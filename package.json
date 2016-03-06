@@ -1,0 +1,16 @@
+{
+  "name": "mco-server",
+  "version": "1.0.0",
+  "description": "a server",
+  "main": "server.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Joseph W Becher <jwbecher@drazisil.com> (drazisil)",
+  "license": "UNLICENSED",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.com:drazisil/mco-server.git"
+  }
+}
