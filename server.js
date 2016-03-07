@@ -1,22 +1,19 @@
-var dgram = require('dgram')
+var net = require('net')
+var server = net.createServer(function (sock) { // connection' listener
+  console.log('client connected')
 
-var server = dgram.createSocket('udp4')
+  // Add a 'data' event handler to this instance of socket
+  sock.on('data', function (data) {
+    console.log('DATA ' + sock.remoteAddress + ': ' + data)
+    // Write the data back to the socket, the client will receive it as data from the server
+    sock.write('You said "' + data + '"')
+  })
 
-server.on('error', function (err) {
-  console.log(`server error:\n` + err.stack)
-  server.close()
+  // Add a 'close' event handler to this instance of socket
+  sock.on('close', function (data) {
+    console.log('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort)
+  })
 })
-
-server.on('message', function (msg, rinfo) {
-  console.log('server got: ' + msg + ' from ' +
-    rinfo.address + ':' + rinfo.port)
+server.listen(8226, function () { // listening' listener
+  console.log('server bound')
 })
-
-server.on('listening', function () {
-  var address = server.address()
-  console.log('server listening ' +
-      address.address + ':' + address.port)
-})
-
-server.bind(8226)
-// server listening 0.0.0.0:41234
