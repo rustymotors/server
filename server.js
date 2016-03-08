@@ -13,6 +13,10 @@ var server = net.createServer(function (sock) { // connection' listener
   sock.on('close', function (data) {
     console.log('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort)
   })
+  // Add a 'error' event handler to this instance of socket
+  sock.on('error', function (err) {
+    console.log('ERROR: ' + err)
+  })
 })
 server.listen(8226, function () { // listening' listener
   console.log('server bound')
