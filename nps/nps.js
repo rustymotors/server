@@ -5,15 +5,18 @@ function npsSetResponseCodeToBuffer (buff, responseCode) {
       buff[0] = 0x06
       buff[1] = 0x01
       return buff
-    // hex 602 = persona ok
+    // hex 601 = persona ok
+    case 'NPS_PERSONA_CREATE_OK':
+      buff[0] = 0x06
+      buff[1] = 0x01
+      return buff
+    // hex 607 = persona get ok
     case 'NPS_PERSONA_GET_OK':
       buff[0] = 0x06
-      buff[1] = 0x02
-      return buff
-    // hex 607 = persona name in use
-    case 'NPS_PERSONA_GET_INUSE':
-      buff[0] = 0x06
       buff[1] = 0x07
+
+      // Set number of personas
+      // buff[41] = 0x01
       return buff
     // hex 611 = persona
     case 'NPS_PERSONA_GET_UNKNOWN':
@@ -35,7 +38,7 @@ function npsGetRequestCodeToBuffer (buff) {
   switch (tmp) {
     // hex 519 = NPSGetPersonaInfoByNames()
     case '519':
-      return 'NPSGetPersonaInfoByNames()'
+      return 'NPSGetPersonaInfoByName()'
     // hex 519 = NPSGetPersonaMaps()
     case '532':
       return 'NPSGetPersonaMaps()'
@@ -47,11 +50,11 @@ function npsGetRequestCodeToBuffer (buff) {
 function npsRequestResponse (buff, requestCode) {
   switch (requestCode) {
     // hex 601 = ok
-    case 'NPSGetPersonaInfoByNames()':
+    case 'NPSGetPersonaInfoByName()':
       return npsSetResponseCodeToBuffer(buff, 'NPS_PERSONA_GET_OK')
       // hex 601 = ok
     case 'NPSGetPersonaMaps()':
-      return npsSetResponseCodeToBuffer(buff, 'NPS_PERSONA_GET_INUSE')
+      return npsSetResponseCodeToBuffer(buff, 'NPS_PERSONA_GET_OK')
     default:
       return buff
   }
