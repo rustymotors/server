@@ -1,72 +1,45 @@
-function npsSetResponseCodeToBuffer (buff, responseCode) {
-  switch (responseCode) {
-    // hex 601 = ok
-    case 'NPS_AUTH_OK':
-      buff[0] = 0x06
-      buff[1] = 0x01
-      return buff
-    // hex 601 = persona ok
-    case 'NPS_PERSONA_CREATE_OK':
-      buff[0] = 0x06
-      buff[1] = 0x01
-      return buff
-    // hex 607 = persona get ok
-    case 'NPS_PERSONA_GET_OK':
-      buff[0] = 0x06
-      buff[1] = 0x07
+var crypto = require('crypto')
 
-      // Set number of personas
-      // buff[41] = 0x01
-      return buff
-    // hex 611 = persona
-    case 'NPS_PERSONA_GET_UNKNOWN':
-      buff[0] = 0x06
-      buff[1] = 0x11
-      return buff
-    // hex 623 = problem with account
-    case 'NPS_AUTH_DENIED':
-      buff[0] = 0x06
-      buff[1] = 0x23
-      return buff
-    default:
-      return buff
-  }
-}
-
-function npsGetRequestCodeToBuffer (buff) {
-  var tmp = buff[0].toString(16) + buff[1].toString(16)
-  switch (tmp) {
-    // hex 519 = NPSGetPersonaInfoByNames()
-    case '519':
-      return 'NPSGetPersonaInfoByName()'
-    // hex 519 = NPSGetPersonaMaps()
-    case '532':
-      return 'NPSGetPersonaMaps()'
-    default:
-      return tmp.toString('hex')
-  }
-}
-
-function npsRequestResponse (buff, requestCode) {
+function getRequestCode (rawBuffer) {
+  var requestCode = toHex(rawBuffer[0]) + toHex(rawBuffer[1])
   switch (requestCode) {
-    // hex 601 = ok
-    case 'NPSGetPersonaInfoByName()':
-      return npsSetResponseCodeToBuffer(buff, 'NPS_PERSONA_GET_OK')
-      // hex 601 = ok
-    case 'NPSGetPersonaMaps()':
-      return npsSetResponseCodeToBuffer(buff, 'NPS_PERSONA_GET_OK')
+    case '0501':
+      return 'NPS_REQUEST_USER_LOGIN'
+    case '0519':
+      return 'NPS_REQUEST_GET_PERSONA_INFO_BY_NAME'
+    case '0532':
+      return 'NPS_REQUEST_GET_PERSONA_MAPS'
+    case '2472':
+    case '7B22':
+      return 'p2pool'
     default:
-      return buff
+      return 'Unknown request code: ' + requestCode
   }
 }
 
-// NPSGetPersonaInfoByName()
-// 602 = 1538 = ??
-// 607 = 1553 = Name in Use
-// 611 = 1553 = ??
+function dumpRequest (sock, rawBuffer, requestCode) {
+  console.log('-----------------------------------------')
+  console.log('Request Code: ' + requestCode)
+  console.log('-----------------------------------------')
+  console.log('Request DATA ' + sock.remoteAddress + ': ' + rawBuffer)
+  console.log('=========================================')
+  console.log('Request DATA ' + sock.remoteAddress + ': ' + rawBuffer.toString('hex'))
+  console.log('-----------------------------------------')
+}
+
+function toHex (d) {
+  return ('0' + (Number(d).toString(16))).slice(-2).toUpperCase()
+}
+
+function randomValueHex (len) {
+  return crypto.randomBytes(Math.ceil(len / 2))
+    .toString('hex') // convert to hexadecimal format
+    .slice(0, len)   // return required number of characters
+}
 
 module.exports = {
-  npsRequestResponse: npsRequestResponse,
-  npsGetRequestCodeToBuffer: npsGetRequestCodeToBuffer,
-  npsSetResponseCodeToBuffer: npsSetResponseCodeToBuffer
+  getRequestCode: getRequestCode,
+  dumpRequest: dumpRequest,
+  toHex: toHex,
+  randomValueHex: randomValueHex
 }

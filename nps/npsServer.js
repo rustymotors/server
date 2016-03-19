@@ -1,6 +1,7 @@
-var crypto = require('crypto')
 var net = require('net')
 const dgram = require('dgram')
+var nps = require('./nps.js')
+var personaServer = require('../persona/server.js')
 
 var NPS_LISTEN_PORTS_TCP = ['7003', '8226', '8227', '8228', '43300']
 
@@ -45,7 +46,7 @@ function npsListener (sock) {
   sock.on('data', function (data) {
     var responseBuffer
     var responseCodeBuffer = new Buffer(2)
-    var requestCode = getRequestCode(data)
+    var requestCode = nps.getRequestCode(data)
 
     if (requestCode !== 'p2pool') {
       console.log('client connected: ' + sock.address().port)
@@ -76,38 +77,7 @@ function npsListener (sock) {
 
         break
       case 'NPS_REQUEST_GET_PERSONA_MAPS':
-        responseBuffer = new Buffer(516)
-        responseBuffer.fill(0)
-
-        responseBuffer[2] = 0x01
-        responseBuffer[3] = 0x00
-
-        for (var i = 4; i < 517; i++) {
-          responseBuffer[i] = crypto.randomBytes(1)
-          if (responseBuffer[i] === 0x00) {
-            responseBuffer[i] = 0x02
-          }
-        }
-
-        // This is the persona count
-        responseBuffer[12] = 0x00
-        responseBuffer[13] = 0x01
-
-        // Response Code
-        responseCodeBuffer.fill(0)
-        responseCodeBuffer[0] = 0x06
-        responseCodeBuffer[1] = 0x07
-        responseCodeBuffer.copy(responseBuffer)
-
-        // CustomerId
-        // var customerIdBuffer = new Buffer(4)
-        // customerIdBuffer.fill(0)
-        // customerIdBuffer[0] = 0xAB
-        // customerIdBuffer[1] = 0x01
-        // customerIdBuffer[2] = 0x00
-        // customerIdBuffer[3] = 0x00
-        // customerIdBuffer.copy(responseBuffer, 12)
-
+        responseBuffer = personaServer.npsResponse_GetPersonaMaps()
         break
       case 'NPS_REQUEST_GET_PERSONA_INFO_BY_NAME':
         responseBuffer = new Buffer(48380)
@@ -141,18 +111,18 @@ function npsListener (sock) {
         responseBuffer = new Buffer(4)
         responseBuffer.fill(0)
     }
-    dumpRequest(sock, data, requestCode)
+    nps.dumpRequest(sock, data, requestCode)
 
     console.log('Response Length: ' + responseBuffer.length)
     // console.log('Response Data: ' + responseBuffer.toString('hex'))
-    console.log('Response Code: ' + toHex(responseBuffer[0]) +
-      toHex(responseBuffer[1]) +
-      toHex(responseBuffer[2]) +
-      toHex(responseBuffer[3]) +
-      toHex(responseBuffer[4]) +
-      toHex(responseBuffer[5]) +
-      toHex(responseBuffer[6]) +
-      toHex(responseBuffer[7])
+    console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +
+      nps.toHex(responseBuffer[1]) +
+      nps.toHex(responseBuffer[2]) +
+      nps.toHex(responseBuffer[3]) +
+      nps.toHex(responseBuffer[4]) +
+      nps.toHex(responseBuffer[5]) +
+      nps.toHex(responseBuffer[6]) +
+      nps.toHex(responseBuffer[7])
     )
     sock.write(responseBuffer)
   })
@@ -162,43 +132,6 @@ function npsListener (sock) {
     var e = err; e = ''; console.log(e)
     // console.log('ERROR: ' + err)
   })
-}
-
-function getRequestCode (rawBuffer) {
-  var requestCode = toHex(rawBuffer[0]) + toHex(rawBuffer[1])
-  switch (requestCode) {
-    case '0501':
-      return 'NPS_REQUEST_USER_LOGIN'
-    case '0519':
-      return 'NPS_REQUEST_GET_PERSONA_INFO_BY_NAME'
-    case '0532':
-      return 'NPS_REQUEST_GET_PERSONA_MAPS'
-    case '2472':
-    case '7B22':
-      return 'p2pool'
-    default:
-      return 'Unknown request code: ' + requestCode
-  }
-}
-
-function dumpRequest (sock, rawBuffer, requestCode) {
-  console.log('-----------------------------------------')
-  console.log('Request Code: ' + requestCode)
-  console.log('-----------------------------------------')
-  console.log('Request DATA ' + sock.remoteAddress + ': ' + rawBuffer)
-  console.log('=========================================')
-  console.log('Request DATA ' + sock.remoteAddress + ': ' + rawBuffer.toString('hex'))
-  console.log('-----------------------------------------')
-}
-
-function toHex (d) {
-  return ('0' + (Number(d).toString(16))).slice(-2).toUpperCase()
-}
-
-function randomValueHex (len) {
-  return crypto.randomBytes(Math.ceil(len / 2))
-    .toString('hex') // convert to hexadecimal format
-    .slice(0, len)   // return required number of characters
 }
 
 module.exports = {
