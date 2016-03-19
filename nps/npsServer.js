@@ -1,26 +1,61 @@
+var crypto = require('crypto')
 var net = require('net')
+const dgram = require('dgram')
 
-var NPS_LISTEN_PORTS = ['8226', '8228', '7003']
+var NPS_LISTEN_PORTS_TCP = ['7003', '8226', '8227', '8228', '43300']
 
 function initServer () {
-  for (var port = 0; port < NPS_LISTEN_PORTS.length; port++) {
-    net.createServer(npsListener).listen(NPS_LISTEN_PORTS[port], function () {
-      console.log('NPS Server listening on port: ' + this.address().port)
+  for (var tcp_port = 0; tcp_port < NPS_LISTEN_PORTS_TCP.length; tcp_port++) {
+    net.createServer(npsListener).listen(NPS_LISTEN_PORTS_TCP[tcp_port], function () {
+      // console.log('NPS Server listening on TCP port: ' + this.address().port)
     })
+  }
+  // TCP 9000 = 9499
+  for (var tcp_port_range = 9000; tcp_port_range < 9500; tcp_port_range++) {
+    net.createServer(npsListener).listen(tcp_port_range, function () {
+      // console.log('NPS Server listening on TCP port: ' + this.address().port)
+    })
+  }
+  // UDP 9500 - 9999
+  for (var udp_port_range = 9500; udp_port_range < 10000; udp_port_range++) {
+    dgram.createSocket('udp4')
+      .on('error', udpErrorHandler)
+      .on('message', udpMessageHandler)
+      .on('listening', udpListiner)
+      .bind(udp_port_range)
   }
 }
 
-function npsListener (sock) {
-  console.log('client connected: ' + sock.address().port)
+function udpErrorHandler (err) {
+  console.log(`server error:\n` + err.stack)
+  this.close()
+}
 
+function udpMessageHandler (msg, rinfo) {
+  console.log('server got: ' + msg + ' from ' + rinfo.address + ':' + rinfo.port)
+}
+
+function udpListiner () {
+  // console.log('NPS Server listening on UDP port: ' + this.address().port)
+}
+
+dgram.createSocket('udp4').on('error', udpErrorHandler).on('message', udpMessageHandler).on('listening', udpListiner).bind()
+
+function npsListener (sock) {
   sock.on('data', function (data) {
-    var responseBuffer = new Buffer(48380)
+    var responseBuffer
     var responseCodeBuffer = new Buffer(2)
-    responseBuffer.fill(0)
-    responseCodeBuffer.fill(0)
     var requestCode = getRequestCode(data)
+
+    if (requestCode !== 'p2pool') {
+      console.log('client connected: ' + sock.address().port)
+    }
+
     switch (requestCode) {
       case 'NPS_REQUEST_USER_LOGIN':
+        responseBuffer = new Buffer(48380)
+        responseBuffer.fill(0)
+
         // Response Code
         responseCodeBuffer.fill(0)
         responseCodeBuffer[0] = 0x06
@@ -41,14 +76,28 @@ function npsListener (sock) {
 
         break
       case 'NPS_REQUEST_GET_PERSONA_MAPS':
+        responseBuffer = new Buffer(516)
+        responseBuffer.fill(0)
+
+        responseBuffer[2] = 0x01
+        responseBuffer[3] = 0x00
+
+        for (var i = 4; i < 517; i++) {
+          responseBuffer[i] = crypto.randomBytes(1)
+          if (responseBuffer[i] === 0x00) {
+            responseBuffer[i] = 0x02
+          }
+        }
+
+        // This is the persona count
+        responseBuffer[12] = 0x00
+        responseBuffer[13] = 0x01
+
         // Response Code
         responseCodeBuffer.fill(0)
         responseCodeBuffer[0] = 0x06
         responseCodeBuffer[1] = 0x07
         responseCodeBuffer.copy(responseBuffer)
-
-    //    responseBuffer[2] = 0xAF
-    //    responseBuffer[3] = 0xAF
 
         // CustomerId
         // var customerIdBuffer = new Buffer(4)
@@ -61,15 +110,20 @@ function npsListener (sock) {
 
         break
       case 'NPS_REQUEST_GET_PERSONA_INFO_BY_NAME':
+        responseBuffer = new Buffer(48380)
+        responseBuffer.fill(0)
+
         // Response Code
-        // 607 = Not Availiable
+        // 607 = name Not Availiable
+        // 611 = failure, no error returned
+        // 602 = failure, no error returned
         responseCodeBuffer.fill(0)
         responseCodeBuffer[0] = 0x06
-        responseCodeBuffer[1] = 0x01
+        responseCodeBuffer[1] = 0x02
         responseCodeBuffer.copy(responseBuffer)
 
-      //    responseBuffer[2] = 0xAF
-      //    responseBuffer[3] = 0xAF
+        responseBuffer[2] = 0xAF
+        responseBuffer[3] = 0xAF
 
         // CustomerId
         // var customerIdBuffer = new Buffer(4)
@@ -81,6 +135,8 @@ function npsListener (sock) {
         // customerIdBuffer.copy(responseBuffer, 12)
 
         break
+      case 'p2pool':
+        return
       default:
         responseBuffer = new Buffer(4)
         responseBuffer.fill(0)
@@ -103,7 +159,8 @@ function npsListener (sock) {
 
   // Add a 'error' event handler to this instance of socket
   sock.on('error', function (err) {
-    console.log('ERROR: ' + err)
+    var e = err; e = ''; console.log(e)
+    // console.log('ERROR: ' + err)
   })
 }
 
@@ -116,6 +173,9 @@ function getRequestCode (rawBuffer) {
       return 'NPS_REQUEST_GET_PERSONA_INFO_BY_NAME'
     case '0532':
       return 'NPS_REQUEST_GET_PERSONA_MAPS'
+    case '2472':
+    case '7B22':
+      return 'p2pool'
     default:
       return 'Unknown request code: ' + requestCode
   }
@@ -133,6 +193,12 @@ function dumpRequest (sock, rawBuffer, requestCode) {
 
 function toHex (d) {
   return ('0' + (Number(d).toString(16))).slice(-2).toUpperCase()
+}
+
+function randomValueHex (len) {
+  return crypto.randomBytes(Math.ceil(len / 2))
+    .toString('hex') // convert to hexadecimal format
+    .slice(0, len)   // return required number of characters
 }
 
 module.exports = {
