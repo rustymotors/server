@@ -3,8 +3,14 @@ var crypto = require('crypto')
 function getRequestCode (rawBuffer) {
   var requestCode = toHex(rawBuffer[0]) + toHex(rawBuffer[1])
   switch (requestCode) {
+    case '0100':
+      return 'NPS_REQUEST_GAME_CONNECT_SERVER'
     case '0501':
       return 'NPS_REQUEST_USER_LOGIN'
+    case '0503':
+      return 'NPS_REQUEST_SELECT_GAME_PERSONA'
+    case '050F':
+      return 'NPS_REQUEST_LOG_OUT_USER'
     case '0519':
       return 'NPS_REQUEST_GET_PERSONA_INFO_BY_NAME'
     case '0532':
