@@ -29,43 +29,43 @@ function npsResponse_GetPersonaMaps () {
   responseBuffer[27] = 0x2C
 
   // Persona Name = 30-bit null terminated string
-  responseBuffer[34] = 0x43
-  responseBuffer[35] = 0x44
-  responseBuffer[36] = 0x45
-  responseBuffer[37] = 0x46
+  responseBuffer[34] = 0x44
+  responseBuffer[35] = 0x6F
+  responseBuffer[36] = 0x63
+  responseBuffer[37] = 0x20
 
-  responseBuffer[38] = 0x47
-  responseBuffer[39] = 0x48
-  responseBuffer[40] = 0x49
-  responseBuffer[41] = 0x4A
+  responseBuffer[38] = 0x42
+  responseBuffer[39] = 0x72
+  responseBuffer[40] = 0x6F
+  responseBuffer[41] = 0x77
 
-  responseBuffer[42] = 0x4B
-  responseBuffer[43] = 0x4C
-  responseBuffer[44] = 0x4E
-  responseBuffer[45] = 0x4F
+  responseBuffer[42] = 0x6E
+  responseBuffer[43] = 0x00
+  responseBuffer[44] = 0x00
+  responseBuffer[45] = 0x00
 
-  responseBuffer[46] = 0x50
-  responseBuffer[47] = 0x51
-  responseBuffer[48] = 0x52
-  responseBuffer[49] = 0x53
+  responseBuffer[46] = 0x00
+  responseBuffer[47] = 0x00
+  responseBuffer[48] = 0x00
+  responseBuffer[49] = 0x00
 
-  responseBuffer[50] = 0x54
-  responseBuffer[51] = 0x55
-  responseBuffer[52] = 0x56
-  responseBuffer[53] = 0x57
+  responseBuffer[50] = 0x00
+  responseBuffer[51] = 0x00
+  responseBuffer[52] = 0x00
+  responseBuffer[53] = 0x00
 
-  responseBuffer[54] = 0x58
-  responseBuffer[55] = 0x59
-  responseBuffer[56] = 0x5A
-  responseBuffer[57] = 0x41
+  responseBuffer[54] = 0x00
+  responseBuffer[55] = 0x00
+  responseBuffer[56] = 0x00
+  responseBuffer[57] = 0x00
 
-  responseBuffer[58] = 0x42
-  responseBuffer[59] = 0x43
-  responseBuffer[60] = 0x44
-  responseBuffer[61] = 0x45
+  responseBuffer[58] = 0x00
+  responseBuffer[59] = 0x00
+  responseBuffer[60] = 0x00
+  responseBuffer[61] = 0x00
 
-  responseBuffer[62] = 0x46
-  responseBuffer[63] = 0x47
+  responseBuffer[62] = 0x00
+  responseBuffer[63] = 0x00
   responseBuffer[64] = 0x00
 
   // Response Code

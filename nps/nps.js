@@ -4,19 +4,20 @@ function getRequestCode (rawBuffer) {
   var requestCode = toHex(rawBuffer[0]) + toHex(rawBuffer[1])
   switch (requestCode) {
     case '0100':
-      return 'NPS_REQUEST_GAME_CONNECT_SERVER'
+      return '(0x0100)NPS_REQUEST_GAME_CONNECT_SERVER'
     case '0501':
-      return 'NPS_REQUEST_USER_LOGIN'
+      return '(0x0501)NPS_REQUEST_USER_LOGIN'
     case '0503':
-      return 'NPS_REQUEST_SELECT_GAME_PERSONA'
+      return '(0x0503)NPS_REQUEST_SELECT_GAME_PERSONA'
     case '050F':
-      return 'NPS_REQUEST_LOG_OUT_USER'
+      return '(0x050F)NPS_REQUEST_LOG_OUT_USER'
     case '0519':
-      return 'NPS_REQUEST_GET_PERSONA_INFO_BY_NAME'
+      return '(0x0519)NPS_REQUEST_GET_PERSONA_INFO_BY_NAME'
     case '0532':
-      return 'NPS_REQUEST_GET_PERSONA_MAPS'
+      return '(0x0532)NPS_REQUEST_GET_PERSONA_MAPS'
     case '2472':
     case '7B22':
+    case '4745':
       return 'p2pool'
     default:
       return 'Unknown request code: ' + requestCode

@@ -2,6 +2,7 @@ var net = require('net')
 const dgram = require('dgram')
 var nps = require('./nps.js')
 var personaServer = require('../persona/server.js')
+var gameServer = require('../game/server.js')
 
 var NPS_LISTEN_PORTS_TCP = ['7003', '8226', '8227', '8228', '43300']
 
@@ -53,7 +54,7 @@ function npsListener (sock) {
     }
 
     switch (requestCode) {
-      case 'NPS_REQUEST_USER_LOGIN':
+      case '(0x0501)NPS_REQUEST_USER_LOGIN':
         responseBuffer = new Buffer(48380)
         responseBuffer.fill(0)
 
@@ -76,7 +77,7 @@ function npsListener (sock) {
         customerIdBuffer.copy(responseBuffer, 12)
 
         break
-      case 'NPS_REQUEST_SELECT_GAME_PERSONA':
+      case '(0x0503)NPS_REQUEST_SELECT_GAME_PERSONA':
         responseBuffer = new Buffer(44975)
         responseBuffer.fill(0)
 
@@ -104,38 +105,13 @@ function npsListener (sock) {
         // customerIdBuffer.copy(responseBuffer, 12)
 
         break
-      case 'NPS_REQUEST_GAME_CONNECT_SERVER':
-        responseBuffer = new Buffer(500)
-        responseBuffer.fill(0)
-
-        // Response Code
-        // 207 = success
-        responseCodeBuffer.fill(0)
-        responseCodeBuffer[0] = 0x02
-        responseCodeBuffer[1] = 0x07
-        responseCodeBuffer.copy(responseBuffer)
-
-        responseBuffer[2] = 0xAF
-        responseBuffer[3] = 0xAF
-
-        for (var i = 4; i < 500; i++) {
-          responseBuffer[i] = nps.toHex((Math.random() * 15 | 1) + 1)
-        }
-
-        // CustomerId
-        // var customerIdBuffer = new Buffer(4)
-        // customerIdBuffer.fill(0)
-        // customerIdBuffer[0] = 0xAB
-        // customerIdBuffer[1] = 0x01
-        // customerIdBuffer[2] = 0x00
-        // customerIdBuffer[3] = 0x00
-        // customerIdBuffer.copy(responseBuffer, 12)
-
+      case '(0x0100)NPS_REQUEST_GAME_CONNECT_SERVER':
+        responseBuffer = gameServer.npsResponse_ConnectServer()
         break
-      case 'NPS_REQUEST_GET_PERSONA_MAPS':
+      case '(0x0532)NPS_REQUEST_GET_PERSONA_MAPS':
         responseBuffer = personaServer.npsResponse_GetPersonaMaps()
         break
-      case 'NPS_REQUEST_GET_PERSONA_INFO_BY_NAME':
+      case '(0x0519)NPS_REQUEST_GET_PERSONA_INFO_BY_NAME':
         responseBuffer = new Buffer(48380)
         responseBuffer.fill(0)
 
