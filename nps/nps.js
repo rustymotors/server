@@ -15,9 +15,12 @@ function getRequestCode (rawBuffer) {
       return '(0x0519)NPS_REQUEST_GET_PERSONA_INFO_BY_NAME'
     case '0532':
       return '(0x0532)NPS_REQUEST_GET_PERSONA_MAPS'
+    case '1101':
+      return '(0x1101)NPSSendCommand'
     case '2472':
     case '7B22':
     case '4745':
+    case 'FBC0':
       return 'p2pool'
     default:
       return 'Unknown request code: ' + requestCode

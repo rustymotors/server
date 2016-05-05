@@ -18,14 +18,14 @@ function initServer () {
       // console.log('NPS Server listening on TCP port: ' + this.address().port)
     })
   }
-  // UDP 9500 - 9999
-  for (var udp_port_range = 9500; udp_port_range < 10000; udp_port_range++) {
-    dgram.createSocket('udp4')
-      .on('error', udpErrorHandler)
-      .on('message', udpMessageHandler)
-      .on('listening', udpListiner)
-      .bind(udp_port_range)
-  }
+  // // UDP 9500 - 9999
+  // for (var udp_port_range = 9500; udp_port_range < 10000; udp_port_range++) {
+  //   dgram.createSocket('udp4')
+  //     .on('error', udpErrorHandler)
+  //     .on('message', udpMessageHandler)
+  //     .on('listening', udpListiner)
+  //     .bind(udp_port_range)
+  // }
 }
 
 function udpErrorHandler (err) {
@@ -50,6 +50,7 @@ function npsListener (sock) {
     var requestCode = nps.getRequestCode(data)
 
     if (requestCode !== 'p2pool') {
+      console.log('')
       console.log('client connected: ' + sock.address().port)
     }
 
@@ -76,6 +77,20 @@ function npsListener (sock) {
         customerIdBuffer[3] = 0x00
         customerIdBuffer.copy(responseBuffer, 12)
 
+        nps.dumpRequest(sock, data, requestCode)
+
+        console.log('Response Length: ' + responseBuffer.length)
+        // console.log('Response Data: ' + responseBuffer.toString('hex'))
+        console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +
+          nps.toHex(responseBuffer[1]) +
+          nps.toHex(responseBuffer[2]) +
+          nps.toHex(responseBuffer[3]) +
+          nps.toHex(responseBuffer[4]) +
+          nps.toHex(responseBuffer[5]) +
+          nps.toHex(responseBuffer[6]) +
+          nps.toHex(responseBuffer[7])
+        )
+        sock.write(responseBuffer)
         break
       case '(0x0503)NPS_REQUEST_SELECT_GAME_PERSONA':
         responseBuffer = new Buffer(44975)
@@ -95,21 +110,52 @@ function npsListener (sock) {
           responseBuffer[i] = nps.toHex((Math.random() * 15 | 1) + 1)
         }
 
-        // CustomerId
-        // var customerIdBuffer = new Buffer(4)
-        // customerIdBuffer.fill(0)
-        // customerIdBuffer[0] = 0xAB
-        // customerIdBuffer[1] = 0x01
-        // customerIdBuffer[2] = 0x00
-        // customerIdBuffer[3] = 0x00
-        // customerIdBuffer.copy(responseBuffer, 12)
+        nps.dumpRequest(sock, data, requestCode)
 
+        console.log('Response Length: ' + responseBuffer.length)
+        // console.log('Response Data: ' + responseBuffer.toString('hex'))
+        console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +
+          nps.toHex(responseBuffer[1]) +
+          nps.toHex(responseBuffer[2]) +
+          nps.toHex(responseBuffer[3]) +
+          nps.toHex(responseBuffer[4]) +
+          nps.toHex(responseBuffer[5]) +
+          nps.toHex(responseBuffer[6]) +
+          nps.toHex(responseBuffer[7])
+        )
+        sock.write(responseBuffer)
         break
       case '(0x0100)NPS_REQUEST_GAME_CONNECT_SERVER':
         responseBuffer = gameServer.npsResponse_ConnectServer()
+
+        nps.dumpRequest(sock, data, requestCode)
+
+        console.log('Response Length: ' + responseBuffer.length)
+        // console.log('Response Data: ' + responseBuffer.toString('hex'))
+        var strDebug_responseBytes = 'Response Code: '
+        for (var iByte = 0; iByte < 32; iByte++) {
+          strDebug_responseBytes += nps.toHex(responseBuffer[iByte]) + ' '
+        }
+        console.log(strDebug_responseBytes)
+        sock.write(responseBuffer)
         break
       case '(0x0532)NPS_REQUEST_GET_PERSONA_MAPS':
         responseBuffer = personaServer.npsResponse_GetPersonaMaps()
+
+        nps.dumpRequest(sock, data, requestCode)
+
+        console.log('Response Length: ' + responseBuffer.length)
+        // console.log('Response Data: ' + responseBuffer.toString('hex'))
+        console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +
+            nps.toHex(responseBuffer[1]) +
+            nps.toHex(responseBuffer[2]) +
+            nps.toHex(responseBuffer[3]) +
+            nps.toHex(responseBuffer[4]) +
+            nps.toHex(responseBuffer[5]) +
+            nps.toHex(responseBuffer[6]) +
+            nps.toHex(responseBuffer[7])
+        )
+        sock.write(responseBuffer)
         break
       case '(0x0519)NPS_REQUEST_GET_PERSONA_INFO_BY_NAME':
         responseBuffer = new Buffer(48380)
@@ -127,36 +173,56 @@ function npsListener (sock) {
         responseBuffer[2] = 0xAF
         responseBuffer[3] = 0xAF
 
-        // CustomerId
-        // var customerIdBuffer = new Buffer(4)
-        // customerIdBuffer.fill(0)
-        // customerIdBuffer[0] = 0xAB
-        // customerIdBuffer[1] = 0x01
-        // customerIdBuffer[2] = 0x00
-        // customerIdBuffer[3] = 0x00
-        // customerIdBuffer.copy(responseBuffer, 12)
+        nps.dumpRequest(sock, data, requestCode)
 
+        console.log('Response Length: ' + responseBuffer.length)
+        // console.log('Response Data: ' + responseBuffer.toString('hex'))
+        console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +
+          nps.toHex(responseBuffer[1]) +
+          nps.toHex(responseBuffer[2]) +
+          nps.toHex(responseBuffer[3]) +
+          nps.toHex(responseBuffer[4]) +
+          nps.toHex(responseBuffer[5]) +
+          nps.toHex(responseBuffer[6]) +
+          nps.toHex(responseBuffer[7])
+        )
+        sock.write(responseBuffer)
+        break
+      case '(0x1101)NPSSendCommand':
+        var cmdReply = gameServer.processCMD(requestCode, data)
+
+        nps.dumpRequest(sock, data, requestCode)
+
+        console.log('Response Length: ' + cmdReply.length)
+        // console.log('Response Data: ' + responseBuffer.toString('hex'))
+        strDebug_responseBytes = 'Response Code: '
+        for (var iCmdReplyByte = 0; iCmdReplyByte < 32; iCmdReplyByte++) {
+          strDebug_responseBytes += nps.toHex(cmdReply[iCmdReplyByte]) + ' '
+        }
+        console.log(strDebug_responseBytes)
+        sock.write(cmdReply)
         break
       case 'p2pool':
         return
       default:
         responseBuffer = new Buffer(4)
         responseBuffer.fill(0)
-    }
-    nps.dumpRequest(sock, data, requestCode)
 
-    console.log('Response Length: ' + responseBuffer.length)
-    // console.log('Response Data: ' + responseBuffer.toString('hex'))
-    console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +
-      nps.toHex(responseBuffer[1]) +
-      nps.toHex(responseBuffer[2]) +
-      nps.toHex(responseBuffer[3]) +
-      nps.toHex(responseBuffer[4]) +
-      nps.toHex(responseBuffer[5]) +
-      nps.toHex(responseBuffer[6]) +
-      nps.toHex(responseBuffer[7])
-    )
-    sock.write(responseBuffer)
+        nps.dumpRequest(sock, data, requestCode)
+
+        console.log('Response Length: ' + responseBuffer.length)
+        // console.log('Response Data: ' + responseBuffer.toString('hex'))
+        console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +
+          nps.toHex(responseBuffer[1]) +
+          nps.toHex(responseBuffer[2]) +
+          nps.toHex(responseBuffer[3]) +
+          nps.toHex(responseBuffer[4]) +
+          nps.toHex(responseBuffer[5]) +
+          nps.toHex(responseBuffer[6]) +
+          nps.toHex(responseBuffer[7])
+        )
+        sock.write(responseBuffer)
+    }
   })
 
   // Add a 'error' event handler to this instance of socket
