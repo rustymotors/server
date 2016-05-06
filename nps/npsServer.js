@@ -167,7 +167,7 @@ function npsListener (sock) {
         // 602 = failure, no error returned
         responseCodeBuffer.fill(0)
         responseCodeBuffer[0] = 0x06
-        responseCodeBuffer[1] = 0x02
+        responseCodeBuffer[1] = 0x01
         responseCodeBuffer.copy(responseBuffer)
 
         responseBuffer[2] = 0xAF
