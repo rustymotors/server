@@ -51,7 +51,7 @@ function npsListener (sock) {
 
     if (requestCode !== 'p2pool') {
       console.log('')
-      console.log('client connected: ' + sock.address().port)
+      console.log('client connected: ' + sock.address().port + ' - Address: ' + sock.remoteAddress)
     }
 
     switch (requestCode) {
