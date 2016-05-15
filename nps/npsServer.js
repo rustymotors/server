@@ -13,11 +13,11 @@ function initServer () {
     })
   }
   // TCP 9000 = 9499
-  for (var tcp_port_range = 9000; tcp_port_range < 9500; tcp_port_range++) {
-    net.createServer(npsListener).listen(tcp_port_range, function () {
-      // console.log('NPS Server listening on TCP port: ' + this.address().port)
-    })
-  }
+  // for (var tcp_port_range = 9000; tcp_port_range < 9500; tcp_port_range++) {
+  //   net.createServer(npsListener).listen(tcp_port_range, function () {
+  //     // console.log('NPS Server listening on TCP port: ' + this.address().port)
+  //   })
+  // }
   // // UDP 9500 - 9999
   // for (var udp_port_range = 9500; udp_port_range < 10000; udp_port_range++) {
   //   dgram.createSocket('udp4')
@@ -48,11 +48,6 @@ function npsListener (sock) {
     var responseBuffer
     var responseCodeBuffer = new Buffer(2)
     var requestCode = nps.getRequestCode(data)
-
-    if (requestCode !== 'p2pool') {
-      console.log('')
-      console.log('client connected: ' + sock.address().port + ' - Address: ' + sock.remoteAddress)
-    }
 
     switch (requestCode) {
       case '(0x0501)NPS_REQUEST_USER_LOGIN':
@@ -202,8 +197,8 @@ function npsListener (sock) {
         console.log(strDebug_responseBytes)
         sock.write(cmdReply)
         break
-      case 'p2pool':
-        return
+      // case 'p2pool':
+      //   return
       default:
         responseBuffer = new Buffer(4)
         responseBuffer.fill(0)
