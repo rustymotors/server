@@ -1,5 +1,6 @@
 var net = require('net')
 const dgram = require('dgram')
+var crypto = require('crypto')
 var nps = require('./nps.js')
 var personaServer = require('../persona/server.js')
 var gameServer = require('../game/server.js')
@@ -54,6 +55,8 @@ function npsListener (sock) {
         responseBuffer = new Buffer(48380)
         responseBuffer.fill(0)
 
+        responseBuffer = crypto.randomBytes(responseBuffer.length)
+
         // Response Code
         responseCodeBuffer.fill(0)
         responseCodeBuffer[0] = 0x06
@@ -101,8 +104,8 @@ function npsListener (sock) {
         responseBuffer[2] = 0xAF
         responseBuffer[3] = 0xAF
 
-        for (var i = 4; i < 44975; i++) {
-          responseBuffer[i] = nps.toHex((Math.random() * 15 | 1) + 1)
+        for (var j = 4; j < responseBuffer.length; j++) {
+          responseBuffer[j] = nps.randomValueHex(1)
         }
 
         nps.dumpRequest(sock, data, requestCode)
@@ -222,8 +225,7 @@ function npsListener (sock) {
 
   // Add a 'error' event handler to this instance of socket
   sock.on('error', function (err) {
-    var e = err; e = ''; console.log(e)
-    // console.log('ERROR: ' + err)
+    console.log('ERROR: ' + err)
   })
 }
 
