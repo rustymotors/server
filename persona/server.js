@@ -1,4 +1,131 @@
+var crypto = require('crypto')
 var nps = require('../nps/nps.js')
+var npsServer = require('../nps/server.js')
+
+var SERVER_PORT_PERSONA = 8228
+
+function initServer () {
+  npsServer.initServer(SERVER_PORT_PERSONA, listener)
+}
+
+function listener (sock) {
+  console.log('client connected: ' + SERVER_PORT_PERSONA)
+
+  // Add a 'data' event handler to this instance of socket
+  sock.on('data', onData.bind({ sock: sock }))
+
+  // Add a 'close' event handler to this instance of socket
+  sock.on('close', function (data) {
+    console.log('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort)
+  })
+  // Add a 'error' event handler to this instance of socket
+  sock.on('error', function (err) {
+    console.log('ERROR: ' + err)
+  })
+}
+
+function onData (data) {
+  var requestCode = nps.getRequestCode(data)
+  nps.dumpRequest(this.sock, data, requestCode)
+
+  var responseBuffer
+  var responseCodeBuffer = new Buffer(2)
+
+  switch (requestCode) {
+    case '(0x0503)NPS_REQUEST_SELECT_GAME_PERSONA':
+      responseBuffer = new Buffer(44975)
+      responseBuffer.fill(0)
+
+      responseBuffer = crypto.randomBytes(responseBuffer.length)
+
+      // Response Code
+      // 207 = success
+      responseCodeBuffer.fill(0)
+      responseCodeBuffer[0] = 0x02
+      responseCodeBuffer[1] = 0x07
+      responseCodeBuffer.copy(responseBuffer)
+
+      responseBuffer[2] = 0xAF
+      responseBuffer[3] = 0xAF
+
+      console.log('Response Length: ' + responseBuffer.length)
+      // console.log('Response Data: ' + responseBuffer.toString('hex'))
+      console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +
+        nps.toHex(responseBuffer[1]) +
+        nps.toHex(responseBuffer[2]) +
+        nps.toHex(responseBuffer[3]) +
+        nps.toHex(responseBuffer[4]) +
+        nps.toHex(responseBuffer[5]) +
+        nps.toHex(responseBuffer[6]) +
+        nps.toHex(responseBuffer[7])
+      )
+      this.sock.write(responseBuffer)
+      break
+    case '(0x0532)NPS_REQUEST_GET_PERSONA_MAPS':
+      responseBuffer = npsResponse_GetPersonaMaps()
+
+      console.log('Response Length: ' + responseBuffer.length)
+      // console.log('Response Data: ' + responseBuffer.toString('hex'))
+      console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +
+        nps.toHex(responseBuffer[1]) +
+        nps.toHex(responseBuffer[2]) +
+        nps.toHex(responseBuffer[3]) +
+        nps.toHex(responseBuffer[4]) +
+        nps.toHex(responseBuffer[5]) +
+        nps.toHex(responseBuffer[6]) +
+        nps.toHex(responseBuffer[7])
+      )
+      this.sock.write(responseBuffer)
+      break
+    case '(0x0519)NPS_REQUEST_GET_PERSONA_INFO_BY_NAME':
+      responseBuffer = new Buffer(48380)
+      responseBuffer.fill(0)
+
+      // Response Code
+      // 607 = name Not Availiable
+      // 611 = failure, no error returned
+      // 602 = failure, no error returned
+      responseCodeBuffer.fill(0)
+      responseCodeBuffer[0] = 0x06
+      responseCodeBuffer[1] = 0x01
+      responseCodeBuffer.copy(responseBuffer)
+
+      responseBuffer[2] = 0xAF
+      responseBuffer[3] = 0xAF
+
+      console.log('Response Length: ' + responseBuffer.length)
+      // console.log('Response Data: ' + responseBuffer.toString('hex'))
+      console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +
+        nps.toHex(responseBuffer[1]) +
+        nps.toHex(responseBuffer[2]) +
+        nps.toHex(responseBuffer[3]) +
+        nps.toHex(responseBuffer[4]) +
+        nps.toHex(responseBuffer[5]) +
+        nps.toHex(responseBuffer[6]) +
+        nps.toHex(responseBuffer[7])
+      )
+      this.sock.write(responseBuffer)
+      break
+    default:
+      responseBuffer = new Buffer(4)
+      responseBuffer.fill(0)
+
+      nps.dumpRequest(this.sock, data, requestCode)
+
+      console.log('Response Length: ' + responseBuffer.length)
+      // console.log('Response Data: ' + responseBuffer.toString('hex'))
+      console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +
+        nps.toHex(responseBuffer[1]) +
+        nps.toHex(responseBuffer[2]) +
+        nps.toHex(responseBuffer[3]) +
+        nps.toHex(responseBuffer[4]) +
+        nps.toHex(responseBuffer[5]) +
+        nps.toHex(responseBuffer[6]) +
+        nps.toHex(responseBuffer[7])
+      )
+      this.sock.write(responseBuffer)
+  }
+}
 
 function npsResponse_GetPersonaMaps () {
   var responseBuffer = new Buffer(516)
@@ -82,5 +209,5 @@ function npsResponse_GetPersonaMaps () {
 }
 
 module.exports = {
-  npsResponse_GetPersonaMaps
+  initServer: initServer
 }
