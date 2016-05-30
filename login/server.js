@@ -55,6 +55,8 @@ function onData (data) {
   customerIdBuffer[3] = 0x00
   customerIdBuffer.copy(responseBuffer, 12)
 
+  nps.decryptSessionKey(data.slice(52, -10))
+
   console.log('Response Length: ' + responseBuffer.length)
   // console.log('Response Data: ' + responseBuffer.toString('hex'))
   console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +

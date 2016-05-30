@@ -12,5 +12,8 @@
   "repository": {
     "type": "git",
     "url": "git@gitlab.com:drazisil/mco-server.git"
+  },
+  "dependencies": {
+    "node-rsa": "^0.3.2"
   }
 }

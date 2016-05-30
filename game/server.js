@@ -35,7 +35,6 @@ function onData (data) {
   switch (requestCode) {
     case '(0x0100)NPS_REQUEST_GAME_CONNECT_SERVER':
       responseBuffer = npsResponse_ConnectServer()
-
       console.log('Response Length: ' + responseBuffer.length)
       // console.log('Response Data: ' + responseBuffer.toString('hex'))
       var strDebug_responseBytes = 'Response Code: '
