@@ -12,7 +12,9 @@ function listener (sock) {
   console.log('client connected: ' + SERVER_PORT_LOBBY)
 
   // Add a 'data' event handler to this instance of socket
-  sock.on('data', onData.bind({ sock: sock }))
+  sock.on('data', onData.bind({
+    sock: sock
+  }))
 
   // Add a 'close' event handler to this instance of socket
   sock.on('close', function (data) {
@@ -55,8 +57,6 @@ function onData (data) {
       console.log(strDebug_responseBytes)
       this.sock.write(cmdReply)
       break
-    // case 'p2pool':
-    //   return
     default:
       responseBuffer = new Buffer(4)
       responseBuffer.fill(0)
@@ -76,12 +76,16 @@ function onData (data) {
   }
 }
 
+var loginResponseBuffer = new Buffer(155)
+loginResponseBuffer.fill(0)
+loginResponseBuffer = crypto.randomBytes(loginResponseBuffer.length)
+
 function npsResponse_ConnectServer () {
   var responseBuffer = new Buffer(155)
   var responseCodeBuffer = new Buffer(2)
   responseBuffer.fill(0)
 
-  responseBuffer = crypto.randomBytes(responseBuffer.length)
+  loginResponseBuffer.copy(responseBuffer)
 
   responseBuffer[2] = 0x00
   responseBuffer[3] = 0x97
@@ -98,6 +102,7 @@ function npsResponse_ConnectServer () {
   responseCodeBuffer[0] = 0x01
   responseCodeBuffer[1] = 0x20
   responseCodeBuffer.copy(responseBuffer)
+  loginResponseBuffer = responseBuffer
 
   return responseBuffer
 }
