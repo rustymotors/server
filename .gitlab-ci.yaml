@@ -1,0 +1,5 @@
+nodejs_run:
+  stage: test
+  script:
+    - npm install
+    - npm test
