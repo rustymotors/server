@@ -12,7 +12,7 @@ function init (path) {
   dbRaces = new sqlite3.Database(path + 'races.db');
 
   dbUsers.serialize(function() {
-    db.run("CREATE TABLE lorem (info TEXT)");
+    dbUsers.run("CREATE TABLE lorem (info TEXT)");
 
     var stmt = dbUsers.prepare("INSERT INTO lorem VALUES (?)");
     for (var i = 0; i < 10; i++) {
