@@ -1,25 +1,31 @@
 var sqlite3 = require('sqlite3').verbose()
 
-var db
+var dbUsers
+var dbPersonas
+var dbSessions
+var dbRaces
 
 function init (path) {
-  db = new sqlite3.Database(path);
+  dbUsers = new sqlite3.Database(path + 'users.db');
+  dbPersonas = new sqlite3.Database(path + 'personas.db');
+  dbSessions = new sqlite3.Database(path + 'sessions.db');
+  dbRaces = new sqlite3.Database(path + 'races.db');
 
-  db.serialize(function() {
+  dbUsers.serialize(function() {
     db.run("CREATE TABLE lorem (info TEXT)");
 
-    var stmt = db.prepare("INSERT INTO lorem VALUES (?)");
+    var stmt = dbUsers.prepare("INSERT INTO lorem VALUES (?)");
     for (var i = 0; i < 10; i++) {
       stmt.run("Ipsum " + i);
     }
     stmt.finalize();
 
-    db.each("SELECT rowid AS id, info FROM lorem", function(err, row) {
+    dbUsers.each("SELECT rowid AS id, info FROM lorem", function(err, row) {
       console.log(row.id + ": " + row.info);
     });
   });
 
-  db.close();
+  dbUsers.close();
 }
 
 module.exports = {
