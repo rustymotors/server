@@ -1,4 +1,4 @@
-var js = require('fs')
+var fs = require('fs')
 var database = require('../src/mco_server/database.js')
 var should = require('should')
 var assert = require('chai').assert;
