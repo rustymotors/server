@@ -1,3 +1,4 @@
+var database = require(../src/mco_server/database.js)
 var assert = require('chai').assert;
 describe('Files', function() {
   it('should locate the pub.key file');
