@@ -22,6 +22,6 @@ function init (path) {
   db.close();
 }
 
-module.export = {
+module.exports = {
   init: init
 }
