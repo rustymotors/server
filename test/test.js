@@ -5,9 +5,23 @@ var assert = require('chai').assert;
 describe('Files', function() {
   it('should locate the pub.key file');
   it('should locate the private_key.pem file');
-  it('should locate the database file, if sqlite3 is used', function() {
+  it('should locate the database files, if sqlite3 is used', function() {
     database.init('../users.db')
-    fs.statSync('../users.db').isFile().should.equal(true)
+    database.init('../personas.db')
+    database.init('../sessions.db')
+    database.init('../races.db')
+    it('should locate the users database file', function() {
+      fs.statSync('../users.db').isFile().should.equal(true)
+    });
+    it('should locate the personas database file', function() {
+      fs.statSync('../personas.db').isFile().should.equal(true)
+    });
+    it('should locate the sessions database file', function() {
+      fs.statSync('../sessions.db').isFile().should.equal(true)
+    });
+    it('should locate the races database file', function() {
+      fs.statSync('../races.db').isFile().should.equal(true)
+    });
   });
 });
 
