@@ -2,7 +2,10 @@ var assert = require('chai').assert;
 describe('Files', function() {
   it('should locate the pub.key file');
   it('should locate the private_key.pem file');
-  it('should locate the database file, if sqlite3 is used');
+  it('should locate the database file, if sqlite3 is used', function() {
+    database.init('../users.db')
+    'foo'.should.equal('foo')
+  });
 });
 
 describe('Databases', function() {
