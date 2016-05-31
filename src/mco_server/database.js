@@ -3,7 +3,7 @@ var sqlite3 = require('sqlite3').verbose()
 var db
 
 function init (path) {
-  db = new sqlite3.Database(':memory:');
+  db = new sqlite3.Database(path);
 
   db.serialize(function() {
     db.run("CREATE TABLE lorem (info TEXT)");
