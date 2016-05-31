@@ -1,4 +1,4 @@
-var database = require(../src/mco_server/database.js)
+var database = require('../src/mco_server/database.js')
 var should = require('should')
 var assert = require('chai').assert;
 describe('Files', function() {
