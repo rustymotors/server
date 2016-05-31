@@ -1,3 +1,4 @@
+var js = require('fs')
 var database = require('../src/mco_server/database.js')
 var should = require('should')
 var assert = require('chai').assert;
@@ -6,7 +7,7 @@ describe('Files', function() {
   it('should locate the private_key.pem file');
   it('should locate the database file, if sqlite3 is used', function() {
     database.init('../users.db')
-    'foo'.should.equal('foo')
+    fs.statSync('../users.db').isFile().should.equal(true)
   });
 });
 
