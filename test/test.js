@@ -5,10 +5,10 @@ var database = require('../src/mco_server/database.js')
 var should = require('should')
 // var assert = require('chai').assert()
 describe('Files', function () {
-  it('should locate the pub.key file', function () {
+  it.skip('should locate the pub.key file', function () {
     should(fs.statSync('./data/pub.key').isFile()).equal(true)
   })
-  it('should locate the private_key.pem file', function () {
+  it.skip('should locate the private_key.pem file', function () {
     should(fs.statSync('./data/private_key.pem').isFile()).equal(true)
   })
   describe('Check for database files, if sqlite3 is used', function () {
