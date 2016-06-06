@@ -1,5 +1,5 @@
 test:
   override:
     - mocha --reporter mocha-junit-reporter:
-      environment:
-        MOCHA_FILE: $CIRCLE_TEST_REPORTS/junit/
+        environment:
+          MOCHA_FILE: $CIRCLE_TEST_REPORTS/junit/
