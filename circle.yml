@@ -1,6 +1,6 @@
 general:
   artifacts:
-    - $CIRCLE_TEST_REPORTS/junit/test-results.xml
+    - $CIRCLE_TEST_REPORTS/junit
 test:
   override:
     - mocha test --reporter mocha-junit-reporter:
