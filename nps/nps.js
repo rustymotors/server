@@ -67,13 +67,17 @@ function randomValueHex (len) {
 
 function decryptSessionKey (encryptedKeySet) {
   initCrypto()
-  encryptedKeySet = new Buffer(encryptedKeySet.toString('utf8'), 'hex')
-  console.log('raw len: ', encryptedKeySet.length)
-  console.log('raw: ', encryptedKeySet.toString('hex'))
-  var encryptedKeySetB64 = encryptedKeySet.toString('base64')
-  console.log('base64: ', encryptedKeySetB64)
-  var decrypted = privateKey.decrypt(encryptedKeySetB64, 'base64')
-  console.log('decrypted: ', new Buffer(decrypted, 'base64').toString('hex'))
+  try {
+    encryptedKeySet = new Buffer(encryptedKeySet.toString('utf8'), 'hex')
+    console.log('raw len: ', encryptedKeySet.length)
+    console.log('raw: ', encryptedKeySet.toString('hex'))
+    var encryptedKeySetB64 = encryptedKeySet.toString('base64')
+    console.log('base64: ', encryptedKeySetB64)
+    var decrypted = privateKey.decrypt(encryptedKeySetB64, 'base64')
+    console.log('decrypted: ', new Buffer(decrypted, 'base64').toString('hex'))
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 module.exports = {
