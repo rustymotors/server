@@ -5,6 +5,7 @@ var NodeRSA = require('node-rsa')
 var privateKeyFilename = './data/private_key.pem'
 var cryptoLoaded = false
 var privateKey
+var session_key
 
 function initCrypto () {
   if (cryptoLoaded === false) {
@@ -74,7 +75,8 @@ function decryptSessionKey (encryptedKeySet) {
     var encryptedKeySetB64 = encryptedKeySet.toString('base64')
     console.log('base64: ', encryptedKeySetB64)
     var decrypted = privateKey.decrypt(encryptedKeySetB64, 'base64')
-    console.log('decrypted: ', new Buffer(decrypted, 'base64').toString('hex'))
+    session_key = new Buffer(decrypted, 'base64').toString('hex').substring(4, 20)
+    console.log('decrypted: ', session_key)
   } catch (e) {
     console.log(e)
   }

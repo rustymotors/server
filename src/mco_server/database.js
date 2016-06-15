@@ -8,9 +8,9 @@ var dbSessions = new sqlite3.Database(DB_PATH + 'sessions.db')
 var dbRaces = new sqlite3.Database(DB_PATH + 'races.db')
 
 function dbCreateTables (callback) {
-  dbUsers.run('CREATE TABLE IF NOT EXISTS users (username TEXT, password_hash TEXT, is_suspended INTEGER)')
-  dbPersonas.run('CREATE TABLE IF NOT EXISTS personas (username TEXT, racer_name TEXT)')
-  dbSessions.run('CREATE TABLE IF NOT EXISTS sessions (org TEXT, id INTEGER, login TEXT, avatar_url TEXT, type TEXT, PRIMARY KEY(id))')
+  dbUsers.run('CREATE TABLE IF NOT EXISTS users (username TEXT UNIQUE, password_hash TEXT, is_suspended INTEGER)')
+  dbPersonas.run('CREATE TABLE IF NOT EXISTS personas (username TEXT UNIQUE, racer_name TEXT UNIQUE, shard TEXT)')
+  dbSessions.run('CREATE TABLE IF NOT EXISTS sessions (session_id TEXT UNIQUE, hostname TEXT, ip_address TEXT UNIQUE, session_key TEXT)')
   dbRaces.run('CREATE TABLE IF NOT EXISTS races (org TEXT, repository TEXT, id INTEGER, title TEXT, state TEXT, open_issues INTEGER, due_on TEXT, html_url TEXT, url TEXT, PRIMARY KEY(id))')
   callback()
 }
