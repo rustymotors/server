@@ -6,6 +6,7 @@ var privateKeyFilename = './data/private_key.pem'
 var cryptoLoaded = false
 var privateKey
 var session_key
+var desIV = new Buffer('0000000000000000', 'hex')
 
 function initCrypto () {
   if (cryptoLoaded === false) {
@@ -60,33 +61,41 @@ function toHex (d) {
   return ('0' + (Number(d).toString(16))).slice(-2).toUpperCase()
 }
 
-function randomValueHex (len) {
-  return crypto.randomBytes(Math.ceil(len / 2))
-    .toString('hex') // convert to hexadecimal format
-    .slice(0, len)   // return required number of characters
-}
+// function randomValueHex (len) {
+//   return crypto.randomBytes(Math.ceil(len / 2))
+//     .toString('hex') // convert to hexadecimal format
+//     .slice(0, len)   // return required number of characters
+// }
 
 function decryptSessionKey (encryptedKeySet) {
   initCrypto()
   try {
     encryptedKeySet = new Buffer(encryptedKeySet.toString('utf8'), 'hex')
-    console.log('raw len: ', encryptedKeySet.length)
-    console.log('raw: ', encryptedKeySet.toString('hex'))
+    // console.log('raw len: ', encryptedKeySet.length)
+    // console.log('raw: ', encryptedKeySet.toString('hex'))
     var encryptedKeySetB64 = encryptedKeySet.toString('base64')
-    console.log('base64: ', encryptedKeySetB64)
+    // console.log('base64: ', encryptedKeySetB64)
     var decrypted = privateKey.decrypt(encryptedKeySetB64, 'base64')
-    session_key = new Buffer(decrypted, 'base64').toString('hex').substring(4, 20)
+    session_key = new Buffer(new Buffer(decrypted, 'base64').toString('hex').substring(4, 20), 'hex')
     console.log('decrypted: ', session_key)
   } catch (e) {
     console.log(e)
   }
 }
 
+function decryptCmd (cypherCmd) {
+  var plaintext = crypto.createDecipheriv('des', new Buffer(session_key, 'hex'), desIV)
+    .update(cypherCmd, 'hex', 'hex')
+  desIV = cypherCmd
+  return plaintext
+}
+
 module.exports = {
   getRequestCode: getRequestCode,
   dumpRequest: dumpRequest,
   toHex: toHex,
-  randomValueHex: randomValueHex,
+  // randomValueHex: randomValueHex,
   decryptSessionKey: decryptSessionKey,
+  decryptCmd: decryptCmd,
   initCrypto: initCrypto
 }

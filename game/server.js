@@ -1,4 +1,4 @@
-var crypto = require('crypto')
+// var crypto = require('crypto')
 var nps = require('../nps/nps.js')
 var npsServer = require('../nps/server.js')
 
@@ -46,6 +46,7 @@ function onData (data) {
       break
     case '(0x1101)NPSSendCommand':
       var cmdReply = processCMD(requestCode, data)
+      console.log('cmd: ' + nps.decryptCmd(data.slice(4)))
 
       console.log('Response Length: ' + cmdReply.length)
       // console.log('Response Data: ' + responseBuffer.toString('hex'))
@@ -77,7 +78,7 @@ function onData (data) {
 
 var loginResponseBuffer = new Buffer(155)
 loginResponseBuffer.fill(0)
-loginResponseBuffer = crypto.randomBytes(loginResponseBuffer.length)
+// loginResponseBuffer = crypto.randomBytes(loginResponseBuffer.length)
 
 function npsResponse_ConnectServer () {
   var responseBuffer = new Buffer(155)
