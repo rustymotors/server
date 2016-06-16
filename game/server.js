@@ -1,4 +1,4 @@
-// var crypto = require('crypto')
+var crypto = require('crypto')
 var nps = require('../nps/nps.js')
 var npsServer = require('../nps/server.js')
 
@@ -78,7 +78,9 @@ function onData (data) {
 
 var loginResponseBuffer = new Buffer(155)
 loginResponseBuffer.fill(0)
-// loginResponseBuffer = crypto.randomBytes(loginResponseBuffer.length)
+
+// TODO: figure out what the correct response is
+loginResponseBuffer = crypto.randomBytes(loginResponseBuffer.length)
 
 function npsResponse_ConnectServer () {
   var responseBuffer = new Buffer(155)
