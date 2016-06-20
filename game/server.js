@@ -38,15 +38,15 @@ function onData (data) {
       console.log('Response Length: ' + responseBuffer.length)
       // console.log('Response Data: ' + responseBuffer.toString('hex'))
       var strDebug_responseBytes = 'Response Code: '
-      for (var iByte = 0; iByte < 32; iByte++) {
-        strDebug_responseBytes += nps.toHex(responseBuffer[iByte]) + ' '
-      }
+      // for (var iByte = 0; iByte < 32; iByte++) {
+      //   strDebug_responseBytes += nps.toHex(responseBuffer[iByte]) + ' '
+      // }
       console.log(strDebug_responseBytes)
       this.sock.write(responseBuffer)
       break
     case '(0x1101)NPSSendCommand':
       var cmdReply = processCMD(requestCode, data)
-      console.log('cmd: ' + nps.decryptCmd(data.slice(4)))
+      console.log('cmd: ' + nps.decryptCmd(new Buffer(data.slice(4))))
 
       console.log('Response Length: ' + cmdReply.length)
       // console.log('Response Data: ' + responseBuffer.toString('hex'))
@@ -80,17 +80,20 @@ var loginResponseBuffer = new Buffer(155)
 loginResponseBuffer.fill(0)
 
 // TODO: figure out what the correct response is
-loginResponseBuffer = crypto.randomBytes(loginResponseBuffer.length)
+// loginResponseBuffer = crypto.randomBytes(loginResponseBuffer.length)
 
 function npsResponse_ConnectServer () {
-  var responseBuffer = new Buffer(155)
+  // var responseBuffer = new Buffer(155)
+  var responseBuffer = new Buffer(8)
   var responseCodeBuffer = new Buffer(2)
   responseBuffer.fill(0)
 
   loginResponseBuffer.copy(responseBuffer)
 
   responseBuffer[2] = 0x00
-  responseBuffer[3] = 0x97
+
+  // responseBuffer[3] = 0x97
+  responseBuffer[3] = 0x06
 
   // User ID
   responseBuffer[4] = 0x00
@@ -117,9 +120,9 @@ function processCMD () {
   responseBuffer[2] = 0x00
   responseBuffer[3] = 0x97
 
-  for (var i = 4; i < responseBuffer.length; i++) {
-    responseBuffer[i] = nps.toHex((Math.random() * 90 | 65) + 1)
-  }
+  // for (var i = 4; i < responseBuffer.length; i++) {
+  //   responseBuffer[i] = nps.toHex((Math.random() * 90 | 65) + 1)
+  // }
 
   // User ID
   responseBuffer[4] = 0x00

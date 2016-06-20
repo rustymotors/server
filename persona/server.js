@@ -36,7 +36,7 @@ function onData (data) {
       responseBuffer = new Buffer(44975)
       responseBuffer.fill(0)
 
-      responseBuffer = crypto.randomBytes(responseBuffer.length)
+      // responseBuffer = crypto.randomBytes(responseBuffer.length)
 
       // Response Code
       // 207 = success
@@ -135,9 +135,9 @@ function npsResponse_GetPersonaMaps () {
   responseBuffer[2] = 0x01
   responseBuffer[3] = 0x00
 
-  for (var i = 4; i < responseBuffer.length; i++) {
-    responseBuffer[i] = nps.toHex((Math.random() * 90 | 65) + 1)
-  }
+  // for (var i = 4; i < responseBuffer.length; i++) {
+  //   responseBuffer[i] = nps.toHex((Math.random() * 90 | 65) + 1)
+  // }
 
   // This is the persona count
   responseBuffer[12] = 0x00
