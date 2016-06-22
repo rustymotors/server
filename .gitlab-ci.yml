@@ -3,5 +3,5 @@ image: node:4.4.5
 nodejs_run:
   stage: test
   script:
-    - npm install
+    - npm install --silent
     - npm test

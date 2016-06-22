@@ -1,4 +1,5 @@
 var net = require('net')
+var nps = require('./nps.js')
 // const dgram = require('dgram')
 
 // var nps = require('./nps.js')
@@ -14,9 +15,15 @@ var net = require('net')
 // }
 
 function initServer (port, listenerCB) {
-  net.createServer(listenerCB).listen(port, function () {
-    console.log('NPS Server listening on TCP port: ' + this.address().port)
-  })
+  try {
+    nps.initCrypto()
+    net.createServer(listenerCB).listen(port, function () {
+      console.log('NPS Server listening on TCP port: ' + this.address().port)
+    })
+  } catch (e) {
+    console.log(e)
+    process.exit()
+  }
 
   // TCP 9000 = 9499
   // for (var tcp_port_range = 9000; tcp_port_range < 9500; tcp_port_range++) {

@@ -1,9 +1,7 @@
-var loginServer = require('./login/server.js')
-var personaServer = require('./persona/server.js')
-var gameServer = require('./game/server.js')
+var mcoServer = require('./src/mco_server/index.js')
 
-loginServer.initServer()
-personaServer.initServer()
-gameServer.initServer()
+// port 43300 = MCOTS
+var SERVER_PORTS = ['8226', '8228', '7003', '43300']
 
-// npsServer.initServer()
+mcoServer.init()
+mcoServer.start(SERVER_PORTS)
