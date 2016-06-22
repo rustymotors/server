@@ -19,9 +19,9 @@ function dbInsertPersonas (callback) {
   var i
 
   dbPersonas.serialize(function () {
-    var stmtPersonas = dbPersonas.prepare('INSERT INTO personas VALUES (?, ?)')
+    var stmtPersonas = dbPersonas.prepare('INSERT INTO personas VALUES (?, ?, ?)')
     for (i = 0; i < 10; i++) {
-      stmtPersonas.run('Lorem ' + i, 'Ipsum ' + i)
+      stmtPersonas.run('Zeta ' + i, 'Lorem ' + i, 'Ipsum ' + i)
     }
     stmtPersonas.finalize(callback())
   })
