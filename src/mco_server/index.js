@@ -44,21 +44,21 @@ function onData (data) {
   var requestCode = nps.getRequestCode(data)
   nps.dumpRequest(this.sock, data, requestCode)
 
-  var responseCodeBuffer = new Buffer(2)
+  var responseCodeBuffer = new Buffer(2).fill(0)
 
   switch (requestCode) {
     case '(0x0501)NPS_REQUEST_USER_LOGIN':
+      nps.setContextIdFromRequest(data)
+      var customer = nps.npsGetCustomerIdByContextId(nps.contextId)
       nps.dumpRequest(this.sock, data, requestCode)
 
       // Write the data back to the socket, the client will receive it as data from the server
       // var responseBuffer = new Buffer(48380) // 48376 + 4 = Lyve
-      var responseBuffer = new Buffer(44975) // 44971 + 4 = Debug
-      responseBuffer.fill(0)
+      var responseBuffer = new Buffer(44975).fill(0) // 44971 + 4 = Debug
 
       responseBuffer = crypto.randomBytes(responseBuffer.length)
 
       // Response Code
-      responseCodeBuffer.fill(0)
       responseCodeBuffer[0] = 0x06
       responseCodeBuffer[1] = 0x01
       responseCodeBuffer.copy(responseBuffer)
@@ -67,13 +67,14 @@ function onData (data) {
       responseBuffer[3] = 0xAF
 
       // CustomerId
-      var customerIdBuffer = new Buffer(4)
-      customerIdBuffer.fill(0)
-      customerIdBuffer[0] = 0xAB
-      customerIdBuffer[1] = 0x01
-      customerIdBuffer[2] = 0x00
-      customerIdBuffer[3] = 0x00
-      customerIdBuffer.copy(responseBuffer, 12)
+      // var customerIdBuffer = new Buffer(4)
+      // customerIdBuffer.fill(0)
+      // customerIdBuffer[0] = 0xAB
+      // customerIdBuffer[1] = 0x01
+      // customerIdBuffer[2] = 0x00
+      // customerIdBuffer[3] = 0x00
+      customer.customerId.copy(responseBuffer, 12)
+//      customerIdBuffer.copy(responseBuffer, 12)
 
       nps.decryptSessionKey(data.slice(52, -10))
 
@@ -96,14 +97,12 @@ function onData (data) {
     //   NPSUserLogin: Error in ReceiveFromSocket, short read msgId: 61375 Len: 6 m_MsgLen: 48380
       break
     case '(0x0503)NPS_REQUEST_SELECT_GAME_PERSONA':
-      responseBuffer = new Buffer(44975)
-      responseBuffer.fill(0)
+      responseBuffer = new Buffer(44975).fill(0)
 
       // responseBuffer = crypto.randomBytes(responseBuffer.length)
 
       // Response Code
       // 207 = success
-      responseCodeBuffer.fill(0)
       responseCodeBuffer[0] = 0x02
       responseCodeBuffer[1] = 0x07
       responseCodeBuffer.copy(responseBuffer)
@@ -125,6 +124,7 @@ function onData (data) {
       this.sock.write(responseBuffer)
       break
     case '(0x0532)NPS_REQUEST_GET_PERSONA_MAPS':
+      nps.setCustomerIdFromRequest(data)
       responseBuffer = npsResponse_GetPersonaMaps()
 
       console.log('Response Length: ' + responseBuffer.length)
@@ -142,14 +142,12 @@ function onData (data) {
       break
     case '(0x0533)NPSValidatePersonaName': // debug
     case '(0x0519)NPS_REQUEST_GET_PERSONA_INFO_BY_NAME':
-      responseBuffer = new Buffer(48380)
-      responseBuffer.fill(0)
+      responseBuffer = new Buffer(48380).fill(0)
 
       // Response Code
       // 607 = name Not Availiable / general error on debug
       // 611 = failure, no error returned / Missing game room on debug
       // 602 = failure, no error returned / general error on debug
-      responseCodeBuffer.fill(0)
       responseCodeBuffer[0] = 0x06
       responseCodeBuffer[1] = 0x01
       responseCodeBuffer.copy(responseBuffer)
@@ -182,12 +180,10 @@ function onData (data) {
       this.sock.write(responseBuffer)
       break
     case '(0x0534)NPSCheckToken':
-      responseBuffer = new Buffer(48380)
-      responseBuffer.fill(0)
+      responseBuffer = new Buffer(48380).fill(0)
 
       // Response Code
       // 207 = success on debug
-      responseCodeBuffer.fill(0)
       responseCodeBuffer[0] = 0x02
       responseCodeBuffer[1] = 0x07
       responseCodeBuffer.copy(responseBuffer)
@@ -222,8 +218,7 @@ function onData (data) {
       this.sock.write(cmdReply)
       break
     default:
-      responseBuffer = new Buffer(10)
-      responseBuffer.fill(0)
+      responseBuffer = new Buffer(10).fill(0)
 
       nps.dumpRequest(this.sock, data, requestCode)
 
@@ -243,9 +238,9 @@ function onData (data) {
 }
 
 function npsResponse_GetPersonaMaps () {
-  var responseBuffer = new Buffer(516)
-  var responseCodeBuffer = new Buffer(2)
-  responseBuffer.fill(0)
+  var persona = nps.npsGetPersonaMapsByCustomerId()
+  var responseBuffer = new Buffer(516).fill(0)
+  var responseCodeBuffer = new Buffer(2).fill(0)
 
   responseBuffer[2] = 0x01
   responseBuffer[3] = 0x00
@@ -258,15 +253,18 @@ function npsResponse_GetPersonaMaps () {
   responseBuffer[12] = 0x00
   responseBuffer[13] = 0x01
 
-  // This is the persona count
+  // This is the max persona count
   responseBuffer[14] = 0x00
   responseBuffer[15] = 0x06
 
   // PersonaId
-  responseBuffer[20] = 0x00
-  responseBuffer[21] = 0x00
-  responseBuffer[22] = 0x00
-  responseBuffer[23] = 0x01
+  var emptyId = new Buffer(4).fill(0)
+  emptyId.copy(responseBuffer, 20)
+  persona.id.copy(responseBuffer, 20)
+  // responseBuffer[20] = 0x00
+  // responseBuffer[21] = 0x00
+  // responseBuffer[22] = 0x00
+  // responseBuffer[23] = 0x01
 
   // Shard ID
   responseBuffer[24] = 0x00
@@ -275,47 +273,49 @@ function npsResponse_GetPersonaMaps () {
   responseBuffer[27] = 0x2C
 
   // Persona Name = 30-bit null terminated string
-  responseBuffer[34] = 0x44
-  responseBuffer[35] = 0x6F
-  responseBuffer[36] = 0x63
-  responseBuffer[37] = 0x20
-
-  responseBuffer[38] = 0x42
-  responseBuffer[39] = 0x72
-  responseBuffer[40] = 0x6F
-  responseBuffer[41] = 0x77
-
-  responseBuffer[42] = 0x6E
-  responseBuffer[43] = 0x00
-  responseBuffer[44] = 0x00
-  responseBuffer[45] = 0x00
-
-  responseBuffer[46] = 0x00
-  responseBuffer[47] = 0x00
-  responseBuffer[48] = 0x00
-  responseBuffer[49] = 0x00
-
-  responseBuffer[50] = 0x00
-  responseBuffer[51] = 0x00
-  responseBuffer[52] = 0x00
-  responseBuffer[53] = 0x00
-
-  responseBuffer[54] = 0x00
-  responseBuffer[55] = 0x00
-  responseBuffer[56] = 0x00
-  responseBuffer[57] = 0x00
-
-  responseBuffer[58] = 0x00
-  responseBuffer[59] = 0x00
-  responseBuffer[60] = 0x00
-  responseBuffer[61] = 0x00
-
-  responseBuffer[62] = 0x00
-  responseBuffer[63] = 0x00
-  responseBuffer[64] = 0x00
+  var emptyName = new Buffer(30).fill(0)
+  emptyName.copy(responseBuffer, 34)
+  persona.name.copy(responseBuffer, 34)
+  // responseBuffer[34] = 0x44
+  // responseBuffer[35] = 0x6F
+  // responseBuffer[36] = 0x63
+  // responseBuffer[37] = 0x20
+  //
+  // responseBuffer[38] = 0x42
+  // responseBuffer[39] = 0x72
+  // responseBuffer[40] = 0x6F
+  // responseBuffer[41] = 0x77
+  //
+  // responseBuffer[42] = 0x6E
+  // responseBuffer[43] = 0x00
+  // responseBuffer[44] = 0x00
+  // responseBuffer[45] = 0x00
+  //
+  // responseBuffer[46] = 0x00
+  // responseBuffer[47] = 0x00
+  // responseBuffer[48] = 0x00
+  // responseBuffer[49] = 0x00
+  //
+  // responseBuffer[50] = 0x00
+  // responseBuffer[51] = 0x00
+  // responseBuffer[52] = 0x00
+  // responseBuffer[53] = 0x00
+  //
+  // responseBuffer[54] = 0x00
+  // responseBuffer[55] = 0x00
+  // responseBuffer[56] = 0x00
+  // responseBuffer[57] = 0x00
+  //
+  // responseBuffer[58] = 0x00
+  // responseBuffer[59] = 0x00
+  // responseBuffer[60] = 0x00
+  // responseBuffer[61] = 0x00
+  //
+  // responseBuffer[62] = 0x00
+  // responseBuffer[63] = 0x00
+  // responseBuffer[64] = 0x00
 
   // Response Code
-  responseCodeBuffer.fill(0)
   responseCodeBuffer[0] = 0x06
   responseCodeBuffer[1] = 0x07
   responseCodeBuffer.copy(responseBuffer)
@@ -325,9 +325,8 @@ function npsResponse_GetPersonaMaps () {
 
 function npsResponse_ConnectServer () {
   // var responseBuffer = new Buffer(155)
-  var responseBuffer = new Buffer(8)
-  var responseCodeBuffer = new Buffer(2)
-  responseBuffer.fill(0)
+  var responseBuffer = new Buffer(8).fill(0)
+  var responseCodeBuffer = new Buffer(2).fill(0)
 
   // loginResponseBuffer.copy(responseBuffer)
 
@@ -344,7 +343,6 @@ function npsResponse_ConnectServer () {
 
   // Response Code
   // 120h = Success
-  responseCodeBuffer.fill(0)
   responseCodeBuffer[0] = 0x01
   responseCodeBuffer[1] = 0x20
   responseCodeBuffer.copy(responseBuffer)
@@ -354,9 +352,8 @@ function npsResponse_ConnectServer () {
 }
 
 function processCMD () {
-  var responseBuffer = new Buffer(155)
-  var responseCodeBuffer = new Buffer(2)
-  responseBuffer.fill(0)
+  var responseBuffer = new Buffer(155).fill(0)
+  var responseCodeBuffer = new Buffer(2).fill(0)
 
   responseBuffer[2] = 0x00
   responseBuffer[3] = 0x97
@@ -373,7 +370,6 @@ function processCMD () {
 
   // Response Code
   // 120h = Success
-  responseCodeBuffer.fill(0)
   responseCodeBuffer[0] = 0x06
   responseCodeBuffer[1] = 0x12
   responseCodeBuffer.copy(responseBuffer)

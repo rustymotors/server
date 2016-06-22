@@ -7,6 +7,9 @@ var cryptoLoaded = false
 var privateKey
 var session_key
 var desIV = new Buffer('0000000000000000', 'hex')
+var contextId = new Buffer(34).fill(0)
+var customerId = new Buffer(4).fill(0)
+var userId = new Buffer(4).fill(0)
 
 function initCrypto () {
   if (cryptoLoaded === false) {
@@ -17,6 +20,41 @@ function initCrypto () {
     }
     privateKey = new NodeRSA(fs.readFileSync(privateKeyFilename))
     cryptoLoaded = true
+  }
+}
+
+function npsGetCustomerIdByContextId (contextIdRequest) {
+  contextId = contextIdRequest
+  switch (contextId.toString()) {
+    case 'd316cd2dd6bf870893dfbaaf17f965884e':
+      userId = new Buffer('0x0001', 'hex')
+      customerId = new Buffer('AB010000', 'hex')
+      return {
+        'userId': userId,
+        'customerId': customerId
+      }
+    case '5213dee3a6bcdb133373b2d4f3b9962758':
+      userId = new Buffer('0x0002', 'hex')
+      customerId = new Buffer('Ac010000', 'hex')
+      return {
+        'userId': userId,
+        'customerId': customerId
+      }
+  }
+}
+
+function npsGetPersonaMapsByCustomerId () {
+  switch (customerId.readUInt32BE()) {
+    case 2868969472:
+      return {
+        'id': new Buffer('0x0001', 'hex'),
+        'name': new Buffer('Doc Brown', 'utf8')
+      }
+    case 2885746688:
+      return {
+        'id': new Buffer('0x0002', 'hex'),
+        'name': new Buffer('Biff', 'utf8')
+      }
   }
 }
 
@@ -51,6 +89,13 @@ function getRequestCode (rawBuffer) {
   }
 }
 
+function setContextIdFromRequest (data) {
+  data.copy(contextId, 0, 14, 48)
+}
+
+function setCustomerIdFromRequest (data) {
+  data.copy(customerId, 0, 12)
+}
 function dumpRequest (sock, rawBuffer, requestCode) {
   console.log('-----------------------------------------')
   console.log('Request Code: ' + requestCode)
@@ -64,12 +109,6 @@ function dumpRequest (sock, rawBuffer, requestCode) {
 function toHex (d) {
   return ('0' + (Number(d).toString(16))).slice(-2).toUpperCase()
 }
-
-// function randomValueHex (len) {
-//   return crypto.randomBytes(Math.ceil(len / 2))
-//     .toString('hex') // convert to hexadecimal format
-//     .slice(0, len)   // return required number of characters
-// }
 
 function decryptSessionKey (encryptedKeySet) {
   initCrypto()
@@ -95,10 +134,16 @@ function decryptCmd (cypherCmd) {
 }
 
 module.exports = {
+  userId: userId,
+  customerId: customerId,
+  contextId: contextId,
+  setContextIdFromRequest: setContextIdFromRequest,
+  setCustomerIdFromRequest: setCustomerIdFromRequest,
+  npsGetCustomerIdByContextId: npsGetCustomerIdByContextId,
+  npsGetPersonaMapsByCustomerId: npsGetPersonaMapsByCustomerId,
   getRequestCode: getRequestCode,
   dumpRequest: dumpRequest,
   toHex: toHex,
-  // randomValueHex: randomValueHex,
   decryptSessionKey: decryptSessionKey,
   decryptCmd: decryptCmd,
   initCrypto: initCrypto
