@@ -1,6 +1,6 @@
 test:
   override:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit
-    - mocha test --reporter mocha-junit-reporter:
+    - mocha -R mocha-multi:
         environment:
           multi: 'spec=- mocha-junit-reporter=$CIRCLE_TEST_REPORTS/junit/test-results.xml'
