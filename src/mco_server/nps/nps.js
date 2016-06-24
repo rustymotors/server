@@ -1,6 +1,16 @@
 var fs = require('fs')
 var crypto = require('crypto')
 var NodeRSA = require('node-rsa')
+var logger = require('winston')
+
+logger.cli()
+// logger.add(logger.transports.File, { filename: 'logs/mco_server.log' })
+logger.add(require('winston-daily-rotate-file'), {
+  filename: 'logs/mco_server.log',
+  json: true,
+  datePattern: '.dd-MM-yyyy'
+})
+logger.level = 'debug'
 
 var privateKeyFilename = './data/private_key.pem'
 var cryptoLoaded = false
@@ -47,12 +57,12 @@ function npsGetPersonaMapsByCustomerId () {
   switch (customerId.readUInt32BE()) {
     case 2868969472:
       return {
-        'id': new Buffer('0x0001', 'hex'),
+        'id': Buffer.from([0x00, 0x00, 0x00, 0x01]),
         'name': new Buffer('Doc Brown', 'utf8')
       }
     case 2885746688:
       return {
-        'id': new Buffer('0x0002', 'hex'),
+        'id': Buffer.from([0x00, 0x00, 0x00, 0x02]),
         'name': new Buffer('Biff', 'utf8')
       }
   }
@@ -97,13 +107,13 @@ function setCustomerIdFromRequest (data) {
   data.copy(customerId, 0, 12)
 }
 function dumpRequest (sock, rawBuffer, requestCode) {
-  console.log('-----------------------------------------')
-  console.log('Request Code: ' + requestCode)
-  console.log('-----------------------------------------')
-  console.log('Request DATA ' + sock.remoteAddress + ': ' + rawBuffer)
-  console.log('=========================================')
-  console.log('Request DATA ' + sock.remoteAddress + ': ' + rawBuffer.toString('hex'))
-  console.log('-----------------------------------------')
+  logger.debug('-----------------------------------------')
+  logger.debug('Request Code: ' + requestCode)
+  logger.debug('-----------------------------------------')
+  logger.debug('Request DATA ' + sock.remoteAddress + ': ' + rawBuffer)
+  logger.debug('=========================================')
+  logger.debug('Request DATA ' + sock.remoteAddress + ': ' + rawBuffer.toString('hex'))
+  logger.debug('-----------------------------------------')
 }
 
 function toHex (d) {
@@ -114,15 +124,12 @@ function decryptSessionKey (encryptedKeySet) {
   initCrypto()
   try {
     encryptedKeySet = new Buffer(encryptedKeySet.toString('utf8'), 'hex')
-    // console.log('raw len: ', encryptedKeySet.length)
-    // console.log('raw: ', encryptedKeySet.toString('hex'))
     var encryptedKeySetB64 = encryptedKeySet.toString('base64')
-    // console.log('base64: ', encryptedKeySetB64)
     var decrypted = privateKey.decrypt(encryptedKeySetB64, 'base64')
     session_key = new Buffer(new Buffer(decrypted, 'base64').toString('hex').substring(4, 20), 'hex')
-    console.log('decrypted: ', session_key)
+    logger.debug('decrypted: ', session_key)
   } catch (e) {
-    console.log(e)
+    logger.error(e)
   }
 }
 
@@ -146,5 +153,6 @@ module.exports = {
   toHex: toHex,
   decryptSessionKey: decryptSessionKey,
   decryptCmd: decryptCmd,
-  initCrypto: initCrypto
+  initCrypto: initCrypto,
+  logger: logger
 }

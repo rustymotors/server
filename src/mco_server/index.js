@@ -6,7 +6,7 @@ function init (port, listenerCB) {
   try {
     nps.initCrypto()
   } catch (err) {
-    console.log(err)
+    nps.logger.error(err)
     process.exit(1)
   }
 }
@@ -15,28 +15,28 @@ function start (ports) {
   try {
     for (var i = 0; i < ports.length; i++) {
       net.createServer(listener).listen(ports[i], function () {
-        console.log('NPS Server listening on TCP port: ' + this.address().port)
+        nps.logger.info('NPS Server listening on TCP port: ' + this.address().port)
       })
     }
   } catch (e) {
-    console.log(e)
+    nps.logger.error(e)
     process.exit()
   }
 }
 
 function listener (sock) {
-  console.log('client connected: ' + sock.address().port)
+  nps.logger.info('client connected: ' + sock.address().port)
 
   // Add a 'data' event handler to this instance of socket
   sock.on('data', onData.bind({ sock: sock }))
 
   // Add a 'close' event handler to this instance of socket
   sock.on('close', function (data) {
-    console.log('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort)
+    nps.logger.info('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort)
   })
   // Add a 'error' event handler to this instance of socket
   sock.on('error', function (err) {
-    console.log('ERROR: ' + err)
+    nps.logger.error(err)
   })
 }
 
@@ -78,9 +78,8 @@ function onData (data) {
 
       nps.decryptSessionKey(data.slice(52, -10))
 
-      console.log('Response Length: ' + responseBuffer.length)
-      // console.log('Response Data: ' + responseBuffer.toString('hex'))
-      console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +
+      nps.logger.debug('Response Length: ' + responseBuffer.length)
+      nps.logger.debug('Response Code: ' + nps.toHex(responseBuffer[0]) +
         nps.toHex(responseBuffer[1]) +
         nps.toHex(responseBuffer[2]) +
         nps.toHex(responseBuffer[3]) +
@@ -110,9 +109,8 @@ function onData (data) {
       responseBuffer[2] = 0xAF
       responseBuffer[3] = 0xAF
 
-      console.log('Response Length: ' + responseBuffer.length)
-      // console.log('Response Data: ' + responseBuffer.toString('hex'))
-      console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +
+      nps.logger.debug('Response Length: ' + responseBuffer.length)
+      nps.logger.debug('Response Code: ' + nps.toHex(responseBuffer[0]) +
         nps.toHex(responseBuffer[1]) +
         nps.toHex(responseBuffer[2]) +
         nps.toHex(responseBuffer[3]) +
@@ -127,9 +125,8 @@ function onData (data) {
       nps.setCustomerIdFromRequest(data)
       responseBuffer = npsResponse_GetPersonaMaps()
 
-      console.log('Response Length: ' + responseBuffer.length)
-      // console.log('Response Data: ' + responseBuffer.toString('hex'))
-      console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +
+      nps.logger.debug('Response Length: ' + responseBuffer.length)
+      nps.logger.debug('Response Code: ' + nps.toHex(responseBuffer[0]) +
         nps.toHex(responseBuffer[1]) +
         nps.toHex(responseBuffer[2]) +
         nps.toHex(responseBuffer[3]) +
@@ -155,9 +152,8 @@ function onData (data) {
       responseBuffer[2] = 0xAF
       responseBuffer[3] = 0xAF
 
-      console.log('Response Length: ' + responseBuffer.length)
-      // console.log('Response Data: ' + responseBuffer.toString('hex'))
-      console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +
+      nps.logger.debug('Response Length: ' + responseBuffer.length)
+      nps.logger.debug('Response Code: ' + nps.toHex(responseBuffer[0]) +
         nps.toHex(responseBuffer[1]) +
         nps.toHex(responseBuffer[2]) +
         nps.toHex(responseBuffer[3]) +
@@ -170,13 +166,12 @@ function onData (data) {
       break
     case '(0x0100)NPS_REQUEST_GAME_CONNECT_SERVER':
       responseBuffer = npsResponse_ConnectServer()
-      console.log('Response Length: ' + responseBuffer.length)
-      // console.log('Response Data: ' + responseBuffer.toString('hex'))
+      nps.logger.debug('Response Length: ' + responseBuffer.length)
       var strDebug_responseBytes = 'Response Code: '
       // for (var iByte = 0; iByte < 32; iByte++) {
       //   strDebug_responseBytes += nps.toHex(responseBuffer[iByte]) + ' '
       // }
-      console.log(strDebug_responseBytes)
+      nps.logger.debug(strDebug_responseBytes)
       this.sock.write(responseBuffer)
       break
     case '(0x0534)NPSCheckToken':
@@ -191,9 +186,8 @@ function onData (data) {
       responseBuffer[2] = 0xAF
       responseBuffer[3] = 0xAF
 
-      console.log('Response Length: ' + responseBuffer.length)
-      // console.log('Response Data: ' + responseBuffer.toString('hex'))
-      console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +
+      nps.logger.debug('Response Length: ' + responseBuffer.length)
+      nps.logger.debug('Response Code: ' + nps.toHex(responseBuffer[0]) +
         nps.toHex(responseBuffer[1]) +
         nps.toHex(responseBuffer[2]) +
         nps.toHex(responseBuffer[3]) +
@@ -206,15 +200,14 @@ function onData (data) {
       break
     case '(0x1101)NPSSendCommand':
       var cmdReply = processCMD(requestCode, data)
-      console.log('cmd: ' + nps.decryptCmd(new Buffer(data.slice(4))))
+      nps.logger.debug('cmd: ' + nps.decryptCmd(new Buffer(data.slice(4))))
 
-      console.log('Response Length: ' + cmdReply.length)
-      // console.log('Response Data: ' + responseBuffer.toString('hex'))
+      nps.logger.debug('Response Length: ' + cmdReply.length)
       strDebug_responseBytes = 'Response Code: '
       for (var iCmdReplyByte = 0; iCmdReplyByte < 32; iCmdReplyByte++) {
         strDebug_responseBytes += nps.toHex(cmdReply[iCmdReplyByte]) + ' '
       }
-      console.log(strDebug_responseBytes)
+      nps.logger.debug(strDebug_responseBytes)
       this.sock.write(cmdReply)
       break
     default:
@@ -222,9 +215,8 @@ function onData (data) {
 
       nps.dumpRequest(this.sock, data, requestCode)
 
-      console.log('Response Length: ' + responseBuffer.length)
-      // console.log('Response Data: ' + responseBuffer.toString('hex'))
-      console.log('Response Code: ' + nps.toHex(responseBuffer[0]) +
+      nps.logger.debug('Response Length: ' + responseBuffer.length)
+      nps.logger.debug('Response Code: ' + nps.toHex(responseBuffer[0]) +
         nps.toHex(responseBuffer[1]) +
         nps.toHex(responseBuffer[2]) +
         nps.toHex(responseBuffer[3]) +
