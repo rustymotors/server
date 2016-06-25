@@ -6,9 +6,10 @@ var logger = require('winston')
 logger.cli()
 // logger.add(logger.transports.File, { filename: 'logs/mco_server.log' })
 logger.add(require('winston-daily-rotate-file'), {
-  filename: 'logs/mco_server.log',
+  filename: 'logs/mco-server_log.json',
   json: true,
-  datePattern: '.dd-MM-yyyy'
+  prepend: true,
+  datePattern: 'yyyy-MM-dd_'
 })
 logger.level = 'debug'
 

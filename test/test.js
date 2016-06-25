@@ -1,9 +1,9 @@
 /* global it describe */
 /* jshint unused: false */
 var fs = require('fs')
-var database = require('../src/mco_server/database.js')
+var database = require('../src/mco-server/database.js')
 var should = require('should')
-// var assert = require('chai').assert()
+
 describe('Files', function () {
   // TODO: Add test pub.key
   it.skip('should locate the pub.key file', function () {
@@ -13,35 +13,50 @@ describe('Files', function () {
   it.skip('should locate the private_key.pem file', function () {
     should(fs.statSync('./data/private_key.pem').isFile()).equal(true)
   })
-
-  describe('Check for database files, if sqlite3 is used', function () {
-    it('should locate the users database file', function () {
-      should(fs.statSync('./data/users.db').isFile()).equal(true)
-    })
-    it('should locate the personas database file', function (done) {
-      database.dbCreateTables(function () {
-        database.dbInsertPersonas(function () {
-          database.dbSelectPersonas(function () {
-            should(fs.statSync('./data/personas.db').isFile()).equal(true)
-            done()
-          })
-        })
-      })
-    })
-    it('should locate the sessions database file', function () {
-      should(fs.statSync('./data/sessions.db').isFile()).equal(true)
-    })
-    it('should locate the races database file', function () {
-      should(fs.statSync('./data/races.db').isFile()).equal(true)
-    })
-  })
 })
 
 describe('Databases', function () {
-  it('should be able to open the database')
-  it('should be able to write to the database')
-  it('should be able to read to the database')
-  it('should be able to delete from the database')
+  it('should be able to create tables', function (done) {
+    database.dbCreateTables(function (err, res) {
+      if (err) {
+        err.should.equal('moo')
+        done()
+      }
+      should.not.exist(res)
+      done()
+    })
+  })
+  it('should be able to write to the database', function (done) {
+    database.dbInsertPersonas(function (err, res) {
+      if (err) {
+        err.should.equal('moo')
+        done()
+      }
+      should.not.exist(res)
+      done()
+    })
+  })
+  it('should be able to fetch persona by customer id', function (done) {
+    database.dbFetchPersonaByCustomerId('Zeta 3', function (err, res) {
+      if (err) {
+        err.should.equal('moo')
+        done()
+      }
+      res = JSON.parse(res)
+      res.racer_name.should.equal('Lorem 3')
+      done()
+    })
+  })
+  it('should be able to delete from the database', function (done) {
+    database.dbDeletePersonas(function (err, res) {
+      if (err) {
+        err.should.equal('moo')
+        done()
+      }
+      should.not.exist(res)
+      done()
+    })
+  })
 })
 
 describe('Connections', function () {
