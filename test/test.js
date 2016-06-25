@@ -1,7 +1,7 @@
 /* global it describe */
 /* jshint unused: false */
 var fs = require('fs')
-var database = require('../src/mco_server/database.js')
+var database = require('../src/mco-server/database.js')
 var should = require('should')
 
 describe('Files', function () {
