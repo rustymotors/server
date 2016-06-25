@@ -36,7 +36,9 @@ function listener (sock) {
   })
   // Add a 'error' event handler to this instance of socket
   sock.on('error', function (err) {
-    nps.logger.error(err)
+    if (err.code !== 'ECONNRESET') {
+      nps.logger.error(err)
+    }
   })
 }
 
