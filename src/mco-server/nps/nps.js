@@ -17,7 +17,8 @@ var privateKeyFilename = './data/private_key.pem'
 var cryptoLoaded = false
 var privateKey
 var session_key
-var desIV = new Buffer('0000000000000000', 'hex')
+var session_cypher
+var session_decypher
 var contextId = new Buffer(34).fill(0)
 var customerId = new Buffer(4).fill(0)
 var userId = new Buffer(4).fill(0)
@@ -77,7 +78,7 @@ function getRequestCode (rawBuffer) {
     case '0501':
       return '(0x0501)NPS_REQUEST_USER_LOGIN'
     case '0503':
-      return '(0x0503)NPS_REQUEST_SELECT_GAME_PERSONA'
+      return '(0x503) NPSSelectGamePersona'
     case '050F':
       return '(0x050F)NPS_REQUEST_LOG_OUT_USER'
     case '0519':
@@ -124,10 +125,13 @@ function toHex (d) {
 function decryptSessionKey (encryptedKeySet) {
   initCrypto()
   try {
-    encryptedKeySet = new Buffer(encryptedKeySet.toString('utf8'), 'hex')
+    encryptedKeySet = Buffer.from(encryptedKeySet.toString('utf8'), 'hex')
     var encryptedKeySetB64 = encryptedKeySet.toString('base64')
     var decrypted = privateKey.decrypt(encryptedKeySetB64, 'base64')
-    session_key = new Buffer(new Buffer(decrypted, 'base64').toString('hex').substring(4, 20), 'hex')
+    session_key = Buffer.from(Buffer.from(decrypted, 'base64').toString('hex').substring(4, 20), 'hex')
+    var desIV = Buffer.alloc(8)
+    session_cypher = crypto.createCipheriv('des-cbc', Buffer.from(session_key, 'hex'), desIV).setAutoPadding(false)
+    session_decypher = crypto.createDecipheriv('des-cbc', Buffer.from(session_key, 'hex'), desIV).setAutoPadding(false)
     logger.debug('decrypted: ', session_key)
   } catch (e) {
     logger.error(e)
@@ -135,9 +139,9 @@ function decryptSessionKey (encryptedKeySet) {
 }
 
 function decryptCmd (cypherCmd) {
-  var plaintext = crypto.createDecipheriv('des', new Buffer(session_key, 'hex'), desIV)
-    .update(cypherCmd, 'hex', 'hex')
-  desIV = cypherCmd
+  console.log('raw cmd: ' + cypherCmd + cypherCmd.length)
+  var plaintext = session_decypher.update(cypherCmd)
+  console.log(typeof plaintext + ' ' + plaintext.length)
   return plaintext
 }
 

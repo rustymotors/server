@@ -1,6 +1,7 @@
-var crypto = require('crypto')
+// var crypto = require('crypto')
 var net = require('net')
 var nps = require('./nps/nps.js')
+var packet = require('./nps/packet.js')
 
 function init (port, listenerCB) {
   try {
@@ -52,21 +53,33 @@ function onData (data) {
     case '(0x0501)NPS_REQUEST_USER_LOGIN':
       nps.setContextIdFromRequest(data)
       var customer = nps.npsGetCustomerIdByContextId(nps.contextId)
+      console.log(customer)
       nps.dumpRequest(this.sock, data, requestCode)
+
+      var packetcontent = Buffer.alloc(44971)
+
+      // This is needed, not sure for what
+      Buffer.from([0x01, 0x01]).copy(packetcontent)
+
+      // load the customer id
+      customer.customerId.copy(packetcontent, 10)
+
+      // Build the packet
+      var packetresult = packet.buildPacket(44975, 0x0601, packetcontent)
 
       // Write the data back to the socket, the client will receive it as data from the server
       // var responseBuffer = new Buffer(48380) // 48376 + 4 = Lyve
-      var responseBuffer = new Buffer(44975).fill(0) // 44971 + 4 = Debug
+      // var responseBuffer = new Buffer(44975).fill(0) // 44971 + 4 = Debug
 
-      responseBuffer = crypto.randomBytes(responseBuffer.length)
+      // responseBuffer = crypto.randomBytes(responseBuffer.length)
 
-      // Response Code
-      responseCodeBuffer[0] = 0x06
-      responseCodeBuffer[1] = 0x01
-      responseCodeBuffer.copy(responseBuffer)
+      // // Response Code
+      // responseCodeBuffer[0] = 0x06
+      // responseCodeBuffer[1] = 0x01
+      // responseCodeBuffer.copy(responseBuffer)
 
-      responseBuffer[2] = 0xAF
-      responseBuffer[3] = 0xAF
+      // responseBuffer[2] = 0xAF
+      // responseBuffer[3] = 0xAF
 
       // CustomerId
       // var customerIdBuffer = new Buffer(4)
@@ -75,30 +88,43 @@ function onData (data) {
       // customerIdBuffer[1] = 0x01
       // customerIdBuffer[2] = 0x00
       // customerIdBuffer[3] = 0x00
-      customer.customerId.copy(responseBuffer, 12)
+      // customer.customerId.copy(responseBuffer, 12)
 //      customerIdBuffer.copy(responseBuffer, 12)
 
       nps.decryptSessionKey(data.slice(52, -10))
 
-      nps.logger.debug('Response Length: ' + responseBuffer.length)
-      nps.logger.debug('Response Code: ' + nps.toHex(responseBuffer[0]) +
-        nps.toHex(responseBuffer[1]) +
-        nps.toHex(responseBuffer[2]) +
-        nps.toHex(responseBuffer[3]) +
-        nps.toHex(responseBuffer[4]) +
-        nps.toHex(responseBuffer[5]) +
-        nps.toHex(responseBuffer[6]) +
-        nps.toHex(responseBuffer[7])
+      // nps.logger.debug('Response Length: ' + responseBuffer.length)
+      // nps.logger.debug('Response Code: ' + nps.toHex(responseBuffer[0]) +
+      //   nps.toHex(responseBuffer[1]) +
+      //   nps.toHex(responseBuffer[2]) +
+      //   nps.toHex(responseBuffer[3]) +
+      //   nps.toHex(responseBuffer[4]) +
+      //   nps.toHex(responseBuffer[5]) +
+      //   nps.toHex(responseBuffer[6]) +
+      //   nps.toHex(responseBuffer[7])
+      // )
+
+      nps.logger.debug('Response Length: ' + packetresult.length)
+      nps.logger.debug('Response Code: ' +
+        packetresult[0].toString(16) +
+        packetresult[1].toString(16) +
+        packetresult[2].toString(16) +
+        packetresult[3].toString(16) +
+        packetresult[4].toString(16) +
+        packetresult[5].toString(16) +
+        packetresult[6].toString(16) +
+        packetresult[7].toString(16)
       )
-      this.sock.write(responseBuffer)
-      this.sock.write(responseBuffer)
+
+      // this.sock.write(responseBuffer)
+      this.sock.write(packetresult)
 
     // sock.end()
     // Wants 4 bytes back
     //   NPSUserLogin: Error in ReceiveFromSocket, short read msgId: 61375 Len: 6 m_MsgLen: 48380
       break
-    case '(0x0503)NPS_REQUEST_SELECT_GAME_PERSONA':
-      responseBuffer = new Buffer(44975).fill(0)
+    case '(0x503) NPSSelectGamePersona':
+      var responseBuffer = new Buffer(44975).fill(0)
 
       // responseBuffer = crypto.randomBytes(responseBuffer.length)
 
@@ -202,7 +228,7 @@ function onData (data) {
       break
     case '(0x1101)NPSSendCommand':
       var cmdReply = processCMD(requestCode, data)
-      nps.logger.debug('cmd: ' + nps.decryptCmd(new Buffer(data.slice(4))))
+      nps.logger.debug('cmd: ' + nps.decryptCmd(new Buffer(data.slice(4))).toString('hex'))
 
       nps.logger.debug('Response Length: ' + cmdReply.length)
       strDebug_responseBytes = 'Response Code: '
