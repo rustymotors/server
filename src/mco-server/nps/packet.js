@@ -7,7 +7,7 @@ function buildPacket (len, header, content) {
   packet = crypto.randomBytes(packet.length)
 
   // Add the response code
-  packet.writeUInt16BE(header)
+  packet.writeUInt16BE(header, 0)
 
   // Write the content
   content.copy(packet, 2)
