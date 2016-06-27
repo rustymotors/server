@@ -53,7 +53,7 @@ function onData (data) {
     case '(0x0501)NPS_REQUEST_USER_LOGIN':
       nps.setContextIdFromRequest(data)
       var customer = nps.npsGetCustomerIdByContextId(nps.contextId)
-      console.log(customer)
+      nps.logger.debug(customer)
       nps.dumpRequest(this.sock, data, requestCode)
 
       var packetcontent = Buffer.alloc(44971)

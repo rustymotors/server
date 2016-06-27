@@ -17,7 +17,7 @@ var privateKeyFilename = './data/private_key.pem'
 var cryptoLoaded = false
 var privateKey
 var session_key
-var session_cypher
+// var session_cypher
 var session_decypher
 var contextId = new Buffer(34).fill(0)
 var customerId = new Buffer(4).fill(0)
@@ -109,10 +109,11 @@ function setCustomerIdFromRequest (data) {
   data.copy(customerId, 0, 12)
 }
 function dumpRequest (sock, rawBuffer, requestCode) {
-  logger.debug('-----------------------------------------')
+  logger.debug('-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
+  logger.debug('-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
   logger.debug('Request Code: ' + requestCode)
   logger.debug('-----------------------------------------')
-  logger.debug('Request DATA ' + sock.remoteAddress + ': ' + rawBuffer)
+  logger.debug('Request DATA ' + sock.remoteAddress + ':' + sock.localPort + ': ' + rawBuffer)
   logger.debug('=========================================')
   logger.debug('Request DATA ' + sock.remoteAddress + ': ' + rawBuffer.toString('hex'))
   logger.debug('-----------------------------------------')
@@ -130,7 +131,7 @@ function decryptSessionKey (encryptedKeySet) {
     var decrypted = privateKey.decrypt(encryptedKeySetB64, 'base64')
     session_key = Buffer.from(Buffer.from(decrypted, 'base64').toString('hex').substring(4, 20), 'hex')
     var desIV = Buffer.alloc(8)
-    session_cypher = crypto.createCipheriv('des-cbc', Buffer.from(session_key, 'hex'), desIV).setAutoPadding(false)
+    // session_cypher = crypto.createCipheriv('des-cbc', Buffer.from(session_key, 'hex'), desIV).setAutoPadding(false)
     session_decypher = crypto.createDecipheriv('des-cbc', Buffer.from(session_key, 'hex'), desIV).setAutoPadding(false)
     logger.debug('decrypted: ', session_key)
   } catch (e) {
@@ -139,9 +140,8 @@ function decryptSessionKey (encryptedKeySet) {
 }
 
 function decryptCmd (cypherCmd) {
-  console.log('raw cmd: ' + cypherCmd + cypherCmd.length)
+  logger.debug('raw cmd: ' + cypherCmd + cypherCmd.length)
   var plaintext = session_decypher.update(cypherCmd)
-  console.log(typeof plaintext + ' ' + plaintext.length)
   return plaintext
 }
 
