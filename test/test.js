@@ -80,7 +80,7 @@ describe('Packets', function () {
     var testcontent = crypto.randomBytes(30)
     var testpacket = packet.buildPacket(32, 0x607, testcontent)
     var testresult = new Buffer(32)
-    testresult.writeUInt16BE(0x607)
+    testresult.writeUInt16BE(0x607, 0)
     testcontent.copy(testresult, 2)
     testpacket.toString('hex').should.equal(testresult.toString('hex'))
   })
