@@ -157,8 +157,11 @@ function onData (data) {
       // packetcontent = crypto.randomBytes(151)
       packetcontent = Buffer.alloc(6)
 
+      // Server ID
+      Buffer.from([0x00]).copy(packetcontent)
+
       // This is needed, not sure for what
-      Buffer.from([0x00, 0x06]).copy(packetcontent)
+      Buffer.from([0x05]).copy(packetcontent, 1)
 
       // load the customer id
       customer.userId.copy(packetcontent, 2)
