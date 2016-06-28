@@ -1,7 +1,9 @@
 /* global it describe */
 /* jshint unused: false */
 var fs = require('fs')
+var crypto = require('crypto')
 var database = require('../src/mco-server/database.js')
+var packet = require('../src/mco-server/nps/packet.js')
 var should = require('should')
 
 describe('Files', function () {
@@ -71,6 +73,17 @@ describe('Encryption', function () {
   it('should be able to encrypt 2 NPS commands in a row')
   it('should be able to decrypt 1 NPS command in a row')
   it('should be able to decrypt 2 NPS commands in a row')
+})
+
+describe('Packets', function () {
+  it('should be able to build a packet', function () {
+    var testcontent = crypto.randomBytes(30)
+    var testpacket = packet.buildPacket(32, 0x607, testcontent)
+    var testresult = new Buffer(32)
+    testresult.writeUInt16BE(0x607, 0)
+    testcontent.copy(testresult, 2)
+    testpacket.toString('hex').should.equal(testresult.toString('hex'))
+  })
 })
 
 describe('NPS Commands', function () {
