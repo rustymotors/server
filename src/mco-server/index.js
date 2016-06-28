@@ -161,7 +161,10 @@ function onData (data) {
       Buffer.from([0x00]).copy(packetcontent)
 
       // This is needed, not sure for what
-      Buffer.from([0x05]).copy(packetcontent, 1)
+      // if it's 97 it says the username returned is correct
+      // if it's 06 it says it's different, but it's random
+      // It's parsed by the NPS cipher somehow.
+      Buffer.from([0x97]).copy(packetcontent, 1)
 
       // load the customer id
       customer.userId.copy(packetcontent, 2)

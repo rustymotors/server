@@ -119,7 +119,7 @@ function setCustomerIdFromRequest (data) {
 }
 
 function dumpRequest (sock, rawBuffer, requestCode) {
-  logger.debug('-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
+  console.log()
   logger.debug('-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
   logger.debug('Request Code: ' + requestCode)
   logger.debug('-----------------------------------------')
@@ -127,6 +127,8 @@ function dumpRequest (sock, rawBuffer, requestCode) {
   logger.debug('=========================================')
   logger.debug('Request DATA ' + sock.remoteAddress + ': ' + rawBuffer.toString('hex'))
   logger.debug('-----------------------------------------')
+  logger.debug('-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
+  console.log()
 }
 
 function dumpResponse (data, count) {
@@ -159,7 +161,7 @@ function decryptSessionKey (encryptedKeySet) {
 }
 
 function decryptCmd (cypherCmd) {
-  logger.debug('raw cmd: ' + cypherCmd + cypherCmd.length)
+  // logger.debug('raw cmd: ' + cypherCmd + cypherCmd.length)
   var plaintext = session_decypher.update(cypherCmd)
   return plaintext
 }
