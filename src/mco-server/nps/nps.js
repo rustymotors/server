@@ -19,9 +19,9 @@ var privateKey
 var session_key
 // var session_cypher
 var session_decypher
-var contextId = new Buffer(34).fill(0)
-var customerId = new Buffer(4).fill(0)
-var userId = new Buffer(4).fill(0)
+var contextId = Buffer.alloc(34)
+var customerId = Buffer.alloc(4)
+var userId = Buffer.alloc(4)
 
 function initCrypto () {
   if (cryptoLoaded === false) {
@@ -39,15 +39,15 @@ function npsGetCustomerIdByContextId (contextIdRequest) {
   contextId = contextIdRequest
   switch (contextId.toString()) {
     case 'd316cd2dd6bf870893dfbaaf17f965884e':
-      userId = new Buffer('0x0001', 'hex')
-      customerId = new Buffer('AB010000', 'hex')
+      userId = Buffer.from([0x00, 0x00, 0x00, 0x01])
+      customerId = Buffer.from([0xAB, 0x01, 0x00, 0x00])
       return {
         'userId': userId,
         'customerId': customerId
       }
     case '5213dee3a6bcdb133373b2d4f3b9962758':
-      userId = new Buffer('0x0002', 'hex')
-      customerId = new Buffer('Ac010000', 'hex')
+      userId = Buffer.from([0x00, 0x00, 0x00, 0x02])
+      customerId = Buffer.from([0xAC, 0x01, 0x00, 0x00])
       return {
         'userId': userId,
         'customerId': customerId
@@ -56,16 +56,25 @@ function npsGetCustomerIdByContextId (contextIdRequest) {
 }
 
 function npsGetPersonaMapsByCustomerId () {
+  var name = Buffer.alloc(30)
   switch (customerId.readUInt32BE()) {
     case 2868969472:
+      Buffer.from('Doc Brown', 'utf8').copy(name)
       return {
+        'personacount': Buffer.from([0x00, 0x01]),
+        'maxpersonas': Buffer.from([0x00, 0x06]),
         'id': Buffer.from([0x00, 0x00, 0x00, 0x01]),
-        'name': new Buffer('Doc Brown', 'utf8')
+        'name': name,
+        'shardid': Buffer.from([0x00, 0x00, 0x00, 0x2C])
       }
     case 2885746688:
+      Buffer.from('Biff', 'utf8').copy(name)
       return {
+        'personacount': Buffer.from([0x00, 0x01]),
+        'maxpersonas': Buffer.from([0x00, 0x06]),
         'id': Buffer.from([0x00, 0x00, 0x00, 0x02]),
-        'name': new Buffer('Biff', 'utf8')
+        'name': name,
+        'shardid': Buffer.from([0x00, 0x00, 0x00, 0x2C])
       }
   }
 }
@@ -80,7 +89,7 @@ function getRequestCode (rawBuffer) {
     case '0503':
       return '(0x503) NPSSelectGamePersona'
     case '050F':
-      return '(0x050F)NPS_REQUEST_LOG_OUT_USER'
+      return '(0x050F)NPSLogOutGameUser'
     case '0519':
       return '(0x0519)NPS_REQUEST_GET_PERSONA_INFO_BY_NAME'
     case '0532':
@@ -108,15 +117,25 @@ function setContextIdFromRequest (data) {
 function setCustomerIdFromRequest (data) {
   data.copy(customerId, 0, 12)
 }
+
 function dumpRequest (sock, rawBuffer, requestCode) {
   logger.debug('-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
   logger.debug('-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
   logger.debug('Request Code: ' + requestCode)
   logger.debug('-----------------------------------------')
-  logger.debug('Request DATA ' + sock.remoteAddress + ':' + sock.localPort + ': ' + rawBuffer)
+  logger.debug('Request DATA ' + sock.remoteAddress + ':' + sock.localPort + ': ' + rawBuffer.toString('ascii'))
   logger.debug('=========================================')
   logger.debug('Request DATA ' + sock.remoteAddress + ': ' + rawBuffer.toString('hex'))
   logger.debug('-----------------------------------------')
+}
+
+function dumpResponse (data, count) {
+  logger.debug('Response Length: ' + data.length)
+  var responseBytes = 'Response Code: ' + toHex(data[0])
+  for (var i = 1; (i < count && i < data.length); i++) {
+    responseBytes += ' ' + toHex(data[i])
+  }
+  logger.debug(responseBytes)
 }
 
 function toHex (d) {
@@ -155,6 +174,7 @@ module.exports = {
   npsGetPersonaMapsByCustomerId: npsGetPersonaMapsByCustomerId,
   getRequestCode: getRequestCode,
   dumpRequest: dumpRequest,
+  dumpResponse: dumpResponse,
   toHex: toHex,
   decryptSessionKey: decryptSessionKey,
   decryptCmd: decryptCmd,

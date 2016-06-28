@@ -1,10 +1,5 @@
-var crypto = require('crypto')
-
 function buildPacket (len, header, content) {
-  var packet = new Buffer(len)
-
-  // Fill packet with random bytes
-  packet = crypto.randomBytes(packet.length)
+  var packet = Buffer.alloc(len)
 
   // Add the response code
   packet.writeUInt16BE(header, 0)
