@@ -5,3 +5,5 @@ test:
   override:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit
     - mocha -R mocha-multi -O spec=-,xunit=$CIRCLE_TEST_REPORTS/junit/test-results.xml
+    - npm coverage
+    - cp coverage $CIRCLE_ARTIFACTS/coverage

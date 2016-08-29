@@ -4,7 +4,8 @@
   "description": "a server",
   "main": "server.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "coverage": "istanbul cover _mocha -- -R spec"
   },
   "author": "Joseph W Becher <jwbecher@drazisil.com> (drazisil)",
   "license": "UNLICENSED",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "chai": "^3.4.1",
+    "istanbul": "^0.4.5",
     "mocha": "^2.3.4",
     "mocha-junit-reporter": "^1.11.1",
     "mocha-multi": "^0.9.0",
