@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "mocha",
-    "coverage": "istanbul cover _mocha -- -R spec"
+    "coverage": "istanbul cover --include-all-sources _mocha -- -R spec"
   },
   "author": "Joseph W Becher <jwbecher@drazisil.com> (drazisil)",
   "license": "UNLICENSED",
