@@ -7,12 +7,10 @@ var packet = require('../src/mco-server/nps/packet.js')
 var should = require('should')
 
 describe('Files', function () {
-  // TODO: Add test pub.key
-  it.skip('should locate the pub.key file', function () {
+  it('should locate the pub.key file', function () {
     should(fs.statSync('./data/pub.key').isFile()).equal(true)
   })
-  // TODO: Add test private_key.pem
-  it.skip('should locate the private_key.pem file', function () {
+  it('should locate the private_key.pem file', function () {
     should(fs.statSync('./data/private_key.pem').isFile()).equal(true)
   })
 })

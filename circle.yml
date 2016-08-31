@@ -2,6 +2,9 @@ machine:
   node:
     version: 6.2.1
 test:
+  pre:
+    - openssl genrsa -out ./data/private_key.pem 1024
+    - openssl rsa -in ./data/private_key.pem -pubout -out ./data/pub.key
   override:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit
     - mocha -R mocha-multi -O spec=-,xunit=$CIRCLE_TEST_REPORTS/junit/test-results.xml
