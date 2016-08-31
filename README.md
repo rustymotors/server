@@ -9,3 +9,8 @@ MCO-Server
 * 8226
 # 8228
 * 7003
+
+```
+openssl genrsa -out ./data/private_key.pem 1024
+openssl rsa -in ./data/private_key.pem -pubout -out ./data/pub.key
+```
