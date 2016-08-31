@@ -28,7 +28,8 @@ function initCrypto () {
     try {
       fs.statSync(privateKeyFilename)
     } catch (e) {
-      throw new Error('Error loading private key: ' + e)
+      logger.error('Error loading private key: ' + e)
+      process.exit(1)
     }
     privateKey = new NodeRSA(fs.readFileSync(privateKeyFilename))
     cryptoLoaded = true
