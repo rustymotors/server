@@ -14,3 +14,9 @@ MCO-Server
 openssl genrsa -out ./data/private_key.pem 1024
 openssl rsa -in ./data/private_key.pem -pubout -out ./data/pub.key
 ```
+
+### Add the following entry to your etc/hosts file
+
+```
+127.0.0.1       dev.mco
+```
