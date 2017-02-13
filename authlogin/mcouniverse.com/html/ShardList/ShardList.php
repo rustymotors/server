@@ -1,0 +1,35 @@
+<?php
+header('Content-type: text/plain');
+//echo "[Twin Pines Mall]\n";
+//echo "Description=Twin Pines Mall\n";
+//echo "ShardId=88\n";
+//echo "LoginServerIP=163.172.11.141\n";
+//echo "LoginServerPort=8226\n";
+//echo "LobbyServerIP=163.172.11.141\n";
+//echo "LobbyServerPort=7003\n";
+//echo "MCOTSServerIP=163.172.11.141\n";
+//echo "StatusId=0\n";
+//echo "Status_Reason=\n";
+//echo "ServerGroup_Name=Group - 1\n";
+//echo "Population=88\n";
+//echo "MaxPersonasPerUser=2\n";
+//echo "DiagnosticServerHost=mco.blocksplorer.com\n";
+//echo "DiagnosticServerPort=80\n";
+//echo "\n";
+// Old IP = 108.183.123.230
+$IP = "98.10.146.85";
+echo "[The Clocktower]\n";
+echo "Description=The Clocktower\n";
+echo "ShardId=44\n";
+echo "LoginServerIP=" . $IP . "\n";
+echo "LoginServerPort=8226\n";
+echo "LobbyServerIP=" . $IP . "\n";
+echo "LobbyServerPort=7003\n";
+echo "MCOTSServerIP=" . $IP . "\n";
+echo "StatusId=0\n";
+echo "Status_Reason=\n";
+echo "ServerGroup_Name=Group - 1\n";
+echo "Population=88\n";
+echo "MaxPersonasPerUser=2\n";
+echo "DiagnosticServerHost=mco.blocksplorer.com\n";
+echo "DiagnosticServerPort=80\n";
