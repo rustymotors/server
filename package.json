@@ -15,6 +15,8 @@
     "url": "git@gitlab.com:drazisil/mco-server.git"
   },
   "dependencies": {
+    "body-parser": "^1.16.1",
+    "express": "^4.14.1",
     "node-rsa": "^0.4.2",
     "sqlite3": "^3.1.4",
     "winston": "^2.2.0",
