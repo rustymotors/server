@@ -341,7 +341,13 @@ app.get('/ShardList/', function (req, res) {
 })
 
 app.get('/key', function (req, res) {
-  res.download('./data/pub.key')
+  console.log(req.method)
+  console.log(req.url)
+
+  var key = fs.readFileSync('./data/pub.key').toString('hex')
+  res.setHeader('Content-disposition', 'attachment; filename=pub.key')
+  res.write(key)
+  res.end()
 })
 
 app.use(function (req, res) {
