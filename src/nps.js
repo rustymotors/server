@@ -1,17 +1,7 @@
 var fs = require('fs')
 var crypto = require('crypto')
 var NodeRSA = require('node-rsa')
-var logger = require('winston')
-
-logger.cli()
-// logger.add(logger.transports.File, { filename: 'logs/mco_server.log' })
-logger.add(require('winston-daily-rotate-file'), {
-  filename: 'logs/mco-server_log.json',
-  json: true,
-  prepend: true,
-  datePattern: 'yyyy-MM-dd_'
-})
-logger.level = 'debug'
+var logger = require('./logger.js')
 
 var privateKeyFilename = './data/private_key.pem'
 var cryptoLoaded = false
@@ -181,6 +171,5 @@ module.exports = {
   toHex: toHex,
   decryptSessionKey: decryptSessionKey,
   decryptCmd: decryptCmd,
-  initCrypto: initCrypto,
-  logger: logger
+  initCrypto: initCrypto
 }

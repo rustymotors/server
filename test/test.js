@@ -2,8 +2,8 @@
 /* jshint unused: false */
 var fs = require('fs')
 var crypto = require('crypto')
-var database = require('../src/mco-server/database.js')
-var packet = require('../src/mco-server/nps/packet.js')
+var database = require('../src/database.js')
+var packet = require('../src/packet.js')
 var should = require('should')
 
 describe('Files', function () {
