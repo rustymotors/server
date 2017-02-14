@@ -19,6 +19,7 @@
     "express": "^4.14.1",
     "node-rsa": "^0.4.2",
     "sqlite3": "^3.1.4",
+    "ssl-config": "^1.0.0",
     "winston": "^2.2.0",
     "winston-daily-rotate-file": "^1.1.4"
   },

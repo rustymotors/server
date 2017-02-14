@@ -3,6 +3,10 @@ var crypto = require('crypto')
 var net = require('net')
 var express = require('express')
 var http = require('http')
+var https = require('https')
+var fs = require('fs')
+var sslConfig = require('ssl-config')('old')
+
 var bodyParser = require('body-parser')
 
 /* Internal dependencies */
@@ -10,6 +14,18 @@ var config = require('./config.json')
 var logger = require('./src/logger.js')
 var nps = require('./src/nps.js')
 var packet = require('./src/packet.js')
+
+var key = fs.readFileSync('./data/private_key.pem')
+var cert = fs.readFileSync('./data/cert.pem')
+// var cert = fs.readFileSync('./cert.pem')
+var httpsOptions = {
+  key: key,
+  cert: cert,
+  rejectUnauthorized: false,
+  ciphers: sslConfig.ciphers,
+  honorCipherOrder: true,
+  secureOptions: sslConfig.minimumTLSVersion
+}
 
 function start (ports) {
   try {
@@ -242,47 +258,123 @@ try {
 /* Start the NPS servers */
 start(config.server_ports)
 
-/* Start the AuthLogin server */
+/* Start the Patch server */
 var app = express()
+
+/* Start the AuthLogin server */
 
 app.use(bodyParser.json()) // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
 
 // Server port is set by PORT env or web_port from config file with fallback to 3000
 app.set('port', process.env.PORT || config.web_port || 80)
+app.set('port_ssl', process.env.PORT_SSL || config.web_port_ssl || 443)
 
 app.post('/games/EA_Seattle/MotorCity/UpdateInfo', function (req, res) {
-  // console.dir(req.body)
-  // var binaryString = pack('H*', 'cafebeef00000000000003')
-/* header('Content-type: application/octet-stream');
-echo $binary_string;
-*/
+  console.log(req.method)
+  console.log(req.url)
   res.set('Content-Type', 'application/octet-stream')
   res.send(new Buffer('cafebeef00000000000003', 'hex'))
 })
 
 app.post('/games/EA_Seattle/MotorCity/NPS', function (req, res) {
-  // console.dir(req.body)
-  // var binaryString = pack('H*', 'cafebeef00000000000003')
-/* header('Content-type: application/octet-stream');
-echo $binary_string;
-*/
+  console.log(req.method)
+  console.log(req.url)
   res.set('Content-Type', 'application/octet-stream')
   res.send(new Buffer('cafebeef00000000000003', 'hex'))
 })
 
 app.post('/games/EA_Seattle/MotorCity/MCO', function (req, res) {
-  // console.dir(req.body)
-  // var binaryString = pack('H*', 'cafebeef00000000000003')
-/* header('Content-type: application/octet-stream');
-echo $binary_string;
-*/
+  console.log(req.method)
+  console.log(req.url)
   res.set('Content-Type', 'application/octet-stream')
   res.send(new Buffer('cafebeef00000000000003', 'hex'))
 })
 
+app.get('/AuthLogin', function (req, res) {
+  console.log(req.method)
+  console.log(req.url)
+  res.set('Content-Type', 'text/plain')
+  res.send('Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e')
+})
+
+// echo "[Twin Pines Mall]\n";
+// echo "Description=Twin Pines Mall\n";
+// echo "ShardId=88\n";
+// echo "LoginServerIP=163.172.11.141\n";
+// echo "LoginServerPort=8226\n";
+// echo "LobbyServerIP=163.172.11.141\n";
+// echo "LobbyServerPort=7003\n";
+// echo "MCOTSServerIP=163.172.11.141\n";
+// echo "StatusId=0\n";
+// echo "Status_Reason=\n";
+// echo "ServerGroup_Name=Group - 1\n";
+// echo "Population=88\n";
+// echo "MaxPersonasPerUser=2\n";
+// echo "DiagnosticServerHost=mco.blocksplorer.com\n";
+// echo "DiagnosticServerPort=80\n";
+// echo "\n";
+// Old IP = 108.183.123.230
+var serverIP = '71.186.155.248'
+var shardList =
+  '[The Clocktower]\n' +
+  'Description=The Clocktower\n' +
+  'ShardId=44\n' +
+  'LoginServerIP=' + serverIP + '\n' +
+  'LoginServerPort=8226\n' +
+  'LobbyServerIP=' + serverIP + '\n' +
+  'LobbyServerPort=7003\n' +
+  'MCOTSServerIP=' + serverIP + '\n' +
+  'StatusId=0\n' +
+  'Status_Reason=\n' +
+  'ServerGroup_Name=Group - 1\n' +
+  'Population=88\n' +
+  'MaxPersonasPerUser=2\n' +
+  'DiagnosticServerHost=' + serverIP + '\n' +
+  'DiagnosticServerPort=80'
+
+app.get('/ShardList/', function (req, res) {
+  console.log(req.method)
+  console.log(req.url)
+  res.set('Content-Type', 'text/plain')
+  res.send(shardList)
+})
+
+app.get('/key', function (req, res) {
+  res.download('./data/pub.key')
+})
+
+app.use(function (req, res) {
+  console.dir(req.headers)
+  console.log(req.method)
+  console.log(req.url)
+  res.send('404')
+})
 // app.use(express.static('public'))
 
 http.createServer(app).listen(app.get('port'), function () {
-  console.log('Express server listening on port ' + app.get('port'))
+  logger.info('Patch server listening on port ' + app.get('port'))
 })
+
+var httpsServer = https.createServer(httpsOptions, app).listen(app.get('port_ssl'), function () {
+  logger.info('AuthLogin server listening on port ' + app.get('port_ssl'))
+})
+
+httpsServer.on('connection', function (socket) {
+  console.log('New SSL connection')
+  socket.on('error', function (error) {
+    console.log('Socket Error: ' + error.message)
+  })
+  socket.on('close', function () {
+    console.log('Socket Connection closed')
+  })
+})
+
+httpsServer.on('error', function (error, socket) {
+  console.log('Error: ' + error)
+})
+
+httpsServer.on('tlsClientError', function (err, sock) {
+  console.log(err)
+})
+

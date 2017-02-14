@@ -11,12 +11,22 @@ MCO-Server
 * 7003
 
 ```
-openssl genrsa -out ./data/private_key.pem 1024
+openssl req -x509 -newkey rsa:1024 -nodes -keyout ./data/private_key.pem -out ./data/cert.pem -days 365
 openssl rsa -in ./data/private_key.pem -pubout -out ./data/pub.key
 ```
+
+Copy the pub.key file to the MotorCity game directory
 
 ### Add the following entry to your etc/hosts file
 
 ```
 127.0.0.1       dev.mco
 ```
+
+### Add the cert to Windows
+
+http://stackoverflow.com/a/2955546/335583
+
+### Delete the movies
+
+C:\Motor City Online\Data\Movies
