@@ -315,7 +315,7 @@ app.get('/AuthLogin', function (req, res) {
 // echo "DiagnosticServerPort=80\n";
 // echo "\n";
 // Old IP = 108.183.123.230
-var serverIP = '71.186.155.248'
+var serverIP = '192.168.1.127'
 var shardList =
   '[The Clocktower]\n' +
   'Description=The Clocktower\n' +
