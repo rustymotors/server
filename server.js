@@ -16,9 +16,13 @@ var nps = require('./src/nps.js')
 var packet = require('./src/packet.js')
 const patchServer = require('./src/patch_server.js')
 
+// Config settings
+const serverIP = 'mc.drazisil.com'
+
 var key = fs.readFileSync('./data/private_key.pem')
 var cert = fs.readFileSync('./data/cert.pem')
-// var cert = fs.readFileSync('./cert.pem')
+
+// Setup SSL config
 var httpsOptions = {
   key: key,
   cert: cert,
@@ -140,7 +144,7 @@ function onData (data) {
       this.sock.write(packetresult)
       break
     // case '(0x0533)NPSValidatePersonaName': // debug
-    case '(0x0519)NPS_REQUEST_GET_PERSONA_INFO_BY_NAME':
+    case '(0x0519) NPSGetPersonaInfoByName':
       customer = nps.npsGetCustomerIdByContextId(nps.contextId)
       nps.dumpRequest(this.sock, data, requestCode)
 
@@ -160,9 +164,9 @@ function onData (data) {
       this.sock.write(packetresult)
 
       // Response Code
-      // 607 = name Not Availiable / general error on debug
-      // 611 = failure, no error returned / Missing game room on debug
-      // 602 = failure, no error returned / general error on debug **WORKS
+      // 607 = persona name not available
+      // 611 = No error, starter car lot
+      // 602 = No error, starter car lot
       break
     case '(0x0100)NPS_REQUEST_GAME_CONNECT_SERVER':
       customer = nps.npsGetCustomerIdByContextId(nps.contextId)
@@ -314,7 +318,7 @@ app.get('/AuthLogin', function (req, res) {
 // echo "DiagnosticServerPort=80\n";
 // echo "\n";
 // Old IP = 108.183.123.230
-var serverIP = '192.168.1.127'
+
 var shardList =
   '[The Clocktower]\n' +
   'Description=The Clocktower\n' +

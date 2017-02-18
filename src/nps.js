@@ -94,7 +94,7 @@ function getRequestCode (rawBuffer) {
     case '050F':
       return '(0x050F)NPSLogOutGameUser'
     case '0519':
-      return '(0x0519)NPS_REQUEST_GET_PERSONA_INFO_BY_NAME'
+      return '(0x0519) NPSGetPersonaInfoByName'
     case '0532':
       return '(0x0532)NPS_REQUEST_GET_PERSONA_MAPS'
     case '0533': // debug
