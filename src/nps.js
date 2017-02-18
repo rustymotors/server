@@ -12,6 +12,7 @@ var session_decypher
 var contextId = Buffer.alloc(34)
 var customerId = Buffer.alloc(4)
 var userId = Buffer.alloc(4)
+var isUserCreated = false
 
 function initCrypto () {
   if (cryptoLoaded === false) {
@@ -50,11 +51,31 @@ function npsGetPersonaMapsByCustomerId () {
   var name = Buffer.alloc(30)
   switch (customerId.readUInt32BE()) {
     case 2868969472:
-      Buffer.from('Doc Brown', 'utf8').copy(name)
+    if (isUserCreated) {
+      Buffer.from('Doc', 'utf8').copy(name)
       return {
         'personacount': Buffer.from([0x00, 0x01]),
-        'maxpersonas': Buffer.from([0x00, 0x06]),
-        'id': Buffer.from([0x00, 0x00, 0x00, 0x01]),
+        'maxpersonas': Buffer.from([0x00, 0x01]),  // Max Personas are how many there are not how many allowed
+        'id': Buffer.from([0x00, 0x00, 0x00, 0x00]),
+        'name': name,
+        'shardid': Buffer.from([0x00, 0x00, 0x00, 0x2C])
+      }
+    } else { 
+Buffer.from('', 'utf8').copy(name)
+      return {
+        'personacount': Buffer.from([0x00, 0x00]),
+        'maxpersonas': Buffer.from([0x00, 0x00]),  // Max Personas are how many there are not how many allowed
+        'id': Buffer.from([0x00, 0x00, 0x00, 0x00]),
+        'name': name,
+        'shardid': Buffer.from([0x00, 0x00, 0x00, 0x2C])
+      }
+    }
+
+      Buffer.from('', 'utf8').copy(name)
+      return {
+        'personacount': Buffer.from([0x00, 0x00]),
+        'maxpersonas': Buffer.from([0x00, 0x00]),  // Max Personas are how many there are not how many allowed
+        'id': Buffer.from([0x00, 0x00, 0x00, 0x00]),
         'name': name,
         'shardid': Buffer.from([0x00, 0x00, 0x00, 0x2C])
       }
@@ -62,7 +83,7 @@ function npsGetPersonaMapsByCustomerId () {
       Buffer.from('Biff', 'utf8').copy(name)
       return {
         'personacount': Buffer.from([0x00, 0x01]),
-        'maxpersonas': Buffer.from([0x00, 0x06]),
+        'maxpersonas': Buffer.from([0x00, 0x00]),
         'id': Buffer.from([0x00, 0x00, 0x00, 0x02]),
         'name': name,
         'shardid': Buffer.from([0x00, 0x00, 0x00, 0x2C])
@@ -171,5 +192,7 @@ module.exports = {
   toHex: toHex,
   decryptSessionKey: decryptSessionKey,
   decryptCmd: decryptCmd,
-  initCrypto: initCrypto
+  initCrypto: initCrypto,
+  isUserCreated
+
 }

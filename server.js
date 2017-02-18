@@ -153,7 +153,7 @@ function onData (data) {
       customer.customerId.copy(packetcontent, 10)
 
       // Build the packet
-      packetresult = packet.buildPacket(48380, 0x0601, packetcontent)
+      packetresult = packet.buildPacket(48380, 0x0602, packetcontent)
 
       nps.dumpResponse(packetresult, 16)
       this.sock.write(packetresult)
@@ -161,7 +161,7 @@ function onData (data) {
       // Response Code
       // 607 = name Not Availiable / general error on debug
       // 611 = failure, no error returned / Missing game room on debug
-      // 602 = failure, no error returned / general error on debug
+      // 602 = failure, no error returned / general error on debug **WORKS
       break
     case '(0x0100)NPS_REQUEST_GAME_CONNECT_SERVER':
       customer = nps.npsGetCustomerIdByContextId(nps.contextId)
@@ -232,6 +232,7 @@ function onData (data) {
       break
     default:
       nps.dumpRequest(this.sock, data, requestCode)
+      nps.isUserCreated = true
 
       // Create the packet content
       packetcontent = crypto.randomBytes(44971)
@@ -240,7 +241,7 @@ function onData (data) {
       Buffer.from([0x01, 0x01]).copy(packetcontent)
 
       // Build the packet
-      packetresult = packet.buildPacket(10, 0x0601, packetcontent)
+      packetresult = packet.buildPacket(10, 0x0612, packetcontent)
 
       nps.dumpResponse(packetresult, 16)
       this.sock.write(packetresult)
