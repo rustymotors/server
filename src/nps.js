@@ -6,9 +6,9 @@ var logger = require('./logger.js')
 var privateKeyFilename = './data/private_key.pem'
 var cryptoLoaded = false
 var privateKey
-var session_key
+var sessionKey
 // var session_cypher
-var session_decypher
+var sessionDecypher
 var contextId = Buffer.alloc(34)
 var customerId = Buffer.alloc(4)
 var userId = Buffer.alloc(4)
@@ -51,33 +51,24 @@ function npsGetPersonaMapsByCustomerId () {
   var name = Buffer.alloc(30)
   switch (customerId.readUInt32BE()) {
     case 2868969472:
-    if (isUserCreated) {
-      Buffer.from('Doc', 'utf8').copy(name)
-      return {
-        'personacount': Buffer.from([0x00, 0x01]),
-        'maxpersonas': Buffer.from([0x00, 0x01]),  // Max Personas are how many there are not how many allowed
-        'id': Buffer.from([0x00, 0x00, 0x00, 0x00]),
-        'name': name,
-        'shardid': Buffer.from([0x00, 0x00, 0x00, 0x2C])
-      }
-    } else { 
-Buffer.from('', 'utf8').copy(name)
-      return {
-        'personacount': Buffer.from([0x00, 0x00]),
-        'maxpersonas': Buffer.from([0x00, 0x00]),  // Max Personas are how many there are not how many allowed
-        'id': Buffer.from([0x00, 0x00, 0x00, 0x00]),
-        'name': name,
-        'shardid': Buffer.from([0x00, 0x00, 0x00, 0x2C])
-      }
-    }
-
-      Buffer.from('', 'utf8').copy(name)
-      return {
-        'personacount': Buffer.from([0x00, 0x00]),
-        'maxpersonas': Buffer.from([0x00, 0x00]),  // Max Personas are how many there are not how many allowed
-        'id': Buffer.from([0x00, 0x00, 0x00, 0x00]),
-        'name': name,
-        'shardid': Buffer.from([0x00, 0x00, 0x00, 0x2C])
+      if (isUserCreated) {
+        Buffer.from('Doc', 'utf8').copy(name)
+        return {
+          'personacount': Buffer.from([0x00, 0x01]),
+          'maxpersonas': Buffer.from([0x00, 0x01]),  // Max Personas are how many there are not how many allowed
+          'id': Buffer.from([0x00, 0x00, 0x00, 0x00]),
+          'name': name,
+          'shardid': Buffer.from([0x00, 0x00, 0x00, 0x2C])
+        }
+      } else {
+        Buffer.from('', 'utf8').copy(name)
+        return {
+          'personacount': Buffer.from([0x00, 0x00]),
+          'maxpersonas': Buffer.from([0x00, 0x00]),  // Max Personas are how many there are not how many allowed
+          'id': Buffer.from([0x00, 0x00, 0x00, 0x00]),
+          'name': name,
+          'shardid': Buffer.from([0x00, 0x00, 0x00, 0x2C])
+        }
       }
     case 2885746688:
       Buffer.from('Biff', 'utf8').copy(name)
@@ -162,11 +153,11 @@ function decryptSessionKey (encryptedKeySet) {
     encryptedKeySet = Buffer.from(encryptedKeySet.toString('utf8'), 'hex')
     var encryptedKeySetB64 = encryptedKeySet.toString('base64')
     var decrypted = privateKey.decrypt(encryptedKeySetB64, 'base64')
-    session_key = Buffer.from(Buffer.from(decrypted, 'base64').toString('hex').substring(4, 20), 'hex')
+    sessionKey = Buffer.from(Buffer.from(decrypted, 'base64').toString('hex').substring(4, 20), 'hex')
     var desIV = Buffer.alloc(8)
-    // session_cypher = crypto.createCipheriv('des-cbc', Buffer.from(session_key, 'hex'), desIV).setAutoPadding(false)
-    session_decypher = crypto.createDecipheriv('des-cbc', Buffer.from(session_key, 'hex'), desIV).setAutoPadding(false)
-    logger.debug('decrypted: ', session_key)
+    // session_cypher = crypto.createCipheriv('des-cbc', Buffer.from(sessionKey, 'hex'), desIV).setAutoPadding(false)
+    sessionDecypher = crypto.createDecipheriv('des-cbc', Buffer.from(sessionKey, 'hex'), desIV).setAutoPadding(false)
+    logger.debug('decrypted: ', sessionKey)
   } catch (e) {
     logger.error(e)
   }
@@ -174,7 +165,7 @@ function decryptSessionKey (encryptedKeySet) {
 
 function decryptCmd (cypherCmd) {
   // logger.debug('raw cmd: ' + cypherCmd + cypherCmd.length)
-  var plaintext = session_decypher.update(cypherCmd)
+  var plaintext = sessionDecypher.update(cypherCmd)
   return plaintext
 }
 
