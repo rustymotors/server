@@ -14,6 +14,7 @@ var config = require('./config.json')
 var logger = require('./src/logger.js')
 var nps = require('./src/nps.js')
 var packet = require('./src/packet.js')
+const patchServer = require('./src/patch_server.js')
 
 var key = fs.readFileSync('./data/private_key.pem')
 var cert = fs.readFileSync('./data/cert.pem')
@@ -272,24 +273,21 @@ app.set('port', process.env.PORT || config.web_port || 80)
 app.set('port_ssl', process.env.PORT_SSL || config.web_port_ssl || 443)
 
 app.post('/games/EA_Seattle/MotorCity/UpdateInfo', function (req, res) {
-  console.log(req.method)
-  console.log(req.url)
-  res.set('Content-Type', 'application/octet-stream')
-  res.send(new Buffer('cafebeef00000000000003', 'hex'))
+  const response = patchServer.patchUpdateInfo(req)
+  res.set(response.headers)
+  res.send(response.body)
 })
 
 app.post('/games/EA_Seattle/MotorCity/NPS', function (req, res) {
-  console.log(req.method)
-  console.log(req.url)
-  res.set('Content-Type', 'application/octet-stream')
-  res.send(new Buffer('cafebeef00000000000003', 'hex'))
+  const response = patchServer.patchNPS(req)
+  res.set(response.headers)
+  res.send(response.body)
 })
 
 app.post('/games/EA_Seattle/MotorCity/MCO', function (req, res) {
-  console.log(req.method)
-  console.log(req.url)
-  res.set('Content-Type', 'application/octet-stream')
-  res.send(new Buffer('cafebeef00000000000003', 'hex'))
+  const response = patchServer.patchMCO(req)
+  res.set(response.headers)
+  res.send(response.body)
 })
 
 app.get('/AuthLogin', function (req, res) {
