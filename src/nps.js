@@ -12,7 +12,7 @@ var sessionDecypher
 var contextId = Buffer.alloc(34)
 var customerId = Buffer.alloc(4)
 var userId = Buffer.alloc(4)
-var isUserCreated = false
+var isUserCreated = true
 
 function initCrypto () {
   if (cryptoLoaded === false) {
@@ -55,7 +55,7 @@ function npsGetPersonaMapsByCustomerId () {
         Buffer.from('Doc', 'utf8').copy(name)
         return {
           'personacount': Buffer.from([0x00, 0x01]),
-          'maxpersonas': Buffer.from([0x00, 0x01]),  // Max Personas are how many there are not how many allowed
+          'maxpersonas': Buffer.from([0x01, 0x01]),  // Max Personas are how many there are not how many allowed
           'id': Buffer.from([0x00, 0x00, 0x00, 0x00]),
           'name': name,
           'shardid': Buffer.from([0x00, 0x00, 0x00, 0x2C])
@@ -86,23 +86,25 @@ function getRequestCode (rawBuffer) {
   var requestCode = toHex(rawBuffer[0]) + toHex(rawBuffer[1])
   switch (requestCode) {
     case '0100':
-      return '(0x0100)NPS_REQUEST_GAME_CONNECT_SERVER'
+      return '(0x0100) NPS_REQUEST_GAME_CONNECT_SERVER'
     case '0501':
-      return '(0x0501)NPS_REQUEST_USER_LOGIN'
+      return '(0x0501) NPSUserLogin'
     case '0503':
       return '(0x503) NPSSelectGamePersona'
     case '050F':
-      return '(0x050F)NPSLogOutGameUser'
+      return '(0x050F) NPSLogOutGameUser'
+    case '0518':
+      return '(0x0518) NPSGetBuddyInfoByName'
     case '0519':
       return '(0x0519) NPSGetPersonaInfoByName'
     case '0532':
-      return '(0x0532)NPS_REQUEST_GET_PERSONA_MAPS'
+      return '(0x0532) NPSGetPersonaMaps'
     case '0533': // debug
-      return '(0x0533)NPSValidatePersonaName'
+      return '(0x0533) NPSValidatePersonaName'
     case '0534': // debug
-      return '(0x0534)NPSCheckToken'
+      return '(0x0534) NPSCheckToken'
     case '1101':
-      return '(0x1101)NPSSendCommand'
+      return '(0x1101) NPSSendCommand'
     case '2472':
     case '7B22':
     case '4745':

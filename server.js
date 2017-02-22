@@ -71,7 +71,7 @@ function onData (data) {
   var packetresult
 
   switch (requestCode) {
-    case '(0x0501)NPS_REQUEST_USER_LOGIN':
+    case '(0x0501) NPSUserLogin':
       nps.setContextIdFromRequest(data)
       customer = nps.npsGetCustomerIdByContextId(nps.contextId)
       nps.dumpRequest(this.sock, data, requestCode)
@@ -110,7 +110,7 @@ function onData (data) {
       nps.dumpResponse(packetresult, 16)
       this.sock.write(packetresult)
       break
-    case '(0x0532)NPS_REQUEST_GET_PERSONA_MAPS':
+    case '(0x0532) NPSGetPersonaMaps':
       nps.setCustomerIdFromRequest(data)
       var persona = nps.npsGetPersonaMapsByCustomerId()
 
@@ -158,7 +158,7 @@ function onData (data) {
       customer.customerId.copy(packetcontent, 10)
 
       // Build the packet
-      packetresult = packet.buildPacket(48380, 0x0602, packetcontent)
+      packetresult = packet.buildPacket(48380, 0x0611, packetcontent)
 
       nps.dumpResponse(packetresult, 16)
       this.sock.write(packetresult)
@@ -168,7 +168,7 @@ function onData (data) {
       // 611 = No error, starter car lot
       // 602 = No error, starter car lot
       break
-    case '(0x0100)NPS_REQUEST_GAME_CONNECT_SERVER':
+    case '(0x0100) NPS_REQUEST_GAME_CONNECT_SERVER':
       customer = nps.npsGetCustomerIdByContextId(nps.contextId)
       console.log(customer)
       nps.dumpRequest(this.sock, data, requestCode)
@@ -198,7 +198,7 @@ function onData (data) {
       nps.dumpResponse(packetresult, 8)
       this.sock.write(packetresult)
       break
-    case '(0x1101)NPSSendCommand':
+    case '(0x1101) NPSSendCommand':
       // 30c = GetMiniRiff
       // 128 = NPSGetMiniUserList
 
@@ -218,7 +218,7 @@ function onData (data) {
       nps.dumpResponse(packetresult, 16)
       this.sock.write(packetresult)
       break
-    case '(0x050F)NPSLogOutGameUser':
+    case '(0x050F) NPSLogOutGameUser':
       logger.debug('cmd: ' + nps.decryptCmd(new Buffer(data.slice(4))).toString('hex'))
 
       nps.dumpRequest(this.sock, data, requestCode)
@@ -246,7 +246,7 @@ function onData (data) {
       Buffer.from([0x01, 0x01]).copy(packetcontent)
 
       // Build the packet
-      packetresult = packet.buildPacket(10, 0x0612, packetcontent)
+      packetresult = packet.buildPacket(254, 0x0612, packetcontent)
 
       nps.dumpResponse(packetresult, 16)
       this.sock.write(packetresult)
