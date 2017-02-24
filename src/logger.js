@@ -8,6 +8,4 @@ logger.add(require('winston-daily-rotate-file'), {
   prepend: true,
   datePattern: 'yyyy-MM-dd_'
 })
-logger.level = 'debug'
-
 module.exports = logger
