@@ -1,62 +1,51 @@
-var fs = require('fs')
-var crypto = require('crypto')
-var NodeRSA = require('node-rsa')
-var logger = require('./logger.js')
+const fs = require('fs')
+const crypto = require('crypto')
+const NodeRSA = require('node-rsa')
+const logger = require('./logger.js')
 
-var privateKeyFilename = './data/private_key.pem'
-var cryptoLoaded = false
+const privateKeyFilename = './data/private_key.pem'
+
 var privateKey
 var sessionKey
-// var session_cypher
 var sessionDecypher
-var contextId = Buffer.alloc(34)
-var customerId = Buffer.alloc(4)
-var userId = Buffer.alloc(4)
-var isUserCreated = true
+
+const isUserCreated = true
 
 function initCrypto () {
-  if (cryptoLoaded === false) {
-    try {
-      fs.statSync(privateKeyFilename)
-    } catch (e) {
-      logger.error('Error loading private key: ' + e)
-      process.exit(1)
-    }
-    privateKey = new NodeRSA(fs.readFileSync(privateKeyFilename))
-    cryptoLoaded = true
+  try {
+    fs.statSync(privateKeyFilename)
+  } catch (e) {
+    logger.error('Error loading private key: ' + e)
+    process.exit(1)
   }
+  privateKey = new NodeRSA(fs.readFileSync(privateKeyFilename))
 }
 
-function npsGetCustomerIdByContextId (contextIdRequest) {
-  contextId = contextIdRequest
+function npsGetCustomerIdByContextId (contextId) {
   switch (contextId.toString()) {
     case 'd316cd2dd6bf870893dfbaaf17f965884e':
-      userId = Buffer.from([0x00, 0x00, 0x00, 0x01])
-      customerId = Buffer.from([0xAB, 0x01, 0x00, 0x00])
       return {
-        'userId': userId,
-        'customerId': customerId
+        'userId': Buffer.from([0x00, 0x00, 0x00, 0x01]),
+        'customerId': Buffer.from([0xAB, 0x01, 0x00, 0x00])
       }
     case '5213dee3a6bcdb133373b2d4f3b9962758':
-      userId = Buffer.from([0x00, 0x00, 0x00, 0x02])
-      customerId = Buffer.from([0xAC, 0x01, 0x00, 0x00])
       return {
-        'userId': userId,
-        'customerId': customerId
+        'userId': Buffer.from([0x00, 0x00, 0x00, 0x02]),
+        'customerId': Buffer.from([0xAC, 0x01, 0x00, 0x00])
       }
   }
 }
 
-function npsGetPersonaMapsByCustomerId () {
-  var name = Buffer.alloc(30)
+function npsGetPersonaMapsByCustomerId (customerId) {
+  let name = Buffer.alloc(30)
   switch (customerId.readUInt32BE()) {
     case 2868969472:
       if (isUserCreated) {
         Buffer.from('Doc', 'utf8').copy(name)
         return {
           'personacount': Buffer.from([0x00, 0x01]),
-          'maxpersonas': Buffer.from([0x01, 0x01]),  // Max Personas are how many there are not how many allowed
-          'id': Buffer.from([0x00, 0x00, 0x00, 0x00]),
+          'maxpersonas': Buffer.from([0x00, 0x02]),  // Max Personas are how many there are not how many allowed
+          'id': Buffer.from([0x00, 0x00, 0x00, 0x01]),
           'name': name,
           'shardid': Buffer.from([0x00, 0x00, 0x00, 0x2C])
         }
@@ -83,7 +72,7 @@ function npsGetPersonaMapsByCustomerId () {
 }
 
 function getRequestCode (rawBuffer) {
-  var requestCode = toHex(rawBuffer[0]) + toHex(rawBuffer[1])
+  let requestCode = toHex(rawBuffer[0]) + toHex(rawBuffer[1])
   switch (requestCode) {
     case '0100':
       return '(0x0100) NPS_REQUEST_GAME_CONNECT_SERVER'
@@ -115,34 +104,31 @@ function getRequestCode (rawBuffer) {
   }
 }
 
-function setContextIdFromRequest (data) {
+/* function setContextIdFromRequest (data) {
   data.copy(contextId, 0, 14, 48)
 }
 
 function setCustomerIdFromRequest (data) {
   data.copy(customerId, 0, 12)
-}
+} */
 
 function dumpRequest (sock, rawBuffer, requestCode) {
-  console.log()
-  logger.debug('-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
-  logger.debug('Request Code: ' + requestCode)
-  logger.debug('-----------------------------------------')
-  logger.debug('Request DATA ' + sock.remoteAddress + ':' + sock.localPort + ': ' + rawBuffer.toString('ascii'))
-  logger.debug('=========================================')
-  logger.debug('Request DATA ' + sock.remoteAddress + ': ' + rawBuffer.toString('hex'))
-  logger.debug('-----------------------------------------')
-  logger.debug('-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
-  console.log()
+  logger.debug(
+    `\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    Request Code: ${requestCode}
+    -----------------------------------------
+    Request DATA ${sock.remoteAddress}:${sock.localPort}:${rawBuffer.toString('ascii')}
+    =========================================
+    Request DATA ${sock.remoteAddress}:${rawBuffer.toString('hex')}
+    -----------------------------------------
+    -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n`)
 }
 
 function dumpResponse (data, count) {
   logger.debug('Response Length: ' + data.length)
-  var responseBytes = 'Response Code: ' + toHex(data[0])
-  for (var i = 1; (i < count && i < data.length); i++) {
-    responseBytes += ' ' + toHex(data[i])
-  }
-  logger.debug(responseBytes)
+  let bytesToReturn = data.slice(0, count)
+  let bytesToReturnHex = bytesToReturn.map((byte) => toHex(byte))
+  logger.debug('Response Code: ' + bytesToReturnHex.join(' '))
 }
 
 function toHex (d) {
@@ -150,13 +136,11 @@ function toHex (d) {
 }
 
 function decryptSessionKey (encryptedKeySet) {
-  initCrypto()
   try {
-    encryptedKeySet = Buffer.from(encryptedKeySet.toString('utf8'), 'hex')
-    var encryptedKeySetB64 = encryptedKeySet.toString('base64')
-    var decrypted = privateKey.decrypt(encryptedKeySetB64, 'base64')
+    let encryptedKeySetB64 = Buffer.from(encryptedKeySet.toString('utf8'), 'hex').toString('base64')
+    let decrypted = privateKey.decrypt(encryptedKeySetB64, 'base64')
     sessionKey = Buffer.from(Buffer.from(decrypted, 'base64').toString('hex').substring(4, 20), 'hex')
-    var desIV = Buffer.alloc(8)
+    let desIV = Buffer.alloc(8)
     // session_cypher = crypto.createCipheriv('des-cbc', Buffer.from(sessionKey, 'hex'), desIV).setAutoPadding(false)
     sessionDecypher = crypto.createDecipheriv('des-cbc', Buffer.from(sessionKey, 'hex'), desIV).setAutoPadding(false)
     logger.debug('decrypted: ', sessionKey)
@@ -172,11 +156,11 @@ function decryptCmd (cypherCmd) {
 }
 
 module.exports = {
-  userId: userId,
-  customerId: customerId,
-  contextId: contextId,
-  setContextIdFromRequest: setContextIdFromRequest,
-  setCustomerIdFromRequest: setCustomerIdFromRequest,
+  // userId: userId,
+  // customerId: customerId,
+  // contextId: contextId,
+  // setContextIdFromRequest: setContextIdFromRequest,
+  // setCustomerIdFromRequest: setCustomerIdFromRequest,
   npsGetCustomerIdByContextId: npsGetCustomerIdByContextId,
   npsGetPersonaMapsByCustomerId: npsGetPersonaMapsByCustomerId,
   getRequestCode: getRequestCode,
