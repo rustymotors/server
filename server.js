@@ -1,9 +1,8 @@
-'use strict'
-
 /* External dependencies */
 const crypto = require('crypto')
 const net = require('net')
 const app = require('express')()
+const http = require('http')
 const https = require('https')
 const fs = require('fs')
 const sslConfig = require('ssl-config')('old')
@@ -19,32 +18,32 @@ const patchServer = require('./src/patch_server.js')
 // Config settings
 logger.level = 'debug'
 
-const config = {
-  'ipServer': 'mc.drazisil.com',
+const serverConfig = {
+  ipServer: 'mc.drazisil.com',
   serverAuthLogin: {
-    'name': 'AuthLogin',
-    'port': 80
+    name: 'AuthLogin',
+    port: 80,
   },
   serverPatch: {
-    'name': 'Patch',
-    'port': 443
+    name: 'Patch',
+    port: 443,
   },
   serverLogin: {
-    'name': 'Login',
-    'port': 8226
+    name: 'Login',
+    port: 8226,
   },
   serverPersona: {
-    'name': 'Login',
-    'port': 8228
+    name: 'Login',
+    port: 8228,
   },
   serverLobby: {
-    'name': 'Lobby',
-    'port': 7003
+    name: 'Lobby',
+    port: 7003,
   },
   serverDatabase: {
-    'name': 'Database',
-    'port': 43300
-  }
+    name: 'Database',
+    port: 43300,
+  },
 }
 
 const key = fs.readFileSync('./data/private_key.pem')
@@ -52,85 +51,24 @@ const cert = fs.readFileSync('./data/cert.pem')
 
 // Setup SSL config
 const httpsOptions = {
-  key: key,
-  cert: cert,
+  key,
+  cert,
   rejectUnauthorized: false,
   ciphers: sslConfig.ciphers,
   honorCipherOrder: true,
-  secureOptions: sslConfig.minimumTLSVersion
+  secureOptions: sslConfig.minimumTLSVersion,
 }
 
-function start (config, callback) {
-  series({
-    serverLogin: function (callback) {
-      const server = net.createServer(listener)
-      server.listen(config.serverLogin.port, function () {
-        logger.info(config.serverLogin.name + ' Server listening on TCP port: ' + config.serverLogin.port)
-        callback(null, server)
-      })
-    },
-    serverPersona: function (callback) {
-      const server = net.createServer(listener)
-      server.listen(config.serverPersona.port, function () {
-        logger.info(config.serverPersona.name + ' Server listening on TCP port: ' + config.serverPersona.port)
-        callback(null, server)
-      })
-    },
-    serverLobby: function (callback) {
-      const server = net.createServer(listener)
-      server.listen(config.serverLobby.port, function () {
-        logger.info(config.serverLobby.name + ' Server listening on TCP port: ' + config.serverLobby.port)
-        callback(null, server)
-      })
-    },
-    serverDatabase: function (callback) {
-      const server = net.createServer(listener)
-      server.listen(config.serverDatabase.port, function () {
-        logger.info(config.serverDatabase.name + ' Server listening on TCP port: ' + config.serverDatabase.port)
-        callback(null, server)
-      })
-    }
-  }, function (err, results) {
-    if (err) { throw err }
-    // Not currently using this
-    results = null
-
-    callback(null)
-  })
-}
-
-function listener (sock) {
-  logger.info('client connected: ' + sock.address().port)
-
-  const socket = sock
-
-  // Add a 'data' event handler to this instance of socket
-  sock.on('data', (data) => {
-    onData(socket, data)
-  })
-  // Add a 'close' event handler to this instance of socket
-  sock.on('close', function (data) {
-    logger.debug(data)
-    logger.info('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort)
-  })
-  // Add a 'error' event handler to this instance of socket
-  sock.on('error', function (err) {
-    if (err.code !== 'ECONNRESET') {
-      logger.error(err)
-    }
-  })
-}
-
-function onData (sock, data) {
-  let requestCode = nps.getRequestCode(data)
+function onData(sock, data) {
+  const requestCode = nps.getRequestCode(data)
 
   let packetcontent
   let packetresult
 
   if (requestCode === '(0x0501) NPSUserLogin') {
-    let contextId = Buffer.alloc(34)
+    const contextId = Buffer.alloc(34)
     data.copy(contextId, 0, 14, 48)
-    let customer = nps.npsGetCustomerIdByContextId(contextId)
+    const customer = nps.npsGetCustomerIdByContextId(contextId)
 
       // Create the packet content
     packetcontent = crypto.randomBytes(44971)
@@ -172,9 +110,9 @@ function onData (sock, data) {
   }
 
   if (requestCode === '(0x0532) NPSGetPersonaMaps') {
-    let customerId = Buffer.alloc(4)
+    const customerId = Buffer.alloc(4)
     data.copy(customerId, 0, 12)
-    let persona = nps.npsGetPersonaMapsByCustomerId(customerId)
+    const persona = nps.npsGetPersonaMapsByCustomerId(customerId)
 
     nps.dumpRequest(sock, data, requestCode)
 
@@ -208,10 +146,10 @@ function onData (sock, data) {
   }
 
   if (requestCode === '(0x0519) NPSGetPersonaInfoByName') {
-    let personaName = Buffer.alloc(data.length - 30)
+    const personaName = Buffer.alloc(data.length - 30)
     data.copy(personaName, 0, 30)
 
-    console.log(personaName)
+    logger.debug(`personaName ${personaName}`)
 
     nps.dumpRequest(sock, data, requestCode)
 
@@ -235,9 +173,9 @@ function onData (sock, data) {
   }
 
   if (requestCode === '(0x0100) NPS_REQUEST_GAME_CONNECT_SERVER') {
-    let contextId = Buffer.alloc(34)
+    const contextId = Buffer.alloc(34)
     data.copy(contextId, 0, 14, 48)
-    let customer = nps.npsGetCustomerIdByContextId(contextId)
+    const customer = nps.npsGetCustomerIdByContextId(contextId)
     logger.debug(customer)
     nps.dumpRequest(sock, data, requestCode)
 
@@ -269,7 +207,7 @@ function onData (sock, data) {
   }
 
   if (requestCode === '(0x1101) NPSSendCommand') {
-    logger.debug('cmd: ' + nps.decryptCmd(new Buffer(data.slice(4))).toString('hex'))
+    logger.debug(`cmd: ${nps.decryptCmd(new Buffer(data.slice(4))).toString('hex')}`)
 
     nps.dumpRequest(sock, data, requestCode)
 
@@ -288,7 +226,7 @@ function onData (sock, data) {
   }
 
   if (requestCode === '(0x050F) NPSLogOutGameUser') {
-    logger.debug('cmd: ' + nps.decryptCmd(new Buffer(data.slice(4))).toString('hex'))
+    logger.debug(`cmd: ${nps.decryptCmd(new Buffer(data.slice(4))).toString('hex')}`)
 
     nps.dumpRequest(sock, data, requestCode)
 
@@ -323,6 +261,66 @@ function onData (sock, data) {
   sock.write(packetresult)
 }
 
+function listener(sock) {
+  logger.info(`client connected: ${sock.address().port}`)
+
+  const socket = sock
+
+  // Add a 'data' event handler to this instance of socket
+  sock.on('data', (data) => {
+    onData(socket, data)
+  })
+  // Add a 'close' event handler to this instance of socket
+  sock.on('close', (data) => {
+    logger.debug(data)
+    logger.info(`CLOSED: ${sock.remoteAddress} ${sock.remotePort}`)
+  })
+  // Add a 'error' event handler to this instance of socket
+  sock.on('error', (err) => {
+    if (err.code !== 'ECONNRESET') {
+      logger.error(err)
+    }
+  })
+}
+
+function start(config, cbStart) {
+  series({
+    serverLogin: (callback) => {
+      const server = net.createServer(listener)
+      server.listen(serverConfig.serverLogin.port, () => {
+        logger.info(`${serverConfig.serverLogin.name} Server listening on TCP port: ${serverConfig.serverLogin.port}`)
+        callback(null, server)
+      })
+    },
+    serverPersona: (callback) => {
+      const server = net.createServer(listener)
+      server.listen(config.serverPersona.port, () => {
+        logger.info(`${config.serverPersona.name} Server listening on TCP port: ${config.serverPersona.port}`)
+        callback(null, server)
+      })
+    },
+    serverLobby: (callback) => {
+      const server = net.createServer(listener)
+      server.listen(config.serverLobby.port, () => {
+        logger.info(`${config.serverLobby.name} Server listening on TCP port: ${config.serverLobby.port}`)
+        callback(null, server)
+      })
+    },
+    serverDatabase: (callback) => {
+      const server = net.createServer(listener)
+      server.listen(config.serverDatabase.port, () => {
+        logger.info(`${config.serverDatabase.name} Server listening on TCP port: ${config.serverDatabase.port}`)
+        callback(null, server)
+      })
+    },
+  }, (err) => {
+    if (err) { throw err }
+    // Not currently using this
+
+    cbStart(null)
+  })
+}
+
 /* Initialize the crypto */
 try {
   nps.initCrypto()
@@ -332,7 +330,7 @@ try {
 }
 
 /* Start the NPS servers */
-start(config, function (err) {
+start(serverConfig, (err) => {
   if (err) { throw err }
   logger.info('Servers started')
 })
@@ -348,25 +346,25 @@ app.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
 app.set('port', 80)
 app.set('port_ssl', 443)
 
-app.post('/games/EA_Seattle/MotorCity/UpdateInfo', function (req, res) {
+app.post('/games/EA_Seattle/MotorCity/UpdateInfo', (req, res) => {
   const response = patchServer.patchUpdateInfo(req)
   res.set(response.headers)
   res.send(response.body)
 })
 
-app.post('/games/EA_Seattle/MotorCity/NPS', function (req, res) {
+app.post('/games/EA_Seattle/MotorCity/NPS', (req, res) => {
   const response = patchServer.patchNPS(req)
   res.set(response.headers)
   res.send(response.body)
 })
 
-app.post('/games/EA_Seattle/MotorCity/MCO', function (req, res) {
+app.post('/games/EA_Seattle/MotorCity/MCO', (req, res) => {
   const response = patchServer.patchMCO(req)
   res.set(response.headers)
   res.send(response.body)
 })
 
-app.get('/AuthLogin', function (req, res) {
+app.get('/AuthLogin', (req, res) => {
   // logger.debug(req.method)
   // logger.debug(req.url)
 
@@ -374,24 +372,23 @@ app.get('/AuthLogin', function (req, res) {
   res.send('Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e')
 })
 
-var shardList =
-  '[The Clocktower]\n' +
-  'Description=The Clocktower\n' +
-  'ShardId=44\n' +
-  'LoginServerIP=' + config.ipServer + '\n' +
-  'LoginServerPort=8226\n' +
-  'LobbyServerIP=' + config.ipServer + '\n' +
-  'LobbyServerPort=7003\n' +
-  'MCOTSServerIP=' + config.ipServer + '\n' +
-  'StatusId=0\n' +
-  'Status_Reason=\n' +
-  'ServerGroup_Name=Group - 1\n' +
-  'Population=88\n' +
-  'MaxPersonasPerUser=2\n' +
-  'DiagnosticServerHost=' + config.ipServer + '\n' +
-  'DiagnosticServerPort=80'
+const shardList = `[The Clocktower]
+Description=The Clocktower
+ShardId=44
+LoginServerIP=${serverConfig.ipServer}
+LoginServerPort=8226
+LobbyServerIP=${serverConfig.ipServer}
+LobbyServerPort=7003
+MCOTSServerIP=${serverConfig.ipServer}
+StatusId=0
+Status_Reason=
+ServerGroup_Name=Group - 1
+Population=88
+MaxPersonasPerUser=2
+DiagnosticServerHost=${serverConfig.ipServer}
+DiagnosticServerPort=80`
 
-app.get('/ShardList/', function (req, res) {
+app.get('/ShardList/', (req, res) => {
   // logger.debug(req.method)
   // logger.debug(req.url)
 
@@ -399,53 +396,51 @@ app.get('/ShardList/', function (req, res) {
   res.send(shardList)
 })
 
-app.get('/key', function (req, res) {
+app.get('/key', (req, res) => {
   // logger.debug(req.method)
   // logger.debug(req.url)
 
-  var key = fs.readFileSync('./data/pub.key').toString('hex')
   res.setHeader('Content-disposition', 'attachment; filename=pub.key')
-  res.write(key)
+  res.write(fs.readFileSync('./data/pub.key').toString('hex'))
   res.end()
 })
 
-app.use(function (req, res) {
+app.use((req, res) => {
   logger.debug(req.headers)
   logger.debug(req.method)
   logger.debug(req.url)
   res.send('404')
 })
 
-const serverPatch = require('http').createServer(app)
-serverPatch.listen(app.get('port'), function () {
-  logger.info('Patch server listening on port ' + app.get('port'))
+const serverPatch = http.createServer(app)
+serverPatch.listen(app.get('port'), () => {
+  logger.info(`Patch server listening on port ${app.get('port')}`)
 })
 
-var httpsServer = https.createServer(httpsOptions, app).listen(app.get('port_ssl'), function () {
-  logger.info('AuthLogin server listening on port ' + app.get('port_ssl'))
+const httpsServer = https.createServer(httpsOptions, app).listen(app.get('port_ssl'), () => {
+  logger.info(`AuthLogin server listening on port ${app.get('port_ssl')}`)
 })
 
 // ================================================
 // ================================================
 // ================================================
 
-httpsServer.on('connection', function (socket) {
+httpsServer.on('connection', (socket) => {
   logger.info('New SSL connection')
-  socket.on('error', function (error) {
-    logger.error('Socket Error: ' + error.message)
+  socket.on('error', (error) => {
+    logger.error(`Socket Error: ${error.message}`)
   })
-  socket.on('close', function () {
+  socket.on('close', () => {
     logger.info('Socket Connection closed')
   })
 })
 
-httpsServer.on('error', function (error, socket) {
+httpsServer.on('error', (error, socket) => {
   logger.debug(socket)
-  logger.error('Error: ' + error)
+  logger.error(`Error: ${error}`)
 })
 
-httpsServer.on('tlsClientError', function (err, sock) {
+httpsServer.on('tlsClientError', (err, sock) => {
   logger.debug(sock)
   logger.error(err)
 })
-
