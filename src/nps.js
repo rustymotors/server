@@ -59,15 +59,12 @@ function npsGetPersonaMapsByCustomerId (customerId) {
           'shardid': Buffer.from([0x00, 0x00, 0x00, 0x2C])
         }
       }
-    case 2885746688:
-      Buffer.from('Biff', 'utf8').copy(name)
-      return {
-        'personacount': Buffer.from([0x00, 0x01]),
-        'maxpersonas': Buffer.from([0x00, 0x00]),
-        'id': Buffer.from([0x00, 0x00, 0x00, 0x02]),
-        'name': name,
-        'shardid': Buffer.from([0x00, 0x00, 0x00, 0x2C])
-      }
+  }
+}
+
+function npsGetPersonaInfoByName (name) {
+  return {
+    'name': name
   }
 }
 
@@ -126,9 +123,11 @@ function dumpRequest (sock, rawBuffer, requestCode) {
 
 function dumpResponse (data, count) {
   logger.debug('Response Length: ' + data.length)
-  let bytesToReturn = data.slice(0, count)
-  let bytesToReturnHex = bytesToReturn.map((byte) => toHex(byte))
-  logger.debug('Response Code: ' + bytesToReturnHex.join(' '))
+  var responseBytes = 'Response Code: ' + toHex(data[0])
+  for (var i = 1; (i < count && i < data.length); i++) {
+    responseBytes += ' ' + toHex(data[i])
+  }
+  logger.debug(responseBytes)
 }
 
 function toHex (d) {
@@ -156,20 +155,15 @@ function decryptCmd (cypherCmd) {
 }
 
 module.exports = {
-  // userId: userId,
-  // customerId: customerId,
-  // contextId: contextId,
-  // setContextIdFromRequest: setContextIdFromRequest,
-  // setCustomerIdFromRequest: setCustomerIdFromRequest,
-  npsGetCustomerIdByContextId: npsGetCustomerIdByContextId,
-  npsGetPersonaMapsByCustomerId: npsGetPersonaMapsByCustomerId,
-  getRequestCode: getRequestCode,
-  dumpRequest: dumpRequest,
-  dumpResponse: dumpResponse,
-  toHex: toHex,
-  decryptSessionKey: decryptSessionKey,
-  decryptCmd: decryptCmd,
-  initCrypto: initCrypto,
+  npsGetCustomerIdByContextId,
+  npsGetPersonaInfoByName,
+  npsGetPersonaMapsByCustomerId,
+  getRequestCode,
+  dumpRequest,
+  dumpResponse,
+  toHex,
+  decryptSessionKey,
+  decryptCmd,
+  initCrypto,
   isUserCreated
-
 }

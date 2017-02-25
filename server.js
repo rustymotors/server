@@ -1,3 +1,5 @@
+'use strict'
+
 /* External dependencies */
 const crypto = require('crypto')
 const net = require('net')
@@ -19,6 +21,14 @@ logger.level = 'debug'
 
 const config = {
   'ipServer': 'mc.drazisil.com',
+  serverAuthLogin: {
+    'name': 'AuthLogin',
+    'port': 80
+  },
+  serverPatch: {
+    'name': 'Patch',
+    'port': 443
+  },
   serverLogin: {
     'name': 'Login',
     'port': 8226
@@ -82,18 +92,25 @@ function start (config, callback) {
     }
   }, function (err, results) {
     if (err) { throw err }
-    callback(null, results)
+    // Not currently using this
+    results = null
+
+    callback(null)
   })
 }
 
 function listener (sock) {
   logger.info('client connected: ' + sock.address().port)
 
-  // Add a 'data' event handler to this instance of socket
-  sock.on('data', onData.bind({ sock: sock }))
+  const socket = sock
 
+  // Add a 'data' event handler to this instance of socket
+  sock.on('data', (data) => {
+    onData(socket, data)
+  })
   // Add a 'close' event handler to this instance of socket
   sock.on('close', function (data) {
+    logger.debug(data)
     logger.info('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort)
   })
   // Add a 'error' event handler to this instance of socket
@@ -104,7 +121,7 @@ function listener (sock) {
   })
 }
 
-function onData (data) {
+function onData (sock, data) {
   let requestCode = nps.getRequestCode(data)
 
   let packetcontent
@@ -131,12 +148,12 @@ function onData (data) {
 
       // nps.dumpRequest(this.sock, data, requestCode)
       // nps.dumpResponse(packetresult, 128)
-    this.sock.write(packetresult)
+    sock.write(packetresult)
     return
   }
 
   if (requestCode === '(0x503) NPSSelectGamePersona') {
-    nps.dumpRequest(this.sock, data, requestCode)
+    nps.dumpRequest(sock, data, requestCode)
 
       // Create the packet content
     packetcontent = crypto.randomBytes(44971)
@@ -150,7 +167,7 @@ function onData (data) {
     packetresult = packet.buildPacket(44975, 0x0207, packetcontent)
 
     nps.dumpResponse(packetresult, 16)
-    this.sock.write(packetresult)
+    sock.write(packetresult)
     return
   }
 
@@ -159,7 +176,7 @@ function onData (data) {
     data.copy(customerId, 0, 12)
     let persona = nps.npsGetPersonaMapsByCustomerId(customerId)
 
-    nps.dumpRequest(this.sock, data, requestCode)
+    nps.dumpRequest(sock, data, requestCode)
 
       // Create the packet content
     packetcontent = crypto.randomBytes(518)
@@ -186,15 +203,17 @@ function onData (data) {
     packetresult = packet.buildPacket(512, 0x0607, packetcontent)
 
     nps.dumpResponse(packetresult, 512)
-    this.sock.write(packetresult)
+    sock.write(packetresult)
     return
   }
 
   if (requestCode === '(0x0519) NPSGetPersonaInfoByName') {
-    let contextId = Buffer.alloc(34)
-    data.copy(contextId, 0, 14, 48)
-    let customer = nps.npsGetCustomerIdByContextId(contextId)
-    nps.dumpRequest(this.sock, data, requestCode)
+    let personaName = Buffer.alloc(data.length - 30)
+    data.copy(personaName, 0, 30)
+
+    console.log(personaName)
+
+    nps.dumpRequest(sock, data, requestCode)
 
       // Create the packet content
     packetcontent = crypto.randomBytes(44976)
@@ -202,14 +221,11 @@ function onData (data) {
       // This is needed, not sure for what
     Buffer.from([0x01, 0x01]).copy(packetcontent)
 
-      // load the customer id
-    customer.customerId.copy(packetcontent, 10)
-
       // Build the packet
     packetresult = packet.buildPacket(48380, 0x0601, packetcontent)
 
     nps.dumpResponse(packetresult, 16)
-    this.sock.write(packetresult)
+    sock.write(packetresult)
 
       // Response Code
       // 607 = persona name not available
@@ -223,7 +239,7 @@ function onData (data) {
     data.copy(contextId, 0, 14, 48)
     let customer = nps.npsGetCustomerIdByContextId(contextId)
     logger.debug(customer)
-    nps.dumpRequest(this.sock, data, requestCode)
+    nps.dumpRequest(sock, data, requestCode)
 
       // Create the packet content
       // packetcontent = crypto.randomBytes(151)
@@ -248,14 +264,14 @@ function onData (data) {
     packetresult = packet.buildPacket(8, 0x0120, packetcontent)
 
     nps.dumpResponse(packetresult, 8)
-    this.sock.write(packetresult)
+    sock.write(packetresult)
     return
   }
 
   if (requestCode === '(0x1101) NPSSendCommand') {
     logger.debug('cmd: ' + nps.decryptCmd(new Buffer(data.slice(4))).toString('hex'))
 
-    nps.dumpRequest(this.sock, data, requestCode)
+    nps.dumpRequest(sock, data, requestCode)
 
       // Create the packet content
     packetcontent = crypto.randomBytes(151)
@@ -267,14 +283,14 @@ function onData (data) {
     packetresult = packet.buildPacket(155, 0x0612, packetcontent)
 
     nps.dumpResponse(packetresult, 16)
-    this.sock.write(packetresult)
+    sock.write(packetresult)
     return
   }
 
   if (requestCode === '(0x050F) NPSLogOutGameUser') {
     logger.debug('cmd: ' + nps.decryptCmd(new Buffer(data.slice(4))).toString('hex'))
 
-    nps.dumpRequest(this.sock, data, requestCode)
+    nps.dumpRequest(sock, data, requestCode)
 
       // Create the packet content
     packetcontent = crypto.randomBytes(253)
@@ -286,12 +302,12 @@ function onData (data) {
     packetresult = packet.buildPacket(257, 0x0612, packetcontent)
 
     nps.dumpResponse(packetresult, 16)
-    this.sock.write(packetresult)
+    sock.write(packetresult)
     return
   }
 
 // Anything else
-  nps.dumpRequest(this.sock, data, requestCode)
+  nps.dumpRequest(sock, data, requestCode)
   nps.isUserCreated = true
 
       // Create the packet content
@@ -304,7 +320,7 @@ function onData (data) {
   packetresult = packet.buildPacket(4, 0x0000, packetcontent)
 
   nps.dumpResponse(packetresult, 16)
-  this.sock.write(packetresult)
+  sock.write(packetresult)
 }
 
 /* Initialize the crypto */
@@ -316,7 +332,7 @@ try {
 }
 
 /* Start the NPS servers */
-start(config, function (err, servers) {
+start(config, function (err) {
   if (err) { throw err }
   logger.info('Servers started')
 })
@@ -329,8 +345,8 @@ app.use(bodyParser.json()) // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
 
 // Server port is set by PORT env or web_port from config file with fallback to 3000
-app.set('port', process.env.PORT || config.web_port || 80)
-app.set('port_ssl', process.env.PORT_SSL || config.web_port_ssl || 443)
+app.set('port', 80)
+app.set('port_ssl', 443)
 
 app.post('/games/EA_Seattle/MotorCity/UpdateInfo', function (req, res) {
   const response = patchServer.patchUpdateInfo(req)
@@ -424,10 +440,12 @@ httpsServer.on('connection', function (socket) {
 })
 
 httpsServer.on('error', function (error, socket) {
+  logger.debug(socket)
   logger.error('Error: ' + error)
 })
 
 httpsServer.on('tlsClientError', function (err, sock) {
+  logger.debug(sock)
   logger.error(err)
 })
 
