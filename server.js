@@ -59,7 +59,7 @@ const httpsOptions = {
   secureOptions: sslConfig.minimumTLSVersion,
 }
 
-function onData(sock, data) {
+function onData(sock, id, data) {
   const requestCode = nps.getRequestCode(data)
 
   let packetcontent
@@ -84,14 +84,13 @@ function onData(sock, data) {
 
     nps.decryptSessionKey(data.slice(52, -10))
 
-      // nps.dumpRequest(this.sock, data, requestCode)
-      // nps.dumpResponse(packetresult, 128)
     sock.write(packetresult)
     return
   }
 
+  // Persona_UseSelected
   if (requestCode === '(0x503) NPSSelectGamePersona') {
-    nps.dumpRequest(sock, data, requestCode)
+    nps.dumpRequest(sock, id, data, requestCode)
 
       // Create the packet content
     packetcontent = crypto.randomBytes(44971)
@@ -114,7 +113,7 @@ function onData(sock, data) {
     data.copy(customerId, 0, 12)
     const persona = nps.npsGetPersonaMapsByCustomerId(customerId)
 
-    nps.dumpRequest(sock, data, requestCode)
+    nps.dumpRequest(sock, id, data, requestCode)
 
       // Create the packet content
     packetcontent = crypto.randomBytes(518)
@@ -151,7 +150,7 @@ function onData(sock, data) {
 
     logger.debug(`personaName ${personaName}`)
 
-    nps.dumpRequest(sock, data, requestCode)
+    nps.dumpRequest(sock, id, data, requestCode)
 
       // Create the packet content
     packetcontent = crypto.randomBytes(44976)
@@ -173,11 +172,12 @@ function onData(sock, data) {
   }
 
   if (requestCode === '(0x0100) NPS_REQUEST_GAME_CONNECT_SERVER') {
-    const contextId = Buffer.alloc(34)
-    data.copy(contextId, 0, 14, 48)
-    const customer = nps.npsGetCustomerIdByContextId(contextId)
-    logger.debug(customer)
-    nps.dumpRequest(sock, data, requestCode)
+    nps.dumpRequest(sock, id, data, requestCode)
+    // const contextId = Buffer.alloc(34)
+    // data.copy(contextId, 0, 14, 48)
+    // const customer = nps.npsGetCustomerIdByContextId(contextId)
+    // logger.debug(`customer: ${customer}`)
+
 
       // Create the packet content
       // packetcontent = crypto.randomBytes(151)
@@ -193,7 +193,7 @@ function onData(sock, data) {
     Buffer.from([0x97]).copy(packetcontent, 1)
 
       // load the customer id
-    customer.userId.copy(packetcontent, 2)
+      // customer.userId.copy(packetcontent, 2)
 
       // RIFF Count = total packet len - 4 for header
       // Buffer.from([0x00, 0x05]).copy(packetcontent, 1490)
@@ -209,7 +209,7 @@ function onData(sock, data) {
   if (requestCode === '(0x1101) NPSSendCommand') {
     logger.debug(`cmd: ${nps.decryptCmd(new Buffer(data.slice(4))).toString('hex')}`)
 
-    nps.dumpRequest(sock, data, requestCode)
+    nps.dumpRequest(sock, id, data, requestCode)
 
       // Create the packet content
     packetcontent = crypto.randomBytes(151)
@@ -228,7 +228,7 @@ function onData(sock, data) {
   if (requestCode === '(0x050F) NPSLogOutGameUser') {
     logger.debug(`cmd: ${nps.decryptCmd(new Buffer(data.slice(4))).toString('hex')}`)
 
-    nps.dumpRequest(sock, data, requestCode)
+    nps.dumpRequest(sock, id, data, requestCode)
 
       // Create the packet content
     packetcontent = crypto.randomBytes(253)
@@ -245,7 +245,7 @@ function onData(sock, data) {
   }
 
 // Anything else
-  nps.dumpRequest(sock, data, requestCode)
+  nps.dumpRequest(sock, id, data, requestCode)
   nps.isUserCreated = true
 
       // Create the packet content
@@ -255,25 +255,28 @@ function onData(sock, data) {
   Buffer.from([0x01, 0x01]).copy(packetcontent)
 
       // Build the packet
-  packetresult = packet.buildPacket(4, 0x0000, packetcontent)
+  packetresult = packet.buildPacket(600, 0x0000, packetcontent)
 
-  nps.dumpResponse(packetresult, 16)
+  nps.dumpResponse(packetresult, 600)
   sock.write(packetresult)
 }
 
 function listener(sock) {
-  logger.info(`client connected: ${sock.address().port}`)
+  const localId = `${sock.localAddress}_${sock.localPort}`
+  const socketId = `${sock.remoteAddress}_${sock.remotePort}`
+  logger.info(`Creating socket: ${localId} => ${socketId}`)
+  sock.setKeepAlive(true)
+
 
   const socket = sock
 
   // Add a 'data' event handler to this instance of socket
   sock.on('data', (data) => {
-    onData(socket, data)
+    onData(socket, socketId, data)
   })
   // Add a 'close' event handler to this instance of socket
-  sock.on('close', (data) => {
-    logger.debug(data)
-    logger.info(`CLOSED: ${sock.remoteAddress} ${sock.remotePort}`)
+  sock.on('close', () => {
+    logger.info(`Closing socket: ${localId} => ${socketId}`)
   })
   // Add a 'error' event handler to this instance of socket
   sock.on('error', (err) => {
@@ -365,9 +368,6 @@ app.post('/games/EA_Seattle/MotorCity/MCO', (req, res) => {
 })
 
 app.get('/AuthLogin', (req, res) => {
-  // logger.debug(req.method)
-  // logger.debug(req.url)
-
   res.set('Content-Type', 'text/plain')
   res.send('Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e')
 })
@@ -389,26 +389,20 @@ DiagnosticServerHost=${serverConfig.ipServer}
 DiagnosticServerPort=80`
 
 app.get('/ShardList/', (req, res) => {
-  // logger.debug(req.method)
-  // logger.debug(req.url)
-
   res.set('Content-Type', 'text/plain')
   res.send(shardList)
 })
 
 app.get('/key', (req, res) => {
-  // logger.debug(req.method)
-  // logger.debug(req.url)
-
   res.setHeader('Content-disposition', 'attachment; filename=pub.key')
   res.write(fs.readFileSync('./data/pub.key').toString('hex'))
   res.end()
 })
 
 app.use((req, res) => {
-  logger.debug(req.headers)
-  logger.debug(req.method)
-  logger.debug(req.url)
+  logger.debug(`Headers: ${req.headers}`)
+  logger.debug(`Method: ${req.method}`)
+  logger.debug(`Url: ${req.url}`)
   res.send('404')
 })
 
@@ -435,12 +429,10 @@ httpsServer.on('connection', (socket) => {
   })
 })
 
-httpsServer.on('error', (error, socket) => {
-  logger.debug(socket)
+httpsServer.on('error', (error) => {
   logger.error(`Error: ${error}`)
 })
 
-httpsServer.on('tlsClientError', (err, sock) => {
-  logger.debug(sock)
-  logger.error(err)
+httpsServer.on('tlsClientError', (err) => {
+  logger.error(`tlsClientError: ${err}`)
 })

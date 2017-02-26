@@ -84,8 +84,6 @@ function toHex(d) {
 
 function getRequestCode(rawBuffer) {
   const requestCode = `${toHex(rawBuffer[0])}${toHex(rawBuffer[1])}`
-  logger.debug(toHex(rawBuffer[0]))
-  logger.debug(toHex(rawBuffer[1]))
   switch (requestCode) {
     case '0100':
       return '(0x0100) NPS_REQUEST_GAME_CONNECT_SERVER'
@@ -117,8 +115,9 @@ function getRequestCode(rawBuffer) {
   }
 }
 
-function dumpRequest(sock, rawBuffer, requestCode) {
+function dumpRequest(sock, id, rawBuffer, requestCode) {
   logger.debug(`\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+  Request from: ${id}
   Request Code: ${requestCode}
   -----------------------------------------
   Request DATA ${sock.remoteAddress}:${sock.localPort}:${rawBuffer.toString('ascii')}
@@ -130,7 +129,7 @@ function dumpRequest(sock, rawBuffer, requestCode) {
 
 function dumpResponse(data, count) {
   logger.debug(`Response Length: ${data.length}`)
-  let responseBytes
+  let responseBytes = ''
   for (let i = 0; (i < count && i < data.length); i += 1) {
     responseBytes += ` ${toHex(data[i])}`
   }
