@@ -1,6 +1,4 @@
 function patchUpdateInfo (req) {
-  console.log(req.method)
-  console.log(req.url)
   const res = {
     'headers': "'Content-Type', 'application/octet-stream'",
     'body': new Buffer('cafebeef00000000000003', 'hex')
@@ -9,8 +7,6 @@ function patchUpdateInfo (req) {
 }
 
 function patchNPS (req) {
-  console.log(req.method)
-  console.log(req.url)
   const res = {
     'headers': "'Content-Type', 'application/octet-stream'",
     'body': new Buffer('cafebeef00000000000003', 'hex')
@@ -19,8 +15,6 @@ function patchNPS (req) {
 }
 
 function patchMCO (req) {
-  console.log(req.method)
-  console.log(req.url)
   const res = {
     'headers': "'Content-Type', 'application/octet-stream'",
     'body': new Buffer('cafebeef00000000000003', 'hex')

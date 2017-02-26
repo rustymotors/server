@@ -11,5 +11,5 @@ function buildPacket (len, header, content) {
 }
 
 module.exports = {
-  buildPacket: buildPacket
+  buildPacket
 }
