@@ -71,6 +71,11 @@ function npsGetPersonaMapsByCustomerId(customerId) {
   }
 }
 
+function npsCheckToken(data) {
+  // data[17] = plate name
+  return null
+}
+
 function npsGetPersonaInfoByName(name) {
   return {
     name,

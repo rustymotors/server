@@ -66,12 +66,14 @@ function onData(sock, id, data) {
   let packetresult
 
   if (requestCode === '(0x0501) NPSUserLogin') {
+    nps.dumpRequest(sock, id, data, requestCode)
     const contextId = Buffer.alloc(34)
     data.copy(contextId, 0, 14, 48)
     const customer = nps.npsGetCustomerIdByContextId(contextId)
 
-      // Create the packet content
-    packetcontent = crypto.randomBytes(44971)
+    // Create the packet content
+    // packetcontent = crypto.randomBytes(44971)
+    packetcontent = crypto.randomBytes(516)
 
       // This is needed, not sure for what
     Buffer.from([0x01, 0x01]).copy(packetcontent)
@@ -79,8 +81,23 @@ function onData(sock, id, data) {
       // load the customer id
     customer.customerId.copy(packetcontent, 10)
 
-      // Build the packet
-    packetresult = packet.buildPacket(44975, 0x0601, packetcontent)
+    // Set response Code 0x0601 (debug)
+    packetcontent[255] = 0x06
+    packetcontent[256] = 0x01
+
+    // For debug
+    packetcontent[257] = 0x01
+    packetcontent[258] = 0x01
+
+
+    // load the customer id (debug)
+    customer.customerId.copy(packetcontent, 267)
+
+    // Build the packet
+    // packetresult = packet.buildPacket(44975, 0x0601, packetcontent)
+    packetresult = packet.buildPacket(516, 0x0601, packetcontent)
+
+    nps.dumpResponse(packetresult, 516)
 
     nps.decryptSessionKey(data.slice(52, -10))
 
@@ -109,14 +126,14 @@ function onData(sock, id, data) {
   }
 
   if (requestCode === '(0x0532) NPSGetPersonaMaps') {
+    nps.dumpRequest(sock, id, data, requestCode)
+
     const customerId = Buffer.alloc(4)
     data.copy(customerId, 0, 12)
     const persona = nps.npsGetPersonaMapsByCustomerId(customerId)
 
-    nps.dumpRequest(sock, id, data, requestCode)
-
       // Create the packet content
-    packetcontent = crypto.randomBytes(518)
+    packetcontent = crypto.randomBytes(1024)
 
       // This is needed, not sure for what
     Buffer.from([0x01, 0x01]).copy(packetcontent)
@@ -137,20 +154,91 @@ function onData(sock, id, data) {
     persona.name.copy(packetcontent, 32)
 
       // Build the packet
-    packetresult = packet.buildPacket(512, 0x0607, packetcontent)
+    packetresult = packet.buildPacket(1024, 0x0607, packetcontent)
 
-    nps.dumpResponse(packetresult, 512)
+    nps.dumpResponse(packetresult, 1024)
+    sock.write(packetresult)
+    return
+  }
+
+  if (requestCode === '(0x0533) NPSValidatePersonaName') {
+    nps.dumpRequest(sock, id, data, requestCode)
+
+    const customerId = Buffer.alloc(4)
+    data.copy(customerId, 0, 12)
+    const persona = nps.npsGetPersonaMapsByCustomerId(customerId)
+
+      // Create the packet content
+    packetcontent = crypto.randomBytes(1024)
+
+      // This is needed, not sure for what
+    Buffer.from([0x01, 0x01]).copy(packetcontent)
+
+      // This is the persona count
+    persona.personacount.copy(packetcontent, 10)
+
+      // This is the max persona count
+    persona.maxpersonas.copy(packetcontent, 18)
+
+      // PersonaId
+    persona.id.copy(packetcontent, 18)
+
+      // Shard ID
+    persona.shardid.copy(packetcontent, 22)
+
+      // Persona Name = 30-bit null terminated string
+    persona.name.copy(packetcontent, 32)
+
+      // Build the packet
+    packetresult = packet.buildPacket(1024, 0x0601, packetcontent)
+
+    nps.dumpResponse(packetresult, 1024)
+    sock.write(packetresult)
+    return
+  }
+
+  if (requestCode === '(0x0534) NPSCheckToken') {
+    nps.dumpRequest(sock, id, data, requestCode)
+
+    // const customerId = Buffer.alloc(4)
+    // data.copy(customerId, 0, 12)
+    // const persona = nps.npsGetPersonaMapsByCustomerId(customerId)
+
+    // Create the packet content
+    packetcontent = crypto.randomBytes(1024)
+
+    // This is needed, not sure for what
+    Buffer.from([0x01, 0x01]).copy(packetcontent)
+
+    // This is the persona count
+    // persona.personacount.copy(packetcontent, 10)
+
+    // This is the max persona count
+    // persona.maxpersonas.copy(packetcontent, 18)
+
+    // PersonaId
+    // persona.id.copy(packetcontent, 18)
+
+    // Shard ID
+    // persona.shardid.copy(packetcontent, 22)
+
+    // Persona Name = 30-bit null terminated string
+    // persona.name.copy(packetcontent, 32)
+
+    // Build the packet
+    packetresult = packet.buildPacket(1024, 0x0207, packetcontent)
+
+    nps.dumpResponse(packetresult, 1024)
     sock.write(packetresult)
     return
   }
 
   if (requestCode === '(0x0519) NPSGetPersonaInfoByName') {
+    nps.dumpRequest(sock, id, data, requestCode)
     const personaName = Buffer.alloc(data.length - 30)
     data.copy(personaName, 0, 30)
 
     logger.debug(`personaName ${personaName}`)
-
-    nps.dumpRequest(sock, id, data, requestCode)
 
       // Create the packet content
     packetcontent = crypto.randomBytes(44976)
