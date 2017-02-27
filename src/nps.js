@@ -162,6 +162,7 @@ function decryptCmd(cypherCmd) {
 }
 
 module.exports = {
+  npsCheckToken,
   npsGetCustomerIdByContextId,
   npsGetPersonaInfoByName,
   npsGetPersonaMapsByCustomerId,
