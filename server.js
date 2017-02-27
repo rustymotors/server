@@ -73,7 +73,8 @@ function onData(sock, id, data) {
 
     // Create the packet content
     // packetcontent = crypto.randomBytes(44971)
-    packetcontent = crypto.randomBytes(516)
+    // packetcontent = crypto.randomBytes(516)
+    packetcontent = packet.premadeLogin()
 
       // This is needed, not sure for what
     Buffer.from([0x01, 0x01]).copy(packetcontent)
