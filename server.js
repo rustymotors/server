@@ -133,8 +133,9 @@ function onData(sock, id, data) {
     data.copy(customerId, 0, 12)
     const persona = nps.npsGetPersonaMapsByCustomerId(customerId)
 
-      // Create the packet content
-    packetcontent = crypto.randomBytes(1024)
+    // Create the packet content
+    // packetcontent = crypto.randomBytes(1024)
+    packetcontent = packet.premadePersonaMaps()
 
       // This is needed, not sure for what
     Buffer.from([0x01, 0x01]).copy(packetcontent)
