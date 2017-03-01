@@ -1,3 +1,5 @@
+let isConnected = false
+
 /* External dependencies */
 const crypto = require('crypto')
 const net = require('net')
@@ -17,6 +19,7 @@ const patchServer = require('./src/patch_server.js')
 
 // Config settings
 logger.level = 'debug'
+
 
 const serverConfig = {
   ipServer: 'mc.drazisil.com',
@@ -82,6 +85,11 @@ function onData(sock, id, data) {
       // load the customer id
     customer.customerId.copy(packetcontent, 10)
 
+    // Don't use queue?
+    Buffer.from([0x00]).copy(packetcontent, 207)
+    // Don't use queue? (debug)
+    Buffer.from([0x00]).copy(packetcontent, 463)
+
     // Set response Code 0x0601 (debug)
     packetcontent[255] = 0x06
     packetcontent[256] = 0x01
@@ -102,6 +110,9 @@ function onData(sock, id, data) {
 
     nps.decryptSessionKey(data.slice(52, -10))
 
+    serverSocket = sock
+    isConnected = true
+
     sock.write(packetresult)
     return
   }
@@ -116,13 +127,15 @@ function onData(sock, id, data) {
       // This is needed, not sure for what
     Buffer.from([0x01, 0x01]).copy(packetcontent)
 
-      // Build the packet
-      // Response Code
-      // 207 = success
-    packetresult = packet.buildPacket(44975, 0x0207, packetcontent)
+    // Build the packet
+    // Response Code
+    // 207 = success
+    // packetresult = packet.buildPacket(44975, 0x0207, packetcontent)
+    packetresult = packet.buildPacket(261, 0x0207, packetcontent)
 
     nps.dumpResponse(packetresult, 16)
     sock.write(packetresult)
+
     return
   }
 
@@ -355,7 +368,11 @@ function listener(sock) {
   const localId = `${sock.localAddress}_${sock.localPort}`
   const socketId = `${sock.remoteAddress}_${sock.remotePort}`
   logger.info(`Creating socket: ${localId} => ${socketId}`)
-  sock.setKeepAlive(true)
+  // sock.setKeepAlive(true)
+  if (sock.localPort === 7003 && isConnected) {
+    const packetresult = packet.buildPacket(4, 0x0230, Buffer.alloc(8))
+    sock.write(packetresult)
+  }
 
 
   const socket = sock
