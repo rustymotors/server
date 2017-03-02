@@ -1,4 +1,4 @@
-let isConnected = false
+let inQueue = false
 
 /* External dependencies */
 const crypto = require('crypto')
@@ -110,8 +110,7 @@ function onData(sock, id, data) {
 
     nps.decryptSessionKey(data.slice(52, -10))
 
-    serverSocket = sock
-    isConnected = true
+    inQueue = true
 
     sock.write(packetresult)
     return
@@ -282,21 +281,22 @@ function onData(sock, id, data) {
     // logger.debug(`customer: ${customer}`)
 
 
-      // Create the packet content
-      // packetcontent = crypto.randomBytes(151)
+    // Create the packet content
     packetcontent = Buffer.alloc(6)
 
-      // Server ID
+    // Server ID
     Buffer.from([0x00]).copy(packetcontent)
 
-      // This is needed, not sure for what
-      // if it's 97 it says the username returned is correct
-      // if it's 06 it says it's different, but it's random
-      // It's parsed by the NPS cipher somehow.
-    Buffer.from([0x97]).copy(packetcontent, 1)
+    // This is needed, not sure for what
+    // Buffer.from([0x01, 0x01]).copy(packetcontent)
+
+    // if it's 97 it says the username returned is correct
+    // if it's 06 it says it's different, but it's random
+    // It's parsed by the NPS cipher somehow.
+    Buffer.from([0x05]).copy(packetcontent, 1)
 
       // load the customer id
-      // customer.userId.copy(packetcontent, 2)
+    Buffer.from([0xAB, 0x01, 0x00, 0x00]).copy(packetcontent, 2)
 
       // RIFF Count = total packet len - 4 for header
       // Buffer.from([0x00, 0x05]).copy(packetcontent, 1490)
@@ -369,8 +369,15 @@ function listener(sock) {
   const socketId = `${sock.remoteAddress}_${sock.remotePort}`
   logger.info(`Creating socket: ${localId} => ${socketId}`)
   // sock.setKeepAlive(true)
-  if (sock.localPort === 7003 && isConnected) {
-    const packetresult = packet.buildPacket(4, 0x0230, Buffer.alloc(8))
+  if (sock.localPort === 7003 && inQueue) {
+    const packetcontent = crypto.randomBytes(151)
+
+    // This is needed, not sure for what
+    Buffer.from([0x01, 0x01]).copy(packetcontent)
+
+    const packetresult = packet.buildPacket(4, 0x0230, packetcontent)
+    inQueue = false
+    nps.dumpResponse(packetresult, 8)
     sock.write(packetresult)
   }
 
