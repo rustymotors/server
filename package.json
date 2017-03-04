@@ -12,7 +12,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git@gitlab.com:drazisil/mco-server.git"
+    "url": "git@github.com:drazisil/mco-server.git"
   },
   "dependencies": {
     "async": "^2.1.5",
