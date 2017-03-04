@@ -2,6 +2,7 @@ const fs = require('fs')
 const crypto = require('crypto')
 const NodeRSA = require('node-rsa')
 const logger = require('./logger.js')
+const packet = require('./packet.js')
 
 const privateKeyFilename = './data/private_key.pem'
 
@@ -9,6 +10,7 @@ let privateKey
 let sessionKey
 let sessionCypher
 let sessionDecypher
+module.exports.inQueue = false
 
 const isUserCreated = true
 
@@ -166,6 +168,88 @@ function encryptCmd(cypherCmd) {
   return sessionCypher.update(cypherCmd)
 }
 
+function userLogin(sock, id, data, requestCode) {
+  dumpRequest(sock, id, data, requestCode)
+  const contextId = Buffer.alloc(34)
+  data.copy(contextId, 0, 14, 48)
+  const customer = npsGetCustomerIdByContextId(contextId)
+
+  // Create the packet content
+  // packetcontent = crypto.randomBytes(44971)
+  // packetcontent = crypto.randomBytes(516)
+  const packetcontent = packet.premadeLogin()
+
+    // This is needed, not sure for what
+  Buffer.from([0x01, 0x01]).copy(packetcontent)
+
+    // load the customer id
+  customer.customerId.copy(packetcontent, 10)
+
+  // Don't use queue?
+  Buffer.from([0x00]).copy(packetcontent, 207)
+  // Don't use queue? (debug)
+  Buffer.from([0x00]).copy(packetcontent, 463)
+
+  // Set response Code 0x0601 (debug)
+  packetcontent[255] = 0x06
+  packetcontent[256] = 0x01
+
+  // For debug
+  packetcontent[257] = 0x01
+  packetcontent[258] = 0x01
+
+
+  // load the customer id (debug)
+  customer.customerId.copy(packetcontent, 267)
+
+  // Build the packet
+  // packetresult = packet.buildPacket(44975, 0x0601, packetcontent)
+  const packetresult = packet.buildPacket(516, 0x0601, packetcontent)
+
+  dumpResponse(packetresult, 516)
+
+  decryptSessionKey(data.slice(52, -10))
+
+  module.exports.inQueue = true
+  return packetresult
+}
+
+function getPersonaMaps(sock, id, data, requestCode) {
+  dumpRequest(sock, id, data, requestCode)
+
+  const customerId = Buffer.alloc(4)
+  data.copy(customerId, 0, 12)
+  const persona = npsGetPersonaMapsByCustomerId(customerId)
+
+  // Create the packet content
+  // packetcontent = crypto.randomBytes(1024)
+  const packetcontent = packet.premadePersonaMaps()
+
+    // This is needed, not sure for what
+  Buffer.from([0x01, 0x01]).copy(packetcontent)
+
+    // This is the persona count
+  persona.personacount.copy(packetcontent, 10)
+
+    // This is the max persona count
+  persona.maxpersonas.copy(packetcontent, 18)
+
+    // PersonaId
+  persona.id.copy(packetcontent, 18)
+
+    // Shard ID
+  persona.shardid.copy(packetcontent, 22)
+
+    // Persona Name = 30-bit null terminated string
+  persona.name.copy(packetcontent, 32)
+
+    // Build the packet
+  const packetresult = packet.buildPacket(1024, 0x0607, packetcontent)
+
+  dumpResponse(packetresult, 1024)
+  return packetresult
+}
+
 module.exports = {
   npsCheckToken,
   npsGetCustomerIdByContextId,
@@ -180,4 +264,7 @@ module.exports = {
   decryptCmd,
   initCrypto,
   isUserCreated,
+  inQueue: module.exports.inQueue,
+  userLogin,
+  getPersonaMaps,
 }

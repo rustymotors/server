@@ -1,5 +1,3 @@
-let inQueue = false
-
 /* External dependencies */
 const crypto = require('crypto')
 const net = require('net')
@@ -68,52 +66,10 @@ function onData(sock, id, data) {
   let packetcontent
   let packetresult
 
+  logger.info(`Data request ${requestCode} from ${sock.remoteAddress}_${sock.localPort}`)
+
   if (requestCode === '(0x0501) NPSUserLogin') {
-    nps.dumpRequest(sock, id, data, requestCode)
-    const contextId = Buffer.alloc(34)
-    data.copy(contextId, 0, 14, 48)
-    const customer = nps.npsGetCustomerIdByContextId(contextId)
-
-    // Create the packet content
-    // packetcontent = crypto.randomBytes(44971)
-    // packetcontent = crypto.randomBytes(516)
-    packetcontent = packet.premadeLogin()
-
-      // This is needed, not sure for what
-    Buffer.from([0x01, 0x01]).copy(packetcontent)
-
-      // load the customer id
-    customer.customerId.copy(packetcontent, 10)
-
-    // Don't use queue?
-    Buffer.from([0x00]).copy(packetcontent, 207)
-    // Don't use queue? (debug)
-    Buffer.from([0x00]).copy(packetcontent, 463)
-
-    // Set response Code 0x0601 (debug)
-    packetcontent[255] = 0x06
-    packetcontent[256] = 0x01
-
-    // For debug
-    packetcontent[257] = 0x01
-    packetcontent[258] = 0x01
-
-
-    // load the customer id (debug)
-    customer.customerId.copy(packetcontent, 267)
-
-    // Build the packet
-    // packetresult = packet.buildPacket(44975, 0x0601, packetcontent)
-    packetresult = packet.buildPacket(516, 0x0601, packetcontent)
-
-    nps.dumpResponse(packetresult, 516)
-
-    nps.decryptSessionKey(data.slice(52, -10))
-
-    inQueue = true
-
-    sock.write(packetresult)
-    return
+    return sock.write(nps.userLogin(sock, id, data, requestCode))
   }
 
   // Persona_UseSelected
@@ -133,46 +89,11 @@ function onData(sock, id, data) {
     packetresult = packet.buildPacket(261, 0x0207, packetcontent)
 
     nps.dumpResponse(packetresult, 16)
-    sock.write(packetresult)
-
-    return
+    return sock.write(packetresult)
   }
 
   if (requestCode === '(0x0532) NPSGetPersonaMaps') {
-    nps.dumpRequest(sock, id, data, requestCode)
-
-    const customerId = Buffer.alloc(4)
-    data.copy(customerId, 0, 12)
-    const persona = nps.npsGetPersonaMapsByCustomerId(customerId)
-
-    // Create the packet content
-    // packetcontent = crypto.randomBytes(1024)
-    packetcontent = packet.premadePersonaMaps()
-
-      // This is needed, not sure for what
-    Buffer.from([0x01, 0x01]).copy(packetcontent)
-
-      // This is the persona count
-    persona.personacount.copy(packetcontent, 10)
-
-      // This is the max persona count
-    persona.maxpersonas.copy(packetcontent, 18)
-
-      // PersonaId
-    persona.id.copy(packetcontent, 18)
-
-      // Shard ID
-    persona.shardid.copy(packetcontent, 22)
-
-      // Persona Name = 30-bit null terminated string
-    persona.name.copy(packetcontent, 32)
-
-      // Build the packet
-    packetresult = packet.buildPacket(1024, 0x0607, packetcontent)
-
-    nps.dumpResponse(packetresult, 1024)
-    sock.write(packetresult)
-    return
+    return sock.write(nps.getPersonaMaps(sock, id, data, requestCode))
   }
 
   if (requestCode === '(0x0533) NPSValidatePersonaName') {
@@ -207,8 +128,7 @@ function onData(sock, id, data) {
     packetresult = packet.buildPacket(1024, 0x0601, packetcontent)
 
     nps.dumpResponse(packetresult, 1024)
-    sock.write(packetresult)
-    return
+    return sock.write(packetresult)
   }
 
   if (requestCode === '(0x0534) NPSCheckToken') {
@@ -243,8 +163,7 @@ function onData(sock, id, data) {
     packetresult = packet.buildPacket(1024, 0x0207, packetcontent)
 
     nps.dumpResponse(packetresult, 1024)
-    sock.write(packetresult)
-    return
+    return sock.write(packetresult)
   }
 
   if (requestCode === '(0x0519) NPSGetPersonaInfoByName') {
@@ -264,13 +183,12 @@ function onData(sock, id, data) {
     packetresult = packet.buildPacket(48380, 0x0601, packetcontent)
 
     nps.dumpResponse(packetresult, 16)
-    sock.write(packetresult)
+    return sock.write(packetresult)
 
       // Response Code
       // 607 = persona name not available
       // 611 = No error, starter car lot
       // 602 = No error, starter car lot
-    return
   }
 
   if (requestCode === '(0x0100) NPS_REQUEST_GAME_CONNECT_SERVER') {
@@ -305,8 +223,7 @@ function onData(sock, id, data) {
     packetresult = packet.buildPacket(8, 0x0120, packetcontent)
 
     nps.dumpResponse(packetresult, 8)
-    sock.write(packetresult)
-    return
+    return sock.write(packetresult)
   }
 
   if (requestCode === '(0x1101) NPSSendCommand') {
@@ -333,8 +250,7 @@ function onData(sock, id, data) {
     const encryptedResponse = nps.encryptCmd(packetresult)
     logger.debug(`encryptedResponse: ${encryptedResponse.toString('hex')}`)
 
-    sock.write(encryptedResponse)
-    return
+    return sock.write(encryptedResponse)
   }
 
   if (requestCode === '(0x050F) NPSLogOutGameUser') {
@@ -352,8 +268,7 @@ function onData(sock, id, data) {
     packetresult = packet.buildPacket(257, 0x0612, packetcontent)
 
     nps.dumpResponse(packetresult, 16)
-    sock.write(packetresult)
-    return
+    return sock.write(packetresult)
   }
 
 // Anything else
@@ -370,7 +285,7 @@ function onData(sock, id, data) {
   packetresult = packet.buildPacket(600, 0x0000, packetcontent)
 
   nps.dumpResponse(packetresult, 600)
-  sock.write(packetresult)
+  return sock.write(packetresult)
 }
 
 function listener(sock) {
@@ -378,14 +293,15 @@ function listener(sock) {
   const socketId = `${sock.remoteAddress}_${sock.remotePort}`
   logger.info(`Creating socket: ${localId} => ${socketId}`)
   // sock.setKeepAlive(true)
-  if (sock.localPort === 7003 && inQueue) {
+  logger.warn(nps.inQueue)
+  if (sock.localPort === 7003 && nps.inQueue === true) {
     const packetcontent = crypto.randomBytes(151)
 
     // This is needed, not sure for what
     Buffer.from([0x01, 0x01]).copy(packetcontent)
 
     const packetresult = packet.buildPacket(4, 0x0230, packetcontent)
-    inQueue = false
+    nps.inQueue = false
     nps.dumpResponse(packetresult, 8)
     sock.write(packetresult)
   }
