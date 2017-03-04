@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "async": "^2.1.5",
-    "body-parser": "^1.16.1",
-    "express": "^4.14.1",
+    "body-parser": "^1.17.0",
+    "express": "^4.15.0",
     "node-rsa": "^0.4.2",
     "socket.io": "^1.7.3",
     "sqlite3": "^3.1.4",
@@ -28,10 +28,11 @@
   },
   "devDependencies": {
     "chai": "^3.4.1",
-    "eslint": "^3.16.1",
+    "eslint": "^3.17.0",
     "eslint-config-airbnb": "^14.1.0",
     "eslint-config-google": "^0.7.1",
     "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
