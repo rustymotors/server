@@ -310,21 +310,30 @@ function onData(sock, id, data) {
   }
 
   if (requestCode === '(0x1101) NPSSendCommand') {
-    logger.debug(`cmd: ${nps.decryptCmd(new Buffer(data.slice(4))).toString('hex')}`)
+    const decryptedCmd = nps.decryptCmd(new Buffer(data.slice(4))).toString('hex')
+    logger.debug(`decryptedCmd: ${decryptedCmd.toString('hex')}`)
+    logger.debug(`cmd: ${decryptedCmd}`)
 
     nps.dumpRequest(sock, id, data, requestCode)
 
       // Create the packet content
-    packetcontent = crypto.randomBytes(151)
+    // packetcontent = crypto.randomBytes(8)
+    packetcontent = Buffer.from([0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19,
+      0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19])
 
       // This is needed, not sure for what
-    Buffer.from([0x01, 0x01]).copy(packetcontent)
+    // Buffer.from([0x01, 0x01]).copy(packetcontent)
 
       // Build the packet
-    packetresult = packet.buildPacket(155, 0x0612, packetcontent)
+    packetresult = packet.buildPacket(24, 0x0219,
+      packetcontent)
 
-    nps.dumpResponse(packetresult, 16)
-    sock.write(packetresult)
+    nps.dumpResponse(packetresult, 24)
+
+    const encryptedResponse = nps.encryptCmd(packetresult)
+    logger.debug(`encryptedResponse: ${encryptedResponse.toString('hex')}`)
+
+    sock.write(encryptedResponse)
     return
   }
 

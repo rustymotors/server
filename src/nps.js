@@ -7,6 +7,7 @@ const privateKeyFilename = './data/private_key.pem'
 
 let privateKey
 let sessionKey
+let sessionCypher
 let sessionDecypher
 
 const isUserCreated = true
@@ -71,7 +72,7 @@ function npsGetPersonaMapsByCustomerId(customerId) {
   }
 }
 
-function npsCheckToken(data) {
+function npsCheckToken() {
   // data[17] = plate name
   return null
 }
@@ -147,8 +148,7 @@ function decryptSessionKey(encryptedKeySet) {
     const decrypted = privateKey.decrypt(encryptedKeySetB64, 'base64')
     sessionKey = Buffer.from(Buffer.from(decrypted, 'base64').toString('hex').substring(4, 20), 'hex')
     const desIV = Buffer.alloc(8)
-    // session_cypher = crypto.createCipheriv('des-cbc', Buffer.from(sessionKey, 'hex'),
-    // desIV).setAutoPadding(false)
+    sessionCypher = crypto.createCipheriv('des-cbc', Buffer.from(sessionKey, 'hex'), desIV).setAutoPadding(false)
     sessionDecypher = crypto.createDecipheriv('des-cbc', Buffer.from(sessionKey, 'hex'), desIV).setAutoPadding(false)
     logger.debug('decrypted: ', sessionKey)
   } catch (e) {
@@ -161,6 +161,11 @@ function decryptCmd(cypherCmd) {
   return sessionDecypher.update(cypherCmd)
 }
 
+function encryptCmd(cypherCmd) {
+  // logger.debug('raw cmd: ' + cypherCmd + cypherCmd.length)
+  return sessionCypher.update(cypherCmd)
+}
+
 module.exports = {
   npsCheckToken,
   npsGetCustomerIdByContextId,
@@ -171,6 +176,7 @@ module.exports = {
   dumpResponse,
   toHex,
   decryptSessionKey,
+  encryptCmd,
   decryptCmd,
   initCrypto,
   isUserCreated,

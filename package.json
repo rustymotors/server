@@ -4,6 +4,7 @@
   "description": "a server",
   "main": "server.js",
   "scripts": {
+    "lint": "./node_modules/.bin/eslint src",
     "test": "mocha",
     "coverage": "istanbul cover --include-all-sources _mocha -- -R spec"
   },
