@@ -1,175 +1,183 @@
-var fs = require('fs')
-var crypto = require('crypto')
-var NodeRSA = require('node-rsa')
-var logger = require('./logger.js')
+const fs = require('fs')
+const crypto = require('crypto')
+const NodeRSA = require('node-rsa')
+const logger = require('./logger.js')
 
-var privateKeyFilename = './data/private_key.pem'
-var cryptoLoaded = false
-var privateKey
-var session_key
-// var session_cypher
-var session_decypher
-var contextId = Buffer.alloc(34)
-var customerId = Buffer.alloc(4)
-var userId = Buffer.alloc(4)
+const privateKeyFilename = './data/private_key.pem'
 
-function initCrypto () {
-  if (cryptoLoaded === false) {
-    try {
-      fs.statSync(privateKeyFilename)
-    } catch (e) {
-      logger.error('Error loading private key: ' + e)
-      process.exit(1)
-    }
-    privateKey = new NodeRSA(fs.readFileSync(privateKeyFilename))
-    cryptoLoaded = true
+let privateKey
+let sessionKey
+let sessionCypher
+let sessionDecypher
+
+const isUserCreated = true
+
+function initCrypto() {
+  try {
+    fs.statSync(privateKeyFilename)
+  } catch (e) {
+    logger.error(`Error loading private key: ${e}`)
+    process.exit(1)
   }
+  privateKey = new NodeRSA(fs.readFileSync(privateKeyFilename))
 }
 
-function npsGetCustomerIdByContextId (contextIdRequest) {
-  contextId = contextIdRequest
+function npsGetCustomerIdByContextId(contextId) {
   switch (contextId.toString()) {
     case 'd316cd2dd6bf870893dfbaaf17f965884e':
-      userId = Buffer.from([0x00, 0x00, 0x00, 0x01])
-      customerId = Buffer.from([0xAB, 0x01, 0x00, 0x00])
       return {
-        'userId': userId,
-        'customerId': customerId
+        userId: Buffer.from([0x00, 0x00, 0x00, 0x01]),
+        customerId: Buffer.from([0xAB, 0x01, 0x00, 0x00]),
       }
     case '5213dee3a6bcdb133373b2d4f3b9962758':
-      userId = Buffer.from([0x00, 0x00, 0x00, 0x02])
-      customerId = Buffer.from([0xAC, 0x01, 0x00, 0x00])
       return {
-        'userId': userId,
-        'customerId': customerId
+        userId: Buffer.from([0x00, 0x00, 0x00, 0x02]),
+        customerId: Buffer.from([0xAC, 0x01, 0x00, 0x00]),
       }
+    default:
+      logger.error(`Unknown contextId: ${contextId.toString()}`)
+      process.exit(1)
+      return null
   }
 }
 
-function npsGetPersonaMapsByCustomerId () {
-  var name = Buffer.alloc(30)
+function npsGetPersonaMapsByCustomerId(customerId) {
+  const name = Buffer.alloc(30)
   switch (customerId.readUInt32BE()) {
     case 2868969472:
-      Buffer.from('Doc Brown', 'utf8').copy(name)
-      return {
-        'personacount': Buffer.from([0x00, 0x01]),
-        'maxpersonas': Buffer.from([0x00, 0x06]),
-        'id': Buffer.from([0x00, 0x00, 0x00, 0x01]),
-        'name': name,
-        'shardid': Buffer.from([0x00, 0x00, 0x00, 0x2C])
+      if (isUserCreated) {
+        Buffer.from('Doc', 'utf8').copy(name)
+        return {
+          personacount: Buffer.from([0x00, 0x01]),
+          // Max Personas are how many there are not how many allowed
+          maxpersonas: Buffer.from([0x00, 0x02]),
+          id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
+          name,
+          shardid: Buffer.from([0x00, 0x00, 0x00, 0x2C]),
+        }
       }
-    case 2885746688:
-      Buffer.from('Biff', 'utf8').copy(name)
+      Buffer.from('', 'utf8').copy(name)
       return {
-        'personacount': Buffer.from([0x00, 0x01]),
-        'maxpersonas': Buffer.from([0x00, 0x06]),
-        'id': Buffer.from([0x00, 0x00, 0x00, 0x02]),
-        'name': name,
-        'shardid': Buffer.from([0x00, 0x00, 0x00, 0x2C])
+        personacount: Buffer.from([0x00, 0x00]),
+        // Max Personas are how many there are not how many allowed
+        maxpersonas: Buffer.from([0x00, 0x00]),
+        id: Buffer.from([0x00, 0x00, 0x00, 0x00]),
+        name,
+        shardid: Buffer.from([0x00, 0x00, 0x00, 0x2C]),
       }
+    default:
+      logger.error(`Unknown customerId: ${customerId.readUInt32BE()}`)
+      process.exit(1)
+      return null
   }
 }
 
-function getRequestCode (rawBuffer) {
-  var requestCode = toHex(rawBuffer[0]) + toHex(rawBuffer[1])
+function npsCheckToken() {
+  // data[17] = plate name
+  return null
+}
+
+function npsGetPersonaInfoByName(name) {
+  return {
+    name,
+  }
+}
+
+function toHex(d) {
+  const hexByte = `0${Number(d).toString(16)}`
+  return `${hexByte.slice(-2).toUpperCase()}`
+}
+
+function getRequestCode(rawBuffer) {
+  const requestCode = `${toHex(rawBuffer[0])}${toHex(rawBuffer[1])}`
   switch (requestCode) {
     case '0100':
-      return '(0x0100)NPS_REQUEST_GAME_CONNECT_SERVER'
+      return '(0x0100) NPS_REQUEST_GAME_CONNECT_SERVER'
     case '0501':
-      return '(0x0501)NPS_REQUEST_USER_LOGIN'
+      return '(0x0501) NPSUserLogin'
     case '0503':
       return '(0x503) NPSSelectGamePersona'
     case '050F':
-      return '(0x050F)NPSLogOutGameUser'
+      return '(0x050F) NPSLogOutGameUser'
+    case '0518':
+      return '(0x0518) NPSGetBuddyInfoByName'
     case '0519':
-      return '(0x0519)NPS_REQUEST_GET_PERSONA_INFO_BY_NAME'
+      return '(0x0519) NPSGetPersonaInfoByName'
     case '0532':
-      return '(0x0532)NPS_REQUEST_GET_PERSONA_MAPS'
+      return '(0x0532) NPSGetPersonaMaps'
     case '0533': // debug
-      return '(0x0533)NPSValidatePersonaName'
+      return '(0x0533) NPSValidatePersonaName'
     case '0534': // debug
-      return '(0x0534)NPSCheckToken'
+      return '(0x0534) NPSCheckToken'
     case '1101':
-      return '(0x1101)NPSSendCommand'
+      return '(0x1101) NPSSendCommand'
     case '2472':
     case '7B22':
     case '4745':
     case 'FBC0':
       return 'p2pool'
     default:
-      return 'Unknown request code: ' + requestCode
+      return `Unknown request code: ${requestCode}`
   }
 }
 
-function setContextIdFromRequest (data) {
-  data.copy(contextId, 0, 14, 48)
+function dumpRequest(sock, id, rawBuffer, requestCode) {
+  logger.debug(`\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+  Request from: ${id}
+  Request Code: ${requestCode}
+  -----------------------------------------
+  Request DATA ${sock.remoteAddress}:${sock.localPort}:${rawBuffer.toString('ascii')}
+  =========================================
+  Request DATA ${sock.remoteAddress}:${rawBuffer.toString('hex')}
+  -----------------------------------------
+  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n`)
 }
 
-function setCustomerIdFromRequest (data) {
-  data.copy(customerId, 0, 12)
-}
-
-function dumpRequest (sock, rawBuffer, requestCode) {
-  console.log()
-  logger.debug('-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
-  logger.debug('Request Code: ' + requestCode)
-  logger.debug('-----------------------------------------')
-  logger.debug('Request DATA ' + sock.remoteAddress + ':' + sock.localPort + ': ' + rawBuffer.toString('ascii'))
-  logger.debug('=========================================')
-  logger.debug('Request DATA ' + sock.remoteAddress + ': ' + rawBuffer.toString('hex'))
-  logger.debug('-----------------------------------------')
-  logger.debug('-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
-  console.log()
-}
-
-function dumpResponse (data, count) {
-  logger.debug('Response Length: ' + data.length)
-  var responseBytes = 'Response Code: ' + toHex(data[0])
-  for (var i = 1; (i < count && i < data.length); i++) {
-    responseBytes += ' ' + toHex(data[i])
+function dumpResponse(data, count) {
+  logger.debug(`Response Length: ${data.length}`)
+  let responseBytes = ''
+  for (let i = 0; (i < count && i < data.length); i += 1) {
+    responseBytes += ` ${toHex(data[i])}`
   }
-  logger.debug(responseBytes)
+  logger.debug(`Response Bytes: ${responseBytes}`)
 }
 
-function toHex (d) {
-  return ('0' + (Number(d).toString(16))).slice(-2).toUpperCase()
-}
-
-function decryptSessionKey (encryptedKeySet) {
-  initCrypto()
+function decryptSessionKey(encryptedKeySet) {
   try {
-    encryptedKeySet = Buffer.from(encryptedKeySet.toString('utf8'), 'hex')
-    var encryptedKeySetB64 = encryptedKeySet.toString('base64')
-    var decrypted = privateKey.decrypt(encryptedKeySetB64, 'base64')
-    session_key = Buffer.from(Buffer.from(decrypted, 'base64').toString('hex').substring(4, 20), 'hex')
-    var desIV = Buffer.alloc(8)
-    // session_cypher = crypto.createCipheriv('des-cbc', Buffer.from(session_key, 'hex'), desIV).setAutoPadding(false)
-    session_decypher = crypto.createDecipheriv('des-cbc', Buffer.from(session_key, 'hex'), desIV).setAutoPadding(false)
-    logger.debug('decrypted: ', session_key)
+    const encryptedKeySetB64 = Buffer.from(encryptedKeySet.toString('utf8'), 'hex').toString('base64')
+    const decrypted = privateKey.decrypt(encryptedKeySetB64, 'base64')
+    sessionKey = Buffer.from(Buffer.from(decrypted, 'base64').toString('hex').substring(4, 20), 'hex')
+    const desIV = Buffer.alloc(8)
+    sessionCypher = crypto.createCipheriv('des-cbc', Buffer.from(sessionKey, 'hex'), desIV).setAutoPadding(false)
+    sessionDecypher = crypto.createDecipheriv('des-cbc', Buffer.from(sessionKey, 'hex'), desIV).setAutoPadding(false)
+    logger.debug('decrypted: ', sessionKey)
   } catch (e) {
     logger.error(e)
   }
 }
 
-function decryptCmd (cypherCmd) {
+function decryptCmd(cypherCmd) {
   // logger.debug('raw cmd: ' + cypherCmd + cypherCmd.length)
-  var plaintext = session_decypher.update(cypherCmd)
-  return plaintext
+  return sessionDecypher.update(cypherCmd)
+}
+
+function encryptCmd(cypherCmd) {
+  // logger.debug('raw cmd: ' + cypherCmd + cypherCmd.length)
+  return sessionCypher.update(cypherCmd)
 }
 
 module.exports = {
-  userId: userId,
-  customerId: customerId,
-  contextId: contextId,
-  setContextIdFromRequest: setContextIdFromRequest,
-  setCustomerIdFromRequest: setCustomerIdFromRequest,
-  npsGetCustomerIdByContextId: npsGetCustomerIdByContextId,
-  npsGetPersonaMapsByCustomerId: npsGetPersonaMapsByCustomerId,
-  getRequestCode: getRequestCode,
-  dumpRequest: dumpRequest,
-  dumpResponse: dumpResponse,
-  toHex: toHex,
-  decryptSessionKey: decryptSessionKey,
-  decryptCmd: decryptCmd,
-  initCrypto: initCrypto
+  npsCheckToken,
+  npsGetCustomerIdByContextId,
+  npsGetPersonaInfoByName,
+  npsGetPersonaMapsByCustomerId,
+  getRequestCode,
+  dumpRequest,
+  dumpResponse,
+  toHex,
+  decryptSessionKey,
+  encryptCmd,
+  decryptCmd,
+  initCrypto,
+  isUserCreated,
 }

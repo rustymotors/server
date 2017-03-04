@@ -1,9 +1,10 @@
 {
   "name": "mco-server",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "a server",
   "main": "server.js",
   "scripts": {
+    "lint": "./node_modules/.bin/eslint src",
     "test": "mocha",
     "coverage": "istanbul cover --include-all-sources _mocha -- -R spec"
   },
@@ -12,12 +13,17 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git@gitlab.com:drazisil/mco-server.git"
+    "url": "git@github.com:drazisil/mco-server.git"
+  },
+  "engines" : {
+      "node" : "~6.10.0"
   },
   "dependencies": {
-    "body-parser": "^1.16.1",
-    "express": "^4.14.1",
+    "async": "^2.1.5",
+    "body-parser": "^1.17.0",
+    "express": "^4.15.0",
     "node-rsa": "^0.4.2",
+    "socket.io": "^1.7.3",
     "sqlite3": "^3.1.4",
     "ssl-config": "^1.0.0",
     "winston": "^2.2.0",
@@ -25,6 +31,12 @@
   },
   "devDependencies": {
     "chai": "^3.4.1",
+    "eslint": "^3.17.0",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-config-google": "^0.7.1",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.10.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
     "mocha-junit-reporter": "^1.11.1",

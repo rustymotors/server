@@ -1,82 +1,79 @@
-var sqlite3 = require('sqlite3').verbose()
+const sqlite3 = require('sqlite3').verbose()
 
-var DB_PATH = './data/'
+const DB_PATH = './data/'
 
-var dbUsers = new sqlite3.Database(DB_PATH + 'users.db')
-var dbPersonas = new sqlite3.Database(DB_PATH + 'personas.db')
-var dbSessions = new sqlite3.Database(DB_PATH + 'sessions.db')
-var dbRaces = new sqlite3.Database(DB_PATH + 'races.db')
+const dbUsers = new sqlite3.Database(`${DB_PATH}users.db`)
+const dbPersonas = new sqlite3.Database(`${DB_PATH}personas.db`)
+const dbSessions = new sqlite3.Database(`${DB_PATH}sessions.db`)
+const dbRaces = new sqlite3.Database(`${DB_PATH}races.db`)
 
-function dbCreateTables (callback) {
-  dbUsers.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, passwordhash TEXT, customerid TEXT UNQUE, is_suspended INTEGER)', function (err, res) {
-    if (err) callback(err)
-    dbPersonas.run('CREATE TABLE IF NOT EXISTS personas (id INTEGER PRIMARY KEY AUTOINCREMENT, customerid TEXT UNIQUE, racername TEXT UNIQUE, shard TEXT)', function (err, res) {
-      if (err) callback(err)
-      dbSessions.run('CREATE TABLE IF NOT EXISTS sessions (id INTEGER PRIMARY KEY AUTOINCREMENT, customerid INTEGER session_id TEXT UNIQUE, hostname TEXT, ipaddress TEXT UNIQUE, session_key TEXT)', function (err, res) {
-        if (err) callback(err)
-        dbRaces.run('CREATE TABLE IF NOT EXISTS races (id INTEGER PRIMARY KEY AUTOINCREMENT, org TEXT, repository TEXT, title TEXT, state TEXT, openissues INTEGER, due_on TEXT, html_url TEXT, url TEXT)', function (err, res) {
-          if (err) callback(err)
-          callback(null, res)
+function dbCreateTables(callback) {
+  dbUsers.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, passwordhash TEXT, customerid TEXT UNQUE, is_suspended INTEGER)', (errUsers) => {
+    if (errUsers) callback(errUsers)
+    dbPersonas.run('CREATE TABLE IF NOT EXISTS personas (id INTEGER PRIMARY KEY AUTOINCREMENT, customerid TEXT UNIQUE, racername TEXT UNIQUE, shard TEXT)', (errPersonans) => {
+      if (errPersonans) callback(errPersonans)
+      dbSessions.run('CREATE TABLE IF NOT EXISTS sessions (id INTEGER PRIMARY KEY AUTOINCREMENT, customerid INTEGER session_id TEXT UNIQUE, hostname TEXT, ipaddress TEXT UNIQUE, session_key TEXT)', (errSessions) => {
+        if (errSessions) callback(errSessions)
+        dbRaces.run('CREATE TABLE IF NOT EXISTS races (id INTEGER PRIMARY KEY AUTOINCREMENT, org TEXT, repository TEXT, title TEXT, state TEXT, openissues INTEGER, due_on TEXT, html_url TEXT, url TEXT)', (errRaces) => {
+          if (errRaces) callback(errRaces)
+          callback(null)
         })
       })
     })
   })
 }
 
-function dbInsertPersonas (callback) {
-  var i
 
-  dbPersonas.serialize(function () {
-    var stmtPersonas = dbPersonas.prepare('INSERT OR REPLACE INTO personas VALUES (?, ?, ?, ?)')
-    for (i = 0; i < 10; i++) {
-      stmtPersonas.run(null, 'Zeta ' + i, 'Lorem ' + i, 'Ipsum ' + i, function (err, res) {
+function dbInsertPersonas(callback) {
+  dbPersonas.serialize(() => {
+    const stmtPersonas = dbPersonas.prepare('INSERT OR REPLACE INTO personas VALUES (?, ?, ?, ?)')
+    for (let i = 0; i < 10; i += 1) {
+      stmtPersonas.run(null, `Zeta ${i}`, `Lorem ${i}`, `Ipsum ${i}`, (err) => {
         if (err) callback(err)
       })
     }
-    stmtPersonas.finalize(function (err, res) {
+    stmtPersonas.finalize((err, res) => {
       if (err) callback(err)
       callback(null, res)
     })
   })
 }
 
-function dbDeletePersonas (callback) {
-  var i
-
-  dbPersonas.serialize(function () {
-    var stmtPersonas = dbPersonas.prepare('DELETE FROM personas WHERE customerid = ?')
-    for (i = 0; i < 10; i++) {
-      stmtPersonas.run('Zeta ' + i, function (err, res) {
+function dbDeletePersonas(callback) {
+  dbPersonas.serialize(() => {
+    const stmtPersonas = dbPersonas.prepare('DELETE FROM personas WHERE customerid = ?')
+    for (let i = 0; i < 10; i += 1) {
+      stmtPersonas.run(`Zeta ${i}`, (err) => {
         if (err) callback(err)
       })
     }
-    stmtPersonas.finalize(function (err, res) {
+    stmtPersonas.finalize((err, res) => {
       if (err) callback(err)
       callback(null, res)
     })
   })
 }
 
-function dbFetchAllPersonas (callback) {
-  var results = {}
+function dbFetchAllPersonas(callback) {
+  const results = {}
   results.rows = []
-  dbPersonas.each('SELECT id, customerid, racername FROM personas', function (err, row) {
+  dbPersonas.each('SELECT id, customerid, racername FROM personas', (err, row) => {
     if (err) callback(err)
-    var resultLine = {}
+    const resultLine = {}
     resultLine.id = row.id
     resultLine.customer_id = row.customerid
     resultLine.racer_name = row.racername
     results.rows.push(resultLine)
-  }, function () {
+  }, () => {
     callback(null, JSON.stringify(results))
   })
 }
 
-function dbFetchPersonaByCustomerId (customer_id, callback) {
-  var sql = 'SELECT id, customerid, racername FROM personas WHERE customerid = ?'
-  dbPersonas.get(sql, customer_id, function (err, row) {
+function dbFetchPersonaByCustomerId(customerId, callback) {
+  const sql = 'SELECT id, customerid, racername FROM personas WHERE customerid = ?'
+  dbPersonas.get(sql, customerId, (err, row) => {
     if (err) callback(err)
-    var resultLine = {}
+    const resultLine = {}
     resultLine.id = row.id
     resultLine.customer_id = row.customerid
     resultLine.racer_name = row.racername
@@ -85,9 +82,9 @@ function dbFetchPersonaByCustomerId (customer_id, callback) {
 }
 
 module.exports = {
-  dbCreateTables: dbCreateTables,
-  dbInsertPersonas: dbInsertPersonas,
-  dbDeletePersonas: dbDeletePersonas,
-  dbFetchAllPersonas: dbFetchAllPersonas,
-  dbFetchPersonaByCustomerId: dbFetchPersonaByCustomerId
+  dbCreateTables,
+  dbInsertPersonas,
+  dbDeletePersonas,
+  dbFetchAllPersonas,
+  dbFetchPersonaByCustomerId,
 }
