@@ -3,6 +3,7 @@ machine:
     version: 6.2.1
 test:
   pre:
+    - npm run lint
     - openssl genrsa -out ./data/private_key.pem 1024
     - openssl rsa -in ./data/private_key.pem -pubout -out ./data/pub.key
   override:
