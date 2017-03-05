@@ -250,6 +250,50 @@ function getPersonaMaps(sock, id, data, requestCode) {
   return packetresult
 }
 
+function sendCommand(sock, id, data, requestCode) {
+  const decryptedCmd = decryptCmd(new Buffer(data.slice(4))).toString('hex')
+  logger.debug(`decryptedCmd: ${decryptedCmd.toString('hex')}`)
+  logger.debug(`cmd: ${decryptedCmd}`)
+
+  dumpRequest(sock, id, data, requestCode)
+
+    // Create the packet content
+  // packetcontent = crypto.randomBytes(8)
+  const packetcontent = Buffer.from([0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19,
+    0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19])
+
+    // This is needed, not sure for what
+  // Buffer.from([0x01, 0x01]).copy(packetcontent)
+
+    // Build the packet
+  const packetresult = packet.buildPacket(24, 0x0219,
+    packetcontent)
+
+  dumpResponse(packetresult, 24)
+
+  const encryptedResponse = encryptCmd(packetresult)
+  logger.debug(`encryptedResponse: ${encryptedResponse.toString('hex')}`)
+  return encryptedResponse
+}
+
+function logoutGameUser(sock, id, data, requestCode) {
+  logger.debug(`cmd: ${decryptCmd(new Buffer(data.slice(4))).toString('hex')}`)
+
+  dumpRequest(sock, id, data, requestCode)
+
+    // Create the packet content
+  const packetcontent = crypto.randomBytes(253)
+
+    // This is needed, not sure for what
+  Buffer.from([0x01, 0x01]).copy(packetcontent)
+
+    // Build the packet
+  const packetresult = packet.buildPacket(257, 0x0612, packetcontent)
+
+  dumpResponse(packetresult, 16)
+  return packetresult
+}
+
 module.exports = {
   npsCheckToken,
   npsGetCustomerIdByContextId,
@@ -267,4 +311,6 @@ module.exports = {
   inQueue: module.exports.inQueue,
   userLogin,
   getPersonaMaps,
+  sendCommand,
+  logoutGameUser,
 }

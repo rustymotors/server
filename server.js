@@ -63,9 +63,6 @@ const httpsOptions = {
 function onData(sock, id, data) {
   const requestCode = nps.getRequestCode(data)
 
-  let packetcontent
-  let packetresult
-
   logger.info(`Data request ${requestCode} from ${sock.remoteAddress}_${sock.localPort}`)
 
   if (requestCode === '(0x0501) NPSUserLogin') {
@@ -77,7 +74,7 @@ function onData(sock, id, data) {
     nps.dumpRequest(sock, id, data, requestCode)
 
       // Create the packet content
-    packetcontent = crypto.randomBytes(44971)
+    const packetcontent = crypto.randomBytes(44971)
 
       // This is needed, not sure for what
     Buffer.from([0x01, 0x01]).copy(packetcontent)
@@ -86,7 +83,7 @@ function onData(sock, id, data) {
     // Response Code
     // 207 = success
     // packetresult = packet.buildPacket(44975, 0x0207, packetcontent)
-    packetresult = packet.buildPacket(261, 0x0207, packetcontent)
+    const packetresult = packet.buildPacket(261, 0x0207, packetcontent)
 
     nps.dumpResponse(packetresult, 16)
     return sock.write(packetresult)
@@ -104,7 +101,7 @@ function onData(sock, id, data) {
     const persona = nps.npsGetPersonaMapsByCustomerId(customerId)
 
       // Create the packet content
-    packetcontent = crypto.randomBytes(1024)
+    const packetcontent = crypto.randomBytes(1024)
 
       // This is needed, not sure for what
     Buffer.from([0x01, 0x01]).copy(packetcontent)
@@ -125,7 +122,7 @@ function onData(sock, id, data) {
     persona.name.copy(packetcontent, 32)
 
       // Build the packet
-    packetresult = packet.buildPacket(1024, 0x0601, packetcontent)
+    const packetresult = packet.buildPacket(1024, 0x0601, packetcontent)
 
     nps.dumpResponse(packetresult, 1024)
     return sock.write(packetresult)
@@ -139,7 +136,7 @@ function onData(sock, id, data) {
     // const persona = nps.npsGetPersonaMapsByCustomerId(customerId)
 
     // Create the packet content
-    packetcontent = crypto.randomBytes(1024)
+    const packetcontent = crypto.randomBytes(1024)
 
     // This is needed, not sure for what
     Buffer.from([0x01, 0x01]).copy(packetcontent)
@@ -160,7 +157,7 @@ function onData(sock, id, data) {
     // persona.name.copy(packetcontent, 32)
 
     // Build the packet
-    packetresult = packet.buildPacket(1024, 0x0207, packetcontent)
+    const packetresult = packet.buildPacket(1024, 0x0207, packetcontent)
 
     nps.dumpResponse(packetresult, 1024)
     return sock.write(packetresult)
@@ -174,13 +171,13 @@ function onData(sock, id, data) {
     logger.debug(`personaName ${personaName}`)
 
       // Create the packet content
-    packetcontent = crypto.randomBytes(44976)
+    const packetcontent = crypto.randomBytes(44976)
 
       // This is needed, not sure for what
     Buffer.from([0x01, 0x01]).copy(packetcontent)
 
       // Build the packet
-    packetresult = packet.buildPacket(48380, 0x0601, packetcontent)
+    const packetresult = packet.buildPacket(48380, 0x0601, packetcontent)
 
     nps.dumpResponse(packetresult, 16)
     return sock.write(packetresult)
@@ -200,7 +197,7 @@ function onData(sock, id, data) {
 
 
     // Create the packet content
-    packetcontent = Buffer.alloc(6)
+    const packetcontent = Buffer.alloc(6)
 
     // Server ID
     Buffer.from([0x00]).copy(packetcontent)
@@ -220,55 +217,20 @@ function onData(sock, id, data) {
       // Buffer.from([0x00, 0x05]).copy(packetcontent, 1490)
 
       // Build the packet
-    packetresult = packet.buildPacket(8, 0x0120, packetcontent)
+    const packetresult = packet.buildPacket(8, 0x0120, packetcontent)
 
     nps.dumpResponse(packetresult, 8)
     return sock.write(packetresult)
   }
 
   if (requestCode === '(0x1101) NPSSendCommand') {
-    const decryptedCmd = nps.decryptCmd(new Buffer(data.slice(4))).toString('hex')
-    logger.debug(`decryptedCmd: ${decryptedCmd.toString('hex')}`)
-    logger.debug(`cmd: ${decryptedCmd}`)
-
-    nps.dumpRequest(sock, id, data, requestCode)
-
-      // Create the packet content
-    // packetcontent = crypto.randomBytes(8)
-    packetcontent = Buffer.from([0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19,
-      0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19])
-
-      // This is needed, not sure for what
-    // Buffer.from([0x01, 0x01]).copy(packetcontent)
-
-      // Build the packet
-    packetresult = packet.buildPacket(24, 0x0219,
-      packetcontent)
-
-    nps.dumpResponse(packetresult, 24)
-
-    const encryptedResponse = nps.encryptCmd(packetresult)
-    logger.debug(`encryptedResponse: ${encryptedResponse.toString('hex')}`)
-
-    return sock.write(encryptedResponse)
+    const packetCommand = nps.sendCommand(sock, id, data, requestCode)
+    return sock.write(packetCommand)
   }
 
   if (requestCode === '(0x050F) NPSLogOutGameUser') {
-    logger.debug(`cmd: ${nps.decryptCmd(new Buffer(data.slice(4))).toString('hex')}`)
-
-    nps.dumpRequest(sock, id, data, requestCode)
-
-      // Create the packet content
-    packetcontent = crypto.randomBytes(253)
-
-      // This is needed, not sure for what
-    Buffer.from([0x01, 0x01]).copy(packetcontent)
-
-      // Build the packet
-    packetresult = packet.buildPacket(257, 0x0612, packetcontent)
-
-    nps.dumpResponse(packetresult, 16)
-    return sock.write(packetresult)
+    const packetLogout = nps.logoutGameUser(sock, id, data, requestCode)
+    return sock.write(packetLogout)
   }
 
 // Anything else
@@ -276,13 +238,13 @@ function onData(sock, id, data) {
   nps.isUserCreated = true
 
       // Create the packet content
-  packetcontent = crypto.randomBytes(44971)
+  const packetcontent = crypto.randomBytes(44971)
 
       // This is needed, not sure for what
   Buffer.from([0x01, 0x01]).copy(packetcontent)
 
       // Build the packet
-  packetresult = packet.buildPacket(600, 0x0000, packetcontent)
+  const packetresult = packet.buildPacket(600, 0x0000, packetcontent)
 
   nps.dumpResponse(packetresult, 600)
   return sock.write(packetresult)
@@ -293,7 +255,6 @@ function listener(sock) {
   const socketId = `${sock.remoteAddress}_${sock.remotePort}`
   logger.info(`Creating socket: ${localId} => ${socketId}`)
   // sock.setKeepAlive(true)
-  logger.warn(nps.inQueue)
   if (sock.localPort === 7003 && nps.inQueue === true) {
     const packetcontent = crypto.randomBytes(151)
 
