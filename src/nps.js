@@ -7,13 +7,13 @@ const NodeRSA = require('node-rsa')
 const logger = require('./logger.js')
 const packet = require('./packet.js')
 
-let privateKey
-let sessionKey
-let sessionCypher
-let sessionDecypher
+// let privateKey
+// let sessionKey
+// let sessionCypher
+// let sessionDecypher
 
-let inQueue = false
-let isUserCreated = true
+// let inQueue = false
+// let isUserCreated = true
 
 function initCrypto(config) {
   try {
@@ -22,7 +22,8 @@ function initCrypto(config) {
     logger.error(`Error loading private key: ${e}`)
     process.exit(1)
   }
-  privateKey = new NodeRSA(fs.readFileSync(config.privateKeyFilename))
+  // privateKey = new NodeRSA(fs.readFileSync(config.privateKeyFilename))
+  return new NodeRSA(fs.readFileSync(config.privateKeyFilename))
 }
 
 function npsGetCustomerIdByContextId(contextId) {
@@ -48,23 +49,12 @@ function npsGetPersonaMapsByCustomerId(customerId) {
   const name = Buffer.alloc(30)
   switch (customerId.readUInt32BE()) {
     case 2868969472:
-      if (isUserCreated) {
-        Buffer.from('Doc', 'utf8').copy(name)
-        return {
-          personacount: Buffer.from([0x00, 0x01]),
-          // Max Personas are how many there are not how many allowed
-          maxpersonas: Buffer.from([0x00, 0x02]),
-          id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
-          name,
-          shardid: Buffer.from([0x00, 0x00, 0x00, 0x2C]),
-        }
-      }
-      Buffer.from('', 'utf8').copy(name)
+      Buffer.from('Doc', 'utf8').copy(name)
       return {
-        personacount: Buffer.from([0x00, 0x00]),
+        personacount: Buffer.from([0x00, 0x01]),
         // Max Personas are how many there are not how many allowed
-        maxpersonas: Buffer.from([0x00, 0x00]),
-        id: Buffer.from([0x00, 0x00, 0x00, 0x00]),
+        maxpersonas: Buffer.from([0x00, 0x02]),
+        id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
         name,
         shardid: Buffer.from([0x00, 0x00, 0x00, 0x2C]),
       }
@@ -145,32 +135,46 @@ function dumpResponse(data, count) {
   logger.debug(`Response Bytes: ${responseBytes}`)
 }
 
-function decryptSessionKey(encryptedKeySet) {
+function decryptSessionKey(session, privateKey, encryptedKeySet) {
+  const s = session
   try {
     const encryptedKeySetB64 = Buffer.from(encryptedKeySet.toString('utf8'), 'hex').toString('base64')
     const decrypted = privateKey.decrypt(encryptedKeySetB64, 'base64')
-    sessionKey = Buffer.from(Buffer.from(decrypted, 'base64').toString('hex').substring(4, 20), 'hex')
+    s.sessionKey = Buffer.from(Buffer.from(decrypted, 'base64').toString('hex').substring(4, 20), 'hex')
     const desIV = Buffer.alloc(8)
-    sessionCypher = crypto.createCipheriv('des-cbc', Buffer.from(sessionKey, 'hex'), desIV).setAutoPadding(false)
-    sessionDecypher = crypto.createDecipheriv('des-cbc', Buffer.from(sessionKey, 'hex'), desIV).setAutoPadding(false)
-    logger.debug('decrypted: ', sessionKey)
+    s.cypher = crypto.createCipheriv('des-cbc', Buffer.from(s.sessionKey, 'hex'), desIV).setAutoPadding(false)
+    s.decypher = crypto.createDecipheriv('des-cbc', Buffer.from(s.sessionKey, 'hex'), desIV).setAutoPadding(false)
+    logger.debug('decrypted: ', s.sessionKey)
   } catch (e) {
     logger.error(e)
   }
+  return s
 }
 
-function decryptCmd(cypherCmd) {
+function decryptCmd(session, cypherCmd) {
+  const s = session
   // logger.debug('raw cmd: ' + cypherCmd + cypherCmd.length)
-  return sessionDecypher.update(cypherCmd)
+  const decryptedCommand = s.decypher.update(cypherCmd)
+  return {
+    s,
+    decryptedCommand,
+  }
 }
 
-function encryptCmd(cypherCmd) {
+function encryptCmd(session, cypherCmd) {
+  const s = session
   // logger.debug('raw cmd: ' + cypherCmd + cypherCmd.length)
-  return sessionCypher.update(cypherCmd)
+  const encryptedCommand = s.cypher.update(cypherCmd)
+  return {
+    s,
+    encryptedCommand,
+  }
 }
 
-function userLogin(sock, id, data, requestCode) {
-  dumpRequest(sock, id, data, requestCode)
+function userLogin(session, data, requestCode) {
+  const s = session
+
+  dumpRequest(s.loginSocket, s.id, data, requestCode)
   const contextId = Buffer.alloc(34)
   data.copy(contextId, 0, 14, 48)
   const customer = npsGetCustomerIdByContextId(contextId)
@@ -209,9 +213,8 @@ function userLogin(sock, id, data, requestCode) {
 
   dumpResponse(packetresult, 516)
 
-  decryptSessionKey(data.slice(52, -10))
+  decryptSessionKey(s.privateKey, data.slice(52, -10))
 
-  module.exports.inQueue = true
   return packetresult
 }
 
@@ -251,12 +254,13 @@ function getPersonaMaps(sock, id, data, requestCode) {
   return packetresult
 }
 
-function sendCommand(sock, id, data, requestCode) {
-  const decryptedCmd = decryptCmd(new Buffer(data.slice(4))).toString('hex')
-  logger.debug(`decryptedCmd: ${decryptedCmd.toString('hex')}`)
-  logger.debug(`cmd: ${decryptedCmd}`)
+function sendCommand(session, data, requestCode) {
+  const s = session
+  const cmd = decryptCmd(s, new Buffer(data.slice(4))).toString('hex')
+  logger.debug(`decryptedCmd: ${cmd.decryptedCmd.toString('hex')}`)
+  logger.debug(`cmd: ${cmd.decryptedCmd}`)
 
-  dumpRequest(sock, id, data, requestCode)
+  dumpRequest(session, data, requestCode)
 
     // Create the packet content
   // packetcontent = crypto.randomBytes(8)
@@ -274,7 +278,10 @@ function sendCommand(sock, id, data, requestCode) {
 
   const encryptedResponse = encryptCmd(packetresult)
   logger.debug(`encryptedResponse: ${encryptedResponse.toString('hex')}`)
-  return encryptedResponse
+  return {
+    s,
+    encryptedResponse,
+  }
 }
 
 function logoutGameUser(sock, id, data, requestCode) {
@@ -295,236 +302,284 @@ function logoutGameUser(sock, id, data, requestCode) {
   return packetresult
 }
 
-function onData(sock, id, data) {
-  const requestCode = getRequestCode(data)
+function loginDataHandler(session, rawData) {
+  let s = session
+  const requestCode = getRequestCode(rawData)
 
-  logger.info(`Data request ${requestCode} from ${sock.remoteAddress}_${sock.localPort}`)
-
-  if (requestCode === '(0x0501) NPSUserLogin') {
-    return sock.write(userLogin(sock, id, data, requestCode))
+  switch (requestCode) {
+    case '(0x0501) NPSUserLogin': {
+      s = userLogin(s, rawData, requestCode)
+      s.loginSocket.write()
+      break
+    }
+    case '(0x050F) NPSLogOutGameUser': {
+      const packetLogout = logoutGameUser(session, rawData, requestCode)
+      s.loginSocket.write(packetLogout)
+      break
+    }
+    default:
+      throw new Error(`Unknown code ${requestCode} was recieved on port 8226`)
   }
+  return s
+}
 
-  // Persona_UseSelected
-  if (requestCode === '(0x503) NPSSelectGamePersona') {
-    dumpRequest(sock, id, data, requestCode)
+function personaDataHandler(session, rawData) {
+  const s = session
+  const requestCode = getRequestCode(rawData)
+
+  switch (requestCode) {
+    // Persona_UseSelected
+    case '(0x503) NPSSelectGamePersona': {
+      dumpRequest(session, rawData, requestCode)
 
       // Create the packet content
-    const packetcontent = crypto.randomBytes(44971)
+      const packetcontent = crypto.randomBytes(44971)
 
       // This is needed, not sure for what
-    Buffer.from([0x01, 0x01]).copy(packetcontent)
+      Buffer.from([0x01, 0x01]).copy(packetcontent)
 
-    // Build the packet
-    // Response Code
-    // 207 = success
-    // packetresult = packet.buildPacket(44975, 0x0207, packetcontent)
-    const packetresult = packet.buildPacket(261, 0x0207, packetcontent)
+      // Build the packet
+      // Response Code
+      // 207 = success
+      // packetresult = packet.buildPacket(44975, 0x0207, packetcontent)
+      const packetresult = packet.buildPacket(261, 0x0207, packetcontent)
 
-    dumpResponse(packetresult, 16)
-    return sock.write(packetresult)
-  }
+      dumpResponse(packetresult, 16)
+      session.personaSocket.write(packetresult)
+      break
+    }
+    case '(0x0532) NPSGetPersonaMaps':
+      session.personaSocket.write(getPersonaMaps(session, rawData, requestCode))
+      break
+    case '(0x0533) NPSValidatePersonaName': {
+      dumpRequest(session, rawData, requestCode)
 
-  if (requestCode === '(0x0532) NPSGetPersonaMaps') {
-    return sock.write(getPersonaMaps(sock, id, data, requestCode))
-  }
-
-  if (requestCode === '(0x0533) NPSValidatePersonaName') {
-    dumpRequest(sock, id, data, requestCode)
-
-    const customerId = Buffer.alloc(4)
-    data.copy(customerId, 0, 12)
-    const persona = npsGetPersonaMapsByCustomerId(customerId)
+      const customerId = Buffer.alloc(4)
+      rawData.copy(customerId, 0, 12)
+      const persona = npsGetPersonaMapsByCustomerId(customerId)
 
       // Create the packet content
-    const packetcontent = crypto.randomBytes(1024)
+      const packetcontent = crypto.randomBytes(1024)
 
       // This is needed, not sure for what
-    Buffer.from([0x01, 0x01]).copy(packetcontent)
+      Buffer.from([0x01, 0x01]).copy(packetcontent)
 
       // This is the persona count
-    persona.personacount.copy(packetcontent, 10)
+      persona.personacount.copy(packetcontent, 10)
 
       // This is the max persona count
-    persona.maxpersonas.copy(packetcontent, 18)
+      persona.maxpersonas.copy(packetcontent, 18)
 
       // PersonaId
-    persona.id.copy(packetcontent, 18)
+      persona.id.copy(packetcontent, 18)
 
       // Shard ID
-    persona.shardid.copy(packetcontent, 22)
+      persona.shardid.copy(packetcontent, 22)
 
       // Persona Name = 30-bit null terminated string
-    persona.name.copy(packetcontent, 32)
+      persona.name.copy(packetcontent, 32)
 
       // Build the packet
-    const packetresult = packet.buildPacket(1024, 0x0601, packetcontent)
+      const packetresult = packet.buildPacket(1024, 0x0601, packetcontent)
 
-    dumpResponse(packetresult, 1024)
-    return sock.write(packetresult)
-  }
+      dumpResponse(packetresult, 1024)
+      s.personaSocket.write(packetresult)
+      break
+    }
+    case '(0x0534) NPSCheckToken': {
+      dumpRequest(session, rawData, requestCode)
 
-  if (requestCode === '(0x0534) NPSCheckToken') {
-    dumpRequest(sock, id, data, requestCode)
-
-    // const customerId = Buffer.alloc(4)
-    // data.copy(customerId, 0, 12)
-    // const persona = nps.npsGetPersonaMapsByCustomerId(customerId)
-
-    // Create the packet content
-    const packetcontent = crypto.randomBytes(1024)
-
-    // This is needed, not sure for what
-    Buffer.from([0x01, 0x01]).copy(packetcontent)
-
-    // This is the persona count
-    // persona.personacount.copy(packetcontent, 10)
-
-    // This is the max persona count
-    // persona.maxpersonas.copy(packetcontent, 18)
-
-    // PersonaId
-    // persona.id.copy(packetcontent, 18)
-
-    // Shard ID
-    // persona.shardid.copy(packetcontent, 22)
-
-    // Persona Name = 30-bit null terminated string
-    // persona.name.copy(packetcontent, 32)
-
-    // Build the packet
-    const packetresult = packet.buildPacket(1024, 0x0207, packetcontent)
-
-    dumpResponse(packetresult, 1024)
-    return sock.write(packetresult)
-  }
-
-  if (requestCode === '(0x0519) NPSGetPersonaInfoByName') {
-    dumpRequest(sock, id, data, requestCode)
-    const personaName = Buffer.alloc(data.length - 30)
-    data.copy(personaName, 0, 30)
-
-    logger.debug(`personaName ${personaName}`)
+      // const customerId = Buffer.alloc(4)
+      // data.copy(customerId, 0, 12)
+      // const persona = nps.npsGetPersonaMapsByCustomerId(customerId)
 
       // Create the packet content
-    const packetcontent = crypto.randomBytes(44976)
+      const packetcontent = crypto.randomBytes(1024)
 
       // This is needed, not sure for what
-    Buffer.from([0x01, 0x01]).copy(packetcontent)
+      Buffer.from([0x01, 0x01]).copy(packetcontent)
+
+      // This is the persona count
+      // persona.personacount.copy(packetcontent, 10)
+
+      // This is the max persona count
+      // persona.maxpersonas.copy(packetcontent, 18)
+
+      // PersonaId
+      // persona.id.copy(packetcontent, 18)
+
+      // Shard ID
+      // persona.shardid.copy(packetcontent, 22)
+
+      // Persona Name = 30-bit null terminated string
+      // persona.name.copy(packetcontent, 32)
 
       // Build the packet
-    const packetresult = packet.buildPacket(48380, 0x0601, packetcontent)
+      const packetresult = packet.buildPacket(1024, 0x0207, packetcontent)
 
-    dumpResponse(packetresult, 16)
-    return sock.write(packetresult)
+      dumpResponse(packetresult, 1024)
+      s.personaSocket.write(packetresult)
+      break
+    }
+    case '(0x0519) NPSGetPersonaInfoByName': {
+      dumpRequest(session, rawData, requestCode)
+      const personaName = Buffer.alloc(rawData.length - 30)
+      rawData.copy(personaName, 0, 30)
+
+      logger.debug(`personaName ${personaName}`)
+
+      // Create the packet content
+      const packetcontent = crypto.randomBytes(44976)
+
+      // This is needed, not sure for what
+      Buffer.from([0x01, 0x01]).copy(packetcontent)
+
+      // Build the packet
+      const packetresult = packet.buildPacket(48380, 0x0601, packetcontent)
+
+      dumpResponse(packetresult, 16)
+      s.personaSocket.write(packetresult)
 
       // Response Code
       // 607 = persona name not available
       // 611 = No error, starter car lot
       // 602 = No error, starter car lot
+      break
+    }
+    default:
+      throw new Error(`Unknown code ${requestCode} was recieved on port 8226`)
   }
+  return s
+}
 
-  if (requestCode === '(0x0100) NPS_REQUEST_GAME_CONNECT_SERVER') {
-    dumpRequest(sock, id, data, requestCode)
-    // const contextId = Buffer.alloc(34)
-    // data.copy(contextId, 0, 14, 48)
-    // const customer = nps.npsGetCustomerIdByContextId(contextId)
-    // logger.debug(`customer: ${customer}`)
+function lobbyDataHandler(session, rawData) {
+  const s = session
+  const requestCode = getRequestCode(rawData)
+
+  switch (requestCode) {
+    case '(0x0100) NPS_REQUEST_GAME_CONNECT_SERVER': {
+      dumpRequest(session, rawData, requestCode)
+      // const contextId = Buffer.alloc(34)
+      // data.copy(contextId, 0, 14, 48)
+      // const customer = nps.npsGetCustomerIdByContextId(contextId)
+      // logger.debug(`customer: ${customer}`)
 
 
-    // Create the packet content
-    const packetcontent = Buffer.alloc(6)
+      // Create the packet content
+      const packetcontent = Buffer.alloc(6)
 
-    // Server ID
-    Buffer.from([0x00]).copy(packetcontent)
+      // Server ID
+      Buffer.from([0x00]).copy(packetcontent)
 
-    // This is needed, not sure for what
-    // Buffer.from([0x01, 0x01]).copy(packetcontent)
+      // This is needed, not sure for what
+      // Buffer.from([0x01, 0x01]).copy(packetcontent)
 
-    // if it's 97 it says the username returned is correct
-    // if it's 06 it says it's different, but it's random
-    // It's parsed by the NPS cipher somehow.
-    Buffer.from([0x05]).copy(packetcontent, 1)
+      // if it's 97 it says the username returned is correct
+      // if it's 06 it says it's different, but it's random
+      // It's parsed by the NPS cipher somehow.
+      Buffer.from([0x05]).copy(packetcontent, 1)
 
-      // load the customer id
-    Buffer.from([0xAB, 0x01, 0x00, 0x00]).copy(packetcontent, 2)
+        // load the customer id
+      Buffer.from([0xAB, 0x01, 0x00, 0x00]).copy(packetcontent, 2)
 
       // RIFF Count = total packet len - 4 for header
       // Buffer.from([0x00, 0x05]).copy(packetcontent, 1490)
 
       // Build the packet
-    const packetresult = packet.buildPacket(8, 0x0120, packetcontent)
+      const packetresult = packet.buildPacket(8, 0x0120, packetcontent)
 
-    dumpResponse(packetresult, 8)
-    return sock.write(packetresult)
+      dumpResponse(packetresult, 8)
+      s.lobbySocket.write(packetresult)
+      break
+    }
+    case '(0x1101) NPSSendCommand': {
+      const cmd = sendCommand(s, rawData, requestCode)
+      s.lobbySocket.write(cmd.encryptedResponse)
+      break
+    }
+    default:
+      throw new Error(`Unknown code ${requestCode} was recieved on port 7003`)
   }
-
-  if (requestCode === '(0x1101) NPSSendCommand') {
-    const packetCommand = sendCommand(sock, id, data, requestCode)
-    return sock.write(packetCommand)
-  }
-
-  if (requestCode === '(0x050F) NPSLogOutGameUser') {
-    const packetLogout = logoutGameUser(sock, id, data, requestCode)
-    return sock.write(packetLogout)
-  }
-
-// Anything else
-  dumpRequest(sock, id, data, requestCode)
-  isUserCreated = true
-
-      // Create the packet content
-  const packetcontent = crypto.randomBytes(44971)
-
-      // This is needed, not sure for what
-  Buffer.from([0x01, 0x01]).copy(packetcontent)
-
-      // Build the packet
-  const packetresult = packet.buildPacket(600, 0x0000, packetcontent)
-
-  dumpResponse(packetresult, 600)
-  return sock.write(packetresult)
+  return s
 }
 
-function listener(sock) {
-  const localId = `${sock.localAddress}_${sock.localPort}`
-  const socketId = `${sock.remoteAddress}_${sock.remotePort}`
-  logger.info(`Creating socket: ${localId} => ${socketId}`)
-  // sock.setKeepAlive(true)
-  if (sock.localPort === 7003 && inQueue === true) {
-    const packetcontent = crypto.randomBytes(151)
+function databaseDataHandler(session, rawData) {
+  const s = session
+  const requestCode = getRequestCode(rawData)
 
-    // This is needed, not sure for what
-    Buffer.from([0x01, 0x01]).copy(packetcontent)
-
-    const packetresult = packet.buildPacket(4, 0x0230, packetcontent)
-    inQueue = false
-    dumpResponse(packetresult, 8)
-    sock.write(packetresult)
+  switch (requestCode) {
+    default:
+      throw new Error(`Unknown code ${requestCode} was recieved on port 43300`)
   }
+  return s
+}
 
+function sendPacketOkToLogin(session) {
+  const packetcontent = crypto.randomBytes(151)
 
-  const socket = sock
+  // This is needed, not sure for what
+  Buffer.from([0x01, 0x01]).copy(packetcontent)
+
+  const packetresult = packet.buildPacket(4, 0x0230, packetcontent)
+  dumpResponse(packetresult, 8)
+  return session.lobbySocket.write(packetresult)
+}
+
+function loginListener(socket) {
+  const localId = `${socket.localAddress}_${socket.localPort}`
+  const socketId = `${socket.remoteAddress}_${socket.remotePort}`
+  logger.info(`Creating login socket: ${localId} => ${socketId}`)
 
   // Add a 'data' event handler to this instance of socket
-  sock.on('data', (data) => {
-    onData(socket, socketId, data)
+  socket.on('data', (data) => {
+    loginDataHandler(socket, socketId, data)
   })
-  // Add a 'close' event handler to this instance of socket
-  sock.on('close', () => {
-    logger.info(`Closing socket: ${localId} => ${socketId}`)
+}
+
+function personaListener(socket) {
+  const localId = `${socket.localAddress}_${socket.localPort}`
+  const socketId = `${socket.remoteAddress}_${socket.remotePort}`
+  logger.info(`Creating persona socket: ${localId} => ${socketId}`)
+
+  // Add a 'data' event handler to this instance of socket
+  socket.on('data', (data) => {
+    personaDataHandler(socket, socketId, data)
   })
-  // Add a 'error' event handler to this instance of socket
-  sock.on('error', (err) => {
-    if (err.code !== 'ECONNRESET') {
-      logger.error(err)
-    }
+}
+
+function lobbyListener(session) {
+  const s = session
+  const lobbySocket = s.lobbySocket
+  const localId = `${lobbySocket.localAddress}_${lobbySocket.localPort}`
+  const socketId = `${lobbySocket.remoteAddress}_${lobbySocket.remotePort}`
+  logger.info(`Creating lobby socket: ${localId} => ${socketId}`)
+
+  if (!s.loggedIntoLobby && sendPacketOkToLogin(s)) {
+    s.loggedIntoLobby = true
+  }
+
+  // Add a 'data' event handler to this instance of socket
+  lobbySocket.on('data', (data) => {
+    lobbyDataHandler(s, data)
+  })
+}
+
+function databaseListener(socket) {
+  const localId = `${socket.localAddress}_${socket.localPort}`
+  const socketId = `${socket.remoteAddress}_${socket.remotePort}`
+  logger.info(`Creating database socket: ${localId} => ${socketId}`)
+
+  // Add a 'data' event handler to this instance of socket
+  socket.on('data', (data) => {
+    databaseDataHandler(socket, socketId, data)
   })
 }
 
 function start(config, cbStart) {
   /* Initialize the crypto */
+  let privateKey = null
   try {
-    initCrypto(config)
+    privateKey = initCrypto(config)
   } catch (err) {
     logger.error(err)
     process.exit(1)
@@ -533,28 +588,48 @@ function start(config, cbStart) {
   // Start the servers
   series({
     serverLogin: (callback) => {
-      const server = net.createServer(listener)
+      const server = net.createServer((socket) => {
+        loginListener({
+          loginSocket: socket,
+          privateKey,
+        })
+      })
       server.listen(config.serverLogin.port, () => {
         logger.info(`${config.serverLogin.name} Server listening on TCP port: ${config.serverLogin.port}`)
         callback(null, server)
       })
     },
     serverPersona: (callback) => {
-      const server = net.createServer(listener)
+      const server = net.createServer((socket) => {
+        personaListener({
+          personaSocket: socket,
+          privateKey,
+        })
+      })
       server.listen(config.serverPersona.port, () => {
         logger.info(`${config.serverPersona.name} Server listening on TCP port: ${config.serverPersona.port}`)
         callback(null, server)
       })
     },
     serverLobby: (callback) => {
-      const server = net.createServer(listener)
+      const server = net.createServer((socket) => {
+        lobbyListener({
+          lobbySocket: socket,
+          privateKey,
+        })
+      })
       server.listen(config.serverLobby.port, () => {
         logger.info(`${config.serverLobby.name} Server listening on TCP port: ${config.serverLobby.port}`)
         callback(null, server)
       })
     },
     serverDatabase: (callback) => {
-      const server = net.createServer(listener)
+      const server = net.createServer((socket) => {
+        databaseListener({
+          databaseSocket: socket,
+          privateKey,
+        })
+      })
       server.listen(config.serverDatabase.port, () => {
         logger.info(`${config.serverDatabase.name} Server listening on TCP port: ${config.serverDatabase.port}`)
         callback(null, server)
@@ -578,11 +653,11 @@ module.exports = {
   dumpRequest,
   dumpResponse,
   toHex,
-  decryptSessionKey,
+  // decryptSessionKey,
   encryptCmd,
   decryptCmd,
   initCrypto,
-  isUserCreated,
+  // isUserCreated,
   userLogin,
   getPersonaMaps,
   sendCommand,
