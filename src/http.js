@@ -29,8 +29,8 @@ function generateShardList(config) {
 function start(config, callback) {
   // Setup SSL config
   const httpsOptions = {
-    key: config.privateKeyFilename,
-    cert: config.certFilename,
+    key: fs.readFileSync(config.privateKeyFilename),
+    cert: fs.readFileSync(config.certFilename),
     rejectUnauthorized: false,
     ciphers: sslConfig.ciphers,
     honorCipherOrder: true,
