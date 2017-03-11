@@ -4,7 +4,7 @@
   "description": "a server",
   "main": "server.js",
   "scripts": {
-    "lint": "./node_modules/.bin/eslint src",
+    "lint": "./node_modules/.bin/eslint src config",
     "test": "mocha",
     "coverage": "istanbul cover --include-all-sources _mocha -- -R spec"
   },
@@ -15,8 +15,8 @@
     "type": "git",
     "url": "git@github.com:drazisil/mco-server.git"
   },
-  "engines" : {
-      "node" : "~6.10.0"
+  "engines": {
+    "node": "~6.10.0"
   },
   "dependencies": {
     "async": "^2.1.5",

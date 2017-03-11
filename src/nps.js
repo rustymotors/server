@@ -524,7 +524,7 @@ function listener(sock) {
 function start(config, cbStart) {
   /* Initialize the crypto */
   try {
-    initCrypto()
+    initCrypto(config)
   } catch (err) {
     logger.error(err)
     process.exit(1)
