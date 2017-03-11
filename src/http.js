@@ -26,9 +26,8 @@ function generateShardList(config) {
   DiagnosticServerPort=80`
 }
 
-function start(config, callback) {
-  // Setup SSL config
-  const httpsOptions = {
+function sslOptions(config) {
+  return {
     key: fs.readFileSync(config.privateKeyFilename),
     cert: fs.readFileSync(config.certFilename),
     rejectUnauthorized: false,
@@ -36,7 +35,9 @@ function start(config, callback) {
     honorCipherOrder: true,
     secureOptions: sslConfig.minimumTLSVersion,
   }
+}
 
+function start(config, callback) {
   app.get('/ShardList/', (req, res) => {
     res.set('Content-Type', 'text/plain')
     res.send(generateShardList(config))
@@ -91,7 +92,7 @@ function start(config, callback) {
     logger.info(`Patch server listening on port ${app.get('port')}`)
   })
 
-  const httpsServer = https.createServer(httpsOptions, app).listen(app.get('port_ssl'), () => {
+  const httpsServer = https.createServer(sslOptions(config), app).listen(app.get('port_ssl'), () => {
     logger.info(`AuthLogin server listening on port ${app.get('port_ssl')}`)
   })
   httpsServer.on('connection', (socket) => {
