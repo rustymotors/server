@@ -504,14 +504,14 @@ function lobbyDataHandler(session, rawData) {
 }
 
 function databaseDataHandler(session, rawData) {
-  const s = session
+  // const s = session
   const requestCode = getRequestCode(rawData)
 
   switch (requestCode) {
     default:
       throw new Error(`Unknown code ${requestCode} was recieved on port 43300`)
   }
-  return s
+  // return s
 }
 
 function sendPacketOkToLogin(session) {
