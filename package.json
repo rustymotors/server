@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "./node_modules/.bin/eslint src config",
     "test": "mocha",
-    "coverage": "nyc --all _mocha -- -R spec && ./node_modules/.bin/codecov"
+    "coverage": "nyc --reporter=html --reporter=text mocha src/ && ./node_modules/.bin/codecov"
   },
   "author": "Joseph W Becher <jwbecher@drazisil.com> (drazisil)",
   "license": "UNLICENSED",
