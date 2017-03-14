@@ -3,3 +3,4 @@ data
 logs
 coverage
 npm-debug.log
+.nyc_output
