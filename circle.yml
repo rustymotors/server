@@ -8,4 +8,4 @@ test:
     - openssl rsa -in ./data/private_key.pem -pubout -out ./data/pub.key
 test:
   post:
-- npm run coverage
+    - npm run coverage
