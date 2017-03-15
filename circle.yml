@@ -9,3 +9,5 @@ test:
 test:
   post:
     - npm run coverage
+    - mkdir $CIRCLE_TEST_REPORTS/junit/ && cp test-results.xml $CIRCLE_TEST_REPORTS/junit/test-results.xml
+    - cp -R coverage $CIRCLE_ARTIFACTS/coverage
