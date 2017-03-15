@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "lint": "./node_modules/.bin/eslint src config",
-    "mocha": "./node_modules/.bin/_mocha -R mocha-multi --reporter-options spec=-,xunit=test-results.xml src/*_test.js",
+    "mocha": "./node_modules/.bin/_mocha -R mocha-multi --reporter-options spec=-,xunit=test-results.xml src/*.test.js",
     "coverage": "nyc --all --reporter=lcov --reporter=text npm test && codecov",
     "test": "npm run lint && npm run mocha"
   },
@@ -21,7 +21,8 @@
   },
   "nyc": {
     "exclude": [
-      "**/*.test.js"
+      "**/*.test.js",
+      "server.js"
     ]
   },
   "dependencies": {
