@@ -7,7 +7,7 @@
     "lint": "./node_modules/.bin/eslint src config",
     "mocha": "./node_modules/.bin/_mocha -- src/*_test.js",
     "cov": "nyc --all --reporter=html --reporter=text mocha src/*_test.js --reporter mocha-junit-reporter --reporter spec --reporter mocha-junit-reporter",
-    "coverage": "nyc report --all --reporter=text-lcov | codecov",
+    "coverage": "nyc report --all --reporter=lcov | codecov",
     "test": "npm run lint && npm run mocha && npm run cov"
   },
   "author": "Joseph W Becher <jwbecher@drazisil.com> (drazisil)",
