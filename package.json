@@ -5,9 +5,14 @@
   "main": "server.js",
   "scripts": {
     "lint": "./node_modules/.bin/eslint src config",
+<<<<<<< HEAD
     "mocha": "./node_modules/.bin/_mocha -R mocha-multi --reporter-options spec=-,xunit=test-results.xml src/*.test.js",
     "coverage": "nyc --all --reporter=lcov --reporter=text npm test && codecov",
     "test": "npm run lint && npm run mocha"
+=======
+    "test": "mocha",
+    "coverage": "nyc report --all --reporter=lcov && ./node_modules/.bin/codecov"
+>>>>>>> 653ba39... Test for coverage
   },
   "author": "Joseph W Becher <jwbecher@drazisil.com> (drazisil)",
   "license": "UNLICENSED",
@@ -47,6 +52,7 @@
     "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
     "mocha-junit-reporter": "^1.11.1",
+    "mocha-lcov-reporter": "^1.3.0",
     "mocha-multi": "^0.10.0",
     "nyc": "^10.1.2",
     "should": "~11.1.2"

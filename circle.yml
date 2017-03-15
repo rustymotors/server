@@ -8,6 +8,6 @@ test:
     - openssl rsa -in ./data/private_key.pem -pubout -out ./data/pub.key
   override:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit
-    - mocha src/ -R mocha-multi -O spec=-,xunit=$CIRCLE_TEST_REPORTS/junit/test-results.xml
+    - mocha src/ -R mocha-multi -O spec=-,xunit=$CIRCLE_TEST_REPORTS/junit/test-results.xml,lcovonly=-
     - npm run coverage
     - cp -R coverage $CIRCLE_ARTIFACTS/coverage

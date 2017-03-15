@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="1.552" tests="4" failures="0">
+  <testsuite name="Root Suite" timestamp="2017-03-15T00:18:22" tests="0" failures="0" time="0">
+  </testsuite>
+  <testsuite name="Databases" timestamp="2017-03-15T00:18:22" tests="4" file="C:\Users\jwbec\Documents\GitHub\mco-server\src\database_test.js" failures="0" time="1.552">
+    <testcase name="Databases should be able to create tables" time="0.005" classname="should be able to create tables">
+    </testcase>
+    <testcase name="Databases should be able to write to the database" time="0.843" classname="should be able to write to the database">
+    </testcase>
+    <testcase name="Databases should be able to fetch persona by customer id" time="0.002" classname="should be able to fetch persona by customer id">
+    </testcase>
+    <testcase name="Databases should be able to delete from the database" time="0.702" classname="should be able to delete from the database">
+    </testcase>
+  </testsuite>
+</testsuites>
