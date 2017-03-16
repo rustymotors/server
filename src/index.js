@@ -5,6 +5,7 @@ const nps = require('./nps.js')
 const configuration = require('./config.js')
 
 function startServers(config) {
+  logger.level = config.loggerLevel
   /* Start the NPS servers */
   http.start(config.serverConfig, (err) => {
     if (err) { throw err }

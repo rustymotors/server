@@ -7,14 +7,6 @@ const NodeRSA = require('node-rsa')
 const logger = require('./logger.js')
 const packet = require('./packet.js')
 
-// let privateKey
-// let sessionKey
-// let sessionCypher
-// let sessionDecypher
-
-// let inQueue = false
-// let isUserCreated = true
-
 function initCrypto(config) {
   try {
     fs.statSync(config.privateKeyFilename)
@@ -114,14 +106,14 @@ function getRequestCode(rawBuffer) {
   }
 }
 
-function dumpRequest(sock, id, rawBuffer, requestCode) {
+function dumpRequest(socket, rawBuffer, requestCode) {
   logger.debug(`\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-  Request from: ${id}
+  Request from: ${socket.localId}
   Request Code: ${requestCode}
   -----------------------------------------
-  Request DATA ${sock.remoteAddress}:${sock.localPort}:${rawBuffer.toString('ascii')}
+  Request DATA ${socket.localId}:${rawBuffer.toString('ascii')}
   =========================================
-  Request DATA ${sock.remoteAddress}:${rawBuffer.toString('hex')}
+  Request DATA ${socket.localId}:${rawBuffer.toString('hex')}
   -----------------------------------------
   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n`)
 }
@@ -135,11 +127,11 @@ function dumpResponse(data, count) {
   logger.debug(`Response Bytes: ${responseBytes}`)
 }
 
-function decryptSessionKey(session, privateKey, encryptedKeySet) {
+function decryptSessionKey(session, encryptedKeySet) {
   const s = session
   try {
     const encryptedKeySetB64 = Buffer.from(encryptedKeySet.toString('utf8'), 'hex').toString('base64')
-    const decrypted = privateKey.decrypt(encryptedKeySetB64, 'base64')
+    const decrypted = s.privateKey.decrypt(encryptedKeySetB64, 'base64')
     s.sessionKey = Buffer.from(Buffer.from(decrypted, 'base64').toString('hex').substring(4, 20), 'hex')
     const desIV = Buffer.alloc(8)
     s.cypher = crypto.createCipheriv('des-cbc', Buffer.from(s.sessionKey, 'hex'), desIV).setAutoPadding(false)
@@ -153,28 +145,23 @@ function decryptSessionKey(session, privateKey, encryptedKeySet) {
 
 function decryptCmd(session, cypherCmd) {
   const s = session
-  // logger.debug('raw cmd: ' + cypherCmd + cypherCmd.length)
+  logger.debug(`raw cmd: ${cypherCmd.toString('hex')}`)
   const decryptedCommand = s.decypher.update(cypherCmd)
-  return {
-    s,
-    decryptedCommand,
-  }
+  s.decryptedCmd = decryptedCommand
+  return s
 }
 
 function encryptCmd(session, cypherCmd) {
   const s = session
   // logger.debug('raw cmd: ' + cypherCmd + cypherCmd.length)
-  const encryptedCommand = s.cypher.update(cypherCmd)
-  return {
-    s,
-    encryptedCommand,
-  }
+  s.encryptedCommand = s.cypher.update(cypherCmd)
+  return s
 }
 
 function userLogin(session, data, requestCode) {
   const s = session
 
-  dumpRequest(s.loginSocket, s.id, data, requestCode)
+  dumpRequest(s.loginSocket, data, requestCode)
   const contextId = Buffer.alloc(34)
   data.copy(contextId, 0, 14, 48)
   const customer = npsGetCustomerIdByContextId(contextId)
@@ -213,13 +200,15 @@ function userLogin(session, data, requestCode) {
 
   dumpResponse(packetresult, 516)
 
-  decryptSessionKey(s.privateKey, data.slice(52, -10))
+  const loginSession = decryptSessionKey(s, data.slice(52, -10))
 
-  return packetresult
+  loginSession.packetresult = packetresult
+
+  return loginSession
 }
 
-function getPersonaMaps(sock, id, data, requestCode) {
-  dumpRequest(sock, id, data, requestCode)
+function getPersonaMaps(session, data, requestCode) {
+  dumpRequest(session.personaSocket, data, requestCode)
 
   const customerId = Buffer.alloc(4)
   data.copy(customerId, 0, 12)
@@ -256,11 +245,11 @@ function getPersonaMaps(sock, id, data, requestCode) {
 
 function sendCommand(session, data, requestCode) {
   const s = session
-  const cmd = decryptCmd(s, new Buffer(data.slice(4))).toString('hex')
+  const cmd = decryptCmd(s, new Buffer(data.slice(4)))
   logger.debug(`decryptedCmd: ${cmd.decryptedCmd.toString('hex')}`)
   logger.debug(`cmd: ${cmd.decryptedCmd}`)
 
-  dumpRequest(session, data, requestCode)
+  dumpRequest(session.lobbySocket, data, requestCode)
 
     // Create the packet content
   // packetcontent = crypto.randomBytes(8)
@@ -276,18 +265,15 @@ function sendCommand(session, data, requestCode) {
 
   dumpResponse(packetresult, 24)
 
-  const encryptedResponse = encryptCmd(packetresult)
-  logger.debug(`encryptedResponse: ${encryptedResponse.toString('hex')}`)
-  return {
-    s,
-    encryptedResponse,
-  }
+  const cmdEncrypted = encryptCmd(s, packetresult)
+  logger.debug(`encryptedResponse: ${cmdEncrypted.encryptedCommand.toString('hex')}`)
+  return cmdEncrypted
 }
 
-function logoutGameUser(sock, id, data, requestCode) {
+function logoutGameUser(session, data, requestCode) {
   logger.debug(`cmd: ${decryptCmd(new Buffer(data.slice(4))).toString('hex')}`)
 
-  dumpRequest(sock, id, data, requestCode)
+  dumpRequest(session.loginSocket, data, requestCode)
 
     // Create the packet content
   const packetcontent = crypto.randomBytes(253)
@@ -309,7 +295,14 @@ function loginDataHandler(session, rawData) {
   switch (requestCode) {
     case '(0x0501) NPSUserLogin': {
       s = userLogin(s, rawData, requestCode)
-      s.loginSocket.write()
+
+      // Update the onData handler with the new session
+      s.loginSocket.removeListener('data', loginDataHandler)
+      s.loginSocket.on('data', (data) => {
+        loginDataHandler(s, data)
+      })
+
+      s.loginSocket.write(s.packetresult)
       break
     }
     case '(0x050F) NPSLogOutGameUser': {
@@ -330,7 +323,7 @@ function personaDataHandler(session, rawData) {
   switch (requestCode) {
     // Persona_UseSelected
     case '(0x503) NPSSelectGamePersona': {
-      dumpRequest(session, rawData, requestCode)
+      dumpRequest(session.personaSocket, rawData, requestCode)
 
       // Create the packet content
       const packetcontent = crypto.randomBytes(44971)
@@ -352,7 +345,7 @@ function personaDataHandler(session, rawData) {
       session.personaSocket.write(getPersonaMaps(session, rawData, requestCode))
       break
     case '(0x0533) NPSValidatePersonaName': {
-      dumpRequest(session, rawData, requestCode)
+      dumpRequest(session.personaSocket, rawData, requestCode)
 
       const customerId = Buffer.alloc(4)
       rawData.copy(customerId, 0, 12)
@@ -387,7 +380,7 @@ function personaDataHandler(session, rawData) {
       break
     }
     case '(0x0534) NPSCheckToken': {
-      dumpRequest(session, rawData, requestCode)
+      dumpRequest(session.personaSocket, rawData, requestCode)
 
       // const customerId = Buffer.alloc(4)
       // data.copy(customerId, 0, 12)
@@ -422,7 +415,7 @@ function personaDataHandler(session, rawData) {
       break
     }
     case '(0x0519) NPSGetPersonaInfoByName': {
-      dumpRequest(session, rawData, requestCode)
+      dumpRequest(session.personaSocket, rawData, requestCode)
       const personaName = Buffer.alloc(rawData.length - 30)
       rawData.copy(personaName, 0, 30)
 
@@ -458,7 +451,7 @@ function lobbyDataHandler(session, rawData) {
 
   switch (requestCode) {
     case '(0x0100) NPS_REQUEST_GAME_CONNECT_SERVER': {
-      dumpRequest(session, rawData, requestCode)
+      dumpRequest(session.lobbySocket, rawData, requestCode)
       // const contextId = Buffer.alloc(34)
       // data.copy(contextId, 0, 14, 48)
       // const customer = nps.npsGetCustomerIdByContextId(contextId)
@@ -494,7 +487,7 @@ function lobbyDataHandler(session, rawData) {
     }
     case '(0x1101) NPSSendCommand': {
       const cmd = sendCommand(s, rawData, requestCode)
-      s.lobbySocket.write(cmd.encryptedResponse)
+      s.lobbySocket.write(cmd.encryptedCommand)
       break
     }
     default:
@@ -525,53 +518,76 @@ function sendPacketOkToLogin(session) {
   return session.lobbySocket.write(packetresult)
 }
 
-function loginListener(socket) {
-  const localId = `${socket.localAddress}_${socket.localPort}`
-  const socketId = `${socket.remoteAddress}_${socket.remotePort}`
-  logger.info(`Creating login socket: ${localId} => ${socketId}`)
+function loginListener(session) {
+  const s = session.loginSocket
+  s.localId = `${s.localAddress}_${s.localPort}`
+  s.socketId = `${s.remoteAddress}_${s.remotePort}`
+  logger.info(`Creating login socket: ${s.localId} => ${s.socketId}`)
 
   // Add a 'data' event handler to this instance of socket
-  socket.on('data', (data) => {
-    loginDataHandler(socket, socketId, data)
+  s.on('data', (data) => {
+    loginDataHandler(session, data)
+  })
+  s.on('error', (err) => {
+    if (err.code !== 'ECONNRESET') {
+      throw err
+    }
   })
 }
 
-function personaListener(socket) {
-  const localId = `${socket.localAddress}_${socket.localPort}`
-  const socketId = `${socket.remoteAddress}_${socket.remotePort}`
-  logger.info(`Creating persona socket: ${localId} => ${socketId}`)
+function personaListener(session) {
+  const s = session.personaSocket
+  s.localId = `${s.localAddress}_${s.localPort}`
+  s.socketId = `${s.remoteAddress}_${s.remotePort}`
+  logger.info(`Creating persona socket: ${s.localId} => ${s.socketId}`)
 
   // Add a 'data' event handler to this instance of socket
-  socket.on('data', (data) => {
-    personaDataHandler(socket, socketId, data)
+  s.on('data', (data) => {
+    personaDataHandler(session, data)
+  })
+  s.on('error', (err) => {
+    if (err.code !== 'ECONNRESET') {
+      throw err
+    }
   })
 }
 
 function lobbyListener(session) {
-  const s = session
-  const lobbySocket = s.lobbySocket
-  const localId = `${lobbySocket.localAddress}_${lobbySocket.localPort}`
-  const socketId = `${lobbySocket.remoteAddress}_${lobbySocket.remotePort}`
-  logger.info(`Creating lobby socket: ${localId} => ${socketId}`)
+  const sess = session
+  const s = session.lobbySocket
+  s.localId = `${s.localAddress}_${s.localPort}`
+  s.socketId = `${s.remoteAddress}_${s.remotePort}`
+  logger.info(`Creating lobby socket: ${s.localId} => ${s.socketId}`)
 
-  if (!s.loggedIntoLobby && sendPacketOkToLogin(s)) {
-    s.loggedIntoLobby = true
+  if (!session.loggedIntoLobby && sendPacketOkToLogin(session)) {
+    sess.loggedIntoLobby = true
   }
 
   // Add a 'data' event handler to this instance of socket
-  lobbySocket.on('data', (data) => {
-    lobbyDataHandler(s, data)
+  s.on('data', (data) => {
+    lobbyDataHandler(sess, data)
+  })
+  s.on('error', (err) => {
+    if (err.code !== 'ECONNRESET') {
+      throw err
+    }
   })
 }
 
-function databaseListener(socket) {
-  const localId = `${socket.localAddress}_${socket.localPort}`
-  const socketId = `${socket.remoteAddress}_${socket.remotePort}`
-  logger.info(`Creating database socket: ${localId} => ${socketId}`)
+function databaseListener(session) {
+  const s = session.databaseSocket
+  s.localId = `${s.localAddress}_${s.localPort}`
+  s.socketId = `${s.remoteAddress}_${s.remotePort}`
+  logger.info(`Creating database socket: ${s.localId} => ${s.socketId}`)
 
   // Add a 'data' event handler to this instance of socket
-  socket.on('data', (data) => {
-    databaseDataHandler(socket, socketId, data)
+  s.on('data', (data) => {
+    databaseDataHandler(session, data)
+  })
+  s.on('error', (err) => {
+    if (err.code !== 'ECONNRESET') {
+      throw err
+    }
   })
 }
 
@@ -586,13 +602,14 @@ function start(config, cbStart) {
   }
 
   // Start the servers
+  const session = {
+    privateKey,
+  }
   series({
     serverLogin: (callback) => {
       const server = net.createServer((socket) => {
-        loginListener({
-          loginSocket: socket,
-          privateKey,
-        })
+        session.loginSocket = socket
+        loginListener(session)
       })
       server.listen(config.serverLogin.port, () => {
         logger.info(`${config.serverLogin.name} Server listening on TCP port: ${config.serverLogin.port}`)
@@ -601,10 +618,8 @@ function start(config, cbStart) {
     },
     serverPersona: (callback) => {
       const server = net.createServer((socket) => {
-        personaListener({
-          personaSocket: socket,
-          privateKey,
-        })
+        session.personaSocket = socket
+        personaListener(session)
       })
       server.listen(config.serverPersona.port, () => {
         logger.info(`${config.serverPersona.name} Server listening on TCP port: ${config.serverPersona.port}`)
@@ -613,10 +628,8 @@ function start(config, cbStart) {
     },
     serverLobby: (callback) => {
       const server = net.createServer((socket) => {
-        lobbyListener({
-          lobbySocket: socket,
-          privateKey,
-        })
+        session.lobbySocket = socket
+        lobbyListener(session)
       })
       server.listen(config.serverLobby.port, () => {
         logger.info(`${config.serverLobby.name} Server listening on TCP port: ${config.serverLobby.port}`)
@@ -625,10 +638,8 @@ function start(config, cbStart) {
     },
     serverDatabase: (callback) => {
       const server = net.createServer((socket) => {
-        databaseListener({
-          databaseSocket: socket,
-          privateKey,
-        })
+        session.databaseSocket = socket
+        databaseListener(session)
       })
       server.listen(config.serverDatabase.port, () => {
         logger.info(`${config.serverDatabase.name} Server listening on TCP port: ${config.serverDatabase.port}`)
