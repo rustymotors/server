@@ -16,7 +16,7 @@
     "port": 8226
   },
   "serverPersona": {
-    "name": "Login",
+    "name": "Persona",
     "port": 8228
   },
   "serverLobby": {

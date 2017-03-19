@@ -98,15 +98,11 @@ function start(config, callback) {
   httpsServer.on('connection', (socket) => {
     logger.info('New SSL connection')
     socket.on('error', (error) => {
-      logger.error(`Socket Error: ${error.message}`)
+      logger.error(`SSL Socket Error: ${error.message}`)
     })
     socket.on('close', () => {
-      logger.info('Socket Connection closed')
+      logger.info('SSL Socket Connection closed')
     })
-  })
-
-  httpsServer.on('error', (error) => {
-    logger.error(`Error: ${error}`)
   })
 
   httpsServer.on('tlsClientError', (err) => {
