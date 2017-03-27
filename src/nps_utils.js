@@ -25,7 +25,8 @@ function dumpResponse(data, count) {
   for (let i = 0; (i < count && i < data.length); i += 1) {
     responseBytes += ` ${toHex(data[i])}`
   }
-  logger.debug(`Response Bytes: ${responseBytes}`)
+  logger.debug(`Response Bytes: ${responseBytes}\n
+    -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n`)
 }
 
 function npsGetCustomerIdByContextId(contextId) {

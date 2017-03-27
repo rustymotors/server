@@ -20,8 +20,8 @@ function msgClientConnect(session, rawData) {
 
   const packetcontent = crypto.randomBytes(516)
 
-  const packetresult = packet.buildPacket(516, 0x3100, packetcontent)
-  util.dumpResponse(packetresult, 516)
+  const packetresult = packet.buildPacket(512, 0x3100, packetcontent)
+  util.dumpResponse(packetresult, packetresult.length)
   return packetresult
 }
 
