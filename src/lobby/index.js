@@ -1,3 +1,4 @@
+const crypto = require('crypto')
 const logger = require('../logger.js')
 const packet = require('../packet.js')
 const util = require('../nps_utils.js')
@@ -61,18 +62,23 @@ function sendCommand(session, data) {
   util.dumpRequest(session.lobbySocket, data)
 
     // Create the packet content
-  // packetcontent = crypto.randomBytes(8)
-  const packetcontent = Buffer.from([0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19,
-    0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19])
+  const packetcontent = crypto.randomBytes(375)
+  // const packetcontent = Buffer.from([0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19,
+  //  0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19])
 
     // This is needed, not sure for what
   // Buffer.from([0x01, 0x01]).copy(packetcontent)
 
+  // Add the response code
+  packetcontent.writeUInt16BE(0x0219, 367)
+  packetcontent.writeUInt16BE(0x0101, 369)
+  packetcontent.writeUInt16BE(0x022C, 371)
+
     // Build the packet
-  const packetresult = packet.buildPacket(24, 0x0219,
+  const packetresult = packet.buildPacket(32, 0x0229,
     packetcontent)
 
-  util.dumpResponse(packetresult, 24)
+  util.dumpResponse(packetresult, packetresult.length)
 
   const cmdEncrypted = encryptCmd(s, packetresult)
   logger.debug(`encryptedResponse: ${cmdEncrypted.encryptedCommand.toString('hex')}`)
