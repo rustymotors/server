@@ -52,6 +52,14 @@ function premadeLogin() {
   ])
 }
 
+function craftGenericReply() {
+  const packet = Buffer.from([0x31, 0x00, 0x54, 0x4f, 0x4d, 0x43, 0x01, 0x00, 0x00,
+    0x00, 0x00, 0x65, 0x00, 0xb6, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00])
+
+  return packet
+}
+
 // TODO: Remove the need for this
 function premadePersonaMaps() {
   return Buffer.from([
@@ -125,6 +133,7 @@ function premadePersonaMaps() {
 
 module.exports = {
   buildPacket,
+  craftGenericReply,
   premadeLogin,
   premadePersonaMaps,
 }

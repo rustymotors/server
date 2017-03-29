@@ -18,9 +18,14 @@ function getDbMsgId(rawBuffer) {
 function msgClientConnect(session, rawData) {
   util.dumpRequest(session.databaseSocket, rawData)
 
-  const packetcontent = crypto.randomBytes(516)
+  // const packetcontent = crypto.randomBytes(516)
 
-  const packetresult = packet.buildPacket(512, 0x3100, packetcontent)
+  // Buffer.from([0x54, 0x4f, 0x4d, 0x43, 0x01, 0x00, 0x00, 0x00, 0x00]).copy(packetcontent, 0)
+
+  // const packetresult = packet.buildPacket(31, 0x3100, packetcontent)
+
+  const packetresult = packet.craftGenericReply()
+
   util.dumpResponse(packetresult, packetresult.length)
   return packetresult
 }

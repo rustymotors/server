@@ -30,6 +30,9 @@ function loginListener(session) {
       throw err
     }
   })
+  s.on('close', () => {
+    logger.info(`Closing login socket: ${s.localId} => ${s.socketId}`)
+  })
 }
 
 function personaListener(session) {
@@ -46,6 +49,9 @@ function personaListener(session) {
     if (err.code !== 'ECONNRESET') {
       throw err
     }
+  })
+  s.on('close', () => {
+    logger.info(`Closing persona socket: ${s.localId} => ${s.socketId}`)
   })
 }
 
@@ -69,6 +75,9 @@ function lobbyListener(session) {
       throw err
     }
   })
+  s.on('close', () => {
+    logger.info(`Closing lobby socket: ${s.localId} => ${s.socketId}`)
+  })
 }
 
 function databaseListener(session) {
@@ -85,6 +94,9 @@ function databaseListener(session) {
     if (err.code !== 'ECONNRESET') {
       throw err
     }
+  })
+  s.on('close', () => {
+    logger.info(`Closing database socket: ${s.localId} => ${s.socketId}`)
   })
 }
 
