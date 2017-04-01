@@ -1,4 +1,4 @@
-const crypto = require('crypto')
+// const crypto = require('crypto')
 const packet = require('../packet.js')
 const util = require('../nps_utils.js')
 
