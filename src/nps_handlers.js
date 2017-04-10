@@ -1,5 +1,5 @@
 const lobby = require('./lobby/index.js')
-const login = require('./login/index.js')
+const login = require('./login.js')
 const logger = require('./logger.js')
 const mcots = require('./mcots/index.js')
 const persona = require('./persona.js')
