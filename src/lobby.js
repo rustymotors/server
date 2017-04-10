@@ -3,6 +3,17 @@ const logger = require('./logger.js')
 const packet = require('./packet.js')
 const util = require('./nps_utils.js')
 
+// typedef struct _NPS_LoginInfo
+// {
+//   NPS_UserInfo UserData;           // The UserInfo for the login
+//   NPS_CUSTOMERID CustomerId;       // The global ID across all of NPS
+//   char keyHash [NPS_HASHED_KEY_LEN];
+//   char HostName[NPS_HOSTNAME_LEN]; // Name of the users computer (64)
+//   char MyIpAddr[NPS_IPADDR_LEN];   // IP address of the users computer (16)
+//   unsigned long Flags;             // The initial flags for the server (4)
+//   char Version[NPS_VERSION_LEN + 1]; // Version string (33)
+// }
+// NPS_LoginInfo;
 function npsRequestGameConnectServer(session, rawData) {
     util.dumpRequest(session.lobbySocket, rawData)
   // const contextId = Buffer.alloc(34)
