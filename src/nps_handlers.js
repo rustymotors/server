@@ -1,4 +1,4 @@
-const lobby = require('./lobby/index.js')
+const lobby = require('./lobby.js')
 const login = require('./login.js')
 const logger = require('./logger.js')
 const mcots = require('./mcots.js')
