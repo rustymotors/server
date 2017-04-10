@@ -86,7 +86,7 @@ function sendCommand(session, data) {
     packetcontent.writeUInt16BE(0x022C, 371)
 
     // Build the packet
-    const packetresult = packet.buildPacket(32, 0x0229,
+    const packetresult = packet.buildPacket(32, 0x0401,
     packetcontent)
 
     util.dumpResponse(packetresult, packetresult.length)
