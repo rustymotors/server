@@ -40,7 +40,10 @@ function npsGetPersonaMaps(session, data) {
     // This is the persona count
     persona.personacount.copy(packetcontent, 10)
 
-    // This is the max persona count
+    // Max personas
+    Buffer.from([0x01]).copy(packetcontent, 15)
+
+    // This is the max persona count (confirmed - debug)
     persona.maxpersonas.copy(packetcontent, 18)
 
     // PersonaId
