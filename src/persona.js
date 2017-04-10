@@ -11,8 +11,18 @@ function npsGetPersonaMapsByCustomerId(customerId) {
         return {
             personacount: Buffer.from([0x00, 0x01]),
         // Max Personas are how many there are not how many allowed
-            maxpersonas: Buffer.from([0x00, 0x02]),
+            maxpersonas: Buffer.from([0x01]),
             id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
+            name,
+            shardid: Buffer.from([0x00, 0x00, 0x00, 0x2C]),
+        }
+    case 1:
+        Buffer.from('Doctor Brown', 'utf8').copy(name)
+        return {
+            personacount: Buffer.from([0x00, 0x01]),
+            // Max Personas are how many there are not how many allowed
+            maxpersonas: Buffer.from([0x01]),
+            id: Buffer.from([0x00, 0x00, 0x00, 0x02]),
             name,
             shardid: Buffer.from([0x00, 0x00, 0x00, 0x2C]),
         }
@@ -40,11 +50,8 @@ function npsGetPersonaMaps(session, data) {
     // This is the persona count
     persona.personacount.copy(packetcontent, 10)
 
-    // Max personas
-    Buffer.from([0x01]).copy(packetcontent, 15)
-
     // This is the max persona count (confirmed - debug)
-    persona.maxpersonas.copy(packetcontent, 18)
+    persona.maxpersonas.copy(packetcontent, 15)
 
     // PersonaId
     persona.id.copy(packetcontent, 18)
