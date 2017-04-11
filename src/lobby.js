@@ -34,10 +34,11 @@ function npsRequestGameConnectServer(session, rawData) {
   // if it's 97 it says the username returned is correct
   // if it's 06 it says it's different, but it's random
   // It's parsed by the NPS cipher somehow.
-    Buffer.from([0x05]).copy(packetcontent, 1)
+    Buffer.from([0x08]).copy(packetcontent, 1)
 
     // load the customer id
-    Buffer.from([0xAB, 0x01, 0x00, 0x00]).copy(packetcontent, 2)
+    // Buffer.from([0xAB, 0x01, 0x00, 0x00]).copy(packetcontent, 2)
+    Buffer.from([0x00, 0x00, 0x00, 0x02]).copy(packetcontent, 2)
 
   // RIFF Count = total packet len - 4 for header
   // Buffer.from([0x00, 0x05]).copy(packetcontent, 1490)
@@ -92,6 +93,9 @@ function sendCommand(session, data) {
     util.dumpResponse(packetresult, packetresult.length)
 
     const cmdEncrypted = encryptCmd(s, packetresult)
+
+    cmdEncrypted.encryptedCommand = Buffer.concat([Buffer.from([0x11, 0x01]), cmdEncrypted.encryptedCommand])
+
     logger.debug(`encryptedResponse: ${cmdEncrypted.encryptedCommand.toString('hex')}`)
     return cmdEncrypted
 }
