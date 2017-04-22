@@ -107,8 +107,8 @@ function lobbyDataHandler(session, rawData) {
     }
     // npsSendCommand
     case '1101': {
-        const cmd = lobby.sendCommand(s, rawData, requestCode)
-        s.lobbySocket.write(cmd.encryptedCommand)
+        // const cmd = lobby.sendCommand(s, rawData, requestCode)
+        // s.lobbySocket.write(cmd.encryptedCommand)
         break
     }
     default:
