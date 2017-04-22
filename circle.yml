@@ -3,11 +3,11 @@ machine:
     version: 6.10.0
 test:
   pre:
-    - npm run lint
     - openssl genrsa -out ./data/private_key.pem 1024
     - openssl rsa -in ./data/private_key.pem -pubout -out ./data/pub.key
+test:
   override:
-    - mkdir -p $CIRCLE_TEST_REPORTS/junit
-    - mocha -R mocha-multi -O spec=-,xunit=$CIRCLE_TEST_REPORTS/junit/test-results.xml
     - npm run coverage
+  post:
+    - mkdir $CIRCLE_TEST_REPORTS/junit/ && cp test-results.xml $CIRCLE_TEST_REPORTS/junit/test-results.xml
     - cp -R coverage $CIRCLE_ARTIFACTS/coverage

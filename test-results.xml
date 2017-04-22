@@ -1,0 +1,8 @@
+<testsuite name="Mocha Tests" tests="6" failures="0" errors="0" skipped="0" timestamp="Sun, 19 Mar 2017 17:23:56 GMT" time="1.571">
+<testcase classname="Config" name="should have loggerLevel" time="0.001"/>
+<testcase classname="Config" name="should have serverConfig" time="0"/>
+<testcase classname="Databases" name="should be able to create tables" time="0.004"/>
+<testcase classname="Databases" name="should be able to write to the database" time="0.77"/>
+<testcase classname="Databases" name="should be able to fetch persona by customer id" time="0.008"/>
+<testcase classname="Databases" name="should be able to delete from the database" time="0.754"/>
+</testsuite>
