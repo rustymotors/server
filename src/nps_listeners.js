@@ -7,7 +7,7 @@ const util = require('./nps_utils.js')
 function sendPacketOkToLogin(session) {
     const packetcontent = crypto.randomBytes(151)
 
-  // This is needed, not sure for what
+    // This is needed, not sure for what
     Buffer.from([0x01, 0x01]).copy(packetcontent)
 
     const packetresult = packet.buildPacket(4, 0x0230, packetcontent)
@@ -21,7 +21,7 @@ function loginListener(session) {
     s.socketId = `${s.remoteAddress}_${s.remotePort}`
     logger.info(`Creating login socket: ${s.localId} => ${s.socketId}`)
 
-  // Add a 'data' event handler to this instance of socket
+    // Add a 'data' event handler to this instance of socket
     s.on('data', (data) => {
         handler.loginDataHandler(session, data)
     })
@@ -41,7 +41,7 @@ function personaListener(session) {
     s.socketId = `${s.remoteAddress}_${s.remotePort}`
     logger.info(`Creating persona socket: ${s.localId} => ${s.socketId}`)
 
-  // Add a 'data' event handler to this instance of socket
+    // Add a 'data' event handler to this instance of socket
     s.on('data', (data) => {
         handler.personaDataHandler(session, data)
     })
@@ -66,7 +66,7 @@ function lobbyListener(session) {
         sess.loggedIntoLobby = true
     }
 
-  // Add a 'data' event handler to this instance of socket
+    // Add a 'data' event handler to this instance of socket
     s.on('data', (data) => {
         handler.lobbyDataHandler(sess, data)
     })
@@ -86,7 +86,7 @@ function databaseListener(session) {
     s.socketId = `${s.remoteAddress}_${s.remotePort}`
     logger.info(`Creating database socket: ${s.localId} => ${s.socketId}`)
 
-  // Add a 'data' event handler to this instance of socket
+    // Add a 'data' event handler to this instance of socket
     s.on('data', (data) => {
         handler.databaseDataHandler(session, data)
     })

@@ -16,34 +16,34 @@ const util = require('./nps_utils.js')
 // NPS_LoginInfo;
 function npsRequestGameConnectServer(session, rawData) {
     util.dumpRequest(session.lobbySocket, rawData)
-  // const contextId = Buffer.alloc(34)
-  // data.copy(contextId, 0, 14, 48)
-  // const customer = nps.npsGetCustomerIdByContextId(contextId)
-  // logger.debug(`customer: ${customer}`)
+    // const contextId = Buffer.alloc(34)
+    // data.copy(contextId, 0, 14, 48)
+    // const customer = nps.npsGetCustomerIdByContextId(contextId)
+    // logger.debug(`customer: ${customer}`)
 
 
-  // Create the packet content
+    // Create the packet content
     const packetcontent = Buffer.alloc(6)
 
-  // Server ID
+    // Server ID
     Buffer.from([0x00]).copy(packetcontent)
 
-  // This is needed, not sure for what
-  // Buffer.from([0x01, 0x01]).copy(packetcontent)
+    // This is needed, not sure for what
+    // Buffer.from([0x01, 0x01]).copy(packetcontent)
 
-  // if it's 97 it says the username returned is correct
-  // if it's 06 it says it's different, but it's random
-  // It's parsed by the NPS cipher somehow.
+    // if it's 97 it says the username returned is correct
+    // if it's 06 it says it's different, but it's random
+    // It's parsed by the NPS cipher somehow.
     Buffer.from([0x08]).copy(packetcontent, 1)
 
     // load the customer id
     // Buffer.from([0xAB, 0x01, 0x00, 0x00]).copy(packetcontent, 2)
     Buffer.from([0x00, 0x00, 0x00, 0x02]).copy(packetcontent, 2)
 
-  // RIFF Count = total packet len - 4 for header
-  // Buffer.from([0x00, 0x05]).copy(packetcontent, 1490)
+    // RIFF Count = total packet len - 4 for header
+    // Buffer.from([0x00, 0x05]).copy(packetcontent, 1490)
 
-  // Build the packet
+    // Build the packet
     const packetresult = packet.buildPacket(8, 0x0120, packetcontent)
 
     util.dumpResponse(packetresult, 8)
@@ -60,7 +60,7 @@ function decryptCmd(session, cypherCmd) {
 
 function encryptCmd(session, cypherCmd) {
     const s = session
-  // logger.debug('raw cmd: ' + cypherCmd + cypherCmd.length)
+    // logger.debug('raw cmd: ' + cypherCmd + cypherCmd.length)
     s.encryptedCommand = s.cypher.update(cypherCmd)
     return s
 }
@@ -75,13 +75,13 @@ function sendCommand(session, data) {
 
     // Create the packet content
     const packetcontent = crypto.randomBytes(375)
-  // const packetcontent = Buffer.from([0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19,
-  //  0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19])
+    // const packetcontent = Buffer.from([0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19,
+    //  0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19])
 
     // This is needed, not sure for what
-  // Buffer.from([0x01, 0x01]).copy(packetcontent)
+    // Buffer.from([0x01, 0x01]).copy(packetcontent)
 
-  // Add the response code
+    // Add the response code
     packetcontent.writeUInt16BE(0x0219, 367)
     packetcontent.writeUInt16BE(0x0101, 369)
     packetcontent.writeUInt16BE(0x022C, 371)
@@ -89,7 +89,7 @@ function sendCommand(session, data) {
     // Build the packet
     // const packetresult = packet.buildPacket(32, 0x0401,
     const packetresult = packet.buildPacket(32, 0x0229,
-    packetcontent)
+        packetcontent)
 
     util.dumpResponse(packetresult, packetresult.length)
 

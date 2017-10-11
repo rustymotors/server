@@ -10,7 +10,7 @@ function npsGetPersonaMapsByCustomerId(customerId) {
         Buffer.from('Doc', 'utf8').copy(name)
         return {
             personacount: Buffer.from([0x00, 0x01]),
-        // Max Personas are how many there are not how many allowed
+            // Max Personas are how many there are not how many allowed
             maxpersonas: Buffer.from([0x01]),
             id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
             name,
@@ -40,8 +40,8 @@ function npsGetPersonaMaps(session, data) {
     data.copy(customerId, 0, 12)
     const persona = npsGetPersonaMapsByCustomerId(customerId)
 
-  // Create the packet content
-  // packetcontent = crypto.randomBytes(1024)
+    // Create the packet content
+    // packetcontent = crypto.randomBytes(1024)
     const packetcontent = packet.premadePersonaMaps()
 
     // This is needed, not sure for what
@@ -70,7 +70,7 @@ function npsGetPersonaMaps(session, data) {
 }
 
 function npsLogoutGameUser(session, data) {
-  // logger.debug(`cmd: ${decryptCmd(new Buffer(data.slice(4))).toString('hex')}`)
+    // logger.debug(`cmd: ${decryptCmd(new Buffer(data.slice(4))).toString('hex')}`)
 
     util.dumpRequest(session.personaSocket, data)
 
@@ -90,16 +90,16 @@ function npsLogoutGameUser(session, data) {
 function npsSelectGamePersona(session, rawData) {
     util.dumpRequest(session.personaSocket, rawData)
 
-  // Create the packet content
+    // Create the packet content
     const packetcontent = crypto.randomBytes(44971)
 
-  // This is needed, not sure for what
+    // This is needed, not sure for what
     Buffer.from([0x01, 0x01]).copy(packetcontent)
 
-  // Build the packet
-  // Response Code
-  // 207 = success
-  // packetresult = packet.buildPacket(44975, 0x0207, packetcontent)
+    // Build the packet
+    // Response Code
+    // 207 = success
+    // packetresult = packet.buildPacket(44975, 0x0207, packetcontent)
     const packetresult = packet.buildPacket(261, 0x0207, packetcontent)
 
     util.dumpResponse(packetresult, 16)
@@ -113,28 +113,28 @@ function npsValidatePersonaName(session, rawData) {
     rawData.copy(customerId, 0, 12)
     const persona = npsGetPersonaMapsByCustomerId(customerId)
 
-  // Create the packet content
+    // Create the packet content
     const packetcontent = crypto.randomBytes(1024)
 
-  // This is needed, not sure for what
+    // This is needed, not sure for what
     Buffer.from([0x01, 0x01]).copy(packetcontent)
 
-  // This is the persona count
+    // This is the persona count
     persona.personacount.copy(packetcontent, 10)
 
-  // This is the max persona count
+    // This is the max persona count
     persona.maxpersonas.copy(packetcontent, 18)
 
-  // PersonaId
+    // PersonaId
     persona.id.copy(packetcontent, 18)
 
-  // Shard ID
+    // Shard ID
     persona.shardid.copy(packetcontent, 22)
 
-  // Persona Name = 30-bit null terminated string
+    // Persona Name = 30-bit null terminated string
     persona.name.copy(packetcontent, 32)
 
-  // Build the packet
+    // Build the packet
     const packetresult = packet.buildPacket(1024, 0x0601, packetcontent)
 
     util.dumpResponse(packetresult, 1024)
@@ -148,13 +148,13 @@ function npsGetPersonaInfoByName(session, rawData) {
 
     logger.debug(`personaName ${personaName}`)
 
-  // Create the packet content
+    // Create the packet content
     const packetcontent = crypto.randomBytes(44976)
 
-  // This is needed, not sure for what
+    // This is needed, not sure for what
     Buffer.from([0x01, 0x01]).copy(packetcontent)
 
-  // Build the packet
+    // Build the packet
     const packetresult = packet.buildPacket(48380, 0x0601, packetcontent)
 
     util.dumpResponse(packetresult, 16)
@@ -164,32 +164,32 @@ function npsGetPersonaInfoByName(session, rawData) {
 function npsCheckToken(session, rawData) {
     util.dumpRequest(session.personaSocket, rawData)
 
-  // const customerId = Buffer.alloc(4)
-  // data.copy(customerId, 0, 12)
-  // const persona = nps.npsGetPersonaMapsByCustomerId(customerId)
+    // const customerId = Buffer.alloc(4)
+    // data.copy(customerId, 0, 12)
+    // const persona = nps.npsGetPersonaMapsByCustomerId(customerId)
 
-  // Create the packet content
+    // Create the packet content
     const packetcontent = crypto.randomBytes(1024)
 
-  // This is needed, not sure for what
+    // This is needed, not sure for what
     Buffer.from([0x01, 0x01]).copy(packetcontent)
 
-  // This is the persona count
-  // persona.personacount.copy(packetcontent, 10)
+    // This is the persona count
+    // persona.personacount.copy(packetcontent, 10)
 
-  // This is the max persona count
-  // persona.maxpersonas.copy(packetcontent, 18)
+    // This is the max persona count
+    // persona.maxpersonas.copy(packetcontent, 18)
 
-  // PersonaId
-  // persona.id.copy(packetcontent, 18)
+    // PersonaId
+    // persona.id.copy(packetcontent, 18)
 
-  // Shard ID
-  // persona.shardid.copy(packetcontent, 22)
+    // Shard ID
+    // persona.shardid.copy(packetcontent, 22)
 
-  // Persona Name = 30-bit null terminated string
-  // persona.name.copy(packetcontent, 32)
+    // Persona Name = 30-bit null terminated string
+    // persona.name.copy(packetcontent, 32)
 
-  // Build the packet
+    // Build the packet
     const packetresult = packet.buildPacket(1024, 0x0207, packetcontent)
 
     util.dumpResponse(packetresult, 1024)

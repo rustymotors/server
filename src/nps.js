@@ -13,17 +13,17 @@ function initCrypto(config) {
         logger.error(`Error loading private key: ${e}`)
         process.exit(1)
     }
-  // privateKey = new NodeRSA(fs.readFileSync(config.privateKeyFilename))
+    // privateKey = new NodeRSA(fs.readFileSync(config.privateKeyFilename))
     return new NodeRSA(fs.readFileSync(config.privateKeyFilename))
 }
 
 function npsCheckToken() {
-  // data[17] = plate name
+    // data[17] = plate name
     return null
 }
 
 function start(config, cbStart) {
-  /* Initialize the crypto */
+    /* Initialize the crypto */
     let privateKey = null
     try {
         privateKey = initCrypto(config)
@@ -32,7 +32,7 @@ function start(config, cbStart) {
         process.exit(1)
     }
 
-  // Start the servers
+    // Start the servers
     const session = {
         privateKey,
     }
@@ -79,7 +79,7 @@ function start(config, cbStart) {
         },
     }, (err) => {
         if (err) { throw err }
-    // Not currently using this
+        // Not currently using this
 
         cbStart(null)
     })

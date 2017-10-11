@@ -19,7 +19,7 @@ function loginDataHandler(session, rawData) {
         const s = session
         loginSession = login.userLogin(s, rawData)
 
-      // Update the onData handler with the new session
+        // Update the onData handler with the new session
         s.loginSocket.removeListener('data', loginDataHandler)
         s.loginSocket.on('data', (data) => {
             loginDataHandler(loginSession, data)
@@ -75,10 +75,10 @@ function personaDataHandler(session, rawData) {
         const packetresult = persona.NPSGetPersonaInfoByName(s, rawData)
         s.personaSocket.write(packetresult)
 
-      // Response Code
-      // 607 = persona name not available
-      // 611 = No error, starter car lot
-      // 602 = No error, starter car lot
+        // Response Code
+        // 607 = persona name not available
+        // 611 = No error, starter car lot
+        // 602 = No error, starter car lot
         break
     }
     default:
@@ -120,7 +120,7 @@ function lobbyDataHandler(session, rawData) {
 
 // sub_40B933
 function databaseDataHandler(session, rawData) {
-  // const s = session
+    // const s = session
     const requestCode = getRequestCode(rawData)
     const msgId = mcots.getDbMsgId(rawData)
     logger.info(`Db message ID ${msgId} was recieved on port 43300`)
@@ -139,7 +139,7 @@ function databaseDataHandler(session, rawData) {
         util.dumpRequest(session.databaseSocket, rawData, requestCode)
         throw new Error(`Unknown code ${requestCode} was recieved on port 43300`)
     }
-  // return s
+    // return s
 }
 
 module.exports = {

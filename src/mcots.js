@@ -1,7 +1,7 @@
 const util = require('./nps_utils.js')
 
 function getDbMsgId(rawBuffer) {
-  // 3100 544f4d4303 00000000 b601
+    // 3100 544f4d4303 00000000 b601
     const msgId = `${util.toHex(rawBuffer[12])}${util.toHex(rawBuffer[11])}`
     switch (msgId) {
     case '01B6':
@@ -51,9 +51,9 @@ function msgClientConnect(session, rawData) {
 
     Buffer.from([0xD5, 0x00]).copy(packetcontent, 6)
 
-  // const packetresult = packet.buildPacket(31, 0x3100, packetcontent)
+    // const packetresult = packet.buildPacket(31, 0x3100, packetcontent)
 
-//    const packetresult = packet.craftGenericReply()
+    //    const packetresult = packet.craftGenericReply()
 
     util.dumpResponse(packetcontent, packetcontent.length)
     return packetcontent
