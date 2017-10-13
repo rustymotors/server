@@ -6,7 +6,10 @@ const NodeRSA = require('node-rsa')
 const listener = require('./nps_listeners.js')
 const logger = require('./logger.js')
 
-function initCrypto(config) {
+const configurationFile = require('../config.json')
+
+function initCrypto() {
+    const config = configurationFile.serverConfig
     try {
         fs.statSync(config.privateKeyFilename)
     } catch (e) {
@@ -22,11 +25,11 @@ function npsCheckToken() {
     return null
 }
 
-function start(config, cbStart) {
+function start(cbStart) {
     /* Initialize the crypto */
     let privateKey = null
     try {
-        privateKey = initCrypto(config)
+        privateKey = initCrypto()
     } catch (err) {
         logger.error(err)
         process.exit(1)
@@ -36,6 +39,9 @@ function start(config, cbStart) {
     const session = {
         privateKey,
     }
+
+    const config = configurationFile.serverConfig
+
     series({
         serverLogin: (callback) => {
             const server = net.createServer((socket) => {

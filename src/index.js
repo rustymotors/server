@@ -19,7 +19,7 @@ function startServers() {
         logger.info('HTTP Servers started')
     })
 
-    nps.start(config.serverConfig, (err) => {
+    nps.start((err) => {
         if (err) { throw err }
         logger.info('TCP Servers started')
     })
