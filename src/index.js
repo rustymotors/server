@@ -2,7 +2,6 @@
 const logger = require('./logger.js')
 const http = require('./http.js')
 const nps = require('./nps.js')
-const config = require('../config.json')
 
 
 /**
