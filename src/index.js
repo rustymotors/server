@@ -4,10 +4,17 @@ const http = require('./http.js')
 const nps = require('./nps.js')
 const config = require('../config.json')
 
+
+/**
+Need to open create listeners on the ports
+
+When a connection opens, cass it to a session controller that will log the
+connection and fork to a connection handlers
+**/
+
 function startServers() {
-    logger.level = config.loggerLevel
     /* Start the NPS servers */
-    http.start(config.serverConfig, (err) => {
+    http.start((err) => {
         if (err) { throw err }
         logger.info('HTTP Servers started')
     })

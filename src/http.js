@@ -4,6 +4,7 @@ const http = require('http')
 const https = require('https')
 const sslConfig = require('ssl-config')('old')
 const fs = require('fs')
+const configurationFile = require('../config.json')
 
 const logger = require('./logger.js')
 const patchServer = require('./patch_server.js')
@@ -37,7 +38,8 @@ function sslOptions(config) {
     }
 }
 
-function start(config, callback) {
+function start(callback) {
+    const config = configurationFile.serverConfig
     app.get('/ShardList/', (req, res) => {
         res.set('Content-Type', 'text/plain')
         res.send(generateShardList(config))
