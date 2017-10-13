@@ -1,25 +1,18 @@
+const castanetResponse = {
+  headers: "'Content-Type', 'application/octet-stream'",
+  body: new Buffer("cafebeef00000000000003", "hex")
+};
+
 function patchUpdateInfo() {
-  const res = {
-    headers: "'Content-Type', 'application/octet-stream'",
-    body: new Buffer("cafebeef00000000000003", "hex")
-  };
-  return res;
+  return castanetRespons;
 }
 
 function patchNPS() {
-  const res = {
-    headers: "'Content-Type', 'application/octet-stream'",
-    body: new Buffer("cafebeef00000000000003", "hex")
-  };
-  return res;
+  return castanetRespons;
 }
 
 function patchMCO() {
-  const res = {
-    headers: "'Content-Type', 'application/octet-stream'",
-    body: new Buffer("cafebeef00000000000003", "hex")
-  };
-  return res;
+  return castanetRespons;
 }
 
 module.exports = {
