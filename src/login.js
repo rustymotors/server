@@ -27,9 +27,9 @@ function userLogin(session, data) {
     data.copy(contextId, 0, 14, 48)
     const customer = util.npsGetCustomerIdByContextId(contextId)
 
-  // Create the packet content
-  // packetcontent = crypto.randomBytes(44971)
-  // packetcontent = crypto.randomBytes(516)
+    // Create the packet content
+    // packetcontent = crypto.randomBytes(44971)
+    // packetcontent = crypto.randomBytes(516)
     const packetcontent = packet.premadeLogin()
 
     // This is needed, not sure for what
@@ -38,25 +38,25 @@ function userLogin(session, data) {
     // load the customer id
     customer.customerId.copy(packetcontent, 10)
 
-  // Don't use queue?
+    // Don't use queue?
     Buffer.from([0x00]).copy(packetcontent, 207)
-  // Don't use queue? (debug)
+    // Don't use queue? (debug)
     Buffer.from([0x00]).copy(packetcontent, 463)
 
-  // Set response Code 0x0601 (debug)
+    // Set response Code 0x0601 (debug)
     packetcontent[255] = 0x06
     packetcontent[256] = 0x01
 
-  // For debug
+    // For debug
     packetcontent[257] = 0x01
     packetcontent[258] = 0x01
 
 
-  // load the customer id (debug)
+    // load the customer id (debug)
     customer.customerId.copy(packetcontent, 267)
 
-  // Build the packet
-  // packetresult = packet.buildPacket(44975, 0x0601, packetcontent)
+    // Build the packet
+    // packetresult = packet.buildPacket(44975, 0x0601, packetcontent)
     const packetresult = packet.buildPacket(516, 0x0601, packetcontent)
 
     util.dumpResponse(packetresult, 516)

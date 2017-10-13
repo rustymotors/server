@@ -52,7 +52,7 @@ function start(config, callback) {
     app.use(bodyParser.json()) // support json encoded bodies
     app.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
 
-  // Server port is set by PORT env or web_port from config file with fallback to 3000
+    // Server port is set by PORT env or web_port from config file with fallback to 3000
     app.set('port', config.serverAuthLogin.port)
     app.set('port_ssl', config.serverPatch.port)
 
