@@ -2,9 +2,9 @@
 const logger = require('./logger.js')
 const http = require('./http.js')
 const nps = require('./nps.js')
-const configuration = require('./config.js')
+const config = require('../config.json')
 
-function startServers(config) {
+function startServers() {
     logger.level = config.loggerLevel
     /* Start the NPS servers */
     http.start(config.serverConfig, (err) => {
@@ -19,6 +19,5 @@ function startServers(config) {
 }
 
 module.exports = {
-    loadConfig: configuration.loadConfig,
     startServers,
 }
