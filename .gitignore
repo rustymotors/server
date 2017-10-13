@@ -5,4 +5,4 @@ coverage
 npm-debug.log
 .nyc_output
 
-test-results.xml
+test-reports/*.xml
