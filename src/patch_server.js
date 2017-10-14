@@ -4,15 +4,15 @@ const castanetResponse = {
 };
 
 function patchUpdateInfo() {
-  return castanetRespons;
+  return castanetResponse;
 }
 
 function patchNPS() {
-  return castanetRespons;
+  return castanetResponse;
 }
 
 function patchMCO() {
-  return castanetRespons;
+  return castanetResponse;
 }
 
 module.exports = {
