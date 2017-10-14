@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const logger = require("./logger.js");
 const packet = require("./packet.js");
 const util = require("./nps_utils.js");
+const MsgPack = require("../lib/MsgPack.js");
 
 // typedef struct _NPS_LoginInfo
 // {
@@ -15,6 +16,11 @@ const util = require("./nps_utils.js");
 // }
 // NPS_LoginInfo;
 function npsRequestGameConnectServer(session, rawData) {
+  // Load the recieved data into a MsgPack class
+  const msgPack = MsgPack(rawData);
+  console.log(msgPack.GetOpCode());
+  console.log(msgPack.GetMsgLen());
+
   util.dumpRequest(session.lobbySocket, rawData);
   // const contextId = Buffer.alloc(34)
   // data.copy(contextId, 0, 14, 48)
