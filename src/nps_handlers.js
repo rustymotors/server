@@ -5,6 +5,8 @@ const mcots = require("./mcots.js");
 const persona = require("./persona.js");
 const util = require("./nps_utils.js");
 
+const MessageNode = require("./MessageNode.js");
+
 function getRequestCode(rawBuffer) {
   return `${util.toHex(rawBuffer[0])}${util.toHex(rawBuffer[1])}`;
 }
@@ -119,6 +121,11 @@ function lobbyDataHandler(session, rawData) {
 }
 
 function databaseDataHandler(session, rawData) {
+  messageNode = MessageNode(rawData);
+  console.log(messageNode.header.length);
+  console.log(messageNode.header.mcosig);
+  console.log(messageNode.buffer);
+
   const requestCode = getRequestCode(rawData);
   const msgId = mcots.getDbMsgId(rawData);
   logger.info(`Db message ID ${msgId} was recieved on port 43300`);
