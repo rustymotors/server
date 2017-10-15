@@ -119,7 +119,6 @@ function lobbyDataHandler(session, rawData) {
 }
 
 function databaseDataHandler(session, rawData) {
-  // const s = session
   const requestCode = getRequestCode(rawData);
   const msgId = mcots.getDbMsgId(rawData);
   logger.info(`Db message ID ${msgId} was recieved on port 43300`);
@@ -136,9 +135,8 @@ function databaseDataHandler(session, rawData) {
     }
     default:
       util.dumpRequest(session.databaseSocket, rawData, requestCode);
-      throw new Error(`Unknown code ${requestCode} was recieved on port 43300`);
+      logger.error(`Unknown code ${requestCode} was recieved on port 43300`);
   }
-  // return s
 }
 
 module.exports = {
