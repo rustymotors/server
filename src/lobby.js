@@ -27,31 +27,27 @@ function npsRequestGameConnectServer(session, rawData) {
   // const customer = nps.npsGetCustomerIdByContextId(contextId)
   // logger.debug(`customer: ${customer}`)
 
-  // Create the packet content
-  const packetcontent = Buffer.alloc(6);
+  // Return a _NPS_UserInfo structure - 40
+  const packetcontent = Buffer.alloc(38);
 
-  // Server ID
-  Buffer.from([0x00]).copy(packetcontent);
+  // MsgLen
+  Buffer.from([0x28]).copy(packetcontent);
 
-  // This is needed, not sure for what
-  // Buffer.from([0x01, 0x01]).copy(packetcontent)
-
-  // if it's 97 it says the username returned is correct
-  // if it's 06 it says it's different, but it's random
-  // It's parsed by the NPS cipher somehow.
-  Buffer.from([0x08]).copy(packetcontent, 1);
-
-  // load the customer id
-  // Buffer.from([0xAB, 0x01, 0x00, 0x00]).copy(packetcontent, 2)
+  // NPS_USERID - User ID - persona id - long
   Buffer.from([0x00, 0x00, 0x00, 0x02]).copy(packetcontent, 2);
 
-  // RIFF Count = total packet len - 4 for header
-  // Buffer.from([0x00, 0x05]).copy(packetcontent, 1490)
+  // User name (32)
+  const name = Buffer.alloc(32);
+  Buffer.from("Doctor Brown", "utf8").copy(name);
+  name.copy(packetcontent, 6);
+
+  // UserData - User controllable data (64)
+  Buffer.alloc(64).copy(packetcontent, 38);
 
   // Build the packet
-  const packetresult = packet.buildPacket(8, 0x0120, packetcontent);
+  const packetresult = packet.buildPacket(102, 0x0120, packetcontent);
 
-  util.dumpResponse(packetresult, 8);
+  util.dumpResponse(packetresult, packetresult.length);
   return packetresult;
 }
 

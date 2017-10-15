@@ -48,7 +48,7 @@ function personaDataHandler(session, rawData) {
     // npsLogoutGameUser
     case "050F": {
       const p = persona.npsLogoutGameUser(s, rawData);
-      s.loggedIntoLobby = false;
+      //s.loggedIntoLobby = false;
       s.personaSocket.write(p);
       break;
     }
@@ -107,8 +107,8 @@ function lobbyDataHandler(session, rawData) {
     }
     // npsSendCommand
     case "1101": {
-      // const cmd = lobby.sendCommand(s, rawData, requestCode)
-      // s.lobbySocket.write(cmd.encryptedCommand)
+      const cmd = lobby.sendCommand(s, rawData, requestCode);
+      s.lobbySocket.write(cmd.encryptedCommand);
       break;
     }
     default:
@@ -118,7 +118,6 @@ function lobbyDataHandler(session, rawData) {
   return s;
 }
 
-// sub_40B933
 function databaseDataHandler(session, rawData) {
   // const s = session
   const requestCode = getRequestCode(rawData);

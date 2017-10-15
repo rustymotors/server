@@ -62,10 +62,6 @@ function lobbyListener(session) {
   s.socketId = `${s.remoteAddress}_${s.remotePort}`;
   logger.info(`Creating lobby socket: ${s.localId} => ${s.socketId}`);
 
-  if (!session.loggedIntoLobby && sendPacketOkToLogin(session)) {
-    sess.loggedIntoLobby = true;
-  }
-
   // Add a 'data' event handler to this instance of socket
   s.on("data", data => {
     handler.lobbyDataHandler(sess, data);
