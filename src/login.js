@@ -11,6 +11,13 @@ function decryptSessionKey(session, encryptedKeySet) {
       "hex"
     ).toString("base64");
     const decrypted = s.privateKey.decrypt(encryptedKeySetB64, "base64");
+    const decrypted2 = Buffer.from(
+      Buffer.from(decrypted, "base64")
+        .toString("hex")
+        .substring(4, 68),
+      "hex"
+    );
+    logger.debug("decrypted skey: ", decrypted2);
     s.sessionKey = Buffer.from(
       Buffer.from(decrypted, "base64")
         .toString("hex")
