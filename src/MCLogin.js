@@ -19,3 +19,5 @@
 */
 // bool ClientConnect( ConnectionInfo * info, MessageNode * node)
 function ClientConnect(info, node) {}
+
+module.exports = ClientConnect;

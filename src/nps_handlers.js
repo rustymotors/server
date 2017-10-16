@@ -124,6 +124,8 @@ function databaseDataHandler(session, rawData) {
   messageNode = MessageNode(rawData);
   console.log(messageNode.header.length);
   console.log(messageNode.header.mcosig);
+  console.log(messageNode.seq);
+  console.log(messageNode.flags);
   console.log(messageNode.buffer);
 
   const requestCode = getRequestCode(rawData);
