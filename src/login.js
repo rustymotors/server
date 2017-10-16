@@ -3,6 +3,8 @@ const logger = require("./logger.js");
 const packet = require("./packet.js");
 const util = require("./nps_utils.js");
 
+const LoginPacket = require("./LoginPacket.js");
+
 function decryptSessionKey(session, encryptedKeySet) {
   const s = session;
   try {
@@ -11,13 +13,6 @@ function decryptSessionKey(session, encryptedKeySet) {
       "hex"
     ).toString("base64");
     const decrypted = s.privateKey.decrypt(encryptedKeySetB64, "base64");
-    const decrypted2 = Buffer.from(
-      Buffer.from(decrypted, "base64")
-        .toString("hex")
-        .substring(4, 68),
-      "hex"
-    );
-    logger.debug("decrypted skey: ", decrypted2);
     s.sessionKey = Buffer.from(
       Buffer.from(decrypted, "base64")
         .toString("hex")
@@ -40,6 +35,9 @@ function decryptSessionKey(session, encryptedKeySet) {
 
 function userLogin(session, data) {
   const s = session;
+
+  loginPacket = LoginPacket(session, data);
+  console.log("Decripted sessionKey: ", loginPacket.sessionKey);
 
   util.dumpRequest(s.loginSocket, data);
   const contextId = Buffer.alloc(34);
