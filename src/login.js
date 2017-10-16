@@ -3,6 +3,8 @@ const logger = require("./logger.js");
 const packet = require("./packet.js");
 const util = require("./nps_utils.js");
 
+const LoginPacket = require("./LoginPacket.js");
+
 function decryptSessionKey(session, encryptedKeySet) {
   const s = session;
   try {
@@ -33,6 +35,9 @@ function decryptSessionKey(session, encryptedKeySet) {
 
 function userLogin(session, data) {
   const s = session;
+
+  loginPacket = LoginPacket(session, data);
+  console.log("Decripted sessionKey: ", loginPacket.sessionKey);
 
   util.dumpRequest(s.loginSocket, data);
   const contextId = Buffer.alloc(34);

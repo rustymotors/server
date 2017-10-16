@@ -54,7 +54,9 @@ function msgClientConnect(session, rawData) {
   //    const packetresult = packet.craftGenericReply()
 
   util.dumpResponse(packetcontent, packetcontent.length);
-  return packetcontent;
+
+  // return packetcontent;
+  return rawData;
 }
 
 module.exports = {

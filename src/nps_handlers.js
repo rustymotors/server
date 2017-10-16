@@ -5,6 +5,8 @@ const mcots = require("./mcots.js");
 const persona = require("./persona.js");
 const util = require("./nps_utils.js");
 
+const MessageNode = require("./MessageNode.js");
+
 function getRequestCode(rawBuffer) {
   return `${util.toHex(rawBuffer[0])}${util.toHex(rawBuffer[1])}`;
 }
@@ -48,7 +50,7 @@ function personaDataHandler(session, rawData) {
     // npsLogoutGameUser
     case "050F": {
       const p = persona.npsLogoutGameUser(s, rawData);
-      s.loggedIntoLobby = false;
+      //s.loggedIntoLobby = false;
       s.personaSocket.write(p);
       break;
     }
@@ -107,8 +109,8 @@ function lobbyDataHandler(session, rawData) {
     }
     // npsSendCommand
     case "1101": {
-      // const cmd = lobby.sendCommand(s, rawData, requestCode)
-      // s.lobbySocket.write(cmd.encryptedCommand)
+      const cmd = lobby.sendCommand(s, rawData, requestCode);
+      s.lobbySocket.write(cmd.encryptedCommand);
       break;
     }
     default:
@@ -118,9 +120,14 @@ function lobbyDataHandler(session, rawData) {
   return s;
 }
 
-// sub_40B933
 function databaseDataHandler(session, rawData) {
-  // const s = session
+  messageNode = MessageNode(rawData);
+  console.log(messageNode.header.length);
+  console.log(messageNode.header.mcosig);
+  console.log(messageNode.seq);
+  console.log(messageNode.flags);
+  console.log(messageNode.buffer);
+
   const requestCode = getRequestCode(rawData);
   const msgId = mcots.getDbMsgId(rawData);
   logger.info(`Db message ID ${msgId} was recieved on port 43300`);
@@ -137,9 +144,8 @@ function databaseDataHandler(session, rawData) {
     }
     default:
       util.dumpRequest(session.databaseSocket, rawData, requestCode);
-      throw new Error(`Unknown code ${requestCode} was recieved on port 43300`);
+      logger.error(`Unknown code ${requestCode} was recieved on port 43300`);
   }
-  // return s
 }
 
 module.exports = {
