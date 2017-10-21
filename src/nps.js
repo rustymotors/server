@@ -49,7 +49,7 @@ function start(cbStart) {
           session.loginSocket = socket;
           listener.loginListener(session);
         });
-        server.listen(config.serverLogin.port, () => {
+        server.listen(config.serverLogin.port, "0.0.0.0", () => {
           logger.info(
             `${config.serverLogin.name} Server listening on TCP port: ${config
               .serverLogin.port}`
@@ -62,7 +62,7 @@ function start(cbStart) {
           session.personaSocket = socket;
           listener.personaListener(session);
         });
-        server.listen(config.serverPersona.port, () => {
+        server.listen(config.serverPersona.port, "0.0.0.0", () => {
           logger.info(
             `${config.serverPersona.name} Server listening on TCP port: ${config
               .serverPersona.port}`
@@ -75,28 +75,28 @@ function start(cbStart) {
           session.lobbySocket = socket;
           listener.lobbyListener(session);
         });
-        server.listen(config.serverLobby.port, () => {
+        server.listen(config.serverLobby.port, "0.0.0.0", () => {
           logger.info(
             `${config.serverLobby.name} Server listening on TCP port: ${config
               .serverLobby.port}`
           );
           callback(null, server);
         });
+      },
+      serverDatabase: callback => {
+        const server = net.createServer(socket => {
+          session.databaseSocket = socket;
+          listener.databaseListener(session);
+        });
+        server.listen(config.serverDatabase.port, "0.0.0.0", () => {
+          logger.info(
+            `${config.serverDatabase
+              .name} Server listening on TCP port: ${config.serverDatabase
+              .port}`
+          );
+          callback(null, server);
+        });
       }
-      // serverDatabase: callback => {
-      //   const server = net.createServer(socket => {
-      //     session.databaseSocket = socket;
-      //     listener.databaseListener(session);
-      //   });
-      //   server.listen(config.serverDatabase.port, () => {
-      //     logger.info(
-      //       `${config.serverDatabase
-      //         .name} Server listening on TCP port: ${config.serverDatabase
-      //         .port}`
-      //     );
-      //     callback(null, server);
-      //   });
-      // }
     },
     err => {
       if (err) {
