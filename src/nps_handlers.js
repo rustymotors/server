@@ -122,19 +122,27 @@ function lobbyDataHandler(session, rawData) {
 
 function databaseDataHandler(session, rawData) {
   messageNode = MessageNode(rawData);
-  console.log(messageNode.header.length);
-  console.log(messageNode.header.mcosig);
-  console.log(messageNode.seq);
-  console.log(messageNode.flags);
-  console.log(messageNode.buffer);
+  logger.info(`=============================================
+    Recieved packet on port ${session.databaseSocket.localPort} from ${session
+    .databaseSocket.remoteAddress}...`);
+  logger.debug("Header Length: ", messageNode.header.length);
+  logger.debug("Header MCOSIG: ", messageNode.header.mcosig);
+  logger.debug("Sequence: ", messageNode.seq);
+  logger.debug("Flags: ", messageNode.flags);
+  logger.debug("Buffer: ", messageNode.buffer);
+  logger.info(`=============================================`);
+
+  if (messageNode.header.mcosig == "TOMC") {
+    logger.debug(`Packet has a valid MCOTS header signature`);
+  }
 
   const requestCode = getRequestCode(rawData);
   const msgId = mcots.getDbMsgId(rawData);
-  logger.info(`Db message ID ${msgId} was recieved on port 43300`);
+  //logger.info(`Db message ID ${msgId} was recieved on port 43300`);
 
   switch (requestCode) {
     case "0D01": // #440 MC_TRACKING_MSG
-      util.dumpRequest(session.databaseSocket, rawData, requestCode);
+      //util.dumpRequest(session.databaseSocket, rawData, requestCode);
       break;
     // #438 MC_CLIENT_CONNECT_MSG
     case "3100": {
@@ -143,7 +151,7 @@ function databaseDataHandler(session, rawData) {
       break;
     }
     default:
-      util.dumpRequest(session.databaseSocket, rawData, requestCode);
+      //util.dumpRequest(session.databaseSocket, rawData, requestCode);
       logger.error(`Unknown code ${requestCode} was recieved on port 43300`);
   }
 }

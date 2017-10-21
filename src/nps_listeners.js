@@ -80,7 +80,7 @@ function databaseListener(session) {
   const s = session.databaseSocket;
   s.localId = `${s.localAddress}_${s.localPort}`;
   s.socketId = `${s.remoteAddress}_${s.remotePort}`;
-  logger.info(`Creating database socket: ${s.localId} => ${s.socketId}`);
+  // logger.info(`Creating database socket: ${s.localId} => ${s.socketId}`);
 
   // Add a 'data' event handler to this instance of socket
   s.on("data", data => {
@@ -92,7 +92,7 @@ function databaseListener(session) {
     }
   });
   s.on("close", () => {
-    logger.info(`Closing database socket: ${s.localId} => ${s.socketId}`);
+    //logger.info(`Closing database socket: ${s.localId} => ${s.socketId}`);
   });
 }
 
