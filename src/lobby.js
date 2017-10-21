@@ -31,7 +31,7 @@ function npsRequestGameConnectServer(session, rawData) {
   const packetcontent = Buffer.alloc(38);
 
   // MsgLen
-  Buffer.from([0x28]).copy(packetcontent);
+  Buffer.from([0x00, 0x04]).copy(packetcontent);
 
   // NPS_USERID - User ID - persona id - long
   Buffer.from([0x00, 0x00, 0x00, 0x02]).copy(packetcontent, 2);
@@ -45,7 +45,7 @@ function npsRequestGameConnectServer(session, rawData) {
   Buffer.alloc(64).copy(packetcontent, 38);
 
   // Build the packet
-  const packetresult = packet.buildPacket(102, 0x0120, packetcontent);
+  const packetresult = packet.buildPacket(4, 0x0120, packetcontent);
 
   util.dumpResponse(packetresult, packetresult.length);
   return packetresult;

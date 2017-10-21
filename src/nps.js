@@ -82,21 +82,21 @@ function start(cbStart) {
           );
           callback(null, server);
         });
-      },
-      serverDatabase: callback => {
-        const server = net.createServer(socket => {
-          session.databaseSocket = socket;
-          listener.databaseListener(session);
-        });
-        server.listen(config.serverDatabase.port, () => {
-          logger.info(
-            `${config.serverDatabase
-              .name} Server listening on TCP port: ${config.serverDatabase
-              .port}`
-          );
-          callback(null, server);
-        });
       }
+      // serverDatabase: callback => {
+      //   const server = net.createServer(socket => {
+      //     session.databaseSocket = socket;
+      //     listener.databaseListener(session);
+      //   });
+      //   server.listen(config.serverDatabase.port, () => {
+      //     logger.info(
+      //       `${config.serverDatabase
+      //         .name} Server listening on TCP port: ${config.serverDatabase
+      //         .port}`
+      //     );
+      //     callback(null, server);
+      //   });
+      // }
     },
     err => {
       if (err) {
