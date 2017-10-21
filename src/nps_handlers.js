@@ -31,7 +31,7 @@ function loginDataHandler(session, rawData) {
     }
     default:
       util.dumpRequest(session.loginSocket, rawData, requestCode);
-      throw new Error(`Unknown code ${requestCode} was recieved on port 8226`);
+      logger.error(`Unknown code ${requestCode} was recieved on port 8226`);
   }
   return loginSession;
 }
@@ -115,7 +115,7 @@ function lobbyDataHandler(session, rawData) {
     }
     default:
       util.dumpRequest(session.lobbySocket, rawData, requestCode);
-      throw new Error(`Unknown code ${requestCode} was recieved on port 7003`);
+      logger.error(`Unknown code ${requestCode} was recieved on port 7003`);
   }
   return s;
 }

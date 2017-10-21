@@ -72,10 +72,9 @@ function userLogin(session, data) {
   customer.customerId.copy(packetcontent, 267);
 
   // Build the packet
-  // packetresult = packet.buildPacket(44975, 0x0601, packetcontent)
-  const packetresult = packet.buildPacket(516, 0x0601, packetcontent);
+  const packetresult = packet.buildPacket(556, 0x0601, packetcontent);
 
-  util.dumpResponse(packetresult, 516);
+  util.dumpResponse(packetresult, packetresult.length);
 
   const loginSession = decryptSessionKey(s, data.slice(52, -10));
 
