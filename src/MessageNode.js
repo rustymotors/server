@@ -50,9 +50,9 @@ function MessageNode(packet) {
   this.setBuffer(packet);
 
   //DWORD	seq;	// sequenceNo
-  this.seq = packet.readInt32BE(5);
+  this.seq = packet.readInt32LE(6);
   //BYTE	flags;	// internally IN_QUEUE, or ALLOCATED, externally COMPRESED and/or ENCRYPTED
-  this.flags = packet[6];
+  this.flags = packet[10];
 
   // #ifdef USE_CRC
   // 	WORD	crc;
