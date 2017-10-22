@@ -1,3 +1,5 @@
-const mcoServer = require('./src/index.js')
+const MCServer = require("./src/MCServer.js");
 
-mcoServer.startServers()
+mcServer = MCServer();
+
+mcServer.run();
