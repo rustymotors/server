@@ -136,24 +136,50 @@ function databaseDataHandler(session, rawData) {
     logger.debug(`Packet has a valid MCOTS header signature`);
   }
 
-  const requestCode = getRequestCode(rawData);
-  const msgId = mcots.getDbMsgId(rawData);
-  //logger.info(`Db message ID ${msgId} was recieved on port 43300`);
+  // Check if this is an unencrypted packet
+  if (messageNode.flags == 0) {
+    const requestCode = Buffer.from([
+      messageNode.buffer[0],
+      messageNode.buffer[1]
+    ]).toString("hex");
 
-  switch (requestCode) {
-    case "0D01": // #440 MC_TRACKING_MSG
-      //util.dumpRequest(session.databaseSocket, rawData, requestCode);
-      break;
-    // #438 MC_CLIENT_CONNECT_MSG
-    case "3100": {
-      const packetresult = mcots.msgClientConnect(session, rawData);
-      session.databaseSocket.write(packetresult);
-      break;
+    switch (requestCode) {
+      case "b601": {
+        const packetresult = mcots.msgClientConnect(session, rawData);
+        session.databaseSocket.write(packetresult);
+        break;
+      }
+      default:
+        //util.dumpRequest(session.databaseSocket, rawData, requestCode);
+        logger.error(
+          `Unknown packet  ${requestCode} was recieved on port 43300`
+        );
+        return;
     }
-    default:
-      //util.dumpRequest(session.databaseSocket, rawData, requestCode);
-      logger.error(`Unknown code ${requestCode} was recieved on port 43300`);
+  } else {
+    // Unknown packet
+    logger.error(`Unknown packet was recieved on port 43300`);
   }
+
+  //
+  //
+  // const msgId = mcots.getDbMsgId(rawData);
+  // //logger.info(`Db message ID ${msgId} was recieved on port 43300`);
+  //
+  // switch (requestCode) {
+  //   case "0D01": // #440 MC_TRACKING_MSG
+  //   //util.dumpRequest(session.databaseSocket, rawData, requestCode);
+  //   // break;
+  //   // #438 MC_CLIENT_CONNECT_MSG
+  //   case "3100": {
+  //     //const packetresult = mcots.msgClientConnect(session, rawData);
+  //     //session.databaseSocket.write(packetresult);
+  //     //break;
+  //   }
+  //   default:
+  //     //util.dumpRequest(session.databaseSocket, rawData, requestCode);
+  //     logger.error(`Unknown code ${requestCode} was recieved on port 43300`);
+  // }
 }
 
 module.exports = {
