@@ -3,6 +3,7 @@ const handler = require("./nps_handlers.js");
 const logger = require("./logger.js");
 const packet = require("./packet.js");
 const util = require("./nps_utils.js");
+const TCPManager = require("./TCPManager.js")();
 
 function sendPacketOkToLogin(session) {
   const packetcontent = crypto.randomBytes(151);
@@ -96,9 +97,35 @@ function databaseListener(session) {
   });
 }
 
+function listener(socket) {
+  const con = TCPManager.getFreeConnection();
+
+  con.sock = socket;
+
+  logger.debug("New Connection...");
+  logger.debug("ConnectionID: ", con.id);
+
+  // Add a 'data' event handler to this instance of socket
+  socket.on("data", data => {
+    handler.handler(con, data);
+  });
+  socket.on("error", err => {
+    if (err.code !== "ECONNRESET") {
+      throw err;
+    }
+  });
+  socket.on("close", () => {
+    logger.info(
+      `Closing socket id ${con.id} for port ${con.sock.localPort} from ${con
+        .sock.remoteAddress}`
+    );
+  });
+}
+
 module.exports = {
   loginListener,
   personaListener,
   lobbyListener,
-  databaseListener
+  databaseListener,
+  listener
 };

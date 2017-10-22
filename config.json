@@ -5,14 +5,6 @@
     "publicKeyFilename": "./data/pub.key",
     "privateKeyFilename": "./data/private_key.pem",
     "certFilename": "./data/cert.pem",
-    "serverAuthLogin": {
-      "name": "AuthLogin",
-      "port": 80
-    },
-    "serverPatch": {
-      "name": "Patch",
-      "port": 443
-    },
     "serverLogin": {
       "name": "Login",
       "port": 8226
@@ -29,6 +21,5 @@
       "name": "Database",
       "port": 43300
     }
-
   }
 }

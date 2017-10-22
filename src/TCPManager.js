@@ -39,7 +39,7 @@ function Connection() {
   this.sock = 0;
 
   // 	msgEvent		= NULL;
-  this.msgEvent = NULL;
+  this.msgEvent = null;
 
   // 	lastMsg			= 0;
   this.lastMsg = 0;
@@ -47,7 +47,7 @@ function Connection() {
   // 	useEncryption	= 0;
   this.useEncryption = 0;
   // 	enc				= NULL;
-  this.enc = NULL;
+  this.enc = null;
 }
 
 // struct TCPManager
@@ -55,6 +55,17 @@ function TCPManager() {
   if (!(this instanceof TCPManager)) {
     return new TCPManager();
   }
+
+  this.connectionID = 1;
+
+  this.connections = [];
 }
+
+TCPManager.prototype.getFreeConnection = function getFreeConnection() {
+  const con = Connection();
+  con.id = this.connectionID;
+  this.connectionID++;
+  return con;
+};
 
 module.exports = TCPManager;

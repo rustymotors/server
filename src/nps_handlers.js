@@ -189,9 +189,29 @@ function databaseDataHandler(session, rawData) {
   // }
 }
 
+function handler(con, rawData) {
+  messageNode = MessageNode(rawData);
+  logger.info(`=============================================
+    Recieved packet on port ${con.sock.localPort} from ${con.sock
+    .remoteAddress}...`);
+  logger.debug("Header Length: ", messageNode.header.length);
+  logger.debug("Header MCOSIG: ", messageNode.header.mcosig);
+  logger.debug("Sequence: ", messageNode.seq);
+  logger.debug("Flags: ", messageNode.flags);
+  logger.debug("Buffer: ", messageNode.buffer);
+  logger.debug("Buffer as text: ", messageNode.buffer.toString("utf8"));
+  logger.debug("Buffer as string: ", messageNode.buffer.toString("hex"));
+  logger.info(`=============================================`);
+
+  if (messageNode.header.mcosig == "TOMC") {
+    logger.debug(`Packet has a valid MCOTS header signature`);
+  }
+}
+
 module.exports = {
   loginDataHandler,
   personaDataHandler,
   lobbyDataHandler,
-  databaseDataHandler
+  databaseDataHandler,
+  handler
 };

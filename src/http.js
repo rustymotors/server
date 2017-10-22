@@ -9,6 +9,17 @@ const configurationFile = require("../config.json");
 const logger = require("./logger.js");
 const patchServer = require("./patch_server.js");
 
+const webPorts = {
+  serverAuthLogin: {
+    name: "AuthLogin",
+    port: 80
+  },
+  serverPatch: {
+    name: "Patch",
+    port: 443
+  }
+};
+
 function generateShardList(config) {
   return `[The Clocktower]
   Description=The Clocktower
@@ -55,8 +66,8 @@ function start(callback) {
   app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
   // Server port is set by PORT env or web_port from config file with fallback to 3000
-  app.set("port", config.serverAuthLogin.port);
-  app.set("port_ssl", config.serverPatch.port);
+  app.set("port", webPorts.serverAuthLogin.port);
+  app.set("port_ssl", webPorts.serverPatch.port);
 
   app.post("/games/EA_Seattle/MotorCity/UpdateInfo", (req, res) => {
     const response = patchServer.patchUpdateInfo(req);
