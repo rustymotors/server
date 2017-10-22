@@ -3,6 +3,7 @@ const readline = require("readline");
 const logger = require("./logger.js");
 const http = require("./http.js");
 const nps = require("./nps.js");
+const TCPManager = require("./TCPManager.js");
 
 function MCServer() {
   if (!(this instanceof MCServer)) {
@@ -12,7 +13,9 @@ function MCServer() {
 
 // returning true means fatal error; thread should exit
 // bool ProcessInput( MessageNode* node, ConnectionInfo * info)
-MCServer.prototype.start = function ProcessInput(node, info) {};
+MCServer.prototype.start = function ProcessInput(node, info) {
+  let preDecryptMsgNo = Buffer.from([0xff, 0xff, 0xff, 0xff]);
+};
 
 /**
 Need to open create listeners on the ports
