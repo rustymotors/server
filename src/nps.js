@@ -3,6 +3,7 @@ const fs = require("fs");
 const net = require("net");
 
 const NodeRSA = require("node-rsa");
+const rc4 = require("arc4");
 const listener = require("./nps_listeners.js");
 const logger = require("./logger.js");
 
@@ -25,6 +26,10 @@ function npsCheckToken() {
   return null;
 }
 
+function initNPSCrypto() {
+  return rc4("arc4", "secret_key");
+}
+
 function start(cbStart) {
   /* Initialize the crypto */
   let privateKey = null;
@@ -37,7 +42,8 @@ function start(cbStart) {
 
   // Start the servers
   const session = {
-    privateKey
+    privateKey,
+    enc: initNPSCrypto()
   };
 
   const config = configurationFile.serverConfig;

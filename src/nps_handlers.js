@@ -130,6 +130,7 @@ function databaseDataHandler(session, rawData) {
   logger.debug("Sequence: ", messageNode.seq);
   logger.debug("Flags: ", messageNode.flags);
   logger.debug("Buffer: ", messageNode.buffer);
+  logger.debug("Buffer as string: ", messageNode.buffer.toString("hex"));
   logger.info(`=============================================`);
 
   if (messageNode.header.mcosig == "TOMC") {
@@ -156,6 +157,12 @@ function databaseDataHandler(session, rawData) {
         );
         return;
     }
+  } else if (messageNode.flags == 8) {
+    // Packet is encrypted
+    const decryptedBuffer = session.enc.decodeBuffer(messageNode.buffer);
+    logger.error(`Unknown encrypted packet was recieved on port 43300`);
+    logger.debug("Using sKey: ", session.sKey);
+    logger.debug("Attempt at decrypting: ", decryptedBuffer);
   } else {
     // Unknown packet
     logger.error(`Unknown packet was recieved on port 43300`);
