@@ -7,12 +7,20 @@ const LoginPacket = require("./LoginPacket.js");
 
 function decryptSessionKey(session, encryptedKeySet) {
   const s = session;
+
   try {
     const encryptedKeySetB64 = Buffer.from(
       encryptedKeySet.toString("utf8"),
       "hex"
     ).toString("base64");
     const decrypted = s.privateKey.decrypt(encryptedKeySetB64, "base64");
+    s.sKey = Buffer.from(
+      Buffer.from(decrypted, "base64")
+        .toString("hex")
+        .substring(4, 68),
+      "hex"
+    );
+    logger.debug("decrypted - long: ", s.sKey);
     s.sessionKey = Buffer.from(
       Buffer.from(decrypted, "base64")
         .toString("hex")
@@ -37,7 +45,6 @@ function userLogin(session, data) {
   const s = session;
 
   loginPacket = LoginPacket(session, data);
-  console.log("Decripted sessionKey: ", loginPacket.sessionKey);
 
   util.dumpRequest(s.loginSocket, data);
   const contextId = Buffer.alloc(34);
@@ -78,9 +85,12 @@ function userLogin(session, data) {
 
   const loginSession = decryptSessionKey(s, data.slice(52, -10));
 
-  loginSession.packetresult = packetresult;
+  console.log("Decrypted sessionKey: ", s.sKey.toString("hex"));
+  s.enc.change(s.sKey.toString("hex"));
 
-  return loginSession;
+  s.packetresult = packetresult;
+
+  return s;
 }
 
 module.exports = {
