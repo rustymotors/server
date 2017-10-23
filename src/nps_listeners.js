@@ -3,7 +3,7 @@ const handler = require("./nps_handlers.js");
 const logger = require("./logger.js");
 const packet = require("./packet.js");
 const util = require("./nps_utils.js");
-const TCPManager = require("./TCPManager.js")();
+const TCPManager = require("./TCPManager.js").TCPManager();
 
 function sendPacketOkToLogin(session) {
   const packetcontent = crypto.randomBytes(151);

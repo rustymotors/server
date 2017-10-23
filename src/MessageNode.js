@@ -8,6 +8,16 @@ function msgHead(header) {
   this.mcosig = header.toString("ascii", 2);
 }
 
+// struct BaseMsgHeader
+function BaseMsgHeader(msg) {
+  if (!(this instanceof BaseMsgHeader)) {
+    return new BaseMsgHeader(header);
+  }
+
+  // WORD	msgNo;
+  this.msgNo = Buffer.from([msg[0], msg[1]]).toString("hex");
+}
+
 // struct MessageNode
 function MessageNode(packet) {
   if (!(this instanceof MessageNode)) {
@@ -17,6 +27,8 @@ function MessageNode(packet) {
   // DWORD	toFrom;		// used to determine whether it was an internally generated msg,
   // 					//  from another server, or truelly from a client
   //
+  this.toFrom = Buffer.alloc(2);
+
   // DWORD	appID;		// game specific user id (may or may not be used)
   // BYTE	allocType;	// this says what pool it came from (when it is not in a pool)
   // 					//  See POOL_xxxx above
@@ -51,7 +63,15 @@ function MessageNode(packet) {
 
   //DWORD	seq;	// sequenceNo
   this.seq = packet.readInt32LE(6);
+
   //BYTE	flags;	// internally IN_QUEUE, or ALLOCATED, externally COMPRESED and/or ENCRYPTED
+  // #define	NONE 					0x00
+  // #define	COMPRESS_IT				0x01	// Compression Requested at Send Time
+  // #define	COMPRESSED				0x02	// The data is ACTUALLY compressed
+  // #define	ASCII					0x04	// compress as ASCII (COMPRESSED must be set too).
+  // #define	USE_ENCRYPTION			0x08
+  // #define	DISCONNECT_AFTER_SEND	0x10	// once this msg is sent; disconnect
+  // #define	HEARTBEAT				0x80
   this.flags = packet[10];
 
   // #ifdef USE_CRC
@@ -78,10 +98,12 @@ MessageNode.prototype.setMsgHeader = function setMsgHeader(packet) {
   this.header = msgHead(header);
 };
 
-MessageNode.prototype.setBuffer = function setSetBuffer(packet) {
-  buffer = Buffer.alloc(packet.length - 11);
-  packet.copy(buffer, 0, 11);
-  this.buffer = buffer;
+MessageNode.prototype.getBaseMsgHeader = function gatBaseMsgHeader(packet) {
+  return BaseMsgHeader(packet);
 };
 
-module.exports = MessageNode;
+MessageNode.prototype.setBuffer = function setSetBuffer(packet) {
+  this.buffer = packet;
+};
+
+module.exports = { MessageNode, BaseMsgHeader };

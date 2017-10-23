@@ -4,6 +4,7 @@ const logger = require("./logger.js");
 const mcots = require("./mcots.js");
 const persona = require("./persona.js");
 const util = require("./nps_utils.js");
+const tcpManager = require("./TCPManager.js").TCPManager();
 
 const MessageNode = require("./MessageNode.js");
 
@@ -121,7 +122,7 @@ function lobbyDataHandler(session, rawData) {
 }
 
 function databaseDataHandler(session, rawData) {
-  messageNode = MessageNode(rawData);
+  messageNode = MessageNode.MessageNode(rawData);
   logger.info(`=============================================
     Recieved packet on port ${session.databaseSocket.localPort} from ${session
     .databaseSocket.remoteAddress}...`);
@@ -190,7 +191,7 @@ function databaseDataHandler(session, rawData) {
 }
 
 function handler(con, rawData) {
-  messageNode = MessageNode(rawData);
+  messageNode = MessageNode.MessageNode(rawData);
   logger.info(`=============================================
     Recieved packet on port ${con.sock.localPort} from ${con.sock
     .remoteAddress}...`);
@@ -205,6 +206,9 @@ function handler(con, rawData) {
 
   if (messageNode.header.mcosig == "TOMC") {
     logger.debug(`Packet has a valid MCOTS header signature`);
+    tcpManager.MessageReceived(messageNode, con);
+  } else {
+    tcpManager.MessageReceived(messageNode, con);
   }
 }
 

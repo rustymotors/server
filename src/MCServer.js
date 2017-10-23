@@ -35,12 +35,6 @@ function MCServer() {
   ];
 }
 
-// returning true means fatal error; thread should exit
-// bool ProcessInput( MessageNode* node, ConnectionInfo * info)
-MCServer.prototype.ProcessInput = function ProcessInput(node, info) {
-  let preDecryptMsgNo = Buffer.from([0xff, 0xff, 0xff, 0xff]);
-};
-
 /**
 Need to open create listeners on the ports
 
@@ -98,4 +92,4 @@ MCServer.prototype.run = function run() {
   recursiveAsyncReadLine();
 };
 
-module.exports = MCServer;
+module.exports = { MCServer };
