@@ -1,10 +1,26 @@
 /* Internal dependencies */
 const readline = require("readline");
 const net = require("net");
+const fs = require("fs");
+const NodeRSA = require("node-rsa");
 const logger = require("./logger.js");
 const http = require("./http.js");
 const listener = require("./nps_listeners.js");
 const TCPManager = require("./TCPManager.js");
+
+const configurationFile = require("../config.json");
+
+function initCrypto() {
+  const config = configurationFile.serverConfig;
+  try {
+    fs.statSync(config.privateKeyFilename);
+  } catch (e) {
+    logger.error(`Error loading private key: ${e}`);
+    process.exit(1);
+  }
+  // privateKey = new NodeRSA(fs.readFileSync(config.privateKeyFilename))
+  return new NodeRSA(fs.readFileSync(config.privateKeyFilename));
+}
 
 function MCServer() {
   if (!(this instanceof MCServer)) {
@@ -57,10 +73,11 @@ MCServer.prototype.run = function run() {
     logger.info("HTTP Servers started");
   });
 
+  const session = initCrypto();
   this.tcpPortList.map(port => {
     net
       .createServer(socket => {
-        listener.listener(socket);
+        listener.listener(session, socket);
       })
       .listen(port, "0.0.0.0", () => {
         logger.info(`Started TCP listener on TCP port: ${port}`);

@@ -41,12 +41,10 @@ function decryptSessionKey(session, encryptedKeySet) {
   return s;
 }
 
-function userLogin(session, data) {
-  const s = session;
-
+function userLogin(session, socket, data) {
   loginPacket = LoginPacket(session, data);
 
-  util.dumpRequest(s.loginSocket, data);
+  util.dumpRequest(socket, data);
   const contextId = Buffer.alloc(34);
   data.copy(contextId, 0, 14, 48);
   const customer = util.npsGetCustomerIdByContextId(contextId);
@@ -83,14 +81,9 @@ function userLogin(session, data) {
 
   util.dumpResponse(packetresult, packetresult.length);
 
-  const loginSession = decryptSessionKey(s, data.slice(52, -10));
+  console.log("Decrypted sessionKey: ", loginPacket.sessionKey);
 
-  console.log("Decrypted sessionKey: ", s.sKey.toString("hex"));
-  s.enc.change(s.sKey.toString("hex"));
-
-  s.packetresult = packetresult;
-
-  return s;
+  return packetresult;
 }
 
 module.exports = {

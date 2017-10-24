@@ -10,7 +10,7 @@ function LoginPacket(session, packet) {
     packet.slice(52, -10).toString("utf8"),
     "hex"
   ).toString("base64");
-  const decrypted = session.privateKey.decrypt(encryptedKeySetB64, "base64");
+  const decrypted = session.decrypt(encryptedKeySetB64, "base64");
   this.sessionKey = Buffer.from(
     Buffer.from(decrypted, "base64")
       .toString("hex")

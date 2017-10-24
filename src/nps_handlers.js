@@ -12,29 +12,22 @@ function getRequestCode(rawBuffer) {
   return `${util.toHex(rawBuffer[0])}${util.toHex(rawBuffer[1])}`;
 }
 
-function loginDataHandler(session, rawData) {
-  let loginSession;
+function loginDataHandler(session, socket, rawData) {
   const requestCode = getRequestCode(rawData);
 
   switch (requestCode) {
     // npsUserLogin
     case "0501": {
       const s = session;
-      loginSession = login.userLogin(s, rawData);
+      responsePacket = login.userLogin(session, socket, rawData);
 
-      // Update the onData handler with the new session
-      s.loginSocket.removeListener("data", loginDataHandler);
-      s.loginSocket.on("data", data => {
-        loginDataHandler(loginSession, data);
-      });
-      s.loginSocket.write(loginSession.packetresult);
+      socket.write(responsePacket);
       break;
     }
     default:
       util.dumpRequest(session.loginSocket, rawData, requestCode);
       logger.error(`Unknown code ${requestCode} was recieved on port 8226`);
   }
-  return loginSession;
 }
 
 function personaDataHandler(session, rawData) {
