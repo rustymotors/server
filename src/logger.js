@@ -1,5 +1,5 @@
 const logger = require("winston");
-const config = require("../config.json");
+const config = require("../config/config.json");
 
 logger.cli();
 // logger.add(logger.transports.File, { filename: 'logs/mco_server.log' })

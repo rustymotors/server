@@ -36,23 +36,22 @@ function loginListener(session) {
   });
 }
 
-function personaListener(session) {
-  const s = session.personaSocket;
-  s.localId = `${s.localAddress}_${s.localPort}`;
-  s.socketId = `${s.remoteAddress}_${s.remotePort}`;
-  logger.info(`Creating persona socket: ${s.localId} => ${s.socketId}`);
+function personaListener(socket) {
+  logger.info(
+    `Creating persona socket from: ${socket.remoteAddress} on port ${socket.localPort}`
+  );
 
   // Add a 'data' event handler to this instance of socket
-  s.on("data", data => {
-    handler.personaDataHandler(session, data);
+  socket.on("data", data => {
+    handler.personaDataHandler(socket, data);
   });
-  s.on("error", err => {
+  socket.on("error", err => {
     if (err.code !== "ECONNRESET") {
       throw err;
     }
   });
-  s.on("close", () => {
-    logger.info(`Closing persona socket: ${s.localId} => ${s.socketId}`);
+  socket.on("close", () => {
+    logger.info(`Closing persona socket.`);
   });
 }
 

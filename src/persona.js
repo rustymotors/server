@@ -33,8 +33,8 @@ function npsGetPersonaMapsByCustomerId(customerId) {
   }
 }
 
-function npsGetPersonaMaps(session, data) {
-  util.dumpRequest(session.personaSocket, data);
+function npsGetPersonaMaps(socket, data) {
+  util.dumpRequest(socket, data);
 
   const customerId = Buffer.alloc(4);
   data.copy(customerId, 0, 12);
@@ -69,10 +69,11 @@ function npsGetPersonaMaps(session, data) {
   return packetresult;
 }
 
-function npsLogoutGameUser(session, data) {
+function npsLogoutGameUser(socket, data) {
+  logger.info("Logging out persona...");
   // logger.debug(`cmd: ${decryptCmd(new Buffer(data.slice(4))).toString('hex')}`)
 
-  util.dumpRequest(session.personaSocket, data);
+  util.dumpRequest(socket, data);
 
   // Create the packet content
   const packetcontent = crypto.randomBytes(253);
@@ -87,8 +88,8 @@ function npsLogoutGameUser(session, data) {
   return packetresult;
 }
 
-function npsSelectGamePersona(session, rawData) {
-  util.dumpRequest(session.personaSocket, rawData);
+function npsSelectGamePersona(socket, rawData) {
+  util.dumpRequest(socket, rawData);
 
   // Create the packet content
   const packetcontent = crypto.randomBytes(44971);

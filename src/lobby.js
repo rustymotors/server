@@ -2,7 +2,7 @@ const crypto = require("crypto");
 const logger = require("./logger.js");
 const packet = require("./packet.js");
 const util = require("./nps_utils.js");
-const MsgPack = require("../lib/MsgPack.js");
+const MsgPack = require("./MsgPack.js");
 
 // typedef struct _NPS_LoginInfo
 // {

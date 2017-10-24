@@ -30,46 +30,45 @@ function loginDataHandler(session, socket, rawData) {
   }
 }
 
-function personaDataHandler(session, rawData) {
-  const s = session;
+function personaDataHandler(socket, rawData) {
   const requestCode = getRequestCode(rawData);
 
   switch (requestCode) {
     // npsSelectGamePersona
     case "0503": {
-      const packetresult = persona.npsSelectGamePersona(s, rawData);
-      session.personaSocket.write(packetresult);
+      const packetresult = persona.npsSelectGamePersona(socket, rawData);
+      socket.write(packetresult);
       break;
     }
     // npsLogoutGameUser
     case "050F": {
-      const p = persona.npsLogoutGameUser(s, rawData);
+      const p = persona.npsLogoutGameUser(socket, rawData);
       //s.loggedIntoLobby = false;
-      s.personaSocket.write(p);
+      socket.write(p);
       break;
     }
     // npsGetPersonaMaps
     case "0532": {
-      const packetresult = persona.npsGetPersonaMaps(session, rawData);
-      s.personaSocket.write(packetresult);
+      const packetresult = persona.npsGetPersonaMaps(socket, rawData);
+      socket.write(packetresult);
       break;
     }
     // npsValidatePersonaName
     case "0533": {
-      const packetresult = persona.npsValidatePersonaName(s, rawData);
-      s.personaSocket.write(packetresult);
+      const packetresult = persona.npsValidatePersonaName(socket, rawData);
+      socket.write(packetresult);
       break;
     }
     // NPSCheckToken
     case "0534": {
-      const packetresult = persona.npsCheckToken(s, rawData);
-      s.personaSocket.write(packetresult);
+      const packetresult = persona.npsCheckToken(socket, rawData);
+      socket.write(packetresult);
       break;
     }
     // NPSGetPersonaInfoByName
     case "0519": {
-      const packetresult = persona.NPSGetPersonaInfoByName(s, rawData);
-      s.personaSocket.write(packetresult);
+      const packetresult = persona.NPSGetPersonaInfoByName(socket, rawData);
+      socket.write(packetresult);
 
       // Response Code
       // 607 = persona name not available
@@ -78,10 +77,9 @@ function personaDataHandler(session, rawData) {
       break;
     }
     default:
-      util.dumpRequest(session.personaSocket, rawData, requestCode);
+      util.dumpRequest(socket, rawData);
       throw new Error(`Unknown code ${requestCode} was recieved on port 8228`);
   }
-  return s;
 }
 
 function lobbyDataHandler(session, rawData) {

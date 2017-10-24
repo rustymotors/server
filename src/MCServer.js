@@ -4,11 +4,12 @@ const net = require("net");
 const fs = require("fs");
 const NodeRSA = require("node-rsa");
 const logger = require("./logger.js");
-const http = require("./http.js");
+const patchServer = require("../lib/WebServer/index.js");
+const personaServer = require("../lib/PersonaServer/index.js")();
 const listener = require("./nps_listeners.js");
 const TCPManager = require("./TCPManager.js");
 
-const configurationFile = require("../config.json");
+const configurationFile = require("../config/config.json");
 
 function initCrypto() {
   const config = configurationFile.serverConfig;
@@ -31,7 +32,6 @@ function MCServer() {
     7003,
     8226,
     8227,
-    8228,
     43300,
     9000,
     9001,
@@ -65,13 +65,9 @@ MCServer.prototype.run = function run() {
     output: process.stdout
   });
 
-  /* Start the NPS servers */
-  http.start(err => {
-    if (err) {
-      throw err;
-    }
-    logger.info("HTTP Servers started");
-  });
+  patchServer.start();
+
+  personaServer.start();
 
   const session = initCrypto();
   this.tcpPortList.map(port => {
