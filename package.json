@@ -4,7 +4,7 @@
     "description": "a server",
     "main": "server.js",
     "scripts": {
-        "test": "jest --all src/",
+        "test": "jest --all",
         "lint": "eslint lib src"
     },
     "author": "Joseph W Becher <jwbecher@drazisil.com> (drazisil)",
@@ -20,7 +20,7 @@
     "jest": {
         "coverageDirectory": "./coverage/",
         "collectCoverage": true,
-        "collectCoverageFrom": ["**/src/**/*.js"],
+        "collectCoverageFrom": ["**/src/**/*.js", "**/lib/**/*.js"],
         "testResultsProcessor": "jest-junit"
     },
     "jest-junit": {
