@@ -35,16 +35,16 @@
 
 // struct ConnectionInfo
 function ConnectionInfo() {
-  if (!(this instanceof ConnectionInfo)) {
-    return new ConnectionInfo;
-  }
+    if (!(this instanceof ConnectionInfo)) {
+        return new ConnectionInfo()
+    }
 
-  // DWORD		custID;
-  this.custID = Buffer.from([0x00, 0x00, 0x00, 0x00])
-  // DWORD		persID;
-  this.persID = Buffer.from([0x00, 0x00, 0x00, 0x00])
-  // char		persName[25];
-  this.persName = Buffer.alloc(25))
+    // DWORD		custID;
+    this.custID = Buffer.from([0x00, 0x00, 0x00, 0x00])
+    // DWORD		persID;
+    this.persID = Buffer.from([0x00, 0x00, 0x00, 0x00])
+    // char		persName[25];
+    this.persName = Buffer.alloc(25)
 }
 
 module.exports = ConnectionInfo
