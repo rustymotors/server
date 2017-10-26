@@ -1,5 +1,4 @@
 const lobby = require('./lobby.js')
-const login = require('./login.js')
 const logger = require('./logger.js')
 const mcots = require('./mcots.js')
 const util = require('./nps_utils.js')
@@ -11,55 +10,37 @@ function getRequestCode(rawBuffer) {
     return `${util.toHex(rawBuffer[0])}${util.toHex(rawBuffer[1])}`
 }
 
-function loginDataHandler(session, socket, rawData) {
-    const requestCode = getRequestCode(rawData)
-
-    switch (requestCode) {
-    // npsUserLogin
-    case '0501': {
-        const responsePacket = login.userLogin(session, socket, rawData)
-
-        socket.write(responsePacket)
-        break
-    }
-    default:
-        util.dumpRequest(session.loginSocket, rawData, requestCode)
-        logger.error(
-            `Unknown code ${requestCode} was recieved on port 8226`
-        )
-    }
-}
-
-function lobbyDataHandler(session, rawData) {
-    const s = session
+function lobbyDataHandler(socket, rawData) {
     const requestCode = getRequestCode(rawData)
 
     switch (requestCode) {
     // npsRequestGameConnectServer
     case '0100': {
-        const packetresult = lobby.npsRequestGameConnectServer(s, rawData)
-        s.lobbySocket.write(packetresult)
+        const packetresult = lobby.npsRequestGameConnectServer(
+            socket,
+            rawData
+        )
+        socket.write(packetresult)
         break
     }
     // npsHeartbeat
     case '0217': {
-        const packetresult = util.npsHeartbeat(s, rawData)
-        s.lobbySocket.write(packetresult)
+        const packetresult = util.npsHeartbeat(socket, rawData)
+        socket.write(packetresult)
         break
     }
     // npsSendCommand
     case '1101': {
-        const cmd = lobby.sendCommand(s, rawData, requestCode)
-        s.lobbySocket.write(cmd.encryptedCommand)
+        const cmd = lobby.sendCommand(socket, rawData, requestCode)
+        socket.write(cmd.encryptedCommand)
         break
     }
     default:
-        util.dumpRequest(session.lobbySocket, rawData, requestCode)
+        util.dumpRequest(socket, rawData, requestCode)
         logger.error(
             `Unknown code ${requestCode} was recieved on port 7003`
         )
     }
-    return s
 }
 
 function databaseDataHandler(session, rawData) {
@@ -154,7 +135,6 @@ function handler(con, rawData) {
 }
 
 module.exports = {
-    loginDataHandler,
     lobbyDataHandler,
     databaseDataHandler,
     handler

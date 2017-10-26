@@ -1,26 +1,11 @@
 /* Internal dependencies */
 const readline = require('readline')
 const net = require('net')
-const fs = require('fs')
-const NodeRSA = require('node-rsa')
 const logger = require('./logger.js')
 const patchServer = require('../lib/WebServer/index.js')
+const loginServer = require('../lib/LoginServer/index.js')()
 const personaServer = require('../lib/PersonaServer/index.js')()
 const listener = require('./nps_listeners.js')
-
-const configurationFile = require('../config/config.json')
-
-function initCrypto() {
-    const config = configurationFile.serverConfig
-    try {
-        fs.statSync(config.privateKeyFilename)
-    } catch (e) {
-        logger.error(`Error loading private key: ${e}`)
-        process.exit(1)
-    }
-    // privateKey = new NodeRSA(fs.readFileSync(config.privateKeyFilename))
-    return new NodeRSA(fs.readFileSync(config.privateKeyFilename))
-}
 
 function MCServer() {
     if (!(this instanceof MCServer)) {
@@ -29,7 +14,6 @@ function MCServer() {
 
     this.tcpPortList = [
         7003,
-        8226,
         8227,
         43300,
         9000,
@@ -66,13 +50,14 @@ MCServer.prototype.run = function run() {
 
     patchServer.start()
 
+    loginServer.start()
+
     personaServer.start()
 
-    const session = initCrypto()
     this.tcpPortList.map(port => {
         net
             .createServer(socket => {
-                listener.listener(session, socket)
+                listener.listener(socket)
             })
             .listen(port, '0.0.0.0', () => {
                 logger.info(`Started TCP listener on TCP port: ${port}`)

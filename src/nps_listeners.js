@@ -2,44 +2,26 @@ const handler = require('./nps_handlers.js')
 const logger = require('./logger.js')
 const TCPManager = require('./TCPManager.js').TCPManager()
 
-function loginListener(session) {
-    const s = session.loginSocket
-    s.localId = `${s.localAddress}_${s.localPort}`
-    s.socketId = `${s.remoteAddress}_${s.remotePort}`
-    logger.info(`Creating login socket: ${s.localId} => ${s.socketId}`)
+function lobbyListener(socket) {
+    socket.localId = `${socket.localAddress}_${socket.localPort}`
+    socket.socketId = `${socket.remoteAddress}_${socket.remotePort}`
+    logger.info(
+        `Creating lobby socket: ${socket.localId} => ${socket.socketId}`
+    )
 
     // Add a 'data' event handler to this instance of socket
-    s.on('data', data => {
-        handler.loginDataHandler(session, data)
+    socket.on('data', data => {
+        handler.lobbyDataHandler(socket, data)
     })
-    s.on('error', err => {
+    socket.on('error', err => {
         if (err.code !== 'ECONNRESET') {
             throw err
         }
     })
-    s.on('close', () => {
-        logger.info(`Closing login socket: ${s.localId} => ${s.socketId}`)
-    })
-}
-
-function lobbyListener(session) {
-    const sess = session
-    const s = session.lobbySocket
-    s.localId = `${s.localAddress}_${s.localPort}`
-    s.socketId = `${s.remoteAddress}_${s.remotePort}`
-    logger.info(`Creating lobby socket: ${s.localId} => ${s.socketId}`)
-
-    // Add a 'data' event handler to this instance of socket
-    s.on('data', data => {
-        handler.lobbyDataHandler(sess, data)
-    })
-    s.on('error', err => {
-        if (err.code !== 'ECONNRESET') {
-            throw err
-        }
-    })
-    s.on('close', () => {
-        logger.info(`Closing lobby socket: ${s.localId} => ${s.socketId}`)
+    socket.on('close', () => {
+        logger.info(
+            `Closing lobby socket: ${socket.localId} => ${socket.socketId}`
+        )
     })
 }
 
@@ -63,14 +45,14 @@ function databaseListener(session) {
     })
 }
 
-function listener(session, socket) {
+function listener(socket) {
     // Is this a login connection?
     if (socket.localPort == 8226) {
         logger.debug('New Login Connection...')
 
         // Add a 'data' event handler to this instance of socket
         socket.on('data', data => {
-            handler.loginDataHandler(session, socket, data)
+            handler.loginDataHandler(socket, data)
         })
         socket.on('error', err => {
             if (err.code !== 'ECONNRESET') {
@@ -107,7 +89,6 @@ function listener(session, socket) {
 }
 
 module.exports = {
-    loginListener,
     lobbyListener,
     databaseListener,
     listener
