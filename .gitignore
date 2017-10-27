@@ -1,5 +1,7 @@
 node_modules
-data
+data/private_key.pem
+data/cert.pem
+data/pub.key
 logs
 coverage
 npm-debug.log
