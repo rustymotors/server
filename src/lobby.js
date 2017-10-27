@@ -18,8 +18,8 @@ const MsgPack = require('./MsgPack.js')
 function npsRequestGameConnectServer(session, rawData) {
     // Load the recieved data into a MsgPack class
     const msgPack = MsgPack(rawData)
-    console.log(msgPack.GetOpCode())
-    console.log(msgPack.GetMsgLen())
+    logger.debug(msgPack.GetOpCode())
+    logger.debug(msgPack.GetMsgLen())
 
     util.dumpRequest(session.lobbySocket, rawData)
     // const contextId = Buffer.alloc(34)
