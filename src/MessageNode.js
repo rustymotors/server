@@ -15,7 +15,7 @@ function BaseMsgHeader(msg) {
     }
 
     // WORD	msgNo;
-    this.msgNo = Buffer.from([msg[0], msg[1]]).toString('hex')
+    this.msgNo = msg.readInt16LE()
 }
 
 // struct MessageNode
@@ -98,12 +98,12 @@ MessageNode.prototype.setMsgHeader = function setMsgHeader(packet) {
     this.header = msgHead(header)
 }
 
-MessageNode.prototype.getBaseMsgHeader = function gatBaseMsgHeader(packet) {
+MessageNode.prototype.getBaseMsgHeader = function getBaseMsgHeader(packet) {
     return BaseMsgHeader(packet)
 }
 
 MessageNode.prototype.setBuffer = function setSetBuffer(packet) {
-    this.buffer = packet
+    this.buffer = packet.slice(11)
 }
 
 module.exports = { MessageNode, BaseMsgHeader }

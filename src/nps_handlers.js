@@ -10,33 +10,35 @@ function getRequestCode(rawBuffer) {
     return `${util.toHex(rawBuffer[0])}${util.toHex(rawBuffer[1])}`
 }
 
-function lobbyDataHandler(socket, rawData) {
+function lobbyDataHandler(con, rawData) {
     const requestCode = getRequestCode(rawData)
 
     switch (requestCode) {
     // npsRequestGameConnectServer
     case '0100': {
         const packetresult = lobby.npsRequestGameConnectServer(
-            socket,
+            con.sock,
             rawData
         )
-        socket.write(packetresult)
+        con.sock.write(packetresult)
         break
     }
     // npsHeartbeat
     case '0217': {
-        const packetresult = util.npsHeartbeat(socket, rawData)
-        socket.write(packetresult)
+        const packetresult = util.npsHeartbeat(con.sock, rawData)
+        con.sock.write(packetresult)
         break
     }
     // npsSendCommand
     case '1101': {
-        const cmd = lobby.sendCommand(socket, rawData, requestCode)
-        socket.write(cmd.encryptedCommand)
+        // This is an encrypted command
+        // Fetch session key
+
+        lobby.sendCommand(con.sock, rawData, requestCode)
         break
     }
     default:
-        util.dumpRequest(socket, rawData, requestCode)
+        util.dumpRequest(con.sock, rawData, requestCode)
         logger.error(
             `Unknown code ${requestCode} was recieved on port 7003`
         )
@@ -46,7 +48,7 @@ function lobbyDataHandler(socket, rawData) {
 function databaseDataHandler(session, rawData) {
     const messageNode = MessageNode.MessageNode(rawData)
     logger.info(`=============================================
-    Recieved packet on port ${session.databaseSocket.localPort} from ${session
+    Recieved database packet on port ${session.databaseSocket.localPort} from ${session
     .databaseSocket.remoteAddress}...`)
     logger.debug('Header Length: ', messageNode.header.length)
     logger.debug('Header MCOSIG: ', messageNode.header.mcosig)
@@ -111,7 +113,8 @@ function handler(con, rawData) {
         logger.debug('Packet has a valid MCOTS header signature')
         tcpManager.MessageReceived(messageNode, con)
     } else {
-        tcpManager.MessageReceived(messageNode, con)
+        //tcpManager.MessageReceived(messageNode, con)
+        lobbyDataHandler(con, rawData)
     }
 }
 

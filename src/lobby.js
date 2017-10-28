@@ -4,6 +4,8 @@ const packet = require('./packet.js')
 const util = require('./nps_utils.js')
 const MsgPack = require('./MsgPack.js')
 
+const db = require('../lib/database/index.js')
+
 // typedef struct _NPS_LoginInfo
 // {
 //   NPS_UserInfo UserData;           // The UserInfo for the login
@@ -15,13 +17,13 @@ const MsgPack = require('./MsgPack.js')
 //   char Version[NPS_VERSION_LEN + 1]; // Version string (33)
 // }
 // NPS_LoginInfo;
-function npsRequestGameConnectServer(session, rawData) {
+function npsRequestGameConnectServer(socket, rawData) {
     // Load the recieved data into a MsgPack class
     const msgPack = MsgPack(rawData)
     logger.debug(msgPack.GetOpCode())
     logger.debug(msgPack.GetMsgLen())
 
-    util.dumpRequest(session.lobbySocket, rawData)
+    util.dumpRequest(socket, rawData)
     // const contextId = Buffer.alloc(34)
     // data.copy(contextId, 0, 14, 48)
     // const customer = nps.npsGetCustomerIdByContextId(contextId)
@@ -51,6 +53,24 @@ function npsRequestGameConnectServer(session, rawData) {
     return packetresult
 }
 
+function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
+    db.query(
+        'SELECT session_key FROM sessions WHERE remote_address = $1',
+        [remoteAddress],
+        (err, res) => {
+            if (err) {
+                // Unknown error
+                console.error(
+                    `DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`
+                )
+                callback(err)
+            } else {
+                callback(null, res.rows[0].session_key)
+            }
+        }
+    )
+}
+
 function decryptCmd(session, cypherCmd) {
     const s = session
     logger.debug(`raw cmd: ${cypherCmd.toString('hex')}`)
@@ -66,44 +86,66 @@ function encryptCmd(session, cypherCmd) {
     return s
 }
 
-function sendCommand(session, data) {
-    const s = session
-    const cmd = decryptCmd(s, new Buffer(data.slice(4)))
-    logger.debug(`decryptedCmd: ${cmd.decryptedCmd.toString('hex')}`)
-    logger.debug(`cmd: ${cmd.decryptedCmd}`)
+function sendCommand(socket, data) {
 
-    util.dumpRequest(session.lobbySocket, data)
+    fetchSessionKeyByRemoteAddress(socket.remoteAddress, (err, sessionKey) => {
+        if (err) {
+            throw err
+        }
 
-    // Create the packet content
-    const packetcontent = crypto.randomBytes(375)
-    // const packetcontent = Buffer.from([0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19,
-    //  0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19])
+        let s = socket
 
-    // This is needed, not sure for what
-    // Buffer.from([0x01, 0x01]).copy(packetcontent)
+        const desIV = Buffer.alloc(8)
+        s.cypher = crypto
+            .createCipheriv('des-cbc', Buffer.from(sessionKey.substr(0, 16), 'hex'), desIV)
+            .setAutoPadding(false)
+        s.decypher = crypto
+            .createDecipheriv(
+                'des-cbc',
+                Buffer.from(sessionKey.substr(0, 16), 'hex'),
+                desIV
+            )
+            .setAutoPadding(false)
 
-    // Add the response code
-    packetcontent.writeUInt16BE(0x0219, 367)
-    packetcontent.writeUInt16BE(0x0101, 369)
-    packetcontent.writeUInt16BE(0x022c, 371)
+        const cmd = decryptCmd(s, new Buffer(data.slice(4)))
+        logger.debug(`decryptedCmd: ${cmd.decryptedCmd.toString('hex')}`)
+        logger.debug(`cmd: ${cmd.decryptedCmd}`)
+        
+        util.dumpRequest(socket, data)
+        
+        // Create the packet content
+        const packetcontent = crypto.randomBytes(375)
+        // const packetcontent = Buffer.from([0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19,
+        //  0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19])
+        
+        // This is needed, not sure for what
+        // Buffer.from([0x01, 0x01]).copy(packetcontent)
+        
+        // Add the response code
+        packetcontent.writeUInt16BE(0x0219, 367)
+        packetcontent.writeUInt16BE(0x0101, 369)
+        packetcontent.writeUInt16BE(0x022c, 371)
+        
+        // Build the packet
+        // const packetresult = packet.buildPacket(32, 0x0401,
+        const packetresult = packet.buildPacket(32, 0x0229, packetcontent)
+        
+        util.dumpResponse(packetresult, packetresult.length)
+        
+        const cmdEncrypted = encryptCmd(s, packetresult)
+        
+        cmdEncrypted.encryptedCommand = Buffer.concat([
+            Buffer.from([0x11, 0x01]),
+            cmdEncrypted.encryptedCommand
+        ])
+        
+        logger.debug(
+            `encryptedResponse: ${cmdEncrypted.encryptedCommand.toString('hex')}`
+        )
+        socket.write(cmdEncrypted.encryptedCommand)
+    })
 
-    // Build the packet
-    // const packetresult = packet.buildPacket(32, 0x0401,
-    const packetresult = packet.buildPacket(32, 0x0229, packetcontent)
 
-    util.dumpResponse(packetresult, packetresult.length)
-
-    const cmdEncrypted = encryptCmd(s, packetresult)
-
-    cmdEncrypted.encryptedCommand = Buffer.concat([
-        Buffer.from([0x11, 0x01]),
-        cmdEncrypted.encryptedCommand
-    ])
-
-    logger.debug(
-        `encryptedResponse: ${cmdEncrypted.encryptedCommand.toString('hex')}`
-    )
-    return cmdEncrypted
 }
 
 module.exports = {
