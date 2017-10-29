@@ -71,6 +71,28 @@ function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
     )
 }
 
+function updateSKeyByRemoteAddress(remoteAddress, sKey, callback) {
+    db.query(
+        'INSERT INTO sessions (s_key, remote_address) VALUES ($1, $2) ON CONFLICT (remote_address) DO UPDATE SET s_key = $1',
+        [sKey, remoteAddress],
+        err => {
+            if (err) {
+                // Unknown error
+                console.error(
+                    `DATABASE ERROR: Unable to store sKey: ${err.message}`
+                )
+                callback(err)
+            } else {
+                logger.debug(
+                    `DATABASE: Updated ${remoteAddress} session with s key ${sKey}`
+                    
+                )
+                callback(null, 'Seccess')
+            }
+        }
+    )
+}
+
 function decryptCmd(session, cypherCmd) {
     const s = session
     logger.debug(`raw cmd: ${cypherCmd.toString('hex')}`)
@@ -95,17 +117,21 @@ function sendCommand(socket, data) {
 
         let s = socket
 
-        const desIV = Buffer.alloc(8)
-        s.cypher = crypto
-            .createCipheriv('des-cbc', Buffer.from(sessionKey.substr(0, 16), 'hex'), desIV)
-            .setAutoPadding(false)
-        s.decypher = crypto
-            .createDecipheriv(
-                'des-cbc',
-                Buffer.from(sessionKey.substr(0, 16), 'hex'),
-                desIV
-            )
-            .setAutoPadding(false)
+        // Create the cypher and decyper only if not already set
+        if (!s.cypher & !s.decypher) {
+            const desIV = Buffer.alloc(8)
+            s.cypher = crypto
+                .createCipheriv('des-cbc', Buffer.from(sessionKey.substr(0, 16), 'hex'), desIV)
+                .setAutoPadding(false)
+            s.decypher = crypto
+                .createDecipheriv(
+                    'des-cbc',
+                    Buffer.from(sessionKey.substr(0, 16), 'hex'),
+                    desIV
+                )
+                .setAutoPadding(false)            
+        }
+        
 
         const cmd = decryptCmd(s, new Buffer(data.slice(4)))
         logger.debug(`decryptedCmd: ${cmd.decryptedCmd.toString('hex')}`)

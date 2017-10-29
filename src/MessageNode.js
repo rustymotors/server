@@ -1,3 +1,5 @@
+const logger = require('./logger.js')
+
 // struct msgHead
 function msgHead(header) {
     if (!(this instanceof msgHead)) {
@@ -27,9 +29,11 @@ function MessageNode(packet) {
     // DWORD	toFrom;		// used to determine whether it was an internally generated msg,
     // 					//  from another server, or truelly from a client
     //
-    this.toFrom = Buffer.alloc(2)
+    this.toFrom = Buffer.from([0x00, 0x00])
 
     // DWORD	appID;		// game specific user id (may or may not be used)
+
+    this.appId = Buffer.from([0x00, 0x00])
     // BYTE	allocType;	// this says what pool it came from (when it is not in a pool)
     // 					//  See POOL_xxxx above
     //
@@ -60,6 +64,14 @@ function MessageNode(packet) {
 
     this.setMsgHeader(packet)
     this.setBuffer(packet)
+
+    this.rawBuffer = packet
+
+
+    if (packet.length <= 6) {
+        logger.error('Packet too short!: ', packet)
+        return
+    }
 
     //DWORD	seq;	// sequenceNo
     this.seq = packet.readInt32LE(6)
