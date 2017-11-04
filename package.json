@@ -15,7 +15,7 @@
     "url": "git@github.com:drazisil/mco-server.git"
   },
   "engines": {
-    "node": "~6.11.4"
+    "node": "~8.9.0"
   },
   "jest": {
     "coverageDirectory": "./coverage/",
@@ -41,11 +41,7 @@
     "winston-daily-rotate-file": "^1.1.4"
   },
   "devDependencies": {
-    "chai": "^3.4.1",
-    "codecov": "^1.0.1",
     "jest": "^21.2.1",
-    "jest-junit": "^3.1.0",
-    "prettier-eslint": "^6.1.0",
-    "should": "~11.1.2"
+    "jest-junit": "^3.1.0"
   }
 }
