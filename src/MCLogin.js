@@ -1,4 +1,4 @@
-const logger = require('./logger.js')
+const logger = require("./logger.js");
 /*
 	ClientConnect : This is not a 'login', it is the client saying:
 	 	"Hey, I'm authenticated! Let's get the channel encrypted so
@@ -20,7 +20,7 @@ const logger = require('./logger.js')
 */
 // bool ClientConnect( ConnectionInfo * info, MessageNode * node)
 function ClientConnect(info, node) {
-    logger.debug(node)
+  logger.debug(node);
 }
 
-module.exports = ClientConnect
+module.exports = ClientConnect;
