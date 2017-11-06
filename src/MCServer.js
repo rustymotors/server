@@ -146,7 +146,7 @@ MCServer.prototype.startCLI = function startCLI(callback) {
 
 MCServer.prototype.run = function run() {
   // Connect to database
-  db.query("SELECT NOW()", err => {
+  db.query("SELECT date('now')", [], (err, res) => {
     if (err) {
       if (err.message.indexOf(" connect ECONNREFUSED") >= 0) {
         // Database not reachable
@@ -158,6 +158,7 @@ MCServer.prototype.run = function run() {
         // Unknown error
         console.error(`Error connecting to database: ${err.message}`);
       }
+      console.log(err, res);
       // Database error, exit
       process.exit(0);
     } else {

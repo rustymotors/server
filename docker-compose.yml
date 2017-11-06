@@ -1,11 +1,5 @@
 version: '3'
-services:
-  postgres:
-    image: postgres
-    ports:
-      - "5432"
-    environment:
-      - POSTGRES_PASSWORD=postgres        
+services:      
   web:
     build: .
     volumes:
