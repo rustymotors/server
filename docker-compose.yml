@@ -1,0 +1,15 @@
+version: '3'
+services:
+  postgres:
+    image: postgres
+    ports:
+      - "5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres        
+  web:
+    build: .
+    volumes:
+       - mco-web:/var/app
+    command: "npm start"
+volumes:
+   mco-web: {}
