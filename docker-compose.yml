@@ -3,7 +3,7 @@ services:
   web:
     build: .
     volumes:
-       - mco-web:/var/app
+            - shared:/var/app
     command: "npm start"
 volumes:
-   mco-web: {}
+   shared:
