@@ -1,4 +1,9 @@
-const logger = require("./logger.js");
+const rc4 = require('arc4')
+const util = require('./nps_utils.js')
+const logger = require('./logger.js')
+
+const db = require('../lib/database/index.js')
+
 // Connection::Connection()
 // {
 // 	id				= 0;
@@ -62,18 +67,84 @@ function Connection() {
 }
 
 function MSG_STRING(msgID) {
-  switch (msgID) {
+    switch (msgID) {
+    case 438:
+        return 'MC_CLIENT_CONNECT_MSG'
     default:
       return "Unknown";
   }
 }
 
+function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
+    db.query(
+        'SELECT session_key FROM sessions WHERE remote_address = $1',
+        [remoteAddress],
+        (err, res) => {
+            if (err) {
+                // Unknown error
+                console.error(
+                    `DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`
+                )
+                callback(err)
+            } else {
+                callback(null, res)
+            }
+        }
+    )
+}
+
+// struct LoginCompleteMsg
+// {
+// 	WORD	msgNo; // MC_LOGIN_COMPLETE = 213 = 0xd5
+// 	DWORD	serverTime;
+// 	char	firstTime:1;
+// 	char	paycheckWaiting:1;
+// 	char	clubInviatationsWaiting:1;
+// 	char	tallyInProgress:1;
+// 	WORD	secondsTillShutdown;
+//
+// 	double	shardGNP;
+// 	DWORD	shardCarsSold;
+// 	DWORD	shardAveSalary;
+// 	DWORD	shardAveCarsOwned;
+// 	DWORD	shardAvePlayerLevel;
+//
+// 	MCOTSListEntry ServerList[MAX_NUM_MCOTS_SERVERLIST_SLOTS];
+//
+// 	DWORD	webCookie;	// used by GPS web page to provide some minimal validation of the user;
+// 						//  o created by MCOTS; stored into DB at login time
+// 						//  o submitted by client in web page posts
+// 						//  o java compares this value against PLAYER.WEBCOOKIE
+// 	SQL_TIMESTAMP_STRUCT	nextTallyDate;
+// 	SQL_TIMESTAMP_STRUCT	nextPaycheckDate;
+// };
+function ClientConnect(con, node) {
+
+    logger.debug('In ClientConnect...')
+
+    fetchSessionKeyByRemoteAddress(con.sock.remoteAddress, (err, res) => {
+        if (err) {
+            throw err
+        }
+        
+        // Create the encryption object
+        con.enc = rc4('arc4', res.rows[0].session_key)
+        
+        
+        util.dumpResponse(node.rawBuffer, node.rawBuffer.length)
+        
+        // write the socket
+        con.sock.write(node.rawBuffer)
+        
+        // return MC_SUCCESS = 101;
+        return 101
+    })
+}
+
 // returning true means fatal error; thread should exit
 // bool ProcessInput( MessageNode* node, ConnectionInfo * info)
 function ProcessInput(node, info) {
-  const preDecryptMsgNo = Buffer.from([0xff, 0xff, 0xff, 0xff]);
-
-  logger.debug(info);
+    let preDecryptMsgNo = Buffer.from([0xFF, 0xFF])
 
   // NOTE: All messages handled here should have the BaseMsgHeader
   // at the beginning of the msg (???????)  If the message is from a Lobby Server,
@@ -82,14 +153,17 @@ function ProcessInput(node, info) {
 
   const currentMsgNo = msg.msgNo;
 
-  // MASSIVE case goes here!
+    // MC_FAILED = 102
+    let result = 102
+    
+    // MASSIVE case goes here!
 
-  switch (currentMsgNo) {
-    //   case MC_CLIENT_CONNECT_MSG:
-    //     logger.info((node, info, ""));
-    //     result = ClientConnect(info, node); // in MCLogin.cpp
-    //
-    //     break;
+    switch (MSG_STRING(currentMsgNo)) {
+    case 'MC_CLIENT_CONNECT_MSG':
+        logger.info((node, info, ''))
+        result = ClientConnect(info, node) // in MCLogin.cpp
+    
+        break
     //
     //   case MC_LOGIN:
     //     logger.info((node, info, ""));
@@ -917,16 +991,17 @@ function ProcessInput(node, info) {
     //     break;
 
     default:
-      logger.error(
-        `Message Number Not Handled: ${currentMsgNo} (${MSG_STRING(
-          currentMsgNo
-        )})  Predecrypt: ${preDecryptMsgNo} (${MSG_STRING(
-          preDecryptMsgNo
-        )}) conID: ${node.toFrom}  PersID: ${node.appID}`
-      );
-    // MCERROR(str); //NOCERROR(info, tNOCSeverity_WARNING, 50104, str);
-    // RequestFailed(node, MC_MSG_NOT_HANDLED_BY_SERVER);
-  }
+        logger.error(
+            `Message Number Not Handled: ${currentMsgNo} (${MSG_STRING(
+                currentMsgNo
+            )})  Predecrypt: ${preDecryptMsgNo} (${MSG_STRING(
+                preDecryptMsgNo
+            )}) conID: ${node.toFrom}  PersID: ${node.appID}`
+        )
+        //MCERROR(str); //NOCERROR(info, tNOCSeverity_WARNING, 50104, str);
+        //RequestFailed(node, MC_MSG_NOT_HANDLED_BY_SERVER);
+    }
+    return result
 }
 
 // struct TCPManager
@@ -962,9 +1037,38 @@ TCPManager.prototype.MessageReceived = function MessageReceived(msg, con) {
     if (!con.enc) {
       logger.error(`KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`);
 
-      con.sock.end();
+    // If not a Heartbeat
+    if (!(msg.flags & 0x80) && con.useEncryption) {
+        logger.debug('TCPMgr::MessageRecieved() Decrypt()\n')
 
-      return;
+        if (!con.enc) {
+            logger.error(
+                `KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`
+            )
+
+            con.sock.end()
+
+            return
+        }
+
+        try {
+            // if (!con.enc.IsSetupComplete()) {
+            //     logger.error(
+            //         `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
+            //     )
+            //     con.sock.end()
+            //     return
+            // }
+
+            //con.enc.Decrypt(msg, con)
+            console.log('Decoded: ', con.enc.decodeBuffer(msg.buffer))
+        } catch (e) {
+            logger.error(
+                `Decrypt() exception thrown! Disconnecting...conid:${con.id}`
+            )
+            con.sock.end()
+            throw e
+        }
     }
 
     try {
@@ -986,29 +1090,9 @@ TCPManager.prototype.MessageReceived = function MessageReceived(msg, con) {
     }
   }
 
-  // Next thing we do is check to see if it's compressed.  If so, we uncompress it here.
+    ProcessInput(msg, con)
 
-  if (msg.flags & 0x02) {
-    logger.debug("TCPMgr::MessageRecieved() Decompress()\n");
-
-    // const comp = CompressedHeader(msg.buffer)
-    // const newMsg = msg
-
-    // unsigned decompSize = DecompressIt( comp->data, msg->header.length, newMsg->buffer, comp->uncompressedLength);
-    // if (decompSize != comp->uncompressedLength)
-    // {
-    //   MCERROR("Size Mismatch on Message Decompress");
-    //   ReleaseMsg(newMsg);
-    //   ReleaseMsg(msg);
-    //   return;
-    // }
-    //
-    // ReleaseMsg(msg);
-    // msg = newMsg;
-    // msg->header.mcosig = *(unsigned long*)MCO_SIG_VAL;	// has to be proprietary!
-  }
-
-  ProcessInput(msg, "");
-};
+}
+}
 
 module.exports = { TCPManager };
