@@ -5,7 +5,7 @@
 -- Dumped from database version 10.0
 -- Dumped by pg_dump version 10.0
 
--- Started on 2017-10-26 21:00:38
+-- Started on 2017-10-27 20:37:25
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -25,7 +25,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- TOC entry 2855 (class 0 OID 0)
+-- TOC entry 2857 (class 0 OID 0)
 -- Dependencies: 1
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
@@ -46,22 +46,22 @@ SET default_with_oids = false;
 
 CREATE TABLE sessions (
     customer_id integer NOT NULL,
-    session_key character varying(256)
+    session_key character varying(256),
+    context_id character(34),
+    remote_address character(16)
 );
 
 
 ALTER TABLE sessions OWNER TO postgres;
 
 --
--- TOC entry 2848 (class 0 OID 24576)
+-- TOC entry 2850 (class 0 OID 24576)
 -- Dependencies: 196
 -- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY sessions (customer_id, session_key) FROM stdin;
-0	ad717a8f7ec28a10aed844f9f682c5bdc69fa3ab9016f598e1c49e1d0844a567
-16777216	0b0652032ee8af8bdc9f34832eb7168801932f77a5ad7241950ba6ee78ea6aa3
-1	4a50cb08af9773e360f709320bf35bd3ca8d1ce4a9e3ff470bbd35d5885c4ceb
+COPY sessions (customer_id, session_key, context_id, remote_address) FROM stdin;
+1	d865a6368c07ba080abc3b71f3294f55a8d5449c294dc2b59ec7a62dd866e2e9	\N	69.204.103.206  
 \.
 
 
@@ -83,7 +83,16 @@ ALTER TABLE ONLY sessions
     ADD CONSTRAINT sessions_pkey PRIMARY KEY (customer_id);
 
 
--- Completed on 2017-10-26 21:00:38
+--
+-- TOC entry 2728 (class 2606 OID 24584)
+-- Name: sessions sessions_token_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY sessions
+    ADD CONSTRAINT sessions_token_key UNIQUE (context_id);
+
+
+-- Completed on 2017-10-27 20:37:25
 
 --
 -- PostgreSQL database dump complete
