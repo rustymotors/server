@@ -1,9 +1,15 @@
 version: '3'
 services:      
-  web:
+  mco:
     build: .
+    ports:
+       - "81:80"
+       - "444:443"
     volumes:
-            - shared:/var/app
+       - ./sockets:/sockets
+    networks:
+       - mco-network
     command: "npm start"
-volumes:
-   shared:
+
+networks:
+   mco-network:

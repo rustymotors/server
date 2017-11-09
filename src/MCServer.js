@@ -1,6 +1,7 @@
 /* Internal dependencies */
 const readline = require("readline");
 const net = require("net");
+const fs = require("fs");
 const async = require("async");
 const logger = require("./logger.js");
 const patchServer = require("../lib/WebServer/index.js");

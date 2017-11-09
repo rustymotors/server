@@ -11,4 +11,3 @@ COPY data ./data
 COPY config ./config
 
 COPY server.js .
-
