@@ -1,8 +1,8 @@
-const rc4 = require('arc4')
-const util = require('./nps_utils.js')
-const logger = require('./logger.js')
+const rc4 = require("arc4");
+const util = require("./nps_utils.js");
+const logger = require("./logger.js");
 
-const db = require('../lib/database/index.js')
+const db = require("../lib/database/index.js");
 
 // Connection::Connection()
 // {
@@ -67,30 +67,30 @@ function Connection() {
 }
 
 function MSG_STRING(msgID) {
-    switch (msgID) {
+  switch (msgID) {
     case 438:
-        return 'MC_CLIENT_CONNECT_MSG'
+      return "MC_CLIENT_CONNECT_MSG";
     default:
       return "Unknown";
   }
 }
 
 function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
-    db.query(
-        'SELECT session_key FROM sessions WHERE remote_address = $1',
-        [remoteAddress],
-        (err, res) => {
-            if (err) {
-                // Unknown error
-                console.error(
-                    `DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`
-                )
-                callback(err)
-            } else {
-                callback(null, res)
-            }
-        }
-    )
+  db.query(
+    "SELECT session_key FROM sessions WHERE remote_address = $1",
+    [remoteAddress],
+    (err, res) => {
+      if (err) {
+        // Unknown error
+        console.error(
+          `DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`
+        );
+        callback(err);
+      } else {
+        callback(null, res);
+      }
+    }
+  );
 }
 
 // struct LoginCompleteMsg
@@ -119,32 +119,30 @@ function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
 // 	SQL_TIMESTAMP_STRUCT	nextPaycheckDate;
 // };
 function ClientConnect(con, node) {
+  logger.debug("In ClientConnect...");
 
-    logger.debug('In ClientConnect...')
+  fetchSessionKeyByRemoteAddress(con.sock.remoteAddress, (err, res) => {
+    if (err) {
+      throw err;
+    }
 
-    fetchSessionKeyByRemoteAddress(con.sock.remoteAddress, (err, res) => {
-        if (err) {
-            throw err
-        }
-        
-        // Create the encryption object
-        con.enc = rc4('arc4', res.rows[0].session_key)
-        
-        
-        util.dumpResponse(node.rawBuffer, node.rawBuffer.length)
-        
-        // write the socket
-        con.sock.write(node.rawBuffer)
-        
-        // return MC_SUCCESS = 101;
-        return 101
-    })
+    // Create the encryption object
+    con.enc = rc4("arc4", res.rows[0].session_key);
+
+    util.dumpResponse(node.rawBuffer, node.rawBuffer.length);
+
+    // write the socket
+    con.sock.write(node.rawBuffer);
+
+    // return MC_SUCCESS = 101;
+    return 101;
+  });
 }
 
 // returning true means fatal error; thread should exit
 // bool ProcessInput( MessageNode* node, ConnectionInfo * info)
 function ProcessInput(node, info) {
-    let preDecryptMsgNo = Buffer.from([0xFF, 0xFF])
+  let preDecryptMsgNo = Buffer.from([0xff, 0xff]);
 
   // NOTE: All messages handled here should have the BaseMsgHeader
   // at the beginning of the msg (???????)  If the message is from a Lobby Server,
@@ -153,17 +151,17 @@ function ProcessInput(node, info) {
 
   const currentMsgNo = msg.msgNo;
 
-    // MC_FAILED = 102
-    let result = 102
-    
-    // MASSIVE case goes here!
+  // MC_FAILED = 102
+  let result = 102;
 
-    switch (MSG_STRING(currentMsgNo)) {
-    case 'MC_CLIENT_CONNECT_MSG':
-        logger.info((node, info, ''))
-        result = ClientConnect(info, node) // in MCLogin.cpp
-    
-        break
+  // MASSIVE case goes here!
+
+  switch (MSG_STRING(currentMsgNo)) {
+    case "MC_CLIENT_CONNECT_MSG":
+      logger.info((node, info, ""));
+      result = ClientConnect(info, node); // in MCLogin.cpp
+
+      break;
     //
     //   case MC_LOGIN:
     //     logger.info((node, info, ""));
@@ -991,17 +989,17 @@ function ProcessInput(node, info) {
     //     break;
 
     default:
-        logger.error(
-            `Message Number Not Handled: ${currentMsgNo} (${MSG_STRING(
-                currentMsgNo
-            )})  Predecrypt: ${preDecryptMsgNo} (${MSG_STRING(
-                preDecryptMsgNo
-            )}) conID: ${node.toFrom}  PersID: ${node.appID}`
-        )
-        //MCERROR(str); //NOCERROR(info, tNOCSeverity_WARNING, 50104, str);
-        //RequestFailed(node, MC_MSG_NOT_HANDLED_BY_SERVER);
-    }
-    return result
+      logger.error(
+        `Message Number Not Handled: ${currentMsgNo} (${MSG_STRING(
+          currentMsgNo
+        )})  Predecrypt: ${preDecryptMsgNo} (${MSG_STRING(
+          preDecryptMsgNo
+        )}) conID: ${node.toFrom}  PersID: ${node.appID}`
+      );
+    //MCERROR(str); //NOCERROR(info, tNOCSeverity_WARNING, 50104, str);
+    //RequestFailed(node, MC_MSG_NOT_HANDLED_BY_SERVER);
+  }
+  return result;
 }
 
 // struct TCPManager
@@ -1037,62 +1035,61 @@ TCPManager.prototype.MessageReceived = function MessageReceived(msg, con) {
     if (!con.enc) {
       logger.error(`KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`);
 
-    // If not a Heartbeat
-    if (!(msg.flags & 0x80) && con.useEncryption) {
-        logger.debug('TCPMgr::MessageRecieved() Decrypt()\n')
+      // If not a Heartbeat
+      if (!(msg.flags & 0x80) && con.useEncryption) {
+        logger.debug("TCPMgr::MessageRecieved() Decrypt()\n");
 
         if (!con.enc) {
-            logger.error(
-                `KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`
-            )
+          logger.error(
+            `KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`
+          );
 
-            con.sock.end()
+          con.sock.end();
 
-            return
+          return;
         }
 
         try {
-            // if (!con.enc.IsSetupComplete()) {
-            //     logger.error(
-            //         `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
-            //     )
-            //     con.sock.end()
-            //     return
-            // }
+          // if (!con.enc.IsSetupComplete()) {
+          //     logger.error(
+          //         `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
+          //     )
+          //     con.sock.end()
+          //     return
+          // }
 
-            //con.enc.Decrypt(msg, con)
-            console.log('Decoded: ', con.enc.decodeBuffer(msg.buffer))
+          //con.enc.Decrypt(msg, con)
+          console.log("Decoded: ", con.enc.decodeBuffer(msg.buffer));
         } catch (e) {
-            logger.error(
-                `Decrypt() exception thrown! Disconnecting...conid:${con.id}`
-            )
-            con.sock.end()
-            throw e
+          logger.error(
+            `Decrypt() exception thrown! Disconnecting...conid:${con.id}`
+          );
+          con.sock.end();
+          throw e;
         }
-    }
-
-    try {
-      if (!con.enc.IsSetupComplete()) {
-        logger.error(
-          `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
-        );
-        con.sock.end();
-        return;
       }
 
-      con.enc.Decrypt(msg, con);
-    } catch (e) {
-      logger.error(
-        `Decrypt() exception thrown! Disconnecting...conid:${con.id}`
-      );
-      con.sock.end();
-      throw e;
+      try {
+        if (!con.enc.IsSetupComplete()) {
+          logger.error(
+            `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
+          );
+          con.sock.end();
+          return;
+        }
+
+        con.enc.Decrypt(msg, con);
+      } catch (e) {
+        logger.error(
+          `Decrypt() exception thrown! Disconnecting...conid:${con.id}`
+        );
+        con.sock.end();
+        throw e;
+      }
     }
+
+    ProcessInput(msg, con);
   }
-
-    ProcessInput(msg, con)
-
-}
-}
+};
 
 module.exports = { TCPManager };
