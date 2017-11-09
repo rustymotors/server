@@ -5,10 +5,6 @@ MCO-Server
 
 ## Server Setup
 
-### Create database
-
-`postgresql://postgres@localhost:5432/mco`
-
 ### Ports needed to be forwarded
 
 * 43300
