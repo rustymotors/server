@@ -144,13 +144,7 @@ function ClientConnect(con, node) {
 // returning true means fatal error; thread should exit
 // bool ProcessInput( MessageNode* node, ConnectionInfo * info)
 function ProcessInput(node, info) {
-<<<<<<< HEAD
     let preDecryptMsgNo = Buffer.from([0xFF, 0xFF])
-=======
-  const preDecryptMsgNo = Buffer.from([0xff, 0xff, 0xff, 0xff]);
-
-  logger.debug(info);
->>>>>>> master
 
   // NOTE: All messages handled here should have the BaseMsgHeader
   // at the beginning of the msg (???????)  If the message is from a Lobby Server,
@@ -159,7 +153,6 @@ function ProcessInput(node, info) {
 
   const currentMsgNo = msg.msgNo;
 
-<<<<<<< HEAD
     // MC_FAILED = 102
     let result = 102
     
@@ -171,16 +164,6 @@ function ProcessInput(node, info) {
         result = ClientConnect(info, node) // in MCLogin.cpp
     
         break
-=======
-  // MASSIVE case goes here!
-
-  switch (currentMsgNo) {
-    //   case MC_CLIENT_CONNECT_MSG:
-    //     logger.info((node, info, ""));
-    //     result = ClientConnect(info, node); // in MCLogin.cpp
-    //
-    //     break;
->>>>>>> master
     //
     //   case MC_LOGIN:
     //     logger.info((node, info, ""));
@@ -1008,7 +991,6 @@ function ProcessInput(node, info) {
     //     break;
 
     default:
-<<<<<<< HEAD
         logger.error(
             `Message Number Not Handled: ${currentMsgNo} (${MSG_STRING(
                 currentMsgNo
@@ -1020,18 +1002,6 @@ function ProcessInput(node, info) {
         //RequestFailed(node, MC_MSG_NOT_HANDLED_BY_SERVER);
     }
     return result
-=======
-      logger.error(
-        `Message Number Not Handled: ${currentMsgNo} (${MSG_STRING(
-          currentMsgNo
-        )})  Predecrypt: ${preDecryptMsgNo} (${MSG_STRING(
-          preDecryptMsgNo
-        )}) conID: ${node.toFrom}  PersID: ${node.appID}`
-      );
-    // MCERROR(str); //NOCERROR(info, tNOCSeverity_WARNING, 50104, str);
-    // RequestFailed(node, MC_MSG_NOT_HANDLED_BY_SERVER);
-  }
->>>>>>> master
 }
 
 // struct TCPManager
@@ -1067,7 +1037,6 @@ TCPManager.prototype.MessageReceived = function MessageReceived(msg, con) {
     if (!con.enc) {
       logger.error(`KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`);
 
-<<<<<<< HEAD
     // If not a Heartbeat
     if (!(msg.flags & 0x80) && con.useEncryption) {
         logger.debug('TCPMgr::MessageRecieved() Decrypt()\n')
@@ -1100,11 +1069,6 @@ TCPManager.prototype.MessageReceived = function MessageReceived(msg, con) {
             con.sock.end()
             throw e
         }
-=======
-      con.sock.end();
-
-      return;
->>>>>>> master
     }
 
     try {
@@ -1126,34 +1090,9 @@ TCPManager.prototype.MessageReceived = function MessageReceived(msg, con) {
     }
   }
 
-<<<<<<< HEAD
     ProcessInput(msg, con)
+
 }
-=======
-  // Next thing we do is check to see if it's compressed.  If so, we uncompress it here.
-
-  if (msg.flags & 0x02) {
-    logger.debug("TCPMgr::MessageRecieved() Decompress()\n");
-
-    // const comp = CompressedHeader(msg.buffer)
-    // const newMsg = msg
-
-    // unsigned decompSize = DecompressIt( comp->data, msg->header.length, newMsg->buffer, comp->uncompressedLength);
-    // if (decompSize != comp->uncompressedLength)
-    // {
-    //   MCERROR("Size Mismatch on Message Decompress");
-    //   ReleaseMsg(newMsg);
-    //   ReleaseMsg(msg);
-    //   return;
-    // }
-    //
-    // ReleaseMsg(msg);
-    // msg = newMsg;
-    // msg->header.mcosig = *(unsigned long*)MCO_SIG_VAL;	// has to be proprietary!
-  }
-
-  ProcessInput(msg, "");
-};
->>>>>>> master
+}
 
 module.exports = { TCPManager };

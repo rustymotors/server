@@ -108,7 +108,6 @@ function encryptCmd(session, cypherCmd) {
   return s;
 }
 
-<<<<<<< HEAD
 function sendCommand(socket, data) {
 
     fetchSessionKeyByRemoteAddress(socket.remoteAddress, (err, sessionKey) => {
@@ -173,46 +172,6 @@ function sendCommand(socket, data) {
     })
 
 
-=======
-function sendCommand(session, data) {
-  const s = session;
-  const cmd = decryptCmd(s, new Buffer(data.slice(4)));
-  logger.debug(`decryptedCmd: ${cmd.decryptedCmd.toString("hex")}`);
-  logger.debug(`cmd: ${cmd.decryptedCmd}`);
-
-  util.dumpRequest(session.lobbySocket, data);
-
-  // Create the packet content
-  const packetcontent = crypto.randomBytes(375);
-  // const packetcontent = Buffer.from([0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19,
-  //  0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19])
-
-  // This is needed, not sure for what
-  // Buffer.from([0x01, 0x01]).copy(packetcontent)
-
-  // Add the response code
-  packetcontent.writeUInt16BE(0x0219, 367);
-  packetcontent.writeUInt16BE(0x0101, 369);
-  packetcontent.writeUInt16BE(0x022c, 371);
-
-  // Build the packet
-  // const packetresult = packet.buildPacket(32, 0x0401,
-  const packetresult = packet.buildPacket(32, 0x0229, packetcontent);
-
-  util.dumpResponse(packetresult, packetresult.length);
-
-  const cmdEncrypted = encryptCmd(s, packetresult);
-
-  cmdEncrypted.encryptedCommand = Buffer.concat([
-    Buffer.from([0x11, 0x01]),
-    cmdEncrypted.encryptedCommand,
-  ]);
-
-  logger.debug(
-    `encryptedResponse: ${cmdEncrypted.encryptedCommand.toString("hex")}`
-  );
-  return cmdEncrypted;
->>>>>>> master
 }
 
 module.exports = {
