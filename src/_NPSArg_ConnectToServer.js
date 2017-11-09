@@ -80,11 +80,11 @@
 
 // struct LoginPacket
 function _NPSArg_ConnectToServer() {
-    if (!(this instanceof _NPSArg_ConnectToServer)) {
-        return new _NPSArg_ConnectToServer()
-    }
+  if (!(this instanceof _NPSArg_ConnectToServer)) {
+    return new _NPSArg_ConnectToServer();
+  }
 }
 
 // HostName[NPS_HOSTNAME_LEN] = 64
 
-module.exports = _NPSArg_ConnectToServer
+module.exports = _NPSArg_ConnectToServer;

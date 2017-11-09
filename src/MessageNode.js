@@ -2,19 +2,19 @@ const logger = require('./logger.js')
 
 // struct msgHead
 function msgHead(header) {
-    if (!(this instanceof msgHead)) {
-        return new msgHead(header)
-    }
+  if (!(this instanceof msgHead)) {
+    return new msgHead(header);
+  }
 
-    this.length = header.readInt16LE()
-    this.mcosig = header.toString('ascii', 2)
+  this.length = header.readInt16LE();
+  this.mcosig = header.toString("ascii", 2);
 }
 
 // struct BaseMsgHeader
 function BaseMsgHeader(msg) {
-    if (!(this instanceof BaseMsgHeader)) {
-        return new BaseMsgHeader(msg)
-    }
+  if (!(this instanceof BaseMsgHeader)) {
+    return new BaseMsgHeader(msg);
+  }
 
     // WORD	msgNo;
     this.msgNo = msg.readInt16LE()
@@ -105,10 +105,10 @@ function MessageNode(packet) {
 }
 
 MessageNode.prototype.setMsgHeader = function setMsgHeader(packet) {
-    const header = Buffer.alloc(6)
-    packet.copy(header, 0, 0, 6)
-    this.header = msgHead(header)
-}
+  const header = Buffer.alloc(6);
+  packet.copy(header, 0, 0, 6);
+  this.header = msgHead(header);
+};
 
 MessageNode.prototype.getBaseMsgHeader = function getBaseMsgHeader(packet) {
     return BaseMsgHeader(packet)
@@ -118,4 +118,4 @@ MessageNode.prototype.setBuffer = function setSetBuffer(packet) {
     this.buffer = packet.slice(11)
 }
 
-module.exports = { MessageNode, BaseMsgHeader }
+module.exports = { MessageNode, BaseMsgHeader };

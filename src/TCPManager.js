@@ -38,32 +38,32 @@ const db = require('../lib/database/index.js')
 
 // struct Connection
 function Connection() {
-    if (!(this instanceof Connection)) {
-        return new Connection()
-    }
+  if (!(this instanceof Connection)) {
+    return new Connection();
+  }
 
-    // id				= 0;
-    this.id = 0
+  // id				= 0;
+  this.id = 0;
 
-    // 	appID			= 0;
-    this.appID = 0
+  // 	appID			= 0;
+  this.appID = 0;
 
-    // 	status			= INACTIVE;
-    this.status = 'INACTIVE'
+  // 	status			= INACTIVE;
+  this.status = "INACTIVE";
 
-    // 	sock			= 0;
-    this.sock = 0
+  // 	sock			= 0;
+  this.sock = 0;
 
-    // 	msgEvent		= NULL;
-    this.msgEvent = null
+  // 	msgEvent		= NULL;
+  this.msgEvent = null;
 
-    // 	lastMsg			= 0;
-    this.lastMsg = 0
+  // 	lastMsg			= 0;
+  this.lastMsg = 0;
 
-    // 	useEncryption	= 0;
-    this.useEncryption = 0
-    // 	enc				= NULL;
-    this.enc = null
+  // 	useEncryption	= 0;
+  this.useEncryption = 0;
+  // 	enc				= NULL;
+  this.enc = null;
 }
 
 function MSG_STRING(msgID) {
@@ -71,8 +71,8 @@ function MSG_STRING(msgID) {
     case 438:
         return 'MC_CLIENT_CONNECT_MSG'
     default:
-        return 'Unknown'
-    }
+      return "Unknown";
+  }
 }
 
 function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
@@ -144,15 +144,22 @@ function ClientConnect(con, node) {
 // returning true means fatal error; thread should exit
 // bool ProcessInput( MessageNode* node, ConnectionInfo * info)
 function ProcessInput(node, info) {
+<<<<<<< HEAD
     let preDecryptMsgNo = Buffer.from([0xFF, 0xFF])
+=======
+  const preDecryptMsgNo = Buffer.from([0xff, 0xff, 0xff, 0xff]);
 
-    // NOTE: All messages handled here should have the BaseMsgHeader
-    // at the beginning of the msg (???????)  If the message is from a Lobby Server,
-    // or the Login Sever, the from needs to identify that by using the "special" id 0
-    const msg = node.getBaseMsgHeader(node.buffer)
+  logger.debug(info);
+>>>>>>> master
 
-    const currentMsgNo = msg.msgNo
+  // NOTE: All messages handled here should have the BaseMsgHeader
+  // at the beginning of the msg (???????)  If the message is from a Lobby Server,
+  // or the Login Sever, the from needs to identify that by using the "special" id 0
+  const msg = node.getBaseMsgHeader(node.buffer);
 
+  const currentMsgNo = msg.msgNo;
+
+<<<<<<< HEAD
     // MC_FAILED = 102
     let result = 102
     
@@ -164,6 +171,16 @@ function ProcessInput(node, info) {
         result = ClientConnect(info, node) // in MCLogin.cpp
     
         break
+=======
+  // MASSIVE case goes here!
+
+  switch (currentMsgNo) {
+    //   case MC_CLIENT_CONNECT_MSG:
+    //     logger.info((node, info, ""));
+    //     result = ClientConnect(info, node); // in MCLogin.cpp
+    //
+    //     break;
+>>>>>>> master
     //
     //   case MC_LOGIN:
     //     logger.info((node, info, ""));
@@ -991,6 +1008,7 @@ function ProcessInput(node, info) {
     //     break;
 
     default:
+<<<<<<< HEAD
         logger.error(
             `Message Number Not Handled: ${currentMsgNo} (${MSG_STRING(
                 currentMsgNo
@@ -1002,34 +1020,54 @@ function ProcessInput(node, info) {
         //RequestFailed(node, MC_MSG_NOT_HANDLED_BY_SERVER);
     }
     return result
+=======
+      logger.error(
+        `Message Number Not Handled: ${currentMsgNo} (${MSG_STRING(
+          currentMsgNo
+        )})  Predecrypt: ${preDecryptMsgNo} (${MSG_STRING(
+          preDecryptMsgNo
+        )}) conID: ${node.toFrom}  PersID: ${node.appID}`
+      );
+    // MCERROR(str); //NOCERROR(info, tNOCSeverity_WARNING, 50104, str);
+    // RequestFailed(node, MC_MSG_NOT_HANDLED_BY_SERVER);
+  }
+>>>>>>> master
 }
 
 // struct TCPManager
 function TCPManager() {
-    if (!(this instanceof TCPManager)) {
-        return new TCPManager()
-    }
+  if (!(this instanceof TCPManager)) {
+    return new TCPManager();
+  }
 
-    this.connectionID = 1
+  this.connectionID = 1;
 
-    this.connections = []
+  this.connections = [];
 }
 
 TCPManager.prototype.getFreeConnection = function getFreeConnection() {
-    const con = Connection()
-    con.id = this.connectionID
-    this.connectionID++
-    return con
-}
+  const con = Connection();
+  con.id = this.connectionID;
+  this.connectionID++;
+  return con;
+};
 
 TCPManager.prototype.MessageReceived = function MessageReceived(msg, con) {
-    logger.debug('In TCPManager::MessageReceived()')
+  logger.debug("In TCPManager::MessageReceived()");
 
-    if (!con.useEncryption && msg.flags & 0x08) {
-        con.useEncryption = 1
-        logger.debug('TCPMgr::MessageRecieved() turning on encryption\n')
-    }
+  if (!con.useEncryption && msg.flags & 0x08) {
+    con.useEncryption = 1;
+    logger.debug("TCPMgr::MessageRecieved() turning on encryption\n");
+  }
 
+  // If not a Heartbeat
+  if (!(msg.flags & 0x80) && con.useEncryption) {
+    logger.debug("TCPMgr::MessageRecieved() Decrypt()\n");
+
+    if (!con.enc) {
+      logger.error(`KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`);
+
+<<<<<<< HEAD
     // If not a Heartbeat
     if (!(msg.flags & 0x80) && con.useEncryption) {
         logger.debug('TCPMgr::MessageRecieved() Decrypt()\n')
@@ -1062,31 +1100,60 @@ TCPManager.prototype.MessageReceived = function MessageReceived(msg, con) {
             con.sock.end()
             throw e
         }
+=======
+      con.sock.end();
+
+      return;
+>>>>>>> master
     }
 
-    // Next thing we do is check to see if it's compressed.  If so, we uncompress it here.
+    try {
+      if (!con.enc.IsSetupComplete()) {
+        logger.error(
+          `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
+        );
+        con.sock.end();
+        return;
+      }
 
-    if (msg.flags & 0x02) {
-        logger.debug('TCPMgr::MessageRecieved() Decompress()\n')
-
-        // const comp = CompressedHeader(msg.buffer)
-        // const newMsg = msg
-
-        // unsigned decompSize = DecompressIt( comp->data, msg->header.length, newMsg->buffer, comp->uncompressedLength);
-        // if (decompSize != comp->uncompressedLength)
-        // {
-        //   MCERROR("Size Mismatch on Message Decompress");
-        //   ReleaseMsg(newMsg);
-        //   ReleaseMsg(msg);
-        //   return;
-        // }
-        //
-        // ReleaseMsg(msg);
-        // msg = newMsg;
-        // msg->header.mcosig = *(unsigned long*)MCO_SIG_VAL;	// has to be proprietary!
+      con.enc.Decrypt(msg, con);
+    } catch (e) {
+      logger.error(
+        `Decrypt() exception thrown! Disconnecting...conid:${con.id}`
+      );
+      con.sock.end();
+      throw e;
     }
+  }
 
+<<<<<<< HEAD
     ProcessInput(msg, con)
 }
+=======
+  // Next thing we do is check to see if it's compressed.  If so, we uncompress it here.
 
-module.exports = { TCPManager }
+  if (msg.flags & 0x02) {
+    logger.debug("TCPMgr::MessageRecieved() Decompress()\n");
+
+    // const comp = CompressedHeader(msg.buffer)
+    // const newMsg = msg
+
+    // unsigned decompSize = DecompressIt( comp->data, msg->header.length, newMsg->buffer, comp->uncompressedLength);
+    // if (decompSize != comp->uncompressedLength)
+    // {
+    //   MCERROR("Size Mismatch on Message Decompress");
+    //   ReleaseMsg(newMsg);
+    //   ReleaseMsg(msg);
+    //   return;
+    // }
+    //
+    // ReleaseMsg(msg);
+    // msg = newMsg;
+    // msg->header.mcosig = *(unsigned long*)MCO_SIG_VAL;	// has to be proprietary!
+  }
+
+  ProcessInput(msg, "");
+};
+>>>>>>> master
+
+module.exports = { TCPManager };
