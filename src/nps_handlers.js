@@ -11,52 +11,47 @@ function getRequestCode(rawBuffer) {
 }
 
 function lobbyDataHandler(con, rawData) {
-    const requestCode = getRequestCode(rawData)
+  const requestCode = getRequestCode(rawData);
 
   switch (requestCode) {
     // npsRequestGameConnectServer
-    case '0100': {
-        const packetresult = lobby.npsRequestGameConnectServer(
-            con.sock,
-            rawData
-        )
-        con.sock.write(packetresult)
-        break
+    case "0100": {
+      const packetresult = lobby.npsRequestGameConnectServer(con.sock, rawData);
+      con.sock.write(packetresult);
+      break;
     }
     // npsHeartbeat
-    case '0217': {
-        const packetresult = util.npsHeartbeat(con.sock, rawData)
-        con.sock.write(packetresult)
-        break
+    case "0217": {
+      const packetresult = util.npsHeartbeat(con.sock, rawData);
+      con.sock.write(packetresult);
+      break;
     }
     // npsSendCommand
-    case '1101': {
-        // This is an encrypted command
-        // Fetch session key
+    case "1101": {
+      // This is an encrypted command
+      // Fetch session key
 
-        lobby.sendCommand(con.sock, rawData, requestCode)
-        break
+      lobby.sendCommand(con.sock, rawData, requestCode);
+      break;
     }
     default:
-        util.dumpRequest(con.sock, rawData, requestCode)
-        logger.error(
-            `Unknown code ${requestCode} was recieved on port 7003`
-        )
-    }
+      util.dumpRequest(con.sock, rawData, requestCode);
+      logger.error(`Unknown code ${requestCode} was recieved on port 7003`);
+  }
 }
 
 function databaseDataHandler(session, rawData) {
-    const messageNode = MessageNode.MessageNode(rawData)
-    logger.info(`=============================================
-    Recieved database packet on port ${session.databaseSocket.localPort} from ${session
-    .databaseSocket.remoteAddress}...`)
-    logger.debug('Header Length: ', messageNode.header.length)
-    logger.debug('Header MCOSIG: ', messageNode.header.mcosig)
-    logger.debug('Sequence: ', messageNode.seq)
-    logger.debug('Flags: ', messageNode.flags)
-    logger.debug('Buffer: ', messageNode.buffer)
-    logger.debug('Buffer as string: ', messageNode.buffer.toString('hex'))
-    logger.info('=============================================')
+  const messageNode = MessageNode.MessageNode(rawData);
+  logger.info(`=============================================
+    Recieved database packet on port ${session.databaseSocket
+      .localPort} from ${session.databaseSocket.remoteAddress}...`);
+  logger.debug("Header Length: ", messageNode.header.length);
+  logger.debug("Header MCOSIG: ", messageNode.header.mcosig);
+  logger.debug("Sequence: ", messageNode.seq);
+  logger.debug("Flags: ", messageNode.flags);
+  logger.debug("Buffer: ", messageNode.buffer);
+  logger.debug("Buffer as string: ", messageNode.buffer.toString("hex"));
+  logger.info("=============================================");
 
   if (messageNode.header.mcosig == "TOMC") {
     logger.debug("Packet has a valid MCOTS header signature");
@@ -91,7 +86,6 @@ function databaseDataHandler(session, rawData) {
     // Unknown packet
     logger.error("Unknown packet was recieved on port 43300");
   }
-
 }
 
 function handler(con, rawData) {
@@ -108,13 +102,13 @@ function handler(con, rawData) {
   logger.debug("Buffer as string: ", messageNode.buffer.toString("hex"));
   logger.info("=============================================");
 
-    if (messageNode.header.mcosig == 'TOMC') {
-        logger.debug('Packet has a valid MCOTS header signature')
-        tcpManager.MessageReceived(messageNode, con)
-    } else {
-        //tcpManager.MessageReceived(messageNode, con)
-        lobbyDataHandler(con, rawData)
-    }
+  if (messageNode.header.mcosig == "TOMC") {
+    logger.debug("Packet has a valid MCOTS header signature");
+    tcpManager.MessageReceived(messageNode, con);
+  } else {
+    //tcpManager.MessageReceived(messageNode, con)
+    lobbyDataHandler(con, rawData);
+  }
 }
 
 module.exports = {

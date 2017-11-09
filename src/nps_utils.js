@@ -40,9 +40,8 @@ function npsHeartbeat(session, rawData) {
 }
 
 module.exports = {
-    toHex,
-    dumpRequest,
-    dumpResponse,
-    npsHeartbeat
-}
-
+  toHex,
+  dumpRequest,
+  dumpResponse,
+  npsHeartbeat,
+};

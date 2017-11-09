@@ -4,7 +4,7 @@ const packet = require("./packet.js");
 const util = require("./nps_utils.js");
 const MsgPack = require("./MsgPack.js");
 
-const db = require('../lib/database/index.js')
+const db = require("../lib/database/index.js");
 
 // typedef struct _NPS_LoginInfo
 // {
@@ -18,16 +18,16 @@ const db = require('../lib/database/index.js')
 // }
 // NPS_LoginInfo;
 function npsRequestGameConnectServer(socket, rawData) {
-    // Load the recieved data into a MsgPack class
-    const msgPack = MsgPack(rawData)
-    logger.debug(msgPack.GetOpCode())
-    logger.debug(msgPack.GetMsgLen())
+  // Load the recieved data into a MsgPack class
+  const msgPack = MsgPack(rawData);
+  logger.debug(msgPack.GetOpCode());
+  logger.debug(msgPack.GetMsgLen());
 
-    util.dumpRequest(socket, rawData)
-    // const contextId = Buffer.alloc(34)
-    // data.copy(contextId, 0, 14, 48)
-    // const customer = nps.npsGetCustomerIdByContextId(contextId)
-    // logger.debug(`customer: ${customer}`)
+  util.dumpRequest(socket, rawData);
+  // const contextId = Buffer.alloc(34)
+  // data.copy(contextId, 0, 14, 48)
+  // const customer = nps.npsGetCustomerIdByContextId(contextId)
+  // logger.debug(`customer: ${customer}`)
 
   // Return a _NPS_UserInfo structure - 40
   const packetcontent = Buffer.alloc(38);
@@ -54,43 +54,40 @@ function npsRequestGameConnectServer(socket, rawData) {
 }
 
 function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
-    db.query(
-        'SELECT session_key FROM sessions WHERE remote_address = $1',
-        [remoteAddress],
-        (err, res) => {
-            if (err) {
-                // Unknown error
-                console.error(
-                    `DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`
-                )
-                callback(err)
-            } else {
-                callback(null, res.rows[0].session_key)
-            }
-        }
-    )
+  db.query(
+    "SELECT session_key FROM sessions WHERE remote_address = $1",
+    [remoteAddress],
+    (err, res) => {
+      if (err) {
+        // Unknown error
+        console.error(
+          `DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`
+        );
+        callback(err);
+      } else {
+        callback(null, res.rows[0].session_key);
+      }
+    }
+  );
 }
 
 function updateSKeyByRemoteAddress(remoteAddress, sKey, callback) {
-    db.query(
-        'INSERT INTO sessions (s_key, remote_address) VALUES ($1, $2) ON CONFLICT (remote_address) DO UPDATE SET s_key = $1',
-        [sKey, remoteAddress],
-        err => {
-            if (err) {
-                // Unknown error
-                console.error(
-                    `DATABASE ERROR: Unable to store sKey: ${err.message}`
-                )
-                callback(err)
-            } else {
-                logger.debug(
-                    `DATABASE: Updated ${remoteAddress} session with s key ${sKey}`
-                    
-                )
-                callback(null, 'Seccess')
-            }
-        }
-    )
+  db.query(
+    "INSERT INTO sessions (s_key, remote_address) VALUES ($1, $2) ON CONFLICT (remote_address) DO UPDATE SET s_key = $1",
+    [sKey, remoteAddress],
+    err => {
+      if (err) {
+        // Unknown error
+        console.error(`DATABASE ERROR: Unable to store sKey: ${err.message}`);
+        callback(err);
+      } else {
+        logger.debug(
+          `DATABASE: Updated ${remoteAddress} session with s key ${sKey}`
+        );
+        callback(null, "Seccess");
+      }
+    }
+  );
 }
 
 function decryptCmd(session, cypherCmd) {
@@ -109,69 +106,69 @@ function encryptCmd(session, cypherCmd) {
 }
 
 function sendCommand(socket, data) {
+  fetchSessionKeyByRemoteAddress(socket.remoteAddress, (err, sessionKey) => {
+    if (err) {
+      throw err;
+    }
 
-    fetchSessionKeyByRemoteAddress(socket.remoteAddress, (err, sessionKey) => {
-        if (err) {
-            throw err
-        }
+    let s = socket;
 
-        let s = socket
-
-        // Create the cypher and decyper only if not already set
-        if (!s.cypher & !s.decypher) {
-            const desIV = Buffer.alloc(8)
-            s.cypher = crypto
-                .createCipheriv('des-cbc', Buffer.from(sessionKey.substr(0, 16), 'hex'), desIV)
-                .setAutoPadding(false)
-            s.decypher = crypto
-                .createDecipheriv(
-                    'des-cbc',
-                    Buffer.from(sessionKey.substr(0, 16), 'hex'),
-                    desIV
-                )
-                .setAutoPadding(false)            
-        }
-        
-
-        const cmd = decryptCmd(s, new Buffer(data.slice(4)))
-        logger.debug(`decryptedCmd: ${cmd.decryptedCmd.toString('hex')}`)
-        logger.debug(`cmd: ${cmd.decryptedCmd}`)
-        
-        util.dumpRequest(socket, data)
-        
-        // Create the packet content
-        const packetcontent = crypto.randomBytes(375)
-        // const packetcontent = Buffer.from([0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19,
-        //  0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19])
-        
-        // This is needed, not sure for what
-        // Buffer.from([0x01, 0x01]).copy(packetcontent)
-        
-        // Add the response code
-        packetcontent.writeUInt16BE(0x0219, 367)
-        packetcontent.writeUInt16BE(0x0101, 369)
-        packetcontent.writeUInt16BE(0x022c, 371)
-        
-        // Build the packet
-        // const packetresult = packet.buildPacket(32, 0x0401,
-        const packetresult = packet.buildPacket(32, 0x0229, packetcontent)
-        
-        util.dumpResponse(packetresult, packetresult.length)
-        
-        const cmdEncrypted = encryptCmd(s, packetresult)
-        
-        cmdEncrypted.encryptedCommand = Buffer.concat([
-            Buffer.from([0x11, 0x01]),
-            cmdEncrypted.encryptedCommand
-        ])
-        
-        logger.debug(
-            `encryptedResponse: ${cmdEncrypted.encryptedCommand.toString('hex')}`
+    // Create the cypher and decyper only if not already set
+    if (!s.cypher & !s.decypher) {
+      const desIV = Buffer.alloc(8);
+      s.cypher = crypto
+        .createCipheriv(
+          "des-cbc",
+          Buffer.from(sessionKey.substr(0, 16), "hex"),
+          desIV
         )
-        socket.write(cmdEncrypted.encryptedCommand)
-    })
+        .setAutoPadding(false);
+      s.decypher = crypto
+        .createDecipheriv(
+          "des-cbc",
+          Buffer.from(sessionKey.substr(0, 16), "hex"),
+          desIV
+        )
+        .setAutoPadding(false);
+    }
 
+    const cmd = decryptCmd(s, new Buffer(data.slice(4)));
+    logger.debug(`decryptedCmd: ${cmd.decryptedCmd.toString("hex")}`);
+    logger.debug(`cmd: ${cmd.decryptedCmd}`);
 
+    util.dumpRequest(socket, data);
+
+    // Create the packet content
+    const packetcontent = crypto.randomBytes(375);
+    // const packetcontent = Buffer.from([0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19,
+    //  0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19, 0x02, 0x19])
+
+    // This is needed, not sure for what
+    // Buffer.from([0x01, 0x01]).copy(packetcontent)
+
+    // Add the response code
+    packetcontent.writeUInt16BE(0x0219, 367);
+    packetcontent.writeUInt16BE(0x0101, 369);
+    packetcontent.writeUInt16BE(0x022c, 371);
+
+    // Build the packet
+    // const packetresult = packet.buildPacket(32, 0x0401,
+    const packetresult = packet.buildPacket(32, 0x0229, packetcontent);
+
+    util.dumpResponse(packetresult, packetresult.length);
+
+    const cmdEncrypted = encryptCmd(s, packetresult);
+
+    cmdEncrypted.encryptedCommand = Buffer.concat([
+      Buffer.from([0x11, 0x01]),
+      cmdEncrypted.encryptedCommand,
+    ]);
+
+    logger.debug(
+      `encryptedResponse: ${cmdEncrypted.encryptedCommand.toString("hex")}`
+    );
+    socket.write(cmdEncrypted.encryptedCommand);
+  });
 }
 
 module.exports = {
