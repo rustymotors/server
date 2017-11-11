@@ -42,30 +42,20 @@ function Connection() {
     return new Connection();
   }
 
-  // id				= 0;
   this.id = 0;
-
-  // 	appID			= 0;
   this.appID = 0;
-
-  // 	status			= INACTIVE;
   this.status = "INACTIVE";
-
-  // 	sock			= 0;
   this.sock = 0;
-
-  // 	msgEvent		= NULL;
   this.msgEvent = null;
-
-  // 	lastMsg			= 0;
   this.lastMsg = 0;
-
-  // 	useEncryption	= 0;
   this.useEncryption = 0;
-  // 	enc				= NULL;
   this.enc = null;
 }
 
+/**
+ * Return the string representtion of the numaric opcode
+ * @param {int} msgID 
+ */
 function MSG_STRING(msgID) {
   switch (msgID) {
     case 438:
@@ -75,6 +65,11 @@ function MSG_STRING(msgID) {
   }
 }
 
+/**
+ * Fetch session key from database based on remote address
+ * @param {string} remoteAddress 
+ * @param {function} callback 
+ */
 function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
   database.db.get(
     "SELECT session_key FROM sessions WHERE remote_address = $1",
