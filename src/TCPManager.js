@@ -1103,4 +1103,4 @@ TCPManager.prototype.MessageReceived = function MessageReceived(msg, con) {
   }
 };
 
-module.exports = { TCPManager };
+module.exports = { TCPManager, MSG_STRING };
