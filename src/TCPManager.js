@@ -119,6 +119,7 @@ function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
 // 	SQL_TIMESTAMP_STRUCT	nextPaycheckDate;
 // };
 function ClientConnect(con, node) {
+  logger.debug("~~~~~~~~~~~~~~~~~~~");
   logger.debug("In ClientConnect...");
 
   fetchSessionKeyByRemoteAddress(con.sock.remoteAddress, (err, res) => {
@@ -1021,6 +1022,7 @@ TCPManager.prototype.getFreeConnection = function getFreeConnection() {
 };
 
 TCPManager.prototype.MessageReceived = function MessageReceived(msg, con) {
+  logger.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
   logger.debug("In TCPManager::MessageReceived()");
 
   if (!con.useEncryption && msg.flags & 0x08) {

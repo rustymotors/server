@@ -60,7 +60,7 @@ MCServer.prototype.startServers = function startServers(callback) {
               listener.listener(socket);
             })
             .listen(port, "0.0.0.0", () => {
-              logger.debug(`Started TCP listener on TCP port: ${port}`);
+              // logger.debug(`Started TCP listener on TCP port: ${port}`);
             });
         });
         callback(null);

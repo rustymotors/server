@@ -30,8 +30,8 @@ function dumpResponse(data, count) {
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n`);
 }
 
-function npsHeartbeat(session, rawData) {
-  dumpRequest(session.lobbySocket, rawData);
+function npsHeartbeat(socket, rawData) {
+  dumpRequest(socket, rawData);
 
   const packetcontent = Buffer.alloc(8);
   const packetresult = packet.buildPacket(8, 0x0127, packetcontent);

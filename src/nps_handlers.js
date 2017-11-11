@@ -46,7 +46,7 @@ function databaseDataHandler(session, rawData) {
     Recieved database packet on port ${session.databaseSocket
       .localPort} from ${session.databaseSocket.remoteAddress}...`);
   logger.debug("Header Length: ", messageNode.header.length);
-  logger.debug("Header MCOSIG: ", messageNode.header.mcosig);
+  logger.debug("Header MCOSIG: ", messageNode.header.mcosig.toString());
   logger.debug("Sequence: ", messageNode.seq);
   logger.debug("Flags: ", messageNode.flags);
   logger.debug("Buffer: ", messageNode.buffer);
