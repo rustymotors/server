@@ -117,4 +117,8 @@ MessageNode.prototype.setBuffer = function setSetBuffer(packet) {
   this.buffer = packet.slice(11);
 };
 
+MessageNode.prototype.isMCOTS = function isMCOTS() {
+  return this.header.mcosig == "TOMC";
+};
+
 module.exports = { MessageNode, BaseMsgHeader };

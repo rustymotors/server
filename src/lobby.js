@@ -20,10 +20,8 @@ const database = require("../lib/database/index.js");
 function npsRequestGameConnectServer(socket, rawData) {
   // Load the recieved data into a MsgPack class
   const msgPack = MsgPack(rawData);
-  logger.debug(msgPack.GetOpCode());
-  logger.debug(msgPack.GetMsgLen());
 
-  util.dumpRequest(socket, rawData);
+  // util.dumpRequest(socket, rawData);
   // const contextId = Buffer.alloc(34)
   // data.copy(contextId, 0, 14, 48)
   // const customer = nps.npsGetCustomerIdByContextId(contextId)
@@ -49,7 +47,7 @@ function npsRequestGameConnectServer(socket, rawData) {
   // Build the packet
   const packetresult = packet.buildPacket(4, 0x0120, packetcontent);
 
-  util.dumpResponse(packetresult, packetresult.length);
+  // util.dumpResponse(packetresult, packetresult.length);
   return packetresult;
 }
 
@@ -75,7 +73,7 @@ function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
 
 function decryptCmd(session, cypherCmd) {
   const s = session;
-  logger.debug(`raw cmd: ${cypherCmd.toString("hex")}`);
+  // logger.debug(`raw cmd: ${cypherCmd.toString("hex")}`);
   const decryptedCommand = s.decypher.update(cypherCmd);
   s.decryptedCmd = decryptedCommand;
   return s;
@@ -96,8 +94,8 @@ function sendCommand(con, data) {
 
     let s = con;
 
-    logger.debug("Retrieved Session Key: ", res.session_key);
-    logger.debug("Retrieved S Key: ", res.s_key);
+    // logger.debug("Retrieved Session Key: ", res.session_key);
+    // logger.debug("Retrieved S Key: ", res.s_key);
 
     // Create the cypher and decyper only if not already set
     if (!s.cypher & !s.decypher) {
@@ -111,9 +109,9 @@ function sendCommand(con, data) {
     }
 
     const cmd = decryptCmd(s, new Buffer(data.slice(4)));
-    logger.debug(`decryptedCmd: ${cmd.decryptedCmd.toString("hex")}`);
+    // logger.debug(`decryptedCmd: ${cmd.decryptedCmd.toString("hex")}`);
 
-    util.dumpRequest(con.sock, data);
+    // util.dumpRequest(con.sock, data);
 
     // Create the packet content
     const packetcontent = crypto.randomBytes(375);
@@ -132,7 +130,7 @@ function sendCommand(con, data) {
     // const packetresult = packet.buildPacket(32, 0x0401,
     const packetresult = packet.buildPacket(32, 0x0229, packetcontent);
 
-    util.dumpResponse(packetresult, packetresult.length);
+    // util.dumpResponse(packetresult, packetresult.length);
 
     const cmdEncrypted = encryptCmd(s, packetresult);
 
@@ -141,9 +139,9 @@ function sendCommand(con, data) {
       cmdEncrypted.encryptedCommand,
     ]);
 
-    logger.debug(
-      `encryptedResponse: ${cmdEncrypted.encryptedCommand.toString("hex")}`
-    );
+    // logger.debug(
+    //   `encryptedResponse: ${cmdEncrypted.encryptedCommand.toString("hex")}`
+    // );
     con.sock.write(cmdEncrypted.encryptedCommand);
     return con;
   });

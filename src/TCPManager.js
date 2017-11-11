@@ -2,7 +2,7 @@ const rc4 = require("arc4");
 const util = require("./nps_utils.js");
 const logger = require("./logger.js");
 
-const db = require("../lib/database/index.js");
+const database = require("../lib/database/index.js");
 
 // Connection::Connection()
 // {
@@ -76,7 +76,7 @@ function MSG_STRING(msgID) {
 }
 
 function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
-  db.query(
+  database.db.get(
     "SELECT session_key FROM sessions WHERE remote_address = $1",
     [remoteAddress],
     (err, res) => {
@@ -131,7 +131,7 @@ function ClientConnect(con, node) {
     }
 
     // Create the encryption object
-    con.enc = rc4("arc4", res.rows[0].session_key);
+    con.enc = rc4("arc4", res.session_key);
 
     util.dumpResponse(node.rawBuffer, node.rawBuffer.length);
 
@@ -146,6 +146,11 @@ function ClientConnect(con, node) {
 // returning true means fatal error; thread should exit
 // bool ProcessInput( MessageNode* node, ConnectionInfo * info)
 function ProcessInput(node, info) {
+  logger.debug(`
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  In TCPManager::ProcessInput()
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  `);
   let preDecryptMsgNo = Buffer.from([0xff, 0xff]);
 
   // NOTE: All messages handled here should have the BaseMsgHeader
@@ -154,6 +159,7 @@ function ProcessInput(node, info) {
   const msg = node.getBaseMsgHeader(node.buffer);
 
   const currentMsgNo = msg.msgNo;
+  logger.debug("currentMsgNo: ", currentMsgNo);
 
   // MC_FAILED = 102
   let result = 102;
@@ -1058,13 +1064,13 @@ TCPManager.prototype.MessageReceived = function MessageReceived(msg, con) {
         }
 
         try {
-          // if (!con.enc.IsSetupComplete()) {
-          //     logger.error(
-          //         `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
-          //     )
-          //     con.sock.end()
-          //     return
-          // }
+          if (!con.enc.IsSetupComplete()) {
+            logger.error(
+              `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
+            );
+            con.sock.end();
+            return;
+          }
 
           //con.enc.Decrypt(msg, con)
           console.log("Decoded: ", con.enc.decodeBuffer(msg.buffer));
@@ -1096,6 +1102,8 @@ TCPManager.prototype.MessageReceived = function MessageReceived(msg, con) {
       }
     }
 
+    ProcessInput(msg, con);
+  } else {
     ProcessInput(msg, con);
   }
 };

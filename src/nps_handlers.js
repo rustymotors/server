@@ -93,20 +93,30 @@ function handler(con, rawData) {
   logger.info(`=============================================
     Recieved packet on port ${con.sock.localPort} from ${con.sock
     .remoteAddress}...`);
-  logger.debug("Header Length: ", messageNode.header.length);
-  logger.debug("Header MCOSIG: ", messageNode.header.mcosig);
-  logger.debug("Sequence: ", messageNode.seq);
-  logger.debug("Flags: ", messageNode.flags);
-  logger.debug("Buffer: ", messageNode.buffer);
-  logger.debug("Buffer as text: ", messageNode.buffer.toString("utf8"));
-  logger.debug("Buffer as string: ", messageNode.buffer.toString("hex"));
   logger.info("=============================================");
 
-  if (messageNode.header.mcosig == "TOMC") {
+  if (messageNode.isMCOTS()) {
     logger.debug("Packet has a valid MCOTS header signature");
+    logger.info("=============================================");
+    logger.debug("Header Length: ", messageNode.header.length);
+    logger.debug("Header MCOSIG: ", messageNode.isMCOTS());
+    logger.debug("Sequence: ", messageNode.seq);
+    logger.debug("Flags: ", messageNode.flags);
+    logger.debug("Buffer: ", messageNode.buffer);
+    logger.debug("Buffer as text: ", messageNode.buffer.toString("utf8"));
+    logger.debug("Buffer as string: ", messageNode.buffer.toString("hex"));
+    logger.info("=============================================");
+
     tcpManager.MessageReceived(messageNode, con);
   } else {
     //tcpManager.MessageReceived(messageNode, con)
+    logger.debug("No valid MCOTS header signature detected, sending to Lobby");
+    logger.info("=============================================");
+    //logger.debug("Header Length: ", messageNode.header.length);
+    //logger.debug("Buffer: ", messageNode.buffer);
+    //logger.debug("Buffer as text: ", messageNode.buffer.toString("utf8"));
+    //logger.debug("Buffer as string: ", messageNode.buffer.toString("hex"));
+    //logger.info("=============================================");
     lobbyDataHandler(con, rawData);
   }
 }
