@@ -31,7 +31,7 @@ function lobbyDataHandler(con, rawData) {
       // This is an encrypted command
       // Fetch session key
 
-      lobby.sendCommand(con.sock, rawData, requestCode);
+      con = lobby.sendCommand(con, rawData, requestCode);
       break;
     }
     default:

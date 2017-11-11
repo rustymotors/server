@@ -56,7 +56,7 @@ function npsRequestGameConnectServer(socket, rawData) {
 function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
   database.db.serialize(function() {
     database.db.get(
-      "SELECT session_key FROM sessions WHERE remote_address = $1",
+      "SELECT session_key, s_key FROM sessions WHERE remote_address = $1",
       [remoteAddress],
       (err, res) => {
         if (err) {
@@ -67,27 +67,6 @@ function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
           callback(err);
         } else {
           callback(null, res);
-        }
-      }
-    );
-  });
-}
-
-function updateSKeyByRemoteAddress(remoteAddress, sKey, callback) {
-  database.db.serialize(function() {
-    database.db.query(
-      "INSERT OR UPDATE INTO sessions (s_key, remote_address) VALUES ($1, $2)",
-      [sKey, remoteAddress],
-      err => {
-        if (err) {
-          // Unknown error
-          console.error(`DATABASE ERROR: Unable to store sKey: ${err.message}`);
-          callback(err);
-        } else {
-          logger.debug(
-            `DATABASE: Updated ${remoteAddress} session with s key ${sKey}`
-          );
-          callback(null, "Success");
         }
       }
     );
@@ -109,38 +88,32 @@ function encryptCmd(session, cypherCmd) {
   return s;
 }
 
-function sendCommand(socket, data) {
-  fetchSessionKeyByRemoteAddress(socket.remoteAddress, (err, res) => {
+function sendCommand(con, data) {
+  fetchSessionKeyByRemoteAddress(con.sock.remoteAddress, (err, res) => {
     if (err) {
       throw err;
     }
 
-    let s = socket;
+    let s = con;
+
+    logger.debug("Retrieved Session Key: ", res.session_key);
+    logger.debug("Retrieved S Key: ", res.s_key);
 
     // Create the cypher and decyper only if not already set
     if (!s.cypher & !s.decypher) {
       const desIV = Buffer.alloc(8);
       s.cypher = crypto
-        .createCipheriv(
-          "des-cbc",
-          Buffer.from(res.session_key.substr(0, 16), "hex"),
-          desIV
-        )
+        .createCipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
         .setAutoPadding(false);
       s.decypher = crypto
-        .createDecipheriv(
-          "des-cbc",
-          Buffer.from(res.session_key.substr(0, 16), "hex"),
-          desIV
-        )
+        .createDecipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
         .setAutoPadding(false);
     }
 
     const cmd = decryptCmd(s, new Buffer(data.slice(4)));
     logger.debug(`decryptedCmd: ${cmd.decryptedCmd.toString("hex")}`);
-    logger.debug(`cmd: ${cmd.decryptedCmd}`);
 
-    util.dumpRequest(socket, data);
+    util.dumpRequest(con.sock, data);
 
     // Create the packet content
     const packetcontent = crypto.randomBytes(375);
@@ -171,7 +144,8 @@ function sendCommand(socket, data) {
     logger.debug(
       `encryptedResponse: ${cmdEncrypted.encryptedCommand.toString("hex")}`
     );
-    socket.write(cmdEncrypted.encryptedCommand);
+    con.sock.write(cmdEncrypted.encryptedCommand);
+    return con;
   });
 }
 

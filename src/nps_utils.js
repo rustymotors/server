@@ -9,15 +9,17 @@ function toHex(d) {
 function dumpRequest(socket, rawBuffer) {
   const localId = `${socket.remoteAddress}_${socket.localPort}`;
   const requestCode = `${toHex(rawBuffer[0])}${toHex(rawBuffer[1])}`;
-  logger.debug(`\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+  logger.debug(`
+  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   Request from: ${socket.remoteAddress} on ${socket.localPort}
   Request Code: ${requestCode}
   -----------------------------------------
   Request DATA ${localId}:${rawBuffer.toString("ascii")}
-  =========================================
+  -----------------------------------------
   Request DATA ${localId}:${rawBuffer.toString("hex")}
   -----------------------------------------
-  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n`);
+  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+  `);
 }
 
 function dumpResponse(data, count) {
