@@ -9,7 +9,7 @@ const loginServer = require("../lib/LoginServer/index.js")();
 const personaServer = require("../lib/PersonaServer/index.js")();
 const listener = require("./nps_listeners.js");
 
-const db = require("../lib/database/index.js");
+const database = require("../lib/database/index.js");
 
 function MCServer() {
   if (!(this instanceof MCServer)) {
@@ -22,7 +22,7 @@ Need to open create listeners on the ports
 
 When a connection opens, cass it to a session controller that will log the
 connection and fork to a connection handlers
-* */
+**/
 
 MCServer.prototype.startServers = function startServers(callback) {
   logger.info("Starting the listening sockets...");
@@ -78,20 +78,23 @@ MCServer.prototype.startServers = function startServers(callback) {
 };
 
 function fetchSessionKey(customerId, callback) {
-  db.query(
-    `SELECT session_key FROM sessions WHERE customer_id = ${customerId}`,
-    (err, res) => {
-      if (err) {
-        // Unknown error
-        console.error(
-          `DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`
-        );
-        callback(err);
-      } else {
-        callback(null, res);
+  database.db.serialize(function() {
+    database.db.get(
+      "SELECT session_key FROM sessions WHERE customer_id = $1",
+      [customerId],
+      (err, res) => {
+        if (err) {
+          // Unknown error
+          console.error(
+            `DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`
+          );
+          callback(err);
+        } else {
+          callback(null, res);
+        }
       }
-    }
-  );
+    );
+  });
 }
 
 function handleCLICommand(command) {
@@ -102,12 +105,11 @@ function handleCLICommand(command) {
       if (err) {
         throw err;
       }
-      if (res.rows[0] == undefined) {
+      if (res == undefined) {
         console.log("Unable to locate session key for customerID:", customerId);
       } else {
         console.log(
-          `The sesssionKey for customerId ${customerId} is ${res.rows[0]
-            .session_key}`
+          `The sesssionKey for customerId ${customerId} is ${res.session_key}`
         );
       }
     });
@@ -147,26 +149,8 @@ MCServer.prototype.startCLI = function startCLI(callback) {
 
 MCServer.prototype.run = function run() {
   // Connect to database
-  db.query("SELECT date('now')", [], (err, res) => {
-    if (err) {
-      if (err.message.indexOf(" connect ECONNREFUSED") >= 0) {
-        // Database not reachable
-        console.error(
-          "DATABASE ERROR: Unable to connect to Database: ",
-          err.message
-        );
-      } else {
-        // Unknown error
-        console.error(`Error connecting to database: ${err.message}`);
-      }
-      console.log(err, res);
-      // Database error, exit
-      process.exit(0);
-    } else {
-      // Start the server listeners
-      async.waterfall([this.startServers, this.startCLI]);
-    }
-  });
+  // Start the server listeners
+  async.waterfall([database.createDB, this.startServers, this.startCLI]);
 };
 
 module.exports = { MCServer };

@@ -4,7 +4,7 @@ const packet = require("./packet.js");
 const util = require("./nps_utils.js");
 const MsgPack = require("./MsgPack.js");
 
-const db = require("../lib/database/index.js");
+const database = require("../lib/database/index.js");
 
 // typedef struct _NPS_LoginInfo
 // {
@@ -54,40 +54,44 @@ function npsRequestGameConnectServer(socket, rawData) {
 }
 
 function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
-  db.query(
-    "SELECT session_key FROM sessions WHERE remote_address = $1",
-    [remoteAddress],
-    (err, res) => {
-      if (err) {
-        // Unknown error
-        console.error(
-          `DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`
-        );
-        callback(err);
-      } else {
-        callback(null, res.rows[0].session_key);
+  database.db.serialize(function() {
+    database.db.get(
+      "SELECT session_key FROM sessions WHERE remote_address = $1",
+      [remoteAddress],
+      (err, res) => {
+        if (err) {
+          // Unknown error
+          console.error(
+            `DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`
+          );
+          callback(err);
+        } else {
+          callback(null, res);
+        }
       }
-    }
-  );
+    );
+  });
 }
 
 function updateSKeyByRemoteAddress(remoteAddress, sKey, callback) {
-  db.query(
-    "INSERT INTO sessions (s_key, remote_address) VALUES ($1, $2) ON CONFLICT (remote_address) DO UPDATE SET s_key = $1",
-    [sKey, remoteAddress],
-    err => {
-      if (err) {
-        // Unknown error
-        console.error(`DATABASE ERROR: Unable to store sKey: ${err.message}`);
-        callback(err);
-      } else {
-        logger.debug(
-          `DATABASE: Updated ${remoteAddress} session with s key ${sKey}`
-        );
-        callback(null, "Seccess");
+  database.db.serialize(function() {
+    database.db.query(
+      "INSERT OR UPDATE INTO sessions (s_key, remote_address) VALUES ($1, $2)",
+      [sKey, remoteAddress],
+      err => {
+        if (err) {
+          // Unknown error
+          console.error(`DATABASE ERROR: Unable to store sKey: ${err.message}`);
+          callback(err);
+        } else {
+          logger.debug(
+            `DATABASE: Updated ${remoteAddress} session with s key ${sKey}`
+          );
+          callback(null, "Success");
+        }
       }
-    }
-  );
+    );
+  });
 }
 
 function decryptCmd(session, cypherCmd) {
@@ -106,7 +110,7 @@ function encryptCmd(session, cypherCmd) {
 }
 
 function sendCommand(socket, data) {
-  fetchSessionKeyByRemoteAddress(socket.remoteAddress, (err, sessionKey) => {
+  fetchSessionKeyByRemoteAddress(socket.remoteAddress, (err, res) => {
     if (err) {
       throw err;
     }
@@ -119,14 +123,14 @@ function sendCommand(socket, data) {
       s.cypher = crypto
         .createCipheriv(
           "des-cbc",
-          Buffer.from(sessionKey.substr(0, 16), "hex"),
+          Buffer.from(res.session_key.substr(0, 16), "hex"),
           desIV
         )
         .setAutoPadding(false);
       s.decypher = crypto
         .createDecipheriv(
           "des-cbc",
-          Buffer.from(sessionKey.substr(0, 16), "hex"),
+          Buffer.from(res.session_key.substr(0, 16), "hex"),
           desIV
         )
         .setAutoPadding(false);
