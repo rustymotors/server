@@ -56,6 +56,10 @@ function handler(con, rawData) {
     logger.debug("Buffer: ", messageNode.buffer);
     logger.debug("Buffer as text: ", messageNode.buffer.toString("utf8"));
     logger.debug("Buffer as string: ", messageNode.buffer.toString("hex"));
+    logger.debug(
+      "Raw Buffer as string: ",
+      messageNode.rawBuffer.toString("hex")
+    );
     logger.info("=============================================");
 
     tcpManager.MessageReceived(messageNode, con);
