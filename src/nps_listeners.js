@@ -1,6 +1,8 @@
 const handler = require("./nps_handlers.js");
 const logger = require("./logger.js");
-const TCPManager = require("./TCPManager.js").TCPManager();
+const TCPManager = require("./TCPManager.js");
+
+tcpMander = new TCPManager.TCPManager();
 
 function listener(socket) {
   // Is this a login connection?
@@ -20,7 +22,7 @@ function listener(socket) {
       logger.info("Closing Login socket");
     });
   } else {
-    const con = TCPManager.getFreeConnection();
+    const con = tcpManager.getFreeConnection();
 
     con.sock = socket;
 

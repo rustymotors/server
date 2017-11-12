@@ -1,4 +1,5 @@
 const rc4 = require("arc4");
+const crypto = require("crypto");
 const util = require("./nps_utils.js");
 const logger = require("./logger.js");
 
@@ -6,9 +7,6 @@ const database = require("../lib/database/index.js");
 
 class Connection {
   constructor() {
-    if (!(this instanceof Connection)) {
-      return new Connection();
-    }
     this.id = 0;
     this.appID = 0;
     this.status = "INACTIVE";
@@ -41,13 +39,13 @@ function MSG_STRING(msgID) {
  */
 function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
   database.db.get(
-    "SELECT session_key FROM sessions WHERE remote_address = $1",
+    "SELECT session_key, s_key FROM sessions WHERE remote_address = $1",
     [remoteAddress],
     (err, res) => {
       if (err) {
         // Unknown error
         console.error(
-          `DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`
+          `DATABASE ERROR: Unable to retrieve sessionsKey: ${err.message}`
         );
         callback(err);
       } else {
@@ -96,6 +94,20 @@ function ClientConnect(con, node) {
 
     // Create the encryption object
     con.enc = rc4("arc4", res.session_key);
+
+    // logger.debug("Retrieved Session Key: ", res.session_key);
+    // logger.debug("Retrieved S Key: ", res.s_key);
+
+    // Create the cypher and decyper only if not already set
+    if (!con.cypher & !con.decypher) {
+      const desIV = Buffer.alloc(8);
+      con.cypher = crypto
+        .createCipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
+        .setAutoPadding(false);
+      con.decypher = crypto
+        .createDecipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
+        .setAutoPadding(false);
+    }
 
     // util.dumpResponse(node.rawBuffer, node.rawBuffer.length);
 
@@ -980,16 +992,17 @@ function ProcessInput(node, info) {
 
 class TCPManager {
   constructor() {
-    if (!(this instanceof TCPManager)) {
-      return new TCPManager();
-    }
     this.connectionID = 1;
     this.connections = [];
   }
   getFreeConnection() {
-    const con = Connection();
+    const con = new Connection();
     con.id = this.connectionID;
     this.connectionID++;
+    this.connections.push(con);
+
+    console.dir(this.connections);
+
     return con;
   }
   MessageReceived(msg, con) {
@@ -1009,43 +1022,33 @@ class TCPManager {
         logger.error(
           `KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`
         );
-        // If not a Heartbeat
-        if (!(msg.flags & 0x80) && con.useEncryption) {
-          logger.debug("TCPMgr::MessageRecieved() Decrypt()\n");
-          if (!con.enc) {
-            logger.error(
-              `KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`
-            );
-            con.sock.end();
-            return;
-          }
-          try {
-            if (!con.enc.IsSetupComplete()) {
-              logger.error(
-                `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
-              );
-              con.sock.end();
-              return;
-            }
-            //con.enc.Decrypt(msg, con)
-            console.log("Decoded: ", con.enc.decodeBuffer(msg.buffer));
-          } catch (e) {
-            logger.error(
-              `Decrypt() exception thrown! Disconnecting...conid:${con.id}`
-            );
-            con.sock.end();
-            throw e;
-          }
+      }
+      // If not a Heartbeat
+      if (!(msg.flags & 0x80) && con.useEncryption) {
+        logger.debug("TCPMgr::MessageRecieved() Decrypt()\n");
+        if (!con.enc) {
+          logger.error(
+            `KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`
+          );
+          con.sock.end();
+          return;
         }
         try {
-          if (!con.enc.IsSetupComplete()) {
+          if (!con.isSetupComplete) {
             logger.error(
               `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
             );
             con.sock.end();
             return;
           }
-          con.enc.Decrypt(msg, con);
+
+          console.dir(this.connections[0]);
+
+          logger.warn(
+            "Decrypted:   ",
+            con.enc.decodeString(msg.buffer, "hex", "hex")
+          );
+          logger.warn("Decrypted: 2 ", con.decypher.update(msg.buffer));
         } catch (e) {
           logger.error(
             `Decrypt() exception thrown! Disconnecting...conid:${con.id}`
@@ -1054,6 +1057,7 @@ class TCPManager {
           throw e;
         }
       }
+
       ProcessInput(msg, con);
     } else {
       ProcessInput(msg, con);

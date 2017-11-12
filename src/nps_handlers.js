@@ -1,9 +1,11 @@
 const lobby = require("./lobby.js");
 const logger = require("./logger.js");
 const util = require("./nps_utils.js");
-const tcpManager = require("./TCPManager.js").TCPManager();
+const TCPManager = require("./TCPManager.js");
 
 const MessageNode = require("./MessageNode.js");
+
+tcpManager = new TCPManager.TCPManager();
 
 function getRequestCode(rawBuffer) {
   return `${util.toHex(rawBuffer[0])}${util.toHex(rawBuffer[1])}`;
@@ -64,7 +66,6 @@ function handler(con, rawData) {
 
     tcpManager.MessageReceived(messageNode, con);
   } else {
-    //tcpManager.MessageReceived(messageNode, con)
     logger.debug("No valid MCOTS header signature detected, sending to Lobby");
     logger.info("=============================================");
     //logger.debug("Header Length: ", messageNode.header.length);

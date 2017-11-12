@@ -12,11 +12,6 @@ const listener = require("./nps_listeners.js");
 const database = require("../lib/database/index.js");
 
 class MCServer {
-  constructor() {
-    if (!(this instanceof MCServer)) {
-      return new MCServer();
-    }
-  }
   /**
   Need to open create listeners on the ports
   
