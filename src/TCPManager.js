@@ -50,6 +50,7 @@ function Connection() {
   this.lastMsg = 0;
   this.useEncryption = 0;
   this.enc = null;
+  this.isSetupComplete = 0;
 }
 
 /**
@@ -128,10 +129,12 @@ function ClientConnect(con, node) {
     // Create the encryption object
     con.enc = rc4("arc4", res.session_key);
 
-    util.dumpResponse(node.rawBuffer, node.rawBuffer.length);
+    // util.dumpResponse(node.rawBuffer, node.rawBuffer.length);
 
     // write the socket
     con.sock.write(node.rawBuffer);
+
+    con.isSetupComplete = 1;
 
     // return MC_SUCCESS = 101;
     return 101;
