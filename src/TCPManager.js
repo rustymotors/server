@@ -1007,57 +1007,65 @@ function ProcessInput(node, info) {
   return result;
 }
 
-// struct TCPManager
-function TCPManager() {
-  if (!(this instanceof TCPManager)) {
-    return new TCPManager();
+class TCPManager {
+  constructor() {
+    if (!(this instanceof TCPManager)) {
+      return new TCPManager();
+    }
+    this.connectionID = 1;
+    this.connections = [];
   }
-
-  this.connectionID = 1;
-
-  this.connections = [];
-}
-
-TCPManager.prototype.getFreeConnection = function getFreeConnection() {
-  const con = Connection();
-  con.id = this.connectionID;
-  this.connectionID++;
-  return con;
-};
-
-TCPManager.prototype.MessageReceived = function MessageReceived(msg, con) {
-  logger.debug(`
+  getFreeConnection() {
+    const con = Connection();
+    con.id = this.connectionID;
+    this.connectionID++;
+    return con;
+  }
+  MessageReceived(msg, con) {
+    logger.debug(`
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   In TCPManager::MessageReceived()
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   `);
-
-  if (!con.useEncryption && msg.flags & 0x08) {
-    con.useEncryption = 1;
-    logger.debug("TCPMgr::MessageRecieved() turning on encryption\n");
-  }
-
-  // If not a Heartbeat
-  if (!(msg.flags & 0x80) && con.useEncryption) {
-    logger.debug("TCPMgr::MessageRecieved() Decrypt()\n");
-
-    if (!con.enc) {
-      logger.error(`KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`);
-
-      // If not a Heartbeat
-      if (!(msg.flags & 0x80) && con.useEncryption) {
-        logger.debug("TCPMgr::MessageRecieved() Decrypt()\n");
-
-        if (!con.enc) {
-          logger.error(
-            `KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`
-          );
-
-          con.sock.end();
-
-          return;
+    if (!con.useEncryption && msg.flags & 0x08) {
+      con.useEncryption = 1;
+      logger.debug("TCPMgr::MessageRecieved() turning on encryption\n");
+    }
+    // If not a Heartbeat
+    if (!(msg.flags & 0x80) && con.useEncryption) {
+      logger.debug("TCPMgr::MessageRecieved() Decrypt()\n");
+      if (!con.enc) {
+        logger.error(
+          `KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`
+        );
+        // If not a Heartbeat
+        if (!(msg.flags & 0x80) && con.useEncryption) {
+          logger.debug("TCPMgr::MessageRecieved() Decrypt()\n");
+          if (!con.enc) {
+            logger.error(
+              `KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`
+            );
+            con.sock.end();
+            return;
+          }
+          try {
+            if (!con.enc.IsSetupComplete()) {
+              logger.error(
+                `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
+              );
+              con.sock.end();
+              return;
+            }
+            //con.enc.Decrypt(msg, con)
+            console.log("Decoded: ", con.enc.decodeBuffer(msg.buffer));
+          } catch (e) {
+            logger.error(
+              `Decrypt() exception thrown! Disconnecting...conid:${con.id}`
+            );
+            con.sock.end();
+            throw e;
+          }
         }
-
         try {
           if (!con.enc.IsSetupComplete()) {
             logger.error(
@@ -1066,9 +1074,7 @@ TCPManager.prototype.MessageReceived = function MessageReceived(msg, con) {
             con.sock.end();
             return;
           }
-
-          //con.enc.Decrypt(msg, con)
-          console.log("Decoded: ", con.enc.decodeBuffer(msg.buffer));
+          con.enc.Decrypt(msg, con);
         } catch (e) {
           logger.error(
             `Decrypt() exception thrown! Disconnecting...conid:${con.id}`
@@ -1077,30 +1083,11 @@ TCPManager.prototype.MessageReceived = function MessageReceived(msg, con) {
           throw e;
         }
       }
-
-      try {
-        if (!con.enc.IsSetupComplete()) {
-          logger.error(
-            `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
-          );
-          con.sock.end();
-          return;
-        }
-
-        con.enc.Decrypt(msg, con);
-      } catch (e) {
-        logger.error(
-          `Decrypt() exception thrown! Disconnecting...conid:${con.id}`
-        );
-        con.sock.end();
-        throw e;
-      }
+      ProcessInput(msg, con);
+    } else {
+      ProcessInput(msg, con);
     }
-
-    ProcessInput(msg, con);
-  } else {
-    ProcessInput(msg, con);
   }
-};
+}
 
 module.exports = { TCPManager, MSG_STRING };
