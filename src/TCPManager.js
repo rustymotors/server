@@ -1042,11 +1042,11 @@ class TCPManager {
             return;
           }
 
-          console.dir(this.connections[0]);
+          logger.warn(msg.buffer.toString("hex"));
 
           logger.warn(
             "Decrypted:   ",
-            con.enc.decodeString(msg.buffer, "hex", "hex")
+            con.enc.decodeString(msg.buffer.toString("hex"), "hex", "hex")
           );
           logger.warn("Decrypted: 2 ", con.decypher.update(msg.buffer));
         } catch (e) {
