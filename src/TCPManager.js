@@ -4,53 +4,21 @@ const logger = require("./logger.js");
 
 const database = require("../lib/database/index.js");
 
-// Connection::Connection()
-// {
-// 	id				= 0;
-// 	appID			= 0;
-// 	status			= INACTIVE;
-// 	sock			= 0;
-// 	port			= 0;
-// 	q				= COMMMGR_DEFAULT_Q;
-// 	msgEvent		= NULL;
-// 	lastMsg			= 0;
-// 	sendBacklog		= 0;	// the # of pending sends for this connection
-// 	lastBacklogNotify = 0;	// when did we notify about backlog
-// 	incommingThread	= NULL;
-// 	hbCount			= 0;
-// 	sbCount			= 0;			// how many times did we notify about backlog
-// 	useEncryption	= 0;
-// 	enc				= NULL;
-// #ifdef MCSERVER
-// 	netInterface	= UnknownInterface;
-// #endif
-// }
-
-// function CompressedHeader(msg) {
-//     if (!(this instanceof CompressedHeader)) {
-//         return new CompressedHeader(msg)
-//     }
-//     //LENSIZE	uncompressedLength;
-//     this.uncompressedLength = msg.readInt16LE()
-//     //BYTE	data[1];	// starting spot for the compressed data
-//     this.data = msg.readInt8(2)
-// }
-
-// struct Connection
-function Connection() {
-  if (!(this instanceof Connection)) {
-    return new Connection();
+class Connection {
+  constructor() {
+    if (!(this instanceof Connection)) {
+      return new Connection();
+    }
+    this.id = 0;
+    this.appID = 0;
+    this.status = "INACTIVE";
+    this.sock = 0;
+    this.msgEvent = null;
+    this.lastMsg = 0;
+    this.useEncryption = 0;
+    this.enc = null;
+    this.isSetupComplete = 0;
   }
-
-  this.id = 0;
-  this.appID = 0;
-  this.status = "INACTIVE";
-  this.sock = 0;
-  this.msgEvent = null;
-  this.lastMsg = 0;
-  this.useEncryption = 0;
-  this.enc = null;
-  this.isSetupComplete = 0;
 }
 
 /**
