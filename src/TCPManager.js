@@ -1002,8 +1002,6 @@ class TCPManager {
     this.connectionID++;
     this.connections.push(con);
 
-    console.dir(this.connections);
-
     return con;
   }
   MessageReceived(msg, con) {
@@ -1071,6 +1069,37 @@ class TCPManager {
  * @param {net.Socket} socket 
  */
 function listener(socket) {
+  /**
+   * Assign the socket a connection
+   */
+  con = tcpManager.getFreeConnection();
+
+  /**
+   * Announce the new connection
+   */
+  logger.info(
+    `Connection from client. conID:(${con.id}) On:${socket.remoteAddress}  Peer:${socket.localAddress}`
+  );
+
+  con.lastMsg = 0;
+  con.status = "ACTIVE";
+
+  con.sock = socket;
+  con.port = socket.localPort;
+
+  /**
+   * Let's setup the connection
+   */
+  try {
+    bSuccess = SetupConnection(con);
+  } catch (err) {
+    bSuccess = false;
+  }
+
+  if (!bSuccess) {
+    logger.error(`SetupConnection(conid:${con.id}) ${con} failed`);
+  }
+
   /**
    * Lets check if we have a connection for this user.
    */
