@@ -2,7 +2,8 @@ const rc4 = require("arc4");
 const crypto = require("crypto");
 const util = require("./nps_utils.js");
 const logger = require("./logger.js");
-
+const lobby = require("./lobby.js");
+const MessageNode = require("./MessageNode.js");
 const database = require("../lib/database/index.js");
 
 class Connection {
@@ -1065,4 +1066,130 @@ class TCPManager {
   }
 }
 
-module.exports = { TCPManager, MSG_STRING };
+/**
+ * Takes a socket
+ * @param {net.Socket} socket 
+ */
+function listener(socket) {
+  /**
+   * Lets check if we have a connection for this user.
+   */
+
+  // Is this a login connection?
+  if (socket.localPort == 8226) {
+    logger.debug("New Login Connection...");
+
+    // Add a 'data' event handler to this instance of socket
+    socket.on("data", data => {
+      loginDataHandler(socket, data);
+    });
+    socket.on("error", err => {
+      if (err.code !== "ECONNRESET") {
+        throw err;
+      }
+    });
+    socket.on("close", () => {
+      logger.info("Closing Login socket");
+    });
+  } else {
+    const con = tcpManager.getFreeConnection();
+
+    con.sock = socket;
+
+    logger.debug("New Connection...");
+    logger.debug("ConnectionID: ", con.id);
+
+    // Add a 'data' event handler to this instance of socket
+    socket.on("data", data => {
+      handler(con, data);
+    });
+    socket.on("error", err => {
+      if (err.code !== "ECONNRESET") {
+        throw err;
+      }
+    });
+    socket.on("close", () => {
+      logger.info(
+        `Closing socket id ${con.id} for port ${con.sock.localPort} from ${con
+          .sock.remoteAddress}`
+      );
+    });
+  }
+}
+
+function getRequestCode(rawBuffer) {
+  return `${util.toHex(rawBuffer[0])}${util.toHex(rawBuffer[1])}`;
+}
+
+function lobbyDataHandler(con, rawData) {
+  const requestCode = getRequestCode(rawData);
+
+  switch (requestCode) {
+    // npsRequestGameConnectServer
+    case "0100": {
+      const packetresult = lobby.npsRequestGameConnectServer(con.sock, rawData);
+      con.sock.write(packetresult);
+      break;
+    }
+    // npsHeartbeat
+    case "0217": {
+      const packetresult = util.npsHeartbeat(con.sock, rawData);
+      con.sock.write(packetresult);
+      break;
+    }
+    // npsSendCommand
+    case "1101": {
+      // This is an encrypted command
+      // Fetch session key
+
+      con = lobby.sendCommand(con, rawData, requestCode);
+      break;
+    }
+    default:
+      util.dumpRequest(con.sock, rawData, requestCode);
+      logger.error(`Unknown code ${requestCode} was recieved on port 7003`);
+  }
+}
+
+function handler(con, rawData) {
+  const messageNode = MessageNode.MessageNode(rawData);
+  logger.info(`=============================================
+    Recieved packet on port ${con.sock.localPort} from ${con.sock
+    .remoteAddress}...`);
+  logger.info("=============================================");
+
+  if (messageNode.isMCOTS()) {
+    logger.debug("Packet has a valid MCOTS header signature");
+    logger.info("=============================================");
+    logger.debug("Header Length: ", messageNode.header.length);
+    logger.debug("Header MCOSIG: ", messageNode.isMCOTS());
+    logger.debug("Sequence: ", messageNode.seq);
+    logger.debug("Flags: ", messageNode.flags);
+    logger.debug("Buffer: ", messageNode.buffer);
+    logger.debug("Buffer as text: ", messageNode.buffer.toString("utf8"));
+    logger.debug("Buffer as string: ", messageNode.buffer.toString("hex"));
+    logger.debug(
+      "Raw Buffer as string: ",
+      messageNode.rawBuffer.toString("hex")
+    );
+    logger.info("=============================================");
+
+    tcpManager.MessageReceived(messageNode, con);
+  } else {
+    logger.debug("No valid MCOTS header signature detected, sending to Lobby");
+    logger.info("=============================================");
+    //logger.debug("Header Length: ", messageNode.header.length);
+    //logger.debug("Buffer: ", messageNode.buffer);
+    //logger.debug("Buffer as text: ", messageNode.buffer.toString("utf8"));
+    //logger.debug("Buffer as string: ", messageNode.buffer.toString("hex"));
+    //logger.info("=============================================");
+    lobbyDataHandler(con, rawData);
+  }
+}
+
+/**
+ * Initialize a new instance of TCPManager
+ */
+tcpManager = new TCPManager();
+
+module.exports = { TCPManager, MSG_STRING, listener };

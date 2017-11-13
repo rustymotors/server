@@ -7,7 +7,7 @@ const logger = require("./logger.js");
 const patchServer = require("../lib/WebServer/index.js");
 const loginServer = require("../lib/LoginServer/index.js")();
 const personaServer = require("../lib/PersonaServer/index.js")();
-const listener = require("./nps_listeners.js");
+const TCPManager = require("./TCPManager.js");
 
 const database = require("../lib/database/index.js");
 
@@ -50,7 +50,7 @@ class MCServer {
           tcpPortList.map(port => {
             net
               .createServer(socket => {
-                listener.listener(socket);
+                TCPManager.listener(socket);
               })
               .listen(port, "0.0.0.0", () => {
                 // logger.debug(`Started TCP listener on TCP port: ${port}`);
