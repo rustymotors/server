@@ -1065,18 +1065,6 @@ class TCPManager {
 }
 
 /**
- * Sets up a connection
- * @param {Connection} con 
- */
-function SetupConnection(con) {
-  sock = con.sock;
-  con.status = "ACTIVE";
-  // connections.SetAt(con->id,con);
-
-  con.enc = NULL;
-}
-
-/**
  * Takes a socket
  * @param {net.Socket} socket 
  */
@@ -1099,18 +1087,7 @@ function listener(socket) {
   con.sock = socket;
   con.port = socket.localPort;
 
-  /**
-   * Let's setup the connection
-   */
-  try {
-    bSuccess = SetupConnection(con);
-  } catch (err) {
-    bSuccess = false;
-  }
-
-  if (!bSuccess) {
-    logger.error(`SetupConnection(conid:${con.id}) ${con} failed`);
-  }
+  
 
   /**
    * Lets check if we have a connection for this user.
