@@ -1065,6 +1065,18 @@ class TCPManager {
 }
 
 /**
+ * Sets up a connection
+ * @param {Connection} con 
+ */
+function SetupConnection(con) {
+  sock = con.sock;
+  con.status = "ACTIVE";
+  // connections.SetAt(con->id,con);
+
+  con.enc = NULL;
+}
+
+/**
  * Takes a socket
  * @param {net.Socket} socket 
  */
