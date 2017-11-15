@@ -1,71 +1,29 @@
 const rc4 = require("arc4");
+const crypto = require("crypto");
 const util = require("./nps_utils.js");
 const logger = require("./logger.js");
+const lobby = require("./lobby.js");
+const MessageNode = require("./MessageNode.js");
+const database = require("../lib/database/index.js");
 
-const db = require("../lib/database/index.js");
-
-// Connection::Connection()
-// {
-// 	id				= 0;
-// 	appID			= 0;
-// 	status			= INACTIVE;
-// 	sock			= 0;
-// 	port			= 0;
-// 	q				= COMMMGR_DEFAULT_Q;
-// 	msgEvent		= NULL;
-// 	lastMsg			= 0;
-// 	sendBacklog		= 0;	// the # of pending sends for this connection
-// 	lastBacklogNotify = 0;	// when did we notify about backlog
-// 	incommingThread	= NULL;
-// 	hbCount			= 0;
-// 	sbCount			= 0;			// how many times did we notify about backlog
-// 	useEncryption	= 0;
-// 	enc				= NULL;
-// #ifdef MCSERVER
-// 	netInterface	= UnknownInterface;
-// #endif
-// }
-
-// function CompressedHeader(msg) {
-//     if (!(this instanceof CompressedHeader)) {
-//         return new CompressedHeader(msg)
-//     }
-//     //LENSIZE	uncompressedLength;
-//     this.uncompressedLength = msg.readInt16LE()
-//     //BYTE	data[1];	// starting spot for the compressed data
-//     this.data = msg.readInt8(2)
-// }
-
-// struct Connection
-function Connection() {
-  if (!(this instanceof Connection)) {
-    return new Connection();
+class Connection {
+  constructor() {
+    this.id = 0;
+    this.appID = 0;
+    this.status = "INACTIVE";
+    this.sock = 0;
+    this.msgEvent = null;
+    this.lastMsg = 0;
+    this.useEncryption = 0;
+    this.enc = null;
+    this.isSetupComplete = 0;
   }
-
-  // id				= 0;
-  this.id = 0;
-
-  // 	appID			= 0;
-  this.appID = 0;
-
-  // 	status			= INACTIVE;
-  this.status = "INACTIVE";
-
-  // 	sock			= 0;
-  this.sock = 0;
-
-  // 	msgEvent		= NULL;
-  this.msgEvent = null;
-
-  // 	lastMsg			= 0;
-  this.lastMsg = 0;
-
-  // 	useEncryption	= 0;
-  this.useEncryption = 0;
-  // 	enc				= NULL;
-  this.enc = null;
 }
 
+/**
+ * Return the string representtion of the numaric opcode
+ * @param {int} msgID 
+ */
 function MSG_STRING(msgID) {
   switch (msgID) {
     case 438:
@@ -75,15 +33,20 @@ function MSG_STRING(msgID) {
   }
 }
 
+/**
+ * Fetch session key from database based on remote address
+ * @param {string} remoteAddress 
+ * @param {function} callback 
+ */
 function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
-  db.query(
-    "SELECT session_key FROM sessions WHERE remote_address = $1",
+  database.db.get(
+    "SELECT session_key, s_key FROM sessions WHERE remote_address = $1",
     [remoteAddress],
     (err, res) => {
       if (err) {
         // Unknown error
         console.error(
-          `DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`
+          `DATABASE ERROR: Unable to retrieve sessionsKey: ${err.message}`
         );
         callback(err);
       } else {
@@ -119,7 +82,11 @@ function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
 // 	SQL_TIMESTAMP_STRUCT	nextPaycheckDate;
 // };
 function ClientConnect(con, node) {
-  logger.debug("In ClientConnect...");
+  logger.debug(`
+    ~~~~~~~~~~~~~~~~~~~
+    In ClientConnect...
+    ~~~~~~~~~~~~~~~~~~~
+  `);
 
   fetchSessionKeyByRemoteAddress(con.sock.remoteAddress, (err, res) => {
     if (err) {
@@ -127,12 +94,28 @@ function ClientConnect(con, node) {
     }
 
     // Create the encryption object
-    con.enc = rc4("arc4", res.rows[0].session_key);
+    con.enc = rc4("arc4", res.session_key);
 
-    util.dumpResponse(node.rawBuffer, node.rawBuffer.length);
+    // logger.debug("Retrieved Session Key: ", res.session_key);
+    // logger.debug("Retrieved S Key: ", res.s_key);
+
+    // Create the cypher and decyper only if not already set
+    if (!con.cypher & !con.decypher) {
+      const desIV = Buffer.alloc(8);
+      con.cypher = crypto
+        .createCipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
+        .setAutoPadding(false);
+      con.decypher = crypto
+        .createDecipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
+        .setAutoPadding(false);
+    }
+
+    // util.dumpResponse(node.rawBuffer, node.rawBuffer.length);
 
     // write the socket
     con.sock.write(node.rawBuffer);
+
+    con.isSetupComplete = 1;
 
     // return MC_SUCCESS = 101;
     return 101;
@@ -142,6 +125,11 @@ function ClientConnect(con, node) {
 // returning true means fatal error; thread should exit
 // bool ProcessInput( MessageNode* node, ConnectionInfo * info)
 function ProcessInput(node, info) {
+  logger.debug(`
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  In TCPManager::ProcessInput()
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  `);
   let preDecryptMsgNo = Buffer.from([0xff, 0xff]);
 
   // NOTE: All messages handled here should have the BaseMsgHeader
@@ -150,6 +138,7 @@ function ProcessInput(node, info) {
   const msg = node.getBaseMsgHeader(node.buffer);
 
   const currentMsgNo = msg.msgNo;
+  logger.debug("currentMsgNo: ", currentMsgNo);
 
   // MC_FAILED = 102
   let result = 102;
@@ -1002,64 +991,63 @@ function ProcessInput(node, info) {
   return result;
 }
 
-// struct TCPManager
-function TCPManager() {
-  if (!(this instanceof TCPManager)) {
-    return new TCPManager();
+class TCPManager {
+  constructor() {
+    this.connectionID = 1;
+    this.connections = [];
   }
+  getFreeConnection() {
+    const con = new Connection();
+    con.id = this.connectionID;
+    this.connectionID++;
+    this.connections.push(con);
 
-  this.connectionID = 1;
-
-  this.connections = [];
-}
-
-TCPManager.prototype.getFreeConnection = function getFreeConnection() {
-  const con = Connection();
-  con.id = this.connectionID;
-  this.connectionID++;
-  return con;
-};
-
-TCPManager.prototype.MessageReceived = function MessageReceived(msg, con) {
-  logger.debug("In TCPManager::MessageReceived()");
-
-  if (!con.useEncryption && msg.flags & 0x08) {
-    con.useEncryption = 1;
-    logger.debug("TCPMgr::MessageRecieved() turning on encryption\n");
+    return con;
   }
-
-  // If not a Heartbeat
-  if (!(msg.flags & 0x80) && con.useEncryption) {
-    logger.debug("TCPMgr::MessageRecieved() Decrypt()\n");
-
-    if (!con.enc) {
-      logger.error(`KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`);
-
+  MessageReceived(msg, con) {
+    logger.debug(`
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  In TCPManager::MessageReceived()
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  `);
+    if (!con.useEncryption && msg.flags & 0x08) {
+      con.useEncryption = 1;
+      logger.debug("TCPMgr::MessageRecieved() turning on encryption\n");
+    }
+    // If not a Heartbeat
+    if (!(msg.flags & 0x80) && con.useEncryption) {
+      logger.debug("TCPMgr::MessageRecieved() Decrypt()\n");
+      if (!con.enc) {
+        logger.error(
+          `KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`
+        );
+      }
       // If not a Heartbeat
       if (!(msg.flags & 0x80) && con.useEncryption) {
         logger.debug("TCPMgr::MessageRecieved() Decrypt()\n");
-
         if (!con.enc) {
           logger.error(
             `KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`
           );
-
           con.sock.end();
-
           return;
         }
-
         try {
-          // if (!con.enc.IsSetupComplete()) {
-          //     logger.error(
-          //         `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
-          //     )
-          //     con.sock.end()
-          //     return
-          // }
+          if (!con.isSetupComplete) {
+            logger.error(
+              `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
+            );
+            con.sock.end();
+            return;
+          }
 
-          //con.enc.Decrypt(msg, con)
-          console.log("Decoded: ", con.enc.decodeBuffer(msg.buffer));
+          logger.warn(msg.buffer.toString("hex"));
+
+          logger.warn(
+            "Decrypted:   ",
+            con.enc.decodeString(msg.buffer.toString("hex"), "hex", "hex")
+          );
+          logger.warn("Decrypted: 2 ", con.decypher.update(msg.buffer));
         } catch (e) {
           logger.error(
             `Decrypt() exception thrown! Disconnecting...conid:${con.id}`
@@ -1069,27 +1057,155 @@ TCPManager.prototype.MessageReceived = function MessageReceived(msg, con) {
         }
       }
 
-      try {
-        if (!con.enc.IsSetupComplete()) {
-          logger.error(
-            `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
-          );
-          con.sock.end();
-          return;
-        }
-
-        con.enc.Decrypt(msg, con);
-      } catch (e) {
-        logger.error(
-          `Decrypt() exception thrown! Disconnecting...conid:${con.id}`
-        );
-        con.sock.end();
-        throw e;
-      }
+      ProcessInput(msg, con);
+    } else {
+      ProcessInput(msg, con);
     }
-
-    ProcessInput(msg, con);
   }
-};
+}
 
-module.exports = { TCPManager };
+/**
+ * Takes a socket
+ * @param {net.Socket} socket 
+ */
+function listener(socket) {
+  /**
+   * Assign the socket a connection
+   */
+  con = tcpManager.getFreeConnection();
+
+  /**
+   * Announce the new connection
+   */
+  logger.info(
+    `Connection from client. conID:(${con.id}) On:${socket.remoteAddress}  Peer:${socket.localAddress}`
+  );
+
+  con.lastMsg = 0;
+  con.status = "ACTIVE";
+
+  con.sock = socket;
+  con.port = socket.localPort;
+
+  /**
+   * Lets check if we have a connection for this user.
+   */
+
+  // Is this a login connection?
+  if (socket.localPort == 8226) {
+    logger.debug("New Login Connection...");
+
+    // Add a 'data' event handler to this instance of socket
+    socket.on("data", data => {
+      loginDataHandler(socket, data);
+    });
+    socket.on("error", err => {
+      if (err.code !== "ECONNRESET") {
+        throw err;
+      }
+    });
+    socket.on("close", () => {
+      logger.info("Closing Login socket");
+    });
+  } else {
+    const con = tcpManager.getFreeConnection();
+
+    con.sock = socket;
+
+    logger.debug("New Connection...");
+    logger.debug("ConnectionID: ", con.id);
+
+    // Add a 'data' event handler to this instance of socket
+    socket.on("data", data => {
+      handler(con, data);
+    });
+    socket.on("error", err => {
+      if (err.code !== "ECONNRESET") {
+        throw err;
+      }
+    });
+    socket.on("close", () => {
+      logger.info(
+        `Closing socket id ${con.id} for port ${con.sock.localPort} from ${con
+          .sock.remoteAddress}`
+      );
+    });
+  }
+}
+
+function getRequestCode(rawBuffer) {
+  return `${util.toHex(rawBuffer[0])}${util.toHex(rawBuffer[1])}`;
+}
+
+function lobbyDataHandler(con, rawData) {
+  const requestCode = getRequestCode(rawData);
+
+  switch (requestCode) {
+    // npsRequestGameConnectServer
+    case "0100": {
+      const packetresult = lobby.npsRequestGameConnectServer(con.sock, rawData);
+      con.sock.write(packetresult);
+      break;
+    }
+    // npsHeartbeat
+    case "0217": {
+      const packetresult = util.npsHeartbeat(con.sock, rawData);
+      con.sock.write(packetresult);
+      break;
+    }
+    // npsSendCommand
+    case "1101": {
+      // This is an encrypted command
+      // Fetch session key
+
+      con = lobby.sendCommand(con, rawData, requestCode);
+      break;
+    }
+    default:
+      util.dumpRequest(con.sock, rawData, requestCode);
+      logger.error(`Unknown code ${requestCode} was recieved on port 7003`);
+  }
+}
+
+function handler(con, rawData) {
+  const messageNode = MessageNode.MessageNode(rawData);
+  logger.info(`=============================================
+    Recieved packet on port ${con.sock.localPort} from ${con.sock
+    .remoteAddress}...`);
+  logger.info("=============================================");
+
+  if (messageNode.isMCOTS()) {
+    logger.debug("Packet has a valid MCOTS header signature");
+    logger.info("=============================================");
+    logger.debug("Header Length: ", messageNode.header.length);
+    logger.debug("Header MCOSIG: ", messageNode.isMCOTS());
+    logger.debug("Sequence: ", messageNode.seq);
+    logger.debug("Flags: ", messageNode.flags);
+    logger.debug("Buffer: ", messageNode.buffer);
+    logger.debug("Buffer as text: ", messageNode.buffer.toString("utf8"));
+    logger.debug("Buffer as string: ", messageNode.buffer.toString("hex"));
+    logger.debug(
+      "Raw Buffer as string: ",
+      messageNode.rawBuffer.toString("hex")
+    );
+    logger.info("=============================================");
+
+    tcpManager.MessageReceived(messageNode, con);
+  } else {
+    logger.debug("No valid MCOTS header signature detected, sending to Lobby");
+    logger.info("=============================================");
+    //logger.debug("Header Length: ", messageNode.header.length);
+    //logger.debug("Buffer: ", messageNode.buffer);
+    //logger.debug("Buffer as text: ", messageNode.buffer.toString("utf8"));
+    //logger.debug("Buffer as string: ", messageNode.buffer.toString("hex"));
+    //logger.info("=============================================");
+    lobbyDataHandler(con, rawData);
+  }
+}
+
+/**
+ * Initialize a new instance of TCPManager
+ */
+tcpManager = new TCPManager();
+
+module.exports = { TCPManager, MSG_STRING, listener };

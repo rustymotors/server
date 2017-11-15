@@ -8,3 +8,4 @@ npm-debug.log
 .nyc_output
 
 test-reports/*.xml
+data/sessions.db
