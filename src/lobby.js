@@ -4,7 +4,7 @@ const packet = require("./packet.js");
 const util = require("./nps_utils.js");
 const MsgPack = require("./MsgPack.js");
 
-const db = require("../lib/database/index.js");
+const database = require("../lib/database/index.js");
 
 // typedef struct _NPS_LoginInfo
 // {
@@ -20,10 +20,8 @@ const db = require("../lib/database/index.js");
 function npsRequestGameConnectServer(socket, rawData) {
   // Load the recieved data into a MsgPack class
   const msgPack = MsgPack(rawData);
-  logger.debug(msgPack.GetOpCode());
-  logger.debug(msgPack.GetMsgLen());
 
-  util.dumpRequest(socket, rawData);
+  // util.dumpRequest(socket, rawData);
   // const contextId = Buffer.alloc(34)
   // data.copy(contextId, 0, 14, 48)
   // const customer = nps.npsGetCustomerIdByContextId(contextId)
@@ -49,50 +47,33 @@ function npsRequestGameConnectServer(socket, rawData) {
   // Build the packet
   const packetresult = packet.buildPacket(4, 0x0120, packetcontent);
 
-  util.dumpResponse(packetresult, packetresult.length);
+  // util.dumpResponse(packetresult, packetresult.length);
   return packetresult;
 }
 
 function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
-  db.query(
-    "SELECT session_key FROM sessions WHERE remote_address = $1",
-    [remoteAddress],
-    (err, res) => {
-      if (err) {
-        // Unknown error
-        console.error(
-          `DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`
-        );
-        callback(err);
-      } else {
-        callback(null, res.rows[0].session_key);
+  database.db.serialize(function() {
+    database.db.get(
+      "SELECT session_key, s_key FROM sessions WHERE remote_address = $1",
+      [remoteAddress],
+      (err, res) => {
+        if (err) {
+          // Unknown error
+          console.error(
+            `DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`
+          );
+          callback(err);
+        } else {
+          callback(null, res);
+        }
       }
-    }
-  );
-}
-
-function updateSKeyByRemoteAddress(remoteAddress, sKey, callback) {
-  db.query(
-    "INSERT INTO sessions (s_key, remote_address) VALUES ($1, $2) ON CONFLICT (remote_address) DO UPDATE SET s_key = $1",
-    [sKey, remoteAddress],
-    err => {
-      if (err) {
-        // Unknown error
-        console.error(`DATABASE ERROR: Unable to store sKey: ${err.message}`);
-        callback(err);
-      } else {
-        logger.debug(
-          `DATABASE: Updated ${remoteAddress} session with s key ${sKey}`
-        );
-        callback(null, "Seccess");
-      }
-    }
-  );
+    );
+  });
 }
 
 function decryptCmd(session, cypherCmd) {
   const s = session;
-  logger.debug(`raw cmd: ${cypherCmd.toString("hex")}`);
+  // logger.debug(`raw cmd: ${cypherCmd.toString("hex")}`);
   const decryptedCommand = s.decypher.update(cypherCmd);
   s.decryptedCmd = decryptedCommand;
   return s;
@@ -105,38 +86,32 @@ function encryptCmd(session, cypherCmd) {
   return s;
 }
 
-function sendCommand(socket, data) {
-  fetchSessionKeyByRemoteAddress(socket.remoteAddress, (err, sessionKey) => {
+function sendCommand(con, data) {
+  fetchSessionKeyByRemoteAddress(con.sock.remoteAddress, (err, res) => {
     if (err) {
       throw err;
     }
 
-    let s = socket;
+    let s = con;
+
+    // logger.debug("Retrieved Session Key: ", res.session_key);
+    // logger.debug("Retrieved S Key: ", res.s_key);
 
     // Create the cypher and decyper only if not already set
     if (!s.cypher & !s.decypher) {
       const desIV = Buffer.alloc(8);
       s.cypher = crypto
-        .createCipheriv(
-          "des-cbc",
-          Buffer.from(sessionKey.substr(0, 16), "hex"),
-          desIV
-        )
+        .createCipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
         .setAutoPadding(false);
       s.decypher = crypto
-        .createDecipheriv(
-          "des-cbc",
-          Buffer.from(sessionKey.substr(0, 16), "hex"),
-          desIV
-        )
+        .createDecipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
         .setAutoPadding(false);
     }
 
     const cmd = decryptCmd(s, new Buffer(data.slice(4)));
-    logger.debug(`decryptedCmd: ${cmd.decryptedCmd.toString("hex")}`);
-    logger.debug(`cmd: ${cmd.decryptedCmd}`);
+    // logger.debug(`decryptedCmd: ${cmd.decryptedCmd.toString("hex")}`);
 
-    util.dumpRequest(socket, data);
+    // util.dumpRequest(con.sock, data);
 
     // Create the packet content
     const packetcontent = crypto.randomBytes(375);
@@ -155,7 +130,7 @@ function sendCommand(socket, data) {
     // const packetresult = packet.buildPacket(32, 0x0401,
     const packetresult = packet.buildPacket(32, 0x0229, packetcontent);
 
-    util.dumpResponse(packetresult, packetresult.length);
+    // util.dumpResponse(packetresult, packetresult.length);
 
     const cmdEncrypted = encryptCmd(s, packetresult);
 
@@ -164,10 +139,11 @@ function sendCommand(socket, data) {
       cmdEncrypted.encryptedCommand,
     ]);
 
-    logger.debug(
-      `encryptedResponse: ${cmdEncrypted.encryptedCommand.toString("hex")}`
-    );
-    socket.write(cmdEncrypted.encryptedCommand);
+    // logger.debug(
+    //   `encryptedResponse: ${cmdEncrypted.encryptedCommand.toString("hex")}`
+    // );
+    con.sock.write(cmdEncrypted.encryptedCommand);
+    return con;
   });
 }
 

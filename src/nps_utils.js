@@ -9,15 +9,17 @@ function toHex(d) {
 function dumpRequest(socket, rawBuffer) {
   const localId = `${socket.remoteAddress}_${socket.localPort}`;
   const requestCode = `${toHex(rawBuffer[0])}${toHex(rawBuffer[1])}`;
-  logger.debug(`\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+  logger.debug(`
+  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   Request from: ${socket.remoteAddress} on ${socket.localPort}
   Request Code: ${requestCode}
   -----------------------------------------
   Request DATA ${localId}:${rawBuffer.toString("ascii")}
-  =========================================
+  -----------------------------------------
   Request DATA ${localId}:${rawBuffer.toString("hex")}
   -----------------------------------------
-  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n`);
+  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+  `);
 }
 
 function dumpResponse(data, count) {
@@ -30,8 +32,8 @@ function dumpResponse(data, count) {
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n`);
 }
 
-function npsHeartbeat(session, rawData) {
-  dumpRequest(session.lobbySocket, rawData);
+function npsHeartbeat(socket, rawData) {
+  dumpRequest(socket, rawData);
 
   const packetcontent = Buffer.alloc(8);
   const packetresult = packet.buildPacket(8, 0x0127, packetcontent);
