@@ -1,4 +1,5 @@
 /* Internal dependencies */
+const { fork } = require("child_process");
 const readline = require("readline");
 const net = require("net");
 const fs = require("fs");
@@ -11,96 +12,121 @@ const TCPManager = require("./TCPManager.js");
 
 const database = require("../lib/database/index.js");
 
-class MCServer {
-  /**
+let connections = [];
+
+function createListenerThread(port, callback) {
+  listenerProcess = fork("./src/listenerThread.js", [], {
+    env: { listenerPort: port },
+  }).on("message", (message, socket) => {
+    console.log(
+      `I got a message from the child: ${message.msg}: ${socket.remoteAddress}`
+    );
+    if (connections.indexOf(socket.localAddress) >= 0) {
+      console.log(
+        `I have seen this connection from ${socket.remoteAddress} on ${socket.localPort} before`
+      );
+    } else {
+      connections.push({
+        remoteAddress: socket.localAddress,
+        sock: socket,
+        id: `${socket.remoteAddress}_${socket.localPort}`,
+      });
+      console.log(
+        `I have not seen this connection from ${socket.remoteAddress} on ${socket.localPort} before, adding it.`
+      );
+    }
+  });
+}
+
+/**
   Need to open create listeners on the ports
   
   When a connection opens, cass it to a session controller that will log the
   connection and fork to a connection handlers
   **/
-  startServers(callback) {
-    logger.info("Starting the listening sockets...");
-    const tcpPortList = [
-      7003,
-      8227,
-      43300,
-      9000,
-      9001,
-      9002,
-      9003,
-      9004,
-      9005,
-      9006,
-      9007,
-      9008,
-      9009,
-      9010,
-      9011,
-      9012,
-      9013,
-      9014,
-    ];
-    async.waterfall(
-      [
-        patchServer.start,
-        loginServer.start,
-        personaServer.start,
-        function(callback) {
-          // arg1 now equals 'one' and arg2 now equals 'two'
-          tcpPortList.map(port => {
-            net
-              .createServer(socket => {
-                TCPManager.listener(socket);
-              })
-              .listen(port, "0.0.0.0", () => {
-                // logger.debug(`Started TCP listener on TCP port: ${port}`);
-              });
-          });
-          callback(null);
-        },
-      ],
-      err => {
-        if (err) {
-          throw err;
-        }
-        // result now equals 'done'
-        logger.info("Listening sockets create successfully.");
+function startServers(callback) {
+  logger.info("Starting the listening sockets...");
+  const tcpPortList = [
+    7003,
+    8227,
+    43300,
+    9000,
+    9001,
+    9002,
+    9003,
+    9004,
+    9005,
+    9006,
+    9007,
+    9008,
+    9009,
+    9010,
+    9011,
+    9012,
+    9013,
+    9014,
+  ];
+  async.waterfall(
+    [
+      patchServer.start,
+      loginServer.start,
+      personaServer.start,
+      function(callback) {
+        // arg1 now equals 'one' and arg2 now equals 'two'
+        tcpPortList.map(port => {
+          createListenerThread(port, callback);
+        });
         callback(null);
+      },
+    ],
+    err => {
+      if (err) {
+        throw err;
       }
-    );
-  }
-  startCLI(callback) {
-    logger.info("Starting the command line interface...");
-    // Create the command interface
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-    // command processing loop
-    var recursiveAsyncReadLine = function() {
-      rl.question("", command => {
-        if (command == "exit") {
-          // we need some base case, for recursion
-          rl.close();
-          return process.exit(); // closing RL and returning from function.
-        }
-        // TODO: Do something with the command
-        handleCLICommand(command);
-        recursiveAsyncReadLine(); // Calling this function again to ask new question
-      });
-    };
-    // Start the CLI interface
-    recursiveAsyncReadLine();
-    logger.info("Command line interface started successfully.");
-    callback(null);
-  }
-  run() {
-    // Connect to database
-    // Start the server listeners
-    async.waterfall([database.createDB, this.startServers, this.startCLI]);
-  }
+      // result now equals 'done'
+      logger.info("Listening sockets create successfully.");
+      callback(null);
+    }
+  );
 }
 
+function startCLI(callback) {
+  logger.info("Starting the command line interface...");
+  // Create the command interface
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  // command processing loop
+  var recursiveAsyncReadLine = function() {
+    rl.question("", command => {
+      if (command == "exit") {
+        // we need some base case, for recursion
+        rl.close();
+        return process.exit(); // closing RL and returning from function.
+      }
+      // TODO: Do something with the command
+      handleCLICommand(command);
+      recursiveAsyncReadLine(); // Calling this function again to ask new question
+    });
+  };
+  // Start the CLI interface
+  recursiveAsyncReadLine();
+  logger.info("Command line interface started successfully.");
+  callback(null);
+}
+
+function run() {
+  // Connect to database
+  // Start the server listeners
+  async.waterfall([database.createDB, startServers, startCLI]);
+}
+
+/**
+ * Fetch the sessionkey from the database by customerid
+ * @param {string} customerId 
+ * @param {callback} callback 
+ */
 function fetchSessionKey(customerId, callback) {
   database.db.serialize(function() {
     database.db.get(
@@ -121,6 +147,21 @@ function fetchSessionKey(customerId, callback) {
   });
 }
 
+function dumpConnections() {
+  console.dir(connections);
+}
+
+function findConnection(connectionId) {
+  results = connections.find(function(connection) {
+    return connection.id.toString() == connectionId.toString();
+  });
+  if (results == undefined) {
+    console.error("No connection found with that id.");
+  } else {
+    console.dir(results);
+  }
+}
+
 function handleCLICommand(command) {
   if (command.indexOf("session_key ") == 0) {
     // session_key <customerID>
@@ -137,9 +178,16 @@ function handleCLICommand(command) {
         );
       }
     });
+  } else if (command.indexOf("dumpConnections") == 0) {
+    // dumpConnections
+    dumpConnections();
+  } else if (command.indexOf("findConnection ") == 0) {
+    // findConnection {connectionID}
+    const connectionId = command.split(" ")[1];
+    findConnection(connectionId);
   } else {
     console.log('Got it! Your answer was: "', command, '"');
   }
 }
 
-module.exports = { MCServer };
+module.exports = { run };
