@@ -1087,8 +1087,6 @@ function listener(socket) {
   con.sock = socket;
   con.port = socket.localPort;
 
-  
-
   /**
    * Lets check if we have a connection for this user.
    */
