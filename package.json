@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "jest --all",
-    "lint": "eslint lib src"
+    "lint": "eslint lib src tests"
   },
   "author": "Joseph W Becher <jwbecher@drazisil.com> (drazisil)",
   "license": "GPL-3.0+",
