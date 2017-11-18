@@ -1,6 +1,8 @@
 MCO-Server
 ============
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/drazisil/mco-server.svg)](https://greenkeeper.io/)
+
 [![CircleCI](https://circleci.com/gh/drazisil/mco-server.svg?style=svg&circle-token=6937e163b7a7a8aed2cd5d4c50bed9501060457d)](https://circleci.com/gh/drazisil/mco-server)
 
 ## About
