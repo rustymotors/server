@@ -31,7 +31,7 @@ const connectionMgr = require("./connectionMgr.js");
 /**
   Need to open create listeners on the ports
   
-  When a connection opens, cass it to a session controller that will log the
+  When a connection opens, pass it to a session controller that will log the
   connection and fork to a connection handlers
   **/
 function startServers(callback) {
@@ -98,9 +98,15 @@ function startCLI(callback) {
         // we need some base case, for recursion
         rl.close();
         return process.exit(); // closing RL and returning from function.
+      } else {
+        /**
+       * Turn the input into an array and extract the command
+       */
+        const args = command.split(" ");
+        const cmd = args.shift();
+        handleCLICommand(cmd, args);
       }
-      // TODO: Do something with the command
-      handleCLICommand(command);
+
       recursiveAsyncReadLine(); // Calling this function again to ask new question
     });
   };
@@ -117,7 +123,7 @@ function run() {
 }
 
 /**
- * Fetch the sessionkey from the database by customerid
+ * Fetch the session key from the database by customer id
  * @param {string} customerId 
  * @param {callback} callback 
  */
@@ -141,33 +147,37 @@ function fetchSessionKey(customerId, callback) {
   });
 }
 
-function handleCLICommand(command) {
-  if (command.indexOf("session_key ") == 0) {
-    // session_key <customerID>
-    const customerId = parseInt(command.split(" ")[1]);
-    fetchSessionKey(customerId, (err, res) => {
-      if (err) {
-        console.error(err.message);
-        console.error(err.stack);
-        process.exit(1);
-      }
-      if (res == undefined) {
-        console.log("Unable to locate session key for customerID:", customerId);
-      } else {
-        console.log(
-          `The sesssionKey for customerId ${customerId} is ${res.session_key}`
-        );
-      }
-    });
-  } else if (command.indexOf("dumpConnections") == 0) {
-    // dumpConnections
-    console.dir(connectionMgr.dumpConnections());
-  } else if (command.indexOf("findConnection ") == 0) {
-    // findConnection {connectionID}
-    const connectionId = command.split(" ")[1];
-    console.dir(connectionMgr.findConnection(connectionId));
-  } else {
-    console.log('Got it! Your answer was: "', command, '"');
+function cliSessionKey(customerId) {
+  fetchSessionKey(customerId, (err, res) => {
+    if (err) {
+      console.error(err.message);
+      console.error(err.stack);
+      process.exit(1);
+    }
+    if (res == undefined) {
+      console.log("Unable to locate session key for customerID:", customerId);
+    } else {
+      console.log(
+        `The sessionKey for customerId ${customerId} is ${res.session_key}`
+      );
+    }
+  });
+}
+
+function handleCLICommand(cmd, args) {
+  const cliCommands = {
+    session_key: function() {
+      cliSessionKey(args[0]);
+    },
+    dumpConnections: function() {
+      console.dir(connectionMgr.dumpConnections());
+    },
+    findConnection: function() {
+      console.dir(connectionMgr.findConnection(args[0]));
+    },
+  };
+  if (typeof cliCommands[cmd] != "function" || cliCommands[cmd]()) {
+    console.log(`Command ${cmd} not found, please check help`);
   }
 }
 
