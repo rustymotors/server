@@ -36,7 +36,7 @@ http://stackoverflow.com/a/2955546/335583
 
 ### Delete the movies
 
-<game dir>\Data\Movies
+`<game dir>\Data\Movies`
 
 
 
