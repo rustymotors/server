@@ -1,24 +1,21 @@
+// mco-server is a game server, written from scratch, for an old game
+// Copyright (C) <2017-2018>  <Joseph W Becher>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 const logger = require("./logger.js");
-/*
-	ClientConnect : This is not a 'login', it is the client saying:
-	 	"Hey, I'm authenticated! Let's get the channel encrypted so
-	 	  can we do some transactions on a secure channel."
 
-	Given:
-		pMsg->customerID
-		pMsg->personaID
-
-	o Go to GLS and validate customerID is authenticated
-	o verify that personaID is valid
-	o Send Ack/Nak result to client
-	if (Ack)
-		o Retrieve sessionKey
-		o SetEncryptionKeys()
-		o Set encryption == true for comm channel
-	else
-		o disconnect
-*/
-// bool ClientConnect( ConnectionInfo * info, MessageNode * node)
 function ClientConnect(info, node) {
   logger.debug(node);
 }
