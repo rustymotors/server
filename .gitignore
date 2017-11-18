@@ -7,5 +7,6 @@ coverage
 npm-debug.log
 .nyc_output
 
-test-reports/*.xml
+test-reports
 data/sessions.db
+junit
