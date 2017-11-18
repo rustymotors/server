@@ -8,7 +8,7 @@
     "lint": "eslint lib src"
   },
   "author": "Joseph W Becher <jwbecher@drazisil.com> (drazisil)",
-  "license": "UNLICENSED",
+  "license": "GPL-3.0+",
   "private": true,
   "repository": {
     "type": "git",
