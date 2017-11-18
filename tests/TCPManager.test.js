@@ -14,33 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const MessageNode = require("./MessageNode.js");
+const TCPManager = require("../src/TCPManager.js");
 
-const packet = Buffer.from([
-  0x00,
-  0x00,
-  0x54,
-  0x4f,
-  0x4d,
-  0x43,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-]);
-
-test("packet is a MCOTS packet", () => {
-  expect(MessageNode.MessageNode(packet).isMCOTS()).toBe(true);
+test("438 = MC_CLIENT_CONNECT_MSG", () => {
+  expect(TCPManager.MSG_STRING(438)).toBe("MC_CLIENT_CONNECT_MSG");
 });
