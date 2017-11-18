@@ -22,31 +22,36 @@ const MsgPack = require("./MsgPack.js");
 
 const database = require("../lib/database/index.js");
 
+/**
+ * Handle a request to connect to a game server packet
+ * @param {Socket} socket 
+ * @param {Buffer} rawData 
+ */
 function npsRequestGameConnectServer(socket, rawData) {
   // Load the recieved data into a MsgPack class
   const msgPack = MsgPack(rawData);
 
   // Return a _NPS_UserInfo structure - 40
-  const packetcontent = Buffer.alloc(38);
+  const packetContent = Buffer.alloc(38);
 
   // MsgLen
-  Buffer.from([0x00, 0x04]).copy(packetcontent);
+  Buffer.from([0x00, 0x04]).copy(packetContent);
 
   // NPS_USERID - User ID - persona id - long
-  Buffer.from([0x00, 0x00, 0x00, 0x02]).copy(packetcontent, 2);
+  Buffer.from([0x00, 0x00, 0x00, 0x02]).copy(packetContent, 2);
 
   // User name (32)
   const name = Buffer.alloc(32);
   Buffer.from("Doctor Brown", "utf8").copy(name);
-  name.copy(packetcontent, 6);
+  name.copy(packetContent, 6);
 
   // UserData - User controllable data (64)
-  Buffer.alloc(64).copy(packetcontent, 38);
+  Buffer.alloc(64).copy(packetContent, 38);
 
   // Build the packet
-  const packetresult = packet.buildPacket(4, 0x0120, packetcontent);
+  const packetResult = packet.buildPacket(4, 0x0120, packetContent);
 
-  return packetresult;
+  return packetResult;
 }
 
 function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
@@ -69,19 +74,36 @@ function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
   });
 }
 
+/**
+ * Takes an encrypted command packet and returns the decrypted bytes
+ * FIXME: This likely does not work anymore, since I no longer use sessions in this way
+ * @param {*} session 
+ * @param {*} cypherCmd 
+ */
 function decryptCmd(session, cypherCmd) {
   const s = session;
-  const decryptedCommand = s.decypher.update(cypherCmd);
+  const decryptedCommand = s.decipher.update(cypherCmd);
   s.decryptedCmd = decryptedCommand;
   return s;
 }
 
+/**
+ * Takes an plaintext command packet and return the encrypted bytes
+ * FIXME: This likely no longer works, as I no longer use sessions in this way
+ * @param {*} session 
+ * @param {*} cypherCmd 
+ */
 function encryptCmd(session, cypherCmd) {
   const s = session;
   s.encryptedCommand = s.cypher.update(cypherCmd);
   return s;
 }
 
+/**
+ * Takes a plaintext command packet, encrypts it, and sends it across the connection's socket
+ * @param {Connection} con 
+ * @param {Buffer} data 
+ */
 function sendCommand(con, data) {
   fetchSessionKeyByRemoteAddress(con.sock.remoteAddress, (err, res) => {
     if (err) {
@@ -92,13 +114,13 @@ function sendCommand(con, data) {
 
     let s = con;
 
-    // Create the cypher and decyper only if not already set
-    if (!s.cypher & !s.decypher) {
+    // Create the cypher and decipher only if not already set
+    if (!s.cypher & !s.decipher) {
       const desIV = Buffer.alloc(8);
       s.cypher = crypto
         .createCipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
         .setAutoPadding(false);
-      s.decypher = crypto
+      s.decipher = crypto
         .createDecipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
         .setAutoPadding(false);
     }
@@ -106,17 +128,17 @@ function sendCommand(con, data) {
     const cmd = decryptCmd(s, new Buffer(data.slice(4)));
 
     // Create the packet content
-    const packetcontent = crypto.randomBytes(375);
+    const packetContent = crypto.randomBytes(375);
 
     // Add the response code
-    packetcontent.writeUInt16BE(0x0219, 367);
-    packetcontent.writeUInt16BE(0x0101, 369);
-    packetcontent.writeUInt16BE(0x022c, 371);
+    packetContent.writeUInt16BE(0x0219, 367);
+    packetContent.writeUInt16BE(0x0101, 369);
+    packetContent.writeUInt16BE(0x022c, 371);
 
     // Build the packet
-    const packetresult = packet.buildPacket(32, 0x0229, packetcontent);
+    const packetResult = packet.buildPacket(32, 0x0229, packetContent);
 
-    const cmdEncrypted = encryptCmd(s, packetresult);
+    const cmdEncrypted = encryptCmd(s, packetResult);
 
     cmdEncrypted.encryptedCommand = Buffer.concat([
       Buffer.from([0x11, 0x01]),

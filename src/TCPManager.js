@@ -137,7 +137,7 @@ function ProcessInput(node, info) {
       logger.error(
         `Message Number Not Handled: ${currentMsgNo} (${MSG_STRING(
           currentMsgNo
-        )})  Predecrypt: ${preDecryptMsgNo} (${MSG_STRING(
+        )})  Predecrypt: ${preDecryptMsgNo.toString("hex")} (${MSG_STRING(
           preDecryptMsgNo
         )}) conID: ${node.toFrom}  PersID: ${node.appID}`
       );

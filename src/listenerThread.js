@@ -16,14 +16,16 @@
 
 const net = require("net");
 
+/**
+ * Given a port and a connection manager object, create a new TCP socket listener for that port
+ * @param {Int} listenerPort 
+ * @param {connectionMgr} connectionMgr 
+ * @param {Function} callback 
+ */
 function startTCPListener(listenerPort, connectionMgr, callback) {
-  let remoteAddress;
-  let id;
-
   const server = net.createServer(c => {
-    // 'connection' listener
-    remoteAddress = c.remoteAddress;
-    id = `${remoteAddress}_${listenerPort}`;
+    const remoteAddress = c.remoteAddress;
+    const id = `${remoteAddress}_${listenerPort}`;
     console.log(`Client ${remoteAddress} connected to port ${listenerPort}`);
     connectionMgr.findOrNewConnection(id, c);
     c.on("end", () => {

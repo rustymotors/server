@@ -34,6 +34,12 @@ class Connection {
   }
 }
 
+/**
+ * Create new connection if when haven't seen this socket before, 
+ * or update the socket on the connection object if we have.
+ * @param {String} id 
+ * @param {Socket} socket 
+ */
 function findOrNewConnection(id, socket) {
   const con = findConnection(id);
   if (con != null) {
@@ -45,35 +51,66 @@ function findOrNewConnection(id, socket) {
   }
 }
 
+/**
+ * Breaks a connection id into address and port
+ * @param {String} id 
+ * @returns {JSON}
+ */
+function parseConnectionId(id) {
+  const parts = id.split("_");
+  const address = parts[0];
+  const port = parts[1];
+  return { address, port };
+}
+
+/**
+ * Check incoming data and route it to the correct handler based on port
+ * @param {String} id 
+ * @param {Buffer} data 
+ */
 function processData(id, data) {
   console.log(`Got data from ${id}`, data);
-  if (id.indexOf("_8226") > 0) {
-    /**
-       * Login port connection
-       */
-    loginDataHandler(findConnection(id).sock, data);
-  } else if (id.indexOf("_8228") > 0) {
-    /**
-       * Persona port connection
-       */
-    personaDataHandler(findConnection(id).sock, data);
-  } else if (id.indexOf("_7003") > 0) {
-    /**
-       * Lobby port connection
-       */
-    handler(findConnection(id), data);
-  } else if (id.indexOf("_43300") > 0) {
-    /**
-       * MCOTS port connection
-       */
-    handler(findConnection(id), data);
+  const connection = parseConnectionId(id);
+  const connectionHandlers = {
+    "8226": function() {
+      loginDataHandler(findConnection(id).sock, data);
+    },
+    "8228": function() {
+      personaDataHandler(findConnection(id).sock, data);
+    },
+    "7003": function() {
+      handler(findConnection(id), data);
+    },
+    "43300": function() {
+      handler(findConnection(id), data);
+    },
+  };
+
+  /**
+   * TODO: Create a fallback handler
+   */
+  if (
+    typeof connectionHandlers[connection.port] != "function" ||
+    connectionHandlers[connection.port]()
+  ) {
+    console.error(
+      `No known handler for port ${connection.port}, unable to handle the request from ${connection.address}, aborting.`
+    );
+    process.exit(1);
   }
 }
 
+/**
+ * Dump all connections for debugging
+ */
 function dumpConnections() {
   return connections;
 }
 
+/**
+ * Locate connection by id in the connections array
+ * @param {String} connectionId 
+ */
 function findConnection(connectionId) {
   results = connections.find(function(connection) {
     return connection.id.toString() == connectionId.toString();
@@ -85,9 +122,21 @@ function findConnection(connectionId) {
   }
 }
 
+/**
+ * Deletes the provided connection id from the connections array
+ * FIXME: Doesn't actually seem to work
+ * @param {String} connectionId 
+ */
+function deleteConnection(connectionId) {
+  connections.filter(conn => {
+    return conn.id != connectionId;
+  });
+}
+
 module.exports = {
   findOrNewConnection,
   processData,
   dumpConnections,
   findConnection,
+  deleteConnection,
 };
