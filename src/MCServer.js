@@ -1,42 +1,17 @@
 /* Internal dependencies */
-const { fork } = require("child_process");
 const readline = require("readline");
 const net = require("net");
 const fs = require("fs");
 const async = require("async");
 const logger = require("./logger.js");
 const patchServer = require("../lib/WebServer/index.js");
-const loginServer = require("../lib/LoginServer/index.js")();
-const personaServer = require("../lib/PersonaServer/index.js")();
 const TCPManager = require("./TCPManager.js");
 
 const database = require("../lib/database/index.js");
 
-let connections = [];
+const { startTCPListener } = require("./listenerThread.js");
 
-function createListenerThread(port, callback) {
-  listenerProcess = fork("./src/listenerThread.js", [], {
-    env: { listenerPort: port },
-  }).on("message", (message, socket) => {
-    console.log(
-      `I got a message from the child: ${message.msg}: ${socket.remoteAddress}`
-    );
-    if (connections.indexOf(socket.localAddress) >= 0) {
-      console.log(
-        `I have seen this connection from ${socket.remoteAddress} on ${socket.localPort} before`
-      );
-    } else {
-      connections.push({
-        remoteAddress: socket.localAddress,
-        sock: socket,
-        id: `${socket.remoteAddress}_${socket.localPort}`,
-      });
-      console.log(
-        `I have not seen this connection from ${socket.remoteAddress} on ${socket.localPort} before, adding it.`
-      );
-    }
-  });
-}
+const connectionMgr = require("./connectionMgr.js");
 
 /**
   Need to open create listeners on the ports
@@ -47,6 +22,8 @@ function createListenerThread(port, callback) {
 function startServers(callback) {
   logger.info("Starting the listening sockets...");
   const tcpPortList = [
+    8228,
+    8226,
     7003,
     8227,
     43300,
@@ -69,19 +46,20 @@ function startServers(callback) {
   async.waterfall(
     [
       patchServer.start,
-      loginServer.start,
-      personaServer.start,
       function(callback) {
-        // arg1 now equals 'one' and arg2 now equals 'two'
+        /**
+         * Start all the TCP port listeners
+         */
         tcpPortList.map(port => {
-          createListenerThread(port, callback);
+          startTCPListener(port, connectionMgr, callback);
         });
-        callback(null);
       },
     ],
     err => {
       if (err) {
-        throw err;
+        console.error(err.message);
+        console.error(err.stack);
+        process.exit(1);
       }
       // result now equals 'done'
       logger.info("Listening sockets create successfully.");
@@ -147,28 +125,15 @@ function fetchSessionKey(customerId, callback) {
   });
 }
 
-function dumpConnections() {
-  console.dir(connections);
-}
-
-function findConnection(connectionId) {
-  results = connections.find(function(connection) {
-    return connection.id.toString() == connectionId.toString();
-  });
-  if (results == undefined) {
-    console.error("No connection found with that id.");
-  } else {
-    console.dir(results);
-  }
-}
-
 function handleCLICommand(command) {
   if (command.indexOf("session_key ") == 0) {
     // session_key <customerID>
     const customerId = parseInt(command.split(" ")[1]);
     fetchSessionKey(customerId, (err, res) => {
       if (err) {
-        throw err;
+        console.error(err.message);
+        console.error(err.stack);
+        process.exit(1);
       }
       if (res == undefined) {
         console.log("Unable to locate session key for customerID:", customerId);
@@ -180,11 +145,11 @@ function handleCLICommand(command) {
     });
   } else if (command.indexOf("dumpConnections") == 0) {
     // dumpConnections
-    dumpConnections();
+    console.dir(connectionMgr.dumpConnections());
   } else if (command.indexOf("findConnection ") == 0) {
     // findConnection {connectionID}
     const connectionId = command.split(" ")[1];
-    findConnection(connectionId);
+    console.dir(connectionMgr.findConnection(connectionId));
   } else {
     console.log('Got it! Your answer was: "', command, '"');
   }

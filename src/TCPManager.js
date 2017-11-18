@@ -90,7 +90,9 @@ function ClientConnect(con, node) {
 
   fetchSessionKeyByRemoteAddress(con.sock.remoteAddress, (err, res) => {
     if (err) {
-      throw err;
+      console.error(err.message);
+      console.error(err.stack);
+      process.exit(1);
     }
 
     // Create the encryption object
@@ -1048,12 +1050,14 @@ class TCPManager {
             con.enc.decodeString(msg.buffer.toString("hex"), "hex", "hex")
           );
           logger.warn("Decrypted: 2 ", con.decypher.update(msg.buffer));
-        } catch (e) {
+        } catch (err) {
           logger.error(
             `Decrypt() exception thrown! Disconnecting...conid:${con.id}`
           );
           con.sock.end();
-          throw e;
+          console.error(err.message);
+          console.error(err.stack);
+          process.exit(1);
         }
       }
 
@@ -1101,7 +1105,9 @@ function listener(socket) {
     });
     socket.on("error", err => {
       if (err.code !== "ECONNRESET") {
-        throw err;
+        console.error(err.message);
+        console.error(err.stack);
+        process.exit(1);
       }
     });
     socket.on("close", () => {
@@ -1121,7 +1127,9 @@ function listener(socket) {
     });
     socket.on("error", err => {
       if (err.code !== "ECONNRESET") {
-        throw err;
+        console.error(err.message);
+        console.error(err.stack);
+        process.exit(1);
       }
     });
     socket.on("close", () => {
@@ -1208,4 +1216,4 @@ function handler(con, rawData) {
  */
 tcpManager = new TCPManager();
 
-module.exports = { TCPManager, MSG_STRING, listener };
+module.exports = { TCPManager, MSG_STRING, listener, handler };
