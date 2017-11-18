@@ -53,6 +53,7 @@ function startServers(callback) {
         tcpPortList.map(port => {
           startTCPListener(port, connectionMgr, callback);
         });
+        callback(null);
       },
     ],
     err => {

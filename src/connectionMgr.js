@@ -46,6 +46,11 @@ function processData(id, data) {
        * Lobby port connection
        */
     handler(findConnection(id), data);
+  } else if (id.indexOf("_43300") > 0) {
+    /**
+       * MCOTS port connection
+       */
+    handler(findConnection(id), data);
   }
 }
 
