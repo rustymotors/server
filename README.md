@@ -1,9 +1,10 @@
 MCO-Server
 ============
 
+[![CircleCI](https://circleci.com/gh/drazisil/mco-server.svg?style=shield)](https://circleci.com/gh/drazisil/mco-server)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) 
+[![NSP Status](https://nodesecurity.io/orgs/drazisil/projects/f5724640-0c3f-4c14-a32d-821760fc186d/badge)](https://nodesecurity.io/orgs/drazisil/projects/f5724640-0c3f-4c14-a32d-821760fc186d)
 [![Greenkeeper badge](https://badges.greenkeeper.io/drazisil/mco-server.svg)](https://greenkeeper.io/)
-
-[![CircleCI](https://circleci.com/gh/drazisil/mco-server.svg?style=svg&circle-token=6937e163b7a7a8aed2cd5d4c50bed9501060457d)](https://circleci.com/gh/drazisil/mco-server)
 
 ## About
 
