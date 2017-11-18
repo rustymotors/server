@@ -21,19 +21,15 @@ const async = require("async");
 const logger = require("./logger.js");
 const patchServer = require("../lib/WebServer/index.js");
 const TCPManager = require("./TCPManager.js");
-
 const database = require("../lib/database/index.js");
-
 const { startTCPListener } = require("./listenerThread.js");
-
 const connectionMgr = require("./connectionMgr.js");
 
 /**
-  Need to open create listeners on the ports
-  
-  When a connection opens, pass it to a session controller that will log the
-  connection and fork to a connection handlers
-  **/
+ * Start the HTTP, HTTPS and TCP connection listeners
+ * @param {Function} callback
+ */
+
 function startServers(callback) {
   logger.info("Starting the listening sockets...");
   const tcpPortList = [
@@ -84,6 +80,10 @@ function startServers(callback) {
   );
 }
 
+/**
+ * Start the command line interface loop
+ * @param {Function} callback 
+ */
 function startCLI(callback) {
   logger.info("Starting the command line interface...");
   // Create the command interface
@@ -147,6 +147,10 @@ function fetchSessionKey(customerId, callback) {
   });
 }
 
+/**
+ * Lookup a session key by customer id
+ * @param {String} customerId 
+ */
 function cliSessionKey(customerId) {
   fetchSessionKey(customerId, (err, res) => {
     if (err) {
@@ -164,6 +168,11 @@ function cliSessionKey(customerId) {
   });
 }
 
+/**
+ * Processes a command and its optional arguments
+ * @param {String} cmd 
+ * @param {Array} args 
+ */
 function handleCLICommand(cmd, args) {
   const cliCommands = {
     session_key: function() {
