@@ -51,10 +51,10 @@ function dumpResponse(data, count) {
 function npsHeartbeat(socket, rawData) {
   dumpRequest(socket, rawData);
 
-  const packetcontent = Buffer.alloc(8);
-  const packetresult = packet.buildPacket(8, 0x0127, packetcontent);
-  dumpResponse(packetresult, 8);
-  return packetresult;
+  const packetContent = Buffer.alloc(8);
+  const packetResult = packet.buildPacket(8, 0x0127, packetContent);
+  dumpResponse(packetResult, 8);
+  return packetResult;
 }
 
 module.exports = {
