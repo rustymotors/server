@@ -28,7 +28,7 @@ const database = require("../lib/database/index.js");
  * @param {Buffer} rawData 
  */
 function npsRequestGameConnectServer(socket, rawData) {
-  // Load the recieved data into a MsgPack class
+  // Load the received data into a MsgPack class
   const msgPack = MsgPack(rawData);
 
   // Return a _NPS_UserInfo structure - 40
