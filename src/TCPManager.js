@@ -37,7 +37,7 @@ class Connection {
 }
 
 /**
- * Return the string representtion of the numaric opcode
+ * Return the string representation of the numeric opcode
  * @param {int} msgID 
  */
 function MSG_STRING(msgID) {
@@ -89,13 +89,13 @@ function ClientConnect(con, node) {
     // Create the encryption object
     con.enc = rc4("arc4", res.session_key);
 
-    // Create the cypher and decyper only if not already set
-    if (!con.cypher & !con.decypher) {
+    // Create the cypher and decipher only if not already set
+    if (!con.cypher & !con.decipher) {
       const desIV = Buffer.alloc(8);
       con.cypher = crypto
         .createCipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
         .setAutoPadding(false);
-      con.decypher = crypto
+      con.decipher = crypto
         .createDecipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
         .setAutoPadding(false);
     }
@@ -137,9 +137,9 @@ function ProcessInput(node, info) {
       logger.error(
         `Message Number Not Handled: ${currentMsgNo} (${MSG_STRING(
           currentMsgNo
-        )})  Predecrypt: ${preDecryptMsgNo.toString("hex")} (${MSG_STRING(
+        )})  Pre decrypt: ${preDecryptMsgNo.toString("hex")} (${MSG_STRING(
           preDecryptMsgNo
-        )}) conID: ${node.toFrom}  PersID: ${node.appID}`
+        )}) conID: ${node.toFrom}  PersonaID: ${node.appID}`
       );
   }
   return result;
@@ -153,20 +153,20 @@ In TCPManager::MessageReceived()
 `);
   if (!con.useEncryption && msg.flags & 0x08) {
     con.useEncryption = 1;
-    logger.debug("TCPMgr::MessageRecieved() turning on encryption\n");
+    logger.debug("TCPMgr::MessageReceived() turning on encryption\n");
   }
   // If not a Heartbeat
   if (!(msg.flags & 0x80) && con.useEncryption) {
-    logger.debug("TCPMgr::MessageRecieved() Decrypt()\n");
+    logger.debug("TCPMgr::MessageReceived() Decrypt()\n");
     if (!con.enc) {
-      logger.error(`KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`);
+      logger.error(`KEncrypt ->enc is NULL! Disconnecting...conId: ${con.id}`);
     }
     // If not a Heartbeat
     if (!(msg.flags & 0x80) && con.useEncryption) {
-      logger.debug("TCPMgr::MessageRecieved() Decrypt()\n");
+      logger.debug("TCPMgr::MessageReceived() Decrypt()\n");
       if (!con.enc) {
         logger.error(
-          `KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`
+          `KEncrypt ->enc is NULL! Disconnecting...conId: ${con.id}`
         );
         con.sock.end();
         return;
@@ -174,7 +174,7 @@ In TCPManager::MessageReceived()
       try {
         if (!con.isSetupComplete) {
           logger.error(
-            `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
+            `Decrypt() not yet setup! Disconnecting...conId: ${con.id}`
           );
           con.sock.end();
           return;
@@ -186,10 +186,10 @@ In TCPManager::MessageReceived()
           "Decrypted:   ",
           con.enc.decodeString(msg.buffer.toString("hex"), "hex", "hex")
         );
-        logger.warn("Decrypted: 2 ", con.decypher.update(msg.buffer));
+        logger.warn("Decrypted: 2 ", con.decipher.update(msg.buffer));
       } catch (e) {
         logger.error(
-          `Decrypt() exception thrown! Disconnecting...conid:${con.id}`
+          `Decrypt() exception thrown! Disconnecting...conId:${con.id}`
         );
         con.sock.end();
         throw e;
@@ -212,14 +212,14 @@ function lobbyDataHandler(con, rawData) {
   switch (requestCode) {
     // npsRequestGameConnectServer
     case "0100": {
-      const packetresult = lobby.npsRequestGameConnectServer(con.sock, rawData);
-      con.sock.write(packetresult);
+      const packetResult = lobby.npsRequestGameConnectServer(con.sock, rawData);
+      con.sock.write(packetResult);
       break;
     }
     // npsHeartbeat
     case "0217": {
-      const packetresult = util.npsHeartbeat(con.sock, rawData);
-      con.sock.write(packetresult);
+      const packetResult = util.npsHeartbeat(con.sock, rawData);
+      con.sock.write(packetResult);
       break;
     }
     // npsSendCommand
@@ -232,14 +232,14 @@ function lobbyDataHandler(con, rawData) {
     }
     default:
       util.dumpRequest(con.sock, rawData, requestCode);
-      logger.error(`Unknown code ${requestCode} was recieved on port 7003`);
+      logger.error(`Unknown code ${requestCode} was received on port 7003`);
   }
 }
 
 function handler(con, rawData) {
   const messageNode = MessageNode.MessageNode(rawData);
   logger.info(`=============================================
-    Recieved packet on port ${con.sock.localPort} from ${con.sock
+    Received packet on port ${con.sock.localPort} from ${con.sock
     .remoteAddress}...`);
   logger.info("=============================================");
 
