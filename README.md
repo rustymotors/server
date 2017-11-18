@@ -30,12 +30,6 @@ I'm writing this from scratch. While I'm proud of what I've done, I'm hitting th
 
 Copy the pub.key file from the server to the client game directory
 
-### Add the following entry to your etc/hosts file
-
-```
-127.0.0.1       dev.mco
-```
-
 ### Add the cert to Windows
 
 http://stackoverflow.com/a/2955546/335583
