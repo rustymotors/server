@@ -89,7 +89,9 @@ function encryptCmd(session, cypherCmd) {
 function sendCommand(con, data) {
   fetchSessionKeyByRemoteAddress(con.sock.remoteAddress, (err, res) => {
     if (err) {
-      throw err;
+      console.error(err.message);
+      console.error(err.stack);
+      process.exit(1);
     }
 
     let s = con;

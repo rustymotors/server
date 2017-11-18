@@ -5,102 +5,107 @@ const fs = require("fs");
 const async = require("async");
 const logger = require("./logger.js");
 const patchServer = require("../lib/WebServer/index.js");
-const loginServer = require("../lib/LoginServer/index.js")();
-const personaServer = require("../lib/PersonaServer/index.js")();
 const TCPManager = require("./TCPManager.js");
 
 const database = require("../lib/database/index.js");
 
-class MCServer {
-  /**
+const { startTCPListener } = require("./listenerThread.js");
+
+const connectionMgr = require("./connectionMgr.js");
+
+/**
   Need to open create listeners on the ports
   
   When a connection opens, cass it to a session controller that will log the
   connection and fork to a connection handlers
   **/
-  startServers(callback) {
-    logger.info("Starting the listening sockets...");
-    const tcpPortList = [
-      7003,
-      8227,
-      43300,
-      9000,
-      9001,
-      9002,
-      9003,
-      9004,
-      9005,
-      9006,
-      9007,
-      9008,
-      9009,
-      9010,
-      9011,
-      9012,
-      9013,
-      9014,
-    ];
-    async.waterfall(
-      [
-        patchServer.start,
-        loginServer.start,
-        personaServer.start,
-        function(callback) {
-          // arg1 now equals 'one' and arg2 now equals 'two'
-          tcpPortList.map(port => {
-            net
-              .createServer(socket => {
-                TCPManager.listener(socket);
-              })
-              .listen(port, "0.0.0.0", () => {
-                // logger.debug(`Started TCP listener on TCP port: ${port}`);
-              });
-          });
-          callback(null);
-        },
-      ],
-      err => {
-        if (err) {
-          throw err;
-        }
-        // result now equals 'done'
-        logger.info("Listening sockets create successfully.");
+function startServers(callback) {
+  logger.info("Starting the listening sockets...");
+  const tcpPortList = [
+    8228,
+    8226,
+    7003,
+    8227,
+    43300,
+    9000,
+    9001,
+    9002,
+    9003,
+    9004,
+    9005,
+    9006,
+    9007,
+    9008,
+    9009,
+    9010,
+    9011,
+    9012,
+    9013,
+    9014,
+  ];
+  async.waterfall(
+    [
+      patchServer.start,
+      function(callback) {
+        /**
+         * Start all the TCP port listeners
+         */
+        tcpPortList.map(port => {
+          startTCPListener(port, connectionMgr, callback);
+        });
         callback(null);
+      },
+    ],
+    err => {
+      if (err) {
+        console.error(err.message);
+        console.error(err.stack);
+        process.exit(1);
       }
-    );
-  }
-  startCLI(callback) {
-    logger.info("Starting the command line interface...");
-    // Create the command interface
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-    // command processing loop
-    var recursiveAsyncReadLine = function() {
-      rl.question("", command => {
-        if (command == "exit") {
-          // we need some base case, for recursion
-          rl.close();
-          return process.exit(); // closing RL and returning from function.
-        }
-        // TODO: Do something with the command
-        handleCLICommand(command);
-        recursiveAsyncReadLine(); // Calling this function again to ask new question
-      });
-    };
-    // Start the CLI interface
-    recursiveAsyncReadLine();
-    logger.info("Command line interface started successfully.");
-    callback(null);
-  }
-  run() {
-    // Connect to database
-    // Start the server listeners
-    async.waterfall([database.createDB, this.startServers, this.startCLI]);
-  }
+      // result now equals 'done'
+      logger.info("Listening sockets create successfully.");
+      callback(null);
+    }
+  );
 }
 
+function startCLI(callback) {
+  logger.info("Starting the command line interface...");
+  // Create the command interface
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  // command processing loop
+  var recursiveAsyncReadLine = function() {
+    rl.question("", command => {
+      if (command == "exit") {
+        // we need some base case, for recursion
+        rl.close();
+        return process.exit(); // closing RL and returning from function.
+      }
+      // TODO: Do something with the command
+      handleCLICommand(command);
+      recursiveAsyncReadLine(); // Calling this function again to ask new question
+    });
+  };
+  // Start the CLI interface
+  recursiveAsyncReadLine();
+  logger.info("Command line interface started successfully.");
+  callback(null);
+}
+
+function run() {
+  // Connect to database
+  // Start the server listeners
+  async.waterfall([database.createDB, startServers, startCLI]);
+}
+
+/**
+ * Fetch the sessionkey from the database by customerid
+ * @param {string} customerId 
+ * @param {callback} callback 
+ */
 function fetchSessionKey(customerId, callback) {
   database.db.serialize(function() {
     database.db.get(
@@ -127,7 +132,9 @@ function handleCLICommand(command) {
     const customerId = parseInt(command.split(" ")[1]);
     fetchSessionKey(customerId, (err, res) => {
       if (err) {
-        throw err;
+        console.error(err.message);
+        console.error(err.stack);
+        process.exit(1);
       }
       if (res == undefined) {
         console.log("Unable to locate session key for customerID:", customerId);
@@ -137,9 +144,16 @@ function handleCLICommand(command) {
         );
       }
     });
+  } else if (command.indexOf("dumpConnections") == 0) {
+    // dumpConnections
+    console.dir(connectionMgr.dumpConnections());
+  } else if (command.indexOf("findConnection ") == 0) {
+    // findConnection {connectionID}
+    const connectionId = command.split(" ")[1];
+    console.dir(connectionMgr.findConnection(connectionId));
   } else {
     console.log('Got it! Your answer was: "', command, '"');
   }
 }
 
-module.exports = { MCServer };
+module.exports = { run };
