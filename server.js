@@ -1,5 +1,3 @@
-const MCServer = require("./src/MCServer.js");
-
-mcServer = new MCServer.MCServer();
+const mcServer = require("./src/MCServer.js");
 
 mcServer.run();
