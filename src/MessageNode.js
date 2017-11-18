@@ -16,7 +16,6 @@
 
 const logger = require("./logger.js");
 
-// struct msgHead
 function msgHead(header) {
   if (!(this instanceof msgHead)) {
     return new msgHead(header);
@@ -26,7 +25,6 @@ function msgHead(header) {
   this.mcosig = header.toString("ascii", 2);
 }
 
-// struct BaseMsgHeader
 function BaseMsgHeader(msg) {
   if (!(this instanceof BaseMsgHeader)) {
     return new BaseMsgHeader(msg);
@@ -36,7 +34,6 @@ function BaseMsgHeader(msg) {
   this.msgNo = msg.readInt16LE();
 }
 
-// struct MessageNode
 function MessageNode(packet) {
   if (!(this instanceof MessageNode)) {
     return new MessageNode(packet);
