@@ -90,7 +90,9 @@ function ClientConnect(con, node) {
 
   fetchSessionKeyByRemoteAddress(con.sock.remoteAddress, (err, res) => {
     if (err) {
-      throw err;
+      console.error(err.message);
+      console.error(err.stack);
+      process.exit(1);
     }
 
     // Create the encryption object
@@ -991,28 +993,21 @@ function ProcessInput(node, info) {
   return result;
 }
 
-class TCPManager {
-  constructor() {
-    this.connectionID = 1;
-    this.connections = [];
+function MessageReceived(msg, con) {
+  logger.debug(`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In TCPManager::MessageReceived()
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+`);
+  if (!con.useEncryption && msg.flags & 0x08) {
+    con.useEncryption = 1;
+    logger.debug("TCPMgr::MessageRecieved() turning on encryption\n");
   }
-  getFreeConnection() {
-    const con = new Connection();
-    con.id = this.connectionID;
-    this.connectionID++;
-    this.connections.push(con);
-
-    return con;
-  }
-  MessageReceived(msg, con) {
-    logger.debug(`
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  In TCPManager::MessageReceived()
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  `);
-    if (!con.useEncryption && msg.flags & 0x08) {
-      con.useEncryption = 1;
-      logger.debug("TCPMgr::MessageRecieved() turning on encryption\n");
+  // If not a Heartbeat
+  if (!(msg.flags & 0x80) && con.useEncryption) {
+    logger.debug("TCPMgr::MessageRecieved() Decrypt()\n");
+    if (!con.enc) {
+      logger.error(`KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`);
     }
     // If not a Heartbeat
     if (!(msg.flags & 0x80) && con.useEncryption) {
@@ -1021,115 +1016,37 @@ class TCPManager {
         logger.error(
           `KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`
         );
+        con.sock.end();
+        return;
       }
-      // If not a Heartbeat
-      if (!(msg.flags & 0x80) && con.useEncryption) {
-        logger.debug("TCPMgr::MessageRecieved() Decrypt()\n");
-        if (!con.enc) {
+      try {
+        if (!con.isSetupComplete) {
           logger.error(
-            `KEncrypt ->enc is NULL! Disconnecting...conid: ${con.id}`
+            `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
           );
           con.sock.end();
           return;
         }
-        try {
-          if (!con.isSetupComplete) {
-            logger.error(
-              `Decrypt() not yet setup! Disconnecting...conid: ${con.id}`
-            );
-            con.sock.end();
-            return;
-          }
 
-          logger.warn(msg.buffer.toString("hex"));
+        logger.warn(msg.buffer.toString("hex"));
 
-          logger.warn(
-            "Decrypted:   ",
-            con.enc.decodeString(msg.buffer.toString("hex"), "hex", "hex")
-          );
-          logger.warn("Decrypted: 2 ", con.decypher.update(msg.buffer));
-        } catch (e) {
-          logger.error(
-            `Decrypt() exception thrown! Disconnecting...conid:${con.id}`
-          );
-          con.sock.end();
-          throw e;
-        }
+        logger.warn(
+          "Decrypted:   ",
+          con.enc.decodeString(msg.buffer.toString("hex"), "hex", "hex")
+        );
+        logger.warn("Decrypted: 2 ", con.decypher.update(msg.buffer));
+      } catch (e) {
+        logger.error(
+          `Decrypt() exception thrown! Disconnecting...conid:${con.id}`
+        );
+        con.sock.end();
+        throw e;
       }
-
-      ProcessInput(msg, con);
-    } else {
-      ProcessInput(msg, con);
     }
-  }
-}
 
-/**
- * Takes a socket
- * @param {net.Socket} socket 
- */
-function listener(socket) {
-  /**
-   * Assign the socket a connection
-   */
-  con = tcpManager.getFreeConnection();
-
-  /**
-   * Announce the new connection
-   */
-  logger.info(
-    `Connection from client. conID:(${con.id}) On:${socket.remoteAddress}  Peer:${socket.localAddress}`
-  );
-
-  con.lastMsg = 0;
-  con.status = "ACTIVE";
-
-  con.sock = socket;
-  con.port = socket.localPort;
-
-  /**
-   * Lets check if we have a connection for this user.
-   */
-
-  // Is this a login connection?
-  if (socket.localPort == 8226) {
-    logger.debug("New Login Connection...");
-
-    // Add a 'data' event handler to this instance of socket
-    socket.on("data", data => {
-      loginDataHandler(socket, data);
-    });
-    socket.on("error", err => {
-      if (err.code !== "ECONNRESET") {
-        throw err;
-      }
-    });
-    socket.on("close", () => {
-      logger.info("Closing Login socket");
-    });
+    ProcessInput(msg, con);
   } else {
-    const con = tcpManager.getFreeConnection();
-
-    con.sock = socket;
-
-    logger.debug("New Connection...");
-    logger.debug("ConnectionID: ", con.id);
-
-    // Add a 'data' event handler to this instance of socket
-    socket.on("data", data => {
-      handler(con, data);
-    });
-    socket.on("error", err => {
-      if (err.code !== "ECONNRESET") {
-        throw err;
-      }
-    });
-    socket.on("close", () => {
-      logger.info(
-        `Closing socket id ${con.id} for port ${con.sock.localPort} from ${con
-          .sock.remoteAddress}`
-      );
-    });
+    ProcessInput(msg, con);
   }
 }
 
@@ -1190,7 +1107,7 @@ function handler(con, rawData) {
     );
     logger.info("=============================================");
 
-    tcpManager.MessageReceived(messageNode, con);
+    MessageReceived(messageNode, con);
   } else {
     logger.debug("No valid MCOTS header signature detected, sending to Lobby");
     logger.info("=============================================");
@@ -1203,9 +1120,4 @@ function handler(con, rawData) {
   }
 }
 
-/**
- * Initialize a new instance of TCPManager
- */
-tcpManager = new TCPManager();
-
-module.exports = { TCPManager, MSG_STRING, listener };
+module.exports = { MSG_STRING, handler };
