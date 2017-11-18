@@ -1,6 +1,0 @@
-<testsuite name="Mocha Tests" tests="4" failures="0" errors="0" skipped="0" timestamp="Wed, 15 Mar 2017 00:00:17 GMT" time="1.403">
-<testcase classname="Databases" name="should be able to create tables" time="0"/>
-<testcase classname="Databases" name="should be able to write to the database" time="0.693"/>
-<testcase classname="Databases" name="should be able to fetch persona by customer id" time="0.004"/>
-<testcase classname="Databases" name="should be able to delete from the database" time="0.674"/>
-</testsuite>
