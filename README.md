@@ -9,7 +9,7 @@ This is a game server, being written from scratch, for a very old and long dead 
 
 ## Help Wanted
 
-I'm writing this fram scratch. While I'm proud of what I've done, I'm hitting the point where I need help. Therefore, I'm open-sourcing this. Any assistance you can provide, either from code help, to suggestions, to even pointing out better ways to do things are greatly appriciated.
+I'm writing this from scratch. While I'm proud of what I've done, I'm hitting the point where I need help. Therefore, I'm open-sourcing this. Any assistance you can provide, either from code help, to suggestions, to even pointing out better ways to do things are greatly appriciated.
 
 ## Server Setup
 
