@@ -2,7 +2,8 @@ MCO-Server
 ============
 
 [![CircleCI](https://circleci.com/gh/drazisil/mco-server.svg?style=shield)](https://circleci.com/gh/drazisil/mco-server)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) 
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdrazisil%2Fmco-server.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdrazisil%2Fmco-server?ref=badge_shield)
+
 [![NSP Status](https://nodesecurity.io/orgs/drazisil/projects/f5724640-0c3f-4c14-a32d-821760fc186d/badge)](https://nodesecurity.io/orgs/drazisil/projects/f5724640-0c3f-4c14-a32d-821760fc186d)
 [![Greenkeeper badge](https://badges.greenkeeper.io/drazisil/mco-server.svg)](https://greenkeeper.io/)
 
@@ -46,3 +47,7 @@ http://stackoverflow.com/a/2955546/335583
 ### Started
 
 Mar 6, 2016
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdrazisil%2Fmco-server.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdrazisil%2Fmco-server?ref=badge_large)
