@@ -76,26 +76,26 @@ function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
 
 /**
  * Takes an encrypted command packet and returns the decrypted bytes
- * FIXME: This likely does not work anymore, since I no longer use sessions in this way
- * @param {*} session 
- * @param {*} cypherCmd 
+ * @param {Connection} con 
+ * @param {Buffer} cypherCmd 
  */
-function decryptCmd(session, cypherCmd) {
-  const s = session;
-  const decryptedCommand = s.decipher.update(cypherCmd);
+function decryptCmd(con, cypherCmd) {
+  const s = con;
+  const decryptedCommand = s.enc.decipher.update(cypherCmd);
   s.decryptedCmd = decryptedCommand;
+  logger.warn(`Enciphered Cmd: ${cypherCmd.toString("hex")}`);
+  logger.warn(`Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`);
   return s;
 }
 
 /**
  * Takes an plaintext command packet and return the encrypted bytes
- * FIXME: This likely no longer works, as I no longer use sessions in this way
- * @param {*} session 
- * @param {*} cypherCmd 
+ * @param {Connection} con 
+ * @param {Buffer} cypherCmd 
  */
-function encryptCmd(session, cypherCmd) {
-  const s = session;
-  s.encryptedCommand = s.cypher.update(cypherCmd);
+function encryptCmd(con, cypherCmd) {
+  const s = con;
+  s.encryptedCommand = s.enc.cypher.update(cypherCmd);
   return s;
 }
 
@@ -115,12 +115,12 @@ function sendCommand(con, data) {
     let s = con;
 
     // Create the cypher and decipher only if not already set
-    if (!s.cypher & !s.decipher) {
+    if (!s.enc.cypher & !s.enc.decipher) {
       const desIV = Buffer.alloc(8);
-      s.cypher = crypto
+      s.enc.cypher = crypto
         .createCipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
         .setAutoPadding(false);
-      s.decipher = crypto
+      s.enc.decipher = crypto
         .createDecipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
         .setAutoPadding(false);
     }

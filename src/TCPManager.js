@@ -22,20 +22,6 @@ const lobby = require("./lobby.js");
 const MessageNode = require("./MessageNode.js");
 const database = require("../lib/database/index.js");
 
-class Connection {
-  constructor() {
-    this.id = 0;
-    this.appID = 0;
-    this.status = "INACTIVE";
-    this.sock = 0;
-    this.msgEvent = null;
-    this.lastMsg = 0;
-    this.useEncryption = 0;
-    this.enc = null;
-    this.isSetupComplete = 0;
-  }
-}
-
 /**
  * Return the string representation of the numeric opcode
  * @param {int} msgID 
@@ -72,6 +58,20 @@ function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
   );
 }
 
+/**
+ * Takes an encrypted command packet and returns the decrypted bytes
+ * @param {Connection} con 
+ * @param {Buffer} cypherCmd 
+ */
+function decryptCmd(con, cypherCmd) {
+  const s = con;
+  const decryptedCommand = s.enc.decipher.update(cypherCmd);
+  s.decryptedCmd = decryptedCommand;
+  logger.warn(`Enciphered Cmd: ${cypherCmd.toString("hex")}`);
+  logger.warn(`Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`);
+  return s;
+}
+
 function ClientConnect(con, node) {
   logger.debug(`
     ~~~~~~~~~~~~~~~~~~~
@@ -86,19 +86,22 @@ function ClientConnect(con, node) {
       process.exit(1);
     }
 
-    // Create the encryption object
-    con.enc = rc4("arc4", res.session_key);
+    logger.debug(`Looking up the session key for ${con.id}...`);
+    // con.enc = con.mgr.findConnection(`${con.sock.remoteAddress}_7003`).enc;
 
-    // Create the cypher and decipher only if not already set
-    if (!con.cypher & !con.decipher) {
-      const desIV = Buffer.alloc(8);
-      con.cypher = crypto
-        .createCipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
-        .setAutoPadding(false);
-      con.decipher = crypto
-        .createDecipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
-        .setAutoPadding(false);
-    }
+    // // Create the encryption object
+    // //con.enc = rc4("arc4", res.session_key);
+
+    // // Create the cypher and decipher only if not already set
+    // if (!con.cypher & !con.decipher) {
+    //   const desIV = Buffer.alloc(8);
+    //   con.cypher = crypto
+    //     .createCipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
+    //     .setAutoPadding(false);
+    //   con.decipher = crypto
+    //     .createDecipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
+    //     .setAutoPadding(false);
+    // }
 
     // write the socket
     con.sock.write(node.rawBuffer);
@@ -110,7 +113,7 @@ function ClientConnect(con, node) {
   });
 }
 
-function ProcessInput(node, info) {
+function ProcessInput(node, conn) {
   logger.debug(`
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   In TCPManager::ProcessInput()
@@ -128,8 +131,8 @@ function ProcessInput(node, info) {
 
   switch (MSG_STRING(currentMsgNo)) {
     case "MC_CLIENT_CONNECT_MSG":
-      logger.info((node, info, ""));
-      result = ClientConnect(info, node);
+      logger.info((node, conn, ""));
+      result = ClientConnect(conn, node);
 
       break;
 
@@ -158,13 +161,15 @@ In TCPManager::MessageReceived()
   // If not a Heartbeat
   if (!(msg.flags & 0x80) && con.useEncryption) {
     logger.debug("TCPMgr::MessageReceived() Decrypt()\n");
-    if (!con.enc) {
+    if (!con.enc.decipher) {
       logger.error(`KEncrypt ->enc is NULL! Disconnecting...conId: ${con.id}`);
     }
     // If not a Heartbeat
     if (!(msg.flags & 0x80) && con.useEncryption) {
-      logger.debug("TCPMgr::MessageReceived() Decrypt()\n");
-      if (!con.enc) {
+      logger.debug(
+        "Packet is not a heartbeat, and encryption is on for this connection"
+      );
+      if (!con.enc.decipher) {
         logger.error(
           `KEncrypt ->enc is NULL! Disconnecting...conId: ${con.id}`
         );
@@ -180,13 +185,7 @@ In TCPManager::MessageReceived()
           return;
         }
 
-        logger.warn(msg.buffer.toString("hex"));
-
-        logger.warn(
-          "Decrypted:   ",
-          con.enc.decodeString(msg.buffer.toString("hex"), "hex", "hex")
-        );
-        logger.warn("Decrypted: 2 ", con.decipher.update(msg.buffer));
+        decryptCmd(con, msg.buffer);
       } catch (e) {
         logger.error(
           `Decrypt() exception thrown! Disconnecting...conId:${con.id}`
@@ -263,6 +262,8 @@ function handler(con, rawData) {
   } else {
     logger.debug("No valid MCOTS header signature detected, sending to Lobby");
     logger.info("=============================================");
+    logger.debug("Buffer as text: ", messageNode.buffer.toString("utf8"));
+    logger.debug("Buffer as string: ", messageNode.buffer.toString("hex"));
 
     lobbyDataHandler(con, rawData);
   }

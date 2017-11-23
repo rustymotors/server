@@ -25,17 +25,16 @@ const net = require("net");
 function startTCPListener(listenerPort, connectionMgr, callback) {
   const server = net.createServer(c => {
     const remoteAddress = c.remoteAddress;
-    const id = `${remoteAddress}_${listenerPort}`;
     console.log(`Client ${remoteAddress} connected to port ${listenerPort}`);
-    connectionMgr.findOrNewConnection(id, c);
+    connectionMgr.findOrNewConnection(remoteAddress, c, connectionMgr);
     c.on("end", () => {
-      connectionMgr.deleteConnection(id);
+      connectionMgr.deleteConnection(remoteAddress);
       console.log(
         `Client ${remoteAddress} disconnected from port ${listenerPort}`
       );
     });
     c.on("data", data => {
-      connectionMgr.processData(id, data);
+      connectionMgr.processData(listenerPort, remoteAddress, data);
     });
     c.on("error", err => {
       if (err.code !== "ECONNRESET") {

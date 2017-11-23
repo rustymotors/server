@@ -21,7 +21,7 @@ const { handler } = require("./TCPManager.js");
 let connections = [];
 
 class Connection {
-  constructor(id, sock) {
+  constructor(id, sock, mgr) {
     this.id = id;
     this.appID = 0;
     this.status = "INACTIVE";
@@ -29,8 +29,9 @@ class Connection {
     this.msgEvent = null;
     this.lastMsg = 0;
     this.useEncryption = 0;
-    this.enc = null;
+    this.enc = {};
     this.isSetupComplete = 0;
+    this.mgr = mgr;
   }
 }
 
@@ -40,14 +41,16 @@ class Connection {
  * @param {String} id 
  * @param {Socket} socket 
  */
-function findOrNewConnection(id, socket) {
-  const con = findConnection(id);
+function findOrNewConnection(remoteAddress, socket, mgr) {
+  const con = findConnection(remoteAddress);
   if (con != null) {
-    console.log(`I have seen connection id ${id} before`);
+    console.log(`I have seen connections from ${remoteAddress} before`);
     con.sock = socket;
   } else {
-    connections.push(new Connection(id, socket));
-    console.log(`I have not seen connection id ${id} before, adding it.`);
+    connections.push(new Connection(remoteAddress, socket, mgr));
+    console.log(
+      `I have not seen connections from ${remoteAddress} before, adding it.`
+    );
   }
 }
 
@@ -68,21 +71,20 @@ function parseConnectionId(id) {
  * @param {String} id 
  * @param {Buffer} data 
  */
-function processData(id, data) {
-  console.log(`Got data from ${id}`, data);
-  const connection = parseConnectionId(id);
+function processData(port, remoteAddress, data) {
+  console.log(`Got data from ${remoteAddress} on port ${port}`, data);
   const connectionHandlers = {
     "8226": function() {
-      loginDataHandler(findConnection(id).sock, data);
+      loginDataHandler(findConnection(remoteAddress).sock, data);
     },
     "8228": function() {
-      personaDataHandler(findConnection(id).sock, data);
+      personaDataHandler(findConnection(remoteAddress).sock, data);
     },
     "7003": function() {
-      handler(findConnection(id), data);
+      handler(findConnection(remoteAddress), data);
     },
     "43300": function() {
-      handler(findConnection(id), data);
+      handler(findConnection(remoteAddress), data);
     },
   };
 
@@ -90,11 +92,11 @@ function processData(id, data) {
    * TODO: Create a fallback handler
    */
   if (
-    typeof connectionHandlers[connection.port] != "function" ||
-    connectionHandlers[connection.port]()
+    typeof connectionHandlers[port] != "function" ||
+    connectionHandlers[port]()
   ) {
     console.error(
-      `No known handler for port ${connection.port}, unable to handle the request from ${connection.address}, aborting.`
+      `No known handler for port ${port}, unable to handle the request from ${remoteAddress} on port ${port}, aborting.`
     );
     process.exit(1);
   }
