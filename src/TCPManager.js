@@ -235,6 +235,15 @@ function lobbyDataHandler(con, rawData) {
   }
 }
 
+/**
+   * Debug seems hard-coded to use the connection queue
+   * Craft a packet that tells the client it's allowed to login
+   */
+
+function sendPacketOkLogin(socket) {
+  socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
+}
+
 function handler(con, rawData) {
   const messageNode = MessageNode.MessageNode(rawData);
   logger.info(`=============================================
@@ -269,4 +278,4 @@ function handler(con, rawData) {
   }
 }
 
-module.exports = { MSG_STRING, handler };
+module.exports = { MSG_STRING, handler, sendPacketOkLogin };

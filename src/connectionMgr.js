@@ -32,6 +32,7 @@ class Connection {
     this.enc = {};
     this.isSetupComplete = 0;
     this.mgr = mgr;
+    this.inQueue = true;
   }
 }
 
@@ -46,11 +47,14 @@ function findOrNewConnection(remoteAddress, socket, mgr) {
   if (con != null) {
     console.log(`I have seen connections from ${remoteAddress} before`);
     con.sock = socket;
+    return con;
   } else {
-    connections.push(new Connection(remoteAddress, socket, mgr));
+    const newConnection = new Connection(remoteAddress, socket, mgr);
     console.log(
       `I have not seen connections from ${remoteAddress} before, adding it.`
     );
+    connections.push(newConnection);
+    return con;
   }
 }
 

@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const net = require("net");
+const { sendPacketOkLogin } = require("./TCPManager.js");
 
 /**
  * Given a port and a connection manager object, create a new TCP socket listener for that port
@@ -23,20 +24,28 @@ const net = require("net");
  * @param {Function} callback 
  */
 function startTCPListener(listenerPort, connectionMgr, callback) {
-  const server = net.createServer(c => {
-    const remoteAddress = c.remoteAddress;
+  const server = net.createServer(socket => {
+    const remoteAddress = socket.remoteAddress;
     console.log(`Client ${remoteAddress} connected to port ${listenerPort}`);
-    connectionMgr.findOrNewConnection(remoteAddress, c, connectionMgr);
-    c.on("end", () => {
+    const con = connectionMgr.findOrNewConnection(
+      remoteAddress,
+      socket,
+      connectionMgr
+    );
+    if (socket.localPort == 7003 && con.inQueue) {
+      sendPacketOkLogin(socket);
+      con.inQueue = false;
+    }
+    socket.on("end", () => {
       connectionMgr.deleteConnection(remoteAddress);
       console.log(
         `Client ${remoteAddress} disconnected from port ${listenerPort}`
       );
     });
-    c.on("data", data => {
+    socket.on("data", data => {
       connectionMgr.processData(listenerPort, remoteAddress, data);
     });
-    c.on("error", err => {
+    socket.on("error", err => {
       if (err.code !== "ECONNRESET") {
         console.error(err.message);
         console.error(err.stack);
