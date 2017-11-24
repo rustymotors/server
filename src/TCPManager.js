@@ -79,6 +79,7 @@ function ClientConnect(con, node) {
     ~~~~~~~~~~~~~~~~~~~
   `);
 
+  logger.debug(`Looking up the session key for ${con.id}...`);
   fetchSessionKeyByRemoteAddress(con.sock.remoteAddress, (err, res) => {
     if (err) {
       console.error(err.message);
@@ -86,22 +87,21 @@ function ClientConnect(con, node) {
       process.exit(1);
     }
 
-    logger.debug(`Looking up the session key for ${con.id}...`);
-    // con.enc = con.mgr.findConnection(`${con.sock.remoteAddress}_7003`).enc;
+    logger.warn("Session Key: ", res.session_key);
 
-    // // Create the encryption object
-    // //con.enc = rc4("arc4", res.session_key);
+    // Create the encryption object
+    //con.encMCOTS = rc4("arc4", res.session_key);
 
-    // // Create the cypher and decipher only if not already set
-    // if (!con.cypher & !con.decipher) {
-    //   const desIV = Buffer.alloc(8);
-    //   con.cypher = crypto
-    //     .createCipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
-    //     .setAutoPadding(false);
-    //   con.decipher = crypto
-    //     .createDecipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
-    //     .setAutoPadding(false);
-    // }
+    // Create the cypher and decipher only if not already set
+    if (!con.encMCOTS.cypher & !con.encMCOTS.decipher) {
+      const desIV = Buffer.alloc(8);
+      con.encMCOTS.cypher = crypto
+        .createCipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
+        .setAutoPadding(false);
+      con.encMCOTS.decipher = crypto
+        .createDecipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
+        .setAutoPadding(false);
+    }
 
     // write the socket
     con.sock.write(node.rawBuffer);
@@ -185,7 +185,18 @@ In TCPManager::MessageReceived()
           return;
         }
 
-        decryptCmd(con, msg.buffer);
+        /**
+         * Attempt to decrypt message
+         */
+        logger.debug(
+          "Message buffer before decrypting: ",
+          msg.buffer.toString("hex")
+        );
+        const decodedBuffer = con.encMCOTS.decipher.update(msg.buffer);
+        logger.debug(
+          "Message buffer after decrypting:  ",
+          decodedBuffer.toString("hex")
+        );
       } catch (e) {
         logger.error(
           `Decrypt() exception thrown! Disconnecting...conId:${con.id}`

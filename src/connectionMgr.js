@@ -30,6 +30,7 @@ class Connection {
     this.lastMsg = 0;
     this.useEncryption = 0;
     this.enc = {};
+    this.encMCOTS = {};
     this.isSetupComplete = 0;
     this.mgr = mgr;
     this.inQueue = true;
@@ -102,6 +103,7 @@ function processData(port, remoteAddress, data) {
     console.error(
       `No known handler for port ${port}, unable to handle the request from ${remoteAddress} on port ${port}, aborting.`
     );
+    console.log("Data was: ", data.toString("hex"));
     process.exit(1);
   }
 }
