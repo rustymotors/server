@@ -30,6 +30,7 @@ class Connection {
     this.lastMsg = 0;
     this.useEncryption = 0;
     this.enc = {};
+    this.enc2 = {};
     this.encMCOTS = {};
     this.isSetupComplete = 0;
     this.mgr = mgr;

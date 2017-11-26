@@ -20,6 +20,7 @@ const util = require("./nps_utils.js");
 const logger = require("./logger.js");
 const lobby = require("./lobby.js");
 const MessageNode = require("./MessageNode.js");
+const ClientConnectMsg = require("./ClientConnectMsg.js");
 const database = require("../lib/database/index.js");
 
 /**
@@ -79,6 +80,20 @@ function ClientConnect(con, node) {
     ~~~~~~~~~~~~~~~~~~~
   `);
 
+  /**
+   * Let's turn it into a ClientConnectMsg
+   */
+  newMsg = ClientConnectMsg.ClientConnectMsg(node.buffer);
+
+  logger.info("=============================================");
+  logger.debug("MsgId:       ", newMsg.msgId);
+  logger.debug("customerId:  ", newMsg.customerId);
+  logger.debug("personaId:   ", newMsg.personaId);
+  logger.debug("custName:    ", newMsg.custName);
+  logger.debug("personaName: ", newMsg.personaName);
+  logger.debug("mcVersion:   ", newMsg.mcVersion);
+  logger.info("=============================================");
+
   logger.debug(`Looking up the session key for ${con.id}...`);
   fetchSessionKeyByRemoteAddress(con.sock.remoteAddress, (err, res) => {
     if (err) {
@@ -88,19 +103,22 @@ function ClientConnect(con, node) {
     }
 
     logger.warn("Session Key: ", res.session_key);
+    logger.warn("S Key: ", res.s_key);
 
     // Create the encryption object
-    //con.encMCOTS = rc4("arc4", res.session_key);
+    con.encMCOTS = rc4("arc4", res.session_key);
 
     // Create the cypher and decipher only if not already set
-    if (!con.encMCOTS.cypher & !con.encMCOTS.decipher) {
+    if (!con.enc2.cypher & !con.enc2.decipher) {
       const desIV = Buffer.alloc(8);
-      con.encMCOTS.cypher = crypto
-        .createCipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
-        .setAutoPadding(false);
-      con.encMCOTS.decipher = crypto
-        .createDecipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
-        .setAutoPadding(false);
+      con.enc2.cypher = crypto.createCipher(
+        "rc4",
+        res.session_key.substring(0, 32)
+      );
+      con.enc2.decipher = crypto.createDecipher(
+        "rc4",
+        res.session_key.substring(0, 32)
+      );
     }
 
     // write the socket
@@ -189,13 +207,17 @@ In TCPManager::MessageReceived()
          * Attempt to decrypt message
          */
         logger.debug(
-          "Message buffer before decrypting: ",
-          msg.buffer.toString("hex")
+          "==================================================================="
         );
-        const decodedBuffer = con.encMCOTS.decipher.update(msg.buffer);
+        logger.debug("Message buffer before decrypting: ", msg.buffer);
+        const decodedBuffer = con.encMCOTS.decodeBuffer(msg.buffer);
+        logger.debug("Message buffer after decrypting:  ", decodedBuffer);
         logger.debug(
-          "Message buffer after decrypting:  ",
-          decodedBuffer.toString("hex")
+          "Message buffer after decrypting2: ",
+          con.enc2.decipher.update(msg.buffer)
+        );
+        logger.debug(
+          "==================================================================="
         );
       } catch (e) {
         logger.error(
