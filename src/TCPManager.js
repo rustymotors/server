@@ -91,7 +91,7 @@ function ClientConnect(con, node) {
   logger.debug("personaId:   ", newMsg.personaId);
   logger.debug("custName:    ", newMsg.custName);
   logger.debug("personaName: ", newMsg.personaName);
-  logger.debug("mcVersion:   ", newMsg.mcVersion);
+  logger.debug("mcVersion:   ", newMsg.mcVersion.toString("hex"));
   logger.info("=============================================");
 
   logger.debug(`Looking up the session key for ${con.id}...`);

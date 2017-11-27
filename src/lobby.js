@@ -28,6 +28,10 @@ const database = require("../lib/database/index.js");
  * @param {Buffer} rawData 
  */
 function npsRequestGameConnectServer(socket, rawData) {
+  logger.info("*** npsRequestGameConnectServer ****");
+  logger.debug("Packet as hex: ", rawData.toString("hex"));
+  logger.info("************************************");
+
   // Load the received data into a MsgPack class
   const msgPack = MsgPack(rawData);
 
