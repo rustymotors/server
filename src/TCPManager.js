@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const rc4 = require("arc4");
 const crypto = require("crypto");
 const util = require("./nps_utils.js");
 const logger = require("./logger.js");
@@ -102,22 +101,20 @@ function ClientConnect(con, node) {
       process.exit(1);
     }
 
-    logger.warn("Session Key: ", res.session_key);
     logger.warn("S Key: ", res.s_key);
-
-    // Create the encryption object
-    con.encMCOTS = rc4("arc4", res.session_key);
 
     // Create the cypher and decipher only if not already set
     if (!con.enc2.cypher & !con.enc2.decipher) {
       const desIV = Buffer.alloc(8);
-      con.enc2.cypher = crypto.createCipher(
-        "rc4",
-        res.session_key.substring(0, 32)
+      con.enc2.cypher = crypto.createCipheriv(
+        "des-cbc",
+        Buffer.from(res.s_key, "hex"),
+        desIV
       );
-      con.enc2.decipher = crypto.createDecipher(
-        "rc4",
-        res.session_key.substring(0, 32)
+      con.enc2.decipher = crypto.createDecipheriv(
+        "des-cbc",
+        Buffer.from(res.s_key, "hex"),
+        desIV
       );
     }
 
@@ -210,11 +207,13 @@ In TCPManager::MessageReceived()
           "==================================================================="
         );
         logger.debug("Message buffer before decrypting: ", msg.buffer);
-        const decodedBuffer = con.encMCOTS.decodeBuffer(msg.buffer);
-        logger.debug("Message buffer after decrypting:  ", decodedBuffer);
+        logger.debug(
+          "Message buffer after decrypting1: ",
+          con.enc2.decipher.update(msg.buffer)
+        );
         logger.debug(
           "Message buffer after decrypting2: ",
-          con.enc2.decipher.update(msg.buffer)
+          con.enc.decipher.update(msg.buffer)
         );
         logger.debug(
           "==================================================================="
