@@ -47,7 +47,7 @@ function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
     (err, res) => {
       if (err) {
         // Unknown error
-        console.error(
+        logger.error(
           `DATABASE ERROR: Unable to retrieve sessionsKey: ${err.message}`
         );
         callback(err);
@@ -96,8 +96,8 @@ function ClientConnect(con, node) {
   logger.debug(`Looking up the session key for ${con.id}...`);
   fetchSessionKeyByRemoteAddress(con.sock.remoteAddress, (err, res) => {
     if (err) {
-      console.error(err.message);
-      console.error(err.stack);
+      logger.error(err.message);
+      logger.error(err.stack);
       process.exit(1);
     }
 

@@ -26,7 +26,7 @@ const { sendPacketOkLogin } = require("./TCPManager.js");
 function startTCPListener(listenerPort, connectionMgr, callback) {
   const server = net.createServer(socket => {
     const remoteAddress = socket.remoteAddress;
-    console.log(`Client ${remoteAddress} connected to port ${listenerPort}`);
+    logger.log(`Client ${remoteAddress} connected to port ${listenerPort}`);
     const con = connectionMgr.findOrNewConnection(
       remoteAddress,
       socket,
@@ -38,7 +38,7 @@ function startTCPListener(listenerPort, connectionMgr, callback) {
     }
     socket.on("end", () => {
       connectionMgr.deleteConnection(remoteAddress);
-      console.log(
+      logger.log(
         `Client ${remoteAddress} disconnected from port ${listenerPort}`
       );
     });
@@ -47,14 +47,14 @@ function startTCPListener(listenerPort, connectionMgr, callback) {
     });
     socket.on("error", err => {
       if (err.code !== "ECONNRESET") {
-        console.error(err.message);
-        console.error(err.stack);
+        logger.error(err.message);
+        logger.error(err.stack);
         process.exit(1);
       }
     });
   });
   server.listen(listenerPort, "0.0.0.0", () => {
-    console.log(`Listener started on port ${listenerPort}`);
+    logger.log(`Listener started on port ${listenerPort}`);
   });
 }
 

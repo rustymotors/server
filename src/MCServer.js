@@ -69,8 +69,8 @@ function startServers(callback) {
     ],
     err => {
       if (err) {
-        console.error(err.message);
-        console.error(err.stack);
+        logger.error(err.message);
+        logger.error(err.stack);
         process.exit(1);
       }
       // result now equals 'done'
@@ -135,7 +135,7 @@ function fetchSessionKey(customerId, callback) {
       (err, res) => {
         if (err) {
           // Unknown error
-          console.error(
+          logger.error(
             `DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`
           );
           callback(err);
@@ -154,14 +154,14 @@ function fetchSessionKey(customerId, callback) {
 function cliSessionKey(customerId) {
   fetchSessionKey(customerId, (err, res) => {
     if (err) {
-      console.error(err.message);
-      console.error(err.stack);
+      logger.error(err.message);
+      logger.error(err.stack);
       process.exit(1);
     }
     if (res == undefined) {
-      console.log("Unable to locate session key for customerID:", customerId);
+      logger.log("Unable to locate session key for customerID:", customerId);
     } else {
-      console.log(
+      logger.log(
         `The sessionKey for customerId ${customerId} is ${res.session_key}`
       );
     }
@@ -179,14 +179,14 @@ function handleCLICommand(cmd, args) {
       cliSessionKey(args[0]);
     },
     dumpConnections: function() {
-      console.dir(connectionMgr.dumpConnections());
+      logger.dir(connectionMgr.dumpConnections());
     },
     findConnection: function() {
-      console.dir(connectionMgr.findConnection(args[0]));
+      logger.dir(connectionMgr.findConnection(args[0]));
     },
   };
   if (typeof cliCommands[cmd] != "function" || cliCommands[cmd]()) {
-    console.log(`Command ${cmd} not found, please check help`);
+    logger.log(`Command ${cmd} not found, please check help`);
   }
 }
 
