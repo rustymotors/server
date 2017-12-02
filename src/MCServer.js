@@ -179,14 +179,14 @@ function handleCLICommand(cmd, args) {
       cliSessionKey(args[0]);
     },
     dumpConnections: function() {
-      logger.dir(connectionMgr.dumpConnections());
+      console.dir(connectionMgr.dumpConnections());
     },
     findConnection: function() {
-      logger.dir(connectionMgr.findConnection(args[0]));
+      console.dir(connectionMgr.findConnection(args[0]));
     },
   };
   if (typeof cliCommands[cmd] != "function" || cliCommands[cmd]()) {
-    logger.log(`Command ${cmd} not found, please check help`);
+    console.log(`Command ${cmd} not found, please check help`);
   }
 }
 
