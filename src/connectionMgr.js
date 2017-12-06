@@ -17,6 +17,7 @@
 const { loginDataHandler } = require("../lib/LoginServer/index.js");
 const { personaDataHandler } = require("../lib/PersonaServer/index.js");
 const { handler } = require("./TCPManager.js");
+const logger = require("./logger.js");
 
 let connections = [];
 
@@ -31,7 +32,6 @@ class Connection {
     this.useEncryption = 0;
     this.enc = {};
     this.enc2 = {};
-    this.encMCOTS = {};
     this.isSetupComplete = 0;
     this.mgr = mgr;
     this.inQueue = true;

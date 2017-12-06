@@ -119,13 +119,14 @@ function sendCommand(con, data) {
     let s = con;
 
     // Create the cypher and decipher only if not already set
+    const key = Buffer.from(res.s_key, "hex");
     if (!s.enc.cypher & !s.enc.decipher) {
       const desIV = Buffer.alloc(8);
       s.enc.cypher = crypto
-        .createCipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
+        .createCipheriv("des-cbc", key, desIV)
         .setAutoPadding(false);
       s.enc.decipher = crypto
-        .createDecipheriv("des-cbc", Buffer.from(res.s_key, "hex"), desIV)
+        .createDecipheriv("des-cbc", key, desIV)
         .setAutoPadding(false);
     }
 

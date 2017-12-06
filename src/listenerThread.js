@@ -16,6 +16,7 @@
 
 const net = require("net");
 const { sendPacketOkLogin } = require("./TCPManager.js");
+const logger = require("./logger.js");
 
 /**
  * Given a port and a connection manager object, create a new TCP socket listener for that port

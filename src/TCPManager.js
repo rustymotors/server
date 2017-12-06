@@ -22,6 +22,20 @@ const MessageNode = require("./MessageNode.js");
 const ClientConnectMsg = require("./ClientConnectMsg.js");
 const database = require("../lib/database/index.js");
 
+function socketWriteIfOpen(sock, data) {
+  if (sock.writable) {
+    sock.write(data);
+  } else {
+    logger.error(
+      "Error writing ",
+      data,
+      " to ",
+      sock.remoteAddress,
+      sock.localPort
+    );
+  }
+}
+
 /**
  * Return the string representation of the numeric opcode
  * @param {int} msgID 
@@ -105,21 +119,15 @@ function ClientConnect(con, node) {
 
     // Create the cypher and decipher only if not already set
     if (!con.enc2.cypher & !con.enc2.decipher) {
-      const desIV = Buffer.alloc(8);
-      con.enc2.cypher = crypto.createCipheriv(
-        "des-cbc",
-        Buffer.from(res.s_key, "hex"),
-        desIV
-      );
-      con.enc2.decipher = crypto.createDecipheriv(
-        "des-cbc",
-        Buffer.from(res.s_key, "hex"),
-        desIV
-      );
+      const key = Buffer.from(res.s_key, "hex");
+      // const key = res.s_key;
+      const iv = Buffer.alloc(64);
+      con.enc2.cypher = crypto.createCipheriv("RC4", key, "");
+      con.enc2.decipher = crypto.createDecipheriv("RC4", key, "");
     }
 
     // write the socket
-    con.sock.write(node.rawBuffer);
+    socketWriteIfOpen(con.sock, node.rawBuffer);
 
     con.isSetupComplete = 1;
 
@@ -206,15 +214,12 @@ In TCPManager::MessageReceived()
         logger.debug(
           "==================================================================="
         );
-        logger.debug("Message buffer before decrypting: ", msg.buffer);
         logger.debug(
-          "Message buffer after decrypting1: ",
-          con.enc2.decipher.update(msg.buffer)
+          "Message buffer before decrypting: ",
+          msg.buffer.toString("hex")
         );
-        logger.debug(
-          "Message buffer after decrypting2: ",
-          con.enc.decipher.update(msg.buffer)
-        );
+        console.log("output:    ", con.enc2.decipher.update(msg.buffer));
+
         logger.debug(
           "==================================================================="
         );
@@ -226,11 +231,10 @@ In TCPManager::MessageReceived()
         throw e;
       }
     }
-
-    ProcessInput(msg, con);
-  } else {
-    ProcessInput(msg, con);
   }
+
+  // Should be good to process now
+  ProcessInput(msg, con);
 }
 
 function getRequestCode(rawBuffer) {
@@ -244,13 +248,13 @@ function lobbyDataHandler(con, rawData) {
     // npsRequestGameConnectServer
     case "0100": {
       const packetResult = lobby.npsRequestGameConnectServer(con.sock, rawData);
-      con.sock.write(packetResult);
+      socketWriteIfOpen(con.sock, packetResult);
       break;
     }
     // npsHeartbeat
     case "0217": {
       const packetResult = util.npsHeartbeat(con.sock, rawData);
-      con.sock.write(packetResult);
+      socketWriteIfOpen(con.sock, packetResult);
       break;
     }
     // npsSendCommand
@@ -273,7 +277,7 @@ function lobbyDataHandler(con, rawData) {
    */
 
 function sendPacketOkLogin(socket) {
-  socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
+  socketWriteIfOpen(socket, Buffer.from([0x02, 0x30, 0x00, 0x00]));
 }
 
 function handler(con, rawData) {
