@@ -126,8 +126,12 @@ function ClientConnect(con, node) {
       con.enc2.decipher = crypto.createDecipheriv("RC4", key, "");
     }
 
+    // Create new response packet
+    // TODO: Do this cleaner
+    rPacket = new MessageNode.MessageNode(node.rawBuffer);
+
     // write the socket
-    socketWriteIfOpen(con.sock, node.rawBuffer);
+    socketWriteIfOpen(con.sock, rPacket.rawBuffer);
 
     con.isSetupComplete = 1;
 
@@ -160,6 +164,9 @@ function ProcessInput(node, conn) {
       break;
 
     default:
+      // We should not do this
+      // FIXME:We SHOULD NOT DO THIS
+      socketWriteIfOpen(conn.sock, node.rawBuffer);
       logger.error(
         `Message Number Not Handled: ${currentMsgNo} (${MSG_STRING(
           currentMsgNo
