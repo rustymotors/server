@@ -34,7 +34,7 @@ Copy the pub.key file from the server to the client game directory
 
 ### Add the cert to Windows
 
-http://stackoverflow.com/a/2955546/335583
+<http://stackoverflow.com/a/2955546/335583>
 
 ### Delete the movies
 
