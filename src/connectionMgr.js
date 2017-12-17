@@ -47,12 +47,12 @@ class Connection {
 function findOrNewConnection(remoteAddress, socket, mgr) {
   const con = findConnection(remoteAddress);
   if (con != null) {
-    logger.log(`I have seen connections from ${remoteAddress} before`);
+    logger.info(`I have seen connections from ${remoteAddress} before`);
     con.sock = socket;
     return con;
   } else {
     const newConnection = new Connection(remoteAddress, socket, mgr);
-    logger.log(
+    logger.info(
       `I have not seen connections from ${remoteAddress} before, adding it.`
     );
     connections.push(newConnection);
@@ -78,7 +78,7 @@ function parseConnectionId(id) {
  * @param {Buffer} data 
  */
 function processData(port, remoteAddress, data) {
-  logger.log(`Got data from ${remoteAddress} on port ${port}`, data);
+  logger.info(`Got data from ${remoteAddress} on port ${port}`, data);
   const connectionHandlers = {
     "8226": function() {
       loginDataHandler(findConnection(remoteAddress).sock, data);
@@ -104,7 +104,7 @@ function processData(port, remoteAddress, data) {
     logger.error(
       `No known handler for port ${port}, unable to handle the request from ${remoteAddress} on port ${port}, aborting.`
     );
-    logger.log("Data was: ", data.toString("hex"));
+    logger.info("Data was: ", data.toString("hex"));
     process.exit(1);
   }
 }
