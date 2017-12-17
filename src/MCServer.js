@@ -162,9 +162,9 @@ function cliSessionKey(customerId) {
       process.exit(1);
     }
     if (res == undefined) {
-      logger.log("Unable to locate session key for customerID:", customerId);
+      logger.info("Unable to locate session key for customerID:", customerId);
     } else {
-      logger.log(
+      logger.info(
         `The sessionKey for customerId ${customerId} is ${res.session_key}`
       );
     }

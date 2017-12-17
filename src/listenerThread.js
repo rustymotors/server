@@ -27,7 +27,7 @@ const logger = require("./logger.js");
 function startTCPListener(listenerPort, connectionMgr, callback) {
   const server = net.createServer(socket => {
     const remoteAddress = socket.remoteAddress;
-    logger.log(`Client ${remoteAddress} connected to port ${listenerPort}`);
+    logger.info(`Client ${remoteAddress} connected to port ${listenerPort}`);
     const con = connectionMgr.findOrNewConnection(
       remoteAddress,
       socket,
@@ -39,7 +39,7 @@ function startTCPListener(listenerPort, connectionMgr, callback) {
     }
     socket.on("end", () => {
       connectionMgr.deleteConnection(remoteAddress);
-      logger.log(
+      logger.info(
         `Client ${remoteAddress} disconnected from port ${listenerPort}`
       );
     });
@@ -55,7 +55,7 @@ function startTCPListener(listenerPort, connectionMgr, callback) {
     });
   });
   server.listen(listenerPort, "0.0.0.0", () => {
-    logger.log(`Listener started on port ${listenerPort}`);
+    logger.info(`Listener started on port ${listenerPort}`);
   });
 }
 
