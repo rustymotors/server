@@ -17,11 +17,12 @@
 const { loginDataHandler } = require("../lib/LoginServer/index.js");
 const { personaDataHandler } = require("../lib/PersonaServer/index.js");
 const { handler } = require("./TCPManager.js");
+const logger = require("./logger.js");
 
 let connections = [];
 
 class Connection {
-  constructor(id, sock) {
+  constructor(id, sock, mgr) {
     this.id = id;
     this.appID = 0;
     this.status = "INACTIVE";
@@ -29,8 +30,11 @@ class Connection {
     this.msgEvent = null;
     this.lastMsg = 0;
     this.useEncryption = 0;
-    this.enc = null;
+    this.enc = {};
+    this.enc2 = {};
     this.isSetupComplete = 0;
+    this.mgr = mgr;
+    this.inQueue = true;
   }
 }
 
@@ -40,14 +44,19 @@ class Connection {
  * @param {String} id 
  * @param {Socket} socket 
  */
-function findOrNewConnection(id, socket) {
-  const con = findConnection(id);
+function findOrNewConnection(remoteAddress, socket, mgr) {
+  const con = findConnection(remoteAddress);
   if (con != null) {
-    console.log(`I have seen connection id ${id} before`);
+    logger.log(`I have seen connections from ${remoteAddress} before`);
     con.sock = socket;
+    return con;
   } else {
-    connections.push(new Connection(id, socket));
-    console.log(`I have not seen connection id ${id} before, adding it.`);
+    const newConnection = new Connection(remoteAddress, socket, mgr);
+    logger.log(
+      `I have not seen connections from ${remoteAddress} before, adding it.`
+    );
+    connections.push(newConnection);
+    return con;
   }
 }
 
@@ -68,21 +77,20 @@ function parseConnectionId(id) {
  * @param {String} id 
  * @param {Buffer} data 
  */
-function processData(id, data) {
-  console.log(`Got data from ${id}`, data);
-  const connection = parseConnectionId(id);
+function processData(port, remoteAddress, data) {
+  logger.log(`Got data from ${remoteAddress} on port ${port}`, data);
   const connectionHandlers = {
     "8226": function() {
-      loginDataHandler(findConnection(id).sock, data);
+      loginDataHandler(findConnection(remoteAddress).sock, data);
     },
     "8228": function() {
-      personaDataHandler(findConnection(id).sock, data);
+      personaDataHandler(findConnection(remoteAddress).sock, data);
     },
     "7003": function() {
-      handler(findConnection(id), data);
+      handler(findConnection(remoteAddress), data);
     },
     "43300": function() {
-      handler(findConnection(id), data);
+      handler(findConnection(remoteAddress), data);
     },
   };
 
@@ -90,12 +98,13 @@ function processData(id, data) {
    * TODO: Create a fallback handler
    */
   if (
-    typeof connectionHandlers[connection.port] != "function" ||
-    connectionHandlers[connection.port]()
+    typeof connectionHandlers[port] != "function" ||
+    connectionHandlers[port]()
   ) {
-    console.error(
-      `No known handler for port ${connection.port}, unable to handle the request from ${connection.address}, aborting.`
+    logger.error(
+      `No known handler for port ${port}, unable to handle the request from ${remoteAddress} on port ${port}, aborting.`
     );
+    logger.log("Data was: ", data.toString("hex"));
     process.exit(1);
   }
 }
