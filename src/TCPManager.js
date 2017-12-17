@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const crypto = require("crypto");
-const util = require("./nps_utils.js");
 const logger = require("./logger.js");
 const lobby = require("./lobby.js");
 const MessageNode = require("./MessageNode.js");
@@ -244,23 +243,25 @@ In TCPManager::MessageReceived()
   ProcessInput(msg, con);
 }
 
-function getRequestCode(rawBuffer) {
-  return `${util.toHex(rawBuffer[0])}${util.toHex(rawBuffer[1])}`;
+function npsHeartbeat(socket, rawData) {
+  const packetContent = Buffer.alloc(8);
+  const packetResult = packet.buildPacket(8, 0x0127, packetContent);
+  return packetResult;
 }
 
 function lobbyDataHandler(con, rawData) {
-  const requestCode = getRequestCode(rawData);
+  const requestCode = rawData.readUInt16BE().toString(16);
 
   switch (requestCode) {
     // npsRequestGameConnectServer
-    case "0100": {
+    case "100": {
       const packetResult = lobby.npsRequestGameConnectServer(con.sock, rawData);
       socketWriteIfOpen(con.sock, packetResult);
       break;
     }
     // npsHeartbeat
-    case "0217": {
-      const packetResult = util.npsHeartbeat(con.sock, rawData);
+    case "217": {
+      const packetResult = npsHeartbeat(con.sock, rawData);
       socketWriteIfOpen(con.sock, packetResult);
       break;
     }
@@ -273,7 +274,6 @@ function lobbyDataHandler(con, rawData) {
       break;
     }
     default:
-      util.dumpRequest(con.sock, rawData, requestCode);
       logger.error(`Unknown code ${requestCode} was received on port 7003`);
   }
 }
