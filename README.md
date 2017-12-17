@@ -22,7 +22,7 @@ I'm writing this from scratch. While I'm proud of what I've done, I'm hitting th
 * 8228
 * 7003
 
-## Generate SSL cert and key
+### Generate SSL cert and key
 
 ```bash
 ./scripts/make_certs.sh
