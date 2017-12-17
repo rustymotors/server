@@ -37,7 +37,10 @@ function startServers(callback) {
     8226,
     7003,
     8227,
+    43200,
     43300,
+    43400,
+    53303,
     9000,
     9001,
     9002,
@@ -69,8 +72,8 @@ function startServers(callback) {
     ],
     err => {
       if (err) {
-        console.error(err.message);
-        console.error(err.stack);
+        logger.error(err.message);
+        logger.error(err.stack);
         process.exit(1);
       }
       // result now equals 'done'
@@ -135,7 +138,7 @@ function fetchSessionKey(customerId, callback) {
       (err, res) => {
         if (err) {
           // Unknown error
-          console.error(
+          logger.error(
             `DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`
           );
           callback(err);
@@ -154,14 +157,14 @@ function fetchSessionKey(customerId, callback) {
 function cliSessionKey(customerId) {
   fetchSessionKey(customerId, (err, res) => {
     if (err) {
-      console.error(err.message);
-      console.error(err.stack);
+      logger.error(err.message);
+      logger.error(err.stack);
       process.exit(1);
     }
     if (res == undefined) {
-      console.log("Unable to locate session key for customerID:", customerId);
+      logger.log("Unable to locate session key for customerID:", customerId);
     } else {
-      console.log(
+      logger.log(
         `The sessionKey for customerId ${customerId} is ${res.session_key}`
       );
     }

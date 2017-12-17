@@ -15,6 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const net = require("net");
+const { sendPacketOkLogin } = require("./TCPManager.js");
+const logger = require("./logger.js");
 
 /**
  * Given a port and a connection manager object, create a new TCP socket listener for that port
@@ -23,30 +25,37 @@ const net = require("net");
  * @param {Function} callback 
  */
 function startTCPListener(listenerPort, connectionMgr, callback) {
-  const server = net.createServer(c => {
-    const remoteAddress = c.remoteAddress;
-    const id = `${remoteAddress}_${listenerPort}`;
-    console.log(`Client ${remoteAddress} connected to port ${listenerPort}`);
-    connectionMgr.findOrNewConnection(id, c);
-    c.on("end", () => {
-      connectionMgr.deleteConnection(id);
-      console.log(
+  const server = net.createServer(socket => {
+    const remoteAddress = socket.remoteAddress;
+    logger.log(`Client ${remoteAddress} connected to port ${listenerPort}`);
+    const con = connectionMgr.findOrNewConnection(
+      remoteAddress,
+      socket,
+      connectionMgr
+    );
+    if (socket.localPort == 7003 && con.inQueue) {
+      sendPacketOkLogin(socket);
+      con.inQueue = false;
+    }
+    socket.on("end", () => {
+      connectionMgr.deleteConnection(remoteAddress);
+      logger.log(
         `Client ${remoteAddress} disconnected from port ${listenerPort}`
       );
     });
-    c.on("data", data => {
-      connectionMgr.processData(id, data);
+    socket.on("data", data => {
+      connectionMgr.processData(listenerPort, remoteAddress, data);
     });
-    c.on("error", err => {
+    socket.on("error", err => {
       if (err.code !== "ECONNRESET") {
-        console.error(err.message);
-        console.error(err.stack);
+        logger.error(err.message);
+        logger.error(err.stack);
         process.exit(1);
       }
     });
   });
   server.listen(listenerPort, "0.0.0.0", () => {
-    console.log(`Listener started on port ${listenerPort}`);
+    logger.log(`Listener started on port ${listenerPort}`);
   });
 }
 

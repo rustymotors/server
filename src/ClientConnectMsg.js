@@ -16,8 +16,19 @@
 
 const logger = require("./logger.js");
 
-function ClientConnect(info, node) {
-  logger.debug(node);
+function ClientConnectMsg(buffer) {
+  if (!(this instanceof ClientConnectMsg)) {
+    return new ClientConnectMsg(buffer);
+  }
+
+  this.msgId = buffer.readInt16LE(0);
+
+  this.customerId = buffer.readInt32LE(2);
+  this.personaId = buffer.readInt32LE(6);
+
+  this.custName = buffer.slice(10, 41).toString();
+  this.personaName = buffer.slice(42, 73).toString();
+  this.mcVersion = buffer.slice(74);
 }
 
-module.exports = ClientConnect;
+module.exports = { ClientConnectMsg };

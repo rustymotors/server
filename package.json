@@ -31,7 +31,6 @@
     "output": "test-reports/junit.xml"
   },
   "dependencies": {
-    "arc4": "^3.3.8",
     "async": "^2.5.0",
     "body-parser": "^1.17.0",
     "express": "^4.15.0",
