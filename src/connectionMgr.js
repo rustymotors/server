@@ -47,9 +47,6 @@ function findConnection(connectionId) {
     const id = connectionId.toString();
     return id === connection.id.toString();
   });
-  if (results === undefined) {
-    return null;
-  }
   return results;
 }
 
@@ -61,7 +58,7 @@ function findConnection(connectionId) {
  */
 function findOrNewConnection(remoteAddress, socket, mgr) {
   const con = findConnection(remoteAddress);
-  if (con != null) {
+  if (con !== undefined) {
     logger.info(`I have seen connections from ${remoteAddress} before`);
     con.sock = socket;
     return con;
