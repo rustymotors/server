@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+const RC4 = require("./RC4.js");
 const crypto = require("crypto");
 const logger = require("./logger.js");
 const lobby = require("./lobby.js");
@@ -86,12 +87,6 @@ function decryptCmd(con, cypherCmd) {
 }
 
 function ClientConnect(con, node) {
-  logger.debug(`
-    ~~~~~~~~~~~~~~~~~~~
-    In ClientConnect...
-    ~~~~~~~~~~~~~~~~~~~
-  `);
-
   /**
    * Let's turn it into a ClientConnectMsg
    */
@@ -117,12 +112,8 @@ function ClientConnect(con, node) {
     logger.warn("S Key: ", res.s_key);
 
     // Create the cypher and decipher only if not already set
-    if (!con.enc2.cypher & !con.enc2.decipher) {
-      const key = Buffer.from(res.s_key, "hex");
-      // const key = res.s_key;
-      const iv = Buffer.alloc(64);
-      con.enc2.cypher = crypto.createCipheriv("RC4", key, "");
-      con.enc2.decipher = crypto.createDecipheriv("RC4", key, "");
+    if (typeof con.enc2 != RC4.ARC4) {
+      con.enc2 = new RC4.ARC4(new Buffer.from(res.s_key));
     }
 
     // Create new response packet
@@ -140,11 +131,6 @@ function ClientConnect(con, node) {
 }
 
 function ProcessInput(node, conn) {
-  logger.debug(`
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  In TCPManager::ProcessInput()
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  `);
   let preDecryptMsgNo = Buffer.from([0xff, 0xff]);
 
   const msg = node.getBaseMsgHeader(node.buffer);
@@ -178,26 +164,21 @@ function ProcessInput(node, conn) {
 }
 
 function MessageReceived(msg, con) {
-  logger.debug(`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-In TCPManager::MessageReceived()
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`);
   if (!con.useEncryption && msg.flags & 0x08) {
     con.useEncryption = 1;
-    logger.debug("TCPMgr::MessageReceived() turning on encryption\n");
+    // logger.debug("TCPMgr::MessageReceived() turning on encryption\n");
   }
   // If not a Heartbeat
   if (!(msg.flags & 0x80) && con.useEncryption) {
-    logger.debug("TCPMgr::MessageReceived() Decrypt()\n");
+    // logger.debug("TCPMgr::MessageReceived() Decrypt()\n");
     if (!con.enc.decipher) {
       logger.error(`KEncrypt ->enc is NULL! Disconnecting...conId: ${con.id}`);
     }
     // If not a Heartbeat
     if (!(msg.flags & 0x80) && con.useEncryption) {
-      logger.debug(
-        "Packet is not a heartbeat, and encryption is on for this connection"
-      );
+      // logger.debug(
+      //   "Packet is not a heartbeat, and encryption is on for this connection"
+      // );
       if (!con.enc.decipher) {
         logger.error(
           `KEncrypt ->enc is NULL! Disconnecting...conId: ${con.id}`
@@ -220,11 +201,15 @@ In TCPManager::MessageReceived()
         logger.debug(
           "==================================================================="
         );
-        logger.debug(
+        logger.warn(
           "Message buffer before decrypting: ",
           msg.buffer.toString("hex")
         );
-        console.log("output:    ", con.enc2.decipher.update(msg.buffer));
+        deciphered1 = con.enc2.DecodeString(msg.buffer);
+        logger.warn("output:    ", deciphered1);
+
+        deciphered2 = con.enc.decipher.update(msg.buffer);
+        logger.warn("output:    ", deciphered2);
 
         logger.debug(
           "==================================================================="

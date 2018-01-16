@@ -55,7 +55,7 @@ function startTCPListener(listenerPort, connectionMgr, callback) {
     });
   });
   server.listen(listenerPort, "0.0.0.0", () => {
-    logger.info(`Listener started on port ${listenerPort}`);
+    // logger.info(`Listener started on port ${listenerPort}`);
   });
 }
 
