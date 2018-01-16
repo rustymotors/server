@@ -14,47 +14,45 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const net = require("net");
-const { sendPacketOkLogin } = require("./TCPManager.js");
-const logger = require("./logger.js");
+const net = require('net');
+const { sendPacketOkLogin } = require('./TCPManager.js');
+const logger = require('./logger.js');
 
 /**
  * Given a port and a connection manager object, create a new TCP socket listener for that port
- * @param {Int} listenerPort 
- * @param {connectionMgr} connectionMgr 
- * @param {Function} callback 
+ * @param {Int} listenerPort
+ * @param {connectionMgr} connectionMgr
+ * @param {Function} callback
  */
-function startTCPListener(listenerPort, connectionMgr, callback) {
-  const server = net.createServer(socket => {
-    const remoteAddress = socket.remoteAddress;
+function startTCPListener(listenerPort, connectionMgr) {
+  const server = net.createServer((socket) => {
+    const { remoteAddress } = socket;
     logger.info(`Client ${remoteAddress} connected to port ${listenerPort}`);
     const con = connectionMgr.findOrNewConnection(
       remoteAddress,
       socket,
-      connectionMgr
+      connectionMgr,
     );
-    if (socket.localPort == 7003 && con.inQueue) {
+    if (socket.localPort === 7003 && con.inQueue) {
       sendPacketOkLogin(socket);
       con.inQueue = false;
     }
-    socket.on("end", () => {
+    socket.on('end', () => {
       connectionMgr.deleteConnection(remoteAddress);
-      logger.info(
-        `Client ${remoteAddress} disconnected from port ${listenerPort}`
-      );
+      logger.info(`Client ${remoteAddress} disconnected from port ${listenerPort}`);
     });
-    socket.on("data", data => {
+    socket.on('data', (data) => {
       connectionMgr.processData(listenerPort, remoteAddress, data);
     });
-    socket.on("error", err => {
-      if (err.code !== "ECONNRESET") {
+    socket.on('error', (err) => {
+      if (err.code !== 'ECONNRESET') {
         logger.error(err.message);
         logger.error(err.stack);
         process.exit(1);
       }
     });
   });
-  server.listen(listenerPort, "0.0.0.0", () => {
+  server.listen(listenerPort, '0.0.0.0', () => {
     // logger.info(`Listener started on port ${listenerPort}`);
   });
 }
