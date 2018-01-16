@@ -16,7 +16,7 @@
     "url": "git@github.com:drazisil/mco-server.git"
   },
   "engines": {
-    "node": "~8.9.0"
+    "node": ">=8.9.0"
   },
   "jest": {
     "coverageDirectory": "./coverage/",
