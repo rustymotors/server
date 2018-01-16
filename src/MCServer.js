@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
+const readline = require('readline');
 const waterfall = require('async/waterfall');
 const logger = require('./logger.js');
 const patchServer = require('../lib/WebServer/index.js');
@@ -77,10 +79,24 @@ function startServers(callback) {
   );
 }
 
+function startCLI() {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  rl.on('line', (input) => {
+    console.log(`Received: ${input}`);
+    if (input === 'exit') {
+      console.log('Goodbye!');
+      process.exit();
+    }
+  });
+}
+
 function run() {
   // Connect to database
   // Start the server listeners
-  waterfall([database.createDB, startServers]);
+  waterfall([database.createDB, startServers, startCLI]);
 }
 
 module.exports = { run };
