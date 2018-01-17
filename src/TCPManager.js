@@ -232,6 +232,7 @@ function lobbyDataHandler(con, rawData) {
     default:
       logger.error(`Unknown code ${requestCode} was received on port 7003`);
   }
+  return con;
 }
 
 /**
