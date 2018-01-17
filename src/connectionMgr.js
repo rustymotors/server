@@ -43,15 +43,15 @@ class Connection {
  * @param {String} connectionId
  */
 function findConnection(connectionId) {
-  const results = connections.find((connection) => {
-    const id = connectionId.toString();
-    return id === connection.id.toString();
-  });
+  const results = connections.find(connection => connectionId.toString() === connection.id.toString());
   return results;
 }
 
-function updateConnectionByAddress(connectionId, newConnection) {
-  
+function updateConnectionById(connectionId, newConnection) {
+  const index = connections.findIndex(connection => connection.id === connectionId);
+  console.log(`Located connection at index ${index}, deleting...`);
+  connections.splice(index, 1);
+  connections.push(newConnection);
 }
 
 /**
@@ -82,11 +82,11 @@ function processData(port, remoteAddress, data) {
   logger.info(`Got data from ${remoteAddress} on port ${port}`, data);
 
   if (port === 8226) {
-    return loginDataHandler(findConnection(remoteAddress).sock, data);
+    return loginDataHandler(findConnection(remoteAddress), data);
   }
 
   if (port === 8228) {
-    return personaDataHandler(findConnection(remoteAddress).sock, data);
+    return personaDataHandler(findConnection(remoteAddress), data);
   }
 
   if (port === 7003) {
@@ -127,4 +127,5 @@ module.exports = {
   dumpConnections,
   findConnection,
   deleteConnection,
+  updateConnectionById,
 };

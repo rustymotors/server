@@ -110,9 +110,7 @@ function ClientConnect(con, node) {
 
     const connectionWithKey = con;
 
-    const iv = Buffer.alloc(8);
-
-    connectionWithKey.enc = crypto.createCipheriv('rc4', Buffer.from(res.s_key), iv);
+    connectionWithKey.enc = crypto.createCipheriv('rc4', res.s_key, '');
 
     // Create new response packet
     // TODO: Do this cleaner
@@ -150,18 +148,18 @@ function ProcessInput(node, conn) {
 
 function MessageReceived(msg, con) {
   const newConnection = con;
-  if (!newConnection.useEncryption && msg.flags && 0x08) {
+  if (!newConnection.useEncryption && (msg.flags & 0x08)) {
     newConnection.useEncryption = 1;
     logger.debug('TCPMgr::MessageReceived() turning on encryption\n');
   }
   // If not a Heartbeat
-  if (!(msg.flags && 0x80) && newConnection.useEncryption) {
+  if (!(msg.flags & 0x80) && newConnection.useEncryption) {
     // logger.debug("TCPMgr::MessageReceived() Decrypt()\n");
     if (!newConnection.enc.decipher) {
       logger.error(`KEncrypt ->enc is NULL! Disconnecting...conId: ${newConnection.id}`);
     }
     // If not a Heartbeat
-    if (!(msg.flags && 0x80) && newConnection.useEncryption) {
+    if (!(msg.flags & 0x80) && newConnection.useEncryption) {
       // logger.debug(
       //   "Packet is not a heartbeat, and encryption is on for this connection"
       // );

@@ -14,25 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const crypto = require("crypto");
-const logger = require("./logger.js");
-const packet = require("./packet.js");
-const MsgPack = require("./MsgPack.js");
+const crypto = require('crypto');
+const logger = require('./logger.js');
+const packet = require('./packet.js');
+// const MsgPack = require('./MsgPack.js');
 
-const database = require("../lib/database/index.js");
+const database = require('../lib/database/index.js');
 
 /**
  * Handle a request to connect to a game server packet
- * @param {Socket} socket 
- * @param {Buffer} rawData 
+ * @param {Socket} socket
+ * @param {Buffer} rawData
  */
 function npsRequestGameConnectServer(socket, rawData) {
-  logger.info("*** npsRequestGameConnectServer ****");
-  logger.debug("Packet as hex: ", rawData.toString("hex"));
-  logger.info("************************************");
+  logger.info('*** npsRequestGameConnectServer ****');
+  logger.debug('Packet as hex: ', rawData.toString('hex'));
+  logger.info('************************************');
 
-  // Load the received data into a MsgPack class
-  const msgPack = MsgPack(rawData);
+  // // Load the received data into a MsgPack class
+  // const msgPack = MsgPack(rawData);
 
   // Return a _NPS_UserInfo structure - 40
   const packetContent = Buffer.alloc(38);
@@ -45,7 +45,7 @@ function npsRequestGameConnectServer(socket, rawData) {
 
   // User name (32)
   const name = Buffer.alloc(32);
-  Buffer.from("Doctor Brown", "utf8").copy(name);
+  Buffer.from('Doctor Brown', 'utf8').copy(name);
   name.copy(packetContent, 6);
 
   // UserData - User controllable data (64)
@@ -58,43 +58,41 @@ function npsRequestGameConnectServer(socket, rawData) {
 }
 
 function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
-  database.db.serialize(function() {
+  database.db.serialize(() => {
     database.db.get(
-      "SELECT session_key, s_key FROM sessions WHERE remote_address = $1",
+      'SELECT session_key, s_key FROM sessions WHERE remote_address = $1',
       [remoteAddress],
       (err, res) => {
         if (err) {
           // Unknown error
-          logger.error(
-            `DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`
-          );
+          logger.error(`DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`);
           callback(err);
         } else {
           callback(null, res);
         }
-      }
+      },
     );
   });
 }
 
 /**
  * Takes an encrypted command packet and returns the decrypted bytes
- * @param {Connection} con 
- * @param {Buffer} cypherCmd 
+ * @param {Connection} con
+ * @param {Buffer} cypherCmd
  */
 function decryptCmd(con, cypherCmd) {
   const s = con;
   const decryptedCommand = s.enc.decipher.update(cypherCmd);
   s.decryptedCmd = decryptedCommand;
-  logger.warn(`Enciphered Cmd: ${cypherCmd.toString("hex")}`);
-  logger.warn(`Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`);
+  logger.warn(`Enciphered Cmd: ${cypherCmd.toString('hex')}`);
+  logger.warn(`Deciphered Cmd: ${s.decryptedCmd.toString('hex')}`);
   return s;
 }
 
 /**
  * Takes an plaintext command packet and return the encrypted bytes
- * @param {Connection} con 
- * @param {Buffer} cypherCmd 
+ * @param {Connection} con
+ * @param {Buffer} cypherCmd
  */
 function encryptCmd(con, cypherCmd) {
   const s = con;
@@ -104,8 +102,8 @@ function encryptCmd(con, cypherCmd) {
 
 /**
  * Takes a plaintext command packet, encrypts it, and sends it across the connection's socket
- * @param {Connection} con 
- * @param {Buffer} data 
+ * @param {Connection} con
+ * @param {Buffer} data
  */
 function sendCommand(con, data) {
   fetchSessionKeyByRemoteAddress(con.sock.remoteAddress, (err, res) => {
@@ -115,21 +113,21 @@ function sendCommand(con, data) {
       process.exit(1);
     }
 
-    let s = con;
+    const s = con;
 
     // Create the cypher and decipher only if not already set
-    const key = Buffer.from(res.s_key, "hex");
-    if (!s.enc.cypher & !s.enc.decipher) {
+    const key = Buffer.from(res.s_key, 'hex');
+    if (!s.enc.cypher && !s.enc.decipher) {
       const desIV = Buffer.alloc(8);
       s.enc.cypher = crypto
-        .createCipheriv("des-cbc", key, desIV)
+        .createCipheriv('des-cbc', key, desIV)
         .setAutoPadding(false);
       s.enc.decipher = crypto
-        .createDecipheriv("des-cbc", key, desIV)
+        .createDecipheriv('des-cbc', key, desIV)
         .setAutoPadding(false);
     }
 
-    const cmd = decryptCmd(s, new Buffer(data.slice(4)));
+    decryptCmd(s, Buffer.from(data.slice(4)));
 
     // Create the packet content
     const packetContent = crypto.randomBytes(375);

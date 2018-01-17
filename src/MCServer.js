@@ -79,21 +79,31 @@ function startServers(callback) {
   );
 }
 
+function handleCLICommand(cmd, args) {
+  const loweredCmd = cmd.toLowerCase();
+  console.log(`Received: ${loweredCmd}`);
+  if (loweredCmd === 'findconnection') {
+    console.log(connectionMgr.findConnection(args[0]));
+  }
+
+  if (loweredCmd === 'dumpconnections') {
+    console.log(connectionMgr.dumpConnections());
+  }
+  if (loweredCmd === 'exit') {
+    console.log('Goodbye!');
+    process.exit();
+  }
+}
+
 function startCLI() {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
   rl.on('line', (input) => {
-    const loweredInput = input.toLowerCase();
-    console.log(`Received: ${loweredInput}`);
-    if (loweredInput === 'dumpconnections') {
-      console.log(connectionMgr.dumpConnections());
-    }
-    if (loweredInput === 'exit') {
-      console.log('Goodbye!');
-      process.exit();
-    }
+    const args = input.split(' ');
+    const cmd = args.shift();
+    handleCLICommand(cmd, args);
   });
 }
 

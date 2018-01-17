@@ -42,7 +42,8 @@ function startTCPListener(listenerPort, connectionMgr) {
       logger.info(`Client ${remoteAddress} disconnected from port ${listenerPort}`);
     });
     socket.on('data', (data) => {
-      connectionMgr.processData(listenerPort, remoteAddress, data);
+      const newConnection = connectionMgr.processData(listenerPort, remoteAddress, data);
+      connectionMgr.updateConnectionById(remoteAddress, newConnection);
     });
     socket.on('error', (err) => {
       if (err.code !== 'ECONNRESET') {
