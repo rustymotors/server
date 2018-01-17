@@ -50,6 +50,10 @@ function findConnection(connectionId) {
   return results;
 }
 
+function updateConnectionByAddress(connectionId, newConnection) {
+  
+}
+
 /**
  * Create new connection if when haven't seen this socket before,
  * or update the socket on the connection object if we have.
@@ -76,32 +80,29 @@ function findOrNewConnection(remoteAddress, socket, mgr) {
  */
 function processData(port, remoteAddress, data) {
   logger.info(`Got data from ${remoteAddress} on port ${port}`, data);
-  const connectionHandlers = {
-    8226: () => {
-      loginDataHandler(findConnection(remoteAddress).sock, data);
-    },
-    8228: () => {
-      personaDataHandler(findConnection(remoteAddress).sock, data);
-    },
-    7003: () => {
-      handler(findConnection(remoteAddress), data);
-    },
-    43300: () => {
-      handler(findConnection(remoteAddress), data);
-    },
-  };
+
+  if (port === 8226) {
+    return loginDataHandler(findConnection(remoteAddress).sock, data);
+  }
+
+  if (port === 8228) {
+    return personaDataHandler(findConnection(remoteAddress).sock, data);
+  }
+
+  if (port === 7003) {
+    return handler(findConnection(remoteAddress), data);
+  }
+
+  if (port === 43300) {
+    return handler(findConnection(remoteAddress), data);
+  }
 
   /**
    * TODO: Create a fallback handler
    */
-  if (
-    typeof connectionHandlers[port] !== 'function' ||
-    connectionHandlers[port]()
-  ) {
-    logger.error(`No known handler for port ${port}, unable to handle the request from ${remoteAddress} on port ${port}, aborting.`);
-    logger.info('Data was: ', data.toString('hex'));
-    process.exit(1);
-  }
+  logger.error(`No known handler for port ${port}, unable to handle the request from ${remoteAddress} on port ${port}, aborting.`);
+  logger.info('Data was: ', data.toString('hex'));
+  process.exit(1);
 }
 
 /**

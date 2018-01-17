@@ -85,8 +85,12 @@ function startCLI() {
     output: process.stdout,
   });
   rl.on('line', (input) => {
-    console.log(`Received: ${input}`);
-    if (input === 'exit') {
+    const loweredInput = input.toLowerCase();
+    console.log(`Received: ${loweredInput}`);
+    if (loweredInput === 'dumpconnections') {
+      console.log(connectionMgr.dumpConnections());
+    }
+    if (loweredInput === 'exit') {
       console.log('Goodbye!');
       process.exit();
     }
