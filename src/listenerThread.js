@@ -22,7 +22,6 @@ const logger = require('./logger.js');
  * Given a port and a connection manager object, create a new TCP socket listener for that port
  * @param {Int} listenerPort
  * @param {connectionMgr} connectionMgr
- * @param {Function} callback
  */
 function startTCPListener(listenerPort, connectionMgr) {
   const server = net.createServer((socket) => {

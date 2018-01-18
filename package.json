@@ -36,7 +36,7 @@
     "body-parser": "^1.17.0",
     "express": "^4.15.0",
     "node-rsa": "^0.4.2",
-    "sqlite": "^2.8.0",
+    "sqlite": "^2.9.1",
     "ssl-config": "^1.0.0",
     "winston": "^2.2.0",
     "winston-daily-rotate-file": "^1.1.4"

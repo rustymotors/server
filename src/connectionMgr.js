@@ -43,13 +43,19 @@ class Connection {
  * @param {String} connectionId
  */
 function findConnection(connectionId) {
-  const results = connections.find(connection => connectionId.toString() === connection.id.toString());
+  const results = connections.find((connection) => {
+    console.log(`ConnectionId: ${connection.id}`);
+    return connectionId.toString() === connection.id.toString();
+  });
   return results;
 }
 
 function updateConnectionById(connectionId, newConnection) {
+  if (newConnection === undefined) {
+    throw new Error('moooooooooooo!');
+  }
   const index = connections.findIndex(connection => connection.id === connectionId);
-  console.log(`Located connection at index ${index}, deleting...`);
+  logger.debug(`Located connection at index ${index}, deleting...`);
   connections.splice(index, 1);
   connections.push(newConnection);
 }

@@ -57,24 +57,6 @@ function npsRequestGameConnectServer(socket, rawData) {
   return packetResult;
 }
 
-function fetchSessionKeyByRemoteAddress(remoteAddress, callback) {
-  database.db.serialize(() => {
-    database.db.get(
-      'SELECT session_key, s_key FROM sessions WHERE remote_address = $1',
-      [remoteAddress],
-      (err, res) => {
-        if (err) {
-          // Unknown error
-          logger.error(`DATABASE ERROR: Unable to retrieve sessionKey: ${err.message}`);
-          callback(err);
-        } else {
-          callback(null, res);
-        }
-      },
-    );
-  });
-}
-
 /**
  * Takes an encrypted command packet and returns the decrypted bytes
  * @param {Connection} con
@@ -106,49 +88,52 @@ function encryptCmd(con, cypherCmd) {
  * @param {Buffer} data
  */
 function sendCommand(con, data) {
-  fetchSessionKeyByRemoteAddress(con.sock.remoteAddress, (err, res) => {
-    if (err) {
-      logger.error(err.message);
-      logger.error(err.stack);
-      process.exit(1);
-    }
+  return new Promise((resolve) => {
+    database.fetchSessionKeyByRemoteAddress(con.sock.remoteAddress)
+      .catch((err) => {
+        logger.error(err.message);
+        logger.error(err.stack);
+        process.exit(1);
+      })
+      .then((res) => {
+        const s = con;
 
-    const s = con;
+        // Create the cypher and decipher only if not already set
+        const key = Buffer.from(res.s_key, 'hex');
+        if (!s.enc.cypher && !s.enc.decipher) {
+          const desIV = Buffer.alloc(8);
+          s.enc.cypher = crypto
+            .createCipheriv('des-cbc', key, desIV)
+            .setAutoPadding(false);
+          s.enc.decipher = crypto
+            .createDecipheriv('des-cbc', key, desIV)
+            .setAutoPadding(false);
+        }
 
-    // Create the cypher and decipher only if not already set
-    const key = Buffer.from(res.s_key, 'hex');
-    if (!s.enc.cypher && !s.enc.decipher) {
-      const desIV = Buffer.alloc(8);
-      s.enc.cypher = crypto
-        .createCipheriv('des-cbc', key, desIV)
-        .setAutoPadding(false);
-      s.enc.decipher = crypto
-        .createDecipheriv('des-cbc', key, desIV)
-        .setAutoPadding(false);
-    }
+        decryptCmd(s, Buffer.from(data.slice(4)));
 
-    decryptCmd(s, Buffer.from(data.slice(4)));
+        // Create the packet content
+        const packetContent = crypto.randomBytes(375);
 
-    // Create the packet content
-    const packetContent = crypto.randomBytes(375);
+        // Add the response code
+        packetContent.writeUInt16BE(0x0219, 367);
+        packetContent.writeUInt16BE(0x0101, 369);
+        packetContent.writeUInt16BE(0x022c, 371);
 
-    // Add the response code
-    packetContent.writeUInt16BE(0x0219, 367);
-    packetContent.writeUInt16BE(0x0101, 369);
-    packetContent.writeUInt16BE(0x022c, 371);
+        // Build the packet
+        const packetResult = packet.buildPacket(32, 0x0229, packetContent);
 
-    // Build the packet
-    const packetResult = packet.buildPacket(32, 0x0229, packetContent);
+        const cmdEncrypted = encryptCmd(s, packetResult);
 
-    const cmdEncrypted = encryptCmd(s, packetResult);
+        cmdEncrypted.encryptedCommand = Buffer.concat([
+          Buffer.from([0x11, 0x01]),
+          cmdEncrypted.encryptedCommand,
+        ]);
 
-    cmdEncrypted.encryptedCommand = Buffer.concat([
-      Buffer.from([0x11, 0x01]),
-      cmdEncrypted.encryptedCommand,
-    ]);
-
-    con.sock.write(cmdEncrypted.encryptedCommand);
-    return con;
+        // FIXME: Figure out why sometimes the socket is closed at this point
+        con.sock.write(cmdEncrypted.encryptedCommand);
+        resolve(s);
+      });
   });
 }
 

@@ -110,7 +110,9 @@ function startCLI() {
 function run() {
   // Connect to database
   // Start the server listeners
-  waterfall([database.createDB, startServers, startCLI]);
+  database.createDB()
+    .then(waterfall([startServers, startCLI]))
+    .catch((err) => { throw err; });
 }
 
 module.exports = { run };
