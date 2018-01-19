@@ -84,7 +84,7 @@ function findOrNewConnection(remoteAddress, socket, mgr) {
  * @param {String} id
  * @param {Buffer} data
  */
-function processData(port, remoteAddress, data) {
+async function processData(port, remoteAddress, data) {
   logger.info(`Got data from ${remoteAddress} on port ${port}`, data);
 
   if (port === 8226) {
@@ -109,6 +109,7 @@ function processData(port, remoteAddress, data) {
   logger.error(`No known handler for port ${port}, unable to handle the request from ${remoteAddress} on port ${port}, aborting.`);
   logger.info('Data was: ', data.toString('hex'));
   process.exit(1);
+  return null;
 }
 
 /**
