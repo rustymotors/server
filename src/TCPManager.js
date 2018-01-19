@@ -83,7 +83,10 @@ function ClientConnect(con, node) {
 
     logger.debug(`Looking up the session key for ${con.id}...`);
     database.fetchSessionKeyByRemoteAddress(con.sock.remoteAddress)
-      .catch(err => reject(err))
+      .catch((err) => {
+        logger.error('Error: ', err);
+        return reject(err);
+      })
       .then((res) => {
         logger.warn('S Key: ', res.s_key);
 
@@ -103,13 +106,15 @@ function ClientConnect(con, node) {
           console.log('connectionWithKey: ', connectionWithKey);
           resolve(connectionWithKey);
         } catch (err) {
-          reject(err);
+          return reject(err);
         }
       });
+    logger.warn('ClientConnect: Hopefully after fetching key');
   });
 }
 
 function ProcessInput(node, conn) {
+  console.trace('=== ProcessInput:');
   return new Promise((resolve) => {
     const preDecryptMsgNo = Buffer.from([0xff, 0xff]);
 
@@ -119,18 +124,16 @@ function ProcessInput(node, conn) {
     logger.debug('currentMsgNo: ', currentMsgNo);
 
     if (MSG_STRING(currentMsgNo) === 'MC_CLIENT_CONNECT_MSG') {
-      logger.info((node, conn, ''));
+
       ClientConnect(conn, node)
         .then((newConnection) => {
           console.log('This is a good connection: ', newConnection);
-          return resolve(newConnection);
+          resolve(newConnection);
         }).catch((err) => {
           logger.error('There was an err: ', err);
           throw err;
         });
     } else {
-      logger.error('HOW ARE YOU GETTING HERE!?');
-
       // We should not do this
       // FIXME:We SHOULD NOT DO THIS
       socketWriteIfOpen(conn.sock, node.rawBuffer);
@@ -201,7 +204,6 @@ function MessageReceived(msg, con) {
       logger.error('ERROR!: ', err);
       throw err;
     });
-  console.log('fuu?');
 }
 
 function npsHeartbeat(socket, rawData) {
@@ -274,7 +276,7 @@ function handler(con, rawData) {
     logger.info('=============================================');
 
     const newConnection = MessageReceived(messageNode, con);
-    console.log('newConnection from Handler: ', newConnection);
+    console.trace('newConnection from Handler: ', newConnection);
     return newConnection;
   }
   logger.debug('No valid MCOTS header signature detected, sending to Lobby');
