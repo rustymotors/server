@@ -41,8 +41,13 @@ function startTCPListener(listenerPort, connectionMgr) {
       logger.info(`Client ${remoteAddress} disconnected from port ${listenerPort}`);
     });
     socket.on('data', async (data) => {
-      const newConnection = await connectionMgr.processData(listenerPort, remoteAddress, data);
-      connectionMgr.updateConnectionById(remoteAddress, newConnection);
+      try {
+        const newConnection = await connectionMgr.processData(listenerPort, remoteAddress, data);
+        connectionMgr.updateConnectionById(remoteAddress, newConnection);
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
     });
     socket.on('error', (err) => {
       if (err.code !== 'ECONNRESET') {
