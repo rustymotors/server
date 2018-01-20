@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const MessageNode = require("../src/MessageNode.js");
+const MessageNode = require('../src/MessageNode.js');
 
 const packet = Buffer.from([
   0x00,
@@ -41,6 +41,6 @@ const packet = Buffer.from([
   0x00,
 ]);
 
-test("packet is a MCOTS packet", () => {
+test('packet is a MCOTS packet', () => {
   expect(MessageNode.MessageNode(packet).isMCOTS()).toBe(true);
 });

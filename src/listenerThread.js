@@ -28,7 +28,7 @@ function startTCPListener(listenerPort, connectionMgr) {
     // Received a new connection
     // Turn it into a connection object
     const connection = connectionMgr.findOrNewConnection(socket);
-    
+
     const { remoteAddress } = socket;
     logger.info(`Client ${remoteAddress} connected to port ${listenerPort}`);
     if (socket.localPort === 7003 && connection.inQueue) {

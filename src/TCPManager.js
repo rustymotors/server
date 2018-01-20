@@ -1,5 +1,3 @@
-
-
 // mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 
@@ -21,7 +19,7 @@ const logger = require('./logger.js');
 const lobby = require('./lobby.js');
 const packet = require('./packet');
 const MessageNode = require('./MessageNode.js');
-const ClientConnectMsg = require('./ClientConnectMsg.js');
+// const ClientConnectMsg = require('./ClientConnectMsg.js');
 const database = require('../lib/database/index.js');
 
 function socketWriteIfOpen(sock, data) {
@@ -69,7 +67,8 @@ async function ClientConnect(con, node) {
   /**
    * Let's turn it into a ClientConnectMsg
    */
-  const newMsg = ClientConnectMsg.ClientConnectMsg(node.buffer);
+  // Not currently using this
+  // const newMsg = ClientConnectMsg.ClientConnectMsg(node.buffer);
 
   // newMsg.dumpPacket();
 

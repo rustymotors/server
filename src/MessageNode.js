@@ -16,9 +16,9 @@
 
 const logger = require('./logger.js');
 
-function msgHead(header) {
-  if (!(this instanceof msgHead)) {
-    return new msgHead(header);
+function MsgHead(header) {
+  if (!(this instanceof MsgHead)) {
+    return new MsgHead(header);
   }
 
   this.length = header.readInt16LE();
@@ -62,7 +62,7 @@ function MessageNode(packet) {
 MessageNode.prototype.setMsgHeader = function setMsgHeader(packet) {
   const header = Buffer.alloc(6);
   packet.copy(header, 0, 0, 6);
-  this.header = msgHead(header);
+  this.header = MsgHead(header);
 };
 
 MessageNode.prototype.getBaseMsgHeader = function getBaseMsgHeader(packet) {

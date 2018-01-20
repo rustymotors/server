@@ -44,7 +44,8 @@ class Connection {
  */
 function findConnection(connectionId) {
   const results = connections.find((connection) => {
-    return connectionId.toString() === connection.id.toString();
+    const match = connectionId.toString() === connection.id.toString();
+    return match;
   });
   return results;
 }
