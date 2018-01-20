@@ -81,8 +81,8 @@ async function ClientConnect(con, node) {
     const connectionWithKey = con;
 
     try {
-      connectionWithKey.enc.encipher = crypto.createCipheriv('rc4', res.session_key, '');
-      connectionWithKey.enc.decipher = crypto.createDecipheriv('rc4', res.session_key, '');
+      connectionWithKey.enc2.cypher = crypto.createCipheriv('rc4', res.session_key, '');
+      connectionWithKey.enc2.decipher = crypto.createDecipheriv('rc4', res.session_key, '');
 
       // Create new response packet
       // TODO: Do this cleaner
@@ -160,6 +160,8 @@ async function MessageReceived(msg, con) {
         );
         const deciphered = newConnection.enc.decipher.update(msg.buffer);
         logger.warn('output:    ', deciphered);
+        const deciphered2 = newConnection.enc2.decipher.update(msg.buffer);
+        logger.warn('output2:    ', deciphered2);
 
         logger.debug('===================================================================');
         return newConnection;
