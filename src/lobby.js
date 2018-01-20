@@ -26,7 +26,7 @@ const database = require('../lib/database/index.js');
  * @param {Socket} socket
  * @param {Buffer} rawData
  */
-function npsRequestGameConnectServer(socket, rawData) {
+async function npsRequestGameConnectServer(socket, rawData) {
   logger.info('*** npsRequestGameConnectServer ****');
   logger.debug('Packet as hex: ', rawData.toString('hex'));
   logger.info('************************************');
@@ -87,54 +87,44 @@ function encryptCmd(con, cypherCmd) {
  * @param {Connection} con
  * @param {Buffer} data
  */
-function sendCommand(con, data) {
-  return new Promise((resolve) => {
-    database.fetchSessionKeyByRemoteAddress(con.sock.remoteAddress)
-      .catch((err) => {
-        logger.error(err.message);
-        logger.error(err.stack);
-        process.exit(1);
-      })
-      .then((res) => {
-        const s = con;
+async function sendCommand(con, data) {
+  const keys = await database.fetchSessionKeyByRemoteAddress(con.sock.remoteAddress);
+  const s = con;
 
-        // Create the cypher and decipher only if not already set
-        const key = Buffer.from(res.s_key, 'hex');
-        if (!s.enc.cypher && !s.enc.decipher) {
-          const desIV = Buffer.alloc(8);
-          s.enc.cypher = crypto
-            .createCipheriv('des-cbc', key, desIV)
-            .setAutoPadding(false);
-          s.enc.decipher = crypto
-            .createDecipheriv('des-cbc', key, desIV)
-            .setAutoPadding(false);
-        }
+  // Create the cypher and decipher only if not already set
+  const key = Buffer.from(keys.s_key, 'hex');
+  if (!s.enc.cypher && !s.enc.decipher) {
+    const desIV = Buffer.alloc(8);
+    s.enc.cypher = crypto
+      .createCipheriv('des-cbc', key, desIV)
+      .setAutoPadding(false);
+    s.enc.decipher = crypto
+      .createDecipheriv('des-cbc', key, desIV)
+      .setAutoPadding(false);
+  }
 
-        decryptCmd(s, Buffer.from(data.slice(4)));
+  decryptCmd(s, Buffer.from(data.slice(4)));
 
-        // Create the packet content
-        const packetContent = crypto.randomBytes(375);
+  // Create the packet content
+  const packetContent = crypto.randomBytes(375);
 
-        // Add the response code
-        packetContent.writeUInt16BE(0x0219, 367);
-        packetContent.writeUInt16BE(0x0101, 369);
-        packetContent.writeUInt16BE(0x022c, 371);
+  // Add the response code
+  packetContent.writeUInt16BE(0x0219, 367);
+  packetContent.writeUInt16BE(0x0101, 369);
+  packetContent.writeUInt16BE(0x022c, 371);
 
-        // Build the packet
-        const packetResult = packet.buildPacket(32, 0x0229, packetContent);
+  // Build the packet
+  const packetResult = packet.buildPacket(32, 0x0229, packetContent);
 
-        const cmdEncrypted = encryptCmd(s, packetResult);
+  const cmdEncrypted = encryptCmd(s, packetResult);
 
-        cmdEncrypted.encryptedCommand = Buffer.concat([
-          Buffer.from([0x11, 0x01]),
-          cmdEncrypted.encryptedCommand,
-        ]);
+  cmdEncrypted.encryptedCommand = Buffer.concat([
+    Buffer.from([0x11, 0x01]),
+    cmdEncrypted.encryptedCommand,
+  ]);
 
-        // FIXME: Figure out why sometimes the socket is closed at this point
-        con.sock.write(cmdEncrypted.encryptedCommand);
-        resolve(s);
-      });
-  });
+
+  return cmdEncrypted;
 }
 
 module.exports = {

@@ -43,7 +43,6 @@ class Connection {
  */
 function findConnection(connectionId) {
   const results = connections.find((connection) => {
-    console.log(`ConnectionId: ${connection.id}`);
     return connectionId.toString() === connection.id.toString();
   });
   return results;
@@ -51,10 +50,9 @@ function findConnection(connectionId) {
 
 function updateConnectionById(connectionId, newConnection) {
   if (newConnection === undefined) {
-    throw new Error('moooooooooooo!');
+    throw new Error('Undefined connection');
   }
   const index = connections.findIndex(connection => connection.id === connectionId);
-  logger.debug(`Located connection at index ${index}, deleting...`);
   connections.splice(index, 1);
   connections.push(newConnection);
 }
@@ -65,15 +63,17 @@ function updateConnectionById(connectionId, newConnection) {
  * @param {String} id
  * @param {Socket} socket
  */
-function findOrNewConnection(remoteAddress, socket, mgr) {
+function findOrNewConnection(socket) {
+  const { remoteAddress } = socket;
   const con = findConnection(remoteAddress);
   if (con !== undefined) {
-    logger.info(`I have seen connections from ${remoteAddress} before`);
+    // logger.info(`I have seen connections from ${remoteAddress} before`);
     con.sock = socket;
     return con;
   }
-  const newConnection = new Connection(remoteAddress, socket, mgr);
-  logger.info(`I have not seen connections from ${remoteAddress} before, adding it.`);
+  const connectionManager = this;
+  const newConnection = new Connection(remoteAddress, socket, connectionManager);
+  // logger.info(`I have not seen connections from ${remoteAddress} before, adding it.`);
   connections.push(newConnection);
   return newConnection;
 }
@@ -84,7 +84,7 @@ function findOrNewConnection(remoteAddress, socket, mgr) {
  * @param {Buffer} data
  */
 async function processData(port, remoteAddress, data) {
-  logger.info(`Got data from ${remoteAddress} on port ${port}`, data);
+  logger.info(`Connection Manager: Got data from ${remoteAddress} on port ${port}`, data);
 
   if (port === 8226) {
     return loginDataHandler(findConnection(remoteAddress), data);
@@ -123,8 +123,8 @@ function dumpConnections() {
  * FIXME: Doesn't actually seem to work
  * @param {String} connectionId
  */
-function deleteConnection(connectionId) {
-  connections.filter(conn => conn.id !== connectionId);
+function deleteConnection(connection) {
+  connections.filter(conn => conn.id !== connection.id);
 }
 
 module.exports = {
