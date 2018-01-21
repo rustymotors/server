@@ -45,11 +45,11 @@ function startTCPListener(listenerPort, connectionMgr) {
           timestamp: Date.now(),
           remoteAddress,
           listenerPort,
+          connection,
           data,
         };
         // Dump the raw packet
-        logger.debug(rawPacket);
-        const newConnection = await connectionMgr.processData(connection, rawPacket);
+        const newConnection = await connectionMgr.processData(rawPacket);
         connectionMgr.updateConnectionById(remoteAddress, newConnection);
       } catch (error) {
         console.error(error);
