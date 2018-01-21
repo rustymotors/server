@@ -24,20 +24,20 @@ const logger = require('./logger.js');
  * @param {connectionMgr} connectionMgr
  */
 function startTCPListener(listenerPort, connectionMgr) {
-  const server = net.createServer((socket) => {
+  net.createServer((socket) => {
     // Received a new connection
     // Turn it into a connection object
     const connection = connectionMgr.findOrNewConnection(socket);
 
     const { remoteAddress } = socket;
-    logger.info(`Client ${remoteAddress} connected to port ${listenerPort}`);
+    // logger.info(`Client ${remoteAddress} connected to port ${listenerPort}`);
     if (socket.localPort === 7003 && connection.inQueue) {
       sendPacketOkLogin(socket);
       connection.inQueue = false;
     }
     socket.on('end', () => {
       connectionMgr.deleteConnection(connection);
-      logger.info(`Client ${remoteAddress} disconnected from port ${listenerPort}`);
+      // logger.info(`Client ${remoteAddress} disconnected from port ${listenerPort}`);
     });
     socket.on('data', async (data) => {
       try {
@@ -63,8 +63,7 @@ function startTCPListener(listenerPort, connectionMgr) {
         process.exit(1);
       }
     });
-  });
-  server.listen(listenerPort, '0.0.0.0', () => {
+  }).listen(listenerPort, '0.0.0.0', () => {
     // logger.info(`Listener started on port ${listenerPort}`);
   });
 }

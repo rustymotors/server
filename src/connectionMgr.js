@@ -87,9 +87,9 @@ function findOrNewConnection(socket) {
  */
 async function processData(rawPacket) {
   const {
-    connection, remoteAddress, listenerPort, data,
+    remoteAddress, listenerPort, data,
   } = rawPacket;
-  logger.info(`Connection Manager: Got data from ${remoteAddress} on port ${listenerPort}`, data);
+  // logger.info(`Connection Manager: Got data from ${remoteAddress} on port ${listenerPort}`, data);
   const handlePacketByPort = {
     8226: loginDataHandler,
     8228: personaDataHandler,
@@ -99,7 +99,7 @@ async function processData(rawPacket) {
 
   if (handlePacketByPort[listenerPort]) {
     // Process the packet if a handler exists
-    return handlePacketByPort[listenerPort](connection, data);
+    return handlePacketByPort[listenerPort](rawPacket);
   }
 
   /**
