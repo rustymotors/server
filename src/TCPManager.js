@@ -19,7 +19,7 @@ const logger = require('./logger.js');
 const lobby = require('./lobby.js');
 const packet = require('./packet');
 const MessageNode = require('./MessageNode.js');
-// const ClientConnectMsg = require('./ClientConnectMsg.js');
+const ClientConnectMsg = require('./ClientConnectMsg.js');
 const database = require('../lib/database/index.js');
 
 function socketWriteIfOpen(sock, data) {
@@ -68,9 +68,9 @@ async function ClientConnect(con, node) {
    * Let's turn it into a ClientConnectMsg
    */
   // Not currently using this
-  // const newMsg = ClientConnectMsg.ClientConnectMsg(node.buffer);
+  const newMsg = ClientConnectMsg.ClientConnectMsg(node.buffer);
 
-  // newMsg.dumpPacket();
+  newMsg.dumpPacket();
 
   logger.debug(`Looking up the session key for ${con.id}...`);
   try {
@@ -157,8 +157,6 @@ async function MessageReceived(msg, con) {
           'Message buffer before decrypting: ',
           msg.buffer.toString('hex'),
         );
-        const deciphered = newConnection.enc.decipher.update(msg.buffer);
-        logger.warn('output:    ', deciphered);
         const deciphered2 = newConnection.enc2.decipher.update(msg.buffer);
         logger.warn('output2:    ', deciphered2);
 

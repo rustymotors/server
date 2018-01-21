@@ -41,7 +41,15 @@ function startTCPListener(listenerPort, connectionMgr) {
     });
     socket.on('data', async (data) => {
       try {
-        const newConnection = await connectionMgr.processData(listenerPort, remoteAddress, data);
+        const rawPacket = {
+          timestamp: Date.now(),
+          remoteAddress,
+          listenerPort,
+          data,
+        };
+        // Dump the raw packet
+        logger.debug(rawPacket);
+        const newConnection = await connectionMgr.processData(connection, rawPacket);
         connectionMgr.updateConnectionById(remoteAddress, newConnection);
       } catch (error) {
         console.error(error);

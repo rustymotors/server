@@ -85,29 +85,30 @@ function findOrNewConnection(socket) {
  * @param {String} id
  * @param {Buffer} data
  */
-async function processData(port, remoteAddress, data) {
-  logger.info(`Connection Manager: Got data from ${remoteAddress} on port ${port}`, data);
+async function processData(connection, rawPacket) {
+  const { remoteAddress, listenerPort, data } = rawPacket;
+  logger.info(`Connection Manager: Got data from ${remoteAddress} on port ${listenerPort}`, data);
 
-  if (port === 8226) {
-    return loginDataHandler(findConnection(remoteAddress), data);
+  if (listenerPort === 8226) {
+    return loginDataHandler(connection, data);
   }
 
-  if (port === 8228) {
-    return personaDataHandler(findConnection(remoteAddress), data);
+  if (listenerPort === 8228) {
+    return personaDataHandler(connection, data);
   }
 
-  if (port === 7003) {
-    return handler(findConnection(remoteAddress), data);
+  if (listenerPort === 7003) {
+    return handler(connection, data);
   }
 
-  if (port === 43300) {
-    return handler(findConnection(remoteAddress), data);
+  if (listenerPort === 43300) {
+    return handler(connection, data);
   }
 
   /**
    * TODO: Create a fallback handler
    */
-  logger.error(`No known handler for port ${port}, unable to handle the request from ${remoteAddress} on port ${port}, aborting.`);
+  logger.error(`No known handler for port ${listenerPort}, unable to handle the request from ${remoteAddress} on port ${listenerPort}, aborting.`);
   logger.info('Data was: ', data.toString('hex'));
   process.exit(1);
   return null;

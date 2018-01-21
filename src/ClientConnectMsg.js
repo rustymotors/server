@@ -29,6 +29,7 @@ function ClientConnectMsg(buffer) {
   this.custName = buffer.slice(10, 41).toString();
   this.personaName = buffer.slice(42, 73).toString();
   this.mcVersion = buffer.slice(74);
+  this.rawBuffer = buffer;
 }
 
 ClientConnectMsg.prototype.dumpPacket = function dumpPacket() {
@@ -39,6 +40,7 @@ ClientConnectMsg.prototype.dumpPacket = function dumpPacket() {
   logger.debug('custName:    ', this.custName);
   logger.debug('personaName: ', this.personaName);
   logger.debug('mcVersion:   ', this.mcVersion.toString('hex'));
+  logger.debug('Raw Buffer:   ', this.rawBuffer.toString('hex'));
   logger.info('=============================================');
 };
 
