@@ -21,7 +21,9 @@ const logger = require('./logger.js');
 const patchServer = require('../lib/WebServer/index.js');
 const database = require('../lib/database/index.js');
 const { startTCPListener } = require('./listenerThread.js');
-const connectionMgr = require('./connectionMgr.js');
+const { ConnectionMgr } = require('./connectionMgr.js');
+
+const connectionMgr = new ConnectionMgr();
 
 /**
  * Start the HTTP, HTTPS and TCP connection listeners
@@ -83,7 +85,7 @@ function handleCLICommand(cmd, args) {
   const loweredCmd = cmd.toLowerCase();
   console.log(`Received: ${loweredCmd}`);
   if (loweredCmd === 'findconnection') {
-    console.log(connectionMgr.findConnection(args[0]));
+    console.log(connectionMgr.findConnectionById(args[0]));
   }
 
   if (loweredCmd === 'dumpconnections') {

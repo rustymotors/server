@@ -17,39 +17,40 @@
 const net = require('net');
 const { sendPacketOkLogin } = require('./TCPManager.js');
 const logger = require('./logger.js');
+const { processData } = require('./connectionMgr');
 
 /**
  * Given a port and a connection manager object, create a new TCP socket listener for that port
- * @param {Int} listenerPort
+ * @param {Int} localPort
  * @param {connectionMgr} connectionMgr
  */
-function startTCPListener(listenerPort, connectionMgr) {
+function startTCPListener(localPort, connectionMgr) {
   net.createServer((socket) => {
     // Received a new connection
     // Turn it into a connection object
-    const connection = connectionMgr.findOrNewConnection(socket);
+    const connection = connectionMgr.findOrNewConnection(socket, connectionMgr);
 
     const { remoteAddress } = socket;
-    // logger.info(`Client ${remoteAddress} connected to port ${listenerPort}`);
+    // logger.info(`Client ${remoteAddress} connected to port ${localPort}`);
     if (socket.localPort === 7003 && connection.inQueue) {
       sendPacketOkLogin(socket);
       connection.inQueue = false;
     }
     socket.on('end', () => {
       connectionMgr.deleteConnection(connection);
-      // logger.info(`Client ${remoteAddress} disconnected from port ${listenerPort}`);
+      // logger.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
     });
     socket.on('data', async (data) => {
       try {
         const rawPacket = {
           timestamp: Date.now(),
           remoteAddress,
-          listenerPort,
+          localPort,
           connection,
           data,
         };
         // Dump the raw packet
-        const newConnection = await connectionMgr.processData(rawPacket);
+        const newConnection = await processData(rawPacket);
         connectionMgr.updateConnectionById(remoteAddress, newConnection);
       } catch (error) {
         console.error(error);
@@ -63,8 +64,8 @@ function startTCPListener(listenerPort, connectionMgr) {
         process.exit(1);
       }
     });
-  }).listen(listenerPort, '0.0.0.0', () => {
-    // logger.info(`Listener started on port ${listenerPort}`);
+  }).listen(localPort, '0.0.0.0', () => {
+    // logger.info(`Listener started on port ${localPort}`);
   });
 }
 

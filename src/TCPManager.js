@@ -64,6 +64,7 @@ function MSG_STRING(msgID) {
 // }
 
 async function ClientConnect(con, node) {
+  const { id } = con;
   /**
    * Let's turn it into a ClientConnectMsg
    */
@@ -74,14 +75,14 @@ async function ClientConnect(con, node) {
 
   logger.debug(`Looking up the session key for ${con.id}...`);
   try {
-    const res = await database.fetchSessionKeyByRemoteAddress(con.sock.remoteAddress);
+    const res = await database.fetchSessionKeyByConnectionId(id);
     logger.warn('S Key: ', res.s_key);
 
     const connectionWithKey = con;
 
     try {
-      connectionWithKey.enc2.cypher = crypto.createCipheriv('rc4', res.session_key, '');
-      connectionWithKey.enc2.decipher = crypto.createDecipheriv('rc4', res.session_key, '');
+      connectionWithKey.enc.cypher = crypto.createCipheriv('rc4', res.session_key, '');
+      connectionWithKey.enc.decipher = crypto.createDecipheriv('rc4', res.session_key, '');
 
       // Create new response packet
       // TODO: Do this cleaner
@@ -103,7 +104,6 @@ async function ClientConnect(con, node) {
 }
 
 async function ProcessInput(node, conn) {
-
   const msg = node.getBaseMsgHeader(node.buffer);
 
   const currentMsgNo = msg.msgNo;
@@ -157,8 +157,8 @@ async function MessageReceived(msg, con) {
           'Message buffer before decrypting: ',
           msg.buffer.toString('hex'),
         );
-        const deciphered2 = newConnection.enc2.decipher.update(msg.buffer);
-        logger.warn('output2:    ', deciphered2);
+        const deciphered = newConnection.enc.decipher.update(msg.buffer);
+        logger.warn('output2:    ', deciphered);
 
         logger.debug('===================================================================');
         return newConnection;
@@ -231,11 +231,11 @@ function sendPacketOkLogin(socket) {
 
 async function handler(rawPacket) {
   const {
-    connection, remoteAddress, listenerPort, data,
+    connection, remoteAddress, localPort, data,
   } = rawPacket;
   const messageNode = MessageNode.MessageNode(data);
   logger.info(`=============================================
-    Received packet on port ${listenerPort} from ${remoteAddress}...`);
+    Received packet on port ${localPort} from ${remoteAddress}...`);
   logger.info('=============================================');
 
   if (messageNode.isMCOTS()) {

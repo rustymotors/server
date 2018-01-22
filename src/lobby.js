@@ -88,7 +88,8 @@ function encryptCmd(con, cypherCmd) {
  * @param {Buffer} data
  */
 async function sendCommand(con, data) {
-  const keys = await database.fetchSessionKeyByRemoteAddress(con.sock.remoteAddress);
+  const { id } = con;
+  const keys = await database.fetchSessionKeyByConnectionId(id);
   const s = con;
 
   // Create the cypher and decipher only if not already set
