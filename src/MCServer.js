@@ -17,6 +17,7 @@
 
 const readline = require('readline');
 const waterfall = require('async/waterfall');
+const whoCalled = require('whocalled');
 const logger = require('./logger.js');
 const patchServer = require('../lib/WebServer/index.js');
 const database = require('../lib/database/index.js');
@@ -75,7 +76,7 @@ function startServers(callback) {
         process.exit(1);
       }
       // result now equals 'done'
-      logger.info('Listening sockets create successfully.');
+      logger.info(whoCalled(), 'Listening sockets create successfully.');
       callback(null);
     },
   );
