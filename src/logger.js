@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const logger = require('winston');
-const config = require('../config/config.json');
+require('dotenv').config();
 
 logger.cli();
 logger.add(require('winston-daily-rotate-file'), {
@@ -25,6 +25,6 @@ logger.add(require('winston-daily-rotate-file'), {
   datePattern: 'yyyy-MM-dd_',
 });
 
-logger.level = config.loggerLevel;
+logger.level = process.env.LOGGER_LEVEL || 'error';
 
 module.exports = logger;

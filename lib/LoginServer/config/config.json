@@ -1,0 +1,25 @@
+{
+  "loggerLevel": "debug",
+  "serverConfig": {
+    "ipServer": "mc.drazisil.com",
+    "publicKeyFilename": "./data/pub.key",
+    "privateKeyFilename": "./data/private_key.pem",
+    "certFilename": "./data/cert.pem",
+    "serverLogin": {
+      "name": "Login",
+      "port": 8226
+    },
+    "serverPersona": {
+      "name": "Persona",
+      "port": 8228
+    },
+    "serverLobby": {
+      "name": "Lobby",
+      "port": 7003
+    },
+    "serverDatabase": {
+      "name": "Database",
+      "port": 43300
+    }
+  }
+}
