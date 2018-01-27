@@ -14,15 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const logger = require("./logger.js");
+const logger = require('./logger.js');
 
-function msgHead(header) {
-  if (!(this instanceof msgHead)) {
-    return new msgHead(header);
+function MsgHead(header) {
+  if (!(this instanceof MsgHead)) {
+    return new MsgHead(header);
   }
 
   this.length = header.readInt16LE();
-  this.mcosig = header.toString("ascii", 2);
+  this.mcosig = header.toString('ascii', 2);
+  return this;
 }
 
 function BaseMsgHeader(msg) {
@@ -30,7 +31,7 @@ function BaseMsgHeader(msg) {
     return new BaseMsgHeader(msg);
   }
 
-  // WORD	msgNo;
+  // WORD msgNo;
   this.msgNo = msg.readInt16LE();
 }
 
@@ -49,20 +50,19 @@ function MessageNode(packet) {
   this.rawBuffer = packet;
 
   if (packet.length <= 6) {
-    logger.error("Packet too short!: ", packet);
-    return;
+    throw new Error('Packet too short!: ', packet);
   }
 
-  //DWORD	seq;	// sequenceNo
+  // DWORD seq; sequenceNo
   this.seq = packet.readInt32LE(6);
 
-  this.flags = packet[10];
+  this.flags = packet.readInt8(10);
 }
 
 MessageNode.prototype.setMsgHeader = function setMsgHeader(packet) {
   const header = Buffer.alloc(6);
   packet.copy(header, 0, 0, 6);
-  this.header = msgHead(header);
+  this.header = MsgHead(header);
 };
 
 MessageNode.prototype.getBaseMsgHeader = function getBaseMsgHeader(packet) {
@@ -74,7 +74,24 @@ MessageNode.prototype.setBuffer = function setSetBuffer(packet) {
 };
 
 MessageNode.prototype.isMCOTS = function isMCOTS() {
-  return this.header.mcosig == "TOMC";
+  return this.header.mcosig === 'TOMC';
+};
+
+MessageNode.prototype.dumpPacket = function dumpPacket() {
+  logger.debug('Packet has a valid MCOTS header signature');
+  logger.info('=============================================');
+  logger.debug('Header Length: ', this.header.length);
+  logger.debug('Header MCOSIG: ', this.isMCOTS());
+  logger.debug('Sequence: ', this.seq);
+  logger.debug('Flags: ', this.flags);
+  logger.debug('Buffer: ', this.buffer);
+  logger.debug('Buffer as text: ', this.buffer.toString('utf8'));
+  logger.debug('Buffer as string: ', this.buffer.toString('hex'));
+  logger.debug(
+    'Raw Buffer as string: ',
+    this.rawBuffer.toString('hex'),
+  );
+  logger.info('=============================================');
 };
 
 module.exports = { MessageNode, BaseMsgHeader };

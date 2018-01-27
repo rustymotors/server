@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const logger = require("./logger.js");
-
 function buildPacket(len, header, content) {
   // TODO: Confirm that len is equal to the content len
   const packet = Buffer.alloc(len);

@@ -14,138 +14,138 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { loginDataHandler } = require("../lib/LoginServer/index.js");
-const { personaDataHandler } = require("../lib/PersonaServer/index.js");
-const { handler } = require("./TCPManager.js");
-const logger = require("./logger.js");
-
-let connections = [];
+const { loginDataHandler } = require('../lib/LoginServer/index.js');
+const { personaDataHandler } = require('../lib/PersonaServer/index.js');
+const { handler } = require('./TCPManager.js');
+const logger = require('./logger.js');
 
 class Connection {
-  constructor(id, sock, mgr) {
-    this.id = id;
+  constructor(connectionId, sock, mgr) {
+    this.id = connectionId;
     this.appID = 0;
-    this.status = "INACTIVE";
+    this.status = 'INACTIVE';
+    this.remoteAddress = sock.remoteAddress;
+    this.localPort = sock.localPort;
     this.sock = sock;
     this.msgEvent = null;
     this.lastMsg = 0;
     this.useEncryption = 0;
     this.enc = {};
-    this.enc2 = {};
     this.isSetupComplete = 0;
     this.mgr = mgr;
     this.inQueue = true;
   }
 }
 
-/**
- * Create new connection if when haven't seen this socket before, 
- * or update the socket on the connection object if we have.
- * @param {String} id 
- * @param {Socket} socket 
+class ConnectionMgr {
+  constructor() {
+    this.connections = [];
+    this.newConnectionId = 1;
+  }
+
+  /**
+   * Locate connection by remoteAddress and localPort in the connections array
+   * @param {String} connectionId
+   */
+  findConnectionByAddressAndPort(remoteAddress, localPort) {
+    const results = this.connections.find((connection) => {
+      const match = remoteAddress === connection.remoteAddress &&
+        localPort === connection.localPort;
+      return match;
+    });
+    return results;
+  }
+
+  /**
+ * Locate connection by id in the connections array
+ * @param {String} connectionId
  */
-function findOrNewConnection(remoteAddress, socket, mgr) {
-  const con = findConnection(remoteAddress);
-  if (con != null) {
-    logger.info(`I have seen connections from ${remoteAddress} before`);
-    con.sock = socket;
-    return con;
-  } else {
-    const newConnection = new Connection(remoteAddress, socket, mgr);
-    logger.info(
-      `I have not seen connections from ${remoteAddress} before, adding it.`
-    );
-    connections.push(newConnection);
-    return con;
+  findConnectionById(connectionId) {
+    const results = this.connections.find((connection) => {
+      const match = connectionId === connection.id;
+      return match;
+    });
+    return results;
+  }
+
+  /**
+   * Deletes the provided connection id from the connections array
+   * FIXME: Doesn't actually seem to work
+   * @param {String} connectionId
+   */
+  deleteConnection(connection) {
+    this.connections = this.connections.filter(conn => (conn.id !== connection.id &&
+      conn.localPort !== connection.localPort));
+  }
+  updateConnectionById(connectionId, newConnection) {
+    if (newConnection === undefined) {
+      throw new Error('Undefined connection');
+    }
+    const index = this.connections.findIndex(connection => connection.id === connectionId);
+    this.connections.splice(index, 1);
+    this.connections.push(newConnection);
+  }
+
+  /**
+   * Create new connection if when haven't seen this socket before,
+   * or update the socket on the connection object if we have.
+   * @param {String} id
+   * @param {Socket} socket
+   */
+  findOrNewConnection(socket) {
+    const { remoteAddress, localPort } = socket;
+    const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
+    if (con !== undefined) {
+      logger.info(`I have seen connections from ${remoteAddress} before`);
+      con.sock = socket;
+      return con;
+    }
+    const connectionManager = this;
+    const newConnection = new Connection(this.newConnectionId, socket, connectionManager);
+    logger.info(`I have not seen connections from ${remoteAddress} before, adding it.`);
+    this.connections.push(newConnection);
+    return newConnection;
+  }
+
+
+  /**
+   * Dump all connections for debugging
+   */
+  dumpConnections() {
+    return this.connections;
   }
 }
 
 /**
- * Breaks a connection id into address and port
- * @param {String} id 
- * @returns {JSON}
+ * Check incoming data and route it to the correct handler based on localPort
+ * @param {String} id
+ * @param {Buffer} data
  */
-function parseConnectionId(id) {
-  const parts = id.split("_");
-  const address = parts[0];
-  const port = parts[1];
-  return { address, port };
-}
-
-/**
- * Check incoming data and route it to the correct handler based on port
- * @param {String} id 
- * @param {Buffer} data 
- */
-function processData(port, remoteAddress, data) {
-  logger.info(`Got data from ${remoteAddress} on port ${port}`, data);
-  const connectionHandlers = {
-    "8226": function() {
-      loginDataHandler(findConnection(remoteAddress).sock, data);
-    },
-    "8228": function() {
-      personaDataHandler(findConnection(remoteAddress).sock, data);
-    },
-    "7003": function() {
-      handler(findConnection(remoteAddress), data);
-    },
-    "43300": function() {
-      handler(findConnection(remoteAddress), data);
-    },
+async function processData(rawPacket) {
+  const {
+    remoteAddress, localPort, data,
+  } = rawPacket;
+  // logger.info(`Connection Manager: Got data from ${remoteAddress} on
+  //   localPort ${localPort}`, data);
+  const handlePacketByPort = {
+    8226: loginDataHandler,
+    8228: personaDataHandler,
+    7003: handler,
+    43300: handler,
   };
+
+  if (handlePacketByPort[localPort]) {
+    // Process the packet if a handler exists
+    return handlePacketByPort[localPort](rawPacket);
+  }
 
   /**
    * TODO: Create a fallback handler
    */
-  if (
-    typeof connectionHandlers[port] != "function" ||
-    connectionHandlers[port]()
-  ) {
-    logger.error(
-      `No known handler for port ${port}, unable to handle the request from ${remoteAddress} on port ${port}, aborting.`
-    );
-    logger.info("Data was: ", data.toString("hex"));
-    process.exit(1);
-  }
+  logger.error(`No known handler for localPort ${localPort}, unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.`);
+  logger.info('Data was: ', data.toString('hex'));
+  process.exit(1);
+  return null;
 }
 
-/**
- * Dump all connections for debugging
- */
-function dumpConnections() {
-  return connections;
-}
-
-/**
- * Locate connection by id in the connections array
- * @param {String} connectionId 
- */
-function findConnection(connectionId) {
-  results = connections.find(function(connection) {
-    return connection.id.toString() == connectionId.toString();
-  });
-  if (results == undefined) {
-    return null;
-  } else {
-    return results;
-  }
-}
-
-/**
- * Deletes the provided connection id from the connections array
- * FIXME: Doesn't actually seem to work
- * @param {String} connectionId 
- */
-function deleteConnection(connectionId) {
-  connections.filter(conn => {
-    return conn.id != connectionId;
-  });
-}
-
-module.exports = {
-  findOrNewConnection,
-  processData,
-  dumpConnections,
-  findConnection,
-  deleteConnection,
-};
+module.exports = { ConnectionMgr, processData };

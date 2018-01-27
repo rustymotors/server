@@ -14,15 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const logger = require("winston");
-const config = require("../config/config.json");
+const logger = require('winston');
+const config = require('../config/config.json');
 
 logger.cli();
-logger.add(require("winston-daily-rotate-file"), {
-  filename: "logs/mco-server_log.json",
+logger.add(require('winston-daily-rotate-file'), {
+  filename: 'logs/mco-server_log.json',
   json: true,
   prepend: true,
-  datePattern: "yyyy-MM-dd_",
+  datePattern: 'yyyy-MM-dd_',
 });
 
 logger.level = config.loggerLevel;
