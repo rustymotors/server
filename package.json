@@ -16,7 +16,7 @@
     "url": "git@github.com:drazisil/mco-server.git"
   },
   "engines": {
-    "node": "~8.9.0"
+    "node": ">=8.9.0"
   },
   "jest": {
     "coverageDirectory": "./coverage/",
@@ -31,12 +31,14 @@
     "output": "test-reports/junit.xml"
   },
   "dependencies": {
+    "arc4": "^3.3.8",
     "async": "^2.5.0",
     "body-parser": "^1.17.0",
     "express": "^4.15.0",
     "node-rsa": "^0.4.2",
-    "sqlite": "^2.8.0",
+    "sqlite": "^2.9.1",
     "ssl-config": "^1.0.0",
+    "whocalled": "^1.0.0",
     "winston": "^2.2.0",
     "winston-daily-rotate-file": "^1.1.4"
   },

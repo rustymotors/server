@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const logger = require("./logger.js");
+const logger = require('./logger.js');
 
 function ClientConnectMsg(buffer) {
   if (!(this instanceof ClientConnectMsg)) {
@@ -29,6 +29,19 @@ function ClientConnectMsg(buffer) {
   this.custName = buffer.slice(10, 41).toString();
   this.personaName = buffer.slice(42, 73).toString();
   this.mcVersion = buffer.slice(74);
+  this.rawBuffer = buffer;
 }
+
+ClientConnectMsg.prototype.dumpPacket = function dumpPacket() {
+  logger.info('=============================================');
+  logger.debug('MsgId:       ', this.msgId);
+  logger.debug('customerId:  ', this.customerId);
+  logger.debug('personaId:   ', this.personaId);
+  logger.debug('custName:    ', this.custName);
+  logger.debug('personaName: ', this.personaName);
+  logger.debug('mcVersion:   ', this.mcVersion.toString('hex'));
+  logger.debug('Raw Buffer:   ', this.rawBuffer.toString('hex'));
+  logger.info('=============================================');
+};
 
 module.exports = { ClientConnectMsg };
