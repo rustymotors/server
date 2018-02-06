@@ -14,30 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { loginDataHandler } = require('../lib/LoginServer/index.js');
-const { personaDataHandler } = require('../lib/PersonaServer/index.js');
-const { handler } = require('./TCPManager.js');
-const logger = require('./logger.js');
+import { fail } from "assert";
+import { Socket } from "net";
+import * as loginDataHandler from "../lib/LoginServer/index.js";
+import * as personaDataHandler from "../lib/PersonaServer/index.js";
+import * as logger from "./logger.js";
+import * as handler from "./TCPManager.js";
 
-class Connection {
-  constructor(connectionId, sock, mgr) {
-    this.id = connectionId;
-    this.appID = 0;
-    this.status = 'INACTIVE';
-    this.remoteAddress = sock.remoteAddress;
-    this.localPort = sock.localPort;
-    this.sock = sock;
-    this.msgEvent = null;
-    this.lastMsg = 0;
-    this.useEncryption = 0;
-    this.enc = {};
-    this.isSetupComplete = 0;
-    this.mgr = mgr;
-    this.inQueue = true;
-  }
-}
 
-class ConnectionMgr {
+
+export class ConnectionMgr {
+  private connections: object[];
+  private newConnectionId: number;
   constructor() {
     this.connections = [];
     this.newConnectionId = 1;
@@ -47,7 +35,7 @@ class ConnectionMgr {
    * Locate connection by remoteAddress and localPort in the connections array
    * @param {String} connectionId
    */
-  findConnectionByAddressAndPort(remoteAddress, localPort) {
+  public findConnectionByAddressAndPort(remoteAddress, localPort) {
     const results = this.connections.find((connection) => {
       const match = remoteAddress === connection.remoteAddress &&
         localPort === connection.localPort;
@@ -60,7 +48,7 @@ class ConnectionMgr {
  * Locate connection by id in the connections array
  * @param {String} connectionId
  */
-  findConnectionById(connectionId) {
+  public findConnectionById(connectionId) {
     const results = this.connections.find((connection) => {
       const match = connectionId === connection.id;
       return match;
@@ -73,15 +61,15 @@ class ConnectionMgr {
    * FIXME: Doesn't actually seem to work
    * @param {String} connectionId
    */
-  deleteConnection(connection) {
-    this.connections = this.connections.filter(conn => (conn.id !== connection.id &&
+  public deleteConnection(connection) {
+    this.connections = this.connections.filter((conn) => (conn.id !== connection.id &&
       conn.localPort !== connection.localPort));
   }
-  updateConnectionById(connectionId, newConnection) {
+  public updateConnectionById(connectionId, newConnection) {
     if (newConnection === undefined) {
-      throw new Error('Undefined connection');
+      throw new Error("Undefined connection");
     }
-    const index = this.connections.findIndex(connection => connection.id === connectionId);
+    const index = this.connections.findIndex((connection) => connection.id === connectionId);
     this.connections.splice(index, 1);
     this.connections.push(newConnection);
   }
@@ -92,7 +80,7 @@ class ConnectionMgr {
    * @param {String} id
    * @param {Socket} socket
    */
-  findOrNewConnection(socket) {
+  public findOrNewConnection(socket) {
     const { remoteAddress, localPort } = socket;
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
     if (con !== undefined) {
@@ -107,11 +95,10 @@ class ConnectionMgr {
     return newConnection;
   }
 
-
   /**
    * Dump all connections for debugging
    */
-  dumpConnections() {
+  public dumpConnections() {
     return this.connections;
   }
 }
@@ -121,7 +108,7 @@ class ConnectionMgr {
  * @param {String} id
  * @param {Buffer} data
  */
-async function processData(rawPacket) {
+export async function processData(rawPacket) {
   const {
     remoteAddress, localPort, data,
   } = rawPacket;
@@ -143,9 +130,7 @@ async function processData(rawPacket) {
    * TODO: Create a fallback handler
    */
   logger.error(`No known handler for localPort ${localPort}, unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.`);
-  logger.info('Data was: ', data.toString('hex'));
+  logger.info("Data was: ", data.toString("hex"));
   process.exit(1);
   return null;
 }
-
-module.exports = { ConnectionMgr, processData };

@@ -14,15 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-const readline = require('readline');
-const waterfall = require('async/waterfall');
-const whoCalled = require('whocalled');
-const logger = require('./logger.js');
-const patchServer = require('../lib/WebServer/index.js');
-const database = require('../lib/database/index.js');
-const { startTCPListener } = require('./listenerThread.js');
-const { ConnectionMgr } = require('./connectionMgr.js');
+import * as async from "async";
+import * as readline from "readline";
+import * as database from "../lib/database/index.js";
+import * as patchServer from "../lib/WebServer/index.js";
+import * as ConnectionMgr from "./connectionMgr.js";
+import * as startTCPListener from "./listenerThread.js";
+import * as logger from "./logger.js";
 
 const connectionMgr = new ConnectionMgr();
 
@@ -65,7 +63,7 @@ function startServers(callback) {
         /**
          * Start all the TCP port listeners
          */
-        tcpPortList.map(port => startTCPListener(port, connectionMgr, callback));
+        tcpPortList.map((port) => startTCPListener(port, connectionMgr, callback));
         cb(null);
       },
     ],
@@ -76,7 +74,7 @@ function startServers(callback) {
         process.exit(1);
       }
       // result now equals 'done'
-      logger.info(whoCalled(), 'Listening sockets create successfully.');
+      logger.info(whoCalled(), "Listening sockets create successfully.");
       callback(null);
     },
   );
@@ -85,15 +83,15 @@ function startServers(callback) {
 function handleCLICommand(cmd, args) {
   const loweredCmd = cmd.toLowerCase();
   console.log(`Received: ${loweredCmd}`);
-  if (loweredCmd === 'findconnection') {
+  if (loweredCmd === "findconnection") {
     console.log(connectionMgr.findConnectionById(args[0]));
   }
 
-  if (loweredCmd === 'dumpconnections') {
+  if (loweredCmd === "dumpconnections") {
     console.log(connectionMgr.dumpConnections());
   }
-  if (loweredCmd === 'exit') {
-    console.log('Goodbye!');
+  if (loweredCmd === "exit") {
+    console.log("Goodbye!");
     process.exit();
   }
 }
@@ -103,8 +101,8 @@ function startCLI() {
     input: process.stdin,
     output: process.stdout,
   });
-  rl.on('line', (input) => {
-    const args = input.split(' ');
+  rl.on("line", (input) => {
+    const args = input.split(" ");
     const cmd = args.shift();
     handleCLICommand(cmd, args);
   });
@@ -118,4 +116,4 @@ function run() {
     .catch((err) => { throw err; });
 }
 
-module.exports = { run };
+export default { run };
