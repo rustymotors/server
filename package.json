@@ -4,8 +4,10 @@
   "description": "a server",
   "main": "server.js",
   "scripts": {
+    "start": "node built/server.js",
     "test": "jest --all",
     "lint": "eslint lib src tests",
+    "build": "tsc",
     "licence-check": "license-checker --json > ./data/licenses.json"
   },
   "author": "Joseph W Becher <jwbecher@drazisil.com> (drazisil)",
@@ -53,7 +55,8 @@
     "jest": "^22.0.0",
     "jest-junit": "^3.1.0",
     "license-checker": "^16.0.0",
-    "prettier": "^1.7.4"
+    "prettier": "^1.7.4",
+    "typescript": "^2.7.1"
   },
   "eslintConfig": {
     "extends": "prettier",
