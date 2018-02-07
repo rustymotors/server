@@ -15,8 +15,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as config from "dotenv";
-import * as logger from "winston";
+import * as Winston from "winston";
 import * as winstonDailyRotateFile from "winston-daily-rotate-file";
+
+const logger = new Winston.Logger({ level: process.env.LOGGER_LEVEL || "error" });
 
 config.config();
 
@@ -27,7 +29,5 @@ logger.add(winstonDailyRotateFile, {
   json: true,
   prepend: true,
 });
-
-logger.level = process.env.LOGGER_LEVEL || "error";
 
 export default logger;
