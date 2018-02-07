@@ -19,10 +19,10 @@ import * as readline from "readline";
 import * as database from "../lib/database/index.js";
 import * as patchServer from "../lib/WebServer/index.js";
 import ConnectionMgr from "./connectionMgr.js";
-import * as startTCPListener from "./listenerThread";
+import startTCPListener from "./listenerThread";
 import * as logger from "./logger.js";
 
-const connectionMgr: ConnectionMgr;
+const connectionMgr = new ConnectionMgr;
 
 /**
  * Start the HTTP, HTTPS and TCP connection listeners
@@ -63,7 +63,7 @@ function startServers(callback) {
         /**
          * Start all the TCP port listeners
          */
-        tcpPortList.map((port: Number) => startTCPListener(port, connectionMgr, callback));
+        tcpPortList.map((port: Number) => startTCPListener(port, connectionMgr));
         cb(null);
       },
     ],

@@ -34,7 +34,7 @@ export interface RawPacket {
  * @param {Int} localPort
  * @param {connectionMgr} connectionMgr
  */
-export default function startTCPListener(localPort: Number, connectionMgr: ConnectionMgr) {
+export default async function startTCPListener(localPort: Number, connectionMgr: ConnectionMgr) {
   net.createServer((socket) => {
     // Received a new connection
     // Turn it into a connection object
@@ -67,7 +67,7 @@ export default function startTCPListener(localPort: Number, connectionMgr: Conne
         throw error;
       }
     });
-    socket.on('error', (err: Error) => {
+    socket.on('error', (err: NodeJS.ErrnoException) => {
       if (err.code !== 'ECONNRESET') {
         logger.error(err.message);
         logger.error(err.stack);
