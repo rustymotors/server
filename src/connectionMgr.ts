@@ -20,22 +20,25 @@ import * as loginDataHandler from "../lib/LoginServer/index.js";
 import * as personaDataHandler from "../lib/PersonaServer/index.js";
 import * as logger from "./logger.js";
 import * as handler from "./TCPManager.js";
+import { Connection } from "./Connection";
+import { RawPacket } from "./listenerThread";
 
 
 
-export class ConnectionMgr {
-  private connections: object[];
+export default class ConnectionMgr {
+  private connections: Connection[];
   private newConnectionId: number;
   constructor() {
     this.connections = [];
     this.newConnectionId = 1;
+    return this
   }
 
   /**
    * Locate connection by remoteAddress and localPort in the connections array
    * @param {String} connectionId
    */
-  public findConnectionByAddressAndPort(remoteAddress, localPort) {
+  public findConnectionByAddressAndPort(remoteAddress: String, localPort: Number) {
     const results = this.connections.find((connection) => {
       const match = remoteAddress === connection.remoteAddress &&
         localPort === connection.localPort;
@@ -48,7 +51,7 @@ export class ConnectionMgr {
  * Locate connection by id in the connections array
  * @param {String} connectionId
  */
-  public findConnectionById(connectionId) {
+  public findConnectionById(connectionId: Number) {
     const results = this.connections.find((connection) => {
       const match = connectionId === connection.id;
       return match;
@@ -80,7 +83,7 @@ export class ConnectionMgr {
    * @param {String} id
    * @param {Socket} socket
    */
-  public findOrNewConnection(socket) {
+  public findOrNewConnection(socket: Socket) {
     const { remoteAddress, localPort } = socket;
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
     if (con !== undefined) {
@@ -108,7 +111,7 @@ export class ConnectionMgr {
  * @param {String} id
  * @param {Buffer} data
  */
-export async function processData(rawPacket) {
+export async function processData(rawPacket: RawPacket) {
   const {
     remoteAddress, localPort, data,
   } = rawPacket;

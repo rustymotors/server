@@ -5,16 +5,16 @@ export class Connection {
   public id: number;
   private appID: number;
   private status: string;
-  private remoteAddress: string;
-  private localPort: number;
-  private sock: Socket;
+  public remoteAddress: string;
+  public localPort: number;
+  public sock: Socket;
   private msgEvent: null;
   private lastMsg: number;
   private useEncryption: boolean;
   private enc: object;
   private isSetupComplete: boolean;
   private mgr: ConnectionMgr;
-  private inQueue: boolean;
+  public inQueue: boolean;
 
   constructor(connectionId: number, sock: Socket, mgr: ConnectionMgr) {
     this.id = connectionId;

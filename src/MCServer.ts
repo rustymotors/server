@@ -18,11 +18,11 @@ import * as async from "async";
 import * as readline from "readline";
 import * as database from "../lib/database/index.js";
 import * as patchServer from "../lib/WebServer/index.js";
-import * as ConnectionMgr from "./connectionMgr.js";
-import * as startTCPListener from "./listenerThread.js";
+import ConnectionMgr from "./connectionMgr.js";
+import * as startTCPListener from "./listenerThread";
 import * as logger from "./logger.js";
 
-const connectionMgr = new ConnectionMgr();
+const connectionMgr: ConnectionMgr;
 
 /**
  * Start the HTTP, HTTPS and TCP connection listeners
@@ -56,25 +56,25 @@ function startServers(callback) {
     9013,
     9014,
   ];
-  waterfall(
+  async.waterfall(
     [
       patchServer.start,
       (cb) => {
         /**
          * Start all the TCP port listeners
          */
-        tcpPortList.map((port) => startTCPListener(port, connectionMgr, callback));
+        tcpPortList.map((port: Number) => startTCPListener(port, connectionMgr, callback));
         cb(null);
       },
     ],
-    (err) => {
+    (err: Error) => {
       if (err) {
         logger.error(err.message);
         logger.error(err.stack);
         process.exit(1);
       }
       // result now equals 'done'
-      logger.info(whoCalled(), "Listening sockets create successfully.");
+      logger.info("Listening sockets create successfully.");
       callback(null);
     },
   );
@@ -112,7 +112,8 @@ function run() {
   // Connect to database
   // Start the server listeners
   database.createDB()
-    .then(waterfall([startServers, startCLI]))
+    .then(startServers)
+    .then(startCLI)
     .catch((err) => { throw err; });
 }
 

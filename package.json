@@ -4,6 +4,7 @@
   "description": "a server",
   "main": "server.js",
   "scripts": {
+    "dev": "npm install && npm run lint && npm build -w",
     "start": "node built/server.js",
     "test": "jest --all",
     "lint": "tslint -c tslint.json 'src/**/*.ts' 'lib/**/*.ts' 'tests/**/*.ts'",

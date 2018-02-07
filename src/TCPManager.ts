@@ -40,7 +40,7 @@ function socketWriteIfOpen(sock, data) {
  * Return the string representation of the numeric opcode
  * @param {int} msgID
  */
-function MSG_STRING(msgID) {
+export function MSG_STRING(msgID) {
   switch (msgID) {
     case 438:
       return 'MC_CLIENT_CONNECT_MSG';
@@ -199,7 +199,7 @@ async function lobbyDataHandler(rawPacket) {
     }
     // npsHeartbeat
     case '217': {
-      const packetResult = await npsHeartbeat(sock, data);
+      const packetResult = await npsHeartbeat();
       socketWriteIfOpen(sock, packetResult);
       break;
     }
@@ -225,11 +225,11 @@ async function lobbyDataHandler(rawPacket) {
    * Craft a packet that tells the client it's allowed to login
    */
 
-function sendPacketOkLogin(socket) {
+export function sendPacketOkLogin(socket) {
   socketWriteIfOpen(socket, Buffer.from([0x02, 0x30, 0x00, 0x00]));
 }
 
-async function handler(rawPacket) {
+export async function handler(rawPacket) {
   const {
     connection, remoteAddress, localPort, data,
   } = rawPacket;
@@ -252,5 +252,3 @@ async function handler(rawPacket) {
   const newConnection = await lobbyDataHandler(rawPacket);
   return newConnection;
 }
-
-module.exports = { MSG_STRING, handler, sendPacketOkLogin };
