@@ -14,17 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const logger = require('winston');
-require('dotenv').config();
+import * as config from "dotenv";
+import * as logger from "winston";
+import * as winstonDailyRotateFile from "winston-daily-rotate-file";
+
+config.config();
 
 logger.cli();
-logger.add(require('winston-daily-rotate-file'), {
-  filename: 'logs/mco-server_log.json',
+logger.add(winstonDailyRotateFile, {
+  datePattern: "yyyy-MM-dd_",
+  filename: "logs/mco-server_log.json",
   json: true,
   prepend: true,
-  datePattern: 'yyyy-MM-dd_',
 });
 
-logger.level = process.env.LOGGER_LEVEL || 'error';
+logger.level = process.env.LOGGER_LEVEL || "error";
 
-module.exports = logger;
+export default logger;

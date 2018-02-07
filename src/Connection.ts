@@ -2,19 +2,19 @@ import { Socket } from "net";
 import ConnectionMgr from "./connectionMgr";
 
 export class Connection {
-  public id: number;
-  private appID: number;
-  private status: string;
   public remoteAddress: string;
   public localPort: number;
   public sock: Socket;
+  public id: number;
+  public inQueue: boolean;
+  private appID: number;
+  private status: string;
   private msgEvent: null;
   private lastMsg: number;
   private useEncryption: boolean;
   private enc: object;
   private isSetupComplete: boolean;
   private mgr: ConnectionMgr;
-  public inQueue: boolean;
 
   constructor(connectionId: number, sock: Socket, mgr: ConnectionMgr) {
     this.id = connectionId;

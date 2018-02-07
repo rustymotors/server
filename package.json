@@ -35,7 +35,9 @@
   },
   "dependencies": {
     "@types/async": "^2.0.47",
+    "@types/dotenv": "^4.0.2",
     "@types/node": "^9.4.0",
+    "@types/winston": "^2.3.7",
     "arc4": "^3.4.0",
     "async": "^2.5.0",
     "awesome-typescript-loader": "^3.4.1",

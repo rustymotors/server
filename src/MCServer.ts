@@ -22,7 +22,7 @@ import ConnectionMgr from "./connectionMgr.js";
 import startTCPListener from "./listenerThread";
 import * as logger from "./logger.js";
 
-const connectionMgr = new ConnectionMgr;
+const connectionMgr = new ConnectionMgr();
 
 /**
  * Start the HTTP, HTTPS and TCP connection listeners
@@ -63,7 +63,7 @@ function startServers(callback) {
         /**
          * Start all the TCP port listeners
          */
-        tcpPortList.map((port: Number) => startTCPListener(port, connectionMgr));
+        tcpPortList.map((port: number) => startTCPListener(port, connectionMgr));
         cb(null);
       },
     ],

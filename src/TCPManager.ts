@@ -14,22 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const crypto = require('crypto');
-const logger = require('./logger.js');
-const lobby = require('./lobby.js');
-const packet = require('./packet');
-const MessageNode = require('./MessageNode.js');
-const ClientConnectMsg = require('./ClientConnectMsg.js');
-const database = require('../lib/database/index.js');
+import * as crypto from "crypto";
+import logger from "./logger.js";
+const lobby = require("./lobby.js");
+const packet = require("./packet");
+const MessageNode = require("./MessageNode.js");
+const ClientConnectMsg = require("./ClientConnectMsg.js");
+const database = require("../lib/database/index.js");
 
 function socketWriteIfOpen(sock, data) {
   if (sock.writable) {
     sock.write(data);
   } else {
     logger.error(
-      'Error writing ',
+      "Error writing ",
       data,
-      ' to ',
+      " to ",
       sock.remoteAddress,
       sock.localPort,
     );
@@ -43,9 +43,9 @@ function socketWriteIfOpen(sock, data) {
 export function MSG_STRING(msgID) {
   switch (msgID) {
     case 438:
-      return 'MC_CLIENT_CONNECT_MSG';
+      return "MC_CLIENT_CONNECT_MSG";
     default:
-      return 'Unknown';
+      return "Unknown";
   }
 }
 
@@ -76,13 +76,13 @@ async function ClientConnect(con, node) {
   logger.debug(`Looking up the session key for ${con.id}...`);
   try {
     const res = await database.fetchSessionKeyByConnectionId(id);
-    logger.warn('S Key: ', res.s_key);
+    logger.warn("S Key: ", res.s_key);
 
     const connectionWithKey = con;
 
     try {
-      connectionWithKey.enc.cypher = crypto.createCipheriv('rc4', res.session_key, '');
-      connectionWithKey.enc.decipher = crypto.createDecipheriv('rc4', res.session_key, '');
+      connectionWithKey.enc.cypher = crypto.createCipheriv("rc4", res.session_key, "");
+      connectionWithKey.enc.decipher = crypto.createDecipheriv("rc4", res.session_key, "");
 
       // Create new response packet
       // TODO: Do this cleaner
@@ -110,7 +110,7 @@ async function ProcessInput(node, conn) {
   const currentMsgString = MSG_STRING(currentMsgNo);
   logger.debug(`currentMsg: ${currentMsgString} (${currentMsgNo})`);
 
-  if (currentMsgString === 'MC_CLIENT_CONNECT_MSG') {
+  if (currentMsgString === "MC_CLIENT_CONNECT_MSG") {
     try {
       const newConnection = await ClientConnect(conn, node);
       return newConnection;
@@ -152,15 +152,15 @@ async function MessageReceived(msg, con) {
         /**
          * Attempt to decrypt message
          */
-        logger.debug('===================================================================');
+        logger.debug("===================================================================");
         logger.warn(
-          'Message buffer before decrypting: ',
-          msg.buffer.toString('hex'),
+          "Message buffer before decrypting: ",
+          msg.buffer.toString("hex"),
         );
         const deciphered = newConnection.enc.decipher.update(msg.buffer);
-        logger.warn('output2:    ', deciphered);
+        logger.warn("output2:    ", deciphered);
 
-        logger.debug('===================================================================');
+        logger.debug("===================================================================");
         return newConnection;
       } catch (e) {
         logger.error(`Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}`);
@@ -174,7 +174,7 @@ async function MessageReceived(msg, con) {
   try {
     return await ProcessInput(msg, newConnection);
   } catch (error) {
-    logger.error('Err: ', error);
+    logger.error("Err: ", error);
     throw error;
   }
 }
@@ -192,19 +192,19 @@ async function lobbyDataHandler(rawPacket) {
 
   switch (requestCode) {
     // npsRequestGameConnectServer
-    case '100': {
+    case "100": {
       const packetResult = await lobby.npsRequestGameConnectServer(sock, data);
       socketWriteIfOpen(sock, packetResult);
       break;
     }
     // npsHeartbeat
-    case '217': {
+    case "217": {
       const packetResult = await npsHeartbeat();
       socketWriteIfOpen(sock, packetResult);
       break;
     }
     // npsSendCommand
-    case '1101': {
+    case "1101": {
       // This is an encrypted command
       // Fetch session key
 
@@ -236,7 +236,7 @@ export async function handler(rawPacket) {
   const messageNode = MessageNode.MessageNode(data);
   logger.info(`=============================================
     Received packet on port ${localPort} from ${remoteAddress}...`);
-  logger.info('=============================================');
+  logger.info("=============================================");
 
   if (messageNode.isMCOTS()) {
     // messageNode.dumpPacket();
@@ -244,10 +244,10 @@ export async function handler(rawPacket) {
     const newConnection = await MessageReceived(messageNode, connection);
     return newConnection;
   }
-  logger.debug('No valid MCOTS header signature detected, sending to Lobby');
-  logger.info('=============================================');
-  logger.debug('Buffer as text: ', messageNode.buffer.toString('utf8'));
-  logger.debug('Buffer as string: ', messageNode.buffer.toString('hex'));
+  logger.debug("No valid MCOTS header signature detected, sending to Lobby");
+  logger.info("=============================================");
+  logger.debug("Buffer as text: ", messageNode.buffer.toString("utf8"));
+  logger.debug("Buffer as string: ", messageNode.buffer.toString("hex"));
 
   const newConnection = await lobbyDataHandler(rawPacket);
   return newConnection;
