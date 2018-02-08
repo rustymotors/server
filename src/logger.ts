@@ -18,7 +18,7 @@ import * as config from "dotenv";
 import * as Winston from "winston";
 import * as winstonDailyRotateFile from "winston-daily-rotate-file";
 
-const logger = new Winston.Logger({ level: process.env.LOGGER_LEVEL || "error" });
+export const logger = new Winston.Logger({ level: process.env.LOGGER_LEVEL || "error" });
 
 config.config();
 
@@ -29,5 +29,3 @@ logger.add(winstonDailyRotateFile, {
   json: true,
   prepend: true,
 });
-
-export default logger;

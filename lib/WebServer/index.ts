@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const async = require('async');
-const web = require('./web.js');
-const patchServer = require('./patchServer.js');
-const logger = require('../../src/logger.js');
+import * as async from "async";
+import { logger } from "../../src/logger";
+import * as patchServer from "./patchServer";
+import * as web from "./web";
 
 /**
  * Start HTTP and HTTPs connection listeners
@@ -51,8 +51,8 @@ function start(callback) {
       },
     },
     () => {
-      logger.info('Patch Server started');
-      logger.info('Web Server started');
+      logger.info("Patch Server started");
+      logger.info("Web Server started");
       callback();
     },
   );

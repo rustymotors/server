@@ -4,7 +4,9 @@
     "allowJs": true,
     "target": "es2015",
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
+    "declaration": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "commonjs"
   },
   "include": [
     "./src/**/*"

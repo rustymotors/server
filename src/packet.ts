@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function buildPacket(len, header, content) {
+export function buildPacket(len, header, content) {
   // TODO: Confirm that len is equal to the content len
   const packet = Buffer.alloc(len);
 
@@ -31,7 +31,7 @@ function buildPacket(len, header, content) {
  * This is the response packet sent on the login port in response to a UserLogin
  * TODO: Replace the need for this
  */
-function premadeLogin() {
+export function premadeLogin() {
   return Buffer.from([
     // Live Packet
     0x06, // +0
@@ -293,7 +293,7 @@ function premadeLogin() {
   ]);
 }
 
-function craftGenericReply() {
+export function craftGenericReply() {
   const packet = Buffer.from([
     0x31,
     0x00,
@@ -328,7 +328,7 @@ function craftGenericReply() {
 }
 
 // TODO: Remove the need for this
-function premadePersonaMaps() {
+export function premadePersonaMaps() {
   return Buffer.from([
     // Live
     0x06,
@@ -1357,10 +1357,3 @@ function premadePersonaMaps() {
     0x08,
   ]);
 }
-
-module.exports = {
-  buildPacket,
-  craftGenericReply,
-  premadeLogin,
-  premadePersonaMaps,
-};

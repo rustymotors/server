@@ -14,30 +14,30 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const logger = require('./logger.js');
+import { logger } from "./logger.js";
 
 function MsgHead(header) {
   if (!(this instanceof MsgHead)) {
-    return new MsgHead(header);
+    return MsgHead(header);
   }
 
   this.length = header.readInt16LE();
-  this.mcosig = header.toString('ascii', 2);
+  this.mcosig = header.toString("ascii", 2);
   return this;
 }
 
-function BaseMsgHeader(msg) {
+export function BaseMsgHeader(msg) {
   if (!(this instanceof BaseMsgHeader)) {
-    return new BaseMsgHeader(msg);
+    return BaseMsgHeader(msg);
   }
 
   // WORD msgNo;
   this.msgNo = msg.readInt16LE();
 }
 
-function MessageNode(packet) {
+export function MessageNode(packet) {
   if (!(this instanceof MessageNode)) {
-    return new MessageNode(packet);
+    return MessageNode(packet);
   }
 
   this.toFrom = Buffer.from([0x00, 0x00]);
@@ -50,7 +50,7 @@ function MessageNode(packet) {
   this.rawBuffer = packet;
 
   if (packet.length <= 6) {
-    throw new Error('Packet too short!: ', packet);
+    throw new Error(`Packet too short!: ${packet.toString()}`);
   }
 
   // DWORD seq; sequenceNo
@@ -74,24 +74,22 @@ MessageNode.prototype.setBuffer = function setSetBuffer(packet) {
 };
 
 MessageNode.prototype.isMCOTS = function isMCOTS() {
-  return this.header.mcosig === 'TOMC';
+  return this.header.mcosig === "TOMC";
 };
 
 MessageNode.prototype.dumpPacket = function dumpPacket() {
-  logger.debug('Packet has a valid MCOTS header signature');
-  logger.info('=============================================');
-  logger.debug('Header Length: ', this.header.length);
-  logger.debug('Header MCOSIG: ', this.isMCOTS());
-  logger.debug('Sequence: ', this.seq);
-  logger.debug('Flags: ', this.flags);
-  logger.debug('Buffer: ', this.buffer);
-  logger.debug('Buffer as text: ', this.buffer.toString('utf8'));
-  logger.debug('Buffer as string: ', this.buffer.toString('hex'));
+  logger.debug("Packet has a valid MCOTS header signature");
+  logger.info("=============================================");
+  logger.debug("Header Length: ", this.header.length);
+  logger.debug("Header MCOSIG: ", this.isMCOTS());
+  logger.debug("Sequence: ", this.seq);
+  logger.debug("Flags: ", this.flags);
+  logger.debug("Buffer: ", this.buffer);
+  logger.debug("Buffer as text: ", this.buffer.toString("utf8"));
+  logger.debug("Buffer as string: ", this.buffer.toString("hex"));
   logger.debug(
-    'Raw Buffer as string: ',
-    this.rawBuffer.toString('hex'),
+    "Raw Buffer as string: ",
+    this.rawBuffer.toString("hex"),
   );
-  logger.info('=============================================');
+  logger.info("=============================================");
 };
-
-module.exports = { MessageNode, BaseMsgHeader };

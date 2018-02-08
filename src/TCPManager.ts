@@ -15,12 +15,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as crypto from "crypto";
-import logger from "./logger.js";
-const lobby = require("./lobby.js");
-const packet = require("./packet");
-const MessageNode = require("./MessageNode.js");
-const ClientConnectMsg = require("./ClientConnectMsg.js");
-const database = require("../lib/database/index.js");
+import * as database from "../lib/database/index";
+import * as ClientConnectMsg from "./ClientConnectMsg";
+import * as lobby from "./lobby.js";
+import { logger } from "./logger.js";
+import * as MessageNode from "./MessageNode";
+import * as packet from "./packet";
 
 function socketWriteIfOpen(sock, data) {
   if (sock.writable) {
@@ -86,7 +86,7 @@ async function ClientConnect(con, node) {
 
       // Create new response packet
       // TODO: Do this cleaner
-      const rPacket = new MessageNode.MessageNode(node.rawBuffer);
+      const rPacket = MessageNode.MessageNode(node.rawBuffer);
 
       // write the socket
       socketWriteIfOpen(connectionWithKey.sock, rPacket.rawBuffer);
@@ -122,20 +122,21 @@ async function ProcessInput(node, conn) {
     // We should not do this
     // FIXME: WE SHOULD NOT DO THIS
     socketWriteIfOpen(conn.sock, node.rawBuffer);
-    logger.error(`Message Number Not Handled: ${currentMsgNo} (${currentMsgString})  conID: ${node.toFrom}  PersonaID: ${node.appID}`);
+    logger.error(`Message Number Not Handled: ${currentMsgNo} (${currentMsgString})
+      conID: ${node.toFrom}  PersonaID: ${node.appID}`);
     process.exit();
   }
 }
 
 async function MessageReceived(msg, con) {
   const newConnection = con;
-  if (!newConnection.useEncryption && (msg.flags & 0x08)) {
+  if (!newConnection.useEncryption && (msg.flags && 0x08)) {
     newConnection.useEncryption = 1;
   }
   // If not a Heartbeat
-  if (!(msg.flags & 0x80) && newConnection.useEncryption) {
+  if (!(msg.flags && 0x80) && newConnection.useEncryption) {
     // If not a Heartbeat
-    if (!(msg.flags & 0x80) && newConnection.useEncryption) {
+    if (!(msg.flags && 0x80) && newConnection.useEncryption) {
       if (!newConnection.enc.decipher) {
         logger.error(`KEncrypt ->enc is NULL! Disconnecting...conId: ${newConnection.id}`);
         console.dir(newConnection);
@@ -208,7 +209,7 @@ async function lobbyDataHandler(rawPacket) {
       // This is an encrypted command
       // Fetch session key
 
-      const newConnection = await lobby.sendCommand(connection, data, requestCode);
+      const newConnection = await lobby.sendCommand(connection, data);
       const { sock: newSock, encryptedCommand } = newConnection;
       // FIXME: Figure out why sometimes the socket is closed at this point
       socketWriteIfOpen(newSock, encryptedCommand);
@@ -221,9 +222,9 @@ async function lobbyDataHandler(rawPacket) {
 }
 
 /**
-   * Debug seems hard-coded to use the connection queue
-   * Craft a packet that tells the client it's allowed to login
-   */
+ * Debug seems hard-coded to use the connection queue
+ * Craft a packet that tells the client it's allowed to login
+ */
 
 export function sendPacketOkLogin(socket) {
   socketWriteIfOpen(socket, Buffer.from([0x02, 0x30, 0x00, 0x00]));
@@ -241,8 +242,7 @@ export async function handler(rawPacket) {
   if (messageNode.isMCOTS()) {
     // messageNode.dumpPacket();
 
-    const newConnection = await MessageReceived(messageNode, connection);
-    return newConnection;
+    return MessageReceived(messageNode, connection);
   }
   logger.debug("No valid MCOTS header signature detected, sending to Lobby");
   logger.info("=============================================");

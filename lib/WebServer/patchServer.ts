@@ -14,15 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const app = require('express')();
-const http = require('http');
-const configurationFile = require('../../config/config.json');
+import App from "express";
+import http = require("http");
+import { config as configurationFile } from "../../config/config";
 
-const logger = require('../../src/logger.js');
+import { logger } from "../../src/logger.js";
+
+const app = App();
 
 const castanetResponse = {
+  body: Buffer.from("cafebeef00000000000003", "hex"),
   headers: "'Content-Type', 'application/octet-stream'",
-  body: Buffer.from('cafebeef00000000000003', 'hex'),
 };
 
 // TODO: Combine these threes functions.
@@ -66,34 +68,34 @@ function generateShardList(config) {
  * Start the HTTP web server
  * @param {Function} callback
  */
-function start(callback) {
+export function start(callback) {
   const config = configurationFile.serverConfig;
 
   /**
    * Return the shard list
    */
-  app.get('/ShardList/', (req, res) => {
-    res.set('Content-Type', 'text/plain');
+  app.get("/ShardList/", (req, res) => {
+    res.set("Content-Type", "text/plain");
     res.send(generateShardList(config));
   });
 
   /**
    * These 3 methods make up the patch server
    */
-  app.post('/games/EA_Seattle/MotorCity/UpdateInfo', (req, res) => {
-    const response = patchUpdateInfo(req);
+  app.post("/games/EA_Seattle/MotorCity/UpdateInfo", (req, res) => {
+    const response = patchUpdateInfo();
     res.set(response.headers);
     res.send(response.body);
   });
 
-  app.post('/games/EA_Seattle/MotorCity/NPS', (req, res) => {
-    const response = patchNPS(req);
+  app.post("/games/EA_Seattle/MotorCity/NPS", (req, res) => {
+    const response = patchNPS();
     res.set(response.headers);
     res.send(response.body);
   });
 
-  app.post('/games/EA_Seattle/MotorCity/MCO', (req, res) => {
-    const response = patchMCO(req);
+  app.post("/games/EA_Seattle/MotorCity/MCO", (req, res) => {
+    const response = patchMCO();
     res.set(response.headers);
     res.send(response.body);
   });
@@ -102,19 +104,14 @@ function start(callback) {
    * Fallback if request doesn't match above
    */
   app.use((req, res) => {
-    logger.debug('HTTP');
-    logger.debug('Headers: ', req.headers);
+    logger.debug("HTTP");
+    logger.debug("Headers: ", req.headers);
     logger.debug(`Method: ${req.method}`);
     logger.debug(`Url: ${req.url}`);
-    res.send('404');
+    res.send("404");
   });
 
   const serverPatch = http.createServer(app);
-  serverPatch.listen('80', '0.0.0.0', () => {});
-
+  serverPatch.listen({ port: "80", host: "0.0.0.0" });
   callback(null);
 }
-
-module.exports = {
-  start,
-};

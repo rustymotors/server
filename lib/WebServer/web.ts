@@ -14,14 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const app = require('express')();
-const bodyParser = require('body-parser');
-const https = require('https');
-const sslConfig = require('ssl-config')('old');
-const fs = require('fs');
-const configurationFile = require('../../config/config.json');
+import bodyParser from "body-parser";
+import { app } from "express";
+import fs = require("fs");
+import * as https from "https";
+import { sslConfig as SSL } from "ssl-config";
+import { config as configurationFile } from "../../config/config";
 
-const logger = require('../../src/logger.js');
+import { logger } from "../../src/logger.js";
+
+const sslConfig = SSL("old");
 
 /**
  * Create the SSL options object
@@ -29,11 +31,11 @@ const logger = require('../../src/logger.js');
  */
 function sslOptions(config) {
   return {
-    key: fs.readFileSync(config.privateKeyFilename),
     cert: fs.readFileSync(config.certFilename),
-    rejectUnauthorized: false,
     ciphers: sslConfig.ciphers,
     honorCipherOrder: true,
+    key: fs.readFileSync(config.privateKeyFilename),
+    rejectUnauthorized: false,
     secureOptions: sslConfig.minimumTLSVersion,
   };
 }
@@ -42,7 +44,7 @@ function sslOptions(config) {
  * Create the HTTP seb server
  * @param {Function} callback
  */
-function start(callback) {
+export function start(callback) {
   const config = configurationFile.serverConfig;
 
   app.use(bodyParser.json()); // support json encoded bodies
@@ -51,69 +53,63 @@ function start(callback) {
   /**
    * Return the public vert
    */
-  app.get('/key', (req, res) => {
-    res.setHeader('Content-disposition', 'attachment; filename=cert.pem');
-    res.write(fs.readFileSync(config.publicKeyFilename).toString('hex'));
+  app.get("/key", (req, res) => {
+    res.setHeader("Content-disposition", "attachment; filename=cert.pem");
+    res.write(fs.readFileSync(config.publicKeyFilename).toString("hex"));
     res.end();
   });
-
 
   /**
    * Return the public key
    */
-  app.get('/key', (req, res) => {
-    res.setHeader('Content-disposition', 'attachment; filename=pub.key');
-    res.write(fs.readFileSync(config.publicKeyFilename).toString('hex'));
+  app.get("/key", (req, res) => {
+    res.setHeader("Content-disposition", "attachment; filename=pub.key");
+    res.write(fs.readFileSync(config.publicKeyFilename).toString("hex"));
     res.end();
   });
 
   /**
    * This endpoint receives the username and password
    */
-  app.get('/AuthLogin', (req, res) => {
-    res.set('Content-Type', 'text/plain');
-    res.send('Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e');
+  app.get("/AuthLogin", (req, res) => {
+    res.set("Content-Type", "text/plain");
+    res.send("Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e");
   });
 
   app.use((req, res) => {
-    logger.debug('SSL');
-    logger.debug('Headers: ', req.headers);
+    logger.debug("SSL");
+    logger.debug("Headers: ", req.headers);
     logger.debug(`Method: ${req.method}`);
     logger.debug(`Url: ${req.url}`);
-    res.send('404');
+    res.send("404");
   });
 
   /**
- * Check if the private key exists
- */
+   * Check if the private key exists
+   */
   try {
-    fs.accessSync('./data/private_key.pem');
+    fs.accessSync("./data/private_key.pem");
   } catch (error) {
-    if (error.code === 'ENOENT') {
-      logger.error('ERROR: Unable to locate certs. Please run `scripts/make_certs.sh` and try again.');
+    if (error.code === "ENOENT") {
+      logger.error("ERROR: Unable to locate certs. Please run `scripts/make_certs.sh` and try again.");
       process.exit();
     }
   }
 
   const httpsServer = https
     .createServer(sslOptions(config), app)
-    .listen('443', '0.0.0.0', () => {});
-  httpsServer.on('connection', (socket) => {
+    .listen({ port: 443, host: "0.0.0.0"})
+  .on("connection", (socket) => {
     // logger.info("New SSL connection");
-    socket.on('error', (error) => {
+    socket.on("error", (error) => {
       logger.error(`SSL Socket Error: ${error.message}`);
     });
-    socket.on('close', () => {
+    socket.on("close", () => {
       // logger.info("SSL Socket Connection closed");
     });
-  });
-
-  httpsServer.on('tlsClientError', (err) => {
+  })
+  .on("tlsClientError", (err) => {
     logger.error(`tlsClientError: ${err}`);
   });
   callback(null);
 }
-
-module.exports = {
-  start,
-};
