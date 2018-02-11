@@ -27,7 +27,9 @@ then
   fi
 else
   echo "Container does not exist"
-  docker run --name "$PGDATABASE"_db -p 5432:5432 -v "$(pwd)"/data:/var/lib/postgresql -v "$(pwd)"/data:/var/run/postgresql -e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" -d postgres:9.4-alpine
+  mkdir "$(pwd)"/data/db
+  chown "$(pwd)"/data/db postgres
+  docker run --name "$PGDATABASE"_db -p 5432:5432 -v "$(pwd)"/data/db:/var/lib/postgresql/data -v "$(pwd)"/data/db:/var/run/postgresql/data -e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" -d postgres:10
 fi
 
 if [ "$1" == "prod" ]

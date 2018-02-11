@@ -68,6 +68,7 @@
     "jest": "^22.0.0",
     "jest-junit": "^3.5.0",
     "license-checker": "^16.0.0",
+    "pg-migrator": "^1.0.5",
     "prettier": "^1.7.4",
     "ts-jest": "^22.0.3",
     "tslint": "^5.9.1",
