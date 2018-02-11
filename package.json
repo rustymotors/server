@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "dev": "npm install && npm run lint && npm build -w",
-    "start": "node built/server.js",
+    "start": "node built/src/server.js",
     "test": "jest --all",
     "lint": "tslint 'src/**/*.ts' 'lib/**/*.ts' 'tests/**/*.ts'",
     "build": "tsc",
