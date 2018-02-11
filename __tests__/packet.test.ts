@@ -14,8 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const TCPManager = require('../src/TCPManager.js');
+import * as packet from '../src/packet';
 
-test('438 = MC_CLIENT_CONNECT_MSG', () => {
-  expect(TCPManager.MSG_STRING(438)).toBe('MC_CLIENT_CONNECT_MSG');
+test('retuns a buffer packet from premadeLogin', () => {
+  expect(packet.premadeLogin()).toBeInstanceOf(Buffer);
+});
+
+test('retuns a buffer packet from craftGenericReply', () => {
+  expect(packet.craftGenericReply()).toBeInstanceOf(Buffer);
+});
+
+test('retuns a buffer packet from premadePersonaMaps', () => {
+  expect(packet.premadePersonaMaps()).toBeInstanceOf(Buffer);
+});
+
+test('retuns a buffer packet from buildPacket', () => {
+  expect(packet.buildPacket(6, 0x601, Buffer.from([0x06, 0x01]))).toBeInstanceOf(Buffer);
 });

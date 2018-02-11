@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "npm install && npm run lint && npm build -w",
     "start": "node built/src/server.js",
-    "test": "jest --all",
-    "lint": "tslint 'src/**/*.ts' 'lib/**/*.ts' 'tests/**/*.ts'",
+    "lint": "tslint -c tslint.json 'src/**/*.{ts,tsx}' 'lib/**/*.{ts,tsx}'",
+    "pretest": "npm run lint",
+    "test": "jest",
     "build": "tsc",
     "licence-check": "license-checker --json > ./data/licenses.json"
   },
@@ -28,7 +29,16 @@
       "**/src/**/*.js",
       "**/lib/**/*.js"
     ],
-    "testResultsProcessor": "jest-junit"
+    "testResultsProcessor": "jest-junit",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "/__tests__/.*\\.(ts|tsx|js)$"
   },
   "jest-junit": {
     "output": "test-reports/junit.xml"
@@ -59,6 +69,7 @@
     "jest-junit": "^3.5.0",
     "license-checker": "^16.0.0",
     "prettier": "^1.7.4",
+    "ts-jest": "^22.0.3",
     "tslint": "^5.9.1",
     "tslint-config-prettier": "^1.7.0",
     "typescript": "^2.7.1",
