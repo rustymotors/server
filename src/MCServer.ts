@@ -16,11 +16,11 @@
 
 import * as async from "async";
 import * as readline from "readline";
-import * as database from "../lib/database/index.js";
-import * as patchServer from "../lib/WebServer/index";
-import ConnectionMgr from "./connectionMgr.js";
+import * as database from "../lib/database/index";
+import * as patchServer from "../lib/WebServer";
+import ConnectionMgr from "./connectionMgr";
 import startTCPListener from "./listenerThread";
-import { logger } from "./logger.js";
+import { logger } from "./logger";
 
 const connectionMgr = new ConnectionMgr();
 

@@ -16,12 +16,12 @@
 
 import { fail } from "assert";
 import { Socket } from "net";
-import * as loginDataHandler from "../lib/LoginServer/index.js";
-import * as personaDataHandler from "../lib/PersonaServer/index.js";
+import * as loginDataHandler from "../lib/LoginServer/index";
+import * as personaDataHandler from "../lib/PersonaServer/index";
 import { Connection } from "./Connection";
 import { IRawPacket } from "./listenerThread";
-import { logger } from "./logger.js";
-import * as handler from "./TCPManager.js";
+import { logger } from "./logger";
+import * as handler from "./TCPManager";
 
 
 

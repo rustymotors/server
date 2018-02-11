@@ -17,7 +17,7 @@
 import * as fs from 'fs';
 import* as NodeRSA from 'node-rsa';
 import { config as configurationFile } from "../../config/config";
-import { logger } from '../../src/logger.js';
+import { logger } from '../../src/logger';
 
 /**
  * Load the RSA private key and return a NodeRSA object

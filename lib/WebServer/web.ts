@@ -21,7 +21,7 @@ import * as https from "https";
 import { sslConfig as SSL } from "ssl-config";
 import { config as configurationFile } from "../../config/config";
 
-import { logger } from "../../src/logger.js";
+import { logger } from "../../src/logger";
 
 const sslConfig = SSL("old");
 

@@ -17,7 +17,6 @@
 import crypto = require("crypto");
 import { logger } from "./logger";
 import * as packet from "./packet";
-// const MsgPack = require('./MsgPack.js');
 
 import * as database from "../lib/database/";
 
