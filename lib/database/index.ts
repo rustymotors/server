@@ -21,7 +21,7 @@ import * as sqlite from "sqlite";
  * @param {Function} callback
  */
 export async function createDB() {
-  const db = await sqlite.open("./data/sessions.db");
+  const db = await sqlite.open("../../data/sessions.db");
   const status = await db.run(
     `CREATE TABLE IF NOT EXISTS sessions (customer_id INTEGER NOT NULL UNIQUE, 
       session_key TEXT, s_key TEXT, context_id TEXT, connection_id INTEGER)`,
@@ -35,7 +35,7 @@ export async function createDB() {
  * @param {string} remoteAddress
  */
 export async function fetchSessionKeyByConnectionId(connectionId) {
-  const db = await sqlite.open("./data/sessions.db", { Promise });
+  const db = await sqlite.open("./data/sessions.db", { promise: Promise });
   const keys = await db.get(
     "SELECT session_key, s_key FROM sessions WHERE connection_id = $1",
     [connectionId],
@@ -47,8 +47,8 @@ export async function updateSessionKey(customerId, sessionKey, contextId, connec
   const sKey = sessionKey.substr(0, 16);
   const db = await sqlite.open("./data/sessions.db");
   const status = await db.run(
-    `INSERT OR REPLACE INTO sessions (customer_id, session_key, s_key, 
-      context_id, connection_id) VALUES ($1, $2, $3, $4, $5)`,
+    `INSERT OR REPLACE INTO sessions (customer_id, session_key, s_key, context_id, 
+      connection_id) VALUES ($1, $2, $3, $4, $5)`,
     [customerId, sessionKey, sKey, contextId, connectionId],
   );
   return status;
