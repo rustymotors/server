@@ -15,16 +15,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as net from 'net';
-import sendPacketOkLogin from './TCPManager.js';
-const logger = require('./logger.js');
-const { processData } = require('./connectionMgr');
-import ConnectionMgr from "./connectionMgr";
 import { Connection } from "./Connection";
+import ConnectionMgr from "./connectionMgr";
+import { processData } from './connectionMgr';
+import { logger } from './logger.js';
+import { sendPacketOkLogin } from './TCPManager.js';
 
-export interface RawPacket {
-  timestamp: Number
-  remoteAddress: String
-  localPort: Number
+export interface IRawPacket {
+  timestamp: number
+  remoteAddress: string
+  localPort: number
   connection: Connection
   data: Buffer
 }
@@ -34,7 +34,7 @@ export interface RawPacket {
  * @param {Int} localPort
  * @param {connectionMgr} connectionMgr
  */
-export default async function startTCPListener(localPort: Number, connectionMgr: ConnectionMgr) {
+export default async function startTCPListener(localPort: number, connectionMgr: ConnectionMgr) {
   net.createServer((socket) => {
     // Received a new connection
     // Turn it into a connection object
@@ -52,12 +52,12 @@ export default async function startTCPListener(localPort: Number, connectionMgr:
     });
     socket.on('data', async (data) => {
       try {
-        const rawPacket: RawPacket = {
-          timestamp: Date.now(),
-          remoteAddress,
-          localPort,
+        const rawPacket: IRawPacket = {
           connection,
           data,
+          localPort,
+          remoteAddress,
+          timestamp: Date.now(),
         };
         // Dump the raw packet
         const newConnection = await processData(rawPacket);

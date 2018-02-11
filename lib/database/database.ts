@@ -35,7 +35,7 @@ export async function createDB() {
  * @param {string} remoteAddress
  */
 export async function fetchSessionKeyByConnectionId(connectionId) {
-  const db = await sqlite.open("./data/sessions.db", { Promise });
+  const db = await sqlite.open("./data/sessions.db", { promise: Promise });
   const keys = await db.get(
     "SELECT session_key, s_key FROM sessions WHERE connection_id = $1",
     [connectionId],

@@ -14,22 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const logger = require('../../src/logger.js');
-const packet = require('./packet.js');
+import { logger } from '../../src/logger';
+import * as packet from './packet';
 
-const npsUserStatus = require('./npsUserStatus.js');
+import { npsUserStatus } from './npsUserStatus';
 
-const database = require('./database.js');
+import * as database from "../database";
 
-function npsGetCustomerIdByContextId(contextId) {
+interface IUser {
+  customerId: Buffer,
+  userId: Buffer
+}
+
+export function npsGetCustomerIdByContextId(contextId) {
+
   const users = {
-    d316cd2dd6bf870893dfbaaf17f965884e: {
-      userId: Buffer.from([0x00, 0x00, 0x00, 0x01]),
-      customerId: Buffer.from([0x00, 0x00, 0x00, 0x01]),
-    },
     '5213dee3a6bcdb133373b2d4f3b9962758': {
-      userId: Buffer.from([0x00, 0x00, 0x00, 0x02]),
       customerId: Buffer.from([0xac, 0x01, 0x00, 0x00]),
+      userId: Buffer.from([0x00, 0x00, 0x00, 0x02]),
+    },
+    d316cd2dd6bf870893dfbaaf17f965884e: {
+      customerId: Buffer.from([0x00, 0x00, 0x00, 0x01]),
+      userId: Buffer.from([0x00, 0x00, 0x00, 0x01]),
     },
   };
   if (contextId.toString() === '') {
@@ -99,7 +105,7 @@ async function userLogin(connection, data) {
   return fullPacket;
 }
 
-async function loginDataHandler(rawPacket) {
+export async function loginDataHandler(rawPacket) {
   const { connection, data } = rawPacket;
   // TODO: Check if this can be handled by a MessageNode object
   const { sock } = connection;
@@ -119,5 +125,3 @@ async function loginDataHandler(rawPacket) {
   }
   return connection;
 }
-
-module.exports = { npsGetCustomerIdByContextId, loginDataHandler };

@@ -18,10 +18,10 @@ import { fail } from "assert";
 import { Socket } from "net";
 import * as loginDataHandler from "../lib/LoginServer/index.js";
 import * as personaDataHandler from "../lib/PersonaServer/index.js";
-import * as logger from "./logger.js";
-import * as handler from "./TCPManager.js";
 import { Connection } from "./Connection";
-import { RawPacket } from "./listenerThread";
+import { IRawPacket } from "./listenerThread";
+import { logger } from "./logger.js";
+import * as handler from "./TCPManager.js";
 
 
 
@@ -38,7 +38,7 @@ export default class ConnectionMgr {
    * Locate connection by remoteAddress and localPort in the connections array
    * @param {String} connectionId
    */
-  public findConnectionByAddressAndPort(remoteAddress: String, localPort: Number) {
+  public findConnectionByAddressAndPort(remoteAddress: string, localPort: number) {
     const results = this.connections.find((connection) => {
       const match = remoteAddress === connection.remoteAddress &&
         localPort === connection.localPort;
@@ -48,10 +48,10 @@ export default class ConnectionMgr {
   }
 
   /**
- * Locate connection by id in the connections array
- * @param {String} connectionId
- */
-  public findConnectionById(connectionId: Number) {
+   * Locate connection by id in the connections array
+   * @param {String} connectionId
+   */
+  public findConnectionById(connectionId: number) {
     const results = this.connections.find((connection) => {
       const match = connectionId === connection.id;
       return match;
@@ -111,7 +111,7 @@ export default class ConnectionMgr {
  * @param {String} id
  * @param {Buffer} data
  */
-export async function processData(rawPacket: RawPacket) {
+export async function processData(rawPacket: IRawPacket) {
   const {
     remoteAddress, localPort, data,
   } = rawPacket;

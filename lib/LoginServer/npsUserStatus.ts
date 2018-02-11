@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const fs = require('fs');
-const NodeRSA = require('node-rsa');
-const logger = require('../../src/logger.js');
-const configurationFile = require('../../config/config.json');
+import * as fs from 'fs';
+import* as NodeRSA from 'node-rsa';
+import { config as configurationFile } from "../../config/config";
+import { logger } from '../../src/logger.js';
 
 /**
  * Load the RSA private key and return a NodeRSA object
@@ -40,7 +40,7 @@ function initCrypto() {
  * @param {Buffer} packet
  * @returns {LoginPacket}
  */
-function npsUserStatus(socket, packet) {
+export function npsUserStatus(socket, packet) {
   // logger.debug("Full Packet: ", packet.toString("hex"));
 
   // Save the NPS opCode
@@ -77,5 +77,3 @@ function npsUserStatus(socket, packet) {
   this.sessionKey = sessionKey;
   return this;
 }
-
-module.exports = npsUserStatus;

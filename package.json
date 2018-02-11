@@ -7,7 +7,7 @@
     "dev": "npm install && npm run lint && npm build -w",
     "start": "node built/server.js",
     "test": "jest --all",
-    "lint": "tslint -c tslint.json 'src/**/*.ts' 'lib/**/*.ts' 'tests/**/*.ts'",
+    "lint": "tslint 'src/**/*.ts' 'lib/**/*.ts' 'tests/**/*.ts'",
     "build": "tsc",
     "licence-check": "license-checker --json > ./data/licenses.json"
   },
@@ -55,30 +55,14 @@
     "winston-daily-rotate-file": "^1.1.4"
   },
   "devDependencies": {
-    "eslint": "^4.17.0",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-config-prettier": "^2.7.0",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-prettier": "^2.6.0",
     "jest": "^22.0.0",
     "jest-junit": "^3.5.0",
     "license-checker": "^16.0.0",
     "prettier": "^1.7.4",
     "tslint": "^5.9.1",
+    "tslint-config-prettier": "^1.7.0",
     "typescript": "^2.7.1",
     "webpack": "^3.10.0"
-  },
-  "eslintConfig": {
-    "extends": "prettier",
-    "parserOptions": {
-      "ecmaVersion": 6
-    },
-    "plugins": [
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": "error"
-    }
   },
   "prettier": {
     "trailingComma": "es5"

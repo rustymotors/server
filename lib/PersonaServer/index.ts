@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const crypto = require('crypto');
-const logger = require('../../src/logger.js');
-const packet = require('../../src/packet.js');
+import * as crypto from 'crypto';
+import { logger } from '../../src/logger.js';
+import * as packet from '../../src/packet.js';
 
 /**
  * Handle a select game persona packet
@@ -75,21 +75,21 @@ function npsGetPersonaMapsByCustomerId(customerId) {
     case 2868969472:
       Buffer.from('Doc', 'utf8').copy(name);
       return {
-        personaCount: Buffer.from([0x00, 0x01]),
+        id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
         // Max Personas are how many there are not how many allowed
         maxPersonas: Buffer.from([0x01]),
-        id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
         name,
+        personaCount: Buffer.from([0x00, 0x01]),
         shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
       };
     case 1:
       Buffer.from('Doctor Brown', 'utf8').copy(name);
       return {
-        personaCount: Buffer.from([0x00, 0x01]),
+        id: Buffer.from([0x00, 0x00, 0x00, 0x02]),
         // Max Personas are how many there are not how many allowed
         maxPersonas: Buffer.from([0x01]),
-        id: Buffer.from([0x00, 0x00, 0x00, 0x02]),
         name,
+        personaCount: Buffer.from([0x00, 0x01]),
         shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
       };
     default:
@@ -143,18 +143,18 @@ function npsGetPersonaMaps(socket, data) {
  * @param {Socket} socket
  * @param {Buffer} rawData
  */
-async function personaDataHandler(rawPacket) {
+export async function personaDataHandler(rawPacket) {
   const { connection, data } = rawPacket;
   const { sock } = connection;
   const requestCode = data.readUInt16BE().toString(16);
 
   if (requestCode === '503') {
-    await npsSelectGamePersona(sock, data);
+    await npsSelectGamePersona(sock);
     return connection;
   }
 
   if (requestCode === '50f') {
-    await npsLogoutGameUser(sock, data);
+    await npsLogoutGameUser(sock);
     return connection;
   }
 
@@ -166,5 +166,3 @@ async function personaDataHandler(rawPacket) {
   process.exit(1);
   return null;
 }
-
-module.exports = { personaDataHandler };
