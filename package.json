@@ -8,7 +8,7 @@
     "start": "node built/src/server.js",
     "lint": "tslint -c tslint.json 'src/**/*.{ts,tsx}' 'lib/**/*.{ts,tsx}'",
     "pretest": "npm run lint",
-    "test": "jest",
+    "test": "jest --all",
     "build": "tsc",
     "licence-check": "license-checker --json > ./data/licenses.json"
   },
