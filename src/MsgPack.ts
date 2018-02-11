@@ -17,7 +17,7 @@
 // MsgPack.js
 function MsgPack(packet) {
   if (!(this instanceof MsgPack)) {
-    return new MsgPack(packet);
+    return MsgPack(packet);
   }
 
   this.sourcePacket = packet;
