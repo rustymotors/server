@@ -18,8 +18,8 @@ import * as net from 'net';
 import { Connection } from "./Connection";
 import ConnectionMgr from "./connectionMgr";
 import { processData } from './connectionMgr';
-import { logger } from './logger.js';
-import { sendPacketOkLogin } from './TCPManager.js';
+import { logger } from './logger';
+import { sendPacketOkLogin } from './TCPManager';
 
 export interface IRawPacket {
   timestamp: number

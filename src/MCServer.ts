@@ -16,11 +16,11 @@
 
 import * as async from "async";
 import * as readline from "readline";
-import * as database from "../lib/database/index.js";
-import * as patchServer from "../lib/WebServer/index";
-import ConnectionMgr from "./connectionMgr.js";
+import * as database from "../lib/database/index";
+import * as patchServer from "../lib/WebServer";
+import ConnectionMgr from "./connectionMgr";
 import startTCPListener from "./listenerThread";
-import { logger } from "./logger.js";
+import { logger } from "./logger";
 
 const connectionMgr = new ConnectionMgr();
 
@@ -29,7 +29,7 @@ const connectionMgr = new ConnectionMgr();
  * @param {Function} callback
  */
 
-function startServers(callback) {
+async function startServers() {
   // logger.info("Starting the listening sockets...");
   const tcpPortList = [
     8228,
@@ -75,7 +75,7 @@ function startServers(callback) {
       }
       // result now equals 'done'
       logger.info("Listening sockets create successfully.");
-      callback(null);
+      return;
     },
   );
 }
@@ -111,8 +111,7 @@ function startCLI() {
 function run() {
   // Connect to database
   // Start the server listeners
-  database.createDB()
-    .then(startServers)
+  startServers()
     .then(startCLI)
     .catch((err) => { throw err; });
 }

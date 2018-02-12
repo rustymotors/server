@@ -15,8 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as crypto from 'crypto';
-import { logger } from '../../src/logger.js';
-import * as packet from '../../src/packet.js';
+import { logger } from '../../src/logger';
+import * as packet from '../../src/packet';
 
 /**
  * Handle a select game persona packet

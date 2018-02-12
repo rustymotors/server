@@ -14,82 +14,78 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { logger } from "./logger.js";
+import { logger } from "./logger";
+import MsgHead from './MsgHead';
 
-function MsgHead(header) {
-  if (!(this instanceof MsgHead)) {
-    return MsgHead(header);
+export default class MessageNode {
+  public toFrom: Buffer;
+  public appId: Buffer;
+  public rawBuffer: Buffer;
+  public seq: number;
+  public flags: number;
+  public header: MsgHead;
+  public buffer: Buffer;
+  public msgNo: number;
+  constructor(packet: Buffer) {
+    this.toFrom = Buffer.from([0x00, 0x00]);
+
+    this.appId = Buffer.from([0x00, 0x00]);
+  
+    this.setMsgHeader(packet);
+    this.setBuffer(packet);
+  
+    this.rawBuffer = packet;
+  
+    if (packet.length <= 6) {
+      throw new Error(`Packet too short!: ${packet.toString()}`);
+    }
+  
+    // DWORD seq; sequenceNo
+    this.seq = packet.readInt32LE(6);
+  
+    this.flags = packet.readInt8(10);
+  
   }
 
-  this.length = header.readInt16LE();
-  this.mcosig = header.toString("ascii", 2);
-  return this;
+  public setMsgHeader(packet: Buffer) {
+    const header = Buffer.alloc(6);
+    packet.copy(header, 0, 0, 6);
+    this.header = new MsgHead(header);
+  }
+
+  public setBuffer(packet: Buffer) {
+    this.buffer = packet.slice(11);
+  }
+
+  public BaseMsgHeader(msg) {
+
+    // WORD msgNo;
+    this.msgNo = msg.readInt16LE();
+  }
+
+  public getBaseMsgHeader(packet: Buffer) {
+    return this.BaseMsgHeader(packet);
+  }
+
+  public isMCOTS() {
+    return this.header.mcosig === "TOMC";
+  }
+
+  public dumpPacket() {
+    logger.debug("Packet has a valid MCOTS header signature");
+    logger.info("=============================================");
+    logger.debug("Header Length: ", this.header.length);
+    logger.debug("Header MCOSIG: ", this.isMCOTS());
+    logger.debug("Sequence: ", this.seq);
+    logger.debug("Flags: ", this.flags);
+    logger.debug("Buffer: ", this.buffer);
+    logger.debug("Buffer as text: ", this.buffer.toString("utf8"));
+    logger.debug("Buffer as string: ", this.buffer.toString("hex"));
+    logger.debug(
+      "Raw Buffer as string: ",
+      this.rawBuffer.toString("hex"),
+    );
+    logger.info("=============================================");
+  }
+
 }
-
-export function BaseMsgHeader(msg) {
-  if (!(this instanceof BaseMsgHeader)) {
-    return BaseMsgHeader(msg);
-  }
-
-  // WORD msgNo;
-  this.msgNo = msg.readInt16LE();
-}
-
-export function MessageNode(packet) {
-  if (!(this instanceof MessageNode)) {
-    return MessageNode(packet);
-  }
-
-  this.toFrom = Buffer.from([0x00, 0x00]);
-
-  this.appId = Buffer.from([0x00, 0x00]);
-
-  this.setMsgHeader(packet);
-  this.setBuffer(packet);
-
-  this.rawBuffer = packet;
-
-  if (packet.length <= 6) {
-    throw new Error(`Packet too short!: ${packet.toString()}`);
-  }
-
-  // DWORD seq; sequenceNo
-  this.seq = packet.readInt32LE(6);
-
-  this.flags = packet.readInt8(10);
-}
-
-MessageNode.prototype.setMsgHeader = function setMsgHeader(packet) {
-  const header = Buffer.alloc(6);
-  packet.copy(header, 0, 0, 6);
-  this.header = MsgHead(header);
-};
-
-MessageNode.prototype.getBaseMsgHeader = function getBaseMsgHeader(packet) {
-  return BaseMsgHeader(packet);
-};
-
-MessageNode.prototype.setBuffer = function setSetBuffer(packet) {
-  this.buffer = packet.slice(11);
-};
-
-MessageNode.prototype.isMCOTS = function isMCOTS() {
-  return this.header.mcosig === "TOMC";
-};
-
-MessageNode.prototype.dumpPacket = function dumpPacket() {
-  logger.debug("Packet has a valid MCOTS header signature");
-  logger.info("=============================================");
-  logger.debug("Header Length: ", this.header.length);
-  logger.debug("Header MCOSIG: ", this.isMCOTS());
-  logger.debug("Sequence: ", this.seq);
-  logger.debug("Flags: ", this.flags);
-  logger.debug("Buffer: ", this.buffer);
-  logger.debug("Buffer as text: ", this.buffer.toString("utf8"));
-  logger.debug("Buffer as string: ", this.buffer.toString("hex"));
-  logger.debug(
-    "Raw Buffer as string: ",
-    this.rawBuffer.toString("hex"),
-  );
-  logger.info("=============================================");
-};

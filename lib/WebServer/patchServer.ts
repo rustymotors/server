@@ -18,7 +18,7 @@ import App from "express";
 import http = require("http");
 import { config as configurationFile } from "../../config/config";
 
-import { logger } from "../../src/logger.js";
+import { logger } from "../../src/logger";
 
 const app = App();
 

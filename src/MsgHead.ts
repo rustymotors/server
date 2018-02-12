@@ -14,30 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function MsgPack(packet) {
-  if (!(this instanceof MsgPack)) {
-    return MsgPack(packet);
+export default class MsgHead {
+  public length: number;
+  public mcosig: string;
+
+  constructor(header: Buffer) {
+    this.length = header.readInt16LE(0);
+    this.mcosig = header.toString("ascii", 2);
+    return this;  
   }
-
-  this.sourcePacket = packet;
-  this.SetOpCode(packet.readInt16BE());
-  this.SetMsgLen(packet.readInt16BE(2));
 }
-
-MsgPack.prototype.GetOpCode = function GetOpCode() {
-  return this.opCode;
-};
-
-MsgPack.prototype.SetOpCode = function SetOpCode(opCode) {
-  this.opCode = opCode;
-};
-
-MsgPack.prototype.GetMsgLen = function GetMsgLen() {
-  return this.msgLen;
-};
-
-MsgPack.prototype.SetMsgLen = function SetMsgLen(msgLen) {
-  this.msgLen = msgLen;
-};
-
-module.exports = MsgPack;

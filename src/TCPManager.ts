@@ -17,9 +17,9 @@
 import * as crypto from "crypto";
 import * as database from "../lib/database/index";
 import * as ClientConnectMsg from "./ClientConnectMsg";
-import * as lobby from "./lobby.js";
-import { logger } from "./logger.js";
-import * as MessageNode from "./MessageNode";
+import * as lobby from "./lobby";
+import { logger } from "./logger";
+import MessageNode from "./MessageNode";
 import * as packet from "./packet";
 
 function socketWriteIfOpen(sock, data) {
@@ -86,7 +86,7 @@ async function ClientConnect(con, node) {
 
       // Create new response packet
       // TODO: Do this cleaner
-      const rPacket = MessageNode.MessageNode(node.rawBuffer);
+      const rPacket = new MessageNode(node.rawBuffer);
 
       // write the socket
       socketWriteIfOpen(connectionWithKey.sock, rPacket.rawBuffer);
@@ -234,7 +234,7 @@ export async function handler(rawPacket) {
   const {
     connection, remoteAddress, localPort, data,
   } = rawPacket;
-  const messageNode = MessageNode.MessageNode(data);
+  const messageNode = new MessageNode(data);
   logger.info(`=============================================
     Received packet on port ${localPort} from ${remoteAddress}...`);
   logger.info("=============================================");
