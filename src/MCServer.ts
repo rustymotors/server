@@ -29,7 +29,7 @@ const connectionMgr = new ConnectionMgr();
  * @param {Function} callback
  */
 
-function startServers(callback) {
+async function startServers() {
   // logger.info("Starting the listening sockets...");
   const tcpPortList = [
     8228,
@@ -75,7 +75,7 @@ function startServers(callback) {
       }
       // result now equals 'done'
       logger.info("Listening sockets create successfully.");
-      callback(null);
+      return;
     },
   );
 }
@@ -111,8 +111,7 @@ function startCLI() {
 function run() {
   // Connect to database
   // Start the server listeners
-  database.createDB()
-    .then(startServers)
+  startServers()
     .then(startCLI)
     .catch((err) => { throw err; });
 }
