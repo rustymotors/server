@@ -30,19 +30,19 @@ export class Logger {
   }
 
   public error(...message: string[]) {
-    process.stderr.write(message.join(' '));
+    process.stderr.write(`[ERROR] ${message.join(' ')} \n`);
   }
 
   public debug(...message: string[]) {
-    process.stdout.write(message.join(' '));
+    process.stdout.write(`[DEBUG] ${message.join(' ')} \n`);
   }
 
   public info(...message: string[]) {
-    process.stdout.write(message.join(' '));
+    process.stdout.write(`[INFO] ${message.join(' ')} \n`);
   }
 
   public warn(...message: string[]) {
-    process.stdout.write(message.join(' '));
+    process.stdout.write(`[WARN] ${message.join(' ')} \n`);
   }
 
 }
