@@ -15,17 +15,38 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as config from "dotenv";
-import * as Winston from "winston";
-import * as winstonDailyRotateFile from "winston-daily-rotate-file";
 
-export const logger = new Winston.Logger({ level: process.env.LOGGER_LEVEL || "error" });
+export interface ILoggerOptions {
+  level: string;
+  filename?: string;
+  datePattern?: string;
+}
 
-config.config();
+export class Logger {
+  private level: string;
 
-logger.cli();
-logger.add(winstonDailyRotateFile, {
-  datePattern: "yyyy-MM-dd_",
-  filename: "logs/mco-server_log.json",
-  json: true,
-  prepend: true,
-});
+  constructor(options: ILoggerOptions) {
+    this.level = options.level;
+  }
+
+  public error(...message: string[]) {
+    process.stderr.write(message.join(' '));
+  }
+
+  public debug(...message: string[]) {
+    process.stdout.write(message.join(' '));
+  }
+
+  public info(...message: string[]) {
+    process.stdout.write(message.join(' '));
+  }
+
+  public warn(...message: string[]) {
+    process.stdout.write(message.join(' '));
+  }
+
+}
+
+
+export const logger = new Logger({ level: process.env.LOGGER_LEVEL || "error" });
+

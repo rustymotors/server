@@ -74,17 +74,15 @@ export default class MessageNode {
   public dumpPacket() {
     logger.debug("Packet has a valid MCOTS header signature");
     logger.info("=============================================");
-    logger.debug("Header Length: ", this.header.length);
-    logger.debug("Header MCOSIG: ", this.isMCOTS());
-    logger.debug("Sequence: ", this.seq);
-    logger.debug("Flags: ", this.flags);
-    logger.debug("Buffer: ", this.buffer);
-    logger.debug("Buffer as text: ", this.buffer.toString("utf8"));
-    logger.debug("Buffer as string: ", this.buffer.toString("hex"));
+    logger.debug(`Header Length: ${this.header.length}`);
+    logger.debug(`Header MCOSIG: ${this.isMCOTS()}`);
+    logger.debug(`Sequence: ${this.seq}`);
+    logger.debug(`Flags: ${this.flags}`);
+    logger.debug(`Buffer: ${this.buffer}`);
+    logger.debug(`Buffer as text: ${this.buffer.toString("utf8")}`);
+    logger.debug(`Buffer as string: ${this.buffer.toString("hex")}`);
     logger.debug(
-      "Raw Buffer as string: ",
-      this.rawBuffer.toString("hex"),
-    );
+      `Raw Buffer as string: ${this.rawBuffer.toString("hex")}`);
     logger.info("=============================================");
   }
 
