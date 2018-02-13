@@ -17,18 +17,17 @@
 import fs = require("fs");
 import * as http from "http";
 import * as https from "https";
-import { sslConfig as SSL } from "ssl-config";
 import { config as configurationFile } from "../../config/config";
+import SSLConfig from "../ssl-config";
 
 import { logger } from "../../src/logger";
-
-const sslConfig = SSL("old");
 
 /**
  * Create the SSL options object
  * @param {JSON} config
  */
 function sslOptions(config) {
+  const sslConfig = new SSLConfig();
   return {
     cert: fs.readFileSync(config.certFilename),
     ciphers: sslConfig.ciphers,
