@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+// This is a subset of https://github.com/certsimple/ssl-config
+
 export default class OldSSLCiphers {
 
   public ciphers: string;
