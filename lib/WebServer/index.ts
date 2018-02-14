@@ -24,13 +24,13 @@ import * as web from "./web";
  * TODO: This code may be better suited in web.js and patchServer.js
  * @param {Function} callback
  */
-export function start(callback) {
+export function start(callback: () => void) {
   /* Start the NPS servers */
 
   async.series(
     {
       patchServer(patchServerCallback) {
-        patchServer.start((err) => {
+        patchServer.start((err: Error) => {
           if (err) {
             logger.error(err.message);
             logger.error(err.stack);
@@ -40,7 +40,7 @@ export function start(callback) {
         });
       },
       web(webServerCallback) {
-        web.start((err) => {
+        web.start((err: Error) => {
           if (err) {
             logger.error(err.message);
             logger.error(err.stack);

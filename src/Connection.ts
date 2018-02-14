@@ -1,3 +1,4 @@
+import { Cipher, Decipher } from "crypto";
 import { Socket } from "net";
 import ConnectionMgr from "./connectionMgr";
 
@@ -7,13 +8,18 @@ export class Connection {
   public sock: Socket;
   public id: number;
   public inQueue: boolean;
+  public enc: {
+    cypher?: Cipher,
+    decipher?: Decipher
+  };
+  public useEncryption: boolean;
+  public isSetupComplete: boolean;
+  public decryptedCmd: Buffer;
+  public encryptedCommand: Buffer;
   private appID: number;
   private status: string;
   private msgEvent: null;
   private lastMsg: number;
-  private useEncryption: boolean;
-  private enc: object;
-  private isSetupComplete: boolean;
   private mgr: ConnectionMgr;
 
   constructor(connectionId: number, sock: Socket, mgr: ConnectionMgr) {

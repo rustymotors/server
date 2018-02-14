@@ -18,14 +18,17 @@ import crypto = require("crypto");
 import { logger } from "./logger";
 import * as packet from "./packet";
 
+import { Socket } from "net";
 import * as database from "../lib/database/";
+import { Connection } from "./Connection";
+import { IRawPacket } from "./listenerThread";
 
 /**
  * Handle a request to connect to a game server packet
  * @param {Socket} socket
  * @param {Buffer} rawData
  */
-export async function npsRequestGameConnectServer(socket, rawData) {
+export async function npsRequestGameConnectServer(socket: Socket, rawData: Buffer) {
   logger.info("*** npsRequestGameConnectServer ****");
   logger.debug("Packet as hex: ", rawData.toString("hex"));
   logger.info("************************************");
@@ -61,7 +64,7 @@ export async function npsRequestGameConnectServer(socket, rawData) {
  * @param {Connection} con
  * @param {Buffer} cypherCmd
  */
-function decryptCmd(con, cypherCmd) {
+function decryptCmd(con: Connection, cypherCmd: Buffer) {
   const s = con;
   const decryptedCommand = s.enc.decipher.update(cypherCmd);
   s.decryptedCmd = decryptedCommand;
@@ -75,7 +78,7 @@ function decryptCmd(con, cypherCmd) {
  * @param {Connection} con
  * @param {Buffer} cypherCmd
  */
-function encryptCmd(con, cypherCmd) {
+function encryptCmd(con: Connection, cypherCmd: Buffer) {
   const s = con;
   s.encryptedCommand = s.enc.cypher.update(cypherCmd);
   return s;
@@ -86,7 +89,7 @@ function encryptCmd(con, cypherCmd) {
  * @param {Connection} con
  * @param {Buffer} data
  */
-export async function sendCommand(con, data) {
+export async function sendCommand(con: Connection, data: Buffer) {
   const { id } = con;
   const keys = await database.fetchSessionKeyByConnectionId(id);
   const s = con;
@@ -96,10 +99,12 @@ export async function sendCommand(con, data) {
   if (!s.enc.cypher && !s.enc.decipher) {
     const desIV = Buffer.alloc(8);
     s.enc.cypher = crypto
-      .createCipheriv("des-cbc", key, desIV)
+      .createCipheriv("des-cbc", key, desIV);
+    s.enc.cypher
       .setAutoPadding(false);
     s.enc.decipher = crypto
-      .createDecipheriv("des-cbc", key, desIV)
+      .createDecipheriv("des-cbc", key, desIV);
+    s.enc.decipher
       .setAutoPadding(false);
   }
 

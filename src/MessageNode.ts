@@ -57,10 +57,10 @@ export default class MessageNode {
     this.buffer = packet.slice(11);
   }
 
-  public BaseMsgHeader(msg) {
+  public BaseMsgHeader(packet:Buffer) {
 
     // WORD msgNo;
-    this.msgNo = msg.readInt16LE();
+    this.msgNo = packet.readInt16LE(0);
   }
 
   public getBaseMsgHeader(packet: Buffer) {

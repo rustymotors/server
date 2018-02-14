@@ -15,23 +15,27 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as crypto from "crypto";
+import { Socket } from "net";
 import * as database from "../lib/database/index";
 import * as ClientConnectMsg from "./ClientConnectMsg";
+import { Connection } from "./Connection";
+import { IRawPacket } from "./listenerThread";
 import * as lobby from "./lobby";
 import { logger } from "./logger";
 import MessageNode from "./MessageNode";
 import * as packet from "./packet";
 
-function socketWriteIfOpen(sock, data) {
+
+function socketWriteIfOpen(sock: Socket, data: Buffer) {
   if (sock.writable) {
     sock.write(data);
   } else {
     logger.error(
       "Error writing ",
-      data,
+      data.toString(),
       " to ",
       sock.remoteAddress,
-      sock.localPort,
+      sock.localPort.toString(),
     );
   }
 }
@@ -40,7 +44,7 @@ function socketWriteIfOpen(sock, data) {
  * Return the string representation of the numeric opcode
  * @param {int} msgID
  */
-export function MSG_STRING(msgID) {
+export function MSG_STRING(msgID: number) {
   switch (msgID) {
     case 438:
       return "MC_CLIENT_CONNECT_MSG";
@@ -63,7 +67,7 @@ export function MSG_STRING(msgID) {
 //   return s;
 // }
 
-async function ClientConnect(con, node) {
+async function ClientConnect(con: Connection, node: MessageNode) {
   const { id } = con;
   /**
    * Let's turn it into a ClientConnectMsg
@@ -91,7 +95,7 @@ async function ClientConnect(con, node) {
       // write the socket
       socketWriteIfOpen(connectionWithKey.sock, rPacket.rawBuffer);
 
-      connectionWithKey.isSetupComplete = 1;
+      connectionWithKey.isSetupComplete = true;
       return connectionWithKey;
     } catch (err) {
       console.error(err);
@@ -103,10 +107,9 @@ async function ClientConnect(con, node) {
   }
 }
 
-async function ProcessInput(node, conn) {
-  const msg = node.getBaseMsgHeader(node.buffer);
+async function ProcessInput(node: MessageNode, conn: Connection) {
 
-  const currentMsgNo = msg.msgNo;
+  const currentMsgNo = node.msgNo;
   const currentMsgString = MSG_STRING(currentMsgNo);
   logger.debug(`currentMsg: ${currentMsgString} (${currentMsgNo})`);
 
@@ -123,15 +126,15 @@ async function ProcessInput(node, conn) {
     // FIXME: WE SHOULD NOT DO THIS
     socketWriteIfOpen(conn.sock, node.rawBuffer);
     logger.error(`Message Number Not Handled: ${currentMsgNo} (${currentMsgString})
-      conID: ${node.toFrom}  PersonaID: ${node.appID}`);
+      conID: ${node.toFrom}  PersonaID: ${node.appId}`);
     process.exit();
   }
 }
 
-async function MessageReceived(msg, con) {
+async function MessageReceived(msg: MessageNode, con: Connection) {
   const newConnection = con;
   if (!newConnection.useEncryption && (msg.flags && 0x08)) {
-    newConnection.useEncryption = 1;
+    newConnection.useEncryption = true;
   }
   // If not a Heartbeat
   if (!(msg.flags && 0x80) && newConnection.useEncryption) {
@@ -159,7 +162,7 @@ async function MessageReceived(msg, con) {
           msg.buffer.toString("hex"),
         );
         const deciphered = newConnection.enc.decipher.update(msg.buffer);
-        logger.warn("output2:    ", deciphered);
+        logger.warn("output2:    ", deciphered.toString());
 
         logger.debug("===================================================================");
         return newConnection;
@@ -186,10 +189,10 @@ async function npsHeartbeat() {
   return packetResult;
 }
 
-async function lobbyDataHandler(rawPacket) {
+async function lobbyDataHandler(rawPacket: IRawPacket) {
   const { connection, data } = rawPacket;
   const { sock } = connection;
-  const requestCode = data.readUInt16BE().toString(16);
+  const requestCode = data.readUInt16BE(0).toString(16);
 
   switch (requestCode) {
     // npsRequestGameConnectServer
@@ -226,11 +229,11 @@ async function lobbyDataHandler(rawPacket) {
  * Craft a packet that tells the client it's allowed to login
  */
 
-export function sendPacketOkLogin(socket) {
+export function sendPacketOkLogin(socket: Socket) {
   socketWriteIfOpen(socket, Buffer.from([0x02, 0x30, 0x00, 0x00]));
 }
 
-export async function handler(rawPacket) {
+export async function handler(rawPacket: IRawPacket) {
   const {
     connection, remoteAddress, localPort, data,
   } = rawPacket;
