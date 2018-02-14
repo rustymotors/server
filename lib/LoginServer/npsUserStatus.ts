@@ -14,24 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import * as crypto from "crypto";
 import * as fs from 'fs';
-import* as NodeRSA from 'node-rsa';
-import { config as configurationFile } from "../../config/config";
+import { Socket } from 'net';
+import { config } from "../../config/config";
 import { logger } from '../../src/logger';
 
 /**
  * Load the RSA private key and return a NodeRSA object
  * @returns {NodeRSA}
  */
-function initCrypto() {
-  const config = configurationFile.serverConfig;
+function fetchPrivateKeyFromFile(privateKeyPath: string) {
   try {
-    fs.statSync(config.privateKeyFilename);
+    fs.statSync(privateKeyPath);
   } catch (e) {
     logger.error(`Error loading private key: ${e}`);
     process.exit(1);
   }
-  return new NodeRSA(fs.readFileSync(config.privateKeyFilename));
+  return fs.readFileSync(privateKeyPath).toString()
 }
 
 /**
@@ -40,11 +40,11 @@ function initCrypto() {
  * @param {Buffer} packet
  * @returns {LoginPacket}
  */
-export function npsUserStatus(socket, packet) {
+export function npsUserStatus(socket: Socket, packet: Buffer) {
   // logger.debug("Full Packet: ", packet.toString("hex"));
 
   // Save the NPS opCode
-  this.opCode = packet.readInt16LE();
+  this.opCode = packet.readInt16LE(0);
 
   // Save the contextId
   this.contextId = packet.slice(14, 48).toString();
@@ -53,7 +53,7 @@ export function npsUserStatus(socket, packet) {
   this.buffer = packet;
 
   // Decrypt the sessionKey
-  const decrypt = initCrypto();
+  const privateKey = fetchPrivateKeyFromFile(config.serverConfig.privateKeyFilename)
 
   this.sessionKeyStr = Buffer.from(
     packet.slice(52, -10).toString('utf8'),
@@ -62,16 +62,16 @@ export function npsUserStatus(socket, packet) {
   // logger.warn(
   //   `Session Key before decryption: ${this.sessionKeyStr.toString("hex")}`
   // );
-  const decrypted = decrypt.decrypt(
-    this.sessionKeyStr.toString('base64'),
-    'base64',
-  );
+  const decrypted = crypto.privateDecrypt(privateKey, 
+    this.sessionKeyStr.toString('base64'));
   const sessionKey = Buffer.from(
-    Buffer.from(decrypted, 'base64')
+    Buffer.from(decrypted.toString(), 'base64')
       .toString('hex')
       .substring(4, 68),
     'hex',
   );
+
+  console.log(sessionKey)
 
   // Save the sessionKey
   this.sessionKey = sessionKey;

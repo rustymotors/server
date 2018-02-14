@@ -10,4 +10,4 @@ npm-debug.log
 test-reports
 data/sessions.db
 junit
-built
+dist

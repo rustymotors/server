@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export function buildPacket(len, header, content) {
+export function buildPacket(len: number, header: number, content: Buffer) {
   // TODO: Confirm that len is equal to the content len
   const packet = Buffer.alloc(len);
 

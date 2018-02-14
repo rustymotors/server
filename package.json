@@ -4,12 +4,13 @@
   "description": "a server",
   "main": "server.js",
   "scripts": {
-    "dev": "npm install && npm run lint && npm build -w",
+    "dev": "npm install && npm run tslint && npm build -w",
+    "build": "npm run build-ts && npm run lint",
     "start": "node built/src/server.js",
-    "lint": "tslint -c tslint.json 'src/**/*.{ts,tsx}' 'lib/**/*.{ts,tsx}'",
+    "tslint": "tslint -c tslint.json -p tsconfig.json",
     "pretest": "npm run lint",
     "test": "jest --all",
-    "build": "tsc",
+    "build-ts": "tsc",
     "licence-check": "license-checker --json > ./data/licenses.json"
   },
   "author": "Joseph W Becher <jwbecher@drazisil.com> (drazisil)",

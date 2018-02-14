@@ -19,41 +19,49 @@ import * as packet from './packet';
 
 import { npsUserStatus } from './npsUserStatus';
 
+import { Connection } from "../../src/Connection";
+import { IRawPacket } from "../../src/listenerThread";
 import * as database from "../database";
 
 interface IUser {
+  contextId: string,
   customerId: Buffer,
   userId: Buffer
 }
 
-export function npsGetCustomerIdByContextId(contextId) {
+export function npsGetCustomerIdByContextId(contextId: string) {
 
-  const users = {
-    '5213dee3a6bcdb133373b2d4f3b9962758': {
+  const users: IUser[] = [
+    {
+      contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
       customerId: Buffer.from([0xac, 0x01, 0x00, 0x00]),
       userId: Buffer.from([0x00, 0x00, 0x00, 0x02]),
     },
-    d316cd2dd6bf870893dfbaaf17f965884e: {
+    {
+      contextId: "d316cd2dd6bf870893dfbaaf17f965884e",
       customerId: Buffer.from([0x00, 0x00, 0x00, 0x01]),
       userId: Buffer.from([0x00, 0x00, 0x00, 0x01]),
     },
-  };
+  ];
   if (contextId.toString() === '') {
     logger.error(`Unknown contextId: ${contextId.toString()}`);
     process.exit(1);
   }
-  return users[contextId.toString()];
+  const userRecord: IUser[] = users.filter((user) => {
+    return user.contextId === contextId
+  })
+  return userRecord[0]
 }
 
 /**
  * Process a UserLogin packet
  * Return a NPS_Serialize
- * @param {Socket} socket
+ * @param {Connection} connection
  * @param {Buffer} data
  */
-async function userLogin(connection, data) {
-  const { socket } = connection;
-  const userStatus = npsUserStatus(socket, data);
+async function userLogin(connection: Connection, data: Buffer) {
+  const { sock } = connection;
+  const userStatus = npsUserStatus(sock, data);
 
   logger.info('*** userLogin ****');
   // logger.debug("Packet as hex: ", data.toString("hex"));
@@ -71,7 +79,7 @@ async function userLogin(connection, data) {
 
   // Save sessionKey in database under customerId
   await database.updateSessionKey(
-    customer.customerId.readInt32BE(),
+    customer.customerId.readInt32BE(0),
     userStatus.sessionKey.toString('hex'),
     userStatus.contextId,
     connection.id,
@@ -105,11 +113,11 @@ async function userLogin(connection, data) {
   return fullPacket;
 }
 
-export async function loginDataHandler(rawPacket) {
+export async function loginDataHandler(rawPacket: IRawPacket) {
   const { connection, data } = rawPacket;
   // TODO: Check if this can be handled by a MessageNode object
   const { sock } = connection;
-  const requestCode = data.readUInt16BE().toString(16);
+  const requestCode = data.readUInt16BE(0).toString(16);
 
   switch (requestCode) {
     // npsUserLogin
