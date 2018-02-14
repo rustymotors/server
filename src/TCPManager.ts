@@ -17,7 +17,7 @@
 import * as crypto from "crypto";
 import { Socket } from "net";
 import * as database from "../lib/database/index";
-import * as ClientConnectMsg from "./ClientConnectMsg";
+import ClientConnectMsg from "./ClientConnectMsg";
 import { Connection } from "./Connection";
 import { IRawPacket } from "./listenerThread";
 import * as lobby from "./lobby";
@@ -73,7 +73,7 @@ async function ClientConnect(con: Connection, node: MessageNode) {
    * Let's turn it into a ClientConnectMsg
    */
   // Not currently using this
-  const newMsg = ClientConnectMsg.ClientConnectMsg(node.buffer);
+  const newMsg = new ClientConnectMsg(node.buffer);
 
   newMsg.dumpPacket();
 

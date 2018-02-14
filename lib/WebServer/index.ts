@@ -16,44 +16,30 @@
 
 import * as async from "async";
 import { logger } from "../../src/logger";
-import * as patchServer from "./patchServer";
-import * as web from "./web";
+import PatchServer from "./patchServer";
+import WebServer from "./web";
 
-/**
- * Start HTTP and HTTPs connection listeners
- * TODO: This code may be better suited in web.js and patchServer.js
- * @param {Function} callback
- */
-export function start(callback: () => void) {
-  /* Start the NPS servers */
+export default class Web {
 
-  async.series(
-    {
-      patchServer(patchServerCallback) {
-        patchServer.start((err: Error) => {
-          if (err) {
-            logger.error(err.message);
-            logger.error(err.stack);
-            process.exit(1);
-          }
-          patchServerCallback(null);
-        });
-      },
-      web(webServerCallback) {
-        web.start((err: Error) => {
-          if (err) {
-            logger.error(err.message);
-            logger.error(err.stack);
-            process.exit(1);
-          }
-          webServerCallback(null);
-        });
-      },
-    },
-    () => {
-      logger.info("Patch Server started");
-      logger.info("Web Server started");
-      callback();
-    },
-  );
+  /**
+   * Start HTTP and HTTPs connection listeners
+   * TODO: This code may be better suited in web.js and patchServer.js
+   */
+  public async start() {
+    /* Start the NPS servers */
+
+
+    const patchServer = new PatchServer
+    const webServer = new WebServer
+
+    patchServer.start()
+    webServer.start()
+
+
+    logger.info("Patch Server started");
+    logger.info("Web Server started");
+
+  }
 }
+
+

@@ -16,6 +16,8 @@
 
 // This is a subset of https://github.com/certsimple/ssl-config
 
+import { SSL_OP_NO_SSLv3 } from 'constants'
+
 export default class OldSSLCiphers {
 
   public ciphers: string;
@@ -78,7 +80,7 @@ export default class OldSSLCiphers {
     ]
 
     this.ciphers = this.cipherSuites.join(':')
-    this.minimumTLSVersion = 0x02; // SSL_OP_NO_SSLv3
+    this.minimumTLSVersion = SSL_OP_NO_SSLv3;
   }
 }
 

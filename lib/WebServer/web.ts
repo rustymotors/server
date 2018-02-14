@@ -39,12 +39,41 @@ function sslOptions(config: IConfigurationFile["serverConfig"]) {
   };
 }
 
+function httpsHandler(request: http.IncomingMessage, response: http.ServerResponse) {
+  logger.info(`Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`)
+}
+
+export default class WebServer {
+
+  public async start() {
+
+    const config = configurationFile.serverConfig;
+
+    const httpsServer = https
+    .createServer(sslOptions(config), httpsHandler)
+    .listen({ port: 443, host: "0.0.0.0"})
+  .on("connection", (socket: Socket) => {
+    // logger.info("New SSL connection");
+    socket.on("error", (error: NodeJS.ErrnoException) => {
+      logger.error(`SSL Socket Error: ${error.message}`);
+    });
+    socket.on("close", () => {
+      // logger.info("SSL Socket Connection closed");
+    });
+  })
+  .on("tlsClientError", (err: Error) => {
+    logger.error(`tlsClientError: ${err}`);
+  });
+
+}
+}
+
 /**
  * Create the HTTP seb server
  * @param {Function} callback
  */
-export function start(callback: () => void) {
-  const config = configurationFile.serverConfig;
+
+  
 
   // app.use(bodyParser.json()); // support json encoded bodies
   // app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
@@ -83,36 +112,8 @@ export function start(callback: () => void) {
   //   res.send("404");
   // });
 
-  /**
-   * Check if the private key exists
-   */
-  try {
-    fs.accessSync("./data/private_key.pem");
-  } catch (error) {
-    if (error.code === "ENOENT") {
-      logger.error("ERROR: Unable to locate certs. Please run `scripts/make_certs.sh` and try again.");
-      process.exit();
-    }
-  }
 
-  function httpsHandler(request: http.IncomingMessage, response: http.ServerResponse) {
-    logger.info(`Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`)
-  }
 
-  const httpsServer = https
-    .createServer(sslOptions(config), httpsHandler)
-    .listen({ port: 443, host: "0.0.0.0"})
-  .on("connection", (socket: Socket) => {
-    // logger.info("New SSL connection");
-    socket.on("error", (error: NodeJS.ErrnoException) => {
-      logger.error(`SSL Socket Error: ${error.message}`);
-    });
-    socket.on("close", () => {
-      // logger.info("SSL Socket Connection closed");
-    });
-  })
-  .on("tlsClientError", (err: Error) => {
-    logger.error(`tlsClientError: ${err}`);
-  });
-  callback();
-}
+
+
+

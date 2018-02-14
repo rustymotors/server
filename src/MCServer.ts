@@ -14,10 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import * as async from "async";
 import * as readline from "readline";
 import * as database from "../lib/database/index";
-import * as patchServer from "../lib/WebServer";
+import Web from "../lib/WebServer";
 import ConnectionMgr from "./connectionMgr";
 import startTCPListener from "./listenerThread";
 import { logger } from "./logger";
@@ -56,28 +55,13 @@ async function startServers() {
     9013,
     9014,
   ];
-  async.waterfall(
-    [
-      patchServer.start,
-      (cb: () => void) => {
-        /**
-         * Start all the TCP port listeners
-         */
-        tcpPortList.map((port: number) => startTCPListener(port, connectionMgr));
-        cb();
-      },
-    ],
-    (err: Error) => {
-      if (err) {
-        logger.error(err.message);
-        logger.error(err.stack);
-        process.exit(1);
-      }
-      // result now equals 'done'
-      logger.info("Listening sockets create successfully.");
-      return;
-    },
-  );
+
+  const web = new Web
+
+  web.start().then(async () => {
+    await tcpPortList.map((port: number) => startTCPListener(port, connectionMgr));
+    logger.info("Listening sockets create successfully.");
+  })
 }
 
 function handleCLICommand(cmd: string, args: string[]) {

@@ -61,11 +61,36 @@ function generateShardList(serverConfig: IConfigurationFile["serverConfig"]) {
   DiagnosticServerPort=80`;
 }
 
+function processHTTPRequest(method: string, url: string) {
+  switch (method.toLowerCase()) {
+    case 'get':
+      return `You requested ${method} ${url}`
+
+  
+    default:
+      return 'Unsupported method';
+  }
+}
+
+function httpHandler(request: http.IncomingMessage, response: http.ServerResponse) {
+  logger.info(`Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`)
+}
+
+
+export default class PatchServer {
+
+  public async start() {
+    const serverPatch = http.createServer(httpHandler);
+    serverPatch.listen({ port: "80", host: "0.0.0.0" });
+  }
+
+}
+
 /**
  * Start the HTTP web server
  * @param {Function} callback
  */
-export function start(callback: () => void) {
+// export async function start() {
   // const config = configurationFile.serverConfig;
 
   // /**
@@ -108,21 +133,3 @@ export function start(callback: () => void) {
   //   res.send("404");
   // });
 
-  function processHTTPRequest(method: string, url: string) {
-    switch (method.toLowerCase()) {
-      case 'get':
-        return `You requested ${method} ${url}`
-    
-      default:
-        return 'Unsupported method';
-    }
-  }
-
-  function httpHandler(request: http.IncomingMessage, response: http.ServerResponse) {
-    logger.info(`Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`)
-  }
-
-  const serverPatch = http.createServer(httpHandler);
-  serverPatch.listen({ port: "80", host: "0.0.0.0" });
-  callback();
-}

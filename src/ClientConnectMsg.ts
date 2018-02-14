@@ -16,30 +16,42 @@
 
 import { logger } from "./logger";
 
-export function ClientConnectMsg(buffer) {
-  if (!(this instanceof ClientConnectMsg)) {
-    return ClientConnectMsg(buffer);
+export default class ClientConnectMsg {
+
+  private msgId: number;
+  private customerId: number;
+  private personaId: number;
+  private custName: string;
+  private personaName: string;
+  private mcVersion: Buffer;
+  private rawBuffer: Buffer;
+
+  constructor(buffer: Buffer) {
+    this.msgId = buffer.readInt16LE(0);
+
+    this.customerId = buffer.readInt32LE(2);
+    this.personaId = buffer.readInt32LE(6);
+  
+    this.custName = buffer.slice(10, 41).toString();
+    this.personaName = buffer.slice(42, 73).toString();
+    this.mcVersion = buffer.slice(74);
+    this.rawBuffer = buffer;
   }
 
-  this.msgId = buffer.readInt16LE(0);
+  /**
+   * dumpPacket
+   */
+  public dumpPacket() {
+    logger.info("=============================================");
+    logger.debug("MsgId:       ", this.msgId.toString());
+    logger.debug("customerId:  ", this.customerId.toString());
+    logger.debug("personaId:   ", this.personaId.toString());
+    logger.debug("custName:    ", this.custName);
+    logger.debug("personaName: ", this.personaName);
+    logger.debug("mcVersion:   ", this.mcVersion.toString("hex"));
+    logger.debug("Raw Buffer:   ", this.rawBuffer.toString("hex"));
+    logger.info("=============================================");
+  }
 
-  this.customerId = buffer.readInt32LE(2);
-  this.personaId = buffer.readInt32LE(6);
 
-  this.custName = buffer.slice(10, 41).toString();
-  this.personaName = buffer.slice(42, 73).toString();
-  this.mcVersion = buffer.slice(74);
-  this.rawBuffer = buffer;
 }
-
-ClientConnectMsg.prototype.dumpPacket = function dumpPacket() {
-  logger.info("=============================================");
-  logger.debug("MsgId:       ", this.msgId);
-  logger.debug("customerId:  ", this.customerId);
-  logger.debug("personaId:   ", this.personaId);
-  logger.debug("custName:    ", this.custName);
-  logger.debug("personaName: ", this.personaName);
-  logger.debug("mcVersion:   ", this.mcVersion.toString("hex"));
-  logger.debug("Raw Buffer:   ", this.rawBuffer.toString("hex"));
-  logger.info("=============================================");
-};
