@@ -61,7 +61,7 @@ export default async function startTCPListener(localPort: number, connectionMgr:
         };
         // Dump the raw packet
         const newConnection = await processData(rawPacket);
-        connectionMgr.updateConnectionById(remoteAddress, newConnection);
+        connectionMgr.updateConnectionById(connection.id, newConnection);
       } catch (error) {
         console.error(error);
         throw error;

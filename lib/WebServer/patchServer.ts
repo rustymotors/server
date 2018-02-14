@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import http = require("http");
-import { config as configurationFile } from "../../config/config";
+import { config, IConfigurationFile  } from "../../config/config";
 
 import { logger } from "../../src/logger";
 
@@ -43,21 +43,21 @@ function patchMCO() {
  * Generate a shard list web document
  * @param {JSON} config
  */
-function generateShardList(config) {
+function generateShardList(serverConfig: IConfigurationFile["serverConfig"]) {
   return `[The Clocktower]
   Description=The Clocktower
   ShardId=44
-  LoginServerIP=${config.ipServer}
+  LoginServerIP=${serverConfig.ipServer}
   LoginServerPort=8226
-  LobbyServerIP=${config.ipServer}
+  LobbyServerIP=${serverConfig.ipServer}
   LobbyServerPort=7003
-  MCOTSServerIP=${config.ipServer}
+  MCOTSServerIP=${serverConfig.ipServer}
   StatusId=0
   Status_Reason=
   ServerGroup_Name=Group - 1
   Population=88
   MaxPersonasPerUser=2
-  DiagnosticServerHost=${config.ipServer}
+  DiagnosticServerHost=${serverConfig.ipServer}
   DiagnosticServerPort=80`;
 }
 
@@ -65,8 +65,8 @@ function generateShardList(config) {
  * Start the HTTP web server
  * @param {Function} callback
  */
-export function start(callback) {
-  const config = configurationFile.serverConfig;
+export function start(callback: () => void) {
+  // const config = configurationFile.serverConfig;
 
   // /**
   //  * Return the shard list
@@ -108,11 +108,21 @@ export function start(callback) {
   //   res.send("404");
   // });
 
+  function processHTTPRequest(method: string, url: string) {
+    switch (method.toLowerCase()) {
+      case 'get':
+        return `You requested ${method} ${url}`
+    
+      default:
+        return 'Unsupported method';
+    }
+  }
+
   function httpHandler(request: http.IncomingMessage, response: http.ServerResponse) {
     logger.info(`Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`)
   }
 
   const serverPatch = http.createServer(httpHandler);
   serverPatch.listen({ port: "80", host: "0.0.0.0" });
-  callback(null);
+  callback();
 }

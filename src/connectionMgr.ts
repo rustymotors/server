@@ -16,12 +16,12 @@
 
 import { fail } from "assert";
 import { Socket } from "net";
-import * as loginDataHandler from "../lib/LoginServer/index";
-import * as personaDataHandler from "../lib/PersonaServer/index";
+import { loginDataHandler } from "../lib/LoginServer/index";
+import { personaDataHandler } from "../lib/PersonaServer/index";
 import { Connection } from "./Connection";
 import { IRawPacket } from "./listenerThread";
 import { logger } from "./logger";
-import * as handler from "./TCPManager";
+import { defaultHandler } from "./TCPManager";
 
 
 
@@ -64,11 +64,11 @@ export default class ConnectionMgr {
    * FIXME: Doesn't actually seem to work
    * @param {String} connectionId
    */
-  public deleteConnection(connection) {
+  public deleteConnection(connection: Connection) {
     this.connections = this.connections.filter((conn) => (conn.id !== connection.id &&
       conn.localPort !== connection.localPort));
   }
-  public updateConnectionById(connectionId, newConnection) {
+  public updateConnectionById(connectionId: number, newConnection: Connection) {
     if (newConnection === undefined) {
       throw new Error("Undefined connection");
     }
@@ -106,6 +106,11 @@ export default class ConnectionMgr {
   }
 }
 
+interface IPortHandler {
+  handler: () => void;
+  port: number
+}
+
 /**
  * Check incoming data and route it to the correct handler based on localPort
  * @param {String} id
@@ -117,23 +122,25 @@ export async function processData(rawPacket: IRawPacket) {
   } = rawPacket;
   // logger.info(`Connection Manager: Got data from ${remoteAddress} on
   //   localPort ${localPort}`, data);
-  const handlePacketByPort = {
-    8226: loginDataHandler,
-    8228: personaDataHandler,
-    7003: handler,
-    43300: handler,
-  };
 
-  if (handlePacketByPort[localPort]) {
-    // Process the packet if a handler exists
-    return handlePacketByPort[localPort](rawPacket);
+  switch (localPort) {
+    case 8226:
+
+      return loginDataHandler(rawPacket)
+    case 8228:
+
+      return personaDataHandler(rawPacket)
+    case 7003:
+
+      return defaultHandler(rawPacket)
+    case 43300:
+
+      return defaultHandler(rawPacket)
+    default:
+      logger.error(`No known handler for localPort ${localPort}, unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.`);
+      logger.info("Data was: ", data.toString("hex"));
+      process.exit(1);
+      return null;
   }
 
-  /**
-   * TODO: Create a fallback handler
-   */
-  logger.error(`No known handler for localPort ${localPort}, unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.`);
-  logger.info("Data was: ", data.toString("hex"));
-  process.exit(1);
-  return null;
 }

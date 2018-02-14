@@ -17,16 +17,17 @@
 import fs = require("fs");
 import * as http from "http";
 import * as https from "https";
-import { config as configurationFile } from "../../config/config";
+import { config as configurationFile, IConfigurationFile } from "../../config/config";
 import SSLConfig from "../ssl-config";
 
+import { Socket } from "net";
 import { logger } from "../../src/logger";
 
 /**
  * Create the SSL options object
  * @param {JSON} config
  */
-function sslOptions(config) {
+function sslOptions(config: IConfigurationFile["serverConfig"]) {
   const sslConfig = new SSLConfig();
   return {
     cert: fs.readFileSync(config.certFilename),
@@ -42,7 +43,7 @@ function sslOptions(config) {
  * Create the HTTP seb server
  * @param {Function} callback
  */
-export function start(callback) {
+export function start(callback: () => void) {
   const config = configurationFile.serverConfig;
 
   // app.use(bodyParser.json()); // support json encoded bodies
@@ -101,17 +102,17 @@ export function start(callback) {
   const httpsServer = https
     .createServer(sslOptions(config), httpsHandler)
     .listen({ port: 443, host: "0.0.0.0"})
-  .on("connection", (socket) => {
+  .on("connection", (socket: Socket) => {
     // logger.info("New SSL connection");
-    socket.on("error", (error) => {
+    socket.on("error", (error: NodeJS.ErrnoException) => {
       logger.error(`SSL Socket Error: ${error.message}`);
     });
     socket.on("close", () => {
       // logger.info("SSL Socket Connection closed");
     });
   })
-  .on("tlsClientError", (err) => {
+  .on("tlsClientError", (err: Error) => {
     logger.error(`tlsClientError: ${err}`);
   });
-  callback(null);
+  callback();
 }

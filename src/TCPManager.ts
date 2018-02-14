@@ -233,7 +233,7 @@ export function sendPacketOkLogin(socket: Socket) {
   socketWriteIfOpen(socket, Buffer.from([0x02, 0x30, 0x00, 0x00]));
 }
 
-export async function handler(rawPacket: IRawPacket) {
+export async function defaultHandler(rawPacket: IRawPacket) {
   const {
     connection, remoteAddress, localPort, data,
   } = rawPacket;

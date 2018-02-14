@@ -59,12 +59,12 @@ async function startServers() {
   async.waterfall(
     [
       patchServer.start,
-      (cb) => {
+      (cb: () => void) => {
         /**
          * Start all the TCP port listeners
          */
         tcpPortList.map((port: number) => startTCPListener(port, connectionMgr));
-        cb(null);
+        cb();
       },
     ],
     (err: Error) => {
@@ -80,11 +80,11 @@ async function startServers() {
   );
 }
 
-function handleCLICommand(cmd, args) {
+function handleCLICommand(cmd: string, args: string[]) {
   const loweredCmd = cmd.toLowerCase();
   console.log(`Received: ${loweredCmd}`);
   if (loweredCmd === "findconnection") {
-    console.log(connectionMgr.findConnectionById(args[0]));
+    console.log(connectionMgr.findConnectionById(Number.parseInt(args[0])));
   }
 
   if (loweredCmd === "dumpconnections") {

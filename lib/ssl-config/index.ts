@@ -19,7 +19,7 @@
 export default class OldSSLCiphers {
 
   public ciphers: string;
-  public minimumTLSVersion: string;
+  public minimumTLSVersion: number;
 
   private cipherSuites: string[];
 
@@ -78,7 +78,7 @@ export default class OldSSLCiphers {
     ]
 
     this.ciphers = this.cipherSuites.join(':')
-    this.minimumTLSVersion = 'sslv3';
+    this.minimumTLSVersion = 0x02; // SSL_OP_NO_SSLv3
   }
 }
 

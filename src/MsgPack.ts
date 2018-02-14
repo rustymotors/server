@@ -1,3 +1,5 @@
+import { IRawPacket } from "./listenerThread";
+
 // mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 
@@ -14,30 +16,38 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function MsgPack(packet) {
-  if (!(this instanceof MsgPack)) {
-    return MsgPack(packet);
+export default class MsgPack {
+  private sourcePacket: Buffer;
+  private opCode: number;
+  private msgLength: number;
+
+  constructor(packet: Buffer) {
+    this.sourcePacket = packet;
+    this.setOpCode(packet.readInt16BE(0));
+    this.setMsgLength(packet.readInt16BE(2));
   }
 
-  this.sourcePacket = packet;
-  this.SetOpCode(packet.readInt16BE());
-  this.SetMsgLen(packet.readInt16BE(2));
+  /**
+   * getOpCode
+   */
+  public getOpCode() {
+    return this.opCode;
+  }
+
+  /**
+   * getMsgLength
+   */
+  public getMsgLength() {
+    return this.msgLength;
+  }
+
+  private setOpCode(opCode: number) {
+    this.opCode = opCode;
+  }
+
+  private setMsgLength(msgLen: number) {
+    this.msgLength = msgLen;
+  }
+
 }
 
-MsgPack.prototype.GetOpCode = function GetOpCode() {
-  return this.opCode;
-};
-
-MsgPack.prototype.SetOpCode = function SetOpCode(opCode) {
-  this.opCode = opCode;
-};
-
-MsgPack.prototype.GetMsgLen = function GetMsgLen() {
-  return this.msgLen;
-};
-
-MsgPack.prototype.SetMsgLen = function SetMsgLen(msgLen) {
-  this.msgLen = msgLen;
-};
-
-module.exports = MsgPack;
