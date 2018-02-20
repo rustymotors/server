@@ -14,21 +14,31 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const net = require('net');
-const { sendPacketOkLogin } = require('./TCPManager.js');
-const logger = require('./logger.js');
-const { processData } = require('./connectionMgr');
+import * as net from 'net';
+import { Connection } from "./Connection";
+import ConnectionMgr from "./connectionMgr";
+import { processData } from './connectionMgr';
+import { logger } from './logger';
+import { sendPacketOkLogin } from './TCPManager';
+
+export interface IRawPacket {
+  timestamp: number
+  remoteAddress: string
+  localPort: number
+  connection: Connection
+  data: Buffer
+}
 
 /**
  * Given a port and a connection manager object, create a new TCP socket listener for that port
  * @param {Int} localPort
  * @param {connectionMgr} connectionMgr
  */
-function startTCPListener(localPort, connectionMgr) {
+export default async function startTCPListener(localPort: number, connectionMgr: ConnectionMgr) {
   net.createServer((socket) => {
     // Received a new connection
     // Turn it into a connection object
-    const connection = connectionMgr.findOrNewConnection(socket, connectionMgr);
+    const connection = connectionMgr.findOrNewConnection(socket);
 
     const { remoteAddress } = socket;
     // logger.info(`Client ${remoteAddress} connected to port ${localPort}`);
@@ -42,31 +52,29 @@ function startTCPListener(localPort, connectionMgr) {
     });
     socket.on('data', async (data) => {
       try {
-        const rawPacket = {
-          timestamp: Date.now(),
-          remoteAddress,
-          localPort,
+        const rawPacket: IRawPacket = {
           connection,
           data,
+          localPort,
+          remoteAddress,
+          timestamp: Date.now(),
         };
         // Dump the raw packet
         const newConnection = await processData(rawPacket);
-        connectionMgr.updateConnectionById(remoteAddress, newConnection);
+        connectionMgr.updateConnectionById(connection.id, newConnection);
       } catch (error) {
         console.error(error);
         throw error;
       }
     });
-    socket.on('error', (err) => {
+    socket.on('error', (err: NodeJS.ErrnoException) => {
       if (err.code !== 'ECONNRESET') {
         logger.error(err.message);
         logger.error(err.stack);
         process.exit(1);
       }
     });
-  }).listen(localPort, '0.0.0.0', () => {
+  }).listen({ port: localPort, hostname: '0.0.0.0'}, () => {
     // logger.info(`Listener started on port ${localPort}`);
   });
 }
-
-module.exports = { startTCPListener };

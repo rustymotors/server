@@ -14,15 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-const readline = require('readline');
-const waterfall = require('async/waterfall');
-const whoCalled = require('whocalled');
-const logger = require('./logger.js');
-const patchServer = require('../lib/WebServer/index.js');
-const database = require('../lib/database/index.js');
-const { startTCPListener } = require('./listenerThread.js');
-const { ConnectionMgr } = require('./connectionMgr.js');
+import * as readline from "readline";
+import * as database from "../lib/database/index";
+import Web from "../lib/WebServer";
+import ConnectionMgr from "./connectionMgr";
+import startTCPListener from "./listenerThread";
+import { logger } from "./logger";
 
 const connectionMgr = new ConnectionMgr();
 
@@ -31,7 +28,7 @@ const connectionMgr = new ConnectionMgr();
  * @param {Function} callback
  */
 
-function startServers(callback) {
+async function startServers() {
   // logger.info("Starting the listening sockets...");
   const tcpPortList = [
     8228,
@@ -58,42 +55,27 @@ function startServers(callback) {
     9013,
     9014,
   ];
-  waterfall(
-    [
-      patchServer.start,
-      (cb) => {
-        /**
-         * Start all the TCP port listeners
-         */
-        tcpPortList.map(port => startTCPListener(port, connectionMgr, callback));
-        cb(null);
-      },
-    ],
-    (err) => {
-      if (err) {
-        logger.error(err.message);
-        logger.error(err.stack);
-        process.exit(1);
-      }
-      // result now equals 'done'
-      logger.info(whoCalled(), 'Listening sockets create successfully.');
-      callback(null);
-    },
-  );
+
+  const web = new Web
+
+  web.start().then(async () => {
+    await tcpPortList.map((port: number) => startTCPListener(port, connectionMgr));
+    logger.info("Listening sockets create successfully.");
+  })
 }
 
-function handleCLICommand(cmd, args) {
+function handleCLICommand(cmd: string, args: string[]) {
   const loweredCmd = cmd.toLowerCase();
   console.log(`Received: ${loweredCmd}`);
-  if (loweredCmd === 'findconnection') {
-    console.log(connectionMgr.findConnectionById(args[0]));
+  if (loweredCmd === "findconnection") {
+    console.log(connectionMgr.findConnectionById(Number.parseInt(args[0])));
   }
 
-  if (loweredCmd === 'dumpconnections') {
+  if (loweredCmd === "dumpconnections") {
     console.log(connectionMgr.dumpConnections());
   }
-  if (loweredCmd === 'exit') {
-    console.log('Goodbye!');
+  if (loweredCmd === "exit") {
+    console.log("Goodbye!");
     process.exit();
   }
 }
@@ -103,8 +85,8 @@ function startCLI() {
     input: process.stdin,
     output: process.stdout,
   });
-  rl.on('line', (input) => {
-    const args = input.split(' ');
+  rl.on("line", (input) => {
+    const args = input.split(" ");
     const cmd = args.shift();
     handleCLICommand(cmd, args);
   });
@@ -113,9 +95,9 @@ function startCLI() {
 function run() {
   // Connect to database
   // Start the server listeners
-  database.createDB()
-    .then(waterfall([startServers, startCLI]))
+  startServers()
+    .then(startCLI)
     .catch((err) => { throw err; });
 }
 
-module.exports = { run };
+export default { run };

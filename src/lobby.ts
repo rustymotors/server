@@ -14,22 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const crypto = require('crypto');
-const logger = require('./logger.js');
-const packet = require('./packet.js');
-// const MsgPack = require('./MsgPack.js');
+import crypto = require("crypto");
+import { logger } from "./logger";
+import * as packet from "./packet";
 
-const database = require('../lib/database/index.js');
+import { Socket } from "net";
+import * as database from "../lib/database/";
+import { Connection } from "./Connection";
+import { IRawPacket } from "./listenerThread";
 
 /**
  * Handle a request to connect to a game server packet
  * @param {Socket} socket
  * @param {Buffer} rawData
  */
-async function npsRequestGameConnectServer(socket, rawData) {
-  logger.info('*** npsRequestGameConnectServer ****');
-  logger.debug('Packet as hex: ', rawData.toString('hex'));
-  logger.info('************************************');
+export async function npsRequestGameConnectServer(socket: Socket, rawData: Buffer) {
+  logger.info("*** npsRequestGameConnectServer ****");
+  logger.debug("Packet as hex: ", rawData.toString("hex"));
+  logger.info("************************************");
 
   // // Load the received data into a MsgPack class
   // const msgPack = MsgPack(rawData);
@@ -45,7 +47,7 @@ async function npsRequestGameConnectServer(socket, rawData) {
 
   // User name (32)
   const name = Buffer.alloc(32);
-  Buffer.from('Doctor Brown', 'utf8').copy(name);
+  Buffer.from("Doctor Brown", "utf8").copy(name);
   name.copy(packetContent, 6);
 
   // UserData - User controllable data (64)
@@ -62,12 +64,12 @@ async function npsRequestGameConnectServer(socket, rawData) {
  * @param {Connection} con
  * @param {Buffer} cypherCmd
  */
-function decryptCmd(con, cypherCmd) {
+function decryptCmd(con: Connection, cypherCmd: Buffer) {
   const s = con;
   const decryptedCommand = s.enc.decipher.update(cypherCmd);
   s.decryptedCmd = decryptedCommand;
-  logger.warn(`Enciphered Cmd: ${cypherCmd.toString('hex')}`);
-  logger.warn(`Deciphered Cmd: ${s.decryptedCmd.toString('hex')}`);
+  logger.warn(`Enciphered Cmd: ${cypherCmd.toString("hex")}`);
+  logger.warn(`Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`);
   return s;
 }
 
@@ -76,7 +78,7 @@ function decryptCmd(con, cypherCmd) {
  * @param {Connection} con
  * @param {Buffer} cypherCmd
  */
-function encryptCmd(con, cypherCmd) {
+function encryptCmd(con: Connection, cypherCmd: Buffer) {
   const s = con;
   s.encryptedCommand = s.enc.cypher.update(cypherCmd);
   return s;
@@ -87,20 +89,22 @@ function encryptCmd(con, cypherCmd) {
  * @param {Connection} con
  * @param {Buffer} data
  */
-async function sendCommand(con, data) {
+export async function sendCommand(con: Connection, data: Buffer) {
   const { id } = con;
   const keys = await database.fetchSessionKeyByConnectionId(id);
   const s = con;
 
   // Create the cypher and decipher only if not already set
-  const key = Buffer.from(keys.s_key, 'hex');
+  const key = Buffer.from(keys.s_key, "hex");
   if (!s.enc.cypher && !s.enc.decipher) {
     const desIV = Buffer.alloc(8);
     s.enc.cypher = crypto
-      .createCipheriv('des-cbc', key, desIV)
+      .createCipheriv("des-cbc", key, desIV);
+    s.enc.cypher
       .setAutoPadding(false);
     s.enc.decipher = crypto
-      .createDecipheriv('des-cbc', key, desIV)
+      .createDecipheriv("des-cbc", key, desIV);
+    s.enc.decipher
       .setAutoPadding(false);
   }
 
@@ -124,11 +128,5 @@ async function sendCommand(con, data) {
     cmdEncrypted.encryptedCommand,
   ]);
 
-
   return cmdEncrypted;
 }
-
-module.exports = {
-  npsRequestGameConnectServer,
-  sendCommand,
-};
