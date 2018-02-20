@@ -1,0 +1,26 @@
+version: "2"
+services:
+  web:
+    build: .
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules
+    ports:
+      - "80:80"
+      - "443:443"
+      - "7003:7003"
+      - "8226:8226"
+      - "8228:8228"
+      - "43300:43300"
+    command: "npm start"
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://todoapp@postgres/todos
+  postgres:
+    image: postgres:10
+    environment:
+      POSTGRES_USER: todoapp
+      POSTGRES_DB: todos    
