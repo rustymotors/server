@@ -4,8 +4,13 @@
   "description": "a server",
   "main": "server.js",
   "scripts": {
+    "dev": "npm install && npm run tslint && npm build -w",
+    "build": "npm run build-ts && npm run tslint",
+    "start": "node built/src/server.js",
+    "tslint": "tslint -c tslint.json -p tsconfig.json",
+    "pretest": "npm run tslint",
     "test": "jest --all",
-    "lint": "eslint lib src tests",
+    "build-ts": "tsc",
     "licence-check": "license-checker --json > ./data/licenses.json"
   },
   "author": "Joseph W Becher <jwbecher@drazisil.com> (drazisil)",
@@ -25,45 +30,46 @@
       "**/src/**/*.js",
       "**/lib/**/*.js"
     ],
-    "testResultsProcessor": "jest-junit"
+    "testResultsProcessor": "jest-junit",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "/__tests__/.*\\.(ts|tsx|js)$"
   },
   "jest-junit": {
     "output": "test-reports/junit.xml"
   },
   "dependencies": {
-    "arc4": "^3.3.8",
+    "@types/async": "^2.0.47",
+    "@types/dotenv": "^4.0.2",
+    "@types/node": "^9.4.6",
+    "@types/sqlite3": "^3.1.1",
+    "arc4": "^3.4.0",
     "async": "^2.5.0",
-    "body-parser": "^1.17.0",
-    "express": "^4.15.0",
-    "node-rsa": "^0.4.2",
+    "awesome-typescript-loader": "^3.4.1",
+    "dotenv": "^5.0.0",
+    "hoek": "^5.0.3",
+    "require-environment-variables": "^1.1.2",
+    "source-map-loader": "^0.2.3",
     "sqlite": "^2.9.1",
-    "ssl-config": "^1.0.0",
-    "whocalled": "^1.0.0",
-    "winston": "^2.2.0",
-    "winston-daily-rotate-file": "^1.1.4"
+    "whocalled": "^1.0.0"
   },
   "devDependencies": {
-    "eslint": "^4.10.0",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-config-prettier": "^2.7.0",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-prettier": "^2.3.1",
-    "jest": "^22.0.0",
-    "jest-junit": "^3.1.0",
+    "jest": "^22.4.0",
+    "jest-junit": "^3.6.0",
     "license-checker": "^16.0.0",
-    "prettier": "^1.7.4"
-  },
-  "eslintConfig": {
-    "extends": "prettier",
-    "parserOptions": {
-      "ecmaVersion": 6
-    },
-    "plugins": [
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": "error"
-    }
+    "pg-migrator": "^1.0.5",
+    "prettier": "^1.7.4",
+    "ts-jest": "^22.0.4",
+    "tslint": "^5.9.1",
+    "tslint-config-prettier": "^1.8.0",
+    "typescript": "^2.7.2",
+    "webpack": "^3.11.0"
   },
   "prettier": {
     "trailingComma": "es5"
