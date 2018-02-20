@@ -27,7 +27,7 @@ jobs:
           key: v2-dependencies-{{ checksum "package.json" }}
 
       # run tests!
-      - run:npm test
+      - run: npm test
       - store_test_results:
           path: test-reports
       - store_artifacts:
