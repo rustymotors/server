@@ -14,17 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const logger = require('winston');
-const config = require('../config/config.json');
+import * as TCPManager from '../src/TCPManager';
 
-logger.cli();
-logger.add(require('winston-daily-rotate-file'), {
-  filename: 'logs/mco-server_log.json',
-  json: true,
-  prepend: true,
-  datePattern: 'yyyy-MM-dd_',
+test('438 = MC_CLIENT_CONNECT_MSG', () => {
+  expect(TCPManager.MSG_STRING(438)).toBe('MC_CLIENT_CONNECT_MSG');
 });
-
-logger.level = config.loggerLevel;
-
-module.exports = logger;
