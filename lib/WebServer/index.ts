@@ -14,20 +14,32 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const packet = require('../src/packet.js');
+import * as async from "async";
+import { logger } from "../../src/logger";
+import PatchServer from "./patchServer";
+import WebServer from "./web";
 
-test('retuns a buffer packet from premadeLogin', () => {
-  expect(packet.premadeLogin()).toBeInstanceOf(Buffer);
-});
+export default class Web {
 
-test('retuns a buffer packet from craftGenericReply', () => {
-  expect(packet.craftGenericReply()).toBeInstanceOf(Buffer);
-});
+  /**
+   * Start HTTP and HTTPs connection listeners
+   * TODO: This code may be better suited in web.js and patchServer.js
+   */
+  public async start() {
+    /* Start the NPS servers */
 
-test('retuns a buffer packet from premadePersonaMaps', () => {
-  expect(packet.premadePersonaMaps()).toBeInstanceOf(Buffer);
-});
 
-test('retuns a buffer packet from buildPacket', () => {
-  expect(packet.buildPacket(6, 0x601, Buffer.from([0x06, 0x01]))).toBeInstanceOf(Buffer);
-});
+    const patchServer = new PatchServer
+    const webServer = new WebServer
+
+    patchServer.start()
+    webServer.start()
+
+
+    logger.info("Patch Server started");
+    logger.info("Web Server started");
+
+  }
+}
+
+

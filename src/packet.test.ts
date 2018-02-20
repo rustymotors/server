@@ -14,17 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const logger = require('winston');
-const config = require('../config/config.json');
+import * as packet from './packet';
 
-logger.cli();
-logger.add(require('winston-daily-rotate-file'), {
-  filename: 'logs/mco-server_log.json',
-  json: true,
-  prepend: true,
-  datePattern: 'yyyy-MM-dd_',
+test('retuns a buffer packet from premadeLogin', () => {
+  expect(packet.premadeLogin()).toBeInstanceOf(Buffer);
 });
 
-logger.level = config.loggerLevel;
+test('retuns a buffer packet from craftGenericReply', () => {
+  expect(packet.craftGenericReply()).toBeInstanceOf(Buffer);
+});
 
-module.exports = logger;
+test('retuns a buffer packet from premadePersonaMaps', () => {
+  expect(packet.premadePersonaMaps()).toBeInstanceOf(Buffer);
+});
+
+test('retuns a buffer packet from buildPacket', () => {
+  expect(packet.buildPacket(6, 0x601, Buffer.from([0x06, 0x01]))).toBeInstanceOf(Buffer);
+});

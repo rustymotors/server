@@ -14,16 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const crypto = require('crypto');
-const logger = require('../../src/logger.js');
-const packet = require('../../src/packet.js');
+import * as crypto from 'crypto';
+import { Socket } from 'net';
+import { IRawPacket } from '../../src/listenerThread';
+import { logger } from '../../src/logger';
+import * as packet from '../../src/packet';
 
 /**
  * Handle a select game persona packet
  * @param {Socket} socket
  * @param {Buffer} rawData
  */
-function npsSelectGamePersona(socket) {
+function npsSelectGamePersona(socket: Socket) {
   // Create the packet content
   // TODO: Create a real response, instead of a random blob of bytes
   const packetContent = crypto.randomBytes(44971);
@@ -47,7 +49,7 @@ function npsSelectGamePersona(socket) {
  * @param {Socket} socket
  * @param {Buffer} data
  */
-async function npsLogoutGameUser(socket) {
+async function npsLogoutGameUser(socket:Socket) {
   logger.info('Logging out persona...');
 
   // Create the packet content
@@ -68,32 +70,32 @@ async function npsLogoutGameUser(socket) {
  * TODO: Store in a database, instead of being hard-coded
  * @param {Int} customerId
  */
-function npsGetPersonaMapsByCustomerId(customerId) {
+function npsGetPersonaMapsByCustomerId(customerId: Buffer) {
   const name = Buffer.alloc(30);
 
-  switch (customerId.readUInt32BE()) {
+  switch (customerId.readUInt32BE(0)) {
     case 2868969472:
       Buffer.from('Doc', 'utf8').copy(name);
       return {
-        personaCount: Buffer.from([0x00, 0x01]),
+        id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
         // Max Personas are how many there are not how many allowed
         maxPersonas: Buffer.from([0x01]),
-        id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
         name,
+        personaCount: Buffer.from([0x00, 0x01]),
         shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
       };
     case 1:
       Buffer.from('Doctor Brown', 'utf8').copy(name);
       return {
-        personaCount: Buffer.from([0x00, 0x01]),
+        id: Buffer.from([0x00, 0x00, 0x00, 0x02]),
         // Max Personas are how many there are not how many allowed
         maxPersonas: Buffer.from([0x01]),
-        id: Buffer.from([0x00, 0x00, 0x00, 0x02]),
         name,
+        personaCount: Buffer.from([0x00, 0x01]),
         shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
       };
     default:
-      logger.error(`Unknown customerId: ${customerId.readUInt32BE()}`);
+      logger.error(`Unknown customerId: ${customerId.readUInt32BE(0)}`);
       process.exit(1);
       return null;
   }
@@ -104,7 +106,7 @@ function npsGetPersonaMapsByCustomerId(customerId) {
  * @param {Socket} socket
  * @param {Buffer} data
  */
-function npsGetPersonaMaps(socket, data) {
+function npsGetPersonaMaps(socket: Socket, data: Buffer) {
   const customerId = Buffer.alloc(4);
   data.copy(customerId, 0, 12);
   const persona = npsGetPersonaMapsByCustomerId(customerId);
@@ -143,18 +145,18 @@ function npsGetPersonaMaps(socket, data) {
  * @param {Socket} socket
  * @param {Buffer} rawData
  */
-async function personaDataHandler(rawPacket) {
+export async function personaDataHandler(rawPacket: IRawPacket) {
   const { connection, data } = rawPacket;
   const { sock } = connection;
-  const requestCode = data.readUInt16BE().toString(16);
+  const requestCode = data.readUInt16BE(0).toString(16);
 
   if (requestCode === '503') {
-    await npsSelectGamePersona(sock, data);
+    await npsSelectGamePersona(sock);
     return connection;
   }
 
   if (requestCode === '50f') {
-    await npsLogoutGameUser(sock, data);
+    await npsLogoutGameUser(sock);
     return connection;
   }
 
@@ -166,5 +168,3 @@ async function personaDataHandler(rawPacket) {
   process.exit(1);
   return null;
 }
-
-module.exports = { personaDataHandler };
