@@ -14,20 +14,33 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import * as packet from '../src/packet';
+import MessageNode from '../MessageNode';
 
-test('retuns a buffer packet from premadeLogin', () => {
-  expect(packet.premadeLogin()).toBeInstanceOf(Buffer);
-});
+const packet = Buffer.from([
+  0x00,
+  0x00,
+  0x54,
+  0x4f,
+  0x4d,
+  0x43,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+]);
 
-test('retuns a buffer packet from craftGenericReply', () => {
-  expect(packet.craftGenericReply()).toBeInstanceOf(Buffer);
-});
-
-test('retuns a buffer packet from premadePersonaMaps', () => {
-  expect(packet.premadePersonaMaps()).toBeInstanceOf(Buffer);
-});
-
-test('retuns a buffer packet from buildPacket', () => {
-  expect(packet.buildPacket(6, 0x601, Buffer.from([0x06, 0x01]))).toBeInstanceOf(Buffer);
+test('packet is a MCOTS packet', () => {
+  expect(new MessageNode(packet).isMCOTS()).toBe(true);
 });
