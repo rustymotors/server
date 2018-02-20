@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "npm install && npm run tslint && npm build -w",
     "build": "npm run build-ts && npm run tslint",
-    "start": "node built/src/server.js",
+    "prestart": "npm run build",
+    "start": "node dist/src/server.js",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "pretest": "npm run tslint",
     "test": "jest --all",
@@ -27,8 +28,8 @@
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "**/src/**/*.js",
-      "**/lib/**/*.js"
+      "src/**/*.ts",
+      "lib/**/*.ts"
     ],
     "testResultsProcessor": "jest-junit",
     "moduleFileExtensions": [
@@ -39,7 +40,8 @@
     "transform": {
       "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
-    "testRegex": "/__tests__/.*\\.(ts|tsx|js)$"
+    "testRegex": ".*(spec|test).(ts|tsx|js)$"
+
   },
   "jest-junit": {
     "output": "test-reports/junit.xml"
@@ -47,6 +49,7 @@
   "dependencies": {
     "@types/async": "^2.0.47",
     "@types/dotenv": "^4.0.2",
+    "@types/jest": "^22.1.3",
     "@types/node": "^9.4.6",
     "@types/sqlite3": "^3.1.1",
     "arc4": "^3.4.0",
