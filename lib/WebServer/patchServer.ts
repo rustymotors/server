@@ -15,13 +15,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import http = require("http");
-import { config, IConfigurationFile  } from "../../config/config";
+import { IConfigurationFile } from "../../config/config";
 
 import { logger } from "../../src/logger";
 
 const castanetResponse = {
   body: Buffer.from("cafebeef00000000000003", "hex"),
-  headers: "'Content-Type', 'application/octet-stream'",
+  header: {
+    type: 'Content-Type',
+    value: 'application/octet-stream'
+  },
 };
 
 // TODO: Combine these threes functions.
@@ -61,75 +64,46 @@ function generateShardList(serverConfig: IConfigurationFile["serverConfig"]) {
   DiagnosticServerPort=80`;
 }
 
-function processHTTPRequest(method: string, url: string) {
-  switch (method.toLowerCase()) {
-    case 'get':
-      return `You requested ${method} ${url}`
+function httpHandler(request: http.IncomingMessage, response: http.ServerResponse, serverConfiguration: IConfigurationFile) {
+  logger.info(`[HTTP] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`)
+  let responseData
+  switch (request.url) {
+    case "/ShardList/":
+      response.setHeader("Content-Type", "text/plain");
+      response.end(generateShardList(serverConfiguration.serverConfig));
+      break;
 
-  
+    case "/games/EA_Seattle/MotorCity/UpdateInfo":
+      responseData = patchUpdateInfo();
+      response.setHeader(responseData.header.type, responseData.header.value);
+      response.end(responseData.body);
+      break;
+    case "/games/EA_Seattle/MotorCity/NPS":
+      responseData = patchNPS();
+      response.setHeader(responseData.header.type, responseData.header.value);
+      response.end(responseData.body);
+      break;
+    case "/games/EA_Seattle/MotorCity/MCO":
+      responseData = patchMCO();
+      response.setHeader(responseData.header.type, responseData.header.value);
+      response.end(responseData.body);
+      break;
+
+
     default:
-      return 'Unsupported method';
+      response.end("foo")
+      break;
   }
-}
-
-function httpHandler(request: http.IncomingMessage, response: http.ServerResponse) {
-  logger.info(`Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`)
 }
 
 
 export default class PatchServer {
 
-  public async start() {
-    const serverPatch = http.createServer(httpHandler);
+  public async start(configurationFile: IConfigurationFile) {
+    const serverPatch = http.createServer((req, res) => {
+      httpHandler(req, res, configurationFile)
+    });
     serverPatch.listen({ port: "80", host: "0.0.0.0" });
   }
 
 }
-
-/**
- * Start the HTTP web server
- * @param {Function} callback
- */
-// export async function start() {
-  // const config = configurationFile.serverConfig;
-
-  // /**
-  //  * Return the shard list
-  //  */
-  // app.get("/ShardList/", (req, res) => {
-  //   res.set("Content-Type", "text/plain");
-  //   res.send(generateShardList(config));
-  // });
-
-  // /**
-  //  * These 3 methods make up the patch server
-  //  */
-  // app.post("/games/EA_Seattle/MotorCity/UpdateInfo", (req, res) => {
-  //   const response = patchUpdateInfo();
-  //   res.set(response.headers);
-  //   res.send(response.body);
-  // });
-
-  // app.post("/games/EA_Seattle/MotorCity/NPS", (req, res) => {
-  //   const response = patchNPS();
-  //   res.set(response.headers);
-  //   res.send(response.body);
-  // });
-
-  // app.post("/games/EA_Seattle/MotorCity/MCO", (req, res) => {
-  //   const response = patchMCO();
-  //   res.set(response.headers);
-  //   res.send(response.body);
-  // });
-
-  // /**
-  //  * Fallback if request doesn't match above
-  //  */
-  // app.use((req, res) => {
-  //   logger.debug("HTTP");
-  //   logger.debug("Headers: ", req.headers);
-  //   logger.debug(`Method: ${req.method}`);
-  //   logger.debug(`Url: ${req.url}`);
-  //   res.send("404");
-  // });
-

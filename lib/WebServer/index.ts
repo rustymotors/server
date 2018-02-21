@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as async from "async";
+import { IConfigurationFile } from "../../config/config";
 import { logger } from "../../src/logger";
 import PatchServer from "./patchServer";
 import WebServer from "./web";
@@ -25,14 +26,14 @@ export default class Web {
    * Start HTTP and HTTPs connection listeners
    * TODO: This code may be better suited in web.js and patchServer.js
    */
-  public async start() {
+  public async start(config: IConfigurationFile) {
     /* Start the NPS servers */
 
 
     const patchServer = new PatchServer
     const webServer = new WebServer
 
-    patchServer.start()
+    patchServer.start(config)
     webServer.start()
 
 
