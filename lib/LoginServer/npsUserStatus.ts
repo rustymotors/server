@@ -71,7 +71,7 @@ export class NPSUserStatus {
    * extractSessionKeyFromPacket
    * 
    * Take 128 bytes
-   * They are the hex of utf-8
+   * They are the utf-8 of the hex bytes that are the key
    */
   public extractSessionKeyFromPacket(serverConfig: IConfigurationFile["serverConfig"], packet: Buffer) {
 
@@ -82,20 +82,10 @@ export class NPSUserStatus {
       packet.slice(52, -10).toString('utf8'),
       'hex',
     );
-    logger.warn(
-      `Session Key before decryption: ${sessionKeyStr.toString("hex")}`
-    );
-    logger.warn(
-      `Session Key before decryption: ${sessionKeyStr.toString("base64")}`
-    );
     const decrypted = crypto.privateDecrypt(privateKey, 
       sessionKeyStr);
-      logger.warn(
-        `Session Key : ${decrypted.toString("hex")}`
-      );
-    const sessionKey = decrypted.slice(2, -4).toString('utf8')
+    const sessionKey = decrypted.slice(2, -4).toString('hex')
   
-    console.log(sessionKey)
     return sessionKey
   }
 }
