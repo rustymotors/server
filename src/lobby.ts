@@ -66,7 +66,7 @@ export async function npsRequestGameConnectServer(socket: Socket, rawData: Buffe
  */
 function decryptCmd(con: Connection, cypherCmd: Buffer) {
   const s = con;
-  const decryptedCommand = s.enc.decipher.update(cypherCmd);
+  const decryptedCommand = s.decipherBuffer(cypherCmd);
   s.decryptedCmd = decryptedCommand;
   logger.warn(`Enciphered Cmd: ${cypherCmd.toString("hex")}`);
   logger.warn(`Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`);
@@ -80,7 +80,7 @@ function decryptCmd(con: Connection, cypherCmd: Buffer) {
  */
 function encryptCmd(con: Connection, cypherCmd: Buffer) {
   const s = con;
-  s.encryptedCommand = s.enc.cypher.update(cypherCmd);
+  s.encryptedCommand = s.cipherBuffer(cypherCmd);
   return s;
 }
 
@@ -96,15 +96,15 @@ export async function sendCommand(con: Connection, data: Buffer) {
 
   // Create the cypher and decipher only if not already set
   const key = Buffer.from(keys.s_key, "hex");
-  if (!s.enc.cypher && !s.enc.decipher) {
+  if (!s.encLobby.cipher && !s.encLobby.decipher) {
     const desIV = Buffer.alloc(8);
-    s.enc.cypher = crypto
+    s.encLobby.cipher = crypto
       .createCipheriv("des-cbc", key, desIV);
-    s.enc.cypher
+    s.encLobby.cipher
       .setAutoPadding(false);
-    s.enc.decipher = crypto
+    s.encLobby.decipher = crypto
       .createDecipheriv("des-cbc", key, desIV);
-    s.enc.decipher
+    s.encLobby.decipher
       .setAutoPadding(false);
   }
 
