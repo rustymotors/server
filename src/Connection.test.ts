@@ -18,41 +18,42 @@ import { Socket } from "net";
 import { Connection } from "./Connection";
 import ConnectionMgr from "./connectionMgr";
 
-let testConnection;
+let testConnection1: Connection;
+let testConnection2: Connection;
 
 describe('Connection class', () => {
 
   beforeEach(() => {
-    testConnection = new Connection(1, new Socket, new ConnectionMgr());
+    testConnection1 = new Connection(1, new Socket, new ConnectionMgr());
   });
 
   test('status == "inactive"', () => {
-    expect(testConnection.status).toEqual('INACTIVE');
+    expect(testConnection1.status).toEqual('INACTIVE');
   });
 
-  test('has no default encryption object"', () => {
-    expect(testConnection.enc).toEqual({});
+  test('has no default encryption object', () => {
+    expect(testConnection1.enc).toEqual({});
   });
 
-  test('changes to setupComplete after setting key"', () => {
-    expect(testConnection.isSetupComplete).toBeFalsy();
-    testConnection.setEncryptionKey('abc123')
-    expect(testConnection.isSetupComplete).toBeTruthy()
+  test('changes to setupComplete after setting key', () => {
+    expect(testConnection1.isSetupComplete).toBeFalsy();
+    testConnection1.setEncryptionKey('abc123')
+    expect(testConnection1.isSetupComplete).toBeTruthy()
   });
+  describe('Two connections can communicate', () => {
 
-  // describe('encrying and decrypting packets', () => {
-  //   // Applies only to tests in this describe block
-  //   beforeEach(() => {
-  //     return initializeFoodDatabase();
-  //   });
+    beforeEach(() => {
+      testConnection1 = new Connection(1, new Socket, new ConnectionMgr());
+      testConnection2 = new Connection(2, new Socket, new ConnectionMgr());
+    });
 
-  //   test('Vienna <3 sausage', () => {
-  //     expect(isValidCityFoodPair('Vienna', 'Wiener Schnitzel')).toBe(true);
-  //   });
-
-  //   test('San Juan <3 plantains', () => {
-  //     expect(isValidCityFoodPair('San Juan', 'Mofongo')).toBe(true);
-  //   });
-  // });
+    test('Connection one can talk to Connection two', () => {
+      testConnection1.setEncryptionKey('abc123')
+      testConnection2.setEncryptionKey('abc123')
+      const testString = "I'm a very a secret message. Please don't decode me!"
+      const encipheredBuffer = testConnection1.cipherBuffer(Buffer.from(testString))
+      expect(testConnection2.decipherBuffer(encipheredBuffer).toString()).toEqual(testString)
+    });
+  });
 
 });

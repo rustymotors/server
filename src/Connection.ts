@@ -26,15 +26,15 @@ export class Connection {
   public id: number;
   public inQueue: boolean;
   public enc: {
-    cypher?: Cipher,
+    cipher?: Cipher,
     decipher?: Decipher
   };
   public useEncryption: boolean;
   public isSetupComplete: boolean;
   public decryptedCmd: Buffer;
   public encryptedCommand: Buffer;
+  public status: string;
   private appID: number;
-  private status: string;
   private msgEvent: null;
   private lastMsg: number;
   private mgr: ConnectionMgr;
@@ -59,8 +59,22 @@ export class Connection {
    * setEncryptionKey
    */
   public setEncryptionKey(sessionKey: string) {
-    this.enc.cypher = crypto.createCipheriv("rc4", sessionKey, "");
+    this.enc.cipher = crypto.createCipheriv("rc4", sessionKey, "");
     this.enc.decipher = crypto.createDecipheriv("rc4", sessionKey, "");
     this.isSetupComplete = true;
+  }
+
+  /**
+   * CipherBuffer
+   */
+  public cipherBuffer(messageBuffer: Buffer) {
+    return this.enc.cipher.update(messageBuffer);
+  }
+  
+  /**
+   * DecipherBuffer
+   */
+  public decipherBuffer(messageBuffer: Buffer) {
+    return this.enc.decipher.update(messageBuffer);
   }
 }

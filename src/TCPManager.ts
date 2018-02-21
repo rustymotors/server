@@ -137,12 +137,6 @@ export async function MessageReceived(msg: MessageNode, con: Connection) {
   if (!(msg.flags && 0x80) && newConnection.useEncryption) {
     // If not a Heartbeat
     if (!(msg.flags && 0x80) && newConnection.useEncryption) {
-      if (!newConnection.enc.decipher) {
-        logger.error(`KEncrypt ->enc is NULL! Disconnecting...conId: ${newConnection.id}`);
-        console.dir(newConnection);
-        con.sock.end();
-        process.exit();
-      }
       try {
         if (!newConnection.isSetupComplete) {
           logger.error(`Decrypt() not yet setup! Disconnecting...conId: ${con.id}`);
@@ -158,7 +152,7 @@ export async function MessageReceived(msg: MessageNode, con: Connection) {
           "Message buffer before decrypting: ",
           msg.buffer.toString("hex"),
         );
-        const deciphered = newConnection.enc.decipher.update(msg.buffer);
+        const deciphered = newConnection.decipherBuffer(msg.buffer);
         logger.warn("output2:    ", deciphered.toString());
 
         logger.debug("===================================================================");
