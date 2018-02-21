@@ -67,7 +67,7 @@ export function MSG_STRING(msgID: number) {
 //   return s;
 // }
 
-async function ClientConnect(con: Connection, node: MessageNode) {
+export async function ClientConnect(con: Connection, node: MessageNode) {
   const { id } = con;
   /**
    * Let's turn it into a ClientConnectMsg
@@ -107,7 +107,7 @@ async function ClientConnect(con: Connection, node: MessageNode) {
   }
 }
 
-async function ProcessInput(node: MessageNode, conn: Connection) {
+export async function ProcessInput(node: MessageNode, conn: Connection) {
 
   const currentMsgNo = node.msgNo;
   const currentMsgString = MSG_STRING(currentMsgNo);
@@ -131,7 +131,7 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
   }
 }
 
-async function MessageReceived(msg: MessageNode, con: Connection) {
+export async function MessageReceived(msg: MessageNode, con: Connection) {
   const newConnection = con;
   if (!newConnection.useEncryption && (msg.flags && 0x08)) {
     newConnection.useEncryption = true;
@@ -183,13 +183,13 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
   }
 }
 
-async function npsHeartbeat() {
+export async function npsHeartbeat() {
   const packetContent = Buffer.alloc(8);
   const packetResult = packet.buildPacket(8, 0x0127, packetContent);
   return packetResult;
 }
 
-async function lobbyDataHandler(rawPacket: IRawPacket) {
+export async function lobbyDataHandler(rawPacket: IRawPacket) {
   const { connection, data } = rawPacket;
   const { sock } = connection;
   const requestCode = data.readUInt16BE(0).toString(16);
