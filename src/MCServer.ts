@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as readline from "readline";
+import { IConfigurationFile  } from "../config/config";
 import * as database from "../lib/database/index";
 import Web from "../lib/WebServer";
 import ConnectionMgr from "./connectionMgr";
@@ -28,7 +29,7 @@ const connectionMgr = new ConnectionMgr();
  * @param {Function} callback
  */
 
-async function startServers() {
+async function startServers(configurationFile: IConfigurationFile) {
   // logger.info("Starting the listening sockets...");
   const tcpPortList = [
     8228,
@@ -58,7 +59,7 @@ async function startServers() {
 
   const web = new Web
 
-  web.start().then(async () => {
+  web.start(configurationFile).then(async () => {
     await tcpPortList.map((port: number) => startTCPListener(port, connectionMgr));
     logger.info("Listening sockets create successfully.");
   })
@@ -92,10 +93,10 @@ function startCLI() {
   });
 }
 
-function run() {
+function run(configurationFile: IConfigurationFile) {
   // Connect to database
   // Start the server listeners
-  startServers()
+  startServers(configurationFile)
     .then(startCLI)
     .catch((err) => { throw err; });
 }
