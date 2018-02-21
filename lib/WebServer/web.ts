@@ -17,8 +17,8 @@
 import fs = require("fs");
 import * as http from "http";
 import * as https from "https";
+import * as SSLConfig from "ssl-config";
 import { config, IConfigurationFile } from "../../config/config";
-import SSLConfig from "../ssl-config";
 
 import { Socket } from "net";
 import { logger } from "../../src/logger";
@@ -27,7 +27,7 @@ import { logger } from "../../src/logger";
  * Create the SSL options object
  */
 function sslOptions(configuration: IConfigurationFile["serverConfig"]) {
-  const sslConfig = new SSLConfig();
+  const sslConfig = SSLConfig('old');
   return {
     cert: fs.readFileSync(configuration.certFilename),
     ciphers: sslConfig.ciphers,
@@ -39,7 +39,7 @@ function sslOptions(configuration: IConfigurationFile["serverConfig"]) {
 }
 
 function httpsHandler(request: http.IncomingMessage, response: http.ServerResponse) {
-  logger.info(`Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`)
+  logger.info(`[HTTPS] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`)
   switch (request.url) {
     case "/key":
       response.setHeader("Content-disposition", "attachment; filename=cert.pem");
