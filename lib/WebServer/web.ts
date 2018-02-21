@@ -52,6 +52,11 @@ function httpsHandler(request: http.IncomingMessage, response: http.ServerRespon
 
 
     default:
+      if (request.url.startsWith("/AuthLogin?")) {
+        response.setHeader("Content-Type", "text/plain")
+        response.end("Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e");
+        return
+      }
       response.statusCode = 404;
       response.end("Unknown request.")
       break;

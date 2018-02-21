@@ -25,6 +25,10 @@ export class Connection {
   public sock: Socket;
   public id: number;
   public inQueue: boolean;
+  public encLobby: {
+    cipher?: Cipher,
+    decipher?: Decipher
+  };
   public enc: {
     cipher?: Cipher,
     decipher?: Decipher
