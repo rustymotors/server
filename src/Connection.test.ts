@@ -34,6 +34,12 @@ describe('Connection class', () => {
     expect(testConnection.enc).toEqual({});
   });
 
+  test('changes to setupComplete after setting key"', () => {
+    expect(testConnection.isSetupComplete).toBeFalsy();
+    testConnection.setEncryptionKey('abc123')
+    expect(testConnection.isSetupComplete).toBeTruthy()
+  });
+
   // describe('encrying and decrypting packets', () => {
   //   // Applies only to tests in this describe block
   //   beforeEach(() => {

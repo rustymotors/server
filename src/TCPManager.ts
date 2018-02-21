@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import * as crypto from "crypto";
 import { Socket } from "net";
 import * as database from "../lib/database/index";
 import ClientConnectMsg from "./ClientConnectMsg";
@@ -85,8 +84,7 @@ export async function ClientConnect(con: Connection, node: MessageNode) {
     const connectionWithKey = con;
 
     try {
-      connectionWithKey.enc.cypher = crypto.createCipheriv("rc4", res.session_key, "");
-      connectionWithKey.enc.decipher = crypto.createDecipheriv("rc4", res.session_key, "");
+      connectionWithKey.setEncryptionKey(res.session_key)
 
       // Create new response packet
       // TODO: Do this cleaner
@@ -95,7 +93,6 @@ export async function ClientConnect(con: Connection, node: MessageNode) {
       // write the socket
       socketWriteIfOpen(connectionWithKey.sock, rPacket.rawBuffer);
 
-      connectionWithKey.isSetupComplete = true;
       return connectionWithKey;
     } catch (err) {
       console.error(err);

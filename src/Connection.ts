@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import * as crypto from "crypto";
 import { Cipher, Decipher } from "crypto";
 import { Socket } from "net";
 import ConnectionMgr from "./connectionMgr";
@@ -52,5 +53,14 @@ export class Connection {
     this.isSetupComplete = false;
     this.mgr = mgr;
     this.inQueue = true;
+  }
+
+  /**
+   * setEncryptionKey
+   */
+  public setEncryptionKey(sessionKey: string) {
+    this.enc.cypher = crypto.createCipheriv("rc4", sessionKey, "");
+    this.enc.decipher = crypto.createDecipheriv("rc4", sessionKey, "");
+    this.isSetupComplete = true;
   }
 }
