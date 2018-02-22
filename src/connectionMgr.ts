@@ -91,6 +91,7 @@ export default class ConnectionMgr {
       con.sock = socket;
       return con;
     }
+    
     const connectionManager = this;
     const newConnection = new Connection(this.newConnectionId, socket, connectionManager);
     logger.info(`I have not seen connections from ${remoteAddress} before, adding it.`);
