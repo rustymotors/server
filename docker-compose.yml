@@ -1,7 +1,9 @@
 version: "2"
+
 services:
   web:
-    build: .
+    build: 
+      context: .
     environment:
       - NODE_ENV=production
     volumes:
