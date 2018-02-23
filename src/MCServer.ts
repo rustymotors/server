@@ -97,6 +97,7 @@ function run(configurationFile: IConfigurationFile) {
   // Connect to database
   // Start the server listeners
   startServers(configurationFile)
+    .then(database.createDB)  
     .then(startCLI)
     .catch((err) => { throw err; });
 }

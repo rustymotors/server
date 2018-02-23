@@ -95,12 +95,14 @@ export async function ClientConnect(con: Connection, node: MessageNode) {
 
       return connectionWithKey;
     } catch (err) {
-      console.error(err);
-      throw err;
+      logger.error(err);
+      logger.error(err.stack);
+      process.exit()
     }
   } catch (error) {
-    console.error(error);
-    throw error;
+    logger.error(error);
+    logger.error(error.stack);
+    process.exit()
   }
 }
 
@@ -234,7 +236,7 @@ export async function defaultHandler(rawPacket: IRawPacket) {
   logger.info("=============================================");
 
   if (messageNode.isMCOTS()) {
-    // messageNode.dumpPacket();
+    messageNode.dumpPacket();
 
     return MessageReceived(messageNode, connection);
   }

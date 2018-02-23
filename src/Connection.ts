@@ -53,6 +53,7 @@ export class Connection {
     this.msgEvent = null;
     this.lastMsg = 0;
     this.useEncryption = false;
+    this.encLobby = {};
     this.enc = {};
     this.isSetupComplete = false;
     this.mgr = mgr;
@@ -65,6 +66,24 @@ export class Connection {
   public setEncryptionKey(sessionKey: string) {
     this.enc.cipher = crypto.createCipheriv("rc4", sessionKey, "");
     this.enc.decipher = crypto.createDecipheriv("rc4", sessionKey, "");
+
+    this.isSetupComplete = true;
+  }
+
+  /**
+   * setEncryptionKeyDES
+   */
+  public setEncryptionKeyDES(sKey: string) {
+    const desIV = Buffer.alloc(8);
+    this.encLobby.cipher = crypto
+      .createCipheriv("des-cbc", Buffer.from(sKey, "hex"), desIV);
+    this.encLobby.cipher
+      .setAutoPadding(false);
+    this.encLobby.decipher = crypto
+      .createDecipheriv("des-cbc", Buffer.from(sKey, "hex"), desIV);
+    this.encLobby.decipher
+      .setAutoPadding(false);
+
     this.isSetupComplete = true;
   }
 
@@ -80,5 +99,19 @@ export class Connection {
    */
   public decipherBuffer(messageBuffer: Buffer) {
     return this.enc.decipher.update(messageBuffer);
+  }
+
+  /**
+   * CipherBufferDES
+   */
+  public cipherBufferDES(messageBuffer: Buffer) {
+    return this.encLobby.cipher.update(messageBuffer);
+  }
+  
+  /**
+   * DecipherBufferDES
+   */
+  public decipherBufferDES(messageBuffer: Buffer) {
+    return this.encLobby.decipher.update(messageBuffer);
   }
 }
