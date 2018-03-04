@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import * as crypto from "crypto";
 import { Socket } from "net";
 import * as database from "../lib/database/index";
 import ClientConnectMsg from "./ClientConnectMsg";
@@ -67,7 +66,7 @@ export function MSG_STRING(msgID: number) {
 //   return s;
 // }
 
-async function ClientConnect(con: Connection, node: MessageNode) {
+export async function ClientConnect(con: Connection, node: MessageNode) {
   const { id } = con;
   /**
    * Let's turn it into a ClientConnectMsg
@@ -85,8 +84,7 @@ async function ClientConnect(con: Connection, node: MessageNode) {
     const connectionWithKey = con;
 
     try {
-      connectionWithKey.enc.cypher = crypto.createCipheriv("rc4", res.session_key, "");
-      connectionWithKey.enc.decipher = crypto.createDecipheriv("rc4", res.session_key, "");
+      connectionWithKey.setEncryptionKey(res.session_key)
 
       // Create new response packet
       // TODO: Do this cleaner
@@ -95,7 +93,6 @@ async function ClientConnect(con: Connection, node: MessageNode) {
       // write the socket
       socketWriteIfOpen(connectionWithKey.sock, rPacket.rawBuffer);
 
-      connectionWithKey.isSetupComplete = true;
       return connectionWithKey;
     } catch (err) {
       console.error(err);
@@ -107,7 +104,7 @@ async function ClientConnect(con: Connection, node: MessageNode) {
   }
 }
 
-async function ProcessInput(node: MessageNode, conn: Connection) {
+export async function ProcessInput(node: MessageNode, conn: Connection) {
 
   const currentMsgNo = node.msgNo;
   const currentMsgString = MSG_STRING(currentMsgNo);
@@ -131,7 +128,7 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
   }
 }
 
-async function MessageReceived(msg: MessageNode, con: Connection) {
+export async function MessageReceived(msg: MessageNode, con: Connection) {
   const newConnection = con;
   if (!newConnection.useEncryption && (msg.flags && 0x08)) {
     newConnection.useEncryption = true;
@@ -140,12 +137,6 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
   if (!(msg.flags && 0x80) && newConnection.useEncryption) {
     // If not a Heartbeat
     if (!(msg.flags && 0x80) && newConnection.useEncryption) {
-      if (!newConnection.enc.decipher) {
-        logger.error(`KEncrypt ->enc is NULL! Disconnecting...conId: ${newConnection.id}`);
-        console.dir(newConnection);
-        con.sock.end();
-        process.exit();
-      }
       try {
         if (!newConnection.isSetupComplete) {
           logger.error(`Decrypt() not yet setup! Disconnecting...conId: ${con.id}`);
@@ -161,7 +152,7 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
           "Message buffer before decrypting: ",
           msg.buffer.toString("hex"),
         );
-        const deciphered = newConnection.enc.decipher.update(msg.buffer);
+        const deciphered = newConnection.decipherBuffer(msg.buffer);
         logger.warn("output2:    ", deciphered.toString());
 
         logger.debug("===================================================================");
@@ -183,13 +174,13 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
   }
 }
 
-async function npsHeartbeat() {
+export async function npsHeartbeat() {
   const packetContent = Buffer.alloc(8);
   const packetResult = packet.buildPacket(8, 0x0127, packetContent);
   return packetResult;
 }
 
-async function lobbyDataHandler(rawPacket: IRawPacket) {
+export async function lobbyDataHandler(rawPacket: IRawPacket) {
   const { connection, data } = rawPacket;
   const { sock } = connection;
   const requestCode = data.readUInt16BE(0).toString(16);
