@@ -75,7 +75,7 @@ export default async function startTCPListener(localPort: number, connectionMgr:
         process.exit(1);
       }
     });
-  }).listen({ port: localPort, hostname: '0.0.0.0'}, () => {
+  }).listen({ port: localPort, host: '0.0.0.0'}, () => {
     // logger.info(`Listener started on port ${localPort}`);
   });
 }

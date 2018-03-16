@@ -87,14 +87,14 @@ export default class ConnectionMgr {
     const { remoteAddress, localPort } = socket;
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
     if (con !== undefined) {
-      logger.info(`I have seen connections from ${remoteAddress} before`);
+      logger.info(`I have seen connections from ${remoteAddress} on ${localPort} before`);
       con.sock = socket;
       return con;
     }
     
     const connectionManager = this;
     const newConnection = new Connection(this.newConnectionId, socket, connectionManager);
-    logger.info(`I have not seen connections from ${remoteAddress} before, adding it.`);
+    logger.info(`I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`);
     this.connections.push(newConnection);
     return newConnection;
   }

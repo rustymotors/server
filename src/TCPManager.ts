@@ -79,7 +79,7 @@ export async function ClientConnect(con: Connection, node: MessageNode) {
   logger.debug(`Looking up the session key for ${con.id}...`);
   try {
     const res = await database.fetchSessionKeyByConnectionId(id);
-    logger.warn("S Key: ", res.s_key);
+    logger.warn("Session Key: ", res.session_key);
 
     const connectionWithKey = con;
 
@@ -131,20 +131,28 @@ export async function ProcessInput(node: MessageNode, conn: Connection) {
 }
 
 export async function MessageReceived(msg: MessageNode, con: Connection) {
+  logger.info("Welcome to MessageRevieved()")
   const newConnection = con;
   if (!newConnection.useEncryption && (msg.flags && 0x08)) {
+    logger.debug("Turning on encryption")
     newConnection.useEncryption = true;
+    logger.debug(newConnection.useEncryption.toString())
   }
   // If not a Heartbeat
-  if (!(msg.flags && 0x80) && newConnection.useEncryption) {
+  if (!(msg.flags === 80) && newConnection.useEncryption) {
+    logger.debug("1")
     // If not a Heartbeat
-    if (!(msg.flags && 0x80) && newConnection.useEncryption) {
+    if (!(msg.flags === 80) && newConnection.useEncryption) {
+      logger.debug("2")
       try {
         if (!newConnection.isSetupComplete) {
+          logger.debug("3")
           logger.error(`Decrypt() not yet setup! Disconnecting...conId: ${con.id}`);
           con.sock.end();
           process.exit();
         }
+
+        logger.debug("4")
 
         /**
          * Attempt to decrypt message
@@ -155,7 +163,8 @@ export async function MessageReceived(msg: MessageNode, con: Connection) {
           msg.buffer.toString("hex"),
         );
         const deciphered = newConnection.decipherBuffer(msg.buffer);
-        logger.warn("output2:    ", deciphered.toString());
+        logger.warn("output2:    ", deciphered.toString("hex"));
+        console.log(deciphered)
 
         logger.debug("===================================================================");
         return newConnection;
@@ -207,6 +216,13 @@ export async function lobbyDataHandler(rawPacket: IRawPacket) {
 
       const newConnection = await lobby.sendCommand(connection, data);
       const { sock: newSock, encryptedCommand } = newConnection;
+      
+      if (encryptedCommand == null) {
+        logger.error("Error with encrypted command, dumping connection...")
+        console.dir(newConnection)
+        process.exit(1)
+      }
+      
       // FIXME: Figure out why sometimes the socket is closed at this point
       socketWriteIfOpen(newSock, encryptedCommand);
       return newConnection;
