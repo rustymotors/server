@@ -31,14 +31,26 @@ export default class MessageNode {
 
     this.appId = Buffer.from([0x00, 0x00]);
   
-    this.setMsgHeader(packet);
     this.setBuffer(packet);
-  
-    this.rawBuffer = packet;
-  
+    this.setMsgHeader(packet);
+
+    this.rawBuffer = packet
+
     if (packet.length <= 6) {
       throw new Error(`Packet too short!: ${packet.toString()}`);
     }
+
+    try {
+      this.msgNo = this.buffer.readInt16LE(0);
+    } catch (error) {
+      if (error instanceof RangeError) {
+        // This is likeley not an MCOTS packet, ignore
+      } else {
+        logger.error(packet.toString("hex"))
+        throw error 
+      }
+    }
+    
   
     // DWORD seq; sequenceNo
     this.seq = packet.readInt32LE(6);
