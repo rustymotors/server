@@ -18,11 +18,11 @@ import { logger } from "./logger";
 
 export default class ClientConnectMsg {
 
+  public customerId: number;
+  public personaId: number;
+  public personaName: string;
   private msgId: number;
-  private customerId: number;
-  private personaId: number;
   private custName: string;
-  private personaName: string;
   private mcVersion: Buffer;
   private rawBuffer: Buffer;
 

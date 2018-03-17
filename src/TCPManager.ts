@@ -84,11 +84,15 @@ export async function ClientConnect(con: Connection, node: MessageNode) {
     const connectionWithKey = con;
 
     try {
-      connectionWithKey.setEncryptionKey(res.session_key)
+      const { customerId, personaId, personaName } = newMsg
+      const sessionKey = Buffer.from(res.session_key, "hex")
+      connectionWithKey.setEncryptionKey(sessionKey)
+      logger.debug(`cust: ${customerId} ID: ${personaId} Name: ${personaName} SessionKey: ${sessionKey[0].toString(16)} ${sessionKey[1].toString(16)} ${sessionKey[2].toString(16)} ${sessionKey[3].toString(16)} ${sessionKey[4].toString(16)} ${sessionKey[5].toString(16)} ${sessionKey[6].toString(16)} ${sessionKey[7].toString(16)}`)
 
       // Create new response packet
       // TODO: Do this cleaner
       const rPacket = new MessageNode(node.rawBuffer);
+      logger.debug(rPacket.rawBuffer.toString("hex"))
 
       // write the socket
       socketWriteIfOpen(connectionWithKey.sock, rPacket.rawBuffer);
@@ -131,7 +135,7 @@ export async function ProcessInput(node: MessageNode, conn: Connection) {
 }
 
 export async function MessageReceived(msg: MessageNode, con: Connection) {
-  logger.info("Welcome to MessageRevieved()")
+  logger.info("Welcome to MessageRecieved()")
   const newConnection = con;
   if (!newConnection.useEncryption && (msg.flags && 0x08)) {
     logger.debug("Turning on encryption")
@@ -216,13 +220,13 @@ export async function lobbyDataHandler(rawPacket: IRawPacket) {
 
       const newConnection = await lobby.sendCommand(connection, data);
       const { sock: newSock, encryptedCommand } = newConnection;
-      
+
       if (encryptedCommand == null) {
         logger.error("Error with encrypted command, dumping connection...")
         console.dir(newConnection)
         process.exit(1)
       }
-      
+
       // FIXME: Figure out why sometimes the socket is closed at this point
       socketWriteIfOpen(newSock, encryptedCommand);
       return newConnection;

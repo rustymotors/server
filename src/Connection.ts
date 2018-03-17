@@ -63,7 +63,7 @@ export class Connection {
   /**
    * setEncryptionKey
    */
-  public setEncryptionKey(sessionKey: string) {
+  public setEncryptionKey(sessionKey: Buffer) {
     this.enc.cipher = crypto.createCipheriv("rc4", sessionKey, "");
     this.enc.decipher = crypto.createDecipheriv("rc4", sessionKey, "");
 
