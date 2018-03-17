@@ -82,8 +82,10 @@ export class NPSUserStatus {
       packet.slice(52, -10).toString('utf8'),
       'hex',
     );
+    logger.debug(`Encrypted Session Key String: ${sessionKeyStr.toString("hex")}`)
     const decrypted = crypto.privateDecrypt(privateKey, 
       sessionKeyStr);
+    logger.debug(`Unsliced key: ${decrypted.toString("hex")}`)
     const sessionKey = decrypted.slice(2, -4).toString('hex')
   
     return sessionKey

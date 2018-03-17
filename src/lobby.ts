@@ -96,7 +96,7 @@ export async function sendCommand(con: Connection, data: Buffer) {
 
   // Create the cypher and decipher only if not already set
   if (!s.encLobby.decipher) {
-    s.setEncryptionKeyDES(keys.s_key)    
+    s.setEncryptionKeyDES(keys.s_key) 
   }
 
   decryptCmd(s, Buffer.from(data.slice(4)));
