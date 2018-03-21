@@ -25,13 +25,21 @@ import MessageNode from "./MessageNode";
 import * as packet from "./packet";
 
 
-function socketWriteIfOpen(sock: Socket, data: Buffer) {
+function socketWriteIfOpen(conn: Connection, node: MessageNode) {
+  
+  // Log that we are trying to write
+  logger.debug(` Atempting to write seq: ${node.seq} to conn: ${conn.id}`)
+  const { sock } = conn
+  const { rawBuffer } = node
+  
+  // Log the buffer we are writing
+  logger.debug(`Writting buffer: ${rawBuffer.toString("hex")}`)
   if (sock.writable) {
-    sock.write(data);
+    sock.write(rawBuffer);
   } else {
     logger.error(
       "Error writing ",
-      data.toString(),
+      rawBuffer.toString(),
       " to ",
       sock.remoteAddress,
       sock.localPort.toString(),
@@ -85,17 +93,24 @@ export async function ClientConnect(con: Connection, node: MessageNode) {
 
     try {
       const { customerId, personaId, personaName } = newMsg
-      const sessionKey = Buffer.from(res.session_key, "hex")
+      const sessionKey = Buffer.from(res.session_key, "hex").slice(0, 8)
       connectionWithKey.setEncryptionKey(sessionKey)
+
+      logger.debug(`Raw Session Key: ${sessionKey.toString("hex")}`)
+
+      // Log the session key
       logger.debug(`cust: ${customerId} ID: ${personaId} Name: ${personaName} SessionKey: ${sessionKey[0].toString(16)} ${sessionKey[1].toString(16)} ${sessionKey[2].toString(16)} ${sessionKey[3].toString(16)} ${sessionKey[4].toString(16)} ${sessionKey[5].toString(16)} ${sessionKey[6].toString(16)} ${sessionKey[7].toString(16)}`)
 
       // Create new response packet
       // TODO: Do this cleaner
       const rPacket = new MessageNode(node.rawBuffer);
-      logger.debug(rPacket.rawBuffer.toString("hex"))
+      logger.debug(`Dumping response...`)
+      rPacket.dumpPacket()
+
+      // logger.debug(rPacket.rawBuffer.toString("hex"))
 
       // write the socket
-      socketWriteIfOpen(connectionWithKey.sock, rPacket.rawBuffer);
+      socketWriteIfOpen(connectionWithKey, rPacket);
 
       return connectionWithKey;
     } catch (err) {
@@ -111,15 +126,15 @@ export async function ClientConnect(con: Connection, node: MessageNode) {
 }
 
 export async function ProcessInput(node: MessageNode, conn: Connection) {
-
+  logger.debug(`In ProcessInput..`)
   const currentMsgNo = node.msgNo;
   const currentMsgString = MSG_STRING(currentMsgNo);
   logger.debug(`currentMsg: ${currentMsgString} (${currentMsgNo})`);
 
   if (currentMsgString === "MC_CLIENT_CONNECT_MSG") {
     try {
-      const newConnection = await ClientConnect(conn, node);
-      return newConnection;
+      const clientConnectMsg = await ClientConnect(conn, node);
+      return clientConnectMsg;
     } catch (error) {
       logger.error(error);
       throw error;
@@ -127,7 +142,6 @@ export async function ProcessInput(node: MessageNode, conn: Connection) {
   } else {
     // We should not do this
     // FIXME: WE SHOULD NOT DO THIS
-    socketWriteIfOpen(conn.sock, node.rawBuffer);
     logger.error(`Message Number Not Handled: ${currentMsgNo} (${currentMsgString})
       conID: ${node.toFrom}  PersonaID: ${node.appId}`);
     process.exit();
@@ -171,6 +185,10 @@ export async function MessageReceived(msg: MessageNode, con: Connection) {
         console.log(deciphered)
 
         logger.debug("===================================================================");
+
+        // This isn't real.
+        socketWriteIfOpen(con, msg)
+
         return newConnection;
       } catch (e) {
         logger.error(`Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}`);
@@ -204,13 +222,13 @@ export async function lobbyDataHandler(rawPacket: IRawPacket) {
     // npsRequestGameConnectServer
     case "100": {
       const packetResult = await lobby.npsRequestGameConnectServer(sock, data);
-      socketWriteIfOpen(sock, packetResult);
+      sock.write(packetResult);
       break;
     }
     // npsHeartbeat
     case "217": {
       const packetResult = await npsHeartbeat();
-      socketWriteIfOpen(sock, packetResult);
+      sock.write(packetResult);
       break;
     }
     // npsSendCommand
@@ -227,8 +245,7 @@ export async function lobbyDataHandler(rawPacket: IRawPacket) {
         process.exit(1)
       }
 
-      // FIXME: Figure out why sometimes the socket is closed at this point
-      socketWriteIfOpen(newSock, encryptedCommand);
+      newSock.write(encryptedCommand);
       return newConnection;
     }
     default:
@@ -243,7 +260,7 @@ export async function lobbyDataHandler(rawPacket: IRawPacket) {
  */
 
 export function sendPacketOkLogin(socket: Socket) {
-  socketWriteIfOpen(socket, Buffer.from([0x02, 0x30, 0x00, 0x00]));
+  socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
 }
 
 export async function defaultHandler(rawPacket: IRawPacket) {
@@ -258,7 +275,9 @@ export async function defaultHandler(rawPacket: IRawPacket) {
   if (messageNode.isMCOTS()) {
     messageNode.dumpPacket();
 
-    return MessageReceived(messageNode, connection);
+    const newMessage = await MessageReceived(messageNode, connection);
+    logger.debug(`Back from MessageRecieved`)
+    return newMessage
   }
   logger.debug("No valid MCOTS header signature detected, sending to Lobby");
   logger.info("=============================================");

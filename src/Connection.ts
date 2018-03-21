@@ -18,6 +18,7 @@ import * as crypto from "crypto";
 import { Cipher, Decipher } from "crypto";
 import { Socket } from "net";
 import ConnectionMgr from "./connectionMgr";
+import { RC4 } from "./RC4";
 
 export class Connection {
   public remoteAddress: string;
@@ -30,8 +31,8 @@ export class Connection {
     decipher?: Decipher
   };
   public enc: {
-    cipher?: Cipher,
-    decipher?: Decipher
+    cipher?: RC4,
+    decipher?: RC4
   };
   public useEncryption: boolean;
   public isSetupComplete: boolean;
@@ -64,8 +65,10 @@ export class Connection {
    * setEncryptionKey
    */
   public setEncryptionKey(sessionKey: Buffer) {
-    this.enc.cipher = crypto.createCipheriv("rc4", sessionKey, "");
-    this.enc.decipher = crypto.createDecipheriv("rc4", sessionKey, "");
+    // this.enc.cipher = crypto.createCipheriv("rc4", sessionKey, "");
+    // this.enc.decipher = crypto.createDecipheriv("rc4", sessionKey, "");
+    this.enc.cipher = new RC4(sessionKey);
+    this.enc.decipher = new RC4(sessionKey);
 
     this.isSetupComplete = true;
   }
@@ -91,14 +94,14 @@ export class Connection {
    * CipherBuffer
    */
   public cipherBuffer(messageBuffer: Buffer) {
-    return this.enc.cipher.update(messageBuffer);
+    return this.enc.cipher.processString(messageBuffer);
   }
   
   /**
    * DecipherBuffer
    */
   public decipherBuffer(messageBuffer: Buffer) {
-    return this.enc.decipher.update(messageBuffer);
+    return this.enc.decipher.processString(messageBuffer);
   }
 
   /**

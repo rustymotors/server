@@ -30,7 +30,7 @@ export default class MessageNode {
     this.toFrom = Buffer.from([0x00, 0x00]);
 
     this.appId = Buffer.from([0x00, 0x00]);
-  
+
     this.setBuffer(packet);
     this.setMsgHeader(packet);
 
@@ -47,16 +47,27 @@ export default class MessageNode {
         // This is likeley not an MCOTS packet, ignore
       } else {
         logger.error(packet.toString("hex"))
-        throw error 
+        throw error
       }
     }
-    
-  
+
+
     // DWORD seq; sequenceNo
     this.seq = packet.readInt32LE(6);
-  
+
     this.flags = packet.readInt8(10);
-  
+
+  }
+
+  // public setSeq(newSeq: number) {
+  //   this.seq = newSeq
+  //   this.rawBuffer.writeInt32LE(this.seq, 6)
+  // }
+
+  public setMsgNo(newMsgNo: number) {
+    this.msgNo = newMsgNo
+    // this.rawBuffer.writeInt16LE(this.msgNo, 9)
+    this.buffer.writeInt16LE(this.msgNo, 0)
   }
 
   public setMsgHeader(packet: Buffer) {
@@ -69,7 +80,7 @@ export default class MessageNode {
     this.buffer = packet.slice(11);
   }
 
-  public BaseMsgHeader(packet:Buffer) {
+  public BaseMsgHeader(packet: Buffer) {
 
     // WORD msgNo;
     this.msgNo = packet.readInt16LE(0);
@@ -88,6 +99,7 @@ export default class MessageNode {
     logger.info("=============================================");
     logger.debug(`Header Length: ${this.header.length}`);
     logger.debug(`Header MCOSIG: ${this.isMCOTS()}`);
+    logger.debug(`MsgNo:    ${this.msgNo}`)
     logger.debug(`Sequence: ${this.seq}`);
     logger.debug(`Flags: ${this.flags}`);
     logger.debug(`Buffer: ${this.buffer}`);

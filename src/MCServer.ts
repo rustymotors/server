@@ -32,6 +32,7 @@ const connectionMgr = new ConnectionMgr();
 async function startServers(configurationFile: IConfigurationFile) {
   // logger.info("Starting the listening sockets...");
   const tcpPortList = [
+    6660,
     8228,
     8226,
     7003,
