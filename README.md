@@ -52,3 +52,5 @@ Mar 6, 2016
 * Client clears the persona server (port 8228)
 * Client clears the lobby/room server (port 7003) and decrypts the NPS packets sent after
 * Client passes client connect to MCOTS (port 43300) but does not decrypt the following packets (yet)
+
+.
