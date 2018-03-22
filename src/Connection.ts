@@ -30,10 +30,7 @@ export class Connection {
     cipher?: Cipher,
     decipher?: Decipher
   };
-  public enc: {
-    cipher?: RC4,
-    decipher?: RC4
-  };
+  public enc: RC4
   public useEncryption: boolean;
   public isSetupComplete: boolean;
   public decryptedCmd: Buffer;
@@ -55,7 +52,7 @@ export class Connection {
     this.lastMsg = 0;
     this.useEncryption = false;
     this.encLobby = {};
-    this.enc = {};
+    this.enc = null;
     this.isSetupComplete = false;
     this.mgr = mgr;
     this.inQueue = true;
@@ -67,8 +64,7 @@ export class Connection {
   public setEncryptionKey(sessionKey: Buffer) {
     // this.enc.cipher = crypto.createCipheriv("rc4", sessionKey, "");
     // this.enc.decipher = crypto.createDecipheriv("rc4", sessionKey, "");
-    this.enc.cipher = new RC4(sessionKey);
-    this.enc.decipher = new RC4(sessionKey);
+    this.enc = new RC4(sessionKey);
 
     this.isSetupComplete = true;
   }
@@ -90,19 +86,19 @@ export class Connection {
     this.isSetupComplete = true;
   }
 
-  /**
-   * CipherBuffer
-   */
-  public cipherBuffer(messageBuffer: Buffer) {
-    return this.enc.cipher.processString(messageBuffer);
-  }
+  // /**
+  //  * CipherBuffer
+  //  */
+  // public cipherBuffer(messageBuffer: Buffer) {
+  //   return this.enc.cipher.processString(messageBuffer);
+  // }
   
-  /**
-   * DecipherBuffer
-   */
-  public decipherBuffer(messageBuffer: Buffer) {
-    return this.enc.decipher.processString(messageBuffer);
-  }
+  // /**
+  //  * DecipherBuffer
+  //  */
+  // public decipherBuffer(messageBuffer: Buffer) {
+  //   return this.enc.decipher.processString(messageBuffer);
+  // }
 
   /**
    * CipherBufferDES

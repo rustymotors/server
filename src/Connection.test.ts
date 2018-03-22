@@ -32,7 +32,7 @@ describe('Connection class', () => {
   });
 
   test('has no default encryption object', () => {
-    expect(testConnection1.enc).toEqual({});
+    expect(testConnection1.enc).toEqual(null);
   });
 
   test('changes to setupComplete after setting key', () => {
@@ -51,8 +51,8 @@ describe('Connection class', () => {
       testConnection1.setEncryptionKey(Buffer.from('abc123', "hex"))
       testConnection2.setEncryptionKey(Buffer.from('abc123', "hex"))
       const testString = "I'm a very a secret message. Please don't decode me!"
-      const encipheredBuffer = testConnection1.cipherBuffer(Buffer.from(testString))
-      expect(testConnection2.decipherBuffer(encipheredBuffer).toString()).toEqual(testString)
+      const encipheredBuffer = testConnection1.enc.processString(Buffer.from(testString))
+      expect(testConnection2.enc.processString(encipheredBuffer).toString()).toEqual(testString)
     });
   });
 

@@ -93,13 +93,15 @@ export async function ClientConnect(con: Connection, node: MessageNode) {
 
     try {
       const { customerId, personaId, personaName } = newMsg
-      const sessionKey = Buffer.from(res.session_key, "hex").slice(0, 8)
+      const sessionKey = res.s_key
       connectionWithKey.setEncryptionKey(sessionKey)
 
-      logger.debug(`Raw Session Key: ${sessionKey.toString("hex")}`)
+      logger.debug(`Raw Session Key: ${sessionKey}`)
+
+      const strKey = Buffer.from(sessionKey, "utf8")
 
       // Log the session key
-      logger.debug(`cust: ${customerId} ID: ${personaId} Name: ${personaName} SessionKey: ${sessionKey[0].toString(16)} ${sessionKey[1].toString(16)} ${sessionKey[2].toString(16)} ${sessionKey[3].toString(16)} ${sessionKey[4].toString(16)} ${sessionKey[5].toString(16)} ${sessionKey[6].toString(16)} ${sessionKey[7].toString(16)}`)
+      logger.debug(`cust: ${customerId} ID: ${personaId} Name: ${personaName} SessionKey: ${strKey[0].toString(16)} ${strKey[1].toString(16)} ${strKey[2].toString(16)} ${strKey[3].toString(16)} ${strKey[4].toString(16)} ${strKey[5].toString(16)} ${strKey[6].toString(16)} ${strKey[7].toString(16)}`)
 
       // Create new response packet
       // TODO: Do this cleaner
@@ -180,9 +182,13 @@ export async function MessageReceived(msg: MessageNode, con: Connection) {
           "Message buffer before decrypting: ",
           msg.buffer.toString("hex"),
         );
-        const deciphered = newConnection.decipherBuffer(msg.buffer);
+        logger.warn(
+          "Message buffer before decrypting: ",
+          msg.buffer.toString(),
+        );
+        const deciphered = newConnection.enc.processString(msg.buffer.toString());
         logger.warn("output2:    ", deciphered.toString("hex"));
-        console.log(deciphered)
+        console.log(`After mState: ${newConnection.enc.getSBox()}`)
 
         logger.debug("===================================================================");
 
