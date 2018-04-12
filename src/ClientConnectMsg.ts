@@ -15,16 +15,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { logger } from "./logger";
+import MessageNode from "./MessageNode";
 
 export default class ClientConnectMsg {
 
+  public customerId: number;
+  public personaId: number;
+  public personaName: string;
+  public rawBuffer: Buffer;
   private msgId: number;
-  private customerId: number;
-  private personaId: number;
   private custName: string;
-  private personaName: string;
   private mcVersion: Buffer;
-  private rawBuffer: Buffer;
 
   constructor(buffer: Buffer) {
     this.msgId = buffer.readInt16LE(0);

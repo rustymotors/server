@@ -32,6 +32,7 @@ const connectionMgr = new ConnectionMgr();
 async function startServers(configurationFile: IConfigurationFile) {
   // logger.info("Starting the listening sockets...");
   const tcpPortList = [
+    6660,
     8228,
     8226,
     7003,
@@ -72,6 +73,10 @@ function handleCLICommand(cmd: string, args: string[]) {
     console.log(connectionMgr.findConnectionById(Number.parseInt(args[0])));
   }
 
+  if (loweredCmd === "findconnectionbyip") {
+    console.log(connectionMgr.findConnectionByAddressAndPort(args[0], Number.parseInt(args[1])));
+  }
+  
   if (loweredCmd === "dumpconnections") {
     console.log(connectionMgr.dumpConnections());
   }
@@ -97,7 +102,9 @@ function run(configurationFile: IConfigurationFile) {
   // Connect to database
   // Start the server listeners
   startServers(configurationFile)
+    .then(database.createDB)  
     .then(startCLI)
+    .then(() => console.log("All good"))
     .catch((err) => { throw err; });
 }
 

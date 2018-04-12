@@ -19,6 +19,7 @@ import * as fs from 'fs';
 import { Socket } from 'net';
 import { config } from "../../config/config";
 import { logger } from '../../src/logger';
+import { IConfigurationFile } from "./config/config";
 
 /**
  * Load the RSA private key and return a NodeRSA object
@@ -40,7 +41,16 @@ function fetchPrivateKeyFromFile(privateKeyPath: string) {
  * @param {Buffer} packet
  * @returns {LoginPacket}
  */
-export function npsUserStatus(socket: Socket, packet: Buffer) {
+
+export class NPSUserStatus {
+
+  public opCode: number;
+  public contextId: string;
+  public sessionKey: string;
+  private buffer: Buffer;
+
+
+  constructor(socket: Socket, packet: Buffer) {
   // logger.debug("Full Packet: ", packet.toString("hex"));
 
   // Save the NPS opCode
@@ -52,28 +62,33 @@ export function npsUserStatus(socket: Socket, packet: Buffer) {
   // Save the raw packet
   this.buffer = packet;
 
-  // Decrypt the sessionKey
-  const privateKey = fetchPrivateKeyFromFile(config.serverConfig.privateKeyFilename)
-
-  this.sessionKeyStr = Buffer.from(
-    packet.slice(52, -10).toString('utf8'),
-    'hex',
-  );
-  // logger.warn(
-  //   `Session Key before decryption: ${this.sessionKeyStr.toString("hex")}`
-  // );
-  const decrypted = crypto.privateDecrypt(privateKey, 
-    this.sessionKeyStr.toString('base64'));
-  const sessionKey = Buffer.from(
-    Buffer.from(decrypted.toString(), 'base64')
-      .toString('hex')
-      .substring(4, 68),
-    'hex',
-  );
-
-  console.log(sessionKey)
-
   // Save the sessionKey
-  this.sessionKey = sessionKey;
+  this.sessionKey = this.extractSessionKeyFromPacket(config.serverConfig, packet);
   return this;
+  }
+
+  /**
+   * extractSessionKeyFromPacket
+   * 
+   * Take 128 bytes
+   * They are the utf-8 of the hex bytes that are the key
+   */
+  public extractSessionKeyFromPacket(serverConfig: IConfigurationFile["serverConfig"], packet: Buffer) {
+
+      // Decrypt the sessionKey
+    const privateKey = fetchPrivateKeyFromFile(serverConfig.privateKeyFilename)
+    
+    const sessionKeyStr = Buffer.from(
+      packet.slice(52, -10).toString('utf8'),
+      'hex',
+    );
+    logger.debug(`Encrypted Session Key String: ${sessionKeyStr.toString("hex")}`)
+    const decrypted = crypto.privateDecrypt(privateKey, 
+      sessionKeyStr);
+    logger.debug(`Unsliced key: ${decrypted.toString("hex")}`)
+    const sessionKey = decrypted.slice(2, -4).toString('hex')
+  
+    return sessionKey
+  }
 }
+

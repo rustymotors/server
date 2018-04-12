@@ -41,8 +41,13 @@ function sslOptions(configuration: IConfigurationFile["serverConfig"]) {
 function httpsHandler(request: http.IncomingMessage, response: http.ServerResponse) {
   logger.info(`[HTTPS] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`)
   switch (request.url) {
-    case "/key":
+    case "/cert":
       response.setHeader("Content-disposition", "attachment; filename=cert.pem");
+      response.end(fs.readFileSync(config.serverConfig.certFilename));
+      break;
+
+    case "/key":
+      response.setHeader("Content-disposition", "attachment; filename=pub.key");
       response.end(fs.readFileSync(config.serverConfig.publicKeyFilename).toString("hex"));
       break;
     case "/AuthLogin":
@@ -52,6 +57,11 @@ function httpsHandler(request: http.IncomingMessage, response: http.ServerRespon
 
 
     default:
+      if (request.url.startsWith("/AuthLogin?")) {
+        response.setHeader("Content-Type", "text/plain")
+        response.end("Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e");
+        return
+      }
       response.statusCode = 404;
       response.end("Unknown request.")
       break;
