@@ -4,10 +4,11 @@ data/cert.pem
 data/pub.key
 logs
 coverage
-npm-debug.log
+*.log
 .nyc_output
 
 test-reports
 data/sessions.db
 junit
 dist
+.env
