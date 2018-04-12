@@ -21,7 +21,7 @@ import * as sqlite from "sqlite";
  * @param {Function} callback
  */
 export async function createDB() {
-  const db = await sqlite.open("../../data/sessions.db");
+  const db = await sqlite.open("./data/sessions.db");
   const status = await db.run(
     `CREATE TABLE IF NOT EXISTS sessions (customer_id INTEGER NOT NULL UNIQUE, 
       session_key TEXT, s_key TEXT, context_id TEXT, connection_id INTEGER)`,

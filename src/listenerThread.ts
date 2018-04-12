@@ -63,8 +63,9 @@ export default async function startTCPListener(localPort: number, connectionMgr:
         const newConnection = await processData(rawPacket);
         connectionMgr.updateConnectionById(connection.id, newConnection);
       } catch (error) {
-        console.error(error);
-        throw error;
+        logger.error(error);
+        logger.error(error.stack);
+        process.exit();
       }
     });
     socket.on('error', (err: NodeJS.ErrnoException) => {
@@ -74,7 +75,7 @@ export default async function startTCPListener(localPort: number, connectionMgr:
         process.exit(1);
       }
     });
-  }).listen({ port: localPort, hostname: '0.0.0.0'}, () => {
+  }).listen({ port: localPort, host: '0.0.0.0'}, () => {
     // logger.info(`Listener started on port ${localPort}`);
   });
 }

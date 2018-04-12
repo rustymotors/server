@@ -10,7 +10,7 @@
     "start": "node dist/src/server.js",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "pretest": "npm run tslint",
-    "test": "jest --all",
+    "test": "npm run build && jest --all",
     "build-ts": "tsc",
     "licence-check": "license-checker --json > ./data/licenses.json"
   },
@@ -27,16 +27,9 @@
   "jest": {
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src/**/*.ts",
-      "lib/**/*.ts"
-    ],
+    "collectCoverageFrom": ["src/**/*.ts", "lib/**/*.ts"],
     "testResultsProcessor": "jest-junit",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ],
+    "moduleFileExtensions": ["ts", "tsx", "js"],
     "transform": {
       "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
@@ -60,7 +53,8 @@
     "source-map-loader": "^0.2.3",
     "sqlite": "^2.9.1",
     "ssl-config": "^1.0.0",
-    "whocalled": "^1.0.0"
+    "whocalled": "^1.0.0",
+    "winston": "^3.0.0-rc3"
   },
   "devDependencies": {
     "jest": "^22.4.0",
@@ -68,6 +62,7 @@
     "license-checker": "^16.0.0",
     "pg-migrator": "^1.0.5",
     "prettier": "^1.7.4",
+    "prettifier": "^0.3.5",
     "ts-jest": "^22.0.4",
     "tslint": "^5.9.1",
     "tslint-config-prettier": "^1.8.0",

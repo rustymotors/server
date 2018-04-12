@@ -65,7 +65,7 @@ function generateShardList(serverConfig: IConfigurationFile["serverConfig"]) {
 }
 
 function httpHandler(request: http.IncomingMessage, response: http.ServerResponse, serverConfiguration: IConfigurationFile) {
-  logger.info(`[HTTP] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`)
+  logger.info(`[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`)
   let responseData
   switch (request.url) {
     case "/ShardList/":
@@ -103,7 +103,9 @@ export default class PatchServer {
     const serverPatch = http.createServer((req, res) => {
       httpHandler(req, res, configurationFile)
     });
-    serverPatch.listen({ port: "80", host: "0.0.0.0" });
+    serverPatch.listen({ port: "80", host: "0.0.0.0" }, () => {
+      logger.info("Patch server is listening...")
+    });
   }
 
 }

@@ -343,7 +343,7 @@ export function premadePersonaMaps() {
     0x89,
     0x52,
     0x58,
-    0x00,
+    0x00, // I think the customer id goes here.
     0x01,
     0x11,
     0x6d,
@@ -354,11 +354,11 @@ export function premadePersonaMaps() {
     0x00,
     0x00,
     0x00,
-    0x01,
+    0x01, // Start of customer id?
     0x00,
     0x00,
     0x00,
-    0x2c,
+    0x2c, // Shardid?
     0x78,
     0xaa,
     0xd0,

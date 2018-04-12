@@ -18,6 +18,7 @@ import * as crypto from "crypto";
 import { Cipher, Decipher } from "crypto";
 import { Socket } from "net";
 import ConnectionMgr from "./connectionMgr";
+import { RC4 } from "./RC4";
 
 export class Connection {
   public remoteAddress: string;
@@ -25,10 +26,11 @@ export class Connection {
   public sock: Socket;
   public id: number;
   public inQueue: boolean;
-  public enc: {
+  public encLobby: {
     cipher?: Cipher,
     decipher?: Decipher
   };
+  public enc: RC4
   public useEncryption: boolean;
   public isSetupComplete: boolean;
   public decryptedCmd: Buffer;
@@ -49,7 +51,8 @@ export class Connection {
     this.msgEvent = null;
     this.lastMsg = 0;
     this.useEncryption = false;
-    this.enc = {};
+    this.encLobby = {};
+    this.enc = null;
     this.isSetupComplete = false;
     this.mgr = mgr;
     this.inQueue = true;
@@ -58,23 +61,56 @@ export class Connection {
   /**
    * setEncryptionKey
    */
-  public setEncryptionKey(sessionKey: string) {
-    this.enc.cipher = crypto.createCipheriv("rc4", sessionKey, "");
-    this.enc.decipher = crypto.createDecipheriv("rc4", sessionKey, "");
+  public setEncryptionKey(sessionKey: Buffer) {
+    // this.enc.cipher = crypto.createCipheriv("rc4", sessionKey, "");
+    // this.enc.decipher = crypto.createDecipheriv("rc4", sessionKey, "");
+    this.enc = new RC4(sessionKey);
+
     this.isSetupComplete = true;
   }
 
   /**
-   * CipherBuffer
+   * setEncryptionKeyDES
    */
-  public cipherBuffer(messageBuffer: Buffer) {
-    return this.enc.cipher.update(messageBuffer);
+  public setEncryptionKeyDES(sKey: string) {
+    const desIV = Buffer.alloc(8);
+    this.encLobby.cipher = crypto
+      .createCipheriv("des-cbc", Buffer.from(sKey, "hex"), desIV);
+    this.encLobby.cipher
+      .setAutoPadding(false);
+    this.encLobby.decipher = crypto
+      .createDecipheriv("des-cbc", Buffer.from(sKey, "hex"), desIV);
+    this.encLobby.decipher
+      .setAutoPadding(false);
+
+    this.isSetupComplete = true;
+  }
+
+  // /**
+  //  * CipherBuffer
+  //  */
+  // public cipherBuffer(messageBuffer: Buffer) {
+  //   return this.enc.cipher.processString(messageBuffer);
+  // }
+  
+  // /**
+  //  * DecipherBuffer
+  //  */
+  // public decipherBuffer(messageBuffer: Buffer) {
+  //   return this.enc.decipher.processString(messageBuffer);
+  // }
+
+  /**
+   * CipherBufferDES
+   */
+  public cipherBufferDES(messageBuffer: Buffer) {
+    return this.encLobby.cipher.update(messageBuffer);
   }
   
   /**
-   * DecipherBuffer
+   * DecipherBufferDES
    */
-  public decipherBuffer(messageBuffer: Buffer) {
-    return this.enc.decipher.update(messageBuffer);
+  public decipherBufferDES(messageBuffer: Buffer) {
+    return this.encLobby.decipher.update(messageBuffer);
   }
 }
