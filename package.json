@@ -66,6 +66,7 @@
     "winston": "^2.4.1"
   },
   "devDependencies": {
+    "@types/winston": "^2.3.9",
     "jest": "^22.4.0",
     "jest-junit": "^3.6.0",
     "license-checker": "^18.0.0",
