@@ -10,10 +10,12 @@
       "name": "Launch Program",
       "program": "${workspaceFolder}/dist/src/server.js",
       "preLaunchTask": "tsc: build - tsconfig.json",
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "outFiles": [
+        "${workspaceFolder}/dist/**/*.js"
+      ],
       "env": {
         "LOGGER_LEVEL": "debug"
-      }
+      },
     }
   ]
 }
