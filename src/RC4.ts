@@ -7,7 +7,6 @@ export class RC4 {
   constructor(key) {
     const keyBytes = Buffer.from(key, "utf8")
     const keyLength = keyBytes.length
-    console.log(`Key: ${keyBytes}, Len: ${keyLength}`)
     this.mState = Array(256)
     this.mX = 0
     this.mY = 0
@@ -16,19 +15,14 @@ export class RC4 {
       this.mState[counter] = counter;
     }
 
-    // console.log(`Initial sBox after KSA: ${this.mState}`)
-
     let index1 = 0
     let j = 0
 
     for (let counter = 0; counter < 256; counter++) {
       j = (j + this.mState[counter] + keyBytes[index1++]) % 256
-      // console.log(`counter: ${counter}, j: ${j}`)
       this.swapByte(counter, j)
       if (index1 >= keyLength) { index1 = 0; }
     }
-    // console.log(`Initial sBox: ${this.mState}`)
-
   }
 
   public getSBox() {
@@ -54,12 +48,9 @@ export class RC4 {
       const b = s[y]
       s[x] = b
       s[y] = a
-
-      // console.log(`inByte: ${inBytes[idx2]}`)
       
       // tslint:disable-next-line:no-bitwise
       output[idx1++] = inBytes[idx2++] ^ s[(a + b) & 0xff]
-      // console.log(`outByte: ${output[idx1 - 1]}`)
     }
 
     this.mX = x
