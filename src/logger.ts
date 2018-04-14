@@ -15,28 +15,31 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as config from "dotenv";
-import * as winston from "winston"
+import * as winston from "winston";
 
-const logger = new (winston.Logger)({
+const logger = new winston.Logger({
+  // tslint:disable-next-line:no-bitwise
+  level: "debug",
   transports: [
-    new (winston.transports.File)({
-      filename: 'filelog-info.log',
-      level: 'info',
-      name: 'info-file',
+    new winston.transports.File({
+      filename: "filelog-info.log",
+      level: "info",
+      name: "info-file",
     }),
-    new (winston.transports.File)({
-      filename: 'filelog-error.log',
-      level: 'error',
-      name: 'error-file',
-    })
-  ]
+    new winston.transports.File({
+      filename: "filelog-error.log",
+      level: "error",
+      name: "error-file",
+    }),
+    new winston.transports.Console(),
+  ],
 });
 
 //
 // If we're not in production then log to the `console` with the format:
 // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
-// 
-if (process.env.NODE_ENV !== 'production') {
+//
+if (process.env.NODE_ENV !== "production") {
   logger.cli();
 }
 
@@ -71,8 +74,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 // }
 
-
 // export const logger = new Logger({ level: process.env.LOGGER_LEVEL || "error" });
 
-export { logger }
-
+export { logger };
