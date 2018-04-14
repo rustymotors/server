@@ -55,7 +55,6 @@ function httpsHandler(request: http.IncomingMessage, response: http.ServerRespon
       response.end("Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e");
       break;
 
-
     default:
       if (request.url.startsWith("/AuthLogin?")) {
         response.setHeader("Content-Type", "text/plain")
