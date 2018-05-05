@@ -24,16 +24,14 @@ import { logger } from "./logger";
 import MessageNode from "./MessageNode";
 import * as packet from "./packet";
 
-
 function socketWriteIfOpen(conn: Connection, node: MessageNode) {
-  
   // Log that we are trying to write
-  logger.debug(` Atempting to write seq: ${node.seq} to conn: ${conn.id}`)
-  const { sock } = conn
-  const { rawBuffer } = node
-  
+  logger.debug(` Atempting to write seq: ${node.seq} to conn: ${conn.id}`);
+  const { sock } = conn;
+  const { rawBuffer } = node;
+
   // Log the buffer we are writing
-  logger.debug(`Writting buffer: ${rawBuffer.toString("hex")}`)
+  logger.debug(`Writting buffer: ${rawBuffer.toString("hex")}`);
   if (sock.writable) {
     sock.write(rawBuffer);
   } else {
@@ -42,7 +40,7 @@ function socketWriteIfOpen(conn: Connection, node: MessageNode) {
       rawBuffer.toString(),
       " to ",
       sock.remoteAddress,
-      sock.localPort.toString(),
+      sock.localPort.toString()
     );
   }
 }
@@ -92,22 +90,31 @@ export async function ClientConnect(con: Connection, node: MessageNode) {
     const connectionWithKey = con;
 
     try {
-      const { customerId, personaId, personaName } = newMsg
-      const sessionKey = res.s_key
-      connectionWithKey.setEncryptionKey(sessionKey)
+      const { customerId, personaId, personaName } = newMsg;
+      const sessionKey = res.s_key;
+      const strKey = Buffer.from(sessionKey, "hex");
+      connectionWithKey.setEncryptionKey(sessionKey.toString());
 
-      logger.debug(`Raw Session Key: ${sessionKey}`)
-
-      const strKey = Buffer.from(sessionKey, "utf8")
+      logger.debug(`Raw Session Key: ${sessionKey}`);
 
       // Log the session key
-      logger.debug(`cust: ${customerId} ID: ${personaId} Name: ${personaName} SessionKey: ${strKey[0].toString(16)} ${strKey[1].toString(16)} ${strKey[2].toString(16)} ${strKey[3].toString(16)} ${strKey[4].toString(16)} ${strKey[5].toString(16)} ${strKey[6].toString(16)} ${strKey[7].toString(16)}`)
+      logger.debug(
+        `cust: ${customerId} ID: ${personaId} Name: ${personaName} SessionKey: ${strKey[0].toString(
+          16
+        )} ${strKey[1].toString(16)} ${strKey[2].toString(
+          16
+        )} ${strKey[3].toString(16)} ${strKey[4].toString(
+          16
+        )} ${strKey[5].toString(16)} ${strKey[6].toString(
+          16
+        )} ${strKey[7].toString(16)}`
+      );
 
       // Create new response packet
       // TODO: Do this cleaner
       const rPacket = new MessageNode(node.rawBuffer);
-      logger.debug(`Dumping response...`)
-      rPacket.dumpPacket()
+      logger.debug(`Dumping response...`);
+      rPacket.dumpPacket();
 
       // logger.debug(rPacket.rawBuffer.toString("hex"))
 
@@ -118,17 +125,17 @@ export async function ClientConnect(con: Connection, node: MessageNode) {
     } catch (err) {
       logger.error(err);
       logger.error(err.stack);
-      process.exit()
+      process.exit();
     }
   } catch (error) {
     logger.error(error);
     logger.error(error.stack);
-    process.exit()
+    process.exit();
   }
 }
 
 export async function ProcessInput(node: MessageNode, conn: Connection) {
-  logger.debug(`In ProcessInput..`)
+  logger.debug(`In ProcessInput..`);
   const currentMsgNo = node.msgNo;
   const currentMsgString = MSG_STRING(currentMsgNo);
   logger.debug(`currentMsg: ${currentMsgString} (${currentMsgNo})`);
@@ -151,53 +158,68 @@ export async function ProcessInput(node: MessageNode, conn: Connection) {
 }
 
 export async function MessageReceived(msg: MessageNode, con: Connection) {
-  logger.info("Welcome to MessageRecieved()")
+  logger.info("Welcome to MessageRecieved()");
   const newConnection = con;
   if (!newConnection.useEncryption && (msg.flags && 0x08)) {
-    logger.debug("Turning on encryption")
+    logger.debug("Turning on encryption");
     newConnection.useEncryption = true;
-    logger.debug(newConnection.useEncryption.toString())
+    logger.debug(newConnection.useEncryption.toString());
   }
   // If not a Heartbeat
   if (!(msg.flags === 80) && newConnection.useEncryption) {
-    logger.debug("1")
+    logger.debug("1");
     // If not a Heartbeat
     if (!(msg.flags === 80) && newConnection.useEncryption) {
-      logger.debug("2")
+      logger.debug("2");
       try {
         if (!newConnection.isSetupComplete) {
-          logger.debug("3")
-          logger.error(`Decrypt() not yet setup! Disconnecting...conId: ${con.id}`);
+          logger.debug("3");
+          logger.error(
+            `Decrypt() not yet setup! Disconnecting...conId: ${con.id}`
+          );
           con.sock.end();
           process.exit();
         }
 
-        logger.debug("4")
+        logger.debug("4");
 
         /**
          * Attempt to decrypt message
          */
-        logger.debug("===================================================================");
-        logger.warn(
-          "Message buffer before decrypting: ",
-          msg.buffer.toString("hex"),
+        logger.debug(
+          "==================================================================="
         );
         logger.warn(
           "Message buffer before decrypting: ",
-          msg.buffer.toString(),
+          msg.buffer.toString("hex")
         );
-        const deciphered = newConnection.enc.processString(msg.buffer.toString());
+        logger.warn(
+          "Message buffer before decrypting: ",
+          msg.buffer.toString()
+        );
+        console.log(
+          `Key: ${newConnection.enc.getKey()}, Len: ${newConnection.enc.getKeyLen()}`
+        );
+        const deciphered = newConnection.enc.processString(
+          msg.buffer.toString()
+        );
         logger.warn("output2:    ", deciphered.toString("hex"));
-        console.log(`After mState: ${newConnection.enc.getSBox()}`)
+        // console.log(`After mState: ${newConnection.enc.getSBox()}`);
 
-        logger.debug("===================================================================");
+        logger.debug(
+          "==================================================================="
+        );
 
         // This isn't real.
-        socketWriteIfOpen(con, msg)
+        socketWriteIfOpen(con, msg);
 
         return newConnection;
       } catch (e) {
-        logger.error(`Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}`);
+        logger.error(
+          `Decrypt() exception thrown! Disconnecting...conId:${
+            newConnection.id
+          }`
+        );
         con.sock.end();
         throw e;
       }
@@ -246,9 +268,9 @@ export async function lobbyDataHandler(rawPacket: IRawPacket) {
       const { sock: newSock, encryptedCommand } = newConnection;
 
       if (encryptedCommand == null) {
-        logger.error("Error with encrypted command, dumping connection...")
-        console.dir(newConnection)
-        process.exit(1)
+        logger.error("Error with encrypted command, dumping connection...");
+        console.dir(newConnection);
+        process.exit(1);
       }
 
       newSock.write(encryptedCommand);
@@ -270,9 +292,7 @@ export function sendPacketOkLogin(socket: Socket) {
 }
 
 export async function defaultHandler(rawPacket: IRawPacket) {
-  const {
-    connection, remoteAddress, localPort, data,
-  } = rawPacket;
+  const { connection, remoteAddress, localPort, data } = rawPacket;
   const messageNode = new MessageNode(data);
   logger.info(`=============================================
     Received packet on port ${localPort} from ${remoteAddress}...`);
@@ -282,8 +302,8 @@ export async function defaultHandler(rawPacket: IRawPacket) {
     messageNode.dumpPacket();
 
     const newMessage = await MessageReceived(messageNode, connection);
-    logger.debug(`Back from MessageRecieved`)
-    return newMessage
+    logger.debug(`Back from MessageRecieved`);
+    return newMessage;
   }
   logger.debug("No valid MCOTS header signature detected, sending to Lobby");
   logger.info("=============================================");
