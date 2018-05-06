@@ -197,9 +197,6 @@ export async function MessageReceived(msg: MessageNode, con: Connection) {
           "Message buffer before decrypting: ",
           msg.buffer.toString()
         );
-        console.log(
-          `Key: ${newConnection.enc.getKey()}, Len: ${newConnection.enc.getKeyLen()}`
-        );
         const deciphered = newConnection.enc.processString(
           msg.buffer.toString()
         );
