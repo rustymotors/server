@@ -65,7 +65,7 @@
   "devDependencies": {
     "jest": "^22.4.0",
     "jest-junit": "^3.6.0",
-    "license-checker": "^19.0.0",
+    "license-checker": "^20.0.0",
     "pg-migrator": "^1.0.5",
     "prettier": "^1.7.4",
     "ts-jest": "^22.0.4",
