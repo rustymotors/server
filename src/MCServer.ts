@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import * as readline from "readline";
-import { IConfigurationFile  } from "../config/config";
+import { IConfigurationFile } from "../config/config";
 import * as database from "../lib/database/index";
 import Web from "../lib/WebServer";
 import ConnectionMgr from "./connectionMgr";
@@ -31,7 +30,7 @@ const connectionMgr = new ConnectionMgr();
  */
 
 async function startServers(configurationFile: IConfigurationFile) {
-  // logger.info("Starting the listening sockets...");
+  logger.info("Starting the listening sockets...");
   const tcpPortList = [
     6660,
     8228,
@@ -59,12 +58,10 @@ async function startServers(configurationFile: IConfigurationFile) {
     9014,
   ];
 
-  const web = new Web
-
-  web.start(configurationFile).then(async () => {
-    await tcpPortList.map((port: number) => startTCPListener(port, connectionMgr));
-    logger.info("Listening sockets create successfully.");
-  })
+  await tcpPortList.map((port: number) =>
+    startTCPListener(port, connectionMgr)
+  );
+  logger.info("Listening sockets create successfully.");
 }
 
 function handleCLICommand(cmd: string, args: string[]) {
@@ -75,9 +72,14 @@ function handleCLICommand(cmd: string, args: string[]) {
   }
 
   if (loweredCmd === "findconnectionbyip") {
-    console.log(connectionMgr.findConnectionByAddressAndPort(args[0], Number.parseInt(args[1])));
+    console.log(
+      connectionMgr.findConnectionByAddressAndPort(
+        args[0],
+        Number.parseInt(args[1])
+      )
+    );
   }
-  
+
   if (loweredCmd === "dumpconnections") {
     console.log(connectionMgr.dumpConnections());
   }
@@ -92,7 +94,7 @@ function startCLI() {
     input: process.stdin,
     output: process.stdout,
   });
-  rl.on("line", (input) => {
+  rl.on("line", input => {
     const args = input.split(" ");
     const cmd = args.shift();
     handleCLICommand(cmd, args);
@@ -103,10 +105,12 @@ function run(configurationFile: IConfigurationFile) {
   // Connect to database
   // Start the server listeners
   startServers(configurationFile)
-    .then(database.createDB)  
+    .then(database.createDB)
     .then(startCLI)
     .then(() => console.log("All good"))
-    .catch((err) => { throw err; });
+    .catch(err => {
+      throw err;
+    });
 }
 
 export default { run };

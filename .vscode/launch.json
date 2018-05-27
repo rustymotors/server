@@ -7,9 +7,14 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "Build Project",
+      "program": "${workspaceFolder}/dist/src/server.js",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/dist/src/server.js"
+      "sourceMaps": true,
+      "smartStep": true,
+      "internalConsoleOptions": "openOnSessionStart",
+      "outFiles": ["${workspaceFolder}/out/**/*.js"],
+      "outputCapture": "std"
     }
   ]
 }
