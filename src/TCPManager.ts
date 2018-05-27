@@ -58,20 +58,6 @@ export function MSG_STRING(msgID: number) {
   }
 }
 
-// /**
-//  * Takes an encrypted command packet and returns the decrypted bytes
-//  * @param {Connection} con
-//  * @param {Buffer} cypherCmd
-//  */
-// function decryptCmd(con, cypherCmd) {
-//   const s = con;
-//   const decryptedCommand = s.enc.decipher.update(cypherCmd);
-//   s.decryptedCmd = decryptedCommand;
-//   logger.warn(`Enciphered Cmd: ${cypherCmd.toString('hex')}`);
-//   logger.warn(`Deciphered Cmd: ${s.decryptedCmd.toString('hex')}`);
-//   return s;
-// }
-
 export async function ClientConnect(con: Connection, node: MessageNode) {
   const { id } = con;
   /**
@@ -115,8 +101,6 @@ export async function ClientConnect(con: Connection, node: MessageNode) {
       const rPacket = new MessageNode(node.rawBuffer);
       logger.debug(`Dumping response...`);
       rPacket.dumpPacket();
-
-      // logger.debug(rPacket.rawBuffer.toString("hex"))
 
       // write the socket
       socketWriteIfOpen(connectionWithKey, rPacket);

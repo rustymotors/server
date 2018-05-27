@@ -21,26 +21,20 @@ import PatchServer from "./patchServer";
 import WebServer from "./web";
 
 export default class Web {
-
   /**
    * Start HTTP and HTTPs connection listeners
    * TODO: This code may be better suited in web.js and patchServer.js
    */
   public async start(config: IConfigurationFile) {
-    /* Start the NPS servers */
 
+    // Start the mock patch server
+    const patchServer = new PatchServer();
+    patchServer.start(config);
+    logger.info("[webServer] Patch Server started");
 
-    const patchServer = new PatchServer
-    const webServer = new WebServer
-
-    patchServer.start(config)
-    webServer.start()
-
-
-    logger.info("Patch Server started");
-    logger.info("Web Server started");
-
+    // Start the AuthLogin and shardlist servers
+    const webServer = new WebServer();
+    webServer.start();
+    logger.info("[webServer] Web Server started");
   }
 }
-
-

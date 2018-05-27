@@ -18,7 +18,6 @@ import { logger } from "./logger";
 import MessageNode from "./MessageNode";
 
 export default class ClientConnectMsg {
-
   public customerId: number;
   public personaId: number;
   public personaName: string;
@@ -32,7 +31,7 @@ export default class ClientConnectMsg {
 
     this.customerId = buffer.readInt32LE(2);
     this.personaId = buffer.readInt32LE(6);
-  
+
     this.custName = buffer.slice(10, 41).toString();
     this.personaName = buffer.slice(42, 73).toString();
     this.mcVersion = buffer.slice(74);
@@ -43,7 +42,7 @@ export default class ClientConnectMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    logger.info("=============================================");
+    logger.info("[ClientConnectMsg]======================================");
     logger.debug("MsgId:       ", this.msgId.toString());
     logger.debug("customerId:  ", this.customerId.toString());
     logger.debug("personaId:   ", this.personaId.toString());
@@ -51,8 +50,6 @@ export default class ClientConnectMsg {
     logger.debug("personaName: ", this.personaName);
     logger.debug("mcVersion:   ", this.mcVersion.toString("hex"));
     logger.debug("Raw Buffer:   ", this.rawBuffer.toString("hex"));
-    logger.info("=============================================");
+    logger.info("[ClientConnectMsg]======================================");
   }
-
-
 }

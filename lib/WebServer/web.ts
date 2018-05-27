@@ -27,7 +27,7 @@ import { logger } from "../../src/logger";
  * Create the SSL options object
  */
 function sslOptions(configuration: IConfigurationFile["serverConfig"]) {
-  const sslConfig = SSLConfig('old');
+  const sslConfig = SSLConfig("old");
   return {
     cert: fs.readFileSync(configuration.certFilename),
     ciphers: sslConfig.ciphers,
@@ -38,54 +38,62 @@ function sslOptions(configuration: IConfigurationFile["serverConfig"]) {
   };
 }
 
-function httpsHandler(request: http.IncomingMessage, response: http.ServerResponse) {
-  logger.info(`[HTTPS] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`)
+function httpsHandler(
+  request: http.IncomingMessage,
+  response: http.ServerResponse
+) {
+  logger.info(
+    `[HTTPS] Request from ${request.socket.remoteAddress} for ${
+      request.method
+    } ${request.url}`
+  );
   switch (request.url) {
     case "/cert":
-      response.setHeader("Content-disposition", "attachment; filename=cert.pem");
+      response.setHeader(
+        "Content-disposition",
+        "attachment; filename=cert.pem"
+      );
       response.end(fs.readFileSync(config.serverConfig.certFilename));
       break;
 
     case "/key":
       response.setHeader("Content-disposition", "attachment; filename=pub.key");
-      response.end(fs.readFileSync(config.serverConfig.publicKeyFilename).toString("hex"));
+      response.end(
+        fs.readFileSync(config.serverConfig.publicKeyFilename).toString("hex")
+      );
       break;
     case "/AuthLogin":
-      response.setHeader("Content-Type", "text/plain")
+      response.setHeader("Content-Type", "text/plain");
       response.end("Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e");
       break;
 
     default:
       if (request.url.startsWith("/AuthLogin?")) {
-        response.setHeader("Content-Type", "text/plain")
+        response.setHeader("Content-Type", "text/plain");
         response.end("Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e");
-        return
+        return;
       }
       response.statusCode = 404;
-      response.end("Unknown request.")
+      response.end("Unknown request.");
       break;
   }
 }
 
 export default class WebServer {
-
   public async start() {
-
     const httpsServer = https
       .createServer(sslOptions(config.serverConfig), httpsHandler)
       .listen({ port: 443, host: "0.0.0.0" })
       .on("connection", (socket: Socket) => {
-        // logger.info("New SSL connection");
         socket.on("error", (error: NodeJS.ErrnoException) => {
-          logger.error(`SSL Socket Error: ${error.message}`);
+          logger.error(`[webServer] SSL Socket Error: ${error.message}`);
         });
         socket.on("close", () => {
-          // logger.info("SSL Socket Connection closed");
+          logger.info("[webServer] SSL Socket Connection closed");
         });
       })
       .on("tlsClientError", (err: Error) => {
-        logger.error(`tlsClientError: ${err}`);
+        logger.error(`[webServer] tlsClientError: ${err}`);
       });
-
   }
 }

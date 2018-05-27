@@ -22,8 +22,8 @@ import { logger } from "../../src/logger";
 const castanetResponse = {
   body: Buffer.from("cafebeef00000000000003", "hex"),
   header: {
-    type: 'Content-Type',
-    value: 'application/octet-stream'
+    type: "Content-Type",
+    value: "application/octet-stream",
   },
 };
 
@@ -64,9 +64,17 @@ function generateShardList(serverConfig: IConfigurationFile["serverConfig"]) {
   DiagnosticServerPort=80`;
 }
 
-function httpHandler(request: http.IncomingMessage, response: http.ServerResponse, serverConfiguration: IConfigurationFile) {
-  logger.info(`[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`)
-  let responseData
+function httpHandler(
+  request: http.IncomingMessage,
+  response: http.ServerResponse,
+  serverConfiguration: IConfigurationFile
+) {
+  logger.info(
+    `[PATCH] Request from ${request.socket.remoteAddress} for ${
+      request.method
+    } ${request.url}`
+  );
+  let responseData;
   switch (request.url) {
     case "/ShardList/":
       response.setHeader("Content-Type", "text/plain");
@@ -89,23 +97,19 @@ function httpHandler(request: http.IncomingMessage, response: http.ServerRespons
       response.end(responseData.body);
       break;
 
-
     default:
-      response.end("foo")
+      response.end("foo");
       break;
   }
 }
 
-
 export default class PatchServer {
-
   public async start(configurationFile: IConfigurationFile) {
     const serverPatch = http.createServer((req, res) => {
-      httpHandler(req, res, configurationFile)
+      httpHandler(req, res, configurationFile);
     });
     serverPatch.listen({ port: "80", host: "0.0.0.0" }, () => {
-      logger.info("Patch server is listening...")
+      logger.info("[patchServer] Patch server is listening...");
     });
   }
-
 }

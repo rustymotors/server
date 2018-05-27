@@ -28,7 +28,10 @@ import { IRawPacket } from "./listenerThread";
  * @param {Socket} socket
  * @param {Buffer} rawData
  */
-export async function npsRequestGameConnectServer(socket: Socket, rawData: Buffer) {
+export async function npsRequestGameConnectServer(
+  socket: Socket,
+  rawData: Buffer
+) {
   logger.info("*** npsRequestGameConnectServer ****");
   logger.debug("Packet as hex: ", rawData.toString("hex"));
   logger.info("************************************");
@@ -68,8 +71,8 @@ function decryptCmd(con: Connection, cypherCmd: Buffer) {
   const s = con;
   const decryptedCommand = s.decipherBufferDES(cypherCmd);
   s.decryptedCmd = decryptedCommand;
-  logger.warn(`Enciphered Cmd: ${cypherCmd.toString("hex")}`);
-  logger.warn(`Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`);
+  logger.warn(`[lobby] Enciphered Cmd: ${cypherCmd.toString("hex")}`);
+  logger.warn(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`);
   return s;
 }
 
@@ -96,7 +99,7 @@ export async function sendCommand(con: Connection, data: Buffer) {
 
   // Create the cypher and decipher only if not already set
   if (!s.encLobby.decipher) {
-    s.setEncryptionKeyDES(keys.s_key) 
+    s.setEncryptionKeyDES(keys.s_key);
   }
 
   decryptCmd(s, Buffer.from(data.slice(4)));
