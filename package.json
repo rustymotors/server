@@ -28,9 +28,16 @@
   "jest": {
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
-    "collectCoverageFrom": ["src/**/*.ts", "lib/**/*.ts"],
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "lib/**/*.ts"
+    ],
     "testResultsProcessor": "jest-junit",
-    "moduleFileExtensions": ["ts", "tsx", "js"],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
     "transform": {
       "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
