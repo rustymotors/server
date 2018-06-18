@@ -77,9 +77,10 @@ export async function ClientConnect(con: Connection, node: MessageNode) {
 
     try {
       const { customerId, personaId, personaName } = newMsg;
-      const sessionKey = res.s_key;
+      const sessionKey = res.session_key;
+      logger.debug(`Raw Session Key: ${sessionKey}`);
       const strKey = Buffer.from(sessionKey, "hex");
-      connectionWithKey.setEncryptionKey(sessionKey.toString());
+      connectionWithKey.setEncryptionKey(sessionKey);
 
       logger.debug(`Raw Session Key: ${sessionKey}`);
 
@@ -177,13 +178,10 @@ export async function MessageReceived(msg: MessageNode, con: Connection) {
           "Message buffer before decrypting: ",
           msg.buffer.toString("hex")
         );
-        logger.warn(
-          "Message buffer before decrypting: ",
-          msg.buffer.toString()
-        );
         const deciphered = newConnection.enc.processString(
-          msg.buffer.toString()
+          msg.buffer.toString("hex")
         );
+        logger.warn("output1:    ", deciphered);
         logger.warn("output2:    ", deciphered.toString("hex"));
         // console.log(`After mState: ${newConnection.enc.getSBox()}`);
 
