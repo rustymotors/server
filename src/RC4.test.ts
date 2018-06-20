@@ -1069,34 +1069,30 @@ const Output4 = Buffer.from([
   0xc0,
 ]);
 
-console.log("\nARC4 validation suite running...\n\n");
+test("ARC4 validation suite", () => {
+  const test0 = new RC4(Key0);
+  expect(test0.processString(Input0).toString("hex")).toEqual(
+    Output0.toString("hex")
+  );
 
-const test0 = new RC4(Key0);
-assert.strictEqual(
-  test0.processString(Input0).toString("hex"),
-  Output0.toString("hex")
-);
+  const test1 = new RC4(Key1);
 
-const test1 = new RC4(Key1);
-assert.strictEqual(
-  test1.processString(Input1).toString("hex"),
-  Output1.toString("hex")
-);
+  expect(test1.processString(Input1).toString("hex")).toEqual(
+    Output1.toString("hex")
+  );
 
-const test2 = new RC4(Key2);
-assert.strictEqual(
-  test2.processString(Input2).toString("hex"),
-  Output2.toString("hex")
-);
+  const test2 = new RC4(Key2);
+  expect(test2.processString(Input2).toString("hex")).toEqual(
+    Output2.toString("hex")
+  );
 
-const test3 = new RC4(Key3);
-assert.strictEqual(
-  test3.processString(Input3).toString("hex"),
-  Output3.toString("hex")
-);
+  const test3 = new RC4(Key3);
+  expect(test3.processString(Input3).toString("hex")).toEqual(
+    Output3.toString("hex")
+  );
 
-const test4 = new RC4(Key4);
-assert.strictEqual(
-  test4.processString(Input4).toString("hex"),
-  Output4.toString("hex")
-);
+  const test4 = new RC4(Key4);
+  expect(test4.processString(Input4).toString("hex")).toEqual(
+    Output4.toString("hex")
+  );
+});
