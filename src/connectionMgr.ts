@@ -23,24 +23,26 @@ import { IRawPacket } from "./listenerThread";
 import { logger } from "./logger";
 import { defaultHandler } from "./TCPManager";
 
-
-
 export default class ConnectionMgr {
   private connections: Connection[];
   private newConnectionId: number;
   constructor() {
     this.connections = [];
     this.newConnectionId = 1;
-    return this
+    return this;
   }
 
   /**
    * Locate connection by remoteAddress and localPort in the connections array
    * @param {String} connectionId
    */
-  public findConnectionByAddressAndPort(remoteAddress: string, localPort: number) {
-    const results = this.connections.find((connection) => {
-      const match = remoteAddress === connection.remoteAddress &&
+  public findConnectionByAddressAndPort(
+    remoteAddress: string,
+    localPort: number
+  ) {
+    const results = this.connections.find(connection => {
+      const match =
+        remoteAddress === connection.remoteAddress &&
         localPort === connection.localPort;
       return match;
     });
@@ -52,7 +54,7 @@ export default class ConnectionMgr {
    * @param {String} connectionId
    */
   public findConnectionById(connectionId: number) {
-    const results = this.connections.find((connection) => {
+    const results = this.connections.find(connection => {
       const match = connectionId === connection.id;
       return match;
     });
@@ -65,14 +67,18 @@ export default class ConnectionMgr {
    * @param {String} connectionId
    */
   public deleteConnection(connection: Connection) {
-    this.connections = this.connections.filter((conn) => (conn.id !== connection.id &&
-      conn.localPort !== connection.localPort));
+    this.connections = this.connections.filter(
+      conn =>
+        conn.id !== connection.id && conn.localPort !== connection.localPort
+    );
   }
   public updateConnectionById(connectionId: number, newConnection: Connection) {
     if (newConnection === undefined) {
       throw new Error("Undefined connection");
     }
-    const index = this.connections.findIndex((connection) => connection.id === connectionId);
+    const index = this.connections.findIndex(
+      connection => connection.id === connectionId
+    );
     this.connections.splice(index, 1);
     this.connections.push(newConnection);
   }
@@ -87,13 +93,22 @@ export default class ConnectionMgr {
     const { remoteAddress, localPort } = socket;
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
     if (con !== undefined) {
-      logger.info(`I have seen connections from ${remoteAddress} before`);
+      logger.info(
+        `[connectionMgr] I have seen connections from ${remoteAddress} on ${localPort} before`
+      );
       con.sock = socket;
       return con;
     }
+
     const connectionManager = this;
-    const newConnection = new Connection(this.newConnectionId, socket, connectionManager);
-    logger.info(`I have not seen connections from ${remoteAddress} before, adding it.`);
+    const newConnection = new Connection(
+      this.newConnectionId,
+      socket,
+      connectionManager
+    );
+    logger.info(
+      `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`
+    );
     this.connections.push(newConnection);
     return newConnection;
   }
@@ -108,7 +123,7 @@ export default class ConnectionMgr {
 
 interface IPortHandler {
   handler: () => void;
-  port: number
+  port: number;
 }
 
 /**
@@ -117,30 +132,25 @@ interface IPortHandler {
  * @param {Buffer} data
  */
 export async function processData(rawPacket: IRawPacket) {
-  const {
-    remoteAddress, localPort, data,
-  } = rawPacket;
+  const { remoteAddress, localPort, data } = rawPacket;
   // logger.info(`Connection Manager: Got data from ${remoteAddress} on
   //   localPort ${localPort}`, data);
 
   switch (localPort) {
     case 8226:
-
-      return loginDataHandler(rawPacket)
+      return loginDataHandler(rawPacket);
     case 8228:
-
-      return personaDataHandler(rawPacket)
+      return personaDataHandler(rawPacket);
     case 7003:
-
-      return defaultHandler(rawPacket)
+      return defaultHandler(rawPacket);
     case 43300:
-
-      return defaultHandler(rawPacket)
+      return defaultHandler(rawPacket);
     default:
-      logger.error(`No known handler for localPort ${localPort}, unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.`);
-      logger.info("Data was: ", data.toString("hex"));
+      logger.error(
+        `[connectionMgr] No known handler for localPort ${localPort}, unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.`
+      );
+      logger.info("[connectionMgr] Data was: ", data.toString("hex"));
       process.exit(1);
       return null;
   }
-
 }

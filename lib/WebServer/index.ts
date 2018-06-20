@@ -15,31 +15,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as async from "async";
+import { IConfigurationFile } from "../../config/config";
 import { logger } from "../../src/logger";
 import PatchServer from "./patchServer";
 import WebServer from "./web";
 
 export default class Web {
-
   /**
    * Start HTTP and HTTPs connection listeners
    * TODO: This code may be better suited in web.js and patchServer.js
    */
-  public async start() {
-    /* Start the NPS servers */
+  public async start(config: IConfigurationFile) {
 
+    // Start the mock patch server
+    const patchServer = new PatchServer();
+    patchServer.start(config);
+    logger.info("[webServer] Patch Server started");
 
-    const patchServer = new PatchServer
-    const webServer = new WebServer
-
-    patchServer.start()
-    webServer.start()
-
-
-    logger.info("Patch Server started");
-    logger.info("Web Server started");
-
+    // Start the AuthLogin and shardlist servers
+    const webServer = new WebServer();
+    webServer.start();
+    logger.info("[webServer] Web Server started");
   }
 }
-
-

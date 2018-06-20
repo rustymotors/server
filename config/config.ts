@@ -1,26 +1,26 @@
 export interface IConfigurationFile {
   loggerLevel: string;
   serverConfig: {
-    certFilename: string,
-    ipServer: string,
-    privateKeyFilename: string,
-    publicKeyFilename: string,
+    certFilename: string;
+    ipServer: string;
+    privateKeyFilename: string;
+    publicKeyFilename: string;
     serverDatabase: {
-      name: string,
-      port: number,
-    },
+      name: string;
+      port: number;
+    };
     serverLobby: {
-      name: string,
-      port: number,
-    },
+      name: string;
+      port: number;
+    };
     serverLogin: {
-      name: string,
-      port: number,
-    },
+      name: string;
+      port: number;
+    };
     serverPersona: {
-      name: string,
-      port: number,
-    },
+      name: string;
+      port: number;
+    };
   };
 }
 
@@ -28,7 +28,7 @@ export const config: IConfigurationFile = {
   loggerLevel: "debug",
   serverConfig: {
     certFilename: "./data/cert.pem",
-    ipServer: "mc.drazisil.com",
+    ipServer: "192.168.5.20",
     privateKeyFilename: "./data/private_key.pem",
     publicKeyFilename: "./data/pub.key",
     serverDatabase: {
