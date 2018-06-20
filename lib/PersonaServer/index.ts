@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import * as crypto from 'crypto';
-import { Socket } from 'net';
-import { IRawPacket } from '../../src/listenerThread';
-import { logger } from '../../src/logger';
-import * as packet from '../../src/packet';
+import * as crypto from "crypto";
+import { Socket } from "net";
+import { IRawPacket } from "../../src/listenerThread";
+import { logger } from "../../src/logger";
+import * as packet from "../../src/packet";
 
 /**
  * Handle a select game persona packet
@@ -49,8 +49,8 @@ function npsSelectGamePersona(socket: Socket) {
  * @param {Socket} socket
  * @param {Buffer} data
  */
-async function npsLogoutGameUser(socket:Socket) {
-  logger.info('Logging out persona...');
+async function npsLogoutGameUser(socket: Socket) {
+  logger.info("[personaServer] Logging out persona...");
 
   // Create the packet content
   // FIXME: Make a real packet, not a random blob of bytes
@@ -75,7 +75,7 @@ function npsGetPersonaMapsByCustomerId(customerId: Buffer) {
 
   switch (customerId.readUInt32BE(0)) {
     case 2868969472:
-      Buffer.from('Doc', 'utf8').copy(name);
+      Buffer.from("Doc", "utf8").copy(name);
       return {
         id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
         // Max Personas are how many there are not how many allowed
@@ -85,7 +85,7 @@ function npsGetPersonaMapsByCustomerId(customerId: Buffer) {
         shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
       };
     case 1:
-      Buffer.from('Doctor Brown', 'utf8').copy(name);
+      Buffer.from("Doctor Brown", "utf8").copy(name);
       return {
         id: Buffer.from([0x00, 0x00, 0x00, 0x02]),
         // Max Personas are how many there are not how many allowed
@@ -95,7 +95,9 @@ function npsGetPersonaMapsByCustomerId(customerId: Buffer) {
         shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
       };
     default:
-      logger.error(`Unknown customerId: ${customerId.readUInt32BE(0)}`);
+      logger.error(
+        `[personaServer] Unknown customerId: ${customerId.readUInt32BE(0)}`
+      );
       process.exit(1);
       return null;
   }
@@ -150,21 +152,23 @@ export async function personaDataHandler(rawPacket: IRawPacket) {
   const { sock } = connection;
   const requestCode = data.readUInt16BE(0).toString(16);
 
-  if (requestCode === '503') {
+  if (requestCode === "503") {
     await npsSelectGamePersona(sock);
     return connection;
   }
 
-  if (requestCode === '50f') {
+  if (requestCode === "50f") {
     await npsLogoutGameUser(sock);
     return connection;
   }
 
-  if (requestCode === '532') {
+  if (requestCode === "532") {
     await npsGetPersonaMaps(sock, data);
     return connection;
   }
-  logger.error(`Unknown code ${requestCode} was received on port 8228`);
+  logger.error(
+    `[personaServer] Unknown code ${requestCode} was received on port 8228`
+  );
   process.exit(1);
   return null;
 }

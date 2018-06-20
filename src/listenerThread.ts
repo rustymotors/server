@@ -14,19 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import * as net from 'net';
+import * as net from "net";
 import { Connection } from "./Connection";
 import ConnectionMgr from "./connectionMgr";
-import { processData } from './connectionMgr';
-import { logger } from './logger';
-import { sendPacketOkLogin } from './TCPManager';
+import { processData } from "./connectionMgr";
+import { logger } from "./logger";
+import { sendPacketOkLogin } from "./TCPManager";
 
 export interface IRawPacket {
-  timestamp: number
-  remoteAddress: string
-  localPort: number
-  connection: Connection
-  data: Buffer
+  timestamp: number;
+  remoteAddress: string;
+  localPort: number;
+  connection: Connection;
+  data: Buffer;
 }
 
 /**
@@ -34,47 +34,57 @@ export interface IRawPacket {
  * @param {Int} localPort
  * @param {connectionMgr} connectionMgr
  */
-export default async function startTCPListener(localPort: number, connectionMgr: ConnectionMgr) {
-  net.createServer((socket) => {
-    // Received a new connection
-    // Turn it into a connection object
-    const connection = connectionMgr.findOrNewConnection(socket);
+export default async function startTCPListener(
+  localPort: number,
+  connectionMgr: ConnectionMgr
+) {
+  net
+    .createServer(socket => {
+      // Received a new connection
+      // Turn it into a connection object
+      const connection = connectionMgr.findOrNewConnection(socket);
 
-    const { remoteAddress } = socket;
-    // logger.info(`Client ${remoteAddress} connected to port ${localPort}`);
-    if (socket.localPort === 7003 && connection.inQueue) {
-      sendPacketOkLogin(socket);
-      connection.inQueue = false;
-    }
-    socket.on('end', () => {
-      connectionMgr.deleteConnection(connection);
-      // logger.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
-    });
-    socket.on('data', async (data) => {
-      try {
-        const rawPacket: IRawPacket = {
-          connection,
-          data,
-          localPort,
-          remoteAddress,
-          timestamp: Date.now(),
-        };
-        // Dump the raw packet
-        const newConnection = await processData(rawPacket);
-        connectionMgr.updateConnectionById(connection.id, newConnection);
-      } catch (error) {
-        console.error(error);
-        throw error;
+      const { remoteAddress } = socket;
+      logger.info(
+        `[listenerThread] Client ${remoteAddress} connected to port ${localPort}`
+      );
+      if (socket.localPort === 7003 && connection.inQueue) {
+        sendPacketOkLogin(socket);
+        connection.inQueue = false;
       }
+      socket.on("end", () => {
+        connectionMgr.deleteConnection(connection);
+        logger.info(
+          `[listenerThread] Client ${remoteAddress} disconnected from port ${localPort}`
+        );
+      });
+      socket.on("data", async data => {
+        try {
+          const rawPacket: IRawPacket = {
+            connection,
+            data,
+            localPort,
+            remoteAddress,
+            timestamp: Date.now(),
+          };
+          // Dump the raw packet
+          const newConnection = await processData(rawPacket);
+          connectionMgr.updateConnectionById(connection.id, newConnection);
+        } catch (error) {
+          logger.error(error);
+          logger.error(error.stack);
+          process.exit();
+        }
+      });
+      socket.on("error", (err: NodeJS.ErrnoException) => {
+        if (err.code !== "ECONNRESET") {
+          logger.error(err.message);
+          logger.error(err.stack);
+          process.exit(1);
+        }
+      });
+    })
+    .listen({ port: localPort, host: "0.0.0.0" }, () => {
+      logger.info(`[listenerThread] Listener started on port ${localPort}`);
     });
-    socket.on('error', (err: NodeJS.ErrnoException) => {
-      if (err.code !== 'ECONNRESET') {
-        logger.error(err.message);
-        logger.error(err.stack);
-        process.exit(1);
-      }
-    });
-  }).listen({ port: localPort, hostname: '0.0.0.0'}, () => {
-    // logger.info(`Listener started on port ${localPort}`);
-  });
 }

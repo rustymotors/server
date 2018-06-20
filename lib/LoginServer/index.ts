@@ -17,7 +17,7 @@
 import { logger } from '../../src/logger';
 import * as packet from './packet';
 
-import { npsUserStatus } from './npsUserStatus';
+import { NPSUserStatus } from './npsUserStatus';
 
 import { Connection } from "../../src/Connection";
 import { IRawPacket } from "../../src/listenerThread";
@@ -61,14 +61,14 @@ export function npsGetCustomerIdByContextId(contextId: string) {
  */
 async function userLogin(connection: Connection, data: Buffer) {
   const { sock } = connection;
-  const userStatus = npsUserStatus(sock, data);
+  const userStatus = new NPSUserStatus(sock, data);
 
   logger.info('*** userLogin ****');
   // logger.debug("Packet as hex: ", data.toString("hex"));
 
   logger.info(`=============================================
     Received login packet on port ${connection.localPort} from ${connection.remoteAddress}...`);
-  logger.debug('NPS opCode: ', userStatus.opCode);
+  logger.debug('NPS opCode: ', userStatus.opCode.toString());
   logger.debug('contextId:', userStatus.contextId);
   logger.debug('Decrypted SessionKey: ', userStatus.sessionKey);
   logger.info('=============================================');
@@ -80,7 +80,7 @@ async function userLogin(connection: Connection, data: Buffer) {
   // Save sessionKey in database under customerId
   await database.updateSessionKey(
     customer.customerId.readInt32BE(0),
-    userStatus.sessionKey.toString('hex'),
+    userStatus.sessionKey,
     userStatus.contextId,
     connection.id,
   );
