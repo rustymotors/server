@@ -148,60 +148,55 @@ export async function MessageReceived(msg: MessageNode, con: Connection) {
   if (!newConnection.useEncryption && (msg.flags && 0x08)) {
     logger.debug("Turning on encryption");
     newConnection.useEncryption = true;
-    logger.debug(newConnection.useEncryption.toString());
   }
+
   // If not a Heartbeat
   if (!(msg.flags === 80) && newConnection.useEncryption) {
-    logger.debug("1");
-    // If not a Heartbeat
-    if (!(msg.flags === 80) && newConnection.useEncryption) {
-      logger.debug("2");
-      try {
-        if (!newConnection.isSetupComplete) {
-          logger.debug("3");
-          logger.error(
-            `Decrypt() not yet setup! Disconnecting...conId: ${con.id}`
-          );
-          con.sock.end();
-          process.exit();
-        }
-
-        logger.debug("4");
-
-        /**
-         * Attempt to decrypt message
-         */
-        logger.debug(
-          "==================================================================="
-        );
-        logger.warn(
-          "Message buffer before decrypting: ",
-          msg.buffer.toString("hex")
-        );
-        const deciphered = newConnection.enc.processString(
-          msg.buffer.toString("hex")
-        );
-        logger.warn("output1:    ", deciphered);
-        logger.warn("output2:    ", deciphered.toString("hex"));
-        // console.log(`After mState: ${newConnection.enc.getSBox()}`);
-
-        logger.debug(
-          "==================================================================="
-        );
-
-        // This isn't real.
-        socketWriteIfOpen(con, msg);
-
-        return newConnection;
-      } catch (e) {
+    try {
+      if (!newConnection.isSetupComplete) {
+        logger.debug("3");
         logger.error(
-          `Decrypt() exception thrown! Disconnecting...conId:${
-            newConnection.id
-          }`
+          `Decrypt() not yet setup! Disconnecting...conId: ${con.id}`
         );
         con.sock.end();
-        throw e;
+        process.exit();
       }
+
+      /**
+       * Attempt to decrypt message
+       */
+      logger.debug(
+        "==================================================================="
+      );
+      logger.warn(
+        `Full packet before decrypting: `,
+        msg.buffer.toString("hex")
+      );
+
+      const encryptedBuffer = msg.buffer.toString("hex");
+
+      logger.warn(`Message buffer before decrypting: `, encryptedBuffer);
+      const deciphered = newConnection.enc.processString(encryptedBuffer);
+      logger.warn(
+        "Message buffer after decrypting:    ",
+        deciphered.toString("hex")
+      );
+      // console.log(`After mState: ${newConnection.enc.getSBox()}`);
+
+      logger.debug(
+        "==================================================================="
+      );
+
+      // This isn't real.
+      socketWriteIfOpen(con, msg);
+
+      return newConnection;
+    } catch (e) {
+      logger.error(
+        `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}`
+      );
+      con.sock.end();
+      throw e;
     }
   }
 

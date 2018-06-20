@@ -62,8 +62,6 @@ export class Connection {
    * setEncryptionKey
    */
   public setEncryptionKey(sessionKey: Buffer) {
-    // this.enc.cipher = crypto.createCipheriv("rc4", sessionKey, "");
-    // this.enc.decipher = crypto.createDecipheriv("rc4", sessionKey, "");
     this.enc = new RC4(sessionKey);
 
     this.isSetupComplete = true;
