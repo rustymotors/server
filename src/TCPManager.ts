@@ -79,10 +79,9 @@ export async function ClientConnect(con: Connection, node: MessageNode) {
       const { customerId, personaId, personaName } = newMsg;
       const sessionKey = res.session_key;
       logger.debug(`Raw Session Key: ${sessionKey}`);
+
       const strKey = Buffer.from(sessionKey, "hex");
       connectionWithKey.setEncryptionKey(sessionKey);
-
-      logger.debug(`Raw Session Key: ${sessionKey}`);
 
       // Log the session key
       logger.debug(
@@ -100,6 +99,7 @@ export async function ClientConnect(con: Connection, node: MessageNode) {
       // Create new response packet
       // TODO: Do this cleaner
       const rPacket = new MessageNode(node.rawBuffer);
+      rPacket.buffer = connectionWithKey.enc.out.processString(node.buffer);
       logger.debug(`Dumping response...`);
       rPacket.dumpPacket();
 
@@ -170,13 +170,13 @@ export async function MessageReceived(msg: MessageNode, con: Connection) {
       );
       logger.warn(
         `Full packet before decrypting: `,
-        msg.buffer.toString("hex")
+        msg.rawBuffer.toString("hex")
       );
 
       const encryptedBuffer = msg.buffer.toString("hex");
 
       logger.warn(`Message buffer before decrypting: `, encryptedBuffer);
-      const deciphered = newConnection.enc.processString(encryptedBuffer);
+      const deciphered = newConnection.enc.in.processString(encryptedBuffer);
       logger.warn(
         "Message buffer after decrypting:    ",
         deciphered.toString("hex")
