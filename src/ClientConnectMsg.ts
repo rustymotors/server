@@ -22,7 +22,7 @@ export default class ClientConnectMsg {
   public personaId: number;
   public personaName: string;
   public rawBuffer: Buffer;
-  private msgId: number;
+  public msgId: number;
   private custName: string;
   private mcVersion: Buffer;
 

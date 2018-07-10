@@ -17,7 +17,7 @@
 import { Logger, transports } from "winston";
 const logger = new Logger({
   transports: [
-    new transports.Console({ level: "debug" }),
+    new transports.Console({ level: "debug", colorize: "all" }),
     new transports.File({
       filename: "filelog-info.log",
       level: "info",

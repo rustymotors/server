@@ -36,9 +36,10 @@ function npsSelectGamePersona(socket: Socket) {
   // Build the packet
   // Response Code
   // 207 = success
-  const packetResult = packet.buildPacket(261, 0x0207, packetContent);
+  const responsePacket = packet.buildPacket(261, 0x0207, packetContent);
 
-  socket.write(packetResult);
+  logger.debug("responsePacket's data prior to sending: ", responsePacket.toString("hex"))
+  socket.write(responsePacket);
 }
 
 /**
@@ -60,9 +61,10 @@ async function npsLogoutGameUser(socket: Socket) {
   Buffer.from([0x01, 0x01]).copy(packetContent);
 
   // Build the packet
-  const packetResult = packet.buildPacket(257, 0x0612, packetContent);
+  const responsePacket = packet.buildPacket(257, 0x0612, packetContent);
 
-  socket.write(packetResult);
+  logger.debug("responsePacket's data prior to sending: ", responsePacket.toString("hex"))
+  socket.write(responsePacket);
 }
 
 /**
@@ -136,9 +138,10 @@ function npsGetPersonaMaps(socket: Socket, data: Buffer) {
   persona.name.copy(packetContent, 32);
 
   // Build the packet
-  const packetResult = packet.buildPacket(1024, 0x0607, packetContent);
+  const responsePacket = packet.buildPacket(1024, 0x0607, packetContent);
 
-  socket.write(packetResult);
+  logger.debug("responsePacket's data prior to sending: ", responsePacket.toString("hex"))
+  socket.write(responsePacket);
 }
 
 /**
