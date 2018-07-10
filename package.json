@@ -71,7 +71,7 @@
     "license-checker": "^20.1.0",
     "pg-migrator": "^1.0.5",
     "prettier": "^1.13.5",
-    "prettifier": "^0.3.5",
+    "prettifier": "^0.4.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.10.0",
     "tslint-config-prettier": "^1.13.0",
