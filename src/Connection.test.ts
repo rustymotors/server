@@ -21,39 +21,41 @@ import ConnectionMgr from "./connectionMgr";
 let testConnection1: Connection;
 let testConnection2: Connection;
 
-describe('Connection class', () => {
-
+describe("Connection class", () => {
   beforeEach(() => {
-    testConnection1 = new Connection(1, new Socket, new ConnectionMgr());
+    testConnection1 = new Connection(1, new Socket(), new ConnectionMgr());
   });
 
   test('status == "inactive"', () => {
-    expect(testConnection1.status).toEqual('INACTIVE');
+    expect(testConnection1.status).toEqual("INACTIVE");
   });
 
-  test('has no default encryption object', () => {
-    expect(testConnection1.enc).toEqual(null);
+  test("has no default encryption object", () => {
+    expect(testConnection1.enc.in).toEqual(null);
+    expect(testConnection1.enc.out).toEqual(null);
   });
 
-  test('changes to setupComplete after setting key', () => {
+  test("changes to setupComplete after setting key", () => {
     expect(testConnection1.isSetupComplete).toBeFalsy();
-    testConnection1.setEncryptionKey(Buffer.from('abc123', "hex"))
-    expect(testConnection1.isSetupComplete).toBeTruthy()
+    testConnection1.setEncryptionKey(Buffer.from("abc123", "hex"));
+    expect(testConnection1.isSetupComplete).toBeTruthy();
   });
-  describe('Two connections can communicate', () => {
-
+  describe("Two connections can communicate", () => {
     beforeEach(() => {
-      testConnection1 = new Connection(1, new Socket, new ConnectionMgr());
-      testConnection2 = new Connection(2, new Socket, new ConnectionMgr());
+      testConnection1 = new Connection(1, new Socket(), new ConnectionMgr());
+      testConnection2 = new Connection(2, new Socket(), new ConnectionMgr());
     });
 
-    test('Connection one can talk to Connection two', () => {
-      testConnection1.setEncryptionKey(Buffer.from('abc123', "hex"))
-      testConnection2.setEncryptionKey(Buffer.from('abc123', "hex"))
-      const testString = "I'm a very a secret message. Please don't decode me!"
-      const encipheredBuffer = testConnection1.enc.processString(Buffer.from(testString))
-      expect(testConnection2.enc.processString(encipheredBuffer).toString()).toEqual(testString)
+    test("Connection one can talk to Connection two", () => {
+      testConnection1.setEncryptionKey(Buffer.from("abc123", "hex"));
+      testConnection2.setEncryptionKey(Buffer.from("abc123", "hex"));
+      const testString = "I'm a very a secret message. Please don't decode me!";
+      const encipheredBuffer = testConnection1.enc.in.processString(
+        Buffer.from(testString)
+      );
+      expect(
+        testConnection2.enc.out.processString(encipheredBuffer).toString()
+      ).toEqual(testString);
     });
   });
-
 });

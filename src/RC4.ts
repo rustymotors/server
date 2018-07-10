@@ -50,13 +50,13 @@ export class RC4 {
     logger.debug(`Buffer entering RC4: `, inBytes);
     let idx1 = 0;
     let idx2 = 0;
-    let strLength = inBytes.length;
-    const output = Buffer.alloc(strLength);
+    let length = inBytes.length;
+    const output = Buffer.alloc(length);
     const s = this.mState;
     let x = this.mX;
     let y = this.mY;
 
-    while (strLength--) {
+    while (length--) {
       // tslint:disable-next-line:no-bitwise
       x = (x + 1) & 0xff;
       const a = s[x];
