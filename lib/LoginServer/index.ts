@@ -124,6 +124,7 @@ export async function loginDataHandler(rawPacket: IRawPacket) {
     case '501': {
       const responsePacket = await userLogin(connection, data);
 
+      logger.debug("responsePacket's data prior to sending: ", responsePacket.toString("hex"))
       sock.write(responsePacket);
       break;
     }
