@@ -68,6 +68,8 @@ export default async function startTCPListener(
             timestamp: Date.now(),
           };
           // Dump the raw packet
+          logger.debug("rawPacket's data prior to proccessing: ", rawPacket.data.toString("hex"))
+
           const newConnection = await processData(rawPacket);
           connectionMgr.updateConnectionById(connection.id, newConnection);
         } catch (error) {
