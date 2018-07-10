@@ -59,15 +59,14 @@ export default class MessageNode {
 
   }
 
-  // public setSeq(newSeq: number) {
-  //   this.seq = newSeq
-  //   this.rawBuffer.writeInt32LE(this.seq, 6)
-  // }
-
   public setMsgNo(newMsgNo: number) {
     this.msgNo = newMsgNo
-    // this.rawBuffer.writeInt16LE(this.msgNo, 9)
     this.buffer.writeInt16LE(this.msgNo, 0)
+  }
+
+  public setSeq(newSeq: number) {
+    this.seq = newSeq
+    this.rawBuffer.writeInt32LE(this.seq, 6)
   }
 
   public setMsgHeader(packet: Buffer) {
@@ -95,6 +94,7 @@ export default class MessageNode {
   }
 
   public dumpPacket() {
+    logger.info("=============================================");
     logger.debug("Packet has a valid MCOTS header signature");
     logger.info("=============================================");
     logger.debug(`Header Length: ${this.header.length}`);
@@ -103,7 +103,9 @@ export default class MessageNode {
     logger.debug(`Sequence: ${this.seq}`);
     logger.debug(`Flags: ${this.flags}`);
     logger.debug(`Buffer: ${this.buffer}`);
+    logger.info("------------------------------------------------");
     logger.debug(`Buffer as text: ${this.buffer.toString("utf8")}`);
+    logger.info("------------------------------------------------");
     logger.debug(`Buffer as string: ${this.buffer.toString("hex")}`);
     logger.debug(
       `Raw Buffer as string: ${this.rawBuffer.toString("hex")}`);
