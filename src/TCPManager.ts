@@ -33,6 +33,7 @@ function socketWriteIfOpen(conn: Connection, node: MessageNode) {
   // Log the buffer we are writing
   logger.debug(`Writting buffer: ${rawBuffer.toString("hex")}`);
   if (sock.writable) {
+    logger.debug("rawBuffer's data prior to sending: ", rawBuffer.toString("hex"))
     sock.write(rawBuffer);
   } else {
     logger.error(
@@ -71,7 +72,7 @@ export async function ClientConnect(con: Connection, node: MessageNode) {
   logger.debug(`Looking up the session key for ${con.id}...`);
   try {
     const res = await database.fetchSessionKeyByConnectionId(id);
-    logger.warn("Session Key: ", res.session_key);
+    logger.warn("Session Key: ", res.s_key);
 
     const connectionWithKey = con;
 
@@ -81,7 +82,7 @@ export async function ClientConnect(con: Connection, node: MessageNode) {
       logger.debug(`Raw Session Key: ${sessionKey}`);
 
       const strKey = Buffer.from(sessionKey, "hex");
-      connectionWithKey.setEncryptionKey(sessionKey);
+      connectionWithKey.setEncryptionKey(strKey.slice(0, 16));
 
       // Log the session key
       logger.debug(
@@ -99,7 +100,9 @@ export async function ClientConnect(con: Connection, node: MessageNode) {
       // Create new response packet
       // TODO: Do this cleaner
       const rPacket = new MessageNode(node.rawBuffer);
-      rPacket.buffer = connectionWithKey.enc.out.processString(node.buffer);
+      // rPacket.buffer = connectionWithKey.enc.out.processString(node.buffer);
+      rPacket.setMsgNo(101)
+      rPacket.setBuffer(Buffer.from([0x65, 0x00, 0xb6, 0x01]))
       logger.debug(`Dumping response...`);
       rPacket.dumpPacket();
 
@@ -223,14 +226,16 @@ export async function lobbyDataHandler(rawPacket: IRawPacket) {
   switch (requestCode) {
     // npsRequestGameConnectServer
     case "100": {
-      const packetResult = await lobby.npsRequestGameConnectServer(sock, data);
-      sock.write(packetResult);
+      const responsePacket = await lobby.npsRequestGameConnectServer(sock, data);
+      logger.debug("responsePacket's data prior to sending: ", responsePacket.toString("hex"))
+      sock.write(responsePacket);
       break;
     }
     // npsHeartbeat
     case "217": {
-      const packetResult = await npsHeartbeat();
-      sock.write(packetResult);
+      const responsePacket = await npsHeartbeat();
+      logger.debug("responsePacket's data prior to sending: ", responsePacket.toString("hex"))
+      sock.write(responsePacket);
       break;
     }
     // npsSendCommand
@@ -247,6 +252,7 @@ export async function lobbyDataHandler(rawPacket: IRawPacket) {
         process.exit(1);
       }
 
+      logger.debug("encrypedCommand's data prior to sending: ", encryptedCommand.toString("hex"))
       newSock.write(encryptedCommand);
       return newConnection;
     }
