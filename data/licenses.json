@@ -1,5 +1,5 @@
 {
-  "@babel/code-frame@7.0.0-beta.44": {
+  "@babel/code-frame@7.0.0-beta.51": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel/tree/master/packages/babel-code-frame",
     "publisher": "Sebastian McKenzie",
@@ -7,7 +7,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/@babel/code-frame",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/@babel/code-frame/README.md"
   },
-  "@babel/highlight@7.0.0-beta.44": {
+  "@babel/highlight@7.0.0-beta.51": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel/tree/master/packages/babel-highlight",
     "publisher": "suchipi",
@@ -39,9 +39,9 @@
     "path": "/home/drazisil/github/mco-server/node_modules/@types/jest",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/@types/jest/LICENSE"
   },
-  "@types/node@10.1.2": {
+  "@types/node@10.3.4": {
     "licenses": "MIT",
-    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "path": "/home/drazisil/github/mco-server/node_modules/@types/node",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/@types/node/LICENSE"
   },
@@ -56,6 +56,115 @@
     "repository": "https://www.github.com/DefinitelyTyped/DefinitelyTyped",
     "path": "/home/drazisil/github/mco-server/node_modules/@types/winston",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/@types/winston/LICENSE"
+  },
+  "@webassemblyjs/ast@1.5.12": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "publisher": "Sven Sauleau",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/ast",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/ast/README.md"
+  },
+  "@webassemblyjs/floating-point-hex-parser@1.5.12": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "publisher": "Mauro Bringolf",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/floating-point-hex-parser",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/floating-point-hex-parser/LICENSE"
+  },
+  "@webassemblyjs/helper-api-error@1.5.12": {
+    "licenses": "MIT",
+    "publisher": "Sven Sauleau",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/helper-api-error"
+  },
+  "@webassemblyjs/helper-buffer@1.5.12": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "publisher": "Sven Sauleau",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/helper-buffer"
+  },
+  "@webassemblyjs/helper-code-frame@1.5.12": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "publisher": "Sven Sauleau",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/helper-code-frame"
+  },
+  "@webassemblyjs/helper-fsm@1.5.12": {
+    "licenses": "ISC",
+    "publisher": "Mauro Bringolf",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/helper-fsm"
+  },
+  "@webassemblyjs/helper-module-context@1.5.12": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "publisher": "Sven Sauleau",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/helper-module-context"
+  },
+  "@webassemblyjs/helper-wasm-bytecode@1.5.12": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "publisher": "Sven Sauleau",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/helper-wasm-bytecode"
+  },
+  "@webassemblyjs/helper-wasm-section@1.5.12": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "publisher": "Sven Sauleau",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/helper-wasm-section"
+  },
+  "@webassemblyjs/ieee754@1.5.12": {
+    "licenses": "MIT",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/ieee754"
+  },
+  "@webassemblyjs/leb128@1.5.12": {
+    "licenses": "MIT",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/leb128",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/leb128/LICENSE.txt"
+  },
+  "@webassemblyjs/utf8@1.5.12": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "publisher": "Sven Sauleau",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/utf8"
+  },
+  "@webassemblyjs/wasm-edit@1.5.12": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "publisher": "Sven Sauleau",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/wasm-edit",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/wasm-edit/README.md"
+  },
+  "@webassemblyjs/wasm-gen@1.5.12": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "publisher": "Sven Sauleau",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/wasm-gen"
+  },
+  "@webassemblyjs/wasm-opt@1.5.12": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "publisher": "Sven Sauleau",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/wasm-opt"
+  },
+  "@webassemblyjs/wasm-parser@1.5.12": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "publisher": "Sven Sauleau",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/wasm-parser",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/wasm-parser/README.md"
+  },
+  "@webassemblyjs/wast-parser@1.5.12": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "publisher": "Sven Sauleau",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/wast-parser",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/wast-parser/README.md"
+  },
+  "@webassemblyjs/wast-printer@1.5.12": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "publisher": "Sven Sauleau",
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/wast-printer",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/wast-printer/README.md"
   },
   "abab@1.0.4": {
     "licenses": "ISC",
@@ -88,13 +197,13 @@
     "path": "/home/drazisil/github/mco-server/node_modules/acorn-globals",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/acorn-globals/LICENSE"
   },
-  "acorn@5.5.3": {
+  "acorn@5.7.1": {
     "licenses": "MIT",
     "repository": "https://github.com/acornjs/acorn",
     "path": "/home/drazisil/github/mco-server/node_modules/acorn",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/acorn/LICENSE"
   },
-  "ajv-keywords@3.1.0": {
+  "ajv-keywords@3.2.0": {
     "licenses": "MIT",
     "repository": "https://github.com/epoberezkin/ajv-keywords",
     "publisher": "Evgeny Poberezkin",
@@ -108,7 +217,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/har-validator/node_modules/ajv",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/har-validator/node_modules/ajv/LICENSE"
   },
-  "ajv@6.4.0": {
+  "ajv@6.5.1": {
     "licenses": "MIT",
     "repository": "https://github.com/epoberezkin/ajv",
     "publisher": "Evgeny Poberezkin",
@@ -209,9 +318,9 @@
     "path": "/home/drazisil/github/mco-server/node_modules/anymatch",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/anymatch/LICENSE"
   },
-  "append-transform@0.4.0": {
+  "append-transform@1.0.0": {
     "licenses": "MIT",
-    "repository": "https://github.com/jamestalmage/append-transform",
+    "repository": "https://github.com/istanbuljs/append-transform",
     "publisher": "James Talmage",
     "email": "james@talmage.io",
     "url": "github.com/jamestalmage",
@@ -438,7 +547,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/asynckit",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/asynckit/LICENSE"
   },
-  "atob@2.1.0": {
+  "atob@2.1.1": {
     "licenses": "(MIT OR Apache-2.0)",
     "repository": "git://git.coolaj86.com/coolaj86/atob.js",
     "publisher": "AJ ONeal",
@@ -447,7 +556,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/atob",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/atob/LICENSE"
   },
-  "awesome-typescript-loader@5.0.0": {
+  "awesome-typescript-loader@5.1.1": {
     "licenses": "MIT",
     "repository": "https://github.com/s-panferov/awesome-typescript-loader",
     "publisher": "Stanislav Panferov",
@@ -482,7 +591,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/babel-code-frame",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/babel-code-frame/README.md"
   },
-  "babel-core@6.26.0": {
+  "babel-core@6.26.3": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel/tree/master/packages/babel-core",
     "publisher": "Sebastian McKenzie",
@@ -506,7 +615,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/babel-helpers",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/babel-helpers/README.md"
   },
-  "babel-jest@22.4.3": {
+  "babel-jest@22.4.4": {
     "licenses": "MIT",
     "repository": "https://github.com/facebook/jest",
     "path": "/home/drazisil/github/mco-server/node_modules/babel-jest",
@@ -527,7 +636,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/babel-plugin-istanbul",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/babel-plugin-istanbul/LICENSE"
   },
-  "babel-plugin-jest-hoist@22.4.3": {
+  "babel-plugin-jest-hoist@22.4.4": {
     "licenses": "MIT",
     "repository": "https://github.com/facebook/jest",
     "path": "/home/drazisil/github/mco-server/node_modules/babel-plugin-jest-hoist",
@@ -539,7 +648,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/babel-plugin-syntax-object-rest-spread",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/babel-plugin-syntax-object-rest-spread/README.md"
   },
-  "babel-plugin-transform-es2015-modules-commonjs@6.26.0": {
+  "babel-plugin-transform-es2015-modules-commonjs@6.26.2": {
     "licenses": "MIT",
     "repository": "https://github.com/babel/babel/tree/master/packages/babel-plugin-transform-es2015-modules-commonjs",
     "path": "/home/drazisil/github/mco-server/node_modules/babel-plugin-transform-es2015-modules-commonjs",
@@ -551,7 +660,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/babel-plugin-transform-strict-mode",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/babel-plugin-transform-strict-mode/README.md"
   },
-  "babel-preset-jest@22.4.3": {
+  "babel-preset-jest@22.4.4": {
     "licenses": "MIT",
     "repository": "https://github.com/facebook/jest",
     "path": "/home/drazisil/github/mco-server/node_modules/babel-preset-jest",
@@ -678,18 +787,6 @@
     "path": "/home/drazisil/github/mco-server/node_modules/bn.js",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/bn.js/README.md"
   },
-  "boom@4.3.1": {
-    "licenses": "BSD-3-Clause",
-    "repository": "https://github.com/hapijs/boom",
-    "path": "/home/drazisil/github/mco-server/node_modules/boom",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/boom/LICENSE"
-  },
-  "boom@5.2.0": {
-    "licenses": "BSD-3-Clause",
-    "repository": "https://github.com/hapijs/boom",
-    "path": "/home/drazisil/github/mco-server/node_modules/cryptiles/node_modules/boom",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/cryptiles/node_modules/boom/LICENSE"
-  },
   "brace-expansion@1.1.11": {
     "licenses": "MIT",
     "repository": "https://github.com/juliangruber/brace-expansion",
@@ -730,7 +827,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/browser-process-hrtime",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/browser-process-hrtime/README.md"
   },
-  "browser-resolve@1.11.2": {
+  "browser-resolve@1.11.3": {
     "licenses": "MIT",
     "repository": "https://github.com/shtylman/node-browser-resolve",
     "publisher": "Roman Shtylman",
@@ -789,7 +886,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/bser",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/bser/README.md"
   },
-  "buffer-from@1.0.0": {
+  "buffer-from@1.1.0": {
     "licenses": "MIT",
     "repository": "https://github.com/LinusU/buffer-from",
     "path": "/home/drazisil/github/mco-server/node_modules/buffer-from",
@@ -879,6 +976,14 @@
     "path": "/home/drazisil/github/mco-server/node_modules/yargs-parser/node_modules/camelcase",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/yargs-parser/node_modules/camelcase/license"
   },
+  "capture-exit@1.2.0": {
+    "licenses": "ISC",
+    "repository": "https://github.com/stefanpenner/capture-exit",
+    "publisher": "Stefan Penner",
+    "email": "stefan.penner@gmail.com",
+    "path": "/home/drazisil/github/mco-server/node_modules/capture-exit",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/capture-exit/README.md"
+  },
   "caseless@0.12.0": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/mikeal/caseless",
@@ -910,8 +1015,8 @@
   "chalk@2.4.1": {
     "licenses": "MIT",
     "repository": "https://github.com/chalk/chalk",
-    "path": "/home/drazisil/github/mco-server/node_modules/license-checker/node_modules/chalk",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/license-checker/node_modules/chalk/license"
+    "path": "/home/drazisil/github/mco-server/node_modules/awesome-typescript-loader/node_modules/chalk",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/awesome-typescript-loader/node_modules/chalk/license"
   },
   "chardet@0.4.2": {
     "licenses": "MIT",
@@ -929,7 +1034,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/chokidar",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/chokidar/README.md"
   },
-  "chokidar@2.0.3": {
+  "chokidar@2.0.4": {
     "licenses": "MIT",
     "repository": "https://github.com/paulmillr/chokidar",
     "publisher": "Paul Miller",
@@ -946,8 +1051,8 @@
     "path": "/home/drazisil/github/mco-server/node_modules/sqlite3/node_modules/chownr",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/sqlite3/node_modules/chownr/LICENSE"
   },
-  "chrome-trace-event@0.1.2": {
-    "licenses": "MIT*",
+  "chrome-trace-event@1.0.0": {
+    "licenses": "MIT",
     "repository": "github.com:samccone/chrome-trace-event",
     "publisher": "Trent Mick, Sam Saccone",
     "path": "/home/drazisil/github/mco-server/node_modules/chrome-trace-event",
@@ -1030,7 +1135,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/cliui",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/cliui/LICENSE.txt"
   },
-  "cliui@4.0.0": {
+  "cliui@4.1.0": {
     "licenses": "ISC",
     "repository": "https://github.com/yargs/cliui",
     "publisher": "Ben Coe",
@@ -1125,11 +1230,10 @@
     "path": "/home/drazisil/github/mco-server/node_modules/commondir",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/commondir/LICENSE"
   },
-  "compare-versions@3.1.0": {
+  "compare-versions@3.3.0": {
     "licenses": "MIT",
     "repository": "https://github.com/omichelsen/compare-versions",
-    "publisher": "Ole Bjørn Michelsen",
-    "email": "ole@michelsen.dk",
+    "publisher": "Ole Michelsen",
     "path": "/home/drazisil/github/mco-server/node_modules/compare-versions",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/compare-versions/LICENSE"
   },
@@ -1208,7 +1312,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/copy-descriptor",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/copy-descriptor/LICENSE"
   },
-  "core-js@2.5.5": {
+  "core-js@2.5.7": {
     "licenses": "MIT",
     "repository": "https://github.com/zloirock/core-js",
     "path": "/home/drazisil/github/mco-server/node_modules/core-js",
@@ -1230,7 +1334,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/cpx",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/cpx/LICENSE"
   },
-  "create-ecdh@4.0.1": {
+  "create-ecdh@4.0.3": {
     "licenses": "MIT",
     "repository": "https://github.com/crypto-browserify/createECDH",
     "publisher": "Calvin Metcalf",
@@ -1258,12 +1362,6 @@
     "path": "/home/drazisil/github/mco-server/node_modules/cross-spawn",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/cross-spawn/LICENSE"
   },
-  "cryptiles@3.1.2": {
-    "licenses": "BSD-3-Clause",
-    "repository": "https://github.com/hapijs/cryptiles",
-    "path": "/home/drazisil/github/mco-server/node_modules/cryptiles",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/cryptiles/LICENSE"
-  },
   "crypto-browserify@3.12.0": {
     "licenses": "MIT",
     "repository": "https://github.com/crypto-browserify/crypto-browserify",
@@ -1281,9 +1379,9 @@
     "path": "/home/drazisil/github/mco-server/node_modules/cssom",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/cssom/LICENSE.txt"
   },
-  "cssstyle@0.2.37": {
+  "cssstyle@0.3.1": {
     "licenses": "MIT",
-    "repository": "https://github.com/chad3814/CSSStyleDeclaration",
+    "repository": "https://github.com/jsakas/CSSStyleDeclaration",
     "path": "/home/drazisil/github/mco-server/node_modules/cssstyle",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/cssstyle/README.md"
   },
@@ -1300,6 +1398,15 @@
     "email": "mathiasbuus@gmail.com",
     "path": "/home/drazisil/github/mco-server/node_modules/cyclist",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/cyclist/README.md"
+  },
+  "d@1.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/medikoo/d",
+    "publisher": "Mariusz Nowak",
+    "email": "medyk@medikoo.com",
+    "url": "http://www.medikoo.com/",
+    "path": "/home/drazisil/github/mco-server/node_modules/d",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/d/LICENSE"
   },
   "dashdash@1.14.1": {
     "licenses": "MIT",
@@ -1348,8 +1455,8 @@
     "repository": "https://github.com/visionmedia/debug",
     "publisher": "TJ Holowaychuk",
     "email": "tj@vision-media.ca",
-    "path": "/home/drazisil/github/mco-server/node_modules/istanbul-api/node_modules/debug",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/istanbul-api/node_modules/debug/LICENSE"
+    "path": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/helper-module-context/node_modules/debug",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/@webassemblyjs/helper-module-context/node_modules/debug/LICENSE"
   },
   "debuglog@1.0.1": {
     "licenses": "MIT",
@@ -1394,9 +1501,9 @@
     "path": "/home/drazisil/github/mco-server/node_modules/deep-is",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/deep-is/LICENSE"
   },
-  "default-require-extensions@1.0.0": {
+  "default-require-extensions@2.0.0": {
     "licenses": "MIT",
-    "repository": "https://github.com/jamestalmage/default-require-extensions",
+    "repository": "https://github.com/avajs/default-require-extensions",
     "publisher": "James Talmage",
     "email": "james@talmage.io",
     "url": "github.com/jamestalmage",
@@ -1538,7 +1645,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/duplexer",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/duplexer/LICENCE"
   },
-  "duplexify@3.5.4": {
+  "duplexify@3.6.0": {
     "licenses": "MIT",
     "repository": "https://github.com/mafintosh/duplexify",
     "publisher": "Mathias Buus",
@@ -1601,13 +1708,13 @@
     "path": "/home/drazisil/github/mco-server/node_modules/errno",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/errno/README.md"
   },
-  "error-ex@1.3.1": {
+  "error-ex@1.3.2": {
     "licenses": "MIT",
     "repository": "https://github.com/qix-/node-error-ex",
     "path": "/home/drazisil/github/mco-server/node_modules/error-ex",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/error-ex/LICENSE"
   },
-  "es-abstract@1.11.0": {
+  "es-abstract@1.12.0": {
     "licenses": "MIT",
     "repository": "https://github.com/ljharb/es-abstract",
     "publisher": "Jordan Harband",
@@ -1623,6 +1730,24 @@
     "path": "/home/drazisil/github/mco-server/node_modules/es-to-primitive",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/es-to-primitive/LICENSE"
   },
+  "es5-ext@0.10.45": {
+    "licenses": "ISC",
+    "repository": "https://github.com/medikoo/es5-ext",
+    "publisher": "Mariusz Nowak",
+    "email": "medyk@medikoo.com",
+    "url": "http://www.medikoo.com/",
+    "path": "/home/drazisil/github/mco-server/node_modules/es5-ext",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/es5-ext/LICENSE"
+  },
+  "es6-iterator@2.0.3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/medikoo/es6-iterator",
+    "publisher": "Mariusz Nowak",
+    "email": "medyk@medikoo.com",
+    "url": "http://www.medikoo.com/",
+    "path": "/home/drazisil/github/mco-server/node_modules/es6-iterator",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/es6-iterator/LICENSE"
+  },
   "es6-shim@0.27.1": {
     "licenses": "MIT",
     "repository": "https://github.com/paulmillr/es6-shim",
@@ -1630,6 +1755,15 @@
     "url": "http://paulmillr.com",
     "path": "/home/drazisil/github/mco-server/node_modules/es6-shim",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/es6-shim/LICENSE"
+  },
+  "es6-symbol@3.1.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/medikoo/es6-symbol",
+    "publisher": "Mariusz Nowak",
+    "email": "medyk@medikoo.com",
+    "url": "http://www.medikoo.com/",
+    "path": "/home/drazisil/github/mco-server/node_modules/es6-symbol",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/es6-symbol/LICENSE"
   },
   "escape-string-regexp@1.0.5": {
     "licenses": "MIT",
@@ -1640,7 +1774,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/escape-string-regexp",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/escape-string-regexp/license"
   },
-  "escodegen@1.9.1": {
+  "escodegen@1.10.0": {
     "licenses": "BSD-2-Clause",
     "repository": "https://github.com/estools/escodegen",
     "path": "/home/drazisil/github/mco-server/node_modules/escodegen",
@@ -1833,6 +1967,13 @@
     "licenses": "MIT",
     "repository": "https://github.com/epoberezkin/fast-deep-equal",
     "publisher": "Evgeny Poberezkin",
+    "path": "/home/drazisil/github/mco-server/node_modules/har-validator/node_modules/fast-deep-equal",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/har-validator/node_modules/fast-deep-equal/LICENSE"
+  },
+  "fast-deep-equal@2.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/epoberezkin/fast-deep-equal",
+    "publisher": "Evgeny Poberezkin",
     "path": "/home/drazisil/github/mco-server/node_modules/fast-deep-equal",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/fast-deep-equal/LICENSE"
   },
@@ -1896,7 +2037,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/fileset",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/fileset/LICENSE-MIT"
   },
-  "fill-range@2.2.3": {
+  "fill-range@2.2.4": {
     "licenses": "MIT",
     "repository": "https://github.com/jonschlinkert/fill-range",
     "publisher": "Jon Schlinkert",
@@ -2023,7 +2164,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/fs-extra",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/fs-extra/LICENSE"
   },
-  "fs-extra@4.0.3": {
+  "fs-extra@6.0.0": {
     "licenses": "MIT",
     "repository": "https://github.com/jprichardson/node-fs-extra",
     "publisher": "JP Richardson",
@@ -2238,6 +2379,15 @@
     "path": "/home/drazisil/github/mco-server/node_modules/has-flag",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/has-flag/license"
   },
+  "has-symbols@1.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/has-symbols",
+    "publisher": "Jordan Harband",
+    "email": "ljharb@gmail.com",
+    "url": "http://ljharb.codes",
+    "path": "/home/drazisil/github/mco-server/node_modules/has-symbols",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/has-symbols/LICENSE"
+  },
   "has-unicode@2.0.1": {
     "licenses": "ISC",
     "repository": "https://github.com/iarna/has-unicode",
@@ -2287,22 +2437,13 @@
     "path": "/home/drazisil/github/mco-server/node_modules/has-yarn",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/has-yarn/license"
   },
-  "has@1.0.1": {
+  "has@1.0.3": {
     "licenses": "MIT",
     "repository": "https://github.com/tarruda/has",
     "publisher": "Thiago de Arruda",
     "email": "tpadilha84@gmail.com",
     "path": "/home/drazisil/github/mco-server/node_modules/has",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/has/LICENSE-MIT"
-  },
-  "hash-base@2.0.2": {
-    "licenses": "MIT",
-    "repository": "https://github.com/crypto-browserify/hash-base",
-    "publisher": "Kirill Fomichev",
-    "email": "fanatid@ya.ru",
-    "url": "https://github.com/fanatid",
-    "path": "/home/drazisil/github/mco-server/node_modules/ripemd160/node_modules/hash-base",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/ripemd160/node_modules/hash-base/README.md"
   },
   "hash-base@3.0.4": {
     "licenses": "MIT",
@@ -2313,22 +2454,13 @@
     "path": "/home/drazisil/github/mco-server/node_modules/hash-base",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/hash-base/LICENSE"
   },
-  "hash.js@1.1.3": {
+  "hash.js@1.1.4": {
     "licenses": "MIT",
     "repository": "https://github.com/indutny/hash.js",
     "publisher": "Fedor Indutny",
     "email": "fedor@indutny.com",
     "path": "/home/drazisil/github/mco-server/node_modules/hash.js",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/hash.js/README.md"
-  },
-  "hawk@6.0.2": {
-    "licenses": "BSD-3-Clause",
-    "repository": "https://github.com/hueniverse/hawk",
-    "publisher": "Eran Hammer",
-    "email": "eran@hammer.io",
-    "url": "http://hueniverse.com",
-    "path": "/home/drazisil/github/mco-server/node_modules/hawk",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/hawk/LICENSE"
   },
   "hmac-drbg@1.0.1": {
     "licenses": "MIT",
@@ -2337,12 +2469,6 @@
     "email": "fedor@indutny.com",
     "path": "/home/drazisil/github/mco-server/node_modules/hmac-drbg",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/hmac-drbg/README.md"
-  },
-  "hoek@4.2.1": {
-    "licenses": "BSD-3-Clause",
-    "repository": "https://github.com/hapijs/hoek",
-    "path": "/home/drazisil/github/mco-server/node_modules/boom/node_modules/hoek",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/boom/node_modules/hoek/LICENSE"
   },
   "hoek@5.0.3": {
     "licenses": "BSD-3-Clause",
@@ -2359,7 +2485,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/home-or-tmp",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/home-or-tmp/license"
   },
-  "hosted-git-info@2.5.0": {
+  "hosted-git-info@2.6.0": {
     "licenses": "ISC",
     "repository": "https://github.com/npm/hosted-git-info",
     "publisher": "Rebecca Turner",
@@ -2914,7 +3040,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/istanbul-lib-coverage",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/istanbul-lib-coverage/LICENSE"
   },
-  "istanbul-lib-hook@1.2.0": {
+  "istanbul-lib-hook@1.2.1": {
     "licenses": "BSD-3-Clause",
     "repository": "https://github.com/istanbuljs/istanbuljs",
     "publisher": "Krishnan Anantheswaran",
@@ -2946,7 +3072,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/istanbul-lib-source-maps",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/istanbul-lib-source-maps/LICENSE"
   },
-  "istanbul-lib-source-maps@1.2.4": {
+  "istanbul-lib-source-maps@1.2.5": {
     "licenses": "BSD-3-Clause",
     "repository": "https://github.com/istanbuljs/istanbuljs",
     "publisher": "Krishnan Anantheswaran",
@@ -2968,13 +3094,13 @@
     "path": "/home/drazisil/github/mco-server/node_modules/jest-changed-files",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/jest-changed-files/README.md"
   },
-  "jest-cli@22.4.3": {
+  "jest-cli@22.4.4": {
     "licenses": "MIT",
     "repository": "https://github.com/facebook/jest",
     "path": "/home/drazisil/github/mco-server/node_modules/jest/node_modules/jest-cli",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/jest/node_modules/jest-cli/README.md"
   },
-  "jest-config@22.4.3": {
+  "jest-config@22.4.4": {
     "licenses": "MIT",
     "repository": "https://github.com/facebook/jest",
     "path": "/home/drazisil/github/mco-server/node_modules/jest-config"
@@ -3010,7 +3136,7 @@
     "repository": "https://github.com/facebook/jest",
     "path": "/home/drazisil/github/mco-server/node_modules/jest-haste-map"
   },
-  "jest-jasmine2@22.4.3": {
+  "jest-jasmine2@22.4.4": {
     "licenses": "MIT",
     "repository": "https://github.com/facebook/jest",
     "path": "/home/drazisil/github/mco-server/node_modules/jest-jasmine2"
@@ -3059,12 +3185,12 @@
     "repository": "https://github.com/facebook/jest",
     "path": "/home/drazisil/github/mco-server/node_modules/jest-resolve"
   },
-  "jest-runner@22.4.3": {
+  "jest-runner@22.4.4": {
     "licenses": "MIT",
     "repository": "https://github.com/facebook/jest",
     "path": "/home/drazisil/github/mco-server/node_modules/jest-runner"
   },
-  "jest-runtime@22.4.3": {
+  "jest-runtime@22.4.4": {
     "licenses": "MIT",
     "repository": "https://github.com/facebook/jest",
     "path": "/home/drazisil/github/mco-server/node_modules/jest-runtime"
@@ -3072,8 +3198,8 @@
   "jest-serializer@22.4.3": {
     "licenses": "MIT",
     "repository": "https://github.com/facebook/jest",
-    "path": "/home/drazisil/github/mco-server/node_modules/jest-haste-map/node_modules/jest-serializer",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/jest-haste-map/node_modules/jest-serializer/README.md"
+    "path": "/home/drazisil/github/mco-server/node_modules/jest-serializer",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/jest-serializer/README.md"
   },
   "jest-snapshot@22.4.3": {
     "licenses": "MIT",
@@ -3085,7 +3211,7 @@
     "repository": "https://github.com/facebook/jest",
     "path": "/home/drazisil/github/mco-server/node_modules/jest-util"
   },
-  "jest-validate@22.4.3": {
+  "jest-validate@22.4.4": {
     "licenses": "MIT",
     "repository": "https://github.com/facebook/jest",
     "path": "/home/drazisil/github/mco-server/node_modules/jest-validate",
@@ -3097,7 +3223,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/jest-worker",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/jest-worker/README.md"
   },
-  "jest@22.4.3": {
+  "jest@22.4.4": {
     "licenses": "MIT",
     "repository": "https://github.com/facebook/jest",
     "path": "/home/drazisil/github/mco-server/node_modules/jest",
@@ -3118,7 +3244,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/js-tokens",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/js-tokens/LICENSE"
   },
-  "js-yaml@3.11.0": {
+  "js-yaml@3.12.0": {
     "licenses": "MIT",
     "repository": "https://github.com/nodeca/js-yaml",
     "publisher": "Vladimir Zapparov",
@@ -3133,7 +3259,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/jsbn",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/jsbn/LICENSE"
   },
-  "jsdom@11.7.0": {
+  "jsdom@11.11.0": {
     "licenses": "MIT",
     "repository": "https://github.com/jsdom/jsdom",
     "path": "/home/drazisil/github/mco-server/node_modules/jsdom",
@@ -3156,6 +3282,13 @@
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/json-parse-better-errors/LICENSE.md"
   },
   "json-schema-traverse@0.3.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/epoberezkin/json-schema-traverse",
+    "publisher": "Evgeny Poberezkin",
+    "path": "/home/drazisil/github/mco-server/node_modules/har-validator/node_modules/json-schema-traverse",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/har-validator/node_modules/json-schema-traverse/LICENSE"
+  },
+  "json-schema-traverse@0.4.1": {
     "licenses": "MIT",
     "repository": "https://github.com/epoberezkin/json-schema-traverse",
     "publisher": "Evgeny Poberezkin",
@@ -3277,6 +3410,15 @@
     "path": "/home/drazisil/github/mco-server/node_modules/lcid",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/lcid/license"
   },
+  "leb@0.3.0": {
+    "licenses": "Apache 2.0",
+    "repository": "https://github.com/Obvious/leb",
+    "publisher": "Dan Bornstein",
+    "email": "danfuzz@milk.com",
+    "url": "http://www.milk.com/",
+    "path": "/home/drazisil/github/mco-server/node_modules/leb",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/leb/LICENSE.txt"
+  },
   "left-pad@1.3.0": {
     "licenses": "WTFPL",
     "repository": "https://github.com/stevemao/left-pad",
@@ -3301,7 +3443,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/levn",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/levn/LICENSE"
   },
-  "license-checker@20.0.0": {
+  "license-checker@20.1.0": {
     "licenses": "BSD-3-Clause",
     "repository": "https://github.com/davglass/license-checker",
     "publisher": "Dav Glass",
@@ -3384,6 +3526,15 @@
     "path": "/home/drazisil/github/mco-server/node_modules/locate-path",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/locate-path/license"
   },
+  "lodash.debounce@4.0.8": {
+    "licenses": "MIT",
+    "repository": "https://github.com/lodash/lodash",
+    "publisher": "John-David Dalton",
+    "email": "john.david.dalton@gmail.com",
+    "url": "http://allyoucanleet.com/",
+    "path": "/home/drazisil/github/mco-server/node_modules/lodash.debounce",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/lodash.debounce/LICENSE"
+  },
   "lodash.sortby@4.7.0": {
     "licenses": "MIT",
     "repository": "https://github.com/lodash/lodash",
@@ -3402,24 +3553,6 @@
     "path": "/home/drazisil/github/mco-server/node_modules/async/node_modules/lodash",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/async/node_modules/lodash/LICENSE"
   },
-  "lodash@4.17.4": {
-    "licenses": "MIT",
-    "repository": "https://github.com/lodash/lodash",
-    "publisher": "John-David Dalton",
-    "email": "john.david.dalton@gmail.com",
-    "url": "http://allyoucanleet.com/",
-    "path": "/home/drazisil/github/mco-server/node_modules/lodash",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/lodash/LICENSE"
-  },
-  "lodash@4.17.5": {
-    "licenses": "MIT",
-    "repository": "https://github.com/lodash/lodash",
-    "publisher": "John-David Dalton",
-    "email": "john.david.dalton@gmail.com",
-    "url": "http://allyoucanleet.com/",
-    "path": "/home/drazisil/github/mco-server/node_modules/awesome-typescript-loader/node_modules/lodash",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/awesome-typescript-loader/node_modules/lodash/LICENSE"
-  },
   "log-symbols@1.0.2": {
     "licenses": "MIT",
     "repository": "https://github.com/sindresorhus/log-symbols",
@@ -3429,6 +3562,15 @@
     "path": "/home/drazisil/github/mco-server/node_modules/log-symbols",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/log-symbols/license"
   },
+  "log-symbols@2.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/log-symbols",
+    "publisher": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com",
+    "path": "/home/drazisil/github/mco-server/node_modules/webpack-log/node_modules/log-symbols",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/webpack-log/node_modules/log-symbols/license"
+  },
   "log-update@1.0.2": {
     "licenses": "MIT",
     "repository": "https://github.com/sindresorhus/log-update",
@@ -3437,6 +3579,22 @@
     "url": "sindresorhus.com",
     "path": "/home/drazisil/github/mco-server/node_modules/log-update",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/log-update/license"
+  },
+  "loglevelnext@1.0.5": {
+    "licenses": "MIT",
+    "repository": "https://github.com/shellscape/loglevelnext",
+    "publisher": "Andrew Powell",
+    "email": "andrew@shellscape.org",
+    "path": "/home/drazisil/github/mco-server/node_modules/loglevelnext",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/loglevelnext/LICENSE"
+  },
+  "long@3.2.0": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/dcodeIO/long.js",
+    "publisher": "Daniel Wirtz",
+    "email": "dcode@dcode.io",
+    "path": "/home/drazisil/github/mco-server/node_modules/long",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/long/LICENSE"
   },
   "longest@1.0.1": {
     "licenses": "MIT",
@@ -3454,7 +3612,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/loose-envify",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/loose-envify/LICENSE"
   },
-  "lru-cache@4.1.2": {
+  "lru-cache@4.1.3": {
     "licenses": "ISC",
     "repository": "https://github.com/isaacs/node-lru-cache",
     "publisher": "Isaac Z. Schlueter",
@@ -3462,7 +3620,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/lru-cache",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/lru-cache/LICENSE"
   },
-  "make-dir@1.2.0": {
+  "make-dir@1.3.0": {
     "licenses": "MIT",
     "repository": "https://github.com/sindresorhus/make-dir",
     "publisher": "Sindre Sorhus",
@@ -3479,6 +3637,11 @@
     "path": "/home/drazisil/github/mco-server/node_modules/makeerror",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/makeerror/license"
   },
+  "mamacro@0.0.3": {
+    "licenses": "MIT",
+    "publisher": "Sven Sauleau",
+    "path": "/home/drazisil/github/mco-server/node_modules/mamacro"
+  },
   "map-cache@0.2.2": {
     "licenses": "MIT",
     "repository": "https://github.com/jonschlinkert/map-cache",
@@ -3494,6 +3657,13 @@
     "url": "https://github.com/jonschlinkert",
     "path": "/home/drazisil/github/mco-server/node_modules/map-visit",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/map-visit/LICENSE"
+  },
+  "math-random@1.0.1": {
+    "licenses": "MIT",
+    "repository": "https://github.com/michaelrhodes/math-random",
+    "publisher": "Michael Rhodes",
+    "path": "/home/drazisil/github/mco-server/node_modules/math-random",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/math-random/readme.md"
   },
   "mco-server@1.2.0": {
     "licenses": "UNLICENSED",
@@ -3715,12 +3885,6 @@
     "path": "/home/drazisil/github/mco-server/node_modules/mz",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/mz/LICENSE"
   },
-  "nan@2.7.0": {
-    "licenses": "MIT",
-    "repository": "https://github.com/nodejs/nan",
-    "path": "/home/drazisil/github/mco-server/node_modules/nan",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/nan/LICENSE.md"
-  },
   "nan@2.9.2": {
     "licenses": "MIT",
     "repository": "https://github.com/nodejs/nan",
@@ -3756,6 +3920,15 @@
     "repository": "https://github.com/suguru03/neo-async",
     "path": "/home/drazisil/github/mco-server/node_modules/neo-async",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/neo-async/README.md"
+  },
+  "next-tick@1.0.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/medikoo/next-tick",
+    "publisher": "Mariusz Nowak",
+    "email": "medyk@medikoo.com",
+    "url": "http://www.medikoo.com/",
+    "path": "/home/drazisil/github/mco-server/node_modules/next-tick",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/next-tick/LICENSE"
   },
   "node-int64@0.4.0": {
     "licenses": "MIT",
@@ -3857,14 +4030,14 @@
     "path": "/home/drazisil/github/mco-server/node_modules/sqlite3/node_modules/number-is-nan",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/sqlite3/node_modules/number-is-nan/license"
   },
-  "nwmatcher@1.4.4": {
+  "nwsapi@2.0.4": {
     "licenses": "MIT",
-    "repository": "https://github.com/dperini/nwmatcher",
+    "repository": "https://github.com/dperini/nwsapi",
     "publisher": "Diego Perini",
     "email": "diego.perini@gmail.com",
     "url": "http://www.iport.it/",
-    "path": "/home/drazisil/github/mco-server/node_modules/nwmatcher",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/nwmatcher/LICENSE"
+    "path": "/home/drazisil/github/mco-server/node_modules/nwsapi",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/nwsapi/LICENSE"
   },
   "oauth-sign@0.8.2": {
     "licenses": "Apache-2.0",
@@ -3892,7 +4065,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/object-copy",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/object-copy/LICENSE"
   },
-  "object-keys@1.0.11": {
+  "object-keys@1.0.12": {
     "licenses": "MIT",
     "repository": "https://github.com/ljharb/object-keys",
     "publisher": "Jordan Harband",
@@ -3908,6 +4081,13 @@
     "url": "https://github.com/jonschlinkert",
     "path": "/home/drazisil/github/mco-server/node_modules/object-visit",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/object-visit/LICENSE"
+  },
+  "object.assign@4.1.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/object.assign",
+    "publisher": "Jordan Harband",
+    "path": "/home/drazisil/github/mco-server/node_modules/object.assign",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/object.assign/LICENSE"
   },
   "object.getownpropertydescriptors@2.0.3": {
     "licenses": "MIT",
@@ -4038,7 +4218,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/p-finally",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/p-finally/license"
   },
-  "p-limit@1.2.0": {
+  "p-limit@1.3.0": {
     "licenses": "MIT",
     "repository": "https://github.com/sindresorhus/p-limit",
     "publisher": "Sindre Sorhus",
@@ -4212,7 +4392,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/path-type",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/path-type/license"
   },
-  "pbkdf2@3.0.14": {
+  "pbkdf2@3.0.16": {
     "licenses": "MIT",
     "repository": "https://github.com/crypto-browserify/pbkdf2",
     "publisher": "Daniel Cousens",
@@ -4395,7 +4575,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/preserve",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/preserve/LICENSE"
   },
-  "prettier@1.12.0": {
+  "prettier@1.13.5": {
     "licenses": "MIT",
     "repository": "https://github.com/prettier/prettier",
     "publisher": "James Long",
@@ -4466,6 +4646,13 @@
     "path": "/home/drazisil/github/mco-server/node_modules/pseudomap",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/pseudomap/LICENSE"
   },
+  "psl@1.1.28": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wrangr/psl",
+    "publisher": "Lupo Montero",
+    "path": "/home/drazisil/github/mco-server/node_modules/psl",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/psl/README.md"
+  },
   "public-encrypt@4.0.2": {
     "licenses": "MIT",
     "repository": "https://github.com/crypto-browserify/publicEncrypt",
@@ -4481,7 +4668,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/pump",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/pump/LICENSE"
   },
-  "pumpify@1.4.0": {
+  "pumpify@1.5.1": {
     "licenses": "MIT",
     "repository": "https://github.com/mafintosh/pumpify",
     "publisher": "Mathias Buus",
@@ -4501,10 +4688,10 @@
     "repository": "https://github.com/bestiejs/punycode.js",
     "publisher": "Mathias Bynens",
     "url": "https://mathiasbynens.be/",
-    "path": "/home/drazisil/github/mco-server/node_modules/tough-cookie/node_modules/punycode",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/tough-cookie/node_modules/punycode/LICENSE-MIT.txt"
+    "path": "/home/drazisil/github/mco-server/node_modules/request/node_modules/punycode",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/request/node_modules/punycode/LICENSE-MIT.txt"
   },
-  "punycode@2.1.0": {
+  "punycode@2.1.1": {
     "licenses": "MIT",
     "repository": "https://github.com/bestiejs/punycode.js",
     "publisher": "Mathias Bynens",
@@ -4512,7 +4699,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/punycode",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/punycode/LICENSE-MIT.txt"
   },
-  "qs@6.5.1": {
+  "qs@6.5.2": {
     "licenses": "BSD-3-Clause",
     "repository": "https://github.com/ljharb/qs",
     "path": "/home/drazisil/github/mco-server/node_modules/qs",
@@ -4534,7 +4721,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/querystring",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/querystring/License.md"
   },
-  "randomatic@1.1.7": {
+  "randomatic@3.0.0": {
     "licenses": "MIT",
     "repository": "https://github.com/jonschlinkert/randomatic",
     "publisher": "Jon Schlinkert",
@@ -4717,7 +4904,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/request-promise-native",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/request-promise-native/LICENSE"
   },
-  "request@2.85.0": {
+  "request@2.87.0": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/request/request",
     "publisher": "Mikeal Rogers",
@@ -4784,7 +4971,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/resolve",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/resolve/LICENSE"
   },
-  "resolve@1.7.1": {
+  "resolve@1.8.1": {
     "licenses": "MIT",
     "repository": "https://github.com/browserify/resolve",
     "publisher": "James Halliday",
@@ -4836,11 +5023,18 @@
     "path": "/home/drazisil/github/mco-server/node_modules/sqlite3/node_modules/rimraf",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/sqlite3/node_modules/rimraf/LICENSE"
   },
-  "ripemd160@2.0.1": {
+  "ripemd160@2.0.2": {
     "licenses": "MIT",
     "repository": "https://github.com/crypto-browserify/ripemd160",
     "path": "/home/drazisil/github/mco-server/node_modules/ripemd160",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/ripemd160/LICENSE.md"
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/ripemd160/LICENSE"
+  },
+  "rsvp@3.6.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/tildeio/rsvp.js",
+    "publisher": "Tilde, Inc. & Stefan Penner",
+    "path": "/home/drazisil/github/mco-server/node_modules/rsvp",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/rsvp/LICENSE"
   },
   "run-async@2.3.0": {
     "licenses": "MIT",
@@ -4889,6 +5083,15 @@
     "publisher": "Feross Aboukhadijeh",
     "email": "feross@feross.org",
     "url": "http://feross.org",
+    "path": "/home/drazisil/github/mco-server/node_modules/sqlite3/node_modules/safe-buffer",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/sqlite3/node_modules/safe-buffer/LICENSE"
+  },
+  "safe-buffer@5.1.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/feross/safe-buffer",
+    "publisher": "Feross Aboukhadijeh",
+    "email": "feross@feross.org",
+    "url": "http://feross.org",
     "path": "/home/drazisil/github/mco-server/node_modules/safe-buffer",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/safe-buffer/LICENSE"
   },
@@ -4901,7 +5104,16 @@
     "path": "/home/drazisil/github/mco-server/node_modules/safe-regex",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/safe-regex/LICENSE"
   },
-  "sane@2.5.0": {
+  "safer-buffer@2.1.2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ChALkeR/safer-buffer",
+    "publisher": "Nikita Skovoroda",
+    "email": "chalkerx@gmail.com",
+    "url": "https://github.com/ChALkeR",
+    "path": "/home/drazisil/github/mco-server/node_modules/safer-buffer",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/safer-buffer/LICENSE"
+  },
+  "sane@2.5.2": {
     "licenses": "MIT",
     "repository": "https://github.com/amasad/sane",
     "publisher": "amasad",
@@ -4937,7 +5149,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/sqlite3/node_modules/semver",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/sqlite3/node_modules/semver/LICENSE"
   },
-  "serialize-javascript@1.4.0": {
+  "serialize-javascript@1.5.0": {
     "licenses": "BSD-3-Clause",
     "repository": "https://github.com/yahoo/serialize-javascript",
     "publisher": "Eric Ferraiuolo",
@@ -5094,15 +5306,6 @@
     "path": "/home/drazisil/github/mco-server/node_modules/snapdragon",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/snapdragon/LICENSE"
   },
-  "sntp@2.1.0": {
-    "licenses": "BSD-3-Clause",
-    "repository": "https://github.com/hueniverse/sntp",
-    "publisher": "Eran Hammer",
-    "email": "eran@hammer.io",
-    "url": "http://hueniverse.com",
-    "path": "/home/drazisil/github/mco-server/node_modules/sntp",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/sntp/LICENSE"
-  },
   "source-list-map@2.0.0": {
     "licenses": "MIT",
     "repository": "https://github.com/webpack/source-list-map",
@@ -5117,7 +5320,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/source-map-loader",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/source-map-loader/LICENSE"
   },
-  "source-map-resolve@0.5.1": {
+  "source-map-resolve@0.5.2": {
     "licenses": "MIT",
     "repository": "https://github.com/lydell/source-map-resolve",
     "publisher": "Simon Lydell",
@@ -5130,13 +5333,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/babel-register/node_modules/source-map-support",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/babel-register/node_modules/source-map-support/LICENSE.md"
   },
-  "source-map-support@0.5.3": {
-    "licenses": "MIT",
-    "repository": "https://github.com/evanw/node-source-map-support",
-    "path": "/home/drazisil/github/mco-server/node_modules/jest-runtime/node_modules/source-map-support",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/jest-runtime/node_modules/source-map-support/LICENSE.md"
-  },
-  "source-map-support@0.5.4": {
+  "source-map-support@0.5.6": {
     "licenses": "MIT",
     "repository": "https://github.com/evanw/node-source-map-support",
     "path": "/home/drazisil/github/mco-server/node_modules/source-map-support",
@@ -5298,7 +5495,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/sqlite",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/sqlite/LICENSE.txt"
   },
-  "sshpk@1.14.1": {
+  "sshpk@1.14.2": {
     "licenses": "MIT",
     "repository": "https://github.com/arekinath/node-sshpk",
     "publisher": "Joyent, Inc",
@@ -5372,7 +5569,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/stream-each",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/stream-each/LICENSE"
   },
-  "stream-http@2.8.1": {
+  "stream-http@2.8.3": {
     "licenses": "MIT",
     "repository": "https://github.com/jhiesey/stream-http",
     "publisher": "John Hiesey",
@@ -5435,15 +5632,6 @@
     "path": "/home/drazisil/github/mco-server/node_modules/string_decoder",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/string_decoder/LICENSE"
   },
-  "stringstream@0.0.5": {
-    "licenses": "MIT",
-    "repository": "https://github.com/mhart/StringStream",
-    "publisher": "Michael Hart",
-    "email": "michael.hart.au@gmail.com",
-    "url": "http://github.com/mhart",
-    "path": "/home/drazisil/github/mco-server/node_modules/stringstream",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/stringstream/LICENSE.txt"
-  },
   "strip-ansi@3.0.1": {
     "licenses": "MIT",
     "repository": "https://github.com/chalk/strip-ansi",
@@ -5468,8 +5656,8 @@
     "publisher": "Sindre Sorhus",
     "email": "sindresorhus@gmail.com",
     "url": "sindresorhus.com",
-    "path": "/home/drazisil/github/mco-server/node_modules/strip-bom",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/strip-bom/license"
+    "path": "/home/drazisil/github/mco-server/node_modules/load-json-file/node_modules/strip-bom",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/load-json-file/node_modules/strip-bom/license"
   },
   "strip-bom@3.0.0": {
     "licenses": "MIT",
@@ -5477,8 +5665,8 @@
     "publisher": "Sindre Sorhus",
     "email": "sindresorhus@gmail.com",
     "url": "sindresorhus.com",
-    "path": "/home/drazisil/github/mco-server/node_modules/jest-runtime/node_modules/strip-bom",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/jest-runtime/node_modules/strip-bom/license"
+    "path": "/home/drazisil/github/mco-server/node_modules/strip-bom",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/strip-bom/license"
   },
   "strip-eof@1.0.0": {
     "licenses": "MIT",
@@ -5617,7 +5805,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/through",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/through/LICENSE.APACHE2"
   },
-  "timers-browserify@2.0.6": {
+  "timers-browserify@2.0.10": {
     "licenses": "MIT",
     "repository": "https://github.com/jryans/timers-browserify",
     "publisher": "J. Ryan Stinnett",
@@ -5688,6 +5876,14 @@
     "repository": "https://github.com/salesforce/tough-cookie",
     "publisher": "Jeremy Stashewsky",
     "email": "jstashewsky@salesforce.com",
+    "path": "/home/drazisil/github/mco-server/node_modules/request/node_modules/tough-cookie",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/request/node_modules/tough-cookie/LICENSE"
+  },
+  "tough-cookie@2.4.2": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/salesforce/tough-cookie",
+    "publisher": "Jeremy Stashewsky",
+    "email": "jstash@gmail.com",
     "path": "/home/drazisil/github/mco-server/node_modules/tough-cookie",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/tough-cookie/LICENSE"
   },
@@ -5716,7 +5912,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/trim-right",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/trim-right/license"
   },
-  "ts-jest@22.4.2": {
+  "ts-jest@22.4.6": {
     "licenses": "MIT",
     "repository": "https://github.com/kulshekhar/ts-jest",
     "publisher": "Kulshekhar Kabra",
@@ -5725,14 +5921,14 @@
     "path": "/home/drazisil/github/mco-server/node_modules/ts-jest",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/ts-jest/LICENSE"
   },
-  "tslib@1.9.0": {
+  "tslib@1.9.2": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/Microsoft/tslib",
     "publisher": "Microsoft Corp.",
     "path": "/home/drazisil/github/mco-server/node_modules/tslib",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/tslib/LICENSE.txt"
   },
-  "tslint-config-prettier@1.10.0": {
+  "tslint-config-prettier@1.13.0": {
     "licenses": "MIT",
     "repository": "https://github.com/alexjoverm/tslint-config-prettier",
     "publisher": "Alex Jover Morales",
@@ -5740,13 +5936,13 @@
     "path": "/home/drazisil/github/mco-server/node_modules/tslint-config-prettier",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/tslint-config-prettier/LICENSE"
   },
-  "tslint@5.9.1": {
+  "tslint@5.10.0": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/palantir/tslint",
     "path": "/home/drazisil/github/mco-server/node_modules/tslint",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/tslint/LICENSE"
   },
-  "tsutils@2.26.1": {
+  "tsutils@2.27.1": {
     "licenses": "MIT",
     "repository": "https://github.com/ajafff/tsutils",
     "publisher": "Klaus Meinhardt",
@@ -5795,7 +5991,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/typedarray",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/typedarray/LICENSE"
   },
-  "typescript@2.8.1": {
+  "typescript@2.9.2": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/Microsoft/TypeScript",
     "publisher": "Microsoft Corp.",
@@ -5827,7 +6023,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/uglify-to-browserify",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/uglify-to-browserify/LICENSE"
   },
-  "uglifyjs-webpack-plugin@1.2.4": {
+  "uglifyjs-webpack-plugin@1.2.5": {
     "licenses": "MIT",
     "repository": "https://github.com/webpack-contrib/uglifyjs-webpack-plugin",
     "publisher": "webpack Contrib Team",
@@ -5884,7 +6080,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/unset-value",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/unset-value/LICENSE"
   },
-  "upath@1.0.4": {
+  "upath@1.1.0": {
     "licenses": "MIT",
     "repository": "https://github.com/anodynos/upath",
     "publisher": "Angelos Pikoulas",
@@ -5892,7 +6088,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/upath",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/upath/LICENSE"
   },
-  "uri-js@3.0.2": {
+  "uri-js@4.2.2": {
     "licenses": "BSD-2-Clause",
     "repository": "https://github.com/garycourt/uri-js",
     "publisher": "Gary Court",
@@ -6006,7 +6202,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/watch",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/watch/LICENSE"
   },
-  "watchpack@1.5.0": {
+  "watchpack@1.6.0": {
     "licenses": "MIT",
     "repository": "https://github.com/webpack/watchpack",
     "publisher": "Tobias Koppers @sokra",
@@ -6022,6 +6218,14 @@
     "path": "/home/drazisil/github/mco-server/node_modules/webidl-conversions",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/webidl-conversions/LICENSE.md"
   },
+  "webpack-log@1.2.0": {
+    "licenses": "MIT",
+    "repository": "https://github.com/webpack-contrib/webpack-log",
+    "publisher": "Andrew Powell",
+    "email": "andrew@shellscape.org",
+    "path": "/home/drazisil/github/mco-server/node_modules/webpack-log",
+    "licenseFile": "/home/drazisil/github/mco-server/node_modules/webpack-log/LICENSE"
+  },
   "webpack-sources@1.1.0": {
     "licenses": "MIT",
     "repository": "https://github.com/webpack/webpack-sources",
@@ -6029,7 +6233,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/webpack-sources",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/webpack-sources/LICENSE"
   },
-  "webpack@4.5.0": {
+  "webpack@4.12.0": {
     "licenses": "MIT",
     "repository": "https://github.com/webpack/webpack",
     "publisher": "Tobias Koppers @sokra",
@@ -6054,7 +6258,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/whatwg-mimetype",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/whatwg-mimetype/LICENSE.txt"
   },
-  "whatwg-url@6.4.0": {
+  "whatwg-url@6.5.0": {
     "licenses": "MIT",
     "repository": "https://github.com/jsdom/whatwg-url",
     "publisher": "Sebastian Mayr",
@@ -6069,7 +6273,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/which-module",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/which-module/LICENSE"
   },
-  "which@1.3.0": {
+  "which@1.3.1": {
     "licenses": "ISC",
     "repository": "https://github.com/isaacs/node-which",
     "publisher": "Isaac Z. Schlueter",
@@ -6077,14 +6281,6 @@
     "url": "http://blog.izs.me",
     "path": "/home/drazisil/github/mco-server/node_modules/which",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/which/LICENSE"
-  },
-  "whocalled@1.0.0": {
-    "licenses": "MIT",
-    "repository": "https://github.com/drazisil/whocalled",
-    "publisher": "Joseph W Becher",
-    "email": "jwbecher@drazisil.com",
-    "path": "/home/drazisil/github/mco-server/node_modules/whocalled",
-    "licenseFile": "/home/drazisil/github/mco-server/node_modules/whocalled/LICENSE"
   },
   "wide-align@1.1.2": {
     "licenses": "ISC",
@@ -6103,7 +6299,7 @@
     "path": "/home/drazisil/github/mco-server/node_modules/window-size",
     "licenseFile": "/home/drazisil/github/mco-server/node_modules/window-size/LICENSE-MIT"
   },
-  "winston@2.4.1": {
+  "winston@2.4.3": {
     "licenses": "MIT",
     "repository": "https://github.com/winstonjs/winston",
     "publisher": "Charlie Robbins",
