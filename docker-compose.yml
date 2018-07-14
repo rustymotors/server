@@ -4,11 +4,6 @@ services:
   web:
     build: 
       context: .
-    environment:
-      - NODE_ENV=production
-    volumes:
-      - .:/usr/app/
-      - /usr/app/node_modules
     ports:
       - "80:80"
       - "443:443"
@@ -20,9 +15,9 @@ services:
     depends_on:
       - postgres
     environment:
-      DATABASE_URL: postgres://todoapp@postgres/todos
+      DATABASE_URL: postgres://mco@postgres/mco
   postgres:
     image: postgres:10
     environment:
-      POSTGRES_USER: todoapp
-      POSTGRES_DB: todos    
+      POSTGRES_USER: mco
+      POSTGRES_DB: mco    
