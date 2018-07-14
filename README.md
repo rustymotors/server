@@ -30,11 +30,13 @@ I'm writing this from scratch. While I'm proud of what I've done, I'm hitting th
 
 ## Client Setup
 
-Copy the pub.key file from the server to the client game directory
+### Client/Server Encryption Setup
 
-### Add the cert to Windows
+* Copy the pub.key file from `https://<server>/key` to the client game directory. Overwrite when prompted.
 
-<http://stackoverflow.com/a/2955546/335583>
+* Download the SSL cert from `https://<server>/cert` and add it to the Trusted Root Store.
+
+    You can find help doing this here <http://stackoverflow.com/a/2955546/335583>
 
 ### Delete the movies
 
