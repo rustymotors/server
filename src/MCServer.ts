@@ -15,12 +15,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as readline from "readline";
-import { IConfigurationFile } from "../config/config";
-import * as database from "../lib/database/index";
-import Web from "../lib/WebServer";
+import { config, IConfigurationFile } from "../config/config";
+import * as database from "../lib/database";
 import ConnectionMgr from "./connectionMgr";
 import startTCPListener from "./listenerThread";
 import { logger } from "./logger";
+import Web from "./WebServer";
 
 const connectionMgr = new ConnectionMgr();
 
@@ -57,6 +57,10 @@ async function startServers(configurationFile: IConfigurationFile) {
     9013,
     9014,
   ];
+
+  const webServer = new Web
+
+  await webServer.start(config);
 
   await tcpPortList.map((port: number) =>
     startTCPListener(port, connectionMgr)

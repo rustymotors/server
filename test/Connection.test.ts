@@ -15,8 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Socket } from "net";
-import { Connection } from "./Connection";
-import ConnectionMgr from "./connectionMgr";
+import { Connection } from "../src/Connection";
+import ConnectionMgr from "../src/connectionMgr";
 
 let testConnection1: Connection;
 let testConnection2: Connection;

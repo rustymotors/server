@@ -9,7 +9,6 @@ export class RC4 {
 
   constructor(key) {
     const keyBytes = Buffer.from(key, "hex");
-    logger.debug(`SessionKey being loaded into RC4: `, keyBytes);
     this.keyBytes = keyBytes;
     const keyLength = keyBytes.length;
     this.keyLen = keyLength;
@@ -47,7 +46,6 @@ export class RC4 {
 
   public processString(inString) {
     const inBytes = Buffer.from(inString, "hex");
-    logger.debug(`Buffer entering RC4: `, inBytes);
     let idx1 = 0;
     let idx2 = 0;
     let length = inBytes.length;
@@ -72,7 +70,6 @@ export class RC4 {
 
     this.mX = x;
     this.mY = y;
-    logger.debug(`Buffer exiting RC4: `, output);
     return output;
   }
   private swapByte(b1, b2) {

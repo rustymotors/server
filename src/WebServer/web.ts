@@ -17,24 +17,23 @@
 import fs = require("fs");
 import * as http from "http";
 import * as https from "https";
-import * as SSLConfig from "ssl-config";
-import { config, IConfigurationFile } from "../../config/config";
-
 import { Socket } from "net";
+import { config, IConfigurationFile } from "../../config/config";
 import { logger } from "../../src/logger";
+import { SSLConfig } from "./ssl-config";
+
 
 /**
  * Create the SSL options object
  */
 function sslOptions(configuration: IConfigurationFile["serverConfig"]) {
-  const sslConfig = SSLConfig("old");
   return {
     cert: fs.readFileSync(configuration.certFilename),
-    ciphers: sslConfig.ciphers,
+    ciphers: SSLConfig.ciphers,
     honorCipherOrder: true,
     key: fs.readFileSync(configuration.privateKeyFilename),
     rejectUnauthorized: false,
-    secureOptions: sslConfig.minimumTLSVersion,
+    secureOptions: SSLConfig.minimumTLSVersion,
   };
 }
 
@@ -44,7 +43,7 @@ function httpsHandler(
 ) {
   logger.info(
     `[HTTPS] Request from ${request.socket.remoteAddress} for ${
-      request.method
+    request.method
     } ${request.url}`
   );
   switch (request.url) {

@@ -16,11 +16,11 @@
 
 import { fail } from "assert";
 import { Socket } from "net";
-import { loginDataHandler } from "../lib/LoginServer/index";
-import { personaDataHandler } from "../lib/PersonaServer/index";
 import { Connection } from "./Connection";
 import { IRawPacket } from "./listenerThread";
 import { logger } from "./logger";
+import { loginDataHandler } from "./LoginServer";
+import { personaDataHandler } from "./PersonaServer";
 import { defaultHandler } from "./TCPManager";
 
 export default class ConnectionMgr {

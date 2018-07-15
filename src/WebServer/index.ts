@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import * as async from "async";
 import { IConfigurationFile } from "../../config/config";
 import { logger } from "../../src/logger";
 import PatchServer from "./patchServer";

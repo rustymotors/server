@@ -18,7 +18,7 @@
 
 import { SSL_OP_NO_SSLv3 } from 'constants'
 
-export default class OldSSLCiphers {
+class OldSSLCiphers {
 
   public ciphers: string;
   public minimumTLSVersion: number;
@@ -84,3 +84,6 @@ export default class OldSSLCiphers {
   }
 }
 
+const SSLConfig = new OldSSLCiphers
+
+export { SSLConfig }

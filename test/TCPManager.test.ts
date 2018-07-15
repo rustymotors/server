@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import * as TCPManager from './TCPManager';
+import * as TCPManager from '../src/TCPManager';
 
 test('438 = MC_CLIENT_CONNECT_MSG', () => {
   expect(TCPManager.MSG_STRING(438)).toBe('MC_CLIENT_CONNECT_MSG');
