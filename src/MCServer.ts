@@ -20,7 +20,8 @@ import * as database from "../lib/database";
 import ConnectionMgr from "./connectionMgr";
 import startTCPListener from "./listenerThread";
 import { logger } from "./logger";
-import Web from "./WebServer";
+import { patchServer } from "./WebServer/patchServer";
+import { webServer } from "./WebServer/webServer";
 
 const connectionMgr = new ConnectionMgr();
 
@@ -58,9 +59,8 @@ async function startServers(configurationFile: IConfigurationFile) {
     9014,
   ];
 
-  const webServer = new Web
-
   await webServer.start(config);
+  await patchServer.start(config)
 
   await tcpPortList.map((port: number) =>
     startTCPListener(port, connectionMgr)

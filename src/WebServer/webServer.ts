@@ -18,8 +18,8 @@ import fs = require("fs");
 import * as http from "http";
 import * as https from "https";
 import { Socket } from "net";
-import { config, IConfigurationFile } from "../../config/config";
-import { logger } from "../../src/logger";
+import { IConfigurationFile } from "./config";
+import { logger } from "./logger";
 import { SSLConfig } from "./ssl-config";
 
 
@@ -37,9 +37,17 @@ function sslOptions(configuration: IConfigurationFile["serverConfig"]) {
   };
 }
 
+const users = [
+  {
+    "token": "d316cd2dd6bf870893dfbaaf17f965884e",
+    "username": "test",
+  }
+]
+
 function httpsHandler(
   request: http.IncomingMessage,
-  response: http.ServerResponse
+  response: http.ServerResponse,
+  serverConfiguration: IConfigurationFile
 ) {
   logger.info(
     `[HTTPS] Request from ${request.socket.remoteAddress} for ${
@@ -52,18 +60,19 @@ function httpsHandler(
         "Content-disposition",
         "attachment; filename=cert.pem"
       );
-      response.end(fs.readFileSync(config.serverConfig.certFilename));
+      response.end(fs.readFileSync(serverConfiguration.serverConfig.certFilename));
       break;
 
     case "/key":
       response.setHeader("Content-disposition", "attachment; filename=pub.key");
       response.end(
-        fs.readFileSync(config.serverConfig.publicKeyFilename).toString("hex")
+        fs.readFileSync(serverConfiguration.serverConfig.publicKeyFilename).toString("hex")
       );
       break;
     case "/AuthLogin":
+      const { username, token } = users[0]
       response.setHeader("Content-Type", "text/plain");
-      response.end("Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e");
+      response.end(`Valid=TRUE\nTicket=${token}`);
       break;
 
     default:
@@ -78,11 +87,15 @@ function httpsHandler(
   }
 }
 
-export default class WebServer {
-  public async start() {
+export class WebServer {
+  public async start(configurationFile: IConfigurationFile) {
     const httpsServer = https
-      .createServer(sslOptions(config.serverConfig), httpsHandler)
-      .listen({ port: 443, host: "0.0.0.0" })
+      .createServer(sslOptions(configurationFile.serverConfig), (req, res) => {
+        httpsHandler(req, res, configurationFile)
+      })
+      .listen({ port: 443, host: "0.0.0.0" }, () => {
+        logger.info("[webServer] Web server is listening...");
+      })
       .on("connection", (socket: Socket) => {
         socket.on("error", (error: NodeJS.ErrnoException) => {
           logger.error(`[webServer] SSL Socket Error: ${error.message}`);
@@ -96,3 +109,7 @@ export default class WebServer {
       });
   }
 }
+
+const webServer = new WebServer
+
+export { webServer }

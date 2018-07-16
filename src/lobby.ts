@@ -19,7 +19,7 @@ import { logger } from "./logger";
 import * as packet from "./packet";
 
 import { Socket } from "net";
-import * as database from "../lib/database/";
+import * as database from "../lib/database";
 import { Connection } from "./Connection";
 import { IRawPacket } from "./listenerThread";
 

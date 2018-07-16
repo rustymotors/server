@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Socket } from "net";
-import * as database from "../lib/database/index";
+import * as database from "../lib/database";
 import ClientConnectMsg from "./ClientConnectMsg";
 import { Connection } from "./Connection";
 import { IRawPacket } from "./listenerThread";

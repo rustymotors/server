@@ -14,26 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { IConfigurationFile } from "../../config/config";
-import { logger } from "../../src/logger";
-import PatchServer from "./patchServer";
-import WebServer from "./web";
+import * as Winston from "winston";
+const logger = new Winston.Logger({
+  transports: [
+    new Winston.transports.Console({ level: "debug", colorize: "all" }),
+    new Winston.transports.File({
+      filename: "filelog-info.log",
+      level: "info",
+      name: "info-file",
+    }),
+    new Winston.transports.File({
+      filename: "filelog-error.log",
+      level: "error",
+      name: "error-file",
+    }),
+  ],
+});
 
-export default class Web {
-  /**
-   * Start HTTP and HTTPs connection listeners
-   * TODO: This code may be better suited in web.js and patchServer.js
-   */
-  public async start(config: IConfigurationFile) {
-
-    // Start the mock patch server
-    const patchServer = new PatchServer();
-    patchServer.start(config);
-    logger.info("[webServer] Patch Server started");
-
-    // Start the AuthLogin and shardlist servers
-    const webServer = new WebServer();
-    webServer.start();
-    logger.info("[webServer] Web Server started");
-  }
-}
+export { logger };

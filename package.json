@@ -32,6 +32,9 @@
       "src/**/*.ts",
       "lib/**/*.ts"
     ],
+    "coveragePathIgnorePatterns": [
+      ".d.ts"
+    ],
     "reporters": [
       "default",
       "jest-junit"

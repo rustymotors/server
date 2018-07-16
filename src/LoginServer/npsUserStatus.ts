@@ -17,9 +17,8 @@
 import * as crypto from "crypto";
 import * as fs from "fs";
 import { Socket } from "net";
-import { config } from "../../config/config";
-import { IConfigurationFile } from "../../config/config";
-import { logger } from "../../src/logger";
+import { config, IConfigurationFile } from "../../config/config";
+import { logger } from "../logger";
 
 /**
  * Load the RSA private key and return a NodeRSA object

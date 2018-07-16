@@ -14,16 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Logger, transports } from "winston";
-const logger = new Logger({
+import * as Winston from "winston";
+const logger = new Winston.Logger({
   transports: [
-    new transports.Console({ level: "debug", colorize: "all" }),
-    new transports.File({
+    new Winston.transports.Console({ level: "debug", colorize: "all" }),
+    new Winston.transports.File({
       filename: "filelog-info.log",
       level: "info",
       name: "info-file",
     }),
-    new transports.File({
+    new Winston.transports.File({
       filename: "filelog-error.log",
       level: "error",
       name: "error-file",
