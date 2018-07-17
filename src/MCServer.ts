@@ -23,7 +23,7 @@ import { logger } from "./logger";
 import { patchServer } from "./WebServer/patchServer";
 import { webServer } from "./WebServer/webServer";
 
-const connectionMgr = new ConnectionMgr();
+export const connectionMgr = new ConnectionMgr();
 
 /**
  * Start the HTTP, HTTPS and TCP connection listeners
@@ -105,7 +105,7 @@ function startCLI() {
   });
 }
 
-function run(configurationFile: IConfigurationFile) {
+export function run(configurationFile: IConfigurationFile) {
   // Connect to database
   // Start the server listeners
   startServers(configurationFile)
@@ -116,5 +116,3 @@ function run(configurationFile: IConfigurationFile) {
       throw err;
     });
 }
-
-export default { run };

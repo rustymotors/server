@@ -1,4 +1,4 @@
 import { config } from "../config/config";
-import mcServer from "./MCServer";
+import * as mcServer from "./MCServer";
 
 mcServer.run(config);
