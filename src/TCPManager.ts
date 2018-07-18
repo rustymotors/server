@@ -273,10 +273,12 @@ export function sendPacketOkLogin(socket: Socket) {
 
 export async function defaultHandler(rawPacket: IRawPacket) {
   const { connection, remoteAddress, localPort, data } = rawPacket;
-  const messageNode = new MessageNode(data);
+
   logger.info(`=============================================
     Received packet on port ${localPort} from ${remoteAddress}...`);
   logger.info("=============================================");
+
+  const messageNode = new MessageNode(data);
 
   if (messageNode.isMCOTS()) {
     messageNode.dumpPacket();
@@ -287,8 +289,8 @@ export async function defaultHandler(rawPacket: IRawPacket) {
   }
   logger.debug("No valid MCOTS header signature detected, sending to Lobby");
   logger.info("=============================================");
-  logger.debug("Buffer as text: ", messageNode.buffer.toString("utf8"));
-  logger.debug("Buffer as string: ", messageNode.buffer.toString("hex"));
+  logger.debug("Buffer as text: ", rawPacket.data.toString("utf8"));
+  logger.debug("Buffer as string: ", rawPacket.data.toString("hex"));
 
   const newConnection = await lobbyDataHandler(rawPacket);
   return newConnection;
