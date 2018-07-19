@@ -14,10 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import * as bodyParser from 'body-parser'
+import * as express from 'express'
 import fs = require("fs");
 import * as http from "http";
 import * as https from "https";
 import { Socket } from "net";
+import { handleAPIRequest } from "../api/"
+import * as MCServer from "../MCServer"
 import { IConfigurationFile } from "./config";
 import { logger } from "./logger";
 import { SSLConfig } from "./ssl-config";
@@ -54,6 +58,21 @@ function httpsHandler(
     request.method
     } ${request.url}`
   );
+
+  const routes = {
+    "/cert": (): void => {
+      console.log("route hit")
+    }
+  }
+
+  const { url } = request
+  const { username, token } = users[0]
+
+  if (request.url.startsWith("/api/")) {
+    handleAPIRequest(request, response, MCServer.connectionMgr)
+    return
+  }
+
   switch (request.url) {
     case "/cert":
       response.setHeader(
@@ -70,7 +89,6 @@ function httpsHandler(
       );
       break;
     case "/AuthLogin":
-      const { username, token } = users[0]
       response.setHeader("Content-Type", "text/plain");
       response.end(`Valid=TRUE\nTicket=${token}`);
       break;
@@ -78,7 +96,7 @@ function httpsHandler(
     default:
       if (request.url.startsWith("/AuthLogin?")) {
         response.setHeader("Content-Type", "text/plain");
-        response.end("Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e");
+        response.end(`Valid=TRUE\nTicket=${token}`);
         return;
       }
       response.statusCode = 404;
@@ -89,10 +107,22 @@ function httpsHandler(
 
 export class WebServer {
   public async start(configurationFile: IConfigurationFile) {
+    const app = express()
+
+    // parse application/json
+    app.use(bodyParser.json())
+
+    app.use((req, res) => {
+      httpsHandler(req, res, configurationFile)
+    });
+
+    app.use((req, res) => {
+      handleAPIRequest(req, res, configurationFile)
+    });
+
+
     const httpsServer = https
-      .createServer(sslOptions(configurationFile.serverConfig), (req, res) => {
-        httpsHandler(req, res, configurationFile)
-      })
+      .createServer(sslOptions(configurationFile.serverConfig), app)
       .listen({ port: 443, host: "0.0.0.0" }, () => {
         logger.info("[webServer] Web server is listening...");
       })
