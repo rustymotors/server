@@ -15,12 +15,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import { IDatabase, IMain } from 'pg-promise';
-import * as pgPromise from 'pg-promise'
+const { Pool, Client } = require('pg')
 
-const pgp: IMain = pgPromise({
-  // Initialization Options
-});
+// pools will use environment variables
+// for connection information
+const pool = new Pool({
+  user: 'postgres',
+  host: 'postgres',
+  database: 'mco',
+})
 
 const cn: string = 'postgres://mco@postgres/mco';
 
@@ -29,13 +32,12 @@ const cn: string = 'postgres://mco@postgres/mco';
  * @param {Function} callback
  */
 export async function createDB() {
-  const db: IDatabase<any> = pgp(cn);
-  return db.none(
+
+  return pool.connect().thdn(pool.query(
     `CREATE TABLE IF NOT EXISTS sessions (customer_id INTEGER NOT NULL UNIQUE, 
       session_key TEXT, s_key TEXT, context_id TEXT, connection_id INTEGER)`,
     [],
-  );
-  return status;
+  ));
 }
 
 /**
@@ -43,19 +45,18 @@ export async function createDB() {
  * @param {string} remoteAddress
  */
 export async function fetchSessionKeyByConnectionId(connectionId: number) {
-  const db: IDatabase<any> = pgp(cn);
-  return db.one(
-    "SELECT session_key, s_key FROM sessions WHERE connection_id = $1",
-    [connectionId],
-  );
+  return pool.connect().then(
+    pool.query(
+      "SELECT session_key, s_key FROM sessions WHERE connection_id = $1",
+      [connectionId],
+    ));
 }
 
 export async function updateSessionKey(customerId: number, sessionKey: string, contextId: string, connectionId: number) {
   const sKey = sessionKey.substr(0, 16);
-  const db: IDatabase<any> = pgp(cn);
-  return db.none(
+  return pool.connect().then(pool.query(
     `INSERT INTO sessions (customer_id, session_key, s_key, context_id, 
       connection_id) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (customer_id) DO UPDATE SET session_key = $2, s_key = $3, context_id = $4, connection_id = $5`,
     [customerId, sessionKey, sKey, contextId, connectionId],
-  );
+  ));
 }
