@@ -51,7 +51,7 @@
     "awesome-typescript-loader": "^5.1.1",
     "dotenv": "^5.0.0",
     "hoek": "^5.0.3",
-    "pg-promise": "^8.4.5",
+    "pg": "^7.4.3",
     "require-environment-variables": "^1.1.2",
     "source-map-loader": "^0.2.3",
     "ssl-config": "^1.0.0",
@@ -60,7 +60,7 @@
   "devDependencies": {
     "@types/async": "^2.0.47",
     "@types/dotenv": "^4.0.2",
-    "@types/jest": "^23.1.6",
+    "@types/jest": "^23.3.0",
     "@types/node": "^10.3.4",
     "@types/winston": "^2.3.9",
     "jest": "^22.4.4",

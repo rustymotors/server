@@ -8,11 +8,8 @@ export class RC4 {
   private keyLen;
 
   constructor(key) {
-    const keyBytes = Buffer.from(key, "hex");
-    logger.debug(`SessionKey being loaded into RC4: `, keyBytes);
-    this.keyBytes = keyBytes;
-    const keyLength = keyBytes.length;
-    this.keyLen = keyLength;
+    this.keyBytes = Buffer.from(key, "hex");
+    this.keyLen = this.keyBytes.length;
     this.mState = Array(256);
     this.mX = 0;
     this.mY = 0;
@@ -25,9 +22,9 @@ export class RC4 {
     let j = 0;
 
     for (let counter = 0; counter < 256; counter++) {
-      j = (j + this.mState[counter] + keyBytes[index1++]) % 256;
+      j = (j + this.mState[counter] + this.keyBytes[index1++]) % 256;
       this.swapByte(counter, j);
-      if (index1 >= keyLength) {
+      if (index1 >= this.keyLen) {
         index1 = 0;
       }
     }
@@ -47,7 +44,6 @@ export class RC4 {
 
   public processString(inString) {
     const inBytes = Buffer.from(inString, "hex");
-    logger.debug(`Buffer entering RC4: `, inBytes);
     let idx1 = 0;
     let idx2 = 0;
     let length = inBytes.length;
@@ -72,7 +68,6 @@ export class RC4 {
 
     this.mX = x;
     this.mY = y;
-    logger.debug(`Buffer exiting RC4: `, output);
     return output;
   }
   private swapByte(b1, b2) {
