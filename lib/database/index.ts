@@ -15,14 +15,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-const { Pool, Client } = require('pg')
+import { Pool } from 'pg'
 
 // pools will use environment variables
 // for connection information
 const pool = new Pool({
-  user: 'postgres',
-  host: 'postgres',
   database: 'mco',
+  host: 'postgres',
+  user: 'postgres',
 })
 
 const cn: string = 'postgres://mco@postgres/mco';
