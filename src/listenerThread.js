@@ -15,42 +15,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const net = require('net');
-const { processData } = require('./connectionMgr');
+const { ConnectionMgr, processData } = require('./connectionMgr');
 const { logger } = require('./logger');
 const { sendPacketOkLogin } = require('./TCPManager');
 
-function listener(socket) {
-  // Received a new connection
-  // Turn it into a connection object
-  const connection = connectionMgr.findOrNewConnection(socket);
-
-  const { remoteAddress } = socket;
-  logger.info(
-    `[listenerThread] Client ${remoteAddress} connected to port ${localPort}`,
-  );
-  if (socket.localPort === 7003 && connection.inQueue) {
-    sendPacketOkLogin(socket);
-    connection.inQueue = false;
-  }
-  socket.on('end', () => {
-    connectionMgr.deleteConnection(connection);
-    logger.info(
-      `[listenerThread] Client ${remoteAddress} disconnected from port ${localPort}`,
-    );
-  });
-  socket.on('data', onData);
-  socket.on('error', (err) => {
-    if (err.code !== 'ECONNRESET') {
-      logger.error(err.message);
-      logger.error(err.stack);
-      process.exit(1);
-    }
-  });
-}
-}
-
-async function onData(data) {
+async function onData(data, connection) {
   try {
+    const { localPort, remoteAddress } = connection.socket;
     const rawPacket = {
       connection,
       data,
@@ -65,13 +36,40 @@ async function onData(data) {
     );
 
     const newConnection = await processData(rawPacket);
-    connectionMgr.updateConnectionById(connection.id, newConnection);
+    ConnectionMgr.updateConnectionById(connection.id, newConnection);
   } catch (error) {
     logger.error(error);
     logger.error(error.stack);
     process.exit();
   }
 }
+function listener(socket, connectionMgr) {
+  // Received a new connection
+  // Turn it into a connection object
+  const connection = connectionMgr.findOrNewConnection(socket);
+
+  const { localPort, remoteAddress } = socket;
+  logger.info(
+    `[listenerThread] Client ${remoteAddress} connected to port ${localPort}`,
+  );
+  if (socket.localPort === 7003 && connection.inQueue) {
+    sendPacketOkLogin(socket);
+    connection.inQueue = false;
+  }
+  socket.on('end', () => {
+    connectionMgr.deleteConnection(connection);
+    logger.info(
+      `[listenerThread] Client ${remoteAddress} disconnected from port ${localPort}`,
+    );
+  });
+  socket.on('data', (data) => { onData(data, connection); });
+  socket.on('error', (err) => {
+    if (err.code !== 'ECONNRESET') {
+      logger.error(err.message);
+      logger.error(err.stack);
+      process.exit(1);
+    }
+  });
 }
 
 /**
@@ -81,8 +79,7 @@ async function onData(data) {
  */
 async function startTCPListener(localPort, connectionMgr) {
   net
-    .createServer((socket) => {
-      listener)
+    .createServer((socket) => { listener(socket, connectionMgr); })
     .listen({ port: localPort, host: '0.0.0.0' }, () => {
       logger.info(`[listenerThread] Listener started on port ${localPort}`);
     });
