@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const database = require("../lib/database");
-const { ConnectionMgr } = require("./connectionMgr");
-const { startTCPListener } = require("./listenerThread");
-const { logger } = require("./logger");
+const database = require('../lib/database');
+const { ConnectionMgr } = require('./connectionMgr');
+const { startTCPListener } = require('./listenerThread');
+const { logger } = require('./logger');
 
 const connectionMgr = new ConnectionMgr();
 
@@ -26,8 +26,8 @@ const connectionMgr = new ConnectionMgr();
  * @param {Function} callback
  */
 
-async function startServers(configurationFile) {
-  logger.info("Starting the listening sockets...");
+async function startServers() {
+  logger.info('Starting the listening sockets...');
   const tcpPortList = [
     6660,
     8228,
@@ -55,10 +55,8 @@ async function startServers(configurationFile) {
     9014,
   ];
 
-  await tcpPortList.map((port) =>
-    startTCPListener(port, connectionMgr)
-  );
-  logger.info("Listening sockets create successfully.");
+  await tcpPortList.map(port => startTCPListener(port, connectionMgr));
+  logger.info('Listening sockets create successfully.');
 }
 
 function run(configurationFile) {
@@ -66,8 +64,7 @@ function run(configurationFile) {
   // Start the server listeners
   startServers(configurationFile)
     .then(database.createDB)
-    .then(() => console.log("All good"))
-    .catch(err => {
+    .catch((err) => {
       throw err;
     });
 }

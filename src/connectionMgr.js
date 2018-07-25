@@ -14,12 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { Socket } = require("net");
-const { loginDataHandler } = require("../lib/LoginServer");
-const { personaDataHandler } = require("../lib/PersonaServer");
-const { Connection } = require("./Connection");
-const { logger } = require("./logger");
-const { defaultHandler } = require("./TCPManager");
+const { loginDataHandler } = require('../lib/LoginServer');
+const { personaDataHandler } = require('../lib/PersonaServer');
+const { Connection } = require('./Connection');
+const { logger } = require('./logger');
+const { defaultHandler } = require('./TCPManager');
 
 class ConnectionMgr {
   constructor() {
@@ -32,14 +31,10 @@ class ConnectionMgr {
    * Locate connection by remoteAddress and localPort in the connections array
    * @param {String} connectionId
    */
-  findConnectionByAddressAndPort(
-    remoteAddress,
-    localPort
-  ) {
-    const results = this.connections.find(connection => {
-      const match =
-        remoteAddress === connection.remoteAddress &&
-        localPort === connection.localPort;
+  findConnectionByAddressAndPort(remoteAddress, localPort) {
+    const results = this.connections.find((connection) => {
+      const match = remoteAddress === connection.remoteAddress
+        && localPort === connection.localPort;
       return match;
     });
     return results;
@@ -50,7 +45,7 @@ class ConnectionMgr {
    * @param {String} connectionId
    */
   findConnectionById(connectionId) {
-    const results = this.connections.find(connection => {
+    const results = this.connections.find((connection) => {
       const match = connectionId === connection.id;
       return match;
     });
@@ -64,16 +59,16 @@ class ConnectionMgr {
    */
   deleteConnection(connection) {
     this.connections = this.connections.filter(
-      conn =>
-        conn.id !== connection.id && conn.localPort !== connection.localPort
+      conn => conn.id !== connection.id && conn.localPort !== connection.localPort,
     );
   }
+
   updateConnectionById(connectionId, newConnection) {
     if (newConnection === undefined) {
-      throw new Error("Undefined connection");
+      throw new Error('Undefined connection');
     }
     const index = this.connections.findIndex(
-      connection => connection.id === connectionId
+      connection => connection.id === connectionId,
     );
     this.connections.splice(index, 1);
     this.connections.push(newConnection);
@@ -90,7 +85,7 @@ class ConnectionMgr {
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
     if (con !== undefined) {
       logger.info(
-        `[connectionMgr] I have seen connections from ${remoteAddress} on ${localPort} before`
+        `[connectionMgr] I have seen connections from ${remoteAddress} on ${localPort} before`,
       );
       con.sock = socket;
       return con;
@@ -100,10 +95,10 @@ class ConnectionMgr {
     const newConnection = new Connection(
       this.newConnectionId,
       socket,
-      connectionManager
+      connectionManager,
     );
     logger.info(
-      `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`
+      `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`,
     );
     this.connections.push(newConnection);
     return newConnection;
@@ -138,12 +133,12 @@ async function processData(rawPacket) {
       return defaultHandler(rawPacket);
     default:
       logger.error(
-        `[connectionMgr] No known handler for localPort ${localPort}, unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.`
+        `[connectionMgr] No known handler for localPort ${localPort}, unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.`,
       );
-      logger.info("[connectionMgr] Data was: ", data.toString("hex"));
+      logger.info('[connectionMgr] Data was: ', data.toString('hex'));
       process.exit(1);
       return null;
   }
 }
 
-module.exports = { ConnectionMgr, processData }
+module.exports = { ConnectionMgr, processData };

@@ -14,27 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const crypto = require("crypto");
-const { logger } = require("./logger");
-const packet = require("./packet");
+const crypto = require('crypto');
+const { logger } = require('./logger');
+const packet = require('./packet');
 
-const { Socket } = require("net");
-const database = require("../lib/database");
-const { Connection } = require("./Connection");
-
+const database = require('../lib/database');
 
 /**
  * Handle a request to connect to a game server packet
  * @param {Socket} socket
  * @param {Buffer} rawData
  */
-async function npsRequestGameConnectServer(
-  socket,
-  rawData
-) {
-  logger.info("*** npsRequestGameConnectServer ****");
-  logger.debug("Packet as hex: ", rawData.toString("hex"));
-  logger.info("************************************");
+async function npsRequestGameConnectServer(socket, rawData) {
+  logger.info('*** npsRequestGameConnectServer ****');
+  logger.debug('Packet as hex: ', rawData.toString('hex'));
+  logger.info('************************************');
 
   // // Load the received data into a MsgPack class
   // const msgPack = MsgPack(rawData);
@@ -50,7 +44,7 @@ async function npsRequestGameConnectServer(
 
   // User name (32)
   const name = Buffer.alloc(32);
-  Buffer.from("Doctor Brown", "utf8").copy(name);
+  Buffer.from('Doctor Brown', 'utf8').copy(name);
   name.copy(packetContent, 6);
 
   // UserData - User controllable data (64)
@@ -71,8 +65,8 @@ function decryptCmd(con, cypherCmd) {
   const s = con;
   const decryptedCommand = s.decipherBufferDES(cypherCmd);
   s.decryptedCmd = decryptedCommand;
-  logger.warn(`[lobby] Enciphered Cmd: ${cypherCmd.toString("hex")}`);
-  logger.warn(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`);
+  logger.warn(`[lobby] Enciphered Cmd: ${cypherCmd.toString('hex')}`);
+  logger.warn(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString('hex')}`);
   return s;
 }
 
@@ -124,4 +118,4 @@ async function sendCommand(con, data) {
 
   return cmdEncrypted;
 }
-module.exports = { npsRequestGameConnectServer, sendCommand }
+module.exports = { npsRequestGameConnectServer, sendCommand };

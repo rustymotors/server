@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const database = require("../lib/database");
-const ClientConnectMsg = require("./ClientConnectMsg");
-const lobby = require("./lobby");
-const { logger } = require("./logger");
-const MessageNode = require("./MessageNode");
-const packet = require("./packet");
+const database = require('../lib/database');
+const ClientConnectMsg = require('./ClientConnectMsg');
+const lobby = require('./lobby');
+const { logger } = require('./logger');
+const MessageNode = require('./MessageNode');
+const packet = require('./packet');
 
 function socketWriteIfOpen(conn, node) {
   // Log that we are trying to write
@@ -28,17 +28,20 @@ function socketWriteIfOpen(conn, node) {
   const { rawBuffer } = node;
 
   // Log the buffer we are writing
-  logger.debug(`Writting buffer: ${rawBuffer.toString("hex")}`);
+  logger.debug(`Writting buffer: ${rawBuffer.toString('hex')}`);
   if (sock.writable) {
-    logger.debug("rawBuffer's data prior to sending: ", rawBuffer.toString("hex"))
+    logger.debug(
+      "rawBuffer's data prior to sending: ",
+      rawBuffer.toString('hex'),
+    );
     sock.write(rawBuffer);
   } else {
     logger.error(
-      "Error writing ",
+      'Error writing ',
       rawBuffer.toString(),
-      " to ",
+      ' to ',
       sock.remoteAddress,
-      sock.localPort.toString()
+      sock.localPort.toString(),
     );
   }
 }
@@ -50,9 +53,9 @@ function socketWriteIfOpen(conn, node) {
 function MSG_STRING(msgID) {
   switch (msgID) {
     case 438:
-      return "MC_CLIENT_CONNECT_MSG";
+      return 'MC_CLIENT_CONNECT_MSG';
     default:
-      return "Unknown";
+      return 'Unknown';
   }
 }
 
@@ -69,7 +72,7 @@ async function ClientConnect(con, node) {
   logger.debug(`Looking up the session key for ${con.id}...`);
   try {
     const res = await database.fetchSessionKeyByConnectionId(id);
-    logger.warn("Session Key: ", res.s_key);
+    logger.warn('Session Key: ', res.s_key);
 
     const connectionWithKey = con;
 
@@ -78,29 +81,29 @@ async function ClientConnect(con, node) {
       const sessionKey = res.session_key;
       logger.debug(`Raw Session Key: ${sessionKey}`);
 
-      const strKey = Buffer.from(sessionKey, "hex");
+      const strKey = Buffer.from(sessionKey, 'hex');
       connectionWithKey.setEncryptionKey(strKey.slice(0, 16));
 
       // Log the session key
       logger.debug(
         `cust: ${customerId} ID: ${personaId} Name: ${personaName} SessionKey: ${strKey[0].toString(
-          16
+          16,
         )} ${strKey[1].toString(16)} ${strKey[2].toString(
-          16
+          16,
         )} ${strKey[3].toString(16)} ${strKey[4].toString(
-          16
+          16,
         )} ${strKey[5].toString(16)} ${strKey[6].toString(
-          16
-        )} ${strKey[7].toString(16)}`
+          16,
+        )} ${strKey[7].toString(16)}`,
       );
 
       // Create new response packet
       // TODO: Do this cleaner
       const rPacket = new MessageNode(node.rawBuffer);
       // rPacket.buffer = connectionWithKey.enc.out.processString(node.buffer);
-      rPacket.setMsgNo(101)
-      rPacket.setBuffer(Buffer.from([0x65, 0x00, 0xb6, 0x01]))
-      logger.debug(`Dumping response...`);
+      rPacket.setMsgNo(101);
+      rPacket.setBuffer(Buffer.from([0x65, 0x00, 0xb6, 0x01]));
+      logger.debug('Dumping response...');
       rPacket.dumpPacket();
 
       // write the socket
@@ -120,12 +123,12 @@ async function ClientConnect(con, node) {
 }
 
 async function ProcessInput(node, conn) {
-  logger.debug(`In ProcessInput..`);
+  logger.debug('In ProcessInput..');
   const currentMsgNo = node.msgNo;
   const currentMsgString = MSG_STRING(currentMsgNo);
   logger.debug(`currentMsg: ${currentMsgString} (${currentMsgNo})`);
 
-  if (currentMsgString === "MC_CLIENT_CONNECT_MSG") {
+  if (currentMsgString === 'MC_CLIENT_CONNECT_MSG') {
     try {
       const clientConnectMsg = await ClientConnect(conn, node);
       return clientConnectMsg;
@@ -143,10 +146,10 @@ async function ProcessInput(node, conn) {
 }
 
 async function MessageReceived(msg, con) {
-  logger.info("Welcome to MessageRecieved()");
+  logger.info('Welcome to MessageRecieved()');
   const newConnection = con;
   if (!newConnection.useEncryption && (msg.flags && 0x08)) {
-    logger.debug("Turning on encryption");
+    logger.debug('Turning on encryption');
     newConnection.useEncryption = true;
   }
 
@@ -154,9 +157,9 @@ async function MessageReceived(msg, con) {
   if (!(msg.flags === 80) && newConnection.useEncryption) {
     try {
       if (!newConnection.isSetupComplete) {
-        logger.debug("3");
+        logger.debug('3');
         logger.error(
-          `Decrypt() not yet setup! Disconnecting...conId: ${con.id}`
+          `Decrypt() not yet setup! Disconnecting...conId: ${con.id}`,
         );
         con.sock.end();
         process.exit();
@@ -166,25 +169,25 @@ async function MessageReceived(msg, con) {
        * Attempt to decrypt message
        */
       logger.debug(
-        "==================================================================="
+        '===================================================================',
       );
       logger.warn(
-        `Full packet before decrypting: `,
-        msg.rawBuffer.toString("hex")
+        'Full packet before decrypting: ',
+        msg.rawBuffer.toString('hex'),
       );
 
-      const encryptedBuffer = msg.buffer.toString("hex");
+      const encryptedBuffer = msg.buffer.toString('hex');
 
-      logger.warn(`Message buffer before decrypting: `, encryptedBuffer);
+      logger.warn('Message buffer before decrypting: ', encryptedBuffer);
       const deciphered = newConnection.enc.in.processString(encryptedBuffer);
       logger.warn(
-        "Message buffer after decrypting:    ",
-        deciphered.toString("hex")
+        'Message buffer after decrypting:    ',
+        deciphered.toString('hex'),
       );
       // console.log(`After mState: ${newConnection.enc.getSBox()}`);
 
       logger.debug(
-        "==================================================================="
+        '===================================================================',
       );
 
       // This isn't real.
@@ -193,7 +196,7 @@ async function MessageReceived(msg, con) {
       return newConnection;
     } catch (e) {
       logger.error(
-        `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}`
+        `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}`,
       );
       con.sock.end();
       throw e;
@@ -204,7 +207,7 @@ async function MessageReceived(msg, con) {
   try {
     return await ProcessInput(msg, newConnection);
   } catch (error) {
-    logger.error("Err: ", error);
+    logger.error('Err: ', error);
     throw error;
   }
 }
@@ -222,21 +225,30 @@ async function lobbyDataHandler(rawPacket) {
 
   switch (requestCode) {
     // npsRequestGameConnectServer
-    case "100": {
-      const responsePacket = await lobby.npsRequestGameConnectServer(sock, data);
-      logger.debug("responsePacket's data prior to sending: ", responsePacket.toString("hex"))
+    case '100': {
+      const responsePacket = await lobby.npsRequestGameConnectServer(
+        sock,
+        data,
+      );
+      logger.debug(
+        "responsePacket's data prior to sending: ",
+        responsePacket.toString('hex'),
+      );
       sock.write(responsePacket);
       break;
     }
     // npsHeartbeat
-    case "217": {
+    case '217': {
       const responsePacket = await npsHeartbeat();
-      logger.debug("responsePacket's data prior to sending: ", responsePacket.toString("hex"))
+      logger.debug(
+        "responsePacket's data prior to sending: ",
+        responsePacket.toString('hex'),
+      );
       sock.write(responsePacket);
       break;
     }
     // npsSendCommand
-    case "1101": {
+    case '1101': {
       // This is an encrypted command
       // Fetch session key
 
@@ -244,12 +256,17 @@ async function lobbyDataHandler(rawPacket) {
       const { sock: newSock, encryptedCommand } = newConnection;
 
       if (encryptedCommand == null) {
-        logger.error("Error with encrypted command, dumping connection...");
-        console.dir(newConnection);
+        logger.error(
+          'Error with encrypted command, dumping connection...',
+          newConnection,
+        );
         process.exit(1);
       }
 
-      logger.debug("encrypedCommand's data prior to sending: ", encryptedCommand.toString("hex"))
+      logger.debug(
+        "encrypedCommand's data prior to sending: ",
+        encryptedCommand.toString('hex'),
+      );
       newSock.write(encryptedCommand);
       return newConnection;
     }
@@ -269,26 +286,37 @@ function sendPacketOkLogin(socket) {
 }
 
 async function defaultHandler(rawPacket) {
-  const { connection, remoteAddress, localPort, data } = rawPacket;
+  const {
+    connection, remoteAddress, localPort, data,
+  } = rawPacket;
   const messageNode = new MessageNode(data);
   logger.info(`=============================================
     Received packet on port ${localPort} from ${remoteAddress}...`);
-  logger.info("=============================================");
+  logger.info('=============================================');
 
   if (messageNode.isMCOTS()) {
     messageNode.dumpPacket();
 
     const newMessage = await MessageReceived(messageNode, connection);
-    logger.debug(`Back from MessageRecieved`);
+    logger.debug('Back from MessageRecieved');
     return newMessage;
   }
-  logger.debug("No valid MCOTS header signature detected, sending to Lobby");
-  logger.info("=============================================");
-  logger.debug("Buffer as text: ", messageNode.buffer.toString("utf8"));
-  logger.debug("Buffer as string: ", messageNode.buffer.toString("hex"));
+  logger.debug('No valid MCOTS header signature detected, sending to Lobby');
+  logger.info('=============================================');
+  logger.debug('Buffer as text: ', messageNode.buffer.toString('utf8'));
+  logger.debug('Buffer as string: ', messageNode.buffer.toString('hex'));
 
   const newConnection = await lobbyDataHandler(rawPacket);
   return newConnection;
 }
 
-module.exports = { MSG_STRING, ClientConnect, ProcessInput, MessageReceived, npsHeartbeat, lobbyDataHandler, defaultHandler }
+module.exports = {
+  MSG_STRING,
+  ClientConnect,
+  ProcessInput,
+  MessageReceived,
+  npsHeartbeat,
+  lobbyDataHandler,
+  sendPacketOkLogin,
+  defaultHandler,
+};
