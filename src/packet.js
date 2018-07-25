@@ -1358,4 +1358,9 @@ function premadePersonaMaps() {
   ]);
 }
 
-module.exports = { buildPacket, premadeLogin, craftGenericReply, premadePersonaMaps }
+module.exports = {
+  buildPacket,
+  premadeLogin,
+  craftGenericReply,
+  premadePersonaMaps,
+};

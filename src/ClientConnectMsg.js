@@ -14,12 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { logger } = require("./logger");
-
+const { logger } = require('./logger');
 
 class ClientConnectMsg {
-
-
   constructor(buffer) {
     this.msgId = buffer.readInt16LE(0);
 
@@ -36,16 +33,16 @@ class ClientConnectMsg {
    * dumpPacket
    */
   dumpPacket() {
-    logger.info("[ClientConnectMsg]======================================");
-    logger.debug("MsgId:       ", this.msgId.toString());
-    logger.debug("customerId:  ", this.customerId.toString());
-    logger.debug("personaId:   ", this.personaId.toString());
-    logger.debug("custName:    ", this.custName);
-    logger.debug("personaName: ", this.personaName);
-    logger.debug("mcVersion:   ", this.mcVersion.toString("hex"));
-    logger.debug("Raw Buffer:   ", this.rawBuffer.toString("hex"));
-    logger.info("[ClientConnectMsg]======================================");
+    logger.info('[ClientConnectMsg]======================================');
+    logger.debug('MsgId:       ', this.msgId.toString());
+    logger.debug('customerId:  ', this.customerId.toString());
+    logger.debug('personaId:   ', this.personaId.toString());
+    logger.debug('custName:    ', this.custName);
+    logger.debug('personaName: ', this.personaName);
+    logger.debug('mcVersion:   ', this.mcVersion.toString('hex'));
+    logger.debug('Raw Buffer:   ', this.rawBuffer.toString('hex'));
+    logger.info('[ClientConnectMsg]======================================');
   }
 }
 
-module.exports = { ClientConnectMsg }
+module.exports = { ClientConnectMsg };

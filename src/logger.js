@@ -14,19 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { Logger, transports } = require("winston");
+const { Logger, transports } = require('winston');
+
 const logger = new Logger({
   transports: [
-    new transports.Console({ level: "debug", colorize: "all" }),
+    new transports.Console({ level: 'debug', colorize: 'all' }),
     new transports.File({
-      filename: "filelog-info.log",
-      level: "info",
-      name: "info-file",
+      filename: 'filelog-info.log',
+      level: 'info',
+      name: 'info-file',
     }),
     new transports.File({
-      filename: "filelog-error.log",
-      level: "error",
-      name: "error-file",
+      filename: 'filelog-error.log',
+      level: 'error',
+      name: 'error-file',
     }),
   ],
 });

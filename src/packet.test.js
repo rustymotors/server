@@ -29,5 +29,7 @@ test('retuns a buffer packet from premadePersonaMaps', () => {
 });
 
 test('retuns a buffer packet from buildPacket', () => {
-  expect(packet.buildPacket(6, 0x601, Buffer.from([0x06, 0x01]))).toBeInstanceOf(Buffer);
+  expect(
+    packet.buildPacket(6, 0x601, Buffer.from([0x06, 0x01])),
+  ).toBeInstanceOf(Buffer);
 });

@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { RC4 } = require("./RC4");
+const crypto = require('crypto');
+const { RC4 } = require('./RC4');
 
 class Connection {
-
   constructor(connectionId, sock, mgr) {
     this.id = connectionId;
     this.appID = 0;
-    this.status = "INACTIVE";
+    this.status = 'INACTIVE';
     this.remoteAddress = sock.remoteAddress;
     this.localPort = sock.localPort;
     this.sock = sock;
@@ -29,11 +29,11 @@ class Connection {
     this.lastMsg = 0;
     this.useEncryption = false;
     this.encLobby = {};
-    (this.enc = {
+    this.enc = {
       in: null,
       out: null,
-    }),
-      (this.isSetupComplete = false);
+    };
+    this.isSetupComplete = false;
     this.mgr = mgr;
     this.inQueue = true;
   }
@@ -54,15 +54,15 @@ class Connection {
   setEncryptionKeyDES(sKey) {
     const desIV = Buffer.alloc(8);
     this.encLobby.cipher = crypto.createCipheriv(
-      "des-cbc",
-      Buffer.from(sKey, "hex"),
-      desIV
+      'des-cbc',
+      Buffer.from(sKey, 'hex'),
+      desIV,
     );
     this.encLobby.cipher.setAutoPadding(false);
     this.encLobby.decipher = crypto.createDecipheriv(
-      "des-cbc",
-      Buffer.from(sKey, "hex"),
-      desIV
+      'des-cbc',
+      Buffer.from(sKey, 'hex'),
+      desIV,
     );
     this.encLobby.decipher.setAutoPadding(false);
 
@@ -84,4 +84,4 @@ class Connection {
   }
 }
 
-module.exports = { Connection }
+module.exports = { Connection };

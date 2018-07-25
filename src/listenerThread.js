@@ -14,41 +14,38 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const net = require("net");
-const { processData } = require("./connectionMgr");
-const { logger } = require("./logger");
-const { sendPacketOkLogin } = require("./TCPManager");
+const net = require('net');
+const { processData } = require('./connectionMgr');
+const { logger } = require('./logger');
+const { sendPacketOkLogin } = require('./TCPManager');
 
 /**
  * Given a port and a connection manager object, create a new TCP socket listener for that port
  * @param {Int} localPort
  * @param {connectionMgr} connectionMgr
  */
-async function startTCPListener(
-  localPort,
-  connectionMgr
-) {
+async function startTCPListener(localPort, connectionMgr) {
   net
-    .createServer(socket => {
+    .createServer((socket) => {
       // Received a new connection
       // Turn it into a connection object
       const connection = connectionMgr.findOrNewConnection(socket);
 
       const { remoteAddress } = socket;
       logger.info(
-        `[listenerThread] Client ${remoteAddress} connected to port ${localPort}`
+        `[listenerThread] Client ${remoteAddress} connected to port ${localPort}`,
       );
       if (socket.localPort === 7003 && connection.inQueue) {
         sendPacketOkLogin(socket);
         connection.inQueue = false;
       }
-      socket.on("end", () => {
+      socket.on('end', () => {
         connectionMgr.deleteConnection(connection);
         logger.info(
-          `[listenerThread] Client ${remoteAddress} disconnected from port ${localPort}`
+          `[listenerThread] Client ${remoteAddress} disconnected from port ${localPort}`,
         );
       });
-      socket.on("data", async data => {
+      socket.on('data', async (data) => {
         try {
           const rawPacket = {
             connection,
@@ -58,7 +55,10 @@ async function startTCPListener(
             timestamp: Date.now(),
           };
           // Dump the raw packet
-          logger.debug("rawPacket's data prior to proccessing: ", rawPacket.data.toString("hex"))
+          logger.debug(
+            "rawPacket's data prior to proccessing: ",
+            rawPacket.data.toString('hex'),
+          );
 
           const newConnection = await processData(rawPacket);
           connectionMgr.updateConnectionById(connection.id, newConnection);
@@ -68,16 +68,16 @@ async function startTCPListener(
           process.exit();
         }
       });
-      socket.on("error", (err) => {
-        if (err.code !== "ECONNRESET") {
+      socket.on('error', (err) => {
+        if (err.code !== 'ECONNRESET') {
           logger.error(err.message);
           logger.error(err.stack);
           process.exit(1);
         }
       });
     })
-    .listen({ port: localPort, host: "0.0.0.0" }, () => {
+    .listen({ port: localPort, host: '0.0.0.0' }, () => {
       logger.info(`[listenerThread] Listener started on port ${localPort}`);
     });
 }
-module.exports = { startTCPListener }
+module.exports = { startTCPListener };
