@@ -15,14 +15,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as readline from "readline";
-import { IConfigurationFile } from "../config/config";
-import * as database from "../lib/database/index";
-import Web from "../lib/WebServer";
+import { config, IConfigurationFile } from "../config/config";
+import * as database from "../lib/database";
 import ConnectionMgr from "./connectionMgr";
 import startTCPListener from "./listenerThread";
 import { logger } from "./logger";
+import { patchServer } from "./WebServer/patchServer";
+import { webServer } from "./WebServer/webServer";
 
-const connectionMgr = new ConnectionMgr();
+export const connectionMgr = new ConnectionMgr();
 
 /**
  * Start the HTTP, HTTPS and TCP connection listeners
@@ -57,6 +58,9 @@ async function startServers(configurationFile: IConfigurationFile) {
     9013,
     9014,
   ];
+
+  await webServer.start(config);
+  await patchServer.start(config)
 
   await tcpPortList.map((port: number) =>
     startTCPListener(port, connectionMgr)
@@ -101,7 +105,7 @@ function startCLI() {
   });
 }
 
-function run(configurationFile: IConfigurationFile) {
+export function run(configurationFile: IConfigurationFile) {
   // Connect to database
   // Start the server listeners
   startServers(configurationFile)
@@ -112,5 +116,3 @@ function run(configurationFile: IConfigurationFile) {
       throw err;
     });
 }
-
-export default { run };

@@ -8,8 +8,15 @@ export class RC4 {
   private keyLen;
 
   constructor(key) {
+<<<<<<< HEAD
+    const keyBytes = Buffer.from(key, "hex");
+    this.keyBytes = keyBytes;
+    const keyLength = keyBytes.length;
+    this.keyLen = keyLength;
+=======
     this.keyBytes = Buffer.from(key, "hex");
     this.keyLen = this.keyBytes.length;
+>>>>>>> develop
     this.mState = Array(256);
     this.mX = 0;
     this.mY = 0;

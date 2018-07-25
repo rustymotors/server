@@ -32,7 +32,13 @@
       "src/**/*.ts",
       "lib/**/*.ts"
     ],
-    "testResultsProcessor": "jest-junit",
+    "coveragePathIgnorePatterns": [
+      ".d.ts"
+    ],
+    "reporters": [
+      "default",
+      "jest-junit"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -49,7 +55,9 @@
   "dependencies": {
     "async": "^2.6.1",
     "awesome-typescript-loader": "^5.1.1",
+    "body-parser": "^1.18.3",
     "dotenv": "^5.0.0",
+    "express": "^4.16.3",
     "hoek": "^5.0.3",
     "pg": "^7.4.3",
     "require-environment-variables": "^1.1.2",
@@ -64,7 +72,7 @@
     "@types/node": "^10.3.4",
     "@types/winston": "^2.3.9",
     "jest": "^22.4.4",
-    "jest-junit": "^4.0.0",
+    "jest-junit": "^5.1.0",
     "license-checker": "^20.1.0",
     "pg-migrator": "^1.0.5",
     "prettier": "^1.13.5",

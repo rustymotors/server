@@ -14,63 +14,89 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import * as bodyParser from 'body-parser'
+import * as express from 'express'
 import fs = require("fs");
 import * as http from "http";
 import * as https from "https";
-import * as SSLConfig from "ssl-config";
-import { config, IConfigurationFile } from "../../config/config";
-
 import { Socket } from "net";
-import { logger } from "../../src/logger";
+import { handleAPIRequest } from "../api/"
+import * as MCServer from "../MCServer"
+import { IConfigurationFile } from "./config";
+import { logger } from "./logger";
+import { SSLConfig } from "./ssl-config";
+
 
 /**
  * Create the SSL options object
  */
 function sslOptions(configuration: IConfigurationFile["serverConfig"]) {
-  const sslConfig = SSLConfig("old");
   return {
     cert: fs.readFileSync(configuration.certFilename),
-    ciphers: sslConfig.ciphers,
+    ciphers: SSLConfig.ciphers,
     honorCipherOrder: true,
     key: fs.readFileSync(configuration.privateKeyFilename),
     rejectUnauthorized: false,
-    secureOptions: sslConfig.minimumTLSVersion,
+    secureOptions: SSLConfig.minimumTLSVersion,
   };
 }
 
+const users = [
+  {
+    "token": "d316cd2dd6bf870893dfbaaf17f965884e",
+    "username": "test",
+  }
+]
+
 function httpsHandler(
   request: http.IncomingMessage,
-  response: http.ServerResponse
+  response: http.ServerResponse,
+  serverConfiguration: IConfigurationFile
 ) {
   logger.info(
     `[HTTPS] Request from ${request.socket.remoteAddress} for ${
-      request.method
+    request.method
     } ${request.url}`
   );
+
+  const routes = {
+    "/cert": (): void => {
+      console.log("route hit")
+    }
+  }
+
+  const { url } = request
+  const { username, token } = users[0]
+
+  if (request.url.startsWith("/api/")) {
+    handleAPIRequest(request, response, MCServer.connectionMgr)
+    return
+  }
+
   switch (request.url) {
     case "/cert":
       response.setHeader(
         "Content-disposition",
         "attachment; filename=cert.pem"
       );
-      response.end(fs.readFileSync(config.serverConfig.certFilename));
+      response.end(fs.readFileSync(serverConfiguration.serverConfig.certFilename));
       break;
 
     case "/key":
       response.setHeader("Content-disposition", "attachment; filename=pub.key");
       response.end(
-        fs.readFileSync(config.serverConfig.publicKeyFilename).toString("hex")
+        fs.readFileSync(serverConfiguration.serverConfig.publicKeyFilename).toString("hex")
       );
       break;
     case "/AuthLogin":
       response.setHeader("Content-Type", "text/plain");
-      response.end("Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e");
+      response.end(`Valid=TRUE\nTicket=${token}`);
       break;
 
     default:
       if (request.url.startsWith("/AuthLogin?")) {
         response.setHeader("Content-Type", "text/plain");
-        response.end("Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e");
+        response.end(`Valid=TRUE\nTicket=${token}`);
         return;
       }
       response.statusCode = 404;
@@ -79,11 +105,27 @@ function httpsHandler(
   }
 }
 
-export default class WebServer {
-  public async start() {
+export class WebServer {
+  public async start(configurationFile: IConfigurationFile) {
+    const app = express()
+
+    // parse application/json
+    app.use(bodyParser.json())
+
+    app.use((req, res) => {
+      httpsHandler(req, res, configurationFile)
+    });
+
+    app.use((req, res) => {
+      handleAPIRequest(req, res, configurationFile)
+    });
+
+
     const httpsServer = https
-      .createServer(sslOptions(config.serverConfig), httpsHandler)
-      .listen({ port: 443, host: "0.0.0.0" })
+      .createServer(sslOptions(configurationFile.serverConfig), app)
+      .listen({ port: 443, host: "0.0.0.0" }, () => {
+        logger.info("[webServer] Web server is listening...");
+      })
       .on("connection", (socket: Socket) => {
         socket.on("error", (error: NodeJS.ErrnoException) => {
           logger.error(`[webServer] SSL Socket Error: ${error.message}`);
@@ -97,3 +139,7 @@ export default class WebServer {
       });
   }
 }
+
+const webServer = new WebServer
+
+export { webServer }

@@ -42,9 +42,9 @@ export default async function startTCPListener(
     .createServer(socket => {
       // Received a new connection
       // Turn it into a connection object
-      const connection = connectionMgr.findOrNewConnection(socket);
+      const connection = connectionMgr.findOrNewConnection(socket, localPort);
 
-      const { remoteAddress } = socket;
+      const { remoteAddress } = connection.sock;
       logger.info(
         `[listenerThread] Client ${remoteAddress} connected to port ${localPort}`
       );
@@ -71,7 +71,7 @@ export default async function startTCPListener(
           logger.debug("rawPacket's data prior to proccessing: ", rawPacket.data.toString("hex"))
 
           const newConnection = await processData(rawPacket);
-          connectionMgr.updateConnectionById(connection.id, newConnection);
+          connectionMgr.updateConnectionByAddressAndPort(remoteAddress, localPort, newConnection);
         } catch (error) {
           logger.error(error);
           logger.error(error.stack);

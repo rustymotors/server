@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { logger } from '../../src/logger';
+import * as database from "../../lib/database";
+import { logger } from '../logger';
 import * as packet from './packet';
 
 import { NPSUserStatus } from './npsUserStatus';
 
-import { Connection } from "../../src/Connection";
-import { IRawPacket } from "../../src/listenerThread";
-import * as database from "../database";
+import { Connection } from "../Connection";
+import { IRawPacket } from "../listenerThread";
 
 interface IUser {
   contextId: string,

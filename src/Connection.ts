@@ -22,6 +22,7 @@ import { RC4 } from "./RC4";
 
 export class Connection {
   public remoteAddress: string;
+  public remotePort: number;
   public localPort: number;
   public sock: Socket;
   public id: number;
@@ -49,6 +50,7 @@ export class Connection {
     this.appID = 0;
     this.status = "INACTIVE";
     this.remoteAddress = sock.remoteAddress;
+    this.remotePort = sock.remotePort;
     this.localPort = sock.localPort;
     this.sock = sock;
     this.msgEvent = null;

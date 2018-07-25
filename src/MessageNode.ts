@@ -36,12 +36,17 @@ export default class MessageNode {
 
     this.rawBuffer = packet
 
-    if (packet.length <= 6) {
-      throw new Error(`Packet too short!: ${packet.toString()}`);
+    // Check if this is a valid MCOTS packet
+    if (!this.isMCOTS()) {
+      return
     }
 
     try {
       this.msgNo = this.buffer.readInt16LE(0);
+
+      if (this.isMCOTS && packet.length <= 6) {
+        throw new Error(`Packet too short!: ${this.rawBuffer.toString()}`);
+      }
     } catch (error) {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore

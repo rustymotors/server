@@ -14,13 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { fail } from "assert";
 import { Socket } from "net";
-import { loginDataHandler } from "../lib/LoginServer/index";
-import { personaDataHandler } from "../lib/PersonaServer/index";
 import { Connection } from "./Connection";
 import { IRawPacket } from "./listenerThread";
 import { logger } from "./logger";
+import { loginDataHandler } from "./LoginServer";
+import { personaDataHandler } from "./PersonaServer";
 import { defaultHandler } from "./TCPManager";
 
 export default class ConnectionMgr {
@@ -72,12 +71,14 @@ export default class ConnectionMgr {
         conn.id !== connection.id && conn.localPort !== connection.localPort
     );
   }
-  public updateConnectionById(connectionId: number, newConnection: Connection) {
+  public updateConnectionByAddressAndPort(remoteAddress: string, localPort: number, newConnection: Connection) {
     if (newConnection === undefined) {
       throw new Error("Undefined connection");
     }
     const index = this.connections.findIndex(
-      connection => connection.id === connectionId
+      connection => {
+        return (connection.remoteAddress === remoteAddress) && (connection.localPort === localPort)
+      }
     );
     this.connections.splice(index, 1);
     this.connections.push(newConnection);
@@ -89,8 +90,8 @@ export default class ConnectionMgr {
    * @param {String} id
    * @param {Socket} socket
    */
-  public findOrNewConnection(socket: Socket) {
-    const { remoteAddress, localPort } = socket;
+  public findOrNewConnection(socket: Socket, localPort: number) {
+    const { remoteAddress } = socket;
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
     if (con !== undefined) {
       logger.info(
@@ -110,6 +111,16 @@ export default class ConnectionMgr {
       `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`
     );
     this.connections.push(newConnection);
+
+    console.log(this.dumpConnections().map((connection => {
+      return {
+        id: connection.id,
+        localPort: connection.localPort,
+        remoteAddress: connection.remoteAddress,
+        remotePort: connection.remotePort
+      }
+    })))
+
     return newConnection;
   }
 
@@ -133,8 +144,6 @@ interface IPortHandler {
  */
 export async function processData(rawPacket: IRawPacket) {
   const { remoteAddress, localPort, data } = rawPacket;
-  // logger.info(`Connection Manager: Got data from ${remoteAddress} on
-  //   localPort ${localPort}`, data);
 
   switch (localPort) {
     case 8226:

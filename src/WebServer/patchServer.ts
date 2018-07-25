@@ -17,7 +17,7 @@
 import http = require("http");
 import { IConfigurationFile } from "../../config/config";
 
-import { logger } from "../../src/logger";
+import { logger } from "../logger";
 
 const castanetResponse = {
   body: Buffer.from("cafebeef00000000000003", "hex"),
@@ -71,7 +71,7 @@ function httpHandler(
 ) {
   logger.info(
     `[PATCH] Request from ${request.socket.remoteAddress} for ${
-      request.method
+    request.method
     } ${request.url}`
   );
   let responseData;
@@ -113,3 +113,7 @@ export default class PatchServer {
     });
   }
 }
+
+const patchServer = new PatchServer
+
+export { patchServer }
