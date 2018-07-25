@@ -8,10 +8,15 @@ export class RC4 {
   private keyLen;
 
   constructor(key) {
+<<<<<<< HEAD
     const keyBytes = Buffer.from(key, "hex");
     this.keyBytes = keyBytes;
     const keyLength = keyBytes.length;
     this.keyLen = keyLength;
+=======
+    this.keyBytes = Buffer.from(key, "hex");
+    this.keyLen = this.keyBytes.length;
+>>>>>>> develop
     this.mState = Array(256);
     this.mX = 0;
     this.mY = 0;
@@ -24,9 +29,9 @@ export class RC4 {
     let j = 0;
 
     for (let counter = 0; counter < 256; counter++) {
-      j = (j + this.mState[counter] + keyBytes[index1++]) % 256;
+      j = (j + this.mState[counter] + this.keyBytes[index1++]) % 256;
       this.swapByte(counter, j);
-      if (index1 >= keyLength) {
+      if (index1 >= this.keyLen) {
         index1 = 0;
       }
     }
