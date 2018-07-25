@@ -4,8 +4,8 @@
   "description": "a server",
   "main": "src/server.js",
   "scripts": {
-    "prestart": "prettier --write ./src/*.js && eslint src --fix",
-    "pretest": "prettier --write ./src/*.js && eslint src --fix",
+    "prestart": "eslint src",
+    "pretest": "eslint src",
     "start": "node src/server.js",
     "test": "jest --all",
     "licence-check": "license-checker --json > ./data/licenses.json"
