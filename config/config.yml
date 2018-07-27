@@ -1,0 +1,23 @@
+  loggerLevel: "debug"
+  serverConfig: 
+    certFilename: "./data/cert.pem"
+    ipServer: "192.168.5.20"
+    privateKeyFilename: "./data/private_key.pem"
+    publicKeyFilename: "./data/pub.key"
+    serverDatabase: 
+      name: "Database"
+      port: 43300
+    
+    serverLobby: 
+      name: "Lobby"
+      port: 7003
+    
+    serverLogin: 
+      name: "Login"
+      port: 8226
+    
+    serverPersona: 
+      name: "Persona"
+      port: 8228
+    
+  

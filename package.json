@@ -2,17 +2,12 @@
   "name": "mco-server",
   "version": "1.2.0",
   "description": "a server",
-  "main": "server.js",
+  "main": "src/server.js",
   "scripts": {
-    "dev": "npm install && npm run tslint && npm build -w",
-    "build": "npm run build-ts && npm run tslint",
-    "prestart": "npm run build",
-    "debug": "npm run build && node --inspect dist/src/server.js",
-    "start": "node dist/src/server.js",
-    "tslint": "tslint -c tslint.json -p tsconfig.json",
-    "pretest": "npm run tslint",
-    "test": "npm run build && jest --all",
-    "build-ts": "tsc",
+    "prestart": "eslint src",
+    "pretest": "eslint src",
+    "start": "node src/server.js",
+    "test": "jest --all",
     "licence-check": "license-checker --json > ./data/licenses.json"
   },
   "author": "Joseph W Becher <jwbecher@drazisil.com> (drazisil)",
@@ -29,54 +24,41 @@
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/**/*.ts",
-      "lib/**/*.ts"
+      "src/**/*.js",
+      "lib/**/*.js"
     ],
     "testResultsProcessor": "jest-junit",
     "moduleFileExtensions": [
-      "ts",
-      "tsx",
       "js"
     ],
-    "transform": {
-      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
-    },
-    "testRegex": ".*(spec|test).(ts|tsx|js)$"
+    "testRegex": ".*(spec|test).(js)$"
   },
   "jest-junit": {
     "output": "test-reports/junit.xml"
   },
   "dependencies": {
-    "ajv": "^6.5.1",
     "async": "^2.6.1",
-    "awesome-typescript-loader": "^5.1.1",
     "dotenv": "^5.0.0",
     "hoek": "^5.0.3",
-    "pg-promise": "^8.4.5",
+    "js-yaml": "^3.12.0",
+    "pg": "^7.4.3",
     "require-environment-variables": "^1.1.2",
     "source-map-loader": "^0.2.3",
-    "sqlite": "^2.9.2",
     "ssl-config": "^1.0.0",
     "winston": "^2.4.3"
   },
   "devDependencies": {
-    "@types/async": "^2.0.47",
-    "@types/dotenv": "^4.0.2",
-    "@types/jest": "^23.1.6",
-    "@types/node": "^10.3.4",
-    "@types/sqlite3": "^3.1.1",
-    "@types/winston": "^2.3.9",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-config-google": "^0.9.1",
+    "eslint-plugin-import": "^2.13.0",
+    "husky": "^0.14.3",
     "jest": "^22.4.4",
     "jest-junit": "^4.0.0",
     "license-checker": "^20.1.0",
+    "lint-staged": "^7.2.0",
     "pg-migrator": "^1.0.5",
-    "prettier": "^1.13.5",
-    "prettifier": "^0.3.5",
-    "ts-jest": "^22.4.6",
-    "tslint": "^5.10.0",
-    "tslint-config-prettier": "^1.13.0",
-    "typescript": "^2.9.2",
-    "webpack": "^4.12.0"
+    "prettier": "^1.13.7"
   },
   "prettier": {
     "trailingComma": "es5"
