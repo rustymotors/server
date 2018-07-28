@@ -18,7 +18,7 @@ const crypto = require('crypto');
 const { logger } = require('./logger');
 const packet = require('./packet');
 
-const database = require('../lib/database/db');
+const pool = require('../lib/database');
 
 /**
  * Handle a request to connect to a game server packet
@@ -82,13 +82,26 @@ function encryptCmd(con, cypherCmd) {
 }
 
 /**
+ * Fetch session key from database based on remote address
+ * @param {string} remoteAddress
+ */
+async function fetchSessionKeyByConnectionId(connectionId) {
+  return pool.connect().then(
+    pool.query(
+      'SELECT session_key, s_key FROM sessions WHERE connection_id = $1',
+      [connectionId],
+    ),
+  ).catch((e) => { logger.error(`Unable to fetch session key for connection id: ${connectionId}: `, e); });
+}
+
+/**
  * Takes a plaintext command packet, encrypts it, and sends it across the connection's socket
  * @param {Connection} con
  * @param {Buffer} data
  */
 async function sendCommand(con, data) {
   const { id } = con;
-  const keys = await database.fetchSessionKeyByConnectionId(id);
+  const keys = await fetchSessionKeyByConnectionId(id);
   const s = con;
 
   // Create the cypher and decipher only if not already set
