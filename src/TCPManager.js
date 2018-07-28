@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const database = require('../lib/database/db');
+const pool = require('../lib/database');
 const ClientConnectMsg = require('./ClientConnectMsg');
 const lobby = require('./lobby');
 const { logger } = require('./logger');
@@ -59,6 +59,19 @@ function MSG_STRING(msgID) {
   }
 }
 
+/**
+ * Fetch session key from database based on remote address
+ * @param {string} remoteAddress
+ */
+async function fetchSessionKeyByConnectionId(connectionId) {
+  return pool.connect().then(
+    pool.query(
+      'SELECT session_key, s_key FROM sessions WHERE connection_id = $1',
+      [connectionId],
+    ),
+  ).catch((e) => { logger.error(`Unable to fetch session key for connection id: ${connectionId}: `, e); });
+}
+
 async function ClientConnect(con, node) {
   const { id } = con;
   /**
@@ -71,7 +84,7 @@ async function ClientConnect(con, node) {
 
   logger.debug(`Looking up the session key for ${con.id}...`);
   try {
-    const res = await database.fetchSessionKeyByConnectionId(id);
+    const res = await fetchSessionKeyByConnectionId(id);
     logger.warn('Session Key: ', res.s_key);
 
     const connectionWithKey = con;
