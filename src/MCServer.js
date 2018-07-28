@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const database = require('../lib/database');
+const database = require('../lib/database/db');
 const { ConnectionMgr } = require('./connectionMgr');
 const { startTCPListener } = require('./listenerThread');
 const { logger } = require('./logger');
