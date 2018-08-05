@@ -20,10 +20,40 @@ const { Connection } = require('./Connection');
 const { logger } = require('./logger');
 const { defaultHandler } = require('./TCPManager');
 
+/**
+ * Check incoming data and route it to the correct handler based on localPort
+ * @param {String} id
+ * @param {Buffer} data
+ */
+async function processData(rawPacket, config) {
+  const { remoteAddress, localPort, data } = rawPacket;
+  // logger.info(`Connection Manager: Got data from ${remoteAddress} on
+  //   localPort ${localPort}`, data);
+
+  switch (localPort) {
+    case 8226:
+      return loginDataHandler(rawPacket, config);
+    case 8228:
+      return personaDataHandler(rawPacket);
+    case 7003:
+      return defaultHandler(rawPacket);
+    case 43300:
+      return defaultHandler(rawPacket);
+    default:
+      logger.error(
+        `[connectionMgr] No known handler for localPort ${localPort}, unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.`,
+      );
+      logger.info('[connectionMgr] Data was: ', data.toString('hex'));
+      process.exit(1);
+      return null;
+  }
+}
+
 class ConnectionMgr {
   constructor() {
     this.connections = [];
     this.newConnectionId = 1;
+    this.processData = processData
     return this;
   }
 
@@ -110,35 +140,11 @@ class ConnectionMgr {
   dumpConnections() {
     return this.connections;
   }
+
 }
 
-/**
- * Check incoming data and route it to the correct handler based on localPort
- * @param {String} id
- * @param {Buffer} data
- */
-async function processData(rawPacket) {
-  const { remoteAddress, localPort, data } = rawPacket;
-  // logger.info(`Connection Manager: Got data from ${remoteAddress} on
-  //   localPort ${localPort}`, data);
 
-  switch (localPort) {
-    case 8226:
-      return loginDataHandler(rawPacket);
-    case 8228:
-      return personaDataHandler(rawPacket);
-    case 7003:
-      return defaultHandler(rawPacket);
-    case 43300:
-      return defaultHandler(rawPacket);
-    default:
-      logger.error(
-        `[connectionMgr] No known handler for localPort ${localPort}, unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.`,
-      );
-      logger.info('[connectionMgr] Data was: ', data.toString('hex'));
-      process.exit(1);
-      return null;
-  }
-}
 
-module.exports = { ConnectionMgr, processData };
+
+
+module.exports = { ConnectionMgr };
