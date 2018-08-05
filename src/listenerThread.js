@@ -15,13 +15,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const net = require('net');
-const { ConnectionMgr, processData } = require('./connectionMgr');
 const { logger } = require('./logger');
 const { sendPacketOkLogin } = require('./TCPManager');
 
-async function onData(data, connection) {
+async function onData(data, connection, config) {
   try {
-    const { localPort, remoteAddress } = connection.socket;
+    const { localPort, remoteAddress } = connection.sock;
     const rawPacket = {
       connection,
       data,
@@ -35,15 +34,15 @@ async function onData(data, connection) {
       rawPacket.data.toString('hex'),
     );
 
-    const newConnection = await processData(rawPacket);
-    ConnectionMgr.updateConnectionById(connection.id, newConnection);
+    const newConnection = await connection.mgr.processData(rawPacket, config);
+    connection.mgr.updateConnectionById(connection.id, newConnection);
   } catch (error) {
     logger.error(error);
     logger.error(error.stack);
     process.exit();
   }
 }
-function listener(socket, connectionMgr) {
+function listener(socket, connectionMgr, config) {
   // Received a new connection
   // Turn it into a connection object
   const connection = connectionMgr.findOrNewConnection(socket);
@@ -62,7 +61,7 @@ function listener(socket, connectionMgr) {
       `[listenerThread] Client ${remoteAddress} disconnected from port ${localPort}`,
     );
   });
-  socket.on('data', (data) => { onData(data, connection); });
+  socket.on('data', (data) => { onData(data, connection, config); });
   socket.on('error', (err) => {
     if (err.code !== 'ECONNRESET') {
       logger.error(err.message);
@@ -77,9 +76,9 @@ function listener(socket, connectionMgr) {
  * @param {Int} localPort
  * @param {connectionMgr} connectionMgr
  */
-async function startTCPListener(localPort, connectionMgr) {
+async function startTCPListener(localPort, connectionMgr, config) {
   net
-    .createServer((socket) => { listener(socket, connectionMgr); })
+    .createServer((socket) => { listener(socket, connectionMgr, config); })
     .listen({ port: localPort, host: '0.0.0.0' }, () => {
       logger.info(`[listenerThread] Listener started on port ${localPort}`);
     });

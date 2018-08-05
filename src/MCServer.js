@@ -26,7 +26,7 @@ const connectionMgr = new ConnectionMgr();
  * @param {Function} callback
  */
 
-async function startServers() {
+async function startServers(config) {
   logger.info('Starting the listening sockets...');
   const tcpPortList = [
     6660,
@@ -55,7 +55,7 @@ async function startServers() {
     9014,
   ];
 
-  await tcpPortList.map(port => startTCPListener(port, connectionMgr));
+  await tcpPortList.map(port => startTCPListener(port, connectionMgr, config));
   logger.info('Listening sockets create successfully.');
 }
 

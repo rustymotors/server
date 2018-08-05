@@ -15,10 +15,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const pool = require('../lib/database');
-const ClientConnectMsg = require('./ClientConnectMsg');
+const { ClientConnectMsg } = require('./ClientConnectMsg');
 const lobby = require('./lobby');
 const { logger } = require('./logger');
-const MessageNode = require('./MessageNode');
+const { MessageNode } = require('./MessageNode');
 const packet = require('./packet');
 
 function socketWriteIfOpen(conn, node) {
@@ -64,12 +64,10 @@ function MSG_STRING(msgID) {
  * @param {string} remoteAddress
  */
 async function fetchSessionKeyByConnectionId(connectionId) {
-  return pool.connect().then(
-    pool.query(
-      'SELECT session_key, s_key FROM sessions WHERE connection_id = $1',
-      [connectionId],
-    ),
-  ).catch((e) => { logger.error(`Unable to fetch session key for connection id: ${connectionId}: `, e); });
+  return pool.query('SELECT session_key, s_key FROM sessions WHERE connection_id = $1',
+    [connectionId])
+    .then(res => res.rows[0])
+    .catch(e => setImmediate(() => { logger.error(`Unable to fetch session key for connection id: ${connectionId}: `, e); }))
 }
 
 async function ClientConnect(con, node) {
@@ -197,7 +195,6 @@ async function MessageReceived(msg, con) {
         'Message buffer after decrypting:    ',
         deciphered.toString('hex'),
       );
-      // console.log(`After mState: ${newConnection.enc.getSBox()}`);
 
       logger.debug(
         '===================================================================',
