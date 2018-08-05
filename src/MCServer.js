@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const database = require('../lib/database');
 const { ConnectionMgr } = require('./connectionMgr');
 const { startTCPListener } = require('./listenerThread');
 const { logger } = require('./logger');
+const pool = require('../lib/database');
 
 const connectionMgr = new ConnectionMgr();
 
@@ -26,7 +26,7 @@ const connectionMgr = new ConnectionMgr();
  * @param {Function} callback
  */
 
-async function startServers() {
+async function startServers(config) {
   logger.info('Starting the listening sockets...');
   const tcpPortList = [
     6660,
@@ -55,15 +55,30 @@ async function startServers() {
     9014,
   ];
 
-  await tcpPortList.map(port => startTCPListener(port, connectionMgr));
+  await tcpPortList.map(port => startTCPListener(port, connectionMgr, config));
   logger.info('Listening sockets create successfully.');
+}
+
+/**
+ * Create the sessions database table if it does not exist
+ * @param {Function} callback
+ */
+async function createDB() {
+  return pool.connect().then(pool.query(
+    `CREATE TABLE IF NOT EXISTS sessions (customer_id INTEGER NOT NULL UNIQUE, 
+    session_key TEXT, s_key TEXT, context_id TEXT, connection_id INTEGER)`,
+    [],
+  )).catch((e) => {
+    logger.error(`Error connecting to database: ${e}`);
+    process.exit(1);
+  });
 }
 
 function run(configurationFile) {
   // Connect to database
   // Start the server listeners
   startServers(configurationFile)
-    .then(database.createDB)
+    .then(createDB)
     .catch((err) => {
       throw err;
     });
