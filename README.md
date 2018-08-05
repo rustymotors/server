@@ -15,32 +15,11 @@ I'm writing this from scratch. While I'm proud of what I've done, I'm hitting th
 
 ## Server Setup
 
-### Ports needed to be forwarded
-
-* 43300
-* 8226
-* 8228
-* 7003
-
-### Generate SSL cert and key
-
-```bash
-./scripts/make_certs.sh
-```
+* See [./docs/server.md]
 
 ## Client Setup
 
-### Client/Server Encryption Setup
-
-* Copy the pub.key file from `https://<server>/key` to the client game directory. Overwrite when prompted.
-
-* Download the SSL cert from `https://<server>/cert` and add it to the Trusted Root Store.
-
-    You can find help doing this here <http://stackoverflow.com/a/2955546/335583>
-
-### Delete the movies
-
-`<game dir>\Data\Movies`
+* See [./docs/client.md]
 
 ## Started
 
