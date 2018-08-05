@@ -15,11 +15,11 @@ I'm writing this from scratch. While I'm proud of what I've done, I'm hitting th
 
 ## Server Setup
 
-* See [./docs/server.md]
+* See [server docs](./docs/server.md)
 
 ## Client Setup
 
-* See [./docs/client.md]
+* See [client docs](./docs/client.md)
 
 ## Started
 
