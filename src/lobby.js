@@ -89,7 +89,7 @@ async function fetchSessionKeyByConnectionId(connectionId) {
   return pool.query('SELECT session_key, s_key FROM sessions WHERE connection_id = $1',
     [connectionId])
     .then(res => res.rows[0])
-    .catch(e => setImmediate(() => { logger.error(`Unable to fetch session key for connection id: ${connectionId}: `, e); }))
+    .catch(e => setImmediate(() => { logger.error(`Unable to fetch session key for connection id: ${connectionId}: `, e); }));
 }
 
 /**
@@ -100,7 +100,7 @@ async function fetchSessionKeyByConnectionId(connectionId) {
 async function sendCommand(con, data) {
   const { id } = con;
   const keys = await fetchSessionKeyByConnectionId(id);
-  logger.debug(keys)
+  logger.debug(keys);
   const s = con;
 
   // Create the cypher and decipher only if not already set

@@ -53,7 +53,7 @@ class ConnectionMgr {
   constructor() {
     this.connections = [];
     this.newConnectionId = 1;
-    this.processData = processData
+    this.processData = processData;
     return this;
   }
 
@@ -140,11 +140,7 @@ class ConnectionMgr {
   dumpConnections() {
     return this.connections;
   }
-
 }
-
-
-
 
 
 module.exports = { ConnectionMgr };
