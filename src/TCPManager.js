@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+const util = require('util');
 const pool = require('../lib/database');
-const { ClientConnectMsg } = require('./ClientConnectMsg');
+const { ClientConnectMsg, LoginMsg, MessageNode } = require('./messageTypes');
 const lobby = require('./lobby');
 const { logger } = require('./logger');
-const { MessageNode } = require('./MessageNode');
 const packet = require('./packet');
 
 function socketWriteIfOpen(conn, node) {
@@ -52,8 +52,15 @@ function socketWriteIfOpen(conn, node) {
  */
 function MSG_STRING(msgID) {
   switch (msgID) {
+    case 105:
+      return 'MC_LOGIN';
+    case 213:
+      return 'MC_LOGIN_COMPLETE';
+    case 324:
+      return 'MC_GET_LOBBIES';
     case 438:
       return 'MC_CLIENT_CONNECT_MSG';
+
     default:
       return 'Unknown';
   }
@@ -70,6 +77,33 @@ async function fetchSessionKeyByConnectionId(connectionId) {
     .catch(e => setImmediate(() => { logger.error(`Unable to fetch session key for connection id: ${connectionId}: `, e); }));
 }
 
+async function Login(con, node) {
+  /**
+   * Let's turn it into a LoginMsg
+   */
+  const newMsg = new LoginMsg(node.buffer);
+
+  // Update the appId
+  newMsg.appId = con.appId
+
+  newMsg.dumpPacket()
+
+  // Create new response packet
+  // TODO: Do this cleaner
+  const rPacket = new MessageNode(node.rawBuffer);
+  // rPacket.buffer = connectionWithKey.enc.out.processString(node.buffer);
+  rPacket.setMsgNo(101);
+  rPacket.setBuffer(Buffer.from([0x65, 0x00, 0xb6, 0x01]));
+  logger.debug('Dumping response...');
+  rPacket.dumpPacket();
+
+  // write the socket
+  socketWriteIfOpen(con, rPacket);
+
+  return con;
+}
+
+
 async function ClientConnect(con, node) {
   const { id } = con;
   /**
@@ -77,8 +111,6 @@ async function ClientConnect(con, node) {
    */
   // Not currently using this
   const newMsg = new ClientConnectMsg(node.buffer);
-
-  newMsg.dumpPacket();
 
   logger.debug(`Looking up the session key for ${con.id}...`);
   try {
@@ -94,6 +126,9 @@ async function ClientConnect(con, node) {
 
       const strKey = Buffer.from(sessionKey, 'hex');
       connectionWithKey.setEncryptionKey(strKey.slice(0, 16));
+
+      // Update the connection's appId
+      connectionWithKey.appId = newMsg.appId
 
       // Log the session key
       logger.debug(
@@ -147,11 +182,18 @@ async function ProcessInput(node, conn) {
       logger.error(error);
       throw error;
     }
+  } else if (currentMsgString === 'MC_LOGIN') {
+    try {
+      const loginMsg = await Login(conn, node);
+      return loginMsg;
+    } catch (error) {
+      logger.error(error);
+      throw error;
+    }
   } else {
-    // We should not do this
-    // FIXME: WE SHOULD NOT DO THIS
     logger.error(`Message Number Not Handled: ${currentMsgNo} (${currentMsgString})
       conID: ${node.toFrom}  PersonaID: ${node.appId}`);
+    logger.debug(util.inspect(node))
     process.exit();
   }
 }
@@ -200,10 +242,8 @@ async function MessageReceived(msg, con) {
         '===================================================================',
       );
 
-      // This isn't real.
-      socketWriteIfOpen(con, msg);
-
-      return newConnection;
+      // Update the MessageNode with the deciphered buffer
+      msg.updateBuffer(deciphered)
     } catch (e) {
       logger.error(
         `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}`,

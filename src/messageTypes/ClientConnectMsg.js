@@ -14,19 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { logger } = require('./logger');
+const { logger } = require('../logger');
+const { MessageNode } = require('./MessageNode');
 
-class ClientConnectMsg {
+class ClientConnectMsg extends MessageNode {
   constructor(buffer) {
-    this.msgId = buffer.readInt16LE(0);
+    super(buffer)
 
     this.customerId = buffer.readInt32LE(2);
     this.personaId = buffer.readInt32LE(6);
 
+    // Set the appId to the Persona Id
+    this.appId = this.personaId;
+
+    this.customerId = buffer.readInt32LE(2);
     this.custName = buffer.slice(10, 41).toString();
     this.personaName = buffer.slice(42, 73).toString();
     this.mcVersion = buffer.slice(74);
-    this.rawBuffer = buffer;
+
+    this.dumpPacket()
   }
 
   /**
@@ -34,7 +40,7 @@ class ClientConnectMsg {
    */
   dumpPacket() {
     logger.info('[ClientConnectMsg]======================================');
-    logger.debug('MsgId:       ', this.msgId.toString());
+    logger.debug('MsgNo:       ', this.msgNo.toString());
     logger.debug('customerId:  ', this.customerId.toString());
     logger.debug('personaId:   ', this.personaId.toString());
     logger.debug('custName:    ', this.custName);
