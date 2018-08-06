@@ -14,19 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { logger } = require('./logger');
+const { logger } = require('../logger');
 const { MsgHead } = require('./MsgHead');
 
 class MessageNode {
   constructor(packet) {
-    this.toFrom = Buffer.from([0x00, 0x00]);
+    this.toFrom = 0;
 
-    this.appId = Buffer.from([0x00, 0x00]);
+    this.appId = 0;
 
     this.setBuffer(packet);
     this.setMsgHeader(packet);
 
     this.rawBuffer = packet;
+
+    this.personaId = packet.readInt32LE(6);
 
     if (packet.length <= 6) {
       throw new Error(`Packet too short!: ${packet.toString()}`);
@@ -42,6 +44,9 @@ class MessageNode {
         throw error;
       }
     }
+
+    // Set the appId to the Persona Id
+    this.appId = this.personaId;
 
     // DWORD seq; sequenceNo
     this.seq = packet.readInt32LE(6);
@@ -67,6 +72,11 @@ class MessageNode {
 
   setBuffer(packet) {
     this.buffer = packet.slice(11);
+  }
+
+  updateBuffer(buffer) {
+    this.buffer = buffer;
+    this.msgNo = this.buffer.readInt16LE(0);
   }
 
   BaseMsgHeader(packet) {
