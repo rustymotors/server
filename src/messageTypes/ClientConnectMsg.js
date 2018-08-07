@@ -15,11 +15,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const { logger } = require('../logger');
-const { MessageNode } = require('./MessageNode');
 
-class ClientConnectMsg extends MessageNode {
+class ClientConnectMsg {
   constructor(buffer) {
-    super(buffer)
+
+    try {
+      this.msgNo = buffer.readInt16LE(0);
+    } catch (error) {
+      if (error instanceof RangeError) {
+        // This is likeley not an MCOTS packet, ignore
+      } else {
+        logger.error(buffer.toString('hex'));
+        throw error;
+      }
+    }
 
     this.customerId = buffer.readInt32LE(2);
     this.personaId = buffer.readInt32LE(6);
@@ -31,8 +40,7 @@ class ClientConnectMsg extends MessageNode {
     this.custName = buffer.slice(10, 41).toString();
     this.personaName = buffer.slice(42, 73).toString();
     this.mcVersion = buffer.slice(74);
-
-    this.dumpPacket()
+    return this;
   }
 
   /**
@@ -46,7 +54,6 @@ class ClientConnectMsg extends MessageNode {
     logger.debug('custName:    ', this.custName);
     logger.debug('personaName: ', this.personaName);
     logger.debug('mcVersion:   ', this.mcVersion.toString('hex'));
-    logger.debug('Raw Buffer:   ', this.rawBuffer.toString('hex'));
     logger.info('[ClientConnectMsg]======================================');
   }
 }
