@@ -14,13 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const util = require('util');
 const { logger } = require('../logger');
-const { MessageNode } = require('./MessageNode');
 
-class LoginMsg extends MessageNode {
+class LoginMsg {
     constructor(buffer) {
-        super(buffer)
+
+        try {
+            this.msgNo = buffer.readInt16LE(0);
+        } catch (error) {
+            if (error instanceof RangeError) {
+                // This is likeley not an MCOTS packet, ignore
+            } else {
+                logger.error(buffer.toString('hex'));
+                throw error;
+            }
+        }
 
         this.customerId = buffer.readInt32LE(2);
         this.personaId = buffer.readInt32LE(6);
@@ -32,9 +40,7 @@ class LoginMsg extends MessageNode {
 
         this.version = buffer.slice(34).toString();
 
-        logger.debug(util.inspect(this))
-
-        this.dumpPacket()
+        return this;
     }
 
     /**

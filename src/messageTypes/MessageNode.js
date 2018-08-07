@@ -28,8 +28,6 @@ class MessageNode {
 
     this.rawBuffer = packet;
 
-    this.personaId = packet.readInt32LE(6);
-
     if (packet.length <= 6) {
       throw new Error(`Packet too short!: ${packet.toString()}`);
     }
@@ -45,13 +43,16 @@ class MessageNode {
       }
     }
 
-    // Set the appId to the Persona Id
-    this.appId = this.personaId;
+
 
     // DWORD seq; sequenceNo
     this.seq = packet.readInt32LE(6);
 
     this.flags = packet.readInt8(10);
+  }
+
+  setAppId(appId) {
+    this.appId = appId
   }
 
   setMsgNo(newMsgNo) {

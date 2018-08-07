@@ -78,15 +78,17 @@ async function fetchSessionKeyByConnectionId(connectionId) {
 }
 
 async function Login(con, node) {
+  const loginMsg = node
   /**
    * Let's turn it into a LoginMsg
    */
-  const newMsg = new LoginMsg(node.buffer);
+  loginMsg.data = new LoginMsg(node.buffer);
 
   // Update the appId
-  newMsg.appId = con.appId
+  loginMsg.appId = con.appId
 
-  newMsg.dumpPacket()
+  logger.debug(util.inspect(loginMsg))
+  loginMsg.data.dumpPacket()
 
   // Create new response packet
   // TODO: Do this cleaner
@@ -176,21 +178,22 @@ async function ProcessInput(node, conn) {
 
   if (currentMsgString === 'MC_CLIENT_CONNECT_MSG') {
     try {
-      const clientConnectMsg = await ClientConnect(conn, node);
-      return clientConnectMsg;
+      const newConnection = await ClientConnect(conn, node);
+      return newConnection;
     } catch (error) {
       logger.error(error);
       throw error;
     }
   } else if (currentMsgString === 'MC_LOGIN') {
     try {
-      const loginMsg = await Login(conn, node);
-      return loginMsg;
+      await Login(conn, node)
+      return conn;
     } catch (error) {
       logger.error(error);
       throw error;
     }
   } else {
+    node.setAppId(conn.appId)
     logger.error(`Message Number Not Handled: ${currentMsgNo} (${currentMsgString})
       conID: ${node.toFrom}  PersonaID: ${node.appId}`);
     logger.debug(util.inspect(node))
