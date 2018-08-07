@@ -24,4 +24,4 @@ This assumes you know the basics of checking out a git repo. If you don't, pleas
 
 ### Running
 
-* `docker-compose up`
+* `npm start`
