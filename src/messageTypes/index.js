@@ -15,7 +15,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const { ClientConnectMsg } = require('./ClientConnectMsg');
+const { GetLobbiesListMsg } = require('./GetLobbiesListMsg');
 const { LoginMsg } = require('./LoginMsg');
 const { MessageNode } = require('./MessageNode');
 
-module.exports = { ClientConnectMsg, LoginMsg, MessageNode }
+module.exports = {
+  ClientConnectMsg, GetLobbiesListMsg, LoginMsg, MessageNode,
+};

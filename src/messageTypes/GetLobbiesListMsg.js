@@ -16,7 +16,7 @@
 
 const { logger } = require('../logger');
 
-class ClientConnectMsg {
+class GetLobbiesListMsg {
   constructor(buffer) {
     try {
       this.msgNo = buffer.readInt16LE(0);
@@ -32,29 +32,19 @@ class ClientConnectMsg {
     this.customerId = buffer.readInt32LE(2);
     this.personaId = buffer.readInt32LE(6);
 
-    // Set the appId to the Persona Id
-    this.appId = this.personaId;
-
-    this.customerId = buffer.readInt32LE(2);
-    this.custName = buffer.slice(10, 41).toString();
-    this.personaName = buffer.slice(42, 73).toString();
-    this.mcVersion = buffer.slice(74);
     return this;
   }
 
   /**
-   * dumpPacket
-   */
+    * dumpPacket
+    */
   dumpPacket() {
-    logger.info('[ClientConnectMsg]======================================');
+    logger.info('[LobbiesListMsg]======================================');
     logger.debug('MsgNo:       ', this.msgNo.toString());
     logger.debug('customerId:  ', this.customerId.toString());
     logger.debug('personaId:   ', this.personaId.toString());
-    logger.debug('custName:    ', this.custName);
-    logger.debug('personaName: ', this.personaName);
-    logger.debug('mcVersion:   ', this.mcVersion.toString('hex'));
-    logger.info('[ClientConnectMsg]======================================');
+    logger.info('[LobbiesListMsg]======================================');
   }
 }
 
-module.exports = { ClientConnectMsg };
+module.exports = { GetLobbiesListMsg };

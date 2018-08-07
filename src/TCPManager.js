@@ -16,7 +16,9 @@
 
 const util = require('util');
 const pool = require('../lib/database');
-const { ClientConnectMsg, LoginMsg, MessageNode } = require('./messageTypes');
+const {
+  ClientConnectMsg, GetLobbiesListMsg, LoginMsg, MessageNode,
+} = require('./messageTypes');
 const lobby = require('./lobby');
 const { logger } = require('./logger');
 const packet = require('./packet');
@@ -58,6 +60,8 @@ function MSG_STRING(msgID) {
       return 'MC_LOGIN_COMPLETE';
     case 324:
       return 'MC_GET_LOBBIES';
+    case 325:
+      return 'MC_LOBBIES';
     case 438:
       return 'MC_CLIENT_CONNECT_MSG';
 
@@ -78,17 +82,17 @@ async function fetchSessionKeyByConnectionId(connectionId) {
 }
 
 async function Login(con, node) {
-  const loginMsg = node
+  const loginMsg = node;
   /**
    * Let's turn it into a LoginMsg
    */
   loginMsg.data = new LoginMsg(node.buffer);
 
   // Update the appId
-  loginMsg.appId = con.appId
+  loginMsg.appId = con.appId;
 
-  logger.debug(util.inspect(loginMsg))
-  loginMsg.data.dumpPacket()
+  logger.debug(util.inspect(loginMsg));
+  loginMsg.data.dumpPacket();
 
   // Create new response packet
   // TODO: Do this cleaner
@@ -97,6 +101,36 @@ async function Login(con, node) {
   rPacket.setMsgNo(101);
   rPacket.setBuffer(Buffer.from([0x65, 0x00, 0xb6, 0x01]));
   logger.debug('Dumping response...');
+  rPacket.dumpPacket();
+
+  // write the socket
+  socketWriteIfOpen(con, rPacket);
+
+  return con;
+}
+
+async function GetLobbies(con, node) {
+  const lobbiesListMsg = node;
+  /**
+   * Let's turn it into a LoginMsg
+   */
+  lobbiesListMsg.data = new GetLobbiesListMsg(node.buffer);
+
+  // Update the appId
+  lobbiesListMsg.appId = con.appId;
+
+  logger.debug(util.inspect(lobbiesListMsg));
+  lobbiesListMsg.data.dumpPacket();
+
+  // Create new response packet
+  // TODO: Do this cleaner
+  const rPacket = new MessageNode(node.rawBuffer);
+  // Set response msgNo to 325 = MC_LOBBIES
+  rPacket.setMsgNo(325);
+  rPacket.setBuffer(Buffer.from([0x65, 0x00, 0x45, 0x01]));
+  logger.debug('Dumping response...');
+  // Encrypt the packet
+  rPacket.buffer = con.enc.out.processString(node.buffer);
   rPacket.dumpPacket();
 
   // write the socket
@@ -130,7 +164,7 @@ async function ClientConnect(con, node) {
       connectionWithKey.setEncryptionKey(strKey.slice(0, 16));
 
       // Update the connection's appId
-      connectionWithKey.appId = newMsg.appId
+      connectionWithKey.appId = newMsg.appId;
 
       // Log the session key
       logger.debug(
@@ -186,17 +220,25 @@ async function ProcessInput(node, conn) {
     }
   } else if (currentMsgString === 'MC_LOGIN') {
     try {
-      await Login(conn, node)
+      await Login(conn, node);
+      return conn;
+    } catch (error) {
+      logger.error(error);
+      throw error;
+    }
+  } else if (currentMsgString === 'MC_GET_LOBBIES') {
+    try {
+      await GetLobbies(conn, node);
       return conn;
     } catch (error) {
       logger.error(error);
       throw error;
     }
   } else {
-    node.setAppId(conn.appId)
+    node.setAppId(conn.appId);
     logger.error(`Message Number Not Handled: ${currentMsgNo} (${currentMsgString})
       conID: ${node.toFrom}  PersonaID: ${node.appId}`);
-    logger.debug(util.inspect(node))
+    logger.debug(util.inspect(node));
     process.exit();
   }
 }
@@ -246,7 +288,7 @@ async function MessageReceived(msg, con) {
       );
 
       // Update the MessageNode with the deciphered buffer
-      msg.updateBuffer(deciphered)
+      msg.updateBuffer(deciphered);
     } catch (e) {
       logger.error(
         `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}`,
