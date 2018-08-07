@@ -6,7 +6,7 @@
   "scripts": {
     "prestart": "eslint src --fix",
     "pretest": "eslint src --fix",
-    "start": "node src/server.js",
+    "start": "docker-compose up --build --abort-on-container-exit",
     "test": "jest --all",
     "licence-check": "license-checker --json > ./data/licenses.json"
   },
