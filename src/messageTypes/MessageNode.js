@@ -44,7 +44,6 @@ class MessageNode {
     }
 
 
-
     // DWORD seq; sequenceNo
     this.seq = packet.readInt32LE(6);
 
@@ -52,7 +51,7 @@ class MessageNode {
   }
 
   setAppId(appId) {
-    this.appId = appId
+    this.appId = appId;
   }
 
   setMsgNo(newMsgNo) {
