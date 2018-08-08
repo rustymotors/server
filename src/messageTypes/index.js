@@ -16,9 +16,10 @@
 
 const { ClientConnectMsg } = require('./ClientConnectMsg');
 const { GetLobbiesListMsg } = require('./GetLobbiesListMsg');
+const { LobbyMsg } = require('./LobbyMsg');
 const { LoginMsg } = require('./LoginMsg');
 const { MessageNode } = require('./MessageNode');
 
 module.exports = {
-  ClientConnectMsg, GetLobbiesListMsg, LoginMsg, MessageNode,
+  ClientConnectMsg, GetLobbiesListMsg, LobbyMsg, LoginMsg, MessageNode,
 };
