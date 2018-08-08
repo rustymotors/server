@@ -17,7 +17,7 @@
 const util = require('util');
 const pool = require('../lib/database');
 const {
-  ClientConnectMsg, GetLobbiesListMsg, LoginMsg, MessageNode,
+  ClientConnectMsg, GetLobbiesListMsg, LobbyMsg, LoginMsg, MessageNode,
 } = require('./messageTypes');
 const lobby = require('./lobby');
 const { logger } = require('./logger');
@@ -123,6 +123,10 @@ async function GetLobbies(con, node) {
   lobbiesListMsg.data.dumpPacket();
 
   // Create new response packet
+
+  const lobbyMsg = new LobbyMsg(1, 0, []);
+  lobbyMsg.dumpPacket();
+
   // TODO: Do this cleaner
   const rPacket = new MessageNode(node.rawBuffer);
   // Set response msgNo to 325 = MC_LOBBIES
