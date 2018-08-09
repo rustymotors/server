@@ -18,23 +18,6 @@ const { logger } = require('../logger');
 
 class LobbyInfo {
 
-
-    // DWORD	turfLength;
-    // DWORD	startSlice;
-    // DWORD	endSlice;
-    // float	dragStageLeft;
-    // float	dragStageRight;
-    // DWORD	dragStagingSlice;
-    // float	gridSpreadFactor;
-    // WORD    linear;
-    // WORD    numplayersmin;
-    // WORD    numplayersmax;
-    // WORD    numplayersdefault;
-    // WORD    bnumplayersenabled;
-    // WORD    numlapsmin;
-    // WORD    numlapsmax;
-    // WORD    numlapsdefault;
-    // WORD    bnumlapsenabled;
     // WORD    numroundsmin;
     // WORD    numroundsmax;
     // WORD    numroundsdefault;
@@ -97,7 +80,7 @@ class LobbyInfo {
     // WORD	teamtrialnumlaps;	// Team Trials Number of Laps
     // DWORD	teamtrialbaseTUP;	// Team Trials Base Time Under Par
     // float	raceCashFactor;
-    constructor(lobbyId, racetypeId, turfId, NPSRiffName, eTurfName, clientArt, elementId) {
+    constructor(lobbyId, racetypeId, turfId, NPSRiffName, eTurfName, clientArt, elementId, turfLength) {
         // DWORD	lobbyID;
         this.lobbyId = lobbyId
         // DWORD	raceTypeID;
@@ -113,6 +96,38 @@ class LobbyInfo {
         this.clientArt = clientArt
         // DWORD	elementID;
         this.elementId = elementId
+        // DWORD	turfLength;
+        this.turfLength = this.turfLength
+        // DWORD	startSlice;
+        this.startSlice = startSlice
+        // DWORD	endSlice;
+        this.endSlice = endSlice
+        // float	dragStageLeft;
+        this.dragStageLeft = dragStageLeft
+        // float	dragStageRight;
+        this.dragStageRight = dragStageRight
+        // DWORD	dragStagingSlice;
+        this.dragStagingSlice = dragStagingSlice
+        // float	gridSpreadFactor;
+        this.gridSpreadFactor = gridSpreadFactor
+        // WORD    linear;
+        this.linear = linear
+        // WORD    numplayersmin;
+        this.numplayersmin = numplayersmin
+        // WORD    numplayersmax;
+        this.numplayersmax = numplayersmax
+        // WORD    numplayersdefault;
+        this.numplayersdefault = numplayersdefault
+        // WORD    bnumplayersenabled;
+        this.bnumplayersenabled = bnumplayersenabled
+        // WORD    numlapsmin;
+        this.numlapsmin = numlapsmin
+        // WORD    numlapsmax;
+        this.numlapsmax = numlapsmax
+        // WORD    numlapsdefault;
+        this.numlapsdefault = numlapsdefault
+        // WORD    bnumlapsenabled;
+        this.bnumlapsenabled = bnumlapsenabled
     }
 }
 
