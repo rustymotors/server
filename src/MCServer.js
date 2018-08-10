@@ -17,7 +17,7 @@
 const { ConnectionMgr } = require('./connectionMgr');
 const { startTCPListener } = require('./listenerThread');
 const { logger } = require('./logger');
-const pool = require('../lib/database');
+// const pool = require('../lib/database');
 
 const connectionMgr = new ConnectionMgr();
 
@@ -59,26 +59,10 @@ async function startServers(config) {
   logger.info('Listening sockets create successfully.');
 }
 
-/**
- * Create the sessions database table if it does not exist
- * @param {Function} callback
- */
-async function createDB() {
-  return pool.connect().then(pool.query(
-    `CREATE TABLE IF NOT EXISTS sessions (customer_id INTEGER NOT NULL UNIQUE, 
-    session_key TEXT, s_key TEXT, context_id TEXT, connection_id INTEGER)`,
-    [],
-  )).catch((e) => {
-    logger.error(`Error connecting to database: ${e}`);
-    process.exit(1);
-  });
-}
-
 function run(configurationFile) {
   // Connect to database
   // Start the server listeners
   startServers(configurationFile)
-    .then(createDB)
     .catch((err) => {
       throw err;
     });
