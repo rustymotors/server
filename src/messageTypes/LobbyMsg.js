@@ -17,25 +17,8 @@
 const { logger } = require('../logger');
 
 class LobbyInfo {
-  // WORD    numroundsmin;
-  // WORD    numroundsmax;
-  // WORD    numroundsdefault;
-  // WORD    bnumroundsenabled;
-  // WORD    bweatherdefault;
-  // WORD    bweatherenabled;
-  // WORD    bnightdefault;
-  // WORD    bnightenabled;
-  // WORD    bbackwarddefault;
-  // WORD    bbackwardenabled;
-  // WORD    btrafficdefault;
-  // WORD    btrafficenabled;
-  // WORD    bdamagedefault;
-  // WORD    bdamageenabled;
-  // WORD    baidefault;
-  // WORD    baienabled;
-  // char   topDog[MC_NAME_LENGTH]; // Also used for TimeTrial's "Last Weeks Champion"?
-  // char   turfOwner[MAX_CLUB_NAME_LENGTH+1];
-  // DWORD  qualifyingTime;
+
+
   // DWORD   clubNumPlayers;
   // DWORD   clubNumLaps;
   // DWORD   clubNumRounds;
@@ -79,57 +62,94 @@ class LobbyInfo {
   // WORD   teamtrialnumlaps;   // Team Trials Number of Laps
   // DWORD  teamtrialbaseTUP;   // Team Trials Base Time Under Par
   // float  raceCashFactor;
-  constructor(lobbyId, racetypeId, turfId, NPSRiffName, eTurfName, clientArt, elementId,
-    turfLength, startSlice, endSlice, dragStageLeft, dragStageRight, dragStagingSlice,
-    gridSpreadFactor, linear, numplayersmin, numplayersmax, numplayersdefault,
-    bnumplayersenabled, numlapsmin, numlapsmax, numlapsdefault, bnumlapsenabled) {
+  constructor(lobbyJson) {
     // DWORD    lobbyID;
-    this.lobbyId = lobbyId;
+    this.lobbyId = lobbyJson.lobbyId;
     // DWORD    raceTypeID;
-    this.racetypeId = racetypeId;
+    this.racetypeId = lobbyJson.racetypeId;
     // DWORD    turfID;
-    this.turfId = turfId;
+    this.turfId = lobbyJson.turfId;
 
     // char NPSRiffName[MC_MAX_NPS_RIFF_NAME]; // 32
-    this.NPSRiffName = NPSRiffName;
+    this.NPSRiffName = lobbyJson.NPSRiffName;
     // char eTurfName[256];
-    this.eTurfName = eTurfName;
+    this.eTurfName = lobbyJson.eTurfName;
     // char clientArt[11];
-    this.clientArt = clientArt;
+    this.clientArt = lobbyJson.clientArt;
     // DWORD    elementID;
-    this.elementId = elementId;
+    this.elementId = lobbyJson.elementId;
     // DWORD    turfLength;
-    this.turfLength = turfLength;
+    this.turfLength = lobbyJson.turfLength;
     // DWORD    startSlice;
-    this.startSlice = startSlice;
+    this.startSlice = lobbyJson.startSlice;
     // DWORD    endSlice;
-    this.endSlice = endSlice;
+    this.endSlice = lobbyJson.endSlice;
     // float    dragStageLeft;
-    this.dragStageLeft = dragStageLeft;
+    this.dragStageLeft = lobbyJson.dragStageLeft;
     // float    dragStageRight;
-    this.dragStageRight = dragStageRight;
+    this.dragStageRight = lobbyJson.dragStageRight;
     // DWORD    dragStagingSlice;
-    this.dragStagingSlice = dragStagingSlice;
+    this.dragStagingSlice = lobbyJson.dragStagingSlice;
     // float    gridSpreadFactor;
-    this.gridSpreadFactor = gridSpreadFactor;
+    this.gridSpreadFactor = lobbyJson.gridSpreadFactor;
     // WORD    linear;
-    this.linear = linear;
+    this.linear = lobbyJson.linear;
     // WORD    numplayersmin;
-    this.numplayersmin = numplayersmin;
+    this.numplayersmin = lobbyJson.numplayersmin;
     // WORD    numplayersmax;
-    this.numplayersmax = numplayersmax;
+    this.numplayersmax = lobbyJson.numplayersmax;
     // WORD    numplayersdefault;
-    this.numplayersdefault = numplayersdefault;
+    this.numplayersdefault = lobbyJson.numplayersdefault;
     // WORD    bnumplayersenabled;
-    this.bnumplayersenabled = bnumplayersenabled;
+    this.bnumplayersenabled = lobbyJson.bnumplayersenabled;
     // WORD    numlapsmin;
-    this.numlapsmin = numlapsmin;
+    this.numlapsmin = lobbyJson.numlapsmin;
     // WORD    numlapsmax;
-    this.numlapsmax = numlapsmax;
+    this.numlapsmax = lobbyJson.numlapsmax;
     // WORD    numlapsdefault;
-    this.numlapsdefault = numlapsdefault;
+    this.numlapsdefault = lobbyJson.numlapsdefault;
     // WORD    bnumlapsenabled;
-    this.bnumlapsenabled = bnumlapsenabled;
+    this.bnumlapsenabled = lobbyJson.bnumlapsenabled;
+    // WORD    numroundsmin;
+    this.numroundsmin = lobbyJson.numroundsmin
+    // WORD    numroundsmax;
+    this.numroundsmax = lobbyJson.numroundsmax
+    // WORD    numroundsdefault;
+    this.numroundsdefault = lobbyJson.numroundsdefault
+    // WORD    bnumroundsenabled;
+    this.bnumroundsenabled = lobbyJson.bnumroundsenabled
+    // WORD    bweatherdefault;
+    this.bweatherdefault = lobbyJson.bweatherdefault
+    // WORD    bweatherenabled;
+    this.bweatherenabled = lobbyJson.bweatherenabled
+    // WORD    bnightdefault;
+    this.bnightdefault = lobbyJson.bnightdefault
+    // WORD    bnightenabled;
+    this.bnightenabled = lobbyJson.bnightenabled
+    // WORD    bbackwarddefault;
+    this.bbackwarddefault = lobbyJson.bbackwarddefault
+    // WORD    bbackwardenabled;
+    this.bbackwardenabled = lobbyJson.bbackwardenabled
+    // WORD    btrafficdefault;
+    this.btrafficdefault = lobbyJson.btrafficdefault
+    // WORD    btrafficenabled;
+    this.btrafficenabled = lobbyJson.btrafficenabled
+    // WORD    bdamagedefault;
+    this.bdamagedefault = lobbyJson.bdamagedefault
+    // WORD    bdamageenabled;
+    this.bdamageenabled = lobbyJson.bdamageenabled
+    // WORD    baidefault;
+    this.baidefault = lobbyJson.baidefault
+    // WORD    baienabled;
+    this.baienabled = lobbyJson.baienabled
+
+    // char   topDog[MC_NAME_LENGTH]; = 13
+    // Also used for TimeTrial's "Last Weeks Champion"?
+    this.topDog = lobbyJson.topDog
+    // char   turfOwner[MAX_CLUB_NAME_LENGTH+1]; = 33 (including the +1)
+    this.turfOwner = lobbyJson.turfOwner
+    // DWORD  qualifyingTime;
+    this.qualifyingTime = lobbyJson.qualifyingTime
   }
 }
 
