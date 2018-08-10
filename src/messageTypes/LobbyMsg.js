@@ -17,7 +17,6 @@
 const { logger } = require('../logger');
 
 class LobbyInfo {
-
   constructor(lobbyJson) {
     // DWORD    lobbyID;
     this.lobbyId = lobbyJson.lobbyId;
@@ -133,59 +132,59 @@ class LobbyInfo {
     // DWORD  ttTimeIncrements;
     this.ttTimeIncrements = lobbyJson.ttTimeIncrements;
     // DWORD  ttvictory_1st_points;
-    this.ttvictory_1st_points = lobbyJson.ttvictory_1st_points
+    this.ttvictory_1st_points = lobbyJson.ttvictory_1st_points;
     // DWORD  ttvictory_1st_cash;
-    this.ttvictory_1st_cash = lobbyJson.ttvictory_1st_cash
+    this.ttvictory_1st_cash = lobbyJson.ttvictory_1st_cash;
     // DWORD  ttvictory_2nd_points;
-    this.ttvictory_2nd_points = lobbyJson.ttvictory_2nd_points
+    this.ttvictory_2nd_points = lobbyJson.ttvictory_2nd_points;
     // DWORD  ttvictory_2nd_cash;
-    this.ttvictory_2nd_cash = lobbyJson.ttvictory_2nd_cash
+    this.ttvictory_2nd_cash = lobbyJson.ttvictory_2nd_cash;
     // DWORD  ttvictory_3rd_points;
-    this.ttvictory_3rd_points = lobbyJson.ttvictory_3rd_points
+    this.ttvictory_3rd_points = lobbyJson.ttvictory_3rd_points;
     // DWORD  ttvictory_3rd_cash;
-    this.ttvictory_3rd_cash = lobbyJson.ttvictory_3rd_cash
+    this.ttvictory_3rd_cash = lobbyJson.ttvictory_3rd_cash;
     // WORD   minLevel;
-    this.minLevel = lobbyJson.minLevel
+    this.minLevel = lobbyJson.minLevel;
     // DWORD  minResetSlice;
-    this.minResetSlice = lobbyJson.minResetSlice
+    this.minResetSlice = lobbyJson.minResetSlice;
     // DWORD  maxResetSlice;
-    this.maxResetSlice = lobbyJson.maxResetSlice
+    this.maxResetSlice = lobbyJson.maxResetSlice;
     // WORD   newbieFlag;
-    this.newbieFlag = lobbyJson.newbieFlag
+    this.newbieFlag = lobbyJson.newbieFlag;
     // WORD   driverHelmetFlag;
-    this.driverHelmetFlag = lobbyJson.driverHelmetFlag
+    this.driverHelmetFlag = lobbyJson.driverHelmetFlag;
     // WORD   clubNumPlayersMax;
-    this.clubNumPlayersMax = lobbyJson.clubNumPlayersMax
+    this.clubNumPlayersMax = lobbyJson.clubNumPlayersMax;
     // WORD   clubNumPlayersMin;
-    this.clubNumPlayersMin = lobbyJson.clubNumPlayersMin
+    this.clubNumPlayersMin = lobbyJson.clubNumPlayersMin;
     // WORD   clubNumPlayersDefault;
-    this.clubNumPlayersDefault = lobbyJson.clubNumPlayersDefault
+    this.clubNumPlayersDefault = lobbyJson.clubNumPlayersDefault;
     // WORD   numClubsMin;
-    this.numClubsMin = lobbyJson.numClubsMin
+    this.numClubsMin = lobbyJson.numClubsMin;
     // float  racePointsFactor;
-    this.racePointsFactor = lobbyJson.racePointsFactor
+    this.racePointsFactor = lobbyJson.racePointsFactor;
     // WORD   bodyClassMax;
-    this.bodyClassMax = lobbyJson.bodyClassMax
+    this.bodyClassMax = lobbyJson.bodyClassMax;
     // WORD   powerClassMax;
-    this.powerClassMax = lobbyJson.powerClassMax
+    this.powerClassMax = lobbyJson.powerClassMax;
     // WORD   partPrizesMax;      // max allowed for this lobby
-    this.partPrizesMax = lobbyJson.partPrizesMax
+    this.partPrizesMax = lobbyJson.partPrizesMax;
     // WORD   partPrizesWon;      // current users prizes for this lobby
-    this.partPrizesWon = lobbyJson.partPrizesMax
+    this.partPrizesWon = lobbyJson.partPrizesMax;
     // DWORD  clubLogoID;         // Logo ID for Turf owner
-    this.clubLogoId = lobbyJson.clubLogoId
+    this.clubLogoId = lobbyJson.clubLogoId;
     // WORD   bteamtrialweather;  // Team Trials Weather Flag
-    this.bteamtrialweather = lobbyJson.bteamtrialweather
+    this.bteamtrialweather = lobbyJson.bteamtrialweather;
     // WORD   bteamtrialnight;    // Team Trials Night Flag
-    this.bteamtrialnight = lobbyJson.bteamtrialnight
+    this.bteamtrialnight = lobbyJson.bteamtrialnight;
     // WORD   bteamtrialbackward; // Team Trials Backwards Flag
-    this.bteamtrialbackward = lobbyJson.bteamtrialbackward
+    this.bteamtrialbackward = lobbyJson.bteamtrialbackward;
     // WORD   teamtrialnumlaps;   // Team Trials Number of Laps
-    this.teamtrialnumlaps = lobbyJson.teamtrialnumlaps
+    this.teamtrialnumlaps = lobbyJson.teamtrialnumlaps;
     // DWORD  teamtrialbaseTUP;   // Team Trials Base Time Under Par
-    this.teamtrialbaseTUP = lobbyJson.teamtrialbaseTUP
+    this.teamtrialbaseTUP = lobbyJson.teamtrialbaseTUP;
     // float  raceCashFactor;
-    this.raceCashFactor = lobbyJson.raceCashFactor
+    this.raceCashFactor = lobbyJson.raceCashFactor;
   }
 }
 
