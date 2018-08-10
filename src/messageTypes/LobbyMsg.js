@@ -18,41 +18,6 @@ const { logger } = require('../logger');
 
 class LobbyInfo {
 
-
-  // DWORD   clubNumPlayers;
-  // DWORD   clubNumLaps;
-  // DWORD   clubNumRounds;
-  // WORD    clubNight;
-  // WORD    clubWeather;
-  // WORD    clubBackwards;
-  // DWORD  bestLapTime; // (64hz ticks)
-  // DWORD  lobbyDifficulty;
-  // DWORD  ttPointForQualify;
-  // DWORD  ttCashForQualify;
-  // DWORD  ttPointBonusFasterIncs;
-  // DWORD  ttCashBonusFasterIncs;
-  // DWORD  ttTimeIncrements;
-
-  // DWORD  ttvictory_1st_points;
-  // DWORD  ttvictory_1st_cash;
-  // DWORD  ttvictory_2nd_points;
-  // DWORD  ttvictory_2nd_cash;
-  // DWORD  ttvictory_3rd_points;
-  // DWORD  ttvictory_3rd_cash;
-  // WORD   minLevel;
-  // DWORD  minResetSlice;
-  // DWORD  maxResetSlice;
-  // WORD   newbieFlag;
-  // WORD   driverHelmetFlag;
-  // WORD   clubNumPlayersMax;
-  // WORD   clubNumPlayersMin;
-  // WORD   clubNumPlayersDefault;
-  // WORD   numClubsMax;
-  // WORD   numClubsMin;
-  // float  racePointsFactor;
-  // WORD   bodyClassMax;
-  // WORD   powerClassMax;
-
   // WORD   partPrizesMax;      // max allowed for this lobby
   // WORD   partPrizesWon;      // current users prizes for this lobby
   // DWORD  clubLogoID;         // Logo ID for Turf owner
@@ -111,45 +76,107 @@ class LobbyInfo {
     // WORD    bnumlapsenabled;
     this.bnumlapsenabled = lobbyJson.bnumlapsenabled;
     // WORD    numroundsmin;
-    this.numroundsmin = lobbyJson.numroundsmin
+    this.numroundsmin = lobbyJson.numroundsmin;
     // WORD    numroundsmax;
-    this.numroundsmax = lobbyJson.numroundsmax
+    this.numroundsmax = lobbyJson.numroundsmax;
     // WORD    numroundsdefault;
-    this.numroundsdefault = lobbyJson.numroundsdefault
+    this.numroundsdefault = lobbyJson.numroundsdefault;
     // WORD    bnumroundsenabled;
-    this.bnumroundsenabled = lobbyJson.bnumroundsenabled
+    this.bnumroundsenabled = lobbyJson.bnumroundsenabled;
     // WORD    bweatherdefault;
-    this.bweatherdefault = lobbyJson.bweatherdefault
+    this.bweatherdefault = lobbyJson.bweatherdefault;
     // WORD    bweatherenabled;
-    this.bweatherenabled = lobbyJson.bweatherenabled
+    this.bweatherenabled = lobbyJson.bweatherenabled;
     // WORD    bnightdefault;
-    this.bnightdefault = lobbyJson.bnightdefault
+    this.bnightdefault = lobbyJson.bnightdefault;
     // WORD    bnightenabled;
-    this.bnightenabled = lobbyJson.bnightenabled
+    this.bnightenabled = lobbyJson.bnightenabled;
     // WORD    bbackwarddefault;
-    this.bbackwarddefault = lobbyJson.bbackwarddefault
+    this.bbackwarddefault = lobbyJson.bbackwarddefault;
     // WORD    bbackwardenabled;
-    this.bbackwardenabled = lobbyJson.bbackwardenabled
+    this.bbackwardenabled = lobbyJson.bbackwardenabled;
     // WORD    btrafficdefault;
-    this.btrafficdefault = lobbyJson.btrafficdefault
+    this.btrafficdefault = lobbyJson.btrafficdefault;
     // WORD    btrafficenabled;
-    this.btrafficenabled = lobbyJson.btrafficenabled
+    this.btrafficenabled = lobbyJson.btrafficenabled;
     // WORD    bdamagedefault;
-    this.bdamagedefault = lobbyJson.bdamagedefault
+    this.bdamagedefault = lobbyJson.bdamagedefault;
     // WORD    bdamageenabled;
-    this.bdamageenabled = lobbyJson.bdamageenabled
+    this.bdamageenabled = lobbyJson.bdamageenabled;
     // WORD    baidefault;
-    this.baidefault = lobbyJson.baidefault
+    this.baidefault = lobbyJson.baidefault;
     // WORD    baienabled;
-    this.baienabled = lobbyJson.baienabled
+    this.baienabled = lobbyJson.baienabled;
 
     // char   topDog[MC_NAME_LENGTH]; = 13
     // Also used for TimeTrial's "Last Weeks Champion"?
-    this.topDog = lobbyJson.topDog
+    this.topDog = lobbyJson.topDog;
     // char   turfOwner[MAX_CLUB_NAME_LENGTH+1]; = 33 (including the +1)
-    this.turfOwner = lobbyJson.turfOwner
+    this.turfOwner = lobbyJson.turfOwner;
     // DWORD  qualifyingTime;
-    this.qualifyingTime = lobbyJson.qualifyingTime
+    this.qualifyingTime = lobbyJson.qualifyingTime;
+    // DWORD   clubNumPlayers;
+    this.clubNumPlayers = lobbyJson.clubNumPlayers;
+    // DWORD   clubNumLaps;
+    this.clubNumLaps = lobbyJson.clubNumLaps;
+    // DWORD   clubNumRounds;
+    this.clubNumRounds = lobbyJson.clubNumRounds;
+    // WORD    clubNight;
+    this.clubNight = lobbyJson.clubNight;
+    // WORD    clubWeather;
+    this.clubWeather = lobbyJson.clubWeather;
+    // WORD    clubBackwards;
+    this.clubBackwards = lobbyJson.clubBackwards;
+    // DWORD  bestLapTime; // (64hz ticks)
+    this.bestLapTime = lobbyJson.bestLapTime;
+    // DWORD  lobbyDifficulty;
+    this.lobbyDifficulty = lobbyJson.lobbyDifficulty;
+    // DWORD  ttPointForQualify;
+    this.ttPointForQualify = lobbyJson.ttPointForQualify;
+    // DWORD  ttCashForQualify;
+    this.ttCashForQualify = lobbyJson.ttCashForQualify;
+    // DWORD  ttPointBonusFasterIncs;
+    this.ttPointBonusFasterIncs = lobbyJson.ttPointBonusFasterIncs;
+    // DWORD  ttCashBonusFasterIncs;
+    this.ttCashBonusFasterIncs = lobbyJson.ttCashBonusFasterIncs;
+    // DWORD  ttTimeIncrements;
+    this.ttTimeIncrements = lobbyJson.ttTimeIncrements;
+    // DWORD  ttvictory_1st_points;
+    this.ttvictory_1st_points = lobbyJson.ttvictory_1st_points
+    // DWORD  ttvictory_1st_cash;
+    this.ttvictory_1st_cash = lobbyJson.ttvictory_1st_cash
+    // DWORD  ttvictory_2nd_points;
+    this.ttvictory_2nd_points = lobbyJson.ttvictory_2nd_points
+    // DWORD  ttvictory_2nd_cash;
+    this.ttvictory_2nd_cash = lobbyJson.ttvictory_2nd_cash
+    // DWORD  ttvictory_3rd_points;
+    this.ttvictory_3rd_points = lobbyJson.ttvictory_3rd_points
+    // DWORD  ttvictory_3rd_cash;
+    this.ttvictory_3rd_cash = lobbyJson.ttvictory_3rd_cash
+    // WORD   minLevel;
+    this.minLevel = lobbyJson.minLevel
+    // DWORD  minResetSlice;
+    this.minResetSlice = lobbyJson.minResetSlice
+    // DWORD  maxResetSlice;
+    this.maxResetSlice = lobbyJson.maxResetSlice
+    // WORD   newbieFlag;
+    this.newbieFlag = lobbyJson.newbieFlag
+    // WORD   driverHelmetFlag;
+    this.driverHelmetFlag = lob.driverHelmetFlag
+    // WORD   clubNumPlayersMax;
+    this.clubNumPlayersMax = lobbyJson.clubNumPlayersMax
+    // WORD   clubNumPlayersMin;
+    this.clubNumPlayersMin = lobbyJson.clubNumPlayersMin
+    // WORD   clubNumPlayersDefault;
+    this.clubNumPlayersDefault = lobbyJson.clubNumPlayersDefault
+    // WORD   numClubsMin;
+    this.numClubsMin = lobbyJson.numClubsMin
+    // float  racePointsFactor;
+    this.racePointsFactor = lobbyJson.racePointsFactor
+    // WORD   bodyClassMax;
+    this.bodyClassMax = lobbyJson.bodyClassMax
+    // WORD   powerClassMax;
+    this.powerClassMax = lobbyJson.powerClassMax
   }
 }
 
@@ -177,8 +204,6 @@ class LobbyMsg {
   dumpPacket() {
     logger.info('[LobbyMsg]======================================');
     logger.debug('MsgNo:       ', this.msgNo.toString());
-    logger.debug('customerId:  ', this.customerId.toString());
-    logger.debug('personaId:   ', this.personaId.toString());
     logger.info('[LobbyMsg]======================================');
   }
 }
