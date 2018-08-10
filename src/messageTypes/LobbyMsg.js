@@ -153,7 +153,7 @@ class LobbyInfo {
     // WORD   newbieFlag;
     this.newbieFlag = lobbyJson.newbieFlag
     // WORD   driverHelmetFlag;
-    this.driverHelmetFlag = lob.driverHelmetFlag
+    this.driverHelmetFlag = lobbyJson.driverHelmetFlag
     // WORD   clubNumPlayersMax;
     this.clubNumPlayersMax = lobbyJson.clubNumPlayersMax
     // WORD   clubNumPlayersMin;
