@@ -30,25 +30,25 @@ class LobbyInfo {
     // char eTurfName[256];
     this.eTurfName = lobbyJson.eTurfName;
     // char clientArt[11];
-    this.clientArt = lobbyJson.clientArt;
+    this.clientArt = lobbyJson.clientArt || 0;
     // DWORD    elementID;
-    this.elementId = lobbyJson.elementId;
+    this.elementId = lobbyJson.elementId || 0;
     // DWORD    turfLength;
-    this.turfLength = lobbyJson.turfLength;
+    this.turfLength = lobbyJson.turfLength || 0;
     // DWORD    startSlice;
-    this.startSlice = lobbyJson.startSlice;
+    this.startSlice = lobbyJson.startSlice || 0;
     // DWORD    endSlice;
-    this.endSlice = lobbyJson.endSlice;
+    this.endSlice = lobbyJson.endSlice || 0;
     // float    dragStageLeft;
-    this.dragStageLeft = lobbyJson.dragStageLeft;
+    this.dragStageLeft = lobbyJson.dragStageLeft || 0;
     // float    dragStageRight;
-    this.dragStageRight = lobbyJson.dragStageRight;
+    this.dragStageRight = lobbyJson.dragStageRight || 0;
     // DWORD    dragStagingSlice;
-    this.dragStagingSlice = lobbyJson.dragStagingSlice;
+    this.dragStagingSlice = lobbyJson.dragStagingSlice || 0;
     // float    gridSpreadFactor;
-    this.gridSpreadFactor = lobbyJson.gridSpreadFactor;
+    this.gridSpreadFactor = lobbyJson.gridSpreadFactor || 0;
     // WORD    linear;
-    this.linear = lobbyJson.linear;
+    this.linear = lobbyJson.linear || 0;
     // WORD    numplayersmin;
     this.numplayersmin = lobbyJson.numplayersmin;
     // WORD    numplayersmax;
@@ -100,9 +100,9 @@ class LobbyInfo {
 
     // char   topDog[MC_NAME_LENGTH]; = 13
     // Also used for TimeTrial's "Last Weeks Champion"?
-    this.topDog = lobbyJson.topDog;
+    this.topDog = lobbyJson.topDog || 0;
     // char   turfOwner[MAX_CLUB_NAME_LENGTH+1]; = 33 (including the +1)
-    this.turfOwner = lobbyJson.turfOwner;
+    this.turfOwner = lobbyJson.turfOwner || 0;
     // DWORD  qualifyingTime;
     this.qualifyingTime = lobbyJson.qualifyingTime;
     // DWORD   clubNumPlayers;
@@ -172,7 +172,7 @@ class LobbyInfo {
     // WORD   partPrizesWon;      // current users prizes for this lobby
     this.partPrizesWon = lobbyJson.partPrizesMax;
     // DWORD  clubLogoID;         // Logo ID for Turf owner
-    this.clubLogoId = lobbyJson.clubLogoId;
+    this.clubLogoId = lobbyJson.clubLogoId || 0;
     // WORD   bteamtrialweather;  // Team Trials Weather Flag
     this.bteamtrialweather = lobbyJson.bteamtrialweather;
     // WORD   bteamtrialnight;    // Team Trials Night Flag
