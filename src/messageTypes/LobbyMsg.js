@@ -18,15 +18,6 @@ const { logger } = require('../logger');
 
 class LobbyInfo {
 
-  // WORD   partPrizesMax;      // max allowed for this lobby
-  // WORD   partPrizesWon;      // current users prizes for this lobby
-  // DWORD  clubLogoID;         // Logo ID for Turf owner
-  // WORD   bteamtrialweather;  // Team Trials Weather Flag
-  // WORD   bteamtrialnight;    // Team Trials Night Flag
-  // WORD   bteamtrialbackward; // Team Trials Backwards Flag
-  // WORD   teamtrialnumlaps;   // Team Trials Number of Laps
-  // DWORD  teamtrialbaseTUP;   // Team Trials Base Time Under Par
-  // float  raceCashFactor;
   constructor(lobbyJson) {
     // DWORD    lobbyID;
     this.lobbyId = lobbyJson.lobbyId;
@@ -177,6 +168,24 @@ class LobbyInfo {
     this.bodyClassMax = lobbyJson.bodyClassMax
     // WORD   powerClassMax;
     this.powerClassMax = lobbyJson.powerClassMax
+    // WORD   partPrizesMax;      // max allowed for this lobby
+    this.partPrizesMax = lobbyJson.partPrizesMax
+    // WORD   partPrizesWon;      // current users prizes for this lobby
+    this.partPrizesWon = lobbyJson.partPrizesMax
+    // DWORD  clubLogoID;         // Logo ID for Turf owner
+    this.clubLogoId = lobbyJson.clubLogoId
+    // WORD   bteamtrialweather;  // Team Trials Weather Flag
+    this.bteamtrialweather = lobbyJson.bteamtrialweather
+    // WORD   bteamtrialnight;    // Team Trials Night Flag
+    this.bteamtrialnight = lobbyJson.bteamtrialnight
+    // WORD   bteamtrialbackward; // Team Trials Backwards Flag
+    this.bteamtrialbackward = lobbyJson.bteamtrialbackward
+    // WORD   teamtrialnumlaps;   // Team Trials Number of Laps
+    this.teamtrialnumlaps = lobbyJson.teamtrialnumlaps
+    // DWORD  teamtrialbaseTUP;   // Team Trials Base Time Under Par
+    this.teamtrialbaseTUP = lobbyJson.teamtrialbaseTUP
+    // float  raceCashFactor;
+    this.raceCashFactor = lobbyJson.raceCashFactor
   }
 }
 
