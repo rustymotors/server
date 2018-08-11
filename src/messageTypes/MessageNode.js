@@ -101,9 +101,6 @@ class MessageNode {
     logger.debug(`MsgNo:    ${this.msgNo}`);
     logger.debug(`Sequence: ${this.seq}`);
     logger.debug(`Flags: ${this.flags}`);
-    logger.debug(`Buffer: ${this.buffer}`);
-    logger.info('------------------------------------------------');
-    logger.debug(`Buffer as text: ${this.buffer.toString('utf8')}`);
     logger.info('------------------------------------------------');
     logger.debug(`Buffer as string: ${this.buffer.toString('hex')}`);
     logger.debug(`Raw Buffer as string: ${this.rawBuffer.toString('hex')}`);
