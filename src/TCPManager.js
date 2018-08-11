@@ -119,13 +119,18 @@ async function GetLobbies(con, node) {
   // Update the appId
   lobbiesListMsg.appId = con.appId;
 
-  logger.debug(util.inspect(lobbiesListMsg));
-  lobbiesListMsg.data.dumpPacket();
 
+  lobbiesListMsg.data.dumpPacket();
+  logger.debug(util.inspect(lobbiesListMsg));
   // Create new response packet
 
   const lobbyMsg = new LobbyMsg(1, 0, []);
+  logger.debug('===========');
+  logger.debug(util.inspect(lobbyMsg.lobbyList.toPacket().toString('hex')));
+  logger.debug('===========');
+
   lobbyMsg.dumpPacket();
+  logger.debug(util.inspect(lobbyMsg));
 
   // TODO: Do this cleaner
   const rPacket = new MessageNode(node.rawBuffer);
@@ -134,7 +139,7 @@ async function GetLobbies(con, node) {
   rPacket.setBuffer(Buffer.from([0x65, 0x00, 0x45, 0x01]));
   logger.debug('Dumping response...');
   // Encrypt the packet
-  rPacket.buffer = con.enc.out.processString(node.buffer);
+  rPacket.buffer = con.enc.out.processString(lobbyMsg.buffer);
   rPacket.dumpPacket();
 
   // write the socket
