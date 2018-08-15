@@ -16,175 +16,182 @@
 
 const { logger } = require('../logger');
 
+const lobbyInfoDefaults = {
+  // DWORD    lobbyID;
+  lobbyId: 0,
+  // DWORD    raceTypeID;
+  racetypeId: 0,
+  // DWORD    turfID;
+  turfId: 0,
+
+  // char NPSRiffName[MC_MAX_NPS_RIFF_NAME]; // 32
+  NPSRiffName: 'main',
+  // char eTurfName[256];
+  eTurfName: '',
+  // char clientArt[11];
+  clientArt: '',
+  // DWORD    elementID;
+  elementId: 0,
+  // DWORD    turfLength;
+  turfLength: 0,
+  // DWORD    startSlice;
+  startSlice: 0,
+  // DWORD    endSlice;
+  endSlice: 0,
+  // float    dragStageLeft;
+  dragStageLeft: 0,
+  // float    dragStageRight;
+  dragStageRight: 0,
+  // DWORD    dragStagingSlice;
+  dragStagingSlice: 0,
+  // float    gridSpreadFactor;
+  gridSpreadFactor: 0,
+  // WORD    linear;
+  linear: 0,
+  // WORD    numplayersmin;
+  numplayersmin: 0,
+  // WORD    numplayersmax;
+  numplayersmax: 5,
+  // WORD    numplayersdefault;
+  numplayersdefault: 1,
+  // WORD    bnumplayersenabled;
+  bnumplayersenabled: 0,
+  // WORD    numlapsmin;
+  numlapsmin: 1,
+  // WORD    numlapsmax;
+  numlapsmax: 5,
+  // WORD    numlapsdefault;
+  numlapsdefault: 1,
+  // WORD    bnumlapsenabled;
+  bnumlapsenabled: 0,
+  // WORD    numroundsmin;
+  numroundsmin: 1,
+  // WORD    numroundsmax;
+  numroundsmax: 5,
+  // WORD    numroundsdefault;
+  numroundsdefault: 1,
+  // WORD    bnumroundsenabled;
+  bnumroundsenabled: 0,
+  // WORD    bweatherdefault;
+  bweatherdefault: 0,
+  // WORD    bweatherenabled;
+  bweatherenabled: 0,
+  // WORD    bnightdefault;
+  bnightdefault: 0,
+  // WORD    bnightenabled;
+  bnightenabled: 0,
+  // WORD    bbackwarddefault;
+  bbackwarddefault: 0,
+  // WORD    bbackwardenabled;
+  bbackwardenabled: 0,
+  // WORD    btrafficdefault;
+  btrafficdefault: 0,
+  // WORD    btrafficenabled;
+  btrafficenabled: 0,
+  // WORD    bdamagedefault;
+  bdamagedefault: 0,
+  // WORD    bdamageenabled;
+  bdamageenabled: 0,
+  // WORD    baidefault;
+  baidefault: 0,
+  // WORD    baienabled;
+  baienabled: 0,
+
+  // char   topDog[MC_NAME_LENGTH]; = 13
+  // Also used for TimeTrial's "Last Weeks Champion"?
+  topDog: '',
+  // char   turfOwner[MAX_CLUB_NAME_LENGTH+1]; = 33 (including the +1)
+  turfOwner: '',
+  // DWORD  qualifyingTime;
+  qualifyingTime: 0,
+  // DWORD   clubNumPlayers;
+  clubNumPlayers: 1,
+  // DWORD   clubNumLaps;
+  clubNumLaps: 1,
+  // DWORD   clubNumRounds;
+  clubNumRounds: 1,
+  // WORD    clubNight;
+  clubNight: 0,
+  // WORD    clubWeather;
+  clubWeather: 0,
+  // WORD    clubBackwards;
+  clubBackwards: 0,
+  // DWORD  bestLapTime; // (64hz ticks)
+  bestLapTime: 0,
+  // DWORD  lobbyDifficulty;
+  lobbyDifficulty: 0,
+  // DWORD  ttPointForQualify;
+  ttPointForQualify: 0,
+  // DWORD  ttCashForQualify;
+  ttCashForQualify: 0,
+  // DWORD  ttPointBonusFasterIncs;
+  ttPointBonusFasterIncs: 1,
+  // DWORD  ttCashBonusFasterIncs;
+  ttCashBonusFasterIncs: 1,
+  // DWORD  ttTimeIncrements;
+  ttTimeIncrements: 1,
+  // DWORD  ttvictory_1st_points;
+  ttvictory_1st_points: 1,
+  // DWORD  ttvictory_1st_cash;
+  ttvictory_1st_cash: 1,
+  // DWORD  ttvictory_2nd_points;
+  ttvictory_2nd_points: 2,
+  // DWORD  ttvictory_2nd_cash;
+  ttvictory_2nd_cash: 2,
+  // DWORD  ttvictory_3rd_points;
+  ttvictory_3rd_points: 3,
+  // DWORD  ttvictory_3rd_cash;
+  ttvictory_3rd_cash: 3,
+  // WORD   minLevel;
+  minLevel: 0,
+  // DWORD  minResetSlice;
+  minResetSlice: 0,
+  // DWORD  maxResetSlice;
+  maxResetSlice: 1,
+  // WORD   newbieFlag;
+  newbieFlag: 1,
+  // WORD   driverHelmetFlag;
+  driverHelmetFlag: 0,
+  // WORD   clubNumPlayersMax;
+  clubNumPlayersMax: 1,
+  // WORD   clubNumPlayersMin;
+  clubNumPlayersMin: 0,
+  // WORD   clubNumPlayersDefault;
+  clubNumPlayersDefault: 0,
+  // WORD   numClubsMin;
+  numClubsMin: 0,
+  // float  racePointsFactor;
+  racePointsFactor: 1,
+  // WORD   bodyClassMax;
+  bodyClassMax: 10,
+  // WORD   powerClassMax;
+  powerClassMax: 10,
+  // WORD   partPrizesMax;      // max allowed for this lobby
+  partPrizesMax: 1,
+  // WORD   partPrizesWon;      // current users prizes for this lobby
+  partPrizesWon: 1,
+  // DWORD  clubLogoID;         // Logo ID for Turf owner
+  clubLogoId: 0,
+  // WORD   bteamtrialweather;  // Team Trials Weather Flag
+  bteamtrialweather: 0,
+  // WORD   bteamtrialnight;    // Team Trials Night Flag
+  bteamtrialnight: 0,
+  // WORD   bteamtrialbackward; // Team Trials Backwards Flag
+  bteamtrialbackward: 0,
+  // WORD   teamtrialnumlaps;   // Team Trials Number of Laps
+  teamtrialnumlaps: 0,
+  // DWORD  teamtrialbaseTUP;   // Team Trials Base Time Under Par
+  teamtrialbaseTUP: 0,
+  // float  raceCashFactor;
+  raceCashFactor: 1,
+};
+
 class LobbyInfo {
-  constructor(lobbyJson) {
-    // DWORD    lobbyID;
-    this.lobbyId = lobbyJson.lobbyId || 0;
-    // DWORD    raceTypeID;
-    this.racetypeId = lobbyJson.racetypeId || 0;
-    // DWORD    turfID;
-    this.turfId = lobbyJson.turfId || 0;
-
-    // char NPSRiffName[MC_MAX_NPS_RIFF_NAME]; // 32
-    this.NPSRiffName = lobbyJson.NPSRiffName || 'main';
-    // char eTurfName[256];
-    this.eTurfName = lobbyJson.eTurfName || '';
-    // char clientArt[11];
-    this.clientArt = lobbyJson.clientArt || '';
-    // DWORD    elementID;
-    this.elementId = lobbyJson.elementId || 0;
-    // DWORD    turfLength;
-    this.turfLength = lobbyJson.turfLength || 0;
-    // DWORD    startSlice;
-    this.startSlice = lobbyJson.startSlice || 0;
-    // DWORD    endSlice;
-    this.endSlice = lobbyJson.endSlice || 0;
-    // float    dragStageLeft;
-    this.dragStageLeft = lobbyJson.dragStageLeft || 0;
-    // float    dragStageRight;
-    this.dragStageRight = lobbyJson.dragStageRight || 0;
-    // DWORD    dragStagingSlice;
-    this.dragStagingSlice = lobbyJson.dragStagingSlice || 0;
-    // float    gridSpreadFactor;
-    this.gridSpreadFactor = lobbyJson.gridSpreadFactor || 0;
-    // WORD    linear;
-    this.linear = lobbyJson.linear || 0;
-    // WORD    numplayersmin;
-    this.numplayersmin = lobbyJson.numplayersmin || 0;
-    // WORD    numplayersmax;
-    this.numplayersmax = lobbyJson.numplayersmax || 5;
-    // WORD    numplayersdefault;
-    this.numplayersdefault = lobbyJson.numplayersdefault || 1;
-    // WORD    bnumplayersenabled;
-    this.bnumplayersenabled = lobbyJson.bnumplayersenabled || 0;
-    // WORD    numlapsmin;
-    this.numlapsmin = lobbyJson.numlapsmin || 1;
-    // WORD    numlapsmax;
-    this.numlapsmax = lobbyJson.numlapsmax || 5;
-    // WORD    numlapsdefault;
-    this.numlapsdefault = lobbyJson.numlapsdefault || 1;
-    // WORD    bnumlapsenabled;
-    this.bnumlapsenabled = lobbyJson.bnumlapsenabled || 0;
-    // WORD    numroundsmin;
-    this.numroundsmin = lobbyJson.numroundsmin || 1;
-    // WORD    numroundsmax;
-    this.numroundsmax = lobbyJson.numroundsmax || 5;
-    // WORD    numroundsdefault;
-    this.numroundsdefault = lobbyJson.numroundsdefault || 1;
-    // WORD    bnumroundsenabled;
-    this.bnumroundsenabled = lobbyJson.bnumroundsenabled || 0;
-    // WORD    bweatherdefault;
-    this.bweatherdefault = lobbyJson.bweatherdefault || 0;
-    // WORD    bweatherenabled;
-    this.bweatherenabled = lobbyJson.bweatherenabled || 0;
-    // WORD    bnightdefault;
-    this.bnightdefault = lobbyJson.bnightdefault || 0;
-    // WORD    bnightenabled;
-    this.bnightenabled = lobbyJson.bnightenabled || 0;
-    // WORD    bbackwarddefault;
-    this.bbackwarddefault = lobbyJson.bbackwarddefault || 0;
-    // WORD    bbackwardenabled;
-    this.bbackwardenabled = lobbyJson.bbackwardenabled || 0;
-    // WORD    btrafficdefault;
-    this.btrafficdefault = lobbyJson.btrafficdefault || 0;
-    // WORD    btrafficenabled;
-    this.btrafficenabled = lobbyJson.btrafficenabled || 0;
-    // WORD    bdamagedefault;
-    this.bdamagedefault = lobbyJson.bdamagedefault || 0;
-    // WORD    bdamageenabled;
-    this.bdamageenabled = lobbyJson.bdamageenabled || 0;
-    // WORD    baidefault;
-    this.baidefault = lobbyJson.baidefault || 0;
-    // WORD    baienabled;
-    this.baienabled = lobbyJson.baienabled || 0;
-
-    // char   topDog[MC_NAME_LENGTH]; = 13
-    // Also used for TimeTrial's "Last Weeks Champion"?
-    this.topDog = lobbyJson.topDog || '';
-    // char   turfOwner[MAX_CLUB_NAME_LENGTH+1]; = 33 (including the +1)
-    this.turfOwner = lobbyJson.turfOwner || '';
-    // DWORD  qualifyingTime;
-    this.qualifyingTime = lobbyJson.qualifyingTime || 0;
-    // DWORD   clubNumPlayers;
-    this.clubNumPlayers = lobbyJson.clubNumPlayers || 1;
-    // DWORD   clubNumLaps;
-    this.clubNumLaps = lobbyJson.clubNumLaps || 1;
-    // DWORD   clubNumRounds;
-    this.clubNumRounds = lobbyJson.clubNumRounds || 1;
-    // WORD    clubNight;
-    this.clubNight = lobbyJson.clubNight || 0;
-    // WORD    clubWeather;
-    this.clubWeather = lobbyJson.clubWeather || 0;
-    // WORD    clubBackwards;
-    this.clubBackwards = lobbyJson.clubBackwards || 0;
-    // DWORD  bestLapTime; // (64hz ticks)
-    this.bestLapTime = lobbyJson.bestLapTime || 0;
-    // DWORD  lobbyDifficulty;
-    this.lobbyDifficulty = lobbyJson.lobbyDifficulty || 0;
-    // DWORD  ttPointForQualify;
-    this.ttPointForQualify = lobbyJson.ttPointForQualify || 0;
-    // DWORD  ttCashForQualify;
-    this.ttCashForQualify = lobbyJson.ttCashForQualify || 0;
-    // DWORD  ttPointBonusFasterIncs;
-    this.ttPointBonusFasterIncs = lobbyJson.ttPointBonusFasterIncs || 1;
-    // DWORD  ttCashBonusFasterIncs;
-    this.ttCashBonusFasterIncs = lobbyJson.ttCashBonusFasterIncs || 1;
-    // DWORD  ttTimeIncrements;
-    this.ttTimeIncrements = lobbyJson.ttTimeIncrements || 1;
-    // DWORD  ttvictory_1st_points;
-    this.ttvictory_1st_points = lobbyJson.ttvictory_1st_points || 1;
-    // DWORD  ttvictory_1st_cash;
-    this.ttvictory_1st_cash = lobbyJson.ttvictory_1st_cash || 1;
-    // DWORD  ttvictory_2nd_points;
-    this.ttvictory_2nd_points = lobbyJson.ttvictory_2nd_points || 2;
-    // DWORD  ttvictory_2nd_cash;
-    this.ttvictory_2nd_cash = lobbyJson.ttvictory_2nd_cash || 2;
-    // DWORD  ttvictory_3rd_points;
-    this.ttvictory_3rd_points = lobbyJson.ttvictory_3rd_points || 3;
-    // DWORD  ttvictory_3rd_cash;
-    this.ttvictory_3rd_cash = lobbyJson.ttvictory_3rd_cash || 3;
-    // WORD   minLevel;
-    this.minLevel = lobbyJson.minLevel || 0;
-    // DWORD  minResetSlice;
-    this.minResetSlice = lobbyJson.minResetSlice || 0;
-    // DWORD  maxResetSlice;
-    this.maxResetSlice = lobbyJson.maxResetSlice || 1;
-    // WORD   newbieFlag;
-    this.newbieFlag = lobbyJson.newbieFlag || 1;
-    // WORD   driverHelmetFlag;
-    this.driverHelmetFlag = lobbyJson.driverHelmetFlag || 0;
-    // WORD   clubNumPlayersMax;
-    this.clubNumPlayersMax = lobbyJson.clubNumPlayersMax || 1;
-    // WORD   clubNumPlayersMin;
-    this.clubNumPlayersMin = lobbyJson.clubNumPlayersMin || 0;
-    // WORD   clubNumPlayersDefault;
-    this.clubNumPlayersDefault = lobbyJson.clubNumPlayersDefault || 0;
-    // WORD   numClubsMin;
-    this.numClubsMin = lobbyJson.numClubsMin || 0;
-    // float  racePointsFactor;
-    this.racePointsFactor = lobbyJson.racePointsFactor || 1;
-    // WORD   bodyClassMax;
-    this.bodyClassMax = lobbyJson.bodyClassMax || 10;
-    // WORD   powerClassMax;
-    this.powerClassMax = lobbyJson.powerClassMax || 10;
-    // WORD   partPrizesMax;      // max allowed for this lobby
-    this.partPrizesMax = lobbyJson.partPrizesMax || 1;
-    // WORD   partPrizesWon;      // current users prizes for this lobby
-    this.partPrizesWon = lobbyJson.partPrizesMax || 1;
-    // DWORD  clubLogoID;         // Logo ID for Turf owner
-    this.clubLogoId = lobbyJson.clubLogoId || 0;
-    // WORD   bteamtrialweather;  // Team Trials Weather Flag
-    this.bteamtrialweather = lobbyJson.bteamtrialweather || 0;
-    // WORD   bteamtrialnight;    // Team Trials Night Flag
-    this.bteamtrialnight = lobbyJson.bteamtrialnight || 0;
-    // WORD   bteamtrialbackward; // Team Trials Backwards Flag
-    this.bteamtrialbackward = lobbyJson.bteamtrialbackward || 0;
-    // WORD   teamtrialnumlaps;   // Team Trials Number of Laps
-    this.teamtrialnumlaps = lobbyJson.teamtrialnumlaps || 0;
-    // DWORD  teamtrialbaseTUP;   // Team Trials Base Time Under Par
-    this.teamtrialbaseTUP = lobbyJson.teamtrialbaseTUP || 0;
-    // float  raceCashFactor;
-    this.raceCashFactor = lobbyJson.raceCashFactor || 1;
+  constructor(lobbyJson = lobbyInfoDefaults) {
+    Object.entries(lobbyJson).forEach((prop) => {
+      const [key, val] = prop;
+      this[key] = val;
+    });
   }
 
   toPacket() {
@@ -371,15 +378,15 @@ class LobbyMsg {
     this.buffer.writeInt16LE(this.noLobbies, 2);
     this.buffer.writeInt8(this.moreToCome, 4);
 
-    this.lobbyList = new LobbyInfo({});
+    this.lobbyList = new LobbyInfo();
     this.lobbyList.toPacket().copy(this.buffer, 5);
 
     return this;
   }
 
   /**
-                      * dumpPacket
-                      */
+    * dumpPacket
+    */
   dumpPacket() {
     logger.info('[LobbyMsg]======================================');
     logger.debug('MsgNo:       ', this.msgNo.toString());
@@ -388,4 +395,4 @@ class LobbyMsg {
   }
 }
 
-module.exports = { LobbyInfo, LobbyMsg };
+module.exports = { LobbyInfo, lobbyInfoDefaults, LobbyMsg };
