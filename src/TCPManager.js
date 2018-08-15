@@ -121,16 +121,11 @@ async function GetLobbies(con, node) {
 
 
   lobbiesListMsg.data.dumpPacket();
-  logger.debug(util.inspect(lobbiesListMsg));
   // Create new response packet
 
   const lobbyMsg = new LobbyMsg(1, 0, []);
-  logger.debug('===========');
-  logger.debug(util.inspect(lobbyMsg.lobbyList.toPacket().toString('hex')));
-  logger.debug('===========');
 
   lobbyMsg.dumpPacket();
-  logger.debug(util.inspect(lobbyMsg));
 
   // TODO: Do this cleaner
   const rPacket = new MessageNode(node.rawBuffer);
