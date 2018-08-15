@@ -14,12 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { LobbyInfo } = require('./LobbyMsg');
+const { LobbyInfo, LobbyMsg } = require('./LobbyMsg');
 
 const lobbyInfo1 = new LobbyInfo();
+const lobbyMsg1 = new LobbyMsg();
 
 describe('LobbyInfo', () => {
   test('packet is the correct length', () => {
     expect(lobbyInfo1.toPacket().length).toBe(567);
+  });
+});
+
+describe('LobbyMsg', () => {
+  test('packet is the correct length', () => {
+    expect(lobbyMsg1.buffer.length).toBe(572);
   });
 });
