@@ -18,6 +18,12 @@ const { logger } = require('../logger');
 
 class LoginMsg {
   constructor(buffer) {
+    this.data = buffer;
+
+    this.deserialize(buffer);
+  }
+
+  deserialize(buffer) {
     try {
       this.msgNo = buffer.readInt16LE(0);
     } catch (error) {
@@ -29,6 +35,7 @@ class LoginMsg {
       }
     }
 
+
     this.customerId = buffer.readInt32LE(2);
     this.personaId = buffer.readInt32LE(6);
 
@@ -38,8 +45,10 @@ class LoginMsg {
     this.personaName = buffer.slice(22, 34).toString();
 
     this.version = buffer.slice(34).toString();
+  }
 
-    return this;
+  serialize() {
+    return this.data;
   }
 
   /**

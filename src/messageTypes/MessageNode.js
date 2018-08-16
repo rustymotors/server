@@ -23,17 +23,21 @@ class MessageNode {
 
     this.appId = 0;
 
-    this.setBuffer(packet);
-    this.setMsgHeader(packet);
+    this.deserialize(packet);
+  }
 
-    this.rawBuffer = packet;
+  deserialize(packet) {
+    this.dataLength = packet.readInt16LE(0);
+    this.mcoSig = packet.slice(2, 6).toString();
+    this.seq = packet.readInt16LE(6);
+    this.flags = packet.readInt8(10);
 
-    if (packet.length <= 6) {
-      throw new Error(`Packet too short!: ${packet.toString()}`);
-    }
+    // data starts at offset 11
+    this.data = packet.slice(11);
 
+    // set message number
     try {
-      this.msgNo = this.buffer.readInt16LE(0);
+      this.msgNo = this.data.readInt16LE(0);
     } catch (error) {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
@@ -42,12 +46,16 @@ class MessageNode {
         throw error;
       }
     }
+  }
 
-
-    // DWORD seq; sequenceNo
-    this.seq = packet.readInt32LE(6);
-
-    this.flags = packet.readInt8(10);
+  serialize() {
+    const packet = Buffer.alloc(this.dataLength + 2);
+    packet.writeInt16LE(this.dataLength, 0);
+    packet.write(this.mcoSig, 2);
+    packet.writeInt16LE(this.seq, 6);
+    packet.writeInt8(this.flags, 10);
+    this.data.copy(packet, 11);
+    return packet;
   }
 
   setAppId(appId) {
@@ -56,12 +64,10 @@ class MessageNode {
 
   setMsgNo(newMsgNo) {
     this.msgNo = newMsgNo;
-    this.buffer.writeInt16LE(this.msgNo, 0);
   }
 
   setSeq(newSeq) {
     this.seq = newSeq;
-    this.rawBuffer.writeInt32LE(this.seq, 6);
   }
 
   setMsgHeader(packet) {
@@ -71,12 +77,14 @@ class MessageNode {
   }
 
   setBuffer(packet) {
-    this.buffer = packet.slice(11);
+    this.data = packet.slice(11);
+    this.dataLength = this.data.length;
   }
 
   updateBuffer(buffer) {
-    this.buffer = buffer;
-    this.msgNo = this.buffer.readInt16LE(0);
+    this.data = buffer;
+    this.dataLength = this.data.length;
+    this.msgNo = this.data.readInt16LE(0);
   }
 
   BaseMsgHeader(packet) {
@@ -89,21 +97,20 @@ class MessageNode {
   }
 
   isMCOTS() {
-    return this.header.mcosig === 'TOMC';
+    return this.mcoSig === 'TOMC';
   }
 
   dumpPacket() {
     logger.info('=============================================');
     logger.debug('Packet has a valid MCOTS header signature');
     logger.info('=============================================');
-    logger.debug(`Header Length: ${this.header.length}`);
+    logger.debug(`Header Length: ${this.dataLength}`);
     logger.debug(`Header MCOSIG: ${this.isMCOTS()}`);
     logger.debug(`MsgNo:    ${this.msgNo}`);
     logger.debug(`Sequence: ${this.seq}`);
     logger.debug(`Flags: ${this.flags}`);
     logger.info('------------------------------------------------');
-    logger.debug(`Buffer as string: ${this.buffer.toString('hex')}`);
-    logger.debug(`Raw Buffer as string: ${this.rawBuffer.toString('hex')}`);
+    logger.debug(`data as string: ${this.data.toString('hex')}`);
     logger.info('=============================================');
   }
 }
