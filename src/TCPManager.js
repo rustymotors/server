@@ -27,20 +27,15 @@ function socketWriteIfOpen(conn, node) {
   // Log that we are trying to write
   logger.debug(` Atempting to write seq: ${node.seq} to conn: ${conn.id}`);
   const { sock } = conn;
-  const { rawBuffer } = node;
 
   // Log the buffer we are writing
-  logger.debug(`Writting buffer: ${rawBuffer.toString('hex')}`);
+  logger.debug(`Writting buffer: ${node.serialize().toString('hex')}`);
   if (sock.writable) {
-    logger.debug(
-      "rawBuffer's data prior to sending: ",
-      rawBuffer.toString('hex'),
-    );
-    sock.write(rawBuffer);
+    sock.write(node.serialize());
   } else {
     logger.error(
       'Error writing ',
-      rawBuffer.toString(),
+      node.serialize(),
       ' to ',
       sock.remoteAddress,
       sock.localPort.toString(),
@@ -86,17 +81,18 @@ async function Login(con, node) {
   /**
    * Let's turn it into a LoginMsg
    */
-  loginMsg.data = new LoginMsg(node.buffer);
+  loginMsg.login = new LoginMsg(node.data);
+  loginMsg.data = loginMsg.login.serialize();
 
   // Update the appId
   loginMsg.appId = con.appId;
 
   logger.debug(util.inspect(loginMsg));
-  loginMsg.data.dumpPacket();
+  loginMsg.login.dumpPacket();
 
   // Create new response packet
   // TODO: Do this cleaner
-  const rPacket = new MessageNode(node.rawBuffer);
+  const rPacket = new MessageNode(node.serialize());
   // rPacket.buffer = connectionWithKey.enc.out.processString(node.buffer);
   rPacket.setMsgNo(101);
   rPacket.setBuffer(Buffer.from([0x65, 0x00, 0xb6, 0x01]));
@@ -114,13 +110,14 @@ async function GetLobbies(con, node) {
   /**
    * Let's turn it into a LoginMsg
    */
-  lobbiesListMsg.data = new GetLobbiesListMsg(node.buffer);
+  lobbiesListMsg.lobby = new GetLobbiesListMsg(node.data);
+  lobbiesListMsg.data = lobbiesListMsg.serialize();
 
   // Update the appId
   lobbiesListMsg.appId = con.appId;
 
 
-  lobbiesListMsg.data.dumpPacket();
+  lobbiesListMsg.lobby.dumpPacket();
   // Create new response packet
 
   const lobbyMsg = new LobbyMsg(1, 0, []);
@@ -128,13 +125,13 @@ async function GetLobbies(con, node) {
   lobbyMsg.dumpPacket();
 
   // TODO: Do this cleaner
-  const rPacket = new MessageNode(node.rawBuffer);
+  const rPacket = new MessageNode(node.data);
   // Set response msgNo to 325 = MC_LOBBIES
   rPacket.setMsgNo(325);
   rPacket.setBuffer(Buffer.from([0x65, 0x00, 0x45, 0x01]));
   logger.debug('Dumping response...');
   // Encrypt the packet
-  rPacket.buffer = con.enc.out.processString(lobbyMsg.buffer);
+  rPacket.data = con.enc.out.processString(lobbyMsg.serialize());
   rPacket.dumpPacket();
 
   // write the socket
@@ -150,7 +147,7 @@ async function ClientConnect(con, node) {
    * Let's turn it into a ClientConnectMsg
    */
   // Not currently using this
-  const newMsg = new ClientConnectMsg(node.buffer);
+  const newMsg = new ClientConnectMsg(node.serialize());
 
   logger.debug(`Looking up the session key for ${con.id}...`);
   try {
@@ -185,7 +182,7 @@ async function ClientConnect(con, node) {
 
       // Create new response packet
       // TODO: Do this cleaner
-      const rPacket = new MessageNode(node.rawBuffer);
+      const rPacket = new MessageNode(node.serialize());
       // rPacket.buffer = connectionWithKey.enc.out.processString(node.buffer);
       rPacket.setMsgNo(101);
       rPacket.setBuffer(Buffer.from([0x65, 0x00, 0xb6, 0x01]));
@@ -273,12 +270,12 @@ async function MessageReceived(msg, con) {
       logger.debug(
         '===================================================================',
       );
+      const encryptedBuffer = msg.data.toString('hex');
       logger.warn(
         'Full packet before decrypting: ',
-        msg.rawBuffer.toString('hex'),
+        encryptedBuffer,
       );
 
-      const encryptedBuffer = msg.buffer.toString('hex');
 
       logger.warn('Message buffer before decrypting: ', encryptedBuffer);
       const deciphered = newConnection.enc.in.processString(encryptedBuffer);
@@ -402,8 +399,8 @@ async function defaultHandler(rawPacket) {
   }
   logger.debug('No valid MCOTS header signature detected, sending to Lobby');
   logger.info('=============================================');
-  logger.debug('Buffer as text: ', messageNode.buffer.toString('utf8'));
-  logger.debug('Buffer as string: ', messageNode.buffer.toString('hex'));
+  logger.debug('Buffer as text: ', messageNode.data.toString('utf8'));
+  logger.debug('Buffer as string: ', messageNode.data.toString('hex'));
 
   const newConnection = await lobbyDataHandler(rawPacket);
   return newConnection;

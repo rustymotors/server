@@ -373,15 +373,19 @@ class LobbyMsg {
     this.moreToCome = moreToCome;
     this.lobbyInfoArr = LobbyInfoArr;
 
-    this.buffer = Buffer.alloc(572);
-    this.buffer.writeInt16LE(this.msgNo);
-    this.buffer.writeInt16LE(this.noLobbies, 2);
-    this.buffer.writeInt8(this.moreToCome, 4);
+    this.data = Buffer.alloc(572);
+    this.data.writeInt16LE(this.msgNo);
+    this.data.writeInt16LE(this.noLobbies, 2);
+    this.data.writeInt8(this.moreToCome, 4);
 
     this.lobbyList = new LobbyInfo();
-    this.lobbyList.toPacket().copy(this.buffer, 5);
+    this.lobbyList.toPacket().copy(this.data, 5);
 
     return this;
+  }
+
+  serialize() {
+    return this.data;
   }
 
   /**
@@ -390,7 +394,7 @@ class LobbyMsg {
   dumpPacket() {
     logger.info('[LobbyMsg]======================================');
     logger.debug('MsgNo:       ', this.msgNo.toString());
-    logger.debug('rawBuffer:   ', this.buffer.toString('hex'));
+    logger.debug('rawBuffer:   ', this.data.toString('hex'));
     logger.info('[LobbyMsg]======================================');
   }
 }
