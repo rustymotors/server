@@ -366,14 +366,14 @@ class LobbyInfo {
 }
 
 class LobbyMsg {
-  constructor(noLobbies, moreToCome, LobbyInfoArr) {
+  constructor() {
     this.msgNo = 325;
+    this.dataLength = 572;
 
-    this.noLobbies = noLobbies;
-    this.moreToCome = moreToCome;
-    this.lobbyInfoArr = LobbyInfoArr;
+    this.noLobbies = 1;
+    this.moreToCome = 0;
 
-    this.data = Buffer.alloc(572);
+    this.data = Buffer.alloc(this.dataLength);
     this.data.writeInt16LE(this.msgNo);
     this.data.writeInt16LE(this.noLobbies, 2);
     this.data.writeInt8(this.moreToCome, 4);
@@ -392,10 +392,11 @@ class LobbyMsg {
     * dumpPacket
     */
   dumpPacket() {
-    logger.info('[LobbyMsg]======================================');
-    logger.debug('MsgNo:       ', this.msgNo.toString());
-    logger.debug('rawBuffer:   ', this.data.toString('hex'));
-    logger.info('[LobbyMsg]======================================');
+    logger.debug('[LobbyMsg]======================================');
+    logger.debug('MsgNo:       ', this.msgNo);
+    logger.debug('dataLength:  ', this.dataLength);
+    logger.debug('packet:   ', this.serialize().toString('hex'));
+    logger.debug('[LobbyMsg]======================================');
   }
 }
 

@@ -55,7 +55,7 @@ class LoginMsg {
      * dumpPacket
      */
   dumpPacket() {
-    logger.info('[LoginMsg]======================================');
+    logger.debug('[LoginMsg]======================================');
     logger.debug('MsgNo:       ', this.msgNo.toString());
     logger.debug('customerId:  ', this.customerId.toString());
     logger.debug('personaId:   ', this.personaId.toString());
@@ -65,7 +65,7 @@ class LoginMsg {
     logger.debug('personaName:    ', this.personaName);
 
     logger.debug('version:    ', this.version);
-    logger.info('[LoginMsg]======================================');
+    logger.debug('[LoginMsg]======================================');
   }
 }
 

@@ -64,6 +64,7 @@ class MessageNode {
 
   setMsgNo(newMsgNo) {
     this.msgNo = newMsgNo;
+    this.data.writeInt16LE(this.msgNo);
   }
 
   setSeq(newSeq) {
@@ -74,11 +75,6 @@ class MessageNode {
     const header = Buffer.alloc(6);
     packet.copy(header, 0, 0, 6);
     this.header = new MsgHead(header);
-  }
-
-  setBuffer(packet) {
-    this.data = packet.slice(11);
-    this.dataLength = this.data.length;
   }
 
   updateBuffer(buffer) {
@@ -101,17 +97,19 @@ class MessageNode {
   }
 
   dumpPacket() {
-    logger.info('=============================================');
+    logger.debug('= MessageNode ===============================');
     logger.debug('Packet has a valid MCOTS header signature');
-    logger.info('=============================================');
+    logger.debug('=============================================');
     logger.debug(`Header Length: ${this.dataLength}`);
     logger.debug(`Header MCOSIG: ${this.isMCOTS()}`);
     logger.debug(`MsgNo:    ${this.msgNo}`);
     logger.debug(`Sequence: ${this.seq}`);
     logger.debug(`Flags: ${this.flags}`);
-    logger.info('------------------------------------------------');
+    logger.debug('------------------------------------------------');
     logger.debug(`data as string: ${this.data.toString('hex')}`);
-    logger.info('=============================================');
+    logger.debug('------------------------------------------------');
+    logger.debug(`packet as string: ${this.serialize().toString('hex')}`);
+    logger.debug('= MessageNode ==================================');
   }
 }
 module.exports = { MessageNode };

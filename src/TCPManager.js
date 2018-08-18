@@ -28,14 +28,25 @@ function socketWriteIfOpen(conn, node) {
   logger.debug(` Atempting to write seq: ${node.seq} to conn: ${conn.id}`);
   const { sock } = conn;
 
+  let packetToWrite = node.serialize();
+
   // Log the buffer we are writing
-  logger.debug(`Writting buffer: ${node.serialize().toString('hex')}`);
+  logger.debug(`Writting buffer: ${packetToWrite.toString('hex')}`);
   if (sock.writable) {
-    sock.write(node.serialize());
+    // Check if encryption is needed
+    if (node.flags === 8) {
+      logger.debug('encryption flag is set');
+      node.updateBuffer(conn.enc.out.processString(node.data));
+      packetToWrite = node.serialize();
+      logger.debug(`encrypted packet: ${packetToWrite.toString('hex')}`);
+    }
+
+    // Write the packet to socket
+    sock.write(packetToWrite);
   } else {
     logger.error(
       'Error writing ',
-      node.serialize(),
+      packetToWrite,
       ' to ',
       sock.remoteAddress,
       sock.localPort.toString(),
@@ -93,9 +104,7 @@ async function Login(con, node) {
   // Create new response packet
   // TODO: Do this cleaner
   const rPacket = new MessageNode(node.serialize());
-  // rPacket.buffer = connectionWithKey.enc.out.processString(node.buffer);
   rPacket.setMsgNo(101);
-  rPacket.setBuffer(Buffer.from([0x65, 0x00, 0xb6, 0x01]));
   logger.debug('Dumping response...');
   rPacket.dumpPacket();
 
@@ -116,22 +125,17 @@ async function GetLobbies(con, node) {
   // Update the appId
   lobbiesListMsg.appId = con.appId;
 
-
-  lobbiesListMsg.lobby.dumpPacket();
   // Create new response packet
+  const lobbyMsg = new LobbyMsg();
 
-  const lobbyMsg = new LobbyMsg(1, 0, []);
+  // TODO: Do this cleaner
+  logger.debug('Dumping response...');
 
   lobbyMsg.dumpPacket();
 
-  // TODO: Do this cleaner
   const rPacket = new MessageNode(node.data);
-  // Set response msgNo to 325 = MC_LOBBIES
-  rPacket.setMsgNo(325);
-  rPacket.setBuffer(Buffer.from([0x65, 0x00, 0x45, 0x01]));
-  logger.debug('Dumping response...');
-  // Encrypt the packet
-  rPacket.data = con.enc.out.processString(lobbyMsg.serialize());
+  rPacket.updateBuffer(lobbyMsg.serialize());
+
   rPacket.dumpPacket();
 
   // write the socket
@@ -183,9 +187,7 @@ async function ClientConnect(con, node) {
       // Create new response packet
       // TODO: Do this cleaner
       const rPacket = new MessageNode(node.serialize());
-      // rPacket.buffer = connectionWithKey.enc.out.processString(node.buffer);
       rPacket.setMsgNo(101);
-      rPacket.setBuffer(Buffer.from([0x65, 0x00, 0xb6, 0x01]));
       logger.debug('Dumping response...');
       rPacket.dumpPacket();
 
