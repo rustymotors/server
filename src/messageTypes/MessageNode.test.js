@@ -16,7 +16,7 @@
 
 const { MessageNode } = require('./MessageNode');
 
-const packet = Buffer.from([
+const messageNode1 = new MessageNode(Buffer.from([
   0x00,
   0x00,
   0x54,
@@ -39,8 +39,8 @@ const packet = Buffer.from([
   0x00,
   0x00,
   0x00,
-]);
+]));
 
 test('packet is a MCOTS packet', () => {
-  expect(new MessageNode(packet).isMCOTS()).toBe(true);
+  expect(messageNode1.isMCOTS()).toBe(true);
 });

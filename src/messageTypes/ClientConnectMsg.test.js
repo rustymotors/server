@@ -14,19 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { LobbyInfo, LobbyMsg } = require('./LobbyMsg');
+const { ClientConnectMsg } = require('./ClientConnectMsg');
 
-const lobbyInfo1 = new LobbyInfo();
-const lobbyMsg1 = new LobbyMsg();
+const clientConnectMsg1 = new ClientConnectMsg(Buffer.concat([Buffer.from([0xb6, 0x01]), Buffer.from('TOMC'), Buffer.alloc(12)]));
 
-describe('LobbyInfo', () => {
-  test('packet is the correct length', () => {
-    expect(lobbyInfo1.toPacket().length).toBe(567);
-  });
-});
-
-describe('LobbyMsg', () => {
-  test('packet is the correct length', () => {
-    expect(lobbyMsg1.data.length).toBe(572);
+describe('ClientConnectMsg', () => {
+  test('msgNo is correct', () => {
+    expect(clientConnectMsg1.msgNo).toBe(438);
   });
 });
