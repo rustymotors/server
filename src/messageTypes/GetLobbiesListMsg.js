@@ -39,11 +39,11 @@ class GetLobbiesListMsg {
     * dumpPacket
     */
   dumpPacket() {
-    logger.info('[LobbiesListMsg]======================================');
+    logger.debug('[LobbiesListMsg]======================================');
     logger.debug('MsgNo:       ', this.msgNo.toString());
     logger.debug('customerId:  ', this.customerId.toString());
     logger.debug('personaId:   ', this.personaId.toString());
-    logger.info('[LobbiesListMsg]======================================');
+    logger.debug('[LobbiesListMsg]======================================');
   }
 }
 
