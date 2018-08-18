@@ -14,19 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { LobbyInfo, LobbyMsg } = require('./LobbyMsg');
+const { MsgHead } = require('./MsgHead');
 
-const lobbyInfo1 = new LobbyInfo();
-const lobbyMsg1 = new LobbyMsg();
+const msgHead1 = new MsgHead(Buffer.concat([Buffer.from([0x14, 0x00]), Buffer.from('TOMC')]));
 
-describe('LobbyInfo', () => {
-  test('packet is the correct length', () => {
-    expect(lobbyInfo1.toPacket().length).toBe(567);
+describe('MsgHead', () => {
+  test('length is correct', () => {
+    expect(msgHead1.length).toBe(20);
   });
-});
-
-describe('LobbyMsg', () => {
-  test('packet is the correct length', () => {
-    expect(lobbyMsg1.data.length).toBe(572);
+  test('mcosig is correct', () => {
+    expect(msgHead1.mcosig).toBe('TOMC');
   });
 });
