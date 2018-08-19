@@ -108,10 +108,7 @@ async function Login(con, node) {
   logger.debug('Dumping response...');
   rPacket.dumpPacket();
 
-  // write the socket
-  socketWriteIfOpen(con, rPacket);
-
-  return con;
+  return [con, rPacket];
 }
 
 async function GetLobbies(con, node) {
@@ -138,10 +135,7 @@ async function GetLobbies(con, node) {
 
   rPacket.dumpPacket();
 
-  // write the socket
-  socketWriteIfOpen(con, rPacket);
-
-  return con;
+  return [con, rPacket];
 }
 
 
@@ -191,10 +185,7 @@ async function ClientConnect(con, node) {
       logger.debug('Dumping response...');
       rPacket.dumpPacket();
 
-      // write the socket
-      socketWriteIfOpen(connectionWithKey, rPacket);
-
-      return connectionWithKey;
+      return [connectionWithKey, rPacket];
     } catch (err) {
       logger.error(err);
       logger.error(err.stack);
@@ -215,24 +206,30 @@ async function ProcessInput(node, conn) {
 
   if (currentMsgString === 'MC_CLIENT_CONNECT_MSG') {
     try {
-      const newConnection = await ClientConnect(conn, node);
-      return newConnection;
+      const [updatedConnection, responsePacket] = await ClientConnect(conn, node);
+      // write the socket
+      socketWriteIfOpen(updatedConnection, responsePacket);
+      return updatedConnection;
     } catch (error) {
       logger.error(error);
       throw error;
     }
   } else if (currentMsgString === 'MC_LOGIN') {
     try {
-      await Login(conn, node);
-      return conn;
+      const [updatedConnection, responsePacket] = await Login(conn, node);
+      // write the socket
+      socketWriteIfOpen(updatedConnection, responsePacket);
+      return updatedConnection;
     } catch (error) {
       logger.error(error);
       throw error;
     }
   } else if (currentMsgString === 'MC_GET_LOBBIES') {
     try {
-      await GetLobbies(conn, node);
-      return conn;
+      const [updatedConnection, responsePacket] = await GetLobbies(conn, node);
+      // write the socket
+      socketWriteIfOpen(updatedConnection, responsePacket);
+      return updatedConnection;
     } catch (error) {
       logger.error(error);
       throw error;
