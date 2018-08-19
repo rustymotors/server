@@ -368,17 +368,18 @@ class LobbyInfo {
 class LobbyMsg {
   constructor() {
     this.msgNo = 325;
-    this.dataLength = 572;
 
     this.noLobbies = 1;
     this.moreToCome = 0;
+
+    this.lobbyList = new LobbyInfo();
+    // this.dataLength = 572;
+    this.dataLength = this.lobbyList.toPacket().length + 5;
 
     this.data = Buffer.alloc(this.dataLength);
     this.data.writeInt16LE(this.msgNo);
     this.data.writeInt16LE(this.noLobbies, 2);
     this.data.writeInt8(this.moreToCome, 4);
-
-    this.lobbyList = new LobbyInfo();
     this.lobbyList.toPacket().copy(this.data, 5);
 
     return this;
