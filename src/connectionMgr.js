@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { loginDataHandler } = require('../lib/LoginServer');
-const { personaDataHandler } = require('../lib/PersonaServer');
+const { loginDataHandler } = require('./LoginServer');
+const { personaDataHandler } = require('./PersonaServer');
 const { Connection } = require('./Connection');
 const { logger } = require('./logger');
 const { defaultHandler } = require('./TCPManager');

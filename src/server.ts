@@ -1,8 +1,8 @@
 import fs = require("fs");
 import yaml = require("js-yaml");
-import { Web } from "../lib/WebServer";
 import { logger } from "./logger";
 import mcServer = require("./MCServer");
+import { Web } from "./WebServer";
 
 // Get document, or throw exception on error
 try {

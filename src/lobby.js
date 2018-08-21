@@ -18,7 +18,7 @@ const crypto = require('crypto');
 const { logger } = require('./logger');
 const packet = require('./packet');
 
-const pool = require('../lib/database');
+const pool = require('./database');
 
 /**
  * Handle a request to connect to a game server packet

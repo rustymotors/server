@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const util = require('util');
-const pool = require('../lib/database');
+const pool = require('./database');
 const {
   ClientConnectMsg, GetLobbiesListMsg, LobbyMsg, LoginMsg, MessageNode,
 } = require('./messageTypes');
