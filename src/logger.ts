@@ -14,22 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { Logger, transports } = require('winston');
+import * as winston from "winston";
 
-const logger = new Logger({
+export const logger = winston.createLogger({
+  format: winston.format.combine(
+    winston.format.colorize({ all: true }),
+    winston.format.simple(),
+  ),
   transports: [
-    new transports.Console({ level: 'debug', colorize: 'all' }),
-    new transports.File({
-      filename: 'filelog-info.log',
-      level: 'info',
-      name: 'info-file',
+    new winston.transports.Console({ level: "debug" }),
+    new winston.transports.File({
+      filename: "filelog-info.log",
+      level: "info",
     }),
-    new transports.File({
-      filename: 'filelog-error.log',
-      level: 'error',
-      name: 'error-file',
+    new winston.transports.File({
+      filename: "filelog-error.log",
+      level: "error",
     }),
   ],
 });
-
-module.exports = { logger };
