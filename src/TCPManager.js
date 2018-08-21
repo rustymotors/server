@@ -34,7 +34,7 @@ function socketWriteIfOpen(conn, node) {
   logger.debug(`Writting buffer: ${packetToWrite.toString('hex')}`);
   if (sock.writable) {
     // Check if encryption is needed
-    if (node.flags === 8) {
+    if (node.flags - 8 >= 0) {
       logger.debug('encryption flag is set');
       node.updateBuffer(conn.enc.out.processString(node.data));
       packetToWrite = node.serialize();
@@ -126,8 +126,8 @@ async function GetLobbies(con, node) {
   const lobbyMsg = new LobbyMsg();
 
   // TODO: Do this cleaner
-  logger.debug('Dumping response...');
 
+  logger.debug('Dumping response...');
   lobbyMsg.dumpPacket();
 
   const rPacket = new MessageNode(node.data);
@@ -384,7 +384,20 @@ async function defaultHandler(rawPacket) {
   const {
     connection, remoteAddress, localPort, data,
   } = rawPacket;
-  const messageNode = new MessageNode(data);
+  let messageNode;
+  try {
+    messageNode = new MessageNode(data);
+  } catch (e) {
+    if (e instanceof RangeError) {
+      // This is a very short packet, likely a heartbeat
+      logger.debug('Unable to pack into a MessageNode, sending to Lobby');
+
+      const newConnection = await lobbyDataHandler(rawPacket);
+      return newConnection;
+    }
+    throw e;
+  }
+
   logger.info(`=============================================
     Received packet on port ${localPort} from ${remoteAddress}...`);
   logger.info('=============================================');
