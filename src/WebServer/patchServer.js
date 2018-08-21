@@ -16,7 +16,7 @@
 
 const http = require("http");
 
-const { logger } = require("../../src/logger");
+const { logger } = require("../logger");
 
 const castanetResponse = {
   body: Buffer.from("cafebeef00000000000003", "hex"),

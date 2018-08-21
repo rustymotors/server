@@ -16,7 +16,7 @@
 
 const crypto = require("crypto");
 const fs = require("fs");
-const { logger } = require("../../src/logger");
+const { logger } = require("../logger");
 
 
 /**
