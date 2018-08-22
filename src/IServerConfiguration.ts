@@ -14,12 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class MsgHead {
-  constructor(header) {
-    this.length = header.readInt16LE(0);
-    this.mcosig = header.toString('ascii', 2);
-    return this;
-  }
+export interface IServerConfiguration {
+    serverConfig: {
+        ipServer: number;
+    };
 }
-
-module.exports = { MsgHead };

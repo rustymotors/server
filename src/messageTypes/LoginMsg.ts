@@ -14,27 +14,36 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { logger } = require('../logger');
+import { logger } from "../logger";
 
-class LoginMsg {
-  constructor(buffer) {
+export class LoginMsg {
+  private msgNo: number;
+  private customerId: number;
+  private personaId: number;
+  private lotOwnerId: number;
+  private brandedPartId: number;
+  private skinId: number;
+  private personaName: string;
+  private version: string;
+  private data: Buffer;
+
+  constructor(buffer: Buffer) {
     this.data = buffer;
 
     this.deserialize(buffer);
   }
 
-  deserialize(buffer) {
+  public deserialize(buffer: Buffer) {
     try {
       this.msgNo = buffer.readInt16LE(0);
     } catch (error) {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
       } else {
-        logger.error(buffer.toString('hex'));
+        logger.error(buffer.toString("hex"));
         throw error;
       }
     }
-
 
     this.customerId = buffer.readInt32LE(2);
     this.personaId = buffer.readInt32LE(6);
@@ -47,26 +56,24 @@ class LoginMsg {
     this.version = buffer.slice(34).toString();
   }
 
-  serialize() {
+  public serialize() {
     return this.data;
   }
 
   /**
-     * dumpPacket
-     */
-  dumpPacket() {
-    logger.debug('[LoginMsg]======================================');
-    logger.debug('MsgNo:       ', this.msgNo.toString());
-    logger.debug('customerId:  ', this.customerId.toString());
-    logger.debug('personaId:   ', this.personaId.toString());
-    logger.debug('lotOwnerId:    ', this.lotOwnerId);
-    logger.debug('brandedPartId:    ', this.brandedPartId);
-    logger.debug('skinId:    ', this.skinId);
-    logger.debug('personaName:    ', this.personaName);
+   * dumpPacket
+   */
+  public dumpPacket() {
+    logger.debug("[LoginMsg]======================================");
+    logger.debug("MsgNo:       ", this.msgNo.toString());
+    logger.debug("customerId:  ", this.customerId.toString());
+    logger.debug("personaId:   ", this.personaId.toString());
+    logger.debug("lotOwnerId:    ", this.lotOwnerId);
+    logger.debug("brandedPartId:    ", this.brandedPartId);
+    logger.debug("skinId:    ", this.skinId);
+    logger.debug("personaName:    ", this.personaName);
 
-    logger.debug('version:    ', this.version);
-    logger.debug('[LoginMsg]======================================');
+    logger.debug("version:    ", this.version);
+    logger.debug("[LoginMsg]======================================");
   }
 }
-
-module.exports = { LoginMsg };

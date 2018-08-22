@@ -14,9 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const http = require("http");
+import * as http from "http";
 
-const { logger } = require("../logger");
+import { IServerConfiguration } from "../IServerConfiguration";
+import { logger } from "../logger";
 
 const castanetResponse = {
   body: Buffer.from("cafebeef00000000000003", "hex"),
@@ -45,7 +46,7 @@ function patchMCO() {
  * Generate a shard list web document
  * @param {JSON} config
  */
-function generateShardList(serverConfig) {
+function generateShardList(serverConfig: IServerConfiguration["serverConfig"]) {
   return `[The Clocktower]
   Description=The Clocktower
   ShardId=44
@@ -64,14 +65,14 @@ function generateShardList(serverConfig) {
 }
 
 function httpHandler(
-  request,
-  response,
-  serverConfiguration
+  request: http.IncomingMessage,
+  response: http.ServerResponse,
+  serverConfiguration: IServerConfiguration,
 ) {
   logger.info(
     `[PATCH] Request from ${request.socket.remoteAddress} for ${
     request.method
-    } ${request.url}`
+    } ${request.url}`,
   );
   let responseData;
   switch (request.url) {
@@ -102,8 +103,8 @@ function httpHandler(
   }
 }
 
-class PatchServer {
-  async start(configurationFile) {
+export class PatchServer {
+  public async start(configurationFile: IServerConfiguration) {
     const serverPatch = http.createServer((req, res) => {
       httpHandler(req, res, configurationFile);
     });
@@ -112,5 +113,3 @@ class PatchServer {
     });
   }
 }
-
-module.exports = { PatchServer }

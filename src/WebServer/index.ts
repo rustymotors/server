@@ -14,15 +14,26 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { MsgHead } = require('./MsgHead');
+import { IServerConfiguration } from "../IServerConfiguration";
+import { logger } from "../logger";
+import { PatchServer } from "./patchServer";
+import { WebServer } from "./web";
 
-const msgHead1 = new MsgHead(Buffer.concat([Buffer.from([0x14, 0x00]), Buffer.from('TOMC')]));
+export class Web {
+  /**
+   * Start HTTP and HTTPs connection listeners
+   * TODO: This code may be better suited in web.js and patchServer.js
+   */
+  public async start(config: IServerConfiguration) {
 
-describe('MsgHead', () => {
-  test('length is correct', () => {
-    expect(msgHead1.length).toBe(20);
-  });
-  test('mcosig is correct', () => {
-    expect(msgHead1.mcosig).toBe('TOMC');
-  });
-});
+    // Start the mock patch server
+    const patchServer = new PatchServer();
+    patchServer.start(config);
+    logger.info("[webServer] Patch Server started");
+
+    // Start the AuthLogin and shardlist servers
+    const webServer = new WebServer();
+    webServer.start(config);
+    logger.info("[webServer] Web Server started");
+  }
+}

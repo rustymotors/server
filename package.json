@@ -4,13 +4,10 @@
   "description": "a server",
   "main": "src/server.js",
   "scripts": {
-    "build": "npm run tsc && npm run test",
-    "prestart": "tslint '{lib,src}/**/*.{ts,tsx}' && npm run tsc",
-    "pretest": "tslint '{lib,src}/**/*.{ts,tsx}' && npm run tsc",
-    "tslint": "tslint '{lib,src}/**/*.{ts,tsx}'",
+    "prestart": "npm run lint-test && npm run tsc",
     "start": "docker-compose up --build --abort-on-container-exit",
     "tsc": "tsc",
-    "test": "jest --all",
+    "lint-test": "tslint '{lib,src}/**/*.{ts,tsx}' && jest --all",
     "licence-check": "license-checker --json > ./data/licenses.json"
   },
   "author": "Joseph W Becher <jwbecher@drazisil.com> (drazisil)",
