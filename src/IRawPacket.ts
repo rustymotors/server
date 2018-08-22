@@ -14,27 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { logger } = require("..//logger");
-const { PatchServer } = require("./patchServer");
-const { WebServer } = require("./web");
+import { Connection } from "./Connection";
 
-class Web {
-  /**
-   * Start HTTP and HTTPs connection listeners
-   * TODO: This code may be better suited in web.js and patchServer.js
-   */
-  async start(config) {
-
-    // Start the mock patch server
-    const patchServer = new PatchServer();
-    patchServer.start(config);
-    logger.info("[webServer] Patch Server started");
-
-    // Start the AuthLogin and shardlist servers
-    const webServer = new WebServer();
-    webServer.start(config);
-    logger.info("[webServer] Web Server started");
-  }
+export interface IRawPacket {
+    connection: Connection;
+    data: Buffer;
+    localPort: number;
+    remoteAddress: string;
+    timestamp: Date;
 }
-
-module.exports = { Web }

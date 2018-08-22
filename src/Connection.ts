@@ -14,21 +14,47 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const crypto = require('crypto');
-const { RC4 } = require('./RC4');
+import * as crypto from "crypto";
+import { Socket } from "net";
+import ConnectionMgr from "./connectionMgr";
+import RC4 from "./RC4";
 
-class Connection {
-  constructor(connectionId, sock, mgr) {
+export class Connection {
+  public id: number;
+  public appId: number;
+  public sock: Socket;
+  public enc: {
+    in: RC4 | null;
+    out: RC4 | null;
+  };
+  public useEncryption: boolean;
+  public remoteAddress: string | undefined;
+  public localPort: number;
+  public isSetupComplete: boolean;
+  public status: "ACTIVE" | "INACTIVE";
+  private msgEvent: null;
+  private lastMsg: number;
+  private encLobby: {
+    cipher: crypto.Cipher | null;
+    decipher: crypto.Decipher | null;
+  };
+  private mgr: ConnectionMgr;
+  private inQueue: boolean;
+
+  constructor(connectionId: number, sock: Socket, mgr: ConnectionMgr) {
     this.id = connectionId;
-    this.appID = 0;
-    this.status = 'INACTIVE';
+    this.appId = 0;
+    this.status = "INACTIVE";
     this.remoteAddress = sock.remoteAddress;
     this.localPort = sock.localPort;
     this.sock = sock;
     this.msgEvent = null;
     this.lastMsg = 0;
     this.useEncryption = false;
-    this.encLobby = {};
+    this.encLobby = {
+      cipher: null,
+      decipher: null,
+    };
     this.enc = {
       in: null,
       out: null,
@@ -41,7 +67,7 @@ class Connection {
   /**
    * setEncryptionKey
    */
-  setEncryptionKey(sessionKey) {
+  public setEncryptionKey(sessionKey: string) {
     this.enc.in = new RC4(sessionKey);
     this.enc.out = new RC4(sessionKey);
 
@@ -51,17 +77,17 @@ class Connection {
   /**
    * setEncryptionKeyDES
    */
-  setEncryptionKeyDES(sKey) {
+  public setEncryptionKeyDES(sKey: string) {
     const desIV = Buffer.alloc(8);
     this.encLobby.cipher = crypto.createCipheriv(
-      'des-cbc',
-      Buffer.from(sKey, 'hex'),
+      "des-cbc",
+      Buffer.from(sKey, "hex"),
       desIV,
     );
     this.encLobby.cipher.setAutoPadding(false);
     this.encLobby.decipher = crypto.createDecipheriv(
-      'des-cbc',
-      Buffer.from(sKey, 'hex'),
+      "des-cbc",
+      Buffer.from(sKey, "hex"),
       desIV,
     );
     this.encLobby.decipher.setAutoPadding(false);
@@ -72,15 +98,21 @@ class Connection {
   /**
    * CipherBufferDES
    */
-  cipherBufferDES(messageBuffer) {
-    return this.encLobby.cipher.update(messageBuffer);
+  public cipherBufferDES(messageBuffer: Buffer) {
+    if (this.encLobby.cipher) {
+      return this.encLobby.cipher.update(messageBuffer);
+    }
+    throw new Error("No DES cipher set on connection");
   }
 
   /**
    * DecipherBufferDES
    */
-  decipherBufferDES(messageBuffer) {
-    return this.encLobby.decipher.update(messageBuffer);
+  public decipherBufferDES(messageBuffer: Buffer) {
+    if (this.encLobby.decipher) {
+      return this.encLobby.decipher.update(messageBuffer);
+    }
+    throw new Error("No DES decipher set on connection");
   }
 }
 

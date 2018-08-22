@@ -14,17 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { logger } = require('../logger');
+import { logger } from "../logger";
 
-class GetLobbiesListMsg {
-  constructor(buffer) {
+export class GetLobbiesListMsg {
+  private customerId: number;
+  private personaId: number;
+
+  private msgNo: number;
+  constructor(buffer: Buffer) {
     try {
       this.msgNo = buffer.readInt16LE(0);
     } catch (error) {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
       } else {
-        logger.error(buffer.toString('hex'));
+        logger.error(buffer.toString("hex"));
         throw error;
       }
     }
@@ -36,15 +40,13 @@ class GetLobbiesListMsg {
   }
 
   /**
-    * dumpPacket
-    */
-  dumpPacket() {
-    logger.debug('[LobbiesListMsg]======================================');
-    logger.debug('MsgNo:       ', this.msgNo.toString());
-    logger.debug('customerId:  ', this.customerId.toString());
-    logger.debug('personaId:   ', this.personaId.toString());
-    logger.debug('[LobbiesListMsg]======================================');
+   * dumpPacket
+   */
+  public dumpPacket() {
+    logger.debug("[LobbiesListMsg]======================================");
+    logger.debug("MsgNo:       ", this.msgNo.toString());
+    logger.debug("customerId:  ", this.customerId.toString());
+    logger.debug("personaId:   ", this.personaId.toString());
+    logger.debug("[LobbiesListMsg]======================================");
   }
 }
-
-module.exports = { GetLobbiesListMsg };
