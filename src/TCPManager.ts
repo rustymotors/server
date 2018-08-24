@@ -109,7 +109,6 @@ async function Login(con: Connection, node: MessageNode) {
   // Update the appId
   loginMsg.appId = con.appId;
 
-  logger.debug(util.inspect(loginMsg));
   loginMsg.login.dumpPacket();
 
   // Create new response packet
@@ -140,11 +139,19 @@ async function GetLobbies(con: Connection, node: MessageNode) {
   // TODO: Do this cleaner
 
   logger.debug("Dumping response...");
-  lobbyMsg.dumpPacket();
 
+  const pReply = new GenericReplyMsg();
+  pReply.msgNo = 101;
+  pReply.msgReply = 324;
   const rPacket = new MessageNode();
+
+  // lobbyMsg.dumpPacket();
+
+  // const rPacket = new MessageNode();
   rPacket.deserialize(node.data);
-  rPacket.updateBuffer(lobbyMsg.serialize());
+  logger.info(pReply.serialize().toString("hex"));
+  rPacket.updateBuffer(pReply.serialize());
+  // rPacket.updateBuffer(lobbyMsg.serialize());
 
   rPacket.dumpPacket();
 
@@ -280,24 +287,23 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
         "===================================================================",
       );
       const encryptedBuffer = msg.data.toString("hex");
-      logger.warn(
-        "Full packet before decrypting: ",
-        encryptedBuffer,
-      );
+      logger.warn(`Full packet before decrypting: ${encryptedBuffer}`);
 
-      logger.warn("Message buffer before decrypting: ", encryptedBuffer);
+      logger.warn(`Message buffer before decrypting: ${encryptedBuffer}`);
       if (!newConnection.enc.in) {
         throw new Error("ARC4 decrypter is null");
       }
       const deciphered = newConnection.enc.in.processString(encryptedBuffer);
-      logger.warn(
-        "Message buffer after decrypting:    ",
-        deciphered.toString("hex"),
-      );
+      logger.warn(`Message buffer after decrypting: ${deciphered.toString("hex")}`);
 
       logger.debug(
         "===================================================================",
       );
+
+      if (deciphered.readUInt16LE(0) <= 0) {
+        logger.error(`Failure deciphering message, exiting.`);
+        process.exit(1);
+      }
 
       // Update the MessageNode with the deciphered buffer
       msg.updateBuffer(deciphered);
