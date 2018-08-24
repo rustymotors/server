@@ -24,6 +24,7 @@ import { logger } from "./logger";
 import {
   ClientConnectMsg, GetLobbiesListMsg, LobbyMsg, LoginMsg,
 } from "./messageTypes";
+import { GenericReplyMsg } from "./messageTypes/GenericReplyMsg";
 import { MessageNode } from "./messageTypes/MessageNode";
 import * as packet from "./packet";
 
@@ -113,7 +114,8 @@ async function Login(con: Connection, node: MessageNode) {
 
   // Create new response packet
   // TODO: Do this cleaner
-  const rPacket = new MessageNode(node.serialize());
+  const rPacket = new MessageNode();
+  rPacket.deserialize(node.serialize());
   rPacket.setMsgNo(101);
   logger.debug("Dumping response...");
   rPacket.dumpPacket();
@@ -140,7 +142,8 @@ async function GetLobbies(con: Connection, node: MessageNode) {
   logger.debug("Dumping response...");
   lobbyMsg.dumpPacket();
 
-  const rPacket = new MessageNode(node.data);
+  const rPacket = new MessageNode();
+  rPacket.deserialize(node.data);
   rPacket.updateBuffer(lobbyMsg.serialize());
 
   rPacket.dumpPacket();
@@ -187,8 +190,12 @@ async function ClientConnect(con: Connection, node: MessageNode) {
 
   // Create new response packet
   // TODO: Do this cleaner
-  const rPacket = new MessageNode(node.serialize());
-  rPacket.setMsgNo(101);
+  const pReply = new GenericReplyMsg();
+  pReply.msgNo = 101;
+  pReply.msgReply = 105;
+  const rPacket = new MessageNode();
+  rPacket.deserialize(node.serialize());
+  rPacket.updateBuffer(pReply.serialize());
   logger.debug("Dumping response...");
   rPacket.dumpPacket();
 
@@ -391,7 +398,8 @@ export async function defaultHandler(rawPacket: IRawPacket) {
   } = rawPacket;
   let messageNode;
   try {
-    messageNode = new MessageNode(data);
+    messageNode = new MessageNode();
+    messageNode.deserialize(data);
   } catch (e) {
     if (e instanceof RangeError) {
       // This is a very short packet, likely a heartbeat

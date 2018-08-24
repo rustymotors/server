@@ -32,12 +32,10 @@ export class MessageNode {
   private mcoSig: string;
   private header: MsgHead;
 
-  constructor(packet: Buffer) {
+  constructor() {
     this.toFrom = 0;
 
     this.appId = 0;
-
-    this.deserialize(packet);
   }
 
   public deserialize(packet: Buffer) {
