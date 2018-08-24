@@ -90,8 +90,8 @@ export class MessageNode {
   }
 
   public updateBuffer(buffer: Buffer) {
-    this.data = buffer;
-    this.dataLength = this.data.length;
+    this.data = Buffer.from(buffer);
+    this.dataLength = 10 + buffer.length;
     this.msgNo = this.data.readInt16LE(0);
   }
 
@@ -113,9 +113,10 @@ export class MessageNode {
     logger.debug(`Sequence: ${this.seq}`);
     logger.debug(`Flags: ${this.flags}`);
     logger.debug("------------------------------------------------");
-    logger.debug(`data as string: ${this.data.toString("hex")}`);
-    logger.debug("------------------------------------------------");
-    logger.debug(`packet as string: ${this.serialize().toString("hex")}`);
+    const packetContents = this.serialize().toString("hex").match(/../g);
+    if (packetContents) {
+      logger.debug(`packet as string: ${packetContents.join(" ")}`);
+    }
     logger.debug("= MessageNode ==================================");
   }
 
