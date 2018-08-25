@@ -21,10 +21,11 @@ import * as pool from "./database";
 import { IRawPacket } from "./IRawPacket";
 import * as lobby from "./lobby";
 import { logger } from "./logger";
-import {
-  ClientConnectMsg, GetLobbiesListMsg, LobbyMsg, LoginMsg,
-} from "./messageTypes";
+import { ClientConnectMsg } from "./messageTypes/ClientConnectMsg";
 import { GenericReplyMsg } from "./messageTypes/GenericReplyMsg";
+import { GetLobbiesListMsg } from "./messageTypes/GetLobbiesListMsg";
+import { LobbyMsg } from "./messageTypes/LobbyMsg";
+import { LoginMsg } from "./messageTypes/LoginMsg";
 import { MessageNode } from "./messageTypes/MessageNode";
 import * as packet from "./packet";
 
