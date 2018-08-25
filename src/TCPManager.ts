@@ -113,9 +113,16 @@ async function Login(con: Connection, node: MessageNode) {
 
   // Create new response packet
   // TODO: Do this cleaner
+  const pReply = new GenericReplyMsg();
+  pReply.msgNo = 101;
+  pReply.msgReply = 105;
   const rPacket = new MessageNode();
+
+  // lobbyMsg.dumpPacket();
+
+  // const rPacket = new MessageNode();
   rPacket.deserialize(node.serialize());
-  rPacket.setMsgNo(101);
+  rPacket.updateBuffer(pReply.serialize());
   logger.debug("Dumping response...");
   rPacket.dumpPacket();
 
