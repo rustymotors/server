@@ -15,8 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const crypto = require("crypto");
-const { logger } = require("../../src/logger");
-const packet = require("../../src/packet");
+const { logger } = require("../logger");
+const packet = require("../packet");
 
 /**
  * Handle a select game persona packet

@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { ConnectionMgr } = require('./connectionMgr');
-const { startTCPListener } = require('./listenerThread');
-const { logger } = require('./logger');
-// const pool = require('../lib/database');
+import ConnectionMgr from "./connectionMgr";
+import { IServerConfiguration } from "./IServerConfiguration";
+import { startTCPListener } from "./listenerThread";
+import { logger } from "./logger";
 
 const connectionMgr = new ConnectionMgr();
 
@@ -26,8 +26,8 @@ const connectionMgr = new ConnectionMgr();
  * @param {Function} callback
  */
 
-async function startServers(config) {
-  logger.info('Starting the listening sockets...');
+async function startServers(config: IServerConfiguration) {
+  logger.info("Starting the listening sockets...");
   const tcpPortList = [
     6660,
     8228,
@@ -55,11 +55,11 @@ async function startServers(config) {
     9014,
   ];
 
-  await tcpPortList.map(port => startTCPListener(port, connectionMgr, config));
-  logger.info('Listening sockets create successfully.');
+  await tcpPortList.map((port) => startTCPListener(port, connectionMgr, config));
+  logger.info("Listening sockets create successfully.");
 }
 
-function run(configurationFile) {
+export function run(configurationFile: IServerConfiguration) {
   // Connect to database
   // Start the server listeners
   startServers(configurationFile)
@@ -67,5 +67,3 @@ function run(configurationFile) {
       throw err;
     });
 }
-
-module.exports = { run };

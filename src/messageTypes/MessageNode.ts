@@ -14,19 +14,31 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { logger } = require('../logger');
-const { MsgHead } = require('./MsgHead');
+import { logger } from "../logger";
+import { GetLobbiesListMsg } from "./GetLobbiesListMsg";
+import { LoginMsg } from "./LoginMsg";
+import MsgHead from "./MsgHead";
 
-class MessageNode {
-  constructor(packet) {
+export class MessageNode {
+  public appId: number;
+  public msgNo: number;
+  public seq: number;
+  public flags: number;
+  public data: Buffer;
+  public login?: LoginMsg;
+  public lobby?: GetLobbiesListMsg;
+  public toFrom: number;
+  private dataLength: number;
+  private mcoSig: string;
+  private header: MsgHead;
+
+  constructor() {
     this.toFrom = 0;
 
     this.appId = 0;
-
-    this.deserialize(packet);
   }
 
-  deserialize(packet) {
+  public deserialize(packet: Buffer) {
     this.dataLength = packet.readInt16LE(0);
     this.mcoSig = packet.slice(2, 6).toString();
     this.seq = packet.readInt16LE(6);
@@ -42,13 +54,13 @@ class MessageNode {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
       } else {
-        logger.error(packet.toString('hex'));
+        logger.error(packet.toString("hex"));
         throw error;
       }
     }
   }
 
-  serialize() {
+  public serialize() {
     const packet = Buffer.alloc(this.dataLength + 2);
     packet.writeInt16LE(this.dataLength, 0);
     packet.write(this.mcoSig, 2);
@@ -58,58 +70,59 @@ class MessageNode {
     return packet;
   }
 
-  setAppId(appId) {
+  public setAppId(appId: number) {
     this.appId = appId;
   }
 
-  setMsgNo(newMsgNo) {
+  public setMsgNo(newMsgNo: number) {
     this.msgNo = newMsgNo;
-    this.data.writeInt16LE(this.msgNo);
+    this.data.writeInt16LE(this.msgNo, 0);
   }
 
-  setSeq(newSeq) {
+  public setSeq(newSeq: number) {
     this.seq = newSeq;
   }
 
-  setMsgHeader(packet) {
+  public setMsgHeader(packet: Buffer) {
     const header = Buffer.alloc(6);
     packet.copy(header, 0, 0, 6);
     this.header = new MsgHead(header);
   }
 
-  updateBuffer(buffer) {
-    this.data = buffer;
-    this.dataLength = this.data.length;
+  public updateBuffer(buffer: Buffer) {
+    this.data = Buffer.from(buffer);
+    this.dataLength = 10 + buffer.length;
     this.msgNo = this.data.readInt16LE(0);
   }
 
-  BaseMsgHeader(packet) {
-    // WORD msgNo;
-    this.msgNo = packet.readInt16LE(0);
-  }
-
-  getBaseMsgHeader(packet) {
+  public getBaseMsgHeader(packet: Buffer) {
     return this.BaseMsgHeader(packet);
   }
 
-  isMCOTS() {
-    return this.mcoSig === 'TOMC';
+  public isMCOTS() {
+    return this.mcoSig === "TOMC";
   }
 
-  dumpPacket() {
-    logger.debug('= MessageNode ===============================');
-    logger.debug('Packet has a valid MCOTS header signature');
-    logger.debug('=============================================');
+  public dumpPacket() {
+    logger.debug("= MessageNode ===============================");
+    logger.debug("Packet has a valid MCOTS header signature");
+    logger.debug("=============================================");
     logger.debug(`Header Length: ${this.dataLength}`);
     logger.debug(`Header MCOSIG: ${this.isMCOTS()}`);
     logger.debug(`MsgNo:    ${this.msgNo}`);
     logger.debug(`Sequence: ${this.seq}`);
     logger.debug(`Flags: ${this.flags}`);
-    logger.debug('------------------------------------------------');
-    logger.debug(`data as string: ${this.data.toString('hex')}`);
-    logger.debug('------------------------------------------------');
-    logger.debug(`packet as string: ${this.serialize().toString('hex')}`);
-    logger.debug('= MessageNode ==================================');
+    logger.debug("------------------------------------------------");
+    const packetContents = this.serialize().toString("hex").match(/../g);
+    if (packetContents) {
+      logger.debug(`packet as string: ${packetContents.join(" ")}`);
+    }
+    logger.debug("= MessageNode ==================================");
+  }
+
+  private BaseMsgHeader(packet: Buffer) {
+    // WORD msgNo;
+    this.msgNo = packet.readInt16LE(0);
   }
 }
 module.exports = { MessageNode };

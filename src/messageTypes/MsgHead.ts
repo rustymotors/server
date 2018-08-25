@@ -14,12 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class MsgHead {
-  constructor(header) {
+export default class MsgHead {
+  public length: number;
+  public mcosig: string;
+
+  constructor(header: Buffer) {
     this.length = header.readInt16LE(0);
-    this.mcosig = header.toString('ascii', 2);
+    this.mcosig = header.toString("ascii", 2);
     return this;
   }
 }
-
-module.exports = { MsgHead };

@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { logger } = require('../../src/logger');
+const { logger } = require('../logger');
 const packet = require('./packet');
 
 const { NPSUserStatus } = require('./npsUserStatus');
 
-const { Connection } = require("../../src/Connection");
+const { Connection } = require("../Connection");
 const pool = require("../database");
 
 function npsGetCustomerIdByContextId(contextId) {
@@ -51,7 +51,7 @@ async function updateSessionKey(customerId, sessionKey, contextId, connectionId)
   return pool.connect().then(pool.query(
     `INSERT INTO sessions (customer_id, session_key, s_key, context_id, 
     connection_id) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (customer_id) DO UPDATE SET session_key = $2, s_key = $3, context_id = $4, connection_id = $5`,
-    [customerId, sessionKey, sKey, contextId, connectionId], )
+    [customerId, sessionKey, sKey, contextId, connectionId])
   ).catch((e) => { console.trace(e); });
 }
 

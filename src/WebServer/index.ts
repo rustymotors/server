@@ -14,16 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { logger } = require("../../src/logger");
-const { PatchServer } = require("./patchServer");
-const { WebServer } = require("./web");
+import { IServerConfiguration } from "../IServerConfiguration";
+import { logger } from "../logger";
+import { PatchServer } from "./patchServer";
+import { WebServer } from "./web";
 
-class Web {
+export class Web {
   /**
    * Start HTTP and HTTPs connection listeners
    * TODO: This code may be better suited in web.js and patchServer.js
    */
-  async start(config) {
+  public async start(config: IServerConfiguration) {
 
     // Start the mock patch server
     const patchServer = new PatchServer();
@@ -36,5 +37,3 @@ class Web {
     logger.info("[webServer] Web Server started");
   }
 }
-
-module.exports = { Web }

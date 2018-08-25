@@ -1,4 +1,4 @@
-const { RC4 } = require('./RC4');
+import RC4 from "./RC4";
 
 const Key0 = Buffer.from([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]);
 const Input0 = Buffer.from([0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]);
@@ -1068,30 +1068,30 @@ const Output4 = Buffer.from([
   0xc0,
 ]);
 
-test('ARC4 validation suite', () => {
-  const test0 = new RC4(Key0);
-  expect(test0.processString(Input0).toString('hex')).toEqual(
-    Output0.toString('hex'),
+test("ARC4 validation suite", () => {
+  const test0 = new RC4(Key0.toString("hex"));
+  expect(test0.processString(Input0.toString("hex")).toString("hex")).toEqual(
+    Output0.toString("hex"),
   );
 
-  const test1 = new RC4(Key1);
+  const test1 = new RC4(Key1.toString("hex"));
 
-  expect(test1.processString(Input1).toString('hex')).toEqual(
-    Output1.toString('hex'),
+  expect(test1.processString(Input1.toString("hex")).toString("hex")).toEqual(
+    Output1.toString("hex"),
   );
 
-  const test2 = new RC4(Key2);
-  expect(test2.processString(Input2).toString('hex')).toEqual(
-    Output2.toString('hex'),
+  const test2 = new RC4(Key2.toString("hex"));
+  expect(test2.processString(Input2.toString("hex")).toString("hex")).toEqual(
+    Output2.toString("hex"),
   );
 
-  const test3 = new RC4(Key3);
-  expect(test3.processString(Input3).toString('hex')).toEqual(
-    Output3.toString('hex'),
+  const test3 = new RC4(Key3.toString("hex"));
+  expect(test3.processString(Input3.toString("hex")).toString("hex")).toEqual(
+    Output3.toString("hex"),
   );
 
-  const test4 = new RC4(Key4);
-  expect(test4.processString(Input4).toString('hex')).toEqual(
-    Output4.toString('hex'),
+  const test4 = new RC4(Key4.toString("hex"));
+  expect(test4.processString(Input4.toString("hex")).toString("hex")).toEqual(
+    Output4.toString("hex"),
   );
 });
