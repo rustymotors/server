@@ -7,6 +7,7 @@
     "prestart": "npm run lint-test && npm run tsc",
     "start": "docker-compose up --build --abort-on-container-exit",
     "tsc": "tsc",
+    "test": "npm run lint-test",
     "lint-test": "tslint '{lib,src}/**/*.{ts,tsx}' && jest --all",
     "licence-check": "license-checker --json > ./data/licenses.json"
   },
