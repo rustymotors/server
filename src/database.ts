@@ -14,16 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-require('dotenv-safe').config();
-const { Pool } = require('pg')
+import * as dotenvSafe from "dotenv-safe";
+dotenvSafe.config();
+import { Pool } from "pg";
 
 // pools will use environment variables
 // for connection information
-const pool = new Pool({
+export const pool = new Pool({
   database: process.env.DB_TABLE,
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
-})
-
-
-module.exports = pool
+});
