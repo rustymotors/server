@@ -17,7 +17,7 @@
 import { Socket } from "net";
 import * as util from "util";
 import { Connection } from "./Connection";
-import * as pool from "./database";
+import { pool } from "./database";
 import { IRawPacket } from "./IRawPacket";
 import * as lobby from "./lobby";
 import { logger } from "./logger";
@@ -43,7 +43,9 @@ function socketWriteIfOpen(conn: Connection, node: MessageNode) {
     if (node.flags - 8 >= 0) {
       logger.debug("encryption flag is set");
       if (conn.enc.out) {
-        node.updateBuffer(conn.enc.out.processString(node.data.toString("hex")));
+        node.updateBuffer(
+          conn.enc.out.processString(node.data.toString("hex"))
+        );
       } else {
         throw new Error("encryption out on connection is null");
       }
@@ -59,7 +61,7 @@ function socketWriteIfOpen(conn: Connection, node: MessageNode) {
       packetToWrite,
       " to ",
       sock.remoteAddress,
-      sock.localPort.toString(),
+      sock.localPort.toString()
     );
   }
 }
@@ -91,12 +93,22 @@ function MSG_STRING(msgID: number) {
  * @param {string} remoteAddress
  */
 async function fetchSessionKeyByConnectionId(connectionId: number) {
-  return pool.query("SELECT session_key, s_key FROM sessions WHERE connection_id = $1",
-    [connectionId])
-    .then((res: { rows: Array<{ session_key: string, s_key: string }>; }) => res.rows[0])
-    .catch((e: ExceptionInformation) => setImmediate(() => {
-      logger.error(`Unable to fetch session key for connection id: ${connectionId}: `, e);
-    }));
+  return pool
+    .query("SELECT session_key, s_key FROM sessions WHERE connection_id = $1", [
+      connectionId,
+    ])
+    .then(
+      (res: { rows: Array<{ session_key: string; s_key: string }> }) =>
+        res.rows[0]
+    )
+    .catch((e: ExceptionInformation) =>
+      setImmediate(() => {
+        logger.error(
+          `Unable to fetch session key for connection id: ${connectionId}: `,
+          e
+        );
+      })
+    );
 }
 
 async function Login(con: Connection, node: MessageNode) {
@@ -188,19 +200,17 @@ async function ClientConnect(con: Connection, node: MessageNode) {
   connectionWithKey.setEncryptionKey(strKey.slice(0, 16).toString("hex"));
 
   // Update the connection's appId
-  connectionWithKey.appId = newMsg.appId;
+  connectionWithKey.appId = newMsg.getAppId();
 
   // Log the session key
   logger.debug(
     `cust: ${customerId} ID: ${personaId} Name: ${personaName} SessionKey: ${strKey[0].toString(
-      16,
-    )} ${strKey[1].toString(16)} ${strKey[2].toString(
-      16,
-    )} ${strKey[3].toString(16)} ${strKey[4].toString(
-      16,
-    )} ${strKey[5].toString(16)} ${strKey[6].toString(
-      16,
-    )} ${strKey[7].toString(16)}`,
+      16
+    )} ${strKey[1].toString(16)} ${strKey[2].toString(16)} ${strKey[3].toString(
+      16
+    )} ${strKey[4].toString(16)} ${strKey[5].toString(16)} ${strKey[6].toString(
+      16
+    )} ${strKey[7].toString(16)}`
   );
 
   // Create new response packet
@@ -282,7 +292,7 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
       if (!newConnection.isSetupComplete) {
         logger.debug("3");
         logger.error(
-          `Decrypt() not yet setup! Disconnecting...conId: ${con.id}`,
+          `Decrypt() not yet setup! Disconnecting...conId: ${con.id}`
         );
         con.sock.end();
         process.exit();
@@ -292,7 +302,7 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
        * Attempt to decrypt message
        */
       logger.debug(
-        "===================================================================",
+        "==================================================================="
       );
       const encryptedBuffer = msg.data.toString("hex");
       logger.warn(`Full packet before decrypting: ${encryptedBuffer}`);
@@ -302,10 +312,12 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
         throw new Error("ARC4 decrypter is null");
       }
       const deciphered = newConnection.enc.in.processString(encryptedBuffer);
-      logger.warn(`Message buffer after decrypting: ${deciphered.toString("hex")}`);
+      logger.warn(
+        `Message buffer after decrypting: ${deciphered.toString("hex")}`
+      );
 
       logger.debug(
-        "===================================================================",
+        "==================================================================="
       );
 
       if (deciphered.readUInt16LE(0) <= 0) {
@@ -317,7 +329,7 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
       msg.updateBuffer(deciphered);
     } catch (e) {
       logger.error(
-        `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}`,
+        `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}`
       );
       con.sock.end();
       throw e;
@@ -349,11 +361,11 @@ async function lobbyDataHandler(rawPacket: IRawPacket) {
     case "100": {
       const responsePacket = await lobby.npsRequestGameConnectServer(
         sock,
-        data,
+        data
       );
       logger.debug(
         "responsePacket's data prior to sending: ",
-        responsePacket.toString("hex"),
+        responsePacket.toString("hex")
       );
       sock.write(responsePacket);
       break;
@@ -363,7 +375,7 @@ async function lobbyDataHandler(rawPacket: IRawPacket) {
       const responsePacket = await npsHeartbeat();
       logger.debug(
         "responsePacket's data prior to sending: ",
-        responsePacket.toString("hex"),
+        responsePacket.toString("hex")
       );
       sock.write(responsePacket);
       break;
@@ -379,14 +391,14 @@ async function lobbyDataHandler(rawPacket: IRawPacket) {
       if (encryptedCommand == null) {
         logger.error(
           "Error with encrypted command, dumping connection...",
-          newConnection,
+          newConnection
         );
         process.exit(1);
       }
 
       logger.debug(
         "encrypedCommand's data prior to sending: ",
-        encryptedCommand.toString("hex"),
+        encryptedCommand.toString("hex")
       );
       newSock.write(encryptedCommand);
       return newConnection;
@@ -407,9 +419,7 @@ function sendPacketOkLogin(socket: Socket) {
 }
 
 export async function defaultHandler(rawPacket: IRawPacket) {
-  const {
-    connection, remoteAddress, localPort, data,
-  } = rawPacket;
+  const { connection, remoteAddress, localPort, data } = rawPacket;
   let messageNode;
   try {
     messageNode = new MessageNode();

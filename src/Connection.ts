@@ -32,12 +32,14 @@ export class Connection {
   public localPort: number;
   public isSetupComplete: boolean;
   public status: "ACTIVE" | "INACTIVE";
-  private msgEvent: null;
-  private lastMsg: number;
-  private encLobby: {
+  public encryptedCommand: Buffer;
+  public encLobby: {
     cipher: crypto.Cipher | null;
     decipher: crypto.Decipher | null;
   };
+  public decryptedCmd: Buffer;
+  private msgEvent: null;
+  private lastMsg: number;
   private mgr: ConnectionMgr;
   private inQueue: boolean;
 
@@ -82,13 +84,13 @@ export class Connection {
     this.encLobby.cipher = crypto.createCipheriv(
       "des-cbc",
       Buffer.from(sKey, "hex"),
-      desIV,
+      desIV
     );
     this.encLobby.cipher.setAutoPadding(false);
     this.encLobby.decipher = crypto.createDecipheriv(
       "des-cbc",
       Buffer.from(sKey, "hex"),
-      desIV,
+      desIV
     );
     this.encLobby.decipher.setAutoPadding(false);
 

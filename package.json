@@ -53,8 +53,10 @@
     "output": "test-reports/junit.xml"
   },
   "dependencies": {
+    "@types/dotenv-safe": "^5.0.0",
     "@types/js-yaml": "^3.11.2",
     "@types/node": "^10.9.2",
+    "@types/pg": "^7.4.10",
     "@types/winston": "^2.4.4",
     "async": "^2.6.1",
     "dotenv-safe": "^6.0.0",

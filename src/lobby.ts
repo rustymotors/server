@@ -14,21 +14,27 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const crypto = require('crypto');
-const { logger } = require('./logger');
-const packet = require('./packet');
+import * as crypto from "crypto";
+import { logger } from "./logger";
+import { buildPacket } from "./packet";
 
-const pool = require('./database');
+import { Socket } from "net";
+import { Connection } from "./Connection";
+import { pool } from "./database";
 
 /**
  * Handle a request to connect to a game server packet
  * @param {Socket} socket
  * @param {Buffer} rawData
  */
-async function npsRequestGameConnectServer(socket, rawData) {
-  logger.info('*** npsRequestGameConnectServer ****');
-  logger.debug('Packet as hex: ', rawData.toString('hex'));
-  logger.info('************************************');
+export async function npsRequestGameConnectServer(
+  socket: Socket,
+  rawData: Buffer
+) {
+  logger.debug("*** npsRequestGameConnectServer ****");
+  logger.debug(`Packet from ${socket.remoteAddress}`);
+  logger.debug("Packet as hex: ", rawData.toString("hex"));
+  logger.debug("************************************");
 
   // // Load the received data into a MsgPack class
   // const msgPack = MsgPack(rawData);
@@ -44,14 +50,14 @@ async function npsRequestGameConnectServer(socket, rawData) {
 
   // User name (32)
   const name = Buffer.alloc(32);
-  Buffer.from('Doctor Brown', 'utf8').copy(name);
+  Buffer.from("Doctor Brown", "utf8").copy(name);
   name.copy(packetContent, 6);
 
   // UserData - User controllable data (64)
   Buffer.alloc(64).copy(packetContent, 38);
 
   // Build the packet
-  const packetResult = packet.buildPacket(4, 0x0120, packetContent);
+  const packetResult = buildPacket(4, 0x0120, packetContent);
 
   return packetResult;
 }
@@ -61,12 +67,12 @@ async function npsRequestGameConnectServer(socket, rawData) {
  * @param {Connection} con
  * @param {Buffer} cypherCmd
  */
-function decryptCmd(con, cypherCmd) {
+function decryptCmd(con: Connection, cypherCmd: Buffer) {
   const s = con;
   const decryptedCommand = s.decipherBufferDES(cypherCmd);
   s.decryptedCmd = decryptedCommand;
-  logger.warn(`[lobby] Enciphered Cmd: ${cypherCmd.toString('hex')}`);
-  logger.warn(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString('hex')}`);
+  logger.warn(`[lobby] Enciphered Cmd: ${cypherCmd.toString("hex")}`);
+  logger.warn(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`);
   return s;
 }
 
@@ -75,7 +81,7 @@ function decryptCmd(con, cypherCmd) {
  * @param {Connection} con
  * @param {Buffer} cypherCmd
  */
-function encryptCmd(con, cypherCmd) {
+function encryptCmd(con: Connection, cypherCmd: Buffer) {
   const s = con;
   s.encryptedCommand = s.cipherBufferDES(cypherCmd);
   return s;
@@ -85,11 +91,20 @@ function encryptCmd(con, cypherCmd) {
  * Fetch session key from database based on remote address
  * @param {string} remoteAddress
  */
-async function fetchSessionKeyByConnectionId(connectionId) {
-  return pool.query('SELECT session_key, s_key FROM sessions WHERE connection_id = $1',
-    [connectionId])
+async function fetchSessionKeyByConnectionId(connectionId: number) {
+  return pool
+    .query("SELECT session_key, s_key FROM sessions WHERE connection_id = $1", [
+      connectionId,
+    ])
     .then(res => res.rows[0])
-    .catch(e => setImmediate(() => { logger.error(`Unable to fetch session key for connection id: ${connectionId}: `, e); }));
+    .catch(e =>
+      setImmediate(() => {
+        logger.error(
+          `Unable to fetch session key for connection id: ${connectionId}: `,
+          e
+        );
+      })
+    );
 }
 
 /**
@@ -97,7 +112,7 @@ async function fetchSessionKeyByConnectionId(connectionId) {
  * @param {Connection} con
  * @param {Buffer} data
  */
-async function sendCommand(con, data) {
+export async function sendCommand(con: Connection, data: Buffer) {
   const { id } = con;
   const keys = await fetchSessionKeyByConnectionId(id);
   logger.debug(keys);
@@ -119,7 +134,7 @@ async function sendCommand(con, data) {
   packetContent.writeUInt16BE(0x022c, 371);
 
   // Build the packet
-  const packetResult = packet.buildPacket(32, 0x0229, packetContent);
+  const packetResult = buildPacket(32, 0x0229, packetContent);
 
   const cmdEncrypted = encryptCmd(s, packetResult);
 

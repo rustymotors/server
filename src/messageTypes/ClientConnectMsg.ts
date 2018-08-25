@@ -14,15 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { Connection } from "../Connection";
 import { logger } from "../logger";
 
 export class ClientConnectMsg {
+  public customerId: number;
+  public personaId: number;
+  public personaName: string;
   private appId: number;
   private msgNo: number;
-  private customerId: number;
-  private personaId: number;
   private custName: string;
-  private personaName: string;
   private mcVersion: Buffer;
 
   constructor(buffer: Buffer) {
@@ -48,6 +49,10 @@ export class ClientConnectMsg {
     this.personaName = buffer.slice(42, 73).toString();
     this.mcVersion = buffer.slice(74);
     return this;
+  }
+
+  public getAppId() {
+    return this.appId;
   }
 
   /**
