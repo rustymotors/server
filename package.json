@@ -28,8 +28,8 @@
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/**/*.js",
-      "lib/**/*.js"
+      "src/**/*.{js|ts}",
+      "lib/**/*.{js|ts}"
     ],
     "reporters": [
       "default",
