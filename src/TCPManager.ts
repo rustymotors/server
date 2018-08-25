@@ -199,7 +199,7 @@ async function ClientConnect(con: Connection, node: MessageNode) {
   // TODO: Do this cleaner
   const pReply = new GenericReplyMsg();
   pReply.msgNo = 101;
-  pReply.msgReply = 105;
+  pReply.msgReply = 438;
   const rPacket = new MessageNode();
   rPacket.deserialize(node.serialize());
   rPacket.updateBuffer(pReply.serialize());
