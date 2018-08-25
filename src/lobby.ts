@@ -15,12 +15,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as crypto from "crypto";
-import { logger } from "./logger";
-import { buildPacket } from "./packet";
-
 import { Socket } from "net";
 import { Connection } from "./Connection";
 import { pool } from "./database";
+import { logger } from "./logger";
+import { buildPacket } from "./packet";
 
 /**
  * Handle a request to connect to a game server packet
