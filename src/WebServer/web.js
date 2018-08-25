@@ -18,7 +18,7 @@ const fs = require("fs");
 const https = require("https");
 const SSLConfig = require("ssl-config");
 
-const { logger } = require("../../src/logger");
+const { logger } = require("../logger");
 
 /**
  * Create the SSL options object

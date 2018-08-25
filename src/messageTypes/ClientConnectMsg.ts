@@ -14,17 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { logger } = require('../logger');
+import { logger } from "../logger";
 
-class ClientConnectMsg {
-  constructor(buffer) {
+export class ClientConnectMsg {
+  private appId: number;
+  private msgNo: number;
+  private customerId: number;
+  private personaId: number;
+  private custName: string;
+  private personaName: string;
+  private mcVersion: Buffer;
+
+  constructor(buffer: Buffer) {
     try {
       this.msgNo = buffer.readInt16LE(0);
     } catch (error) {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
       } else {
-        logger.error(buffer.toString('hex'));
+        logger.error(buffer.toString("hex"));
         throw error;
       }
     }
@@ -45,15 +53,15 @@ class ClientConnectMsg {
   /**
    * dumpPacket
    */
-  dumpPacket() {
-    logger.info('[ClientConnectMsg]======================================');
-    logger.debug('MsgNo:       ', this.msgNo.toString());
-    logger.debug('customerId:  ', this.customerId.toString());
-    logger.debug('personaId:   ', this.personaId.toString());
-    logger.debug('custName:    ', this.custName);
-    logger.debug('personaName: ', this.personaName);
-    logger.debug('mcVersion:   ', this.mcVersion.toString('hex'));
-    logger.info('[ClientConnectMsg]======================================');
+  public dumpPacket() {
+    logger.info("[ClientConnectMsg]======================================");
+    logger.debug("MsgNo:       ", this.msgNo.toString());
+    logger.debug("customerId:  ", this.customerId.toString());
+    logger.debug("personaId:   ", this.personaId.toString());
+    logger.debug("custName:    ", this.custName);
+    logger.debug("personaName: ", this.personaName);
+    logger.debug("mcVersion:   ", this.mcVersion.toString("hex"));
+    logger.info("[ClientConnectMsg]======================================");
   }
 }
 

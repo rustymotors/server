@@ -14,35 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { MessageNode } = require('./MessageNode');
+import * as winston from "winston";
 
-const messageNode1 = new MessageNode();
-messageNode1.deserialize(
-  Buffer.from([
-    0x00,
-    0x00,
-    0x54,
-    0x4f,
-    0x4d,
-    0x43,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-  ]));
-
-test('packet is a MCOTS packet', () => {
-  expect(messageNode1.isMCOTS()).toBe(true);
+export const logger = winston.createLogger({
+  format: winston.format.combine(
+    winston.format.colorize({ all: true }),
+    winston.format.simple(),
+  ),
+  transports: [
+    new winston.transports.Console({ level: "debug" }),
+    new winston.transports.File({
+      filename: "filelog-info.log",
+      level: "info",
+    }),
+    new winston.transports.File({
+      filename: "filelog-error.log",
+      level: "error",
+    }),
+  ],
 });

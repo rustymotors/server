@@ -14,12 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { ClientConnectMsg } = require('./ClientConnectMsg');
-const { GetLobbiesListMsg } = require('./GetLobbiesListMsg');
-const { LobbyMsg } = require('./LobbyMsg');
-const { LoginMsg } = require('./LoginMsg');
-const { MessageNode } = require('./MessageNode');
+import MsgHead from "./MsgHead";
 
-module.exports = {
-  ClientConnectMsg, GetLobbiesListMsg, LobbyMsg, LoginMsg, MessageNode,
-};
+const msgHead1 = new MsgHead(Buffer.concat([Buffer.from([0x14, 0x00]), Buffer.from("TOMC")]));
+
+describe("MsgHead", () => {
+  test("length is correct", () => {
+    expect(msgHead1.length).toBe(20);
+  });
+  test("mcosig is correct", () => {
+    expect(msgHead1.mcosig).toBe("TOMC");
+  });
+});

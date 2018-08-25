@@ -14,22 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { Logger, transports } = require('winston');
+import { Connection } from "./Connection";
 
-const logger = new Logger({
-  transports: [
-    new transports.Console({ level: 'debug', colorize: 'all' }),
-    new transports.File({
-      filename: 'filelog-info.log',
-      level: 'info',
-      name: 'info-file',
-    }),
-    new transports.File({
-      filename: 'filelog-error.log',
-      level: 'error',
-      name: 'error-file',
-    }),
-  ],
-});
-
-module.exports = { logger };
+export interface IRawPacket {
+    connection: Connection;
+    data: Buffer;
+    localPort: number;
+    remoteAddress: string;
+    timestamp: Date;
+}

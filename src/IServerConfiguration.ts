@@ -14,15 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { MsgHead } = require('./MsgHead');
-
-const msgHead1 = new MsgHead(Buffer.concat([Buffer.from([0x14, 0x00]), Buffer.from('TOMC')]));
-
-describe('MsgHead', () => {
-  test('length is correct', () => {
-    expect(msgHead1.length).toBe(20);
-  });
-  test('mcosig is correct', () => {
-    expect(msgHead1.mcosig).toBe('TOMC');
-  });
-});
+export interface IServerConfiguration {
+    serverConfig: {
+        ipServer: number;
+    };
+}
