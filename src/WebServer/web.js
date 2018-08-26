@@ -37,7 +37,8 @@ function sslOptions(configuration) {
 
 function httpsHandler(
   request,
-  response
+  response,
+  config
 ) {
   logger.info(
     `[HTTPS] Request from ${request.socket.remoteAddress} for ${
@@ -79,7 +80,9 @@ function httpsHandler(
 class WebServer {
   async start(config) {
     const httpsServer = https
-      .createServer(sslOptions(config.serverConfig), httpsHandler)
+      .createServer(sslOptions(config.serverConfig), (req, res) => {
+        httpsHandler(req, res, config);
+      })
       .listen({ port: 4443, host: "0.0.0.0" })
       .on("connection", (socket) => {
         socket.on("error", (error) => {

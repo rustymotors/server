@@ -20,7 +20,7 @@ const packet = require('./packet');
 const { NPSUserStatus } = require('./npsUserStatus');
 
 const { Connection } = require("../Connection");
-const pool = require("../database");
+const { pool } = require("../database");
 
 function npsGetCustomerIdByContextId(contextId) {
 
