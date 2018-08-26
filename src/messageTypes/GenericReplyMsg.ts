@@ -51,7 +51,6 @@ export class GenericReplyMsg {
     this.result = buffer.slice(4, 8);
     this.data = buffer.slice(8, 12);
     this.data2 = buffer.slice(12);
-
   }
 
   public serialize() {
@@ -73,11 +72,11 @@ export class GenericReplyMsg {
    */
   public dumpPacket() {
     logger.debug("[GenericReply]======================================");
-    logger.debug("MsgNo:       ", this.msgNo);
-    logger.debug("MsgReply:    ", this.msgReply);
-    logger.debug("result:      ", this.result.toString("hex"));
-    logger.debug("data:        ", this.data.toString("hex"));
-    logger.debug("data2:       ", this.data2.toString("hex"));
+    logger.debug(`MsgNo:       ${this.msgNo}`);
+    logger.debug(`MsgReply:    ${this.msgReply}`);
+    logger.debug(`result:      ${this.result.toString("hex")}`);
+    logger.debug(`data:        ${this.data.toString("hex")}`);
+    logger.debug(`data2:       ${this.data2.toString("hex")}`);
     logger.debug("[/GenericReply]======================================");
   }
 }
