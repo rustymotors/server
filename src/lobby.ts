@@ -32,7 +32,7 @@ export async function npsRequestGameConnectServer(
 ) {
   logger.debug("*** npsRequestGameConnectServer ****");
   logger.debug(`Packet from ${socket.remoteAddress}`);
-  logger.debug("Packet as hex: ", rawData.toString("hex"));
+  logger.debug(`Packet as hex: ${rawData.toString("hex")}`);
   logger.debug("************************************");
 
   // // Load the received data into a MsgPack class
@@ -144,4 +144,3 @@ export async function sendCommand(con: Connection, data: Buffer) {
 
   return cmdEncrypted;
 }
-module.exports = { npsRequestGameConnectServer, sendCommand };

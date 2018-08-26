@@ -15,7 +15,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 export interface IServerConfiguration {
-    serverConfig: {
-        ipServer: number;
-    };
+  serverConfig: {
+    ipServer: number;
+    certFilename: string;
+    publicKeyFilename: string;
+    privateKeyFilename: string;
+  };
 }

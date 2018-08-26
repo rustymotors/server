@@ -36,7 +36,9 @@ function npsSelectGamePersona(socket) {
   // 207 = success
   const responsePacket = packet.buildPacket(261, 0x0207, packetContent);
 
-  logger.debug("responsePacket's data prior to sending: ", responsePacket.toString("hex"))
+  logger.debug(
+    `responsePacket's data prior to sending: ${responsePacket.toString("hex")}`
+  );
   socket.write(responsePacket);
 }
 
@@ -61,7 +63,9 @@ async function npsLogoutGameUser(socket) {
   // Build the packet
   const responsePacket = packet.buildPacket(257, 0x0612, packetContent);
 
-  logger.debug("responsePacket's data prior to sending: ", responsePacket.toString("hex"))
+  logger.debug(
+    `responsePacket's data prior to sending: ${responsePacket.toString("hex")}`
+  );
   socket.write(responsePacket);
 }
 
@@ -138,7 +142,9 @@ function npsGetPersonaMaps(socket, data) {
   // Build the packet
   const responsePacket = packet.buildPacket(1024, 0x0607, packetContent);
 
-  logger.debug("responsePacket's data prior to sending: ", responsePacket.toString("hex"))
+  logger.debug(
+    `responsePacket's data prior to sending: ${responsePacket.toString("hex")}`
+  );
   socket.write(responsePacket);
 }
 
@@ -174,4 +180,4 @@ async function personaDataHandler(rawPacket) {
   return null;
 }
 
-module.exports = { personaDataHandler }
+module.exports = { personaDataHandler };

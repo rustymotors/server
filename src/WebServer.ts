@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { IServerConfiguration } from "../IServerConfiguration";
-import { logger } from "../logger";
+import { IServerConfiguration } from "./IServerConfiguration";
+import { logger } from "./logger";
 import { PatchServer } from "./patchServer";
 import { WebServer } from "./web";
 
@@ -25,7 +25,6 @@ export class Web {
    * TODO: This code may be better suited in web.js and patchServer.js
    */
   public async start(config: IServerConfiguration) {
-
     // Start the mock patch server
     const patchServer = new PatchServer();
     patchServer.start(config);
@@ -33,7 +32,7 @@ export class Web {
 
     // Start the AuthLogin and shardlist servers
     const webServer = new WebServer();
-    webServer.start(config);
+    webServer.start(config.serverConfig);
     logger.info("[webServer] Web Server started");
   }
 }

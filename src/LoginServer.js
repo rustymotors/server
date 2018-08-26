@@ -14,16 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const { logger } = require('../logger');
-const packet = require('./packet');
+const { logger } = require("./logger");
+const packet = require("./packet");
 
-const { NPSUserStatus } = require('./npsUserStatus');
+const { NPSUserStatus } = require("./npsUserStatus");
 
-const { Connection } = require("../Connection");
-const pool = require("../database");
+const { Connection } = require("./Connection");
+const { pool } = require("./database");
 
 function npsGetCustomerIdByContextId(contextId) {
-
   const users = [
     {
       contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
@@ -36,23 +35,35 @@ function npsGetCustomerIdByContextId(contextId) {
       userId: Buffer.from([0x00, 0x00, 0x00, 0x01]),
     },
   ];
-  if (contextId.toString() === '') {
+  if (contextId.toString() === "") {
     logger.error(`Unknown contextId: ${contextId.toString()}`);
     process.exit(1);
   }
-  const userRecord = users.filter((user) => {
-    return user.contextId === contextId
-  })
-  return userRecord[0]
+  const userRecord = users.filter(user => {
+    return user.contextId === contextId;
+  });
+  return userRecord[0];
 }
 
-async function updateSessionKey(customerId, sessionKey, contextId, connectionId) {
+async function updateSessionKey(
+  customerId,
+  sessionKey,
+  contextId,
+  connectionId
+) {
   const sKey = sessionKey.substr(0, 16);
-  return pool.connect().then(pool.query(
-    `INSERT INTO sessions (customer_id, session_key, s_key, context_id, 
+  return pool
+    .connect()
+    .then(
+      pool.query(
+        `INSERT INTO sessions (customer_id, session_key, s_key, context_id, 
     connection_id) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (customer_id) DO UPDATE SET session_key = $2, s_key = $3, context_id = $4, connection_id = $5`,
-    [customerId, sessionKey, sKey, contextId, connectionId])
-  ).catch((e) => { console.trace(e); });
+        [customerId, sessionKey, sKey, contextId, connectionId]
+      )
+    )
+    .catch(e => {
+      console.trace(e);
+    });
 }
 
 /**
@@ -65,15 +76,17 @@ async function userLogin(connection, data, config) {
   const { sock } = connection;
   const userStatus = new NPSUserStatus(config, data);
 
-  logger.info('*** userLogin ****');
+  logger.info("*** userLogin ****");
   // logger.debug("Packet as hex: ", data.toString("hex"));
 
   logger.info(`=============================================
-    Received login packet on port ${connection.localPort} from ${connection.remoteAddress}...`);
-  logger.debug('NPS opCode: ', userStatus.opCode.toString());
-  logger.debug('contextId:', userStatus.contextId);
-  logger.debug('Decrypted SessionKey: ', userStatus.sessionKey);
-  logger.info('=============================================');
+    Received login packet on port ${connection.localPort} from ${
+    connection.remoteAddress
+  }...`);
+  logger.debug("NPS opCode: ", userStatus.opCode.toString());
+  logger.debug("contextId:", userStatus.contextId);
+  logger.debug("Decrypted SessionKey: ", userStatus.sessionKey);
+  logger.info("=============================================");
 
   // Load the customer record by contextId
   // TODO: This needs to be from a database, right now is it static
@@ -84,7 +97,7 @@ async function userLogin(connection, data, config) {
     customer.customerId.readInt32BE(0),
     userStatus.sessionKey,
     userStatus.contextId,
-    connection.id,
+    connection.id
   );
 
   // Create the packet content
@@ -123,18 +136,24 @@ async function loginDataHandler(rawPacket, config) {
 
   switch (requestCode) {
     // npsUserLogin
-    case '501': {
+    case "501": {
       const responsePacket = await userLogin(connection, data, config);
 
-      logger.debug("responsePacket's data prior to sending: ", responsePacket.toString("hex"))
+      logger.debug(
+        `responsePacket's data prior to sending: ${responsePacket.toString(
+          "hex"
+        )}`
+      );
       sock.write(responsePacket);
       break;
     }
     default:
-      logger.error(`LOGIN: Unknown code ${requestCode} was received on port 8226`);
+      logger.error(
+        `LOGIN: Unknown code ${requestCode} was received on port 8226`
+      );
       process.exit();
   }
   return connection;
 }
 
-module.exports = { npsGetCustomerIdByContextId, userLogin, loginDataHandler }
+module.exports = { npsGetCustomerIdByContextId, userLogin, loginDataHandler };

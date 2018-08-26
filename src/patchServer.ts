@@ -16,8 +16,8 @@
 
 import * as http from "http";
 
-import { IServerConfiguration } from "../IServerConfiguration";
-import { logger } from "../logger";
+import { IServerConfiguration } from "./IServerConfiguration";
+import { logger } from "./logger";
 
 const castanetResponse = {
   body: Buffer.from("cafebeef00000000000003", "hex"),
@@ -67,12 +67,12 @@ function generateShardList(serverConfig: IServerConfiguration["serverConfig"]) {
 function httpHandler(
   request: http.IncomingMessage,
   response: http.ServerResponse,
-  serverConfiguration: IServerConfiguration,
+  serverConfiguration: IServerConfiguration
 ) {
   logger.info(
     `[PATCH] Request from ${request.socket.remoteAddress} for ${
-    request.method
-    } ${request.url}`,
+      request.method
+    } ${request.url}`
   );
   let responseData;
   switch (request.url) {
