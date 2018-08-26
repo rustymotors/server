@@ -65,15 +65,15 @@ export class LoginMsg {
    */
   public dumpPacket() {
     logger.debug("[LoginMsg]======================================");
-    logger.debug("MsgNo:       ", this.msgNo.toString());
-    logger.debug("customerId:  ", this.customerId.toString());
-    logger.debug("personaId:   ", this.personaId.toString());
-    logger.debug("lotOwnerId:    ", this.lotOwnerId);
-    logger.debug("brandedPartId:    ", this.brandedPartId);
-    logger.debug("skinId:    ", this.skinId);
-    logger.debug("personaName:    ", this.personaName);
+    logger.debug(`MsgNo:          ${this.msgNo.toString()}`);
+    logger.debug(`customerId:     ${this.customerId.toString()}`);
+    logger.debug(`personaId:      ${this.personaId.toString()}`);
+    logger.debug(`lotOwnerId:     ${this.lotOwnerId}`);
+    logger.debug(`brandedPartId:  ${this.brandedPartId}`);
+    logger.debug(`skinId:         ${this.skinId}`);
+    logger.debug(`personaName:    ${this.personaName}`);
 
-    logger.debug("version:    ", this.version);
+    logger.debug(`version:        ${this.version}`);
     logger.debug("[LoginMsg]======================================");
   }
 }
