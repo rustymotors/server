@@ -149,6 +149,59 @@ function npsGetPersonaMaps(socket, data) {
 }
 
 /**
+ * Handle a get persona maps packet
+ * @param {Socket} socket
+ * @param {Buffer} data
+ */
+function npsValidatePersonaName(socket, data) {
+  // 0533 00
+  // 24 000000000000 00
+  // 24 00 000001 00
+  // 06 6d6f6f6a6f65 00
+  // 0a 4d6f746f722043697479
+  const customerId = data.readInt32BE(12);
+  const requestedPersonaName = data.slice(18, data.readInt8(18)).toString();
+  const serviceName = data.slice((data.indexOf(0x0a) + 1).toString());
+  logger.warn(`customerId: ${customerId}`);
+  logger.warn(`Requested persona name: ${requestedPersonaName}`);
+  logger.warn(`Service name: ${serviceName}`);
+
+  // const persona = npsGetPersonaMapsByCustomerId(customerId);
+
+  // Create the packet content
+  // TODO: Create a real personas map packet, instead of using a fake one that (mostly) works
+  const packetContent = Buffer.alloc(36);
+
+  // This is needed, not sure for what
+  // Buffer.from([0x01, 0x01]).copy(packetContent);
+
+  // This is the persona count
+  // persona.personaCount.copy(packetContent, 10);
+
+  // This is the max persona count (confirmed - debug)
+  // persona.maxPersonas.copy(packetContent, 15);
+
+  // PersonaId
+  // persona.id.copy(packetContent, 18);
+
+  // Shard ID
+  // persona.shardId.copy(packetContent, 22);
+
+  // Persona Name = 30-bit null terminated string
+  // persona.name.copy(packetContent, 32);
+
+  // Build the packet
+  // NPS_USER_VALID     validation succeeded
+  // const responsePacket = packet.buildPacket(1024, 0x0601, Buffer.alloc(8));
+  const responsePacket = Buffer.from([0x06, 0x01, 0x00, 0x00]);
+
+  logger.debug(
+    `responsePacket's data prior to sending: ${responsePacket.toString("hex")}`
+  );
+  socket.write(responsePacket);
+}
+
+/**
  * Route an incoming persona packet to the connect handler
  * TODO: See if this can be handled by a MessageNode
  * @param {Socket} socket
@@ -171,6 +224,12 @@ async function personaDataHandler(rawPacket) {
 
   if (requestCode === "532") {
     await npsGetPersonaMaps(sock, data);
+    return connection;
+  }
+
+  // NPS_VALIDATE_PERSONA_NAME   = 0x533
+  if (requestCode === "533") {
+    await npsValidatePersonaName(sock, data);
     return connection;
   }
   logger.error(
