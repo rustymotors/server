@@ -15,8 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 const crypto = require("crypto");
-const { logger } = require("../logger");
-const packet = require("../packet");
+const { logger } = require("./logger");
+const packet = require("./packet");
 
 /**
  * Handle a select game persona packet
@@ -160,7 +160,9 @@ function npsValidatePersonaName(socket, data) {
   // 06 6d6f6f6a6f65 00
   // 0a 4d6f746f722043697479
   const customerId = data.readInt32BE(12);
-  const requestedPersonaName = data.slice(18, data.readInt8(18)).toString();
+  const requestedPersonaName = data
+    .slice(18, data.lastIndexOf(0x00))
+    .toString();
   const serviceName = data.slice((data.indexOf(0x0a) + 1).toString());
   logger.warn(`customerId: ${customerId}`);
   logger.warn(`Requested persona name: ${requestedPersonaName}`);
@@ -193,7 +195,7 @@ function npsValidatePersonaName(socket, data) {
   // Build the packet
   // NPS_USER_VALID     validation succeeded
   // const responsePacket = packet.buildPacket(1024, 0x0601, Buffer.alloc(8));
-  const responsePacket = Buffer.from([0x06, 0x01, 0x00, 0x00]);
+  const responsePacket = Buffer.from([0x06, 0x01, 0x00, 0x01, 0x00]);
 
   logger.debug(
     `responsePacket's data prior to sending: ${responsePacket.toString("hex")}`
