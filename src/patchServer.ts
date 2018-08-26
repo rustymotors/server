@@ -62,7 +62,7 @@ function generateShardList(serverConfig: IServerConfiguration["serverConfig"]) {
   MaxPersonasPerUser=2
   DiagnosticServerHost=${serverConfig.ipServer}
   DiagnosticServerPort=80
-  [Twin Pines Mall]
+[Twin Pines Mall]
   Description=Twin Pines Mall
   ShardId=88
   LoginServerIP=mc.drazisil.com
@@ -77,7 +77,7 @@ function generateShardList(serverConfig: IServerConfiguration["serverConfig"]) {
   MaxPersonasPerUser=2
   DiagnosticServerHost=mc.drazisil.com
   DiagnosticServerPort=80
-  [Marty's House]
+[Marty's House]
   Description=Marty's House
   ShardId=22
   LoginServerIP=192.168.5.14
