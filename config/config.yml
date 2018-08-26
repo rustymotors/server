@@ -1,7 +1,7 @@
   loggerLevel: "debug"
   serverConfig: 
     certFilename: "./data/cert.pem"
-    ipServer: "192.168.1.14"
+    ipServer: "192.168.5.20"
     privateKeyFilename: "./data/private_key.pem"
     publicKeyFilename: "./data/pub.key"
     serverDatabase: 
