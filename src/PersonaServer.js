@@ -153,6 +153,42 @@ function npsGetPersonaMaps(socket, data) {
  * @param {Socket} socket
  * @param {Buffer} data
  */
+function npsCheckToken(socket, data) {
+  const customerId = data.readInt32BE(12);
+  const requestedPersonaName = data
+    .slice(18, data.lastIndexOf(0x00))
+    .toString();
+  const serviceName = data.slice((data.indexOf(0x0a) + 1).toString());
+  logger.warn(`customerId: ${customerId}`);
+  logger.warn(`Requested persona name: ${requestedPersonaName}`);
+  logger.warn(`Service name: ${serviceName}`);
+
+  // const persona = npsGetPersonaMapsByCustomerId(customerId);
+
+  // Create the packet content
+  // TODO: Create a real personas map packet, instead of using a fake one that (mostly) works
+
+  // This is needed, not sure for what
+  const packetContent = packet.premadePersonaMaps();
+  Buffer.from([0x01, 0x01]).copy(packetContent);
+
+  // Build the packet
+  // NPS_ACK = 207
+  const responsePacket = packet.buildPacket(1024, 0x0207, packetContent);
+
+  logger.debug(
+    `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.toString(
+      "hex"
+    )}`
+  );
+  socket.write(responsePacket);
+}
+
+/**
+ * Handle a get persona maps packet
+ * @param {Socket} socket
+ * @param {Buffer} data
+ */
 function npsValidatePersonaName(socket, data) {
   // 0533 00
   // 24 000000000000 00
@@ -172,10 +208,10 @@ function npsValidatePersonaName(socket, data) {
 
   // Create the packet content
   // TODO: Create a real personas map packet, instead of using a fake one that (mostly) works
-  const packetContent = Buffer.alloc(36);
 
   // This is needed, not sure for what
-  // Buffer.from([0x01, 0x01]).copy(packetContent);
+  const packetContent = packet.premadePersonaMaps();
+  Buffer.from([0x01, 0x01]).copy(packetContent);
 
   // This is the persona count
   // persona.personaCount.copy(packetContent, 10);
@@ -195,10 +231,13 @@ function npsValidatePersonaName(socket, data) {
   // Build the packet
   // NPS_USER_VALID     validation succeeded
   // const responsePacket = packet.buildPacket(1024, 0x0601, Buffer.alloc(8));
-  const responsePacket = Buffer.from([0x06, 0x01, 0x00, 0x01, 0x00]);
+  // const responsePacket = Buffer.from([0x06, 0x01, 0x00, 0x01, 0x00]);
+  const responsePacket = packet.buildPacket(1024, 0x0601, packetContent);
 
   logger.debug(
-    `responsePacket's data prior to sending: ${responsePacket.toString("hex")}`
+    `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.toString(
+      "hex"
+    )}`
   );
   socket.write(responsePacket);
 }
@@ -232,6 +271,12 @@ async function personaDataHandler(rawPacket) {
   // NPS_VALIDATE_PERSONA_NAME   = 0x533
   if (requestCode === "533") {
     await npsValidatePersonaName(sock, data);
+    return connection;
+  }
+
+  // NPS_CHECK_TOKEN   = 0x534
+  if (requestCode === "534") {
+    await npsCheckToken(sock, data);
     return connection;
   }
   logger.error(
