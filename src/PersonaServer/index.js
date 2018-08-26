@@ -93,7 +93,7 @@ function npsGetPersonaMapsByCustomerId(customerId) {
       return {
         id: Buffer.from([0x00, 0x00, 0x00, 0x02]),
         // Max Personas are how many there are not how many allowed
-        maxPersonas: Buffer.from([0x01]),
+        maxPersonas: Buffer.from([0x02]),
         name,
         personaCount: Buffer.from([0x00, 0x01]),
         shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
