@@ -45,13 +45,19 @@ export class StockCarInfoMsg {
 
   public serialize() {
     // This does not count the StockCar array
-    const packet = Buffer.alloc(17);
+    const packet = Buffer.alloc(17 + 9 * this.StockCarList.length);
     packet.writeInt16LE(this.msgNo, 0);
     packet.writeInt32LE(this.starterCash, 2);
     packet.writeInt32LE(this.dealerId, 6);
     packet.writeInt32LE(this.brand, 10);
     packet.writeInt16LE(this.noCars, 14);
     packet.writeInt8(this.moreToCome, 16);
+    if (this.StockCarList.length > 0) {
+      this.StockCarList.forEach((stockCar, i) => {
+        const offset = 10 * i;
+        stockCar.serialize().copy(packet, 17 + offset);
+      });
+    }
     return packet;
   }
 
@@ -66,6 +72,7 @@ export class StockCarInfoMsg {
     logger.debug(`brand:        ${this.brand}`);
     logger.debug(`noCars:       ${this.noCars}`);
     logger.debug(`moreToCome:   ${this.moreToCome}`);
+    logger.debug(`StockCarList: ${this.StockCarList.toString()}`);
     logger.debug("[/StockCarInfoMsg]======================================");
   }
 }

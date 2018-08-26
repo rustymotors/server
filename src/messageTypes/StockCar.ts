@@ -23,9 +23,30 @@ import { logger } from "../logger";
 export class StockCar {
   private brandedPartId: number;
   private retailPrice: number;
-  private bIsDealOfTheDay: boolean;
+  private bIsDealOfTheDay: number;
 
   constructor() {
-    this.bIsDealOfTheDay = false;
+    this.brandedPartId = 101;
+    this.retailPrice = 20;
+    this.bIsDealOfTheDay = 0;
+  }
+
+  public serialize() {
+    const packet = Buffer.alloc(10);
+    packet.writeInt32LE(this.brandedPartId, 0);
+    packet.writeInt32LE(this.retailPrice, 4);
+    packet.writeInt16LE(this.bIsDealOfTheDay, 8);
+    return packet;
+  }
+
+  /**
+   * dumpPacket
+   */
+  public dumpPacket() {
+    logger.debug("[StockCar]======================================");
+    logger.debug(`brandedPartId:     ${this.brandedPartId}`);
+    logger.debug(`retailPrice        ${this.retailPrice}`);
+    logger.debug(`isDealOfTheDay:    ${this.bIsDealOfTheDay}`);
+    logger.debug("[/StockCar]======================================");
   }
 }
