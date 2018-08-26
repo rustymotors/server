@@ -188,7 +188,7 @@ async function ClientConnect(con: Connection, node: MessageNode) {
 
   logger.debug(`Looking up the session key for ${con.id}...`);
   const res = await fetchSessionKeyByConnectionId(id);
-  logger.warn("Session Key: ", res.s_key);
+  logger.warn(`Session Key: ${res.s_key}`);
 
   const connectionWithKey = con;
 
@@ -448,8 +448,8 @@ export async function defaultHandler(rawPacket: IRawPacket) {
   }
   logger.debug("No valid MCOTS header signature detected, sending to Lobby");
   logger.info("=============================================");
-  logger.debug("Buffer as text: ", messageNode.data.toString("utf8"));
-  logger.debug("Buffer as string: ", messageNode.data.toString("hex"));
+  logger.debug(`Buffer as text: ${messageNode.data.toString("utf8")}`);
+  logger.debug(`Buffer as string: ${messageNode.data.toString("hex")}`);
 
   const newConnection = await lobbyDataHandler(rawPacket);
   return newConnection;

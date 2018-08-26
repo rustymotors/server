@@ -14,17 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const fs = require("fs");
-const https = require("https");
-const SSLConfig = require("ssl-config");
+import * as fs from "fs";
+import { IncomingMessage, ServerResponse } from "http";
+import * as https from "https";
+import { SSLConfig } from "./ssl-config";
 
-const { logger } = require("../logger");
+import { IServerConfiguration } from "./IServerConfiguration";
+import { logger } from "./logger";
 
 /**
  * Create the SSL options object
  */
-function sslOptions(configuration) {
-  const sslConfig = SSLConfig("old");
+function sslOptions(configuration: IServerConfiguration["serverConfig"]) {
+  const sslConfig = new SSLConfig();
   return {
     cert: fs.readFileSync(configuration.certFilename),
     ciphers: sslConfig.ciphers,
@@ -36,12 +38,13 @@ function sslOptions(configuration) {
 }
 
 function httpsHandler(
-  request,
-  response
+  request: IncomingMessage,
+  response: ServerResponse,
+  config: IServerConfiguration["serverConfig"]
 ) {
   logger.info(
     `[HTTPS] Request from ${request.socket.remoteAddress} for ${
-    request.method
+      request.method
     } ${request.url}`
   );
   switch (request.url) {
@@ -50,14 +53,12 @@ function httpsHandler(
         "Content-disposition",
         "attachment; filename=cert.pem"
       );
-      response.end(fs.readFileSync(config.serverConfig.certFilename));
+      response.end(fs.readFileSync(config.certFilename));
       break;
 
     case "/key":
       response.setHeader("Content-disposition", "attachment; filename=pub.key");
-      response.end(
-        fs.readFileSync(config.serverConfig.publicKeyFilename).toString("hex")
-      );
+      response.end(fs.readFileSync(config.publicKeyFilename).toString("hex"));
       break;
     case "/AuthLogin":
       response.setHeader("Content-Type", "text/plain");
@@ -65,7 +66,7 @@ function httpsHandler(
       break;
 
     default:
-      if (request.url.startsWith("/AuthLogin?")) {
+      if (request.url && request.url.startsWith("/AuthLogin?")) {
         response.setHeader("Content-Type", "text/plain");
         response.end("Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e");
         return;
@@ -76,23 +77,28 @@ function httpsHandler(
   }
 }
 
-class WebServer {
-  async start(config) {
+export class WebServer {
+  public async start(config: IServerConfiguration["serverConfig"]) {
     const httpsServer = https
-      .createServer(sslOptions(config.serverConfig), httpsHandler)
+      .createServer(
+        sslOptions(config),
+        (req: IncomingMessage, res: ServerResponse) => {
+          httpsHandler(req, res, config);
+        }
+      )
       .listen({ port: 4443, host: "0.0.0.0" })
-      .on("connection", (socket) => {
-        socket.on("error", (error) => {
+      .on("connection", socket => {
+        socket.on("error", (error: Error) => {
           logger.error(`[webServer] SSL Socket Error: ${error.message}`);
         });
         socket.on("close", () => {
           logger.info("[webServer] SSL Socket Connection closed");
         });
       })
-      .on("tlsClientError", (err) => {
+      .on("tlsClientError", err => {
         logger.error(`[webServer] tlsClientError: ${err}`);
       });
   }
 }
 
-module.exports = { WebServer }
+module.exports = { WebServer };

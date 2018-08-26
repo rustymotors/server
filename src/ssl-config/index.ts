@@ -16,12 +16,14 @@
 
 // This is a subset of https://github.com/certsimple/ssl-config
 
-const { SSL_OP_NO_SSLv3 } = require('constants')
+import { SSL_OP_NO_SSLv3 } from "constants";
 
-class OldSSLCiphers {
+export class SSLConfig {
+  public cipherSuites: string[];
+  public ciphers: string;
+  public minimumTLSVersion: number;
 
   constructor() {
-
     this.cipherSuites = [
       "ECDHE-ECDSA-CHACHA20-POLY1305",
       "ECDHE-RSA-CHACHA20-POLY1305",
@@ -71,12 +73,10 @@ class OldSSLCiphers {
       "!aECDH",
       "!EDH-DSS-DES-CBC3-SHA",
       "!KRB5-DES-CBC3-SHA",
-      "!SRP"
-    ]
+      "!SRP",
+    ];
 
-    this.ciphers = this.cipherSuites.join(':')
+    this.ciphers = this.cipherSuites.join(":");
     this.minimumTLSVersion = SSL_OP_NO_SSLv3;
   }
 }
-
-module.exports = { OldSSLCiphers }

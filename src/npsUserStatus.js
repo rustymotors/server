@@ -16,8 +16,7 @@
 
 const crypto = require("crypto");
 const fs = require("fs");
-const { logger } = require("../logger");
-
+const { logger } = require("./logger");
 
 /**
  * Load the RSA private key and return a NodeRSA object
@@ -41,7 +40,6 @@ function fetchPrivateKeyFromFile(privateKeyPath) {
  */
 
 class NPSUserStatus {
-
   constructor(config, packet) {
     // Save the NPS opCode
     this.opCode = packet.readInt16LE(0);
@@ -66,10 +64,7 @@ class NPSUserStatus {
    * Take 128 bytes
    * They are the utf-8 of the hex bytes that are the key
    */
-  extractSessionKeyFromPacket(
-    serverConfig,
-    packet
-  ) {
+  extractSessionKeyFromPacket(serverConfig, packet) {
     // Decrypt the sessionKey
     const privateKey = fetchPrivateKeyFromFile(serverConfig.privateKeyFilename);
 
@@ -90,4 +85,4 @@ class NPSUserStatus {
   }
 }
 
-module.exports = { NPSUserStatus }
+module.exports = { NPSUserStatus };
