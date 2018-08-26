@@ -23,6 +23,7 @@ import * as lobby from "./lobby";
 import { logger } from "./logger";
 import { ClientConnectMsg } from "./messageTypes/ClientConnectMsg";
 import { GenericReplyMsg } from "./messageTypes/GenericReplyMsg";
+import { GenericRequestMsg } from "./messageTypes/GenericRequestMsg";
 import { GetLobbiesListMsg } from "./messageTypes/GetLobbiesListMsg";
 import { LobbyMsg } from "./messageTypes/LobbyMsg";
 import { LoginMsg } from "./messageTypes/LoginMsg";
@@ -180,6 +181,27 @@ async function GetLobbies(con: Connection, node: MessageNode) {
   return { con, rPacket };
 }
 
+async function GetStockCarInfo(con: Connection, node: MessageNode) {
+  const getStockCarInfoMsg = new GenericRequestMsg();
+  getStockCarInfoMsg.deserialize(node.data);
+  getStockCarInfoMsg.dumpPacket();
+
+  logger.debug("Dumping response...");
+
+  const pReply = new GenericReplyMsg();
+  pReply.msgNo = 101;
+  pReply.msgReply = 324;
+  const rPacket = new MessageNode();
+
+  rPacket.deserialize(node.serialize());
+  logger.info(pReply.serialize().toString("hex"));
+  rPacket.updateBuffer(pReply.serialize());
+
+  rPacket.dumpPacket();
+
+  return { con, rPacket };
+}
+
 async function ClientConnect(con: Connection, node: MessageNode) {
   const { id } = con;
   /**
@@ -262,6 +284,18 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
   } else if (currentMsgString === "MC_GET_LOBBIES") {
     try {
       const result = await GetLobbies(conn, node);
+      const updatedConnection = result.con;
+      const responsePacket = result.rPacket;
+      // write the socket
+      socketWriteIfOpen(updatedConnection, responsePacket);
+      return updatedConnection;
+    } catch (error) {
+      logger.error(error);
+      throw error;
+    }
+  } else if (currentMsgString === "MC_STOCK_CAR_INFO") {
+    try {
+      const result = await GetStockCarInfo(conn, node);
       const updatedConnection = result.con;
       const responsePacket = result.rPacket;
       // write the socket
