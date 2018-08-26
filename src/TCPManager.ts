@@ -70,7 +70,7 @@ function socketWriteIfOpen(conn: Connection, node: MessageNode) {
  * Return the string representation of the numeric opcode
  * @param {int} msgID
  */
-function MSG_STRING(msgID: number) {
+export function MSG_STRING(msgID: number) {
   switch (msgID) {
     case 105:
       return "MC_LOGIN";
@@ -364,8 +364,9 @@ async function lobbyDataHandler(rawPacket: IRawPacket) {
         data
       );
       logger.debug(
-        "responsePacket's data prior to sending: ",
-        responsePacket.toString("hex")
+        `responsePacket's data prior to sending: ${responsePacket.toString(
+          "hex"
+        )}`
       );
       sock.write(responsePacket);
       break;
@@ -374,8 +375,9 @@ async function lobbyDataHandler(rawPacket: IRawPacket) {
     case "217": {
       const responsePacket = await npsHeartbeat();
       logger.debug(
-        "responsePacket's data prior to sending: ",
-        responsePacket.toString("hex")
+        `responsePacket's data prior to sending: ${responsePacket.toString(
+          "hex"
+        )}`
       );
       sock.write(responsePacket);
       break;
@@ -390,15 +392,15 @@ async function lobbyDataHandler(rawPacket: IRawPacket) {
 
       if (encryptedCommand == null) {
         logger.error(
-          "Error with encrypted command, dumping connection...",
-          newConnection
+          `Error with encrypted command, dumping connection...${newConnection}`
         );
         process.exit(1);
       }
 
       logger.debug(
-        "encrypedCommand's data prior to sending: ",
-        encryptedCommand.toString("hex")
+        `encrypedCommand's data prior to sending: ${encryptedCommand.toString(
+          "hex"
+        )}`
       );
       newSock.write(encryptedCommand);
       return newConnection;
@@ -414,7 +416,7 @@ async function lobbyDataHandler(rawPacket: IRawPacket) {
  * Craft a packet that tells the client it's allowed to login
  */
 
-function sendPacketOkLogin(socket: Socket) {
+export function sendPacketOkLogin(socket: Socket) {
   socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
 }
 
@@ -454,14 +456,3 @@ export async function defaultHandler(rawPacket: IRawPacket) {
   const newConnection = await lobbyDataHandler(rawPacket);
   return newConnection;
 }
-
-module.exports = {
-  ClientConnect,
-  MSG_STRING,
-  MessageReceived,
-  ProcessInput,
-  defaultHandler,
-  lobbyDataHandler,
-  npsHeartbeat,
-  sendPacketOkLogin,
-};
