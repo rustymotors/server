@@ -28,6 +28,7 @@ import { GetLobbiesListMsg } from "./messageTypes/GetLobbiesListMsg";
 import { LobbyMsg } from "./messageTypes/LobbyMsg";
 import { LoginMsg } from "./messageTypes/LoginMsg";
 import { MessageNode } from "./messageTypes/MessageNode";
+import { StockCar } from "./messageTypes/StockCar";
 import { StockCarInfoMsg } from "./messageTypes/StockCarInfoMsg";
 import * as packet from "./packet";
 
@@ -197,6 +198,11 @@ async function GetStockCarInfo(con: Connection, node: MessageNode) {
 
   const pReply = new StockCarInfoMsg();
   pReply.starterCash = 200;
+  pReply.dealerId = 8;
+  pReply.brand = 101;
+
+  const newStockCar = new StockCar();
+  pReply.StockCarList.push(newStockCar);
 
   pReply.dumpPacket();
 
