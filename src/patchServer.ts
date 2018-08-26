@@ -64,7 +64,7 @@ function generateShardList(serverConfig: IServerConfiguration["serverConfig"]) {
   DiagnosticServerPort=80
   [Twin Pines Mall]
   Description=Twin Pines Mall
-  ShardId=44
+  ShardId=88
   LoginServerIP=mc.drazisil.com
   LoginServerPort=8226
   LobbyServerIP=mc.drazisil.com
@@ -79,7 +79,7 @@ function generateShardList(serverConfig: IServerConfiguration["serverConfig"]) {
   DiagnosticServerPort=80
   [Marty's House]
   Description=Marty's House
-  ShardId=44
+  ShardId=22
   LoginServerIP=192.168.5.14
   LoginServerPort=8226
   LobbyServerIP=192.168.5.14
