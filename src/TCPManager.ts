@@ -74,6 +74,8 @@ export function MSG_STRING(msgID: number) {
   switch (msgID) {
     case 105:
       return "MC_LOGIN";
+    case 141:
+      return "MC_STOCK_CAR_INFO";
     case 213:
       return "MC_LOGIN_COMPLETE";
     case 324:
