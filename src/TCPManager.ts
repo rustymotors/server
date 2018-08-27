@@ -91,8 +91,6 @@ export function MSG_STRING(msgID: number) {
       return "MC_LOBBIES";
     case 438:
       return "MC_CLIENT_CONNECT_MSG";
-    case 507:
-      return "NPS_NEW_GAME_ACCOUNT";
 
     default:
       return "Unknown";
@@ -201,7 +199,7 @@ async function GetStockCarInfo(con: Connection, node: MessageNode) {
   const pReply = new StockCarInfoMsg();
   pReply.starterCash = 200;
   pReply.dealerId = 8;
-  pReply.brand = 101;
+  pReply.brand = 105;
 
   const newStockCar = new StockCar();
   pReply.StockCarList.push(newStockCar);

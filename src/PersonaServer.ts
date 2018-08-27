@@ -14,19 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const crypto = require("crypto");
-const { logger } = require("./logger");
-const packet = require("./packet");
+import * as crypto from "crypto";
+import { Socket } from "net";
+import { IRawPacket } from "./IRawPacket";
+import { logger } from "./logger";
+import { NPSMsg } from "./messageTypes/NPSMsg";
+import { buildPacket, premadePersonaMaps } from "./packet";
 
 /**
  * Handle a select game persona packet
  * @param {Socket} socket
  * @param {Buffer} rawData
  */
-function npsSelectGamePersona(socket) {
+async function npsSelectGamePersona(socket: Socket) {
   // Create the packet content
   // TODO: Create a real response, instead of a random blob of bytes
-  const packetContent = crypto.randomBytes(44971);
+  // const packetContent = crypto.randomBytes(44971);
+  const packetContent = Buffer.alloc(44971);
 
   // This is needed, not sure for what
   Buffer.from([0x01, 0x01]).copy(packetContent);
@@ -34,12 +38,22 @@ function npsSelectGamePersona(socket) {
   // Build the packet
   // Response Code
   // 207 = success
-  const responsePacket = packet.buildPacket(261, 0x0207, packetContent);
+  const responsePacket = buildPacket(261, 0x0207, packetContent);
 
   logger.debug(
-    `responsePacket's data prior to sending: ${responsePacket.toString("hex")}`
+    `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.toString(
+      "hex"
+    )}`
   );
   socket.write(responsePacket);
+}
+
+async function npsNewGameAccount(sock: Socket) {
+  const rPacket = new NPSMsg();
+  rPacket.msgNo = 0x601;
+  rPacket.dumpPacket();
+
+  sock.write(rPacket.serialize());
 }
 
 /**
@@ -50,21 +64,24 @@ function npsSelectGamePersona(socket) {
  * @param {Socket} socket
  * @param {Buffer} data
  */
-async function npsLogoutGameUser(socket) {
+async function npsLogoutGameUser(socket: Socket) {
   logger.info("[personaServer] Logging out persona...");
 
   // Create the packet content
   // FIXME: Make a real packet, not a random blob of bytes
-  const packetContent = crypto.randomBytes(253);
+  // const packetContent = crypto.randomBytes(253);
+  const packetContent = Buffer.alloc(253);
 
   // This is needed, not sure for what
   Buffer.from([0x01, 0x01]).copy(packetContent);
 
   // Build the packet
-  const responsePacket = packet.buildPacket(257, 0x0612, packetContent);
+  const responsePacket = buildPacket(257, 0x0612, packetContent);
 
   logger.debug(
-    `responsePacket's data prior to sending: ${responsePacket.toString("hex")}`
+    `[npsLogoutGameUser] responsePacket's data prior to sending: ${responsePacket.toString(
+      "hex"
+    )}`
   );
   socket.write(responsePacket);
 }
@@ -74,10 +91,10 @@ async function npsLogoutGameUser(socket) {
  * TODO: Store in a database, instead of being hard-coded
  * @param {Int} customerId
  */
-function npsGetPersonaMapsByCustomerId(customerId) {
+async function npsGetPersonaMapsByCustomerId(customerId: number) {
   const name = Buffer.alloc(30);
 
-  switch (customerId.readUInt32BE(0)) {
+  switch (customerId) {
     case 2868969472:
       Buffer.from("Doc", "utf8").copy(name);
       return {
@@ -100,10 +117,9 @@ function npsGetPersonaMapsByCustomerId(customerId) {
       };
     default:
       logger.error(
-        `[personaServer] Unknown customerId: ${customerId.readUInt32BE(0)}`
+        `[personaServer/npsGetPersonaMapsByCustomerId] Unknown customerId: ${customerId}`
       );
       process.exit(1);
-      return null;
   }
 }
 
@@ -112,40 +128,48 @@ function npsGetPersonaMapsByCustomerId(customerId) {
  * @param {Socket} socket
  * @param {Buffer} data
  */
-function npsGetPersonaMaps(socket, data) {
+async function npsGetPersonaMaps(socket: Socket, data: Buffer) {
   const customerId = Buffer.alloc(4);
   data.copy(customerId, 0, 12);
-  const persona = npsGetPersonaMapsByCustomerId(customerId);
-
-  // Create the packet content
-  // TODO: Create a real personas map packet, instead of using a fake one that (mostly) works
-  const packetContent = packet.premadePersonaMaps();
-
-  // This is needed, not sure for what
-  Buffer.from([0x01, 0x01]).copy(packetContent);
-
-  // This is the persona count
-  persona.personaCount.copy(packetContent, 10);
-
-  // This is the max persona count (confirmed - debug)
-  persona.maxPersonas.copy(packetContent, 15);
-
-  // PersonaId
-  persona.id.copy(packetContent, 18);
-
-  // Shard ID
-  persona.shardId.copy(packetContent, 22);
-
-  // Persona Name = 30-bit null terminated string
-  persona.name.copy(packetContent, 32);
-
-  // Build the packet
-  const responsePacket = packet.buildPacket(1024, 0x0607, packetContent);
-
-  logger.debug(
-    `responsePacket's data prior to sending: ${responsePacket.toString("hex")}`
+  const persona = await npsGetPersonaMapsByCustomerId(
+    customerId.readUInt32BE(0)
   );
-  socket.write(responsePacket);
+
+  if (persona === undefined) {
+    throw new Error("persona undefined in npsGetPersonaMaps");
+  } else {
+    // Create the packet content
+    // TODO: Create a real personas map packet, instead of using a fake one that (mostly) works
+    const packetContent = premadePersonaMaps();
+
+    // This is needed, not sure for what
+    Buffer.from([0x01, 0x01]).copy(packetContent);
+
+    // This is the persona count
+    persona.personaCount.copy(packetContent, 10);
+
+    // This is the max persona count (confirmed - debug)
+    persona.maxPersonas.copy(packetContent, 15);
+
+    // PersonaId
+    persona.id.copy(packetContent, 18);
+
+    // Shard ID
+    persona.shardId.copy(packetContent, 22);
+
+    // Persona Name = 30-bit null terminated string
+    persona.name.copy(packetContent, 32);
+
+    // Build the packet
+    const responsePacket = buildPacket(1024, 0x0607, packetContent);
+
+    logger.debug(
+      `[npsGetPersonaMaps] responsePacket's data prior to sending: ${responsePacket.toString(
+        "hex"
+      )}`
+    );
+    socket.write(responsePacket);
+  }
 }
 
 /**
@@ -153,12 +177,12 @@ function npsGetPersonaMaps(socket, data) {
  * @param {Socket} socket
  * @param {Buffer} data
  */
-function npsCheckToken(socket, data) {
+async function npsCheckToken(socket: Socket, data: Buffer) {
   const customerId = data.readInt32BE(12);
   const requestedPersonaName = data
     .slice(18, data.lastIndexOf(0x00))
     .toString();
-  const serviceName = data.slice((data.indexOf(0x0a) + 1).toString());
+  const serviceName = data.slice(data.indexOf(0x0a) + 1).toString();
   logger.warn(`customerId: ${customerId}`);
   logger.warn(`Requested persona name: ${requestedPersonaName}`);
   logger.warn(`Service name: ${serviceName}`);
@@ -169,12 +193,12 @@ function npsCheckToken(socket, data) {
   // TODO: Create a real personas map packet, instead of using a fake one that (mostly) works
 
   // This is needed, not sure for what
-  const packetContent = packet.premadePersonaMaps();
+  const packetContent = premadePersonaMaps();
   Buffer.from([0x01, 0x01]).copy(packetContent);
 
   // Build the packet
   // NPS_ACK = 207
-  const responsePacket = packet.buildPacket(1024, 0x0207, packetContent);
+  const responsePacket = buildPacket(1024, 0x0207, packetContent);
 
   logger.debug(
     `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.toString(
@@ -189,7 +213,7 @@ function npsCheckToken(socket, data) {
  * @param {Socket} socket
  * @param {Buffer} data
  */
-function npsValidatePersonaName(socket, data) {
+async function npsValidatePersonaName(socket: Socket, data: Buffer) {
   // 0533 00
   // 24 000000000000 00
   // 24 00 000001 00
@@ -199,7 +223,7 @@ function npsValidatePersonaName(socket, data) {
   const requestedPersonaName = data
     .slice(18, data.lastIndexOf(0x00))
     .toString();
-  const serviceName = data.slice((data.indexOf(0x0a) + 1).toString());
+  const serviceName = data.slice(data.indexOf(0x0a) + 1).toString();
   logger.warn(`customerId: ${customerId}`);
   logger.warn(`Requested persona name: ${requestedPersonaName}`);
   logger.warn(`Service name: ${serviceName}`);
@@ -210,29 +234,14 @@ function npsValidatePersonaName(socket, data) {
   // TODO: Create a real personas map packet, instead of using a fake one that (mostly) works
 
   // This is needed, not sure for what
-  const packetContent = packet.premadePersonaMaps();
+  const packetContent = premadePersonaMaps();
   Buffer.from([0x01, 0x01]).copy(packetContent);
-
-  // This is the persona count
-  // persona.personaCount.copy(packetContent, 10);
-
-  // This is the max persona count (confirmed - debug)
-  // persona.maxPersonas.copy(packetContent, 15);
-
-  // PersonaId
-  // persona.id.copy(packetContent, 18);
-
-  // Shard ID
-  // persona.shardId.copy(packetContent, 22);
-
-  // Persona Name = 30-bit null terminated string
-  // persona.name.copy(packetContent, 32);
 
   // Build the packet
   // NPS_USER_VALID     validation succeeded
   // const responsePacket = packet.buildPacket(1024, 0x0601, Buffer.alloc(8));
   // const responsePacket = Buffer.from([0x06, 0x01, 0x00, 0x01, 0x00]);
-  const responsePacket = packet.buildPacket(1024, 0x0601, packetContent);
+  const responsePacket = buildPacket(1024, 0x0601, packetContent);
 
   logger.debug(
     `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.toString(
@@ -248,42 +257,43 @@ function npsValidatePersonaName(socket, data) {
  * @param {Socket} socket
  * @param {Buffer} rawData
  */
-async function personaDataHandler(rawPacket) {
+export async function personaDataHandler(rawPacket: IRawPacket) {
   const { connection, data } = rawPacket;
   const { sock } = connection;
   const requestCode = data.readUInt16BE(0).toString(16);
 
-  if (requestCode === "503") {
-    await npsSelectGamePersona(sock);
-    return connection;
-  }
+  switch (requestCode) {
+    case "503":
+      // NPS_REGISTER_GAME_LOGIN = 0x503
+      await npsSelectGamePersona(sock);
+      return connection;
 
-  if (requestCode === "50f") {
-    await npsLogoutGameUser(sock);
-    return connection;
-  }
+    case "507":
+      // NPS_NEW_GAME_ACCOUNT == 0x507
+      await npsNewGameAccount(sock);
+      return connection;
 
-  if (requestCode === "532") {
-    await npsGetPersonaMaps(sock, data);
-    return connection;
+    case "50f":
+      // NPS_REGISTER_GAME_LOGOUT = 0x50F
+      await npsLogoutGameUser(sock);
+      return connection;
+    case "532":
+      // NPS_GET_PERSONA_MAPS = 0x532
+      await npsGetPersonaMaps(sock, data);
+      return connection;
+    case "533":
+      // NPS_VALIDATE_PERSONA_NAME   = 0x533
+      await npsValidatePersonaName(sock, data);
+      return connection;
+    case "534":
+      // NPS_CHECK_TOKEN   = 0x534
+      await npsCheckToken(sock, data);
+      return connection;
+    default:
+      logger.error(
+        `[personaServer] Unknown code ${requestCode} was received on port 8228`
+      );
+      process.exit(1);
+      return null;
   }
-
-  // NPS_VALIDATE_PERSONA_NAME   = 0x533
-  if (requestCode === "533") {
-    await npsValidatePersonaName(sock, data);
-    return connection;
-  }
-
-  // NPS_CHECK_TOKEN   = 0x534
-  if (requestCode === "534") {
-    await npsCheckToken(sock, data);
-    return connection;
-  }
-  logger.error(
-    `[personaServer] Unknown code ${requestCode} was received on port 8228`
-  );
-  process.exit(1);
-  return null;
 }
-
-module.exports = { personaDataHandler };
