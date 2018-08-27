@@ -83,9 +83,9 @@ async function userLogin(connection, data, config) {
     Received login packet on port ${connection.localPort} from ${
     connection.remoteAddress
   }...`);
-  logger.debug("NPS opCode: ", userStatus.opCode.toString());
-  logger.debug("contextId:", userStatus.contextId);
-  logger.debug("Decrypted SessionKey: ", userStatus.sessionKey);
+  logger.debug(`NPS opCode:           ${userStatus.opCode.toString()}`);
+  logger.debug(`contextId:            ${userStatus.contextId}`);
+  logger.debug(`Decrypted SessionKey: ${userStatus.sessionKey}`);
   logger.info("=============================================");
 
   // Load the customer record by contextId
