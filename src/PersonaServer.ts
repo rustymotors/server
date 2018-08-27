@@ -138,10 +138,11 @@ async function npsGetPersonaMaps(socket: Socket, data: Buffer) {
   } else {
     // Create the packet content
     // TODO: Create a real personas map packet, instead of using a fake one that (mostly) works
-    const packetContent = premadePersonaMaps();
+    // const packetContent = premadePersonaMaps();
+    const packetContent = Buffer.alloc(68);
 
-    // This is needed, not sure for what
-    Buffer.from([0x01, 0x01]).copy(packetContent);
+    // This is the remaining packet length after the msgNo
+    Buffer.from([0x00, 0x44]).copy(packetContent);
 
     // This is the persona count
     persona.personaCount.copy(packetContent, 10);
@@ -155,11 +156,15 @@ async function npsGetPersonaMaps(socket: Socket, data: Buffer) {
     // Shard ID
     persona.shardId.copy(packetContent, 22);
 
+    // No clue
+    // Buffer.from([0x6c, 0x78, 0x0a, 0x0d]).copy(packetContent, 28);
+    Buffer.from([0x0a, 0x0d]).copy(packetContent, 30);
+
     // Persona Name = 30-bit null terminated string
     persona.name.copy(packetContent, 32);
 
     // Build the packet
-    const responsePacket = buildPacket(1024, 0x0607, packetContent);
+    const responsePacket = buildPacket(68, 0x0607, packetContent);
 
     logger.debug(
       `[npsGetPersonaMaps] responsePacket's data prior to sending: ${responsePacket.toString(
