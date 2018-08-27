@@ -29,7 +29,6 @@ import { buildPacket, premadePersonaMaps } from "./packet";
 async function npsSelectGamePersona(socket: Socket) {
   // Create the packet content
   // TODO: Create a real response, instead of a random blob of bytes
-  // const packetContent = crypto.randomBytes(44971);
   const packetContent = Buffer.alloc(44971);
 
   // This is needed, not sure for what
@@ -69,7 +68,6 @@ async function npsLogoutGameUser(socket: Socket) {
 
   // Create the packet content
   // FIXME: Make a real packet, not a random blob of bytes
-  // const packetContent = crypto.randomBytes(253);
   const packetContent = Buffer.alloc(253);
 
   // This is needed, not sure for what
