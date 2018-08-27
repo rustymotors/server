@@ -125,7 +125,7 @@ export async function sendCommand(con: Connection, data: Buffer) {
   decryptCmd(s, Buffer.from(data.slice(4)));
 
   // Create the packet content
-  const packetContent = crypto.randomBytes(375);
+  const packetContent = Buffer.alloc(375);
 
   // Add the response code
   packetContent.writeUInt16BE(0x0219, 367);
