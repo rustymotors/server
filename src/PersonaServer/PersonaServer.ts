@@ -28,10 +28,7 @@ import { buildPacket, premadePersonaMaps } from "../packet";
 async function _npsSelectGamePersona(socket: Socket) {
   // Create the packet content
   // TODO: Create a real response, instead of a random blob of bytes
-  const packetContent = Buffer.alloc(44971);
-
-  // This is needed, not sure for what
-  // Buffer.from([0x01, 0x01]).copy(packetContent);
+  const packetContent = Buffer.alloc(251);
 
   // Build the packet
   // Response Code
