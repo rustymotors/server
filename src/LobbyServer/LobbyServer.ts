@@ -14,14 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import * as crypto from "crypto";
 import { Socket } from "net";
 import { Connection } from "../Connection";
 import { pool } from "../database";
 import { IRawPacket } from "../IRawPacket";
 import { logger } from "../logger";
-import { buildPacket } from "../packet";
-import * as packet from "../packet";
+import { NPSMsg } from "../messageTypes/NPSMsg";
 
 /**
  * Handle a request to connect to a game server packet
@@ -58,7 +56,11 @@ export async function _npsRequestGameConnectServer(
   Buffer.alloc(64).copy(packetContent, 38);
 
   // Build the packet
-  const packetResult = buildPacket(4, 0x0120, packetContent);
+  const packetResult = new NPSMsg();
+  packetResult.msgNo = 0x120;
+  packetResult.setContent(packetContent);
+  packetResult.dumpPacket();
+  // const packetResult = buildPacket(4, 0x0120, packetContent);
 
   return packetResult;
 }
@@ -135,9 +137,13 @@ export async function sendCommand(con: Connection, data: Buffer) {
   packetContent.writeUInt16BE(0x022c, 371);
 
   // Build the packet
-  const packetResult = buildPacket(32, 0x0229, packetContent);
+  const packetResult = new NPSMsg();
+  packetResult.msgNo = 0x229;
+  packetResult.setContent(packetContent);
+  packetResult.dumpPacket();
+  // const packetResult = buildPacket(32, 0x0229, packetContent);
 
-  const cmdEncrypted = encryptCmd(s, packetResult);
+  const cmdEncrypted = encryptCmd(s, packetResult.getContentAsBuffer());
 
   cmdEncrypted.encryptedCommand = Buffer.concat([
     Buffer.from([0x11, 0x01]),
@@ -150,10 +156,18 @@ export async function sendCommand(con: Connection, data: Buffer) {
 export class LobbyServer {
   public _npsHeartbeat() {
     const packetContent = Buffer.alloc(8);
-    const packetResult = packet.buildPacket(8, 0x0127, packetContent);
+    const packetResult = new NPSMsg();
+    packetResult.msgNo = 0x127;
+    packetResult.setContent(packetContent);
+    packetResult.dumpPacket();
+    // const packetResult = buildPacket(8, 0x0127, packetContent);
     return packetResult;
   }
   public async dataHandler(rawPacket: IRawPacket) {
+    const { localPort, remoteAddress } = rawPacket;
+    logger.info(`=============================================
+    Received packet on port ${localPort} from ${remoteAddress}...`);
+    logger.info("=============================================");
     const { connection, data } = rawPacket;
     const { sock } = connection;
     const requestCode = data.readUInt16BE(0).toString(16);
@@ -163,22 +177,18 @@ export class LobbyServer {
       case "100": {
         const responsePacket = await _npsRequestGameConnectServer(sock, data);
         logger.debug(
-          `responsePacket's data prior to sending: ${responsePacket.toString(
-            "hex"
-          )}`
+          `responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
         );
-        sock.write(responsePacket);
+        sock.write(responsePacket.serialize());
         break;
       }
       // npsHeartbeat
       case "217": {
         const responsePacket = await this._npsHeartbeat();
         logger.debug(
-          `responsePacket's data prior to sending: ${responsePacket.toString(
-            "hex"
-          )}`
+          `responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
         );
-        sock.write(responsePacket);
+        sock.write(responsePacket.serialize());
         break;
       }
       // npsSendCommand

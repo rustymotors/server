@@ -50,6 +50,10 @@ export class LoginServer {
     config: IServerConfiguration
   ) {
     const { connection, data } = rawPacket;
+    const { localPort, remoteAddress } = rawPacket;
+    logger.info(`=============================================
+    Received packet on port ${localPort} from ${remoteAddress}...`);
+    logger.info("=============================================");
     // TODO: Check if this can be handled by a MessageNode object
     const { sock } = connection;
     const requestCode = data.readUInt16BE(0).toString(16);
