@@ -257,13 +257,15 @@ async function _npsValidatePersonaName(socket: Socket, data: Buffer) {
 export class PersonaServer {
   /**
    * Route an incoming persona packet to the connect handler
-   * TODO: See if this can be handled by a MessageNode
    * @param {Socket} socket
    * @param {Buffer} rawData
    */
   public async dataHandler(rawPacket: IRawPacket) {
-    const { connection, data } = rawPacket;
+    const { connection, data, localPort, remoteAddress } = rawPacket;
     const { sock } = connection;
+    logger.info(`=============================================
+    Received packet on port ${localPort} from ${remoteAddress}...`);
+    logger.info("=============================================");
     const requestCode = data.readUInt16BE(0).toString(16);
 
     switch (requestCode) {
