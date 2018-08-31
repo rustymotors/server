@@ -89,7 +89,7 @@ export class LoginServer {
       },
       {
         contextId: "d316cd2dd6bf870893dfbaaf17f965884e",
-        customerId: Buffer.from([0x00, 0x00, 0x00, 0x01]),
+        customerId: Buffer.from([0x00, 0x54, 0xb4, 0x6c]),
         userId: Buffer.from([0x00, 0x00, 0x00, 0x01]),
       },
     ];

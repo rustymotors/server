@@ -33,7 +33,7 @@ export class NPSMsg {
 
   public setContent(buffer: Buffer) {
     this.content = buffer;
-    this.contentLength = this.content.length;
+    this.contentLength = this.content.length + 4;
   }
 
   public getContentAsBuffer() {
@@ -45,7 +45,7 @@ export class NPSMsg {
   }
 
   public serialize() {
-    const packet = Buffer.alloc(this.contentLength + 4);
+    const packet = Buffer.alloc(this.contentLength);
     packet.writeInt16BE(this.msgNo, 0);
     packet.writeInt16BE(this.contentLength, 2);
     this.content.copy(packet, 4);
