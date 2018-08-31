@@ -18,7 +18,7 @@ import { Socket } from "net";
 import { IRawPacket } from "../IRawPacket";
 import { logger } from "../logger";
 import { NPSMsg } from "../messageTypes/NPSMsg";
-import { buildPacket, premadePersonaMaps } from "../packet";
+import { premadePersonaMaps } from "../packet";
 
 /**
  * Handle a select game persona packet
@@ -37,7 +37,6 @@ async function _npsSelectGamePersona(socket: Socket) {
   responsePacket.msgNo = 0x207;
   responsePacket.setContent(packetContent);
   responsePacket.dumpPacket();
-  // const responsePacket = buildPacket(261, 0x0207, packetContent);
 
   logger.debug(
     `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
@@ -66,17 +65,13 @@ async function _npsLogoutGameUser(socket: Socket) {
 
   // Create the packet content
   // FIXME: Make a real packet, not a random blob of bytes
-  const packetContent = Buffer.alloc(253);
-
-  // This is needed, not sure for what
-  // Buffer.from([0x01, 0x01]).copy(packetContent);
+  const packetContent = Buffer.alloc(257);
 
   // Build the packet
   const responsePacket = new NPSMsg();
   responsePacket.msgNo = 0x612;
   responsePacket.setContent(packetContent);
   responsePacket.dumpPacket();
-  // const responsePacket = buildPacket(257, 0x0612, packetContent);
 
   logger.debug(
     `[npsLogoutGameUser] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
@@ -97,7 +92,6 @@ async function _npsGetPersonaMapsByCustomerId(customerId: number) {
       Buffer.from("Doc", "utf8").copy(name);
       return {
         id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
-        // Max Personas are how many there are not how many allowed
         maxPersonas: Buffer.from([0x01]),
         name,
         personaCount: Buffer.from([0x00, 0x01]),
@@ -107,7 +101,6 @@ async function _npsGetPersonaMapsByCustomerId(customerId: number) {
       Buffer.from("Doctor Brown", "utf8").copy(name);
       return {
         id: Buffer.from([0x00, 0x00, 0x00, 0x02]),
-        // Max Personas are how many there are not how many allowed
         maxPersonas: Buffer.from([0x02]),
         name,
         personaCount: Buffer.from([0x00, 0x01]),
@@ -141,11 +134,7 @@ async function _npsGetPersonaMaps(socket: Socket, data: Buffer) {
   } else {
     // Create the packet content
     // TODO: Create a real personas map packet, instead of using a fake one that (mostly) works
-    // const packetContent = premadePersonaMaps();
     const packetContent = Buffer.alloc(68);
-
-    // This is the remaining packet length after the msgNo
-    // Buffer.from([0x00, 0x44]).copy(packetContent);
 
     // This is the persona count
     persona.personaCount.copy(packetContent, 8);
@@ -160,7 +149,6 @@ async function _npsGetPersonaMaps(socket: Socket, data: Buffer) {
     persona.shardId.copy(packetContent, 20);
 
     // No clue
-    // Buffer.from([0x6c, 0x78, 0x0a, 0x0d]).copy(packetContent, 28);
     Buffer.from([0x0a, 0x0d]).copy(packetContent, 28);
 
     // Persona Name = 30-bit null terminated string
@@ -171,7 +159,6 @@ async function _npsGetPersonaMaps(socket: Socket, data: Buffer) {
     responsePacket.msgNo = 0x607;
     responsePacket.setContent(packetContent.slice(0, 68));
     responsePacket.dumpPacket();
-    // const responsePacket = buildPacket(68, 0x0607, packetContent);
 
     logger.debug(
       `[npsGetPersonaMaps] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
@@ -196,20 +183,17 @@ async function _npsCheckToken(socket: Socket, data: Buffer) {
   logger.warn(`Requested persona name: ${requestedPersonaName}`);
   logger.warn(`Service name: ${serviceName}`);
 
-  // const persona = npsGetPersonaMapsByCustomerId(customerId);
-
   // Create the packet content
   // TODO: Create a real personas map packet, instead of using a fake one that (mostly) works
 
-  // This is needed, not sure for what
+  logger.warn(`Using PremadeMaps as base`);
   const packetContent = premadePersonaMaps();
-  // Buffer.from([0x01, 0x01]).copy(packetContent);
 
   // Build the packet
   // NPS_ACK = 207
   const responsePacket = new NPSMsg();
   responsePacket.msgNo = 0x207;
-  responsePacket.setContent(packetContent);
+  responsePacket.setContent(packetContent.slice(0, 1024));
   responsePacket.dumpPacket();
   // const responsePacket = buildPacket(1024, 0x0207, packetContent);
 
@@ -234,22 +218,17 @@ async function _npsValidatePersonaName(socket: Socket, data: Buffer) {
   logger.warn(`Requested persona name: ${requestedPersonaName}`);
   logger.warn(`Service name: ${serviceName}`);
 
-  // const persona = npsGetPersonaMapsByCustomerId(customerId);
-
   // Create the packet content
   // TODO: Create a real personas map packet, instead of using a fake one that (mostly) works
 
-  // This is needed, not sure for what
   const packetContent = premadePersonaMaps();
-  // Buffer.from([0x01, 0x01]).copy(packetContent);
 
   // Build the packet
   // NPS_USER_VALID     validation succeeded
   const responsePacket = new NPSMsg();
   responsePacket.msgNo = 0x601;
-  responsePacket.setContent(packetContent);
+  responsePacket.setContent(packetContent.slice(0, 1024));
   responsePacket.dumpPacket();
-  // const responsePacket = buildPacket(1024, 0x0601, packetContent);
 
   logger.debug(
     `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
