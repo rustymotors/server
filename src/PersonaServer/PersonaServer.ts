@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import * as crypto from "crypto";
 import { Socket } from "net";
 import { IRawPacket } from "../IRawPacket";
 import { logger } from "../logger";
@@ -32,19 +31,21 @@ async function _npsSelectGamePersona(socket: Socket) {
   const packetContent = Buffer.alloc(44971);
 
   // This is needed, not sure for what
-  Buffer.from([0x01, 0x01]).copy(packetContent);
+  // Buffer.from([0x01, 0x01]).copy(packetContent);
 
   // Build the packet
   // Response Code
   // 207 = success
-  const responsePacket = buildPacket(261, 0x0207, packetContent);
+  const responsePacket = new NPSMsg();
+  responsePacket.msgNo = 0x207;
+  responsePacket.setContent(packetContent);
+  responsePacket.dumpPacket();
+  // const responsePacket = buildPacket(261, 0x0207, packetContent);
 
   logger.debug(
-    `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.toString(
-      "hex"
-    )}`
+    `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
   );
-  socket.write(responsePacket);
+  socket.write(responsePacket.serialize());
 }
 
 async function _npsNewGameAccount(sock: Socket) {
@@ -71,17 +72,19 @@ async function _npsLogoutGameUser(socket: Socket) {
   const packetContent = Buffer.alloc(253);
 
   // This is needed, not sure for what
-  Buffer.from([0x01, 0x01]).copy(packetContent);
+  // Buffer.from([0x01, 0x01]).copy(packetContent);
 
   // Build the packet
-  const responsePacket = buildPacket(257, 0x0612, packetContent);
+  const responsePacket = new NPSMsg();
+  responsePacket.msgNo = 0x612;
+  responsePacket.setContent(packetContent);
+  responsePacket.dumpPacket();
+  // const responsePacket = buildPacket(257, 0x0612, packetContent);
 
   logger.debug(
-    `[npsLogoutGameUser] responsePacket's data prior to sending: ${responsePacket.toString(
-      "hex"
-    )}`
+    `[npsLogoutGameUser] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
   );
-  socket.write(responsePacket);
+  socket.write(responsePacket.serialize());
 }
 
 /**
@@ -129,6 +132,9 @@ async function _npsGetPersonaMapsByCustomerId(customerId: number) {
 async function _npsGetPersonaMaps(socket: Socket, data: Buffer) {
   const customerId = Buffer.alloc(4);
   data.copy(customerId, 0, 12);
+  logger.info(
+    `npsGetPersonaMaps for custometId: ${customerId.readUInt32BE(0)}`
+  );
   const persona = await _npsGetPersonaMapsByCustomerId(
     customerId.readUInt32BE(0)
   );
@@ -142,36 +148,39 @@ async function _npsGetPersonaMaps(socket: Socket, data: Buffer) {
     const packetContent = Buffer.alloc(68);
 
     // This is the remaining packet length after the msgNo
-    Buffer.from([0x00, 0x44]).copy(packetContent);
+    // Buffer.from([0x00, 0x44]).copy(packetContent);
 
     // This is the persona count
-    persona.personaCount.copy(packetContent, 10);
+    persona.personaCount.copy(packetContent, 8);
 
     // This is the max persona count (confirmed - debug)
-    persona.maxPersonas.copy(packetContent, 15);
+    persona.maxPersonas.copy(packetContent, 13);
 
     // PersonaId
-    persona.id.copy(packetContent, 18);
+    persona.id.copy(packetContent, 16);
 
     // Shard ID
-    persona.shardId.copy(packetContent, 22);
+    persona.shardId.copy(packetContent, 20);
 
     // No clue
     // Buffer.from([0x6c, 0x78, 0x0a, 0x0d]).copy(packetContent, 28);
-    Buffer.from([0x0a, 0x0d]).copy(packetContent, 30);
+    Buffer.from([0x0a, 0x0d]).copy(packetContent, 28);
 
     // Persona Name = 30-bit null terminated string
-    persona.name.copy(packetContent, 32);
+    persona.name.copy(packetContent, 30);
 
     // Build the packet
-    const responsePacket = buildPacket(68, 0x0607, packetContent);
+    const responsePacket = new NPSMsg();
+    responsePacket.msgNo = 0x607;
+    responsePacket.setContent(packetContent.slice(0, 68));
+    responsePacket.dumpPacket();
+    // const responsePacket = buildPacket(68, 0x0607, packetContent);
 
     logger.debug(
-      `[npsGetPersonaMaps] responsePacket's data prior to sending: ${responsePacket.toString(
-        "hex"
-      )}`
+      `[npsGetPersonaMaps] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
     );
-    socket.write(responsePacket);
+
+    socket.write(responsePacket.serialize());
   }
 }
 
@@ -197,18 +206,20 @@ async function _npsCheckToken(socket: Socket, data: Buffer) {
 
   // This is needed, not sure for what
   const packetContent = premadePersonaMaps();
-  Buffer.from([0x01, 0x01]).copy(packetContent);
+  // Buffer.from([0x01, 0x01]).copy(packetContent);
 
   // Build the packet
   // NPS_ACK = 207
-  const responsePacket = buildPacket(1024, 0x0207, packetContent);
+  const responsePacket = new NPSMsg();
+  responsePacket.msgNo = 0x207;
+  responsePacket.setContent(packetContent);
+  responsePacket.dumpPacket();
+  // const responsePacket = buildPacket(1024, 0x0207, packetContent);
 
   logger.debug(
-    `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.toString(
-      "hex"
-    )}`
+    `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
   );
-  socket.write(responsePacket);
+  socket.write(responsePacket.serialize());
 }
 
 /**
@@ -217,11 +228,6 @@ async function _npsCheckToken(socket: Socket, data: Buffer) {
  * @param {Buffer} data
  */
 async function _npsValidatePersonaName(socket: Socket, data: Buffer) {
-  // 0533 00
-  // 24 000000000000 00
-  // 24 00 000001 00
-  // 06 6d6f6f6a6f65 00
-  // 0a 4d6f746f722043697479
   const customerId = data.readInt32BE(12);
   const requestedPersonaName = data
     .slice(18, data.lastIndexOf(0x00))
@@ -238,20 +244,20 @@ async function _npsValidatePersonaName(socket: Socket, data: Buffer) {
 
   // This is needed, not sure for what
   const packetContent = premadePersonaMaps();
-  Buffer.from([0x01, 0x01]).copy(packetContent);
+  // Buffer.from([0x01, 0x01]).copy(packetContent);
 
   // Build the packet
   // NPS_USER_VALID     validation succeeded
-  // const responsePacket = packet.buildPacket(1024, 0x0601, Buffer.alloc(8));
-  // const responsePacket = Buffer.from([0x06, 0x01, 0x00, 0x01, 0x00]);
-  const responsePacket = buildPacket(1024, 0x0601, packetContent);
+  const responsePacket = new NPSMsg();
+  responsePacket.msgNo = 0x601;
+  responsePacket.setContent(packetContent);
+  responsePacket.dumpPacket();
+  // const responsePacket = buildPacket(1024, 0x0601, packetContent);
 
   logger.debug(
-    `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.toString(
-      "hex"
-    )}`
+    `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
   );
-  socket.write(responsePacket);
+  socket.write(responsePacket.serialize());
 }
 
 export class PersonaServer {
