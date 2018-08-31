@@ -170,6 +170,7 @@ export class LobbyServer {
     logger.info("=============================================");
     const { connection, data } = rawPacket;
     const { sock } = connection;
+    let updatedConnection = connection;
     const requestCode = data.readUInt16BE(0).toString(16);
 
     switch (requestCode) {
@@ -196,12 +197,12 @@ export class LobbyServer {
         // This is an encrypted command
         // Fetch session key
 
-        const newConnection = await sendCommand(connection, data);
-        const { sock: newSock, encryptedCommand } = newConnection;
+        updatedConnection = await sendCommand(connection, data);
+        const { sock: newSock, encryptedCommand } = updatedConnection;
 
         if (encryptedCommand == null) {
           logger.error(
-            `Error with encrypted command, dumping connection...${newConnection}`
+            `Error with encrypted command, dumping connection...${updatedConnection}`
           );
           process.exit(1);
         }
@@ -212,11 +213,12 @@ export class LobbyServer {
           )}`
         );
         newSock.write(encryptedCommand);
-        return newConnection;
+        break;
       }
       default:
         logger.error(`Unknown code ${requestCode} was received on port 7003`);
+        process.exit();
     }
-    return connection;
+    return updatedConnection;
   }
 }
