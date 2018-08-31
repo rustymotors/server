@@ -179,7 +179,7 @@ async function GetLobbies(con: Connection, node: MessageNode) {
 
   // const rPacket = new MessageNode();
   rPacket.deserialize(node.data);
-  logger.info(pReply.serialize().toString("hex"));
+
   rPacket.updateBuffer(pReply.serialize());
   // rPacket.updateBuffer(lobbyMsg.serialize());
 
