@@ -19,7 +19,7 @@ import * as util from "util";
 import { Connection } from "./Connection";
 import { pool } from "./database";
 import { IRawPacket } from "./IRawPacket";
-import * as lobby from "./lobby";
+import { LobbyServer } from "./LobbyServer/LobbyServer";
 import { logger } from "./logger";
 import { ClientConnectMsg } from "./messageTypes/ClientConnectMsg";
 import { GenericReplyMsg } from "./messageTypes/GenericReplyMsg";
@@ -30,7 +30,8 @@ import { LoginMsg } from "./messageTypes/LoginMsg";
 import { MessageNode } from "./messageTypes/MessageNode";
 import { StockCar } from "./messageTypes/StockCar";
 import { StockCarInfoMsg } from "./messageTypes/StockCarInfoMsg";
-import * as packet from "./packet";
+
+const lobbyServer = new LobbyServer();
 
 function encryptIfNeeded(conn: Connection, node: MessageNode) {
   let packetToWrite = node;
@@ -400,72 +401,6 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
   }
 }
 
-async function npsHeartbeat() {
-  const packetContent = Buffer.alloc(8);
-  const packetResult = packet.buildPacket(8, 0x0127, packetContent);
-  return packetResult;
-}
-
-async function lobbyDataHandler(rawPacket: IRawPacket) {
-  const { connection, data } = rawPacket;
-  const { sock } = connection;
-  const requestCode = data.readUInt16BE(0).toString(16);
-
-  switch (requestCode) {
-    // npsRequestGameConnectServer
-    case "100": {
-      const responsePacket = await lobby.npsRequestGameConnectServer(
-        sock,
-        data
-      );
-      logger.debug(
-        `responsePacket's data prior to sending: ${responsePacket.toString(
-          "hex"
-        )}`
-      );
-      sock.write(responsePacket);
-      break;
-    }
-    // npsHeartbeat
-    case "217": {
-      const responsePacket = await npsHeartbeat();
-      logger.debug(
-        `responsePacket's data prior to sending: ${responsePacket.toString(
-          "hex"
-        )}`
-      );
-      sock.write(responsePacket);
-      break;
-    }
-    // npsSendCommand
-    case "1101": {
-      // This is an encrypted command
-      // Fetch session key
-
-      const newConnection = await lobby.sendCommand(connection, data);
-      const { sock: newSock, encryptedCommand } = newConnection;
-
-      if (encryptedCommand == null) {
-        logger.error(
-          `Error with encrypted command, dumping connection...${newConnection}`
-        );
-        process.exit(1);
-      }
-
-      logger.debug(
-        `encrypedCommand's data prior to sending: ${encryptedCommand.toString(
-          "hex"
-        )}`
-      );
-      newSock.write(encryptedCommand);
-      return newConnection;
-    }
-    default:
-      logger.error(`Unknown code ${requestCode} was received on port 7003`);
-  }
-  return connection;
-}
-
 /**
  * Debug seems hard-coded to use the connection queue
  * Craft a packet that tells the client it's allowed to login
@@ -486,7 +421,7 @@ export async function defaultHandler(rawPacket: IRawPacket) {
       // This is a very short packet, likely a heartbeat
       logger.debug("Unable to pack into a MessageNode, sending to Lobby");
 
-      const updatedConnection = await lobbyDataHandler(rawPacket);
+      const updatedConnection = await lobbyServer.dataHandler(rawPacket);
       return updatedConnection;
     }
     throw e;
@@ -508,6 +443,6 @@ export async function defaultHandler(rawPacket: IRawPacket) {
   logger.debug(`Buffer as text: ${messageNode.data.toString("utf8")}`);
   logger.debug(`Buffer as string: ${messageNode.data.toString("hex")}`);
 
-  const newConnection = await lobbyDataHandler(rawPacket);
+  const newConnection = await lobbyServer.dataHandler(rawPacket);
   return newConnection;
 }
