@@ -16,17 +16,17 @@
 
 import * as crypto from "crypto";
 import { Socket } from "net";
-import { IRawPacket } from "./IRawPacket";
-import { logger } from "./logger";
-import { NPSMsg } from "./messageTypes/NPSMsg";
-import { buildPacket, premadePersonaMaps } from "./packet";
+import { IRawPacket } from "../IRawPacket";
+import { logger } from "../logger";
+import { NPSMsg } from "../messageTypes/NPSMsg";
+import { buildPacket, premadePersonaMaps } from "../packet";
 
 /**
  * Handle a select game persona packet
  * @param {Socket} socket
  * @param {Buffer} rawData
  */
-async function npsSelectGamePersona(socket: Socket) {
+async function _npsSelectGamePersona(socket: Socket) {
   // Create the packet content
   // TODO: Create a real response, instead of a random blob of bytes
   const packetContent = Buffer.alloc(44971);
@@ -47,7 +47,7 @@ async function npsSelectGamePersona(socket: Socket) {
   socket.write(responsePacket);
 }
 
-async function npsNewGameAccount(sock: Socket) {
+async function _npsNewGameAccount(sock: Socket) {
   const rPacket = new NPSMsg();
   rPacket.msgNo = 0x601;
   rPacket.dumpPacket();
@@ -63,7 +63,7 @@ async function npsNewGameAccount(sock: Socket) {
  * @param {Socket} socket
  * @param {Buffer} data
  */
-async function npsLogoutGameUser(socket: Socket) {
+async function _npsLogoutGameUser(socket: Socket) {
   logger.info("[personaServer] Logging out persona...");
 
   // Create the packet content
@@ -89,7 +89,7 @@ async function npsLogoutGameUser(socket: Socket) {
  * TODO: Store in a database, instead of being hard-coded
  * @param {Int} customerId
  */
-async function npsGetPersonaMapsByCustomerId(customerId: number) {
+async function _npsGetPersonaMapsByCustomerId(customerId: number) {
   const name = Buffer.alloc(30);
 
   switch (customerId) {
@@ -126,10 +126,10 @@ async function npsGetPersonaMapsByCustomerId(customerId: number) {
  * @param {Socket} socket
  * @param {Buffer} data
  */
-async function npsGetPersonaMaps(socket: Socket, data: Buffer) {
+async function _npsGetPersonaMaps(socket: Socket, data: Buffer) {
   const customerId = Buffer.alloc(4);
   data.copy(customerId, 0, 12);
-  const persona = await npsGetPersonaMapsByCustomerId(
+  const persona = await _npsGetPersonaMapsByCustomerId(
     customerId.readUInt32BE(0)
   );
 
@@ -180,7 +180,7 @@ async function npsGetPersonaMaps(socket: Socket, data: Buffer) {
  * @param {Socket} socket
  * @param {Buffer} data
  */
-async function npsCheckToken(socket: Socket, data: Buffer) {
+async function _npsCheckToken(socket: Socket, data: Buffer) {
   const customerId = data.readInt32BE(12);
   const requestedPersonaName = data
     .slice(18, data.lastIndexOf(0x00))
@@ -216,7 +216,7 @@ async function npsCheckToken(socket: Socket, data: Buffer) {
  * @param {Socket} socket
  * @param {Buffer} data
  */
-async function npsValidatePersonaName(socket: Socket, data: Buffer) {
+async function _npsValidatePersonaName(socket: Socket, data: Buffer) {
   // 0533 00
   // 24 000000000000 00
   // 24 00 000001 00
@@ -254,49 +254,51 @@ async function npsValidatePersonaName(socket: Socket, data: Buffer) {
   socket.write(responsePacket);
 }
 
-/**
- * Route an incoming persona packet to the connect handler
- * TODO: See if this can be handled by a MessageNode
- * @param {Socket} socket
- * @param {Buffer} rawData
- */
-export async function personaDataHandler(rawPacket: IRawPacket) {
-  const { connection, data } = rawPacket;
-  const { sock } = connection;
-  const requestCode = data.readUInt16BE(0).toString(16);
+export class PersonaServer {
+  /**
+   * Route an incoming persona packet to the connect handler
+   * TODO: See if this can be handled by a MessageNode
+   * @param {Socket} socket
+   * @param {Buffer} rawData
+   */
+  public async dataHandler(rawPacket: IRawPacket) {
+    const { connection, data } = rawPacket;
+    const { sock } = connection;
+    const requestCode = data.readUInt16BE(0).toString(16);
 
-  switch (requestCode) {
-    case "503":
-      // NPS_REGISTER_GAME_LOGIN = 0x503
-      await npsSelectGamePersona(sock);
-      return connection;
+    switch (requestCode) {
+      case "503":
+        // NPS_REGISTER_GAME_LOGIN = 0x503
+        await _npsSelectGamePersona(sock);
+        return connection;
 
-    case "507":
-      // NPS_NEW_GAME_ACCOUNT == 0x507
-      await npsNewGameAccount(sock);
-      return connection;
+      case "507":
+        // NPS_NEW_GAME_ACCOUNT == 0x507
+        await _npsNewGameAccount(sock);
+        return connection;
 
-    case "50f":
-      // NPS_REGISTER_GAME_LOGOUT = 0x50F
-      await npsLogoutGameUser(sock);
-      return connection;
-    case "532":
-      // NPS_GET_PERSONA_MAPS = 0x532
-      await npsGetPersonaMaps(sock, data);
-      return connection;
-    case "533":
-      // NPS_VALIDATE_PERSONA_NAME   = 0x533
-      await npsValidatePersonaName(sock, data);
-      return connection;
-    case "534":
-      // NPS_CHECK_TOKEN   = 0x534
-      await npsCheckToken(sock, data);
-      return connection;
-    default:
-      logger.error(
-        `[personaServer] Unknown code ${requestCode} was received on port 8228`
-      );
-      process.exit(1);
-      return null;
+      case "50f":
+        // NPS_REGISTER_GAME_LOGOUT = 0x50F
+        await _npsLogoutGameUser(sock);
+        return connection;
+      case "532":
+        // NPS_GET_PERSONA_MAPS = 0x532
+        await _npsGetPersonaMaps(sock, data);
+        return connection;
+      case "533":
+        // NPS_VALIDATE_PERSONA_NAME   = 0x533
+        await _npsValidatePersonaName(sock, data);
+        return connection;
+      case "534":
+        // NPS_CHECK_TOKEN   = 0x534
+        await _npsCheckToken(sock, data);
+        return connection;
+      default:
+        logger.error(
+          `[personaServer] Unknown code ${requestCode} was received on port 8228`
+        );
+        process.exit(1);
+        return null;
+    }
   }
 }

@@ -16,7 +16,7 @@
 
 const crypto = require("crypto");
 const fs = require("fs");
-const { logger } = require("./logger");
+const { logger } = require("../logger");
 
 /**
  * Load the RSA private key and return a NodeRSA object

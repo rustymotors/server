@@ -16,21 +16,23 @@
 
 import * as crypto from "crypto";
 import { Socket } from "net";
-import { Connection } from "./Connection";
-import { pool } from "./database";
-import { logger } from "./logger";
-import { buildPacket } from "./packet";
+import { Connection } from "../Connection";
+import { pool } from "../database";
+import { IRawPacket } from "../IRawPacket";
+import { logger } from "../logger";
+import { buildPacket } from "../packet";
+import * as packet from "../packet";
 
 /**
  * Handle a request to connect to a game server packet
  * @param {Socket} socket
  * @param {Buffer} rawData
  */
-export async function npsRequestGameConnectServer(
+export async function _npsRequestGameConnectServer(
   socket: Socket,
   rawData: Buffer
 ) {
-  logger.debug("*** npsRequestGameConnectServer ****");
+  logger.debug("*** _npsRequestGameConnectServer ****");
   logger.debug(`Packet from ${socket.remoteAddress}`);
   logger.debug(`Packet as hex: ${rawData.toString("hex")}`);
   logger.debug("************************************");
@@ -143,4 +145,68 @@ export async function sendCommand(con: Connection, data: Buffer) {
   ]);
 
   return cmdEncrypted;
+}
+
+export class LobbyServer {
+  public _npsHeartbeat() {
+    const packetContent = Buffer.alloc(8);
+    const packetResult = packet.buildPacket(8, 0x0127, packetContent);
+    return packetResult;
+  }
+  public async dataHandler(rawPacket: IRawPacket) {
+    const { connection, data } = rawPacket;
+    const { sock } = connection;
+    const requestCode = data.readUInt16BE(0).toString(16);
+
+    switch (requestCode) {
+      // _npsRequestGameConnectServer
+      case "100": {
+        const responsePacket = await _npsRequestGameConnectServer(sock, data);
+        logger.debug(
+          `responsePacket's data prior to sending: ${responsePacket.toString(
+            "hex"
+          )}`
+        );
+        sock.write(responsePacket);
+        break;
+      }
+      // npsHeartbeat
+      case "217": {
+        const responsePacket = await this._npsHeartbeat();
+        logger.debug(
+          `responsePacket's data prior to sending: ${responsePacket.toString(
+            "hex"
+          )}`
+        );
+        sock.write(responsePacket);
+        break;
+      }
+      // npsSendCommand
+      case "1101": {
+        // This is an encrypted command
+        // Fetch session key
+
+        const newConnection = await sendCommand(connection, data);
+        const { sock: newSock, encryptedCommand } = newConnection;
+
+        if (encryptedCommand == null) {
+          logger.error(
+            `Error with encrypted command, dumping connection...${newConnection}`
+          );
+          process.exit(1);
+        }
+
+        logger.debug(
+          `encrypedCommand's data prior to sending: ${encryptedCommand.toString(
+            "hex"
+          )}`
+        );
+        newSock.write(encryptedCommand);
+        return newConnection;
+      }
+      default:
+        logger.error(`Unknown code ${requestCode} was received on port 7003`);
+    }
+    return connection;
+  }
 }
