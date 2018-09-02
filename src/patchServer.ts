@@ -80,11 +80,11 @@ function generateShardList(serverConfig: IServerConfiguration["serverConfig"]) {
 [Marty's House]
   Description=Marty's House
   ShardId=22
-  LoginServerIP=192.168.5.14
+  LoginServerIP=192.168.1.14
   LoginServerPort=8226
-  LobbyServerIP=192.168.5.14
+  LobbyServerIP=192.168.1.14
   LobbyServerPort=7003
-  MCOTSServerIP=192.168.5.14
+  MCOTSServerIP=192.168.1.14
   StatusId=0
   Status_Reason=
   ServerGroup_Name=Group - 1
