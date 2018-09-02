@@ -17,9 +17,9 @@
 import { Connection } from "./Connection";
 
 export interface IRawPacket {
-    connection: Connection;
-    data: Buffer;
-    localPort: number;
-    remoteAddress: string;
-    timestamp: Date;
+  connection: Connection;
+  data: Buffer;
+  localPort: number;
+  remoteAddress?: string;
+  timestamp: Date | number;
 }

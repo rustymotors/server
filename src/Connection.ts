@@ -38,10 +38,10 @@ export class Connection {
     decipher: crypto.Decipher | null;
   };
   public decryptedCmd: Buffer;
+  public inQueue: boolean;
+  public mgr: ConnectionMgr;
   private msgEvent: null;
   private lastMsg: number;
-  private mgr: ConnectionMgr;
-  private inQueue: boolean;
 
   constructor(connectionId: number, sock: Socket, mgr: ConnectionMgr) {
     this.id = connectionId;

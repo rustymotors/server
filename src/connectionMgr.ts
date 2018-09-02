@@ -48,6 +48,7 @@ export default class ConnectionMgr {
     config: IServerConfiguration
   ) {
     const { remoteAddress, localPort, data } = rawPacket;
+    const updatedConnection = rawPacket.connection;
     // logger.info(`Connection Manager: Got data from ${remoteAddress} on
     //   localPort ${localPort}`, data);
 
@@ -67,7 +68,7 @@ export default class ConnectionMgr {
         );
         logger.info("[connectionMgr] Data was: ", data.toString("hex"));
         process.exit(1);
-        return null;
+        return updatedConnection;
     }
   }
   /**
@@ -133,6 +134,10 @@ export default class ConnectionMgr {
     if (!remoteAddress) {
       throw new Error("Remote address is empty");
     }
+    // tslint:disable-next-line:no-console
+    console.warn(`Looking for ${remoteAddress}:${localPort} in`);
+    // tslint:disable-next-line:no-console
+    console.dir(this.connections);
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
     if (con !== undefined) {
       logger.info(
@@ -152,6 +157,14 @@ export default class ConnectionMgr {
       `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`
     );
     this.connections.push(newConnection);
+    // tslint:disable-next-line:no-console
+    console.warn(`Added`);
+    // tslint:disable-next-line:no-console
+    console.dir(newConnection);
+    // tslint:disable-next-line:no-console
+    console.warn(` to `);
+    // tslint:disable-next-line:no-console
+    console.dir(this.connections);
     return newConnection;
   }
 
