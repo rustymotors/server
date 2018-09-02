@@ -1,4 +1,5 @@
 export default class RC4 {
+  public key: string;
   private keyBytes: Buffer;
   private keyLen: number;
   private mState: number[];
@@ -6,7 +7,8 @@ export default class RC4 {
   private mY: number;
 
   constructor(key: string) {
-    this.keyBytes = Buffer.from(key, "hex");
+    this.key = key;
+    this.keyBytes = Buffer.from(this.key, "hex");
     this.keyLen = this.keyBytes.length;
     this.mState = Array(256);
     this.mX = 0;

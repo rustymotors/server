@@ -158,6 +158,7 @@ export class PersonaServer {
   public async dataHandler(rawPacket: IRawPacket) {
     const { connection, data, localPort, remoteAddress } = rawPacket;
     const { sock } = connection;
+    const updatedConnection = connection;
     logger.info(`=============================================
     Received packet on port ${localPort} from ${remoteAddress}...`);
     logger.info("=============================================");
@@ -167,35 +168,35 @@ export class PersonaServer {
       case "503":
         // NPS_REGISTER_GAME_LOGIN = 0x503
         await _npsSelectGamePersona(sock);
-        return connection;
+        return updatedConnection;
 
       case "507":
         // NPS_NEW_GAME_ACCOUNT == 0x507
         await _npsNewGameAccount(sock);
-        return connection;
+        return updatedConnection;
 
       case "50f":
         // NPS_REGISTER_GAME_LOGOUT = 0x50F
         await _npsLogoutGameUser(sock);
-        return connection;
+        return updatedConnection;
       case "532":
         // NPS_GET_PERSONA_MAPS = 0x532
         await this._npsGetPersonaMaps(sock, data);
-        return connection;
+        return updatedConnection;
       case "533":
         // NPS_VALIDATE_PERSONA_NAME   = 0x533
         await _npsValidatePersonaName(sock, data);
-        return connection;
+        return updatedConnection;
       case "534":
         // NPS_CHECK_TOKEN   = 0x534
         await _npsCheckToken(sock, data);
-        return connection;
+        return updatedConnection;
       default:
         logger.error(
           `[personaServer] Unknown code ${requestCode} was received on port 8228`
         );
         process.exit(1);
-        return null;
+        return updatedConnection;
     }
   }
 

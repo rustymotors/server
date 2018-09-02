@@ -35,13 +35,14 @@ import { StockCarInfoMsg } from "./messageTypes/StockCarInfoMsg";
 const lobbyServer = new LobbyServer();
 const mcotServer = new MCOTServer();
 
-function encryptIfNeeded(conn: Connection, node: MessageNode) {
+async function encryptIfNeeded(conn: Connection, node: MessageNode) {
   let packetToWrite = node;
 
   // Check if encryption is needed
   if (node.flags - 8 >= 0) {
     logger.debug("encryption flag is set");
     if (conn.enc.out) {
+      logger.warn(`Using key: ${conn.enc.out.key}`);
       node.updateBuffer(conn.enc.out.processString(node.data.toString("hex")));
     } else {
       throw new Error("encryption out on connection is null");
@@ -55,53 +56,37 @@ function encryptIfNeeded(conn: Connection, node: MessageNode) {
   return { conn, packetToWrite };
 }
 
-function socketWriteIfOpen(conn: Connection, nodes: MessageNode[]) {
-  nodes.forEach(node => {
+async function socketWriteIfOpen(conn: Connection, nodes: MessageNode[]) {
+  let updatedConnection = conn;
+  nodes.forEach(async node => {
+    const encryptedResult = await encryptIfNeeded(conn, node);
     // Log that we are trying to write
-    logger.debug(` Atempting to write seq: ${node.seq} to conn: ${conn.id}`);
-    const { sock } = conn;
+    logger.debug(
+      ` Atempting to write seq: ${encryptedResult.packetToWrite.seq} to conn: ${
+        encryptedResult.conn.id
+      }`
+    );
+    const { sock } = encryptedResult.conn;
 
     // Log the buffer we are writing
-    logger.debug(`Writting buffer: ${node.serialize().toString("hex")}`);
+    logger.debug(
+      `Writting buffer: ${encryptedResult.packetToWrite
+        .serialize()
+        .toString("hex")}`
+    );
     if (sock.writable) {
       // Write the packet to socket
-      sock.write(node.serialize());
+      sock.write(encryptedResult.packetToWrite.serialize());
+      updatedConnection = encryptedResult.conn;
     } else {
       logger.error(
-        `Error writing ${node.serialize()} to ${
+        `Error writing ${encryptedResult.packetToWrite.serialize()} to ${
           sock.remoteAddress
         } , ${sock.localPort.toString()}`
       );
     }
   });
-}
-
-/**
- * Return the string representation of the numeric opcode
- * @param {int} msgID
- */
-export function MSG_STRING(msgID: number) {
-  switch (msgID) {
-    case 105:
-      return "MC_LOGIN";
-    case 109:
-      return "MC_SET_OPTIONS";
-    case 141:
-      return "MC_STOCK_CAR_INFO";
-    case 213:
-      return "MC_LOGIN_COMPLETE";
-    case 266:
-      return "MC_UPDATE_PLAYER_PHYSICAL";
-    case 324:
-      return "MC_GET_LOBBIES";
-    case 325:
-      return "MC_LOBBIES";
-    case 438:
-      return "MC_CLIENT_CONNECT_MSG";
-
-    default:
-      return "Unknown";
-  }
+  return updatedConnection;
 }
 
 /**
@@ -127,7 +112,7 @@ async function fetchSessionKeyByConnectionId(connectionId: number) {
     );
 }
 
-async function Login(con: Connection, node: MessageNode) {
+export async function Login(con: Connection, node: MessageNode) {
   const loginMsg = node;
   /**
    * Let's turn it into a LoginMsg
@@ -191,9 +176,7 @@ async function GetLobbies(con: Connection, node: MessageNode) {
 
   rPacket.dumpPacket();
 
-  const { conn, packetToWrite } = encryptIfNeeded(con, rPacket);
-
-  return { conn, nodes: [packetToWrite] };
+  return { con, nodes: [rPacket] };
 }
 
 async function GetStockCarInfo(con: Connection, node: MessageNode) {
@@ -221,9 +204,7 @@ async function GetStockCarInfo(con: Connection, node: MessageNode) {
 
   rPacket.dumpPacket();
 
-  const { conn, packetToWrite } = encryptIfNeeded(con, rPacket);
-
-  return { conn, nodes: [packetToWrite] };
+  return { con, nodes: [rPacket] };
 }
 
 async function ClientConnect(con: Connection, node: MessageNode) {
@@ -272,24 +253,25 @@ async function ClientConnect(con: Connection, node: MessageNode) {
   logger.debug("Dumping response...");
   rPacket.dumpPacket();
 
-  const { conn, packetToWrite } = encryptIfNeeded(connectionWithKey, rPacket);
-
-  return { conn, nodes: [packetToWrite] };
+  return { con, nodes: [rPacket] };
 }
 
 async function ProcessInput(node: MessageNode, conn: Connection) {
   logger.debug("In ProcessInput..");
+  let updatedConnection = conn;
   const currentMsgNo = node.msgNo;
-  const currentMsgString = MSG_STRING(currentMsgNo);
+  const currentMsgString = mcotServer._MSG_STRING(currentMsgNo);
   logger.debug(`currentMsg: ${currentMsgString} (${currentMsgNo})`);
 
   switch (currentMsgString) {
     case "MC_SET_OPTIONS":
       try {
         const result = await mcotServer._setOptions(conn, node);
-        const updatedConnection = result.con;
         const responsePackets = result.nodes;
-        mcotServer._socketWriteIfOpen(updatedConnection, responsePackets);
+        updatedConnection = await socketWriteIfOpen(
+          result.con,
+          responsePackets
+        );
         return updatedConnection;
       } catch (error) {
         throw error;
@@ -298,9 +280,11 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
     case "MC_UPDATE_PLAYER_PHYSICAL":
       try {
         const result = await mcotServer._updatePlayerPhysical(conn, node);
-        const updatedConnection = result.con;
         const responsePackets = result.nodes;
-        mcotServer._socketWriteIfOpen(updatedConnection, responsePackets);
+        updatedConnection = await socketWriteIfOpen(
+          result.con,
+          responsePackets
+        );
         return updatedConnection;
       } catch (error) {
         throw error;
@@ -314,10 +298,9 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
   if (currentMsgString === "MC_CLIENT_CONNECT_MSG") {
     try {
       const result = await ClientConnect(conn, node);
-      const updatedConnection = result.conn;
       const responsePackets = result.nodes;
       // write the socket
-      socketWriteIfOpen(updatedConnection, responsePackets);
+      updatedConnection = await socketWriteIfOpen(result.con, responsePackets);
       return updatedConnection;
     } catch (error) {
       logger.error(error);
@@ -326,10 +309,20 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
   } else if (currentMsgString === "MC_LOGIN") {
     try {
       const result = await Login(conn, node);
-      const updatedConnection = result.con;
       const responsePackets = result.nodes;
       // write the socket
-      socketWriteIfOpen(updatedConnection, responsePackets);
+      updatedConnection = await socketWriteIfOpen(result.con, responsePackets);
+      return updatedConnection;
+    } catch (error) {
+      logger.error(error);
+      throw error;
+    }
+  } else if (currentMsgString === "MC_LOGOUT") {
+    try {
+      const result = await mcotServer._logout(conn, node);
+      const responsePackets = result.nodes;
+      // write the socket
+      updatedConnection = await socketWriteIfOpen(result.con, responsePackets);
       return updatedConnection;
     } catch (error) {
       logger.error(error);
@@ -338,10 +331,9 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
   } else if (currentMsgString === "MC_GET_LOBBIES") {
     try {
       const result = await GetLobbies(conn, node);
-      const updatedConnection = result.conn;
       const responsePackets = result.nodes;
       // write the socket
-      socketWriteIfOpen(updatedConnection, responsePackets);
+      updatedConnection = await socketWriteIfOpen(result.con, responsePackets);
       return updatedConnection;
     } catch (error) {
       logger.error(error);
@@ -350,10 +342,9 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
   } else if (currentMsgString === "MC_STOCK_CAR_INFO") {
     try {
       const result = await GetStockCarInfo(conn, node);
-      const updatedConnection = result.conn;
       const responsePackets = result.nodes;
       // write the socket
-      socketWriteIfOpen(updatedConnection, responsePackets);
+      updatedConnection = await socketWriteIfOpen(result.con, responsePackets);
       return updatedConnection;
     } catch (error) {
       logger.error(error);
@@ -365,6 +356,7 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
       conID: ${node.toFrom}  PersonaID: ${node.appId}`);
     logger.debug(util.inspect(node));
     process.exit();
+    return updatedConnection;
   }
 }
 
@@ -446,6 +438,7 @@ export function sendPacketOkLogin(socket: Socket) {
 
 export async function defaultHandler(rawPacket: IRawPacket) {
   const { connection, remoteAddress, localPort, data } = rawPacket;
+  let updatedConnection = connection;
   let messageNode;
   try {
     messageNode = new MessageNode();
@@ -455,8 +448,7 @@ export async function defaultHandler(rawPacket: IRawPacket) {
       // This is a very short packet, likely a heartbeat
       logger.debug("Unable to pack into a MessageNode, sending to Lobby");
 
-      const updatedConnection = await lobbyServer.dataHandler(rawPacket);
-      return updatedConnection;
+      updatedConnection = await lobbyServer.dataHandler(rawPacket);
     }
     throw e;
   }

@@ -21,57 +21,16 @@ import { GenericReplyMsg } from "./messageTypes/GenericReplyMsg";
 import { MessageNode } from "./messageTypes/MessageNode";
 
 export class MCOTServer {
-  public async _encryptIfNeeded(conn: Connection, node: MessageNode) {
-    let packetToWrite = node;
-
-    // Check if encryption is needed
-    if (node.flags - 8 >= 0) {
-      logger.debug("encryption flag is set");
-      if (conn.enc.out) {
-        node.updateBuffer(
-          conn.enc.out.processString(node.data.toString("hex"))
-        );
-      } else {
-        throw new Error("encryption out on connection is null");
-      }
-      packetToWrite = node;
-      logger.debug(
-        `encrypted packet: ${packetToWrite.serialize().toString("hex")}`
-      );
-    }
-
-    return { conn, packetToWrite };
-  }
-
-  public async _socketWriteIfOpen(conn: Connection, nodes: MessageNode[]) {
-    nodes.forEach(node => {
-      // Log that we are trying to write
-      logger.debug(` Atempting to write seq: ${node.seq} to conn: ${conn.id}`);
-      const { sock } = conn;
-
-      // Log the buffer we are writing
-      logger.debug(`Writting buffer: ${node.serialize().toString("hex")}`);
-      if (sock.writable) {
-        // Write the packet to socket
-        sock.write(node.serialize());
-      } else {
-        logger.error(
-          `Error writing ${node.serialize()} to ${
-            sock.remoteAddress
-          } , ${sock.localPort.toString()}`
-        );
-      }
-    });
-  }
-
   /**
    * Return the string representation of the numeric opcode
    * @param {int} msgID
    */
-  public MSG_STRING(msgID: number) {
+  public _MSG_STRING(msgID: number) {
     switch (msgID) {
       case 105:
         return "MC_LOGIN";
+      case 106:
+        return "MC_LOGOUT";
       case 109:
         return "MC_SET_OPTIONS";
       case 141:
@@ -90,6 +49,32 @@ export class MCOTServer {
       default:
         return "Unknown";
     }
+  }
+
+  public async _logout(con: Connection, node: MessageNode) {
+    const logoutMsg = node;
+
+    logoutMsg.data = node.serialize();
+
+    // Update the appId
+    logoutMsg.appId = con.appId;
+
+    // Create new response packet
+    // TODO: Do this cleaner
+    const pReply = new GenericReplyMsg();
+    pReply.msgNo = 101;
+    pReply.msgReply = 106;
+    const rPacket = new MessageNode();
+
+    // lobbyMsg.dumpPacket();
+
+    // const rPacket = new MessageNode();
+    // rPacket.deserialize(node.serialize());
+    // rPacket.updateBuffer(pReply.serialize());
+    // logger.debug("Dumping response...");
+    // rPacket.dumpPacket();
+
+    return { con, nodes: [] };
   }
 
   public async _setOptions(con: Connection, node: MessageNode) {

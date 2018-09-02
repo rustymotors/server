@@ -14,14 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const net = require("net");
-const { logger } = require("./logger");
-const { sendPacketOkLogin } = require("./TCPManager");
+import * as net from "net";
+import { Connection } from "./Connection";
+import ConnectionMgr from "./connectionMgr";
+import { IRawPacket } from "./IRawPacket";
+import { IServerConfiguration } from "./IServerConfiguration";
+import { logger } from "./logger";
+import { sendPacketOkLogin } from "./TCPManager";
 
-async function onData(data, connection, config) {
+async function onData(
+  data: Buffer,
+  connection: Connection,
+  config: IServerConfiguration
+) {
   try {
     const { localPort, remoteAddress } = connection.sock;
-    const rawPacket = {
+    const rawPacket: IRawPacket = {
       connection,
       data,
       localPort,
@@ -41,7 +49,11 @@ async function onData(data, connection, config) {
     process.exit();
   }
 }
-function listener(socket, connectionMgr, config) {
+function listener(
+  socket: net.Socket,
+  connectionMgr: ConnectionMgr,
+  config: IServerConfiguration
+) {
   // Received a new connection
   // Turn it into a connection object
   const connection = connectionMgr.findOrNewConnection(socket);
@@ -55,7 +67,7 @@ function listener(socket, connectionMgr, config) {
     connection.inQueue = false;
   }
   socket.on("end", () => {
-    connectionMgr.deleteConnection(connection);
+    // connectionMgr.deleteConnection(connection);
     logger.info(
       `[listenerThread] Client ${remoteAddress} disconnected from port ${localPort}`
     );
@@ -63,10 +75,9 @@ function listener(socket, connectionMgr, config) {
   socket.on("data", data => {
     onData(data, connection, config);
   });
-  socket.on("error", err => {
+  socket.on("error", (err: NodeJS.ErrnoException) => {
     if (err.code !== "ECONNRESET") {
       logger.error(err.message);
-      logger.error(err.stack);
       process.exit(1);
     }
   });
@@ -77,7 +88,11 @@ function listener(socket, connectionMgr, config) {
  * @param {Int} localPort
  * @param {connectionMgr} connectionMgr
  */
-async function startTCPListener(localPort, connectionMgr, config) {
+export async function startTCPListener(
+  localPort: number,
+  connectionMgr: ConnectionMgr,
+  config: IServerConfiguration
+) {
   net
     .createServer(socket => {
       listener(socket, connectionMgr, config);
@@ -86,4 +101,3 @@ async function startTCPListener(localPort, connectionMgr, config) {
       logger.info(`[listenerThread] Listener started on port ${localPort}`);
     });
 }
-module.exports = { startTCPListener };
