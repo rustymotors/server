@@ -21,6 +21,7 @@ import { pool } from "./database";
 import { IRawPacket } from "./IRawPacket";
 import { LobbyServer } from "./LobbyServer/LobbyServer";
 import { logger } from "./logger";
+import { MCOTServer } from "./MCOTServer";
 import { ClientConnectMsg } from "./messageTypes/ClientConnectMsg";
 import { GenericReplyMsg } from "./messageTypes/GenericReplyMsg";
 import { GenericRequestMsg } from "./messageTypes/GenericRequestMsg";
@@ -32,6 +33,7 @@ import { StockCar } from "./messageTypes/StockCar";
 import { StockCarInfoMsg } from "./messageTypes/StockCarInfoMsg";
 
 const lobbyServer = new LobbyServer();
+const mcotServer = new MCOTServer();
 
 function encryptIfNeeded(conn: Connection, node: MessageNode) {
   let packetToWrite = node;
@@ -82,10 +84,14 @@ export function MSG_STRING(msgID: number) {
   switch (msgID) {
     case 105:
       return "MC_LOGIN";
+    case 109:
+      return "MC_SET_OPTIONS";
     case 141:
       return "MC_STOCK_CAR_INFO";
     case 213:
       return "MC_LOGIN_COMPLETE";
+    case 266:
+      return "MC_UPDATE_PLAYER_PHYSICAL";
     case 324:
       return "MC_GET_LOBBIES";
     case 325:
@@ -276,6 +282,34 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
   const currentMsgNo = node.msgNo;
   const currentMsgString = MSG_STRING(currentMsgNo);
   logger.debug(`currentMsg: ${currentMsgString} (${currentMsgNo})`);
+
+  switch (currentMsgString) {
+    case "MC_SET_OPTIONS":
+      try {
+        const result = await mcotServer._setOptions(conn, node);
+        const updatedConnection = result.con;
+        const responsePackets = result.nodes;
+        mcotServer._socketWriteIfOpen(updatedConnection, responsePackets);
+        return updatedConnection;
+      } catch (error) {
+        throw error;
+      }
+      break;
+    case "MC_UPDATE_PLAYER_PHYSICAL":
+      try {
+        const result = await mcotServer._updatePlayerPhysical(conn, node);
+        const updatedConnection = result.con;
+        const responsePackets = result.nodes;
+        mcotServer._socketWriteIfOpen(updatedConnection, responsePackets);
+        return updatedConnection;
+      } catch (error) {
+        throw error;
+      }
+      break;
+
+    default:
+      break;
+  }
 
   if (currentMsgString === "MC_CLIENT_CONNECT_MSG") {
     try {
