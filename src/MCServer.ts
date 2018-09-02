@@ -21,49 +21,44 @@ import { logger } from "./logger";
 
 const connectionMgr = new ConnectionMgr();
 
-/**
- * Start the HTTP, HTTPS and TCP connection listeners
- * @param {Function} callback
- */
+export class MCServer {
+  /**
+   * Start the HTTP, HTTPS and TCP connection listeners
+   * @param {Function} callback
+   */
 
-async function startServers(config: IServerConfiguration) {
-  logger.info("Starting the listening sockets...");
-  const tcpPortList = [
-    6660,
-    8228,
-    8226,
-    7003,
-    8227,
-    43200,
-    43300,
-    43400,
-    53303,
-    9000,
-    9001,
-    9002,
-    9003,
-    9004,
-    9005,
-    9006,
-    9007,
-    9008,
-    9009,
-    9010,
-    9011,
-    9012,
-    9013,
-    9014,
-  ];
+  public async startServers(config: IServerConfiguration) {
+    logger.info("Starting the listening sockets...");
+    const tcpPortList = [
+      6660,
+      8228,
+      8226,
+      7003,
+      8227,
+      43200,
+      43300,
+      43400,
+      53303,
+      9000,
+      9001,
+      9002,
+      9003,
+      9004,
+      9005,
+      9006,
+      9007,
+      9008,
+      9009,
+      9010,
+      9011,
+      9012,
+      9013,
+      9014,
+    ];
 
-  await tcpPortList.map((port) => startTCPListener(port, connectionMgr, config));
-  logger.info("Listening sockets create successfully.");
-}
-
-export function run(configurationFile: IServerConfiguration) {
-  // Connect to database
-  // Start the server listeners
-  startServers(configurationFile)
-    .catch((err) => {
-      throw err;
-    });
+    await tcpPortList.map(port =>
+      startTCPListener(port, connectionMgr, config)
+    );
+    logger.info("Listening sockets create successfully.");
+  }
 }
