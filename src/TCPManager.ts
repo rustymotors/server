@@ -210,7 +210,7 @@ async function GetStockCarInfo(con: Connection, node: MessageNode) {
   const rPacket = new MessageNode();
 
   rPacket.deserialize(node.serialize());
-  logger.info(pReply.serialize().toString("hex"));
+
   rPacket.updateBuffer(pReply.serialize());
 
   rPacket.dumpPacket();
