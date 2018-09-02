@@ -370,51 +370,53 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
 
   // If not a Heartbeat
   if (!(msg.flags === 80) && newConnection.useEncryption) {
-    try {
-      if (!newConnection.isSetupComplete) {
-        logger.debug("3");
+    if (!newConnection.isSetupComplete) {
+      logger.debug("3");
+      logger.error(`Decrypt() not yet setup! Disconnecting...conId: ${con.id}`);
+      con.sock.end();
+      process.exit();
+    }
+
+    if (msg.flags - 8 >= 0) {
+      try {
+        /**
+         * Attempt to decrypt message
+         */
+        logger.debug(
+          "==================================================================="
+        );
+        const encryptedBuffer = msg.data.toString("hex");
+        logger.warn(`Full packet before decrypting: ${encryptedBuffer}`);
+
+        logger.warn(`Message buffer before decrypting: ${encryptedBuffer}`);
+        if (!newConnection.enc.in) {
+          throw new Error("ARC4 decrypter is null");
+        }
+        const deciphered = newConnection.enc.in.processString(encryptedBuffer);
+        logger.warn(
+          `Message buffer after decrypting: ${deciphered.toString("hex")}`
+        );
+
+        logger.debug(
+          "==================================================================="
+        );
+
+        if (deciphered.readUInt16LE(0) <= 0) {
+          logger.error(`Failure deciphering message, exiting.`);
+          process.exit(1);
+        }
+
+        // Update the MessageNode with the deciphered buffer
+        msg.updateBuffer(deciphered);
+      } catch (e) {
         logger.error(
-          `Decrypt() not yet setup! Disconnecting...conId: ${con.id}`
+          `Decrypt() exception thrown! Disconnecting...conId:${
+            newConnection.id
+          }`
         );
         con.sock.end();
-        process.exit();
+        throw e;
       }
-
-      /**
-       * Attempt to decrypt message
-       */
-      logger.debug(
-        "==================================================================="
-      );
-      const encryptedBuffer = msg.data.toString("hex");
-      logger.warn(`Full packet before decrypting: ${encryptedBuffer}`);
-
-      logger.warn(`Message buffer before decrypting: ${encryptedBuffer}`);
-      if (!newConnection.enc.in) {
-        throw new Error("ARC4 decrypter is null");
-      }
-      const deciphered = newConnection.enc.in.processString(encryptedBuffer);
-      logger.warn(
-        `Message buffer after decrypting: ${deciphered.toString("hex")}`
-      );
-
-      logger.debug(
-        "==================================================================="
-      );
-
-      if (deciphered.readUInt16LE(0) <= 0) {
-        logger.error(`Failure deciphering message, exiting.`);
-        process.exit(1);
-      }
-
-      // Update the MessageNode with the deciphered buffer
-      msg.updateBuffer(deciphered);
-    } catch (e) {
-      logger.error(
-        `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}`
-      );
-      con.sock.end();
-      throw e;
     }
   }
 

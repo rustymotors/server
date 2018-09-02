@@ -1,12 +1,11 @@
 import fs = require("fs");
 import yaml = require("js-yaml");
+import { AdminServer } from "./AdminServer";
 import { IServerConfiguration } from "./IServerConfiguration";
 import { logger } from "./logger";
 import { MCServer } from "./MCServer";
 import { PatchServer } from "./patchServer";
 import { WebServer } from "./WebServer";
-
-const mcServer = new MCServer();
 
 // Get document, or throw exception on error
 try {
@@ -24,7 +23,15 @@ try {
   webServer.start(config.serverConfig);
   logger.info("[webServer] Web Server started");
 
+  // Start the MC Server
+  const mcServer = new MCServer();
   mcServer.startServers(config);
+
+  // Start the Admin server
+  const adminServer = new AdminServer(mcServer);
+  adminServer.start(config.serverConfig);
+  logger.info("[adminServer] Web Server started");
 } catch (e) {
   logger.error(e);
+  process.exit(1);
 }
