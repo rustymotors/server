@@ -19,9 +19,12 @@ import { IServerConfiguration } from "./IServerConfiguration";
 import { startTCPListener } from "./listenerThread";
 import { logger } from "./logger";
 
-const connectionMgr = new ConnectionMgr();
-
 export class MCServer {
+  public mgr: ConnectionMgr;
+
+  constructor() {
+    this.mgr = new ConnectionMgr();
+  }
   /**
    * Start the HTTP, HTTPS and TCP connection listeners
    * @param {Function} callback
@@ -56,9 +59,7 @@ export class MCServer {
       9014,
     ];
 
-    await tcpPortList.map(port =>
-      startTCPListener(port, connectionMgr, config)
-    );
+    await tcpPortList.map(port => startTCPListener(port, this.mgr, config));
     logger.info("Listening sockets create successfully.");
   }
 }

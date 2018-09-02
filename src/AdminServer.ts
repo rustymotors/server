@@ -17,12 +17,17 @@
 import * as fs from "fs";
 import { IncomingMessage, ServerResponse } from "http";
 import * as https from "https";
-import { SSLConfig } from "./ssl-config";
-
 import { IServerConfiguration } from "./IServerConfiguration";
 import { logger } from "./logger";
+import { MCServer } from "./MCServer";
+import { SSLConfig } from "./ssl-config";
 
-export class WebServer {
+export class AdminServer {
+  public mcServer: MCServer;
+
+  constructor(mcServer: MCServer) {
+    this.mcServer = mcServer;
+  }
   /**
    * Create the SSL options object
    */
@@ -44,35 +49,29 @@ export class WebServer {
     config: IServerConfiguration["serverConfig"]
   ) {
     logger.info(
-      `[HTTPS] Request from ${request.socket.remoteAddress} for ${
+      `[Admin] Request from ${request.socket.remoteAddress} for ${
         request.method
       } ${request.url}`
     );
     switch (request.url) {
-      case "/cert":
-        response.setHeader(
-          "Content-disposition",
-          "attachment; filename=cert.pem"
-        );
-        response.end(fs.readFileSync(config.certFilename));
-        break;
-
-      case "/key":
-        response.setHeader(
-          "Content-disposition",
-          "attachment; filename=pub.key"
-        );
-        response.end(fs.readFileSync(config.publicKeyFilename).toString("hex"));
-        break;
-      case "/AuthLogin":
+      case "/admin/connections":
         response.setHeader("Content-Type", "text/plain");
-        response.end("Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e");
-        break;
+        const connections = this.mcServer.mgr.dumpConnections();
+        connections.forEach((connection, index) => {
+          const displayConnection = `
+            index: ${index} - ${connection.id}
+                remoteAddress: ${connection.remoteAddress}:${
+            connection.localPort
+          }
+            `;
+          response.write(displayConnection);
+        });
+        response.end();
+        return;
 
       default:
-        if (request.url && request.url.startsWith("/AuthLogin?")) {
-          response.setHeader("Content-Type", "text/plain");
-          response.end("Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e");
+        if (request.url && request.url.startsWith("/admin")) {
+          response.end("Jiggawatt!");
           return;
         }
         response.statusCode = 404;
@@ -88,17 +87,17 @@ export class WebServer {
           this._httpsHandler(req, res, config);
         }
       )
-      .listen({ port: 4443, host: "0.0.0.0" })
+      .listen({ port: 8888, host: "0.0.0.0" })
       .on("connection", socket => {
         socket.on("error", (error: Error) => {
-          logger.error(`[webServer] SSL Socket Error: ${error.message}`);
+          logger.error(`[AdminServer] SSL Socket Error: ${error.message}`);
         });
         socket.on("close", () => {
-          logger.info("[webServer] SSL Socket Connection closed");
+          logger.info("[AdminServer] SSL Socket Connection closed");
         });
       })
       .on("tlsClientError", err => {
-        logger.error(`[webServer] tlsClientError: ${err}`);
+        logger.error(`[AdminServer] tlsClientError: ${err}`);
       });
   }
 }

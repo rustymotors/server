@@ -42,7 +42,14 @@ async function onData(
     );
 
     const newConnection = await connection.mgr.processData(rawPacket, config);
-    connection.mgr.updateConnectionById(connection.id, newConnection);
+    if (!connection.remoteAddress) {
+      throw new Error("Remote address is empty");
+    }
+    connection.mgr._updateConnectionByAddressAndPort(
+      connection.remoteAddress,
+      connection.localPort,
+      newConnection
+    );
   } catch (error) {
     logger.error(error);
     logger.error(error.stack);

@@ -123,6 +123,22 @@ export default class ConnectionMgr {
     this.connections.push(newConnection);
   }
 
+  public _updateConnectionByAddressAndPort(
+    address: string,
+    port: number,
+    newConnection: Connection
+  ) {
+    if (newConnection === undefined) {
+      throw new Error("Undefined connection");
+    }
+    const index = this.connections.findIndex(
+      (connection: Connection) =>
+        connection.remoteAddress === address && connection.localPort === port
+    );
+    this.connections.splice(index, 1);
+    this.connections.push(newConnection);
+  }
+
   /**
    * Create new connection if when haven't seen this socket before,
    * or update the socket on the connection object if we have.
