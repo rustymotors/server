@@ -26,5 +26,5 @@ test("returns a valid persona id - 5551212", async () => {
 test("returns a valid name - d316cd2dd6bf870893dfbaaf17f965884e", async () => {
   const { name } = await personaServer._npsGetPersonaMapsByCustomerId(5551212);
   expect(name.toString("utf8").length).toEqual(30);
-  expect(name.toString("utf8")).toContain("Doctor Brown");
+  expect(name.toString("utf8")).toContain("Dr Brown");
 });

@@ -211,7 +211,7 @@ export class PersonaServer {
 
     switch (customerId) {
       case 2868969472:
-        Buffer.from("Doc", "utf8").copy(name);
+        Buffer.from("Doc Joe", "utf8").copy(name);
         result = {
           id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
           maxPersonas: Buffer.from([0x01]),
@@ -221,7 +221,7 @@ export class PersonaServer {
         };
         break;
       case 5551212:
-        Buffer.from("Doctor Brown", "utf8").copy(name);
+        Buffer.from("Dr Brown", "utf8").copy(name);
         result = {
           id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
           maxPersonas: Buffer.from([0x02]),
