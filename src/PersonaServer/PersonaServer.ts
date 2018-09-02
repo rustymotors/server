@@ -100,7 +100,7 @@ async function _npsCheckToken(socket: Socket, data: Buffer) {
   // Create the packet content
   // TODO: Create a real personas map packet, instead of using a fake one that (mostly) works
 
-  const packetContent = Buffer.alloc(512);
+  const packetContent = Buffer.alloc(256);
 
   // Build the packet
   // NPS_ACK = 207
@@ -134,7 +134,7 @@ async function _npsValidatePersonaName(socket: Socket, data: Buffer) {
   // Create the packet content
   // TODO: Create a real personas map packet, instead of using a fake one that (mostly) works
 
-  const packetContent = Buffer.alloc(512);
+  const packetContent = Buffer.alloc(256);
 
   // Build the packet
   // NPS_USER_VALID     validation succeeded
