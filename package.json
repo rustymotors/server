@@ -4,10 +4,11 @@
   "description": "a server",
   "main": "src/server.js",
   "scripts": {
-    "prestart": "eslint src --fix",
-    "pretest": "eslint src --fix",
-    "start": "node src/server.js",
-    "test": "jest --all",
+    "prestart": "npm run lint-test && npm run tsc",
+    "start": "docker-compose up --build --abort-on-container-exit",
+    "tsc": "tsc",
+    "test": "npm run lint-test",
+    "lint-test": "tslint '{lib,src}/**/*.{ts,tsx}' && jest --all",
     "licence-check": "license-checker --json > ./data/licenses.json"
   },
   "author": "Joseph W Becher <jwbecher@drazisil.com> (drazisil)",
@@ -18,48 +19,68 @@
     "url": "git@github.com:drazisil/mco-server.git"
   },
   "engines": {
-    "node": ">=8.9.0"
+    "node": ">=8.11.0"
   },
   "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/**/*.js",
-      "lib/**/*.js"
+      "src/**/*.{js|ts}",
+      "lib/**/*.{js|ts}"
     ],
     "reporters": [
       "default",
       "jest-junit"
     ],
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
-      "js"
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
     ],
-    "testRegex": ".*(spec|test).(js)$"
+    "testPathIgnorePatterns": [
+      "<rootDir>/dist/",
+      "<rootDir>/node_modules/"
+    ]
   },
   "jest-junit": {
     "output": "test-reports/junit.xml"
   },
   "dependencies": {
+    "@types/dotenv-safe": "^5.0.0",
+    "@types/js-yaml": "^3.11.2",
+    "@types/node": "^10.9.2",
+    "@types/pg": "^7.4.10",
+    "@types/winston": "^2.4.4",
     "async": "^2.6.1",
     "dotenv-safe": "^6.0.0",
-    "hoek": "^5.0.3",
     "js-yaml": "^3.12.0",
     "pg": "^7.4.3",
-    "source-map-loader": "^0.2.3",
+    "source-map-loader": "^0.2.4",
     "ssl-config": "^1.0.0",
-    "winston": "^2.4.3"
+    "winston": "^3.0.0"
   },
   "devDependencies": {
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^13.0.0",
+    "@types/jest": "^23.3.1",
     "eslint-config-google": "^0.9.1",
-    "eslint-plugin-import": "^2.13.0",
-    "jest": "^23.4.1",
+    "jest": "^23.5.0",
     "jest-junit": "^5.1.0",
-    "license-checker": "^20.1.0",
-    "lint-staged": "^7.2.0",
+    "license-checker": "^20.2.0",
+    "lint-staged": "^7.2.2",
     "pg-migrator": "^1.0.5",
-    "prettier": "^1.13.7"
+    "prettier": "^1.14.2",
+    "prettier-eslint": "^8.8.2",
+    "ts-jest": "^23.1.4",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.15.0",
+    "typescript": "^3.0.1",
+    "typescript-eslint-parser": "^18.0.0"
   },
   "prettier": {
     "trailingComma": "es5"
