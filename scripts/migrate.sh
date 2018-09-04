@@ -1,17 +1,18 @@
 #!/usr/bin/env bash
 
-if [ -z "$PGDATABASE" ]; then
-    echo "Please set the env: PGDATABASE"
+if [ -z "$POSTGRES_DB" ]; then
+    echo "Please set the env: POSTGRES_DB"
     exit
 fi
 
-if [ -z "$PGUSER" ]; then
-    echo "Please set the env: PGUSER"
+if [ -z "$POSTGRES_USER" ]; then
+    echo "Please set the env: POSTGRES_USER"
     exit
 fi
 
-if [ -z "$PGHOST" ]; then
-    export PGHOST=localhost
+if [ -z "$POSTGRES_HOST" ]; then
+    echo "Please set the env: POSTGRES_HOST"
+    exit
 fi
 
-npx pg-migrator postgres://"$PGUSER"@"$PGHOST"/"$PGDATABASE" "$1"
+npx pg-migrator postgres://"$POSTGRES_USER"@"$POSTGRES_HOST"/"$POSTGRES_DB" "$1"
