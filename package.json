@@ -64,7 +64,8 @@
     "pg": "^7.4.3",
     "source-map-loader": "^0.2.4",
     "ssl-config": "^1.0.0",
-    "winston": "^3.0.0"
+    "winston": "^3.0.1"
+
   },
   "devDependencies": {
     "@types/jest": "^23.3.1",
