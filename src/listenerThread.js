@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const net = require('net');
-const { logger } = require('./logger');
-const { sendPacketOkLogin } = require('./TCPManager');
+const net = require("net");
+const { logger } = require("./logger");
+const { sendPacketOkLogin } = require("./TCPManager");
 
 async function onData(data, connection, config) {
   try {
@@ -30,8 +30,7 @@ async function onData(data, connection, config) {
     };
     // Dump the raw packet
     logger.debug(
-      "rawPacket's data prior to proccessing: ",
-      rawPacket.data.toString('hex'),
+      `rawPacket's data prior to proccessing: ${rawPacket.data.toString("hex")}`
     );
 
     const newConnection = await connection.mgr.processData(rawPacket, config);
@@ -49,21 +48,23 @@ function listener(socket, connectionMgr, config) {
 
   const { localPort, remoteAddress } = socket;
   logger.info(
-    `[listenerThread] Client ${remoteAddress} connected to port ${localPort}`,
+    `[listenerThread] Client ${remoteAddress} connected to port ${localPort}`
   );
   if (socket.localPort === 7003 && connection.inQueue) {
     sendPacketOkLogin(socket);
     connection.inQueue = false;
   }
-  socket.on('end', () => {
+  socket.on("end", () => {
     connectionMgr.deleteConnection(connection);
     logger.info(
-      `[listenerThread] Client ${remoteAddress} disconnected from port ${localPort}`,
+      `[listenerThread] Client ${remoteAddress} disconnected from port ${localPort}`
     );
   });
-  socket.on('data', (data) => { onData(data, connection, config); });
-  socket.on('error', (err) => {
-    if (err.code !== 'ECONNRESET') {
+  socket.on("data", data => {
+    onData(data, connection, config);
+  });
+  socket.on("error", err => {
+    if (err.code !== "ECONNRESET") {
       logger.error(err.message);
       logger.error(err.stack);
       process.exit(1);
@@ -78,8 +79,10 @@ function listener(socket, connectionMgr, config) {
  */
 async function startTCPListener(localPort, connectionMgr, config) {
   net
-    .createServer((socket) => { listener(socket, connectionMgr, config); })
-    .listen({ port: localPort, host: '0.0.0.0' }, () => {
+    .createServer(socket => {
+      listener(socket, connectionMgr, config);
+    })
+    .listen({ port: localPort, host: "0.0.0.0" }, () => {
       logger.info(`[listenerThread] Listener started on port ${localPort}`);
     });
 }
