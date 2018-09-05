@@ -19,11 +19,12 @@ import { Connection } from "./Connection";
 import { IRawPacket } from "./IRawPacket";
 import { IServerConfiguration } from "./IServerConfiguration";
 import { LobbyServer } from "./LobbyServer/LobbyServer";
-import { logger } from "./logger";
+import { Logger } from "./logger";
 import { LoginServer } from "./LoginServer/LoginServer";
 import { PersonaServer } from "./PersonaServer/PersonaServer";
 import { defaultHandler } from "./TCPManager";
 
+const logger = new Logger().getLogger();
 const loginServer = new LoginServer();
 const personaServer = new PersonaServer();
 const lobbyServer = new LobbyServer();

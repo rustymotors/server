@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { logger } from "../logger";
+import { Logger } from "../logger";
+
+const logger = new Logger().getLogger();
 
 // WORD	msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD	msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)

@@ -17,7 +17,9 @@
 import ConnectionMgr from "./connectionMgr";
 import { IServerConfiguration } from "./IServerConfiguration";
 import { startTCPListener } from "./listenerThread";
-import { logger } from "./logger";
+import { Logger } from "./logger";
+
+const logger = new Logger().getLogger();
 
 export class MCServer {
   public mgr: ConnectionMgr;

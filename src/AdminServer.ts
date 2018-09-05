@@ -18,9 +18,11 @@ import * as fs from "fs";
 import { IncomingMessage, ServerResponse } from "http";
 import * as https from "https";
 import { IServerConfiguration } from "./IServerConfiguration";
-import { logger } from "./logger";
+import { Logger } from "./logger";
 import { MCServer } from "./MCServer";
 import { SSLConfig } from "./ssl-config";
+
+const logger = new Logger().getLogger();
 
 export class AdminServer {
   public mcServer: MCServer;

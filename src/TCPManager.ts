@@ -20,18 +20,16 @@ import { Connection } from "./Connection";
 import { pool } from "./database";
 import { IRawPacket } from "./IRawPacket";
 import { LobbyServer } from "./LobbyServer/LobbyServer";
-import { logger } from "./logger";
-import { MCOTServer } from "./MCOTServer";
+import { Logger } from "./logger";
+import { MCOTServer } from "./MCOTS/MCOTServer";
 import { ClientConnectMsg } from "./messageTypes/ClientConnectMsg";
 import { GenericReplyMsg } from "./messageTypes/GenericReplyMsg";
 import { GenericRequestMsg } from "./messageTypes/GenericRequestMsg";
-import { GetLobbiesListMsg } from "./messageTypes/GetLobbiesListMsg";
-import { LobbyMsg } from "./messageTypes/LobbyMsg";
-import { LoginMsg } from "./messageTypes/LoginMsg";
 import { MessageNode } from "./messageTypes/MessageNode";
 import { StockCar } from "./messageTypes/StockCar";
 import { StockCarInfoMsg } from "./messageTypes/StockCarInfoMsg";
 
+const logger = new Logger().getLogger();
 const lobbyServer = new LobbyServer();
 const mcotServer = new MCOTServer();
 
@@ -110,73 +108,6 @@ async function fetchSessionKeyByConnectionId(connectionId: number) {
         );
       })
     );
-}
-
-export async function Login(con: Connection, node: MessageNode) {
-  const loginMsg = node;
-  /**
-   * Let's turn it into a LoginMsg
-   */
-  loginMsg.login = new LoginMsg(node.data);
-  loginMsg.data = loginMsg.login.serialize();
-
-  // Update the appId
-  loginMsg.appId = con.appId;
-
-  loginMsg.login.dumpPacket();
-
-  // Create new response packet
-  // TODO: Do this cleaner
-  const pReply = new GenericReplyMsg();
-  pReply.msgNo = 101;
-  pReply.msgReply = 105;
-  const rPacket = new MessageNode();
-
-  // lobbyMsg.dumpPacket();
-
-  // const rPacket = new MessageNode();
-  rPacket.deserialize(node.serialize());
-  rPacket.updateBuffer(pReply.serialize());
-  logger.debug("Dumping response...");
-  rPacket.dumpPacket();
-
-  return { con, nodes: [rPacket] };
-}
-
-async function GetLobbies(con: Connection, node: MessageNode) {
-  const lobbiesListMsg = node;
-  /**
-   * Let's turn it into a LoginMsg
-   */
-  lobbiesListMsg.lobby = new GetLobbiesListMsg(node.data);
-  lobbiesListMsg.data = lobbiesListMsg.serialize();
-
-  // Update the appId
-  lobbiesListMsg.appId = con.appId;
-
-  // Create new response packet
-  const lobbyMsg = new LobbyMsg();
-
-  // TODO: Do this cleaner
-
-  logger.debug("Dumping response...");
-
-  const pReply = new GenericReplyMsg();
-  pReply.msgNo = 101;
-  pReply.msgReply = 324;
-  const rPacket = new MessageNode();
-
-  // lobbyMsg.dumpPacket();
-
-  // const rPacket = new MessageNode();
-  rPacket.deserialize(node.data);
-
-  rPacket.updateBuffer(pReply.serialize());
-  // rPacket.updateBuffer(lobbyMsg.serialize());
-
-  rPacket.dumpPacket();
-
-  return { con, nodes: [rPacket] };
 }
 
 async function GetStockCarInfo(con: Connection, node: MessageNode) {
@@ -308,7 +239,7 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
     }
   } else if (currentMsgString === "MC_LOGIN") {
     try {
-      const result = await Login(conn, node);
+      const result = await mcotServer._login(conn, node);
       const responsePackets = result.nodes;
       // write the socket
       updatedConnection = await socketWriteIfOpen(result.con, responsePackets);
@@ -330,7 +261,7 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
     }
   } else if (currentMsgString === "MC_GET_LOBBIES") {
     try {
-      const result = await GetLobbies(conn, node);
+      const result = await mcotServer._getLobbies(conn, node);
       const responsePackets = result.nodes;
       // write the socket
       updatedConnection = await socketWriteIfOpen(result.con, responsePackets);

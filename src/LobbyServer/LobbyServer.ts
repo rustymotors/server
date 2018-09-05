@@ -18,8 +18,25 @@ import { Socket } from "net";
 import { Connection } from "../Connection";
 import { pool } from "../database";
 import { IRawPacket } from "../IRawPacket";
-import { logger } from "../logger";
+import { Logger } from "../logger";
 import { NPSMsg } from "../messageTypes/NPSMsg";
+
+const logger = new Logger().getLogger();
+
+async function npsSocketWriteIfOpen(conn: Connection, buffer: Buffer) {
+  const sock = conn.sock;
+  if (sock.writable) {
+    // Write the packet to socket
+    sock.write(buffer);
+  } else {
+    logger.error(
+      `[Lobby] Error writing ${buffer.toString("hex")} to ${
+        sock.remoteAddress
+      } , ${sock.localPort.toString()}`
+    );
+  }
+  return conn;
+}
 
 /**
  * Handle a request to connect to a game server packet
@@ -103,7 +120,7 @@ async function fetchSessionKeyByConnectionId(connectionId: number) {
     .catch(e =>
       setImmediate(() => {
         logger.error(
-          `Unable to fetch session key for connection id: ${connectionId}: `,
+          `[Lobby] Unable to fetch session key for connection id: ${connectionId}: `,
           e
         );
       })
@@ -166,7 +183,7 @@ export class LobbyServer {
   public async dataHandler(rawPacket: IRawPacket) {
     const { localPort, remoteAddress } = rawPacket;
     logger.info(`=============================================
-    Received packet on port ${localPort} from ${remoteAddress}...`);
+    [Lobby] Received packet on port ${localPort} from ${remoteAddress}...`);
     logger.info("=============================================");
     const { connection, data } = rawPacket;
     const { sock } = connection;
@@ -178,18 +195,18 @@ export class LobbyServer {
       case "100": {
         const responsePacket = await _npsRequestGameConnectServer(sock, data);
         logger.debug(
-          `responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
+          `[Lobby/Connect] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
         );
-        sock.write(responsePacket.serialize());
+        npsSocketWriteIfOpen(connection, responsePacket.serialize());
         break;
       }
       // npsHeartbeat
       case "217": {
         const responsePacket = await this._npsHeartbeat();
         logger.debug(
-          `responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
+          `[Lobby/Heartbeat] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
         );
-        sock.write(responsePacket.serialize());
+        npsSocketWriteIfOpen(connection, responsePacket.serialize());
         break;
       }
       // npsSendCommand
@@ -202,21 +219,23 @@ export class LobbyServer {
 
         if (encryptedCommand == null) {
           logger.error(
-            `Error with encrypted command, dumping connection...${updatedConnection}`
+            `[Lobby/CMD] Error with encrypted command, dumping connection...${updatedConnection}`
           );
           process.exit(1);
         }
 
         logger.debug(
-          `encrypedCommand's data prior to sending: ${encryptedCommand.toString(
+          `[Lobby/CMD] encrypedCommand's data prior to sending: ${encryptedCommand.toString(
             "hex"
           )}`
         );
-        newSock.write(encryptedCommand);
+        npsSocketWriteIfOpen(connection, encryptedCommand);
         break;
       }
       default:
-        logger.error(`Unknown code ${requestCode} was received on port 7003`);
+        logger.error(
+          `[Lobby] Unknown code ${requestCode} was received on port 7003`
+        );
         process.exit();
     }
     return updatedConnection;

@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { logger } from "../logger";
+import { Logger } from "../logger";
 import { StockCar } from "./StockCar";
+
+const logger = new Logger().getLogger();
 
 // WORD	msgNo;
 // DWORD    starterCash; // when called from the create persona screen,
