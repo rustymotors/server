@@ -20,7 +20,9 @@ import * as https from "https";
 import { SSLConfig } from "./ssl-config";
 
 import { IServerConfiguration } from "./IServerConfiguration";
-import { logger } from "./logger";
+import { Logger } from "./logger";
+
+const logger = new Logger().getLogger();
 
 export class WebServer {
   /**

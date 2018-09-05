@@ -16,8 +16,10 @@
 
 import { Socket } from "net";
 import { IRawPacket } from "../IRawPacket";
-import { logger } from "../logger";
+import { Logger } from "../logger";
 import { NPSMsg } from "../messageTypes/NPSMsg";
+
+const logger = new Logger().getLogger();
 
 interface IPersonaRecord {
   id: Buffer;

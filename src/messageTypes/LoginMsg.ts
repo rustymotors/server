@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { logger } from "../logger";
+import { Logger } from "../logger";
+
+const logger = new Logger().getLogger();
 
 export class LoginMsg {
   private msgNo: number;

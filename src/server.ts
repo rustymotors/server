@@ -2,10 +2,12 @@ import fs = require("fs");
 import yaml = require("js-yaml");
 import { AdminServer } from "./AdminServer";
 import { IServerConfiguration } from "./IServerConfiguration";
-import { logger } from "./logger";
+import { Logger } from "./logger";
 import { MCServer } from "./MCServer";
 import { PatchServer } from "./patchServer";
 import { WebServer } from "./WebServer";
+
+const logger = new Logger().getLogger();
 
 // Get document, or throw exception on error
 try {

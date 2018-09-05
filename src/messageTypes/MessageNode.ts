@@ -14,10 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { logger } from "../logger";
+import { Logger } from "../logger";
 import { GetLobbiesListMsg } from "./GetLobbiesListMsg";
 import { LoginMsg } from "./LoginMsg";
 import MsgHead from "./MsgHead";
+
+const logger = new Logger().getLogger();
 
 export class MessageNode {
   public appId: number;
@@ -113,7 +115,9 @@ export class MessageNode {
     logger.debug(`Sequence: ${this.seq}`);
     logger.debug(`Flags: ${this.flags}`);
     logger.debug("------------------------------------------------");
-    const packetContents = this.serialize().toString("hex").match(/../g);
+    const packetContents = this.serialize()
+      .toString("hex")
+      .match(/../g);
     if (packetContents) {
       logger.debug(`packet as string: ${packetContents.join(" ")}`);
     }

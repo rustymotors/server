@@ -16,13 +16,15 @@
 
 import { IRawPacket } from "../IRawPacket";
 import { IServerConfiguration } from "../IServerConfiguration";
-import { logger } from "../logger";
+import { Logger } from "../logger";
 
 import { NPSUserStatus } from "../messageTypes/npsUserStatus";
 
 import { Connection } from "../Connection";
 import { pool } from "../database";
 import { premadeLogin } from "../packet";
+
+const logger = new Logger().getLogger();
 
 async function _updateSessionKey(
   customerId: number,

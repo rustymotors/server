@@ -19,8 +19,10 @@ import { Connection } from "./Connection";
 import ConnectionMgr from "./connectionMgr";
 import { IRawPacket } from "./IRawPacket";
 import { IServerConfiguration } from "./IServerConfiguration";
-import { logger } from "./logger";
+import { Logger } from "./logger";
 import { sendPacketOkLogin } from "./TCPManager";
+
+const logger = new Logger().getLogger();
 
 async function onData(
   data: Buffer,

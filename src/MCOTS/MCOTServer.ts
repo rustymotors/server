@@ -14,11 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Connection } from "./Connection";
-import { LobbyServer } from "./LobbyServer/LobbyServer";
-import { logger } from "./logger";
-import { GenericReplyMsg } from "./messageTypes/GenericReplyMsg";
-import { MessageNode } from "./messageTypes/MessageNode";
+import { Connection } from "../Connection";
+import { Logger } from "../logger";
+import { GenericReplyMsg } from "../messageTypes/GenericReplyMsg";
+import { GetLobbiesListMsg } from "../messageTypes/GetLobbiesListMsg";
+import { LobbyMsg } from "../messageTypes/LobbyMsg";
+import { LoginMsg } from "../messageTypes/LoginMsg";
+import { MessageNode } from "../messageTypes/MessageNode";
+
+const logger = new Logger().getLogger();
 
 export class MCOTServer {
   /**
@@ -49,6 +53,76 @@ export class MCOTServer {
       default:
         return "Unknown";
     }
+  }
+
+  public async _login(con: Connection, node: MessageNode) {
+    const loginMsg = node;
+    /**
+     * Let's turn it into a LoginMsg
+     */
+    loginMsg.login = new LoginMsg(node.data);
+    loginMsg.data = loginMsg.login.serialize();
+
+    // Update the appId
+    loginMsg.appId = con.appId;
+
+    loginMsg.login.dumpPacket();
+
+    // Create new response packet
+    // TODO: Do this cleaner
+    const pReply = new GenericReplyMsg();
+    pReply.msgNo = 213;
+    // pReply.msgNo = 101;
+    pReply.msgReply = 105;
+    const rPacket = new MessageNode();
+
+    // lobbyMsg.dumpPacket();
+
+    // const rPacket = new MessageNode();
+    rPacket.deserialize(node.serialize());
+    rPacket.updateBuffer(pReply.serialize());
+    logger.debug("Dumping response...");
+    rPacket.dumpPacket();
+
+    return { con, nodes: [rPacket] };
+  }
+
+  public async _getLobbies(con: Connection, node: MessageNode) {
+    const lobbiesListMsg = node;
+    /**
+     * Let's turn it into a LoginMsg
+     */
+    lobbiesListMsg.lobby = new GetLobbiesListMsg(node.data);
+    lobbiesListMsg.data = lobbiesListMsg.serialize();
+
+    // Update the appId
+    lobbiesListMsg.appId = con.appId;
+
+    // Create new response packet
+    const lobbyMsg = new LobbyMsg();
+
+    // TODO: Do this cleaner
+
+    logger.debug("Dumping response...");
+
+    const pReply = new GenericReplyMsg();
+    pReply.msgNo = 325;
+    // pReply.msgNo = 101;
+    pReply.msgReply = 324;
+    const rPacket = new MessageNode();
+
+    // lobbyMsg.dumpPacket();
+
+    // const rPacket = new MessageNode();
+    rPacket.deserialize(node.data);
+    rPacket.flags = 0;
+
+    rPacket.updateBuffer(pReply.serialize());
+    // rPacket.updateBuffer(lobbyMsg.serialize());
+
+    rPacket.dumpPacket();
+
+    return { con, nodes: [rPacket] };
   }
 
   public async _logout(con: Connection, node: MessageNode) {

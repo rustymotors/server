@@ -16,20 +16,28 @@
 
 import * as winston from "winston";
 
-export const logger = winston.createLogger({
-  format: winston.format.combine(
-    winston.format.colorize({ all: true }),
-    winston.format.simple(),
-  ),
-  transports: [
-    new winston.transports.Console({ level: "debug" }),
-    new winston.transports.File({
-      filename: "filelog-info.log",
-      level: "info",
-    }),
-    new winston.transports.File({
-      filename: "filelog-error.log",
-      level: "error",
-    }),
-  ],
-});
+export class Logger {
+  public level: string;
+  public logger: winston.Logger;
+
+  constructor(level: string = "debug") {
+    this.level = level;
+    this.logger = winston.createLogger({
+      format: winston.format.combine(
+        winston.format.colorize({ all: true }),
+        winston.format.simple()
+      ),
+      transports: [
+        new winston.transports.Console({ level }),
+        new winston.transports.File({
+          filename: "logs/mcoServer.log",
+          level,
+        }),
+      ],
+    });
+  }
+
+  public getLogger() {
+    return this.logger;
+  }
+}

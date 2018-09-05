@@ -17,7 +17,9 @@
 import * as http from "http";
 
 import { IServerConfiguration } from "./IServerConfiguration";
-import { logger } from "./logger";
+import { Logger } from "./logger";
+
+const logger = new Logger().getLogger();
 
 const castanetResponse = {
   body: Buffer.from("cafebeef00000000000003", "hex"),

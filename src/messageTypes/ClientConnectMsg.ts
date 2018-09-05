@@ -15,7 +15,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Connection } from "../Connection";
-import { logger } from "../logger";
+import { Logger } from "../logger";
+
+const logger = new Logger().getLogger();
 
 export class ClientConnectMsg {
   public customerId: number;
