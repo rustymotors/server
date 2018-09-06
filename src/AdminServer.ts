@@ -18,17 +18,17 @@ import * as fs from "fs";
 import { IncomingMessage, ServerResponse } from "http";
 import * as https from "https";
 import { IServerConfiguration } from "./IServerConfiguration";
-import { Logger } from "./logger";
+import { ILoggerInstance } from "./logger";
 import { MCServer } from "./MCServer";
 import { SSLConfig } from "./ssl-config";
 
-const logger = new Logger().getLogger();
-
 export class AdminServer {
   public mcServer: MCServer;
+  public logger: ILoggerInstance;
 
-  constructor(mcServer: MCServer) {
+  constructor(mcServer: MCServer, logger: ILoggerInstance) {
     this.mcServer = mcServer;
+    this.logger = logger;
   }
   /**
    * Create the SSL options object
@@ -50,7 +50,7 @@ export class AdminServer {
     response: ServerResponse,
     config: IServerConfiguration["serverConfig"]
   ) {
-    logger.info(
+    this.logger.info(
       `[Admin] Request from ${request.socket.remoteAddress} for ${
         request.method
       } ${request.url}`
@@ -92,14 +92,14 @@ export class AdminServer {
       .listen({ port: 8888, host: "0.0.0.0" })
       .on("connection", socket => {
         socket.on("error", (error: Error) => {
-          logger.error(`[AdminServer] SSL Socket Error: ${error.message}`);
+          this.logger.error(`[AdminServer] SSL Socket Error: ${error.message}`);
         });
         socket.on("close", () => {
-          logger.info("[AdminServer] SSL Socket Connection closed");
+          this.logger.info("[AdminServer] SSL Socket Connection closed");
         });
       })
       .on("tlsClientError", err => {
-        logger.error(`[AdminServer] tlsClientError: ${err}`);
+        this.logger.error(`[AdminServer] tlsClientError: ${err}`);
       });
   }
 }
