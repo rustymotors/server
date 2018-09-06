@@ -5,8 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const packet = require("./packet");
+export default class MsgHead {
+  public length: number;
+  public mcosig: string;
 
-test("retuns a buffer packet from premadeLogin", () => {
-  expect(packet.premadeLogin()).toBeInstanceOf(Buffer);
-});
+  constructor(header: Buffer) {
+    this.length = header.readInt16LE(0);
+    this.mcosig = header.toString("ascii", 2);
+    return this;
+  }
+}

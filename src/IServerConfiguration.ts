@@ -5,8 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const packet = require("./packet");
-
-test("retuns a buffer packet from premadeLogin", () => {
-  expect(packet.premadeLogin()).toBeInstanceOf(Buffer);
-});
+export interface IServerConfiguration {
+  serverConfig: {
+    ipServer: number;
+    certFilename: string;
+    publicKeyFilename: string;
+    privateKeyFilename: string;
+  };
+}

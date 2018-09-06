@@ -5,8 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const packet = require("./packet");
+import * as dotenvSafe from "dotenv-safe";
+dotenvSafe.config();
+import { Pool } from "pg";
 
-test("retuns a buffer packet from premadeLogin", () => {
-  expect(packet.premadeLogin()).toBeInstanceOf(Buffer);
+// pools will use environment variables
+// for connection information
+export const pool = new Pool({
+  database: process.env.DB_TABLE,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
 });
