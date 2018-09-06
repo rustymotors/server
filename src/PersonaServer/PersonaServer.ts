@@ -185,11 +185,9 @@ export class PersonaServer {
         await _npsCheckToken(sock, data);
         return updatedConnection;
       default:
-        logger.error(
+        throw new Error(
           `[personaServer] Unknown code ${requestCode} was received on port 8228`
         );
-        process.exit(1);
-        return updatedConnection;
     }
   }
 
@@ -225,18 +223,9 @@ export class PersonaServer {
         };
         break;
       default:
-        logger.error(
+        throw new Error(
           `[personaServer/npsGetPersonaMapsByCustomerId] Unknown customerId: ${customerId}`
         );
-        process.exit(1);
-        // This never happens, but makes typescript happy
-        result = {
-          id: Buffer.alloc(0),
-          maxPersonas: Buffer.alloc(0),
-          name: Buffer.alloc(0),
-          personaCount: Buffer.alloc(0),
-          shardId: Buffer.alloc(0),
-        };
     }
     return result;
   }

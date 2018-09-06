@@ -5,20 +5,20 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const crypto = require("crypto");
-const fs = require("fs");
-const { logger } = require("../logger");
+import * as crypto from "crypto";
+import * as fs from "fs";
+import { IServerConfiguration } from "../IServerConfiguration";
+import { ILoggerInstance } from "../logger";
 
 /**
  * Load the RSA private key and return a NodeRSA object
  * @returns {NodeRSA}
  */
-function fetchPrivateKeyFromFile(privateKeyPath) {
+function fetchPrivateKeyFromFile(privateKeyPath: string) {
   try {
     fs.statSync(privateKeyPath);
   } catch (e) {
-    logger.error(`[npsUserStatus] Error loading private key: ${e}`);
-    process.exit(1);
+    throw new Error(`[npsUserStatus] Error loading private key: ${e}`);
   }
   return fs.readFileSync(privateKeyPath).toString();
 }
@@ -30,8 +30,19 @@ function fetchPrivateKeyFromFile(privateKeyPath) {
  * @returns {LoginPacket}
  */
 
-class NPSUserStatus {
-  constructor(config, packet) {
+export class NPSUserStatus {
+  public logger: ILoggerInstance;
+  public opCode: number;
+  public contextId: string;
+  public buffer: Buffer;
+  public sessionKey: string;
+
+  constructor(
+    config: IServerConfiguration,
+    packet: Buffer,
+    logger: ILoggerInstance
+  ) {
+    this.logger = logger;
     // Save the NPS opCode
     this.opCode = packet.readInt16LE(0);
 
@@ -42,7 +53,7 @@ class NPSUserStatus {
     this.buffer = packet;
 
     // Save the sessionKey
-    this.sessionKey = this.extractSessionKeyFromPacket(
+    this.sessionKey = this._extractSessionKeyFromPacket(
       config.serverConfig,
       packet
     );
@@ -55,7 +66,10 @@ class NPSUserStatus {
    * Take 128 bytes
    * They are the utf-8 of the hex bytes that are the key
    */
-  extractSessionKeyFromPacket(serverConfig, packet) {
+  public _extractSessionKeyFromPacket(
+    serverConfig: IServerConfiguration["serverConfig"],
+    packet: Buffer
+  ) {
     // Decrypt the sessionKey
     const privateKey = fetchPrivateKeyFromFile(serverConfig.privateKeyFilename);
 
@@ -63,17 +77,17 @@ class NPSUserStatus {
       packet.slice(52, -10).toString("utf8"),
       "hex"
     );
-    logger.debug(
+    this.logger.debug(
       `[npsUserStatus] Encrypted Session Key String: ${sessionKeyStr.toString(
         "hex"
       )}`
     );
     const decrypted = crypto.privateDecrypt(privateKey, sessionKeyStr);
-    logger.debug(`[npsUserStatus] Unsliced key: ${decrypted.toString("hex")}`);
+    this.logger.debug(
+      `[npsUserStatus] Unsliced key: ${decrypted.toString("hex")}`
+    );
     const sessionKey = decrypted.slice(2, -4).toString("hex");
 
     return sessionKey;
   }
 }
-
-module.exports = { NPSUserStatus };

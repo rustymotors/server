@@ -10,24 +10,26 @@ import { Connection } from "./Connection";
 import { IRawPacket } from "./IRawPacket";
 import { IServerConfiguration } from "./IServerConfiguration";
 import { LobbyServer } from "./LobbyServer/LobbyServer";
-import { Logger } from "./logger";
+import { ILoggerInstance } from "./logger";
 import { LoginServer } from "./LoginServer/LoginServer";
 import { PersonaServer } from "./PersonaServer/PersonaServer";
 import { defaultHandler } from "./TCPManager";
 
-const logger = new Logger().getLogger();
-const loginServer = new LoginServer();
 const personaServer = new PersonaServer();
 const lobbyServer = new LobbyServer();
 
 export default class ConnectionMgr {
+  public logger: ILoggerInstance;
   private connections: Connection[];
   private newConnectionId: number;
 
-  constructor() {
+  constructor(logger: ILoggerInstance) {
+    if (!logger) {
+      throw new Error("No logger in constructor");
+    }
+    this.logger = logger;
     this.connections = [];
     this.newConnectionId = 1;
-    return this;
   }
 
   /**
@@ -39,6 +41,8 @@ export default class ConnectionMgr {
     rawPacket: IRawPacket,
     config: IServerConfiguration
   ) {
+    const loginServer = new LoginServer(this.logger);
+
     const { remoteAddress, localPort, data } = rawPacket;
     const updatedConnection = rawPacket.connection;
     // logger.info(`Connection Manager: Got data from ${remoteAddress} on
@@ -54,13 +58,11 @@ export default class ConnectionMgr {
       case 43300:
         return defaultHandler(rawPacket);
       default:
-        logger.error(
+        throw new Error(
           `[connectionMgr] No known handler for localPort ${localPort},
-          unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.`
+          unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.
+          [connectionMgr] Data was: ", data.toString("hex")`
         );
-        logger.info("[connectionMgr] Data was: ", data.toString("hex"));
-        process.exit(1);
-        return updatedConnection;
     }
   }
   /**
@@ -104,18 +106,7 @@ export default class ConnectionMgr {
     );
   }
 
-  public updateConnectionById(connectionId: number, newConnection: Connection) {
-    if (newConnection === undefined) {
-      throw new Error("Undefined connection");
-    }
-    const index = this.connections.findIndex(
-      (connection: Connection) => connection.id === connectionId
-    );
-    this.connections.splice(index, 1);
-    this.connections.push(newConnection);
-  }
-
-  public _updateConnectionByAddressAndPort(
+  public async _updateConnectionByAddressAndPort(
     address: string,
     port: number,
     newConnection: Connection
@@ -132,10 +123,11 @@ export default class ConnectionMgr {
   }
 
   /**
-   * Create new connection if when haven't seen this socket before,
-   * or update the socket on the connection object if we have.
-   * @param {String} id
+   * Return an existing connection, or a new one
+   *
    * @param {Socket} socket
+   * @returns
+   * @memberof ConnectionMgr
    */
   public findOrNewConnection(socket: Socket) {
     const { remoteAddress, localPort } = socket;
@@ -144,20 +136,15 @@ export default class ConnectionMgr {
     }
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
     if (con !== undefined) {
-      logger.info(
+      this.logger.info(
         `[connectionMgr] I have seen connections from ${remoteAddress} on ${localPort} before`
       );
       con.sock = socket;
       return con;
     }
 
-    const connectionManager = this;
-    const newConnection = new Connection(
-      this.newConnectionId,
-      socket,
-      connectionManager
-    );
-    logger.info(
+    const newConnection = new Connection(this.newConnectionId, socket, this);
+    this.logger.info(
       `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`
     );
     this.connections.push(newConnection);
