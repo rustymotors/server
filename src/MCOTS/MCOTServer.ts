@@ -106,7 +106,6 @@ export class MCOTServer {
 
     // const rPacket = new MessageNode();
     rPacket.deserialize(node.data);
-    rPacket.flags = 0;
 
     rPacket.updateBuffer(pReply.serialize());
     // rPacket.updateBuffer(lobbyMsg.serialize());
