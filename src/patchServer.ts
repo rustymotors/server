@@ -17,9 +17,7 @@
 import * as http from "http";
 
 import { IServerConfiguration } from "./IServerConfiguration";
-import { Logger } from "./logger";
-
-const logger = new Logger().getLogger();
+import { ILoggerInstance } from "./logger";
 
 const castanetResponse = {
   body: Buffer.from("cafebeef00000000000003", "hex"),
@@ -99,7 +97,8 @@ function generateShardList(serverConfig: IServerConfiguration["serverConfig"]) {
 function httpHandler(
   request: http.IncomingMessage,
   response: http.ServerResponse,
-  serverConfiguration: IServerConfiguration
+  serverConfiguration: IServerConfiguration,
+  logger: ILoggerInstance
 ) {
   logger.info(
     `[PATCH] Request from ${request.socket.remoteAddress} for ${
@@ -136,12 +135,18 @@ function httpHandler(
 }
 
 export class PatchServer {
+  public logger: ILoggerInstance;
+
+  constructor(logger: ILoggerInstance) {
+    this.logger = logger;
+  }
+
   public async start(configurationFile: IServerConfiguration) {
     const serverPatch = http.createServer((req, res) => {
-      httpHandler(req, res, configurationFile);
+      httpHandler(req, res, configurationFile, this.logger);
     });
     serverPatch.listen({ port: "3000", host: "0.0.0.0" }, () => {
-      logger.info("[patchServer] Patch server is listening...");
+      this.logger.info("[patchServer] Patch server is listening...");
     });
   }
 }

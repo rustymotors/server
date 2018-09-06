@@ -20,11 +20,14 @@ import * as https from "https";
 import { SSLConfig } from "./ssl-config";
 
 import { IServerConfiguration } from "./IServerConfiguration";
-import { Logger } from "./logger";
-
-const logger = new Logger().getLogger();
+import { ILoggerInstance } from "./logger";
 
 export class WebServer {
+  public logger: ILoggerInstance;
+
+  constructor(logger: ILoggerInstance) {
+    this.logger = logger;
+  }
   /**
    * Create the SSL options object
    */
@@ -45,7 +48,7 @@ export class WebServer {
     response: ServerResponse,
     config: IServerConfiguration["serverConfig"]
   ) {
-    logger.info(
+    this.logger.info(
       `[HTTPS] Request from ${request.socket.remoteAddress} for ${
         request.method
       } ${request.url}`
@@ -93,14 +96,14 @@ export class WebServer {
       .listen({ port: 4443, host: "0.0.0.0" })
       .on("connection", socket => {
         socket.on("error", (error: Error) => {
-          logger.error(`[webServer] SSL Socket Error: ${error.message}`);
+          this.logger.error(`[webServer] SSL Socket Error: ${error.message}`);
         });
         socket.on("close", () => {
-          logger.info("[webServer] SSL Socket Connection closed");
+          this.logger.info("[webServer] SSL Socket Connection closed");
         });
       })
       .on("tlsClientError", err => {
-        logger.error(`[webServer] tlsClientError: ${err}`);
+        this.logger.error(`[webServer] tlsClientError: ${err}`);
       });
   }
 }

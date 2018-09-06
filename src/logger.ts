@@ -16,6 +16,9 @@
 
 import * as winston from "winston";
 
+// tslint:disable-next-line:no-empty-interface
+export interface ILoggerInstance extends winston.Logger {}
+
 export class Logger {
   public level: string;
   public logger: winston.Logger;
