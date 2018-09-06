@@ -1,20 +1,11 @@
 // mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-const { logger } = require('../logger');
+const { logger } = require("../logger");
 
 const lobbyInfoDefaults = {
   // DWORD    lobbyID;
@@ -25,11 +16,11 @@ const lobbyInfoDefaults = {
   turfId: 0,
 
   // char NPSRiffName[MC_MAX_NPS_RIFF_NAME]; // 32
-  NPSRiffName: 'main',
+  NPSRiffName: "main",
   // char eTurfName[256];
-  eTurfName: '',
+  eTurfName: "",
   // char clientArt[11];
-  clientArt: '',
+  clientArt: "",
   // DWORD    elementID;
   elementId: 0,
   // DWORD    turfLength;
@@ -99,9 +90,9 @@ const lobbyInfoDefaults = {
 
   // char   topDog[MC_NAME_LENGTH]; = 13
   // Also used for TimeTrial's "Last Weeks Champion"?
-  topDog: '',
+  topDog: "",
   // char   turfOwner[MAX_CLUB_NAME_LENGTH+1]; = 33 (including the +1)
-  turfOwner: '',
+  turfOwner: "",
   // DWORD  qualifyingTime;
   qualifyingTime: 0,
   // DWORD   clubNumPlayers;
@@ -188,7 +179,7 @@ const lobbyInfoDefaults = {
 
 class LobbyInfo {
   constructor(lobbyJson = lobbyInfoDefaults) {
-    Object.entries(lobbyJson).forEach((prop) => {
+    Object.entries(lobbyJson).forEach(prop => {
       const [key, val] = prop;
       this[key] = val;
     });
@@ -390,14 +381,14 @@ class LobbyMsg {
   }
 
   /**
-    * dumpPacket
-    */
+   * dumpPacket
+   */
   dumpPacket() {
-    logger.debug('[LobbyMsg]======================================');
-    logger.debug('MsgNo:       ', this.msgNo);
-    logger.debug('dataLength:  ', this.dataLength);
-    logger.debug('packet:   ', this.serialize().toString('hex'));
-    logger.debug('[LobbyMsg]======================================');
+    logger.debug("[LobbyMsg]======================================");
+    logger.debug("MsgNo:       ", this.msgNo);
+    logger.debug("dataLength:  ", this.dataLength);
+    logger.debug("packet:   ", this.serialize().toString("hex"));
+    logger.debug("[LobbyMsg]======================================");
   }
 }
 
