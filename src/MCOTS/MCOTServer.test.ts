@@ -5,8 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const packet = require("./packet");
+import { MCOTServer } from "./MCOTServer";
 
-test("retuns a buffer packet from premadeLogin", () => {
-  expect(packet.premadeLogin()).toBeInstanceOf(Buffer);
+const mcotServer = new MCOTServer();
+
+test("438 = MC_CLIENT_CONNECT_MSG", () => {
+  expect(mcotServer._MSG_STRING(438)).toBe("MC_CLIENT_CONNECT_MSG");
 });

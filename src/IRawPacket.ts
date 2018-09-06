@@ -5,8 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const packet = require("./packet");
+import { Connection } from "./Connection";
 
-test("retuns a buffer packet from premadeLogin", () => {
-  expect(packet.premadeLogin()).toBeInstanceOf(Buffer);
-});
+export interface IRawPacket {
+  connection: Connection;
+  data: Buffer;
+  localPort: number;
+  remoteAddress?: string;
+  timestamp: Date | number;
+}

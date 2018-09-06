@@ -1,0 +1,96 @@
+// mco-server is a game server, written from scratch, for an old game
+// Copyright (C) <2017-2018>  <Joseph W Becher>
+
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+import * as fs from "fs";
+import { IncomingMessage, ServerResponse } from "http";
+import * as https from "https";
+import { IServerConfiguration } from "./IServerConfiguration";
+import { ILoggerInstance } from "./logger";
+import { MCServer } from "./MCServer";
+import { SSLConfig } from "./ssl-config";
+
+export class AdminServer {
+  public mcServer: MCServer;
+  public logger: ILoggerInstance;
+
+  constructor(mcServer: MCServer, logger: ILoggerInstance) {
+    this.mcServer = mcServer;
+    this.logger = logger;
+  }
+  /**
+   * Create the SSL options object
+   */
+  public _sslOptions(configuration: IServerConfiguration["serverConfig"]) {
+    const sslConfig = new SSLConfig();
+    return {
+      cert: fs.readFileSync(configuration.certFilename),
+      ciphers: sslConfig.ciphers,
+      honorCipherOrder: true,
+      key: fs.readFileSync(configuration.privateKeyFilename),
+      rejectUnauthorized: false,
+      secureOptions: sslConfig.minimumTLSVersion,
+    };
+  }
+
+  public _httpsHandler(
+    request: IncomingMessage,
+    response: ServerResponse,
+    config: IServerConfiguration["serverConfig"]
+  ) {
+    this.logger.info(
+      `[Admin] Request from ${request.socket.remoteAddress} for ${
+        request.method
+      } ${request.url}`
+    );
+    switch (request.url) {
+      case "/admin/connections":
+        response.setHeader("Content-Type", "text/plain");
+        const connections = this.mcServer.mgr.dumpConnections();
+        connections.forEach((connection, index) => {
+          const displayConnection = `
+            index: ${index} - ${connection.id}
+                remoteAddress: ${connection.remoteAddress}:${
+            connection.localPort
+          }
+            `;
+          response.write(displayConnection);
+        });
+        response.end();
+        return;
+
+      default:
+        if (request.url && request.url.startsWith("/admin")) {
+          response.end("Jiggawatt!");
+          return;
+        }
+        response.statusCode = 404;
+        response.end("Unknown request.");
+        break;
+    }
+  }
+  public async start(config: IServerConfiguration["serverConfig"]) {
+    const httpsServer = https
+      .createServer(
+        this._sslOptions(config),
+        (req: IncomingMessage, res: ServerResponse) => {
+          this._httpsHandler(req, res, config);
+        }
+      )
+      .listen({ port: 8888, host: "0.0.0.0" })
+      .on("connection", socket => {
+        socket.on("error", (error: Error) => {
+          this.logger.error(`[AdminServer] SSL Socket Error: ${error.message}`);
+        });
+        socket.on("close", () => {
+          this.logger.info("[AdminServer] SSL Socket Connection closed");
+        });
+      })
+      .on("tlsClientError", err => {
+        this.logger.error(`[AdminServer] tlsClientError: ${err}`);
+      });
+  }
+}
