@@ -68,7 +68,7 @@ async function socketWriteIfOpen(conn: Connection, nodes: MessageNode[]) {
       sock.write(encryptedResult.packetToWrite.serialize());
       updatedConnection = encryptedResult.conn;
     } else {
-      logger.error(
+      throw new Error(
         `Error writing ${encryptedResult.packetToWrite.serialize()} to ${
           sock.remoteAddress
         } , ${sock.localPort.toString()}`
@@ -91,14 +91,11 @@ async function fetchSessionKeyByConnectionId(connectionId: number) {
       (res: { rows: Array<{ session_key: string; s_key: string }> }) =>
         res.rows[0]
     )
-    .catch((e: ExceptionInformation) =>
-      setImmediate(() => {
-        logger.error(
-          `Unable to fetch session key for connection id: ${connectionId}: `,
-          e
-        );
-      })
-    );
+    .catch((e: ExceptionInformation) => {
+      throw new Error(
+        `Unable to fetch session key for connection id: ${connectionId}: ${e}`
+      );
+    });
 }
 
 async function GetStockCarInfo(con: Connection, node: MessageNode) {
@@ -225,8 +222,7 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
       updatedConnection = await socketWriteIfOpen(result.con, responsePackets);
       return updatedConnection;
     } catch (error) {
-      logger.error(error);
-      throw error;
+      throw new Error(`[TCPManager] Error writing to socket: ${error}`);
     }
   } else if (currentMsgString === "MC_LOGIN") {
     try {
@@ -236,8 +232,7 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
       updatedConnection = await socketWriteIfOpen(result.con, responsePackets);
       return updatedConnection;
     } catch (error) {
-      logger.error(error);
-      throw error;
+      throw new Error(`[TCPManager] Error writing to socket: ${error}`);
     }
   } else if (currentMsgString === "MC_LOGOUT") {
     try {
@@ -247,8 +242,7 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
       updatedConnection = await socketWriteIfOpen(result.con, responsePackets);
       return updatedConnection;
     } catch (error) {
-      logger.error(error);
-      throw error;
+      throw new Error(`[TCPManager] Error writing to socket: ${error}`);
     }
   } else if (currentMsgString === "MC_GET_LOBBIES") {
     try {
@@ -258,8 +252,7 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
       updatedConnection = await socketWriteIfOpen(result.con, responsePackets);
       return updatedConnection;
     } catch (error) {
-      logger.error(error);
-      throw error;
+      throw new Error(`[TCPManager] Error writing to socket: ${error}`);
     }
   } else if (currentMsgString === "MC_STOCK_CAR_INFO") {
     try {
@@ -269,16 +262,12 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
       updatedConnection = await socketWriteIfOpen(result.con, responsePackets);
       return updatedConnection;
     } catch (error) {
-      logger.error(error);
-      throw error;
+      throw new Error(`[TCPManager] Error writing to socket: ${error}`);
     }
   } else {
     node.setAppId(conn.appId);
-    logger.error(`Message Number Not Handled: ${currentMsgNo} (${currentMsgString})
+    throw new Error(`Message Number Not Handled: ${currentMsgNo} (${currentMsgString})
       conID: ${node.toFrom}  PersonaID: ${node.appId}`);
-    logger.debug(util.inspect(node));
-    process.exit();
-    return updatedConnection;
   }
 }
 
@@ -293,10 +282,9 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
   // If not a Heartbeat
   if (!(msg.flags === 80) && newConnection.useEncryption) {
     if (!newConnection.isSetupComplete) {
-      logger.debug("3");
-      logger.error(`Decrypt() not yet setup! Disconnecting...conId: ${con.id}`);
-      con.sock.end();
-      process.exit();
+      throw new Error(
+        `Decrypt() not yet setup! Disconnecting...conId: ${con.id}`
+      );
     }
 
     if (msg.flags - 8 >= 0) {
@@ -324,20 +312,17 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
         );
 
         if (deciphered.readUInt16LE(0) <= 0) {
-          logger.error(`Failure deciphering message, exiting.`);
-          process.exit(1);
+          throw new Error(`Failure deciphering message, exiting.`);
         }
 
         // Update the MessageNode with the deciphered buffer
         msg.updateBuffer(deciphered);
       } catch (e) {
-        logger.error(
+        throw new Error(
           `Decrypt() exception thrown! Disconnecting...conId:${
             newConnection.id
-          }`
+          }: ${e}`
         );
-        con.sock.end();
-        throw e;
       }
     }
   }
@@ -346,8 +331,7 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
   try {
     return await ProcessInput(msg, newConnection);
   } catch (error) {
-    logger.error("Err: ", error);
-    throw error;
+    throw new Error(`[TCPManager/ProcessInput] Err: ${error}`);
   }
 }
 

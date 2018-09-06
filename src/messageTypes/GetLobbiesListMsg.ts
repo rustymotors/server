@@ -21,8 +21,11 @@ export class GetLobbiesListMsg {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
       } else {
-        logger.error(buffer.toString("hex"));
-        throw error;
+        throw new Error(
+          `[GetLobbiesListMsg] Unable to read msgNo from ${buffer.toString(
+            "hex"
+          )}: ${error}`
+        );
       }
     }
 

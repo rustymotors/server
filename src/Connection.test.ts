@@ -8,13 +8,18 @@
 import { Socket } from "net";
 import { Connection } from "./Connection";
 import ConnectionMgr from "./connectionMgr";
+import { Logger } from "./logger";
 
 let testConnection1: Connection;
 let testConnection2: Connection;
 
 describe("Connection class", () => {
   beforeEach(() => {
-    testConnection1 = new Connection(1, new Socket(), new ConnectionMgr());
+    testConnection1 = new Connection(
+      1,
+      new Socket(),
+      new ConnectionMgr(new Logger().getLogger())
+    );
   });
 
   test('status == "inactive"', () => {
@@ -35,8 +40,16 @@ describe("Connection class", () => {
   });
   describe("Two connections can communicate", () => {
     beforeEach(() => {
-      testConnection1 = new Connection(1, new Socket(), new ConnectionMgr());
-      testConnection2 = new Connection(2, new Socket(), new ConnectionMgr());
+      testConnection1 = new Connection(
+        1,
+        new Socket(),
+        new ConnectionMgr(new Logger().getLogger())
+      );
+      testConnection2 = new Connection(
+        2,
+        new Socket(),
+        new ConnectionMgr(new Logger().getLogger())
+      );
     });
 
     test("Connection one can talk to Connection two", () => {

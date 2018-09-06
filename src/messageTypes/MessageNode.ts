@@ -47,8 +47,11 @@ export class MessageNode {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
       } else {
-        logger.error(packet.toString("hex"));
-        throw error;
+        throw new Error(
+          `[MessageNode] Unable to read msgNo from ${packet.toString(
+            "hex"
+          )}: ${error}`
+        );
       }
     }
   }
