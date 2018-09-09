@@ -20,7 +20,7 @@ async function npsSocketWriteIfOpen(conn: Connection, buffer: Buffer) {
     // Write the packet to socket
     sock.write(buffer);
   } else {
-    logger.error(
+    throw new Error(
       `[Lobby] Error writing ${buffer.toString("hex")} to ${
         sock.remoteAddress
       } , ${sock.localPort.toString()}`
@@ -108,14 +108,11 @@ async function fetchSessionKeyByConnectionId(connectionId: number) {
       connectionId,
     ])
     .then(res => res.rows[0])
-    .catch(e =>
-      setImmediate(() => {
-        logger.error(
-          `[Lobby] Unable to fetch session key for connection id: ${connectionId}: `,
-          e
-        );
-      })
-    );
+    .catch(e => {
+      throw new Error(
+        `[Lobby] Unable to fetch session key for connection id: ${connectionId}: ${e}`
+      );
+    });
 }
 
 /**
@@ -209,10 +206,9 @@ export class LobbyServer {
         const { sock: newSock, encryptedCommand } = updatedConnection;
 
         if (encryptedCommand == null) {
-          logger.error(
+          throw new Error(
             `[Lobby/CMD] Error with encrypted command, dumping connection...${updatedConnection}`
           );
-          process.exit(1);
         }
 
         logger.debug(
@@ -224,10 +220,9 @@ export class LobbyServer {
         break;
       }
       default:
-        logger.error(
+        throw new Error(
           `[Lobby] Unknown code ${requestCode} was received on port 7003`
         );
-        process.exit();
     }
     return updatedConnection;
   }

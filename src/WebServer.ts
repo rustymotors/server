@@ -84,17 +84,17 @@ export class WebServer {
           this._httpsHandler(req, res, config);
         }
       )
-      .listen({ port: 4443, host: "0.0.0.0" })
+      .listen({ port: 443, host: "0.0.0.0" })
       .on("connection", socket => {
         socket.on("error", (error: Error) => {
-          this.logger.error(`[webServer] SSL Socket Error: ${error.message}`);
+          throw new Error(`[webServer] SSL Socket Error: ${error.message}`);
         });
         socket.on("close", () => {
           this.logger.info("[webServer] SSL Socket Connection closed");
         });
       })
       .on("tlsClientError", err => {
-        this.logger.error(`[webServer] tlsClientError: ${err}`);
+        throw new Error(`[webServer] tlsClientError: ${err}`);
       });
   }
 }

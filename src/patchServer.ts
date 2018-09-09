@@ -136,7 +136,7 @@ export class PatchServer {
     const serverPatch = http.createServer((req, res) => {
       httpHandler(req, res, configurationFile, this.logger);
     });
-    serverPatch.listen({ port: "3000", host: "0.0.0.0" }, () => {
+    serverPatch.listen({ port: "80", host: "0.0.0.0" }, () => {
       this.logger.info("[patchServer] Patch server is listening...");
     });
   }
