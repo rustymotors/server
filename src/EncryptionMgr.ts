@@ -11,8 +11,8 @@ import RC4 from "./RC4";
 export class EncryptionMgr {
   private in: RC4;
   private out: RC4;
-  private inKey: string;
-  private outKey: string;
+  private inKey: Buffer;
+  private outKey: Buffer;
 
   constructor() {
     this.in = new RC4();
@@ -26,7 +26,7 @@ export class EncryptionMgr {
    * @returns {boolean}
    * @memberof EncryptionMgr
    */
-  public setEncryptionKey(sessionKey: string): boolean {
+  public setEncryptionKey(sessionKey: Buffer): boolean {
     this.in.setEncryptionKey(sessionKey);
     this.inKey = this.in.key;
     this.out.setEncryptionKey(sessionKey);
@@ -41,7 +41,7 @@ export class EncryptionMgr {
    * @returns {Buffer}
    * @memberof EncryptionMgr
    */
-  public decrypt(encryptedText: string): Buffer {
+  public decrypt(encryptedText: Buffer): Buffer {
     assert.equal(this.inKey, this.in.key);
     const oldMState = this.in.mState;
     const cypherText = this.in.processString(encryptedText);
@@ -57,9 +57,9 @@ export class EncryptionMgr {
    * @returns {Buffer}
    * @memberof EncryptionMgr
    */
-  public encrypt(encryptedText: string): Buffer {
+  public encrypt(encryptedText: Buffer): Buffer {
     assert.equal(this.outKey, this.out.key);
-    const oldMState = this.out.mState;
+    const oldMState = Buffer.from(this.out.mState);
     const plaintext = this.out.processString(encryptedText);
     assert.notEqual(oldMState, this.out.mState);
     // tslint:disable-next-line:no-console
