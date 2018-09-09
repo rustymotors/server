@@ -1,4 +1,4 @@
-const initialState = Buffer.from([
+const initialState = [
   0,
   1,
   2,
@@ -255,7 +255,7 @@ const initialState = Buffer.from([
   253,
   254,
   255,
-]);
+];
 
 export default class RC4 {
   public key: string;
@@ -277,9 +277,7 @@ export default class RC4 {
     this.mX = 0;
     this.mY = 0;
 
-    for (let counter = 0; counter < 256; counter++) {
-      this.mState[counter] = counter;
-    }
+    this._resetState();
 
     let index1 = 0;
     let j = 0;
@@ -294,6 +292,7 @@ export default class RC4 {
   }
 
   public processBuffer(inBytes: Buffer) {
+    // return this.processString(inBytes);
     let idx1 = 0;
     let idx2 = 0;
     let length = inBytes.length;
@@ -333,27 +332,27 @@ export default class RC4 {
         // tslint:disable-next-line:no-bitwise
         inBytes[index] ^ this.mState[(this.mState[i] + this.mState[j]) % 256];
     }
-    // this._genState();
+    this._genState();
     return output;
   }
 
-  // private _resetState() {
-  //   this.mState = Buffer.from(initialState);
-  // }
+  private _resetState() {
+    this.mState = Array.from(initialState);
+  }
 
-  // private _genState() {
-  //   this._resetState();
+  private _genState() {
+    this._resetState();
 
-  //   let j = 0;
+    let j = 0;
 
-  //   const state = this.mState;
-  //   const len = this.key.length;
-  //   for (let i = 0; i < 256; ++i) {
-  //     j = (j + state[i] + this.key[i % len]) % 256;
-  //     state[j] = [state[i], (state[i] = state[j])][0];
-  //   }
-  //   return state;
-  // }
+    const state = this.mState;
+    const len = this.key.length;
+    for (let i = 0; i < 256; ++i) {
+      j = (j + state[i] + this.keyBytes[i % len]) % 256;
+      state[j] = [state[i], (state[i] = state[j])][0];
+    }
+    return state;
+  }
 
   private swapByte(b1: number, b2: number) {
     const t1 = this.mState[b1];
