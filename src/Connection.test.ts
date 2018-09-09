@@ -57,14 +57,14 @@ describe("Connection class", () => {
         throw new Error("error in testing!");
       }
       const encipheredBuffer = testConnection1.enc.encrypt(
-        Buffer.from(testString).toString("hex")
+        Buffer.from(testString)
       );
       if (!testConnection2.enc) {
         throw new Error("error in testing!");
       }
-      expect(
-        testConnection2.enc.decrypt(encipheredBuffer.toString("hex")).toString()
-      ).toEqual(testString);
+      expect(testConnection2.enc.decrypt(encipheredBuffer).toString()).toEqual(
+        testString
+      );
     });
   });
 });

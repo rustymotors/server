@@ -36,8 +36,8 @@ export class EncryptionMgr {
    * @returns {Buffer}
    * @memberof EncryptionMgr
    */
-  public decrypt(encryptedText: string): Buffer {
-    return this.in.processString(encryptedText);
+  public decrypt(encryptedText: Buffer): Buffer {
+    return this.in.processBuffer(encryptedText);
   }
   /**
    * Encrypt plaintext and return the ciphertext
@@ -46,8 +46,8 @@ export class EncryptionMgr {
    * @returns {Buffer}
    * @memberof EncryptionMgr
    */
-  public encrypt(encryptedText: string): Buffer {
-    return this.out.processString(encryptedText);
+  public encrypt(plainText: Buffer): Buffer {
+    return this.out.processBuffer(plainText);
   }
 
   public _getInKey() {
