@@ -1,12 +1,12 @@
 export default class RC4 {
   public key: string;
+  public mState: number[];
   private keyBytes: Buffer;
   private keyLen: number;
-  private mState: number[];
   private mX: number;
   private mY: number;
 
-  constructor(key: string) {
+  public setEncryptionKey(key: string) {
     this.key = key;
     this.keyBytes = Buffer.from(this.key, "hex");
     this.keyLen = this.keyBytes.length;

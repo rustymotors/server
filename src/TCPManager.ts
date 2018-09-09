@@ -30,9 +30,9 @@ async function encryptIfNeeded(conn: Connection, node: MessageNode) {
   // Check if encryption is needed
   if (node.flags - 8 >= 0) {
     logger.debug("encryption flag is set");
-    if (conn.enc.out) {
-      logger.warn(`Using key: ${conn.enc.out.key}`);
-      node.updateBuffer(conn.enc.out.processString(node.data.toString("hex")));
+    if (conn.enc) {
+      logger.warn(`Using key: ${conn.enc._getOutKey()}`);
+      node.updateBuffer(conn.enc.encrypt(node.data.toString("hex")));
     } else {
       throw new Error("encryption out on connection is null");
     }
@@ -299,10 +299,10 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
         logger.warn(`Full packet before decrypting: ${encryptedBuffer}`);
 
         logger.warn(`Message buffer before decrypting: ${encryptedBuffer}`);
-        if (!newConnection.enc.in) {
+        if (!newConnection.enc) {
           throw new Error("ARC4 decrypter is null");
         }
-        const deciphered = newConnection.enc.in.processString(encryptedBuffer);
+        const deciphered = newConnection.enc.decrypt(encryptedBuffer);
         logger.warn(
           `Message buffer after decrypting: ${deciphered.toString("hex")}`
         );
