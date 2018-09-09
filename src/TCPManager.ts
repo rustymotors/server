@@ -145,7 +145,7 @@ async function ClientConnect(con: Connection, node: MessageNode) {
   logger.debug(`Raw Session Key: ${sessionKey}`);
 
   const strKey = Buffer.from(sessionKey, "hex");
-  connectionWithKey.setEncryptionKey(strKey.slice(0, 16).toString("hex"));
+  connectionWithKey.setEncryptionKey(Buffer.from(strKey.slice(0, 16)));
 
   // Update the connection's appId
   connectionWithKey.appId = newMsg.getAppId();
