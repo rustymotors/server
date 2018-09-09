@@ -52,8 +52,8 @@ export class Connection {
     this.inQueue = true;
   }
 
-  public setEncryptionKey(key: string) {
-    this.isSetupComplete = this.enc.setEncryptionKey(Buffer.from(key, "hex"));
+  public setEncryptionKey(key: Buffer) {
+    this.isSetupComplete = this.enc.setEncryptionKey(key);
   }
 
   /**
