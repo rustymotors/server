@@ -32,7 +32,9 @@ describe("Connection class", () => {
 
   test("changes to setupComplete after setting key", () => {
     expect(testConnection1.isSetupComplete).toBeFalsy();
-    testConnection1.setEncryptionKey(Buffer.from("abc123", "hex"));
+    testConnection1.setEncryptionKey(
+      Buffer.from("abc123", "hex").toString("hex")
+    );
     expect(testConnection1.isSetupComplete).toBeTruthy();
   });
   describe("Two connections can communicate", () => {
@@ -50,21 +52,25 @@ describe("Connection class", () => {
     });
 
     test("Connection one can talk to Connection two", () => {
-      testConnection1.setEncryptionKey(Buffer.from("abc123", "hex"));
-      testConnection2.setEncryptionKey(Buffer.from("abc123", "hex"));
+      testConnection1.setEncryptionKey(
+        Buffer.from("abc123", "hex").toString("hex")
+      );
+      testConnection2.setEncryptionKey(
+        Buffer.from("abc123", "hex").toString("hex")
+      );
       const testString = "I'm a very a secret message. Please don't decode me!";
       if (!testConnection1.enc) {
         throw new Error("error in testing!");
       }
-      const encipheredBuffer = testConnection1.enc.encrypt(
-        Buffer.from(testString)
+      const encipheredBuffer = testConnection1.enc.decrypt(
+        Buffer.from(testString).toString("hex")
       );
       if (!testConnection2.enc) {
         throw new Error("error in testing!");
       }
-      expect(testConnection2.enc.decrypt(encipheredBuffer).toString()).toEqual(
-        testString
-      );
+      expect(
+        testConnection2.enc.decrypt(encipheredBuffer.toString("hex")).toString()
+      ).toEqual(testString);
     });
   });
 });

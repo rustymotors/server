@@ -52,7 +52,7 @@ export class Connection {
     this.inQueue = true;
   }
 
-  public setEncryptionKey(key: Buffer) {
+  public setEncryptionKey(key: string) {
     this.isSetupComplete = this.enc.setEncryptionKey(key);
   }
 

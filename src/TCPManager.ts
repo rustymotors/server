@@ -31,14 +31,8 @@ async function encryptIfNeeded(conn: Connection, node: MessageNode) {
   if (node.flags - 8 >= 0) {
     logger.debug("encryption flag is set");
     if (conn.enc) {
-      try {
-        logger.warn(`Using key: ${conn.enc._getOutKey()}`);
-        node.updateBuffer(conn.enc.encrypt(node.data));
-      } catch (error) {
-        throw new Error(
-          `Fatal! Error encrypting data: ${node.data.toString("hex")}: ${error}`
-        );
-      }
+      logger.warn(`Using key: ${conn.enc._getOutKey()}`);
+      node.updateBuffer(conn.enc.encrypt(node.data.toString("hex")));
     } else {
       throw new Error("encryption out on connection is null");
     }
@@ -301,7 +295,7 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
         logger.debug(
           "==================================================================="
         );
-        const encryptedBuffer = msg.data;
+        const encryptedBuffer = msg.data.toString("hex");
         logger.warn(`Full packet before decrypting: ${encryptedBuffer}`);
 
         logger.warn(`Message buffer before decrypting: ${encryptedBuffer}`);
