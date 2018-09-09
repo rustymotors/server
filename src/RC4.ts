@@ -319,6 +319,42 @@ export default class RC4 {
     return output;
   }
 
+  public processString(inBytes: Buffer) {
+    let i = 0;
+    let j = 0;
+    const length = inBytes.length;
+    const output = Buffer.alloc(length);
+
+    for (let index = 0; index < length; ++index) {
+      i = (i + 1) % 256;
+      j = (j + this.mState[i]) % 256;
+      this.swapByte(i, j);
+      output[index] =
+        // tslint:disable-next-line:no-bitwise
+        inBytes[index] ^ this.mState[(this.mState[i] + this.mState[j]) % 256];
+    }
+    // this._genState();
+    return output;
+  }
+
+  // private _resetState() {
+  //   this.mState = Buffer.from(initialState);
+  // }
+
+  // private _genState() {
+  //   this._resetState();
+
+  //   let j = 0;
+
+  //   const state = this.mState;
+  //   const len = this.key.length;
+  //   for (let i = 0; i < 256; ++i) {
+  //     j = (j + state[i] + this.key[i % len]) % 256;
+  //     state[j] = [state[i], (state[i] = state[j])][0];
+  //   }
+  //   return state;
+  // }
+
   private swapByte(b1: number, b2: number) {
     const t1 = this.mState[b1];
     this.mState[b1] = this.mState[b2];
