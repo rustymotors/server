@@ -30,6 +30,32 @@ export default class RC4 {
     }
   }
 
+  public processBuffer(inBytes: Buffer) {
+    let idx1 = 0;
+    let idx2 = 0;
+    let length = inBytes.length;
+    const output = Buffer.alloc(length);
+    const s = this.mState;
+    let x = this.mX;
+    let y = this.mY;
+
+    while (length--) {
+      // tslint:disable-next-line no-bitwise
+      x = (x + 1) & 0xff;
+      const a = s[x];
+      // tslint:disable-next-line no-bitwise
+      y = (y + a) & 0xff;
+      this.swapByte(x, y);
+
+      // tslint:disable-next-line no-bitwise
+      output[idx1++] = inBytes[idx2++] ^ s[(s[y] + s[x]) & 0xff];
+    }
+
+    this.mX = x;
+    this.mY = y;
+    return output;
+  }
+
   public processString(inString: string) {
     const inBytes = Buffer.from(inString, "hex");
     let idx1 = 0;
@@ -46,12 +72,10 @@ export default class RC4 {
       const a = s[x];
       // tslint:disable-next-line no-bitwise
       y = (y + a) & 0xff;
-      const b = s[y];
-      s[x] = b;
-      s[y] = a;
+      this.swapByte(x, y);
 
       // tslint:disable-next-line no-bitwise
-      output[idx1++] = inBytes[idx2++] ^ s[(a + b) & 0xff];
+      output[idx1++] = inBytes[idx2++] ^ s[(s[y] + s[x]) & 0xff];
     }
 
     this.mX = x;
