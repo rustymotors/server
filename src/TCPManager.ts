@@ -296,9 +296,13 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
           "==================================================================="
         );
         const encryptedBuffer = Buffer.from(msg.data);
-        logger.warn(`Full packet before decrypting: ${encryptedBuffer}`);
+        logger.warn(
+          `Full packet before decrypting: ${encryptedBuffer.toString("hex")}`
+        );
 
-        logger.warn(`Message buffer before decrypting: ${encryptedBuffer}`);
+        logger.warn(
+          `Message buffer before decrypting: ${encryptedBuffer.toString("hex")}`
+        );
         if (!newConnection.enc) {
           throw new Error("ARC4 decrypter is null");
         }
