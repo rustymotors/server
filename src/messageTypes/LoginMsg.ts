@@ -33,8 +33,11 @@ export class LoginMsg {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
       } else {
-        logger.error(buffer.toString("hex"));
-        throw error;
+        throw new Error(
+          `[LoginMsg] Unable to read msgNo from ${buffer.toString(
+            "hex"
+          )}: ${error}`
+        );
       }
     }
 

@@ -8,16 +8,14 @@
 import * as crypto from "crypto";
 import { Socket } from "net";
 import ConnectionMgr from "./connectionMgr";
+import { EncryptionMgr } from "./EncryptionMgr";
 import RC4 from "./RC4";
 
 export class Connection {
   public id: number;
   public appId: number;
   public sock: Socket;
-  public enc: {
-    in: RC4 | null;
-    out: RC4 | null;
-  };
+  public enc: EncryptionMgr;
   public useEncryption: boolean;
   public remoteAddress: string | undefined;
   public localPort: number;
@@ -48,23 +46,14 @@ export class Connection {
       cipher: null,
       decipher: null,
     };
-    this.enc = {
-      in: null,
-      out: null,
-    };
+    this.enc = new EncryptionMgr();
     this.isSetupComplete = false;
     this.mgr = mgr;
     this.inQueue = true;
   }
 
-  /**
-   * setEncryptionKey
-   */
-  public setEncryptionKey(sessionKey: string) {
-    this.enc.in = new RC4(sessionKey);
-    this.enc.out = new RC4(sessionKey);
-
-    this.isSetupComplete = true;
+  public setEncryptionKey(key: Buffer) {
+    this.isSetupComplete = this.enc.setEncryptionKey(key);
   }
 
   /**
@@ -108,5 +97,3 @@ export class Connection {
     throw new Error("No DES decipher set on connection");
   }
 }
-
-module.exports = { Connection };

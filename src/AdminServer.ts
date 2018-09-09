@@ -80,17 +80,17 @@ export class AdminServer {
           this._httpsHandler(req, res, config);
         }
       )
-      .listen({ port: 8888, host: "0.0.0.0" })
+      .listen({ port: 88, host: "0.0.0.0" })
       .on("connection", socket => {
         socket.on("error", (error: Error) => {
-          this.logger.error(`[AdminServer] SSL Socket Error: ${error.message}`);
+          throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`);
         });
         socket.on("close", () => {
           this.logger.info("[AdminServer] SSL Socket Connection closed");
         });
-      })
-      .on("tlsClientError", err => {
-        this.logger.error(`[AdminServer] tlsClientError: ${err}`);
       });
+    // .on("tlsClientError", err => {
+    //   throw new Error(`[AdminServer] tlsClientError: ${err}`);
+    // });
   }
 }

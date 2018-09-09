@@ -7,15 +7,13 @@
 
 import { IRawPacket } from "../IRawPacket";
 import { IServerConfiguration } from "../IServerConfiguration";
-import { Logger } from "../logger";
+import { ILoggerInstance } from "../logger";
 
 import { NPSUserStatus } from "../messageTypes/npsUserStatus";
 
 import { Connection } from "../Connection";
 import { pool } from "../database";
 import { premadeLogin } from "../packet";
-
-const logger = new Logger().getLogger();
 
 async function _updateSessionKey(
   customerId: number,
@@ -32,21 +30,26 @@ async function _updateSessionKey(
     )
 
     .catch(e => {
-      logger.error(e);
-      process.exit();
+      throw e;
     });
 }
 
 export class LoginServer {
+  public logger: ILoggerInstance;
+
+  constructor(logger: ILoggerInstance) {
+    this.logger = logger;
+  }
+
   public async dataHandler(
     rawPacket: IRawPacket,
     config: IServerConfiguration
   ) {
     const { connection, data } = rawPacket;
     const { localPort, remoteAddress } = rawPacket;
-    logger.info(`=============================================
+    this.logger.info(`=============================================
     Received packet on port ${localPort} from ${remoteAddress}...`);
-    logger.info("=============================================");
+    this.logger.info("=============================================");
     // TODO: Check if this can be handled by a MessageNode object
     const { sock } = connection;
     const requestCode = data.readUInt16BE(0).toString(16);
@@ -56,7 +59,7 @@ export class LoginServer {
       case "501": {
         const responsePacket = await this._userLogin(connection, data, config);
 
-        logger.debug(
+        this.logger.debug(
           `responsePacket's data prior to sending: ${responsePacket.toString(
             "hex"
           )}`
@@ -65,10 +68,9 @@ export class LoginServer {
         break;
       }
       default:
-        logger.error(
+        throw new Error(
           `LOGIN: Unknown code ${requestCode} was received on port 8226`
         );
-        process.exit();
     }
     return connection;
   }
@@ -87,8 +89,7 @@ export class LoginServer {
       },
     ];
     if (contextId.toString() === "") {
-      logger.error(`Unknown contextId: ${contextId.toString()}`);
-      process.exit(1);
+      throw new Error(`Unknown contextId: ${contextId.toString()}`);
     }
     const userRecord = users.filter(user => {
       return user.contextId === contextId;
@@ -109,19 +110,19 @@ export class LoginServer {
   ) {
     const { sock } = connection;
     const { localPort, remoteAddress } = sock;
-    const userStatus = new NPSUserStatus(config, data);
+    const userStatus = new NPSUserStatus(config, data, this.logger);
 
-    logger.info("*** _userLogin ****");
+    this.logger.info("*** _userLogin ****");
     // logger.debug("Packet as hex: ", data.toString("hex"));
 
-    logger.info(`=============================================
+    this.logger.info(`=============================================
     Received login packet on port ${localPort} from ${
       connection.remoteAddress
     }...`);
-    logger.debug(`NPS opCode:           ${userStatus.opCode.toString()}`);
-    logger.debug(`contextId:            ${userStatus.contextId}`);
-    logger.debug(`Decrypted SessionKey: ${userStatus.sessionKey}`);
-    logger.info("=============================================");
+    this.logger.debug(`NPS opCode:           ${userStatus.opCode.toString()}`);
+    this.logger.debug(`contextId:            ${userStatus.contextId}`);
+    this.logger.debug(`Decrypted SessionKey: ${userStatus.sessionKey}`);
+    this.logger.info("=============================================");
 
     // Load the customer record by contextId
     // TODO: This needs to be from a database, right now is it static
@@ -139,7 +140,7 @@ export class LoginServer {
     // TODO: This needs to be dynamically generated, right now we are using a
     // a static packet that works _most_ of the time
     const packetContent = premadeLogin();
-    logger.warn(`Using Premade Login: ${packetContent.toString("hex")}`);
+    this.logger.warn(`Using Premade Login: ${packetContent.toString("hex")}`);
 
     // MsgId: 0x601
     Buffer.from([0x06, 0x01]).copy(packetContent);
