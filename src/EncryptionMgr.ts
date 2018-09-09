@@ -23,7 +23,7 @@ export class EncryptionMgr {
    * @returns {boolean}
    * @memberof EncryptionMgr
    */
-  public setEncryptionKey(sessionKey: string): boolean {
+  public setEncryptionKey(sessionKey: Buffer): boolean {
     this.in.setEncryptionKey(sessionKey);
     this.out.setEncryptionKey(sessionKey);
 

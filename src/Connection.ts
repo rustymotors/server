@@ -53,7 +53,7 @@ export class Connection {
   }
 
   public setEncryptionKey(key: string) {
-    this.isSetupComplete = this.enc.setEncryptionKey(key);
+    this.isSetupComplete = this.enc.setEncryptionKey(Buffer.from(key, "hex"));
   }
 
   /**

@@ -6,9 +6,9 @@ export default class RC4 {
   private mX: number;
   private mY: number;
 
-  public setEncryptionKey(key: string) {
-    this.key = key;
-    this.keyBytes = Buffer.from(this.key, "hex");
+  public setEncryptionKey(key: Buffer) {
+    this.key = key.toString("hex");
+    this.keyBytes = key;
     this.keyLen = this.keyBytes.length;
     this.mState = Array(256);
     this.mX = 0;
