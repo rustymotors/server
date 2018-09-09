@@ -84,7 +84,7 @@ export class WebServer {
           this._httpsHandler(req, res, config);
         }
       )
-      .listen({ port: 4443, host: "0.0.0.0" })
+      .listen({ port: 443, host: "0.0.0.0" })
       .on("connection", socket => {
         socket.on("error", (error: Error) => {
           throw new Error(`[webServer] SSL Socket Error: ${error.message}`);

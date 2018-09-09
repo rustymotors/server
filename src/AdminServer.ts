@@ -80,7 +80,7 @@ export class AdminServer {
           this._httpsHandler(req, res, config);
         }
       )
-      .listen({ port: 8888, host: "0.0.0.0" })
+      .listen({ port: 88, host: "0.0.0.0" })
       .on("connection", socket => {
         socket.on("error", (error: Error) => {
           throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`);
