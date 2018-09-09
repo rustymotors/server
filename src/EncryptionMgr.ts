@@ -1,4 +1,3 @@
-import * as assert from "assert";
 import RC4 from "./RC4";
 
 // mco-server is a game server, written from scratch, for an old game
@@ -11,8 +10,6 @@ import RC4 from "./RC4";
 export class EncryptionMgr {
   private in: RC4;
   private out: RC4;
-  private inKey: Buffer;
-  private outKey: Buffer;
 
   constructor() {
     this.in = new RC4();
@@ -26,11 +23,9 @@ export class EncryptionMgr {
    * @returns {boolean}
    * @memberof EncryptionMgr
    */
-  public setEncryptionKey(sessionKey: Buffer): boolean {
+  public setEncryptionKey(sessionKey: string): boolean {
     this.in.setEncryptionKey(sessionKey);
-    this.inKey = this.in.key;
     this.out.setEncryptionKey(sessionKey);
-    this.outKey = this.out.key;
 
     return true;
   }
@@ -41,14 +36,8 @@ export class EncryptionMgr {
    * @returns {Buffer}
    * @memberof EncryptionMgr
    */
-  public decrypt(encryptedText: Buffer): Buffer {
-    assert.equal(this.inKey, this.in.key);
-    const oldMState = this.in.mState;
-    const cypherText = this.in.processString(encryptedText);
-    assert.notEqual(oldMState, this.out.mState);
-    // tslint:disable-next-line:no-console
-    console.info("After decryption, the mState has changed");
-    return cypherText;
+  public decrypt(encryptedText: string): Buffer {
+    return this.in.processString(encryptedText);
   }
   /**
    * Encrypt plaintext and return the ciphertext
@@ -57,14 +46,8 @@ export class EncryptionMgr {
    * @returns {Buffer}
    * @memberof EncryptionMgr
    */
-  public encrypt(encryptedText: Buffer): Buffer {
-    assert.equal(this.outKey, this.out.key);
-    const oldMState = Buffer.from(this.out.mState);
-    const plaintext = this.out.processString(encryptedText);
-    assert.notEqual(oldMState, this.out.mState);
-    // tslint:disable-next-line:no-console
-    console.info("After encryption, the mState has changed");
-    return plaintext;
+  public encrypt(encryptedText: string): Buffer {
+    return this.out.processString(encryptedText);
   }
 
   public _getInKey() {

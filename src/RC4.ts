@@ -1,13 +1,15 @@
 export default class RC4 {
-  public key: Buffer;
+  public key: string;
   public mState: number[];
+  private keyBytes: Buffer;
   private keyLen: number;
   private mX: number;
   private mY: number;
 
-  public setEncryptionKey(key: Buffer) {
+  public setEncryptionKey(key: string) {
     this.key = key;
-    this.keyLen = this.key.length;
+    this.keyBytes = Buffer.from(this.key, "hex");
+    this.keyLen = this.keyBytes.length;
     this.mState = Array(256);
     this.mX = 0;
     this.mY = 0;
@@ -20,7 +22,7 @@ export default class RC4 {
     let j = 0;
 
     for (let counter = 0; counter < 256; counter++) {
-      j = (j + this.mState[counter] + this.key[index1++]) % 256;
+      j = (j + this.mState[counter] + this.keyBytes[index1++]) % 256;
       this.swapByte(counter, j);
       if (index1 >= this.keyLen) {
         index1 = 0;
@@ -28,8 +30,8 @@ export default class RC4 {
     }
   }
 
-  public processString(inString: Buffer) {
-    const inBytes = Buffer.from(inString);
+  public processString(inString: string) {
+    const inBytes = Buffer.from(inString, "hex");
     let idx1 = 0;
     let idx2 = 0;
     let length = inBytes.length;

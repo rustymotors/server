@@ -1,4 +1,4 @@
-import RC4 from "./RC4";
+import RC4 from "./RC4-2";
 
 const Key00 = Buffer.from([0x4b, 0x65, 0x79]); // "Key"
 const Input00 = Buffer.from([
@@ -1092,35 +1092,49 @@ const Output4 = Buffer.from([
   0xc0,
 ]);
 
-test("ARC4 validation suite", () => {
-  const test0 = new RC4();
-  test0.setEncryptionKey(Key0.toString("hex"));
-  expect(test0.processString(Input0.toString("hex")).toString("hex")).toEqual(
-    Output0.toString("hex")
-  );
+describe("ARC4 2 validation suite", () => {
+  describe("two-way message transfer", () => {
+    test("encode", () => {
+      const test00 = new RC4();
+      test00.setEncryptionKey(Key00);
+      expect(test00.processString(Input00)).toEqual(Output00);
+      test00.setEncryptionKey(Key00);
+      expect(test00.processString(Input00)).toEqual(Output00);
+    });
+    test("decode", () => {
+      const test00 = new RC4();
+      test00.setEncryptionKey(Key00);
+      expect(test00.processString(Output00)).toEqual(Input00);
+    });
+  });
+  test("Test 0", () => {
+    const test0 = new RC4();
+    test0.setEncryptionKey(Key0);
+    expect(test0.processString(Input0)).toEqual(Output0);
+  });
 
-  const test1 = new RC4();
-  test1.setEncryptionKey(Key1.toString("hex"));
+  test("Test 1", () => {
+    const test1 = new RC4();
+    test1.setEncryptionKey(Key1);
 
-  expect(test1.processString(Input1.toString("hex")).toString("hex")).toEqual(
-    Output1.toString("hex")
-  );
+    expect(test1.processString(Input1)).toEqual(Output1);
+  });
 
-  const test2 = new RC4();
-  test2.setEncryptionKey(Key2.toString("hex"));
-  expect(test2.processString(Input2.toString("hex")).toString("hex")).toEqual(
-    Output2.toString("hex")
-  );
+  test("Test 2", () => {
+    const test2 = new RC4();
+    test2.setEncryptionKey(Key2);
+    expect(test2.processString(Input2)).toEqual(Output2);
+  });
 
-  const test3 = new RC4();
-  test3.setEncryptionKey(Key3.toString("hex"));
-  expect(test3.processString(Input3.toString("hex")).toString("hex")).toEqual(
-    Output3.toString("hex")
-  );
+  test("Test 3", () => {
+    const test3 = new RC4();
+    test3.setEncryptionKey(Key3);
+    expect(test3.processString(Input3)).toEqual(Output3);
+  });
 
-  const test4 = new RC4();
-  test4.setEncryptionKey(Key4.toString("hex"));
-  expect(test4.processString(Input4.toString("hex")).toString("hex")).toEqual(
-    Output4.toString("hex")
-  );
+  test("Test 4", () => {
+    const test4 = new RC4();
+    test4.setEncryptionKey(Key4);
+    expect(test4.processString(Input4)).toEqual(Output4);
+  });
 });
