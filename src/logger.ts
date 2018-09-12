@@ -22,7 +22,7 @@ export class Logger {
         winston.format.simple()
       ),
       transports: [
-        new winston.transports.Console({ level, handleExceptions: true }),
+        new winston.transports.Console({ level }),
         new winston.transports.File({
           filename: "logs/mcoServer.log",
           level,
