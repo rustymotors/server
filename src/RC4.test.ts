@@ -1095,32 +1095,22 @@ const Output4 = Buffer.from([
 test("ARC4 validation suite", () => {
   const test0 = new RC4();
   test0.setEncryptionKey(Key0);
-  expect(test0.processString(Input0.toString("hex")).toString("hex")).toEqual(
-    Output0.toString("hex")
-  );
+  expect(test0.processBuffer(Input0)).toEqual(Output0);
 
   const test1 = new RC4();
   test1.setEncryptionKey(Key1);
 
-  expect(test1.processString(Input1.toString("hex")).toString("hex")).toEqual(
-    Output1.toString("hex")
-  );
+  expect(test1.processBuffer(Input1)).toEqual(Output1);
 
   const test2 = new RC4();
   test2.setEncryptionKey(Key2);
-  expect(test2.processString(Input2.toString("hex")).toString("hex")).toEqual(
-    Output2.toString("hex")
-  );
+  expect(test2.processBuffer(Input2)).toEqual(Output2);
 
   const test3 = new RC4();
   test3.setEncryptionKey(Key3);
-  expect(test3.processString(Input3.toString("hex")).toString("hex")).toEqual(
-    Output3.toString("hex")
-  );
+  expect(test3.processBuffer(Input3)).toEqual(Output3);
 
   const test4 = new RC4();
   test4.setEncryptionKey(Key4);
-  expect(test4.processString(Input4.toString("hex")).toString("hex")).toEqual(
-    Output4.toString("hex")
-  );
+  expect(test4.processBuffer(Input4)).toEqual(Output4);
 });
