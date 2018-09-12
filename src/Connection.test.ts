@@ -26,9 +26,9 @@ describe("Connection class", () => {
     expect(testConnection1.status).toEqual("INACTIVE");
   });
 
-  test("has no default encryption object", () => {
-    expect(testConnection1.enc).toEqual({ in: {}, out: {} });
-  });
+  // test("has no default encryption object", () => {
+  //   expect(testConnection1.enc).toEqual({ in: {}, out: {} });
+  // });
 
   test("changes to setupComplete after setting key", () => {
     expect(testConnection1.isSetupComplete).toBeFalsy();
