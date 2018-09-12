@@ -12,7 +12,7 @@
     "licence-check": "nlf > ./data/licenses.txt"
   },
   "author": "Joseph W Becher <jwbecher@drazisil.com> (drazisil)",
-  "license": "GPL-3.0+",
+  "license": "MPL-2.0",
   "private": true,
   "repository": {
     "type": "git",
