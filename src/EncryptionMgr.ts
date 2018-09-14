@@ -1,4 +1,4 @@
-import RC4 from "./RC4";
+import * as crypto from "crypto";
 
 // mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
@@ -8,13 +8,9 @@ import RC4 from "./RC4";
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 export class EncryptionMgr {
-  private in: RC4;
-  private out: RC4;
-
-  constructor() {
-    this.in = new RC4();
-    this.out = new RC4();
-  }
+  private sessionKey: Buffer;
+  private in: crypto.Decipher;
+  private out: crypto.Cipher;
 
   /**
    * set the internal sessionkey
@@ -24,45 +20,34 @@ export class EncryptionMgr {
    * @memberof EncryptionMgr
    */
   public setEncryptionKey(sessionKey: Buffer): boolean {
-    this.in.setEncryptionKey(sessionKey);
-    this.out.setEncryptionKey(sessionKey);
+    this.sessionKey = sessionKey;
+    this.in = crypto.createDecipheriv("rc4", sessionKey, "");
+    this.out = crypto.createCipheriv("rc4", sessionKey, "");
 
     return true;
   }
   /**
    * Takes cyphertext and returns plaintext
    *
-   * @param {string} encryptedText
+   * @param {Buffer} encryptedText
    * @returns {Buffer}
    * @memberof EncryptionMgr
    */
   public decrypt(encryptedText: Buffer): Buffer {
-    return this.in.processBuffer(encryptedText);
+    return Buffer.from(this.in.update(encryptedText));
   }
   /**
    * Encrypt plaintext and return the ciphertext
    *
-   * @param {string} encryptedText
+   * @param {Buffer} encryptedText
    * @returns {Buffer}
    * @memberof EncryptionMgr
    */
   public encrypt(plainText: Buffer): Buffer {
-    return this.out.processBuffer(plainText);
+    return Buffer.from(this.out.update(plainText, "binary", "hex"), "hex");
   }
 
-  public _getInKey() {
-    return this.in.key;
-  }
-
-  public _getOutKey() {
-    return this.out.key;
-  }
-
-  public _getInState() {
-    return this.in.mState;
-  }
-
-  public _getOutState() {
-    return this.out.mState;
+  public getSessionKey() {
+    return this.sessionKey.toString("hex");
   }
 }
