@@ -30,9 +30,11 @@ async function encryptIfNeeded(conn: Connection, node: MessageNode) {
   // Check if encryption is needed
   if (node.flags - 8 >= 0) {
     logger.debug("encryption flag is set");
+    let plainText;
     if (conn.enc) {
-      logger.warn(`Using key: ${conn.enc._getOutKey()}`);
-      node.updateBuffer(conn.enc.encrypt(node.data));
+      logger.warn(`Using key: ${conn.enc.getSessionKey()}`);
+      plainText = node.data;
+      node.updateBuffer(conn.enc.encrypt(plainText));
     } else {
       throw new Error("encryption out on connection is null");
     }
