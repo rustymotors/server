@@ -81,13 +81,16 @@ export class MCOTServer {
   public async _getLobbies(con: Connection, node: MessageNode) {
     const lobbiesListMsg = node;
     /**
-     * Let's turn it into a LoginMsg
+     * Let's turn it into a GetLobbiesListMsg
      */
     lobbiesListMsg.lobby = new GetLobbiesListMsg(node.data);
     lobbiesListMsg.data = lobbiesListMsg.serialize();
 
     // Update the appId
     lobbiesListMsg.appId = con.appId;
+
+    // Dump
+    lobbiesListMsg.lobby.dumpPacket();
 
     // Create new response packet
     const lobbyMsg = new LobbyMsg();
@@ -102,13 +105,13 @@ export class MCOTServer {
     pReply.msgReply = 324;
     const rPacket = new MessageNode();
 
-    // lobbyMsg.dumpPacket();
+    lobbyMsg.dumpPacket();
 
     // const rPacket = new MessageNode();
     rPacket.deserialize(node.data);
 
     rPacket.updateBuffer(pReply.serialize());
-    // rPacket.updateBuffer(lobbyMsg.serialize());
+    rPacket.updateBuffer(lobbyMsg.serialize());
 
     rPacket.dumpPacket();
 

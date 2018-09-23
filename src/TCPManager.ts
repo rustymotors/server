@@ -267,9 +267,9 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
       throw new Error(`[TCPManager] Error writing to socket: ${error}`);
     }
   } else if (currentMsgString === "MC_GET_LOBBIES") {
+    const result = await mcotServer._getLobbies(conn, node);
+    const responsePackets = result.nodes;
     try {
-      const result = await mcotServer._getLobbies(conn, node);
-      const responsePackets = result.nodes;
       // write the socket
       updatedConnection = await socketWriteIfOpen(result.con, responsePackets);
       return updatedConnection;

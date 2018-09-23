@@ -56,6 +56,7 @@ export class AdminServer {
                 remoteAddress: ${connection.remoteAddress}:${
             connection.localPort
           }
+            Encryption ID: ${connection.enc.getId()}
             `;
           response.write(displayConnection);
         });

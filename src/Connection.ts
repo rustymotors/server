@@ -51,11 +51,6 @@ export class Connection {
     this.inQueue = true;
     this.decryptedCmd = Buffer.alloc(0);
     this.encryptedCmd = Buffer.alloc(0);
-    this.mgr.logger.debug(
-      `Created new connection for ${this.remoteAddress}:${this.localPort}: ${
-        this.id
-      }`
-    );
   }
 
   public setEncryptionKey(key: Buffer) {

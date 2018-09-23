@@ -14,8 +14,8 @@ export class ClientConnectMsg {
   public customerId: number;
   public personaId: number;
   public personaName: string;
+  public msgNo: number;
   private appId: number;
-  private msgNo: number;
   private custName: string;
   private mcVersion: Buffer;
 
