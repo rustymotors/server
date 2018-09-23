@@ -85,59 +85,67 @@ function generateShardList(serverConfig: IServerConfiguration["serverConfig"]) {
   //   DiagnosticServerPort=80`;
 }
 
-function httpHandler(
-  request: http.IncomingMessage,
-  response: http.ServerResponse,
-  serverConfiguration: IServerConfiguration,
-  logger: ILoggerInstance
-) {
-  logger.info(
-    `[PATCH] Request from ${request.socket.remoteAddress} for ${
-      request.method
-    } ${request.url}`
-  );
-  let responseData;
-  switch (request.url) {
-    case "/ShardList/":
-      response.setHeader("Content-Type", "text/plain");
-      response.end(generateShardList(serverConfiguration.serverConfig));
-      break;
-
-    case "/games/EA_Seattle/MotorCity/UpdateInfo":
-      responseData = patchUpdateInfo();
-      response.setHeader(responseData.header.type, responseData.header.value);
-      response.end(responseData.body);
-      break;
-    case "/games/EA_Seattle/MotorCity/NPS":
-      responseData = patchNPS();
-      response.setHeader(responseData.header.type, responseData.header.value);
-      response.end(responseData.body);
-      break;
-    case "/games/EA_Seattle/MotorCity/MCO":
-      responseData = patchMCO();
-      response.setHeader(responseData.header.type, responseData.header.value);
-      response.end(responseData.body);
-      break;
-
-    default:
-      response.end("foo");
-      break;
-  }
-}
-
 export class PatchServer {
   public logger: ILoggerInstance;
+  private banList: string[] = [];
 
   constructor(logger: ILoggerInstance) {
     this.logger = logger;
   }
 
+  public _httpHandler(
+    request: http.IncomingMessage,
+    response: http.ServerResponse,
+    serverConfiguration: IServerConfiguration,
+    logger: ILoggerInstance
+  ) {
+    let responseData;
+    switch (request.url) {
+      case "/ShardList/":
+        response.setHeader("Content-Type", "text/plain");
+        response.end(generateShardList(serverConfiguration.serverConfig));
+        break;
+
+      case "/games/EA_Seattle/MotorCity/UpdateInfo":
+        responseData = patchUpdateInfo();
+        response.setHeader(responseData.header.type, responseData.header.value);
+        response.end(responseData.body);
+        break;
+      case "/games/EA_Seattle/MotorCity/NPS":
+        responseData = patchNPS();
+        response.setHeader(responseData.header.type, responseData.header.value);
+        response.end(responseData.body);
+        break;
+      case "/games/EA_Seattle/MotorCity/MCO":
+        responseData = patchMCO();
+        response.setHeader(responseData.header.type, responseData.header.value);
+        response.end(responseData.body);
+        break;
+
+      default:
+        // Is this a hacker?
+        if (this.banList.indexOf(request.socket.remoteAddress!) < 0) {
+          // In ban list, skip
+          break;
+        }
+        // Unknown request, log it
+        logger.debug(
+          `[PATCH] Unknown Request from ${request.socket.remoteAddress} for ${
+            request.method
+          } ${request.url}, banning.`
+        );
+        this.banList.push(request.socket.remoteAddress!);
+        response.end("foo");
+        break;
+    }
+  }
+
   public async start(configurationFile: IServerConfiguration) {
     const serverPatch = http.createServer((req, res) => {
-      httpHandler(req, res, configurationFile, this.logger);
+      this._httpHandler(req, res, configurationFile, this.logger);
     });
     serverPatch.listen({ port: "80", host: "0.0.0.0" }, () => {
-      this.logger.info("[patchServer] Patch server is listening...");
+      this.logger.debug("[patchServer] Patch server is listening...");
     });
   }
 }

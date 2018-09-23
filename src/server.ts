@@ -20,27 +20,34 @@ export class Server {
     // Get document, or throw exception on error
     this.config = this.loadConfig("./config/config.yml");
 
+    this.start();
+  }
+  public loadConfig(file: string) {
+    return yaml.safeLoad(fs.readFileSync(file, "utf8"));
+  }
+  private async start() {
+    this.logger.info("Starting servers...");
+
     // Start the mock patch server
     const patchServer = new PatchServer(this.logger);
-    patchServer.start(this.config);
-    thisLogger.info("[webServer] Patch Server started");
+    await patchServer.start(this.config);
+    this.logger.debug("[webServer] Patch Server started");
 
     // Start the AuthLogin and shardlist servers
     const webServer = new WebServer(this.logger);
     webServer.start(this.config.serverConfig);
-    thisLogger.info("[webServer] Web Server started");
+    this.logger.debug("[webServer] Web Server started");
 
     // Start the MC Server
     const mcServer = new MCServer(this.logger);
-    mcServer.startServers(this.config);
+    await mcServer.startServers(this.config);
 
     // Start the Admin server
     const adminServer = new AdminServer(mcServer, this.logger);
     adminServer.start(this.config.serverConfig);
-    thisLogger.info("[adminServer] Web Server started");
-  }
-  public loadConfig(file: string) {
-    return yaml.safeLoad(fs.readFileSync(file, "utf8"));
+    this.logger.debug("[adminServer] Web Server started");
+
+    this.logger.info("Servers started, ready for connections.");
   }
 }
 

@@ -86,12 +86,6 @@ export class AdminServer {
         socket.on("error", (error: Error) => {
           throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`);
         });
-        socket.on("close", () => {
-          this.logger.info("[AdminServer] SSL Socket Connection closed");
-        });
       });
-    // .on("tlsClientError", err => {
-    //   throw new Error(`[AdminServer] tlsClientError: ${err}`);
-    // });
   }
 }

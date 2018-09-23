@@ -32,6 +32,7 @@ async function encryptIfNeeded(conn: Connection, node: MessageNode) {
     logger.debug("encryption flag is set");
     let plainText;
     if (conn.enc) {
+      // TODO: Don't expose key
       logger.warn(`Using key: ${conn.enc.getSessionKey()}`);
       plainText = node.data;
       logger.info(`Using encryption id: ${conn.enc.getId()}`);
