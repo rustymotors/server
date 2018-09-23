@@ -95,34 +95,6 @@ export default class ConnectionMgr {
   }
 
   /**
-   * Deletes the provided connection id from the connections array
-   * FIXME: Doesn't actually seem to work
-   * @param {String} connectionId
-   */
-  public deleteConnection(connection: Connection) {
-    this.connections = this.connections.filter(
-      (conn: Connection) =>
-        conn.id !== connection.id && conn.localPort !== connection.localPort
-    );
-  }
-
-  public async _updateConnectionByAddressAndPort(
-    address: string,
-    port: number,
-    newConnection: Connection
-  ) {
-    if (newConnection === undefined) {
-      throw new Error("Undefined connection");
-    }
-    const index = this.connections.findIndex(
-      (connection: Connection) =>
-        connection.remoteAddress === address && connection.localPort === port
-    );
-    this.connections.splice(index, 1);
-    this.connections.push(newConnection);
-  }
-
-  /**
    * Return an existing connection, or a new one
    *
    * @param {Socket} socket
