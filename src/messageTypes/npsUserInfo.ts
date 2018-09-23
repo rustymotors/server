@@ -15,9 +15,9 @@ export class NPSUserInfo {
   public userData: Buffer; // 64 length;
 
   constructor(rawData: Buffer) {
-    this.userId = rawData.readInt16LE(4);
-    this.userName = rawData.slice(6, 36);
-    this.userData = rawData.slice(36);
+    this.userId = rawData.readInt32BE(4);
+    this.userName = rawData.slice(8, 38);
+    this.userData = rawData.slice(38);
   }
 
   public dumpInfo() {

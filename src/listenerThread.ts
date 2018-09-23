@@ -53,11 +53,6 @@ export class ListenerThread {
       if (!connection.remoteAddress) {
         throw new Error("Remote address is empty");
       }
-      await connection.mgr._updateConnectionByAddressAndPort(
-        connection.remoteAddress,
-        connection.localPort,
-        newConnection
-      );
     } catch (error) {
       throw error;
     }
