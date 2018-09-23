@@ -10,10 +10,10 @@ import { Logger } from "../logger";
 const logger = new Logger().getLogger();
 
 export class GetLobbiesListMsg {
+  public msgNo: number;
   private customerId: number;
   private personaId: number;
 
-  private msgNo: number;
   constructor(buffer: Buffer) {
     try {
       this.msgNo = buffer.readInt16LE(0);
@@ -40,10 +40,10 @@ export class GetLobbiesListMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    logger.debug("[LobbiesListMsg]======================================");
+    logger.debug("[GetLobbiesListMsg]======================================");
     logger.debug("MsgNo:       ", this.msgNo.toString());
     logger.debug("customerId:  ", this.customerId.toString());
     logger.debug("personaId:   ", this.personaId.toString());
-    logger.debug("[LobbiesListMsg]======================================");
+    logger.debug("[GetLobbiesListMsg]======================================");
   }
 }

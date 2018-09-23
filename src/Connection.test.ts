@@ -124,6 +124,11 @@ describe("Connection class", () => {
       const encipheredBuffer2 = testConn1.enc.encrypt(plainText1);
       expect(testConn1.enc.decrypt(encipheredBuffer2)).toEqual(plainText1);
       expect(testConn2.enc.decrypt(encipheredBuffer2)).toEqual(plainText1);
+
+      // And again
+      const encipheredBuffer3 = testConn1.enc.encrypt(plainText1);
+      expect(testConn1.enc.decrypt(encipheredBuffer3)).toEqual(plainText1);
+      expect(testConn2.enc.decrypt(encipheredBuffer3)).toEqual(plainText1);
     });
   });
 });

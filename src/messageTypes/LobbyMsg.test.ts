@@ -5,7 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { LobbyInfo, LobbyMsg } = require("./LobbyMsg");
+import { LobbyInfo } from "./LobbyInfo";
+import { LobbyMsg } from "./LobbyMsg";
 
 const lobbyInfo1 = new LobbyInfo();
 const lobbyMsg1 = new LobbyMsg();
