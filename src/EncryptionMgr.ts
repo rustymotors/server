@@ -8,9 +8,19 @@ import * as crypto from "crypto";
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 export class EncryptionMgr {
+  private id: string;
   private sessionKey: Buffer;
-  private in: crypto.Decipher;
-  private out: crypto.Cipher;
+  private in: crypto.Decipher | null;
+  private out: crypto.Cipher | null;
+
+  constructor() {
+    const hash = crypto.createHash("sha256");
+    const timestamp = (Date.now() + Math.random()).toString();
+    hash.update(timestamp);
+    this.id = hash.digest("hex");
+    this.sessionKey = Buffer.alloc(0);
+    (this.in = null), (this.out = null);
+  }
 
   /**
    * set the internal sessionkey
@@ -34,7 +44,7 @@ export class EncryptionMgr {
    * @memberof EncryptionMgr
    */
   public decrypt(encryptedText: Buffer): Buffer {
-    return Buffer.from(this.in.update(encryptedText));
+    return Buffer.from(this.in!.update(encryptedText));
   }
   /**
    * Encrypt plaintext and return the ciphertext
@@ -44,10 +54,17 @@ export class EncryptionMgr {
    * @memberof EncryptionMgr
    */
   public encrypt(plainText: Buffer): Buffer {
-    return Buffer.from(this.out.update(plainText, "binary", "hex"), "hex");
+    return Buffer.from(this.out!.update(plainText, "binary", "hex"), "hex");
   }
 
   public getSessionKey() {
     return this.sessionKey.toString("hex");
+  }
+
+  /**
+   * getId
+   */
+  public getId() {
+    return this.id;
   }
 }

@@ -86,7 +86,7 @@ export default class ConnectionMgr {
    * Locate connection by id in the connections array
    * @param {String} connectionId
    */
-  public findConnectionById(connectionId: number) {
+  public findConnectionById(connectionId: string) {
     const results = this.connections.find(connection => {
       const match = connectionId === connection.id;
       return match;
@@ -143,7 +143,11 @@ export default class ConnectionMgr {
       return con;
     }
 
-    const newConnection = new Connection(this.newConnectionId, socket, this);
+    const newConnection = new Connection(
+      `${Date.now().toString()}_${this.newConnectionId}`,
+      socket,
+      this
+    );
     this.logger.info(
       `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`
     );

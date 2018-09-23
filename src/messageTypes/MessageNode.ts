@@ -23,11 +23,17 @@ export class MessageNode {
   public toFrom: number;
   private dataLength: number;
   private mcoSig: string;
-  private header: MsgHead;
+  // private header: MsgHead | null;
 
   constructor() {
-    this.toFrom = 0;
+    this.msgNo = 0;
+    this.seq = 999;
+    this.flags = 0;
+    this.data = Buffer.alloc(0);
+    this.dataLength = 0;
+    this.mcoSig = "NotAValue";
 
+    this.toFrom = 0;
     this.appId = 0;
   }
 
@@ -82,7 +88,7 @@ export class MessageNode {
   public setMsgHeader(packet: Buffer) {
     const header = Buffer.alloc(6);
     packet.copy(header, 0, 0, 6);
-    this.header = new MsgHead(header);
+    // this.header = new MsgHead(header);
   }
 
   public updateBuffer(buffer: Buffer) {

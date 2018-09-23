@@ -21,7 +21,9 @@ export class NPSMsg {
   private content: Buffer;
 
   constructor() {
-    this.setContent(Buffer.from([0x01, 0x02, 0x03, 0x04]));
+    this.content = Buffer.from([0x01, 0x02, 0x03, 0x04]);
+    this.msgNo = 0;
+    this.contentLength = this.content.length;
   }
 
   public setContent(buffer: Buffer) {

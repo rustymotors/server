@@ -21,6 +21,14 @@ export class LoginMsg {
   private data: Buffer;
 
   constructor(buffer: Buffer) {
+    this.msgNo = 0;
+    this.customerId = 0;
+    this.personaId = 0;
+    this.lotOwnerId = 0;
+    this.brandedPartId = 0;
+    this.skinId = 0;
+    this.personaName = "NotAPerson";
+    this.version = "0.0.0.0";
     this.data = buffer;
 
     this.deserialize(buffer);

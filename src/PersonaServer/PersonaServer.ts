@@ -13,6 +13,7 @@ import { NPSMsg } from "../messageTypes/NPSMsg";
 const logger = new Logger().getLogger();
 
 interface IPersonaRecord {
+  customerId: number;
   id: Buffer;
   maxPersonas: Buffer;
   name: Buffer;
@@ -143,6 +144,31 @@ async function _npsValidatePersonaName(socket: Socket, data: Buffer) {
 }
 
 export class PersonaServer {
+  private personaList: IPersonaRecord[] = [
+    {
+      customerId: 2868969472,
+      id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
+      maxPersonas: Buffer.from([0x01]),
+      name: this._generateNameBuffer("Doc Joe"),
+      personaCount: Buffer.from([0x00, 0x01]),
+      shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
+    },
+    {
+      customerId: 5551212,
+      id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
+      maxPersonas: Buffer.from([0x02]),
+      name: this._generateNameBuffer("Dr Brown"),
+      personaCount: Buffer.from([0x00, 0x01]),
+      shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
+    },
+  ];
+
+  public _generateNameBuffer(name: string) {
+    const nameBuffer = Buffer.alloc(30);
+    Buffer.from(name, "utf8").copy(nameBuffer);
+    return nameBuffer;
+  }
+
   /**
    * Route an incoming persona packet to the connect handler
    * @param {Socket} socket
@@ -191,43 +217,50 @@ export class PersonaServer {
     }
   }
 
+  public _getPersonasByCustomerId(customerId: number) {
+    let results;
+    results = this.personaList.find(persona => {
+      const match = customerId === persona.customerId;
+      return match;
+    });
+    if (!results) {
+      throw new Error(
+        `Unable to locate a persona for customerId: ${customerId}`
+      );
+    }
+    return results;
+  }
+
+  public _getPersonasById(id: number) {
+    let results;
+    results = this.personaList.find(persona => {
+      const match = id === persona.id.readInt16LE(0);
+      return match;
+    });
+    if (!results) {
+      throw new Error(`Unable to locate a persona for id: ${id}`);
+    }
+    return results;
+  }
+
   /**
    * Lookup all personas owned by the customer id
    * TODO: Store in a database, instead of being hard-coded
    * @param {Int} customerId
    */
   public async _npsGetPersonaMapsByCustomerId(customerId: number) {
-    const name = Buffer.alloc(30);
-
-    let result: IPersonaRecord;
+    // const name = Buffer.alloc(30);
 
     switch (customerId) {
       case 2868969472:
-        Buffer.from("Doc Joe", "utf8").copy(name);
-        result = {
-          id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
-          maxPersonas: Buffer.from([0x01]),
-          name,
-          personaCount: Buffer.from([0x00, 0x01]),
-          shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
-        };
-        break;
+        return this._getPersonasByCustomerId(customerId);
       case 5551212:
-        Buffer.from("Dr Brown", "utf8").copy(name);
-        result = {
-          id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
-          maxPersonas: Buffer.from([0x02]),
-          name,
-          personaCount: Buffer.from([0x00, 0x01]),
-          shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
-        };
-        break;
+        return this._getPersonasByCustomerId(customerId);
       default:
         throw new Error(
           `[personaServer/npsGetPersonaMapsByCustomerId] Unknown customerId: ${customerId}`
         );
     }
-    return result;
   }
 
   /**

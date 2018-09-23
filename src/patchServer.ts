@@ -52,37 +52,37 @@ function generateShardList(serverConfig: IServerConfiguration["serverConfig"]) {
   Population=88
   MaxPersonasPerUser=2
   DiagnosticServerHost=${serverConfig.ipServer}
-  DiagnosticServerPort=80
-[Twin Pines Mall]
-  Description=Twin Pines Mall
-  ShardId=88
-  LoginServerIP=mc.drazisil.com
-  LoginServerPort=8226
-  LobbyServerIP=mc.drazisil.com
-  LobbyServerPort=7003
-  MCOTSServerIP=mc.drazisil.com
-  StatusId=0
-  Status_Reason=
-  ServerGroup_Name=Group - 1
-  Population=88
-  MaxPersonasPerUser=2
-  DiagnosticServerHost=mc.drazisil.com
-  DiagnosticServerPort=80
-[Marty's House]
-  Description=Marty's House
-  ShardId=22
-  LoginServerIP=192.168.1.14
-  LoginServerPort=8226
-  LobbyServerIP=192.168.1.14
-  LobbyServerPort=7003
-  MCOTSServerIP=192.168.1.14
-  StatusId=0
-  Status_Reason=
-  ServerGroup_Name=Group - 1
-  Population=88
-  MaxPersonasPerUser=2
-  DiagnosticServerHost=192.168.5.14
   DiagnosticServerPort=80`;
+  // [Twin Pines Mall]
+  //   Description=Twin Pines Mall
+  //   ShardId=88
+  //   LoginServerIP=mc.drazisil.com
+  //   LoginServerPort=8226
+  //   LobbyServerIP=mc.drazisil.com
+  //   LobbyServerPort=7003
+  //   MCOTSServerIP=mc.drazisil.com
+  //   StatusId=0
+  //   Status_Reason=
+  //   ServerGroup_Name=Group - 1
+  //   Population=88
+  //   MaxPersonasPerUser=2
+  //   DiagnosticServerHost=mc.drazisil.com
+  //   DiagnosticServerPort=80
+  // [Marty's House]
+  //   Description=Marty's House
+  //   ShardId=22
+  //   LoginServerIP=192.168.1.14
+  //   LoginServerPort=8226
+  //   LobbyServerIP=192.168.1.14
+  //   LobbyServerPort=7003
+  //   MCOTSServerIP=192.168.1.14
+  //   StatusId=0
+  //   Status_Reason=
+  //   ServerGroup_Name=Group - 1
+  //   Population=88
+  //   MaxPersonasPerUser=2
+  //   DiagnosticServerHost=192.168.5.14
+  //   DiagnosticServerPort=80`;
 }
 
 function httpHandler(
