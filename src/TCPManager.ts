@@ -5,8 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import * as assert from "assert";
 import { Socket } from "net";
-import * as util from "util";
 import { Connection } from "./Connection";
 import { pool } from "./database";
 import { IRawPacket } from "./IRawPacket";
@@ -34,6 +34,7 @@ async function encryptIfNeeded(conn: Connection, node: MessageNode) {
     if (conn.enc) {
       logger.warn(`Using key: ${conn.enc.getSessionKey()}`);
       plainText = node.data;
+      logger.info(`Using encryption id: ${conn.enc.getId()}`);
       node.updateBuffer(conn.enc.encrypt(plainText));
     } else {
       throw new Error("encryption out on connection is null");
@@ -84,7 +85,7 @@ async function socketWriteIfOpen(conn: Connection, nodes: MessageNode[]) {
  * Fetch session key from database based on remote address
  * @param {string} remoteAddress
  */
-async function fetchSessionKeyByConnectionId(connectionId: number) {
+async function fetchSessionKeyByConnectionId(connectionId: string) {
   return pool
     .query("SELECT session_key, s_key FROM sessions WHERE connection_id = $1", [
       connectionId,
@@ -95,7 +96,23 @@ async function fetchSessionKeyByConnectionId(connectionId: number) {
     )
     .catch((e: ExceptionInformation) => {
       throw new Error(
-        `Unable to fetch session key for connection id: ${connectionId}: ${e}`
+        `[TCPManager] Unable to fetch session key for connection id: ${connectionId}: ${e}`
+      );
+    });
+}
+
+async function fetchSessionKeyByCustomerId(customerId: number) {
+  return pool
+    .query("SELECT session_key, s_key FROM sessions WHERE customer_id = $1", [
+      customerId,
+    ])
+    .then(
+      (res: { rows: Array<{ session_key: string; s_key: string }> }) =>
+        res.rows[0]
+    )
+    .catch((e: ExceptionInformation) => {
+      throw new Error(
+        `[TCPManager] Unable to fetch session key for customer id: ${customerId}: ${e}`
       );
     });
 }
@@ -134,11 +151,14 @@ async function ClientConnect(con: Connection, node: MessageNode) {
    * Let's turn it into a ClientConnectMsg
    */
   // Not currently using this
-  const newMsg = new ClientConnectMsg(node.serialize());
+  const newMsg = new ClientConnectMsg(node.data);
 
-  logger.debug(`Looking up the session key for ${con.id}...`);
-  const res = await fetchSessionKeyByConnectionId(id);
-  logger.warn(`Session Key: ${res.s_key}`);
+  logger.debug(
+    `[TCPManager] Looking up the session key for ${newMsg.customerId}...`
+  );
+  const res = await fetchSessionKeyByCustomerId(newMsg.customerId);
+  assert(res.s_key);
+  logger.warn(`[TCPManager] Session Key: ${res.s_key}`);
 
   const connectionWithKey = con;
 
@@ -308,6 +328,7 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
         if (!newConnection.enc) {
           throw new Error("ARC4 decrypter is null");
         }
+        logger.info(`Using encryption id: ${newConnection.enc.getId()}`);
         const deciphered = newConnection.enc.decrypt(encryptedBuffer);
         logger.warn(
           `Message buffer after decrypting: ${deciphered.toString("hex")}`
@@ -334,11 +355,7 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
   }
 
   // Should be good to process now
-  try {
-    return await ProcessInput(msg, newConnection);
-  } catch (error) {
-    throw new Error(`[TCPManager/ProcessInput] Err: ${error}`);
-  }
+  return await ProcessInput(msg, newConnection);
 }
 
 /**

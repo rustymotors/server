@@ -9,10 +9,9 @@ import * as crypto from "crypto";
 import { Socket } from "net";
 import ConnectionMgr from "./connectionMgr";
 import { EncryptionMgr } from "./EncryptionMgr";
-import RC4 from "./RC4";
 
 export class Connection {
-  public id: number;
+  public id: string;
   public appId: number;
   public sock: Socket;
   public enc: EncryptionMgr;
@@ -21,7 +20,7 @@ export class Connection {
   public localPort: number;
   public isSetupComplete: boolean;
   public status: "ACTIVE" | "INACTIVE";
-  public encryptedCommand: Buffer;
+  public encryptedCmd: Buffer;
   public encLobby: {
     cipher: crypto.Cipher | null;
     decipher: crypto.Decipher | null;
@@ -32,7 +31,7 @@ export class Connection {
   private msgEvent: null;
   private lastMsg: number;
 
-  constructor(connectionId: number, sock: Socket, mgr: ConnectionMgr) {
+  constructor(connectionId: string, sock: Socket, mgr: ConnectionMgr) {
     this.id = connectionId;
     this.appId = 0;
     this.status = "INACTIVE";
@@ -50,6 +49,13 @@ export class Connection {
     this.isSetupComplete = false;
     this.mgr = mgr;
     this.inQueue = true;
+    this.decryptedCmd = Buffer.alloc(0);
+    this.encryptedCmd = Buffer.alloc(0);
+    this.mgr.logger.debug(
+      `Created new connection for ${this.remoteAddress}:${this.localPort}: ${
+        this.id
+      }`
+    );
   }
 
   public setEncryptionKey(key: Buffer) {

@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS "sessions"
    session_key text  NOT NULL,
    s_key text  NOT NULL,
    context_id text  NOT NULL,
-   connection_id integer  NOT NULL,
+   connection_id text  NOT NULL,
    CONSTRAINT pk_session PRIMARY KEY (customer_id)
 )
 WITH (

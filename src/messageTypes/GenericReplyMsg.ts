@@ -23,6 +23,8 @@ export class GenericReplyMsg {
   private data2: Buffer;
 
   constructor() {
+    this.msgNo = 0;
+    this.msgReply = 0;
     this.result = Buffer.alloc(4);
     this.data = Buffer.alloc(4);
     this.data2 = Buffer.alloc(4);

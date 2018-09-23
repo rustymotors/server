@@ -13,11 +13,7 @@ export class Server {
   public config: IServerConfiguration;
   public logger: ILoggerInstance;
 
-  public loadConfig(file: string) {
-    return yaml.safeLoad(fs.readFileSync(file, "utf8"));
-  }
-
-  public async init(thisLogger: ILoggerInstance) {
+  public constructor(thisLogger: ILoggerInstance) {
     this.logger = thisLogger;
     this.config = yaml.safeLoad(fs.readFileSync("./config/config.yml", "utf8"));
 
@@ -43,7 +39,9 @@ export class Server {
     adminServer.start(this.config.serverConfig);
     thisLogger.info("[adminServer] Web Server started");
   }
+  public loadConfig(file: string) {
+    return yaml.safeLoad(fs.readFileSync(file, "utf8"));
+  }
 }
 
-const server = new Server();
-server.init(logger);
+const server = new Server(logger);

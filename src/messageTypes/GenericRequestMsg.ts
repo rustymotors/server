@@ -19,6 +19,7 @@ export class GenericRequestMsg {
   private data2: Buffer;
 
   constructor() {
+    this.msgNo = 0;
     this.data = Buffer.alloc(4);
     this.data2 = Buffer.alloc(4);
   }

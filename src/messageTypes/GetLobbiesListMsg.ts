@@ -20,6 +20,7 @@ export class GetLobbiesListMsg {
     } catch (error) {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
+        this.msgNo = 0;
       } else {
         throw new Error(
           `[GetLobbiesListMsg] Unable to read msgNo from ${buffer.toString(

@@ -25,6 +25,7 @@ export class ClientConnectMsg {
     } catch (error) {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
+        this.msgNo = 0;
       } else {
         throw new Error(
           `[ClientConnectMsg] Unable to read msgNo from ${buffer.toString(
