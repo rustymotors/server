@@ -108,8 +108,9 @@ function decryptCmd(con: Connection, cypherCmd: Buffer) {
   const s = con;
   const decryptedCommand = s.decipherBufferDES(cypherCmd);
   s.decryptedCmd = decryptedCommand;
-  logger.warn(`[lobby] Enciphered Cmd: ${cypherCmd.toString("hex")}`);
-  logger.warn(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`);
+  // TODO: Don't output the enchiphered command once we know we are correctly deciphering it
+  logger.debug(`[lobby] Enciphered Cmd: ${cypherCmd.toString("hex")}`);
+  logger.debug(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`);
   return s;
 }
 
@@ -165,7 +166,15 @@ export async function sendCommand(con: Connection, data: Buffer) {
   const { id } = con;
   const s = con;
 
-  decryptCmd(s, Buffer.from(data.slice(4)));
+  const decipheredCommand = decryptCmd(s, Buffer.from(data.slice(4)))
+    .decryptedCmd;
+
+  // Marshal the command into an NPS packet
+  const incommingRequest = new NPSMsg();
+  incommingRequest.deserialize(decipheredCommand);
+
+  logger.debug(`Imcomming NPS Command...`);
+  incommingRequest.dumpPacket();
 
   // Create the packet content
   const packetContent = Buffer.alloc(375);

@@ -116,10 +116,6 @@ export class ListenerThread {
       .createServer(socket => {
         this._listener(socket, connectionMgr, config);
       })
-      .listen({ port: localPort, host: "0.0.0.0" }, () => {
-        this.logger.info(
-          `[listenerThread] Listener started on port ${localPort}`
-        );
-      });
+      .listen({ port: localPort, host: "0.0.0.0" });
   }
 }

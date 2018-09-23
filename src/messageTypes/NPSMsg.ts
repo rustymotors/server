@@ -47,6 +47,13 @@ export class NPSMsg {
     return packet;
   }
 
+  public deserialize(packet: Buffer) {
+    this.msgNo = packet.readInt16BE(0);
+    this.contentLength = packet.readInt16BE(2);
+    this.content = packet.slice(4);
+    return this;
+  }
+
   /**
    * dumpPacket
    */

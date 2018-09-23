@@ -6,9 +6,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from "../logger";
-import { GetLobbiesListMsg } from "./GetLobbiesListMsg";
-import { LoginMsg } from "./LoginMsg";
-import MsgHead from "./MsgHead";
 
 const logger = new Logger().getLogger();
 
@@ -18,12 +15,9 @@ export class MessageNode {
   public seq: number;
   public flags: number;
   public data: Buffer;
-  public login?: LoginMsg;
-  public lobby?: GetLobbiesListMsg;
   public toFrom: number;
   private dataLength: number;
   private mcoSig: string;
-  // private header: MsgHead | null;
 
   constructor() {
     this.msgNo = 0;
@@ -111,9 +105,11 @@ export class MessageNode {
     logger.debug("=============================================");
     logger.debug(`Header Length: ${this.dataLength}`);
     logger.debug(`Header MCOSIG: ${this.isMCOTS()}`);
-    logger.debug(`MsgNo:    ${this.msgNo}`);
-    logger.debug(`Sequence: ${this.seq}`);
-    logger.debug(`Flags: ${this.flags}`);
+    logger.debug(`MsgNo:         ${this.msgNo}`);
+    logger.debug(`Sequence:      ${this.seq}`);
+    logger.debug(`Flags:         ${this.flags}`);
+    logger.debug(`ToFrom:        ${this.toFrom}`);
+    logger.debug(`AppId:         ${this.appId}`);
     logger.debug("------------------------------------------------");
     const packetContents = this.serialize()
       .toString("hex")

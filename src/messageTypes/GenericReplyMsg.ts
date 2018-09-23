@@ -17,6 +17,8 @@ const logger = new Logger().getLogger();
 
 export class GenericReplyMsg {
   public msgNo: number;
+  public appId: number;
+  public toFrom: number;
   public msgReply: number;
   private result: Buffer;
   private data: Buffer;
@@ -24,10 +26,36 @@ export class GenericReplyMsg {
 
   constructor() {
     this.msgNo = 0;
+    this.toFrom = 0;
+    this.appId = 0;
     this.msgReply = 0;
     this.result = Buffer.alloc(4);
     this.data = Buffer.alloc(4);
     this.data2 = Buffer.alloc(4);
+  }
+
+  /**
+   * Setter $data
+   * @param {Buffer} value
+   */
+  set $data(value: Buffer) {
+    this.data = value;
+  }
+
+  /**
+   * Setter $data2
+   * @param {Buffer} value
+   */
+  set $data2(value: Buffer) {
+    this.data2 = value;
+  }
+
+  /**
+   * Setter $result
+   * @param {Buffer} value
+   */
+  set $result(value: Buffer) {
+    this.result = value;
   }
 
   public deserialize(buffer: Buffer) {
