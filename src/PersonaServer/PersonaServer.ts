@@ -234,7 +234,7 @@ export class PersonaServer {
   public _getPersonasById(id: number) {
     let results;
     results = this.personaList.find(persona => {
-      const match = id === persona.id.readInt16LE(0);
+      const match = id === persona.id.readInt32BE(0);
       return match;
     });
     if (!results) {
