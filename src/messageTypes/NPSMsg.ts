@@ -39,6 +39,10 @@ export class NPSMsg {
     return this.content.toString("hex");
   }
 
+  public getPacketAsString() {
+    return this.serialize().toString("hex");
+  }
+
   public serialize() {
     const packet = Buffer.alloc(this.contentLength);
     packet.writeInt16BE(this.msgNo, 0);
