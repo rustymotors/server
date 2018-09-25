@@ -44,9 +44,6 @@ export default class ConnectionMgr {
     const loginServer = new LoginServer(this.logger);
 
     const { remoteAddress, localPort, data } = rawPacket;
-    const updatedConnection = rawPacket.connection;
-    // logger.info(`Connection Manager: Got data from ${remoteAddress} on
-    //   localPort ${localPort}`, data);
 
     switch (localPort) {
       case 8226:
@@ -58,11 +55,12 @@ export default class ConnectionMgr {
       case 43300:
         return defaultHandler(rawPacket);
       default:
-        throw new Error(
+        this.logger.error(
           `[connectionMgr] No known handler for localPort ${localPort},
           unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.
-          [connectionMgr] Data was: ", data.toString("hex")`
+          [connectionMgr] Data was: ${data.toString("hex")}`
         );
+        return rawPacket.connection;
     }
   }
   /**
@@ -92,6 +90,22 @@ export default class ConnectionMgr {
       return match;
     });
     return results;
+  }
+
+  public async _updateConnectionByAddressAndPort(
+    address: string,
+    port: number,
+    newConnection: Connection
+  ) {
+    if (newConnection === undefined) {
+      throw new Error("Undefined connection");
+    }
+    const index = this.connections.findIndex(
+      (connection: Connection) =>
+        connection.remoteAddress === address && connection.localPort === port
+    );
+    this.connections.splice(index, 1);
+    this.connections.push(newConnection);
   }
 
   /**

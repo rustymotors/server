@@ -33,73 +33,6 @@ async function npsSocketWriteIfOpen(conn: Connection, buffer: Buffer) {
 }
 
 /**
- * Handle a request to connect to a game server packet
- * @param {Socket} socket
- * @param {Buffer} rawData
- */
-export async function _npsRequestGameConnectServer(
-  connection: Connection,
-  rawData: Buffer
-) {
-  const { sock } = connection;
-  logger.debug("*** _npsRequestGameConnectServer ****");
-  logger.debug(`Packet from ${sock.remoteAddress}`);
-  logger.debug(`Packet as hex: ${rawData.toString("hex")}`);
-  logger.debug("************************************");
-
-  // // Load the received data into a MsgPack class
-  // const msgPack = MsgPack(rawData);
-
-  // Return a _NPS_UserInfo structure
-  const userInfo = new NPSUserInfo(rawData);
-  userInfo.dumpInfo();
-
-  const personaManager = new PersonaServer();
-
-  const customerId = personaManager._getPersonasById(userInfo.userId)
-    .customerId;
-
-  // Set the encryption keys on the lobby connection
-  const keys = await fetchSessionKeyByCustomerId(customerId);
-  assert(keys);
-  const s = connection;
-
-  // Create the cypher and decipher only if not already set
-  if (!s.encLobby.decipher) {
-    try {
-      s.setEncryptionKeyDES(keys.s_key);
-    } catch (error) {
-      throw new Error(`[Lobby] Unable to set ${keys.s_key} from ${keys}`);
-    }
-  }
-
-  const packetContent = Buffer.alloc(38);
-
-  // MsgLen
-  Buffer.from([0x00, 0x04]).copy(packetContent);
-
-  // NPS_USERID - User ID - persona id - long
-  Buffer.from([0x00, 0x00, 0x00, 0x02]).copy(packetContent, 2);
-
-  // User name (32)
-  const name = Buffer.alloc(32);
-  Buffer.from("Doctor Brown", "utf8").copy(name);
-  name.copy(packetContent, 6);
-
-  // UserData - User controllable data (64)
-  Buffer.alloc(64).copy(packetContent, 38);
-
-  // Build the packet
-  const packetResult = new NPSMsg();
-  packetResult.msgNo = 0x120;
-  packetResult.setContent(packetContent);
-  packetResult.dumpPacket();
-  // const packetResult = buildPacket(4, 0x0120, packetContent);
-
-  return packetResult;
-}
-
-/**
  * Takes an encrypted command packet and returns the decrypted bytes
  * @param {Connection} con
  * @param {Buffer} cypherCmd
@@ -224,12 +157,12 @@ export class LobbyServer {
     switch (requestCode) {
       // _npsRequestGameConnectServer
       case "100": {
-        const responsePacket = await _npsRequestGameConnectServer(
+        const responsePacket = await this._npsRequestGameConnectServer(
           connection,
           data
         );
         logger.debug(
-          `[Lobby/Connect] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
+          `[Lobby/Connect] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
         );
         npsSocketWriteIfOpen(connection, responsePacket.serialize());
         break;
@@ -271,5 +204,87 @@ export class LobbyServer {
         );
     }
     return updatedConnection;
+  }
+
+  public _generateSessionKeyBuffer(key: string) {
+    const nameBuffer = Buffer.alloc(64);
+    Buffer.from(key, "utf8").copy(nameBuffer);
+    return nameBuffer;
+  }
+
+  /**
+   * Handle a request to connect to a game server packet
+   * @param {Socket} socket
+   * @param {Buffer} rawData
+   */
+  public async _npsRequestGameConnectServer(
+    connection: Connection,
+    rawData: Buffer
+  ) {
+    const { sock } = connection;
+    logger.debug("*** _npsRequestGameConnectServer ****");
+    logger.debug(`Packet from ${sock.remoteAddress}`);
+    logger.debug(`Packet as hex: ${rawData.toString("hex")}`);
+    logger.debug("************************************");
+
+    // // Load the received data into a MsgPack class
+    // const msgPack = MsgPack(rawData);
+
+    // Return a _NPS_UserInfo structure
+    const userInfo = new NPSUserInfo(rawData);
+    userInfo.dumpInfo();
+
+    const personaManager = new PersonaServer();
+
+    const customerId = personaManager._getPersonasById(userInfo.userId)
+      .customerId;
+
+    // Set the encryption keys on the lobby connection
+    const keys = await fetchSessionKeyByCustomerId(customerId);
+    assert(keys);
+    const s = connection;
+
+    // Create the cypher and decipher only if not already set
+    if (!s.encLobby.decipher) {
+      try {
+        s.setEncryptionKeyDES(keys.s_key);
+      } catch (error) {
+        throw new Error(`[Lobby] Unable to set ${keys.s_key} from ${keys}`);
+      }
+    }
+
+    const packetContent = Buffer.alloc(72);
+    // const packetContent = Buffer.alloc(38);
+
+    // this response is a NPS_UserStatus
+
+    // Ban and Gag
+    // Buffer.from([0x00]).copy(packetContent);
+    // Buffer.from([0x00, 0x00]).copy(packetContent);
+
+    // NPS_USERID - User ID - persona id - long
+    Buffer.from([0x00, 0x84, 0x5f, 0xed]).copy(packetContent);
+
+    // SessionKeyStr (32)
+    this._generateSessionKeyBuffer(keys.session_key).copy(packetContent, 4);
+
+    // // SessionKeyLen - int
+    packetContent.writeInt16BE(32, 66);
+
+    // // User name (32)
+    // const name = Buffer.alloc(32);
+    // Buffer.from("Doctor Brown", "utf8").copy(name);
+    // name.copy(packetContent, 6);
+
+    // // UserData - User controllable data (64)
+    // Buffer.alloc(64).copy(packetContent, 38);
+
+    // Build the packet
+    const packetResult = new NPSMsg();
+    packetResult.msgNo = 0x120;
+    packetResult.setContent(packetContent);
+    packetResult.dumpPacket();
+
+    return packetResult;
   }
 }
