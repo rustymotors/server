@@ -140,6 +140,10 @@ export class PatchServer {
     }
   }
 
+  public getBans() {
+    return this.banList;
+  }
+
   public async start(configurationFile: IServerConfiguration) {
     const serverPatch = http.createServer((req, res) => {
       this._httpHandler(req, res, configurationFile, this.logger);

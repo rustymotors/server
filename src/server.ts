@@ -43,7 +43,7 @@ export class Server {
     await mcServer.startServers(this.config);
 
     // Start the Admin server
-    const adminServer = new AdminServer(mcServer, this.logger);
+    const adminServer = new AdminServer(patchServer, mcServer, this.logger);
     adminServer.start(this.config.serverConfig);
     this.logger.debug("[adminServer] Web Server started");
 

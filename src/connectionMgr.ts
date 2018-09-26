@@ -22,6 +22,7 @@ export default class ConnectionMgr {
   public logger: ILoggerInstance;
   private connections: Connection[];
   private newConnectionId: number;
+  private banList: string[] = [];
 
   constructor(logger: ILoggerInstance) {
     if (!logger) {
@@ -55,14 +56,26 @@ export default class ConnectionMgr {
       case 43300:
         return defaultHandler(rawPacket);
       default:
-        this.logger.error(
+        // Is this a hacker?
+        if (this.banList.indexOf(remoteAddress!) < 0) {
+          // In ban list, skip
+          return rawPacket.connection;
+        }
+        // Unknown request, log it
+        this.logger.debug(
           `[connectionMgr] No known handler for localPort ${localPort},
-          unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.
-          [connectionMgr] Data was: ${data.toString("hex")}`
+                unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.
+                [connectionMgr] Data was: ${data.toString("hex")}, banning.`
         );
+        this.banList.push(remoteAddress!);
         return rawPacket.connection;
     }
   }
+
+  public getBans() {
+    return this.banList;
+  }
+
   /**
    * Locate connection by remoteAddress and localPort in the connections array
    * @param {String} connectionId
