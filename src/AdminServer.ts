@@ -11,13 +11,20 @@ import * as https from "https";
 import { IServerConfiguration } from "./IServerConfiguration";
 import { ILoggerInstance } from "./logger";
 import { MCServer } from "./MCServer";
+import { PatchServer } from "./patchServer";
 import { SSLConfig } from "./ssl-config";
 
 export class AdminServer {
   public mcServer: MCServer;
+  public patchServer: PatchServer;
   public logger: ILoggerInstance;
 
-  constructor(mcServer: MCServer, logger: ILoggerInstance) {
+  constructor(
+    patchServer: PatchServer,
+    mcServer: MCServer,
+    logger: ILoggerInstance
+  ) {
+    this.patchServer = patchServer;
     this.mcServer = mcServer;
     this.logger = logger;
   }
@@ -61,6 +68,15 @@ export class AdminServer {
           response.write(displayConnection);
         });
         response.end();
+        return;
+
+      case "/admin/bans":
+        response.setHeader("Content-Type", "application/json");
+        const banlist = {
+          mcServer: this.mcServer.mgr.getBans(),
+          patchServer: this.patchServer.getBans(),
+        };
+        response.end(JSON.stringify(banlist));
         return;
 
       default:
