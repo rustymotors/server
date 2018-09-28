@@ -131,6 +131,7 @@ export default class ConnectionMgr {
   public findOrNewConnection(socket: Socket) {
     const { remoteAddress, localPort } = socket;
     if (!remoteAddress) {
+      this.logger.error(socket);
       throw new Error("Remote address is empty");
     }
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
