@@ -94,13 +94,14 @@ export class MCOTServer {
     pReply.msgNo = 325;
     pReply.msgReply = 324;
     const rPacket = new MessageNode();
+    rPacket.flags = 9;
 
     // const rPacket = new MessageNode();
     rPacket.deserialize(node.serialize());
 
     // Set the data of the GenericReplyMsg to the LobbyMsg
-    pReply.$data = lobbyMsg.serialize();
-    rPacket.updateBuffer(pReply.serialize());
+    pReply.setData(lobbyMsg.serialize());
+    rPacket.updateBuffer(lobbyMsg.serialize());
 
     // Set the AppId
     rPacket.appId = con.appId;

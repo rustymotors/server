@@ -38,7 +38,7 @@ export class GenericReplyMsg {
    * Setter $data
    * @param {Buffer} value
    */
-  set $data(value: Buffer) {
+  public setData(value: Buffer) {
     this.data = value;
   }
 
@@ -46,16 +46,8 @@ export class GenericReplyMsg {
    * Setter $data2
    * @param {Buffer} value
    */
-  set $data2(value: Buffer) {
+  public setData2(value: Buffer) {
     this.data2 = value;
-  }
-
-  /**
-   * Setter $result
-   * @param {Buffer} value
-   */
-  set $result(value: Buffer) {
-    this.result = value;
   }
 
   public deserialize(buffer: Buffer) {

@@ -24,12 +24,25 @@ const logger = new Logger().getLogger();
 const lobbyServer = new LobbyServer();
 const mcotServer = new MCOTServer();
 
+async function compressIfNeeded(conn: Connection, node: MessageNode) {
+  const packetToWrite = node;
+
+  // Check if compression is needed
+  if (node.getLength() < 80) {
+    logger.debug("Too small, should not compress");
+  } else {
+    logger.debug(`This packet should be compressed`);
+  }
+  return { conn, packetToWrite };
+}
+
 async function encryptIfNeeded(conn: Connection, node: MessageNode) {
   let packetToWrite = node;
 
   // Check if encryption is needed
   if (node.flags - 8 >= 0) {
     logger.debug("encryption flag is set");
+
     let plainText;
     if (conn.enc) {
       // TODO: Don't expose key
@@ -50,32 +63,33 @@ async function encryptIfNeeded(conn: Connection, node: MessageNode) {
 }
 
 async function socketWriteIfOpen(conn: Connection, nodes: MessageNode[]) {
-  let updatedConnection = conn;
+  const updatedConnection = conn;
   nodes.forEach(async node => {
-    const encryptedResult = await encryptIfNeeded(conn, node);
+    const { packetToWrite: compressedPacket } = await compressIfNeeded(
+      conn,
+      node
+    );
+    const { packetToWrite } = await encryptIfNeeded(conn, compressedPacket);
     // Log that we are trying to write
     logger.debug(
-      ` Atempting to write seq: ${encryptedResult.packetToWrite.seq} to conn: ${
-        encryptedResult.conn.id
+      ` Atempting to write seq: ${packetToWrite.seq} to conn: ${
+        updatedConnection.id
       }`
     );
-    const { sock } = encryptedResult.conn;
 
     // Log the buffer we are writing
     logger.debug(
-      `Writting buffer: ${encryptedResult.packetToWrite
-        .serialize()
-        .toString("hex")}`
+      `Writting buffer: ${packetToWrite.serialize().toString("hex")}`
     );
-    if (sock.writable) {
+    if (conn.sock.writable) {
       // Write the packet to socket
-      sock.write(encryptedResult.packetToWrite.serialize());
-      updatedConnection = encryptedResult.conn;
+      conn.sock.write(packetToWrite.serialize());
+      // updatedConnection = encryptedResult.conn;
     } else {
       throw new Error(
-        `Error writing ${encryptedResult.packetToWrite.serialize()} to ${
-          sock.remoteAddress
-        } , ${sock.localPort.toString()}`
+        `Error writing ${packetToWrite.serialize()} to ${
+          conn.sock.remoteAddress
+        } , ${conn.sock.localPort.toString()}`
       );
     }
   });
@@ -158,8 +172,8 @@ async function ClientConnect(con: Connection, node: MessageNode) {
     `[TCPManager] Looking up the session key for ${newMsg.customerId}...`
   );
   const res = await fetchSessionKeyByCustomerId(newMsg.customerId);
-  assert(res.s_key);
-  logger.warn(`[TCPManager] Session Key: ${res.s_key}`);
+  assert(res.session_key);
+  logger.warn(`[TCPManager] Session Key: ${res.session_key}`);
 
   const connectionWithKey = con;
 
