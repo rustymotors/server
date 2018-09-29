@@ -9,6 +9,7 @@
 
 import { Logger } from "../logger";
 import { LobbyInfo } from "./LobbyInfo";
+import { MessageNode } from "./MessageNode";
 
 const logger = new Logger().getLogger();
 

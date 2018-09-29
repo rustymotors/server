@@ -120,6 +120,10 @@ export class MessageNode {
     logger.debug("= MessageNode ==================================");
   }
 
+  public getLength() {
+    return this.dataLength;
+  }
+
   private BaseMsgHeader(packet: Buffer) {
     // WORD msgNo;
     this.msgNo = packet.readInt16LE(0);
