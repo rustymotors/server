@@ -27,6 +27,7 @@ interface IPersonaRecord {
  * @param {Buffer} rawData
  */
 async function _npsSelectGamePersona(socket: Socket) {
+  logger.debug(`_npsSelectGamePersona...`);
   // Create the packet content
   // TODO: Create a real response, instead of a random blob of bytes
   const packetContent = Buffer.alloc(251);
@@ -37,6 +38,7 @@ async function _npsSelectGamePersona(socket: Socket) {
   const responsePacket = new NPSMsg();
   responsePacket.msgNo = 0x207;
   responsePacket.setContent(packetContent);
+  logger.debug(`Dumping response...`);
   responsePacket.dumpPacket();
 
   logger.debug(
@@ -48,6 +50,7 @@ async function _npsSelectGamePersona(socket: Socket) {
 async function _npsNewGameAccount(sock: Socket) {
   const rPacket = new NPSMsg();
   rPacket.msgNo = 0x601;
+  logger.debug(`Dumping response...`);
   rPacket.dumpPacket();
 
   sock.write(rPacket.serialize());
@@ -62,6 +65,7 @@ async function _npsNewGameAccount(sock: Socket) {
  * @param {Buffer} data
  */
 async function _npsLogoutGameUser(socket: Socket) {
+  logger.debug(`_npsLogoutGameUser...`);
   logger.info("[personaServer] Logging out persona...");
 
   // Create the packet content
@@ -72,6 +76,7 @@ async function _npsLogoutGameUser(socket: Socket) {
   const responsePacket = new NPSMsg();
   responsePacket.msgNo = 0x612;
   responsePacket.setContent(packetContent);
+  logger.debug(`Dumping response...`);
   responsePacket.dumpPacket();
 
   logger.debug(
@@ -86,6 +91,7 @@ async function _npsLogoutGameUser(socket: Socket) {
  * @param {Buffer} data
  */
 async function _npsCheckToken(socket: Socket, data: Buffer) {
+  logger.debug(`_npsCheckToken...`);
   const customerId = data.readInt32BE(12);
   const plateName = data.slice(17).toString();
   logger.warn(`customerId: ${customerId}`);
@@ -101,6 +107,7 @@ async function _npsCheckToken(socket: Socket, data: Buffer) {
   const responsePacket = new NPSMsg();
   responsePacket.msgNo = 0x207;
   responsePacket.setContent(packetContent);
+  logger.debug(`Dumping response...`);
   responsePacket.dumpPacket();
   // const responsePacket = buildPacket(1024, 0x0207, packetContent);
 
@@ -116,6 +123,7 @@ async function _npsCheckToken(socket: Socket, data: Buffer) {
  * @param {Buffer} data
  */
 async function _npsValidatePersonaName(socket: Socket, data: Buffer) {
+  logger.debug(`_npsValidatePersonaName...`);
   const customerId = data.readInt32BE(12);
   const requestedPersonaName = data
     .slice(18, data.lastIndexOf(0x00))
@@ -135,6 +143,7 @@ async function _npsValidatePersonaName(socket: Socket, data: Buffer) {
   const responsePacket = new NPSMsg();
   responsePacket.msgNo = 0x601;
   responsePacket.setContent(packetContent);
+  logger.debug(`Dumping response...`);
   responsePacket.dumpPacket();
 
   logger.debug(
@@ -269,6 +278,7 @@ export class PersonaServer {
    * @param {Buffer} data
    */
   public async _npsGetPersonaMaps(socket: Socket, data: Buffer) {
+    logger.debug(`_npsGetPersonaMaps...`);
     const customerId = Buffer.alloc(4);
     data.copy(customerId, 0, 12);
     logger.info(
@@ -307,6 +317,7 @@ export class PersonaServer {
       const responsePacket = new NPSMsg();
       responsePacket.msgNo = 0x607;
       responsePacket.setContent(packetContent.slice(0, 68));
+      logger.debug(`Dumping response...`);
       responsePacket.dumpPacket();
 
       logger.debug(
