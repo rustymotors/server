@@ -63,7 +63,7 @@ export class NPSMsg {
    */
   public dumpPacket() {
     logger.debug("[NPSMsg]======================================");
-    logger.debug(`MsgNo:         ${this.msgNo}`);
+    logger.debug(`MsgNo:         ${this.msgNo.toString(16)} (${this.msgNo})`);
     logger.debug(`contentLength: ${this.contentLength}`);
     logger.debug(`Content:       ${this.content.toString("hex")}`);
     logger.debug(`Serialized:    ${this.serialize().toString("hex")}`);

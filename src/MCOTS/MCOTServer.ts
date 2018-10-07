@@ -39,6 +39,8 @@ export class MCOTServer {
         return "MC_LOBBIES";
       case 438:
         return "MC_CLIENT_CONNECT_MSG";
+      case 440:
+        return "MC_TRACKING_MSG";
 
       default:
         return "Unknown";
@@ -148,6 +150,32 @@ export class MCOTServer {
     const pReply = new GenericReplyMsg();
     pReply.msgNo = 101;
     pReply.msgReply = 109;
+    const rPacket = new MessageNode();
+
+    // lobbyMsg.dumpPacket();
+
+    // const rPacket = new MessageNode();
+    rPacket.deserialize(node.serialize());
+    rPacket.updateBuffer(pReply.serialize());
+    logger.debug("Dumping response...");
+    rPacket.dumpPacket();
+
+    return { con, nodes: [rPacket] };
+  }
+
+  public async _trackingMessage(con: Connection, node: MessageNode) {
+    const trackingMsg = node;
+
+    trackingMsg.data = node.serialize();
+
+    // Update the appId
+    trackingMsg.appId = con.appId;
+
+    // Create new response packet
+    // TODO: Do this cleaner
+    const pReply = new GenericReplyMsg();
+    pReply.msgNo = 101;
+    pReply.msgReply = 440;
     const rPacket = new MessageNode();
 
     // lobbyMsg.dumpPacket();

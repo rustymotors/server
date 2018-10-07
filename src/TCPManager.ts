@@ -233,6 +233,19 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
         throw error;
       }
       break;
+    case "MC_TRACKING_MSG":
+      try {
+        const result = await mcotServer._trackingMessage(conn, node);
+        const responsePackets = result.nodes;
+        // updatedConnection = await socketWriteIfOpen(
+        //   result.con,
+        //   responsePackets
+        // );
+        return updatedConnection;
+      } catch (error) {
+        throw error;
+      }
+      break;
     case "MC_UPDATE_PLAYER_PHYSICAL":
       try {
         const result = await mcotServer._updatePlayerPhysical(conn, node);
