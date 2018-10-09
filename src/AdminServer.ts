@@ -11,13 +11,20 @@ import * as https from "https";
 import { IServerConfiguration } from "./IServerConfiguration";
 import { ILoggerInstance } from "./logger";
 import { MCServer } from "./MCServer";
+import { PatchServer } from "./patchServer";
 import { SSLConfig } from "./ssl-config";
 
 export class AdminServer {
   public mcServer: MCServer;
+  public patchServer: PatchServer;
   public logger: ILoggerInstance;
 
-  constructor(mcServer: MCServer, logger: ILoggerInstance) {
+  constructor(
+    patchServer: PatchServer,
+    mcServer: MCServer,
+    logger: ILoggerInstance
+  ) {
+    this.patchServer = patchServer;
     this.mcServer = mcServer;
     this.logger = logger;
   }
@@ -56,10 +63,20 @@ export class AdminServer {
                 remoteAddress: ${connection.remoteAddress}:${
             connection.localPort
           }
+            Encryption ID: ${connection.enc.getId()}
             `;
           response.write(displayConnection);
         });
         response.end();
+        return;
+
+      case "/admin/bans":
+        response.setHeader("Content-Type", "application/json");
+        const banlist = {
+          mcServer: this.mcServer.mgr.getBans(),
+          patchServer: this.patchServer.getBans(),
+        };
+        response.end(JSON.stringify(banlist));
         return;
 
       default:
@@ -85,12 +102,6 @@ export class AdminServer {
         socket.on("error", (error: Error) => {
           throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`);
         });
-        socket.on("close", () => {
-          this.logger.info("[AdminServer] SSL Socket Connection closed");
-        });
       });
-    // .on("tlsClientError", err => {
-    //   throw new Error(`[AdminServer] tlsClientError: ${err}`);
-    // });
   }
 }
