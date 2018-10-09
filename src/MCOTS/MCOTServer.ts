@@ -8,7 +8,6 @@
 import { Connection } from "../Connection";
 import { Logger } from "../logger";
 import { GenericReplyMsg } from "../messageTypes/GenericReplyMsg";
-import { GetLobbiesListMsg } from "../messageTypes/GetLobbiesListMsg";
 import { LobbyMsg } from "../messageTypes/LobbyMsg";
 import { LoginMsg } from "../messageTypes/LoginMsg";
 import { MessageNode } from "../messageTypes/MessageNode";
@@ -40,6 +39,8 @@ export class MCOTServer {
         return "MC_LOBBIES";
       case 438:
         return "MC_CLIENT_CONNECT_MSG";
+      case 440:
+        return "MC_TRACKING_MSG";
 
       default:
         return "Unknown";
@@ -47,17 +48,16 @@ export class MCOTServer {
   }
 
   public async _login(con: Connection, node: MessageNode) {
-    const loginMsg = node;
     /**
      * Let's turn it into a LoginMsg
      */
-    loginMsg.login = new LoginMsg(node.data);
-    loginMsg.data = loginMsg.login.serialize();
+    const loginMsg = new LoginMsg(node.data);
+    // loginMsg.data = loginMsg.login.serialize();
 
     // Update the appId
     loginMsg.appId = con.appId;
 
-    loginMsg.login.dumpPacket();
+    loginMsg.dumpPacket();
 
     // Create new response packet
     // TODO: Do this cleaner
@@ -65,11 +65,9 @@ export class MCOTServer {
     pReply.msgNo = 213;
     // pReply.msgNo = 101;
     pReply.msgReply = 105;
+    pReply.appId = con.appId;
     const rPacket = new MessageNode();
 
-    // lobbyMsg.dumpPacket();
-
-    // const rPacket = new MessageNode();
     rPacket.deserialize(node.serialize());
     rPacket.updateBuffer(pReply.serialize());
     logger.debug("Dumping response...");
@@ -79,37 +77,41 @@ export class MCOTServer {
   }
 
   public async _getLobbies(con: Connection, node: MessageNode) {
+    logger.debug(`In _getLobbies...`);
     const lobbiesListMsg = node;
-    /**
-     * Let's turn it into a LoginMsg
-     */
-    lobbiesListMsg.lobby = new GetLobbiesListMsg(node.data);
-    lobbiesListMsg.data = lobbiesListMsg.serialize();
 
     // Update the appId
     lobbiesListMsg.appId = con.appId;
+
+    // Dump the packet
+    logger.debug("Dumping request...");
+    lobbiesListMsg.dumpPacket();
 
     // Create new response packet
     const lobbyMsg = new LobbyMsg();
 
     // TODO: Do this cleaner
 
-    logger.debug("Dumping response...");
-
     const pReply = new GenericReplyMsg();
     pReply.msgNo = 325;
-    // pReply.msgNo = 101;
     pReply.msgReply = 324;
     const rPacket = new MessageNode();
-
-    // lobbyMsg.dumpPacket();
+    rPacket.flags = 9;
 
     // const rPacket = new MessageNode();
-    rPacket.deserialize(node.data);
+    rPacket.deserialize(node.serialize());
 
-    rPacket.updateBuffer(pReply.serialize());
-    // rPacket.updateBuffer(lobbyMsg.serialize());
+    // Set the data of the GenericReplyMsg to the LobbyMsg
+    pReply.setData(lobbyMsg.serialize());
+    rPacket.updateBuffer(lobbyMsg.serialize());
 
+    // Set the AppId
+    rPacket.appId = con.appId;
+
+    // Dump the packet
+    logger.debug(`-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-`);
+    logger.debug("Dumping response...");
+    lobbyMsg.dumpPacket();
     rPacket.dumpPacket();
 
     return { con, nodes: [rPacket] };
@@ -130,12 +132,6 @@ export class MCOTServer {
     pReply.msgReply = 106;
     const rPacket = new MessageNode();
 
-    // lobbyMsg.dumpPacket();
-
-    // const rPacket = new MessageNode();
-    // rPacket.deserialize(node.serialize());
-    // rPacket.updateBuffer(pReply.serialize());
-    // logger.debug("Dumping response...");
     // rPacket.dumpPacket();
 
     return { con, nodes: [] };
@@ -154,6 +150,32 @@ export class MCOTServer {
     const pReply = new GenericReplyMsg();
     pReply.msgNo = 101;
     pReply.msgReply = 109;
+    const rPacket = new MessageNode();
+
+    // lobbyMsg.dumpPacket();
+
+    // const rPacket = new MessageNode();
+    rPacket.deserialize(node.serialize());
+    rPacket.updateBuffer(pReply.serialize());
+    logger.debug("Dumping response...");
+    rPacket.dumpPacket();
+
+    return { con, nodes: [rPacket] };
+  }
+
+  public async _trackingMessage(con: Connection, node: MessageNode) {
+    const trackingMsg = node;
+
+    trackingMsg.data = node.serialize();
+
+    // Update the appId
+    trackingMsg.appId = con.appId;
+
+    // Create new response packet
+    // TODO: Do this cleaner
+    const pReply = new GenericReplyMsg();
+    pReply.msgNo = 101;
+    pReply.msgReply = 440;
     const rPacket = new MessageNode();
 
     // lobbyMsg.dumpPacket();

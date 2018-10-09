@@ -13,7 +13,7 @@ export function premadeLogin() {
   return Buffer.from([
     // Live Packet
     0x06, // +0
-    0x01,
+    0x02,
     0x01,
     0x01,
     0x21,

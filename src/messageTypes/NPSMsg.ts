@@ -21,7 +21,9 @@ export class NPSMsg {
   private content: Buffer;
 
   constructor() {
-    this.setContent(Buffer.from([0x01, 0x02, 0x03, 0x04]));
+    this.content = Buffer.from([0x01, 0x02, 0x03, 0x04]);
+    this.msgNo = 0;
+    this.contentLength = this.content.length;
   }
 
   public setContent(buffer: Buffer) {
@@ -37,6 +39,10 @@ export class NPSMsg {
     return this.content.toString("hex");
   }
 
+  public getPacketAsString() {
+    return this.serialize().toString("hex");
+  }
+
   public serialize() {
     const packet = Buffer.alloc(this.contentLength);
     packet.writeInt16BE(this.msgNo, 0);
@@ -45,12 +51,19 @@ export class NPSMsg {
     return packet;
   }
 
+  public deserialize(packet: Buffer) {
+    this.msgNo = packet.readInt16BE(0);
+    this.contentLength = packet.readInt16BE(2);
+    this.content = packet.slice(4);
+    return this;
+  }
+
   /**
    * dumpPacket
    */
   public dumpPacket() {
     logger.debug("[NPSMsg]======================================");
-    logger.debug(`MsgNo:         ${this.msgNo}`);
+    logger.debug(`MsgNo:         ${this.msgNo.toString(16)} (${this.msgNo})`);
     logger.debug(`contentLength: ${this.contentLength}`);
     logger.debug(`Content:       ${this.content.toString("hex")}`);
     logger.debug(`Serialized:    ${this.serialize().toString("hex")}`);
