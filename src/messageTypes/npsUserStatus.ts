@@ -77,13 +77,15 @@ export class NPSUserStatus {
       packet.slice(52, -10).toString("utf8"),
       "hex"
     );
-    this.logger.debug(
+    // TODO: Do not expose security key
+    this.logger.warn(
       `[npsUserStatus] Encrypted Session Key String: ${sessionKeyStr.toString(
         "hex"
       )}`
     );
     const decrypted = crypto.privateDecrypt(privateKey, sessionKeyStr);
-    this.logger.debug(
+    // TODO: Do not expose security key
+    this.logger.warn(
       `[npsUserStatus] Unsliced key: ${decrypted.toString("hex")}`
     );
     const sessionKey = decrypted.slice(2, -4).toString("hex");

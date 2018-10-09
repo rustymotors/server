@@ -22,6 +22,7 @@ export default class ConnectionMgr {
   public logger: ILoggerInstance;
   private connections: Connection[];
   private newConnectionId: number;
+  private banList: string[] = [];
 
   constructor(logger: ILoggerInstance) {
     if (!logger) {
@@ -44,9 +45,6 @@ export default class ConnectionMgr {
     const loginServer = new LoginServer(this.logger);
 
     const { remoteAddress, localPort, data } = rawPacket;
-    const updatedConnection = rawPacket.connection;
-    // logger.info(`Connection Manager: Got data from ${remoteAddress} on
-    //   localPort ${localPort}`, data);
 
     switch (localPort) {
       case 8226:
@@ -58,13 +56,26 @@ export default class ConnectionMgr {
       case 43300:
         return defaultHandler(rawPacket);
       default:
-        throw new Error(
+        // Is this a hacker?
+        if (this.banList.indexOf(remoteAddress!) < 0) {
+          // In ban list, skip
+          return rawPacket.connection;
+        }
+        // Unknown request, log it
+        this.logger.debug(
           `[connectionMgr] No known handler for localPort ${localPort},
-          unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.
-          [connectionMgr] Data was: ", data.toString("hex")`
+                unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.
+                [connectionMgr] Data was: ${data.toString("hex")}, banning.`
         );
+        this.banList.push(remoteAddress!);
+        return rawPacket.connection;
     }
   }
+
+  public getBans() {
+    return this.banList;
+  }
+
   /**
    * Locate connection by remoteAddress and localPort in the connections array
    * @param {String} connectionId
@@ -86,24 +97,12 @@ export default class ConnectionMgr {
    * Locate connection by id in the connections array
    * @param {String} connectionId
    */
-  public findConnectionById(connectionId: number) {
+  public findConnectionById(connectionId: string) {
     const results = this.connections.find(connection => {
       const match = connectionId === connection.id;
       return match;
     });
     return results;
-  }
-
-  /**
-   * Deletes the provided connection id from the connections array
-   * FIXME: Doesn't actually seem to work
-   * @param {String} connectionId
-   */
-  public deleteConnection(connection: Connection) {
-    this.connections = this.connections.filter(
-      (conn: Connection) =>
-        conn.id !== connection.id && conn.localPort !== connection.localPort
-    );
   }
 
   public async _updateConnectionByAddressAndPort(
@@ -132,6 +131,7 @@ export default class ConnectionMgr {
   public findOrNewConnection(socket: Socket) {
     const { remoteAddress, localPort } = socket;
     if (!remoteAddress) {
+      this.logger.error(socket);
       throw new Error("Remote address is empty");
     }
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
@@ -143,7 +143,11 @@ export default class ConnectionMgr {
       return con;
     }
 
-    const newConnection = new Connection(this.newConnectionId, socket, this);
+    const newConnection = new Connection(
+      `${Date.now().toString()}_${this.newConnectionId}`,
+      socket,
+      this
+    );
     this.logger.info(
       `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`
     );

@@ -13,6 +13,7 @@ import { NPSMsg } from "../messageTypes/NPSMsg";
 const logger = new Logger().getLogger();
 
 interface IPersonaRecord {
+  customerId: number;
   id: Buffer;
   maxPersonas: Buffer;
   name: Buffer;
@@ -26,6 +27,7 @@ interface IPersonaRecord {
  * @param {Buffer} rawData
  */
 async function _npsSelectGamePersona(socket: Socket) {
+  logger.debug(`_npsSelectGamePersona...`);
   // Create the packet content
   // TODO: Create a real response, instead of a random blob of bytes
   const packetContent = Buffer.alloc(251);
@@ -36,6 +38,7 @@ async function _npsSelectGamePersona(socket: Socket) {
   const responsePacket = new NPSMsg();
   responsePacket.msgNo = 0x207;
   responsePacket.setContent(packetContent);
+  logger.debug(`Dumping response...`);
   responsePacket.dumpPacket();
 
   logger.debug(
@@ -47,6 +50,7 @@ async function _npsSelectGamePersona(socket: Socket) {
 async function _npsNewGameAccount(sock: Socket) {
   const rPacket = new NPSMsg();
   rPacket.msgNo = 0x601;
+  logger.debug(`Dumping response...`);
   rPacket.dumpPacket();
 
   sock.write(rPacket.serialize());
@@ -61,6 +65,7 @@ async function _npsNewGameAccount(sock: Socket) {
  * @param {Buffer} data
  */
 async function _npsLogoutGameUser(socket: Socket) {
+  logger.debug(`_npsLogoutGameUser...`);
   logger.info("[personaServer] Logging out persona...");
 
   // Create the packet content
@@ -71,6 +76,7 @@ async function _npsLogoutGameUser(socket: Socket) {
   const responsePacket = new NPSMsg();
   responsePacket.msgNo = 0x612;
   responsePacket.setContent(packetContent);
+  logger.debug(`Dumping response...`);
   responsePacket.dumpPacket();
 
   logger.debug(
@@ -85,6 +91,7 @@ async function _npsLogoutGameUser(socket: Socket) {
  * @param {Buffer} data
  */
 async function _npsCheckToken(socket: Socket, data: Buffer) {
+  logger.debug(`_npsCheckToken...`);
   const customerId = data.readInt32BE(12);
   const plateName = data.slice(17).toString();
   logger.warn(`customerId: ${customerId}`);
@@ -100,6 +107,7 @@ async function _npsCheckToken(socket: Socket, data: Buffer) {
   const responsePacket = new NPSMsg();
   responsePacket.msgNo = 0x207;
   responsePacket.setContent(packetContent);
+  logger.debug(`Dumping response...`);
   responsePacket.dumpPacket();
   // const responsePacket = buildPacket(1024, 0x0207, packetContent);
 
@@ -115,6 +123,7 @@ async function _npsCheckToken(socket: Socket, data: Buffer) {
  * @param {Buffer} data
  */
 async function _npsValidatePersonaName(socket: Socket, data: Buffer) {
+  logger.debug(`_npsValidatePersonaName...`);
   const customerId = data.readInt32BE(12);
   const requestedPersonaName = data
     .slice(18, data.lastIndexOf(0x00))
@@ -134,6 +143,7 @@ async function _npsValidatePersonaName(socket: Socket, data: Buffer) {
   const responsePacket = new NPSMsg();
   responsePacket.msgNo = 0x601;
   responsePacket.setContent(packetContent);
+  logger.debug(`Dumping response...`);
   responsePacket.dumpPacket();
 
   logger.debug(
@@ -143,6 +153,31 @@ async function _npsValidatePersonaName(socket: Socket, data: Buffer) {
 }
 
 export class PersonaServer {
+  private personaList: IPersonaRecord[] = [
+    {
+      customerId: 2868969472,
+      id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
+      maxPersonas: Buffer.from([0x01]),
+      name: this._generateNameBuffer("Doc Joe"),
+      personaCount: Buffer.from([0x00, 0x01]),
+      shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
+    },
+    {
+      customerId: 5551212,
+      id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
+      maxPersonas: Buffer.from([0x02]),
+      name: this._generateNameBuffer("Dr Brown"),
+      personaCount: Buffer.from([0x00, 0x01]),
+      shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
+    },
+  ];
+
+  public _generateNameBuffer(name: string) {
+    const nameBuffer = Buffer.alloc(30);
+    Buffer.from(name, "utf8").copy(nameBuffer);
+    return nameBuffer;
+  }
+
   /**
    * Route an incoming persona packet to the connect handler
    * @param {Socket} socket
@@ -191,43 +226,50 @@ export class PersonaServer {
     }
   }
 
+  public _getPersonasByCustomerId(customerId: number) {
+    let results;
+    results = this.personaList.find(persona => {
+      const match = customerId === persona.customerId;
+      return match;
+    });
+    if (!results) {
+      throw new Error(
+        `Unable to locate a persona for customerId: ${customerId}`
+      );
+    }
+    return results;
+  }
+
+  public _getPersonasById(id: number) {
+    let results;
+    results = this.personaList.find(persona => {
+      const match = id === persona.id.readInt32BE(0);
+      return match;
+    });
+    if (!results) {
+      throw new Error(`Unable to locate a persona for id: ${id}`);
+    }
+    return results;
+  }
+
   /**
    * Lookup all personas owned by the customer id
    * TODO: Store in a database, instead of being hard-coded
    * @param {Int} customerId
    */
   public async _npsGetPersonaMapsByCustomerId(customerId: number) {
-    const name = Buffer.alloc(30);
-
-    let result: IPersonaRecord;
+    // const name = Buffer.alloc(30);
 
     switch (customerId) {
       case 2868969472:
-        Buffer.from("Doc Joe", "utf8").copy(name);
-        result = {
-          id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
-          maxPersonas: Buffer.from([0x01]),
-          name,
-          personaCount: Buffer.from([0x00, 0x01]),
-          shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
-        };
-        break;
+        return this._getPersonasByCustomerId(customerId);
       case 5551212:
-        Buffer.from("Dr Brown", "utf8").copy(name);
-        result = {
-          id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
-          maxPersonas: Buffer.from([0x02]),
-          name,
-          personaCount: Buffer.from([0x00, 0x01]),
-          shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
-        };
-        break;
+        return this._getPersonasByCustomerId(customerId);
       default:
         throw new Error(
           `[personaServer/npsGetPersonaMapsByCustomerId] Unknown customerId: ${customerId}`
         );
     }
-    return result;
   }
 
   /**
@@ -236,6 +278,7 @@ export class PersonaServer {
    * @param {Buffer} data
    */
   public async _npsGetPersonaMaps(socket: Socket, data: Buffer) {
+    logger.debug(`_npsGetPersonaMaps...`);
     const customerId = Buffer.alloc(4);
     data.copy(customerId, 0, 12);
     logger.info(
@@ -274,6 +317,7 @@ export class PersonaServer {
       const responsePacket = new NPSMsg();
       responsePacket.msgNo = 0x607;
       responsePacket.setContent(packetContent.slice(0, 68));
+      logger.debug(`Dumping response...`);
       responsePacket.dumpPacket();
 
       logger.debug(

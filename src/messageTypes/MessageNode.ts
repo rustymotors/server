@@ -6,9 +6,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from "../logger";
-import { GetLobbiesListMsg } from "./GetLobbiesListMsg";
-import { LoginMsg } from "./LoginMsg";
-import MsgHead from "./MsgHead";
 
 const logger = new Logger().getLogger();
 
@@ -18,16 +15,19 @@ export class MessageNode {
   public seq: number;
   public flags: number;
   public data: Buffer;
-  public login?: LoginMsg;
-  public lobby?: GetLobbiesListMsg;
   public toFrom: number;
   private dataLength: number;
   private mcoSig: string;
-  private header: MsgHead;
 
   constructor() {
-    this.toFrom = 0;
+    this.msgNo = 0;
+    this.seq = 999;
+    this.flags = 0;
+    this.data = Buffer.alloc(0);
+    this.dataLength = 0;
+    this.mcoSig = "NotAValue";
 
+    this.toFrom = 0;
     this.appId = 0;
   }
 
@@ -82,7 +82,7 @@ export class MessageNode {
   public setMsgHeader(packet: Buffer) {
     const header = Buffer.alloc(6);
     packet.copy(header, 0, 0, 6);
-    this.header = new MsgHead(header);
+    // this.header = new MsgHead(header);
   }
 
   public updateBuffer(buffer: Buffer) {
@@ -105,9 +105,11 @@ export class MessageNode {
     logger.debug("=============================================");
     logger.debug(`Header Length: ${this.dataLength}`);
     logger.debug(`Header MCOSIG: ${this.isMCOTS()}`);
-    logger.debug(`MsgNo:    ${this.msgNo}`);
-    logger.debug(`Sequence: ${this.seq}`);
-    logger.debug(`Flags: ${this.flags}`);
+    logger.debug(`MsgNo:         ${this.msgNo}`);
+    logger.debug(`Sequence:      ${this.seq}`);
+    logger.debug(`Flags:         ${this.flags}`);
+    logger.debug(`ToFrom:        ${this.toFrom}`);
+    logger.debug(`AppId:         ${this.appId}`);
     logger.debug("------------------------------------------------");
     const packetContents = this.serialize()
       .toString("hex")
@@ -116,6 +118,10 @@ export class MessageNode {
       logger.debug(`packet as string: ${packetContents.join(" ")}`);
     }
     logger.debug("= MessageNode ==================================");
+  }
+
+  public getLength() {
+    return this.dataLength;
   }
 
   private BaseMsgHeader(packet: Buffer) {
