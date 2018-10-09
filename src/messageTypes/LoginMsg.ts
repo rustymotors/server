@@ -10,6 +10,8 @@ import { Logger } from "../logger";
 const logger = new Logger().getLogger();
 
 export class LoginMsg {
+  public appId: number;
+  public toFrom: number;
   private msgNo: number;
   private customerId: number;
   private personaId: number;
@@ -21,6 +23,17 @@ export class LoginMsg {
   private data: Buffer;
 
   constructor(buffer: Buffer) {
+    this.msgNo = 0;
+    this.toFrom = 0;
+    this.appId = 0;
+
+    this.customerId = 0;
+    this.personaId = 0;
+    this.lotOwnerId = 0;
+    this.brandedPartId = 0;
+    this.skinId = 0;
+    this.personaName = "NotAPerson";
+    this.version = "0.0.0.0";
     this.data = buffer;
 
     this.deserialize(buffer);

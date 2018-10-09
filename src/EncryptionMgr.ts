@@ -1,4 +1,4 @@
-import RC4 from "./RC4";
+import * as crypto from "crypto";
 
 // mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
@@ -8,12 +8,18 @@ import RC4 from "./RC4";
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 export class EncryptionMgr {
-  private in: RC4;
-  private out: RC4;
+  private id: string;
+  private sessionKey: Buffer;
+  private in: crypto.Decipher | null;
+  private out: crypto.Cipher | null;
 
   constructor() {
-    this.in = new RC4();
-    this.out = new RC4();
+    const hash = crypto.createHash("sha256");
+    const timestamp = (Date.now() + Math.random()).toString();
+    hash.update(timestamp);
+    this.id = hash.digest("hex");
+    this.sessionKey = Buffer.alloc(0);
+    (this.in = null), (this.out = null);
   }
 
   /**
@@ -24,45 +30,41 @@ export class EncryptionMgr {
    * @memberof EncryptionMgr
    */
   public setEncryptionKey(sessionKey: Buffer): boolean {
-    this.in.setEncryptionKey(sessionKey);
-    this.out.setEncryptionKey(sessionKey);
+    this.sessionKey = sessionKey;
+    this.in = crypto.createDecipheriv("rc4", sessionKey, "");
+    this.out = crypto.createCipheriv("rc4", sessionKey, "");
 
     return true;
   }
   /**
    * Takes cyphertext and returns plaintext
    *
-   * @param {string} encryptedText
+   * @param {Buffer} encryptedText
    * @returns {Buffer}
    * @memberof EncryptionMgr
    */
   public decrypt(encryptedText: Buffer): Buffer {
-    return this.in.processBuffer(encryptedText);
+    return Buffer.from(this.in!.update(encryptedText));
   }
   /**
    * Encrypt plaintext and return the ciphertext
    *
-   * @param {string} encryptedText
+   * @param {Buffer} encryptedText
    * @returns {Buffer}
    * @memberof EncryptionMgr
    */
   public encrypt(plainText: Buffer): Buffer {
-    return this.out.processBuffer(plainText);
+    return Buffer.from(this.out!.update(plainText, "binary", "hex"), "hex");
   }
 
-  public _getInKey() {
-    return this.in.key;
+  public getSessionKey() {
+    return this.sessionKey.toString("hex");
   }
 
-  public _getOutKey() {
-    return this.out.key;
-  }
-
-  public _getInState() {
-    return this.in.mState;
-  }
-
-  public _getOutState() {
-    return this.out.mState;
+  /**
+   * getId
+   */
+  public getId() {
+    return this.id;
   }
 }

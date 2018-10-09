@@ -14,8 +14,8 @@ export class ClientConnectMsg {
   public customerId: number;
   public personaId: number;
   public personaName: string;
+  public msgNo: number;
   private appId: number;
-  private msgNo: number;
   private custName: string;
   private mcVersion: Buffer;
 
@@ -25,6 +25,7 @@ export class ClientConnectMsg {
     } catch (error) {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
+        this.msgNo = 0;
       } else {
         throw new Error(
           `[ClientConnectMsg] Unable to read msgNo from ${buffer.toString(

@@ -19,7 +19,7 @@ async function _updateSessionKey(
   customerId: number,
   sessionKey: string,
   contextId: string,
-  connectionId: number
+  connectionId: string
 ) {
   const sKey = sessionKey.substr(0, 16);
   return pool

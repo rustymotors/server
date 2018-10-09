@@ -39,11 +39,6 @@ export class WebServer {
     response: ServerResponse,
     config: IServerConfiguration["serverConfig"]
   ) {
-    this.logger.info(
-      `[HTTPS] Request from ${request.socket.remoteAddress} for ${
-        request.method
-      } ${request.url}`
-    );
     switch (request.url) {
       case "/cert":
         response.setHeader(
@@ -71,7 +66,13 @@ export class WebServer {
           response.end("Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e");
           return;
         }
+        // Unknown request, log it
         response.statusCode = 404;
+        this.logger.debug(
+          `[HTTPS] Unknown Request from ${request.socket.remoteAddress} for ${
+            request.method
+          } ${request.url}`
+        );
         response.end("Unknown request.");
         break;
     }
@@ -84,17 +85,6 @@ export class WebServer {
           this._httpsHandler(req, res, config);
         }
       )
-      .listen({ port: 443, host: "0.0.0.0" })
-      .on("connection", socket => {
-        socket.on("error", (error: Error) => {
-          throw new Error(`[webServer] SSL Socket Error: ${error.message}`);
-        });
-        socket.on("close", () => {
-          this.logger.info("[webServer] SSL Socket Connection closed");
-        });
-      })
-      .on("tlsClientError", err => {
-        throw new Error(`[webServer] tlsClientError: ${err}`);
-      });
+      .listen({ port: 443, host: "0.0.0.0" });
   }
 }

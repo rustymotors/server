@@ -31,6 +31,8 @@ export class StockCarInfoMsg {
   constructor() {
     this.msgNo = 141;
     this.starterCash = 1;
+    this.dealerId = 0;
+    this.brand = 0;
     this.noCars = 1;
     this.moreToCome = 0;
     this.StockCarList = [];
