@@ -10,6 +10,9 @@ import * as http from "http";
 import { IServerConfiguration } from "./IServerConfiguration";
 import { ILoggerInstance } from "./logger";
 
+/**
+ * A simulated patch server response
+ */
 const castanetResponse = {
   body: Buffer.from("cafebeef00000000000003", "hex"),
   header: {
@@ -18,17 +21,23 @@ const castanetResponse = {
   },
 };
 
-// TODO: Combine these threes functions.
-// The long-term plan is to actually have an update server,
-// but it's very low priority
+/**
+ * Simulate a response from a patch server
+ */
 function patchUpdateInfo() {
   return castanetResponse;
 }
 
+/**
+ * Simulate a response from a patch server
+ */
 function patchNPS() {
   return castanetResponse;
 }
 
+/**
+ * Simulate a response from a patch server
+ */
 function patchMCO() {
   return castanetResponse;
 }

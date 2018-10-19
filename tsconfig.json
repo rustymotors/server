@@ -12,6 +12,6 @@
     "noImplicitReturns": true,
     "strict": true
   },
-  "include": ["./src/**/*"],
+  "include": ["./test/**/*"],
   "exclude": ["node_modules"]
 }

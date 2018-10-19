@@ -45,10 +45,7 @@ async function encryptIfNeeded(conn: Connection, node: MessageNode) {
 
     let plainText;
     if (conn.enc) {
-      // TODO: Don't expose key
-      logger.warn(`Using key: ${conn.enc.getSessionKey()}`);
       plainText = node.data;
-      logger.info(`Using encryption id: ${conn.enc.getId()}`);
       node.updateBuffer(conn.enc.encrypt(plainText));
     } else {
       throw new Error("encryption out on connection is null");
@@ -199,7 +196,6 @@ async function ClientConnect(con: Connection, node: MessageNode) {
   );
 
   // Create new response packet
-  // TODO: Do this cleaner
   const pReply = new GenericReplyMsg();
   pReply.msgNo = 101;
   pReply.msgReply = 438;
