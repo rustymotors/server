@@ -7,9 +7,9 @@
 
 /**
  * This is the response packet sent on the login port in response to a UserLogin
- * TODO: Replace the need for this
  */
 export function premadeLogin() {
+  // TODO: Generate a dynamic login response message
   return Buffer.from([
     // Live Packet
     0x06, // +0
