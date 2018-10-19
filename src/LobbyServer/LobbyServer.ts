@@ -236,8 +236,11 @@ export class LobbyServer {
 
     const personaManager = new PersonaServer();
 
-    const customerId = personaManager._getPersonasById(userInfo.userId)
-      .customerId;
+    const personas = personaManager._getPersonasById(userInfo.userId);
+    if (personas.length === 0) {
+      throw new Error("No personas found.");
+    }
+    const customerId = personas[0].customerId;
 
     // Set the encryption keys on the lobby connection
     const keys = await fetchSessionKeyByCustomerId(customerId);

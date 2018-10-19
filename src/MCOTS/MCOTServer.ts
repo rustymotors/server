@@ -52,7 +52,6 @@ export class MCOTServer {
      * Let's turn it into a LoginMsg
      */
     const loginMsg = new LoginMsg(node.data);
-    // loginMsg.data = loginMsg.login.serialize();
 
     // Update the appId
     loginMsg.appId = con.appId;
@@ -60,7 +59,6 @@ export class MCOTServer {
     loginMsg.dumpPacket();
 
     // Create new response packet
-    // TODO: Do this cleaner
     const pReply = new GenericReplyMsg();
     pReply.msgNo = 213;
     // pReply.msgNo = 101;
@@ -89,8 +87,6 @@ export class MCOTServer {
 
     // Create new response packet
     const lobbyMsg = new LobbyMsg();
-
-    // TODO: Do this cleaner
 
     const pReply = new GenericReplyMsg();
     pReply.msgNo = 325;
@@ -126,7 +122,6 @@ export class MCOTServer {
     logoutMsg.appId = con.appId;
 
     // Create new response packet
-    // TODO: Do this cleaner
     const pReply = new GenericReplyMsg();
     pReply.msgNo = 101;
     pReply.msgReply = 106;
@@ -146,7 +141,6 @@ export class MCOTServer {
     setOptionsMsg.appId = con.appId;
 
     // Create new response packet
-    // TODO: Do this cleaner
     const pReply = new GenericReplyMsg();
     pReply.msgNo = 101;
     pReply.msgReply = 109;
@@ -172,7 +166,6 @@ export class MCOTServer {
     trackingMsg.appId = con.appId;
 
     // Create new response packet
-    // TODO: Do this cleaner
     const pReply = new GenericReplyMsg();
     pReply.msgNo = 101;
     pReply.msgReply = 440;
@@ -198,7 +191,6 @@ export class MCOTServer {
     updatePlayerPhysicalMsg.appId = con.appId;
 
     // Create new response packet
-    // TODO: Do this cleaner
     const pReply = new GenericReplyMsg();
     pReply.msgNo = 101;
     pReply.msgReply = 266;

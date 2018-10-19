@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { MessageNode } = require("./MessageNode");
+const { MessageNode } = require("../src/messageTypes/MessageNode");
 
 const messageNode1 = new MessageNode();
 messageNode1.deserialize(
