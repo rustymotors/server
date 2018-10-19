@@ -1,7 +1,7 @@
 # MCO-Server
 
 [![CircleCI](https://circleci.com/gh/drazisil/mco-server.svg?style=shield)](https://circleci.com/gh/drazisil/mco-server)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) 
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![Greenkeeper badge](https://badges.greenkeeper.io/drazisil/mco-server.svg)](https://greenkeeper.io/)
 
 ## About
@@ -14,11 +14,11 @@ I'm writing this from scratch. While I'm proud of what I've done, I'm hitting th
 
 ## Server Setup
 
-* See [server docs](./docs/server.md)
+- See [server docs](./docs/server.md)
 
 ## Client Setup
 
-* See [client docs](./docs/client.md)
+- See [client docs](./docs/client.md)
 
 ## Started
 
@@ -26,17 +26,10 @@ Mar 6, 2016
 
 ## Current Status
 
-### Done
-
-* Client clears patch and update server (port 80)
-* Client clears the login web server (port 443)
-* Client clears the login server (port 8226)
-* Client clears the persona server (port 8228)
-* Client clears the lobby/room server (port 7003) and decrypts the NPS packets sent after
-* Client passes client connect to MCOTS (port 43300) ands decrypt the packets sent after
+- See [changelog](./CHANGELOG)
 
 ### TODO
 
-* Create database
-* Create packets
-* Respond correctly to NPS and MCOTS packets
+- Create database
+- Create packets
+- Respond correctly to NPS and MCOTS packets
