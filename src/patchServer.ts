@@ -9,6 +9,7 @@ import * as http from "http";
 
 import { IServerConfiguration } from "./IServerConfiguration";
 import { ILoggerInstance } from "./logger";
+import { ShardEntry } from "./ShardEntry";
 
 /**
  * A simulated patch server response
@@ -47,51 +48,46 @@ function patchMCO() {
  * @param {JSON} config
  */
 function generateShardList(serverConfig: IServerConfiguration["serverConfig"]) {
-  return `[The Clocktower]
-  Description=The Clocktower
-  ShardId=44
-  LoginServerIP=${serverConfig.ipServer}
-  LoginServerPort=8226
-  LobbyServerIP=${serverConfig.ipServer}
-  LobbyServerPort=7003
-  MCOTSServerIP=${serverConfig.ipServer}
-  StatusId=0
-  Status_Reason=
-  ServerGroup_Name=Group - 1
-  Population=88
-  MaxPersonasPerUser=2
-  DiagnosticServerHost=${serverConfig.ipServer}
-  DiagnosticServerPort=80`;
-  // [Twin Pines Mall]
-  //   Description=Twin Pines Mall
-  //   ShardId=88
-  //   LoginServerIP=mc.drazisil.com
-  //   LoginServerPort=8226
-  //   LobbyServerIP=mc.drazisil.com
-  //   LobbyServerPort=7003
-  //   MCOTSServerIP=mc.drazisil.com
-  //   StatusId=0
-  //   Status_Reason=
-  //   ServerGroup_Name=Group - 1
-  //   Population=88
-  //   MaxPersonasPerUser=2
-  //   DiagnosticServerHost=mc.drazisil.com
-  //   DiagnosticServerPort=80
-  // [Marty's House]
-  //   Description=Marty's House
-  //   ShardId=22
-  //   LoginServerIP=192.168.1.14
-  //   LoginServerPort=8226
-  //   LobbyServerIP=192.168.1.14
-  //   LobbyServerPort=7003
-  //   MCOTSServerIP=192.168.1.14
-  //   StatusId=0
-  //   Status_Reason=
-  //   ServerGroup_Name=Group - 1
-  //   Population=88
-  //   MaxPersonasPerUser=2
-  //   DiagnosticServerHost=192.168.5.14
-  //   DiagnosticServerPort=80`;
+  const shardClockTower = new ShardEntry(
+    "The Clocktower",
+    "The Clocktower",
+    44,
+    serverConfig.ipServer,
+    8226,
+    serverConfig.ipServer,
+    7003,
+    serverConfig.ipServer,
+    0,
+    "",
+    "Group-1",
+    88,
+    2,
+    serverConfig.ipServer,
+    80
+  );
+  const shardTwinPinesMall = new ShardEntry(
+    "Twin Pines Mall",
+    "Twin Pines Mall",
+    88,
+    serverConfig.ipServer,
+    8226,
+    serverConfig.ipServer,
+    7003,
+    serverConfig.ipServer,
+    0,
+    "",
+    "Group-1",
+    88,
+    2,
+    serverConfig.ipServer,
+    80
+  );
+
+  const shardList = [];
+  shardList.push(shardClockTower.formatForShardList());
+  // shardList.push(shardTwinPinesMall.formatForShardList());
+
+  return shardList.join("\n");
 }
 
 export class PatchServer {

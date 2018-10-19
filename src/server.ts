@@ -7,6 +7,9 @@ import { MCServer } from "./MCServer";
 import { PatchServer } from "./patchServer";
 import { WebServer } from "./WebServer";
 
+import * as dotenvSafe from "dotenv-safe";
+dotenvSafe.config();
+
 const logger = new Logger().getLogger();
 
 export class Server {
@@ -19,6 +22,10 @@ export class Server {
 
     // Get document, or throw exception on error
     this.config = this.loadConfig("./config/config.yml");
+
+    if (process.env.SERVER_IP) {
+      this.config.serverConfig.ipServer = process.env.SERVER_IP;
+    }
 
     this.start();
   }
