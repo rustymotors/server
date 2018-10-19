@@ -26,7 +26,7 @@ Mar 6, 2016
 
 ## Current Status
 
-- See [changelog](./CHANGELOG)
+- See the [changelog](./CHANGELOG.md).
 
 ### TODO
 
