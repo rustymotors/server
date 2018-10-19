@@ -7,7 +7,7 @@
 
 export interface IServerConfiguration {
   serverConfig: {
-    ipServer: number;
+    ipServer: string;
     certFilename: string;
     publicKeyFilename: string;
     privateKeyFilename: string;
