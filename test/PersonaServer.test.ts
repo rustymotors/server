@@ -15,7 +15,28 @@ describe("PersonaServer Methods", async () => {
     test("returns a valid NPSMsg", async () => {
       const responseMessage = await personaServer._npsGetPersonaMaps(
         new Socket(),
-        Buffer.from("")
+        Buffer.from([
+          0x01,
+          0x01,
+          0x01,
+          0x01,
+          0x01,
+          0x01,
+          0x01,
+          0x01,
+          0x01,
+          0x01,
+          0x01,
+          0x01,
+          0x01,
+          0x01,
+          0x01,
+          0x01,
+          0x01,
+          0x01,
+          0x01,
+          0x01,
+        ])
       );
       expect(responseMessage).toBeInstanceOf(NPSMsg);
     });

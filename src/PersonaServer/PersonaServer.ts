@@ -9,7 +9,7 @@ import { Socket } from "net";
 import { IPersonaRecord } from "../IPersonaRecord";
 import { IRawPacket } from "../IRawPacket";
 import { Logger } from "../logger";
-import { NPSMsg } from "../messageTypes/NPSMsg";
+import { MSG_DIRECTION, NPSMsg } from "../messageTypes/NPSMsg";
 import { NPSPersonaMapsMsg } from "../messageTypes/NPSPersonaMapsMsg";
 
 const logger = new Logger().getLogger();
@@ -45,15 +45,19 @@ export class PersonaServer {
    * @param {Socket} socket
    * @param {Buffer} rawData
    */
-  public async _npsSelectGamePersona(socket: Socket) {
+  public async _npsSelectGamePersona(socket: Socket, data: Buffer) {
     logger.debug(`_npsSelectGamePersona...`);
+    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED)
+      .deserialize(data)
+      .dumpPacket();
+
     // Create the packet content
     const packetContent = Buffer.alloc(251);
 
     // Build the packet
     // Response Code
     // 207 = success
-    const responsePacket = new NPSMsg();
+    const responsePacket = new NPSMsg(MSG_DIRECTION.SENT);
     responsePacket.msgNo = 0x207;
     responsePacket.setContent(packetContent);
     logger.debug(`Dumping response...`);
@@ -65,8 +69,12 @@ export class PersonaServer {
     return responsePacket;
   }
 
-  public async _npsNewGameAccount(sock: Socket) {
-    const rPacket = new NPSMsg();
+  public async _npsNewGameAccount(sock: Socket, data: Buffer) {
+    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED)
+      .deserialize(data)
+      .dumpPacket();
+
+    const rPacket = new NPSMsg(MSG_DIRECTION.SENT);
     rPacket.msgNo = 0x601;
     logger.debug(`Dumping response...`);
     rPacket.dumpPacket();
@@ -81,15 +89,17 @@ export class PersonaServer {
    * @param {Socket} socket
    * @param {Buffer} data
    */
-  public async _npsLogoutGameUser(socket: Socket) {
-    logger.debug(`_npsLogoutGameUser...`);
+  public async _npsLogoutGameUser(socket: Socket, data: Buffer) {
     logger.info("[personaServer] Logging out persona...");
+    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED)
+      .deserialize(data)
+      .dumpPacket();
 
     // Create the packet content
     const packetContent = Buffer.alloc(257);
 
     // Build the packet
-    const responsePacket = new NPSMsg();
+    const responsePacket = new NPSMsg(MSG_DIRECTION.SENT);
     responsePacket.msgNo = 0x612;
     responsePacket.setContent(packetContent);
     logger.debug(`Dumping response...`);
@@ -108,6 +118,10 @@ export class PersonaServer {
    */
   public async _npsCheckToken(socket: Socket, data: Buffer) {
     logger.debug(`_npsCheckToken...`);
+    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED)
+      .deserialize(data)
+      .dumpPacket();
+
     const customerId = data.readInt32BE(12);
     const plateName = data.slice(17).toString();
     logger.warn(`customerId: ${customerId}`);
@@ -119,7 +133,7 @@ export class PersonaServer {
 
     // Build the packet
     // NPS_ACK = 207
-    const responsePacket = new NPSMsg();
+    const responsePacket = new NPSMsg(MSG_DIRECTION.SENT);
     responsePacket.msgNo = 0x207;
     responsePacket.setContent(packetContent);
     logger.debug(`Dumping response...`);
@@ -139,6 +153,10 @@ export class PersonaServer {
    */
   public async _npsValidatePersonaName(socket: Socket, data: Buffer) {
     logger.debug(`_npsValidatePersonaName...`);
+    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED)
+      .deserialize(data)
+      .dumpPacket();
+
     const customerId = data.readInt32BE(12);
     const requestedPersonaName = data
       .slice(18, data.lastIndexOf(0x00))
@@ -155,7 +173,7 @@ export class PersonaServer {
 
     // Build the packet
     // NPS_USER_VALID     validation succeeded
-    const responsePacket = new NPSMsg();
+    const responsePacket = new NPSMsg(MSG_DIRECTION.SENT);
     responsePacket.msgNo = 0x601;
     responsePacket.setContent(packetContent);
     logger.debug(`Dumping response...`);
@@ -167,56 +185,11 @@ export class PersonaServer {
     return responsePacket;
   }
 
-  /**
-   * Route an incoming persona packet to the connect handler
-   * @param {Socket} socket
-   * @param {Buffer} rawData
-   */
-  public async dataHandler(rawPacket: IRawPacket) {
-    const { connection, data, localPort, remoteAddress } = rawPacket;
-    const { sock } = connection;
-    const updatedConnection = connection;
-    logger.info(`=============================================
-    Received packet on port ${localPort} from ${remoteAddress}...`);
-    logger.info("=============================================");
-    const requestCode = data.readUInt16BE(0).toString(16);
-    let responsePacket: NPSMsg;
-
-    switch (requestCode) {
-      case "503":
-        // NPS_REGISTER_GAME_LOGIN = 0x503
-        responsePacket = await this._npsSelectGamePersona(sock);
-        sock.write(responsePacket.serialize());
-        return updatedConnection;
-
-      case "507":
-        // NPS_NEW_GAME_ACCOUNT == 0x507
-        responsePacket = await this._npsNewGameAccount(sock);
-        sock.write(responsePacket.serialize());
-        return updatedConnection;
-
-      case "50f":
-        // NPS_REGISTER_GAME_LOGOUT = 0x50F
-        responsePacket = await this._npsLogoutGameUser(sock);
-        sock.write(responsePacket.serialize());
-        return updatedConnection;
-      case "532":
-        // NPS_GET_PERSONA_MAPS = 0x532
-        responsePacket = await this._npsGetPersonaMaps(sock, data);
-        sock.write(responsePacket.serialize());
-        return updatedConnection;
-      case "533":
-        // NPS_VALIDATE_PERSONA_NAME   = 0x533
-        await this._npsValidatePersonaName(sock, data);
-        return updatedConnection;
-      case "534":
-        // NPS_CHECK_TOKEN   = 0x534
-        await this._npsCheckToken(sock, data);
-        return updatedConnection;
-      default:
-        throw new Error(
-          `[personaServer] Unknown code ${requestCode} was received on port 8228`
-        );
+  public _send(socket: Socket, packet: NPSMsg) {
+    try {
+      socket.write(packet.serialize());
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -271,6 +244,9 @@ export class PersonaServer {
    */
   public async _npsGetPersonaMaps(socket: Socket, data: Buffer) {
     logger.debug(`_npsGetPersonaMaps...`);
+    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED)
+      .deserialize(data)
+      .dumpPacket();
     const customerId = Buffer.alloc(4);
     data.copy(customerId, 0, 12);
     logger.info(
@@ -280,14 +256,69 @@ export class PersonaServer {
       customerId.readUInt32BE(0)
     );
 
-    const personaMapsMsg = new NPSPersonaMapsMsg();
+    const personaMapsMsg = new NPSPersonaMapsMsg(MSG_DIRECTION.SENT);
 
     if (personas.length === 0) {
       logger.error("[_npsGetPersonaMaps] No personas found");
     } else {
       personaMapsMsg.loadMaps(personas);
-      personaMapsMsg.dumpInfo();
+      personaMapsMsg.dumpPacket();
     }
-    return personaMapsMsg.npsSerialize();
+    return personaMapsMsg;
+  }
+
+  /**
+   * Route an incoming persona packet to the connect handler
+   * @param {Socket} socket
+   * @param {Buffer} rawData
+   */
+  public async dataHandler(rawPacket: IRawPacket) {
+    const { connection, data, localPort, remoteAddress } = rawPacket;
+    const { sock } = connection;
+    const updatedConnection = connection;
+    logger.info(`=============================================
+    Received packet on port ${localPort} from ${remoteAddress}...`);
+    logger.info("=============================================");
+    const requestCode = data.readUInt16BE(0).toString(16);
+    let responsePacket: NPSMsg;
+
+    switch (requestCode) {
+      case "503":
+        // NPS_REGISTER_GAME_LOGIN = 0x503
+        responsePacket = await this._npsSelectGamePersona(sock, data);
+        this._send(sock, responsePacket);
+        return updatedConnection;
+
+      case "507":
+        // NPS_NEW_GAME_ACCOUNT == 0x507
+        responsePacket = await this._npsNewGameAccount(sock, data);
+        this._send(sock, responsePacket);
+        return updatedConnection;
+
+      case "50f":
+        // NPS_REGISTER_GAME_LOGOUT = 0x50F
+        responsePacket = await this._npsLogoutGameUser(sock, data);
+        this._send(sock, responsePacket);
+        return updatedConnection;
+      case "532":
+        // NPS_GET_PERSONA_MAPS = 0x532
+        responsePacket = await this._npsGetPersonaMaps(sock, data);
+        this._send(sock, responsePacket);
+        return updatedConnection;
+      case "533":
+        // NPS_VALIDATE_PERSONA_NAME   = 0x533
+        responsePacket = await this._npsValidatePersonaName(sock, data);
+        this._send(sock, responsePacket);
+        return updatedConnection;
+      case "534":
+        // NPS_CHECK_TOKEN   = 0x534
+        responsePacket = await this._npsCheckToken(sock, data);
+        this._send(sock, responsePacket);
+        return updatedConnection;
+      default:
+        throw new Error(
+          `[personaServer] Unknown code ${requestCode} was received on port 8228`
+        );
+    }
   }
 }
