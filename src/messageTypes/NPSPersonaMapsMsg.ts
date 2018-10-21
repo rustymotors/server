@@ -61,9 +61,7 @@ export class NPSPersonaMapsMsg extends NPSMsg {
     packetContent.write(this.name, 22);
 
     // Build the packet
-    logger.info(packetContent.toString("hex"));
     super.setContent(packetContent);
-    logger.info(super.serialize().toString("hex"));
     return super.serialize();
   }
 
@@ -74,8 +72,6 @@ export class NPSPersonaMapsMsg extends NPSMsg {
     );
     logger.debug(`MsgVersion:          ${this.msgVersion}`);
     logger.debug(`contentLength:       ${this.msgLength}`);
-    logger.debug(`Content:             ${this.content.toString("hex")}`);
-    logger.debug(`Serialized:          ${this.serialize().toString("hex")}`);
     logger.debug(`personaCount:        ${this.personaCount}`);
     logger.debug(`maxPersonaCount:     ${this.maxPersonaCount}`);
     logger.debug(`id:                  ${this.id}`);
