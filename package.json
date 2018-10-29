@@ -73,7 +73,7 @@
     "@types/jest": "^23.3.5",
     "jest": "^23.6.0",
     "jest-junit": "^5.2.0",
-    "lint-staged": "^7.3.0",
+    "lint-staged": "^8.0.0",
     "nlf": "^2.0.1",
     "nodemon": "^1.18.4",
     "pg-migrator": "^1.0.5",
