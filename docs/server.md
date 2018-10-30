@@ -11,9 +11,11 @@ This assumes you know the basics of checking out a git repo. If you don't, pleas
 
 ## Configure Environment Variables
 
-Create a .env file at the root of your repository that maps to the appropriate locations.  
+Create a `.env` file at the root of your repository.  
 
 *Note that .env files do not have a filename before the extension.*
+
+You can either copy the contents of the `.env.example` file into your `.env` file (and fill it in) or you can configure the file by copying the blank template below (and fill it in):
 
 ```DB_HOST=
   DB_USER=
@@ -26,9 +28,8 @@ Create a .env file at the root of your repository that maps to the appropriate l
 ```
 
 ## Create Your PostgreSQL Database Tables
-
-Execute `/migrations/1-2.sql` to setup your database tables on the server.
-
+To configure your initial database state, run the following at the command prompt:
+* `./scripts/migrate.sh`
 
 ## Installing
 
