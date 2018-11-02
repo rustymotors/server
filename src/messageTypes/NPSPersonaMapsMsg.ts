@@ -31,7 +31,7 @@ export class NPSPersonaMapsMsg extends NPSMsg {
   public loadMaps(personas: IPersonaRecord[]): any {
     if (personas.length >= 0) {
       this.id = personas[0].id.readInt32BE(0);
-      this.personaCount = 1;
+      this.personaCount = personas.length;
       this.maxPersonaCount = personas[0].maxPersonas.readInt8(0);
       this.shardId = personas[0].shardId.readInt32BE(0);
       this.name = personas[0].name.toString("utf8");
@@ -43,22 +43,33 @@ export class NPSPersonaMapsMsg extends NPSMsg {
     const packetContent = Buffer.alloc(68);
 
     // This is the persona count
-    packetContent.writeInt16BE(this.personaCount, 0);
+    packetContent.writeInt16BE(this.personaCount + 1, 0);
 
     // This is the max persona count (confirmed - debug)
     packetContent.writeInt8(this.maxPersonaCount, 5);
 
+    // This is the max persona count (testing)
+    // packetContent.writeInt16BE(this.maxPersonaCount, 2); // 48-12
+
     // PersonaId
+    // packetContent.writeUInt32BE(this.id, 53);
     packetContent.writeUInt32BE(this.id, 8);
 
     // Shard ID
+    // packetContent.writeInt32BE(this.shardId, 1281);
     packetContent.writeInt32BE(this.shardId, 12);
 
     // No clue, but the persona name does not display without it.
-    Buffer.from([0x0a, 0x0d]).copy(packetContent, 20);
+    // Buffer.from([0x0a, 0x0d]).copy(packetContent, 20);
+    Buffer.from([0x00, 0x2c]).copy(packetContent, 20);
 
     // Persona Name = 30-bit null terminated string
-    packetContent.write(this.name, 22);
+    // packetContent.write(this.name, 4);
+    // packetContent.write(this.name, 22);
+    packetContent.write("aBcDeFgHiJkLmNoPqRsTuVwXyZ", 22);
+    Buffer.from([0x00, 0x2e]).copy(packetContent, 24);
+    Buffer.from([0x00, 0x2d]).copy(packetContent, 40);
+    packetContent.write("AbCdEfGhIjKlMnOpQrStUvWxYz", 42);
 
     // Build the packet
     super.setContent(packetContent);

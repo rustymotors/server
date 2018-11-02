@@ -32,6 +32,14 @@ export class PersonaServer {
       personaCount: Buffer.from([0x00, 0x01]),
       shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
     },
+    {
+      customerId: 5551212,
+      id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
+      maxPersonas: Buffer.from([0x02]),
+      name: this._generateNameBuffer("Morty Dr"),
+      personaCount: Buffer.from([0x00, 0x01]),
+      shardId: Buffer.from([0x00, 0x00, 0x00, 0x58]),
+    },
   ];
 
   public _generateNameBuffer(name: string) {
