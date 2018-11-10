@@ -6,7 +6,7 @@ This currently has only been tested with the debug version of the client. If you
 
 * copy `sample.reg` in the project root to a new file with the same extension
 * Modify all instances of `dev.mco` in the new file to be your server's DNS or IP
-* Double-click the registry file to import and overwrite the default registry settings for the clinet
+* Double-click the registry file to import and overwrite the default registry settings for the client
 
 ### Client/Server Encryption Setup
 
