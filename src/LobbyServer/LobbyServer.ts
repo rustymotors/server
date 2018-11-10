@@ -11,7 +11,7 @@ import { Connection } from "../Connection";
 import { pool } from "../database";
 import { IRawPacket } from "../IRawPacket";
 import { Logger } from "../logger";
-import { NPSMsg } from "../messageTypes/NPSMsg";
+import { MSG_DIRECTION, NPSMsg } from "../messageTypes/NPSMsg";
 import { NPSUserInfo } from "../messageTypes/npsUserInfo";
 import { PersonaServer } from "../PersonaServer/PersonaServer";
 
@@ -103,7 +103,7 @@ export async function sendCommand(con: Connection, data: Buffer) {
     .decryptedCmd;
 
   // Marshal the command into an NPS packet
-  const incommingRequest = new NPSMsg();
+  const incommingRequest = new NPSMsg(MSG_DIRECTION.RECIEVED);
   incommingRequest.deserialize(decipheredCommand);
 
   logger.debug(`Imcomming NPS Command...`);
@@ -118,7 +118,7 @@ export async function sendCommand(con: Connection, data: Buffer) {
   packetContent.writeUInt16BE(0x022c, 371);
 
   // Build the packet
-  const packetResult = new NPSMsg();
+  const packetResult = new NPSMsg(MSG_DIRECTION.SENT);
   packetResult.msgNo = 0x229;
   packetResult.setContent(packetContent);
   packetResult.dumpPacket();
@@ -137,7 +137,7 @@ export async function sendCommand(con: Connection, data: Buffer) {
 export class LobbyServer {
   public _npsHeartbeat() {
     const packetContent = Buffer.alloc(8);
-    const packetResult = new NPSMsg();
+    const packetResult = new NPSMsg(MSG_DIRECTION.SENT);
     packetResult.msgNo = 0x127;
     packetResult.setContent(packetContent);
     packetResult.dumpPacket();
@@ -171,7 +171,7 @@ export class LobbyServer {
       case "217": {
         const responsePacket = await this._npsHeartbeat();
         logger.debug(
-          `[Lobby/Heartbeat] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
+          `[Lobby/Heartbeat] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
         );
         npsSocketWriteIfOpen(connection, responsePacket.serialize());
         break;
@@ -283,7 +283,7 @@ export class LobbyServer {
     // Buffer.alloc(64).copy(packetContent, 38);
 
     // Build the packet
-    const packetResult = new NPSMsg();
+    const packetResult = new NPSMsg(MSG_DIRECTION.SENT);
     packetResult.msgNo = 0x120;
     packetResult.setContent(packetContent);
     packetResult.dumpPacket();
