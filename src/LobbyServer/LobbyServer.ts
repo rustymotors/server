@@ -171,7 +171,7 @@ export class LobbyServer {
       case "217": {
         const responsePacket = await this._npsHeartbeat();
         logger.debug(
-          `[Lobby/Heartbeat] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
+          `[Lobby/Heartbeat] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
         );
         npsSocketWriteIfOpen(connection, responsePacket.serialize());
         break;
