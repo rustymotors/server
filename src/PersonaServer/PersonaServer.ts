@@ -72,7 +72,7 @@ export class PersonaServer {
     responsePacket.dumpPacket();
 
     logger.debug(
-      `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
+      `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return responsePacket;
   }
@@ -114,7 +114,7 @@ export class PersonaServer {
     responsePacket.dumpPacket();
 
     logger.debug(
-      `[npsLogoutGameUser] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
+      `[npsLogoutGameUser] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return responsePacket;
   }
@@ -149,7 +149,7 @@ export class PersonaServer {
     // const responsePacket = buildPacket(1024, 0x0207, packetContent);
 
     logger.debug(
-      `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
+      `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return responsePacket;
   }
@@ -188,7 +188,7 @@ export class PersonaServer {
     responsePacket.dumpPacket();
 
     logger.debug(
-      `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.getContentAsString()}`
+      `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return responsePacket;
   }

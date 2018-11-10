@@ -46,10 +46,6 @@ export class NPSMsg {
     return this.content;
   }
 
-  public getContentAsString() {
-    return this.content.toString("hex");
-  }
-
   public getPacketAsString() {
     return this.serialize().toString("hex");
   }
