@@ -75,7 +75,7 @@
     "jest-junit": "^5.2.0",
     "lint-staged": "^8.0.3",
     "nlf": "^2.0.1",
-    "nodemon": "^1.18.4",
+    "nodemon": "^1.18.9",
     "pg-migrator": "^1.0.5",
     "prettier": "^1.14.3",
     "prettier-eslint": "^8.8.2",
