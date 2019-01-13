@@ -101,20 +101,18 @@ export class NPSPersonaMapsMsg extends NPSMsg {
     logger.debug(`MsgVersion:          ${this.msgVersion}`);
     logger.debug(`contentLength:       ${this.msgLength}`);
     logger.debug(`personaCount:        ${this.personaCount}`);
-    logger.debug(
-      `maxPersonaCount:     ${this.deserializeInt8(
-        this.personas[0].maxPersonas
-      )}`
-    );
-    logger.debug(
-      `id:                  ${this.deserializeInt32(this.personas[0].id)}`
-    );
-    logger.debug(
-      `shardId:             ${this.deserializeInt32(this.personas[0].shardId)}`
-    );
-    logger.debug(
-      `name:                ${this.deserializeString(this.personas[0].name)}`
-    );
+    for (const persona of this.personas) {
+      logger.debug(
+        `maxPersonaCount:     ${this.deserializeInt8(persona.maxPersonas)}`
+      );
+      logger.debug(`id:                  ${this.deserializeInt32(persona.id)}`);
+      logger.debug(
+        `shardId:             ${this.deserializeInt32(persona.shardId)}`
+      );
+      logger.debug(
+        `name:                ${this.deserializeString(persona.name)}`
+      );
+    }
     logger.debug(`Packet as hex:       ${this.getPacketAsString()}`);
     logger.debug("[/NPSPersonaMapsMsg]======================================");
   }
