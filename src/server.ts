@@ -12,6 +12,16 @@ dotenvSafe.config();
 
 const logger = new Logger().getLogger();
 
+// Test that we are only using NodeJS v8.x.x
+const nodeMajorVersion = parseInt(process.versions.node.split(".")[0], 10);
+if (nodeMajorVersion > 8) {
+  console.error(
+    "mco-server is not able to work with versions of nodejs due to using weak crypto. Please downgrade."
+  );
+  process.exit(-1);
+}
+console.log();
+
 export class Server {
   public config: IServerConfiguration;
   public logger: ILoggerInstance;

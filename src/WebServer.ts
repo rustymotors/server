@@ -8,7 +8,8 @@
 import * as fs from "fs";
 import { IncomingMessage, ServerResponse } from "http";
 import * as https from "https";
-import { SSLConfig } from "./ssl-config";
+// tslint:disable-next-line:no-var-requires
+const SSLConfig = require("ssl-config");
 
 import { IServerConfiguration } from "./IServerConfiguration";
 import { ILoggerInstance } from "./logger";
@@ -23,7 +24,7 @@ export class WebServer {
    * Create the SSL options object
    */
   public _sslOptions(configuration: IServerConfiguration["serverConfig"]) {
-    const sslConfig = new SSLConfig();
+    const sslConfig = new SSLConfig("old");
     return {
       cert: fs.readFileSync(configuration.certFilename),
       ciphers: sslConfig.ciphers,
