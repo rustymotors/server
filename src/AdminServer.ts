@@ -12,7 +12,8 @@ import { IServerConfiguration } from "./IServerConfiguration";
 import { ILoggerInstance } from "./logger";
 import { MCServer } from "./MCServer";
 import { PatchServer } from "./patchServer";
-import { SSLConfig } from "./ssl-config";
+// tslint:disable-next-line:no-var-requires
+const SSLConfig = require("ssl-config");
 
 export class AdminServer {
   public mcServer: MCServer;
@@ -32,7 +33,7 @@ export class AdminServer {
    * Create the SSL options object
    */
   public _sslOptions(configuration: IServerConfiguration["serverConfig"]) {
-    const sslConfig = new SSLConfig();
+    const sslConfig = new SSLConfig("old");
     return {
       cert: fs.readFileSync(configuration.certFilename),
       ciphers: sslConfig.ciphers,
