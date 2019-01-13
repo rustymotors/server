@@ -10,7 +10,9 @@
     "strictNullChecks": true,
     "noImplicitThis": true,
     "noImplicitReturns": true,
-    "strict": true
+    "strict": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": ["./test/**/*"],
   "exclude": ["node_modules"]
