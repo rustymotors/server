@@ -2,7 +2,9 @@
   "defaultSeverity": "error",
   "extends": ["tslint:recommended", "tslint-config-prettier"],
   "jsRules": {},
-  "rules": {},
+  "rules": {
+    "no-console": false
+  },
   "rulesDirectory": [],
   "linterOptions": {
     "exclude": ["dist"]
