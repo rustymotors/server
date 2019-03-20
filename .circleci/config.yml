@@ -13,7 +13,7 @@ jobs:
       - checkout
 
       - run: |
-          npm i -G npm
+          npm update npm
           npm -v
           npm ci
 
