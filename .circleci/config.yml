@@ -7,14 +7,12 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/node:8.11
+      - image: circleci/node:8.15
 
     steps:
       - checkout
 
       - run: |
-          npm i npm@6
-          npm doctor
           npm ci
 
       # run tests!
