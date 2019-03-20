@@ -59,7 +59,7 @@
   "dependencies": {
     "@types/dotenv-safe": "^5.0.1",
     "@types/js-yaml": "^3.11.2",
-    "@types/node": "^11.9.0",
+    "@types/node": "11.9.0",
     "@types/pg": "^7.4.11",
     "async": "^2.6.1",
     "dotenv-safe": "^6.0.0",
