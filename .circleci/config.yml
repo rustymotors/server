@@ -14,7 +14,7 @@ jobs:
 
       - run: |
           npm i npm@6
-          ls -lah /usr/local/lib/node_modules/npm
+          npm doctor
           npm ci
 
       # run tests!
