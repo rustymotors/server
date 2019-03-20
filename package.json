@@ -32,21 +32,19 @@
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/**/*.{js|ts}",
-      "lib/**/*.{js|ts}"
+      "**/*.{js,jsx,ts,tsx}",
+      "!**/node_modules/**",
+      "!**/dist/**",
+      "!**/coverage/**"
+    ],
+    "coverageReporters": [
+      "lcov",
+      "text",
+      "html"
     ],
     "reporters": [
       "default",
       "jest-junit"
-    ],
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
     ],
     "testPathIgnorePatterns": [
       "<rootDir>/dist/",
@@ -59,11 +57,13 @@
   "dependencies": {
     "@types/dotenv-safe": "^5.0.3",
     "@types/js-yaml": "^3.12.0",
+    "@types/lodash": "^4.14.123",
     "@types/node": "11.9.0",
     "@types/pg": "^7.4.14",
     "async": "^2.6.2",
     "dotenv-safe": "^6.1.0",
     "js-yaml": "^3.12.2",
+    "lodash": "^4.17.11",
     "pg": "^7.9.0",
     "source-map-loader": "^0.2.4",
     "ssl-config": "^1.0.0",
