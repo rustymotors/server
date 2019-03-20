@@ -32,21 +32,19 @@
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/**/*.{js|ts}",
-      "lib/**/*.{js|ts}"
+      "**/*.{js,jsx,ts,tsx}",
+      "!**/node_modules/**",
+      "!**/dist/**",
+      "!**/coverage/**"
+    ],
+    "coverageReporters": [
+      "lcov",
+      "text",
+      "html"
     ],
     "reporters": [
       "default",
       "jest-junit"
-    ],
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
     ],
     "testPathIgnorePatterns": [
       "<rootDir>/dist/",
