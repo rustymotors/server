@@ -5,9 +5,25 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import * as struct from "c-struct";
 import { Logger } from "../logger";
 
 const logger = new Logger().getLogger();
+
+// tslint:disable: object-literal-sort-keys
+const loginMsgSchema = new struct.Schema({
+  msgNo: struct.type.uint16,
+  customerId: struct.type.uint32,
+  personaId: struct.type.uint32,
+  lotOwnerId: struct.type.uint32,
+  brandedPartId: struct.type.uint32,
+  skinId: struct.type.uint32,
+  personaName: struct.type.string(12),
+  version: struct.type.string(),
+});
+
+// register to cache
+struct.register("LoginMsg", loginMsgSchema);
 
 export class LoginMsg {
   public appId: number;
@@ -21,6 +37,7 @@ export class LoginMsg {
   public personaName: string;
   public version: string;
   public data: Buffer;
+  public struct: any;
 
   constructor(buffer: Buffer) {
     this.msgNo = 0;
@@ -38,6 +55,7 @@ export class LoginMsg {
     this.data = buffer;
 
     this.deserialize(buffer);
+    this.struct = struct.unpackSync("LoginMsg", buffer);
   }
 
   public deserialize(buffer: Buffer) {
@@ -84,6 +102,7 @@ export class LoginMsg {
     logger.debug(`personaName:    ${this.personaName}`);
 
     logger.debug(`version:        ${this.version}`);
+    logger.debug(`struct:        ${this.struct}`);
     logger.debug("[LoginMsg]======================================");
   }
 }
