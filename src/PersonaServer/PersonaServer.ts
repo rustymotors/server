@@ -33,14 +33,14 @@ export class PersonaServer {
       personaCount: Buffer.from([0x00, 0x01]),
       shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
     },
-    // {
-    //   customerId: 5551212,
-    //   id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
-    //   maxPersonas: Buffer.from([0x02]),
-    //   name: this._generateNameBuffer("Morty Dr"),
-    //   personaCount: Buffer.from([0x00, 0x01]),
-    //   shardId: Buffer.from([0x00, 0x00, 0x00, 0x58]),
-    // },
+    {
+      customerId: 5551212,
+      id: Buffer.from([0x00, 0x84, 0x5f, 0xee]),
+      maxPersonas: Buffer.from([0x02]),
+      name: this._generateNameBuffer("Morty Dr"),
+      personaCount: Buffer.from([0x00, 0x01]),
+      shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
+    },
   ];
 
   public _generateNameBuffer(name: string) {
@@ -261,6 +261,9 @@ export class PersonaServer {
     );
     const personas = await this._npsGetPersonaMapsByCustomerId(
       customerId.readUInt32BE(0)
+    );
+    console.debug(
+      `${personas.length} personas found for ${customerId.toString("utf8")}`
     );
 
     const personaMapsMsg = new NPSPersonaMapsMsg(MSG_DIRECTION.SENT);

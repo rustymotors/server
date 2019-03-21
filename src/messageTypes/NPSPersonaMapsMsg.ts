@@ -13,53 +13,80 @@ const logger = new Logger().getLogger();
 
 export class NPSPersonaMapsMsg extends NPSMsg {
   public personaCount: number;
-  public maxPersonaCount: number;
-  public id: number;
-  public shardId: number;
-  public name: string; // 30-bit null terminated string
+  public personas: IPersonaRecord[] = [];
+  // public personaSize = 1296;
+  public personaSize = 40;
 
   constructor(direction: MSG_DIRECTION) {
     super(direction);
     this.msgNo = 0x607;
     this.personaCount = 0;
-    this.maxPersonaCount = 0;
-    this.id = 0;
-    this.shardId = 0;
-    this.name = "";
   }
 
   public loadMaps(personas: IPersonaRecord[]): any {
     if (personas.length >= 0) {
-      this.id = personas[0].id.readInt32BE(0);
       this.personaCount = personas.length;
-      this.maxPersonaCount = personas[0].maxPersonas.readInt8(0);
-      this.shardId = personas[0].shardId.readInt32BE(0);
-      this.name = personas[0].name.toString("utf8");
+      this.personas = personas;
     }
   }
 
+  public deserializeInt8(buf: Buffer) {
+    return buf.readInt8(0);
+  }
+
+  public deserializeInt32(buf: Buffer) {
+    return buf.readInt32BE(0);
+  }
+
+  public deserializeString(buf: Buffer) {
+    return buf.toString("utf8");
+  }
+
   public serialize() {
+    let index = 0;
     // Create the packet content
-    const packetContent = Buffer.alloc(40);
+    // const packetContent = Buffer.alloc(40);
+    const packetContent = Buffer.alloc(this.personaSize * this.personaCount);
 
-    // This is the persona count
-    packetContent.writeInt16BE(this.personaCount, 0);
+    for (const persona of this.personas) {
+      // This is the persona count
+      packetContent.writeInt16BE(
+        this.personaCount,
+        this.personaSize * index + 0
+      );
 
-    // This is the max persona count (confirmed - debug)
-    packetContent.writeInt8(this.maxPersonaCount, 5);
+      // This is the max persona count (confirmed - debug)
+      packetContent.writeInt8(
+        this.deserializeInt8(persona.maxPersonas),
+        this.personaSize * index + 5
+      );
 
-    // PersonaId
-    packetContent.writeUInt32BE(this.id, 8);
+      // PersonaId
+      packetContent.writeUInt32BE(
+        this.deserializeInt32(persona.id),
+        this.personaSize * index + 8
+      );
 
-    // Shard ID
-    // packetContent.writeInt32BE(this.shardId, 1281);
-    packetContent.writeInt32BE(this.shardId, 12);
+      // Shard ID
+      // packetContent.writeInt32BE(this.shardId, 1281);
+      packetContent.writeInt32BE(
+        this.deserializeInt32(persona.shardId),
+        this.personaSize * index + 12
+      );
 
-    // Length of Persona Name
-    packetContent.writeInt16BE(this.name.length, 20);
+      // Length of Persona Name
+      packetContent.writeInt16BE(
+        persona.name.length,
+        this.personaSize * index + 20
+      );
 
-    // Persona Name = 30-bit null terminated string
-    packetContent.write(this.name, 22);
+      // Persona Name = 30-bit null terminated string
+      packetContent.write(
+        this.deserializeString(persona.name),
+        this.personaSize * index + 22
+      );
+      index++;
+    }
 
     // Build the packet
     super.setContent(packetContent);
@@ -74,10 +101,18 @@ export class NPSPersonaMapsMsg extends NPSMsg {
     logger.debug(`MsgVersion:          ${this.msgVersion}`);
     logger.debug(`contentLength:       ${this.msgLength}`);
     logger.debug(`personaCount:        ${this.personaCount}`);
-    logger.debug(`maxPersonaCount:     ${this.maxPersonaCount}`);
-    logger.debug(`id:                  ${this.id}`);
-    logger.debug(`shardId:             ${this.shardId}`);
-    logger.debug(`name:                ${this.name}`);
+    for (const persona of this.personas) {
+      logger.debug(
+        `maxPersonaCount:     ${this.deserializeInt8(persona.maxPersonas)}`
+      );
+      logger.debug(`id:                  ${this.deserializeInt32(persona.id)}`);
+      logger.debug(
+        `shardId:             ${this.deserializeInt32(persona.shardId)}`
+      );
+      logger.debug(
+        `name:                ${this.deserializeString(persona.name)}`
+      );
+    }
     logger.debug(`Packet as hex:       ${this.getPacketAsString()}`);
     logger.debug("[/NPSPersonaMapsMsg]======================================");
   }
