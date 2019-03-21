@@ -13,8 +13,9 @@ jobs:
       - run: |
           npm ci
 
-      # run tests!
-      - run: npm run lint-test
+      - run:
+          name: Run Tests
+          command: npm run lint-test
 
       - codecov/upload:
           file: coverage/*.xml
