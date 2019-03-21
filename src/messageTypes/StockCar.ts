@@ -14,9 +14,9 @@ const logger = new Logger().getLogger();
 // WORD    bIsDealOfTheDay;
 
 export class StockCar {
-  private brandedPartId: number;
-  private retailPrice: number;
-  private bIsDealOfTheDay: number;
+  public brandedPartId: number;
+  public retailPrice: number;
+  public bIsDealOfTheDay: number;
 
   constructor() {
     this.brandedPartId = 105;
