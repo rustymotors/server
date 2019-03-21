@@ -12,21 +12,22 @@ const logger = new Logger().getLogger();
 export class LoginMsg {
   public appId: number;
   public toFrom: number;
-  private msgNo: number;
-  private customerId: number;
-  private personaId: number;
-  private lotOwnerId: number;
-  private brandedPartId: number;
-  private skinId: number;
-  private personaName: string;
-  private version: string;
-  private data: Buffer;
+  public msgNo: number;
+  public customerId: number;
+  public personaId: number;
+  public lotOwnerId: number;
+  public brandedPartId: number;
+  public skinId: number;
+  public personaName: string;
+  public version: string;
+  public data: Buffer;
 
   constructor(buffer: Buffer) {
     this.msgNo = 0;
     this.toFrom = 0;
     this.appId = 0;
 
+    // TODO: Why do I set these if I turn around and deserialize after?
     this.customerId = 0;
     this.personaId = 0;
     this.lotOwnerId = 0;
