@@ -93,16 +93,29 @@ export class LoginMsg {
    */
   public dumpPacket() {
     logger.debug("[LoginMsg]======================================");
-    logger.debug(`MsgNo:          ${this.msgNo.toString()}`);
-    logger.debug(`customerId:     ${this.customerId.toString()}`);
-    logger.debug(`personaId:      ${this.personaId.toString()}`);
-    logger.debug(`lotOwnerId:     ${this.lotOwnerId}`);
-    logger.debug(`brandedPartId:  ${this.brandedPartId}`);
-    logger.debug(`skinId:         ${this.skinId}`);
-    logger.debug(`personaName:    ${this.personaName}`);
+    logger.debug(
+      `MsgNo:          ${this.msgNo.toString()} = ${this.struct.msgNo}`
+    );
+    logger.debug(
+      `customerId:     ${this.customerId.toString()} = ${
+        this.struct.customerId
+      }`
+    );
+    logger.debug(
+      `personaId:      ${this.personaId.toString()} = ${this.struct.personaId}`
+    );
+    logger.debug(
+      `lotOwnerId:     ${this.lotOwnerId} = ${this.struct.lotOwnerId}`
+    );
+    logger.debug(
+      `brandedPartId:  ${this.brandedPartId} = ${this.struct.brandedPartId}`
+    );
+    logger.debug(`skinId:         ${this.skinId} = ${this.struct.skinId}`);
+    logger.debug(
+      `personaName:    ${this.personaName} = ${this.struct.personaName}`
+    );
 
-    logger.debug(`version:        ${this.version}`);
-    logger.debug(`struct:        ${this.struct}`);
+    logger.debug(`version:        ${this.version} = ${this.struct.version}`);
     logger.debug("[LoginMsg]======================================");
   }
 }
