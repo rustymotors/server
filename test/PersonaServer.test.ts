@@ -14,7 +14,7 @@ describe("PersonaServer Methods", async () => {
   describe("_getPersonasByCustomerId", () => {
     test("returns a valid persona", () => {
       const results = personaServer._getPersonasByCustomerId(5551212);
-      expect(results.length).toEqual(1);
+      expect(results.length).toEqual(2);
       const name = results[0].name.toString();
       expect(name).toMatch("Dr Brown");
     });
