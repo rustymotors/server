@@ -41,7 +41,8 @@
       "**/*.{js,jsx,ts,tsx}",
       "!**/node_modules/**",
       "!**/dist/**",
-      "!**/coverage/**"
+      "!**/coverage/**",
+      "!**/typings/**"
     ],
     "coverageReporters": [
       "lcov",
