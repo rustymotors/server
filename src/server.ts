@@ -1,5 +1,5 @@
-import fs = require("fs");
-import yaml = require("js-yaml");
+import * as fs from "fs";
+import * as yaml from "js-yaml";
 import { AdminServer } from "./AdminServer";
 import { IServerConfiguration } from "./IServerConfiguration";
 import { ILoggerInstance, Logger } from "./logger";
