@@ -8,12 +8,11 @@
 import * as fs from "fs";
 import { IncomingMessage, ServerResponse } from "http";
 import * as https from "https";
+import * as SSLConfig from "ssl-config";
 import { IServerConfiguration } from "./IServerConfiguration";
 import { ILoggerInstance } from "./logger";
 import { MCServer } from "./MCServer";
 import { PatchServer } from "./patchServer";
-// tslint:disable-next-line:no-var-requires
-const SSLConfig = require("ssl-config");
 
 export class AdminServer {
   public mcServer: MCServer;

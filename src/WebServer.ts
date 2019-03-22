@@ -8,8 +8,7 @@
 import * as fs from "fs";
 import { IncomingMessage, ServerResponse } from "http";
 import * as https from "https";
-// tslint:disable-next-line:no-var-requires
-const SSLConfig = require("ssl-config");
+import * as SSLConfig from "ssl-config";
 
 import { IServerConfiguration } from "./IServerConfiguration";
 import { ILoggerInstance } from "./logger";
