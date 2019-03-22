@@ -10,6 +10,13 @@ jobs:
     steps:
       - checkout
 
+      - run:
+          name: Make fake certs
+          command: |
+            touch data/private_key.pem
+            touch data/pub.key
+            touch data/cert.pem
+
       - run: |
           npm ci
 
