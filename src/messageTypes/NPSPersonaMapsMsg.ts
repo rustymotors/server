@@ -5,28 +5,63 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import * as struct from "c-struct";
 import { IPersonaRecord } from "../IPersonaRecord";
 import { Logger } from "../logger";
 import { MSG_DIRECTION, NPSMsg } from "./NPSMsg";
 
 const logger = new Logger().getLogger();
 
+// tslint:disable: object-literal-sort-keys
+const npsPersonaMapsMsgSchema = new struct.Schema({
+  msgNo: struct.type.uint16,
+  msgLength: struct.type.uint16,
+  msgVersion: struct.type.uint16,
+  reserved: struct.type.uint16,
+  msgChecksum: struct.type.uint32,
+  // End of header
+  personas: [
+    {
+      // customerId: number;
+      id: struct.type.uint32,
+      maxPersonas: struct.type.uint8,
+      name: struct.type.string(30),
+      // personaCount: Buffer;
+      shardId: struct.type.uint32,
+    },
+  ],
+});
+
+// register to cache
+struct.register("NPSPersonaMapsMsg", npsPersonaMapsMsgSchema);
+
 export class NPSPersonaMapsMsg extends NPSMsg {
   public personaCount: number;
   public personas: IPersonaRecord[] = [];
   // public personaSize = 1296;
   public personaSize = 40;
+  public struct: any;
 
   constructor(direction: MSG_DIRECTION) {
     super(direction);
     this.msgNo = 0x607;
     this.personaCount = 0;
+    this.struct = struct.unpackSync("NPSPersonaMapsMsg", Buffer.alloc(30));
+
+    this.struct.msgNo = this.msgNo;
   }
 
   public loadMaps(personas: IPersonaRecord[]): any {
     if (personas.length >= 0) {
       this.personaCount = personas.length;
       this.personas = personas;
+      personas.map(persona => {
+        this.struct.personas.push({
+          id: this.deserializeInt32(persona.id),
+          name: this.deserializeString(persona.name),
+          shardId: this.deserializeInt32(persona.shardId),
+        });
+      });
     }
   }
 
@@ -114,6 +149,23 @@ export class NPSPersonaMapsMsg extends NPSMsg {
       );
     }
     logger.debug(`Packet as hex:       ${this.getPacketAsString()}`);
+
+    // TODO: Work on this more
+    logger.debug(this.struct);
+    logger.debug(
+      struct
+        .packSync("NPSPersonaMapsMsg", this.struct, {
+          endian: "b",
+        })
+        .toString("hex")
+    );
+
+    logger.debug(
+      `Struct as hex:       ${struct.packSync(
+        "NPSPersonaMapsMsg",
+        this.struct
+      )}`
+    );
     logger.debug("[/NPSPersonaMapsMsg]======================================");
   }
 }
