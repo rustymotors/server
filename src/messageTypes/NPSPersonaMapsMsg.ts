@@ -22,12 +22,16 @@ const npsPersonaMapsMsgSchema = new struct.Schema({
   // End of header
   personas: [
     {
-      // customerId: number;
+      personaCount: struct.type.uint16,
+      unknown1: struct.type.uint16,
+      maxPersonas: struct.type.uint16,
+      unknown2: struct.type.uint16,
       id: struct.type.uint32,
-      maxPersonas: struct.type.uint8,
-      name: struct.type.string(30),
-      // personaCount: Buffer;
       shardId: struct.type.uint32,
+      unknown3: struct.type.uint16,
+      unknown4: struct.type.uint16,
+      personaNameLength: struct.type.uint16,
+      name: struct.type.string(16),
     },
   ],
 });
@@ -46,7 +50,7 @@ export class NPSPersonaMapsMsg extends NPSMsg {
     super(direction);
     this.msgNo = 0x607;
     this.personaCount = 0;
-    this.struct = struct.unpackSync("NPSPersonaMapsMsg", Buffer.alloc(30));
+    this.struct = struct.unpackSync("NPSPersonaMapsMsg", Buffer.alloc(100));
 
     this.struct.msgNo = this.msgNo;
   }
@@ -54,13 +58,17 @@ export class NPSPersonaMapsMsg extends NPSMsg {
   public loadMaps(personas: IPersonaRecord[]): any {
     if (personas.length >= 0) {
       this.personaCount = personas.length;
-      this.personas = personas;
-      personas.map(persona => {
-        this.struct.personas.push({
+      this.personas = [];
+      personas.forEach((persona, idx) => {
+        console.log("ping");
+        this.struct.personas[idx] = {
+          personaCount: personas.length,
+          maxPersonas: personas.length,
           id: this.deserializeInt32(persona.id),
+          personaNameLength: this.deserializeString(persona.name).length,
           name: this.deserializeString(persona.name),
           shardId: this.deserializeInt32(persona.shardId),
-        });
+        };
       });
     }
   }
@@ -124,8 +132,12 @@ export class NPSPersonaMapsMsg extends NPSMsg {
     }
 
     // Build the packet
-    super.setContent(packetContent);
-    return super.serialize();
+    const msgLength = struct.packSync("NPSPersonaMapsMsg", this.struct).length;
+    this.struct.msgLength = msgLength;
+    this.struct.msgChecksum = msgLength;
+    return struct.packSync("NPSPersonaMapsMsg", this.struct, {
+      endian: "b",
+    });
   }
 
   public dumpPacket() {
@@ -151,21 +163,7 @@ export class NPSPersonaMapsMsg extends NPSMsg {
     logger.debug(`Packet as hex:       ${this.getPacketAsString()}`);
 
     // TODO: Work on this more
-    logger.debug(this.struct);
-    logger.debug(
-      struct
-        .packSync("NPSPersonaMapsMsg", this.struct, {
-          endian: "b",
-        })
-        .toString("hex")
-    );
 
-    logger.debug(
-      `Struct as hex:       ${struct.packSync(
-        "NPSPersonaMapsMsg",
-        this.struct
-      )}`
-    );
     logger.debug("[/NPSPersonaMapsMsg]======================================");
   }
 }
