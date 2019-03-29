@@ -4,11 +4,7 @@ orbs:
   codecov: codecov/codecov@1.0.4
 jobs:
   build:
-    executor: 
-        name: node
-        parameters:
-          # specify the version you desire here
-          tag: 8.15
+    executor: node
 
     steps:
       - checkout
