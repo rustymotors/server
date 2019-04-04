@@ -27,7 +27,9 @@ jobs:
       - run:
           name: Run Tests
           command: npm run lint-test
-
+      - run:
+          command: echo $ARTIFACT_PATH
+          when: always
       - codecov/upload:
           file: coverage/*.xml
       - upload-artifacts-group
