@@ -11,7 +11,7 @@ jobs:
       - checkout
       - node-version-check:
           version: "v8.15.1"
-      - npm-outdated-check:
+      - npm-outdated-check
       - run:
           name: Make fake certs
           command: |
