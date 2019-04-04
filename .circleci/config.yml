@@ -88,9 +88,15 @@ commands:
         default: "$ARTIFACTS_PATH"
         type: string
     steps:
+      - run:
+          name: "Preprate artifacts group for upload"
+          command: :
+            mkdir -p ~/artifacts
+            cp -r << parameters.artifacts-group >> ~/artifacts
+          when: always
       - store_artifacts:
           name: "Upload artifacts group"
-          path: "<< parameters.artifacts-group >>"
+          path: ~/artifacts
           when: always
 
 workflows:
