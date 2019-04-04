@@ -33,3 +33,8 @@ jobs:
 
       - store_artifacts:
           path: coverage
+
+ workflows:
+   build-test:
+     jobs:
+       - build
