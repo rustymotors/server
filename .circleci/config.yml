@@ -90,7 +90,7 @@ commands:
     steps:
       - run:
           name: "Preprate artifacts group for upload"
-          command: :
+          command: |
             mkdir -p ~/artifacts
             cp -r << parameters.artifacts-group >> ~/artifacts
           when: always
