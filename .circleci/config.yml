@@ -34,7 +34,8 @@ jobs:
       - store_artifacts:
           path: coverage
 
- workflows:
+workflows:
+  version: 2.1
    build-test:
      jobs:
        - build
