@@ -45,7 +45,7 @@ commands:
     steps:
       - run: |
           node -v
-          $([ $(node -v) == << parameters.version >>])
+          $([ $(node -v) == "<< parameters.version >>""])
 
 workflows:
   version: 2.1
