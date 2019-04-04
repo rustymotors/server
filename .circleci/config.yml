@@ -30,6 +30,7 @@ jobs:
 
       - codecov/upload:
           file: coverage/*.xml
+      - upload-artifacts-group
       - store_test_results:
           path: test-reports
       - store_artifacts:
@@ -66,7 +67,7 @@ commands:
           name: "Check for outdated versions of dependencies"
           command: |
             npm outdated > << parameters.report-path >>/outdated_versions.txt
-            $(npm outdated)
+            npm outdated
   node-version-check:
     description: "Check for version of Node"
     parameters:
@@ -78,6 +79,18 @@ commands:
           command: |
             node -v
             $([ $(node -v) == "<< parameters.version >>" ])
+  upload-artifacts-group:
+    description: "Upload several artifacts at once."
+    parameters:
+      artifacts-group:
+        default: []
+        type: array
+    steps:
+      - run:
+          name: "Echo artifacts path"
+          command: |
+            echo << parameters.artifacts-group >>
+          when: always
 
 workflows:
   version: 2.1
