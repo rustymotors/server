@@ -86,11 +86,10 @@ commands:
         default: "$ARTIFACTS_PATH"
         type: string
     steps:
-      - run:
-          name: "Echo artifacts path"
-          command: |
-            echo << parameters.artifacts-group >>
-          when: always
+      - store_artifacts:
+          name: "Upload artifacts group"
+          path: "$ARTIFACTS_PATH"
+          when: aways
 
 workflows:
   version: 2.1
