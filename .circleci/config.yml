@@ -11,7 +11,7 @@ jobs:
       - checkout
       - run:
           name: Check Node Version
-          command: [$(node -v) == "v8.15.1"]
+          command: "[$(node -v) == 'v8.15.1']"
       - run:
           name: Make fake certs
           command: |
