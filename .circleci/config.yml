@@ -44,10 +44,10 @@ commands:
         type: string
     steps:
       - run:
-        name: "Check for version of Node"
-        command: |
-          node -v
-          $([ $(node -v) == "<< parameters.version >>" ])
+          name: "Check for version of Node"
+          command: |
+            node -v
+            $([ $(node -v) == "<< parameters.version >>" ])
 
 workflows:
   version: 2.1
