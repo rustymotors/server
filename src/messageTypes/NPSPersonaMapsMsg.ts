@@ -5,28 +5,71 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import * as struct from "c-struct";
 import { IPersonaRecord } from "../IPersonaRecord";
 import { Logger } from "../logger";
 import { MSG_DIRECTION, NPSMsg } from "./NPSMsg";
 
 const logger = new Logger().getLogger();
 
+// tslint:disable: object-literal-sort-keys
+const npsPersonaMapsMsgSchema = new struct.Schema({
+  msgNo: struct.type.uint16,
+  msgLength: struct.type.uint16,
+  msgVersion: struct.type.uint16,
+  reserved: struct.type.uint16,
+  msgChecksum: struct.type.uint32,
+  // End of header
+  personas: [
+    {
+      personaCount: struct.type.uint16,
+      unknown1: struct.type.uint16,
+      maxPersonas: struct.type.uint16,
+      unknown2: struct.type.uint16,
+      id: struct.type.uint32,
+      shardId: struct.type.uint32,
+      unknown3: struct.type.uint16,
+      unknown4: struct.type.uint16,
+      personaNameLength: struct.type.uint16,
+      name: struct.type.string(16),
+    },
+  ],
+});
+
+// register to cache
+struct.register("NPSPersonaMapsMsg", npsPersonaMapsMsgSchema);
+
 export class NPSPersonaMapsMsg extends NPSMsg {
   public personaCount: number;
   public personas: IPersonaRecord[] = [];
   // public personaSize = 1296;
   public personaSize = 40;
+  public struct: any;
 
   constructor(direction: MSG_DIRECTION) {
     super(direction);
     this.msgNo = 0x607;
     this.personaCount = 0;
+    this.struct = struct.unpackSync("NPSPersonaMapsMsg", Buffer.alloc(100));
+
+    this.struct.msgNo = this.msgNo;
   }
 
   public loadMaps(personas: IPersonaRecord[]): any {
     if (personas.length >= 0) {
       this.personaCount = personas.length;
-      this.personas = personas;
+      this.personas = [];
+      personas.forEach((persona, idx) => {
+        console.log("ping");
+        this.struct.personas[idx] = {
+          personaCount: personas.length,
+          maxPersonas: personas.length,
+          id: this.deserializeInt32(persona.id),
+          personaNameLength: this.deserializeString(persona.name).length,
+          name: this.deserializeString(persona.name),
+          shardId: this.deserializeInt32(persona.shardId),
+        };
+      });
     }
   }
 
@@ -89,8 +132,12 @@ export class NPSPersonaMapsMsg extends NPSMsg {
     }
 
     // Build the packet
-    super.setContent(packetContent);
-    return super.serialize();
+    const msgLength = struct.packSync("NPSPersonaMapsMsg", this.struct).length;
+    this.struct.msgLength = msgLength;
+    this.struct.msgChecksum = msgLength;
+    return struct.packSync("NPSPersonaMapsMsg", this.struct, {
+      endian: "b",
+    });
   }
 
   public dumpPacket() {
@@ -114,6 +161,9 @@ export class NPSPersonaMapsMsg extends NPSMsg {
       );
     }
     logger.debug(`Packet as hex:       ${this.getPacketAsString()}`);
+
+    // TODO: Work on this more
+
     logger.debug("[/NPSPersonaMapsMsg]======================================");
   }
 }
