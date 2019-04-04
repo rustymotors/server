@@ -9,7 +9,9 @@ jobs:
       tag: "8.15"
     steps:
       - checkout
-
+      - run:
+          name: Check Node Version
+          command: [$(node -v) == "v8.15.1"]
       - run:
           name: Make fake certs
           command: |
@@ -17,8 +19,9 @@ jobs:
             touch data/pub.key
             touch data/cert.pem
 
-      - run: |
-          npm ci
+      - run:
+          name: Install dependencies
+          command: npm ci
 
       - run:
           name: Run Tests
