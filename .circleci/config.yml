@@ -9,9 +9,7 @@ jobs:
       tag: "8.15"
     steps:
       - checkout
-      - run:
-          name: Check Node Version
-          command: $([ $(node -v) == 'v8.15.1' ])
+      - version: 'v8.15.1'
       - run:
           name: Make fake certs
           command: |
@@ -36,6 +34,17 @@ jobs:
 
       - store_artifacts:
           path: coverage
+
+commands:
+  npm-version-check:
+    description: "Check for version of Node"
+    parameters:
+      version:
+        type: string
+    steps:
+      - run: |
+        node -v
+        $([ $(node -v) == << parameters.version >>])
 
 workflows:
   version: 2.1
