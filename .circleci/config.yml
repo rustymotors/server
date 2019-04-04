@@ -46,9 +46,9 @@ commands:
         type: string
     steps:
       - run:
-          name: "Check for version of Node"
+          name: "Check for outdated versions of dependencies"
           command: |
-            npm outdated > << parameters.version >>/outdated_versions.txt
+            npm outdated > << parameters.report-path >>/outdated_versions.txt
             $(npm outdated)
   node-version-check:
     description: "Check for version of Node"
