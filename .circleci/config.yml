@@ -92,7 +92,7 @@ commands:
           name: "Preprate artifacts group for upload"
           command: |
             mkdir -p ~/artifacts
-            if [ << parameters.artifacts-group >> -ne ~/artifacts ] then cp -r << parameters.artifacts-group >> ~/artifacts fi
+            if [ << parameters.artifacts-group >> -ne ~/artifacts ]; then cp -r << parameters.artifacts-group >> ~/artifacts; fi
           when: always
       - store_artifacts:
           name: "Upload artifacts group"
