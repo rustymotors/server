@@ -85,7 +85,7 @@ export class LoginMsg {
   }
 
   public serialize() {
-    return this.data;
+    return struct.packSync("LoginMsg", this.struct);
   }
 
   /**
