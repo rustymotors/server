@@ -46,7 +46,7 @@ commands:
     description: "Prepare and set artifacts directory path"
     parameters:
       artifacts-path:
-        default: "$CIRCLE_WORKING_DIRECTORY/artifacts"
+        default: "~/artifacts"
         type: string
     steps:
       - run:
