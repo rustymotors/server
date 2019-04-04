@@ -9,7 +9,8 @@ jobs:
       tag: "8.15"
     steps:
       - checkout
-      - version: "v8.15.1"
+      - npm-version-check:
+          version: "v8.15.1"
       - run:
           name: Make fake certs
           command: |
