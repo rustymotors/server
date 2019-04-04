@@ -50,7 +50,7 @@ commands:
           name: "Create artifacts path"
           command: |
             mkdir -p << parameters.report-path >>
-            echo "export ARTIFACTS_PATH=<< parameters.report-path >>"" >> $BASH_ENV
+            echo "export ARTIFACTS_PATH=<< parameters.artifacts-path >>"" >> $BASH_ENV
       - run:
           name: "Echo artifacts path"
           command: |
