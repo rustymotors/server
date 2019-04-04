@@ -43,7 +43,9 @@ commands:
       version:
         type: string
     steps:
-      - run: |
+      - run:
+        name: "Check for version of Node"
+        command: |
           node -v
           $([ $(node -v) == "<< parameters.version >>" ])
 
