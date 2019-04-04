@@ -9,6 +9,7 @@ jobs:
       tag: "8.15"
     steps:
       - checkout
+      - prepare-artifacts-dir
       - node-version-check:
           version: "v8.15.1"
       - npm-outdated-check
@@ -38,6 +39,22 @@ jobs:
           path: coverage
 
 commands:
+  prepare-artifacts-dir:
+    description: "Prepare and set artifacts directory path"
+    parameters:
+      artifacts-path:
+        default: "$CIRCLE_WORKING_DIRECTORY/artifacts"
+        type: string
+    steps:
+       - run:
+          name: "Create artifacts path"
+          command: |
+            mkdir -p << parameters.report-path >>
+            echo "export ARTIFACTS_PATH=<< parameters.report-path >>"" >> $BASH_ENV
+        - run:
+          name: "Echo artifacts path"
+          command: |
+            echo $ARTIFACTS_PATH      
   npm-outdated-check:
     description: "Check for outdated versions of dependencies"
     parameters:
