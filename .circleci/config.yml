@@ -9,7 +9,7 @@ jobs:
       tag: "8.15"
     steps:
       - checkout
-      - version: 'v8.15.1'
+      - version: "v8.15.1"
       - run:
           name: Make fake certs
           command: |
@@ -43,8 +43,8 @@ commands:
         type: string
     steps:
       - run: |
-        node -v
-        $([ $(node -v) == << parameters.version >>])
+          node -v
+          $([ $(node -v) == << parameters.version >>])
 
 workflows:
   version: 2.1
