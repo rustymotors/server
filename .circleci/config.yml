@@ -62,7 +62,7 @@ commands:
     description: "Check for outdated versions of dependencies"
     parameters:
       report-path:
-        default: "$CIRCLE_WORKING_DIRECTORY/artifacts"
+        default: "$ARTIFACTS_PATH"
         type: string
     steps:
       - run:
