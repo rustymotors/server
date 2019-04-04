@@ -83,8 +83,8 @@ commands:
     description: "Upload several artifacts at once."
     parameters:
       artifacts-group:
-        default: []
-        type: array
+        default: "$ARTIFACTS_PATH"
+        type: string
     steps:
       - run:
           name: "Echo artifacts path"
