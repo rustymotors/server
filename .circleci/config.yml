@@ -83,12 +83,12 @@ commands:
     description: "Upload several artifacts at once."
     parameters:
       artifacts-group:
-        default: "/$ARTIFACTS_PATH"
+        default: "$ARTIFACTS_PATH"
         type: string
     steps:
       - store_artifacts:
           name: "Upload artifacts group"
-          path: "$ARTIFACTS_PATH"
+          path: "/$ARTIFACTS_PATH"
           when: aways
 
 workflows:
