@@ -90,7 +90,7 @@ commands:
     steps:
       - store_artifacts:
           name: "Upload artifacts group"
-          path: "$ARTIFACTS_PATH"
+          path: "<< parameters.version >>"
           when: aways
 
 workflows:
