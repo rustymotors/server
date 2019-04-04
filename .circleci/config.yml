@@ -89,7 +89,7 @@ commands:
         type: string
     steps:
       - run:
-          name: "Preprate artifacts group for upload"
+          name: "Prepare artifacts group for upload"
           command: |
             mkdir -p ~/artifacts
             if [ << parameters.artifacts-group >> -ne ~/artifacts ]; then cp -r << parameters.artifacts-group >> ~/artifacts; fi
