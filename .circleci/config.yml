@@ -91,7 +91,7 @@ commands:
       - store_artifacts:
           name: "Upload artifacts group"
           path: "<< parameters.artifacts-group >>"
-          when: aways
+          when: always
 
 workflows:
   version: 2.1
