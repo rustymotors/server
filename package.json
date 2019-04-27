@@ -70,7 +70,7 @@
     "async": "^2.6.2",
     "c-struct": "0.0.5",
     "dotenv-safe": "^6.1.0",
-    "js-yaml": "^3.13.0",
+    "js-yaml": "^3.13.1",
     "lodash": "^4.17.11",
     "pg": "^7.9.0",
     "source-map-loader": "^0.2.4",
