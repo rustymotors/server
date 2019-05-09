@@ -97,5 +97,10 @@
   },
   "prettier": {
     "trailingComma": "es5"
+  },
+  "greenkeeper": {
+    "ignore": [
+      "@types/node"
+    ]
   }
 }
