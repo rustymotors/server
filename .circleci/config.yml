@@ -85,7 +85,7 @@ commands:
                 name: "Check for outdated versions of dependencies"
                 command: |
                   npm outdated | tee << parameters.report-path >>/outdated_versions.txt && true
-        node-version-check:
+  node-version-check:
     description: "Check for version of Node"
     parameters:
       version:
