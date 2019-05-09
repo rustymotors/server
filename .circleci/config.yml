@@ -12,7 +12,8 @@ jobs:
       - prepare-artifacts-dir
       - node-version-check:
           version: "v8.15.1"
-      - npm-outdated-check
+      - npm-outdated-check:
+          should-fail: false
       - run:
           name: Make fake certs
           command: |
@@ -46,8 +47,9 @@ commands:
     description: "Prepare and set artifacts directory path"
     parameters:
       artifacts-path:
-        default: "~/artifacts"
+        description: The path to store artifacts
         type: string
+        default: "~/artifacts"
     steps:
       - run:
           name: "Create artifacts path"
@@ -64,12 +66,26 @@ commands:
       report-path:
         default: "$ARTIFACTS_PATH"
         type: string
+      should-fail:
+        description: Should the step fail?
+        type: boolean
+        default: true
     steps:
-      - run:
-          name: "Check for outdated versions of dependencies"
-          command: |
-            npm outdated | tee << parameters.report-path >>/outdated_versions.txt
-  node-version-check:
+      - when:
+          condition: << parameters.should-fail >>
+          steps:
+            - run:
+                name: "Check for outdated versions of dependencies"
+                command: |
+                  npm outdated | tee << parameters.report-path >>/outdated_versions.txt
+      - unless:
+          condition: << parameters.should-fail >>
+          steps:
+            - run:
+                name: "Check for outdated versions of dependencies"
+                command: |
+                  npm outdated | tee << parameters.report-path >>/outdated_versions.txt && true
+        node-version-check:
     description: "Check for version of Node"
     parameters:
       version:
