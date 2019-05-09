@@ -12,6 +12,9 @@ jobs:
       - prepare-artifacts-dir
       - node-version-check:
           version: "v8.15.1"
+      - run:
+          name: Install dependencies
+          command: npm ci
       - npm-outdated-check:
           should-fail: false
       - run:
@@ -20,10 +23,6 @@ jobs:
             touch data/private_key.pem
             touch data/pub.key
             touch data/cert.pem
-
-      - run:
-          name: Install dependencies
-          command: npm ci
 
       - run:
           name: Run Tests
@@ -84,7 +83,7 @@ commands:
             - run:
                 name: "Check for outdated versions of dependencies"
                 command: |
-                  npm outdated | tee << parameters.report-path >>/outdated_versions.txt && true
+                  npm outdated && true | tee << parameters.report-path >>/outdated_versions.txt
   node-version-check:
     description: "Check for version of Node"
     parameters:
