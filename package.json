@@ -67,7 +67,7 @@
     "@types/lodash": "^4.14.123",
     "@types/node": "11.9.0",
     "@types/pg": "^7.4.14",
-    "async": "^2.6.2",
+    "async": "^3.0.1",
     "c-struct": "0.0.5",
     "dotenv-safe": "^6.1.0",
     "js-yaml": "^3.13.1",
