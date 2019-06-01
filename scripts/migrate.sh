@@ -15,4 +15,6 @@ if [ -z "$POSTGRES_HOST" ]; then
     exit
 fi
 
+# postgres://mco@127.0.0.1/mco
+
 npx pg-migrator postgres://"$POSTGRES_USER"@"$POSTGRES_HOST"/"$POSTGRES_DB" "$1"
