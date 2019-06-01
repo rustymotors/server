@@ -5,7 +5,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import * as _ from "lodash";
 import { Socket } from "net";
 import { IPersonaRecord } from "../IPersonaRecord";
 import { IRawPacket } from "../IRawPacket";
@@ -205,7 +204,9 @@ export class PersonaServer {
   public _getPersonasByCustomerId(customerId: number) {
     let results: IPersonaRecord[];
 
-    results = _.filter(this.personaList, { customerId });
+    results = this.personaList.filter(persona => {
+      return persona.customerId == customerId;
+    });
     if (!results) {
       throw new Error(
         `Unable to locate a persona for customerId: ${customerId}`

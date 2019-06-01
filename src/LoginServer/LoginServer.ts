@@ -29,9 +29,11 @@ async function _updateSessionKey(
       [customerId, sessionKey, sKey, contextId, connectionId]
     )
 
-    .catch(e => {
-      throw e;
-    });
+    .catch(e =>
+      setImmediate(() => {
+        throw e;
+      })
+    );
 }
 
 export class LoginServer {
@@ -76,6 +78,7 @@ export class LoginServer {
   }
 
   public _npsGetCustomerIdByContextId(contextId: string) {
+    this.logger.debug(`Entering _npsGetCustomerIdByContextId...`);
     const users = [
       {
         contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
@@ -94,6 +97,12 @@ export class LoginServer {
     const userRecord = users.filter(user => {
       return user.contextId === contextId;
     });
+    if (userRecord.length != 1) {
+      throw new Error(
+        `Unable to locate user record matching contextId ${contextId}`
+      );
+    }
+    this.logger.debug(userRecord);
     return userRecord[0];
   }
 
@@ -129,12 +138,14 @@ export class LoginServer {
     const customer = this._npsGetCustomerIdByContextId(userStatus.contextId);
 
     // Save sessionKey in database under customerId
+    this.logger.debug(`Preparing to update session key in db`);
     await _updateSessionKey(
       customer.customerId.readInt32BE(0),
       userStatus.sessionKey,
       userStatus.contextId,
       connection.id
     );
+    this.logger.debug(`Session key updated`);
 
     // Create the packet content
     // TODO: This needs to be dynamically generated, right now we are using a
