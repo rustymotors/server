@@ -10,9 +10,10 @@
   ],
   "scripts": {
     "docker": "docker-compose up -d",
-    "start": "npm run docker && nodemon",
+    "prestart": "npm run docker",
+    "start": "ts-node src/server.ts",
     "test": "npm run lint-test",
-    "lint-test": "eslint 'src/**/*.ts' && jest --all"
+    "lint-test": "eslint 'src/**/*.ts' --fix && jest --all"
   },
   "author": "Joe Becher <jwbecher@drazisil.com> (drazisil.com)",
   "license": "MPL-2.0",
@@ -70,6 +71,7 @@
     "c-struct": "0.0.5",
     "dotenv-safe": "^6.1.0",
     "js-yaml": "^3.13.1",
+    "minimum-tls-version": "0.0.3",
     "pg": "^7.9.0",
     "ssl-config": "^1.0.0",
     "winston": "^3.2.1"
