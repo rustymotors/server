@@ -38,10 +38,16 @@ To configure your initial database state, run the following at the command promp
 
 ### Ports needed to be forwarded
 
+* 80
+* 443
 * 43300
 * 8226
 * 8228
 * 7003
+
+### Permission to bind to low ports
+
+`sudo setcap cap_net_bind_service=+ep $(which node)`
 
 ### Running
 
