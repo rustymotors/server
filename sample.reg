@@ -2,23 +2,23 @@ Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\EACom\AuthAuth]
 "AuthLoginBaseService"="AuthLogin"
-"AuthLoginServer"="dev.mco"
+"AuthLoginServer"="192.168.5.20"
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Electronic Arts\Motor City]
 "GamePatch"="games/EA_Seattle/MotorCity/MCO"
 "UpdateInfoPatch"="games/EA_Seattle/MotorCity/UpdateInfo"
 "NPSPatch"="games/EA_Seattle/MotorCity/NPS"
-"PatchServerIP"="dev.mco"
+"PatchServerIP"="192.168.5.20"
 "PatchServerPort"="80"
-"CreateAccount"="dev.mco/SubscribeEntry.jsp?prodID=REG-MCO"
+"CreateAccount"="192.168.5.20/SubscribeEntry.jsp?prodID=REG-MCO"
 "Language"="English"
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Electronic Arts\Motor City\1.0]
-"ShardUrl"="http://dev.mco/ShardList/"
+"ShardUrl"="http://192.168.5.20/ShardList/"
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Electronic Arts\Motor City\AuthAuth]
 "AuthLoginBaseService"="AuthLogin"
-"AuthLoginServer"="dev.mco"
+"AuthLoginServer"="192.168.5.20"
 
 [HKEY_LOCAL_MACHINE\Software\Electronic Arts\Network Play System]
 "Log"="1"

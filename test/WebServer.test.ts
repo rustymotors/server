@@ -7,10 +7,9 @@
 import * as SSLConfig from "ssl-config";
 import { IServerConfiguration } from "../src/IServerConfiguration";
 import { Logger } from "../src/logger";
-import { WebServer } from "../src/WebServer";
+import * as WebServer from "../src/WebServer";
 
 const logger = new Logger().getLogger();
-const webServer = new WebServer(logger);
 
 const config: IServerConfiguration = {
   serverConfig: {
@@ -18,17 +17,15 @@ const config: IServerConfiguration = {
     ipServer: "xxx",
     privateKeyFilename: "data/private_key.pem",
     publicKeyFilename: "data/pub.key",
+    registryFilename: "sample.reg",
   },
 };
 
 describe("WebServer", () => {
-  test("has instance of Logger", () => {
-    expect(webServer.logger).toBe(logger);
-  });
   describe("_sslOptions", () => {
     const { serverConfig } = config;
     const sslConfig = new SSLConfig("old");
-    const sslOptions = webServer._sslOptions(serverConfig);
+    const sslOptions = WebServer._sslOptions(serverConfig);
     test("has a ciphers property", () => {
       expect(typeof sslOptions.ciphers).toEqual("string");
     });
