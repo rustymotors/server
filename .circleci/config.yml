@@ -11,7 +11,7 @@ jobs:
       - checkout
       - prepare-artifacts-dir
       - node-version-check:
-          version: "v8.15.1"
+          version: "v10.16.0"
       - run:
           name: Install dependencies
           command: npm ci
