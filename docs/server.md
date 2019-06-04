@@ -7,7 +7,7 @@ This assumes you know the basics of checking out a git repo. If you don't, pleas
 * Linux
 ** If you want to try running on Windows it may work, but I'm not going to support it
 * Docker (optional, but only if you want to run Postgres manually)
-* NodeJS 8
+* NodeJS
 
 ## Configure Environment Variables
 
@@ -38,10 +38,16 @@ To configure your initial database state, run the following at the command promp
 
 ### Ports needed to be forwarded
 
+* 80
+* 443
 * 43300
 * 8226
 * 8228
 * 7003
+
+### Permission to bind to low ports
+
+`sudo setcap cap_net_bind_service=+ep $(which node)`
 
 ### Running
 

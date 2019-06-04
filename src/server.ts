@@ -5,7 +5,7 @@ import { IServerConfiguration } from "./IServerConfiguration";
 import { ILoggerInstance, Logger } from "./logger";
 import { MCServer } from "./MCServer";
 import { PatchServer } from "./patchServer";
-import { WebServer } from "./WebServer";
+import * as WebServer from "./WebServer";
 
 import * as dotenvSafe from "dotenv-safe";
 dotenvSafe.config();
@@ -13,14 +13,14 @@ dotenvSafe.config();
 const logger = new Logger().getLogger();
 
 // Test that we are only using NodeJS v8.x.x
-const nodeMajorVersion = parseInt(process.versions.node.split(".")[0], 10);
-if (nodeMajorVersion > 8) {
-  console.error(
-    "mco-server is not able to work with versions of nodejs due to using weak crypto. Please downgrade."
-  );
-  process.exit(-1);
-}
-console.log();
+// const nodeMajorVersion = parseInt(process.versions.node.split(".")[0], 10);
+// if (nodeMajorVersion > 8) {
+//   console.error(
+//     "mco-server is not able to work with versions of nodejs due to using weak crypto. Please downgrade."
+//   );
+//   process.exit(-1);
+// }
+// console.log();
 
 export class Server {
   public config: IServerConfiguration;
@@ -45,14 +45,13 @@ export class Server {
   private async start() {
     this.logger.info("Starting servers...");
 
-    // Start the mock patch server
+    // Start the mock patch server and shardlist sserver
     const patchServer = new PatchServer(this.logger);
     await patchServer.start(this.config);
     this.logger.debug("[webServer] Patch Server started");
 
-    // Start the AuthLogin and shardlist servers
-    const webServer = new WebServer(this.logger);
-    webServer.start(this.config.serverConfig);
+    // Start the AuthLogin server
+    const webServer = WebServer.start();
     this.logger.debug("[webServer] Web Server started");
 
     // Start the MC Server

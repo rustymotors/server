@@ -1,4 +1,9 @@
 
+### 1.3.1
+
+* add /registry endpoint to download registry file
+* remove check for old version of NodeJS
+
 ### 1.3.0 (Start of changelog)
 
 * Client clears patch and update server (port 80)

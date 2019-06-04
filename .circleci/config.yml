@@ -6,12 +6,12 @@ jobs:
   build:
     executor:
       name: node/node
-      tag: "8.15"
+      tag: "10.16.0"
     steps:
       - checkout
       - prepare-artifacts-dir
       - node-version-check:
-          version: "v8.15.1"
+          version: "v10.16.0"
       - run:
           name: Install dependencies
           command: npm ci
@@ -106,7 +106,7 @@ commands:
           name: "Prepare artifacts group for upload"
           command: |
             mkdir -p ~/artifacts
-            if [ << parameters.artifacts-group >> -ne ~/artifacts ]; then cp -r << parameters.artifacts-group >> ~/artifacts; fi
+            if [ << parameters.artifacts-group >> != ~/artifacts ]; then cp -r << parameters.artifacts-group >> ~/artifacts; fi
           when: always
       - store_artifacts:
           name: "Upload artifacts group"
