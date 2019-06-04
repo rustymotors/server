@@ -9,7 +9,7 @@ import { Socket } from "net";
 import { NPSMsg } from "../src/messageTypes/NPSMsg";
 import { PersonaServer } from "../src/PersonaServer/PersonaServer";
 
-describe("PersonaServer Methods", async () => {
+describe("PersonaServer Methods", () => {
   const personaServer = new PersonaServer();
   describe("_getPersonasByCustomerId", () => {
     test("returns a valid persona", () => {
@@ -19,7 +19,7 @@ describe("PersonaServer Methods", async () => {
       expect(name).toMatch("Dr Brown");
     });
   });
-  describe("_npsGetPersonaMaps", async () => {
+  describe("_npsGetPersonaMaps", () => {
     test("returns a valid NPSMsg", async () => {
       const responseMessage = await personaServer._npsGetPersonaMaps(
         new Socket(),
@@ -49,7 +49,7 @@ describe("PersonaServer Methods", async () => {
       expect(responseMessage).toBeInstanceOf(NPSMsg);
     });
   });
-  describe("_npsGetPersonaMapsByCustomerId", async () => {
+  describe("_npsGetPersonaMapsByCustomerId", () => {
     test("returns a valid persona id - 5551212", async () => {
       const personas = await personaServer._npsGetPersonaMapsByCustomerId(
         5551212

@@ -4,3 +4,4 @@ serverConfig:
   ipServer: "192.168.5.20"
   privateKeyFilename: "./data/private_key.pem"
   publicKeyFilename: "./data/pub.key"
+  registryFilename: "./sample.reg"
