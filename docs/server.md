@@ -7,7 +7,7 @@ This assumes you know the basics of checking out a git repo. If you don't, pleas
 * Linux
 ** If you want to try running on Windows it may work, but I'm not going to support it
 * Docker (optional, but only if you want to run Postgres manually)
-* NodeJS 8
+* NodeJS
 
 ## Configure Environment Variables
 

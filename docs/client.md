@@ -1,5 +1,9 @@
 # Configuring the client to connect to the server
 
+__Importent!:__ You must use a newer version of Windows. Windows XP is unable to use the encryption ciphers needed to talk to the server
+
+---
+
 This currently has only been tested with the debug version of the client. If you don't have those files and instructions the server _might_ work, but is not currently supported.
 
 ## Registry

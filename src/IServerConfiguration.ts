@@ -11,5 +11,6 @@ export interface IServerConfiguration {
     certFilename: string;
     publicKeyFilename: string;
     privateKeyFilename: string;
+    registryFilename: string;
   };
 }

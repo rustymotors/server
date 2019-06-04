@@ -5,7 +5,7 @@ import { IServerConfiguration } from "./IServerConfiguration";
 import { ILoggerInstance, Logger } from "./logger";
 import { MCServer } from "./MCServer";
 import { PatchServer } from "./patchServer";
-import { WebServer } from "./WebServer";
+import * as WebServer from "./WebServer";
 
 import * as dotenvSafe from "dotenv-safe";
 dotenvSafe.config();
@@ -51,9 +51,8 @@ export class Server {
     this.logger.debug("[webServer] Patch Server started");
 
     // Start the AuthLogin server
-    // const webServer = new WebServer(this.logger);
-    // webServer.start(this.config.serverConfig);
-    // this.logger.debug("[webServer] Web Server started");
+    const webServer = WebServer.start();
+    this.logger.debug("[webServer] Web Server started");
 
     // Start the MC Server
     const mcServer = new MCServer(this.logger);
