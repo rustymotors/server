@@ -59,7 +59,7 @@
     ]
   },
   "jest-junit": {
-    "output": "test-reports/junit.xml"
+    "output": "test-reports/jest/junit.xml"
   },
   "dependencies": {
     "@types/dotenv-safe": "^5.0.3",
