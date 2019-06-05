@@ -15,7 +15,9 @@
     "prestart": "npm run build && npm run docker",
     "start": "node dist/src/server.js",
     "test": "npm run lint-test",
-    "lint-test": "eslint 'src/**/*.ts' --fix && jest --all"
+    "lint-test": "eslint 'src/**/*.ts' --fix && jest --all",
+    "migrate": "npm run docker && pg-migrator postgres://mco@127.0.0.1/mco",
+    "postinstall": "rm -rf node_modules/pg-migrator/examples/*"
   },
   "author": "Joe Becher <jwbecher@drazisil.com> (drazisil.com)",
   "license": "MPL-2.0",
@@ -40,6 +42,7 @@
     "js-yaml": "^3.13.1",
     "minimum-tls-version": "0.0.3",
     "pg": "^7.11.0",
+    "pg-migrator": "^1.0.5",
     "ssl-config": "^1.0.0",
     "winston": "^3.2.1"
   },
