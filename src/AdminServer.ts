@@ -9,8 +9,8 @@ import * as fs from "fs";
 import { IncomingMessage, ServerResponse } from "http";
 import * as https from "https";
 import * as SSLConfig from "ssl-config";
-import { IServerConfiguration } from "./IServerConfiguration";
-import { ILoggerInstance } from "./logger";
+import { IServerConfiguration } from "../services/shared/interfaces/IServerConfiguration";
+import { ILoggerInstance } from "../services/shared/logger";
 import { MCServer } from "./MCServer";
 import { PatchServer } from "./patchServer";
 

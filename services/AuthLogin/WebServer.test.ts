@@ -5,25 +5,22 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import * as SSLConfig from "ssl-config";
-import { IServerConfiguration } from "../src/IServerConfiguration";
-import { Logger } from "../src/logger";
-import * as WebServer from "../src/WebServer";
+import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
+import * as fs from "fs";
+import * as yaml from "js-yaml";
+import { Logger } from "../shared/logger";
+import * as WebServer from "./WebServer";
 
 const logger = new Logger().getLogger();
 
-const config: IServerConfiguration = {
-  serverConfig: {
-    certFilename: "data/cert.pem",
-    ipServer: "xxx",
-    privateKeyFilename: "data/private_key.pem",
-    publicKeyFilename: "data/pub.key",
-    registryFilename: "sample.reg",
-  },
-};
+const CONFIG: IServerConfiguration = yaml.safeLoad(
+  fs.readFileSync("./services/shared/config.yml", "utf8")
+);
+
+const { serverConfig } = CONFIG;
 
 describe("WebServer", () => {
   describe("_sslOptions", () => {
-    const { serverConfig } = config;
     const sslConfig = new SSLConfig("old");
     const sslOptions = WebServer._sslOptions(serverConfig);
     test("has a ciphers property", () => {

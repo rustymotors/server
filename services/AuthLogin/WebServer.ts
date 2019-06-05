@@ -7,15 +7,14 @@
 
 import * as fs from "fs";
 import * as yaml from "js-yaml";
-import { ILoggerInstance, Logger } from "./logger";
-import { IncomingMessage, ServerResponse } from "http";
+import { Logger } from "../shared/logger";
 import * as https from "https";
 import * as SSLConfig from "ssl-config";
 
-import { IServerConfiguration } from "./IServerConfiguration";
+import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
 
 const CONFIG: IServerConfiguration = yaml.safeLoad(
-  fs.readFileSync("./config/config.yml", "utf8")
+  fs.readFileSync("./services/shared/config.yml", "utf8")
 );
 
 const { serverConfig } = CONFIG;

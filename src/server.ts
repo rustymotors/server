@@ -1,26 +1,16 @@
 import * as fs from "fs";
 import * as yaml from "js-yaml";
 import { AdminServer } from "./AdminServer";
-import { IServerConfiguration } from "./IServerConfiguration";
-import { ILoggerInstance, Logger } from "./logger";
+import { IServerConfiguration } from "../services/shared/interfaces/IServerConfiguration";
+import { ILoggerInstance, Logger } from "../services/shared/logger";
 import { MCServer } from "./MCServer";
 import { PatchServer } from "./patchServer";
-import * as WebServer from "./WebServer";
+import * as WebServer from "../services/AuthLogin/WebServer";
 
 import * as dotenvSafe from "dotenv-safe";
 dotenvSafe.config();
 
 const logger = new Logger().getLogger();
-
-// Test that we are only using NodeJS v8.x.x
-// const nodeMajorVersion = parseInt(process.versions.node.split(".")[0], 10);
-// if (nodeMajorVersion > 8) {
-//   console.error(
-//     "mco-server is not able to work with versions of nodejs due to using weak crypto. Please downgrade."
-//   );
-//   process.exit(-1);
-// }
-// console.log();
 
 export class Server {
   public config: IServerConfiguration;

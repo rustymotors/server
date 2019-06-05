@@ -7,8 +7,8 @@
 
 import * as http from "http";
 
-import { IServerConfiguration } from "./IServerConfiguration";
-import { ILoggerInstance } from "./logger";
+import { IServerConfiguration } from "../services/shared/interfaces/IServerConfiguration";
+import { ILoggerInstance } from "../services/shared/logger";
 import { ShardEntry } from "./ShardEntry";
 
 /**
