@@ -5,7 +5,7 @@ import { IServerConfiguration } from "../services/shared/interfaces/IServerConfi
 import { ILoggerInstance, Logger } from "../services/shared/logger";
 import { MCServer } from "./MCServer";
 import { PatchServer } from "./patchServer";
-import * as WebServer from "../services/AuthLogin/WebServer";
+// import * as WebServer from "../services/AuthLogin/WebServer";
 
 import * as dotenvSafe from "dotenv-safe";
 dotenvSafe.config();
@@ -18,10 +18,9 @@ export class Server {
 
   public constructor(thisLogger: ILoggerInstance) {
     this.logger = thisLogger;
-    this.config = yaml.safeLoad(fs.readFileSync("./config/config.yml", "utf8"));
 
     // Get document, or throw exception on error
-    this.config = this.loadConfig("./config/config.yml");
+    this.config = this.loadConfig("./services/shared/config.yml");
 
     if (process.env.SERVER_IP) {
       this.config.serverConfig.ipServer = process.env.SERVER_IP;
@@ -38,11 +37,7 @@ export class Server {
     // Start the mock patch server and shardlist sserver
     const patchServer = new PatchServer(this.logger);
     await patchServer.start(this.config);
-    this.logger.debug("[webServer] Patch Server started");
-
-    // Start the AuthLogin server
-    const webServer = WebServer.start();
-    this.logger.debug("[webServer] Web Server started");
+    this.logger.debug("[patchServer] Patch Server started");
 
     // Start the MC Server
     const mcServer = new MCServer(this.logger);
