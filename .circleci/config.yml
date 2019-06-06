@@ -20,9 +20,9 @@ jobs:
       - run:
           name: Make fake certs
           command: |
-            touch data/private_key.pem
-            touch data/pub.key
-            touch data/cert.pem
+            touch services/shared/data/private_key.pem
+            touch services/shared/data/pub.key
+            touch services/shared/data/cert.pem
 
       - run:
           name: Run Tests
