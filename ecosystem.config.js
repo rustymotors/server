@@ -30,5 +30,20 @@ module.exports = {
         NODE_ENV: "production",
       },
     },
+    {
+      name: "MCOS PatchAndShard",
+      script: "dist/services/PatchAndShard/app.js",
+
+      instances: 1,
+      autorestart: true,
+      watch: false,
+      max_memory_restart: "1G",
+      env: {
+        NODE_ENV: "development",
+      },
+      env_production: {
+        NODE_ENV: "production",
+      },
+    },
   ],
 };

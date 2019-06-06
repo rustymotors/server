@@ -7,19 +7,11 @@
 import { AdminServer } from "../src/AdminServer";
 import { Logger } from "../services/shared/logger";
 import { MCServer } from "../src/MCServer";
-import { PatchServer } from "../src/patchServer";
 
 const logger = new Logger().getLogger();
-const adminServer = new AdminServer(
-  new PatchServer(logger),
-  new MCServer(logger),
-  logger
-);
+const adminServer = new AdminServer(new MCServer(logger), logger);
 
 describe("AdminServer", () => {
-  test("has instance of PatchServer", () => {
-    expect(adminServer.patchServer).toBeInstanceOf(PatchServer);
-  });
   test("has instance of MCServer", () => {
     expect(adminServer.mcServer).toBeInstanceOf(MCServer);
   });

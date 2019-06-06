@@ -4,8 +4,6 @@ import { AdminServer } from "./AdminServer";
 import { IServerConfiguration } from "../services/shared/interfaces/IServerConfiguration";
 import { ILoggerInstance, Logger } from "../services/shared/logger";
 import { MCServer } from "./MCServer";
-import { PatchServer } from "./patchServer";
-// import * as WebServer from "../services/AuthLogin/WebServer";
 
 import * as dotenvSafe from "dotenv-safe";
 dotenvSafe.config();
@@ -34,17 +32,12 @@ export class Server {
   private async start() {
     this.logger.info("Starting servers...");
 
-    // Start the mock patch server and shardlist sserver
-    const patchServer = new PatchServer(this.logger);
-    await patchServer.start(this.config);
-    this.logger.debug("[patchServer] Patch Server started");
-
     // Start the MC Server
     const mcServer = new MCServer(this.logger);
     await mcServer.startServers(this.config);
 
     // Start the Admin server
-    const adminServer = new AdminServer(patchServer, mcServer, this.logger);
+    const adminServer = new AdminServer(mcServer, this.logger);
     adminServer.start(this.config.serverConfig);
     this.logger.debug("[adminServer] Web Server started");
 

@@ -12,19 +12,12 @@ import * as SSLConfig from "ssl-config";
 import { IServerConfiguration } from "../services/shared/interfaces/IServerConfiguration";
 import { ILoggerInstance } from "../services/shared/logger";
 import { MCServer } from "./MCServer";
-import { PatchServer } from "./patchServer";
 
 export class AdminServer {
   public mcServer: MCServer;
-  public patchServer: PatchServer;
   public logger: ILoggerInstance;
 
-  constructor(
-    patchServer: PatchServer,
-    mcServer: MCServer,
-    logger: ILoggerInstance
-  ) {
-    this.patchServer = patchServer;
+  constructor(mcServer: MCServer, logger: ILoggerInstance) {
     this.mcServer = mcServer;
     this.logger = logger;
   }
@@ -74,7 +67,6 @@ export class AdminServer {
         response.setHeader("Content-Type", "application/json");
         const banlist = {
           mcServer: this.mcServer.mgr.getBans(),
-          patchServer: this.patchServer.getBans(),
         };
         response.end(JSON.stringify(banlist));
         return;
