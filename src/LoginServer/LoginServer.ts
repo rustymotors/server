@@ -5,14 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { IRawPacket } from "../IRawPacket";
-import { IServerConfiguration } from "../IServerConfiguration";
-import { ILoggerInstance } from "../logger";
+import { IRawPacket } from "../../services/shared/interfaces/IRawPacket";
+import { IServerConfiguration } from "../../services/shared/interfaces/IServerConfiguration";
+import { ILoggerInstance } from "../../services/shared/logger";
 
-import { NPSUserStatus } from "../messageTypes/npsUserStatus";
+import { NPSUserStatus } from "../../services/shared/messageTypes/npsUserStatus";
 
 import { Connection } from "../Connection";
-import { pool } from "../database";
+import { pool } from "../../services/shared/database";
 import { premadeLogin } from "../packet";
 
 async function _updateSessionKey(

@@ -6,11 +6,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Connection } from "../Connection";
-import { Logger } from "../logger";
-import { GenericReplyMsg } from "../messageTypes/GenericReplyMsg";
-import { LobbyMsg } from "../messageTypes/LobbyMsg";
-import { LoginMsg } from "../messageTypes/LoginMsg";
-import { MessageNode } from "../messageTypes/MessageNode";
+import { Logger } from "../../services/shared/logger";
+import { GenericReplyMsg } from "../../services/shared/messageTypes/GenericReplyMsg";
+import { LobbyMsg } from "../../services/shared/messageTypes/LobbyMsg";
+import { LoginMsg } from "../../services/shared/messageTypes/LoginMsg";
+import { MessageNode } from "../../services/shared/messageTypes/MessageNode";
 
 const logger = new Logger().getLogger();
 

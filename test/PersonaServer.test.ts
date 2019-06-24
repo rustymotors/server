@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Socket } from "net";
-import { NPSMsg } from "../src/messageTypes/NPSMsg";
+import { NPSMsg } from "../services/shared/messageTypes/NPSMsg";
 import { PersonaServer } from "../src/PersonaServer/PersonaServer";
 
 describe("PersonaServer Methods", () => {
