@@ -7,7 +7,7 @@
 
 import * as crypto from "crypto";
 import * as fs from "fs";
-import { IServerConfiguration } from "../IServerConfiguration";
+import { IServerConfiguration } from "../interfaces/IServerConfiguration";
 import { ILoggerInstance } from "../logger";
 
 /**

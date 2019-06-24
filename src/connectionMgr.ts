@@ -7,10 +7,10 @@
 
 import { Socket } from "net";
 import { Connection } from "./Connection";
-import { IRawPacket } from "./IRawPacket";
-import { IServerConfiguration } from "./IServerConfiguration";
+import { IRawPacket } from "../services/shared/interfaces/IRawPacket";
+import { IServerConfiguration } from "../services/shared/interfaces/IServerConfiguration";
 import { LobbyServer } from "./LobbyServer/LobbyServer";
-import { ILoggerInstance } from "./logger";
+import { ILoggerInstance } from "../services/shared/logger";
 import { LoginServer } from "./LoginServer/LoginServer";
 import { PersonaServer } from "./PersonaServer/PersonaServer";
 import { defaultHandler } from "./TCPManager";

@@ -13,9 +13,9 @@
     "prebuild": "rm -rf disc/**",
     "build": "npm run prebuild && tsc",
     "prestart": "npm run build && npm run docker",
-    "start": "node dist/src/server.js",
+    "start": "pm2 start",
     "test": "npm run lint-test",
-    "lint-test": "eslint 'src/**/*.ts' --fix && jest --all",
+    "lint-test": "eslint '{services,src}/**/*.ts' --fix && jest --all",
     "migrate": "npm run docker && pg-migrator postgres://mco@127.0.0.1/mco",
     "postinstall": "rm -rf node_modules/pg-migrator/examples/*"
   },
@@ -56,6 +56,7 @@
     "jest": "^24.8.0",
     "jest-junit": "^6.4.0",
     "lint-staged": "^8.1.7",
+    "pm2": "^3.5.1",
     "prettier": "^1.17.1",
     "prettier-eslint": "^9.0.0",
     "ts-jest": "24.0.2",
@@ -86,7 +87,7 @@
   },
   "lint-staged": {
     "*.js": [
-      "eslint 'src/**/*.ts' --fix",
+      "eslint '{services,src}/**/*.ts' --fix",
       "git add"
     ]
   },

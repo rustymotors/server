@@ -8,17 +8,17 @@
 import * as assert from "assert";
 import { Socket } from "net";
 import { Connection } from "./Connection";
-import { pool } from "./database";
-import { IRawPacket } from "./IRawPacket";
+import { pool } from "../services/shared/database";
+import { IRawPacket } from "../services/shared/interfaces/IRawPacket";
 import { LobbyServer } from "./LobbyServer/LobbyServer";
-import { Logger } from "./logger";
+import { Logger } from "../services/shared/logger";
 import { MCOTServer } from "./MCOTS/MCOTServer";
-import { ClientConnectMsg } from "./messageTypes/ClientConnectMsg";
-import { GenericReplyMsg } from "./messageTypes/GenericReplyMsg";
-import { GenericRequestMsg } from "./messageTypes/GenericRequestMsg";
-import { MessageNode } from "./messageTypes/MessageNode";
-import { StockCar } from "./messageTypes/StockCar";
-import { StockCarInfoMsg } from "./messageTypes/StockCarInfoMsg";
+import { ClientConnectMsg } from "../services/shared/messageTypes/ClientConnectMsg";
+import { GenericReplyMsg } from "../services/shared/messageTypes/GenericReplyMsg";
+import { GenericRequestMsg } from "../services/shared/messageTypes/GenericRequestMsg";
+import { MessageNode } from "../services/shared/messageTypes/MessageNode";
+import { StockCar } from "../services/shared/messageTypes/StockCar";
+import { StockCarInfoMsg } from "../services/shared/messageTypes/StockCarInfoMsg";
 
 const logger = new Logger().getLogger();
 const lobbyServer = new LobbyServer();

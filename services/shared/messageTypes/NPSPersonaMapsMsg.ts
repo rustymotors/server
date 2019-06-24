@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as struct from "c-struct";
-import { IPersonaRecord } from "../IPersonaRecord";
+import { IPersonaRecord } from "../interfaces/IPersonaRecord";
 import { Logger } from "../logger";
 import { MSG_DIRECTION, NPSMsg } from "./NPSMsg";
 
