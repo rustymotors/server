@@ -21,7 +21,6 @@ You can either copy the contents of the `.env.example` file into your `.env` fil
   DB_USER=
   DB_TABLE=
   DATABASE_URL=
-  POSTGRES_DB=
   SERVER_IP=
 ```
 
