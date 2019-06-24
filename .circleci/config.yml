@@ -23,7 +23,9 @@ jobs:
             touch services/shared/data/private_key.pem
             touch services/shared/data/pub.key
             touch services/shared/data/cert.pem
-
+      - run:
+          name: Copy .env.example to .env
+          command: cp .env.example .env
       - run:
           name: Run Tests
           command: npm run lint-test
