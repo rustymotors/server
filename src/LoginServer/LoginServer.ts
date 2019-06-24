@@ -22,14 +22,15 @@ async function _updateSessionKey(
   connectionId: string
 ) {
   const sKey = sessionKey.substr(0, 16);
-  return pool
-    .query(
+  const db = await pool;
+  return await db
+    .get(
       `INSERT INTO sessions (customer_id, session_key, s_key, context_id, 
     connection_id) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (customer_id) DO UPDATE SET session_key = $2, s_key = $3, context_id = $4, connection_id = $5`,
       [customerId, sessionKey, sKey, contextId, connectionId]
     )
 
-    .catch(e =>
+    .catch((e: any) =>
       setImmediate(() => {
         throw e;
       })

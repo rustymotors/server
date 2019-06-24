@@ -67,12 +67,13 @@ function encryptCmd(con: Connection, cypherCmd: Buffer) {
  */
 async function fetchSessionKeyByConnectionId(connectionId: string) {
   logger.debug(connectionId);
-  return pool
-    .query("SELECT session_key, s_key FROM sessions WHERE connection_id = $1", [
+  const db = await pool;
+
+  return await db
+    .get("SELECT session_key, s_key FROM sessions WHERE connection_id = ?", [
       connectionId,
     ])
-    .then(res => res.rows[0])
-    .catch(e => {
+    .catch((e: any) => {
       throw new Error(
         `[Lobby] Unable to fetch session key for connection id: ${connectionId}: ${e}`
       );
@@ -81,12 +82,12 @@ async function fetchSessionKeyByConnectionId(connectionId: string) {
 
 async function fetchSessionKeyByCustomerId(customerId: number) {
   logger.debug(customerId.toString());
-  return pool
-    .query("SELECT session_key, s_key FROM sessions WHERE customer_id = $1", [
+  const db = await pool;
+  return await db
+    .get("SELECT session_key, s_key FROM sessions WHERE customer_id = ?", [
       customerId,
     ])
-    .then(res => res.rows[0])
-    .catch(e => {
+    .catch((e: any) => {
       throw new Error(
         `[Lobby] Unable to fetch session key for customerId: ${customerId}: ${e}`
       );
