@@ -20,10 +20,6 @@ You can either copy the contents of the `.env.example` file into your `.env` fil
 ```DB_HOST=
   DB_USER=
   DB_TABLE=
-  DATABASE_URL=
-  POSTGRES_DB=
-  POSTGRES_HOST=
-  POSTGRES_USER=
   SERVER_IP=
 ```
 
