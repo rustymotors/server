@@ -1,4 +1,9 @@
 
+### 1.3.3
+
+* remove unneeded POSTGRESS_USER env
+* add dev values to .env.example
+
 ### 1.3.2
 
 * convert the patch and shard servers to services
