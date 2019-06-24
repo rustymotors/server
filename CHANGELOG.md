@@ -1,4 +1,8 @@
 
+### 1.3.2
+
+* convert the patch and shard servers to services
+
 ### 1.3.1
 
 * add /registry endpoint to download registry file
