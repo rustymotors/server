@@ -69,9 +69,7 @@ async function socketWriteIfOpen(conn: Connection, nodes: MessageNode[]) {
     const { packetToWrite } = await encryptIfNeeded(conn, compressedPacket);
     // Log that we are trying to write
     logger.debug(
-      ` Atempting to write seq: ${packetToWrite.seq} to conn: ${
-        updatedConnection.id
-      }`
+      ` Atempting to write seq: ${packetToWrite.seq} to conn: ${updatedConnection.id}`
     );
 
     // Log the buffer we are writing
@@ -364,9 +362,7 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
         msg.updateBuffer(deciphered);
       } catch (e) {
         throw new Error(
-          `Decrypt() exception thrown! Disconnecting...conId:${
-            newConnection.id
-          }: ${e}`
+          `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}: ${e}`
         );
       }
     }
