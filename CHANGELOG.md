@@ -1,5 +1,6 @@
 ### 1.4.4
 
+- remove unused ts-node
 - add an npm stop script
 
 ### 1.4.3
