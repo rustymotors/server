@@ -12,7 +12,8 @@
     "prebuild": "rm -rf dist/**",
     "build": "npm run prebuild && tsc",
     "prestart": "npm run build",
-    "start": "pm2 start",
+    "start": "pm2 start ecosystem.config.js",
+    "stop": "pm2 delete ecosystem.config.js",
     "test": "npm run lint-test",
     "lint-test": "eslint '{services,src}/**/*.ts' --fix && jest --all"
   },

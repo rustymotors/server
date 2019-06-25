@@ -1,3 +1,7 @@
+### 1.4.4
+
+- add an npm stop script
+
 ### 1.4.3
 
 - switch database from postgres to sqlite
