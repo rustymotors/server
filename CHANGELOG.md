@@ -1,6 +1,6 @@
 ### 1.4.4
 
-- upgrade prettier, husky, eslint
+- upgraded a bunch of things
 - remove unused ts-node
 - add an npm stop script
 
