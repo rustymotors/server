@@ -8,11 +8,12 @@
 import * as dotenvSafe from "dotenv-safe";
 dotenvSafe.config();
 import { Pool } from "pg";
+import * as sqlite from "sqlite";
+
+const dbPromise = Promise.resolve()
+  .then(() => sqlite.open("./database.sqlite"))
+  .then(db => db.migrate({ force: "last" }));
 
 // pools will use environment variables
 // for connection information
-export const pool = new Pool({
-  database: process.env.DB_TABLE,
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-});
+export const pool = dbPromise;

@@ -1,24 +1,28 @@
-CREATE TABLE IF NOT EXISTS "sessions"
+-- Up
+CREATE TABLE
+IF NOT EXISTS "sessions"
 (
    customer_id integer,
    session_key text  NOT NULL,
    s_key text  NOT NULL,
    context_id text  NOT NULL,
    connection_id text  NOT NULL,
-   CONSTRAINT pk_session PRIMARY KEY (customer_id)
-)
-WITH (
-  OIDS = FALSE
+   CONSTRAINT pk_session PRIMARY KEY
+(customer_id)
 );
 
-CREATE TABLE IF NOT EXISTS "lobbies"
+CREATE TABLE
+IF NOT EXISTS "lobbies"
 (
 			lobbyID integer, 
       raceTypeID integer, 
       turfID integer, 
-      riffName character(32), 
-      eTurfName character(256), 
-      clientArt character(11), 
+      riffName character
+(32), 
+      eTurfName character
+(256), 
+      clientArt character
+(11), 
       elementID integer, 
 			turfLength integer, 
       startSlice integer, 
@@ -52,8 +56,10 @@ CREATE TABLE IF NOT EXISTS "lobbies"
       bDamageEnabled smallint, 
       bAIDefault smallint, 
       bAIEnabled smallint, 
-      topDog character(13), 
-      turfOwner character(33), 
+      topDog character
+(13), 
+      turfOwner character
+(33), 
       qualifyingTime integer, 
 			clubNumPlayers integer, 
       clubNumLaps integer, 
@@ -95,8 +101,10 @@ CREATE TABLE IF NOT EXISTS "lobbies"
       teamtBaseTUP integer, 
       raceCashFactor real
 
-)
-WITH (
-  OIDS = FALSE
 );
- 
+
+
+-- Down
+DROP TABLE "sessions";
+
+DROP TABLE "lobbies";

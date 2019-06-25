@@ -12,3 +12,4 @@ data/sessions.db
 junit
 dist
 .env
+database.sqlite
