@@ -135,9 +135,7 @@ function _httpHandler(
       }
       // Unknown request, log it
       logger.debug(
-        `[PATCH] Unknown Request from ${request.socket.remoteAddress} for ${
-          request.method
-        } ${request.url}, banning.`
+        `[PATCH] Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}, banning.`
       );
       banList.push(request.socket.remoteAddress!);
       response.end("foo");
