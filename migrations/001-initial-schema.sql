@@ -7,8 +7,7 @@ IF NOT EXISTS "sessions"
    s_key text  NOT NULL,
    context_id text  NOT NULL,
    connection_id text  NOT NULL,
-   CONSTRAINT pk_session PRIMARY KEY
-(customer_id)
+   CONSTRAINT pk_session PRIMARY KEY (customer_id)
 );
 
 CREATE TABLE
@@ -17,12 +16,9 @@ IF NOT EXISTS "lobbies"
 			lobbyID integer, 
       raceTypeID integer, 
       turfID integer, 
-      riffName character
-(32), 
-      eTurfName character
-(256), 
-      clientArt character
-(11), 
+      riffName character(32), 
+      eTurfName character(256), 
+      clientArt character(11), 
       elementID integer, 
 			turfLength integer, 
       startSlice integer, 
@@ -56,10 +52,8 @@ IF NOT EXISTS "lobbies"
       bDamageEnabled smallint, 
       bAIDefault smallint, 
       bAIEnabled smallint, 
-      topDog character
-(13), 
-      turfOwner character
-(33), 
+      topDog character(13), 
+      turfOwner character(33), 
       qualifyingTime integer, 
 			clubNumPlayers integer, 
       clubNumLaps integer, 
