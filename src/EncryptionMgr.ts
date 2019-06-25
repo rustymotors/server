@@ -54,7 +54,10 @@ export class EncryptionMgr {
    * @memberof EncryptionMgr
    */
   public encrypt(plainText: Buffer): Buffer {
-    return Buffer.from(this.out!.update(plainText, "binary", "hex"), "hex");
+    return Buffer.from(
+      this.out!.update(plainText.toString(), "binary", "hex"),
+      "hex"
+    );
   }
 
   public getSessionKey() {

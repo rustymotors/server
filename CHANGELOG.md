@@ -1,3 +1,9 @@
+### 1.4.4
+
+- upgraded a bunch of things
+- remove unused ts-node
+- add an npm stop script
+
 ### 1.4.3
 
 - switch database from postgres to sqlite

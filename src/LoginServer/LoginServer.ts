@@ -126,9 +126,7 @@ export class LoginServer {
     // logger.debug("Packet as hex: ", data.toString("hex"));
 
     this.logger.info(`=============================================
-    Received login packet on port ${localPort} from ${
-      connection.remoteAddress
-    }...`);
+    Received login packet on port ${localPort} from ${connection.remoteAddress}...`);
     this.logger.debug(`NPS opCode:           ${userStatus.opCode.toString()}`);
     this.logger.debug(`contextId:            ${userStatus.contextId}`);
     this.logger.debug(`Decrypted SessionKey: ${userStatus.sessionKey}`);

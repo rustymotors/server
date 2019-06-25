@@ -42,9 +42,7 @@ export class AdminServer {
     config: IServerConfiguration["serverConfig"]
   ) {
     this.logger.info(
-      `[Admin] Request from ${request.socket.remoteAddress} for ${
-        request.method
-      } ${request.url}`
+      `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );
     switch (request.url) {
       case "/admin/connections":
