@@ -1,6 +1,6 @@
 {
   "name": "mco-server",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "a server",
   "main": "src/server.ts",
   "files": [
