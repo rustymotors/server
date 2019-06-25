@@ -98,14 +98,11 @@ async function socketWriteIfOpen(conn: Connection, nodes: MessageNode[]) {
  * @param {string} remoteAddress
  */
 async function fetchSessionKeyByConnectionId(connectionId: string) {
-  return pool
-    .query("SELECT session_key, s_key FROM sessions WHERE connection_id = $1", [
+  const db = await pool;
+  return await db
+    .get("SELECT session_key, s_key FROM sessions WHERE connection_id = ?", [
       connectionId,
     ])
-    .then(
-      (res: { rows: Array<{ session_key: string; s_key: string }> }) =>
-        res.rows[0]
-    )
     .catch((e: ExceptionInformation) => {
       throw new Error(
         `[TCPManager] Unable to fetch session key for connection id: ${connectionId}: ${e}`
@@ -114,14 +111,11 @@ async function fetchSessionKeyByConnectionId(connectionId: string) {
 }
 
 async function fetchSessionKeyByCustomerId(customerId: number) {
-  return pool
-    .query("SELECT session_key, s_key FROM sessions WHERE customer_id = $1", [
+  const db = await pool;
+  return await db
+    .get("SELECT session_key, s_key FROM sessions WHERE customer_id = ?", [
       customerId,
     ])
-    .then(
-      (res: { rows: Array<{ session_key: string; s_key: string }> }) =>
-        res.rows[0]
-    )
     .catch((e: ExceptionInformation) => {
       throw new Error(
         `[TCPManager] Unable to fetch session key for customer id: ${customerId}: ${e}`
