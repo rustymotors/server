@@ -49,10 +49,9 @@
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^5.0.0",
     "eslint-plugin-prettier": "^3.1.0",
-    "husky": "^2.3.0",
+    "husky": "^2.5.0",
     "jest": "^24.8.0",
     "jest-junit": "^6.4.0",
-    "lint-staged": "^8.1.7",
     "pm2": "^3.5.1",
     "prettier": "^1.18.2",
     "prettier-eslint": "^9.0.0",
@@ -81,15 +80,8 @@
       "plugin:prettier/recommended"
     ]
   },
-  "lint-staged": {
-    "*.js": [
-      "eslint '{services,src}/**/*.ts' --fix",
-      "git add"
-    ]
-  },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
       "pre-push": "npm test"
     }
   },
