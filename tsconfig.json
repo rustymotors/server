@@ -11,7 +11,6 @@
     "noImplicitThis": true,
     "noImplicitReturns": true,
     "strict": true,
-    "types": ["node"],
     "typeRoots": ["./node_modules/@types/", "./typings/"]
   },
   "include": ["./services/**/*", "./src/**/*", "./test/**/*"],
