@@ -3,6 +3,7 @@
 [![CircleCI](https://circleci.com/gh/drazisil/mco-server.svg?style=shield)](https://circleci.com/gh/drazisil/mco-server)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![Greenkeeper badge](https://badges.greenkeeper.io/drazisil/mco-server.svg)](https://greenkeeper.io/)
+[![codecov](https://codecov.io/gh/drazisil/mco-server/branch/master/graph/badge.svg)](https://codecov.io/gh/drazisil/mco-server)
 
 ## About
 
