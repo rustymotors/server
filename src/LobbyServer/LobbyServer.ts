@@ -6,7 +6,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as assert from "assert";
-import { Socket } from "net";
 import { Connection } from "../Connection";
 import { pool } from "../services/shared/database";
 import { IRawPacket } from "../services/shared/interfaces/IRawPacket";
@@ -15,7 +14,7 @@ import { MSG_DIRECTION, NPSMsg } from "../services/shared/messageTypes/NPSMsg";
 import { NPSUserInfo } from "../services/shared/messageTypes/npsUserInfo";
 import { PersonaServer } from "../PersonaServer/PersonaServer";
 
-const logger = new Logger().getLogger();
+const loggers = new Logger().getLoggers();
 
 async function npsSocketWriteIfOpen(conn: Connection, buffer: Buffer) {
   const sock = conn.sock;
@@ -26,7 +25,7 @@ async function npsSocketWriteIfOpen(conn: Connection, buffer: Buffer) {
     throw new Error(
       `[Lobby] Error writing ${buffer.toString("hex")} to ${
         sock.remoteAddress
-      } , ${sock.localPort.toString()}`
+      } , ${sock}`
     );
   }
   return conn;
@@ -42,8 +41,10 @@ function decryptCmd(con: Connection, cypherCmd: Buffer) {
   const decryptedCommand = s.decipherBufferDES(cypherCmd);
   s.decryptedCmd = decryptedCommand;
   // TODO: Don't output the enchiphered command once we know we are correctly deciphering it
-  logger.debug(`[lobby] Enciphered Cmd: ${cypherCmd.toString("hex")}`);
-  logger.debug(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`);
+  loggers.both.debug(`[lobby] Enciphered Cmd: ${cypherCmd.toString("hex")}`);
+  loggers.both.debug(
+    `[lobby] Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`
+  );
   return s;
 }
 
@@ -63,7 +64,7 @@ function encryptCmd(con: Connection, cypherCmd: Buffer) {
  * @param {string} remoteAddress
  */
 async function fetchSessionKeyByConnectionId(connectionId: string) {
-  logger.debug(connectionId);
+  loggers.both.debug(connectionId);
   const db = await pool;
 
   return await db
@@ -78,7 +79,7 @@ async function fetchSessionKeyByConnectionId(connectionId: string) {
 }
 
 async function fetchSessionKeyByCustomerId(customerId: number) {
-  logger.debug(customerId.toString());
+  loggers.both.debug(customerId.toString());
   const db = await pool;
   return await db
     .get("SELECT session_key, s_key FROM sessions WHERE customer_id = ?", [
@@ -107,7 +108,7 @@ export async function sendCommand(con: Connection, data: Buffer) {
   const incommingRequest = new NPSMsg(MSG_DIRECTION.RECIEVED);
   incommingRequest.deserialize(decipheredCommand);
 
-  logger.debug(`Imcomming NPS Command...`);
+  loggers.both.debug(`Incomming NPS Command...`);
   incommingRequest.dumpPacket();
 
   // Create the packet content
@@ -147,9 +148,9 @@ export class LobbyServer {
   }
   public async dataHandler(rawPacket: IRawPacket) {
     const { localPort, remoteAddress } = rawPacket;
-    logger.info(`=============================================
+    loggers.both.info(`=============================================
     [Lobby] Received packet on port ${localPort} from ${remoteAddress}...`);
-    logger.info("=============================================");
+    loggers.both.info("=============================================");
     const { connection, data } = rawPacket;
     const { sock } = connection;
     let updatedConnection = connection;
@@ -162,16 +163,21 @@ export class LobbyServer {
           connection,
           data
         );
-        logger.debug(
+        loggers.both.debug(
           `[Lobby/Connect] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
         );
-        npsSocketWriteIfOpen(connection, responsePacket.serialize());
+        // TODO: Investigate why this crashes retail
+        try {
+          npsSocketWriteIfOpen(connection, responsePacket.serialize());
+        } catch (error) {
+          loggers.both.error(error);
+        }
         break;
       }
       // npsHeartbeat
       case "217": {
         const responsePacket = await this._npsHeartbeat();
-        logger.debug(
+        loggers.both.debug(
           `[Lobby/Heartbeat] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
         );
         npsSocketWriteIfOpen(connection, responsePacket.serialize());
@@ -191,7 +197,7 @@ export class LobbyServer {
           );
         }
 
-        logger.debug(
+        loggers.both.debug(
           `[Lobby/CMD] encrypedCommand's data prior to sending: ${encryptedCmd.toString(
             "hex"
           )}`
@@ -223,10 +229,10 @@ export class LobbyServer {
     rawData: Buffer
   ) {
     const { sock } = connection;
-    logger.debug("*** _npsRequestGameConnectServer ****");
-    logger.debug(`Packet from ${sock.remoteAddress}`);
-    logger.debug(`Packet as hex: ${rawData.toString("hex")}`);
-    logger.debug("************************************");
+    loggers.both.debug("*** _npsRequestGameConnectServer ***");
+    loggers.both.debug(`Packet from ${sock.remoteAddress}`);
+    loggers.both.debug(`Packet as hex: ${rawData.toString("hex")}`);
+    loggers.both.debug("************************************");
 
     // // Load the received data into a MsgPack class
     // const msgPack = MsgPack(rawData);
