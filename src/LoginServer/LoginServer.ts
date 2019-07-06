@@ -132,7 +132,7 @@ export class LoginServer {
     const { localPort, remoteAddress } = sock;
     const userStatus = new NPSUserStatus(config, data, this.loggers.both);
 
-    this.loggers.both.info("*** _userLogin ****");
+    this.loggers.both.info("*** _userLogin ***");
     // logger.debug("Packet as hex: ", data.toString("hex"));
 
     this.loggers.both.info(`=============================================
