@@ -10,14 +10,14 @@ import { Connection } from "./Connection";
 import ConnectionMgr from "./connectionMgr";
 import { IRawPacket } from "./services/shared/interfaces/IRawPacket";
 import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
-import { ILoggerInstance } from "./services/shared/logger";
+import { ILoggers } from "./services/shared/logger";
 import { sendPacketOkLogin } from "./TCPManager";
 
 export class ListenerThread {
-  public logger: ILoggerInstance;
+  public loggers: ILoggers;
 
-  constructor(logger: ILoggerInstance) {
-    this.logger = logger;
+  constructor(loggers: ILoggers) {
+    this.loggers = loggers;
   }
 
   /**
@@ -43,7 +43,7 @@ export class ListenerThread {
         timestamp: Date.now(),
       };
       // Dump the raw packet
-      this.logger.debug(
+      this.loggers.both.debug(
         `rawPacket's data prior to proccessing: ${rawPacket.data.toString(
           "hex"
         )}`
@@ -81,7 +81,7 @@ export class ListenerThread {
     const connection = connectionMgr.findOrNewConnection(socket);
 
     const { localPort, remoteAddress } = socket;
-    this.logger.info(
+    this.loggers.both.info(
       `[listenerThread] Client ${remoteAddress} connected to port ${localPort}`
     );
     if (socket.localPort === 7003 && connection.inQueue) {
@@ -89,7 +89,7 @@ export class ListenerThread {
       connection.inQueue = false;
     }
     socket.on("end", () => {
-      this.logger.info(
+      this.loggers.both.info(
         `[listenerThread] Client ${remoteAddress} disconnected from port ${localPort}`
       );
     });

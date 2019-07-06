@@ -8,7 +8,7 @@
 import { Logger } from "../src/services/shared/logger";
 import { LoginServer } from "../src/LoginServer/LoginServer";
 
-const loginServer = new LoginServer(new Logger().getLogger());
+const loginServer = new LoginServer(new Logger().getLoggers());
 
 test("retuns a valid customer id - d316cd2dd6bf870893dfbaaf17f965884e", () => {
   const { customerId, userId } = loginServer._npsGetCustomerIdByContextId(

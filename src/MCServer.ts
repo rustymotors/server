@@ -8,15 +8,15 @@
 import ConnectionMgr from "./connectionMgr";
 import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
 import { ListenerThread } from "./listenerThread";
-import { ILoggerInstance } from "./services/shared/logger";
+import { ILoggerInstance, ILoggers } from "./services/shared/logger";
 
 export class MCServer {
   public mgr: ConnectionMgr;
-  public logger: ILoggerInstance;
+  public loggers: ILoggers;
 
-  constructor(logger: ILoggerInstance) {
-    this.logger = logger;
-    this.mgr = new ConnectionMgr(this.logger);
+  constructor(loggers: ILoggers) {
+    this.loggers = loggers;
+    this.mgr = new ConnectionMgr(this.loggers);
   }
   /**
    * Start the HTTP, HTTPS and TCP connection listeners
@@ -24,8 +24,8 @@ export class MCServer {
    */
 
   public async startServers(config: IServerConfiguration) {
-    const listenerThread = new ListenerThread(this.logger);
-    this.logger.debug("[MCServer] Starting the listening sockets...");
+    const listenerThread = new ListenerThread(this.loggers);
+    this.loggers.both.debug("[MCServer] Starting the listening sockets...");
     const tcpPortList = [
       6660,
       8228,
@@ -56,6 +56,8 @@ export class MCServer {
     await tcpPortList.map(port =>
       listenerThread.startTCPListener(port, this.mgr, config)
     );
-    this.logger.debug("[MCServer] Listening sockets create successfully.");
+    this.loggers.both.debug(
+      "[MCServer] Listening sockets create successfully."
+    );
   }
 }

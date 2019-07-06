@@ -60,7 +60,6 @@ export class NPSPersonaMapsMsg extends NPSMsg {
       this.personaCount = personas.length;
       this.personas = [];
       personas.forEach((persona, idx) => {
-        console.log("ping");
         this.struct.personas[idx] = {
           personaCount: personas.length,
           maxPersonas: personas.length,

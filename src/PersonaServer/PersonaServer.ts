@@ -12,7 +12,7 @@ import { Logger } from "../services/shared/logger";
 import { MSG_DIRECTION, NPSMsg } from "../services/shared/messageTypes/NPSMsg";
 import { NPSPersonaMapsMsg } from "../services/shared/messageTypes/NPSPersonaMapsMsg";
 
-const logger = new Logger().getLogger();
+const loggers = new Logger().getLoggers();
 
 export class PersonaServer {
   private personaList: IPersonaRecord[] = [
@@ -54,7 +54,7 @@ export class PersonaServer {
    * @param {Buffer} rawData
    */
   public async _npsSelectGamePersona(socket: Socket, data: Buffer) {
-    logger.debug(`_npsSelectGamePersona...`);
+    loggers.both.debug(`_npsSelectGamePersona...`);
     const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED)
       .deserialize(data)
       .dumpPacket();
@@ -68,10 +68,10 @@ export class PersonaServer {
     const responsePacket = new NPSMsg(MSG_DIRECTION.SENT);
     responsePacket.msgNo = 0x207;
     responsePacket.setContent(packetContent);
-    logger.debug(`Dumping response...`);
+    loggers.both.debug(`Dumping response...`);
     responsePacket.dumpPacket();
 
-    logger.debug(
+    loggers.both.debug(
       `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return responsePacket;
@@ -84,7 +84,7 @@ export class PersonaServer {
 
     const rPacket = new NPSMsg(MSG_DIRECTION.SENT);
     rPacket.msgNo = 0x601;
-    logger.debug(`Dumping response...`);
+    loggers.both.debug(`Dumping response...`);
     rPacket.dumpPacket();
 
     return rPacket;
@@ -98,7 +98,7 @@ export class PersonaServer {
    * @param {Buffer} data
    */
   public async _npsLogoutGameUser(socket: Socket, data: Buffer) {
-    logger.info("[personaServer] Logging out persona...");
+    loggers.both.info("[personaServer] Logging out persona...");
     const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED)
       .deserialize(data)
       .dumpPacket();
@@ -110,10 +110,10 @@ export class PersonaServer {
     const responsePacket = new NPSMsg(MSG_DIRECTION.SENT);
     responsePacket.msgNo = 0x612;
     responsePacket.setContent(packetContent);
-    logger.debug(`Dumping response...`);
+    loggers.both.debug(`Dumping response...`);
     responsePacket.dumpPacket();
 
-    logger.debug(
+    loggers.both.debug(
       `[npsLogoutGameUser] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return responsePacket;
@@ -125,15 +125,15 @@ export class PersonaServer {
    * @param {Buffer} data
    */
   public async _npsCheckToken(socket: Socket, data: Buffer) {
-    logger.debug(`_npsCheckToken...`);
+    loggers.both.debug(`_npsCheckToken...`);
     const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED)
       .deserialize(data)
       .dumpPacket();
 
     const customerId = data.readInt32BE(12);
     const plateName = data.slice(17).toString();
-    logger.warn(`customerId: ${customerId}`);
-    logger.warn(`Plate name: ${plateName}`);
+    loggers.both.warn(`customerId: ${customerId}`);
+    loggers.both.warn(`Plate name: ${plateName}`);
 
     // Create the packet content
 
@@ -144,11 +144,11 @@ export class PersonaServer {
     const responsePacket = new NPSMsg(MSG_DIRECTION.SENT);
     responsePacket.msgNo = 0x207;
     responsePacket.setContent(packetContent);
-    logger.debug(`Dumping response...`);
+    loggers.both.debug(`Dumping response...`);
     responsePacket.dumpPacket();
     // const responsePacket = buildPacket(1024, 0x0207, packetContent);
 
-    logger.debug(
+    loggers.both.debug(
       `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return responsePacket;
@@ -160,7 +160,7 @@ export class PersonaServer {
    * @param {Buffer} data
    */
   public async _npsValidatePersonaName(socket: Socket, data: Buffer) {
-    logger.debug(`_npsValidatePersonaName...`);
+    loggers.both.debug(`_npsValidatePersonaName...`);
     const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED)
       .deserialize(data)
       .dumpPacket();
@@ -170,9 +170,9 @@ export class PersonaServer {
       .slice(18, data.lastIndexOf(0x00))
       .toString();
     const serviceName = data.slice(data.indexOf(0x0a) + 1).toString();
-    logger.warn(`customerId: ${customerId}`);
-    logger.warn(`Requested persona name: ${requestedPersonaName}`);
-    logger.warn(`Service name: ${serviceName}`);
+    loggers.both.warn(`customerId: ${customerId}`);
+    loggers.both.warn(`Requested persona name: ${requestedPersonaName}`);
+    loggers.both.warn(`Service name: ${serviceName}`);
 
     // Create the packet content
     // TODO: Create a real personas map packet, instead of using a fake one that (mostly) works
@@ -184,10 +184,10 @@ export class PersonaServer {
     const responsePacket = new NPSMsg(MSG_DIRECTION.SENT);
     responsePacket.msgNo = 0x601;
     responsePacket.setContent(packetContent);
-    logger.debug(`Dumping response...`);
+    loggers.both.debug(`Dumping response...`);
     responsePacket.dumpPacket();
 
-    logger.debug(
+    loggers.both.debug(
       `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return responsePacket;
@@ -251,26 +251,26 @@ export class PersonaServer {
    * @param {Buffer} data
    */
   public async _npsGetPersonaMaps(socket: Socket, data: Buffer) {
-    logger.debug(`_npsGetPersonaMaps...`);
+    loggers.both.debug(`_npsGetPersonaMaps...`);
     const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED)
       .deserialize(data)
       .dumpPacket();
     const customerId = Buffer.alloc(4);
     data.copy(customerId, 0, 12);
-    logger.info(
+    loggers.both.info(
       `npsGetPersonaMaps for customerId: ${customerId.readUInt32BE(0)}`
     );
     const personas = await this._npsGetPersonaMapsByCustomerId(
       customerId.readUInt32BE(0)
     );
-    console.debug(
+    loggers.both.debug(
       `${personas.length} personas found for ${customerId.toString("utf8")}`
     );
 
     const personaMapsMsg = new NPSPersonaMapsMsg(MSG_DIRECTION.SENT);
 
     if (personas.length === 0) {
-      logger.error("[_npsGetPersonaMaps] No personas found");
+      loggers.both.error("[_npsGetPersonaMaps] No personas found");
     } else {
       personaMapsMsg.loadMaps(personas);
       personaMapsMsg.dumpPacket();
@@ -287,9 +287,9 @@ export class PersonaServer {
     const { connection, data, localPort, remoteAddress } = rawPacket;
     const { sock } = connection;
     const updatedConnection = connection;
-    logger.info(`=============================================
+    loggers.both.info(`=============================================
     Received packet on port ${localPort} from ${remoteAddress}...`);
-    logger.info("=============================================");
+    loggers.both.info("=============================================");
     const requestCode = data.readUInt16BE(0).toString(16);
     let responsePacket: NPSMsg;
 

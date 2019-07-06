@@ -2,20 +2,22 @@ import * as fs from "fs";
 import * as yaml from "js-yaml";
 import { AdminServer } from "./AdminServer";
 import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
-import { ILoggerInstance, Logger } from "./services/shared/logger";
+import { ILoggerInstance, Logger, ILoggers } from "./services/shared/logger";
 import { MCServer } from "./MCServer";
 
 import * as dotenvSafe from "dotenv-safe";
 dotenvSafe.config();
 
-const logger = new Logger().getLogger();
+const loggers = new Logger().getLoggers();
 
 export class Server {
   public config: IServerConfiguration;
   public logger: ILoggerInstance;
+  public loggers: ILoggers;
 
-  public constructor(thisLogger: ILoggerInstance) {
-    this.logger = thisLogger;
+  public constructor(loggers: ILoggers) {
+    this.loggers = loggers;
+    this.logger = loggers.both;
 
     // Get document, or throw exception on error
     this.config = this.loadConfig("./src/services/shared/config.yml");
@@ -33,7 +35,7 @@ export class Server {
     this.logger.info("Starting servers...");
 
     // Start the MC Server
-    const mcServer = new MCServer(this.logger);
+    const mcServer = new MCServer(this.loggers);
     await mcServer.startServers(this.config);
 
     // Start the Admin server
@@ -45,4 +47,4 @@ export class Server {
   }
 }
 
-const server = new Server(logger);
+const server = new Server(loggers);

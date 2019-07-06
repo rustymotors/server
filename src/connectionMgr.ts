@@ -10,25 +10,26 @@ import { Connection } from "./Connection";
 import { IRawPacket } from "./services/shared/interfaces/IRawPacket";
 import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
 import { LobbyServer } from "./LobbyServer/LobbyServer";
-import { ILoggerInstance } from "./services/shared/logger";
+import { ILoggers } from "./services/shared/logger";
 import { LoginServer } from "./LoginServer/LoginServer";
 import { PersonaServer } from "./PersonaServer/PersonaServer";
 import { defaultHandler } from "./TCPManager";
+import { loggers } from "winston";
 
 const personaServer = new PersonaServer();
 const lobbyServer = new LobbyServer();
 
 export default class ConnectionMgr {
-  public logger: ILoggerInstance;
+  public loggers: ILoggers;
   private connections: Connection[];
   private newConnectionId: number;
   private banList: string[] = [];
 
-  constructor(logger: ILoggerInstance) {
-    if (!logger) {
-      throw new Error("No logger in constructor");
+  constructor(loggers: ILoggers) {
+    if (!loggers) {
+      throw new Error("No loggers in constructor");
     }
-    this.logger = logger;
+    this.loggers = loggers;
     this.connections = [];
     this.newConnectionId = 1;
   }
@@ -42,12 +43,18 @@ export default class ConnectionMgr {
     rawPacket: IRawPacket,
     config: IServerConfiguration
   ) {
-    const loginServer = new LoginServer(this.logger);
+    const loginServer = new LoginServer(this.loggers);
 
     const { remoteAddress, localPort, data } = rawPacket;
 
     switch (localPort) {
       case 8226:
+        this.loggers.file.debug({
+          msg: "logging raw packet",
+          remoteAddress,
+          localPort,
+          data: data.toString("hex"),
+        });
         return loginServer.dataHandler(rawPacket, config);
       case 8228:
         return personaServer.dataHandler(rawPacket);
@@ -62,7 +69,7 @@ export default class ConnectionMgr {
           return rawPacket.connection;
         }
         // Unknown request, log it
-        this.logger.debug(
+        this.loggers.both.debug(
           `[connectionMgr] No known handler for localPort ${localPort},
                 unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.
                 [connectionMgr] Data was: ${data.toString("hex")}, banning.`
@@ -131,12 +138,12 @@ export default class ConnectionMgr {
   public findOrNewConnection(socket: Socket) {
     const { remoteAddress, localPort } = socket;
     if (!remoteAddress) {
-      this.logger.error(socket);
+      this.loggers.both.error(socket);
       throw new Error("Remote address is empty");
     }
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
     if (con !== undefined) {
-      this.logger.info(
+      this.loggers.both.info(
         `[connectionMgr] I have seen connections from ${remoteAddress} on ${localPort} before`
       );
       con.sock = socket;
@@ -148,7 +155,7 @@ export default class ConnectionMgr {
       socket,
       this
     );
-    this.logger.info(
+    this.loggers.both.info(
       `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`
     );
     this.connections.push(newConnection);

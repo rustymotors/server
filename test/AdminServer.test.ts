@@ -8,14 +8,14 @@ import { AdminServer } from "../src/AdminServer";
 import { Logger } from "../src/services/shared/logger";
 import { MCServer } from "../src/MCServer";
 
-const logger = new Logger().getLogger();
-const adminServer = new AdminServer(new MCServer(logger), logger);
+const loggers = new Logger().getLoggers();
+const adminServer = new AdminServer(new MCServer(loggers), loggers.both);
 
 describe("AdminServer", () => {
   test("has instance of MCServer", () => {
     expect(adminServer.mcServer).toBeInstanceOf(MCServer);
   });
   test("has instance of Logger", () => {
-    expect(adminServer.logger).toBe(logger);
+    expect(adminServer.logger).toBe(loggers.both);
   });
 });

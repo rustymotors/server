@@ -16,7 +16,7 @@ describe("Connection class", () => {
     testConnection = new Connection(
       "abc",
       new Socket(),
-      new ConnectionMgr(new Logger().getLogger())
+      new ConnectionMgr(new Logger().getLoggers())
     );
   });
 
@@ -93,12 +93,12 @@ describe("Connection class", () => {
       testConn1 = new Connection(
         "def",
         new Socket(),
-        new ConnectionMgr(new Logger().getLogger())
+        new ConnectionMgr(new Logger().getLoggers())
       );
       testConn2 = new Connection(
         "ghi",
         new Socket(),
-        new ConnectionMgr(new Logger().getLogger())
+        new ConnectionMgr(new Logger().getLoggers())
       );
       testConn1.setEncryptionKey(Buffer.from("abc123", "hex"));
       testConn2.setEncryptionKey(Buffer.from("abc123", "hex"));

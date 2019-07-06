@@ -11,9 +11,15 @@ import * as DailyRotateFile from "winston-daily-rotate-file";
 // tslint:disable-next-line:no-empty-interface
 export interface ILoggerInstance extends winston.Logger {}
 
+export interface ILoggers {
+  both: ILoggerInstance;
+  file: ILoggerInstance;
+}
+
 export class Logger {
   public loggingLevel: string;
-  public logger: winston.Logger;
+  public loggerBoth: winston.Logger;
+  public loggerFile: winston.Logger;
 
   constructor(level: string = "debug") {
     this.loggingLevel = level;
@@ -21,9 +27,19 @@ export class Logger {
       winston.format.colorize({ all: true }),
       winston.format.simple()
     );
-    this.logger = winston.createLogger({
+    this.loggerBoth = winston.createLogger({
       transports: [
         new winston.transports.Console({ level, format: consoleFormat }),
+        new DailyRotateFile({
+          filename: "logs/mcoServer-%DATE%.log",
+          level,
+          datePattern: "YYYY-MM-DD",
+          zippedArchive: true,
+        }),
+      ],
+    });
+    this.loggerFile = winston.createLogger({
+      transports: [
         new DailyRotateFile({
           filename: "logs/mcoServer-%DATE%.log",
           level,
@@ -35,6 +51,10 @@ export class Logger {
   }
 
   public getLogger() {
-    return this.logger;
+    return this.loggerBoth;
+  }
+
+  public getLoggers() {
+    return { both: this.loggerBoth, file: this.loggerFile };
   }
 }
