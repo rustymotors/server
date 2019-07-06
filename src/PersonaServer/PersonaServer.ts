@@ -6,14 +6,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Socket } from "net";
-import { IPersonaRecord } from "../../services/shared/interfaces/IPersonaRecord";
-import { IRawPacket } from "../../services/shared/interfaces/IRawPacket";
-import { Logger } from "../../services/shared/logger";
-import {
-  MSG_DIRECTION,
-  NPSMsg,
-} from "../../services/shared/messageTypes/NPSMsg";
-import { NPSPersonaMapsMsg } from "../../services/shared/messageTypes/NPSPersonaMapsMsg";
+import { IPersonaRecord } from "../services/shared/interfaces/IPersonaRecord";
+import { IRawPacket } from "../services/shared/interfaces/IRawPacket";
+import { Logger } from "../services/shared/logger";
+import { MSG_DIRECTION, NPSMsg } from "../services/shared/messageTypes/NPSMsg";
+import { NPSPersonaMapsMsg } from "../services/shared/messageTypes/NPSPersonaMapsMsg";
 
 const logger = new Logger().getLogger();
 

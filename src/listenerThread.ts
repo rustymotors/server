@@ -8,9 +8,9 @@
 import * as net from "net";
 import { Connection } from "./Connection";
 import ConnectionMgr from "./connectionMgr";
-import { IRawPacket } from "../services/shared/interfaces/IRawPacket";
-import { IServerConfiguration } from "../services/shared/interfaces/IServerConfiguration";
-import { ILoggerInstance } from "../services/shared/logger";
+import { IRawPacket } from "./services/shared/interfaces/IRawPacket";
+import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
+import { ILoggerInstance } from "./services/shared/logger";
 import { sendPacketOkLogin } from "./TCPManager";
 
 export class ListenerThread {

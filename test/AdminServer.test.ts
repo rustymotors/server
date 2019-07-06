@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import { AdminServer } from "../src/AdminServer";
-import { Logger } from "../services/shared/logger";
+import { Logger } from "../src/services/shared/logger";
 import { MCServer } from "../src/MCServer";
 
 const logger = new Logger().getLogger();

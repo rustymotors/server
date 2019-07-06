@@ -8,14 +8,11 @@
 import * as assert from "assert";
 import { Socket } from "net";
 import { Connection } from "../Connection";
-import { pool } from "../../services/shared/database";
-import { IRawPacket } from "../../services/shared/interfaces/IRawPacket";
-import { Logger } from "../../services/shared/logger";
-import {
-  MSG_DIRECTION,
-  NPSMsg,
-} from "../../services/shared/messageTypes/NPSMsg";
-import { NPSUserInfo } from "../../services/shared/messageTypes/npsUserInfo";
+import { pool } from "../services/shared/database";
+import { IRawPacket } from "../services/shared/interfaces/IRawPacket";
+import { Logger } from "../services/shared/logger";
+import { MSG_DIRECTION, NPSMsg } from "../services/shared/messageTypes/NPSMsg";
+import { NPSUserInfo } from "../services/shared/messageTypes/npsUserInfo";
 import { PersonaServer } from "../PersonaServer/PersonaServer";
 
 const logger = new Logger().getLogger();

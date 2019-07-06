@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import * as yaml from "js-yaml";
 import { AdminServer } from "./AdminServer";
-import { IServerConfiguration } from "../services/shared/interfaces/IServerConfiguration";
-import { ILoggerInstance, Logger } from "../services/shared/logger";
+import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
+import { ILoggerInstance, Logger } from "./services/shared/logger";
 import { MCServer } from "./MCServer";
 
 import * as dotenvSafe from "dotenv-safe";

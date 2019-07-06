@@ -8,7 +8,7 @@
 import { Socket } from "net";
 import { Connection } from "../src/Connection";
 import ConnectionMgr from "../src/connectionMgr";
-import { Logger } from "../services/shared/logger";
+import { Logger } from "../src/services/shared/logger";
 
 describe("Connection class", () => {
   let testConnection: Connection;

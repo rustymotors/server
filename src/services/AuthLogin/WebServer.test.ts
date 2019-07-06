@@ -14,7 +14,7 @@ import * as WebServer from "./WebServer";
 const logger = new Logger().getLogger();
 
 const CONFIG: IServerConfiguration = yaml.safeLoad(
-  fs.readFileSync("./services/shared/config.yml", "utf8")
+  fs.readFileSync("./src/services/shared/config.yml", "utf8")
 );
 
 const { serverConfig } = CONFIG;

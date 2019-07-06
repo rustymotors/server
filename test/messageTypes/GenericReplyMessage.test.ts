@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { GenericReplyMsg } from "../../services/shared/messageTypes/GenericReplyMsg";
+import { GenericReplyMsg } from "../../src/services/shared/messageTypes/GenericReplyMsg";
 
 const genericReplyMsg1 = new GenericReplyMsg();
 

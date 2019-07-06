@@ -14,7 +14,7 @@ import * as SSLConfig from "ssl-config";
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
 
 const CONFIG: IServerConfiguration = yaml.safeLoad(
-  fs.readFileSync("./services/shared/config.yml", "utf8")
+  fs.readFileSync("./src/services/shared/config.yml", "utf8")
 );
 
 const { serverConfig } = CONFIG;

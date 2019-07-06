@@ -9,8 +9,8 @@ import * as fs from "fs";
 import { IncomingMessage, ServerResponse } from "http";
 import * as https from "https";
 import * as SSLConfig from "ssl-config";
-import { IServerConfiguration } from "../services/shared/interfaces/IServerConfiguration";
-import { ILoggerInstance } from "../services/shared/logger";
+import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
+import { ILoggerInstance } from "./services/shared/logger";
 import { MCServer } from "./MCServer";
 
 export class AdminServer {
