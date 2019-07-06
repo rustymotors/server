@@ -36,7 +36,8 @@
     "js-yaml": "^3.13.1",
     "sqlite": "^3.0.3",
     "ts-node": "^8.3.0",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "winston-daily-rotate-file": "^3.9.0"
   },
   "devDependencies": {
     "@types/jest": "24.0.15",
