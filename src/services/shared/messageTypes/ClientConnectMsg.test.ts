@@ -5,13 +5,18 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { GenericRequestMsg } from "../../src/services/shared/messageTypes/GenericRequestMsg";
+import { ClientConnectMsg } from "./ClientConnectMsg";
 
-const genericRequestMsg1 = new GenericRequestMsg();
+const clientConnectMsg1 = new ClientConnectMsg(
+  Buffer.concat([
+    Buffer.from([0xb6, 0x01]),
+    Buffer.from("TOMC"),
+    Buffer.alloc(12),
+  ])
+);
 
-describe("GenericRequestMsg", () => {
-  const { msgNo } = genericRequestMsg1;
+describe("ClientConnectMsg", () => {
   test("msgNo is correct", () => {
-    expect(msgNo).toBe(0);
+    expect(clientConnectMsg1.msgNo).toBe(438);
   });
 });

@@ -5,8 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from "../src/services/shared/logger";
-import { LoginServer } from "../src/LoginServer/LoginServer";
+import { Logger } from "../logger";
+import { LoginServer } from "../../../LoginServer/LoginServer";
 
 const loginServer = new LoginServer(new Logger().getLoggers());
 

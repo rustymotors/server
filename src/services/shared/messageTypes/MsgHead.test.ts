@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import MsgHead from "../src/services/shared/messageTypes/MsgHead";
+import MsgHead from "./MsgHead";
 
 const msgHead1 = new MsgHead(
   Buffer.concat([Buffer.from([0x14, 0x00]), Buffer.from("TOMC")])

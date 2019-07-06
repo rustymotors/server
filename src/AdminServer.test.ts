@@ -4,9 +4,9 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import { AdminServer } from "../src/AdminServer";
-import { Logger } from "../src/services/shared/logger";
-import { MCServer } from "../src/services/MCServer/MCServer";
+import { AdminServer } from "./AdminServer";
+import { Logger } from "./services/shared/logger";
+import { MCServer } from "./services/MCServer/MCServer";
 
 const loggers = new Logger().getLoggers();
 const adminServer = new AdminServer(new MCServer(loggers), loggers.both);

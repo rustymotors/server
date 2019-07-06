@@ -5,8 +5,16 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import * as packet from "../src/packet";
+import { GenericReplyMsg } from "./GenericReplyMsg";
 
-test("retuns a buffer packet from premadeLogin", () => {
-  expect(packet.premadeLogin()).toBeInstanceOf(Buffer);
+const genericReplyMsg1 = new GenericReplyMsg();
+
+describe("GenericReplyMsg", () => {
+  const { msgNo, toFrom } = genericReplyMsg1;
+  test("msgNo is correct", () => {
+    expect(msgNo).toBe(0);
+  });
+  test("toFrom is correct", () => {
+    expect(toFrom).toBe(0);
+  });
 });
