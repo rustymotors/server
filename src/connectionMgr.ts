@@ -47,14 +47,16 @@ export default class ConnectionMgr {
 
     const { remoteAddress, localPort, data } = rawPacket;
 
+    // Log the packet as debug
+    this.loggers.file.debug({
+      msg: "logging raw packet",
+      remoteAddress,
+      localPort,
+      data: data.toString("hex"),
+    });
+
     switch (localPort) {
       case 8226:
-        this.loggers.file.debug({
-          msg: "logging raw packet",
-          remoteAddress,
-          localPort,
-          data: data.toString("hex"),
-        });
         return loginServer.dataHandler(rawPacket, config);
       case 8228:
         return personaServer.dataHandler(rawPacket);
