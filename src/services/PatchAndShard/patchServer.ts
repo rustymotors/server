@@ -13,7 +13,7 @@ import { Logger } from "../shared/logger";
 import { ShardEntry } from "./ShardEntry";
 
 const CONFIG: IServerConfiguration = yaml.safeLoad(
-  fs.readFileSync("./services/shared/config.yml", "utf8")
+  fs.readFileSync("./src/services/shared/config.yml", "utf8")
 );
 
 const { serverConfig } = CONFIG;

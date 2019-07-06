@@ -18,7 +18,7 @@ export class Server {
     this.logger = thisLogger;
 
     // Get document, or throw exception on error
-    this.config = this.loadConfig("./services/shared/config.yml");
+    this.config = this.loadConfig("./src/services/shared/config.yml");
 
     if (process.env.SERVER_IP) {
       this.config.serverConfig.ipServer = process.env.SERVER_IP;
