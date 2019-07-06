@@ -18,21 +18,9 @@ Used for the HTTP(S) servers for AuthLogin, Patch and Shard
 
 Used to parse the YAML config file
 
-    "minimum-tls-version": "0.0.3",
-
-Used to set broken SSL settings to work with XP
-
-TODO: Check if still needed when talking to Windows 10
-
     "sqlite": "^3.0.3",
 
 Used for the database
-
-    "ssl-config": "^1.0.0",
-
-Used for setting the SSL setting to use a broken cipher for XP
-
-TODO: Check if this is still needed when talking to Windows 10
 
     "winston": "^3.2.1"
 

@@ -34,9 +34,7 @@
     "dotenv-safe": "^6.1.0",
     "express": "^4.17.1",
     "js-yaml": "^3.13.1",
-    "minimum-tls-version": "0.0.3",
     "sqlite": "^3.0.3",
-    "ssl-config": "^1.0.0",
     "ts-node": "^8.3.0",
     "winston": "^3.2.1"
   },

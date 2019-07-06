@@ -8,7 +8,6 @@
 import * as fs from "fs";
 import { IncomingMessage, ServerResponse } from "http";
 import * as https from "https";
-import * as SSLConfig from "ssl-config";
 import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
 import { ILoggerInstance } from "./services/shared/logger";
 import { MCServer } from "./MCServer";
@@ -25,14 +24,11 @@ export class AdminServer {
    * Create the SSL options object
    */
   public _sslOptions(configuration: IServerConfiguration["serverConfig"]) {
-    const sslConfig = new SSLConfig("old");
     return {
       cert: fs.readFileSync(configuration.certFilename),
-      ciphers: sslConfig.ciphers,
       honorCipherOrder: true,
       key: fs.readFileSync(configuration.privateKeyFilename),
       rejectUnauthorized: false,
-      secureOptions: sslConfig.minimumTLSVersion,
     };
   }
 

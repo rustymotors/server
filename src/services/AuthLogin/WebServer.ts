@@ -9,7 +9,6 @@ import * as fs from "fs";
 import * as yaml from "js-yaml";
 import { Logger } from "../shared/logger";
 import * as https from "https";
-import * as SSLConfig from "ssl-config";
 
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
 
@@ -24,14 +23,11 @@ const logger = new Logger().getLogger();
 export function _sslOptions(
   configuration: IServerConfiguration["serverConfig"]
 ) {
-  const sslConfig = new SSLConfig("old");
   return {
     cert: fs.readFileSync(configuration.certFilename),
-    ciphers: sslConfig.ciphers,
     honorCipherOrder: true,
     key: fs.readFileSync(configuration.privateKeyFilename),
     rejectUnauthorized: false,
-    secureOptions: sslConfig.minimumTLSVersion,
   };
 }
 
