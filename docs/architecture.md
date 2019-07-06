@@ -24,12 +24,6 @@ Used to set broken SSL settings to work with XP
 
 TODO: Check if still needed when talking to Windows 10
 
-    "pg": "^7.11.0",
-
-Used for the database
-
-TODO: Is this still needed since we switched to sqlite?
-
     "sqlite": "^3.0.3",
 
 Used for the database

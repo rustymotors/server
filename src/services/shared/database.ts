@@ -7,7 +7,6 @@
 
 import * as dotenvSafe from "dotenv-safe";
 dotenvSafe.config();
-import { Pool } from "pg";
 import * as sqlite from "sqlite";
 
 const dbPromise = Promise.resolve()
