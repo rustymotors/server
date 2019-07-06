@@ -6,14 +6,14 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Socket } from "net";
-import { Connection } from "./Connection";
-import { IRawPacket } from "./services/shared/interfaces/IRawPacket";
-import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
-import { LobbyServer } from "./LobbyServer/LobbyServer";
-import { ILoggers } from "./services/shared/logger";
-import { LoginServer } from "./LoginServer/LoginServer";
-import { PersonaServer } from "./PersonaServer/PersonaServer";
-import { defaultHandler } from "./TCPManager";
+import { Connection } from "../../Connection";
+import { IRawPacket } from "../shared/interfaces/IRawPacket";
+import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
+import { LobbyServer } from "../../LobbyServer/LobbyServer";
+import { ILoggers } from "../shared/logger";
+import { LoginServer } from "../../LoginServer/LoginServer";
+import { PersonaServer } from "../../PersonaServer/PersonaServer";
+import { defaultHandler } from "../../TCPManager";
 
 const personaServer = new PersonaServer();
 const lobbyServer = new LobbyServer();

@@ -6,9 +6,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import ConnectionMgr from "./connectionMgr";
-import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
+import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
 import { ListenerThread } from "./listenerThread";
-import { ILoggerInstance, ILoggers } from "./services/shared/logger";
+import { ILoggers } from "../shared/logger";
 
 export class MCServer {
   public mgr: ConnectionMgr;

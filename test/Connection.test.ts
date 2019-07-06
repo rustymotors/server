@@ -7,7 +7,7 @@
 
 import { Socket } from "net";
 import { Connection } from "../src/Connection";
-import ConnectionMgr from "../src/connectionMgr";
+import ConnectionMgr from "../src/services/MCServer/connectionMgr";
 import { Logger } from "../src/services/shared/logger";
 
 describe("Connection class", () => {

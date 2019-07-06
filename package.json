@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "prestart": "npm test",
-    "start": "ts-node src/app.js",
+    "start": "ts-node src/app.ts",
     "test": "npm run lint-test",
     "lint-test": "eslint '{services,src}/**/*.ts' --fix && jest --all"
   },

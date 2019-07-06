@@ -6,12 +6,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as net from "net";
-import { Connection } from "./Connection";
+import { Connection } from "../../Connection";
 import ConnectionMgr from "./connectionMgr";
-import { IRawPacket } from "./services/shared/interfaces/IRawPacket";
-import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
-import { ILoggers } from "./services/shared/logger";
-import { sendPacketOkLogin } from "./TCPManager";
+import { IRawPacket } from "../shared/interfaces/IRawPacket";
+import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
+import { ILoggers } from "../shared/logger";
+import { sendPacketOkLogin } from "../../TCPManager";
 
 export class ListenerThread {
   public loggers: ILoggers;

@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import { AdminServer } from "../src/AdminServer";
 import { Logger } from "../src/services/shared/logger";
-import { MCServer } from "../src/MCServer";
+import { MCServer } from "../src/services/MCServer/MCServer";
 
 const loggers = new Logger().getLoggers();
 const adminServer = new AdminServer(new MCServer(loggers), loggers.both);

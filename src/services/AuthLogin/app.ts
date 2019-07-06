@@ -1,9 +1,8 @@
 import * as WebServer from "./WebServer";
+import { ILoggers } from "../../services/shared/logger";
 
-import { Logger } from "../shared/logger";
-
-const logger = new Logger().getLogger();
-
-// Start the AuthLogin server
-const webServer = WebServer.start();
-logger.debug("[webServer] Web Server started");
+export function start(loggers: ILoggers) {
+  // Start the AuthLogin server
+  const webServer = WebServer.start();
+  loggers.both.debug("[webServer] Web Server started");
+}

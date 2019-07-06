@@ -3,7 +3,7 @@ import * as yaml from "js-yaml";
 import { AdminServer } from "./AdminServer";
 import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
 import { ILoggerInstance, Logger, ILoggers } from "./services/shared/logger";
-import { MCServer } from "./MCServer";
+import { MCServer } from "./services/MCServer/MCServer";
 
 import * as dotenvSafe from "dotenv-safe";
 dotenvSafe.config();
@@ -46,5 +46,3 @@ export class Server {
     this.logger.info("Servers started, ready for connections.");
   }
 }
-
-const server = new Server(loggers);

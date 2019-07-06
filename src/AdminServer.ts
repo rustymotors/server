@@ -10,7 +10,7 @@ import { IncomingMessage, ServerResponse } from "http";
 import * as https from "https";
 import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
 import { ILoggerInstance } from "./services/shared/logger";
-import { MCServer } from "./MCServer";
+import { MCServer } from "./services/MCServer/MCServer";
 
 export class AdminServer {
   public mcServer: MCServer;
