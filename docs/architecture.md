@@ -55,3 +55,7 @@ This is the "Shard" where players mingle, and prep for races. Contains most game
 ### Room Server
 
 This is the server where all races take place, one for each race. Not sure if this is a pysically seperate server normally, or a compartment of the [Game Server](#Game)
+
+### Admin Server
+
+This is an interface to view connection records and bans.
