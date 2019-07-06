@@ -43,7 +43,7 @@ export class Logger {
         new DailyRotateFile({
           filename: "logs/mcoServer-%DATE%.log",
           level,
-          datePattern: "YYYY-MM-DD-HH",
+          datePattern: "YYYY-MM-DD",
           zippedArchive: true,
         }),
       ],

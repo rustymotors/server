@@ -55,9 +55,13 @@ export class PersonaServer {
    */
   public async _npsSelectGamePersona(socket: Socket, data: Buffer) {
     loggers.both.debug(`_npsSelectGamePersona...`);
-    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED)
-      .deserialize(data)
-      .dumpPacket();
+    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED).deserialize(data);
+    loggers.file.debug({
+      msg: "NPSMsg request object from _npsSelectGamePersona",
+      NPSMsg: requestPacket.toJSON(),
+    });
+
+    requestPacket.dumpPacket();
 
     // Create the packet content
     const packetContent = Buffer.alloc(251);
@@ -69,6 +73,11 @@ export class PersonaServer {
     responsePacket.msgNo = 0x207;
     responsePacket.setContent(packetContent);
     loggers.both.debug(`Dumping response...`);
+    loggers.file.debug({
+      msg: "NPSMsg response object from _npsSelectGamePersona",
+      NPSMsg: responsePacket.toJSON(),
+    });
+
     responsePacket.dumpPacket();
 
     loggers.both.debug(
@@ -78,13 +87,22 @@ export class PersonaServer {
   }
 
   public async _npsNewGameAccount(sock: Socket, data: Buffer) {
-    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED)
-      .deserialize(data)
-      .dumpPacket();
+    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED).deserialize(data);
+    loggers.file.debug({
+      msg: "NPSMsg response object from _npsNewGameAccount",
+      NPSMsg: requestPacket.toJSON(),
+    });
+
+    requestPacket.dumpPacket();
 
     const rPacket = new NPSMsg(MSG_DIRECTION.SENT);
     rPacket.msgNo = 0x601;
     loggers.both.debug(`Dumping response...`);
+    loggers.file.debug({
+      msg: "NPSMsg response object from _npsNewGameAccount",
+      NPSMsg: rPacket.toJSON(),
+    });
+
     rPacket.dumpPacket();
 
     return rPacket;
@@ -99,9 +117,13 @@ export class PersonaServer {
    */
   public async _npsLogoutGameUser(socket: Socket, data: Buffer) {
     loggers.both.info("[personaServer] Logging out persona...");
-    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED)
-      .deserialize(data)
-      .dumpPacket();
+    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED).deserialize(data);
+    loggers.file.debug({
+      msg: "NPSMsg request object from _npsLogoutGameUser",
+      NPSMsg: requestPacket.toJSON(),
+    });
+
+    requestPacket.dumpPacket();
 
     // Create the packet content
     const packetContent = Buffer.alloc(257);
@@ -111,6 +133,11 @@ export class PersonaServer {
     responsePacket.msgNo = 0x612;
     responsePacket.setContent(packetContent);
     loggers.both.debug(`Dumping response...`);
+    loggers.file.debug({
+      msg: "NPSMsg response object from _npsLogoutGameUser",
+      NPSMsg: responsePacket.toJSON(),
+    });
+
     responsePacket.dumpPacket();
 
     loggers.both.debug(
@@ -126,9 +153,13 @@ export class PersonaServer {
    */
   public async _npsCheckToken(socket: Socket, data: Buffer) {
     loggers.both.debug(`_npsCheckToken...`);
-    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED)
-      .deserialize(data)
-      .dumpPacket();
+    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED).deserialize(data);
+    loggers.file.debug({
+      msg: "NPSMsg request object from _npsCheckToken",
+      NPSMsg: requestPacket.toJSON(),
+    });
+
+    requestPacket.dumpPacket();
 
     const customerId = data.readInt32BE(12);
     const plateName = data.slice(17).toString();
@@ -145,6 +176,10 @@ export class PersonaServer {
     responsePacket.msgNo = 0x207;
     responsePacket.setContent(packetContent);
     loggers.both.debug(`Dumping response...`);
+    loggers.file.debug({
+      msg: "NPSMsg response object from _npsCheckToken",
+      NPSMsg: responsePacket.toJSON(),
+    });
     responsePacket.dumpPacket();
     // const responsePacket = buildPacket(1024, 0x0207, packetContent);
 
@@ -161,9 +196,13 @@ export class PersonaServer {
    */
   public async _npsValidatePersonaName(socket: Socket, data: Buffer) {
     loggers.both.debug(`_npsValidatePersonaName...`);
-    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED)
-      .deserialize(data)
-      .dumpPacket();
+    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED).deserialize(data);
+
+    loggers.file.debug({
+      msg: "NPSMsg request object from _npsValidatePersonaName",
+      NPSMsg: requestPacket.toJSON(),
+    });
+    requestPacket.dumpPacket();
 
     const customerId = data.readInt32BE(12);
     const requestedPersonaName = data
@@ -184,7 +223,12 @@ export class PersonaServer {
     const responsePacket = new NPSMsg(MSG_DIRECTION.SENT);
     responsePacket.msgNo = 0x601;
     responsePacket.setContent(packetContent);
+
     loggers.both.debug(`Dumping response...`);
+    loggers.file.debug({
+      msg: "NPSMsg response object from _npsValidatePersonaName",
+      NPSMsg: responsePacket.toJSON(),
+    });
     responsePacket.dumpPacket();
 
     loggers.both.debug(
@@ -252,9 +296,14 @@ export class PersonaServer {
    */
   public async _npsGetPersonaMaps(socket: Socket, data: Buffer) {
     loggers.both.debug(`_npsGetPersonaMaps...`);
-    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED)
-      .deserialize(data)
-      .dumpPacket();
+    const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED).deserialize(data);
+
+    loggers.file.debug({
+      msg: "NPSMsg request object from _npsGetPersonaMaps",
+      NPSMsg: requestPacket.toJSON(),
+    });
+    requestPacket.dumpPacket();
+
     const customerId = Buffer.alloc(4);
     data.copy(customerId, 0, 12);
     loggers.both.info(
@@ -273,6 +322,10 @@ export class PersonaServer {
       loggers.both.error("[_npsGetPersonaMaps] No personas found");
     } else {
       personaMapsMsg.loadMaps(personas);
+      loggers.file.debug({
+        msg: "NPSMsg response object from _npsGetPersonaMaps",
+        NPSMsg: personaMapsMsg.toJSON(),
+      });
       personaMapsMsg.dumpPacket();
     }
     return personaMapsMsg;

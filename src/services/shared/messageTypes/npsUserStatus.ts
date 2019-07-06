@@ -82,4 +82,13 @@ export class NPSUserStatus {
 
     return sessionKey;
   }
+
+  public toJSON() {
+    return {
+      opCode: this.opCode,
+      contextId: this.contextId,
+      sessionKey: this.sessionKey,
+      rawBuffer: this.buffer.toString("hex"),
+    };
+  }
 }

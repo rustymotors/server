@@ -81,4 +81,14 @@ export class NPSMsg {
     logger.debug(`Serialized:    ${this.serialize().toString("hex")}`);
     logger.debug("[/NPSMsg]======================================");
   }
+
+  public toJSON() {
+    return {
+      msgNo: this.msgNo.toString(16),
+      msgLength: this.msgLength,
+      msgVersion: this.msgVersion,
+      content: this.content.toString("hex"),
+      direction: this.direction,
+    };
+  }
 }

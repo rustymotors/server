@@ -7,7 +7,7 @@
 
 import { IRawPacket } from "../services/shared/interfaces/IRawPacket";
 import { IServerConfiguration } from "../services/shared/interfaces/IServerConfiguration";
-import { ILoggerInstance, ILoggers } from "../services/shared/logger";
+import { ILoggers } from "../services/shared/logger";
 
 import { NPSUserStatus } from "../services/shared/messageTypes/npsUserStatus";
 
@@ -57,17 +57,12 @@ export class LoginServer {
     const { sock } = connection;
     const requestCode = data.readUInt16BE(0).toString(16);
 
+    let responsePacket;
+
     switch (requestCode) {
       // npsUserLogin
       case "501": {
-        const responsePacket = await this._userLogin(connection, data, config);
-
-        this.loggers.both.debug(
-          `responsePacket's data prior to sending: ${responsePacket.toString(
-            "hex"
-          )}`
-        );
-        sock.write(responsePacket);
+        responsePacket = await this._userLogin(connection, data, config);
         break;
       }
       default:
@@ -75,6 +70,16 @@ export class LoginServer {
           `LOGIN: Unknown code ${requestCode} was received on port 8226`
         );
     }
+    this.loggers.file.debug({
+      msg: "responsePacket object from dataHandler",
+      userStatus: responsePacket.toString("hex"),
+    });
+    this.loggers.both.debug(
+      `responsePacket's data prior to sending: ${responsePacket.toString(
+        "hex"
+      )}`
+    );
+    sock.write(responsePacket);
     return connection;
   }
 
@@ -99,7 +104,7 @@ export class LoginServer {
       return user.contextId === contextId;
     });
     if (userRecord.length != 1) {
-      this.loggers.both.debug({
+      this.loggers.file.debug({
         msg:
           "preparing to leave _npsGetCustomerIdByContextId after not finding record",
         contextId,
@@ -108,7 +113,7 @@ export class LoginServer {
         `Unable to locate user record matching contextId ${contextId}`
       );
     }
-    this.loggers.both.debug({
+    this.loggers.file.debug({
       msg:
         "preparing to leave _npsGetCustomerIdByContextId after finding record",
       contextId,
@@ -132,8 +137,12 @@ export class LoginServer {
     const { localPort, remoteAddress } = sock;
     const userStatus = new NPSUserStatus(config, data, this.loggers.both);
 
+    this.loggers.file.debug({
+      msg: "UserStatus object from _userLogin",
+      userStatus: userStatus.toJSON(),
+    });
+
     this.loggers.both.info("*** _userLogin ***");
-    // logger.debug("Packet as hex: ", data.toString("hex"));
 
     this.loggers.both.info(`=============================================
     Received login packet on port ${localPort} from ${connection.remoteAddress}...`);

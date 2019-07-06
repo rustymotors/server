@@ -14,7 +14,6 @@ import { ILoggers } from "./services/shared/logger";
 import { LoginServer } from "./LoginServer/LoginServer";
 import { PersonaServer } from "./PersonaServer/PersonaServer";
 import { defaultHandler } from "./TCPManager";
-import { loggers } from "winston";
 
 const personaServer = new PersonaServer();
 const lobbyServer = new LobbyServer();
