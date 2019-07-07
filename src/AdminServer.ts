@@ -32,38 +32,39 @@ export class AdminServer {
     };
   }
 
-  public _httpsHandler(
-    request: IncomingMessage,
-    response: ServerResponse,
-    config: IServerConfiguration["serverConfig"]
-  ) {
+  public _handleGetBans() {
+    const banlist = {
+      mcServer: this.mcServer.mgr.getBans(),
+    };
+    return JSON.stringify(banlist);
+  }
+
+  public _handleGetConnections() {
+    const connections = this.mcServer.mgr.dumpConnections();
+    let responseText: string = "";
+    connections.forEach((connection, index) => {
+      const displayConnection = `
+        index: ${index} - ${connection.id}
+            remoteAddress: ${connection.remoteAddress}:${connection.localPort}
+        Encryption ID: ${connection.enc.getId()}
+        `;
+      responseText += displayConnection;
+    });
+    return responseText;
+  }
+
+  public _httpsHandler(request: IncomingMessage, response: ServerResponse) {
     this.logger.info(
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );
     switch (request.url) {
       case "/admin/connections":
         response.setHeader("Content-Type", "text/plain");
-        const connections = this.mcServer.mgr.dumpConnections();
-        connections.forEach((connection, index) => {
-          const displayConnection = `
-            index: ${index} - ${connection.id}
-                remoteAddress: ${connection.remoteAddress}:${
-            connection.localPort
-          }
-            Encryption ID: ${connection.enc.getId()}
-            `;
-          response.write(displayConnection);
-        });
-        response.end();
-        return;
+        return response.end(this._handleGetConnections());
 
       case "/admin/bans":
         response.setHeader("Content-Type", "application/json");
-        const banlist = {
-          mcServer: this.mcServer.mgr.getBans(),
-        };
-        response.end(JSON.stringify(banlist));
-        return;
+        return response.end(this._handleGetBans());
 
       default:
         if (request.url && request.url.startsWith("/admin")) {
@@ -80,7 +81,7 @@ export class AdminServer {
       .createServer(
         this._sslOptions(config),
         (req: IncomingMessage, res: ServerResponse) => {
-          this._httpsHandler(req, res, config);
+          this._httpsHandler(req, res);
         }
       )
       .listen({ port: 88, host: "0.0.0.0" })
