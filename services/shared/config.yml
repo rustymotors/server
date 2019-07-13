@@ -1,7 +1,0 @@
-loggerLevel: "debug"
-serverConfig:
-  certFilename: "./services/shared/data/cert.pem"
-  ipServer: "192.168.5.20"
-  privateKeyFilename: "./services/shared/data/private_key.pem"
-  publicKeyFilename: "./services/shared/data/pub.key"
-  registryFilename: "./services/shared/sample.reg"

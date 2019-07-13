@@ -18,27 +18,9 @@ Used for the HTTP(S) servers for AuthLogin, Patch and Shard
 
 Used to parse the YAML config file
 
-    "minimum-tls-version": "0.0.3",
-
-Used to set broken SSL settings to work with XP
-
-TODO: Check if still needed when talking to Windows 10
-
-    "pg": "^7.11.0",
-
-Used for the database
-
-TODO: Is this still needed since we switched to sqlite?
-
     "sqlite": "^3.0.3",
 
 Used for the database
-
-    "ssl-config": "^1.0.0",
-
-Used for setting the SSL setting to use a broken cipher for XP
-
-TODO: Check if this is still needed when talking to Windows 10
 
     "winston": "^3.2.1"
 
@@ -73,3 +55,7 @@ This is the "Shard" where players mingle, and prep for races. Contains most game
 ### Room Server
 
 This is the server where all races take place, one for each race. Not sure if this is a pysically seperate server normally, or a compartment of the [Game Server](#Game)
+
+### Admin Server
+
+This is an interface to view connection records and bans.

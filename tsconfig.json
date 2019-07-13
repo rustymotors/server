@@ -13,6 +13,6 @@
     "strict": true,
     "typeRoots": ["./node_modules/@types/", "./typings/"]
   },
-  "include": ["./services/**/*", "./src/**/*", "./test/**/*"],
+  "include": ["src/services/**/*", "./src/**/*", "./test/**/*"],
   "exclude": ["node_modules"]
 }

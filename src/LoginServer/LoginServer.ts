@@ -5,14 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { IRawPacket } from "../../services/shared/interfaces/IRawPacket";
-import { IServerConfiguration } from "../../services/shared/interfaces/IServerConfiguration";
-import { ILoggerInstance } from "../../services/shared/logger";
+import { IRawPacket } from "../services/shared/interfaces/IRawPacket";
+import { IServerConfiguration } from "../services/shared/interfaces/IServerConfiguration";
+import { ILoggers } from "../services/shared/logger";
 
-import { NPSUserStatus } from "../../services/shared/messageTypes/npsUserStatus";
+import { NPSUserStatus } from "../services/shared/messageTypes/npsUserStatus";
 
 import { Connection } from "../Connection";
-import { pool } from "../../services/shared/database";
+import { pool } from "../services/shared/database";
 import { premadeLogin } from "../packet";
 
 async function _updateSessionKey(
@@ -38,10 +38,10 @@ async function _updateSessionKey(
 }
 
 export class LoginServer {
-  public logger: ILoggerInstance;
+  public loggers: ILoggers;
 
-  constructor(logger: ILoggerInstance) {
-    this.logger = logger;
+  constructor(loggers: ILoggers) {
+    this.loggers = loggers;
   }
 
   public async dataHandler(
@@ -50,24 +50,19 @@ export class LoginServer {
   ) {
     const { connection, data } = rawPacket;
     const { localPort, remoteAddress } = rawPacket;
-    this.logger.info(`=============================================
+    this.loggers.both.info(`=============================================
     Received packet on port ${localPort} from ${remoteAddress}...`);
-    this.logger.info("=============================================");
+    this.loggers.both.info("=============================================");
     // TODO: Check if this can be handled by a MessageNode object
     const { sock } = connection;
     const requestCode = data.readUInt16BE(0).toString(16);
 
+    let responsePacket;
+
     switch (requestCode) {
       // npsUserLogin
       case "501": {
-        const responsePacket = await this._userLogin(connection, data, config);
-
-        this.logger.debug(
-          `responsePacket's data prior to sending: ${responsePacket.toString(
-            "hex"
-          )}`
-        );
-        sock.write(responsePacket);
+        responsePacket = await this._userLogin(connection, data, config);
         break;
       }
       default:
@@ -75,11 +70,21 @@ export class LoginServer {
           `LOGIN: Unknown code ${requestCode} was received on port 8226`
         );
     }
+    this.loggers.file.debug({
+      msg: "responsePacket object from dataHandler",
+      userStatus: responsePacket.toString("hex"),
+    });
+    this.loggers.both.debug(
+      `responsePacket's data prior to sending: ${responsePacket.toString(
+        "hex"
+      )}`
+    );
+    sock.write(responsePacket);
     return connection;
   }
 
   public _npsGetCustomerIdByContextId(contextId: string) {
-    this.logger.debug(`Entering _npsGetCustomerIdByContextId...`);
+    this.loggers.both.debug(`Entering _npsGetCustomerIdByContextId...`);
     const users = [
       {
         contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
@@ -99,11 +104,21 @@ export class LoginServer {
       return user.contextId === contextId;
     });
     if (userRecord.length != 1) {
+      this.loggers.file.debug({
+        msg:
+          "preparing to leave _npsGetCustomerIdByContextId after not finding record",
+        contextId,
+      });
       throw new Error(
         `Unable to locate user record matching contextId ${contextId}`
       );
     }
-    this.logger.debug(userRecord);
+    this.loggers.file.debug({
+      msg:
+        "preparing to leave _npsGetCustomerIdByContextId after finding record",
+      contextId,
+      userRecord,
+    });
     return userRecord[0];
   }
 
@@ -120,37 +135,45 @@ export class LoginServer {
   ) {
     const { sock } = connection;
     const { localPort, remoteAddress } = sock;
-    const userStatus = new NPSUserStatus(config, data, this.logger);
+    const userStatus = new NPSUserStatus(config, data, this.loggers.both);
 
-    this.logger.info("*** _userLogin ****");
-    // logger.debug("Packet as hex: ", data.toString("hex"));
+    this.loggers.file.debug({
+      msg: "UserStatus object from _userLogin",
+      userStatus: userStatus.toJSON(),
+    });
 
-    this.logger.info(`=============================================
+    this.loggers.both.info("*** _userLogin ***");
+
+    this.loggers.both.info(`=============================================
     Received login packet on port ${localPort} from ${connection.remoteAddress}...`);
-    this.logger.debug(`NPS opCode:           ${userStatus.opCode.toString()}`);
-    this.logger.debug(`contextId:            ${userStatus.contextId}`);
-    this.logger.debug(`Decrypted SessionKey: ${userStatus.sessionKey}`);
-    this.logger.info("=============================================");
+    this.loggers.both.debug(
+      `NPS opCode:           ${userStatus.opCode.toString()}`
+    );
+    this.loggers.both.debug(`contextId:            ${userStatus.contextId}`);
+    this.loggers.both.debug(`Decrypted SessionKey: ${userStatus.sessionKey}`);
+    this.loggers.both.info("=============================================");
 
     // Load the customer record by contextId
     // TODO: This needs to be from a database, right now is it static
     const customer = this._npsGetCustomerIdByContextId(userStatus.contextId);
 
     // Save sessionKey in database under customerId
-    this.logger.debug(`Preparing to update session key in db`);
+    this.loggers.both.debug(`Preparing to update session key in db`);
     await _updateSessionKey(
       customer.customerId.readInt32BE(0),
       userStatus.sessionKey,
       userStatus.contextId,
       connection.id
     );
-    this.logger.debug(`Session key updated`);
+    this.loggers.both.debug(`Session key updated`);
 
     // Create the packet content
     // TODO: This needs to be dynamically generated, right now we are using a
     // a static packet that works _most_ of the time
     const packetContent = premadeLogin();
-    this.logger.warn(`Using Premade Login: ${packetContent.toString("hex")}`);
+    this.loggers.both.warn(
+      `Using Premade Login: ${packetContent.toString("hex")}`
+    );
 
     // MsgId: 0x601
     Buffer.from([0x06, 0x01]).copy(packetContent);
