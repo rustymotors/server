@@ -307,7 +307,7 @@ export class PersonaServer {
     const customerId = Buffer.alloc(4);
     data.copy(customerId, 0, 12);
     loggers.both.info(
-l310      `npsGetPersonaMaps for customerId: ${customerId.readUInt32BE(0)}`
+      `npsGetPersonaMaps for customerId: ${customerId.readUInt32BE(0)}`
     );
     const personas = await this._npsGetPersonaMapsByCustomerId(
       customerId.readUInt32BE(0)
