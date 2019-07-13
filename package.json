@@ -102,6 +102,6 @@
     ]
   },
   "jest-junit": {
-    "output": "test-reports/Jest/junit.xml"
+    "output": "test-reports/jest/junit.xml"
   }
 }
