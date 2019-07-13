@@ -307,13 +307,13 @@ export class PersonaServer {
     const customerId = Buffer.alloc(4);
     data.copy(customerId, 0, 12);
     loggers.both.info(
-      `npsGetPersonaMaps for customerId: ${customerId.readUInt32BE(0)}`
+l310      `npsGetPersonaMaps for customerId: ${customerId.readUInt32BE(0)}`
     );
     const personas = await this._npsGetPersonaMapsByCustomerId(
       customerId.readUInt32BE(0)
     );
     loggers.both.debug(
-      `${personas.length} personas found for ${customerId.toString("utf8")}`
+      `${personas.length} personas found for ${customerId.readUInt32BE(0)}`
     );
 
     const personaMapsMsg = new NPSPersonaMapsMsg(MSG_DIRECTION.SENT);
