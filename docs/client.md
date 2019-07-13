@@ -20,11 +20,16 @@ This currently has only been tested with the debug version of the client. If you
 
   You can find help doing this here <http://stackoverflow.com/a/2955546/335583>
 
+### Change the graphics settings
+
+In <game dir>\SaveData\option.ini, change `graphicsModeIndex=4`
+  
+(thanks to [@VladManyanov](https://github.com/VladManyanov) for the tip)
+
 ### Delete the movies
 
 `<game dir>\Data\Movies`
 
 ### Windows 10 Compatibility settings
 
-- run in 640x480
 - Disable fullscreen
