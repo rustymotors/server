@@ -313,7 +313,7 @@ export class PersonaServer {
       customerId.readUInt32BE(0)
     );
     loggers.both.debug(
-      `${personas.length} personas found for ${customerId.toString("utf8")}`
+      `${personas.length} personas found for ${customerId.readUInt32BE(0)}`
     );
 
     const personaMapsMsg = new NPSPersonaMapsMsg(MSG_DIRECTION.SENT);
