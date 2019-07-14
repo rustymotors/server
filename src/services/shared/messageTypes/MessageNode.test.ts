@@ -35,6 +35,16 @@ messageNode1.deserialize(
   ])
 );
 
-test("packet is a MCOTS packet", () => {
-  expect(messageNode1.isMCOTS()).toBe(true);
+describe("MessageNode", () => {
+  test("throws error when not passed long enough buffer", () => {
+    expect(() => {
+      new MessageNode().deserialize(Buffer.from([0x00, 0x00]));
+    }).toThrowError(
+      "[MessageNode] Not long enough to deserialize, only 2 bytes long"
+    );
+  });
+
+  test("packet is a MCOTS packet", () => {
+    expect(messageNode1.isMCOTS()).toBe(true);
+  });
 });
