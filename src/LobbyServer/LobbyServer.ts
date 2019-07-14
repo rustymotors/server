@@ -238,7 +238,7 @@ export class LobbyServer {
     // const msgPack = MsgPack(rawData);
 
     // Return a _NPS_UserInfo structure
-    const userInfo = new NPSUserInfo(rawData);
+    const userInfo = new NPSUserInfo(rawData, loggers);
     userInfo.dumpInfo();
 
     const personaManager = new PersonaServer();

@@ -136,6 +136,7 @@ export class LoginServer {
     const { sock } = connection;
     const { localPort, remoteAddress } = sock;
     const userStatus = new NPSUserStatus(config, data, this.loggers.both);
+    userStatus.extractSessionKeyFromPacket(config.serverConfig, data);
 
     this.loggers.file.debug({
       msg: "UserStatus object from _userLogin",
