@@ -1,14 +1,13 @@
 import { PatchServer } from "./patchServer";
 import { Logger } from "../shared/logger";
 import * as fs from "fs";
-import * as yaml from "js-yaml";
 
 // get instance of loggers
 const loggers = new Logger().getLoggers();
 
 // get instance of config
-const config = yaml.safeLoad(
-  fs.readFileSync("./src/services/shared/config.yml", "utf8")
+const config = JSON.parse(
+  fs.readFileSync("./src/services/shared/config.json", "utf8")
 );
 
 describe("PatchServer", () => {

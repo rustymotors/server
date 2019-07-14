@@ -6,10 +6,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as http from "http";
-import * as fs from "fs";
-import * as yaml from "js-yaml";
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
-import { Logger, ILoggers } from "../shared/logger";
+import { ILoggers } from "../shared/logger";
 import { ShardEntry } from "./ShardEntry";
 
 export class PatchServer {
