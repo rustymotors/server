@@ -35,7 +35,7 @@ export class NPSUserStatus {
   public opCode: number;
   public contextId: string;
   public buffer: Buffer;
-  public sessionKey: string;
+  public sessionKey: string = "";
 
   constructor(
     config: IServerConfiguration,
@@ -52,11 +52,6 @@ export class NPSUserStatus {
     // Save the raw packet
     this.buffer = packet;
 
-    // Save the sessionKey
-    this.sessionKey = this._extractSessionKeyFromPacket(
-      config.serverConfig,
-      packet
-    );
     return this;
   }
 
@@ -66,7 +61,7 @@ export class NPSUserStatus {
    * Take 128 bytes
    * They are the utf-8 of the hex bytes that are the key
    */
-  public _extractSessionKeyFromPacket(
+  public extractSessionKeyFromPacket(
     serverConfig: IServerConfiguration["serverConfig"],
     packet: Buffer
   ) {
