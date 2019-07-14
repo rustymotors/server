@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import * as yaml from "js-yaml";
 import { AdminServer } from "./AdminServer";
 import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
 import { ILoggerInstance, Logger, ILoggers } from "./services/shared/logger";
@@ -15,22 +14,14 @@ export class Server {
   public logger: ILoggerInstance;
   public loggers: ILoggers;
 
-  public constructor(loggers: ILoggers) {
+  public constructor(config: IServerConfiguration, loggers: ILoggers) {
     this.loggers = loggers;
     this.logger = loggers.both;
-
-    // Get document, or throw exception on error
-    this.config = this.loadConfig("./src/services/shared/config.yml");
-
-    if (process.env.SERVER_IP) {
-      this.config.serverConfig.ipServer = process.env.SERVER_IP;
-    }
+    this.config = config;
 
     this.start();
   }
-  public loadConfig(file: string) {
-    return yaml.safeLoad(fs.readFileSync(file, "utf8"));
-  }
+
   private async start() {
     this.logger.info("Starting servers...");
 
