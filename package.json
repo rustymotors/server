@@ -89,8 +89,7 @@
     ],
     "coverageReporters": [
       "lcov",
-      "text",
-      "html"
+      "text"
     ],
     "reporters": [
       "default",
@@ -102,6 +101,6 @@
     ]
   },
   "jest-junit": {
-    "output": "test-reports/Jest/junit.xml"
+    "output": "test-reports/jest/junit.xml"
   }
 }
