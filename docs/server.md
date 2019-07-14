@@ -27,12 +27,6 @@ You can either copy the contents of the `.env.example` file into your `.env` fil
   SERVER_IP=
 ```
 
-## Create Your PostgreSQL Database Tables
-
-To configure your initial database state, run the following at the command prompt:
-
-- `./scripts/migrate.sh 2`
-
 ## Installing
 
 - `npm install`
