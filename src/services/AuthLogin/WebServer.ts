@@ -6,18 +6,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as fs from "fs";
-import * as yaml from "js-yaml";
 import { IncomingMessage, ServerResponse } from "http";
 import { ILoggers } from "../shared/logger";
 import * as https from "https";
 
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
-
-const CONFIG: IServerConfiguration = yaml.safeLoad(
-  fs.readFileSync("./src/services/shared/config.yml", "utf8")
-);
-
-const { serverConfig } = CONFIG;
 
 export class WebServer {
   public config: IServerConfiguration;
@@ -42,15 +35,15 @@ export class WebServer {
   }
 
   public _handleGetCert() {
-    return fs.readFileSync(serverConfig.certFilename);
+    return fs.readFileSync(this.config.serverConfig.certFilename);
   }
 
   public _handleGetKey() {
-    return fs.readFileSync(serverConfig.publicKeyFilename);
+    return fs.readFileSync(this.config.serverConfig.publicKeyFilename);
   }
 
   public _handleGetRegistry() {
-    return fs.readFileSync(serverConfig.registryFilename);
+    return fs.readFileSync(this.config.serverConfig.registryFilename);
   }
 
   public _httpsHandler(request: IncomingMessage, response: ServerResponse) {
