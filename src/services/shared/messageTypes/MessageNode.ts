@@ -32,20 +32,24 @@ export class MessageNode {
   }
 
   public deserialize(packet: Buffer) {
-    this.dataLength = packet.readInt16LE(0);
-    this.mcoSig = packet.slice(2, 6).toString();
-    this.seq = packet.readInt16LE(6);
-    this.flags = packet.readInt8(10);
-
-    // data starts at offset 11
-    this.data = packet.slice(11);
-
-    // set message number
     try {
+      this.dataLength = packet.readInt16LE(0);
+      this.mcoSig = packet.slice(2, 6).toString();
+      this.seq = packet.readInt16LE(6);
+      this.flags = packet.readInt8(10);
+
+      // data starts at offset 11
+      this.data = packet.slice(11);
+
+      // set message number
+
       this.msgNo = this.data.readInt16LE(0);
     } catch (error) {
-      if (error instanceof RangeError) {
+      if (error.name.includes("RangeError")) {
         // This is likeley not an MCOTS packet, ignore
+        throw new Error(
+          `[MessageNode] Not long enough to deserialize, only ${packet.length} bytes long`
+        );
       } else {
         throw new Error(
           `[MessageNode] Unable to read msgNo from ${packet.toString(
