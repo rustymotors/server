@@ -6,17 +6,9 @@
 
 Used for LoginMsg and NPSPersonaMapsMsg
 
-    "dotenv-safe": "^6.1.0",
-
-Used to fail if envs are net set
-
     "express": "^4.17.1",
 
 Used for the HTTP(S) servers for AuthLogin, Patch and Shard
-
-    "js-yaml": "^3.13.1",
-
-Used to parse the YAML config file
 
     "sqlite": "^3.0.3",
 

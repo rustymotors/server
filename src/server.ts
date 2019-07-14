@@ -4,11 +4,6 @@ import { IServerConfiguration } from "./services/shared/interfaces/IServerConfig
 import { ILoggerInstance, Logger, ILoggers } from "./services/shared/logger";
 import { MCServer } from "./services/MCServer/MCServer";
 
-import * as dotenvSafe from "dotenv-safe";
-dotenvSafe.config();
-
-const loggers = new Logger().getLoggers();
-
 export class Server {
   public config: IServerConfiguration;
   public logger: ILoggerInstance;
