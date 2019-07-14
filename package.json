@@ -25,11 +25,9 @@
     "node": "8.15.1"
   },
   "dependencies": {
-    "@types/dotenv-safe": "^5.0.3",
     "@types/node": "^12.0.12",
     "@types/pg": "^7.4.14",
     "c-struct": "0.0.5",
-    "dotenv-safe": "^6.1.0",
     "sqlite": "^3.0.3",
     "ts-node": "^8.3.0",
     "winston": "^3.2.1",

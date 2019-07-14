@@ -1,3 +1,8 @@
+###
+
+- Removed .env
+- Updated docs
+
 ## 2.0.0
 
 - forgot to update changelog, a lot

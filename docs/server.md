@@ -13,20 +13,6 @@ This assumes you know the basics of checking out a git repo. If you don't, pleas
 
 In `src/services/shared/config.json`, change the IP address to the external IP of the machine the server is running on
 
-## Configure Environment Variables
-
-Create a `.env` file at the root of your repository.
-
-_Note that .env files do not have a filename before the extension._
-
-You can either copy the contents of the `.env.example` file into your `.env` file (and fill it in) or you can configure the file by copying the blank template below (and fill it in):
-
-```DB_HOST=
-  DB_USER=
-  DB_TABLE=
-  SERVER_IP=
-```
-
 ## Installing
 
 - `npm install`
