@@ -7,7 +7,8 @@
 
 import * as fs from "fs";
 import * as yaml from "js-yaml";
-import { Logger } from "../shared/logger";
+import { IncomingMessage, ServerResponse } from "http";
+import { ILoggers } from "../shared/logger";
 import * as https from "https";
 
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
@@ -18,53 +19,83 @@ const CONFIG: IServerConfiguration = yaml.safeLoad(
 
 const { serverConfig } = CONFIG;
 
-const logger = new Logger().getLogger();
+export class WebServer {
+  public config: IServerConfiguration;
+  public loggers: ILoggers;
 
-export function _sslOptions(
-  configuration: IServerConfiguration["serverConfig"]
-) {
-  return {
-    cert: fs.readFileSync(configuration.certFilename),
-    honorCipherOrder: true,
-    key: fs.readFileSync(configuration.privateKeyFilename),
-    rejectUnauthorized: false,
-  };
-}
+  constructor(config: IServerConfiguration, loggers: ILoggers) {
+    this.config = config;
+    this.loggers = loggers;
+  }
 
-const express = require("express");
-const app = express();
+  _sslOptions(configuration: IServerConfiguration["serverConfig"]) {
+    return {
+      cert: fs.readFileSync(configuration.certFilename),
+      honorCipherOrder: true,
+      key: fs.readFileSync(configuration.privateKeyFilename),
+      rejectUnauthorized: false,
+    };
+  }
 
-app.use("/AuthLogin", (reg: any, res: any) => {
-  res.set("Content-Type", "text/plain");
-  res.end("Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e");
-});
+  public _handleGetTicket(ticket: string) {
+    return "Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e";
+  }
 
-app.use("/cert", (reg: any, res: any) => {
-  res.set("Content-disposition", "attachment; filename=cert.pem");
-  res.end(fs.readFileSync(serverConfig.certFilename));
-});
+  public _handleGetCert() {
+    return fs.readFileSync(serverConfig.certFilename);
+  }
 
-app.use("/key", (reg: any, res: any) => {
-  res.set("Content-disposition", "attachment; filename=key.pub");
-  res.end(fs.readFileSync(serverConfig.publicKeyFilename));
-});
+  public _handleGetKey() {
+    return fs.readFileSync(serverConfig.publicKeyFilename);
+  }
 
-app.use("/registry", (reg: any, res: any) => {
-  res.set("Content-disposition", "attachment; filename=mco.reg");
-  res.end(fs.readFileSync(serverConfig.registryFilename));
-});
+  public _handleGetRegistry() {
+    return fs.readFileSync(serverConfig.registryFilename);
+  }
 
-app.get("/", (req: any, res: any) => {
-  res.send("Hello World!");
-});
+  public _httpsHandler(request: IncomingMessage, response: ServerResponse) {
+    this.loggers.both.info(
+      `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
+    );
+    if (request.url!.startsWith("/AuthLogin")) {
+      response.setHeader("Content-Type", "text/plain");
+      return response.end(this._handleGetTicket(request.url!));
+    }
 
-app.use(function(req: any, res: any) {
-  logger.debug(`Unknown Request`);
-  res.send("Unknown request.");
-});
+    if (request.url === "/cert") {
+      response.setHeader(
+        "Content-disposition",
+        "attachment; filename=cert.pem"
+      );
+      return response.end(this._handleGetCert());
+    }
 
-export async function start() {
-  const httpsServer = https
-    .createServer(_sslOptions(serverConfig), app)
-    .listen({ port: 443, host: "0.0.0.0" });
+    if (request.url === "/key") {
+      response.setHeader("Content-disposition", "attachment; filename=key.pub");
+      return response.end(this._handleGetKey());
+    }
+
+    if (request.url === "/registry") {
+      response.setHeader("Content-disposition", "attachment; filename=mco.reg");
+      return response.end(this._handleGetRegistry());
+    }
+
+    if (request.url === "/registry") {
+      return response.end("Hello, world!");
+    }
+
+    this.loggers.both.debug(`Unknown Request`);
+    return response.end("Unknown request.");
+  }
+
+  async start() {
+    const httpsServer = https
+      .createServer(
+        this._sslOptions(this.config.serverConfig),
+        (req: IncomingMessage, res: ServerResponse) => {
+          this._httpsHandler(req, res);
+        }
+      )
+      .listen({ port: 443, host: "0.0.0.0" });
+  }
 }
