@@ -41,7 +41,7 @@ You can either copy the contents of the `.env.example` file into your `.env` fil
 - 8228
 - 7003
 
-### Permission to bind to low ports
+### Permission to bind to low ports (on linux)
 
 `sudo setcap cap_net_bind_service=+ep $(which node)`
 
