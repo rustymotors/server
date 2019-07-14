@@ -18,5 +18,6 @@ import { WebServer } from "./services/AuthLogin/WebServer";
 const AuthLogin = new WebServer(config, loggers);
 AuthLogin.start();
 // MCOS PatchAndShard
-import * as PatchAndShard from "./services/PatchAndShard/app";
-PatchAndShard.start(loggers);
+import { PatchServer } from "./services/PatchAndShard/patchServer";
+const patchAndShardServer = new PatchServer(config, loggers);
+patchAndShardServer.start();
