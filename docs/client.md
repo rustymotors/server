@@ -20,14 +20,13 @@ This currently has only been tested with the debug version of the client. If you
 
 ### Change the graphics settings
 
-In <game dir>\SaveData\options.ini, change `graphicsModeIndex=<value>`, according to resolution list:
+In <game dir>\SaveData\options.ini, change the value `graphicsModeIndex=<value>`, according to resolution list:
 
-- `1` for 640x480
-- `2` for 800x600
-- `3` for 1360x768
-- `4` for 1280x1024
-  
-(thanks to [@VladManyanov](https://github.com/VladManyanov) for the tip)
+- `0` for 640x480
+- `1` for 800x600
+- `2` for 1024x768
+- `3` for 1152x864
+- `4` for 1280x960
 
 ### Disable the movies
 
