@@ -15,6 +15,7 @@ Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Electronic Arts\Motor City\1.0]
 "ShardUrl"="http://192.168.5.20/ShardList/"
+"ShardUrlDev"="http://192.168.5.20/ShardList/"
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Electronic Arts\Motor City\AuthAuth]
 "AuthLoginBaseService"="AuthLogin"
