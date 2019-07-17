@@ -43,7 +43,34 @@ export class WebServer {
   }
 
   public _handleGetRegistry() {
-    return fs.readFileSync(this.config.serverConfig.registryFilename);
+    const dynamicRegistryFile = `Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\EACom\\AuthAuth]
+"AuthLoginBaseService"="AuthLogin"
+"AuthLoginServer"="${this.config.serverConfig.ipServer}"
+
+[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City]
+"GamePatch"="games/EA_Seattle/MotorCity/MCO"
+"UpdateInfoPatch"="games/EA_Seattle/MotorCity/UpdateInfo"
+"NPSPatch"="games/EA_Seattle/MotorCity/NPS"
+"PatchServerIP"="${this.config.serverConfig.ipServer}"
+"PatchServerPort"="80"
+"CreateAccount"="${this.config.serverConfig.ipServer}/SubscribeEntry.jsp?prodID=REG-MCO"
+"Language"="English"
+
+[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City\\1.0]
+"ShardUrl"="http://${this.config.serverConfig.ipServer}/ShardList/"
+"ShardUrlDev"="http://${this.config.serverConfig.ipServer}/ShardList/"
+
+[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City\\AuthAuth]
+"AuthLoginBaseService"="AuthLogin"
+"AuthLoginServer"="${this.config.serverConfig.ipServer}"
+
+[HKEY_LOCAL_MACHINE\\Software\\Electronic Arts\\Network Play System]
+"Log"="1"
+
+`;
+    return dynamicRegistryFile;
   }
 
   public _httpsHandler(request: IncomingMessage, response: ServerResponse) {
