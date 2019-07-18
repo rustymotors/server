@@ -12,7 +12,7 @@
     "prestart": "npm test",
     "start": "ts-node src/app.ts",
     "test": "npm run lint-test",
-    "lint-test": "eslint '{services,src}/**/*.ts' --fix && jest --all"
+    "lint-test": "eslint '{services,src}/**/*.ts' --fix && jest --all --ci --runInBand"
   },
   "author": "Joe Becher <jwbecher@drazisil.com> (drazisil.com)",
   "license": "MPL-2.0",
