@@ -29,7 +29,7 @@ export class DatabaseManager {
    * @param {string} remoteAddress
    */
   public async fetchSessionKeyByConnectionId(connectionId: string) {
-    this.loggers.both.debug(connectionId);
+    console.log(connectionId);
     const db = await pool;
 
     return await db
@@ -38,7 +38,7 @@ export class DatabaseManager {
       ])
       .catch((e: any) => {
         throw new Error(
-          `[Lobby] Unable to fetch session key for connection id: ${connectionId}: ${e}`
+          `[databaseManager] Unable to fetch session key for connection id: ${connectionId}: ${e}`
         );
       });
   }
@@ -60,7 +60,9 @@ export class DatabaseManager {
 
       .catch((e: any) =>
         setImmediate(() => {
-          throw e;
+          throw new Error(
+            `[databaseManager] Unable to update session key for connection id: ${connectionId}: ${e}`
+          );
         })
       );
   }

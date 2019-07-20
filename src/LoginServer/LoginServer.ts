@@ -19,9 +19,9 @@ export class LoginServer {
   public loggers: ILoggers;
   public databaseManager: DatabaseManager;
 
-  constructor(loggers: ILoggers) {
+  constructor(loggers: ILoggers, databaseManager: DatabaseManager) {
     this.loggers = loggers;
-    this.databaseManager = new DatabaseManager(loggers);
+    this.databaseManager = databaseManager;
   }
 
   public async dataHandler(

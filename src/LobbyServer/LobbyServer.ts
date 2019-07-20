@@ -14,10 +14,11 @@ import { NPSUserInfo } from "../services/shared/messageTypes/npsUserInfo";
 import { PersonaServer } from "../PersonaServer/PersonaServer";
 import { NPSPacketManager } from "../npsPacketManager";
 import { DatabaseManager } from "../databaseManager";
+import { ConfigManager } from "../configManager";
 
 const loggers = new Logger().getLoggers();
+const config = new ConfigManager().getConfig();
 
-const npsPacketManager = new NPSPacketManager(loggers);
 const databaseManager = new DatabaseManager(loggers);
 
 async function npsSocketWriteIfOpen(conn: Connection, buffer: Buffer) {
@@ -79,11 +80,6 @@ export async function sendCommand(con: Connection, data: Buffer) {
   const incommingRequest = new NPSMsg(MSG_DIRECTION.RECIEVED);
   incommingRequest.deserialize(decipheredCommand);
 
-  loggers.both.debug(
-    `Incomming NPS Command... [${npsPacketManager.msgCodetoName(
-      incommingRequest.msgNo
-    )}]`
-  );
   incommingRequest.dumpPacket();
 
   // Create the packet content

@@ -1,8 +1,19 @@
 import { ILoggers } from "./services/shared/logger";
 import { IRawPacket } from "./services/shared/interfaces/IRawPacket";
+import { LoginServer } from "./LoginServer/LoginServer";
+import { PersonaServer } from "./PersonaServer/PersonaServer";
+import { LobbyServer } from "./LobbyServer/LobbyServer";
+import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
+import { DatabaseManager } from "./databaseManager";
+import { Connection } from "./Connection";
 
 export class NPSPacketManager {
   public loggers: ILoggers;
+  public config: IServerConfiguration;
+  public database: DatabaseManager;
+  public loginServer: LoginServer;
+  public personaServer: PersonaServer;
+  public lobbyServer: LobbyServer;
   public npsKey: string = "";
   public msgNameMapping = [
     { id: 0x100, name: "NPS_LOGIN" },
@@ -18,8 +29,17 @@ export class NPSPacketManager {
     { id: 0x1101, name: "NPS_CRYPTO_DES_CBC" },
   ];
 
-  constructor(loggers: ILoggers) {
+  constructor(
+    loggers: ILoggers,
+    config: IServerConfiguration,
+    databaseManager: DatabaseManager
+  ) {
     this.loggers = loggers;
+    this.config = config;
+    this.database = databaseManager;
+    this.loginServer = new LoginServer(this.loggers, databaseManager);
+    this.personaServer = new PersonaServer();
+    this.lobbyServer = new LobbyServer();
   }
 
   public msgCodetoName(msgId: number) {
@@ -37,20 +57,25 @@ export class NPSPacketManager {
     this.npsKey = key;
   }
 
-  public processNPSPacket(rawPacket: IRawPacket) {
+  public async processNPSPacket(rawPacket: IRawPacket) {
     let msgId = rawPacket.data.readInt16BE(0);
-    if (msgId === 0x1101) {
-      // This packet needs to be decrypted first
-      this.loggers.both.debug(`packet needs to be decrypted`);
-      if (this.npsKey === "") {
-        throw new Error(
-          `[npsPacketManager] Attempted to decrypt packet before setting key`
-        );
-      }
-    }
-
     this.loggers.both.debug(
       `[npsPacketManger] Handling message ${this.msgCodetoName(msgId)}`
     );
+
+    const { localPort } = rawPacket;
+
+    switch (localPort) {
+      case 8226:
+        return this.loginServer.dataHandler(rawPacket, this.config);
+      case 8228:
+        return this.personaServer.dataHandler(rawPacket);
+      case 7003:
+        return this.lobbyServer.dataHandler(rawPacket);
+      default:
+        throw new Error(
+          `[npsPacketManager] ERROR: Recieved a ${msgId} packet on port ${localPort}`
+        );
+    }
   }
 }

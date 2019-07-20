@@ -7,10 +7,12 @@
 
 import { Logger } from "../logger";
 import { NPSPacketManager } from "../../../npsPacketManager";
+import { ConfigManager } from "../../../configManager";
+import { DatabaseManager } from "../../../databaseManager";
 
 const loggers = new Logger().getLoggers();
-
-const npsPacketManager = new NPSPacketManager(loggers);
+const config = new ConfigManager().getConfig();
+const database = new DatabaseManager(loggers);
 
 /*
     NPS messages are sent serialized in BE format
@@ -85,9 +87,7 @@ export class NPSMsg {
       `[NPSMsg/${messageType}] == ${this.direction} ==================`
     );
     loggers.both.debug(
-      `MsgNo:         ${this.msgNo.toString(16)} (${
-        this.msgNo
-      }) [${npsPacketManager.msgCodetoName(this.msgNo)}]`
+      `MsgNo:         ${this.msgNo.toString(16)} (${this.msgNo})`
     );
     loggers.both.debug(`MsgVersion:    ${this.msgVersion}`);
     loggers.both.debug(`contentLength: ${this.msgLength}`);

@@ -7,8 +7,11 @@
 
 import { Logger } from "../logger";
 import { LoginServer } from "../../../LoginServer/LoginServer";
+import { DatabaseManager } from "../../../databaseManager";
+const loggers = new Logger().getLoggers();
+const database = new DatabaseManager(loggers);
 
-const loginServer = new LoginServer(new Logger().getLoggers());
+const loginServer = new LoginServer(new Logger().getLoggers(), database);
 
 test("retuns a valid customer id - d316cd2dd6bf870893dfbaaf17f965884e", () => {
   const { customerId, userId } = loginServer._npsGetCustomerIdByContextId(

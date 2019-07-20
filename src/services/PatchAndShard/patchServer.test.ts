@@ -1,14 +1,13 @@
 import { PatchServer } from "./patchServer";
 import { Logger } from "../shared/logger";
 import * as fs from "fs";
+import { ConfigManager } from "../../configManager";
 
 // get instance of loggers
 const loggers = new Logger().getLoggers();
 
 // get instance of config
-const config = JSON.parse(
-  fs.readFileSync("./src/services/shared/config.json", "utf8")
-);
+const config = new ConfigManager().getConfig();
 
 describe("PatchServer", () => {
   const patchServer = new PatchServer(config, loggers);
