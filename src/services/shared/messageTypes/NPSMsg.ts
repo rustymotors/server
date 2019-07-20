@@ -6,8 +6,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from "../logger";
+import { NPSPacketManager } from "../../../npsPacketManager";
 
-const logger = new Logger().getLogger();
+const loggers = new Logger().getLoggers();
+
+const npsPacketManager = new NPSPacketManager(loggers);
 
 /*
     NPS messages are sent serialized in BE format
@@ -21,17 +24,6 @@ export enum MSG_DIRECTION {
 }
 
 export class NPSMsg {
-  public msgNameMapping = [
-    { id: 0x120, name: "NPS_LOGIN_RESP" },
-    { id: 0x128, name: "NPS_GET_MINI_USER_LIST" },
-    { id: 0x207, name: "NPS_ACK" },
-    { id: 0x229, name: "NPS_MINI_USER_LIST" },
-    { id: 0x30c, name: "NPS_SEND_MINI_RIFF_LIST" },
-    { id: 0x501, name: "NPS_USER_LOGIN" },
-    { id: 0x503, name: "NPS_REGISTER_GAME_LOGIN" },
-    { id: 0x532, name: "NPS_GET_PERSONA_MAPS" },
-    { id: 0x607, name: "NPS_GAME_ACCOUNT_INFO" },
-  ];
   public msgNo: number;
   protected msgLength: number;
   protected msgVersion: number;
@@ -46,13 +38,6 @@ export class NPSMsg {
     this.content = Buffer.from([0x01, 0x02, 0x03, 0x04]);
     this.msgLength = this.content.length + 12;
     this.direction = direction;
-  }
-
-  public msgCodetoName(msgId: number) {
-    const mapping = this.msgNameMapping.find(mapping => {
-      return mapping.id === msgId;
-    });
-    return mapping ? mapping.name : "Unknown msgId";
   }
 
   public setContent(buffer: Buffer) {
@@ -96,16 +81,16 @@ export class NPSMsg {
   }
 
   public dumpPacketHeader(messageType: string) {
-    logger.debug(
+    loggers.both.debug(
       `[NPSMsg/${messageType}] == ${this.direction} ==================`
     );
-    logger.debug(
+    loggers.both.debug(
       `MsgNo:         ${this.msgNo.toString(16)} (${
         this.msgNo
-      }) [${this.msgCodetoName(this.msgNo)}]`
+      }) [${npsPacketManager.msgCodetoName(this.msgNo)}]`
     );
-    logger.debug(`MsgVersion:    ${this.msgVersion}`);
-    logger.debug(`contentLength: ${this.msgLength}`);
+    loggers.both.debug(`MsgVersion:    ${this.msgVersion}`);
+    loggers.both.debug(`contentLength: ${this.msgLength}`);
   }
 
   /**
@@ -113,9 +98,9 @@ export class NPSMsg {
    */
   public dumpPacket() {
     this.dumpPacketHeader("NPSMsg");
-    logger.debug(`Content:       ${this.content.toString("hex")}`);
-    logger.debug(`Serialized:    ${this.serialize().toString("hex")}`);
-    logger.debug("[/NPSMsg]======================================");
+    loggers.both.debug(`Content:       ${this.content.toString("hex")}`);
+    loggers.both.debug(`Serialized:    ${this.serialize().toString("hex")}`);
+    loggers.both.debug("[/NPSMsg]======================================");
   }
 
   public toJSON() {

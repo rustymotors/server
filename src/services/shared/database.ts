@@ -11,6 +11,4 @@ const dbPromise = Promise.resolve()
   .then(() => sqlite.open("./database.sqlite"))
   .then(db => db.migrate({ force: "last" }));
 
-// pools will use environment variables
-// for connection information
 export const pool = dbPromise;

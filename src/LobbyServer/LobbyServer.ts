@@ -7,14 +7,18 @@
 
 import * as assert from "assert";
 import { Connection } from "../Connection";
-import { pool } from "../services/shared/database";
 import { IRawPacket } from "../services/shared/interfaces/IRawPacket";
 import { Logger } from "../services/shared/logger";
 import { MSG_DIRECTION, NPSMsg } from "../services/shared/messageTypes/NPSMsg";
 import { NPSUserInfo } from "../services/shared/messageTypes/npsUserInfo";
 import { PersonaServer } from "../PersonaServer/PersonaServer";
+import { NPSPacketManager } from "../npsPacketManager";
+import { DatabaseManager } from "../databaseManager";
 
 const loggers = new Logger().getLoggers();
+
+const npsPacketManager = new NPSPacketManager(loggers);
+const databaseManager = new DatabaseManager(loggers);
 
 async function npsSocketWriteIfOpen(conn: Connection, buffer: Buffer) {
   const sock = conn.sock;
@@ -60,39 +64,6 @@ function encryptCmd(con: Connection, cypherCmd: Buffer) {
 }
 
 /**
- * Fetch session key from database based on remote address
- * @param {string} remoteAddress
- */
-async function fetchSessionKeyByConnectionId(connectionId: string) {
-  loggers.both.debug(connectionId);
-  const db = await pool;
-
-  return await db
-    .get("SELECT session_key, s_key FROM sessions WHERE connection_id = ?", [
-      connectionId,
-    ])
-    .catch((e: any) => {
-      throw new Error(
-        `[Lobby] Unable to fetch session key for connection id: ${connectionId}: ${e}`
-      );
-    });
-}
-
-async function fetchSessionKeyByCustomerId(customerId: number) {
-  loggers.both.debug(customerId.toString());
-  const db = await pool;
-  return await db
-    .get("SELECT session_key, s_key FROM sessions WHERE customer_id = ?", [
-      customerId,
-    ])
-    .catch((e: any) => {
-      throw new Error(
-        `[Lobby] Unable to fetch session key for customerId: ${customerId}: ${e}`
-      );
-    });
-}
-
-/**
  * Takes a plaintext command packet, encrypts it, and sends it across the connection's socket
  * @param {Connection} con
  * @param {Buffer} data
@@ -109,7 +80,7 @@ export async function sendCommand(con: Connection, data: Buffer) {
   incommingRequest.deserialize(decipheredCommand);
 
   loggers.both.debug(
-    `Incomming NPS Command... [${incommingRequest.msgCodetoName(
+    `Incomming NPS Command... [${npsPacketManager.msgCodetoName(
       incommingRequest.msgNo
     )}]`
   );
@@ -257,7 +228,7 @@ export class LobbyServer {
     const customerId = personas[0].customerId;
 
     // Set the encryption keys on the lobby connection
-    const keys = await fetchSessionKeyByCustomerId(customerId);
+    const keys = await databaseManager.fetchSessionKeyByCustomerId(customerId);
     assert(keys);
     const s = connection;
 

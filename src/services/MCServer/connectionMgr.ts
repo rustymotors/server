@@ -14,6 +14,7 @@ import { ILoggers } from "../shared/logger";
 import { LoginServer } from "../../LoginServer/LoginServer";
 import { PersonaServer } from "../../PersonaServer/PersonaServer";
 import { defaultHandler } from "../../TCPManager";
+import { NPSPacketManager } from "../../npsPacketManager";
 
 const personaServer = new PersonaServer();
 const lobbyServer = new LobbyServer();
@@ -43,6 +44,7 @@ export default class ConnectionMgr {
     config: IServerConfiguration
   ) {
     const loginServer = new LoginServer(this.loggers);
+    const npsPacketManager = new NPSPacketManager(this.loggers);
 
     const { remoteAddress, localPort, data } = rawPacket;
 
@@ -56,10 +58,28 @@ export default class ConnectionMgr {
 
     switch (localPort) {
       case 8226:
+        this.loggers.both.debug(
+          `Recieved NPS packet ${npsPacketManager.msgCodetoName(
+            rawPacket.data.readInt16BE(0)
+          )} on port ${localPort}`
+        );
+        npsPacketManager.processNPSPacket(rawPacket);
         return loginServer.dataHandler(rawPacket, config);
       case 8228:
+        this.loggers.both.debug(
+          `Recieved NPS packet ${npsPacketManager.msgCodetoName(
+            rawPacket.data.readInt16BE(0)
+          )} on port ${localPort}`
+        );
+        npsPacketManager.processNPSPacket(rawPacket);
         return personaServer.dataHandler(rawPacket);
       case 7003:
+        this.loggers.both.debug(
+          `Recieved NPS packet ${npsPacketManager.msgCodetoName(
+            rawPacket.data.readInt16BE(0)
+          )} on port ${localPort}`
+        );
+        npsPacketManager.processNPSPacket(rawPacket);
         return lobbyServer.dataHandler(rawPacket);
       case 43300:
         return defaultHandler(rawPacket);

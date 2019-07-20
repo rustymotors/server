@@ -12,36 +12,16 @@ import { ILoggers } from "../services/shared/logger";
 import { NPSUserStatus } from "../services/shared/messageTypes/npsUserStatus";
 
 import { Connection } from "../Connection";
-import { pool } from "../services/shared/database";
 import { premadeLogin } from "../packet";
-
-async function _updateSessionKey(
-  customerId: number,
-  sessionKey: string,
-  contextId: string,
-  connectionId: string
-) {
-  const sKey = sessionKey.substr(0, 16);
-  const db = await pool;
-  return await db
-    .get(
-      `INSERT INTO sessions (customer_id, session_key, s_key, context_id, 
-    connection_id) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (customer_id) DO UPDATE SET session_key = $2, s_key = $3, context_id = $4, connection_id = $5`,
-      [customerId, sessionKey, sKey, contextId, connectionId]
-    )
-
-    .catch((e: any) =>
-      setImmediate(() => {
-        throw e;
-      })
-    );
-}
+import { DatabaseManager } from "../databaseManager";
 
 export class LoginServer {
   public loggers: ILoggers;
+  public databaseManager: DatabaseManager;
 
   constructor(loggers: ILoggers) {
     this.loggers = loggers;
+    this.databaseManager = new DatabaseManager(loggers);
   }
 
   public async dataHandler(
@@ -153,7 +133,7 @@ export class LoginServer {
 
     // Save sessionKey in database under customerId
     this.loggers.both.debug(`Preparing to update session key in db`);
-    await _updateSessionKey(
+    await this.databaseManager._updateSessionKey(
       customer.customerId.readInt32BE(0),
       userStatus.sessionKey,
       userStatus.contextId,
