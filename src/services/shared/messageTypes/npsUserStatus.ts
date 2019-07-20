@@ -73,9 +73,7 @@ export class NPSUserStatus {
       "hex"
     );
     const decrypted = crypto.privateDecrypt(privateKey, sessionKeyStr);
-    const sessionKey = decrypted.slice(2, -4).toString("hex");
-
-    return sessionKey;
+    this.sessionKey = decrypted.slice(2, -4).toString("hex");
   }
 
   public toJSON() {
