@@ -9,14 +9,10 @@ import { Socket } from "net";
 import { Connection } from "../../Connection";
 import { IRawPacket } from "../shared/interfaces/IRawPacket";
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
-import { LobbyServer } from "../../LobbyServer/LobbyServer";
 import { ILoggers } from "../shared/logger";
-import { LoginServer } from "../../LoginServer/LoginServer";
-import { PersonaServer } from "../../PersonaServer/PersonaServer";
 import { defaultHandler } from "../../TCPManager";
-
-const personaServer = new PersonaServer();
-const lobbyServer = new LobbyServer();
+import { NPSPacketManager } from "../../npsPacketManager";
+import { DatabaseManager } from "../../databaseManager";
 
 export default class ConnectionMgr {
   public loggers: ILoggers;
@@ -42,7 +38,12 @@ export default class ConnectionMgr {
     rawPacket: IRawPacket,
     config: IServerConfiguration
   ) {
-    const loginServer = new LoginServer(this.loggers);
+    const database = new DatabaseManager(this.loggers);
+    const npsPacketManager = new NPSPacketManager(
+      this.loggers,
+      config,
+      database
+    );
 
     const { remoteAddress, localPort, data } = rawPacket;
 
@@ -56,11 +57,26 @@ export default class ConnectionMgr {
 
     switch (localPort) {
       case 8226:
-        return loginServer.dataHandler(rawPacket, config);
+        this.loggers.both.debug(
+          `Recieved NPS packet ${npsPacketManager.msgCodetoName(
+            rawPacket.data.readInt16BE(0)
+          )} on port ${localPort}`
+        );
+        return npsPacketManager.processNPSPacket(rawPacket);
       case 8228:
-        return personaServer.dataHandler(rawPacket);
+        this.loggers.both.debug(
+          `Recieved NPS packet ${npsPacketManager.msgCodetoName(
+            rawPacket.data.readInt16BE(0)
+          )} on port ${localPort}`
+        );
+        return npsPacketManager.processNPSPacket(rawPacket);
       case 7003:
-        return lobbyServer.dataHandler(rawPacket);
+        this.loggers.both.debug(
+          `Recieved NPS packet ${npsPacketManager.msgCodetoName(
+            rawPacket.data.readInt16BE(0)
+          )} on port ${localPort}`
+        );
+        return npsPacketManager.processNPSPacket(rawPacket);
       case 43300:
         return defaultHandler(rawPacket);
       default:
