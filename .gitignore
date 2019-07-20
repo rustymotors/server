@@ -1,7 +1,4 @@
 node_modules
-src/services/shared/data/private_key.pem
-src/services/shared/data/cert.pem
-src/services/shared/data/pub.key
 logs
 coverage
 *.log
