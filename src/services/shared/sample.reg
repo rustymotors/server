@@ -21,6 +21,6 @@ Windows Registry Editor Version 5.00
 "AuthLoginBaseService"="AuthLogin"
 "AuthLoginServer"="192.168.5.20"
 
-[HKEY_LOCAL_MACHINE\Software\Electronic Arts\Network Play System]
+[HKEY_LOCAL_MACHINE\Software\WOW6432Node\Electronic Arts\Network Play System]
 "Log"="1"
 
