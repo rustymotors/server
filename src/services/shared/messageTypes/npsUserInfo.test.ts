@@ -1,6 +1,7 @@
 import { NPSUserInfo } from "./npsUserInfo";
 import { Logger } from "../logger";
 import { IServerConfiguration } from "../interfaces/IServerConfiguration";
+import { MSG_DIRECTION } from "./NPSMsg";
 
 const loggers = new Logger().getLoggers();
 
@@ -10,7 +11,8 @@ describe("NPSUserInfo", () => {
       Buffer.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x84, 0x5f, 0xed]),
       Buffer.alloc(98),
     ]);
-    const npsUserInfo = new NPSUserInfo(testPacket, loggers);
+    const npsUserInfo = new NPSUserInfo(MSG_DIRECTION.RECIEVED, loggers);
+    npsUserInfo.deserialize(testPacket);
     expect(npsUserInfo.userId).toBe(8675309);
   });
 });

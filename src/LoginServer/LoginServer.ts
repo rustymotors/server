@@ -136,23 +136,16 @@ export class LoginServer {
     const { sock } = connection;
     const { localPort, remoteAddress } = sock;
     const userStatus = new NPSUserStatus(config, data, this.loggers.both);
+    this.loggers.both.info(`=============================================
+    Received login packet on port ${localPort} from ${connection.remoteAddress}...`);
+
     userStatus.extractSessionKeyFromPacket(config.serverConfig, data);
 
     this.loggers.file.debug({
       msg: "UserStatus object from _userLogin",
       userStatus: userStatus.toJSON(),
     });
-
-    this.loggers.both.info("*** _userLogin ***");
-
-    this.loggers.both.info(`=============================================
-    Received login packet on port ${localPort} from ${connection.remoteAddress}...`);
-    this.loggers.both.debug(
-      `NPS opCode:           ${userStatus.opCode.toString()}`
-    );
-    this.loggers.both.debug(`contextId:            ${userStatus.contextId}`);
-    this.loggers.both.debug(`Decrypted SessionKey: ${userStatus.sessionKey}`);
-    this.loggers.both.info("=============================================");
+    userStatus.dumpPacket();
 
     // Load the customer record by contextId
     // TODO: This needs to be from a database, right now is it static

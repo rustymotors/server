@@ -9,6 +9,7 @@ import * as crypto from "crypto";
 import * as fs from "fs";
 import { IServerConfiguration } from "../interfaces/IServerConfiguration";
 import { ILoggerInstance } from "../logger";
+import { NPSMsg, MSG_DIRECTION } from "./NPSMsg";
 
 /**
  * Load the RSA private key and return a NodeRSA object
@@ -30,7 +31,7 @@ function fetchPrivateKeyFromFile(privateKeyPath: string) {
  * @returns {LoginPacket}
  */
 
-export class NPSUserStatus {
+export class NPSUserStatus extends NPSMsg {
   public logger: ILoggerInstance;
   public opCode: number;
   public contextId: string;
@@ -42,6 +43,7 @@ export class NPSUserStatus {
     packet: Buffer,
     logger: ILoggerInstance
   ) {
+    super(MSG_DIRECTION.RECIEVED);
     this.logger = logger;
     // Save the NPS opCode
     this.opCode = packet.readInt16LE(0);
@@ -78,10 +80,22 @@ export class NPSUserStatus {
 
   public toJSON() {
     return {
+      msgNo: this.msgNo.toString(16),
+      msgLength: this.msgLength,
+      msgVersion: this.msgVersion,
+      content: this.content.toString("hex"),
+      direction: this.direction,
       opCode: this.opCode,
       contextId: this.contextId,
       sessionKey: this.sessionKey,
       rawBuffer: this.buffer.toString("hex"),
     };
+  }
+
+  public dumpPacket() {
+    this.dumpPacketHeader("NPSUserStatus");
+    this.logger.debug(`contextId:            ${this.contextId}`);
+    this.logger.debug(`Decrypted SessionKey: ${this.sessionKey}`);
+    this.logger.info("=============================================");
   }
 }

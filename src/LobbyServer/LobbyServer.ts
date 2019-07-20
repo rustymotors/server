@@ -108,7 +108,11 @@ export async function sendCommand(con: Connection, data: Buffer) {
   const incommingRequest = new NPSMsg(MSG_DIRECTION.RECIEVED);
   incommingRequest.deserialize(decipheredCommand);
 
-  loggers.both.debug(`Incomming NPS Command...`);
+  loggers.both.debug(
+    `Incomming NPS Command... [${incommingRequest.msgCodetoName(
+      incommingRequest.msgNo
+    )}]`
+  );
   incommingRequest.dumpPacket();
 
   // Create the packet content
@@ -118,6 +122,8 @@ export async function sendCommand(con: Connection, data: Buffer) {
   packetContent.writeUInt16BE(0x0219, 367);
   packetContent.writeUInt16BE(0x0101, 369);
   packetContent.writeUInt16BE(0x022c, 371);
+
+  loggers.both.warn(`Sending a dummy response of 0x229 - NPS_MINI_USER_LIST`);
 
   // Build the packet
   const packetResult = new NPSMsg(MSG_DIRECTION.SENT);
@@ -238,7 +244,8 @@ export class LobbyServer {
     // const msgPack = MsgPack(rawData);
 
     // Return a _NPS_UserInfo structure
-    const userInfo = new NPSUserInfo(rawData, loggers);
+    const userInfo = new NPSUserInfo(MSG_DIRECTION.RECIEVED, loggers);
+    userInfo.deserialize(rawData);
     userInfo.dumpInfo();
 
     const personaManager = new PersonaServer();
