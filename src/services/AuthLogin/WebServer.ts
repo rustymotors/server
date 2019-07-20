@@ -66,7 +66,7 @@ export class WebServer {
 "AuthLoginBaseService"="AuthLogin"
 "AuthLoginServer"="${this.config.serverConfig.ipServer}"
 
-[HKEY_LOCAL_MACHINE\\Software\\Electronic Arts\\Network Play System]
+[HKEY_LOCAL_MACHINE\\Software\\WOW6432Node\\Electronic Arts\\Network Play System]
 "Log"="1"
 
 `;
@@ -91,7 +91,7 @@ export class WebServer {
     }
 
     if (request.url === "/key") {
-      response.setHeader("Content-disposition", "attachment; filename=key.pub");
+      response.setHeader("Content-disposition", "attachment; filename=pub.key");
       return response.end(this._handleGetKey());
     }
 
@@ -100,11 +100,10 @@ export class WebServer {
       return response.end(this._handleGetRegistry());
     }
 
-    if (request.url === "/registry") {
+    if (request.url === "/") {
       return response.end("Hello, world!");
     }
 
-    this.loggers.both.debug(`Unknown Request`);
     return response.end("Unknown request.");
   }
 
