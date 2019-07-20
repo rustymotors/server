@@ -1,5 +1,6 @@
 ### 2.0.1
 
+- Other massive refactoring changes. forgot about the change log. probably on v 3 now, as far as backward compatibility goes.
 - Removed .env
 - Updated docs
 
