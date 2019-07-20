@@ -140,12 +140,7 @@ export class NPSPersonaMapsMsg extends NPSMsg {
   }
 
   public dumpPacket() {
-    logger.debug(`[NPSPersonaMapsMsg] = ${this.direction} ===============`);
-    logger.debug(
-      `MsgNo:               ${this.msgNo.toString(16)} (${this.msgNo})`
-    );
-    logger.debug(`MsgVersion:          ${this.msgVersion}`);
-    logger.debug(`contentLength:       ${this.msgLength}`);
+    this.dumpPacketHeader("NPSPersonaMapsMsg");
     logger.debug(`personaCount:        ${this.personaCount}`);
     for (const persona of this.personas) {
       logger.debug(

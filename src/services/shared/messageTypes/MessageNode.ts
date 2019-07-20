@@ -119,7 +119,7 @@ export class MessageNode {
       .toString("hex")
       .match(/../g);
     if (packetContents) {
-      logger.debug(`packet as string: ${packetContents.join(" ")}`);
+      logger.debug(`packet as string: ${packetContents.join("")}`);
     }
     logger.debug("= MessageNode ==================================");
   }

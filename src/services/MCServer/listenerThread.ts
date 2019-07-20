@@ -44,7 +44,7 @@ export class ListenerThread {
       };
       // Dump the raw packet
       this.loggers.both.debug(
-        `rawPacket's data prior to proccessing: ${rawPacket.data.toString(
+        `[listenerThread] rawPacket's data prior to proccessing: ${rawPacket.data.toString(
           "hex"
         )}`
       );
