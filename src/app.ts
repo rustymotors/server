@@ -1,3 +1,4 @@
+import { ConfigManager } from "./configManager";
 import { Logger } from "./services/shared/logger";
 import * as fs from "fs";
 
@@ -5,9 +6,7 @@ import * as fs from "fs";
 const loggers = new Logger().getLoggers();
 
 // get instance of config
-const config = JSON.parse(
-  fs.readFileSync("./src/services/shared/config.json", "utf8")
-);
+const config = new ConfigManager().getConfig();
 
 // MCOS Monolith
 import { Server } from "./server";

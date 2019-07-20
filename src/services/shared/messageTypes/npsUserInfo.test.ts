@@ -1,6 +1,5 @@
 import { NPSUserInfo } from "./npsUserInfo";
 import { Logger } from "../logger";
-import { IServerConfiguration } from "../interfaces/IServerConfiguration";
 import { MSG_DIRECTION } from "./NPSMsg";
 
 const loggers = new Logger().getLoggers();
