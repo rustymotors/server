@@ -28,11 +28,11 @@ export enum MSG_DIRECTION {
 
 export class NPSMsg {
   public msgNo: number;
-  protected msgLength: number;
-  protected msgVersion: number;
-  protected reserved: number;
-  protected content: Buffer;
-  protected direction: MSG_DIRECTION;
+  public msgLength: number;
+  public msgVersion: number;
+  public reserved: number;
+  public content: Buffer;
+  public direction: MSG_DIRECTION;
 
   constructor(direction: MSG_DIRECTION) {
     this.msgNo = 0;
