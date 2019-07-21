@@ -5,18 +5,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import * as assert from "assert";
 import { Connection } from "../Connection";
 import { IRawPacket } from "../services/shared/interfaces/IRawPacket";
 import { MSG_DIRECTION, NPSMsg } from "../services/shared/messageTypes/NPSMsg";
 import { NPSUserInfo } from "../services/shared/messageTypes/npsUserInfo";
 import { PersonaServer } from "../PersonaServer/PersonaServer";
-import { NPSPacketManager } from "../npsPacketManager";
 import { DatabaseManager } from "../databaseManager";
 import { ConfigManager } from "../configManager";
 import * as bunyan from "bunyan";
 
-const config = new ConfigManager().getConfig();
 const logger = bunyan
   .createLogger({ name: "mcoServer" })
   .child({ module: "LobbyServer" });
@@ -119,9 +116,7 @@ export class LobbyServer {
   }
   public async dataHandler(rawPacket: IRawPacket) {
     const { localPort, remoteAddress } = rawPacket;
-    logger.info(`=============================================
-    [Lobby] Received packet on port ${localPort} from ${remoteAddress}...`);
-    logger.info("=============================================");
+    logger.info({ message: `Received packet`, localPort, remoteAddress });
     const { connection, data } = rawPacket;
     const { sock } = connection;
     let updatedConnection = connection;
@@ -231,7 +226,8 @@ export class LobbyServer {
       try {
         s.setEncryptionKeyDES(keys.s_key);
       } catch (error) {
-        throw new Error(`[Lobby] Unable to set ${keys.s_key} from ${keys}`);
+        logger.fatal({ message: "Unable to set session key", keys, error });
+        process.exit(-1);
       }
     }
 

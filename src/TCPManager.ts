@@ -305,9 +305,6 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
         /**
          * Attempt to decrypt message
          */
-        logger.debug(
-          "==================================================================="
-        );
         const encryptedBuffer = Buffer.from(msg.data);
         logger.warn(
           `Full packet before decrypting: ${encryptedBuffer.toString("hex")}`
@@ -323,10 +320,6 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
         const deciphered = newConnection.enc.decrypt(encryptedBuffer);
         logger.warn(
           `Message buffer after decrypting: ${deciphered.toString("hex")}`
-        );
-
-        logger.debug(
-          "==================================================================="
         );
 
         if (deciphered.readUInt16LE(0) <= 0) {
@@ -373,21 +366,19 @@ export async function defaultHandler(rawPacket: IRawPacket) {
     throw new Error(`[TCPManager] Unable yp pack into MessageNode: ${e}`);
   }
 
-  logger.info(`=============================================
-    Received packet on port ${localPort} from ${remoteAddress}...`);
-  logger.info("=============================================");
+  logger.info({ message: "Received packet", localPort, remoteAddress });
 
   if (messageNode.isMCOTS()) {
     messageNode.dumpPacket();
 
     const newMessage = await MessageReceived(messageNode, connection);
-    logger.debug("Back from MessageRecieved");
+    logger.info("Back from MessageRecieved");
     return newMessage;
   }
-  logger.debug("No valid MCOTS header signature detected, sending to Lobby");
-  logger.info("=============================================");
-  logger.debug(`Buffer as text: ${messageNode.data.toString("utf8")}`);
-  logger.debug(`Buffer as string: ${messageNode.data.toString("hex")}`);
+  logger.info({
+    message: "No valid MCOTS header signature detected, sending to Lobby",
+    data: messageNode.data.toString("hex"),
+  });
 
   const newConnection = await lobbyServer.dataHandler(rawPacket);
   return newConnection;

@@ -92,8 +92,9 @@ export class NPSUserStatus extends NPSMsg {
 
   public dumpPacket() {
     this.dumpPacketHeader("NPSUserStatus");
-    this.logger.debug(`contextId:            ${this.contextId}`);
-    this.logger.debug(`Decrypted SessionKey: ${this.sessionKey}`);
-    this.logger.info("=============================================");
+    this.logger.debug({
+      contextId: this.contextId,
+      sessionKey: this.sessionKey,
+    });
   }
 }

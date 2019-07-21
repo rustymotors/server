@@ -46,9 +46,13 @@ export class LoginServer {
         break;
       }
       default:
-        throw new Error(
-          `LOGIN: Unknown code ${requestCode} was received on port 8226`
-        );
+        this.logger.info({
+          message: "Unknown nps code recieved",
+          requestCode,
+          localPort,
+          data: rawPacket.data.toString("hex"),
+        });
+        return connection;
     }
     this.logger.info({
       message: "responsePacket object from dataHandler",
