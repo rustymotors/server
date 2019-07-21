@@ -8,7 +8,7 @@
 import * as crypto from "crypto";
 import * as fs from "fs";
 import { IServerConfiguration } from "../interfaces/IServerConfiguration";
-import { ILoggerInstance } from "../logger";
+import * as bunyan from "bunyan";
 import { NPSMsg, MSG_DIRECTION } from "./NPSMsg";
 
 /**
@@ -32,19 +32,17 @@ function fetchPrivateKeyFromFile(privateKeyPath: string) {
  */
 
 export class NPSUserStatus extends NPSMsg {
-  public logger: ILoggerInstance;
+  public logger: bunyan;
   public opCode: number;
   public contextId: string;
   public buffer: Buffer;
   public sessionKey: string = "";
 
-  constructor(
-    config: IServerConfiguration,
-    packet: Buffer,
-    logger: ILoggerInstance
-  ) {
+  constructor(config: IServerConfiguration, packet: Buffer) {
     super(MSG_DIRECTION.RECIEVED);
-    this.logger = logger;
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "npsUserStatus" });
     // Save the NPS opCode
     this.opCode = packet.readInt16LE(0);
 

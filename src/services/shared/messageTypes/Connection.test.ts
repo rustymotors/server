@@ -8,16 +8,11 @@
 import { Socket } from "net";
 import { Connection } from "../../../Connection";
 import ConnectionMgr from "../../MCServer/connectionMgr";
-import { Logger } from "../logger";
 
 describe("Connection class", () => {
   let testConnection: Connection;
   beforeEach(() => {
-    testConnection = new Connection(
-      "abc",
-      new Socket(),
-      new ConnectionMgr(new Logger().getLoggers())
-    );
+    testConnection = new Connection("abc", new Socket(), new ConnectionMgr());
   });
 
   test('status == "inactive"', () => {
@@ -90,16 +85,8 @@ describe("Connection class", () => {
       0x45,
     ]);
     beforeAll(() => {
-      testConn1 = new Connection(
-        "def",
-        new Socket(),
-        new ConnectionMgr(new Logger().getLoggers())
-      );
-      testConn2 = new Connection(
-        "ghi",
-        new Socket(),
-        new ConnectionMgr(new Logger().getLoggers())
-      );
+      testConn1 = new Connection("def", new Socket(), new ConnectionMgr());
+      testConn2 = new Connection("ghi", new Socket(), new ConnectionMgr());
       testConn1.setEncryptionKey(Buffer.from("abc123", "hex"));
       testConn2.setEncryptionKey(Buffer.from("abc123", "hex"));
     });

@@ -1,17 +1,17 @@
 import * as fs from "fs";
 import { AdminServer } from "./AdminServer";
 import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
-import { ILoggerInstance, Logger, ILoggers } from "./services/shared/logger";
+import * as bunyan from "bunyan";
 import { MCServer } from "./services/MCServer/MCServer";
 
 export class Server {
   public config: IServerConfiguration;
-  public logger: ILoggerInstance;
-  public loggers: ILoggers;
+  public logger: bunyan;
 
-  public constructor(config: IServerConfiguration, loggers: ILoggers) {
-    this.loggers = loggers;
-    this.logger = loggers.both;
+  public constructor(config: IServerConfiguration) {
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "server" });
     this.config = config;
 
     this.start();
@@ -21,11 +21,11 @@ export class Server {
     this.logger.info("Starting servers...");
 
     // Start the MC Server
-    const mcServer = new MCServer(this.loggers);
+    const mcServer = new MCServer();
     await mcServer.startServers(this.config);
 
     // Start the Admin server
-    const adminServer = new AdminServer(mcServer, this.logger);
+    const adminServer = new AdminServer(mcServer);
     adminServer.start(this.config.serverConfig);
     this.logger.debug("[adminServer] Web Server started");
 

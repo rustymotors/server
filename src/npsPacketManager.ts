@@ -1,4 +1,4 @@
-import { ILoggers } from "./services/shared/logger";
+import * as bunyan from "bunyan";
 import { IRawPacket } from "./services/shared/interfaces/IRawPacket";
 import { LoginServer } from "./LoginServer/LoginServer";
 import { PersonaServer } from "./PersonaServer/PersonaServer";
@@ -8,7 +8,7 @@ import { DatabaseManager } from "./databaseManager";
 import { Connection } from "./Connection";
 
 export class NPSPacketManager {
-  public loggers: ILoggers;
+  public logger: bunyan;
   public config: IServerConfiguration;
   public database: DatabaseManager;
   public loginServer: LoginServer;
@@ -29,15 +29,13 @@ export class NPSPacketManager {
     { id: 0x1101, name: "NPS_CRYPTO_DES_CBC" },
   ];
 
-  constructor(
-    loggers: ILoggers,
-    config: IServerConfiguration,
-    databaseManager: DatabaseManager
-  ) {
-    this.loggers = loggers;
+  constructor(config: IServerConfiguration, databaseManager: DatabaseManager) {
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "npsPacketManager" });
     this.config = config;
     this.database = databaseManager;
-    this.loginServer = new LoginServer(this.loggers, databaseManager);
+    this.loginServer = new LoginServer(databaseManager);
     this.personaServer = new PersonaServer();
     this.lobbyServer = new LobbyServer();
   }
@@ -59,7 +57,7 @@ export class NPSPacketManager {
 
   public async processNPSPacket(rawPacket: IRawPacket) {
     let msgId = rawPacket.data.readInt16BE(0);
-    this.loggers.both.debug(
+    this.logger.debug(
       `[npsPacketManger] Handling message ${this.msgCodetoName(msgId)}`
     );
 

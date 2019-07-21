@@ -7,18 +7,20 @@
 
 import * as fs from "fs";
 import { IncomingMessage, ServerResponse } from "http";
-import { ILoggers } from "../shared/logger";
+import * as bunyan from "bunyan";
 import * as https from "https";
 
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
 
 export class WebServer {
   public config: IServerConfiguration;
-  public loggers: ILoggers;
+  public logger: bunyan;
 
-  constructor(config: IServerConfiguration, loggers: ILoggers) {
+  constructor(config: IServerConfiguration) {
     this.config = config;
-    this.loggers = loggers;
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "WebServer" });
   }
 
   _sslOptions(configuration: IServerConfiguration["serverConfig"]) {
@@ -74,7 +76,7 @@ export class WebServer {
   }
 
   public _httpsHandler(request: IncomingMessage, response: ServerResponse) {
-    this.loggers.both.info(
+    this.logger.info(
       `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );
     if (request.url!.startsWith("/AuthLogin")) {

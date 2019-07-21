@@ -5,12 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Connection } from "../../../Connection";
-import { Logger } from "../logger";
-
-const logger = new Logger().getLogger();
+import * as bunyan from "bunyan";
 
 export class ClientConnectMsg {
+  public logger: bunyan;
   public customerId: number;
   public personaId: number;
   public personaName: string;
@@ -20,6 +18,10 @@ export class ClientConnectMsg {
   private mcVersion: Buffer;
 
   constructor(buffer: Buffer) {
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "ClientConnectMsg" });
+
     try {
       this.msgNo = buffer.readInt16LE(0);
     } catch (error) {
@@ -56,14 +58,18 @@ export class ClientConnectMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    logger.info("[ClientConnectMsg]======================================");
-    logger.debug("MsgNo:       ", this.msgNo.toString());
-    logger.debug("customerId:  ", this.customerId.toString());
-    logger.debug("personaId:   ", this.personaId.toString());
-    logger.debug("custName:    ", this.custName);
-    logger.debug("personaName: ", this.personaName);
-    logger.debug("mcVersion:   ", this.mcVersion.toString("hex"));
-    logger.info("[ClientConnectMsg]======================================");
+    this.logger.info(
+      "[ClientConnectMsg]======================================"
+    );
+    this.logger.debug("MsgNo:       ", this.msgNo.toString());
+    this.logger.debug("customerId:  ", this.customerId.toString());
+    this.logger.debug("personaId:   ", this.personaId.toString());
+    this.logger.debug("custName:    ", this.custName);
+    this.logger.debug("personaName: ", this.personaName);
+    this.logger.debug("mcVersion:   ", this.mcVersion.toString("hex"));
+    this.logger.info(
+      "[ClientConnectMsg]======================================"
+    );
   }
 }
 

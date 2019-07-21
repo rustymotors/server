@@ -10,14 +10,16 @@ import { Connection } from "../../Connection";
 import ConnectionMgr from "./connectionMgr";
 import { IRawPacket } from "../shared/interfaces/IRawPacket";
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
-import { ILoggers } from "../shared/logger";
 import { sendPacketOkLogin } from "../../TCPManager";
+import * as bunyan from "bunyan";
 
 export class ListenerThread {
-  public loggers: ILoggers;
+  public logger: bunyan;
 
-  constructor(loggers: ILoggers) {
-    this.loggers = loggers;
+  constructor() {
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "ListenerThread" });
   }
 
   /**
@@ -43,7 +45,7 @@ export class ListenerThread {
         timestamp: Date.now(),
       };
       // Dump the raw packet
-      this.loggers.both.debug(
+      this.logger.debug(
         `[listenerThread] rawPacket's data prior to proccessing: ${rawPacket.data.toString(
           "hex"
         )}`
@@ -81,7 +83,7 @@ export class ListenerThread {
     const connection = connectionMgr.findOrNewConnection(socket);
 
     const { localPort, remoteAddress } = socket;
-    this.loggers.both.info(
+    this.logger.info(
       `[listenerThread] Client ${remoteAddress} connected to port ${localPort}`
     );
     if (socket.localPort === 7003 && connection.inQueue) {
@@ -89,7 +91,7 @@ export class ListenerThread {
       connection.inQueue = false;
     }
     socket.on("end", () => {
-      this.loggers.both.info(
+      this.logger.debug(
         `[listenerThread] Client ${remoteAddress} disconnected from port ${localPort}`
       );
     });

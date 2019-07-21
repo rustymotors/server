@@ -9,22 +9,21 @@ import { Socket } from "net";
 import { Connection } from "../../Connection";
 import { IRawPacket } from "../shared/interfaces/IRawPacket";
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
-import { ILoggers } from "../shared/logger";
+import * as bunyan from "bunyan";
 import { defaultHandler } from "../../TCPManager";
 import { NPSPacketManager } from "../../npsPacketManager";
 import { DatabaseManager } from "../../databaseManager";
 
 export default class ConnectionMgr {
-  public loggers: ILoggers;
+  public logger: bunyan;
   private connections: Connection[];
   private newConnectionId: number;
   private banList: string[] = [];
 
-  constructor(loggers: ILoggers) {
-    if (!loggers) {
-      throw new Error("No loggers in constructor");
-    }
-    this.loggers = loggers;
+  constructor() {
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "ConnectionManager" });
     this.connections = [];
     this.newConnectionId = 1;
   }
@@ -38,17 +37,13 @@ export default class ConnectionMgr {
     rawPacket: IRawPacket,
     config: IServerConfiguration
   ) {
-    const database = new DatabaseManager(this.loggers);
-    const npsPacketManager = new NPSPacketManager(
-      this.loggers,
-      config,
-      database
-    );
+    const database = new DatabaseManager();
+    const npsPacketManager = new NPSPacketManager(config, database);
 
     const { remoteAddress, localPort, data } = rawPacket;
 
     // Log the packet as debug
-    this.loggers.file.debug({
+    this.logger.debug({
       msg: "logging raw packet",
       remoteAddress,
       localPort,
@@ -57,21 +52,21 @@ export default class ConnectionMgr {
 
     switch (localPort) {
       case 8226:
-        this.loggers.both.debug(
+        this.logger.debug(
           `Recieved NPS packet ${npsPacketManager.msgCodetoName(
             rawPacket.data.readInt16BE(0)
           )} on port ${localPort}`
         );
         return npsPacketManager.processNPSPacket(rawPacket);
       case 8228:
-        this.loggers.both.debug(
+        this.logger.debug(
           `Recieved NPS packet ${npsPacketManager.msgCodetoName(
             rawPacket.data.readInt16BE(0)
           )} on port ${localPort}`
         );
         return npsPacketManager.processNPSPacket(rawPacket);
       case 7003:
-        this.loggers.both.debug(
+        this.logger.debug(
           `Recieved NPS packet ${npsPacketManager.msgCodetoName(
             rawPacket.data.readInt16BE(0)
           )} on port ${localPort}`
@@ -86,7 +81,7 @@ export default class ConnectionMgr {
           return rawPacket.connection;
         }
         // Unknown request, log it
-        this.loggers.both.debug(
+        this.logger.debug(
           `[connectionMgr] No known handler for localPort ${localPort},
                 unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.
                 [connectionMgr] Data was: ${data.toString("hex")}, banning.`
@@ -155,12 +150,12 @@ export default class ConnectionMgr {
   public findOrNewConnection(socket: Socket) {
     const { remoteAddress, localPort } = socket;
     if (!remoteAddress) {
-      this.loggers.both.error(socket);
+      this.logger.error(socket);
       throw new Error("Remote address is empty");
     }
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
     if (con !== undefined) {
-      this.loggers.both.info(
+      this.logger.info(
         `[connectionMgr] I have seen connections from ${remoteAddress} on ${localPort} before`
       );
       con.sock = socket;
@@ -172,7 +167,7 @@ export default class ConnectionMgr {
       socket,
       this
     );
-    this.loggers.both.info(
+    this.logger.info(
       `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`
     );
     this.connections.push(newConnection);

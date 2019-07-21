@@ -4,15 +4,16 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-import { Logger } from "../logger";
+import * as bunyan from "bunyan";
 import { NPSPacketManager } from "../../../npsPacketManager";
 import { ConfigManager } from "../../../configManager";
 import { DatabaseManager } from "../../../databaseManager";
 
-const loggers = new Logger().getLoggers();
+const logger = bunyan
+  .createLogger({ name: "mcoServer" })
+  .child({ module: "NPSMsg" });
 const config = new ConfigManager().getConfig();
-const database = new DatabaseManager(loggers);
+const database = new DatabaseManager();
 
 /*
     NPS messages are sent serialized in BE format
@@ -83,14 +84,12 @@ export class NPSMsg {
   }
 
   public dumpPacketHeader(messageType: string) {
-    loggers.both.debug(
+    logger.debug(
       `[NPSMsg/${messageType}] == ${this.direction} ==================`
     );
-    loggers.both.debug(
-      `MsgNo:         ${this.msgNo.toString(16)} (${this.msgNo})`
-    );
-    loggers.both.debug(`MsgVersion:    ${this.msgVersion}`);
-    loggers.both.debug(`contentLength: ${this.msgLength}`);
+    logger.debug(`MsgNo:         ${this.msgNo.toString(16)} (${this.msgNo})`);
+    logger.debug(`MsgVersion:    ${this.msgVersion}`);
+    logger.debug(`contentLength: ${this.msgLength}`);
   }
 
   /**
@@ -98,9 +97,9 @@ export class NPSMsg {
    */
   public dumpPacket() {
     this.dumpPacketHeader("NPSMsg");
-    loggers.both.debug(`Content:       ${this.content.toString("hex")}`);
-    loggers.both.debug(`Serialized:    ${this.serialize().toString("hex")}`);
-    loggers.both.debug("[/NPSMsg]======================================");
+    logger.debug(`Content:       ${this.content.toString("hex")}`);
+    logger.debug(`Serialized:    ${this.serialize().toString("hex")}`);
+    logger.debug("[/NPSMsg]======================================");
   }
 
   public toJSON() {

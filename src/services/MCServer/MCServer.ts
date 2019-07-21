@@ -8,15 +8,17 @@
 import ConnectionMgr from "./connectionMgr";
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
 import { ListenerThread } from "./listenerThread";
-import { ILoggers } from "../shared/logger";
+import * as bunyan from "bunyan";
 
 export class MCServer {
   public mgr: ConnectionMgr;
-  public loggers: ILoggers;
+  public logger: bunyan;
 
-  constructor(loggers: ILoggers) {
-    this.loggers = loggers;
-    this.mgr = new ConnectionMgr(this.loggers);
+  constructor() {
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "MCCserver" });
+    this.mgr = new ConnectionMgr();
   }
   /**
    * Start the HTTP, HTTPS and TCP connection listeners
@@ -24,8 +26,8 @@ export class MCServer {
    */
 
   public async startServers(config: IServerConfiguration) {
-    const listenerThread = new ListenerThread(this.loggers);
-    this.loggers.both.debug("[MCServer] Starting the listening sockets...");
+    const listenerThread = new ListenerThread();
+    this.logger.debug("[MCServer] Starting the listening sockets...");
     const tcpPortList = [
       6660,
       8228,
@@ -56,8 +58,6 @@ export class MCServer {
     await tcpPortList.map(port =>
       listenerThread.startTCPListener(port, this.mgr, config)
     );
-    this.loggers.both.debug(
-      "[MCServer] Listening sockets create successfully."
-    );
+    this.logger.debug("[MCServer] Listening sockets create successfully.");
   }
 }

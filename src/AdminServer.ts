@@ -9,16 +9,18 @@ import * as fs from "fs";
 import { IncomingMessage, ServerResponse } from "http";
 import * as https from "https";
 import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
-import { ILoggerInstance } from "./services/shared/logger";
 import { MCServer } from "./services/MCServer/MCServer";
+import * as bunyan from "bunyan";
 
 export class AdminServer {
   public mcServer: MCServer;
-  public logger: ILoggerInstance;
+  public logger: bunyan;
 
-  constructor(mcServer: MCServer, logger: ILoggerInstance) {
+  constructor(mcServer: MCServer) {
     this.mcServer = mcServer;
-    this.logger = logger;
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "ListenerThread" });
   }
   /**
    * Create the SSL options object

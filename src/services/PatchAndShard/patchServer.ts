@@ -7,12 +7,12 @@
 
 import * as http from "http";
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
-import { ILoggers } from "../shared/logger";
+import * as bunyan from "bunyan";
 import { ShardEntry } from "./ShardEntry";
 
 export class PatchServer {
   public config: IServerConfiguration;
-  public loggers: ILoggers;
+  public logger: bunyan;
   public banList: string[] = [];
 
   /**
@@ -26,9 +26,11 @@ export class PatchServer {
     },
   };
 
-  constructor(config: IServerConfiguration, loggers: ILoggers) {
+  constructor(config: IServerConfiguration) {
     this.config = config;
-    this.loggers = loggers;
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "PatchServer" });
   }
 
   /**
@@ -133,7 +135,7 @@ export class PatchServer {
           break;
         }
         // Unknown request, log it
-        this.loggers.both.debug(
+        this.logger.debug(
           `[PATCH] Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}, banning.`
         );
         this.banList.push(request.socket.remoteAddress!);
@@ -151,7 +153,7 @@ export class PatchServer {
       this._httpHandler(req, res);
     });
     serverPatch.listen({ port: "80", host: "0.0.0.0" }, () => {
-      this.loggers.both.debug("[patchServer] Patch server is listening...");
+      this.logger.debug("[patchServer] Patch server is listening...");
     });
   }
 }

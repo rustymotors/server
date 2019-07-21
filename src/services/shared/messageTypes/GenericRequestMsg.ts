@@ -5,20 +5,22 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from "../logger";
-
-const logger = new Logger().getLogger();
+import * as bunyan from "bunyan";
 
 // WORD	msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // DWORD	data;   // specific to the message sent (but usually 0)
 // DWORD	data2;
 
 export class GenericRequestMsg {
+  public logger: bunyan;
   public msgNo: number;
   private data: Buffer;
   private data2: Buffer;
 
   constructor() {
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "GenericRequestMsg" });
     this.msgNo = 0;
     this.data = Buffer.alloc(4);
     this.data2 = Buffer.alloc(4);
@@ -55,10 +57,12 @@ export class GenericRequestMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    logger.debug("[GenericRequest]======================================");
-    logger.debug(`MsgNo:       ${this.msgNo}`);
-    logger.debug(`data:        ${this.data.toString("hex")}`);
-    logger.debug(`data2:       ${this.data2.toString("hex")}`);
-    logger.debug("[/GenericRequest]======================================");
+    this.logger.debug("[GenericRequest]======================================");
+    this.logger.debug(`MsgNo:       ${this.msgNo}`);
+    this.logger.debug(`data:        ${this.data.toString("hex")}`);
+    this.logger.debug(`data2:       ${this.data2.toString("hex")}`);
+    this.logger.debug(
+      "[/GenericRequest]======================================"
+    );
   }
 }

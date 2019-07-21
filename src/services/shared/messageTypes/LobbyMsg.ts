@@ -7,13 +7,12 @@
 
 // tslint:disable:object-literal-sort-keys
 
-import { Logger } from "../logger";
+import * as bunyan from "bunyan";
 import { LobbyInfo } from "./LobbyInfo";
 import { MessageNode } from "./MessageNode";
 
-const logger = new Logger().getLogger();
-
 export class LobbyMsg {
+  public logger: bunyan;
   public msgNo: number;
   public noLobbies: number;
   public moreToCome: number;
@@ -23,6 +22,9 @@ export class LobbyMsg {
   private dataLength: number;
 
   constructor() {
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "LobbyMsg" });
     this.msgNo = 325;
 
     this.noLobbies = 1;
@@ -47,10 +49,10 @@ export class LobbyMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    logger.debug(`[LobbyMsg]======================================`);
-    logger.debug(`MsgNo:       ${this.msgNo}`);
-    logger.debug(`dataLength:  ${this.dataLength}`);
-    logger.debug(`packet:      ${this.serialize().toString("hex")}`);
-    logger.debug(`[LobbyMsg]======================================`);
+    this.logger.debug(`[LobbyMsg]======================================`);
+    this.logger.debug(`MsgNo:       ${this.msgNo}`);
+    this.logger.debug(`dataLength:  ${this.dataLength}`);
+    this.logger.debug(`packet:      ${this.serialize().toString("hex")}`);
+    this.logger.debug(`[LobbyMsg]======================================`);
   }
 }

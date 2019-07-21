@@ -8,18 +8,20 @@
 import * as assert from "assert";
 import { Connection } from "../Connection";
 import { IRawPacket } from "../services/shared/interfaces/IRawPacket";
-import { Logger } from "../services/shared/logger";
 import { MSG_DIRECTION, NPSMsg } from "../services/shared/messageTypes/NPSMsg";
 import { NPSUserInfo } from "../services/shared/messageTypes/npsUserInfo";
 import { PersonaServer } from "../PersonaServer/PersonaServer";
 import { NPSPacketManager } from "../npsPacketManager";
 import { DatabaseManager } from "../databaseManager";
 import { ConfigManager } from "../configManager";
+import * as bunyan from "bunyan";
 
-const loggers = new Logger().getLoggers();
 const config = new ConfigManager().getConfig();
+const logger = bunyan
+  .createLogger({ name: "mcoServer" })
+  .child({ module: "LobbyServer" });
 
-const databaseManager = new DatabaseManager(loggers);
+const databaseManager = new DatabaseManager();
 
 async function npsSocketWriteIfOpen(conn: Connection, buffer: Buffer) {
   const sock = conn.sock;
@@ -46,10 +48,8 @@ function decryptCmd(con: Connection, cypherCmd: Buffer) {
   const decryptedCommand = s.decipherBufferDES(cypherCmd);
   s.decryptedCmd = decryptedCommand;
   // TODO: Don't output the enchiphered command once we know we are correctly deciphering it
-  loggers.both.debug(`[lobby] Enciphered Cmd: ${cypherCmd.toString("hex")}`);
-  loggers.both.debug(
-    `[lobby] Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`
-  );
+  logger.debug(`[lobby] Enciphered Cmd: ${cypherCmd.toString("hex")}`);
+  logger.debug(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`);
   return s;
 }
 
@@ -90,7 +90,7 @@ export async function sendCommand(con: Connection, data: Buffer) {
   packetContent.writeUInt16BE(0x0101, 369);
   packetContent.writeUInt16BE(0x022c, 371);
 
-  loggers.both.warn(`Sending a dummy response of 0x229 - NPS_MINI_USER_LIST`);
+  logger.warn(`Sending a dummy response of 0x229 - NPS_MINI_USER_LIST`);
 
   // Build the packet
   const packetResult = new NPSMsg(MSG_DIRECTION.SENT);
@@ -121,9 +121,9 @@ export class LobbyServer {
   }
   public async dataHandler(rawPacket: IRawPacket) {
     const { localPort, remoteAddress } = rawPacket;
-    loggers.both.info(`=============================================
+    logger.info(`=============================================
     [Lobby] Received packet on port ${localPort} from ${remoteAddress}...`);
-    loggers.both.info("=============================================");
+    logger.info("=============================================");
     const { connection, data } = rawPacket;
     const { sock } = connection;
     let updatedConnection = connection;
@@ -136,21 +136,21 @@ export class LobbyServer {
           connection,
           data
         );
-        loggers.both.debug(
+        logger.debug(
           `[Lobby/Connect] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
         );
         // TODO: Investigate why this crashes retail
         try {
           npsSocketWriteIfOpen(connection, responsePacket.serialize());
         } catch (error) {
-          loggers.both.error(error);
+          logger.error(`[LobbyServer] Unable to send packet: ${error}`);
         }
         break;
       }
       // npsHeartbeat
       case "217": {
         const responsePacket = await this._npsHeartbeat();
-        loggers.both.debug(
+        logger.debug(
           `[Lobby/Heartbeat] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
         );
         npsSocketWriteIfOpen(connection, responsePacket.serialize());
@@ -170,7 +170,7 @@ export class LobbyServer {
           );
         }
 
-        loggers.both.debug(
+        logger.debug(
           `[Lobby/CMD] encrypedCommand's data prior to sending: ${encryptedCmd.toString(
             "hex"
           )}`
@@ -202,16 +202,16 @@ export class LobbyServer {
     rawData: Buffer
   ) {
     const { sock } = connection;
-    loggers.both.debug("*** _npsRequestGameConnectServer ***");
-    loggers.both.debug(`Packet from ${sock.remoteAddress}`);
-    loggers.both.debug(`Packet as hex: ${rawData.toString("hex")}`);
-    loggers.both.debug("************************************");
+    logger.debug("*** _npsRequestGameConnectServer ***");
+    logger.debug(`Packet from ${sock.remoteAddress}`);
+    logger.debug(`Packet as hex: ${rawData.toString("hex")}`);
+    logger.debug("************************************");
 
     // // Load the received data into a MsgPack class
     // const msgPack = MsgPack(rawData);
 
     // Return a _NPS_UserInfo structure
-    const userInfo = new NPSUserInfo(MSG_DIRECTION.RECIEVED, loggers);
+    const userInfo = new NPSUserInfo(MSG_DIRECTION.RECIEVED);
     userInfo.deserialize(rawData);
     userInfo.dumpInfo();
 
@@ -225,7 +225,6 @@ export class LobbyServer {
 
     // Set the encryption keys on the lobby connection
     const keys = await databaseManager.fetchSessionKeyByCustomerId(customerId);
-    assert(keys);
     const s = connection;
 
     // Create the cypher and decipher only if not already set

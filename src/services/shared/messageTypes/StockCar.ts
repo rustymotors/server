@@ -5,20 +5,22 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from "../logger";
-
-const logger = new Logger().getLogger();
+import * as bunyan from "bunyan";
 
 // DWORD   brandedPartID;
 // DWORD   retailPrice;
 // WORD    bIsDealOfTheDay;
 
 export class StockCar {
+  public logger: bunyan;
   public brandedPartId: number;
   public retailPrice: number;
   public bIsDealOfTheDay: number;
 
   constructor() {
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "StockCar" });
     this.brandedPartId = 105;
     this.retailPrice = 20;
     this.bIsDealOfTheDay = 0;
@@ -36,10 +38,10 @@ export class StockCar {
    * dumpPacket
    */
   public dumpPacket() {
-    logger.debug("[StockCar]======================================");
-    logger.debug(`brandedPartId:     ${this.brandedPartId}`);
-    logger.debug(`retailPrice        ${this.retailPrice}`);
-    logger.debug(`isDealOfTheDay:    ${this.bIsDealOfTheDay}`);
-    logger.debug("[/StockCar]======================================");
+    this.logger.debug("[StockCar]======================================");
+    this.logger.debug(`brandedPartId:     ${this.brandedPartId}`);
+    this.logger.debug(`retailPrice        ${this.retailPrice}`);
+    this.logger.debug(`isDealOfTheDay:    ${this.bIsDealOfTheDay}`);
+    this.logger.debug("[/StockCar]======================================");
   }
 }

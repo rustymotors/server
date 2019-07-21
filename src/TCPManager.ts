@@ -10,7 +10,7 @@ import { Socket } from "net";
 import { Connection } from "./Connection";
 import { IRawPacket } from "./services/shared/interfaces/IRawPacket";
 import { LobbyServer } from "./LobbyServer/LobbyServer";
-import { Logger } from "./services/shared/logger";
+import * as bunyan from "bunyan";
 import { MCOTServer } from "./MCOTS/MCOTServer";
 import { ClientConnectMsg } from "./services/shared/messageTypes/ClientConnectMsg";
 import { GenericReplyMsg } from "./services/shared/messageTypes/GenericReplyMsg";
@@ -20,19 +20,21 @@ import { StockCar } from "./services/shared/messageTypes/StockCar";
 import { StockCarInfoMsg } from "./services/shared/messageTypes/StockCarInfoMsg";
 import { DatabaseManager } from "./databaseManager";
 
-const loggers = new Logger().getLoggers();
+const logger = bunyan
+  .createLogger({ name: "mcoServer" })
+  .child({ module: "TCPManager" });
 const lobbyServer = new LobbyServer();
 const mcotServer = new MCOTServer();
-const databaseManager = new DatabaseManager(loggers);
+const databaseManager = new DatabaseManager();
 
 async function compressIfNeeded(conn: Connection, node: MessageNode) {
   const packetToWrite = node;
 
   // Check if compression is needed
   if (node.getLength() < 80) {
-    loggers.both.debug("Too small, should not compress");
+    logger.debug("Too small, should not compress");
   } else {
-    loggers.both.debug(`This packet should be compressed`);
+    logger.debug(`This packet should be compressed`);
   }
   return { conn, packetToWrite };
 }
@@ -42,7 +44,7 @@ async function encryptIfNeeded(conn: Connection, node: MessageNode) {
 
   // Check if encryption is needed
   if (node.flags - 8 >= 0) {
-    loggers.both.debug("encryption flag is set");
+    logger.debug("encryption flag is set");
 
     let plainText;
     if (conn.enc) {
@@ -52,7 +54,7 @@ async function encryptIfNeeded(conn: Connection, node: MessageNode) {
       throw new Error("encryption out on connection is null");
     }
     packetToWrite = node;
-    loggers.both.debug(
+    logger.debug(
       `encrypted packet: ${packetToWrite.serialize().toString("hex")}`
     );
   }
@@ -69,12 +71,12 @@ async function socketWriteIfOpen(conn: Connection, nodes: MessageNode[]) {
     );
     const { packetToWrite } = await encryptIfNeeded(conn, compressedPacket);
     // Log that we are trying to write
-    loggers.both.debug(
+    logger.debug(
       ` Atempting to write seq: ${packetToWrite.seq} to conn: ${updatedConnection.id}`
     );
 
     // Log the buffer we are writing
-    loggers.both.debug(
+    logger.debug(
       `Writting buffer: ${packetToWrite.serialize().toString("hex")}`
     );
     if (conn.sock.writable) {
@@ -97,7 +99,7 @@ async function GetStockCarInfo(con: Connection, node: MessageNode) {
   getStockCarInfoMsg.deserialize(node.data);
   getStockCarInfoMsg.dumpPacket();
 
-  loggers.both.debug("Dumping response...");
+  logger.debug("Dumping response...");
 
   const pReply = new StockCarInfoMsg();
   pReply.starterCash = 200;
@@ -128,20 +130,20 @@ async function ClientConnect(con: Connection, node: MessageNode) {
   // Not currently using this
   const newMsg = new ClientConnectMsg(node.data);
 
-  loggers.both.debug(
+  logger.debug(
     `[TCPManager] Looking up the session key for ${newMsg.customerId}...`
   );
   const res = await databaseManager.fetchSessionKeyByCustomerId(
     newMsg.customerId
   );
   assert(res.session_key);
-  loggers.both.warn(`[TCPManager] Session Key: ${res.session_key}`);
+  logger.warn(`[TCPManager] Session Key: ${res.session_key}`);
 
   const connectionWithKey = con;
 
   const { customerId, personaId, personaName } = newMsg;
   const sessionKey = res.session_key;
-  loggers.both.debug(`Raw Session Key: ${sessionKey}`);
+  logger.debug(`Raw Session Key: ${sessionKey}`);
 
   const strKey = Buffer.from(sessionKey, "hex");
   connectionWithKey.setEncryptionKey(Buffer.from(strKey.slice(0, 16)));
@@ -150,7 +152,7 @@ async function ClientConnect(con: Connection, node: MessageNode) {
   connectionWithKey.appId = newMsg.getAppId();
 
   // Log the session key
-  loggers.both.debug(
+  logger.debug(
     `cust: ${customerId} ID: ${personaId} Name: ${personaName} SessionKey: ${strKey[0].toString(
       16
     )} ${strKey[1].toString(16)} ${strKey[2].toString(16)} ${strKey[3].toString(
@@ -167,18 +169,18 @@ async function ClientConnect(con: Connection, node: MessageNode) {
   const rPacket = new MessageNode();
   rPacket.deserialize(node.serialize());
   rPacket.updateBuffer(pReply.serialize());
-  loggers.both.debug("Dumping response...");
+  logger.debug("Dumping response...");
   rPacket.dumpPacket();
 
   return { con, nodes: [rPacket] };
 }
 
 async function ProcessInput(node: MessageNode, conn: Connection) {
-  loggers.both.debug("In ProcessInput..");
+  logger.debug("In ProcessInput..");
   let updatedConnection = conn;
   const currentMsgNo = node.msgNo;
   const currentMsgString = mcotServer._MSG_STRING(currentMsgNo);
-  loggers.both.debug(`currentMsg: ${currentMsgString} (${currentMsgNo})`);
+  logger.debug(`currentMsg: ${currentMsgString} (${currentMsgNo})`);
 
   switch (currentMsgString) {
     case "MC_SET_OPTIONS":
@@ -283,10 +285,10 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
 }
 
 async function MessageReceived(msg: MessageNode, con: Connection) {
-  loggers.both.info("Welcome to MessageRecieved()");
+  logger.info("Welcome to MessageRecieved()");
   const newConnection = con;
   if (!newConnection.useEncryption && (msg.flags && 0x08)) {
-    loggers.both.debug("Turning on encryption");
+    logger.debug("Turning on encryption");
     newConnection.useEncryption = true;
   }
 
@@ -303,27 +305,27 @@ async function MessageReceived(msg: MessageNode, con: Connection) {
         /**
          * Attempt to decrypt message
          */
-        loggers.both.debug(
+        logger.debug(
           "==================================================================="
         );
         const encryptedBuffer = Buffer.from(msg.data);
-        loggers.both.warn(
+        logger.warn(
           `Full packet before decrypting: ${encryptedBuffer.toString("hex")}`
         );
 
-        loggers.both.warn(
+        logger.warn(
           `Message buffer before decrypting: ${encryptedBuffer.toString("hex")}`
         );
         if (!newConnection.enc) {
           throw new Error("ARC4 decrypter is null");
         }
-        loggers.both.info(`Using encryption id: ${newConnection.enc.getId()}`);
+        logger.info(`Using encryption id: ${newConnection.enc.getId()}`);
         const deciphered = newConnection.enc.decrypt(encryptedBuffer);
-        loggers.both.warn(
+        logger.warn(
           `Message buffer after decrypting: ${deciphered.toString("hex")}`
         );
 
-        loggers.both.debug(
+        logger.debug(
           "==================================================================="
         );
 
@@ -364,30 +366,28 @@ export async function defaultHandler(rawPacket: IRawPacket) {
   } catch (e) {
     if (e instanceof RangeError) {
       // This is a very short packet, likely a heartbeat
-      loggers.both.debug("Unable to pack into a MessageNode, sending to Lobby");
+      logger.debug("Unable to pack into a MessageNode, sending to Lobby");
 
       updatedConnection = await lobbyServer.dataHandler(rawPacket);
     }
-    throw e;
+    throw new Error(`[TCPManager] Unable yp pack into MessageNode: ${e}`);
   }
 
-  loggers.both.info(`=============================================
+  logger.info(`=============================================
     Received packet on port ${localPort} from ${remoteAddress}...`);
-  loggers.both.info("=============================================");
+  logger.info("=============================================");
 
   if (messageNode.isMCOTS()) {
     messageNode.dumpPacket();
 
     const newMessage = await MessageReceived(messageNode, connection);
-    loggers.both.debug("Back from MessageRecieved");
+    logger.debug("Back from MessageRecieved");
     return newMessage;
   }
-  loggers.both.debug(
-    "No valid MCOTS header signature detected, sending to Lobby"
-  );
-  loggers.both.info("=============================================");
-  loggers.both.debug(`Buffer as text: ${messageNode.data.toString("utf8")}`);
-  loggers.both.debug(`Buffer as string: ${messageNode.data.toString("hex")}`);
+  logger.debug("No valid MCOTS header signature detected, sending to Lobby");
+  logger.info("=============================================");
+  logger.debug(`Buffer as text: ${messageNode.data.toString("utf8")}`);
+  logger.debug(`Buffer as string: ${messageNode.data.toString("hex")}`);
 
   const newConnection = await lobbyServer.dataHandler(rawPacket);
   return newConnection;

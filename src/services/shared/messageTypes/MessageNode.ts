@@ -5,11 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from "../logger";
-
-const logger = new Logger().getLogger();
+import * as bunyan from "bunyan";
 
 export class MessageNode {
+  public logger: bunyan;
   public appId: number;
   public msgNo: number;
   public seq: number;
@@ -20,6 +19,9 @@ export class MessageNode {
   private mcoSig: string;
 
   constructor() {
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "MessageNode" });
     this.msgNo = 0;
     this.seq = 999;
     this.flags = 0;
@@ -104,24 +106,24 @@ export class MessageNode {
   }
 
   public dumpPacket() {
-    logger.debug("= MessageNode ===============================");
-    logger.debug("Packet has a valid MCOTS header signature");
-    logger.debug("=============================================");
-    logger.debug(`Header Length: ${this.dataLength}`);
-    logger.debug(`Header MCOSIG: ${this.isMCOTS()}`);
-    logger.debug(`MsgNo:         ${this.msgNo}`);
-    logger.debug(`Sequence:      ${this.seq}`);
-    logger.debug(`Flags:         ${this.flags}`);
-    logger.debug(`ToFrom:        ${this.toFrom}`);
-    logger.debug(`AppId:         ${this.appId}`);
-    logger.debug("------------------------------------------------");
+    this.logger.debug("= MessageNode ===============================");
+    this.logger.debug("Packet has a valid MCOTS header signature");
+    this.logger.debug("=============================================");
+    this.logger.debug(`Header Length: ${this.dataLength}`);
+    this.logger.debug(`Header MCOSIG: ${this.isMCOTS()}`);
+    this.logger.debug(`MsgNo:         ${this.msgNo}`);
+    this.logger.debug(`Sequence:      ${this.seq}`);
+    this.logger.debug(`Flags:         ${this.flags}`);
+    this.logger.debug(`ToFrom:        ${this.toFrom}`);
+    this.logger.debug(`AppId:         ${this.appId}`);
+    this.logger.debug("------------------------------------------------");
     const packetContents = this.serialize()
       .toString("hex")
       .match(/../g);
     if (packetContents) {
-      logger.debug(`packet as string: ${packetContents.join("")}`);
+      this.logger.debug(`packet as string: ${packetContents.join("")}`);
     }
-    logger.debug("= MessageNode ==================================");
+    this.logger.debug("= MessageNode ==================================");
   }
 
   public getLength() {

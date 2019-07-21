@@ -5,17 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import { AdminServer } from "./AdminServer";
-import { Logger } from "./services/shared/logger";
 import { MCServer } from "./services/MCServer/MCServer";
 
-const loggers = new Logger().getLoggers();
-const adminServer = new AdminServer(new MCServer(loggers), loggers.both);
+const adminServer = new AdminServer(new MCServer());
 
 describe("AdminServer", () => {
   test("has instance of MCServer", () => {
     expect(adminServer.mcServer).toBeInstanceOf(MCServer);
-  });
-  test("has instance of Logger", () => {
-    expect(adminServer.logger).toBe(loggers.both);
   });
 });

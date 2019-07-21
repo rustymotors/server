@@ -1,17 +1,19 @@
-import { ILoggers } from "./services/shared/logger";
+import * as bunyan from "bunyan";
 import { pool } from "./services/shared/database";
 
 export class DatabaseManager {
   public pool: Promise<import("sqlite").Database>;
-  public loggers: ILoggers;
+  public logger: bunyan;
 
-  constructor(loggers: ILoggers) {
+  constructor() {
     this.pool = pool;
-    this.loggers = loggers;
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "databaseManager" });
   }
 
   public async fetchSessionKeyByCustomerId(customerId: number) {
-    this.loggers.both.debug(customerId.toString());
+    this.logger.debug(customerId.toString());
     const db = await pool;
     return await db
       .get("SELECT session_key, s_key FROM sessions WHERE customer_id = ?", [
@@ -29,7 +31,6 @@ export class DatabaseManager {
    * @param {string} remoteAddress
    */
   public async fetchSessionKeyByConnectionId(connectionId: string) {
-    console.log(connectionId);
     const db = await pool;
 
     return await db

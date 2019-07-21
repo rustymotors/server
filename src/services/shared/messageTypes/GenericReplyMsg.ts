@@ -5,9 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from "../logger";
-
-const logger = new Logger().getLogger();
+import * as bunyan from "bunyan";
 
 // WORD	msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD	msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
@@ -16,6 +14,7 @@ const logger = new Logger().getLogger();
 // DWORD	data2;
 
 export class GenericReplyMsg {
+  public logger: bunyan;
   public msgNo: number;
   public appId: number;
   public toFrom: number;
@@ -25,6 +24,9 @@ export class GenericReplyMsg {
   private data2: Buffer;
 
   constructor() {
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "GenericReplyMsg" });
     this.msgNo = 0;
     this.toFrom = 0;
     this.appId = 0;
@@ -89,12 +91,12 @@ export class GenericReplyMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    logger.debug("[GenericReply]======================================");
-    logger.debug(`MsgNo:       ${this.msgNo}`);
-    logger.debug(`MsgReply:    ${this.msgReply}`);
-    logger.debug(`result:      ${this.result.toString("hex")}`);
-    logger.debug(`data:        ${this.data.toString("hex")}`);
-    logger.debug(`data2:       ${this.data2.toString("hex")}`);
-    logger.debug("[/GenericReply]======================================");
+    this.logger.debug("[GenericReply]======================================");
+    this.logger.debug(`MsgNo:       ${this.msgNo}`);
+    this.logger.debug(`MsgReply:    ${this.msgReply}`);
+    this.logger.debug(`result:      ${this.result.toString("hex")}`);
+    this.logger.debug(`data:        ${this.data.toString("hex")}`);
+    this.logger.debug(`data2:       ${this.data2.toString("hex")}`);
+    this.logger.debug("[/GenericReply]======================================");
   }
 }

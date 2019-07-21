@@ -5,10 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from "../logger";
+import * as bunyan from "bunyan";
 import { StockCar } from "./StockCar";
-
-const logger = new Logger().getLogger();
 
 // WORD	msgNo;
 // DWORD    starterCash; // when called from the create persona screen,
@@ -20,6 +18,7 @@ const logger = new Logger().getLogger();
 // StockCar carInfo[1];
 
 export class StockCarInfoMsg {
+  public logger: bunyan;
   public msgNo: number;
   public starterCash: number;
   public dealerId: number;
@@ -29,6 +28,9 @@ export class StockCarInfoMsg {
   public StockCarList: StockCar[];
 
   constructor() {
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "StockCarMsg" });
     this.msgNo = 141;
     this.starterCash = 1;
     this.dealerId = 0;
@@ -60,14 +62,18 @@ export class StockCarInfoMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    logger.debug("[StockCarInfoMsg]======================================");
-    logger.debug(`MsgNo:        ${this.msgNo}`);
-    logger.debug(`starterCash:  ${this.starterCash}`);
-    logger.debug(`dealerId:     ${this.dealerId}`);
-    logger.debug(`brand:        ${this.brand}`);
-    logger.debug(`noCars:       ${this.noCars}`);
-    logger.debug(`moreToCome:   ${this.moreToCome}`);
-    logger.debug(`StockCarList: ${this.StockCarList.toString()}`);
-    logger.debug("[/StockCarInfoMsg]======================================");
+    this.logger.debug(
+      "[StockCarInfoMsg]======================================"
+    );
+    this.logger.debug(`MsgNo:        ${this.msgNo}`);
+    this.logger.debug(`starterCash:  ${this.starterCash}`);
+    this.logger.debug(`dealerId:     ${this.dealerId}`);
+    this.logger.debug(`brand:        ${this.brand}`);
+    this.logger.debug(`noCars:       ${this.noCars}`);
+    this.logger.debug(`moreToCome:   ${this.moreToCome}`);
+    this.logger.debug(`StockCarList: ${this.StockCarList.toString()}`);
+    this.logger.debug(
+      "[/StockCarInfoMsg]======================================"
+    );
   }
 }

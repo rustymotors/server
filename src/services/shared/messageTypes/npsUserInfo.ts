@@ -5,18 +5,20 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { ILoggers } from "../logger";
+import * as bunyan from "bunyan";
 import { NPSMsg, MSG_DIRECTION } from "./NPSMsg";
 
 export class NPSUserInfo extends NPSMsg {
-  public loggers: ILoggers;
+  public logger: bunyan;
   public userId: number = 0;
   public userName: Buffer = Buffer.from([0x00]); // 30 length
   public userData: Buffer = Buffer.from([0x00]); // 64 length;
 
-  constructor(direction: MSG_DIRECTION, loggers: ILoggers) {
+  constructor(direction: MSG_DIRECTION) {
     super(direction);
-    this.loggers = loggers;
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "npmUserInfo" });
   }
 
   public deserialize(rawData: Buffer) {
@@ -28,11 +30,9 @@ export class NPSUserInfo extends NPSMsg {
 
   public dumpInfo() {
     this.dumpPacketHeader("NPSUserInfo");
-    this.loggers.both.debug(`UserId:        ${this.userId}`);
-    this.loggers.both.debug(`UserName:      ${this.userName.toString()}`);
-    this.loggers.both.debug(`UserData:      ${this.userData.toString("hex")}`);
-    this.loggers.both.debug(
-      "[/NPSUserInfo]======================================"
-    );
+    this.logger.debug(`UserId:        ${this.userId}`);
+    this.logger.debug(`UserName:      ${this.userName.toString()}`);
+    this.logger.debug(`UserData:      ${this.userData.toString("hex")}`);
+    this.logger.debug("[/NPSUserInfo]======================================");
   }
 }

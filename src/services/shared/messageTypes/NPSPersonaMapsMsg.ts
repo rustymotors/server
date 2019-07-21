@@ -7,10 +7,8 @@
 
 import * as struct from "c-struct";
 import { IPersonaRecord } from "../interfaces/IPersonaRecord";
-import { Logger } from "../logger";
+import * as bunyan from "bunyan";
 import { MSG_DIRECTION, NPSMsg } from "./NPSMsg";
-
-const logger = new Logger().getLogger();
 
 // tslint:disable: object-literal-sort-keys
 const npsPersonaMapsMsgSchema = new struct.Schema({
@@ -40,6 +38,7 @@ const npsPersonaMapsMsgSchema = new struct.Schema({
 struct.register("NPSPersonaMapsMsg", npsPersonaMapsMsgSchema);
 
 export class NPSPersonaMapsMsg extends NPSMsg {
+  public logger: bunyan;
   public personaCount: number;
   public personas: IPersonaRecord[] = [];
   // public personaSize = 1296;
@@ -48,6 +47,9 @@ export class NPSPersonaMapsMsg extends NPSMsg {
 
   constructor(direction: MSG_DIRECTION) {
     super(direction);
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "NPSPersonaMapsMsg" });
     this.msgNo = 0x607;
     this.personaCount = 0;
     this.struct = struct.unpackSync("NPSPersonaMapsMsg", Buffer.alloc(100));
@@ -141,23 +143,27 @@ export class NPSPersonaMapsMsg extends NPSMsg {
 
   public dumpPacket() {
     this.dumpPacketHeader("NPSPersonaMapsMsg");
-    logger.debug(`personaCount:        ${this.personaCount}`);
+    this.logger.debug(`personaCount:        ${this.personaCount}`);
     for (const persona of this.personas) {
-      logger.debug(
+      this.logger.debug(
         `maxPersonaCount:     ${this.deserializeInt8(persona.maxPersonas)}`
       );
-      logger.debug(`id:                  ${this.deserializeInt32(persona.id)}`);
-      logger.debug(
+      this.logger.debug(
+        `id:                  ${this.deserializeInt32(persona.id)}`
+      );
+      this.logger.debug(
         `shardId:             ${this.deserializeInt32(persona.shardId)}`
       );
-      logger.debug(
+      this.logger.debug(
         `name:                ${this.deserializeString(persona.name)}`
       );
     }
-    logger.debug(`Packet as hex:       ${this.getPacketAsString()}`);
+    this.logger.debug(`Packet as hex:       ${this.getPacketAsString()}`);
 
     // TODO: Work on this more
 
-    logger.debug("[/NPSPersonaMapsMsg]======================================");
+    this.logger.debug(
+      "[/NPSPersonaMapsMsg]======================================"
+    );
   }
 }

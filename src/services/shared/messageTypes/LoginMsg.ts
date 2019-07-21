@@ -6,9 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as struct from "c-struct";
-import { Logger } from "../logger";
-
-const logger = new Logger().getLogger();
+import * as bunyan from "bunyan";
 
 // tslint:disable: object-literal-sort-keys
 const loginMsgSchema = new struct.Schema({
@@ -26,6 +24,7 @@ const loginMsgSchema = new struct.Schema({
 struct.register("LoginMsg", loginMsgSchema);
 
 export class LoginMsg {
+  public logger: bunyan;
   public appId: number;
   public toFrom: number;
   public msgNo: number;
@@ -40,6 +39,9 @@ export class LoginMsg {
   public struct: any;
 
   constructor(buffer: Buffer) {
+    this.logger = bunyan
+      .createLogger({ name: "mcoServer" })
+      .child({ module: "LoginMsg" });
     this.msgNo = 0;
     this.toFrom = 0;
     this.appId = 0;
@@ -92,30 +94,32 @@ export class LoginMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    logger.debug("[LoginMsg]======================================");
-    logger.debug(
+    this.logger.debug("[LoginMsg]======================================");
+    this.logger.debug(
       `MsgNo:          ${this.msgNo.toString()} = ${this.struct.msgNo}`
     );
-    logger.debug(
+    this.logger.debug(
       `customerId:     ${this.customerId.toString()} = ${
         this.struct.customerId
       }`
     );
-    logger.debug(
+    this.logger.debug(
       `personaId:      ${this.personaId.toString()} = ${this.struct.personaId}`
     );
-    logger.debug(
+    this.logger.debug(
       `lotOwnerId:     ${this.lotOwnerId} = ${this.struct.lotOwnerId}`
     );
-    logger.debug(
+    this.logger.debug(
       `brandedPartId:  ${this.brandedPartId} = ${this.struct.brandedPartId}`
     );
-    logger.debug(`skinId:         ${this.skinId} = ${this.struct.skinId}`);
-    logger.debug(
+    this.logger.debug(`skinId:         ${this.skinId} = ${this.struct.skinId}`);
+    this.logger.debug(
       `personaName:    ${this.personaName} = ${this.struct.personaName}`
     );
 
-    logger.debug(`version:        ${this.version} = ${this.struct.version}`);
-    logger.debug("[LoginMsg]======================================");
+    this.logger.debug(
+      `version:        ${this.version} = ${this.struct.version}`
+    );
+    this.logger.debug("[LoginMsg]======================================");
   }
 }
