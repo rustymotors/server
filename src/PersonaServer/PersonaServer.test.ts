@@ -5,48 +5,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Socket } from "net";
-import { NPSMsg } from "./NPSMsg";
-import { PersonaServer } from "../../../PersonaServer/PersonaServer";
+import { PersonaServer } from "./PersonaServer";
 
 describe("PersonaServer Methods", () => {
   const personaServer = new PersonaServer();
+  personaServer.logger.level("warn");
   describe("_getPersonasByCustomerId", () => {
     test("returns a valid persona", () => {
       const results = personaServer._getPersonasByCustomerId(5551212);
       expect(results.length).toEqual(2);
       const name = results[0].name.toString();
       expect(name).toMatch("Dr Brown");
-    });
-  });
-  describe("_npsGetPersonaMaps", () => {
-    test("returns a valid NPSMsg", async () => {
-      const responseMessage = await personaServer._npsGetPersonaMaps(
-        new Socket(),
-        Buffer.from([
-          0x01,
-          0x01,
-          0x01,
-          0x01,
-          0x01,
-          0x01,
-          0x01,
-          0x01,
-          0x01,
-          0x01,
-          0x01,
-          0x01,
-          0x01,
-          0x01,
-          0x01,
-          0x01,
-          0x01,
-          0x01,
-          0x01,
-          0x01,
-        ])
-      );
-      expect(responseMessage).toBeInstanceOf(NPSMsg);
     });
   });
   describe("_npsGetPersonaMapsByCustomerId", () => {

@@ -304,9 +304,6 @@ export class PersonaServer {
 
     const customerId = Buffer.alloc(4);
     data.copy(customerId, 0, 12);
-    this.logger.info(
-      `npsGetPersonaMaps for customerId: ${customerId.readUInt32BE(0)}`
-    );
     const personas = await this._npsGetPersonaMapsByCustomerId(
       customerId.readUInt32BE(0)
     );
@@ -317,7 +314,10 @@ export class PersonaServer {
     const personaMapsMsg = new NPSPersonaMapsMsg(MSG_DIRECTION.SENT);
 
     if (personas.length === 0) {
-      this.logger.error("[_npsGetPersonaMaps] No personas found");
+      this.logger.error({
+        message: "No personas found",
+        customerId: customerId.readUInt32BE(0),
+      });
     } else {
       personaMapsMsg.loadMaps(personas);
       this.logger.info({

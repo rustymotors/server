@@ -97,7 +97,7 @@ export class NPSMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    logger.info({
+    logger.debug({
       message: `NPSMsg/NPSMsg`,
       direction: this.direction,
       msgNo: this.msgNo.toString(16),
