@@ -49,10 +49,11 @@ export class LobbyMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    this.logger.debug(`[LobbyMsg]======================================`);
-    this.logger.debug(`MsgNo:       ${this.msgNo}`);
-    this.logger.debug(`dataLength:  ${this.dataLength}`);
-    this.logger.debug(`packet:      ${this.serialize().toString("hex")}`);
-    this.logger.debug(`[LobbyMsg]======================================`);
+    this.logger.info({
+      message: `LobbyMsg`,
+      msgNo: this.msgNo,
+      dataLength: this.dataLength,
+      packet: this.serialize().toString("hex"),
+    });
   }
 }

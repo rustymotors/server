@@ -106,24 +106,20 @@ export class MessageNode {
   }
 
   public dumpPacket() {
-    this.logger.debug("= MessageNode ===============================");
-    this.logger.debug("Packet has a valid MCOTS header signature");
-    this.logger.debug("=============================================");
-    this.logger.debug(`Header Length: ${this.dataLength}`);
-    this.logger.debug(`Header MCOSIG: ${this.isMCOTS()}`);
-    this.logger.debug(`MsgNo:         ${this.msgNo}`);
-    this.logger.debug(`Sequence:      ${this.seq}`);
-    this.logger.debug(`Flags:         ${this.flags}`);
-    this.logger.debug(`ToFrom:        ${this.toFrom}`);
-    this.logger.debug(`AppId:         ${this.appId}`);
-    this.logger.debug("------------------------------------------------");
     const packetContents = this.serialize()
       .toString("hex")
       .match(/../g);
-    if (packetContents) {
-      this.logger.debug(`packet as string: ${packetContents.join("")}`);
-    }
-    this.logger.debug("= MessageNode ==================================");
+    this.logger.info({
+      message: "MessageNode",
+      dataLength: this.dataLength,
+      isMCOTS: this.isMCOTS(),
+      msgNo: this.msgNo,
+      seq: this.seq,
+      flags: this.flags,
+      toFrom: this.toFrom,
+      appId: this.appId,
+      packetContents: packetContents!.join("") || "",
+    });
   }
 
   public getLength() {

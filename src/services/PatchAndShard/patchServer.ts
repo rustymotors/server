@@ -135,7 +135,7 @@ export class PatchServer {
           break;
         }
         // Unknown request, log it
-        this.logger.debug(
+        this.logger.info(
           `[PATCH] Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}, banning.`
         );
         this.banList.push(request.socket.remoteAddress!);
@@ -153,7 +153,7 @@ export class PatchServer {
       this._httpHandler(req, res);
     });
     serverPatch.listen({ port: "80", host: "0.0.0.0" }, () => {
-      this.logger.debug("[patchServer] Patch server is listening...");
+      this.logger.info("[patchServer] Patch server is listening...");
     });
   }
 }

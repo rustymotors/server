@@ -57,12 +57,11 @@ export class GenericRequestMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    this.logger.debug("[GenericRequest]======================================");
-    this.logger.debug(`MsgNo:       ${this.msgNo}`);
-    this.logger.debug(`data:        ${this.data.toString("hex")}`);
-    this.logger.debug(`data2:       ${this.data2.toString("hex")}`);
-    this.logger.debug(
-      "[/GenericRequest]======================================"
-    );
+    this.logger.info({
+      message: "GenericRequest",
+      msgNo: this.msgNo,
+      data: this.data.toString("hex"),
+      data2: this.data2.toString("hex"),
+    });
   }
 }

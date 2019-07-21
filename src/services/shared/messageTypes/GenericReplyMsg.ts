@@ -91,12 +91,13 @@ export class GenericReplyMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    this.logger.debug("[GenericReply]======================================");
-    this.logger.debug(`MsgNo:       ${this.msgNo}`);
-    this.logger.debug(`MsgReply:    ${this.msgReply}`);
-    this.logger.debug(`result:      ${this.result.toString("hex")}`);
-    this.logger.debug(`data:        ${this.data.toString("hex")}`);
-    this.logger.debug(`data2:       ${this.data2.toString("hex")}`);
-    this.logger.debug("[/GenericReply]======================================");
+    this.logger.info({
+      message: "GenericReply",
+      msgNo: this.msgNo,
+      msgReply: this.msgReply,
+      result: this.result.toString("hex"),
+      data: this.data.toString("hex"),
+      tdata2: this.data2.toString("hex"),
+    });
   }
 }

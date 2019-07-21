@@ -45,7 +45,7 @@ export class ListenerThread {
         timestamp: Date.now(),
       };
       // Dump the raw packet
-      this.logger.debug(
+      this.logger.info(
         `[listenerThread] rawPacket's data prior to proccessing: ${rawPacket.data.toString(
           "hex"
         )}`
@@ -53,10 +53,11 @@ export class ListenerThread {
 
       const newConnection = await connection.mgr.processData(rawPacket, config);
       if (!connection.remoteAddress) {
-        throw new Error("Remote address is empty");
+        this.logger.fatal({ message: "Remote address is empty", connection });
+        process.exit(-1);
       }
       await connection.mgr._updateConnectionByAddressAndPort(
-        connection.remoteAddress,
+        connection.remoteAddress!,
         connection.localPort,
         newConnection
       );
@@ -91,7 +92,7 @@ export class ListenerThread {
       connection.inQueue = false;
     }
     socket.on("end", () => {
-      this.logger.debug(
+      this.logger.info(
         `[listenerThread] Client ${remoteAddress} disconnected from port ${localPort}`
       );
     });
@@ -100,7 +101,7 @@ export class ListenerThread {
     });
     socket.on("error", (err: NodeJS.ErrnoException) => {
       if (err.code !== "ECONNRESET") {
-        throw err;
+        this.logger.error(err);
       }
     });
   }

@@ -47,9 +47,7 @@ function decryptCmd(con: Connection, cypherCmd: Buffer) {
   const s = con;
   const decryptedCommand = s.decipherBufferDES(cypherCmd);
   s.decryptedCmd = decryptedCommand;
-  // TODO: Don't output the enchiphered command once we know we are correctly deciphering it
-  logger.debug(`[lobby] Enciphered Cmd: ${cypherCmd.toString("hex")}`);
-  logger.debug(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`);
+  logger.info(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`);
   return s;
 }
 
@@ -136,21 +134,21 @@ export class LobbyServer {
           connection,
           data
         );
-        logger.debug(
+        logger.info(
           `[Lobby/Connect] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
         );
         // TODO: Investigate why this crashes retail
         try {
           npsSocketWriteIfOpen(connection, responsePacket.serialize());
         } catch (error) {
-          logger.error(`[LobbyServer] Unable to send packet: ${error}`);
+          logger.warn(`[LobbyServer] Unable to send packet: ${error}`);
         }
         break;
       }
       // npsHeartbeat
       case "217": {
         const responsePacket = await this._npsHeartbeat();
-        logger.debug(
+        logger.info(
           `[Lobby/Heartbeat] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
         );
         npsSocketWriteIfOpen(connection, responsePacket.serialize());
@@ -165,12 +163,13 @@ export class LobbyServer {
         const { sock: newSock, encryptedCmd } = updatedConnection;
 
         if (encryptedCmd == null) {
-          throw new Error(
+          logger.fatal(
             `[Lobby/CMD] Error with encrypted command, dumping connection...${updatedConnection}`
           );
+          process.exit(-1);
         }
 
-        logger.debug(
+        logger.info(
           `[Lobby/CMD] encrypedCommand's data prior to sending: ${encryptedCmd.toString(
             "hex"
           )}`
@@ -202,10 +201,10 @@ export class LobbyServer {
     rawData: Buffer
   ) {
     const { sock } = connection;
-    logger.debug("*** _npsRequestGameConnectServer ***");
-    logger.debug(`Packet from ${sock.remoteAddress}`);
-    logger.debug(`Packet as hex: ${rawData.toString("hex")}`);
-    logger.debug("************************************");
+    logger.info("*** _npsRequestGameConnectServer ***");
+    logger.info(`Packet from ${sock.remoteAddress}`);
+    logger.info(`Packet as hex: ${rawData.toString("hex")}`);
+    logger.info("************************************");
 
     // // Load the received data into a MsgPack class
     // const msgPack = MsgPack(rawData);

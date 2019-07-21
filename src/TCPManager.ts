@@ -180,7 +180,7 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
   let updatedConnection = conn;
   const currentMsgNo = node.msgNo;
   const currentMsgString = mcotServer._MSG_STRING(currentMsgNo);
-  logger.debug(`currentMsg: ${currentMsgString} (${currentMsgNo})`);
+  logger.info({ currentMsgString, currentMsgNo });
 
   switch (currentMsgString) {
     case "MC_SET_OPTIONS":

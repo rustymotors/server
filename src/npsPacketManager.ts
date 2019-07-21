@@ -57,7 +57,7 @@ export class NPSPacketManager {
 
   public async processNPSPacket(rawPacket: IRawPacket) {
     let msgId = rawPacket.data.readInt16BE(0);
-    this.logger.debug(
+    this.logger.info(
       `[npsPacketManger] Handling message ${this.msgCodetoName(msgId)}`
     );
 
@@ -71,9 +71,12 @@ export class NPSPacketManager {
       case 7003:
         return this.lobbyServer.dataHandler(rawPacket);
       default:
-        throw new Error(
-          `[npsPacketManager] ERROR: Recieved a ${msgId} packet on port ${localPort}`
-        );
+        this.logger.error({
+          message: `[npsPacketManager] Recieved a packet`,
+          msgId,
+          localPort,
+        });
+        return rawPacket.connection;
     }
   }
 }

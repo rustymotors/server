@@ -43,8 +43,8 @@ export default class ConnectionMgr {
     const { remoteAddress, localPort, data } = rawPacket;
 
     // Log the packet as debug
-    this.logger.debug({
-      msg: "logging raw packet",
+    this.logger.info({
+      message: "logging raw packet",
       remoteAddress,
       localPort,
       data: data.toString("hex"),
@@ -52,25 +52,31 @@ export default class ConnectionMgr {
 
     switch (localPort) {
       case 8226:
-        this.logger.debug(
-          `Recieved NPS packet ${npsPacketManager.msgCodetoName(
+        this.logger.info({
+          message: `Recieved NPS packet`,
+          msgName: npsPacketManager.msgCodetoName(
             rawPacket.data.readInt16BE(0)
-          )} on port ${localPort}`
-        );
+          ),
+          localPort,
+        });
         return npsPacketManager.processNPSPacket(rawPacket);
       case 8228:
-        this.logger.debug(
-          `Recieved NPS packet ${npsPacketManager.msgCodetoName(
+        this.logger.info({
+          message: `Recieved NPS packet`,
+          msgName: npsPacketManager.msgCodetoName(
             rawPacket.data.readInt16BE(0)
-          )} on port ${localPort}`
-        );
+          ),
+          localPort,
+        });
         return npsPacketManager.processNPSPacket(rawPacket);
       case 7003:
-        this.logger.debug(
-          `Recieved NPS packet ${npsPacketManager.msgCodetoName(
+        this.logger.info({
+          message: `Recieved NPS packet`,
+          msgName: npsPacketManager.msgCodetoName(
             rawPacket.data.readInt16BE(0)
-          )} on port ${localPort}`
-        );
+          ),
+          localPort,
+        });
         return npsPacketManager.processNPSPacket(rawPacket);
       case 43300:
         return defaultHandler(rawPacket);
@@ -81,11 +87,12 @@ export default class ConnectionMgr {
           return rawPacket.connection;
         }
         // Unknown request, log it
-        this.logger.debug(
-          `[connectionMgr] No known handler for localPort ${localPort},
-                unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.
-                [connectionMgr] Data was: ${data.toString("hex")}, banning.`
-        );
+        this.logger.warn({
+          message: `[connectionMgr] No known handler for request, banning`,
+          localPort,
+          remoteAddress,
+          data: data.toString("hex"),
+        });
         this.banList.push(remoteAddress!);
         return rawPacket.connection;
     }
@@ -130,7 +137,12 @@ export default class ConnectionMgr {
     newConnection: Connection
   ) {
     if (newConnection === undefined) {
-      throw new Error("Undefined connection");
+      this.logger.fatal({
+        message: "Undefined connection",
+        remoteAddress: address,
+        localPort: port,
+      });
+      process.exit(-1);
     }
     const index = this.connections.findIndex(
       (connection: Connection) =>
@@ -150,10 +162,14 @@ export default class ConnectionMgr {
   public findOrNewConnection(socket: Socket) {
     const { remoteAddress, localPort } = socket;
     if (!remoteAddress) {
-      this.logger.error(socket);
-      throw new Error("Remote address is empty");
+      this.logger.fatal({
+        message: "No address in socket",
+        remoteAddress,
+        localPort,
+      });
+      process.exit(-1);
     }
-    const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
+    const con = this.findConnectionByAddressAndPort(remoteAddress!, localPort);
     if (con !== undefined) {
       this.logger.info(
         `[connectionMgr] I have seen connections from ${remoteAddress} on ${localPort} before`

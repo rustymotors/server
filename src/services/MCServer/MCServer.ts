@@ -27,7 +27,7 @@ export class MCServer {
 
   public async startServers(config: IServerConfiguration) {
     const listenerThread = new ListenerThread();
-    this.logger.debug("[MCServer] Starting the listening sockets...");
+    this.logger.info("[MCServer] Starting the listening sockets...");
     const tcpPortList = [
       6660,
       8228,
@@ -58,6 +58,6 @@ export class MCServer {
     await tcpPortList.map(port =>
       listenerThread.startTCPListener(port, this.mgr, config)
     );
-    this.logger.debug("[MCServer] Listening sockets create successfully.");
+    this.logger.info("[MCServer] Listening sockets create successfully.");
   }
 }

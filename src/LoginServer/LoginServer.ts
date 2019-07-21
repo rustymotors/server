@@ -32,9 +32,7 @@ export class LoginServer {
   ) {
     const { connection, data } = rawPacket;
     const { localPort, remoteAddress } = rawPacket;
-    this.logger.info(`=============================================
-    Received packet on port ${localPort} from ${remoteAddress}...`);
-    this.logger.info("=============================================");
+    this.logger.info({ message: "Received packet", localPort, remoteAddress });
     // TODO: Check if this can be handled by a MessageNode object
     const { sock } = connection;
     const requestCode = data.readUInt16BE(0).toString(16);
@@ -52,11 +50,11 @@ export class LoginServer {
           `LOGIN: Unknown code ${requestCode} was received on port 8226`
         );
     }
-    this.logger.debug({
-      msg: "responsePacket object from dataHandler",
+    this.logger.info({
+      message: "responsePacket object from dataHandler",
       userStatus: responsePacket.toString("hex"),
     });
-    this.logger.debug(
+    this.logger.info(
       `responsePacket's data prior to sending: ${responsePacket.toString(
         "hex"
       )}`
@@ -66,7 +64,7 @@ export class LoginServer {
   }
 
   public _npsGetCustomerIdByContextId(contextId: string) {
-    this.logger.debug(`Entering _npsGetCustomerIdByContextId...`);
+    this.logger.info(`Entering _npsGetCustomerIdByContextId...`);
     const users = [
       {
         contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
@@ -86,8 +84,8 @@ export class LoginServer {
       return user.contextId === contextId;
     });
     if (userRecord.length != 1) {
-      this.logger.debug({
-        msg:
+      this.logger.warn({
+        message:
           "preparing to leave _npsGetCustomerIdByContextId after not finding record",
         contextId,
       });
@@ -95,8 +93,8 @@ export class LoginServer {
         `Unable to locate user record matching contextId ${contextId}`
       );
     }
-    this.logger.debug({
-      msg:
+    this.logger.info({
+      message:
         "preparing to leave _npsGetCustomerIdByContextId after finding record",
       contextId,
       userRecord,
@@ -118,13 +116,16 @@ export class LoginServer {
     const { sock } = connection;
     const { localPort, remoteAddress } = sock;
     const userStatus = new NPSUserStatus(config, data);
-    this.logger.info(`=============================================
-    Received login packet on port ${localPort} from ${connection.remoteAddress}...`);
+    this.logger.info({
+      message: "Received login packet",
+      localPort,
+      remoteAddress: connection.remoteAddress,
+    });
 
     userStatus.extractSessionKeyFromPacket(config.serverConfig, data);
 
-    this.logger.debug({
-      msg: "UserStatus object from _userLogin",
+    this.logger.info({
+      message: "UserStatus object from _userLogin",
       userStatus: userStatus.toJSON(),
     });
     userStatus.dumpPacket();
@@ -134,14 +135,14 @@ export class LoginServer {
     const customer = this._npsGetCustomerIdByContextId(userStatus.contextId);
 
     // Save sessionKey in database under customerId
-    this.logger.debug(`Preparing to update session key in db`);
+    this.logger.info(`Preparing to update session key in db`);
     await this.databaseManager._updateSessionKey(
       customer.customerId.readInt32BE(0),
       userStatus.sessionKey,
       userStatus.contextId,
       connection.id
     );
-    this.logger.debug(`Session key updated`);
+    this.logger.info(`Session key updated`);
 
     // Create the packet content
     // TODO: This needs to be dynamically generated, right now we are using a
@@ -167,8 +168,6 @@ export class LoginServer {
      * Then send ok to login packet
      */
     const fullPacket = Buffer.concat([packetContent, packetContent]);
-    // logger.debug("Full response packet length: ", fullPacket.length);
-    // logger.debug("Full response packet as string: ", fullPacket.toString("hex"));
     return fullPacket;
   }
 }

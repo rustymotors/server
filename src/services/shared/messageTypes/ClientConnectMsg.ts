@@ -58,18 +58,15 @@ export class ClientConnectMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    this.logger.info(
-      "[ClientConnectMsg]======================================"
-    );
-    this.logger.debug("MsgNo:       ", this.msgNo.toString());
-    this.logger.debug("customerId:  ", this.customerId.toString());
-    this.logger.debug("personaId:   ", this.personaId.toString());
-    this.logger.debug("custName:    ", this.custName);
-    this.logger.debug("personaName: ", this.personaName);
-    this.logger.debug("mcVersion:   ", this.mcVersion.toString("hex"));
-    this.logger.info(
-      "[ClientConnectMsg]======================================"
-    );
+    this.logger.info({
+      message: "ClientConnectMsg",
+      msgNo: this.msgNo.toString(),
+      customerId: this.customerId.toString(),
+      personaId: this.personaId.toString(),
+      custName: this.custName,
+      personaName: this.personaName,
+      mcVersion: this.mcVersion.toString("hex"),
+    });
   }
 }
 

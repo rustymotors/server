@@ -27,7 +27,7 @@ export class Server {
     // Start the Admin server
     const adminServer = new AdminServer(mcServer);
     adminServer.start(this.config.serverConfig);
-    this.logger.debug("[adminServer] Web Server started");
+    this.logger.info("[adminServer] Web Server started");
 
     this.logger.info("Servers started, ready for connections.");
   }

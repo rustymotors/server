@@ -70,21 +70,21 @@ export class MCOTServer {
 
     rPacket.deserialize(node.serialize());
     rPacket.updateBuffer(pReply.serialize());
-    logger.debug("Dumping response...");
+    logger.info("Dumping response...");
     rPacket.dumpPacket();
 
     return { con, nodes: [rPacket] };
   }
 
   public async _getLobbies(con: Connection, node: MessageNode) {
-    logger.debug(`In _getLobbies...`);
+    logger.info(`In _getLobbies...`);
     const lobbiesListMsg = node;
 
     // Update the appId
     lobbiesListMsg.appId = con.appId;
 
     // Dump the packet
-    logger.debug("Dumping request...");
+    logger.info("Dumping request...");
     lobbiesListMsg.dumpPacket();
 
     // Create new response packet
@@ -107,8 +107,7 @@ export class MCOTServer {
     rPacket.appId = con.appId;
 
     // Dump the packet
-    logger.debug(`-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-`);
-    logger.debug("Dumping response...");
+    logger.info("Dumping response...");
     lobbyMsg.dumpPacket();
     rPacket.dumpPacket();
 
@@ -153,7 +152,7 @@ export class MCOTServer {
     // const rPacket = new MessageNode();
     rPacket.deserialize(node.serialize());
     rPacket.updateBuffer(pReply.serialize());
-    logger.debug("Dumping response...");
+    logger.info("Dumping response...");
     rPacket.dumpPacket();
 
     return { con, nodes: [rPacket] };
@@ -178,7 +177,7 @@ export class MCOTServer {
     // const rPacket = new MessageNode();
     rPacket.deserialize(node.serialize());
     rPacket.updateBuffer(pReply.serialize());
-    logger.debug("Dumping response...");
+    logger.info("Dumping response...");
     rPacket.dumpPacket();
 
     return { con, nodes: [rPacket] };
@@ -203,7 +202,7 @@ export class MCOTServer {
     // const rPacket = new MessageNode();
     rPacket.deserialize(node.serialize());
     rPacket.updateBuffer(pReply.serialize());
-    logger.debug("Dumping response...");
+    logger.info("Dumping response...");
     rPacket.dumpPacket();
 
     return { con, nodes: [rPacket] };
