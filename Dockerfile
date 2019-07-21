@@ -15,4 +15,4 @@ COPY typings typings
 
 COPY migrations migrations
 
-CMD npx ts-node src/app.ts
+COPY migrate migrate

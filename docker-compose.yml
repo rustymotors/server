@@ -30,16 +30,25 @@ services:
       - "9012:9012"
       - "9013:9013"
       - "9014:9014"
+    environment:
+      PGHOST: db
+      PGUSER: postgres
+      PGDATABASE: postgres
+      PGPASSWORD: mco
     volumes:
       - ./:/home/node/app
-    links:
+    depends_on:
+      - db
       - redis
+    command: "npm run prod"
 
   db:
-    image: postgres
+    image: postgres:11.4
     restart: always
     environment:
       POSTGRES_PASSWORD: mco
+    ports:
+      - "5432:5432"
 
   adminer:
     image: adminer
