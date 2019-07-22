@@ -14,5 +14,3 @@ COPY src src
 COPY typings typings
 
 COPY migrations migrations
-
-COPY migrate migrate

@@ -12,14 +12,16 @@ import { IRawPacket } from "../shared/interfaces/IRawPacket";
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
 import { sendPacketOkLogin } from "../../TCPManager";
 import * as bunyan from "bunyan";
+import { Logger } from "../../loggerManager";
 
 export class ListenerThread {
   public logger: bunyan;
 
   constructor() {
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "ListenerThread" });
+    // this.logger = bunyan
+    //   .createLogger({ name: "mcoServer" })
+    //   .child({ module: "ListenerThread" });
+    this.logger = new Logger().getLogger("ListenerThread");
   }
 
   /**
