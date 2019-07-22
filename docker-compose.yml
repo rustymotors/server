@@ -30,6 +30,8 @@ services:
       - "9012:9012"
       - "9013:9013"
       - "9014:9014"
+      # Node REPL
+      - "5001:5001"
     environment:
       PGHOST: db
       PGUSER: postgres
