@@ -48,7 +48,8 @@ export class AdminServer {
       const displayConnection = `
         index: ${index} - ${connection.id}
             remoteAddress: ${connection.remoteAddress}:${connection.localPort}
-        Encryption ID: ${connection.enc.getId()}
+            Encryption ID: ${connection.enc.getId()}
+            inQueue:       ${connection.inQueue}
         `;
       responseText += displayConnection;
     });
