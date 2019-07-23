@@ -30,7 +30,6 @@ jobs:
           command: echo $ARTIFACTS_PATH
           when: always
       - codecov/upload:
-          name: Upload coverage - Codecov.io
           file: coverage/*.xml
       - run:
           name: Upload coverage - Drazisil - testing
