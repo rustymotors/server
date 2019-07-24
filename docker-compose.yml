@@ -33,7 +33,7 @@ services:
       # Node REPL
       - "5001:5001"
     environment:
-      PGHOST: db
+      PGHOST: postgres
       PGUSER: postgres
       PGDATABASE: postgres
       PGPASSWORD: mco
@@ -65,7 +65,7 @@ services:
     ports:
       - "9187"
     environment:
-      - DATA_SOURCE_NAME=postgresql://postgres:@postgres:5432?sslmode=disable
+      - DATA_SOURCE_NAME=postgresql://postgres:mco@postgres:5432?sslmode=disable
 
   adminer:
     image: adminer

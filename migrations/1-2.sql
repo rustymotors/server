@@ -13,8 +13,8 @@ WITH (
   OIDS = FALSE
 );
 
-DROP TABLE IF EXISTS "lobies";
-CREATE TABLE "public"."lobies"
+DROP TABLE IF EXISTS "lobbies";
+CREATE TABLE "public"."lobbies"
 (
 	"lobyID" integer NOT NULL,
 	"raceTypeID" integer NOT NULL,
