@@ -9,6 +9,7 @@ const testConfig: IServerConfiguration = {
     privateKeyFilename: "na",
     registryFilename: "na",
   },
+  statsDHost: "na",
 };
 
 describe("NPSUserStatus", () => {
