@@ -18,9 +18,6 @@ export class ListenerThread {
   public logger: bunyan;
 
   constructor() {
-    // this.logger = bunyan
-    //   .createLogger({ name: "mcoServer" })
-    //   .child({ module: "ListenerThread" });
     this.logger = new Logger().getLogger("ListenerThread");
   }
 

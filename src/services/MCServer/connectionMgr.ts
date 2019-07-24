@@ -13,14 +13,19 @@ import * as bunyan from "bunyan";
 import { defaultHandler } from "../../TCPManager";
 import { NPSPacketManager } from "../../npsPacketManager";
 import { DatabaseManager } from "../../databaseManager";
+import { ConfigManager } from "../../configManager";
+import * as SDC from "statsd-client";
 
 export default class ConnectionMgr {
   public logger: bunyan;
+  public config = new ConfigManager().getConfig();
+  public sdc: SDC;
   private connections: Connection[];
   private newConnectionId: number;
   private banList: string[] = [];
 
   constructor() {
+    this.sdc = new SDC({ host: this.config.statsDHost });
     this.logger = bunyan
       .createLogger({ name: "mcoServer" })
       .child({ module: "ConnectionManager" });
@@ -43,6 +48,7 @@ export default class ConnectionMgr {
     const { remoteAddress, localPort, data } = rawPacket;
 
     // Log the packet as debug
+    this.sdc.increment("packets.count");
     this.logger.info({
       message: "logging raw packet",
       remoteAddress,
