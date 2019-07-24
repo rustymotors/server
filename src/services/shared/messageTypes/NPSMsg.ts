@@ -10,7 +10,6 @@ import { ConfigManager } from "../../../configManager";
 import { DatabaseManager } from "../../../databaseManager";
 import { Logger } from "../../../loggerManager";
 
-this.logger = new Logger().getLogger("NPSMsg");
 const config = new ConfigManager().getConfig();
 const database = new DatabaseManager();
 
@@ -26,6 +25,7 @@ export enum MSG_DIRECTION {
 }
 
 export class NPSMsg {
+  public logger = new Logger().getLogger("NPSMsg");
   public msgNo: number;
   public msgLength: number;
   public msgVersion: number;
@@ -83,7 +83,7 @@ export class NPSMsg {
   }
 
   public dumpPacketHeader(messageType: string) {
-    logger.info({
+    this.logger.info({
       message: `NPSMsg/${messageType}`,
       direction: this.direction,
       msgNo: this.msgNo.toString(16),
@@ -96,7 +96,7 @@ export class NPSMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    logger.debug({
+    this.logger.debug({
       message: `NPSMsg/NPSMsg`,
       direction: this.direction,
       msgNo: this.msgNo.toString(16),

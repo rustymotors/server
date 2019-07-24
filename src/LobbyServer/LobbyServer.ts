@@ -13,8 +13,9 @@ import { PersonaServer } from "../PersonaServer/PersonaServer";
 import { DatabaseManager } from "../databaseManager";
 import { ConfigManager } from "../configManager";
 import * as bunyan from "bunyan";
+import { Logger } from "../loggerManager";
 
-this.logger = new Logger().getLogger("LobbyServer");
+const logger = new Logger().getLogger("LobbyServer");
 
 const databaseManager = new DatabaseManager();
 

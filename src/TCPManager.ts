@@ -21,7 +21,7 @@ import { StockCarInfoMsg } from "./services/shared/messageTypes/StockCarInfoMsg"
 import { DatabaseManager } from "./databaseManager";
 import { Logger } from "./loggerManager";
 
-this.logger = new Logger().getLogger("TCPManager");
+const logger = new Logger().getLogger("TCPManager");
 const lobbyServer = new LobbyServer();
 const mcotServer = new MCOTServer();
 const databaseManager = new DatabaseManager();

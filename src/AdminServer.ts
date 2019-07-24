@@ -59,11 +59,13 @@ export class AdminServer {
     this.logger.info(
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );
-    this.logger.info({
-      message: "Requested recieved",
-      url: request.url,
-      remoteAddress: request.connection.remoteAddress,
-    });
+    this.logger.info(
+      {
+        url: request.url,
+        remoteAddress: request.connection.remoteAddress,
+      },
+      "Requested recieved"
+    );
     switch (request.url) {
       case "/admin/connections":
         response.setHeader("Content-Type", "text/plain");

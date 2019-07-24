@@ -1,4 +1,5 @@
 import * as bunyan from "bunyan";
+import { Logger } from "./loggerManager";
 const pool = require("./db/index");
 
 export class DatabaseManager {

@@ -13,6 +13,7 @@ export class Logger {
         port: 12201,
       }),
     });
+    logger.addSerializers(bunyan.stdSerializers);
 
     return logger;
   }

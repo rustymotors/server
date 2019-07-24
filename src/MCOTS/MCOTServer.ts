@@ -6,16 +6,14 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Connection } from "../Connection";
-import * as bunyan from "bunyan";
 import { GenericReplyMsg } from "../services/shared/messageTypes/GenericReplyMsg";
 import { LobbyMsg } from "../services/shared/messageTypes/LobbyMsg";
 import { LoginMsg } from "../services/shared/messageTypes/LoginMsg";
 import { MessageNode } from "../services/shared/messageTypes/MessageNode";
 import { Logger } from "../loggerManager";
 
-this.logger = new Logger().getLogger("MCOTSServer");
-
 export class MCOTServer {
+  public logger = new Logger().getLogger("MCOTSServer");
   /**
    * Return the string representation of the numeric opcode
    * @param {int} msgID
@@ -69,21 +67,21 @@ export class MCOTServer {
 
     rPacket.deserialize(node.serialize());
     rPacket.updateBuffer(pReply.serialize());
-    logger.info("Dumping response...");
+    this.logger.info("Dumping response...");
     rPacket.dumpPacket();
 
     return { con, nodes: [rPacket] };
   }
 
   public async _getLobbies(con: Connection, node: MessageNode) {
-    logger.info(`In _getLobbies...`);
+    this.logger.info(`In _getLobbies...`);
     const lobbiesListMsg = node;
 
     // Update the appId
     lobbiesListMsg.appId = con.appId;
 
     // Dump the packet
-    logger.info("Dumping request...");
+    this.logger.info("Dumping request...");
     lobbiesListMsg.dumpPacket();
 
     // Create new response packet
@@ -106,7 +104,7 @@ export class MCOTServer {
     rPacket.appId = con.appId;
 
     // Dump the packet
-    logger.info("Dumping response...");
+    this.logger.info("Dumping response...");
     lobbyMsg.dumpPacket();
     rPacket.dumpPacket();
 
@@ -151,7 +149,7 @@ export class MCOTServer {
     // const rPacket = new MessageNode();
     rPacket.deserialize(node.serialize());
     rPacket.updateBuffer(pReply.serialize());
-    logger.info("Dumping response...");
+    this.logger.info("Dumping response...");
     rPacket.dumpPacket();
 
     return { con, nodes: [rPacket] };
@@ -176,7 +174,7 @@ export class MCOTServer {
     // const rPacket = new MessageNode();
     rPacket.deserialize(node.serialize());
     rPacket.updateBuffer(pReply.serialize());
-    logger.info("Dumping response...");
+    this.logger.info("Dumping response...");
     rPacket.dumpPacket();
 
     return { con, nodes: [rPacket] };
@@ -201,7 +199,7 @@ export class MCOTServer {
     // const rPacket = new MessageNode();
     rPacket.deserialize(node.serialize());
     rPacket.updateBuffer(pReply.serialize());
-    logger.info("Dumping response...");
+    this.logger.info("Dumping response...");
     rPacket.dumpPacket();
 
     return { con, nodes: [rPacket] };
