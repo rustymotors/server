@@ -7,6 +7,7 @@
 
 import * as bunyan from "bunyan";
 import { StockCar } from "./StockCar";
+import { Logger } from "../../../loggerManager";
 
 // WORD	msgNo;
 // DWORD    starterCash; // when called from the create persona screen,
@@ -28,9 +29,7 @@ export class StockCarInfoMsg {
   public StockCarList: StockCar[];
 
   constructor() {
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "StockCarMsg" });
+    this.logger = new Logger().getLogger("StockCarMsg");
     this.msgNo = 141;
     this.starterCash = 1;
     this.dealerId = 0;

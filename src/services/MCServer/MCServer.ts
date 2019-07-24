@@ -9,15 +9,14 @@ import ConnectionMgr from "./connectionMgr";
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
 import { ListenerThread } from "./listenerThread";
 import * as bunyan from "bunyan";
+import { Logger } from "../../loggerManager";
 
 export class MCServer {
   public mgr: ConnectionMgr;
   public logger: bunyan;
 
   constructor() {
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "MCCserver" });
+    this.logger = new Logger().getLogger("MCServer");
     this.mgr = new ConnectionMgr();
   }
   /**

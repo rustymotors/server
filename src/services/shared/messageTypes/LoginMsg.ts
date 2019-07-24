@@ -7,6 +7,7 @@
 
 import * as struct from "c-struct";
 import * as bunyan from "bunyan";
+import { Logger } from "../../../loggerManager";
 
 // tslint:disable: object-literal-sort-keys
 const loginMsgSchema = new struct.Schema({
@@ -39,9 +40,7 @@ export class LoginMsg {
   public struct: any;
 
   constructor(buffer: Buffer) {
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "LoginMsg" });
+    this.logger = new Logger().getLogger("LoginMsg");
     this.msgNo = 0;
     this.toFrom = 0;
     this.appId = 0;

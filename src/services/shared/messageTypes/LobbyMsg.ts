@@ -10,6 +10,7 @@
 import * as bunyan from "bunyan";
 import { LobbyInfo } from "./LobbyInfo";
 import { MessageNode } from "./MessageNode";
+import { Logger } from "../../../loggerManager";
 
 export class LobbyMsg {
   public logger: bunyan;
@@ -22,9 +23,7 @@ export class LobbyMsg {
   private dataLength: number;
 
   constructor() {
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "LobbyMsg" });
+    this.logger = new Logger().getLogger("LobbyMsg");
     this.msgNo = 325;
 
     this.noLobbies = 1;

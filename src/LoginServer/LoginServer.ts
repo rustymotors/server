@@ -14,15 +14,14 @@ import { Connection } from "../Connection";
 import { premadeLogin } from "../packet";
 import { DatabaseManager } from "../databaseManager";
 import * as bunyan from "bunyan";
+import { Logger } from "../loggerManager";
 
 export class LoginServer {
   public logger: bunyan;
   public databaseManager: DatabaseManager;
 
   constructor(databaseManager: DatabaseManager) {
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "LoginServer" });
+    this.logger = new Logger().getLogger("LoginServer");
     this.databaseManager = databaseManager;
   }
 

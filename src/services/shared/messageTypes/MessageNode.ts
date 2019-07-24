@@ -6,6 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as bunyan from "bunyan";
+import { Logger } from "../../../loggerManager";
 
 export class MessageNode {
   public logger: bunyan;
@@ -19,9 +20,7 @@ export class MessageNode {
   private mcoSig: string;
 
   constructor() {
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "MessageNode" });
+    this.logger = new Logger().getLogger("MessageNode");
     this.msgNo = 0;
     this.seq = 999;
     this.flags = 0;

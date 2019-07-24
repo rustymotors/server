@@ -6,6 +6,7 @@ import { LobbyServer } from "./LobbyServer/LobbyServer";
 import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
 import { DatabaseManager } from "./databaseManager";
 import { Connection } from "./Connection";
+import { Logger } from "./loggerManager";
 
 export class NPSPacketManager {
   public logger: bunyan;
@@ -30,9 +31,7 @@ export class NPSPacketManager {
   ];
 
   constructor(config: IServerConfiguration, databaseManager: DatabaseManager) {
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "npsPacketManager" });
+    this.logger = new Logger().getLogger("NPSPacketManager");
     this.config = config;
     this.database = databaseManager;
     this.loginServer = new LoginServer(databaseManager);

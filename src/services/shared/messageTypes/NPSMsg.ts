@@ -8,10 +8,9 @@ import * as bunyan from "bunyan";
 import { NPSPacketManager } from "../../../npsPacketManager";
 import { ConfigManager } from "../../../configManager";
 import { DatabaseManager } from "../../../databaseManager";
+import { Logger } from "../../../loggerManager";
 
-const logger = bunyan
-  .createLogger({ name: "mcoServer" })
-  .child({ module: "NPSMsg" });
+this.logger = new Logger().getLogger("NPSMsg");
 const config = new ConfigManager().getConfig();
 const database = new DatabaseManager();
 

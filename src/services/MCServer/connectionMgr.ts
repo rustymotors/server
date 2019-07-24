@@ -15,6 +15,7 @@ import { NPSPacketManager } from "../../npsPacketManager";
 import { DatabaseManager } from "../../databaseManager";
 import { ConfigManager } from "../../configManager";
 import * as SDC from "statsd-client";
+import { Logger } from "../../loggerManager";
 
 export default class ConnectionMgr {
   public logger: bunyan;
@@ -26,9 +27,7 @@ export default class ConnectionMgr {
 
   constructor() {
     this.sdc = new SDC({ host: this.config.statsDHost });
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "ConnectionManager" });
+    this.logger = new Logger().getLogger("ConnectionManager");
     this.connections = [];
     this.newConnectionId = 1;
   }

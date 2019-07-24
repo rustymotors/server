@@ -3,6 +3,7 @@ import { AdminServer } from "./AdminServer";
 import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
 import * as bunyan from "bunyan";
 import { MCServer } from "./services/MCServer/MCServer";
+import { Logger } from "./loggerManager";
 
 export class Server {
   public config: IServerConfiguration;
@@ -11,9 +12,7 @@ export class Server {
   public adminServer!: AdminServer;
 
   public constructor(config: IServerConfiguration) {
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "server" });
+    this.logger = new Logger().getLogger("server");
     this.config = config;
 
     this.start();

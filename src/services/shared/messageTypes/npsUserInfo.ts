@@ -7,6 +7,7 @@
 
 import * as bunyan from "bunyan";
 import { NPSMsg, MSG_DIRECTION } from "./NPSMsg";
+import { Logger } from "../../../loggerManager";
 
 export class NPSUserInfo extends NPSMsg {
   public logger: bunyan;
@@ -16,9 +17,7 @@ export class NPSUserInfo extends NPSMsg {
 
   constructor(direction: MSG_DIRECTION) {
     super(direction);
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "npmUserInfo" });
+    this.logger = new Logger().getLogger("NPSUserInfo");
   }
 
   public deserialize(rawData: Buffer) {

@@ -6,6 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as bunyan from "bunyan";
+import { Logger } from "../../../loggerManager";
 
 // DWORD   brandedPartID;
 // DWORD   retailPrice;
@@ -18,9 +19,7 @@ export class StockCar {
   public bIsDealOfTheDay: number;
 
   constructor() {
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "StockCar" });
+    this.logger = new Logger().getLogger("StockCar");
     this.brandedPartId = 105;
     this.retailPrice = 20;
     this.bIsDealOfTheDay = 0;

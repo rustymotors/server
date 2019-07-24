@@ -11,6 +11,7 @@ import * as https from "https";
 import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
 import { MCServer } from "./services/MCServer/MCServer";
 import * as bunyan from "bunyan";
+import { Logger } from "./loggerManager";
 
 export class AdminServer {
   public mcServer: MCServer;
@@ -18,9 +19,7 @@ export class AdminServer {
 
   constructor(mcServer: MCServer) {
     this.mcServer = mcServer;
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "ListenerThread" });
+    this.logger = new Logger().getLogger("AdminServer");
   }
   /**
    * Create the SSL options object
@@ -60,6 +59,11 @@ export class AdminServer {
     this.logger.info(
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );
+    this.logger.info({
+      message: "Requested recieved",
+      url: request.url,
+      remoteAddress: request.connection.remoteAddress,
+    });
     switch (request.url) {
       case "/admin/connections":
         response.setHeader("Content-Type", "text/plain");

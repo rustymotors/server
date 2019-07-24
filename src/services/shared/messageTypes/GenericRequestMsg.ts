@@ -6,6 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as bunyan from "bunyan";
+import { Logger } from "../../../loggerManager";
 
 // WORD	msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // DWORD	data;   // specific to the message sent (but usually 0)
@@ -18,9 +19,7 @@ export class GenericRequestMsg {
   private data2: Buffer;
 
   constructor() {
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "GenericRequestMsg" });
+    this.logger = new Logger().getLogger("GenericRequestMsg");
     this.msgNo = 0;
     this.data = Buffer.alloc(4);
     this.data2 = Buffer.alloc(4);

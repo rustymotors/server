@@ -11,6 +11,7 @@ import { IRawPacket } from "../services/shared/interfaces/IRawPacket";
 import * as bunyan from "bunyan";
 import { MSG_DIRECTION, NPSMsg } from "../services/shared/messageTypes/NPSMsg";
 import { NPSPersonaMapsMsg } from "../services/shared/messageTypes/NPSPersonaMapsMsg";
+import { Logger } from "../loggerManager";
 
 export class PersonaServer {
   public logger: bunyan;
@@ -42,9 +43,7 @@ export class PersonaServer {
   ];
 
   constructor() {
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "PersonaServer" });
+    this.logger = new Logger().getLogger("PersonaServer");
   }
 
   public _generateNameBuffer(name: string) {

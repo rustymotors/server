@@ -5,9 +5,7 @@ export class DatabaseManager {
   public logger: bunyan;
 
   constructor() {
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "databaseManager" });
+    this.logger = new Logger().getLogger("DatabaseManager");
   }
 
   public async fetchSessionKeyByCustomerId(customerId: number) {

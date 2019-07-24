@@ -19,10 +19,9 @@ import { MessageNode } from "./services/shared/messageTypes/MessageNode";
 import { StockCar } from "./services/shared/messageTypes/StockCar";
 import { StockCarInfoMsg } from "./services/shared/messageTypes/StockCarInfoMsg";
 import { DatabaseManager } from "./databaseManager";
+import { Logger } from "./loggerManager";
 
-const logger = bunyan
-  .createLogger({ name: "mcoServer" })
-  .child({ module: "TCPManager" });
+this.logger = new Logger().getLogger("TCPManager");
 const lobbyServer = new LobbyServer();
 const mcotServer = new MCOTServer();
 const databaseManager = new DatabaseManager();

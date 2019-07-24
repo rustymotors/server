@@ -10,6 +10,7 @@ import * as fs from "fs";
 import { IServerConfiguration } from "../interfaces/IServerConfiguration";
 import * as bunyan from "bunyan";
 import { NPSMsg, MSG_DIRECTION } from "./NPSMsg";
+import { Logger } from "../../../loggerManager";
 
 /**
  * Load the RSA private key and return a NodeRSA object
@@ -40,9 +41,7 @@ export class NPSUserStatus extends NPSMsg {
 
   constructor(config: IServerConfiguration, packet: Buffer) {
     super(MSG_DIRECTION.RECIEVED);
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "npsUserStatus" });
+    this.logger = new Logger().getLogger("NPSUserStatus");
     // Save the NPS opCode
     this.opCode = packet.readInt16LE(0);
 

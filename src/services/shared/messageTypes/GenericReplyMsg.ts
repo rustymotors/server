@@ -6,6 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as bunyan from "bunyan";
+import { Logger } from "../../../loggerManager";
 
 // WORD	msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD	msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
@@ -24,9 +25,7 @@ export class GenericReplyMsg {
   private data2: Buffer;
 
   constructor() {
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "GenericReplyMsg" });
+    this.logger = new Logger().getLogger("GenericReplyMsg");
     this.msgNo = 0;
     this.toFrom = 0;
     this.appId = 0;

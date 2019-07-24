@@ -11,10 +11,9 @@ import { GenericReplyMsg } from "../services/shared/messageTypes/GenericReplyMsg
 import { LobbyMsg } from "../services/shared/messageTypes/LobbyMsg";
 import { LoginMsg } from "../services/shared/messageTypes/LoginMsg";
 import { MessageNode } from "../services/shared/messageTypes/MessageNode";
+import { Logger } from "../loggerManager";
 
-const logger = bunyan
-  .createLogger({ name: "mcoServer" })
-  .child({ module: "MCOTSServer" });
+this.logger = new Logger().getLogger("MCOTSServer");
 
 export class MCOTServer {
   /**

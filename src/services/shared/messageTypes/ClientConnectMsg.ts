@@ -6,6 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as bunyan from "bunyan";
+import { Logger } from "../../../loggerManager";
 
 export class ClientConnectMsg {
   public logger: bunyan;
@@ -18,9 +19,7 @@ export class ClientConnectMsg {
   private mcVersion: Buffer;
 
   constructor(buffer: Buffer) {
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "ClientConnectMsg" });
+    this.logger = new Logger().getLogger("ClientConnectMsg");
 
     try {
       this.msgNo = buffer.readInt16LE(0);

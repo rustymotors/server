@@ -11,6 +11,7 @@ import * as bunyan from "bunyan";
 import * as https from "https";
 
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
+import { Logger } from "../../loggerManager";
 
 export class WebServer {
   public config: IServerConfiguration;
@@ -18,9 +19,7 @@ export class WebServer {
 
   constructor(config: IServerConfiguration) {
     this.config = config;
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "WebServer" });
+    this.logger = new Logger().getLogger("WebServer");
   }
 
   _sslOptions(configuration: IServerConfiguration["serverConfig"]) {

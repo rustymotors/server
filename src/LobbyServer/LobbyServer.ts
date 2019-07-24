@@ -14,9 +14,7 @@ import { DatabaseManager } from "../databaseManager";
 import { ConfigManager } from "../configManager";
 import * as bunyan from "bunyan";
 
-const logger = bunyan
-  .createLogger({ name: "mcoServer" })
-  .child({ module: "LobbyServer" });
+this.logger = new Logger().getLogger("LobbyServer");
 
 const databaseManager = new DatabaseManager();
 

@@ -9,6 +9,7 @@ import * as http from "http";
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
 import * as bunyan from "bunyan";
 import { ShardEntry } from "./ShardEntry";
+import { Logger } from "../../loggerManager";
 
 export class PatchServer {
   public config: IServerConfiguration;
@@ -28,9 +29,7 @@ export class PatchServer {
 
   constructor(config: IServerConfiguration) {
     this.config = config;
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "PatchServer" });
+    this.logger = new Logger().getLogger("PatchServer");
   }
 
   /**

@@ -63,7 +63,7 @@ services:
   postgres_exporter:
     image: wrouesnel/postgres_exporter
     ports:
-      - "9187"
+      - "9187:9187"
     environment:
       - DATA_SOURCE_NAME=postgresql://postgres:mco@postgres:5432?sslmode=disable
 
@@ -71,7 +71,7 @@ services:
     image: adminer
     restart: always
     ports:
-      - 8181:8080
+      - "8181:8080"
 
   redis:
     image: redis
@@ -101,9 +101,13 @@ services:
   # MongoDB: https://hub.docker.com/_/mongo/
   mongodb:
     image: mongo:3
+    volumes:
+      - mongo_data:/data/db
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.6.1
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
     environment:
       - http.host=0.0.0.0
       - transport.host=localhost
@@ -117,6 +121,8 @@ services:
   # Graylog: https://hub.docker.com/r/graylog/graylog/
   graylog:
     image: graylog/graylog:3.0.2
+    # volumes:
+    #   - graylog_journal:/usr/share/graylog/data/journal
     environment:
       # CHANGE ME (must be at least 16 characters)!
       - GRAYLOG_PASSWORD_SECRET=somepasswordpepper
@@ -140,5 +146,14 @@ services:
       - 12201:12201
       # GELF UDP
       - 12201:12201/udp
+    volumes:
+      - ./graylog/config:/usr/share/graylog/data/config
+
 volumes:
   logvolume01: {}
+  mongo_data:
+    driver: local
+  es_data:
+    driver: local
+  graylog_journal:
+    driver: local

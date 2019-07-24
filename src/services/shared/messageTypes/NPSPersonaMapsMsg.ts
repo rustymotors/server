@@ -9,6 +9,7 @@ import * as struct from "c-struct";
 import { IPersonaRecord } from "../interfaces/IPersonaRecord";
 import * as bunyan from "bunyan";
 import { MSG_DIRECTION, NPSMsg } from "./NPSMsg";
+import { Logger } from "../../../loggerManager";
 
 // tslint:disable: object-literal-sort-keys
 const npsPersonaMapsMsgSchema = new struct.Schema({
@@ -47,9 +48,7 @@ export class NPSPersonaMapsMsg extends NPSMsg {
 
   constructor(direction: MSG_DIRECTION) {
     super(direction);
-    this.logger = bunyan
-      .createLogger({ name: "mcoServer" })
-      .child({ module: "NPSPersonaMapsMsg" });
+    this.logger = new Logger().getLogger("NPSPersonaMapsMsg");
     this.msgNo = 0x607;
     this.personaCount = 0;
     this.struct = struct.unpackSync("NPSPersonaMapsMsg", Buffer.alloc(100));
