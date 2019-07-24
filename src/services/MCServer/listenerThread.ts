@@ -13,11 +13,17 @@ import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration"
 import { sendPacketOkLogin } from "../../TCPManager";
 import * as bunyan from "bunyan";
 import { Logger } from "../../loggerManager";
+import { sendCommand } from "../../LobbyServer/LobbyServer";
+import { ConfigManager } from "../../configManager";
+import * as SDC from "statsd-client";
 
 export class ListenerThread {
+  public config = new ConfigManager().getConfig();
+  public sdc: SDC;
   public logger: bunyan;
 
   constructor() {
+    this.sdc = new SDC({ host: this.config.statsDHost });
     this.logger = new Logger().getLogger("ListenerThread");
   }
 
@@ -49,8 +55,9 @@ export class ListenerThread {
           "hex"
         )}`
       );
-
+      const startPacketHandleTime = new Date();
       const newConnection = await connection.mgr.processData(rawPacket, config);
+      this.sdc.timing("packet.tcp.process_time", startPacketHandleTime);
       if (!connection.remoteAddress) {
         this.logger.fatal({ message: "Remote address is empty", connection });
         process.exit(-1);
