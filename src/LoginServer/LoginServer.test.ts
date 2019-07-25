@@ -9,7 +9,7 @@ import { LoginServer } from "./LoginServer";
 import { DatabaseManager } from "../databaseManager";
 const database = new DatabaseManager();
 
-const loginServer = new LoginServer(database);
+const loginServer = new LoginServer();
 loginServer.logger.level("warn");
 
 test("retuns a valid customer id - d316cd2dd6bf870893dfbaaf17f965884e", () => {

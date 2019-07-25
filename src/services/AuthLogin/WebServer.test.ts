@@ -7,7 +7,7 @@ const config = new ConfigManager().getConfig();
 
 describe("WebServer", () => {
   test("can generate registry file", () => {
-    const webServer = new WebServer(config);
+    const webServer = new WebServer();
     const staticRegistry = fs.readFileSync(
       config.serverConfig.registryFilename
     );

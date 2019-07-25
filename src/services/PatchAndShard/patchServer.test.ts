@@ -6,7 +6,7 @@ import { ConfigManager } from "../../configManager";
 const config = new ConfigManager().getConfig();
 
 describe("PatchServer", () => {
-  const patchServer = new PatchServer(config);
+  const patchServer = new PatchServer();
 
   test("castanetResponse", () => {
     expect(patchServer.castanetResponse.body.toString("hex")).toEqual(
