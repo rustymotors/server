@@ -1,5 +1,4 @@
 import { NPSUserStatus } from "./npsUserStatus";
-import { IServerConfiguration } from "../interfaces/IServerConfiguration";
 
 describe("NPSUserStatus", () => {
   test("can create an instance", () => {
