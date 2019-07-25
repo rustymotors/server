@@ -42,16 +42,8 @@ services:
       - ./:/home/node/app
     depends_on:
       - postgres
-      - redis
       - graylog
     command: "npm run prod"
-
-  statsd:
-    image: prom/statsd-exporter:v0.6.0
-    command: -statsd.listen-udp=:8125 -statsd.listen-tcp=:8125
-    ports:
-      - "8125:8125"
-      - "9102:9102"
 
   postgres:
     image: postgres:11.4
@@ -61,43 +53,11 @@ services:
     ports:
       - "5432:5432"
 
-  postgres_exporter:
-    image: wrouesnel/postgres_exporter
-    ports:
-      - "9187:9187"
-    environment:
-      - DATA_SOURCE_NAME=postgresql://postgres:mco@postgres:5432?sslmode=disable
-
   adminer:
     image: adminer
     restart: always
     ports:
       - "8181:8080"
-
-  redis:
-    image: redis
-
-  prometheus:
-    image: prom/prometheus:v2.11.1
-    ports:
-      - "9090:9090"
-    volumes:
-      # Path on the host, relative to the Compose file
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-
-  grafana:
-    image: grafana/grafana:6.2.5
-    ports:
-      - "3000:3000"
-
-  traefik:
-    image: traefik:v1.7.12 # The official Traefik docker image
-    command: --api --docker # Enables the web UI and tells Traefik to listen to docker
-    ports:
-      - "81:80" # The HTTP port
-      - "8080:8080" # The Web UI (enabled by --api)
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
 
   # MongoDB: https://hub.docker.com/_/mongo/
   mongodb:
@@ -151,7 +111,6 @@ services:
       - ./graylog/config:/usr/share/graylog/data/config
 
 volumes:
-  logvolume01: {}
   mongo_data:
     driver: local
   es_data:
