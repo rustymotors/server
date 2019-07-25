@@ -10,16 +10,14 @@ import { IncomingMessage, ServerResponse } from "http";
 import * as https from "https";
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
 import { MCServer } from "../MCServer/MCServer";
-import * as bunyan from "bunyan";
 import { Logger } from "../../loggerManager";
 
 export class AdminServer {
   public mcServer: MCServer;
-  public logger: bunyan;
+  public logger = new Logger().getLogger("AdminServer");
 
   constructor(mcServer: MCServer) {
     this.mcServer = mcServer;
-    this.logger = new Logger().getLogger("AdminServer");
   }
   /**
    * Create the SSL options object
@@ -85,19 +83,5 @@ export class AdminServer {
         break;
     }
   }
-  public async start(config: IServerConfiguration["serverConfig"]) {
-    const httpsServer = https
-      .createServer(
-        this._sslOptions(config),
-        (req: IncomingMessage, res: ServerResponse) => {
-          this._httpsHandler(req, res);
-        }
-      )
-      .listen({ port: 88, host: "0.0.0.0" })
-      .on("connection", socket => {
-        socket.on("error", (error: Error) => {
-          throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`);
-        });
-      });
-  }
+  public async start(config: IServerConfiguration["serverConfig"]) {}
 }

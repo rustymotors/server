@@ -7,7 +7,6 @@
 
 import * as struct from "c-struct";
 import { IPersonaRecord } from "../interfaces/IPersonaRecord";
-import * as bunyan from "bunyan";
 import { MSG_DIRECTION, NPSMsg } from "./NPSMsg";
 import { Logger } from "../../../loggerManager";
 
@@ -39,7 +38,7 @@ const npsPersonaMapsMsgSchema = new struct.Schema({
 struct.register("NPSPersonaMapsMsg", npsPersonaMapsMsgSchema);
 
 export class NPSPersonaMapsMsg extends NPSMsg {
-  public logger: bunyan;
+  public logger = new Logger().getLogger("NPSPersonaMapsMsg");
   public personaCount: number;
   public personas: IPersonaRecord[] = [];
   // public personaSize = 1296;
@@ -48,7 +47,6 @@ export class NPSPersonaMapsMsg extends NPSMsg {
 
   constructor(direction: MSG_DIRECTION) {
     super(direction);
-    this.logger = new Logger().getLogger("NPSPersonaMapsMsg");
     this.msgNo = 0x607;
     this.personaCount = 0;
     this.struct = struct.unpackSync("NPSPersonaMapsMsg", Buffer.alloc(100));

@@ -7,14 +7,15 @@ const config = new ConfigManager().getConfig();
 
 // MCOS Monolith
 import { Server } from "./server";
-const server = new Server(config);
+const server = new Server();
+server.start();
 // MCOS AuthLogin and Shard
 import { WebServer } from "./services/AuthLogin/WebServer";
-const AuthLogin = new WebServer(config);
+const AuthLogin = new WebServer();
 AuthLogin.start();
 // MCOS PatchAndShard
 import { PatchServer } from "./services/PatchAndShard/patchServer";
-const patchAndShardServer = new PatchServer(config);
+const patchAndShardServer = new PatchServer();
 patchAndShardServer.start();
 
 net

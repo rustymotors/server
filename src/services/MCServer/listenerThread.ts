@@ -10,22 +10,15 @@ import { ConnectionObj } from "../../ConnectionObj";
 import ConnectionMgr from "./connectionMgr";
 import { IRawPacket } from "../shared/interfaces/IRawPacket";
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
-import { sendPacketOkLogin } from "../../TCPManager";
-import * as bunyan from "bunyan";
+import { sendPacketOkLogin } from "./TCPManager";
 import { Logger } from "../../loggerManager";
-import { sendCommand } from "../../LobbyServer/LobbyServer";
 import { ConfigManager } from "../../configManager";
 import * as SDC from "statsd-client";
 
 export class ListenerThread {
   public config = new ConfigManager().getConfig();
-  public sdc: SDC;
-  public logger: bunyan;
-
-  constructor() {
-    this.sdc = new SDC({ host: this.config.statsDHost });
-    this.logger = new Logger().getLogger("ListenerThread");
-  }
+  public sdc = new SDC({ host: this.config.statsDHost });
+  public logger = new Logger().getLogger("ListenerThread");
 
   /**
    * the onData handler

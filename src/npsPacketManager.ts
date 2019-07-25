@@ -1,17 +1,16 @@
-import * as bunyan from "bunyan";
 import { IRawPacket } from "./services/shared/interfaces/IRawPacket";
 import { LoginServer } from "./LoginServer/LoginServer";
 import { PersonaServer } from "./PersonaServer/PersonaServer";
 import { LobbyServer } from "./LobbyServer/LobbyServer";
 import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
 import { DatabaseManager } from "./databaseManager";
-import { ConnectionObj } from "./ConnectionObj";
 import { Logger } from "./loggerManager";
+import { ConfigManager } from "./configManager";
 
 export class NPSPacketManager {
-  public logger: bunyan;
-  public config: IServerConfiguration;
-  public database: DatabaseManager;
+  public logger = new Logger().getLogger("NPSPacketManager");
+  public config = new ConfigManager().getConfig();
+  public database = new DatabaseManager();
   public loginServer: LoginServer;
   public personaServer: PersonaServer;
   public lobbyServer: LobbyServer;
@@ -30,11 +29,8 @@ export class NPSPacketManager {
     { id: 0x1101, name: "NPS_CRYPTO_DES_CBC" },
   ];
 
-  constructor(config: IServerConfiguration, databaseManager: DatabaseManager) {
-    this.logger = new Logger().getLogger("NPSPacketManager");
-    this.config = config;
-    this.database = databaseManager;
-    this.loginServer = new LoginServer(databaseManager);
+  constructor() {
+    this.loginServer = new LoginServer();
     this.personaServer = new PersonaServer();
     this.lobbyServer = new LobbyServer();
   }

@@ -5,11 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import * as bunyan from "bunyan";
 import { Logger } from "../../../loggerManager";
 
 export class MessageNode {
-  public logger: bunyan;
+  public logger = new Logger().getLogger("MessageNode");
   public appId: number;
   public msgNo: number;
   public seq: number;
@@ -20,7 +19,6 @@ export class MessageNode {
   private mcoSig: string;
 
   constructor() {
-    this.logger = new Logger().getLogger("MessageNode");
     this.msgNo = 0;
     this.seq = 999;
     this.flags = 0;

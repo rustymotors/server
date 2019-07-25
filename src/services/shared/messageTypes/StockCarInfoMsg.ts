@@ -5,7 +5,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import * as bunyan from "bunyan";
 import { StockCar } from "./StockCar";
 import { Logger } from "../../../loggerManager";
 
@@ -19,7 +18,7 @@ import { Logger } from "../../../loggerManager";
 // StockCar carInfo[1];
 
 export class StockCarInfoMsg {
-  public logger: bunyan;
+  public logger = new Logger().getLogger("StockCarMsg");
   public msgNo: number;
   public starterCash: number;
   public dealerId: number;
@@ -29,7 +28,6 @@ export class StockCarInfoMsg {
   public StockCarList: StockCar[];
 
   constructor() {
-    this.logger = new Logger().getLogger("StockCarMsg");
     this.msgNo = 141;
     this.starterCash = 1;
     this.dealerId = 0;

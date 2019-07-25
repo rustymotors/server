@@ -8,17 +8,12 @@
 import ConnectionMgr from "./connectionMgr";
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
 import { ListenerThread } from "./listenerThread";
-import * as bunyan from "bunyan";
-import { Logger } from "../../loggerManager";
+import { Logger } from "./loggerManager";
 
 export class MCServer {
-  public mgr: ConnectionMgr;
-  public logger: bunyan;
+  public mgr = new ConnectionMgr();
+  public logger = new Logger().getLogger("MCServer");
 
-  constructor() {
-    this.logger = new Logger().getLogger("MCServer");
-    this.mgr = new ConnectionMgr();
-  }
   /**
    * Start the HTTP, HTTPS and TCP connection listeners
    * @param {Function} callback

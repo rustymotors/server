@@ -9,8 +9,7 @@ import { Socket } from "net";
 import { ConnectionObj } from "../../ConnectionObj";
 import { IRawPacket } from "../shared/interfaces/IRawPacket";
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
-import * as bunyan from "bunyan";
-import { defaultHandler } from "../../TCPManager";
+import { defaultHandler } from "./TCPManager";
 import { NPSPacketManager } from "../../npsPacketManager";
 import { DatabaseManager } from "../../databaseManager";
 import { ConfigManager } from "../../configManager";
@@ -18,7 +17,7 @@ import * as SDC from "statsd-client";
 import { Logger } from "../../loggerManager";
 
 export default class ConnectionMgr {
-  public logger: bunyan;
+  public logger = new Logger().getLogger("ConnectionManager");
   public config = new ConfigManager().getConfig();
   public sdc: SDC;
   private connections: ConnectionObj[];
@@ -27,7 +26,6 @@ export default class ConnectionMgr {
 
   constructor() {
     this.sdc = new SDC({ host: this.config.statsDHost });
-    this.logger = new Logger().getLogger("ConnectionManager");
     this.connections = [];
     this.newConnectionId = 1;
   }
@@ -42,7 +40,7 @@ export default class ConnectionMgr {
     config: IServerConfiguration
   ) {
     const database = new DatabaseManager();
-    const npsPacketManager = new NPSPacketManager(config, database);
+    const npsPacketManager = new NPSPacketManager();
 
     const { remoteAddress, localPort, data } = rawPacket;
 
@@ -55,34 +53,20 @@ export default class ConnectionMgr {
       data: data.toString("hex"),
     });
 
+    if (localPort === 8226 || localPort === 8228 || localPort === 7003) {
+      this.logger.info(
+        {
+          msgName: npsPacketManager.msgCodetoName(
+            rawPacket.data.readInt16BE(0)
+          ),
+          localPort,
+        },
+        `Recieved NPS packet`
+      );
+      return npsPacketManager.processNPSPacket(rawPacket);
+    }
+
     switch (localPort) {
-      case 8226:
-        this.logger.info({
-          message: `Recieved NPS packet`,
-          msgName: npsPacketManager.msgCodetoName(
-            rawPacket.data.readInt16BE(0)
-          ),
-          localPort,
-        });
-        return npsPacketManager.processNPSPacket(rawPacket);
-      case 8228:
-        this.logger.info({
-          message: `Recieved NPS packet`,
-          msgName: npsPacketManager.msgCodetoName(
-            rawPacket.data.readInt16BE(0)
-          ),
-          localPort,
-        });
-        return npsPacketManager.processNPSPacket(rawPacket);
-      case 7003:
-        this.logger.info({
-          message: `Recieved NPS packet`,
-          msgName: npsPacketManager.msgCodetoName(
-            rawPacket.data.readInt16BE(0)
-          ),
-          localPort,
-        });
-        return npsPacketManager.processNPSPacket(rawPacket);
       case 43300:
         return defaultHandler(rawPacket);
       default:

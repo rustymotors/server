@@ -8,13 +8,12 @@
 import { Socket } from "net";
 import { IPersonaRecord } from "../services/shared/interfaces/IPersonaRecord";
 import { IRawPacket } from "../services/shared/interfaces/IRawPacket";
-import * as bunyan from "bunyan";
 import { MSG_DIRECTION, NPSMsg } from "../services/shared/messageTypes/NPSMsg";
 import { NPSPersonaMapsMsg } from "../services/shared/messageTypes/NPSPersonaMapsMsg";
 import { Logger } from "../loggerManager";
 
 export class PersonaServer {
-  public logger: bunyan;
+  public logger = new Logger().getLogger("PersonaServer");
   private personaList: IPersonaRecord[] = [
     {
       customerId: 2868969472,
@@ -42,10 +41,6 @@ export class PersonaServer {
     },
   ];
 
-  constructor() {
-    this.logger = new Logger().getLogger("PersonaServer");
-  }
-
   public _generateNameBuffer(name: string) {
     const nameBuffer = Buffer.alloc(30);
     Buffer.from(name, "utf8").copy(nameBuffer);
@@ -57,7 +52,7 @@ export class PersonaServer {
    * @param {Socket} socket
    * @param {Buffer} rawData
    */
-  public async _npsSelectGamePersona(socket: Socket, data: Buffer) {
+  public async _npsSelectGamePersona(data: Buffer) {
     this.logger.info(`_npsSelectGamePersona...`);
     const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED).deserialize(data);
     this.logger.info({
@@ -89,7 +84,7 @@ export class PersonaServer {
     return responsePacket;
   }
 
-  public async _npsNewGameAccount(sock: Socket, data: Buffer) {
+  public async _npsNewGameAccount(data: Buffer) {
     const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED).deserialize(data);
     this.logger.info({
       message: "NPSMsg response object from _npsNewGameAccount",
@@ -117,7 +112,7 @@ export class PersonaServer {
    * @param {Socket} socket
    * @param {Buffer} data
    */
-  public async _npsLogoutGameUser(socket: Socket, data: Buffer) {
+  public async _npsLogoutGameUser(data: Buffer) {
     this.logger.info("[personaServer] Logging out persona...");
     const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED).deserialize(data);
     this.logger.info({
@@ -152,7 +147,7 @@ export class PersonaServer {
    * @param {Socket} socket
    * @param {Buffer} data
    */
-  public async _npsCheckToken(socket: Socket, data: Buffer) {
+  public async _npsCheckToken(data: Buffer) {
     this.logger.info(`_npsCheckToken...`);
     const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED).deserialize(data);
     this.logger.info({
@@ -194,7 +189,7 @@ export class PersonaServer {
    * @param {Socket} socket
    * @param {Buffer} data
    */
-  public async _npsValidatePersonaName(socket: Socket, data: Buffer) {
+  public async _npsValidatePersonaName(data: Buffer) {
     this.logger.info(`_npsValidatePersonaName...`);
     const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED).deserialize(data);
 
@@ -291,7 +286,7 @@ export class PersonaServer {
    * @param {Socket} socket
    * @param {Buffer} data
    */
-  public async _npsGetPersonaMaps(socket: Socket, data: Buffer) {
+  public async _npsGetPersonaMaps(data: Buffer) {
     this.logger.info(`_npsGetPersonaMaps...`);
     const requestPacket = new NPSMsg(MSG_DIRECTION.RECIEVED).deserialize(data);
 
@@ -344,34 +339,34 @@ export class PersonaServer {
     switch (requestCode) {
       case "503":
         // NPS_REGISTER_GAME_LOGIN = 0x503
-        responsePacket = await this._npsSelectGamePersona(sock, data);
+        responsePacket = await this._npsSelectGamePersona(data);
         this._send(sock, responsePacket);
         return updatedConnection;
 
       case "507":
         // NPS_NEW_GAME_ACCOUNT == 0x507
-        responsePacket = await this._npsNewGameAccount(sock, data);
+        responsePacket = await this._npsNewGameAccount(data);
         this._send(sock, responsePacket);
         return updatedConnection;
 
       case "50f":
         // NPS_REGISTER_GAME_LOGOUT = 0x50F
-        responsePacket = await this._npsLogoutGameUser(sock, data);
+        responsePacket = await this._npsLogoutGameUser(data);
         this._send(sock, responsePacket);
         return updatedConnection;
       case "532":
         // NPS_GET_PERSONA_MAPS = 0x532
-        responsePacket = await this._npsGetPersonaMaps(sock, data);
+        responsePacket = await this._npsGetPersonaMaps(data);
         this._send(sock, responsePacket);
         return updatedConnection;
       case "533":
         // NPS_VALIDATE_PERSONA_NAME   = 0x533
-        responsePacket = await this._npsValidatePersonaName(sock, data);
+        responsePacket = await this._npsValidatePersonaName(data);
         this._send(sock, responsePacket);
         return updatedConnection;
       case "534":
         // NPS_CHECK_TOKEN   = 0x534
-        responsePacket = await this._npsCheckToken(sock, data);
+        responsePacket = await this._npsCheckToken(data);
         this._send(sock, responsePacket);
         return updatedConnection;
       default:

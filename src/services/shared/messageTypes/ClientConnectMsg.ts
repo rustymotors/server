@@ -5,11 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import * as bunyan from "bunyan";
 import { Logger } from "../../../loggerManager";
 
 export class ClientConnectMsg {
-  public logger: bunyan;
+  public logger = new Logger().getLogger("ClientConnectMsg");
   public customerId: number;
   public personaId: number;
   public personaName: string;
@@ -19,8 +18,6 @@ export class ClientConnectMsg {
   private mcVersion: Buffer;
 
   constructor(buffer: Buffer) {
-    this.logger = new Logger().getLogger("ClientConnectMsg");
-
     try {
       this.msgNo = buffer.readInt16LE(0);
     } catch (error) {

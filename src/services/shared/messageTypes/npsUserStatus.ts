@@ -8,7 +8,6 @@
 import * as crypto from "crypto";
 import * as fs from "fs";
 import { IServerConfiguration } from "../interfaces/IServerConfiguration";
-import * as bunyan from "bunyan";
 import { NPSMsg, MSG_DIRECTION } from "./NPSMsg";
 import { Logger } from "../../../loggerManager";
 
@@ -33,15 +32,14 @@ function fetchPrivateKeyFromFile(privateKeyPath: string) {
  */
 
 export class NPSUserStatus extends NPSMsg {
-  public logger: bunyan;
+  public logger = new Logger().getLogger("NPSUserStatus");
   public opCode: number;
   public contextId: string;
   public buffer: Buffer;
   public sessionKey: string = "";
 
-  constructor(config: IServerConfiguration, packet: Buffer) {
+  constructor(packet: Buffer) {
     super(MSG_DIRECTION.RECIEVED);
-    this.logger = new Logger().getLogger("NPSUserStatus");
     // Save the NPS opCode
     this.opCode = packet.readInt16LE(0);
 

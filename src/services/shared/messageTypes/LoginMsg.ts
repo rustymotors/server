@@ -6,7 +6,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as struct from "c-struct";
-import * as bunyan from "bunyan";
 import { Logger } from "../../../loggerManager";
 
 // tslint:disable: object-literal-sort-keys
@@ -25,7 +24,7 @@ const loginMsgSchema = new struct.Schema({
 struct.register("LoginMsg", loginMsgSchema);
 
 export class LoginMsg {
-  public logger: bunyan;
+  public logger = new Logger().getLogger("LoginMsg");
   public appId: number;
   public toFrom: number;
   public msgNo: number;
@@ -40,7 +39,6 @@ export class LoginMsg {
   public struct: any;
 
   constructor(buffer: Buffer) {
-    this.logger = new Logger().getLogger("LoginMsg");
     this.msgNo = 0;
     this.toFrom = 0;
     this.appId = 0;

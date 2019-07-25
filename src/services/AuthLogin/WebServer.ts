@@ -7,20 +7,15 @@
 
 import * as fs from "fs";
 import { IncomingMessage, ServerResponse } from "http";
-import * as bunyan from "bunyan";
 import * as https from "https";
 
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
 import { Logger } from "../../loggerManager";
+import { ConfigManager } from "../../configManager";
 
 export class WebServer {
-  public config: IServerConfiguration;
-  public logger: bunyan;
-
-  constructor(config: IServerConfiguration) {
-    this.config = config;
-    this.logger = new Logger().getLogger("WebServer");
-  }
+  public config = new ConfigManager().getConfig();
+  public logger = new Logger().getLogger("WebServer");
 
   _sslOptions(configuration: IServerConfiguration["serverConfig"]) {
     return {
@@ -31,7 +26,7 @@ export class WebServer {
     };
   }
 
-  public _handleGetTicket(ticket: string) {
+  public _handleGetTicket() {
     return "Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e";
   }
 
@@ -80,7 +75,7 @@ export class WebServer {
     );
     if (request.url!.startsWith("/AuthLogin")) {
       response.setHeader("Content-Type", "text/plain");
-      return response.end(this._handleGetTicket(request.url!));
+      return response.end(this._handleGetTicket());
     }
 
     if (request.url === "/cert") {
@@ -108,14 +103,5 @@ export class WebServer {
     return response.end("Unknown request.");
   }
 
-  async start() {
-    const httpsServer = https
-      .createServer(
-        this._sslOptions(this.config.serverConfig),
-        (req: IncomingMessage, res: ServerResponse) => {
-          this._httpsHandler(req, res);
-        }
-      )
-      .listen({ port: 443, host: "0.0.0.0" });
-  }
+  async start() {}
 }

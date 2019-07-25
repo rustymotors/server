@@ -11,8 +11,6 @@ import { MSG_DIRECTION, NPSMsg } from "../services/shared/messageTypes/NPSMsg";
 import { NPSUserInfo } from "../services/shared/messageTypes/npsUserInfo";
 import { PersonaServer } from "../PersonaServer/PersonaServer";
 import { DatabaseManager } from "../databaseManager";
-import { ConfigManager } from "../configManager";
-import * as bunyan from "bunyan";
 import { Logger } from "../loggerManager";
 
 const logger = new Logger().getLogger("LobbyServer");
@@ -64,7 +62,6 @@ function encryptCmd(con: ConnectionObj, cypherCmd: Buffer) {
  * @param {Buffer} data
  */
 export async function sendCommand(con: ConnectionObj, data: Buffer) {
-  const { id } = con;
   const s = con;
 
   const decipheredCommand = decryptCmd(s, Buffer.from(data.slice(4)))
@@ -117,7 +114,6 @@ export class LobbyServer {
     const { localPort, remoteAddress } = rawPacket;
     logger.info({ message: `Received packet`, localPort, remoteAddress });
     const { connection, data } = rawPacket;
-    const { sock } = connection;
     let updatedConnection = connection;
     const requestCode = data.readUInt16BE(0).toString(16);
 
@@ -154,7 +150,7 @@ export class LobbyServer {
         // Fetch session key
 
         updatedConnection = await sendCommand(connection, data);
-        const { sock: newSock, encryptedCmd } = updatedConnection;
+        const { encryptedCmd } = updatedConnection;
 
         if (encryptedCmd == null) {
           logger.fatal(

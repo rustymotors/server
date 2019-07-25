@@ -7,7 +7,7 @@
 
 import { ConnectionObj } from "../ConnectionObj";
 import { GenericReplyMsg } from "../services/shared/messageTypes/GenericReplyMsg";
-import { LobbyMsg } from "../services/shared/messageTypes/LobbyMsg";
+import { LobbyMsg } from "../services/MCServer/messageTypes/LobbyMsg";
 import { LoginMsg } from "../services/shared/messageTypes/LoginMsg";
 import { MessageNode } from "../services/shared/messageTypes/MessageNode";
 import { Logger } from "../loggerManager";

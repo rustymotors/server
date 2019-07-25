@@ -1,13 +1,8 @@
-import * as bunyan from "bunyan";
 import { Logger } from "./loggerManager";
 const pool = require("./db/index");
 
 export class DatabaseManager {
-  public logger: bunyan;
-
-  constructor() {
-    this.logger = new Logger().getLogger("DatabaseManager");
-  }
+  public logger = new Logger().getLogger("DatabaseManager");
 
   public async fetchSessionKeyByCustomerId(customerId: number) {
     try {

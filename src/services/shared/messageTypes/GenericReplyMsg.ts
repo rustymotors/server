@@ -5,7 +5,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import * as bunyan from "bunyan";
 import { Logger } from "../../../loggerManager";
 
 // WORD	msgNo;    // typically MC_SUCCESS or MC_FAILURE
@@ -15,7 +14,7 @@ import { Logger } from "../../../loggerManager";
 // DWORD	data2;
 
 export class GenericReplyMsg {
-  public logger: bunyan;
+  public logger = new Logger().getLogger("GenericReplyMsg");
   public msgNo: number;
   public appId: number;
   public toFrom: number;
@@ -25,7 +24,6 @@ export class GenericReplyMsg {
   private data2: Buffer;
 
   constructor() {
-    this.logger = new Logger().getLogger("GenericReplyMsg");
     this.msgNo = 0;
     this.toFrom = 0;
     this.appId = 0;

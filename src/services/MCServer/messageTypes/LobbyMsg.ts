@@ -7,13 +7,11 @@
 
 // tslint:disable:object-literal-sort-keys
 
-import * as bunyan from "bunyan";
 import { LobbyInfo } from "./LobbyInfo";
-import { MessageNode } from "./MessageNode";
-import { Logger } from "../../../loggerManager";
+import { Logger } from "../loggerManager";
 
 export class LobbyMsg {
-  public logger: bunyan;
+  public logger = new Logger().getLogger("LobbyMsg");
   public msgNo: number;
   public noLobbies: number;
   public moreToCome: number;
@@ -23,7 +21,6 @@ export class LobbyMsg {
   private dataLength: number;
 
   constructor() {
-    this.logger = new Logger().getLogger("LobbyMsg");
     this.msgNo = 325;
 
     this.noLobbies = 1;

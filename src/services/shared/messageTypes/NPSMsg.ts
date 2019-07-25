@@ -4,14 +4,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import * as bunyan from "bunyan";
-import { NPSPacketManager } from "../../../npsPacketManager";
-import { ConfigManager } from "../../../configManager";
-import { DatabaseManager } from "../../../databaseManager";
 import { Logger } from "../../../loggerManager";
-
-const config = new ConfigManager().getConfig();
-const database = new DatabaseManager();
 
 /*
     NPS messages are sent serialized in BE format

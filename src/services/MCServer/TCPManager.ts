@@ -7,19 +7,18 @@
 
 import * as assert from "assert";
 import { Socket } from "net";
-import { ConnectionObj } from "./ConnectionObj";
-import { IRawPacket } from "./services/shared/interfaces/IRawPacket";
-import { LobbyServer } from "./LobbyServer/LobbyServer";
-import * as bunyan from "bunyan";
-import { MCOTServer } from "./MCOTS/MCOTServer";
-import { ClientConnectMsg } from "./services/shared/messageTypes/ClientConnectMsg";
-import { GenericReplyMsg } from "./services/shared/messageTypes/GenericReplyMsg";
-import { GenericRequestMsg } from "./services/shared/messageTypes/GenericRequestMsg";
-import { MessageNode } from "./services/shared/messageTypes/MessageNode";
-import { StockCar } from "./services/shared/messageTypes/StockCar";
-import { StockCarInfoMsg } from "./services/shared/messageTypes/StockCarInfoMsg";
-import { DatabaseManager } from "./databaseManager";
-import { Logger } from "./loggerManager";
+import { ConnectionObj } from "../../ConnectionObj";
+import { IRawPacket } from "../shared/interfaces/IRawPacket";
+import { LobbyServer } from "../../LobbyServer/LobbyServer";
+import { MCOTServer } from "../../MCOTS/MCOTServer";
+import { ClientConnectMsg } from "../shared/messageTypes/ClientConnectMsg";
+import { GenericReplyMsg } from "../shared/messageTypes/GenericReplyMsg";
+import { GenericRequestMsg } from "../shared/messageTypes/GenericRequestMsg";
+import { MessageNode } from "../shared/messageTypes/MessageNode";
+import { StockCar } from "../shared/messageTypes/StockCar";
+import { StockCarInfoMsg } from "../shared/messageTypes/StockCarInfoMsg";
+import { DatabaseManager } from "../../databaseManager";
+import { Logger } from "../../loggerManager";
 
 const logger = new Logger().getLogger("TCPManager");
 const lobbyServer = new LobbyServer();
@@ -122,7 +121,6 @@ async function GetStockCarInfo(con: ConnectionObj, node: MessageNode) {
 }
 
 async function ClientConnect(con: ConnectionObj, node: MessageNode) {
-  const { id } = con;
   /**
    * Let's turn it into a ClientConnectMsg
    */
@@ -198,7 +196,6 @@ async function ProcessInput(node: MessageNode, conn: ConnectionObj) {
     case "MC_TRACKING_MSG":
       try {
         const result = await mcotServer._trackingMessage(conn, node);
-        const responsePackets = result.nodes;
         // updatedConnection = await socketWriteIfOpen(
         //   result.con,
         //   responsePackets
@@ -350,7 +347,6 @@ export function sendPacketOkLogin(socket: Socket) {
 
 export async function defaultHandler(rawPacket: IRawPacket) {
   const { connection, remoteAddress, localPort, data } = rawPacket;
-  let updatedConnection = connection;
   let messageNode;
   try {
     messageNode = new MessageNode();
@@ -359,8 +355,6 @@ export async function defaultHandler(rawPacket: IRawPacket) {
     if (e instanceof RangeError) {
       // This is a very short packet, likely a heartbeat
       logger.debug("Unable to pack into a MessageNode, sending to Lobby");
-
-      updatedConnection = await lobbyServer.dataHandler(rawPacket);
     }
     throw new Error(`[TCPManager] Unable yp pack into MessageNode: ${e}`);
   }

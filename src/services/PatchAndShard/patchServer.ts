@@ -7,13 +7,13 @@
 
 import * as http from "http";
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
-import * as bunyan from "bunyan";
 import { ShardEntry } from "./ShardEntry";
 import { Logger } from "../../loggerManager";
+import { ConfigManager } from "../../configManager";
 
 export class PatchServer {
-  public config: IServerConfiguration;
-  public logger: bunyan;
+  public config = new ConfigManager().getConfig();
+  public logger = new Logger().getLogger("PatchServer");
   public banList: string[] = [];
 
   /**
@@ -26,11 +26,6 @@ export class PatchServer {
       value: "application/octet-stream",
     },
   };
-
-  constructor(config: IServerConfiguration) {
-    this.config = config;
-    this.logger = new Logger().getLogger("PatchServer");
-  }
 
   /**
    * Simulate a response from a patch server
@@ -63,23 +58,6 @@ export class PatchServer {
       "The Clocktower",
       "The Clocktower",
       44,
-      ipServer,
-      8226,
-      ipServer,
-      7003,
-      ipServer,
-      0,
-      "",
-      "Group-1",
-      88,
-      2,
-      ipServer,
-      80
-    );
-    const shardTwinPinesMall = new ShardEntry(
-      "Twin Pines Mall",
-      "Twin Pines Mall",
-      88,
       ipServer,
       8226,
       ipServer,

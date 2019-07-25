@@ -13,17 +13,11 @@ import { NPSUserStatus } from "../services/shared/messageTypes/npsUserStatus";
 import { ConnectionObj } from "../ConnectionObj";
 import { premadeLogin } from "../packet";
 import { DatabaseManager } from "../databaseManager";
-import * as bunyan from "bunyan";
 import { Logger } from "../loggerManager";
 
 export class LoginServer {
-  public logger: bunyan;
-  public databaseManager: DatabaseManager;
-
-  constructor(databaseManager: DatabaseManager) {
-    this.logger = new Logger().getLogger("LoginServer");
-    this.databaseManager = databaseManager;
-  }
+  public logger = new Logger().getLogger("LoginServer");
+  public databaseManager = new DatabaseManager();
 
   public async dataHandler(
     rawPacket: IRawPacket,
@@ -117,8 +111,8 @@ export class LoginServer {
     config: IServerConfiguration
   ) {
     const { sock } = connection;
-    const { localPort, remoteAddress } = sock;
-    const userStatus = new NPSUserStatus(config, data);
+    const { localPort } = sock;
+    const userStatus = new NPSUserStatus(data);
     this.logger.info({
       message: "Received login packet",
       localPort,
