@@ -8,10 +8,10 @@
 import * as fs from "fs";
 import { IncomingMessage, ServerResponse } from "http";
 import * as https from "https";
-import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
-import { MCServer } from "./services/MCServer/MCServer";
+import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
+import { MCServer } from "../MCServer/MCServer";
 import * as bunyan from "bunyan";
-import { Logger } from "./loggerManager";
+import { Logger } from "../../loggerManager";
 
 export class AdminServer {
   public mcServer: MCServer;

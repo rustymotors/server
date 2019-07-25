@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { AdminServer } from "./AdminServer";
+import { AdminServer } from "./services/AdminServer/AdminServer";
 import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
 import * as bunyan from "bunyan";
 import { MCServer } from "./services/MCServer/MCServer";
