@@ -9,11 +9,12 @@ import * as net from "net";
 import { ConnectionObj } from "../../ConnectionObj";
 import ConnectionMgr from "./connectionMgr";
 import { IRawPacket } from "../shared/interfaces/IRawPacket";
-import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
+
 import { sendPacketOkLogin } from "./TCPManager";
-import { Logger } from "../../loggerManager";
-import { ConfigManager } from "../../configManager";
+
 import * as SDC from "statsd-client";
+import { IServerConfiguration, ConfigManager } from "../shared/configManager";
+import { Logger } from "../shared/loggerManager";
 
 export class ListenerThread {
   public config = new ConfigManager().getConfig();

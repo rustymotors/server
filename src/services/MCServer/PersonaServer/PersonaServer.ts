@@ -6,11 +6,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Socket } from "net";
-import { IPersonaRecord } from "../services/shared/interfaces/IPersonaRecord";
-import { IRawPacket } from "../services/shared/interfaces/IRawPacket";
-import { MSG_DIRECTION, NPSMsg } from "../services/shared/messageTypes/NPSMsg";
-import { NPSPersonaMapsMsg } from "../services/shared/messageTypes/NPSPersonaMapsMsg";
-import { Logger } from "../loggerManager";
+import { IPersonaRecord } from "./interfaces/IPersonaRecord";
+import { IRawPacket } from "../../shared/interfaces/IRawPacket";
+import { MSG_DIRECTION, NPSMsg } from "../messageTypes/NPSMsg";
+import { NPSPersonaMapsMsg } from "./messageTypes/NPSPersonaMapsMsg";
+import { Logger } from "../../shared/loggerManager";
 
 export class PersonaServer {
   public logger = new Logger().getLogger("PersonaServer");

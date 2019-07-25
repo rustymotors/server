@@ -5,12 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { ConnectionObj } from "../ConnectionObj";
-import { GenericReplyMsg } from "../services/shared/messageTypes/GenericReplyMsg";
-import { LobbyMsg } from "../services/MCServer/messageTypes/LobbyMsg";
-import { LoginMsg } from "../services/shared/messageTypes/LoginMsg";
-import { MessageNode } from "../services/shared/messageTypes/MessageNode";
-import { Logger } from "../loggerManager";
+import { ConnectionObj } from "../../../ConnectionObj";
+import { GenericReplyMsg } from "../../shared/messageTypes/GenericReplyMsg";
+import { LobbyMsg } from "../messageTypes/LobbyMsg";
+import { LoginMsg } from "../../shared/messageTypes/LoginMsg";
+import { MessageNode } from "../../shared/messageTypes/MessageNode";
+import { Logger } from "../../shared/loggerManager";
 
 export class MCOTServer {
   public logger = new Logger().getLogger("MCOTSServer");

@@ -1,11 +1,11 @@
-import { IRawPacket } from "./services/shared/interfaces/IRawPacket";
+import { IRawPacket } from "../shared/interfaces/IRawPacket";
 import { LoginServer } from "./LoginServer/LoginServer";
 import { PersonaServer } from "./PersonaServer/PersonaServer";
 import { LobbyServer } from "./LobbyServer/LobbyServer";
-import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
-import { DatabaseManager } from "./databaseManager";
-import { Logger } from "./loggerManager";
-import { ConfigManager } from "./configManager";
+import { DatabaseManager } from "../shared/databaseManager";
+
+import { Logger } from "../shared/loggerManager";
+import { ConfigManager } from "../shared/configManager";
 
 export class NPSPacketManager {
   public logger = new Logger().getLogger("NPSPacketManager");

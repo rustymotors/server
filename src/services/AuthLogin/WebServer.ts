@@ -7,11 +7,9 @@
 
 import * as fs from "fs";
 import { IncomingMessage, ServerResponse } from "http";
-import * as https from "https";
 
-import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
-import { Logger } from "../../loggerManager";
-import { ConfigManager } from "../../configManager";
+import { Logger } from "../shared/loggerManager";
+import { IServerConfiguration, ConfigManager } from "../shared/configManager";
 
 export class WebServer {
   public config = new ConfigManager().getConfig();

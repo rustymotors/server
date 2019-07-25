@@ -5,15 +5,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { IRawPacket } from "../services/shared/interfaces/IRawPacket";
-import { IServerConfiguration } from "../services/shared/interfaces/IServerConfiguration";
+import { IRawPacket } from "../../shared/interfaces/IRawPacket";
 
-import { NPSUserStatus } from "../services/shared/messageTypes/npsUserStatus";
+import { NPSUserStatus } from "../../shared/messageTypes/npsUserStatus";
 
-import { ConnectionObj } from "../ConnectionObj";
-import { premadeLogin } from "../packet";
-import { DatabaseManager } from "../databaseManager";
-import { Logger } from "../loggerManager";
+import { ConnectionObj } from "../../../ConnectionObj";
+import { premadeLogin } from "../../../packet";
+import { DatabaseManager } from "../../shared/databaseManager";
+import { Logger } from "../../shared/loggerManager";
+import { IServerConfiguration } from "../../shared/configManager";
 
 export class LoginServer {
   public logger = new Logger().getLogger("LoginServer");

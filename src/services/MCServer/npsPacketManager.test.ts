@@ -1,9 +1,4 @@
 import { NPSPacketManager } from "./npsPacketManager";
-import { ConfigManager } from "./configManager";
-import { DatabaseManager } from "./databaseManager";
-
-const config = new ConfigManager().getConfig();
-const database = new DatabaseManager();
 
 describe("NPSPacketManger", () => {
   test("can find name for 0x229", () => {

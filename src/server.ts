@@ -1,8 +1,7 @@
 import { AdminServer } from "./services/AdminServer/AdminServer";
-import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
-import { MCServer } from "./services/MCServer/MCServer";
-import { Logger } from "./loggerManager";
-import { ConfigManager } from "./configManager";
+import { Logger } from "./services/shared/loggerManager";
+import { ConfigManager } from "./services/shared/configManager";
+import { MCServer } from "./services/MCServer";
 
 export class Server {
   public config = new ConfigManager().getConfig();

@@ -1,5 +1,5 @@
 import { NPSPersonaMapsMsg } from "./NPSPersonaMapsMsg";
-import { MSG_DIRECTION } from "./NPSMsg";
+import { MSG_DIRECTION } from "../../messageTypes/NPSMsg";
 
 describe("NPSPersonaMapsMsg", () => {
   const npsPersonaMapsMsg = new NPSPersonaMapsMsg(MSG_DIRECTION.RECIEVED);

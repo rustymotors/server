@@ -7,10 +7,10 @@
 
 import * as fs from "fs";
 import { IncomingMessage, ServerResponse } from "http";
-import * as https from "https";
-import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
-import { MCServer } from "../MCServer/MCServer";
-import { Logger } from "../../loggerManager";
+
+import { MCServer } from "../MCServer";
+import { Logger } from "../shared/loggerManager";
+import { IServerConfiguration } from "../shared/configManager";
 
 export class AdminServer {
   public mcServer: MCServer;

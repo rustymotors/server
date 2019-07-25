@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as struct from "c-struct";
-import { Logger } from "../../../loggerManager";
+import { Logger } from "../loggerManager";
 
 // tslint:disable: object-literal-sort-keys
 const loginMsgSchema = new struct.Schema({

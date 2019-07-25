@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { StockCar } from "./StockCar";
-import { Logger } from "../../../loggerManager";
+import { Logger } from "../../shared/loggerManager";
 
 // WORD	msgNo;
 // DWORD    starterCash; // when called from the create persona screen,

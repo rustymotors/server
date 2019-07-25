@@ -6,10 +6,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as http from "http";
-import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
+
 import { ShardEntry } from "./ShardEntry";
-import { Logger } from "../../loggerManager";
-import { ConfigManager } from "../../configManager";
+import { ConfigManager } from "../shared/configManager";
+import { Logger } from "../shared/loggerManager";
 
 export class PatchServer {
   public config = new ConfigManager().getConfig();

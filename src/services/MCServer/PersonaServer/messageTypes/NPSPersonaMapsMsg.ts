@@ -7,8 +7,8 @@
 
 import * as struct from "c-struct";
 import { IPersonaRecord } from "../interfaces/IPersonaRecord";
-import { MSG_DIRECTION, NPSMsg } from "./NPSMsg";
-import { Logger } from "../../../loggerManager";
+import { MSG_DIRECTION, NPSMsg } from "../../messageTypes/NPSMsg";
+import { Logger } from "../../../shared/loggerManager";
 
 // tslint:disable: object-literal-sort-keys
 const npsPersonaMapsMsgSchema = new struct.Schema({

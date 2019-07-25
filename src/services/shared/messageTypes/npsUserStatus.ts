@@ -7,9 +7,10 @@
 
 import * as crypto from "crypto";
 import * as fs from "fs";
-import { IServerConfiguration } from "../interfaces/IServerConfiguration";
-import { NPSMsg, MSG_DIRECTION } from "./NPSMsg";
-import { Logger } from "../../../loggerManager";
+
+import { NPSMsg, MSG_DIRECTION } from "../../MCServer/messageTypes/NPSMsg";
+import { Logger } from "../loggerManager";
+import { IServerConfiguration } from "../configManager";
 
 /**
  * Load the RSA private key and return a NodeRSA object

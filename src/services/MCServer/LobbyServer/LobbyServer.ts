@@ -5,13 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { ConnectionObj } from "../ConnectionObj";
-import { IRawPacket } from "../services/shared/interfaces/IRawPacket";
-import { MSG_DIRECTION, NPSMsg } from "../services/shared/messageTypes/NPSMsg";
-import { NPSUserInfo } from "../services/shared/messageTypes/npsUserInfo";
+import { ConnectionObj } from "../../../ConnectionObj";
+import { IRawPacket } from "../../shared/interfaces/IRawPacket";
+import { MSG_DIRECTION, NPSMsg } from "../messageTypes/NPSMsg";
+import { NPSUserInfo } from "../../shared/messageTypes/npsUserInfo";
 import { PersonaServer } from "../PersonaServer/PersonaServer";
-import { DatabaseManager } from "../databaseManager";
-import { Logger } from "../loggerManager";
+import { DatabaseManager } from "../../shared/databaseManager";
+import { Logger } from "../../shared/loggerManager";
 
 const logger = new Logger().getLogger("LobbyServer");
 

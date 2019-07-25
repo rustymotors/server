@@ -8,7 +8,7 @@
 // tslint:disable:object-literal-sort-keys
 
 import { LobbyInfo } from "./LobbyInfo";
-import { Logger } from "../loggerManager";
+import { Logger } from "../../shared/loggerManager";
 
 export class LobbyMsg {
   public logger = new Logger().getLogger("LobbyMsg");

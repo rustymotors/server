@@ -6,8 +6,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { LoginServer } from "./LoginServer";
-import { DatabaseManager } from "../databaseManager";
-const database = new DatabaseManager();
 
 const loginServer = new LoginServer();
 loginServer.logger.level("warn");

@@ -5,8 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { NPSMsg, MSG_DIRECTION } from "./NPSMsg";
-import { Logger } from "../../../loggerManager";
+import { NPSMsg, MSG_DIRECTION } from "../../MCServer/messageTypes/NPSMsg";
+import { Logger } from "../loggerManager";
 
 export class NPSUserInfo extends NPSMsg {
   public logger = new Logger().getLogger("NPSUserInfo");

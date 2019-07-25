@@ -8,13 +8,14 @@
 import { Socket } from "net";
 import { ConnectionObj } from "../../ConnectionObj";
 import { IRawPacket } from "../shared/interfaces/IRawPacket";
-import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
+
 import { defaultHandler } from "./TCPManager";
-import { NPSPacketManager } from "../../npsPacketManager";
-import { DatabaseManager } from "../../databaseManager";
-import { ConfigManager } from "../../configManager";
+import { NPSPacketManager } from "./npsPacketManager";
+import { DatabaseManager } from "../shared/databaseManager";
+
 import * as SDC from "statsd-client";
-import { Logger } from "../../loggerManager";
+import { Logger } from "../shared/loggerManager";
+import { ConfigManager, IServerConfiguration } from "../shared/configManager";
 
 export default class ConnectionMgr {
   public logger = new Logger().getLogger("ConnectionManager");

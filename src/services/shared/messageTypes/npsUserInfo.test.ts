@@ -1,5 +1,5 @@
 import { NPSUserInfo } from "./npsUserInfo";
-import { MSG_DIRECTION } from "./NPSMsg";
+import { MSG_DIRECTION } from "../../MCServer/messageTypes/NPSMsg";
 
 describe("NPSUserInfo", () => {
   test("can create an instance", () => {
