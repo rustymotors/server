@@ -5,10 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Connection } from "../../../Connection";
+import { ConnectionObj } from "../../../ConnectionObj";
 
 export interface IRawPacket {
-  connection: Connection;
+  connectionId: string;
+  connection: ConnectionObj;
   data: Buffer;
   localPort: number;
   remoteAddress?: string;

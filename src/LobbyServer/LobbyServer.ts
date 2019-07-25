@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Connection } from "../Connection";
+import { ConnectionObj } from "../ConnectionObj";
 import { IRawPacket } from "../services/shared/interfaces/IRawPacket";
 import { MSG_DIRECTION, NPSMsg } from "../services/shared/messageTypes/NPSMsg";
 import { NPSUserInfo } from "../services/shared/messageTypes/npsUserInfo";
@@ -19,7 +19,7 @@ const logger = new Logger().getLogger("LobbyServer");
 
 const databaseManager = new DatabaseManager();
 
-async function npsSocketWriteIfOpen(conn: Connection, buffer: Buffer) {
+async function npsSocketWriteIfOpen(conn: ConnectionObj, buffer: Buffer) {
   const sock = conn.sock;
   if (sock.writable) {
     // Write the packet to socket
@@ -36,10 +36,10 @@ async function npsSocketWriteIfOpen(conn: Connection, buffer: Buffer) {
 
 /**
  * Takes an encrypted command packet and returns the decrypted bytes
- * @param {Connection} con
+ * @param {ConnectionObj} con
  * @param {Buffer} cypherCmd
  */
-function decryptCmd(con: Connection, cypherCmd: Buffer) {
+function decryptCmd(con: ConnectionObj, cypherCmd: Buffer) {
   const s = con;
   const decryptedCommand = s.decipherBufferDES(cypherCmd);
   s.decryptedCmd = decryptedCommand;
@@ -49,10 +49,10 @@ function decryptCmd(con: Connection, cypherCmd: Buffer) {
 
 /**
  * Takes an plaintext command packet and return the encrypted bytes
- * @param {Connection} con
+ * @param {ConnectionObj} con
  * @param {Buffer} cypherCmd
  */
-function encryptCmd(con: Connection, cypherCmd: Buffer) {
+function encryptCmd(con: ConnectionObj, cypherCmd: Buffer) {
   const s = con;
   s.encryptedCmd = s.cipherBufferDES(cypherCmd);
   return s;
@@ -60,10 +60,10 @@ function encryptCmd(con: Connection, cypherCmd: Buffer) {
 
 /**
  * Takes a plaintext command packet, encrypts it, and sends it across the connection's socket
- * @param {Connection} con
+ * @param {ConnectionObj} con
  * @param {Buffer} data
  */
-export async function sendCommand(con: Connection, data: Buffer) {
+export async function sendCommand(con: ConnectionObj, data: Buffer) {
   const { id } = con;
   const s = con;
 
@@ -191,7 +191,7 @@ export class LobbyServer {
    * @param {Buffer} rawData
    */
   public async _npsRequestGameConnectServer(
-    connection: Connection,
+    connection: ConnectionObj,
     rawData: Buffer
   ) {
     const { sock } = connection;

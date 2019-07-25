@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Socket } from "net";
-import { Connection } from "../../Connection";
+import { ConnectionObj } from "../../ConnectionObj";
 import { IRawPacket } from "../shared/interfaces/IRawPacket";
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
 import * as bunyan from "bunyan";
@@ -21,7 +21,7 @@ export default class ConnectionMgr {
   public logger: bunyan;
   public config = new ConfigManager().getConfig();
   public sdc: SDC;
-  private connections: Connection[];
+  private connections: ConnectionObj[];
   private newConnectionId: number;
   private banList: string[] = [];
 
@@ -139,7 +139,7 @@ export default class ConnectionMgr {
   public async _updateConnectionByAddressAndPort(
     address: string,
     port: number,
-    newConnection: Connection
+    newConnection: ConnectionObj
   ) {
     if (newConnection === undefined) {
       this.logger.fatal({
@@ -150,7 +150,7 @@ export default class ConnectionMgr {
       process.exit(-1);
     }
     const index = this.connections.findIndex(
-      (connection: Connection) =>
+      (connection: ConnectionObj) =>
         connection.remoteAddress === address && connection.localPort === port
     );
     this.connections.splice(index, 1);
@@ -183,7 +183,7 @@ export default class ConnectionMgr {
       return con;
     }
 
-    const newConnection = new Connection(
+    const newConnection = new ConnectionObj(
       `${Date.now().toString()}_${this.newConnectionId}`,
       socket,
       this

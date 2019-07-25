@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Connection } from "../Connection";
+import { ConnectionObj } from "../ConnectionObj";
 import { GenericReplyMsg } from "../services/shared/messageTypes/GenericReplyMsg";
 import { LobbyMsg } from "../services/shared/messageTypes/LobbyMsg";
 import { LoginMsg } from "../services/shared/messageTypes/LoginMsg";
@@ -46,7 +46,7 @@ export class MCOTServer {
     }
   }
 
-  public async _login(con: Connection, node: MessageNode) {
+  public async _login(con: ConnectionObj, node: MessageNode) {
     /**
      * Let's turn it into a LoginMsg
      */
@@ -73,7 +73,7 @@ export class MCOTServer {
     return { con, nodes: [rPacket] };
   }
 
-  public async _getLobbies(con: Connection, node: MessageNode) {
+  public async _getLobbies(con: ConnectionObj, node: MessageNode) {
     this.logger.info(`In _getLobbies...`);
     const lobbiesListMsg = node;
 
@@ -111,7 +111,7 @@ export class MCOTServer {
     return { con, nodes: [rPacket] };
   }
 
-  public async _logout(con: Connection, node: MessageNode) {
+  public async _logout(con: ConnectionObj, node: MessageNode) {
     const logoutMsg = node;
 
     logoutMsg.data = node.serialize();
@@ -130,7 +130,7 @@ export class MCOTServer {
     return { con, nodes: [] };
   }
 
-  public async _setOptions(con: Connection, node: MessageNode) {
+  public async _setOptions(con: ConnectionObj, node: MessageNode) {
     const setOptionsMsg = node;
 
     setOptionsMsg.data = node.serialize();
@@ -155,7 +155,7 @@ export class MCOTServer {
     return { con, nodes: [rPacket] };
   }
 
-  public async _trackingMessage(con: Connection, node: MessageNode) {
+  public async _trackingMessage(con: ConnectionObj, node: MessageNode) {
     const trackingMsg = node;
 
     trackingMsg.data = node.serialize();
@@ -180,7 +180,7 @@ export class MCOTServer {
     return { con, nodes: [rPacket] };
   }
 
-  public async _updatePlayerPhysical(con: Connection, node: MessageNode) {
+  public async _updatePlayerPhysical(con: ConnectionObj, node: MessageNode) {
     const updatePlayerPhysicalMsg = node;
 
     updatePlayerPhysicalMsg.data = node.serialize();

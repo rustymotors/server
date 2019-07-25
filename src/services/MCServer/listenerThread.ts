@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as net from "net";
-import { Connection } from "../../Connection";
+import { ConnectionObj } from "../../ConnectionObj";
 import ConnectionMgr from "./connectionMgr";
 import { IRawPacket } from "../shared/interfaces/IRawPacket";
 import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
@@ -32,17 +32,18 @@ export class ListenerThread {
    * takes the data buffer and creates a IRawPacket object
    *
    * @param {Buffer} data
-   * @param {Connection} connection
+   * @param {ConnectionObj} connection
    * @param {IServerConfiguration} config
    */
   public async _onData(
     data: Buffer,
-    connection: Connection,
+    connection: ConnectionObj,
     config: IServerConfiguration
   ) {
     try {
       const { localPort, remoteAddress } = connection.sock;
       const rawPacket: IRawPacket = {
+        connectionId: connection.id,
         connection,
         data,
         localPort,

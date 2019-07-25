@@ -10,7 +10,7 @@ import { IServerConfiguration } from "../services/shared/interfaces/IServerConfi
 
 import { NPSUserStatus } from "../services/shared/messageTypes/npsUserStatus";
 
-import { Connection } from "../Connection";
+import { ConnectionObj } from "../ConnectionObj";
 import { premadeLogin } from "../packet";
 import { DatabaseManager } from "../databaseManager";
 import * as bunyan from "bunyan";
@@ -108,11 +108,11 @@ export class LoginServer {
   /**
    * Process a UserLogin packet
    * Return a NPS_Serialize
-   * @param {Connection} connection
+   * @param {ConnectionObj} connection
    * @param {Buffer} data
    */
   public async _userLogin(
-    connection: Connection,
+    connection: ConnectionObj,
     data: Buffer,
     config: IServerConfiguration
   ) {

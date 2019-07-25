@@ -10,7 +10,7 @@ import { Socket } from "net";
 import ConnectionMgr from "./services/MCServer/connectionMgr";
 import { EncryptionMgr } from "./EncryptionMgr";
 
-export class Connection {
+export class ConnectionObj {
   public id: string;
   public appId: number;
   public sock: Socket;

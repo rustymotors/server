@@ -6,13 +6,17 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Socket } from "net";
-import { Connection } from "../../../Connection";
+import { ConnectionObj } from "../../../ConnectionObj";
 import ConnectionMgr from "../../MCServer/connectionMgr";
 
 describe("Connection class", () => {
-  let testConnection: Connection;
+  let testConnection: ConnectionObj;
   beforeEach(() => {
-    testConnection = new Connection("abc", new Socket(), new ConnectionMgr());
+    testConnection = new ConnectionObj(
+      "abc",
+      new Socket(),
+      new ConnectionMgr()
+    );
   });
 
   test('status == "inactive"', () => {
@@ -25,8 +29,8 @@ describe("Connection class", () => {
     expect(testConnection.isSetupComplete).toBeTruthy();
   });
   describe("Two connections can communicate", () => {
-    let testConn1: Connection;
-    let testConn2: Connection;
+    let testConn1: ConnectionObj;
+    let testConn2: ConnectionObj;
     const plainText1 = Buffer.from(
       "I'm a very a secret message. Please don't decode me!"
     );
@@ -85,8 +89,8 @@ describe("Connection class", () => {
       0x45,
     ]);
     beforeAll(() => {
-      testConn1 = new Connection("def", new Socket(), new ConnectionMgr());
-      testConn2 = new Connection("ghi", new Socket(), new ConnectionMgr());
+      testConn1 = new ConnectionObj("def", new Socket(), new ConnectionMgr());
+      testConn2 = new ConnectionObj("ghi", new Socket(), new ConnectionMgr());
       testConn1.setEncryptionKey(Buffer.from("abc123", "hex"));
       testConn2.setEncryptionKey(Buffer.from("abc123", "hex"));
     });

@@ -5,7 +5,7 @@ import { PersonaServer } from "./PersonaServer/PersonaServer";
 import { LobbyServer } from "./LobbyServer/LobbyServer";
 import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
 import { DatabaseManager } from "./databaseManager";
-import { Connection } from "./Connection";
+import { ConnectionObj } from "./ConnectionObj";
 import { Logger } from "./loggerManager";
 
 export class NPSPacketManager {

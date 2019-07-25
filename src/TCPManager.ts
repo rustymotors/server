@@ -7,7 +7,7 @@
 
 import * as assert from "assert";
 import { Socket } from "net";
-import { Connection } from "./Connection";
+import { ConnectionObj } from "./ConnectionObj";
 import { IRawPacket } from "./services/shared/interfaces/IRawPacket";
 import { LobbyServer } from "./LobbyServer/LobbyServer";
 import * as bunyan from "bunyan";
@@ -26,7 +26,7 @@ const lobbyServer = new LobbyServer();
 const mcotServer = new MCOTServer();
 const databaseManager = new DatabaseManager();
 
-async function compressIfNeeded(conn: Connection, node: MessageNode) {
+async function compressIfNeeded(conn: ConnectionObj, node: MessageNode) {
   const packetToWrite = node;
 
   // Check if compression is needed
@@ -38,7 +38,7 @@ async function compressIfNeeded(conn: Connection, node: MessageNode) {
   return { conn, packetToWrite };
 }
 
-async function encryptIfNeeded(conn: Connection, node: MessageNode) {
+async function encryptIfNeeded(conn: ConnectionObj, node: MessageNode) {
   let packetToWrite = node;
 
   // Check if encryption is needed
@@ -61,7 +61,7 @@ async function encryptIfNeeded(conn: Connection, node: MessageNode) {
   return { conn, packetToWrite };
 }
 
-async function socketWriteIfOpen(conn: Connection, nodes: MessageNode[]) {
+async function socketWriteIfOpen(conn: ConnectionObj, nodes: MessageNode[]) {
   const updatedConnection = conn;
   nodes.forEach(async node => {
     const { packetToWrite: compressedPacket } = await compressIfNeeded(
@@ -93,7 +93,7 @@ async function socketWriteIfOpen(conn: Connection, nodes: MessageNode[]) {
   return updatedConnection;
 }
 
-async function GetStockCarInfo(con: Connection, node: MessageNode) {
+async function GetStockCarInfo(con: ConnectionObj, node: MessageNode) {
   const getStockCarInfoMsg = new GenericRequestMsg();
   getStockCarInfoMsg.deserialize(node.data);
   getStockCarInfoMsg.dumpPacket();
@@ -121,7 +121,7 @@ async function GetStockCarInfo(con: Connection, node: MessageNode) {
   return { con, nodes: [rPacket] };
 }
 
-async function ClientConnect(con: Connection, node: MessageNode) {
+async function ClientConnect(con: ConnectionObj, node: MessageNode) {
   const { id } = con;
   /**
    * Let's turn it into a ClientConnectMsg
@@ -174,7 +174,7 @@ async function ClientConnect(con: Connection, node: MessageNode) {
   return { con, nodes: [rPacket] };
 }
 
-async function ProcessInput(node: MessageNode, conn: Connection) {
+async function ProcessInput(node: MessageNode, conn: ConnectionObj) {
   logger.debug("In ProcessInput..");
   let updatedConnection = conn;
   const currentMsgNo = node.msgNo;
@@ -283,7 +283,7 @@ async function ProcessInput(node: MessageNode, conn: Connection) {
   }
 }
 
-async function MessageReceived(msg: MessageNode, con: Connection) {
+async function MessageReceived(msg: MessageNode, con: ConnectionObj) {
   logger.info("Welcome to MessageRecieved()");
   const newConnection = con;
   if (!newConnection.useEncryption && (msg.flags && 0x08)) {
