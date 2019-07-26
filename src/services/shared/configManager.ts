@@ -8,7 +8,6 @@ export interface IServerConfiguration {
     privateKeyFilename: string;
     registryFilename: string;
   };
-  statsDHost: string;
 }
 
 export class ConfigManager {

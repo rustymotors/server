@@ -6,6 +6,5 @@
     "privateKeyFilename": "./src/services/shared/data/private_key.pem",
     "publicKeyFilename": "./src/services/shared/data/pub.key",
     "registryFilename": "./src/services/shared/sample.reg"
-  },
-  "statsDHost": "statsd"
+  }
 }
