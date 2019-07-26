@@ -6,6 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as fs from "fs";
+import * as https from "https";
 import { IncomingMessage, ServerResponse } from "http";
 
 import { MCServer } from "../MCServer";
@@ -83,5 +84,19 @@ export class AdminServer {
         break;
     }
   }
-  public async start(config: IServerConfiguration["serverConfig"]) {}
+  public async start(config: IServerConfiguration["serverConfig"]) {
+    const httpsServer = https
+      .createServer(
+        this._sslOptions(config),
+        (req: IncomingMessage, res: ServerResponse) => {
+          this._httpsHandler(req, res);
+        }
+      )
+      .listen({ port: 88, host: "0.0.0.0" })
+      .on("connection", socket => {
+        socket.on("error", (error: Error) => {
+          throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`);
+        });
+      });
+  }
 }

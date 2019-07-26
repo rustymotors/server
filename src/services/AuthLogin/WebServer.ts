@@ -6,6 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as fs from "fs";
+import * as https from "https";
 import { IncomingMessage, ServerResponse } from "http";
 
 import { Logger } from "../shared/loggerManager";
@@ -16,6 +17,8 @@ export class WebServer {
   public logger = new Logger().getLogger("WebServer");
 
   _sslOptions(configuration: IServerConfiguration["serverConfig"]) {
+    this.logger.debug(fs.readFileSync(configuration.certFilename));
+
     return {
       cert: fs.readFileSync(configuration.certFilename),
       honorCipherOrder: true,
@@ -101,5 +104,14 @@ export class WebServer {
     return response.end("Unknown request.");
   }
 
-  async start() {}
+  async start() {
+    const httpsServer = https
+      .createServer(
+        this._sslOptions(this.config.serverConfig),
+        (req: IncomingMessage, res: ServerResponse) => {
+          this._httpsHandler(req, res);
+        }
+      )
+      .listen({ port: 443, host: "0.0.0.0" });
+  }
 }
