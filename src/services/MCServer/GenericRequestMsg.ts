@@ -54,11 +54,13 @@ export class GenericRequestMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    this.logger.info({
-      message: "GenericRequest",
-      msgNo: this.msgNo,
-      data: this.data.toString("hex"),
-      data2: this.data2.toString("hex"),
-    });
+    this.logger.info(
+      {
+        msgNo: this.msgNo,
+        data: this.data.toString("hex"),
+        data2: this.data2.toString("hex"),
+      },
+      "GenericRequest"
+    );
   }
 }

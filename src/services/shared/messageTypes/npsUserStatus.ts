@@ -90,9 +90,12 @@ export class NPSUserStatus extends NPSMsg {
 
   public dumpPacket() {
     this.dumpPacketHeader("NPSUserStatus");
-    this.logger.debug({
-      contextId: this.contextId,
-      sessionKey: this.sessionKey,
-    });
+    this.logger.debug(
+      {
+        contextId: this.contextId,
+        sessionKey: this.sessionKey,
+      },
+      "NPSUserStatus"
+    );
   }
 }

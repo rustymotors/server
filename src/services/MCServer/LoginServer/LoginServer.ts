@@ -25,7 +25,7 @@ export class LoginServer {
   ) {
     const { connection, data } = rawPacket;
     const { localPort, remoteAddress } = rawPacket;
-    this.logger.info({ message: "Received packet", localPort, remoteAddress });
+    this.logger.info({ localPort, remoteAddress }, "Received packet");
     // TODO: Check if this can be handled by a MessageNode object
     const { sock } = connection;
     const requestCode = data.readUInt16BE(0).toString(16);
@@ -39,18 +39,22 @@ export class LoginServer {
         break;
       }
       default:
-        this.logger.info({
-          message: "Unknown nps code recieved",
-          requestCode,
-          localPort,
-          data: rawPacket.data.toString("hex"),
-        });
+        this.logger.info(
+          {
+            requestCode,
+            localPort,
+            data: rawPacket.data.toString("hex"),
+          },
+          "Unknown nps code recieved"
+        );
         return connection;
     }
-    this.logger.info({
-      message: "responsePacket object from dataHandler",
-      userStatus: responsePacket.toString("hex"),
-    });
+    this.logger.info(
+      {
+        userStatus: responsePacket.toString("hex"),
+      },
+      "responsePacket object from dataHandler"
+    );
     this.logger.info(
       `responsePacket's data prior to sending: ${responsePacket.toString(
         "hex"
@@ -81,21 +85,23 @@ export class LoginServer {
       return user.contextId === contextId;
     });
     if (userRecord.length != 1) {
-      this.logger.warn({
-        message:
-          "preparing to leave _npsGetCustomerIdByContextId after not finding record",
-        contextId,
-      });
+      this.logger.warn(
+        {
+          contextId,
+        },
+        "preparing to leave _npsGetCustomerIdByContextId after not finding record"
+      );
       throw new Error(
         `Unable to locate user record matching contextId ${contextId}`
       );
     }
-    this.logger.info({
-      message:
-        "preparing to leave _npsGetCustomerIdByContextId after finding record",
-      contextId,
-      userRecord,
-    });
+    this.logger.info(
+      {
+        contextId,
+        userRecord,
+      },
+      "preparing to leave _npsGetCustomerIdByContextId after finding record"
+    );
     return userRecord[0];
   }
 
@@ -113,18 +119,22 @@ export class LoginServer {
     const { sock } = connection;
     const { localPort } = sock;
     const userStatus = new NPSUserStatus(data);
-    this.logger.info({
-      message: "Received login packet",
-      localPort,
-      remoteAddress: connection.remoteAddress,
-    });
+    this.logger.info(
+      {
+        localPort,
+        remoteAddress: connection.remoteAddress,
+      },
+      "Received login packet"
+    );
 
     userStatus.extractSessionKeyFromPacket(config.serverConfig, data);
 
-    this.logger.info({
-      message: "UserStatus object from _userLogin",
-      userStatus: userStatus.toJSON(),
-    });
+    this.logger.info(
+      {
+        userStatus: userStatus.toJSON(),
+      },
+      "UserStatus object from _userLogin"
+    );
     userStatus.dumpPacket();
 
     // Load the customer record by contextId

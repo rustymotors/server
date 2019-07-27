@@ -9,7 +9,7 @@ import { Socket } from "net";
 import { ConnectionObj } from "./ConnectionObj";
 import { IRawPacket } from "./IRawPacket";
 
-import { defaultHandler } from "./TCPManager";
+import { defaultHandler } from "./MCOTS/TCPManager";
 import { NPSPacketManager } from "./npsPacketManager";
 import { DatabaseManager } from "../shared/databaseManager";
 
@@ -47,12 +47,14 @@ export default class ConnectionMgr {
 
     // Log the packet as debug
     this.sdc.increment("packets.count");
-    this.logger.info({
-      message: "logging raw packet",
-      remoteAddress,
-      localPort,
-      data: data.toString("hex"),
-    });
+    this.logger.info(
+      {
+        remoteAddress,
+        localPort,
+        data: data.toString("hex"),
+      },
+      "logging raw packet"
+    );
 
     if (localPort === 8226 || localPort === 8228 || localPort === 7003) {
       this.logger.info(
@@ -77,12 +79,14 @@ export default class ConnectionMgr {
           return rawPacket.connection;
         }
         // Unknown request, log it
-        this.logger.warn({
-          message: `[connectionMgr] No known handler for request, banning`,
-          localPort,
-          remoteAddress,
-          data: data.toString("hex"),
-        });
+        this.logger.warn(
+          {
+            localPort,
+            remoteAddress,
+            data: data.toString("hex"),
+          },
+          `[connectionMgr] No known handler for request, banning`
+        );
         this.banList.push(remoteAddress!);
         return rawPacket.connection;
     }
@@ -127,11 +131,13 @@ export default class ConnectionMgr {
     newConnection: ConnectionObj
   ) {
     if (newConnection === undefined) {
-      this.logger.fatal({
-        message: "Undefined connection",
-        remoteAddress: address,
-        localPort: port,
-      });
+      this.logger.fatal(
+        {
+          remoteAddress: address,
+          localPort: port,
+        },
+        "Undefined connection"
+      );
       process.exit(-1);
     }
     const index = this.connections.findIndex(
@@ -152,11 +158,13 @@ export default class ConnectionMgr {
   public findOrNewConnection(socket: Socket) {
     const { remoteAddress, localPort } = socket;
     if (!remoteAddress) {
-      this.logger.fatal({
-        message: "No address in socket",
-        remoteAddress,
-        localPort,
-      });
+      this.logger.fatal(
+        {
+          remoteAddress,
+          localPort,
+        },
+        "No address in socket"
+      );
       process.exit(-1);
     }
     const con = this.findConnectionByAddressAndPort(remoteAddress!, localPort);
@@ -178,6 +186,13 @@ export default class ConnectionMgr {
     );
     this.connections.push(newConnection);
     return newConnection;
+  }
+
+  public resetAllQueueState() {
+    this.connections = this.connections.map((connection: ConnectionObj) => {
+      connection.inQueue = true;
+      return connection;
+    });
   }
 
   /**

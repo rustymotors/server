@@ -9,7 +9,7 @@
     "AUTHORS"
   ],
   "scripts": {
-    "start": "docker-compose up --build",
+    "start": "docker-compose up -d --build",
     "stop": "docker-compose down",
     "test": "npm run lint-test",
     "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",

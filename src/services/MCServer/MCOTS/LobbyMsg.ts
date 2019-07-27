@@ -45,11 +45,13 @@ export class LobbyMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    this.logger.info({
-      message: `LobbyMsg`,
-      msgNo: this.msgNo,
-      dataLength: this.dataLength,
-      packet: this.serialize().toString("hex"),
-    });
+    this.logger.info(
+      {
+        msgNo: this.msgNo,
+        dataLength: this.dataLength,
+        packet: this.serialize().toString("hex"),
+      },
+      `LobbyMsg`
+    );
   }
 }

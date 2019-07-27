@@ -88,13 +88,15 @@ export class GenericReplyMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    this.logger.info({
-      message: "GenericReply",
-      msgNo: this.msgNo,
-      msgReply: this.msgReply,
-      result: this.result.toString("hex"),
-      data: this.data.toString("hex"),
-      tdata2: this.data2.toString("hex"),
-    });
+    this.logger.info(
+      {
+        msgNo: this.msgNo,
+        msgReply: this.msgReply,
+        result: this.result.toString("hex"),
+        data: this.data.toString("hex"),
+        tdata2: this.data2.toString("hex"),
+      },
+      "GenericReply"
+    );
   }
 }

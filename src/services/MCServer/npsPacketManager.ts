@@ -73,11 +73,13 @@ export class NPSPacketManager {
       case 7003:
         return this.lobbyServer.dataHandler(rawPacket);
       default:
-        this.logger.error({
-          message: `[npsPacketManager] Recieved a packet`,
-          msgId,
-          localPort,
-        });
+        this.logger.error(
+          {
+            msgId,
+            localPort,
+          },
+          `[npsPacketManager] Recieved a packet`
+        );
         return rawPacket.connection;
     }
   }

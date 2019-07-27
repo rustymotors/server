@@ -76,28 +76,32 @@ export class NPSMsg {
   }
 
   public dumpPacketHeader(messageType: string) {
-    this.logger.info({
-      message: `NPSMsg/${messageType}`,
-      direction: this.direction,
-      msgNo: this.msgNo.toString(16),
-      msgVersion: this.msgVersion,
-      msgLength: this.msgLength,
-    });
+    this.logger.info(
+      {
+        direction: this.direction,
+        msgNo: this.msgNo.toString(16),
+        msgVersion: this.msgVersion,
+        msgLength: this.msgLength,
+      },
+      `NPSMsg/${messageType}`
+    );
   }
 
   /**
    * dumpPacket
    */
   public dumpPacket() {
-    this.logger.debug({
-      message: `NPSMsg/NPSMsg`,
-      direction: this.direction,
-      msgNo: this.msgNo.toString(16),
-      msgVersion: this.msgVersion,
-      msgLength: this.msgLength,
-      content: this.content.toString("hex"),
-      serialized: this.serialize().toString("hex"),
-    });
+    this.logger.debug(
+      {
+        direction: this.direction,
+        msgNo: this.msgNo.toString(16),
+        msgVersion: this.msgVersion,
+        msgLength: this.msgLength,
+        content: this.content.toString("hex"),
+        serialized: this.serialize().toString("hex"),
+      },
+      `NPSMsg/NPSMsg`
+    );
   }
 
   public toJSON() {

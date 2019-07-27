@@ -105,17 +105,19 @@ export class MessageNode {
     const packetContents = this.serialize()
       .toString("hex")
       .match(/../g);
-    this.logger.info({
-      message: "MessageNode",
-      dataLength: this.dataLength,
-      isMCOTS: this.isMCOTS(),
-      msgNo: this.msgNo,
-      seq: this.seq,
-      flags: this.flags,
-      toFrom: this.toFrom,
-      appId: this.appId,
-      packetContents: packetContents!.join("") || "",
-    });
+    this.logger.info(
+      {
+        dataLength: this.dataLength,
+        isMCOTS: this.isMCOTS(),
+        msgNo: this.msgNo,
+        seq: this.seq,
+        flags: this.flags,
+        toFrom: this.toFrom,
+        appId: this.appId,
+        packetContents: packetContents!.join("") || "",
+      },
+      "MessageNode"
+    );
   }
 
   public getLength() {

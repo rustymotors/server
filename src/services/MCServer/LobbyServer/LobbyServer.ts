@@ -112,7 +112,7 @@ export class LobbyServer {
   }
   public async dataHandler(rawPacket: IRawPacket) {
     const { localPort, remoteAddress } = rawPacket;
-    logger.info({ message: `Received packet`, localPort, remoteAddress });
+    logger.info({ localPort, remoteAddress }, `Received packet`);
     const { connection, data } = rawPacket;
     let updatedConnection = connection;
     const requestCode = data.readUInt16BE(0).toString(16);
@@ -221,7 +221,7 @@ export class LobbyServer {
       try {
         s.setEncryptionKeyDES(keys.s_key);
       } catch (error) {
-        logger.fatal({ message: "Unable to set session key", keys, error });
+        logger.fatal({ keys, error }, "Unable to set session key");
         process.exit(-1);
       }
     }

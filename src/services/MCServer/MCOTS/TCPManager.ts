@@ -6,22 +6,22 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as assert from "assert";
-import { Socket } from "net";
-import { ConnectionObj } from "./ConnectionObj";
-import { IRawPacket } from "./IRawPacket";
-import { LobbyServer } from "./LobbyServer/LobbyServer";
-import { MCOTServer } from "./MCOTS/MCOTServer";
-import { ClientConnectMsg } from "./ClientConnectMsg";
-import { GenericReplyMsg } from "./GenericReplyMsg";
-import { GenericRequestMsg } from "./GenericRequestMsg";
-import { MessageNode } from "../shared/messageTypes/MessageNode";
-import { StockCar } from "./MCOTS/StockCar";
-import { StockCarInfoMsg } from "./MCOTS/StockCarInfoMsg";
-import { DatabaseManager } from "../shared/databaseManager";
-import { Logger } from "../shared/loggerManager";
+// import { Socket } from "net";
+import { ConnectionObj } from "../ConnectionObj";
+import { IRawPacket } from "../IRawPacket";
+// import { LobbyServer } from "../LobbyServer/LobbyServer";
+import { MCOTServer } from "./MCOTServer";
+import { ClientConnectMsg } from "../ClientConnectMsg";
+import { GenericReplyMsg } from "../GenericReplyMsg";
+import { GenericRequestMsg } from "../GenericRequestMsg";
+import { MessageNode } from "../../shared/messageTypes/MessageNode";
+import { StockCar } from "./StockCar";
+import { StockCarInfoMsg } from "./StockCarInfoMsg";
+import { DatabaseManager } from "../../shared/databaseManager";
+import { Logger } from "../../shared/loggerManager";
 
 const logger = new Logger().getLogger("TCPManager");
-const lobbyServer = new LobbyServer();
+// const lobbyServer = new LobbyServer();
 const mcotServer = new MCOTServer();
 const databaseManager = new DatabaseManager();
 
@@ -177,7 +177,6 @@ async function ProcessInput(node: MessageNode, conn: ConnectionObj) {
   let updatedConnection = conn;
   const currentMsgNo = node.msgNo;
   const currentMsgString = mcotServer._MSG_STRING(currentMsgNo);
-  logger.info({ currentMsgString, currentMsgNo });
 
   switch (currentMsgString) {
     case "MC_SET_OPTIONS":
@@ -336,43 +335,34 @@ async function MessageReceived(msg: MessageNode, con: ConnectionObj) {
   return await ProcessInput(msg, newConnection);
 }
 
-/**
- * Debug seems hard-coded to use the connection queue
- * Craft a packet that tells the client it's allowed to login
- */
-
-export function sendPacketOkLogin(socket: Socket) {
-  socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
-}
-
 export async function defaultHandler(rawPacket: IRawPacket) {
   const { connection, remoteAddress, localPort, data } = rawPacket;
   let messageNode;
-  try {
-    messageNode = new MessageNode();
-    messageNode.deserialize(data);
-  } catch (e) {
-    if (e instanceof RangeError) {
-      // This is a very short packet, likely a heartbeat
-      logger.debug("Unable to pack into a MessageNode, sending to Lobby");
-    }
-    throw new Error(`[TCPManager] Unable yp pack into MessageNode: ${e}`);
-  }
+  // try {
+  messageNode = new MessageNode();
+  messageNode.deserialize(data);
+  // } catch (e) {
+  //   if (e instanceof RangeError) {
+  //     // This is a very short packet, likely a heartbeat
+  //     logger.debug("Unable to pack into a MessageNode, sending to Lobby");
+  //   }
+  //   throw new Error(`[TCPManager] Unable tp pack into MessageNode: ${e}`);
+  // }
 
-  logger.info({ message: "Received packet", localPort, remoteAddress });
+  logger.info({ localPort, remoteAddress }, "Received packet");
 
-  if (messageNode.isMCOTS()) {
-    messageNode.dumpPacket();
+  // if (messageNode.isMCOTS()) {
+  messageNode.dumpPacket();
 
-    const newMessage = await MessageReceived(messageNode, connection);
-    logger.info("Back from MessageRecieved");
-    return newMessage;
-  }
-  logger.info({
-    message: "No valid MCOTS header signature detected, sending to Lobby",
-    data: messageNode.data.toString("hex"),
-  });
+  const newMessage = await MessageReceived(messageNode, connection);
+  logger.info("Back from MessageRecieved");
+  return newMessage;
+  // }
+  // logger.info({
+  //   message: "No valid MCOTS header signature detected, sending to Lobby",
+  //   data: messageNode.data.toString("hex"),
+  // });
 
-  const newConnection = await lobbyServer.dataHandler(rawPacket);
-  return newConnection;
+  // const newConnection = await lobbyServer.dataHandler(rawPacket);
+  // return newConnection;
 }

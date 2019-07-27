@@ -91,16 +91,18 @@ export class LoginMsg {
    * dumpPacket
    */
   public dumpPacket() {
-    this.logger.info({
-      message: "LoginMsg",
-      msgNo: this.msgNo.toString(),
-      customerId: this.customerId.toString(),
-      personaId: this.personaId.toString(),
-      lotOwnerId: this.lotOwnerId,
-      brandedPartId: this.brandedPartId,
-      skinId: this.skinId,
-      personaName: this.personaName,
-      version: this.version,
-    });
+    this.logger.info(
+      {
+        msgNo: this.msgNo.toString(),
+        customerId: this.customerId.toString(),
+        personaId: this.personaId.toString(),
+        lotOwnerId: this.lotOwnerId,
+        brandedPartId: this.brandedPartId,
+        skinId: this.skinId,
+        personaName: this.personaName,
+        version: this.version,
+      },
+      "LoginMsg"
+    );
   }
 }

@@ -10,7 +10,7 @@ import { ConnectionObj } from "./ConnectionObj";
 import ConnectionMgr from "./connectionMgr";
 import { IRawPacket } from "./IRawPacket";
 
-import { sendPacketOkLogin } from "./TCPManager";
+// import { sendPacketOkLogin } from "./MCOTS/TCPManager";
 
 import * as SDC from "statsd-client";
 import { IServerConfiguration, ConfigManager } from "../shared/configManager";
@@ -54,7 +54,7 @@ export class ListenerThread {
       const newConnection = await connection.mgr.processData(rawPacket, config);
       this.sdc.timing("packet.tcp.process_time", startPacketHandleTime);
       if (!connection.remoteAddress) {
-        this.logger.fatal({ message: "Remote address is empty", connection });
+        this.logger.fatal({ connection }, "Remote address is empty");
         process.exit(-1);
       }
       await connection.mgr._updateConnectionByAddressAndPort(
@@ -89,7 +89,12 @@ export class ListenerThread {
       `[listenerThread] Client ${remoteAddress} connected to port ${localPort}`
     );
     if (socket.localPort === 7003 && connection.inQueue) {
-      sendPacketOkLogin(socket);
+      /**
+       * Debug seems hard-coded to use the connection queue
+       * Craft a packet that tells the client it's allowed to login
+       */
+
+      socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
       connection.inQueue = false;
     }
     socket.on("end", () => {
