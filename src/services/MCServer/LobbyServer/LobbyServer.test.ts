@@ -12,4 +12,8 @@ describe("LobbyServer", () => {
   test("_generateSessionKeyBuffer", () => {
     expect(lobbyServer._generateSessionKeyBuffer("123").length).toEqual(64);
   });
+
+  test("_npsHeartbeat()", () => {
+    expect(lobbyServer._npsHeartbeat().msgNo).toEqual(0x0127);
+  });
 });
