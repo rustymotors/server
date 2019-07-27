@@ -94,7 +94,7 @@ export class PersonaServer {
       {
         NPSMsg: requestPacket.toJSON(),
       },
-      "NPSMsg response object from _npsNewGameAccount"
+      "NPSMsg request object from _npsNewGameAccount"
     );
 
     requestPacket.dumpPacket();
