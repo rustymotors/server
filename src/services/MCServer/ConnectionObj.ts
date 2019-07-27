@@ -7,7 +7,7 @@
 
 import * as crypto from "crypto";
 import { Socket } from "net";
-import ConnectionMgr from "./services/MCServer/connectionMgr";
+import ConnectionMgr from "./connectionMgr";
 import { EncryptionMgr } from "./EncryptionMgr";
 
 export class ConnectionObj {

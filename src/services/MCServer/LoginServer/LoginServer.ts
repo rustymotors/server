@@ -5,12 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { IRawPacket } from "../../shared/interfaces/IRawPacket";
+import { IRawPacket } from "../IRawPacket";
 
 import { NPSUserStatus } from "../../shared/messageTypes/npsUserStatus";
 
-import { ConnectionObj } from "../../../ConnectionObj";
-import { premadeLogin } from "../../../packet";
+import { ConnectionObj } from "../ConnectionObj";
+import { premadeLogin } from "./packet";
 import { DatabaseManager } from "../../shared/databaseManager";
 import { Logger } from "../../shared/loggerManager";
 import { IServerConfiguration } from "../../shared/configManager";

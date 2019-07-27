@@ -5,8 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import * as packet from "../../../packet";
+import { ConnectionObj } from "./ConnectionObj";
 
-test("retuns a buffer packet from premadeLogin", () => {
-  expect(packet.premadeLogin()).toBeInstanceOf(Buffer);
-});
+export interface IRawPacket {
+  connectionId: string;
+  connection: ConnectionObj;
+  data: Buffer;
+  localPort: number;
+  remoteAddress?: string;
+  timestamp: Date | number;
+}

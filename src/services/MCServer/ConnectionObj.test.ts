@@ -6,8 +6,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Socket } from "net";
-import { ConnectionObj } from "../../../ConnectionObj";
-import ConnectionMgr from "../../MCServer/connectionMgr";
+import { ConnectionObj } from "./ConnectionObj";
+import ConnectionMgr from "./connectionMgr";
 
 describe("Connection class", () => {
   let testConnection: ConnectionObj;

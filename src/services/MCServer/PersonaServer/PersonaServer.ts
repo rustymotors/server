@@ -7,7 +7,7 @@
 
 import { Socket } from "net";
 import { IPersonaRecord } from "./interfaces/IPersonaRecord";
-import { IRawPacket } from "../../shared/interfaces/IRawPacket";
+import { IRawPacket } from "../IRawPacket";
 import { MSG_DIRECTION, NPSMsg } from "../messageTypes/NPSMsg";
 import { NPSPersonaMapsMsg } from "./messageTypes/NPSPersonaMapsMsg";
 import { Logger } from "../../shared/loggerManager";

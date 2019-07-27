@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { ConnectionObj } from "../../../ConnectionObj";
+import { ConnectionObj } from "../ConnectionObj";
 import { GenericReplyMsg } from "../../shared/messageTypes/GenericReplyMsg";
 import { LobbyMsg } from "../messageTypes/LobbyMsg";
 import { LoginMsg } from "../../shared/messageTypes/LoginMsg";

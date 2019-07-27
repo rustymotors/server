@@ -1,5 +1,3 @@
-import { Logger } from "../loggerManager";
-
 // mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 
@@ -7,6 +5,7 @@ import { Logger } from "../loggerManager";
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { Logger } from "../loggerManager";
 export class MessageNode {
   public logger = new Logger().getLogger("MessageNode");
   public appId: number;

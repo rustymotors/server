@@ -6,8 +6,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Socket } from "net";
-import { ConnectionObj } from "../../ConnectionObj";
-import { IRawPacket } from "../shared/interfaces/IRawPacket";
+import { ConnectionObj } from "./ConnectionObj";
+import { IRawPacket } from "./IRawPacket";
 
 import { defaultHandler } from "./TCPManager";
 import { NPSPacketManager } from "./npsPacketManager";

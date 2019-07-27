@@ -6,9 +6,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as net from "net";
-import { ConnectionObj } from "../../ConnectionObj";
+import { ConnectionObj } from "./ConnectionObj";
 import ConnectionMgr from "./connectionMgr";
-import { IRawPacket } from "../shared/interfaces/IRawPacket";
+import { IRawPacket } from "./IRawPacket";
 
 import { sendPacketOkLogin } from "./TCPManager";
 

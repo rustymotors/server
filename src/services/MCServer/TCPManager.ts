@@ -7,8 +7,8 @@
 
 import * as assert from "assert";
 import { Socket } from "net";
-import { ConnectionObj } from "../../ConnectionObj";
-import { IRawPacket } from "../shared/interfaces/IRawPacket";
+import { ConnectionObj } from "./ConnectionObj";
+import { IRawPacket } from "./IRawPacket";
 import { LobbyServer } from "./LobbyServer/LobbyServer";
 import { MCOTServer } from "./MCOTS/MCOTServer";
 import { ClientConnectMsg } from "./ClientConnectMsg";
