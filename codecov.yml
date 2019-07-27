@@ -1,4 +1,5 @@
 codecov:
-  comment:
-    layout: "reach, diff, flags, files"
-    behavior: new
+
+comment:
+  layout: "reach, diff, flags, files"
+  behavior: new
