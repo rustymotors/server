@@ -27,7 +27,7 @@ export class StockCarInfoMsg {
   public moreToCome: number;
   public StockCarList: StockCar[];
 
-  constructor() {
+  constructor(starterCash: number, dealerId: number, brand: number) {
     this.msgNo = 141;
     this.starterCash = 1;
     this.dealerId = 0;
@@ -35,6 +35,11 @@ export class StockCarInfoMsg {
     this.noCars = 1;
     this.moreToCome = 0;
     this.StockCarList = [];
+  }
+
+  public addStockCar(car: StockCar) {
+    this.StockCarList.push(car);
+    this.noCars = this.StockCarList.length;
   }
 
   public serialize() {
@@ -60,17 +65,16 @@ export class StockCarInfoMsg {
    */
   public dumpPacket() {
     this.logger.debug(
-      "[StockCarInfoMsg]======================================"
-    );
-    this.logger.debug(`MsgNo:        ${this.msgNo}`);
-    this.logger.debug(`starterCash:  ${this.starterCash}`);
-    this.logger.debug(`dealerId:     ${this.dealerId}`);
-    this.logger.debug(`brand:        ${this.brand}`);
-    this.logger.debug(`noCars:       ${this.noCars}`);
-    this.logger.debug(`moreToCome:   ${this.moreToCome}`);
-    this.logger.debug(`StockCarList: ${this.StockCarList.toString()}`);
-    this.logger.debug(
-      "[/StockCarInfoMsg]======================================"
+      {
+        msgNo: this.msgNo,
+        starterCash: this.starterCash,
+        dealerId: this.dealerId,
+        brand: this.brand,
+        noCars: this.noCars,
+        moreToCome: this.moreToCome,
+        stockCarList: this.StockCarList.toString(),
+      },
+      "StockCarInfoMsg"
     );
   }
 }

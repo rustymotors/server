@@ -7,7 +7,7 @@
 
 import { StockCar } from "./StockCar";
 
-const stockCar1 = new StockCar();
+const stockCar1 = new StockCar(105, 20, 0);
 
 describe("StockCar", () => {
   const { brandedPartId, retailPrice, bIsDealOfTheDay } = stockCar1;

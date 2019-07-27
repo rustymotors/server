@@ -7,7 +7,7 @@
 
 import { StockCarInfoMsg } from "./StockCarInfoMsg";
 
-const stockCarInfoMsg1 = new StockCarInfoMsg();
+const stockCarInfoMsg1 = new StockCarInfoMsg(1, 0, 0);
 
 describe("StockCarInfoMsg", () => {
   const {

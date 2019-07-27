@@ -19,6 +19,7 @@ import { StockCar } from "./StockCar";
 import { StockCarInfoMsg } from "./StockCarInfoMsg";
 import { DatabaseManager } from "../../shared/databaseManager";
 import { Logger } from "../../shared/loggerManager";
+import { MSG_DIRECTION } from "./NPSMsg";
 
 const logger = new Logger().getLogger("TCPManager");
 // const lobbyServer = new LobbyServer();
@@ -97,19 +98,18 @@ async function GetStockCarInfo(con: ConnectionObj, node: MessageNode) {
   getStockCarInfoMsg.deserialize(node.data);
   getStockCarInfoMsg.dumpPacket();
 
-  logger.debug("Dumping response...");
-
-  const pReply = new StockCarInfoMsg();
+  const pReply = new StockCarInfoMsg(200, 0, 105);
   pReply.starterCash = 200;
   pReply.dealerId = 8;
   pReply.brand = 105;
 
-  const newStockCar = new StockCar();
-  pReply.StockCarList.push(newStockCar);
+  pReply.addStockCar(new StockCar(113, 20, 0)); // Bel-air
+  pReply.addStockCar(new StockCar(104, 15, 1)); // Fairlane - Deal of the day
+  pReply.addStockCar(new StockCar(402, 20, 0)); // Centry
 
   pReply.dumpPacket();
 
-  const rPacket = new MessageNode();
+  const rPacket = new MessageNode(MSG_DIRECTION.SENT);
 
   rPacket.deserialize(node.serialize());
 
@@ -163,17 +163,15 @@ async function ClientConnect(con: ConnectionObj, node: MessageNode) {
   const pReply = new GenericReplyMsg();
   pReply.msgNo = 101;
   pReply.msgReply = 438;
-  const rPacket = new MessageNode();
+  const rPacket = new MessageNode(MSG_DIRECTION.SENT);
   rPacket.deserialize(node.serialize());
   rPacket.updateBuffer(pReply.serialize());
-  logger.debug("Dumping response...");
   rPacket.dumpPacket();
 
   return { con, nodes: [rPacket] };
 }
 
 async function ProcessInput(node: MessageNode, conn: ConnectionObj) {
-  logger.debug("In ProcessInput..");
   let updatedConnection = conn;
   const currentMsgNo = node.msgNo;
   const currentMsgString = mcotServer._MSG_STRING(currentMsgNo);
@@ -195,10 +193,11 @@ async function ProcessInput(node: MessageNode, conn: ConnectionObj) {
     case "MC_TRACKING_MSG":
       try {
         const result = await mcotServer._trackingMessage(conn, node);
-        // updatedConnection = await socketWriteIfOpen(
-        //   result.con,
-        //   responsePackets
-        // );
+        const responsePackets = result.nodes;
+        updatedConnection = await socketWriteIfOpen(
+          result.con,
+          responsePackets
+        );
         return updatedConnection;
       } catch (error) {
         throw error;
@@ -280,7 +279,6 @@ async function ProcessInput(node: MessageNode, conn: ConnectionObj) {
 }
 
 async function MessageReceived(msg: MessageNode, con: ConnectionObj) {
-  logger.info("Welcome to MessageRecieved()");
   const newConnection = con;
   if (!newConnection.useEncryption && (msg.flags && 0x08)) {
     logger.debug("Turning on encryption");
@@ -339,7 +337,7 @@ export async function defaultHandler(rawPacket: IRawPacket) {
   const { connection, remoteAddress, localPort, data } = rawPacket;
   let messageNode;
   // try {
-  messageNode = new MessageNode();
+  messageNode = new MessageNode(MSG_DIRECTION.RECIEVED);
   messageNode.deserialize(data);
   // } catch (e) {
   //   if (e instanceof RangeError) {
@@ -349,13 +347,20 @@ export async function defaultHandler(rawPacket: IRawPacket) {
   //   throw new Error(`[TCPManager] Unable tp pack into MessageNode: ${e}`);
   // }
 
-  logger.info({ localPort, remoteAddress }, "Received packet");
+  logger.info(
+    {
+      localPort,
+      remoteAddress,
+      direction: messageNode.direction,
+      data: rawPacket.data.toString("hex"),
+    },
+    "Received TCP packet"
+  );
 
   // if (messageNode.isMCOTS()) {
   messageNode.dumpPacket();
 
   const newMessage = await MessageReceived(messageNode, connection);
-  logger.info("Back from MessageRecieved");
   return newMessage;
   // }
   // logger.info({

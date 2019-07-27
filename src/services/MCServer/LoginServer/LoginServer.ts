@@ -25,7 +25,7 @@ export class LoginServer {
   ) {
     const { connection, data } = rawPacket;
     const { localPort, remoteAddress } = rawPacket;
-    this.logger.info({ localPort, remoteAddress }, "Received packet");
+    this.logger.info({ localPort, remoteAddress }, "Received Login packet");
     // TODO: Check if this can be handled by a MessageNode object
     const { sock } = connection;
     const requestCode = data.readUInt16BE(0).toString(16);

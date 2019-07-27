@@ -7,7 +7,7 @@
 
 import { MessageNode } from "./MessageNode";
 
-const messageNode1 = new MessageNode();
+const messageNode1 = new MessageNode("Recieved");
 messageNode1.deserialize(
   Buffer.from([
     0x00,
@@ -38,7 +38,7 @@ messageNode1.deserialize(
 describe("MessageNode", () => {
   test("throws error when not passed long enough buffer", () => {
     expect(() => {
-      new MessageNode().deserialize(Buffer.from([0x00, 0x00]));
+      new MessageNode("Recieved").deserialize(Buffer.from([0x00, 0x00]));
     }).toThrowError(
       "[MessageNode] Not long enough to deserialize, only 2 bytes long"
     );

@@ -70,11 +70,6 @@
       "plugin:prettier/recommended"
     ]
   },
-  "husky": {
-    "hooks": {
-      "pre-push": "npm test"
-    }
-  },
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"

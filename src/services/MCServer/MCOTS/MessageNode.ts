@@ -6,8 +6,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from "../../shared/loggerManager";
+
 export class MessageNode {
   public logger = new Logger().getLogger("MessageNode");
+  public direction: "Recieved" | "Sent";
   public appId: number;
   public msgNo: number;
   public seq: number;
@@ -17,7 +19,8 @@ export class MessageNode {
   private dataLength: number;
   private mcoSig: string;
 
-  constructor() {
+  constructor(direction: "Recieved" | "Sent") {
+    this.direction = direction;
     this.msgNo = 0;
     this.seq = 999;
     this.flags = 0;
@@ -110,6 +113,7 @@ export class MessageNode {
         dataLength: this.dataLength,
         isMCOTS: this.isMCOTS(),
         msgNo: this.msgNo,
+        direction: this.direction,
         seq: this.seq,
         flags: this.flags,
         toFrom: this.toFrom,

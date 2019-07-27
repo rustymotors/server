@@ -112,7 +112,7 @@ export class LobbyServer {
   }
   public async dataHandler(rawPacket: IRawPacket) {
     const { localPort, remoteAddress } = rawPacket;
-    logger.info({ localPort, remoteAddress }, `Received packet`);
+    logger.info({ localPort, remoteAddress }, `Received Lobby packet`);
     const { connection, data } = rawPacket;
     let updatedConnection = connection;
     const requestCode = data.readUInt16BE(0).toString(16);

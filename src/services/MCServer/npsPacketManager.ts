@@ -31,6 +31,7 @@ export class NPSPacketManager {
     { id: 0x30c, name: "NPS_SEND_MINI_RIFF_LIST" },
     { id: 0x501, name: "NPS_USER_LOGIN" },
     { id: 0x503, name: "NPS_REGISTER_GAME_LOGIN" },
+    { id: 0x507, name: "NPS_NEW_GAME_ACCOUNT" },
     { id: 0x532, name: "NPS_GET_PERSONA_MAPS" },
     { id: 0x607, name: "NPS_GAME_ACCOUNT_INFO" },
     { id: 0x1101, name: "NPS_CRYPTO_DES_CBC" },
@@ -60,7 +61,8 @@ export class NPSPacketManager {
   public async processNPSPacket(rawPacket: IRawPacket) {
     let msgId = rawPacket.data.readInt16BE(0);
     this.logger.info(
-      `[npsPacketManger] Handling message ${this.msgCodetoName(msgId)}`
+      { msgName: this.msgCodetoName(msgId), msgId },
+      "Handling message"
     );
 
     const { localPort } = rawPacket;

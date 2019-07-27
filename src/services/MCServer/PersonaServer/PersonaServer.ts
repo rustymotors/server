@@ -358,7 +358,10 @@ export class PersonaServer {
     const { connection, data, localPort, remoteAddress } = rawPacket;
     const { sock } = connection;
     const updatedConnection = connection;
-    this.logger.info({ localPort, remoteAddress }, "Received packet");
+    this.logger.info(
+      { localPort, remoteAddress, data: rawPacket.data.toString("hex") },
+      "Received Persona packet"
+    );
     const requestCode = data.readUInt16BE(0).toString(16);
     let responsePacket: NPSMsg;
 

@@ -46,9 +46,8 @@ export class ListenerThread {
       };
       // Dump the raw packet
       this.logger.info(
-        `[listenerThread] rawPacket's data prior to proccessing: ${rawPacket.data.toString(
-          "hex"
-        )}`
+        { data: rawPacket.data.toString("hex") },
+        `rawPacket's data prior to proccessing`
       );
       const startPacketHandleTime = new Date();
       const newConnection = await connection.mgr.processData(rawPacket, config);

@@ -16,10 +16,14 @@ export class StockCar {
   public retailPrice: number;
   public bIsDealOfTheDay: number;
 
-  constructor() {
-    this.brandedPartId = 105;
-    this.retailPrice = 20;
-    this.bIsDealOfTheDay = 0;
+  constructor(
+    brandedPartId: number,
+    retailPrice: number,
+    bIsDealOfTheDay: number
+  ) {
+    this.brandedPartId = brandedPartId;
+    this.retailPrice = retailPrice;
+    this.bIsDealOfTheDay = bIsDealOfTheDay;
   }
 
   public serialize() {
