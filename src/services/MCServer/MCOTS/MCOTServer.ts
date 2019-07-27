@@ -9,7 +9,7 @@ import { ConnectionObj } from "../ConnectionObj";
 import { GenericReplyMsg } from "../GenericReplyMsg";
 import { LobbyMsg } from "./LobbyMsg";
 import { LoginMsg } from "./LoginMsg";
-import { MessageNode } from "../../shared/messageTypes/MessageNode";
+import { MessageNode } from "./MessageNode";
 import { Logger } from "../../shared/loggerManager";
 
 export class MCOTServer {

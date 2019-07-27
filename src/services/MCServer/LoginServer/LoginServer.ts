@@ -7,7 +7,7 @@
 
 import { IRawPacket } from "../IRawPacket";
 
-import { NPSUserStatus } from "../../shared/messageTypes/npsUserStatus";
+import { NPSUserStatus } from "./npsUserStatus";
 
 import { ConnectionObj } from "../ConnectionObj";
 import { premadeLogin } from "./packet";

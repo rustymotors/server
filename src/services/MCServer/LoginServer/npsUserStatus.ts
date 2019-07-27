@@ -8,9 +8,9 @@
 import * as crypto from "crypto";
 import * as fs from "fs";
 
-import { NPSMsg, MSG_DIRECTION } from "../../MCServer/MCOTS/NPSMsg";
-import { Logger } from "../loggerManager";
-import { IServerConfiguration } from "../configManager";
+import { NPSMsg, MSG_DIRECTION } from "../MCOTS/NPSMsg";
+import { Logger } from "../../shared/loggerManager";
+import { IServerConfiguration } from "../../shared/configManager";
 
 /**
  * Load the RSA private key and return a NodeRSA object

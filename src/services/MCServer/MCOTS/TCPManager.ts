@@ -14,7 +14,7 @@ import { MCOTServer } from "./MCOTServer";
 import { ClientConnectMsg } from "../ClientConnectMsg";
 import { GenericReplyMsg } from "../GenericReplyMsg";
 import { GenericRequestMsg } from "../GenericRequestMsg";
-import { MessageNode } from "../../shared/messageTypes/MessageNode";
+import { MessageNode } from "./MessageNode";
 import { StockCar } from "./StockCar";
 import { StockCarInfoMsg } from "./StockCarInfoMsg";
 import { DatabaseManager } from "../../shared/databaseManager";

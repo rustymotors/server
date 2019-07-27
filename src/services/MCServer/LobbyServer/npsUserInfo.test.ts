@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { NPSUserInfo } from "./npsUserInfo";
-import { MSG_DIRECTION } from "../../MCServer/MCOTS/NPSMsg";
+import { MSG_DIRECTION } from "../MCOTS/NPSMsg";
 
 describe("NPSUserInfo", () => {
   test("can create an instance", () => {
