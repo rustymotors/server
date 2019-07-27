@@ -125,13 +125,14 @@ export class LobbyServer {
           data
         );
         logger.info(
-          `[Lobby/Connect] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
+          { data: responsePacket.getPacketAsString() },
+          `Connect responsePacket's data prior to sending`
         );
         // TODO: Investigate why this crashes retail
         try {
           npsSocketWriteIfOpen(connection, responsePacket.serialize());
         } catch (error) {
-          logger.warn(`[LobbyServer] Unable to send packet: ${error}`);
+          logger.warn({ error }, `Unable to send Connect packet`);
         }
         break;
       }
@@ -139,7 +140,8 @@ export class LobbyServer {
       case "217": {
         const responsePacket = await this._npsHeartbeat();
         logger.info(
-          `[Lobby/Heartbeat] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
+          { data: responsePacket.getPacketAsString() },
+          `Heartbeat responsePacket's data prior to sending`
         );
         npsSocketWriteIfOpen(connection, responsePacket.serialize());
         break;
@@ -154,15 +156,15 @@ export class LobbyServer {
 
         if (encryptedCmd == null) {
           logger.fatal(
-            `[Lobby/CMD] Error with encrypted command, dumping connection...${updatedConnection}`
+            { updatedConnection },
+            `Error with encrypted command, dumping connection`
           );
           process.exit(-1);
         }
 
         logger.info(
-          `[Lobby/CMD] encrypedCommand's data prior to sending: ${encryptedCmd.toString(
-            "hex"
-          )}`
+          { data: encryptedCmd.toString("hex") },
+          `encrypedCommand's data prior to sending`
         );
         npsSocketWriteIfOpen(connection, encryptedCmd);
         break;
@@ -191,13 +193,10 @@ export class LobbyServer {
     rawData: Buffer
   ) {
     const { sock } = connection;
-    logger.info("*** _npsRequestGameConnectServer ***");
-    logger.info(`Packet from ${sock.remoteAddress}`);
-    logger.info(`Packet as hex: ${rawData.toString("hex")}`);
-    logger.info("************************************");
-
-    // // Load the received data into a MsgPack class
-    // const msgPack = MsgPack(rawData);
+    logger.info(
+      { remoteAddress: sock.remoteAddress, data: rawData.toString("hex") },
+      `_npsRequestGameConnectServer`
+    );
 
     // Return a _NPS_UserInfo structure
     const userInfo = new NPSUserInfo(MSG_DIRECTION.RECIEVED);
