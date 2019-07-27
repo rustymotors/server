@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { NPSPersonaMapsMsg } from "./NPSPersonaMapsMsg";
-import { MSG_DIRECTION } from "../../messageTypes/NPSMsg";
+import { MSG_DIRECTION } from "../MCOTS/NPSMsg";
 
 describe("NPSPersonaMapsMsg", () => {
   const npsPersonaMapsMsg = new NPSPersonaMapsMsg(MSG_DIRECTION.RECIEVED);

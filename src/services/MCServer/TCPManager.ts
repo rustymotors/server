@@ -12,11 +12,11 @@ import { IRawPacket } from "./IRawPacket";
 import { LobbyServer } from "./LobbyServer/LobbyServer";
 import { MCOTServer } from "./MCOTS/MCOTServer";
 import { ClientConnectMsg } from "./ClientConnectMsg";
-import { GenericReplyMsg } from "../shared/messageTypes/GenericReplyMsg";
-import { GenericRequestMsg } from "../shared/messageTypes/GenericRequestMsg";
+import { GenericReplyMsg } from "./GenericReplyMsg";
+import { GenericRequestMsg } from "./GenericRequestMsg";
 import { MessageNode } from "../shared/messageTypes/MessageNode";
-import { StockCar } from "./messageTypes/StockCar";
-import { StockCarInfoMsg } from "./messageTypes/StockCarInfoMsg";
+import { StockCar } from "./MCOTS/StockCar";
+import { StockCarInfoMsg } from "./MCOTS/StockCarInfoMsg";
 import { DatabaseManager } from "../shared/databaseManager";
 import { Logger } from "../shared/loggerManager";
 

@@ -8,7 +8,7 @@
 import * as crypto from "crypto";
 import * as fs from "fs";
 
-import { NPSMsg, MSG_DIRECTION } from "../../MCServer/messageTypes/NPSMsg";
+import { NPSMsg, MSG_DIRECTION } from "../../MCServer/MCOTS/NPSMsg";
 import { Logger } from "../loggerManager";
 import { IServerConfiguration } from "../configManager";
 

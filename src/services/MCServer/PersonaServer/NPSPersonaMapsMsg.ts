@@ -6,9 +6,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as struct from "c-struct";
-import { IPersonaRecord } from "../interfaces/IPersonaRecord";
-import { MSG_DIRECTION, NPSMsg } from "../../messageTypes/NPSMsg";
-import { Logger } from "../../../shared/loggerManager";
+import { IPersonaRecord } from "./IPersonaRecord";
+import { MSG_DIRECTION, NPSMsg } from "../MCOTS/NPSMsg";
+import { Logger } from "../../shared/loggerManager";
 
 // tslint:disable: object-literal-sort-keys
 const npsPersonaMapsMsgSchema = new struct.Schema({

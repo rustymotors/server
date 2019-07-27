@@ -6,9 +6,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { ConnectionObj } from "../ConnectionObj";
-import { GenericReplyMsg } from "../../shared/messageTypes/GenericReplyMsg";
-import { LobbyMsg } from "../messageTypes/LobbyMsg";
-import { LoginMsg } from "../../shared/messageTypes/LoginMsg";
+import { GenericReplyMsg } from "../GenericReplyMsg";
+import { LobbyMsg } from "./LobbyMsg";
+import { LoginMsg } from "./LoginMsg";
 import { MessageNode } from "../../shared/messageTypes/MessageNode";
 import { Logger } from "../../shared/loggerManager";
 

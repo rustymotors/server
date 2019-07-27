@@ -7,7 +7,7 @@
 
 import { ConnectionObj } from "../ConnectionObj";
 import { IRawPacket } from "../IRawPacket";
-import { MSG_DIRECTION, NPSMsg } from "../messageTypes/NPSMsg";
+import { MSG_DIRECTION, NPSMsg } from "../MCOTS/NPSMsg";
 import { NPSUserInfo } from "../../shared/messageTypes/npsUserInfo";
 import { PersonaServer } from "../PersonaServer/PersonaServer";
 import { DatabaseManager } from "../../shared/databaseManager";
