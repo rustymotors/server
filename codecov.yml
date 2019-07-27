@@ -1,2 +1,4 @@
 codecov:
-  bot: ""
+  comment:
+    layout: "reach, diff, flags, files"
+    behavior: new
