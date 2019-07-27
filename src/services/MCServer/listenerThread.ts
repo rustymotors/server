@@ -62,7 +62,7 @@ export class ListenerThread {
         newConnection
       );
     } catch (error) {
-      throw error;
+      throw new Error(`Error in listenerThread::onData: ${error}`);
     }
   }
 
@@ -106,7 +106,7 @@ export class ListenerThread {
     });
     socket.on("error", (err: NodeJS.ErrnoException) => {
       if (err.code !== "ECONNRESET") {
-        this.logger.error(err);
+        this.logger.error({ err }, `Socket error`);
       }
     });
   }

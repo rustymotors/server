@@ -187,7 +187,7 @@ async function ProcessInput(node: MessageNode, conn: ConnectionObj) {
         );
         return updatedConnection;
       } catch (error) {
-        throw error;
+        throw new Error(`Error in MC_SET_OPTIONS: ${error}`);
       }
       break;
     case "MC_TRACKING_MSG":
@@ -200,7 +200,7 @@ async function ProcessInput(node: MessageNode, conn: ConnectionObj) {
         );
         return updatedConnection;
       } catch (error) {
-        throw error;
+        throw new Error(`Error in MC_TRACKING_MSG: ${error}`);
       }
       break;
     case "MC_UPDATE_PLAYER_PHYSICAL":
@@ -213,7 +213,7 @@ async function ProcessInput(node: MessageNode, conn: ConnectionObj) {
         );
         return updatedConnection;
       } catch (error) {
-        throw error;
+        throw new Error(`Error in MC_UPDATE_PLAYER_PHYSICAL: ${error}`);
       }
       break;
 
