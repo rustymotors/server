@@ -1,5 +1,3 @@
-codecov:
-
 comment:
   layout: "reach, diff, flags, files"
   behavior: new
