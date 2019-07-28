@@ -11,7 +11,6 @@ import { IRawPacket } from "../IRawPacket";
 import { NPSMsg } from "../MCOTS/NPSMsg";
 import { NPSPersonaMapsMsg } from "./NPSPersonaMapsMsg";
 import { Logger } from "../../shared/loggerManager";
-import { UserGameData } from "./userGameData";
 
 export class PersonaServer {
   public logger = new Logger().getLogger("PersonaServer");

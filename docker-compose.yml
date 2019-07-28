@@ -1,12 +1,28 @@
 version: "3"
 services:
+  authlogin:
+    build: ./src/services/AuthLogin
+    image: mcoserver/authlogin:latest
+    ports:
+      - "443:443"
+    environment:
+      PGHOST: postgres
+      PGUSER: postgres
+      PGDATABASE: postgres
+      PGPASSWORD: mco
+    volumes:
+      - ./:/home/node/app
+    depends_on:
+      - postgres
+      - graylog
+    command: "npm run prod"
   app:
     build: .
     image: mcoserver/app:latest
     ports:
       - "80:80"
       - "88:88"
-      - "443:443"
+      # - "443:443"
       - "6660:6660"
       - "7003:7003"
       - "8226:8226"

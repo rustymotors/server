@@ -9,8 +9,8 @@ import * as fs from "fs";
 import * as https from "https";
 import { IncomingMessage, ServerResponse } from "http";
 
-import { Logger } from "../shared/loggerManager";
-import { IServerConfiguration, ConfigManager } from "../shared/configManager";
+import { Logger } from "./loggerManager";
+import { IServerConfiguration, ConfigManager } from "./configManager";
 
 export class WebServer {
   public config = new ConfigManager().getConfig();
