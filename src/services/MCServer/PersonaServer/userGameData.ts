@@ -19,6 +19,8 @@ const npsUserGameDataSchema = new struct.Schema({
   msgChecksum: struct.type.uint32,
   // End of header
   personaCount: struct.type.uint16,
+  unknown1: struct.type.uint16,
+  maxPersonas: struct.type.uint16,
   personas: [
     {
       customerId: struct.type.uint32,
@@ -67,6 +69,7 @@ export class UserGameData extends NPSMsg {
   public loadMaps(personas: IPersonaRecord[]): any {
     if (personas.length >= 0) {
       this.struct.personaCount = personas.length;
+      this.struct.maxPersonas = personas.length;
       this.personas = [];
       try {
         personas.forEach((persona, idx) => {

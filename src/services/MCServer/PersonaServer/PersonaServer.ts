@@ -328,8 +328,8 @@ export class PersonaServer {
       `${personas.length} personas found for ${customerId.readUInt32BE(0)}`
     );
 
-    // const personaMapsMsg = new NPSPersonaMapsMsg(MSG_DIRECTION.SENT);
-    const personaMapsMsg = new UserGameData();
+    const personaMapsMsg = new NPSPersonaMapsMsg("Sent");
+    // const personaMapsMsg = new UserGameData();
 
     if (personas.length === 0) {
       this.logger.error(
