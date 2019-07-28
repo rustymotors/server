@@ -6,7 +6,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { NPSUserInfo } from "./npsUserInfo";
-import { MSG_DIRECTION } from "../MCOTS/NPSMsg";
 
 describe("NPSUserInfo", () => {
   test("can create an instance", () => {
@@ -14,7 +13,7 @@ describe("NPSUserInfo", () => {
       Buffer.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x84, 0x5f, 0xed]),
       Buffer.alloc(98),
     ]);
-    const npsUserInfo = new NPSUserInfo(MSG_DIRECTION.RECIEVED);
+    const npsUserInfo = new NPSUserInfo("Recieved");
     npsUserInfo.deserialize(testPacket);
     expect(npsUserInfo.userId).toBe(8675309);
   });

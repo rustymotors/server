@@ -50,19 +50,33 @@ export class ListenerThread {
         `rawPacket's data prior to proccessing`
       );
       const startPacketHandleTime = new Date();
-      const newConnection = await connection.mgr.processData(rawPacket, config);
+      let newConnection = connection;
+      try {
+        newConnection = await connection.mgr.processData(rawPacket, config);
+      } catch (error) {
+        this.logger.error({ error }, `Error in listenerThread::onData 1:`);
+
+        process.exit(-1);
+      }
       this.sdc.timing("packet.tcp.process_time", startPacketHandleTime);
       if (!connection.remoteAddress) {
         this.logger.fatal({ connection }, "Remote address is empty");
         process.exit(-1);
       }
-      await connection.mgr._updateConnectionByAddressAndPort(
-        connection.remoteAddress!,
-        connection.localPort,
-        newConnection
-      );
+      try {
+        await connection.mgr._updateConnectionByAddressAndPort(
+          connection.remoteAddress!,
+          connection.localPort,
+          newConnection
+        );
+      } catch (error) {
+        this.logger.error({ error }, `Error in listenerThread::onData 2:`);
+
+        process.exit(-1);
+      }
     } catch (error) {
-      throw new Error(`Error in listenerThread::onData: ${error}`);
+      this.logger.error({ error }, `Error in listenerThread::onData 3:`);
+      process.exit(-1);
     }
   }
 

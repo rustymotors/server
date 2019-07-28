@@ -40,7 +40,6 @@ export default class ConnectionMgr {
     rawPacket: IRawPacket,
     config: IServerConfiguration
   ) {
-    const database = new DatabaseManager();
     const npsPacketManager = new NPSPacketManager();
 
     const { remoteAddress, localPort, data } = rawPacket;
@@ -66,17 +65,30 @@ export default class ConnectionMgr {
         },
         `Recieved NPS packet`
       );
-      return npsPacketManager.processNPSPacket(rawPacket);
+      try {
+        return npsPacketManager.processNPSPacket(rawPacket);
+      } catch (error) {
+        this.logger.error({ error }, `Error in connectionMgr::processData`);
+
+        process.exit(-1);
+      }
     }
+
+    this.logger.info(`This is an MCOTS packed`);
 
     switch (localPort) {
       case 43300:
         return defaultHandler(rawPacket);
       default:
         // Is this a hacker?
-        if (this.banList.indexOf(remoteAddress!) < 0) {
-          // In ban list, skip
-          return rawPacket.connection;
+        try {
+          if (this.banList.indexOf(remoteAddress!) < 0) {
+            // In ban list, skip
+            return rawPacket.connection;
+          }
+        } catch (error) {
+          this.logger.error({ error }, `Error checking ban list`);
+          process.exit(-1);
         }
         // Unknown request, log it
         this.logger.warn(
@@ -140,12 +152,19 @@ export default class ConnectionMgr {
       );
       process.exit(-1);
     }
-    const index = this.connections.findIndex(
-      (connection: ConnectionObj) =>
-        connection.remoteAddress === address && connection.localPort === port
-    );
-    this.connections.splice(index, 1);
-    this.connections.push(newConnection);
+    try {
+      const index = this.connections.findIndex(
+        (connection: ConnectionObj) =>
+          connection.remoteAddress === address && connection.localPort === port
+      );
+      this.connections.splice(index, 1);
+      this.connections.push(newConnection);
+    } catch (error) {
+      this.logger.error(
+        { error, connections: this.connections },
+        `Error updating connection`
+      );
+    }
   }
 
   /**
@@ -202,3 +221,9 @@ export default class ConnectionMgr {
     return this.connections;
   }
 }
+
+process.on("unhandledRejection", (reason, p) => {
+  console.log("Unhandled Rejection at:", p, "reason:", reason);
+  console.trace();
+  // application specific logging, throwing an error, or other logic here
+});

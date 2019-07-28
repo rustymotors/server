@@ -12,11 +12,6 @@ import { Logger } from "../../shared/loggerManager";
 
 // WORD	msgNo;    NPS message number
 
-export enum MSG_DIRECTION {
-  RECIEVED = "Recieved",
-  SENT = "Sent",
-}
-
 export class NPSMsg {
   public logger = new Logger().getLogger("NPSMsg");
   public msgNo: number;
@@ -24,9 +19,9 @@ export class NPSMsg {
   public msgVersion: number;
   public reserved: number;
   public content: Buffer;
-  public direction: MSG_DIRECTION;
+  public direction: "Recieved" | "Sent";
 
-  constructor(direction: MSG_DIRECTION) {
+  constructor(direction: "Recieved" | "Sent") {
     this.msgNo = 0;
     this.msgVersion = 0;
     this.reserved = 0;

@@ -7,7 +7,7 @@
 
 import * as struct from "c-struct";
 import { IPersonaRecord } from "./IPersonaRecord";
-import { MSG_DIRECTION, NPSMsg } from "../MCOTS/NPSMsg";
+import { NPSMsg } from "../MCOTS/NPSMsg";
 import { Logger } from "../../shared/loggerManager";
 
 // tslint:disable: object-literal-sort-keys
@@ -45,7 +45,7 @@ export class NPSPersonaMapsMsg extends NPSMsg {
   public personaSize = 40;
   public struct: any;
 
-  constructor(direction: MSG_DIRECTION) {
+  constructor(direction: "Recieved" | "Sent") {
     super(direction);
     this.msgNo = 0x607;
     this.personaCount = 0;

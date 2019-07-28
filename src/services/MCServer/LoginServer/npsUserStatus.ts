@@ -8,7 +8,7 @@
 import * as crypto from "crypto";
 import * as fs from "fs";
 
-import { NPSMsg, MSG_DIRECTION } from "../MCOTS/NPSMsg";
+import { NPSMsg } from "../MCOTS/NPSMsg";
 import { Logger } from "../../shared/loggerManager";
 import { IServerConfiguration } from "../../shared/configManager";
 
@@ -40,7 +40,7 @@ export class NPSUserStatus extends NPSMsg {
   public sessionKey: string = "";
 
   constructor(packet: Buffer) {
-    super(MSG_DIRECTION.RECIEVED);
+    super("Recieved");
     // Save the NPS opCode
     this.opCode = packet.readInt16LE(0);
 

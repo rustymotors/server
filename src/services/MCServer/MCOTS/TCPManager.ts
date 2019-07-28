@@ -19,7 +19,6 @@ import { StockCar } from "./StockCar";
 import { StockCarInfoMsg } from "./StockCarInfoMsg";
 import { DatabaseManager } from "../../shared/databaseManager";
 import { Logger } from "../../shared/loggerManager";
-import { MSG_DIRECTION } from "./NPSMsg";
 
 const logger = new Logger().getLogger("TCPManager");
 // const lobbyServer = new LobbyServer();
@@ -109,7 +108,7 @@ async function GetStockCarInfo(con: ConnectionObj, node: MessageNode) {
 
   pReply.dumpPacket();
 
-  const rPacket = new MessageNode(MSG_DIRECTION.SENT);
+  const rPacket = new MessageNode("Sent");
 
   rPacket.deserialize(node.serialize());
 
@@ -163,7 +162,7 @@ async function ClientConnect(con: ConnectionObj, node: MessageNode) {
   const pReply = new GenericReplyMsg();
   pReply.msgNo = 101;
   pReply.msgReply = 438;
-  const rPacket = new MessageNode(MSG_DIRECTION.SENT);
+  const rPacket = new MessageNode("Sent");
   rPacket.deserialize(node.serialize());
   rPacket.updateBuffer(pReply.serialize());
   rPacket.dumpPacket();
@@ -337,7 +336,7 @@ export async function defaultHandler(rawPacket: IRawPacket) {
   const { connection, remoteAddress, localPort, data } = rawPacket;
   let messageNode;
   // try {
-  messageNode = new MessageNode(MSG_DIRECTION.RECIEVED);
+  messageNode = new MessageNode("Recieved");
   messageNode.deserialize(data);
   // } catch (e) {
   //   if (e instanceof RangeError) {

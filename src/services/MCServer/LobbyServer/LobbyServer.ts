@@ -7,7 +7,7 @@
 
 import { ConnectionObj } from "../ConnectionObj";
 import { IRawPacket } from "../IRawPacket";
-import { MSG_DIRECTION, NPSMsg } from "../MCOTS/NPSMsg";
+import { NPSMsg } from "../MCOTS/NPSMsg";
 import { NPSUserInfo } from "./npsUserInfo";
 import { PersonaServer } from "../PersonaServer/PersonaServer";
 import { DatabaseManager } from "../../shared/databaseManager";
@@ -68,7 +68,7 @@ export async function sendCommand(con: ConnectionObj, data: Buffer) {
     .decryptedCmd;
 
   // Marshal the command into an NPS packet
-  const incommingRequest = new NPSMsg(MSG_DIRECTION.RECIEVED);
+  const incommingRequest = new NPSMsg("Recieved");
   incommingRequest.deserialize(decipheredCommand);
 
   incommingRequest.dumpPacket();
@@ -84,7 +84,7 @@ export async function sendCommand(con: ConnectionObj, data: Buffer) {
   logger.warn(`Sending a dummy response of 0x229 - NPS_MINI_USER_LIST`);
 
   // Build the packet
-  const packetResult = new NPSMsg(MSG_DIRECTION.SENT);
+  const packetResult = new NPSMsg("Sent");
   packetResult.msgNo = 0x229;
   packetResult.setContent(packetContent);
   packetResult.dumpPacket();
@@ -103,7 +103,7 @@ export async function sendCommand(con: ConnectionObj, data: Buffer) {
 export class LobbyServer {
   public _npsHeartbeat() {
     const packetContent = Buffer.alloc(8);
-    const packetResult = new NPSMsg(MSG_DIRECTION.SENT);
+    const packetResult = new NPSMsg("Sent");
     packetResult.msgNo = 0x127;
     packetResult.setContent(packetContent);
     packetResult.dumpPacket();
@@ -199,7 +199,7 @@ export class LobbyServer {
     );
 
     // Return a _NPS_UserInfo structure
-    const userInfo = new NPSUserInfo(MSG_DIRECTION.RECIEVED);
+    const userInfo = new NPSUserInfo("Recieved");
     userInfo.deserialize(rawData);
     userInfo.dumpInfo();
 
@@ -252,7 +252,7 @@ export class LobbyServer {
     // Buffer.alloc(64).copy(packetContent, 38);
 
     // Build the packet
-    const packetResult = new NPSMsg(MSG_DIRECTION.SENT);
+    const packetResult = new NPSMsg("Sent");
     packetResult.msgNo = 0x120;
     packetResult.setContent(packetContent);
     packetResult.dumpPacket();

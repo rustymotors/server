@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { NPSMsg, MSG_DIRECTION } from "../MCOTS/NPSMsg";
+import { NPSMsg } from "../MCOTS/NPSMsg";
 import { Logger } from "../../shared/loggerManager";
 
 export class NPSUserInfo extends NPSMsg {
@@ -14,7 +14,7 @@ export class NPSUserInfo extends NPSMsg {
   public userName: Buffer = Buffer.from([0x00]); // 30 length
   public userData: Buffer = Buffer.from([0x00]); // 64 length;
 
-  constructor(direction: MSG_DIRECTION) {
+  constructor(direction: "Recieved" | "Sent") {
     super(direction);
   }
 

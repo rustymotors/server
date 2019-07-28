@@ -6,12 +6,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { NPSPersonaMapsMsg } from "./NPSPersonaMapsMsg";
-import { MSG_DIRECTION } from "../MCOTS/NPSMsg";
 
 describe("NPSPersonaMapsMsg", () => {
-  const npsPersonaMapsMsg = new NPSPersonaMapsMsg(MSG_DIRECTION.RECIEVED);
+  const npsPersonaMapsMsg = new NPSPersonaMapsMsg("Recieved");
   test("direction is set correctly", () => {
-    expect(npsPersonaMapsMsg.direction).toEqual(MSG_DIRECTION.RECIEVED);
+    expect(npsPersonaMapsMsg.direction).toEqual("Recieved");
     expect(npsPersonaMapsMsg.msgNo).toEqual(0x607);
   });
 });
