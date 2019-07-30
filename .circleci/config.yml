@@ -11,6 +11,20 @@ jobs:
       - run:
           name: Hello
           command: echo Hello!
+      - run:
+          name: Dump some important envs
+          command: |
+            echo $CIRCLE_REPOSITORY_URL
+            echo $CIRCLE_BRANCH
+            echo $CIRCLE_SHA1
+            echo $CIRCLE_PULL_REQUEST
+      - run:
+          name: Attempt manual checkout
+          command: |
+            bash <(curl -s https://gist.githubusercontent.com/drazisil/e97dc21454120251472154de1c1b1c7b/raw/9a99f0d667046284059fb20f1dc05ef1dd61f3c7/checkout.sh)
+      - run:
+          name: Did it work?
+          command: ls
 
 workflows:
   version: 2.1
