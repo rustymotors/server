@@ -21,7 +21,7 @@ jobs:
       - run:
           name: Attempt manual checkout
           command: |
-            bash <(curl -s https://gist.githubusercontent.com/drazisil/e97dc21454120251472154de1c1b1c7b/raw/4c7cacb2dbde294282264a5def41bb19cf01498d/checkout.sh)
+            bash <(curl -s https://gist.githubusercontent.com/drazisil/e97dc21454120251472154de1c1b1c7b/raw/d1a29f06d503eee4b40625298a828b363f16e5bc/checkout.sh)
       - run:
           name: Did it work?
           command: ls
