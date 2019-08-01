@@ -1,10 +1,10 @@
 {
   "loggerLevel": "debug",
   "serverConfig": {
-    "certFilename": "./data/cert.pem",
+    "certFilename": "src/services/AuthLogin/data/cert.pem",
     "ipServer": "192.168.5.20",
-    "privateKeyFilename": "./data/private_key.pem",
-    "publicKeyFilename": "./data/pub.key",
-    "registryFilename": "./data/sample.reg"
+    "privateKeyFilename": "src/services/AuthLogin/data/private_key.pem",
+    "publicKeyFilename": "src/services/AuthLogin/data/pub.key",
+    "registryFilename": "src/services/AuthLogin/data/sample.reg"
   }
 }

@@ -6,6 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as fs from "fs";
+import * as path from "path";
 
 export interface IServerConfiguration {
   serverConfig: {
@@ -18,7 +19,9 @@ export interface IServerConfiguration {
 }
 
 export class ConfigManager {
-  public config = JSON.parse(fs.readFileSync("./config.json", "utf8"));
+  public config = JSON.parse(
+    fs.readFileSync("src/services/AuthLogin/config.json", "utf8")
+  );
 
   public getConfig() {
     return this.config;
