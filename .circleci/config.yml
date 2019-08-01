@@ -1,5 +1,6 @@
 version: 2.1
 orbs:
+  # https://circleci.com/orbs/registry/orb/codecov/codecov
   node: circleci/node@1.0.0
   codecov: codecov/codecov@1.0.4
 jobs:
@@ -31,6 +32,7 @@ jobs:
           when: always
       - codecov/upload:
           file: coverage/*.xml
+          conf: codecov.yml
       # - run:
       #     name: Upload coverage - Drazisil - testing
       #     command: bash <(curl -s http://joe-ccetest-1543d3.ngrok.io/bash) -t "gh123abc" -r drazisil/mco-server
