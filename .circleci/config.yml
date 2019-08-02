@@ -26,8 +26,7 @@ jobs:
       - run:
           name: Upload coverage
           command: |
-            cd authlogin
-            bash <(curl -s https://codecov.io/bash)
+            bash <(curl -s https://codecov.io/bash) -R authlogin -f authlogin/.coverage
 
   build_main:
     executor:
