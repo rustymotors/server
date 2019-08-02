@@ -11,10 +11,12 @@ jobs:
       - checkout
       - run:
           name: Install Requirements
-          command: pip install -r authlogin/requirements.txt
+          command: make init
+          working_dir: authlogin
       - run:
           name: Run tests
           command: make test
+          working_dir: authlogin
       - store_test_results:
           path: authlogin/junit.xml
       - store_artifacts:
