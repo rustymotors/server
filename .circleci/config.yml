@@ -13,7 +13,7 @@ jobs:
           name: Install Requirements
           command: |
             cd authlogin
-            make init
+            sudo make init
       - run:
           name: Run tests
           command: |
