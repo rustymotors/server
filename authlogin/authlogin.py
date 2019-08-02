@@ -2,6 +2,10 @@ import cherrypy
 import ssl
 
 
+def handle_authlogin(username, password):
+    return "Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e"
+
+
 class AuthLogin(object):
     @cherrypy.expose
     def index(self):
@@ -10,7 +14,7 @@ class AuthLogin(object):
     @cherrypy.expose
     def AuthLogin(self, serviceID, username, version, password):
         cherrypy.response.headers['Content-Type'] = 'text/plain'
-        return "Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e"
+        return handle_authlogin(username, password)
 
 
 if __name__ == "__main__":
