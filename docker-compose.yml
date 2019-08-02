@@ -1,7 +1,7 @@
 version: "3"
 services:
   authlogin:
-    build: ./src/services/AuthLogin
+    build: ./authlogin
     image: mcoserver/authlogin:latest
     ports:
       - "443:443"
@@ -15,7 +15,6 @@ services:
     depends_on:
       - postgres
       - graylog
-    command: "npm run prod"
   app:
     build: .
     image: mcoserver/app:latest
