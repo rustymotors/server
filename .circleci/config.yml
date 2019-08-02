@@ -11,12 +11,14 @@ jobs:
       - checkout
       - run:
           name: Install Requirements
-          command: make init
-          working_dir: authlogin
+          command: |
+            cd authlogin
+            make init
       - run:
           name: Run tests
-          command: make test
-          working_dir: authlogin
+          command: |
+            cd authlogin
+            make test
       - store_test_results:
           path: authlogin/junit.xml
       - store_artifacts:
