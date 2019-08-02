@@ -4,7 +4,28 @@ orbs:
   node: circleci/node@1.0.0
   codecov: codecov/codecov@1.0.4
 jobs:
-  build:
+  build_authlogin:
+    docker:
+      - image: circleci/python:3.7.4
+    steps:
+      - checkout
+      - run:
+          name: Install Requirements
+          command: pip install -r authlogin/requirements.txt
+      - run:
+          name: Run tests
+          command: make test
+      - store_test_results:
+          path: authlogin/junit.xml
+      - store_artifacts:
+          path: authlogin/junit.xml
+      - run:
+          name: Upload coverage
+          command: |
+            cd authlogin
+            bash <(curl -s https://codecov.io/bash)
+
+  build_main:
     executor:
       name: node/node
       tag: "10.16.0"
@@ -121,4 +142,5 @@ workflows:
   version: 2.1
   build-test:
     jobs:
-      - build
+      - build_main
+      - build_authlogin
