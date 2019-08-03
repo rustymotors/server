@@ -74,7 +74,7 @@ export default class ConnectionMgr {
       }
     }
 
-    this.logger.info(`This is an MCOTS packed`);
+    this.logger.info(`This is an MCOTS packet`);
 
     switch (localPort) {
       case 43300:

@@ -335,16 +335,18 @@ async function MessageReceived(msg: MessageNode, con: ConnectionObj) {
 export async function defaultHandler(rawPacket: IRawPacket) {
   const { connection, remoteAddress, localPort, data } = rawPacket;
   let messageNode;
-  // try {
-  messageNode = new MessageNode("Recieved");
-  messageNode.deserialize(data);
-  // } catch (e) {
-  //   if (e instanceof RangeError) {
-  //     // This is a very short packet, likely a heartbeat
-  //     logger.debug("Unable to pack into a MessageNode, sending to Lobby");
-  //   }
-  //   throw new Error(`[TCPManager] Unable tp pack into MessageNode: ${e}`);
-  // }
+  let newConnection = rawPacket.connection;
+  try {
+    messageNode = new MessageNode("Recieved");
+    messageNode.deserialize(data);
+  } catch (e) {
+    if (e instanceof RangeError) {
+      // This is a very short packet, likely a heartbeat
+      logger.debug("Unable to pack into a MessageNode, sending to Lobby");
+    }
+    logger.error(`[TCPManager] Unable tp pack into MessageNode: ${e}`);
+    return newConnection;
+  }
 
   logger.info(
     {
@@ -361,12 +363,4 @@ export async function defaultHandler(rawPacket: IRawPacket) {
 
   const newMessage = await MessageReceived(messageNode, connection);
   return newMessage;
-  // }
-  // logger.info({
-  //   message: "No valid MCOTS header signature detected, sending to Lobby",
-  //   data: messageNode.data.toString("hex"),
-  // });
-
-  // const newConnection = await lobbyServer.dataHandler(rawPacket);
-  // return newConnection;
 }
