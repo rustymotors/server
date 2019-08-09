@@ -19,16 +19,17 @@ jobs:
           command: |
             cd authlogin
             make test
-      - store_test_results:
-          path: authlogin/junit.xml
-      - store_artifacts:
-          path: coverage
-      - store_artifacts:
-          path: authlogin/junit.xml
       - run:
           name: Upload coverage
           command: |
-            bash <(curl -s https://codecov.io/bash) -F authlogin
+            bash <(curl -s https://codecov.io/bash) -F authlogin            
+      - store_test_results:
+          path: test-reports
+      - store_artifacts:
+          path: coverage
+      - store_artifacts:
+          path: test-reports
+
   build_main:
     executor:
       name: node/node
