@@ -21,7 +21,7 @@ jobs:
             make test
       - store_test_results:
           path: authlogin/junit.xml
-       - store_artifacts:
+      - store_artifacts:
           path: coverage
       - store_artifacts:
           path: authlogin/junit.xml
