@@ -1,3 +1,2 @@
 comment:
-  layout: "files"
-  behavior: "once"
+  behavior: "new"
