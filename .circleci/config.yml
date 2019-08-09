@@ -21,13 +21,14 @@ jobs:
             make test
       - store_test_results:
           path: authlogin/junit.xml
+       - store_artifacts:
+          path: coverage
       - store_artifacts:
           path: authlogin/junit.xml
       - run:
           name: Upload coverage
           command: |
-            bash <(curl -s https://codecov.io/bash) -R authlogin -f authlogin/coverage.xml
-
+            bash <(curl -s https://codecov.io/bash) -F authlogin
   build_main:
     executor:
       name: node/node
@@ -54,12 +55,10 @@ jobs:
       - run:
           command: echo $ARTIFACTS_PATH
           when: always
-      - codecov/upload:
-          file: coverage/*.xml
-          conf: codecov.yml
-      # - run:
-      #     name: Upload coverage - Drazisil - testing
-      #     command: bash <(curl -s http://joe-ccetest-1543d3.ngrok.io/bash) -t "gh123abc" -r drazisil/mco-server
+      - run:
+          name: Upload coverage
+          command: |
+            bash <(curl -s https://codecov.io/bash) -F monolith
       - upload-artifacts-group
       - store_test_results:
           path: test-reports
