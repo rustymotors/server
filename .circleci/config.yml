@@ -24,11 +24,13 @@ jobs:
           command: |
             bash <(curl -s https://codecov.io/bash) -F authlogin            
       - store_test_results:
-          path: test-reports
+          path: test_results
       - store_artifacts:
-          path: coverage
+          path: htmlcov
       - store_artifacts:
-          path: test-reports
+          path: coverage.xml
+      - store_artifacts:
+          path: test_results
 
   build_main:
     executor:
