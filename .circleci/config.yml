@@ -27,7 +27,7 @@ jobs:
       - store_test_results:
           path: authlogin/test_results
       - store_artifacts:
-          path authlogin/upload.txt
+          path: authlogin/upload.txt
       - store_artifacts:
           path: authlogin/htmlcov
       - store_artifacts:
