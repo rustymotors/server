@@ -22,6 +22,7 @@ jobs:
       - run:
           name: Upload coverage
           command: |
+            ls -lah
             bash <(curl -s https://codecov.io/bash) -F authlogin -d > authlogin/upload.txt
             bash <(curl -s https://codecov.io/bash) -F authlogin            
       - store_test_results:
