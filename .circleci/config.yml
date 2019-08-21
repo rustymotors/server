@@ -1,8 +1,4 @@
 version: 2.1
-orbs:
-  # https://circleci.com/orbs/registry/orb/codecov/codecov
-  node: circleci/node@1.0.0
-  codecov: codecov/codecov@1.0.4
 jobs:
   build_authlogin:
     docker:
@@ -12,17 +8,18 @@ jobs:
       - run:
           name: Install Requirements
           command: |
-            cd authlogin
             sudo make init
+          working_directory: authlogin
       - run:
           name: Run tests
           command: |
-            cd authlogin
             make test
+          working_directory: authlogin
       - run:
           name: Upload coverage
           command: |
             ls -lah
+            cd authlogin
             bash <(curl -s https://codecov.io/bash) -F authlogin -d > authlogin/upload.txt
             bash <(curl -s https://codecov.io/bash) -F authlogin            
       - store_test_results:
@@ -37,9 +34,8 @@ jobs:
           path: authlogin/test_results
 
   build_main:
-    executor:
-      name: node/node
-      tag: "10.16.0"
+    docker: 
+      - image: node:10.16.0
     steps:
       - checkout
       - prepare-artifacts-dir
@@ -145,10 +141,8 @@ commands:
       - store_artifacts:
           name: "Upload artifacts group"
           path: ~/artifacts
-          when: always
 
 workflows:
-  version: 2.1
   build-test:
     jobs:
       - build_main
