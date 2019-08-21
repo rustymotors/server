@@ -20,7 +20,7 @@ jobs:
           command: |
             ls -lah
             cd authlogin
-            bash <(curl -s https://codecov.io/bash) -F authlogin -d > authlogin/upload.txt
+            bash <(curl -s https://codecov.io/bash) -F authlogin -d > upload.txt
             bash <(curl -s https://codecov.io/bash) -F authlogin            
       - store_test_results:
           path: authlogin/test_results
