@@ -17,5 +17,6 @@ steps:
 
 - script: |
     npm install
-    npm run build
+    npm test
+    bash <(curl -s https://codecov.io/bash)
   displayName: 'npm install and build'
