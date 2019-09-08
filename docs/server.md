@@ -16,7 +16,6 @@ This assumes you know the basics of checking out a git repo. If you don't, pleas
 ## Installing
 
 - `npm install`
-- `./scripts/make_certs.sh`
 
 ### Ports needed to be forwarded
 
