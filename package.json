@@ -31,7 +31,7 @@
     "sqlite": "^3.0.3",
     "ts-node": "^8.3.0",
     "winston": "^3.2.1",
-    "winston-daily-rotate-file": "^3.9.0"
+    "winston-daily-rotate-file": "^4.0.0"
   },
   "devDependencies": {
     "@types/jest": "24.0.18",
@@ -44,7 +44,7 @@
     "jest-junit": "^8.0.0",
     "prettier": "^1.18.2",
     "prettier-eslint": "^9.0.0",
-    "ts-jest": "24.0.2",
+    "ts-jest": "24.1.0",
     "typescript": "^3.5.2"
   },
   "prettier": {
