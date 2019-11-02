@@ -17,4 +17,7 @@ describe("GenericReplyMsg", () => {
   test("toFrom is correct", () => {
     expect(toFrom).toBe(0);
   });
+  test("can serialize", () => {
+    expect(genericReplyMsg1.serialize()).toEqual(Buffer.alloc(16));
+  });
 });

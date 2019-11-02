@@ -14,4 +14,7 @@ describe("GenericRequestMsg", () => {
   test("msgNo is correct", () => {
     expect(msgNo).toBe(0);
   });
+  test("can serialize", () => {
+    expect(genericRequestMsg1.serialize()).toEqual(Buffer.alloc(16));
+  });
 });
