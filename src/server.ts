@@ -1,33 +1,32 @@
-import * as fs from "fs";
-import { AdminServer } from "./AdminServer";
-import { IServerConfiguration } from "./services/shared/interfaces/IServerConfiguration";
-import { ILoggerInstance, Logger, ILoggers } from "./services/shared/logger";
-import { MCServer } from "./services/MCServer/MCServer";
+// mco-server is a game server, written from scratch, for an old game
+// Copyright (C) <2017-2018>  <Joseph W Becher>
+
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+import { AdminServer } from "./services/AdminServer/AdminServer";
+import { Logger } from "./services/shared/loggerManager";
+import { ConfigManager } from "./services/shared/configManager";
+import { MCServer } from "./services/MCServer";
 
 export class Server {
-  public config: IServerConfiguration;
-  public logger: ILoggerInstance;
-  public loggers: ILoggers;
+  public config = new ConfigManager().getConfig();
+  public logger = new Logger().getLogger("Server");
+  public mcServer!: MCServer;
+  public adminServer!: AdminServer;
 
-  public constructor(config: IServerConfiguration, loggers: ILoggers) {
-    this.loggers = loggers;
-    this.logger = loggers.both;
-    this.config = config;
-
-    this.start();
-  }
-
-  private async start() {
+  public async start() {
     this.logger.info("Starting servers...");
 
     // Start the MC Server
-    const mcServer = new MCServer(this.loggers);
-    await mcServer.startServers(this.config);
+    this.mcServer = new MCServer();
+    this.mcServer.startServers(this.config);
 
     // Start the Admin server
-    const adminServer = new AdminServer(mcServer, this.logger);
-    adminServer.start(this.config.serverConfig);
-    this.logger.debug("[adminServer] Web Server started");
+    this.adminServer = new AdminServer(this.mcServer);
+    this.adminServer.start(this.config.serverConfig);
+    this.logger.info("[adminServer] Web Server started");
 
     this.logger.info("Servers started, ready for connections.");
   }

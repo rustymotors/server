@@ -5,13 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { PatchServer } from "./services/PatchAndShard/patchServer";
-import { Server } from "./server";
+import { NPSPacketManager } from "./npsPacketManager";
 
-// MCOS Monolith
-const server = new Server();
-server.start();
-
-// MCOS PatchAndShard
-const patchAndShardServer = new PatchServer();
-patchAndShardServer.start();
+describe("NPSPacketManger", () => {
+  test("can find name for 0x229", () => {
+    const npsPacketManager = new NPSPacketManager();
+    expect(npsPacketManager.msgCodetoName(0x229)).toEqual("NPS_MINI_USER_LIST");
+  });
+});
