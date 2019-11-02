@@ -24,35 +24,35 @@
     "url": "git@github.com:drazisil/mco-server.git"
   },
   "engines": {
-    "node": "8.15.1"
+    "node": "10.16.0"
   },
   "dependencies": {
-    "@types/bunyan": "^1.8.6",
-    "@types/node": "^12.6.7",
-    "@types/pg": "^7.4.14",
-    "@types/statsd-client": "^0.4.0",
-    "bunyan": "^1.8.12",
-    "bunyan-gelf": "^1.0.0",
+    "@types/bunyan": "1.8.6",
+    "@types/node": "12.12.5",
+    "@types/pg": "7.11.2",
+    "@types/statsd-client": "0.4.0",
+    "bunyan": "1.8.12",
+    "bunyan-gelf": "1.0.0",
     "c-struct": "0.0.5",
-    "pg": "^7.11.0",
-    "pg-migrator": "^1.0.5",
-    "statsd-client": "^0.4.2",
-    "ts-node": "^8.3.0",
-    "winston": "^3.2.1",
-    "winston-daily-rotate-file": "^4.2.1"
+    "pg": "7.12.1",
+    "pg-migrator": "1.0.5",
+    "statsd-client": "0.4.4",
+    "ts-node": "8.4.1",
+    "winston": "3.2.1",
+    "winston-daily-rotate-file": "4.2.1"
   },
   "devDependencies": {
     "@types/jest": "24.0.21",
-    "@typescript-eslint/parser": "^2.0.0",
-    "eslint": "^6.0.1",
-    "eslint-config-prettier": "^6.0.0",
-    "eslint-plugin-prettier": "^3.1.0",
-    "jest": "^24.8.0",
-    "jest-junit": "^9.0.0",
-    "prettier": "^1.18.2",
-    "prettier-eslint": "^9.0.0",
+    "@typescript-eslint/parser": "2.6.0",
+    "eslint": "6.6.0",
+    "eslint-config-prettier": "6.5.0",
+    "eslint-plugin-prettier": "3.1.1",
+    "jest": "24.9.0",
+    "jest-junit": "9.0.0",
+    "prettier": "1.18.2",
+    "prettier-eslint": "9.0.0",
     "ts-jest": "24.1.0",
-    "typescript": "^3.5.2"
+    "typescript": "3.6.4"
   },
   "prettier": {
     "trailingComma": "es5"
