@@ -25,7 +25,7 @@
     "node": "8.15.1"
   },
   "dependencies": {
-    "@types/node": "^12.6.7",
+    "@types/node": "^12.12.5",
     "@types/pg": "^7.4.14",
     "c-struct": "0.0.5",
     "sqlite": "^3.0.3",
