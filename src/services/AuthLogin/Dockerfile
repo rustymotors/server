@@ -14,7 +14,3 @@ COPY src src
 COPY data data
 
 COPY config.json config.json
-
-COPY typings typings
-
-COPY migrations migrations
