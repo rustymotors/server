@@ -34,7 +34,7 @@
     "winston-daily-rotate-file": "^4.2.1"
   },
   "devDependencies": {
-    "@types/jest": "24.0.20",
+    "@types/jest": "24.0.21",
     "@typescript-eslint/parser": "^2.0.0",
     "eslint": "^6.0.1",
     "eslint-config-prettier": "^6.0.0",
