@@ -5,11 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { ConnectionObj } from "../../../ConnectionObj";
-import { GenericReplyMsg } from "../../shared/messageTypes/GenericReplyMsg";
-import { LobbyMsg } from "../messageTypes/LobbyMsg";
-import { LoginMsg } from "../../shared/messageTypes/LoginMsg";
-import { MessageNode } from "../../shared/messageTypes/MessageNode";
+import { ConnectionObj } from "../ConnectionObj";
+import { GenericReplyMsg } from "../GenericReplyMsg";
+import { LobbyMsg } from "./LobbyMsg";
+import { LoginMsg } from "./LoginMsg";
+import { MessageNode } from "./MessageNode";
 import { Logger } from "../../shared/loggerManager";
 
 export class MCOTServer {
@@ -60,14 +60,12 @@ export class MCOTServer {
     // Create new response packet
     const pReply = new GenericReplyMsg();
     pReply.msgNo = 213;
-    // pReply.msgNo = 101;
     pReply.msgReply = 105;
     pReply.appId = con.appId;
-    const rPacket = new MessageNode();
+    const rPacket = new MessageNode("Sent");
 
     rPacket.deserialize(node.serialize());
     rPacket.updateBuffer(pReply.serialize());
-    this.logger.info("Dumping response...");
     rPacket.dumpPacket();
 
     return { con, nodes: [rPacket] };
@@ -90,10 +88,9 @@ export class MCOTServer {
     const pReply = new GenericReplyMsg();
     pReply.msgNo = 325;
     pReply.msgReply = 324;
-    const rPacket = new MessageNode();
+    const rPacket = new MessageNode("Sent");
     rPacket.flags = 9;
 
-    // const rPacket = new MessageNode();
     rPacket.deserialize(node.serialize());
 
     // Set the data of the GenericReplyMsg to the LobbyMsg
@@ -104,7 +101,6 @@ export class MCOTServer {
     rPacket.appId = con.appId;
 
     // Dump the packet
-    this.logger.info("Dumping response...");
     lobbyMsg.dumpPacket();
     rPacket.dumpPacket();
 
@@ -123,7 +119,7 @@ export class MCOTServer {
     const pReply = new GenericReplyMsg();
     pReply.msgNo = 101;
     pReply.msgReply = 106;
-    const rPacket = new MessageNode();
+    const rPacket = new MessageNode("Sent");
 
     // rPacket.dumpPacket();
 
@@ -142,14 +138,10 @@ export class MCOTServer {
     const pReply = new GenericReplyMsg();
     pReply.msgNo = 101;
     pReply.msgReply = 109;
-    const rPacket = new MessageNode();
+    const rPacket = new MessageNode("Sent");
 
-    // lobbyMsg.dumpPacket();
-
-    // const rPacket = new MessageNode();
     rPacket.deserialize(node.serialize());
     rPacket.updateBuffer(pReply.serialize());
-    this.logger.info("Dumping response...");
     rPacket.dumpPacket();
 
     return { con, nodes: [rPacket] };
@@ -167,14 +159,10 @@ export class MCOTServer {
     const pReply = new GenericReplyMsg();
     pReply.msgNo = 101;
     pReply.msgReply = 440;
-    const rPacket = new MessageNode();
+    const rPacket = new MessageNode("Sent");
 
-    // lobbyMsg.dumpPacket();
-
-    // const rPacket = new MessageNode();
     rPacket.deserialize(node.serialize());
     rPacket.updateBuffer(pReply.serialize());
-    this.logger.info("Dumping response...");
     rPacket.dumpPacket();
 
     return { con, nodes: [rPacket] };
@@ -192,14 +180,10 @@ export class MCOTServer {
     const pReply = new GenericReplyMsg();
     pReply.msgNo = 101;
     pReply.msgReply = 266;
-    const rPacket = new MessageNode();
+    const rPacket = new MessageNode("Sent");
 
-    // lobbyMsg.dumpPacket();
-
-    // const rPacket = new MessageNode();
     rPacket.deserialize(node.serialize());
     rPacket.updateBuffer(pReply.serialize());
-    this.logger.info("Dumping response...");
     rPacket.dumpPacket();
 
     return { con, nodes: [rPacket] };

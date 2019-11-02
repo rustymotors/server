@@ -9,9 +9,6 @@ CREATE TABLE "sessions"
 	connection_id text NOT NULL,
 	CONSTRAINT pk_session PRIMARY KEY (customer_id)
 )
-WITH (
-  OIDS = FALSE
-);
 
 DROP TABLE IF EXISTS "lobbies";
 CREATE TABLE "public"."lobbies"
@@ -97,4 +94,3 @@ CREATE TABLE "public"."lobbies"
 	"teamtNumLaps" smallint NOT NULL,
 	"raceCashFactor" real NOT NULL
 )
-WITH (oids = false);

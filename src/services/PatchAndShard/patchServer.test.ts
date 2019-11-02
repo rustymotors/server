@@ -1,9 +1,5 @@
 import { PatchServer } from "./patchServer";
-import * as fs from "fs";
 import { ConfigManager } from "../shared/configManager";
-
-// get instance of config
-const config = new ConfigManager().getConfig();
 
 describe("PatchServer", () => {
   const patchServer = new PatchServer();

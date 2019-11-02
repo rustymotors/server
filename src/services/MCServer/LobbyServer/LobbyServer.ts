@@ -5,10 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { ConnectionObj } from "../../../ConnectionObj";
-import { IRawPacket } from "../../shared/interfaces/IRawPacket";
-import { MSG_DIRECTION, NPSMsg } from "../messageTypes/NPSMsg";
-import { NPSUserInfo } from "../../shared/messageTypes/npsUserInfo";
+import { ConnectionObj } from "../ConnectionObj";
+import { IRawPacket } from "../IRawPacket";
+import { NPSMsg } from "../MCOTS/NPSMsg";
+import { NPSUserInfo } from "./npsUserInfo";
 import { PersonaServer } from "../PersonaServer/PersonaServer";
 import { DatabaseManager } from "../../shared/databaseManager";
 import { Logger } from "../../shared/loggerManager";
@@ -68,7 +68,7 @@ export async function sendCommand(con: ConnectionObj, data: Buffer) {
     .decryptedCmd;
 
   // Marshal the command into an NPS packet
-  const incommingRequest = new NPSMsg(MSG_DIRECTION.RECIEVED);
+  const incommingRequest = new NPSMsg("Recieved");
   incommingRequest.deserialize(decipheredCommand);
 
   incommingRequest.dumpPacket();
@@ -84,7 +84,7 @@ export async function sendCommand(con: ConnectionObj, data: Buffer) {
   logger.warn(`Sending a dummy response of 0x229 - NPS_MINI_USER_LIST`);
 
   // Build the packet
-  const packetResult = new NPSMsg(MSG_DIRECTION.SENT);
+  const packetResult = new NPSMsg("Sent");
   packetResult.msgNo = 0x229;
   packetResult.setContent(packetContent);
   packetResult.dumpPacket();
@@ -103,7 +103,7 @@ export async function sendCommand(con: ConnectionObj, data: Buffer) {
 export class LobbyServer {
   public _npsHeartbeat() {
     const packetContent = Buffer.alloc(8);
-    const packetResult = new NPSMsg(MSG_DIRECTION.SENT);
+    const packetResult = new NPSMsg("Sent");
     packetResult.msgNo = 0x127;
     packetResult.setContent(packetContent);
     packetResult.dumpPacket();
@@ -112,7 +112,7 @@ export class LobbyServer {
   }
   public async dataHandler(rawPacket: IRawPacket) {
     const { localPort, remoteAddress } = rawPacket;
-    logger.info({ message: `Received packet`, localPort, remoteAddress });
+    logger.info({ localPort, remoteAddress }, `Received Lobby packet`);
     const { connection, data } = rawPacket;
     let updatedConnection = connection;
     const requestCode = data.readUInt16BE(0).toString(16);
@@ -125,13 +125,14 @@ export class LobbyServer {
           data
         );
         logger.info(
-          `[Lobby/Connect] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
+          { data: responsePacket.getPacketAsString() },
+          `Connect responsePacket's data prior to sending`
         );
         // TODO: Investigate why this crashes retail
         try {
           npsSocketWriteIfOpen(connection, responsePacket.serialize());
         } catch (error) {
-          logger.warn(`[LobbyServer] Unable to send packet: ${error}`);
+          logger.warn({ error }, `Unable to send Connect packet`);
         }
         break;
       }
@@ -139,7 +140,8 @@ export class LobbyServer {
       case "217": {
         const responsePacket = await this._npsHeartbeat();
         logger.info(
-          `[Lobby/Heartbeat] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
+          { data: responsePacket.getPacketAsString() },
+          `Heartbeat responsePacket's data prior to sending`
         );
         npsSocketWriteIfOpen(connection, responsePacket.serialize());
         break;
@@ -154,15 +156,15 @@ export class LobbyServer {
 
         if (encryptedCmd == null) {
           logger.fatal(
-            `[Lobby/CMD] Error with encrypted command, dumping connection...${updatedConnection}`
+            { updatedConnection },
+            `Error with encrypted command, dumping connection`
           );
           process.exit(-1);
         }
 
         logger.info(
-          `[Lobby/CMD] encrypedCommand's data prior to sending: ${encryptedCmd.toString(
-            "hex"
-          )}`
+          { data: encryptedCmd.toString("hex") },
+          `encrypedCommand's data prior to sending`
         );
         npsSocketWriteIfOpen(connection, encryptedCmd);
         break;
@@ -191,16 +193,13 @@ export class LobbyServer {
     rawData: Buffer
   ) {
     const { sock } = connection;
-    logger.info("*** _npsRequestGameConnectServer ***");
-    logger.info(`Packet from ${sock.remoteAddress}`);
-    logger.info(`Packet as hex: ${rawData.toString("hex")}`);
-    logger.info("************************************");
-
-    // // Load the received data into a MsgPack class
-    // const msgPack = MsgPack(rawData);
+    logger.info(
+      { remoteAddress: sock.remoteAddress, data: rawData.toString("hex") },
+      `_npsRequestGameConnectServer`
+    );
 
     // Return a _NPS_UserInfo structure
-    const userInfo = new NPSUserInfo(MSG_DIRECTION.RECIEVED);
+    const userInfo = new NPSUserInfo("Recieved");
     userInfo.deserialize(rawData);
     userInfo.dumpInfo();
 
@@ -221,7 +220,7 @@ export class LobbyServer {
       try {
         s.setEncryptionKeyDES(keys.s_key);
       } catch (error) {
-        logger.fatal({ message: "Unable to set session key", keys, error });
+        logger.fatal({ keys, error }, "Unable to set session key");
         process.exit(-1);
       }
     }
@@ -253,7 +252,7 @@ export class LobbyServer {
     // Buffer.alloc(64).copy(packetContent, 38);
 
     // Build the packet
-    const packetResult = new NPSMsg(MSG_DIRECTION.SENT);
+    const packetResult = new NPSMsg("Sent");
     packetResult.msgNo = 0x120;
     packetResult.setContent(packetContent);
     packetResult.dumpPacket();

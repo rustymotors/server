@@ -1,4 +1,11 @@
-import { IRawPacket } from "../shared/interfaces/IRawPacket";
+// mco-server is a game server, written from scratch, for an old game
+// Copyright (C) <2017-2018>  <Joseph W Becher>
+
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+import { IRawPacket } from "./IRawPacket";
 import { LoginServer } from "./LoginServer/LoginServer";
 import { PersonaServer } from "./PersonaServer/PersonaServer";
 import { LobbyServer } from "./LobbyServer/LobbyServer";
@@ -24,6 +31,7 @@ export class NPSPacketManager {
     { id: 0x30c, name: "NPS_SEND_MINI_RIFF_LIST" },
     { id: 0x501, name: "NPS_USER_LOGIN" },
     { id: 0x503, name: "NPS_REGISTER_GAME_LOGIN" },
+    { id: 0x507, name: "NPS_NEW_GAME_ACCOUNT" },
     { id: 0x532, name: "NPS_GET_PERSONA_MAPS" },
     { id: 0x607, name: "NPS_GAME_ACCOUNT_INFO" },
     { id: 0x1101, name: "NPS_CRYPTO_DES_CBC" },
@@ -53,7 +61,8 @@ export class NPSPacketManager {
   public async processNPSPacket(rawPacket: IRawPacket) {
     let msgId = rawPacket.data.readInt16BE(0);
     this.logger.info(
-      `[npsPacketManger] Handling message ${this.msgCodetoName(msgId)}`
+      { msgName: this.msgCodetoName(msgId), msgId },
+      "Handling message"
     );
 
     const { localPort } = rawPacket;
@@ -66,11 +75,13 @@ export class NPSPacketManager {
       case 7003:
         return this.lobbyServer.dataHandler(rawPacket);
       default:
-        this.logger.error({
-          message: `[npsPacketManager] Recieved a packet`,
-          msgId,
-          localPort,
-        });
+        this.logger.error(
+          {
+            msgId,
+            localPort,
+          },
+          `[npsPacketManager] Recieved a packet`
+        );
         return rawPacket.connection;
     }
   }

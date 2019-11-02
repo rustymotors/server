@@ -1,5 +1,3 @@
-import { Logger } from "../shared/loggerManager";
-
 // mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 
@@ -7,6 +5,7 @@ import { Logger } from "../shared/loggerManager";
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { Logger } from "../shared/loggerManager";
 export class ClientConnectMsg {
   public logger = new Logger().getLogger("ClientConnectMsg");
   public customerId: number;
@@ -55,14 +54,14 @@ export class ClientConnectMsg {
    */
   public dumpPacket() {
     this.logger.info({
-      message: "ClientConnectMsg",
       msgNo: this.msgNo.toString(),
       customerId: this.customerId.toString(),
       personaId: this.personaId.toString(),
       custName: this.custName,
       personaName: this.personaName,
       mcVersion: this.mcVersion.toString("hex"),
-    });
+    }),
+      "ClientConnectMsg";
   }
 }
 

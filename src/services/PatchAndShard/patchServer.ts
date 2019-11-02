@@ -72,6 +72,24 @@ export class PatchServer {
       80
     );
 
+    const shardTwinPinesMall = new ShardEntry(
+      "Twin Pines Mall",
+      "Twin Pines Mall",
+      88,
+      ipServer,
+      8226,
+      ipServer,
+      7003,
+      ipServer,
+      0,
+      "",
+      "Group-1",
+      88,
+      2,
+      ipServer,
+      80
+    );
+
     const shardList = [];
     shardList.push(shardClockTower.formatForShardList());
     // shardList.push(shardTwinPinesMall.formatForShardList());

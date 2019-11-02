@@ -9,7 +9,7 @@
     "AUTHORS"
   ],
   "scripts": {
-    "start": "docker-compose up --build",
+    "start": "docker-compose up -d --build",
     "stop": "docker-compose down",
     "test": "npm run lint-test",
     "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
@@ -42,7 +42,7 @@
     "winston-daily-rotate-file": "^3.9.0"
   },
   "devDependencies": {
-    "@types/jest": "24.0.15",
+    "@types/jest": "24.0.17",
     "@typescript-eslint/parser": "^1.11.0",
     "eslint": "^6.0.1",
     "eslint-config-prettier": "^6.0.0",
@@ -69,11 +69,6 @@
     "extends": [
       "plugin:prettier/recommended"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-push": "npm test"
-    }
   },
   "jest": {
     "transform": {

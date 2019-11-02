@@ -6,6 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as fs from "fs";
+import * as https from "https";
 import { IncomingMessage, ServerResponse } from "http";
 
 import { MCServer } from "../MCServer";
@@ -53,6 +54,22 @@ export class AdminServer {
     return responseText;
   }
 
+  public _handleResetAllQueueState() {
+    this.mcServer.mgr.resetAllQueueState();
+    const connections = this.mcServer.mgr.dumpConnections();
+    let responseText: string = "Queue state reset for all connections\n\n";
+    connections.forEach((connection, index) => {
+      const displayConnection = `
+        index: ${index} - ${connection.id}
+            remoteAddress: ${connection.remoteAddress}:${connection.localPort}
+            Encryption ID: ${connection.enc.getId()}
+            inQueue:       ${connection.inQueue}
+        `;
+      responseText += displayConnection;
+    });
+    return responseText;
+  }
+
   public _httpsHandler(request: IncomingMessage, response: ServerResponse) {
     this.logger.info(
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
@@ -69,6 +86,10 @@ export class AdminServer {
         response.setHeader("Content-Type", "text/plain");
         return response.end(this._handleGetConnections());
 
+      case "/admin/connections/resetAllQueueState":
+        response.setHeader("Content-Type", "text/plain");
+        return response.end(this._handleResetAllQueueState());
+
       case "/admin/bans":
         response.setHeader("Content-Type", "application/json");
         return response.end(this._handleGetBans());
@@ -83,5 +104,19 @@ export class AdminServer {
         break;
     }
   }
-  public async start(config: IServerConfiguration["serverConfig"]) {}
+  public async start(config: IServerConfiguration["serverConfig"]) {
+    const httpsServer = https
+      .createServer(
+        this._sslOptions(config),
+        (req: IncomingMessage, res: ServerResponse) => {
+          this._httpsHandler(req, res);
+        }
+      )
+      .listen({ port: 88, host: "0.0.0.0" })
+      .on("connection", socket => {
+        socket.on("error", (error: Error) => {
+          throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`);
+        });
+      });
+  }
 }
