@@ -10,3 +10,4 @@ junit
 dist
 .env
 database.sqlite
+junit.xml

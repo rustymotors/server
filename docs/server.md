@@ -2,6 +2,8 @@
 
 This assumes you know the basics of checking out a git repo. If you don't, please search it.
 
+**_This server uses Docker and docker-compose_**
+
 ## Requirements
 
 - Linux
@@ -17,19 +19,13 @@ This assumes you know the basics of checking out a git repo. If you don't, pleas
 
 - `npm install`
 
-### Ports needed to be forwarded
-
-- 80
-- 443
-- 43300
-- 8226
-- 8228
-- 7003
-
-### Permission to bind to low ports (on linux)
-
-`sudo setcap cap_net_bind_service=+ep $(which node)`
+- [Install Docker](https://docs.docker.com/install/)
+- [Install docker-compose](https://docs.docker.com/compose/install/)
 
 ### Running
 
 - `npm start`
+
+This will start the server running on Docker
+
+Afterwards, run `npm run migrate` to create the database before trying to connect

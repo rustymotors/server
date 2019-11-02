@@ -6,25 +6,27 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Socket } from "net";
-import { Connection } from "../../Connection";
-import { IRawPacket } from "../shared/interfaces/IRawPacket";
-import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
-import { ILoggers } from "../shared/logger";
-import { defaultHandler } from "../../TCPManager";
-import { NPSPacketManager } from "../../npsPacketManager";
-import { DatabaseManager } from "../../databaseManager";
+import { ConnectionObj } from "./ConnectionObj";
+import { IRawPacket } from "./IRawPacket";
+
+import { defaultHandler } from "./MCOTS/TCPManager";
+import { NPSPacketManager } from "./npsPacketManager";
+import { DatabaseManager } from "../shared/databaseManager";
+
+import * as SDC from "statsd-client";
+import { Logger } from "../shared/loggerManager";
+import { ConfigManager, IServerConfiguration } from "../shared/configManager";
 
 export default class ConnectionMgr {
-  public loggers: ILoggers;
-  private connections: Connection[];
+  public logger = new Logger().getLogger("ConnectionManager");
+  public config = new ConfigManager().getConfig();
+  public sdc: SDC;
+  private connections: ConnectionObj[];
   private newConnectionId: number;
   private banList: string[] = [];
 
-  constructor(loggers: ILoggers) {
-    if (!loggers) {
-      throw new Error("No loggers in constructor");
-    }
-    this.loggers = loggers;
+  constructor() {
+    this.sdc = new SDC({ host: this.config.statsDHost });
     this.connections = [];
     this.newConnectionId = 1;
   }
@@ -38,58 +40,64 @@ export default class ConnectionMgr {
     rawPacket: IRawPacket,
     config: IServerConfiguration
   ) {
-    const database = new DatabaseManager(this.loggers);
-    const npsPacketManager = new NPSPacketManager(
-      this.loggers,
-      config,
-      database
-    );
+    const npsPacketManager = new NPSPacketManager();
 
     const { remoteAddress, localPort, data } = rawPacket;
 
     // Log the packet as debug
-    this.loggers.file.debug({
-      msg: "logging raw packet",
-      remoteAddress,
-      localPort,
-      data: data.toString("hex"),
-    });
+    this.sdc.increment("packets.count");
+    this.logger.info(
+      {
+        remoteAddress,
+        localPort,
+        data: data.toString("hex"),
+      },
+      "logging raw packet"
+    );
+
+    if (localPort === 8226 || localPort === 8228 || localPort === 7003) {
+      this.logger.info(
+        {
+          msgName: npsPacketManager.msgCodetoName(
+            rawPacket.data.readInt16BE(0)
+          ),
+          localPort,
+        },
+        `Recieved NPS packet`
+      );
+      try {
+        return npsPacketManager.processNPSPacket(rawPacket);
+      } catch (error) {
+        this.logger.error({ error }, `Error in connectionMgr::processData`);
+
+        process.exit(-1);
+      }
+    }
+
+    this.logger.info(`This is an MCOTS packed`);
 
     switch (localPort) {
-      case 8226:
-        this.loggers.both.debug(
-          `Recieved NPS packet ${npsPacketManager.msgCodetoName(
-            rawPacket.data.readInt16BE(0)
-          )} on port ${localPort}`
-        );
-        return npsPacketManager.processNPSPacket(rawPacket);
-      case 8228:
-        this.loggers.both.debug(
-          `Recieved NPS packet ${npsPacketManager.msgCodetoName(
-            rawPacket.data.readInt16BE(0)
-          )} on port ${localPort}`
-        );
-        return npsPacketManager.processNPSPacket(rawPacket);
-      case 7003:
-        this.loggers.both.debug(
-          `Recieved NPS packet ${npsPacketManager.msgCodetoName(
-            rawPacket.data.readInt16BE(0)
-          )} on port ${localPort}`
-        );
-        return npsPacketManager.processNPSPacket(rawPacket);
       case 43300:
         return defaultHandler(rawPacket);
       default:
         // Is this a hacker?
-        if (this.banList.indexOf(remoteAddress!) < 0) {
-          // In ban list, skip
-          return rawPacket.connection;
+        try {
+          if (this.banList.indexOf(remoteAddress!) < 0) {
+            // In ban list, skip
+            return rawPacket.connection;
+          }
+        } catch (error) {
+          this.logger.error({ error }, `Error checking ban list`);
+          process.exit(-1);
         }
         // Unknown request, log it
-        this.loggers.both.debug(
-          `[connectionMgr] No known handler for localPort ${localPort},
-                unable to handle the request from ${remoteAddress} on localPort ${localPort}, aborting.
-                [connectionMgr] Data was: ${data.toString("hex")}, banning.`
+        this.logger.warn(
+          {
+            localPort,
+            remoteAddress,
+            data: data.toString("hex"),
+          },
+          `[connectionMgr] No known handler for request, banning`
         );
         this.banList.push(remoteAddress!);
         return rawPacket.connection;
@@ -132,17 +140,31 @@ export default class ConnectionMgr {
   public async _updateConnectionByAddressAndPort(
     address: string,
     port: number,
-    newConnection: Connection
+    newConnection: ConnectionObj
   ) {
     if (newConnection === undefined) {
-      throw new Error("Undefined connection");
+      this.logger.fatal(
+        {
+          remoteAddress: address,
+          localPort: port,
+        },
+        "Undefined connection"
+      );
+      process.exit(-1);
     }
-    const index = this.connections.findIndex(
-      (connection: Connection) =>
-        connection.remoteAddress === address && connection.localPort === port
-    );
-    this.connections.splice(index, 1);
-    this.connections.push(newConnection);
+    try {
+      const index = this.connections.findIndex(
+        (connection: ConnectionObj) =>
+          connection.remoteAddress === address && connection.localPort === port
+      );
+      this.connections.splice(index, 1);
+      this.connections.push(newConnection);
+    } catch (error) {
+      this.logger.error(
+        { error, connections: this.connections },
+        `Error updating connection`
+      );
+    }
   }
 
   /**
@@ -155,28 +177,41 @@ export default class ConnectionMgr {
   public findOrNewConnection(socket: Socket) {
     const { remoteAddress, localPort } = socket;
     if (!remoteAddress) {
-      this.loggers.both.error(socket);
-      throw new Error("Remote address is empty");
+      this.logger.fatal(
+        {
+          remoteAddress,
+          localPort,
+        },
+        "No address in socket"
+      );
+      process.exit(-1);
     }
-    const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
+    const con = this.findConnectionByAddressAndPort(remoteAddress!, localPort);
     if (con !== undefined) {
-      this.loggers.both.info(
+      this.logger.info(
         `[connectionMgr] I have seen connections from ${remoteAddress} on ${localPort} before`
       );
       con.sock = socket;
       return con;
     }
 
-    const newConnection = new Connection(
+    const newConnection = new ConnectionObj(
       `${Date.now().toString()}_${this.newConnectionId}`,
       socket,
       this
     );
-    this.loggers.both.info(
+    this.logger.info(
       `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`
     );
     this.connections.push(newConnection);
     return newConnection;
+  }
+
+  public resetAllQueueState() {
+    this.connections = this.connections.map((connection: ConnectionObj) => {
+      connection.inQueue = true;
+      return connection;
+    });
   }
 
   /**
@@ -186,3 +221,9 @@ export default class ConnectionMgr {
     return this.connections;
   }
 }
+
+process.on("unhandledRejection", (reason, p) => {
+  console.log("Unhandled Rejection at:", p, "reason:", reason);
+  console.trace();
+  // application specific logging, throwing an error, or other logic here
+});

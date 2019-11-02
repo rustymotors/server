@@ -9,9 +9,11 @@
     "AUTHORS"
   ],
   "scripts": {
-    "prestart": "npm test",
-    "start": "ts-node src/app.ts",
+    "start": "docker-compose up -d --build",
+    "stop": "docker-compose down",
     "test": "npm run lint-test",
+    "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
+    "prod": "ts-node src/app.ts | ./node_modules/.bin/bunyan",
     "lint-test": "eslint '{services,src}/**/*.ts' --fix && jest --all --ci --runInBand"
   },
   "author": "Joe Becher <jwbecher@drazisil.com> (drazisil.com)",
@@ -25,10 +27,16 @@
     "node": "8.15.1"
   },
   "dependencies": {
-    "@types/node": "^12.12.5",
+    "@types/bunyan": "^1.8.6",
+    "@types/node": "^12.6.7",
     "@types/pg": "^7.4.14",
+    "@types/statsd-client": "^0.4.0",
+    "bunyan": "^1.8.12",
+    "bunyan-gelf": "^1.0.0",
     "c-struct": "0.0.5",
-    "sqlite": "^3.0.3",
+    "pg": "^7.11.0",
+    "pg-migrator": "^1.0.5",
+    "statsd-client": "^0.4.2",
     "ts-node": "^8.3.0",
     "winston": "^3.2.1",
     "winston-daily-rotate-file": "^4.2.1"
@@ -39,7 +47,6 @@
     "eslint": "^6.0.1",
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
-    "husky": "^3.0.0",
     "jest": "^24.8.0",
     "jest-junit": "^9.0.0",
     "prettier": "^1.18.2",
@@ -62,11 +69,6 @@
     "extends": [
       "plugin:prettier/recommended"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-push": "npm test"
-    }
   },
   "jest": {
     "transform": {
