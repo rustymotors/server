@@ -1,5 +1,5 @@
 {
-  "name": "mco-server",
+  "name": "@mco-server/authlogin",
   "version": "2.0.1",
   "description": "a server",
   "main": "src/server.ts",
@@ -9,8 +9,6 @@
     "AUTHORS"
   ],
   "scripts": {
-    "start": "docker-compose up -d --build",
-    "stop": "docker-compose down",
     "test": "npm run lint-test",
     "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
     "prod": "ts-node src/app.ts | ./node_modules/.bin/bunyan",
@@ -39,19 +37,19 @@
     "statsd-client": "^0.4.2",
     "ts-node": "^8.3.0",
     "winston": "^3.2.1",
-    "winston-daily-rotate-file": "^4.0.0"
+    "winston-daily-rotate-file": "^3.9.0"
   },
   "devDependencies": {
-    "@types/jest": "24.0.18",
-    "@typescript-eslint/parser": "^2.0.0",
+    "@types/jest": "24.0.15",
+    "@typescript-eslint/parser": "^1.11.0",
     "eslint": "^6.0.1",
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
     "jest": "^24.8.0",
-    "jest-junit": "^8.0.0",
+    "jest-junit": "^7.0.0",
     "prettier": "^1.18.2",
     "prettier-eslint": "^9.0.0",
-    "ts-jest": "24.1.0",
+    "ts-jest": "24.0.2",
     "typescript": "^3.5.2"
   },
   "prettier": {

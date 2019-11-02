@@ -5,13 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { PatchServer } from "./services/PatchAndShard/patchServer";
-import { Server } from "./server";
+import { ConnectionObj } from "./ConnectionObj";
 
-// MCOS Monolith
-const server = new Server();
-server.start();
-
-// MCOS PatchAndShard
-const patchAndShardServer = new PatchServer();
-patchAndShardServer.start();
+export interface IRawPacket {
+  connectionId: string;
+  connection: ConnectionObj;
+  data: Buffer;
+  localPort: number;
+  remoteAddress?: string;
+  timestamp: Date | number;
+}

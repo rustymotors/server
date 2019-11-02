@@ -6,36 +6,38 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as net from "net";
-import { Connection } from "../../Connection";
+import { ConnectionObj } from "./ConnectionObj";
 import ConnectionMgr from "./connectionMgr";
-import { IRawPacket } from "../shared/interfaces/IRawPacket";
-import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
-import { ILoggers } from "../shared/logger";
-import { sendPacketOkLogin } from "../../TCPManager";
+import { IRawPacket } from "./IRawPacket";
+
+// import { sendPacketOkLogin } from "./MCOTS/TCPManager";
+
+import * as SDC from "statsd-client";
+import { IServerConfiguration, ConfigManager } from "../shared/configManager";
+import { Logger } from "../shared/loggerManager";
 
 export class ListenerThread {
-  public loggers: ILoggers;
-
-  constructor(loggers: ILoggers) {
-    this.loggers = loggers;
-  }
+  public config = new ConfigManager().getConfig();
+  public sdc = new SDC({ host: this.config.statsDHost });
+  public logger = new Logger().getLogger("ListenerThread");
 
   /**
    * the onData handler
    * takes the data buffer and creates a IRawPacket object
    *
    * @param {Buffer} data
-   * @param {Connection} connection
+   * @param {ConnectionObj} connection
    * @param {IServerConfiguration} config
    */
   public async _onData(
     data: Buffer,
-    connection: Connection,
+    connection: ConnectionObj,
     config: IServerConfiguration
   ) {
     try {
       const { localPort, remoteAddress } = connection.sock;
       const rawPacket: IRawPacket = {
+        connectionId: connection.id,
         connection,
         data,
         localPort,
@@ -43,23 +45,38 @@ export class ListenerThread {
         timestamp: Date.now(),
       };
       // Dump the raw packet
-      this.loggers.both.debug(
-        `[listenerThread] rawPacket's data prior to proccessing: ${rawPacket.data.toString(
-          "hex"
-        )}`
+      this.logger.info(
+        { data: rawPacket.data.toString("hex") },
+        `rawPacket's data prior to proccessing`
       );
+      const startPacketHandleTime = new Date();
+      let newConnection = connection;
+      try {
+        newConnection = await connection.mgr.processData(rawPacket, config);
+      } catch (error) {
+        this.logger.error({ error }, `Error in listenerThread::onData 1:`);
 
-      const newConnection = await connection.mgr.processData(rawPacket, config);
-      if (!connection.remoteAddress) {
-        throw new Error("Remote address is empty");
+        process.exit(-1);
       }
-      await connection.mgr._updateConnectionByAddressAndPort(
-        connection.remoteAddress,
-        connection.localPort,
-        newConnection
-      );
+      this.sdc.timing("packet.tcp.process_time", startPacketHandleTime);
+      if (!connection.remoteAddress) {
+        this.logger.fatal({ connection }, "Remote address is empty");
+        process.exit(-1);
+      }
+      try {
+        await connection.mgr._updateConnectionByAddressAndPort(
+          connection.remoteAddress!,
+          connection.localPort,
+          newConnection
+        );
+      } catch (error) {
+        this.logger.error({ error }, `Error in listenerThread::onData 2:`);
+
+        process.exit(-1);
+      }
     } catch (error) {
-      throw error;
+      this.logger.error({ error }, `Error in listenerThread::onData 3:`);
+      process.exit(-1);
     }
   }
 
@@ -81,15 +98,20 @@ export class ListenerThread {
     const connection = connectionMgr.findOrNewConnection(socket);
 
     const { localPort, remoteAddress } = socket;
-    this.loggers.both.info(
+    this.logger.info(
       `[listenerThread] Client ${remoteAddress} connected to port ${localPort}`
     );
     if (socket.localPort === 7003 && connection.inQueue) {
-      sendPacketOkLogin(socket);
+      /**
+       * Debug seems hard-coded to use the connection queue
+       * Craft a packet that tells the client it's allowed to login
+       */
+
+      socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
       connection.inQueue = false;
     }
     socket.on("end", () => {
-      this.loggers.both.info(
+      this.logger.info(
         `[listenerThread] Client ${remoteAddress} disconnected from port ${localPort}`
       );
     });
@@ -98,7 +120,7 @@ export class ListenerThread {
     });
     socket.on("error", (err: NodeJS.ErrnoException) => {
       if (err.code !== "ECONNRESET") {
-        throw err;
+        this.logger.error({ err }, `Socket error`);
       }
     });
   }

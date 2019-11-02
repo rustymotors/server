@@ -1,16 +1,8 @@
 import { PatchServer } from "./patchServer";
-import { Logger } from "../shared/logger";
-import * as fs from "fs";
-import { ConfigManager } from "../../configManager";
-
-// get instance of loggers
-const loggers = new Logger().getLoggers();
-
-// get instance of config
-const config = new ConfigManager().getConfig();
+import { ConfigManager } from "../shared/configManager";
 
 describe("PatchServer", () => {
-  const patchServer = new PatchServer(config, loggers);
+  const patchServer = new PatchServer();
 
   test("castanetResponse", () => {
     expect(patchServer.castanetResponse.body.toString("hex")).toEqual(
