@@ -6,13 +6,14 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as http from "http";
-import { IServerConfiguration } from "../shared/interfaces/IServerConfiguration";
-import { ILoggers } from "../shared/logger";
+
 import { ShardEntry } from "./ShardEntry";
+import { ConfigManager } from "../shared/configManager";
+import { Logger } from "../shared/loggerManager";
 
 export class PatchServer {
-  public config: IServerConfiguration;
-  public loggers: ILoggers;
+  public config = new ConfigManager().getConfig();
+  public logger = new Logger().getLogger("PatchServer");
   public banList: string[] = [];
 
   /**
@@ -25,11 +26,6 @@ export class PatchServer {
       value: "application/octet-stream",
     },
   };
-
-  constructor(config: IServerConfiguration, loggers: ILoggers) {
-    this.config = config;
-    this.loggers = loggers;
-  }
 
   /**
    * Simulate a response from a patch server
@@ -75,6 +71,7 @@ export class PatchServer {
       ipServer,
       80
     );
+
     const shardTwinPinesMall = new ShardEntry(
       "Twin Pines Mall",
       "Twin Pines Mall",
@@ -133,7 +130,7 @@ export class PatchServer {
           break;
         }
         // Unknown request, log it
-        this.loggers.both.debug(
+        this.logger.info(
           `[PATCH] Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}, banning.`
         );
         this.banList.push(request.socket.remoteAddress!);
@@ -151,7 +148,7 @@ export class PatchServer {
       this._httpHandler(req, res);
     });
     serverPatch.listen({ port: "80", host: "0.0.0.0" }, () => {
-      this.loggers.both.debug("[patchServer] Patch server is listening...");
+      this.logger.info("[patchServer] Patch server is listening...");
     });
   }
 }

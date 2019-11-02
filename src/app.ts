@@ -1,21 +1,17 @@
-import { ConfigManager } from "./configManager";
-import { Logger } from "./services/shared/logger";
-import * as fs from "fs";
+// mco-server is a game server, written from scratch, for an old game
+// Copyright (C) <2017-2018>  <Joseph W Becher>
 
-// get instance of loggers
-const loggers = new Logger().getLoggers();
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-// get instance of config
-const config = new ConfigManager().getConfig();
+import { PatchServer } from "./services/PatchAndShard/patchServer";
+import { Server } from "./server";
 
 // MCOS Monolith
-import { Server } from "./server";
-const server = new Server(config, loggers);
-// MCOS AuthLogin and Shard
-import { WebServer } from "./services/AuthLogin/WebServer";
-const AuthLogin = new WebServer(config, loggers);
-AuthLogin.start();
+const server = new Server();
+server.start();
+
 // MCOS PatchAndShard
-import { PatchServer } from "./services/PatchAndShard/patchServer";
-const patchAndShardServer = new PatchServer(config, loggers);
+const patchAndShardServer = new PatchServer();
 patchAndShardServer.start();
