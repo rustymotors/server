@@ -18,6 +18,7 @@ This assumes you know the basics of checking out a git repo. If you don't, pleas
 ## Installing
 
 - `npm install`
+
 - [Install Docker](https://docs.docker.com/install/)
 - [Install docker-compose](https://docs.docker.com/compose/install/)
 
