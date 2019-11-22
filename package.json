@@ -52,7 +52,7 @@
     "prettier": "1.19.1",
     "prettier-eslint": "9.0.1",
     "ts-jest": "24.2.0",
-    "typescript": "3.6.4"
+    "typescript": "3.7.2"
   },
   "prettier": {
     "trailingComma": "es5"
