@@ -39,7 +39,7 @@
     "statsd-client": "0.4.4",
     "ts-node": "8.5.4",
     "winston": "3.2.1",
-    "winston-daily-rotate-file": "4.3.1"
+    "winston-daily-rotate-file": "4.4.0"
   },
   "devDependencies": {
     "@types/jest": "24.0.23",
