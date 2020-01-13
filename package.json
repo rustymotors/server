@@ -34,7 +34,7 @@
     "bunyan": "1.8.12",
     "bunyan-gelf": "1.0.0",
     "c-struct": "0.0.5",
-    "pg": "7.17.0",
+    "pg": "7.17.1",
     "pg-migrator": "1.0.5",
     "statsd-client": "0.4.4",
     "ts-node": "8.6.0",
