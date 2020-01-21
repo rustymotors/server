@@ -1,3 +1,3 @@
-comment:
-  layout: "files"
-  behavior: "update"
+codecov:
+  notify:
+    after_n_builds: 10
