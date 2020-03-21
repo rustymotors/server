@@ -15,6 +15,7 @@ steps:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
 - script: |
+    export
     npm install
     npm test
     bash <(curl -s https://codecov.io/bash)
