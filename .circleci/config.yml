@@ -34,6 +34,7 @@ jobs:
           name: Download Codecov uploader
           command: |
             wget https://github.com/codecov/uploader/releases/download/v0.1.0_1209/codecov-linux
+            chmod +x codecov-linux
       - run:
           name: Upload to Codecov
           command: ./codecov-linux
