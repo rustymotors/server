@@ -30,12 +30,17 @@ jobs:
       - run:
           command: echo $ARTIFACTS_PATH
           when: always
-      - codecov/upload:
-          file: coverage/*.xml
-          conf: codecov.yml
-      # - run:
-      #     name: Upload coverage - Drazisil - testing
-      #     command: bash <(curl -s http://joe-ccetest-1543d3.ngrok.io/bash) -t "gh123abc" -r drazisil/mco-server
+      - run:
+          name: Download Codecov uploader
+          command: |
+            wget https://github.com/codecov/uploader/releases/download/v0.1.0_1209/codecov-linux
+            chmod +x codecov-linux
+      - run:
+          name: Upload to Codecov
+          command: ./codecov-linux
+      - run:
+          name: Upload to Codecov - Staging
+          command: ./codecov-linux --url "https://stage-web.codecov.dev"
       - upload-artifacts-group
       - store_test_results:
           path: test-reports
