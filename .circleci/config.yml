@@ -33,8 +33,7 @@ jobs:
       - run:
           name: Download Codecov uploader
           command: |
-            wget https://github.com/codecov/uploader/releases/download/v0.1.0_1190/codecov-linux
-            # chmod +x codecov-linux # This step might not be needed.
+            wget https://github.com/codecov/uploader/releases/download/v0.1.0_1209/codecov-linux
       - run:
           name: Upload to Codecov
           command: ./codecov-linux
