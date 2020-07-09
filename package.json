@@ -42,7 +42,7 @@
     "ts-node": "8.10.2",
     "winston": "3.2.1",
     "winston-daily-rotate-file": "4.4.2",
-    "snyk": "^1.353.0"
+    "snyk": "^1.361.3"
   },
   "devDependencies": {
     "@types/jest": "26.0.0",
