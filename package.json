@@ -38,7 +38,7 @@
     "c-struct": "0.0.5",
     "pg": "8.2.2",
     "pg-migrator": "1.0.5",
-    "statsd-client": "0.4.4",
+    "statsd-client": "0.4.5",
     "ts-node": "8.10.2",
     "winston": "3.2.1",
     "winston-daily-rotate-file": "4.4.2",
