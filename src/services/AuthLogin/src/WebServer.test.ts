@@ -15,6 +15,6 @@ describe("WebServer", () => {
       webServer.config.serverConfig.registryFilename
     );
     const dynamicRegistry = webServer._handleGetRegistry();
-    expect(dynamicRegistry).toEqual(staticRegistry.toString("UTF-8"));
+    expect(dynamicRegistry).toEqual(staticRegistry.toString("utf-8"));
   });
 });
