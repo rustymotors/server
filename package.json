@@ -32,7 +32,7 @@
     "@types/bunyan": "1.8.6",
     "@types/node": "14.11.10",
     "@types/pg": "7.14.5",
-    "@types/statsd-client": "0.4.0",
+    "@types/statsd-client": "0.4.1",
     "bunyan": "1.8.14",
     "bunyan-gelf": "1.1.0",
     "c-struct": "0.0.5",
