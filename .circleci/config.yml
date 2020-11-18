@@ -32,8 +32,9 @@ jobs:
       - run:
           command: echo $ARTIFACTS_PATH
           when: always
-      - codecov/upload:
-          file: coverage/*.xml
+      - run:
+          name: Codecov
+          command: ./upload.sh
       - upload-artifacts-group
       - store_test_results:
           path: test-reports
