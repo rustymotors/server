@@ -24,7 +24,7 @@
     "url": "git@github.com:drazisil/mco-server.git"
   },
   "engines": {
-    "node": "8.15.1"
+    "node": "8.17.0"
   },
   "dependencies": {
     "@types/bunyan": "1.8.6",
