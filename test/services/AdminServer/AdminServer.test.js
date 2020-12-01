@@ -4,13 +4,13 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import { AdminServer } from "./AdminServer";
-import { MCServer } from "../MCServer";
+const { AdminServer } = require('../../../src/services/AdminServer/AdminServer')
+const { MCServer } = require('../../../src/services/MCServer')
+const tap = require('tap')
 
-const adminServer = new AdminServer(new MCServer());
+const adminServer = new AdminServer(new MCServer())
 
-describe("AdminServer", () => {
-  test("has instance of MCServer", () => {
-    expect(adminServer.mcServer).toBeInstanceOf(MCServer);
-  });
-});
+tap.test('AdminServer', (t) => {
+  t.type(typeof adminServer.mcServer, 'MCServer')
+  t.done()
+})

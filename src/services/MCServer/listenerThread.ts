@@ -115,7 +115,7 @@ export class ListenerThread {
         `[listenerThread] Client ${remoteAddress} disconnected from port ${localPort}`
       );
     });
-    socket.on("data", data => {
+    socket.on("data", (data) => {
       this._onData(data, connection, config);
     });
     socket.on("error", (err: NodeJS.ErrnoException) => {
@@ -140,7 +140,7 @@ export class ListenerThread {
     config: IServerConfiguration
   ) {
     net
-      .createServer(socket => {
+      .createServer((socket) => {
         this._listener(socket, connectionMgr, config);
       })
       .listen({ port: localPort, host: "0.0.0.0" });

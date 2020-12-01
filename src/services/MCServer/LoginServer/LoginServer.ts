@@ -81,7 +81,7 @@ export class LoginServer {
     if (contextId.toString() === "") {
       throw new Error(`Unknown contextId: ${contextId.toString()}`);
     }
-    const userRecord = users.filter(user => {
+    const userRecord = users.filter((user) => {
       return user.contextId === contextId;
     });
     if (userRecord.length != 1) {

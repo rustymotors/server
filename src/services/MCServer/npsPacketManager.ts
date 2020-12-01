@@ -44,7 +44,7 @@ export class NPSPacketManager {
   }
 
   public msgCodetoName(msgId: number) {
-    const mapping = this.msgNameMapping.find(mapping => {
+    const mapping = this.msgNameMapping.find((mapping) => {
       return mapping.id === msgId;
     });
     return mapping ? mapping.name : "Unknown msgId";

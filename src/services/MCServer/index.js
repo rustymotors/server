@@ -5,24 +5,25 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import ConnectionMgr from "./connectionMgr";
+const { ConnectionMgr } = require('./connectionMgr')
 
-import { ListenerThread } from "./listenerThread";
-import { Logger } from "../shared/loggerManager";
-import { IServerConfiguration } from "../shared/configManager";
+const { ListenerThread } = require('./listenerThread')
+const { Logger } = require('../shared/loggerManager')
 
 export class MCServer {
-  public mgr = new ConnectionMgr();
-  public logger = new Logger().getLogger("MCServer");
+  constructor () {
+    this.mgr = new ConnectionMgr()
+    this.logger = new Logger().getLogger('MCServer')
+  }
 
   /**
    * Start the HTTP, HTTPS and TCP connection listeners
-   * @param {Function} callback
+   * @param {IServerConfiguration} config
    */
 
-  public async startServers(config: IServerConfiguration) {
-    const listenerThread = new ListenerThread();
-    this.logger.info("[MCServer] Starting the listening sockets...");
+  async startServers (config) {
+    const listenerThread = new ListenerThread()
+    this.logger.info('[MCServer] Starting the listening sockets...')
     const tcpPortList = [
       6660,
       8228,
@@ -47,12 +48,16 @@ export class MCServer {
       9011,
       9012,
       9013,
-      9014,
-    ];
+      9014
+    ]
 
-    await tcpPortList.map(port =>
+    await tcpPortList.map((port) =>
       listenerThread.startTCPListener(port, this.mgr, config)
-    );
-    this.logger.info("[MCServer] Listening sockets create successfully.");
+    )
+    this.logger.info('[MCServer] Listening sockets create successfully.')
   }
+}
+
+module.exports = {
+  MCServer
 }
