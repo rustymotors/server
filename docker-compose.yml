@@ -62,7 +62,7 @@ services:
     command: "npm run prod"
 
   postgres:
-    image: postgres:11.4
+    image: postgres:11.10
     restart: always
     environment:
       POSTGRES_PASSWORD: mco
