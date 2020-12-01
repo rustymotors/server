@@ -260,7 +260,7 @@ export class PersonaServer {
   public _getPersonasByCustomerId(customerId: number) {
     let results: IPersonaRecord[];
 
-    results = this.personaList.filter(persona => {
+    results = this.personaList.filter((persona) => {
       return persona.customerId == customerId;
     });
     if (!results) {
@@ -273,7 +273,7 @@ export class PersonaServer {
 
   public _getPersonasById(id: number) {
     let results: IPersonaRecord[];
-    results = this.personaList.filter(persona => {
+    results = this.personaList.filter((persona) => {
       const match = id === persona.id.readInt32BE(0);
       return match;
     });

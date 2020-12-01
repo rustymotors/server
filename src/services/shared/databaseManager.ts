@@ -13,7 +13,9 @@ export class DatabaseManager {
 
   public async fetchSessionKeyByCustomerId(customerId: number) {
     try {
-      const { rows } = await pool.query(
+      const {
+        rows,
+      } = await pool.query(
         "SELECT session_key, s_key FROM sessions WHERE customer_id = $1",
         [customerId]
       );
@@ -30,7 +32,9 @@ export class DatabaseManager {
   public async fetchSessionKeyByConnectionId(connectionId: string) {
     //==
     try {
-      const { rows } = await pool.query(
+      const {
+        rows,
+      } = await pool.query(
         "SELECT session_key, s_key FROM sessions WHERE connection_id = $1",
         [connectionId]
       );
@@ -48,7 +52,9 @@ export class DatabaseManager {
   ) {
     const sKey = sessionKey.substr(0, 16);
     try {
-      const { rows } = await pool.query(
+      const {
+        rows,
+      } = await pool.query(
         "INSERT INTO sessions (customer_id, session_key, s_key, context_id, connection_id) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (customer_id) DO UPDATE SET session_key = $2, s_key = $3, context_id = $4, connection_id = $5",
         [customerId, sessionKey, sKey, contextId, connectionId]
       );

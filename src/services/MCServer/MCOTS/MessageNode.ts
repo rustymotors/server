@@ -105,9 +105,7 @@ export class MessageNode {
   }
 
   public dumpPacket() {
-    const packetContents = this.serialize()
-      .toString("hex")
-      .match(/../g);
+    const packetContents = this.serialize().toString("hex").match(/../g);
     this.logger.info(
       {
         dataLength: this.dataLength,
