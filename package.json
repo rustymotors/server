@@ -38,11 +38,11 @@
     "c-struct": "0.0.5",
     "pg": "8.5.1",
     "pg-migrator": "1.0.5",
+    "snyk": "1.431.4",
     "statsd-client": "0.4.5",
     "ts-node": "9.0.0",
     "winston": "3.3.3",
-    "winston-daily-rotate-file": "4.5.0",
-    "snyk": "1.431.4"
+    "winston-daily-rotate-file": "4.5.0"
   },
   "devDependencies": {
     "@types/jest": "26.0.15",
@@ -67,7 +67,12 @@
       "!**/typings/**"
     ],
     "moduleFileExtensions": [
-      "ts", "json", "jsx", "tsx", "node", "js"
+      "ts",
+      "json",
+      "jsx",
+      "tsx",
+      "node",
+      "js"
     ],
     "coverageReporters": [
       "lcov",
@@ -78,7 +83,7 @@
       "jest-junit"
     ],
     "testPathIgnorePatterns": [
-      "<rootDir>/test/" ,
+      "<rootDir>/test/",
       "<rootDir>/dist/",
       "<rootDir>/node_modules/"
     ]
