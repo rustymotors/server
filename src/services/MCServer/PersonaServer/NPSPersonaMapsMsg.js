@@ -77,6 +77,8 @@ export class NPSPersonaMapsMsg extends NPSMsg {
   /**
    *
    * @param {Buffer} buf
+   * @return {number}
+   * @memberof! NPSPersonaMapsMsg
    */
   deserializeInt8 (buf) {
     return buf.readInt8(0)
@@ -85,6 +87,8 @@ export class NPSPersonaMapsMsg extends NPSMsg {
   /**
    *
    * @param {Buffer} buf
+   * @return {number}
+   * @memberof! NPSPersonaMapsMsg
    */
   deserializeInt32 (buf) {
     return buf.readInt32BE(0)
@@ -93,6 +97,8 @@ export class NPSPersonaMapsMsg extends NPSMsg {
   /**
    *
    * @param {Buffer} buf
+   * @return {string}
+   * @memberof! NPSPersonaMapsMsg
    */
   deserializeString (buf) {
     return buf.toString('utf8')
