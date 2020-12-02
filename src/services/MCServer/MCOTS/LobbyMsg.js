@@ -58,3 +58,7 @@ class LobbyMsg {
     )
   }
 }
+
+module.exports = {
+  LobbyMsg
+}

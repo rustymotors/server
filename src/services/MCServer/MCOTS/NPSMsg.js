@@ -41,6 +41,7 @@ class NPSMsg {
 
   /**
    *
+   * @return {Buffer}
    */
   getContentAsBuffer () {
     return this.content
@@ -48,6 +49,7 @@ class NPSMsg {
 
   /**
    *
+   * @return {string}
    */
   getPacketAsString () {
     return this.serialize().toString('hex')
@@ -55,6 +57,7 @@ class NPSMsg {
 
   /**
    *
+   * @return {Buffer}
    */
   serialize () {
     try {
@@ -78,6 +81,7 @@ class NPSMsg {
   /**
    *
    * @param {Buffer} packet
+   * @return {NPSMsg}
    */
   deserialize (packet) {
     this.msgNo = packet.readInt16BE(0)
@@ -122,6 +126,7 @@ class NPSMsg {
 
   /**
    *
+   * @return {{msgNo: string, msgLength: number, msgVersion: number, content: string, direction: 'Recieved'|'Sent'}}
    */
   toJSON () {
     return {

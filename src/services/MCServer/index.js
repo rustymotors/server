@@ -13,7 +13,7 @@ const { Logger } = require('../shared/loggerManager')
 /**
  *
  */
- class MCServer {
+class MCServer {
   constructor () {
     this.mgr = new ConnectionMgr()
     this.logger = new Logger().getLogger('MCServer')

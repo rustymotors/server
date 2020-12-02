@@ -11,23 +11,23 @@
 class ShardEntry {
   /**
    *
-   * @param {string} name 
-   * @param {string} description 
-   * @param {number} id 
-   * @param {string} loginServerIp 
-   * @param {number} loginServerPort 
-   * @param {string} lobbyServerIp 
-   * @param {number} lobbyServerPort 
-   * @param {string} mcotsServerIp 
-   * @param {number} statusID 
-   * @param {string} statusReason 
-   * @param {string} serverGroupName 
-   * @param {number} population 
-   * @param {number} maxPersonasPerUser 
-   * @param {string} diagnosticServerHost 
-   * @param {number} diagnosticServerPort 
+   * @param {string} name
+   * @param {string} description
+   * @param {number} id
+   * @param {string} loginServerIp
+   * @param {number} loginServerPort
+   * @param {string} lobbyServerIp
+   * @param {number} lobbyServerPort
+   * @param {string} mcotsServerIp
+   * @param {number} statusID
+   * @param {string} statusReason
+   * @param {string} serverGroupName
+   * @param {number} population
+   * @param {number} maxPersonasPerUser
+   * @param {string} diagnosticServerHost
+   * @param {number} diagnosticServerPort
    */
-  constructor(
+  constructor (
     name,
     description,
     id,
@@ -44,21 +44,21 @@ class ShardEntry {
     diagnosticServerHost,
     diagnosticServerPort
   ) {
-    this.name = name;
-    this.description = description;
-    this.id = id;
-    this.loginServerIp = loginServerIp;
-    this.loginServerPort = loginServerPort;
-    this.lobbyServerIp = lobbyServerIp;
-    this.lobbyServerPort = lobbyServerPort;
-    this.mcotsServerIp = mcotsServerIp;
-    this.statusID = statusID;
-    this.statusReason = statusReason;
-    this.serverGroupName = serverGroupName;
-    this.population = population;
-    this.maxPersonasPerUser = maxPersonasPerUser;
-    this.diagnosticServerHost = diagnosticServerHost;
-    this.diagnosticServerPort = diagnosticServerPort;
+    this.name = name
+    this.description = description
+    this.id = id
+    this.loginServerIp = loginServerIp
+    this.loginServerPort = loginServerPort
+    this.lobbyServerIp = lobbyServerIp
+    this.lobbyServerPort = lobbyServerPort
+    this.mcotsServerIp = mcotsServerIp
+    this.statusID = statusID
+    this.statusReason = statusReason
+    this.serverGroupName = serverGroupName
+    this.population = population
+    this.maxPersonasPerUser = maxPersonasPerUser
+    this.diagnosticServerHost = diagnosticServerHost
+    this.diagnosticServerPort = diagnosticServerPort
   }
 
   /**
