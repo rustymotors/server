@@ -24,7 +24,10 @@ class MCOTServer {
 
   /**
    * Return the string representation of the numeric opcode
+   *
    * @param {number} msgID
+   * @return {string}
+   * @memberof! MCOTServer
    */
   _MSG_STRING (msgID) {
     switch (msgID) {
