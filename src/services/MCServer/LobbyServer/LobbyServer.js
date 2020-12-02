@@ -106,7 +106,10 @@ async function sendCommand (con, data) {
   return cmdEncrypted
 }
 
-export class LobbyServer {
+/**
+ *
+ */
+class LobbyServer {
   /**
    *
    */

@@ -346,6 +346,9 @@ const lobbyInfoDefaults = {
   raceCashFactor: 1
 }
 
+/**
+ *
+ */
 class LobbyInfo {
   /**
    *

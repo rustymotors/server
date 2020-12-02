@@ -8,7 +8,10 @@
 const { LobbyInfo } = require('./LobbyInfo')
 const { Logger } = require('../../shared/loggerManager')
 
-export class LobbyMsg {
+/**
+ *
+ */
+class LobbyMsg {
   /**
    *
    */

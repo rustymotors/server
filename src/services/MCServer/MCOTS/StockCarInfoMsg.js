@@ -16,6 +16,9 @@ const { Logger } = require('../../shared/loggerManager')
 // BYTE     moreToCome;     // if 1, expect another msg, otherwise don't
 // StockCar carInfo[1];
 
+/**
+ *
+ */
 class StockCarInfoMsg {
   /**
    *

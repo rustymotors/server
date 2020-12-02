@@ -20,7 +20,10 @@ const IServerConfiguration = {
   }
 }
 
-export class ConfigManager {
+/**
+ *
+ */
+class ConfigManager {
   /**
    *
    */

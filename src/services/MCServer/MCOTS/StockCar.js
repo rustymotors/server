@@ -10,6 +10,9 @@ const { Logger } = require('../../shared/loggerManager')
 // DWORD   retailPrice;
 // WORD    bIsDealOfTheDay;
 
+/**
+ *
+ */
 class StockCar {
   /**
    *

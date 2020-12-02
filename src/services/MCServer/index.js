@@ -10,7 +10,10 @@ const { ConnectionMgr } = require('./connectionMgr')
 const { ListenerThread } = require('./listenerThread')
 const { Logger } = require('../shared/loggerManager')
 
-export class MCServer {
+/**
+ *
+ */
+ class MCServer {
   constructor () {
     this.mgr = new ConnectionMgr()
     this.logger = new Logger().getLogger('MCServer')

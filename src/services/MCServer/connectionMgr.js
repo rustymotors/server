@@ -14,7 +14,13 @@ const SDC = require('statsd-client')
 const { Logger } = require('../shared/loggerManager')
 const { ConfigManager } = require('../shared/configManager')
 
+/**
+ *
+ */
 class ConnectionMgr {
+  /**
+   * 
+   */
   constructor () {
     this.logger = new Logger().getLogger('ConnectionManager')
     this.config = new ConfigManager().getConfig()

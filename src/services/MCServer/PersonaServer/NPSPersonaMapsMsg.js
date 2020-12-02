@@ -35,7 +35,11 @@ const npsPersonaMapsMsgSchema = new struct.Schema({
 // register to cache
 struct.register('NPSPersonaMapsMsg', npsPersonaMapsMsgSchema)
 
-export class NPSPersonaMapsMsg extends NPSMsg {
+/**
+ *
+ * @extends {NPSMsg}
+ */
+class NPSPersonaMapsMsg extends NPSMsg {
   /**
    *
    * @param {'Recieved'|'Sent'} direction

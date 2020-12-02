@@ -10,7 +10,10 @@ const SDC = require('statsd-client')
 const { ConfigManager } = require('../shared/configManager')
 const { Logger } = require('../shared/loggerManager')
 
-export class ListenerThread {
+/**
+ *
+ */
+class ListenerThread {
   /**
    *
    */

@@ -7,6 +7,9 @@
 
 const { Logger } = require('../../shared/loggerManager')
 
+/**
+ *
+ */
 class MessageNode {
   /**
    *

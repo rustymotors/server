@@ -10,7 +10,10 @@ import { Logger } from "./services/shared/loggerManager";
 import { ConfigManager } from "./services/shared/configManager";
 import { MCServer } from "./services/MCServer";
 
-export class Server {
+/**
+ *
+ */
+class Server {
   public config = new ConfigManager().getConfig();
   public logger = new Logger().getLogger("Server");
   public mcServer!: MCServer;

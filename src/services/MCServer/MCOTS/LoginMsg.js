@@ -22,6 +22,9 @@ const loginMsgSchema = new struct.Schema({
 // register to cache
 struct.register('LoginMsg', loginMsgSchema)
 
+/**
+ *
+ */
 class LoginMsg {
   /**
    *

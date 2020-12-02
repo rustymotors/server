@@ -8,7 +8,11 @@
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 const { Logger } = require('../../shared/loggerManager')
 
-export class NPSUserInfo extends NPSMsg {
+/**
+ *
+ * @extends {NPSMsg}
+ */
+class NPSUserInfo extends NPSMsg {
   /**
    *
    * @param {'Recieved'|'Sent'} direction

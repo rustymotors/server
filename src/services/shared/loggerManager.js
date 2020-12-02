@@ -8,6 +8,9 @@
 const bunyan = require('bunyan')
 const BunyanToGelfStream = require('bunyan-gelf')
 
+/**
+ *
+ */
 class Logger {
   /**
    *

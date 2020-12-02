@@ -12,7 +12,10 @@ const { Logger } = require('../../shared/loggerManager')
 
 // WORD msgNo;    NPS message number
 
-export class NPSMsg {
+/**
+ *
+ */
+class NPSMsg {
   /**
    *
    * @param {'Recieved'|'Sent'} direction

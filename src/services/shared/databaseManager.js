@@ -8,7 +8,10 @@
 const { Logger } = require('./loggerManager')
 const pool = require('./db/index')
 
-export class DatabaseManager {
+/**
+ *
+ */
+class DatabaseManager {
   /**
    *
    */

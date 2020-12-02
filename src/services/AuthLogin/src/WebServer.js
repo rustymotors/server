@@ -10,6 +10,9 @@ const https = require('https')
 const { Logger } = require('./loggerManager')
 const { ConfigManager } = require('./configManager')
 
+/**
+ *
+ */
 class WebServer {
   constructor () {
     this.config = new ConfigManager().getConfig()

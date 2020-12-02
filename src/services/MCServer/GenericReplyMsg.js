@@ -13,7 +13,10 @@ const { Logger } = require('../shared/loggerManager')
 // DWORD data;   // specific to the message sent (but usually 0)
 // DWORD data2;
 
-export class GenericReplyMsg {
+/**
+ *
+ */
+class GenericReplyMsg {
   /**
    *
    */

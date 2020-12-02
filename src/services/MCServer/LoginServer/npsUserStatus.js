@@ -32,7 +32,11 @@ function fetchPrivateKeyFromFile (privateKeyPath) {
  * @returns {LoginPacket}
  */
 
-export class NPSUserStatus extends NPSMsg {
+/**
+ *
+ * @extends {NPSMsg}
+ */
+class NPSUserStatus extends NPSMsg {
   /**
    *
    * @param {Buffer} packet
