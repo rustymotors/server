@@ -7,7 +7,7 @@
 
 const { GenericReplyMsg } = require('../GenericReplyMsg')
 const { LobbyMsg } = require('./LobbyMsg')
-const { LoginMsg } = require('./LoginMsg')
+const { LoginMsg } = require('./LoginMsg.js')
 const { MessageNode } = require('./MessageNode')
 const { Logger } = require('../../shared/loggerManager')
 
