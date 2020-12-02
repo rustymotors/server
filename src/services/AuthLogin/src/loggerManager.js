@@ -15,6 +15,7 @@ export class Logger {
    * @return {Logger}
    */
   getLogger (service) {
+    // deepcode ignore WrongNumberOfArgs: False positive, signature is correct
     const logger = bunyan
       .createLogger({ name: 'mcoServer' })
       .child({ module: service })

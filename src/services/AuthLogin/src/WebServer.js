@@ -101,6 +101,7 @@ class WebServer {
    * @param {ServerResponse} response
    * @memberof! WebServer
    */
+  // file deepcode ignore NoRateLimitingForExpensiveWebOperation: Not using express, unsure how to handle rate limiting on raw http
   _httpsHandler (request, response) {
     this.logger.info(
       `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
