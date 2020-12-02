@@ -5,39 +5,41 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-export class ShardEntry {
-  public name: string;
-  public description: string;
-  public id: number;
-  public loginServerIp: string;
-  public loginServerPort: number;
-  public lobbyServerIp: string;
-  public lobbyServerPort: number;
-  public mcotsServerIp: string;
-  public statusID: number;
-  public statusReason: string;
-  public serverGroupName: string;
-  public population: number;
-  public maxPersonasPerUser: number;
-  public diagnosticServerHost: string;
-  public diagnosticServerPort: number;
-
+class ShardEntry {
+  /**
+   * 
+   * @param {string} name 
+   * @param {string} description 
+   * @param {number} id 
+   * @param {string} loginServerIp 
+   * @param {number} loginServerPort 
+   * @param {string} lobbyServerIp 
+   * @param {number} lobbyServerPort 
+   * @param {string} mcotsServerIp 
+   * @param {number} statusID 
+   * @param {string} statusReason 
+   * @param {string} serverGroupName 
+   * @param {number} population 
+   * @param {number} maxPersonasPerUser 
+   * @param {string} diagnosticServerHost 
+   * @param {number} diagnosticServerPort 
+   */
   constructor(
-    name: string,
-    description: string,
-    id: number,
-    loginServerIp: string,
-    loginServerPort: number,
-    lobbyServerIp: string,
-    lobbyServerPort: number,
-    mcotsServerIp: string,
-    statusID: number,
-    statusReason: string,
-    serverGroupName: string,
-    population: number,
-    maxPersonasPerUser: number,
-    diagnosticServerHost: string,
-    diagnosticServerPort: number
+    name,
+    description,
+    id,
+    loginServerIp,
+    loginServerPort,
+    lobbyServerIp,
+    lobbyServerPort,
+    mcotsServerIp,
+    statusID,
+    statusReason,
+    serverGroupName,
+    population,
+    maxPersonasPerUser,
+    diagnosticServerHost,
+    diagnosticServerPort
   ) {
     this.name = name;
     this.description = description;
@@ -56,7 +58,10 @@ export class ShardEntry {
     this.diagnosticServerPort = diagnosticServerPort;
   }
 
-  public formatForShardList() {
+  /**
+   *
+   */
+  formatForShardList () {
     return `[${this.name}]
     Description=${this.description}
     ShardId=${this.id}
@@ -71,6 +76,10 @@ export class ShardEntry {
     Population=${this.population}
     MaxPersonasPerUser=${this.maxPersonasPerUser}
     DiagnosticServerHost=${this.diagnosticServerHost}
-    DiagnosticServerPort=${this.diagnosticServerPort}`;
+    DiagnosticServerPort=${this.diagnosticServerPort}`
   }
+}
+
+module.exports = {
+  ShardEntry
 }

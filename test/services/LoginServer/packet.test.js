@@ -5,8 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import * as packet from "./packet";
+const { premadeLogin } = require('../../../src/services/MCServer/LoginServer/packet')
+const tap = require('tap')
 
-test("retuns a buffer packet from premadeLogin", () => {
-  expect(packet.premadeLogin()).toBeInstanceOf(Buffer);
-});
+tap.test('LoginServer - Packet', (t) => {
+  const packet = premadeLogin()
+  t.type(packet, 'Buffer')
+  t.done()
+})
