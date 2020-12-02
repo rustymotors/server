@@ -4,13 +4,19 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
-const { AdminServer } = require('../../../src/services/AdminServer/AdminServer')
-const { MCServer } = require('../../../src/services/MCServer')
+
+const { ClientConnectMsg } = require('../../../src/services/MCServer/ClientConnectMsg')
 const tap = require('tap')
 
-const adminServer = new AdminServer(new MCServer())
+tap.test('ClientConnectMsg', (t) => {
+  const clientConnectMsg1 = new ClientConnectMsg(
+    Buffer.concat([
+      Buffer.from([0xb6, 0x01]),
+      Buffer.from('TOMC'),
+      Buffer.alloc(12)
+    ])
+  )
 
-tap.test('AdminServer', (t) => {
-  t.type(adminServer.mcServer, 'MCServer')
+  t.equal(clientConnectMsg1.msgNo, 438)
   t.done()
 })
