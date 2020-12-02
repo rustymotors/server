@@ -30,7 +30,6 @@ class ClientConnectMsg {
       }
     }
 
-    this.customerId = buffer.readInt32LE(2)
     this.personaId = buffer.readInt32LE(6)
 
     // Set the appId to the Persona Id
@@ -45,6 +44,7 @@ class ClientConnectMsg {
 
   /**
    *
+   * @return {number}
    */
   getAppId () {
     return this.appId

@@ -34,6 +34,7 @@ class ConnectionMgr {
    * Check incoming data and route it to the correct handler based on localPort
    * @param {IRawPacket} rawPacket
    * @param {IServerConfiguration} config
+   * @memberof ConnectionMgr
    */
   async processData (
     rawPacket,
@@ -105,6 +106,7 @@ class ConnectionMgr {
 
   /**
    *
+   * @return {string[]}
    */
   getBans () {
     return this.banList
@@ -114,6 +116,8 @@ class ConnectionMgr {
    * Locate connection by remoteAddress and localPort in the connections array
    * @param {string} remoteAddress
    * @param {number} localPort
+   * @memberof ConnectionMgr
+   * @return {ConnectionObj|undefined}
    */
   findConnectionByAddressAndPort (
     remoteAddress,
@@ -131,6 +135,7 @@ class ConnectionMgr {
   /**
    * Locate connection by id in the connections array
    * @param {string} connectionId
+   * @return {ConnectionObj|undefined}
    */
   findConnectionById (connectionId) {
     const results = this.connections.find((connection) => {
@@ -145,6 +150,7 @@ class ConnectionMgr {
    * @param {string} address
    * @param {number} port
    * @param {ConnectionObj} newConnection
+   * @memberof ConnectionMgr
    */
   async _updateConnectionByAddressAndPort (
     address,
@@ -180,7 +186,7 @@ class ConnectionMgr {
    * Return an existing connection, or a new one
    *
    * @param {Socket} socket
-   * @returns
+   * @return {ConnectionObj}
    * @memberof ConnectionMgr
    */
   findOrNewConnection (socket) {
@@ -218,6 +224,8 @@ class ConnectionMgr {
 
   /**
    *
+   * @return {ConnectionObj}
+   * @memberof ConnectionMgr
    */
   resetAllQueueState () {
     this.connections = this.connections.map((connection) => {
@@ -228,6 +236,9 @@ class ConnectionMgr {
 
   /**
    * Dump all connections for debugging
+   *
+   * @return {ConnectionObj[]}
+   * @memberof ConnectionMgr
    */
   dumpConnections () {
     return this.connections

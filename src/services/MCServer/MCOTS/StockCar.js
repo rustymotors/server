@@ -31,6 +31,7 @@ class StockCar {
 
   /**
    *
+   * @return {Buffer}
    */
   serialize () {
     const packet = Buffer.alloc(10)

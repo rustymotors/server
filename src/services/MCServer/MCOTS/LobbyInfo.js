@@ -529,6 +529,7 @@ class LobbyInfo {
 }
 
 module.exports = {
+  ILobbyInfo,
   lobbyInfoDefaults,
   LobbyInfo
 }

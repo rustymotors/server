@@ -318,7 +318,6 @@ export class PersonaServer {
 
     switch (customerId) {
       case 2868969472:
-        return this._getPersonasByCustomerId(customerId)
       case 5551212:
         return this._getPersonasByCustomerId(customerId)
       default:

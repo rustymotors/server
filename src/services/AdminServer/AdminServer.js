@@ -109,7 +109,7 @@ class AdminServer {
         return response.end(this._handleResetAllQueueState())
 
       case '/admin/bans':
-        response.setHeader('Content-Type', 'application/json')
+        response.setHeader('Content-Type', 'application/json; charset=utf-8')
         return response.end(this._handleGetBans())
 
       default:

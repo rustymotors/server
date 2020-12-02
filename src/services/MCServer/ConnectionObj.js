@@ -73,6 +73,7 @@ class ConnectionObj {
    * @param {string} sKey
    */
   setEncryptionKeyDES (sKey) {
+    // deepcode ignore HardcodedSecret: This uses an empty IV
     const desIV = Buffer.alloc(8)
     this.encLobby.cipher = crypto.createCipheriv(
       'des-cbc',

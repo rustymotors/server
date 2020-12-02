@@ -35,6 +35,7 @@ export class LobbyMsg {
 
   /**
    *
+   * @return {Buffer}
    */
   serialize () {
     return this.data

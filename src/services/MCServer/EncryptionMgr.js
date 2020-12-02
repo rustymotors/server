@@ -30,9 +30,9 @@ class EncryptionMgr {
    */
   setEncryptionKey (sessionKey) {
     this.sessionKey = sessionKey
+    // file deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
     this.in = crypto.createDecipheriv('rc4', sessionKey, '')
     this.out = crypto.createCipheriv('rc4', sessionKey, '')
-
     return true
   }
 
