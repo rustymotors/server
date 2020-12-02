@@ -10,7 +10,10 @@ const { premadeLogin } = require('./packet')
 const { DatabaseManager } = require('../../shared/databaseManager')
 const { Logger } = require('../../shared/loggerManager')
 
-export class LoginServer {
+/**
+ *
+ */
+class LoginServer {
   /**
    *
    */

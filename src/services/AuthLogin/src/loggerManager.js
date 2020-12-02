@@ -8,7 +8,10 @@
 const bunyan = require('bunyan')
 const BunyanToGelfStream = require('bunyan-gelf')
 
-export class Logger {
+/**
+ *
+ */
+class Logger {
   /**
    *
    * @param {string} service

@@ -48,7 +48,11 @@ const npsUserGameDataSchema = new cStruct.Schema({
 // register to cache
 cStruct.register('UserGameData', npsUserGameDataSchema)
 
-export class UserGameData extends NPSMsg {
+/**
+ *
+ * @extends {NPSMsg}
+ */
+class UserGameData extends NPSMsg {
   /**
    *
    */

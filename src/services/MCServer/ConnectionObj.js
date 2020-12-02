@@ -7,6 +7,9 @@
 const crypto = require('crypto')
 const { EncryptionMgr } = require('./EncryptionMgr')
 
+/**
+ *
+ */
 class ConnectionObj {
   /**
    *

@@ -11,7 +11,10 @@ const { LoginMsg } = require('./LoginMsg.js')
 const { MessageNode } = require('./MessageNode')
 const { Logger } = require('../../shared/loggerManager')
 
-export class MCOTServer {
+/**
+ *
+ */
+class MCOTServer {
   /**
    *
    */

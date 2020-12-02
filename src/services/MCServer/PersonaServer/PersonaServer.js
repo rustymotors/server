@@ -9,7 +9,10 @@ const { NPSMsg } = require('../MCOTS/NPSMsg')
 const { NPSPersonaMapsMsg } = require('./NPSPersonaMapsMsg')
 const { Logger } = require('../../shared/loggerManager')
 
-export class PersonaServer {
+/**
+ *
+ */
+class PersonaServer {
   /**
    *
    */

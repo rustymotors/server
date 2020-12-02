@@ -17,7 +17,10 @@ const IServerConfiguration = {
   }
 }
 
-export class ConfigManager {
+/**
+ *
+ */
+class ConfigManager {
   constructor () {
     this.config = JSON.parse(
       fs.readFileSync('src/services/AuthLogin/config.json', 'utf8')
