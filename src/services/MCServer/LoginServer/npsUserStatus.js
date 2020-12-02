@@ -60,7 +60,7 @@ export class NPSUserStatus extends NPSMsg {
    * Take 128 bytes
    * They are the utf-8 of the hex bytes that are the key
    *
-   * @param {IServerConfiguration['serverConfig']} serverConfig
+   * @param {IServerConfiguration.serverConfig} serverConfig
    * @param {Buffer} packet
    */
   extractSessionKeyFromPacket (

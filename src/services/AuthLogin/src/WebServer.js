@@ -18,7 +18,7 @@ class WebServer {
 
   /**
    *
-   * @param {IServerConfiguration['serverConfig']} configuration
+   * @param {IServerConfiguration.serverConfig} configuration
    * @memberof! WebServer
    */
   _sslOptions (configuration) {

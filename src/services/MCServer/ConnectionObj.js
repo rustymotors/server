@@ -15,26 +15,6 @@ class ConnectionObj {
    * @param {ConnectionMgr} mgr
    */
   constructor (connectionId, sock, mgr) {
-    // public id: string;
-    // public appId: number;
-    // public sock: Socket;
-    // public enc: EncryptionMgr;
-    // public useEncryption: boolean;
-    // public remoteAddress: string | undefined;
-    // public localPort: number;
-    // public isSetupComplete: boolean;
-    // public status: "ACTIVE" | "INACTIVE";
-    // public encryptedCmd: Buffer;
-    // public encLobby: {
-    //   cipher: crypto.Cipher | null;
-    //   decipher: crypto.Decipher | null;
-    // };
-    // public decryptedCmd: Buffer;
-    // public inQueue: boolean;
-    // public mgr: ConnectionMgr;
-    // private msgEvent: null;
-    // private lastMsg: number;
-
     this.id = connectionId
     this.appId = 0
     /**

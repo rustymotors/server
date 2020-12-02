@@ -7,6 +7,9 @@
 
 const fs = require('fs')
 
+/**
+ * @typedef {{ serverConfig: { ipServer: string, certFilename: string, publicKeyFilename: string, privateKeyFilename: string, registryFilename: string}}} IServerConfiguration
+ */
 const IServerConfiguration = {
   serverConfig: {
     ipServer: '',

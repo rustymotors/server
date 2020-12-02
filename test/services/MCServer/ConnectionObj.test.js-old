@@ -5,19 +5,26 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Socket } from "net";
-import { ConnectionObj } from "./ConnectionObj";
-import ConnectionMgr from "./connectionMgr";
+const { ConnectionObj } = require("../../../src/services/MCServer/ConnectionObj")
+const ConnectionMgr = require("../../../src/services/MCServer/connectionMgr")
+const tap = require('tap')
 
-describe("Connection class", () => {
-  let testConnection: ConnectionObj;
-  beforeEach(() => {
+tap.test('ConnectionObj', (t) => {
+  t.beforeEach((t) => {
     testConnection = new ConnectionObj(
       "abc",
       new Socket(),
       new ConnectionMgr()
     );
-  });
+    t.done()
+  })
+
+  
+})
+
+describe("Connection class", () => {
+  let testConnection: ConnectionObj;
+  beforeEach();
 
   test('status == "inactive"', () => {
     expect(testConnection.status).toEqual("INACTIVE");
