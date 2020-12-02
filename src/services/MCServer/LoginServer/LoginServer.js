@@ -72,7 +72,7 @@ export class LoginServer {
   /**
    *
    * @param {string} contextId
-   * @return {{ contextId: string, customerId: Buffer, userId: Buffer )}}
+   * @return {{ contextId: string, customerId: Buffer, userId: Buffer}}
    */
   _npsGetCustomerIdByContextId (contextId) {
     this.logger.info('Entering _npsGetCustomerIdByContextId...')

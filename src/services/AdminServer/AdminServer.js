@@ -5,10 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import * as fs from 'fs'
-import * as https from 'https'
+const fs = require('fs')
+const https = require('https')
 const { Logger } = require('../shared/loggerManager')
 
+/**
+ *
+ */
 class AdminServer {
   /**
    *
@@ -25,7 +28,7 @@ class AdminServer {
   /**
    * Create the SSL options object
    *
-   * @param {IServerConfiguration["serverConfig"]} configuration
+   * @param {IServerConfiguration.serverConfig} configuration
    */
   _sslOptions (configuration) {
     return {
@@ -124,7 +127,7 @@ class AdminServer {
 
   /**
    *
-   * @param {IServerConfiguration["serverConfig"]} config
+   * @param {IServerConfiguration.serverConfig} config
    */
   async start (config) {
     const httpsServer = https
