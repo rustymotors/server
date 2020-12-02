@@ -84,7 +84,7 @@ async function socketWriteIfOpen (conn, nodes) {
     // Log the buffer we are writing
     logger.debug(
       `Writting buffer: ${packetToWrite.serialize().toString('hex')}`
-    );
+    )
     if (conn.sock.writable) {
       // Write the packet to socket
       conn.sock.write(packetToWrite.serialize())

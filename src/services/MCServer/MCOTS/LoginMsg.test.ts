@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { LoginMsg } from "./LoginMsg";
+import { LoginMsg } from "./LoginMsg.js";
 
 const inboundBuffer = Buffer.alloc(42);
 inboundBuffer.write("NotAPerson", 24);
