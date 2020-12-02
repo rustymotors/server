@@ -60,20 +60,18 @@ export class NPSPersonaMapsMsg extends NPSMsg {
    * @param {IPersonaRecord[]} personas
    */
   loadMaps (personas) {
-    if (personas.length >= 0) {
-      this.personaCount = personas.length
-      this.personas = []
-      personas.forEach((persona, idx) => {
-        this.struct.personas[idx] = {
-          personaCount: personas.length,
-          maxPersonas: personas.length,
-          id: this.deserializeInt32(persona.id),
-          personaNameLength: this.deserializeString(persona.name).length,
-          name: this.deserializeString(persona.name),
-          shardId: this.deserializeInt32(persona.shardId)
-        }
-      })
-    }
+    this.personaCount = personas.length
+    this.personas = []
+    personas.forEach((persona, idx) => {
+      this.struct.personas[idx] = {
+        personaCount: personas.length,
+        maxPersonas: personas.length,
+        id: this.deserializeInt32(persona.id),
+        personaNameLength: this.deserializeString(persona.name).length,
+        name: this.deserializeString(persona.name),
+        shardId: this.deserializeInt32(persona.shardId)
+      }
+    })
   }
 
   /**

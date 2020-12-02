@@ -61,6 +61,7 @@ class MessageNode {
 
   /**
    *
+   * @return {Buffer}
    */
   serialize () {
     const packet = Buffer.alloc(this.dataLength + 2)
@@ -119,14 +120,7 @@ class MessageNode {
 
   /**
    *
-   * @param {Buffer} packet
-   */
-  getBaseMsgHeader (packet) {
-    return this.BaseMsgHeader(packet)
-  }
-
-  /**
-   *
+   * @return {string}
    */
   isMCOTS () {
     return this.mcoSig === 'TOMC'

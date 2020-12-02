@@ -12,8 +12,10 @@ class Logger {
   /**
    *
    * @param {string} service
+   * @return {Logger}
    */
   getLogger (service) {
+    // deepcode ignore WrongNumberOfArgs: I believe this is a bug. sig: function createLogger(options: LoggerOptions): Logger;
     const logger = bunyan
       .createLogger({ name: 'mcoServer' })
       .child({ module: service })
