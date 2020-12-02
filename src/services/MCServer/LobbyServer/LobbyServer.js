@@ -19,6 +19,7 @@ const databaseManager = new DatabaseManager()
  *
  * @param {ConnectionObj} conn
  * @param {Buffer} buffer
+ * @return {ConnectionObj}
  */
 async function npsSocketWriteIfOpen (conn, buffer) {
   const sock = conn.sock
@@ -38,6 +39,7 @@ async function npsSocketWriteIfOpen (conn, buffer) {
 /**
  * Takes an encrypted command packet and returns the decrypted bytes
  *
+ * @return {ConnectionObj}
  * @param {ConnectionObj} con
  * @param {Buffer} cypherCmd
  */
@@ -54,6 +56,7 @@ function decryptCmd (con, cypherCmd) {
  *
  * @param {ConnectionObj} con
  * @param {Buffer} cypherCmd
+ * @return {ConnectionObj}
  */
 function encryptCmd (con, cypherCmd) {
   const s = con
@@ -66,6 +69,7 @@ function encryptCmd (con, cypherCmd) {
  *
  * @param {ConnectionObj} con
  * @param {Buffer} data
+ * @return {ConnectionObj}
  */
 async function sendCommand (con, data) {
   const s = con
@@ -112,6 +116,7 @@ async function sendCommand (con, data) {
 class LobbyServer {
   /**
    *
+   * @return {Buffer}
    */
   _npsHeartbeat () {
     const packetContent = Buffer.alloc(8)
@@ -197,6 +202,7 @@ class LobbyServer {
   /**
    *
    * @param {string} key
+   * @return {Buffer}
    */
   _generateSessionKeyBuffer (key) {
     const nameBuffer = Buffer.alloc(64)

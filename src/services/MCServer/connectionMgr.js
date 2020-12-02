@@ -19,7 +19,7 @@ const { ConfigManager } = require('../shared/configManager')
  */
 class ConnectionMgr {
   /**
-   * 
+   *
    */
   constructor () {
     this.logger = new Logger().getLogger('ConnectionManager')
@@ -230,7 +230,6 @@ class ConnectionMgr {
 
   /**
    *
-   * @return {ConnectionObj}
    * @memberof ConnectionMgr
    */
   resetAllQueueState () {

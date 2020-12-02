@@ -123,7 +123,7 @@ class MessageNode {
 
   /**
    *
-   * @return {string}
+   * @return {boolean}
    */
   isMCOTS () {
     return this.mcoSig === 'TOMC'
@@ -152,6 +152,7 @@ class MessageNode {
 
   /**
    *
+   * @return {number}
    */
   getLength () {
     return this.dataLength
