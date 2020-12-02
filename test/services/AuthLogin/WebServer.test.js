@@ -15,6 +15,6 @@ tap.test('WebServer', (t) => {
     webServer.config.serverConfig.registryFilename
   )
   const dynamicRegistry = webServer._handleGetRegistry()
-  t.equal(dynamicRegistry, staticRegistry.toString('utf-8'))
+  t.equal(dynamicRegistry, staticRegistry.toString('utf8'))
   t.done()
 })
