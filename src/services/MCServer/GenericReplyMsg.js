@@ -111,3 +111,7 @@ class GenericReplyMsg {
     )
   }
 }
+
+module.exports = {
+  GenericReplyMsg
+}
