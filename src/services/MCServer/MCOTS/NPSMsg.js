@@ -6,6 +6,20 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const { Logger } = require('../../shared/loggerManager')
+
+/**
+ * 
+ * @readonly
+ * @enum {string}
+ */
+// eslint-disable-next-line
+ const NPS_MSG_DIRECTION = {
+  /** Recieved from a client (client => server) */
+  Recieved: 'Recieved',
+  /** Sent to a client (server => client) */
+  Sent: 'Sent'
+}
+
 /*
     NPS messages are sent serialized in BE format
 */
@@ -18,7 +32,7 @@ const { Logger } = require('../../shared/loggerManager')
 class NPSMsg {
   /**
    *
-   * @param {'Recieved'|'Sent'} direction
+   * @param {NPS_MSG_DIRECTION} direction - the direction of the message flow
    */
   constructor (direction) {
     this.logger = new Logger().getLogger('NPSMsg')
