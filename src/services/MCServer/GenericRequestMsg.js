@@ -27,7 +27,7 @@ class GenericRequestMsg {
 
   /**
    *
-   * @param {Buffer}} buffer
+   * @param {Buffer} buffer
    */
   deserialize (buffer) {
     try {
