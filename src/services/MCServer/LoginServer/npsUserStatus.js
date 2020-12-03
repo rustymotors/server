@@ -14,7 +14,7 @@ const { Logger } = require('../../shared/loggerManager')
  * Load the RSA private key and return a NodeRSA object
  *
  * @param {string} privateKeyPath
- * @returns {NodeRSA}
+ * @return {NodeRSA}
  */
 function fetchPrivateKeyFromFile (privateKeyPath) {
   try {
@@ -29,7 +29,7 @@ function fetchPrivateKeyFromFile (privateKeyPath) {
  * Structure the raw packet into a login packet structure
  * @param {Socket} socket
  * @param {Buffer} packet
- * @returns {LoginPacket}
+ * @return {LoginPacket}
  */
 
 /**

@@ -83,6 +83,7 @@ class LoginMsg {
 
   /**
    *
+   * @return any
    */
   serialize () {
     return struct.packSync('LoginMsg', this.struct)
