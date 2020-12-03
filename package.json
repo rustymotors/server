@@ -2,7 +2,7 @@
   "name": "mco-server",
   "version": "2.0.1",
   "description": "a server",
-  "main": "src/server.ts",
+  "main": "src/server.js",
   "files": [
     "README.md",
     "CHANGELOG.md",
@@ -15,7 +15,7 @@
     "tap": "tap --coverage test",
     "doc": "jsdoc -R README.md -P package.json -r src",
     "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
-    "prod": "ts-node src/app.ts | ./node_modules/.bin/bunyan",
+    "prod": "node src/app.js | ./node_modules/.bin/bunyan",
     "lint-test": "standard --fix && jest --all --ci --runInBand && tap --coverage test",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect"
