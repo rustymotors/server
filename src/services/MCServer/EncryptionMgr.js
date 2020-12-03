@@ -28,7 +28,7 @@ class EncryptionMgr {
    * set the internal sessionkey
    *
    * @param {Buffer} sessionKey
-   * @returns {boolean}
+   * @return {boolean}
    * @memberof EncryptionMgr
    */
   setEncryptionKey (sessionKey) {
@@ -43,7 +43,7 @@ class EncryptionMgr {
    * Takes cyphertext and returns plaintext
    *
    * @param {Buffer} encryptedText
-   * @returns {Buffer}
+   * @return {Buffer}
    * @memberof EncryptionMgr
    */
   decrypt (encryptedText) {
@@ -54,7 +54,7 @@ class EncryptionMgr {
    * Encrypt plaintext and return the ciphertext
    *
    * @param {Buffer} plainText
-   * @returns {Buffer}
+   * @return {Buffer}
    * @memberof EncryptionMgr
    */
   encrypt (plainText) {

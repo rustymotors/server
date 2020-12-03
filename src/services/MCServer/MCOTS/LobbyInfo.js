@@ -446,7 +446,7 @@ class LobbyInfo {
 
   /**
    *
-   * @returns {ILobbyInfo}
+   * @return {ILobbyInfo}
    */
   toPacket () {
     const lobbyPacket = Buffer.alloc(567)

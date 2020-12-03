@@ -28,6 +28,7 @@ class NPSUserInfo extends NPSMsg {
   /**
    *
    * @param {Buffer} rawData
+   * @return {NPSUserInfo}
    */
   deserialize (rawData) {
     this.userId = rawData.readInt32BE(4)

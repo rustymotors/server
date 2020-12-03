@@ -126,7 +126,18 @@ class NPSMsg {
 
   /**
    *
-   * @return {{msgNo: string, msgLength: number, msgVersion: number, content: string, direction: 'Recieved'|'Sent'}}
+   * @global
+   * @typedef {Object} NPSMsgJSON
+   * @property {string} msgNo
+   * @property {number} msgLength
+   * @property {number} msgVersion
+   * @property {string} content
+   * @property {NPSMsgDirection} direction
+   */
+
+  /**
+   *
+   * @return {NPSMsgJSON}
    */
   toJSON () {
     return {
