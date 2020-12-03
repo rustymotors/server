@@ -7,8 +7,10 @@
 
 /**
  * This is the response packet sent on the login port in response to a UserLogin
+ *
+ * @returns Buffer
  */
-export function premadeLogin() {
+function premadeLogin () {
   // TODO: Generate a dynamic login response message
   return Buffer.from([
     // Live Packet
@@ -267,6 +269,10 @@ export function premadeLogin() {
     0x89,
     0x00, // (0x8c was old val)
     0x00, // (0x98 was old val)
-    0x00, // (0xa6 was old val)
-  ]);
+    0x00 // (0xa6 was old val)
+  ])
+}
+
+module.exports = {
+  premadeLogin
 }
