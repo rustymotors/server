@@ -66,6 +66,7 @@ class EncryptionMgr {
 
   /**
    *
+   * @param {string}
    */
   getSessionKey () {
     return this.sessionKey.toString('hex')
@@ -73,6 +74,8 @@ class EncryptionMgr {
 
   /**
    * getId
+   * 
+   * @return {string}
    */
   getId () {
     return this.id

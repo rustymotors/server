@@ -110,6 +110,7 @@ class NPSPersonaMapsMsg extends NPSMsg {
 
   /**
    *
+   * @return {any}
    */
   serialize () {
     let index = 0
