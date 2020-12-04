@@ -14,8 +14,12 @@ const { ConfigManager } = require('./configManager')
  *
  */
 class WebServer {
-  constructor () {
-    this.config = new ConfigManager().getConfig()
+  /**
+   *
+   * @param {string} configFilePath
+   */
+  constructor (configFilePath) {
+    this.config = new ConfigManager(configFilePath).getConfig()
     this.logger = new Logger().getLogger('WebServer')
   }
 

@@ -14,8 +14,12 @@ const { Logger } = require('../shared/loggerManager')
  *
  */
 class MCServer {
-  constructor () {
-    this.mgr = new ConnectionMgr()
+  /**
+   *
+   * @param {string} configFilePath - file path to the configuration file
+   */
+  constructor (configFilePath) {
+    this.mgr = new ConnectionMgr(configFilePath)
     this.logger = new Logger().getLogger('MCServer')
   }
 

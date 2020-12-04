@@ -14,11 +14,8 @@ const { Logger } = require('../shared/loggerManager')
  *
  */
 class ListenerThread {
-  /**
-   *
-   */
   constructor () {
-    this.config = new ConfigManager().getConfig()
+    this.config = new ConfigManager('./src/services/shared/config.json').getConfig()
     this.sdc = new SDC({ host: this.config.statsDHost })
     this.logger = new Logger().getLogger('ListenerThread')
   }

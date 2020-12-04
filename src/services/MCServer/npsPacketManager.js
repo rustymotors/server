@@ -12,13 +12,13 @@ const { DatabaseManager } = require('../shared/databaseManager')
 const { Logger } = require('../shared/loggerManager')
 const { ConfigManager } = require('../shared/configManager')
 
-class NPSPacketManager {
 /**
  *
  */
+class NPSPacketManager {
   constructor () {
     this.logger = new Logger().getLogger('NPSPacketManager')
-    this.config = new ConfigManager().getConfig()
+    this.config = new ConfigManager('./src/services/shared/config.json').getConfig()
     this.database = new DatabaseManager()
     this.npsKey = ''
     this.msgNameMapping = [

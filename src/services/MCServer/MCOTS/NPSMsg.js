@@ -8,7 +8,7 @@
 const { Logger } = require('../../shared/loggerManager')
 
 /**
- * 
+ *
  * @readonly
  * @enum {string}
  */

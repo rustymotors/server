@@ -23,11 +23,8 @@ const CastanetResponse = {
 }
 
 class PatchServer {
-  /**
-   *
-   */
   constructor () {
-    this.config = new ConfigManager().getConfig()
+    this.config = new ConfigManager('./src/services/shared/config.json').getConfig()
     this.logger = new Logger().getLogger('PatchServer')
     /** @type {string[]} */
     this.banList = []

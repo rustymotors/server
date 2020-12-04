@@ -27,11 +27,12 @@ const IServerConfiguration = {
 class ConfigManager {
   /**
    *
+   * @param {string} configFilePath
    */
-  constructor () {
+  constructor (configFilePath) {
     /** @type {IServerConfiguration} */
     this.config = JSON.parse(
-      fs.readFileSync('./src/services/shared/config.json', 'utf8')
+      fs.readFileSync(configFilePath, 'utf8')
     )
   }
 

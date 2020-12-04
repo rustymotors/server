@@ -18,7 +18,7 @@ class Server {
    *
    */
   constructor () {
-    this.config = new ConfigManager().getConfig()
+    this.config = new ConfigManager('./src/services/shared/config.json').getConfig()
     this.logger = new Logger().getLogger('Server')
   }
 
