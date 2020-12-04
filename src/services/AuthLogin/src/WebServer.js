@@ -36,7 +36,7 @@ class WebServer {
   /**
    *
    * @param {IServerConfiguration.serverConfig} configuration
-   * @returns {sslOptionsObj}
+   * @return {sslOptionsObj}
    * @memberof! WebServer
    */
   _sslOptions (configuration) {
