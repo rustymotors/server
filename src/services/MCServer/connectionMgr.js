@@ -18,12 +18,9 @@ const { ConfigManager } = require('../shared/configManager')
  *
  */
 class ConnectionMgr {
-  /**
-   *
-   */
   constructor () {
     this.logger = new Logger().getLogger('ConnectionManager')
-    this.config = new ConfigManager().getConfig()
+    this.config = new ConfigManager('./src/services/shared/config.json').getConfig()
     this.sdc = new SDC({ host: this.config.statsDHost })
     /**
      * @type {ConnectionObj[]}

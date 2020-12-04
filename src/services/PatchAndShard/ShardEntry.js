@@ -63,7 +63,7 @@ class ShardEntry {
 
   /**
    *
-   * @return string
+   * @return {string}
    */
   formatForShardList () {
     return `[${this.name}]

@@ -84,6 +84,7 @@ class NPSUserStatus extends NPSMsg {
 
   /**
    *
+   * @return {Object}
    */
   toJSON () {
     return {

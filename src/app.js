@@ -9,9 +9,9 @@ const { PatchServer } = require('./services/PatchAndShard/patchServer')
 const { Server } = require('./server')
 
 // MCOS Monolith
-const server = new Server()
+const server = new Server('./src/services/shared/config.json')
 server.start()
 
 // MCOS PatchAndShard
-const patchAndShardServer = new PatchServer()
+const patchAndShardServer = new PatchServer('./src/services/shared/config.json')
 patchAndShardServer.start()

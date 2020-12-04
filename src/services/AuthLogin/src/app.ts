@@ -8,5 +8,5 @@
 import { WebServer } from "./WebServer";
 
 // MCOS AuthLogin and Shard
-const AuthLogin = new WebServer();
+const AuthLogin = new WebServer('config.json');
 AuthLogin.start();

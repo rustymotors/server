@@ -21,9 +21,13 @@ const IServerConfiguration = {
  *
  */
 class ConfigManager {
-  constructor () {
+  /**
+   *
+   * @param {string} configFilePath
+   */
+  constructor (configFilePath) {
     this.config = JSON.parse(
-      fs.readFileSync('config.json', 'utf8')
+      fs.readFileSync(configFilePath, 'utf8')
     )
   }
 
