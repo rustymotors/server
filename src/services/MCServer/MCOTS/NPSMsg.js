@@ -12,7 +12,6 @@ const { Logger } = require('../../shared/loggerManager')
  * @readonly
  * @enum {string}
  */
-// eslint-disable-next-line
  const NPS_MSG_DIRECTION = {
   /** Recieved from a client (client => server) */
   Recieved: 'Recieved',
@@ -165,5 +164,6 @@ class NPSMsg {
 }
 
 module.exports = {
+  NPS_MSG_DIRECTION,
   NPSMsg
 }

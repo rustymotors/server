@@ -28,6 +28,8 @@ class PatchServer {
     this.logger = new Logger().getLogger('PatchServer')
     /** @type {string[]} */
     this.banList = []
+    /** @type {ShardEntry[]} */
+    this.possibleShards = []
   }
 
   /**
@@ -86,7 +88,8 @@ class PatchServer {
       80
     )
 
-    // eslint-disable-next-line
+    this.possibleShards.push(shardClockTower.formatForShardList())
+
     const shardTwinPinesMall = new ShardEntry(
       'Twin Pines Mall',
       'Twin Pines Mall',
@@ -105,12 +108,13 @@ class PatchServer {
       80
     )
 
-    /** @type {ShardEntry[]} */
-    const shardList = []
-    shardList.push(shardClockTower.formatForShardList())
-    // shardList.push(shardTwinPinesMall.formatForShardList());
+    this.possibleShards.push(shardTwinPinesMall.formatForShardList())
 
-    return shardList.join('\n')
+    /** @type {ShardEntry[]} */
+    const activeShardList = []
+    activeShardList.push(shardClockTower.formatForShardList())
+
+    return activeShardList.join('\n')
   }
 
   /**
