@@ -51,6 +51,7 @@ class PersonaServer {
   /**
    *
    * @param {string} name
+   * @return {Buffer}
    */
   _generateNameBuffer (name) {
     const nameBuffer = Buffer.alloc(30)
@@ -61,7 +62,7 @@ class PersonaServer {
   /**
    * Handle a select game persona packet
    *
-   * @param {Buffer} rawData
+   * @param {Buffer} data
    */
   async _npsSelectGamePersona (data) {
     this.logger.info('_npsSelectGamePersona...')
@@ -280,6 +281,7 @@ class PersonaServer {
   /**
    *
    * @param {number} customerId
+   * @return {IPersonaRecord[]}
    */
   _getPersonasByCustomerId (customerId) {
     /** @type {IPersonaRecord[]} */
@@ -297,6 +299,7 @@ class PersonaServer {
   /**
    *
    * @param {number} id
+   * @return {IPersonaRecord[]}
    */
   _getPersonasById (id) {
     /** @type {IPersonaRecord[]} */

@@ -29,6 +29,7 @@ class AdminServer {
    * Create the SSL options object
    *
    * @param {IServerConfiguration.serverConfig} configuration
+   * @return {sslOptionsObj}
    */
   _sslOptions (configuration) {
     return {
@@ -41,6 +42,7 @@ class AdminServer {
 
   /**
    *
+   * @return {string[]}
    */
   _handleGetBans () {
     const banlist = {
@@ -51,6 +53,7 @@ class AdminServer {
 
   /**
    *
+   * @return {string}
    */
   _handleGetConnections () {
     const connections = this.mcServer.mgr.dumpConnections()
@@ -69,6 +72,7 @@ class AdminServer {
 
   /**
    *
+   * @return {string}
    */
   _handleResetAllQueueState () {
     this.mcServer.mgr.resetAllQueueState()
@@ -90,6 +94,7 @@ class AdminServer {
    *
    * @param {IncomingMessage} request
    * @param {ServerResponse} response
+   * @return {any}
    */
   _httpsHandler (request, response) {
     this.logger.info(

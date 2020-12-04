@@ -50,7 +50,7 @@ class GenericRequestMsg {
 
   /**
    *
-   * @return Buffer
+   * @return {Buffer}
    */
   serialize () {
     const packet = Buffer.alloc(16)

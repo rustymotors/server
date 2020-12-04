@@ -24,8 +24,19 @@ class WebServer {
   }
 
   /**
+   * 
+   * @global
+   * @typedef {Object} sslOptionsObj
+   * @property {sting} cert
+   * @property {boolean} honorCipherOrder
+   * @property {string} key
+   * @property {boolean} rejectUnauthorized
+   */
+
+  /**
    *
    * @param {IServerConfiguration.serverConfig} configuration
+   * @returns {sslOptionsObj}
    * @memberof! WebServer
    */
   _sslOptions (configuration) {

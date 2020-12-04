@@ -78,6 +78,7 @@ class ConnectionObj {
    * CipherBufferDES
    *
    * @param {Buffer} messageBuffer
+   * @return {Buffer}
    */
   cipherBufferDES (messageBuffer) {
     if (this.encLobby.cipher) {
@@ -90,6 +91,7 @@ class ConnectionObj {
    * DecipherBufferDES
    *
    * @param {Buffer} messageBuffer
+   * @return {Buffer}
    */
   decipherBufferDES (messageBuffer) {
     if (this.encLobby.decipher) {

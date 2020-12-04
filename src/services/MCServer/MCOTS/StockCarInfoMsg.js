@@ -52,6 +52,7 @@ class StockCarInfoMsg {
 
   /**
    *
+   * @return {Buffer}
    */
   serialize () {
     // This does not count the StockCar array

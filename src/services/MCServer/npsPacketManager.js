@@ -44,6 +44,7 @@ class NPSPacketManager {
   /**
    *
    * @param {number} msgId
+   * @return {string}
    */
   msgCodetoName (msgId) {
     const mapping = this.msgNameMapping.find((mapping) => {
@@ -54,6 +55,7 @@ class NPSPacketManager {
 
   /**
    *
+   * @return {string}
    */
   getNPSKey () {
     return this.npsKey

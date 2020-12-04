@@ -99,6 +99,7 @@ class UserGameData extends NPSMsg {
   /**
    *
    * @param {Buffer} buf
+   * @return {number}
    * @memberof! UserGameData
    */
   deserializeInt8 (buf) {
@@ -108,6 +109,7 @@ class UserGameData extends NPSMsg {
   /**
    *
    * @param {Buffer} buf
+   * @return {number}
    * @memberof! UserGameData
    */
   deserializeInt32 (buf) {
@@ -117,6 +119,7 @@ class UserGameData extends NPSMsg {
   /**
    *
    * @param {Buffer} buf
+   * @return {string}
    * @memberof! UserGameData
    */
   deserializeString (buf) {
@@ -125,6 +128,7 @@ class UserGameData extends NPSMsg {
 
   /**
    *
+   * @return {any}
    * @memberof! UserGameData
    */
   serialize () {
