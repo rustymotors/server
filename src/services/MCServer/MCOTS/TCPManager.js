@@ -194,7 +194,6 @@ async function ClientConnect (con, node) {
  * @param {ConnectionObj} conn
  */
 async function ProcessInput (node, conn) {
-  let updatedConnection = conn
   const currentMsgNo = node.msgNo
   const currentMsgString = mcotServer._MSG_STRING(currentMsgNo)
 
@@ -203,7 +202,7 @@ async function ProcessInput (node, conn) {
       try {
         const result = await mcotServer._setOptions(conn, node)
         const responsePackets = result.nodes
-        updatedConnection = await socketWriteIfOpen(
+        const updatedConnection = await socketWriteIfOpen(
           result.con,
           responsePackets
         )
@@ -215,7 +214,7 @@ async function ProcessInput (node, conn) {
       try {
         const result = await mcotServer._trackingMessage(conn, node)
         const responsePackets = result.nodes
-        updatedConnection = await socketWriteIfOpen(
+        const updatedConnection = await socketWriteIfOpen(
           result.con,
           responsePackets
         )
@@ -227,7 +226,7 @@ async function ProcessInput (node, conn) {
       try {
         const result = await mcotServer._updatePlayerPhysical(conn, node)
         const responsePackets = result.nodes
-        updatedConnection = await socketWriteIfOpen(
+        const updatedConnection = await socketWriteIfOpen(
           result.con,
           responsePackets
         )
@@ -245,8 +244,7 @@ async function ProcessInput (node, conn) {
       const result = await ClientConnect(conn, node)
       const responsePackets = result.nodes
       // write the socket
-      updatedConnection = await socketWriteIfOpen(result.con, responsePackets)
-      return updatedConnection
+      return await socketWriteIfOpen(result.con, responsePackets)
     } catch (error) {
       throw new Error(`[TCPManager] Error writing to socket: ${error}`)
     }
@@ -255,8 +253,7 @@ async function ProcessInput (node, conn) {
       const result = await mcotServer._login(conn, node)
       const responsePackets = result.nodes
       // write the socket
-      updatedConnection = await socketWriteIfOpen(result.con, responsePackets)
-      return updatedConnection
+      return await socketWriteIfOpen(result.con, responsePackets)
     } catch (error) {
       throw new Error(`[TCPManager] Error writing to socket: ${error}`)
     }
@@ -265,8 +262,7 @@ async function ProcessInput (node, conn) {
       const result = await mcotServer._logout(conn, node)
       const responsePackets = result.nodes
       // write the socket
-      updatedConnection = await socketWriteIfOpen(result.con, responsePackets)
-      return updatedConnection
+      return await socketWriteIfOpen(result.con, responsePackets)
     } catch (error) {
       throw new Error(`[TCPManager] Error writing to socket: ${error}`)
     }
@@ -275,8 +271,7 @@ async function ProcessInput (node, conn) {
     const responsePackets = result.nodes
     try {
       // write the socket
-      updatedConnection = await socketWriteIfOpen(result.con, responsePackets)
-      return updatedConnection
+      return await socketWriteIfOpen(result.con, responsePackets)
     } catch (error) {
       throw new Error(`[TCPManager] Error writing to socket: ${error}`)
     }
@@ -285,8 +280,7 @@ async function ProcessInput (node, conn) {
       const result = await GetStockCarInfo(conn, node)
       const responsePackets = result.nodes
       // write the socket
-      updatedConnection = await socketWriteIfOpen(result.con, responsePackets)
-      return updatedConnection
+      return await socketWriteIfOpen(result.con, responsePackets)
     } catch (error) {
       throw new Error(`[TCPManager] Error writing to socket: ${error}`)
     }
