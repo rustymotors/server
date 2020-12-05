@@ -12,7 +12,7 @@ const { Logger } = require('../../shared/loggerManager')
  * @readonly
  * @enum {string}
  */
- const NPS_MSG_DIRECTION = {
+const NPS_MSG_DIRECTION = {
   /** Recieved from a client (client => server) */
   Recieved: 'Recieved',
   /** Sent to a client (server => client) */

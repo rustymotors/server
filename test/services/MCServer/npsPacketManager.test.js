@@ -5,13 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { ConnectionObj } from "./ConnectionObj";
+const { NPSPacketManager } = require('../../../src/services/MCServer/npsPacketManager')
+const tap = require('tap')
 
-export interface IRawPacket {
-  connectionId: string;
-  connection: ConnectionObj;
-  data: Buffer;
-  localPort: number;
-  remoteAddress?: string;
-  timestamp: Date | number;
-}
+tap.test('NPSPacketManger', (t) => {
+  const npsPacketManager = new NPSPacketManager()
+  t.equal(npsPacketManager.msgCodetoName(0x229), 'NPS_MINI_USER_LIST')
+  t.done()
+})

@@ -74,7 +74,7 @@ class EncryptionMgr {
 
   /**
    * getId
-   * 
+   *
    * @return {string}
    */
   getId () {
