@@ -5,8 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { WebServer } from "./WebServer";
+const { premadeLogin } = require('../../../src/services/MCServer/LoginServer/packet')
+const tap = require('tap')
 
-// MCOS AuthLogin and Shard
-const AuthLogin = new WebServer('config.json');
-AuthLogin.start();
+tap.test('LoginServer - Packet', (t) => {
+  const packet = premadeLogin()
+  t.type(packet, 'Buffer')
+  t.done()
+})
