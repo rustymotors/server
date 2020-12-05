@@ -11,3 +11,5 @@ dist
 .env
 database.sqlite
 junit.xml
+.dccache
+out/*
