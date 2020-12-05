@@ -24,7 +24,7 @@ class WebServer {
   }
 
   /**
-   * 
+   *
    * @global
    * @typedef {Object} sslOptionsObj
    * @property {sting} cert
