@@ -1,0 +1,15 @@
+branches: 100
+check-coverage: true
+color: true
+coverage: true
+coverage-report:
+  - text
+  - cobertura
+  - html
+no-browser: true
+functions: 100
+lines: 100
+output-dir: coverage
+statements: 100
+test-regex: ((\/|^)(tests?|__tests?__)\/.*|\.(tests?|spec)|^\/?tests?)\.([mc]js|[jt]sx?)$
+
