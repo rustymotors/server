@@ -7,6 +7,7 @@
 
 const { NPSUserStatus } = require('./npsUserStatus')
 const { premadeLogin } = require('./packet')
+const { DatabaseManager } = require('../../shared/databaseManager')
 const { Logger } = require('../../shared/loggerManager')
 
 /**
@@ -15,11 +16,10 @@ const { Logger } = require('../../shared/loggerManager')
 class LoginServer {
   /**
    *
-   * @param {DatabaseManager} databaseMgr
    */
-  constructor (databaseMgr) {
+  constructor () {
     this.logger = new Logger().getLogger('LoginServer')
-    this.databaseManager = databaseMgr
+    this.databaseManager = new DatabaseManager()
   }
 
   /**
