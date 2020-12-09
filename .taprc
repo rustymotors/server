@@ -2,6 +2,7 @@ branches: 100
 check-coverage: true
 color: true
 coverage: true
+reporter: spec
 coverage-report:
   - text
   - cobertura
