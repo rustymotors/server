@@ -5,7 +5,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { Logger } = require('./loggerManager')
 const pool = require('./db/index')
 
 /**
@@ -14,9 +13,10 @@ const pool = require('./db/index')
 class DatabaseManager {
   /**
    *
+   * @param {Logger} logger
    */
-  constructor () {
-    this.logger = new Logger().getLogger('DatabaseManager')
+  constructor (logger) {
+    this.logger = logger
   }
 
   /**
@@ -34,6 +34,7 @@ class DatabaseManager {
       return rows[0]
     } catch (e) {
       this.logger.warn(`Unable to update session key ${e}`)
+      throw new Error(e)
     }
   }
 
