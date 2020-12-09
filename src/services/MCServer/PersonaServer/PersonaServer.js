@@ -7,6 +7,7 @@
 
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 const { NPSPersonaMapsMsg } = require('./NPSPersonaMapsMsg')
+const { Logger } = require('../../shared/loggerManager')
 
 /**
  *
@@ -14,10 +15,9 @@ const { NPSPersonaMapsMsg } = require('./NPSPersonaMapsMsg')
 class PersonaServer {
   /**
    *
-   * @param {Logger} logger
    */
-  constructor (logger) {
-    this.logger = logger
+  constructor () {
+    this.logger = new Logger().getLogger('PersonaServer')
 
     /** @type {IPersonaRecord[]} */
     this.personaList = [
@@ -288,7 +288,7 @@ class PersonaServer {
     const results = this.personaList.filter((persona) => {
       return persona.customerId === customerId
     })
-    if (results.length === 0) {
+    if (results.length <= 0) {
       this.logger.error(
         `Unable to locate a persona for customerId: ${customerId}`
       )
@@ -307,7 +307,7 @@ class PersonaServer {
       const match = id === persona.id.readInt32BE(0)
       return match
     })
-    if (results.length === 0) {
+    if (results.length <= 0) {
       this.logger.error(`Unable to locate a persona for id: ${id}`)
     }
     return results
