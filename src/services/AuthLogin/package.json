@@ -37,10 +37,10 @@
     "pg": "7.11.0",
     "pg-migrator": "1.0.5",
     "statsd-client": "0.4.2",
-    "ts-node": "8.10.2",
+    "ts-node": "9.1.1",
     "winston": "3.2.1",
     "winston-daily-rotate-file": "3.9.0",
-    "snyk": "1.431.4"
+    "snyk": "1.434.4"
   },
   "devDependencies": {
     "@types/jest": "24.0.15",
