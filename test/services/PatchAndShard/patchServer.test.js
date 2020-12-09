@@ -91,7 +91,7 @@ tap.test('PatchServer - Default', (t) => {
   t.deepEquals(patchServer._getBans(), [], '_getBans() is empty after _cleanBans()')
 })
 
-tap.test('PatchServer - Start/Stop', (t) => {
+tap.skip('PatchServer - Start/Stop', (t) => {
   const patchServer = new PatchServer()
 
   patchServer.logger = fakeLogger
