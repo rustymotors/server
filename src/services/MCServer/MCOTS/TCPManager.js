@@ -18,7 +18,7 @@ const { Logger } = require('../../shared/loggerManager')
 
 const logger = new Logger().getLogger('TCPManager')
 const mcotServer = new MCOTServer()
-const databaseManager = new DatabaseManager()
+const databaseManager = new DatabaseManager(new Logger().getLogger('DatabaseManager'))
 
 /**
  *
