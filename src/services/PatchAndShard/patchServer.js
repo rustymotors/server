@@ -9,6 +9,7 @@
 const http = require('http')
 const { ShardEntry } = require('./ShardEntry')
 const { ConfigManager } = require('../shared/configManager')
+const { Logger } = require('../shared/loggerManager')
 
 /**
  * A simulated patch server response
@@ -21,26 +22,14 @@ const CastanetResponse = {
   }
 }
 
-/**
- *
- */
 class PatchServer {
-  /**
-   *
-   * @param {Logger} logger
-   */
-  constructor (logger) {
+  constructor () {
     this.config = new ConfigManager('./src/services/shared/config.json').getConfig()
-    this.logger = logger
+    this.logger = new Logger().getLogger('PatchServer')
     /** @type {string[]} */
     this.banList = []
     /** @type {ShardEntry[]} */
     this.possibleShards = []
-
-    /** @type {http.Server} */
-    this.serverPatch = http.createServer((req, res) => {
-      this._httpHandler(req, res)
-    })
   }
 
   /**
@@ -130,8 +119,8 @@ class PatchServer {
 
   /**
    *
-   * @param {http.IncomingMessage} request
-   * @param {http.ServerResponse} response
+   * @param {IncomingMessage} request
+   * @param {ServerResponse} response
    * @memberof! PatchServer
    */
   _httpHandler (
@@ -163,31 +152,18 @@ class PatchServer {
 
       default:
         // Is this a hacker?
-        // if (this.banList.indexOf(request.socket.remoteAddress) < 0) {
-        response.statusCode = 404
-        response.end('')
-        // In ban list, skip
-        // break
-        // }
-
+        if (this.banList.indexOf(request.socket.remoteAddress) < 0) {
+          // In ban list, skip
+          break
+        }
         // Unknown request, log it
-        // response.end('foo')
         this.logger.info(
           `[PATCH] Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}, banning.`
         )
-        // this._addBan(request.socket.remoteAddress)
+        this.banList.push(request.socket.remoteAddress)
+        response.end('foo')
         break
     }
-  }
-
-  /**
-   *
-   * @param {string} banIP
-   * @return {void}
-   * @memberof! PatchServer
-   */
-  _addBan (banIP) {
-    this.banList.push(banIP)
   }
 
   /**
@@ -201,22 +177,15 @@ class PatchServer {
 
   /**
    *
-   * @return {void}
    * @memberof! PatchServer
    */
-  _clearBans () {
-    this.banList = []
-  }
-
-  /**
-   *
-   * @memberof! PatchServer
-   */
-  start () {
-    this.serverPatch.listen({ port: '80', host: '0.0.0.0' }, () => {
+  async start () {
+    const serverPatch = http.createServer((req, res) => {
+      this._httpHandler(req, res)
+    })
+    serverPatch.listen({ port: '80', host: '0.0.0.0' }, () => {
       this.logger.info('[patchServer] Patch server is listening...')
     })
-    return this.serverPatch
   }
 }
 

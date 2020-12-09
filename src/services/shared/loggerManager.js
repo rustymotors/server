@@ -11,16 +11,11 @@ const BunyanToGelfStream = require('bunyan-gelf')
 /**
  *
  */
-class LoggingMgr {
-  constructor () {
-    return this
-  }
-
+class Logger {
   /**
    *
    * @param {string} service
-   * @return {bunyan.Logger}
-   * @memberof! LoggingMgr
+   * @return {Logger}
    */
   getLogger (service) {
     // deepcode ignore WrongNumberOfArgs: I believe this is a bug. sig: function createLogger(options: LoggerOptions): Logger;
@@ -41,5 +36,5 @@ class LoggingMgr {
 }
 
 module.exports = {
-  Logger: LoggingMgr
+  Logger
 }

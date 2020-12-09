@@ -8,6 +8,7 @@
 const { LoginServer } = require('./LoginServer/LoginServer')
 const { PersonaServer } = require('./PersonaServer/PersonaServer')
 const { LobbyServer } = require('./LobbyServer/LobbyServer')
+const { DatabaseManager } = require('../shared/databaseManager')
 const { Logger } = require('../shared/loggerManager')
 const { ConfigManager } = require('../shared/configManager')
 
@@ -15,14 +16,10 @@ const { ConfigManager } = require('../shared/configManager')
  *
  */
 class NPSPacketManager {
-  /**
-   *
-   * @param {@param} databaseMgr
-   */
-  constructor (databaseMgr) {
+  constructor () {
     this.logger = new Logger().getLogger('NPSPacketManager')
     this.config = new ConfigManager('./src/services/shared/config.json').getConfig()
-    this.database = databaseMgr
+    this.database = new DatabaseManager()
     this.npsKey = ''
     this.msgNameMapping = [
       { id: 0x100, name: 'NPS_LOGIN' },
@@ -40,7 +37,7 @@ class NPSPacketManager {
     ]
 
     this.loginServer = new LoginServer()
-    this.personaServer = new PersonaServer(new Logger().getLogger('PersonaServer'))
+    this.personaServer = new PersonaServer()
     this.lobbyServer = new LobbyServer()
   }
 
