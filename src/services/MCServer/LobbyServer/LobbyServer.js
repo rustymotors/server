@@ -13,7 +13,7 @@ const { Logger } = require('../../shared/loggerManager')
 
 const logger = new Logger().getLogger('LobbyServer')
 
-const databaseManager = new DatabaseManager(new Logger().getLogger('DatabaseManager'))
+const databaseManager = new DatabaseManager()
 
 /**
  *
@@ -231,7 +231,7 @@ class LobbyServer {
     userInfo.deserialize(rawData)
     userInfo.dumpInfo()
 
-    const personaManager = new PersonaServer(new Logger().getLogger('PersonaServer'))
+    const personaManager = new PersonaServer()
 
     const personas = personaManager._getPersonasById(userInfo.userId)
     if (personas.length === 0) {
