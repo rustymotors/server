@@ -40,6 +40,11 @@
     "pg-migrator": "1.0.5",
     "snyk": "1.431.4",
     "statsd-client": "0.4.5"
+    "snyk": "1.434.4",
+    "statsd-client": "0.4.5",
+    "ts-node": "9.1.1",
+    "winston": "3.3.3",
+    "winston-daily-rotate-file": "4.5.0"
   },
   "devDependencies": {
     "@types/node": "^14.14.10",
