@@ -1,4 +1,3 @@
-check-coverage: true
 color: true
 coverage: true
 reporter: spec
