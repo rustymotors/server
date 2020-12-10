@@ -1,1 +1,14 @@
 
+flags:
+  MCServer:
+    paths:
+      - src/services/MCServer/*
+    carryforward: false
+  All_Services:
+    paths:
+      - src/services/**/*
+    carryforward: false
+  Shared:
+    paths:
+      - src/services/shared/*
+    carryforward: false
