@@ -1,6 +1,6 @@
 # Configuring the client to connect to the server
 
-**Importent!:** You must use a newer version of Windows. Windows XP is unable to use the encryption ciphers needed to talk to the server
+**Important!:** You must use a newer version of Windows. Windows XP is unable to use the encryption ciphers needed to talk to the server
 
 ---
 
@@ -8,28 +8,30 @@ This currently has only been tested with the debug version of the client. If you
 
 ## Registry
 
-- copy `sample.reg` in the project root to a new file with the same extension
-- Modify all instances of `dev.mco` in the new file to be your server's DNS or IP
-- Double-click the registry file to import and overwrite the default registry settings for the client
+- Copy the mco.reg file from `https://<server>/registry`.
+- Double-click the registry file to import and overwrite the default registry settings for the client.
 
 ### Client/Server Encryption Setup
 
 - Copy the pub.key file from `https://<server>/key` to the client game directory. Overwrite when prompted.
-
 - Download the SSL cert from `https://<server>/cert` and add it to the Trusted Root Store.
 
-  You can find help doing this here <http://stackoverflow.com/a/2955546/335583>
+(_This can be done by opening a `Run... (Win+R) > MMC (Microsoft Management Console) > Add/Remove Snap-in > Available snap-ins, click Certificates > select Computer account and Local computer > double-click on Certificates > right-click on Trusted Root Certification Authorities Store > All tasks, select Import > Locate the cert.pem file > Finish`_)
 
 ### Change the graphics settings
 
-In <game dir>\SaveData\option.ini, change `graphicsModeIndex=4`
-  
-(thanks to [@VladManyanov](https://github.com/VladManyanov) for the tip)
+In <game dir>\SaveData\options.ini, change the value `graphicsModeIndex=<value>`, according to resolution list:
 
-### Delete the movies
+- `0` for 640x480
+- `1` for 800x600
+- `2` for 1024x768
+- `3` for 1152x864
+- `4` for 1280x960
 
-`<game dir>\Data\Movies`
+### Disable the movies
+
+You can delete the `<game dir>\Data\Movies` folder, or start the game with parameter `-nomovie` (_Create a shortcut for debug executable_).
 
 ### Windows 10 Compatibility settings
 
-- Disable fullscreen
+- Disable fullscreen (In some cases, fullscreen will work fine, to switch between window and fullscreen modes use Alt+Enter buttons).

@@ -1,0 +1,104 @@
+{
+  "name": "@mco-server/authlogin",
+  "version": "2.0.1",
+  "description": "a server",
+  "main": "src/server.ts",
+  "files": [
+    "README.md",
+    "CHANGELOG.md",
+    "AUTHORS"
+  ],
+  "scripts": {
+    "test": "npm run lint-test",
+    "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
+    "prod": "ts-node src/app.ts | ./node_modules/.bin/bunyan",
+    "lint-test": "eslint '{services,src}/**/*.ts' --fix && jest --all --ci --runInBand",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
+  },
+  "author": "Joe Becher <jwbecher@drazisil.com> (drazisil.com)",
+  "license": "MPL-2.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:drazisil/mco-server.git"
+  },
+  "engines": {
+    "node": "8.17.0"
+  },
+  "dependencies": {
+    "@types/bunyan": "1.8.6",
+    "@types/node": "12.6.7",
+    "@types/pg": "7.4.14",
+    "@types/statsd-client": "0.4.0",
+    "bunyan": "1.8.13",
+    "bunyan-gelf": "1.0.0",
+    "c-struct": "0.0.5",
+    "pg": "7.11.0",
+    "pg-migrator": "1.0.5",
+    "statsd-client": "0.4.2",
+    "ts-node": "9.1.1",
+    "winston": "3.2.1",
+    "winston-daily-rotate-file": "3.9.0",
+    "snyk": "1.434.4"
+  },
+  "devDependencies": {
+    "@types/jest": "24.0.15",
+    "@typescript-eslint/parser": "1.11.0",
+    "eslint": "7.15.0",
+    "eslint-config-prettier": "7.0.0",
+    "eslint-plugin-prettier": "3.1.0",
+    "jest": "24.8.0",
+    "jest-junit": "7.0.0",
+    "prettier": "1.18.2",
+    "prettier-eslint": "9.0.0",
+    "ts-jest": "24.0.2",
+    "typescript": "3.5.2"
+  },
+  "prettier": {
+    "trailingComma": "es5"
+  },
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaVersion": 2017,
+      "sourceType": "module"
+    },
+    "env": {
+      "es6": true
+    },
+    "extends": [
+      "plugin:prettier/recommended"
+    ]
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "coverageDirectory": "./coverage/",
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "**/*.{js,jsx,ts,tsx}",
+      "!**/node_modules/**",
+      "!**/dist/**",
+      "!**/coverage/**",
+      "!**/typings/**"
+    ],
+    "coverageReporters": [
+      "lcov",
+      "text"
+    ],
+    "reporters": [
+      "default",
+      "jest-junit"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/dist/",
+      "<rootDir>/node_modules/"
+    ]
+  },
+  "jest-junit": {
+    "output": "test-reports/jest/junit.xml"
+  },
+  "snyk": true
+}

@@ -1,3 +1,17 @@
+### 2.0.1
+
+- Other massive refactoring changes. forgot about the change log. probably on v 3 now, as far as backward compatibility goes.
+- Removed .env
+- Updated docs
+
+## 2.0.0
+
+- forgot to update changelog, a lot
+- moved serves back into a monolith of sorts
+- switched from yaml to json (which I guess probably makes this non-backwarsd compatable)
+- noted the database change from postgres to sqlite in 1.4.3 is breaking as well
+- added more code coverage
+
 ### 1.4.4
 
 - upgraded a bunch of things

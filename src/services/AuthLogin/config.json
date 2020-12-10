@@ -1,0 +1,10 @@
+{
+  "loggerLevel": "debug",
+  "serverConfig": {
+    "certFilename": "data/cert.pem",
+    "ipServer": "192.168.5.20",
+    "privateKeyFilename": "data/private_key.pem",
+    "publicKeyFilename": "data/pub.key",
+    "registryFilename": "data/sample.reg"
+  }
+}

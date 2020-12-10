@@ -1,7 +1,4 @@
 node_modules
-data/private_key.pem
-data/cert.pem
-data/pub.key
 logs
 coverage
 *.log
@@ -13,3 +10,6 @@ junit
 dist
 .env
 database.sqlite
+junit.xml
+.dccache
+out/*

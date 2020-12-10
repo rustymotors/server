@@ -1,8 +1,7 @@
-# MCO-Server xx
-
-[![CircleCI](https://circleci.com/gh/drazisil/mco-server.svg?style=shield)](https://circleci.com/gh/drazisil/mco-server)
+# MCO-Server
+![Node.js CI](https://github.com/drazisil/mco-server/workflows/Node.js%20CI/badge.svg)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
-[![Greenkeeper badge](https://badges.greenkeeper.io/drazisil/mco-server.svg)](https://greenkeeper.io/)
+[![Known Vulnerabilities](https://snyk.io/test/github/drazisil/mco-server/badge.svg)](https://snyk.io/test/github/drazisil/mco-server)
 [![codecov](https://codecov.io/gh/drazisil/mco-server/branch/master/graph/badge.svg)](https://codecov.io/gh/drazisil/mco-server)
 
 ## About
@@ -37,4 +36,4 @@ Mar 6, 2016
 - Create packets
 - Respond correctly to NPS and MCOTS packets
 
-.
+....
