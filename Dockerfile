@@ -1,4 +1,4 @@
-FROM node:10.16.0-jessie
+FROM node:10.22.0-jessie
 
 RUN setcap cap_net_bind_service=+ep $(which node)
 
