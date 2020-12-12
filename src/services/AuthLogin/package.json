@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@types/bunyan": "1.8.6",
-    "@types/node": "12.6.7",
+    "@types/node": "12.19.9",
     "@types/pg": "7.4.14",
     "@types/statsd-client": "0.4.0",
     "bunyan": "1.8.13",
@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@types/jest": "24.0.15",
-    "@typescript-eslint/parser": "1.11.0",
+    "@typescript-eslint/parser": "4.9.1",
     "eslint": "7.15.0",
     "eslint-config-prettier": "7.0.0",
     "eslint-plugin-prettier": "3.1.0",
