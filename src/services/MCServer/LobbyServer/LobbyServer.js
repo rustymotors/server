@@ -6,7 +6,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const appSettings = require('../../../../config/app-settings')
-const logger = require('../../../shared/logger').child({ service: 'mcoserver:LobbyServer' })
+const logger = require('../../../shared/logger').child({
+  service: 'mcoserver:LobbyServer'
+})
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 const { NPSUserInfo } = require('./npsUserInfo')
 const { PersonaServer } = require('../PersonaServer/PersonaServer')

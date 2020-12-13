@@ -29,7 +29,7 @@ class AdminServer {
     /**
      * @type {Logger}
      */
-    this.logger = logger.child({service: 'mcoserver:AdminServer' })
+    this.logger = logger.child({ service: 'mcoserver:AdminServer' })
     /** @type {https.httpsServer|undefined} */
     let httpServer
   }

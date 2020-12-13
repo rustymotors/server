@@ -10,7 +10,6 @@ const fs = require('fs')
 const https = require('https')
 const logger = require('../../shared/logger')
 
-
 /**
  *
  */
@@ -21,7 +20,7 @@ class AuthLogin {
    */
   constructor (config) {
     this.config = config
-    this.logger = logger.child({ service:'mcoserver:AuthLogin'})
+    this.logger = logger.child({ service: 'mcoserver:AuthLogin' })
   }
 
   /**
