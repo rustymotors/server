@@ -35,14 +35,14 @@
     "c-struct": "0.0.5",
     "debug": "4.3.1",
     "pg": "8.5.1",
-    "pg-migrator": "1.0.5",
-    "snyk": "1.434.4",
+    "pg-migrator": "1.1.0",
+    "snyk": "1.436.0",
     "supports-color": "8.0.0",
     "winston": "3.3.3",
     "winston-daily-rotate-file": "4.5.0"
   },
   "devDependencies": {
-    "@types/node": "^14.14.11",
+    "@types/node": "14.14.13",
     "jsdoc": "3.6.6",
     "prettier-standard": "16.4.1",
     "supertest": "6.0.1",
