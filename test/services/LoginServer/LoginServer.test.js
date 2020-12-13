@@ -11,7 +11,6 @@ const {
 const tap = require('tap')
 
 const loginServer = new LoginServer()
-loginServer.logger.level('warn')
 
 tap.test('LoginServer', t => {
   const { customerId, userId } = loginServer._npsGetCustomerIdByContextId(
