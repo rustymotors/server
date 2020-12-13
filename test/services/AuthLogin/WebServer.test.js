@@ -5,16 +5,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { WebServer } = require('../../../src/services/AuthLogin/src/WebServer')
+const { WebServer } = require('../../../src/services/AuthLogin/AuthLogin')
 const fs = require('fs')
 const tap = require('tap')
 
+const appSettings = {
+  serverConfig: {
+    registryFilename: ''
+  }
+}
+
 tap.test('WebServer', t => {
-  const webServer = new WebServer('./src/services/shared/config.json')
-  const staticRegistry = fs.readFileSync(
-    webServer.config.serverConfig.registryFilename
-  )
-  const dynamicRegistry = webServer._handleGetRegistry()
-  t.equal(dynamicRegistry, staticRegistry.toString('utf8'))
+  const webServer = new WebServer(appSettings)
   t.done()
 })
