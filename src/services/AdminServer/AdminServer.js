@@ -6,7 +6,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:AdminServer')
-const appSettings = require('../../../config/app-settings')
 const logger = require('../../shared/logger')
 const fs = require('fs')
 const https = require('https')
@@ -30,8 +29,6 @@ class AdminServer {
      * @type {Logger}
      */
     this.logger = logger.child({ service: 'mcoserver:AdminServer' })
-    /** @type {https.httpsServer|undefined} */
-    let httpServer
   }
 
   /**
@@ -145,6 +142,7 @@ class AdminServer {
    */
   async start (config) {
     try {
+      /** @type {https.httpsServer|undefined} */
       this.httpsServer = https.createServer(
         this._sslOptions(config),
         (req, res) => {
