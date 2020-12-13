@@ -6,11 +6,15 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const { Socket } = require('net')
-const { ConnectionObj } = require('../../../src/services/MCServer/ConnectionObj')
-const { ConnectionMgr } = require('../../../src/services/MCServer/connectionMgr')
+const {
+  ConnectionObj
+} = require('../../../src/services/MCServer/ConnectionObj')
+const {
+  ConnectionMgr
+} = require('../../../src/services/MCServer/connectionMgr')
 const tap = require('tap')
 
-tap.test('ConnectionObj', (t) => {
+tap.test('ConnectionObj', t => {
   const testConnection = new ConnectionObj(
     'abc',
     new Socket(),
@@ -25,7 +29,7 @@ tap.test('ConnectionObj', (t) => {
   t.done()
 })
 
-tap.test('ConnectionObj cross-comms', (t) => {
+tap.test('ConnectionObj cross-comms', t => {
   let testConn1
   let testConn2
 
@@ -95,12 +99,12 @@ tap.test('ConnectionObj cross-comms', (t) => {
     0x45
   ])
 
-  t.test('Connection one is not the same id as connection two', (t1) => {
+  t.test('Connection one is not the same id as connection two', t1 => {
     t1.notEqual(testConn1.enc.getId(), testConn2.enc.getId())
     t1.done()
   })
 
-  t.test('Connection Two can decipher Connection One', (t1) => {
+  t.test('Connection Two can decipher Connection One', t1 => {
     t1.ok(testConn1.enc)
     const encipheredBuffer = testConn1.enc.encrypt(plainText1)
     t1.deepEqual(encipheredBuffer, cipherText1)

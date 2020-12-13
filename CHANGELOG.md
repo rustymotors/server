@@ -1,3 +1,16 @@
+## 2.0
+
+### 3.0.0-beta1
+
+Note: The beta builds are not static and probably broken.
+
+* Switch bunyan to winston
+* Switch typescript to javascript
+* Remove statsd
+* Move authlogin into the monolith
+* Replace configmanager with appsettings
+* Cap node version at <=v9.11.2 due to SSL errors vaused by insecure ciphers
+
 ### 2.0.1
 
 - Other massive refactoring changes. forgot about the change log. probably on v 3 now, as far as backward compatibility goes.

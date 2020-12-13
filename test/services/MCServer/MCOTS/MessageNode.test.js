@@ -5,7 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { MessageNode } = require('../../../../src/services/MCServer/MCOTS/MessageNode')
+const {
+  MessageNode
+} = require('../../../../src/services/MCServer/MCOTS/MessageNode')
 const tap = require('tap')
 
 const messageNode1 = new MessageNode('Recieved')
@@ -36,9 +38,10 @@ messageNode1.deserialize(
   ])
 )
 
-tap.test('MessageNode', (t) => {
-  t.throws(() => { new MessageNode('Recieved').deserialize(Buffer.from([0x00, 0x00])) },
-    '[MessageNode] Not long enough to deserialize, only 2 bytes long')
+tap.test('MessageNode', t => {
+  t.throws(() => {
+    new MessageNode('Recieved').deserialize(Buffer.from([0x00, 0x00]))
+  }, '[MessageNode] Not long enough to deserialize, only 2 bytes long')
 
   t.ok(messageNode1.isMCOTS())
   t.done()

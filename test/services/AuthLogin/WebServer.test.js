@@ -9,7 +9,7 @@ const { WebServer } = require('../../../src/services/AuthLogin/src/WebServer')
 const fs = require('fs')
 const tap = require('tap')
 
-tap.test('WebServer', (t) => {
+tap.test('WebServer', t => {
   const webServer = new WebServer('./src/services/shared/config.json')
   const staticRegistry = fs.readFileSync(
     webServer.config.serverConfig.registryFilename

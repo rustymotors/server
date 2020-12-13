@@ -5,19 +5,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const appSettings = require('../../../config/app-settings')
+const logger = require('../../shared/logger')
 const net = require('net')
-const SDC = require('statsd-client')
-const { ConfigManager } = require('../shared/configManager')
-const { Logger } = require('../shared/loggerManager')
 
 /**
  *
  */
 class ListenerThread {
   constructor () {
-    this.config = new ConfigManager('./src/services/shared/config.json').getConfig()
-    this.sdc = new SDC({ host: this.config.statsDHost })
-    this.logger = new Logger().getLogger('ListenerThread')
+    this.config = appSettings
+    this.logger = logger.child({ service: 'mcoserver:ListenerThread' })
   }
 
   /**
@@ -29,11 +27,7 @@ class ListenerThread {
    * @param {IServerConfiguration} config
    * @memberof! ListenerThread
    */
-  async _onData (
-    data,
-    connection,
-    config
-  ) {
+  async _onData (data, connection, config) {
     try {
       const { localPort, remoteAddress } = connection.sock
       /** @type {IRawPacket} */
@@ -50,7 +44,6 @@ class ListenerThread {
         { data: rawPacket.data.toString('hex') },
         "rawPacket's data prior to proccessing"
       )
-      const startPacketHandleTime = new Date()
       let newConnection = connection
       try {
         newConnection = await connection.mgr.processData(rawPacket, config)
@@ -59,7 +52,6 @@ class ListenerThread {
 
         process.exit(-1)
       }
-      this.sdc.timing('packet.tcp.process_time', startPacketHandleTime)
       if (!connection.remoteAddress) {
         this.logger.fatal({ connection }, 'Remote address is empty')
         process.exit(-1)
@@ -89,11 +81,7 @@ class ListenerThread {
    * @param {IServerConfiguration} config
    * @memberof ListenerThread
    */
-  _listener (
-    socket,
-    connectionMgr,
-    config
-  ) {
+  _listener (socket, connectionMgr, config) {
     // Received a new connection
     // Turn it into a connection object
     const connection = connectionMgr.findOrNewConnection(socket)
@@ -116,10 +104,10 @@ class ListenerThread {
         `[listenerThread] Client ${remoteAddress} disconnected from port ${localPort}`
       )
     })
-    socket.on('data', (data) => {
+    socket.on('data', data => {
       this._onData(data, connection, config)
     })
-    socket.on('error', (err) => {
+    socket.on('error', err => {
       if (err.code !== 'ECONNRESET') {
         this.logger.error({ err }, 'Socket error')
       }
@@ -136,13 +124,9 @@ class ListenerThread {
    * @param {IServerConfiguration} config
    * @memberof! ListenerThread
    */
-  async startTCPListener (
-    localPort,
-    connectionMgr,
-    config
-  ) {
+  async startTCPListener (localPort, connectionMgr, config) {
     net
-      .createServer((socket) => {
+      .createServer(socket => {
         this._listener(socket, connectionMgr, config)
       })
       .listen({ port: localPort, host: '0.0.0.0' })

@@ -5,8 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const appSettings = require('../../../../config/app-settings')
+const logger = require('../../../shared/logger')
 const { LobbyInfo } = require('./LobbyInfo')
-const { Logger } = require('../../shared/loggerManager')
 
 /**
  *
@@ -16,7 +17,7 @@ class LobbyMsg {
    *
    */
   constructor () {
-    this.logger = new Logger().getLogger('LobbyMsg')
+    this.logger = logger.child({ service: 'mcoserver:LobbyMsg' })
 
     this.msgNo = 325
 
@@ -27,7 +28,7 @@ class LobbyMsg {
 
     this.lobbyList = new LobbyInfo()
     // this.dataLength = 572;
-    this.dataLength = (this.lobbyList.toPacket().length + 5)
+    this.dataLength = this.lobbyList.toPacket().length + 5
 
     this.data = Buffer.alloc(this.dataLength)
     this.data.writeInt16LE(this.msgNo, 0)

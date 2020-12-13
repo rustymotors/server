@@ -5,9 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const appSettings = require('../../../../config/app-settings')
+const logger = require('../../../shared/logger')
 const { NPSUserStatus } = require('./npsUserStatus')
 const { premadeLogin } = require('./packet')
-const { Logger } = require('../../shared/loggerManager')
 
 /**
  *
@@ -18,7 +19,7 @@ class LoginServer {
    * @param {DatabaseManager} databaseMgr
    */
   constructor (databaseMgr) {
-    this.logger = new Logger().getLogger('LoginServer')
+    this.logger = logger.child({ service: 'mcoserver:LoginServer' })
     this.databaseManager = databaseMgr
   }
 
@@ -27,10 +28,7 @@ class LoginServer {
    * @param {IRawPacket} rawPacket
    * @param {IServerConfiguration} config
    */
-  async dataHandler (
-    rawPacket,
-    config
-  ) {
+  async dataHandler (rawPacket, config) {
     const { connection, data } = rawPacket
     const { localPort, remoteAddress } = rawPacket
     this.logger.info({ localPort, remoteAddress }, 'Received Login packet')
@@ -94,7 +92,7 @@ class LoginServer {
     if (contextId.toString() === '') {
       throw new Error(`Unknown contextId: ${contextId.toString()}`)
     }
-    const userRecord = users.filter((user) => {
+    const userRecord = users.filter(user => {
       return user.contextId === contextId
     })
     if (userRecord.length !== 1) {
@@ -125,11 +123,7 @@ class LoginServer {
    * @param {Buffer} data
    * @param {IServerConfiguration} config
    */
-  async _userLogin (
-    connection,
-    data,
-    config
-  ) {
+  async _userLogin (connection, data, config) {
     const { sock } = connection
     const { localPort } = sock
     const userStatus = new NPSUserStatus(data)

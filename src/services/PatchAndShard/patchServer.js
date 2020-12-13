@@ -5,10 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-// deepcode ignore HttpToHttps: This section of the server is not encrypted
+const debug = require('debug')('mcoserver:MatchServer')
+const appSettings = require('../../../config/app-settings')
+// This section of the server can not be encrypted. This is an intentional choice for compatibility
+// deepcode ignore HttpToHttps: This is intentional. See above note.
 const http = require('http')
 const { ShardEntry } = require('./ShardEntry')
-const { ConfigManager } = require('../shared/configManager')
 
 /**
  * A simulated patch server response
@@ -30,7 +32,7 @@ class PatchServer {
    * @param {Logger} logger
    */
   constructor (logger) {
-    this.config = new ConfigManager('./src/services/shared/config.json').getConfig()
+    this.config = appSettings
     this.logger = logger
     /** @type {string[]} */
     this.banList = []
@@ -134,10 +136,7 @@ class PatchServer {
    * @param {http.ServerResponse} response
    * @memberof! PatchServer
    */
-  _httpHandler (
-    request,
-    response
-  ) {
+  _httpHandler (request, response) {
     let responseData
     switch (request.url) {
       case '/ShardList/':
@@ -214,6 +213,7 @@ class PatchServer {
    */
   start () {
     this.serverPatch.listen({ port: '80', host: '0.0.0.0' }, () => {
+      debug('port 80 listening')
       this.logger.info('[patchServer] Patch server is listening...')
     })
     return this.serverPatch

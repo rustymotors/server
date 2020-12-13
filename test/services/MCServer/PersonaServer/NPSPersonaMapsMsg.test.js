@@ -5,10 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { NPSPersonaMapsMsg } = require('../../../../src/services/MCServer/PersonaServer/NPSPersonaMapsMsg')
+const {
+  NPSPersonaMapsMsg
+} = require('../../../../src/services/MCServer/PersonaServer/NPSPersonaMapsMsg')
 const tap = require('tap')
 
-tap.test('NPSPersonaMapsMsg', (t) => {
+tap.test('NPSPersonaMapsMsg', t => {
   const npsPersonaMapsMsg = new NPSPersonaMapsMsg('Recieved')
   t.equal(npsPersonaMapsMsg.direction, 'Recieved')
   t.equal(npsPersonaMapsMsg.msgNo, 0x607)

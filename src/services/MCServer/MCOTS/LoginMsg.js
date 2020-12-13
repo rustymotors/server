@@ -5,8 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const appSettings = require('../../../../config/app-settings')
+const logger = require('../../../shared/logger')
 const struct = require('c-struct')
-const { Logger } = require('../../shared/loggerManager')
 
 const loginMsgSchema = new struct.Schema({
   msgNo: struct.type.uint16,
@@ -31,7 +32,7 @@ class LoginMsg {
    * @param {Buffer} buffer
    */
   constructor (buffer) {
-    this.logger = new Logger().getLogger('LoginMsg')
+    this.logger = logger.child({ service: 'mcoserver:LoginMsg' })
 
     this.msgNo = 0
     this.toFrom = 0

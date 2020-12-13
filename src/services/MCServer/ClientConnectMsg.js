@@ -5,15 +5,21 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { Logger } = require('../shared/loggerManager')
+const appSettings = require('../../../config/app-settings')
+const logger = require('../../shared/logger')
 
+/**
+ *
+ *
+ * @class ClientConnectMsg
+ */
 class ClientConnectMsg {
   /**
    *
    * @param {Buffer} buffer
    */
   constructor (buffer) {
-    this.logger = new Logger().getLogger('ClientConnectMsg')
+    this.logger = logger.child({ service: 'mcoserver:ClientConnectMsg' })
 
     try {
       this.msgNo = buffer.readInt16LE(0)
@@ -54,15 +60,16 @@ class ClientConnectMsg {
    * dumpPacket
    */
   dumpPacket () {
-    this.logger.info({
-      msgNo: this.msgNo.toString(),
-      customerId: this.customerId.toString(),
-      personaId: this.personaId.toString(),
-      custName: this.custName,
-      personaName: this.personaName,
-      mcVersion: this.mcVersion.toString('hex')
-    },
-    'ClientConnectMsg'
+    this.logger.info(
+      {
+        msgNo: this.msgNo.toString(),
+        customerId: this.customerId.toString(),
+        personaId: this.personaId.toString(),
+        custName: this.custName,
+        personaName: this.personaName,
+        mcVersion: this.mcVersion.toString('hex')
+      },
+      'ClientConnectMsg'
     )
   }
 }

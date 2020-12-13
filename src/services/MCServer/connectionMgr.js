@@ -5,23 +5,19 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const appSettings = require('../../../config/app-settings')
+const logger = require('../../shared/logger')
 const { ConnectionObj } = require('./ConnectionObj')
-
 const { defaultHandler } = require('./MCOTS/TCPManager')
 const { NPSPacketManager } = require('./npsPacketManager')
-
-const SDC = require('statsd-client')
-const { Logger } = require('../shared/loggerManager')
-const { ConfigManager } = require('../shared/configManager')
 
 /**
  *
  */
 class ConnectionMgr {
   constructor () {
-    this.logger = new Logger().getLogger('ConnectionManager')
-    this.config = new ConfigManager('./src/services/shared/config.json').getConfig()
-    this.sdc = new SDC({ host: this.config.statsDHost })
+    this.logger = logger.child({ service: 'mcoserver:ConnectionMgr' })
+    this.config = appSettings
     /**
      * @type {ConnectionObj[]}
      */
@@ -39,16 +35,12 @@ class ConnectionMgr {
    * @param {IServerConfiguration} config
    * @memberof ConnectionMgr
    */
-  async processData (
-    rawPacket,
-    config
-  ) {
+  async processData (rawPacket, config) {
     const npsPacketManager = new NPSPacketManager()
 
     const { remoteAddress, localPort, data } = rawPacket
 
     // Log the packet as debug
-    this.sdc.increment('packets.count')
     this.logger.info(
       {
         remoteAddress,
@@ -122,11 +114,8 @@ class ConnectionMgr {
    * @memberof ConnectionMgr
    * @return {ConnectionObj|undefined}
    */
-  findConnectionByAddressAndPort (
-    remoteAddress,
-    localPort
-  ) {
-    const results = this.connections.find((connection) => {
+  findConnectionByAddressAndPort (remoteAddress, localPort) {
+    const results = this.connections.find(connection => {
       const match =
         remoteAddress === connection.remoteAddress &&
         localPort === connection.localPort
@@ -141,7 +130,7 @@ class ConnectionMgr {
    * @return {ConnectionObj|undefined}
    */
   findConnectionById (connectionId) {
-    const results = this.connections.find((connection) => {
+    const results = this.connections.find(connection => {
       const match = connectionId === connection.id
       return match
     })
@@ -155,11 +144,7 @@ class ConnectionMgr {
    * @param {ConnectionObj} newConnection
    * @memberof ConnectionMgr
    */
-  async _updateConnectionByAddressAndPort (
-    address,
-    port,
-    newConnection
-  ) {
+  async _updateConnectionByAddressAndPort (address, port, newConnection) {
     if (newConnection === undefined) {
       this.logger.fatal(
         {
@@ -172,7 +157,7 @@ class ConnectionMgr {
     }
     try {
       const index = this.connections.findIndex(
-        (connection) =>
+        connection =>
           connection.remoteAddress === address && connection.localPort === port
       )
       this.connections.splice(index, 1)
@@ -230,7 +215,7 @@ class ConnectionMgr {
    * @memberof ConnectionMgr
    */
   resetAllQueueState () {
-    this.connections = this.connections.map((connection) => {
+    this.connections = this.connections.map(connection => {
       connection.inQueue = true
       return connection
     })

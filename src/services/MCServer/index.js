@@ -5,22 +5,21 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { ConnectionMgr } = require('./connectionMgr')
-
+const debug = require('debug')('mcoserver:MCServer')
+const appSettings = require('../../../config/app-settings')
+const logger = require('../../shared/logger')
 const { ListenerThread } = require('./listenerThread')
-const { Logger } = require('../shared/loggerManager')
+const { ConnectionMgr } = require('./connectionMgr')
 
 /**
  *
+ *
+ * @class MCServer
  */
 class MCServer {
-  /**
-   *
-   * @param {string} configFilePath - file path to the configuration file
-   */
-  constructor (configFilePath) {
-    this.mgr = new ConnectionMgr(configFilePath)
-    this.logger = new Logger().getLogger('MCServer')
+  constructor () {
+    this.mgr = new ConnectionMgr()
+    this.logger = logger.child({ service: 'mcoserver:MCServer' })
   }
 
   /**
@@ -30,7 +29,7 @@ class MCServer {
 
   async startServers (config) {
     const listenerThread = new ListenerThread()
-    this.logger.info('[MCServer] Starting the listening sockets...')
+    this.logger.info('Starting the listening sockets...')
     const tcpPortList = [
       6660,
       8228,
@@ -58,10 +57,11 @@ class MCServer {
       9014
     ]
 
-    await tcpPortList.map((port) =>
+    await tcpPortList.forEach(port => {
       listenerThread.startTCPListener(port, this.mgr, config)
-    )
-    this.logger.info('[MCServer] Listening sockets create successfully.')
+      debug(`port ${port} listening`)
+    })
+    this.logger.info('Listening sockets create successfully.')
   }
 }
 

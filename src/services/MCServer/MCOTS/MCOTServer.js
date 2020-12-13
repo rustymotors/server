@@ -5,11 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const appSettings = require('../../../../config/app-settings')
+const logger = require('../../../shared/logger')
 const { GenericReplyMsg } = require('../GenericReplyMsg')
 const { LobbyMsg } = require('./LobbyMsg')
 const { LoginMsg } = require('./LoginMsg.js')
 const { MessageNode } = require('./MessageNode')
-const { Logger } = require('../../shared/loggerManager')
 
 /**
  *
@@ -19,7 +20,7 @@ class MCOTServer {
    *
    */
   constructor () {
-    this.logger = new Logger().getLogger('MCOTSServer')
+    this.logger = logger.child({ service: 'mcoserver:MCOTSServer' })
   }
 
   /**

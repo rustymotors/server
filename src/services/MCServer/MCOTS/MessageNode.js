@@ -5,7 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { Logger } = require('../../shared/loggerManager')
+const appSettings = require('../../../../config/app-settings')
+const logger = require('../../../shared/logger')
 
 /**
  *
@@ -16,7 +17,7 @@ class MessageNode {
    * @param {'Recieved'|'Sent'} direction
    */
   constructor (direction) {
-    this.logger = new Logger().getLogger('MessageNode')
+    this.logger = logger.child({ service: 'mcoserver:MessageNode' })
     this.direction = direction
     this.msgNo = 0
     this.seq = 999
@@ -133,7 +134,9 @@ class MessageNode {
    *
    */
   dumpPacket () {
-    const packetContents = this.serialize().toString('hex').match(/../g)
+    const packetContents = this.serialize()
+      .toString('hex')
+      .match(/../g)
     this.logger.info(
       {
         dataLength: this.dataLength,

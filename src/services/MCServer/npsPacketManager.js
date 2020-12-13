@@ -5,11 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const appSettings = require('../../../config/app-settings')
+const logger = require('../../shared/logger')
 const { LoginServer } = require('./LoginServer/LoginServer')
 const { PersonaServer } = require('./PersonaServer/PersonaServer')
 const { LobbyServer } = require('./LobbyServer/LobbyServer')
-const { Logger } = require('../shared/loggerManager')
-const { ConfigManager } = require('../shared/configManager')
 
 /**
  *
@@ -20,8 +20,8 @@ class NPSPacketManager {
    * @param {@param} databaseMgr
    */
   constructor (databaseMgr) {
-    this.logger = new Logger().getLogger('NPSPacketManager')
-    this.config = new ConfigManager('./src/services/shared/config.json').getConfig()
+    this.logger = logger.child({ service: 'mcoserver:NPSPacketManager' })
+    this.config = appSettings
     this.database = databaseMgr
     this.npsKey = ''
     this.msgNameMapping = [
@@ -40,7 +40,9 @@ class NPSPacketManager {
     ]
 
     this.loginServer = new LoginServer()
-    this.personaServer = new PersonaServer(new Logger().getLogger('PersonaServer'))
+    this.personaServer = new PersonaServer(
+      new Logger().getLogger('PersonaServer')
+    )
     this.lobbyServer = new LobbyServer()
   }
 
@@ -50,7 +52,7 @@ class NPSPacketManager {
    * @return {string}
    */
   msgCodetoName (msgId) {
-    const mapping = this.msgNameMapping.find((mapping) => {
+    const mapping = this.msgNameMapping.find(mapping => {
       return mapping.id === msgId
     })
     return mapping ? mapping.name : 'Unknown msgId'

@@ -1,6 +1,6 @@
 {
   "name": "mco-server",
-  "version": "2.0.1",
+  "version": "3.0.0-beta1",
   "description": "a server",
   "main": "src/server.js",
   "files": [
@@ -9,15 +9,15 @@
     "AUTHORS"
   ],
   "scripts": {
-    "start": "docker-compose up -d --build",
-    "stop": "docker-compose down",
+    "start": "node src/app.js",
     "test": "npm run lint-test",
     "doc": "jsdoc -R README.md -P package.json -r src",
     "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
     "prod": "node src/app.js | ./node_modules/.bin/bunyan",
-    "lint-test": "standard --fix && tap --coverage test",
+    "lint-test": "prettier-standard --format && tap --coverage test",
     "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "prepare": "npm run snyk-protect",
+    "precommit": "prettier-standard --lint"
   },
   "author": "Joe Becher <jwbecher@drazisil.com> (drazisil.com)",
   "license": "MPL-2.0",
@@ -27,67 +27,26 @@
     "url": "git@github.com:drazisil/mco-server.git"
   },
   "engines": {
-    "node": "10.16.0"
+    "node": "<=v9.11.2"
   },
   "dependencies": {
-    "@types/bunyan": "1.8.6",
     "@types/pg": "7.14.7",
     "@types/statsd-client": "0.4.1",
-    "bunyan": "1.8.14",
-    "bunyan-gelf": "1.1.0",
     "c-struct": "0.0.5",
+    "debug": "4.3.1",
     "pg": "8.5.1",
     "pg-migrator": "1.0.5",
     "snyk": "1.434.4",
-    "statsd-client": "0.4.5",
-    "ts-node": "9.1.1",
+    "supports-color": "8.0.0",
     "winston": "3.3.3",
     "winston-daily-rotate-file": "4.5.0"
   },
   "devDependencies": {
     "@types/node": "^14.14.11",
     "jsdoc": "3.6.6",
-    "standard": "^16.0.3",
+    "prettier-standard": "16.4.1",
     "supertest": "6.0.1",
     "tap": "14.11.0"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "coverageDirectory": "./coverage/",
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "**/*.{ts,tsx}",
-      "!**/node_modules/**",
-      "!**/dist/**",
-      "!**/coverage/**",
-      "!**/typings/**"
-    ],
-    "moduleFileExtensions": [
-      "ts",
-      "json",
-      "jsx",
-      "tsx",
-      "node",
-      "js"
-    ],
-    "coverageReporters": [
-      "lcov",
-      "text"
-    ],
-    "reporters": [
-      "default",
-      "jest-junit"
-    ],
-    "testPathIgnorePatterns": [
-      "<rootDir>/test/",
-      "<rootDir>/dist/",
-      "<rootDir>/node_modules/"
-    ]
-  },
-  "jest-junit": {
-    "output": "test-reports/jest/junit.xml"
   },
   "snyk": true
 }
