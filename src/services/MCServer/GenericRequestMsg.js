@@ -22,7 +22,7 @@ class GenericRequestMsg {
    *
    */
   constructor () {
-    this.logger = logger.child({ service:'mcoserver:GenericRequestMsg'})
+    this.logger = logger.child({ service: 'mcoserver:GenericRequestMsg' })
     this.msgNo = 0
     this.data = Buffer.alloc(4)
     this.data2 = Buffer.alloc(4)
