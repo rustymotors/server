@@ -5,12 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { MCOTServer } = require('../../../../src/services/MCServer/MCOTS/MCOTServer')
+const {
+  MCOTServer
+} = require('../../../../src/services/MCServer/MCOTS/MCOTServer')
 const tap = require('tap')
 
 const mcotServer = new MCOTServer()
 
-tap.test('MCOTS Server', (t) => {
+tap.test('MCOTS Server', t => {
   tap.equal(mcotServer._MSG_STRING(438), 'MC_CLIENT_CONNECT_MSG')
 
   tap.equal(mcotServer._MSG_STRING(105), 'MC_LOGIN')

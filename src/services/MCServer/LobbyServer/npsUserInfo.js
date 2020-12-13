@@ -5,8 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const debug = require('debug')('mcoserver:npsUserInfo')
+const appSettings = require('../../../../config/app-settings')
+const logger = require('../../../shared/logger')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
-const { Logger } = require('../../shared/loggerManager')
 
 /**
  *
@@ -19,7 +21,7 @@ class NPSUserInfo extends NPSMsg {
    */
   constructor (direction) {
     super(direction)
-    this.logger = new Logger().getLogger('NPSUserInfo')
+    this.logger = logger.child({ service: 'mcoserver:NPSUserInfo' })
     this.userId = 0
     this.userName = Buffer.from([0x00]) // 30 length
     this.userData = Buffer.from([0x00]) // 64 length
@@ -42,10 +44,10 @@ class NPSUserInfo extends NPSMsg {
    */
   dumpInfo () {
     this.dumpPacketHeader('NPSUserInfo')
-    this.logger.debug(`UserId:        ${this.userId}`)
-    this.logger.debug(`UserName:      ${this.userName.toString()}`)
-    this.logger.debug(`UserData:      ${this.userData.toString('hex')}`)
-    this.logger.debug('[/NPSUserInfo]======================================')
+    debug(`UserId:        ${this.userId}`)
+    debug(`UserName:      ${this.userName.toString()}`)
+    debug(`UserData:      ${this.userData.toString('hex')}`)
+    debug('[/NPSUserInfo]======================================')
   }
 }
 

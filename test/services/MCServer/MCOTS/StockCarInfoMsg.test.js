@@ -5,12 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { StockCarInfoMsg } = require('../../../../src/services/MCServer/MCOTS/StockCarInfoMsg')
+const {
+  StockCarInfoMsg
+} = require('../../../../src/services/MCServer/MCOTS/StockCarInfoMsg')
 const tap = require('tap')
 
 const stockCarInfoMsg1 = new StockCarInfoMsg(1, 0, 0)
 
-tap.test('StockCarInfoMsg', (t) => {
+tap.test('StockCarInfoMsg', t => {
   const {
     msgNo,
     starterCash,

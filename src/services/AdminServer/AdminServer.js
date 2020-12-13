@@ -5,12 +5,19 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const debug = require('debug')('mcoserver:AdminServer')
+const appSettings = require('../../../config/app-settings')
+const logger = require('../../shared/logger')
 const fs = require('fs')
 const https = require('https')
-const { Logger } = require('../shared/loggerManager')
 
 /**
  *
+ *
+ * @class AdminServer
+ * @property {MCServer} mcServer
+ * @property {winston.Logger} logger
+ * @property {https.httpServer|undefined} httpServer
  */
 class AdminServer {
   /**
@@ -22,7 +29,9 @@ class AdminServer {
     /**
      * @type {Logger}
      */
-    this.logger = new Logger().getLogger('AdminServer')
+    this.logger = logger.child({service: 'mcoserver:AdminServer' })
+    /** @type {https.httpsServer|undefined} */
+    let httpServer
   }
 
   /**
@@ -135,16 +144,22 @@ class AdminServer {
    * @param {IServerConfiguration.serverConfig} config
    */
   async start (config) {
-    const httpsServer = https
-      .createServer(
+    try {
+      this.httpsServer = https.createServer(
         this._sslOptions(config),
         (req, res) => {
           this._httpsHandler(req, res)
         }
       )
-    httpsServer.listen({ port: 88, host: '0.0.0.0' })
-    httpsServer.on('connection', (socket) => {
-      socket.on('error', (error) => {
+    } catch (err) {
+      this.logger.error(`${err.message}, ${err.stack}`)
+      process.exit(-1)
+    }
+    this.httpsServer.listen({ port: 88, host: '0.0.0.0' }, () => {
+      debug('port 88 listening')
+    })
+    this.httpsServer.on('connection', socket => {
+      socket.on('error', error => {
         throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`)
       })
     })

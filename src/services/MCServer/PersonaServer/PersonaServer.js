@@ -285,7 +285,7 @@ class PersonaServer {
    */
   _getPersonasByCustomerId (customerId) {
     /** @type {IPersonaRecord[]} */
-    const results = this.personaList.filter((persona) => {
+    const results = this.personaList.filter(persona => {
       return persona.customerId === customerId
     })
     if (results.length === 0) {
@@ -303,7 +303,7 @@ class PersonaServer {
    */
   _getPersonasById (id) {
     /** @type {IPersonaRecord[]} */
-    const results = this.personaList.filter((persona) => {
+    const results = this.personaList.filter(persona => {
       const match = id === persona.id.readInt32BE(0)
       return match
     })

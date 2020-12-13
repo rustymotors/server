@@ -5,7 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { Logger } = require('../shared/loggerManager')
+const appSettings = require('../../../config/app-settings')
+const logger = require('../../shared/logger')
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
@@ -21,7 +22,7 @@ class GenericReplyMsg {
    *
    */
   constructor () {
-    this.logger = new Logger().getLogger('GenericReplyMsg')
+    this.logger = logger.child({ service: 'mcoserver:GenericReplyMsg' })
 
     this.msgNo = 0
     this.toFrom = 0

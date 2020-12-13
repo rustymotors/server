@@ -5,7 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { LoginMsg } = require('../../../../src/services/MCServer/MCOTS/LoginMsg.js')
+const {
+  LoginMsg
+} = require('../../../../src/services/MCServer/MCOTS/LoginMsg.js')
 const tap = require('tap')
 
 const inboundBuffer = Buffer.alloc(42)
@@ -13,7 +15,7 @@ inboundBuffer.write('NotAPerson', 24)
 inboundBuffer.write('0.0.0.0', 34)
 const loginMsg1 = new LoginMsg(inboundBuffer)
 
-tap.test('LoginMsg', (t) => {
+tap.test('LoginMsg', t => {
   const {
     appId,
     toFrom,

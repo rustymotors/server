@@ -5,7 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const assert = require('assert')
+const debug = require('debug')('mcoserver:TCPManager')
+const appSettings = require('../../../../config/app-settings')
+const logger = require('../../../shared/logger')
+
 const { MCOTServer } = require('./MCOTServer')
 const { ClientConnectMsg } = require('../ClientConnectMsg')
 const { GenericReplyMsg } = require('../GenericReplyMsg')
@@ -13,12 +16,12 @@ const { GenericRequestMsg } = require('../GenericRequestMsg')
 const { MessageNode } = require('./MessageNode')
 const { StockCar } = require('./StockCar')
 const { StockCarInfoMsg } = require('./StockCarInfoMsg')
-const { DatabaseManager } = require('../../shared/databaseManager')
-const { Logger } = require('../../shared/loggerManager')
+const { DatabaseManager } = require('../../../shared/databaseManager')
 
-const logger = new Logger().getLogger('TCPManager')
 const mcotServer = new MCOTServer()
-const databaseManager = new DatabaseManager(new Logger().getLogger('DatabaseManager'))
+const databaseManager = new DatabaseManager(
+  logger.child({ service: 'mcoserver:DatabaseManager' })
+)
 
 /**
  *
@@ -30,9 +33,9 @@ async function compressIfNeeded (conn, node) {
 
   // Check if compression is needed
   if (node.getLength() < 80) {
-    logger.debug('Too small, should not compress')
+    debug('Too small, should not compress')
   } else {
-    logger.debug('This packet should be compressed')
+    debug('This packet should be compressed')
   }
   return { conn, packetToWrite }
 }
@@ -47,7 +50,7 @@ async function encryptIfNeeded (conn, node) {
 
   // Check if encryption is needed
   if (node.flags - 8 >= 0) {
-    logger.debug('encryption flag is set')
+    debug('encryption flag is set')
 
     if (conn.enc) {
       node.updateBuffer(conn.enc.encrypt(node.data))
@@ -55,9 +58,7 @@ async function encryptIfNeeded (conn, node) {
       throw new Error('encryption out on connection is null')
     }
     packetToWrite = node
-    logger.debug(
-      `encrypted packet: ${packetToWrite.serialize().toString('hex')}`
-    )
+    debug(`encrypted packet: ${packetToWrite.serialize().toString('hex')}`)
   }
 
   return { conn, packetToWrite }
@@ -70,21 +71,19 @@ async function encryptIfNeeded (conn, node) {
  */
 async function socketWriteIfOpen (conn, nodes) {
   const updatedConnection = conn
-  nodes.forEach(async (node) => {
+  nodes.forEach(async node => {
     const { packetToWrite: compressedPacket } = await compressIfNeeded(
       conn,
       node
     )
     const { packetToWrite } = await encryptIfNeeded(conn, compressedPacket)
     // Log that we are trying to write
-    logger.debug(
+    debug(
       ` Atempting to write seq: ${packetToWrite.seq} to conn: ${updatedConnection.id}`
     )
 
     // Log the buffer we are writing
-    logger.debug(
-      `Writting buffer: ${packetToWrite.serialize().toString('hex')}`
-    )
+    debug(`Writting buffer: ${packetToWrite.serialize().toString('hex')}`)
     if (conn.sock.writable) {
       // Write the packet to socket
       conn.sock.write(packetToWrite.serialize())
@@ -144,20 +143,18 @@ async function ClientConnect (con, node) {
   // Not currently using this
   const newMsg = new ClientConnectMsg(node.data)
 
-  logger.debug(
-    `[TCPManager] Looking up the session key for ${newMsg.customerId}...`
-  )
+  debug(`[TCPManager] Looking up the session key for ${newMsg.customerId}...`)
   const res = await databaseManager.fetchSessionKeyByCustomerId(
     newMsg.customerId
   )
   assert(res.session_key)
-  logger.warn(`[TCPManager] Session Key: ${res.session_key}`)
+  debug(`[TCPManager] Session Key: ${res.session_key}`)
 
   const connectionWithKey = con
 
   const { customerId, personaId, personaName } = newMsg
   const sessionKey = res.session_key
-  logger.debug(`Raw Session Key: ${sessionKey}`)
+  debug(`Raw Session Key: ${sessionKey}`)
 
   const strKey = Buffer.from(sessionKey, 'hex')
   connectionWithKey.setEncryptionKey(Buffer.from(strKey.slice(0, 16)))
@@ -166,7 +163,7 @@ async function ClientConnect (con, node) {
   connectionWithKey.appId = newMsg.getAppId()
 
   // Log the session key
-  logger.debug(
+  debug(
     `cust: ${customerId} ID: ${personaId} Name: ${personaName} SessionKey: ${strKey[0].toString(
       16
     )} ${strKey[1].toString(16)} ${strKey[2].toString(16)} ${strKey[3].toString(
@@ -299,7 +296,7 @@ async function ProcessInput (node, conn) {
 async function MessageReceived (msg, con) {
   const newConnection = con
   if (!newConnection.useEncryption && msg.flags && 0x08) {
-    logger.debug('Turning on encryption')
+    debug('Turning on encryption')
     newConnection.useEncryption = true
   }
 
@@ -357,16 +354,8 @@ async function MessageReceived (msg, con) {
  */
 async function defaultHandler (rawPacket) {
   const { connection, remoteAddress, localPort, data } = rawPacket
-  // try {
   const messageNode = new MessageNode('Recieved')
   messageNode.deserialize(data)
-  // } catch (e) {
-  //   if (e instanceof RangeError) {
-  //     // This is a very short packet, likely a heartbeat
-  //     logger.debug("Unable to pack into a MessageNode, sending to Lobby");
-  //   }
-  //   throw new Error(`[TCPManager] Unable to pack into MessageNode: ${e}`);
-  // }
 
   logger.info(
     {
