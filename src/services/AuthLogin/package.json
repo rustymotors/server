@@ -39,7 +39,7 @@
     "statsd-client": "0.4.2",
     "ts-node": "9.1.1",
     "winston": "3.2.1",
-    "winston-daily-rotate-file": "3.9.0",
+    "winston-daily-rotate-file": "4.5.0",
     "snyk": "1.436.0"
   },
   "devDependencies": {
