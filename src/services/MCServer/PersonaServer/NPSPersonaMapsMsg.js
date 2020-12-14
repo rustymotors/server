@@ -6,7 +6,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:NPSPersonaMapsMsg')
-const appSettings = require('../../../../config/app-settings')
 const logger = require('../../../shared/logger')
 
 const struct = require('c-struct')
