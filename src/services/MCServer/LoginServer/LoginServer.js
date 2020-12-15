@@ -5,6 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const debug = require('debug')('mcoserver:LoginServer')
 const logger = require('../../../shared/logger')
 const { NPSUserStatus } = require('./npsUserStatus')
 const { premadeLogin } = require('./packet')
@@ -44,7 +45,7 @@ class LoginServer {
         break
       }
       default:
-        this.logger.info(
+        debug(
           {
             requestCode,
             localPort,
@@ -54,13 +55,13 @@ class LoginServer {
         )
         return connection
     }
-    this.logger.info(
+    debug(
       {
         userStatus: responsePacket.toString('hex')
       },
       'responsePacket object from dataHandler'
     )
-    this.logger.info(
+    debug(
       `responsePacket's data prior to sending: ${responsePacket.toString(
         'hex'
       )}`
@@ -75,7 +76,7 @@ class LoginServer {
    * @return {{ contextId: string, customerId: Buffer, userId: Buffer}}
    */
   _npsGetCustomerIdByContextId (contextId) {
-    this.logger.info('Entering _npsGetCustomerIdByContextId...')
+    debug('Entering _npsGetCustomerIdByContextId...')
     const users = [
       {
         contextId: '5213dee3a6bcdb133373b2d4f3b9962758',
@@ -95,7 +96,7 @@ class LoginServer {
       return user.contextId === contextId
     })
     if (userRecord.length !== 1) {
-      this.logger.warn(
+      debug(
         {
           contextId
         },
@@ -105,7 +106,7 @@ class LoginServer {
         `Unable to locate user record matching contextId ${contextId}`
       )
     }
-    this.logger.info(
+    debug(
       {
         contextId,
         userRecord
@@ -136,7 +137,7 @@ class LoginServer {
 
     userStatus.extractSessionKeyFromPacket(config.serverConfig, data)
 
-    this.logger.info(
+    debug(
       {
         userStatus: userStatus.toJSON()
       },
@@ -149,7 +150,7 @@ class LoginServer {
     const customer = this._npsGetCustomerIdByContextId(userStatus.contextId)
 
     // Save sessionKey in database under customerId
-    this.logger.info('Preparing to update session key in db')
+    debug('Preparing to update session key in db')
     await this.databaseManager._updateSessionKey(
       customer.customerId.readInt32BE(0),
       userStatus.sessionKey,
@@ -162,7 +163,7 @@ class LoginServer {
     // TODO: This needs to be dynamically generated, right now we are using a
     // a static packet that works _most_ of the time
     const packetContent = premadeLogin()
-    this.logger.warn(`Using Premade Login: ${packetContent.toString('hex')}`)
+    debug(`Using Premade Login: ${packetContent.toString('hex')}`)
 
     // MsgId: 0x601
     Buffer.from([0x06, 0x01]).copy(packetContent)
