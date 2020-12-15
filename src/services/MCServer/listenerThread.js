@@ -87,9 +87,7 @@ class ListenerThread {
     const connection = connectionMgr.findOrNewConnection(socket)
 
     const { localPort, remoteAddress } = socket
-    this.logger.info(
-      `[listenerThread] Client ${remoteAddress} connected to port ${localPort}`
-    )
+    this.logger.info(`Client ${remoteAddress} connected to port ${localPort}`)
     if (socket.localPort === 7003 && connection.inQueue) {
       /**
        * Debug seems hard-coded to use the connection queue
@@ -101,7 +99,7 @@ class ListenerThread {
     }
     socket.on('end', () => {
       this.logger.info(
-        `[listenerThread] Client ${remoteAddress} disconnected from port ${localPort}`
+        `Client ${remoteAddress} disconnected from port ${localPort}`
       )
     })
     socket.on('data', data => {
@@ -109,7 +107,7 @@ class ListenerThread {
     })
     socket.on('error', err => {
       if (err.code !== 'ECONNRESET') {
-        this.logger.error({ err }, 'Socket error')
+        this.logger.error(`Socket error: ${err}`)
       }
     })
   }
