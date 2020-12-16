@@ -16,12 +16,12 @@ const deepCopyFunction = inObject => {
   outObject = Array.isArray(inObject) ? [] : {}
 
   for (let key in inObject) {
-      if (inObject[key]) {
-        value = inObject[key]
+    if (inObject[key]) {
+      value = inObject[key]
 
-        // Recursively (deep) copy for nested objects, including arrays
-        outObject[key] = deepCopyFunction(value)   
-      }
+      // Recursively (deep) copy for nested objects, including arrays
+      outObject[key] = deepCopyFunction(value)
+    }
   }
 
   return outObject
