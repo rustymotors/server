@@ -15,7 +15,7 @@ const deepCopyFunction = inObject => {
   // Create an array or object to hold the values
   outObject = Array.isArray(inObject) ? [] : {}
 
-  for (key in inObject) {
+  for (let key in inObject) {
     value = inObject[key]
 
     // Recursively (deep) copy for nested objects, including arrays
