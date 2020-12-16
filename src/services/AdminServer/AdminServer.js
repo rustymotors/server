@@ -150,8 +150,7 @@ class AdminServer {
         }
       )
     } catch (err) {
-      this.logger.error(`${err.message}, ${err.stack}`)
-      process.exit(-1)
+      throw new Error(`${err.message}, ${err.stack}`)
     }
     this.httpsServer.listen({ port: 88, host: '0.0.0.0' }, () => {
       debug('port 88 listening')
