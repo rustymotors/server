@@ -5,10 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { NPSUserInfo } = require('../../../../src/services/MCServer/LobbyServer/npsUserInfo')
+const {
+  NPSUserInfo
+} = require('../../../../src/services/MCServer/LobbyServer/npsUserInfo')
 const tap = require('tap')
 
-tap.test('NPSUserInfo', (t) => {
+tap.test('NPSUserInfo', t => {
   const testPacket = Buffer.concat([
     Buffer.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x84, 0x5f, 0xed]),
     Buffer.alloc(98)

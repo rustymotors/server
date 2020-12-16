@@ -5,8 +5,8 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "editor.defaultFormatter": "chenxsan.vscode-standardjs",
+  "editor.defaultFormatter": "numso.prettier-standard-vscode",
   "[javascript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    "editor.defaultFormatter": "numso.prettier-standard-vscode"
   }
 }

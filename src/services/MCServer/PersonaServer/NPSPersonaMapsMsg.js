@@ -5,9 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const debug = require('debug')('mcoserver:NPSPersonaMapsMsg')
+const logger = require('../../../shared/logger')
+
 const struct = require('c-struct')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
-const { Logger } = require('../../shared/loggerManager')
 
 const npsPersonaMapsMsgSchema = new struct.Schema({
   msgNo: struct.type.uint16,
@@ -47,7 +49,7 @@ class NPSPersonaMapsMsg extends NPSMsg {
   constructor (direction) {
     super(direction)
 
-    this.logger = new Logger().getLogger('NPSPersonaMapsMsg')
+    this.logger = logger.child({ service: 'mcoserver:NPSPersonaMapsMsg' })
     /** @type {IPersonaRecord[]} */
     this.personas = []
     // public personaSize = 1296;
@@ -122,38 +124,38 @@ class NPSPersonaMapsMsg extends NPSMsg {
       // This is the persona count
       packetContent.writeInt16BE(
         this.personaCount,
-        (this.personaSize * index + 0)
+        this.personaSize * index + 0
       )
 
       // This is the max persona count (confirmed - debug)
       packetContent.writeInt8(
         this.deserializeInt8(persona.maxPersonas),
-        (this.personaSize * index + 5)
+        this.personaSize * index + 5
       )
 
       // PersonaId
       packetContent.writeUInt32BE(
         this.deserializeInt32(persona.id),
-        (this.personaSize * index + 8)
+        this.personaSize * index + 8
       )
 
       // Shard ID
       // packetContent.writeInt32BE(this.shardId, 1281);
       packetContent.writeInt32BE(
         this.deserializeInt32(persona.shardId),
-        (this.personaSize * index + 12)
+        this.personaSize * index + 12
       )
 
       // Length of Persona Name
       packetContent.writeInt16BE(
         persona.name.length,
-        (this.personaSize * index + 20)
+        this.personaSize * index + 20
       )
 
       // Persona Name = 30-bit null terminated string
       packetContent.write(
         this.deserializeString(persona.name),
-        (this.personaSize * index + 22)
+        this.personaSize * index + 22
       )
       index++
     }
@@ -172,28 +174,18 @@ class NPSPersonaMapsMsg extends NPSMsg {
    */
   dumpPacket () {
     this.dumpPacketHeader('NPSPersonaMapsMsg')
-    this.logger.debug(`personaCount:        ${this.personaCount}`)
+    debug(`personaCount:        ${this.personaCount}`)
     for (const persona of this.personas) {
-      this.logger.debug(
-        `maxPersonaCount:     ${this.deserializeInt8(persona.maxPersonas)}`
-      )
-      this.logger.debug(
-        `id:                  ${this.deserializeInt32(persona.id)}`
-      )
-      this.logger.debug(
-        `shardId:             ${this.deserializeInt32(persona.shardId)}`
-      )
-      this.logger.debug(
-        `name:                ${this.deserializeString(persona.name)}`
-      )
+      debug(`maxPersonaCount:     ${this.deserializeInt8(persona.maxPersonas)}`)
+      debug(`id:                  ${this.deserializeInt32(persona.id)}`)
+      debug(`shardId:             ${this.deserializeInt32(persona.shardId)}`)
+      debug(`name:                ${this.deserializeString(persona.name)}`)
     }
-    this.logger.debug(`Packet as hex:       ${this.getPacketAsString()}`)
+    debug(`Packet as hex:       ${this.getPacketAsString()}`)
 
     // TODO: Work on this more
 
-    this.logger.debug(
-      '[/NPSPersonaMapsMsg]======================================'
-    )
+    debug('[/NPSPersonaMapsMsg]======================================')
   }
 }
 

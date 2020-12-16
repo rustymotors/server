@@ -1,4 +1,5 @@
 # MCO-Server
+
 ![Node.js CI](https://github.com/drazisil/mco-server/workflows/Node.js%20CI/badge.svg)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![Known Vulnerabilities](https://snyk.io/test/github/drazisil/mco-server/badge.svg)](https://snyk.io/test/github/drazisil/mco-server)

@@ -5,13 +5,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { Logger } = require('../../shared/loggerManager')
+const debug = require('debug')('mcoserver:StockCar')
+const logger = require('../../../shared/logger')
+
 // DWORD   brandedPartID;
 // DWORD   retailPrice;
 // WORD    bIsDealOfTheDay;
 
 /**
  *
+ *
+ * @class StockCar
  */
 class StockCar {
   /**
@@ -20,12 +24,8 @@ class StockCar {
    * @param {number} retailPrice
    * @param {0|1} bIsDealOfTheDay
    */
-  constructor (
-    brandedPartId,
-    retailPrice,
-    bIsDealOfTheDay
-  ) {
-    this.logger = new Logger().getLogger('StockCar')
+  constructor (brandedPartId, retailPrice, bIsDealOfTheDay) {
+    this.logger = logger.child({ service: 'mcoserver:StockCar' })
 
     this.brandedPartId = brandedPartId
     this.retailPrice = retailPrice
@@ -48,11 +48,11 @@ class StockCar {
    * dumpPacket
    */
   dumpPacket () {
-    this.logger.debug('[StockCar]======================================')
-    this.logger.debug(`brandedPartId:     ${this.brandedPartId}`)
-    this.logger.debug(`retailPrice        ${this.retailPrice}`)
-    this.logger.debug(`isDealOfTheDay:    ${this.bIsDealOfTheDay}`)
-    this.logger.debug('[/StockCar]======================================')
+    debug('[StockCar]======================================')
+    debug(`brandedPartId:     ${this.brandedPartId}`)
+    debug(`retailPrice        ${this.retailPrice}`)
+    debug(`isDealOfTheDay:    ${this.bIsDealOfTheDay}`)
+    debug('[/StockCar]======================================')
   }
 }
 

@@ -5,7 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { Logger } = require('../../shared/loggerManager')
+const debug = require('debug')('mcoserver:StockCarInfoMsg')
+const logger = require('../../../shared/logger')
 
 // WORD     msgNo;
 // DWORD    starterCash; // when called from the create persona screen,
@@ -27,7 +28,7 @@ class StockCarInfoMsg {
    * @param {number} brand
    */
   constructor (starterCash, dealerId, brand) {
-    this.logger = new Logger().getLogger('StockCarMsg')
+    this.logger = logger.child({ service: 'mcoserver:StockCarInfoMsg' })
 
     this.msgNo = 141
     this.starterCash = 1
@@ -76,7 +77,7 @@ class StockCarInfoMsg {
    * dumpPacket
    */
   dumpPacket () {
-    this.logger.debug(
+    debug(
       {
         msgNo: this.msgNo,
         starterCash: this.starterCash,

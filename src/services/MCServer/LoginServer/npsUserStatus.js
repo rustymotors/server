@@ -5,10 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const debug = require('debug')('mcoserver:npsUserStatus')
+const logger = require('../../../shared/logger')
 const crypto = require('crypto')
 const fs = require('fs')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
-const { Logger } = require('../../shared/loggerManager')
 
 /**
  * Load the RSA private key and return a NodeRSA object
@@ -43,7 +44,7 @@ class NPSUserStatus extends NPSMsg {
    */
   constructor (packet) {
     super('Recieved')
-    this.logger = new Logger().getLogger('NPSUserStatus')
+    this.logger = logger.child({ service: 'mcoserver:NPSUserStatus' })
     this.sessionKey = ''
 
     // Save the NPS opCode
@@ -67,10 +68,7 @@ class NPSUserStatus extends NPSMsg {
    * @param {IServerConfiguration.serverConfig} serverConfig
    * @param {Buffer} packet
    */
-  extractSessionKeyFromPacket (
-    serverConfig,
-    packet
-  ) {
+  extractSessionKeyFromPacket (serverConfig, packet) {
     // Decrypt the sessionKey
     const privateKey = fetchPrivateKeyFromFile(serverConfig.privateKeyFilename)
 
@@ -105,7 +103,7 @@ class NPSUserStatus extends NPSMsg {
    */
   dumpPacket () {
     this.dumpPacketHeader('NPSUserStatus')
-    this.logger.debug(
+    debug(
       {
         contextId: this.contextId,
         sessionKey: this.sessionKey

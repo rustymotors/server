@@ -5,41 +5,39 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { PersonaServer } = require('../../../../src/services/MCServer/PersonaServer/PersonaServer')
+const {
+  PersonaServer
+} = require('../../../../src/services/MCServer/PersonaServer/PersonaServer')
 const tap = require('tap')
 const { NPSMsg } = require('../../../../src/services/MCServer/MCOTS/NPSMsg')
 
 const fakeLogger = {
-  info: function () { },
-  warn: function () { },
-  error: function () { }
+  info: function () {},
+  warn: function () {},
+  error: function () {}
 }
 
-tap.test('PersonaServer Methods', async (t) => {
+tap.test('PersonaServer Methods', async t => {
   const personaServer = new PersonaServer(fakeLogger)
   const results = personaServer._getPersonasByCustomerId(5551212)
   t.equal(results.length, 2)
   const name = results[0].name.toString('utf8')
   t.contains(name, 'Dr Brown')
 
-  const personas = await personaServer._npsGetPersonaMapsByCustomerId(
-    5551212
-  )
+  const personas = await personaServer._npsGetPersonaMapsByCustomerId(5551212)
   const id1 = personas[0].id
   const name1 = personas[0].name
   t.equal(id1.readInt32BE(0), 8675309)
   t.equal(name1.toString('utf8').length, 30)
 
-  const badPersonas = await personaServer._getPersonasByCustomerId(
-    123654
-  )
+  const badPersonas = await personaServer._getPersonasByCustomerId(123654)
 
   t.equals(badPersonas.length, 0, 'no personas found')
 
   t.done()
 })
 
-tap.test('PersonaServer _npsSelectGamePersona()', async (t) => {
+tap.test('PersonaServer _npsSelectGamePersona()', async t => {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg('Recieved').serialize()
   const results = await personaServer._npsSelectGamePersona(data)
@@ -47,7 +45,7 @@ tap.test('PersonaServer _npsSelectGamePersona()', async (t) => {
   t.done()
 })
 
-tap.test('PersonaServer _npsNewGameAccount()', async (t) => {
+tap.test('PersonaServer _npsNewGameAccount()', async t => {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg('Recieved').serialize()
   const results = await personaServer._npsNewGameAccount(data)
@@ -55,7 +53,7 @@ tap.test('PersonaServer _npsNewGameAccount()', async (t) => {
   t.done()
 })
 
-tap.test('PersonaServer _npsLogoutGameUser()', async (t) => {
+tap.test('PersonaServer _npsLogoutGameUser()', async t => {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg('Recieved').serialize()
   const results = await personaServer._npsLogoutGameUser(data)
@@ -63,7 +61,7 @@ tap.test('PersonaServer _npsLogoutGameUser()', async (t) => {
   t.done()
 })
 
-tap.test('PersonaServer _npsCheckToken()', async (t) => {
+tap.test('PersonaServer _npsCheckToken()', async t => {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg('Recieved').serialize()
   const results = await personaServer._npsCheckToken(data)
@@ -71,7 +69,7 @@ tap.test('PersonaServer _npsCheckToken()', async (t) => {
   t.done()
 })
 
-tap.test('PersonaServer _npsValidatePersonaName()', async (t) => {
+tap.test('PersonaServer _npsValidatePersonaName()', async t => {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg('Recieved').serialize()
   const results = await personaServer._npsValidatePersonaName(data)
@@ -79,7 +77,7 @@ tap.test('PersonaServer _npsValidatePersonaName()', async (t) => {
   t.done()
 })
 
-tap.test('PersonaServer _send()', async (t) => {
+tap.test('PersonaServer _send()', async t => {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg('Recieved')
   const fakeSocket = {}
@@ -87,10 +85,12 @@ tap.test('PersonaServer _send()', async (t) => {
   t.done()
 })
 
-tap.test('PersonaServer _npsGetPersonaMapsByCustomerId()', async (t) => {
+tap.test('PersonaServer _npsGetPersonaMapsByCustomerId()', async t => {
   const personaServer = new PersonaServer(fakeLogger)
 
-  const personas1 = await personaServer._npsGetPersonaMapsByCustomerId(2868969472)
+  const personas1 = await personaServer._npsGetPersonaMapsByCustomerId(
+    2868969472
+  )
 
   t.equals(personas1.length, 1)
   t.match(personas1[0].name.toString('utf8'), 'Doc Joe')
