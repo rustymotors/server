@@ -5,15 +5,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const debug = require('debug')
 const appSettings = require('../../../config/app-settings')
-const logger = require('../../shared/logger')
 const net = require('net')
 
 /**
  *
  */
 class ListenerThread {
-  constructor () {
+  constructor (logger) {
     this.config = appSettings
     this.logger = logger.child({ service: 'mcoserver:ListenerThread' })
   }
@@ -48,13 +48,11 @@ class ListenerThread {
       try {
         newConnection = await connection.mgr.processData(rawPacket, config)
       } catch (error) {
-        this.logger.error({ error }, 'Error in listenerThread::onData 1:')
-
-        process.exit(-1)
+        throw new Error(`Error in listenerThread::onData 1: ${error}`)
       }
       if (!connection.remoteAddress) {
-        this.logger.fatal({ connection }, 'Remote address is empty')
-        process.exit(-1)
+        debug(connection)
+        throw new Error('Remote address is empty')
       }
       try {
         await connection.mgr._updateConnectionByAddressAndPort(
@@ -63,13 +61,10 @@ class ListenerThread {
           newConnection
         )
       } catch (error) {
-        this.logger.error({ error }, 'Error in listenerThread::onData 2:')
-
-        process.exit(-1)
+        throw new Error(`Error in listenerThread::onData 2: ${error}`)
       }
     } catch (error) {
-      this.logger.error({ error }, 'Error in listenerThread::onData 3:')
-      process.exit(-1)
+      throw new Error(`Error in listenerThread::onData 3: ${error}`)
     }
   }
 

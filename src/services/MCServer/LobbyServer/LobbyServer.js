@@ -179,11 +179,10 @@ class LobbyServer {
         const { encryptedCmd } = updatedConnection
 
         if (encryptedCmd == null) {
-          logger.fatal(
+          throw new Error(
             { updatedConnection },
             'Error with encrypted command, dumping connection'
           )
-          process.exit(-1)
         }
 
         logger.info(
@@ -249,8 +248,7 @@ class LobbyServer {
       try {
         s.setEncryptionKeyDES(keys.s_key)
       } catch (error) {
-        logger.fatal({ keys, error }, 'Unable to set session key')
-        process.exit(-1)
+        throw new Error({ keys, error }, 'Unable to set session key')
       }
     }
 

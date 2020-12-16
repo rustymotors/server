@@ -5,6 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const debug = require('debug')('mcoserver:npsUserGameData')
 const cStruct = require('c-struct')
 const { Logger } = require('../../shared/loggerManager')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
@@ -65,9 +66,8 @@ class UserGameData extends NPSMsg {
     try {
       this.struct = cStruct.unpackSync('UserGameData', Buffer.alloc(1300))
     } catch (error) {
-      console.trace(error)
-      this.logger.error({ error }, 'Error unpacking struct')
-      process.exit(-1)
+      debug(error)
+      throw new Error({ error }, 'Error unpacking struct')
     }
   }
 
@@ -143,9 +143,8 @@ class UserGameData extends NPSMsg {
         endian: 'b'
       })
     } catch (error) {
-      console.trace(error)
-      this.logger.error({ error }, 'Error packing struct')
-      process.exit(-1)
+      debug(error)
+      throw new Error({ error }, 'Error packing struct')
     }
   }
 }

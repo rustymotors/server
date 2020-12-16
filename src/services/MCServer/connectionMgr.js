@@ -63,9 +63,7 @@ class ConnectionMgr {
       try {
         return npsPacketManager.processNPSPacket(rawPacket)
       } catch (error) {
-        this.logger.error({ error }, 'Error in connectionMgr::processData')
-
-        process.exit(-1)
+        throw new Error({ error }, 'Error in connectionMgr::processData')
       }
     }
 
@@ -82,8 +80,7 @@ class ConnectionMgr {
             return rawPacket.connection
           }
         } catch (error) {
-          this.logger.error({ error }, 'Error checking ban list')
-          process.exit(-1)
+          throw new Error({ error }, 'Error checking ban list')
         }
         // Unknown request, log it
         this.logger.warn(
@@ -146,14 +143,13 @@ class ConnectionMgr {
    */
   async _updateConnectionByAddressAndPort (address, port, newConnection) {
     if (newConnection === undefined) {
-      this.logger.fatal(
+      throw new Error(
         {
           remoteAddress: address,
           localPort: port
         },
         'Undefined connection'
       )
-      process.exit(-1)
     }
     try {
       const index = this.connections.findIndex(
@@ -180,14 +176,13 @@ class ConnectionMgr {
   findOrNewConnection (socket) {
     const { remoteAddress, localPort } = socket
     if (!remoteAddress) {
-      this.logger.fatal(
+      throw new Error(
         {
           remoteAddress,
           localPort
         },
         'No address in socket'
       )
-      process.exit(-1)
     }
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort)
     if (con !== undefined) {

@@ -68,8 +68,7 @@ class DatabaseManager {
       )
       return rows
     } catch (e) {
-      this.logger.fatal(`Unable to update session key: ${e}`)
-      process.exit(-1)
+      throw new Error(`Unable to update session key: ${e}`)
     }
   }
 }
