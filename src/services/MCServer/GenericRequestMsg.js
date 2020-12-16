@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { Logger } = require('../shared/loggerManager')
+const logger = require('../../shared/logger')
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // DWORD data;   // specific to the message sent (but usually 0)
@@ -13,13 +13,15 @@ const { Logger } = require('../shared/loggerManager')
 
 /**
  *
+ *
+ * @class GenericRequestMsg
  */
 class GenericRequestMsg {
   /**
    *
    */
   constructor () {
-    this.logger = new Logger().getLogger('GenericRequestMsg')
+    this.logger = logger.child({ service: 'mcoserver:GenericRequestMsg' })
     this.msgNo = 0
     this.data = Buffer.alloc(4)
     this.data2 = Buffer.alloc(4)

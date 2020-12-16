@@ -5,15 +5,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const logger = require('../../../shared/logger').child({
+  service: 'mcoserver:LobbyServer'
+})
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 const { NPSUserInfo } = require('./npsUserInfo')
 const { PersonaServer } = require('../PersonaServer/PersonaServer')
-const { DatabaseManager } = require('../../shared/databaseManager')
-const { Logger } = require('../../shared/loggerManager')
+const { DatabaseManager } = require('../../../shared/databaseManager')
 
-const logger = new Logger().getLogger('LobbyServer')
-
-const databaseManager = new DatabaseManager(new Logger().getLogger('DatabaseManager'))
+const databaseManager = new DatabaseManager(
+  logger.child({ service: 'mcoserver:DatabaseManager' })
+)
 
 /**
  *
@@ -177,11 +179,10 @@ class LobbyServer {
         const { encryptedCmd } = updatedConnection
 
         if (encryptedCmd == null) {
-          logger.fatal(
+          throw new Error(
             { updatedConnection },
             'Error with encrypted command, dumping connection'
           )
-          process.exit(-1)
         }
 
         logger.info(
@@ -216,10 +217,7 @@ class LobbyServer {
    * @param {ConnectionObj} connection
    * @param {Buffer} rawData
    */
-  async _npsRequestGameConnectServer (
-    connection,
-    rawData
-  ) {
+  async _npsRequestGameConnectServer (connection, rawData) {
     const { sock } = connection
     logger.info(
       { remoteAddress: sock.remoteAddress, data: rawData.toString('hex') },
@@ -231,7 +229,9 @@ class LobbyServer {
     userInfo.deserialize(rawData)
     userInfo.dumpInfo()
 
-    const personaManager = new PersonaServer(new Logger().getLogger('PersonaServer'))
+    const personaManager = new PersonaServer(
+      new Logger().getLogger('PersonaServer')
+    )
 
     const personas = personaManager._getPersonasById(userInfo.userId)
     if (personas.length === 0) {
@@ -248,8 +248,7 @@ class LobbyServer {
       try {
         s.setEncryptionKeyDES(keys.s_key)
       } catch (error) {
-        logger.fatal({ keys, error }, 'Unable to set session key')
-        process.exit(-1)
+        throw new Error({ keys, error }, 'Unable to set session key')
       }
     }
 

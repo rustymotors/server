@@ -5,22 +5,22 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const debug = require('debug')('mcoserver:webServer')
 const fs = require('fs')
 const https = require('https')
-const { Logger } = require('./loggerManager')
-const { ConfigManager } = require('./configManager')
+const logger = require('../../shared/logger')
 
 /**
  *
  */
-class WebServer {
+class AuthLogin {
   /**
    *
-   * @param {string} configFilePath
+   * @param {AppSettings} config
    */
-  constructor (configFilePath) {
-    this.config = new ConfigManager(configFilePath).getConfig()
-    this.logger = new Logger().getLogger('WebServer')
+  constructor (config) {
+    this.config = config
+    this.logger = logger.child({ service: 'mcoserver:AuthLogin' })
   }
 
   /**
@@ -40,7 +40,7 @@ class WebServer {
    * @memberof! WebServer
    */
   _sslOptions (configuration) {
-    this.logger.debug(fs.readFileSync(configuration.certFilename))
+    debug(`Reading ${configuration.certFilename}`)
 
     return {
       cert: fs.readFileSync(configuration.certFilename),
@@ -130,10 +130,7 @@ class WebServer {
     }
 
     if (request.url === '/cert') {
-      response.setHeader(
-        'Content-disposition',
-        'attachment; filename=cert.pem'
-      )
+      response.setHeader('Content-disposition', 'attachment; filename=cert.pem')
       return response.end(this._handleGetCert())
     }
 
@@ -160,16 +157,15 @@ class WebServer {
    */
   async start () {
     await https
-      .createServer(
-        this._sslOptions(this.config.serverConfig),
-        (req, res) => {
-          this._httpsHandler(req, res)
-        }
-      )
-      .listen({ port: 443, host: '0.0.0.0' })
+      .createServer(this._sslOptions(this.config.serverConfig), (req, res) => {
+        this._httpsHandler(req, res)
+      })
+      .listen({ port: 443, host: '0.0.0.0' }, () => {
+        debug('port 443 listening')
+      })
   }
 }
 
 module.exports = {
-  WebServer
+  WebServer: AuthLogin
 }

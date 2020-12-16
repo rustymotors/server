@@ -5,10 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { LobbyServer } = require('../../../../src/services/MCServer/LobbyServer/LobbyServer')
+const {
+  LobbyServer
+} = require('../../../../src/services/MCServer/LobbyServer/LobbyServer')
 const tap = require('tap')
 
-tap.test('LobbyServer', (t) => {
+tap.test('LobbyServer', t => {
   const lobbyServer = new LobbyServer()
   t.equals(lobbyServer._generateSessionKeyBuffer('123').length, 64)
 

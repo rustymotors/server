@@ -10,7 +10,7 @@ const tap = require('tap')
 
 const stockCar1 = new StockCar(105, 20, 0)
 
-tap.test('StockCar', (t) => {
+tap.test('StockCar', t => {
   const { brandedPartId, retailPrice, bIsDealOfTheDay } = stockCar1
   t.equal(brandedPartId, 105)
 

@@ -1,10 +1,10 @@
-version: "3"
+version: '3'
 services:
   authlogin:
     build: ./src/services/AuthLogin
     image: mcoserver/authlogin:latest
     ports:
-      - "443:443"
+      - '443:443'
     environment:
       PGHOST: postgres
       PGUSER: postgres
@@ -15,40 +15,40 @@ services:
     depends_on:
       - postgres
       - graylog
-    command: "npm run prod"
+    command: 'npm run prod'
   app:
     build: .
     image: mcoserver/app:latest
     ports:
-      - "80:80"
-      - "88:88"
+      - '80:80'
+      - '88:88'
       # - "443:443"
-      - "6660:6660"
-      - "7003:7003"
-      - "8226:8226"
-      - "8227:8227"
-      - "8228:8228"
-      - "43200:43200"
-      - "43300:43300"
-      - "43400:43400"
-      - "53303:43400"
-      - "9000:9000"
-      - "9001:9001"
-      - "9002:9002"
-      - "9003:9003"
-      - "9004:9004"
-      - "9005:9005"
-      - "9006:9006"
-      - "9007:9007"
-      - "9008:9008"
-      - "9009:9009"
-      - "9010:9010"
-      - "9011:9011"
-      - "9012:9012"
-      - "9013:9013"
-      - "9014:9014"
+      - '6660:6660'
+      - '7003:7003'
+      - '8226:8226'
+      - '8227:8227'
+      - '8228:8228'
+      - '43200:43200'
+      - '43300:43300'
+      - '43400:43400'
+      - '53303:43400'
+      - '9000:9000'
+      - '9001:9001'
+      - '9002:9002'
+      - '9003:9003'
+      - '9004:9004'
+      - '9005:9005'
+      - '9006:9006'
+      - '9007:9007'
+      - '9008:9008'
+      - '9009:9009'
+      - '9010:9010'
+      - '9011:9011'
+      - '9012:9012'
+      - '9013:9013'
+      - '9014:9014'
       # Node REPL
-      - "5001:5001"
+      - '5001:5001'
     environment:
       PGHOST: postgres
       PGUSER: postgres
@@ -59,7 +59,7 @@ services:
     depends_on:
       - postgres
       - graylog
-    command: "npm run prod"
+    command: 'npm run prod'
 
   postgres:
     image: postgres:11.10
@@ -67,13 +67,13 @@ services:
     environment:
       POSTGRES_PASSWORD: mco
     ports:
-      - "5432:5432"
+      - '5432:5432'
 
   adminer:
     image: adminer
     restart: always
     ports:
-      - "8181:8080"
+      - '8181:8080'
 
   # MongoDB: https://hub.docker.com/_/mongo/
   mongodb:
@@ -89,7 +89,7 @@ services:
       - http.host=0.0.0.0
       - transport.host=localhost
       - network.host=0.0.0.0
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
     ulimits:
       memlock:
         soft: -1
