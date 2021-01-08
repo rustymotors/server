@@ -9,6 +9,9 @@ const debug = require('debug')('mcoserver:AdminServer')
 const logger = require('../../shared/logger')
 const fs = require('fs')
 const https = require('https')
+const util = require('util')
+
+const readFilePromise = util.promisify(fs.readFile)
 
 /**
  *
@@ -37,11 +40,35 @@ class AdminServer {
    * @param {IServerConfiguration.serverConfig} configuration
    * @return {sslOptionsObj}
    */
-  _sslOptions (configuration) {
+  async _sslOptions (configuration) {
+    debug(`Reading ${configuration.certFilename}`)
+
+    try {
+      const cert = await readFilePromise(configuration.certFilename)
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        console.error(`Unable to load ${configuration.certFilename}, server must quit!`)  
+      } else {
+        console.error(error)
+      }
+      process.exit(-1)
+    }
+
+    try {
+      const key = await readFilePromise(configuration.privateKeyFilename)
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        console.error(`Unable to load ${configuration.privateKeyFilename}, server must quit!`)  
+      } else {
+        console.error(error)
+      }
+      process.exit(-1)
+    }
+
     return {
-      cert: fs.readFileSync(configuration.certFilename),
+      cert,
       honorCipherOrder: true,
-      key: fs.readFileSync(configuration.privateKeyFilename),
+      key,
       rejectUnauthorized: false
     }
   }
@@ -144,7 +171,7 @@ class AdminServer {
     try {
       /** @type {https.httpsServer|undefined} */
       this.httpsServer = https.createServer(
-        this._sslOptions(config),
+        await this._sslOptions(config),
         (req, res) => {
           this._httpsHandler(req, res)
         }

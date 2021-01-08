@@ -9,6 +9,9 @@ const debug = require('debug')('mcoserver:webServer')
 const fs = require('fs')
 const https = require('https')
 const logger = require('../../shared/logger')
+const util = require('util')
+
+const readFilePromise = util.promisify(fs.readFile)
 
 /**
  *
@@ -39,13 +42,35 @@ class AuthLogin {
    * @return {sslOptionsObj}
    * @memberof! WebServer
    */
-  _sslOptions (configuration) {
+  async _sslOptions (configuration) {
     debug(`Reading ${configuration.certFilename}`)
 
+    try {
+      const cert = await readFilePromise(configuration.certFilename)
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        console.error(`Unable to load ${configuration.certFilename}, server must quit!`)  
+      } else {
+        console.error(error)
+      }
+      process.exit(-1)
+    }
+
+    try {
+      const key = await readFilePromise(configuration.privateKeyFilename)
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        console.error(`Unable to load ${configuration.privateKeyFilename}, server must quit!`)  
+      } else {
+        console.error(error)
+      }
+      process.exit(-1)
+    }
+
     return {
-      cert: fs.readFileSync(configuration.certFilename),
+      cert,
       honorCipherOrder: true,
-      key: fs.readFileSync(configuration.privateKeyFilename),
+      key,
       rejectUnauthorized: false
     }
   }
@@ -157,7 +182,7 @@ class AuthLogin {
    */
   async start () {
     await https
-      .createServer(this._sslOptions(this.config.serverConfig), (req, res) => {
+      .createServer(await this._sslOptions(this.config.serverConfig), (req, res) => {
         this._httpsHandler(req, res)
       })
       .listen({ port: 443, host: '0.0.0.0' }, () => {

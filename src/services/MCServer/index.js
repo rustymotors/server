@@ -28,7 +28,7 @@ class MCServer {
 
   async startServers (config) {
     logger
-    const listenerThread = new ListenerThread()
+    const listenerThread = new ListenerThread(logger)
     this.logger.info('Starting the listening sockets...')
     const tcpPortList = [
       6660,
