@@ -9,7 +9,7 @@
     "AUTHORS"
   ],
   "scripts": {
-    "start": "node src/app.js",
+    "start": "DEBUG-mcoserver* node src/app.js",
     "test": "npm run lint-test",
     "doc": "jsdoc -R README.md -P package.json -r src",
     "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
