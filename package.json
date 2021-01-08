@@ -13,7 +13,6 @@
     "test": "npm run lint-test",
     "doc": "jsdoc -R README.md -P package.json -r src",
     "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
-    "prod": "node src/app.js | ./node_modules/.bin/bunyan",
     "lint-test": "prettier-standard --format && tap --coverage test",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect",
