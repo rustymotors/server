@@ -11,8 +11,8 @@ This assumes you know the basics of checking out a git repo. If you don't, pleas
 ### Configure server settings
 
 - In `src/services/shared/config.json`, change the IP address to the external IP of the machine the server is running on;
-- Locate the `sample.reg` file on `src/services/shared` folder, and modify all instances of `192.168.5.20` to be your server's DNS or IP.
 
+- Generate the SSL cert and keys using `scripts/make_certs.sh`
 ## Installing
 
 - `npm install`
