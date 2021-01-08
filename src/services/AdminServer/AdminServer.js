@@ -43,6 +43,9 @@ class AdminServer {
   async _sslOptions (configuration) {
     debug(`Reading ${configuration.certFilename}`)
 
+    let cert
+    let key
+
     try {
       const cert = await readFilePromise(configuration.certFilename)
     } catch (error) {
