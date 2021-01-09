@@ -42,6 +42,17 @@ tap.test('AdminServer', async t => {
       t1.contains(error, /private.key/, 'throws when key file is not found')
     }
     mock.restore()
+    //  deepcode ignore WrongNumberOfArgs/test: false positive
+    mock({
+      '/cert/cert.pem': 'stuff',
+      '/cert/private.key': 'stuff'
+    })
+    try {
+      await adminServer._sslOptions(config)
+    } catch (error) {
+      t1.contains(error, /private.key/, 'throws when key file is not found')
+    }
+    mock.restore()
     t1.done()
   })
 
