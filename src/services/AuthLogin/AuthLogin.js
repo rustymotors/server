@@ -52,7 +52,9 @@ class AuthLogin {
       const cert = await readFilePromise(configuration.certFilename)
     } catch (error) {
       if (error.code === 'ENOENT') {
-        console.error(`Unable to load ${configuration.certFilename}, server must quit!`)  
+        console.error(
+          `Unable to load ${configuration.certFilename}, server must quit!`
+        )
       } else {
         console.error(error)
       }
@@ -63,7 +65,9 @@ class AuthLogin {
       const key = await readFilePromise(configuration.privateKeyFilename)
     } catch (error) {
       if (error.code === 'ENOENT') {
-        console.error(`Unable to load ${configuration.privateKeyFilename}, server must quit!`)  
+        console.error(
+          `Unable to load ${configuration.privateKeyFilename}, server must quit!`
+        )
       } else {
         console.error(error)
       }
@@ -185,9 +189,12 @@ class AuthLogin {
    */
   async start () {
     await https
-      .createServer(await this._sslOptions(this.config.serverConfig), (req, res) => {
-        this._httpsHandler(req, res)
-      })
+      .createServer(
+        await this._sslOptions(this.config.serverConfig),
+        (req, res) => {
+          this._httpsHandler(req, res)
+        }
+      )
       .listen({ port: 443, host: '0.0.0.0' }, () => {
         debug('port 443 listening')
       })
