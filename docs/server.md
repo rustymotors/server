@@ -13,6 +13,7 @@ This assumes you know the basics of checking out a git repo. If you don't, pleas
 - In `src/services/shared/config.json`, change the IP address to the external IP of the machine the server is running on;
 
 - Generate the SSL cert and keys using `scripts/make_certs.sh`
+
 ## Installing
 
 - `npm install`
@@ -21,34 +22,34 @@ This assumes you know the basics of checking out a git repo. If you don't, pleas
 
 You will need to open the following ports:
 
-* 80
-* 443
-* 6660
-* 7003
-* 8226
-* 8227
-* 8228
-* 43200
-* 43300
-* 43400
-* 53303
-* 9000
-* 9001
-* 9002
-* 9003
-* 9004
-* 9005
-* 9006
-* 9007
-* 9008
-* 9009
-* 9010
-* 9011
-* 9012
-* 9013
-* 9014
+- 80
+- 443
+- 6660
+- 7003
+- 8226
+- 8227
+- 8228
+- 43200
+- 43300
+- 43400
+- 53303
+- 9000
+- 9001
+- 9002
+- 9003
+- 9004
+- 9005
+- 9006
+- 9007
+- 9008
+- 9009
+- 9010
+- 9011
+- 9012
+- 9013
+- 9014
 
-* 88 - Admin UI (optional)
+- 88 - Admin UI (optional)
 
 ### Running
 
