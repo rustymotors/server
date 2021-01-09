@@ -49,30 +49,20 @@ class AuthLogin {
     let key
 
     try {
-      const cert = await readFilePromise(configuration.certFilename)
+      cert = await readFilePromise(configuration.certFilename)
     } catch (error) {
-      if (error.code === 'ENOENT') {
-        console.error(
-          `Unable to load ${configuration.certFilename}, server must quit!`
+        throw new Error(
+          `Error loading ${configuration.certFilename}, server must quit!`
         )
-      } else {
-        console.error(error)
       }
-      process.exit(-1)
-    }
 
     try {
-      const key = await readFilePromise(configuration.privateKeyFilename)
+      key = await readFilePromise(configuration.privateKeyFilename)
     } catch (error) {
-      if (error.code === 'ENOENT') {
-        console.error(
-          `Unable to load ${configuration.privateKeyFilename}, server must quit!`
+        throw new Error(
+          `Error loading ${configuration.privateKeyFilename}, server must quit!`
         )
-      } else {
-        console.error(error)
       }
-      process.exit(-1)
-    }
 
     return {
       cert,

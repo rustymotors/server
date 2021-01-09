@@ -47,7 +47,7 @@ class AdminServer {
     let key
 
     try {
-      const cert = await readFilePromise(configuration.certFilename)
+      cert = await readFilePromise(configuration.certFilename)
     } catch (error) {
         throw new Error(
           `Error loading ${configuration.certFilename}, server must quit!`
@@ -55,7 +55,7 @@ class AdminServer {
       }
 
     try {
-      const key = await readFilePromise(configuration.privateKeyFilename)
+      key = await readFilePromise(configuration.privateKeyFilename)
     } catch (error) {
         throw new Error(
           `Error loading ${configuration.privateKeyFilename}, server must quit!`
