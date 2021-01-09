@@ -50,22 +50,24 @@ class AdminServer {
       const cert = await readFilePromise(configuration.certFilename)
     } catch (error) {
       if (error.code === 'ENOENT') {
-        console.error(`Unable to load ${configuration.certFilename}, server must quit!`)  
+        throw(
+          `Unable to load ${configuration.certFilename}, server must quit!`
+        )
       } else {
-        console.error(error)
+        throw(`Error: ${error}`)
       }
-      process.exit(-1)
     }
 
     try {
       const key = await readFilePromise(configuration.privateKeyFilename)
     } catch (error) {
       if (error.code === 'ENOENT') {
-        console.error(`Unable to load ${configuration.privateKeyFilename}, server must quit!`)  
+        throw(
+          `Unable to load ${configuration.privateKeyFilename}, server must quit!`
+        )
       } else {
-        console.error(error)
+        throw(`Error: ${error}`)
       }
-      process.exit(-1)
     }
 
     return {
