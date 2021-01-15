@@ -5,11 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const appSettings = require('../config/app-settings')
-const logger = require('./shared/logger')
-const { WebServer } = require('./services/AuthLogin/AuthLogin')
-const { PatchServer } = require('./services/PatchAndShard/patchServer')
-const { Server } = require('./server')
+const appSettings = require('./config/app-settings')
+const logger = require('./src/shared/logger')
+const { WebServer } = require('./src/services/AuthLogin/AuthLogin')
+const { PatchServer } = require('./src/services/PatchAndShard/patchServer')
+const { Server } = require('./src/server')
 
 // MCOS Monolith
 const server = new Server('./src/services/shared/config.json')
