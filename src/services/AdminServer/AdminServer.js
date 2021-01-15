@@ -10,6 +10,7 @@ const logger = require('../../shared/logger')
 const fs = require('fs')
 const https = require('https')
 const util = require('util')
+const tls = require("crypto");
 
 const readFilePromise = util.promisify(fs.readFile)
 
@@ -52,15 +53,19 @@ class AdminServer {
         throw new Error(
           `Error loading ${configuration.certFilename}, server must quit!`
         )
-      }
+    }
 
     try {
       key = await readFilePromise(configuration.privateKeyFilename)
     } catch (error) {
-        throw new Error(
+      throw new Error(
           `Error loading ${configuration.privateKeyFilename}, server must quit!`
-        )
-      }
+      )
+    }
+
+    const ciphers = tls.getCiphers()
+
+    debug(ciphers)
 
     return {
       cert,
@@ -166,12 +171,14 @@ class AdminServer {
    */
   async start (config) {
     try {
-      /** @type {https.httpsServer|undefined} */
+      const sslOptions = await this._sslOptions(config)
+
+      /** @type {https.Server|undefined} */
       this.httpsServer = https.createServer(
-        await this._sslOptions(config),
-        (req, res) => {
-          this._httpsHandler(req, res)
-        }
+          sslOptions,
+          (req, res) => {
+            this._httpsHandler(req, res)
+          }
       )
     } catch (err) {
       throw new Error(`${err.message}, ${err.stack}`)
