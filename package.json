@@ -2,14 +2,13 @@
   "name": "mco-server",
   "version": "3.0.0-beta1",
   "description": "a server",
-  "main": "src/server.js",
   "files": [
     "README.md",
     "CHANGELOG.md",
     "AUTHORS"
   ],
   "scripts": {
-    "start": "DEBUG=mcoserver* node src/app.js",
+    "start": "DEBUG=mcoserver* node app.js",
     "test": "npm run lint-test",
     "doc": "jsdoc -R README.md -P package.json -r src",
     "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
@@ -34,6 +33,8 @@
     "debug": "4.3.1",
     "pg": "8.5.1",
     "pg-migrator": "1.1.0",
+    "sequelize": "6.3.5",
+    "sqlite3": "4.2.0",
     "winston": "3.3.3",
     "winston-daily-rotate-file": "4.5.0"
   },

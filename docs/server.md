@@ -53,6 +53,8 @@ You will need to open the following ports:
 
 ### Running
 
+Enable Node to use port 80 and 443: `sudo setcap cap_net_bind_service=+ep $(which node)`
+
 - `npm start`
 
 This will start the server running on Docker
