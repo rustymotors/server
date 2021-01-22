@@ -3,6 +3,7 @@ logs
 coverage
 *.log
 .idea
+.vscode
 .nyc_output
 
 test-reports
