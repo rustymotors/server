@@ -2,6 +2,7 @@ node_modules
 logs
 coverage
 *.log
+.idea
 .nyc_output
 
 test-reports
