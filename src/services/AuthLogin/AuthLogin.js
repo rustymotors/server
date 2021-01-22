@@ -9,6 +9,9 @@ const debug = require('debug')('mcoserver:webServer')
 const fs = require('fs')
 const https = require('https')
 const logger = require('../../shared/logger')
+const util = require('util')
+
+const readFilePromise = util.promisify(fs.readFile)
 
 /**
  *
@@ -39,13 +42,32 @@ class AuthLogin {
    * @return {sslOptionsObj}
    * @memberof! WebServer
    */
-  _sslOptions (configuration) {
+  async _sslOptions (configuration) {
     debug(`Reading ${configuration.certFilename}`)
 
+    let cert
+    let key
+
+    try {
+      cert = await readFilePromise(configuration.certFilename)
+    } catch (error) {
+        throw new Error(
+          `Error loading ${configuration.certFilename}, server must quit!`
+        )
+      }
+
+    try {
+      key = await readFilePromise(configuration.privateKeyFilename)
+    } catch (error) {
+        throw new Error(
+          `Error loading ${configuration.privateKeyFilename}, server must quit!`
+        )
+      }
+
     return {
-      cert: fs.readFileSync(configuration.certFilename),
+      cert,
       honorCipherOrder: true,
-      key: fs.readFileSync(configuration.privateKeyFilename),
+      key,
       rejectUnauthorized: false
     }
   }
@@ -156,13 +178,28 @@ class AuthLogin {
    * @memberof! WebServer
    */
   async start () {
-    await https
-      .createServer(this._sslOptions(this.config.serverConfig), (req, res) => {
-        this._httpsHandler(req, res)
-      })
+    const sslOptions = await this._sslOptions(this.config.serverConfig)
+
+    this.httpsServer = await https
+      .createServer(
+        sslOptions,
+        (req, res) => {
+          this._httpsHandler(req, res)
+        }
+      )
       .listen({ port: 443, host: '0.0.0.0' }, () => {
         debug('port 443 listening')
       })
+    this.httpsServer.on('connection', socket => {
+      socket.on('error', error => {
+        throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`)
+      })
+    })
+    this.httpsServer.on('tlsClientError', error => {
+        debug(`[AuthLogin] SSL Socket Client Error: ${error.message}`)
+        // throw new Error(`[AuthLogin] SSL Socket Client Error: ${error.message}`)
+      })
+
   }
 }
 

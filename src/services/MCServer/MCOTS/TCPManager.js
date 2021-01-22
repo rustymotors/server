@@ -6,6 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:TCPManager')
+const appSettings = require('../../../../config/app-settings')
 const logger = require('../../../shared/logger')
 
 const { MCOTServer } = require('./MCOTServer')
@@ -19,8 +20,9 @@ const { DatabaseManager } = require('../../../shared/databaseManager')
 
 const mcotServer = new MCOTServer()
 const databaseManager = new DatabaseManager(
+  appSettings.serverConfig.connectionURL,
   logger.child({ service: 'mcoserver:DatabaseManager' })
-)
+).init()
 
 /**
  *

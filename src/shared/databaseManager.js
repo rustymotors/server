@@ -6,6 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const pool = require('./db/index')
+const { Sequelize } = require('sequelize');
 
 /**
  *
@@ -13,10 +14,27 @@ const pool = require('./db/index')
 class DatabaseManager {
   /**
    *
+   * @param {string} connectionURL
    * @param {Logger} logger
    */
-  constructor (logger) {
+  constructor (connectionURL, logger) {
+    this.sequelize = new Sequelize(connectionURL) // Example for sqlite
     this.logger = logger
+  }
+
+  /**
+   *
+   *
+   * @memberof DatabaseManager
+   */
+  async init() {
+    try {
+      await this.sequelize.authenticate();
+      this.logger.info('Connection has been established successfully.');
+    } catch (error) {
+      throw new Error(`Unable to connect to the database: ${error}`);
+    }
+    return this
   }
 
   /**

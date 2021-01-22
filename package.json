@@ -2,19 +2,17 @@
   "name": "mco-server",
   "version": "3.0.0-beta1",
   "description": "a server",
-  "main": "src/server.js",
   "files": [
     "README.md",
     "CHANGELOG.md",
     "AUTHORS"
   ],
   "scripts": {
-    "start": "node src/app.js",
+    "start": "DEBUG=mcoserver* node app.js",
     "test": "npm run lint-test",
     "doc": "jsdoc -R README.md -P package.json -r src",
     "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
-    "prod": "node src/app.js | ./node_modules/.bin/bunyan",
-    "lint-test": "prettier-standard --format && tap --coverage test",
+    "lint-test": "prettier-standard --format src test && tap --coverage test",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect",
     "precommit": "prettier-standard --lint"
@@ -36,6 +34,9 @@
     "debug": "4.3.1",
     "pg": "8.5.1",
     "pg-migrator": "1.1.0",
+    "sequelize": "6.3.5",
+    "sqlite3": "5.0.1",
+    "ssl-config": "1.0.0",
     "snyk": "1.439.0",
     "supports-color": "8.1.0",
     "winston": "3.3.3",
@@ -44,8 +45,10 @@
   "devDependencies": {
     "@types/node": "14.14.22",
     "jsdoc": "3.6.6",
+    "mock-fs": "4.13.0",
     "prettier-standard": "16.4.1",
-    "sinon": "9.2.2",
+    "sinon": "9.2.3",
+    "snyk": "1.437.3",
     "supertest": "6.0.1",
     "tap": "14.11.0"
   },

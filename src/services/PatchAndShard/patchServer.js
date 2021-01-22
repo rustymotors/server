@@ -210,6 +210,7 @@ class PatchServer {
   /**
    *
    * @memberof! PatchServer
+   * @return {http.Server}
    */
   start () {
     this.serverPatch.listen({ port: '80', host: '0.0.0.0' }, () => {
