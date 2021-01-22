@@ -2,6 +2,7 @@ node_modules
 logs
 coverage
 *.log
+.idea
 .nyc_output
 
 test-reports
@@ -16,4 +17,4 @@ out/*
 *.cert
 *.pem
 *.key
-.idea
+
