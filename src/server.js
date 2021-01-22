@@ -34,7 +34,7 @@ class Server {
 
     // Start the Admin server
     this.adminServer = new AdminServer(this.mcServer)
-    this.adminServer.start(this.config.serverConfig)
+    await this.adminServer.start(this.config.serverConfig)
     this.logger.info('Web Server started')
 
     this.logger.info('Servers started, ready for connections.')

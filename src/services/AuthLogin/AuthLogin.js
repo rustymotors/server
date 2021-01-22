@@ -178,9 +178,11 @@ class AuthLogin {
    * @memberof! WebServer
    */
   async start () {
-    await https
+    const sslOptions = await this._sslOptions(this.config.serverConfig)
+
+    this.httpsServer = await https
       .createServer(
-        await this._sslOptions(this.config.serverConfig),
+        sslOptions,
         (req, res) => {
           this._httpsHandler(req, res)
         }
@@ -188,6 +190,16 @@ class AuthLogin {
       .listen({ port: 443, host: '0.0.0.0' }, () => {
         debug('port 443 listening')
       })
+    this.httpsServer.on('connection', socket => {
+      socket.on('error', error => {
+        throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`)
+      })
+    })
+    this.httpsServer.on('tlsClientError', error => {
+        debug(`[AuthLogin] SSL Socket Client Error: ${error.message}`)
+        // throw new Error(`[AuthLogin] SSL Socket Client Error: ${error.message}`)
+      })
+
   }
 }
 

@@ -11,9 +11,7 @@ const fs = require('fs')
 const tap = require('tap')
 
 const appSettings = {
-  serverConfig: {
-    registryFilename: ''
-  }
+  serverConfig: {}
 }
 
 tap.test('WebServer', t => {

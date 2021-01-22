@@ -1,4 +1,11 @@
 const winston = require('winston')
+const path = require('path')
+
+const ipServer = '192.168.5.20'
+const certFilename = 'cert.pem'
+const privateKeyFilename = 'private_key.pem'
+const publicKeyFilename = 'pub.key'
+const connectionURL = 'sqlite:memory:'
 
 /**
  *
@@ -15,7 +22,7 @@ const winston = require('winston')
  * @property {string} ipServer
  * @property {string} privateKeyFilename
  * @property {string} publicKeyFilename
- * @property {string} registryFilename
+ * @property {string} connectionURL
  */
 
 /**
@@ -50,11 +57,11 @@ const appSettings = {
     }
   },
   serverConfig: {
-    certFilename: './data/cert.pem',
-    ipServer: '192.168.5.20',
-    privateKeyFilename: './data/private_key.pem',
-    publicKeyFilename: './data/pub.key',
-    registryFilename: './data/sample.reg'
+    certFilename: path.join(process.cwd(), 'data', certFilename),
+    ipServer,
+    privateKeyFilename: path.join(process.cwd(), 'data', privateKeyFilename),
+    publicKeyFilename: path.join(process.cwd(), 'data', publicKeyFilename),
+    connectionURL
   }
 }
 

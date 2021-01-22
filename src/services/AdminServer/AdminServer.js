@@ -10,7 +10,6 @@ const logger = require('../../shared/logger')
 const fs = require('fs')
 const https = require('https')
 const util = require('util')
-const tls = require("crypto");
 
 const readFilePromise = util.promisify(fs.readFile)
 
@@ -62,10 +61,6 @@ class AdminServer {
           `Error loading ${configuration.privateKeyFilename}, server must quit!`
       )
     }
-
-    const ciphers = tls.getCiphers()
-
-    debug(ciphers)
 
     return {
       cert,
