@@ -28,7 +28,8 @@
     "node": "<=v9.11.2"
   },
   "dependencies": {
-    "@types/pg": "7.14.7",
+    "@types/pg": "7.14.9",
+    "@types/statsd-client": "0.4.1",
     "c-struct": "0.0.5",
     "debug": "4.3.1",
     "pg": "8.5.1",
@@ -36,6 +37,8 @@
     "sequelize": "6.3.5",
     "sqlite3": "5.0.1",
     "ssl-config": "1.0.0",
+    "snyk": "1.439.0",
+    "supports-color": "8.0.0",
     "winston": "3.3.3",
     "winston-daily-rotate-file": "4.5.0"
   },
