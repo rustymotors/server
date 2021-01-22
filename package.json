@@ -42,7 +42,7 @@
     "winston-daily-rotate-file": "4.5.0"
   },
   "devDependencies": {
-    "@types/node": "14.14.13",
+    "@types/node": "14.14.22",
     "jsdoc": "3.6.6",
     "prettier-standard": "16.4.1",
     "sinon": "9.2.2",
