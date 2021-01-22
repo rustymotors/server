@@ -30,12 +30,12 @@
     "@types/statsd-client": "0.4.1",
     "c-struct": "0.0.5",
     "debug": "4.3.1",
+    "ini": "2.0.0",
     "pg": "8.5.1",
     "pg-migrator": "1.1.0",
     "sequelize": "6.4.0",
     "sqlite3": "5.0.1",
     "ssl-config": "1.0.0",
-    "snyk": "1.439.0",
     "supports-color": "8.1.0",
     "winston": "3.3.3",
     "winston-daily-rotate-file": "4.5.0"

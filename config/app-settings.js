@@ -1,18 +1,8 @@
-const winston = require('winston')
+const fs = require('fs')
+const ini = require('ini')
 const path = require('path')
 
-const ipServer = '192.168.5.20'
-const certFilename = 'cert.pem'
-const privateKeyFilename = 'private_key.pem'
-const publicKeyFilename = 'pub.key'
-const connectionURL = 'sqlite::memory:'
-
-/**
- *
- *
- * @typedef WinstonConfigs
- * @property {winston.LoggerOptions} silllyLogConfig
- */
+const config = ini.parse(fs.readFileSync(path.join(process.cwd(), 'config/app_settings.ini'), 'utf8'))
 
 /**
  *
@@ -29,39 +19,17 @@ const connectionURL = 'sqlite::memory:'
  *
  *
  * @typedef AppSettings
- * @property {WinstonConfigs} winston
  * @property {ServerConfig} serverConfig
  */
 
 /** @type {AppSettings} */
 const appSettings = {
-  winston: {
-    silllyLogConfig: {
-      level: 'silly',
-      transports: [
-        new winston.transports.File({
-          filename: './logs/silly.log'
-        }),
-        new winston.transports.Console({
-          format: winston.format.combine(
-            winston.format.timestamp({
-              format: 'YYYY-MM-DD HH:mm:ss'
-            }),
-            winston.format.errors({ stack: true }),
-            winston.format.splat(),
-            winston.format.simple(),
-            winston.format.colorize({ all: true })
-          )
-        })
-      ]
-    }
-  },
   serverConfig: {
-    certFilename: path.join(process.cwd(), 'data', certFilename),
-    ipServer,
-    privateKeyFilename: path.join(process.cwd(), 'data', privateKeyFilename),
-    publicKeyFilename: path.join(process.cwd(), 'data', publicKeyFilename),
-    connectionURL
+    certFilename: path.join(process.cwd(), config.serverConfig.certFilename),
+    ipServer: config.serverConfig.ipServer,
+    privateKeyFilename: path.join(process.cwd(), config.serverConfig.privateKeyFilename),
+    publicKeyFilename: path.join(process.cwd(), config.serverConfig.privateKeyFilename),
+    connectionURL: config.serverConfig.connectionURL
   }
 }
 
