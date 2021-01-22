@@ -10,7 +10,6 @@ const winston = require('winston')
 
 module.exports = winston.createLogger({
   ...{
-    silllyLogConfig: {
       level: 'silly',
       transports: [
         new winston.transports.File({
@@ -28,5 +27,5 @@ module.exports = winston.createLogger({
           )
         })
       ]
-    }}
+    }
 })
