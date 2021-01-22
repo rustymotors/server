@@ -38,7 +38,7 @@
     "sqlite3": "5.0.1",
     "ssl-config": "1.0.0",
     "snyk": "1.439.0",
-    "supports-color": "8.0.0",
+    "supports-color": "8.1.0",
     "winston": "3.3.3",
     "winston-daily-rotate-file": "4.5.0"
   },
