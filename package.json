@@ -32,7 +32,7 @@
     "debug": "4.3.1",
     "pg": "8.5.1",
     "pg-migrator": "1.1.0",
-    "sequelize": "6.3.5",
+    "sequelize": "6.4.0",
     "sqlite3": "5.0.1",
     "ssl-config": "1.0.0",
     "snyk": "1.439.0",
