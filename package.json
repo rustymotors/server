@@ -46,9 +46,7 @@
     "mock-fs": "4.13.0",
     "prettier-standard": "16.4.1",
     "sinon": "9.2.3",
-    "snyk": "1.437.3",
     "supertest": "6.0.1",
     "tap": "14.11.0"
-  },
-  "snyk": true
+  }
 }
