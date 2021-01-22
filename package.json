@@ -13,7 +13,6 @@
     "doc": "jsdoc -R README.md -P package.json -r src",
     "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
     "lint-test": "prettier-standard --format src test && tap --coverage test",
-    "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect",
     "precommit": "prettier-standard --lint"
   },
@@ -37,7 +36,6 @@
     "sequelize": "6.3.5",
     "sqlite3": "5.0.1",
     "ssl-config": "1.0.0",
-    "snyk": "1.439.0",
     "supports-color": "8.1.0",
     "winston": "3.3.3",
     "winston-daily-rotate-file": "4.5.0"
@@ -52,5 +50,4 @@
     "supertest": "6.0.1",
     "tap": "14.11.0"
   },
-  "snyk": true
 }
