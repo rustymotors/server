@@ -5,7 +5,7 @@ const ipServer = '192.168.5.20'
 const certFilename = 'cert.pem'
 const privateKeyFilename = 'private_key.pem'
 const publicKeyFilename = 'pub.key'
-const connectionURL = 'sqlite:memory:'
+const connectionURL = 'sqlite::memory:'
 
 /**
  *
