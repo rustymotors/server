@@ -36,7 +36,7 @@
     "sequelize": "6.5.0",
     "sqlite3": "5.0.1",
     "ssl-config": "1.0.0",
-    "supports-color": "8.1.0",
+    "supports-color": "8.1.1",
     "winston": "3.3.3",
     "winston-daily-rotate-file": "4.5.0"
   },
