@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const debug = require('debug')('mcoserver:MatchServer')
+const debug = require('debug')('mcoserver:PatchServer')
 const appSettings = require('../../../config/app-settings')
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
