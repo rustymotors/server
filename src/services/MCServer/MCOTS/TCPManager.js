@@ -22,7 +22,7 @@ const mcotServer = new MCOTServer()
 const databaseManager = new DatabaseManager(
   appSettings.serverConfig.connectionURL,
   logger.child({ service: 'mcoserver:DatabaseManager' })
-).init()
+)
 
 /**
  *

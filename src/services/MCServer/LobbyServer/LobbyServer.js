@@ -17,7 +17,7 @@ const { DatabaseManager } = require('../../../shared/databaseManager')
 const databaseManager = new DatabaseManager(
   appSettings.serverConfig.connectionURL,
   logger.child({ service: 'mcoserver:DatabaseManager' })
-).init()
+)
 
 /**
  *
