@@ -28,7 +28,7 @@ const appSettings = {
     certFilename: path.join(process.cwd(), config.serverConfig.certFilename),
     ipServer: config.serverConfig.ipServer,
     privateKeyFilename: path.join(process.cwd(), config.serverConfig.privateKeyFilename),
-    publicKeyFilename: path.join(process.cwd(), config.serverConfig.privateKeyFilename),
+    publicKeyFilename: path.join(process.cwd(), config.serverConfig.publicKeyFilename),
     connectionURL: config.serverConfig.connectionURL
   }
 }
