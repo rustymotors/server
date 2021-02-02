@@ -7,10 +7,14 @@
 
 const debug = require('debug')('mcoserver:PatchServer')
 const appSettings = require('../../../config/app-settings')
+const fs = require('fs')
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
 const http = require('http')
 const { ShardEntry } = require('./ShardEntry')
+const util = require('util')
+
+const readFilePromise = util.promisify(fs.readFile)
 
 /**
  * A simulated patch server response
@@ -31,7 +35,7 @@ class PatchServer {
    *
    * @param {Logger} logger
    */
-  constructor (logger) {
+  constructor(logger) {
     this.config = appSettings
     this.logger = logger
     /** @type {string[]} */
@@ -43,6 +47,14 @@ class PatchServer {
     this.serverPatch = http.createServer((req, res) => {
       this._httpHandler(req, res)
     })
+    this.serverPatch.on('error', (err) => {
+      if (err.code === "EACCES") {
+        logger.error(`Unable to start server on port 80! Have you granted access to the node runtime?`)
+        process.exit(-1)
+      }
+      console.dir(err)
+      throw err
+    })
   }
 
   /**
@@ -51,7 +63,7 @@ class PatchServer {
    * @return {CastanetResponse}
    * @memberof! PatchServer
    */
-  _patchUpdateInfo () {
+  _patchUpdateInfo() {
     return CastanetResponse
   }
 
@@ -61,7 +73,7 @@ class PatchServer {
    * @return {CastanetResponse}
    * @memberof! PatchServer
    */
-  _patchNPS () {
+  _patchNPS() {
     return CastanetResponse
   }
 
@@ -71,7 +83,7 @@ class PatchServer {
    * @return {CastanetResponse}
    * @memberof! PatchServer
    */
-  _patchMCO () {
+  _patchMCO() {
     return CastanetResponse
   }
 
@@ -81,7 +93,7 @@ class PatchServer {
    * @return {string}
    * @memberof! PatchServer
    */
-  _generateShardList () {
+  _generateShardList() {
     const { ipServer } = this.config.serverConfig
     const shardClockTower = new ShardEntry(
       'The Clocktower',
@@ -131,13 +143,88 @@ class PatchServer {
   }
 
   /**
+ *
+ * @return {string}
+ * @memberof! WebServer
+ */
+  _handleGetCert() {
+    return fs.readFileSync(this.config.serverConfig.certFilename)
+  }
+
+  /**
+   *
+   * @return {string}
+   * @memberof! WebServer
+   */
+  _handleGetKey() {
+    return fs.readFileSync(this.config.serverConfig.publicKeyFilename)
+  }
+
+  /**
+   *
+   * @return {string}
+   * @memberof! WebServer
+   */
+  _handleGetRegistry() {
+    const dynamicRegistryFile = `Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\EACom\\AuthAuth]
+"AuthLoginBaseService"="AuthLogin"
+"AuthLoginServer"="${this.config.serverConfig.ipServer}"
+
+[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City]
+"GamePatch"="games/EA_Seattle/MotorCity/MCO"
+"UpdateInfoPatch"="games/EA_Seattle/MotorCity/UpdateInfo"
+"NPSPatch"="games/EA_Seattle/MotorCity/NPS"
+"PatchServerIP"="${this.config.serverConfig.ipServer}"
+"PatchServerPort"="80"
+"CreateAccount"="${this.config.serverConfig.ipServer}/SubscribeEntry.jsp?prodID=REG-MCO"
+"Language"="English"
+
+[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City\\1.0]
+"ShardUrl"="http://${this.config.serverConfig.ipServer}/ShardList/"
+"ShardUrlDev"="http://${this.config.serverConfig.ipServer}/ShardList/"
+
+[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City\\AuthAuth]
+"AuthLoginBaseService"="AuthLogin"
+"AuthLoginServer"="${this.config.serverConfig.ipServer}"
+
+[HKEY_LOCAL_MACHINE\\Software\\WOW6432Node\\Electronic Arts\\Network Play System]
+"Log"="1"
+
+`
+    return dynamicRegistryFile
+  }
+
+
+  /**
    *
    * @param {http.IncomingMessage} request
    * @param {http.ServerResponse} response
    * @memberof! PatchServer
    */
-  _httpHandler (request, response) {
+  _httpHandler(request, response) {
     let responseData
+
+    if (request.url === '/cert') {
+      response.setHeader('Content-disposition', 'attachment; filename=cert.pem')
+      return response.end(this._handleGetCert())
+    }
+
+    if (request.url === '/key') {
+      response.setHeader('Content-disposition', 'attachment; filename=pub.key')
+      return response.end(this._handleGetKey())
+    }
+
+    if (request.url === '/registry') {
+      response.setHeader('Content-disposition', 'attachment; filename=mco.reg')
+      return response.end(this._handleGetRegistry())
+    }
+
+    if (request.url === '/') {
+      return response.end('Hello, world!')
+    }
+
     switch (request.url) {
       case '/ShardList/':
         response.setHeader('Content-Type', 'text/plain')
@@ -159,6 +246,7 @@ class PatchServer {
         response.setHeader(responseData.header.type, responseData.header.value)
         response.end(responseData.body)
         break
+
 
       default:
         // Is this a hacker?
@@ -185,7 +273,7 @@ class PatchServer {
    * @return {void}
    * @memberof! PatchServer
    */
-  _addBan (banIP) {
+  _addBan(banIP) {
     this.banList.push(banIP)
   }
 
@@ -194,7 +282,7 @@ class PatchServer {
    * @return {string[]}
    * @memberof! PatchServer
    */
-  _getBans () {
+  _getBans() {
     return this.banList
   }
 
@@ -203,7 +291,7 @@ class PatchServer {
    * @return {void}
    * @memberof! PatchServer
    */
-  _clearBans () {
+  _clearBans() {
     this.banList = []
   }
 
@@ -212,8 +300,8 @@ class PatchServer {
    * @memberof! PatchServer
    * @return {http.Server}
    */
-  start () {
-    this.serverPatch.listen({ port: '80', host: '0.0.0.0' }, () => {
+  async start() {
+    await this.serverPatch.listen({ port: '80', host: '0.0.0.0' }, () => {
       debug('port 80 listening')
       this.logger.info('[patchServer] Patch server is listening...')
     })

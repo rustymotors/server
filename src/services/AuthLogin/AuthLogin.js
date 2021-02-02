@@ -21,7 +21,7 @@ class AuthLogin {
    *
    * @param {AppSettings} config
    */
-  constructor (config) {
+  constructor(config) {
     this.config = config
     this.logger = logger.child({ service: 'mcoserver:AuthLogin' })
   }
@@ -42,7 +42,7 @@ class AuthLogin {
    * @return {sslOptionsObj}
    * @memberof! WebServer
    */
-  async _sslOptions (configuration) {
+  async _sslOptions(configuration) {
     debug(`Reading ${configuration.certFilename}`)
 
     let cert
@@ -51,18 +51,18 @@ class AuthLogin {
     try {
       cert = await readFilePromise(configuration.certFilename)
     } catch (error) {
-        throw new Error(
-          `Error loading ${configuration.certFilename}, server must quit!`
-        )
-      }
+      throw new Error(
+        `Error loading ${configuration.certFilename}, server must quit!`
+      )
+    }
 
     try {
       key = await readFilePromise(configuration.privateKeyFilename)
     } catch (error) {
-        throw new Error(
-          `Error loading ${configuration.privateKeyFilename}, server must quit!`
-        )
-      }
+      throw new Error(
+        `Error loading ${configuration.privateKeyFilename}, server must quit!`
+      )
+    }
 
     return {
       cert,
@@ -77,63 +77,10 @@ class AuthLogin {
    * @return {string}
    * @memberof! WebServer
    */
-  _handleGetTicket () {
+  _handleGetTicket() {
     return 'Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e'
   }
 
-  /**
-   *
-   * @return {string}
-   * @memberof! WebServer
-   */
-  _handleGetCert () {
-    return fs.readFileSync(this.config.serverConfig.certFilename)
-  }
-
-  /**
-   *
-   * @return {string}
-   * @memberof! WebServer
-   */
-  _handleGetKey () {
-    return fs.readFileSync(this.config.serverConfig.publicKeyFilename)
-  }
-
-  /**
-   *
-   * @return {string}
-   * @memberof! WebServer
-   */
-  _handleGetRegistry () {
-    const dynamicRegistryFile = `Windows Registry Editor Version 5.00
-
-[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\EACom\\AuthAuth]
-"AuthLoginBaseService"="AuthLogin"
-"AuthLoginServer"="${this.config.serverConfig.ipServer}"
-
-[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City]
-"GamePatch"="games/EA_Seattle/MotorCity/MCO"
-"UpdateInfoPatch"="games/EA_Seattle/MotorCity/UpdateInfo"
-"NPSPatch"="games/EA_Seattle/MotorCity/NPS"
-"PatchServerIP"="${this.config.serverConfig.ipServer}"
-"PatchServerPort"="80"
-"CreateAccount"="${this.config.serverConfig.ipServer}/SubscribeEntry.jsp?prodID=REG-MCO"
-"Language"="English"
-
-[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City\\1.0]
-"ShardUrl"="http://${this.config.serverConfig.ipServer}/ShardList/"
-"ShardUrlDev"="http://${this.config.serverConfig.ipServer}/ShardList/"
-
-[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City\\AuthAuth]
-"AuthLoginBaseService"="AuthLogin"
-"AuthLoginServer"="${this.config.serverConfig.ipServer}"
-
-[HKEY_LOCAL_MACHINE\\Software\\WOW6432Node\\Electronic Arts\\Network Play System]
-"Log"="1"
-
-`
-    return dynamicRegistryFile
-  }
 
   /**
    *
@@ -142,32 +89,13 @@ class AuthLogin {
    * @memberof! WebServer
    */
   // file deepcode ignore NoRateLimitingForExpensiveWebOperation: Not using express, unsure how to handle rate limiting on raw http
-  _httpsHandler (request, response) {
+  _httpsHandler(request, response) {
     this.logger.info(
       `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     )
     if (request.url.startsWith('/AuthLogin')) {
       response.setHeader('Content-Type', 'text/plain')
       return response.end(this._handleGetTicket())
-    }
-
-    if (request.url === '/cert') {
-      response.setHeader('Content-disposition', 'attachment; filename=cert.pem')
-      return response.end(this._handleGetCert())
-    }
-
-    if (request.url === '/key') {
-      response.setHeader('Content-disposition', 'attachment; filename=pub.key')
-      return response.end(this._handleGetKey())
-    }
-
-    if (request.url === '/registry') {
-      response.setHeader('Content-disposition', 'attachment; filename=mco.reg')
-      return response.end(this._handleGetRegistry())
-    }
-
-    if (request.url === '/') {
-      return response.end('Hello, world!')
     }
 
     return response.end('Unknown request.')
@@ -177,29 +105,38 @@ class AuthLogin {
    *
    * @memberof! WebServer
    */
-  async start () {
+  async start() {
     const sslOptions = await this._sslOptions(this.config.serverConfig)
 
-    this.httpsServer = await https
-      .createServer(
-        sslOptions,
-        (req, res) => {
-          this._httpsHandler(req, res)
-        }
-      )
-      .listen({ port: 443, host: '0.0.0.0' }, () => {
-        debug('port 443 listening')
-      })
+    try {
+      this.httpsServer = await https
+        .createServer(
+          sslOptions,
+          (req, res) => {
+            this._httpsHandler(req, res)
+          }
+        )
+        .listen({ port: 443, host: '0.0.0.0' }, () => {
+          debug('port 443 listening')
+        })
+
+    } catch (error) {
+      if (error.code === "EACCES") {
+        logger.error(`Unable to start server on port 443! Have you granted access to the node runtime?`)
+        process.exit(-1)
+      }
+      throw error
+    }
     this.httpsServer.on('connection', socket => {
       socket.on('error', error => {
         throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`)
       })
     })
     this.httpsServer.on('tlsClientError', error => {
-        debug(`[AuthLogin] SSL Socket Client Error: ${error.message}`)
-        // throw new Error(`[AuthLogin] SSL Socket Client Error: ${error.message}`)
-      })
-
+      debug(`[AuthLogin] SSL Socket Client Error: ${error.message}`)
+      // throw new Error(`[AuthLogin] SSL Socket Client Error: ${error.message}`)
+    })
+    return this.httpsServer
   }
 }
 
