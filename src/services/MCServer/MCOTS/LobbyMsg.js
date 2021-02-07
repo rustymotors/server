@@ -49,12 +49,12 @@ class LobbyMsg {
    */
   dumpPacket () {
     this.logger.info(
+      'LobbyMsg',
       {
         msgNo: this.msgNo,
         dataLength: this.dataLength,
         packet: this.serialize().toString('hex')
-      },
-      'LobbyMsg'
+      }
     )
   }
 }

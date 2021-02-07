@@ -6,9 +6,13 @@
 
 const crypto = require('crypto')
 const { EncryptionMgr } = require('./EncryptionMgr')
+const { ConnectionMgr } = require('./ConnectionMgr')
 
 /**
- *
+ * @typedef ConnectionObj
+ * @param {string} id
+ * @param {Socket} sock
+ * @param {ConnectionMgr} mgr
  */
 class ConnectionObj {
   /**
@@ -17,7 +21,7 @@ class ConnectionObj {
    * @param {Socket} sock
    * @param {ConnectionMgr} mgr
    */
-  constructor (connectionId, sock, mgr) {
+  constructor(connectionId, sock, mgr) {
     this.id = connectionId
     this.appId = 0
     /**
@@ -46,7 +50,7 @@ class ConnectionObj {
    *
    * @param {Buffer} key
    */
-  setEncryptionKey (key) {
+  setEncryptionKey(key) {
     this.isSetupComplete = this.enc.setEncryptionKey(key)
   }
 
@@ -55,7 +59,7 @@ class ConnectionObj {
    *
    * @param {string} sKey
    */
-  setEncryptionKeyDES (sKey) {
+  setEncryptionKeyDES(sKey) {
     // deepcode ignore HardcodedSecret: This uses an empty IV
     const desIV = Buffer.alloc(8)
     this.encLobby.cipher = crypto.createCipheriv(
@@ -80,7 +84,7 @@ class ConnectionObj {
    * @param {Buffer} messageBuffer
    * @return {Buffer}
    */
-  cipherBufferDES (messageBuffer) {
+  cipherBufferDES(messageBuffer) {
     if (this.encLobby.cipher) {
       return this.encLobby.cipher.update(messageBuffer)
     }
@@ -93,7 +97,7 @@ class ConnectionObj {
    * @param {Buffer} messageBuffer
    * @return {Buffer}
    */
-  decipherBufferDES (messageBuffer) {
+  decipherBufferDES(messageBuffer) {
     if (this.encLobby.decipher) {
       return this.encLobby.decipher.update(messageBuffer)
     }

@@ -227,21 +227,36 @@ class PatchServer {
 
     switch (request.url) {
       case '/ShardList/':
-        response.setHeader('Content-Type', 'text/plain')
+        this.logger.info(
+          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
+        )
+
+      response.setHeader('Content-Type', 'text/plain')
         response.end(this._generateShardList())
         break
 
       case '/games/EA_Seattle/MotorCity/UpdateInfo':
-        responseData = this._patchUpdateInfo()
+        this.logger.info(
+          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
+        )
+
+      responseData = this._patchUpdateInfo()
         response.setHeader(responseData.header.type, responseData.header.value)
         response.end(responseData.body)
         break
       case '/games/EA_Seattle/MotorCity/NPS':
-        responseData = this._patchNPS()
+        this.logger.info(
+          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
+        )
+
+      responseData = this._patchNPS()
         response.setHeader(responseData.header.type, responseData.header.value)
         response.end(responseData.body)
         break
       case '/games/EA_Seattle/MotorCity/MCO':
+        this.logger.info(
+          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
+        )
         responseData = this._patchMCO()
         response.setHeader(responseData.header.type, responseData.header.value)
         response.end(responseData.body)

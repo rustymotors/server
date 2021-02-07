@@ -15,7 +15,4 @@ database.sqlite
 junit.xml
 .dccache
 out/*
-*.cert
-*.pem
-*.key
 

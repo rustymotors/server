@@ -10,14 +10,17 @@ const logger = require('../../shared/logger')
 const { ConnectionObj } = require('./ConnectionObj')
 const { defaultHandler } = require('./MCOTS/TCPManager')
 const { NPSPacketManager } = require('./npsPacketManager')
+const { DatabaseMgr} = require('../../shared/databaseManager')
 
 /**
- *
+ * @typedef ConnectionMgr
+ * @param {DatabaseMgr} databaseMgr
  */
 class ConnectionMgr {
-  constructor () {
+  constructor (databaseMgr) {
     this.logger = logger.child({ service: 'mcoserver:ConnectionMgr' })
     this.config = appSettings
+    this.databaseMgr = databaseMgr
     /**
      * @type {ConnectionObj[]}
      */
@@ -33,32 +36,33 @@ class ConnectionMgr {
    * Check incoming data and route it to the correct handler based on localPort
    * @param {IRawPacket} rawPacket
    * @param {IServerConfiguration} config
+   * @return ConnectionObj
    * @memberof ConnectionMgr
    */
   async processData (rawPacket, config) {
-    const npsPacketManager = new NPSPacketManager()
+    const npsPacketManager = new NPSPacketManager(this.databaseMgr)
 
     const { remoteAddress, localPort, data } = rawPacket
 
     // Log the packet as debug
     this.logger.info(
+      'logging raw packet',
       {
         remoteAddress,
         localPort,
         data: data.toString('hex')
-      },
-      'logging raw packet'
+      }
     )
 
     if (localPort === 8226 || localPort === 8228 || localPort === 7003) {
       this.logger.info(
+        'Recieved NPS packet',
         {
           msgName: npsPacketManager.msgCodetoName(
             rawPacket.data.readInt16BE(0)
           ),
           localPort
-        },
-        'Recieved NPS packet'
+        }
       )
       try {
         return npsPacketManager.processNPSPacket(rawPacket)
@@ -84,12 +88,12 @@ class ConnectionMgr {
         }
         // Unknown request, log it
         this.logger.warn(
+          '[connectionMgr] No known handler for request, banning',
           {
             localPort,
             remoteAddress,
             data: data.toString('hex')
-          },
-          '[connectionMgr] No known handler for request, banning'
+          }
         )
         this.banList.push(remoteAddress)
         return rawPacket.connection
@@ -144,11 +148,11 @@ class ConnectionMgr {
   async _updateConnectionByAddressAndPort (address, port, newConnection) {
     if (newConnection === undefined) {
       throw new Error(
+        'Undefined connection',
         {
           remoteAddress: address,
           localPort: port
-        },
-        'Undefined connection'
+        }
       )
     }
     try {
@@ -160,8 +164,8 @@ class ConnectionMgr {
       this.connections.push(newConnection)
     } catch (error) {
       this.logger.error(
-        { error, connections: this.connections },
-        'Error updating connection'
+        'Error updating connection',
+        { error, connections: this.connections }
       )
     }
   }
@@ -177,11 +181,11 @@ class ConnectionMgr {
     const { remoteAddress, localPort } = socket
     if (!remoteAddress) {
       throw new Error(
+        'No address in socket',
         {
           remoteAddress,
           localPort
-        },
-        'No address in socket'
+        }
       )
     }
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort)

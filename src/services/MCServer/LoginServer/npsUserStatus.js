@@ -104,11 +104,11 @@ class NPSUserStatus extends NPSMsg {
   dumpPacket () {
     this.dumpPacketHeader('NPSUserStatus')
     debug(
+      'NPSUserStatus',
       {
         contextId: this.contextId,
         sessionKey: this.sessionKey
-      },
-      'NPSUserStatus'
+      }
     )
   }
 }

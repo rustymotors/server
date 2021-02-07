@@ -100,14 +100,14 @@ class GenericReplyMsg {
    */
   dumpPacket () {
     this.logger.info(
+      'GenericReply',
       {
         msgNo: this.msgNo,
         msgReply: this.msgReply,
         result: this.result.toString('hex'),
         data: this.data.toString('hex'),
         tdata2: this.data2.toString('hex')
-      },
-      'GenericReply'
+      }
     )
   }
 }

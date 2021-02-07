@@ -8,7 +8,8 @@
 const debug = require('debug')('mcoserver:MCServer')
 const logger = require('../../shared/logger')
 const { ListenerThread } = require('./listenerThread')
-const { ConnectionMgr } = require('./connectionMgr')
+const { ConnectionMgr } = require('./ConnectionMgr')
+const { DatabaseManager } = require('../../shared/databaseManager')
 
 /**
  *
@@ -17,7 +18,7 @@ const { ConnectionMgr } = require('./connectionMgr')
  */
 class MCServer {
   constructor () {
-    this.mgr = new ConnectionMgr()
+    this.mgr = new ConnectionMgr(new DatabaseManager)
     this.logger = logger.child({ service: 'mcoserver:MCServer' })
   }
 

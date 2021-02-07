@@ -94,6 +94,7 @@ class LoginMsg {
    */
   dumpPacket () {
     this.logger.info(
+      'LoginMsg',
       {
         msgNo: this.msgNo.toString(),
         customerId: this.customerId.toString(),
@@ -103,8 +104,7 @@ class LoginMsg {
         skinId: this.skinId,
         personaName: this.personaName,
         version: this.version
-      },
-      'LoginMsg'
+      }
     )
   }
 }

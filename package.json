@@ -8,7 +8,7 @@
     "AUTHORS"
   ],
   "scripts": {
-    "start": "DEBUG=mcoserver* node app.js",
+    "start": "DEBUG=mcoserver* node --trace-warnings app.js",
     "test": "npm run lint-test",
     "doc": "jsdoc -R README.md -P package.json -r src",
     "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@types/node": "14.14.22",
+    "eslint": "7.19.0",
     "jsdoc": "3.6.6",
     "mock-fs": "4.13.0",
     "prettier-standard": "16.4.1",

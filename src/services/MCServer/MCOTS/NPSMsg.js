@@ -111,13 +111,13 @@ class NPSMsg {
    */
   dumpPacketHeader (messageType) {
     this.logger.info(
+      `NPSMsg/${messageType}`,
       {
         direction: this.direction,
         msgNo: this.msgNo.toString(16),
         msgVersion: this.msgVersion,
         msgLength: this.msgLength
-      },
-      `NPSMsg/${messageType}`
+      }
     )
   }
 
@@ -126,6 +126,7 @@ class NPSMsg {
    */
   dumpPacket () {
     debug(
+      'NPSMsg/NPSMsg',
       {
         direction: this.direction,
         msgNo: this.msgNo.toString(16),
@@ -133,8 +134,7 @@ class NPSMsg {
         msgLength: this.msgLength,
         content: this.content.toString('hex'),
         serialized: this.serialize().toString('hex')
-      },
-      'NPSMsg/NPSMsg'
+      }
     )
   }
 

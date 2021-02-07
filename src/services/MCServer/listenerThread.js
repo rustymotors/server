@@ -8,12 +8,14 @@
 const debug = require('debug')
 const appSettings = require('../../../config/app-settings')
 const net = require('net')
+const { ConnectionMgr } = require('./ConnectionMgr')
+const { ConnectionObj } = require('./ConnectionObj')
 
 /**
  *
  */
 class ListenerThread {
-  constructor (logger) {
+  constructor(logger) {
     this.config = appSettings
     this.logger = logger.child({ service: 'mcoserver:ListenerThread' })
   }
@@ -27,7 +29,7 @@ class ListenerThread {
    * @param {IServerConfiguration} config
    * @memberof! ListenerThread
    */
-  async _onData (data, connection, config) {
+  async _onData(data, connection, config) {
     try {
       const { localPort, remoteAddress } = connection.sock
       /** @type {IRawPacket} */
@@ -41,8 +43,9 @@ class ListenerThread {
       }
       // Dump the raw packet
       this.logger.info(
-        { data: rawPacket.data.toString('hex') },
-        "rawPacket's data prior to proccessing"
+        "rawPacket's data prior to proccessing",
+        { data: rawPacket.data.toString('hex') }
+
       )
       let newConnection = connection
       try {
@@ -71,12 +74,12 @@ class ListenerThread {
   /**
    * server listener method
    *
-   * @param {Socket} socket
+   * @param {net.Socket} socket
    * @param {ConnectionMgr} connectionMgr
    * @param {IServerConfiguration} config
    * @memberof ListenerThread
    */
-  _listener (socket, connectionMgr, config) {
+  _listener(socket, connectionMgr, config) {
     // Received a new connection
     // Turn it into a connection object
     const connection = connectionMgr.findOrNewConnection(socket)
@@ -117,7 +120,7 @@ class ListenerThread {
    * @param {IServerConfiguration} config
    * @memberof! ListenerThread
    */
-  async startTCPListener (localPort, connectionMgr, config) {
+  async startTCPListener(localPort, connectionMgr, config) {
     net
       .createServer(socket => {
         this._listener(socket, connectionMgr, config)

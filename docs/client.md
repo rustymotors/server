@@ -35,3 +35,5 @@ You can delete the `<game dir>\Data\Movies` folder, or start the game with param
 ### Windows 10 Compatibility settings
 
 - Disable fullscreen (In some cases, fullscreen will work fine, to switch between window and fullscreen modes use Alt+Enter buttons).
+
+- Tell Windows to run in 16-bit color mode

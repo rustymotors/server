@@ -359,13 +359,13 @@ async function defaultHandler (rawPacket) {
   messageNode.deserialize(data)
 
   logger.info(
+    'Received TCP packet',
     {
       localPort,
       remoteAddress,
       direction: messageNode.direction,
       data: rawPacket.data.toString('hex')
-    },
-    'Received TCP packet'
+    }
   )
 
   messageNode.dumpPacket()

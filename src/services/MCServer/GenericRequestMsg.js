@@ -67,12 +67,12 @@ class GenericRequestMsg {
    */
   dumpPacket () {
     this.logger.info(
+      'GenericRequest',
       {
         msgNo: this.msgNo,
         data: this.data.toString('hex'),
         data2: this.data2.toString('hex')
-      },
-      'GenericRequest'
+      }
     )
   }
 }

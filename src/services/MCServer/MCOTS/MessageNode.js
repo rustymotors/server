@@ -137,6 +137,7 @@ class MessageNode {
       .toString('hex')
       .match(/../g)
     this.logger.info(
+      'MessageNode',
       {
         dataLength: this.dataLength,
         isMCOTS: this.isMCOTS(),
@@ -147,8 +148,7 @@ class MessageNode {
         toFrom: this.toFrom,
         appId: this.appId,
         packetContents: packetContents.join('') || ''
-      },
-      'MessageNode'
+      }
     )
   }
 

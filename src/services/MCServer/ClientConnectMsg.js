@@ -60,6 +60,7 @@ class ClientConnectMsg {
    */
   dumpPacket () {
     this.logger.info(
+      'ClientConnectMsg',
       {
         msgNo: this.msgNo.toString(),
         customerId: this.customerId.toString(),
@@ -67,8 +68,7 @@ class ClientConnectMsg {
         custName: this.custName,
         personaName: this.personaName,
         mcVersion: this.mcVersion.toString('hex')
-      },
-      'ClientConnectMsg'
+      }
     )
   }
 }
