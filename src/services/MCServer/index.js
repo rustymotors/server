@@ -6,28 +6,36 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:MCServer')
-const logger = require('../../shared/logger')
+const {logger} = require('../../shared/logger')
 const { ListenerThread } = require('./listenerThread')
 const { ConnectionMgr } = require('./ConnectionMgr')
 const { DatabaseManager } = require('../../shared/databaseManager')
+const { appSettings } = require('../../../config/app-settings')
+
 
 /**
  *
  *
  * @class MCServer
+ * @param {appSettings} config
  */
 class MCServer {
-  constructor () {
-    this.mgr = new ConnectionMgr(new DatabaseManager)
+  /**
+   * 
+   * @param {appSettings} config 
+   */
+  constructor (config) {
+    this.config = config
+    this.mgr = new ConnectionMgr()
     this.logger = logger.child({ service: 'mcoserver:MCServer' })
   }
 
   /**
    * Start the HTTP, HTTPS and TCP connection listeners
-   * @param {IServerConfiguration} config
+   * 
    */
 
-  async startServers (config) {
+  async startServers () {
     logger
     const listenerThread = new ListenerThread(logger)
     this.logger.info('Starting the listening sockets...')
@@ -59,7 +67,7 @@ class MCServer {
     ]
 
     await tcpPortList.forEach(port => {
-      listenerThread.startTCPListener(port, this.mgr, config)
+      listenerThread.startTCPListener(port, this.mgr, this.config.serverConfig)
       debug(`port ${port} listening`)
     })
     this.logger.info('Listening sockets create successfully.')

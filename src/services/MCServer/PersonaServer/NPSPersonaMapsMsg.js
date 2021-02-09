@@ -6,10 +6,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:NPSPersonaMapsMsg')
-const logger = require('../../../shared/logger')
+const {logger} = require('../../../shared/logger')
 
 const struct = require('c-struct')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
+const {IPersonaRecord} = require('./PersonaRecord')
 
 const npsPersonaMapsMsgSchema = new struct.Schema({
   msgNo: struct.type.uint16,
@@ -35,6 +36,7 @@ const npsPersonaMapsMsgSchema = new struct.Schema({
 })
 
 // register to cache
+// @ts-ignore
 struct.register('NPSPersonaMapsMsg', npsPersonaMapsMsgSchema)
 
 /**
@@ -56,8 +58,10 @@ class NPSPersonaMapsMsg extends NPSMsg {
     this.personaSize = 40
     this.msgNo = 0x607
     this.personaCount = 0
-    this.struct = struct.unpackSync('NPSPersonaMapsMsg', Buffer.alloc(100))
+    // @ts-ignore
+    this.struct = struct.unpackSync('NPSPersonaMapsMsg', Buffer.alloc(100), {})
 
+    // @ts-ignore
     this.struct.msgNo = this.msgNo
   }
 
@@ -69,6 +73,7 @@ class NPSPersonaMapsMsg extends NPSMsg {
     this.personaCount = personas.length
     this.personas = []
     personas.forEach((persona, idx) => {
+      // @ts-ignore
       this.struct.personas[idx] = {
         personaCount: personas.length,
         maxPersonas: personas.length,
@@ -161,9 +166,13 @@ class NPSPersonaMapsMsg extends NPSMsg {
     }
 
     // Build the packet
-    const msgLength = struct.packSync('NPSPersonaMapsMsg', this.struct).length
+    // @ts-ignore
+    const msgLength = struct.packSync('NPSPersonaMapsMsg', this.struct, {}).length
+    // @ts-ignore
     this.struct.msgLength = msgLength
+    // @ts-ignore
     this.struct.msgChecksum = msgLength
+    // @ts-ignore
     return struct.packSync('NPSPersonaMapsMsg', this.struct, {
       endian: 'b'
     })

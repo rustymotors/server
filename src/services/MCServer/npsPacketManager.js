@@ -5,12 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const appSettings = require('../../../config/app-settings')
-const logger = require('../../shared/logger')
+const {appSettings} = require('../../../config/app-settings')
+const {logger} = require('../../shared/logger')
 const { LoginServer } = require('./LoginServer/LoginServer')
 const { PersonaServer } = require('./PersonaServer/PersonaServer')
 const { LobbyServer } = require('./LobbyServer/LobbyServer')
-const { DatabaseMgr } = require('../../shared/databaseManager')
+const { DatabaseManager } = require('../../shared/databaseManager')
 
 /**
  *
@@ -18,7 +18,7 @@ const { DatabaseMgr } = require('../../shared/databaseManager')
 class NPSPacketManager {
   /**
    *
-   * @param {DatabaseMgr} databaseMgr
+   * @param {DatabaseManager} databaseMgr
    */
   constructor (databaseMgr) {
     this.logger = logger.child({ service: 'mcoserver:NPSPacketManager' })
@@ -77,7 +77,7 @@ class NPSPacketManager {
 
   /**
    *
-   * @param {IRawPacket} rawPacket
+   * @param {import('./listenerThread').IRawPacket} rawPacket
    */
   async processNPSPacket (rawPacket) {
     const msgId = rawPacket.data.readInt16BE(0)
@@ -90,7 +90,7 @@ class NPSPacketManager {
 
     switch (localPort) {
       case 8226:
-        return this.loginServer.dataHandler(rawPacket, this.config)
+        return this.loginServer.dataHandler(rawPacket, this.config.serverConfig)
       case 8228:
         return this.personaServer.dataHandler(rawPacket)
       case 7003:

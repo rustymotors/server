@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../../../shared/logger')
+const {logger} = require('../../../shared/logger')
 
 /**
  *
@@ -133,12 +133,14 @@ class MessageNode {
    *
    */
   dumpPacket () {
-    const packetContents = this.serialize()
+    let packetContentsArray = this.serialize()
       .toString('hex')
       .match(/../g)
+      if (packetContentsArray == null) {
+        packetContentsArray = []
+      }
     this.logger.info(
-      'MessageNode',
-      {
+      `MessageNode: ${{
         dataLength: this.dataLength,
         isMCOTS: this.isMCOTS(),
         msgNo: this.msgNo,
@@ -147,8 +149,8 @@ class MessageNode {
         flags: this.flags,
         toFrom: this.toFrom,
         appId: this.appId,
-        packetContents: packetContents.join('') || ''
-      }
+        packetContents: packetContentsArray.join('') || ''
+      }}`
     )
   }
 

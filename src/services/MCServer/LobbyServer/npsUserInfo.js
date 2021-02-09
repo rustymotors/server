@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:npsUserInfo')
-const logger = require('../../../shared/logger')
+const {logger} = require('../../../shared/logger')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 
 /**

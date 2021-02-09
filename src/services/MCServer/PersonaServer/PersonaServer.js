@@ -5,8 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const { Socket } = require('net')
+const {logger} = require('../../../shared/logger')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 const { NPSPersonaMapsMsg } = require('./NPSPersonaMapsMsg')
+const {PersonaRecord} = require('./PersonaRecord')
 
 /**
  *
@@ -14,12 +17,12 @@ const { NPSPersonaMapsMsg } = require('./NPSPersonaMapsMsg')
 class PersonaServer {
   /**
    *
-   * @param {Logger} logger
+   * @param {logger} logger
    */
   constructor(logger) {
     this.logger = logger
 
-    /** @type {IPersonaRecord[]} */
+    /** @type {PersonaRecord[]} */
     this.personaList = [
       {
         customerId: 2868969472,
@@ -281,10 +284,10 @@ class PersonaServer {
   /**
    *
    * @param {number} customerId
-   * @return {IPersonaRecord[]}
+   * @return {PersonaRecord[]}
    */
   _getPersonasByCustomerId(customerId) {
-    /** @type {IPersonaRecord[]} */
+    /** @type {PersonaRecord[]} */
     const results = this.personaList.filter(persona => {
       return persona.customerId === customerId
     })
@@ -299,10 +302,10 @@ class PersonaServer {
   /**
    *
    * @param {number} id
-   * @return {IPersonaRecord[]}
+   * @return {PersonaRecord[]}
    */
   _getPersonasById(id) {
-    /** @type {IPersonaRecord[]} */
+    /** @type {PersonaRecord[]} */
     const results = this.personaList.filter(persona => {
       const match = id === persona.id.readInt32BE(0)
       return match
@@ -376,7 +379,7 @@ class PersonaServer {
           }
         )
       } catch (error) {
-        this.logger.error({ error }, 'Error serializing personaMapsMsg')
+        this.logger.error(`Error serializing personaMapsMsg: ${{ error }}`)
       }
     }
     return personaMapsMsg
@@ -385,7 +388,7 @@ class PersonaServer {
   /**
    * Route an incoming persona packet to the connect handler
    *
-   * @param {IRawPacket} rawPacket
+   * @param {import('../listenerThread').IRawPacket} rawPacket
    */
   async dataHandler(rawPacket) {
     const { connection, data, localPort, remoteAddress } = rawPacket

@@ -6,16 +6,18 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:npsUserStatus')
-const logger = require('../../../shared/logger')
+const {logger} = require('../../../shared/logger')
 const crypto = require('crypto')
 const fs = require('fs')
-const { NPSMsg } = require('../MCOTS/NPSMsg')
+const { NPSMsg, INPSMsgJSON } = require('../MCOTS/NPSMsg')
+const { Socket } = require('net')
+const { IServerConfig} = require('../../../../config/app-settings')
 
 /**
- * Load the RSA private key and return a NodeRSA object
+ * Load the RSA private key
  *
  * @param {string} privateKeyPath
- * @return {NodeRSA}
+ * @return {string}
  */
 function fetchPrivateKeyFromFile (privateKeyPath) {
   try {
@@ -65,7 +67,7 @@ class NPSUserStatus extends NPSMsg {
    * Take 128 bytes
    * They are the utf-8 of the hex bytes that are the key
    *
-   * @param {IServerConfiguration.serverConfig} serverConfig
+   * @param {IServerConfig} serverConfig
    * @param {Buffer} packet
    */
   extractSessionKeyFromPacket (serverConfig, packet) {
@@ -82,11 +84,11 @@ class NPSUserStatus extends NPSMsg {
 
   /**
    *
-   * @return {Object}
+   * @return {INPSMsgJSON}
    */
   toJSON () {
     return {
-      msgNo: this.msgNo.toString(16),
+      msgNo: this.msgNo,
       msgLength: this.msgLength,
       msgVersion: this.msgVersion,
       content: this.content.toString('hex'),

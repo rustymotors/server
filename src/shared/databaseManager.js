@@ -6,29 +6,56 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const pool = require('./db/index')
+const { logger } = require('../shared/logger')
+const { migrate } = require("postgres-migrations")
+
+/**
+ * @typedef Session_Record
+ * @property {string} s_key
+ * @property {string} session_key
+ */
+
+/**
+ * 
+ * @param {logger} logger 
+ */
+ async function doMigrations(logger) {
+  logger.info('Starting migrations...')
+  const client = pool.pool
+  await client.connect()
+  try {
+    await migrate({client}, "migrations")
+  } finally {
+    // await client.end()
+    logger.info('Migrations complete!')
+  }
+}
 
 /**
  *
  */
-class DatabaseManager {
+exports.DatabaseManager = class DatabaseManager {
   /**
    *
-   * @param {string} connectionURL
-   * @param {Logger} logger
+   * @param {logger} logger
    */
-  constructor (connectionURL, logger) {
+  constructor(logger) {
+    this.logger = logger
+    doMigrations(logger)
   }
 
   /**
    *
    * @param {number} customerId
+   * @return Promise<Session_Record[]>
    */
-  async fetchSessionKeyByCustomerId (customerId) {
+  async fetchSessionKeyByCustomerId(customerId) {
     try {
       const { rows } = await pool.query(
         'SELECT session_key, s_key FROM sessions WHERE customer_id = $1',
         [customerId]
       )
+      /** @type SessionRecord[] */
       return rows[0]
     } catch (e) {
       this.logger.warn(`Unable to update session key ${e}`)
@@ -39,13 +66,15 @@ class DatabaseManager {
   /**
    * Fetch session key from database based on remote address
    * @param {string} connectionId
+   * @return Promise<Session_Record[]>
    */
-  async fetchSessionKeyByConnectionId (connectionId) {
+  async fetchSessionKeyByConnectionId(connectionId) {
     try {
       const { rows } = await pool.query(
         'SELECT session_key, s_key FROM sessions WHERE connection_id = $1',
         [connectionId]
       )
+      /** @type Session_Record[] */
       return rows[0]
     } catch (e) {
       this.logger.warn(`Unable to update session key ${e}`)
@@ -58,8 +87,9 @@ class DatabaseManager {
    * @param {string} sessionKey
    * @param {string} contextId
    * @param {string} connectionId
+   * @return Promise<Session_Record[]>
    */
-  async _updateSessionKey (customerId, sessionKey, contextId, connectionId) {
+  async _updateSessionKey(customerId, sessionKey, contextId, connectionId) {
     const sKey = sessionKey.substr(0, 16)
     try {
       const { rows } = await pool.query(
@@ -71,8 +101,4 @@ class DatabaseManager {
       throw new Error(`Unable to update session key: ${e}`)
     }
   }
-}
-
-module.exports = {
-  DatabaseManager
 }

@@ -6,15 +6,29 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')
-const appSettings = require('../../../config/app-settings')
+const {appSettings, IServerConfig} = require('../../../config/app-settings')
 const net = require('net')
 const { ConnectionMgr } = require('./ConnectionMgr')
 const { ConnectionObj } = require('./ConnectionObj')
+const {logger} = require('../../shared/logger')
+
+/**
+ * @typedef IRawPacket
+ * @property {string} connectionId
+ * @property {ConnectionObj} connection
+ * @property {Buffer} data
+ * @property {number} localPort
+ * @property {string  | undefined } remoteAddress
+ * @property {number} timestamp
+ */
 
 /**
  *
  */
 class ListenerThread {
+  /**
+   * @param {logger} logger
+   */
   constructor(logger) {
     this.config = appSettings
     this.logger = logger.child({ service: 'mcoserver:ListenerThread' })
@@ -26,7 +40,7 @@ class ListenerThread {
    *
    * @param {Buffer} data
    * @param {ConnectionObj} connection
-   * @param {IServerConfiguration} config
+   * @param {IServerConfig} config
    * @memberof! ListenerThread
    */
   async _onData(data, connection, config) {
@@ -54,7 +68,7 @@ class ListenerThread {
         throw new Error(`Error in listenerThread::onData 1: ${error}`)
       }
       if (!connection.remoteAddress) {
-        debug(connection)
+        debug(connection.toString())
         throw new Error('Remote address is empty')
       }
       try {
@@ -76,7 +90,7 @@ class ListenerThread {
    *
    * @param {net.Socket} socket
    * @param {ConnectionMgr} connectionMgr
-   * @param {IServerConfiguration} config
+   * @param {IServerConfig} config
    * @memberof ListenerThread
    */
   _listener(socket, connectionMgr, config) {
@@ -104,7 +118,7 @@ class ListenerThread {
       this._onData(data, connection, config)
     })
     socket.on('error', err => {
-      if (err.code !== 'ECONNRESET') {
+      if (!err.message.includes('ECONNRESET')) {
         this.logger.error(`Socket error: ${err}`)
       }
     })
@@ -117,7 +131,7 @@ class ListenerThread {
    * @export
    * @param {number} localPort
    * @param {ConnectionMgr} connectionMgr
-   * @param {IServerConfiguration} config
+   * @param {IServerConfig} config
    * @memberof! ListenerThread
    */
   async startTCPListener(localPort, connectionMgr, config) {

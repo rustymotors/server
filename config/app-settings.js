@@ -7,7 +7,7 @@ const config = ini.parse(fs.readFileSync(path.join(process.cwd(), 'config/app_se
 /**
  *
  *
- * @typedef ServerConfig
+ * @typedef IServerConfig
  * @property {string} certFilename
  * @property {string} ipServer
  * @property {string} privateKeyFilename
@@ -18,12 +18,12 @@ const config = ini.parse(fs.readFileSync(path.join(process.cwd(), 'config/app_se
 /**
  *
  *
- * @typedef AppSettings
- * @property {ServerConfig} serverConfig
+ * @typedef IAppSettings
+ * @property {IServerConfig} serverConfig
  */
 
-/** @type {AppSettings} */
-const appSettings = {
+/** @type {IAppSettings} */
+exports.appSettings = {
   serverConfig: {
     certFilename: path.join(process.cwd(), config.serverConfig.certFilename),
     ipServer: config.serverConfig.ipServer,
@@ -32,5 +32,3 @@ const appSettings = {
     connectionURL: config.serverConfig.connectionURL
   }
 }
-
-module.exports = appSettings

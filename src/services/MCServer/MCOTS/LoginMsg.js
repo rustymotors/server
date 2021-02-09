@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../../../shared/logger')
+const {logger} = require('../../../shared/logger')
 const struct = require('c-struct')
 
 const loginMsgSchema = new struct.Schema({
@@ -20,6 +20,7 @@ const loginMsgSchema = new struct.Schema({
 })
 
 // register to cache
+// @ts-ignore
 struct.register('LoginMsg', loginMsgSchema)
 
 /**
@@ -48,7 +49,8 @@ class LoginMsg {
     this.data = buffer
 
     this.deserialize(buffer)
-    this.struct = struct.unpackSync('LoginMsg', buffer)
+    // @ts-ignore
+    this.struct = struct.unpackSync('LoginMsg', buffer, {})
   }
 
   /**
@@ -86,7 +88,8 @@ class LoginMsg {
    * @return {any}
    */
   serialize () {
-    return struct.packSync('LoginMsg', this.struct)
+    // @ts-ignore
+    return struct.packSync('LoginMsg', this.struct, {})
   }
 
   /**

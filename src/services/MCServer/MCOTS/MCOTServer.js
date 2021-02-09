@@ -5,7 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../../../shared/logger')
+const {logger} = require('../../../shared/logger')
+const { ConnectionObj } = require('../ConnectionObj')
 const { GenericReplyMsg } = require('../GenericReplyMsg')
 const { LobbyMsg } = require('./LobbyMsg')
 const { LoginMsg } = require('./LoginMsg.js')
@@ -132,6 +133,7 @@ class MCOTServer {
    *
    * @param {ConnectionObj} con
    * @param {MessageNode} node
+   * @return Promise<{ConnectionObject, MessageNode[]}>
    */
   async _logout (con, node) {
     const logoutMsg = node
@@ -151,7 +153,10 @@ class MCOTServer {
     rPacket.updateBuffer(pReply.serialize())
     rPacket.dumpPacket()
 
-    return { con, nodes: [] }
+    /** @type MessageNode[] */
+    const nodes = []
+
+    return { con, nodes }
   }
 
   /**
@@ -182,7 +187,7 @@ class MCOTServer {
 
   /**
    *
-   * @param {Connection} con
+   * @param {ConnectionObj} con
    * @param {MessageNode} node
    */
   async _trackingMessage (con, node) {

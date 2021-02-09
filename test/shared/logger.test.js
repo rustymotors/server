@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const tap = require('tap')
-const logger = require('../../src/shared/logger')
+const {logger} = require('../../src/shared/logger')
 const winston = require('winston')
 
 tap.test('Logger', t => {

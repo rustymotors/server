@@ -4,22 +4,28 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const crypto = require('crypto')
 const { EncryptionMgr } = require('./EncryptionMgr')
-const { ConnectionMgr } = require('./ConnectionMgr')
+const { Socket } = require('net')
+const { createCipheriv, Cipher, Decipher, createDecipheriv } = require('crypto')
 
 /**
- * @typedef ConnectionObj
- * @param {string} id
- * @param {Socket} sock
- * @param {ConnectionMgr} mgr
+ * @typedef LobbyCiphers
+ * @property { Cipher | null } cipher
+ * @property { Decipher | null} decipher
  */
-class ConnectionObj {
+
+/**
+ * @class ConnectionObj
+ * @property {string} id
+ * @property {Socket} sock
+ * @property {ConnectionMgr} mgr
+ */
+exports.ConnectionObj = class ConnectionObj {
   /**
    *
    * @param {string} connectionId
    * @param {Socket} sock
-   * @param {ConnectionMgr} mgr
+   * @param {import('./ConnectionMgr').ConnectionMgr} mgr
    */
   constructor(connectionId, sock, mgr) {
     this.id = connectionId
@@ -34,6 +40,7 @@ class ConnectionObj {
     this.msgEvent = null
     this.lastMsg = 0
     this.useEncryption = false
+    /** @type {LobbyCiphers} */
     this.encLobby = {
       cipher: null,
       decipher: null
@@ -62,13 +69,13 @@ class ConnectionObj {
   setEncryptionKeyDES(sKey) {
     // deepcode ignore HardcodedSecret: This uses an empty IV
     const desIV = Buffer.alloc(8)
-    this.encLobby.cipher = crypto.createCipheriv(
+    this.encLobby.cipher = createCipheriv(
       'des-cbc',
       Buffer.from(sKey, 'hex'),
       desIV
     )
     this.encLobby.cipher.setAutoPadding(false)
-    this.encLobby.decipher = crypto.createDecipheriv(
+    this.encLobby.decipher = createDecipheriv(
       'des-cbc',
       Buffer.from(sKey, 'hex'),
       desIV
@@ -103,8 +110,4 @@ class ConnectionObj {
     }
     throw new Error('No DES decipher set on connection')
   }
-}
-
-module.exports = {
-  ConnectionObj
 }

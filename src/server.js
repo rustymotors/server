@@ -5,8 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const appSettings = require('../config/app-settings')
-const logger = require('./shared/logger')
+const {appSettings} = require('../config/app-settings')
+const {logger} = require('./shared/logger')
 const { AdminServer } = require('./services/AdminServer/AdminServer')
 const { MCServer } = require('./services/MCServer')
 
@@ -29,8 +29,8 @@ class Server {
     this.logger.info('Starting servers...')
 
     // Start the MC Server
-    this.mcServer = new MCServer()
-    this.mcServer.startServers(this.config)
+    this.mcServer = new MCServer(appSettings)
+    this.mcServer.startServers()
 
     // Start the Admin server
     this.adminServer = new AdminServer(this.mcServer)

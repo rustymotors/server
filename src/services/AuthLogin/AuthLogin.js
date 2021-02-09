@@ -8,18 +8,23 @@
 const debug = require('debug')('mcoserver:AuthLogin')
 const fs = require('fs')
 const https = require('https')
-const logger = require('../../shared/logger')
+const { logger } = require('../../shared/logger')
 const util = require('util')
+const { appSettings } = require('../../../config/app-settings')
+const { IncomingMessage, ServerResponse } = require('http')
+const { Socket } = require('net')
 
 const readFilePromise = util.promisify(fs.readFile)
 
 /**
- *
+ * @class
+ * @property {appSettings} config
+ * @property {logger} logger
  */
 class AuthLogin {
   /**
    *
-   * @param {AppSettings} config
+   * @param {appSettings} config
    */
   constructor(config) {
     this.config = config
@@ -30,7 +35,7 @@ class AuthLogin {
    *
    * @global
    * @typedef {Object} sslOptionsObj
-   * @property {sting} cert
+   * @property {string} cert
    * @property {boolean} honorCipherOrder
    * @property {string} key
    * @property {boolean} rejectUnauthorized
@@ -38,8 +43,8 @@ class AuthLogin {
 
   /**
    *
-   * @param {IServerConfiguration.serverConfig} configuration
-   * @return {sslOptionsObj}
+   * @param {import('../../../config/app-settings').IServerConfig} configuration
+   * @returns {Promise<sslOptionsObj>}
    * @memberof! WebServer
    */
   async _sslOptions(configuration) {
@@ -49,7 +54,7 @@ class AuthLogin {
     let key
 
     try {
-      cert = await readFilePromise(configuration.certFilename)
+      cert = await readFilePromise(configuration.certFilename, { encoding: "utf-8" })
     } catch (error) {
       throw new Error(
         `Error loading ${configuration.certFilename}, server must quit!`
@@ -57,7 +62,7 @@ class AuthLogin {
     }
 
     try {
-      key = await readFilePromise(configuration.privateKeyFilename)
+      key = await readFilePromise(configuration.privateKeyFilename, { encoding: "utf-8" })
     } catch (error) {
       throw new Error(
         `Error loading ${configuration.privateKeyFilename}, server must quit!`
@@ -93,12 +98,22 @@ class AuthLogin {
     this.logger.info(
       `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     )
-    if (request.url.startsWith('/AuthLogin')) {
+    if (request.url && request.url.startsWith('/AuthLogin')) {
       response.setHeader('Content-Type', 'text/plain')
       return response.end(this._handleGetTicket())
     }
 
     return response.end('Unknown request.')
+  }
+
+  /**
+   * 
+   * @param {Socket} socket
+   */
+  _socketEventHandler(socket) {
+    socket.on('error', (error) => {
+      throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`)
+    })
   }
 
   /**
@@ -127,11 +142,7 @@ class AuthLogin {
       }
       throw error
     }
-    this.httpsServer.on('connection', socket => {
-      socket.on('error', error => {
-        throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`)
-      })
-    })
+    this.httpsServer.on('connection', this._socketEventHandler)
     this.httpsServer.on('tlsClientError', error => {
       debug(`[AuthLogin] SSL Socket Client Error: ${error.message}`)
       // throw new Error(`[AuthLogin] SSL Socket Client Error: ${error.message}`)

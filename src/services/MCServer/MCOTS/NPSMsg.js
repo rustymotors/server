@@ -6,11 +6,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:NPSMsg')
-const logger = require('../../../shared/logger')
+const {logger} = require('../../../shared/logger')
 
 /**
  *
  * @readonly
+ * @global
  * @enum {string}
  */
 const NPS_MSG_DIRECTION = {
@@ -19,6 +20,21 @@ const NPS_MSG_DIRECTION = {
   /** Sent to a client (server => client) */
   Sent: 'Sent'
 }
+
+  /**
+   *
+   * @global
+   * @typedef {Object} INPSMsgJSON
+   * @property {number} msgNo
+   * @property {number | null} opCode
+   * @property {number} msgLength
+   * @property {number} msgVersion
+   * @property {string} content
+   * @property {string} contextId
+   * @property {NPS_MSG_DIRECTION} direction
+   * @property {string | null } sessionKey
+   * @property {string} rawBuffer
+   */
 
 /*
     NPS messages are sent serialized in BE format
@@ -96,6 +112,7 @@ class NPSMsg {
    *
    * @param {Buffer} packet
    * @return {NPSMsg}
+   * @memberof NPSMsg
    */
   deserialize (packet) {
     this.msgNo = packet.readInt16BE(0)
@@ -123,6 +140,7 @@ class NPSMsg {
 
   /**
    * dumpPacket
+   * @memberof NPSMsg
    */
   dumpPacket () {
     debug(
@@ -140,26 +158,19 @@ class NPSMsg {
 
   /**
    *
-   * @global
-   * @typedef {Object} NPSMsgJSON
-   * @property {string} msgNo
-   * @property {number} msgLength
-   * @property {number} msgVersion
-   * @property {string} content
-   * @property {NPSMsgDirection} direction
-   */
-
-  /**
-   *
-   * @return {NPSMsgJSON}
+   * @return {INPSMsgJSON}
    */
   toJSON () {
     return {
-      msgNo: this.msgNo.toString(16),
+      msgNo: this.msgNo,
+      opCode: null,
+      contextId: '',
       msgLength: this.msgLength,
       msgVersion: this.msgVersion,
       content: this.content.toString('hex'),
-      direction: this.direction
+      sessionKey: null,
+      direction: this.direction,
+      rawBuffer:  this.content.toString('hex')
     }
   }
 }

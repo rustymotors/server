@@ -6,8 +6,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:TCPManager')
-const appSettings = require('../../../../config/app-settings')
-const logger = require('../../../shared/logger')
+const {appSettings} = require('../../../../config/app-settings')
+const {logger} = require('../../../shared/logger')
 
 const { MCOTServer } = require('./MCOTServer')
 const { ClientConnectMsg } = require('../ClientConnectMsg')
@@ -17,10 +17,10 @@ const { MessageNode } = require('./MessageNode')
 const { StockCar } = require('./StockCar')
 const { StockCarInfoMsg } = require('./StockCarInfoMsg')
 const { DatabaseManager } = require('../../../shared/databaseManager')
+const {ConnectionObj} = require('../ConnectionObj')
 
 const mcotServer = new MCOTServer()
 const databaseManager = new DatabaseManager(
-  appSettings.serverConfig.connectionURL,
   logger.child({ service: 'mcoserver:DatabaseManager' })
 )
 
@@ -148,13 +148,12 @@ async function ClientConnect (con, node) {
   const res = await databaseManager.fetchSessionKeyByCustomerId(
     newMsg.customerId
   )
-  assert(res.session_key)
-  debug(`[TCPManager] Session Key: ${res.session_key}`)
+  debug(`[TCPManager] Session Key: ${res[0].session_key}`)
 
   const connectionWithKey = con
 
   const { customerId, personaId, personaName } = newMsg
-  const sessionKey = res.session_key
+  const sessionKey = res[0].session_key
   debug(`Raw Session Key: ${sessionKey}`)
 
   const strKey = Buffer.from(sessionKey, 'hex')
@@ -351,7 +350,8 @@ async function MessageReceived (msg, con) {
 
 /**
  *
- * @param {IRawPacket} rawPacket
+ * @param {import('../listenerThread').IRawPacket} rawPacket
+ * @returns {Promise<ConnectionObj>}
  */
 async function defaultHandler (rawPacket) {
   const { connection, remoteAddress, localPort, data } = rawPacket

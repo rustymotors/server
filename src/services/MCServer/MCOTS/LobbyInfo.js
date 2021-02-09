@@ -27,6 +27,7 @@
  * @property {number} numplayersdefault
  * @property {number} bnumplayersenabled
  * @property {number} numlapsmin
+ * @property {number} numlapsmax
  * @property {number} numplayersmax
  * @property {number} numlapsdefault
  * @property {number} bnumlapsenabled
@@ -446,7 +447,7 @@ class LobbyInfo {
 
   /**
    *
-   * @return {ILobbyInfo}
+   * @return {Buffer}
    */
   toPacket () {
     const lobbyPacket = Buffer.alloc(567)

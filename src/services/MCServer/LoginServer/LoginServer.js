@@ -6,10 +6,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:LoginServer')
-const logger = require('../../../shared/logger')
+const {logger} = require('../../../shared/logger')
 const { NPSUserStatus } = require('./npsUserStatus')
 const { premadeLogin } = require('./packet')
 const { DatabaseManager } = require('../../../shared/databaseManager')
+const { IServerConfig } = require('../../../../config/app-settings')
+const { ConnectionObj} = require('../ConnectionObj')
 
 /**
  *
@@ -26,13 +28,13 @@ class LoginServer {
 
   /**
    *
-   * @param {IRawPacket} rawPacket
-   * @param {IServerConfiguration} config
+   * @param {import('../listenerThread').IRawPacket} rawPacket
+   * @param {IServerConfig} config
    */
   async dataHandler (rawPacket, config) {
     const { connection, data } = rawPacket
     const { localPort, remoteAddress } = rawPacket
-    this.logger.info({ localPort, remoteAddress }, 'Received Login packet')
+    this.logger.info(`Received Login packet: ${{ localPort, remoteAddress }}`)
     // TODO: Check if this can be handled by a MessageNode object
     const { sock } = connection
     const requestCode = data.readUInt16BE(0).toString(16)
@@ -123,7 +125,7 @@ class LoginServer {
    * Return a NPS_Serialize
    * @param {ConnectionObj} connection
    * @param {Buffer} data
-   * @param {IServerConfiguration} config
+   * @param {IServerConfig} config
    */
   async _userLogin (connection, data, config) {
     const { sock } = connection
@@ -137,7 +139,7 @@ class LoginServer {
       }
     )
 
-    userStatus.extractSessionKeyFromPacket(config.serverConfig, data)
+    userStatus.extractSessionKeyFromPacket(config, data)
 
     debug(
       'UserStatus object from _userLogin',

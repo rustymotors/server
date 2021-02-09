@@ -6,7 +6,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:StockCarInfoMsg')
-const logger = require('../../../shared/logger')
+const {logger} = require('../../../shared/logger')
+const {StockCar} = require('./StockCar')
 
 // WORD     msgNo;
 // DWORD    starterCash; // when called from the create persona screen,

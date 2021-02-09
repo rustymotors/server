@@ -11,7 +11,7 @@ const {
 } = require('../../../src/services/MCServer/ConnectionObj')
 const {
   ConnectionMgr
-} = require('../../../src/services/MCServer/connectionMgr')
+} = require('../../../src/services/MCServer/ConnectionMgr')
 const tap = require('tap')
 
 tap.test('ConnectionObj', t => {
@@ -30,7 +30,9 @@ tap.test('ConnectionObj', t => {
 })
 
 tap.test('ConnectionObj cross-comms', t => {
+  /** @type {ConnectionObj} */
   let testConn1
+  /** @type {ConnectionObj} */
   let testConn2
 
   t.beforeEach((done, t1) => {

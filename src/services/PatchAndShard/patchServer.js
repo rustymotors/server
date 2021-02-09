@@ -6,20 +6,21 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:PatchServer')
-const appSettings = require('../../../config/app-settings')
+const {IAppSettings, appSettings} = require('../../../config/app-settings')
 const fs = require('fs')
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
 const http = require('http')
 const { ShardEntry } = require('./ShardEntry')
 const util = require('util')
+const {logger} = require('../../shared/logger')
 
 const readFilePromise = util.promisify(fs.readFile)
 
 /**
  * A simulated patch server response
  */
-const CastanetResponse = {
+exports.CastanetResponse = {
   body: Buffer.from('cafebeef00000000000003', 'hex'),
   header: {
     type: 'Content-Type',
@@ -28,19 +29,20 @@ const CastanetResponse = {
 }
 
 /**
- *
+ * @class
  */
-class PatchServer {
+exports.PatchServer = class PatchServer {
   /**
    *
-   * @param {Logger} logger
+   * @param {logger} logger
    */
   constructor(logger) {
+    /** @type { IAppSettings } */
     this.config = appSettings
     this.logger = logger
     /** @type {string[]} */
     this.banList = []
-    /** @type {ShardEntry[]} */
+    /** @type {string[]} */
     this.possibleShards = []
 
     /** @type {http.Server} */
@@ -48,7 +50,7 @@ class PatchServer {
       this._httpHandler(req, res)
     })
     this.serverPatch.on('error', (err) => {
-      if (err.code === "EACCES") {
+      if (err.message.includes("EACCES")) {
         logger.error(`Unable to start server on port 80! Have you granted access to the node runtime?`)
         process.exit(-1)
       }
@@ -60,31 +62,31 @@ class PatchServer {
   /**
    * Simulate a response from a update server
    *
-   * @return {CastanetResponse}
+   * @return {exports.CastanetResponse}
    * @memberof! PatchServer
    */
   _patchUpdateInfo() {
-    return CastanetResponse
+    return exports.CastanetResponse
   }
 
   /**
    * Simulate a response from a patch server
    *
-   * @return {CastanetResponse}
+   * @return exports.CastanetResponse
    * @memberof! PatchServer
    */
   _patchNPS() {
-    return CastanetResponse
+    return exports.CastanetResponse
   }
 
   /**
    * Simulate a response from a patch server
    *
-   * @return {CastanetResponse}
+   * @returns exports.CastanetResponse
    * @memberof! PatchServer
    */
   _patchMCO() {
-    return CastanetResponse
+    return exports.CastanetResponse
   }
 
   /**
@@ -113,7 +115,7 @@ class PatchServer {
       80
     )
 
-    this.possibleShards.push(shardClockTower.formatForShardList())
+    this.possibleShards.concat(shardClockTower.formatForShardList())
 
     const shardTwinPinesMall = new ShardEntry(
       'Twin Pines Mall',
@@ -135,7 +137,7 @@ class PatchServer {
 
     this.possibleShards.push(shardTwinPinesMall.formatForShardList())
 
-    /** @type {ShardEntry[]} */
+    /** @type {string[]} */
     const activeShardList = []
     activeShardList.push(shardClockTower.formatForShardList())
 
@@ -148,7 +150,7 @@ class PatchServer {
  * @memberof! WebServer
  */
   _handleGetCert() {
-    return fs.readFileSync(this.config.serverConfig.certFilename)
+    return fs.readFileSync(this.config.serverConfig.certFilename).toString()
   }
 
   /**
@@ -157,7 +159,7 @@ class PatchServer {
    * @memberof! WebServer
    */
   _handleGetKey() {
-    return fs.readFileSync(this.config.serverConfig.publicKeyFilename)
+    return fs.readFileSync(this.config.serverConfig.publicKeyFilename).toString()
   }
 
   /**
@@ -313,7 +315,7 @@ class PatchServer {
   /**
    *
    * @memberof! PatchServer
-   * @return {http.Server}
+   * @return {Promise<http.Server>}
    */
   async start() {
     await this.serverPatch.listen({ port: '80', host: '0.0.0.0' }, () => {
@@ -324,7 +326,3 @@ class PatchServer {
   }
 }
 
-module.exports = {
-  CastanetResponse,
-  PatchServer
-}

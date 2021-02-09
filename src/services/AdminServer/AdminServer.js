@@ -6,10 +6,14 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:AdminServer')
-const logger = require('../../shared/logger')
+const { logger } = require('../../shared/logger')
 const fs = require('fs')
 const https = require('https')
 const util = require('util')
+const { MCServer } = require('../MCServer')
+const { IServerConfig } = require('../../../config/app-settings')
+const { IncomingMessage, ServerResponse } = require('http')
+const { Socket } = require('net')
 
 const readFilePromise = util.promisify(fs.readFile)
 
@@ -26,10 +30,10 @@ class AdminServer {
    *
    * @param {MCServer} mcServer
    */
-  constructor (mcServer) {
+  constructor(mcServer) {
     this.mcServer = mcServer
     /**
-     * @type {Logger}
+     * @type {logger}
      */
     this.logger = logger.child({ service: 'mcoserver:AdminServer' })
   }
@@ -37,10 +41,10 @@ class AdminServer {
   /**
    * Create the SSL options object
    *
-   * @param {IServerConfiguration.serverConfig} configuration
-   * @return {sslOptionsObj}
+   * @param {IServerConfig} configuration
+   * @return {Promise<import('tls').TlsOptions>}
    */
-  async _sslOptions (configuration) {
+  async _sslOptions(configuration) {
     debug(`Reading ${configuration.certFilename}`)
 
     let cert
@@ -49,16 +53,16 @@ class AdminServer {
     try {
       cert = await readFilePromise(configuration.certFilename)
     } catch (error) {
-        throw new Error(
-          `Error loading ${configuration.certFilename}, server must quit!`
-        )
+      throw new Error(
+        `Error loading ${configuration.certFilename}, server must quit!`
+      )
     }
 
     try {
       key = await readFilePromise(configuration.privateKeyFilename)
     } catch (error) {
       throw new Error(
-          `Error loading ${configuration.privateKeyFilename}, server must quit!`
+        `Error loading ${configuration.privateKeyFilename}, server must quit!`
       )
     }
 
@@ -72,9 +76,9 @@ class AdminServer {
 
   /**
    *
-   * @return {string[]}
+   * @return {string}
    */
-  _handleGetBans () {
+  _handleGetBans() {
     const banlist = {
       mcServer: this.mcServer.mgr.getBans()
     }
@@ -85,7 +89,7 @@ class AdminServer {
    *
    * @return {string}
    */
-  _handleGetConnections () {
+  _handleGetConnections() {
     const connections = this.mcServer.mgr.dumpConnections()
     let responseText = ''
     connections.forEach((connection, index) => {
@@ -104,7 +108,7 @@ class AdminServer {
    *
    * @return {string}
    */
-  _handleResetAllQueueState () {
+  _handleResetAllQueueState() {
     this.mcServer.mgr.resetAllQueueState()
     const connections = this.mcServer.mgr.dumpConnections()
     let responseText = 'Queue state reset for all connections\n\n'
@@ -126,7 +130,7 @@ class AdminServer {
    * @param {ServerResponse} response
    * @return {any}
    */
-  _httpsHandler (request, response) {
+  _httpsHandler(request, response) {
     this.logger.info(
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     )
@@ -161,19 +165,29 @@ class AdminServer {
   }
 
   /**
-   *
-   * @param {IServerConfiguration.serverConfig} config
+   * 
+   * @param {Socket} socket 
    */
-  async start (config) {
+  _socketEventHandler(socket) {
+    socket.on('error', error => {
+      throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`)
+    })
+  }
+
+  /**
+   *
+   * @param {IServerConfig} config
+   */
+  async start(config) {
     try {
       const sslOptions = await this._sslOptions(config)
 
       /** @type {https.Server|undefined} */
       this.httpsServer = https.createServer(
-          sslOptions,
-          (req, res) => {
-            this._httpsHandler(req, res)
-          }
+        sslOptions,
+        (req, res) => {
+          this._httpsHandler(req, res)
+        }
       )
     } catch (err) {
       throw new Error(`${err.message}, ${err.stack}`)
@@ -181,11 +195,7 @@ class AdminServer {
     this.httpsServer.listen({ port: 88, host: '0.0.0.0' }, () => {
       debug('port 88 listening')
     })
-    this.httpsServer.on('connection', socket => {
-      socket.on('error', error => {
-        throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`)
-      })
-    })
+    this.httpsServer.on('connection', this._socketEventHandler)
   }
 }
 
