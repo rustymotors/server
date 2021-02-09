@@ -145,15 +145,16 @@ async function ClientConnect (con, node) {
   const newMsg = new ClientConnectMsg(node.data)
 
   debug(`[TCPManager] Looking up the session key for ${newMsg.customerId}...`)
+  /** @type {import('../../../shared/databaseManager').Session_Record} */
   const res = await databaseManager.fetchSessionKeyByCustomerId(
     newMsg.customerId
   )
-  debug(`[TCPManager] Session Key: ${res[0].session_key}`)
+  debug(`[TCPManager] Session Key: ${res.session_key}`)
 
   const connectionWithKey = con
 
   const { customerId, personaId, personaName } = newMsg
-  const sessionKey = res[0].session_key
+  const sessionKey = res.session_key
   debug(`Raw Session Key: ${sessionKey}`)
 
   const strKey = Buffer.from(sessionKey, 'hex')

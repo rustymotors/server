@@ -140,7 +140,7 @@ class MessageNode {
         packetContentsArray = []
       }
     this.logger.info(
-      `MessageNode: ${{
+      `MessageNode: ${JSON.stringify({
         dataLength: this.dataLength,
         isMCOTS: this.isMCOTS(),
         msgNo: this.msgNo,
@@ -150,7 +150,7 @@ class MessageNode {
         toFrom: this.toFrom,
         appId: this.appId,
         packetContents: packetContentsArray.join('') || ''
-      }}`
+      })}`
     )
   }
 

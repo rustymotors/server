@@ -139,7 +139,7 @@ class LobbyServer {
    */
   async dataHandler(rawPacket) {
     const { localPort, remoteAddress } = rawPacket
-    logger.info(`Received Lobby packet: ${{ localPort, remoteAddress }}`)
+    logger.info(`Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`)
     const { connection, data } = rawPacket
     let updatedConnection = connection
     const requestCode = data.readUInt16BE(0).toString(16)
@@ -152,7 +152,7 @@ class LobbyServer {
           data
         )
         logger.info(
-          `Connect responsePacket's data prior to sending: ${{ data: responsePacket.getPacketAsString() }}`
+          `Connect responsePacket's data prior to sending: ${JSON.stringify({ data: responsePacket.getPacketAsString() })}`
         )
         // TODO: Investigate why this crashes retail
         try {
@@ -166,7 +166,7 @@ class LobbyServer {
       case '217': {
         const responsePacket = await this._npsHeartbeat()
         logger.info(
-          `Heartbeat responsePacket's data prior to sending: ${{ data: responsePacket.getPacketAsString() }}`
+          `Heartbeat responsePacket's data prior to sending: ${JSON.stringify({ data: responsePacket.getPacketAsString() })}`
         )
         npsSocketWriteIfOpen(connection, responsePacket.serialize())
         break
@@ -181,12 +181,12 @@ class LobbyServer {
 
         if (encryptedCmd == null) {
           throw new Error(
-            `Error with encrypted command, dumping connection: ${{ updatedConnection }}`
+            `Error with encrypted command, dumping connection: ${JSON.stringify({ updatedConnection })}`
           )
         }
 
         logger.info(
-          `encrypedCommand's data prior to sending: ${ { data: encryptedCmd.toString('hex') }}`
+          `encrypedCommand's data prior to sending: ${JSON.stringify({ data: encryptedCmd.toString('hex') })}`
         )
         npsSocketWriteIfOpen(connection, encryptedCmd)
         break
@@ -219,7 +219,7 @@ class LobbyServer {
   async _npsRequestGameConnectServer(connection, rawData) {
     const { sock } = connection
     logger.info(
-      `_npsRequestGameConnectServer: ${{ remoteAddress: sock.remoteAddress, data: rawData.toString('hex') }}`
+      `_npsRequestGameConnectServer: ${JSON.stringify({ remoteAddress: sock.remoteAddress, data: rawData.toString('hex')})}`
     )
 
     // Return a _NPS_UserInfo structure
@@ -238,16 +238,16 @@ class LobbyServer {
     const customerId = personas[0].customerId
 
     // Set the encryption keys on the lobby connection
-    /** @type {Session_Record[]} */
+    /** @type {Session_Record} */
     const keys = await databaseManager.fetchSessionKeyByCustomerId(customerId)
     const s = connection
 
     // Create the cypher and decipher only if not already set
     if (!s.encLobby.decipher) {
       try {
-        s.setEncryptionKeyDES(keys[0].s_key)
+        s.setEncryptionKeyDES(keys.s_key)
       } catch (error) {
-        throw new Error(`Unable to set session key: ${{ keys, error }}`)
+        throw new Error(`Unable to set session key: ${JSON.stringify({ keys, error })}`)
       }
     }
 
@@ -264,7 +264,7 @@ class LobbyServer {
     Buffer.from([0x00, 0x84, 0x5f, 0xed]).copy(packetContent)
 
     // SessionKeyStr (32)
-    this._generateSessionKeyBuffer(keys[0].session_key).copy(packetContent, 4)
+    this._generateSessionKeyBuffer(keys.session_key).copy(packetContent, 4)
 
     // // SessionKeyLen - int
     packetContent.writeInt16BE(32, 66)

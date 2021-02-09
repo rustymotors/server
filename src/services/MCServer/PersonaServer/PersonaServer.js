@@ -379,7 +379,7 @@ class PersonaServer {
           }
         )
       } catch (error) {
-        this.logger.error(`Error serializing personaMapsMsg: ${{ error }}`)
+        this.logger.error(`Error serializing personaMapsMsg: ${error}`)
       }
     }
     return personaMapsMsg

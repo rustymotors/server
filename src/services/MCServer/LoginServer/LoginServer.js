@@ -34,7 +34,7 @@ class LoginServer {
   async dataHandler (rawPacket, config) {
     const { connection, data } = rawPacket
     const { localPort, remoteAddress } = rawPacket
-    this.logger.info(`Received Login packet: ${{ localPort, remoteAddress }}`)
+    this.logger.info(`Received Login packet: ${JSON.stringify({ localPort, remoteAddress })}`)
     // TODO: Check if this can be handled by a MessageNode object
     const { sock } = connection
     const requestCode = data.readUInt16BE(0).toString(16)

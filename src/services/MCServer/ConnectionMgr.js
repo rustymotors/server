@@ -153,10 +153,10 @@ exports.ConnectionMgr = class ConnectionMgr {
   async _updateConnectionByAddressAndPort(address, port, newConnection) {
     if (newConnection === undefined) {
       throw new Error(
-        `Undefined connection: ${{
+        `Undefined connection: ${JSON.stringify({
           remoteAddress: address,
           localPort: port
-        }}`
+        })}`
 
       )
     }
@@ -186,10 +186,10 @@ exports.ConnectionMgr = class ConnectionMgr {
     const { remoteAddress, localPort } = socket
     if (!remoteAddress) {
       throw new Error(
-        `No address in socket: ${{
+        `No address in socket: ${JSON.stringify({
           remoteAddress,
           localPort
-        }}`
+        })}`
 
       )
     }
