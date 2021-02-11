@@ -19,14 +19,16 @@ const { appSettings } = require('../../../config/app-settings')
  * @class MCServer
  * @param {appSettings} config
  */
-class MCServer {
+exports.MCServer = class MCServer {
   /**
    * 
+   * @constructor
    * @param {appSettings} config 
+   * @param {DatabaseManager} databaseManager
    */
-  constructor (config) {
+  constructor (config, databaseManager) {
     this.config = config
-    this.mgr = new ConnectionMgr()
+    this.mgr = new ConnectionMgr(logger, databaseManager)
     this.logger = logger.child({ service: 'mcoserver:MCServer' })
   }
 
@@ -72,8 +74,4 @@ class MCServer {
     })
     this.logger.info('Listening sockets create successfully.')
   }
-}
-
-module.exports = {
-  MCServer
 }

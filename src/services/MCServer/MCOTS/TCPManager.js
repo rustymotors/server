@@ -37,6 +37,12 @@ async function compressIfNeeded (conn, node) {
     debug('Too small, should not compress')
   } else {
     debug('This packet should be compressed')
+    /* TODO: Write compression.
+     *
+     * At this time we will still send the packet, to not hang connection
+     * Client will crash though, due to memory access errors
+     */
+
   }
   return { conn, packetToWrite }
 }

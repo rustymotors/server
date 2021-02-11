@@ -19,10 +19,15 @@ const { migrate } = require("postgres-migrations")
  * 
  * @param {logger} logger 
  */
- async function doMigrations(logger) {
+ exports.doMigrations = async function doMigrations(logger) {
   logger.info('Starting migrations...')
   const client = pool.pool
-  await client.connect()
+  try {
+    await client.connect()
+  } catch (error) {
+    logger.error(`Error connecting to database, exiting: ${error}`)
+    process.exit(-1)
+  }
   try {
     await migrate({client}, "migrations")
   } finally {
@@ -41,7 +46,6 @@ exports.DatabaseManager = class DatabaseManager {
    */
   constructor(logger) {
     this.logger = logger
-    doMigrations(logger)
   }
 
   /**

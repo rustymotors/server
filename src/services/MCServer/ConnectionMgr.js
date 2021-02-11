@@ -5,13 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const debug = require('debug')('mcoserver:ConnectionManager')
+const { Socket } = require('net')
 const { appSettings, IServerConfig } = require('../../../config/app-settings')
+const { DatabaseManager } = require('../../shared/databaseManager')
 const { logger } = require('../../shared/logger')
 const { ConnectionObj } = require('./ConnectionObj')
 const { defaultHandler } = require('./MCOTS/TCPManager')
 const { NPSPacketManager } = require('./npsPacketManager')
-const { DatabaseManager } = require('../../shared/databaseManager')
-const { Socket } = require('net')
 
 /**
  * @class ConnectionMgr
@@ -19,10 +20,15 @@ const { Socket } = require('net')
  * @property {DatabaseMgr} databaseMgr
  */
 exports.ConnectionMgr = class ConnectionMgr {
-  constructor() {
+  /**
+   * 
+   * @param {logger} logger 
+   * @param {DatabaseManager} databaseManager 
+   */
+  constructor(logger, databaseManager) {
     this.logger = logger.child({ service: 'mcoserver:ConnectionMgr' })
     this.config = appSettings
-    this.databaseMgr = new DatabaseManager(logger)
+    this.databaseMgr = databaseManager
     /**
      * @type {ConnectionObj[]}
      */
@@ -47,7 +53,7 @@ exports.ConnectionMgr = class ConnectionMgr {
     const { remoteAddress, localPort, data } = rawPacket
 
     // Log the packet as debug
-    this.logger.info(
+    debug(
       'logging raw packet',
       {
         remoteAddress,
@@ -57,7 +63,7 @@ exports.ConnectionMgr = class ConnectionMgr {
     )
 
     if (localPort === 8226 || localPort === 8228 || localPort === 7003) {
-      this.logger.info(
+      debug(
         'Recieved NPS packet',
         {
           msgName: npsPacketManager.msgCodetoName(

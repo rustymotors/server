@@ -9,17 +9,19 @@ const {appSettings} = require('../config/app-settings')
 const {logger} = require('./shared/logger')
 const { AdminServer } = require('./services/AdminServer/AdminServer')
 const { MCServer } = require('./services/MCServer')
+const { DatabaseManager } = require('./shared/databaseManager')
 
 /**
  * @class
  */
 class Server {
   /**
-   *
+   * @param {DatabaseManager} databaseManager
    */
-  constructor () {
+  constructor (databaseManager) {
     this.config = appSettings
     this.logger = logger.child({ service: 'mcoserver:Server' })
+    this.databaseManager = databaseManager
   }
 
   /**
@@ -29,7 +31,7 @@ class Server {
     this.logger.info('Starting servers...')
 
     // Start the MC Server
-    this.mcServer = new MCServer(appSettings)
+    this.mcServer = new MCServer(appSettings, this.databaseManager)
     this.mcServer.startServers()
 
     // Start the Admin server

@@ -25,7 +25,7 @@ const {logger} = require('../../shared/logger')
 /**
  *
  */
-class ListenerThread {
+exports.ListenerThread = class ListenerThread {
   /**
    * @param {logger} logger
    */
@@ -141,8 +141,4 @@ class ListenerThread {
       })
       .listen({ port: localPort, host: '0.0.0.0' })
   }
-}
-
-module.exports = {
-  ListenerThread
 }

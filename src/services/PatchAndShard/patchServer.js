@@ -224,6 +224,7 @@ exports.PatchServer = class PatchServer {
     }
 
     if (request.url === '/') {
+      response.statusCode = 404
       return response.end('Hello, world!')
     }
 
