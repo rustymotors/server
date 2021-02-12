@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')
-const {appSettings, IServerConfig} = require('../../../config/app-settings')
+const {IServerConfig} = require('../../../config/app-settings')
 const net = require('net')
 const { ConnectionMgr } = require('./ConnectionMgr')
 const { ConnectionObj } = require('./ConnectionObj')
@@ -27,11 +27,12 @@ const {logger} = require('../../shared/logger')
  */
 exports.ListenerThread = class ListenerThread {
   /**
+   * @param {import('../../../config/app-settings').IAppSettings} config
    * @param {logger} logger
    */
-  constructor(logger) {
-    this.config = appSettings
-    this.logger = logger.child({ service: 'mcoserver:ListenerThread' })
+  constructor(config, logger) {
+    this.config = config
+    this.logger = logger
   }
 
   /**
@@ -132,13 +133,20 @@ exports.ListenerThread = class ListenerThread {
    * @param {number} localPort
    * @param {ConnectionMgr} connectionMgr
    * @param {IServerConfig} config
+   * @returns {Promise<net.Server>}
    * @memberof! ListenerThread
    */
   async startTCPListener(localPort, connectionMgr, config) {
-    net
+    return net
       .createServer(socket => {
         this._listener(socket, connectionMgr, config)
       })
       .listen({ port: localPort, host: '0.0.0.0' })
   }
 }
+
+process.on('unhandledRejection', (reason, p) => {
+  console.log('Unhandled Rejection at:', p, 'reason:', reason)
+  console.trace()
+  // application specific logging, throwing an error, or other logic here
+})

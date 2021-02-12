@@ -5,7 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const sinon = require('sinon')
 const { Socket } = require('net')
+const depLogger = require('../../../src/shared/logger')
+const { DatabaseManager } = require('../../../src/shared/databaseManager')
 const {
   ConnectionObj
 } = require('../../../src/services/MCServer/ConnectionObj')
@@ -13,12 +16,31 @@ const {
   ConnectionMgr
 } = require('../../../src/services/MCServer/ConnectionMgr')
 const tap = require('tap')
+const { MCServer } = require('../../../src/services/MCServer')
+
+/** @type {IAppSettings} */
+const fakeConfig = {
+  serverConfig: {
+    certFilename: '/cert/cert.pem',
+    privateKeyFilename: '/cert/private.key',
+    ipServer: '',
+    publicKeyFilename: '',
+    connectionURL: ''
+  }
+}
+
+const fakeLogger = sinon.mock(depLogger.logger)
+fakeLogger.expects('child').withArgs().atLeast(1)
+
+const fakeDatabaseManager = sinon.createStubInstance(DatabaseManager)
+
+const fakeConnectionManager = sinon.createStubInstance(ConnectionMgr)
 
 tap.test('ConnectionObj', t => {
   const testConnection = new ConnectionObj(
     'abc',
     new Socket(),
-    new ConnectionMgr()
+    fakeDatabaseManager
   )
 
   t.equal(testConnection.status, 'INACTIVE')
@@ -36,8 +58,8 @@ tap.test('ConnectionObj cross-comms', t => {
   let testConn2
 
   t.beforeEach((done, t1) => {
-    testConn1 = new ConnectionObj('def', new Socket(), new ConnectionMgr())
-    testConn2 = new ConnectionObj('ghi', new Socket(), new ConnectionMgr())
+    testConn1 = new ConnectionObj('def', new Socket(), fakeConnectionManager)
+    testConn2 = new ConnectionObj('ghi', new Socket(), fakeConnectionManager)
     testConn1.setEncryptionKey(Buffer.from('abc123', 'hex'))
     testConn2.setEncryptionKey(Buffer.from('abc123', 'hex'))
     done()

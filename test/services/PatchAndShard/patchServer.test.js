@@ -4,13 +4,13 @@ const {
   PatchServer
 } = require('../../../src/services/PatchAndShard/patchServer')
 const tap = require('tap')
+const depLogger = require('../../../src/shared/logger')
+const sinon = require('sinon')
 
-const fakeLogger = {
-  info: function (msg) {}
-}
+const fakeLogger = sinon.stub(depLogger.logger, 'info')
 
 tap.test('PatchServer', t => {
-  const patchServer = new PatchServer()
+  const patchServer = new PatchServer(depLogger.logger)
 
   t.equals(CastanetResponse.body.toString('hex'), 'cafebeef00000000000003')
   t.equals(
@@ -31,7 +31,7 @@ tap.test('PatchServer', t => {
 })
 
 tap.test('PatchServer - Shardlist', t => {
-  const patchServer = new PatchServer()
+  const patchServer = new PatchServer(depLogger.logger)
   request(patchServer.serverPatch)
     .get('/ShardList/')
     .then(
@@ -46,7 +46,7 @@ tap.test('PatchServer - Shardlist', t => {
 })
 
 tap.test('PatchServer - UpdateInfo', t => {
-  const patchServer = new PatchServer()
+  const patchServer = new PatchServer(depLogger.logger)
   request(patchServer.serverPatch)
     .get('/games/EA_Seattle/MotorCity/UpdateInfo')
     .then(response => {
@@ -59,7 +59,7 @@ tap.test('PatchServer - UpdateInfo', t => {
 })
 
 tap.test('PatchServer - NPS', t => {
-  const patchServer = new PatchServer()
+  const patchServer = new PatchServer(depLogger.logger)
   request(patchServer.serverPatch)
     .get('/games/EA_Seattle/MotorCity/NPS')
     .then(response => {
@@ -72,7 +72,7 @@ tap.test('PatchServer - NPS', t => {
 })
 
 tap.test('PatchServer - MCO', t => {
-  const patchServer = new PatchServer()
+  const patchServer = new PatchServer(depLogger.logger)
   request(patchServer.serverPatch)
     .get('/games/EA_Seattle/MotorCity/MCO')
     .then(response => {
@@ -85,18 +85,16 @@ tap.test('PatchServer - MCO', t => {
 })
 
 tap.test('PatchServer - Default', t => {
-  const patchServer = new PatchServer()
+  const patchServer = new PatchServer(depLogger.logger)
 
   t.deepEquals(patchServer._getBans(), [], 'initial _getBans()')
-
-  patchServer.logger = fakeLogger
 
   // deepcode ignore PromiseNotCaughtNode/test: This promise doesn't return an error, it seems.
   request(patchServer.serverPatch)
     .get('/')
-    .then(response => {
+    .then(/** @type {import('supertest').Response} */  response => {
       t.deepEquals(patchServer._getBans(), [], '_getBans() after request')
-      t.equals(response.statusCode, 404, 'should return 404')
+      t.equals(response.status, 404, 'should return 404')
       t.done()
     })
   patchServer._addBan('1.1.1.1')
@@ -113,12 +111,10 @@ tap.test('PatchServer - Default', t => {
   )
 })
 
-tap.skip('PatchServer - Start/Stop', t => {
-  const patchServer = new PatchServer()
+tap.skip('PatchServer - Start/Stop', async t => {
+  const patchServer = new PatchServer(depLogger.logger)
 
-  patchServer.logger = fakeLogger
-
-  const start = patchServer.start()
+  const start = await patchServer.start()
 
   start.on('listening', () => {
     t.ok(true, 'server is listening')

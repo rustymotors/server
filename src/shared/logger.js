@@ -7,8 +7,7 @@
 
 const winston = require('winston')
 
-module.exports = {
-  logger: winston.createLogger({
+exports.logger = winston.createLogger({
     ...{
       level: 'silly',
       transports: [
@@ -29,4 +28,3 @@ module.exports = {
       ]
     }
   })
-}

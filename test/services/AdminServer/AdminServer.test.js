@@ -6,28 +6,43 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 const mock = require('mock-fs')
 const { AdminServer } = require('../../../src/services/AdminServer/AdminServer')
-const { MCServer } = require('../../../src/services/MCServer')
 const tap = require('tap')
+const sinon = require('sinon')
+const {logger} = require('../../../src/shared/logger')
+const { MCServer: IMCServer, MCServer } = require('../../../src/services/MCServer')
+const { DatabaseManager: IDatabaseManager, DatabaseManager } = require('../../../src/shared/databaseManager')
+const td = require('testdouble')
 
+const fakeConfig = {
+  serverConfig: {
+    certFilename: '/cert/cert.pem',
+    privateKeyFilename: '/cert/private.key',
+    ipServer: '',
+    publicKeyFilename: '',
+    connectionURL: ''
+  }
+}
 
-const adminServer = new AdminServer(new MCServer())
+const fakeLogger = td.object(logger)
+
+const fakeDatabaseManagerConstructor = td.constructor(DatabaseManager)
+const fakeDatabaseManager = new fakeDatabaseManagerConstructor(fakeLogger)
+
+const fakeMCServerConstructor = td.constructor(MCServer)
+const fakeMCServer = new fakeMCServerConstructor(fakeConfig, fakeDatabaseManager)
+
+const adminServer = new AdminServer(fakeMCServer)
+
 tap.test('AdminServer', async t => {
-  t.type(adminServer.mcServer, 'MCServer')
 
   t.test('_sslOptions()', async t1 => {
-
-
-    const config = {
-      certFilename: '/cert/cert.pem',
-      privateKeyFilename: '/cert/private.key'
-    }
 
     //  deepcode ignore WrongNumberOfArgs/test: false positive
     mock({
       '/cert/': {}
     })
     try {
-      await adminServer._sslOptions(config)
+      await adminServer._sslOptions(fakeConfig.serverConfig)
     } catch (error) {
       t1.contains(error, /cert.pem/, 'throws when cert file is not found')
     }
@@ -37,7 +52,7 @@ tap.test('AdminServer', async t => {
       '/cert/cert.pem': 'stuff'
     })
     try {
-      await adminServer._sslOptions(config)
+      await adminServer._sslOptions(fakeConfig.serverConfig)
     } catch (error) {
       t1.contains(error, /private.key/, 'throws when key file is not found')
     }
@@ -48,7 +63,7 @@ tap.test('AdminServer', async t => {
       '/cert/private.key': 'stuff'
     })
     try {
-      await adminServer._sslOptions(config)
+      await adminServer._sslOptions(fakeConfig.serverConfig)
     } catch (error) {
       t1.contains(error, /private.key/, 'throws when key file is not found')
     }

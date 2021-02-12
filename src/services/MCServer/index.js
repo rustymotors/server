@@ -38,8 +38,7 @@ exports.MCServer = class MCServer {
    */
 
   async startServers () {
-    logger
-    const listenerThread = new ListenerThread(logger)
+    const listenerThread = new ListenerThread(appSettings, logger.child({ service: 'mcoserver:ListenerThread' }))
     this.logger.info('Starting the listening sockets...')
     const tcpPortList = [
       6660,
