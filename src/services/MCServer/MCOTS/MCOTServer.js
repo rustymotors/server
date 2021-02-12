@@ -12,15 +12,15 @@ const { LobbyMsg } = require('./LobbyMsg')
 const { LoginMsg } = require('./LoginMsg.js')
 const { MessageNode } = require('./MessageNode')
 
-/**
- *
- */
-class MCOTServer {
+exports.MCOTServer = class MCOTServer {
   /**
-   *
+   * Creates an instance of MCOTServer.
+   * @class
+   * @param {logger} logger
+   * @memberof MCOTServer
    */
-  constructor () {
-    this.logger = logger.child({ service: 'mcoserver:MCOTSServer' })
+  constructor (logger) {
+    this.logger = logger
   }
 
   /**
@@ -236,8 +236,4 @@ class MCOTServer {
 
     return { con, nodes: [rPacket] }
   }
-}
-
-module.exports = {
-  MCOTServer
 }

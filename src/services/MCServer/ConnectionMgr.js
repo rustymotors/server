@@ -13,18 +13,12 @@ const { logger } = require('../../shared/logger')
 const { ConnectionObj } = require('./ConnectionObj')
 const { defaultHandler } = require('./MCOTS/TCPManager')
 const { NPSPacketManager } = require('./npsPacketManager')
-const { IRawPacket } = require('./listenerThread')
 
-/**
- * @class ConnectionMgr
- * @property {logger} logger
- * @property {DatabaseMgr} databaseMgr
- */
 exports.ConnectionMgr = class ConnectionMgr {
   /**
-   * 
-   * @param {logger} logger 
-   * @param {DatabaseManager} databaseManager 
+   * Creates an instance of ConnectionMgr.
+   * @param {logger} logger
+   * @param {DatabaseManager} databaseManager
    */
   constructor(logger, databaseManager) {
     this.logger = logger.child({ service: 'mcoserver:ConnectionMgr' })

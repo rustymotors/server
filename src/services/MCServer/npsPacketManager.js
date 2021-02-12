@@ -11,7 +11,6 @@ const { LoginServer } = require('./LoginServer/LoginServer')
 const { PersonaServer } = require('./PersonaServer/PersonaServer')
 const { LobbyServer } = require('./LobbyServer/LobbyServer')
 const { DatabaseManager } = require('../../shared/databaseManager')
-const { IRawPacket} = require('./listenerThread')
 
 /**
  *

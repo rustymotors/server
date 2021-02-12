@@ -10,7 +10,6 @@ const {logger} = require('../../../shared/logger')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 const { NPSPersonaMapsMsg } = require('./NPSPersonaMapsMsg')
 const {PersonaRecord} = require('./PersonaRecord')
-const {IRawPacket} = require('../listenerThread')
 
 /**
  *

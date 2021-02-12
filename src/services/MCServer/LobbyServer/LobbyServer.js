@@ -12,7 +12,6 @@ const { NPSUserInfo } = require('./npsUserInfo')
 const { PersonaServer } = require('../PersonaServer/PersonaServer')
 const { DatabaseManager, Session_Record } = require('../../../shared/databaseManager')
 const { ConnectionObj } = require('../ConnectionObj')
-const { IRawPacket } = require('../listenerThread')
 
 const logger = require('../../../shared/logger').logger.child({
   service: 'mcoserver:LobbyServer'

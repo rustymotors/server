@@ -7,7 +7,6 @@
 const { EncryptionMgr } = require('./EncryptionMgr')
 const { Socket } = require('net')
 const { createCipheriv, Cipher, Decipher, createDecipheriv } = require('crypto')
-const { ConnectionMgr} = require('./ConnectionMgr')
 
 /**
  * @typedef LobbyCiphers

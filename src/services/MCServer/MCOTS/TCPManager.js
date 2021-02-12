@@ -6,7 +6,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:TCPManager')
-const {appSettings} = require('../../../../config/app-settings')
 const {logger} = require('../../../shared/logger')
 
 const { MCOTServer } = require('./MCOTServer')
@@ -19,7 +18,7 @@ const { StockCarInfoMsg } = require('./StockCarInfoMsg')
 const { DatabaseManager } = require('../../../shared/databaseManager')
 const {ConnectionObj} = require('../ConnectionObj')
 
-const mcotServer = new MCOTServer()
+const mcotServer = new MCOTServer( logger.child({ service: 'mcoserver:MCOTSServer' }))
 const databaseManager = new DatabaseManager(
   logger.child({ service: 'mcoserver:DatabaseManager' })
 )
@@ -151,7 +150,7 @@ async function ClientConnect (con, node) {
   const newMsg = new ClientConnectMsg(node.data)
 
   debug(`[TCPManager] Looking up the session key for ${newMsg.customerId}...`)
-  /** @type {import('../../../shared/databaseManager').Session_Record} */
+  /** @type {Session_Record} */
   const res = await databaseManager.fetchSessionKeyByCustomerId(
     newMsg.customerId
   )
@@ -357,7 +356,7 @@ async function MessageReceived (msg, con) {
 
 /**
  *
- * @param {import('../listenerThread').IRawPacket} rawPacket
+ * @param {IRawPacket} rawPacket
  * @returns {Promise<ConnectionObj>}
  */
 async function defaultHandler (rawPacket) {

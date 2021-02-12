@@ -12,7 +12,6 @@ const { premadeLogin } = require('./packet')
 const { DatabaseManager } = require('../../../shared/databaseManager')
 const { IServerConfig } = require('../../../../config/app-settings')
 const { ConnectionObj} = require('../ConnectionObj')
-const { IRawPacket } = require('../listenerThread')
 
 /**
  *
