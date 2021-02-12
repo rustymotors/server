@@ -27,6 +27,7 @@ const {logger} = require('../../shared/logger')
  */
 exports.ListenerThread = class ListenerThread {
   /**
+   * @class
    * @param {import('../../../config/app-settings').IAppSettings} config
    * @param {logger} logger
    */
