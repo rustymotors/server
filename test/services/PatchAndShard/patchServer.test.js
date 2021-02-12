@@ -1,5 +1,4 @@
 const request = require('supertest')
-const { Response } = require('supertest')
 const {
   CastanetResponse,
   PatchServer
@@ -93,7 +92,7 @@ tap.test('PatchServer - Default', t => {
   // deepcode ignore PromiseNotCaughtNode/test: This promise doesn't return an error, it seems.
   request(patchServer.serverPatch)
     .get('/')
-    .then(/** @type {Response} */  response => {
+    .then(/** @type {request.Response} */  response => {
       t.deepEquals(patchServer._getBans(), [], '_getBans() after request')
       t.equals(response.status, 404, 'should return 404')
       t.done()
