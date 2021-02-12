@@ -42,6 +42,7 @@ const { migrate } = require("postgres-migrations")
 exports.DatabaseManager = class DatabaseManager {
   /**
    *
+   * @class
    * @param {logger} logger
    */
   constructor(logger) {
@@ -51,7 +52,8 @@ exports.DatabaseManager = class DatabaseManager {
   /**
    *
    * @param {number} customerId
-   * @return Promise<Session_Record>
+   * @return {Promise<Session_Record>}
+   * @memberof {DatabaseManager}
    */
   async fetchSessionKeyByCustomerId(customerId) {
     try {
@@ -59,7 +61,7 @@ exports.DatabaseManager = class DatabaseManager {
         'SELECT session_key, s_key FROM sessions WHERE customer_id = $1',
         [customerId]
       )
-      /** @type SessionRecord */
+      /** @type {SessionRecord} */
       return rows[0]
     } catch (e) {
       this.logger.warn(`Unable to update session key ${e}`)
@@ -69,8 +71,10 @@ exports.DatabaseManager = class DatabaseManager {
 
   /**
    * Fetch session key from database based on remote address
+   * 
    * @param {string} connectionId
-   * @return Promise<Session_Record>
+   * @returns {Promise<Session_Record>}
+   * @memberof {DatabaseManager}
    */
   async fetchSessionKeyByConnectionId(connectionId) {
     try {
@@ -78,10 +82,11 @@ exports.DatabaseManager = class DatabaseManager {
         'SELECT session_key, s_key FROM sessions WHERE connection_id = $1',
         [connectionId]
       )
-      /** @type Session_Record */
+      /** @type {Session_Record} */
       return rows[0]
     } catch (e) {
-      this.logger.warn(`Unable to update session key ${e}`)
+      this.logger.error(`Unable to update session key ${e}`)
+      process.exit(-1)
     }
   }
 
@@ -91,7 +96,8 @@ exports.DatabaseManager = class DatabaseManager {
    * @param {string} sessionKey
    * @param {string} contextId
    * @param {string} connectionId
-   * @return Promise<Session_Record[]>
+   * @return {Promise<Session_Record[]>}
+   * @memberof {DatabaseManager}
    */
   async _updateSessionKey(customerId, sessionKey, contextId, connectionId) {
     const sKey = sessionKey.substr(0, 16)

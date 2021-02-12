@@ -19,6 +19,7 @@ const { ConnectionObj} = require('../ConnectionObj')
 class LoginServer {
   /**
    *
+   * @class
    * @param {DatabaseManager} databaseMgr
    */
   constructor (databaseMgr) {
