@@ -43,6 +43,11 @@ tap.test('MessageNode', t => {
     new MessageNode('Recieved').deserialize(Buffer.from([0x00, 0x00]))
   }, '[MessageNode] Not long enough to deserialize, only 2 bytes long')
 
-  t.ok(messageNode1.isMCOTS())
+  t.ok(messageNode1.isMCOTS(), 'is a MessageNode')
+  try {
+    messageNode1.dumpPacket()
+  } catch (error) {
+    t.ok(error, 'Unable to dump faulty packet')  
+  }
   t.done()
 })
