@@ -21,8 +21,8 @@ exports.MCServer = class MCServer {
   /**
    *
    * @constructor
-   * @param {appSettings} config
-   * @param {module:DatabaseManager} databaseManager
+   * @param {IAppSettings} config
+   * @param {module:DatabaseManager.DatabaseManager} databaseManager
    */
   constructor (config, databaseManager) {
     this.config = config
