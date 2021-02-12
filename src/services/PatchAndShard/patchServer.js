@@ -82,7 +82,7 @@ exports.PatchServer = class PatchServer {
   /**
    * Simulate a response from a patch server
    *
-   * @returns {exports.CastanetResponse}
+   * @return {exports.CastanetResponse}
    * @memberof! PatchServer
    */
   _patchMCO() {

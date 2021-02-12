@@ -28,7 +28,7 @@ const {logger} = require('../../shared/logger')
 exports.ListenerThread = class ListenerThread {
   /**
    * @class
-   * @param {import('../../../config/app-settings').IAppSettings} config
+   * @param {IAppSettings} config
    * @param {logger} logger
    */
   constructor(config, logger) {
@@ -134,7 +134,7 @@ exports.ListenerThread = class ListenerThread {
    * @param {number} localPort
    * @param {ConnectionMgr} connectionMgr
    * @param {IServerConfig} config
-   * @returns {Promise<net.Server>}
+   * @return {Promise<net.Server>}
    * @memberof! ListenerThread
    */
   async startTCPListener(localPort, connectionMgr, config) {
