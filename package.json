@@ -22,9 +22,6 @@
     "type": "git",
     "url": "git@github.com:drazisil/mco-server.git"
   },
-  "engines": {
-    "node": "<=v9.11.2"
-  },
   "dependencies": {
     "@types/pg": "7.14.9",
     "@types/statsd-client": "0.4.1",
