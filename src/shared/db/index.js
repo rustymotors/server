@@ -1,4 +1,4 @@
-const { Pool } = require('pg')
+const { Pool, QueryResult } = require('pg')
 
 const pool = new Pool({
   user: 'postgres',
@@ -10,6 +10,7 @@ const pool = new Pool({
 /**
  * @param {string} text
  * @param {any[]} params
+ * @return {Promise<QueryResult<any>>}
  */
 exports.query = (text, params) => pool.query(text, params)
 exports.pool = pool

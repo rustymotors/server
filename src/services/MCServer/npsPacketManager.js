@@ -11,6 +11,7 @@ const { LoginServer } = require('./LoginServer/LoginServer')
 const { PersonaServer } = require('./PersonaServer/PersonaServer')
 const { LobbyServer } = require('./LobbyServer/LobbyServer')
 const { DatabaseManager } = require('../../shared/databaseManager')
+const { IRawPacket} = require('./listenerThread')
 
 /**
  *
@@ -77,7 +78,7 @@ class NPSPacketManager {
 
   /**
    *
-   * @param {import('./listenerThread').IRawPacket} rawPacket
+   * @param {IRawPacket} rawPacket
    */
   async processNPSPacket (rawPacket) {
     const msgId = rawPacket.data.readInt16BE(0)

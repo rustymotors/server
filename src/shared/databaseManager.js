@@ -73,7 +73,7 @@ exports.DatabaseManager = class DatabaseManager {
    * Fetch session key from database based on remote address
    * 
    * @param {string} connectionId
-   * @returns {Promise<Session_Record>}
+   * @return {Promise<Session_Record>}
    * @memberof {DatabaseManager}
    */
   async fetchSessionKeyByConnectionId(connectionId) {

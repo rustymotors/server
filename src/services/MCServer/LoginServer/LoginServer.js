@@ -12,6 +12,7 @@ const { premadeLogin } = require('./packet')
 const { DatabaseManager } = require('../../../shared/databaseManager')
 const { IServerConfig } = require('../../../../config/app-settings')
 const { ConnectionObj} = require('../ConnectionObj')
+const { IRawPacket } = require('../listenerThread')
 
 /**
  *
@@ -29,7 +30,7 @@ class LoginServer {
 
   /**
    *
-   * @param {import('../listenerThread').IRawPacket} rawPacket
+   * @param {IRawPacket} rawPacket
    * @param {IServerConfig} config
    */
   async dataHandler (rawPacket, config) {

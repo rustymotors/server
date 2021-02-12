@@ -10,6 +10,7 @@ const {logger} = require('../../../shared/logger')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 const { NPSPersonaMapsMsg } = require('./NPSPersonaMapsMsg')
 const {PersonaRecord} = require('./PersonaRecord')
+const {IRawPacket} = require('../listenerThread')
 
 /**
  *
@@ -388,7 +389,7 @@ class PersonaServer {
   /**
    * Route an incoming persona packet to the connect handler
    *
-   * @param {import('../listenerThread').IRawPacket} rawPacket
+   * @param {IRawPacket} rawPacket
    */
   async dataHandler(rawPacket) {
     const { connection, data, localPort, remoteAddress } = rawPacket

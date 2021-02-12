@@ -7,6 +7,7 @@
 const { EncryptionMgr } = require('./EncryptionMgr')
 const { Socket } = require('net')
 const { createCipheriv, Cipher, Decipher, createDecipheriv } = require('crypto')
+const { ConnectionMgr} = require('./ConnectionMgr')
 
 /**
  * @typedef LobbyCiphers
@@ -25,7 +26,7 @@ exports.ConnectionObj = class ConnectionObj {
    *
    * @param {string} connectionId
    * @param {Socket} sock
-   * @param {import('./ConnectionMgr').ConnectionMgr} mgr
+   * @param {ConnectionMgr} mgr
    */
   constructor(connectionId, sock, mgr) {
     this.id = connectionId

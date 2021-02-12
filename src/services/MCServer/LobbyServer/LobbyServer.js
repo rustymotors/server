@@ -137,7 +137,7 @@ class LobbyServer {
   /**
    *
    * @param {IRawPacket} rawPacket
-   * @returns {Promise<ConnectionObj>}
+   * @return {Promise<ConnectionObj>}
    */
   async dataHandler(rawPacket) {
     const { localPort, remoteAddress } = rawPacket
