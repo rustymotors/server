@@ -12,7 +12,8 @@ const { MCServer } = require('./services/MCServer')
 const { DatabaseManager } = require('./shared/databaseManager')
 
 /**
- * @class
+ * Main game server
+ * @module Server
  */
 class Server {
   /**

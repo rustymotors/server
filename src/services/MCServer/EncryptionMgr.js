@@ -8,6 +8,12 @@
 const crypto = require('crypto')
 
 /**
+ * Handles the management of the encryption and decryption
+ * of the TCP connections
+ * @module EncryptionMgr
+ */
+
+/**
  *
  */
 class EncryptionMgr {
@@ -47,7 +53,10 @@ class EncryptionMgr {
    * @memberof EncryptionMgr
    */
   decrypt (encryptedText) {
-    return Buffer.from(this.in.update(encryptedText))
+    if (this.in === null) {
+      throw new Error('No encryption manager found!')
+    }
+    return Buffer.from(this.in.update(encryptedText))      
   }
 
   /**
@@ -58,6 +67,9 @@ class EncryptionMgr {
    * @memberof EncryptionMgr
    */
   encrypt (plainText) {
+    if (this.out === null) {
+      throw new Error('No decryption manager found!')
+    }
     return Buffer.from(
       this.out.update(plainText.toString(), 'binary', 'hex'),
       'hex'

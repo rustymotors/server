@@ -12,7 +12,15 @@ const { LobbyMsg } = require('./LobbyMsg')
 const { LoginMsg } = require('./LoginMsg.js')
 const { MessageNode } = require('./MessageNode')
 
-exports.MCOTServer = class MCOTServer {
+/**
+ * Mangages the game database server
+ * @module MCOTSServer
+ */
+
+/**
+ * 
+ */
+ exports.MCOTServer = class MCOTServer {
   /**
    * Creates an instance of MCOTServer.
    * @class
@@ -131,9 +139,9 @@ exports.MCOTServer = class MCOTServer {
 
   /**
    *
-   * @param {ConnectionObj} con
-   * @param {MessageNode} node
-   * @return {Promise<{ConnectionObject, MessageNode[]}>}
+   * @param {module:ConnectionObj} con
+   * @param {module:MessageNode} node
+   * @return {Promise<MCOTS_Session>}
    */
   async _logout (con, node) {
     const logoutMsg = node
@@ -161,8 +169,8 @@ exports.MCOTServer = class MCOTServer {
 
   /**
    *
-   * @param {ConnectionObj} con
-   * @param {MessageNode} node
+   * @param {module:ConnectionObj} con
+   * @param {module:MessageNode} node
    */
   async _setOptions (con, node) {
     const setOptionsMsg = node
@@ -187,8 +195,8 @@ exports.MCOTServer = class MCOTServer {
 
   /**
    *
-   * @param {ConnectionObj} con
-   * @param {MessageNode} node
+   * @param {module:ConnectionObj} con
+   * @param {module:MessageNode} node
    */
   async _trackingMessage (con, node) {
     const trackingMsg = node
@@ -213,8 +221,8 @@ exports.MCOTServer = class MCOTServer {
 
   /**
    *
-   * @param {ConnectionObj} con
-   * @param {MessageNode} node
+   * @param {module:ConnectionObj} con
+   * @param {module:MessageNode} node
    */
   async _updatePlayerPhysical (con, node) {
     const updatePlayerPhysicalMsg = node

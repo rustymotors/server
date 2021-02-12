@@ -10,13 +10,18 @@ const fs = require('fs')
 const https = require('https')
 const { logger } = require('../../shared/logger')
 const util = require('util')
-const { appSettings, IServerConfig } = require('../../../config/app-settings')
+const { appSettings, } = require('../../../config/app-settings')
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
 const { IncomingMessage, ServerResponse } = require('http')
 const { Socket } = require('net')
 
 const readFilePromise = util.promisify(fs.readFile)
+
+/**
+ * Handles web-based user logins
+ * @module AuthLogin
+ */
 
 /**
  * @class

@@ -8,6 +8,11 @@
 const debug = require('debug')
 
 /**
+ * Packet structure for communications with the game database
+ * @module MessageNode
+ */
+
+/**
  *
  */
 class MessageNode {

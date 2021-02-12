@@ -10,14 +10,13 @@ const { logger } = require('../shared/logger')
 const { migrate } = require("postgres-migrations")
 
 /**
- * @typedef Session_Record
- * @property {string} s_key
- * @property {string} session_key
+ * Database connection abstraction
+ * @module DatabaseManager
  */
 
 /**
  * 
- * @param {logger} logger 
+ * @param {module:Logger.logger} logger 
  */
  exports.doMigrations = async function doMigrations(logger) {
   logger.info('Starting migrations...')

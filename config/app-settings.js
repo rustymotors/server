@@ -2,25 +2,12 @@ const fs = require('fs')
 const ini = require('ini')
 const path = require('path')
 
+/**
+ * Reads the INI configuration file
+ * @module
+ */
+
 const config = ini.parse(fs.readFileSync(path.join(process.cwd(), 'config/app_settings.ini'), 'utf8'))
-
-/**
- *
- *
- * @typedef IServerConfig
- * @property {string} certFilename
- * @property {string} ipServer
- * @property {string} privateKeyFilename
- * @property {string} publicKeyFilename
- * @property {string} connectionURL
- */
-
-/**
- *
- *
- * @typedef IAppSettings
- * @property {IServerConfig} serverConfig
- */
 
 /** @type {IAppSettings} */
 exports.appSettings = {

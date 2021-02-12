@@ -6,12 +6,17 @@
 
 const { EncryptionMgr } = require('./EncryptionMgr')
 const { Socket } = require('net')
-const { createCipheriv, Cipher, Decipher, createDecipheriv } = require('crypto')
+const crypto = require('crypto')
+
+/**
+ * Contains the proporties and methods for a TCP connection
+ * @module ConnectionObj
+ */
 
 /**
  * @typedef LobbyCiphers
- * @property { Cipher | null } cipher
- * @property { Decipher | null} decipher
+ * @property { crypto.Cipher | null } cipher
+ * @property { crypto.Decipher | null} decipher
  */
 
 /**
@@ -25,7 +30,7 @@ exports.ConnectionObj = class ConnectionObj {
    *
    * @param {string} connectionId
    * @param {Socket} sock
-   * @param {ConnectionMgr} mgr
+   * @param {module:ConnectionMgr} mgr
    */
   constructor(connectionId, sock, mgr) {
     this.id = connectionId
@@ -69,13 +74,13 @@ exports.ConnectionObj = class ConnectionObj {
   setEncryptionKeyDES(sKey) {
     // deepcode ignore HardcodedSecret: This uses an empty IV
     const desIV = Buffer.alloc(8)
-    this.encLobby.cipher = createCipheriv(
+    this.encLobby.cipher = crypto.createCipheriv(
       'des-cbc',
       Buffer.from(sKey, 'hex'),
       desIV
     )
     this.encLobby.cipher.setAutoPadding(false)
-    this.encLobby.decipher = createDecipheriv(
+    this.encLobby.decipher = crypto.createDecipheriv(
       'des-cbc',
       Buffer.from(sKey, 'hex'),
       desIV

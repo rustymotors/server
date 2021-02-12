@@ -10,12 +10,17 @@ const { appSettings } = require('../../../../config/app-settings')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 const { NPSUserInfo } = require('./npsUserInfo')
 const { PersonaServer } = require('../PersonaServer/PersonaServer')
-const { DatabaseManager, Session_Record } = require('../../../shared/databaseManager')
+const { DatabaseManager } = require('../../../shared/databaseManager')
 const { ConnectionObj } = require('../ConnectionObj')
 
 const logger = require('../../../shared/logger').logger.child({
   service: 'mcoserver:LobbyServer'
 })
+
+/**
+ * Manages the game connection to the lobby and racing rooms
+ * @module LobbyServer
+ */
 
 const databaseManager = new DatabaseManager(
   logger.child({ service: 'mcoserver:DatabaseManager' })
@@ -23,9 +28,9 @@ const databaseManager = new DatabaseManager(
 
 /**
  *
- * @param {ConnectionObj} conn
+ * @param {module:ConnectionObj} conn
  * @param {Buffer} buffer
- * @return {Promise<ConnectionObj>}
+ * @return {Promise<{module:ConnectionObj}>}
  */
 async function npsSocketWriteIfOpen(conn, buffer) {
   const sock = conn.sock
@@ -44,8 +49,8 @@ async function npsSocketWriteIfOpen(conn, buffer) {
 /**
  * Takes an encrypted command packet and returns the decrypted bytes
  *
- * @return {ConnectionObj}
- * @param {ConnectionObj} con
+ * @return {module:ConnectionObj}
+ * @param {module:ConnectionObj} con
  * @param {Buffer} cypherCmd
  */
 function decryptCmd(con, cypherCmd) {
@@ -59,9 +64,9 @@ function decryptCmd(con, cypherCmd) {
 /**
  * Takes an plaintext command packet and return the encrypted bytes
  *
- * @param {ConnectionObj} con
+ * @param {module:ConnectionObj} con
  * @param {Buffer} cypherCmd
- * @return {ConnectionObj}
+ * @return {module:ConnectionObj}
  */
 function encryptCmd(con, cypherCmd) {
   const s = con
@@ -72,9 +77,9 @@ function encryptCmd(con, cypherCmd) {
 /**
  * Takes a plaintext command packet, encrypts it, and sends it across the connection's socket
  *
- * @param {ConnectionObj} con
+ * @param {module:ConnectionObj} con
  * @param {Buffer} data
- * @return {Promise<ConnectionObj>}
+ * @return {Promise<{module:ConnectionObj}>}
  */
 async function sendCommand(con, data) {
   const s = con
@@ -121,7 +126,7 @@ async function sendCommand(con, data) {
 class LobbyServer {
   /**
    *
-   * @return {NPSMsg}
+   * @return {module:NPSMsg}
    */
   _npsHeartbeat() {
     const packetContent = Buffer.alloc(8)
@@ -136,7 +141,7 @@ class LobbyServer {
   /**
    *
    * @param {IRawPacket} rawPacket
-   * @return {Promise<ConnectionObj>}
+   * @return {Promise<{module:ConnectionObj}>}
    */
   async dataHandler(rawPacket) {
     const { localPort, remoteAddress } = rawPacket
@@ -214,7 +219,7 @@ class LobbyServer {
   /**
    * Handle a request to connect to a game server packet
    *
-   * @param {ConnectionObj} connection
+   * @param {module:ConnectionObj} connection
    * @param {Buffer} rawData
    */
   async _npsRequestGameConnectServer(connection, rawData) {

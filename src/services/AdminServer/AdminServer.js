@@ -11,7 +11,6 @@ const fs = require('fs')
 const https = require('https')
 const util = require('util')
 const { MCServer } = require('../MCServer')
-const { IServerConfig } = require('../../../config/app-settings')
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
 const { IncomingMessage, ServerResponse } = require('http')
@@ -19,6 +18,11 @@ const { Socket } = require('net')
 const { TlsOptions } = require('tls')
 
 const readFilePromise = util.promisify(fs.readFile)
+
+/**
+ * SSL web server for managing the state of the system
+ * @module AdminServer
+ */
 
 /**
  *

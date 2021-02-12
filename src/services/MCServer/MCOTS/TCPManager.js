@@ -17,11 +17,19 @@ const { StockCar } = require('./StockCar')
 const { StockCarInfoMsg } = require('./StockCarInfoMsg')
 const { DatabaseManager } = require('../../../shared/databaseManager')
 const {ConnectionObj} = require('../ConnectionObj')
+const { ListenerThread } = require('../listenerThread')
+
+/**
+ * Manages TCP connection packet processing
+ * @module TCPManager
+ */
 
 const mcotServer = new MCOTServer( logger.child({ service: 'mcoserver:MCOTSServer' }))
 const databaseManager = new DatabaseManager(
   logger.child({ service: 'mcoserver:DatabaseManager' })
 )
+
+/** */
 
 /**
  *
@@ -150,7 +158,7 @@ async function ClientConnect (con, node) {
   const newMsg = new ClientConnectMsg(node.data)
 
   debug(`[TCPManager] Looking up the session key for ${newMsg.customerId}...`)
-  /** @type {Session_Record} */
+  /** @type {module:DatabaseManager.Session_Record} */
   const res = await databaseManager.fetchSessionKeyByCustomerId(
     newMsg.customerId
   )
@@ -356,7 +364,7 @@ async function MessageReceived (msg, con) {
 
 /**
  *
- * @param {IRawPacket} rawPacket
+ * @param {module:ListenerThread/IRawPacket} rawPacket
  * @return {Promise<ConnectionObj>}
  */
 async function defaultHandler (rawPacket) {

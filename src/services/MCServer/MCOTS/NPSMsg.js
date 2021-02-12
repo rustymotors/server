@@ -9,6 +9,11 @@ const debug = require('debug')('mcoserver:NPSMsg')
 const {logger} = require('../../../shared/logger')
 
 /**
+ * Packet container for NPS messages
+ * @module NPSMsg
+ */
+
+/**
  *
  * @readonly
  * @global

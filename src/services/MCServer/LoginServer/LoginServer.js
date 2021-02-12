@@ -9,18 +9,17 @@ const debug = require('debug')('mcoserver:LoginServer')
 const {logger} = require('../../../shared/logger')
 const { NPSUserStatus } = require('./npsUserStatus')
 const { premadeLogin } = require('./packet')
-const { DatabaseManager } = require('../../../shared/databaseManager')
-const { IServerConfig } = require('../../../../config/app-settings')
-const { ConnectionObj} = require('../ConnectionObj')
 
 /**
- *
+ * Manages the initial game connection setup and teardown.
+ * @module LoginServer
  */
+
 class LoginServer {
   /**
    *
    * @class
-   * @param {DatabaseManager} databaseMgr
+   * @param {module:DatabaseManager} databaseMgr
    */
   constructor (databaseMgr) {
     this.logger = logger.child({ service: 'mcoserver:LoginServer' })
@@ -123,10 +122,11 @@ class LoginServer {
 
   /**
    * Process a UserLogin packet
-   * Return a NPS_Serialize
-   * @param {ConnectionObj} connection
+   * Return a @link {module:NPSMsg} object
+   * @param {module:ConnectionObj} connection
    * @param {Buffer} data
    * @param {IServerConfig} config
+   * @return {module:NPSMsg}
    */
   async _userLogin (connection, data, config) {
     const { sock } = connection

@@ -12,13 +12,14 @@ const { ConnectionMgr } = require('./ConnectionMgr')
 const { DatabaseManager } = require('../../shared/databaseManager')
 const { appSettings } = require('../../../config/app-settings')
 
-
 /**
- *
- *
- * @class MCServer
- * @param {appSettings} config
+ * This class starts all the servers
+ * TODO: Better document this
+ * @module MCServer
  */
+
+
+
 exports.MCServer = class MCServer {
   /**
    * 

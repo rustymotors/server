@@ -7,7 +7,16 @@
 
 const winston = require('winston')
 
-exports.logger = winston.createLogger({
+/**
+ * Provides a shared logging abstraction
+ * @module Logger
+ */
+
+
+ /**
+  * Return a shared logger
+  */
+ exports.logger = winston.createLogger({
     ...{
       level: 'silly',
       transports: [

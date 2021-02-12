@@ -6,16 +6,22 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:PatchServer')
-const {IAppSettings, appSettings} = require('../../../config/app-settings')
+const {appSettings} = require('../../../config/app-settings')
 const fs = require('fs')
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
 const http = require('http')
 const { ShardEntry } = require('./ShardEntry')
 const util = require('util')
-const {logger} = require('../../shared/logger')
 
 const readFilePromise = util.promisify(fs.readFile)
+
+/**
+ * Manages patch and update server connections
+ * Also handles the shard list, and some utility endpoints
+ * TODO: Document the endpoints
+ * @module PatchServer
+ */
 
 /**
  * A simulated patch server response
@@ -34,7 +40,7 @@ exports.CastanetResponse = {
 exports.PatchServer = class PatchServer {
   /**
    *
-   * @param {logger} logger
+   * @param {module:logger} logger
    */
   constructor(logger) {
     /** @type { IAppSettings } */
