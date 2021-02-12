@@ -13,7 +13,6 @@ const { DatabaseManager } = require('../src/shared/DatabaseManager')
 const net = require('net')
 const { ConnectionObj } = require('../src/services/MCServer/ConnectionObj')
 const { MCServer } = require('../src/services/MCServer')
-
 exports.deepCopyFunction = function deepCopyFunction (inObject) {
   if (typeof inObject !== 'object' || inObject === null) {
     return inObject // Return the value if inObject is not an object
