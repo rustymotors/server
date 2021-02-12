@@ -13,25 +13,6 @@ const { DatabaseManager } = require('../src/shared/DatabaseManager')
 const net = require('net')
 const { ConnectionObj } = require('../src/services/MCServer/ConnectionObj')
 const { MCServer } = require('../src/services/MCServer')
-exports.deepCopyFunction = function deepCopyFunction (inObject) {
-  if (typeof inObject !== 'object' || inObject === null) {
-    return inObject // Return the value if inObject is not an object
-  }
-
-  // Create an array or object to hold the values
-  const outObject = Array.isArray(inObject) ? [] : {}
-
-  for (const key in inObject) {
-    if (inObject[key]) {
-      const value = inObject[key]
-
-      // Recursively (deep) copy for nested objects, including arrays
-      outObject[key] = deepCopyFunction(value)
-    }
-  }
-
-  return outObject
-}
 
 exports.fakeConfig = {
   serverConfig: {
