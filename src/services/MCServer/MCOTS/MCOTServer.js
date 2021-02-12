@@ -5,21 +5,30 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../../../shared/logger')
+const {logger} = require('../../../shared/logger')
+const { ConnectionObj } = require('../ConnectionObj')
 const { GenericReplyMsg } = require('../GenericReplyMsg')
 const { LobbyMsg } = require('./LobbyMsg')
 const { LoginMsg } = require('./LoginMsg.js')
 const { MessageNode } = require('./MessageNode')
 
 /**
- *
+ * Mangages the game database server
+ * @module MCOTSServer
  */
-class MCOTServer {
+
+/**
+ * 
+ */
+ exports.MCOTServer = class MCOTServer {
   /**
-   *
+   * Creates an instance of MCOTServer.
+   * @class
+   * @param {logger} logger
+   * @memberof MCOTServer
    */
-  constructor () {
-    this.logger = logger.child({ service: 'mcoserver:MCOTSServer' })
+  constructor (logger) {
+    this.logger = logger
   }
 
   /**
@@ -130,8 +139,9 @@ class MCOTServer {
 
   /**
    *
-   * @param {ConnectionObj} con
-   * @param {MessageNode} node
+   * @param {module:ConnectionObj} con
+   * @param {module:MessageNode} node
+   * @return {Promise<MCOTS_Session>}
    */
   async _logout (con, node) {
     const logoutMsg = node
@@ -151,13 +161,16 @@ class MCOTServer {
     rPacket.updateBuffer(pReply.serialize())
     rPacket.dumpPacket()
 
-    return { con, nodes: [] }
+    /** @type MessageNode[] */
+    const nodes = []
+
+    return { con, nodes }
   }
 
   /**
    *
-   * @param {ConnectionObj} con
-   * @param {MessageNode} node
+   * @param {module:ConnectionObj} con
+   * @param {module:MessageNode} node
    */
   async _setOptions (con, node) {
     const setOptionsMsg = node
@@ -182,8 +195,8 @@ class MCOTServer {
 
   /**
    *
-   * @param {Connection} con
-   * @param {MessageNode} node
+   * @param {module:ConnectionObj} con
+   * @param {module:MessageNode} node
    */
   async _trackingMessage (con, node) {
     const trackingMsg = node
@@ -208,8 +221,8 @@ class MCOTServer {
 
   /**
    *
-   * @param {ConnectionObj} con
-   * @param {MessageNode} node
+   * @param {module:ConnectionObj} con
+   * @param {module:MessageNode} node
    */
   async _updatePlayerPhysical (con, node) {
     const updatePlayerPhysicalMsg = node
@@ -231,8 +244,4 @@ class MCOTServer {
 
     return { con, nodes: [rPacket] }
   }
-}
-
-module.exports = {
-  MCOTServer
 }

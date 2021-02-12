@@ -4,20 +4,35 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const crypto = require('crypto')
 const { EncryptionMgr } = require('./EncryptionMgr')
+const { Socket } = require('net')
+const crypto = require('crypto')
 
 /**
- *
+ * Contains the proporties and methods for a TCP connection
+ * @module ConnectionObj
  */
-class ConnectionObj {
+
+/**
+ * @typedef LobbyCiphers
+ * @property { crypto.Cipher | null } cipher
+ * @property { crypto.Decipher | null} decipher
+ */
+
+/**
+ * @class ConnectionObj
+ * @property {string} id
+ * @property {Socket} sock
+ * @property {ConnectionMgr} mgr
+ */
+exports.ConnectionObj = class ConnectionObj {
   /**
    *
    * @param {string} connectionId
    * @param {Socket} sock
-   * @param {ConnectionMgr} mgr
+   * @param {module:ConnectionMgr} mgr
    */
-  constructor (connectionId, sock, mgr) {
+  constructor(connectionId, sock, mgr) {
     this.id = connectionId
     this.appId = 0
     /**
@@ -30,6 +45,7 @@ class ConnectionObj {
     this.msgEvent = null
     this.lastMsg = 0
     this.useEncryption = false
+    /** @type {LobbyCiphers} */
     this.encLobby = {
       cipher: null,
       decipher: null
@@ -46,7 +62,7 @@ class ConnectionObj {
    *
    * @param {Buffer} key
    */
-  setEncryptionKey (key) {
+  setEncryptionKey(key) {
     this.isSetupComplete = this.enc.setEncryptionKey(key)
   }
 
@@ -55,7 +71,7 @@ class ConnectionObj {
    *
    * @param {string} sKey
    */
-  setEncryptionKeyDES (sKey) {
+  setEncryptionKeyDES(sKey) {
     // deepcode ignore HardcodedSecret: This uses an empty IV
     const desIV = Buffer.alloc(8)
     this.encLobby.cipher = crypto.createCipheriv(
@@ -80,7 +96,7 @@ class ConnectionObj {
    * @param {Buffer} messageBuffer
    * @return {Buffer}
    */
-  cipherBufferDES (messageBuffer) {
+  cipherBufferDES(messageBuffer) {
     if (this.encLobby.cipher) {
       return this.encLobby.cipher.update(messageBuffer)
     }
@@ -93,14 +109,10 @@ class ConnectionObj {
    * @param {Buffer} messageBuffer
    * @return {Buffer}
    */
-  decipherBufferDES (messageBuffer) {
+  decipherBufferDES(messageBuffer) {
     if (this.encLobby.decipher) {
       return this.encLobby.decipher.update(messageBuffer)
     }
     throw new Error('No DES decipher set on connection')
   }
-}
-
-module.exports = {
-  ConnectionObj
 }

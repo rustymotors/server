@@ -8,7 +8,7 @@
 /**
  *
  */
-class ShardEntry {
+exports.ShardEntry = class ShardEntry {
   /**
    *
    * @param {string} name
@@ -82,8 +82,4 @@ class ShardEntry {
     DiagnosticServerHost=${this.diagnosticServerHost}
     DiagnosticServerPort=${this.diagnosticServerPort}`
   }
-}
-
-module.exports = {
-  ShardEntry
 }

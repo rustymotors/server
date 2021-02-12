@@ -13,8 +13,8 @@ This currently has only been tested with the debug version of the client. If you
 
 ### Client/Server Encryption Setup
 
-- Copy the pub.key file from `https://<server>/key` to the client game directory. Overwrite when prompted.
-- Download the SSL cert from `https://<server>/cert` and add it to the Trusted Root Store.
+- Copy the pub.key file from `http://<server>/key` to the client game directory. Overwrite when prompted.
+- Download the SSL cert from `http://<server>/cert` and add it to the Trusted Root Store.
 
 (_This can be done by opening a `Run... (Win+R) > MMC (Microsoft Management Console) > Add/Remove Snap-in > Available snap-ins, click Certificates > select Computer account and Local computer > double-click on Certificates > right-click on Trusted Root Certification Authorities Store > All tasks, select Import > Locate the cert.pem file > Finish`_)
 
@@ -35,3 +35,5 @@ You can delete the `<game dir>\Data\Movies` folder, or start the game with param
 ### Windows 10 Compatibility settings
 
 - Disable fullscreen (In some cases, fullscreen will work fine, to switch between window and fullscreen modes use Alt+Enter buttons).
+
+- Tell Windows to run in 16-bit color mode

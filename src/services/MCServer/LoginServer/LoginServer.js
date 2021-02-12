@@ -6,17 +6,20 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:LoginServer')
-const logger = require('../../../shared/logger')
+const {logger} = require('../../../shared/logger')
 const { NPSUserStatus } = require('./npsUserStatus')
 const { premadeLogin } = require('./packet')
 
 /**
- *
+ * Manages the initial game connection setup and teardown.
+ * @module LoginServer
  */
+
 class LoginServer {
   /**
    *
-   * @param {DatabaseManager} databaseMgr
+   * @class
+   * @param {module:DatabaseManager} databaseMgr
    */
   constructor (databaseMgr) {
     this.logger = logger.child({ service: 'mcoserver:LoginServer' })
@@ -26,12 +29,12 @@ class LoginServer {
   /**
    *
    * @param {IRawPacket} rawPacket
-   * @param {IServerConfiguration} config
+   * @param {IServerConfig} config
    */
   async dataHandler (rawPacket, config) {
     const { connection, data } = rawPacket
     const { localPort, remoteAddress } = rawPacket
-    this.logger.info({ localPort, remoteAddress }, 'Received Login packet')
+    this.logger.info(`Received Login packet: ${JSON.stringify({ localPort, remoteAddress })}`)
     // TODO: Check if this can be handled by a MessageNode object
     const { sock } = connection
     const requestCode = data.readUInt16BE(0).toString(16)
@@ -46,20 +49,20 @@ class LoginServer {
       }
       default:
         debug(
+          'Unknown nps code recieved',
           {
             requestCode,
             localPort,
             data: rawPacket.data.toString('hex')
-          },
-          'Unknown nps code recieved'
+          }
         )
         return connection
     }
     debug(
+      'responsePacket object from dataHandler',
       {
         userStatus: responsePacket.toString('hex')
-      },
-      'responsePacket object from dataHandler'
+      }
     )
     debug(
       `responsePacket's data prior to sending: ${responsePacket.toString(
@@ -97,51 +100,53 @@ class LoginServer {
     })
     if (userRecord.length !== 1) {
       debug(
+        'preparing to leave _npsGetCustomerIdByContextId after not finding record',
         {
           contextId
-        },
-        'preparing to leave _npsGetCustomerIdByContextId after not finding record'
+        }
+        
       )
       throw new Error(
         `Unable to locate user record matching contextId ${contextId}`
       )
     }
     debug(
+      'preparing to leave _npsGetCustomerIdByContextId after finding record',
       {
         contextId,
         userRecord
-      },
-      'preparing to leave _npsGetCustomerIdByContextId after finding record'
+      }
     )
     return userRecord[0]
   }
 
   /**
    * Process a UserLogin packet
-   * Return a NPS_Serialize
-   * @param {ConnectionObj} connection
+   * Return a @link {module:NPSMsg} object
+   * @param {module:ConnectionObj} connection
    * @param {Buffer} data
-   * @param {IServerConfiguration} config
+   * @param {IServerConfig} config
+   * @return {module:NPSMsg}
    */
   async _userLogin (connection, data, config) {
     const { sock } = connection
     const { localPort } = sock
     const userStatus = new NPSUserStatus(data)
     this.logger.info(
+      'Received login packet',
       {
         localPort,
         remoteAddress: connection.remoteAddress
-      },
-      'Received login packet'
+      }
     )
 
-    userStatus.extractSessionKeyFromPacket(config.serverConfig, data)
+    userStatus.extractSessionKeyFromPacket(config, data)
 
     debug(
+      'UserStatus object from _userLogin',
       {
         userStatus: userStatus.toJSON()
-      },
-      'UserStatus object from _userLogin'
+      }
     )
     userStatus.dumpPacket()
 

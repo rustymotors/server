@@ -6,14 +6,20 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-const appSettings = require('./config/app-settings')
-const logger = require('./src/shared/logger')
+const {appSettings} = require('./config/app-settings')
+const {logger} = require('./src/shared/logger')
 const { WebServer } = require('./src/services/AuthLogin/AuthLogin')
 const { PatchServer } = require('./src/services/PatchAndShard/patchServer')
 const { Server } = require('./src/server')
+const { DatabaseManager, doMigrations } = require('./src/shared/databaseManager')
+
+// Database manager
+const dbLogger = logger.child({service: 'mcoserver:DatabaseManager'})
+const databaseManager = new DatabaseManager(dbLogger)
+doMigrations(dbLogger)
 
 // MCOS Monolith
-const server = new Server('./src/services/shared/config.json')
+const server = new Server(databaseManager)
 
 // MCOS PatchAndShard
 const patchAndShardServer = new PatchServer(

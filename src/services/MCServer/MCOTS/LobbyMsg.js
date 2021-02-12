@@ -5,18 +5,18 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../../../shared/logger')
+const debug = require('debug')('mcoserver:LobbyMsg')
+const {logger} = require('../../../shared/logger')
 const { LobbyInfo } = require('./LobbyInfo')
 
 /**
  *
  */
-class LobbyMsg {
+exports.LobbyMsg = class LobbyMsg {
   /**
    *
    */
   constructor () {
-    this.logger = logger.child({ service: 'mcoserver:LobbyMsg' })
 
     this.msgNo = 325
 
@@ -48,17 +48,13 @@ class LobbyMsg {
    * dumpPacket
    */
   dumpPacket () {
-    this.logger.info(
+    debug(
+      'LobbyMsg',
       {
         msgNo: this.msgNo,
         dataLength: this.dataLength,
         packet: this.serialize().toString('hex')
-      },
-      'LobbyMsg'
+      }
     )
   }
-}
-
-module.exports = {
-  LobbyMsg
 }

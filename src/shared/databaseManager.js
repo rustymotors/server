@@ -6,29 +6,61 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const pool = require('./db/index')
+const { logger } = require('../shared/logger')
+const { migrate } = require("postgres-migrations")
+
+/**
+ * Database connection abstraction
+ * @module DatabaseManager
+ */
+
+/**
+ * 
+ * @param {module:Logger.logger} logger 
+ */
+ exports.doMigrations = async function doMigrations(logger) {
+  logger.info('Starting migrations...')
+  const client = pool.pool
+  try {
+    await client.connect()
+  } catch (error) {
+    logger.error(`Error connecting to database, exiting: ${error}`)
+    process.exit(-1)
+  }
+  try {
+    await migrate({client}, "migrations")
+  } finally {
+    // await client.end()
+    logger.info('Migrations complete!')
+  }
+}
 
 /**
  *
  */
-class DatabaseManager {
+exports.DatabaseManager = class DatabaseManager {
   /**
    *
-   * @param {string} connectionURL
-   * @param {Logger} logger
+   * @class
+   * @param {logger} logger
    */
-  constructor (connectionURL, logger) {
+  constructor(logger) {
+    this.logger = logger
   }
 
   /**
    *
    * @param {number} customerId
+   * @return {Promise<Session_Record>}
+   * @memberof {DatabaseManager}
    */
-  async fetchSessionKeyByCustomerId (customerId) {
+  async fetchSessionKeyByCustomerId(customerId) {
     try {
       const { rows } = await pool.query(
         'SELECT session_key, s_key FROM sessions WHERE customer_id = $1',
         [customerId]
       )
+      /** @type {SessionRecord} */
       return rows[0]
     } catch (e) {
       this.logger.warn(`Unable to update session key ${e}`)
@@ -38,17 +70,22 @@ class DatabaseManager {
 
   /**
    * Fetch session key from database based on remote address
+   * 
    * @param {string} connectionId
+   * @return {Promise<Session_Record>}
+   * @memberof {DatabaseManager}
    */
-  async fetchSessionKeyByConnectionId (connectionId) {
+  async fetchSessionKeyByConnectionId(connectionId) {
     try {
       const { rows } = await pool.query(
         'SELECT session_key, s_key FROM sessions WHERE connection_id = $1',
         [connectionId]
       )
+      /** @type {Session_Record} */
       return rows[0]
     } catch (e) {
-      this.logger.warn(`Unable to update session key ${e}`)
+      this.logger.error(`Unable to update session key ${e}`)
+      process.exit(-1)
     }
   }
 
@@ -58,8 +95,10 @@ class DatabaseManager {
    * @param {string} sessionKey
    * @param {string} contextId
    * @param {string} connectionId
+   * @return {Promise<Session_Record[]>}
+   * @memberof {DatabaseManager}
    */
-  async _updateSessionKey (customerId, sessionKey, contextId, connectionId) {
+  async _updateSessionKey(customerId, sessionKey, contextId, connectionId) {
     const sKey = sessionKey.substr(0, 16)
     try {
       const { rows } = await pool.query(
@@ -71,8 +110,4 @@ class DatabaseManager {
       throw new Error(`Unable to update session key: ${e}`)
     }
   }
-}
-
-module.exports = {
-  DatabaseManager
 }

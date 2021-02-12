@@ -6,16 +6,29 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')
-const appSettings = require('../../../config/app-settings')
 const net = require('net')
+const { ConnectionMgr } = require('./ConnectionMgr')
+const { ConnectionObj } = require('./ConnectionObj')
+const {logger} = require('../../shared/logger')
+
+/**
+ * TCP Listener thread
+ * @module ListenerThread
+ */
+
 
 /**
  *
  */
-class ListenerThread {
-  constructor (logger) {
-    this.config = appSettings
-    this.logger = logger.child({ service: 'mcoserver:ListenerThread' })
+exports.ListenerThread = class ListenerThread {
+  /**
+   * @class
+   * @param {IAppSettings} config
+   * @param {module:logger} logger
+   */
+  constructor(config, logger) {
+    this.config = config
+    this.logger = logger
   }
 
   /**
@@ -23,11 +36,11 @@ class ListenerThread {
    * takes the data buffer and creates a IRawPacket object
    *
    * @param {Buffer} data
-   * @param {ConnectionObj} connection
-   * @param {IServerConfiguration} config
+   * @param {module:ConnectionObj} connection
+   * @param {module:IServerConfig} config
    * @memberof! ListenerThread
    */
-  async _onData (data, connection, config) {
+  async _onData(data, connection, config) {
     try {
       const { localPort, remoteAddress } = connection.sock
       /** @type {IRawPacket} */
@@ -41,8 +54,9 @@ class ListenerThread {
       }
       // Dump the raw packet
       this.logger.info(
-        { data: rawPacket.data.toString('hex') },
-        "rawPacket's data prior to proccessing"
+        "rawPacket's data prior to proccessing",
+        { data: rawPacket.data.toString('hex') }
+
       )
       let newConnection = connection
       try {
@@ -51,7 +65,7 @@ class ListenerThread {
         throw new Error(`Error in listenerThread::onData 1: ${error}`)
       }
       if (!connection.remoteAddress) {
-        debug(connection)
+        debug(connection.toString())
         throw new Error('Remote address is empty')
       }
       try {
@@ -71,12 +85,12 @@ class ListenerThread {
   /**
    * server listener method
    *
-   * @param {Socket} socket
-   * @param {ConnectionMgr} connectionMgr
-   * @param {IServerConfiguration} config
+   * @param {net.Socket} socket
+   * @param {module:ConnectionMgr} connectionMgr
+   * @param {module:IServerConfig} config
    * @memberof ListenerThread
    */
-  _listener (socket, connectionMgr, config) {
+  _listener(socket, connectionMgr, config) {
     // Received a new connection
     // Turn it into a connection object
     const connection = connectionMgr.findOrNewConnection(socket)
@@ -101,7 +115,7 @@ class ListenerThread {
       this._onData(data, connection, config)
     })
     socket.on('error', err => {
-      if (err.code !== 'ECONNRESET') {
+      if (!err.message.includes('ECONNRESET')) {
         this.logger.error(`Socket error: ${err}`)
       }
     })
@@ -113,12 +127,13 @@ class ListenerThread {
    *
    * @export
    * @param {number} localPort
-   * @param {ConnectionMgr} connectionMgr
-   * @param {IServerConfiguration} config
+   * @param {module:ConnectionMgr} connectionMgr
+   * @param {module:IServerConfig} config
+   * @return {Promise<net.Server>}
    * @memberof! ListenerThread
    */
-  async startTCPListener (localPort, connectionMgr, config) {
-    net
+  async startTCPListener(localPort, connectionMgr, config) {
+    return net
       .createServer(socket => {
         this._listener(socket, connectionMgr, config)
       })
@@ -126,6 +141,8 @@ class ListenerThread {
   }
 }
 
-module.exports = {
-  ListenerThread
-}
+process.on('unhandledRejection', (reason, p) => {
+  console.log('Unhandled Rejection at:', p, 'reason:', reason)
+  console.trace()
+  // application specific logging, throwing an error, or other logic here
+})

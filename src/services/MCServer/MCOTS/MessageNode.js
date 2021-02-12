@@ -5,7 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../../../shared/logger')
+const debug = require('debug')
+
+/**
+ * Packet structure for communications with the game database
+ * @module MessageNode
+ */
 
 /**
  *
@@ -16,7 +21,6 @@ class MessageNode {
    * @param {'Recieved'|'Sent'} direction
    */
   constructor (direction) {
-    this.logger = logger.child({ service: 'mcoserver:MessageNode' })
     this.direction = direction
     this.msgNo = 0
     this.seq = 999
@@ -133,11 +137,14 @@ class MessageNode {
    *
    */
   dumpPacket () {
-    const packetContents = this.serialize()
+    let packetContentsArray = this.serialize()
       .toString('hex')
       .match(/../g)
-    this.logger.info(
-      {
+      if (packetContentsArray == null) {
+        packetContentsArray = []
+      }
+    debug(
+      `MessageNode: ${JSON.stringify({
         dataLength: this.dataLength,
         isMCOTS: this.isMCOTS(),
         msgNo: this.msgNo,
@@ -146,9 +153,8 @@ class MessageNode {
         flags: this.flags,
         toFrom: this.toFrom,
         appId: this.appId,
-        packetContents: packetContents.join('') || ''
-      },
-      'MessageNode'
+        packetContents: packetContentsArray.join('') || ''
+      })}`
     )
   }
 

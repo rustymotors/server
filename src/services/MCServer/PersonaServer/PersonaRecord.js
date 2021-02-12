@@ -16,7 +16,9 @@
  * @property {Buffer} personaCount
  * @property {Buffer} shardId
  */
-const IPersonaRecord = {
+
+ /** @type IPersonaRecord */
+const PersonaRecord = {
   customerId: 0,
   id: Buffer.alloc(1),
   maxPersonas: Buffer.alloc(1),
@@ -26,5 +28,5 @@ const IPersonaRecord = {
 }
 
 module.exports = {
-  IPersonaRecord
+  PersonaRecord
 }

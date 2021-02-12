@@ -8,7 +8,7 @@ CREATE TABLE "sessions"
 	context_id text NOT NULL,
 	connection_id text NOT NULL,
 	CONSTRAINT pk_session PRIMARY KEY (customer_id)
-)
+);
 
 DROP TABLE IF EXISTS "lobbies";
 CREATE TABLE "public"."lobbies"
@@ -93,4 +93,4 @@ CREATE TABLE "public"."lobbies"
 	"teamtBackwards" smallint NOT NULL,
 	"teamtNumLaps" smallint NOT NULL,
 	"raceCashFactor" real NOT NULL
-)
+);

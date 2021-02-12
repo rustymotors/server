@@ -6,8 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:TCPManager')
-const appSettings = require('../../../../config/app-settings')
-const logger = require('../../../shared/logger')
+const {logger} = require('../../../shared/logger')
 
 const { MCOTServer } = require('./MCOTServer')
 const { ClientConnectMsg } = require('../ClientConnectMsg')
@@ -17,12 +16,20 @@ const { MessageNode } = require('./MessageNode')
 const { StockCar } = require('./StockCar')
 const { StockCarInfoMsg } = require('./StockCarInfoMsg')
 const { DatabaseManager } = require('../../../shared/databaseManager')
+const {ConnectionObj} = require('../ConnectionObj')
+const { ListenerThread } = require('../listenerThread')
 
-const mcotServer = new MCOTServer()
+/**
+ * Manages TCP connection packet processing
+ * @module TCPManager
+ */
+
+const mcotServer = new MCOTServer( logger.child({ service: 'mcoserver:MCOTSServer' }))
 const databaseManager = new DatabaseManager(
-  appSettings.serverConfig.connectionURL,
   logger.child({ service: 'mcoserver:DatabaseManager' })
 )
+
+/** */
 
 /**
  *
@@ -37,6 +44,12 @@ async function compressIfNeeded (conn, node) {
     debug('Too small, should not compress')
   } else {
     debug('This packet should be compressed')
+    /* TODO: Write compression.
+     *
+     * At this time we will still send the packet, to not hang connection
+     * Client will crash though, due to memory access errors
+     */
+
   }
   return { conn, packetToWrite }
 }
@@ -145,10 +158,10 @@ async function ClientConnect (con, node) {
   const newMsg = new ClientConnectMsg(node.data)
 
   debug(`[TCPManager] Looking up the session key for ${newMsg.customerId}...`)
+  /** @type {module:DatabaseManager.Session_Record} */
   const res = await databaseManager.fetchSessionKeyByCustomerId(
     newMsg.customerId
   )
-  assert(res.session_key)
   debug(`[TCPManager] Session Key: ${res.session_key}`)
 
   const connectionWithKey = con
@@ -351,7 +364,8 @@ async function MessageReceived (msg, con) {
 
 /**
  *
- * @param {IRawPacket} rawPacket
+ * @param {module:ListenerThread/IRawPacket} rawPacket
+ * @return {Promise<ConnectionObj>}
  */
 async function defaultHandler (rawPacket) {
   const { connection, remoteAddress, localPort, data } = rawPacket
@@ -359,13 +373,13 @@ async function defaultHandler (rawPacket) {
   messageNode.deserialize(data)
 
   logger.info(
+    'Received TCP packet',
     {
       localPort,
       remoteAddress,
       direction: messageNode.direction,
       data: rawPacket.data.toString('hex')
-    },
-    'Received TCP packet'
+    }
   )
 
   messageNode.dumpPacket()

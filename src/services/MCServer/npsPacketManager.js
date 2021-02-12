@@ -5,11 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const appSettings = require('../../../config/app-settings')
-const logger = require('../../shared/logger')
+const {appSettings} = require('../../../config/app-settings')
+const {logger} = require('../../shared/logger')
 const { LoginServer } = require('./LoginServer/LoginServer')
 const { PersonaServer } = require('./PersonaServer/PersonaServer')
 const { LobbyServer } = require('./LobbyServer/LobbyServer')
+const { DatabaseManager } = require('../../shared/databaseManager')
 
 /**
  *
@@ -17,7 +18,7 @@ const { LobbyServer } = require('./LobbyServer/LobbyServer')
 class NPSPacketManager {
   /**
    *
-   * @param {@param} databaseMgr
+   * @param {DatabaseManager} databaseMgr
    */
   constructor (databaseMgr) {
     this.logger = logger.child({ service: 'mcoserver:NPSPacketManager' })
@@ -39,7 +40,7 @@ class NPSPacketManager {
       { id: 0x1101, name: 'NPS_CRYPTO_DES_CBC' }
     ]
 
-    this.loginServer = new LoginServer()
+    this.loginServer = new LoginServer(this.database)
     this.personaServer = new PersonaServer(
       this.logger.child({ service: 'test_mcoserver:PersonaServer' })
     )
@@ -81,26 +82,26 @@ class NPSPacketManager {
   async processNPSPacket (rawPacket) {
     const msgId = rawPacket.data.readInt16BE(0)
     this.logger.info(
-      { msgName: this.msgCodetoName(msgId), msgId },
-      'Handling message'
+      'Handling message',
+      { msgName: this.msgCodetoName(msgId), msgId }
     )
 
     const { localPort } = rawPacket
 
     switch (localPort) {
       case 8226:
-        return this.loginServer.dataHandler(rawPacket, this.config)
+        return this.loginServer.dataHandler(rawPacket, this.config.serverConfig)
       case 8228:
         return this.personaServer.dataHandler(rawPacket)
       case 7003:
         return this.lobbyServer.dataHandler(rawPacket)
       default:
         this.logger.error(
+          '[npsPacketManager] Recieved a packet',
           {
             msgId,
             localPort
-          },
-          '[npsPacketManager] Recieved a packet'
+          }
         )
         return rawPacket.connection
     }

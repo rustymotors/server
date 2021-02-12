@@ -5,19 +5,23 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const appSettings = require('../../../config/app-settings')
-const logger = require('../../shared/logger')
+const debug = require('debug')('mcoserver:ConnectionManager')
+const { Socket } = require('net')
+const { appSettings } = require('../../../config/app-settings')
 const { ConnectionObj } = require('./ConnectionObj')
 const { defaultHandler } = require('./MCOTS/TCPManager')
 const { NPSPacketManager } = require('./npsPacketManager')
 
-/**
- *
- */
-class ConnectionMgr {
-  constructor () {
+exports.ConnectionMgr = class ConnectionMgr {
+  /**
+   * Creates an instance of ConnectionMgr.
+   * @param {module:Logger.logger} logger
+   * @param {module:DatabaseManager} databaseManager
+   */
+  constructor(logger, databaseManager) {
     this.logger = logger.child({ service: 'mcoserver:ConnectionMgr' })
     this.config = appSettings
+    this.databaseMgr = databaseManager
     /**
      * @type {ConnectionObj[]}
      */
@@ -32,38 +36,39 @@ class ConnectionMgr {
   /**
    * Check incoming data and route it to the correct handler based on localPort
    * @param {IRawPacket} rawPacket
-   * @param {IServerConfiguration} config
+   * @param {IServerConfig} config
+   * @return {Promise<ConnectionObj>}
    * @memberof ConnectionMgr
    */
-  async processData (rawPacket, config) {
-    const npsPacketManager = new NPSPacketManager()
+  async processData(rawPacket, config) {
+    const npsPacketManager = new NPSPacketManager(this.databaseMgr)
 
     const { remoteAddress, localPort, data } = rawPacket
 
     // Log the packet as debug
-    this.logger.info(
+    debug(
+      'logging raw packet',
       {
         remoteAddress,
         localPort,
         data: data.toString('hex')
-      },
-      'logging raw packet'
+      }
     )
 
     if (localPort === 8226 || localPort === 8228 || localPort === 7003) {
-      this.logger.info(
+      debug(
+        'Recieved NPS packet',
         {
           msgName: npsPacketManager.msgCodetoName(
             rawPacket.data.readInt16BE(0)
           ),
           localPort
-        },
-        'Recieved NPS packet'
+        }
       )
       try {
         return npsPacketManager.processNPSPacket(rawPacket)
       } catch (error) {
-        throw new Error({ error }, 'Error in connectionMgr::processData')
+        throw new Error(`Error in connectionMgr::processData ${error}`)
       }
     }
 
@@ -75,23 +80,26 @@ class ConnectionMgr {
       default:
         // Is this a hacker?
         try {
-          if (this.banList.indexOf(remoteAddress) < 0) {
+          if (remoteAddress && this.banList.indexOf(remoteAddress) < 0) {
             // In ban list, skip
             return rawPacket.connection
           }
         } catch (error) {
-          throw new Error({ error }, 'Error checking ban list')
+          throw new Error(`Error checking ban list: ${error}`)
         }
         // Unknown request, log it
         this.logger.warn(
+          '[connectionMgr] No known handler for request, banning',
           {
             localPort,
             remoteAddress,
             data: data.toString('hex')
-          },
-          '[connectionMgr] No known handler for request, banning'
+          }
         )
-        this.banList.push(remoteAddress)
+        if (remoteAddress) {
+          this.banList.push(remoteAddress)
+        }
+
         return rawPacket.connection
     }
   }
@@ -100,7 +108,7 @@ class ConnectionMgr {
    *
    * @return {string[]}
    */
-  getBans () {
+  getBans() {
     return this.banList
   }
 
@@ -109,9 +117,9 @@ class ConnectionMgr {
    * @param {string} remoteAddress
    * @param {number} localPort
    * @memberof ConnectionMgr
-   * @return {ConnectionObj|undefined}
+   * @return {ConnectionObj | undefined}
    */
-  findConnectionByAddressAndPort (remoteAddress, localPort) {
+  findConnectionByAddressAndPort(remoteAddress, localPort) {
     const results = this.connections.find(connection => {
       const match =
         remoteAddress === connection.remoteAddress &&
@@ -124,9 +132,9 @@ class ConnectionMgr {
   /**
    * Locate connection by id in the connections array
    * @param {string} connectionId
-   * @return {ConnectionObj|undefined}
+   * @return {ConnectionObj | undefined}
    */
-  findConnectionById (connectionId) {
+  findConnectionById(connectionId) {
     const results = this.connections.find(connection => {
       const match = connectionId === connection.id
       return match
@@ -141,14 +149,14 @@ class ConnectionMgr {
    * @param {ConnectionObj} newConnection
    * @memberof ConnectionMgr
    */
-  async _updateConnectionByAddressAndPort (address, port, newConnection) {
+  async _updateConnectionByAddressAndPort(address, port, newConnection) {
     if (newConnection === undefined) {
       throw new Error(
-        {
+        `Undefined connection: ${JSON.stringify({
           remoteAddress: address,
           localPort: port
-        },
-        'Undefined connection'
+        })}`
+
       )
     }
     try {
@@ -160,8 +168,8 @@ class ConnectionMgr {
       this.connections.push(newConnection)
     } catch (error) {
       this.logger.error(
-        { error, connections: this.connections },
-        'Error updating connection'
+        'Error updating connection',
+        { error, connections: this.connections }
       )
     }
   }
@@ -173,15 +181,15 @@ class ConnectionMgr {
    * @return {ConnectionObj}
    * @memberof ConnectionMgr
    */
-  findOrNewConnection (socket) {
+  findOrNewConnection(socket) {
     const { remoteAddress, localPort } = socket
     if (!remoteAddress) {
       throw new Error(
-        {
+        `No address in socket: ${JSON.stringify({
           remoteAddress,
           localPort
-        },
-        'No address in socket'
+        })}`
+
       )
     }
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort)
@@ -209,7 +217,7 @@ class ConnectionMgr {
    *
    * @memberof ConnectionMgr
    */
-  resetAllQueueState () {
+  resetAllQueueState() {
     this.connections = this.connections.map(connection => {
       connection.inQueue = true
       return connection
@@ -222,7 +230,7 @@ class ConnectionMgr {
    * @return {ConnectionObj[]}
    * @memberof ConnectionMgr
    */
-  dumpConnections () {
+  dumpConnections() {
     return this.connections
   }
 }
@@ -232,7 +240,3 @@ process.on('unhandledRejection', (reason, p) => {
   console.trace()
   // application specific logging, throwing an error, or other logic here
 })
-
-module.exports = {
-  ConnectionMgr
-}
