@@ -16,20 +16,20 @@ const { IServerConfig } = require('../../../config/app-settings')
 // deepcode ignore HttpToHttps: This is intentional. See above note.
 const { IncomingMessage, ServerResponse } = require('http')
 const { Socket } = require('net')
+const { TlsOptions } = require('tls')
 
 const readFilePromise = util.promisify(fs.readFile)
 
 /**
  *
  *
- * @class AdminServer
  * @property {MCServer} mcServer
  * @property {winston.Logger} logger
  * @property {https.httpServer|undefined} httpServer
  */
 class AdminServer {
   /**
-   *
+   * @class
    * @param {MCServer} mcServer
    */
   constructor(mcServer) {
@@ -44,7 +44,7 @@ class AdminServer {
    * Create the SSL options object
    *
    * @param {IServerConfig} configuration
-   * @return {Promise<import('tls').TlsOptions>}
+   * @return {Promise<TlsOptions>}
    */
   async _sslOptions(configuration) {
     debug(`Reading ${configuration.certFilename}`)

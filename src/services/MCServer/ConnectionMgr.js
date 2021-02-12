@@ -13,6 +13,7 @@ const { logger } = require('../../shared/logger')
 const { ConnectionObj } = require('./ConnectionObj')
 const { defaultHandler } = require('./MCOTS/TCPManager')
 const { NPSPacketManager } = require('./npsPacketManager')
+const { IRawPacket } = require('./listenerThread')
 
 /**
  * @class ConnectionMgr
@@ -42,7 +43,7 @@ exports.ConnectionMgr = class ConnectionMgr {
 
   /**
    * Check incoming data and route it to the correct handler based on localPort
-   * @param {import('./listenerThread').IRawPacket} rawPacket
+   * @param {IRawPacket} rawPacket
    * @param {IServerConfig} config
    * @returns {Promise<ConnectionObj>}
    * @memberof ConnectionMgr
