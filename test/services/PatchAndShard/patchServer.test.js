@@ -1,4 +1,5 @@
 const request = require('supertest')
+const { Response } = require('supertest')
 const {
   CastanetResponse,
   PatchServer
