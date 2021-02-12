@@ -6,15 +6,13 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const {
-  GenericRequestMsg
-} = require('../../../src/services/MCServer/GenericRequestMsg')
+  NPSPersonaMapsMsg
+} = require('./NPSPersonaMapsMsg')
 const tap = require('tap')
 
-const genericRequestMsg1 = new GenericRequestMsg()
-
-tap.test('GenericRequestMsg', t => {
-  const { msgNo } = genericRequestMsg1
-  t.equal(msgNo, 0)
-  t.deepEqual(genericRequestMsg1.serialize(), Buffer.alloc(16))
+tap.test('NPSPersonaMapsMsg', t => {
+  const npsPersonaMapsMsg = new NPSPersonaMapsMsg('Recieved')
+  t.equal(npsPersonaMapsMsg.direction, 'Recieved')
+  t.equal(npsPersonaMapsMsg.msgNo, 0x607)
   t.done()
 })

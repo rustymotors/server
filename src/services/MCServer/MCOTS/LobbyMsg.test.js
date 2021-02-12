@@ -7,8 +7,8 @@
 
 const {
   LobbyInfo
-} = require('../../../../src/services/MCServer/MCOTS/LobbyInfo')
-const { LobbyMsg } = require('../../../../src/services/MCServer/MCOTS/LobbyMsg')
+} = require('./LobbyInfo')
+const { LobbyMsg } = require('./LobbyMsg')
 const tap = require('tap')
 
 const lobbyInfo1 = new LobbyInfo()

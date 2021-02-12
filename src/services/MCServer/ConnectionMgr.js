@@ -6,7 +6,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:ConnectionManager')
-const { Socket } = require('net')
 const { appSettings } = require('../../../config/app-settings')
 const { ConnectionObj } = require('./ConnectionObj')
 const { defaultHandler } = require('./MCOTS/TCPManager')
@@ -18,7 +17,7 @@ exports.ConnectionMgr = class ConnectionMgr {
    * @param {module:Logger.logger} logger
    * @param {module:DatabaseManager} databaseManager
    */
-  constructor(logger, databaseManager) {
+  constructor (logger, databaseManager) {
     this.logger = logger.child({ service: 'mcoserver:ConnectionMgr' })
     this.config = appSettings
     this.databaseMgr = databaseManager
@@ -40,7 +39,7 @@ exports.ConnectionMgr = class ConnectionMgr {
    * @return {Promise<ConnectionObj>}
    * @memberof ConnectionMgr
    */
-  async processData(rawPacket, config) {
+  async processData (rawPacket, config) {
     const npsPacketManager = new NPSPacketManager(this.databaseMgr)
 
     const { remoteAddress, localPort, data } = rawPacket
@@ -108,7 +107,7 @@ exports.ConnectionMgr = class ConnectionMgr {
    *
    * @return {string[]}
    */
-  getBans() {
+  getBans () {
     return this.banList
   }
 
@@ -119,7 +118,7 @@ exports.ConnectionMgr = class ConnectionMgr {
    * @memberof ConnectionMgr
    * @return {ConnectionObj | undefined}
    */
-  findConnectionByAddressAndPort(remoteAddress, localPort) {
+  findConnectionByAddressAndPort (remoteAddress, localPort) {
     const results = this.connections.find(connection => {
       const match =
         remoteAddress === connection.remoteAddress &&
@@ -134,7 +133,7 @@ exports.ConnectionMgr = class ConnectionMgr {
    * @param {string} connectionId
    * @return {ConnectionObj | undefined}
    */
-  findConnectionById(connectionId) {
+  findConnectionById (connectionId) {
     const results = this.connections.find(connection => {
       const match = connectionId === connection.id
       return match
@@ -149,7 +148,7 @@ exports.ConnectionMgr = class ConnectionMgr {
    * @param {ConnectionObj} newConnection
    * @memberof ConnectionMgr
    */
-  async _updateConnectionByAddressAndPort(address, port, newConnection) {
+  async _updateConnectionByAddressAndPort (address, port, newConnection) {
     if (newConnection === undefined) {
       throw new Error(
         `Undefined connection: ${JSON.stringify({
@@ -181,7 +180,7 @@ exports.ConnectionMgr = class ConnectionMgr {
    * @return {ConnectionObj}
    * @memberof ConnectionMgr
    */
-  findOrNewConnection(socket) {
+  findOrNewConnection (socket) {
     const { remoteAddress, localPort } = socket
     if (!remoteAddress) {
       throw new Error(
@@ -217,7 +216,7 @@ exports.ConnectionMgr = class ConnectionMgr {
    *
    * @memberof ConnectionMgr
    */
-  resetAllQueueState() {
+  resetAllQueueState () {
     this.connections = this.connections.map(connection => {
       connection.inQueue = true
       return connection
@@ -230,7 +229,7 @@ exports.ConnectionMgr = class ConnectionMgr {
    * @return {ConnectionObj[]}
    * @memberof ConnectionMgr
    */
-  dumpConnections() {
+  dumpConnections () {
     return this.connections
   }
 }

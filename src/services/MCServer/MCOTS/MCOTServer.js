@@ -5,8 +5,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const {logger} = require('../../../shared/logger')
-const { ConnectionObj } = require('../ConnectionObj')
 const { GenericReplyMsg } = require('../GenericReplyMsg')
 const { LobbyMsg } = require('./LobbyMsg')
 const { LoginMsg } = require('./LoginMsg.js')
@@ -18,13 +16,13 @@ const { MessageNode } = require('./MessageNode')
  */
 
 /**
- * 
+ *
  */
- exports.MCOTServer = class MCOTServer {
+exports.MCOTServer = class MCOTServer {
   /**
    * Creates an instance of MCOTServer.
    * @class
-   * @param {logger} logger
+   * @param {module:Logger.logger} logger
    * @memberof MCOTServer
    */
   constructor (logger) {
@@ -68,8 +66,8 @@ const { MessageNode } = require('./MessageNode')
 
   /**
    *
-   * @param {ConnectionObj} con
-   * @param {MessageNode} node
+   * @param {module:ConnectionObj} con
+   * @param {module:MessageNode} node
    */
   async _login (con, node) {
     /*
@@ -98,8 +96,8 @@ const { MessageNode } = require('./MessageNode')
 
   /**
    *
-   * @param {ConnectionObj} con
-   * @param {MessageNode} node
+   * @param {module:ConnectionObj} con
+   * @param {module:MessageNode} node
    */
   async _getLobbies (con, node) {
     this.logger.info('In _getLobbies...')

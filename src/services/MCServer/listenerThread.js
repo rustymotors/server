@@ -7,15 +7,11 @@
 
 const debug = require('debug')
 const net = require('net')
-const { ConnectionMgr } = require('./ConnectionMgr')
-const { ConnectionObj } = require('./ConnectionObj')
-const {logger} = require('../../shared/logger')
 
 /**
  * TCP Listener thread
  * @module ListenerThread
  */
-
 
 /**
  *
@@ -24,9 +20,9 @@ exports.ListenerThread = class ListenerThread {
   /**
    * @class
    * @param {IAppSettings} config
-   * @param {module:logger} logger
+   * @param {module:Logger.logger} logger
    */
-  constructor(config, logger) {
+  constructor (config, logger) {
     this.config = config
     this.logger = logger
   }
@@ -40,7 +36,7 @@ exports.ListenerThread = class ListenerThread {
    * @param {module:IServerConfig} config
    * @memberof! ListenerThread
    */
-  async _onData(data, connection, config) {
+  async _onData (data, connection, config) {
     try {
       const { localPort, remoteAddress } = connection.sock
       /** @type {IRawPacket} */
@@ -90,7 +86,7 @@ exports.ListenerThread = class ListenerThread {
    * @param {module:IServerConfig} config
    * @memberof ListenerThread
    */
-  _listener(socket, connectionMgr, config) {
+  _listener (socket, connectionMgr, config) {
     // Received a new connection
     // Turn it into a connection object
     const connection = connectionMgr.findOrNewConnection(socket)
@@ -132,7 +128,7 @@ exports.ListenerThread = class ListenerThread {
    * @return {Promise<net.Server>}
    * @memberof! ListenerThread
    */
-  async startTCPListener(localPort, connectionMgr, config) {
+  async startTCPListener (localPort, connectionMgr, config) {
     return net
       .createServer(socket => {
         this._listener(socket, connectionMgr, config)

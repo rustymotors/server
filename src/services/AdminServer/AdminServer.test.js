@@ -4,33 +4,21 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
 const mock = require('mock-fs')
-const { WebServer } = require('../../../src/services/AuthLogin/AuthLogin')
-const fs = require('fs')
+const { AdminServer } = require('./AdminServer')
 const tap = require('tap')
+const { fakeMCServer, fakeConfig } = require('../../../test/helpers')
 
-const appSettings = {
-  serverConfig: {}
-}
+const adminServer = new AdminServer(fakeMCServer)
 
-tap.test('WebServer', t => {
-  const webServer = new WebServer(appSettings)
-
+tap.test('AdminServer', async t => {
   t.test('_sslOptions()', async t1 => {
-
-
-    const config = {
-      certFilename: '/cert/cert.pem',
-      privateKeyFilename: '/cert/private.key'
-    }
-
     //  deepcode ignore WrongNumberOfArgs/test: false positive
     mock({
       '/cert/': {}
     })
     try {
-      await webServer._sslOptions(config)
+      await adminServer._sslOptions(fakeConfig.serverConfig)
     } catch (error) {
       t1.contains(error, /cert.pem/, 'throws when cert file is not found')
     }
@@ -40,23 +28,24 @@ tap.test('WebServer', t => {
       '/cert/cert.pem': 'stuff'
     })
     try {
-      await webServer._sslOptions(config)
+      await adminServer._sslOptions(fakeConfig.serverConfig)
     } catch (error) {
       t1.contains(error, /private.key/, 'throws when key file is not found')
     }
     mock.restore()
-        //  deepcode ignore WrongNumberOfArgs/test: false positive
-        mock({
-          '/cert/cert.pem': 'stuff',
-          '/cert/private.key': 'stuff'
-        })
-        try {
-          await webServer._sslOptions(config)
-        } catch (error) {
-          t1.contains(error, /private.key/, 'throws when key file is not found')
-        }
-        mock.restore()
+    //  deepcode ignore WrongNumberOfArgs/test: false positive
+    mock({
+      '/cert/cert.pem': 'stuff',
+      '/cert/private.key': 'stuff'
+    })
+    try {
+      await adminServer._sslOptions(fakeConfig.serverConfig)
+    } catch (error) {
+      t1.contains(error, /private.key/, 'throws when key file is not found')
+    }
+    mock.restore()
     t1.done()
   })
+
   t.done()
 })

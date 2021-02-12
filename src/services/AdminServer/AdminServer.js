@@ -10,12 +10,6 @@ const { logger } = require('../../shared/logger')
 const fs = require('fs')
 const https = require('https')
 const util = require('util')
-const { MCServer } = require('../MCServer')
-// This section of the server can not be encrypted. This is an intentional choice for compatibility
-// deepcode ignore HttpToHttps: This is intentional. See above note.
-const { IncomingMessage, ServerResponse } = require('http')
-const { Socket } = require('net')
-const { TlsOptions } = require('tls')
 
 const readFilePromise = util.promisify(fs.readFile)
 
@@ -27,16 +21,16 @@ const readFilePromise = util.promisify(fs.readFile)
 /**
  *
  *
- * @property {MCServer} mcServer
+ * @property {module:MCServer} mcServer
  * @property {winston.Logger} logger
  * @property {https.httpServer|undefined} httpServer
  */
 class AdminServer {
   /**
    * @class
-   * @param {MCServer} mcServer
+   * @param {module:MCServer} mcServer
    */
-  constructor(mcServer) {
+  constructor (mcServer) {
     this.mcServer = mcServer
     /**
      * @type {logger}
@@ -48,9 +42,8 @@ class AdminServer {
    * Create the SSL options object
    *
    * @param {IServerConfig} configuration
-   * @return {Promise<TlsOptions>}
    */
-  async _sslOptions(configuration) {
+  async _sslOptions (configuration) {
     debug(`Reading ${configuration.certFilename}`)
 
     let cert
@@ -84,7 +77,7 @@ class AdminServer {
    *
    * @return {string}
    */
-  _handleGetBans() {
+  _handleGetBans () {
     const banlist = {
       mcServer: this.mcServer.mgr.getBans()
     }
@@ -95,7 +88,7 @@ class AdminServer {
    *
    * @return {string}
    */
-  _handleGetConnections() {
+  _handleGetConnections () {
     const connections = this.mcServer.mgr.dumpConnections()
     let responseText = ''
     connections.forEach((connection, index) => {
@@ -114,11 +107,11 @@ class AdminServer {
    *
    * @return {string}
    */
-  _handleResetAllQueueState() {
+  _handleResetAllQueueState () {
     this.mcServer.mgr.resetAllQueueState()
     const connections = this.mcServer.mgr.dumpConnections()
     let responseText = 'Queue state reset for all connections\n\n'
-    connections.forEach((connection, index) => {
+    connections.forEach((connection, /** @type {number} */ index) => {
       const displayConnection = `
         index: ${index} - ${connection.id}
             remoteAddress: ${connection.remoteAddress}:${connection.localPort}
@@ -136,7 +129,7 @@ class AdminServer {
    * @param {ServerResponse} response
    * @return {any}
    */
-  _httpsHandler(request, response) {
+  _httpsHandler (request, response) {
     this.logger.info(
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     )
@@ -171,10 +164,10 @@ class AdminServer {
   }
 
   /**
-   * 
-   * @param {Socket} socket 
+   *
+   * @param {Socket} socket
    */
-  _socketEventHandler(socket) {
+  _socketEventHandler (socket) {
     socket.on('error', error => {
       throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`)
     })
@@ -184,7 +177,7 @@ class AdminServer {
    *
    * @param {IServerConfig} config
    */
-  async start(config) {
+  async start (config) {
     try {
       const sslOptions = await this._sslOptions(config)
 

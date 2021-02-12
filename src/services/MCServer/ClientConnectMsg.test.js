@@ -7,7 +7,7 @@
 
 const {
   ClientConnectMsg
-} = require('../../../src/services/MCServer/ClientConnectMsg')
+} = require('./ClientConnectMsg')
 const tap = require('tap')
 
 tap.test('ClientConnectMsg', t => {

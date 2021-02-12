@@ -6,12 +6,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:npsUserStatus')
-const {logger} = require('../../../shared/logger')
+const { logger } = require('../../../shared/logger')
 const crypto = require('crypto')
 const fs = require('fs')
-const { NPSMsg, INPSMsgJSON } = require('../MCOTS/NPSMsg')
-const { Socket } = require('net')
-const { IServerConfig} = require('../../../../config/app-settings')
+const { NPSMsg } = require('../MCOTS/NPSMsg')
 
 /**
  * Load the RSA private key

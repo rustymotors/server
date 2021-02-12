@@ -6,8 +6,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:StockCarInfoMsg')
-const {logger} = require('../../../shared/logger')
-const {StockCar} = require('./StockCar')
+const { logger } = require('../../../shared/logger')
+
+/**
+ * Object for providing information on stock cars
+ * @module StockCarInfoMsg
+ */
 
 // WORD     msgNo;
 // DWORD    starterCash; // when called from the create persona screen,
@@ -18,15 +22,14 @@ const {StockCar} = require('./StockCar')
 // BYTE     moreToCome;     // if 1, expect another msg, otherwise don't
 // StockCar carInfo[1];
 
-/**
- *
- */
-class StockCarInfoMsg {
+exports.StockCarInfoMsg = class StockCarInfoMsg {
   /**
-   *
+   * Creates an instance of StockCarInfoMsg.
+   * @class
    * @param {number} starterCash
    * @param {number} dealerId
    * @param {number} brand
+   * @memberof StockCarInfoMsg
    */
   constructor (starterCash, dealerId, brand) {
     this.logger = logger.child({ service: 'mcoserver:StockCarInfoMsg' })
@@ -39,13 +42,13 @@ class StockCarInfoMsg {
     this.noCars = 1
     /** @type {0|1} */
     this.moreToCome = 0
-    /** @type {StockCar[]} */
+    /** @type {module:StockCar} */
     this.StockCarList = []
   }
 
   /**
    *
-   * @param {StockCar} car
+   * @param {module:StockCar} car
    */
   addStockCar (car) {
     this.StockCarList.push(car)
@@ -66,7 +69,7 @@ class StockCarInfoMsg {
     packet.writeInt16LE(this.noCars, 14)
     packet.writeInt8(this.moreToCome, 16)
     if (this.StockCarList.length > 0) {
-      this.StockCarList.forEach((stockCar, i) => {
+      this.StockCarList.forEach((/** @type {module:StocCar} */ stockCar, /** @type {number} */ i) => {
         const offset = 10 * i
         stockCar.serialize().copy(packet, 17 + offset)
       })
@@ -91,8 +94,4 @@ class StockCarInfoMsg {
       'StockCarInfoMsg'
     )
   }
-}
-
-module.exports = {
-  StockCarInfoMsg
 }

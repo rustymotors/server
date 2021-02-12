@@ -6,12 +6,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:LobbyServer')
-const { appSettings } = require('../../../../config/app-settings')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 const { NPSUserInfo } = require('./npsUserInfo')
 const { PersonaServer } = require('../PersonaServer/PersonaServer')
-const { DatabaseManager } = require('../../../shared/databaseManager')
-const { ConnectionObj } = require('../ConnectionObj')
+const { DatabaseManager } = require('../../../shared/DatabaseManager')
 
 const logger = require('../../../shared/logger').logger.child({
   service: 'mcoserver:LobbyServer'
@@ -32,7 +30,7 @@ const databaseManager = new DatabaseManager(
  * @param {Buffer} buffer
  * @return {Promise<{module:ConnectionObj}>}
  */
-async function npsSocketWriteIfOpen(conn, buffer) {
+async function npsSocketWriteIfOpen (conn, buffer) {
   const sock = conn.sock
   if (sock.writable) {
     // Write the packet to socket
@@ -53,11 +51,11 @@ async function npsSocketWriteIfOpen(conn, buffer) {
  * @param {module:ConnectionObj} con
  * @param {Buffer} cypherCmd
  */
-function decryptCmd(con, cypherCmd) {
+function decryptCmd (con, cypherCmd) {
   const s = con
   const decryptedCommand = s.decipherBufferDES(cypherCmd)
   s.decryptedCmd = decryptedCommand
-  logger.info(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString('hex')}`)
+  debug(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString('hex')}`)
   return s
 }
 
@@ -68,7 +66,7 @@ function decryptCmd(con, cypherCmd) {
  * @param {Buffer} cypherCmd
  * @return {module:ConnectionObj}
  */
-function encryptCmd(con, cypherCmd) {
+function encryptCmd (con, cypherCmd) {
   const s = con
   s.encryptedCmd = s.cipherBufferDES(cypherCmd)
   return s
@@ -81,7 +79,7 @@ function encryptCmd(con, cypherCmd) {
  * @param {Buffer} data
  * @return {Promise<{module:ConnectionObj}>}
  */
-async function sendCommand(con, data) {
+async function sendCommand (con, data) {
   const s = con
 
   const decipheredCommand = decryptCmd(s, Buffer.from(data.slice(4)))
@@ -101,7 +99,7 @@ async function sendCommand(con, data) {
   packetContent.writeUInt16BE(0x0101, 369)
   packetContent.writeUInt16BE(0x022c, 371)
 
-  logger.warn('Sending a dummy response of 0x229 - NPS_MINI_USER_LIST')
+  debug('Sending a dummy response of 0x229 - NPS_MINI_USER_LIST')
 
   // Build the packet
   const packetResult = new NPSMsg('Sent')
@@ -128,7 +126,7 @@ class LobbyServer {
    *
    * @return {module:NPSMsg}
    */
-  _npsHeartbeat() {
+  _npsHeartbeat () {
     const packetContent = Buffer.alloc(8)
     const packetResult = new NPSMsg('Sent')
     packetResult.msgNo = 0x127
@@ -143,9 +141,9 @@ class LobbyServer {
    * @param {IRawPacket} rawPacket
    * @return {Promise<{module:ConnectionObj}>}
    */
-  async dataHandler(rawPacket) {
+  async dataHandler (rawPacket) {
     const { localPort, remoteAddress } = rawPacket
-    logger.info(`Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`)
+    debug(`Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`)
     const { connection, data } = rawPacket
     let updatedConnection = connection
     const requestCode = data.readUInt16BE(0).toString(16)
@@ -157,21 +155,22 @@ class LobbyServer {
           connection,
           data
         )
-        logger.info(
+        debug(
           `Connect responsePacket's data prior to sending: ${JSON.stringify({ data: responsePacket.getPacketAsString() })}`
         )
         // TODO: Investigate why this crashes retail
         try {
           npsSocketWriteIfOpen(connection, responsePacket.serialize())
         } catch (error) {
-          logger.warn(`Unable to send Connect packet: ${error}`)
+          logger.error(`Unable to send Connect packet: ${error}`)
+          process.exit(-1)
         }
         break
       }
       // npsHeartbeat
       case '217': {
         const responsePacket = await this._npsHeartbeat()
-        logger.info(
+        debug(
           `Heartbeat responsePacket's data prior to sending: ${JSON.stringify({ data: responsePacket.getPacketAsString() })}`
         )
         npsSocketWriteIfOpen(connection, responsePacket.serialize())
@@ -191,7 +190,7 @@ class LobbyServer {
           )
         }
 
-        logger.info(
+        debug(
           `encrypedCommand's data prior to sending: ${JSON.stringify({ data: encryptedCmd.toString('hex') })}`
         )
         npsSocketWriteIfOpen(connection, encryptedCmd)
@@ -210,7 +209,7 @@ class LobbyServer {
    * @param {string} key
    * @return {Buffer}
    */
-  _generateSessionKeyBuffer(key) {
+  _generateSessionKeyBuffer (key) {
     const nameBuffer = Buffer.alloc(64)
     Buffer.from(key, 'utf8').copy(nameBuffer)
     return nameBuffer
@@ -222,10 +221,10 @@ class LobbyServer {
    * @param {module:ConnectionObj} connection
    * @param {Buffer} rawData
    */
-  async _npsRequestGameConnectServer(connection, rawData) {
+  async _npsRequestGameConnectServer (connection, rawData) {
     const { sock } = connection
-    logger.info(
-      `_npsRequestGameConnectServer: ${JSON.stringify({ remoteAddress: sock.remoteAddress, data: rawData.toString('hex')})}`
+    debug(
+      `_npsRequestGameConnectServer: ${JSON.stringify({ remoteAddress: sock.remoteAddress, data: rawData.toString('hex') })}`
     )
 
     // Return a _NPS_UserInfo structure

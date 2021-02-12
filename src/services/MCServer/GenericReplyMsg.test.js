@@ -5,17 +5,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { StockCar } = require('../../../../src/services/MCServer/MCOTS/StockCar')
+const {
+  GenericReplyMsg
+} = require('./GenericReplyMsg')
 const tap = require('tap')
 
-const stockCar1 = new StockCar(105, 20, 0)
+const genericReplyMsg1 = new GenericReplyMsg()
 
-tap.test('StockCar', t => {
-  const { brandedPartId, retailPrice, bIsDealOfTheDay } = stockCar1
-  t.equal(brandedPartId, 105)
-
-  t.equal(retailPrice, 20)
-
-  t.equal(bIsDealOfTheDay, 0)
+tap.test('GenericReplyMsg', t => {
+  const { msgNo, toFrom } = genericReplyMsg1
+  t.equal(msgNo, 0)
+  t.equal(toFrom, 0)
+  t.deepEqual(genericReplyMsg1.serialize(), Buffer.alloc(16))
   t.done()
 })

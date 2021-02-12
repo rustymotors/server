@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:TCPManager')
-const {logger} = require('../../../shared/logger')
+const { logger } = require('../../../shared/logger')
 
 const { MCOTServer } = require('./MCOTServer')
 const { ClientConnectMsg } = require('../ClientConnectMsg')
@@ -15,16 +15,14 @@ const { GenericRequestMsg } = require('../GenericRequestMsg')
 const { MessageNode } = require('./MessageNode')
 const { StockCar } = require('./StockCar')
 const { StockCarInfoMsg } = require('./StockCarInfoMsg')
-const { DatabaseManager } = require('../../../shared/databaseManager')
-const {ConnectionObj} = require('../ConnectionObj')
-const { ListenerThread } = require('../listenerThread')
+const { DatabaseManager } = require('../../../shared/DatabaseManager')
 
 /**
  * Manages TCP connection packet processing
  * @module TCPManager
  */
 
-const mcotServer = new MCOTServer( logger.child({ service: 'mcoserver:MCOTSServer' }))
+const mcotServer = new MCOTServer(logger.child({ service: 'mcoserver:MCOTSServer' }))
 const databaseManager = new DatabaseManager(
   logger.child({ service: 'mcoserver:DatabaseManager' })
 )
@@ -33,7 +31,7 @@ const databaseManager = new DatabaseManager(
 
 /**
  *
- * @param {ConnectionObj} conn
+ * @param {module:ConnectionObj} conn
  * @param {MessageNode} node
  */
 async function compressIfNeeded (conn, node) {
@@ -49,15 +47,14 @@ async function compressIfNeeded (conn, node) {
      * At this time we will still send the packet, to not hang connection
      * Client will crash though, due to memory access errors
      */
-
   }
   return { conn, packetToWrite }
 }
 
 /**
  *
- * @param {ConnectionObj} conn
- * @param {MessageNode} node
+ * @param {module:ConnectionObj} conn
+ * @param {module:MessageNode} node
  */
 async function encryptIfNeeded (conn, node) {
   let packetToWrite = node
@@ -80,7 +77,7 @@ async function encryptIfNeeded (conn, node) {
 
 /**
  *
- * @param {ConnectionObj} conn
+ * @param {module:ConnectionObj} conn
  * @param {MessageNode[]} nodes
  */
 async function socketWriteIfOpen (conn, nodes) {
@@ -115,8 +112,8 @@ async function socketWriteIfOpen (conn, nodes) {
 
 /**
  *
- * @param {ConnectionObj} con
- * @param {MessageNode} node
+ * @param {module:ConnectionObj} con
+ * @param {module:MessageNode} node
  */
 async function GetStockCarInfo (con, node) {
   const getStockCarInfoMsg = new GenericRequestMsg()
@@ -147,8 +144,8 @@ async function GetStockCarInfo (con, node) {
 
 /**
  *
- * @param {ConnectionObj} con
- * @param {MessageNode} node
+ * @param {module:ConnectionObj} con
+ * @param {module:MessageNode} node
  */
 async function ClientConnect (con, node) {
   /**
@@ -201,8 +198,8 @@ async function ClientConnect (con, node) {
 
 /**
  *
- * @param {MessageNode} node
- * @param {ConnectionObj} conn
+ * @param {module:MessageNode} node
+ * @param {module:ConnectionObj} conn
  */
 async function ProcessInput (node, conn) {
   const currentMsgNo = node.msgNo
@@ -304,8 +301,8 @@ async function ProcessInput (node, conn) {
 
 /**
  *
- * @param {MessageNode} msg
- * @param {ConnectionObj} con
+ * @param {module:MessageNode} msg
+ * @param {module:ConnectionObj} con
  */
 async function MessageReceived (msg, con) {
   const newConnection = con
@@ -365,7 +362,7 @@ async function MessageReceived (msg, con) {
 /**
  *
  * @param {module:ListenerThread/IRawPacket} rawPacket
- * @return {Promise<ConnectionObj>}
+ * @return {Promise<{module:ConnectionObj}>}
  */
 async function defaultHandler (rawPacket) {
   const { connection, remoteAddress, localPort, data } = rawPacket

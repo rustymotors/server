@@ -6,7 +6,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:LobbyMsg')
-const {logger} = require('../../../shared/logger')
 const { LobbyInfo } = require('./LobbyInfo')
 
 /**
@@ -17,7 +16,6 @@ exports.LobbyMsg = class LobbyMsg {
    *
    */
   constructor () {
-
     this.msgNo = 325
 
     /** @type {0|1} */

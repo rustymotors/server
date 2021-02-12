@@ -6,10 +6,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:MCServer')
-const {logger} = require('../../shared/logger')
+const { logger } = require('../../shared/logger')
 const { ListenerThread } = require('./listenerThread')
 const { ConnectionMgr } = require('./ConnectionMgr')
-const { DatabaseManager } = require('../../shared/databaseManager')
 const { appSettings } = require('../../../config/app-settings')
 
 /**
@@ -18,14 +17,12 @@ const { appSettings } = require('../../../config/app-settings')
  * @module MCServer
  */
 
-
-
 exports.MCServer = class MCServer {
   /**
-   * 
+   *
    * @constructor
-   * @param {appSettings} config 
-   * @param {DatabaseManager} databaseManager
+   * @param {appSettings} config
+   * @param {module:DatabaseManager} databaseManager
    */
   constructor (config, databaseManager) {
     this.config = config
@@ -35,7 +32,7 @@ exports.MCServer = class MCServer {
 
   /**
    * Start the HTTP, HTTPS and TCP connection listeners
-   * 
+   *
    */
 
   async startServers () {

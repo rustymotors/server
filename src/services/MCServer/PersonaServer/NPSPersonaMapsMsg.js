@@ -6,11 +6,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:NPSPersonaMapsMsg')
-const {logger} = require('../../../shared/logger')
+const { logger } = require('../../../shared/logger')
 
 const struct = require('c-struct')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
-const {IPersonaRecord} = require('./PersonaRecord')
 
 const npsPersonaMapsMsgSchema = new struct.Schema({
   msgNo: struct.type.uint16,
@@ -19,6 +18,7 @@ const npsPersonaMapsMsgSchema = new struct.Schema({
   reserved: struct.type.uint16,
   msgChecksum: struct.type.uint32,
   // End of header
+  // @ts-ignore
   personas: [
     {
       personaCount: struct.type.uint16,

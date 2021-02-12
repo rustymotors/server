@@ -12,28 +12,27 @@ const winston = require('winston')
  * @module Logger
  */
 
-
- /**
+/**
   * Return a shared logger
   */
- exports.logger = winston.createLogger({
-    ...{
-      level: 'silly',
-      transports: [
-        new winston.transports.File({
-          filename: './logs/silly.log'
-        }),
-        new winston.transports.Console({
-          format: winston.format.combine(
-            winston.format.timestamp({
-              format: 'YYYY-MM-DD HH:mm:ss'
-            }),
-            winston.format.errors({ stack: true }),
-            winston.format.splat(),
-            winston.format.simple(),
-            winston.format.colorize({ all: true })
-          )
-        })
-      ]
-    }
-  })
+exports.logger = winston.createLogger({
+  ...{
+    level: 'silly',
+    transports: [
+      new winston.transports.File({
+        filename: './logs/silly.log'
+      }),
+      new winston.transports.Console({
+        format: winston.format.combine(
+          winston.format.timestamp({
+            format: 'YYYY-MM-DD HH:mm:ss'
+          }),
+          winston.format.errors({ stack: true }),
+          winston.format.splat(),
+          winston.format.simple(),
+          winston.format.colorize({ all: true })
+        )
+      })
+    ]
+  }
+})

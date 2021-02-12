@@ -5,12 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const {appSettings} = require('../../../config/app-settings')
-const {logger} = require('../../shared/logger')
+const { appSettings } = require('../../../config/app-settings')
+const { logger } = require('../../shared/logger')
 const { LoginServer } = require('./LoginServer/LoginServer')
 const { PersonaServer } = require('./PersonaServer/PersonaServer')
 const { LobbyServer } = require('./LobbyServer/LobbyServer')
-const { DatabaseManager } = require('../../shared/databaseManager')
 
 /**
  *
@@ -18,7 +17,7 @@ const { DatabaseManager } = require('../../shared/databaseManager')
 class NPSPacketManager {
   /**
    *
-   * @param {DatabaseManager} databaseMgr
+   * @param {module:DatabaseManager} databaseMgr
    */
   constructor (databaseMgr) {
     this.logger = logger.child({ service: 'mcoserver:NPSPacketManager' })

@@ -6,20 +6,20 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:StockCar')
-const {logger} = require('../../../shared/logger')
+const { logger } = require('../../../shared/logger')
+
+/**
+ * Container objest for Stock cars
+ * @module StockCar
+ */
 
 // DWORD   brandedPartID;
 // DWORD   retailPrice;
 // WORD    bIsDealOfTheDay;
 
-/**
- *
- *
- * @class StockCar
- */
-class StockCar {
+exports.StockCar = class StockCar {
   /**
-   *
+   * @class
    * @param {number} brandedPartId
    * @param {number} retailPrice
    * @param {0|1} bIsDealOfTheDay
@@ -54,8 +54,4 @@ class StockCar {
     debug(`isDealOfTheDay:    ${this.bIsDealOfTheDay}`)
     debug('[/StockCar]======================================')
   }
-}
-
-module.exports = {
-  StockCar
 }

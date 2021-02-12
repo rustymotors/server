@@ -7,7 +7,7 @@
 
 const {
   LobbyServer
-} = require('../../../../src/services/MCServer/LobbyServer/LobbyServer')
+} = require('./LobbyServer')
 const tap = require('tap')
 
 tap.test('LobbyServer', t => {

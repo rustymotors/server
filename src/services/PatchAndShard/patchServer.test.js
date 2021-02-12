@@ -2,12 +2,9 @@ const request = require('supertest')
 const {
   CastanetResponse,
   PatchServer
-} = require('../../../src/services/PatchAndShard/patchServer')
+} = require('./patchServer')
 const tap = require('tap')
-const depLogger = require('../../../src/shared/logger')
-const sinon = require('sinon')
-
-const fakeLogger = sinon.stub(depLogger.logger, 'info')
+const depLogger = require('../../shared/logger')
 
 tap.test('PatchServer', t => {
   const patchServer = new PatchServer(depLogger.logger)
@@ -92,7 +89,7 @@ tap.test('PatchServer - Default', t => {
   // deepcode ignore PromiseNotCaughtNode/test: This promise doesn't return an error, it seems.
   request(patchServer.serverPatch)
     .get('/')
-    .then(/** @type {request.Response} */  response => {
+    .then(/** @type {request.Response} */ response => {
       t.deepEquals(patchServer._getBans(), [], '_getBans() after request')
       t.equals(response.status, 404, 'should return 404')
       t.done()

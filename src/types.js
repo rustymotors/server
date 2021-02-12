@@ -9,7 +9,7 @@
  * @property {number} timestamp
  */
 
- /**
+/**
  *
  * @global
  * @typedef IServerConfig
@@ -27,16 +27,28 @@
  * @property {IServerConfig} serverConfig
  */
 
- /**
+/**
  * @global
  * @typedef Session_Record
  * @property {string} s_key
  * @property {string} session_key
  */
 
- /** 
+/**
   * @global
   * @typedef MCOTS_Session
   * @property {module:ConnectionObj} con
   * @property {module:MessageNode[]} nodes
   */
+
+/**
+ *
+ * @global
+ * @typedef {Object} IPersonaRecord
+ * @property {number} customerId
+ * @property {Buffer} id
+ * @property {Buffer} maxPersonas
+ * @property {Buffer} name
+ * @property {Buffer} personaCount
+ * @property {Buffer} shardId
+ */
