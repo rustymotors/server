@@ -209,6 +209,7 @@ exports.PatchServer = class PatchServer {
    *
    * @param {http.IncomingMessage} request
    * @param {http.ServerResponse} response
+   * @return {void}
    * @memberof! PatchServer
    */
   _httpHandler(request, response) {

@@ -7,9 +7,7 @@
 
 const debug = require('debug')('mcoserver:ConnectionManager')
 const { Socket } = require('net')
-const { appSettings, IServerConfig } = require('../../../config/app-settings')
-const { DatabaseManager } = require('../../shared/databaseManager')
-const { logger } = require('../../shared/logger')
+const { appSettings } = require('../../../config/app-settings')
 const { ConnectionObj } = require('./ConnectionObj')
 const { defaultHandler } = require('./MCOTS/TCPManager')
 const { NPSPacketManager } = require('./npsPacketManager')
@@ -17,8 +15,8 @@ const { NPSPacketManager } = require('./npsPacketManager')
 exports.ConnectionMgr = class ConnectionMgr {
   /**
    * Creates an instance of ConnectionMgr.
-   * @param {logger} logger
-   * @param {DatabaseManager} databaseManager
+   * @param {module:Logger.logger} logger
+   * @param {module:DatabaseManager} databaseManager
    */
   constructor(logger, databaseManager) {
     this.logger = logger.child({ service: 'mcoserver:ConnectionMgr' })
@@ -39,7 +37,7 @@ exports.ConnectionMgr = class ConnectionMgr {
    * Check incoming data and route it to the correct handler based on localPort
    * @param {IRawPacket} rawPacket
    * @param {IServerConfig} config
-   * @returns {Promise<ConnectionObj>}
+   * @return {Promise<ConnectionObj>}
    * @memberof ConnectionMgr
    */
   async processData(rawPacket, config) {
@@ -119,7 +117,7 @@ exports.ConnectionMgr = class ConnectionMgr {
    * @param {string} remoteAddress
    * @param {number} localPort
    * @memberof ConnectionMgr
-   * @return {ConnectionObj|undefined}
+   * @return {ConnectionObj | undefined}
    */
   findConnectionByAddressAndPort(remoteAddress, localPort) {
     const results = this.connections.find(connection => {
@@ -134,7 +132,7 @@ exports.ConnectionMgr = class ConnectionMgr {
   /**
    * Locate connection by id in the connections array
    * @param {string} connectionId
-   * @return {ConnectionObj|undefined}
+   * @return {ConnectionObj | undefined}
    */
   findConnectionById(connectionId) {
     const results = this.connections.find(connection => {
