@@ -46,7 +46,7 @@ class AuthLogin {
   /**
    *
    * @param {IServerConfig} configuration
-   * @returns {Promise<sslOptionsObj>}
+   * @return {Promise<sslOptionsObj>}
    * @memberof! WebServer
    */
   async _sslOptions(configuration) {

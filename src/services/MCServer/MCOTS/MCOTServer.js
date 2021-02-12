@@ -133,7 +133,7 @@ exports.MCOTServer = class MCOTServer {
    *
    * @param {ConnectionObj} con
    * @param {MessageNode} node
-   * @return Promise<{ConnectionObject, MessageNode[]}>
+   * @return {Promise<{ConnectionObject, MessageNode[]}>}
    */
   async _logout (con, node) {
     const logoutMsg = node

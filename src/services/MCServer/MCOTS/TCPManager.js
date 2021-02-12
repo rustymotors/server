@@ -357,7 +357,7 @@ async function MessageReceived (msg, con) {
 /**
  *
  * @param {IRawPacket} rawPacket
- * @returns {Promise<ConnectionObj>}
+ * @return {Promise<ConnectionObj>}
  */
 async function defaultHandler (rawPacket) {
   const { connection, remoteAddress, localPort, data } = rawPacket
