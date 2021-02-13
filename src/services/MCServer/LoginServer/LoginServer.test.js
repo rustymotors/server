@@ -7,7 +7,7 @@
 
 const {
   LoginServer
-} = require('../../../src/services/MCServer/LoginServer/LoginServer')
+} = require('./LoginServer')
 const tap = require('tap')
 
 const loginServer = new LoginServer()

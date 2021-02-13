@@ -7,7 +7,7 @@
 
 const {
   StockCarInfoMsg
-} = require('../../../../src/services/MCServer/MCOTS/StockCarInfoMsg')
+} = require('./StockCarInfoMsg')
 const tap = require('tap')
 
 const stockCarInfoMsg1 = new StockCarInfoMsg(1, 0, 0)

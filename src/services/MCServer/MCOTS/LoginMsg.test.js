@@ -7,7 +7,7 @@
 
 const {
   LoginMsg
-} = require('../../../../src/services/MCServer/MCOTS/LoginMsg.js')
+} = require('./LoginMsg.js')
 const tap = require('tap')
 
 const inboundBuffer = Buffer.alloc(42)

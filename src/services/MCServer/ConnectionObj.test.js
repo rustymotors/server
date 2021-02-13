@@ -7,27 +7,15 @@
 
 const sinon = require('sinon')
 const { Socket } = require('net')
-const depLogger = require('../../../src/shared/logger')
-const { DatabaseManager } = require('../../../src/shared/databaseManager')
+const depLogger = require('../../shared/logger')
+const { DatabaseManager } = require('../../shared/DatabaseManager')
 const {
   ConnectionObj
-} = require('../../../src/services/MCServer/ConnectionObj')
+} = require('./ConnectionObj')
 const {
   ConnectionMgr
-} = require('../../../src/services/MCServer/ConnectionMgr')
+} = require('./ConnectionMgr')
 const tap = require('tap')
-const { MCServer } = require('../../../src/services/MCServer')
-
-/** @type {IAppSettings} */
-const fakeConfig = {
-  serverConfig: {
-    certFilename: '/cert/cert.pem',
-    privateKeyFilename: '/cert/private.key',
-    ipServer: '',
-    publicKeyFilename: '',
-    connectionURL: ''
-  }
-}
 
 const fakeLogger = sinon.mock(depLogger.logger)
 fakeLogger.expects('child').withArgs().atLeast(1)

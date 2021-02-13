@@ -5,7 +5,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const { EncryptionMgr } = require('./EncryptionMgr')
-const { Socket } = require('net')
 const crypto = require('crypto')
 
 /**
@@ -32,7 +31,7 @@ exports.ConnectionObj = class ConnectionObj {
    * @param {Socket} sock
    * @param {module:ConnectionMgr} mgr
    */
-  constructor(connectionId, sock, mgr) {
+  constructor (connectionId, sock, mgr) {
     this.id = connectionId
     this.appId = 0
     /**
@@ -62,7 +61,7 @@ exports.ConnectionObj = class ConnectionObj {
    *
    * @param {Buffer} key
    */
-  setEncryptionKey(key) {
+  setEncryptionKey (key) {
     this.isSetupComplete = this.enc.setEncryptionKey(key)
   }
 
@@ -71,7 +70,7 @@ exports.ConnectionObj = class ConnectionObj {
    *
    * @param {string} sKey
    */
-  setEncryptionKeyDES(sKey) {
+  setEncryptionKeyDES (sKey) {
     // deepcode ignore HardcodedSecret: This uses an empty IV
     const desIV = Buffer.alloc(8)
     this.encLobby.cipher = crypto.createCipheriv(
@@ -96,7 +95,7 @@ exports.ConnectionObj = class ConnectionObj {
    * @param {Buffer} messageBuffer
    * @return {Buffer}
    */
-  cipherBufferDES(messageBuffer) {
+  cipherBufferDES (messageBuffer) {
     if (this.encLobby.cipher) {
       return this.encLobby.cipher.update(messageBuffer)
     }
@@ -109,7 +108,7 @@ exports.ConnectionObj = class ConnectionObj {
    * @param {Buffer} messageBuffer
    * @return {Buffer}
    */
-  decipherBufferDES(messageBuffer) {
+  decipherBufferDES (messageBuffer) {
     if (this.encLobby.decipher) {
       return this.encLobby.decipher.update(messageBuffer)
     }

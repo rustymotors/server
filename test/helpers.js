@@ -9,31 +9,10 @@
 const td = require('testdouble')
 const { logger } = require('../src/shared/logger')
 const { ConnectionMgr } = require('../src/services/MCServer/ConnectionMgr')
-const { DatabaseManager } = require('../src/shared/databaseManager')
+const { DatabaseManager } = require('../src/shared/DatabaseManager')
 const net = require('net')
 const { ConnectionObj } = require('../src/services/MCServer/ConnectionObj')
-
-exports.deepCopyFunction = deepCopyFunction = inObject => {
-  let outObject, value, key
-
-  if (typeof inObject !== 'object' || inObject === null) {
-    return inObject // Return the value if inObject is not an object
-  }
-
-  // Create an array or object to hold the values
-  outObject = Array.isArray(inObject) ? [] : {}
-
-  for (let key in inObject) {
-    if (inObject[key]) {
-      value = inObject[key]
-
-      // Recursively (deep) copy for nested objects, including arrays
-      outObject[key] = deepCopyFunction(value)
-    }
-  }
-
-  return outObject
-}
+const { MCServer } = require('../src/services/MCServer')
 
 exports.fakeConfig = {
   serverConfig: {
@@ -47,25 +26,28 @@ exports.fakeConfig = {
 
 const fakeLogger = td.object(logger)
 exports.fakeLogger = fakeLogger
-exports.fakeLogger.child = function() {
+exports.fakeLogger.child = function () {
   return exports.fakeLogger
 }
 
-exports.fakeDatabaseManagerConstructor = td.constructor(DatabaseManager)
-exports.fakeDatabaseManager = new exports.fakeDatabaseManagerConstructor(exports.fakeLogger)
+exports.FakeDatabaseManagerConstructor = td.constructor(DatabaseManager)
+exports.fakeDatabaseManager = new exports.FakeDatabaseManagerConstructor(exports.fakeLogger)
 
-exports.fakeConnectionManagerConstructor = td.constructor(ConnectionMgr)
-exports.fakeConnectionMgr = new exports.fakeConnectionManagerConstructor(exports.fakeLogger, exports.fakeDatabaseManager)
+exports.FakeConnectionManagerConstructor = td.constructor(ConnectionMgr)
+exports.fakeConnectionMgr = new exports.FakeConnectionManagerConstructor(exports.fakeLogger, exports.fakeDatabaseManager)
 
 /**
  * Fake socket for testing
  */
-exports.fakeSocketConstructor = td.constructor(net.Socket)
-const fakeSocket = new exports.fakeSocketConstructor()
+exports.FakeSocketConstructor = td.constructor(net.Socket)
+const fakeSocket = new exports.FakeSocketConstructor()
 fakeSocket.localPort = '7003'
 exports.fakeSocket = fakeSocket
 
 /**
  * Fake connectionObj for testing
  */
-exports.fakeConnectionConstructor = td.constructor(ConnectionObj)
+exports.FakeConnectionConstructor = td.constructor(ConnectionObj)
+
+exports.FakeMCServerConstructor = td.constructor(MCServer)
+exports.fakeMCServer = new exports.FakeMCServerConstructor(exports.fakeConfig, exports.fakeDatabaseManager)

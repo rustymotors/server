@@ -11,7 +11,7 @@ const {logger} = require('./src/shared/logger')
 const { WebServer } = require('./src/services/AuthLogin/AuthLogin')
 const { PatchServer } = require('./src/services/PatchAndShard/patchServer')
 const { Server } = require('./src/server')
-const { DatabaseManager, doMigrations } = require('./src/shared/databaseManager')
+const { DatabaseManager, doMigrations } = require('./src/shared/DatabaseManager')
 
 // Database manager
 const dbLogger = logger.child({service: 'mcoserver:DatabaseManager'})

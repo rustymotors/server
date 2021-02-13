@@ -7,9 +7,9 @@
 
 const {
   PersonaServer
-} = require('../../../../src/services/MCServer/PersonaServer/PersonaServer')
+} = require('./PersonaServer')
 const tap = require('tap')
-const { NPSMsg } = require('../../../../src/services/MCServer/MCOTS/NPSMsg')
+const { NPSMsg } = require('../MCOTS/NPSMsg')
 
 const fakeLogger = {
   info: function () {},

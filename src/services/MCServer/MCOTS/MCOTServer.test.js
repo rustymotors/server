@@ -7,7 +7,7 @@
 
 const {
   MCOTServer
-} = require('../../../../src/services/MCServer/MCOTS/MCOTServer')
+} = require('./MCOTServer')
 const tap = require('tap')
 
 const mcotServer = new MCOTServer()

@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:NPSMsg')
-const {logger} = require('../../../shared/logger')
+const { logger } = require('../../../shared/logger')
 
 /**
  * Packet container for NPS messages
@@ -26,7 +26,7 @@ const NPS_MSG_DIRECTION = {
   Sent: 'Sent'
 }
 
-  /**
+/**
    *
    * @global
    * @typedef {Object} INPSMsgJSON
@@ -175,7 +175,7 @@ class NPSMsg {
       content: this.content.toString('hex'),
       sessionKey: null,
       direction: this.direction,
-      rawBuffer:  this.content.toString('hex')
+      rawBuffer: this.content.toString('hex')
     }
   }
 }

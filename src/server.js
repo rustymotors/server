@@ -5,11 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const {appSettings} = require('../config/app-settings')
-const {logger} = require('./shared/logger')
+const { appSettings } = require('../config/app-settings')
+const { logger } = require('./shared/logger')
 const { AdminServer } = require('./services/AdminServer/AdminServer')
 const { MCServer } = require('./services/MCServer')
-const { DatabaseManager } = require('./shared/databaseManager')
 
 /**
  * Main game server
@@ -17,7 +16,7 @@ const { DatabaseManager } = require('./shared/databaseManager')
  */
 class Server {
   /**
-   * @param {DatabaseManager} databaseManager
+   * @param {module:DatabaseManager} databaseManager
    */
   constructor (databaseManager) {
     this.config = appSettings

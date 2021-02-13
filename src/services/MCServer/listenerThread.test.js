@@ -6,10 +6,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const tap = require('tap')
-const { fakeLogger, fakeConnectionMgr, fakeConfig, fakeSocket, fakeConnectionConstructor } = require('../../helpers')
+const { fakeLogger, fakeConnectionMgr, fakeConfig, fakeSocket, FakeConnectionConstructor } = require('../../../test/helpers')
 const {
   ListenerThread
-} = require('../../../src/services/MCServer/listenerThread')
+} = require('./listenerThread')
 
 tap.test('ListenerThread', async t => {
   const listenerThread = new ListenerThread(fakeConfig, fakeLogger.child({ service: 'mcoserver:TestListenerThread' }))
@@ -22,20 +22,20 @@ tap.test('ListenerThread', async t => {
 })
 
 tap.test('ListenerThread - _onData', async t => {
-  const listenerThread = new ListenerThread( fakeConfig, fakeLogger.child({ service: 'mcoserver:TestListenerThread' }))
+  const listenerThread = new ListenerThread(fakeConfig, fakeLogger.child({ service: 'mcoserver:TestListenerThread' }))
 
-  const fakeConnection1 =new fakeConnectionConstructor('test_connction_1', fakeSocket, fakeConnectionMgr)
+  const fakeConnection1 = new FakeConnectionConstructor('test_connction_1', fakeSocket, fakeConnectionMgr)
   fakeConnection1.remoteAddress = '0.0.0.0'
 
   t.same(fakeConnection1.remoteAddress, '0.0.0.0', 'remoteAddress is 0.0.0.0')
 
   try {
-    await listenerThread._onData(Buffer.alloc(5), fakeConnection1,fakeConfig.serverConfig)
+    await listenerThread._onData(Buffer.alloc(5), fakeConnection1, fakeConfig.serverConfig)
   } catch (err) {
     t.notOk(err.message.includes('Remote address is empty'), 'remoteAddress is empty')
   }
 
-  const fakeConnection3 = new fakeConnectionConstructor('test_connction_3', fakeSocket, fakeConnectionMgr)
+  const fakeConnection3 = new FakeConnectionConstructor('test_connction_3', fakeSocket, fakeConnectionMgr)
   fakeConnection3.sock = fakeSocket
   fakeConnection3.mgr = fakeConnectionMgr
   fakeConnection3.remoteAddress = undefined
@@ -43,7 +43,6 @@ tap.test('ListenerThread - _onData', async t => {
   t.same(fakeConnection3.remoteAddress, undefined, 'remoteAddress is undefined')
 
   try {
-
     await listenerThread._onData(Buffer.alloc(5), fakeConnection3, fakeConfig.serverConfig)
   } catch (err) {
     t.ok(err.message.includes('Remote address is empty'), 'remoteAddress is empty')

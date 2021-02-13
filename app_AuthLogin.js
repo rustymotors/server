@@ -5,14 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const {
-  NPSUserStatus
-} = require('../../../src/services/MCServer/LoginServer/npsUserStatus')
-const tap = require('tap')
+const { WebServer } = require('./src/services/AuthLogin/AuthLogin')
+const { appSettings } = require('./config/app-settings')
 
-tap.test('NPSUserStatus', t => {
-  const testPacket = Buffer.from([0x7b, 0x00])
-  const npsUserStatus = new NPSUserStatus(testPacket)
-  t.equal(npsUserStatus.opCode, 123)
-  t.done()
-})
+// MCOS AuthLogin and Shard
+const AuthLogin = new WebServer(appSettings)
+AuthLogin.start()

@@ -7,5 +7,5 @@ coverage-report:
   - html
 no-browser: true
 output-dir: coverage
-test-regex: ((\/|^)(tests?|__tests?__)\/.*|\.(tests?|spec)|^\/?tests?)\.([mc]js|[jt]sx?)$
+
 

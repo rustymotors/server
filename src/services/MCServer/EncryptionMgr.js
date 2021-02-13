@@ -56,7 +56,7 @@ class EncryptionMgr {
     if (this.in === null) {
       throw new Error('No encryption manager found!')
     }
-    return Buffer.from(this.in.update(encryptedText))      
+    return Buffer.from(this.in.update(encryptedText))
   }
 
   /**

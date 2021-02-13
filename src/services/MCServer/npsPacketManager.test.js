@@ -6,13 +6,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const {
-  NPSPersonaMapsMsg
-} = require('../../../../src/services/MCServer/PersonaServer/NPSPersonaMapsMsg')
+  NPSPacketManager
+} = require('./npsPacketManager')
 const tap = require('tap')
 
-tap.test('NPSPersonaMapsMsg', t => {
-  const npsPersonaMapsMsg = new NPSPersonaMapsMsg('Recieved')
-  t.equal(npsPersonaMapsMsg.direction, 'Recieved')
-  t.equal(npsPersonaMapsMsg.msgNo, 0x607)
+tap.test('NPSPacketManger', t => {
+  const npsPacketManager = new NPSPacketManager()
+  t.equal(npsPacketManager.msgCodetoName(0x229), 'NPS_MINI_USER_LIST')
   t.done()
 })

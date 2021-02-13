@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:LoginServer')
-const {logger} = require('../../../shared/logger')
+const { logger } = require('../../../shared/logger')
 const { NPSUserStatus } = require('./npsUserStatus')
 const { premadeLogin } = require('./packet')
 
@@ -104,7 +104,7 @@ class LoginServer {
         {
           contextId
         }
-        
+
       )
       throw new Error(
         `Unable to locate user record matching contextId ${contextId}`

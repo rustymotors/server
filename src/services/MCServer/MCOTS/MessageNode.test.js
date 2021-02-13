@@ -7,7 +7,7 @@
 
 const {
   MessageNode
-} = require('../../../../src/services/MCServer/MCOTS/MessageNode')
+} = require('./MessageNode')
 const tap = require('tap')
 
 const messageNode1 = new MessageNode('Recieved')
@@ -47,7 +47,7 @@ tap.test('MessageNode', t => {
   try {
     messageNode1.dumpPacket()
   } catch (error) {
-    t.ok(error, 'Unable to dump faulty packet')  
+    t.ok(error, 'Unable to dump faulty packet')
   }
   t.done()
 })

@@ -5,9 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const pool = require('./db/index')
-const { logger } = require('../shared/logger')
-const { migrate } = require("postgres-migrations")
+const { pool } = require('./db/index')
+const { migrate } = require('postgres-migrations')
 
 /**
  * Database connection abstraction
@@ -15,12 +14,12 @@ const { migrate } = require("postgres-migrations")
  */
 
 /**
- * 
- * @param {module:Logger.logger} logger 
+ *
+ * @param {module:Logger.logger} logger
  */
- exports.doMigrations = async function doMigrations(logger) {
+exports.doMigrations = async function doMigrations (logger) {
   logger.info('Starting migrations...')
-  const client = pool.pool
+  const client = pool
   try {
     await client.connect()
   } catch (error) {
@@ -28,7 +27,7 @@ const { migrate } = require("postgres-migrations")
     process.exit(-1)
   }
   try {
-    await migrate({client}, "migrations")
+    await migrate({ client }, 'migrations')
   } finally {
     // await client.end()
     logger.info('Migrations complete!')
@@ -42,9 +41,9 @@ exports.DatabaseManager = class DatabaseManager {
   /**
    *
    * @class
-   * @param {logger} logger
+   * @param {module:Logger.logger} logger
    */
-  constructor(logger) {
+  constructor (logger) {
     this.logger = logger
   }
 
@@ -54,7 +53,7 @@ exports.DatabaseManager = class DatabaseManager {
    * @return {Promise<Session_Record>}
    * @memberof {DatabaseManager}
    */
-  async fetchSessionKeyByCustomerId(customerId) {
+  async fetchSessionKeyByCustomerId (customerId) {
     try {
       const { rows } = await pool.query(
         'SELECT session_key, s_key FROM sessions WHERE customer_id = $1',
@@ -70,12 +69,12 @@ exports.DatabaseManager = class DatabaseManager {
 
   /**
    * Fetch session key from database based on remote address
-   * 
+   *
    * @param {string} connectionId
    * @return {Promise<Session_Record>}
    * @memberof {DatabaseManager}
    */
-  async fetchSessionKeyByConnectionId(connectionId) {
+  async fetchSessionKeyByConnectionId (connectionId) {
     try {
       const { rows } = await pool.query(
         'SELECT session_key, s_key FROM sessions WHERE connection_id = $1',
@@ -98,7 +97,7 @@ exports.DatabaseManager = class DatabaseManager {
    * @return {Promise<Session_Record[]>}
    * @memberof {DatabaseManager}
    */
-  async _updateSessionKey(customerId, sessionKey, contextId, connectionId) {
+  async _updateSessionKey (customerId, sessionKey, contextId, connectionId) {
     const sKey = sessionKey.substr(0, 16)
     try {
       const { rows } = await pool.query(

@@ -140,9 +140,9 @@ class MessageNode {
     let packetContentsArray = this.serialize()
       .toString('hex')
       .match(/../g)
-      if (packetContentsArray == null) {
-        packetContentsArray = []
-      }
+    if (packetContentsArray == null) {
+      packetContentsArray = []
+    }
     debug(
       `MessageNode: ${JSON.stringify({
         dataLength: this.dataLength,

@@ -6,12 +6,15 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const {
-  premadeLogin
-} = require('../../../src/services/MCServer/LoginServer/packet')
+  GenericRequestMsg
+} = require('./GenericRequestMsg')
 const tap = require('tap')
 
-tap.test('LoginServer - Packet', t => {
-  const packet = premadeLogin()
-  t.type(packet, 'Buffer')
+const genericRequestMsg1 = new GenericRequestMsg()
+
+tap.test('GenericRequestMsg', t => {
+  const { msgNo } = genericRequestMsg1
+  t.equal(msgNo, 0)
+  t.deepEqual(genericRequestMsg1.serialize(), Buffer.alloc(16))
   t.done()
 })

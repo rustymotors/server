@@ -6,15 +6,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const debug = require('debug')('mcoserver:PatchServer')
-const {appSettings} = require('../../../config/app-settings')
+const { appSettings } = require('../../../config/app-settings')
 const fs = require('fs')
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
 const http = require('http')
 const { ShardEntry } = require('./ShardEntry')
-const util = require('util')
-
-const readFilePromise = util.promisify(fs.readFile)
 
 /**
  * Manages patch and update server connections
@@ -42,7 +39,7 @@ exports.PatchServer = class PatchServer {
    *
    * @param {module:logger} logger
    */
-  constructor(logger) {
+  constructor (logger) {
     /** @type { IAppSettings } */
     this.config = appSettings
     this.logger = logger
@@ -56,8 +53,8 @@ exports.PatchServer = class PatchServer {
       this._httpHandler(req, res)
     })
     this.serverPatch.on('error', (err) => {
-      if (err.message.includes("EACCES")) {
-        logger.error(`Unable to start server on port 80! Have you granted access to the node runtime?`)
+      if (err.message.includes('EACCES')) {
+        logger.error('Unable to start server on port 80! Have you granted access to the node runtime?')
         process.exit(-1)
       }
       console.dir(err)
@@ -71,7 +68,7 @@ exports.PatchServer = class PatchServer {
    * @return {exports.CastanetResponse}
    * @memberof! PatchServer
    */
-  _patchUpdateInfo() {
+  _patchUpdateInfo () {
     return exports.CastanetResponse
   }
 
@@ -81,7 +78,7 @@ exports.PatchServer = class PatchServer {
    * @return {exports.CastanetResponse}
    * @memberof! PatchServer
    */
-  _patchNPS() {
+  _patchNPS () {
     return exports.CastanetResponse
   }
 
@@ -91,7 +88,7 @@ exports.PatchServer = class PatchServer {
    * @return {exports.CastanetResponse}
    * @memberof! PatchServer
    */
-  _patchMCO() {
+  _patchMCO () {
     return exports.CastanetResponse
   }
 
@@ -101,7 +98,7 @@ exports.PatchServer = class PatchServer {
    * @return {string}
    * @memberof! PatchServer
    */
-  _generateShardList() {
+  _generateShardList () {
     const { ipServer } = this.config.serverConfig
     const shardClockTower = new ShardEntry(
       'The Clocktower',
@@ -155,7 +152,7 @@ exports.PatchServer = class PatchServer {
  * @return {string}
  * @memberof! WebServer
  */
-  _handleGetCert() {
+  _handleGetCert () {
     return fs.readFileSync(this.config.serverConfig.certFilename).toString()
   }
 
@@ -164,7 +161,7 @@ exports.PatchServer = class PatchServer {
    * @return {string}
    * @memberof! WebServer
    */
-  _handleGetKey() {
+  _handleGetKey () {
     return fs.readFileSync(this.config.serverConfig.publicKeyFilename).toString()
   }
 
@@ -173,7 +170,7 @@ exports.PatchServer = class PatchServer {
    * @return {string}
    * @memberof! WebServer
    */
-  _handleGetRegistry() {
+  _handleGetRegistry () {
     const dynamicRegistryFile = `Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\EACom\\AuthAuth]
@@ -204,7 +201,6 @@ exports.PatchServer = class PatchServer {
     return dynamicRegistryFile
   }
 
-
   /**
    *
    * @param {http.IncomingMessage} request
@@ -212,7 +208,7 @@ exports.PatchServer = class PatchServer {
    * @return {void}
    * @memberof! PatchServer
    */
-  _httpHandler(request, response) {
+  _httpHandler (request, response) {
     let responseData
 
     if (request.url === '/cert') {
@@ -237,11 +233,11 @@ exports.PatchServer = class PatchServer {
 
     switch (request.url) {
       case '/ShardList/':
-        this.logger.info(
+        debug(
           `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
         )
 
-      response.setHeader('Content-Type', 'text/plain')
+        response.setHeader('Content-Type', 'text/plain')
         response.end(this._generateShardList())
         break
 
@@ -250,7 +246,7 @@ exports.PatchServer = class PatchServer {
           `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
         )
 
-      responseData = this._patchUpdateInfo()
+        responseData = this._patchUpdateInfo()
         response.setHeader(responseData.header.type, responseData.header.value)
         response.end(responseData.body)
         break
@@ -259,7 +255,7 @@ exports.PatchServer = class PatchServer {
           `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
         )
 
-      responseData = this._patchNPS()
+        responseData = this._patchNPS()
         response.setHeader(responseData.header.type, responseData.header.value)
         response.end(responseData.body)
         break
@@ -271,7 +267,6 @@ exports.PatchServer = class PatchServer {
         response.setHeader(responseData.header.type, responseData.header.value)
         response.end(responseData.body)
         break
-
 
       default:
         // Is this a hacker?
@@ -298,7 +293,7 @@ exports.PatchServer = class PatchServer {
    * @return {void}
    * @memberof! PatchServer
    */
-  _addBan(banIP) {
+  _addBan (banIP) {
     this.banList.push(banIP)
   }
 
@@ -307,7 +302,7 @@ exports.PatchServer = class PatchServer {
    * @return {string[]}
    * @memberof! PatchServer
    */
-  _getBans() {
+  _getBans () {
     return this.banList
   }
 
@@ -316,7 +311,7 @@ exports.PatchServer = class PatchServer {
    * @return {void}
    * @memberof! PatchServer
    */
-  _clearBans() {
+  _clearBans () {
     this.banList = []
   }
 
@@ -325,7 +320,7 @@ exports.PatchServer = class PatchServer {
    * @memberof! PatchServer
    * @return {Promise<http.Server>}
    */
-  async start() {
+  async start () {
     await this.serverPatch.listen({ port: '80', host: '0.0.0.0' }, () => {
       debug('port 80 listening')
       this.logger.info('[patchServer] Patch server is listening...')
@@ -333,4 +328,3 @@ exports.PatchServer = class PatchServer {
     return this.serverPatch
   }
 }
-

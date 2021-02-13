@@ -7,7 +7,6 @@
 
 const debug = require('debug')('mcoserver:npsUserGameData')
 const cStruct = require('c-struct')
-const { Logger } = require('../../shared/loggerManager')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 
 const npsUserGameDataSchema = new cStruct.Schema({
@@ -55,11 +54,12 @@ cStruct.register('UserGameData', npsUserGameDataSchema)
  */
 class UserGameData extends NPSMsg {
   /**
-   *
+   * @class
+   * @param {module:Logger.logger} logger
    */
-  constructor () {
+  constructor (logger) {
     super('Sent')
-    this.logger = new Logger().getLogger('NPSUserGameData')
+    this.logger = logger.child('NPSUserGameData')
     /** @type {IPersonaRecord[]} */
     this.personas = []
 
@@ -67,7 +67,7 @@ class UserGameData extends NPSMsg {
       this.struct = cStruct.unpackSync('UserGameData', Buffer.alloc(1300))
     } catch (error) {
       debug(error)
-      throw new Error({ error }, 'Error unpacking struct')
+      throw new Error(`Error unpacking struct: ${error}`)
     }
   }
 

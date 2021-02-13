@@ -7,7 +7,7 @@
 
 const {
   NPSUserInfo
-} = require('../../../../src/services/MCServer/LobbyServer/npsUserInfo')
+} = require('./npsUserInfo')
 const tap = require('tap')
 
 tap.test('NPSUserInfo', t => {
