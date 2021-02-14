@@ -113,3 +113,33 @@ const LobbyInfo = {
   teamtrialbaseTUP: Buffer.alloc(4), // Uint4B
   raceCashFactor: Buffer.alloc(4) // Float (4B)
 }
+
+const GLDP_Persona = {
+  customerId_: Buffer.alloc(4), // Uint4B
+  personaId_: Buffer.alloc(4), // Uint4B
+  creationDate_: Buffer.alloc(4), // Int4B
+  personaName_: Buffer.alloc(33) // [33] Char
+}
+
+const _UserGameData = {
+  CustomerId: Buffer.alloc(4), // Uint4B
+  GameUserName: Buffer.alloc(33), // [33] Char
+  ServerDataId: Buffer.alloc(4), // Uint4B
+  CreateDate: Buffer.alloc(4), // Int4B
+  LastLogin: Buffer.alloc(4), // Int4B
+  NumGames: Buffer.alloc(4), // Int4B
+  GameUserId: Buffer.alloc(4), // Uint4B
+  IsOnSystem: Buffer.alloc(4), // Int4B
+  GamePurchaseDate: Buffer.alloc(4), // Int4B
+  GameSerialNumber: Buffer.alloc(33), // [33] Char
+  TimeOnline: Buffer.alloc(4), // Int4B
+  TimeInGame: Buffer.alloc(4), // Int4B
+  GameSpecific: Buffer.alloc(512), // [512] Char
+  PersonalBlob: Buffer.alloc(256), // [256] Char
+  PictureBlob: Buffer.alloc(1), // [1] Char
+  DND: Buffer.alloc(4), // Int4B
+  GameStart: Buffer.alloc(4), // Int4B
+  CurrentKey: Buffer.alloc(400), // [400] Char
+  PersonaLevle: Buffer.alloc(4), // Int4B
+  ShardId: Buffer.alloc(4) // Uint4B
+}
