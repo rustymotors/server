@@ -143,3 +143,30 @@ const _UserGameData = {
   PersonaLevle: Buffer.alloc(4), // Int4B
   ShardId: Buffer.alloc(4) // Uint4B
 }
+
+const GLDP_PersonaList = {
+  NPS_SerializeList: Buffer.alloc(48), // NPS_SerializeList
+  maxPersonas_: Buffer.alloc(4)// Uint4B
+}
+
+const GenericReply = {
+  msgNo: Buffer.alloc(4), // Uint4B
+  msgReply: Buffer.alloc(4), // Uint4B
+  result: Buffer.alloc(4), // Uint4B
+  data: Buffer.alloc(4), // Uint4B
+  data2: Buffer.alloc(4) // Uint4B
+}
+
+const NPS_GetPersonaMapListReq = {
+  NPS_SerializeList: Buffer.alloc(48), // NPS_SerializeList
+  customerId_: Buffer.alloc(4) // Uint4B
+}
+
+const BaseMsgHeader = {
+  msgNo: Buffer.alloc(4) // Uint4B
+}
+
+const CompressedHeader = {
+  uncompressedLength: Buffer.alloc(4), // Uint4B
+  data: Buffer.alloc(0) // [0] Uint4B
+}
