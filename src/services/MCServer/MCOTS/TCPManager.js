@@ -16,6 +16,8 @@ const { MessageNode } = require('./MessageNode')
 const { StockCar } = require('./StockCar')
 const { StockCarInfoMsg } = require('./StockCarInfoMsg')
 const { DatabaseManager } = require('../../../shared/DatabaseManager')
+// eslint-disable-next-line no-unused-vars
+const { ConnectionObj } = require('../ConnectionObj')
 
 /**
  * Manages TCP connection packet processing
@@ -198,8 +200,8 @@ async function ClientConnect (con, node) {
 
 /**
  *
- * @param {module:MessageNode} node
- * @param {module:ConnectionObj} conn
+ * @param {MessageNode} node
+ * @param {ConnectionObj} conn
  */
 async function ProcessInput (node, conn) {
   const currentMsgNo = node.msgNo
@@ -276,6 +278,8 @@ async function ProcessInput (node, conn) {
     }
   } else if (currentMsgString === 'MC_GET_LOBBIES') {
     const result = await mcotServer._getLobbies(conn, node)
+    debug('Dumping Lobbies response packet...')
+    debug(result.nodes)
     const responsePackets = result.nodes
     try {
       // write the socket
@@ -325,19 +329,19 @@ async function MessageReceived (msg, con) {
          * Attempt to decrypt message
          */
         const encryptedBuffer = Buffer.from(msg.data)
-        logger.warn(
+        debug(
           `Full packet before decrypting: ${encryptedBuffer.toString('hex')}`
         )
 
-        logger.warn(
+        debug(
           `Message buffer before decrypting: ${encryptedBuffer.toString('hex')}`
         )
         if (!newConnection.enc) {
           throw new Error('ARC4 decrypter is null')
         }
-        logger.info(`Using encryption id: ${newConnection.enc.getId()}`)
+        debug(`Using encryption id: ${newConnection.enc.getId()}`)
         const deciphered = newConnection.enc.decrypt(encryptedBuffer)
-        logger.warn(
+        debug(
           `Message buffer after decrypting: ${deciphered.toString('hex')}`
         )
 
