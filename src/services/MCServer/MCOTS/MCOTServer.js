@@ -5,10 +5,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const debug = require('debug')('mcoserver:MCOTSServer')
+// eslint-disable-next-line no-unused-vars
+const { ConnectionObj } = require('../ConnectionObj')
 const { GenericReplyMsg } = require('../GenericReplyMsg')
 const { LobbyMsg } = require('./LobbyMsg')
 const { LoginMsg } = require('./LoginMsg.js')
 const { MessageNode } = require('./MessageNode')
+// eslint-disable-next-line no-unused-vars
+const { Logger } = require('winston')
 
 /**
  * Mangages the game database server
@@ -22,7 +27,7 @@ exports.MCOTServer = class MCOTServer {
   /**
    * Creates an instance of MCOTServer.
    * @class
-   * @param {module:Logger.logger} logger
+   * @param {Logger} logger
    * @memberof MCOTServer
    */
   constructor (logger) {
@@ -66,8 +71,8 @@ exports.MCOTServer = class MCOTServer {
 
   /**
    *
-   * @param {module:ConnectionObj} con
-   * @param {module:MessageNode} node
+   * @param {ConnectionObj} con
+   * @param {MessageNode} node
    */
   async _login (con, node) {
     /*
@@ -96,19 +101,19 @@ exports.MCOTServer = class MCOTServer {
 
   /**
    *
-   * @param {module:ConnectionObj} con
-   * @param {module:MessageNode} node
+   * @param {ConnectionObj} con
+   * @param {MessageNode} node
    */
   async _getLobbies (con, node) {
-    this.logger.info('In _getLobbies...')
+    debug('In _getLobbies...')
     const lobbiesListMsg = node
 
     // Update the appId
     lobbiesListMsg.appId = con.appId
 
     // Dump the packet
-    this.logger.info('Dumping request...')
-    lobbiesListMsg.dumpPacket()
+    debug('Dumping request...')
+    debug(lobbiesListMsg)
 
     // Create new response packet
     const lobbyMsg = new LobbyMsg()
@@ -129,8 +134,8 @@ exports.MCOTServer = class MCOTServer {
     rPacket.appId = con.appId
 
     // Dump the packet
-    lobbyMsg.dumpPacket()
-    rPacket.dumpPacket()
+    debug('Dumping response...')
+    debug(rPacket)
 
     return { con, nodes: [rPacket] }
   }
@@ -194,7 +199,7 @@ exports.MCOTServer = class MCOTServer {
   /**
    *
    * @param {module:ConnectionObj} con
-   * @param {module:MessageNode} node
+   * @param {module:MessageNode.MessageNode} node
    */
   async _trackingMessage (con, node) {
     const trackingMsg = node
