@@ -61,7 +61,7 @@ export class ListenerThread {
         { data: rawPacket.data.toString('hex') }
 
       )
-      let newConnection = connection
+      let newConnection: ConnectionObj
       try {
         newConnection = await connection.mgr.processData(rawPacket)
       } catch (error) {
