@@ -73,7 +73,7 @@ export class MCServer {
     ]
 
     tcpPortList.forEach(port => {
-      listenerThread.startTCPListener(port, this.mgr, this.config.serverConfig)
+      listenerThread.startTCPListener(port, this.mgr)
       debug('mcoserver:MCServer')(`port ${port} listening`)
     })
     this.logger.info('Listening sockets create successfully.')

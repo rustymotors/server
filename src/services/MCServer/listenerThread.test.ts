@@ -12,9 +12,9 @@ import { ListenerThread } from './listenerThread'
 tap.test('ListenerThread', async t => {
   const listenerThread = new ListenerThread(fakeConfig, fakeLogger.child({ service: 'mcoserver:TestListenerThread' }))
 
-  const server = await listenerThread.startTCPListener(80, fakeConnectionMgr, fakeConfig.serverConfig)
+  const server = await listenerThread.startTCPListener(80, fakeConnectionMgr)
 
-  listenerThread._listener(fakeSocket, fakeConnectionMgr, fakeConfig.serverConfig)
+  listenerThread._listener(fakeSocket, fakeConnectionMgr)
   server.close()
   t.done()
 })
@@ -28,7 +28,7 @@ tap.test('ListenerThread - _onData', async t => {
   t.same(fakeConnection1.remoteAddress, '0.0.0.0', 'remoteAddress is 0.0.0.0')
 
   try {
-    await listenerThread._onData(Buffer.alloc(5), fakeConnection1, fakeConfig.serverConfig)
+    await listenerThread._onData(Buffer.alloc(5), fakeConnection1)
   } catch (err) {
     t.notOk(err.message.includes('Remote address is empty'), 'remoteAddress is empty')
   }
@@ -41,7 +41,7 @@ tap.test('ListenerThread - _onData', async t => {
   t.same(fakeConnection3.remoteAddress, undefined, 'remoteAddress is undefined')
 
   try {
-    await listenerThread._onData(Buffer.alloc(5), fakeConnection3, fakeConfig.serverConfig)
+    await listenerThread._onData(Buffer.alloc(5), fakeConnection3)
   } catch (err) {
     t.ok(err.message.includes('Remote address is empty'), 'remoteAddress is empty')
     t.done()

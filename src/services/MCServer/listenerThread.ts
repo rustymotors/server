@@ -8,7 +8,7 @@
 import debug from 'debug'
 import net from 'net'
 import { Logger } from 'winston'
-import { IAppSettings, IRawPacket, IServerConfig } from '../../types'
+import { IAppSettings, IRawPacket } from '../../types'
 import { ConnectionMgr } from './ConnectionMgr'
 import { ConnectionObj } from './ConnectionObj'
 
@@ -43,7 +43,7 @@ export class ListenerThread {
    * @param {module:IServerConfig} config
    * @memberof! ListenerThread
    */
-  async _onData (data: Buffer, connection: ConnectionObj, config: IServerConfig) {
+  async _onData (data: Buffer, connection: ConnectionObj): Promise<void> {
     try {
       const { localPort, remoteAddress } = connection.sock
       /** @type {IRawPacket} */
@@ -93,7 +93,7 @@ export class ListenerThread {
    * @param {module:IServerConfig} config
    * @memberof ListenerThread
    */
-  _listener (socket: net.Socket, connectionMgr: ConnectionMgr, config: IServerConfig) {
+  _listener (socket: net.Socket, connectionMgr: ConnectionMgr): void {
     // Received a new connection
     // Turn it into a connection object
     const connection = connectionMgr.findOrNewConnection(socket)
@@ -115,7 +115,7 @@ export class ListenerThread {
       )
     })
     socket.on('data', data => {
-      this._onData(data, connection, config)
+      this._onData(data, connection)
     })
     socket.on('error', err => {
       if (!err.message.includes('ECONNRESET')) {
@@ -135,10 +135,10 @@ export class ListenerThread {
    * @return {Promise<net.Server>}
    * @memberof! ListenerThread
    */
-  async startTCPListener (localPort: number, connectionMgr: ConnectionMgr, config: IServerConfig): Promise<net.Server> {
+  async startTCPListener (localPort: number, connectionMgr: ConnectionMgr): Promise<net.Server> {
     return net
       .createServer(socket => {
-        this._listener(socket, connectionMgr, config)
+        this._listener(socket, connectionMgr)
       })
       .listen({ port: localPort, host: '0.0.0.0' })
   }

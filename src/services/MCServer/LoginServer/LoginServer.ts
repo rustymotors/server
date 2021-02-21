@@ -7,7 +7,7 @@
 
 import { Logger } from 'winston'
 import { DatabaseManager } from '../../../shared/DatabaseManager'
-import { IRawPacket, IServerConfig } from '../../../types'
+import { IRawPacket, IServerConfig, IUserRecordMini } from '../../../types'
 import { ConnectionObj } from '../ConnectionObj'
 import { logger } from '../../../shared/logger'
 import { NPSUserStatus } from './npsUserStatus'
@@ -39,7 +39,7 @@ export class LoginServer {
    * @param {IRawPacket} rawPacket
    * @param {IServerConfig} config
    */
-  async dataHandler (rawPacket: IRawPacket, config: IServerConfig) {
+  async dataHandler (rawPacket: IRawPacket, config: IServerConfig): Promise<ConnectionObj> {
     const { connection, data } = rawPacket
     const { localPort, remoteAddress } = rawPacket
     this.logger.info(`Received Login packet: ${JSON.stringify({ localPort, remoteAddress })}`)
@@ -86,7 +86,7 @@ export class LoginServer {
    * @param {string} contextId
    * @return {{ contextId: string, customerId: Buffer, userId: Buffer}}
    */
-  _npsGetCustomerIdByContextId (contextId: string) {
+  async _npsGetCustomerIdByContextId (contextId: string): Promise<IUserRecordMini> {
     debug('mcoserver:LoginServer')('Entering _npsGetCustomerIdByContextId...')
     const users = [
       {
@@ -136,7 +136,7 @@ export class LoginServer {
    * @param {IServerConfig} config
    * @return {module:NPSMsg}
    */
-  async _userLogin (connection: ConnectionObj, data: Buffer, config: IServerConfig) {
+  async _userLogin (connection: ConnectionObj, data: Buffer, config: IServerConfig): Promise<Buffer> {
     const { sock } = connection
     const { localPort } = sock
     const userStatus = new NPSUserStatus(data)
@@ -160,7 +160,7 @@ export class LoginServer {
 
     // Load the customer record by contextId
     // TODO: This needs to be from a database, right now is it static
-    const customer = this._npsGetCustomerIdByContextId(userStatus.contextId)
+    const customer = await this._npsGetCustomerIdByContextId(userStatus.contextId)
 
     // Save sessionKey in database under customerId
     debug('Preparing to update session key in db')

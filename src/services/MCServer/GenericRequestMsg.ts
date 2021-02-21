@@ -38,7 +38,7 @@ export class GenericRequestMsg {
    *
    * @param {Buffer} buffer
    */
-  deserialize (buffer: Buffer) {
+  deserialize (buffer: Buffer): void {
     try {
       this.msgNo = buffer.readInt16LE(0)
     } catch (error) {
@@ -61,7 +61,7 @@ export class GenericRequestMsg {
    *
    * @return {Buffer}
    */
-  serialize () {
+  serialize (): Buffer {
     const packet = Buffer.alloc(16)
     packet.writeInt16LE(this.msgNo, 0)
     this.data.copy(packet, 2)
@@ -72,7 +72,7 @@ export class GenericRequestMsg {
   /**
    * dumpPacket
    */
-  dumpPacket () {
+  dumpPacket (): void {
     this.logger.info(
       'GenericRequest',
       {

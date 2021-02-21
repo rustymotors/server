@@ -11,8 +11,8 @@ import { fakeDatabaseManager } from '../../../../test/helpers'
 
 const loginServer = new LoginServer(fakeDatabaseManager)
 
-tap.test('LoginServer', t => {
-  const { customerId, userId } = loginServer._npsGetCustomerIdByContextId(
+tap.test('LoginServer', async t => {
+  const { customerId, userId } = await loginServer._npsGetCustomerIdByContextId(
     'd316cd2dd6bf870893dfbaaf17f965884e'
   )
   t.equal(customerId.readUInt32BE(0).toString(), '5551212')
@@ -20,8 +20,8 @@ tap.test('LoginServer', t => {
   t.done()
 })
 
-tap.test('LoginServer', t => {
-  const { customerId, userId } = loginServer._npsGetCustomerIdByContextId(
+tap.test('LoginServer', async t => {
+  const { customerId, userId } = await loginServer._npsGetCustomerIdByContextId(
     '5213dee3a6bcdb133373b2d4f3b9962758'
   )
   t.equal(customerId.readUInt32BE(0).toString(), '2885746688')

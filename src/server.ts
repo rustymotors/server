@@ -35,7 +35,7 @@ export class Server {
   /**
    *
    */
-  async start () {
+  async start (): Promise<void> {
     this.logger.info('Starting servers...')
 
     // Start the MC Server

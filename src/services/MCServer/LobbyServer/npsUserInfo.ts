@@ -38,7 +38,7 @@ export class NPSUserInfo extends NPSMsg {
    * @param {Buffer} rawData
    * @return {NPSUserInfo}
    */
-  deserialize (rawData: Buffer) {
+  deserialize (rawData: Buffer): NPSUserInfo {
     this.userId = rawData.readInt32BE(4)
     this.userName = rawData.slice(8, 38)
     this.userData = rawData.slice(38)
@@ -48,7 +48,7 @@ export class NPSUserInfo extends NPSMsg {
   /**
    *
    */
-  dumpInfo () {
+  dumpInfo (): void {
     this.dumpPacketHeader('NPSUserInfo')
     debug('mcoserver:npsUserInfo')(`UserId:        ${this.userId}`)
     debug('mcoserver:npsUserInfo')(`UserName:      ${this.userName.toString()}`)

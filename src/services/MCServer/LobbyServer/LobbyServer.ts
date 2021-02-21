@@ -130,7 +130,7 @@ export class LobbyServer {
    *
    * @return {module:NPSMsg}
    */
-  _npsHeartbeat () {
+  _npsHeartbeat (): NPSMsg {
     const packetContent = Buffer.alloc(8)
     const packetResult = new NPSMsg(MESSAGE_DIRECTION.SENT)
     packetResult.msgNo = 0x127
@@ -145,7 +145,7 @@ export class LobbyServer {
    * @param {IRawPacket} rawPacket
    * @return {Promise<{module:ConnectionObj}>}
    */
-  async dataHandler (rawPacket: IRawPacket) {
+  async dataHandler (rawPacket: IRawPacket): Promise<ConnectionObj> {
     const { localPort, remoteAddress } = rawPacket
     debug('mcoserver:LobbyServer')(`Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`)
     const { connection, data } = rawPacket
@@ -213,7 +213,7 @@ export class LobbyServer {
    * @param {string} key
    * @return {Buffer}
    */
-  _generateSessionKeyBuffer (key: string) {
+  _generateSessionKeyBuffer (key: string): Buffer {
     const nameBuffer = Buffer.alloc(64)
     Buffer.from(key, 'utf8').copy(nameBuffer)
     return nameBuffer
@@ -225,7 +225,7 @@ export class LobbyServer {
    * @param {module:ConnectionObj} connection
    * @param {Buffer} rawData
    */
-  async _npsRequestGameConnectServer (connection: ConnectionObj, rawData: Buffer) {
+  async _npsRequestGameConnectServer (connection: ConnectionObj, rawData: Buffer): Promise<NPSMsg> {
     const { sock } = connection
     debug('mcoserver:LobbyServer')(
       `_npsRequestGameConnectServer: ${JSON.stringify({ remoteAddress: sock.remoteAddress, data: rawData.toString('hex') })}`

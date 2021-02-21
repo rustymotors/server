@@ -75,7 +75,7 @@ export class NPSUserStatus extends NPSMsg {
    * @param {IServerConfig} serverConfig
    * @param {Buffer} packet
    */
-  extractSessionKeyFromPacket (serverConfig: IServerConfig, packet: Buffer) {
+  extractSessionKeyFromPacket (serverConfig: IServerConfig, packet: Buffer): void {
     // Decrypt the sessionKey
     const privateKey = fetchPrivateKeyFromFile(serverConfig.privateKeyFilename)
 
@@ -91,7 +91,15 @@ export class NPSUserStatus extends NPSMsg {
    *
    * @return {INPSMsgJSON}
    */
-  toJSON () {
+  toJSON (): { msgNo: number,
+    msgLength: number,
+    msgVersion: number,
+    content: string,
+    direction: MESSAGE_DIRECTION,
+    opCode: number,
+    contextId: string,
+    sessionKey: string,
+    rawBuffer: string} {
     return {
       msgNo: this.msgNo,
       msgLength: this.msgLength,
@@ -108,7 +116,7 @@ export class NPSUserStatus extends NPSMsg {
   /**
    *
    */
-  dumpPacket () {
+  dumpPacket (): void {
     this.dumpPacketHeader('NPSUserStatus')
     debug('mcoserver:npsUserStatus')(
       'NPSUserStatus',

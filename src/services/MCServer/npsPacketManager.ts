@@ -14,6 +14,7 @@ import { logger } from '../../shared/logger'
 import { LoginServer } from './LoginServer/LoginServer'
 import { PersonaServer } from './PersonaServer/PersonaServer'
 import { LobbyServer } from './LobbyServer/LobbyServer'
+import { ConnectionObj } from './ConnectionObj'
 
 /**
  *
@@ -68,7 +69,7 @@ export class NPSPacketManager {
    * @param {number} msgId
    * @return {string}
    */
-  msgCodetoName (msgId: number) {
+  msgCodetoName (msgId: number): string {
     const mapping = this.msgNameMapping.find(mapping => {
       return mapping.id === msgId
     })
@@ -79,7 +80,7 @@ export class NPSPacketManager {
    *
    * @return {string}
    */
-  getNPSKey () {
+  getNPSKey (): string {
     return this.npsKey
   }
 
@@ -87,7 +88,7 @@ export class NPSPacketManager {
    *
    * @param {string} key
    */
-  setNPSKey (key: string) {
+  setNPSKey (key: string):void {
     this.npsKey = key
   }
 
@@ -95,7 +96,7 @@ export class NPSPacketManager {
    *
    * @param {IRawPacket} rawPacket
    */
-  async processNPSPacket (rawPacket: IRawPacket) {
+  async processNPSPacket (rawPacket: IRawPacket): Promise<ConnectionObj> {
     const msgId = rawPacket.data.readInt16BE(0)
     this.logger.info(
       'Handling message',

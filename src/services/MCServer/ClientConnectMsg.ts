@@ -61,14 +61,14 @@ export class ClientConnectMsg {
    *
    * @return {number}
    */
-  getAppId () {
+  getAppId (): number {
     return this.appId
   }
 
   /**
    * dumpPacket
    */
-  dumpPacket () {
+  dumpPacket (): void {
     this.logger.info(
       'ClientConnectMsg',
       {

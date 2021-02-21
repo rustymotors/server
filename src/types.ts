@@ -275,3 +275,9 @@ export interface ISslOptions {
   key: string
   rejectUnauthorized: false
 }
+
+export interface IUserRecordMini {
+  contextId: string
+  customerId: Buffer
+  userId: Buffer
+}

@@ -45,14 +45,14 @@ export class LobbyMsg {
    *
    * @return {Buffer}
    */
-  serialize () {
+  serialize (): Buffer {
     return this.data
   }
 
   /**
    * dumpPacket
    */
-  dumpPacket () {
+  dumpPacket (): void {
     debug('mcoserver:LobbyMsg')(
       'LobbyMsg',
       {
