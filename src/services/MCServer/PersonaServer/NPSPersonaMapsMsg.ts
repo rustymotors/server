@@ -8,37 +8,33 @@
 import { MESSAGE_DIRECTION } from '../MCOTS/MessageNode'
 import { logger } from '../../../shared/logger'
 
-import struct from 'c-struct'
 import { NPSMsg } from '../MCOTS/NPSMsg'
 import { IPersonaRecord } from '../../../types'
 
 import debug from 'debug'
 
-const npsPersonaMapsMsgSchema = new struct.Schema({
-  msgNo: struct.type.uint16,
-  msgLength: struct.type.uint16,
-  msgVersion: struct.type.uint16,
-  reserved: struct.type.uint16,
-  msgChecksum: struct.type.uint32,
+export interface InpsPersonaMapsMsgSchema {
+  msgNo: number // uint16,
+  msgLength: number // uint16,
+  msgVersion: number // uint16,
+  reserved: number // uint16,
+  msgChecksum: number // uint32,
   // End of header
   personas: [
     {
-      personaCount: struct.type.uint16,
-      unknown1: struct.type.uint16,
-      maxPersonas: struct.type.uint16,
-      unknown2: struct.type.uint16,
-      id: struct.type.uint32,
-      shardId: struct.type.uint32,
-      unknown3: struct.type.uint16,
-      unknown4: struct.type.uint16,
-      personaNameLength: struct.type.uint16,
-      name: struct.type.string(16)
+      personaCount: number // uint16,
+      unknown1: number // uint16,
+      maxPersonas: number // uint16,
+      unknown2: number // uint16,
+      id: number // uint32,
+      shardId: number // uint32,
+      unknown3: number // uint16,
+      unknown4: number // uint16,
+      personaNameLength: number // uint16,
+      name: string // string(16)
     }
   ]
-})
-
-// register to cache
-struct.register('NPSPersonaMapsMsg', npsPersonaMapsMsgSchema)
+}
 
 /**
  *
@@ -48,7 +44,6 @@ export class NPSPersonaMapsMsg extends NPSMsg {
   personas: IPersonaRecord[]
   personaSize: number
   personaCount: number
-  struct: Record<string, unknown>
   /**
    *
    * @param {'Recieved'|'Sent'} direction
@@ -63,9 +58,6 @@ export class NPSPersonaMapsMsg extends NPSMsg {
     this.personaSize = 40
     this.msgNo = 0x607
     this.personaCount = 0
-    this.struct = struct.unpackSync('NPSPersonaMapsMsg', Buffer.alloc(100), {})
-
-    this.struct.msgNo = this.msgNo
   }
 
   /**
@@ -74,17 +66,7 @@ export class NPSPersonaMapsMsg extends NPSMsg {
    */
   loadMaps (personas: IPersonaRecord[]): void {
     this.personaCount = personas.length
-    this.personas = []
-    personas.forEach((persona, idx) => {
-      this.struct.personas[idx] = {
-        personaCount: personas.length,
-        maxPersonas: personas.length,
-        id: this.deserializeInt32(persona.id),
-        personaNameLength: this.deserializeString(persona.name).length,
-        name: this.deserializeString(persona.name),
-        shardId: this.deserializeInt32(persona.shardId)
-      }
-    })
+    this.personas = personas
   }
 
   /**
@@ -119,7 +101,7 @@ export class NPSPersonaMapsMsg extends NPSMsg {
 
   /**
    *
-   * @return {any}
+   * @return {Buffer}
    */
   serialize (): Buffer {
     let index = 0
@@ -168,12 +150,7 @@ export class NPSPersonaMapsMsg extends NPSMsg {
     }
 
     // Build the packet
-    const msgLength = struct.packSync('NPSPersonaMapsMsg', this.struct, { endian: 'b' }).length
-    this.struct.msgLength = msgLength
-    this.struct.msgChecksum = msgLength
-    return struct.packSync('NPSPersonaMapsMsg', this.struct, {
-      endian: 'b'
-    })
+    return packetContent
   }
 
   /**

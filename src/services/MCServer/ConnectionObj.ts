@@ -90,7 +90,7 @@ export class ConnectionObj {
    *
    * @param {Buffer} key
    */
-  setEncryptionKey (key: Buffer) {
+  setEncryptionKey (key: Buffer): void {
     this.isSetupComplete = this.enc.setEncryptionKey(key)
   }
 
@@ -99,7 +99,7 @@ export class ConnectionObj {
    *
    * @param {string} sKey
    */
-  setEncryptionKeyDES (sKey: string) {
+  setEncryptionKeyDES (sKey: string): void {
     // deepcode ignore HardcodedSecret: This uses an empty IV
     const desIV = Buffer.alloc(8)
     this.encLobby.cipher = crypto.createCipheriv(
@@ -107,13 +107,13 @@ export class ConnectionObj {
       Buffer.from(sKey, 'hex'),
       desIV
     )
-    this.encLobby.cipher!.setAutoPadding(false)
+    this.encLobby.cipher.setAutoPadding(false)
     this.encLobby.decipher = crypto.createDecipheriv(
       'des-cbc',
       Buffer.from(sKey, 'hex'),
       desIV
     )
-    this.encLobby.decipher!.setAutoPadding(false)
+    this.encLobby.decipher.setAutoPadding(false)
 
     this.isSetupComplete = true
   }
@@ -124,7 +124,7 @@ export class ConnectionObj {
    * @param {Buffer} messageBuffer
    * @return {Buffer}
    */
-  cipherBufferDES (messageBuffer: Buffer) {
+  cipherBufferDES (messageBuffer: Buffer): Buffer {
     if (this.encLobby.cipher) {
       return this.encLobby.cipher.update(messageBuffer)
     }
@@ -137,7 +137,7 @@ export class ConnectionObj {
    * @param {Buffer} messageBuffer
    * @return {Buffer}
    */
-  decipherBufferDES (messageBuffer: Buffer) {
+  decipherBufferDES (messageBuffer: Buffer): Buffer {
     if (this.encLobby.decipher) {
       return this.encLobby.decipher.update(messageBuffer)
     }

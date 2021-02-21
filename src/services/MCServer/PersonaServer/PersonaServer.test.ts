@@ -33,47 +33,47 @@ tap.test('PersonaServer Methods', async t => {
 
 tap.test('PersonaServer _npsSelectGamePersona()', async t => {
   const personaServer = new PersonaServer(fakeLogger)
-  const data = new NPSMsg(MESSAGE_DIRECTION.RECIEVED).serialize()
+  const data = new NPSMsg(MESSAGE_DIRECTION.SENT).serialize()
   const results = await personaServer._npsSelectGamePersona(data)
-  t.equal(results.direction, 'Sent')
+  t.equal(results.direction, MESSAGE_DIRECTION.SENT)
   t.done()
 })
 
 tap.test('PersonaServer _npsNewGameAccount()', async t => {
   const personaServer = new PersonaServer(fakeLogger)
-  const data = new NPSMsg(MESSAGE_DIRECTION.RECIEVED).serialize()
+  const data = new NPSMsg(MESSAGE_DIRECTION.SENT).serialize()
   const results = await personaServer._npsNewGameAccount(data)
-  t.equal(results.direction, 'Sent')
+  t.equal(results.direction, MESSAGE_DIRECTION.SENT)
   t.done()
 })
 
 tap.test('PersonaServer _npsLogoutGameUser()', async t => {
   const personaServer = new PersonaServer(fakeLogger)
-  const data = new NPSMsg(MESSAGE_DIRECTION.RECIEVED).serialize()
+  const data = new NPSMsg(MESSAGE_DIRECTION.SENT).serialize()
   const results = await personaServer._npsLogoutGameUser(data)
-  t.equal(results.direction, 'Sent')
+  t.equal(results.direction, MESSAGE_DIRECTION.SENT)
   t.done()
 })
 
 tap.test('PersonaServer _npsCheckToken()', async t => {
   const personaServer = new PersonaServer(fakeLogger)
-  const data = new NPSMsg(MESSAGE_DIRECTION.RECIEVED).serialize()
+  const data = new NPSMsg(MESSAGE_DIRECTION.SENT).serialize()
   const results = await personaServer._npsCheckToken(data)
-  t.equal(results.direction, 'Sent')
+  t.equal(results.direction, MESSAGE_DIRECTION.SENT)
   t.done()
 })
 
 tap.test('PersonaServer _npsValidatePersonaName()', async t => {
   const personaServer = new PersonaServer(fakeLogger)
-  const data = new NPSMsg(MESSAGE_DIRECTION.RECIEVED).serialize()
+  const data = new NPSMsg(MESSAGE_DIRECTION.SENT).serialize()
   const results = await personaServer._npsValidatePersonaName(data)
-  t.equal(results.direction, 'Sent')
+  t.equal(results.direction, MESSAGE_DIRECTION.SENT)
   t.done()
 })
 
 tap.test('PersonaServer _send()', async t => {
   const personaServer = new PersonaServer(fakeLogger)
-  const data = new NPSMsg(MESSAGE_DIRECTION.RECIEVED)
+  const data = new NPSMsg(MESSAGE_DIRECTION.SENT)
   await personaServer._send(fakeSocket, data)
   t.done()
 })

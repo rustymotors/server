@@ -99,7 +99,7 @@ export class LoginMsg {
 
   /**
    *
-   * @return {any}
+   * @return {Buffer}
    */
   serialize (): Buffer {
     return struct.packSync('LoginMsg', this.struct, { endian: 'b' })

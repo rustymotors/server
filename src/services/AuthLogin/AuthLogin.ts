@@ -9,7 +9,7 @@ import fs from 'fs'
 import https, { Server } from 'https'
 import { logger } from '../../shared/logger'
 import util from 'util'
-import { IAppSettings, IServerConfig } from '../../types'
+import { IAppSettings, IServerConfig, ISslOptions } from '../../types'
 import { Logger } from 'winston'
 import { IncomingMessage, ServerResponse } from 'http'
 import { Socket } from 'net'
@@ -56,7 +56,7 @@ export class AuthLogin {
    * @return {Promise<sslOptionsObj>}
    * @memberof! WebServer
    */
-  async _sslOptions (configuration: IServerConfig) {
+  async _sslOptions (configuration: IServerConfig): Promise<ISslOptions> {
     debug('mcoserver:AuthLogin')(`Reading ${configuration.certFilename}`)
 
     let cert
@@ -91,7 +91,7 @@ export class AuthLogin {
    * @return {string}
    * @memberof! WebServer
    */
-  _handleGetTicket () {
+  _handleGetTicket (): string {
     return 'Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e'
   }
 
@@ -102,7 +102,7 @@ export class AuthLogin {
    * @memberof! WebServer
    */
   // file deepcode ignore NoRateLimitingForExpensiveWebOperation: Not using express, unsure how to handle rate limiting on raw http
-  _httpsHandler (request: IncomingMessage, response: ServerResponse) {
+  _httpsHandler (request: IncomingMessage, response: ServerResponse): void {
     this.logger.info(
       `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     )
@@ -118,7 +118,7 @@ export class AuthLogin {
    *
    * @param {Socket} socket
    */
-  _socketEventHandler (socket: Socket) {
+  _socketEventHandler (socket: Socket): void {
     socket.on('error', (error) => {
       throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`)
     })
@@ -128,7 +128,7 @@ export class AuthLogin {
    *
    * @memberof! WebServer
    */
-  async start () {
+  async start (): Promise<Server> {
     const sslOptions = await this._sslOptions(this.config.serverConfig)
 
     try {

@@ -11,7 +11,7 @@ import https, { Server } from 'https'
 import util from 'util'
 import { MCServer } from '../MCServer'
 import { Logger } from 'winston'
-import { IServerConfig } from '../../types'
+import { IServerConfig, ISslOptions } from '../../types'
 import { IncomingMessage, ServerResponse } from 'http'
 import { Socket } from 'net'
 import debug from 'debug'
@@ -51,14 +51,14 @@ export class AdminServer {
    *
    * @param {IServerConfig} configuration
    */
-  async _sslOptions (configuration: IServerConfig) {
+  async _sslOptions (configuration: IServerConfig): Promise<ISslOptions> {
     debug('mcoserver:AdminServer')(`Reading ${configuration.certFilename}`)
 
     let cert
     let key
 
     try {
-      cert = await readFilePromise(configuration.certFilename)
+      cert = await readFilePromise(configuration.certFilename, { encoding: 'utf-8' })
     } catch (error) {
       throw new Error(
         `Error loading ${configuration.certFilename}, server must quit!`
@@ -66,7 +66,7 @@ export class AdminServer {
     }
 
     try {
-      key = await readFilePromise(configuration.privateKeyFilename)
+      key = await readFilePromise(configuration.privateKeyFilename, { encoding: 'utf-8' })
     } catch (error) {
       throw new Error(
         `Error loading ${configuration.privateKeyFilename}, server must quit!`
@@ -85,7 +85,7 @@ export class AdminServer {
    *
    * @return {string}
    */
-  _handleGetBans () {
+  _handleGetBans (): string {
     const banlist = {
       mcServer: this.mcServer.mgr.getBans()
     }
@@ -96,7 +96,7 @@ export class AdminServer {
    *
    * @return {string}
    */
-  _handleGetConnections () {
+  _handleGetConnections (): string {
     const connections = this.mcServer.mgr.dumpConnections()
     let responseText = ''
     connections.forEach((connection, index) => {
@@ -115,7 +115,7 @@ export class AdminServer {
    *
    * @return {string}
    */
-  _handleResetAllQueueState () {
+  _handleResetAllQueueState (): string {
     this.mcServer.mgr.resetAllQueueState()
     const connections = this.mcServer.mgr.dumpConnections()
     let responseText = 'Queue state reset for all connections\n\n'
@@ -135,9 +135,9 @@ export class AdminServer {
    *
    * @param {IncomingMessage} request
    * @param {ServerResponse} response
-   * @return {any}
+   * @return {void}
    */
-  _httpsHandler (request: IncomingMessage, response: ServerResponse) {
+  _httpsHandler (request: IncomingMessage, response: ServerResponse): void {
     this.logger.info(
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     )
@@ -175,7 +175,7 @@ export class AdminServer {
    *
    * @param {Socket} socket
    */
-  _socketEventHandler (socket: Socket) {
+  _socketEventHandler (socket: Socket): void {
     socket.on('error', error => {
       throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`)
     })
@@ -185,7 +185,7 @@ export class AdminServer {
    *
    * @param {IServerConfig} config
    */
-  async start (config: IServerConfig) {
+  async start (config: IServerConfig): Promise<void> {
     try {
       const sslOptions = await this._sslOptions(config)
 

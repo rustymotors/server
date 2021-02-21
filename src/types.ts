@@ -268,3 +268,10 @@ export interface ILobbyInfo {
   teamtrialbaseTUP: number
   raceCashFactor: number
 }
+
+export interface ISslOptions {
+  cert: string
+  honorCipherOrder: true
+  key: string
+  rejectUnauthorized: false
+}

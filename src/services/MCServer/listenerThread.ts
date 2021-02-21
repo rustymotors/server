@@ -63,7 +63,7 @@ export class ListenerThread {
       )
       let newConnection = connection
       try {
-        newConnection = await connection.mgr.processData(rawPacket, config)
+        newConnection = await connection.mgr.processData(rawPacket)
       } catch (error) {
         throw new Error(`Error in listenerThread::onData 1: ${error}`)
       }

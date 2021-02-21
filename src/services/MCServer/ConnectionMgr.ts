@@ -9,7 +9,7 @@ import { Socket } from 'net'
 import { Logger } from 'winston'
 import { appSettings } from '../../../config/app-settings'
 import { DatabaseManager } from '../../shared/DatabaseManager'
-import { IAppSettings, IRawPacket, IServerConfig } from '../../types'
+import { IAppSettings, IRawPacket } from '../../types'
 import { ConnectionObj } from './ConnectionObj'
 import { defaultHandler } from './MCOTS/TCPManager'
 import { NPSPacketManager } from './npsPacketManager'
@@ -46,11 +46,10 @@ export class ConnectionMgr {
   /**
    * Check incoming data and route it to the correct handler based on localPort
    * @param {IRawPacket} rawPacket
-   * @param {IServerConfig} config
    * @return {Promise<ConnectionObj>}
    * @memberof ConnectionMgr
    */
-  async processData (rawPacket: IRawPacket, config: IServerConfig) {
+  async processData (rawPacket: IRawPacket): Promise<ConnectionObj> {
     const npsPacketManager = new NPSPacketManager(this.databaseMgr)
 
     const { remoteAddress, localPort, data } = rawPacket
@@ -118,7 +117,7 @@ export class ConnectionMgr {
    *
    * @return {string[]}
    */
-  getBans () {
+  getBans (): string[] {
     return this.banList
   }
 
@@ -129,13 +128,16 @@ export class ConnectionMgr {
    * @memberof ConnectionMgr
    * @return {ConnectionObj | undefined}
    */
-  findConnectionByAddressAndPort (remoteAddress: string, localPort: number) {
+  findConnectionByAddressAndPort (remoteAddress: string, localPort: number): ConnectionObj {
     const results = this.connections.find(connection => {
       const match =
         remoteAddress === connection.remoteAddress &&
         localPort === connection.localPort
       return match
     })
+    if (results === undefined) {
+      throw new Error(`Unable to locate connection for ${remoteAddress} on port ${localPort}`)
+    }
     return results
   }
 
@@ -144,11 +146,14 @@ export class ConnectionMgr {
    * @param {string} connectionId
    * @return {ConnectionObj | undefined}
    */
-  findConnectionById (connectionId: string) {
+  findConnectionById (connectionId: string): ConnectionObj {
     const results = this.connections.find(connection => {
       const match = connectionId === connection.id
       return match
     })
+    if (results === undefined) {
+      throw new Error(`Unable to locate connection for id ${connectionId}`)
+    }
     return results
   }
 
@@ -159,7 +164,7 @@ export class ConnectionMgr {
    * @param {ConnectionObj} newConnection
    * @memberof ConnectionMgr
    */
-  async _updateConnectionByAddressAndPort (address: string, port: number, newConnection: ConnectionObj) {
+  async _updateConnectionByAddressAndPort (address: string, port: number, newConnection: ConnectionObj): Promise<void> {
     if (newConnection === undefined) {
       throw new Error(
         `Undefined connection: ${JSON.stringify({
@@ -191,7 +196,7 @@ export class ConnectionMgr {
    * @return {ConnectionObj}
    * @memberof ConnectionMgr
    */
-  findOrNewConnection (socket: Socket) {
+  findOrNewConnection (socket: Socket): ConnectionObj {
     const { remoteAddress, localPort } = socket
     if (!remoteAddress) {
       throw new Error(
@@ -227,7 +232,7 @@ export class ConnectionMgr {
    *
    * @memberof ConnectionMgr
    */
-  resetAllQueueState () {
+  resetAllQueueState (): void {
     this.connections = this.connections.map(connection => {
       connection.inQueue = true
       return connection
@@ -240,7 +245,7 @@ export class ConnectionMgr {
    * @return {ConnectionObj[]}
    * @memberof ConnectionMgr
    */
-  dumpConnections () {
+  dumpConnections (): ConnectionObj[] {
     return this.connections
   }
 }

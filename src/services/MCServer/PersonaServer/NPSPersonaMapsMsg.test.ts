@@ -11,7 +11,7 @@ import { MESSAGE_DIRECTION } from '../MCOTS/MessageNode'
 
 tap.test('NPSPersonaMapsMsg', t => {
   const npsPersonaMapsMsg = new NPSPersonaMapsMsg(MESSAGE_DIRECTION.RECIEVED)
-  t.equal(npsPersonaMapsMsg.direction, 'Recieved')
+  t.equal(npsPersonaMapsMsg.direction, MESSAGE_DIRECTION.RECIEVED)
   t.equal(npsPersonaMapsMsg.msgNo, 0x607)
   t.done()
 })
