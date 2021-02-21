@@ -8,12 +8,12 @@
     "AUTHORS"
   ],
   "scripts": {
-    "start": "DEBUG=mcoserver* node --trace-warnings app.js",
+    "start": "DEBUG=mcoserver* ts-node app.js",
     "test": "npm run lint-test",
     "doc": "jsdoc -R README.md -P package.json -r src",
     "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
-    "lint-test": "eslint --fix src test && tap --coverage-map=map.js --coverage",
-    "precommit": "eslint --lint"
+    "lint-test": "eslint --fix src test && tap",
+    "precommit": "eslint src test"
   },
   "author": "Joe Becher <jwbecher@drazisil.com> (drazisil.com)",
   "license": "MPL-2.0",
@@ -33,21 +33,34 @@
     "pg-migrator": "1.1.0",
     "postgres-migrations": "5.1.1",
     "supports-color": "8.1.0",
+    "ts-node": "9.1.1",
+    "typescript": "4.1.5",
     "winston": "3.3.3",
     "winston-daily-rotate-file": "4.5.0"
   },
   "devDependencies": {
+    "@types/c-struct": "0.0.0",
+    "@types/debug": "4.1.5",
+    "@types/ini": "1.3.30",
+    "@types/mock-fs": "4.13.0",
     "@types/sinon": "9.0.10",
-    "eslint": "7.20.0",
-    "eslint-config-standard": "16.0.2",
-    "eslint-plugin-import": "2.22.1",
-    "eslint-plugin-node": "11.1.0",
-    "eslint-plugin-promise": "4.3.1",
+    "@types/supertest": "2.0.10",
+    "@types/tap": "14.10.2",
+    "@typescript-eslint/eslint-plugin": "4.15.1",
+    "@typescript-eslint/parser": "4.15.1",
+    "eslint": "^7.20.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.3.1",
     "jsdoc": "3.6.6",
     "mock-fs": "4.13.0",
     "sinon": "9.2.4",
     "supertest": "6.1.3",
     "tap": "14.11.0",
     "testdouble": "3.16.1"
+  },
+  "tap": {
+    "coverage-map": "map.js"
   }
 }
