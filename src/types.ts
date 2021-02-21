@@ -57,12 +57,12 @@ export interface IAppSettings {
 /**
  * @global
  * @typedef ISessionRecord
- * @property {string} s_key
- * @property {string} session_key
+ * @property {string} skey
+ * @property {string} sessionkey
  */
 export interface ISessionRecord {
-  sKey: string
-  sessionKey: string
+  skey: string
+  sessionkey: string
 }
 
 /**

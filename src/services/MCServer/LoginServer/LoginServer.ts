@@ -14,6 +14,7 @@ import { NPSUserStatus } from './npsUserStatus'
 import { premadeLogin } from './packet'
 
 import debug from 'debug'
+import { VError } from 'verror'
 
 /**
  * Manages the initial game connection setup and teardown.
@@ -101,7 +102,7 @@ export class LoginServer {
       }
     ]
     if (contextId.toString() === '') {
-      throw new Error(`Unknown contextId: ${contextId.toString()}`)
+      throw new VError(`Unknown contextId: ${contextId.toString()}`)
     }
     const userRecord = users.filter(user => {
       return user.contextId === contextId
@@ -114,7 +115,7 @@ export class LoginServer {
         }
 
       )
-      throw new Error(
+      throw new VError(
         `Unable to locate user record matching contextId ${contextId}`
       )
     }
@@ -162,11 +163,11 @@ export class LoginServer {
     // TODO: This needs to be from a database, right now is it static
     const customer = await this._npsGetCustomerIdByContextId(userStatus.contextId)
 
-    // Save sessionKey in database under customerId
+    // Save sessionkey in database under customerId
     debug('Preparing to update session key in db')
     await this.databaseManager._updateSessionKey(
       customer.customerId.readInt32BE(0),
-      userStatus.sessionKey,
+      userStatus.sessionkey,
       userStatus.contextId,
       connection.id
     )

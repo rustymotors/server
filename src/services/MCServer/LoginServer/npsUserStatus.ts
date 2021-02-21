@@ -12,6 +12,7 @@ import { NPSMsg } from '../MCOTS/NPSMsg'
 import { MESSAGE_DIRECTION } from '../MCOTS/MessageNode'
 import { IServerConfig } from '../../../types'
 import debug from 'debug'
+import { VError } from 'verror'
 
 /**
  * Load the RSA private key
@@ -23,7 +24,7 @@ export function fetchPrivateKeyFromFile (privateKeyPath: string): string {
   try {
     fs.statSync(privateKeyPath)
   } catch (e) {
-    throw new Error(`[npsUserStatus] Error loading private key: ${e}`)
+    throw new VError(`[npsUserStatus] Error loading private key: ${e}`)
   }
   return fs.readFileSync(privateKeyPath).toString()
 }
@@ -40,7 +41,7 @@ export function fetchPrivateKeyFromFile (privateKeyPath: string): string {
  * @extends {NPSMsg}
  */
 export class NPSUserStatus extends NPSMsg {
-  sessionKey: string
+  sessionkey: string
   opCode: number
   contextId: string
   buffer: Buffer
@@ -52,7 +53,7 @@ export class NPSUserStatus extends NPSMsg {
   constructor (packet: Buffer) {
     super(MESSAGE_DIRECTION.RECIEVED)
     this.logger = logger.child({ service: 'mcoserver:NPSUserStatus' })
-    this.sessionKey = ''
+    this.sessionkey = ''
 
     // Save the NPS opCode
     this.opCode = packet.readInt16LE(0)
@@ -76,15 +77,15 @@ export class NPSUserStatus extends NPSMsg {
    * @param {Buffer} packet
    */
   extractSessionKeyFromPacket (serverConfig: IServerConfig, packet: Buffer): void {
-    // Decrypt the sessionKey
+    // Decrypt the sessionkey
     const privateKey = fetchPrivateKeyFromFile(serverConfig.privateKeyFilename)
 
-    const sessionKeyStr = Buffer.from(
+    const sessionkeyStr = Buffer.from(
       packet.slice(52, -10).toString('utf8'),
       'hex'
     )
-    const decrypted = crypto.privateDecrypt(privateKey, sessionKeyStr)
-    this.sessionKey = decrypted.slice(2, -4).toString('hex')
+    const decrypted = crypto.privateDecrypt(privateKey, sessionkeyStr)
+    this.sessionkey = decrypted.slice(2, -4).toString('hex')
   }
 
   /**
@@ -98,7 +99,7 @@ export class NPSUserStatus extends NPSMsg {
     direction: MESSAGE_DIRECTION,
     opCode: number,
     contextId: string,
-    sessionKey: string,
+    sessionkey: string,
     rawBuffer: string} {
     return {
       msgNo: this.msgNo,
@@ -108,7 +109,7 @@ export class NPSUserStatus extends NPSMsg {
       direction: this.direction,
       opCode: this.opCode,
       contextId: this.contextId,
-      sessionKey: this.sessionKey,
+      sessionkey: this.sessionkey,
       rawBuffer: this.buffer.toString('hex')
     }
   }
@@ -122,7 +123,7 @@ export class NPSUserStatus extends NPSMsg {
       'NPSUserStatus',
       {
         contextId: this.contextId,
-        sessionKey: this.sessionKey
+        sessionkey: this.sessionkey
       }
     )
   }

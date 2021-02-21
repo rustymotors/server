@@ -55,7 +55,7 @@ export class NPSPersonaMapsMsg extends NPSMsg {
     /** @type {IPersonaRecord[]} */
     this.personas = []
     // public personaSize = 1296;
-    this.personaSize = 40
+    this.personaSize = 38
     this.msgNo = 0x607
     this.personaCount = 0
   }

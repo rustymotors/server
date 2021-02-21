@@ -8,6 +8,7 @@
 import { logger } from '../../../shared/logger'
 import struct from 'c-struct'
 import { Logger } from 'winston'
+import { VError } from 'verror'
 
 const loginMsgSchema = new struct.Schema({
   msgNo: struct.type.uint16,
@@ -78,7 +79,7 @@ export class LoginMsg {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
       } else {
-        throw new Error(
+        throw new VError(
           `[LoginMsg] Unable to read msgNo from ${buffer.toString(
             'hex'
           )}: ${error}`

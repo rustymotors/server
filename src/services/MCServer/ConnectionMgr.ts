@@ -14,6 +14,7 @@ import { ConnectionObj } from './ConnectionObj'
 import { defaultHandler } from './MCOTS/TCPManager'
 import { NPSPacketManager } from './npsPacketManager'
 import debug from 'debug'
+import { VError } from 'verror'
 
 export class ConnectionMgr {
   logger: Logger
@@ -77,7 +78,7 @@ export class ConnectionMgr {
       try {
         return npsPacketManager.processNPSPacket(rawPacket)
       } catch (error) {
-        throw new Error(`Error in connectionMgr::processData ${error}`)
+        throw new VError(`Error in connectionMgr::processData ${error}`)
       }
     }
 
@@ -94,7 +95,7 @@ export class ConnectionMgr {
             return rawPacket.connection
           }
         } catch (error) {
-          throw new Error(`Error checking ban list: ${error}`)
+          throw new VError(`Error checking ban list: ${error}`)
         }
         // Unknown request, log it
         this.logger.warn(
@@ -128,16 +129,13 @@ export class ConnectionMgr {
    * @memberof ConnectionMgr
    * @return {ConnectionObj | undefined}
    */
-  findConnectionByAddressAndPort (remoteAddress: string, localPort: number): ConnectionObj {
+  findConnectionByAddressAndPort (remoteAddress: string, localPort: number): ConnectionObj | undefined {
     const results = this.connections.find(connection => {
       const match =
         remoteAddress === connection.remoteAddress &&
         localPort === connection.localPort
       return match
     })
-    if (results === undefined) {
-      throw new Error(`Unable to locate connection for ${remoteAddress} on port ${localPort}`)
-    }
     return results
   }
 
@@ -152,7 +150,7 @@ export class ConnectionMgr {
       return match
     })
     if (results === undefined) {
-      throw new Error(`Unable to locate connection for id ${connectionId}`)
+      throw new VError(`Unable to locate connection for id ${connectionId}`)
     }
     return results
   }
@@ -166,7 +164,7 @@ export class ConnectionMgr {
    */
   async _updateConnectionByAddressAndPort (address: string, port: number, newConnection: ConnectionObj): Promise<void> {
     if (newConnection === undefined) {
-      throw new Error(
+      throw new VError(
         `Undefined connection: ${JSON.stringify({
           remoteAddress: address,
           localPort: port
@@ -199,7 +197,7 @@ export class ConnectionMgr {
   findOrNewConnection (socket: Socket): ConnectionObj {
     const { remoteAddress, localPort } = socket
     if (!remoteAddress) {
-      throw new Error(
+      throw new VError(
         `No address in socket: ${JSON.stringify({
           remoteAddress,
           localPort

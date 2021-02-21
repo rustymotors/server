@@ -24,9 +24,11 @@ tap.test('PersonaServer Methods', async t => {
   t.equal(id1.readInt32BE(0), 8675309)
   t.equal(name1.toString('utf8').length, 30)
 
-  const badPersonas = await personaServer._getPersonasByCustomerId(123654)
-
-  t.equals(badPersonas.length, 0, 'no personas found')
+  try {
+    await personaServer._getPersonasByCustomerId(123654)
+  } catch (error) {
+    t.contains(error, /Unable to locate a persona/, 'Throws when no persona is found')
+  }
 
   t.done()
 })

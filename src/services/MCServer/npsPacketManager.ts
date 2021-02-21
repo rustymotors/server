@@ -47,6 +47,7 @@ export class NPSPacketManager {
       { id: 0x120, name: 'NPS_LOGIN_RESP' },
       { id: 0x128, name: 'NPS_GET_MINI_USER_LIST' },
       { id: 0x207, name: 'NPS_ACK' },
+      { id: 0x217, name: 'NPS_HEATBEAT' },
       { id: 0x229, name: 'NPS_MINI_USER_LIST' },
       { id: 0x30c, name: 'NPS_SEND_MINI_RIFF_LIST' },
       { id: 0x501, name: 'NPS_USER_LOGIN' },
@@ -123,8 +124,4 @@ export class NPSPacketManager {
         return rawPacket.connection
     }
   }
-}
-
-module.exports = {
-  NPSPacketManager
 }

@@ -14,6 +14,7 @@ import { Logger } from 'winston'
 import { IncomingMessage, ServerResponse } from 'http'
 import { Socket } from 'net'
 import debug from 'debug'
+import { VError } from 'verror'
 
 const readFilePromise = util.promisify(fs.readFile)
 
@@ -65,7 +66,7 @@ export class AuthLogin {
     try {
       cert = await readFilePromise(configuration.certFilename, { encoding: 'utf-8' })
     } catch (error) {
-      throw new Error(
+      throw new VError(
         `Error loading ${configuration.certFilename}, server must quit!`
       )
     }
@@ -73,7 +74,7 @@ export class AuthLogin {
     try {
       key = await readFilePromise(configuration.privateKeyFilename, { encoding: 'utf-8' })
     } catch (error) {
-      throw new Error(
+      throw new VError(
         `Error loading ${configuration.privateKeyFilename}, server must quit!`
       )
     }
@@ -120,7 +121,7 @@ export class AuthLogin {
    */
   _socketEventHandler (socket: Socket): void {
     socket.on('error', (error) => {
-      throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`)
+      throw new VError(`[AuthLogin] SSL Socket Error: ${error.message}`)
     })
   }
 
@@ -152,7 +153,7 @@ export class AuthLogin {
     this.httpsServer.on('connection', this._socketEventHandler)
     this.httpsServer.on('tlsClientError', error => {
       debug('mcoserver:AuthLogin')(`[AuthLogin] SSL Socket Client Error: ${error.message}`)
-      // throw new Error(`[AuthLogin] SSL Socket Client Error: ${error.message}`)
+      // throw new VError(`[AuthLogin] SSL Socket Client Error: ${error.message}`)
     })
     return this.httpsServer
   }
