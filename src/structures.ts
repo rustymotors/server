@@ -1,11 +1,11 @@
-/* eslint-disable */
-
-const _NPS_RiffListHeader = {
+// eslint-disable-next-line camelcase
+export const _NPS_RiffListHeader = {
   StructSize: Buffer.alloc(4), // Uint4B
   NumRiffs: Buffer.alloc(4) // UInt4B
 }
 
-const _NPS_RiffInfo = {
+// eslint-disable-next-line camelcase
+export const _NPS_RiffInfo = {
   Riff: Buffer.alloc(32), // [32] Char
   Protocol: Buffer.alloc(4), // Uint4B
   CommId: Buffer.alloc(4), // Int4B
@@ -21,14 +21,14 @@ const _NPS_RiffInfo = {
   GameServerISRunning: Buffer.alloc(1) // Char
 }
 
-const LobbyMsg = {
+export const LobbyMsg = {
   msgNo: Buffer.alloc(4), // Uint4B
   noLobbies: Buffer.alloc(4), // Uint4B
   moreToCome: Buffer.alloc(4), // Uint4B
   lobbyInfo: Buffer.alloc(142) // [142] LobbyInfo
 }
 
-const LobbyInfo = {
+export const LobbyInfo = {
   lobbyID: Buffer.alloc(4), // Uint4B
   raceTypeID: Buffer.alloc(4), // Uint4B
   turfID: Buffer.alloc(4), // Uint4B
@@ -114,14 +114,15 @@ const LobbyInfo = {
   raceCashFactor: Buffer.alloc(4) // Float (4B)
 }
 
-const GLDP_Persona = {
+// eslint-disable-next-line camelcase
+export const GLDP_Persona = {
   customerId_: Buffer.alloc(4), // Uint4B
   personaId_: Buffer.alloc(4), // Uint4B
   creationDate_: Buffer.alloc(4), // Int4B
   personaName_: Buffer.alloc(33) // [33] Char
 }
 
-const _UserGameData = {
+export const _UserGameData = {
   CustomerId: Buffer.alloc(4), // Uint4B
   GameUserName: Buffer.alloc(33), // [33] Char
   ServerDataId: Buffer.alloc(4), // Uint4B
@@ -144,12 +145,13 @@ const _UserGameData = {
   ShardId: Buffer.alloc(4) // Uint4B
 }
 
-const GLDP_PersonaList = {
+// eslint-disable-next-line camelcase
+export const GLDP_PersonaList = {
   NPS_SerializeList: Buffer.alloc(48), // NPS_SerializeList
   maxPersonas_: Buffer.alloc(4)// Uint4B
 }
 
-const GenericReply = {
+export const GenericReply = {
   msgNo: Buffer.alloc(4), // Uint4B
   msgReply: Buffer.alloc(4), // Uint4B
   result: Buffer.alloc(4), // Uint4B
@@ -157,75 +159,79 @@ const GenericReply = {
   data2: Buffer.alloc(4) // Uint4B
 }
 
-const NPS_GetPersonaMapListReq = {
+// eslint-disable-next-line camelcase
+export const NPS_GetPersonaMapListReq = {
   NPS_SerializeList: Buffer.alloc(48), // NPS_SerializeList
   customerId_: Buffer.alloc(4) // Uint4B
 }
 
-const BaseMsgHeader = {
+export const BaseMsgHeader = {
   msgNo: Buffer.alloc(4) // Uint4B
 }
 
-const CompressedHeader = {
+export const CompressedHeader = {
   uncompressedLength: Buffer.alloc(4), // Uint4B
   data: Buffer.alloc(0) // [0] Uint4B
 }
 
-const MessageNode = {
+export const MessageNode = {
   toFrom: Buffer.alloc(4), // UInt4B
   appID: Buffer.alloc(4), // UInt4B
   header: Buffer.alloc(8), // msgHead
   seq: Buffer.alloc(4), // UInt4B
   flags: Buffer.alloc(4), // UInt4B
-  buffer: buffer.alloc(1) // [1] Char
+  buffer: Buffer.alloc(1) // [1] Char
 }
 
-const NPS_LOBBYSERVER_COMMANDS = [
-  { name: 'NPS_FORCE_LOGOFF', value: 513},
-  { name: 'NPS_USER_LEFT', value: 514},
-  {name:'NPS_USER_JOINED', value: 515},
-  {name: 'NPS_USER_INFO', value:516},
-  {name: 'NPS_SYSTEM_ALERT', value: 517},
-  {name: 'NPS_CLIENT_COUNT', value: 518},
-  {name: 'NPS_ACK', value: 519},
-  {name: 'NPS_USER_LEFT_CHANNEL', value: 520},
-  {name: 'NPS_CHANNEL_CLOSED', value: 521},
-  {name: 'NPS_DUP_USER', value: 522},
-  {name: 'NPS_SERVER_FULL', value: 523},
-  {name: 'NPS_USER_JOINED_CHANNEL', value: 524},
-  {name: 'NPS_SERVER_INFO', value: 525},
-  {name: 'NPS_CHANNEL_CREATED', value: 526},
-  {name: 'NPS_CHANNEL_DELETED', value: 527},
-  {name: 'NPS_READY_LIST', value: 528},
-  {name: 'NPS_USER_LIST', value: 529},
-  {name: 'NPS_SERVER_LIST', value: 530},
-  {name: 'NPS_CHANNEL_DENIED', value: 531},
-  {name: 'NPS_CHANNEL_GRANTED', value: 532},
-  {name: 'NPS_CHANNEL_CONDITIONAL', value: 533},
-  {name: 'NPS_SERVER_REDIRECT', value: 534},
-  {name: 'NPS_HEARTBEAT', value: 535},
-  {name: 'NPS_HEARTBEAT_TIMEOUT', value: 536},
-  {name: 'NPS_CHANNEL_UPDATE', value: 537},
-  {name: 'NPS_FORCE_LEAVE_CHANNEL', value: 538},
-  {name: 'NPS_USER_LOCATION', value: 539},
-  {name: 'NPS_GAME_SERVER_STARTED', value: 540},
-  {name: 'NPS_GAME_SERVER_TERMINATED', value: 541},
-  {name: 'NPS_VERSIONS_DIFFERENT', value: 542},
-  {name: 'NPS_SEND_VERSION_STRING', value: 543},
-  {name: 'NPS_GAME_SKU_REGISTRY_KEY', value: 544},
-  {name: 'NPS_PLUGIN_ACK', value: 545},
-  {name: 'NPS_SERVER_CRASHED', value: 546},
-  {name: 'NPS_OPEN_COMM_CHANNEL_ACK', value: 547},
-  {name: 'NPS_GAME_SERVER_STATE_CHANGE', value: 548},
-  {name: 'NPS_SLOT_UPDATE', value: 549},
-  {name: 'NPS_SLOT_LIST', value: 550},
-  {name: 'NPS_CHANNEL_MASTER', value: 551},
-  {name: 'NPS_CHANNEL_MASTER_LIST', value: 552},
-  {name: 'NPS_MINI_USER_LIST', value: 553},
-  {name: 'NPS_INVALID_KEY', value: 554},
-  {name: 'NPS_NO_VALIDATION_SERVER', value: 555},
-  {name: 'NPS_INC_MINI_USER_LIST', value: 556},
-  {name: 'NPS_DEC_MINI_USER_LIST', value: 557},
-  {name: 'NPS_BUDDY_LIST', value: 558},
-  {name: 'NPS_BUDDYLIST_UPDATE', value: 559}
+/**
+ * Commands from the game server to the game client
+ */
+export const NPS_LOBBYSERVER_COMMANDS = [
+  { name: 'NPS_FORCE_LOGOFF', value: 513 },
+  { name: 'NPS_USER_LEFT', value: 514 },
+  { name: 'NPS_USER_JOINED', value: 515 },
+  { name: 'NPS_USER_INFO', value: 516 },
+  { name: 'NPS_SYSTEM_ALERT', value: 517 },
+  { name: 'NPS_CLIENT_COUNT', value: 518 },
+  { name: 'NPS_ACK', value: 519 },
+  { name: 'NPS_USER_LEFT_CHANNEL', value: 520 },
+  { name: 'NPS_CHANNEL_CLOSED', value: 521 },
+  { name: 'NPS_DUP_USER', value: 522 },
+  { name: 'NPS_SERVER_FULL', value: 523 },
+  { name: 'NPS_USER_JOINED_CHANNEL', value: 524 },
+  { name: 'NPS_SERVER_INFO', value: 525 },
+  { name: 'NPS_CHANNEL_CREATED', value: 526 },
+  { name: 'NPS_CHANNEL_DELETED', value: 527 },
+  { name: 'NPS_READY_LIST', value: 528 },
+  { name: 'NPS_USER_LIST', value: 529 },
+  { name: 'NPS_SERVER_LIST', value: 530 },
+  { name: 'NPS_CHANNEL_DENIED', value: 531 },
+  { name: 'NPS_CHANNEL_GRANTED', value: 532 },
+  { name: 'NPS_CHANNEL_CONDITIONAL', value: 533 },
+  { name: 'NPS_SERVER_REDIRECT', value: 534 },
+  { name: 'NPS_HEARTBEAT', value: 535 },
+  { name: 'NPS_HEARTBEAT_TIMEOUT', value: 536 },
+  { name: 'NPS_CHANNEL_UPDATE', value: 537 },
+  { name: 'NPS_FORCE_LEAVE_CHANNEL', value: 538 },
+  { name: 'NPS_USER_LOCATION', value: 539 },
+  { name: 'NPS_GAME_SERVER_STARTED', value: 540 },
+  { name: 'NPS_GAME_SERVER_TERMINATED', value: 541 },
+  { name: 'NPS_VERSIONS_DIFFERENT', value: 542 },
+  { name: 'NPS_SEND_VERSION_STRING', value: 543 },
+  { name: 'NPS_GAME_SKU_REGISTRY_KEY', value: 544 },
+  { name: 'NPS_PLUGIN_ACK', value: 545 },
+  { name: 'NPS_SERVER_CRASHED', value: 546 },
+  { name: 'NPS_OPEN_COMM_CHANNEL_ACK', value: 547 },
+  { name: 'NPS_GAME_SERVER_STATE_CHANGE', value: 548 },
+  { name: 'NPS_SLOT_UPDATE', value: 549 },
+  { name: 'NPS_SLOT_LIST', value: 550 },
+  { name: 'NPS_CHANNEL_MASTER', value: 551 },
+  { name: 'NPS_CHANNEL_MASTER_LIST', value: 552 },
+  { name: 'NPS_MINI_USER_LIST', value: 553 },
+  { name: 'NPS_INVALID_KEY', value: 554 },
+  { name: 'NPS_NO_VALIDATION_SERVER', value: 555 },
+  { name: 'NPS_INC_MINI_USER_LIST', value: 556 },
+  { name: 'NPS_DEC_MINI_USER_LIST', value: 557 },
+  { name: 'NPS_BUDDY_LIST', value: 558 },
+  { name: 'NPS_BUDDYLIST_UPDATE', value: 559 }
 ]
