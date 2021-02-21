@@ -17,6 +17,6 @@ export const pool = new pg.Pool({
 /**
  * @param {string} text
  * @param {string[]} params
- * @return {Promise<pg.QueryResult<Record<string, unknown>[]>>}
+ * @return {Promise<pg.QueryResult<Record<string, string>[]>>}
  */
-export function query (text: QueryArrayConfig, params: string[]): Promise<pg.QueryResult<Record<string, unknown>[]>> { return pool.query(text, params) }
+export function query (text: QueryArrayConfig, params: string[]): Promise<pg.QueryResult<Record<string, string>[]>> { return pool.query(text, params) }
