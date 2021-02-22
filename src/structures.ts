@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { INPS_COMMAND_MAP, NPS_COMMAND_MODULE } from './types'
+import { npsCommandMap, NPS_COMMAND_MODULE } from './types'
 
 // eslint-disable-next-line camelcase
 export const _NPS_RiffListHeader = {
@@ -195,7 +195,7 @@ export const MessageNode = {
 /**
  * Commands from the game server to the game client
  */
-export const NPS_LOBBYSERVER_COMMANDS: INPS_COMMAND_MAP[] = [
+export const NPS_LOBBYSERVER_COMMANDS: npsCommandMap[] = [
   { name: 'NPS_FORCE_LOGOFF', value: 513, module: NPS_COMMAND_MODULE.Lobby },
   { name: 'NPS_USER_LEFT', value: 514, module: NPS_COMMAND_MODULE.Lobby },
   { name: 'NPS_USER_JOINED', value: 515, module: NPS_COMMAND_MODULE.Lobby },
@@ -248,7 +248,7 @@ export const NPS_LOBBYSERVER_COMMANDS: INPS_COMMAND_MAP[] = [
 /**
  * Commands from the game client to the game server
  */
-export const NPS_LOBBYCLIENT_COMMANDS: INPS_COMMAND_MAP[] = [
+export const NPS_LOBBYCLIENT_COMMANDS: npsCommandMap[] = [
   { name: 'NPS_LOGIN', value: 256, module: NPS_COMMAND_MODULE.Lobby },
   { name: 'NPS_GET_USER_LIST', value: 257, module: NPS_COMMAND_MODULE.Lobby },
   { name: 'NPS_GET_MY_USER_DATA', value: 258, module: NPS_COMMAND_MODULE.Lobby },
@@ -299,7 +299,7 @@ export const NPS_LOBBYCLIENT_COMMANDS: INPS_COMMAND_MAP[] = [
 /**
  * Commands from the game client to the login server
  */
-export const NPS_LOGINCLIENT_COMMANDS: INPS_COMMAND_MAP[] = [
+export const NPS_LOGINCLIENT_COMMANDS: npsCommandMap[] = [
   { name: 'NPS_USER_LOGIN', value: 1281, module: NPS_COMMAND_MODULE.Login },
   { name: 'NPS_GAME_LOGIN', value: 1282, module: NPS_COMMAND_MODULE.Login },
   { name: 'NPS_REGISTER_GAME_LOGIN', value: 1283, module: NPS_COMMAND_MODULE.Login },
@@ -346,15 +346,15 @@ export const NPS_LOGINCLIENT_COMMANDS: INPS_COMMAND_MAP[] = [
   { name: 'NPS_GET_USER_STATUS', value: 1333, module: NPS_COMMAND_MODULE.Login }
 ]
 
-export const NPS_LOBBY_COMMANDS: INPS_COMMAND_MAP[] = [
+export const NPS_LOBBY_COMMANDS: npsCommandMap[] = [
   ...NPS_LOBBYCLIENT_COMMANDS, ...NPS_LOBBYSERVER_COMMANDS
 ]
 
-export const NPS_LOGIN_COMMANDS: INPS_COMMAND_MAP[] = [
+export const NPS_LOGIN_COMMANDS: npsCommandMap[] = [
   ...NPS_LOGINCLIENT_COMMANDS
 ]
 
-export const NPS_COMMANDS:INPS_COMMAND_MAP[] = [
+export const NPS_COMMANDS:npsCommandMap[] = [
   ...NPS_LOBBY_COMMANDS, ...NPS_LOGINCLIENT_COMMANDS,
   { name: 'NPS_CRYPTO_DES_CBC', value: 0x1101, module: NPS_COMMAND_MODULE.Lobby }
 ]
