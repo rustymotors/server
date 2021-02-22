@@ -17,6 +17,7 @@ import { GenericRequestMsg } from '../GenericRequestMsg'
 import { StockCar } from './StockCar'
 import { StockCarInfoMsg } from './StockCarInfoMsg'
 import { DatabaseManager } from '../../../shared/DatabaseManager'
+import { VError } from 'verror'
 
 /**
  * Manages TCP connection packet processing
@@ -67,7 +68,7 @@ async function encryptIfNeeded (conn:ConnectionObj, node:MessageNode) {
     if (conn.enc) {
       node.updateBuffer(conn.enc.encrypt(node.data))
     } else {
-      throw new Error('encryption out on connection is null')
+      throw new VError('encryption out on connection is null')
     }
     packetToWrite = node
     debug('mcoserver:TCPManager')(`encrypted packet: ${packetToWrite.serialize().toString('hex')}`)
@@ -101,7 +102,7 @@ export async function socketWriteIfOpen (conn:ConnectionObj, nodes:MessageNode[]
       conn.sock.write(packetToWrite.serialize())
       // updatedConnection = encryptedResult.conn;
     } else {
-      throw new Error(
+      throw new VError(
         `Error writing ${packetToWrite.serialize()} to ${
           conn.sock.remoteAddress
         } , ${conn.sock.localPort.toString()}`
@@ -160,15 +161,15 @@ export async function ClientConnect (con:ConnectionObj, node:MessageNode): Promi
   const res:ISessionRecord = await databaseManager.fetchSessionKeyByCustomerId(
     newMsg.customerId
   )
-  debug('mcoserver:TCPManager')(`[TCPManager] Session Key: ${res.sessionKey}`)
+  debug('mcoserver:TCPManager')(`[TCPManager] Session Key: ${res.sessionkey}`)
 
   const connectionWithKey = con
 
   const { customerId, personaId, personaName } = newMsg
-  const sessionKey = res.sessionKey
-  debug('mcoserver:TCPManager')(`Raw Session Key: ${sessionKey}`)
+  const sessionkey = res.sessionkey
+  debug('mcoserver:TCPManager')(`Raw Session Key: ${sessionkey}`)
 
-  const strKey = Buffer.from(sessionKey, 'hex')
+  const strKey = Buffer.from(sessionkey, 'hex')
   connectionWithKey.setEncryptionKey(Buffer.from(strKey.slice(0, 16)))
 
   // Update the connection's appId
@@ -198,9 +199,7 @@ export async function ClientConnect (con:ConnectionObj, node:MessageNode): Promi
 }
 
 /**
- *
- * @param {MessageNode} node
- * @param {ConnectionObj} conn
+ * Route or process MCOTS commands
  */
 export async function ProcessInput (node:MessageNode, conn:ConnectionObj): Promise<ConnectionObj> {
   const currentMsgNo = node.msgNo
@@ -217,7 +216,7 @@ export async function ProcessInput (node:MessageNode, conn:ConnectionObj): Promi
         )
         return updatedConnection
       } catch (error) {
-        throw new Error(`Error in MC_SET_OPTIONS: ${error}`)
+        throw new VError(`Error in MC_SET_OPTIONS: ${error}`)
       }
     case 'MC_TRACKING_MSG':
       try {
@@ -229,7 +228,7 @@ export async function ProcessInput (node:MessageNode, conn:ConnectionObj): Promi
         )
         return updatedConnection
       } catch (error) {
-        throw new Error(`Error in MC_TRACKING_MSG: ${error}`)
+        throw new VError(`Error in MC_TRACKING_MSG: ${error}`)
       }
     case 'MC_UPDATE_PLAYER_PHYSICAL':
       try {
@@ -241,7 +240,7 @@ export async function ProcessInput (node:MessageNode, conn:ConnectionObj): Promi
         )
         return updatedConnection
       } catch (error) {
-        throw new Error(`Error in MC_UPDATE_PLAYER_PHYSICAL: ${error}`)
+        throw new VError(`Error in MC_UPDATE_PLAYER_PHYSICAL: ${error}`)
       }
 
     default:
@@ -255,7 +254,7 @@ export async function ProcessInput (node:MessageNode, conn:ConnectionObj): Promi
       // write the socket
       return await socketWriteIfOpen(result.con, responsePackets)
     } catch (error) {
-      throw new Error(`[TCPManager] Error writing to socket: ${error}`)
+      throw new VError(`[TCPManager] Error writing to socket: ${error}`)
     }
   } else if (currentMsgString === 'MC_LOGIN') {
     try {
@@ -264,7 +263,7 @@ export async function ProcessInput (node:MessageNode, conn:ConnectionObj): Promi
       // write the socket
       return await socketWriteIfOpen(result.con, responsePackets)
     } catch (error) {
-      throw new Error(`[TCPManager] Error writing to socket: ${error}`)
+      throw new VError(`[TCPManager] Error writing to socket: ${error}`)
     }
   } else if (currentMsgString === 'MC_LOGOUT') {
     try {
@@ -273,7 +272,7 @@ export async function ProcessInput (node:MessageNode, conn:ConnectionObj): Promi
       // write the socket
       return await socketWriteIfOpen(result.con, responsePackets)
     } catch (error) {
-      throw new Error(`[TCPManager] Error writing to socket: ${error}`)
+      throw new VError(`[TCPManager] Error writing to socket: ${error}`)
     }
   } else if (currentMsgString === 'MC_GET_LOBBIES') {
     const result = await mcotServer._getLobbies(conn, node)
@@ -284,7 +283,7 @@ export async function ProcessInput (node:MessageNode, conn:ConnectionObj): Promi
       // write the socket
       return await socketWriteIfOpen(result.con, responsePackets)
     } catch (error) {
-      throw new Error(`[TCPManager] Error writing to socket: ${error}`)
+      throw new VError(`[TCPManager] Error writing to socket: ${error}`)
     }
   } else if (currentMsgString === 'MC_STOCK_CAR_INFO') {
     try {
@@ -293,11 +292,11 @@ export async function ProcessInput (node:MessageNode, conn:ConnectionObj): Promi
       // write the socket
       return await socketWriteIfOpen(result.con, responsePackets)
     } catch (error) {
-      throw new Error(`[TCPManager] Error writing to socket: ${error}`)
+      throw new VError(`[TCPManager] Error writing to socket: ${error}`)
     }
   } else {
     node.setAppId(conn.appId)
-    throw new Error(`Message Number Not Handled: ${currentMsgNo} (${currentMsgString})
+    throw new VError(`Message Number Not Handled: ${currentMsgNo} (${currentMsgString})
       conID: ${node.toFrom}  PersonaID: ${node.appId}`)
   }
 }
@@ -315,9 +314,9 @@ export async function MessageReceived (msg:MessageNode, con:ConnectionObj): Prom
   }
 
   // If not a Heartbeat
-  if (!(msg.flags === 80) && newConnection.useEncryption) {
+  if (msg.flags !== 80 && newConnection.useEncryption) {
     if (!newConnection.isSetupComplete) {
-      throw new Error(
+      throw new VError(
         `Decrypt() not yet setup! Disconnecting...conId: ${con.id}`
       )
     }
@@ -336,7 +335,7 @@ export async function MessageReceived (msg:MessageNode, con:ConnectionObj): Prom
           `Message buffer before decrypting: ${encryptedBuffer.toString('hex')}`
         )
         if (!newConnection.enc) {
-          throw new Error('ARC4 decrypter is null')
+          throw new VError('ARC4 decrypter is null')
         }
         debug('mcoserver:TCPManager')(`Using encryption id: ${newConnection.enc.getId()}`)
         const deciphered = newConnection.enc.decrypt(encryptedBuffer)
@@ -345,13 +344,13 @@ export async function MessageReceived (msg:MessageNode, con:ConnectionObj): Prom
         )
 
         if (deciphered.readUInt16LE(0) <= 0) {
-          throw new Error('Failure deciphering message, exiting.')
+          throw new VError('Failure deciphering message, exiting.')
         }
 
         // Update the MessageNode with the deciphered buffer
         msg.updateBuffer(deciphered)
       } catch (e) {
-        throw new Error(
+        throw new VError(
           `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}: ${e}`
         )
       }

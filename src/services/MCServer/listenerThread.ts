@@ -7,6 +7,7 @@
 
 import debug from 'debug'
 import net from 'net'
+import { VError } from 'verror'
 import { Logger } from 'winston'
 import { IAppSettings, IRawPacket } from '../../types'
 import { ConnectionMgr } from './ConnectionMgr'
@@ -65,11 +66,11 @@ export class ListenerThread {
       try {
         newConnection = await connection.mgr.processData(rawPacket)
       } catch (error) {
-        throw new Error(`Error in listenerThread::onData 1: ${error}`)
+        throw new VError(`Error in listenerThread::onData 1: ${error}`)
       }
       if (!connection.remoteAddress) {
         debug(connection.toString())
-        throw new Error('Remote address is empty')
+        throw new VError('Remote address is empty')
       }
       try {
         await connection.mgr._updateConnectionByAddressAndPort(
@@ -78,10 +79,10 @@ export class ListenerThread {
           newConnection
         )
       } catch (error) {
-        throw new Error(`Error in listenerThread::onData 2: ${error}`)
+        throw new VError(`Error in listenerThread::onData 2: ${error}`)
       }
     } catch (error) {
-      throw new Error(`Error in listenerThread::onData 3: ${error}`)
+      throw new VError(`Error in listenerThread::onData 3: ${error}`)
     }
   }
 
@@ -148,4 +149,5 @@ process.on('unhandledRejection', (reason, p) => {
   console.log('Unhandled Rejection at:', p, 'reason:', reason)
   console.trace()
   // application specific logging, throwing an error, or other logic here
+  process.exit(-1)
 })

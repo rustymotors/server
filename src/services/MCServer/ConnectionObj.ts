@@ -7,6 +7,7 @@
 
 import crypto, { Cipher, Decipher } from 'crypto'
 import { Socket } from 'net'
+import { VError } from 'verror'
 import { ConnectionMgr } from './ConnectionMgr'
 import { EncryptionManager } from './EncryptionMgr'
 
@@ -97,23 +98,33 @@ export class ConnectionObj {
   /**
    * setEncryptionKeyDES
    *
-   * @param {string} sKey
+   * @param {string} skey
    */
-  setEncryptionKeyDES (sKey: string): void {
+  setEncryptionKeyDES (skey: string): void {
     // deepcode ignore HardcodedSecret: This uses an empty IV
     const desIV = Buffer.alloc(8)
-    this.encLobby.cipher = crypto.createCipheriv(
-      'des-cbc',
-      Buffer.from(sKey, 'hex'),
-      desIV
-    )
-    this.encLobby.cipher.setAutoPadding(false)
-    this.encLobby.decipher = crypto.createDecipheriv(
-      'des-cbc',
-      Buffer.from(sKey, 'hex'),
-      desIV
-    )
-    this.encLobby.decipher.setAutoPadding(false)
+
+    try {
+      this.encLobby.cipher = crypto.createCipheriv(
+        'des-cbc',
+        Buffer.from(skey, 'hex'),
+        desIV
+      )
+      this.encLobby.cipher.setAutoPadding(false)
+    } catch (error) {
+      throw new VError(`Error setting cipher: ${error}`)
+    }
+
+    try {
+      this.encLobby.decipher = crypto.createDecipheriv(
+        'des-cbc',
+        Buffer.from(skey, 'hex'),
+        desIV
+      )
+      this.encLobby.decipher.setAutoPadding(false)
+    } catch (error) {
+      throw new VError(`Error setting decipher: ${error}`)
+    }
 
     this.isSetupComplete = true
   }
@@ -128,7 +139,7 @@ export class ConnectionObj {
     if (this.encLobby.cipher) {
       return this.encLobby.cipher.update(messageBuffer)
     }
-    throw new Error('No DES cipher set on connection')
+    throw new VError('No DES cipher set on connection')
   }
 
   /**
@@ -141,6 +152,6 @@ export class ConnectionObj {
     if (this.encLobby.decipher) {
       return this.encLobby.decipher.update(messageBuffer)
     }
-    throw new Error('No DES decipher set on connection')
+    throw new VError('No DES decipher set on connection')
   }
 }

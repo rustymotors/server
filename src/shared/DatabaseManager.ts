@@ -10,6 +10,7 @@ import { Logger } from 'winston'
 import { pool } from './db/index'
 import { migrate } from 'postgres-migrations'
 import { ISessionRecord } from '../types'
+import { VError } from 'verror'
 
 /**
  * Database connection abstraction
@@ -61,14 +62,14 @@ export class DatabaseManager {
   async fetchSessionKeyByCustomerId (customerId: number): Promise<ISessionRecord> {
     try {
       const { rows } = await pool.query(
-        'SELECT session_key, s_key FROM sessions WHERE customer_id = $1',
+        'SELECT sessionkey, skey FROM sessions WHERE customer_id = $1',
         [customerId]
       )
       /** @type {SessionRecord} */
       return rows[0]
     } catch (e) {
       this.logger.warn(`Unable to update session key ${e}`)
-      throw new Error(e)
+      throw new VError(e)
     }
   }
 
@@ -82,7 +83,7 @@ export class DatabaseManager {
   async fetchSessionKeyByConnectionId (connectionId: string): Promise<ISessionRecord> {
     try {
       const { rows } = await pool.query(
-        'SELECT session_key, s_key FROM sessions WHERE connection_id = $1',
+        'SELECT sessionkey, skey FROM sessions WHERE connection_id = $1',
         [connectionId]
       )
       /** @type {Session_Record} */
@@ -96,23 +97,23 @@ export class DatabaseManager {
   /**
    *
    * @param {number} customerId
-   * @param {string} sessionKey
+   * @param {string} sessionkey
    * @param {string} contextId
    * @param {string} connectionId
    * @return {Promise<Session_Record[]>}
    * @memberof {DatabaseManager}
    */
-  async _updateSessionKey (customerId: number, sessionKey: string, contextId: string, connectionId: string): Promise<ISessionRecord> {
-    const sKey = sessionKey.substr(0, 16)
+  async _updateSessionKey (customerId: number, sessionkey: string, contextId: string, connectionId: string): Promise<ISessionRecord> {
+    const skey = sessionkey.substr(0, 16)
     try {
       const { rows } = await pool.query(
-        'INSERT INTO sessions (customer_id, session_key, s_key, context_id, connection_id) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (customer_id) DO UPDATE SET session_key = $2, s_key = $3, context_id = $4, connection_id = $5',
-        [customerId, sessionKey, sKey, contextId, connectionId]
+        'INSERT INTO sessions (customer_id, sessionkey, skey, context_id, connection_id) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (customer_id) DO UPDATE SET sessionkey = $2, skey = $3, context_id = $4, connection_id = $5',
+        [customerId, sessionkey, skey, contextId, connectionId]
       )
       const results: ISessionRecord = rows[0]
       return results
     } catch (e) {
-      throw new Error(`Unable to update session key: ${e}`)
+      throw new VError(`Unable to update session key: ${e}`)
     }
   }
 }

@@ -14,6 +14,7 @@ import { IRawPacket } from '../../../types'
 import { MESSAGE_DIRECTION } from '../MCOTS/MessageNode'
 import debug from 'debug'
 import { logger as Logger } from '../../../shared/logger'
+import { VError } from 'verror'
 
 const logger = Logger.child({
   service: 'mcoserver:LobbyServer'
@@ -40,7 +41,7 @@ async function npsSocketWriteIfOpen (conn: ConnectionObj, buffer: Buffer) {
     // Write the packet to socket
     sock.write(buffer)
   } else {
-    throw new Error(
+    throw new VError(
       `[Lobby] Error writing ${buffer.toString('hex')} to ${sock.remoteAddress
       } , ${sock}`
     )
@@ -189,7 +190,7 @@ export class LobbyServer {
         const { encryptedCmd } = updatedConnection
 
         if (encryptedCmd == null) {
-          throw new Error(
+          throw new VError(
             `Error with encrypted command, dumping connection: ${JSON.stringify({ updatedConnection })}`
           )
         }
@@ -201,7 +202,7 @@ export class LobbyServer {
         break
       }
       default:
-        throw new Error(
+        throw new VError(
           `[Lobby] Unknown code ${requestCode} was received on port 7003`
         )
     }
@@ -242,7 +243,7 @@ export class LobbyServer {
 
     const personas = personaManager._getPersonasById(userInfo.userId)
     if (personas.length === 0) {
-      throw new Error('No personas found.')
+      throw new VError('No personas found.')
     }
     const customerId = personas[0].customerId
 
@@ -254,9 +255,9 @@ export class LobbyServer {
     // Create the cypher and decipher only if not already set
     if (!s.encLobby.decipher) {
       try {
-        s.setEncryptionKeyDES(keys.sKey)
+        s.setEncryptionKeyDES(keys.skey)
       } catch (error) {
-        throw new Error(`Unable to set session key: ${JSON.stringify({ keys, error })}`)
+        throw new VError(`Unable to set session key: ${JSON.stringify({ keys, error })}`)
       }
     }
 
@@ -273,7 +274,7 @@ export class LobbyServer {
     Buffer.from([0x00, 0x84, 0x5f, 0xed]).copy(packetContent)
 
     // SessionKeyStr (32)
-    this._generateSessionKeyBuffer(keys.sessionKey).copy(packetContent, 4)
+    this._generateSessionKeyBuffer(keys.sessionkey).copy(packetContent, 4)
 
     // // SessionKeyLen - int
     packetContent.writeInt16BE(32, 66)

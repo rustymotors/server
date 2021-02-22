@@ -9,6 +9,7 @@ import { Logger } from 'winston'
 import { logger } from '../../../shared/logger'
 import { MESSAGE_DIRECTION } from './MessageNode'
 import debug from 'debug'
+import { VError } from 'verror'
 
 /**
  * Packet container for NPS messages
@@ -26,7 +27,7 @@ import debug from 'debug'
    * @property {string} content
    * @property {string} contextId
    * @property {NPS_MSG_DIRECTION} direction
-   * @property {string | null } sessionKey
+   * @property {string | null } sessionkey
    * @property {string} rawBuffer
    */
 
@@ -106,7 +107,7 @@ export class NPSMsg {
       }
       return packet
     } catch (error) {
-      throw new Error(`[NPSMsg] Error in serialize(): ${error}`)
+      throw new VError(`[NPSMsg] Error in serialize(): ${error}`)
     }
   }
 

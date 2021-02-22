@@ -57,12 +57,12 @@ export interface IAppSettings {
 /**
  * @global
  * @typedef ISessionRecord
- * @property {string} s_key
- * @property {string} session_key
+ * @property {string} skey
+ * @property {string} sessionkey
  */
 export interface ISessionRecord {
-  sKey: string
-  sessionKey: string
+  skey: string
+  sessionkey: string
 }
 
 /**
@@ -280,4 +280,15 @@ export interface IUserRecordMini {
   contextId: string
   customerId: Buffer
   userId: Buffer
+}
+
+export enum NPS_COMMAND_MODULE {
+  'Lobby',
+  'Login'
+}
+
+export interface InpsCommandMap {
+  name: string,
+  value: number,
+  module: NPS_COMMAND_MODULE
 }

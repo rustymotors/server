@@ -8,7 +8,7 @@
 import { ConnectionObj } from '../ConnectionObj'
 import { MessageNode, MESSAGE_DIRECTION } from './MessageNode'
 import { GenericReplyMsg } from '../GenericReplyMsg'
-import { LobbyMsg } from './LobbyMsg'
+// import { LobbyMsg } from './LobbyMsg'
 import { LoginMsg } from './LoginMsg'
 
 // eslint-disable-next-line no-unused-vars
@@ -119,7 +119,7 @@ export class MCOTServer {
     debug('mcoserver:MCOTSServer')(lobbiesListMsg)
 
     // Create new response packet
-    const lobbyMsg = new LobbyMsg()
+    // const lobbyMsg = new LobbyMsg()
 
     const pReply = new GenericReplyMsg()
     pReply.msgNo = 325
@@ -127,16 +127,23 @@ export class MCOTServer {
     const rPacket = new MessageNode(MESSAGE_DIRECTION.SENT)
     rPacket.flags = 9
 
-    rPacket.deserialize(node.serialize())
+    const lobby = Buffer.alloc(12)
+    lobby.writeInt32LE(325, 0)
+    lobby.writeInt32LE(0, 4)
+    lobby.writeInt32LE(0, 8)
 
-    // Set the data of the GenericReplyMsg to the LobbyMsg
-    pReply.setData(lobbyMsg.serialize())
-    rPacket.updateBuffer(lobbyMsg.serialize())
+    rPacket.updateBuffer(pReply.serialize())
 
-    // Set the AppId
-    rPacket.appId = con.appId
+    // rPacket.deserialize(node.serialize())
 
-    // Dump the packet
+    // // Set the data of the GenericReplyMsg to the LobbyMsg
+    // pReply.setData(lobbyMsg.serialize())
+    // rPacket.updateBuffer(lobbyMsg.serialize())
+
+    // // Set the AppId
+    // rPacket.appId = con.appId
+
+    // // Dump the packet
     debug('mcoserver:MCOTSServer')('Dumping response...')
     debug('mcoserver:MCOTSServer')(rPacket)
 

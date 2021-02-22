@@ -6,6 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import crypto, { Cipher, Decipher } from 'crypto'
+import { VError } from 'verror'
 
 /**
  * Handles the management of the encryption and decryption
@@ -18,7 +19,7 @@ import crypto, { Cipher, Decipher } from 'crypto'
  */
 export class EncryptionManager {
   id: string
-  sessionKey: Buffer
+  sessionkey: Buffer
   in: Decipher | null
   out: Cipher | null
 
@@ -30,7 +31,7 @@ export class EncryptionManager {
     const timestamp = (Date.now() + Math.random()).toString()
     hash.update(timestamp)
     this.id = hash.digest('hex')
-    this.sessionKey = Buffer.alloc(0)
+    this.sessionkey = Buffer.alloc(0)
     this.in = null
     this.out = null
   }
@@ -38,15 +39,15 @@ export class EncryptionManager {
   /**
    * set the internal sessionkey
    *
-   * @param {Buffer} sessionKey
+   * @param {Buffer} sessionkey
    * @return {boolean}
    * @memberof EncryptionMgr
    */
-  setEncryptionKey (sessionKey: Buffer): boolean {
-    this.sessionKey = sessionKey
+  setEncryptionKey (sessionkey: Buffer): boolean {
+    this.sessionkey = sessionkey
     // file deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
-    this.in = crypto.createDecipheriv('rc4', sessionKey, '')
-    this.out = crypto.createCipheriv('rc4', sessionKey, '')
+    this.in = crypto.createDecipheriv('rc4', sessionkey, '')
+    this.out = crypto.createCipheriv('rc4', sessionkey, '')
     return true
   }
 
@@ -59,7 +60,7 @@ export class EncryptionManager {
    */
   decrypt (encryptedText: Buffer): Buffer {
     if (this.in === null) {
-      throw new Error('No encryption manager found!')
+      throw new VError('No encryption manager found!')
     }
     return Buffer.from(this.in.update(encryptedText))
   }
@@ -73,7 +74,7 @@ export class EncryptionManager {
    */
   encrypt (plainText: Buffer): Buffer {
     if (this.out === null) {
-      throw new Error('No decryption manager found!')
+      throw new VError('No decryption manager found!')
     }
     return Buffer.from(
       this.out.update(plainText.toString(), 'binary', 'hex'),
@@ -86,7 +87,7 @@ export class EncryptionManager {
    * @return {string}
    */
   _getSessionKey (): string {
-    return this.sessionKey.toString('hex')
+    return this.sessionkey.toString('hex')
   }
 
   /**
