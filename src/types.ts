@@ -287,7 +287,7 @@ export enum NPS_COMMAND_MODULE {
   'Login'
 }
 
-export interface npsCommandMap {
+export interface InpsCommandMap {
   name: string,
   value: number,
   module: NPS_COMMAND_MODULE
