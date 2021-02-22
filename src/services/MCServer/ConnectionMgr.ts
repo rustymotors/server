@@ -13,8 +13,11 @@ import { IAppSettings, IRawPacket } from '../../types'
 import { ConnectionObj } from './ConnectionObj'
 import { defaultHandler } from './MCOTS/TCPManager'
 import { NPSPacketManager } from './npsPacketManager'
-import debug from 'debug'
+import Debug from 'debug'
 import { VError } from 'verror'
+import { NPS_COMMANDS } from '../../structures'
+
+const debug = Debug('mcoserver:ConnectionManager')
 
 export class ConnectionMgr {
   logger: Logger
@@ -46,9 +49,6 @@ export class ConnectionMgr {
 
   /**
    * Check incoming data and route it to the correct handler based on localPort
-   * @param {IRawPacket} rawPacket
-   * @return {Promise<ConnectionObj>}
-   * @memberof ConnectionMgr
    */
   async processData (rawPacket: IRawPacket): Promise<ConnectionObj> {
     const npsPacketManager = new NPSPacketManager(this.databaseMgr)
@@ -56,7 +56,7 @@ export class ConnectionMgr {
     const { remoteAddress, localPort, data } = rawPacket
 
     // Log the packet as debug
-    debug('mcoserver:ConnectionManager')(
+    debug(
       'logging raw packet',
       {
         remoteAddress,
@@ -65,53 +65,66 @@ export class ConnectionMgr {
       }
     )
 
-    if (localPort === 8226 || localPort === 8228 || localPort === 7003) {
-      debug('mcoserver:ConnectionManager')(
-        'Recieved NPS packet',
-        {
-          msgName: npsPacketManager.msgCodetoName(
-            rawPacket.data.readInt16BE(0)
-          ),
-          localPort
-        }
-      )
-      try {
-        return npsPacketManager.processNPSPacket(rawPacket)
-      } catch (error) {
-        throw new VError(`Error in connectionMgr::processData ${error}`)
-      }
-    }
-
-    this.logger.info('This is an MCOTS packet')
-
     switch (localPort) {
-      case 43300:
-        return defaultHandler(rawPacket)
-      default:
-        // Is this a hacker?
-        try {
-          if (remoteAddress && this.banList.indexOf(remoteAddress) < 0) {
-            // In ban list, skip
-            return rawPacket.connection
-          }
-        } catch (error) {
-          throw new VError(`Error checking ban list: ${error}`)
-        }
-        // Unknown request, log it
-        this.logger.warn(
-          '[connectionMgr] No known handler for request, banning',
+      case 8226:
+      case 8228:
+      case 7003:
+        debug(
+          'Recieved NPS packet',
           {
-            localPort,
-            remoteAddress,
-            data: data.toString('hex')
+            opCode: rawPacket.data.readInt16BE(0),
+            msgName: `${npsPacketManager.msgCodetoName(
+              rawPacket.data.readInt16BE(0)
+            )} / ${this.getNameFromOpCode(rawPacket.data.readInt16BE(0))}`,
+            localPort
           }
         )
-        if (remoteAddress) {
-          this.banList.push(remoteAddress)
+        try {
+          return await npsPacketManager.processNPSPacket(rawPacket)
+        } catch (error) {
+          throw new VError(`Error in connectionMgr::processData ${error}`)
         }
-
-        return rawPacket.connection
+      case 43300:
+        debug(
+          'Recieved MCOTS packet'
+          // {
+          //   opCode: rawPacket.data.readInt16BE(0),
+          //   msgName: `${npsPacketManager.msgCodetoName(
+          //     rawPacket.data.readInt16BE(0)
+          //   )} / ${this.getNameFromOpCode(rawPacket.data.readInt16BE(0))}`,
+          //   localPort
+          // }
+        )
+        return defaultHandler(rawPacket)
+      default:
+        throw new VError(`We received a packet on port ${localPort}. We don't what to do yet, going to throw so the message isn't lost. ${rawPacket}`)
     }
+  }
+
+  /**
+   * Get the name connected to the NPS opcode
+   */
+  getNameFromOpCode (opCode: number): string {
+    const opCodeName = NPS_COMMANDS.find((code) => {
+      return code.value === opCode
+    })
+    if (opCodeName === undefined) {
+      throw new VError(`Unable to locate name for opCode ${opCode}`)
+    }
+    return opCodeName.name
+  }
+
+  /**
+   * Get the name connected to the NPS opcode
+   */
+  getOpcodeFromName (name: string): number {
+    const opCode = NPS_COMMANDS.find((code) => {
+      return code.name === name
+    })
+    if (opCode === undefined) {
+      throw new VError(`Unable to locate opcode for name ${name}`)
+    }
+    return opCode.value
   }
 
   /**
@@ -252,4 +265,5 @@ process.on('unhandledRejection', (reason, p) => {
   console.log('Unhandled Rejection at:', p, 'reason:', reason)
   console.trace()
   // application specific logging, throwing an error, or other logic here
+  process.exit(-1)
 })

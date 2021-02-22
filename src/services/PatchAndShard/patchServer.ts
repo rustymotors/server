@@ -72,7 +72,6 @@ export class PatchServer {
         logger.error('Unable to start server on port 80! Have you granted access to the node runtime?')
         process.exit(-1)
       }
-      console.dir(err)
       throw err
     })
   }
@@ -133,7 +132,7 @@ export class PatchServer {
       80
     )
 
-    this.possibleShards.concat(shardClockTower.formatForShardList())
+    this.possibleShards.push(shardClockTower.formatForShardList())
 
     const shardTwinPinesMall = new ShardEntry(
       'Twin Pines Mall',

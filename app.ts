@@ -35,12 +35,12 @@ Promise.all(
     authLogin.start()]
 ).then(
   () => {
-    console.log('All servers started successfully')
+    logger.info('All servers started successfully')
   }
 )
   .catch(
     (err) => {
-      console.error(`There was an error starting the server: ${err}`)
+      logger.error(`There was an error starting the server: ${err}`)
       process.exit(-1)
     }
   )

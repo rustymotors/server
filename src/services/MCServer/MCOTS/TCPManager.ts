@@ -199,9 +199,7 @@ export async function ClientConnect (con:ConnectionObj, node:MessageNode): Promi
 }
 
 /**
- *
- * @param {MessageNode} node
- * @param {ConnectionObj} conn
+ * Route or process MCOTS commands
  */
 export async function ProcessInput (node:MessageNode, conn:ConnectionObj): Promise<ConnectionObj> {
   const currentMsgNo = node.msgNo
@@ -316,7 +314,7 @@ export async function MessageReceived (msg:MessageNode, con:ConnectionObj): Prom
   }
 
   // If not a Heartbeat
-  if (!(msg.flags === 80) && newConnection.useEncryption) {
+  if (msg.flags !== 80 && newConnection.useEncryption) {
     if (!newConnection.isSetupComplete) {
       throw new VError(
         `Decrypt() not yet setup! Disconnecting...conId: ${con.id}`

@@ -281,3 +281,14 @@ export interface IUserRecordMini {
   customerId: Buffer
   userId: Buffer
 }
+
+export enum NPS_COMMAND_MODULE {
+  'Lobby',
+  'Login'
+}
+
+export interface INPS_COMMAND_MAP {
+  name: string,
+  value: number,
+  module: NPS_COMMAND_MODULE
+}

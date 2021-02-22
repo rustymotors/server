@@ -8,7 +8,7 @@
 import { ConnectionObj } from '../ConnectionObj'
 import { MessageNode, MESSAGE_DIRECTION } from './MessageNode'
 import { GenericReplyMsg } from '../GenericReplyMsg'
-import { LobbyMsg } from './LobbyMsg'
+// import { LobbyMsg } from './LobbyMsg'
 import { LoginMsg } from './LoginMsg'
 
 // eslint-disable-next-line no-unused-vars
@@ -119,7 +119,7 @@ export class MCOTServer {
     debug('mcoserver:MCOTSServer')(lobbiesListMsg)
 
     // Create new response packet
-    const lobbyMsg = new LobbyMsg()
+    // const lobbyMsg = new LobbyMsg()
 
     const pReply = new GenericReplyMsg()
     pReply.msgNo = 325
