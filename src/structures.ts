@@ -174,9 +174,9 @@ export const NPS_GetPersonaMapListReq = {
   customerId_: Buffer.alloc(4) // Uint4B
 }
 
-export const msgHead = {
-  length: Buffer.alloc(4), // UInt4B
-  mcosig: Buffer.alloc(4) // UInt4B
+export class MsgHead {
+  private length: Buffer = Buffer.alloc(4) // UInt4B
+  private mcosig: Buffer = Buffer.alloc(4) // UInt4B
 }
 
 export const BaseMsgHeader = {
@@ -188,13 +188,17 @@ export const CompressedHeader = {
   data: Buffer.alloc(0) // [0] Uint4B
 }
 
-export const MessageNode = {
-  toFrom: Buffer.alloc(4), // UInt4B
-  appID: Buffer.alloc(4), // UInt4B
-  header: Buffer.alloc(8), // msgHead
-  seq: Buffer.alloc(4), // UInt4B
-  flags: Buffer.alloc(4), // UInt4B
-  buffer: Buffer.alloc(1) // [1] Char
+export class MessageNode {
+  private toFrom: Buffer = Buffer.alloc(4) // UInt4
+  private appID: Buffer = Buffer.alloc(4) // UInt4
+  private header: MsgHead = new MsgHead() // UInt4
+  private seq: Buffer = Buffer.alloc(4) // UInt4
+  private flags: Buffer = Buffer.alloc(4) // UInt4
+  private buffer: Buffer // [1] Char
+
+  constructor (buffer: Buffer) {
+    this.buffer = buffer
+  }
 }
 
 /**
