@@ -8,7 +8,7 @@
       "version": "3.0.0-beta1",
       "license": "MPL-2.0",
       "dependencies": {
-        "@types/node": "14.14.30",
+        "@types/node": "14.14.31",
         "@types/pg": "7.14.9",
         "@types/statsd-client": "0.4.1",
         "c-struct": "0.0.5",
@@ -385,9 +385,9 @@
       }
     },
     "node_modules/@types/node": {
-      "version": "14.14.30",
-      "resolved": "https://registry.npmjs.org/@types/node/-/node-14.14.30.tgz",
-      "integrity": "sha512-gUWhy8s45fQp4PqqKecsnOkdW0kt1IaKjgOIR3HPokkzTmQj9ji2wWFID5THu1MKrtO+d4s2lVrlEhXUsPXSvg=="
+      "version": "14.14.31",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-14.14.31.tgz",
+      "integrity": "sha512-vFHy/ezP5qI0rFgJ7aQnjDXwAMrG0KqqIH7tQG5PPv3BWBayOPIQNBjVc/P6hhdZfMx51REc6tfDNXHUio893g=="
     },
     "node_modules/@types/pg": {
       "version": "7.14.9",
@@ -1079,7 +1079,6 @@
       "dependencies": {
         "anymatch": "~3.1.1",
         "braces": "~3.0.2",
-        "fsevents": "~2.1.2",
         "glob-parent": "~5.1.0",
         "is-binary-path": "~2.1.0",
         "is-glob": "~4.0.1",
@@ -7890,9 +7889,9 @@
       }
     },
     "@types/node": {
-      "version": "14.14.30",
-      "resolved": "https://registry.npmjs.org/@types/node/-/node-14.14.30.tgz",
-      "integrity": "sha512-gUWhy8s45fQp4PqqKecsnOkdW0kt1IaKjgOIR3HPokkzTmQj9ji2wWFID5THu1MKrtO+d4s2lVrlEhXUsPXSvg=="
+      "version": "14.14.31",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-14.14.31.tgz",
+      "integrity": "sha512-vFHy/ezP5qI0rFgJ7aQnjDXwAMrG0KqqIH7tQG5PPv3BWBayOPIQNBjVc/P6hhdZfMx51REc6tfDNXHUio893g=="
     },
     "@types/pg": {
       "version": "7.14.9",
