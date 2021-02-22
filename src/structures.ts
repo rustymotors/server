@@ -174,6 +174,11 @@ export const NPS_GetPersonaMapListReq = {
   customerId_: Buffer.alloc(4) // Uint4B
 }
 
+export const msgHead = {
+  length: Buffer.alloc(4), // UInt4B
+  mcosig: Buffer.alloc(4) // UInt4B
+}
+
 export const BaseMsgHeader = {
   msgNo: Buffer.alloc(4) // Uint4B
 }
