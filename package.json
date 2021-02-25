@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "start": "DEBUG=mcoserver* ts-node app.ts",
+    "coverage": "DEBUG=mcoserver* nyc --extension '.ts' --reporter=html --reporter=text ./launch.js",
     "test": "npm run lint-test",
     "doc": "jsdoc -R README.md -P package.json -r src",
     "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
