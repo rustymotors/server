@@ -46,7 +46,7 @@
     "@types/mock-fs": "4.13.0",
     "@types/sinon": "9.0.10",
     "@types/supertest": "2.0.10",
-    "@types/tap": "14.10.2",
+    "@types/tap": "14.10.3",
     "@types/verror": "1.10.4",
     "@typescript-eslint/eslint-plugin": "4.15.2",
     "@typescript-eslint/parser": "4.15.2",
