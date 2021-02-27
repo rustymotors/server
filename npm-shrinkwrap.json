@@ -31,7 +31,7 @@
         "@types/mock-fs": "4.13.0",
         "@types/sinon": "9.0.10",
         "@types/supertest": "2.0.10",
-        "@types/tap": "14.10.2",
+        "@types/tap": "14.10.3",
         "@types/verror": "1.10.4",
         "@typescript-eslint/eslint-plugin": "4.15.2",
         "@typescript-eslint/parser": "4.15.2",
@@ -460,9 +460,9 @@
       }
     },
     "node_modules/@types/tap": {
-      "version": "14.10.2",
-      "resolved": "https://registry.npmjs.org/@types/tap/-/tap-14.10.2.tgz",
-      "integrity": "sha512-StS2GGiWZE2UP1O3ffJTlgyaAj2mayURkM4qzTqnDBF7ldXpCYIV9nHm6syute0P1hhcIhHeRDldZsqg4+TthQ==",
+      "version": "14.10.3",
+      "resolved": "https://registry.npmjs.org/@types/tap/-/tap-14.10.3.tgz",
+      "integrity": "sha512-pdibkMTqKxznrLTFRVJdv/zQ8AAvHe9puqiBt9Mp+hrBgs0ZqCsjCj2e6ez8+p39oapyVp491xxw09E732g1Qw==",
       "dev": true,
       "dependencies": {
         "@types/node": "*"
@@ -7964,9 +7964,9 @@
       }
     },
     "@types/tap": {
-      "version": "14.10.2",
-      "resolved": "https://registry.npmjs.org/@types/tap/-/tap-14.10.2.tgz",
-      "integrity": "sha512-StS2GGiWZE2UP1O3ffJTlgyaAj2mayURkM4qzTqnDBF7ldXpCYIV9nHm6syute0P1hhcIhHeRDldZsqg4+TthQ==",
+      "version": "14.10.3",
+      "resolved": "https://registry.npmjs.org/@types/tap/-/tap-14.10.3.tgz",
+      "integrity": "sha512-pdibkMTqKxznrLTFRVJdv/zQ8AAvHe9puqiBt9Mp+hrBgs0ZqCsjCj2e6ez8+p39oapyVp491xxw09E732g1Qw==",
       "dev": true,
       "requires": {
         "@types/node": "*"
