@@ -9,7 +9,7 @@
       "license": "MPL-2.0",
       "dependencies": {
         "@types/node": "14.14.31",
-        "@types/pg": "7.14.9",
+        "@types/pg": "7.14.11",
         "@types/statsd-client": "0.4.1",
         "c-struct": "0.0.5",
         "debug": "4.3.1",
@@ -389,11 +389,12 @@
       "integrity": "sha512-vFHy/ezP5qI0rFgJ7aQnjDXwAMrG0KqqIH7tQG5PPv3BWBayOPIQNBjVc/P6hhdZfMx51REc6tfDNXHUio893g=="
     },
     "node_modules/@types/pg": {
-      "version": "7.14.9",
-      "resolved": "https://registry.npmjs.org/@types/pg/-/pg-7.14.9.tgz",
-      "integrity": "sha512-ThTOEwOvYM++zRSGiajRqKyTQboCEJE2VI+30d93WX94sQ7CnrcJ7CICT9oC+QD8Co9JTYJkKEfEXSb5DjUOFA==",
+      "version": "7.14.11",
+      "resolved": "https://registry.npmjs.org/@types/pg/-/pg-7.14.11.tgz",
+      "integrity": "sha512-EnZkZ1OMw9DvNfQkn2MTJrwKmhJYDEs5ujWrPfvseWNoI95N8B4HzU/Ltrq5ZfYxDX/Zg8mTzwr6UAyTjjFvXA==",
       "dependencies": {
         "@types/node": "*",
+        "pg-protocol": "^1.2.0",
         "pg-types": "^2.2.0"
       }
     },
@@ -7816,11 +7817,12 @@
       "integrity": "sha512-vFHy/ezP5qI0rFgJ7aQnjDXwAMrG0KqqIH7tQG5PPv3BWBayOPIQNBjVc/P6hhdZfMx51REc6tfDNXHUio893g=="
     },
     "@types/pg": {
-      "version": "7.14.9",
-      "resolved": "https://registry.npmjs.org/@types/pg/-/pg-7.14.9.tgz",
-      "integrity": "sha512-ThTOEwOvYM++zRSGiajRqKyTQboCEJE2VI+30d93WX94sQ7CnrcJ7CICT9oC+QD8Co9JTYJkKEfEXSb5DjUOFA==",
+      "version": "7.14.11",
+      "resolved": "https://registry.npmjs.org/@types/pg/-/pg-7.14.11.tgz",
+      "integrity": "sha512-EnZkZ1OMw9DvNfQkn2MTJrwKmhJYDEs5ujWrPfvseWNoI95N8B4HzU/Ltrq5ZfYxDX/Zg8mTzwr6UAyTjjFvXA==",
       "requires": {
         "@types/node": "*",
+        "pg-protocol": "^1.2.0",
         "pg-types": "^2.2.0"
       }
     },
