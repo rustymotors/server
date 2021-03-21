@@ -162,6 +162,10 @@ export class AdminServer {
         response.setHeader('Content-Type', 'application/json; charset=utf-8')
         return response.end(this._handleGetBans())
 
+      case '/admin/poweroff':
+        response.end('ok')
+        process.exit(0)
+
       default:
         if (request.url && request.url.startsWith('/admin')) {
           return response.end('Jiggawatt!')

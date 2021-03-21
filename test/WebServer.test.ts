@@ -6,15 +6,17 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import mock from 'mock-fs'
-import { AuthLogin } from './AuthLogin'
-import tap from 'tap'
-import { fakeConfig } from '../../../test/helpers'
-import { IServerConfig } from '../../types'
+import { AuthLogin } from '../src/services/AuthLogin/AuthLogin'
+import { fakeConfig } from './helpers'
+import { IServerConfig } from '../src/types'
+import { expect } from 'chai'
 
-tap.test('WebServer', t => {
+/* eslint-env mocha */
+
+describe('WebServer', function () {
   const webServer = new AuthLogin(fakeConfig)
 
-  t.test('_sslOptions()', async t1 => {
+  it('_sslOptions()', async function () {
     const config: IServerConfig = {
       certFilename: '/cert/cert.pem',
       privateKeyFilename: '/cert/private.key',
@@ -30,7 +32,7 @@ tap.test('WebServer', t => {
     try {
       await webServer._sslOptions(config)
     } catch (error) {
-      t1.contains(error, /cert.pem/, 'throws when cert file is not found')
+      expect(error).contains(/cert.pem/)
     }
     mock.restore()
     //  deepcode ignore WrongNumberOfArgs/test: false positive
@@ -40,7 +42,7 @@ tap.test('WebServer', t => {
     try {
       await webServer._sslOptions(config)
     } catch (error) {
-      t1.contains(error, /private.key/, 'throws when key file is not found')
+      expect(error).contains(/private.key/)
     }
     mock.restore()
     //  deepcode ignore WrongNumberOfArgs/test: false positive
@@ -51,10 +53,8 @@ tap.test('WebServer', t => {
     try {
       await webServer._sslOptions(config)
     } catch (error) {
-      t1.contains(error, /private.key/, 'throws when key file is not found')
+      expect(error).contains(/private.key/)
     }
     mock.restore()
-    t1.done()
   })
-  t.done()
 })

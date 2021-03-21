@@ -5,15 +5,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { LoginMsg } from './LoginMsg'
-import tap from 'tap'
+import { expect } from 'chai'
+import { LoginMsg } from '../src/services/MCServer/MCOTS/LoginMsg'
+
+/* eslint-env mocha */
 
 const inboundBuffer = Buffer.alloc(42)
 inboundBuffer.write('NotAPerson', 24)
 inboundBuffer.write('0.0.0.0', 34)
 const loginMsg1 = new LoginMsg(inboundBuffer)
 
-tap.test('LoginMsg', t => {
+it('LoginMsg', function () {
   const {
     appId,
     toFrom,
@@ -27,26 +29,25 @@ tap.test('LoginMsg', t => {
     version,
     data
   } = loginMsg1
-  t.equal(appId, 0)
+  expect(appId).equals(0)
 
-  t.equal(toFrom, 0)
+  expect(toFrom).equals(0)
 
-  t.equal(msgNo, 0)
+  expect(msgNo).equals(0)
 
-  t.equal(customerId, 0)
+  expect(customerId).equals(0)
 
-  t.equal(personaId, 0)
+  expect(personaId).equals(0)
 
-  t.equal(lotOwnerId, 0)
+  expect(lotOwnerId).equals(0)
 
-  t.equal(brandedPartId, 0)
+  expect(brandedPartId).equals(0)
 
-  t.equal(skinId, 0)
+  expect(skinId).equals(0)
 
-  t.contains(personaName, 'NotAPerson')
+  expect(personaName).contains('NotAPerson')
 
-  t.contains(version, '0.0.0.0')
+  expect(version).contains('0.0.0.0')
 
-  t.equal(data, inboundBuffer)
-  t.done()
+  expect(data).equals(inboundBuffer)
 })

@@ -5,15 +5,16 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { GenericReplyMsg } from './GenericReplyMsg'
-import tap from 'tap'
+import { expect } from 'chai'
+import { GenericReplyMsg } from '../src/services/MCServer/GenericReplyMsg'
+
+/* eslint-env mocha */
 
 const genericReplyMsg1 = new GenericReplyMsg()
 
-tap.test('GenericReplyMsg', t => {
+it('GenericReplyMsg', function () {
   const { msgNo, toFrom } = genericReplyMsg1
-  t.equal(msgNo, 0)
-  t.equal(toFrom, 0)
-  t.deepEqual(genericReplyMsg1.serialize(), Buffer.alloc(16))
-  t.done()
+  expect(msgNo).equals(0)
+  expect(toFrom).equals(0)
+  expect(genericReplyMsg1.serialize()).to.deep.equal(Buffer.alloc(16))
 })

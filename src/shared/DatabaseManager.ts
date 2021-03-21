@@ -27,7 +27,7 @@ export async function doMigrations (logger: Logger): Promise<void> {
   try {
     await client.connect()
   } catch (error) {
-    logger.error(`Error connecting to database, exiting: ${error}`)
+    logger.error('Error connecting to database, exiting: ', error)
     process.exit(-1)
   }
   try {
@@ -68,7 +68,7 @@ export class DatabaseManager {
       /** @type {SessionRecord} */
       return rows[0]
     } catch (e) {
-      this.logger.warn(`Unable to update session key ${e}`)
+      this.logger.warn('Unable to update session key ', e)
       throw new VError(e)
     }
   }
@@ -89,7 +89,7 @@ export class DatabaseManager {
       /** @type {Session_Record} */
       return rows[0]
     } catch (e) {
-      this.logger.error(`Unable to update session key ${e}`)
+      this.logger.error('Unable to update session key ', e)
       process.exit(-1)
     }
   }
@@ -113,7 +113,7 @@ export class DatabaseManager {
       const results: ISessionRecord = rows[0]
       return results
     } catch (e) {
-      throw new VError(`Unable to update session key: ${e}`)
+      throw new VError('Unable to update session key: ', e)
     }
   }
 }
