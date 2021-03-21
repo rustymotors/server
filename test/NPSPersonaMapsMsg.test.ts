@@ -5,13 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { NPSPersonaMapsMsg } from './NPSPersonaMapsMsg'
-import tap from 'tap'
-import { MESSAGE_DIRECTION } from '../MCOTS/MessageNode'
+import { MESSAGE_DIRECTION } from "../src/services/MCServer/MCOTS/MessageNode"
+import { NPSPersonaMapsMsg } from "../src/services/MCServer/PersonaServer/NPSPersonaMapsMsg"
+import { expect } from 'chai'
 
-tap.test('NPSPersonaMapsMsg', t => {
+/* eslint-env mocha */
+
+it('NPSPersonaMapsMsg', function () {
   const npsPersonaMapsMsg = new NPSPersonaMapsMsg(MESSAGE_DIRECTION.RECIEVED)
-  t.equal(npsPersonaMapsMsg.direction, MESSAGE_DIRECTION.RECIEVED)
-  t.equal(npsPersonaMapsMsg.msgNo, 0x607)
-  t.done()
+  expect(npsPersonaMapsMsg.direction).equals(MESSAGE_DIRECTION.RECIEVED)
+  expect(npsPersonaMapsMsg.msgNo).equals( 0x607)
 })

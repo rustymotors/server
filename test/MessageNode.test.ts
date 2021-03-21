@@ -5,8 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { MessageNode, MESSAGE_DIRECTION } from './MessageNode'
-import tap from 'tap'
+import { expect } from 'chai'
+import { MessageNode, MESSAGE_DIRECTION } from '../src/services/MCServer/MCOTS/MessageNode'
+
+/* eslint-env mocha */
 
 const messageNode1 = new MessageNode(MESSAGE_DIRECTION.RECIEVED)
 messageNode1.deserialize(
@@ -36,16 +38,15 @@ messageNode1.deserialize(
   ])
 )
 
-tap.test('MessageNode', t => {
-  t.throws(() => {
+it('MessageNode', function () {
+  expect(() => {
     new MessageNode(MESSAGE_DIRECTION.RECIEVED).deserialize(Buffer.from([0x00, 0x00]))
-  }, '[MessageNode] Not long enough to deserialize, only 2 bytes long')
+  }).throws('[MessageNode] Not long enough to deserialize, only 2 bytes long')
 
-  t.ok(messageNode1.isMCOTS(), 'is a MessageNode')
+  expect(messageNode1.isMCOTS()).is.true
   try {
     messageNode1.dumpPacket()
   } catch (error) {
-    t.ok(error, 'Unable to dump faulty packet')
+    expect(error).is.not.null
   }
-  t.done()
 })

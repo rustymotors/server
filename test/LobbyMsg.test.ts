@@ -5,19 +5,19 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { LobbyInfoPacket } from './LobbyInfo'
-import { LobbyMsg } from './LobbyMsg'
-import tap from 'tap'
+import { expect } from 'chai'
+import { LobbyInfoPacket } from '../src/services/MCServer/MCOTS/LobbyInfo'
+import { LobbyMsg } from '../src/services/MCServer/MCOTS/LobbyMsg'
+
+/* eslint-env mocha */
 
 const lobbyInfo1 = new LobbyInfoPacket()
 const lobbyMsg1 = new LobbyMsg()
 
-tap.test('LobbyInfo', t => {
-  t.equal(lobbyInfo1.toPacket().length, 567)
-  t.done()
+it('LobbyInfo', function () {
+  expect(lobbyInfo1.toPacket().length).equals(567)
 })
 
-tap.test('LobbyMsg', t => {
-  t.equal(lobbyMsg1.data.length, 572)
-  t.done()
+it('LobbyMsg', function () {
+  expect(lobbyMsg1.data.length).equals(572)
 })

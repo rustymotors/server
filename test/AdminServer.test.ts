@@ -5,15 +5,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { expect } from 'chai'
 import mock from 'mock-fs'
-import { AdminServer } from './AdminServer'
-import tap from 'tap'
-import { fakeMCServer, fakeConfig } from '../../../test/helpers'
+import { AdminServer } from '../src/services/AdminServer/AdminServer'
+import { fakeConfig, fakeMCServer } from './helpers'
+
+/* eslint-env mocha */
 
 const adminServer = new AdminServer(fakeMCServer)
 
-tap.test('AdminServer', async t => {
-  t.test('_sslOptions()', async t1 => {
+describe('AdminServer', async function () {
+  it('_sslOptions()', async function () {
     //  deepcode ignore WrongNumberOfArgs/test: false positive
     mock({
       '/cert/': {}
@@ -21,7 +23,7 @@ tap.test('AdminServer', async t => {
     try {
       await adminServer._sslOptions(fakeConfig.serverConfig)
     } catch (error) {
-      t1.contains(error, /cert.pem/, 'throws when cert file is not found')
+      expect(error).contains(/cert.pem/)
     }
     mock.restore()
     //  deepcode ignore WrongNumberOfArgs/test: false positive
@@ -31,7 +33,7 @@ tap.test('AdminServer', async t => {
     try {
       await adminServer._sslOptions(fakeConfig.serverConfig)
     } catch (error) {
-      t1.contains(error, /private.key/, 'throws when key file is not found')
+      expect(error).contains(/private.key/)
     }
     mock.restore()
     //  deepcode ignore WrongNumberOfArgs/test: false positive
@@ -42,11 +44,8 @@ tap.test('AdminServer', async t => {
     try {
       await adminServer._sslOptions(fakeConfig.serverConfig)
     } catch (error) {
-      t1.contains(error, /private.key/, 'throws when key file is not found')
+      expect(error).contains(/private.key/)
     }
     mock.restore()
-    t1.done()
   })
-
-  t.done()
 })

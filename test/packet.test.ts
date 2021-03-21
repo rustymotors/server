@@ -5,11 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { premadeLogin } from './packet'
-import tap from 'tap'
+import { premadeLogin } from '../src/services/MCServer/LoginServer/packet'
+import { expect } from 'chai'
 
-tap.test('LoginServer - Packet', t => {
+/* eslint-env mocha */
+
+it('LoginServer - Packet', function () {
   const packet = premadeLogin()
-  t.type(packet, 'Buffer')
-  t.done()
+  expect(Buffer.isBuffer(packet)).is.true
 })

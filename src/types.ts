@@ -288,7 +288,7 @@ export enum NPS_COMMAND_MODULE {
 }
 
 export interface InpsCommandMap {
-  name: string,
-  value: number,
+  name: string;
+  value: number;
   module: NPS_COMMAND_MODULE
 }

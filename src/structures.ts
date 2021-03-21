@@ -206,11 +206,11 @@ export const CompressedHeader = {
 }
 
 export class MessageNode {
-  private _toFrom: Buffer = Buffer.alloc(4) // UInt4
-  private _appID: Buffer = Buffer.alloc(4) // UInt4
-  private _header: MsgHead = new MsgHead() // UInt4
-  private _seq: Buffer = Buffer.alloc(4) // UInt4
-  private _flags: Buffer = Buffer.alloc(4) // UInt4
+  private readonly _toFrom: Buffer = Buffer.alloc(4) // UInt4
+  private readonly _appID: Buffer = Buffer.alloc(4) // UInt4
+  private readonly _header: MsgHead = new MsgHead() // UInt4
+  private readonly _seq: Buffer = Buffer.alloc(4) // UInt4
+  private readonly _flags: Buffer = Buffer.alloc(4) // UInt4
   private _buffer: Buffer // [1] Char
   _rawBuffer: Buffer = Buffer.alloc(0)
 

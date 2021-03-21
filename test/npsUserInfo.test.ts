@@ -5,22 +5,18 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { NPSUserInfo } from './npsUserInfo'
-import tap from 'tap'
-import { MESSAGE_DIRECTION } from '../MCOTS/MessageNode'
+import { NPSUserInfo } from '../src/services/MCServer/LobbyServer/npsUserInfo'
+import { MESSAGE_DIRECTION } from '../src/services/MCServer/MCOTS/MessageNode'
+import { expect } from 'chai'
 
-tap.test('NPSUserInfo', t => {
+/* eslint-env mocha */
+
+it('NPSUserInfo', function () {
   const testPacket = Buffer.concat([
     Buffer.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x84, 0x5f, 0xed]),
     Buffer.alloc(98)
   ])
   const npsUserInfo = new NPSUserInfo(MESSAGE_DIRECTION.RECIEVED)
   npsUserInfo.deserialize(testPacket)
-  t.equal(npsUserInfo.userId, 8675309)
-  t.done()
+  expect(npsUserInfo.userId).equals(8675309)
 })
-
-// describe("NPSUserInfo", () => {
-//   test("can create an instance", () => {
-//   });
-// });

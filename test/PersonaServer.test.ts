@@ -5,94 +5,88 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { PersonaServer } from './PersonaServer'
-import tap from 'tap'
-import { NPSMsg } from '../MCOTS/NPSMsg'
-import { MESSAGE_DIRECTION } from '../MCOTS/MessageNode'
-import { fakeLogger, fakeSocket } from '../../../../test/helpers'
+import { PersonaServer } from '../src/services/MCServer/PersonaServer/PersonaServer'
+import { NPSMsg } from '../src/services/MCServer/MCOTS/NPSMsg'
+import { MESSAGE_DIRECTION } from '../src/services/MCServer/MCOTS/MessageNode'
+import { fakeLogger, fakeSocket } from './helpers'
+import { expect } from 'chai'
 
-tap.test('PersonaServer Methods', async t => {
+/* eslint-env mocha */
+
+it('PersonaServer Methods', async function () {
   const personaServer = new PersonaServer(fakeLogger)
   const results = await personaServer._getPersonasByCustomerId(5551212)
-  t.equal(results.length, 2)
+  expect(results.length).equals(2)
   const name = results[0].name.toString('utf8')
-  t.contains(name, 'Dr Brown')
+  expect(name).contains('Dr Brown')
 
   const personas = await personaServer._npsGetPersonaMapsByCustomerId(5551212)
   const id1 = personas[0].id
   const name1 = personas[0].name
-  t.equal(id1.readInt32BE(0), 8675309)
-  t.equal(name1.toString('utf8').length, 30)
+  expect(id1.readInt32BE(0)).equals(8675309)
+  expect(name1.toString('utf8').length).equals(30)
 
   try {
     await personaServer._getPersonasByCustomerId(123654)
   } catch (error) {
-    t.contains(error, /Unable to locate a persona/, 'Throws when no persona is found')
+    expect(error).contains(/Unable to locate a persona/)
   }
 
-  t.done()
 })
 
-tap.test('PersonaServer _npsSelectGamePersona()', async t => {
+it('PersonaServer _npsSelectGamePersona()', async function () {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg(MESSAGE_DIRECTION.SENT).serialize()
   const results = await personaServer._npsSelectGamePersona(data)
-  t.equal(results.direction, MESSAGE_DIRECTION.SENT)
-  t.done()
+  expect(results.direction).equals(MESSAGE_DIRECTION.SENT)
 })
 
-tap.test('PersonaServer _npsNewGameAccount()', async t => {
+it('PersonaServer _npsNewGameAccount()', async function () {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg(MESSAGE_DIRECTION.SENT).serialize()
   const results = await personaServer._npsNewGameAccount(data)
-  t.equal(results.direction, MESSAGE_DIRECTION.SENT)
-  t.done()
+  expect(results.direction).equals(MESSAGE_DIRECTION.SENT)
 })
 
-tap.test('PersonaServer _npsLogoutGameUser()', async t => {
+it('PersonaServer _npsLogoutGameUser()', async function () {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg(MESSAGE_DIRECTION.SENT).serialize()
   const results = await personaServer._npsLogoutGameUser(data)
-  t.equal(results.direction, MESSAGE_DIRECTION.SENT)
-  t.done()
+  expect(results.direction).equals(MESSAGE_DIRECTION.SENT)
 })
 
-tap.test('PersonaServer _npsCheckToken()', async t => {
+it('PersonaServer _npsCheckToken()', async function () {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg(MESSAGE_DIRECTION.SENT).serialize()
   const results = await personaServer._npsCheckToken(data)
-  t.equal(results.direction, MESSAGE_DIRECTION.SENT)
-  t.done()
+  expect(results.direction).equals(MESSAGE_DIRECTION.SENT)
 })
 
-tap.test('PersonaServer _npsValidatePersonaName()', async t => {
+it('PersonaServer _npsValidatePersonaName()', async function () {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg(MESSAGE_DIRECTION.SENT).serialize()
   const results = await personaServer._npsValidatePersonaName(data)
-  t.equal(results.direction, MESSAGE_DIRECTION.SENT)
-  t.done()
+  expect(results.direction).equals(MESSAGE_DIRECTION.SENT)
 })
 
-tap.test('PersonaServer _send()', async t => {
+it('PersonaServer _send()', async function () {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg(MESSAGE_DIRECTION.SENT)
   await personaServer._send(fakeSocket, data)
-  t.done()
 })
 
-tap.test('PersonaServer _npsGetPersonaMapsByCustomerId()', async t => {
+it('PersonaServer _npsGetPersonaMapsByCustomerId()', async function () {
   const personaServer = new PersonaServer(fakeLogger)
 
   const personas1 = await personaServer._npsGetPersonaMapsByCustomerId(
     2868969472
   )
 
-  t.equals(personas1.length, 1)
-  t.match(personas1[0].name.toString('utf8'), 'Doc Joe')
+  expect(personas1.length).equals(1)
+  expect(personas1[0].name.toString('utf8')).contains('Doc Joe')
 
   const personas2 = await personaServer._npsGetPersonaMapsByCustomerId(4)
 
-  t.equals(personas2.length, 0)
+  expect(personas2.length).equals(0)
 
-  t.done()
 })

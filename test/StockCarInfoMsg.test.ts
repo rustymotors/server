@@ -5,12 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { StockCarInfoMsg } from './StockCarInfoMsg'
-import tap from 'tap'
+import { StockCarInfoMsg } from '../src/services/MCServer/MCOTS/StockCarInfoMsg'
+import { expect } from 'chai'
+
+/* eslint-env mocha */
 
 const stockCarInfoMsg1 = new StockCarInfoMsg(1, 0, 0)
 
-tap.test('StockCarInfoMsg', t => {
+it('StockCarInfoMsg', function () {
   const {
     msgNo,
     starterCash,
@@ -20,18 +22,17 @@ tap.test('StockCarInfoMsg', t => {
     moreToCome,
     StockCarList
   } = stockCarInfoMsg1
-  t.equal(msgNo, 141)
+  expect(msgNo).equals(141)
 
-  t.equal(starterCash, 1)
+  expect(starterCash).equals(1)
 
-  t.equal(dealerId, 0)
+  expect(dealerId).equals(0)
 
-  t.equal(brand, 0)
+  expect(brand).equals(0)
 
-  t.equal(noCars, 1)
+  expect(noCars).equals(1)
 
-  t.equal(moreToCome, 0)
+  expect(moreToCome).equals(0)
 
-  t.deepEqual(StockCarList, [])
-  t.done()
+  expect(StockCarList).to.deep.equal([])
 })

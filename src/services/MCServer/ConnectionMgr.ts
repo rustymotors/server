@@ -51,7 +51,7 @@ export class ConnectionMgr {
    * Check incoming data and route it to the correct handler based on localPort
    */
   async processData (rawPacket: IRawPacket): Promise<ConnectionObj> {
-    const npsPacketManager = new NPSPacketManager(this.databaseMgr)
+    const npsPacketManager = new NPSPacketManager(this.databaseMgr, this.logger)
 
     const { remoteAddress, localPort, data } = rawPacket
 
