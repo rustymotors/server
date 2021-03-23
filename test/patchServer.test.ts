@@ -70,7 +70,7 @@ it('PatchServer - NPS', () => {
     })
 })
 
-it('PatchServer - MCO', function (done) {
+it('PatchServer - MCO', (done) => {
   const patchServer = new PatchServer(fakeLogger)
   request(patchServer.serverPatch)
     .get('/games/EA_Seattle/MotorCity/MCO')
