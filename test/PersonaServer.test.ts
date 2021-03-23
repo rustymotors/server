@@ -69,10 +69,10 @@ it('PersonaServer _npsValidatePersonaName()', async () => {
   expect(results.direction).equals(MESSAGE_DIRECTION.SENT)
 })
 
-it('PersonaServer _send()', async () => {
+it('PersonaServer _send()', () => {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg(MESSAGE_DIRECTION.SENT)
-  await personaServer._send(fakeSocket, data)
+  expect(() => { personaServer._send(fakeSocket, data) }).to.not.throw
 })
 
 it('PersonaServer _npsGetPersonaMapsByCustomerId()', async () => {
