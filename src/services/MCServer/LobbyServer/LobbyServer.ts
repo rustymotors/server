@@ -14,7 +14,6 @@ import { IRawPacket } from '../../../types'
 import { MESSAGE_DIRECTION } from '../MCOTS/MessageNode'
 import debug from 'debug'
 import { logger as Logger } from '../../../shared/logger'
-import { VError } from 'verror'
 
 const logger = Logger.child({
   service: 'mcoserver:LobbyServer'
@@ -41,7 +40,7 @@ async function npsSocketWriteIfOpen (conn: ConnectionObj, buffer: Buffer) {
     // Write the packet to socket
     sock.write(buffer)
   } else {
-    throw new VError(
+    throw new Error(
       `[Lobby] Error writing ${buffer.toString('hex')} to ${sock.remoteAddress
       } , ${sock}`
     )
@@ -190,7 +189,7 @@ export class LobbyServer {
         const { encryptedCmd } = updatedConnection
 
         if (encryptedCmd == null) {
-          throw new VError(
+          throw new Error(
             `Error with encrypted command, dumping connection: ${JSON.stringify({ updatedConnection })}`
           )
         }
@@ -202,7 +201,7 @@ export class LobbyServer {
         break
       }
       default:
-        throw new VError(
+        throw new Error(
           `[Lobby] Unknown code ${requestCode} was received on port 7003`
         )
     }
@@ -243,7 +242,7 @@ export class LobbyServer {
 
     const personas = personaManager._getPersonasById(userInfo.userId)
     if (personas.length === 0) {
-      throw new VError('No personas found.')
+      throw new Error('No personas found.')
     }
     const customerId = personas[0].customerId
 
@@ -257,7 +256,10 @@ export class LobbyServer {
       try {
         s.setEncryptionKeyDES(keys.skey)
       } catch (error) {
-        throw new VError(`Unable to set session key: ${JSON.stringify({ keys, error })}`)
+        if (error instanceof Error) {
+          throw new Error(`Unable to set session key: ${JSON.stringify({ keys, error })}`)
+        }
+        throw new Error(`Unable to set session key: ${JSON.stringify({ keys, error: 'unknown' })}`)
       }
     }
 

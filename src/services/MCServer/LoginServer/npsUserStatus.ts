@@ -12,7 +12,6 @@ import { NPSMsg } from '../MCOTS/NPSMsg'
 import { MESSAGE_DIRECTION } from '../MCOTS/MessageNode'
 import { IServerConfig } from '../../../types'
 import debug from 'debug'
-import { VError } from 'verror'
 
 /**
  * Load the RSA private key
@@ -24,7 +23,10 @@ export function fetchPrivateKeyFromFile (privateKeyPath: string): string {
   try {
     fs.statSync(privateKeyPath)
   } catch (e) {
-    throw new VError(`[npsUserStatus] Error loading private key: ${e}`)
+    if (e instanceof Error) {
+      throw new Error(`[npsUserStatus] Error loading private key: ${e.message}`)
+    }
+    throw new Error(`[npsUserStatus] Error loading private key, error unknown`)
   }
   return fs.readFileSync(privateKeyPath).toString()
 }

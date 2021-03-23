@@ -15,7 +15,6 @@ import { IServerConfig, ISslOptions } from '../../types'
 import { IncomingMessage, ServerResponse } from 'http'
 import { Socket } from 'net'
 import debug from 'debug'
-import { VError } from 'verror'
 
 const readFilePromise = util.promisify(fs.readFile)
 
@@ -61,7 +60,7 @@ export class AdminServer {
     try {
       cert = await readFilePromise(configuration.certFilename, { encoding: 'utf-8' })
     } catch (error) {
-      throw new VError(
+      throw new Error(
         `Error loading ${configuration.certFilename}, server must quit!`
       )
     }
@@ -69,7 +68,7 @@ export class AdminServer {
     try {
       key = await readFilePromise(configuration.privateKeyFilename, { encoding: 'utf-8' })
     } catch (error) {
-      throw new VError(
+      throw new Error(
         `Error loading ${configuration.privateKeyFilename}, server must quit!`
       )
     }
@@ -182,7 +181,7 @@ export class AdminServer {
    */
   _socketEventHandler (socket: Socket): void {
     socket.on('error', error => {
-      throw new VError(`[AdminServer] SSL Socket Error: ${error.message}`)
+      throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`)
     })
   }
 
@@ -202,7 +201,7 @@ export class AdminServer {
         }
       )
     } catch (err) {
-      throw new VError(`${err.message}, ${err.stack}`)
+      throw new Error(`${err.message}, ${err.stack}`)
     }
     this.httpsServer.listen({ port: 88, host: '0.0.0.0' }, () => {
       debug('mcoserver:AdminServer')('port 88 listening')

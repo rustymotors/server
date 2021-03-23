@@ -6,7 +6,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import crypto, { Cipher, Decipher } from 'crypto'
-import { VError } from 'verror'
 
 /**
  * Handles the management of the encryption and decryption
@@ -60,7 +59,7 @@ export class EncryptionManager {
    */
   decrypt (encryptedText: Buffer): Buffer {
     if (this.in === null) {
-      throw new VError('No encryption manager found!')
+      throw new Error('No encryption manager found!')
     }
     return Buffer.from(this.in.update(encryptedText))
   }
@@ -74,7 +73,7 @@ export class EncryptionManager {
    */
   encrypt (plainText: Buffer): Buffer {
     if (this.out === null) {
-      throw new VError('No decryption manager found!')
+      throw new Error('No decryption manager found!')
     }
     return Buffer.from(
       this.out.update(plainText.toString(), 'binary', 'hex'),

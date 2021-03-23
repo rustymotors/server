@@ -7,7 +7,6 @@
 
 import debug from 'debug'
 import net from 'net'
-import { VError } from 'verror'
 import { Logger } from 'winston'
 import { IAppSettings, IRawPacket } from '../../types'
 import { ConnectionMgr } from './ConnectionMgr'
@@ -66,11 +65,14 @@ export class ListenerThread {
       try {
         newConnection = await connection.mgr.processData(rawPacket)
       } catch (error) {
-        throw new VError(`Error in listenerThread::onData 1: ${error}`)
+        if (error instanceof Error) {
+          throw new Error(`Error in listenerThread::onData 1: ${error}`)
+        }
+        throw new Error(`Error in listenerThread::onData 1, error unknown`)
       }
       if (!connection.remoteAddress) {
         debug(connection.toString())
-        throw new VError('Remote address is empty')
+        throw new Error('Remote address is empty')
       }
       try {
         await connection.mgr._updateConnectionByAddressAndPort(
@@ -79,10 +81,16 @@ export class ListenerThread {
           newConnection
         )
       } catch (error) {
-        throw new VError(`Error in listenerThread::onData 2: ${error}`)
+        if (error instanceof Error) {
+          throw new Error(`Error in listenerThread::onData 2: ${error.message}`)
+        }
+        throw new Error(`Error in listenerThread::onData 2, error unknown`)
       }
     } catch (error) {
-      throw new VError(`Error in listenerThread::onData 3: ${error}`)
+      if (error instanceof Error) {
+        throw new Error(`Error in listenerThread::onData 3: ${error.message}`)
+      }
+      throw new Error(`Error in listenerThread::onData 3, error unknown`)
     }
   }
 

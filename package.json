@@ -13,7 +13,7 @@
     "test": "npm run lint-test",
     "doc": "jsdoc -R README.md -P package.json -r src",
     "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
-    "lint-test": "ts-standard --fix src/**/*.ts && tsc && nyc mocha --extension ts --require ts-node/register --require source-map-support/register",
+    "lint-test": "ts-standard --fix src/**/*.ts && tsc && nyc mocha --extension ts --extension js --require ts-node/register --require source-map-support/register",
     "precommit": "npm run lint-test"
   },
   "author": "Joe Becher <jwbecher@drazisil.com> (drazisil.com)",
@@ -33,9 +33,7 @@
     "pg": "8.5.1",
     "pg-migrator": "1.1.0",
     "postgres-migrations": "5.1.1",
-    "supports-color": "8.1.0",
     "typescript": "4.2.3",
-    "verror": "1.10.0",
     "winston": "3.3.3",
     "winston-daily-rotate-file": "4.5.1"
   },
@@ -73,7 +71,10 @@
     ],
     "exclude": [
       "out/*",
-      "coverage/*"
+      "coverage/*",
+      "test/*",
+      "dist/*",
+      "*/**/*.test.{ts,js}"
     ]
   }
 }
