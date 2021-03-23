@@ -95,30 +95,12 @@ it('PatchServer - Default', () => {
       expect(patchServer._getBans()).deep.equals([])
       expect(response.status).equals(404)
     })
-  patchServer._addBan('1.1.1.1')
+  patchServer._addBan('255.255.255.255')
   expect(
     patchServer._getBans()).deep.equals(
-    ['1.1.1.1'])
+      ['255.255.255.255'])
   patchServer._clearBans()
   expect(
     patchServer._getBans()).deep.equals(
     [])
 })
-
-// it.skip('PatchServer - Start/Stop', async () => {
-//   const patchServer = new PatchServer(fakeLogger)
-
-//   const start = await patchServer.start()
-
-//   start.on('listening', () => {
-//     expect(true).is.true
-
-//     expect(
-//       patchServer.serverPatch.close(r => {
-//         t.deepEquals(r, null, 'server is stopped')
-//         t.done()
-//       }),
-//       'can stop'
-//     )
-//   })
-// })
