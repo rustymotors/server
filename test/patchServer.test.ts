@@ -15,17 +15,17 @@ import { expect } from 'chai'
 it('PatchServer', () => {
   const patchServer = new PatchServer(fakeLogger)
 
-  expect(CastanetResponse.body.toString('hex')).to.equal('cafebeef00000000000003')
+  expect(CastanetResponse.body.toString('hex')).to.deep.equal('cafebeef00000000000003')
   expect(
-    patchServer._patchUpdateInfo().body.toString('hex')).to.equal(
+    patchServer._patchUpdateInfo().body.toString('hex')).deep.equals(
     'cafebeef00000000000003'
   )
   expect(
-    patchServer._patchNPS().body.toString('hex')).equals(
+    patchServer._patchNPS().body.toString('hex')).deep.equals(
     'cafebeef00000000000003'
   )
   expect(
-    patchServer._patchMCO().body.toString('hex')).equals(
+    patchServer._patchMCO().body.toString('hex')).deep.equals(
     'cafebeef00000000000003'
   )
   expect(patchServer._generateShardList()).contains('The Clocktower')
@@ -51,7 +51,7 @@ it('PatchServer - UpdateInfo', () => {
   request(patchServer.serverPatch)
     .get('/games/EA_Seattle/MotorCity/UpdateInfo')
     .then(response => {
-      expect(response.body).equals(CastanetResponse.body)
+      expect(response.body).deep.equals(CastanetResponse.body)
     })
     .catch(e => {
       console.error(e)
@@ -63,7 +63,7 @@ it('PatchServer - NPS', () => {
   request(patchServer.serverPatch)
     .get('/games/EA_Seattle/MotorCity/NPS')
     .then(response => {
-      expect(response.body).equals(CastanetResponse.body)
+      expect(response.body).deep.equals(CastanetResponse.body)
     })
     .catch(e => {
       console.error(e)
