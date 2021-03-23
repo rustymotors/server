@@ -12,7 +12,7 @@ import { GenericRequestMsg } from '../src/services/MCServer/GenericRequestMsg'
 
 const genericRequestMsg1 = new GenericRequestMsg()
 
-it('GenericRequestMsg', function () {
+it('GenericRequestMsg', () => {
   const { msgNo } = genericRequestMsg1
   expect(msgNo).equals(0)
   expect(genericRequestMsg1.serialize()).to.deep.equal(Buffer.alloc(16))

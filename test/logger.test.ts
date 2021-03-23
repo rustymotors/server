@@ -10,6 +10,6 @@ import { expect } from 'chai'
 
 /* eslint-env mocha */
 
-it('Logger', function () {
+it('Logger', () => {
   expect(typeof logger).to.equal('object')
 })

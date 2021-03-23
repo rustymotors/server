@@ -38,7 +38,7 @@ messageNode1.deserialize(
   ])
 )
 
-it('MessageNode', function () {
+it('MessageNode', () => {
   expect(() => {
     new MessageNode(MESSAGE_DIRECTION.RECIEVED).deserialize(Buffer.from([0x00, 0x00]))
   }).throws('[MessageNode] Not long enough to deserialize, only 2 bytes long')

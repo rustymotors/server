@@ -10,7 +10,7 @@ import { LobbyServer } from '../src/services/MCServer/LobbyServer/LobbyServer'
 
 /* eslint-env mocha */
 
-it('LobbyServer', function () {
+it('LobbyServer', () => {
   const lobbyServer = new LobbyServer()
   expect(lobbyServer._generateSessionKeyBuffer('123').length).equals(64)
 

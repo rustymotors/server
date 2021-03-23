@@ -12,7 +12,7 @@ import { expect } from 'chai'
 
 const stockCarInfoMsg1 = new StockCarInfoMsg(1, 0, 0)
 
-it('StockCarInfoMsg', function () {
+it('StockCarInfoMsg', () => {
   const {
     msgNo,
     starterCash,

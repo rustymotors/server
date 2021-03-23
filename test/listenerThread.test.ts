@@ -11,7 +11,7 @@ import { expect } from 'chai'
 
 /* eslint-env mocha */
 
-it('ListenerThread', async function () {
+it('ListenerThread', async () => {
   const listenerThread = new ListenerThread(fakeConfig, fakeLogger.child({ service: 'mcoserver:TestListenerThread' }))
 
   const server = await listenerThread.startTCPListener(3000, fakeConnectionMgr)
@@ -20,7 +20,7 @@ it('ListenerThread', async function () {
   server.close()
 })
 
-it('ListenerThread - _onData', async function () {
+it('ListenerThread - _onData', async () => {
   const listenerThread = new ListenerThread(fakeConfig, fakeLogger.child({ service: 'mcoserver:TestListenerThread' }))
 
   const fakeConnection1 = new FakeConnectionConstructor('test_connction_1', fakeSocket, fakeConnectionMgr)

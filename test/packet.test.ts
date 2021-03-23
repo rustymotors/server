@@ -10,7 +10,7 @@ import { expect } from 'chai'
 
 /* eslint-env mocha */
 
-it('LoginServer - Packet', function () {
+it('LoginServer - Packet', () => {
   const packet = premadeLogin()
   expect(Buffer.isBuffer(packet)).is.true
 })

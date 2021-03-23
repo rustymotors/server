@@ -11,8 +11,8 @@ import { expect } from 'chai'
 
 /* eslint-env mocha */
 
-describe('NPSPacketManager', function () {
-  it('NPSPacketManger', async function () {
+describe('NPSPacketManager', () => {
+  it('NPSPacketManger', async () => {
     const npsPacketManager = new NPSPacketManager(fakeDatabaseManager, fakeLogger)
     expect(npsPacketManager.msgCodetoName(0x229)).to.equal('NPS_MINI_USER_LIST')
   })

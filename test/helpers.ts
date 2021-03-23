@@ -25,7 +25,7 @@ export const fakeConfig = {
 
 export const fakeLogger = td.object(logger)
 exports.fakeLogger = fakeLogger
-exports.fakeLogger.child = function () {
+exports.fakeLogger.child = () => {
   return exports.fakeLogger
 }
 

@@ -12,7 +12,7 @@ import { expect } from 'chai'
 
 /* eslint-env mocha */
 
-it('PatchServer', function () {
+it('PatchServer', () => {
   const patchServer = new PatchServer(fakeLogger)
 
   expect(CastanetResponse.body.toString('hex')).to.equal('cafebeef00000000000003')
@@ -32,7 +32,7 @@ it('PatchServer', function () {
   expect(patchServer._getBans()).deep.equals([])
 })
 
-it('PatchServer - Shardlist', function () {
+it('PatchServer - Shardlist', () => {
   const patchServer = new PatchServer(fakeLogger)
   request(patchServer.serverPatch)
     .get('/ShardList/')
@@ -46,7 +46,7 @@ it('PatchServer - Shardlist', function () {
     )
 })
 
-it('PatchServer - UpdateInfo', function () {
+it('PatchServer - UpdateInfo', () => {
   const patchServer = new PatchServer(fakeLogger)
   request(patchServer.serverPatch)
     .get('/games/EA_Seattle/MotorCity/UpdateInfo')
@@ -58,7 +58,7 @@ it('PatchServer - UpdateInfo', function () {
     })
 })
 
-it('PatchServer - NPS', function () {
+it('PatchServer - NPS', () => {
   const patchServer = new PatchServer(fakeLogger)
   request(patchServer.serverPatch)
     .get('/games/EA_Seattle/MotorCity/NPS')
@@ -83,7 +83,7 @@ it('PatchServer - MCO', function (done) {
     })
 })
 
-it('PatchServer - Default', function () {
+it('PatchServer - Default', () => {
   const patchServer = new PatchServer(fakeLogger)
 
   expect(patchServer._getBans()).deep.equals([])
@@ -105,7 +105,7 @@ it('PatchServer - Default', function () {
     [])
 })
 
-// it.skip('PatchServer - Start/Stop', async function () {
+// it.skip('PatchServer - Start/Stop', async () => {
 //   const patchServer = new PatchServer(fakeLogger)
 
 //   const start = await patchServer.start()

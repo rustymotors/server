@@ -15,7 +15,7 @@ inboundBuffer.write('NotAPerson', 24)
 inboundBuffer.write('0.0.0.0', 34)
 const loginMsg1 = new LoginMsg(inboundBuffer)
 
-it('LoginMsg', function () {
+it('LoginMsg', () => {
   const {
     appId,
     toFrom,

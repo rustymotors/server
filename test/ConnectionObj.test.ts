@@ -19,7 +19,7 @@ fakeLogger.expects('child').withArgs().atLeast(1)
 
 const fakeConnectionManager = sinon.createStubInstance(ConnectionMgr)
 
-it('ConnectionObj', function () {
+it('ConnectionObj', () => {
   const testConnection = new ConnectionObj(
     'abc',
     new Socket(),
@@ -32,7 +32,7 @@ it('ConnectionObj', function () {
   expect(testConnection.isSetupComplete).is.true
 })
 
-it('ConnectionObj cross-comms', function () {
+it('ConnectionObj cross-comms', () => {
   /** @type {ConnectionObj} */
   let testConn1: ConnectionObj
   /** @type {ConnectionObj} */
@@ -103,11 +103,11 @@ it('ConnectionObj cross-comms', function () {
     0x45
   ])
 
-  it('Connection one is not the same id as connection two', function () {
+  it('Connection one is not the same id as connection two', () => {
     expect(testConn1.enc.getId()).is.not.equal(testConn2.enc.getId())
   })
 
-  it('Connection Two can decipher Connection One', function () {
+  it('Connection Two can decipher Connection One', () => {
     expect(testConn1.enc).is.not.null
     const encipheredBuffer = testConn1.enc.encrypt(plainText1)
     expect(encipheredBuffer).to.deep.equal(cipherText1)

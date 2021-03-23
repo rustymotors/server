@@ -12,7 +12,7 @@ import { GenericReplyMsg } from '../src/services/MCServer/GenericReplyMsg'
 
 const genericReplyMsg1 = new GenericReplyMsg()
 
-it('GenericReplyMsg', function () {
+it('GenericReplyMsg', () => {
   const { msgNo, toFrom } = genericReplyMsg1
   expect(msgNo).equals(0)
   expect(toFrom).equals(0)

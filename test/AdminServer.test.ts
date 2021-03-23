@@ -14,8 +14,8 @@ import { fakeConfig, fakeMCServer } from './helpers'
 
 const adminServer = new AdminServer(fakeMCServer)
 
-describe('AdminServer', async function () {
-  it('_sslOptions()', async function () {
+describe('AdminServer', async () => {
+  it('_sslOptions()', async () => {
     //  deepcode ignore WrongNumberOfArgs/test: false positive
     mock({
       '/cert/': {}

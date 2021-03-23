@@ -11,7 +11,7 @@ import { expect } from 'chai'
 
 /* eslint-env mocha */
 
-it('NPSPersonaMapsMsg', function () {
+it('NPSPersonaMapsMsg', () => {
   const npsPersonaMapsMsg = new NPSPersonaMapsMsg(MESSAGE_DIRECTION.RECIEVED)
   expect(npsPersonaMapsMsg.direction).equals(MESSAGE_DIRECTION.RECIEVED)
   expect(npsPersonaMapsMsg.msgNo).equals( 0x607)

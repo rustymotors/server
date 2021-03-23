@@ -13,7 +13,7 @@ import { fakeDatabaseManager } from './helpers'
 
 const loginServer = new LoginServer(fakeDatabaseManager)
 
-it('LoginServer', async function () {
+it('LoginServer', async () => {
   const { customerId, userId } = await loginServer._npsGetCustomerIdByContextId(
     'd316cd2dd6bf870893dfbaaf17f965884e'
   )
@@ -21,7 +21,7 @@ it('LoginServer', async function () {
   expect(userId.readUInt32BE(0).toString()).equals('1')
 })
 
-it('LoginServer', async function () {
+it('LoginServer', async () => {
   const { customerId, userId } = await loginServer._npsGetCustomerIdByContextId(
     '5213dee3a6bcdb133373b2d4f3b9962758'
   )

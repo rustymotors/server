@@ -13,10 +13,10 @@ import { expect } from 'chai'
 
 /* eslint-env mocha */
 
-describe('WebServer', function () {
+describe('WebServer', () => {
   const webServer = new AuthLogin(fakeConfig)
 
-  it('_sslOptions()', async function () {
+  it('_sslOptions()', async () => {
     const config: IServerConfig = {
       certFilename: '/cert/cert.pem',
       privateKeyFilename: '/cert/private.key',

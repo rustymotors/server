@@ -10,7 +10,7 @@ import { ClientConnectMsg } from '../src/services/MCServer/ClientConnectMsg'
 
 /* eslint-env mocha */
 
-it('ClientConnectMsg', function () {
+it('ClientConnectMsg', () => {
   const clientConnectMsg1 = new ClientConnectMsg(
     Buffer.concat([
       Buffer.from([0xb6, 0x01]),

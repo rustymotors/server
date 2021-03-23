@@ -13,7 +13,7 @@ import { fakeLogger } from './helpers'
 
 const mcotServer = new MCOTServer(fakeLogger)
 
-it('MCOTS Server', function () {
+it('MCOTS Server', () => {
   expect(mcotServer._MSG_STRING(438)).equals('MC_CLIENT_CONNECT_MSG')
 
   expect(mcotServer._MSG_STRING(105)).equals('MC_LOGIN')

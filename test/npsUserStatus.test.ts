@@ -10,7 +10,7 @@ import { expect } from 'chai'
 
 /* eslint-env mocha */
 
-it('NPSUserStatus', function () {
+it('NPSUserStatus', () => {
   const testPacket = Buffer.from([0x7b, 0x00])
   const npsUserStatus = new NPSUserStatus(testPacket)
   expect(npsUserStatus.opCode).equals(123)

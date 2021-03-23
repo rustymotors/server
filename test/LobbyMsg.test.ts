@@ -14,10 +14,10 @@ import { LobbyMsg } from '../src/services/MCServer/MCOTS/LobbyMsg'
 const lobbyInfo1 = new LobbyInfoPacket()
 const lobbyMsg1 = new LobbyMsg()
 
-it('LobbyInfo', function () {
+it('LobbyInfo', () => {
   expect(lobbyInfo1.toPacket().length).equals(567)
 })
 
-it('LobbyMsg', function () {
+it('LobbyMsg', () => {
   expect(lobbyMsg1.data.length).equals(572)
 })

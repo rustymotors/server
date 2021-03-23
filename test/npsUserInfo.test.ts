@@ -11,7 +11,7 @@ import { expect } from 'chai'
 
 /* eslint-env mocha */
 
-it('NPSUserInfo', function () {
+it('NPSUserInfo', () => {
   const testPacket = Buffer.concat([
     Buffer.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x84, 0x5f, 0xed]),
     Buffer.alloc(98)

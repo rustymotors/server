@@ -13,7 +13,7 @@ import { expect } from 'chai'
 
 /* eslint-env mocha */
 
-it('PersonaServer Methods', async function () {
+it('PersonaServer Methods', async () => {
   const personaServer = new PersonaServer(fakeLogger)
   const results = await personaServer._getPersonasByCustomerId(5551212)
   expect(results.length).equals(2)
@@ -34,48 +34,48 @@ it('PersonaServer Methods', async function () {
 
 })
 
-it('PersonaServer _npsSelectGamePersona()', async function () {
+it('PersonaServer _npsSelectGamePersona()', async () => {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg(MESSAGE_DIRECTION.SENT).serialize()
   const results = await personaServer._npsSelectGamePersona(data)
   expect(results.direction).equals(MESSAGE_DIRECTION.SENT)
 })
 
-it('PersonaServer _npsNewGameAccount()', async function () {
+it('PersonaServer _npsNewGameAccount()', async () => {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg(MESSAGE_DIRECTION.SENT).serialize()
   const results = await personaServer._npsNewGameAccount(data)
   expect(results.direction).equals(MESSAGE_DIRECTION.SENT)
 })
 
-it('PersonaServer _npsLogoutGameUser()', async function () {
+it('PersonaServer _npsLogoutGameUser()', async () => {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg(MESSAGE_DIRECTION.SENT).serialize()
   const results = await personaServer._npsLogoutGameUser(data)
   expect(results.direction).equals(MESSAGE_DIRECTION.SENT)
 })
 
-it('PersonaServer _npsCheckToken()', async function () {
+it('PersonaServer _npsCheckToken()', async () => {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg(MESSAGE_DIRECTION.SENT).serialize()
   const results = await personaServer._npsCheckToken(data)
   expect(results.direction).equals(MESSAGE_DIRECTION.SENT)
 })
 
-it('PersonaServer _npsValidatePersonaName()', async function () {
+it('PersonaServer _npsValidatePersonaName()', async () => {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg(MESSAGE_DIRECTION.SENT).serialize()
   const results = await personaServer._npsValidatePersonaName(data)
   expect(results.direction).equals(MESSAGE_DIRECTION.SENT)
 })
 
-it('PersonaServer _send()', async function () {
+it('PersonaServer _send()', async () => {
   const personaServer = new PersonaServer(fakeLogger)
   const data = new NPSMsg(MESSAGE_DIRECTION.SENT)
   await personaServer._send(fakeSocket, data)
 })
 
-it('PersonaServer _npsGetPersonaMapsByCustomerId()', async function () {
+it('PersonaServer _npsGetPersonaMapsByCustomerId()', async () => {
   const personaServer = new PersonaServer(fakeLogger)
 
   const personas1 = await personaServer._npsGetPersonaMapsByCustomerId(

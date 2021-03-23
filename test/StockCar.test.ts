@@ -12,7 +12,7 @@ import { expect } from 'chai'
 
 const stockCar1 = new StockCar(105, 20, 0)
 
-it('StockCar', function () {
+it('StockCar', () => {
   const { brandedPartId, retailPrice, bIsDealOfTheDay } = stockCar1
   expect(brandedPartId).equals(105)
 
