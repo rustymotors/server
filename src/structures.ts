@@ -212,7 +212,7 @@ export class MessageNode {
   private readonly _seq: Buffer = Buffer.alloc(4) // UInt4
   private readonly _flags: Buffer = Buffer.alloc(4) // UInt4
   private _buffer: Buffer // [1] Char
-  _rawBuffer: Buffer = Buffer.alloc(0)
+  private _rawBuffer: Buffer
 
   constructor (buffer: Buffer) {
     this._rawBuffer = buffer
@@ -257,6 +257,10 @@ export class MessageNode {
 
   get buffer (): Buffer {
     return this._buffer
+  }
+
+  get rawBuffer(): Buffer {
+    return this._rawBuffer
   }
 
   set buffer (value: Buffer) {
