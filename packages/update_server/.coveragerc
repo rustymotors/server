@@ -1,0 +1,15 @@
+[run]
+source =
+    update_server
+    tests
+branch = True
+omit =
+    update_server/cli.py
+
+[report]
+exclude_lines =
+    no cov
+    no qa
+    noqa
+    pragma: no cover
+    if __name__ == .__main__.:
