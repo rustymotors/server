@@ -5,14 +5,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { GenericRequestMsg } from './GenericRequestMsg'
-import tap from 'tap'
+import { expect } from 'chai'
+import { GenericRequestMsg } from '../src/services/MCServer/GenericRequestMsg'
+
+/* eslint-env mocha */
 
 const genericRequestMsg1 = new GenericRequestMsg()
 
-tap.test('GenericRequestMsg', t => {
+it('GenericRequestMsg', () => {
   const { msgNo } = genericRequestMsg1
-  t.equal(msgNo, 0)
-  t.deepEqual(genericRequestMsg1.serialize(), Buffer.alloc(16))
-  t.done()
+  expect(msgNo).equals(0)
+  expect(genericRequestMsg1.serialize()).to.deep.equal(Buffer.alloc(16))
 })

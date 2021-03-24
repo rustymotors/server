@@ -10,7 +10,6 @@ import { Logger } from 'winston'
 import { pool } from './db/index'
 import { migrate } from 'postgres-migrations'
 import { ISessionRecord } from '../types'
-import { VError } from 'verror'
 
 /**
  * Database connection abstraction
@@ -27,7 +26,7 @@ export async function doMigrations (logger: Logger): Promise<void> {
   try {
     await client.connect()
   } catch (error) {
-    logger.error(`Error connecting to database, exiting: ${error}`)
+    logger.error('Error connecting to database, exiting: ', error)
     process.exit(-1)
   }
   try {
@@ -68,8 +67,8 @@ export class DatabaseManager {
       /** @type {SessionRecord} */
       return rows[0]
     } catch (e) {
-      this.logger.warn(`Unable to update session key ${e}`)
-      throw new VError(e)
+      this.logger.warn('Unable to update session key ', e)
+      throw new Error(e)
     }
   }
 
@@ -89,7 +88,7 @@ export class DatabaseManager {
       /** @type {Session_Record} */
       return rows[0]
     } catch (e) {
-      this.logger.error(`Unable to update session key ${e}`)
+      this.logger.error('Unable to update session key ', e)
       process.exit(-1)
     }
   }
@@ -113,7 +112,10 @@ export class DatabaseManager {
       const results: ISessionRecord = rows[0]
       return results
     } catch (e) {
-      throw new VError(`Unable to update session key: ${e}`)
+      if (e instanceof Error) {
+        throw new Error(`Unable to update session key: ${e.message}`)
+      }
+      throw new Error('Unable to update session key, error unknown')
     }
   }
 }

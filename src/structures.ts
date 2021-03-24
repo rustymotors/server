@@ -174,6 +174,28 @@ export const NPS_GetPersonaMapListReq = {
   customerId_: Buffer.alloc(4) // Uint4B
 }
 
+export class MsgHead {
+  // This is a 4B in the debug binary, the client is sending 2B
+  private _length: Buffer = Buffer.alloc(2) // UInt4B
+  private _mcosig: Buffer = Buffer.alloc(4) // UInt4B
+
+  get length (): number {
+    return this._length.readInt16BE()
+  }
+
+  set length (value: number) {
+    this._length.writeInt16BE(value)
+  }
+
+  get mcosig (): Buffer {
+    return this._mcosig
+  }
+
+  set mcosig (value: Buffer) {
+    this._mcosig = value
+  }
+}
+
 export const BaseMsgHeader = {
   msgNo: Buffer.alloc(4) // Uint4B
 }
@@ -183,13 +205,74 @@ export const CompressedHeader = {
   data: Buffer.alloc(0) // [0] Uint4B
 }
 
-export const MessageNode = {
-  toFrom: Buffer.alloc(4), // UInt4B
-  appID: Buffer.alloc(4), // UInt4B
-  header: Buffer.alloc(8), // msgHead
-  seq: Buffer.alloc(4), // UInt4B
-  flags: Buffer.alloc(4), // UInt4B
-  buffer: Buffer.alloc(1) // [1] Char
+export class MessageNode {
+  private readonly _toFrom: Buffer = Buffer.alloc(4) // UInt4
+  private readonly _appID: Buffer = Buffer.alloc(4) // UInt4
+  private readonly _header: MsgHead = new MsgHead() // UInt4
+  private readonly _seq: Buffer = Buffer.alloc(4) // UInt4
+  private readonly _flags: Buffer = Buffer.alloc(4) // UInt4
+  private _buffer: Buffer // [1] Char
+  private _rawBuffer: Buffer
+
+  constructor (buffer: Buffer) {
+    this._rawBuffer = buffer
+    this._buffer = buffer.slice(16)
+  }
+
+  get toFrom (): number {
+    return this._toFrom.readInt32BE()
+  }
+
+  set toFrom (value: number) {
+    this._toFrom.writeInt32BE(value)
+  }
+
+  get appId (): number {
+    return this._appID.readInt32BE()
+  }
+
+  set appId (value: number) {
+    this._appID.writeInt32BE(value)
+  }
+
+  get header (): MsgHead {
+    return this._header
+  }
+
+  get seq (): number {
+    return this._seq.readInt32BE()
+  }
+
+  set seq (value: number) {
+    this._seq.writeInt32BE(value)
+  }
+
+  get flags (): number {
+    return this._flags.readInt32BE()
+  }
+
+  set flags (value: number) {
+    this._flags.writeInt32BE(value)
+  }
+
+  get buffer (): Buffer {
+    return this._buffer
+  }
+
+  get rawBuffer(): Buffer {
+    return this._rawBuffer
+  }
+
+  set buffer (value: Buffer) {
+    this._buffer = value
+  }
+
+  static fromBuffer (buffer: Buffer): MessageNode {
+    const newNode = new MessageNode(buffer)
+    newNode.header.length = 24 + buffer.byteLength
+    newNode.header.mcosig = buffer.slice(2, 6)
+    return newNode
+  }
 }
 
 /**

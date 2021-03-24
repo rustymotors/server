@@ -7,7 +7,6 @@
 
 import crypto, { Cipher, Decipher } from 'crypto'
 import { Socket } from 'net'
-import { VError } from 'verror'
 import { ConnectionMgr } from './ConnectionMgr'
 import { EncryptionManager } from './EncryptionMgr'
 
@@ -112,7 +111,7 @@ export class ConnectionObj {
       )
       this.encLobby.cipher.setAutoPadding(false)
     } catch (error) {
-      throw new VError(`Error setting cipher: ${error}`)
+      throw new Error(`Error setting cipher: ${error}`)
     }
 
     try {
@@ -123,7 +122,7 @@ export class ConnectionObj {
       )
       this.encLobby.decipher.setAutoPadding(false)
     } catch (error) {
-      throw new VError(`Error setting decipher: ${error}`)
+      throw new Error(`Error setting decipher: ${error}`)
     }
 
     this.isSetupComplete = true
@@ -139,7 +138,7 @@ export class ConnectionObj {
     if (this.encLobby.cipher) {
       return this.encLobby.cipher.update(messageBuffer)
     }
-    throw new VError('No DES cipher set on connection')
+    throw new Error('No DES cipher set on connection')
   }
 
   /**
@@ -152,6 +151,6 @@ export class ConnectionObj {
     if (this.encLobby.decipher) {
       return this.encLobby.decipher.update(messageBuffer)
     }
-    throw new VError('No DES decipher set on connection')
+    throw new Error('No DES decipher set on connection')
   }
 }

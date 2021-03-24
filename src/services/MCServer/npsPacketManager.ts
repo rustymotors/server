@@ -10,7 +10,6 @@ import { DatabaseManager } from '../../shared/DatabaseManager'
 import { IAppSettings, IRawPacket } from '../../types'
 
 import { appSettings } from '../../../config/app-settings'
-import { logger } from '../../shared/logger'
 import { LoginServer } from './LoginServer/LoginServer'
 import { PersonaServer } from './PersonaServer/PersonaServer'
 import { LobbyServer } from './LobbyServer/LobbyServer'
@@ -37,7 +36,7 @@ export class NPSPacketManager {
    *
    * @param {module:DatabaseManager} databaseMgr
    */
-  constructor (databaseMgr: DatabaseManager) {
+  constructor (databaseMgr: DatabaseManager, logger: Logger) {
     this.logger = logger.child({ service: 'mcoserver:NPSPacketManager' })
     this.config = appSettings
     this.database = databaseMgr

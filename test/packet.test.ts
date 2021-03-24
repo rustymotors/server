@@ -5,12 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { NPSUserStatus } from './npsUserStatus'
-import tap from 'tap'
+import { premadeLogin } from '../src/services/MCServer/LoginServer/packet'
+import { expect } from 'chai'
 
-tap.test('NPSUserStatus', t => {
-  const testPacket = Buffer.from([0x7b, 0x00])
-  const npsUserStatus = new NPSUserStatus(testPacket)
-  t.equal(npsUserStatus.opCode, 123)
-  t.done()
+/* eslint-env mocha */
+
+it('LoginServer - Packet', () => {
+  const packet = premadeLogin()
+  expect(Buffer.isBuffer(packet)).is.true
 })

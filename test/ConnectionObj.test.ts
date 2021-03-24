@@ -5,45 +5,44 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import sinon from 'sinon'
+import { expect } from 'chai'
 import { Socket } from 'net'
-import { logger } from '../../shared/logger'
-import { ConnectionObj, ConnectionStatus } from './ConnectionObj'
-import { ConnectionMgr } from './ConnectionMgr'
-import tap from 'tap'
+import sinon from 'sinon'
+import { ConnectionMgr } from '../src/services/MCServer/ConnectionMgr'
+import { ConnectionObj, ConnectionStatus } from '../src/services/MCServer/ConnectionObj'
+import { logger } from '../src/shared/logger'
+
+/* eslint-env mocha */
 
 const fakeLogger = sinon.mock(logger)
 fakeLogger.expects('child').withArgs().atLeast(1)
 
 const fakeConnectionManager = sinon.createStubInstance(ConnectionMgr)
 
-tap.test('ConnectionObj', t => {
+it('ConnectionObj', () => {
   const testConnection = new ConnectionObj(
     'abc',
     new Socket(),
     fakeConnectionManager
   )
 
-  t.equal(testConnection.status, ConnectionStatus.Inactive)
-  t.notOk(testConnection.isSetupComplete)
+  expect(testConnection.status).equals(ConnectionStatus.Inactive)
+  expect(testConnection.isSetupComplete).is.false
   testConnection.setEncryptionKey(Buffer.from('abc123', 'hex'))
-  t.ok(testConnection.isSetupComplete)
-
-  t.done()
+  expect(testConnection.isSetupComplete).is.true
 })
 
-tap.test('ConnectionObj cross-comms', t => {
+it('ConnectionObj cross-comms', () => {
   /** @type {ConnectionObj} */
   let testConn1: ConnectionObj
   /** @type {ConnectionObj} */
   let testConn2: ConnectionObj
 
-  t.beforeEach((done) => {
+  beforeEach(() => {
     testConn1 = new ConnectionObj('def', new Socket(), fakeConnectionManager)
     testConn2 = new ConnectionObj('ghi', new Socket(), fakeConnectionManager)
     testConn1.setEncryptionKey(Buffer.from('abc123', 'hex'))
     testConn2.setEncryptionKey(Buffer.from('abc123', 'hex'))
-    done()
   })
 
   const plainText1 = Buffer.from(
@@ -104,29 +103,26 @@ tap.test('ConnectionObj cross-comms', t => {
     0x45
   ])
 
-  t.test('Connection one is not the same id as connection two', t1 => {
-    t1.notEqual(testConn1.enc.getId(), testConn2.enc.getId())
-    t1.done()
+  it('Connection one is not the same id as connection two', () => {
+    expect(testConn1.enc.getId()).is.not.equal(testConn2.enc.getId())
   })
 
-  t.test('Connection Two can decipher Connection One', t1 => {
-    t1.ok(testConn1.enc)
+  it('Connection Two can decipher Connection One', () => {
+    expect(testConn1.enc).is.not.null
     const encipheredBuffer = testConn1.enc.encrypt(plainText1)
-    t1.deepEqual(encipheredBuffer, cipherText1)
-    t1.ok(testConn2.enc)
-    t1.deepEqual(testConn1.enc.decrypt(encipheredBuffer), plainText1)
-    t1.deepEqual(testConn2.enc.decrypt(encipheredBuffer), plainText1)
+    expect(encipheredBuffer).to.deep.equal(cipherText1)
+    expect(testConn2.enc).is.not.null
+    expect(testConn1.enc.decrypt(encipheredBuffer)).deep.equals(plainText1)
+    expect(testConn2.enc.decrypt(encipheredBuffer)).deep.equals(plainText1)
 
     // Try again
     const encipheredBuffer2 = testConn1.enc.encrypt(plainText1)
-    t1.deepEqual(testConn1.enc.decrypt(encipheredBuffer2), plainText1)
-    t1.deepEqual(testConn2.enc.decrypt(encipheredBuffer2), plainText1)
+    expect(testConn1.enc.decrypt(encipheredBuffer2)).deep.equals(plainText1)
+    expect(testConn2.enc.decrypt(encipheredBuffer2)).deep.equals(plainText1)
 
     // And again
     const encipheredBuffer3 = testConn1.enc.encrypt(plainText1)
-    t1.deepEqual(testConn1.enc.decrypt(encipheredBuffer3), plainText1)
-    t1.deepEqual(testConn2.enc.decrypt(encipheredBuffer3), plainText1)
-    t1.done()
+    expect(testConn1.enc.decrypt(encipheredBuffer3)).deep.equals(plainText1)
+    expect(testConn2.enc.decrypt(encipheredBuffer3)).deep.equals(plainText1)
   })
-  t.done()
 })

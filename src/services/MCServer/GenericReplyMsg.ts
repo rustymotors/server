@@ -5,7 +5,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { VError } from 'verror'
 import { Logger } from 'winston'
 
 import { logger } from '../../shared/logger'
@@ -71,7 +70,7 @@ export class GenericReplyMsg {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
       } else {
-        throw new VError(
+        throw new error(
           `[GenericReplyMsg] Unable to read msgNo from ${buffer.toString(
             'hex'
           )}: ${error}`

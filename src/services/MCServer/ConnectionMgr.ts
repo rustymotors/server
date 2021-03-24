@@ -14,8 +14,7 @@ import { ConnectionObj } from './ConnectionObj'
 import { defaultHandler } from './MCOTS/TCPManager'
 import { NPSPacketManager } from './npsPacketManager'
 import Debug from 'debug'
-import { VError } from 'verror'
-import { NPS_COMMANDS } from '../../structures'
+import { MessageNode, NPS_COMMANDS } from '../../structures'
 
 const debug = Debug('mcoserver:ConnectionManager')
 
@@ -51,7 +50,7 @@ export class ConnectionMgr {
    * Check incoming data and route it to the correct handler based on localPort
    */
   async processData (rawPacket: IRawPacket): Promise<ConnectionObj> {
-    const npsPacketManager = new NPSPacketManager(this.databaseMgr)
+    const npsPacketManager = new NPSPacketManager(this.databaseMgr, this.logger)
 
     const { remoteAddress, localPort, data } = rawPacket
 
@@ -68,7 +67,7 @@ export class ConnectionMgr {
     switch (localPort) {
       case 8226:
       case 8228:
-      case 7003:
+      case 7003: {
         debug(
           'Recieved NPS packet',
           {
@@ -82,9 +81,10 @@ export class ConnectionMgr {
         try {
           return await npsPacketManager.processNPSPacket(rawPacket)
         } catch (error) {
-          throw new VError(`Error in connectionMgr::processData ${error}`)
+          throw new Error(`Error in connectionMgr::processData ${error}`)
         }
-      case 43300:
+      }
+      case 43300: {
         debug(
           'Recieved MCOTS packet'
           // {
@@ -95,9 +95,14 @@ export class ConnectionMgr {
           //   localPort
           // }
         )
+        const newNode = MessageNode.fromBuffer(rawPacket.data)
+        debug(newNode)
+
         return defaultHandler(rawPacket)
+      }
       default:
-        throw new VError(`We received a packet on port ${localPort}. We don't what to do yet, going to throw so the message isn't lost. ${rawPacket}`)
+        debug(rawPacket)
+        throw new Error(`We received a packet on port ${localPort}. We don't what to do yet, going to throw so the message isn't lost.`)
     }
   }
 
@@ -109,7 +114,7 @@ export class ConnectionMgr {
       return code.value === opCode
     })
     if (opCodeName === undefined) {
-      throw new VError(`Unable to locate name for opCode ${opCode}`)
+      throw new Error(`Unable to locate name for opCode ${opCode}`)
     }
     return opCodeName.name
   }
@@ -122,7 +127,7 @@ export class ConnectionMgr {
       return code.name === name
     })
     if (opCode === undefined) {
-      throw new VError(`Unable to locate opcode for name ${name}`)
+      throw new Error(`Unable to locate opcode for name ${name}`)
     }
     return opCode.value
   }
@@ -163,7 +168,7 @@ export class ConnectionMgr {
       return match
     })
     if (results === undefined) {
-      throw new VError(`Unable to locate connection for id ${connectionId}`)
+      throw new Error(`Unable to locate connection for id ${connectionId}`)
     }
     return results
   }
@@ -177,7 +182,7 @@ export class ConnectionMgr {
    */
   async _updateConnectionByAddressAndPort (address: string, port: number, newConnection: ConnectionObj): Promise<void> {
     if (newConnection === undefined) {
-      throw new VError(
+      throw new Error(
         `Undefined connection: ${JSON.stringify({
           remoteAddress: address,
           localPort: port
@@ -210,7 +215,7 @@ export class ConnectionMgr {
   findOrNewConnection (socket: Socket): ConnectionObj {
     const { remoteAddress, localPort } = socket
     if (!remoteAddress) {
-      throw new VError(
+      throw new Error(
         `No address in socket: ${JSON.stringify({
           remoteAddress,
           localPort

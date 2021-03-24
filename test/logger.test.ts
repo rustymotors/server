@@ -5,10 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import tap from 'tap'
-import { logger } from './logger'
+import { logger } from '../src/shared/logger'
+import { expect } from 'chai'
 
-tap.test('Logger', t => {
-  t.equals(typeof logger, 'object')
-  t.done()
+/* eslint-env mocha */
+
+it('Logger', () => {
+  expect(typeof logger).to.equal('object')
 })

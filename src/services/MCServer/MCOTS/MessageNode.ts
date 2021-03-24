@@ -6,7 +6,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import debug from 'debug'
-import { VError } from 'verror'
 
 /**
  * Packet structure for communications with the game database
@@ -68,11 +67,11 @@ export class MessageNode {
     } catch (error) {
       if (error.name.includes('RangeError')) {
         // This is likeley not an MCOTS packet, ignore
-        throw new VError(
+        throw new Error(
           `[MessageNode] Not long enough to deserialize, only ${packet.length} bytes long`
         )
       } else {
-        throw new VError(
+        throw new Error(
           `[MessageNode] Unable to read msgNo from ${packet.toString(
             'hex'
           )}: ${error}`

@@ -5,32 +5,25 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { expect } from 'chai'
 import mock from 'mock-fs'
-import { AuthLogin } from './AuthLogin'
-import tap from 'tap'
-import { fakeConfig } from '../../../test/helpers'
-import { IServerConfig } from '../../types'
+import { AdminServer } from '../src/services/AdminServer/AdminServer'
+import { fakeConfig, fakeMCServer } from './helpers'
 
-tap.test('WebServer', t => {
-  const webServer = new AuthLogin(fakeConfig)
+/* eslint-env mocha */
 
-  t.test('_sslOptions()', async t1 => {
-    const config: IServerConfig = {
-      certFilename: '/cert/cert.pem',
-      privateKeyFilename: '/cert/private.key',
-      ipServer: '',
-      publicKeyFilename: '',
-      connectionURL: ''
-    }
+const adminServer = new AdminServer(fakeMCServer)
 
+describe('AdminServer', async () => {
+  it('_sslOptions()', async () => {
     //  deepcode ignore WrongNumberOfArgs/test: false positive
     mock({
       '/cert/': {}
     })
     try {
-      await webServer._sslOptions(config)
+      await adminServer._sslOptions(fakeConfig.serverConfig)
     } catch (error) {
-      t1.contains(error, /cert.pem/, 'throws when cert file is not found')
+      expect(error).contains(/cert.pem/)
     }
     mock.restore()
     //  deepcode ignore WrongNumberOfArgs/test: false positive
@@ -38,9 +31,9 @@ tap.test('WebServer', t => {
       '/cert/cert.pem': 'stuff'
     })
     try {
-      await webServer._sslOptions(config)
+      await adminServer._sslOptions(fakeConfig.serverConfig)
     } catch (error) {
-      t1.contains(error, /private.key/, 'throws when key file is not found')
+      expect(error).contains(/private.key/)
     }
     mock.restore()
     //  deepcode ignore WrongNumberOfArgs/test: false positive
@@ -49,12 +42,10 @@ tap.test('WebServer', t => {
       '/cert/private.key': 'stuff'
     })
     try {
-      await webServer._sslOptions(config)
+      await adminServer._sslOptions(fakeConfig.serverConfig)
     } catch (error) {
-      t1.contains(error, /private.key/, 'throws when key file is not found')
+      expect(error).contains(/private.key/)
     }
     mock.restore()
-    t1.done()
   })
-  t.done()
 })

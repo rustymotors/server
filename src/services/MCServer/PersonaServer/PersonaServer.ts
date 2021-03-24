@@ -13,7 +13,6 @@ import { NPSMsg } from '../MCOTS/NPSMsg'
 import { NPSPersonaMapsMsg } from './NPSPersonaMapsMsg'
 import { ConnectionObj } from '../ConnectionObj'
 import Debug from 'debug'
-import { VError } from 'verror'
 
 const debug = Debug('mcoserver:PersonaServer')
 
@@ -285,7 +284,10 @@ export class PersonaServer {
     try {
       socket.write(packet.serialize())
     } catch (error) {
-      throw new VError(`Unable to send packet: ${error}`)
+      if (error instanceof Error) {
+        throw new Error(`Unable to send packet: ${error}`)
+      }
+      throw new Error(`Unable to send packet, error unknown`)
     }
   }
 
@@ -300,7 +302,7 @@ export class PersonaServer {
       return persona.customerId === customerId
     })
     if (results.length === 0) {
-      throw new VError(
+      throw new Error(
         `Unable to locate a persona for customerId: ${customerId}`
       )
     }
@@ -319,7 +321,7 @@ export class PersonaServer {
       return match
     })
     if (results.length === 0) {
-      throw new VError(`Unable to locate a persona for id: ${id}`)
+      throw new Error(`Unable to locate a persona for id: ${id}`)
     }
     return results
   }
@@ -372,7 +374,7 @@ export class PersonaServer {
     const personaMapsMsg = new NPSPersonaMapsMsg(MESSAGE_DIRECTION.SENT)
 
     if (personas.length === 0) {
-      throw new VError(
+      throw new Error(
         `No personas found for customer Id: ${customerId.readUInt32BE(0)}`
       )
     } else {
@@ -392,7 +394,10 @@ export class PersonaServer {
 
         responsePacket.dumpPacket()
       } catch (error) {
-        throw new VError(`Error serializing personaMapsMsg: ${error}`)
+        if (error instanceof Error) {
+          throw new Error(`Error serializing personaMapsMsg: ${error}`)
+        }
+        throw new Error(`Error serializing personaMapsMsg, error unknonw`)
       }
     }
     return responsePacket
@@ -453,7 +458,7 @@ export class PersonaServer {
         return updatedConnection
 
       default:
-        throw new VError(
+        throw new Error(
           `[personaServer] Unknown code was received ${
           {
             requestCode,
