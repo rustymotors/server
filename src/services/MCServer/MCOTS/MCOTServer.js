@@ -5,16 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { ConnectionObj } from '../ConnectionObj'
-import { MessageNode, MESSAGE_DIRECTION } from './MessageNode'
-import { GenericReplyMsg } from '../GenericReplyMsg'
-// import { LobbyMsg } from './LobbyMsg'
-import { LoginMsg } from './LoginMsg'
+const { ConnectionObj } = require('../ConnectionObj')
+const { MessageNode } = require('./MessageNode')
+const { GenericReplyMsg } = require('../GenericReplyMsg')
+const { LoginMsg } = require('./LoginMsg')
 
 // eslint-disable-next-line no-unused-vars
-import { Logger } from 'winston'
 
-import debug from 'debug'
+const debug = require('debug')
 
 /**
  * Mangages the game database server
@@ -22,18 +20,17 @@ import debug from 'debug'
  */
 
 /**
- *
+ * @class
+ * @property {Logger} logger
  */
-export class MCOTServer {
-  logger: Logger
+class MCOTServer {
 
   /**
    * Creates an instance of MCOTServer.
    * @class
-   * @param {Logger} logger
-   * @memberof MCOTServer
+   * @param {import('../../../shared/logger').Logger} logger
    */
-  constructor (logger: Logger) {
+  constructor (logger) {
     this.logger = logger
   }
 
@@ -42,9 +39,8 @@ export class MCOTServer {
    *
    * @param {number} msgID
    * @return {string}
-   * @memberof! MCOTServer
    */
-  _MSG_STRING (msgID: number): string {
+  _MSG_STRING (msgID) {
     switch (msgID) {
       case 105:
         return 'MC_LOGIN'
@@ -76,8 +72,9 @@ export class MCOTServer {
    *
    * @param {ConnectionObj} con
    * @param {MessageNode} node
+   * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
-  async _login (con: ConnectionObj, node: MessageNode): Promise<{con: ConnectionObj, nodes: MessageNode[]}> {
+  async _login (con, node) {
     /*
      * Let's turn it into a LoginMsg
      */
@@ -93,7 +90,7 @@ export class MCOTServer {
     pReply.msgNo = 213
     pReply.msgReply = 105
     pReply.appId = con.appId
-    const rPacket = new MessageNode(MESSAGE_DIRECTION.SENT)
+    const rPacket = new MessageNode('SENT')
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
@@ -106,8 +103,9 @@ export class MCOTServer {
    *
    * @param {ConnectionObj} con
    * @param {MessageNode} node
+   * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
-  async _getLobbies (con: ConnectionObj, node: MessageNode): Promise<{con: ConnectionObj, nodes: MessageNode[]}> {
+  async _getLobbies (con, node) {
     debug('mcoserver:MCOTSServer')('In _getLobbies...')
     const lobbiesListMsg = node
 
@@ -124,7 +122,7 @@ export class MCOTServer {
     const pReply = new GenericReplyMsg()
     pReply.msgNo = 325
     pReply.msgReply = 324
-    const rPacket = new MessageNode(MESSAGE_DIRECTION.SENT)
+    const rPacket = new MessageNode('SENT')
     rPacket.flags = 9
 
     const lobby = Buffer.alloc(12)
@@ -133,15 +131,6 @@ export class MCOTServer {
     lobby.writeInt32LE(0, 8)
 
     rPacket.updateBuffer(pReply.serialize())
-
-    // rPacket.deserialize(node.serialize())
-
-    // // Set the data of the GenericReplyMsg to the LobbyMsg
-    // pReply.setData(lobbyMsg.serialize())
-    // rPacket.updateBuffer(lobbyMsg.serialize())
-
-    // // Set the AppId
-    // rPacket.appId = con.appId
 
     // // Dump the packet
     debug('mcoserver:MCOTSServer')('Dumping response...')
@@ -154,9 +143,9 @@ export class MCOTServer {
    *
    * @param {module:ConnectionObj} con
    * @param {module:MessageNode} node
-   * @return {Promise<MCOTS_Session>}
+   * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
-  async _logout (con: ConnectionObj, node: MessageNode): Promise<{con: ConnectionObj, nodes: MessageNode[]}> {
+  async _logout (con, node) {
     const logoutMsg = node
 
     logoutMsg.data = node.serialize()
@@ -168,24 +157,25 @@ export class MCOTServer {
     const pReply = new GenericReplyMsg()
     pReply.msgNo = 101
     pReply.msgReply = 106
-    const rPacket = new MessageNode(MESSAGE_DIRECTION.SENT)
+    const rPacket = new MessageNode('SENT')
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
     rPacket.dumpPacket()
 
     /** @type MessageNode[] */
-    const nodes: MessageNode[] = []
+    const nodes = []
 
     return { con, nodes }
   }
 
   /**
    *
-   * @param {module:ConnectionObj} con
-   * @param {module:MessageNode} node
+   * @param {ConnectionObj} con
+   * @param {MessageNode} node
+   * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
-  async _setOptions (con: ConnectionObj, node: MessageNode): Promise<{con: ConnectionObj, nodes: MessageNode[]}> {
+  async _setOptions (con, node) {
     const setOptionsMsg = node
 
     setOptionsMsg.data = node.serialize()
@@ -197,7 +187,7 @@ export class MCOTServer {
     const pReply = new GenericReplyMsg()
     pReply.msgNo = 101
     pReply.msgReply = 109
-    const rPacket = new MessageNode(MESSAGE_DIRECTION.SENT)
+    const rPacket = new MessageNode('SENT')
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
@@ -208,10 +198,11 @@ export class MCOTServer {
 
   /**
    *
-   * @param {module:ConnectionObj} con
-   * @param {module:MessageNode.MessageNode} node
+   * @param {ConnectionObj} con
+   * @param {MessageNode} node
+   * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
-  async _trackingMessage (con: ConnectionObj, node: MessageNode): Promise<{con: ConnectionObj, nodes: MessageNode[]}> {
+  async _trackingMessage (con, node) {
     const trackingMsg = node
 
     trackingMsg.data = node.serialize()
@@ -223,7 +214,7 @@ export class MCOTServer {
     const pReply = new GenericReplyMsg()
     pReply.msgNo = 101
     pReply.msgReply = 440
-    const rPacket = new MessageNode(MESSAGE_DIRECTION.SENT)
+    const rPacket = new MessageNode('SENT')
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
@@ -236,8 +227,9 @@ export class MCOTServer {
    *
    * @param {module:ConnectionObj} con
    * @param {module:MessageNode} node
+   * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
-  async _updatePlayerPhysical (con: ConnectionObj, node: MessageNode): Promise<{con: ConnectionObj, nodes: MessageNode[]}> {
+  async _updatePlayerPhysical (con, node) {
     const updatePlayerPhysicalMsg = node
 
     updatePlayerPhysicalMsg.data = node.serialize()
@@ -249,7 +241,7 @@ export class MCOTServer {
     const pReply = new GenericReplyMsg()
     pReply.msgNo = 101
     pReply.msgReply = 266
-    const rPacket = new MessageNode(MESSAGE_DIRECTION.SENT)
+    const rPacket = new MessageNode('SENT')
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
@@ -258,3 +250,4 @@ export class MCOTServer {
     return { con, nodes: [rPacket] }
   }
 }
+module.exports.MCOTServer = MCOTServer

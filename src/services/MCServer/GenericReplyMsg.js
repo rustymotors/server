@@ -5,9 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from 'winston'
-
-import { logger } from '../../shared/logger'
+const { logger } = require("../../shared/logger")
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
@@ -16,17 +14,21 @@ import { logger } from '../../shared/logger'
 // DWORD data2;
 
 /**
- *
+ * @module GenericReplyMsg
  */
-export class GenericReplyMsg {
-  logger: Logger
-  msgNo: number
-  toFrom: number
-  appId: number
-  msgReply: number
-  result: Buffer
-  data: Buffer
-  data2: Buffer
+
+/**
+ * @class
+ * @property {Logger} logger
+ * @property {number} msgNo
+ * @property {number} toFrom
+ * @property {number} appId
+ * @property {number} msgReply
+ * @property {Buffer} result
+ * @property {Buffer} data
+ * @property {Buffer} data2
+ */
+class GenericReplyMsg {
 
   /**
    *
@@ -44,26 +46,29 @@ export class GenericReplyMsg {
   }
 
   /**
-   * Setter $data
+   * Setter data
    * @param {Buffer} value
+   * @returns {void}
    */
-  setData (value: Buffer): void {
+  setData (value) {
     this.data = value
   }
 
   /**
-   * Setter $data2
+   * Setter data2
    * @param {Buffer} value
+   * @returns {void}
    */
-  setData2 (value: Buffer): void {
+  setData2 (value) {
     this.data2 = value
   }
 
   /**
    *
    * @param {Buffer} buffer
+   * @returns {void}
    */
-  deserialize (buffer: Buffer): void {
+  deserialize (buffer) {
     try {
       this.msgNo = buffer.readInt16LE(0)
     } catch (error) {
@@ -88,7 +93,7 @@ export class GenericReplyMsg {
    *
    * @return {Buffer}
    */
-  serialize (): Buffer {
+  serialize () {
     const packet = Buffer.alloc(16)
     packet.writeInt16LE(this.msgNo, 0)
     packet.writeInt16LE(this.msgReply, 2)
@@ -101,15 +106,17 @@ export class GenericReplyMsg {
   /**
    *
    * @param {Buffer} buffer
+   * @returns {void}
    */
-  setResult (buffer: Buffer): void {
+  setResult (buffer) {
     this.result = buffer
   }
 
   /**
    * dumpPacket
+   * @returns {void}
    */
-  dumpPacket (): void {
+  dumpPacket () {
     this.logger.info(
       'GenericReply',
       {
@@ -122,3 +129,4 @@ export class GenericReplyMsg {
     )
   }
 }
+module.exports.GenericReplyMsg = GenericReplyMsg

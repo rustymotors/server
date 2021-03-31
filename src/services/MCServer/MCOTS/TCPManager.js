@@ -5,8 +5,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { isExternalModule } from 'typescript'
-
 const { debug } = require('debug')
 const { ConnectionObj } = require('../ConnectionObj')
 const { MessageNode, MESSAGE_DIRECTION } = require('./MessageNode')
@@ -35,7 +33,7 @@ const databaseManager = new DatabaseManager(
  * @param {MessageNode} node
  * @returns {Promise<{conn: ConnectionObj, packetToWrite: MessageNode}>}
  */
-module.exports.compressIfNeeded = async function compressIfNeeded (conn, node) {
+async function compressIfNeeded (conn, node) {
   const packetToWrite = node
 
   // Check if compression is needed
@@ -51,6 +49,7 @@ module.exports.compressIfNeeded = async function compressIfNeeded (conn, node) {
   }
   return { conn, packetToWrite }
 }
+module.exports.compressIfNeeded = compressIfNeeded
 
 /**
  *
@@ -83,10 +82,10 @@ async function encryptIfNeeded (conn, node) {
  * @param {MessageNode[]} nodes
  * @returns {Promise<ConnectionObj>}
  */
-module.exports.socketWriteIfOpen = async function socketWriteIfOpen (conn, nodes) {
+async function socketWriteIfOpen (conn, nodes) {
   const updatedConnection = conn
   nodes.forEach(async node => {
-    const { packetToWrite: compressedPacket } = await module.exports.compressIfNeeded(
+    const { packetToWrite: compressedPacket } = await compressIfNeeded(
       conn,
       node
     )
@@ -112,6 +111,7 @@ module.exports.socketWriteIfOpen = async function socketWriteIfOpen (conn, nodes
   })
   return updatedConnection
 }
+module.exports.socketWriteIfOpen = socketWriteIfOpen
 
 /**
  *
@@ -119,7 +119,7 @@ module.exports.socketWriteIfOpen = async function socketWriteIfOpen (conn, nodes
  * @param {MessageNode} node
  * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
  */
-module.exports.GetStockCarInfo = async function GetStockCarInfo (con, node) {
+async function GetStockCarInfo (con, node) {
   const getStockCarInfoMsg = new GenericRequestMsg()
   getStockCarInfoMsg.deserialize(node.data)
   getStockCarInfoMsg.dumpPacket()
@@ -135,7 +135,7 @@ module.exports.GetStockCarInfo = async function GetStockCarInfo (con, node) {
 
   pReply.dumpPacket()
 
-  const rPacket = new MessageNode(MESSAGE_DIRECTION.SENT)
+  const rPacket = new MessageNode('SENT')
 
   rPacket.deserialize(node.serialize())
 
@@ -145,13 +145,15 @@ module.exports.GetStockCarInfo = async function GetStockCarInfo (con, node) {
 
   return { con, nodes: [rPacket] }
 }
+module.exports.GetStockCarInfo = GetStockCarInfo
 
 /**
  *
- * @param {module:ConnectionObj} con
- * @param {module:MessageNode} node
+ * @param {ConnectionObj} con
+ * @param {MessageNode} node
+ * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
  */
-export async function ClientConnect (con:ConnectionObj, node:MessageNode): Promise<{con: ConnectionObj, nodes: MessageNode[]}> {
+async function ClientConnect (con, node) {
   /**
    * Let's turn it into a ClientConnectMsg
    */
@@ -159,8 +161,7 @@ export async function ClientConnect (con:ConnectionObj, node:MessageNode): Promi
   const newMsg = new ClientConnectMsg(node.data)
 
   debug('mcoserver:TCPManager')(`[TCPManager] Looking up the session key for ${newMsg.customerId}...`)
-  /** @type {module:DatabaseManager.Session_Record} */
-  const res:ISessionRecord = await databaseManager.fetchSessionKeyByCustomerId(
+  const res = await databaseManager.fetchSessionKeyByCustomerId(
     newMsg.customerId
   )
   debug('mcoserver:TCPManager')(`[TCPManager] Session Key: ${res.sessionkey}`)
@@ -192,7 +193,7 @@ export async function ClientConnect (con:ConnectionObj, node:MessageNode): Promi
   const pReply = new GenericReplyMsg()
   pReply.msgNo = 101
   pReply.msgReply = 438
-  const rPacket = new MessageNode(MESSAGE_DIRECTION.SENT)
+  const rPacket = new MessageNode('SENT')
   rPacket.deserialize(node.serialize())
   rPacket.updateBuffer(pReply.serialize())
   rPacket.dumpPacket()
@@ -202,8 +203,11 @@ export async function ClientConnect (con:ConnectionObj, node:MessageNode): Promi
 
 /**
  * Route or process MCOTS commands
+ * @param {MessageNode} node
+ * @param {ConnectionObj} conn
+ * @returns {Promise<ConnectionObj>}
  */
-export async function ProcessInput (node:MessageNode, conn:ConnectionObj): Promise<ConnectionObj> {
+async function ProcessInput (node, conn) {
   const currentMsgNo = node.msgNo
   const currentMsgString = mcotServer._MSG_STRING(currentMsgNo)
 
@@ -212,7 +216,7 @@ export async function ProcessInput (node:MessageNode, conn:ConnectionObj): Promi
       try {
         const result = await mcotServer._setOptions(conn, node)
         const responsePackets = result.nodes
-        const updatedConnection = await socketWriteIfOpen(
+        const updatedConnection = await module.exports.socketWriteIfOpen(
           result.con,
           responsePackets
         )
@@ -227,7 +231,7 @@ export async function ProcessInput (node:MessageNode, conn:ConnectionObj): Promi
       try {
         const result = await mcotServer._trackingMessage(conn, node)
         const responsePackets = result.nodes
-        const updatedConnection = await socketWriteIfOpen(
+        const updatedConnection = await module.exports.socketWriteIfOpen(
           result.con,
           responsePackets
         )
@@ -242,7 +246,7 @@ export async function ProcessInput (node:MessageNode, conn:ConnectionObj): Promi
       try {
         const result = await mcotServer._updatePlayerPhysical(conn, node)
         const responsePackets = result.nodes
-        const updatedConnection = await socketWriteIfOpen(
+        const updatedConnection = await module.exports.socketWriteIfOpen(
           result.con,
           responsePackets
         )
@@ -329,10 +333,11 @@ export async function ProcessInput (node:MessageNode, conn:ConnectionObj): Promi
 
 /**
  *
- * @param {module:MessageNode} msg
- * @param {module:ConnectionObj} con
+ * @param {MessageNode} msg
+ * @param {ConnectionObj} con
+ * @returns {Promise<ConnectionObj>}
  */
-export async function MessageReceived (msg:MessageNode, con:ConnectionObj): Promise<ConnectionObj> {
+async function MessageReceived (msg, con) {
   const newConnection = con
   if (!newConnection.useEncryption && msg.flags && 0x08) {
     debug('mcoserver:TCPManager')('Turning on encryption')
@@ -394,12 +399,12 @@ export async function MessageReceived (msg:MessageNode, con:ConnectionObj): Prom
 
 /**
  *
- * @param {module:ListenerThread/IRawPacket} rawPacket
- * @return {Promise<{module:ConnectionObj}>}
+ * @param {IRawPacket} rawPacket
+ * @return {Promise<ConnectionObj>}
  */
-export async function defaultHandler (rawPacket:IRawPacket): Promise<ConnectionObj> {
+async function defaultHandler (rawPacket) {
   const { connection, remoteAddress, localPort, data } = rawPacket
-  const messageNode = new MessageNode(MESSAGE_DIRECTION.RECIEVED)
+  const messageNode = new MessageNode('RECEIVED')
   messageNode.deserialize(data)
 
   logger.info(
@@ -411,9 +416,10 @@ export async function defaultHandler (rawPacket:IRawPacket): Promise<ConnectionO
       data: rawPacket.data.toString('hex')
     }
   )
-
   messageNode.dumpPacket()
 
   const newMessage = await MessageReceived(messageNode, connection)
   return newMessage
 }
+module.exports.defaultHandler = defaultHandler
+

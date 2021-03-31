@@ -5,36 +5,36 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import debug from 'debug'
+const debug = require('debug')
 
 /**
  * Packet structure for communications with the game database
  * @module MessageNode
  */
 
-export enum MESSAGE_DIRECTION {
-  'RECIEVED',
-  'SENT'
-}
+/**
+ * @typedef {'RECEIVED' | 'SENT'} MESSAGE_DIRECTION
+ * 
+ */
 
 /**
- *
+ * @class
+ * @property {MESSAGE_DIRECTION} direction
+ * @property {number} msgNo
+ * @property {number} seq
+ * @property {Buffer} data
+ * @property {number} dataLength
+ * @property {string} mcoSig
+ * @property {number} toFrom
+ * @property {number} appId
  */
-export class MessageNode {
-  direction: MESSAGE_DIRECTION
-  msgNo: number
-  seq: number
-  flags: number
-  data: Buffer
-  dataLength: number
-  mcoSig: string
-  toFrom: number
-  appId: number
+class MessageNode {
+  
   /**
    *
    * @param {MESSAGE_DIRECTION} direction
    */
-  constructor (direction: MESSAGE_DIRECTION) {
+  constructor (direction) {
     this.direction = direction
     this.msgNo = 0
     this.seq = 999
@@ -50,8 +50,9 @@ export class MessageNode {
   /**
    *
    * @param {Buffer} packet
+   * @returns {void}
    */
-  deserialize (packet: Buffer): void {
+  deserialize (packet) {
     try {
       this.dataLength = packet.readInt16LE(0)
       this.mcoSig = packet.slice(2, 6).toString()
@@ -84,7 +85,7 @@ export class MessageNode {
    *
    * @return {Buffer}
    */
-  serialize (): Buffer {
+  serialize () {
     const packet = Buffer.alloc(this.dataLength + 2)
     packet.writeInt16LE(this.dataLength, 0)
     packet.write(this.mcoSig, 2)
@@ -97,16 +98,18 @@ export class MessageNode {
   /**
    *
    * @param {number} appId
+   * @returns {void}
    */
-  setAppId (appId: number): void {
+  setAppId (appId) {
     this.appId = appId
   }
 
   /**
    *
    * @param {number} newMsgNo
+   * @returns {void}
    */
-  setMsgNo (newMsgNo: number): void {
+  setMsgNo (newMsgNo) {
     this.msgNo = newMsgNo
     this.data.writeInt16LE(this.msgNo, 0)
   }
@@ -114,26 +117,28 @@ export class MessageNode {
   /**
    *
    * @param {number} newSeq
+   * @returns {void}
    */
-  setSeq (newSeq: number): void {
+  setSeq (newSeq) {
     this.seq = newSeq
   }
 
   /**
    *
    * @param {Buffer} packet
+   * @returns {void}
    */
-  setMsgHeader (packet: Buffer): void {
+  setMsgHeader (packet) {
     const header = Buffer.alloc(6)
     packet.copy(header, 0, 0, 6)
-    // this.header = new MsgHead(header);
   }
 
   /**
    *
    * @param {Buffer} buffer
+   * @returns {void}
    */
-  updateBuffer (buffer: Buffer): void {
+  updateBuffer (buffer) {
     this.data = Buffer.from(buffer)
     this.dataLength = 10 + buffer.length
     this.msgNo = this.data.readInt16LE(0)
@@ -143,14 +148,15 @@ export class MessageNode {
    *
    * @return {boolean}
    */
-  isMCOTS (): boolean {
+  isMCOTS () {
     return this.mcoSig === 'TOMC'
   }
 
   /**
    *
+   * @returns {void}
    */
-  dumpPacket (): void {
+  dumpPacket () {
     let packetContentsArray = this.serialize()
       .toString('hex')
       .match(/../g)
@@ -176,16 +182,18 @@ export class MessageNode {
    *
    * @return {number}
    */
-  getLength (): number {
+  getLength () {
     return this.dataLength
   }
 
   /**
    *
    * @param {Buffer} packet
+   * @returns {void}
    */
-  BaseMsgHeader (packet: Buffer): void {
+  BaseMsgHeader (packet) {
     // WORD msgNo;
     this.msgNo = packet.readInt16LE(0)
   }
 }
+module.exports.MessageNode = MessageNode

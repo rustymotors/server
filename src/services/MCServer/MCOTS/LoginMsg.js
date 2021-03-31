@@ -5,9 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { logger } from '../../../shared/logger'
-import struct from 'c-struct'
-import { Logger } from 'winston'
+const { logger } = require('../../../shared/logger')
+
+const struct = require('c-struct')
+
+/**
+ * @module LoginMsg
+ */
 
 const loginMsgSchema = new struct.Schema({
   msgNo: struct.type.uint16,
@@ -24,28 +28,28 @@ const loginMsgSchema = new struct.Schema({
 struct.register('LoginMsg', loginMsgSchema)
 
 /**
- *
+ * @class
+ * @property {Logger} logger
+ * @property {number} newMsgNo
+ * @property {number} toFrom
+ * @property {number} appId
+ * @property {number} customerId
+ * @property {number} personaId
+ * @property {number} lotOwnerId
+ * @property {number} brandedPartId
+ * @property {number} skinId
+ * @property {string} personaName
+ * @property {string} version
+ * @property {Buffer} data
+ * @property {Record<string, unknown>} struct
  */
-export class LoginMsg {
-  logger: Logger
-  msgNo: number
-  toFrom: number
-  appId: number
-  customerId: number
-  personaId: number
-  lotOwnerId: number
-  brandedPartId: number
-  skinId: number
-  personaName: string
-  version: string
-  data: Buffer
-  struct: Record<string, unknown>
+class LoginMsg {
 
   /**
    *
    * @param {Buffer} buffer
    */
-  constructor (buffer: Buffer) {
+  constructor (buffer) {
     this.logger = logger.child({ service: 'mcoserver:LoginMsg' })
 
     this.msgNo = 0
@@ -70,8 +74,9 @@ export class LoginMsg {
   /**
    *
    * @param {Buffer} buffer
+   * @returns {void}
    */
-  deserialize (buffer: Buffer): void {
+  deserialize (buffer) {
     try {
       this.msgNo = buffer.readInt16LE(0)
     } catch (error) {
@@ -107,14 +112,15 @@ export class LoginMsg {
    *
    * @return {Buffer}
    */
-  serialize (): Buffer {
+  serialize () {
     return struct.packSync('LoginMsg', this.struct, { endian: 'b' })
   }
 
   /**
    * dumpPacket
+   * @returns {void}
    */
-  dumpPacket (): void {
+  dumpPacket () {
     this.logger.info(
       'LoginMsg',
       {
@@ -130,3 +136,4 @@ export class LoginMsg {
     )
   }
 }
+module.exports.LoginMsg = LoginMsg
