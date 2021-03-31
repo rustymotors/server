@@ -5,33 +5,37 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Socket } from 'net'
-import { Logger } from 'winston'
-import { appSettings } from '../../../config/app-settings'
-import { DatabaseManager } from '../../shared/DatabaseManager'
-import { IAppSettings, IRawPacket } from '../../types'
-import { ConnectionObj } from './ConnectionObj'
-import { defaultHandler } from './MCOTS/TCPManager'
-import { NPSPacketManager } from './npsPacketManager'
-import Debug from 'debug'
-import { MessageNode, NPS_COMMANDS } from '../../structures'
+const { Socket } = require('net')
+const { appSettings } = require('../../../config/app-settings')
+const { DatabaseManager } = require('../../shared/DatabaseManager')
+const { ConnectionObj } = require('./ConnectionObj')
+const { defaultHandler } = require('./MCOTS/TCPManager')
+const { NPSPacketManager } = require('./npsPacketManager')
+const Debug = require('debug')
+const { MessageNode, NPS_COMMANDS } = require('../../structures')
 
 const debug = Debug('mcoserver:ConnectionManager')
 
-export class ConnectionMgr {
-  logger: Logger
-  config: IAppSettings
-  databaseMgr: DatabaseManager
-  connections: ConnectionObj[]
-  newConnectionId: number
-  banList: string[]
+/**
+ * @module Conne
+ */
+
+/**
+ * @class
+ * @property {Logger} logger
+ * @property {IAppSettings} config
+ * @property {DatabaseManager} databaseManager
+ * @property {ConnectionObj[]} connections
+ * @property {string[]} banList
+ */
+module.exports.ConnectionMgr = class ConnectionMgr {
 
   /**
    * Creates an instance of ConnectionMgr.
-   * @param {module:Logger.logger} logger
-   * @param {module:DatabaseManager} databaseManager
+   * @param {import('../../shared/logger').Logger} logger
+   * @param {DatabaseManager} databaseManager
    */
-  constructor (logger: Logger, databaseManager: DatabaseManager) {
+  constructor (logger, databaseManager) {
     this.logger = logger.child({ service: 'mcoserver:ConnectionMgr' })
     this.config = appSettings
     this.databaseMgr = databaseManager
@@ -48,8 +52,10 @@ export class ConnectionMgr {
 
   /**
    * Check incoming data and route it to the correct handler based on localPort
+   * @param {IRawPacket} rawPacket
+   * @returns {Promise<ConnectionObj>}
    */
-  async processData (rawPacket: IRawPacket): Promise<ConnectionObj> {
+  async processData (rawPacket) {
     const npsPacketManager = new NPSPacketManager(this.databaseMgr, this.logger)
 
     const { remoteAddress, localPort, data } = rawPacket
@@ -108,8 +114,10 @@ export class ConnectionMgr {
 
   /**
    * Get the name connected to the NPS opcode
+   * @param {number} opCode
+   * @returns {string}
    */
-  getNameFromOpCode (opCode: number): string {
+  getNameFromOpCode (opCode) {
     const opCodeName = NPS_COMMANDS.find((code) => {
       return code.value === opCode
     })
@@ -121,8 +129,10 @@ export class ConnectionMgr {
 
   /**
    * Get the name connected to the NPS opcode
+   * @param {string} name
+   * @returns {number}
    */
-  getOpcodeFromName (name: string): number {
+  getOpcodeFromName (name) {
     const opCode = NPS_COMMANDS.find((code) => {
       return code.name === name
     })
@@ -136,7 +146,7 @@ export class ConnectionMgr {
    *
    * @return {string[]}
    */
-  getBans (): string[] {
+  getBans () {
     return this.banList
   }
 
@@ -147,7 +157,7 @@ export class ConnectionMgr {
    * @memberof ConnectionMgr
    * @return {ConnectionObj | undefined}
    */
-  findConnectionByAddressAndPort (remoteAddress: string, localPort: number): ConnectionObj | undefined {
+  findConnectionByAddressAndPort (remoteAddress, localPort) {
     const results = this.connections.find(connection => {
       const match =
         remoteAddress === connection.remoteAddress &&
@@ -162,7 +172,7 @@ export class ConnectionMgr {
    * @param {string} connectionId
    * @return {ConnectionObj | undefined}
    */
-  findConnectionById (connectionId: string): ConnectionObj {
+  findConnectionById (connectionId) {
     const results = this.connections.find(connection => {
       const match = connectionId === connection.id
       return match
@@ -178,9 +188,9 @@ export class ConnectionMgr {
    * @param {string} address
    * @param {number} port
    * @param {ConnectionObj} newConnection
-   * @memberof ConnectionMgr
+   * @returns {Promise<void>}
    */
-  async _updateConnectionByAddressAndPort (address: string, port: number, newConnection: ConnectionObj): Promise<void> {
+  async _updateConnectionByAddressAndPort (address, port, newConnection) {
     if (newConnection === undefined) {
       throw new Error(
         `Undefined connection: ${JSON.stringify({
@@ -210,9 +220,8 @@ export class ConnectionMgr {
    *
    * @param {Socket} socket
    * @return {ConnectionObj}
-   * @memberof ConnectionMgr
    */
-  findOrNewConnection (socket: Socket): ConnectionObj {
+  findOrNewConnection (socket) {
     const { remoteAddress, localPort } = socket
     if (!remoteAddress) {
       throw new Error(
@@ -246,9 +255,9 @@ export class ConnectionMgr {
 
   /**
    *
-   * @memberof ConnectionMgr
+   * @returns {void}
    */
-  resetAllQueueState (): void {
+  resetAllQueueState () {
     this.connections = this.connections.map(connection => {
       connection.inQueue = true
       return connection
@@ -259,9 +268,8 @@ export class ConnectionMgr {
    * Dump all connections for debugging
    *
    * @return {ConnectionObj[]}
-   * @memberof ConnectionMgr
    */
-  dumpConnections (): ConnectionObj[] {
+  dumpConnections () {
     return this.connections
   }
 }

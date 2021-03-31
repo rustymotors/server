@@ -5,18 +5,19 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { debug } from 'debug'
-import { ConnectionObj } from '../ConnectionObj'
-import { IRawPacket, ISessionRecord } from '../../../types'
-import { MessageNode, MESSAGE_DIRECTION } from './MessageNode'
-import { logger } from '../../../shared/logger'
-import { MCOTServer } from './MCOTServer'
-import { ClientConnectMsg } from '../ClientConnectMsg'
-import { GenericReplyMsg } from '../GenericReplyMsg'
-import { GenericRequestMsg } from '../GenericRequestMsg'
-import { StockCar } from './StockCar'
-import { StockCarInfoMsg } from './StockCarInfoMsg'
-import { DatabaseManager } from '../../../shared/DatabaseManager'
+import { isExternalModule } from 'typescript'
+
+const { debug } = require('debug')
+const { ConnectionObj } = require('../ConnectionObj')
+const { MessageNode, MESSAGE_DIRECTION } = require('./MessageNode')
+const { logger } = require('../../../shared/logger')
+const { MCOTServer } = require('./MCOTServer')
+const { ClientConnectMsg } = require('../ClientConnectMsg')
+const { GenericReplyMsg } = require('../GenericReplyMsg')
+const { GenericRequestMsg } = require('../GenericRequestMsg')
+const { StockCar } = require('./StockCar')
+const { StockCarInfoMsg } = require('./StockCarInfoMsg')
+const { DatabaseManager } = require('../../../shared/DatabaseManager')
 
 /**
  * Manages TCP connection packet processing
@@ -28,14 +29,13 @@ const databaseManager = new DatabaseManager(
   logger.child({ service: 'mcoserver:DatabaseManager' })
 )
 
-/** */
-
 /**
  *
- * @param {module:ConnectionObj} conn
+ * @param {ConnectionObj} conn
  * @param {MessageNode} node
+ * @returns {Promise<{conn: ConnectionObj, packetToWrite: MessageNode}>}
  */
-export async function compressIfNeeded (conn: ConnectionObj, node:MessageNode): Promise<{conn: ConnectionObj, packetToWrite : MessageNode}> {
+module.exports.compressIfNeeded = async function compressIfNeeded (conn, node) {
   const packetToWrite = node
 
   // Check if compression is needed
@@ -54,10 +54,11 @@ export async function compressIfNeeded (conn: ConnectionObj, node:MessageNode): 
 
 /**
  *
- * @param {module:ConnectionObj} conn
- * @param {module:MessageNode} node
+ * @param {ConnectionObj} conn
+ * @param {MessageNode} node
+ * @returns {Promise<{conn: ConnectionObj, packetToWrite: MessageNode}>}
  */
-async function encryptIfNeeded (conn:ConnectionObj, node:MessageNode) {
+async function encryptIfNeeded (conn, node) {
   let packetToWrite = node
 
   // Check if encryption is needed
@@ -78,13 +79,14 @@ async function encryptIfNeeded (conn:ConnectionObj, node:MessageNode) {
 
 /**
  *
- * @param {module:ConnectionObj} conn
+ * @param {ConnectionObj} conn
  * @param {MessageNode[]} nodes
+ * @returns {Promise<ConnectionObj>}
  */
-export async function socketWriteIfOpen (conn:ConnectionObj, nodes:MessageNode[]): Promise<ConnectionObj> {
+module.exports.socketWriteIfOpen = async function socketWriteIfOpen (conn, nodes) {
   const updatedConnection = conn
   nodes.forEach(async node => {
-    const { packetToWrite: compressedPacket } = await compressIfNeeded(
+    const { packetToWrite: compressedPacket } = await module.exports.compressIfNeeded(
       conn,
       node
     )
@@ -113,10 +115,11 @@ export async function socketWriteIfOpen (conn:ConnectionObj, nodes:MessageNode[]
 
 /**
  *
- * @param {module:ConnectionObj} con
- * @param {module:MessageNode} node
+ * @param {ConnectionObj} con
+ * @param {MessageNode} node
+ * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
  */
-export async function GetStockCarInfo (con:ConnectionObj, node:MessageNode): Promise<{con: ConnectionObj, nodes: MessageNode[]}> {
+module.exports.GetStockCarInfo = async function GetStockCarInfo (con, node) {
   const getStockCarInfoMsg = new GenericRequestMsg()
   getStockCarInfoMsg.deserialize(node.data)
   getStockCarInfoMsg.dumpPacket()

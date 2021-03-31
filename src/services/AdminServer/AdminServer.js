@@ -5,16 +5,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { logger } from '../../shared/logger'
-import fs from 'fs'
-import https, { Server } from 'https'
-import util from 'util'
-import { MCServer } from '../MCServer'
-import { Logger } from 'winston'
-import { IServerConfig, ISslOptions } from '../../types'
-import { IncomingMessage, ServerResponse } from 'http'
-import { Socket } from 'net'
-import debug from 'debug'
+const { IncomingMessage, ServerResponse } = require('http')
+const { Socket } = require('net')
+const { MCServer } = require('../MCServer')
+
+const { logger } = require('../../shared/logger')
+const fs = require('fs')
+const https = require('https')
+const util = require('util')
+const debug = require('debug')
 
 const readFilePromise = util.promisify(fs.readFile)
 
@@ -26,19 +25,16 @@ const readFilePromise = util.promisify(fs.readFile)
 /**
  *
  *
- * @property {module:MCServer} mcServer
- * @property {winston.Logger} logger
- * @property {https.httpServer|undefined} httpServer
+ * @property {MCServer} mcServer
+ * @property {Logger} logger
+ * @property {Server} httpServer
  */
-export class AdminServer {
-  mcServer: MCServer
-  logger: Logger
-  httpsServer: Server | undefined
+module.exports.AdminServer = class AdminServer {
   /**
    * @class
-   * @param {module:MCServer} mcServer
+   * @param {MCServer} mcServer
    */
-  constructor (mcServer: MCServer) {
+  constructor (mcServer) {
     this.mcServer = mcServer
     /**
      * @type {logger}
@@ -50,8 +46,9 @@ export class AdminServer {
    * Create the SSL options object
    *
    * @param {IServerConfig} configuration
+   * @returns {Promise<ISslOptions>}
    */
-  async _sslOptions (configuration: IServerConfig): Promise<ISslOptions> {
+  async _sslOptions (configuration) {
     debug('mcoserver:AdminServer')(`Reading ${configuration.certFilename}`)
 
     let cert
@@ -85,7 +82,7 @@ export class AdminServer {
    *
    * @return {string}
    */
-  _handleGetBans (): string {
+  _handleGetBans () {
     const banlist = {
       mcServer: this.mcServer.mgr.getBans()
     }
@@ -96,7 +93,7 @@ export class AdminServer {
    *
    * @return {string}
    */
-  _handleGetConnections (): string {
+  _handleGetConnections () {
     const connections = this.mcServer.mgr.dumpConnections()
     let responseText = ''
     connections.forEach((connection, index) => {
@@ -115,7 +112,7 @@ export class AdminServer {
    *
    * @return {string}
    */
-  _handleResetAllQueueState (): string {
+  _handleResetAllQueueState () {
     this.mcServer.mgr.resetAllQueueState()
     const connections = this.mcServer.mgr.dumpConnections()
     let responseText = 'Queue state reset for all connections\n\n'
@@ -137,7 +134,7 @@ export class AdminServer {
    * @param {ServerResponse} response
    * @return {void}
    */
-  _httpsHandler (request: IncomingMessage, response: ServerResponse): void {
+  _httpsHandler (request, response) {
     this.logger.info(
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     )
@@ -145,7 +142,7 @@ export class AdminServer {
       'Requested recieved',
       {
         url: request.url,
-        remoteAddress: request.connection.remoteAddress
+        remoteAddress: request.socket.remoteAddress
       }
     )
     switch (request.url) {
@@ -178,8 +175,9 @@ export class AdminServer {
   /**
    *
    * @param {Socket} socket
+   * @returns {void}
    */
-  _socketEventHandler (socket: Socket): void {
+  _socketEventHandler (socket) {
     socket.on('error', error => {
       throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`)
     })
@@ -188,8 +186,9 @@ export class AdminServer {
   /**
    *
    * @param {IServerConfig} config
+   * @returns {Promise<void>}
    */
-  async start (config: IServerConfig): Promise<void> {
+  async start (config) {
     try {
       const sslOptions = await this._sslOptions(config)
 

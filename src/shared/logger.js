@@ -5,17 +5,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import winston from 'winston'
+const winston = require('winston')
 
 /**
- * Provides a shared logging abstraction
  * @module Logger
  */
 
 /**
-  * Return a shared logger
+ * Provides a shared logging abstraction
+  * @typedef {Object} Logger
   */
-export const logger = winston.createLogger({
+module.exports.logger = winston.createLogger({
   ...{
     level: 'silly',
     transports: [

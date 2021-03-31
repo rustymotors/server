@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import crypto, { Cipher, Decipher } from 'crypto'
+const crypto = require('crypto')
 
 /**
  * Handles the management of the encryption and decryption
@@ -14,13 +14,13 @@ import crypto, { Cipher, Decipher } from 'crypto'
  */
 
 /**
- *
+ * @class
+ * @property {string} id
+ * @property {Buffer} sessionkey
+ * @property {crypto.Decipher} in
+ * @property {crypty.Cipher} out
  */
-export class EncryptionManager {
-  id: string
-  sessionkey: Buffer
-  in: Decipher | null
-  out: Cipher | null
+module.exports.EncryptionManager = class EncryptionManager {
 
   /**
    *
@@ -40,9 +40,8 @@ export class EncryptionManager {
    *
    * @param {Buffer} sessionkey
    * @return {boolean}
-   * @memberof EncryptionMgr
    */
-  setEncryptionKey (sessionkey: Buffer): boolean {
+  setEncryptionKey (sessionkey) {
     this.sessionkey = sessionkey
     // file deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
     this.in = crypto.createDecipheriv('rc4', sessionkey, '')
@@ -57,7 +56,7 @@ export class EncryptionManager {
    * @return {Buffer}
    * @memberof EncryptionMgr
    */
-  decrypt (encryptedText: Buffer): Buffer {
+  decrypt (encryptedText) {
     if (this.in === null) {
       throw new Error('No encryption manager found!')
     }
@@ -71,7 +70,7 @@ export class EncryptionManager {
    * @return {Buffer}
    * @memberof EncryptionMgr
    */
-  encrypt (plainText: Buffer): Buffer {
+  encrypt (plainText) {
     if (this.out === null) {
       throw new Error('No decryption manager found!')
     }
@@ -85,7 +84,7 @@ export class EncryptionManager {
    *
    * @return {string}
    */
-  _getSessionKey (): string {
+  _getSessionKey () {
     return this.sessionkey.toString('hex')
   }
 
@@ -94,7 +93,7 @@ export class EncryptionManager {
    *
    * @return {string}
    */
-  getId (): string {
+  getId () {
     return this.id
   }
 }

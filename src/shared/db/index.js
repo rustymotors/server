@@ -5,18 +5,20 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import pg, { QueryArrayConfig } from 'pg'
+const pg = require('pg')
 
-export const pool = new pg.Pool({
+const pool = new pg.Pool({
   user: 'postgres',
   host: 'localhost',
   password: 'password',
   port: 5432
 })
 
+module.exports.pool = pool
+
 /**
  * @param {string} text
  * @param {string[]} params
  * @return {Promise<pg.QueryResult<Record<string, string>[]>>}
  */
-export function query (text: QueryArrayConfig, params: string[]): Promise<pg.QueryResult<Record<string, string>[]>> { return pool.query(text, params) }
+module.exports.query = function query (text, params) { return pool.query(text, params) }

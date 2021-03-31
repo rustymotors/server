@@ -34,9 +34,9 @@ it('ConnectionObj', () => {
 
 it('ConnectionObj cross-comms', () => {
   /** @type {ConnectionObj} */
-  let testConn1: ConnectionObj
+  let testConn1
   /** @type {ConnectionObj} */
-  let testConn2: ConnectionObj
+  let testConn2
 
   beforeEach(() => {
     testConn1 = new ConnectionObj('def', new Socket(), fakeConnectionManager)

@@ -5,68 +5,60 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import crypto, { Cipher, Decipher } from 'crypto'
-import { Socket } from 'net'
-import { ConnectionMgr } from './ConnectionMgr'
-import { EncryptionManager } from './EncryptionMgr'
+const crypto = require('crypto')
+const { Socket } = require('net')
+const { ConnectionMgr } = require('./ConnectionMgr')
+const { EncryptionManager } = require('./EncryptionMgr')
 
 /**
  * Contains the proporties and methods for a TCP connection
  * @module ConnectionObj
  */
 
-export enum ConnectionStatus {
-  'Active',
-  'Inactive'
-}
+/**
+ * @typedef {'Active' | 'Inactive'} ConnectionStatus
+ */
 
 /**
  * @typedef LobbyCiphers
  * @property { crypto.Cipher | null } cipher
  * @property { crypto.Decipher | null} decipher
  */
-export interface LobbyCiphers {
-  cipher: Cipher | null,
-  decipher: Decipher | null
-}
 
 /**
  * @class ConnectionObj
  * @property {string} id
+ * @property {number} appId
+ * @property {ConnectionStatus} status
+ * @property {string} remoteAddress
+ * @property {string} localPort
  * @property {Socket} sock
+ * @property {null} msgEvent
+ * @property {number} lastMsg
+ * @property {boolean} useEncryption
+ * @property {LobbyCiphers} encLobby
+ * @property {EncryptionManager} enc
+ * @property {boolean} isSetupComplete
  * @property {ConnectionMgr} mgr
+ * @property {boolean} inQueue
+ * @property {Buffer} decryptedCmd
+ * @property {Buffer} encryptedCmd
  */
-export class ConnectionObj {
-  id: string
-  appId: number
-  status: ConnectionStatus
-  remoteAddress: string | undefined
-  localPort: number
-  sock: Socket
-  msgEvent: null
-  lastMsg: number
-  useEncryption: boolean
-  encLobby: LobbyCiphers
-  enc: EncryptionManager
-  isSetupComplete: boolean
-  mgr: ConnectionMgr
-  inQueue: boolean
-  decryptedCmd: Buffer
-  encryptedCmd: Buffer
+module.exports.ConnectionObj = class ConnectionObj {
 
   /**
    *
    * @param {string} connectionId
    * @param {Socket} sock
-   * @param {module:ConnectionMgr} mgr
+   * @param {ConnectionMgr} mgr
    */
-  constructor (connectionId: string, sock: Socket, mgr: ConnectionMgr) {
+  constructor (connectionId, sock, mgr) {
     this.id = connectionId
     this.appId = 0
     /**
      * @type {ConnectionStatus}
      */
-    this.status = ConnectionStatus.Inactive
+    this.status = 'Inactive'
     this.remoteAddress = sock.remoteAddress
     this.localPort = sock.localPort
     this.sock = sock
@@ -89,8 +81,9 @@ export class ConnectionObj {
   /**
    *
    * @param {Buffer} key
+   * @returns {void}
    */
-  setEncryptionKey (key: Buffer): void {
+  setEncryptionKey (key) {
     this.isSetupComplete = this.enc.setEncryptionKey(key)
   }
 
@@ -98,8 +91,9 @@ export class ConnectionObj {
    * setEncryptionKeyDES
    *
    * @param {string} skey
+   * @returns {void}
    */
-  setEncryptionKeyDES (skey: string): void {
+  setEncryptionKeyDES (skey) {
     // deepcode ignore HardcodedSecret: This uses an empty IV
     const desIV = Buffer.alloc(8)
 
@@ -134,7 +128,7 @@ export class ConnectionObj {
    * @param {Buffer} messageBuffer
    * @return {Buffer}
    */
-  cipherBufferDES (messageBuffer: Buffer): Buffer {
+  cipherBufferDES (messageBuffer) {
     if (this.encLobby.cipher) {
       return this.encLobby.cipher.update(messageBuffer)
     }
@@ -147,7 +141,7 @@ export class ConnectionObj {
    * @param {Buffer} messageBuffer
    * @return {Buffer}
    */
-  decipherBufferDES (messageBuffer: Buffer): Buffer {
+  decipherBufferDES (messageBuffer) {
     if (this.encLobby.decipher) {
       return this.encLobby.decipher.update(messageBuffer)
     }

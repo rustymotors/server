@@ -5,23 +5,35 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect } from 'chai'
 import mock from 'mock-fs'
-import { AdminServer } from '../src/services/AdminServer/AdminServer'
-import { fakeConfig, fakeMCServer } from './helpers'
+import { AuthLogin } from '../src/services/AuthLogin/AuthLogin'
+import { fakeConfig } from './helpers'
+import { IServerConfig } from '../src/types'
+import { expect } from 'chai'
 
 /* eslint-env mocha */
 
-const adminServer = new AdminServer(fakeMCServer)
+describe('WebServer', () => {
+  const webServer = new AuthLogin(fakeConfig)
 
-describe('AdminServer', async () => {
   it('_sslOptions()', async () => {
+    /**
+     * @type {IServerConfig}
+     */
+    const config = {
+      certFilename: '/cert/cert.pem',
+      privateKeyFilename: '/cert/private.key',
+      ipServer: '',
+      publicKeyFilename: '',
+      connectionURL: ''
+    }
+
     //  deepcode ignore WrongNumberOfArgs/test: false positive
     mock({
       '/cert/': {}
     })
     try {
-      await adminServer._sslOptions(fakeConfig.serverConfig)
+      await webServer._sslOptions(config)
     } catch (error) {
       expect(error).contains(/cert.pem/)
     }
@@ -31,7 +43,7 @@ describe('AdminServer', async () => {
       '/cert/cert.pem': 'stuff'
     })
     try {
-      await adminServer._sslOptions(fakeConfig.serverConfig)
+      await webServer._sslOptions(config)
     } catch (error) {
       expect(error).contains(/private.key/)
     }
@@ -42,7 +54,7 @@ describe('AdminServer', async () => {
       '/cert/private.key': 'stuff'
     })
     try {
-      await adminServer._sslOptions(fakeConfig.serverConfig)
+      await webServer._sslOptions(config)
     } catch (error) {
       expect(error).contains(/private.key/)
     }

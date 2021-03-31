@@ -6,36 +6,41 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { appSettings } from '../config/app-settings'
-import { logger } from './shared/logger'
 import { AdminServer } from './services/AdminServer/AdminServer'
 import { MCServer } from './services/MCServer'
 import { DatabaseManager } from './shared/DatabaseManager'
-import { IAppSettings } from './types'
-import { Logger } from 'winston'
+import { logger } from './shared/logger'
+
 
 /**
  * Main game server
- * @module Server
+ * @class
+ * @property {IAppSettings} config
+ * @property {Logger} logger
+ * @property {DatabaseManager} databaseManager
+ * @property {MCServer} mcServer
+ * @property {AdminServer} adminServer
  */
 export class Server {
-  config: IAppSettings
-  logger: Logger
-  databaseManager: DatabaseManager
-  mcServer: MCServer | undefined
-  adminServer: AdminServer | undefined
+  config
+  logger
+  databaseManager
+  mcServer
+  adminServer
+
   /**
-   * @param {module:DatabaseManager} databaseManager
+   * @param {DatabaseManager} databaseManager
    */
-  constructor (databaseManager: DatabaseManager) {
+  constructor (databaseManager) {
     this.config = appSettings
     this.logger = logger.child({ service: 'mcoserver:Server' })
     this.databaseManager = databaseManager
   }
 
   /**
-   *
+   * @returns {Promise<void>}
    */
-  async start (): Promise<void> {
+  async start () {
     this.logger.info('Starting servers...')
 
     // Start the MC Server

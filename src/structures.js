@@ -5,8 +5,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { InpsCommandMap, NPS_COMMAND_MODULE } from './types'
-
 // eslint-disable-next-line camelcase
 export const _NPS_RiffListHeader = {
   StructSize: Buffer.alloc(4), // Uint4B
@@ -176,22 +174,36 @@ export const NPS_GetPersonaMapListReq = {
 
 export class MsgHead {
   // This is a 4B in the debug binary, the client is sending 2B
-  private _length: Buffer = Buffer.alloc(2) // UInt4B
-  private _mcosig: Buffer = Buffer.alloc(4) // UInt4B
+  /** @type {Buffer} */
+  _length = Buffer.alloc(2) // UInt4B
+  /** @type {Buffer} */
+  _mcosig = Buffer.alloc(4) // UInt4B
 
-  get length (): number {
+  /**
+   * @returns {number}
+   */
+  get length () {
     return this._length.readInt16BE()
   }
 
-  set length (value: number) {
+  /**
+   * @param {number} value
+   */
+  set length (value) {
     this._length.writeInt16BE(value)
   }
 
-  get mcosig (): Buffer {
+  /**
+   * @returns {Buffer}
+   */
+  get mcosig () {
     return this._mcosig
   }
 
-  set mcosig (value: Buffer) {
+  /**
+   * @param {Buffer} value
+   */
+  set mcosig (value) {
     this._mcosig = value
   }
 }
@@ -205,69 +217,124 @@ export const CompressedHeader = {
   data: Buffer.alloc(0) // [0] Uint4B
 }
 
+/**
+ * @class MessageNode
+ * @property {Buffer} _toFrom
+ * @property {Buffer} _appID
+ * @property {Buffer} _header
+ * @property {Buffer} _seq
+ * @property {Buffer} _flags
+ * @property {Buffer} _buffer
+ * @property {Buffer} _rawBuffer
+ */
 export class MessageNode {
-  private readonly _toFrom: Buffer = Buffer.alloc(4) // UInt4
-  private readonly _appID: Buffer = Buffer.alloc(4) // UInt4
-  private readonly _header: MsgHead = new MsgHead() // UInt4
-  private readonly _seq: Buffer = Buffer.alloc(4) // UInt4
-  private readonly _flags: Buffer = Buffer.alloc(4) // UInt4
-  private _buffer: Buffer // [1] Char
-  private _rawBuffer: Buffer
+  _toFrom = Buffer.alloc(4) // UInt4
+  _appID = Buffer.alloc(4) // UInt4
+  _header = new MsgHead() // UInt4
+  _seq = Buffer.alloc(4) // UInt4
+  _flags = Buffer.alloc(4) // UInt4
+  _buffer // [1] Char
+  _rawBuffer
 
-  constructor (buffer: Buffer) {
+  /**
+   * 
+   * @param {Buffer} buffer 
+   */
+  constructor (buffer) {
     this._rawBuffer = buffer
     this._buffer = buffer.slice(16)
   }
 
-  get toFrom (): number {
+  /**
+   * @returns {number}
+   */
+  get toFrom () {
     return this._toFrom.readInt32BE()
   }
 
-  set toFrom (value: number) {
+  /**
+   * @param {number} value
+   */
+  set toFrom (value) {
     this._toFrom.writeInt32BE(value)
   }
 
-  get appId (): number {
+  /**
+   * @returns {number}
+   */
+  get appId () {
     return this._appID.readInt32BE()
   }
 
-  set appId (value: number) {
+  /**
+   * @param {number} value
+   */
+  set appId (value) {
     this._appID.writeInt32BE(value)
   }
 
-  get header (): MsgHead {
+  /**
+   * @returns {MsgHead}
+   */
+  get header () {
     return this._header
   }
 
-  get seq (): number {
+  /**
+   * @returns {number}
+   */
+  get seq () {
     return this._seq.readInt32BE()
   }
 
-  set seq (value: number) {
+  /**
+   * @param {number} value
+   */
+  set seq (value) {
     this._seq.writeInt32BE(value)
   }
 
-  get flags (): number {
+  /**
+   * @returns {number}
+   */
+  get flags () {
     return this._flags.readInt32BE()
   }
 
-  set flags (value: number) {
+  /**
+   * @param {number} value
+   */
+  set flags (value) {
     this._flags.writeInt32BE(value)
   }
 
-  get buffer (): Buffer {
+  /**
+   * @returns {Buffer}
+   */
+  get buffer () {
     return this._buffer
   }
 
-  get rawBuffer(): Buffer {
+  /**
+   * @returns {number}
+   */
+  get rawBuffer() {
     return this._rawBuffer
   }
 
-  set buffer (value: Buffer) {
+  /**
+   * @param {Buffer} value
+   */
+  set buffer (value) {
     this._buffer = value
   }
 
-  static fromBuffer (buffer: Buffer): MessageNode {
+  /**
+   * 
+   * @param {Buffer} buffer 
+   * @returns {MessageNode}
+   */
+  static fromBuffer (buffer) {
     const newNode = new MessageNode(buffer)
     newNode.header.length = 24 + buffer.byteLength
     newNode.header.mcosig = buffer.slice(2, 6)
@@ -277,8 +344,9 @@ export class MessageNode {
 
 /**
  * Commands from the game server to the game client
+ * @type {InpsCommandMap[]}
  */
-export const NPS_LOBBYSERVER_COMMANDS: InpsCommandMap[] = [
+export const NPS_LOBBYSERVER_COMMANDS = [
   { name: 'NPS_FORCE_LOGOFF', value: 513, module: NPS_COMMAND_MODULE.Lobby },
   { name: 'NPS_USER_LEFT', value: 514, module: NPS_COMMAND_MODULE.Lobby },
   { name: 'NPS_USER_JOINED', value: 515, module: NPS_COMMAND_MODULE.Lobby },
@@ -330,8 +398,9 @@ export const NPS_LOBBYSERVER_COMMANDS: InpsCommandMap[] = [
 
 /**
  * Commands from the game client to the game server
+ * @type {InpsCommandMap[]}
  */
-export const NPS_LOBBYCLIENT_COMMANDS: InpsCommandMap[] = [
+export const NPS_LOBBYCLIENT_COMMANDS = [
   { name: 'NPS_LOGIN', value: 256, module: NPS_COMMAND_MODULE.Lobby },
   { name: 'NPS_GET_USER_LIST', value: 257, module: NPS_COMMAND_MODULE.Lobby },
   { name: 'NPS_GET_MY_USER_DATA', value: 258, module: NPS_COMMAND_MODULE.Lobby },
@@ -381,8 +450,9 @@ export const NPS_LOBBYCLIENT_COMMANDS: InpsCommandMap[] = [
 
 /**
  * Commands from the game client to the login server
+ * @type {InpsCommandMap[]}
  */
-export const NPS_LOGINCLIENT_COMMANDS: InpsCommandMap[] = [
+export const NPS_LOGINCLIENT_COMMANDS = [
   { name: 'NPS_USER_LOGIN', value: 1281, module: NPS_COMMAND_MODULE.Login },
   { name: 'NPS_GAME_LOGIN', value: 1282, module: NPS_COMMAND_MODULE.Login },
   { name: 'NPS_REGISTER_GAME_LOGIN', value: 1283, module: NPS_COMMAND_MODULE.Login },
@@ -429,15 +499,24 @@ export const NPS_LOGINCLIENT_COMMANDS: InpsCommandMap[] = [
   { name: 'NPS_GET_USER_STATUS', value: 1333, module: NPS_COMMAND_MODULE.Login }
 ]
 
-export const NPS_LOBBY_COMMANDS: InpsCommandMap[] = [
+/**
+ * @type {InpsCommandMap[]}
+ */
+export const NPS_LOBBY_COMMANDS = [
   ...NPS_LOBBYCLIENT_COMMANDS, ...NPS_LOBBYSERVER_COMMANDS
 ]
 
-export const NPS_LOGIN_COMMANDS: InpsCommandMap[] = [
+/**
+ * @type {InpsCommandMap[]}
+ */
+export const NPS_LOGIN_COMMANDS = [
   ...NPS_LOGINCLIENT_COMMANDS
 ]
 
-export const NPS_COMMANDS:InpsCommandMap[] = [
+/**
+ * @type {InpsCommandMap[]}
+ */
+export const NPS_COMMANDS = [
   ...NPS_LOBBY_COMMANDS, ...NPS_LOGINCLIENT_COMMANDS,
   { name: 'NPS_CRYPTO_DES_CBC', value: 0x1101, module: NPS_COMMAND_MODULE.Lobby }
 ]

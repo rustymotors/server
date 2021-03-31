@@ -5,11 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { ConnectionObj } from './services/MCServer/ConnectionObj'
+
+/**
+ * @module
+ */
 
 /**
  * @global
- * @typedef IRawPacket
+ * @typedef {Object} IRawPacket
  * @property {string} connectionId
  * @property {module:ConnectionObj} connection
  * @property {Buffer} data
@@ -17,57 +20,36 @@ import { ConnectionObj } from './services/MCServer/ConnectionObj'
  * @property {string  | undefined } remoteAddress
  * @property {number} timestamp
  */
-export interface IRawPacket {
-  connectionId: string
-  connection: ConnectionObj
-  data: Buffer
-  localPort: number
-  remoteAddress: string | undefined
-  timestamp: number
-}
+
 
 /**
  *
  * @global
- * @typedef IServerConfig
+ * @typedef {Object} IServerConfig
  * @property {string} certFilename
  * @property {string} ipServer
  * @property {string} privateKeyFilename
  * @property {string} publicKeyFilename
  * @property {string} connectionURL
  */
-export interface IServerConfig {
-  certFilename: string
-  ipServer: string
-  privateKeyFilename: string
-  publicKeyFilename: string
-  connectionURL: string
-}
 
 /**
  *
  * @global
- * @typedef IAppSettings
+ * @typedef {Object} IAppSettings
  * @property {IServerConfig} serverConfig
  */
-export interface IAppSettings {
-  serverConfig: IServerConfig
-}
 
 /**
  * @global
- * @typedef ISessionRecord
+ * @typedef {Object} ISessionRecord
  * @property {string} skey
  * @property {string} sessionkey
  */
-export interface ISessionRecord {
-  skey: string
-  sessionkey: string
-}
 
 /**
   * @global
-  * @typedef MCOTS_Session
+  * @typedef {Object} MCOTS_Session
   * @property {module:ConnectionObj} con
   * @property {module:MessageNode[]} nodes
   */
@@ -83,14 +65,6 @@ export interface ISessionRecord {
  * @property {Buffer} personaCount
  * @property {Buffer} shardId
  */
-export interface IPersonaRecord {
-  customerId: number
-  id: Buffer
-  maxPersonas: Buffer
-  name: Buffer
-  personaCount: Buffer
-  shardId: Buffer
-}
 
 /**
  * @global
@@ -178,117 +152,34 @@ export interface IPersonaRecord {
  * @property {number} teamtrialbaseTUP
  * @property {number} raceCashFactor
  */
-export interface ILobbyInfo {
-  lobbyId: number
-  racetypeId: number
-  turfId: number
-  NPSRiffName: string
-  eTurfName: string
-  clientArt: string
-  elementId: number
-  turfLength: number
-  startSlice: number
-  endSlice: number
-  dragStageLeft: number
-  dragStageRight: number
-  dragStagingSlice: number
-  gridSpreadFactor: number
-  linear: number
-  numplayersmin: number
-  numplayersdefault: number
-  bnumplayersenabled: number
-  numlapsmin: number
-  numlapsmax: number
-  numplayersmax: number
-  numlapsdefault: number
-  bnumlapsenabled: number
-  numroundsmin: number
-  numroundsmax: number
-  numroundsdefault: number
-  bnumroundsenabled: number
-  bweatherdefault: number
-  bweatherenabled: number
-  bnightdefault: number
-  bnightenabled: number
-  bbackwarddefault: number
-  bbackwardenabled: number
-  btrafficdefault: number
-  btrafficenabled: number
-  bdamagedefault: number
-  bdamageenabled: number
-  baidefault: number
-  baienabled: number
-  topDog: string
-  turfOwner: string
-  qualifyingTime: number
-  clubNumPlayers: number
-  clubNumLaps: number
-  clubNumRounds: number
-  clubNight: number
-  clubWeather: number
-  clubBackwards: number
-  bestLapTime: number
-  lobbyDifficulty: number
-  ttPointForQualify: number
-  ttCashForQualify: number
-  ttPointBonusFasterIncs: number
-  ttCashBonusFasterIncs: number
-  ttTimeIncrements: number
-  // eslint-disable-next-line camelcase
-  ttvictory_1st_points: number
-  // eslint-disable-next-line camelcase
-  ttvictory_1st_cash: number
-  // eslint-disable-next-line camelcase
-  ttvictory_2nd_points: number
-  // eslint-disable-next-line camelcase
-  ttvictory_2nd_cash: number
-  // eslint-disable-next-line camelcase
-  ttvictory_3rd_points: number
-  // eslint-disable-next-line camelcase
-  ttvictory_3rd_cash: number
-  minLevel: number
-  minResetSlice: number
-  maxResetSlice: number
-  newbieFlag: number
-  driverHelmetFlag: number
-  clubNumPlayersMin: number
-  clubNumPlayersMax: number
-  clubNumPlayersDefault: number
-  numClubsMin: number
-  racePointsFactor: number
-  bodyClassMax: number
-  powerClassMax: number
-  partPrizesMax: number
-  partPrizesWon: number
-  clubLogoId: number
-  bteamtrialweather: number
-  bteamtrialnight: number
-  bteamtrialbackward: number
-  teamtrialnumlaps: number
-  teamtrialbaseTUP: number
-  raceCashFactor: number
-}
 
-export interface ISslOptions {
-  cert: string
-  honorCipherOrder: true
-  key: string
-  rejectUnauthorized: false
-}
+/**
+ * @global
+ * @typedef {Object} ISslOptions
+ * @property {string} cert
+ * @property {boolean} honorCipherOrder
+ * @property {string} key
+ * @property {boolean} rejectUnauthorized
+ */
 
-export interface IUserRecordMini {
-  contextId: string
-  customerId: Buffer
-  userId: Buffer
-}
+/**
+ * @global
+ * @typedef {Object} IUserRecordMini
+ * @property {string} contextId
+ * @property {string} customerId
+ * @property {Buffer} userId
+ */
 
-export enum NPS_COMMAND_MODULE {
-  'Lobby',
-  'Login'
-}
+/**
+ * @global
+ * @typedef {'Lobby' | 'Login'}  NPS_COMMAND_MODULE
+ */
 
-export interface InpsCommandMap {
-  name: string;
-  value: number;
-  module: NPS_COMMAND_MODULE
-}
+
+/**
+ * @global
+ * @typedef {Object} InpsCommandMap
+ * @property {string} name
+ * @property {number} value
+ * @property {NPS_COMMAND_MODULE} module
+ */

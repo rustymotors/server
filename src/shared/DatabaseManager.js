@@ -5,11 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from 'winston'
-
-import { pool } from './db/index'
-import { migrate } from 'postgres-migrations'
-import { ISessionRecord } from '../types'
+const { pool } = require('./db/index')
+const { migrate } = require('postgres-migrations')
 
 /**
  * Database connection abstraction
@@ -18,9 +15,10 @@ import { ISessionRecord } from '../types'
 
 /**
  *
- * @param {module:Logger.logger} logger
+ * @param {import('./logger').Logger} logger
+ * @returns {Promise<void>}
  */
-export async function doMigrations (logger: Logger): Promise<void> {
+module.exports.doMigrations = async function doMigrations (logger) {
   logger.info('Starting migrations...')
   const client = pool
   try {
@@ -38,27 +36,24 @@ export async function doMigrations (logger: Logger): Promise<void> {
 }
 
 /**
- *
+ * @class
+ * @property {Logger} logger
  */
-export class DatabaseManager {
-  logger: Logger
-
+module.exports.DatabaseManager = class DatabaseManager {
   /**
-   *
-   * @class
-   * @param {module:Logger.logger} logger
+   * @param {import('./logger').Logger} logger
    */
-  constructor (logger: Logger) {
+  constructor (logger) {
     this.logger = logger
   }
 
   /**
    *
    * @param {number} customerId
-   * @return {Promise<Session_Record>}
+   * @return {Promise<ISessionRecord>}
    * @memberof {DatabaseManager}
    */
-  async fetchSessionKeyByCustomerId (customerId: number): Promise<ISessionRecord> {
+  async fetchSessionKeyByCustomerId (customerId) {
     try {
       const { rows } = await pool.query(
         'SELECT sessionkey, skey FROM sessions WHERE customer_id = $1',
@@ -76,16 +71,16 @@ export class DatabaseManager {
    * Fetch session key from database based on remote address
    *
    * @param {string} connectionId
-   * @return {Promise<Session_Record>}
+   * @return {Promise<ISessionRecord>}
    * @memberof {DatabaseManager}
    */
-  async fetchSessionKeyByConnectionId (connectionId: string): Promise<ISessionRecord> {
+  async fetchSessionKeyByConnectionId (connectionId) {
     try {
       const { rows } = await pool.query(
         'SELECT sessionkey, skey FROM sessions WHERE connection_id = $1',
         [connectionId]
       )
-      /** @type {Session_Record} */
+      /** @type {ISession_Record} */
       return rows[0]
     } catch (e) {
       this.logger.error('Unable to update session key ', e)
@@ -99,17 +94,18 @@ export class DatabaseManager {
    * @param {string} sessionkey
    * @param {string} contextId
    * @param {string} connectionId
-   * @return {Promise<Session_Record[]>}
+   * @return {Promise<ISessionRecord>}
    * @memberof {DatabaseManager}
    */
-  async _updateSessionKey (customerId: number, sessionkey: string, contextId: string, connectionId: string): Promise<ISessionRecord> {
+  async _updateSessionKey (customerId, sessionkey, contextId, connectionId) {
     const skey = sessionkey.substr(0, 16)
     try {
       const { rows } = await pool.query(
         'INSERT INTO sessions (customer_id, sessionkey, skey, context_id, connection_id) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (customer_id) DO UPDATE SET sessionkey = $2, skey = $3, context_id = $4, connection_id = $5',
         [customerId, sessionkey, skey, contextId, connectionId]
       )
-      const results: ISessionRecord = rows[0]
+      /** @type {ISessionRecord} */
+      const results = rows[0]
       return results
     } catch (e) {
       if (e instanceof Error) {

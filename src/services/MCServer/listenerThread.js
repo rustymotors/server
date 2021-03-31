@@ -5,12 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import debug from 'debug'
-import net from 'net'
-import { Logger } from 'winston'
-import { IAppSettings, IRawPacket } from '../../types'
-import { ConnectionMgr } from './ConnectionMgr'
-import { ConnectionObj } from './ConnectionObj'
+const { Server, Socket } = require('net')
+const { ConnectionMgr } = require('./ConnectionMgr')
+const { ConnectionObj } = require('./ConnectionObj')
+
+const debug = require('debug')
+const net = require('net')
 
 /**
  * TCP Listener thread
@@ -18,18 +18,17 @@ import { ConnectionObj } from './ConnectionObj'
  */
 
 /**
- *
+ * @class
+ * @property {IAppSettings} config
+ * @property {Logger} logger
  */
-export class ListenerThread {
-  config: IAppSettings
-  logger: Logger
+module.exports.ListenerThread = class ListenerThread {
 
   /**
-   * @class
    * @param {IAppSettings} config
-   * @param {module:Logger.logger} logger
+   * @param {import('../../shared/logger').Logger} logger
    */
-  constructor (config: IAppSettings, logger: Logger) {
+  constructor (config, logger) {
     this.config = config
     this.logger = logger
   }
@@ -39,15 +38,14 @@ export class ListenerThread {
    * takes the data buffer and creates a IRawPacket object
    *
    * @param {Buffer} data
-   * @param {module:ConnectionObj} connection
-   * @param {module:IServerConfig} config
-   * @memberof! ListenerThread
+   * @param {ConnectionObj} connection
+   * @returns {Promise<void>}
    */
-  async _onData (data: Buffer, connection: ConnectionObj): Promise<void> {
+  async _onData (data, connection) {
     try {
       const { localPort, remoteAddress } = connection.sock
       /** @type {IRawPacket} */
-      const rawPacket: IRawPacket = {
+      const rawPacket = {
         connectionId: connection.id,
         connection,
         data,
@@ -61,7 +59,8 @@ export class ListenerThread {
         { data: rawPacket.data.toString('hex') }
 
       )
-      let newConnection: ConnectionObj
+      /** @type {ConnectionObj} */
+      let newConnection
       try {
         newConnection = await connection.mgr.processData(rawPacket)
       } catch (error) {
@@ -97,12 +96,11 @@ export class ListenerThread {
   /**
    * server listener method
    *
-   * @param {net.Socket} socket
-   * @param {module:ConnectionMgr} connectionMgr
-   * @param {module:IServerConfig} config
-   * @memberof ListenerThread
+   * @param {Socket} socket
+   * @param {ConnectionMgr} connectionMgr
+   * @returns {void}
    */
-  _listener (socket: net.Socket, connectionMgr: ConnectionMgr): void {
+  _listener (socket, connectionMgr) {
     // Received a new connection
     // Turn it into a connection object
     const connection = connectionMgr.findOrNewConnection(socket)
@@ -140,11 +138,9 @@ export class ListenerThread {
    * @export
    * @param {number} localPort
    * @param {module:ConnectionMgr} connectionMgr
-   * @param {module:IServerConfig} config
-   * @return {Promise<net.Server>}
-   * @memberof! ListenerThread
+   * @return {Promise<Server>}
    */
-  async startTCPListener (localPort: number, connectionMgr: ConnectionMgr): Promise<net.Server> {
+  async startTCPListener (localPort, connectionMgr) {
     return net
       .createServer(socket => {
         this._listener(socket, connectionMgr)

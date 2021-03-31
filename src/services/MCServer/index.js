@@ -5,14 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { logger } from '../../shared/logger'
-import { ListenerThread } from './listenerThread'
-import { ConnectionMgr } from './ConnectionMgr'
-import { appSettings } from '../../../config/app-settings'
-import { IAppSettings } from '../../types'
-import { Logger } from 'winston'
-import { DatabaseManager } from '../../shared/DatabaseManager'
-import debug from 'debug'
+const { logger } = require('../../shared/logger')
+const { ListenerThread } = require('./listenerThread')
+const { ConnectionMgr } = require('./ConnectionMgr')
+const { appSettings } = require('../../../config/app-settings')
+const { DatabaseManager } = require('../../shared/DatabaseManager')
+const debug = require('debug')
 
 /**
  * This class starts all the servers
@@ -20,18 +18,20 @@ import debug from 'debug'
  * @module MCServer
  */
 
-export class MCServer {
-  config: IAppSettings
-  mgr: ConnectionMgr
-  logger: Logger
+/**
+ * @class
+ * @property {IAppSettings} config
+ * @property {ConnectionMgr} mgr
+ * @property {Logger} logger
+ */
+module.exports.MCServer = class MCServer {
 
   /**
    *
-   * @constructor
    * @param {IAppSettings} config
-   * @param {module:DatabaseManager.DatabaseManager} databaseManager
+   * @param {DatabaseManager} databaseManager
    */
-  constructor (config: IAppSettings, databaseManager: DatabaseManager) {
+  constructor (config, databaseManager) {
     this.config = config
     this.mgr = new ConnectionMgr(logger, databaseManager)
     this.logger = logger.child({ service: 'mcoserver:MCServer' })
@@ -39,10 +39,10 @@ export class MCServer {
 
   /**
    * Start the HTTP, HTTPS and TCP connection listeners
-   *
+   * @returns {Promise<void>}
    */
 
-  async startServers (): Promise<void> {
+  async startServers () {
     const listenerThread = new ListenerThread(appSettings, logger.child({ service: 'mcoserver:ListenerThread' }))
     this.logger.info('Starting the listening sockets...')
     const tcpPortList = [
