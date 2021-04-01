@@ -5,10 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from 'winston'
-import { logger } from '../../../shared/logger'
-import { StockCar } from './StockCar'
-import debug from 'debug'
+const { logger } = require('../../../shared/logger')
+const debug = require('debug')
+const { StockCar } = require('./StockCar')
 
 /**
  * Object for providing information on stock cars
@@ -24,15 +23,18 @@ import debug from 'debug'
 // BYTE     moreToCome;     // if 1, expect another msg, otherwise don't
 // StockCar carInfo[1];
 
-export class StockCarInfoMsg {
-  logger: Logger
-  msgNo: number
-  starterCash: number
-  dealerId: number
-  brand: number
-  noCars: number
-  moreToCome: number
-  StockCarList: StockCar[]
+/**
+ * @class
+ * @property {Logger} logger
+ * @property {number} msgNo
+ * @property {number} starterCash
+ * @property {number} dealerId
+ * @property {number} brand
+ * @property {number} noCars
+ * @property {number} moreToCome
+ * @property {StockCar[]} StockCarList
+ */
+class StockCarInfoMsg {
   /**
    * Creates an instance of StockCarInfoMsg.
    * @class
@@ -41,7 +43,7 @@ export class StockCarInfoMsg {
    * @param {number} brand
    * @memberof StockCarInfoMsg
    */
-  constructor (starterCash: number, dealerId: number, brand: number) {
+  constructor (starterCash, dealerId, brand) {
     this.logger = logger.child({ service: 'mcoserver:StockCarInfoMsg' })
 
     this.msgNo = 141
@@ -58,9 +60,10 @@ export class StockCarInfoMsg {
 
   /**
    *
-   * @param {module:StockCar} car
+   * @param {StockCar} car
+   * @returns {void}
    */
-  addStockCar (car: StockCar): void {
+  addStockCar (car) {
     this.StockCarList.push(car)
     this.noCars = this.StockCarList.length
   }
@@ -69,7 +72,7 @@ export class StockCarInfoMsg {
    *
    * @return {Buffer}
    */
-  serialize (): Buffer {
+  serialize () {
     // This does not count the StockCar array
     const packet = Buffer.alloc(17 + 9 * this.StockCarList.length)
     packet.writeInt16LE(this.msgNo, 0)
@@ -89,8 +92,9 @@ export class StockCarInfoMsg {
 
   /**
    * dumpPacket
+   * @returns {void}
    */
-  dumpPacket (): void {
+  dumpPacket () {
     debug('mcoserver:StockCarInfoMsg')(
       {
         msgNo: this.msgNo,
@@ -105,3 +109,4 @@ export class StockCarInfoMsg {
     )
   }
 }
+module.exports.StockCarInfoMsg = StockCarInfoMsg

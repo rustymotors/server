@@ -5,38 +5,35 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from 'winston'
-import { DatabaseManager } from '../../shared/DatabaseManager'
-import { IAppSettings, IRawPacket } from '../../types'
-
-import { appSettings } from '../../../config/app-settings'
-import { LoginServer } from './LoginServer/LoginServer'
-import { PersonaServer } from './PersonaServer/PersonaServer'
-import { LobbyServer } from './LobbyServer/LobbyServer'
-import { ConnectionObj } from './ConnectionObj'
+const { appSettings } = require("../../../config/app-settings")
+const { DatabaseManager } = require("../../shared/DatabaseManager")
+const { ConnectionObj } = require("./ConnectionObj")
+const { LobbyServer } = require("./LobbyServer/LobbyServer")
+const { LoginServer } = require("./LoginServer/LoginServer")
+const { PersonaServer } = require("./PersonaServer/PersonaServer")
 
 /**
- *
+ * @module npsPacketManager
  */
-export class NPSPacketManager {
-  logger: Logger
-  config: IAppSettings
-  database: DatabaseManager
-  npsKey: string
-  msgNameMapping: {
-    id: number,
-    name: string
-  }[]
 
-  loginServer: LoginServer
-  personaServer: PersonaServer
-  lobbyServer: LobbyServer
+/**
+ * @class
+ * @property {Logger} logger
+ * @property {IAppSettings} config
+ * @property {DatabaseManager} database
+ * @property {string} npsKey
+ * @property {{id: number, name: string}[]} msgNameMapping
+ * @property {LoginServer} loginServer
+ * @property {PersonaServer} personaServer
+ * @property {LobbyServer} lobbyServer
+ */
+class NPSPacketManager {
 
   /**
    *
-   * @param {module:DatabaseManager} databaseMgr
+   * @param {DatabaseManager} databaseMgr
    */
-  constructor (databaseMgr: DatabaseManager, logger: Logger) {
+  constructor (databaseMgr, logger) {
     this.logger = logger.child({ service: 'mcoserver:NPSPacketManager' })
     this.config = appSettings
     this.database = databaseMgr
@@ -69,7 +66,7 @@ export class NPSPacketManager {
    * @param {number} msgId
    * @return {string}
    */
-  msgCodetoName (msgId: number): string {
+  msgCodetoName (msgId) {
     const mapping = this.msgNameMapping.find(code => {
       return code.id === msgId
     })
@@ -80,23 +77,25 @@ export class NPSPacketManager {
    *
    * @return {string}
    */
-  getNPSKey (): string {
+  getNPSKey () {
     return this.npsKey
   }
 
   /**
    *
    * @param {string} key
+   * @returns {void}
    */
-  setNPSKey (key: string):void {
+  setNPSKey (key) {
     this.npsKey = key
   }
 
   /**
    *
    * @param {IRawPacket} rawPacket
+   * @returns {Promise<ConnectionObj>}
    */
-  async processNPSPacket (rawPacket: IRawPacket): Promise<ConnectionObj> {
+  async processNPSPacket (rawPacket) {
     const msgId = rawPacket.data.readInt16BE(0)
     this.logger.info(
       'Handling message',
@@ -124,3 +123,4 @@ export class NPSPacketManager {
     }
   }
 }
+module.exports.NPSPacketManager = NPSPacketManager

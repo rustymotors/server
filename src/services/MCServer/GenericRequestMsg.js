@@ -5,9 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from 'winston'
+const { logger } = require('../../shared/logger')
 
-import { logger } from '../../shared/logger'
+/**
+ * @module GenericRequestMsg
+ */
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // DWORD data;   // specific to the message sent (but usually 0)
@@ -16,13 +18,13 @@ import { logger } from '../../shared/logger'
 /**
  *
  *
- * @class GenericRequestMsg
+ * @class
+ * @property {Logger} logger
+ * @property {number} msgNo
+ * @property {Buffer} data
+ * @property {Buffer} data2
  */
-export class GenericRequestMsg {
-  logger: Logger
-  msgNo: number
-  data: Buffer
-  data2: Buffer
+class GenericRequestMsg {
 
   /**
    *
@@ -37,8 +39,9 @@ export class GenericRequestMsg {
   /**
    *
    * @param {Buffer} buffer
+   * @returns {void}
    */
-  deserialize (buffer: Buffer): void {
+  deserialize (buffer) {
     try {
       this.msgNo = buffer.readInt16LE(0)
     } catch (error) {
@@ -61,7 +64,7 @@ export class GenericRequestMsg {
    *
    * @return {Buffer}
    */
-  serialize (): Buffer {
+  serialize () {
     const packet = Buffer.alloc(16)
     packet.writeInt16LE(this.msgNo, 0)
     this.data.copy(packet, 2)
@@ -71,8 +74,9 @@ export class GenericRequestMsg {
 
   /**
    * dumpPacket
+   * @returns {void}
    */
-  dumpPacket (): void {
+  dumpPacket () {
     this.logger.info(
       'GenericRequest',
       {
@@ -83,7 +87,4 @@ export class GenericRequestMsg {
     )
   }
 }
-
-module.exports = {
-  GenericRequestMsg
-}
+module.exports.GenericRequestMsg = GenericRequestMsg

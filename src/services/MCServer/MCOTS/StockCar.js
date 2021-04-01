@@ -5,10 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from 'winston'
-import { logger } from '../../../shared/logger'
+const { logger } = require('../../../shared/logger')
 
-import debug from 'debug'
+const debug = require('debug')
 
 /**
  * Container objest for Stock cars
@@ -19,18 +18,20 @@ import debug from 'debug'
 // DWORD   retailPrice;
 // WORD    bIsDealOfTheDay;
 
-export class StockCar {
-  logger: Logger
-  brandedPartId: number
-  retailPrice: number
-  bIsDealOfTheDay: 0 | 1
+/**
+ * @class
+ * @property {Logger} logger
+ * @property {number} brandedPartId
+ * @property {number} retailPrice
+ * @property {0 | 1} bIsDealOfTheDay
+ */
+class StockCar {
   /**
-   * @class
    * @param {number} brandedPartId
    * @param {number} retailPrice
    * @param {0|1} bIsDealOfTheDay
    */
-  constructor (brandedPartId: number, retailPrice: number, bIsDealOfTheDay: 0 | 1) {
+  constructor (brandedPartId, retailPrice, bIsDealOfTheDay) {
     this.logger = logger.child({ service: 'mcoserver:StockCar' })
 
     this.brandedPartId = brandedPartId
@@ -42,7 +43,7 @@ export class StockCar {
    *
    * @return {Buffer}
    */
-  serialize (): Buffer {
+  serialize () {
     const packet = Buffer.alloc(10)
     packet.writeInt32LE(this.brandedPartId, 0)
     packet.writeInt32LE(this.retailPrice, 4)
@@ -52,8 +53,9 @@ export class StockCar {
 
   /**
    * dumpPacket
+   * @returns {void}
    */
-  dumpPacket (): void {
+  dumpPacket () {
     debug('mcoserver:StockCar')('[StockCar]======================================')
     debug('mcoserver:StockCar')(`brandedPartId:     ${this.brandedPartId}`)
     debug('mcoserver:StockCar')(`retailPrice        ${this.retailPrice}`)
@@ -61,3 +63,4 @@ export class StockCar {
     debug('mcoserver:StockCar')('[/StockCar]======================================')
   }
 }
+module.exports.StockCar = StockCar

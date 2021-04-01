@@ -5,29 +5,32 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from 'winston'
+const { logger } = require("../../shared/logger")
 
-import { logger } from '../../shared/logger'
+/**
+ * @module ClientConnectMsg
+ */
 
 /**
  *
  *
- * @class ClientConnectMsg
+ * @class 
+ * @property {Logger} logger
+ * @property {number} msgNo
+ * @property {number} personaId
+ * @property {number} appId
+ * @property {number} customerId
+ * @property {string} custName
+ * @property {string} personaName
+ * @property {Buffer} mcVersion
  */
-export class ClientConnectMsg {
-  logger: Logger
-  msgNo: number
-  personaId: number
-  appId: number
-  customerId: number
-  custName: string
-  personaName: string
-  mcVersion: Buffer
+class ClientConnectMsg {
+
   /**
    *
    * @param {Buffer} buffer
    */
-  constructor (buffer: Buffer) {
+  constructor (buffer) {
     this.logger = logger.child({ service: 'mcoserver:ClientConnectMsg' })
 
     try {
@@ -61,14 +64,15 @@ export class ClientConnectMsg {
    *
    * @return {number}
    */
-  getAppId (): number {
+  getAppId () {
     return this.appId
   }
 
   /**
    * dumpPacket
+   * @returns {void}
    */
-  dumpPacket (): void {
+  dumpPacket () {
     this.logger.info(
       'ClientConnectMsg',
       {
@@ -83,4 +87,4 @@ export class ClientConnectMsg {
   }
 }
 
-module.exports = { ClientConnectMsg }
+module.exports.ClientConnectMsg = ClientConnectMsg

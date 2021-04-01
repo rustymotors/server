@@ -5,17 +5,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { NPSMsg } from '../MCOTS/NPSMsg'
-import { NPSUserInfo } from './npsUserInfo'
-import { PersonaServer } from '../PersonaServer/PersonaServer'
-import { DatabaseManager } from '../../../shared/DatabaseManager'
-import { ConnectionObj } from '../ConnectionObj'
-import { IRawPacket } from '../../../types'
-import { MESSAGE_DIRECTION } from '../MCOTS/MessageNode'
-import debug from 'debug'
-import { logger as Logger } from '../../../shared/logger'
+const { NPSMsg } = require("../MCOTS/NPSMsg")
+const { PersonaServer } = require("../PersonaServer/PersonaServer")
+const { NPSUserInfo } = require("./npsUserInfo")
 
-const logger = Logger.child({
+const debug = require("debug")
+
+const { ConnectionObj } = require("../ConnectionObj")
+const { DatabaseManager } = require("../../../shared/DatabaseManager")
+const {logger: rawLogger} = require("../../../shared/logger")
+
+const logger = rawLogger.child({
   service: 'mcoserver:LobbyServer'
 })
 
@@ -30,11 +30,11 @@ const databaseManager = new DatabaseManager(
 
 /**
  *
- * @param {module:ConnectionObj} conn
+ * @param {ConnectionObj} conn
  * @param {Buffer} buffer
- * @return {Promise<{module:ConnectionObj}>}
+ * @return {Promise<ConnectionObj>}
  */
-async function npsSocketWriteIfOpen (conn: ConnectionObj, buffer: Buffer) {
+async function npsSocketWriteIfOpen (conn, buffer) {
   const sock = conn.sock
   if (sock.writable) {
     // Write the packet to socket
@@ -51,11 +51,11 @@ async function npsSocketWriteIfOpen (conn: ConnectionObj, buffer: Buffer) {
 /**
  * Takes an encrypted command packet and returns the decrypted bytes
  *
- * @return {module:ConnectionObj}
- * @param {module:ConnectionObj} con
+ * @return {ConnectionObj}
+ * @param {ConnectionObj} con
  * @param {Buffer} cypherCmd
  */
-function decryptCmd (con: ConnectionObj, cypherCmd: Buffer) {
+function decryptCmd (con, cypherCmd) {
   const s = con
   const decryptedCommand = s.decipherBufferDES(cypherCmd)
   s.decryptedCmd = decryptedCommand
@@ -66,11 +66,11 @@ function decryptCmd (con: ConnectionObj, cypherCmd: Buffer) {
 /**
  * Takes an plaintext command packet and return the encrypted bytes
  *
- * @param {module:ConnectionObj} con
+ * @param {ConnectionObj} con
  * @param {Buffer} cypherCmd
- * @return {module:ConnectionObj}
+ * @return {ConnectionObj}
  */
-function encryptCmd (con: ConnectionObj, cypherCmd: Buffer) {
+function encryptCmd (con, cypherCmd) {
   const s = con
   s.encryptedCmd = s.cipherBufferDES(cypherCmd)
   return s
@@ -79,18 +79,18 @@ function encryptCmd (con: ConnectionObj, cypherCmd: Buffer) {
 /**
  * Takes a plaintext command packet, encrypts it, and sends it across the connection's socket
  *
- * @param {module:ConnectionObj} con
+ * @param {ConnectionObj} con
  * @param {Buffer} data
- * @return {Promise<{module:ConnectionObj}>}
+ * @return {Promise<ConnectionObj>}
  */
-async function sendCommand (con: ConnectionObj, data: Buffer) {
+async function sendCommand (con, data) {
   const s = con
 
   const decipheredCommand = decryptCmd(s, Buffer.from(data.slice(4)))
     .decryptedCmd
 
   // Marshal the command into an NPS packet
-  const incommingRequest = new NPSMsg(MESSAGE_DIRECTION.RECIEVED)
+  const incommingRequest = new NPSMsg('RECEIVED')
   incommingRequest.deserialize(decipheredCommand)
 
   incommingRequest.dumpPacket()
@@ -106,7 +106,7 @@ async function sendCommand (con: ConnectionObj, data: Buffer) {
   debug('mcoserver:LobbyServer')('Sending a dummy response of 0x229 - NPS_MINI_USER_LIST')
 
   // Build the packet
-  const packetResult = new NPSMsg(MESSAGE_DIRECTION.SENT)
+  const packetResult = new NPSMsg('SENT')
   packetResult.msgNo = 0x229
   packetResult.setContent(packetContent)
   packetResult.dumpPacket()
@@ -123,16 +123,16 @@ async function sendCommand (con: ConnectionObj, data: Buffer) {
 }
 
 /**
- *
+ * @class
  */
-export class LobbyServer {
+class LobbyServer {
   /**
    *
-   * @return {module:NPSMsg}
+   * @return NPSMsg}
    */
-  _npsHeartbeat (): NPSMsg {
+  _npsHeartbeat () {
     const packetContent = Buffer.alloc(8)
-    const packetResult = new NPSMsg(MESSAGE_DIRECTION.SENT)
+    const packetResult = new NPSMsg('SENT')
     packetResult.msgNo = 0x127
     packetResult.setContent(packetContent)
     packetResult.dumpPacket()
@@ -143,9 +143,9 @@ export class LobbyServer {
   /**
    *
    * @param {IRawPacket} rawPacket
-   * @return {Promise<{module:ConnectionObj}>}
+   * @return {Promise<ConnectionObj>}
    */
-  async dataHandler (rawPacket: IRawPacket): Promise<ConnectionObj> {
+  async dataHandler (rawPacket) {
     const { localPort, remoteAddress } = rawPacket
     debug('mcoserver:LobbyServer')(`Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`)
     const { connection, data } = rawPacket
@@ -173,7 +173,7 @@ export class LobbyServer {
       }
       // npsHeartbeat
       case '217': {
-        const responsePacket = await this._npsHeartbeat()
+        const responsePacket = this._npsHeartbeat()
         debug('mcoserver:LobbyServer')(
           `Heartbeat responsePacket's data prior to sending: ${JSON.stringify({ data: responsePacket.getPacketAsString() })}`
         )
@@ -213,7 +213,7 @@ export class LobbyServer {
    * @param {string} key
    * @return {Buffer}
    */
-  _generateSessionKeyBuffer (key: string): Buffer {
+  _generateSessionKeyBuffer (key) {
     const nameBuffer = Buffer.alloc(64)
     Buffer.from(key, 'utf8').copy(nameBuffer)
     return nameBuffer
@@ -222,17 +222,18 @@ export class LobbyServer {
   /**
    * Handle a request to connect to a game server packet
    *
-   * @param {module:ConnectionObj} connection
+   * @param {ConnectionObj} connection
    * @param {Buffer} rawData
+   * @returns {Promise<NPSMsg>}
    */
-  async _npsRequestGameConnectServer (connection: ConnectionObj, rawData: Buffer): Promise<NPSMsg> {
+  async _npsRequestGameConnectServer (connection, rawData) {
     const { sock } = connection
     debug('mcoserver:LobbyServer')(
       `_npsRequestGameConnectServer: ${JSON.stringify({ remoteAddress: sock.remoteAddress, data: rawData.toString('hex') })}`
     )
 
     // Return a _NPS_UserInfo structure
-    const userInfo = new NPSUserInfo(MESSAGE_DIRECTION.RECIEVED)
+    const userInfo = new NPSUserInfo('RECEIVED')
     userInfo.deserialize(rawData)
     userInfo.dumpInfo()
 
@@ -247,7 +248,7 @@ export class LobbyServer {
     const customerId = personas[0].customerId
 
     // Set the encryption keys on the lobby connection
-    /** @type {Session_Record} */
+    /** @type {ISessionRecord} */
     const keys = await databaseManager.fetchSessionKeyByCustomerId(customerId)
     const s = connection
 
@@ -290,7 +291,7 @@ export class LobbyServer {
     // Buffer.alloc(64).copy(packetContent, 38);
 
     // Build the packet
-    const packetResult = new NPSMsg(MESSAGE_DIRECTION.SENT)
+    const packetResult = new NPSMsg('SENT')
     packetResult.msgNo = 0x120
     packetResult.setContent(packetContent)
     packetResult.dumpPacket()
@@ -298,3 +299,4 @@ export class LobbyServer {
     return packetResult
   }
 }
+module.exports.LobbyServer = LobbyServer
