@@ -7,7 +7,7 @@
 
 const { logger } = require('../../../shared/logger')
 const debug = require('debug')
-const { StockCar } = require('./StockCar')
+const { StockCar } = require('./StockCar') // lgtm [js/unused-local-variable]
 
 /**
  * Object for providing information on stock cars

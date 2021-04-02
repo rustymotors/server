@@ -6,8 +6,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const { appSettings } = require("../../../config/app-settings")
-const { DatabaseManager } = require("../../shared/DatabaseManager")
-const { ConnectionObj } = require("./ConnectionObj")
+const { DatabaseManager } = require("../../shared/DatabaseManager") // lgtm [js/unused-local-variable]
+const { ConnectionObj } = require("./ConnectionObj") // lgtm [js/unused-local-variable]
 const { LobbyServer } = require("./LobbyServer/LobbyServer")
 const { LoginServer } = require("./LoginServer/LoginServer")
 const { PersonaServer } = require("./PersonaServer/PersonaServer")

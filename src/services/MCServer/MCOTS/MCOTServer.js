@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { ConnectionObj } = require('../ConnectionObj')
+const { ConnectionObj } = require('../ConnectionObj') // lgtm [js/unused-local-variable]
 const { MessageNode } = require('./MessageNode')
 const { GenericReplyMsg } = require('../GenericReplyMsg')
 const { LoginMsg } = require('./LoginMsg')

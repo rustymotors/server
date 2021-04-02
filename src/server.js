@@ -8,7 +8,7 @@
 import { appSettings } from '../config/app-settings'
 import { AdminServer } from './services/AdminServer/AdminServer'
 import { MCServer } from './services/MCServer'
-import { DatabaseManager } from './shared/DatabaseManager'
+import { DatabaseManager } from './shared/DatabaseManager' // lgtm [js/unused-local-variable]
 import { logger } from './shared/logger'
 
 

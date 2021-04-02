@@ -8,7 +8,7 @@
 import mock from 'mock-fs'
 import { AuthLogin } from '../src/services/AuthLogin/AuthLogin'
 import { fakeConfig } from './helpers'
-import { IServerConfig } from '../src/types'
+import { IServerConfig } from '../src/types' // lgtm [js/unused-local-variable]
 import { expect } from 'chai'
 
 /* eslint-env mocha */

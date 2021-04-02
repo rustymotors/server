@@ -9,7 +9,7 @@ const { logger } = require('../../shared/logger')
 const { ListenerThread } = require('./listenerThread')
 const { ConnectionMgr } = require('./ConnectionMgr')
 const { appSettings } = require('../../../config/app-settings')
-const { DatabaseManager } = require('../../shared/DatabaseManager')
+const { DatabaseManager } = require('../../shared/DatabaseManager') // lgtm [js/unused-local-variable]
 const debug = require('debug')
 
 /**

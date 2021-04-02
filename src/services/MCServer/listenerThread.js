@@ -5,9 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { Server, Socket } = require('net')
-const { ConnectionMgr } = require('./ConnectionMgr')
-const { ConnectionObj } = require('./ConnectionObj')
+const { Server, Socket } = require('net') // lgtm [js/unused-local-variable]
+const { ConnectionMgr } = require('./ConnectionMgr') // lgtm [js/unused-local-variable]
+const { ConnectionObj } = require('./ConnectionObj') // lgtm [js/unused-local-variable]
 
 const debug = require('debug')
 const net = require('net')

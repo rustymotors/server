@@ -6,8 +6,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const { debug } = require('debug')
-const { ConnectionObj } = require('../ConnectionObj')
-const { MessageNode, MESSAGE_DIRECTION } = require('./MessageNode')
+const { ConnectionObj } = require('../ConnectionObj') // lgtm [js/unused-local-variable]
+const { MessageNode } = require('./MessageNode')
 const { logger } = require('../../../shared/logger')
 const { MCOTServer } = require('./MCOTServer')
 const { ClientConnectMsg } = require('../ClientConnectMsg')

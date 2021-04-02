@@ -11,7 +11,7 @@ const { NPSUserInfo } = require("./npsUserInfo")
 
 const debug = require("debug")
 
-const { ConnectionObj } = require("../ConnectionObj")
+const { ConnectionObj } = require("../ConnectionObj") // lgtm [js/unused-local-variable]
 const { DatabaseManager } = require("../../../shared/DatabaseManager")
 const {logger: rawLogger} = require("../../../shared/logger")
 

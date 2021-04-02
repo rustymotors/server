@@ -6,8 +6,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const crypto = require('crypto')
-const { Socket } = require('net')
-const { ConnectionMgr } = require('./ConnectionMgr')
+const { Socket } = require('net') // lgtm [js/unused-local-variable]
+const { ConnectionMgr } = require('./ConnectionMgr') // lgtm [js/unused-local-variable]
 const { EncryptionManager } = require('./EncryptionMgr')
 
 /**

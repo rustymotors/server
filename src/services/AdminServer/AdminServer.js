@@ -5,9 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { IncomingMessage, ServerResponse } = require('http')
-const { Socket } = require('net')
-const { MCServer } = require('../MCServer')
+const { IncomingMessage, ServerResponse } = require('http') // lgtm [js/unused-local-variable]
+const { Socket } = require('net') // lgtm [js/unused-local-variable]
+const { MCServer } = require('../MCServer') // lgtm [js/unused-local-variable]
 
 const { logger } = require('../../shared/logger')
 const fs = require('fs')

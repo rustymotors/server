@@ -7,12 +7,16 @@
 
 const pg = require('pg')
 
+if (process.env.MCO_DB_USER === undefined) {
+  throw new Error('Please set the env: MCO_DB_USER')
+}
+
 if (process.env.MCO_DB_PASS === undefined) {
   throw new Error('Please set the env: MCO_DB_PASS')
 }
 
 const pool = new pg.Pool({
-  user: 'postgres',
+  user: process.env.MCO_DB_USER,
   host: 'localhost',
   password: process.env.MCO_DB_PASS,
   port: 5432
