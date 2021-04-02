@@ -301,7 +301,7 @@ async function ProcessInput (node, conn) {
     const responsePackets = result.nodes
     try {
       // write the socket
-      return socketWriteIfOpen(result.con, responsePackets)
+      return await socketWriteIfOpen(result.con, responsePackets)
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`[TCPManager] Error writing to socket: ${error}`)
