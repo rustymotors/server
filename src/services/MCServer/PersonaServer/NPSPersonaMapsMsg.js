@@ -5,50 +5,55 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { MESSAGE_DIRECTION } from '../MCOTS/MessageNode'
-import { logger } from '../../../shared/logger'
+const { logger } = require('../../../shared/logger')
 
-import { NPSMsg } from '../MCOTS/NPSMsg'
-import { IPersonaRecord } from '../../../types'
+const { NPSMsg } = require('../MCOTS/NPSMsg')
 
-import debug from 'debug'
+const debug = require('debug')
 
-export interface InpsPersonaMapsMsgSchema {
-  msgNo: number // uint16,
-  msgLength: number // uint16,
-  msgVersion: number // uint16,
-  reserved: number // uint16,
-  msgChecksum: number // uint32,
-  // End of header
-  personas: [
-    {
-      personaCount: number // uint16,
-      unknown1: number // uint16,
-      maxPersonas: number // uint16,
-      unknown2: number // uint16,
-      id: number // uint32,
-      shardId: number // uint32,
-      unknown3: number // uint16,
-      unknown4: number // uint16,
-      personaNameLength: number // uint16,
-      name: string // string(16)
-    }
-  ]
-}
+/**
+ * @module NPSPersonaMapsMsg
+ */
+
+/**
+ * @typedef InpsPersonaMapsPersonaRecord
+ * @property {number} personaCount - uint16
+ * @property {number} unknown1 - uint16
+ * @property {number} maxPersonas - uint16
+ * @property {number} unknown2 - uint16
+ * @property {number} id - uint32
+ * @property {number} shardId - uint32
+ * @property {number} unknown3 - uint16
+ * @property {number} unknown4 - uint16
+ * @property {number} personaNameLength - uint16
+ * @property {string} name - string(16)
+ */
+
+/**
+ * @typedef InpsPersonaMapsMsgSchema
+ * @property {number} msgNo - uint16
+ * @property {number} msgLength - uint16
+ * @property {number} msgVersion - uint16
+ * @property {number} reserved - uint16
+ * @property {number} msgChecksum - uint16
+ * @property {InpsPersonaMapsPersonaRecord[]} personas
+ */
+
 
 /**
  *
+ * @class
  * @extends {NPSMsg}
+ * @property {IPersonaRecord[]} personas
+ * @property {number} personaSize
+ * @property {number} personaCount
  */
-export class NPSPersonaMapsMsg extends NPSMsg {
-  personas: IPersonaRecord[]
-  personaSize: number
-  personaCount: number
+class NPSPersonaMapsMsg extends NPSMsg {
   /**
    *
-   * @param {'Recieved'|'Sent'} direction
+   * @param {import('../MCOTS/MessageNode').MESSAGE_DIRECTION} direction
    */
-  constructor (direction: MESSAGE_DIRECTION) {
+  constructor (direction) {
     super(direction)
 
     this.logger = logger.child({ service: 'mcoserver:NPSPersonaMapsMsg' })
@@ -63,8 +68,9 @@ export class NPSPersonaMapsMsg extends NPSMsg {
   /**
    *
    * @param {IPersonaRecord[]} personas
+   * @returns {void}
    */
-  loadMaps (personas: IPersonaRecord[]): void {
+  loadMaps (personas) {
     this.personaCount = personas.length
     this.personas = personas
   }
@@ -75,7 +81,7 @@ export class NPSPersonaMapsMsg extends NPSMsg {
    * @return {number}
    * @memberof! NPSPersonaMapsMsg
    */
-  deserializeInt8 (buf: Buffer): number {
+  deserializeInt8 (buf) {
     return buf.readInt8(0)
   }
 
@@ -85,7 +91,7 @@ export class NPSPersonaMapsMsg extends NPSMsg {
    * @return {number}
    * @memberof! NPSPersonaMapsMsg
    */
-  deserializeInt32 (buf: Buffer): number {
+  deserializeInt32 (buf) {
     return buf.readInt32BE(0)
   }
 
@@ -95,7 +101,7 @@ export class NPSPersonaMapsMsg extends NPSMsg {
    * @return {string}
    * @memberof! NPSPersonaMapsMsg
    */
-  deserializeString (buf: Buffer): string {
+  deserializeString (buf) {
     return buf.toString('utf8')
   }
 
@@ -103,7 +109,7 @@ export class NPSPersonaMapsMsg extends NPSMsg {
    *
    * @return {Buffer}
    */
-  serialize (): Buffer {
+  serialize () {
     let index = 0
     // Create the packet content
     // const packetContent = Buffer.alloc(40);
@@ -155,8 +161,9 @@ export class NPSPersonaMapsMsg extends NPSMsg {
 
   /**
    *
+   * @returns {void}
    */
-  dumpPacket (): void {
+  dumpPacket () {
     this.dumpPacketHeader('NPSPersonaMapsMsg')
     debug('mcoserver:NPSPersonaMapsMsg')(`personaCount:        ${this.personaCount}`)
     for (const persona of this.personas) {
@@ -172,3 +179,4 @@ export class NPSPersonaMapsMsg extends NPSMsg {
     debug('mcoserver:NPSPersonaMapsMsg')('[/NPSPersonaMapsMsg]======================================')
   }
 }
+module.exports.NPSPersonaMapsMsg = NPSPersonaMapsMsg

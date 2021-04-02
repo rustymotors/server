@@ -7,7 +7,7 @@
 
 const pg = require('pg')
 
-if (process.env.MCO_DB_PASS.length === 0) {
+if (process.env.MCO_DB_PASS === undefined) {
   throw new Error('Please set the env: MCO_DB_PASS')
 }
 

@@ -5,10 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from 'winston'
-import { logger } from '../../../shared/logger'
-import { MESSAGE_DIRECTION } from './MessageNode'
-import debug from 'debug'
+const { logger } = require('../../../shared/logger')
+const debug = require('debug')
 
 /**
  * Packet container for NPS messages
@@ -25,7 +23,7 @@ import debug from 'debug'
    * @property {number} msgVersion
    * @property {string} content
    * @property {string} contextId
-   * @property {NPS_MSG_DIRECTION} direction
+   * @property {import('./MessageNode').MESSAGE_DIRECTION} direction
    * @property {string | null } sessionkey
    * @property {string} rawBuffer
    */
@@ -37,22 +35,22 @@ import debug from 'debug'
 // WORD msgNo;    NPS message number
 
 /**
- *
+ * @class
+ * @property {Logger} logger
+ * @property {number} msgNo
+ * @property {number} msgVersion
+ * @property {number} reserved
+ * @property {Buffer} content
+ * @property {number} msgLength
+ * @property {MESSAGE_DIRECTION} direction
  */
-export class NPSMsg {
-  logger: Logger
-  msgNo: number
-  msgVersion: number
-  reserved: number
-  content: Buffer
-  msgLength: number
-  direction: MESSAGE_DIRECTION
+class NPSMsg {
 
   /**
    *
-   * @param {NPS_MSG_DIRECTION} direction - the direction of the message flow
+   * @param {import('./MessageNode').MESSAGE_DIRECTION} direction - the direction of the message flow
    */
-  constructor (direction:MESSAGE_DIRECTION) {
+  constructor (direction) {
     this.logger = logger.child({ service: 'mcoserver:NPSMsg' })
     this.msgNo = 0
     this.msgVersion = 0
@@ -65,8 +63,9 @@ export class NPSMsg {
   /**
    *
    * @param {Buffer} buffer
+   * @returns {void}
    */
-  setContent (buffer: Buffer): void {
+  setContent (buffer) {
     this.content = buffer
     this.msgLength = this.content.length + 12
   }
@@ -75,7 +74,7 @@ export class NPSMsg {
    *
    * @return {Buffer}
    */
-  getContentAsBuffer (): Buffer {
+  getContentAsBuffer () {
     return this.content
   }
 
@@ -83,7 +82,7 @@ export class NPSMsg {
    *
    * @return {string}
    */
-  getPacketAsString (): string {
+  getPacketAsString () {
     return this.serialize().toString('hex')
   }
 
@@ -91,7 +90,7 @@ export class NPSMsg {
    *
    * @return {Buffer}
    */
-  serialize (): Buffer {
+  serialize () {
     try {
       const packet = Buffer.alloc(this.msgLength)
       packet.writeInt16BE(this.msgNo, 0)
@@ -119,7 +118,7 @@ export class NPSMsg {
    * @return {NPSMsg}
    * @memberof NPSMsg
    */
-  deserialize (packet: Buffer): NPSMsg {
+  deserialize (packet) {
     this.msgNo = packet.readInt16BE(0)
     this.msgLength = packet.readInt16BE(2)
     this.msgVersion = packet.readInt16BE(4)
@@ -130,8 +129,9 @@ export class NPSMsg {
   /**
    *
    * @param {string} messageType
+   * @returns {void}
    */
-  dumpPacketHeader (messageType: string): void {
+  dumpPacketHeader (messageType) {
     this.logger.info(
       `NPSMsg/${messageType}`,
       {
@@ -145,9 +145,10 @@ export class NPSMsg {
 
   /**
    * dumpPacket
+   * @returns {void}
    * @memberof NPSMsg
    */
-  dumpPacket (): void {
+  dumpPacket () {
     debug('mcoserver:NPSMsg')(
       'NPSMsg/NPSMsg',
       {
@@ -165,15 +166,7 @@ export class NPSMsg {
    *
    * @return {INPSMsgJSON}
    */
-  toJSON (): {
-    msgNo: number,
-    contextId: string,
-    msgLength: number,
-    msgVersion: number,
-    content: string,
-    direction: MESSAGE_DIRECTION,
-    rawBuffer: string
-    } {
+  toJSON () {
     return {
       msgNo: this.msgNo,
       contextId: '',
@@ -181,7 +174,10 @@ export class NPSMsg {
       msgVersion: this.msgVersion,
       content: this.content.toString('hex'),
       direction: this.direction,
-      rawBuffer: this.content.toString('hex')
+      rawBuffer: this.content.toString('hex'),
+      opCode: 0,
+      sessionkey: ''
     }
   }
 }
+module.exports.NPSMsg = NPSMsg

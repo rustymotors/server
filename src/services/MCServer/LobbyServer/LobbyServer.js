@@ -241,7 +241,7 @@ class LobbyServer {
       logger.child('PersonaServer')
     )
 
-    const personas = personaManager._getPersonasById(userInfo.userId)
+    const personas = await personaManager._getPersonasById(userInfo.userId)
     if (personas.length === 0) {
       throw new Error('No personas found.')
     }
