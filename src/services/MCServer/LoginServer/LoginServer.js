@@ -5,31 +5,32 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from 'winston'
-import { DatabaseManager } from '../../../shared/DatabaseManager'
-import { IRawPacket, IServerConfig, IUserRecordMini } from '../../../types'
-import { ConnectionObj } from '../ConnectionObj'
-import { logger } from '../../../shared/logger'
-import { NPSUserStatus } from './npsUserStatus'
-import { premadeLogin } from './packet'
+const { DatabaseManager } = require('../../../shared/DatabaseManager')
+const { ConnectionObj } = require('../ConnectionObj')
+const { logger } = require('../../../shared/logger')
+const { NPSUserStatus } = require('./npsUserStatus')
+const { premadeLogin } = require('./packet')
 
-import debug from 'debug'
+const debug = require('debug')
+const { NPSMsg } = require('../MCOTS/NPSMsg')
 
 /**
  * Manages the initial game connection setup and teardown.
  * @module LoginServer
  */
 
-export class LoginServer {
-  logger: Logger
-  databaseManager: DatabaseManager
+/**
+ * @class
+ * @property {Logger} logger
+ * @property {DatabaseManager} databaseManager
+ */
+class LoginServer {
 
   /**
    *
-   * @class
-   * @param {module:DatabaseManager} databaseMgr
+   * @param {DatabaseManager} databaseMgr
    */
-  constructor (databaseMgr: DatabaseManager) {
+  constructor (databaseMgr) {
     this.logger = logger.child({ service: 'mcoserver:LoginServer' })
     this.databaseManager = databaseMgr
   }
@@ -38,8 +39,9 @@ export class LoginServer {
    *
    * @param {IRawPacket} rawPacket
    * @param {IServerConfig} config
+   * @returns {Promise<ConnectionObj>}
    */
-  async dataHandler (rawPacket: IRawPacket, config: IServerConfig): Promise<ConnectionObj> {
+  async dataHandler (rawPacket, config) {
     const { connection, data } = rawPacket
     const { localPort, remoteAddress } = rawPacket
     this.logger.info(`Received Login packet: ${JSON.stringify({ localPort, remoteAddress })}`)
@@ -84,20 +86,21 @@ export class LoginServer {
   /**
    *
    * @param {string} contextId
-   * @return {{ contextId: string, customerId: Buffer, userId: Buffer}}
+   * @return {Promise<IUserRecordMini>}
    */
-  async _npsGetCustomerIdByContextId (contextId: string): Promise<IUserRecordMini> {
+  async _npsGetCustomerIdByContextId (contextId) {
     debug('mcoserver:LoginServer')('Entering _npsGetCustomerIdByContextId...')
+    /** @type {IUserRecordMini[]} */
     const users = [
       {
         contextId: '5213dee3a6bcdb133373b2d4f3b9962758',
-        customerId: Buffer.from([0xac, 0x01, 0x00, 0x00]),
-        userId: Buffer.from([0x00, 0x00, 0x00, 0x02])
+        customerId: 0x000001ac,
+        userId: 0x00000002
       },
       {
         contextId: 'd316cd2dd6bf870893dfbaaf17f965884e',
-        customerId: Buffer.from([0x00, 0x54, 0xb4, 0x6c]),
-        userId: Buffer.from([0x00, 0x00, 0x00, 0x01])
+        customerId: 0x0054b46c,
+        userId: 0x00000001
       }
     ]
     if (contextId.toString() === '') {
@@ -130,13 +133,13 @@ export class LoginServer {
 
   /**
    * Process a UserLogin packet
-   * Return a @link {module:NPSMsg} object
-   * @param {module:ConnectionObj} connection
+   * Should return a @link {module:NPSMsg} object
+   * @param {ConnectionObj} connection
    * @param {Buffer} data
    * @param {IServerConfig} config
-   * @return {module:NPSMsg}
+   * @return {Promise<Buffer>}
    */
-  async _userLogin (connection: ConnectionObj, data: Buffer, config: IServerConfig): Promise<Buffer> {
+  async _userLogin (connection, data, config) {
     const { sock } = connection
     const { localPort } = sock
     const userStatus = new NPSUserStatus(data)
@@ -165,7 +168,7 @@ export class LoginServer {
     // Save sessionkey in database under customerId
     debug('Preparing to update session key in db')
     await this.databaseManager._updateSessionKey(
-      customer.customerId.readInt32BE(0),
+      customer.customerId,
       userStatus.sessionkey,
       userStatus.contextId,
       connection.id
@@ -185,7 +188,7 @@ export class LoginServer {
     Buffer.from([0x01, 0x00]).copy(packetContent, 2)
 
     // load the customer id
-    customer.customerId.copy(packetContent, 12)
+    packetContent.writeInt32BE(customer.customerId, 12)
 
     // Don't use queue (+208, but I'm not sure if this includes the header or not)
     Buffer.from([0x00]).copy(packetContent, 208)
@@ -199,3 +202,4 @@ export class LoginServer {
     return fullPacket
   }
 }
+module.exports.LoginServer = LoginServer

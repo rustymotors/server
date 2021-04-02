@@ -10,7 +10,7 @@
  *
  * @return {Buffer}
  */
-export function premadeLogin (): Buffer {
+function premadeLogin () {
   // TODO: Generate a dynamic login response message
   return Buffer.from([
     // Live Packet
@@ -272,7 +272,4 @@ export function premadeLogin (): Buffer {
     0x00 // (0xa6 was old val)
   ])
 }
-
-module.exports = {
-  premadeLogin
-}
+module.exports.premadeLogin = premadeLogin

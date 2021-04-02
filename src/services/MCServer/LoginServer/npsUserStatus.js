@@ -4,14 +4,18 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+const { Socket } = require('net')
 
-import { logger } from '../../../shared/logger'
-import crypto from 'crypto'
-import fs from 'fs'
-import { NPSMsg } from '../MCOTS/NPSMsg'
-import { MESSAGE_DIRECTION } from '../MCOTS/MessageNode'
-import { IServerConfig } from '../../../types'
-import debug from 'debug'
+const { logger } = require('../../../shared/logger')
+const crypto = require('crypto')
+const fs = require('fs')
+const { NPSMsg } = require('../MCOTS/NPSMsg')
+const debug = require('debug')
+
+/**
+ * 
+ * @module NPSUserStatus
+ */
 
 /**
  * Load the RSA private key
@@ -19,7 +23,7 @@ import debug from 'debug'
  * @param {string} privateKeyPath
  * @return {string}
  */
-export function fetchPrivateKeyFromFile (privateKeyPath: string): string {
+function fetchPrivateKeyFromFile (privateKeyPath) {
   try {
     fs.statSync(privateKeyPath)
   } catch (e) {
@@ -39,21 +43,21 @@ export function fetchPrivateKeyFromFile (privateKeyPath: string): string {
  */
 
 /**
- *
+ * 
+ * @class
  * @extends {NPSMsg}
+ * @property {string} sessionkey
+ * @property {string} opCode
+ * @property {Buffer} buffer
  */
-export class NPSUserStatus extends NPSMsg {
-  sessionkey: string
-  opCode: number
-  contextId: string
-  buffer: Buffer
+class NPSUserStatus extends NPSMsg {
 
   /**
    *
    * @param {Buffer} packet
    */
-  constructor (packet: Buffer) {
-    super(MESSAGE_DIRECTION.RECIEVED)
+  constructor (packet) {
+    super('RECEIVED')
     this.logger = logger.child({ service: 'mcoserver:NPSUserStatus' })
     this.sessionkey = ''
 
@@ -77,8 +81,9 @@ export class NPSUserStatus extends NPSMsg {
    *
    * @param {IServerConfig} serverConfig
    * @param {Buffer} packet
+   * @returns {void}
    */
-  extractSessionKeyFromPacket (serverConfig: IServerConfig, packet: Buffer): void {
+  extractSessionKeyFromPacket (serverConfig, packet) {
     // Decrypt the sessionkey
     const privateKey = fetchPrivateKeyFromFile(serverConfig.privateKeyFilename)
 
@@ -92,17 +97,9 @@ export class NPSUserStatus extends NPSMsg {
 
   /**
    *
-   * @return {INPSMsgJSON}
+   * @return {import('../MCOTS/NPSMsg').INPSMsgJSON}
    */
-  toJSON (): { msgNo: number,
-    msgLength: number,
-    msgVersion: number,
-    content: string,
-    direction: MESSAGE_DIRECTION,
-    opCode: number,
-    contextId: string,
-    sessionkey: string,
-    rawBuffer: string} {
+  toJSON () {
     return {
       msgNo: this.msgNo,
       msgLength: this.msgLength,
@@ -117,9 +114,9 @@ export class NPSUserStatus extends NPSMsg {
   }
 
   /**
-   *
+   * @returns {void}
    */
-  dumpPacket (): void {
+  dumpPacket () {
     this.dumpPacketHeader('NPSUserStatus')
     debug('mcoserver:npsUserStatus')(
       'NPSUserStatus',
@@ -130,3 +127,4 @@ export class NPSUserStatus extends NPSMsg {
     )
   }
 }
+module.exports.NPSUserStatus = NPSUserStatus

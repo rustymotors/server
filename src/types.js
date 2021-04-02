@@ -166,20 +166,14 @@
  * @global
  * @typedef {Object} IUserRecordMini
  * @property {string} contextId
- * @property {string} customerId
- * @property {Buffer} userId
+ * @property {number} customerId
+ * @property {number} userId
  */
-
-/**
- * @global
- * @typedef {'Lobby' | 'Login'}  NPS_COMMAND_MODULE
- */
-
 
 /**
  * @global
  * @typedef {Object} InpsCommandMap
  * @property {string} name
  * @property {number} value
- * @property {NPS_COMMAND_MODULE} module
+ * @property {'Lobby' | 'Login'} module
  */

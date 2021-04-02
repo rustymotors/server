@@ -5,27 +5,30 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from 'winston'
-import { logger } from '../../../shared/logger'
-import { MESSAGE_DIRECTION } from '../MCOTS/MessageNode'
-import { NPSMsg } from '../MCOTS/NPSMsg'
-import debug from 'debug'
+const { logger } = require('../../../shared/logger')
+const { MESSAGE_DIRECTION } = require('../MCOTS/MessageNode')
+const { NPSMsg } = require('../MCOTS/NPSMsg')
+const debug = require('debug')
 
 /**
- *
- * @extends {NPSMsg}
+ * @module NPSUserInfo
  */
-export class NPSUserInfo extends NPSMsg {
-  logger: Logger
-  userId: number
-  userName: Buffer
-  userData: Buffer
+
+/**
+ * @class
+ * @extends {NPSMsg}
+ * @property {Logger} logger
+ * @property {number} userId
+ * @property {Buffer} userName
+ * @property {Buffer} userData
+ */
+class NPSUserInfo extends NPSMsg {
 
   /**
    *
-   * @param {'Recieved'|'Sent'} direction
+   * @param {MESSAGE_DIRECTION} direction
    */
-  constructor (direction: MESSAGE_DIRECTION) {
+  constructor (direction) {
     super(direction)
     this.logger = logger.child({ service: 'mcoserver:NPSUserInfo' })
     this.userId = 0
@@ -38,7 +41,7 @@ export class NPSUserInfo extends NPSMsg {
    * @param {Buffer} rawData
    * @return {NPSUserInfo}
    */
-  deserialize (rawData: Buffer): NPSUserInfo {
+  deserialize (rawData) {
     this.userId = rawData.readInt32BE(4)
     this.userName = rawData.slice(8, 38)
     this.userData = rawData.slice(38)
@@ -46,9 +49,9 @@ export class NPSUserInfo extends NPSMsg {
   }
 
   /**
-   *
+   * @returns {void}
    */
-  dumpInfo (): void {
+  dumpInfo () {
     this.dumpPacketHeader('NPSUserInfo')
     debug('mcoserver:npsUserInfo')(`UserId:        ${this.userId}`)
     debug('mcoserver:npsUserInfo')(`UserName:      ${this.userName.toString()}`)
@@ -56,3 +59,4 @@ export class NPSUserInfo extends NPSMsg {
     debug('mcoserver:npsUserInfo')('[/NPSUserInfo]======================================')
   }
 }
+module.exports.NPSUserInfo = NPSUserInfo
