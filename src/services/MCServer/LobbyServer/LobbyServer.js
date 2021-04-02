@@ -110,7 +110,6 @@ async function sendCommand (con, data) {
   packetResult.msgNo = 0x229
   packetResult.setContent(packetContent)
   packetResult.dumpPacket()
-  // const packetResult = buildPacket(32, 0x0229, packetContent);
 
   const cmdEncrypted = encryptCmd(s, packetResult.getContentAsBuffer())
 
@@ -136,7 +135,6 @@ class LobbyServer {
     packetResult.msgNo = 0x127
     packetResult.setContent(packetContent)
     packetResult.dumpPacket()
-    // const packetResult = buildPacket(8, 0x0127, packetContent);
     return packetResult
   }
 
@@ -265,13 +263,10 @@ class LobbyServer {
     }
 
     const packetContent = Buffer.alloc(72)
-    // const packetContent = Buffer.alloc(38);
 
     // this response is a NPS_UserStatus
 
     // Ban and Gag
-    // Buffer.from([0x00]).copy(packetContent);
-    // Buffer.from([0x00, 0x00]).copy(packetContent);
 
     // NPS_USERID - User ID - persona id - long
     Buffer.from([0x00, 0x84, 0x5f, 0xed]).copy(packetContent)
@@ -281,14 +276,6 @@ class LobbyServer {
 
     // // SessionKeyLen - int
     packetContent.writeInt16BE(32, 66)
-
-    // // User name (32)
-    // const name = Buffer.alloc(32);
-    // Buffer.from("Doctor Brown", "utf8").copy(name);
-    // name.copy(packetContent, 6);
-
-    // // UserData - User controllable data (64)
-    // Buffer.alloc(64).copy(packetContent, 38);
 
     // Build the packet
     const packetResult = new NPSMsg('SENT')

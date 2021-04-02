@@ -100,7 +100,6 @@ async function socketWriteIfOpen (conn, nodes) {
     if (conn.sock.writable) {
       // Write the packet to socket
       conn.sock.write(packetToWrite.serialize())
-      // updatedConnection = encryptedResult.conn;
     } else {
       throw new Error(
         `Error writing ${packetToWrite.serialize()} to ${
@@ -216,11 +215,10 @@ async function ProcessInput (node, conn) {
       try {
         const result = await mcotServer._setOptions(conn, node)
         const responsePackets = result.nodes
-        const updatedConnection = await module.exports.socketWriteIfOpen(
+        return await module.exports.socketWriteIfOpen(
           result.con,
           responsePackets
         )
-        return updatedConnection
       } catch (error) {
         if (error instanceof Error) {
           throw new Error(`Error in MC_SET_OPTIONS: ${error}`)
@@ -231,11 +229,10 @@ async function ProcessInput (node, conn) {
       try {
         const result = await mcotServer._trackingMessage(conn, node)
         const responsePackets = result.nodes
-        const updatedConnection = await module.exports.socketWriteIfOpen(
+        return module.exports.socketWriteIfOpen(
           result.con,
           responsePackets
         )
-        return updatedConnection
       } catch (error) {
         if (error instanceof Error) {
           throw new Error(`Error in MC_TRACKING_MSG: ${error}`)
@@ -246,11 +243,10 @@ async function ProcessInput (node, conn) {
       try {
         const result = await mcotServer._updatePlayerPhysical(conn, node)
         const responsePackets = result.nodes
-        const updatedConnection = await module.exports.socketWriteIfOpen(
+       return module.exports.socketWriteIfOpen(
           result.con,
           responsePackets
         )
-        return updatedConnection
       } catch (error) {
         if (error instanceof Error) {
           throw new Error(`Error in MC_UPDATE_PLAYER_PHYSICAL: ${error}`)
@@ -279,7 +275,7 @@ async function ProcessInput (node, conn) {
       const result = await mcotServer._login(conn, node)
       const responsePackets = result.nodes
       // write the socket
-      return await socketWriteIfOpen(result.con, responsePackets)
+      return socketWriteIfOpen(result.con, responsePackets)
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`[TCPManager] Error writing to socket: ${error}`)
@@ -305,7 +301,7 @@ async function ProcessInput (node, conn) {
     const responsePackets = result.nodes
     try {
       // write the socket
-      return await socketWriteIfOpen(result.con, responsePackets)
+      return socketWriteIfOpen(result.con, responsePackets)
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`[TCPManager] Error writing to socket: ${error}`)
@@ -317,7 +313,7 @@ async function ProcessInput (node, conn) {
       const result = await GetStockCarInfo(conn, node)
       const responsePackets = result.nodes
       // write the socket
-      return await socketWriteIfOpen(result.con, responsePackets)
+      return socketWriteIfOpen(result.con, responsePackets)
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`[TCPManager] Error writing to socket: ${error}`)
@@ -394,7 +390,7 @@ async function MessageReceived (msg, con) {
   }
 
   // Should be good to process now
-  return await ProcessInput(msg, newConnection)
+  return ProcessInput(msg, newConnection)
 }
 
 /**
@@ -418,8 +414,7 @@ async function defaultHandler (rawPacket) {
   )
   messageNode.dumpPacket()
 
-  const newMessage = await MessageReceived(messageNode, connection)
-  return newMessage
+  return MessageReceived(messageNode, connection)
 }
 module.exports.defaultHandler = defaultHandler
 

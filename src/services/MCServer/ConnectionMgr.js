@@ -158,13 +158,12 @@ module.exports.ConnectionMgr = class ConnectionMgr {
    * @return {ConnectionObj | undefined}
    */
   findConnectionByAddressAndPort (remoteAddress, localPort) {
-    const results = this.connections.find(connection => {
+    return this.connections.find(connection => {
       const match =
         remoteAddress === connection.remoteAddress &&
         localPort === connection.localPort
       return match
     })
-    return results
   }
 
   /**
@@ -174,8 +173,7 @@ module.exports.ConnectionMgr = class ConnectionMgr {
    */
   findConnectionById (connectionId) {
     const results = this.connections.find(connection => {
-      const match = connectionId === connection.id
-      return match
+      return connectionId === connection.id
     })
     if (results === undefined) {
       throw new Error(`Unable to locate connection for id ${connectionId}`)

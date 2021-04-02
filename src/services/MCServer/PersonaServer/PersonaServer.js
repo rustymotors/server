@@ -220,7 +220,6 @@ class PersonaServer {
       }
     )
     responsePacket.dumpPacket()
-    // const responsePacket = buildPacket(1024, 0x0207, packetContent);
 
     debug(
       `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
@@ -338,7 +337,6 @@ class PersonaServer {
    * @returns {Promise<IPersonaRecord[]>}
    */
   async _npsGetPersonaMapsByCustomerId (customerId) {
-    // const name = Buffer.alloc(30);
 
     switch (customerId) {
       case 2868969472:

@@ -105,8 +105,7 @@ module.exports.DatabaseManager = class DatabaseManager {
         [customerId, sessionkey, skey, contextId, connectionId]
       )
       /** @type {ISessionRecord} */
-      const results = rows[0]
-      return results
+      return rows[0]
     } catch (e) {
       if (e instanceof Error) {
         throw new Error(`Unable to update session key: ${e.message}`)
