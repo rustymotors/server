@@ -7,10 +7,14 @@
 
 const pg = require('pg')
 
+if (process.env.MCO_DB_PASS.length === 0) {
+  throw new Error('Please set the env: MCO_DB_PASS')
+}
+
 const pool = new pg.Pool({
   user: 'postgres',
   host: 'localhost',
-  password: 'password',
+  password: process.env.MCO_DB_PASS,
   port: 5432
 })
 
