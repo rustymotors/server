@@ -172,12 +172,21 @@ const NPS_GetPersonaMapListReq = {
   customerId_: Buffer.alloc(4) // Uint4B
 }
 
+/**
+ * @class
+ * @property {Buffer} _length
+ * @property {Buffer} _mcosig
+ */
 class MsgHead {
+
+  constructor () {
   // This is a 4B in the debug binary, the client is sending 2B
   /** @type {Buffer} */
-  _length = Buffer.alloc(2) // UInt4B
+  this._length = Buffer.alloc(2) // UInt4B
   /** @type {Buffer} */
-  _mcosig = Buffer.alloc(4) // UInt4B
+  this._mcosig = Buffer.alloc(4) // UInt4B
+
+  }
 
   /**
    * @returns {number}
