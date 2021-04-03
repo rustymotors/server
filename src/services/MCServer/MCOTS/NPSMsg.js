@@ -57,6 +57,9 @@ class NPSMsg {
     this.reserved = 0
     this.content = Buffer.from([0x01, 0x02, 0x03, 0x04])
     this.msgLength = this.content.length + 12
+    if (direction !== 'RECEIVED' && direction !== 'SENT') {
+      throw new Error(`Directior must be either 'RECEIVED' or 'SENT'`)
+    }
     this.direction = direction
   }
 

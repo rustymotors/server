@@ -5,12 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect } from 'chai'
-import { Socket } from 'net'
-import sinon from 'sinon'
-import { ConnectionMgr } from '../src/services/MCServer/ConnectionMgr'
-import { ConnectionObj, ConnectionStatus } from '../src/services/MCServer/ConnectionObj'
-import { logger } from '../src/shared/logger'
+const { expect } = require('chai')
+const { Socket } = require('net')
+const sinon = require('sinon')
+const { ConnectionMgr } = require('../src/services/MCServer/ConnectionMgr')
+const { ConnectionObj } = require('../src/services/MCServer/ConnectionObj')
+const { logger } = require('../src/shared/logger')
 
 /* eslint-env mocha */
 
@@ -26,7 +26,7 @@ it('ConnectionObj', () => {
     fakeConnectionManager
   )
 
-  expect(testConnection.status).equals(ConnectionStatus.Inactive)
+  expect(testConnection.status).equals('Inactive')
   expect(testConnection.isSetupComplete).is.false
   testConnection.setEncryptionKey(Buffer.from('abc123', 'hex'))
   expect(testConnection.isSetupComplete).is.true

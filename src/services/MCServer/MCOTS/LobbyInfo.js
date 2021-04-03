@@ -5,183 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { ILobbyInfo } from '../../../types'
-
 /**
  * Object for Loby information
  * @module LobbyInfo
  */
 
-// /** @type {ILobbyInfo} */
-// const ILobbyInfo = {
-//   // DWORD    lobbyID;
-//   lobbyId: 0,
-//   // DWORD    raceTypeID;
-//   racetypeId: 0,
-//   // DWORD    turfID;
-//   turfId: 0,
-
-//   // char NPSRiffName[MC_MAX_NPS_RIFF_NAME]; // 32
-//   NPSRiffName: 'main',
-//   // char eTurfName[256];
-//   eTurfName: '',
-//   // char clientArt[11];
-//   clientArt: '',
-//   // DWORD    elementID;
-//   elementId: 0,
-//   // DWORD    turfLength;
-//   turfLength: 0,
-//   // DWORD    startSlice;
-//   startSlice: 0,
-//   // DWORD    endSlice;
-//   endSlice: 0,
-//   // float    dragStageLeft;
-//   dragStageLeft: 0,
-//   // float    dragStageRight;
-//   dragStageRight: 0,
-//   // DWORD    dragStagingSlice;
-//   dragStagingSlice: 0,
-//   // float    gridSpreadFactor;
-//   gridSpreadFactor: 0,
-//   // WORD    linear;
-//   linear: 0,
-//   // WORD    numplayersmin;
-//   numplayersmin: 0,
-//   // WORD    numplayersmax;
-//   numplayersmax: 5,
-//   // WORD    numplayersdefault;
-//   numplayersdefault: 1,
-//   // WORD    bnumplayersenabled;
-//   bnumplayersenabled: 0,
-//   // WORD    numlapsmin;
-//   numlapsmin: 1,
-//   // WORD    numlapsmax;
-//   numlapsmax: 5,
-//   // WORD    numlapsdefault;
-//   numlapsdefault: 1,
-//   // WORD    bnumlapsenabled;
-//   bnumlapsenabled: 0,
-//   // WORD    numroundsmin;
-//   numroundsmin: 1,
-//   // WORD    numroundsmax;
-//   numroundsmax: 5,
-//   // WORD    numroundsdefault;
-//   numroundsdefault: 1,
-//   // WORD    bnumroundsenabled;
-//   bnumroundsenabled: 0,
-//   // WORD    bweatherdefault;
-//   bweatherdefault: 0,
-//   // WORD    bweatherenabled;
-//   bweatherenabled: 0,
-//   // WORD    bnightdefault;
-//   bnightdefault: 0,
-//   // WORD    bnightenabled;
-//   bnightenabled: 0,
-//   // WORD    bbackwarddefault;
-//   bbackwarddefault: 0,
-//   // WORD    bbackwardenabled;
-//   bbackwardenabled: 0,
-//   // WORD    btrafficdefault;
-//   btrafficdefault: 0,
-//   // WORD    btrafficenabled;
-//   btrafficenabled: 0,
-//   // WORD    bdamagedefault;
-//   bdamagedefault: 0,
-//   // WORD    bdamageenabled;
-//   bdamageenabled: 0,
-//   // WORD    baidefault;
-//   baidefault: 0,
-//   // WORD    baienabled;
-//   baienabled: 0,
-
-//   // char   topDog[MC_NAME_LENGTH]; = 13
-//   // Also used for TimeTrial's "Last Weeks Champion"?
-//   topDog: '',
-//   // char   turfOwner[MAX_CLUB_NAME_LENGTH+1]; = 33 (including the +1)
-//   turfOwner: '',
-//   // DWORD  qualifyingTime;
-//   qualifyingTime: 0,
-//   // DWORD   clubNumPlayers;
-//   clubNumPlayers: 1,
-//   // DWORD   clubNumLaps;
-//   clubNumLaps: 1,
-//   // DWORD   clubNumRounds;
-//   clubNumRounds: 1,
-//   // WORD    clubNight;
-//   clubNight: 0,
-//   // WORD    clubWeather;
-//   clubWeather: 0,
-//   // WORD    clubBackwards;
-//   clubBackwards: 0,
-//   // DWORD  bestLapTime; // (64hz ticks)
-//   bestLapTime: 0,
-//   // DWORD  lobbyDifficulty;
-//   lobbyDifficulty: 0,
-//   // DWORD  ttPointForQualify;
-//   ttPointForQualify: 0,
-//   // DWORD  ttCashForQualify;
-//   ttCashForQualify: 0,
-//   // DWORD  ttPointBonusFasterIncs;
-//   ttPointBonusFasterIncs: 1,
-//   // DWORD  ttCashBonusFasterIncs;
-//   ttCashBonusFasterIncs: 1,
-//   // DWORD  ttTimeIncrements;
-//   ttTimeIncrements: 1,
-//   // DWORD  ttvictory_1st_points;
-//   ttvictory_1st_points: 1,
-//   // DWORD  ttvictory_1st_cash;
-//   ttvictory_1st_cash: 1,
-//   // DWORD  ttvictory_2nd_points;
-//   ttvictory_2nd_points: 2,
-//   // DWORD  ttvictory_2nd_cash;
-//   ttvictory_2nd_cash: 2,
-//   // DWORD  ttvictory_3rd_points;
-//   ttvictory_3rd_points: 3,
-//   // DWORD  ttvictory_3rd_cash;
-//   ttvictory_3rd_cash: 3,
-//   // WORD   minLevel;
-//   minLevel: 0,
-//   // DWORD  minResetSlice;
-//   minResetSlice: 0,
-//   // DWORD  maxResetSlice;
-//   maxResetSlice: 1,
-//   // WORD   newbieFlag;
-//   newbieFlag: 1,
-//   // WORD   driverHelmetFlag;
-//   driverHelmetFlag: 0,
-//   // WORD   clubNumPlayersMax;
-//   clubNumPlayersMax: 1,
-//   // WORD   clubNumPlayersMin;
-//   clubNumPlayersMin: 0,
-//   // WORD   clubNumPlayersDefault;
-//   clubNumPlayersDefault: 0,
-//   // WORD   numClubsMin;
-//   numClubsMin: 0,
-//   // float  racePointsFactor;
-//   racePointsFactor: 1,
-//   // WORD   bodyClassMax;
-//   bodyClassMax: 10,
-//   // WORD   powerClassMax;
-//   powerClassMax: 10,
-//   // WORD   partPrizesMax;      // max allowed for this lobby
-//   partPrizesMax: 1,
-//   // WORD   partPrizesWon;      // current users prizes for this lobby
-//   partPrizesWon: 1,
-//   // DWORD  clubLogoID;         // Logo ID for Turf owner
-//   clubLogoId: 0,
-//   // WORD   bteamtrialweather;  // Team Trials Weather Flag
-//   bteamtrialweather: 0,
-//   // WORD   bteamtrialnight;    // Team Trials Night Flag
-//   bteamtrialnight: 0,
-//   // WORD   bteamtrialbackward; // Team Trials Backwards Flag
-//   bteamtrialbackward: 0,
-//   // WORD   teamtrialnumlaps;   // Team Trials Number of Laps
-//   teamtrialnumlaps: 0,
-//   // DWORD  teamtrialbaseTUP;   // Team Trials Base Time Under Par
-//   teamtrialbaseTUP: 0,
-//   // float  raceCashFactor;
-//   raceCashFactor: 1
-// }
 
 /** @type {ILobbyInfo} */
 const lobbyInfoDefaults = {
@@ -355,10 +183,11 @@ const lobbyInfoDefaults = {
 }
 
 /**
- *
+ * @class
+ * @property {ILobbyInfo} data
  */
-export class LobbyInfoPacket {
-  data: ILobbyInfo
+class LobbyInfoPacket {
+
   /**
    *
    */
@@ -370,7 +199,7 @@ export class LobbyInfoPacket {
    *
    * @return {Buffer}
    */
-  toPacket (): Buffer {
+  toPacket () {
     const lobbyPacket = Buffer.alloc(567)
 
     lobbyPacket.writeInt32LE(this.data.lobbyId, 0)
@@ -540,3 +369,4 @@ export class LobbyInfoPacket {
     return lobbyPacket
   }
 }
+module.exports.LobbyInfoPacket = LobbyInfoPacket

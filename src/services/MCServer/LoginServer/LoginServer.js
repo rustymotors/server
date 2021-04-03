@@ -94,7 +94,7 @@ class LoginServer {
     const users = [
       {
         contextId: '5213dee3a6bcdb133373b2d4f3b9962758',
-        customerId: 0x000001ac,
+        customerId: 0xac010000,
         userId: 0x00000002
       },
       {

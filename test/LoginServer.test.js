@@ -5,9 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect } from 'chai'
-import { LoginServer } from '../src/services/MCServer/LoginServer/LoginServer'
-import { fakeDatabaseManager } from './helpers'
+const { expect } = require('chai')
+const { LoginServer } = require('../src/services/MCServer/LoginServer/LoginServer')
+const { fakeDatabaseManager } = require('./helpers')
 
 /* eslint-env mocha */
 
@@ -17,14 +17,14 @@ it('LoginServer', async () => {
   const { customerId, userId } = await loginServer._npsGetCustomerIdByContextId(
     'd316cd2dd6bf870893dfbaaf17f965884e'
   )
-  expect(customerId.readUInt32BE(0).toString()).eq('5551212')
-  expect(userId.readUInt32BE(0).toString()).equals('1')
+  expect(customerId).equals(5551212)
+  expect(userId).equals(1)
 })
 
 it('LoginServer', async () => {
   const { customerId, userId } = await loginServer._npsGetCustomerIdByContextId(
     '5213dee3a6bcdb133373b2d4f3b9962758'
   )
-  expect(customerId.readUInt32BE(0).toString()).equals('2885746688')
-  expect(userId.readUInt32BE(0).toString()).equals('2')
+  expect(customerId).equals(2885746688)
+  expect(userId).equals(2)
 })

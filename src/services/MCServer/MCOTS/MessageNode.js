@@ -35,6 +35,9 @@ class MessageNode {
    * @param {MESSAGE_DIRECTION} direction
    */
   constructor (direction) {
+    if (direction !== 'RECEIVED' && direction !== 'SENT') {
+      throw new Error(`Direction must be either 'RECEIVED' or 'SENT'`)
+    }
     this.direction = direction
     this.msgNo = 0
     this.seq = 999

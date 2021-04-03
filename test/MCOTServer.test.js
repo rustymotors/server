@@ -5,9 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect } from 'chai'
-import { MCOTServer } from '../src/services/MCServer/MCOTS/MCOTServer'
-import { fakeLogger } from './helpers'
+const { expect } = require('chai')
+const { MCOTServer } = require('../src/services/MCServer/MCOTS/MCOTServer')
+const { fakeLogger } = require('./helpers')
 
 /* eslint-env mocha */
 

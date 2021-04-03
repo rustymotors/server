@@ -5,15 +5,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import td from 'testdouble'
-import { logger } from '../src/shared/logger'
-import { ConnectionMgr } from '../src/services/MCServer/ConnectionMgr'
-import { DatabaseManager } from '../src/shared/DatabaseManager'
-import net from 'net'
-import { ConnectionObj } from '../src/services/MCServer/ConnectionObj'
-import { MCServer } from '../src/services/MCServer'
+const td = require('testdouble')
+const { logger } = require('../src/shared/logger')
+const { ConnectionMgr } = require('../src/services/MCServer/ConnectionMgr')
+const { DatabaseManager } = require('../src/shared/DatabaseManager')
+const net = require('net')
+const { ConnectionObj } = require('../src/services/MCServer/ConnectionObj')
+const { MCServer } = require('../src/services/MCServer')
 
-export const fakeConfig = {
+const fakeConfig = {
   serverConfig: {
     certFilename: '/cert/cert.pem',
     privateKeyFilename: '/cert/private.key',
@@ -23,29 +23,35 @@ export const fakeConfig = {
   }
 }
 
-export const fakeLogger = td.object(logger)
-exports.fakeLogger = fakeLogger
-exports.fakeLogger.child = () => {
-  return exports.fakeLogger
+const fakeLogger = td.object(logger)
+fakeLogger.child = () => {
+  return fakeLogger
 }
 
-export const FakeDatabaseManagerConstructor = td.constructor(DatabaseManager)
-export const fakeDatabaseManager = new exports.FakeDatabaseManagerConstructor(exports.fakeLogger)
+const FakeDatabaseManagerConstructor = td.constructor(DatabaseManager)
+const fakeDatabaseManager = new FakeDatabaseManagerConstructor(fakeLogger)
 
-export const FakeConnectionManagerConstructor = td.constructor(ConnectionMgr)
-export const fakeConnectionMgr = new exports.FakeConnectionManagerConstructor(exports.fakeLogger, exports.fakeDatabaseManager)
+const FakeConnectionManagerConstructor = td.constructor(ConnectionMgr)
+const fakeConnectionMgr = new FakeConnectionManagerConstructor(fakeLogger, fakeDatabaseManager)
 
 /**
  * Fake socket for testing
  */
-export const FakeSocketConstructor = td.constructor(net.Socket)
-export const fakeSocket = new exports.FakeSocketConstructor()
+const FakeSocketConstructor = td.constructor(net.Socket)
+const fakeSocket = new FakeSocketConstructor()
 fakeSocket.localPort = '7003'
 
 /**
  * Fake connectionObj for testing
  */
-export const FakeConnectionConstructor = td.constructor(ConnectionObj)
+const FakeConnectionConstructor = td.constructor(ConnectionObj)
 
-export const FakeMCServerConstructor = td.constructor(MCServer)
-export const fakeMCServer = new exports.FakeMCServerConstructor(exports.fakeConfig, exports.fakeDatabaseManager)
+const FakeMCServerConstructor = td.constructor(MCServer)
+const fakeMCServer = new FakeMCServerConstructor(fakeConfig, fakeDatabaseManager)
+
+module.exports.fakeLogger = fakeLogger
+module.exports.FakeConnectionManagerConstructor = FakeConnectionManagerConstructor
+module.exports.fakeConnectionMgr = fakeConnectionMgr
+module.exports.FakeSocketConstructor = FakeSocketConstructor
+module.exports.fakeSocket = fakeSocket
+module.exports.FakeConnectionConstructor = FakeConnectionConstructor

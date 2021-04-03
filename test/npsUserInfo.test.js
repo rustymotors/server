@@ -5,9 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { NPSUserInfo } from '../src/services/MCServer/LobbyServer/npsUserInfo'
-import { MESSAGE_DIRECTION } from '../src/services/MCServer/MCOTS/MessageNode'
-import { expect } from 'chai'
+const { NPSUserInfo } = require('../src/services/MCServer/LobbyServer/npsUserInfo')
+const { expect } = require('chai')
 
 /* eslint-env mocha */
 
@@ -16,7 +15,7 @@ it('NPSUserInfo', () => {
     Buffer.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x84, 0x5f, 0xed]),
     Buffer.alloc(98)
   ])
-  const npsUserInfo = new NPSUserInfo(MESSAGE_DIRECTION.RECIEVED)
+  const npsUserInfo = new NPSUserInfo('RECEIVED')
   npsUserInfo.deserialize(testPacket)
   expect(npsUserInfo.userId).equals(8675309)
 })

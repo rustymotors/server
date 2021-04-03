@@ -5,19 +5,19 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { LobbyInfoPacket } from './LobbyInfo'
-import debug from 'debug'
+const { LobbyInfoPacket } = require('./LobbyInfo')
+const debug = require('debug')
 
 /**
- *
+ * @class
+ * @property {number} msgNo
+ * @property {number} noLobbies
+ * @property {0 | 1} moreToCome
+ * @property {LobbyInfoPacket} lobbyList
+ * @property {number} dataLength
+ * @property {Buffer} data
  */
-export class LobbyMsg {
-  msgNo: number
-  noLobbies: number
-  moreToCome: number
-  lobbyList: LobbyInfoPacket
-  dataLength: number
-  data: Buffer
+class LobbyMsg {
 
   /**
    *
@@ -25,9 +25,7 @@ export class LobbyMsg {
   constructor () {
     this.msgNo = 325
 
-    /** @type {0|1} */
     this.noLobbies = 1
-    /** @type {0|1} */
     this.moreToCome = 0
 
     this.lobbyList = new LobbyInfoPacket()
@@ -45,14 +43,15 @@ export class LobbyMsg {
    *
    * @return {Buffer}
    */
-  serialize (): Buffer {
+  serialize () {
     return this.data
   }
 
   /**
    * dumpPacket
+   * @returns {void}
    */
-  dumpPacket (): void {
+  dumpPacket () {
     debug('mcoserver:LobbyMsg')(
       'LobbyMsg',
       {
@@ -63,3 +62,4 @@ export class LobbyMsg {
     )
   }
 }
+module.exports.LobbyMsg = LobbyMsg

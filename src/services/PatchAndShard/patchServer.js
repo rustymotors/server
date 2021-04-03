@@ -7,13 +7,12 @@
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
-import http, { IncomingMessage, Server, ServerResponse } from 'http'
-import { Logger } from 'winston'
-import { IAppSettings } from '../../types'
-import { appSettings } from '../../../config/app-settings'
-import fs from 'fs'
-import { ShardEntry } from './ShardEntry'
-import debug from 'debug'
+const http = require('http')
+const { Logger } = require('winston')
+const { appSettings } = require('../../../config/app-settings')
+const fs = require('fs')
+const { ShardEntry } = require('./ShardEntry')
+const debug = require('debug')
 
 /**
  * Manages patch and update server connections
@@ -22,18 +21,23 @@ import debug from 'debug'
  * @module PatchServer
  */
 
-export interface ICastanetResponse {
-  body: Buffer
-  header: {
-    type: string
-    value: string
-  }
-}
+/**
+ * @typedef ICastanetResponseHeader
+ * @property {string} type
+ * @property {string} value
+ */
+
+/**
+ * @typedef ICastanetResponse
+ * @property {Buffer} body
+ * @property {ICastanetResponseHeader} header
+ */
 
 /**
  * A simulated patch server response
+ * @type {ICastanetResponse}
  */
-export const CastanetResponse: ICastanetResponse = {
+const CastanetResponse = {
   body: Buffer.from('cafebeef00000000000003', 'hex'),
   header: {
     type: 'Content-Type',
@@ -43,27 +47,23 @@ export const CastanetResponse: ICastanetResponse = {
 
 /**
  * @class
+ * @property {IAppSettings} config
+ * @property {Logger} logger
+ * @property {string[]} banList
+ * @property {string[]} possibleShards
+ * @property {Server} serverPatch
  */
-export class PatchServer {
-  config: IAppSettings
-  logger: Logger
-  banList: string[]
-  possibleShards: string[]
-  serverPatch: Server
+class PatchServer {
   /**
    *
-   * @param {module:logger} logger
+   * @param {Logger} logger
    */
-  constructor (logger: Logger) {
-    /** @type { IAppSettings } */
+  constructor (logger) {
     this.config = appSettings
     this.logger = logger
-    /** @type {string[]} */
     this.banList = []
-    /** @type {string[]} */
     this.possibleShards = []
 
-    /** @type {http.Server} */
     this.serverPatch = http.createServer((req, res) => {
       this._httpHandler(req, res)
     })
@@ -79,31 +79,31 @@ export class PatchServer {
   /**
    * Simulate a response from a update server
    *
-   * @return {exports.CastanetResponse}
+   * @return {ICastanetResponse}
    * @memberof! PatchServer
    */
-  _patchUpdateInfo (): ICastanetResponse {
-    return exports.CastanetResponse
+  _patchUpdateInfo () {
+    return CastanetResponse
   }
 
   /**
    * Simulate a response from a patch server
    *
-   * @return {exports.CastanetResponse}
+   * @return {ICastanetResponse}
    * @memberof! PatchServer
    */
-  _patchNPS (): ICastanetResponse {
-    return exports.CastanetResponse
+  _patchNPS () {
+    return CastanetResponse
   }
 
   /**
    * Simulate a response from a patch server
    *
-   * @return {exports.CastanetResponse}
+   * @return {ICastanetResponse}
    * @memberof! PatchServer
    */
-  _patchMCO (): ICastanetResponse {
-    return exports.CastanetResponse
+  _patchMCO () {
+    return CastanetResponse
   }
 
   /**
@@ -112,7 +112,7 @@ export class PatchServer {
    * @return {string}
    * @memberof! PatchServer
    */
-  _generateShardList (): string {
+  _generateShardList () {
     const { ipServer } = this.config.serverConfig
     const shardClockTower = new ShardEntry(
       'The Clocktower',
@@ -166,7 +166,7 @@ export class PatchServer {
  * @return {string}
  * @memberof! WebServer
  */
-  _handleGetCert (): string {
+  _handleGetCert () {
     return fs.readFileSync(this.config.serverConfig.certFilename).toString()
   }
 
@@ -175,7 +175,7 @@ export class PatchServer {
    * @return {string}
    * @memberof! WebServer
    */
-  _handleGetKey (): string {
+  _handleGetKey () {
     return fs.readFileSync(this.config.serverConfig.publicKeyFilename).toString()
   }
 
@@ -184,7 +184,7 @@ export class PatchServer {
    * @return {string}
    * @memberof! WebServer
    */
-  _handleGetRegistry (): string {
+  _handleGetRegistry () {
     const dynamicRegistryFile = `Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\EACom\\AuthAuth]
@@ -222,7 +222,7 @@ export class PatchServer {
    * @return {void}
    * @memberof! PatchServer
    */
-  _httpHandler (request: IncomingMessage, response: ServerResponse): void {
+  _httpHandler (request, response) {
     let responseData
 
     if (request.url === '/cert') {
@@ -284,19 +284,13 @@ export class PatchServer {
 
       default:
         // Is this a hacker?
-        // if (this.banList.indexOf(request.socket.remoteAddress) < 0) {
         response.statusCode = 404
         response.end('')
-        // In ban list, skip
-        // break
-        // }
 
         // Unknown request, log it
-        // response.end('foo')
         this.logger.info(
           `[PATCH] Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}, banning.`
         )
-        // this._addBan(request.socket.remoteAddress)
         break
     }
   }
@@ -307,7 +301,7 @@ export class PatchServer {
    * @return {void}
    * @memberof! PatchServer
    */
-  _addBan (banIP: string): void {
+  _addBan (banIP) {
     this.banList.push(banIP)
   }
 
@@ -316,7 +310,7 @@ export class PatchServer {
    * @return {string[]}
    * @memberof! PatchServer
    */
-  _getBans (): string[] {
+  _getBans () {
     return this.banList
   }
 
@@ -325,7 +319,7 @@ export class PatchServer {
    * @return {void}
    * @memberof! PatchServer
    */
-  _clearBans (): void {
+  _clearBans () {
     this.banList = []
   }
 
@@ -334,10 +328,12 @@ export class PatchServer {
    * @memberof! PatchServer
    * @return {Promise<http.Server>}
    */
-  async start (): Promise<Server> {
+  async start () {
     return this.serverPatch.listen({ port: '80', host: '0.0.0.0' }, () => {
       debug('port 80 listening')
       this.logger.info('[patchServer] Patch server is listening...')
     })
   }
 }
+module.exports.CastanetResponse = CastanetResponse
+module.exports.PatchServer = PatchServer

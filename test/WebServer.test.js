@@ -5,11 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import mock from 'mock-fs'
-import { AuthLogin } from '../src/services/AuthLogin/AuthLogin'
-import { fakeConfig } from './helpers'
-import { IServerConfig } from '../src/types' // lgtm [js/unused-local-variable]
-import { expect } from 'chai'
+const mock = require('mock-fs')
+const { AuthLogin } = require('../src/services/AuthLogin/AuthLogin')
+const { fakeConfig } = require('./helpers')
+const { IServerConfig } = require('../src/types') // lgtm [js/unused-local-variable]
+const { expect } = require('chai')
 
 /* eslint-env mocha */
 

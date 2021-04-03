@@ -6,24 +6,25 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 /**
- *
+ * @class
+ * @property {string} name
+ * @property {string} description
+ * @property {number} id
+ * @property {string} loginServerIp
+ * @property {number} loginServerPort
+ * @property {string} lobbyServerIp
+ * @property {number} lobbyServerPort
+ * @property {string} mcotsServerIp
+ * @property {number} statusId
+ * @property {string} statusReason
+ * @property {string} serverGroupName
+ * @property {number} population
+ * @property {number} maxPersonasPerUser
+ * @property {string} diagnosticServerHost
+ * @property {number} diagnosticServerPort
  */
-export class ShardEntry {
-  name: string
-  description: string
-  id: number
-  loginServerIp: string
-  loginServerPort: number
-  lobbyServerIp: string
-  lobbyServerPort: number
-  mcotsServerIp: string
-  statusId: number
-  statusReason: string
-  serverGroupName: string
-  population: number
-  maxPersonasPerUser: number
-  diagnosticServerHost: string
-  diagnosticServerPort: number
+class ShardEntry {
+
   /**
    *
    * @param {string} name
@@ -34,7 +35,7 @@ export class ShardEntry {
    * @param {string} lobbyServerIp
    * @param {number} lobbyServerPort
    * @param {string} mcotsServerIp
-   * @param {number} statusID
+   * @param {number} statusId
    * @param {string} statusReason
    * @param {string} serverGroupName
    * @param {number} population
@@ -43,21 +44,21 @@ export class ShardEntry {
    * @param {number} diagnosticServerPort
    */
   constructor (
-    name: string,
-    description: string,
-    id: number,
-    loginServerIp: string,
-    loginServerPort: number,
-    lobbyServerIp: string,
-    lobbyServerPort: number,
-    mcotsServerIp: string,
-    statusId: number,
-    statusReason: string,
-    serverGroupName: string,
-    population: number,
-    maxPersonasPerUser: number,
-    diagnosticServerHost: string,
-    diagnosticServerPort: number
+    name,
+    description,
+    id,
+    loginServerIp,
+    loginServerPort,
+    lobbyServerIp,
+    lobbyServerPort,
+    mcotsServerIp,
+    statusId,
+    statusReason,
+    serverGroupName,
+    population,
+    maxPersonasPerUser,
+    diagnosticServerHost,
+    diagnosticServerPort
   ) {
     this.name = name
     this.description = description
@@ -80,7 +81,7 @@ export class ShardEntry {
    *
    * @return {string}
    */
-  formatForShardList (): string {
+  formatForShardList () {
     return `[${this.name}]
     Description=${this.description}
     ShardId=${this.id}
@@ -98,3 +99,4 @@ export class ShardEntry {
     DiagnosticServerPort=${this.diagnosticServerPort}`
   }
 }
+module.exports.ShardEntry = ShardEntry

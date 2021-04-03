@@ -5,15 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import fs from 'fs'
-import https, { Server } from 'https'
-import { logger } from '../../shared/logger'
-import util from 'util'
-import { IAppSettings, IServerConfig, ISslOptions } from '../../types'
-import { Logger } from 'winston'
-import { IncomingMessage, ServerResponse } from 'http'
-import { Socket } from 'net'
-import debug from 'debug'
+const fs = require('fs')
+const https = require('https')
+const { logger } = require('../../shared/logger')
+const util = require('util')
+const { IncomingMessage, ServerResponse } = require('http')
+const { Socket } = require('net')
+const debug = require('debug')
+const { Server } = require('https')
 
 const readFilePromise = util.promisify(fs.readFile)
 
@@ -25,17 +24,15 @@ const readFilePromise = util.promisify(fs.readFile)
 /**
  * @class
  * @property {IAppSettings} config
- * @property {module:Logger.logger} logger
+ * @property {Logger} logger
+ * @property {Server} httpsServer
  */
-export class AuthLogin {
-  config: IAppSettings
-  logger: Logger
-  httpsServer: Server | undefined
+class AuthLogin {
   /**
    *
    * @param {IAppSettings} config
    */
-  constructor (config: IAppSettings) {
+  constructor (config) {
     this.config = config
     this.logger = logger.child({ service: 'mcoserver:AuthLogin' })
   }
@@ -53,10 +50,10 @@ export class AuthLogin {
   /**
    *
    * @param {IServerConfig} configuration
-   * @return {Promise<sslOptionsObj>}
+   * @return {Promise<ISslOptions>}
    * @memberof! WebServer
    */
-  async _sslOptions (configuration: IServerConfig): Promise<ISslOptions> {
+  async _sslOptions (configuration) {
     debug('mcoserver:AuthLogin')(`Reading ${configuration.certFilename}`)
 
     let cert
@@ -91,7 +88,7 @@ export class AuthLogin {
    * @return {string}
    * @memberof! WebServer
    */
-  _handleGetTicket (): string {
+  _handleGetTicket () {
     return 'Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e'
   }
 
@@ -99,10 +96,11 @@ export class AuthLogin {
    *
    * @param {IncomingMessage} request
    * @param {ServerResponse} response
+   * @returns {void}
    * @memberof! WebServer
    */
   // file deepcode ignore NoRateLimitingForExpensiveWebOperation: Not using express, unsure how to handle rate limiting on raw http
-  _httpsHandler (request: IncomingMessage, response: ServerResponse): void {
+  _httpsHandler (request, response) {
     this.logger.info(
       `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     )
@@ -117,8 +115,9 @@ export class AuthLogin {
   /**
    *
    * @param {Socket} socket
+   * @returns {void}
    */
-  _socketEventHandler (socket: Socket): void {
+  _socketEventHandler (socket) {
     socket.on('error', (error) => {
       throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`)
     })
@@ -126,9 +125,10 @@ export class AuthLogin {
 
   /**
    *
+   * @returns {Promise<Server>}
    * @memberof! WebServer
    */
-  async start (): Promise<Server> {
+  async start () {
     const sslOptions = await this._sslOptions(this.config.serverConfig)
 
     try {
@@ -157,3 +157,4 @@ export class AuthLogin {
     return this.httpsServer
   }
 }
+module.exports.AuthLogin = AuthLogin

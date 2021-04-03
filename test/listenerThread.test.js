@@ -5,9 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { fakeLogger, fakeConnectionMgr, fakeConfig, fakeSocket, FakeConnectionConstructor } from './helpers'
-import { ListenerThread } from '../src/services/MCServer/listenerThread'
-import { expect } from 'chai'
+const { fakeLogger, fakeConnectionMgr, fakeConfig, fakeSocket, FakeConnectionConstructor } = require('./helpers')
+const { ListenerThread } = require('../src/services/MCServer/listenerThread')
+const { expect } = require('chai')
 
 /* eslint-env mocha */
 
