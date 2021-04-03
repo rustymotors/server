@@ -237,19 +237,18 @@ const CompressedHeader = {
  * @property {Buffer} _rawBuffer
  */
 class MessageNode {
-  _toFrom = Buffer.alloc(4) // UInt4
-  _appID = Buffer.alloc(4) // UInt4
-  _header = new MsgHead() // UInt4
-  _seq = Buffer.alloc(4) // UInt4
-  _flags = Buffer.alloc(4) // UInt4
-  _buffer // [1] Char
-  _rawBuffer
+
 
   /**
    * 
    * @param {Buffer} buffer 
    */
   constructor (buffer) {
+    this._toFrom = Buffer.alloc(4) // UInt4
+    this._appID = Buffer.alloc(4) // UInt4
+    this._header = new MsgHead() // UInt4
+    this._seq = Buffer.alloc(4) // UInt4
+    this._flags = Buffer.alloc(4) // UInt4
     this._rawBuffer = buffer
     this._buffer = buffer.slice(16)
   }
