@@ -41,7 +41,7 @@
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "1.0.1",
     "@types/c-struct": "0.0.0",
-    "@types/chai": "4.2.15",
+    "@types/chai": "4.2.16",
     "@types/debug": "4.1.5",
     "@types/ini": "1.3.30",
     "@types/mocha": "8.2.2",
