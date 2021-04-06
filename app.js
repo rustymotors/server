@@ -6,12 +6,12 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { appSettings } from './config/app-settings'
-import { logger } from './src/shared/logger'
-import { AuthLogin } from './src/services/AuthLogin/AuthLogin'
-import { PatchServer } from './src/services/PatchAndShard/patchServer'
-import { Server } from './src/server'
-import { DatabaseManager, doMigrations } from './src/shared/DatabaseManager'
+const { appSettings } = require('./config/app-settings')
+const { logger } = require('./src/shared/logger')
+const { AuthLogin } = require('./src/services/AuthLogin/AuthLogin')
+const { PatchServer } = require('./src/services/PatchAndShard/patchServer')
+const { Server } = require('./src/server')
+const { DatabaseManager, doMigrations } = require('./src/shared/DatabaseManager')
 
 // Database manager
 const dbLogger = logger.child({ service: 'mcoserver:DatabaseManager' })

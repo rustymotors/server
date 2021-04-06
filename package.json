@@ -8,7 +8,7 @@
     "AUTHORS"
   ],
   "scripts": {
-    "start": "DEBUG=mcoserver* ts-node app.ts",
+    "start": "DEBUG=mcoserver* node app.js",
     "coverage": "DEBUG=mcoserver* nyc --extension '.ts' --reporter=html --reporter=text ./launch.js",
     "test": "npm run lint-test",
     "doc": "jsdoc -R README.md -P package.json -r src",

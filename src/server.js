@@ -5,11 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { appSettings } from '../config/app-settings'
-import { AdminServer } from './services/AdminServer/AdminServer'
-import { MCServer } from './services/MCServer'
-import { DatabaseManager } from './shared/DatabaseManager' // lgtm [js/unused-local-variable]
-import { logger } from './shared/logger'
+const { appSettings } = require('../config/app-settings')
+const { AdminServer } = require('./services/AdminServer/AdminServer')
+const { MCServer } = require('./services/MCServer')
+const { DatabaseManager } = require('./shared/DatabaseManager') // lgtm [js/unused-local-variable]
+const { logger } = require('./shared/logger')
 
 
 /**
@@ -21,7 +21,7 @@ import { logger } from './shared/logger'
  * @property {MCServer} mcServer
  * @property {AdminServer} adminServer
  */
-export class Server {
+class Server {
   config
   logger
   databaseManager
@@ -56,6 +56,4 @@ export class Server {
   }
 }
 
-module.exports = {
-  Server
-}
+module.exports.Server = Server
