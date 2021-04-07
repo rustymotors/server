@@ -403,7 +403,7 @@ async function defaultHandler (rawPacket) {
   const messageNode = new MessageNode('RECEIVED')
   messageNode.deserialize(data)
 
-  logger.info(
+  logger.child({ service: 'mcoserver:TCPManager' }).info(
     'Received TCP packet',
     {
       localPort,
