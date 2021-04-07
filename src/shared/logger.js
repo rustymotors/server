@@ -13,7 +13,7 @@ const winston = require('winston')
 
 /**
  * Provides a shared logging abstraction
-  * @typedef {Object} Logger
+  * @typedef {winston.Logger} Logger
   */
 module.exports.logger = winston.createLogger({
   ...{
