@@ -26,7 +26,7 @@ const readFilePromise = util.promisify(fs.readFile)
  *
  *
  * @property {MCServer} mcServer
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  * @property {Server} httpServer
  */
 module.exports.AdminServer = class AdminServer {
@@ -37,7 +37,7 @@ module.exports.AdminServer = class AdminServer {
   constructor (mcServer) {
     this.mcServer = mcServer
     /**
-     * @type {logger}
+     * @type {module:MCO_Logger.logger}
      */
     this.logger = logger.child({ service: 'mcoserver:AdminServer' })
   }

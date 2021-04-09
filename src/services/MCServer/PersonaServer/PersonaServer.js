@@ -19,13 +19,13 @@ const debug = Debug('mcoserver:PersonaServer')
 
 /**
  * @class
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  * @property {IPersonaRecord[]} personaList
  */
 class PersonaServer {
   /**
    *
-   * @param {import('../../../shared/logger').Logger} logger
+   * @param {module:MCO_Logger.logger} logger
    */
   constructor(logger) {
     this.logger = logger

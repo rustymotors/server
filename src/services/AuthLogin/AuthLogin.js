@@ -24,7 +24,7 @@ const readFilePromise = util.promisify(fs.readFile)
 /**
  * @class
  * @property {IAppSettings} config
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  * @property {Server} httpsServer
  */
 class AuthLogin {
@@ -39,7 +39,6 @@ class AuthLogin {
 
   /**
    *
-   * @global
    * @typedef {Object} sslOptionsObj
    * @property {string} cert
    * @property {boolean} honorCipherOrder

@@ -48,7 +48,7 @@ const CastanetResponse = {
 /**
  * @class
  * @property {IAppSettings} config
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  * @property {string[]} banList
  * @property {string[]} possibleShards
  * @property {Server} serverPatch
@@ -56,7 +56,7 @@ const CastanetResponse = {
 class PatchServer {
   /**
    *
-   * @param {Logger} logger
+   * @param {module:MCO_Logger.logger} logger
    */
   constructor (logger) {
     this.config = appSettings

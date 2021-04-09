@@ -8,12 +8,12 @@
 const winston = require('winston')
 
 /**
- * @module Logger
+ * @module MCO_Logger
  */
 
 /**
  * Provides a shared logging abstraction
-  * @typedef {winston.Logger} Logger
+  * @type {winston.Logger}
   */
 module.exports.logger = winston.createLogger({
   ...{

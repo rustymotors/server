@@ -17,12 +17,18 @@ const { PersonaServer } = require("./PersonaServer/PersonaServer")
  */
 
 /**
+ * @typedef IMsgNameMapping
+ * @property {number} id
+ * @property {string} name
+ */
+
+/**
  * @class
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  * @property {IAppSettings} config
  * @property {DatabaseManager} database
  * @property {string} npsKey
- * @property {{id: number, name: string}[]} msgNameMapping
+ * @property {module:npsPacketManager~IMsgNameMapping[]} msgNameMapping
  * @property {LoginServer} loginServer
  * @property {PersonaServer} personaServer
  * @property {LobbyServer} lobbyServer

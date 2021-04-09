@@ -15,7 +15,7 @@ const { migrate } = require('postgres-migrations')
 
 /**
  *
- * @param {import('./logger').Logger} logger
+ * @param {module:MCO_Logger.logger} logger
  * @returns {Promise<void>}
  */
 module.exports.doMigrations = async function doMigrations (logger) {
@@ -37,11 +37,11 @@ module.exports.doMigrations = async function doMigrations (logger) {
 
 /**
  * @class
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  */
 module.exports.DatabaseManager = class DatabaseManager {
   /**
-   * @param {import('./logger').Logger} logger
+   * @param {module:MCO_Logger.logger} logger
    */
   constructor (logger) {
     this.logger = logger

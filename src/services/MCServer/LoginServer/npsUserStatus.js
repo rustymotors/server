@@ -97,7 +97,7 @@ class NPSUserStatus extends NPSMsg {
 
   /**
    *
-   * @return {import('../MCOTS/NPSMsg').INPSMsgJSON}
+   * @return {module:NPSMsg.INPSMsgJSON}
    */
   toJSON () {
     return {

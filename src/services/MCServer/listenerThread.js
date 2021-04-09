@@ -20,13 +20,13 @@ const net = require('net')
 /**
  * @class
  * @property {IAppSettings} config
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  */
 module.exports.ListenerThread = class ListenerThread {
 
   /**
    * @param {IAppSettings} config
-   * @param {import('../../shared/logger').Logger} logger
+   * @param {module:MCO_Logger.logger} logger
    */
   constructor (config, logger) {
     this.config = config
@@ -113,7 +113,7 @@ module.exports.ListenerThread = class ListenerThread {
        * Craft a packet that tells the client it's allowed to login
        */
 
-      socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]))
+      // socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]))
       connection.inQueue = false
     }
     socket.on('end', () => {

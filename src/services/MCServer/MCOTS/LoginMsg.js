@@ -29,7 +29,7 @@ struct.register('LoginMsg', loginMsgSchema)
 
 /**
  * @class
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  * @property {number} newMsgNo
  * @property {number} toFrom
  * @property {number} appId

@@ -17,12 +17,12 @@ const { MessageNode, NPS_COMMANDS } = require('../../structures')
 const debug = Debug('mcoserver:ConnectionManager')
 
 /**
- * @module Conne
+ * @module ConnectionMgr
  */
 
 /**
  * @class
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  * @property {IAppSettings} config
  * @property {DatabaseManager} databaseManager
  * @property {ConnectionObj[]} connections
@@ -32,7 +32,7 @@ module.exports.ConnectionMgr = class ConnectionMgr {
 
   /**
    * Creates an instance of ConnectionMgr.
-   * @param {import('../../shared/logger').Logger} logger
+   * @param {module:MCO_Logger.logger} logger
    * @param {DatabaseManager} databaseManager
    */
   constructor (logger, databaseManager) {

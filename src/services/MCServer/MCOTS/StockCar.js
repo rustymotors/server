@@ -20,7 +20,7 @@ const debug = require('debug')
 
 /**
  * @class
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  * @property {number} brandedPartId
  * @property {number} retailPrice
  * @property {0 | 1} bIsDealOfTheDay

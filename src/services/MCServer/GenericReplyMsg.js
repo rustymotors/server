@@ -19,7 +19,7 @@ const { logger } = require("../../shared/logger")
 
 /**
  * @class
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  * @property {number} msgNo
  * @property {number} toFrom
  * @property {number} appId

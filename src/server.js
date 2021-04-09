@@ -16,7 +16,7 @@ const { logger } = require('./shared/logger')
  * Main game server
  * @class
  * @property {IAppSettings} config
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  * @property {DatabaseManager} databaseManager
  * @property {MCServer} mcServer
  * @property {AdminServer} adminServer
