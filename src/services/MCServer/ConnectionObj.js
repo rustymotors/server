@@ -7,7 +7,6 @@
 
 const crypto = require('crypto')
 const { Socket } = require('net') // lgtm [js/unused-local-variable]
-const { ConnectionMgr } = require('./ConnectionMgr') // lgtm [js/unused-local-variable]
 const { EncryptionManager } = require('./EncryptionMgr')
 
 /**
@@ -50,7 +49,7 @@ module.exports.ConnectionObj = class ConnectionObj {
    *
    * @param {string} connectionId
    * @param {Socket} sock
-   * @param {ConnectionMgr} mgr
+   * @param {import('./ConnectionMgr').ConnectionMgr} mgr
    */
   constructor (connectionId, sock, mgr) {
     this.id = connectionId
