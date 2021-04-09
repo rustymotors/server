@@ -56,7 +56,7 @@ class NPSPacketManager {
 
     this.loginServer = new LoginServer(this.database)
     this.personaServer = new PersonaServer(
-      this.logger.child({ service: 'test_mcoserver:PersonaServer' })
+      this.logger.child({ service: 'mcoserver:PersonaServer' })
     )
     this.lobbyServer = new LobbyServer()
   }
