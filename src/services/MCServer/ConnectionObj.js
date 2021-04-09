@@ -38,7 +38,7 @@ const { EncryptionManager } = require('./EncryptionMgr')
  * @property {LobbyCiphers} encLobby
  * @property {EncryptionManager} enc
  * @property {boolean} isSetupComplete
- * @property {ConnectionMgr} mgr
+ * @property {module:ConnectionMgr.ConnectionMgr} mgr
  * @property {boolean} inQueue
  * @property {Buffer} decryptedCmd
  * @property {Buffer} encryptedCmd
@@ -49,7 +49,7 @@ module.exports.ConnectionObj = class ConnectionObj {
    *
    * @param {string} connectionId
    * @param {Socket} sock
-   * @param {import('./ConnectionMgr').ConnectionMgr} mgr
+   * @param {module:ConnectionMgr.ConnectionMgr} mgr
    */
   constructor (connectionId, sock, mgr) {
     this.id = connectionId
