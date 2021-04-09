@@ -65,6 +65,9 @@
       "html",
       "cobertura"
     ],
+    "include": [
+      "src/**/*.js"
+    ],
     "exclude": [
       "out/*",
       "coverage/*",
