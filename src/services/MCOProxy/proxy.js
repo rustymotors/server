@@ -35,22 +35,6 @@ const { Server: TCPServer } = require("net");
  * @property {ProtocolType} protocol
  */
 
-/** @type {IProxyListenerRequest[]} */
-const serverRequests = [
-    {
-        port: 80,
-        protocol: 'http'
-    },
-    {
-        port: 443,
-        protocol: 'ssl'
-    },
-    {
-        port: 8228,
-        protocol: 'tcp'
-    }
-]
-
 /**
  * @class
  * @property {IProxyListenerRecord[]} activeListeners

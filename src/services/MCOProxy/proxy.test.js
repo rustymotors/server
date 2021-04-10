@@ -9,18 +9,42 @@ const { expect } = require('chai')
 const { MCOProxy } = require('./proxy')
 
 /** @type {module:MCOProxy~IProxyListenerRequest[]} */
-const testRequestList = [
+const testServerRequests = [
     {
-        port: 444,
+        port: 80,
+        protocol: 'http'
+    },
+    {
+        port: 443,
+        protocol: 'ssl'
+    },
+    {
+        port: 8228,
         protocol: 'tcp'
     }
-] 
+]
+
+/** @type {module:MCOProxy~IProxyListenerRequest[]} */
+const testServerRequestsBad = [
+    {
+        port: 666,
+        protocol: 'udp'
+    }
+]
 
 describe('MCOProxy', function() {
 
     it('should return an instance of itself when new() is called ', async function() {
         /** @type {MCOProxy} */
-        const testProxy = await MCOProxy.new(testRequestList)
-        expect(testProxy.activeListeners.length).to.be.equal(1)
+        const testProxy = await MCOProxy.new(testServerRequests)
+        expect(testProxy.activeListeners.length).to.be.equal(3)
+    })
+
+    it('should throw when new() is passed a request with an invalid protocol field ', async function() {
+        /** @type {MCOProxy} */
+        MCOProxy.new(testServerRequestsBad)
+        .catch(err => {
+            expect(err).to.match(/Unsupported server type/)
+        })
     })
 })
