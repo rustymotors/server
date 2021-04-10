@@ -22,7 +22,7 @@ const debug = require('debug')
  * @class
  * @property {IAppSettings} config
  * @property {ConnectionMgr} mgr
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  */
 module.exports.MCServer = class MCServer {
 
@@ -33,7 +33,7 @@ module.exports.MCServer = class MCServer {
    */
   constructor (config, databaseManager) {
     this.config = config
-    this.mgr = new ConnectionMgr(logger, databaseManager)
+    this.mgr = new ConnectionMgr(logger, databaseManager, this.config)
     this.logger = logger.child({ service: 'mcoserver:MCServer' })
   }
 

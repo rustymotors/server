@@ -21,14 +21,14 @@ const debug = require('debug')
 
 /**
  * @class
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  */
 class MCOTServer {
 
   /**
    * Creates an instance of MCOTServer.
    * @class
-   * @param {import('../../../shared/logger').Logger} logger
+   * @param {module:MCO_Logger.logger} logger
    */
   constructor (logger) {
     this.logger = logger

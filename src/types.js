@@ -7,7 +7,7 @@
 
 
 /**
- * @module
+ * @module SharedTypes
  */
 
 /**

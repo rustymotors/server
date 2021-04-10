@@ -51,7 +51,7 @@ const debug = require('debug')
 class NPSPersonaMapsMsg extends NPSMsg {
   /**
    *
-   * @param {import('../MCOTS/MessageNode').MESSAGE_DIRECTION} direction
+   * @param {module:MessageNode.MESSAGE_DIRECTION} direction
    */
   constructor (direction) {
     super(direction)

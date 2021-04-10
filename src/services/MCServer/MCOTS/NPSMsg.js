@@ -23,7 +23,7 @@ const debug = require('debug')
    * @property {number} msgVersion
    * @property {string} content
    * @property {string} contextId
-   * @property {import('./MessageNode').MESSAGE_DIRECTION} direction
+   * @property {module:MessageNode.MESSAGE_DIRECTION} direction
    * @property {string | null } sessionkey
    * @property {string} rawBuffer
    */
@@ -36,7 +36,7 @@ const debug = require('debug')
 
 /**
  * @class
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  * @property {number} msgNo
  * @property {number} msgVersion
  * @property {number} reserved
@@ -48,7 +48,7 @@ class NPSMsg {
 
   /**
    *
-   * @param {import('./MessageNode').MESSAGE_DIRECTION} direction - the direction of the message flow
+   * @param {module:MessageNode.MESSAGE_DIRECTION} direction - the direction of the message flow
    */
   constructor (direction) {
     this.logger = logger.child({ service: 'mcoserver:NPSMsg' })

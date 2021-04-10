@@ -5,42 +5,39 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { Socket } = require('net') // lgtm [js/unused-local-variable]
-const { appSettings } = require('../../../config/app-settings')
-const { DatabaseManager } = require('../../shared/DatabaseManager') // lgtm [js/unused-local-variable]
-const { ConnectionObj } = require('./ConnectionObj')
-const { defaultHandler } = require('./MCOTS/TCPManager')
-const { NPSPacketManager } = require('./npsPacketManager')
 const Debug = require('debug')
 const { MessageNode, NPS_COMMANDS } = require('../../structures')
+const { defaultHandler } = require('./MCOTS/TCPManager')
+const { ConnectionObj } = require('./ConnectionObj')
+const { NPSPacketManager } = require('./npsPacketManager')
 
 const debug = Debug('mcoserver:ConnectionManager')
 
 /**
- * @module Conne
+ * @module ConnectionMgr
  */
 
 /**
  * @class
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  * @property {IAppSettings} config
- * @property {DatabaseManager} databaseManager
- * @property {ConnectionObj[]} connections
+ * @property {module:DatabaseManager} databaseManager
+ * @property {module:ConnectionObj[]} connections
  * @property {string[]} banList
  */
-module.exports.ConnectionMgr = class ConnectionMgr {
+class ConnectionMgr {
 
   /**
    * Creates an instance of ConnectionMgr.
-   * @param {import('../../shared/logger').Logger} logger
-   * @param {DatabaseManager} databaseManager
+   * @param {module:MCO_Logger.logger} logger
+   * @param {module:DatabaseManager} databaseManager
    */
-  constructor (logger, databaseManager) {
+  constructor (logger, databaseManager, appSettings) {
     this.logger = logger.child({ service: 'mcoserver:ConnectionMgr' })
     this.config = appSettings
     this.databaseMgr = databaseManager
     /**
-     * @type {ConnectionObj[]}
+     * @type {module:ConnectionObj[]}
      */
     this.connections = []
     this.newConnectionId = 1
@@ -53,10 +50,10 @@ module.exports.ConnectionMgr = class ConnectionMgr {
   /**
    * Check incoming data and route it to the correct handler based on localPort
    * @param {IRawPacket} rawPacket
-   * @returns {Promise<ConnectionObj>}
+   * @returns {Promise} {@link module:ConnectionObj~ConnectionObj}
    */
   async processData (rawPacket) {
-    const npsPacketManager = new NPSPacketManager(this.databaseMgr, this.logger)
+    const npsPacketManager = new NPSPacketManager(this.databaseMgr, this.logger, this.config)
 
     const { remoteAddress, localPort, data } = rawPacket
 
@@ -155,7 +152,7 @@ module.exports.ConnectionMgr = class ConnectionMgr {
    * @param {string} remoteAddress
    * @param {number} localPort
    * @memberof ConnectionMgr
-   * @return {ConnectionObj | undefined}
+   * @return {module:ConnectionObj}
    */
   findConnectionByAddressAndPort (remoteAddress, localPort) {
     return this.connections.find(connection => {
@@ -169,7 +166,7 @@ module.exports.ConnectionMgr = class ConnectionMgr {
   /**
    * Locate connection by id in the connections array
    * @param {string} connectionId
-   * @return {ConnectionObj | undefined}
+   * @return {module:ConnectionObj}
    */
   findConnectionById (connectionId) {
     const results = this.connections.find(connection => {
@@ -185,7 +182,7 @@ module.exports.ConnectionMgr = class ConnectionMgr {
    *
    * @param {string} address
    * @param {number} port
-   * @param {ConnectionObj} newConnection
+   * @param {module:ConnectionObj} newConnection
    * @returns {Promise<void>}
    */
   async _updateConnectionByAddressAndPort (address, port, newConnection) {
@@ -216,8 +213,8 @@ module.exports.ConnectionMgr = class ConnectionMgr {
   /**
    * Return an existing connection, or a new one
    *
-   * @param {Socket} socket
-   * @return {ConnectionObj}
+   * @param {module:net.Socket} socket
+   * @return {module:ConnectionObj}
    */
   findOrNewConnection (socket) {
     const { remoteAddress, localPort } = socket
@@ -265,12 +262,13 @@ module.exports.ConnectionMgr = class ConnectionMgr {
   /**
    * Dump all connections for debugging
    *
-   * @return {ConnectionObj[]}
+   * @return {module:ConnectionObj[]}
    */
   dumpConnections () {
     return this.connections
   }
 }
+module.exports.ConnectionMgr = ConnectionMgr
 
 process.on('unhandledRejection', (reason, p) => {
   console.log('Unhandled Rejection at:', p, 'reason:', reason)

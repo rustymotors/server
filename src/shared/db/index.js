@@ -27,6 +27,6 @@ module.exports.pool = pool
 /**
  * @param {string} text
  * @param {string[]} params
- * @return {Promise<pg.QueryResult<Record<string, string>[]>>}
+ * @return {Promise<pg.QueryResult<Record<string, string[]>>>}
  */
 module.exports.query = function query (text, params) { return pool.query(text, params) }

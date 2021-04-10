@@ -21,7 +21,7 @@ const { NPSMsg } = require('../MCOTS/NPSMsg')
 
 /**
  * @class
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  * @property {DatabaseManager} databaseManager
  */
 class LoginServer {

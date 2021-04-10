@@ -17,7 +17,7 @@ const debug = require('debug')
 /**
  * @class
  * @extends {NPSMsg}
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  * @property {number} userId
  * @property {Buffer} userName
  * @property {Buffer} userData

@@ -25,7 +25,7 @@ const { StockCar } = require('./StockCar') // lgtm [js/unused-local-variable]
 
 /**
  * @class
- * @property {Logger} logger
+ * @property {module:MCO_Logger.logger} logger
  * @property {number} msgNo
  * @property {number} starterCash
  * @property {number} dealerId
