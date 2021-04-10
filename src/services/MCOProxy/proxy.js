@@ -5,6 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+//  deepcode ignore HttpToHttps: http is required here. suggestions on how to allow http on an https server welcome
 const { Server: HTTPServer } = require("http");
 const { Server: SSLServer } = require("https");
 const { Server: TCPServer } = require("net");
