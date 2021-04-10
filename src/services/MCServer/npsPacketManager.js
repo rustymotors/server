@@ -5,9 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { appSettings } = require("../../../config/app-settings")
-const { DatabaseManager } = require("../../shared/DatabaseManager") // lgtm [js/unused-local-variable]
-const { ConnectionObj } = require("./ConnectionObj") // lgtm [js/unused-local-variable]
+const { ConnectionObj } = require("./ConnectionObj")
 const { LobbyServer } = require("./LobbyServer/LobbyServer")
 const { LoginServer } = require("./LoginServer/LoginServer")
 const { PersonaServer } = require("./PersonaServer/PersonaServer")
@@ -25,21 +23,23 @@ const { PersonaServer } = require("./PersonaServer/PersonaServer")
 /**
  * @class
  * @property {module:MCO_Logger.logger} logger
- * @property {IAppSettings} config
- * @property {DatabaseManager} database
+ * @property {module:IAppSettings} config
+ * @property {module:DatabaseManager} database
  * @property {string} npsKey
  * @property {module:npsPacketManager~IMsgNameMapping[]} msgNameMapping
- * @property {LoginServer} loginServer
- * @property {PersonaServer} personaServer
- * @property {LobbyServer} lobbyServer
+ * @property {module:LoginServer} loginServer
+ * @property {module:PersonaServer} personaServer
+ * @property {module:LobbyServer} lobbyServer
  */
 class NPSPacketManager {
 
   /**
    *
-   * @param {DatabaseManager} databaseMgr
+   * @param {module:DatabaseManager} databaseMgr
+   * @param {module:MCO_Logger.logger} logger
+   * @param {IAppSettings} appSettings
    */
-  constructor (databaseMgr, logger) {
+  constructor (databaseMgr, logger, appSettings) {
     this.logger = logger.child({ service: 'mcoserver:NPSPacketManager' })
     this.config = appSettings
     this.database = databaseMgr
@@ -98,7 +98,7 @@ class NPSPacketManager {
 
   /**
    *
-   * @param {IRawPacket} rawPacket
+   * @param {module:IRawPacket} rawPacket
    * @returns {Promise<ConnectionObj>}
    */
   async processNPSPacket (rawPacket) {

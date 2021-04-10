@@ -6,7 +6,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const crypto = require('crypto')
-const { Socket } = require('net') // lgtm [js/unused-local-variable]
 const { EncryptionManager } = require('./EncryptionMgr')
 
 /**
@@ -25,7 +24,7 @@ const { EncryptionManager } = require('./EncryptionMgr')
  */
 
 /**
- * @class ConnectionObj
+ * @class
  * @property {string} id
  * @property {number} appId
  * @property {ConnectionStatus} status
@@ -43,12 +42,12 @@ const { EncryptionManager } = require('./EncryptionMgr')
  * @property {Buffer} decryptedCmd
  * @property {Buffer} encryptedCmd
  */
-module.exports.ConnectionObj = class ConnectionObj {
+class ConnectionObj {
 
   /**
    *
    * @param {string} connectionId
-   * @param {Socket} sock
+   * @param {module:net/Socket} sock
    * @param {module:ConnectionMgr.ConnectionMgr} mgr
    */
   constructor (connectionId, sock, mgr) {
@@ -147,3 +146,4 @@ module.exports.ConnectionObj = class ConnectionObj {
     throw new Error('No DES decipher set on connection')
   }
 }
+module.exports.ConnectionObj = ConnectionObj

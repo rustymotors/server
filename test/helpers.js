@@ -23,6 +23,14 @@ const fakeConfig = {
   }
 }
 
+/**
+ * @type {IAppSettings}
+ */
+const fakeSettings = {
+
+}
+module.exports.fakeSettings = fakeSettings
+
 const fakeLogger = td.object(logger)
 fakeLogger.child = () => {
   return fakeLogger

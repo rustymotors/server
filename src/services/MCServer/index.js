@@ -33,7 +33,7 @@ module.exports.MCServer = class MCServer {
    */
   constructor (config, databaseManager) {
     this.config = config
-    this.mgr = new ConnectionMgr(logger, databaseManager)
+    this.mgr = new ConnectionMgr(logger, databaseManager, this.config)
     this.logger = logger.child({ service: 'mcoserver:MCServer' })
   }
 

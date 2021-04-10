@@ -6,14 +6,14 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const { NPSPacketManager } = require('../src/services/MCServer/npsPacketManager')
-const { fakeDatabaseManager, fakeLogger } = require('./helpers')
+const { fakeDatabaseManager, fakeLogger, fakeSettings } = require('./helpers')
 const { expect } = require('chai')
 
 /* eslint-env mocha */
 
 describe('NPSPacketManager', () => {
   it('NPSPacketManger', async () => {
-    const npsPacketManager = new NPSPacketManager(fakeDatabaseManager, fakeLogger)
+    const npsPacketManager = new NPSPacketManager(fakeDatabaseManager, fakeLogger, fakeSettings)
     expect(npsPacketManager.msgCodetoName(0x229)).to.equal('NPS_MINI_USER_LIST')
   })
 })
