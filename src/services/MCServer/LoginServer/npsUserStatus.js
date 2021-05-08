@@ -6,11 +6,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 const { Socket } = require('net')
 
-const { logger } = require('../../../shared/logger')
+const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:NPSUserStatus' })
 const crypto = require('crypto')
 const fs = require('fs')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
-const debug = require('debug')
+
 
 /**
  * 
@@ -58,7 +58,6 @@ class NPSUserStatus extends NPSMsg {
    */
   constructor (packet) {
     super('RECEIVED')
-    this.logger = logger.child({ service: 'mcoserver:NPSUserStatus' })
     this.sessionkey = ''
 
     // Save the NPS opCode
@@ -118,7 +117,7 @@ class NPSUserStatus extends NPSMsg {
    */
   dumpPacket () {
     this.dumpPacketHeader('NPSUserStatus')
-    debug('mcoserver:npsUserStatus')(
+    logger.debug(
       'NPSUserStatus',
       {
         contextId: this.contextId,

@@ -5,8 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { logger } = require('../../../shared/logger')
-const debug = require('debug')
+const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:NPSMsg' })
+
 
 /**
  * Packet container for NPS messages
@@ -36,7 +36,6 @@ const debug = require('debug')
 
 /**
  * @class
- * @property {module:MCO_Logger.logger} logger
  * @property {number} msgNo
  * @property {number} msgVersion
  * @property {number} reserved
@@ -51,7 +50,6 @@ class NPSMsg {
    * @param {module:MessageNode.MESSAGE_DIRECTION} direction - the direction of the message flow
    */
   constructor (direction) {
-    this.logger = logger.child({ service: 'mcoserver:NPSMsg' })
     this.msgNo = 0
     this.msgVersion = 0
     this.reserved = 0
@@ -135,7 +133,7 @@ class NPSMsg {
    * @returns {void}
    */
   dumpPacketHeader (messageType) {
-    this.logger.info(
+    logger.info(
       `NPSMsg/${messageType}`,
       {
         direction: this.direction,
@@ -152,7 +150,7 @@ class NPSMsg {
    * @memberof NPSMsg
    */
   dumpPacket () {
-    debug('mcoserver:NPSMsg')(
+    logger.debug(
       'NPSMsg/NPSMsg',
       {
         direction: this.direction,

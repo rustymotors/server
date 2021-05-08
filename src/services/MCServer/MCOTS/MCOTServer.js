@@ -12,7 +12,7 @@ const { LoginMsg } = require('./LoginMsg')
 
 // eslint-disable-next-line no-unused-vars
 
-const debug = require('debug')
+
 
 /**
  * Mangages the game database server

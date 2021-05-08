@@ -9,24 +9,16 @@ const { NPSMsg } = require("../MCOTS/NPSMsg")
 const { PersonaServer } = require("../PersonaServer/PersonaServer")
 const { NPSUserInfo } = require("./npsUserInfo")
 
-const debug = require("debug")
-
 const { ConnectionObj } = require("../ConnectionObj") // lgtm [js/unused-local-variable]
 const { DatabaseManager } = require("../../../shared/DatabaseManager")
-const {logger: rawLogger} = require("../../../shared/logger")
-
-const logger = rawLogger.child({
-  service: 'mcoserver:LobbyServer'
-})
+const logger = require("../../@mcoserver/mco-logger").child({ service: 'mcoserver:LobbyServer' })
 
 /**
  * Manages the game connection to the lobby and racing rooms
  * @module LobbyServer
  */
 
-const databaseManager = new DatabaseManager(
-  logger.child({ service: 'mcoserver:DatabaseManager' })
-)
+const databaseManager = new DatabaseManager()
 
 /**
  *
@@ -59,7 +51,7 @@ function decryptCmd (con, cypherCmd) {
   const s = con
   const decryptedCommand = s.decipherBufferDES(cypherCmd)
   s.decryptedCmd = decryptedCommand
-  debug('mcoserver:LobbyServer')(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString('hex')}`)
+  logger.debug(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString('hex')}`)
   return s
 }
 
@@ -103,7 +95,7 @@ async function sendCommand (con, data) {
   packetContent.writeUInt16BE(0x0101, 369)
   packetContent.writeUInt16BE(0x022c, 371)
 
-  debug('mcoserver:LobbyServer')('Sending a dummy response of 0x229 - NPS_MINI_USER_LIST')
+  logger.debug('Sending a dummy response of 0x229 - NPS_MINI_USER_LIST')
 
   // Build the packet
   const packetResult = new NPSMsg('SENT')
@@ -145,7 +137,7 @@ class LobbyServer {
    */
   async dataHandler (rawPacket) {
     const { localPort, remoteAddress } = rawPacket
-    debug('mcoserver:LobbyServer')(`Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`)
+    logger.debug(`Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`)
     const { connection, data } = rawPacket
     let updatedConnection = connection
     const requestCode = data.readUInt16BE(0).toString(16)
@@ -157,7 +149,7 @@ class LobbyServer {
           connection,
           data
         )
-        debug('mcoserver:LobbyServer')(
+        logger.debug(
           `Connect responsePacket's data prior to sending: ${JSON.stringify({ data: responsePacket.getPacketAsString() })}`
         )
         // TODO: Investigate why this crashes retail
@@ -172,7 +164,7 @@ class LobbyServer {
       // npsHeartbeat
       case '217': {
         const responsePacket = this._npsHeartbeat()
-        debug('mcoserver:LobbyServer')(
+        logger.debug(
           `Heartbeat responsePacket's data prior to sending: ${JSON.stringify({ data: responsePacket.getPacketAsString() })}`
         )
         npsSocketWriteIfOpen(connection, responsePacket.serialize())
@@ -192,7 +184,7 @@ class LobbyServer {
           )
         }
 
-        debug('mcoserver:LobbyServer')(
+        logger.debug(
           `encrypedCommand's data prior to sending: ${JSON.stringify({ data: encryptedCmd.toString('hex') })}`
         )
         npsSocketWriteIfOpen(connection, encryptedCmd)
@@ -226,7 +218,7 @@ class LobbyServer {
    */
   async _npsRequestGameConnectServer (connection, rawData) {
     const { sock } = connection
-    debug('mcoserver:LobbyServer')(
+    logger.debug(
       `_npsRequestGameConnectServer: ${JSON.stringify({ remoteAddress: sock.remoteAddress, data: rawData.toString('hex') })}`
     )
 
@@ -235,9 +227,7 @@ class LobbyServer {
     userInfo.deserialize(rawData)
     userInfo.dumpInfo()
 
-    const personaManager = new PersonaServer(
-      logger.child('PersonaServer')
-    )
+    const personaManager = new PersonaServer()
 
     const personas = await personaManager._getPersonasById(userInfo.userId)
     if (personas.length === 0) {

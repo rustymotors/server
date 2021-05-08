@@ -9,11 +9,10 @@ const { IncomingMessage, ServerResponse } = require('http') // lgtm [js/unused-l
 const { Socket } = require('net') // lgtm [js/unused-local-variable]
 const { MCServer } = require('../MCServer') // lgtm [js/unused-local-variable]
 
-const { logger } = require('../../shared/logger')
+const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:AdminServer' })
 const fs = require('fs')
 const https = require('https')
 const util = require('util')
-const debug = require('debug')
 
 const readFilePromise = util.promisify(fs.readFile)
 
@@ -26,7 +25,6 @@ const readFilePromise = util.promisify(fs.readFile)
  *
  *
  * @property {MCServer} mcServer
- * @property {module:MCO_Logger.logger} logger
  * @property {Server} httpServer
  */
 module.exports.AdminServer = class AdminServer {
@@ -36,10 +34,6 @@ module.exports.AdminServer = class AdminServer {
    */
   constructor (mcServer) {
     this.mcServer = mcServer
-    /**
-     * @type {module:MCO_Logger.logger}
-     */
-    this.logger = logger.child({ service: 'mcoserver:AdminServer' })
   }
 
   /**
@@ -49,7 +43,7 @@ module.exports.AdminServer = class AdminServer {
    * @returns {Promise<ISslOptions>}
    */
   async _sslOptions (configuration) {
-    debug('mcoserver:AdminServer')(`Reading ${configuration.certFilename}`)
+    logger.debug(`Reading ${configuration.certFilename}`)
 
     let cert
     let key
@@ -135,10 +129,10 @@ module.exports.AdminServer = class AdminServer {
    * @return {void}
    */
   _httpsHandler (request, response) {
-    this.logger.info(
+    logger.info(
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     )
-    this.logger.info(
+    logger.info(
       'Requested recieved',
       {
         url: request.url,
@@ -203,7 +197,7 @@ module.exports.AdminServer = class AdminServer {
       throw new Error(`${err.message}, ${err.stack}`)
     }
     this.httpsServer.listen({ port: 88, host: '0.0.0.0' }, () => {
-      debug('mcoserver:AdminServer')('port 88 listening')
+      logger.debug('port 88 listening')
     })
     this.httpsServer.on('connection', this._socketEventHandler)
   }

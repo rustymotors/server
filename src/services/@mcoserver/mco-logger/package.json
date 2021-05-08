@@ -1,0 +1,14 @@
+{
+  "name": "@mcoserver/mco-logger",
+  "version": "1.0.0",
+  "description": "Shared logger for mcoserver",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Joseph Becher <drazisil@hey.com>",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "winston": "3.3.3"
+  }
+}

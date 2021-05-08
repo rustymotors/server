@@ -8,8 +8,8 @@
 const { Server, Socket } = require('net') // lgtm [js/unused-local-variable]
 const { ConnectionMgr } = require('./ConnectionMgr') // lgtm [js/unused-local-variable]
 const { ConnectionObj } = require('./ConnectionObj') // lgtm [js/unused-local-variable]
+const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:ListenerThread' })
 
-const debug = require('debug')
 const net = require('net')
 
 /**
@@ -20,17 +20,14 @@ const net = require('net')
 /**
  * @class
  * @property {IAppSettings} config
- * @property {module:MCO_Logger.logger} logger
  */
 module.exports.ListenerThread = class ListenerThread {
 
   /**
    * @param {IAppSettings} config
-   * @param {module:MCO_Logger.logger} logger
    */
-  constructor (config, logger) {
+  constructor (config) {
     this.config = config
-    this.logger = logger
   }
 
   /**
@@ -54,7 +51,7 @@ module.exports.ListenerThread = class ListenerThread {
         timestamp: Date.now()
       }
       // Dump the raw packet
-      this.logger.info(
+      logger.info(
         "rawPacket's data prior to proccessing",
         { data: rawPacket.data.toString('hex') }
 
@@ -70,7 +67,7 @@ module.exports.ListenerThread = class ListenerThread {
         throw new Error(`Error in listenerThread::onData 1, error unknown`)
       }
       if (!connection.remoteAddress) {
-        debug(connection.toString())
+        logger.debug(connection.toString())
         throw new Error('Remote address is empty')
       }
       try {
@@ -106,7 +103,7 @@ module.exports.ListenerThread = class ListenerThread {
     const connection = connectionMgr.findOrNewConnection(socket)
 
     const { localPort, remoteAddress } = socket
-    this.logger.info(`Client ${remoteAddress} connected to port ${localPort}`)
+    logger.info(`Client ${remoteAddress} connected to port ${localPort}`)
     if (socket.localPort === 7003 && connection.inQueue) {
       /**
        * Debug seems hard-coded to use the connection queue
@@ -117,7 +114,7 @@ module.exports.ListenerThread = class ListenerThread {
       connection.inQueue = false
     }
     socket.on('end', () => {
-      this.logger.info(
+      logger.info(
         `Client ${remoteAddress} disconnected from port ${localPort}`
       )
     })
@@ -126,7 +123,7 @@ module.exports.ListenerThread = class ListenerThread {
     })
     socket.on('error', err => {
       if (!err.message.includes('ECONNRESET')) {
-        this.logger.error(`Socket error: ${err}`)
+        logger.error(`Socket error: ${err}`)
       }
     })
   }

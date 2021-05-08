@@ -5,9 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { logger } = require('../../../shared/logger')
+const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:StockCar' })
 
-const debug = require('debug')
+
 
 /**
  * Container objest for Stock cars
@@ -20,7 +20,6 @@ const debug = require('debug')
 
 /**
  * @class
- * @property {module:MCO_Logger.logger} logger
  * @property {number} brandedPartId
  * @property {number} retailPrice
  * @property {0 | 1} bIsDealOfTheDay
@@ -32,8 +31,6 @@ class StockCar {
    * @param {0|1} bIsDealOfTheDay
    */
   constructor (brandedPartId, retailPrice, bIsDealOfTheDay) {
-    this.logger = logger.child({ service: 'mcoserver:StockCar' })
-
     this.brandedPartId = brandedPartId
     this.retailPrice = retailPrice
     this.bIsDealOfTheDay = bIsDealOfTheDay
@@ -56,11 +53,11 @@ class StockCar {
    * @returns {void}
    */
   dumpPacket () {
-    debug('mcoserver:StockCar')('[StockCar]======================================')
-    debug('mcoserver:StockCar')(`brandedPartId:     ${this.brandedPartId}`)
-    debug('mcoserver:StockCar')(`retailPrice        ${this.retailPrice}`)
-    debug('mcoserver:StockCar')(`isDealOfTheDay:    ${this.bIsDealOfTheDay}`)
-    debug('mcoserver:StockCar')('[/StockCar]======================================')
+    logger.debug('[StockCar]======================================')
+    logger.debug(`brandedPartId:     ${this.brandedPartId}`)
+    logger.debug(`retailPrice        ${this.retailPrice}`)
+    logger.debug(`isDealOfTheDay:    ${this.bIsDealOfTheDay}`)
+    logger.debug('[/StockCar]======================================')
   }
 }
 module.exports.StockCar = StockCar

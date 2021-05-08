@@ -5,8 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { logger } = require('../../../shared/logger')
-const debug = require('debug')
+const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:StockCarInfoMsg' })
+
 const { StockCar } = require('./StockCar') // lgtm [js/unused-local-variable]
 
 /**
@@ -25,7 +25,6 @@ const { StockCar } = require('./StockCar') // lgtm [js/unused-local-variable]
 
 /**
  * @class
- * @property {module:MCO_Logger.logger} logger
  * @property {number} msgNo
  * @property {number} starterCash
  * @property {number} dealerId
@@ -44,7 +43,6 @@ class StockCarInfoMsg {
    * @memberof StockCarInfoMsg
    */
   constructor (starterCash, dealerId, brand) {
-    this.logger = logger.child({ service: 'mcoserver:StockCarInfoMsg' })
 
     this.msgNo = 141
     this.starterCash = starterCash
@@ -95,7 +93,7 @@ class StockCarInfoMsg {
    * @returns {void}
    */
   dumpPacket () {
-    debug('mcoserver:StockCarInfoMsg')(
+   logger.debug(
       {
         msgNo: this.msgNo,
         starterCash: this.starterCash,
@@ -104,8 +102,7 @@ class StockCarInfoMsg {
         noCars: this.noCars,
         moreToCome: this.moreToCome,
         stockCarList: this.StockCarList.toString()
-      },
-      'StockCarInfoMsg'
+      }
     )
   }
 }
