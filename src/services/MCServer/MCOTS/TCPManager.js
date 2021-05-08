@@ -5,10 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { debug } = require('debug')
 const { ConnectionObj } = require('../ConnectionObj') // lgtm [js/unused-local-variable]
 const { MessageNode } = require('./MessageNode')
-const { logger } = require('../../../shared/logger')
+const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:MCOTSServer' })
 const { MCOTServer } = require('./MCOTServer')
 const { ClientConnectMsg } = require('../ClientConnectMsg')
 const { GenericReplyMsg } = require('../GenericReplyMsg')
@@ -22,10 +21,8 @@ const { DatabaseManager } = require('../../../shared/DatabaseManager')
  * @module TCPManager
  */
 
-const mcotServer = new MCOTServer(logger.child({ service: 'mcoserver:MCOTSServer' }))
-const databaseManager = new DatabaseManager(
-  logger.child({ service: 'mcoserver:DatabaseManager' })
-)
+const mcotServer = new MCOTServer()
+const databaseManager = new DatabaseManager()
 
 /**
  *
@@ -38,9 +35,9 @@ async function compressIfNeeded (conn, node) {
 
   // Check if compression is needed
   if (node.getLength() < 80) {
-    debug('mcoserver:TCPManager')('Too small, should not compress')
+    logger.debug('Too small, should not compress')
   } else {
-    debug('mcoserver:TCPManager')('This packet should be compressed')
+    logger.debug('This packet should be compressed')
     /* TODO: Write compression.
      *
      * At this time we will still send the packet, to not hang connection
@@ -62,7 +59,7 @@ async function encryptIfNeeded (conn, node) {
 
   // Check if encryption is needed
   if (node.flags - 8 >= 0) {
-    debug('mcoserver:TCPManager')('encryption flag is set')
+    logger.debug('encryption flag is set')
 
     if (conn.enc) {
       node.updateBuffer(conn.enc.encrypt(node.data))
@@ -70,7 +67,7 @@ async function encryptIfNeeded (conn, node) {
       throw new Error('encryption out on connection is null')
     }
     packetToWrite = node
-    debug('mcoserver:TCPManager')(`encrypted packet: ${packetToWrite.serialize().toString('hex')}`)
+    logger.debug(`encrypted packet: ${packetToWrite.serialize().toString('hex')}`)
   }
 
   return { conn, packetToWrite }
@@ -91,12 +88,12 @@ async function socketWriteIfOpen (conn, nodes) {
     )
     const { packetToWrite } = await encryptIfNeeded(conn, compressedPacket)
     // Log that we are trying to write
-    debug('mcoserver:TCPManager')(
+    logger.debug(
       ` Atempting to write seq: ${packetToWrite.seq} to conn: ${updatedConnection.id}`
     )
 
     // Log the buffer we are writing
-    debug('mcoserver:TCPManager')(`Writting buffer: ${packetToWrite.serialize().toString('hex')}`)
+    logger.debug(`Writting buffer: ${packetToWrite.serialize().toString('hex')}`)
     if (conn.sock.writable) {
       // Write the packet to socket
       conn.sock.write(packetToWrite.serialize())
@@ -159,17 +156,16 @@ async function ClientConnect (con, node) {
   // Not currently using this
   const newMsg = new ClientConnectMsg(node.data)
 
-  debug('mcoserver:TCPManager')(`[TCPManager] Looking up the session key for ${newMsg.customerId}...`)
+  logger.debug(`[TCPManager] Looking up the session key for ${newMsg.customerId}...`)
   const res = await databaseManager.fetchSessionKeyByCustomerId(
     newMsg.customerId
   )
-  debug('mcoserver:TCPManager')(`[TCPManager] Session Key: ${res.sessionkey}`)
+  logger.debug(`[TCPManager] Session Key located!`)
 
   const connectionWithKey = con
 
   const { customerId, personaId, personaName } = newMsg
   const sessionkey = res.sessionkey
-  debug('mcoserver:TCPManager')(`Raw Session Key: ${sessionkey}`)
 
   const strKey = Buffer.from(sessionkey, 'hex')
   connectionWithKey.setEncryptionKey(Buffer.from(strKey.slice(0, 16)))
@@ -178,14 +174,8 @@ async function ClientConnect (con, node) {
   connectionWithKey.appId = newMsg.getAppId()
 
   // Log the session key
-  debug('mcoserver:TCPManager')(
-    `cust: ${customerId} ID: ${personaId} Name: ${personaName} SessionKey: ${strKey[0].toString(
-      16
-    )} ${strKey[1].toString(16)} ${strKey[2].toString(16)} ${strKey[3].toString(
-      16
-    )} ${strKey[4].toString(16)} ${strKey[5].toString(16)} ${strKey[6].toString(
-      16
-    )} ${strKey[7].toString(16)}`
+  logger.debug(
+    `cust: ${customerId} ID: ${personaId} Name: ${personaName}`
   )
 
   // Create new response packet
@@ -296,8 +286,8 @@ async function ProcessInput (node, conn) {
     }
   } else if (currentMsgString === 'MC_GET_LOBBIES') {
     const result = await mcotServer._getLobbies(conn, node)
-    debug('mcoserver:TCPManager')('Dumping Lobbies response packet...')
-    debug('mcoserver:TCPManager')(result.nodes)
+    logger.debug('Dumping Lobbies response packet...')
+    logger.debug(result.nodes)
     const responsePackets = result.nodes
     try {
       // write the socket
@@ -336,7 +326,7 @@ async function ProcessInput (node, conn) {
 async function MessageReceived (msg, con) {
   const newConnection = con
   if (!newConnection.useEncryption && msg.flags && 0x08) {
-    debug('mcoserver:TCPManager')('Turning on encryption')
+    logger.debug('Turning on encryption')
     newConnection.useEncryption = true
   }
 
@@ -354,19 +344,19 @@ async function MessageReceived (msg, con) {
          * Attempt to decrypt message
          */
         const encryptedBuffer = Buffer.from(msg.data)
-        debug('mcoserver:TCPManager')(
+        logger.debug(
           `Full packet before decrypting: ${encryptedBuffer.toString('hex')}`
         )
 
-        debug('mcoserver:TCPManager')(
+        logger.debug(
           `Message buffer before decrypting: ${encryptedBuffer.toString('hex')}`
         )
         if (!newConnection.enc) {
           throw new Error('ARC4 decrypter is null')
         }
-        debug('mcoserver:TCPManager')(`Using encryption id: ${newConnection.enc.getId()}`)
+        logger.debug(`Using encryption id: ${newConnection.enc.getId()}`)
         const deciphered = newConnection.enc.decrypt(encryptedBuffer)
-        debug('mcoserver:TCPManager')(
+        logger.debug(
           `Message buffer after decrypting: ${deciphered.toString('hex')}`
         )
 
@@ -403,7 +393,7 @@ async function defaultHandler (rawPacket) {
   const messageNode = new MessageNode('RECEIVED')
   messageNode.deserialize(data)
 
-  logger.child({ service: 'mcoserver:TCPManager' }).info(
+  logger.info(
     'Received TCP packet',
     {
       localPort,
@@ -417,4 +407,3 @@ async function defaultHandler (rawPacket) {
   return MessageReceived(messageNode, connection)
 }
 module.exports.defaultHandler = defaultHandler
-

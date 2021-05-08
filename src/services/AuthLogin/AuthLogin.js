@@ -7,11 +7,11 @@
 
 const fs = require('fs')
 const https = require('https')
-const { logger } = require('../../shared/logger')
+const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:AuthLogin' })
 const util = require('util')
 const { IncomingMessage, ServerResponse } = require('http')
 const { Socket } = require('net')
-const debug = require('debug')
+
 const { Server } = require('https')
 
 const readFilePromise = util.promisify(fs.readFile)
@@ -24,7 +24,6 @@ const readFilePromise = util.promisify(fs.readFile)
 /**
  * @class
  * @property {IAppSettings} config
- * @property {module:MCO_Logger.logger} logger
  * @property {Server} httpsServer
  */
 class AuthLogin {
@@ -34,7 +33,6 @@ class AuthLogin {
    */
   constructor (config) {
     this.config = config
-    this.logger = logger.child({ service: 'mcoserver:AuthLogin' })
   }
 
   /**
@@ -53,7 +51,7 @@ class AuthLogin {
    * @memberof! WebServer
    */
   async _sslOptions (configuration) {
-    debug('mcoserver:AuthLogin')(`Reading ${configuration.certFilename}`)
+    logger.debug(`Reading ${configuration.certFilename}`)
 
     let cert
     let key
@@ -100,7 +98,7 @@ class AuthLogin {
    */
   // file deepcode ignore NoRateLimitingForExpensiveWebOperation: Not using express, unsure how to handle rate limiting on raw http
   _httpsHandler (request, response) {
-    this.logger.info(
+    logger.info(
       `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     )
     if (request.url && request.url.startsWith('/AuthLogin')) {
@@ -139,7 +137,7 @@ class AuthLogin {
           }
         )
         .listen({ port: 443, host: '0.0.0.0' }, () => {
-          debug('mcoserver:AuthLogin')('port 443 listening')
+          logger.debug('port 443 listening')
         })
     } catch (error) {
       if (error.code === 'EACCES') {
@@ -150,8 +148,7 @@ class AuthLogin {
     }
     this.httpsServer.on('connection', this._socketEventHandler)
     this.httpsServer.on('tlsClientError', error => {
-      debug('mcoserver:AuthLogin')(`[AuthLogin] SSL Socket Client Error: ${error.message}`)
-      // throw new VError(`[AuthLogin] SSL Socket Client Error: ${error.message}`)
+      logger.error(`[AuthLogin] SSL Socket Client Error: ${error.message}`)
     })
     return this.httpsServer
   }

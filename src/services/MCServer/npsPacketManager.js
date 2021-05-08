@@ -9,6 +9,7 @@ const { ConnectionObj } = require("./ConnectionObj")
 const { LobbyServer } = require("./LobbyServer/LobbyServer")
 const { LoginServer } = require("./LoginServer/LoginServer")
 const { PersonaServer } = require("./PersonaServer/PersonaServer")
+const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:NPSPacketManager' })
 
 /**
  * @module npsPacketManager
@@ -22,7 +23,6 @@ const { PersonaServer } = require("./PersonaServer/PersonaServer")
 
 /**
  * @class
- * @property {module:MCO_Logger.logger} logger
  * @property {module:IAppSettings} config
  * @property {module:DatabaseManager} database
  * @property {string} npsKey
@@ -36,11 +36,9 @@ class NPSPacketManager {
   /**
    *
    * @param {module:DatabaseManager} databaseMgr
-   * @param {module:MCO_Logger.logger} logger
    * @param {IAppSettings} appSettings
    */
-  constructor (databaseMgr, logger, appSettings) {
-    this.logger = logger.child({ service: 'mcoserver:NPSPacketManager' })
+  constructor (databaseMgr, appSettings) {
     this.config = appSettings
     this.database = databaseMgr
     this.npsKey = ''
@@ -61,9 +59,7 @@ class NPSPacketManager {
     ]
 
     this.loginServer = new LoginServer(this.database)
-    this.personaServer = new PersonaServer(
-      this.logger.child({ service: 'mcoserver:PersonaServer' })
-    )
+    this.personaServer = new PersonaServer()
     this.lobbyServer = new LobbyServer()
   }
 
@@ -103,7 +99,7 @@ class NPSPacketManager {
    */
   async processNPSPacket (rawPacket) {
     const msgId = rawPacket.data.readInt16BE(0)
-    this.logger.info(
+    logger.info(
       'Handling message',
       { msgName: this.msgCodetoName(msgId), msgId }
     )
@@ -118,7 +114,7 @@ class NPSPacketManager {
       case 7003:
         return this.lobbyServer.dataHandler(rawPacket)
       default:
-        this.logger.error(
+        logger.error(
           '[npsPacketManager] Recieved a packet',
           {
             msgId,

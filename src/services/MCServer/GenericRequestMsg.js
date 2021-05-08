@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { logger } = require('../../shared/logger')
+const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:GenericRequestMsg' })
 
 /**
  * @module GenericRequestMsg
@@ -19,7 +19,6 @@ const { logger } = require('../../shared/logger')
  *
  *
  * @class
- * @property {module:MCO_Logger.logger} logger
  * @property {number} msgNo
  * @property {Buffer} data
  * @property {Buffer} data2
@@ -30,7 +29,6 @@ class GenericRequestMsg {
    *
    */
   constructor () {
-    this.logger = logger.child({ service: 'mcoserver:GenericRequestMsg' })
     this.msgNo = 0
     this.data = Buffer.alloc(4)
     this.data2 = Buffer.alloc(4)
@@ -77,7 +75,7 @@ class GenericRequestMsg {
    * @returns {void}
    */
   dumpPacket () {
-    this.logger.info(
+    logger.info(
       'GenericRequest',
       {
         msgNo: this.msgNo,

@@ -7,11 +7,11 @@
 
 const { DatabaseManager } = require('../../../shared/DatabaseManager')
 const { ConnectionObj } = require('../ConnectionObj')
-const { logger } = require('../../../shared/logger')
+const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:LoginServer' })
 const { NPSUserStatus } = require('./npsUserStatus')
 const { premadeLogin } = require('./packet')
 
-const debug = require('debug')
+
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 
 /**
@@ -21,7 +21,6 @@ const { NPSMsg } = require('../MCOTS/NPSMsg')
 
 /**
  * @class
- * @property {module:MCO_Logger.logger} logger
  * @property {DatabaseManager} databaseManager
  */
 class LoginServer {
@@ -31,7 +30,6 @@ class LoginServer {
    * @param {DatabaseManager} databaseMgr
    */
   constructor (databaseMgr) {
-    this.logger = logger.child({ service: 'mcoserver:LoginServer' })
     this.databaseManager = databaseMgr
   }
 
@@ -44,7 +42,7 @@ class LoginServer {
   async dataHandler (rawPacket, config) {
     const { connection, data } = rawPacket
     const { localPort, remoteAddress } = rawPacket
-    this.logger.info(`Received Login packet: ${JSON.stringify({ localPort, remoteAddress })}`)
+    logger.info(`Received Login packet: ${JSON.stringify({ localPort, remoteAddress })}`)
     // TODO: Check if this can be handled by a MessageNode object
     const { sock } = connection
     const requestCode = data.readUInt16BE(0).toString(16)
@@ -58,7 +56,7 @@ class LoginServer {
         break
       }
       default:
-        debug('mcoserver:LoginServer')(
+        logger.debug(
           'Unknown nps code recieved',
           {
             requestCode,
@@ -68,13 +66,13 @@ class LoginServer {
         )
         return connection
     }
-    debug('mcoserver:LoginServer')(
+    logger.debug(
       'responsePacket object from dataHandler',
       {
         userStatus: responsePacket.toString('hex')
       }
     )
-    debug('mcoserver:LoginServer')(
+    logger.debug(
       `responsePacket's data prior to sending: ${responsePacket.toString(
         'hex'
       )}`
@@ -89,7 +87,7 @@ class LoginServer {
    * @return {Promise<IUserRecordMini>}
    */
   async _npsGetCustomerIdByContextId (contextId) {
-    debug('mcoserver:LoginServer')('Entering _npsGetCustomerIdByContextId...')
+    logger.debug('Entering _npsGetCustomerIdByContextId...')
     /** @type {IUserRecordMini[]} */
     const users = [
       {
@@ -110,7 +108,7 @@ class LoginServer {
       return user.contextId === contextId
     })
     if (userRecord.length !== 1) {
-      debug('mcoserver:LoginServer')(
+      logger.debug(
         'preparing to leave _npsGetCustomerIdByContextId after not finding record',
         {
           contextId
@@ -121,7 +119,7 @@ class LoginServer {
         `Unable to locate user record matching contextId ${contextId}`
       )
     }
-    debug('mcoserver:LoginServer')(
+    logger.debug(
       'preparing to leave _npsGetCustomerIdByContextId after finding record',
       {
         contextId,
@@ -143,7 +141,7 @@ class LoginServer {
     const { sock } = connection
     const { localPort } = sock
     const userStatus = new NPSUserStatus(data)
-    this.logger.info(
+    logger.info(
       'Received login packet',
       {
         localPort,
@@ -153,7 +151,7 @@ class LoginServer {
 
     userStatus.extractSessionKeyFromPacket(config, data)
 
-    debug('mcoserver:LoginServer')(
+    logger.debug(
       'UserStatus object from _userLogin',
       {
         userStatus: userStatus.toJSON()
@@ -166,20 +164,20 @@ class LoginServer {
     const customer = await this._npsGetCustomerIdByContextId(userStatus.contextId)
 
     // Save sessionkey in database under customerId
-    debug('Preparing to update session key in db')
+    logger.debug('Preparing to update session key in db')
     await this.databaseManager._updateSessionKey(
       customer.customerId,
       userStatus.sessionkey,
       userStatus.contextId,
       connection.id
     )
-    this.logger.info('Session key updated')
+    logger.info('Session key updated')
 
     // Create the packet content
     // TODO: This needs to be dynamically generated, right now we are using a
     // a static packet that works _most_ of the time
     const packetContent = premadeLogin()
-    debug(`Using Premade Login: ${packetContent.toString('hex')}`)
+    logger.debug(`Using Premade Login: ${packetContent.toString('hex')}`)
 
     // MsgId: 0x601
     Buffer.from([0x06, 0x01]).copy(packetContent)
