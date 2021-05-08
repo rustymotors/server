@@ -15,17 +15,14 @@ const winston = require('winston')
  * Provides a shared logging abstraction
   * @type {winston.Logger}
   */
-winston.createLogger({
+module.exports = winston.createLogger({
   ...{
     level: 'silly',
     transports: [
-      new winston.transports.File({
-        filename: './logs/silly.log'
-      }),
       new winston.transports.Console({
         format: winston.format.combine(
           winston.format.timestamp({
-            format: 'YYYY-MM-DD HH:mm:ss'
+            format: 'YYYY-MM-DD HH:mm:ss.SSS'
           }),
           winston.format.errors({ stack: true }),
           winston.format.splat(),

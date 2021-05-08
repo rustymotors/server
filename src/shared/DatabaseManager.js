@@ -7,6 +7,7 @@
 
 const { pool } = require('./db/index')
 const { migrate } = require('postgres-migrations')
+const logger = require('../services/@mcoserver/mco-logger').child({ service: 'mcoserver:DatabaseMgr' })
 
 /**
  * Database connection abstraction
@@ -15,10 +16,9 @@ const { migrate } = require('postgres-migrations')
 
 /**
  *
- * @param {module:MCO_Logger.logger} logger
  * @returns {Promise<void>}
  */
-module.exports.doMigrations = async function doMigrations (logger) {
+module.exports.doMigrations = async function doMigrations () {
   logger.info('Starting migrations...')
   const client = pool
   try {
@@ -37,16 +37,8 @@ module.exports.doMigrations = async function doMigrations (logger) {
 
 /**
  * @class
- * @property {module:MCO_Logger.logger} logger
  */
 module.exports.DatabaseManager = class DatabaseManager {
-  /**
-   * @param {module:MCO_Logger.logger} logger
-   */
-  constructor (logger) {
-    this.logger = logger
-  }
-
   /**
    *
    * @param {number} customerId
@@ -62,7 +54,7 @@ module.exports.DatabaseManager = class DatabaseManager {
       /** @type {SessionRecord} */
       return rows[0]
     } catch (e) {
-      this.logger.warn('Unable to update session key ', e)
+      logger.warn('Unable to update session key ', e)
       throw new Error(e)
     }
   }
@@ -83,7 +75,7 @@ module.exports.DatabaseManager = class DatabaseManager {
       /** @type {ISession_Record} */
       return rows[0]
     } catch (e) {
-      this.logger.error('Unable to update session key ', e)
+      logger.error('Unable to update session key ', e)
       process.exit(-1)
     }
   }

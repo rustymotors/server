@@ -10,13 +10,14 @@ const { Socket } = require('net')
 const sinon = require('sinon')
 const { ConnectionMgr } = require('../src/services/MCServer/ConnectionMgr')
 const { ConnectionObj } = require('../src/services/MCServer/ConnectionObj')
-const { logger } = require('../src/shared/logger')
+const logger = require('../src/services/@mcoserver/mco-logger')
 
 /* eslint-env mocha */
 
 const fakeLogger = sinon.mock(logger)
 fakeLogger.expects('child').withArgs().atLeast(1)
 
+// TODO: REplace with testdouble
 const fakeConnectionManager = sinon.createStubInstance(ConnectionMgr)
 
 it('ConnectionObj', () => {

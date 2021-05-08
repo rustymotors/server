@@ -8,11 +8,11 @@
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
 const http = require('http')
-const { Logger } = require('winston')
 const { appSettings } = require('../../../config/app-settings')
 const fs = require('fs')
 const { ShardEntry } = require('./ShardEntry')
-const debug = require('debug')
+const winston = require('winston')
+
 
 /**
  * Manages patch and update server connections
@@ -48,19 +48,19 @@ const CastanetResponse = {
 /**
  * @class
  * @property {IAppSettings} config
- * @property {module:MCO_Logger.logger} logger
+ * @property {winston.Logger} logger
  * @property {string[]} banList
  * @property {string[]} possibleShards
  * @property {Server} serverPatch
  */
 class PatchServer {
   /**
-   *
-   * @param {module:MCO_Logger.logger} logger
+   * 
+   * @param {winston.Logger} logger 
    */
   constructor (logger) {
-    this.config = appSettings
     this.logger = logger
+    this.config = appSettings
     this.banList = []
     this.possibleShards = []
 
@@ -69,7 +69,7 @@ class PatchServer {
     })
     this.serverPatch.on('error', (err) => {
       if (err.message.includes('EACCES')) {
-        logger.error('Unable to start server on port 80! Have you granted access to the node runtime?')
+        this.logger.error('Unable to start server on port 80! Have you granted access to the node runtime?')
         process.exit(-1)
       }
       throw err
@@ -247,7 +247,7 @@ class PatchServer {
 
     switch (request.url) {
       case '/ShardList/':
-        debug('mcoserver:PatchServer')(
+        this.logger.debug(
           `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
         )
 
@@ -329,8 +329,8 @@ class PatchServer {
    * @return {Promise<http.Server>}
    */
   async start () {
-    return this.serverPatch.listen({ port: '80', host: '0.0.0.0' }, () => {
-      debug('port 80 listening')
+    return this.serverPatch.listen({ port: '80', host: '0.0.0.0' }, function () {
+      this.logger.debug('port 80 listening')
       this.logger.info('[patchServer] Patch server is listening...')
     })
   }

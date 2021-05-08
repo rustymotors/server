@@ -5,11 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { logger } = require('../../../shared/logger')
+const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:NPSPersonaMapsMsg' })
 
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 
-const debug = require('debug')
+
 
 /**
  * @module NPSPersonaMapsMsg
@@ -56,7 +56,6 @@ class NPSPersonaMapsMsg extends NPSMsg {
   constructor (direction) {
     super(direction)
 
-    this.logger = logger.child({ service: 'mcoserver:NPSPersonaMapsMsg' })
     /** @type {IPersonaRecord[]} */
     this.personas = []
     // public personaSize = 1296;
@@ -165,18 +164,18 @@ class NPSPersonaMapsMsg extends NPSMsg {
    */
   dumpPacket () {
     this.dumpPacketHeader('NPSPersonaMapsMsg')
-    debug('mcoserver:NPSPersonaMapsMsg')(`personaCount:        ${this.personaCount}`)
+    logger.debug(`personaCount:        ${this.personaCount}`)
     for (const persona of this.personas) {
-      debug('mcoserver:NPSPersonaMapsMsg')(`maxPersonaCount:     ${this.deserializeInt8(persona.maxPersonas)}`)
-      debug('mcoserver:NPSPersonaMapsMsg')(`id:                  ${this.deserializeInt32(persona.id)}`)
-      debug('mcoserver:NPSPersonaMapsMsg')(`shardId:             ${this.deserializeInt32(persona.shardId)}`)
-      debug('mcoserver:NPSPersonaMapsMsg')(`name:                ${this.deserializeString(persona.name)}`)
+      logger.debug(`maxPersonaCount:     ${this.deserializeInt8(persona.maxPersonas)}`)
+      logger.debug(`id:                  ${this.deserializeInt32(persona.id)}`)
+      logger.debug(`shardId:             ${this.deserializeInt32(persona.shardId)}`)
+      logger.debug(`name:                ${this.deserializeString(persona.name)}`)
     }
-    debug('mcoserver:NPSPersonaMapsMsg')(`Packet as hex:       ${this.getPacketAsString()}`)
+    logger.debug(`Packet as hex:       ${this.getPacketAsString()}`)
 
     // TODO: Work on this more
 
-    debug('mcoserver:NPSPersonaMapsMsg')('[/NPSPersonaMapsMsg]======================================')
+    logger.debug('[/NPSPersonaMapsMsg]======================================')
   }
 }
 module.exports.NPSPersonaMapsMsg = NPSPersonaMapsMsg

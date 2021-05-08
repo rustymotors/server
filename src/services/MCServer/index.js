@@ -5,12 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { logger } = require('../../shared/logger')
+const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:MCServer' })
 const { ListenerThread } = require('./listenerThread')
 const { ConnectionMgr } = require('./ConnectionMgr')
 const { appSettings } = require('../../../config/app-settings')
 const { DatabaseManager } = require('../../shared/DatabaseManager') // lgtm [js/unused-local-variable]
-const debug = require('debug')
+
 
 /**
  * This class starts all the servers
@@ -22,7 +22,6 @@ const debug = require('debug')
  * @class
  * @property {IAppSettings} config
  * @property {ConnectionMgr} mgr
- * @property {module:MCO_Logger.logger} logger
  */
 module.exports.MCServer = class MCServer {
 
@@ -33,8 +32,7 @@ module.exports.MCServer = class MCServer {
    */
   constructor (config, databaseManager) {
     this.config = config
-    this.mgr = new ConnectionMgr(logger, databaseManager, this.config)
-    this.logger = logger.child({ service: 'mcoserver:MCServer' })
+    this.mgr = new ConnectionMgr(databaseManager, this.config)
   }
 
   /**
@@ -43,8 +41,8 @@ module.exports.MCServer = class MCServer {
    */
 
   async startServers () {
-    const listenerThread = new ListenerThread(appSettings, logger.child({ service: 'mcoserver:ListenerThread' }))
-    this.logger.info('Starting the listening sockets...')
+    const listenerThread = new ListenerThread(appSettings)
+    logger.info('Starting the listening sockets...')
     const tcpPortList = [
       6660,
       8228,
@@ -74,8 +72,8 @@ module.exports.MCServer = class MCServer {
 
     tcpPortList.forEach(port => {
       listenerThread.startTCPListener(port, this.mgr)
-      debug('mcoserver:MCServer')(`port ${port} listening`)
+      logger.debug(`port ${port} listening`)
     })
-    this.logger.info('Listening sockets create successfully.')
+    logger.info('Listening sockets create successfully.')
   }
 }

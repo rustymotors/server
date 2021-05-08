@@ -5,13 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const Debug = require('debug')
+
 const { MessageNode, NPS_COMMANDS } = require('../../structures')
 const { defaultHandler } = require('./MCOTS/TCPManager')
 const { ConnectionObj } = require('./ConnectionObj')
 const { NPSPacketManager } = require('./npsPacketManager')
 
-const debug = Debug('mcoserver:ConnectionManager')
+const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:ConnectionMgr' })
 
 /**
  * @module ConnectionMgr
@@ -19,7 +19,6 @@ const debug = Debug('mcoserver:ConnectionManager')
 
 /**
  * @class
- * @property {module:MCO_Logger.logger} logger
  * @property {IAppSettings} config
  * @property {module:DatabaseManager} databaseManager
  * @property {module:ConnectionObj[]} connections
@@ -29,11 +28,10 @@ class ConnectionMgr {
 
   /**
    * Creates an instance of ConnectionMgr.
-   * @param {module:MCO_Logger.logger} logger
    * @param {module:DatabaseManager} databaseManager
+   * @param {IAppSettings} appSettings
    */
-  constructor (logger, databaseManager, appSettings) {
-    this.logger = logger.child({ service: 'mcoserver:ConnectionMgr' })
+  constructor (databaseManager, appSettings) {
     this.config = appSettings
     this.databaseMgr = databaseManager
     /**
@@ -53,12 +51,12 @@ class ConnectionMgr {
    * @returns {Promise} {@link module:ConnectionObj~ConnectionObj}
    */
   async processData (rawPacket) {
-    const npsPacketManager = new NPSPacketManager(this.databaseMgr, this.logger, this.config)
+    const npsPacketManager = new NPSPacketManager(this.databaseMgr, this.config)
 
     const { remoteAddress, localPort, data } = rawPacket
 
     // Log the packet as debug
-    debug(
+    logger.debug(
       'logging raw packet',
       {
         remoteAddress,
@@ -71,7 +69,7 @@ class ConnectionMgr {
       case 8226:
       case 8228:
       case 7003: {
-        debug(
+        logger.debug(
           'Recieved NPS packet',
           {
             opCode: rawPacket.data.readInt16BE(0),
@@ -88,7 +86,7 @@ class ConnectionMgr {
         }
       }
       case 43300: {
-        debug(
+        logger.debug(
           'Recieved MCOTS packet'
           // {
           //   opCode: rawPacket.data.readInt16BE(0),
@@ -99,12 +97,12 @@ class ConnectionMgr {
           // }
         )
         const newNode = MessageNode.fromBuffer(rawPacket.data)
-        debug(newNode)
+        logger.debug(newNode)
 
         return defaultHandler(rawPacket)
       }
       default:
-        debug(rawPacket)
+        logger.debug(rawPacket)
         throw new Error(`We received a packet on port ${localPort}. We don't what to do yet, going to throw so the message isn't lost.`)
     }
   }
@@ -203,7 +201,7 @@ class ConnectionMgr {
       this.connections.splice(index, 1)
       this.connections.push(newConnection)
     } catch (error) {
-      this.logger.error(
+      logger.error(
         'Error updating connection',
         { error, connections: this.connections }
       )
@@ -229,7 +227,7 @@ class ConnectionMgr {
     }
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort)
     if (con !== undefined) {
-      this.logger.info(
+      logger.info(
         `[connectionMgr] I have seen connections from ${remoteAddress} on ${localPort} before`
       )
       con.sock = socket
@@ -241,7 +239,7 @@ class ConnectionMgr {
       socket,
       this
     )
-    this.logger.info(
+    logger.info(
       `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`
     )
     this.connections.push(newConnection)

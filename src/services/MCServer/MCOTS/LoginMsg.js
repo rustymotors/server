@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { logger } = require('../../../shared/logger')
+const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:LoginMsg' })
 
 const struct = require('c-struct')
 
@@ -29,7 +29,6 @@ struct.register('LoginMsg', loginMsgSchema)
 
 /**
  * @class
- * @property {module:MCO_Logger.logger} logger
  * @property {number} newMsgNo
  * @property {number} toFrom
  * @property {number} appId
@@ -50,7 +49,6 @@ class LoginMsg {
    * @param {Buffer} buffer
    */
   constructor (buffer) {
-    this.logger = logger.child({ service: 'mcoserver:LoginMsg' })
 
     this.msgNo = 0
     this.toFrom = 0
@@ -121,7 +119,7 @@ class LoginMsg {
    * @returns {void}
    */
   dumpPacket () {
-    this.logger.info(
+    logger.info(
       'LoginMsg',
       {
         msgNo: this.msgNo.toString(),
