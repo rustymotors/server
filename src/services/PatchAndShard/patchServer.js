@@ -11,7 +11,6 @@ const http = require('http')
 const { appSettings } = require('../../../config/app-settings')
 const fs = require('fs')
 const { ShardEntry } = require('./ShardEntry')
-const winston = require('winston')
 
 
 /**
@@ -48,7 +47,7 @@ const CastanetResponse = {
 /**
  * @class
  * @property {IAppSettings} config
- * @property {winston.Logger} logger
+ * @property {{module:MCO_Logger.logger}} logger
  * @property {string[]} banList
  * @property {string[]} possibleShards
  * @property {Server} serverPatch
@@ -56,7 +55,7 @@ const CastanetResponse = {
 class PatchServer {
   /**
    * 
-   * @param {winston.Logger} logger 
+   * @param {object} logger 
    */
   constructor (logger) {
     this.logger = logger
