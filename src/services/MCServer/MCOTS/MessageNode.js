@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
+const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:MessageNode' })
 
 /**
  * Packet structure for communications with the game database
@@ -14,7 +14,7 @@
 
 /**
  * @typedef {'RECEIVED' | 'SENT'} MESSAGE_DIRECTION
- * 
+ *
  */
 
 /**
@@ -29,14 +29,13 @@
  * @property {number} appId
  */
 class MessageNode {
-  
   /**
    *
    * @param {MESSAGE_DIRECTION} direction
    */
   constructor (direction) {
     if (direction !== 'RECEIVED' && direction !== 'SENT') {
-      throw new Error(`Direction must be either 'RECEIVED' or 'SENT'`)
+      throw new Error('Direction must be either \'RECEIVED\' or \'SENT\'')
     }
     this.direction = direction
     this.msgNo = 0
@@ -166,7 +165,7 @@ class MessageNode {
     if (packetContentsArray == null) {
       packetContentsArray = []
     }
-    debug('mcoserver:MessageNode')(
+    logger.debug(
       `MessageNode: ${JSON.stringify({
         dataLength: this.dataLength,
         isMCOTS: this.isMCOTS(),

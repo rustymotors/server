@@ -7,6 +7,7 @@
 
 const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:StockCarInfoMsg' })
 
+// eslint-disable-next-line no-unused-vars
 const { StockCar } = require('./StockCar') // lgtm [js/unused-local-variable]
 
 /**
@@ -43,7 +44,6 @@ class StockCarInfoMsg {
    * @memberof StockCarInfoMsg
    */
   constructor (starterCash, dealerId, brand) {
-
     this.msgNo = 141
     this.starterCash = starterCash
     this.dealerId = dealerId
@@ -93,7 +93,7 @@ class StockCarInfoMsg {
    * @returns {void}
    */
   dumpPacket () {
-   logger.debug(
+    logger.debug(
       {
         msgNo: this.msgNo,
         starterCash: this.starterCash,

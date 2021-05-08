@@ -9,8 +9,6 @@ const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:M
 const { ListenerThread } = require('./listenerThread')
 const { ConnectionMgr } = require('./ConnectionMgr')
 const { appSettings } = require('../../../config/app-settings')
-const { DatabaseManager } = require('../../shared/DatabaseManager') // lgtm [js/unused-local-variable]
-
 
 /**
  * This class starts all the servers
@@ -24,15 +22,13 @@ const { DatabaseManager } = require('../../shared/DatabaseManager') // lgtm [js/
  * @property {ConnectionMgr} mgr
  */
 module.exports.MCServer = class MCServer {
-
   /**
    *
    * @param {IAppSettings} config
-   * @param {DatabaseManager} databaseManager
    */
-  constructor (config, databaseManager) {
+  constructor (config) {
     this.config = config
-    this.mgr = new ConnectionMgr(databaseManager, this.config)
+    this.mgr = new ConnectionMgr(this.config)
   }
 
   /**

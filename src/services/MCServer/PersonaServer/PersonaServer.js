@@ -5,8 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
+// eslint-disable-next-line no-unused-vars
 const { Socket } = require('net')
+// eslint-disable-next-line no-unused-vars
 const { ConnectionObj } = require('../ConnectionObj')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 const { NPSPersonaMapsMsg } = require('./NPSPersonaMapsMsg')
@@ -21,8 +22,7 @@ const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserve
  * @property {IPersonaRecord[]} personaList
  */
 class PersonaServer {
-  constructor() {
-
+  constructor () {
     this.personaList = [
       {
         customerId: 2868969472,
@@ -56,7 +56,7 @@ class PersonaServer {
    * @param {string} name
    * @return {Buffer}
    */
-  _generateNameBuffer(name) {
+  _generateNameBuffer (name) {
     const nameBuffer = Buffer.alloc(30)
     Buffer.from(name, 'utf8').copy(nameBuffer)
     return nameBuffer
@@ -68,7 +68,7 @@ class PersonaServer {
    * @param {Buffer} data
    * @returns {Promise<NPSMsg>}
    */
-  async _npsSelectGamePersona(data) {
+  async _npsSelectGamePersona (data) {
     logger.info('_npsSelectGamePersona...')
     const requestPacket = new NPSMsg('RECEIVED').deserialize(data)
     logger.debug(
@@ -107,7 +107,7 @@ class PersonaServer {
    * @param {Buffer} data
    * @returns {Promise<NPSMsg>}
    */
-  async _npsNewGameAccount(data) {
+  async _npsNewGameAccount (data) {
     const requestPacket = new NPSMsg('RECEIVED').deserialize(data)
     logger.debug(
       'NPSMsg request object from _npsNewGameAccount',
@@ -140,7 +140,7 @@ class PersonaServer {
    * @param {Buffer} data
    * @returns {Promise<NPSMsg>}
    */
-  async _npsLogoutGameUser(data) {
+  async _npsLogoutGameUser (data) {
     logger.debug('[personaServer] Logging out persona...')
     const requestPacket = new NPSMsg('RECEIVED').deserialize(data)
     logger.debug(
@@ -180,7 +180,7 @@ class PersonaServer {
    * @param {Buffer} data
    * @returns {Promise<NPSMsg>}
    */
-  async _npsCheckToken(data) {
+  async _npsCheckToken (data) {
     logger.info('_npsCheckToken...')
     const requestPacket = new NPSMsg('RECEIVED').deserialize(data)
     logger.debug(
@@ -226,7 +226,7 @@ class PersonaServer {
    * @param {Buffer} data
    * @returns {Promise<NPSMsg>}
    */
-  async _npsValidatePersonaName(data) {
+  async _npsValidatePersonaName (data) {
     logger.debug('_npsValidatePersonaName...')
     const requestPacket = new NPSMsg('RECEIVED').deserialize(data)
 
@@ -278,14 +278,14 @@ class PersonaServer {
    * @returns {void}
    * @memberof PersonaServer
    */
-  _send(socket, packet) {
+  _send (socket, packet) {
     try {
       socket.write(packet.serialize())
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Unable to send packet: ${error}`)
       }
-      throw new Error(`Unable to send packet, error unknown`)
+      throw new Error('Unable to send packet, error unknown')
     }
   }
 
@@ -294,7 +294,7 @@ class PersonaServer {
    * @param {number} customerId
    * @return {Promise<IPersonaRecord[]>}
    */
-  async _getPersonasByCustomerId(customerId) {
+  async _getPersonasByCustomerId (customerId) {
     const results = this.personaList.filter(persona => {
       return persona.customerId === customerId
     })
@@ -311,7 +311,7 @@ class PersonaServer {
    * @param {number} id
    * @return {Promise<IPersonaRecord[]>}
    */
-  async _getPersonasById(id) {
+  async _getPersonasById (id) {
     const results = this.personaList.filter(persona => {
       const match = id === persona.id.readInt32BE(0)
       return match
@@ -329,8 +329,7 @@ class PersonaServer {
    * @param {number} customerId
    * @returns {Promise<IPersonaRecord[]>}
    */
-  async _npsGetPersonaMapsByCustomerId(customerId) {
-
+  async _npsGetPersonaMapsByCustomerId (customerId) {
     switch (customerId) {
       case 2868969472:
       case 5551212:
@@ -345,7 +344,7 @@ class PersonaServer {
    * @param {Buffer} data
    * @returns {Promise<NPSMsg>}
    */
-  async _npsGetPersonaMaps(data) {
+  async _npsGetPersonaMaps (data) {
     logger.debug('_npsGetPersonaMaps...')
     const requestPacket = new NPSMsg('RECEIVED').deserialize(data)
 
@@ -397,7 +396,7 @@ class PersonaServer {
         if (error instanceof Error) {
           throw new Error(`Error serializing personaMapsMsg: ${error}`)
         }
-        throw new Error(`Error serializing personaMapsMsg, error unknonw`)
+        throw new Error('Error serializing personaMapsMsg, error unknonw')
       }
     }
     return responsePacket
@@ -409,7 +408,7 @@ class PersonaServer {
    * @param {IRawPacket} rawPacket
    * @returns {Promise<ConnectionObj>}
    */
-  async dataHandler(rawPacket) {
+  async dataHandler (rawPacket) {
     const { connection, data, localPort, remoteAddress } = rawPacket
     const { sock } = connection
     const updatedConnection = connection

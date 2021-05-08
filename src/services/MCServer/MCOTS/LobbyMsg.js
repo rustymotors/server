@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const { LobbyInfoPacket } = require('./LobbyInfo')
-
+const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:LobbyMsg' })
 
 /**
  * @class
@@ -18,7 +18,6 @@ const { LobbyInfoPacket } = require('./LobbyInfo')
  * @property {Buffer} data
  */
 class LobbyMsg {
-
   /**
    *
    */
@@ -52,7 +51,7 @@ class LobbyMsg {
    * @returns {void}
    */
   dumpPacket () {
-    debug('mcoserver:LobbyMsg')(
+    logger.debug(
       'LobbyMsg',
       {
         msgNo: this.msgNo,

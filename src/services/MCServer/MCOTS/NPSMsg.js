@@ -7,7 +7,6 @@
 
 const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:NPSMsg' })
 
-
 /**
  * Packet container for NPS messages
  * @module NPSMsg
@@ -44,7 +43,6 @@ const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserve
  * @property {MESSAGE_DIRECTION} direction
  */
 class NPSMsg {
-
   /**
    *
    * @param {module:MessageNode.MESSAGE_DIRECTION} direction - the direction of the message flow
@@ -56,7 +54,7 @@ class NPSMsg {
     this.content = Buffer.from([0x01, 0x02, 0x03, 0x04])
     this.msgLength = this.content.length + 12
     if (direction !== 'RECEIVED' && direction !== 'SENT') {
-      throw new Error(`Directior must be either 'RECEIVED' or 'SENT'`)
+      throw new Error('Directior must be either \'RECEIVED\' or \'SENT\'')
     }
     this.direction = direction
   }
@@ -109,7 +107,7 @@ class NPSMsg {
       if (error instanceof Error) {
         throw new Error(`[NPSMsg] Error in serialize(): ${error}`)
       }
-      throw new Error(`[NPSMsg] Error in serialize(), error unknown`)
+      throw new Error('[NPSMsg] Error in serialize(), error unknown')
     }
   }
 

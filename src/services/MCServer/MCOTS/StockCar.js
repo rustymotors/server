@@ -7,8 +7,6 @@
 
 const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:StockCar' })
 
-
-
 /**
  * Container objest for Stock cars
  * @module StockCar

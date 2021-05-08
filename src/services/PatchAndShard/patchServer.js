@@ -11,7 +11,7 @@ const http = require('http')
 const { appSettings } = require('../../../config/app-settings')
 const fs = require('fs')
 const { ShardEntry } = require('./ShardEntry')
-
+const logger = require('../@mcoserver/mco-logger').child({service: 'mcoserver:PatchServer'})
 
 /**
  * Manages patch and update server connections
@@ -54,8 +54,8 @@ const CastanetResponse = {
  */
 class PatchServer {
   /**
-   * 
-   * @param {module:MCO_Logger.logger} logger 
+   *
+   * @param {module:MCO_Logger.logger} logger
    */
   constructor (logger) {
     this.logger = logger
@@ -329,8 +329,8 @@ class PatchServer {
    */
   async start () {
     return this.serverPatch.listen({ port: '80', host: '0.0.0.0' }, function () {
-      this.logger.debug('port 80 listening')
-      this.logger.info('[patchServer] Patch server is listening...')
+      logger.debug('port 80 listening')
+      logger.info('[patchServer] Patch server is listening...')
     })
   }
 }

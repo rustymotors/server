@@ -24,7 +24,6 @@ const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:G
  * @property {Buffer} data2
  */
 class GenericRequestMsg {
-
   /**
    *
    */
@@ -46,7 +45,7 @@ class GenericRequestMsg {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
       } else {
-        throw new error(
+        throw new Error(
           `[GenericRequestMsg] Unable to read msgNo from ${buffer.toString(
             'hex'
           )}: ${error}`

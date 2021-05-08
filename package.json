@@ -28,6 +28,8 @@
     "pg": "8.6.0",
     "pg-migrator": "1.1.0",
     "postgres-migrations": "5.1.1",
+    "sequelize": "6.6.2",
+    "sqlite3": "5.0.2",
     "winston": "3.3.3"
   },
   "devDependencies": {

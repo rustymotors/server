@@ -5,13 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-// eslint-disable-next-line camelcase
+// eslint-disable-next-line camelcase,no-unused-vars
 const _NPS_RiffListHeader = {
   StructSize: Buffer.alloc(4), // Uint4B
   NumRiffs: Buffer.alloc(4) // UInt4B
 }
 
-// eslint-disable-next-line camelcase
+// eslint-disable-next-line camelcase,no-unused-vars
 const _NPS_RiffInfo = {
   Riff: Buffer.alloc(32), // [32] Char
   Protocol: Buffer.alloc(4), // Uint4B
@@ -28,6 +28,7 @@ const _NPS_RiffInfo = {
   GameServerISRunning: Buffer.alloc(1) // Char
 }
 
+// eslint-disable-next-line no-unused-vars
 const LobbyMsg = {
   msgNo: Buffer.alloc(4), // Uint4B
   noLobbies: Buffer.alloc(4), // Uint4B
@@ -35,6 +36,7 @@ const LobbyMsg = {
   lobbyInfo: Buffer.alloc(142) // [142] LobbyInfo
 }
 
+// eslint-disable-next-line no-unused-vars
 const LobbyInfo = {
   lobbyID: Buffer.alloc(4), // Uint4B
   raceTypeID: Buffer.alloc(4), // Uint4B
@@ -121,7 +123,7 @@ const LobbyInfo = {
   raceCashFactor: Buffer.alloc(4) // Float (4B)
 }
 
-// eslint-disable-next-line camelcase
+// eslint-disable-next-line camelcase,no-unused-vars
 const GLDP_Persona = {
   customerId_: Buffer.alloc(4), // Uint4B
   personaId_: Buffer.alloc(4), // Uint4B
@@ -129,6 +131,7 @@ const GLDP_Persona = {
   personaName_: Buffer.alloc(33) // [33] Char
 }
 
+// eslint-disable-next-line no-unused-vars
 const _UserGameData = {
   CustomerId: Buffer.alloc(4), // Uint4B
   GameUserName: Buffer.alloc(33), // [33] Char
@@ -152,12 +155,13 @@ const _UserGameData = {
   ShardId: Buffer.alloc(4) // Uint4B
 }
 
-// eslint-disable-next-line camelcase
+// eslint-disable-next-line camelcase,no-unused-vars
 const GLDP_PersonaList = {
   NPS_SerializeList: Buffer.alloc(48), // NPS_SerializeList
   maxPersonas_: Buffer.alloc(4)// Uint4B
 }
 
+// eslint-disable-next-line no-unused-vars
 const GenericReply = {
   msgNo: Buffer.alloc(4), // Uint4B
   msgReply: Buffer.alloc(4), // Uint4B
@@ -166,7 +170,7 @@ const GenericReply = {
   data2: Buffer.alloc(4) // Uint4B
 }
 
-// eslint-disable-next-line camelcase
+// eslint-disable-next-line camelcase,no-unused-vars
 const NPS_GetPersonaMapListReq = {
   NPS_SerializeList: Buffer.alloc(48), // NPS_SerializeList
   customerId_: Buffer.alloc(4) // Uint4B
@@ -178,14 +182,12 @@ const NPS_GetPersonaMapListReq = {
  * @property {Buffer} _mcosig
  */
 class MsgHead {
-
   constructor () {
   // This is a 4B in the debug binary, the client is sending 2B
   /** @type {Buffer} */
-  this._length = Buffer.alloc(2) // UInt4B
-  /** @type {Buffer} */
-  this._mcosig = Buffer.alloc(4) // UInt4B
-
+    this._length = Buffer.alloc(2) // UInt4B
+    /** @type {Buffer} */
+    this._mcosig = Buffer.alloc(4) // UInt4B
   }
 
   /**
@@ -217,10 +219,12 @@ class MsgHead {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 const BaseMsgHeader = {
   msgNo: Buffer.alloc(4) // Uint4B
 }
 
+// eslint-disable-next-line no-unused-vars
 const CompressedHeader = {
   uncompressedLength: Buffer.alloc(4), // Uint4B
   data: Buffer.alloc(0) // [0] Uint4B
@@ -237,11 +241,9 @@ const CompressedHeader = {
  * @property {Buffer} _rawBuffer
  */
 class MessageNode {
-
-
   /**
-   * 
-   * @param {Buffer} buffer 
+   *
+   * @param {Buffer} buffer
    */
   constructor (buffer) {
     this._toFrom = Buffer.alloc(4) // UInt4
@@ -326,7 +328,7 @@ class MessageNode {
   /**
    * @returns {Buffer}
    */
-  get rawBuffer() {
+  get rawBuffer () {
     return this._rawBuffer
   }
 
@@ -338,8 +340,8 @@ class MessageNode {
   }
 
   /**
-   * 
-   * @param {Buffer} buffer 
+   *
+   * @param {Buffer} buffer
    * @returns {MessageNode}
    */
   static fromBuffer (buffer) {
@@ -517,6 +519,7 @@ const NPS_LOBBY_COMMANDS = [
 /**
  * @type {InpsCommandMap[]}
  */
+// eslint-disable-next-line no-unused-vars
 const NPS_LOGIN_COMMANDS = [
   ...NPS_LOGINCLIENT_COMMANDS
 ]

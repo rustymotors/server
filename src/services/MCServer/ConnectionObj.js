@@ -43,7 +43,6 @@ const { EncryptionManager } = require('./EncryptionMgr')
  * @property {Buffer} encryptedCmd
  */
 class ConnectionObj {
-
   /**
    *
    * @param {string} connectionId

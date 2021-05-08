@@ -5,20 +5,19 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { NPSMsg } = require("../MCOTS/NPSMsg")
-const { PersonaServer } = require("../PersonaServer/PersonaServer")
-const { NPSUserInfo } = require("./npsUserInfo")
+const { NPSMsg } = require('../MCOTS/NPSMsg')
+const { PersonaServer } = require('../PersonaServer/PersonaServer')
+const { NPSUserInfo } = require('./npsUserInfo')
 
-const { ConnectionObj } = require("../ConnectionObj") // lgtm [js/unused-local-variable]
-const { DatabaseManager } = require("../../../shared/DatabaseManager")
-const logger = require("../../@mcoserver/mco-logger").child({ service: 'mcoserver:LobbyServer' })
+// eslint-disable-next-line no-unused-vars
+const { ConnectionObj } = require('../ConnectionObj') // lgtm [js/unused-local-variable]
+const { fetchSessionKeyByCustomerId } = require('../../@mcoserver/mco-database')
+const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:LobbyServer' })
 
 /**
  * Manages the game connection to the lobby and racing rooms
  * @module LobbyServer
  */
-
-const databaseManager = new DatabaseManager()
 
 /**
  *
@@ -237,7 +236,7 @@ class LobbyServer {
 
     // Set the encryption keys on the lobby connection
     /** @type {ISessionRecord} */
-    const keys = await databaseManager.fetchSessionKeyByCustomerId(customerId)
+    const keys = await fetchSessionKeyByCustomerId(customerId)
     const s = connection
 
     // Create the cypher and decipher only if not already set

@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require("../@mcoserver/mco-logger").child({ service: 'mcoserver:GenericReplyMsg' })
+const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:GenericReplyMsg' })
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
@@ -28,12 +28,10 @@ const logger = require("../@mcoserver/mco-logger").child({ service: 'mcoserver:G
  * @property {Buffer} data2
  */
 class GenericReplyMsg {
-
   /**
    *
    */
   constructor () {
-
     this.msgNo = 0
     this.toFrom = 0
     this.appId = 0
@@ -73,7 +71,7 @@ class GenericReplyMsg {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
       } else {
-        throw new error(
+        throw new Error(
           `[GenericReplyMsg] Unable to read msgNo from ${buffer.toString(
             'hex'
           )}: ${error}`

@@ -9,9 +9,12 @@ const fs = require('fs')
 const https = require('https')
 const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:AuthLogin' })
 const util = require('util')
+// eslint-disable-next-line no-unused-vars
 const { IncomingMessage, ServerResponse } = require('http')
+// eslint-disable-next-line no-unused-vars
 const { Socket } = require('net')
 
+// eslint-disable-next-line no-unused-vars
 const { Server } = require('https')
 
 const readFilePromise = util.promisify(fs.readFile)

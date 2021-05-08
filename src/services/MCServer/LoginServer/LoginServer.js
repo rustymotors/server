@@ -5,14 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { DatabaseManager } = require('../../../shared/DatabaseManager')
+const { _updateSessionKey } = require('../../@mcoserver/mco-database')
+// eslint-disable-next-line no-unused-vars
 const { ConnectionObj } = require('../ConnectionObj')
 const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:LoginServer' })
+// eslint-disable-next-line no-unused-vars
 const { NPSUserStatus } = require('./npsUserStatus')
 const { premadeLogin } = require('./packet')
-
-
-const { NPSMsg } = require('../MCOTS/NPSMsg')
 
 /**
  * Manages the initial game connection setup and teardown.
@@ -21,18 +20,8 @@ const { NPSMsg } = require('../MCOTS/NPSMsg')
 
 /**
  * @class
- * @property {DatabaseManager} databaseManager
  */
 class LoginServer {
-
-  /**
-   *
-   * @param {DatabaseManager} databaseMgr
-   */
-  constructor (databaseMgr) {
-    this.databaseManager = databaseMgr
-  }
-
   /**
    *
    * @param {IRawPacket} rawPacket
@@ -165,7 +154,7 @@ class LoginServer {
 
     // Save sessionkey in database under customerId
     logger.debug('Preparing to update session key in db')
-    await this.databaseManager._updateSessionKey(
+    await _updateSessionKey(
       customer.customerId,
       userStatus.sessionkey,
       userStatus.contextId,

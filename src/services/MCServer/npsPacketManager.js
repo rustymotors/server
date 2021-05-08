@@ -5,10 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { ConnectionObj } = require("./ConnectionObj")
-const { LobbyServer } = require("./LobbyServer/LobbyServer")
-const { LoginServer } = require("./LoginServer/LoginServer")
-const { PersonaServer } = require("./PersonaServer/PersonaServer")
+// eslint-disable-next-line no-unused-vars
+const { ConnectionObj } = require('./ConnectionObj')
+const { LobbyServer } = require('./LobbyServer/LobbyServer')
+const { LoginServer } = require('./LoginServer/LoginServer')
+const { PersonaServer } = require('./PersonaServer/PersonaServer')
 const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:NPSPacketManager' })
 
 /**
@@ -24,7 +25,6 @@ const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:N
 /**
  * @class
  * @property {module:IAppSettings} config
- * @property {module:DatabaseManager} database
  * @property {string} npsKey
  * @property {module:npsPacketManager~IMsgNameMapping[]} msgNameMapping
  * @property {module:LoginServer} loginServer
@@ -32,15 +32,12 @@ const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:N
  * @property {module:LobbyServer} lobbyServer
  */
 class NPSPacketManager {
-
   /**
    *
-   * @param {module:DatabaseManager} databaseMgr
    * @param {IAppSettings} appSettings
    */
-  constructor (databaseMgr, appSettings) {
+  constructor (appSettings) {
     this.config = appSettings
-    this.database = databaseMgr
     this.npsKey = ''
     this.msgNameMapping = [
       { id: 0x100, name: 'NPS_LOGIN' },
@@ -58,7 +55,7 @@ class NPSPacketManager {
       { id: 0x1101, name: 'NPS_CRYPTO_DES_CBC' }
     ]
 
-    this.loginServer = new LoginServer(this.database)
+    this.loginServer = new LoginServer()
     this.personaServer = new PersonaServer()
     this.lobbyServer = new LobbyServer()
   }

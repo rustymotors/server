@@ -8,30 +8,21 @@
 const { appSettings } = require('../config/app-settings')
 const { AdminServer } = require('./services/AdminServer/AdminServer')
 const { MCServer } = require('./services/MCServer')
-const { DatabaseManager } = require('./shared/DatabaseManager') // lgtm [js/unused-local-variable]
 const logger = require('./services/@mcoserver/mco-logger').child({ service: 'mcoserver:Server' })
-
 
 /**
  * Main game server
  * @class
  * @property {IAppSettings} config
- * @property {DatabaseManager} databaseManager
- * @property {MCServer} mcServer
+ * @property {module:MCServer} mcServer
  * @property {AdminServer} adminServer
  */
 class Server {
-  config
-  databaseManager
-  mcServer
-  adminServer
-
   /**
-   * @param {DatabaseManager} databaseManager
+   *
    */
-  constructor (databaseManager) {
+  constructor () {
     this.config = appSettings
-    this.databaseManager = databaseManager
   }
 
   /**
@@ -41,7 +32,7 @@ class Server {
     logger.info('Starting servers...')
 
     // Start the MC Server
-    this.mcServer = new MCServer(appSettings, this.databaseManager)
+    this.mcServer = new MCServer(appSettings)
     this.mcServer.startServers()
 
     // Start the Admin server

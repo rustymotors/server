@@ -5,6 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+// eslint-disable-next-line no-unused-vars
 const { ConnectionObj } = require('../ConnectionObj') // lgtm [js/unused-local-variable]
 const { MessageNode } = require('./MessageNode')
 const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:MCOTSServer' })
@@ -14,7 +15,7 @@ const { GenericReplyMsg } = require('../GenericReplyMsg')
 const { GenericRequestMsg } = require('../GenericRequestMsg')
 const { StockCar } = require('./StockCar')
 const { StockCarInfoMsg } = require('./StockCarInfoMsg')
-const { DatabaseManager } = require('../../../shared/DatabaseManager')
+const { fetchSessionKeyByCustomerId } = require('../../@mcoserver/mco-database')
 
 /**
  * Manages TCP connection packet processing
@@ -22,7 +23,6 @@ const { DatabaseManager } = require('../../../shared/DatabaseManager')
  */
 
 const mcotServer = new MCOTServer()
-const databaseManager = new DatabaseManager()
 
 /**
  *
@@ -157,10 +157,10 @@ async function ClientConnect (con, node) {
   const newMsg = new ClientConnectMsg(node.data)
 
   logger.debug(`[TCPManager] Looking up the session key for ${newMsg.customerId}...`)
-  const res = await databaseManager.fetchSessionKeyByCustomerId(
+  const res = await fetchSessionKeyByCustomerId(
     newMsg.customerId
   )
-  logger.debug(`[TCPManager] Session Key located!`)
+  logger.debug('[TCPManager] Session Key located!')
 
   const connectionWithKey = con
 
@@ -213,7 +213,7 @@ async function ProcessInput (node, conn) {
         if (error instanceof Error) {
           throw new Error(`Error in MC_SET_OPTIONS: ${error}`)
         }
-        throw new Error(`Error in MC_SET_OPTIONS, error unknown`)
+        throw new Error('Error in MC_SET_OPTIONS, error unknown')
       }
     case 'MC_TRACKING_MSG':
       try {
@@ -227,13 +227,13 @@ async function ProcessInput (node, conn) {
         if (error instanceof Error) {
           throw new Error(`Error in MC_TRACKING_MSG: ${error}`)
         }
-        throw new Error(`Error in MC_TRACKING_MSG, error unknown`)
+        throw new Error('Error in MC_TRACKING_MSG, error unknown')
       }
     case 'MC_UPDATE_PLAYER_PHYSICAL':
       try {
         const result = await mcotServer._updatePlayerPhysical(conn, node)
         const responsePackets = result.nodes
-       return module.exports.socketWriteIfOpen(
+        return module.exports.socketWriteIfOpen(
           result.con,
           responsePackets
         )
@@ -241,7 +241,7 @@ async function ProcessInput (node, conn) {
         if (error instanceof Error) {
           throw new Error(`Error in MC_UPDATE_PLAYER_PHYSICAL: ${error}`)
         }
-        throw new Error(`Error in MC_UPDATE_PLAYER_PHYSICAL, error unknown`)
+        throw new Error('Error in MC_UPDATE_PLAYER_PHYSICAL, error unknown')
       }
 
     default:
@@ -258,7 +258,7 @@ async function ProcessInput (node, conn) {
       if (error instanceof Error) {
         throw new Error(`[TCPManager] Error writing to socket: ${error}`)
       }
-      throw new Error(`[TCPManager] Error writing to socket, error unknown`)
+      throw new Error('[TCPManager] Error writing to socket, error unknown')
     }
   } else if (currentMsgString === 'MC_LOGIN') {
     try {
@@ -270,7 +270,7 @@ async function ProcessInput (node, conn) {
       if (error instanceof Error) {
         throw new Error(`[TCPManager] Error writing to socket: ${error}`)
       }
-      throw new Error(`[TCPManager] Error writing to socket, error unknown`)
+      throw new Error('[TCPManager] Error writing to socket, error unknown')
     }
   } else if (currentMsgString === 'MC_LOGOUT') {
     try {
@@ -282,7 +282,7 @@ async function ProcessInput (node, conn) {
       if (error instanceof Error) {
         throw new Error(`[TCPManager] Error writing to socket: ${error}`)
       }
-      throw new Error(`[TCPManager] Error writing to socket, error unknown`)
+      throw new Error('[TCPManager] Error writing to socket, error unknown')
     }
   } else if (currentMsgString === 'MC_GET_LOBBIES') {
     const result = await mcotServer._getLobbies(conn, node)
@@ -296,7 +296,7 @@ async function ProcessInput (node, conn) {
       if (error instanceof Error) {
         throw new Error(`[TCPManager] Error writing to socket: ${error}`)
       }
-      throw new Error(`[TCPManager] Error writing to socket, error unknown`)
+      throw new Error('[TCPManager] Error writing to socket, error unknown')
     }
   } else if (currentMsgString === 'MC_STOCK_CAR_INFO') {
     try {
@@ -308,7 +308,7 @@ async function ProcessInput (node, conn) {
       if (error instanceof Error) {
         throw new Error(`[TCPManager] Error writing to socket: ${error}`)
       }
-      throw new Error(`[TCPManager] Error writing to socket, error unknown`)
+      throw new Error('[TCPManager] Error writing to socket, error unknown')
     }
   } else {
     node.setAppId(conn.appId)

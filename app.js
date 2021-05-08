@@ -11,14 +11,9 @@ const logger = require('./src/services/@mcoserver/mco-logger')
 const { AuthLogin } = require('./src/services/AuthLogin/AuthLogin')
 const { PatchServer } = require('./src/services/PatchAndShard/patchServer')
 const { Server } = require('./src/server')
-const { DatabaseManager, doMigrations } = require('./src/shared/DatabaseManager')
-
-// Database manager
-const databaseManager = new DatabaseManager()
-doMigrations()
 
 // MCOS Monolith
-const server = new Server(databaseManager)
+const server = new Server()
 
 // MCOS PatchAndShard
 const patchAndShardServer = new PatchServer(logger.child({ service: 'mcoserver:PatchServer' }))

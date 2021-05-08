@@ -7,11 +7,10 @@
 
 const { expect } = require('chai')
 const { LoginServer } = require('../src/services/MCServer/LoginServer/LoginServer')
-const { fakeDatabaseManager } = require('./helpers')
 
 /* eslint-env mocha */
 
-const loginServer = new LoginServer(fakeDatabaseManager)
+const loginServer = new LoginServer()
 
 it('LoginServer', async () => {
   const { customerId, userId } = await loginServer._npsGetCustomerIdByContextId(

@@ -5,7 +5,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
 const { MessageNode, NPS_COMMANDS } = require('../../structures')
 const { defaultHandler } = require('./MCOTS/TCPManager')
 const { ConnectionObj } = require('./ConnectionObj')
@@ -20,20 +19,16 @@ const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:C
 /**
  * @class
  * @property {IAppSettings} config
- * @property {module:DatabaseManager} databaseManager
  * @property {module:ConnectionObj[]} connections
  * @property {string[]} banList
  */
 class ConnectionMgr {
-
   /**
    * Creates an instance of ConnectionMgr.
-   * @param {module:DatabaseManager} databaseManager
    * @param {IAppSettings} appSettings
    */
-  constructor (databaseManager, appSettings) {
+  constructor (appSettings) {
     this.config = appSettings
-    this.databaseMgr = databaseManager
     /**
      * @type {module:ConnectionObj[]}
      */
@@ -51,7 +46,7 @@ class ConnectionMgr {
    * @returns {Promise} {@link module:ConnectionObj~ConnectionObj}
    */
   async processData (rawPacket) {
-    const npsPacketManager = new NPSPacketManager(this.databaseMgr, this.config)
+    const npsPacketManager = new NPSPacketManager(this.config)
 
     const { remoteAddress, localPort, data } = rawPacket
 

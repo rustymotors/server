@@ -5,8 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+// eslint-disable-next-line no-unused-vars
 const { IncomingMessage, ServerResponse } = require('http') // lgtm [js/unused-local-variable]
+// eslint-disable-next-line no-unused-vars
 const { Socket } = require('net') // lgtm [js/unused-local-variable]
+// eslint-disable-next-line no-unused-vars
 const { MCServer } = require('../MCServer') // lgtm [js/unused-local-variable]
 
 const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:AdminServer' })

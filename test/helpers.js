@@ -8,7 +8,6 @@
 const td = require('testdouble')
 const logger = require('../src/services/@mcoserver/mco-logger')
 const { ConnectionMgr } = require('../src/services/MCServer/ConnectionMgr')
-const { DatabaseManager } = require('../src/shared/DatabaseManager')
 const net = require('net')
 const { ConnectionObj } = require('../src/services/MCServer/ConnectionObj')
 const { MCServer } = require('../src/services/MCServer')
@@ -39,11 +38,8 @@ fakeLogger.info = td.function(logger.info)
 fakeLogger.debug = td.function(logger.debug)
 fakeLogger.error = td.function(logger.error)
 
-const FakeDatabaseManagerConstructor = td.constructor(DatabaseManager)
-const fakeDatabaseManager = new FakeDatabaseManagerConstructor(fakeLogger)
-
 const FakeConnectionManagerConstructor = td.constructor(ConnectionMgr)
-const fakeConnectionMgr = new FakeConnectionManagerConstructor(fakeLogger, fakeDatabaseManager)
+const fakeConnectionMgr = new FakeConnectionManagerConstructor(fakeLogger)
 
 /**
  * Fake socket for testing
@@ -58,7 +54,7 @@ fakeSocket.localPort = '7003'
 const FakeConnectionConstructor = td.constructor(ConnectionObj)
 
 const FakeMCServerConstructor = td.constructor(MCServer)
-const fakeMCServer = new FakeMCServerConstructor(fakeConfig, fakeDatabaseManager)
+const fakeMCServer = new FakeMCServerConstructor(fakeConfig)
 
 module.exports.fakeLogger = fakeLogger
 module.exports.FakeConnectionManagerConstructor = FakeConnectionManagerConstructor
