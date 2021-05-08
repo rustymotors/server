@@ -55,7 +55,7 @@ const CastanetResponse = {
 class PatchServer {
   /**
    * 
-   * @param {object} logger 
+   * @param {module:MCO_Logger.logger} logger 
    */
   constructor (logger) {
     this.logger = logger
