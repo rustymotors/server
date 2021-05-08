@@ -10,7 +10,6 @@
   "scripts": {
     "start": "node app.js",
     "test": "npm run lint-test",
-    "doc": "jsdoc -R README.md -P package.json -r src",
     "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
     "lint": "standard --fix src/**/*.js",
     "lint-test": "standard --fix src/**/*.js && nyc mocha",
@@ -43,7 +42,6 @@
     "@types/supertest": "2.0.11",
     "@types/verror": "1.10.4",
     "chai": "4.3.4",
-    "jsdoc": "3.6.6",
     "mocha": "8.4.0",
     "mock-fs": "4.13.0",
     "nyc": "15.1.0",
