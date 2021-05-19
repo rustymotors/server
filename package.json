@@ -26,7 +26,6 @@
     "c-struct": "0.0.5",
     "ini": "2.0.0",
     "pg": "8.6.0",
-    "pg-migrator": "1.1.0",
     "postgres-migrations": "5.1.1",
     "winston": "3.3.3"
   },
