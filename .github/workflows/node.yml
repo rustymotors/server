@@ -24,9 +24,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-      - run: MCO_DB_USER=dummyuser MCO_DB_PASS=dummypass npm test
-      - name: Codecov
+      - name: Test & Codecov
         # You may pin to the exact commit or the version.
         # uses: codecov/codecov-action@239febf655bba88b16ff5dea1d3135ea8663a1f9
-        run: xvfb-run bash <(curl -s https://codecov.io/bash)
+        run: |
+          MCO_DB_USER=dummyuser MCO_DB_PASS=dummypass xvfb-run npm test 
+          bash <(curl -s https://codecov.io/bash)
 
