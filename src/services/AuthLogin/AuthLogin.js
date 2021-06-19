@@ -144,7 +144,8 @@ class AuthLogin {
     }
     this.httpsServer.on('connection', this._socketEventHandler)
     this.httpsServer.on('tlsClientError', error => {
-      logger.error(`[AuthLogin] SSL Socket Client Error: ${error.message}`)
+      logger.error(`SSL Socket Client Error: ${error.message}`)
+      logger.error(`Please make sure the client has followed all the directions for setup in the docs directory`)
     })
     return this.httpsServer
   }
