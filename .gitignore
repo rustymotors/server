@@ -1,3 +1,4 @@
+.env # do not commit env settings
 .vscode # Do not commit IDE settings
 node_modules
 logs

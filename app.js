@@ -6,6 +6,7 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
+require('dotenv').config()
 const { appSettings } = require('./config/app-settings')
 const logger = require('./src/services/@mcoserver/mco-logger')
 const { AuthLogin } = require('./src/services/AuthLogin/AuthLogin')
