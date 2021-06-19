@@ -327,9 +327,10 @@ class PatchServer {
    * @return {Promise<http.Server>}
    */
   async start () {
+    const logger = this.logger
     return this.serverPatch.listen({ port: '80', host: '0.0.0.0' }, function () {
-      this.logger.debug('port 80 listening')
-      this.logger.info('[patchServer] Patch server is listening...')
+      logger.debug('port 80 listening')
+      logger.info('[patchServer] Patch server is listening...')
     })
   }
 }

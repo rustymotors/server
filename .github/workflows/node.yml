@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-      - run: MCO_DB_USER=dummyuser MCO_DB_PASS=dummypass npm test
+      - run: MCO_LOG_LEVEL=warn npm test
       - name: Codecov
         # You may pin to the exact commit or the version.
         # uses: codecov/codecov-action@239febf655bba88b16ff5dea1d3135ea8663a1f9
