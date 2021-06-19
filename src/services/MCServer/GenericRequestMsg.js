@@ -24,7 +24,6 @@ const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:G
  * @property {Buffer} data2
  */
 class GenericRequestMsg {
-
   /**
    *
    */

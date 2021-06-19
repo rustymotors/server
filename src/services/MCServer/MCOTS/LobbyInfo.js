@@ -10,7 +10,6 @@
  * @module LobbyInfo
  */
 
-
 /** @type {ILobbyInfo} */
 const lobbyInfoDefaults = {
   // DWORD    lobbyID;
@@ -187,7 +186,6 @@ const lobbyInfoDefaults = {
  * @property {ILobbyInfo} data
  */
 class LobbyInfoPacket {
-
   /**
    *
    */

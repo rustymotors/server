@@ -5,14 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { ConnectionObj } = require('../ConnectionObj') // lgtm [js/unused-local-variable]
+const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:MCOTSServer' })
 const { MessageNode } = require('./MessageNode')
 const { GenericReplyMsg } = require('../GenericReplyMsg')
 const { LoginMsg } = require('./LoginMsg')
-
-// eslint-disable-next-line no-unused-vars
-
-
 
 /**
  * Mangages the game database server
@@ -24,7 +20,6 @@ const { LoginMsg } = require('./LoginMsg')
  * @property {module:MCO_Logger.logger} logger
  */
 class MCOTServer {
-
   /**
    * Creates an instance of MCOTServer.
    * @class
@@ -106,15 +101,15 @@ class MCOTServer {
    * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
   async _getLobbies (con, node) {
-    debug('mcoserver:MCOTSServer')('In _getLobbies...')
+    logger.debug('In _getLobbies...')
     const lobbiesListMsg = node
 
     // Update the appId
     lobbiesListMsg.appId = con.appId
 
     // Dump the packet
-    debug('mcoserver:MCOTSServer')('Dumping request...')
-    debug('mcoserver:MCOTSServer')(lobbiesListMsg)
+    logger.debug('Dumping request...')
+    logger.debug(lobbiesListMsg)
 
     // Create new response packet
     // const lobbyMsg = new LobbyMsg()
@@ -133,8 +128,8 @@ class MCOTServer {
     rPacket.updateBuffer(pReply.serialize())
 
     // // Dump the packet
-    debug('mcoserver:MCOTSServer')('Dumping response...')
-    debug('mcoserver:MCOTSServer')(rPacket)
+    logger.debug('Dumping response...')
+    logger.debug(rPacket)
 
     return { con, nodes: [rPacket] }
   }

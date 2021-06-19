@@ -12,7 +12,6 @@ const { appSettings } = require('../../../config/app-settings')
 const fs = require('fs')
 const { ShardEntry } = require('./ShardEntry')
 
-
 /**
  * Manages patch and update server connections
  * Also handles the shard list, and some utility endpoints
@@ -54,8 +53,8 @@ const CastanetResponse = {
  */
 class PatchServer {
   /**
-   * 
-   * @param {module:MCO_Logger.logger} logger 
+   *
+   * @param {module:MCO_Logger.logger} logger
    */
   constructor (logger) {
     this.logger = logger

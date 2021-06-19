@@ -7,8 +7,6 @@
 
 const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:StockCarInfoMsg' })
 
-const { StockCar } = require('./StockCar') // lgtm [js/unused-local-variable]
-
 /**
  * Object for providing information on stock cars
  * @module StockCarInfoMsg
@@ -43,7 +41,6 @@ class StockCarInfoMsg {
    * @memberof StockCarInfoMsg
    */
   constructor (starterCash, dealerId, brand) {
-
     this.msgNo = 141
     this.starterCash = starterCash
     this.dealerId = dealerId
@@ -93,7 +90,7 @@ class StockCarInfoMsg {
    * @returns {void}
    */
   dumpPacket () {
-   logger.debug(
+    logger.debug(
       {
         msgNo: this.msgNo,
         starterCash: this.starterCash,

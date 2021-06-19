@@ -5,10 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { ConnectionObj } = require("./ConnectionObj")
-const { LobbyServer } = require("./LobbyServer/LobbyServer")
-const { LoginServer } = require("./LoginServer/LoginServer")
-const { PersonaServer } = require("./PersonaServer/PersonaServer")
+const { LobbyServer } = require('./LobbyServer/LobbyServer')
+const { LoginServer } = require('./LoginServer/LoginServer')
+const { PersonaServer } = require('./PersonaServer/PersonaServer')
 const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:NPSPacketManager' })
 
 /**
@@ -32,7 +31,6 @@ const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:N
  * @property {module:LobbyServer} lobbyServer
  */
 class NPSPacketManager {
-
   /**
    *
    * @param {module:DatabaseManager} databaseMgr

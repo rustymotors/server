@@ -43,13 +43,11 @@ struct.register('LoginMsg', loginMsgSchema)
  * @property {Record<string, unknown>} struct
  */
 class LoginMsg {
-
   /**
    *
    * @param {Buffer} buffer
    */
   constructor (buffer) {
-
     this.msgNo = 0
     this.toFrom = 0
     this.appId = 0
@@ -92,7 +90,6 @@ class LoginMsg {
           'hex'
         )}, error unknown`
       )
-
     }
 
     this.customerId = buffer.readInt32LE(2)

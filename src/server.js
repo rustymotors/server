@@ -8,9 +8,7 @@
 const { appSettings } = require('../config/app-settings')
 const { AdminServer } = require('./services/AdminServer/AdminServer')
 const { MCServer } = require('./services/MCServer')
-const { DatabaseManager } = require('./shared/DatabaseManager') // lgtm [js/unused-local-variable]
 const logger = require('./services/@mcoserver/mco-logger').child({ service: 'mcoserver:Server' })
-
 
 /**
  * Main game server
@@ -21,11 +19,6 @@ const logger = require('./services/@mcoserver/mco-logger').child({ service: 'mco
  * @property {AdminServer} adminServer
  */
 class Server {
-  config
-  databaseManager
-  mcServer
-  adminServer
-
   /**
    * @param {DatabaseManager} databaseManager
    */

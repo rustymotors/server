@@ -5,10 +5,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { IncomingMessage, ServerResponse } = require('http') // lgtm [js/unused-local-variable]
-const { Socket } = require('net') // lgtm [js/unused-local-variable]
-const { MCServer } = require('../MCServer') // lgtm [js/unused-local-variable]
-
 const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:AdminServer' })
 const fs = require('fs')
 const https = require('https')
@@ -155,7 +151,7 @@ module.exports.AdminServer = class AdminServer {
       case '/admin/poweroff':
         response.end('ok')
         process.exit(0)
-
+        break
       default:
         if (request.url && request.url.startsWith('/admin')) {
           return response.end('Jiggawatt!')

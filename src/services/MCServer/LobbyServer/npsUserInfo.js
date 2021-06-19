@@ -6,9 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:NPSUserInfo' })
-const { MESSAGE_DIRECTION } = require('../MCOTS/MessageNode')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
-
 
 /**
  * @module NPSUserInfo
@@ -22,7 +20,6 @@ const { NPSMsg } = require('../MCOTS/NPSMsg')
  * @property {Buffer} userData
  */
 class NPSUserInfo extends NPSMsg {
-
   /**
    *
    * @param {MESSAGE_DIRECTION} direction

@@ -9,8 +9,6 @@ const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserve
 
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 
-
-
 /**
  * @module NPSPersonaMapsMsg
  */
@@ -38,7 +36,6 @@ const { NPSMsg } = require('../MCOTS/NPSMsg')
  * @property {number} msgChecksum - uint16
  * @property {InpsPersonaMapsPersonaRecord[]} personas
  */
-
 
 /**
  *

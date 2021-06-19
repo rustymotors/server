@@ -24,7 +24,6 @@
  * @property {number} diagnosticServerPort
  */
 class ShardEntry {
-
   /**
    *
    * @param {string} name

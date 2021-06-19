@@ -5,9 +5,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { Server, Socket } = require('net') // lgtm [js/unused-local-variable]
-const { ConnectionMgr } = require('./ConnectionMgr') // lgtm [js/unused-local-variable]
-const { ConnectionObj } = require('./ConnectionObj') // lgtm [js/unused-local-variable]
 const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:ListenerThread' })
 
 const net = require('net')
@@ -22,7 +19,6 @@ const net = require('net')
  * @property {IAppSettings} config
  */
 module.exports.ListenerThread = class ListenerThread {
-
   /**
    * @param {IAppSettings} config
    */
@@ -64,7 +60,7 @@ module.exports.ListenerThread = class ListenerThread {
         if (error instanceof Error) {
           throw new Error(`Error in listenerThread::onData 1: ${error}`)
         }
-        throw new Error(`Error in listenerThread::onData 1, error unknown`)
+        throw new Error('Error in listenerThread::onData 1, error unknown')
       }
       if (!connection.remoteAddress) {
         logger.debug(connection.toString())
@@ -80,13 +76,13 @@ module.exports.ListenerThread = class ListenerThread {
         if (error instanceof Error) {
           throw new Error(`Error in listenerThread::onData 2: ${error.message}`)
         }
-        throw new Error(`Error in listenerThread::onData 2, error unknown`)
+        throw new Error('Error in listenerThread::onData 2, error unknown')
       }
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Error in listenerThread::onData 3: ${error.message}`)
       }
-      throw new Error(`Error in listenerThread::onData 3, error unknown`)
+      throw new Error('Error in listenerThread::onData 3, error unknown')
     }
   }
 

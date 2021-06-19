@@ -5,14 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { DatabaseManager } = require('../../../shared/DatabaseManager')
-const { ConnectionObj } = require('../ConnectionObj')
 const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:LoginServer' })
 const { NPSUserStatus } = require('./npsUserStatus')
 const { premadeLogin } = require('./packet')
-
-
-const { NPSMsg } = require('../MCOTS/NPSMsg')
 
 /**
  * Manages the initial game connection setup and teardown.
@@ -24,7 +19,6 @@ const { NPSMsg } = require('../MCOTS/NPSMsg')
  * @property {DatabaseManager} databaseManager
  */
 class LoginServer {
-
   /**
    *
    * @param {DatabaseManager} databaseMgr
