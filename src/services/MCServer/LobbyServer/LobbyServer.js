@@ -5,13 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { NPSMsg } = require("../MCOTS/NPSMsg")
-const { PersonaServer } = require("../PersonaServer/PersonaServer")
-const { NPSUserInfo } = require("./npsUserInfo")
-
-const { ConnectionObj } = require("../ConnectionObj") // lgtm [js/unused-local-variable]
-const { DatabaseManager } = require("../../../shared/DatabaseManager")
-const logger = require("../../@mcoserver/mco-logger").child({ service: 'mcoserver:LobbyServer' })
+const { NPSMsg } = require('../MCOTS/NPSMsg')
+const { PersonaServer } = require('../PersonaServer/PersonaServer')
+const { NPSUserInfo } = require('./npsUserInfo')
+const { DatabaseManager } = require('../../../shared/DatabaseManager')
+const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:LobbyServer' })
 
 /**
  * Manages the game connection to the lobby and racing rooms

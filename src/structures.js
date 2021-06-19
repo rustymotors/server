@@ -178,14 +178,12 @@ const NPS_GetPersonaMapListReq = {
  * @property {Buffer} _mcosig
  */
 class MsgHead {
-
   constructor () {
   // This is a 4B in the debug binary, the client is sending 2B
   /** @type {Buffer} */
-  this._length = Buffer.alloc(2) // UInt4B
-  /** @type {Buffer} */
-  this._mcosig = Buffer.alloc(4) // UInt4B
-
+    this._length = Buffer.alloc(2) // UInt4B
+    /** @type {Buffer} */
+    this._mcosig = Buffer.alloc(4) // UInt4B
   }
 
   /**
@@ -237,11 +235,9 @@ const CompressedHeader = {
  * @property {Buffer} _rawBuffer
  */
 class MessageNode {
-
-
   /**
-   * 
-   * @param {Buffer} buffer 
+   *
+   * @param {Buffer} buffer
    */
   constructor (buffer) {
     this._toFrom = Buffer.alloc(4) // UInt4
@@ -326,7 +322,7 @@ class MessageNode {
   /**
    * @returns {Buffer}
    */
-  get rawBuffer() {
+  get rawBuffer () {
     return this._rawBuffer
   }
 
@@ -338,8 +334,8 @@ class MessageNode {
   }
 
   /**
-   * 
-   * @param {Buffer} buffer 
+   *
+   * @param {Buffer} buffer
    * @returns {MessageNode}
    */
   static fromBuffer (buffer) {
@@ -528,6 +524,21 @@ const NPS_COMMANDS = [
   ...NPS_LOBBY_COMMANDS, ...NPS_LOGINCLIENT_COMMANDS,
   { name: 'NPS_CRYPTO_DES_CBC', value: 0x1101, module: 'Lobby' }
 ]
-module.exports.MessageNode = MessageNode
-module.exports.NPS_COMMANDS = NPS_COMMANDS
-module.exports.NPS_LOBBY_COMMANDS = NPS_LOBBY_COMMANDS
+
+module.exports = {
+  _NPS_RiffInfo,
+  _NPS_RiffListHeader,
+  _UserGameData,
+  BaseMsgHeader,
+  CompressedHeader,
+  GenericReply,
+  GLDP_Persona,
+  GLDP_PersonaList,
+  LobbyInfo,
+  LobbyMsg,
+  MessageNode,
+  NPS_COMMANDS,
+  NPS_GetPersonaMapListReq,
+  NPS_LOBBY_COMMANDS,
+  NPS_LOGIN_COMMANDS
+}

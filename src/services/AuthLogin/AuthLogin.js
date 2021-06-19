@@ -9,10 +9,6 @@ const fs = require('fs')
 const https = require('https')
 const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:AuthLogin' })
 const util = require('util')
-const { IncomingMessage, ServerResponse } = require('http')
-const { Socket } = require('net')
-
-const { Server } = require('https')
 
 const readFilePromise = util.promisify(fs.readFile)
 

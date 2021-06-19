@@ -21,7 +21,6 @@ const crypto = require('crypto')
  * @property {crypty.Cipher} out
  */
 module.exports.EncryptionManager = class EncryptionManager {
-
   /**
    *
    */

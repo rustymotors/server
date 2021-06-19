@@ -5,7 +5,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
 const { MessageNode, NPS_COMMANDS } = require('../../structures')
 const { defaultHandler } = require('./MCOTS/TCPManager')
 const { ConnectionObj } = require('./ConnectionObj')
@@ -25,7 +24,6 @@ const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:C
  * @property {string[]} banList
  */
 class ConnectionMgr {
-
   /**
    * Creates an instance of ConnectionMgr.
    * @param {module:DatabaseManager} databaseManager

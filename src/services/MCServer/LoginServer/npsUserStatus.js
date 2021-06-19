@@ -4,16 +4,14 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
-const { Socket } = require('net')
 
 const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:NPSUserStatus' })
 const crypto = require('crypto')
 const fs = require('fs')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 
-
 /**
- * 
+ *
  * @module NPSUserStatus
  */
 
@@ -30,7 +28,7 @@ function fetchPrivateKeyFromFile (privateKeyPath) {
     if (e instanceof Error) {
       throw new Error(`[npsUserStatus] Error loading private key: ${e.message}`)
     }
-    throw new Error(`[npsUserStatus] Error loading private key, error unknown`)
+    throw new Error('[npsUserStatus] Error loading private key, error unknown')
   }
   return fs.readFileSync(privateKeyPath).toString()
 }
@@ -43,7 +41,7 @@ function fetchPrivateKeyFromFile (privateKeyPath) {
  */
 
 /**
- * 
+ *
  * @class
  * @extends {NPSMsg}
  * @property {string} sessionkey
@@ -51,7 +49,6 @@ function fetchPrivateKeyFromFile (privateKeyPath) {
  * @property {Buffer} buffer
  */
 class NPSUserStatus extends NPSMsg {
-
   /**
    *
    * @param {Buffer} packet
