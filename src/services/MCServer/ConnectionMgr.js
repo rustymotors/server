@@ -267,8 +267,5 @@ class ConnectionMgr {
 module.exports.ConnectionMgr = ConnectionMgr
 
 process.on('unhandledRejection', (reason, p) => {
-  console.log('Unhandled Rejection at:', p, 'reason:', reason)
-  console.trace()
-  // application specific logging, throwing an error, or other logic here
-  process.exit(-1)
+  throw new Error('Unhandled Rejection at:', p, 'reason:', reason)
 })

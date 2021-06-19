@@ -158,8 +158,7 @@ module.exports.DatabaseManager = class DatabaseManager {
       /** @type {ISession_Record} */
       return row
     } catch (e) {
-      logger.error('Unable to fetch session key ', e)
-      process.exit(-1)
+      throw new Error('Unable to fetch session key ', e)
     }
   }
 
