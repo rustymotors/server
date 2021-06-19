@@ -15,5 +15,5 @@ dist
 database.sqlite
 junit.xml
 .dccache
-out/*
+built
 
