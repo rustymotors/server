@@ -4,7 +4,9 @@
         "ecmaVersion": 9
     },
     "env": {
+        "es6": true,
         "jest": true,
-        "node": true
+        "node": true,
+        "shared-node-browser": true
     }
 }

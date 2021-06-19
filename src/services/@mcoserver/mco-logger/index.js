@@ -11,13 +11,15 @@ const winston = require('winston')
  * @module MCO_Logger
  */
 
+const level = process.env.MCO_LOG_LEVEL || 'silly'
+
 /**
  * Provides a shared logging abstraction
   * @type {winston.Logger}
   */
 module.exports = winston.createLogger({
   ...{
-    level: 'silly',
+    level,
     transports: [
       new winston.transports.Console({
         format: winston.format.combine(

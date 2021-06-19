@@ -16,4 +16,5 @@ database.sqlite
 junit.xml
 .dccache
 out/*
+*.db
 
