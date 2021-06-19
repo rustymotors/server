@@ -14,7 +14,8 @@
     "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
     "lint": "eslint --fix \"src/**/*.js\"",
     "lint-test": "npm run lint && nyc mocha",
-    "precommit": "npm run lint-test"
+    "precommit": "npm run lint-test",
+    "postinstall": "mkdir db"
   },
   "author": "Joe Becher <jwbecher@drazisil.com> (drazisil.com)",
   "license": "MPL-2.0",
