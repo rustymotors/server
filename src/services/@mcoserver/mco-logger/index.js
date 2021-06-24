@@ -84,7 +84,10 @@ function getDefaultService() {
  * @returns {string}
  */
 function getLogLevel(options) {
-  return options.level ? options.level : getDefaultLevel()
+  if (options && options.level) {
+    return options.level
+  }
+  return getDefaultLevel()
 }
 
 /**
