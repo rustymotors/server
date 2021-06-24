@@ -31,7 +31,7 @@ const fakeConnectionMgr = new FakeConnectionManagerConstructor(fakeDatabaseManag
 const FakeSocketConstructor = td.constructor(net.Socket)
 const fakeSocket = new FakeSocketConstructor()
 fakeSocket.localPort = '7003'
-fakeSocket.remoteAddress = '3.3.3.3'
+fakeSocket.remoteAddress = '10.1.2.3'
 
 /**
  * Fake connectionObj for testing
