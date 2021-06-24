@@ -73,7 +73,7 @@ class ConnectionMgr {
           ${{
             opCode: rawPacket.data.readInt16BE(0),
             msgName1: npsPacketManager.msgCodetoName(rawPacket.data.readInt16BE(0)),
-            msgName2: this.getNameFromOpCode(rawPacket.data.readInt16BE(0))},
+            msgName2: this.getNameFromOpCode(rawPacket.data.readInt16BE(0)),
             localPort
           }}`, { service: this.serviceName }
         )
