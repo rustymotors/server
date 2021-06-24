@@ -1,3 +1,4 @@
+// @ts-check
 // mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
@@ -6,6 +7,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const { log } = require('../@mcoserver/mco-logger')
+const config = require('../../../config')
 const fs = require('fs')
 const https = require('https')
 const util = require('util')
@@ -19,7 +21,7 @@ const readFilePromise = util.promisify(fs.readFile)
 
 /**
  *
- *
+ * @property {config} config
  * @property {MCServer} mcServer
  * @property {Server} httpServer
  */
@@ -29,34 +31,36 @@ module.exports.AdminServer = class AdminServer {
    * @param {MCServer} mcServer
    */
   constructor(mcServer) {
+    this.config = config
     this.mcServer = mcServer
   }
 
   /**
    * Create the SSL options object
    *
-   * @param {IServerConfig} configuration
+   * @param {config.config} configuration
    * @returns {Promise<ISslOptions>}
    */
   async _sslOptions(configuration) {
-    log(`Reading ${configuration.certFilename}`, { service: 'mcoserver:AdminServer', level: 'debug' })
+    const certSettings = configuration.certificate
+    log(`Reading ${certSettings.certFilename}`, { service: 'mcoserver:AdminServer', level: 'debug' })
 
     let cert
     let key
 
     try {
-      cert = await readFilePromise(configuration.certFilename, { encoding: 'utf-8' })
+      cert = await readFilePromise(certSettings.certFilename, { encoding: 'utf-8' })
     } catch (error) {
       throw new Error(
-        `Error loading ${configuration.certFilename}, server must quit!`
+        `Error loading ${certSettings.certFilename}, server must quit!`
       )
     }
 
     try {
-      key = await readFilePromise(configuration.privateKeyFilename, { encoding: 'utf-8' })
+      key = await readFilePromise(certSettings.privateKeyFilename, { encoding: 'utf-8' })
     } catch (error) {
       throw new Error(
-        `Error loading ${configuration.privateKeyFilename}, server must quit!`
+        `Error loading ${certSettings.privateKeyFilename}, server must quit!`
       )
     }
 
@@ -176,7 +180,7 @@ module.exports.AdminServer = class AdminServer {
 
   /**
    *
-   * @param {IServerConfig} config
+   * @param {module:config.config} config
    * @returns {Promise<void>}
    */
   async start(config) {

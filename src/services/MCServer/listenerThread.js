@@ -16,15 +16,8 @@ const net = require('net')
 
 /**
  * @class
- * @property {IAppSettings} config
  */
 module.exports.ListenerThread = class ListenerThread {
-  /**
-   * @param {IAppSettings} config
-   */
-  constructor(config) {
-    this.config = config
-  }
 
   /**
    * the onData handler

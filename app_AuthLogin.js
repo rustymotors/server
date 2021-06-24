@@ -1,3 +1,4 @@
+// @ts-check
 // mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 
@@ -6,8 +7,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const { WebServer } = require('./src/services/AuthLogin/AuthLogin')
-const { appSettings } = require('./config/app-settings')
 
 // MCOS AuthLogin and Shard
-const AuthLogin = new WebServer(appSettings)
+const AuthLogin = new WebServer()
 AuthLogin.start()

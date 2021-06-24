@@ -6,8 +6,6 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-require('dotenv').config()
-const { appSettings } = require('./config/app-settings')
 const { log } = require('./src/services/@mcoserver/mco-logger')
 const { AuthLogin } = require('./src/services/AuthLogin/AuthLogin')
 const { PatchServer } = require('./src/services/PatchAndShard/patchServer')
@@ -24,7 +22,7 @@ const server = new Server(databaseManager)
 const patchAndShardServer = new PatchServer()
 
 // MCOS AuthLogin and Shard
-const authLogin = new AuthLogin(appSettings)
+const authLogin = new AuthLogin()
 
 Promise.all(
   [server.start(),

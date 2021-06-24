@@ -9,7 +9,7 @@
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
 const http = require('http')
-const { appSettings } = require('../../../config/app-settings')
+const config = require('../../../config')
 const fs = require('fs')
 const { debug, log } = require('../@mcoserver/mco-logger')
 const { ShardEntry } = require('./ShardEntry')
@@ -47,7 +47,7 @@ const CastanetResponse = {
 
 /**
  * @class
- * @property {IAppSettings} config
+ * @property {config.config} config
  * @property {string[]} banList
  * @property {string[]} possibleShards
  * @property {Server} serverPatch
@@ -55,7 +55,7 @@ const CastanetResponse = {
 class PatchServer {
 
   constructor () {
-    this.config = appSettings
+    this.config = config
     this.banList = []
     this.possibleShards = []
 
@@ -109,7 +109,7 @@ class PatchServer {
    * @memberof! PatchServer
    */
   _generateShardList () {
-    const { ipServer } = this.config.serverConfig
+    const { ipServer } = this.config.serverSettings
     const shardClockTower = new ShardEntry(
       'The Clocktower',
       'The Clocktower',
@@ -163,7 +163,7 @@ class PatchServer {
  * @memberof! WebServer
  */
   _handleGetCert () {
-    return fs.readFileSync(this.config.serverConfig.certFilename).toString()
+    return fs.readFileSync(this.config.certificate.certFilename).toString()
   }
 
   /**
@@ -172,7 +172,7 @@ class PatchServer {
    * @memberof! WebServer
    */
   _handleGetKey () {
-    return fs.readFileSync(this.config.serverConfig.publicKeyFilename).toString()
+    return fs.readFileSync(this.config.certificate.publicKeyFilename).toString()
   }
 
   /**
@@ -181,28 +181,29 @@ class PatchServer {
    * @memberof! WebServer
    */
   _handleGetRegistry () {
+    const { ipServer } = this.config.serverSettings
     const dynamicRegistryFile = `Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\EACom\\AuthAuth]
 "AuthLoginBaseService"="AuthLogin"
-"AuthLoginServer"="${this.config.serverConfig.ipServer}"
+"AuthLoginServer"="${ipServer}"
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City]
 "GamePatch"="games/EA_Seattle/MotorCity/MCO"
 "UpdateInfoPatch"="games/EA_Seattle/MotorCity/UpdateInfo"
 "NPSPatch"="games/EA_Seattle/MotorCity/NPS"
-"PatchServerIP"="${this.config.serverConfig.ipServer}"
+"PatchServerIP"="${ipServer}"
 "PatchServerPort"="80"
-"CreateAccount"="${this.config.serverConfig.ipServer}/SubscribeEntry.jsp?prodID=REG-MCO"
+"CreateAccount"="${ipServer}/SubscribeEntry.jsp?prodID=REG-MCO"
 "Language"="English"
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City\\1.0]
-"ShardUrl"="http://${this.config.serverConfig.ipServer}/ShardList/"
-"ShardUrlDev"="http://${this.config.serverConfig.ipServer}/ShardList/"
+"ShardUrl"="http://${ipServer}/ShardList/"
+"ShardUrlDev"="http://${ipServer}/ShardList/"
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City\\AuthAuth]
 "AuthLoginBaseService"="AuthLogin"
-"AuthLoginServer"="${this.config.serverConfig.ipServer}"
+"AuthLoginServer"="${ipServer}"
 
 [HKEY_LOCAL_MACHINE\\Software\\WOW6432Node\\Electronic Arts\\Network Play System]
 "Log"="1"
@@ -285,7 +286,7 @@ class PatchServer {
 
         // Unknown request, log it
         log(
-          `[PATCH] Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}, banning.`, { service: this.serviceName }
+          `[PATCH] Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`, { service: this.serviceName }
         )
         break
     }

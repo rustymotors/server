@@ -8,7 +8,7 @@
 const { debug, log } = require('../@mcoserver/mco-logger')
 const { ListenerThread } = require('./listenerThread')
 const { ConnectionMgr } = require('./ConnectionMgr')
-const { appSettings } = require('../../../config/app-settings')
+const config = require('../../../config')
 
 /**
  * This class starts all the servers
@@ -18,16 +18,15 @@ const { appSettings } = require('../../../config/app-settings')
 
 /**
  * @class
- * @property {IAppSettings} config
+ * @property {config.config} config
  * @property {ConnectionMgr} mgr
  */
 module.exports.MCServer = class MCServer {
   /**
    *
-   * @param {IAppSettings} config
    * @param {DatabaseManager} databaseManager
    */
-  constructor(config, databaseManager) {
+  constructor(databaseManager) {
     this.config = config
     this.mgr = new ConnectionMgr(databaseManager, this.config)
     this.serviceName = 'mcoserver:MCServer'
@@ -39,7 +38,7 @@ module.exports.MCServer = class MCServer {
    */
 
   async startServers() {
-    const listenerThread = new ListenerThread(appSettings)
+    const listenerThread = new ListenerThread()
     log('Starting the listening sockets...', { service: this.serviceName })
     const tcpPortList = [
       6660,
