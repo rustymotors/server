@@ -72,11 +72,10 @@ class ConnectionMgr {
           `Recieved NPS packet',
           ${{
             opCode: rawPacket.data.readInt16BE(0),
-            msgName: `${npsPacketManager.msgCodetoName(
-              rawPacket.data.readInt16BE(0)
-            )} / ${this.getNameFromOpCode(rawPacket.data.readInt16BE(0))}`,
+            msgName1: npsPacketManager.msgCodetoName(rawPacket.data.readInt16BE(0)),
+            msgName2: this.getNameFromOpCode(rawPacket.data.readInt16BE(0))},
             localPort
-            }}`, { service: this.serviceName }
+          }}`, { service: this.serviceName }
         )
         try {
           return await npsPacketManager.processNPSPacket(rawPacket)
