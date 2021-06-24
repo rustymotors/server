@@ -1,3 +1,4 @@
+// @ts-check
 // mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
@@ -7,25 +8,10 @@
 
 const { log } = require('../../@mcoserver/mco-logger')
 
-const struct = require('c-struct')
-
 /**
  * @module LoginMsg
  */
 
-const loginMsgSchema = new struct.Schema({
-  msgNo: struct.type.uint16,
-  customerId: struct.type.uint32,
-  personaId: struct.type.uint32,
-  lotOwnerId: struct.type.uint32,
-  brandedPartId: struct.type.uint32,
-  skinId: struct.type.uint32,
-  personaName: struct.type.string(12),
-  version: struct.type.string()
-})
-
-// register to cache
-struct.register('LoginMsg', loginMsgSchema)
 
 /**
  * @class
@@ -63,8 +49,6 @@ class LoginMsg {
     this.data = buffer
 
     this.deserialize(buffer)
-
-    this.struct = struct.unpackSync('LoginMsg', buffer, { endian: 'b' })
   }
 
   /**
@@ -101,14 +85,6 @@ class LoginMsg {
     this.personaName = buffer.slice(22, 34).toString()
 
     this.version = buffer.slice(34).toString()
-  }
-
-  /**
-   *
-   * @return {Buffer}
-   */
-  serialize () {
-    return struct.packSync('LoginMsg', this.struct, { endian: 'b' })
   }
 
   /**

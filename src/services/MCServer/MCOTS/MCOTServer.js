@@ -8,7 +8,6 @@
 const { log } = require('../../@mcoserver/mco-logger')
 const { MessageNode } = require('./MessageNode')
 const { GenericReplyMsg } = require('../GenericReplyMsg')
-const { LoginMsg } = require('./LoginMsg')
 
 /**
  * Mangages the game database server
@@ -70,15 +69,6 @@ class MCOTServer {
    * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
   async _login (con, node) {
-    /*
-     * Let's turn it into a LoginMsg
-     */
-    const loginMsg = new LoginMsg(node.data)
-
-    // Update the appId
-    loginMsg.appId = con.appId
-
-    loginMsg.dumpPacket()
 
     // Create new response packet
     const pReply = new GenericReplyMsg()
