@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:NPSPersonaMapsMsg' })
+const { debug } = require('../../@mcoserver/mco-logger')
 
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 
@@ -50,7 +50,7 @@ class NPSPersonaMapsMsg extends NPSMsg {
    *
    * @param {module:MessageNode.MESSAGE_DIRECTION} direction
    */
-  constructor (direction) {
+  constructor(direction) {
     super(direction)
 
     /** @type {IPersonaRecord[]} */
@@ -59,6 +59,7 @@ class NPSPersonaMapsMsg extends NPSMsg {
     this.personaSize = 38
     this.msgNo = 0x607
     this.personaCount = 0
+    this.serviceName = 'mcoserver:NPSPersonaMapsMsg'
   }
 
   /**
@@ -66,7 +67,7 @@ class NPSPersonaMapsMsg extends NPSMsg {
    * @param {IPersonaRecord[]} personas
    * @returns {void}
    */
-  loadMaps (personas) {
+  loadMaps(personas) {
     this.personaCount = personas.length
     this.personas = personas
   }
@@ -77,7 +78,7 @@ class NPSPersonaMapsMsg extends NPSMsg {
    * @return {number}
    * @memberof! NPSPersonaMapsMsg
    */
-  deserializeInt8 (buf) {
+  deserializeInt8(buf) {
     return buf.readInt8(0)
   }
 
@@ -87,7 +88,7 @@ class NPSPersonaMapsMsg extends NPSMsg {
    * @return {number}
    * @memberof! NPSPersonaMapsMsg
    */
-  deserializeInt32 (buf) {
+  deserializeInt32(buf) {
     return buf.readInt32BE(0)
   }
 
@@ -97,7 +98,7 @@ class NPSPersonaMapsMsg extends NPSMsg {
    * @return {string}
    * @memberof! NPSPersonaMapsMsg
    */
-  deserializeString (buf) {
+  deserializeString(buf) {
     return buf.toString('utf8')
   }
 
@@ -105,7 +106,7 @@ class NPSPersonaMapsMsg extends NPSMsg {
    *
    * @return {Buffer}
    */
-  serialize () {
+  serialize() {
     let index = 0
     // Create the packet content
     // const packetContent = Buffer.alloc(40);
@@ -159,20 +160,20 @@ class NPSPersonaMapsMsg extends NPSMsg {
    *
    * @returns {void}
    */
-  dumpPacket () {
+  dumpPacket() {
     this.dumpPacketHeader('NPSPersonaMapsMsg')
-    logger.debug(`personaCount:        ${this.personaCount}`)
+    debug(`personaCount:        ${this.personaCount}`, { service: this.serviceName })
     for (const persona of this.personas) {
-      logger.debug(`maxPersonaCount:     ${this.deserializeInt8(persona.maxPersonas)}`)
-      logger.debug(`id:                  ${this.deserializeInt32(persona.id)}`)
-      logger.debug(`shardId:             ${this.deserializeInt32(persona.shardId)}`)
-      logger.debug(`name:                ${this.deserializeString(persona.name)}`)
+      debug(`maxPersonaCount:     ${this.deserializeInt8(persona.maxPersonas)}`, { service: this.serviceName })
+      debug(`id:                  ${this.deserializeInt32(persona.id)}`, { service: this.serviceName })
+      debug(`shardId:             ${this.deserializeInt32(persona.shardId)}`, { service: this.serviceName })
+      debug(`name:                ${this.deserializeString(persona.name)}`, { service: this.serviceName })
     }
-    logger.debug(`Packet as hex:       ${this.getPacketAsString()}`)
+    debug(`Packet as hex:       ${this.getPacketAsString()}`, { service: this.serviceName })
 
     // TODO: Work on this more
 
-    logger.debug('[/NPSPersonaMapsMsg]======================================')
+    debug('[/NPSPersonaMapsMsg]======================================', { service: this.serviceName })
   }
 }
 module.exports.NPSPersonaMapsMsg = NPSPersonaMapsMsg

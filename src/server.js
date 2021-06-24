@@ -8,7 +8,7 @@
 const { appSettings } = require('../config/app-settings')
 const { AdminServer } = require('./services/AdminServer/AdminServer')
 const { MCServer } = require('./services/MCServer')
-const logger = require('./services/@mcoserver/mco-logger').child({ service: 'mcoserver:Server' })
+const { log } = require('./services/@mcoserver/mco-logger')
 
 /**
  * Main game server
@@ -25,13 +25,14 @@ class Server {
   constructor (databaseManager) {
     this.config = appSettings
     this.databaseManager = databaseManager
+    this.serviceName = 'mcoserver:Server'
   }
 
   /**
    * @returns {Promise<void>}
    */
   async start () {
-    logger.info('Starting servers...')
+    log('Starting servers...', { service: 'mcoserver:Server' })
 
     // Start the MC Server
     this.mcServer = new MCServer(appSettings, this.databaseManager)
@@ -40,9 +41,9 @@ class Server {
     // Start the Admin server
     this.adminServer = new AdminServer(this.mcServer)
     await this.adminServer.start(this.config.serverConfig)
-    logger.info('Web Server started')
+    log('Web Server started', { service: 'mcoserver:Server' })
 
-    logger.info('Servers started, ready for connections.')
+    log('Servers started, ready for connections.', { service: 'mcoserver:Server' })
   }
 }
 

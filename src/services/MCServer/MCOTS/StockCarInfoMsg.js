@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:StockCarInfoMsg' })
+const { log } = require('../../@mcoserver/mco-logger')
 
 /**
  * Object for providing information on stock cars
@@ -51,6 +51,7 @@ class StockCarInfoMsg {
     this.moreToCome = 0
     /** @type {module:StockCar} */
     this.StockCarList = []
+    this.serviceName = 'mcoserver:StockCarInfoMsg'
   }
 
   /**
@@ -90,8 +91,8 @@ class StockCarInfoMsg {
    * @returns {void}
    */
   dumpPacket () {
-    logger.debug(
-      {
+    log(
+      `${{
         msgNo: this.msgNo,
         starterCash: this.starterCash,
         dealerId: this.dealerId,
@@ -99,7 +100,7 @@ class StockCarInfoMsg {
         noCars: this.noCars,
         moreToCome: this.moreToCome,
         stockCarList: this.StockCarList.toString()
-      }
+      }}`, { service: this.serviceName, level: 'debug'}
     )
   }
 }

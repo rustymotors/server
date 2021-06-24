@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:GenericReplyMsg' })
+const { log } = require('../@mcoserver/mco-logger')
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
@@ -31,7 +31,7 @@ class GenericReplyMsg {
   /**
    *
    */
-  constructor () {
+  constructor() {
     this.msgNo = 0
     this.toFrom = 0
     this.appId = 0
@@ -46,7 +46,7 @@ class GenericReplyMsg {
    * @param {Buffer} value
    * @returns {void}
    */
-  setData (value) {
+  setData(value) {
     this.data = value
   }
 
@@ -55,7 +55,7 @@ class GenericReplyMsg {
    * @param {Buffer} value
    * @returns {void}
    */
-  setData2 (value) {
+  setData2(value) {
     this.data2 = value
   }
 
@@ -64,7 +64,7 @@ class GenericReplyMsg {
    * @param {Buffer} buffer
    * @returns {void}
    */
-  deserialize (buffer) {
+  deserialize(buffer) {
     try {
       this.msgNo = buffer.readInt16LE(0)
     } catch (error) {
@@ -89,7 +89,7 @@ class GenericReplyMsg {
    *
    * @return {Buffer}
    */
-  serialize () {
+  serialize() {
     const packet = Buffer.alloc(16)
     packet.writeInt16LE(this.msgNo, 0)
     packet.writeInt16LE(this.msgReply, 2)
@@ -104,7 +104,7 @@ class GenericReplyMsg {
    * @param {Buffer} buffer
    * @returns {void}
    */
-  setResult (buffer) {
+  setResult(buffer) {
     this.result = buffer
   }
 
@@ -112,17 +112,16 @@ class GenericReplyMsg {
    * dumpPacket
    * @returns {void}
    */
-  dumpPacket () {
-    logger.info(
-      'GenericReply',
-      {
+  dumpPacket() {
+    log(
+      `GenericReply',
+      ${{
         msgNo: this.msgNo,
         msgReply: this.msgReply,
         result: this.result.toString('hex'),
         data: this.data.toString('hex'),
         tdata2: this.data2.toString('hex')
-      }
-    )
+      }}`, { service: 'mcoserver:GenericReplyMsg' })
   }
 }
 module.exports.GenericReplyMsg = GenericReplyMsg

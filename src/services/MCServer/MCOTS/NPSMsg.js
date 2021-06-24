@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:NPSMsg' })
+const { debug, log } = require('../../@mcoserver/mco-logger')
 
 /**
  * Packet container for NPS messages
@@ -57,6 +57,7 @@ class NPSMsg {
       throw new Error('Directior must be either \'RECEIVED\' or \'SENT\'')
     }
     this.direction = direction
+    this.serviceName = 'mcoserver:NPSMsg'
   }
 
   /**
@@ -131,14 +132,14 @@ class NPSMsg {
    * @returns {void}
    */
   dumpPacketHeader (messageType) {
-    logger.info(
-      `NPSMsg/${messageType}`,
-      {
+    log(
+      `NPSMsg/${messageType},
+      ${{
         direction: this.direction,
         msgNo: this.msgNo.toString(16),
         msgVersion: this.msgVersion,
         msgLength: this.msgLength
-      }
+      }}`, { service: this.serviceName}
     )
   }
 
@@ -148,16 +149,16 @@ class NPSMsg {
    * @memberof NPSMsg
    */
   dumpPacket () {
-    logger.debug(
-      'NPSMsg/NPSMsg',
-      {
+    debug(
+      `NPSMsg/NPSMsg,
+      ${{
         direction: this.direction,
         msgNo: this.msgNo.toString(16),
         msgVersion: this.msgVersion,
         msgLength: this.msgLength,
         content: this.content.toString('hex'),
         serialized: this.serialize().toString('hex')
-      }
+      }}`, { service: this.serviceName }
     )
   }
 

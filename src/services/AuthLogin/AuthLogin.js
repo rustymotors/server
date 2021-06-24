@@ -7,7 +7,7 @@
 
 const fs = require('fs')
 const https = require('https')
-const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:AuthLogin' })
+const { debug,log } = require('../@mcoserver/mco-logger')
 const util = require('util')
 
 const readFilePromise = util.promisify(fs.readFile)
@@ -29,6 +29,7 @@ class AuthLogin {
    */
   constructor (config) {
     this.config = config
+    this.serviceName = 'mcoserver:AuthLogin'
   }
 
   /**
@@ -47,7 +48,7 @@ class AuthLogin {
    * @memberof! WebServer
    */
   async _sslOptions (configuration) {
-    logger.debug(`Reading ${configuration.certFilename}`)
+    debug(`Reading ${configuration.certFilename}`, { service: this.serviceName })
 
     let cert
     let key
@@ -94,8 +95,8 @@ class AuthLogin {
    */
   // file deepcode ignore NoRateLimitingForExpensiveWebOperation: Not using express, unsure how to handle rate limiting on raw http
   _httpsHandler (request, response) {
-    logger.info(
-      `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
+    log(
+      `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`, { service: this.serviceName }
     )
     if (request.url && request.url.startsWith('/AuthLogin')) {
       response.setHeader('Content-Type', 'text/plain')
@@ -133,18 +134,18 @@ class AuthLogin {
           }
         )
         .listen({ port: 443, host: '0.0.0.0' }, () => {
-          logger.debug('port 443 listening')
+          debug('port 443 listening', { service: this.serviceName })
         })
     } catch (error) {
       if (error.code === 'EACCES') {
-        logger.error('Unable to start server on port 443! Have you granted access to the node runtime?')
-        process.exit(-1)
+        process.exitCode = -1
+        throw new Error('Unable to start server on port 443! Have you granted access to the node runtime?')
       }
       throw error
     }
     this.httpsServer.on('connection', this._socketEventHandler)
     this.httpsServer.on('tlsClientError', error => {
-      logger.error(`[AuthLogin] SSL Socket Client Error: ${error.message}`)
+      log(`[AuthLogin] SSL Socket Client Error: ${error.message}`, { service: this.serviceName, level: 'warn' })
     })
     return this.httpsServer
   }

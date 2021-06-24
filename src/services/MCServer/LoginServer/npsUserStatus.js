@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:NPSUserStatus' })
+const { debug } = require('../../@mcoserver/mco-logger')
 const crypto = require('crypto')
 const fs = require('fs')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
@@ -114,12 +114,12 @@ class NPSUserStatus extends NPSMsg {
    */
   dumpPacket () {
     this.dumpPacketHeader('NPSUserStatus')
-    logger.debug(
-      'NPSUserStatus',
-      {
+    debug(
+      `NPSUserStatus',
+      ${{
         contextId: this.contextId,
         sessionkey: this.sessionkey
-      }
+      }}`, { service: 'mcoserver:NPSUserStatus' }
     )
   }
 }

@@ -5,7 +5,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../services/@mcoserver/mco-logger').child({ service: 'mcoserver:DatabaseMgr' })
 const sqlite3 = require('sqlite3').verbose();
 
 /**
@@ -117,6 +116,7 @@ module.exports.DatabaseManager = class DatabaseManager {
           "raceCashFactor" real NOT NULL
         );`);
     });
+    this.serviceName = 'mcoserver:DatabaseMgr'
   }
 
   db() {
@@ -137,8 +137,7 @@ module.exports.DatabaseManager = class DatabaseManager {
       /** @type {SessionRecord} */
       return row
     } catch (e) {
-      logger.warn('Unable to fetch session key ', e)
-      throw new Error(e)
+      throw new Error(`Unable to fetch session key: ${e}`)
     }
   }
 
@@ -158,8 +157,8 @@ module.exports.DatabaseManager = class DatabaseManager {
       /** @type {ISession_Record} */
       return row
     } catch (e) {
-      logger.error('Unable to fetch session key ', e)
-      process.exit(-1)
+      process.exitCode = -1
+      throw new Error(`Unable to fetch session key ', ${e}`)
     }
   }
 

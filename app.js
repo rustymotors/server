@@ -8,7 +8,7 @@
 
 require('dotenv').config()
 const { appSettings } = require('./config/app-settings')
-const logger = require('./src/services/@mcoserver/mco-logger')
+const { log } = require('./src/services/@mcoserver/mco-logger')
 const { AuthLogin } = require('./src/services/AuthLogin/AuthLogin')
 const { PatchServer } = require('./src/services/PatchAndShard/patchServer')
 const { Server } = require('./src/server')
@@ -21,7 +21,7 @@ const databaseManager = new DatabaseManager()
 const server = new Server(databaseManager)
 
 // MCOS PatchAndShard
-const patchAndShardServer = new PatchServer(logger.child({ service: 'mcoserver:PatchServer' }))
+const patchAndShardServer = new PatchServer()
 
 // MCOS AuthLogin and Shard
 const authLogin = new AuthLogin(appSettings)
@@ -32,12 +32,12 @@ Promise.all(
     authLogin.start()]
 ).then(
   () => {
-    logger.info('All servers started successfully')
+    log('All servers started successfully')
   }
 )
   .catch(
     (err) => {
-      logger.error(`There was an error starting the server: ${err}`)
-      process.exit(-1)
+      process.exitCode = -1
+      throw new Error(`There was an error starting the server: ${err}`)
     }
   )

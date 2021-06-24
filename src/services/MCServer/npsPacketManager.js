@@ -8,7 +8,7 @@
 const { LobbyServer } = require('./LobbyServer/LobbyServer')
 const { LoginServer } = require('./LoginServer/LoginServer')
 const { PersonaServer } = require('./PersonaServer/PersonaServer')
-const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:NPSPacketManager' })
+const { log } = require('../@mcoserver/mco-logger')
 
 /**
  * @module npsPacketManager
@@ -59,6 +59,7 @@ class NPSPacketManager {
     this.loginServer = new LoginServer(this.database)
     this.personaServer = new PersonaServer()
     this.lobbyServer = new LobbyServer()
+    this.serviceName = 'mcoserver:NPSPacketManager'
   }
 
   /**
@@ -97,9 +98,9 @@ class NPSPacketManager {
    */
   async processNPSPacket (rawPacket) {
     const msgId = rawPacket.data.readInt16BE(0)
-    logger.info(
-      'Handling message',
-      { msgName: this.msgCodetoName(msgId), msgId }
+    log(
+      `Handling message',
+      ${{ msgName: this.msgCodetoName(msgId), msgId }}`, { service: this.serviceName}
     )
 
     const { localPort } = rawPacket
@@ -112,14 +113,14 @@ class NPSPacketManager {
       case 7003:
         return this.lobbyServer.dataHandler(rawPacket)
       default:
-        logger.error(
-          '[npsPacketManager] Recieved a packet',
-          {
+        process.exitCode = -1
+        throw new Error(
+          `[npsPacketManager] Recieved a packet',
+          ${{
             msgId,
             localPort
-          }
+          }}`
         )
-        return rawPacket.connection
     }
   }
 }

@@ -10,7 +10,7 @@ const { defaultHandler } = require('./MCOTS/TCPManager')
 const { ConnectionObj } = require('./ConnectionObj')
 const { NPSPacketManager } = require('./npsPacketManager')
 
-const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:ConnectionMgr' })
+const { debug, log } = require('../@mcoserver/mco-logger')
 
 /**
  * @module ConnectionMgr
@@ -41,6 +41,7 @@ class ConnectionMgr {
      * @type {string[]}
      */
     this.banList = []
+    this.serviceName = 'mcoserver:ConnectionMgr'
   }
 
   /**
@@ -54,28 +55,28 @@ class ConnectionMgr {
     const { remoteAddress, localPort, data } = rawPacket
 
     // Log the packet as debug
-    logger.debug(
-      'logging raw packet',
-      {
+    debug(
+      `logging raw packet',
+      ${{
         remoteAddress,
         localPort,
         data: data.toString('hex')
-      }
+      }}`, { service: this.serviceName }
     )
 
     switch (localPort) {
       case 8226:
       case 8228:
       case 7003: {
-        logger.debug(
-          'Recieved NPS packet',
-          {
+        debug(
+          `Recieved NPS packet',
+          ${{
             opCode: rawPacket.data.readInt16BE(0),
             msgName: `${npsPacketManager.msgCodetoName(
               rawPacket.data.readInt16BE(0)
             )} / ${this.getNameFromOpCode(rawPacket.data.readInt16BE(0))}`,
             localPort
-          }
+            }}`, { service: this.serviceName }
         )
         try {
           return await npsPacketManager.processNPSPacket(rawPacket)
@@ -84,8 +85,9 @@ class ConnectionMgr {
         }
       }
       case 43300: {
-        logger.debug(
+        debug(
           'Recieved MCOTS packet'
+          , { service: this.serviceName }
           // {
           //   opCode: rawPacket.data.readInt16BE(0),
           //   msgName: `${npsPacketManager.msgCodetoName(
@@ -95,12 +97,12 @@ class ConnectionMgr {
           // }
         )
         const newNode = MessageNode.fromBuffer(rawPacket.data)
-        logger.debug(newNode)
+        debug(newNode, { service: this.serviceName })
 
         return defaultHandler(rawPacket)
       }
       default:
-        logger.debug(rawPacket)
+        debug(rawPacket, { service: this.serviceName })
         throw new Error(`We received a packet on port ${localPort}. We don't what to do yet, going to throw so the message isn't lost.`)
     }
   }
@@ -199,7 +201,8 @@ class ConnectionMgr {
       this.connections.splice(index, 1)
       this.connections.push(newConnection)
     } catch (error) {
-      logger.error(
+      process.exitCode = -1
+      throw new Error(
         'Error updating connection',
         { error, connections: this.connections }
       )
@@ -225,8 +228,8 @@ class ConnectionMgr {
     }
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort)
     if (con !== undefined) {
-      logger.info(
-        `[connectionMgr] I have seen connections from ${remoteAddress} on ${localPort} before`
+      log(
+        `[connectionMgr] I have seen connections from ${remoteAddress} on ${localPort} before`, { service: this.serviceName }
       )
       con.sock = socket
       return con
@@ -237,8 +240,8 @@ class ConnectionMgr {
       socket,
       this
     )
-    logger.info(
-      `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`
+    log(
+      `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`, { service: this.serviceName }
     )
     this.connections.push(newConnection)
     return newConnection
@@ -265,10 +268,3 @@ class ConnectionMgr {
   }
 }
 module.exports.ConnectionMgr = ConnectionMgr
-
-process.on('unhandledRejection', (reason, p) => {
-  console.log('Unhandled Rejection at:', p, 'reason:', reason)
-  console.trace()
-  // application specific logging, throwing an error, or other logic here
-  process.exit(-1)
-})

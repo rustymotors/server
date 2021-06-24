@@ -1,3 +1,4 @@
+// @ts-check
 // mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
@@ -9,7 +10,8 @@ const { NPSMsg } = require('../MCOTS/NPSMsg')
 const { PersonaServer } = require('../PersonaServer/PersonaServer')
 const { NPSUserInfo } = require('./npsUserInfo')
 const { DatabaseManager } = require('../../../shared/DatabaseManager')
-const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:LobbyServer' })
+const { debug}  = require('../../@mcoserver/mco-logger')
+  
 
 /**
  * Manages the game connection to the lobby and racing rooms
@@ -49,7 +51,7 @@ function decryptCmd (con, cypherCmd) {
   const s = con
   const decryptedCommand = s.decipherBufferDES(cypherCmd)
   s.decryptedCmd = decryptedCommand
-  logger.debug(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString('hex')}`)
+  debug(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString('hex')}`, { service: 'mcoserver:LobbyServer' })
   return s
 }
 
@@ -93,7 +95,7 @@ async function sendCommand (con, data) {
   packetContent.writeUInt16BE(0x0101, 369)
   packetContent.writeUInt16BE(0x022c, 371)
 
-  logger.debug('Sending a dummy response of 0x229 - NPS_MINI_USER_LIST')
+  debug('Sending a dummy response of 0x229 - NPS_MINI_USER_LIST', { service: 'mcoserver:LobbyServer' })
 
   // Build the packet
   const packetResult = new NPSMsg('SENT')
@@ -135,7 +137,7 @@ class LobbyServer {
    */
   async dataHandler (rawPacket) {
     const { localPort, remoteAddress } = rawPacket
-    logger.debug(`Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`)
+    debug(`Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`, { service: 'mcoserver:LobbyServer' })
     const { connection, data } = rawPacket
     let updatedConnection = connection
     const requestCode = data.readUInt16BE(0).toString(16)
@@ -147,23 +149,23 @@ class LobbyServer {
           connection,
           data
         )
-        logger.debug(
-          `Connect responsePacket's data prior to sending: ${JSON.stringify({ data: responsePacket.getPacketAsString() })}`
+        debug(
+          `Connect responsePacket's data prior to sending: ${JSON.stringify({ data: responsePacket.getPacketAsString() })}`, { service: 'mcoserver:LobbyServer' }
         )
         // TODO: Investigate why this crashes retail
         try {
           npsSocketWriteIfOpen(connection, responsePacket.serialize())
         } catch (error) {
-          logger.error(`Unable to send Connect packet: ${error}`)
-          process.exit(-1)
+          process.exitCode = -1
+          throw new Error(`Unable to send Connect packet: ${error}`)
         }
         break
       }
       // npsHeartbeat
       case '217': {
         const responsePacket = this._npsHeartbeat()
-        logger.debug(
-          `Heartbeat responsePacket's data prior to sending: ${JSON.stringify({ data: responsePacket.getPacketAsString() })}`
+        debug(
+          `Heartbeat responsePacket's data prior to sending: ${JSON.stringify({ data: responsePacket.getPacketAsString() })}`, { service: 'mcoserver:LobbyServer' }
         )
         npsSocketWriteIfOpen(connection, responsePacket.serialize())
         break
@@ -182,8 +184,8 @@ class LobbyServer {
           )
         }
 
-        logger.debug(
-          `encrypedCommand's data prior to sending: ${JSON.stringify({ data: encryptedCmd.toString('hex') })}`
+        debug(
+          `encrypedCommand's data prior to sending: ${JSON.stringify({ data: encryptedCmd.toString('hex') })}`, { service: 'mcoserver:LobbyServer' }
         )
         npsSocketWriteIfOpen(connection, encryptedCmd)
         break
@@ -216,8 +218,8 @@ class LobbyServer {
    */
   async _npsRequestGameConnectServer (connection, rawData) {
     const { sock } = connection
-    logger.debug(
-      `_npsRequestGameConnectServer: ${JSON.stringify({ remoteAddress: sock.remoteAddress, data: rawData.toString('hex') })}`
+    debug(
+      `_npsRequestGameConnectServer: ${JSON.stringify({ remoteAddress: sock.remoteAddress, data: rawData.toString('hex') })}`, { service: 'mcoserver:LobbyServer' }
     )
 
     // Return a _NPS_UserInfo structure

@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:AdminServer' })
+const { log } = require('../@mcoserver/mco-logger')
 const fs = require('fs')
 const https = require('https')
 const util = require('util')
@@ -28,7 +28,7 @@ module.exports.AdminServer = class AdminServer {
    * @class
    * @param {MCServer} mcServer
    */
-  constructor (mcServer) {
+  constructor(mcServer) {
     this.mcServer = mcServer
   }
 
@@ -38,8 +38,8 @@ module.exports.AdminServer = class AdminServer {
    * @param {IServerConfig} configuration
    * @returns {Promise<ISslOptions>}
    */
-  async _sslOptions (configuration) {
-    logger.debug(`Reading ${configuration.certFilename}`)
+  async _sslOptions(configuration) {
+    log(`Reading ${configuration.certFilename}`, { service: 'mcoserver:AdminServer', level: 'debug' })
 
     let cert
     let key
@@ -72,7 +72,7 @@ module.exports.AdminServer = class AdminServer {
    *
    * @return {string}
    */
-  _handleGetBans () {
+  _handleGetBans() {
     const banlist = {
       mcServer: this.mcServer.mgr.getBans()
     }
@@ -83,7 +83,7 @@ module.exports.AdminServer = class AdminServer {
    *
    * @return {string}
    */
-  _handleGetConnections () {
+  _handleGetConnections() {
     const connections = this.mcServer.mgr.dumpConnections()
     let responseText = ''
     connections.forEach((connection, index) => {
@@ -102,7 +102,7 @@ module.exports.AdminServer = class AdminServer {
    *
    * @return {string}
    */
-  _handleResetAllQueueState () {
+  _handleResetAllQueueState() {
     this.mcServer.mgr.resetAllQueueState()
     const connections = this.mcServer.mgr.dumpConnections()
     let responseText = 'Queue state reset for all connections\n\n'
@@ -124,16 +124,17 @@ module.exports.AdminServer = class AdminServer {
    * @param {ServerResponse} response
    * @return {void}
    */
-  _httpsHandler (request, response) {
-    logger.info(
-      `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
+  _httpsHandler(request, response) {
+    log(
+      `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`, { service: 'mcoserver:AdminServer' }
     )
-    logger.info(
-      'Requested recieved',
-      {
+    log(
+      `Requested recieved,
+      ${{
         url: request.url,
         remoteAddress: request.socket.remoteAddress
       }
+      }`, { service: 'mcoserver:AdminServer' }
     )
     switch (request.url) {
       case '/admin/connections':
@@ -167,7 +168,7 @@ module.exports.AdminServer = class AdminServer {
    * @param {Socket} socket
    * @returns {void}
    */
-  _socketEventHandler (socket) {
+  _socketEventHandler(socket) {
     socket.on('error', error => {
       throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`)
     })
@@ -178,7 +179,7 @@ module.exports.AdminServer = class AdminServer {
    * @param {IServerConfig} config
    * @returns {Promise<void>}
    */
-  async start (config) {
+  async start(config) {
     try {
       const sslOptions = await this._sslOptions(config)
 
@@ -193,7 +194,7 @@ module.exports.AdminServer = class AdminServer {
       throw new Error(`${err.message}, ${err.stack}`)
     }
     this.httpsServer.listen({ port: 88, host: '0.0.0.0' }, () => {
-      logger.debug('port 88 listening')
+      log('port 88 listening', { service: 'mcoserver:AdminServer', level: 'debug' })
     })
     this.httpsServer.on('connection', this._socketEventHandler)
   }

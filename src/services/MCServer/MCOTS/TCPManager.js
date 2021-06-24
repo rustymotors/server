@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const { MessageNode } = require('./MessageNode')
-const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:MCOTSServer' })
+const { log } = require('../../@mcoserver/mco-logger')
 const { MCOTServer } = require('./MCOTServer')
 const { ClientConnectMsg } = require('../ClientConnectMsg')
 const { GenericReplyMsg } = require('../GenericReplyMsg')
@@ -29,14 +29,14 @@ const databaseManager = new DatabaseManager()
  * @param {MessageNode} node
  * @returns {Promise<{conn: ConnectionObj, packetToWrite: MessageNode}>}
  */
-async function compressIfNeeded (conn, node) {
+async function compressIfNeeded(conn, node) {
   const packetToWrite = node
 
   // Check if compression is needed
   if (node.getLength() < 80) {
-    logger.debug('Too small, should not compress')
+    log('Too small, should not compress', { service: 'mcoserver:MCOTSServer', level: 'debug' })
   } else {
-    logger.debug('This packet should be compressed')
+    log('This packet should be compressed', { service: 'mcoserver:MCOTSServer', level: 'debug' })
     /* TODO: Write compression.
      *
      * At this time we will still send the packet, to not hang connection
@@ -53,12 +53,12 @@ module.exports.compressIfNeeded = compressIfNeeded
  * @param {MessageNode} node
  * @returns {Promise<{conn: ConnectionObj, packetToWrite: MessageNode}>}
  */
-async function encryptIfNeeded (conn, node) {
+async function encryptIfNeeded(conn, node) {
   let packetToWrite = node
 
   // Check if encryption is needed
   if (node.flags - 8 >= 0) {
-    logger.debug('encryption flag is set')
+    log('encryption flag is set', { service: 'mcoserver:MCOTSServer', level: 'debug' })
 
     if (conn.enc) {
       node.updateBuffer(conn.enc.encrypt(node.data))
@@ -66,7 +66,7 @@ async function encryptIfNeeded (conn, node) {
       throw new Error('encryption out on connection is null')
     }
     packetToWrite = node
-    logger.debug(`encrypted packet: ${packetToWrite.serialize().toString('hex')}`)
+    log(`encrypted packet: ${packetToWrite.serialize().toString('hex')}`, { service: 'mcoserver:MCOTSServer', level: 'debug' })
   }
 
   return { conn, packetToWrite }
@@ -78,7 +78,7 @@ async function encryptIfNeeded (conn, node) {
  * @param {MessageNode[]} nodes
  * @returns {Promise<ConnectionObj>}
  */
-async function socketWriteIfOpen (conn, nodes) {
+async function socketWriteIfOpen(conn, nodes) {
   const updatedConnection = conn
   nodes.forEach(async node => {
     const { packetToWrite: compressedPacket } = await compressIfNeeded(
@@ -87,19 +87,18 @@ async function socketWriteIfOpen (conn, nodes) {
     )
     const { packetToWrite } = await encryptIfNeeded(conn, compressedPacket)
     // Log that we are trying to write
-    logger.debug(
-      ` Atempting to write seq: ${packetToWrite.seq} to conn: ${updatedConnection.id}`
+    log(
+      ` Atempting to write seq: ${packetToWrite.seq} to conn: ${updatedConnection.id}`, { service: 'mcoserver:MCOTSServer', level: 'debug' }
     )
 
     // Log the buffer we are writing
-    logger.debug(`Writting buffer: ${packetToWrite.serialize().toString('hex')}`)
+    log(`Writting buffer: ${packetToWrite.serialize().toString('hex')}`, { service: 'mcoserver:MCOTSServer', level: 'debug' })
     if (conn.sock.writable) {
       // Write the packet to socket
       conn.sock.write(packetToWrite.serialize())
     } else {
       throw new Error(
-        `Error writing ${packetToWrite.serialize()} to ${
-          conn.sock.remoteAddress
+        `Error writing ${packetToWrite.serialize()} to ${conn.sock.remoteAddress
         } , ${conn.sock.localPort.toString()}`
       )
     }
@@ -114,7 +113,7 @@ module.exports.socketWriteIfOpen = socketWriteIfOpen
  * @param {MessageNode} node
  * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
  */
-async function GetStockCarInfo (con, node) {
+async function GetStockCarInfo(con, node) {
   const getStockCarInfoMsg = new GenericRequestMsg()
   getStockCarInfoMsg.deserialize(node.data)
   getStockCarInfoMsg.dumpPacket()
@@ -148,18 +147,18 @@ module.exports.GetStockCarInfo = GetStockCarInfo
  * @param {MessageNode} node
  * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
  */
-async function ClientConnect (con, node) {
+async function ClientConnect(con, node) {
   /**
    * Let's turn it into a ClientConnectMsg
    */
   // Not currently using this
   const newMsg = new ClientConnectMsg(node.data)
 
-  logger.debug(`[TCPManager] Looking up the session key for ${newMsg.customerId}...`)
+  log(`[TCPManager] Looking up the session key for ${newMsg.customerId}...`, { service: 'mcoserver:MCOTSServer', level: 'debug' })
   const res = await databaseManager.fetchSessionKeyByCustomerId(
     newMsg.customerId
   )
-  logger.debug('[TCPManager] Session Key located!')
+  log('[TCPManager] Session Key located!', { service: 'mcoserver:MCOTSServer', level: 'debug' })
 
   const connectionWithKey = con
 
@@ -173,8 +172,8 @@ async function ClientConnect (con, node) {
   connectionWithKey.appId = newMsg.getAppId()
 
   // Log the session key
-  logger.debug(
-    `cust: ${customerId} ID: ${personaId} Name: ${personaName}`
+  log(
+    `cust: ${customerId} ID: ${personaId} Name: ${personaName}`, { service: 'mcoserver:MCOTSServer', level: 'debug' }
   )
 
   // Create new response packet
@@ -195,7 +194,7 @@ async function ClientConnect (con, node) {
  * @param {ConnectionObj} conn
  * @returns {Promise<ConnectionObj>}
  */
-async function ProcessInput (node, conn) {
+async function ProcessInput(node, conn) {
   const currentMsgNo = node.msgNo
   const currentMsgString = mcotServer._MSG_STRING(currentMsgNo)
 
@@ -285,8 +284,8 @@ async function ProcessInput (node, conn) {
     }
   } else if (currentMsgString === 'MC_GET_LOBBIES') {
     const result = await mcotServer._getLobbies(conn, node)
-    logger.debug('Dumping Lobbies response packet...')
-    logger.debug(result.nodes)
+    log('Dumping Lobbies response packet...', { service: 'mcoserver:MCOTSServer', level: 'debug' })
+    log(result.nodes, { service: 'mcoserver:MCOTSServer', level: 'debug' })
     const responsePackets = result.nodes
     try {
       // write the socket
@@ -322,10 +321,10 @@ async function ProcessInput (node, conn) {
  * @param {ConnectionObj} con
  * @returns {Promise<ConnectionObj>}
  */
-async function MessageReceived (msg, con) {
+async function MessageReceived(msg, con) {
   const newConnection = con
   if (!newConnection.useEncryption && msg.flags && 0x08) {
-    logger.debug('Turning on encryption')
+    log('Turning on encryption', { service: 'mcoserver:MCOTSServer', level: 'debug' })
     newConnection.useEncryption = true
   }
 
@@ -343,20 +342,20 @@ async function MessageReceived (msg, con) {
          * Attempt to decrypt message
          */
         const encryptedBuffer = Buffer.from(msg.data)
-        logger.debug(
-          `Full packet before decrypting: ${encryptedBuffer.toString('hex')}`
+        log(
+          `Full packet before decrypting: ${encryptedBuffer.toString('hex')}`, { service: 'mcoserver:MCOTSServer', level: 'debug' }
         )
 
-        logger.debug(
-          `Message buffer before decrypting: ${encryptedBuffer.toString('hex')}`
+        log(
+          `Message buffer before decrypting: ${encryptedBuffer.toString('hex')}`, { service: 'mcoserver:MCOTSServer', level: 'debug' }
         )
         if (!newConnection.enc) {
           throw new Error('ARC4 decrypter is null')
         }
-        logger.debug(`Using encryption id: ${newConnection.enc.getId()}`)
+        log(`Using encryption id: ${newConnection.enc.getId()}`, { service: 'mcoserver:MCOTSServer', level: 'debug' })
         const deciphered = newConnection.enc.decrypt(encryptedBuffer)
-        logger.debug(
-          `Message buffer after decrypting: ${deciphered.toString('hex')}`
+        log(
+          `Message buffer after decrypting: ${deciphered.toString('hex')}`, { service: 'mcoserver:MCOTSServer', level: 'debug' }
         )
 
         if (deciphered.readUInt16LE(0) <= 0) {
@@ -387,19 +386,19 @@ async function MessageReceived (msg, con) {
  * @param {IRawPacket} rawPacket
  * @return {Promise<ConnectionObj>}
  */
-async function defaultHandler (rawPacket) {
+async function defaultHandler(rawPacket) {
   const { connection, remoteAddress, localPort, data } = rawPacket
   const messageNode = new MessageNode('RECEIVED')
   messageNode.deserialize(data)
 
-  logger.info(
-    'Received TCP packet',
-    {
+  log(
+    `Received TCP packet',
+    ${{
       localPort,
       remoteAddress,
       direction: messageNode.direction,
       data: rawPacket.data.toString('hex')
-    }
+    }}`, { service: 'mcoserver:MCOTSServer' }
   )
   messageNode.dumpPacket()
 
