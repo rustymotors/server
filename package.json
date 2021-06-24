@@ -16,7 +16,7 @@
     "precommit": "npm run lint-test",
     "postinstall": "mkdir db"
   },
-  "author": "Joe Becher <jwbecher@drazisil.com> (drazisil.com)",
+  "author": "Drazi Crendraven <drazisil@hey.com>",
   "license": "MPL-2.0",
   "private": true,
   "repository": {
