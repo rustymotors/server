@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:MessageNode' })
+const { log } = require('../../@mcoserver/mco-logger')
 
 /**
  * Packet structure for communications with the game database
@@ -33,7 +33,7 @@ class MessageNode {
    *
    * @param {MESSAGE_DIRECTION} direction
    */
-  constructor (direction) {
+  constructor(direction) {
     if (direction !== 'RECEIVED' && direction !== 'SENT') {
       throw new Error('Direction must be either \'RECEIVED\' or \'SENT\'')
     }
@@ -54,7 +54,7 @@ class MessageNode {
    * @param {Buffer} packet
    * @returns {void}
    */
-  deserialize (packet) {
+  deserialize(packet) {
     try {
       this.dataLength = packet.readInt16LE(0)
       this.mcoSig = packet.slice(2, 6).toString()
@@ -87,7 +87,7 @@ class MessageNode {
    *
    * @return {Buffer}
    */
-  serialize () {
+  serialize() {
     const packet = Buffer.alloc(this.dataLength + 2)
     packet.writeInt16LE(this.dataLength, 0)
     packet.write(this.mcoSig, 2)
@@ -102,7 +102,7 @@ class MessageNode {
    * @param {number} appId
    * @returns {void}
    */
-  setAppId (appId) {
+  setAppId(appId) {
     this.appId = appId
   }
 
@@ -111,7 +111,7 @@ class MessageNode {
    * @param {number} newMsgNo
    * @returns {void}
    */
-  setMsgNo (newMsgNo) {
+  setMsgNo(newMsgNo) {
     this.msgNo = newMsgNo
     this.data.writeInt16LE(this.msgNo, 0)
   }
@@ -121,7 +121,7 @@ class MessageNode {
    * @param {number} newSeq
    * @returns {void}
    */
-  setSeq (newSeq) {
+  setSeq(newSeq) {
     this.seq = newSeq
   }
 
@@ -130,7 +130,7 @@ class MessageNode {
    * @param {Buffer} packet
    * @returns {void}
    */
-  setMsgHeader (packet) {
+  setMsgHeader(packet) {
     const header = Buffer.alloc(6)
     packet.copy(header, 0, 0, 6)
   }
@@ -140,7 +140,7 @@ class MessageNode {
    * @param {Buffer} buffer
    * @returns {void}
    */
-  updateBuffer (buffer) {
+  updateBuffer(buffer) {
     this.data = Buffer.from(buffer)
     this.dataLength = 10 + buffer.length
     this.msgNo = this.data.readInt16LE(0)
@@ -150,7 +150,7 @@ class MessageNode {
    *
    * @return {boolean}
    */
-  isMCOTS () {
+  isMCOTS() {
     return this.mcoSig === 'TOMC'
   }
 
@@ -158,25 +158,24 @@ class MessageNode {
    *
    * @returns {void}
    */
-  dumpPacket () {
+  dumpPacket() {
     let packetContentsArray = this.serialize()
       .toString('hex')
       .match(/../g)
     if (packetContentsArray == null) {
       packetContentsArray = []
     }
-    logger.debug('mcoserver:MessageNode')(
-      `MessageNode: ${JSON.stringify({
-        dataLength: this.dataLength,
-        isMCOTS: this.isMCOTS(),
-        msgNo: this.msgNo,
-        direction: this.direction,
-        seq: this.seq,
-        flags: this.flags,
-        toFrom: this.toFrom,
-        appId: this.appId,
-        packetContents: packetContentsArray.join('') || ''
-      })}`
+    log(`MessageNode: ${JSON.stringify({
+      dataLength: this.dataLength,
+      isMCOTS: this.isMCOTS(),
+      msgNo: this.msgNo,
+      direction: this.direction,
+      seq: this.seq,
+      flags: this.flags,
+      toFrom: this.toFrom,
+      appId: this.appId,
+      packetContents: packetContentsArray.join('') || ''
+    })}`, { service: 'mcoserver:MessageNode', level: 'debug' }
     )
   }
 
@@ -184,7 +183,7 @@ class MessageNode {
    *
    * @return {number}
    */
-  getLength () {
+  getLength() {
     return this.dataLength
   }
 
@@ -193,7 +192,7 @@ class MessageNode {
    * @param {Buffer} packet
    * @returns {void}
    */
-  BaseMsgHeader (packet) {
+  BaseMsgHeader(packet) {
     // WORD msgNo;
     this.msgNo = packet.readInt16LE(0)
   }

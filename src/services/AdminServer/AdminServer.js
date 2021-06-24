@@ -1,3 +1,4 @@
+// @ts-check
 // mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
@@ -5,7 +6,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:AdminServer' })
+const { log } = require('../@mcoserver/mco-logger')
+const config = require('../../../config')
 const fs = require('fs')
 const https = require('https')
 const util = require('util')
@@ -19,7 +21,7 @@ const readFilePromise = util.promisify(fs.readFile)
 
 /**
  *
- *
+ * @property {config} config
  * @property {MCServer} mcServer
  * @property {Server} httpServer
  */
@@ -28,35 +30,37 @@ module.exports.AdminServer = class AdminServer {
    * @class
    * @param {MCServer} mcServer
    */
-  constructor (mcServer) {
+  constructor(mcServer) {
+    this.config = config
     this.mcServer = mcServer
   }
 
   /**
    * Create the SSL options object
    *
-   * @param {IServerConfig} configuration
+   * @param {config.config} configuration
    * @returns {Promise<ISslOptions>}
    */
-  async _sslOptions (configuration) {
-    logger.debug(`Reading ${configuration.certFilename}`)
+  async _sslOptions(configuration) {
+    const certSettings = configuration.certificate
+    log(`Reading ${certSettings.certFilename}`, { service: 'mcoserver:AdminServer', level: 'debug' })
 
     let cert
     let key
 
     try {
-      cert = await readFilePromise(configuration.certFilename, { encoding: 'utf-8' })
+      cert = await readFilePromise(certSettings.certFilename, { encoding: 'utf-8' })
     } catch (error) {
       throw new Error(
-        `Error loading ${configuration.certFilename}, server must quit!`
+        `Error loading ${certSettings.certFilename}, server must quit!`
       )
     }
 
     try {
-      key = await readFilePromise(configuration.privateKeyFilename, { encoding: 'utf-8' })
+      key = await readFilePromise(certSettings.privateKeyFilename, { encoding: 'utf-8' })
     } catch (error) {
       throw new Error(
-        `Error loading ${configuration.privateKeyFilename}, server must quit!`
+        `Error loading ${certSettings.privateKeyFilename}, server must quit!`
       )
     }
 
@@ -72,7 +76,7 @@ module.exports.AdminServer = class AdminServer {
    *
    * @return {string}
    */
-  _handleGetBans () {
+  _handleGetBans() {
     const banlist = {
       mcServer: this.mcServer.mgr.getBans()
     }
@@ -83,7 +87,7 @@ module.exports.AdminServer = class AdminServer {
    *
    * @return {string}
    */
-  _handleGetConnections () {
+  _handleGetConnections() {
     const connections = this.mcServer.mgr.dumpConnections()
     let responseText = ''
     connections.forEach((connection, index) => {
@@ -102,7 +106,7 @@ module.exports.AdminServer = class AdminServer {
    *
    * @return {string}
    */
-  _handleResetAllQueueState () {
+  _handleResetAllQueueState() {
     this.mcServer.mgr.resetAllQueueState()
     const connections = this.mcServer.mgr.dumpConnections()
     let responseText = 'Queue state reset for all connections\n\n'
@@ -124,16 +128,17 @@ module.exports.AdminServer = class AdminServer {
    * @param {ServerResponse} response
    * @return {void}
    */
-  _httpsHandler (request, response) {
-    logger.info(
-      `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
+  _httpsHandler(request, response) {
+    log(
+      `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`, { service: 'mcoserver:AdminServer' }
     )
-    logger.info(
-      'Requested recieved',
-      {
+    log(
+      `Requested recieved,
+      ${{
         url: request.url,
         remoteAddress: request.socket.remoteAddress
       }
+      }`, { service: 'mcoserver:AdminServer' }
     )
     switch (request.url) {
       case '/admin/connections':
@@ -167,7 +172,7 @@ module.exports.AdminServer = class AdminServer {
    * @param {Socket} socket
    * @returns {void}
    */
-  _socketEventHandler (socket) {
+  _socketEventHandler(socket) {
     socket.on('error', error => {
       throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`)
     })
@@ -175,10 +180,10 @@ module.exports.AdminServer = class AdminServer {
 
   /**
    *
-   * @param {IServerConfig} config
+   * @param {module:config.config} config
    * @returns {Promise<void>}
    */
-  async start (config) {
+  async start(config) {
     try {
       const sslOptions = await this._sslOptions(config)
 
@@ -193,7 +198,7 @@ module.exports.AdminServer = class AdminServer {
       throw new Error(`${err.message}, ${err.stack}`)
     }
     this.httpsServer.listen({ port: 88, host: '0.0.0.0' }, () => {
-      logger.debug('port 88 listening')
+      log('port 88 listening', { service: 'mcoserver:AdminServer', level: 'debug' })
     })
     this.httpsServer.on('connection', this._socketEventHandler)
   }

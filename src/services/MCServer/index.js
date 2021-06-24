@@ -5,10 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:MCServer' })
+const { debug, log } = require('../@mcoserver/mco-logger')
 const { ListenerThread } = require('./listenerThread')
 const { ConnectionMgr } = require('./ConnectionMgr')
-const { appSettings } = require('../../../config/app-settings')
+const config = require('../../../config')
 
 /**
  * This class starts all the servers
@@ -18,18 +18,18 @@ const { appSettings } = require('../../../config/app-settings')
 
 /**
  * @class
- * @property {IAppSettings} config
+ * @property {config.config} config
  * @property {ConnectionMgr} mgr
  */
 module.exports.MCServer = class MCServer {
   /**
    *
-   * @param {IAppSettings} config
    * @param {DatabaseManager} databaseManager
    */
-  constructor (config, databaseManager) {
+  constructor(databaseManager) {
     this.config = config
     this.mgr = new ConnectionMgr(databaseManager, this.config)
+    this.serviceName = 'mcoserver:MCServer'
   }
 
   /**
@@ -37,9 +37,9 @@ module.exports.MCServer = class MCServer {
    * @returns {Promise<void>}
    */
 
-  async startServers () {
-    const listenerThread = new ListenerThread(appSettings)
-    logger.info('Starting the listening sockets...')
+  async startServers() {
+    const listenerThread = new ListenerThread()
+    log('Starting the listening sockets...', { service: this.serviceName })
     const tcpPortList = [
       6660,
       8228,
@@ -69,8 +69,8 @@ module.exports.MCServer = class MCServer {
 
     tcpPortList.forEach(port => {
       listenerThread.startTCPListener(port, this.mgr)
-      logger.debug(`port ${port} listening`)
+      debug(`port ${port} listening`, { service: this.serviceName })
     })
-    logger.info('Listening sockets create successfully.')
+    log('Listening sockets create successfully.', { service: this.serviceName })
   }
 }

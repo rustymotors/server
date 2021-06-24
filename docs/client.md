@@ -18,6 +18,8 @@ This currently has only been tested with the debug version of the client. If you
 
 (_This can be done by opening a `Run... (Win+R) > MMC (Microsoft Management Console) > Add/Remove Snap-in > Available snap-ins, click Certificates > select Computer account and Local computer > double-click on Certificates > right-click on Trusted Root Certification Authorities Store > All tasks, select Import > Locate the cert.pem file > Finish`_)
 
+!! Please make sure to restart the browser afterwards !!
+
 ### Change the graphics settings
 
 In <game dir>\SaveData\options.ini, change the value `graphicsModeIndex=<value>`, according to resolution list:

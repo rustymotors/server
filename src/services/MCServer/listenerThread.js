@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:ListenerThread' })
+const { debug, log } = require('../@mcoserver/mco-logger')
 
 const net = require('net')
 
@@ -16,15 +16,8 @@ const net = require('net')
 
 /**
  * @class
- * @property {IAppSettings} config
  */
 module.exports.ListenerThread = class ListenerThread {
-  /**
-   * @param {IAppSettings} config
-   */
-  constructor (config) {
-    this.config = config
-  }
 
   /**
    * the onData handler
@@ -34,7 +27,7 @@ module.exports.ListenerThread = class ListenerThread {
    * @param {ConnectionObj} connection
    * @returns {Promise<void>}
    */
-  async _onData (data, connection) {
+  async _onData(data, connection) {
     try {
       const { localPort, remoteAddress } = connection.sock
       /** @type {IRawPacket} */
@@ -47,9 +40,8 @@ module.exports.ListenerThread = class ListenerThread {
         timestamp: Date.now()
       }
       // Dump the raw packet
-      logger.info(
-        "rawPacket's data prior to proccessing",
-        { data: rawPacket.data.toString('hex') }
+      debug(
+        `rawPacket's data prior to proccessing, { data: ${rawPacket.data.toString('hex')}}`, { service: 'mcoserver:ListenerThread' }
 
       )
       /** @type {ConnectionObj} */
@@ -63,8 +55,7 @@ module.exports.ListenerThread = class ListenerThread {
         throw new Error('Error in listenerThread::onData 1, error unknown')
       }
       if (!connection.remoteAddress) {
-        logger.debug(connection.toString())
-        throw new Error('Remote address is empty')
+        throw new Error(`Remote address is empty: ${connection.toString()}`)
       }
       try {
         await connection.mgr._updateConnectionByAddressAndPort(
@@ -93,13 +84,13 @@ module.exports.ListenerThread = class ListenerThread {
    * @param {ConnectionMgr} connectionMgr
    * @returns {void}
    */
-  _listener (socket, connectionMgr) {
+  _listener(socket, connectionMgr) {
     // Received a new connection
     // Turn it into a connection object
     const connection = connectionMgr.findOrNewConnection(socket)
 
     const { localPort, remoteAddress } = socket
-    logger.info(`Client ${remoteAddress} connected to port ${localPort}`)
+    log(`Client ${remoteAddress} connected to port ${localPort}`, { service: 'mcoserver:ListenerThread' })
     if (socket.localPort === 7003 && connection.inQueue) {
       /**
        * Debug seems hard-coded to use the connection queue
@@ -110,8 +101,8 @@ module.exports.ListenerThread = class ListenerThread {
       connection.inQueue = false
     }
     socket.on('end', () => {
-      logger.info(
-        `Client ${remoteAddress} disconnected from port ${localPort}`
+      log(
+        `Client ${remoteAddress} disconnected from port ${localPort}`, { service: 'mcoserver:ListenerThread' }
       )
     })
     socket.on('data', data => {
@@ -119,7 +110,7 @@ module.exports.ListenerThread = class ListenerThread {
     })
     socket.on('error', err => {
       if (!err.message.includes('ECONNRESET')) {
-        logger.error(`Socket error: ${err}`)
+        throw new Error(`Socket error: ${err}`)
       }
     })
   }
@@ -133,7 +124,7 @@ module.exports.ListenerThread = class ListenerThread {
    * @param {module:ConnectionMgr} connectionMgr
    * @return {Promise<Server>}
    */
-  async startTCPListener (localPort, connectionMgr) {
+  async startTCPListener(localPort, connectionMgr) {
     return net
       .createServer(socket => {
         this._listener(socket, connectionMgr)
@@ -141,10 +132,3 @@ module.exports.ListenerThread = class ListenerThread {
       .listen({ port: localPort, host: '0.0.0.0' })
   }
 }
-
-process.on('unhandledRejection', (reason, p) => {
-  console.log('Unhandled Rejection at:', p, 'reason:', reason)
-  console.trace()
-  // application specific logging, throwing an error, or other logic here
-  process.exit(-1)
-})

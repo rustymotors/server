@@ -1,3 +1,4 @@
+// @ts-check
 // mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
@@ -5,7 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:NPSUserInfo' })
+const { debug } = require('../../@mcoserver/mco-logger')
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 
 /**
@@ -29,6 +30,7 @@ class NPSUserInfo extends NPSMsg {
     this.userId = 0
     this.userName = Buffer.from([0x00]) // 30 length
     this.userData = Buffer.from([0x00]) // 64 length
+    this.serviceName = 'mcoserver:NPSUserInfo'
   }
 
   /**
@@ -48,10 +50,10 @@ class NPSUserInfo extends NPSMsg {
    */
   dumpInfo () {
     this.dumpPacketHeader('NPSUserInfo')
-    logger.debug(`UserId:        ${this.userId}`)
-    logger.debug(`UserName:      ${this.userName.toString()}`)
-    logger.debug(`UserData:      ${this.userData.toString('hex')}`)
-    logger.debug('[/NPSUserInfo]======================================')
+    debug(`UserId:        ${this.userId}`, { service: this.serviceName })
+    debug(`UserName:      ${this.userName.toString()}`, { service: this.serviceName })
+    debug(`UserData:      ${this.userData.toString('hex')}`, { service: this.serviceName })
+    debug('[/NPSUserInfo]======================================', { service: this.serviceName })
   }
 }
 module.exports.NPSUserInfo = NPSUserInfo

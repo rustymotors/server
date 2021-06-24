@@ -6,20 +6,17 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const request = require('supertest')
-const td = require('testdouble')
 const { CastanetResponse, PatchServer } = require('../src/services/PatchAndShard/patchServer')
-const { fakeLogger } = require('./helpers')
 const { expect } = require('chai')
 
 
 /* eslint-env mocha */
 
 let patchServer
-const logger = td.object()
 
-describe('PatchServer', function(done) {
+describe('PatchServer', function() {
   beforeEach(function() {
-    patchServer = new PatchServer(fakeLogger)
+    patchServer = new PatchServer()
   })
 
   it('PatchServer', () => {

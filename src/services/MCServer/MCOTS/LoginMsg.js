@@ -1,3 +1,4 @@
+// @ts-check
 // mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
@@ -5,27 +6,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:LoginMsg' })
-
-const struct = require('c-struct')
+const { log } = require('../../@mcoserver/mco-logger')
 
 /**
  * @module LoginMsg
  */
 
-const loginMsgSchema = new struct.Schema({
-  msgNo: struct.type.uint16,
-  customerId: struct.type.uint32,
-  personaId: struct.type.uint32,
-  lotOwnerId: struct.type.uint32,
-  brandedPartId: struct.type.uint32,
-  skinId: struct.type.uint32,
-  personaName: struct.type.string(12),
-  version: struct.type.string()
-})
-
-// register to cache
-struct.register('LoginMsg', loginMsgSchema)
 
 /**
  * @class
@@ -63,8 +49,6 @@ class LoginMsg {
     this.data = buffer
 
     this.deserialize(buffer)
-
-    this.struct = struct.unpackSync('LoginMsg', buffer, { endian: 'b' })
   }
 
   /**
@@ -104,21 +88,13 @@ class LoginMsg {
   }
 
   /**
-   *
-   * @return {Buffer}
-   */
-  serialize () {
-    return struct.packSync('LoginMsg', this.struct, { endian: 'b' })
-  }
-
-  /**
    * dumpPacket
    * @returns {void}
    */
   dumpPacket () {
-    logger.info(
-      'LoginMsg',
-      {
+    log(
+      `LoginMsg',
+      ${{
         msgNo: this.msgNo.toString(),
         customerId: this.customerId.toString(),
         personaId: this.personaId.toString(),
@@ -127,7 +103,7 @@ class LoginMsg {
         skinId: this.skinId,
         personaName: this.personaName,
         version: this.version
-      }
+      }}`, { service: 'mcoserver:LoginMsg' }
     )
   }
 }

@@ -1,3 +1,4 @@
+// @ts-check
 // mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
@@ -8,8 +9,9 @@
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
 const http = require('http')
-const { appSettings } = require('../../../config/app-settings')
+const config = require('../../../config')
 const fs = require('fs')
+const { debug, log } = require('../@mcoserver/mco-logger')
 const { ShardEntry } = require('./ShardEntry')
 
 /**
@@ -45,20 +47,15 @@ const CastanetResponse = {
 
 /**
  * @class
- * @property {IAppSettings} config
- * @property {{module:MCO_Logger.logger}} logger
+ * @property {config.config} config
  * @property {string[]} banList
  * @property {string[]} possibleShards
  * @property {Server} serverPatch
  */
 class PatchServer {
-  /**
-   *
-   * @param {module:MCO_Logger.logger} logger
-   */
-  constructor (logger) {
-    this.logger = logger
-    this.config = appSettings
+
+  constructor () {
+    this.config = config
     this.banList = []
     this.possibleShards = []
 
@@ -67,11 +64,12 @@ class PatchServer {
     })
     this.serverPatch.on('error', (err) => {
       if (err.message.includes('EACCES')) {
-        this.logger.error('Unable to start server on port 80! Have you granted access to the node runtime?')
-        process.exit(-1)
+        process.exitCode = -1
+        throw new Error('Unable to start server on port 80! Have you granted access to the node runtime?')
       }
       throw err
     })
+    this.serviceName = 'mcoserver:PatchServer'
   }
 
   /**
@@ -111,7 +109,7 @@ class PatchServer {
    * @memberof! PatchServer
    */
   _generateShardList () {
-    const { ipServer } = this.config.serverConfig
+    const { ipServer } = this.config.serverSettings
     const shardClockTower = new ShardEntry(
       'The Clocktower',
       'The Clocktower',
@@ -165,7 +163,7 @@ class PatchServer {
  * @memberof! WebServer
  */
   _handleGetCert () {
-    return fs.readFileSync(this.config.serverConfig.certFilename).toString()
+    return fs.readFileSync(this.config.certificate.certFilename).toString()
   }
 
   /**
@@ -174,7 +172,7 @@ class PatchServer {
    * @memberof! WebServer
    */
   _handleGetKey () {
-    return fs.readFileSync(this.config.serverConfig.publicKeyFilename).toString()
+    return fs.readFileSync(this.config.certificate.publicKeyFilename).toString()
   }
 
   /**
@@ -183,28 +181,29 @@ class PatchServer {
    * @memberof! WebServer
    */
   _handleGetRegistry () {
+    const { ipServer } = this.config.serverSettings
     const dynamicRegistryFile = `Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\EACom\\AuthAuth]
 "AuthLoginBaseService"="AuthLogin"
-"AuthLoginServer"="${this.config.serverConfig.ipServer}"
+"AuthLoginServer"="${ipServer}"
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City]
 "GamePatch"="games/EA_Seattle/MotorCity/MCO"
 "UpdateInfoPatch"="games/EA_Seattle/MotorCity/UpdateInfo"
 "NPSPatch"="games/EA_Seattle/MotorCity/NPS"
-"PatchServerIP"="${this.config.serverConfig.ipServer}"
+"PatchServerIP"="${ipServer}"
 "PatchServerPort"="80"
-"CreateAccount"="${this.config.serverConfig.ipServer}/SubscribeEntry.jsp?prodID=REG-MCO"
+"CreateAccount"="${ipServer}/SubscribeEntry.jsp?prodID=REG-MCO"
 "Language"="English"
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City\\1.0]
-"ShardUrl"="http://${this.config.serverConfig.ipServer}/ShardList/"
-"ShardUrlDev"="http://${this.config.serverConfig.ipServer}/ShardList/"
+"ShardUrl"="http://${ipServer}/ShardList/"
+"ShardUrlDev"="http://${ipServer}/ShardList/"
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City\\AuthAuth]
 "AuthLoginBaseService"="AuthLogin"
-"AuthLoginServer"="${this.config.serverConfig.ipServer}"
+"AuthLoginServer"="${ipServer}"
 
 [HKEY_LOCAL_MACHINE\\Software\\WOW6432Node\\Electronic Arts\\Network Play System]
 "Log"="1"
@@ -245,8 +244,8 @@ class PatchServer {
 
     switch (request.url) {
       case '/ShardList/':
-        this.logger.debug(
-          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
+        debug(
+          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`, { service: this.serviceName }
         )
 
         response.setHeader('Content-Type', 'text/plain')
@@ -254,8 +253,8 @@ class PatchServer {
         break
 
       case '/games/EA_Seattle/MotorCity/UpdateInfo':
-        this.logger.info(
-          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
+        log(
+          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`, { service: this.serviceName }
         )
 
         responseData = this._patchUpdateInfo()
@@ -263,8 +262,8 @@ class PatchServer {
         response.end(responseData.body)
         break
       case '/games/EA_Seattle/MotorCity/NPS':
-        this.logger.info(
-          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
+        log(
+          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`, { service: this.serviceName }
         )
 
         responseData = this._patchNPS()
@@ -272,8 +271,8 @@ class PatchServer {
         response.end(responseData.body)
         break
       case '/games/EA_Seattle/MotorCity/MCO':
-        this.logger.info(
-          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
+        log(
+          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`, { service: this.serviceName }
         )
         responseData = this._patchMCO()
         response.setHeader(responseData.header.type, responseData.header.value)
@@ -286,8 +285,8 @@ class PatchServer {
         response.end('')
 
         // Unknown request, log it
-        this.logger.info(
-          `[PATCH] Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}, banning.`
+        log(
+          `[PATCH] Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`, { service: this.serviceName }
         )
         break
     }
@@ -327,10 +326,10 @@ class PatchServer {
    * @return {Promise<http.Server>}
    */
   async start () {
-    const logger = this.logger
+    const serviceName = this.serviceName
     return this.serverPatch.listen({ port: '80', host: '0.0.0.0' }, function () {
-      logger.debug('port 80 listening')
-      logger.info('[patchServer] Patch server is listening...')
+      debug('port 80 listening', { service: serviceName })
+      log('[patchServer] Patch server is listening...', { service: serviceName })
     })
   }
 }

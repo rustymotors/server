@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../@mcoserver/mco-logger').child({ service: 'mcoserver:ClientConnectMsg' })
+const { log } = require('../@mcoserver/mco-logger')
 
 /**
  * @module ClientConnectMsg
@@ -69,16 +69,16 @@ class ClientConnectMsg {
    * @returns {void}
    */
   dumpPacket () {
-    logger.info(
-      'ClientConnectMsg',
-      {
+    log(
+      `ClientConnectMsg',
+      ${{
         msgNo: this.msgNo.toString(),
         customerId: this.customerId.toString(),
         personaId: this.personaId.toString(),
         custName: this.custName,
         personaName: this.personaName,
         mcVersion: this.mcVersion.toString('hex')
-      }
+      }}`, { service: 'mcoserver:ClientConnectMsg' }
     )
   }
 }

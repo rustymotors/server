@@ -5,14 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { fakeLogger, fakeConnectionMgr, fakeConfig, fakeSocket, FakeConnectionConstructor } = require('./helpers')
+const { fakeConnectionMgr, fakeConfig, fakeSocket, FakeConnectionConstructor } = require('./helpers')
 const { ListenerThread } = require('../src/services/MCServer/listenerThread')
 const { expect } = require('chai')
 
 /* eslint-env mocha */
 
 it('ListenerThread', async () => {
-  const listenerThread = new ListenerThread(fakeConfig, fakeLogger.child({ service: 'mcoserver:TestListenerThread' }))
+  const listenerThread = new ListenerThread(fakeConfig)
 
   const server = await listenerThread.startTCPListener(3000, fakeConnectionMgr)
 
@@ -21,7 +21,7 @@ it('ListenerThread', async () => {
 })
 
 it('ListenerThread - _onData', async () => {
-  const listenerThread = new ListenerThread(fakeConfig, fakeLogger.child({ service: 'mcoserver:TestListenerThread' }))
+  const listenerThread = new ListenerThread(fakeConfig)
 
   const fakeConnection1 = new FakeConnectionConstructor('test_connction_1', fakeSocket, fakeConnectionMgr)
   fakeConnection1.remoteAddress = '0.0.0.0'

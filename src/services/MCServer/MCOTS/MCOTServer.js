@@ -5,10 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:MCOTSServer' })
+const { log } = require('../../@mcoserver/mco-logger')
 const { MessageNode } = require('./MessageNode')
 const { GenericReplyMsg } = require('../GenericReplyMsg')
-const { LoginMsg } = require('./LoginMsg')
 
 /**
  * Mangages the game database server
@@ -70,15 +69,6 @@ class MCOTServer {
    * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
   async _login (con, node) {
-    /*
-     * Let's turn it into a LoginMsg
-     */
-    const loginMsg = new LoginMsg(node.data)
-
-    // Update the appId
-    loginMsg.appId = con.appId
-
-    loginMsg.dumpPacket()
 
     // Create new response packet
     const pReply = new GenericReplyMsg()
@@ -101,15 +91,15 @@ class MCOTServer {
    * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
   async _getLobbies (con, node) {
-    logger.debug('In _getLobbies...')
+    log('In _getLobbies...', { service: 'mcoserver:MCOTSServer', level: 'debug' })
     const lobbiesListMsg = node
 
     // Update the appId
     lobbiesListMsg.appId = con.appId
 
     // Dump the packet
-    logger.debug('Dumping request...')
-    logger.debug(lobbiesListMsg)
+    log('Dumping request...', { service: 'mcoserver:MCOTSServer', level: 'debug' })
+    log(lobbiesListMsg, { service: 'mcoserver:MCOTSServer', level: 'debug' })
 
     // Create new response packet
     // const lobbyMsg = new LobbyMsg()
@@ -128,8 +118,8 @@ class MCOTServer {
     rPacket.updateBuffer(pReply.serialize())
 
     // // Dump the packet
-    logger.debug('Dumping response...')
-    logger.debug(rPacket)
+    log('Dumping response...', { service: 'mcoserver:MCOTSServer', level: 'debug' })
+    log(rPacket, { service: 'mcoserver:MCOTSServer', level: 'debug' })
 
     return { con, nodes: [rPacket] }
   }

@@ -15,7 +15,7 @@ const logger = require('../src/services/@mcoserver/mco-logger')
 /* eslint-env mocha */
 
 const fakeLogger = sinon.mock(logger)
-fakeLogger.expects('child').withArgs().atLeast(1)
+fakeLogger.expects('log').withArgs().atLeast(1)
 
 // TODO: REplace with testdouble
 const fakeConnectionManager = sinon.createStubInstance(ConnectionMgr)

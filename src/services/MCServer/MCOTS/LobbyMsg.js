@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const logger = require('../../@mcoserver/mco-logger').child({ service: 'mcoserver:LobbyMsg' })
+const { debug } = require('../../@mcoserver/mco-logger')
 const { LobbyInfoPacket } = require('./LobbyInfo')
 
 /**
@@ -36,6 +36,7 @@ class LobbyMsg {
     this.data.writeInt16LE(this.noLobbies, 2)
     this.data.writeInt8(this.moreToCome, 4)
     this.lobbyList.toPacket().copy(this.data, 5)
+    this.serviceName = 'mcoserver:LobbyMsg'
   }
 
   /**
@@ -51,13 +52,13 @@ class LobbyMsg {
    * @returns {void}
    */
   dumpPacket () {
-    logger.debug(
-      'LobbyMsg',
-      {
+    debug(
+      `LobbyMsg',
+      ${{
         msgNo: this.msgNo,
         dataLength: this.dataLength,
         packet: this.serialize().toString('hex')
-      }
+      }}`, { service: this.serviceName }
     )
   }
 }

@@ -6,22 +6,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const td = require('testdouble')
-const logger = require('../src/services/@mcoserver/mco-logger')
 const { ConnectionMgr } = require('../src/services/MCServer/ConnectionMgr')
 const { DatabaseManager } = require('../src/shared/DatabaseManager')
 const net = require('net')
 const { ConnectionObj } = require('../src/services/MCServer/ConnectionObj')
-const { MCServer } = require('../src/services/MCServer')
-
-const fakeConfig = {
-  serverConfig: {
-    certFilename: '/cert/cert.pem',
-    privateKeyFilename: '/cert/private.key',
-    ipServer: '',
-    publicKeyFilename: '',
-    connectionURL: ''
-  }
-}
 
 /**
  * @type {IAppSettings}
@@ -31,19 +19,11 @@ const fakeSettings = {
 }
 module.exports.fakeSettings = fakeSettings
 
-const fakeLogger = td.object(logger)
-fakeLogger.child = () => {
-  return fakeLogger
-}
-fakeLogger.info = td.function(logger.info)
-fakeLogger.debug = td.function(logger.debug)
-fakeLogger.error = td.function(logger.error)
-
 const FakeDatabaseManagerConstructor = td.constructor(DatabaseManager)
-const fakeDatabaseManager = new FakeDatabaseManagerConstructor(fakeLogger)
+const fakeDatabaseManager = new FakeDatabaseManagerConstructor()
 
 const FakeConnectionManagerConstructor = td.constructor(ConnectionMgr)
-const fakeConnectionMgr = new FakeConnectionManagerConstructor(fakeLogger, fakeDatabaseManager)
+const fakeConnectionMgr = new FakeConnectionManagerConstructor(fakeDatabaseManager, fakeSettings)
 
 /**
  * Fake socket for testing
@@ -51,16 +31,12 @@ const fakeConnectionMgr = new FakeConnectionManagerConstructor(fakeLogger, fakeD
 const FakeSocketConstructor = td.constructor(net.Socket)
 const fakeSocket = new FakeSocketConstructor()
 fakeSocket.localPort = '7003'
+fakeSocket.remoteAddress = '10.1.2.3'
 
 /**
  * Fake connectionObj for testing
  */
 const FakeConnectionConstructor = td.constructor(ConnectionObj)
-
-const FakeMCServerConstructor = td.constructor(MCServer)
-const fakeMCServer = new FakeMCServerConstructor(fakeConfig, fakeDatabaseManager)
-
-module.exports.fakeLogger = fakeLogger
 module.exports.FakeConnectionManagerConstructor = FakeConnectionManagerConstructor
 module.exports.fakeConnectionMgr = fakeConnectionMgr
 module.exports.FakeSocketConstructor = FakeSocketConstructor
