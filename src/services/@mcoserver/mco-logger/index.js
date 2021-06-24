@@ -112,8 +112,8 @@ function getServiceName(options) {
  */
 function shouldDebug(options) {
   return (options.args && options.args.verbose)
-    || getLogLevel === 'debug'
-    || getDefaultLevel === 'silly'
+    || getLogLevel() === 'debug'
+    || getDefaultLevel() === 'silly'
 }
 
 module.exports = {
