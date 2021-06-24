@@ -11,7 +11,6 @@
     "build": "tsc",
     "start": "node app.js",
     "test": "npm run lint-test",
-    "migrate": "pg-migrator postgres://postgres:mco@localhost/postgres 2",
     "lint": "eslint --fix \"src/**/*.js\"",
     "lint-test": "npm run lint && nyc mocha",
     "precommit": "npm run lint-test",
