@@ -31,6 +31,8 @@
     "sqlite3": "5.0.2"
   },
   "devDependencies": {
+    "@commitlint/cli": "12.1.4",
+    "@commitlint/config-conventional": "12.1.4",
     "@tsconfig/node14": "1.0.1",
     "@types/c-struct": "0.0.0",
     "@types/chai": "4.2.19",
@@ -44,6 +46,7 @@
     "@types/verror": "1.10.4",
     "chai": "4.3.4",
     "eslint": "7.29.0",
+    "husky": "6.0.0",
     "mocha": "8.4.0",
     "mock-fs": "4.14.0",
     "nyc": "15.1.0",
