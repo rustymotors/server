@@ -6,7 +6,7 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-const { log } = require('./src/services/@mcoserver/mco-logger')
+const { log } = require('./src/services/@drazisil/mco-logger')
 const { AuthLogin } = require('./src/services/AuthLogin/AuthLogin')
 const { PatchServer } = require('./src/services/PatchAndShard/patchServer')
 const { Server } = require('./src/server')

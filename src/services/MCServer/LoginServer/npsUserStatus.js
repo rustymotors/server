@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { debug } = require('../../@mcoserver/mco-logger')
+const { debug } = require('../../@drazisil/mco-logger')
 const crypto = require('crypto')
 const fs = require('fs')
 const { NPSMsg } = require('../MCOTS/NPSMsg')

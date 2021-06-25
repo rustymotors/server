@@ -10,7 +10,7 @@ const { NPSMsg } = require('../MCOTS/NPSMsg')
 const { PersonaServer } = require('../PersonaServer/PersonaServer')
 const { NPSUserInfo } = require('./npsUserInfo')
 const { DatabaseManager } = require('../../../shared/DatabaseManager')
-const { debug}  = require('../../@mcoserver/mco-logger')
+const { debug}  = require('../../@drazisil/mco-logger')
   
 
 /**

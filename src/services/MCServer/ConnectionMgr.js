@@ -10,7 +10,7 @@ const { defaultHandler } = require('./MCOTS/TCPManager')
 const { ConnectionObj } = require('./ConnectionObj')
 const { NPSPacketManager } = require('./npsPacketManager')
 
-const { debug, log } = require('../@mcoserver/mco-logger')
+const { debug, log } = require('../@drazisil/mco-logger')
 
 /**
  * @module ConnectionMgr

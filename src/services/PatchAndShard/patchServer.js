@@ -11,7 +11,7 @@
 const http = require('http')
 const config = require('../../../config')
 const fs = require('fs')
-const { debug, log } = require('../@mcoserver/mco-logger')
+const { debug, log } = require('../@drazisil/mco-logger')
 const { ShardEntry } = require('./ShardEntry')
 
 /**
