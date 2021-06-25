@@ -9,7 +9,7 @@
 const fs = require('fs')
 const https = require('https')
 const config = require('../../../config/')
-const { debug, log } = require('../@drazisil/mco-logger')
+const { debug, log } = require('@drazisil/mco-logger')
 const util = require('util')
 
 const readFilePromise = util.promisify(fs.readFile)

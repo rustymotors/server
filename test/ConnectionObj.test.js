@@ -10,7 +10,7 @@ const { Socket } = require('net')
 const sinon = require('sinon')
 const { ConnectionMgr } = require('../src/services/MCServer/ConnectionMgr')
 const { ConnectionObj } = require('../src/services/MCServer/ConnectionObj')
-const logger = require('../src/services/@drazisil/mco-logger')
+const logger = require('@drazisil/mco-logger')
 
 /* eslint-env mocha */
 

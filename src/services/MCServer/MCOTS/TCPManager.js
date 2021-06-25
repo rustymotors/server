@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const { MessageNode } = require('./MessageNode')
-const { log } = require('../../@drazisil/mco-logger')
+const { log } = require('@drazisil/mco-logger')
 const { MCOTServer } = require('./MCOTServer')
 const { ClientConnectMsg } = require('../ClientConnectMsg')
 const { GenericReplyMsg } = require('../GenericReplyMsg')
