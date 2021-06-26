@@ -1,7 +1,7 @@
 # MCO-Server
 
 ![Node.js CI](https://github.com/drazisil/mco-server/workflows/Node.js%20CI/badge.svg)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![CodeQL](https://github.com/drazisil/mco-server/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/drazisil/mco-server/actions/workflows/codeql-analysis.yml)[![Node.js CI](https://github.com/drazisil/mco-server/actions/workflows/node.yml/badge.svg)](https://github.com/drazisil/mco-server/actions/workflows/node.yml)
 [![codecov](https://codecov.io/gh/drazisil/mco-server/branch/master/graph/badge.svg)](https://codecov.io/gh/drazisil/mco-server)
 
 ## About
