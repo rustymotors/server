@@ -7,7 +7,7 @@
 
 const { NPSMsg } = require('../MCOTS/NPSMsg')
 const { NPSPersonaMapsMsg } = require('./NPSPersonaMapsMsg')
-const { debug } = require('../../@mcoserver/mco-logger')
+const { debug } = require('@drazisil/mco-logger')
 
 /**
  * @module PersonaServer

@@ -8,7 +8,7 @@
 const { LobbyServer } = require('./LobbyServer/LobbyServer')
 const { LoginServer } = require('./LoginServer/LoginServer')
 const { PersonaServer } = require('./PersonaServer/PersonaServer')
-const { log } = require('../@mcoserver/mco-logger')
+const { log } = require('@drazisil/mco-logger')
 
 /**
  * @module npsPacketManager

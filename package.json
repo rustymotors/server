@@ -24,6 +24,7 @@
     "url": "git@github.com:drazisil/mco-server.git"
   },
   "dependencies": {
+    "@drazisil/mco-logger": "1.1.0",
     "sqlite3": "5.0.2"
   },
   "devDependencies": {

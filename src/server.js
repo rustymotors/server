@@ -8,7 +8,7 @@
 const config = require('../config')
 const { AdminServer } = require('./services/AdminServer/AdminServer')
 const { MCServer } = require('./services/MCServer')
-const { log } = require('./services/@mcoserver/mco-logger')
+const { log } = require('@drazisil/mco-logger')
 
 /**
  * Main game server
