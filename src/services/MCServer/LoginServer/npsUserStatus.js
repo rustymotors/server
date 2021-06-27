@@ -5,10 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { debug } = require('@drazisil/mco-logger')
-const crypto = require('crypto')
-const fs = require('fs')
-const { NPSMsg } = require('../MCOTS/NPSMsg')
+import { debug } from '@drazisil/mco-logger'
+import { privateDecrypt } from 'crypto'
+import { readFileSync, statSync } from 'fs'
+import { NPSMsg } from '../MCOTS/NPSMsg.js'
 
 /**
  *
@@ -23,14 +23,14 @@ const { NPSMsg } = require('../MCOTS/NPSMsg')
  */
 function fetchPrivateKeyFromFile (privateKeyPath) {
   try {
-    fs.statSync(privateKeyPath)
+    statSync(privateKeyPath)
   } catch (e) {
     if (e instanceof Error) {
       throw new Error(`[npsUserStatus] Error loading private key: ${e.message}`)
     }
     throw new Error('[npsUserStatus] Error loading private key, error unknown')
   }
-  return fs.readFileSync(privateKeyPath).toString()
+  return readFileSync(privateKeyPath).toString()
 }
 
 /**
@@ -87,7 +87,7 @@ class NPSUserStatus extends NPSMsg {
       packet.slice(52, -10).toString('utf8'),
       'hex'
     )
-    const decrypted = crypto.privateDecrypt(privateKey, sessionkeyStr)
+    const decrypted = privateDecrypt(privateKey, sessionkeyStr)
     this.sessionkey = decrypted.slice(2, -4).toString('hex')
   }
 
@@ -123,4 +123,5 @@ class NPSUserStatus extends NPSMsg {
     )
   }
 }
-module.exports.NPSUserStatus = NPSUserStatus
+const _NPSUserStatus = NPSUserStatus
+export { _NPSUserStatus as NPSUserStatus }

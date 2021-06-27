@@ -1,3 +1,4 @@
+// @ts-check
 // mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
@@ -5,7 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const sqlite3 = require('sqlite3').verbose();
+import sqlite3 from 'sqlite3'
 
 /**
  * Database connection abstraction
@@ -15,14 +16,21 @@ const sqlite3 = require('sqlite3').verbose();
 /**
  * @class
  */
-module.exports.DatabaseManager = class DatabaseManager {
+export class DatabaseManager {
 
   constructor() {
-    const db = new sqlite3.Database('db/mco.db');
-    this.db = db
+    /**
+     * @name DatabaseManager#db
+     */
+    
+    this.localDB = new (sqlite3.verbose().Database)('db/mco.db')
 
-    this.db.serialize(function () {
-      db.run(`CREATE TABLE IF NOT EXISTS "sessions"
+    const localDB = this.localDB
+
+    this.changes = 0
+
+    this.localDB.serialize(function () {
+      localDB.run(`CREATE TABLE IF NOT EXISTS "sessions"
         (
           customer_id integer,
           sessionkey text NOT NULL,
@@ -32,7 +40,7 @@ module.exports.DatabaseManager = class DatabaseManager {
           CONSTRAINT pk_session PRIMARY KEY(customer_id)
         );`);
 
-      db.run(`CREATE TABLE IF NOT EXISTS "lobbies"
+      localDB.run(`CREATE TABLE IF NOT EXISTS "lobbies"
         (
           "lobyID" integer NOT NULL,
           "raceTypeID" integer NOT NULL,
@@ -120,7 +128,7 @@ module.exports.DatabaseManager = class DatabaseManager {
   }
 
   db() {
-    return this.db
+    return this.localDB
   }
 
   /**
@@ -130,15 +138,22 @@ module.exports.DatabaseManager = class DatabaseManager {
    * @memberof {DatabaseManager}
    */
   async fetchSessionKeyByCustomerId(customerId) {
+    return new Promise((resolve, reject) => {
     try {
-      const stmt = this.db.prepare("SELECT sessionkey, skey FROM sessions WHERE customer_id = ?");
-      const row = stmt.get(customerId)
-      stmt.finalize()
-      /** @type {SessionRecord} */
-      return row
+      const stmt = this.localDB.prepare("SELECT sessionkey, skey FROM sessions WHERE customer_id = ?");
+      stmt.get(customerId, (err, row) => {
+        if (err) {
+          reject(`Unable to fetch session key: ${err}`)
+        }
+        stmt.finalize()
+        /** @type {ISessionRecord} */
+        resolve(row)
+      })
+
     } catch (e) {
-      throw new Error(`Unable to fetch session key: ${e}`)
+      reject(`Unable to fetch session key: ${e}`)
     }
+  })
   }
 
   /**
@@ -149,17 +164,22 @@ module.exports.DatabaseManager = class DatabaseManager {
    * @memberof {DatabaseManager}
    */
   async fetchSessionKeyByConnectionId(connectionId) {
-    try {
-      const stmt = this.db.prepare("SELECT sessionkey, skey FROM sessions WHERE connection_id = ?");
-      const row = stmt.get(connectionId)
-      stmt.finalize()
+    return new Promise((resolve, reject) => {
+      try {
+        const stmt = this.localDB.prepare("SELECT sessionkey, skey FROM sessions WHERE connection_id = ?");
+        stmt.get(connectionId, (err, row) => {
+          if (err) {
+            reject(`Unable to fetch session key: ${err}`)
+          }
+          stmt.finalize()
+          /** @type {ISessionRecord} */
+          resolve(row)
+        })
 
-      /** @type {ISession_Record} */
-      return row
-    } catch (e) {
-      process.exitCode = -1
-      throw new Error(`Unable to fetch session key ', ${e}`)
-    }
+      } catch (e) {
+        reject(`Unable to fetch session key: ${e}`)
+      }
+    })
   }
 
   /**
@@ -168,23 +188,26 @@ module.exports.DatabaseManager = class DatabaseManager {
    * @param {string} sessionkey
    * @param {string} contextId
    * @param {string} connectionId
-   * @return {Promise<ISessionRecord>}
+   * @return {Promise<number>}
    * @memberof {DatabaseManager}
    */
   async _updateSessionKey(customerId, sessionkey, contextId, connectionId) {
     const skey = sessionkey.substr(0, 16)
-    try {
-      const stmt = this.db.prepare("INSERT INTO sessions (customer_id, sessionkey, skey, context_id, connection_id) VALUES (?, ?, ?, ?, ?)");
-      const row = stmt.run(customerId, sessionkey, skey, contextId, connectionId)
-      stmt.finalize()
 
-      /** @type {ISessionRecord} */
-      return row
-    } catch (e) {
-      if (e instanceof Error) {
-        throw new Error(`Unable to update session key: ${e.message}`)
+    return new Promise((resolve, reject) => {
+      try {
+        const stmt = this.localDB.prepare("INSERT INTO sessions (customer_id, sessionkey, skey, context_id, connection_id) VALUES ($customerId, $sessionkey, $skey, $contextId, $connectionId)");
+        stmt.run({customerId, sessionkey, skey, contextId, connectionId}, err => {
+          if (err) {
+            reject(`Unable to update session key: ${err}`)
+          }
+          stmt.finalize()
+          resolve(/** @type {number} */ this.changes)
+        })
+
+      } catch (e) {
+        reject(`Unable to update session key: ${e}`)
       }
-      throw new Error('Unable to update session key, error unknown')
-    }
+    })
   }
 }

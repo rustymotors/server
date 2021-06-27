@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { log } = require('@drazisil/mco-logger')
+import { log } from '@drazisil/mco-logger'
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
@@ -124,4 +124,5 @@ class GenericReplyMsg {
       }}`, { service: 'mcoserver:GenericReplyMsg' })
   }
 }
-module.exports.GenericReplyMsg = GenericReplyMsg
+const _GenericReplyMsg = GenericReplyMsg
+export { _GenericReplyMsg as GenericReplyMsg }

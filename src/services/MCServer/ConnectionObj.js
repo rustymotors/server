@@ -5,8 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const crypto = require('crypto')
-const { EncryptionManager } = require('./EncryptionMgr')
+import { createCipheriv, createDecipheriv } from 'crypto'
+import { EncryptionManager } from './EncryptionMgr.js'
 
 /**
  * Contains the proporties and methods for a TCP connection
@@ -30,7 +30,7 @@ const { EncryptionManager } = require('./EncryptionMgr')
  * @property {ConnectionStatus} status
  * @property {string} remoteAddress
  * @property {string} localPort
- * @property {Socket} sock
+ * @property {import("net").Socket} sock
  * @property {null} msgEvent
  * @property {number} lastMsg
  * @property {boolean} useEncryption
@@ -46,7 +46,7 @@ class ConnectionObj {
   /**
    *
    * @param {string} connectionId
-   * @param {module:net/Socket} sock
+   * @param {import("net").Socket} sock
    * @param {module:ConnectionMgr.ConnectionMgr} mgr
    */
   constructor (connectionId, sock, mgr) {
@@ -95,7 +95,7 @@ class ConnectionObj {
     const desIV = Buffer.alloc(8)
 
     try {
-      this.encLobby.cipher = crypto.createCipheriv(
+      this.encLobby.cipher = createCipheriv(
         'des-cbc',
         Buffer.from(skey, 'hex'),
         desIV
@@ -106,7 +106,7 @@ class ConnectionObj {
     }
 
     try {
-      this.encLobby.decipher = crypto.createDecipheriv(
+      this.encLobby.decipher = createDecipheriv(
         'des-cbc',
         Buffer.from(skey, 'hex'),
         desIV
@@ -145,4 +145,5 @@ class ConnectionObj {
     throw new Error('No DES decipher set on connection')
   }
 }
-module.exports.ConnectionObj = ConnectionObj
+const _ConnectionObj = ConnectionObj
+export { _ConnectionObj as ConnectionObj }

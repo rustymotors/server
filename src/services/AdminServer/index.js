@@ -6,13 +6,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { log } = require('@drazisil/mco-logger')
-const config = require('../../../config')
-const fs = require('fs')
-const https = require('https')
-const util = require('util')
+import { log } from '@drazisil/mco-logger'
+import config from '../../../config/index.js'
+import { readFile } from 'fs'
+import { createServer } from 'https'
+import { promisify } from 'util'
 
-const readFilePromise = util.promisify(fs.readFile)
+const readFilePromise = promisify(readFile)
 
 /**
  * SSL web server for managing the state of the system
@@ -25,10 +25,10 @@ const readFilePromise = util.promisify(fs.readFile)
  * @property {MCServer} mcServer
  * @property {Server} httpServer
  */
-module.exports.AdminServer = class AdminServer {
+export class AdminServer {
   /**
    * @class
-   * @param {MCServer} mcServer
+   * @param {module:MCServer} mcServer
    */
   constructor(mcServer) {
     this.config = config
@@ -90,7 +90,7 @@ module.exports.AdminServer = class AdminServer {
   _handleGetConnections() {
     const connections = this.mcServer.mgr.dumpConnections()
     let responseText = ''
-    connections.forEach((connection, index) => {
+    connections.forEach((/** @type {{ id: any; remoteAddress: any; localPort: any; enc: { getId: () => any; }; inQueue: any; }} */ connection, /** @type {any} */ index) => {
       const displayConnection = `
         index: ${index} - ${connection.id}
             remoteAddress: ${connection.remoteAddress}:${connection.localPort}
@@ -110,7 +110,7 @@ module.exports.AdminServer = class AdminServer {
     this.mcServer.mgr.resetAllQueueState()
     const connections = this.mcServer.mgr.dumpConnections()
     let responseText = 'Queue state reset for all connections\n\n'
-    connections.forEach((connection, /** @type {number} */ index) => {
+    connections.forEach((/** @type {{ id: any; remoteAddress: any; localPort: any; enc: { getId: () => any; }; inQueue: any; }} */ connection, /** @type {number} */ index) => {
       const displayConnection = `
         index: ${index} - ${connection.id}
             remoteAddress: ${connection.remoteAddress}:${connection.localPort}
@@ -123,10 +123,9 @@ module.exports.AdminServer = class AdminServer {
   }
 
   /**
-   *
-   * @param {IncomingMessage} request
-   * @param {ServerResponse} response
    * @return {void}
+   * @param {import("http").IncomingMessage} request
+   * @param {import("http").ServerResponse} response
    */
   _httpsHandler(request, response) {
     log(
@@ -153,10 +152,6 @@ module.exports.AdminServer = class AdminServer {
         response.setHeader('Content-Type', 'application/json; charset=utf-8')
         return response.end(this._handleGetBans())
 
-      case '/admin/poweroff':
-        response.end('ok')
-        process.exit(0)
-        break
       default:
         if (request.url && request.url.startsWith('/admin')) {
           return response.end('Jiggawatt!')
@@ -168,12 +163,11 @@ module.exports.AdminServer = class AdminServer {
   }
 
   /**
-   *
-   * @param {Socket} socket
    * @returns {void}
+   * @param {import("net").Socket} socket
    */
   _socketEventHandler(socket) {
-    socket.on('error', error => {
+    socket.on('error', (/** @type {{ message: any; }} */ error) => {
       throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`)
     })
   }
@@ -187,8 +181,8 @@ module.exports.AdminServer = class AdminServer {
     try {
       const sslOptions = await this._sslOptions(config)
 
-      /** @type {https.Server|undefined} */
-      this.httpsServer = https.createServer(
+      /** @type {import("https").Server|undefined} */
+      this.httpsServer = createServer(
         sslOptions,
         (req, res) => {
           this._httpsHandler(req, res)

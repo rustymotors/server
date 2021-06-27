@@ -5,10 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { expect } = require('chai')
-const mock  = require('mock-fs')
-const { AdminServer }  = require('../src/services/AdminServer/AdminServer')
-const { fakeConfig, fakeMCServer }  = require('./helpers')
+import { expect } from 'chai'
+import mock, { restore } from 'mock-fs'
+import { AdminServer } from '../src/services/AdminServer/index.js'
+import { fakeConfig, fakeMCServer } from './helpers.js'
 
 /* eslint-env mocha */
 
@@ -25,7 +25,7 @@ describe('AdminServer', async () => {
     } catch (error) {
       expect(error).contains(/cert.pem/)
     }
-    mock.restore()
+    restore()
     //  deepcode ignore WrongNumberOfArgs/test: false positive
     mock({
       '/cert/cert.pem': 'stuff'
@@ -35,7 +35,7 @@ describe('AdminServer', async () => {
     } catch (error) {
       expect(error).contains(/private.key/)
     }
-    mock.restore()
+    restore()
     //  deepcode ignore WrongNumberOfArgs/test: false positive
     mock({
       '/cert/cert.pem': 'stuff',
@@ -46,6 +46,6 @@ describe('AdminServer', async () => {
     } catch (error) {
       expect(error).contains(/private.key/)
     }
-    mock.restore()
+    restore()
   })
 })

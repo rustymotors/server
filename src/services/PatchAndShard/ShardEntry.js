@@ -23,7 +23,7 @@
  * @property {string} diagnosticServerHost
  * @property {number} diagnosticServerPort
  */
-class ShardEntry {
+export class ShardEntry {
   /**
    *
    * @param {string} name
@@ -98,4 +98,4 @@ class ShardEntry {
     DiagnosticServerPort=${this.diagnosticServerPort}`
   }
 }
-module.exports.ShardEntry = ShardEntry
+

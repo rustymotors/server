@@ -5,7 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { debug, log } = require('@drazisil/mco-logger')
+// eslint-disable-next-line no-undef
+import { debug, log } from '@drazisil/mco-logger'
 
 /**
  * Packet container for NPS messages
@@ -180,4 +181,5 @@ class NPSMsg {
     }
   }
 }
-module.exports.NPSMsg = NPSMsg
+const _NPSMsg = NPSMsg
+export { _NPSMsg as NPSMsg }

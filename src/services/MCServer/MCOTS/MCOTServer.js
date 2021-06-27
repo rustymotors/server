@@ -5,9 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { log } = require('@drazisil/mco-logger')
-const { MessageNode } = require('./MessageNode')
-const { GenericReplyMsg } = require('../GenericReplyMsg')
+import { log } from '@drazisil/mco-logger'
+import { MessageNode } from './MessageNode.js'
+import { GenericReplyMsg } from '../GenericReplyMsg.js'
 
 /**
  * Mangages the game database server
@@ -235,4 +235,5 @@ class MCOTServer {
     return { con, nodes: [rPacket] }
   }
 }
-module.exports.MCOTServer = MCOTServer
+const _MCOTServer = MCOTServer
+export { _MCOTServer as MCOTServer }

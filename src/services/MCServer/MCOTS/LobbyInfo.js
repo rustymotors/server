@@ -367,4 +367,5 @@ class LobbyInfoPacket {
     return lobbyPacket
   }
 }
-module.exports.LobbyInfoPacket = LobbyInfoPacket
+const _LobbyInfoPacket = LobbyInfoPacket
+export { _LobbyInfoPacket as LobbyInfoPacket }

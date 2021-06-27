@@ -5,11 +5,26 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const td = require('testdouble')
-const { ConnectionMgr } = require('../src/services/MCServer/ConnectionMgr')
-const { DatabaseManager } = require('../src/shared/DatabaseManager')
-const net = require('net')
-const { ConnectionObj } = require('../src/services/MCServer/ConnectionObj')
+import { constructor } from 'testdouble'
+import { ConnectionMgr } from '../src/services/MCServer/ConnectionMgr.js'
+import { DatabaseManager } from '../src/shared/DatabaseManager.js'
+import { Socket } from 'net'
+import { ConnectionObj } from '../src/services/MCServer/ConnectionObj.js'
+import { MCServer } from '../src/services/MCServer/index.js'
+
+export const fakeConfig = {
+    serverConfig: {
+        certFilename: '/cert/cert.pem',
+        privateKeyFilename: '/cert/private.key',
+        ipServer: '',
+        publicKeyFilename: '',
+        connectionURL: ''
+    }
+}
+
+
+const FakeMCServerConstructor = td.constructor(MCServer)
+const fakeMCServer = new FakeMCServerConstructor(fakeConfig, fakeDatabaseManager)
 
 /**
  * @type {IAppSettings}
@@ -17,18 +32,19 @@ const { ConnectionObj } = require('../src/services/MCServer/ConnectionObj')
 const fakeSettings = {
 
 }
-module.exports.fakeSettings = fakeSettings
+const _fakeSettings = fakeSettings
+export { _fakeSettings as fakeSettings }
 
-const FakeDatabaseManagerConstructor = td.constructor(DatabaseManager)
+const FakeDatabaseManagerConstructor = constructor(DatabaseManager)
 const fakeDatabaseManager = new FakeDatabaseManagerConstructor()
 
-const FakeConnectionManagerConstructor = td.constructor(ConnectionMgr)
+const FakeConnectionManagerConstructor = constructor(ConnectionMgr)
 const fakeConnectionMgr = new FakeConnectionManagerConstructor(fakeDatabaseManager, fakeSettings)
 
 /**
  * Fake socket for testing
  */
-const FakeSocketConstructor = td.constructor(net.Socket)
+const FakeSocketConstructor = constructor(Socket)
 const fakeSocket = new FakeSocketConstructor()
 fakeSocket.localPort = '7003'
 fakeSocket.remoteAddress = '10.1.2.3'
@@ -36,9 +52,14 @@ fakeSocket.remoteAddress = '10.1.2.3'
 /**
  * Fake connectionObj for testing
  */
-const FakeConnectionConstructor = td.constructor(ConnectionObj)
-module.exports.FakeConnectionManagerConstructor = FakeConnectionManagerConstructor
-module.exports.fakeConnectionMgr = fakeConnectionMgr
-module.exports.FakeSocketConstructor = FakeSocketConstructor
-module.exports.fakeSocket = fakeSocket
-module.exports.FakeConnectionConstructor = FakeConnectionConstructor
+const FakeConnectionConstructor = constructor(ConnectionObj)
+const _FakeConnectionManagerConstructor = FakeConnectionManagerConstructor
+export { _FakeConnectionManagerConstructor as FakeConnectionManagerConstructor }
+const _fakeConnectionMgr = fakeConnectionMgr
+export { _fakeConnectionMgr as fakeConnectionMgr }
+const _FakeSocketConstructor = FakeSocketConstructor
+export { _FakeSocketConstructor as FakeSocketConstructor }
+const _fakeSocket = fakeSocket
+export { _fakeSocket as fakeSocket }
+const _FakeConnectionConstructor = FakeConnectionConstructor
+export { _FakeConnectionConstructor as FakeConnectionConstructor }

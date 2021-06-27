@@ -6,13 +6,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const fs = require('fs')
-const https = require('https')
-const config = require('../../../config/')
-const { debug, log } = require('@drazisil/mco-logger')
-const util = require('util')
+import { debug, log } from '@drazisil/mco-logger'
+import { readFile } from 'fs'
+import { createServer } from 'https'
+import { promisify } from 'util'
+import config from '../../../config/index.js'
 
-const readFilePromise = util.promisify(fs.readFile)
+const readFilePromise = promisify(readFile)
 
 /**
  * Handles web-based user logins
@@ -86,14 +86,13 @@ class AuthLogin {
     return 'Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e'
   }
 
-  /**
-   *
-   * @param {IncomingMessage} request
-   * @param {ServerResponse} response
-   * @returns {void}
-   * @memberof! WebServer
-   */
   // file deepcode ignore NoRateLimitingForExpensiveWebOperation: Not using express, unsure how to handle rate limiting on raw http
+  /**
+   * @returns {void}
+   * @memberof ! WebServer
+   * @param {import("http").IncomingMessage} request
+   * @param {import("http").ServerResponse} response
+   */
   _httpsHandler(request, response) {
     log(
       `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`, { service: this.serviceName }
@@ -107,27 +106,25 @@ class AuthLogin {
   }
 
   /**
-   *
-   * @param {Socket} socket
    * @returns {void}
+   * @param {import("net").Socket} socket
    */
   _socketEventHandler(socket) {
-    socket.on('error', (error) => {
+    socket.on('error', (/** @type {{ message: any; }} */ error) => {
       throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`)
     })
   }
 
   /**
    *
-   * @returns {Promise<Server>}
+   * @returns {Promise<import("https").Server>}
    * @memberof! WebServer
    */
   async start() {
     const sslOptions = await this._sslOptions(this.config)
 
     try {
-      this.httpsServer = await https
-        .createServer(
+      this.httpsServer = await createServer(
           sslOptions,
           (req, res) => {
             this._httpsHandler(req, res)
@@ -150,4 +147,5 @@ class AuthLogin {
     return this.httpsServer
   }
 }
-module.exports.AuthLogin = AuthLogin
+const _AuthLogin = AuthLogin
+export { _AuthLogin as AuthLogin }

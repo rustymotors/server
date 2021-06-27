@@ -5,10 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { debug, log } = require('@drazisil/mco-logger')
-const { ListenerThread } = require('./listenerThread')
-const { ConnectionMgr } = require('./ConnectionMgr')
-const config = require('../../../config')
+import { debug, log } from '@drazisil/mco-logger'
+import { ListenerThread } from './listenerThread'
+import { ConnectionMgr } from './ConnectionMgr'
+import config from '../../../config'
 
 /**
  * This class starts all the servers
@@ -21,7 +21,7 @@ const config = require('../../../config')
  * @property {config.config} config
  * @property {ConnectionMgr} mgr
  */
-module.exports.MCServer = class MCServer {
+export class MCServer {
   /**
    *
    * @param {DatabaseManager} databaseManager

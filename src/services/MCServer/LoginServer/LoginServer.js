@@ -5,9 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { debug, log } = require('@drazisil/mco-logger')
-const { NPSUserStatus } = require('./npsUserStatus')
-const { premadeLogin } = require('./packet')
+import { debug, log } from '@drazisil/mco-logger'
+import { NPSUserStatus } from './npsUserStatus.js'
+import { premadeLogin } from './packet.js'
 
 /**
  * Manages the initial game connection setup and teardown.
@@ -195,4 +195,5 @@ class LoginServer {
     return fullPacket
   }
 }
-module.exports.LoginServer = LoginServer
+const _LoginServer = LoginServer
+export { _LoginServer as LoginServer }

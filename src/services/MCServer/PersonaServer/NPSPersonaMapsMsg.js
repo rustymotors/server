@@ -5,9 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { debug } = require('@drazisil/mco-logger')
+import { debug } from '@drazisil/mco-logger'
+import { NPSMsg } from '../MCOTS/NPSMsg.js'
 
-const { NPSMsg } = require('../MCOTS/NPSMsg')
 
 /**
  * @module NPSPersonaMapsMsg
@@ -176,4 +176,5 @@ class NPSPersonaMapsMsg extends NPSMsg {
     debug('[/NPSPersonaMapsMsg]======================================', { service: this.serviceName })
   }
 }
-module.exports.NPSPersonaMapsMsg = NPSPersonaMapsMsg
+const _NPSPersonaMapsMsg = NPSPersonaMapsMsg
+export { _NPSPersonaMapsMsg as NPSPersonaMapsMsg }

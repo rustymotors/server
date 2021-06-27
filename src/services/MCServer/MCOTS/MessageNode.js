@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { log } = require('@drazisil/mco-logger')
+import { log } from '@drazisil/mco-logger'
 
 /**
  * Packet structure for communications with the game database
@@ -197,4 +197,5 @@ class MessageNode {
     this.msgNo = packet.readInt16LE(0)
   }
 }
-module.exports.MessageNode = MessageNode
+const _MessageNode = MessageNode
+export { _MessageNode as MessageNode }

@@ -5,9 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { debug, log } = require('@drazisil/mco-logger')
+import { debug, log } from '@drazisil/mco-logger'
 
-const net = require('net')
+import { createServer } from 'net'
 
 /**
  * TCP Listener thread
@@ -17,7 +17,7 @@ const net = require('net')
 /**
  * @class
  */
-module.exports.ListenerThread = class ListenerThread {
+export class ListenerThread {
 
   /**
    * the onData handler
@@ -125,8 +125,7 @@ module.exports.ListenerThread = class ListenerThread {
    * @return {Promise<Server>}
    */
   async startTCPListener(localPort, connectionMgr) {
-    return net
-      .createServer(socket => {
+    return createServer(socket => {
         this._listener(socket, connectionMgr)
       })
       .listen({ port: localPort, host: '0.0.0.0' })

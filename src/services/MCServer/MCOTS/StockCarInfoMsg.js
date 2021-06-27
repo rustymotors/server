@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { log } = require('@drazisil/mco-logger')
+import { log } from '@drazisil/mco-logger'
 
 /**
  * Object for providing information on stock cars
@@ -104,4 +104,5 @@ class StockCarInfoMsg {
     )
   }
 }
-module.exports.StockCarInfoMsg = StockCarInfoMsg
+const _StockCarInfoMsg = StockCarInfoMsg
+export { _StockCarInfoMsg as StockCarInfoMsg }
