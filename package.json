@@ -18,7 +18,7 @@
     "lint": "eslint --fix \"src/**/*.js\"",
     "lint-test": "npm run lint && nyc mocha",
     "precommit": "npm run lint-test",
-    "postinstall": "mkdir db"
+    "postinstall": "mkdir -p db"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
   "license": "MPL-2.0",
