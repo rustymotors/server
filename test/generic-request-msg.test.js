@@ -5,13 +5,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import chai from 'chai';
-const {expect} = chai;
-import {premadeLogin} from '../src/services/LoginServer/packet.js';
+import {expect} from 'chai';
+import {GenericRequestMsg} from '../src/services/MCServer/GenericRequestMsg.js';
 
 /* eslint-env mocha */
 
-it('LoginServer - Packet', () => {
-  const packet = premadeLogin();
-  expect(Buffer.isBuffer(packet)).to.be.true;
+const genericRequestMessage1 = new GenericRequestMsg();
+
+it('GenericRequestMsg', () => {
+	const {msgNo} = genericRequestMessage1;
+	expect(msgNo).equals(0);
+	expect(genericRequestMessage1.serialize()).to.deep.equal(Buffer.alloc(16));
 });

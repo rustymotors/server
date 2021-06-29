@@ -5,13 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import chai from 'chai';
-const {expect} = chai;
-import {premadeLogin} from '../src/services/LoginServer/packet.js';
+import {expect} from 'chai';
+import {LobbyServer} from '../src/services/MCServer/LobbyServer/LobbyServer.js';
 
 /* eslint-env mocha */
 
-it('LoginServer - Packet', () => {
-  const packet = premadeLogin();
-  expect(Buffer.isBuffer(packet)).to.be.true;
+it('LobbyServer', () => {
+	const lobbyServer = new LobbyServer();
+	expect(lobbyServer._generateSessionKeyBuffer('123').length).equals(64);
+
+	expect(lobbyServer._npsHeartbeat().msgNo).equals(0x01_27);
 });

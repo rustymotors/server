@@ -1,16 +1,5 @@
 {
     "extends": [
-        "eslint:recommended",
-        "plugin:node/recommended"
-    ],
-    "parserOptions": {
-        "ecmaVersion": 9,
-        "sourceType": "module"
-    },
-    "env": {
-        "es6": true,
-        "jest": true,
-        "node": true,
-        "shared-node-browser": true
-    }
+        "eslint-config-xo-space"
+    ]    
 }

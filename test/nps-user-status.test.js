@@ -7,11 +7,12 @@
 
 import chai from 'chai';
 const {expect} = chai;
-import {premadeLogin} from '../src/services/LoginServer/packet.js';
+import {NPSUserStatus} from '../src/services/LoginServer/nps-user-status.js';
 
 /* eslint-env mocha */
 
-it('LoginServer - Packet', () => {
-  const packet = premadeLogin();
-  expect(Buffer.isBuffer(packet)).to.be.true;
+it('NPSUserStatus', () => {
+  const testPacket = Buffer.from([0x7B, 0x00]);
+  const npsUserStatus = new NPSUserStatus(testPacket);
+  expect(npsUserStatus.opCode).equals(123);
 });
