@@ -8,11 +8,11 @@
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
-import { createServer } from 'http'
-import config from '../../../config'
-import { readFileSync } from 'fs'
 import { debug, log } from '@drazisil/mco-logger'
-import { ShardEntry } from './ShardEntry'
+import { readFileSync } from 'fs'
+import { createServer } from 'http'
+import config from '../../../config/index.js'
+import { ShardEntry } from './ShardEntry.js'
 
 /**
  * Manages patch and update server connections
@@ -56,7 +56,13 @@ class PatchServer {
 
   constructor () {
     this.config = config
+    /**
+     * @type {string[]}
+     */
     this.banList = []
+    /**
+     * @type {string[]}
+     */
     this.possibleShards = []
 
     this.serverPatch = createServer((req, res) => {
@@ -213,11 +219,10 @@ class PatchServer {
   }
 
   /**
-   *
-   * @param {http.IncomingMessage} request
-   * @param {http.ServerResponse} response
    * @return {void}
-   * @memberof! PatchServer
+   * @memberof ! PatchServer
+   * @param {import("http").IncomingMessage} request
+   * @param {import("http").ServerResponse} response
    */
   _httpHandler (request, response) {
     let responseData
@@ -323,7 +328,7 @@ class PatchServer {
   /**
    *
    * @memberof! PatchServer
-   * @return {Promise<http.Server>}
+   * @return {Promise<import("http").Server>}
    */
   async start () {
     const serviceName = this.serviceName
@@ -335,5 +340,6 @@ class PatchServer {
 }
 const _CastanetResponse = CastanetResponse
 export { _CastanetResponse as CastanetResponse }
-const _PatchServer = PatchServer
 export { _PatchServer as PatchServer }
+const _PatchServer = PatchServer
+

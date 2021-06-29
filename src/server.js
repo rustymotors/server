@@ -5,10 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import config from '../config'
-import { AdminServer } from './services/AdminServer'
-import { MCServer } from './services/MCServer'
 import { log } from '@drazisil/mco-logger'
+import config from '../config/index.js'
+import { AdminServer } from './services/AdminServer/index.js'
+import { MCServer } from './services/MCServer/index.js'
 
 /**
  * Main game server

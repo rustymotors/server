@@ -6,11 +6,11 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-const { log } = require('@drazisil/mco-logger')
-const { AuthLogin } = require('./src/services/AuthLogin/AuthLogin')
-const { PatchServer } = require('./src/services/PatchAndShard/patchServer')
-const { Server } = require('./src/server')
-const { DatabaseManager } = require('./src/shared/DatabaseManager')
+import { log } from '@drazisil/mco-logger'
+import { Server } from './src/server.js'
+import { AuthLogin } from './src/services/AuthLogin/AuthLogin.js'
+import { PatchServer } from './src/services/PatchAndShard/patchServer.js'
+import { DatabaseManager } from './src/shared/DatabaseManager.js'
 
 // Database manager
 const databaseManager = new DatabaseManager()
