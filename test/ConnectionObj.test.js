@@ -5,20 +5,21 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { expect } = require('chai')
-const { Socket } = require('net')
-const sinon = require('sinon')
-const { ConnectionMgr } = require('../src/services/MCServer/ConnectionMgr')
-const { ConnectionObj } = require('../src/services/MCServer/ConnectionObj')
-const logger = require('@drazisil/mco-logger')
+import { expect } from 'chai'
+import { Socket } from 'net'
+import pkg from 'sinon';
+const { mock, createStubInstance } = pkg
+import { ConnectionMgr } from '../src/services/MCServer/ConnectionMgr.js'
+import { ConnectionObj } from '../src/services/MCServer/ConnectionObj.js'
+import logger from '@drazisil/mco-logger'
 
 /* eslint-env mocha */
 
-const fakeLogger = sinon.mock(logger)
+const fakeLogger = mock(logger)
 fakeLogger.expects('log').withArgs().atLeast(1)
 
 // TODO: REplace with testdouble
-const fakeConnectionManager = sinon.createStubInstance(ConnectionMgr)
+const fakeConnectionManager = createStubInstance(ConnectionMgr)
 
 it('ConnectionObj', () => {
   const testConnection = new ConnectionObj(

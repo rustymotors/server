@@ -6,9 +6,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { debug, log } from '@drazisil/mco-logger'
-import { ListenerThread } from './listenerThread'
-import { ConnectionMgr } from './ConnectionMgr'
-import config from '../../../config'
+import { ListenerThread } from './listenerThread.js'
+import { ConnectionMgr } from './ConnectionMgr.js'
+import config from '../../../config/index.js'
 
 /**
  * This class starts all the servers

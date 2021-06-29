@@ -5,8 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { expect } = require('chai')
-const { GenericRequestMsg } = require('../src/services/MCServer/GenericRequestMsg')
+import { expect } from 'chai'
+import { GenericRequestMsg } from '../src/services/MCServer/GenericRequestMsg.js'
 
 /* eslint-env mocha */
 

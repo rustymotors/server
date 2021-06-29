@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { debug } from '@drazisil/mco-logger'
-import { LobbyInfoPacket } from './LobbyInfo'
+import { LobbyInfoPacket } from './LobbyInfo.js'
 
 /**
  * @class

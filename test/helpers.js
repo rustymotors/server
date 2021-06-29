@@ -22,9 +22,11 @@ export const fakeConfig = {
     }
 }
 
+const FakeDatabaseManagerConstructor = constructor(DatabaseManager)
+export const fakeDatabaseManager = new FakeDatabaseManagerConstructor()
 
-const FakeMCServerConstructor = td.constructor(MCServer)
-const fakeMCServer = new FakeMCServerConstructor(fakeConfig, fakeDatabaseManager)
+export const FakeMCServerConstructor = constructor(MCServer)
+export const fakeMCServer = new FakeMCServerConstructor(fakeConfig, fakeDatabaseManager)
 
 /**
  * @type {IAppSettings}
@@ -34,9 +36,6 @@ const fakeSettings = {
 }
 const _fakeSettings = fakeSettings
 export { _fakeSettings as fakeSettings }
-
-const FakeDatabaseManagerConstructor = constructor(DatabaseManager)
-const fakeDatabaseManager = new FakeDatabaseManagerConstructor()
 
 const FakeConnectionManagerConstructor = constructor(ConnectionMgr)
 const fakeConnectionMgr = new FakeConnectionManagerConstructor(fakeDatabaseManager, fakeSettings)

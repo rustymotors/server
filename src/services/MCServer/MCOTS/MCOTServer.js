@@ -19,14 +19,6 @@ import { GenericReplyMsg } from '../GenericReplyMsg.js'
  * @property {module:MCO_Logger.logger} logger
  */
 class MCOTServer {
-  /**
-   * Creates an instance of MCOTServer.
-   * @class
-   * @param {module:MCO_Logger.logger} logger
-   */
-  constructor (logger) {
-    this.logger = logger
-  }
 
   /**
    * Return the string representation of the numeric opcode

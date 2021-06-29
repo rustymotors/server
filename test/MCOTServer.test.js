@@ -5,13 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { expect } = require('chai')
-const { MCOTServer } = require('../src/services/MCServer/MCOTS/MCOTServer')
-const { fakeLogger } = require('./helpers')
+import { expect } from 'chai'
+import { MCOTServer } from '../src/services/MCServer/MCOTS/MCOTServer.js'
+
 
 /* eslint-env mocha */
 
-const mcotServer = new MCOTServer(fakeLogger)
+const mcotServer = new MCOTServer()
 
 it('MCOTS Server', () => {
   expect(mcotServer._MSG_STRING(438)).equals('MC_CLIENT_CONNECT_MSG')

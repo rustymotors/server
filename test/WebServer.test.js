@@ -5,11 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const mock = require('mock-fs')
-const { AuthLogin } = require('../src/services/AuthLogin/AuthLogin')
-const { fakeConfig } = require('./helpers')
-const { IServerConfig } = require('../src/types') // lgtm [js/unused-local-variable]
-const { expect } = require('chai')
+import mock, { restore } from 'mock-fs'
+import { AuthLogin } from '../src/services/AuthLogin/AuthLogin.js'
+import { fakeConfig } from './helpers.js'
+import { expect } from 'chai'
 
 /* eslint-env mocha */
 
@@ -37,7 +36,7 @@ describe('WebServer', () => {
     } catch (error) {
       expect(error).contains(/cert.pem/)
     }
-    mock.restore()
+    restore()
     //  deepcode ignore WrongNumberOfArgs/test: false positive
     mock({
       '/cert/cert.pem': 'stuff'
@@ -47,7 +46,7 @@ describe('WebServer', () => {
     } catch (error) {
       expect(error).contains(/private.key/)
     }
-    mock.restore()
+    restore()
     //  deepcode ignore WrongNumberOfArgs/test: false positive
     mock({
       '/cert/cert.pem': 'stuff',
@@ -58,6 +57,6 @@ describe('WebServer', () => {
     } catch (error) {
       expect(error).contains(/private.key/)
     }
-    mock.restore()
+    restore()
   })
 })
