@@ -5,9 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const request = require('supertest')
-const { CastanetResponse, PatchServer } = require('../src/services/PatchAndShard/patchServer')
-const { expect } = require('chai')
+import { expect } from 'chai'
+import request from 'supertest'
+import { CastanetResponse, PatchServer } from '../src/services/PatchAndShard/patchServer.js'
 
 
 /* eslint-env mocha */

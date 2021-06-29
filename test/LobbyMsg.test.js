@@ -5,9 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { expect } = require('chai')
-const { LobbyInfoPacket } = require('../src/services/MCServer/MCOTS/LobbyInfo')
-const { LobbyMsg } = require('../src/services/MCServer/MCOTS/LobbyMsg')
+import { expect } from 'chai'
+import { LobbyInfoPacket } from '../src/services/MCServer/MCOTS/LobbyInfo.js'
+import { LobbyMsg } from '../src/services/MCServer/MCOTS/LobbyMsg.js'
 
 /* eslint-env mocha */
 

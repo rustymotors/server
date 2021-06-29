@@ -8,11 +8,11 @@
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
-const http = require('http')
-const config = require('../../../config')
-const fs = require('fs')
-const { debug, log } = require('@drazisil/mco-logger')
-const { ShardEntry } = require('./ShardEntry')
+import { debug, log } from '@drazisil/mco-logger'
+import { readFileSync } from 'fs'
+import { createServer } from 'http'
+import config from '../../../config/index.js'
+import { ShardEntry } from './ShardEntry.js'
 
 /**
  * Manages patch and update server connections
@@ -56,10 +56,16 @@ class PatchServer {
 
   constructor () {
     this.config = config
+    /**
+     * @type {string[]}
+     */
     this.banList = []
+    /**
+     * @type {string[]}
+     */
     this.possibleShards = []
 
-    this.serverPatch = http.createServer((req, res) => {
+    this.serverPatch = createServer((req, res) => {
       this._httpHandler(req, res)
     })
     this.serverPatch.on('error', (err) => {
@@ -163,7 +169,7 @@ class PatchServer {
  * @memberof! WebServer
  */
   _handleGetCert () {
-    return fs.readFileSync(this.config.certificate.certFilename).toString()
+    return readFileSync(this.config.certificate.certFilename).toString()
   }
 
   /**
@@ -172,7 +178,7 @@ class PatchServer {
    * @memberof! WebServer
    */
   _handleGetKey () {
-    return fs.readFileSync(this.config.certificate.publicKeyFilename).toString()
+    return readFileSync(this.config.certificate.publicKeyFilename).toString()
   }
 
   /**
@@ -213,11 +219,10 @@ class PatchServer {
   }
 
   /**
-   *
-   * @param {http.IncomingMessage} request
-   * @param {http.ServerResponse} response
    * @return {void}
-   * @memberof! PatchServer
+   * @memberof ! PatchServer
+   * @param {import("http").IncomingMessage} request
+   * @param {import("http").ServerResponse} response
    */
   _httpHandler (request, response) {
     let responseData
@@ -323,7 +328,7 @@ class PatchServer {
   /**
    *
    * @memberof! PatchServer
-   * @return {Promise<http.Server>}
+   * @return {Promise<import("http").Server>}
    */
   async start () {
     const serviceName = this.serviceName
@@ -333,5 +338,8 @@ class PatchServer {
     })
   }
 }
-module.exports.CastanetResponse = CastanetResponse
-module.exports.PatchServer = PatchServer
+const _CastanetResponse = CastanetResponse
+export { _CastanetResponse as CastanetResponse }
+export { _PatchServer as PatchServer }
+const _PatchServer = PatchServer
+

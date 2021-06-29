@@ -5,12 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { MessageNode, NPS_COMMANDS } = require('../../structures')
-const { defaultHandler } = require('./MCOTS/TCPManager')
-const { ConnectionObj } = require('./ConnectionObj')
-const { NPSPacketManager } = require('./npsPacketManager')
+import { MessageNode, NPS_COMMANDS } from '../../structures.js'
+import { defaultHandler } from './MCOTS/TCPManager.js'
+import { ConnectionObj } from './ConnectionObj.js'
+import { NPSPacketManager } from './npsPacketManager.js'
 
-const { debug, log } = require('@drazisil/mco-logger')
+import { debug, log } from '@drazisil/mco-logger'
 
 /**
  * @module ConnectionMgr
@@ -266,4 +266,5 @@ class ConnectionMgr {
     return this.connections
   }
 }
-module.exports.ConnectionMgr = ConnectionMgr
+const _ConnectionMgr = ConnectionMgr
+export { _ConnectionMgr as ConnectionMgr }

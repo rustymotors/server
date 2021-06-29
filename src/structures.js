@@ -1,3 +1,4 @@
+// @ts-check
 // mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
@@ -6,13 +7,13 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 // eslint-disable-next-line camelcase
-const _NPS_RiffListHeader = {
+export const _NPS_RiffListHeader = {
   StructSize: Buffer.alloc(4), // Uint4B
   NumRiffs: Buffer.alloc(4) // UInt4B
 }
 
 // eslint-disable-next-line camelcase
-const _NPS_RiffInfo = {
+export const _NPS_RiffInfo = {
   Riff: Buffer.alloc(32), // [32] Char
   Protocol: Buffer.alloc(4), // Uint4B
   CommId: Buffer.alloc(4), // Int4B
@@ -28,14 +29,14 @@ const _NPS_RiffInfo = {
   GameServerISRunning: Buffer.alloc(1) // Char
 }
 
-const LobbyMsg = {
+export const LobbyMsg = {
   msgNo: Buffer.alloc(4), // Uint4B
   noLobbies: Buffer.alloc(4), // Uint4B
   moreToCome: Buffer.alloc(4), // Uint4B
   lobbyInfo: Buffer.alloc(142) // [142] LobbyInfo
 }
 
-const LobbyInfo = {
+export const LobbyInfo = {
   lobbyID: Buffer.alloc(4), // Uint4B
   raceTypeID: Buffer.alloc(4), // Uint4B
   turfID: Buffer.alloc(4), // Uint4B
@@ -122,14 +123,14 @@ const LobbyInfo = {
 }
 
 // eslint-disable-next-line camelcase
-const GLDP_Persona = {
+export const GLDP_Persona = {
   customerId_: Buffer.alloc(4), // Uint4B
   personaId_: Buffer.alloc(4), // Uint4B
   creationDate_: Buffer.alloc(4), // Int4B
   personaName_: Buffer.alloc(33) // [33] Char
 }
 
-const _UserGameData = {
+export const _UserGameData = {
   CustomerId: Buffer.alloc(4), // Uint4B
   GameUserName: Buffer.alloc(33), // [33] Char
   ServerDataId: Buffer.alloc(4), // Uint4B
@@ -153,12 +154,12 @@ const _UserGameData = {
 }
 
 // eslint-disable-next-line camelcase
-const GLDP_PersonaList = {
+export const GLDP_PersonaList = {
   NPS_SerializeList: Buffer.alloc(48), // NPS_SerializeList
   maxPersonas_: Buffer.alloc(4)// Uint4B
 }
 
-const GenericReply = {
+export const GenericReply = {
   msgNo: Buffer.alloc(4), // Uint4B
   msgReply: Buffer.alloc(4), // Uint4B
   result: Buffer.alloc(4), // Uint4B
@@ -167,7 +168,7 @@ const GenericReply = {
 }
 
 // eslint-disable-next-line camelcase
-const NPS_GetPersonaMapListReq = {
+export const NPS_GetPersonaMapListReq = {
   NPS_SerializeList: Buffer.alloc(48), // NPS_SerializeList
   customerId_: Buffer.alloc(4) // Uint4B
 }
@@ -178,9 +179,9 @@ const NPS_GetPersonaMapListReq = {
  * @property {Buffer} _mcosig
  */
 class MsgHead {
-  constructor () {
-  // This is a 4B in the debug binary, the client is sending 2B
-  /** @type {Buffer} */
+  constructor() {
+    // This is a 4B in the debug binary, the client is sending 2B
+    /** @type {Buffer} */
     this._length = Buffer.alloc(2) // UInt4B
     /** @type {Buffer} */
     this._mcosig = Buffer.alloc(4) // UInt4B
@@ -189,37 +190,37 @@ class MsgHead {
   /**
    * @returns {number}
    */
-  get length () {
+  get length() {
     return this._length.readInt16BE()
   }
 
   /**
    * @param {number} value
    */
-  set length (value) {
+  set length(value) {
     this._length.writeInt16BE(value)
   }
 
   /**
    * @returns {Buffer}
    */
-  get mcosig () {
+  get mcosig() {
     return this._mcosig
   }
 
   /**
    * @param {Buffer} value
    */
-  set mcosig (value) {
+  set mcosig(value) {
     this._mcosig = value
   }
 }
 
-const BaseMsgHeader = {
+export const BaseMsgHeader = {
   msgNo: Buffer.alloc(4) // Uint4B
 }
 
-const CompressedHeader = {
+export const CompressedHeader = {
   uncompressedLength: Buffer.alloc(4), // Uint4B
   data: Buffer.alloc(0) // [0] Uint4B
 }
@@ -234,12 +235,12 @@ const CompressedHeader = {
  * @property {Buffer} _buffer
  * @property {Buffer} _rawBuffer
  */
-class MessageNode {
+export class MessageNode {
   /**
    *
    * @param {Buffer} buffer
    */
-  constructor (buffer) {
+  constructor(buffer) {
     this._toFrom = Buffer.alloc(4) // UInt4
     this._appID = Buffer.alloc(4) // UInt4
     this._header = new MsgHead() // UInt4
@@ -252,84 +253,84 @@ class MessageNode {
   /**
    * @returns {number}
    */
-  get toFrom () {
+  get toFrom() {
     return this._toFrom.readInt32BE()
   }
 
   /**
    * @param {number} value
    */
-  set toFrom (value) {
+  set toFrom(value) {
     this._toFrom.writeInt32BE(value)
   }
 
   /**
    * @returns {number}
    */
-  get appId () {
+  get appId() {
     return this._appID.readInt32BE()
   }
 
   /**
    * @param {number} value
    */
-  set appId (value) {
+  set appId(value) {
     this._appID.writeInt32BE(value)
   }
 
   /**
    * @returns {MsgHead}
    */
-  get header () {
+  get header() {
     return this._header
   }
 
   /**
    * @returns {number}
    */
-  get seq () {
+  get seq() {
     return this._seq.readInt32BE()
   }
 
   /**
    * @param {number} value
    */
-  set seq (value) {
+  set seq(value) {
     this._seq.writeInt32BE(value)
   }
 
   /**
    * @returns {number}
    */
-  get flags () {
+  get flags() {
     return this._flags.readInt32BE()
   }
 
   /**
    * @param {number} value
    */
-  set flags (value) {
+  set flags(value) {
     this._flags.writeInt32BE(value)
   }
 
   /**
    * @returns {Buffer}
    */
-  get buffer () {
+  get buffer() {
     return this._buffer
   }
 
   /**
    * @returns {Buffer}
    */
-  get rawBuffer () {
+  get rawBuffer() {
     return this._rawBuffer
   }
 
   /**
    * @param {Buffer} value
    */
-  set buffer (value) {
+  set buffer(value) {
     this._buffer = value
   }
 
@@ -338,7 +339,7 @@ class MessageNode {
    * @param {Buffer} buffer
    * @returns {MessageNode}
    */
-  static fromBuffer (buffer) {
+  static fromBuffer(buffer) {
     const newNode = new MessageNode(buffer)
     newNode.header.length = 24 + buffer.byteLength
     newNode.header.mcosig = buffer.slice(2, 6)
@@ -513,32 +514,15 @@ const NPS_LOBBY_COMMANDS = [
 /**
  * @type {InpsCommandMap[]}
  */
-const NPS_LOGIN_COMMANDS = [
+export const NPS_LOGIN_COMMANDS = [
   ...NPS_LOGINCLIENT_COMMANDS
 ]
 
 /**
  * @type {InpsCommandMap[]}
  */
-const NPS_COMMANDS = [
+export const NPS_COMMANDS = [
   ...NPS_LOBBY_COMMANDS, ...NPS_LOGINCLIENT_COMMANDS,
   { name: 'NPS_CRYPTO_DES_CBC', value: 0x1101, module: 'Lobby' }
 ]
 
-module.exports = {
-  _NPS_RiffInfo,
-  _NPS_RiffListHeader,
-  _UserGameData,
-  BaseMsgHeader,
-  CompressedHeader,
-  GenericReply,
-  GLDP_Persona,
-  GLDP_PersonaList,
-  LobbyInfo,
-  LobbyMsg,
-  MessageNode,
-  NPS_COMMANDS,
-  NPS_GetPersonaMapListReq,
-  NPS_LOBBY_COMMANDS,
-  NPS_LOGIN_COMMANDS
-}

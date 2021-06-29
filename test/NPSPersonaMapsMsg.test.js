@@ -5,8 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { NPSPersonaMapsMsg } = require("../src/services/MCServer/PersonaServer/NPSPersonaMapsMsg")
-const { expect } = require('chai')
+import { NPSPersonaMapsMsg } from "../src/services/MCServer/PersonaServer/NPSPersonaMapsMsg.js"
+import { expect } from 'chai'
 
 /* eslint-env mocha */
 

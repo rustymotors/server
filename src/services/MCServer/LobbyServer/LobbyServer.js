@@ -6,11 +6,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { NPSMsg } = require('../MCOTS/NPSMsg')
-const { PersonaServer } = require('../PersonaServer/PersonaServer')
-const { NPSUserInfo } = require('./npsUserInfo')
-const { DatabaseManager } = require('../../../shared/DatabaseManager')
-const { debug}  = require('@drazisil/mco-logger')
+import { debug } from '@drazisil/mco-logger'
+import { DatabaseManager } from '../../../shared/DatabaseManager.js'
+import { NPSMsg } from '../MCOTS/NPSMsg.js'
+import { PersonaServer } from '../PersonaServer/PersonaServer.js'
+import { NPSUserInfo } from './npsUserInfo.js'
   
 
 /**
@@ -276,4 +276,5 @@ class LobbyServer {
     return packetResult
   }
 }
-module.exports.LobbyServer = LobbyServer
+const _LobbyServer = LobbyServer
+export { _LobbyServer as LobbyServer }

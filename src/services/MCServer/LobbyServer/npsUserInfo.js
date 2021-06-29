@@ -6,8 +6,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { debug } = require('@drazisil/mco-logger')
-const { NPSMsg } = require('../MCOTS/NPSMsg')
+import { debug } from '@drazisil/mco-logger'
+import { NPSMsg } from '../MCOTS/NPSMsg.js'
 
 /**
  * @module NPSUserInfo
@@ -56,4 +56,5 @@ class NPSUserInfo extends NPSMsg {
     debug('[/NPSUserInfo]======================================', { service: this.serviceName })
   }
 }
-module.exports.NPSUserInfo = NPSUserInfo
+const _NPSUserInfo = NPSUserInfo
+export { _NPSUserInfo as NPSUserInfo }

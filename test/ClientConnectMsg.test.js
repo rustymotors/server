@@ -5,8 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { expect } = require('chai')
-const { ClientConnectMsg } = require('../src/services/MCServer/ClientConnectMsg')
+import { expect } from 'chai'
+import { ClientConnectMsg } from '../src/services/MCServer/ClientConnectMsg.js'
 
 /* eslint-env mocha */
 

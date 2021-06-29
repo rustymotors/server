@@ -5,15 +5,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { MessageNode } = require('./MessageNode')
-const { log } = require('@drazisil/mco-logger')
-const { MCOTServer } = require('./MCOTServer')
-const { ClientConnectMsg } = require('../ClientConnectMsg')
-const { GenericReplyMsg } = require('../GenericReplyMsg')
-const { GenericRequestMsg } = require('../GenericRequestMsg')
-const { StockCar } = require('./StockCar')
-const { StockCarInfoMsg } = require('./StockCarInfoMsg')
-const { DatabaseManager } = require('../../../shared/DatabaseManager')
+import { MessageNode } from './MessageNode.js'
+import { log } from '@drazisil/mco-logger'
+import { MCOTServer } from './MCOTServer.js'
+import { ClientConnectMsg } from '../ClientConnectMsg.js'
+import { GenericReplyMsg } from '../GenericReplyMsg.js'
+import { GenericRequestMsg } from '../GenericRequestMsg.js'
+import { StockCar } from './StockCar.js'
+import { StockCarInfoMsg } from './StockCarInfoMsg.js'
+import { DatabaseManager } from '../../../shared/DatabaseManager.js'
 
 /**
  * Manages TCP connection packet processing
@@ -45,7 +45,8 @@ async function compressIfNeeded(conn, node) {
   }
   return { conn, packetToWrite }
 }
-module.exports.compressIfNeeded = compressIfNeeded
+const _compressIfNeeded = compressIfNeeded
+export { _compressIfNeeded as compressIfNeeded }
 
 /**
  *
@@ -105,7 +106,8 @@ async function socketWriteIfOpen(conn, nodes) {
   })
   return updatedConnection
 }
-module.exports.socketWriteIfOpen = socketWriteIfOpen
+const _socketWriteIfOpen = socketWriteIfOpen
+export { _socketWriteIfOpen as socketWriteIfOpen }
 
 /**
  *
@@ -139,7 +141,8 @@ async function GetStockCarInfo(con, node) {
 
   return { con, nodes: [rPacket] }
 }
-module.exports.GetStockCarInfo = GetStockCarInfo
+const _GetStockCarInfo = GetStockCarInfo
+export { _GetStockCarInfo as GetStockCarInfo }
 
 /**
  *
@@ -203,7 +206,7 @@ async function ProcessInput(node, conn) {
       try {
         const result = await mcotServer._setOptions(conn, node)
         const responsePackets = result.nodes
-        return await module.exports.socketWriteIfOpen(
+        return await _socketWriteIfOpen(
           result.con,
           responsePackets
         )
@@ -217,7 +220,7 @@ async function ProcessInput(node, conn) {
       try {
         const result = await mcotServer._trackingMessage(conn, node)
         const responsePackets = result.nodes
-        return module.exports.socketWriteIfOpen(
+        return _socketWriteIfOpen(
           result.con,
           responsePackets
         )
@@ -231,7 +234,7 @@ async function ProcessInput(node, conn) {
       try {
         const result = await mcotServer._updatePlayerPhysical(conn, node)
         const responsePackets = result.nodes
-        return module.exports.socketWriteIfOpen(
+        return _socketWriteIfOpen(
           result.con,
           responsePackets
         )
@@ -404,4 +407,5 @@ async function defaultHandler(rawPacket) {
 
   return MessageReceived(messageNode, connection)
 }
-module.exports.defaultHandler = defaultHandler
+const _defaultHandler = defaultHandler
+export { _defaultHandler as defaultHandler }

@@ -272,4 +272,5 @@ function premadeLogin () {
     0x00 // (0xa6 was old val)
   ])
 }
-module.exports.premadeLogin = premadeLogin
+const _premadeLogin = premadeLogin
+export { _premadeLogin as premadeLogin }

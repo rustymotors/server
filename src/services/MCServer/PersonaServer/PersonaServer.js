@@ -5,9 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { NPSMsg } = require('../MCOTS/NPSMsg')
-const { NPSPersonaMapsMsg } = require('./NPSPersonaMapsMsg')
-const { debug } = require('@drazisil/mco-logger')
+import { debug } from '@drazisil/mco-logger'
+import { NPSMsg } from '../MCOTS/NPSMsg.js'
+import { NPSPersonaMapsMsg } from './NPSPersonaMapsMsg.js'
 
 /**
  * @module PersonaServer
@@ -463,4 +463,5 @@ class PersonaServer {
     }
   }
 }
-module.exports.PersonaServer = PersonaServer
+const _PersonaServer = PersonaServer
+export { _PersonaServer as PersonaServer }

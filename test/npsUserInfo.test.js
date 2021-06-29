@@ -5,8 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { NPSUserInfo } = require('../src/services/MCServer/LobbyServer/npsUserInfo')
-const { expect } = require('chai')
+import { NPSUserInfo } from '../src/services/MCServer/LobbyServer/npsUserInfo.js'
+import { expect } from 'chai'
 
 /* eslint-env mocha */
 
