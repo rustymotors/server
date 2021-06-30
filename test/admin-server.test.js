@@ -5,13 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import chai from 'chai';
-const {expect} = chai;
+import {expect, describe, it} from '@jest/globals';
 import mock, {restore} from 'mock-fs';
 import {AdminServer} from '../src/services/AdminServer/index.js';
 import {fakeConfig, fakeMCServer} from './helpers.js';
-
-/* eslint-env mocha */
 
 const adminServer = new AdminServer(fakeMCServer);
 
@@ -24,7 +21,7 @@ describe('AdminServer', () => {
     try {
       await adminServer._sslOptions(fakeConfig.serverConfig);
     } catch (error) {
-      expect(error).contains(/cert.pem/);
+      expect(error).toMatch(/cert.pem/);
     }
 
     restore();
@@ -35,7 +32,7 @@ describe('AdminServer', () => {
     try {
       await adminServer._sslOptions(fakeConfig.serverConfig);
     } catch (error) {
-      expect(error).contains(/private.key/);
+      expect(error).toMatch(/private.key/);
     }
 
     restore();
@@ -47,7 +44,7 @@ describe('AdminServer', () => {
     try {
       await adminServer._sslOptions(fakeConfig.serverConfig);
     } catch (error) {
-      expect(error).contains(/private.key/);
+      expect(error).toMatch(/private.key/);
     }
 
     restore();

@@ -5,15 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {expect} from 'chai';
-import {GenericRequestMsg} from '../src/services/MCServer/GenericRequestMsg.js';
-
-/* eslint-env mocha */
+import {expect, it} from '@jest/globals';
+import {GenericRequestMsg} from '../src/services/MCServer/generic-request-msg.js';
 
 const genericRequestMessage1 = new GenericRequestMsg();
 
 it('GenericRequestMsg', () => {
-	const {msgNo} = genericRequestMessage1;
-	expect(msgNo).equals(0);
-	expect(genericRequestMessage1.serialize()).to.deep.equal(Buffer.alloc(16));
+  const {msgNo} = genericRequestMessage1;
+  expect(msgNo).toEqual(0);
+  expect(genericRequestMessage1.serialize()).toStrictEqual(Buffer.alloc(16));
 });

@@ -5,18 +5,16 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {expect} from 'chai';
-import {StockCar} from '../src/services/MCServer/MCOTS/StockCar.js';
-
-/* eslint-env mocha */
+import {expect, test} from '@jest/globals';
+import {StockCar} from '../src/services/MCOTS/stock-car.js';
 
 const stockCar1 = new StockCar(105, 20, 0);
 
-it('StockCar', () => {
-	const {brandedPartId, retailPrice, bIsDealOfTheDay} = stockCar1;
-	expect(brandedPartId).equals(105);
+test('StockCar', () => {
+  const {brandedPartId, retailPrice, bIsDealOfTheDay} = stockCar1;
+  expect(brandedPartId).toEqual(105);
 
-	expect(retailPrice).equals(20);
+  expect(retailPrice).toEqual(20);
 
-	expect(bIsDealOfTheDay).equals(0);
+  expect(bIsDealOfTheDay).toEqual(0);
 });

@@ -9,7 +9,7 @@ import chai from 'chai';
 const {expect} = chai;
 import {premadeLogin} from '../src/services/LoginServer/packet.js';
 
-/* eslint-env mocha */
+
 
 it('LoginServer - Packet', () => {
   const packet = premadeLogin();

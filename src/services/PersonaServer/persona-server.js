@@ -295,12 +295,12 @@ class PersonaServer {
   async _getPersonasByCustomerId(customerId) {
     const results = this.personaList.filter(persona => persona.customerId === customerId);
     if (results.length === 0) {
-      throw new Error(
-        `Unable to locate a persona for customerId: ${customerId}`,
+      return Promise.reject(
+        new Error(`Unable to locate a persona for customerId: ${customerId}`),
       );
-    } else {
-      return results;
     }
+
+    return results;
   }
 
   /**

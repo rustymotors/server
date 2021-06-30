@@ -5,14 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {expect} from 'chai';
-import {LobbyServer} from '../src/services/MCServer/LobbyServer/LobbyServer.js';
-
-/* eslint-env mocha */
+import {expect, it} from '@jest/globals';
+import {LobbyServer} from '../src/services/LobbyServer/lobby-server.js';
 
 it('LobbyServer', () => {
-	const lobbyServer = new LobbyServer();
-	expect(lobbyServer._generateSessionKeyBuffer('123').length).equals(64);
+  const lobbyServer = new LobbyServer();
+  expect(lobbyServer._generateSessionKeyBuffer('123').length).toEqual(64);
 
-	expect(lobbyServer._npsHeartbeat().msgNo).equals(0x01_27);
+  expect(lobbyServer._npsHeartbeat().msgNo).toEqual(0x01_27);
 });

@@ -5,12 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {expect} from '@jest/globals';
+import {expect, it} from '@jest/globals';
 import {PersonaServer} from '../src/services/PersonaServer/persona-server.js';
 import {NPSMsg} from '../src/services/MCOTS/nps-msg.js';
 import {fakeSocket} from './helpers.js';
-
-/* eslint-env mocha */
 
 it('PersonaServer Methods', async () => {
   const personaServer = new PersonaServer();
@@ -25,10 +23,11 @@ it('PersonaServer Methods', async () => {
   expect(id1.readInt32BE(0)).toEqual(8_675_309);
   expect(name1.toString('utf8').length).toEqual(30);
 
-  expect(
-    async () => {
-      personaServer._getPersonasByCustomerId(123_654);
-    }).toEqual({});
+  try {
+    expect(typeof await personaServer._getPersonasByCustomerId(123_654)).toBe('string');
+  } catch (error) {
+    expect(error.length).toEqual([]);
+  }
 });
 
 it('PersonaServer _npsSelectGamePersona()', async () => {

@@ -5,14 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {expect} from 'chai';
+import {expect, test} from '@jest/globals';
 import {StockCarInfoMsg} from '../src/services/MCOTS/stock-car-info-msg.js';
-
-/* eslint-env mocha */
 
 const stockCarInfoMessage1 = new StockCarInfoMsg(1, 0, 0);
 
-it('StockCarInfoMsg', () => {
+test('StockCarInfoMsg', () => {
   const {
     msgNo,
     starterCash,
@@ -22,17 +20,17 @@ it('StockCarInfoMsg', () => {
     moreToCome,
     StockCarList,
   } = stockCarInfoMessage1;
-  expect(msgNo).equals(141);
+  expect(msgNo).toEqual(141);
 
-  expect(starterCash).equals(1);
+  expect(starterCash).toEqual(1);
 
-  expect(dealerId).equals(0);
+  expect(dealerId).toEqual(0);
 
-  expect(brand).equals(0);
+  expect(brand).toEqual(0);
 
-  expect(noCars).equals(1);
+  expect(noCars).toEqual(1);
 
-  expect(moreToCome).equals(0);
+  expect(moreToCome).toEqual(0);
 
-  expect(StockCarList).to.deep.equal([]);
+  expect(StockCarList).toStrictEqual([]);
 });

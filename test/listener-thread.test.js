@@ -5,12 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import chai from 'chai';
-const {expect} = chai;
+import {expect, it} from '@jest/globals';
 import {ListenerThread} from '../src/services/MCServer/listener-thread.js';
 import {fakeConnectionMgr, fakeConfig, fakeSocket, FakeConnectionConstructor} from './helpers.js';
-
-/* eslint-env mocha */
 
 it('ListenerThread', async () => {
   const listenerThread = new ListenerThread(fakeConfig);
@@ -27,12 +24,12 @@ it('ListenerThread - _onData', async () => {
   const fakeConnection1 = new FakeConnectionConstructor('test_connction_1', fakeSocket, fakeConnectionMgr);
   fakeConnection1.remoteAddress = '0.0.0.0';
 
-  expect(fakeConnection1.remoteAddress).equals('0.0.0.0');
+  expect(fakeConnection1.remoteAddress).toEqual('0.0.0.0');
 
   try {
     await listenerThread._onData(Buffer.alloc(5), fakeConnection1);
   } catch (error) {
-    expect(error.message).to.not.equal('Remote address is empty');
+    expect(error.message).not.toEqual('Remote address is empty');
   }
 
   const fakeConnection3 = new FakeConnectionConstructor('test_connction_3', fakeSocket, fakeConnectionMgr);
@@ -40,11 +37,11 @@ it('ListenerThread - _onData', async () => {
   fakeConnection3.mgr = fakeConnectionMgr;
   fakeConnection3.remoteAddress = undefined;
 
-  expect(fakeConnection3.remoteAddress).equals(undefined);
+  expect(fakeConnection3.remoteAddress).toEqual(undefined);
 
   try {
     await listenerThread._onData(Buffer.alloc(5), fakeConnection3);
   } catch (error) {
-    expect(error.message).includes('Remote address is empty');
+    expect(error.message).toContain('Remote address is empty');
   }
 });

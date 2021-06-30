@@ -10,7 +10,7 @@ import {debug} from '@drazisil/mco-logger';
 import {DatabaseManager} from '../shared/database-manager.js';
 import {NPSMsg} from '../MCOTS/nps-msg.js';
 import {PersonaServer} from '../PersonaServer/persona-server.js';
-import {NPSUserInfo} from './npsUserInfo.js';
+import {NPSUserInfo} from './nps-user-info.js';
 
 /**
  * Manages the game connection to the lobby and racing rooms

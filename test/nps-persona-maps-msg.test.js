@@ -5,13 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {expect} from 'chai';
-import {NPSPersonaMapsMsg} from '../src/services/MCServer/PersonaServer/NPSPersonaMapsMsg.js';
-
-/* eslint-env mocha */
+import {expect, it} from '@jest/globals';
+import {NPSPersonaMapsMsg} from '../src/services/PersonaServer/nps-persona-maps-msg.js';
 
 it('NPSPersonaMapsMsg', () => {
-	const npsPersonaMapsMessage = new NPSPersonaMapsMsg('RECEIVED');
-	expect(npsPersonaMapsMessage.direction).equals('RECEIVED');
-	expect(npsPersonaMapsMessage.msgNo).equals(0x6_07);
+  const npsPersonaMapsMessage = new NPSPersonaMapsMsg('RECEIVED');
+  expect(npsPersonaMapsMessage.direction).toEqual('RECEIVED');
+  expect(npsPersonaMapsMessage.msgNo).toEqual(0x6_07);
 });

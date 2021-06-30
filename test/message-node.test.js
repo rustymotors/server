@@ -5,10 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {expect} from 'chai';
-import {MessageNode} from '../src/services/MCServer/MCOTS/message-node.js';
-
-/* eslint-env mocha */
+import {expect, it} from '@jest/globals';
+import {MessageNode} from '../src/services/MCOTS/message-node.js';
 
 const messageNode1 = new MessageNode('RECEIVED');
 messageNode1.deserialize(
@@ -41,12 +39,12 @@ messageNode1.deserialize(
 it('MessageNode', () => {
   expect(() => {
     new MessageNode('RECEIVED').deserialize(Buffer.from([0x00, 0x00]));
-  }).throws('[MessageNode] Not long enough to deserialize, only 2 bytes long');
+  }).toThrow('[MessageNode] Not long enough to deserialize, only 2 bytes long');
 
-  expect(messageNode1.isMCOTS()).is.true;
+  expect(messageNode1.isMCOTS()).toBeTruthy();
   try {
     messageNode1.dumpPacket();
   } catch (error) {
-    expect(error).is.not.null;
+    expect(error).not.toBeNull();
   }
 });

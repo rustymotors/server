@@ -6,12 +6,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import mock, {restore} from 'mock-fs';
-import chai from 'chai';
-const {expect} = chai;
-import {AuthLogin} from '../src/services/AuthLogin/AuthLogin.js';
+import {expect, describe, it} from '@jest/globals';
+import {AuthLogin} from '../src/services/AuthLogin/auth-login.js';
 import {fakeConfig} from './helpers.js';
-
-/* eslint-env mocha */
 
 describe('WebServer', () => {
   const webServer = new AuthLogin(fakeConfig);
@@ -35,7 +32,7 @@ describe('WebServer', () => {
     try {
       await webServer._sslOptions(config);
     } catch (error) {
-      expect(error).contains(/cert.pem/);
+      expect(error).toMatch(/cert.pem/);
     }
 
     restore();
@@ -46,7 +43,7 @@ describe('WebServer', () => {
     try {
       await webServer._sslOptions(config);
     } catch (error) {
-      expect(error).contains(/private.key/);
+      expect(error).toMatch(/private.key/);
     }
 
     restore();
@@ -58,7 +55,7 @@ describe('WebServer', () => {
     try {
       await webServer._sslOptions(config);
     } catch (error) {
-      expect(error).contains(/private.key/);
+      expect(error).toMatch(/private.key/);
     }
 
     restore();

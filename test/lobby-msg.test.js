@@ -5,19 +5,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {expect} from 'chai';
-import {LobbyInfoPacket} from '../src/services/MCServer/MCOTS/LobbyInfo.js';
-import {LobbyMsg} from '../src/services/MCServer/MCOTS/LobbyMsg.js';
-
-/* eslint-env mocha */
+import {expect, it} from '@jest/globals';
+import {LobbyInfoPacket} from '../src/services/MCOTS/lobby-info.js';
+import {LobbyMsg} from '../src/services/MCOTS/lobby-msg.js';
 
 const lobbyInfo1 = new LobbyInfoPacket();
 const lobbyMessage1 = new LobbyMsg();
 
 it('LobbyInfo', () => {
-	expect(lobbyInfo1.toPacket().length).equals(567);
+  expect(lobbyInfo1.toPacket().length).toEqual(567);
 });
 
 it('LobbyMsg', () => {
-	expect(lobbyMessage1.data.length).equals(572);
+  expect(lobbyMessage1.data.length).toEqual(572);
 });

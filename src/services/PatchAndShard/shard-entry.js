@@ -24,7 +24,7 @@
  * @property {number} diagnosticServerPort
  */
 export class ShardEntry {
-	/**
+  /**
    *
    * @param {string} name
    * @param {string} description
@@ -42,46 +42,46 @@ export class ShardEntry {
    * @param {string} diagnosticServerHost
    * @param {number} diagnosticServerPort
    */
-	constructor(
-		name,
-		description,
-		id,
-		loginServerIp,
-		loginServerPort,
-		lobbyServerIp,
-		lobbyServerPort,
-		mcotsServerIp,
-		statusId,
-		statusReason,
-		serverGroupName,
-		population,
-		maxPersonasPerUser,
-		diagnosticServerHost,
-		diagnosticServerPort
-	) {
-		this.name = name;
-		this.description = description;
-		this.id = id;
-		this.loginServerIp = loginServerIp;
-		this.loginServerPort = loginServerPort;
-		this.lobbyServerIp = lobbyServerIp;
-		this.lobbyServerPort = lobbyServerPort;
-		this.mcotsServerIp = mcotsServerIp;
-		this.statusId = statusId;
-		this.statusReason = statusReason;
-		this.serverGroupName = serverGroupName;
-		this.population = population;
-		this.maxPersonasPerUser = maxPersonasPerUser;
-		this.diagnosticServerHost = diagnosticServerHost;
-		this.diagnosticServerPort = diagnosticServerPort;
-	}
+  constructor(
+    name,
+    description,
+    id,
+    loginServerIp,
+    loginServerPort,
+    lobbyServerIp,
+    lobbyServerPort,
+    mcotsServerIp,
+    statusId,
+    statusReason,
+    serverGroupName,
+    population,
+    maxPersonasPerUser,
+    diagnosticServerHost,
+    diagnosticServerPort,
+  ) {
+    this.name = name;
+    this.description = description;
+    this.id = id;
+    this.loginServerIp = loginServerIp;
+    this.loginServerPort = loginServerPort;
+    this.lobbyServerIp = lobbyServerIp;
+    this.lobbyServerPort = lobbyServerPort;
+    this.mcotsServerIp = mcotsServerIp;
+    this.statusId = statusId;
+    this.statusReason = statusReason;
+    this.serverGroupName = serverGroupName;
+    this.population = population;
+    this.maxPersonasPerUser = maxPersonasPerUser;
+    this.diagnosticServerHost = diagnosticServerHost;
+    this.diagnosticServerPort = diagnosticServerPort;
+  }
 
-	/**
+  /**
    *
    * @return {string}
    */
-	formatForShardList() {
-		return `[${this.name}]
+  formatForShardList() {
+    return `[${this.name}]
     Description=${this.description}
     ShardId=${this.id}
     LoginServerIP=${this.loginServerIp}
@@ -96,6 +96,6 @@ export class ShardEntry {
     MaxPersonasPerUser=${this.maxPersonasPerUser}
     DiagnosticServerHost=${this.diagnosticServerHost}
     DiagnosticServerPort=${this.diagnosticServerPort}`;
-	}
+  }
 }
 

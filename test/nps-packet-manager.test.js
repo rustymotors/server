@@ -5,15 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {expect} from 'chai';
-import {NPSPacketManager} from '../src/services/MCServer/npsPacketManager.js';
+import {expect, it, describe} from '@jest/globals';
+import {NPSPacketManager} from '../src/services/MCServer/nps-packet-manager.js';
 import {fakeDatabaseManager, fakeSettings} from './helpers.js';
 
-/* eslint-env mocha */
-
 describe('NPSPacketManager', () => {
-	it('NPSPacketManger', async () => {
-		const npsPacketManager = new NPSPacketManager(fakeDatabaseManager, fakeSettings);
-		expect(npsPacketManager.msgCodetoName(0x2_29)).to.equal('NPS_MINI_USER_LIST');
-	});
+  it('NPSPacketManger', async () => {
+    const npsPacketManager = new NPSPacketManager(fakeDatabaseManager, fakeSettings);
+    expect(npsPacketManager.msgCodetoName(0x2_29)).toEqual('NPS_MINI_USER_LIST');
+  });
 });

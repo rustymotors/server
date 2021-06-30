@@ -5,21 +5,29 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {expect} from 'chai';
-import {MCOTServer} from '../src/services/MCOTS/MCOTServer.js.js';
-
-/* eslint-env mocha */
+import {describe, expect, test} from '@jest/globals';
+import {MCOTServer} from '../src/services/MCOTS/mcots-server.js';
 
 const mcotServer = new MCOTServer();
 
-it('MCOTS Server', () => {
-  expect(mcotServer._MSG_STRING(438)).equals('MC_CLIENT_CONNECT_MSG');
+describe('MCOTS Server', () => {
+  test('msg_string()', () => {
+    expect(mcotServer._MSG_STRING(438)).toEqual('MC_CLIENT_CONNECT_MSG');
+  });
 
-  expect(mcotServer._MSG_STRING(105)).equals('MC_LOGIN');
+  test('msg_string()', () => {
+    expect(mcotServer._MSG_STRING(105)).toEqual('MC_LOGIN');
+  });
 
-  expect(mcotServer._MSG_STRING(106)).equals('MC_LOGOUT');
+  test('msg_string()', () => {
+    expect(mcotServer._MSG_STRING(106)).toEqual('MC_LOGOUT');
+  });
 
-  expect(mcotServer._MSG_STRING(109)).equals('MC_SET_OPTIONS');
+  test('msg_string()', () => {
+    expect(mcotServer._MSG_STRING(109)).toEqual('MC_SET_OPTIONS');
+  });
 
-  expect(mcotServer._MSG_STRING(141)).equals('MC_STOCK_CAR_INFO');
+  test('msg_string()', () => {
+    expect(mcotServer._MSG_STRING(141)).toEqual('MC_STOCK_CAR_INFO');
+  });
 });
