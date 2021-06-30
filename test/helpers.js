@@ -13,14 +13,31 @@ import {DatabaseManager} from '../src/services/shared/database-manager.js';
 import {ConnectionObj} from '../src/services/MCServer/connection-obj.js';
 import {MCServer} from '../src/services/MCServer/index.js';
 
+/**
+ * @property {Object} certificate
+ * @property {string} certificate.privateKeyFilename
+ * @property {string} certificate.publicKeyFilename
+ * @property {string} certificate.certFilename
+ * @property {Object} serverSettings
+ * @property {string} serverSettings.ipServer
+ * @property {Object} serviceConnections
+ * @property {string} serviceConnections.databaseURL
+ * @property {string} defaultLogLevel
+ */
 export const fakeConfig = {
-  serverConfig: {
+  certificate: {
     certFilename: '/cert/cert.pem',
     privateKeyFilename: '/cert/private.key',
-    ipServer: '',
     publicKeyFilename: '',
-    connectionURL: '',
+
   },
+  serverSettings: {
+    ipServer: '',
+  },
+  serviceConnections: {
+    databaseURL: '',
+  },
+  defaultLogLevel: 'warn',
 };
 
 const FakeDatabaseManagerConstructor = constructor(DatabaseManager);

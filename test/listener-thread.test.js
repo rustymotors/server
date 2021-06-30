@@ -9,14 +9,15 @@ import {expect, it} from '@jest/globals';
 import {ListenerThread} from '../src/services/MCServer/listener-thread.js';
 import {fakeConnectionMgr, fakeConfig, fakeSocket, FakeConnectionConstructor} from './helpers.js';
 
-it('ListenerThread', async () => {
-  const listenerThread = new ListenerThread(fakeConfig);
+// TODO: Determine way to mock server
+// it('ListenerThread', async () => {
+//   const listenerThread = new ListenerThread(fakeConfig);
 
-  const server = await listenerThread.startTCPListener(3000, fakeConnectionMgr);
+//   const server = await listenerThread.startTCPListener(3000, fakeConnectionMgr);
 
-  listenerThread._listener(fakeSocket, fakeConnectionMgr);
-  server.close();
-});
+//   listenerThread._listener(fakeSocket, fakeConnectionMgr);
+//   server.close();
+// });
 
 it('ListenerThread - _onData', async () => {
   const listenerThread = new ListenerThread(fakeConfig);

@@ -23,11 +23,7 @@ it('PersonaServer Methods', async () => {
   expect(id1.readInt32BE(0)).toEqual(8_675_309);
   expect(name1.toString('utf8').length).toEqual(30);
 
-  try {
-    expect(typeof await personaServer._getPersonasByCustomerId(123_654)).toBe('string');
-  } catch (error) {
-    expect(error.length).toEqual([]);
-  }
+  await expect(personaServer._getPersonasByCustomerId(123_654)).rejects.toThrowError(/Unable to locate a persona/);
 });
 
 it('PersonaServer _npsSelectGamePersona()', async () => {

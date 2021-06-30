@@ -7,12 +7,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import {createServer} from 'https';
-import {readFile} from 'fs';
-import {promisify} from 'util';
 import {log} from '@drazisil/mco-logger';
 import config from '../../../config/index.js';
-
-const readFilePromise = promisify(readFile);
+import {_sslOptions} from '../@drazisil/ssl-options.js';
 
 /**
  * SSL web server for managing the state of the system
@@ -33,43 +30,7 @@ export class AdminServer {
   constructor(mcServer) {
     this.config = config;
     this.mcServer = mcServer;
-  }
-
-  /**
-   * Create the SSL options object
-   *
-   * @param {config} configuration
-   * @returns {Promise<ISslOptions>}
-   */
-  async _sslOptions(configuration) {
-    const certSettings = configuration.certificate;
-    log(`Reading ${certSettings.certFilename}`, {service: 'mcoserver:AdminServer', level: 'debug'});
-
-    let cert;
-    let key;
-
-    try {
-      cert = await readFilePromise(certSettings.certFilename, {encoding: 'utf-8'});
-    } catch {
-      throw new Error(
-        `Error loading ${certSettings.certFilename}, server must quit!`,
-      );
-    }
-
-    try {
-      key = await readFilePromise(certSettings.privateKeyFilename, {encoding: 'utf-8'});
-    } catch {
-      throw new Error(
-        `Error loading ${certSettings.privateKeyFilename}, server must quit!`,
-      );
-    }
-
-    return {
-      cert,
-      honorCipherOrder: true,
-      key,
-      rejectUnauthorized: false,
-    };
+    this.serviceName = 'mcoserver:AdminServer0;';
   }
 
   /**
@@ -182,7 +143,7 @@ export class AdminServer {
    */
   async start(config) {
     try {
-      const sslOptions = await this._sslOptions(config);
+      const sslOptions = await _sslOptions(config, this.serviceName);
 
       /** @type {import("https").Server} */
       this.httpsServer = createServer(

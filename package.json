@@ -17,7 +17,7 @@
     "test": "npm run lint-test",
     "lint": "xo --fix",
     "lint-test": "npm run lint && npm run test:only",
-    "test:only": "node --trace-warnings --experimental-vm-modules node_modules/.bin/jest",
+    "test:only": "node --trace-warnings --experimental-vm-modules node_modules/.bin/jest --detectOpenHandles",
     "precommit": "npm run lint-test",
     "postinstall": "mkdir -p db"
   },
@@ -95,6 +95,8 @@
     ]
   },
   "jest": {
+    "cache": false,
+    "ci": true,
     "collectCoverage": true,
     "collectCoverageFrom": [
       "lib/**/*.js",
