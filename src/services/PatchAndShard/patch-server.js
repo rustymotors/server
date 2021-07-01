@@ -8,9 +8,9 @@
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
-import { debug, log } from '@drazisil/mco-logger'
 import { readFileSync } from 'fs'
 import { createServer } from 'http'
+import { debug, log } from '@drazisil/mco-logger'
 import config from '../../../config/index.js'
 import { ShardEntry } from './shard-entry.js'
 
