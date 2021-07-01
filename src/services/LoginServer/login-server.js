@@ -35,6 +35,7 @@ class LoginServer {
    * @returns {Promise<ConnectionObj>}
    */
   async dataHandler(rawPacket, config) {
+    let processed = true
     const { connection, data } = rawPacket
     const { localPort, remoteAddress } = rawPacket
     log(
@@ -64,23 +65,26 @@ class LoginServer {
           }}`,
           { service: this.serviceName },
         )
-        return connection
+        processed = false
     }
 
-    debug(
-      `responsePacket object from dataHandler',
+    if (processed) {
+      debug(
+        `responsePacket object from dataHandler',
       ${{
         userStatus: responsePacket.toString('hex'),
       }}`,
-      { service: this.serviceName },
-    )
-    debug(
-      `responsePacket's data prior to sending: ${responsePacket.toString(
-        'hex',
-      )}`,
-      { service: this.serviceName },
-    )
-    sock.write(responsePacket)
+        { service: this.serviceName },
+      )
+      debug(
+        `responsePacket's data prior to sending: ${responsePacket.toString(
+          'hex',
+        )}`,
+        { service: this.serviceName },
+      )
+      sock.write(responsePacket)
+    }
+
     return connection
   }
 
