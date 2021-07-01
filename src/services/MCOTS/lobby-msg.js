@@ -17,7 +17,7 @@ import { LobbyInfoPacket } from './lobby-info.js'
  * @property {number} dataLength
  * @property {Buffer} data
  */
-class LobbyMessage {
+export class LobbyMessage {
   /**
    *
    */
@@ -28,8 +28,12 @@ class LobbyMessage {
     this.moreToCome = 0
 
     this.lobbyList = new LobbyInfoPacket()
-    // This.dataLength = 572;
+    // The expected length here is 572
     this.dataLength = this.lobbyList.toPacket().length + 5
+
+    if (this.dataLength !== 572) {
+      throw new Error(`Unexpected length of packet! Expected 572, recieved ${this.dataLength}`)
+    }
 
     this.data = Buffer.alloc(this.dataLength)
     this.data.writeInt16LE(this.msgNo, 0)
@@ -63,5 +67,3 @@ class LobbyMessage {
     )
   }
 }
-const _LobbyMessage = LobbyMessage
-export { _LobbyMessage as LobbyMsg }
