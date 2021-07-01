@@ -5,16 +5,16 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {expect, test} from '@jest/globals';
-import {AdminServer} from '../src/services/AdminServer/index.js';
-import {fakeMCServer} from './helpers.js';
+import { expect, test } from '@jest/globals'
+import { AdminServer } from '../src/services/AdminServer/index.js'
+import { fakeMCServer } from './helpers.js'
 
 test('AdminServer', () => {
   try {
     // eslint-disable-next-line no-unused-vars
-    const _ = new AdminServer(fakeMCServer);
-    expect(true).toBeTruthy();
+    const _ = new AdminServer(fakeMCServer)
+    expect(true).toBeTruthy()
   } catch (error) {
-    expect(error).toBeFalsy();
+    expect(error).toBeFalsy()
   }
-});
+})

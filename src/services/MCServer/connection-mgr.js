@@ -5,11 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {debug, log} from '@drazisil/mco-logger';
-import {MessageNode, NPS_COMMANDS} from '../../structures.js';
-import {defaultHandler} from '../MCOTS/tcp-manager.js';
-import {ConnectionObj} from './connection-obj.js';
-import {NPSPacketManager} from './nps-packet-manager.js';
+import { debug, log } from '@drazisil/mco-logger'
+import { MessageNode, NPS_COMMANDS } from '../../structures.js'
+import { defaultHandler } from '../MCOTS/tcp-manager.js'
+import { ConnectionObj } from './connection-obj.js'
+import { NPSPacketManager } from './nps-packet-manager.js'
 
 /**
  * @module ConnectionMgr
@@ -29,18 +29,18 @@ class ConnectionMgr {
    * @param {IAppSettings} appSettings
    */
   constructor(databaseManager, appSettings) {
-    this.config = appSettings;
-    this.databaseMgr = databaseManager;
+    this.config = appSettings
+    this.databaseMgr = databaseManager
     /**
      * @type {module:ConnectionObj[]}
      */
-    this.connections = [];
-    this.newConnectionId = 1;
+    this.connections = []
+    this.newConnectionId = 1
     /**
      * @type {string[]}
      */
-    this.banList = [];
-    this.serviceName = 'mcoserver:ConnectionMgr';
+    this.banList = []
+    this.serviceName = 'mcoserver:ConnectionMgr'
   }
 
   /**
@@ -49,19 +49,20 @@ class ConnectionMgr {
    * @returns {Promise} {@link module:ConnectionObj~ConnectionObj}
    */
   async processData(rawPacket) {
-    const npsPacketManager = new NPSPacketManager(this.databaseMgr, this.config);
+    const npsPacketManager = new NPSPacketManager(this.databaseMgr, this.config)
 
-    const {remoteAddress, localPort, data} = rawPacket;
+    const { remoteAddress, localPort, data } = rawPacket
 
     // Log the packet as debug
     debug(
       `logging raw packet',
       ${{
-    remoteAddress,
-    localPort,
-    data: data.toString('hex'),
-  }}`, {service: this.serviceName},
-    );
+        remoteAddress,
+        localPort,
+        data: data.toString('hex'),
+      }}`,
+      { service: this.serviceName },
+    )
 
     switch (localPort) {
       case 8226:
@@ -70,23 +71,26 @@ class ConnectionMgr {
         debug(
           `Recieved NPS packet',
           ${{
-    opCode: rawPacket.data.readInt16BE(0),
-    msgName1: npsPacketManager.msgCodetoName(rawPacket.data.readInt16BE(0)),
-    msgName2: this.getNameFromOpCode(rawPacket.data.readInt16BE(0)),
-    localPort,
-  }}`, {service: this.serviceName},
-        );
+            opCode: rawPacket.data.readInt16BE(0),
+            msgName1: npsPacketManager.msgCodetoName(
+              rawPacket.data.readInt16BE(0),
+            ),
+            msgName2: this.getNameFromOpCode(rawPacket.data.readInt16BE(0)),
+            localPort,
+          }}`,
+          { service: this.serviceName },
+        )
         try {
-          return await npsPacketManager.processNPSPacket(rawPacket);
+          return await npsPacketManager.processNPSPacket(rawPacket)
         } catch (error) {
-          throw new Error(`Error in connectionMgr::processData ${error}`);
+          throw new Error(`Error in connectionMgr::processData ${error}`)
         }
       }
 
       case 43_300: {
         debug(
-          'Recieved MCOTS packet'
-          , {service: this.serviceName},
+          'Recieved MCOTS packet',
+          { service: this.serviceName },
           // {
           //   opCode: rawPacket.data.readInt16BE(0),
           //   msgName: `${npsPacketManager.msgCodetoName(
@@ -94,16 +98,18 @@ class ConnectionMgr {
           //   )} / ${this.getNameFromOpCode(rawPacket.data.readInt16BE(0))}`,
           //   localPort
           // }
-        );
-        const newNode = MessageNode.fromBuffer(rawPacket.data);
-        debug(newNode, {service: this.serviceName});
+        )
+        const newNode = MessageNode.fromBuffer(rawPacket.data)
+        debug(newNode, { service: this.serviceName })
 
-        return defaultHandler(rawPacket);
+        return defaultHandler(rawPacket)
       }
 
       default:
-        debug(rawPacket, {service: this.serviceName});
-        throw new Error(`We received a packet on port ${localPort}. We don't what to do yet, going to throw so the message isn't lost.`);
+        debug(rawPacket, { service: this.serviceName })
+        throw new Error(
+          `We received a packet on port ${localPort}. We don't what to do yet, going to throw so the message isn't lost.`,
+        )
     }
   }
 
@@ -113,12 +119,12 @@ class ConnectionMgr {
    * @returns {string}
    */
   getNameFromOpCode(opCode) {
-    const opCodeName = NPS_COMMANDS.find(code => code.value === opCode);
+    const opCodeName = NPS_COMMANDS.find(code => code.value === opCode)
     if (opCodeName === undefined) {
-      throw new Error(`Unable to locate name for opCode ${opCode}`);
+      throw new Error(`Unable to locate name for opCode ${opCode}`)
     }
 
-    return opCodeName.name;
+    return opCodeName.name
   }
 
   /**
@@ -127,12 +133,12 @@ class ConnectionMgr {
    * @returns {number}
    */
   getOpcodeFromName(name) {
-    const opCode = NPS_COMMANDS.find(code => code.name === name);
+    const opCode = NPS_COMMANDS.find(code => code.name === name)
     if (opCode === undefined) {
-      throw new Error(`Unable to locate opcode for name ${name}`);
+      throw new Error(`Unable to locate opcode for name ${name}`)
     }
 
-    return opCode.value;
+    return opCode.value
   }
 
   /**
@@ -140,7 +146,7 @@ class ConnectionMgr {
    * @return {string[]}
    */
   getBans() {
-    return this.banList;
+    return this.banList
   }
 
   /**
@@ -152,11 +158,11 @@ class ConnectionMgr {
    */
   findConnectionByAddressAndPort(remoteAddress, localPort) {
     return this.connections.find(connection => {
-      const match
-        = remoteAddress === connection.remoteAddress
-        && localPort === connection.localPort;
-      return match;
-    });
+      const match =
+        remoteAddress === connection.remoteAddress &&
+        localPort === connection.localPort
+      return match
+    })
   }
 
   /**
@@ -165,12 +171,14 @@ class ConnectionMgr {
    * @return {module:ConnectionObj}
    */
   findConnectionById(connectionId) {
-    const results = this.connections.find(connection => connectionId === connection.id);
+    const results = this.connections.find(
+      connection => connectionId === connection.id,
+    )
     if (results === undefined) {
-      throw new Error(`Unable to locate connection for id ${connectionId}`);
+      throw new Error(`Unable to locate connection for id ${connectionId}`)
     }
 
-    return results;
+    return results
   }
 
   /**
@@ -187,23 +195,22 @@ class ConnectionMgr {
           remoteAddress: address,
           localPort: port,
         })}`,
-
-      );
+      )
     }
 
     try {
       const index = this.connections.findIndex(
         connection =>
           connection.remoteAddress === address && connection.localPort === port,
-      );
-      this.connections.splice(index, 1);
-      this.connections.push(newConnection);
+      )
+      this.connections.splice(index, 1)
+      this.connections.push(newConnection)
     } catch (error) {
-      process.exitCode = -1;
-      throw new Error(
-        'Error updating connection',
-        {error, connections: this.connections},
-      );
+      process.exitCode = -1
+      throw new Error('Error updating connection', {
+        error,
+        connections: this.connections,
+      })
     }
   }
 
@@ -214,36 +221,37 @@ class ConnectionMgr {
    * @return {module:ConnectionObj}
    */
   findOrNewConnection(socket) {
-    const {remoteAddress, localPort} = socket;
+    const { remoteAddress, localPort } = socket
     if (!remoteAddress) {
       throw new Error(
         `No address in socket: ${JSON.stringify({
           remoteAddress,
           localPort,
         })}`,
-
-      );
+      )
     }
 
-    const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
+    const con = this.findConnectionByAddressAndPort(remoteAddress, localPort)
     if (con !== undefined) {
       log(
-        `[connectionMgr] I have seen connections from ${remoteAddress} on ${localPort} before`, {service: this.serviceName},
-      );
-      con.sock = socket;
-      return con;
+        `[connectionMgr] I have seen connections from ${remoteAddress} on ${localPort} before`,
+        { service: this.serviceName },
+      )
+      con.sock = socket
+      return con
     }
 
     const newConnection = new ConnectionObj(
       `${Date.now().toString()}_${this.newConnectionId}`,
       socket,
       this,
-    );
+    )
     log(
-      `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`, {service: this.serviceName},
-    );
-    this.connections.push(newConnection);
-    return newConnection;
+      `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`,
+      { service: this.serviceName },
+    )
+    this.connections.push(newConnection)
+    return newConnection
   }
 
   /**
@@ -252,9 +260,9 @@ class ConnectionMgr {
    */
   resetAllQueueState() {
     this.connections = this.connections.map(connection => {
-      connection.inQueue = true;
-      return connection;
-    });
+      connection.inQueue = true
+      return connection
+    })
   }
 
   /**
@@ -263,8 +271,8 @@ class ConnectionMgr {
    * @return {module:ConnectionObj[]}
    */
   dumpConnections() {
-    return this.connections;
+    return this.connections
   }
 }
-const _ConnectionMgr = ConnectionMgr;
-export {_ConnectionMgr as ConnectionMgr};
+const _ConnectionMgr = ConnectionMgr
+export { _ConnectionMgr as ConnectionMgr }

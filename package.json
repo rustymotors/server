@@ -86,8 +86,9 @@
   "xo": {
     "rules": {
       "unicorn/prefer-node-protocol": 0,
-      "no-unused-expressions": 1
-    }
+      "promise/prefer-await-to-then": 1
+    },
+    "prettier": true
   },
   "commitlint": {
     "extends": [
@@ -99,7 +100,7 @@
     "ci": true,
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "lib/**/*.js",
+      "src/**/*.js",
       "!**/node_modules/**",
       "!**/vendor/**"
     ],

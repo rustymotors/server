@@ -5,9 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {expect, it} from '@jest/globals';
-import {ListenerThread} from '../src/services/MCServer/listener-thread.js';
-import {fakeConnectionMgr, fakeConfig, fakeSocket, FakeConnectionConstructor} from './helpers.js';
+import { expect, it } from '@jest/globals'
+import { ListenerThread } from '../src/services/MCServer/listener-thread.js'
+import {
+  fakeConnectionMgr,
+  fakeConfig,
+  fakeSocket,
+  FakeConnectionConstructor,
+} from './helpers.js'
 
 // TODO: Determine way to mock server
 // it('ListenerThread', async () => {
@@ -20,29 +25,37 @@ import {fakeConnectionMgr, fakeConfig, fakeSocket, FakeConnectionConstructor} fr
 // });
 
 it('ListenerThread - _onData', async () => {
-  const listenerThread = new ListenerThread(fakeConfig);
+  const listenerThread = new ListenerThread(fakeConfig)
 
-  const fakeConnection1 = new FakeConnectionConstructor('test_connction_1', fakeSocket, fakeConnectionMgr);
-  fakeConnection1.remoteAddress = '0.0.0.0';
+  const fakeConnection1 = new FakeConnectionConstructor(
+    'test_connction_1',
+    fakeSocket,
+    fakeConnectionMgr,
+  )
+  fakeConnection1.remoteAddress = '0.0.0.0'
 
-  expect(fakeConnection1.remoteAddress).toEqual('0.0.0.0');
-
-  try {
-    await listenerThread._onData(Buffer.alloc(5), fakeConnection1);
-  } catch (error) {
-    expect(error.message).not.toEqual('Remote address is empty');
-  }
-
-  const fakeConnection3 = new FakeConnectionConstructor('test_connction_3', fakeSocket, fakeConnectionMgr);
-  fakeConnection3.sock = fakeSocket;
-  fakeConnection3.mgr = fakeConnectionMgr;
-  fakeConnection3.remoteAddress = undefined;
-
-  expect(fakeConnection3.remoteAddress).toEqual(undefined);
+  expect(fakeConnection1.remoteAddress).toEqual('0.0.0.0')
 
   try {
-    await listenerThread._onData(Buffer.alloc(5), fakeConnection3);
+    await listenerThread._onData(Buffer.alloc(5), fakeConnection1)
   } catch (error) {
-    expect(error.message).toContain('Remote address is empty');
+    expect(error.message).not.toEqual('Remote address is empty')
   }
-});
+
+  const fakeConnection3 = new FakeConnectionConstructor(
+    'test_connction_3',
+    fakeSocket,
+    fakeConnectionMgr,
+  )
+  fakeConnection3.sock = fakeSocket
+  fakeConnection3.mgr = fakeConnectionMgr
+  fakeConnection3.remoteAddress = undefined
+
+  expect(fakeConnection3.remoteAddress).toEqual(undefined)
+
+  try {
+    await listenerThread._onData(Buffer.alloc(5), fakeConnection3)
+  } catch (error) {
+    expect(error.message).toContain('Remote address is empty')
+  }
+})

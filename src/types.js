@@ -46,11 +46,11 @@
  */
 
 /**
-  * @global
-  * @typedef {Object} MCOTS_Session
-  * @property {module:ConnectionObj} con
-  * @property {module:MessageNode[]} nodes
-  */
+ * @global
+ * @typedef {Object} MCOTS_Session
+ * @property {module:ConnectionObj} con
+ * @property {module:MessageNode[]} nodes
+ */
 
 /**
  *

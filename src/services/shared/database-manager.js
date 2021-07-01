@@ -6,7 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import sqlite3 from 'sqlite3';
+import sqlite3 from 'sqlite3'
 
 /**
  * Database connection abstraction
@@ -22,11 +22,11 @@ export class DatabaseManager {
      * @name DatabaseManager#db
      */
 
-    this.localDB = new (sqlite3.verbose().Database)('db/mco.db');
+    this.localDB = new (sqlite3.verbose().Database)('db/mco.db')
 
-    const {localDB} = this;
+    const { localDB } = this
 
-    this.changes = 0;
+    this.changes = 0
 
     this.localDB.serialize(() => {
       localDB.run(`CREATE TABLE IF NOT EXISTS "sessions"
@@ -37,7 +37,7 @@ export class DatabaseManager {
           context_id text NOT NULL,
           connection_id text NOT NULL,
           CONSTRAINT pk_session PRIMARY KEY(customer_id)
-        );`);
+        );`)
 
       localDB.run(`CREATE TABLE IF NOT EXISTS "lobbies"
         (
@@ -121,13 +121,13 @@ export class DatabaseManager {
           "teamtBackwards" smallint NOT NULL,
           "teamtNumLaps" smallint NOT NULL,
           "raceCashFactor" real NOT NULL
-        );`);
-    });
-    this.serviceName = 'mcoserver:DatabaseMgr';
+        );`)
+    })
+    this.serviceName = 'mcoserver:DatabaseMgr'
   }
 
   db() {
-    return this.localDB;
+    return this.localDB
   }
 
   /**
@@ -139,20 +139,22 @@ export class DatabaseManager {
   async fetchSessionKeyByCustomerId(customerId) {
     return new Promise((resolve, reject) => {
       try {
-        const stmt = this.localDB.prepare('SELECT sessionkey, skey FROM sessions WHERE customer_id = ?');
+        const stmt = this.localDB.prepare(
+          'SELECT sessionkey, skey FROM sessions WHERE customer_id = ?',
+        )
         stmt.get(customerId, (error, row) => {
           if (error) {
-            reject(`Unable to fetch session key: ${error}`);
+            reject(new Error(`Unable to fetch session key: ${error}`))
           }
 
-          stmt.finalize();
+          stmt.finalize()
           /** @type {ISessionRecord} */
-          resolve(row);
-        });
+          resolve(row)
+        })
       } catch (error) {
-        reject(`Unable to fetch session key: ${error}`);
+        reject(new Error(`Unable to fetch session key: ${error}`))
       }
-    });
+    })
   }
 
   /**
@@ -165,20 +167,22 @@ export class DatabaseManager {
   async fetchSessionKeyByConnectionId(connectionId) {
     return new Promise((resolve, reject) => {
       try {
-        const stmt = this.localDB.prepare('SELECT sessionkey, skey FROM sessions WHERE connection_id = ?');
+        const stmt = this.localDB.prepare(
+          'SELECT sessionkey, skey FROM sessions WHERE connection_id = ?',
+        )
         stmt.get(connectionId, (error, row) => {
           if (error) {
-            reject(`Unable to fetch session key: ${error}`);
+            reject(new Error(`Unable to fetch session key: ${error}`))
           }
 
-          stmt.finalize();
+          stmt.finalize()
           /** @type {ISessionRecord} */
-          resolve(row);
-        });
+          resolve(row)
+        })
       } catch (error) {
-        reject(`Unable to fetch session key: ${error}`);
+        reject(new Error(`Unable to fetch session key: ${error}`))
       }
-    });
+    })
   }
 
   /**
@@ -191,22 +195,27 @@ export class DatabaseManager {
    * @memberof {DatabaseManager}
    */
   async _updateSessionKey(customerId, sessionkey, contextId, connectionId) {
-    const skey = sessionkey.slice(0, 16);
+    const skey = sessionkey.slice(0, 16)
 
     return new Promise((resolve, reject) => {
       try {
-        const stmt = this.localDB.prepare('INSERT INTO sessions (customer_id, sessionkey, skey, context_id, connection_id) VALUES ($customerId, $sessionkey, $skey, $contextId, $connectionId)');
-        stmt.run({customerId, sessionkey, skey, contextId, connectionId}, error => {
-          if (error) {
-            reject(`Unable to update session key: ${error}`);
-          }
+        const stmt = this.localDB.prepare(
+          'INSERT INTO sessions (customer_id, sessionkey, skey, context_id, connection_id) VALUES ($customerId, $sessionkey, $skey, $contextId, $connectionId)',
+        )
+        stmt.run(
+          { customerId, sessionkey, skey, contextId, connectionId },
+          error => {
+            if (error) {
+              reject(new Error(`Unable to update session key: ${error}`))
+            }
 
-          stmt.finalize();
-          resolve(/** @type {number} */ this.changes);
-        });
+            stmt.finalize()
+            resolve(/** @type {number} */ this.changes)
+          },
+        )
       } catch (error) {
-        reject(`Unable to update session key: ${error}`);
+        reject(new Error(`Unable to update session key: ${error}`))
       }
-    });
+    })
   }
 }

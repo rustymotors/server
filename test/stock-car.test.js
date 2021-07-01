@@ -5,16 +5,16 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {expect, test} from '@jest/globals';
-import {StockCar} from '../src/services/MCOTS/stock-car.js';
+import { expect, test } from '@jest/globals'
+import { StockCar } from '../src/services/MCOTS/stock-car.js'
 
-const stockCar1 = new StockCar(105, 20, 0);
+const stockCar1 = new StockCar(105, 20, 0)
 
 test('StockCar', () => {
-  const {brandedPartId, retailPrice, bIsDealOfTheDay} = stockCar1;
-  expect(brandedPartId).toEqual(105);
+  const { brandedPartId, retailPrice, bIsDealOfTheDay } = stockCar1
+  expect(brandedPartId).toEqual(105)
 
-  expect(retailPrice).toEqual(20);
+  expect(retailPrice).toEqual(20)
 
-  expect(bIsDealOfTheDay).toEqual(0);
-});
+  expect(bIsDealOfTheDay).toEqual(0)
+})

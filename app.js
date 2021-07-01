@@ -6,36 +6,29 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import {log} from '@drazisil/mco-logger';
-import {Server} from './src/server.js';
-import {AuthLogin} from './src/services/AuthLogin/AuthLogin.js';
-import {PatchServer} from './src/services/PatchAndShard/patchServer.js';
-import {DatabaseManager} from './src/shared/DatabaseManager.js';
+import { log } from '@drazisil/mco-logger'
+import { Server } from './src/server.js'
+import { AuthLogin } from './src/services/AuthLogin/AuthLogin.js'
+import { PatchServer } from './src/services/PatchAndShard/patchServer.js'
+import { DatabaseManager } from './src/shared/DatabaseManager.js'
 
 // Database manager
-const databaseManager = new DatabaseManager();
+const databaseManager = new DatabaseManager()
 
 // MCOS Monolith
-const server = new Server(databaseManager);
+const server = new Server(databaseManager)
 
 // MCOS PatchAndShard
-const patchAndShardServer = new PatchServer();
+const patchAndShardServer = new PatchServer()
 
 // MCOS AuthLogin and Shard
-const authLogin = new AuthLogin();
+const authLogin = new AuthLogin()
 
-Promise.all(
-	[server.start(),
-		patchAndShardServer.start(),
-		authLogin.start()]
-).then(
-	() => {
-		log('All servers started successfully');
-	}
-)
-	.catch(
-		error => {
-			process.exitCode = -1;
-			throw new Error(`There was an error starting the server: ${error}`);
-		}
-	);
+Promise.all([server.start(), patchAndShardServer.start(), authLogin.start()])
+  .then(() => {
+    log('All servers started successfully')
+  })
+  .catch(error => {
+    process.exitCode = -1
+    throw new Error(`There was an error starting the server: ${error}`)
+  })

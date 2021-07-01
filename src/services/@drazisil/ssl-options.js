@@ -6,20 +6,20 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {readFile} from 'fs';
-import {promisify} from 'util';
-import {debug} from '@drazisil/mco-logger';
+import { readFile } from 'fs'
+import { promisify } from 'util'
+import { debug } from '@drazisil/mco-logger'
 
-const readFilePromise = promisify(readFile);
+const readFilePromise = promisify(readFile)
 
 /**
-   *
-   * @typedef {Object} sslOptionsObj
-   * @property {string} cert
-   * @property {boolean} honorCipherOrder
-   * @property {string} key
-   * @property {boolean} rejectUnauthorized
-   */
+ *
+ * @typedef {Object} sslOptionsObj
+ * @property {string} cert
+ * @property {boolean} honorCipherOrder
+ * @property {string} key
+ * @property {boolean} rejectUnauthorized
+ */
 
 /**
    *
@@ -32,25 +32,29 @@ const readFilePromise = promisify(readFile);
    * @return {Promise<sslOptionsObj>}
    */
 export async function _sslOptions(certificateSettings, serviceName) {
-  debug(`Reading ${certificateSettings.certFilename}`, {service: serviceName});
+  debug(`Reading ${certificateSettings.certFilename}`, { service: serviceName })
 
-  let cert;
-  let key;
+  let cert
+  let key
 
   try {
-    cert = await readFilePromise(certificateSettings.certFilename, {encoding: 'utf-8'});
+    cert = await readFilePromise(certificateSettings.certFilename, {
+      encoding: 'utf-8',
+    })
   } catch (error) {
     throw new Error(
       `Error loading ${certificateSettings.certFilename}: (${error}), server must quit!`,
-    );
+    )
   }
 
   try {
-    key = await readFilePromise(certificateSettings.privateKeyFilename, {encoding: 'utf-8'});
+    key = await readFilePromise(certificateSettings.privateKeyFilename, {
+      encoding: 'utf-8',
+    })
   } catch (error) {
     throw new Error(
       `Error loading ${certificateSettings.privateKeyFilename}: (${error}), server must quit!`,
-    );
+    )
   }
 
   return {
@@ -58,5 +62,5 @@ export async function _sslOptions(certificateSettings, serviceName) {
     honorCipherOrder: true,
     key,
     rejectUnauthorized: false,
-  };
+  }
 }

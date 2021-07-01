@@ -5,8 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {debug} from '@drazisil/mco-logger';
-import {LobbyInfoPacket} from './lobby-info.js';
+import { debug } from '@drazisil/mco-logger'
+import { LobbyInfoPacket } from './lobby-info.js'
 
 /**
  * @class
@@ -22,21 +22,21 @@ class LobbyMessage {
    *
    */
   constructor() {
-    this.msgNo = 325;
+    this.msgNo = 325
 
-    this.noLobbies = 1;
-    this.moreToCome = 0;
+    this.noLobbies = 1
+    this.moreToCome = 0
 
-    this.lobbyList = new LobbyInfoPacket();
+    this.lobbyList = new LobbyInfoPacket()
     // This.dataLength = 572;
-    this.dataLength = this.lobbyList.toPacket().length + 5;
+    this.dataLength = this.lobbyList.toPacket().length + 5
 
-    this.data = Buffer.alloc(this.dataLength);
-    this.data.writeInt16LE(this.msgNo, 0);
-    this.data.writeInt16LE(this.noLobbies, 2);
-    this.data.writeInt8(this.moreToCome, 4);
-    this.lobbyList.toPacket().copy(this.data, 5);
-    this.serviceName = 'mcoserver:LobbyMsg';
+    this.data = Buffer.alloc(this.dataLength)
+    this.data.writeInt16LE(this.msgNo, 0)
+    this.data.writeInt16LE(this.noLobbies, 2)
+    this.data.writeInt8(this.moreToCome, 4)
+    this.lobbyList.toPacket().copy(this.data, 5)
+    this.serviceName = 'mcoserver:LobbyMsg'
   }
 
   /**
@@ -44,7 +44,7 @@ class LobbyMessage {
    * @return {Buffer}
    */
   serialize() {
-    return this.data;
+    return this.data
   }
 
   /**
@@ -55,12 +55,13 @@ class LobbyMessage {
     debug(
       `LobbyMsg',
       ${{
-    msgNo: this.msgNo,
-    dataLength: this.dataLength,
-    packet: this.serialize().toString('hex'),
-  }}`, {service: this.serviceName},
-    );
+        msgNo: this.msgNo,
+        dataLength: this.dataLength,
+        packet: this.serialize().toString('hex'),
+      }}`,
+      { service: this.serviceName },
+    )
   }
 }
-const _LobbyMessage = LobbyMessage;
-export {_LobbyMessage as LobbyMsg};
+const _LobbyMessage = LobbyMessage
+export { _LobbyMessage as LobbyMsg }

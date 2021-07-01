@@ -6,8 +6,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {AuthLogin} from './src/services/AuthLogin/AuthLogin.js';
+import { AuthLogin } from './src/services/AuthLogin/AuthLogin.js'
 
 // MCOS AuthLogin and Shard
-const authLogin = new AuthLogin();
-authLogin.start();
+const authLogin = new AuthLogin()
+authLogin.start()

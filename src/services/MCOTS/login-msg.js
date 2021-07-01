@@ -6,7 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {log} from '@drazisil/mco-logger';
+import { log } from '@drazisil/mco-logger'
 
 /**
  * @module LoginMsg
@@ -33,21 +33,21 @@ class LoginMessage {
    * @param {Buffer} buffer
    */
   constructor(buffer) {
-    this.msgNo = 0;
-    this.toFrom = 0;
-    this.appId = 0;
+    this.msgNo = 0
+    this.toFrom = 0
+    this.appId = 0
 
     // TODO: Why do I set these if I turn around and deserialize after?
-    this.customerId = 0;
-    this.personaId = 0;
-    this.lotOwnerId = 0;
-    this.brandedPartId = 0;
-    this.skinId = 0;
-    this.personaName = 'NotAPerson';
-    this.version = '0.0.0.0';
-    this.data = buffer;
+    this.customerId = 0
+    this.personaId = 0
+    this.lotOwnerId = 0
+    this.brandedPartId = 0
+    this.skinId = 0
+    this.personaName = 'NotAPerson'
+    this.version = '0.0.0.0'
+    this.data = buffer
 
-    this.deserialize(buffer);
+    this.deserialize(buffer)
   }
 
   /**
@@ -57,7 +57,7 @@ class LoginMessage {
    */
   deserialize(buffer) {
     try {
-      this.msgNo = buffer.readInt16LE(0);
+      this.msgNo = buffer.readInt16LE(0)
     } catch (error) {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
@@ -66,25 +66,25 @@ class LoginMessage {
           `[LoginMsg] Unable to read msgNo from ${buffer.toString(
             'hex',
           )}: ${error}`,
-        );
+        )
       }
 
       throw new Error(
         `[LoginMsg] Unable to read msgNo from ${buffer.toString(
           'hex',
         )}, error unknown`,
-      );
+      )
     }
 
-    this.customerId = buffer.readInt32LE(2);
-    this.personaId = buffer.readInt32LE(6);
+    this.customerId = buffer.readInt32LE(2)
+    this.personaId = buffer.readInt32LE(6)
 
-    this.lotOwnerId = buffer.readInt32LE(10);
-    this.brandedPartId = buffer.readInt32LE(14);
-    this.skinId = buffer.readInt32LE(18);
-    this.personaName = buffer.slice(22, 34).toString();
+    this.lotOwnerId = buffer.readInt32LE(10)
+    this.brandedPartId = buffer.readInt32LE(14)
+    this.skinId = buffer.readInt32LE(18)
+    this.personaName = buffer.slice(22, 34).toString()
 
-    this.version = buffer.slice(34).toString();
+    this.version = buffer.slice(34).toString()
   }
 
   /**
@@ -95,17 +95,18 @@ class LoginMessage {
     log(
       `LoginMsg',
       ${{
-    msgNo: this.msgNo.toString(),
-    customerId: this.customerId.toString(),
-    personaId: this.personaId.toString(),
-    lotOwnerId: this.lotOwnerId,
-    brandedPartId: this.brandedPartId,
-    skinId: this.skinId,
-    personaName: this.personaName,
-    version: this.version,
-  }}`, {service: 'mcoserver:LoginMsg'},
-    );
+        msgNo: this.msgNo.toString(),
+        customerId: this.customerId.toString(),
+        personaId: this.personaId.toString(),
+        lotOwnerId: this.lotOwnerId,
+        brandedPartId: this.brandedPartId,
+        skinId: this.skinId,
+        personaName: this.personaName,
+        version: this.version,
+      }}`,
+      { service: 'mcoserver:LoginMsg' },
+    )
   }
 }
-const _LoginMessage = LoginMessage;
-export {_LoginMessage as LoginMsg};
+const _LoginMessage = LoginMessage
+export { _LoginMessage as LoginMsg }

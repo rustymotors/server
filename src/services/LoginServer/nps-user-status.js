@@ -5,10 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {privateDecrypt} from 'crypto';
-import {readFileSync, statSync} from 'fs';
-import {debug} from '@drazisil/mco-logger';
-import {NPSMsg} from '../MCOTS/nps-msg.js';
+import { privateDecrypt } from 'crypto'
+import { readFileSync, statSync } from 'fs'
+import { debug } from '@drazisil/mco-logger'
+import { NPSMsg } from '../MCOTS/nps-msg.js'
 
 /**
  *
@@ -23,16 +23,18 @@ import {NPSMsg} from '../MCOTS/nps-msg.js';
  */
 function fetchPrivateKeyFromFile(privateKeyPath) {
   try {
-    statSync(privateKeyPath);
+    statSync(privateKeyPath)
   } catch (error) {
     if (error instanceof Error) {
-      throw new TypeError(`[npsUserStatus] Error loading private key: ${error.message}`);
+      throw new TypeError(
+        `[npsUserStatus] Error loading private key: ${error.message}`,
+      )
     }
 
-    throw new Error('[npsUserStatus] Error loading private key, error unknown');
+    throw new Error('[npsUserStatus] Error loading private key, error unknown')
   }
 
-  return readFileSync(privateKeyPath).toString();
+  return readFileSync(privateKeyPath).toString()
 }
 
 /**
@@ -56,19 +58,17 @@ class NPSUserStatus extends NPSMsg {
    * @param {Buffer} packet
    */
   constructor(packet) {
-    super('RECEIVED');
-    this.sessionkey = '';
+    super('RECEIVED')
+    this.sessionkey = ''
 
     // Save the NPS opCode
-    this.opCode = packet.readInt16LE(0);
+    this.opCode = packet.readInt16LE(0)
 
     // Save the contextId
-    this.contextId = packet.slice(14, 48).toString();
+    this.contextId = packet.slice(14, 48).toString()
 
     // Save the raw packet
-    this.buffer = packet;
-
-    return this;
+    this.buffer = packet
   }
 
   /**
@@ -83,14 +83,14 @@ class NPSUserStatus extends NPSMsg {
    */
   extractSessionKeyFromPacket(serverConfig, packet) {
     // Decrypt the sessionkey
-    const privateKey = fetchPrivateKeyFromFile(serverConfig.privateKeyFilename);
+    const privateKey = fetchPrivateKeyFromFile(serverConfig.privateKeyFilename)
 
     const sessionkeyString = Buffer.from(
       packet.slice(52, -10).toString('utf8'),
       'hex',
-    );
-    const decrypted = privateDecrypt(privateKey, sessionkeyString);
-    this.sessionkey = decrypted.slice(2, -4).toString('hex');
+    )
+    const decrypted = privateDecrypt(privateKey, sessionkeyString)
+    this.sessionkey = decrypted.slice(2, -4).toString('hex')
   }
 
   /**
@@ -108,22 +108,23 @@ class NPSUserStatus extends NPSMsg {
       contextId: this.contextId,
       sessionkey: this.sessionkey,
       rawBuffer: this.buffer.toString('hex'),
-    };
+    }
   }
 
   /**
    * @returns {void}
    */
   dumpPacket() {
-    this.dumpPacketHeader('NPSUserStatus');
+    this.dumpPacketHeader('NPSUserStatus')
     debug(
       `NPSUserStatus',
       ${{
-    contextId: this.contextId,
-    sessionkey: this.sessionkey,
-  }}`, {service: 'mcoserver:NPSUserStatus'},
-    );
+        contextId: this.contextId,
+        sessionkey: this.sessionkey,
+      }}`,
+      { service: 'mcoserver:NPSUserStatus' },
+    )
   }
 }
-const _NPSUserStatus = NPSUserStatus;
-export {_NPSUserStatus as NPSUserStatus};
+const _NPSUserStatus = NPSUserStatus
+export { _NPSUserStatus as NPSUserStatus }

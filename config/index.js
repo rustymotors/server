@@ -22,19 +22,19 @@ export const certificate = {
   privateKeyFilename: 'data/private_key.pem',
   publicKeyFilename: 'data/pub.key',
   certFilename: 'data/mcouniverse.crt',
-};
+}
 export const serverSettings = {
   ipServer: 'localhost',
-};
+}
 export const serviceConnections = {
   databaseURL: 'sqlite: :memory',
-};
-export const defaultLogLevel = 'info';
+}
+export const defaultLogLevel = 'info'
 
 const config = {
   certificate,
   serverSettings,
   serviceConnections,
   defaultLogLevel,
-};
-export default config;
+}
+export default config

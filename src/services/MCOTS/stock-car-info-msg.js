@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {log} from '@drazisil/mco-logger';
+import { log } from '@drazisil/mco-logger'
 
 /**
  * Object for providing information on stock cars
@@ -32,7 +32,7 @@ import {log} from '@drazisil/mco-logger';
  * @property {StockCar[]} StockCarList
  */
 class StockCarInfoMessage {
-	/**
+  /**
    * Creates an instance of StockCarInfoMsg.
    * @class
    * @param {number} starterCash
@@ -40,70 +40,71 @@ class StockCarInfoMessage {
    * @param {number} brand
    * @memberof StockCarInfoMsg
    */
-	constructor(starterCash, dealerId, brand) {
-		this.msgNo = 141;
-		this.starterCash = starterCash;
-		this.dealerId = dealerId;
-		this.brand = brand;
-		/** Number of cars */
-		this.noCars = 1;
-		/** @type {0|1} */
-		this.moreToCome = 0;
-		/** @type {module:StockCar} */
-		this.StockCarList = [];
-		this.serviceName = 'mcoserver:StockCarInfoMsg';
-	}
+  constructor(starterCash, dealerId, brand) {
+    this.msgNo = 141
+    this.starterCash = starterCash
+    this.dealerId = dealerId
+    this.brand = brand
+    /** Number of cars */
+    this.noCars = 1
+    /** @type {0|1} */
+    this.moreToCome = 0
+    /** @type {module:StockCar} */
+    this.StockCarList = []
+    this.serviceName = 'mcoserver:StockCarInfoMsg'
+  }
 
-	/**
+  /**
    *
    * @param {StockCar} car
    * @returns {void}
    */
-	addStockCar(car) {
-		this.StockCarList.push(car);
-		this.noCars = this.StockCarList.length;
-	}
+  addStockCar(car) {
+    this.StockCarList.push(car)
+    this.noCars = this.StockCarList.length
+  }
 
-	/**
+  /**
    *
    * @return {Buffer}
    */
-	serialize() {
-		// This does not count the StockCar array
-		const packet = Buffer.alloc(17 + 9 * this.StockCarList.length);
-		packet.writeInt16LE(this.msgNo, 0);
-		packet.writeInt32LE(this.starterCash, 2);
-		packet.writeInt32LE(this.dealerId, 6);
-		packet.writeInt32LE(this.brand, 10);
-		packet.writeInt16LE(this.noCars, 14);
-		packet.writeInt8(this.moreToCome, 16);
-		if (this.StockCarList.length > 0) {
-			for (const [i, stockCar] of this.StockCarList.entries()) {
-				const offset = 10 * i;
-				stockCar.serialize().copy(packet, 17 + offset);
-			}
-		}
+  serialize() {
+    // This does not count the StockCar array
+    const packet = Buffer.alloc((17 + 9) * this.StockCarList.length)
+    packet.writeInt16LE(this.msgNo, 0)
+    packet.writeInt32LE(this.starterCash, 2)
+    packet.writeInt32LE(this.dealerId, 6)
+    packet.writeInt32LE(this.brand, 10)
+    packet.writeInt16LE(this.noCars, 14)
+    packet.writeInt8(this.moreToCome, 16)
+    if (this.StockCarList.length > 0) {
+      for (const [i, stockCar] of this.StockCarList.entries()) {
+        const offset = 10 * i
+        stockCar.serialize().copy(packet, 17 + offset)
+      }
+    }
 
-		return packet;
-	}
+    return packet
+  }
 
-	/**
+  /**
    * DumpPacket
    * @returns {void}
    */
-	dumpPacket() {
-		log(
-			`${{
-				msgNo: this.msgNo,
-				starterCash: this.starterCash,
-				dealerId: this.dealerId,
-				brand: this.brand,
-				noCars: this.noCars,
-				moreToCome: this.moreToCome,
-				stockCarList: this.StockCarList.toString()
-			}}`, {service: this.serviceName, level: 'debug'}
-		);
-	}
+  dumpPacket() {
+    log(
+      `${{
+        msgNo: this.msgNo,
+        starterCash: this.starterCash,
+        dealerId: this.dealerId,
+        brand: this.brand,
+        noCars: this.noCars,
+        moreToCome: this.moreToCome,
+        stockCarList: this.StockCarList.toString(),
+      }}`,
+      { service: this.serviceName, level: 'debug' },
+    )
+  }
 }
-const _StockCarInfoMessage = StockCarInfoMessage;
-export {_StockCarInfoMessage as StockCarInfoMsg};
+const _StockCarInfoMessage = StockCarInfoMessage
+export { _StockCarInfoMessage as StockCarInfoMsg }
