@@ -19,7 +19,9 @@ import { fakeConfig } from './helpers.js'
 
 describe('sslOptions()', () => {
   beforeEach(() => {
-    jest.spyOn(fs, 'statSync').mockImplementation(() => {})
+    jest.spyOn(fs, 'statSync').mockImplementation(() => {
+      // This is intentionally empty
+    })
   })
 
   afterEach(() => {
