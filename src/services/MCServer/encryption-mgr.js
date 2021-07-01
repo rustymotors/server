@@ -25,7 +25,8 @@ export class EncryptionManager {
    *
    */
   constructor() {
-    const hash = createHash('sha256')
+    // This hash is used for an id only.
+    const hash = createHash('sha512')
     const timestamp = (Date.now() + Math.random()).toString()
     hash.update(timestamp)
     this.id = hash.digest('hex')
