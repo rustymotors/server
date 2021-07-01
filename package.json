@@ -60,7 +60,7 @@
     "source-map-support": "0.5.19",
     "supertest": "6.1.3",
     "testdouble": "3.16.1",
-    "typescript": "4.3.4",
+    "typescript": "4.3.5",
     "xo": "0.40.3"
   },
   "nyc": {
