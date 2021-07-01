@@ -6,9 +6,14 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { premadeLogin } from '../src/services/LoginServer/packet.js'
+import { NPSUserInfo } from '../src/services/LobbyServer/nps-user-info.js'
 
-it('LoginServer - Packet', () => {
-  const packet = premadeLogin()
-  expect(Buffer.isBuffer(packet)).toBeTruthy()
+it('NPSUserInfo', () => {
+  const testPacket = Buffer.concat([
+    Buffer.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x84, 0x5f, 0xed]),
+    Buffer.alloc(98),
+  ])
+  const npsUserInfo = new NPSUserInfo('RECEIVED')
+  npsUserInfo.deserialize(testPacket)
+  expect(npsUserInfo.userId).toEqual(8_675_309)
 })

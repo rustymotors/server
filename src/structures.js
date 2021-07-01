@@ -1,18 +1,17 @@
+/* eslint-disable camelcase */
 // @ts-check
-// mco-server is a game server, written from scratch, for an old game
+// Mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-// eslint-disable-next-line camelcase
 export const _NPS_RiffListHeader = {
   StructSize: Buffer.alloc(4), // Uint4B
-  NumRiffs: Buffer.alloc(4) // UInt4B
+  NumRiffs: Buffer.alloc(4), // UInt4B
 }
 
-// eslint-disable-next-line camelcase
 export const _NPS_RiffInfo = {
   Riff: Buffer.alloc(32), // [32] Char
   Protocol: Buffer.alloc(4), // Uint4B
@@ -26,14 +25,14 @@ export const _NPS_RiffInfo = {
   NumberOfReadyPlayers: Buffer.alloc(4), // Uint4B
   MaxReadyPlayers: Buffer.alloc(4), // Uint4B
   MasterUserId: Buffer.alloc(4), // Uint4B
-  GameServerISRunning: Buffer.alloc(1) // Char
+  GameServerISRunning: Buffer.alloc(1), // Char
 }
 
-export const LobbyMsg = {
+export const LobbyMessage = {
   msgNo: Buffer.alloc(4), // Uint4B
   noLobbies: Buffer.alloc(4), // Uint4B
   moreToCome: Buffer.alloc(4), // Uint4B
-  lobbyInfo: Buffer.alloc(142) // [142] LobbyInfo
+  lobbyInfo: Buffer.alloc(142), // [142] LobbyInfo
 }
 
 export const LobbyInfo = {
@@ -119,15 +118,14 @@ export const LobbyInfo = {
   bteamtrialbackwards: Buffer.alloc(4), // Uint4B
   teamtrialnumlaps: Buffer.alloc(4), // Uint4B
   teamtrialbaseTUP: Buffer.alloc(4), // Uint4B
-  raceCashFactor: Buffer.alloc(4) // Float (4B)
+  raceCashFactor: Buffer.alloc(4), // Float (4B)
 }
 
-// eslint-disable-next-line camelcase
 export const GLDP_Persona = {
   customerId_: Buffer.alloc(4), // Uint4B
   personaId_: Buffer.alloc(4), // Uint4B
   creationDate_: Buffer.alloc(4), // Int4B
-  personaName_: Buffer.alloc(33) // [33] Char
+  personaName_: Buffer.alloc(33), // [33] Char
 }
 
 export const _UserGameData = {
@@ -150,13 +148,12 @@ export const _UserGameData = {
   GameStart: Buffer.alloc(4), // Int4B
   CurrentKey: Buffer.alloc(400), // [400] Char
   PersonaLevle: Buffer.alloc(4), // Int4B
-  ShardId: Buffer.alloc(4) // Uint4B
+  ShardId: Buffer.alloc(4), // Uint4B
 }
 
-// eslint-disable-next-line camelcase
 export const GLDP_PersonaList = {
   NPS_SerializeList: Buffer.alloc(48), // NPS_SerializeList
-  maxPersonas_: Buffer.alloc(4)// Uint4B
+  maxPersonas_: Buffer.alloc(4), // Uint4B
 }
 
 export const GenericReply = {
@@ -164,13 +161,12 @@ export const GenericReply = {
   msgReply: Buffer.alloc(4), // Uint4B
   result: Buffer.alloc(4), // Uint4B
   data: Buffer.alloc(4), // Uint4B
-  data2: Buffer.alloc(4) // Uint4B
+  data2: Buffer.alloc(4), // Uint4B
 }
 
-// eslint-disable-next-line camelcase
-export const NPS_GetPersonaMapListReq = {
+export const NPS_GetPersonaMapListRequest = {
   NPS_SerializeList: Buffer.alloc(48), // NPS_SerializeList
-  customerId_: Buffer.alloc(4) // Uint4B
+  customerId_: Buffer.alloc(4), // Uint4B
 }
 
 /**
@@ -178,7 +174,7 @@ export const NPS_GetPersonaMapListReq = {
  * @property {Buffer} _length
  * @property {Buffer} _mcosig
  */
-class MsgHead {
+class MessageHead {
   constructor() {
     // This is a 4B in the debug binary, the client is sending 2B
     /** @type {Buffer} */
@@ -216,13 +212,13 @@ class MsgHead {
   }
 }
 
-export const BaseMsgHeader = {
-  msgNo: Buffer.alloc(4) // Uint4B
+export const BaseMessageHeader = {
+  msgNo: Buffer.alloc(4), // Uint4B
 }
 
 export const CompressedHeader = {
   uncompressedLength: Buffer.alloc(4), // Uint4B
-  data: Buffer.alloc(0) // [0] Uint4B
+  data: Buffer.alloc(0), // [0] Uint4B
 }
 
 /**
@@ -243,7 +239,7 @@ export class MessageNode {
   constructor(buffer) {
     this._toFrom = Buffer.alloc(4) // UInt4
     this._appID = Buffer.alloc(4) // UInt4
-    this._header = new MsgHead() // UInt4
+    this._header = new MessageHead() // UInt4
     this._seq = Buffer.alloc(4) // UInt4
     this._flags = Buffer.alloc(4) // UInt4
     this._rawBuffer = buffer
@@ -279,7 +275,7 @@ export class MessageNode {
   }
 
   /**
-   * @returns {MsgHead}
+   * @returns {MessageHead}
    */
   get header() {
     return this._header
@@ -321,17 +317,17 @@ export class MessageNode {
   }
 
   /**
-   * @returns {Buffer}
-   */
-  get rawBuffer() {
-    return this._rawBuffer
-  }
-
-  /**
    * @param {Buffer} value
    */
   set buffer(value) {
     this._buffer = value
+  }
+
+  /**
+   * @returns {Buffer}
+   */
+  get rawBuffer() {
+    return this._rawBuffer
   }
 
   /**
@@ -398,7 +394,7 @@ const NPS_LOBBYSERVER_COMMANDS = [
   { name: 'NPS_INC_MINI_USER_LIST', value: 556, module: 'Lobby' },
   { name: 'NPS_DEC_MINI_USER_LIST', value: 557, module: 'Lobby' },
   { name: 'NPS_BUDDY_LIST', value: 558, module: 'Lobby' },
-  { name: 'NPS_BUDDYLIST_UPDATE', value: 559, module: 'Lobby' }
+  { name: 'NPS_BUDDYLIST_UPDATE', value: 559, module: 'Lobby' },
 ]
 
 /**
@@ -450,7 +446,7 @@ const NPS_LOBBYCLIENT_COMMANDS = [
   { name: 'NPS_UDP_FAILURE', value: 297, module: 'Lobby' },
   { name: 'NPS_BUDDYLIST_REFRESH', value: 298, module: 'Lobby' },
   { name: 'NPS_BUDDYLIST_ADD_USERS', value: 299, module: 'Lobby' },
-  { name: 'NPS_BUDDYLIST_REMOVE_USERS', value: 300, module: 'Lobby' }
+  { name: 'NPS_BUDDYLIST_REMOVE_USERS', value: 300, module: 'Lobby' },
 ]
 
 /**
@@ -501,28 +497,27 @@ const NPS_LOGINCLIENT_COMMANDS = [
   { name: 'NPS_GET_PERSONA_MAPS', value: 1330, module: 'Login' },
   { name: 'NPS_VALIDATE_PERSONA_NAME', value: 1331, module: 'Login' },
   { name: 'NPS_CHECK_TOKEN', value: 1332, module: 'Login' },
-  { name: 'NPS_GET_USER_STATUS', value: 1333, module: 'Login' }
+  { name: 'NPS_GET_USER_STATUS', value: 1333, module: 'Login' },
 ]
 
 /**
  * @type {InpsCommandMap[]}
  */
 const NPS_LOBBY_COMMANDS = [
-  ...NPS_LOBBYCLIENT_COMMANDS, ...NPS_LOBBYSERVER_COMMANDS
+  ...NPS_LOBBYCLIENT_COMMANDS,
+  ...NPS_LOBBYSERVER_COMMANDS,
 ]
 
 /**
  * @type {InpsCommandMap[]}
  */
-export const NPS_LOGIN_COMMANDS = [
-  ...NPS_LOGINCLIENT_COMMANDS
-]
+export const NPS_LOGIN_COMMANDS = [...NPS_LOGINCLIENT_COMMANDS]
 
 /**
  * @type {InpsCommandMap[]}
  */
 export const NPS_COMMANDS = [
-  ...NPS_LOBBY_COMMANDS, ...NPS_LOGINCLIENT_COMMANDS,
-  { name: 'NPS_CRYPTO_DES_CBC', value: 0x1101, module: 'Lobby' }
+  ...NPS_LOBBY_COMMANDS,
+  ...NPS_LOGINCLIENT_COMMANDS,
+  { name: 'NPS_CRYPTO_DES_CBC', value: 0x11_01, module: 'Lobby' },
 ]
-

@@ -6,9 +6,16 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { premadeLogin } from '../src/services/LoginServer/packet.js'
+import { ClientConnectMsg } from '../src/services/MCServer/client-connect-msg.js'
 
-it('LoginServer - Packet', () => {
-  const packet = premadeLogin()
-  expect(Buffer.isBuffer(packet)).toBeTruthy()
+it('ClientConnectMsg', () => {
+  const clientConnectMessage1 = new ClientConnectMsg(
+    Buffer.concat([
+      Buffer.from([0xb6, 0x01]),
+      Buffer.from('TOMC'),
+      Buffer.alloc(12),
+    ]),
+  )
+
+  expect(clientConnectMessage1.msgNo).toEqual(438)
 })

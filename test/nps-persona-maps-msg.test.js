@@ -6,9 +6,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { premadeLogin } from '../src/services/LoginServer/packet.js'
+import { NPSPersonaMapsMsg } from '../src/services/PersonaServer/nps-persona-maps-msg.js'
 
-it('LoginServer - Packet', () => {
-  const packet = premadeLogin()
-  expect(Buffer.isBuffer(packet)).toBeTruthy()
+it('NPSPersonaMapsMsg', () => {
+  const npsPersonaMapsMessage = new NPSPersonaMapsMsg('RECEIVED')
+  expect(npsPersonaMapsMessage.direction).toEqual('RECEIVED')
+  expect(npsPersonaMapsMessage.msgNo).toEqual(0x6_07)
 })

@@ -6,9 +6,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { premadeLogin } from '../src/services/LoginServer/packet.js'
+import { NPSUserStatus } from '../src/services/LoginServer/nps-user-status.js'
 
-it('LoginServer - Packet', () => {
-  const packet = premadeLogin()
-  expect(Buffer.isBuffer(packet)).toBeTruthy()
+it('NPSUserStatus', () => {
+  const testPacket = Buffer.from([0x7b, 0x00])
+  const npsUserStatus = new NPSUserStatus(testPacket)
+  expect(npsUserStatus.opCode).toEqual(123)
 })

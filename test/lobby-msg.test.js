@@ -6,9 +6,16 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { premadeLogin } from '../src/services/LoginServer/packet.js'
+import { LobbyInfoPacket } from '../src/services/MCOTS/lobby-info.js'
+import { LobbyMsg } from '../src/services/MCOTS/lobby-msg.js'
 
-it('LoginServer - Packet', () => {
-  const packet = premadeLogin()
-  expect(Buffer.isBuffer(packet)).toBeTruthy()
+const lobbyInfo1 = new LobbyInfoPacket()
+const lobbyMessage1 = new LobbyMsg()
+
+it('LobbyInfo', () => {
+  expect(lobbyInfo1.toPacket().length).toEqual(567)
+})
+
+it('LobbyMsg', () => {
+  expect(lobbyMessage1.data.length).toEqual(572)
 })

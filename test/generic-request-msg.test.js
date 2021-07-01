@@ -6,9 +6,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { premadeLogin } from '../src/services/LoginServer/packet.js'
+import { GenericRequestMsg } from '../src/services/MCServer/generic-request-msg.js'
 
-it('LoginServer - Packet', () => {
-  const packet = premadeLogin()
-  expect(Buffer.isBuffer(packet)).toBeTruthy()
+const genericRequestMessage1 = new GenericRequestMsg()
+
+it('GenericRequestMsg', () => {
+  const { msgNo } = genericRequestMessage1
+  expect(msgNo).toEqual(0)
+  expect(genericRequestMessage1.serialize()).toStrictEqual(Buffer.alloc(16))
 })

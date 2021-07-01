@@ -1,4 +1,4 @@
-// mco-server is a game server, written from scratch, for an old game
+// Mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
@@ -22,7 +22,7 @@ class Server {
   /**
    * @param {DatabaseManager} databaseManager
    */
-  constructor (databaseManager) {
+  constructor(databaseManager) {
     this.config = config
     this.databaseManager = databaseManager
     this.serviceName = 'mcoserver:Server'
@@ -31,7 +31,7 @@ class Server {
   /**
    * @returns {Promise<void>}
    */
-  async start () {
+  async start() {
     log('Starting servers...', { service: 'mcoserver:Server' })
 
     // Start the MC Server
@@ -43,7 +43,9 @@ class Server {
     await this.adminServer.start(this.config)
     log('Web Server started', { service: 'mcoserver:Server' })
 
-    log('Servers started, ready for connections.', { service: 'mcoserver:Server' })
+    log('Servers started, ready for connections.', {
+      service: 'mcoserver:Server',
+    })
   }
 }
 

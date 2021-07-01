@@ -15,8 +15,9 @@
     "build": "tsc",
     "start": "node app.js",
     "test": "npm run lint-test",
-    "lint": "eslint --fix \"src/**/*.js\"",
-    "lint-test": "npm run lint && nyc mocha",
+    "lint": "xo --fix",
+    "lint-test": "npm run lint && npm run test:only",
+    "test:only": "node --trace-warnings --experimental-vm-modules node_modules/.bin/jest --detectOpenHandles",
     "precommit": "npm run lint-test",
     "postinstall": "mkdir -p db"
   },
@@ -48,8 +49,10 @@
     "@types/verror": "1.10.4",
     "chai": "4.3.4",
     "eslint": "7.29.0",
+    "eslint-config-xo-space": "0.28.0",
     "eslint-plugin-node": "11.1.0",
     "husky": "6.0.0",
+    "jest": "27.0.6",
     "mocha": "8.4.0",
     "mock-fs": "4.14.0",
     "nyc": "15.1.0",
@@ -57,7 +60,8 @@
     "source-map-support": "0.5.19",
     "supertest": "6.1.3",
     "testdouble": "3.16.1",
-    "typescript": "4.3.4"
+    "typescript": "4.3.4",
+    "xo": "0.40.3"
   },
   "nyc": {
     "all": true,
@@ -77,6 +81,33 @@
       "test/*",
       "dist/*",
       "*/**/*.test.{ts,js}"
+    ]
+  },
+  "xo": {
+    "rules": {
+      "unicorn/prefer-node-protocol": 0,
+      "promise/prefer-await-to-then": 1
+    },
+    "prettier": true
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "jest": {
+    "cache": false,
+    "ci": true,
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!**/node_modules/**",
+      "!**/vendor/**"
+    ],
+    "coverageReporters": [
+      "text",
+      "html",
+      "lcov"
     ]
   }
 }

@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-      - run: npm test
+      - run: npm run test:only
       - name: Codecov
         # You may pin to the exact commit or the version.
         # uses: codecov/codecov-action@239febf655bba88b16ff5dea1d3135ea8663a1f9

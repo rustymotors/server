@@ -1,1 +1,1 @@
-declare module '@drazisil/mco-logger';
+declare module '@drazisil/mco-logger'
