@@ -29,8 +29,12 @@ jobs:
       - run: npm install
       - run: npm run test:only
       - name: Codecov
-        # You may pin to the exact commit or the version.
-        # uses: codecov/codecov-action@239febf655bba88b16ff5dea1d3135ea8663a1f9
-        uses: codecov/codecov-action@v1.5.2
-        with:
-          name: ${{ matrix.node-version }}
+        run: |
+            curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import
+            curl -Os https://uploader.codecov.io/latest/codecov-linux
+            curl -Os https://uploader.codecov.io/latest/codecov-linux.SHA256SUM
+            curl -Os https://uploader.codecov.io/latest/codecov-linux.SHA256SUM.sig
+            gpg --verify codecov-linux.SHA256SUM.sig codecov-linux.SHA256SUM
+            shasum -a 256 -c codecov-linux.SHA256SUM
+            chmod +x codecov-linux
+            ./codecov-linux -t 18362b60-86ca-4be2-a8cb-2bc94f4f0bd2 -F ${{ matrix.node-version }}
