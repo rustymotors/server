@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { createHash, createDecipheriv, createCipheriv, randomBytes } from 'crypto'
+import { createDecipheriv, createCipheriv, randomBytes } from 'crypto'
 
 /**
  * Handles the management of the encryption and decryption
@@ -26,10 +26,8 @@ export class EncryptionManager {
    */
   constructor() {
     // This hash is used for an id only.
-    const hash = createHash('sha512')
     const timestamp = (Date.now() + randomBytes(20)).toString()
-    hash.update(timestamp)
-    this.id = hash.digest('hex')
+    this.id = Buffer.from(timestamp).toString('hex')
     this.sessionkey = Buffer.alloc(0)
     this.in = null
     this.out = null
