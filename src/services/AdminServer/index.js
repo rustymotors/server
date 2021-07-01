@@ -144,7 +144,7 @@ export class AdminServer {
    */
   async start(config) {
     try {
-      const sslOptions = await _sslOptions(config, this.serviceName)
+      const sslOptions = await _sslOptions(config.certificate, this.serviceName)
 
       /** @type {import("https").Server} */
       this.httpsServer = createServer(
