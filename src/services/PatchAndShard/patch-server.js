@@ -8,9 +8,9 @@
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
+import { debug, log } from '@drazisil/mco-logger'
 import { readFileSync } from 'fs'
 import { createServer } from 'http'
-import { debug, log } from '@drazisil/mco-logger'
 import config from '../../../config/index.js'
 import { ShardEntry } from './shard-entry.js'
 
@@ -37,7 +37,7 @@ import { ShardEntry } from './shard-entry.js'
  * A simulated patch server response
  * @type {ICastanetResponse}
  */
-const CastanetResponse = {
+export const CastanetResponse = {
   body: Buffer.from('cafebeef00000000000003', 'hex'),
   header: {
     type: 'Content-Type',
@@ -52,7 +52,7 @@ const CastanetResponse = {
  * @property {string[]} possibleShards
  * @property {Server} serverPatch
  */
-class PatchServer {
+export class PatchServer {
   constructor() {
     this.config = config
     /**
@@ -347,7 +347,3 @@ class PatchServer {
     })
   }
 }
-const _CastanetResponse = CastanetResponse
-export { _CastanetResponse as CastanetResponse }
-export { _PatchServer as PatchServer }
-const _PatchServer = PatchServer
