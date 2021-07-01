@@ -67,3 +67,6 @@ export class LobbyMessage {
     )
   }
 }
+
+const _LobbyMessage = LobbyMessage
+export { _LobbyMessage as LobbyMsg }
