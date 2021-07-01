@@ -8,9 +8,9 @@
 
 import { log } from '@drazisil/mco-logger'
 import { Server } from './src/server.js'
-import { AuthLogin } from './src/services/AuthLogin/AuthLogin.js'
-import { PatchServer } from './src/services/PatchAndShard/patchServer.js'
-import { DatabaseManager } from './src/shared/DatabaseManager.js'
+import { AuthLogin } from './src/services/AuthLogin/auth-login.js'
+import { PatchServer } from './src/services/PatchAndShard/patch-server.js'
+import { DatabaseManager } from './src/services/shared/database-manager.js'
 
 // Database manager
 const databaseManager = new DatabaseManager()
