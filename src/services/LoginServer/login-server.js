@@ -18,7 +18,7 @@ import { premadeLogin } from './packet.js'
  * @class
  * @property {DatabaseManager} databaseManager
  */
-class LoginServer {
+export class LoginServer {
   /**
    *
    * @param {DatabaseManager} databaseMgr
@@ -214,9 +214,6 @@ class LoginServer {
      * Debug sends the login request twice, so we need to reply twice
      * Then send ok to login packet
      */
-    const fullPacket = Buffer.concat([packetContent, packetContent])
-    return fullPacket
+    return Buffer.concat([packetContent, packetContent])
   }
 }
-const _LoginServer = LoginServer
-export { _LoginServer as LoginServer }
