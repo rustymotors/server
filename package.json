@@ -48,7 +48,7 @@
     "@types/supertest": "2.0.11",
     "@types/verror": "1.10.5",
     "chai": "4.3.4",
-    "eslint": "7.29.0",
+    "eslint": "7.30.0",
     "eslint-config-xo-space": "0.28.0",
     "eslint-plugin-node": "11.1.0",
     "husky": "7.0.0",
