@@ -32,7 +32,9 @@ export class LobbyMessage {
     this.dataLength = this.lobbyList.toPacket().length + 5
 
     if (this.dataLength !== 572) {
-      throw new Error(`Unexpected length of packet! Expected 572, recieved ${this.dataLength}`)
+      throw new Error(
+        `Unexpected length of packet! Expected 572, recieved ${this.dataLength}`,
+      )
     }
 
     this.data = Buffer.alloc(this.dataLength)
