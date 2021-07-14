@@ -6,7 +6,9 @@ declare module '@drazisil/mco-logger'; {
   * @param {Object} [options.service] optional name of service to append
   */
   export interface LoggerOptions {
-    args?: Record<string, unknown>;
+    args?: {
+			verbose?: boolean;
+		};
     level?: string;
     service?: string;
   }
