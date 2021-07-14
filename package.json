@@ -54,39 +54,6 @@
     "testdouble": "3.16.1",
     "ts-jest": "27.0.3",
     "typescript": "4.3.5",
-    "xo": "0.41.0"
-  },
-  "nyc": {
-    "all": true,
-    "useSpawnWrap": true,
-    "reporter": [
-      "text",
-      "text-summary",
-      "html",
-      "cobertura"
-    ],
-    "include": [
-      "src/**/*.js"
-    ],
-    "exclude": [
-      "out/*",
-      "coverage/*",
-      "test/*",
-      "dist/*",
-      "*/**/*.test.{ts,js}"
-    ]
-  },
-  "xo": {
-    "rules": {
-      "unicorn/prefer-node-protocol": 0,
-      "promise/prefer-await-to-then": 1
-    },
-    "prettier": true
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
   },
   "jest": {
     "preset": "ts-jest",
@@ -94,7 +61,7 @@
     "ci": true,
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/**/*.js",
+      "src/**/*.{js,ts}",
       "!**/node_modules/**",
       "!**/vendor/**"
     ],
