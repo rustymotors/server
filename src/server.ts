@@ -6,9 +6,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { log } from '@drazisil/mco-logger'
-import config from '../config/index.js'
-import { AdminServer } from './services/AdminServer/index.js'
-import { MCServer } from './services/MCServer/index.js'
+import config, { IAppConfiguration } from '../config/index'
+import { AdminServer } from './services/AdminServer/index'
+import { MCServer } from './services/MCServer/index'
+import { DatabaseManager } from './services/shared/database-manager'
 
 /**
  * Main game server
@@ -19,10 +20,15 @@ import { MCServer } from './services/MCServer/index.js'
  * @property {AdminServer} adminServer
  */
 class Server {
+  config: IAppConfiguration
+  databaseManager: DatabaseManager
+  serviceName: string
+  mcServer: MCServer | undefined
+  adminServer: AdminServer | undefined
   /**
    * @param {DatabaseManager} databaseManager
    */
-  constructor(databaseManager) {
+  constructor(databaseManager: DatabaseManager) {
     this.config = config
     this.databaseManager = databaseManager
     this.serviceName = 'mcoserver:Server'
