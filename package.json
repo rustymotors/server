@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "start": "node app.js",
+    "start": "ts-node app.ts",
     "test": "npm run lint-test",
     "lint": "eslint . --ext js --ext ts",
     "lint-test": "npm run lint && npm run test:only",
@@ -29,7 +29,8 @@
   },
   "dependencies": {
     "@drazisil/mco-logger": "1.1.0",
-    "sqlite3": "5.0.2"
+    "sqlite3": "5.0.2",
+    "ts-node": "10.1.0"
   },
   "devDependencies": {
     "@tsconfig/node14": "1.0.1",
