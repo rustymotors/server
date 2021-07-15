@@ -4,7 +4,7 @@
 [![CodeQL](https://github.com/drazisil/mco-server/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/drazisil/mco-server/actions/workflows/codeql-analysis.yml)[![Node.js CI](https://github.com/drazisil/mco-server/actions/workflows/node.yml/badge.svg)](https://github.com/drazisil/mco-server/actions/workflows/node.yml)
 [![codecov](https://codecov.io/gh/drazisil/mco-server/branch/master/graph/badge.svg)](https://codecov.io/gh/drazisil/mco-server)
 
-## About
+## About 
 
 This is a game server, being written from scratch, for a very old and long dead game. The owners of said game have shown no interest in bringing it back, but even so all names of their IP have been avoided to prevent issues.
 
