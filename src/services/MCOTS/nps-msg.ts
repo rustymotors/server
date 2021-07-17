@@ -5,8 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {debug, log} from '@drazisil/mco-logger';
-import { EMessageDirection } from './message-node';
+import { debug, log } from '@drazisil/mco-logger'
+import { EMessageDirection } from './message-node'
 
 /**
  * Packet container for NPS messages
@@ -67,13 +67,13 @@ export class NPSMessage {
    * @param {module:MessageNode.MESSAGE_DIRECTION} direction - the direction of the message flow
    */
   constructor(direction: EMessageDirection) {
-    this.msgNo = 0;
-    this.msgVersion = 0;
-    this.reserved = 0;
-    this.content = Buffer.from([0x01, 0x02, 0x03, 0x04]);
-    this.msgLength = this.content.length + 12;
-    this.direction = direction;
-    this.serviceName = 'mcoserver:NPSMsg';
+    this.msgNo = 0
+    this.msgVersion = 0
+    this.reserved = 0
+    this.content = Buffer.from([0x01, 0x02, 0x03, 0x04])
+    this.msgLength = this.content.length + 12
+    this.direction = direction
+    this.serviceName = 'mcoserver:NPSMsg'
   }
 
   /**
@@ -82,8 +82,8 @@ export class NPSMessage {
    * @return {void}
    */
   setContent(buffer: Buffer): void {
-    this.content = buffer;
-    this.msgLength = this.content.length + 12;
+    this.content = buffer
+    this.msgLength = this.content.length + 12
   }
 
   /**
@@ -91,7 +91,7 @@ export class NPSMessage {
    * @return {Buffer}
    */
   getContentAsBuffer(): Buffer {
-    return this.content;
+    return this.content
   }
 
   /**
@@ -99,7 +99,7 @@ export class NPSMessage {
    * @return {string}
    */
   getPacketAsString(): string {
-    return this.serialize().toString('hex');
+    return this.serialize().toString('hex')
   }
 
   /**
@@ -108,26 +108,26 @@ export class NPSMessage {
    */
   serialize(): Buffer {
     try {
-      const packet = Buffer.alloc(this.msgLength);
-      packet.writeInt16BE(this.msgNo, 0);
-      packet.writeInt16BE(this.msgLength, 2);
+      const packet = Buffer.alloc(this.msgLength)
+      packet.writeInt16BE(this.msgNo, 0)
+      packet.writeInt16BE(this.msgLength, 2)
       if (this.msgLength > 4) {
-        packet.writeInt16BE(this.msgVersion, 4);
-        packet.writeInt16BE(this.reserved, 6);
+        packet.writeInt16BE(this.msgVersion, 4)
+        packet.writeInt16BE(this.reserved, 6)
       }
 
       if (this.msgLength > 8) {
-        packet.writeInt32BE(this.msgLength, 8);
-        this.content.copy(packet, 12);
+        packet.writeInt32BE(this.msgLength, 8)
+        this.content.copy(packet, 12)
       }
 
-      return packet;
+      return packet
     } catch (error) {
       if (error instanceof Error) {
-        throw new TypeError(`[NPSMsg] Error in serialize(): ${error}`);
+        throw new TypeError(`[NPSMsg] Error in serialize(): ${error}`)
       }
 
-      throw new Error('[NPSMsg] Error in serialize(), error unknown');
+      throw new Error('[NPSMsg] Error in serialize(), error unknown')
     }
   }
 
@@ -138,11 +138,11 @@ export class NPSMessage {
    * @memberof NPSMsg
    */
   deserialize(packet: Buffer): NPSMessage {
-    this.msgNo = packet.readInt16BE(0);
-    this.msgLength = packet.readInt16BE(2);
-    this.msgVersion = packet.readInt16BE(4);
-    this.content = packet.slice(12);
-    return this;
+    this.msgNo = packet.readInt16BE(0)
+    this.msgLength = packet.readInt16BE(2)
+    this.msgVersion = packet.readInt16BE(4)
+    this.content = packet.slice(12)
+    return this
   }
 
   /**
@@ -152,15 +152,15 @@ export class NPSMessage {
    */
   dumpPacketHeader(messageType: string): void {
     log(
-        `NPSMsg/${messageType},
+      `NPSMsg/${messageType},
       ${{
-    direction: this.direction,
-    msgNo: this.msgNo.toString(16),
-    msgVersion: this.msgVersion,
-    msgLength: this.msgLength,
-  }}`,
-        {service: this.serviceName},
-    );
+        direction: this.direction,
+        msgNo: this.msgNo.toString(16),
+        msgVersion: this.msgVersion,
+        msgLength: this.msgLength,
+      }}`,
+      { service: this.serviceName },
+    )
   }
 
   /**
@@ -170,17 +170,17 @@ export class NPSMessage {
    */
   dumpPacket(): void {
     debug(
-        `NPSMsg/NPSMsg,
+      `NPSMsg/NPSMsg,
       ${{
-    direction: this.direction,
-    msgNo: this.msgNo.toString(16),
-    msgVersion: this.msgVersion,
-    msgLength: this.msgLength,
-    content: this.content.toString('hex'),
-    serialized: this.serialize().toString('hex'),
-  }}`,
-        {service: this.serviceName},
-    );
+        direction: this.direction,
+        msgNo: this.msgNo.toString(16),
+        msgVersion: this.msgVersion,
+        msgLength: this.msgLength,
+        content: this.content.toString('hex'),
+        serialized: this.serialize().toString('hex'),
+      }}`,
+      { service: this.serviceName },
+    )
   }
 
   /**
@@ -198,6 +198,6 @@ export class NPSMessage {
       rawBuffer: this.content.toString('hex'),
       opCode: 0,
       sessionkey: '',
-    };
+    }
   }
 }

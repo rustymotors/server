@@ -36,8 +36,8 @@ describe('sslOptions()', () => {
 
   it('will throw an error when unable to locate the certificate', async () => {
     //  Deepcode ignore WrongNumberOfArgs/test: false positive
-    await expect(_sslOptions(fakeConfig.certificate, 'testingSSLOptions')).rejects.toThrowError(
-      /cert.pem/,
-    )
+    await expect(
+      _sslOptions(fakeConfig.certificate, 'testingSSLOptions'),
+    ).rejects.toThrowError(/cert.pem/)
   })
 })

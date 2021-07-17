@@ -6,12 +6,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {createServer, Server} from 'https';
-import {debug, log} from '@drazisil/mco-logger';
-import config, {IAppConfiguration} from '../../../config/index';
-import {_sslOptions} from '../@drazisil/ssl-options';
-import {IncomingMessage, ServerResponse} from 'http';
-import {Socket} from 'net';
+import { createServer, Server } from 'https'
+import { debug, log } from '@drazisil/mco-logger'
+import config, { IAppConfiguration } from '../../../config/index'
+import { _sslOptions } from '../@drazisil/ssl-options'
+import { IncomingMessage, ServerResponse } from 'http'
+import { Socket } from 'net'
 
 /**
  * Handles web-based user logins
@@ -37,8 +37,8 @@ export class AuthLogin {
   serviceName: string
   httpsServer: Server | undefined
   constructor() {
-    this.config = config;
-    this.serviceName = 'mcoserver:AuthLogin';
+    this.config = config
+    this.serviceName = 'mcoserver:AuthLogin'
   }
 
   /**
@@ -47,7 +47,7 @@ export class AuthLogin {
    * @memberof! WebServer
    */
   _handleGetTicket(): string {
-    return 'Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e';
+    return 'Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e'
   }
 
   // File deepcode ignore NoRateLimitingForExpensiveWebOperation: Not using express, unsure how to handle rate limiting on raw http
@@ -59,15 +59,15 @@ export class AuthLogin {
    */
   _httpsHandler(request: IncomingMessage, response: ServerResponse): void {
     log(
-        `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
-        {service: this.serviceName},
-    );
+      `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
+      { service: this.serviceName },
+    )
     if (request.url && request.url.startsWith('/AuthLogin')) {
-      response.setHeader('Content-Type', 'text/plain');
-      return response.end(this._handleGetTicket());
+      response.setHeader('Content-Type', 'text/plain')
+      return response.end(this._handleGetTicket())
     }
 
-    return response.end('Unknown request.');
+    return response.end('Unknown request.')
   }
 
   /**
@@ -75,9 +75,9 @@ export class AuthLogin {
    * @param {import("net").Socket} socket
    */
   _socketEventHandler(socket: Socket): void {
-    socket.on('error', (error) => {
-      throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`);
-    });
+    socket.on('error', error => {
+      throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`)
+    })
   }
 
   /**
@@ -85,36 +85,36 @@ export class AuthLogin {
    * @returns {Promise<import("https").Server>}
    * @memberof! WebServer
    */
-  async start(): Promise<import("https").Server> {
+  async start(): Promise<import('https').Server> {
     const sslOptions = await _sslOptions(
-        this.config.certificate,
-        this.serviceName,
-    );
+      this.config.certificate,
+      this.serviceName,
+    )
 
     try {
       this.httpsServer = createServer(sslOptions, (request, response) => {
-        this._httpsHandler(request, response);
-      }).listen({port: 443, host: '0.0.0.0'}, () => {
-        debug('port 443 listening', {service: this.serviceName});
-      });
+        this._httpsHandler(request, response)
+      }).listen({ port: 443, host: '0.0.0.0' }, () => {
+        debug('port 443 listening', { service: this.serviceName })
+      })
     } catch (error) {
       if (error.code === 'EACCES') {
-        process.exitCode = -1;
+        process.exitCode = -1
         throw new Error(
-            'Unable to start server on port 443! Have you granted access to the node runtime?',
-        );
+          'Unable to start server on port 443! Have you granted access to the node runtime?',
+        )
       }
 
-      throw error;
+      throw error
     }
 
-    this.httpsServer.on('connection', this._socketEventHandler);
-    this.httpsServer.on('tlsClientError', (error) => {
+    this.httpsServer.on('connection', this._socketEventHandler)
+    this.httpsServer.on('tlsClientError', error => {
       log(`[AuthLogin] SSL Socket Client Error: ${error.message}`, {
         service: this.serviceName,
         level: 'warn',
-      });
-    });
-    return this.httpsServer;
+      })
+    })
+    return this.httpsServer
   }
 }

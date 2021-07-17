@@ -56,19 +56,19 @@ export const fakeSettings: IAppConfiguration = {
   certificate: {
     privateKeyFilename: '',
     publicKeyFilename: '',
-    certFilename: ''
+    certFilename: '',
   },
   serverSettings: {
-    ipServer: ''
+    ipServer: '',
   },
   serviceConnections: {
-    databaseURL: ''
+    databaseURL: '',
   },
-  defaultLogLevel: ''
+  defaultLogLevel: '',
 }
 
 const FakeConnectionManagerConstructor = constructor(SessionManager)
-const fakeConnectionMgr = new FakeConnectionManagerConstructor(
+export const fakeConnectionMgr = new FakeConnectionManagerConstructor(
   fakeDatabaseManager,
   fakeSettings,
 )
@@ -77,21 +77,11 @@ const fakeConnectionMgr = new FakeConnectionManagerConstructor(
  * Fake socket for testing
  */
 const FakeSocketConstructor = constructor(Socket)
-const fakeSocket = new FakeSocketConstructor()
+export const fakeSocket = new FakeSocketConstructor()
 // fakeSocket.localPort = '7003'
 // fakeSocket.remoteAddress = '10.1.2.3'
 
 /**
  * Fake connectionObj for testing
  */
-const FakeConnectionConstructor = constructor(TCPConnection)
-const _FakeConnectionManagerConstructor = FakeConnectionManagerConstructor
-export { _FakeConnectionManagerConstructor as FakeConnectionManagerConstructor }
-const _fakeConnectionMgr = fakeConnectionMgr
-export { _fakeConnectionMgr as fakeConnectionMgr }
-const _FakeSocketConstructor = FakeSocketConstructor
-export { _FakeSocketConstructor as FakeSocketConstructor }
-const _fakeSocket = fakeSocket
-export { _fakeSocket as fakeSocket }
-const _FakeConnectionConstructor = FakeConnectionConstructor
-export { _FakeConnectionConstructor as FakeConnectionConstructor }
+export const FakeConnectionConstructor = constructor(TCPConnection)

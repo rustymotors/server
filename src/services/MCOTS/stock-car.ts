@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {log} from '@drazisil/mco-logger';
+import { log } from '@drazisil/mco-logger'
 
 /**
  * Container objest for Stock cars
@@ -32,11 +32,15 @@ export class StockCar {
    * @param {number} retailPrice
    * @param {0|1} bIsDealOfTheDay
    */
-  constructor(brandedPartId: number, retailPrice: number, bIsDealOfTheDay: number) {
-    this.brandedPartId = brandedPartId;
-    this.retailPrice = retailPrice;
-    this.bIsDealOfTheDay = bIsDealOfTheDay;
-    this.serviceName = 'mcoserver:StockCar';
+  constructor(
+    brandedPartId: number,
+    retailPrice: number,
+    bIsDealOfTheDay: number,
+  ) {
+    this.brandedPartId = brandedPartId
+    this.retailPrice = retailPrice
+    this.bIsDealOfTheDay = bIsDealOfTheDay
+    this.serviceName = 'mcoserver:StockCar'
   }
 
   /**
@@ -44,11 +48,11 @@ export class StockCar {
    * @return {Buffer}
    */
   serialize(): Buffer {
-    const packet = Buffer.alloc(10);
-    packet.writeInt32LE(this.brandedPartId, 0);
-    packet.writeInt32LE(this.retailPrice, 4);
-    packet.writeInt16LE(this.bIsDealOfTheDay, 8);
-    return packet;
+    const packet = Buffer.alloc(10)
+    packet.writeInt32LE(this.brandedPartId, 0)
+    packet.writeInt32LE(this.retailPrice, 4)
+    packet.writeInt16LE(this.bIsDealOfTheDay, 8)
+    return packet
   }
 
   /**
@@ -59,19 +63,19 @@ export class StockCar {
     log('[StockCar]======================================', {
       service: this.serviceName,
       level: 'debug',
-    });
+    })
     log(`brandedPartId:     ${this.brandedPartId}`, {
       service: this.serviceName,
       level: 'debug',
-    });
+    })
     log(`retailPrice        ${this.retailPrice}`, {
       service: this.serviceName,
       level: 'debug',
-    });
+    })
     log(`isDealOfTheDay:    ${this.bIsDealOfTheDay}`, {
       service: this.serviceName,
       level: 'debug',
-    });
-    log('[/StockCar]======================================');
+    })
+    log('[/StockCar]======================================')
   }
 }

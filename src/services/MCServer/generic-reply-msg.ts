@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {log} from '@drazisil/mco-logger';
+import { log } from '@drazisil/mco-logger'
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
@@ -39,13 +39,13 @@ export class GenericReplyMessage {
    *
    */
   constructor() {
-    this.msgNo = 0;
-    this.toFrom = 0;
-    this.appId = 0;
-    this.msgReply = 0;
-    this.result = Buffer.alloc(4);
-    this.data = Buffer.alloc(4);
-    this.data2 = Buffer.alloc(4);
+    this.msgNo = 0
+    this.toFrom = 0
+    this.appId = 0
+    this.msgReply = 0
+    this.result = Buffer.alloc(4)
+    this.data = Buffer.alloc(4)
+    this.data2 = Buffer.alloc(4)
   }
 
   /**
@@ -54,7 +54,7 @@ export class GenericReplyMessage {
    * @return {void}
    */
   setData(value: Buffer): void {
-    this.data = value;
+    this.data = value
   }
 
   /**
@@ -63,7 +63,7 @@ export class GenericReplyMessage {
    * @return {void}
    */
   setData2(value: Buffer): void {
-    this.data2 = value;
+    this.data2 = value
   }
 
   /**
@@ -73,23 +73,23 @@ export class GenericReplyMessage {
    */
   deserialize(buffer: Buffer): void {
     try {
-      this.msgNo = buffer.readInt16LE(0);
+      this.msgNo = buffer.readInt16LE(0)
     } catch (error) {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
       } else {
         throw new TypeError(
-            `[GenericReplyMsg] Unable to read msgNo from ${buffer.toString(
-                'hex',
-            )}: ${error}`,
-        );
+          `[GenericReplyMsg] Unable to read msgNo from ${buffer.toString(
+            'hex',
+          )}: ${error}`,
+        )
       }
     }
 
-    this.msgReply = buffer.readInt16LE(2);
-    this.result = buffer.slice(4, 8);
-    this.data = buffer.slice(8, 12);
-    this.data2 = buffer.slice(12);
+    this.msgReply = buffer.readInt16LE(2)
+    this.result = buffer.slice(4, 8)
+    this.data = buffer.slice(8, 12)
+    this.data2 = buffer.slice(12)
   }
 
   /**
@@ -97,13 +97,13 @@ export class GenericReplyMessage {
    * @return {Buffer}
    */
   serialize(): Buffer {
-    const packet = Buffer.alloc(16);
-    packet.writeInt16LE(this.msgNo, 0);
-    packet.writeInt16LE(this.msgReply, 2);
-    this.result.copy(packet, 4);
-    this.data.copy(packet, 8);
-    this.data2.copy(packet, 12);
-    return packet;
+    const packet = Buffer.alloc(16)
+    packet.writeInt16LE(this.msgNo, 0)
+    packet.writeInt16LE(this.msgReply, 2)
+    this.result.copy(packet, 4)
+    this.data.copy(packet, 8)
+    this.data2.copy(packet, 12)
+    return packet
   }
 
   /**
@@ -112,7 +112,7 @@ export class GenericReplyMessage {
    * @return {void}
    */
   setResult(buffer: Buffer): void {
-    this.result = buffer;
+    this.result = buffer
   }
 
   /**
@@ -121,15 +121,15 @@ export class GenericReplyMessage {
    */
   dumpPacket(): void {
     log(
-        `GenericReply',
+      `GenericReply',
       ${{
-    msgNo: this.msgNo,
-    msgReply: this.msgReply,
-    result: this.result.toString('hex'),
-    data: this.data.toString('hex'),
-    tdata2: this.data2.toString('hex'),
-  }}`,
-        {service: 'mcoserver:GenericReplyMsg'},
-    );
+        msgNo: this.msgNo,
+        msgReply: this.msgReply,
+        result: this.result.toString('hex'),
+        data: this.data.toString('hex'),
+        tdata2: this.data2.toString('hex'),
+      }}`,
+      { service: 'mcoserver:GenericReplyMsg' },
+    )
   }
 }
