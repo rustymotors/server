@@ -5,8 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { debug } from '@drazisil/mco-logger'
-import { LobbyInfoPacket } from './lobby-info'
+import {debug} from '@drazisil/mco-logger';
+import {LobbyInfoPacket} from './lobby-info';
 
 /**
  * @class
@@ -29,27 +29,27 @@ export class LobbyMessage {
    *
    */
   constructor() {
-    this.msgNo = 325
+    this.msgNo = 325;
 
-    this.noLobbies = 1
-    this.moreToCome = 0
+    this.noLobbies = 1;
+    this.moreToCome = 0;
 
-    this.lobbyList = new LobbyInfoPacket()
+    this.lobbyList = new LobbyInfoPacket();
     // The expected length here is 572
-    this.dataLength = this.lobbyList.toPacket().length + 5
+    this.dataLength = this.lobbyList.toPacket().length + 5;
 
     if (this.dataLength !== 572) {
       throw new Error(
-        `Unexpected length of packet! Expected 572, recieved ${this.dataLength}`,
-      )
+          `Unexpected length of packet! Expected 572, recieved ${this.dataLength}`,
+      );
     }
 
-    this.data = Buffer.alloc(this.dataLength)
-    this.data.writeInt16LE(this.msgNo, 0)
-    this.data.writeInt16LE(this.noLobbies, 2)
-    this.data.writeInt8(this.moreToCome, 4)
-    this.lobbyList.toPacket().copy(this.data, 5)
-    this.serviceName = 'mcoserver:LobbyMsg'
+    this.data = Buffer.alloc(this.dataLength);
+    this.data.writeInt16LE(this.msgNo, 0);
+    this.data.writeInt16LE(this.noLobbies, 2);
+    this.data.writeInt8(this.moreToCome, 4);
+    this.lobbyList.toPacket().copy(this.data, 5);
+    this.serviceName = 'mcoserver:LobbyMsg';
   }
 
   /**
@@ -57,22 +57,22 @@ export class LobbyMessage {
    * @return {Buffer}
    */
   serialize() {
-    return this.data
+    return this.data;
   }
 
   /**
    * DumpPacket
-   * @returns {void}
+   * @return {void}
    */
   dumpPacket() {
     debug(
-      `LobbyMsg',
+        `LobbyMsg',
       ${{
-        msgNo: this.msgNo,
-        dataLength: this.dataLength,
-        packet: this.serialize().toString('hex'),
-      }}`,
-      { service: this.serviceName },
-    )
+    msgNo: this.msgNo,
+    dataLength: this.dataLength,
+    packet: this.serialize().toString('hex'),
+  }}`,
+        {service: this.serviceName},
+    );
   }
 }

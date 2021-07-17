@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { log } from '@drazisil/mco-logger'
+import {log} from '@drazisil/mco-logger';
 
 /**
  * @module GenericRequestMsg
@@ -32,34 +32,34 @@ export class GenericRequestMessage {
    *
    */
   constructor() {
-    this.msgNo = 0
-    this.data = Buffer.alloc(4)
-    this.data2 = Buffer.alloc(4)
-    this.serviceName = 'mcoserver:GenericRequestMsg'
+    this.msgNo = 0;
+    this.data = Buffer.alloc(4);
+    this.data2 = Buffer.alloc(4);
+    this.serviceName = 'mcoserver:GenericRequestMsg';
   }
 
   /**
    *
    * @param {Buffer} buffer
-   * @returns {void}
+   * @return {void}
    */
   deserialize(buffer: Buffer) {
     try {
-      this.msgNo = buffer.readInt16LE(0)
+      this.msgNo = buffer.readInt16LE(0);
     } catch (error) {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
       } else {
         throw new TypeError(
-          `[GenericRequestMsg] Unable to read msgNo from ${buffer.toString(
-            'hex',
-          )}: ${error}`,
-        )
+            `[GenericRequestMsg] Unable to read msgNo from ${buffer.toString(
+                'hex',
+            )}: ${error}`,
+        );
       }
     }
 
-    this.data = buffer.slice(2, 6)
-    this.data2 = buffer.slice(6)
+    this.data = buffer.slice(2, 6);
+    this.data2 = buffer.slice(6);
   }
 
   /**
@@ -67,26 +67,26 @@ export class GenericRequestMessage {
    * @return {Buffer}
    */
   serialize() {
-    const packet = Buffer.alloc(16)
-    packet.writeInt16LE(this.msgNo, 0)
-    this.data.copy(packet, 2)
-    this.data2.copy(packet, 6)
-    return packet
+    const packet = Buffer.alloc(16);
+    packet.writeInt16LE(this.msgNo, 0);
+    this.data.copy(packet, 2);
+    this.data2.copy(packet, 6);
+    return packet;
   }
 
   /**
    * DumpPacket
-   * @returns {void}
+   * @return {void}
    */
   dumpPacket() {
     log(
-      `GenericRequest',
+        `GenericRequest',
       ${{
-        msgNo: this.msgNo,
-        data: this.data.toString('hex'),
-        data2: this.data2.toString('hex'),
-      }}`,
-      { service: this.serviceName },
-    )
+    msgNo: this.msgNo,
+    data: this.data.toString('hex'),
+    data2: this.data2.toString('hex'),
+  }}`,
+        {service: this.serviceName},
+    );
   }
 }

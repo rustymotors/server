@@ -6,8 +6,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { debug } from '@drazisil/mco-logger'
-import { NPSMessage } from '../MCOTS/nps-msg'
+import {debug} from '@drazisil/mco-logger';
+import {NPSMessage} from '../MCOTS/nps-msg';
 
 /**
  * @module NPSUserInfo
@@ -29,11 +29,11 @@ class NPSUserInfo extends NPSMessage {
    * @param {MESSAGE_DIRECTION} direction
    */
   constructor(direction: string) {
-    super(direction)
-    this.userId = 0
-    this.userName = Buffer.from([0x00]) // 30 length
-    this.userData = Buffer.from([0x00]) // 64 length
-    this.serviceName = 'mcoserver:NPSUserInfo'
+    super(direction);
+    this.userId = 0;
+    this.userName = Buffer.from([0x00]); // 30 length
+    this.userData = Buffer.from([0x00]); // 64 length
+    this.serviceName = 'mcoserver:NPSUserInfo';
   }
 
   /**
@@ -42,28 +42,28 @@ class NPSUserInfo extends NPSMessage {
    * @return {NPSUserInfo}
    */
   deserialize(rawData: Buffer) {
-    this.userId = rawData.readInt32BE(4)
-    this.userName = rawData.slice(8, 38)
-    this.userData = rawData.slice(38)
-    return this
+    this.userId = rawData.readInt32BE(4);
+    this.userName = rawData.slice(8, 38);
+    this.userData = rawData.slice(38);
+    return this;
   }
 
   /**
-   * @returns {void}
+   * @return {void}
    */
   dumpInfo() {
-    this.dumpPacketHeader('NPSUserInfo')
-    debug(`UserId:        ${this.userId}`, { service: this.serviceName })
+    this.dumpPacketHeader('NPSUserInfo');
+    debug(`UserId:        ${this.userId}`, {service: this.serviceName});
     debug(`UserName:      ${this.userName.toString()}`, {
       service: this.serviceName,
-    })
+    });
     debug(`UserData:      ${this.userData.toString('hex')}`, {
       service: this.serviceName,
-    })
+    });
     debug('[/NPSUserInfo]======================================', {
       service: this.serviceName,
-    })
+    });
   }
 }
-const _NPSUserInfo = NPSUserInfo
-export { _NPSUserInfo as NPSUserInfo }
+const _NPSUserInfo = NPSUserInfo;
+export {_NPSUserInfo as NPSUserInfo};

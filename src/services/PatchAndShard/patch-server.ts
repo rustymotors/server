@@ -8,11 +8,11 @@
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
-import { readFileSync } from 'fs'
-import { createServer, IncomingMessage, Server, ServerResponse } from 'http'
-import { debug, log } from '@drazisil/mco-logger'
-import config, { IAppConfiguration } from '../../../config/index'
-import { ShardEntry } from './shard-entry'
+import {readFileSync} from 'fs';
+import {createServer, IncomingMessage, Server, ServerResponse} from 'http';
+import {debug, log} from '@drazisil/mco-logger';
+import config, {IAppConfiguration} from '../../../config/index';
+import {ShardEntry} from './shard-entry';
 
 /**
  * Manages patch and update server connections
@@ -43,7 +43,7 @@ export const CastanetResponse = {
     type: 'Content-Type',
     value: 'application/octet-stream',
   },
-}
+};
 
 /**
  * @class
@@ -59,30 +59,30 @@ export class PatchServer {
   serverPatch: Server | undefined
   serviceName: string
   constructor() {
-    this.config = config
+    this.config = config;
     /**
      * @type {string[]}
      */
-    this.banList = []
+    this.banList = [];
     /**
      * @type {string[]}
      */
-    this.possibleShards = []
+    this.possibleShards = [];
 
     this.serverPatch = createServer((request, response) => {
-      this._httpHandler(request, response)
-    })
-    this.serverPatch.on('error', error => {
+      this._httpHandler(request, response);
+    });
+    this.serverPatch.on('error', (error) => {
       if (error.message.includes('EACCES')) {
-        process.exitCode = -1
+        process.exitCode = -1;
         throw new Error(
-          'Unable to start server on port 80! Have you granted access to the node runtime?',
-        )
+            'Unable to start server on port 80! Have you granted access to the node runtime?',
+        );
       }
 
-      throw error
-    })
-    this.serviceName = 'mcoserver:PatchServer'
+      throw error;
+    });
+    this.serviceName = 'mcoserver:PatchServer';
   }
 
   /**
@@ -92,7 +92,7 @@ export class PatchServer {
    * @memberof! PatchServer
    */
   _patchUpdateInfo() {
-    return CastanetResponse
+    return CastanetResponse;
   }
 
   /**
@@ -102,7 +102,7 @@ export class PatchServer {
    * @memberof! PatchServer
    */
   _patchNPS() {
-    return CastanetResponse
+    return CastanetResponse;
   }
 
   /**
@@ -112,7 +112,7 @@ export class PatchServer {
    * @memberof! PatchServer
    */
   _patchMCO() {
-    return CastanetResponse
+    return CastanetResponse;
   }
 
   /**
@@ -122,52 +122,52 @@ export class PatchServer {
    * @memberof! PatchServer
    */
   _generateShardList() {
-    const { ipServer } = this.config.serverSettings
+    const {ipServer} = this.config.serverSettings;
     const shardClockTower = new ShardEntry(
-      'The Clocktower',
-      'The Clocktower',
-      44,
-      ipServer,
-      8226,
-      ipServer,
-      7003,
-      ipServer,
-      0,
-      '',
-      'Group-1',
-      88,
-      2,
-      ipServer,
-      80,
-    )
+        'The Clocktower',
+        'The Clocktower',
+        44,
+        ipServer,
+        8226,
+        ipServer,
+        7003,
+        ipServer,
+        0,
+        '',
+        'Group-1',
+        88,
+        2,
+        ipServer,
+        80,
+    );
 
-    this.possibleShards.push(shardClockTower.formatForShardList())
+    this.possibleShards.push(shardClockTower.formatForShardList());
 
     const shardTwinPinesMall = new ShardEntry(
-      'Twin Pines Mall',
-      'Twin Pines Mall',
-      88,
-      ipServer,
-      8226,
-      ipServer,
-      7003,
-      ipServer,
-      0,
-      '',
-      'Group-1',
-      88,
-      2,
-      ipServer,
-      80,
-    )
+        'Twin Pines Mall',
+        'Twin Pines Mall',
+        88,
+        ipServer,
+        8226,
+        ipServer,
+        7003,
+        ipServer,
+        0,
+        '',
+        'Group-1',
+        88,
+        2,
+        ipServer,
+        80,
+    );
 
-    this.possibleShards.push(shardTwinPinesMall.formatForShardList())
+    this.possibleShards.push(shardTwinPinesMall.formatForShardList());
 
     /** @type {string[]} */
-    const activeShardList = []
-    activeShardList.push(shardClockTower.formatForShardList())
+    const activeShardList = [];
+    activeShardList.push(shardClockTower.formatForShardList());
 
-    return activeShardList.join('\n')
+    return activeShardList.join('\n');
   }
 
   /**
@@ -176,7 +176,7 @@ export class PatchServer {
    * @memberof! WebServer
    */
   _handleGetCert() {
-    return readFileSync(this.config.certificate.certFilename).toString()
+    return readFileSync(this.config.certificate.certFilename).toString();
   }
 
   /**
@@ -185,7 +185,7 @@ export class PatchServer {
    * @memberof! WebServer
    */
   _handleGetKey() {
-    return readFileSync(this.config.certificate.publicKeyFilename).toString()
+    return readFileSync(this.config.certificate.publicKeyFilename).toString();
   }
 
   /**
@@ -194,7 +194,7 @@ export class PatchServer {
    * @memberof! WebServer
    */
   _handleGetRegistry() {
-    const { ipServer } = this.config.serverSettings
+    const {ipServer} = this.config.serverSettings;
     const dynamicRegistryFile = `Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\EACom\\AuthAuth]
@@ -221,8 +221,8 @@ export class PatchServer {
 [HKEY_LOCAL_MACHINE\\Software\\WOW6432Node\\Electronic Arts\\Network Play System]
 "Log"="1"
 
-`
-    return dynamicRegistryFile
+`;
+    return dynamicRegistryFile;
   }
 
   /**
@@ -232,80 +232,80 @@ export class PatchServer {
    * @param {import("http").ServerResponse} response
    */
   _httpHandler(request: IncomingMessage, response: ServerResponse) {
-    let responseData
+    let responseData;
 
     if (request.url === '/cert') {
-      response.setHeader('Content-disposition', 'attachment; filename=cert.pem')
-      return response.end(this._handleGetCert())
+      response.setHeader('Content-disposition', 'attachment; filename=cert.pem');
+      return response.end(this._handleGetCert());
     }
 
     if (request.url === '/key') {
-      response.setHeader('Content-disposition', 'attachment; filename=pub.key')
-      return response.end(this._handleGetKey())
+      response.setHeader('Content-disposition', 'attachment; filename=pub.key');
+      return response.end(this._handleGetKey());
     }
 
     if (request.url === '/registry') {
-      response.setHeader('Content-disposition', 'attachment; filename=mco.reg')
-      return response.end(this._handleGetRegistry())
+      response.setHeader('Content-disposition', 'attachment; filename=mco.reg');
+      return response.end(this._handleGetRegistry());
     }
 
     if (request.url === '/') {
-      response.statusCode = 404
-      return response.end('Hello, world!')
+      response.statusCode = 404;
+      return response.end('Hello, world!');
     }
 
     switch (request.url) {
       case '/ShardList/':
         debug(
-          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
-          { service: this.serviceName },
-        )
+            `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
+            {service: this.serviceName},
+        );
 
-        response.setHeader('Content-Type', 'text/plain')
-        response.end(this._generateShardList())
-        break
+        response.setHeader('Content-Type', 'text/plain');
+        response.end(this._generateShardList());
+        break;
 
       case '/games/EA_Seattle/MotorCity/UpdateInfo':
         log(
-          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
-          { service: this.serviceName },
-        )
+            `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
+            {service: this.serviceName},
+        );
 
-        responseData = this._patchUpdateInfo()
-        response.setHeader(responseData.header.type, responseData.header.value)
-        response.end(responseData.body)
-        break
+        responseData = this._patchUpdateInfo();
+        response.setHeader(responseData.header.type, responseData.header.value);
+        response.end(responseData.body);
+        break;
       case '/games/EA_Seattle/MotorCity/NPS':
         log(
-          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
-          { service: this.serviceName },
-        )
+            `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
+            {service: this.serviceName},
+        );
 
-        responseData = this._patchNPS()
-        response.setHeader(responseData.header.type, responseData.header.value)
-        response.end(responseData.body)
-        break
+        responseData = this._patchNPS();
+        response.setHeader(responseData.header.type, responseData.header.value);
+        response.end(responseData.body);
+        break;
       case '/games/EA_Seattle/MotorCity/MCO':
         log(
-          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
-          { service: this.serviceName },
-        )
-        responseData = this._patchMCO()
-        response.setHeader(responseData.header.type, responseData.header.value)
-        response.end(responseData.body)
-        break
+            `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
+            {service: this.serviceName},
+        );
+        responseData = this._patchMCO();
+        response.setHeader(responseData.header.type, responseData.header.value);
+        response.end(responseData.body);
+        break;
 
       default:
         // Is this a hacker?
-        response.statusCode = 404
-        response.end('')
+        response.statusCode = 404;
+        response.end('');
 
         // Unknown request, log it
         log(
-          `[PATCH] Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
-          { service: this.serviceName },
-        )
-        break
+            `[PATCH] Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
+            {service: this.serviceName},
+        );
+        break;
     }
   }
 
@@ -316,7 +316,7 @@ export class PatchServer {
    * @memberof! PatchServer
    */
   _addBan(banIP: string) {
-    this.banList.push(banIP)
+    this.banList.push(banIP);
   }
 
   /**
@@ -325,7 +325,7 @@ export class PatchServer {
    * @memberof! PatchServer
    */
   _getBans() {
-    return this.banList
+    return this.banList;
   }
 
   /**
@@ -334,7 +334,7 @@ export class PatchServer {
    * @memberof! PatchServer
    */
   _clearBans() {
-    this.banList = []
+    this.banList = [];
   }
 
   /**
@@ -343,15 +343,15 @@ export class PatchServer {
    * @return {Promise<import("http").Server>}
    */
   async start() {
-    const { serviceName } = this
+    const {serviceName} = this;
     if (this.serverPatch === undefined) {
-      throw new Error('Patch server is not defined')
+      throw new Error('Patch server is not defined');
     }
-    return this.serverPatch.listen({ port: '80', host: '0.0.0.0' }, () => {
-      debug('port 80 listening', { service: serviceName })
+    return this.serverPatch.listen({port: '80', host: '0.0.0.0'}, () => {
+      debug('port 80 listening', {service: serviceName});
       log('[patchServer] Patch server is listening...', {
         service: serviceName,
-      })
-    })
+      });
+    });
   }
 }

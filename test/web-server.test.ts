@@ -6,8 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, test } from '@jest/globals'
-import { AuthLogin } from '../src/services/AuthLogin/auth-login'
-import { fakeConfig } from './helpers.js'
+import { AuthLogin } from '../src/services/AuthLogin/index'
 
 test('WebServer', () => {
   try {

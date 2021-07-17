@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { debug, log } from '@drazisil/mco-logger'
+import {debug, log} from '@drazisil/mco-logger';
 
 /**
  * Packet container for NPS messages
@@ -55,27 +55,27 @@ export class NPSMessage {
    * @param {module:MessageNode.MESSAGE_DIRECTION} direction - the direction of the message flow
    */
   constructor(direction: string) {
-    this.msgNo = 0
-    this.msgVersion = 0
-    this.reserved = 0
-    this.content = Buffer.from([0x01, 0x02, 0x03, 0x04])
-    this.msgLength = this.content.length + 12
+    this.msgNo = 0;
+    this.msgVersion = 0;
+    this.reserved = 0;
+    this.content = Buffer.from([0x01, 0x02, 0x03, 0x04]);
+    this.msgLength = this.content.length + 12;
     if (direction !== 'RECEIVED' && direction !== 'SENT') {
-      throw new Error("Directior must be either 'RECEIVED' or 'SENT'")
+      throw new Error('Directior must be either \'RECEIVED\' or \'SENT\'');
     }
 
-    this.direction = direction
-    this.serviceName = 'mcoserver:NPSMsg'
+    this.direction = direction;
+    this.serviceName = 'mcoserver:NPSMsg';
   }
 
   /**
    *
    * @param {Buffer} buffer
-   * @returns {void}
+   * @return {void}
    */
   setContent(buffer: Buffer) {
-    this.content = buffer
-    this.msgLength = this.content.length + 12
+    this.content = buffer;
+    this.msgLength = this.content.length + 12;
   }
 
   /**
@@ -83,7 +83,7 @@ export class NPSMessage {
    * @return {Buffer}
    */
   getContentAsBuffer() {
-    return this.content
+    return this.content;
   }
 
   /**
@@ -91,7 +91,7 @@ export class NPSMessage {
    * @return {string}
    */
   getPacketAsString() {
-    return this.serialize().toString('hex')
+    return this.serialize().toString('hex');
   }
 
   /**
@@ -100,26 +100,26 @@ export class NPSMessage {
    */
   serialize() {
     try {
-      const packet = Buffer.alloc(this.msgLength)
-      packet.writeInt16BE(this.msgNo, 0)
-      packet.writeInt16BE(this.msgLength, 2)
+      const packet = Buffer.alloc(this.msgLength);
+      packet.writeInt16BE(this.msgNo, 0);
+      packet.writeInt16BE(this.msgLength, 2);
       if (this.msgLength > 4) {
-        packet.writeInt16BE(this.msgVersion, 4)
-        packet.writeInt16BE(this.reserved, 6)
+        packet.writeInt16BE(this.msgVersion, 4);
+        packet.writeInt16BE(this.reserved, 6);
       }
 
       if (this.msgLength > 8) {
-        packet.writeInt32BE(this.msgLength, 8)
-        this.content.copy(packet, 12)
+        packet.writeInt32BE(this.msgLength, 8);
+        this.content.copy(packet, 12);
       }
 
-      return packet
+      return packet;
     } catch (error) {
       if (error instanceof Error) {
-        throw new TypeError(`[NPSMsg] Error in serialize(): ${error}`)
+        throw new TypeError(`[NPSMsg] Error in serialize(): ${error}`);
       }
 
-      throw new Error('[NPSMsg] Error in serialize(), error unknown')
+      throw new Error('[NPSMsg] Error in serialize(), error unknown');
     }
   }
 
@@ -130,49 +130,49 @@ export class NPSMessage {
    * @memberof NPSMsg
    */
   deserialize(packet: Buffer) {
-    this.msgNo = packet.readInt16BE(0)
-    this.msgLength = packet.readInt16BE(2)
-    this.msgVersion = packet.readInt16BE(4)
-    this.content = packet.slice(12)
-    return this
+    this.msgNo = packet.readInt16BE(0);
+    this.msgLength = packet.readInt16BE(2);
+    this.msgVersion = packet.readInt16BE(4);
+    this.content = packet.slice(12);
+    return this;
   }
 
   /**
    *
    * @param {string} messageType
-   * @returns {void}
+   * @return {void}
    */
   dumpPacketHeader(messageType: string) {
     log(
-      `NPSMsg/${messageType},
+        `NPSMsg/${messageType},
       ${{
-        direction: this.direction,
-        msgNo: this.msgNo.toString(16),
-        msgVersion: this.msgVersion,
-        msgLength: this.msgLength,
-      }}`,
-      { service: this.serviceName },
-    )
+    direction: this.direction,
+    msgNo: this.msgNo.toString(16),
+    msgVersion: this.msgVersion,
+    msgLength: this.msgLength,
+  }}`,
+        {service: this.serviceName},
+    );
   }
 
   /**
    * DumpPacket
-   * @returns {void}
+   * @return {void}
    * @memberof NPSMsg
    */
   dumpPacket() {
     debug(
-      `NPSMsg/NPSMsg,
+        `NPSMsg/NPSMsg,
       ${{
-        direction: this.direction,
-        msgNo: this.msgNo.toString(16),
-        msgVersion: this.msgVersion,
-        msgLength: this.msgLength,
-        content: this.content.toString('hex'),
-        serialized: this.serialize().toString('hex'),
-      }}`,
-      { service: this.serviceName },
-    )
+    direction: this.direction,
+    msgNo: this.msgNo.toString(16),
+    msgVersion: this.msgVersion,
+    msgLength: this.msgLength,
+    content: this.content.toString('hex'),
+    serialized: this.serialize().toString('hex'),
+  }}`,
+        {service: this.serviceName},
+    );
   }
 
   /**
@@ -190,6 +190,6 @@ export class NPSMessage {
       rawBuffer: this.content.toString('hex'),
       opCode: 0,
       sessionkey: '',
-    }
+    };
   }
 }

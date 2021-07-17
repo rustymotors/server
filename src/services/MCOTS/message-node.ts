@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { log } from '@drazisil/mco-logger'
+import {log} from '@drazisil/mco-logger';
 
 /**
  * Packet structure for communications with the game database
@@ -44,51 +44,51 @@ export class MessageNode {
    */
   constructor(direction: string) {
     if (direction !== 'RECEIVED' && direction !== 'SENT') {
-      throw new Error("Direction must be either 'RECEIVED' or 'SENT'")
+      throw new Error('Direction must be either \'RECEIVED\' or \'SENT\'');
     }
 
-    this.direction = direction
-    this.msgNo = 0
-    this.seq = 999
-    this.flags = 0
-    this.data = Buffer.alloc(0)
-    this.dataLength = 0
-    this.mcoSig = 'NotAValue'
+    this.direction = direction;
+    this.msgNo = 0;
+    this.seq = 999;
+    this.flags = 0;
+    this.data = Buffer.alloc(0);
+    this.dataLength = 0;
+    this.mcoSig = 'NotAValue';
 
-    this.toFrom = 0
-    this.appId = 0
+    this.toFrom = 0;
+    this.appId = 0;
   }
 
   /**
    *
    * @param {Buffer} packet
-   * @returns {void}
+   * @return {void}
    */
   deserialize(packet: Buffer) {
     try {
-      this.dataLength = packet.readInt16LE(0)
-      this.mcoSig = packet.slice(2, 6).toString()
-      this.seq = packet.readInt16LE(6)
-      this.flags = packet.readInt8(10)
+      this.dataLength = packet.readInt16LE(0);
+      this.mcoSig = packet.slice(2, 6).toString();
+      this.seq = packet.readInt16LE(6);
+      this.flags = packet.readInt8(10);
 
       // Data starts at offset 11
-      this.data = packet.slice(11)
+      this.data = packet.slice(11);
 
       // Set message number
 
-      this.msgNo = this.data.readInt16LE(0)
+      this.msgNo = this.data.readInt16LE(0);
     } catch (error) {
       if (error.name.includes('RangeError')) {
         // This is likeley not an MCOTS packet, ignore
         throw new Error(
-          `[MessageNode] Not long enough to deserialize, only ${packet.length} bytes long`,
-        )
+            `[MessageNode] Not long enough to deserialize, only ${packet.length} bytes long`,
+        );
       } else {
         throw new Error(
-          `[MessageNode] Unable to read msgNo from ${packet.toString(
-            'hex',
-          )}: ${error}`,
-        )
+            `[MessageNode] Unable to read msgNo from ${packet.toString(
+                'hex',
+            )}: ${error}`,
+        );
       }
     }
   }
@@ -98,62 +98,62 @@ export class MessageNode {
    * @return {Buffer}
    */
   serialize() {
-    const packet = Buffer.alloc(this.dataLength + 2)
-    packet.writeInt16LE(this.dataLength, 0)
-    packet.write(this.mcoSig, 2)
-    packet.writeInt16LE(this.seq, 6)
-    packet.writeInt8(this.flags, 10)
-    this.data.copy(packet, 11)
-    return packet
+    const packet = Buffer.alloc(this.dataLength + 2);
+    packet.writeInt16LE(this.dataLength, 0);
+    packet.write(this.mcoSig, 2);
+    packet.writeInt16LE(this.seq, 6);
+    packet.writeInt8(this.flags, 10);
+    this.data.copy(packet, 11);
+    return packet;
   }
 
   /**
    *
    * @param {number} appId
-   * @returns {void}
+   * @return {void}
    */
   setAppId(appId: number) {
-    this.appId = appId
+    this.appId = appId;
   }
 
   /**
    *
    * @param {number} newMsgNo
-   * @returns {void}
+   * @return {void}
    */
   setMsgNo(newMessageNo: number) {
-    this.msgNo = newMessageNo
-    this.data.writeInt16LE(this.msgNo, 0)
+    this.msgNo = newMessageNo;
+    this.data.writeInt16LE(this.msgNo, 0);
   }
 
   /**
    *
    * @param {number} newSeq
-   * @returns {void}
+   * @return {void}
    */
   setSeq(newSeq: number) {
-    this.seq = newSeq
+    this.seq = newSeq;
   }
 
   /**
    *
    * @param {Buffer} packet
-   * @returns {void}
+   * @return {void}
    */
   setMsgHeader(packet: Buffer) {
-    const header = Buffer.alloc(6)
-    packet.copy(header, 0, 0, 6)
+    const header = Buffer.alloc(6);
+    packet.copy(header, 0, 0, 6);
   }
 
   /**
    *
    * @param {Buffer} buffer
-   * @returns {void}
+   * @return {void}
    */
   updateBuffer(buffer: Buffer) {
-    this.data = Buffer.from(buffer)
-    this.dataLength = 10 + buffer.length
-    this.msgNo = this.data.readInt16LE(0)
+    this.data = Buffer.from(buffer);
+    this.dataLength = 10 + buffer.length;
+    this.msgNo = this.data.readInt16LE(0);
   }
 
   /**
@@ -161,33 +161,33 @@ export class MessageNode {
    * @return {boolean}
    */
   isMCOTS() {
-    return this.mcoSig === 'TOMC'
+    return this.mcoSig === 'TOMC';
   }
 
   /**
    *
-   * @returns {void}
+   * @return {void}
    */
   dumpPacket() {
-    let packetContentsArray = this.serialize().toString('hex').match(/../g)
+    let packetContentsArray = this.serialize().toString('hex').match(/../g);
     if (packetContentsArray === null) {
-      packetContentsArray = []
+      packetContentsArray = [];
     }
 
     log(
-      `Message ${JSON.stringify({
-        dataLength: this.dataLength,
-        isMCOTS: this.isMCOTS(),
-        msgNo: this.msgNo,
-        direction: this.direction,
-        seq: this.seq,
-        flags: this.flags,
-        toFrom: this.toFrom,
-        appId: this.appId,
-        packetContents: packetContentsArray.join('') || '',
-      })}`,
-      { service: 'mcoserver:MessageNode', level: 'debug' },
-    )
+        `Message ${JSON.stringify({
+          dataLength: this.dataLength,
+          isMCOTS: this.isMCOTS(),
+          msgNo: this.msgNo,
+          direction: this.direction,
+          seq: this.seq,
+          flags: this.flags,
+          toFrom: this.toFrom,
+          appId: this.appId,
+          packetContents: packetContentsArray.join('') || '',
+        })}`,
+        {service: 'mcoserver:MessageNode', level: 'debug'},
+    );
   }
 
   /**
@@ -195,17 +195,17 @@ export class MessageNode {
    * @return {number}
    */
   getLength() {
-    return this.dataLength
+    return this.dataLength;
   }
 
   /**
    *
    * @param {Buffer} packet
-   * @returns {void}
+   * @return {void}
    */
   BaseMsgHeader(packet: Buffer) {
     // WORD msgNo;
-    this.msgNo = packet.readInt16LE(0)
+    this.msgNo = packet.readInt16LE(0);
   }
 }
 

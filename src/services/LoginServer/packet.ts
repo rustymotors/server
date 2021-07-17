@@ -270,8 +270,8 @@ function premadeLogin() {
     0x00, // (0x8c was old val)
     0x00, // (0x98 was old val)
     0x00, // (0xa6 was old val)
-  ])
+  ]);
 }
 
-const _premadeLogin = premadeLogin
-export { _premadeLogin as premadeLogin }
+const _premadeLogin = premadeLogin;
+export {_premadeLogin as premadeLogin};
