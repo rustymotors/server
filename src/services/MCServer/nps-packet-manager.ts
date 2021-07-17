@@ -12,6 +12,7 @@ import {LobbyServer} from '../LobbyServer';
 import {LoginServer} from '../LoginServer';
 import {PersonaServer} from '../PersonaServer/persona-server';
 import {DatabaseManager} from '../shared/database-manager';
+import { TCPConnection } from './tcpConnection';
 
 /**
  * @module npsPacketManager
@@ -82,7 +83,7 @@ export class NPSPacketManager {
    * @param {number} msgId
    * @return {string}
    */
-  msgCodetoName(messageId: number) {
+  msgCodetoName(messageId: number): string {
     const mapping = this.msgNameMapping.find((code) => code.id === messageId);
     return mapping ? mapping.name : 'Unknown msgId';
   }
@@ -91,7 +92,7 @@ export class NPSPacketManager {
    *
    * @return {string}
    */
-  getNPSKey() {
+  getNPSKey(): string {
     return this.npsKey;
   }
 
@@ -100,7 +101,7 @@ export class NPSPacketManager {
    * @param {string} key
    * @return {void}
    */
-  setNPSKey(key:string) {
+  setNPSKey(key:string): void {
     this.npsKey = key;
   }
 
@@ -109,7 +110,7 @@ export class NPSPacketManager {
    * @param {module:IRawPacket} rawPacket
    * @return {Promise<ConnectionObj>}
    */
-  async processNPSPacket(rawPacket: IRawPacket) {
+  async processNPSPacket(rawPacket: IRawPacket): Promise<TCPConnection> {
     const messageId = rawPacket.data.readInt16BE(0);
     log(
         `Handling message',

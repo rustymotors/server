@@ -56,7 +56,7 @@ export class LobbyMessage {
    *
    * @return {Buffer}
    */
-  serialize() {
+  serialize(): Buffer {
     return this.data;
   }
 
@@ -64,7 +64,7 @@ export class LobbyMessage {
    * DumpPacket
    * @return {void}
    */
-  dumpPacket() {
+  dumpPacket(): void {
     debug(
         `LobbyMsg',
       ${{

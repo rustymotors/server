@@ -68,7 +68,7 @@ export class StockCarInfoMessage {
    * @param {StockCar} car
    * @return {void}
    */
-  addStockCar(car: StockCar) {
+  addStockCar(car: StockCar): void {
     this.StockCarList.push(car);
     this.noCars = this.StockCarList.length;
   }
@@ -77,7 +77,7 @@ export class StockCarInfoMessage {
    *
    * @return {Buffer}
    */
-  serialize() {
+  serialize(): Buffer {
     // This does not count the StockCar array
     const packet = Buffer.alloc((17 + 9) * this.StockCarList.length);
     packet.writeInt16LE(this.msgNo, 0);
@@ -100,7 +100,7 @@ export class StockCarInfoMessage {
    * DumpPacket
    * @return {void}
    */
-  dumpPacket() {
+  dumpPacket(): void {
     log(
         `${{
           msgNo: this.msgNo,

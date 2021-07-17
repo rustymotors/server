@@ -66,7 +66,7 @@ export class ClientConnectMessage {
    *
    * @return {number}
    */
-  getAppId() {
+  getAppId(): number {
     return this.appId;
   }
 
@@ -74,7 +74,7 @@ export class ClientConnectMessage {
    * DumpPacket
    * @return {void}
    */
-  dumpPacket() {
+  dumpPacket(): void {
     log(
         `ClientConnectMsg',
       ${{

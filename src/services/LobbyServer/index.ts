@@ -13,6 +13,7 @@ import {PersonaServer} from '../PersonaServer/persona-server';
 import {NPSUserInfo} from './nps-user-info';
 import {TCPConnection} from '../MCServer/tcpConnection';
 import {IRawPacket, ISessionRecord} from '../../types';
+import { EMessageDirection } from '../MCOTS/message-node';
 
 /**
  * Manages the game connection to the lobby and racing rooms
@@ -27,7 +28,7 @@ const databaseManager = new DatabaseManager();
  * @param {Buffer} buffer
  * @return {Promise<ConnectionObj>}
  */
-async function npsSocketWriteIfOpen(conn: TCPConnection, buffer: Buffer) {
+async function npsSocketWriteIfOpen(conn: TCPConnection, buffer: Buffer): Promise<TCPConnection> {
   const {sock} = conn;
   if (sock.writable) {
     // Write the packet to socket
@@ -50,7 +51,7 @@ async function npsSocketWriteIfOpen(conn: TCPConnection, buffer: Buffer) {
  * @param {ConnectionObj} con
  * @param {Buffer} cypherCmd
  */
-function decryptCmd(con: TCPConnection, cypherCmd: Buffer) {
+function decryptCmd(con: TCPConnection, cypherCmd: Buffer): TCPConnection {
   const s = con;
   const decryptedCommand = s.decipherBufferDES(cypherCmd);
   s.decryptedCmd = decryptedCommand;
@@ -67,7 +68,7 @@ function decryptCmd(con: TCPConnection, cypherCmd: Buffer) {
  * @param {Buffer} cypherCmd
  * @return {ConnectionObj}
  */
-function encryptCmd(con: TCPConnection, cypherCmd: Buffer) {
+function encryptCmd(con: TCPConnection, cypherCmd: Buffer): TCPConnection {
   const s = con;
   s.encryptedCmd = s.cipherBufferDES(cypherCmd);
   return s;
@@ -80,7 +81,7 @@ function encryptCmd(con: TCPConnection, cypherCmd: Buffer) {
  * @param {Buffer} data
  * @return {Promise<ConnectionObj>}
  */
-async function sendCommand(con: TCPConnection, data: Buffer) {
+async function sendCommand(con: TCPConnection, data: Buffer): Promise<TCPConnection> {
   const s = con;
 
   const decipheredCommand = decryptCmd(
@@ -89,7 +90,7 @@ async function sendCommand(con: TCPConnection, data: Buffer) {
   ).decryptedCmd;
 
   // Marshal the command into an NPS packet
-  const incommingRequest = new NPSMessage('RECEIVED');
+  const incommingRequest = new NPSMessage(EMessageDirection.RECEIVED);
   incommingRequest.deserialize(decipheredCommand);
 
   incommingRequest.dumpPacket();
@@ -107,7 +108,7 @@ async function sendCommand(con: TCPConnection, data: Buffer) {
   });
 
   // Build the packet
-  const packetResult = new NPSMessage('SENT');
+  const packetResult = new NPSMessage(EMessageDirection.SENT);
   packetResult.msgNo = 0x2_29;
   packetResult.setContent(packetContent);
   packetResult.dumpPacket();
@@ -130,9 +131,9 @@ export class LobbyServer {
    *
    * @return NPSMsg}
    */
-  _npsHeartbeat() {
+  _npsHeartbeat(): NPSMessage {
     const packetContent = Buffer.alloc(8);
-    const packetResult = new NPSMessage('SENT');
+    const packetResult = new NPSMessage(EMessageDirection.SENT);
     packetResult.msgNo = 0x1_27;
     packetResult.setContent(packetContent);
     packetResult.dumpPacket();
@@ -144,7 +145,7 @@ export class LobbyServer {
    * @param {IRawPacket} rawPacket
    * @return {Promise<ConnectionObj>}
    */
-  async dataHandler(rawPacket: IRawPacket) {
+  async dataHandler(rawPacket: IRawPacket): Promise<TCPConnection> {
     const {localPort, remoteAddress} = rawPacket;
     debug(
         `Received Lobby packet: ${JSON.stringify({localPort, remoteAddress})}`,
@@ -231,7 +232,7 @@ export class LobbyServer {
    * @param {string} key
    * @return {Buffer}
    */
-  _generateSessionKeyBuffer(key: string) {
+  _generateSessionKeyBuffer(key: string): Buffer {
     const nameBuffer = Buffer.alloc(64);
     Buffer.from(key, 'utf8').copy(nameBuffer);
     return nameBuffer;
@@ -244,7 +245,7 @@ export class LobbyServer {
    * @param {Buffer} rawData
    * @return {Promise<NPSMsg>}
    */
-  async _npsRequestGameConnectServer(connection: TCPConnection, rawData: Buffer) {
+  async _npsRequestGameConnectServer(connection: TCPConnection, rawData: Buffer): Promise<NPSMessage> {
     const {sock} = connection;
     debug(
         `_npsRequestGameConnectServer: ${JSON.stringify({
@@ -255,13 +256,13 @@ export class LobbyServer {
     );
 
     // Return a _NPS_UserInfo structure
-    const userInfo = new NPSUserInfo('RECEIVED');
+    const userInfo = new NPSUserInfo(EMessageDirection.RECEIVED);
     userInfo.deserialize(rawData);
     userInfo.dumpInfo();
 
     const personaManager = new PersonaServer();
 
-    const personas = await personaManager._getPersonasById(userInfo.userId);
+    const personas = await personaManager.getPersonasByPersonaId(userInfo.userId);
     if (personas.length === 0) {
       throw new Error('No personas found.');
     }
@@ -309,7 +310,7 @@ export class LobbyServer {
     packetContent.writeInt16BE(32, 66);
 
     // Build the packet
-    const packetResult = new NPSMessage('SENT');
+    const packetResult = new NPSMessage(EMessageDirection.SENT);
     packetResult.msgNo = 0x1_20;
     packetResult.setContent(packetContent);
     packetResult.dumpPacket();

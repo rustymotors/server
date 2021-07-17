@@ -16,6 +16,10 @@ import {log} from '@drazisil/mco-logger';
  * @typedef {'RECEIVED' | 'SENT'} MESSAGE_DIRECTION
  *
  */
+export enum EMessageDirection {
+  RECEIVED = 'received',
+  SENT = 'sent'
+}
 
 /**
  * @class
@@ -29,7 +33,7 @@ import {log} from '@drazisil/mco-logger';
  * @property {number} appId
  */
 export class MessageNode {
-  direction: string
+  direction: EMessageDirection
   msgNo: number
   seq: number
   flags: number
@@ -42,10 +46,7 @@ export class MessageNode {
    *
    * @param {MESSAGE_DIRECTION} direction
    */
-  constructor(direction: string) {
-    if (direction !== 'RECEIVED' && direction !== 'SENT') {
-      throw new Error('Direction must be either \'RECEIVED\' or \'SENT\'');
-    }
+  constructor(direction: EMessageDirection) {
 
     this.direction = direction;
     this.msgNo = 0;
@@ -64,7 +65,7 @@ export class MessageNode {
    * @param {Buffer} packet
    * @return {void}
    */
-  deserialize(packet: Buffer) {
+  deserialize(packet: Buffer): void {
     try {
       this.dataLength = packet.readInt16LE(0);
       this.mcoSig = packet.slice(2, 6).toString();
@@ -97,7 +98,7 @@ export class MessageNode {
    *
    * @return {Buffer}
    */
-  serialize() {
+  serialize(): Buffer {
     const packet = Buffer.alloc(this.dataLength + 2);
     packet.writeInt16LE(this.dataLength, 0);
     packet.write(this.mcoSig, 2);
@@ -112,7 +113,7 @@ export class MessageNode {
    * @param {number} appId
    * @return {void}
    */
-  setAppId(appId: number) {
+  setAppId(appId: number): void {
     this.appId = appId;
   }
 
@@ -121,7 +122,7 @@ export class MessageNode {
    * @param {number} newMsgNo
    * @return {void}
    */
-  setMsgNo(newMessageNo: number) {
+  setMsgNo(newMessageNo: number): void {
     this.msgNo = newMessageNo;
     this.data.writeInt16LE(this.msgNo, 0);
   }
@@ -131,7 +132,7 @@ export class MessageNode {
    * @param {number} newSeq
    * @return {void}
    */
-  setSeq(newSeq: number) {
+  setSeq(newSeq: number): void {
     this.seq = newSeq;
   }
 
@@ -140,7 +141,7 @@ export class MessageNode {
    * @param {Buffer} packet
    * @return {void}
    */
-  setMsgHeader(packet: Buffer) {
+  setMsgHeader(packet: Buffer): void {
     const header = Buffer.alloc(6);
     packet.copy(header, 0, 0, 6);
   }
@@ -150,7 +151,7 @@ export class MessageNode {
    * @param {Buffer} buffer
    * @return {void}
    */
-  updateBuffer(buffer: Buffer) {
+  updateBuffer(buffer: Buffer): void {
     this.data = Buffer.from(buffer);
     this.dataLength = 10 + buffer.length;
     this.msgNo = this.data.readInt16LE(0);
@@ -160,7 +161,7 @@ export class MessageNode {
    *
    * @return {boolean}
    */
-  isMCOTS() {
+  isMCOTS(): boolean {
     return this.mcoSig === 'TOMC';
   }
 
@@ -168,7 +169,7 @@ export class MessageNode {
    *
    * @return {void}
    */
-  dumpPacket() {
+  dumpPacket(): void {
     let packetContentsArray = this.serialize().toString('hex').match(/../g);
     if (packetContentsArray === null) {
       packetContentsArray = [];
@@ -194,7 +195,7 @@ export class MessageNode {
    *
    * @return {number}
    */
-  getLength() {
+  getLength(): number {
     return this.dataLength;
   }
 
@@ -203,7 +204,7 @@ export class MessageNode {
    * @param {Buffer} packet
    * @return {void}
    */
-  BaseMsgHeader(packet: Buffer) {
+  BaseMsgHeader(packet: Buffer): void {
     // WORD msgNo;
     this.msgNo = packet.readInt16LE(0);
   }

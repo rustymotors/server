@@ -44,7 +44,7 @@ export class AdminServer {
    *
    * @return {string}
    */
-  _handleGetBans() {
+  _handleGetBans(): string {
     const banlist = {
       mcServer: this.mcServer.mgr.getBans(),
     };
@@ -55,7 +55,7 @@ export class AdminServer {
    *
    * @return {string}
    */
-  _handleGetConnections() {
+  _handleGetConnections(): string {
     const connections = this.mcServer.mgr.dumpConnections();
     let responseText = '';
     for (const [index, connection] of connections.entries()) {
@@ -75,7 +75,7 @@ export class AdminServer {
    *
    * @return {string}
    */
-  _handleResetAllQueueState() {
+  _handleResetAllQueueState(): string {
     this.mcServer.mgr.resetAllQueueState();
     const connections = this.mcServer.mgr.dumpConnections();
     let responseText = 'Queue state reset for all connections\n\n';
@@ -97,7 +97,7 @@ export class AdminServer {
    * @param {import("http").IncomingMessage} request
    * @param {import("http").ServerResponse} response
    */
-  _httpsHandler(request: IncomingMessage, response: ServerResponse) {
+  _httpsHandler(request: IncomingMessage, response: ServerResponse): void {
     log(
         `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
         {service: 'mcoserver:AdminServer'},
@@ -138,7 +138,7 @@ export class AdminServer {
    * @returns {void}
    * @param {import("net").Socket} socket
    */
-  _socketEventHandler(socket: Socket) {
+  _socketEventHandler(socket: Socket): void {
     socket.on('error', (error) => {
       throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`);
     });
@@ -149,7 +149,7 @@ export class AdminServer {
    * @param {module:config.config} config
    * @return {Promise<void>}
    */
-  async start(config: IAppConfiguration) {
+  async start(config: IAppConfiguration): Promise<void> {
     try {
       const sslOptions = await _sslOptions(config.certificate, this.serviceName);
 
@@ -157,8 +157,8 @@ export class AdminServer {
       this.httpsServer = createServer(
           sslOptions,
           (
-          /** @type {import("http").IncomingMessage} */ request,
-              /** @type {import("http").ServerResponse} */ response,
+          /** @type {import("http").IncomingMessage} */ request: import("http").IncomingMessage,
+              /** @type {import("http").ServerResponse} */ response: import("http").ServerResponse,
           ) => {
             this._httpsHandler(request, response);
           },

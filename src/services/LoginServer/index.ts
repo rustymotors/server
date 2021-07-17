@@ -7,7 +7,7 @@
 
 import {debug, log} from '@drazisil/mco-logger';
 import {IAppConfiguration} from '../../../config';
-import {IRawPacket} from '../../types';
+import {IRawPacket, IUserRecordMini} from '../../types';
 import {TCPConnection} from '../MCServer/tcpConnection';
 import {DatabaseManager} from '../shared/database-manager';
 import {NPSUserStatus} from './nps-user-status';
@@ -40,7 +40,7 @@ export class LoginServer {
    * @param {IServerConfig} config
    * @return {Promise<ConnectionObj>}
    */
-  async dataHandler(rawPacket: IRawPacket, config: IAppConfiguration) {
+  async dataHandler(rawPacket: IRawPacket, config: IAppConfiguration): Promise<TCPConnection> {
     let processed = true;
     const {connection, data} = rawPacket;
     const {localPort, remoteAddress} = rawPacket;
@@ -99,12 +99,12 @@ export class LoginServer {
    * @param {string} contextId
    * @return {Promise<IUserRecordMini>}
    */
-  async _npsGetCustomerIdByContextId(contextId: string) {
+  async _npsGetCustomerIdByContextId(contextId: string): Promise<IUserRecordMini> {
     debug('Entering _npsGetCustomerIdByContextId...', {
       service: this.serviceName,
     });
     /** @type {IUserRecordMini[]} */
-    const users = [
+    const users: IUserRecordMini[] = [
       {
         contextId: '5213dee3a6bcdb133373b2d4f3b9962758',
         customerId: 0xac_01_00_00,
@@ -153,7 +153,7 @@ export class LoginServer {
    * @param {IServerConfig} config
    * @return {Promise<Buffer>}
    */
-  async _userLogin(connection: TCPConnection, data: Buffer, config: IAppConfiguration) {
+  async _userLogin(connection: TCPConnection, data: Buffer, config: IAppConfiguration): Promise<Buffer> {
     const {sock} = connection;
     const {localPort} = sock;
     const userStatus = new NPSUserStatus(data);

@@ -41,7 +41,7 @@ export class MCServer {
    * @returns {Promise<void>}
    */
 
-  async startServers() {
+  async startServers(): Promise<void> {
     const listenerThread = new ListenerThread();
     log('Starting the listening sockets...', {service: this.serviceName});
     const tcpPortList = [

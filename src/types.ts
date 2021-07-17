@@ -182,6 +182,12 @@ export interface IPersonaRecord {
  * @property {string} key
  * @property {boolean} rejectUnauthorized
  */
+export interface ISslOptions {
+    cert: string
+    honorCipherOrder: boolean
+    key: string
+    rejectUnauthorized: boolean
+}
 
 /**
  * @global
@@ -190,6 +196,11 @@ export interface IPersonaRecord {
  * @property {number} customerId
  * @property {number} userId
  */
+export interface IUserRecordMini {
+    contextId: string
+    customerId: number
+    userId: number
+}
 
 /**
  * @global

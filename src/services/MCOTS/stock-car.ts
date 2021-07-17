@@ -43,7 +43,7 @@ export class StockCar {
    *
    * @return {Buffer}
    */
-  serialize() {
+  serialize(): Buffer {
     const packet = Buffer.alloc(10);
     packet.writeInt32LE(this.brandedPartId, 0);
     packet.writeInt32LE(this.retailPrice, 4);
@@ -55,7 +55,7 @@ export class StockCar {
    * DumpPacket
    * @return {void}
    */
-  dumpPacket() {
+  dumpPacket(): void {
     log('[StockCar]======================================', {
       service: this.serviceName,
       level: 'debug',

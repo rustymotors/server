@@ -43,7 +43,7 @@ export class EncryptionManager {
    * @param {Buffer} sessionkey
    * @return {boolean}
    */
-  setEncryptionKey(sessionkey: Buffer) {
+  setEncryptionKey(sessionkey: Buffer): boolean {
     this.sessionkey = sessionkey;
     // File deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
     this.in = createDecipheriv('rc4', sessionkey, '');
@@ -58,7 +58,7 @@ export class EncryptionManager {
    * @return {Buffer}
    * @memberof EncryptionMgr
    */
-  decrypt(encryptedText: Buffer) {
+  decrypt(encryptedText: Buffer): Buffer {
     if (this.in === undefined) {
       throw new Error('No decryption manager found!');
     }
@@ -73,7 +73,7 @@ export class EncryptionManager {
    * @return {Buffer}
    * @memberof EncryptionMgr
    */
-  encrypt(plainText: Buffer) {
+  encrypt(plainText: Buffer): Buffer {
     if (this.out === undefined) {
       throw new Error('No encryption manager found!');
     }
@@ -88,7 +88,7 @@ export class EncryptionManager {
    *
    * @return {string}
    */
-  _getSessionKey() {
+  _getSessionKey(): string {
     return this.sessionkey.toString('hex');
   }
 
@@ -97,7 +97,7 @@ export class EncryptionManager {
    *
    * @return {string}
    */
-  getId() {
+  getId(): string {
     return this.id;
   }
 }

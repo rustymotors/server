@@ -170,13 +170,15 @@ export const NPS_GetPersonaMapListRequest = {
 };
 
 /**
- * @class
  * @property {Buffer} _length
  * @property {Buffer} _mcosig
  */
 export class MessageHead {
   _length: Buffer
   _mcosig: Buffer
+  /**
+   *
+   */
   constructor() {
     // This is a 4B in the debug binary, the client is sending 2B
     /** @type {Buffer} */
@@ -195,21 +197,21 @@ export class MessageHead {
   /**
    * @param {number} value
    */
-  set length(value) {
+  set length(value: number) {
     this._length.writeInt16BE(value);
   }
 
   /**
    * @return {Buffer}
    */
-  get mcosig() {
+  get mcosig(): Buffer {
     return this._mcosig;
   }
 
   /**
    * @param {Buffer} value
    */
-  set mcosig(value) {
+  set mcosig(value: Buffer) {
     this._mcosig = value;
   }
 }

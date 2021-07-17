@@ -6,6 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import {debug, log} from '@drazisil/mco-logger';
+import { EMessageDirection } from './message-node';
 
 /**
  * Packet container for NPS messages
@@ -26,6 +27,17 @@ import {debug, log} from '@drazisil/mco-logger';
  * @property {string | null } sessionkey
  * @property {string} rawBuffer
  */
+export interface INPSMessageJSON {
+  msgNo: number
+  opCode: number | undefined
+  msgLength: number
+  msgVersion: number
+  content: string
+  contextId: string
+  direction: EMessageDirection
+  sessionkey: string | undefined
+  rawBuffer: string
+}
 
 /*
     NPS messages are sent serialized in BE format
@@ -48,22 +60,18 @@ export class NPSMessage {
   reserved: number
   content: Buffer
   msgLength: number
-  direction: string
+  direction: EMessageDirection
   serviceName: string
   /**
    *
    * @param {module:MessageNode.MESSAGE_DIRECTION} direction - the direction of the message flow
    */
-  constructor(direction: string) {
+  constructor(direction: EMessageDirection) {
     this.msgNo = 0;
     this.msgVersion = 0;
     this.reserved = 0;
     this.content = Buffer.from([0x01, 0x02, 0x03, 0x04]);
     this.msgLength = this.content.length + 12;
-    if (direction !== 'RECEIVED' && direction !== 'SENT') {
-      throw new Error('Directior must be either \'RECEIVED\' or \'SENT\'');
-    }
-
     this.direction = direction;
     this.serviceName = 'mcoserver:NPSMsg';
   }
@@ -73,7 +81,7 @@ export class NPSMessage {
    * @param {Buffer} buffer
    * @return {void}
    */
-  setContent(buffer: Buffer) {
+  setContent(buffer: Buffer): void {
     this.content = buffer;
     this.msgLength = this.content.length + 12;
   }
@@ -82,7 +90,7 @@ export class NPSMessage {
    *
    * @return {Buffer}
    */
-  getContentAsBuffer() {
+  getContentAsBuffer(): Buffer {
     return this.content;
   }
 
@@ -90,7 +98,7 @@ export class NPSMessage {
    *
    * @return {string}
    */
-  getPacketAsString() {
+  getPacketAsString(): string {
     return this.serialize().toString('hex');
   }
 
@@ -98,7 +106,7 @@ export class NPSMessage {
    *
    * @return {Buffer}
    */
-  serialize() {
+  serialize(): Buffer {
     try {
       const packet = Buffer.alloc(this.msgLength);
       packet.writeInt16BE(this.msgNo, 0);
@@ -129,7 +137,7 @@ export class NPSMessage {
    * @return {NPSMsg}
    * @memberof NPSMsg
    */
-  deserialize(packet: Buffer) {
+  deserialize(packet: Buffer): NPSMessage {
     this.msgNo = packet.readInt16BE(0);
     this.msgLength = packet.readInt16BE(2);
     this.msgVersion = packet.readInt16BE(4);
@@ -142,7 +150,7 @@ export class NPSMessage {
    * @param {string} messageType
    * @return {void}
    */
-  dumpPacketHeader(messageType: string) {
+  dumpPacketHeader(messageType: string): void {
     log(
         `NPSMsg/${messageType},
       ${{
@@ -160,7 +168,7 @@ export class NPSMessage {
    * @return {void}
    * @memberof NPSMsg
    */
-  dumpPacket() {
+  dumpPacket(): void {
     debug(
         `NPSMsg/NPSMsg,
       ${{
@@ -179,7 +187,7 @@ export class NPSMessage {
    *
    * @return {INPSMsgJSON}
    */
-  toJSON() {
+  toJSON(): INPSMessageJSON {
     return {
       msgNo: this.msgNo,
       contextId: '',

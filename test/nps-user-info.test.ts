@@ -7,13 +7,14 @@
 
 import { expect, it } from '@jest/globals'
 import { NPSUserInfo } from '../src/services/LobbyServer/nps-user-info'
+import { EMessageDirection } from '../src/services/MCOTS/message-node'
 
 it('NPSUserInfo', () => {
   const testPacket = Buffer.concat([
     Buffer.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x84, 0x5f, 0xed]),
     Buffer.alloc(98),
   ])
-  const npsUserInfo = new NPSUserInfo('RECEIVED')
+  const npsUserInfo = new NPSUserInfo(EMessageDirection.RECEIVED)
   npsUserInfo.deserialize(testPacket)
   expect(npsUserInfo.userId).toEqual(8_675_309)
 })

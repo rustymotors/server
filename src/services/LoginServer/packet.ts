@@ -10,7 +10,7 @@
  *
  * @return {Buffer}
  */
-function premadeLogin() {
+function premadeLogin(): Buffer {
   // TODO: Generate a dynamic login response message
   return Buffer.from([
     // Live Packet

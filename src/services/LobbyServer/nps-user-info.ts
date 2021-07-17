@@ -7,6 +7,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import {debug} from '@drazisil/mco-logger';
+import { EMessageDirection } from '../MCOTS/message-node';
 import {NPSMessage} from '../MCOTS/nps-msg';
 
 /**
@@ -28,7 +29,7 @@ class NPSUserInfo extends NPSMessage {
    *
    * @param {MESSAGE_DIRECTION} direction
    */
-  constructor(direction: string) {
+  constructor(direction: EMessageDirection) {
     super(direction);
     this.userId = 0;
     this.userName = Buffer.from([0x00]); // 30 length
@@ -41,7 +42,7 @@ class NPSUserInfo extends NPSMessage {
    * @param {Buffer} rawData
    * @return {NPSUserInfo}
    */
-  deserialize(rawData: Buffer) {
+  deserialize(rawData: Buffer): NPSUserInfo {
     this.userId = rawData.readInt32BE(4);
     this.userName = rawData.slice(8, 38);
     this.userData = rawData.slice(38);
@@ -51,7 +52,7 @@ class NPSUserInfo extends NPSMessage {
   /**
    * @return {void}
    */
-  dumpInfo() {
+  dumpInfo(): void {
     this.dumpPacketHeader('NPSUserInfo');
     debug(`UserId:        ${this.userId}`, {service: this.serviceName});
     debug(`UserName:      ${this.userName.toString()}`, {

@@ -53,7 +53,7 @@ export class GenericReplyMessage {
    * @param {Buffer} value
    * @return {void}
    */
-  setData(value: Buffer) {
+  setData(value: Buffer): void {
     this.data = value;
   }
 
@@ -62,7 +62,7 @@ export class GenericReplyMessage {
    * @param {Buffer} value
    * @return {void}
    */
-  setData2(value: Buffer) {
+  setData2(value: Buffer): void {
     this.data2 = value;
   }
 
@@ -71,7 +71,7 @@ export class GenericReplyMessage {
    * @param {Buffer} buffer
    * @return {void}
    */
-  deserialize(buffer: Buffer) {
+  deserialize(buffer: Buffer): void {
     try {
       this.msgNo = buffer.readInt16LE(0);
     } catch (error) {
@@ -96,7 +96,7 @@ export class GenericReplyMessage {
    *
    * @return {Buffer}
    */
-  serialize() {
+  serialize(): Buffer {
     const packet = Buffer.alloc(16);
     packet.writeInt16LE(this.msgNo, 0);
     packet.writeInt16LE(this.msgReply, 2);
@@ -111,7 +111,7 @@ export class GenericReplyMessage {
    * @param {Buffer} buffer
    * @return {void}
    */
-  setResult(buffer: Buffer) {
+  setResult(buffer: Buffer): void {
     this.result = buffer;
   }
 
@@ -119,7 +119,7 @@ export class GenericReplyMessage {
    * DumpPacket
    * @return {void}
    */
-  dumpPacket() {
+  dumpPacket(): void {
     log(
         `GenericReply',
       ${{

@@ -66,7 +66,7 @@ export class LoginMessage {
    * @param {Buffer} buffer
    * @return {void}
    */
-  deserialize(buffer: Buffer) {
+  deserialize(buffer: Buffer): void {
     try {
       this.msgNo = buffer.readInt16LE(0);
     } catch (error) {
@@ -102,7 +102,7 @@ export class LoginMessage {
    * DumpPacket
    * @return {void}
    */
-  dumpPacket() {
+  dumpPacket(): void {
     log(
         `LoginMsg',
       ${{

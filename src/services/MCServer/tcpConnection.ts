@@ -98,7 +98,7 @@ export class TCPConnection {
    * @param {Buffer} key
    * @return {void}
    */
-  setEncryptionKey(key: Buffer) {
+  setEncryptionKey(key: Buffer): void {
     this.isSetupComplete = this.enc.setEncryptionKey(key);
   }
 
@@ -108,7 +108,7 @@ export class TCPConnection {
    * @param {string} skey
    * @return {void}
    */
-  setEncryptionKeyDES(skey: string) {
+  setEncryptionKeyDES(skey: string): void {
     // Deepcode ignore HardcodedSecret: This uses an empty IV
     const desIV = Buffer.alloc(8);
 
@@ -143,7 +143,7 @@ export class TCPConnection {
    * @param {Buffer} messageBuffer
    * @return {Buffer}
    */
-  cipherBufferDES(messageBuffer: Buffer) {
+  cipherBufferDES(messageBuffer: Buffer): Buffer {
     if (this.encLobby.cipher) {
       return this.encLobby.cipher.update(messageBuffer);
     }
@@ -157,7 +157,7 @@ export class TCPConnection {
    * @param {Buffer} messageBuffer
    * @return {Buffer}
    */
-  decipherBufferDES(messageBuffer: Buffer) {
+  decipherBufferDES(messageBuffer: Buffer): Buffer {
     if (this.encLobby.decipher) {
       return this.encLobby.decipher.update(messageBuffer);
     }

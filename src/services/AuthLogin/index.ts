@@ -46,7 +46,7 @@ export class AuthLogin {
    * @return {string}
    * @memberof! WebServer
    */
-  _handleGetTicket() {
+  _handleGetTicket(): string {
     return 'Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e';
   }
 
@@ -57,7 +57,7 @@ export class AuthLogin {
    * @param {import("http").IncomingMessage} request
    * @param {import("http").ServerResponse} response
    */
-  _httpsHandler(request: IncomingMessage, response: ServerResponse) {
+  _httpsHandler(request: IncomingMessage, response: ServerResponse): void {
     log(
         `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
         {service: this.serviceName},
@@ -74,7 +74,7 @@ export class AuthLogin {
    * @returns {void}
    * @param {import("net").Socket} socket
    */
-  _socketEventHandler(socket: Socket) {
+  _socketEventHandler(socket: Socket): void {
     socket.on('error', (error) => {
       throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`);
     });
@@ -85,7 +85,7 @@ export class AuthLogin {
    * @returns {Promise<import("https").Server>}
    * @memberof! WebServer
    */
-  async start() {
+  async start(): Promise<import("https").Server> {
     const sslOptions = await _sslOptions(
         this.config.certificate,
         this.serviceName,

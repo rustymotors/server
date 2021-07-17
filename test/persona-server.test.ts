@@ -9,79 +9,80 @@ import { expect, it } from '@jest/globals'
 import { PersonaServer } from '../src/services/PersonaServer/persona-server'
 import { NPSMessage } from '../src/services/MCOTS/nps-msg'
 import { fakeSocket } from './helpers'
+import { EMessageDirection } from '../src/services/MCOTS/message-node'
 
 it('PersonaServer Methods', async () => {
   const personaServer = new PersonaServer()
-  const results = await personaServer._getPersonasByCustomerId(5_551_212)
+  const results = await personaServer.getPersonasByCustomerId(5_551_212)
   expect(results.length).toEqual(2)
   const name = results[0].name.toString('utf8')
   expect(name).toContain('Dr Brown')
 
-  const personas = await personaServer._npsGetPersonaMapsByCustomerId(5_551_212)
+  const personas = await personaServer.getPersonaMapsByCustomerId(5_551_212)
   const id1 = personas[0].id
   const name1 = personas[0].name
   expect(id1.readInt32BE(0)).toEqual(8_675_309)
   expect(name1.toString('utf8').length).toEqual(30)
 
   await expect(
-    personaServer._getPersonasByCustomerId(123_654),
+    personaServer.getPersonasByCustomerId(123_654),
   ).rejects.toThrowError(/Unable to locate a persona/)
 })
 
 it('PersonaServer _npsSelectGamePersona()', async () => {
   const personaServer = new PersonaServer()
-  const data = new NPSMessage('SENT').serialize()
-  const results = await personaServer._npsSelectGamePersona(data)
-  expect(results.direction).toEqual('SENT')
+  const data = new NPSMessage(EMessageDirection.SENT).serialize()
+  const results = await personaServer.handleSelectGamePersona(data)
+  expect(results.direction).toEqual(EMessageDirection.SENT)
 })
 
 it('PersonaServer _npsNewGameAccount()', async () => {
   const personaServer = new PersonaServer()
-  const data = new NPSMessage('SENT').serialize()
-  const results = await personaServer._npsNewGameAccount(data)
-  expect(results.direction).toEqual('SENT')
+  const data = new NPSMessage(EMessageDirection.SENT).serialize()
+  const results = await personaServer.createNewGameAccount(data)
+  expect(results.direction).toEqual(EMessageDirection.SENT)
 })
 
 it('PersonaServer _npsLogoutGameUser()', async () => {
   const personaServer = new PersonaServer()
-  const data = new NPSMessage('SENT').serialize()
-  const results = await personaServer._npsLogoutGameUser(data)
-  expect(results.direction).toEqual('SENT')
+  const data = new NPSMessage(EMessageDirection.SENT).serialize()
+  const results = await personaServer.logoutGameUser(data)
+  expect(results.direction).toEqual(EMessageDirection.SENT)
 })
 
 it('PersonaServer _npsCheckToken()', async () => {
   const personaServer = new PersonaServer()
-  const data = new NPSMessage('SENT').serialize()
-  const results = await personaServer._npsCheckToken(data)
-  expect(results.direction).toEqual('SENT')
+  const data = new NPSMessage(EMessageDirection.SENT).serialize()
+  const results = await personaServer.validateLicencePlate(data)
+  expect(results.direction).toEqual(EMessageDirection.SENT)
 })
 
 it('PersonaServer _npsValidatePersonaName()', async () => {
   const personaServer = new PersonaServer()
-  const data = new NPSMessage('SENT').serialize()
-  const results = await personaServer._npsValidatePersonaName(data)
-  expect(results.direction).toEqual('SENT')
+  const data = new NPSMessage(EMessageDirection.SENT).serialize()
+  const results = await personaServer.validatePersonaName(data)
+  expect(results.direction).toEqual(EMessageDirection.SENT)
 })
 
 it('PersonaServer _send()', () => {
   const personaServer = new PersonaServer()
-  const data = new NPSMessage('SENT')
+  const data = new NPSMessage(EMessageDirection.SENT)
   expect(() => {
-    personaServer._send(fakeSocket, data)
+    personaServer.sendPacket(fakeSocket, data)
   }).not.toThrow()
 })
 
 it('PersonaServer _npsGetPersonaMapsByCustomerId()', async () => {
   const personaServer = new PersonaServer()
 
-  const personas1 = await personaServer._npsGetPersonaMapsByCustomerId(
+  const personas1 = await personaServer.getPersonaMapsByCustomerId(
     2_868_969_472,
   )
 
   expect(personas1.length).toEqual(1)
   expect(personas1[0].name.toString('utf8')).toContain('Doc Joe')
 
-  const personas2 = await personaServer._npsGetPersonaMapsByCustomerId(4)
+  const personas2 = await personaServer.getPersonaMapsByCustomerId(4)
 
   expect(personas2.length).toEqual(0)
 })

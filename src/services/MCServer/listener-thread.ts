@@ -5,10 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {createServer, Socket} from 'net';
+import {createServer, Server, Socket} from 'net';
 import {debug, log} from '@drazisil/mco-logger';
 import {TCPConnection} from './tcpConnection';
 import {SessionManager} from './connection-mgr';
+import { IRawPacket } from '../../types';
 
 /**
  * TCP Listener thread
@@ -27,11 +28,11 @@ export class ListenerThread {
    * @param {ConnectionObj} connection
    * @return {Promise<void>}
    */
-  async _onData(data: Buffer, connection: TCPConnection) {
+  async _onData(data: Buffer, connection: TCPConnection): Promise<void> {
     try {
       const {localPort, remoteAddress} = connection.sock;
       /** @type {IRawPacket} */
-      const rawPacket = {
+      const rawPacket: IRawPacket = {
         connectionId: connection.id,
         connection,
         data,
@@ -47,7 +48,7 @@ export class ListenerThread {
           {service: 'mcoserver:ListenerThread'},
       );
       /** @type {ConnectionObj} */
-      let newConnection;
+      let newConnection: TCPConnection;
       try {
         newConnection = await connection.mgr.processData(rawPacket);
       } catch (error) {
@@ -95,7 +96,7 @@ export class ListenerThread {
    * @param {ConnectionMgr} connectionMgr
    * @return {void}
    */
-  _listener(socket: Socket, connectionMgr: SessionManager) {
+  _listener(socket: Socket, connectionMgr: SessionManager): void {
     // Received a new connection
     // Turn it into a connection object
     const connection = connectionMgr.findOrNewConnection(socket);
@@ -138,7 +139,7 @@ export class ListenerThread {
    * @param {module:ConnectionMgr} connectionMgr
    * @return {Promise<Server>}
    */
-  async startTCPListener(localPort: number, connectionMgr: SessionManager) {
+  async startTCPListener(localPort: number, connectionMgr: SessionManager): Promise<Server> {
     return createServer((socket) => {
       this._listener(socket, connectionMgr);
     }).listen({port: localPort, host: '0.0.0.0'});

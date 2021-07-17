@@ -95,7 +95,7 @@ export class ShardEntry {
    *
    * @return {string}
    */
-  formatForShardList() {
+  formatForShardList(): string {
     return `[${this.name}]
     Description=${this.description}
     ShardId=${this.id}

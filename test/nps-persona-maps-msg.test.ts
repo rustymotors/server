@@ -6,10 +6,13 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
+import { EMessageDirection } from '../src/services/MCOTS/message-node'
 import { NPSPersonaMapsMessage } from '../src/services/PersonaServer/nps-persona-maps-msg'
 
 it('NPSPersonaMapsMsg', () => {
-  const npsPersonaMapsMessage = new NPSPersonaMapsMessage('RECEIVED')
-  expect(npsPersonaMapsMessage.direction).toEqual('RECEIVED')
+  const npsPersonaMapsMessage = new NPSPersonaMapsMessage(
+    EMessageDirection.RECEIVED,
+  )
+  expect(npsPersonaMapsMessage.direction).toEqual(EMessageDirection.RECEIVED)
   expect(npsPersonaMapsMessage.msgNo).toEqual(0x6_07)
 })
