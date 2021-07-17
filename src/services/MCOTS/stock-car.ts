@@ -32,7 +32,11 @@ export class StockCar {
    * @param {number} retailPrice
    * @param {0|1} bIsDealOfTheDay
    */
-  constructor(brandedPartId: number, retailPrice: number, bIsDealOfTheDay: number) {
+  constructor(
+    brandedPartId: number,
+    retailPrice: number,
+    bIsDealOfTheDay: number,
+  ) {
     this.brandedPartId = brandedPartId
     this.retailPrice = retailPrice
     this.bIsDealOfTheDay = bIsDealOfTheDay
@@ -43,7 +47,7 @@ export class StockCar {
    *
    * @return {Buffer}
    */
-  serialize() {
+  serialize(): Buffer {
     const packet = Buffer.alloc(10)
     packet.writeInt32LE(this.brandedPartId, 0)
     packet.writeInt32LE(this.retailPrice, 4)
@@ -53,9 +57,9 @@ export class StockCar {
 
   /**
    * DumpPacket
-   * @returns {void}
+   * @return {void}
    */
-  dumpPacket() {
+  dumpPacket(): void {
     log('[StockCar]======================================', {
       service: this.serviceName,
       level: 'debug',

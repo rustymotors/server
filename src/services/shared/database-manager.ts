@@ -9,23 +9,14 @@
 import sqlite3 from 'sqlite3'
 import { ISessionRecord } from '../../types'
 
-/**
- * Database connection abstraction
- * @module DatabaseManager
- */
-
-/**
- * @class
- */
 export class DatabaseManager {
   localDB: sqlite3.Database
   changes: number
   serviceName: string
+  /**
+   *
+   */
   constructor() {
-    /**
-     * @name DatabaseManager#db
-     */
-
     this.localDB = new (sqlite3.verbose().Database)('db/mco.db')
 
     const { localDB } = this
@@ -130,17 +121,9 @@ export class DatabaseManager {
     this.serviceName = 'mcoserver:DatabaseMgr'
   }
 
-  db() {
-    return this.localDB
-  }
-
-  /**
-   *
-   * @param {number} customerId
-   * @return {Promise<ISessionRecord>}
-   * @memberof {DatabaseManager}
-   */
-  async fetchSessionKeyByCustomerId(customerId: number): Promise<ISessionRecord> {
+  async fetchSessionKeyByCustomerId(
+    customerId: number,
+  ): Promise<ISessionRecord> {
     return new Promise((resolve, reject) => {
       try {
         const stmt = this.localDB.prepare(
@@ -161,14 +144,9 @@ export class DatabaseManager {
     })
   }
 
-  /**
-   * Fetch session key from database based on remote address
-   *
-   * @param {string} connectionId
-   * @return {Promise<ISessionRecord>}
-   * @memberof {DatabaseManager}
-   */
-  async fetchSessionKeyByConnectionId(connectionId: string) {
+  async fetchSessionKeyByConnectionId(
+    connectionId: string,
+  ): Promise<ISessionRecord> {
     return new Promise((resolve, reject) => {
       try {
         const stmt = this.localDB.prepare(
@@ -189,16 +167,12 @@ export class DatabaseManager {
     })
   }
 
-  /**
-   *
-   * @param {number} customerId
-   * @param {string} sessionkey
-   * @param {string} contextId
-   * @param {string} connectionId
-   * @return {Promise<number>}
-   * @memberof {DatabaseManager}
-   */
-  async _updateSessionKey(customerId: number, sessionkey: string, contextId: string, connectionId: string) {
+  async _updateSessionKey(
+    customerId: number,
+    sessionkey: string,
+    contextId: string,
+    connectionId: string,
+  ): Promise<number> {
     const skey = sessionkey.slice(0, 16)
 
     return new Promise((resolve, reject) => {

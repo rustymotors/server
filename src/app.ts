@@ -7,10 +7,10 @@
 */
 
 import { log } from '@drazisil/mco-logger'
-import { Server } from './src/server'
-import { AuthLogin } from './src/services/AuthLogin/auth-login'
-import { PatchServer } from './src/services/PatchAndShard/patch-server'
-import { DatabaseManager } from './src/services/shared/database-manager'
+import { Server } from './server'
+import { AuthLogin } from './services/AuthLogin'
+import { PatchServer } from './services/PatchAndShard/patch-server'
+import { DatabaseManager } from './services/shared/database-manager'
 
 // Database manager
 const databaseManager = new DatabaseManager()

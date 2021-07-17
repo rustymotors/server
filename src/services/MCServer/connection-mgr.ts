@@ -14,7 +14,7 @@ import { defaultHandler } from '../MCOTS/tcp-manager'
 import { DatabaseManager } from '../shared/database-manager'
 import { TCPConnection } from './tcpConnection'
 import { NPSPacketManager } from './nps-packet-manager'
-import { MessageNode } from '../MCOTS/message-node'
+import { EMessageDirection, MessageNode } from '../MCOTS/message-node'
 
 /**
  * @module ConnectionMgr
@@ -39,7 +39,10 @@ export class SessionManager {
    * @param {module:DatabaseManager} databaseManager
    * @param {IAppSettings} appSettings
    */
-  constructor(databaseManager: DatabaseManager, appSettings: IAppConfiguration) {
+  constructor(
+    databaseManager: DatabaseManager,
+    appSettings: IAppConfiguration,
+  ) {
     this.config = appSettings
     this.databaseMgr = databaseManager
     /**
@@ -57,9 +60,9 @@ export class SessionManager {
   /**
    * Check incoming data and route it to the correct handler based on localPort
    * @param {IRawPacket} rawPacket
-   * @returns {Promise} {@link module:ConnectionObj~ConnectionObj}
+   * @return {Promise} {@link module:ConnectionObj~ConnectionObj}
    */
-  async processData(rawPacket: IRawPacket) {
+  async processData(rawPacket: IRawPacket): Promise<TCPConnection> {
     const npsPacketManager = new NPSPacketManager(this.databaseMgr, this.config)
 
     const { remoteAddress, localPort, data } = rawPacket
@@ -110,15 +113,15 @@ export class SessionManager {
           //   localPort
           // }
         )
-        const newNode = new MessageNode('RECEIVED')
+        const newNode = new MessageNode(EMessageDirection.RECEIVED)
         newNode.deserialize(rawPacket.data)
-        debug(newNode, { service: this.serviceName })
+        debug(JSON.stringify(newNode), { service: this.serviceName })
 
         return defaultHandler(rawPacket)
       }
 
       default:
-        debug(rawPacket, { service: this.serviceName })
+        debug(JSON.stringify(rawPacket), { service: this.serviceName })
         throw new Error(
           `We received a packet on port ${localPort}. We don't what to do yet, going to throw so the message isn't lost.`,
         )
@@ -128,9 +131,9 @@ export class SessionManager {
   /**
    * Get the name connected to the NPS opcode
    * @param {number} opCode
-   * @returns {string}
+   * @return {string}
    */
-  getNameFromOpCode(opCode: number) {
+  getNameFromOpCode(opCode: number): string {
     const opCodeName = NPS_COMMANDS.find(code => code.value === opCode)
     if (opCodeName === undefined) {
       throw new Error(`Unable to locate name for opCode ${opCode}`)
@@ -142,9 +145,9 @@ export class SessionManager {
   /**
    * Get the name connected to the NPS opcode
    * @param {string} name
-   * @returns {number}
+   * @return {number}
    */
-  getOpcodeFromName(name: string) {
+  getOpcodeFromName(name: string): number {
     const opCode = NPS_COMMANDS.find(code => code.name === name)
     if (opCode === undefined) {
       throw new Error(`Unable to locate opcode for name ${name}`)
@@ -157,7 +160,7 @@ export class SessionManager {
    *
    * @return {string[]}
    */
-  getBans() {
+  getBans(): string[] {
     return this.banList
   }
 
@@ -168,13 +171,22 @@ export class SessionManager {
    * @memberof ConnectionMgr
    * @return {module:ConnectionObj}
    */
-  findConnectionByAddressAndPort(remoteAddress: string, localPort: number) {
-    return this.connections.find(connection => {
+  findConnectionByAddressAndPort(
+    remoteAddress: string,
+    localPort: number,
+  ): TCPConnection {
+    const result = this.connections.find(connection => {
       const match =
         remoteAddress === connection.remoteAddress &&
         localPort === connection.localPort
       return match
     })
+    if (result === undefined) {
+      throw new Error(
+        `Unable to locate connection for ${remoteAddress}:${localPort}`,
+      )
+    }
+    return result
   }
 
   /**
@@ -182,7 +194,7 @@ export class SessionManager {
    * @param {string} connectionId
    * @return {module:ConnectionObj}
    */
-  findConnectionById(connectionId: string) {
+  findConnectionById(connectionId: string): TCPConnection {
     const results = this.connections.find(
       connection => connectionId === connection.id,
     )
@@ -198,9 +210,13 @@ export class SessionManager {
    * @param {string} address
    * @param {number} port
    * @param {module:ConnectionObj} newConnection
-   * @returns {Promise<void>}
+   * @return {Promise<void>}
    */
-  async _updateConnectionByAddressAndPort(address: string, port: number, newConnection: TCPConnection) {
+  async _updateConnectionByAddressAndPort(
+    address: string,
+    port: number,
+    newConnection: TCPConnection,
+  ): Promise<void> {
     if (newConnection === undefined) {
       throw new Error(
         `Undefined connection: ${JSON.stringify({
@@ -219,10 +235,12 @@ export class SessionManager {
       this.connections.push(newConnection)
     } catch (error) {
       process.exitCode = -1
-      throw new Error(`Error updating connection, ${JSON.stringify({
-        error,
-        connections: this.connections,
-      })}`)
+      throw new Error(
+        `Error updating connection, ${JSON.stringify({
+          error,
+          connections: this.connections,
+        })}`,
+      )
     }
   }
 
@@ -232,7 +250,7 @@ export class SessionManager {
    * @param {module:net.Socket} socket
    * @return {module:ConnectionObj}
    */
-  findOrNewConnection(socket: Socket) {
+  findOrNewConnection(socket: Socket): TCPConnection {
     const { remoteAddress, localPort } = socket
     if (!remoteAddress) {
       throw new Error(
@@ -268,9 +286,9 @@ export class SessionManager {
 
   /**
    *
-   * @returns {void}
+   * @return {void}
    */
-  resetAllQueueState() {
+  resetAllQueueState(): void {
     this.connections = this.connections.map(connection => {
       connection.inQueue = true
       return connection
@@ -282,7 +300,7 @@ export class SessionManager {
    *
    * @return {module:ConnectionObj[]}
    */
-  dumpConnections() {
+  dumpConnections(): TCPConnection[] {
     return this.connections
   }
 }

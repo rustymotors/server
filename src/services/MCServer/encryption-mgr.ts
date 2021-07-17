@@ -5,7 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { createDecipheriv, createCipheriv, randomBytes, Decipher, Cipher } from 'crypto'
+import {
+  createDecipheriv,
+  createCipheriv,
+  randomBytes,
+  Decipher,
+  Cipher,
+} from 'crypto'
 
 /**
  * Handles the management of the encryption and decryption
@@ -22,7 +28,7 @@ import { createDecipheriv, createCipheriv, randomBytes, Decipher, Cipher } from 
  */
 export class EncryptionManager {
   id: string
-  sessionkey: Buffer
+  sessionkey: Buffer;
   in: Decipher | undefined
   out: Cipher | undefined
   /**
@@ -43,7 +49,7 @@ export class EncryptionManager {
    * @param {Buffer} sessionkey
    * @return {boolean}
    */
-  setEncryptionKey(sessionkey: Buffer) {
+  setEncryptionKey(sessionkey: Buffer): boolean {
     this.sessionkey = sessionkey
     // File deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
     this.in = createDecipheriv('rc4', sessionkey, '')
@@ -58,7 +64,7 @@ export class EncryptionManager {
    * @return {Buffer}
    * @memberof EncryptionMgr
    */
-  decrypt(encryptedText: Buffer) {
+  decrypt(encryptedText: Buffer): Buffer {
     if (this.in === undefined) {
       throw new Error('No decryption manager found!')
     }
@@ -73,7 +79,7 @@ export class EncryptionManager {
    * @return {Buffer}
    * @memberof EncryptionMgr
    */
-  encrypt(plainText: Buffer) {
+  encrypt(plainText: Buffer): Buffer {
     if (this.out === undefined) {
       throw new Error('No encryption manager found!')
     }
@@ -88,7 +94,7 @@ export class EncryptionManager {
    *
    * @return {string}
    */
-  _getSessionKey() {
+  _getSessionKey(): string {
     return this.sessionkey.toString('hex')
   }
 
@@ -97,7 +103,7 @@ export class EncryptionManager {
    *
    * @return {string}
    */
-  getId() {
+  getId(): string {
     return this.id
   }
 }

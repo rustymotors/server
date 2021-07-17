@@ -95,11 +95,10 @@ export interface ILobbyInfo {
   turfId: number
   racetypeId: number
   lobbyId: number
-
 }
 
 /** @type {ILobbyInfo} */
-const lobbyInfoDefaults = {
+const lobbyInfoDefaults: ILobbyInfo = {
   // DWORD    lobbyID;
   lobbyId: 0,
   // DWORD    raceTypeID;
@@ -286,7 +285,7 @@ export class LobbyInfoPacket {
    *
    * @return {Buffer}
    */
-  toPacket() {
+  toPacket(): Buffer {
     const lobbyPacket = Buffer.alloc(567)
 
     lobbyPacket.writeInt32LE(this.data.lobbyId, 0)

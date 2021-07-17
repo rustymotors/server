@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { TCPConnection } from "./services/MCServer/tcpConnection";
+import { TCPConnection } from './services/MCServer/tcpConnection'
 
 /**
  * @module SharedTypes
@@ -22,14 +22,13 @@ import { TCPConnection } from "./services/MCServer/tcpConnection";
  * @property {number} timestamp
  */
 export interface IRawPacket {
-    connectionId: string
-    connection: TCPConnection
-    data: Buffer
-    localPort: number | undefined
-    remoteAddress: string | undefined
-    timestamp: number
+  connectionId: string
+  connection: TCPConnection
+  data: Buffer
+  localPort: number | undefined
+  remoteAddress: string | undefined
+  timestamp: number
 }
-
 
 /**
  *
@@ -56,8 +55,8 @@ export interface IRawPacket {
  * @property {string} sessionkey
  */
 export interface ISessionRecord {
-    skey: string
-    sessionkey: string
+  skey: string
+  sessionkey: string
 }
 
 /**
@@ -79,12 +78,12 @@ export interface ISessionRecord {
  * @property {Buffer} shardId
  */
 export interface IPersonaRecord {
-    customerId: number
-    id: Buffer
-    maxPersonas: Buffer
-    name: Buffer
-    personaCount: Buffer
-    shardId: Buffer
+  customerId: number
+  id: Buffer
+  maxPersonas: Buffer
+  name: Buffer
+  personaCount: Buffer
+  shardId: Buffer
 }
 
 /**
@@ -182,6 +181,12 @@ export interface IPersonaRecord {
  * @property {string} key
  * @property {boolean} rejectUnauthorized
  */
+export interface ISslOptions {
+  cert: string
+  honorCipherOrder: boolean
+  key: string
+  rejectUnauthorized: boolean
+}
 
 /**
  * @global
@@ -190,6 +195,11 @@ export interface IPersonaRecord {
  * @property {number} customerId
  * @property {number} userId
  */
+export interface IUserRecordMini {
+  contextId: string
+  customerId: number
+  userId: number
+}
 
 /**
  * @global
@@ -198,3 +208,8 @@ export interface IPersonaRecord {
  * @property {number} value
  * @property {'Lobby' | 'Login'} module
  */
+export interface InpsCommandMap {
+  name: string
+  value: number
+  module: 'Lobby' | 'Login'
+}

@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { LoginServer } from '../src/services/LoginServer/login-server'
+import { LoginServer } from '../src/services/LoginServer/index'
 import { fakeDatabaseManager } from './helpers'
 
 const loginServer = new LoginServer(fakeDatabaseManager)

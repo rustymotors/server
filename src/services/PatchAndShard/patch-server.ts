@@ -21,23 +21,19 @@ import { ShardEntry } from './shard-entry'
  * @module PatchServer
  */
 
-/**
- * @typedef ICastanetResponseHeader
- * @property {string} type
- * @property {string} value
- */
-
-/**
- * @typedef ICastanetResponse
- * @property {Buffer} body
- * @property {ICastanetResponseHeader} header
- */
+interface ICastanetResponse {
+  body: Buffer
+  header: {
+    type: string
+    value: string
+  }
+}
 
 /**
  * A simulated patch server response
  * @type {ICastanetResponse}
  */
-export const CastanetResponse = {
+export const CastanetResponse: ICastanetResponse = {
   body: Buffer.from('cafebeef00000000000003', 'hex'),
   header: {
     type: 'Content-Type',
@@ -91,7 +87,7 @@ export class PatchServer {
    * @return {ICastanetResponse}
    * @memberof! PatchServer
    */
-  _patchUpdateInfo() {
+  _patchUpdateInfo(): ICastanetResponse {
     return CastanetResponse
   }
 
@@ -101,7 +97,7 @@ export class PatchServer {
    * @return {ICastanetResponse}
    * @memberof! PatchServer
    */
-  _patchNPS() {
+  _patchNPS(): ICastanetResponse {
     return CastanetResponse
   }
 
@@ -111,7 +107,7 @@ export class PatchServer {
    * @return {ICastanetResponse}
    * @memberof! PatchServer
    */
-  _patchMCO() {
+  _patchMCO(): ICastanetResponse {
     return CastanetResponse
   }
 
@@ -121,7 +117,7 @@ export class PatchServer {
    * @return {string}
    * @memberof! PatchServer
    */
-  _generateShardList() {
+  _generateShardList(): string {
     const { ipServer } = this.config.serverSettings
     const shardClockTower = new ShardEntry(
       'The Clocktower',
@@ -164,7 +160,7 @@ export class PatchServer {
     this.possibleShards.push(shardTwinPinesMall.formatForShardList())
 
     /** @type {string[]} */
-    const activeShardList = []
+    const activeShardList: string[] = []
     activeShardList.push(shardClockTower.formatForShardList())
 
     return activeShardList.join('\n')
@@ -175,7 +171,7 @@ export class PatchServer {
    * @return {string}
    * @memberof! WebServer
    */
-  _handleGetCert() {
+  _handleGetCert(): string {
     return readFileSync(this.config.certificate.certFilename).toString()
   }
 
@@ -184,7 +180,7 @@ export class PatchServer {
    * @return {string}
    * @memberof! WebServer
    */
-  _handleGetKey() {
+  _handleGetKey(): string {
     return readFileSync(this.config.certificate.publicKeyFilename).toString()
   }
 
@@ -193,7 +189,7 @@ export class PatchServer {
    * @return {string}
    * @memberof! WebServer
    */
-  _handleGetRegistry() {
+  _handleGetRegistry(): string {
     const { ipServer } = this.config.serverSettings
     const dynamicRegistryFile = `Windows Registry Editor Version 5.00
 
@@ -231,7 +227,7 @@ export class PatchServer {
    * @param {import("http").IncomingMessage} request
    * @param {import("http").ServerResponse} response
    */
-  _httpHandler(request: IncomingMessage, response: ServerResponse) {
+  _httpHandler(request: IncomingMessage, response: ServerResponse): void {
     let responseData
 
     if (request.url === '/cert') {
@@ -315,7 +311,7 @@ export class PatchServer {
    * @return {void}
    * @memberof! PatchServer
    */
-  _addBan(banIP: string) {
+  _addBan(banIP: string): void {
     this.banList.push(banIP)
   }
 
@@ -324,7 +320,7 @@ export class PatchServer {
    * @return {string[]}
    * @memberof! PatchServer
    */
-  _getBans() {
+  _getBans(): string[] {
     return this.banList
   }
 
@@ -333,7 +329,7 @@ export class PatchServer {
    * @return {void}
    * @memberof! PatchServer
    */
-  _clearBans() {
+  _clearBans(): void {
     this.banList = []
   }
 
@@ -342,7 +338,7 @@ export class PatchServer {
    * @memberof! PatchServer
    * @return {Promise<import("http").Server>}
    */
-  async start() {
+  async start(): Promise<import('http').Server> {
     const { serviceName } = this
     if (this.serverPatch === undefined) {
       throw new Error('Patch server is not defined')

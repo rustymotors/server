@@ -7,6 +7,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { InpsCommandMap } from './types'
+
 export const _NPS_RiffListHeader = {
   StructSize: Buffer.alloc(4), // Uint4B
   NumRiffs: Buffer.alloc(4), // UInt4B
@@ -170,13 +172,15 @@ export const NPS_GetPersonaMapListRequest = {
 }
 
 /**
- * @class
  * @property {Buffer} _length
  * @property {Buffer} _mcosig
  */
 export class MessageHead {
   _length: Buffer
   _mcosig: Buffer
+  /**
+   *
+   */
   constructor() {
     // This is a 4B in the debug binary, the client is sending 2B
     /** @type {Buffer} */
@@ -186,7 +190,7 @@ export class MessageHead {
   }
 
   /**
-   * @returns {number}
+   * @return {number}
    */
   get length(): number {
     return this._length.readInt16BE()
@@ -195,21 +199,21 @@ export class MessageHead {
   /**
    * @param {number} value
    */
-  set length(value) {
+  set length(value: number) {
     this._length.writeInt16BE(value)
   }
 
   /**
-   * @returns {Buffer}
+   * @return {Buffer}
    */
-  get mcosig() {
+  get mcosig(): Buffer {
     return this._mcosig
   }
 
   /**
    * @param {Buffer} value
    */
-  set mcosig(value) {
+  set mcosig(value: Buffer) {
     this._mcosig = value
   }
 }
@@ -349,7 +353,7 @@ export const CompressedHeader = {
  * Commands from the game server to the game client
  * @type {InpsCommandMap[]}
  */
-const NPS_LOBBYSERVER_COMMANDS = [
+const NPS_LOBBYSERVER_COMMANDS: InpsCommandMap[] = [
   { name: 'NPS_FORCE_LOGOFF', value: 513, module: 'Lobby' },
   { name: 'NPS_USER_LEFT', value: 514, module: 'Lobby' },
   { name: 'NPS_USER_JOINED', value: 515, module: 'Lobby' },
@@ -403,7 +407,7 @@ const NPS_LOBBYSERVER_COMMANDS = [
  * Commands from the game client to the game server
  * @type {InpsCommandMap[]}
  */
-const NPS_LOBBYCLIENT_COMMANDS = [
+const NPS_LOBBYCLIENT_COMMANDS: InpsCommandMap[] = [
   { name: 'NPS_LOGIN', value: 256, module: 'Lobby' },
   { name: 'NPS_GET_USER_LIST', value: 257, module: 'Lobby' },
   { name: 'NPS_GET_MY_USER_DATA', value: 258, module: 'Lobby' },
@@ -455,7 +459,7 @@ const NPS_LOBBYCLIENT_COMMANDS = [
  * Commands from the game client to the login server
  * @type {InpsCommandMap[]}
  */
-const NPS_LOGINCLIENT_COMMANDS = [
+const NPS_LOGINCLIENT_COMMANDS: InpsCommandMap[] = [
   { name: 'NPS_USER_LOGIN', value: 1281, module: 'Login' },
   { name: 'NPS_GAME_LOGIN', value: 1282, module: 'Login' },
   { name: 'NPS_REGISTER_GAME_LOGIN', value: 1283, module: 'Login' },
@@ -505,7 +509,7 @@ const NPS_LOGINCLIENT_COMMANDS = [
 /**
  * @type {InpsCommandMap[]}
  */
-const NPS_LOBBY_COMMANDS = [
+const NPS_LOBBY_COMMANDS: InpsCommandMap[] = [
   ...NPS_LOBBYCLIENT_COMMANDS,
   ...NPS_LOBBYSERVER_COMMANDS,
 ]
@@ -513,12 +517,14 @@ const NPS_LOBBY_COMMANDS = [
 /**
  * @type {InpsCommandMap[]}
  */
-export const NPS_LOGIN_COMMANDS = [...NPS_LOGINCLIENT_COMMANDS]
+export const NPS_LOGIN_COMMANDS: InpsCommandMap[] = [
+  ...NPS_LOGINCLIENT_COMMANDS,
+]
 
 /**
  * @type {InpsCommandMap[]}
  */
-export const NPS_COMMANDS = [
+export const NPS_COMMANDS: InpsCommandMap[] = [
   ...NPS_LOBBY_COMMANDS,
   ...NPS_LOGINCLIENT_COMMANDS,
   { name: 'NPS_CRYPTO_DES_CBC', value: 0x11_01, module: 'Lobby' },

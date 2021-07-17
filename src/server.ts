@@ -19,7 +19,7 @@ import { DatabaseManager } from './services/shared/database-manager'
  * @property {MCServer} mcServer
  * @property {AdminServer} adminServer
  */
-class Server {
+export class Server {
   config: IAppConfiguration
   databaseManager: DatabaseManager
   serviceName: string
@@ -35,9 +35,9 @@ class Server {
   }
 
   /**
-   * @returns {Promise<void>}
+   * @return {Promise<void>}
    */
-  async start() {
+  async start(): Promise<void> {
     log('Starting servers...', { service: 'mcoserver:Server' })
 
     // Start the MC Server
@@ -54,6 +54,3 @@ class Server {
     })
   }
 }
-
-const _Server = Server
-export { _Server as Server }

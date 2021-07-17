@@ -8,8 +8,9 @@
 import { privateDecrypt } from 'crypto'
 import { readFileSync, statSync } from 'fs'
 import { debug } from '@drazisil/mco-logger'
-import { NPSMessage } from '../MCOTS/nps-msg'
+import { INPSMessageJSON, NPSMessage } from '../MCOTS/nps-msg'
 import { IAppConfiguration } from '../../../config'
+import { EMessageDirection } from '../MCOTS/message-node'
 
 /**
  *
@@ -22,7 +23,7 @@ import { IAppConfiguration } from '../../../config'
  * @param {string} privateKeyPath
  * @return {string}
  */
-function fetchPrivateKeyFromFile(privateKeyPath: string) {
+function fetchPrivateKeyFromFile(privateKeyPath: string): string {
   try {
     statSync(privateKeyPath)
   } catch (error) {
@@ -63,7 +64,7 @@ export class NPSUserStatus extends NPSMessage {
    * @param {Buffer} packet
    */
   constructor(packet: Buffer) {
-    super('RECEIVED')
+    super(EMessageDirection.RECEIVED)
     this.sessionkey = ''
 
     // Save the NPS opCode
@@ -84,9 +85,12 @@ export class NPSUserStatus extends NPSMessage {
    *
    * @param {IServerConfig} serverConfig
    * @param {Buffer} packet
-   * @returns {void}
+   * @return {void}
    */
-  extractSessionKeyFromPacket(serverConfig: IAppConfiguration['certificate'], packet: Buffer) {
+  extractSessionKeyFromPacket(
+    serverConfig: IAppConfiguration['certificate'],
+    packet: Buffer,
+  ): void {
     // Decrypt the sessionkey
     const privateKey = fetchPrivateKeyFromFile(serverConfig.privateKeyFilename)
 
@@ -102,7 +106,7 @@ export class NPSUserStatus extends NPSMessage {
    *
    * @return {module:NPSMsg.INPSMsgJSON}
    */
-  toJSON() {
+  toJSON(): INPSMessageJSON {
     return {
       msgNo: this.msgNo,
       msgLength: this.msgLength,
@@ -117,9 +121,9 @@ export class NPSUserStatus extends NPSMessage {
   }
 
   /**
-   * @returns {void}
+   * @return {void}
    */
-  dumpPacket() {
+  dumpPacket(): void {
     this.dumpPacketHeader('NPSUserStatus')
     debug(
       `NPSUserStatus',
@@ -131,4 +135,3 @@ export class NPSUserStatus extends NPSMessage {
     )
   }
 }
-

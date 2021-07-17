@@ -7,6 +7,7 @@
 
 import { debug } from '@drazisil/mco-logger'
 import { IPersonaRecord } from '../../types'
+import { EMessageDirection } from '../MCOTS/message-node'
 import { NPSMessage } from '../MCOTS/nps-msg'
 
 /**
@@ -53,7 +54,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    *
    * @param {module:MessageNode.MESSAGE_DIRECTION} direction
    */
-  constructor(direction: string) {
+  constructor(direction: EMessageDirection) {
     super(direction)
 
     /** @type {IPersonaRecord[]} */
@@ -68,9 +69,9 @@ export class NPSPersonaMapsMessage extends NPSMessage {
   /**
    *
    * @param {IPersonaRecord[]} personas
-   * @returns {void}
+   * @return {void}
    */
-  loadMaps(personas: IPersonaRecord[]) {
+  loadMaps(personas: IPersonaRecord[]): void {
     this.personaCount = personas.length
     this.personas = personas
   }
@@ -81,7 +82,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    * @return {number}
    * @memberof! NPSPersonaMapsMsg
    */
-  deserializeInt8(buf: Buffer) {
+  deserializeInt8(buf: Buffer): number {
     return buf.readInt8(0)
   }
 
@@ -91,7 +92,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    * @return {number}
    * @memberof! NPSPersonaMapsMsg
    */
-  deserializeInt32(buf: Buffer) {
+  deserializeInt32(buf: Buffer): number {
     return buf.readInt32BE(0)
   }
 
@@ -101,7 +102,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    * @return {string}
    * @memberof! NPSPersonaMapsMsg
    */
-  deserializeString(buf: Buffer) {
+  deserializeString(buf: Buffer): string {
     return buf.toString('utf8')
   }
 
@@ -109,7 +110,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    *
    * @return {Buffer}
    */
-  serialize() {
+  serialize(): Buffer {
     let index = 0
     // Create the packet content
     // const packetContent = Buffer.alloc(40);
@@ -161,9 +162,9 @@ export class NPSPersonaMapsMessage extends NPSMessage {
 
   /**
    *
-   * @returns {void}
+   * @return {void}
    */
-  dumpPacket() {
+  dumpPacket(): void {
     this.dumpPacketHeader('NPSPersonaMapsMsg')
     debug(`personaCount:        ${this.personaCount}`, {
       service: this.serviceName,

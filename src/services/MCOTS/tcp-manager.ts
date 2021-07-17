@@ -12,8 +12,8 @@ import { GenericRequestMessage } from '../MCServer/generic-request-msg'
 import { DatabaseManager } from '../shared/database-manager'
 import { StockCar } from './stock-car'
 import { StockCarInfoMessage } from './stock-car-info-msg'
-import { MCOTServer } from './mcots-server'
-import { MessageNode } from './message-node'
+import { MCOTServer } from '.'
+import { EMessageDirection, MessageNode } from './message-node'
 import { TCPConnection } from '../MCServer/tcpConnection'
 import { IRawPacket } from '../../types'
 
@@ -25,17 +25,28 @@ import { IRawPacket } from '../../types'
 const mcotServer = new MCOTServer()
 const databaseManager = new DatabaseManager()
 
+export type ConnectionWithPacket = {
+  connection: TCPConnection
+  packet: MessageNode
+}
+
+export type ConnectionWithPackets = {
+  connection: TCPConnection
+  packetList: MessageNode[]
+}
+
 /**
  *
- * @param {ConnectionObj} conn
- * @param {MessageNode} node
- * @returns {Promise<{conn: ConnectionObj, packetToWrite: MessageNode}>}
+ * @param {ConnectionObj} connection
+ * @param {MessageNode} packet
+ * @return {Promise<{conn: ConnectionObj, packetToWrite: MessageNode}>}
  */
-async function compressIfNeeded(conn: TCPConnection, node: MessageNode) {
-  const packetToWrite = node
-
+async function compressIfNeeded(
+  connection: TCPConnection,
+  packet: MessageNode,
+): Promise<ConnectionWithPacket> {
   // Check if compression is needed
-  if (node.getLength() < 80) {
+  if (packet.getLength() < 80) {
     log('Too small, should not compress', {
       service: 'mcoserver:MCOTSServer',
       level: 'debug',
@@ -52,102 +63,97 @@ async function compressIfNeeded(conn: TCPConnection, node: MessageNode) {
      */
   }
 
-  return { conn, packetToWrite }
+  return { connection, packet }
 }
 
-const _compressIfNeeded = compressIfNeeded
-export { _compressIfNeeded as compressIfNeeded }
-
-/**
- *
- * @param {ConnectionObj} conn
- * @param {MessageNode} node
- * @returns {Promise<{conn: ConnectionObj, packetToWrite: MessageNode}>}
- */
-async function encryptIfNeeded(conn: TCPConnection, node: MessageNode) {
-  let packetToWrite = node
-
+async function encryptIfNeeded(
+  connection: TCPConnection,
+  packet: MessageNode,
+): Promise<ConnectionWithPacket> {
   // Check if encryption is needed
-  if (node.flags - 8 >= 0) {
+  if (packet.flags - 8 >= 0) {
     log('encryption flag is set', {
       service: 'mcoserver:MCOTSServer',
       level: 'debug',
     })
 
-    if (conn.enc) {
-      node.updateBuffer(conn.enc.encrypt(node.data))
+    if (connection.enc) {
+      packet.updateBuffer(connection.enc.encrypt(packet.data))
     } else {
       throw new Error('encryption out on connection is null')
     }
 
-    packetToWrite = node
-    log(`encrypted packet: ${packetToWrite.serialize().toString('hex')}`, {
+    log(`encrypted packet: ${packet.serialize().toString('hex')}`, {
       service: 'mcoserver:MCOTSServer',
       level: 'debug',
     })
   }
 
-  return { conn, packetToWrite }
+  return { connection, packet }
 }
 
 /**
  *
  * @param {ConnectionObj} connection
- * @param {MessageNode[]} nodes
- * @returns {Promise<ConnectionObj>}
+ * @param {MessageNode[]} packetList
+ * @return {Promise<ConnectionObj>}
  */
-async function socketWriteIfOpen(connection: TCPConnection, nodes: MessageNode[]) {
-  const updatedConnection = connection
+async function socketWriteIfOpen(
+  connection: TCPConnection,
+  packetList: MessageNode[],
+): Promise<TCPConnection> {
+  const updatedConnection: ConnectionWithPackets = {
+    connection: connection,
+    packetList: packetList,
+  }
   // For each node in nodes
-  for (const node of nodes) {
+  for (const packet of updatedConnection.packetList) {
     // Does the packet need to be compressed?
-    const { packetToWrite: compressedPacket } = await compressIfNeeded(
-      connection,
-      node,
-    )
+    const compressedPacket: MessageNode = (
+      await compressIfNeeded(connection, packet)
+    ).packet
     // Does the packet need to be encrypted?
-    const { packetToWrite } = await encryptIfNeeded(
-      connection,
-      compressedPacket,
-    )
+    const encryptedPacket = (
+      await encryptIfNeeded(connection, compressedPacket)
+    ).packet
     // Log that we are trying to write
     log(
-      ` Atempting to write seq: ${packetToWrite.seq} to conn: ${updatedConnection.id}`,
+      ` Atempting to write seq: ${encryptedPacket.seq} to conn: ${updatedConnection.connection.id}`,
       { service: 'mcoserver:MCOTSServer', level: 'debug' },
     )
 
     // Log the buffer we are writing
-    log(`Writting buffer: ${packetToWrite.serialize().toString('hex')}`, {
+    log(`Writting buffer: ${encryptedPacket.serialize().toString('hex')}`, {
       service: 'mcoserver:MCOTSServer',
       level: 'debug',
     })
     if (connection.sock.writable) {
       // Write the packet to socket
-      connection.sock.write(packetToWrite.serialize())
+      connection.sock.write(encryptedPacket.serialize())
     } else {
       throw new Error(
-        `Error writing ${packetToWrite.serialize()} to ${
+        `Error writing ${encryptedPacket.serialize()} to ${
           connection.sock.remoteAddress
         } , ${connection.sock.localPort.toString()}`,
       )
     }
   }
 
-  return updatedConnection
+  return updatedConnection.connection
 }
-
-const _socketWriteIfOpen = socketWriteIfOpen
-export { _socketWriteIfOpen as socketWriteIfOpen }
 
 /**
  *
  * @param {ConnectionObj} connection
- * @param {MessageNode} node
- * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
+ * @param {MessageNode} packet
+ * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
  */
-async function getStockCarInfo(connection: TCPConnection, node: MessageNode) {
+async function getStockCarInfo(
+  connection: TCPConnection,
+  packet: MessageNode,
+): Promise<ConnectionWithPackets> {
   const getStockCarInfoMessage = new GenericRequestMessage()
-  getStockCarInfoMessage.deserialize(node.data)
+  getStockCarInfoMessage.deserialize(packet.data)
   getStockCarInfoMessage.dumpPacket()
 
   const stockCarInfoMessage = new StockCarInfoMessage(200, 0, 105)
@@ -161,32 +167,32 @@ async function getStockCarInfo(connection: TCPConnection, node: MessageNode) {
 
   stockCarInfoMessage.dumpPacket()
 
-  const responsePacket = new MessageNode('SENT')
+  const responsePacket = new MessageNode(EMessageDirection.SENT)
 
-  responsePacket.deserialize(node.serialize())
+  responsePacket.deserialize(packet.serialize())
 
   responsePacket.updateBuffer(stockCarInfoMessage.serialize())
 
   responsePacket.dumpPacket()
 
-  return { con: connection, nodes: [responsePacket] }
+  return { connection, packetList: [responsePacket] }
 }
-
-const _GetStockCarInfo = getStockCarInfo
-export { _GetStockCarInfo as GetStockCarInfo }
 
 /**
  *
  * @param {ConnectionObj} connection
- * @param {MessageNode} node
- * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
+ * @param {MessageNode} packet
+ * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
  */
-async function clientConnect(connection: TCPConnection, node: MessageNode) {
+async function clientConnect(
+  connection: TCPConnection,
+  packet: MessageNode,
+): Promise<ConnectionWithPackets> {
   /**
    * Let's turn it into a ClientConnectMsg
    */
   // Not currently using this
-  const newMessage = new ClientConnectMessage(node.data)
+  const newMessage = new ClientConnectMessage(packet.data)
 
   log(
     `[TCPManager] Looking up the session key for ${newMessage.customerId}...`,
@@ -221,21 +227,24 @@ async function clientConnect(connection: TCPConnection, node: MessageNode) {
   const genericReplyMessage = new GenericReplyMessage()
   genericReplyMessage.msgNo = 101
   genericReplyMessage.msgReply = 438
-  const responsePacket = new MessageNode('SENT')
-  responsePacket.deserialize(node.serialize())
+  const responsePacket = new MessageNode(EMessageDirection.SENT)
+  responsePacket.deserialize(packet.serialize())
   responsePacket.updateBuffer(genericReplyMessage.serialize())
   responsePacket.dumpPacket()
 
-  return { con: connection, nodes: [responsePacket] }
+  return { connection, packetList: [responsePacket] }
 }
 
 /**
  * Route or process MCOTS commands
  * @param {MessageNode} node
  * @param {ConnectionObj} conn
- * @returns {Promise<ConnectionObj>}
+ * @return {Promise<ConnectionObj>}
  */
-async function processInput(node: MessageNode, conn: TCPConnection) {
+async function processInput(
+  node: MessageNode,
+  conn: TCPConnection,
+): Promise<TCPConnection> {
   const currentMessageNo = node.msgNo
   const currentMessageString = mcotServer._MSG_STRING(currentMessageNo)
 
@@ -243,8 +252,8 @@ async function processInput(node: MessageNode, conn: TCPConnection) {
     case 'MC_SET_OPTIONS':
       try {
         const result = await mcotServer._setOptions(conn, node)
-        const responsePackets = result.nodes
-        return await _socketWriteIfOpen(result.con, responsePackets)
+        const responsePackets = result.packetList
+        return await socketWriteIfOpen(result.connection, responsePackets)
       } catch (error) {
         if (error instanceof Error) {
           throw new TypeError(`Error in MC_SET_OPTIONS: ${error}`)
@@ -256,8 +265,8 @@ async function processInput(node: MessageNode, conn: TCPConnection) {
     case 'MC_TRACKING_MSG':
       try {
         const result = await mcotServer._trackingMessage(conn, node)
-        const responsePackets = result.nodes
-        return _socketWriteIfOpen(result.con, responsePackets)
+        const responsePackets = result.packetList
+        return socketWriteIfOpen(result.connection, responsePackets)
       } catch (error) {
         if (error instanceof Error) {
           throw new TypeError(`Error in MC_TRACKING_MSG: ${error}`)
@@ -269,8 +278,8 @@ async function processInput(node: MessageNode, conn: TCPConnection) {
     case 'MC_UPDATE_PLAYER_PHYSICAL':
       try {
         const result = await mcotServer._updatePlayerPhysical(conn, node)
-        const responsePackets = result.nodes
-        return _socketWriteIfOpen(result.con, responsePackets)
+        const responsePackets = result.packetList
+        return socketWriteIfOpen(result.connection, responsePackets)
       } catch (error) {
         if (error instanceof Error) {
           throw new TypeError(`Error in MC_UPDATE_PLAYER_PHYSICAL: ${error}`)
@@ -282,9 +291,9 @@ async function processInput(node: MessageNode, conn: TCPConnection) {
     case 'MC_CLIENT_CONNECT_MSG': {
       try {
         const result = await clientConnect(conn, node)
-        const responsePackets = result.nodes
+        const responsePackets = result.packetList
         // Write the socket
-        return await socketWriteIfOpen(result.con, responsePackets)
+        return await socketWriteIfOpen(result.connection, responsePackets)
       } catch (error) {
         if (error instanceof Error) {
           throw new TypeError(`[TCPManager] Error writing to socket: ${error}`)
@@ -297,9 +306,9 @@ async function processInput(node: MessageNode, conn: TCPConnection) {
     case 'MC_LOGIN': {
       try {
         const result = await mcotServer._login(conn, node)
-        const responsePackets = result.nodes
+        const responsePackets = result.packetList
         // Write the socket
-        return socketWriteIfOpen(result.con, responsePackets)
+        return socketWriteIfOpen(result.connection, responsePackets)
       } catch (error) {
         if (error instanceof Error) {
           throw new TypeError(`[TCPManager] Error writing to socket: ${error}`)
@@ -312,9 +321,9 @@ async function processInput(node: MessageNode, conn: TCPConnection) {
     case 'MC_LOGOUT': {
       try {
         const result = await mcotServer._logout(conn, node)
-        const responsePackets = result.nodes
+        const responsePackets = result.packetList
         // Write the socket
-        return await socketWriteIfOpen(result.con, responsePackets)
+        return await socketWriteIfOpen(result.connection, responsePackets)
       } catch (error) {
         if (error instanceof Error) {
           throw new TypeError(`[TCPManager] Error writing to socket: ${error}`)
@@ -330,11 +339,14 @@ async function processInput(node: MessageNode, conn: TCPConnection) {
         service: 'mcoserver:MCOTSServer',
         level: 'debug',
       })
-      log(result.nodes, { service: 'mcoserver:MCOTSServer', level: 'debug' })
-      const responsePackets = result.nodes
+      log(JSON.stringify(result.packetList.join()), {
+        service: 'mcoserver:MCOTSServer',
+        level: 'debug',
+      })
+      const responsePackets = result.packetList
       try {
         // Write the socket
-        return await socketWriteIfOpen(result.con, responsePackets)
+        return await socketWriteIfOpen(result.connection, responsePackets)
       } catch (error) {
         if (error instanceof Error) {
           throw new TypeError(`[TCPManager] Error writing to socket: ${error}`)
@@ -347,9 +359,9 @@ async function processInput(node: MessageNode, conn: TCPConnection) {
     case 'MC_STOCK_CAR_INFO': {
       try {
         const result = await getStockCarInfo(conn, node)
-        const responsePackets = result.nodes
+        const responsePackets = result.packetList
         // Write the socket
-        return socketWriteIfOpen(result.con, responsePackets)
+        return socketWriteIfOpen(result.connection, responsePackets)
       } catch (error) {
         if (error instanceof Error) {
           throw new TypeError(`[TCPManager] Error writing to socket: ${error}`)
@@ -371,9 +383,12 @@ async function processInput(node: MessageNode, conn: TCPConnection) {
  *
  * @param {MessageNode} msg
  * @param {ConnectionObj} con
- * @returns {Promise<ConnectionObj>}
+ * @return {Promise<ConnectionObj>}
  */
-async function messageReceived(message: MessageNode, con: TCPConnection) {
+async function messageReceived(
+  message: MessageNode,
+  con: TCPConnection,
+): Promise<TCPConnection> {
   const newConnection = con
   if (!newConnection.useEncryption && message.flags && 0x08) {
     log('Turning on encryption', {
@@ -451,9 +466,11 @@ async function messageReceived(message: MessageNode, con: TCPConnection) {
  * @param {IRawPacket} rawPacket
  * @return {Promise<ConnectionObj>}
  */
-async function defaultHandler(rawPacket: IRawPacket) {
+export async function defaultHandler(
+  rawPacket: IRawPacket,
+): Promise<TCPConnection> {
   const { connection, remoteAddress, localPort, data } = rawPacket
-  const messageNode = new MessageNode('RECEIVED')
+  const messageNode = new MessageNode(EMessageDirection.RECEIVED)
   messageNode.deserialize(data)
 
   log(
@@ -470,6 +487,3 @@ async function defaultHandler(rawPacket: IRawPacket) {
 
   return messageReceived(messageNode, connection)
 }
-
-const _defaultHandler = defaultHandler
-export { _defaultHandler as defaultHandler }

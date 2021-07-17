@@ -8,7 +8,8 @@
 import { log } from '@drazisil/mco-logger'
 import { GenericReplyMessage } from '../MCServer/generic-reply-msg'
 import { TCPConnection } from '../MCServer/tcpConnection'
-import { MessageNode } from './message-node'
+import { EMessageDirection, MessageNode } from './message-node'
+import { ConnectionWithPackets } from './tcp-manager'
 
 /**
  * Mangages the game database server
@@ -26,7 +27,7 @@ export class MCOTServer {
    * @param {number} msgID
    * @return {string}
    */
-  _MSG_STRING(messageID: number) {
+  _MSG_STRING(messageID: number): string {
     switch (messageID) {
       case 105:
         return 'MC_LOGIN'
@@ -56,32 +57,38 @@ export class MCOTServer {
 
   /**
    *
-   * @param {ConnectionObj} con
+   * @param {ConnectionObj} connection
    * @param {MessageNode} node
-   * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
+   * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
-  async _login(con: TCPConnection, node: MessageNode) {
+  async _login(
+    connection: TCPConnection,
+    node: MessageNode,
+  ): Promise<ConnectionWithPackets> {
     // Create new response packet
     const pReply = new GenericReplyMessage()
     pReply.msgNo = 213
     pReply.msgReply = 105
-    pReply.appId = con.appId
-    const rPacket = new MessageNode('SENT')
+    pReply.appId = connection.appId
+    const rPacket = new MessageNode(EMessageDirection.SENT)
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
     rPacket.dumpPacket()
 
-    return { con, nodes: [rPacket] }
+    return { connection, packetList: [rPacket] }
   }
 
   /**
    *
-   * @param {ConnectionObj} con
+   * @param {ConnectionObj} connection
    * @param {MessageNode} node
-   * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
+   * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
-  async _getLobbies(con: TCPConnection, node: MessageNode) {
+  async _getLobbies(
+    connection: TCPConnection,
+    node: MessageNode,
+  ): Promise<ConnectionWithPackets> {
     log('In _getLobbies...', {
       service: 'mcoserver:MCOTSServer',
       level: 'debug',
@@ -89,14 +96,14 @@ export class MCOTServer {
     const lobbiesListMessage = node
 
     // Update the appId
-    lobbiesListMessage.appId = con.appId
+    lobbiesListMessage.appId = connection.appId
 
     // Dump the packet
     log('Dumping request...', {
       service: 'mcoserver:MCOTSServer',
       level: 'debug',
     })
-    log(lobbiesListMessage, {
+    log(JSON.stringify(lobbiesListMessage), {
       service: 'mcoserver:MCOTSServer',
       level: 'debug',
     })
@@ -107,7 +114,7 @@ export class MCOTServer {
     const pReply = new GenericReplyMessage()
     pReply.msgNo = 325
     pReply.msgReply = 324
-    const rPacket = new MessageNode('SENT')
+    const rPacket = new MessageNode(EMessageDirection.SENT)
     rPacket.flags = 9
 
     const lobby = Buffer.alloc(12)
@@ -122,30 +129,36 @@ export class MCOTServer {
       service: 'mcoserver:MCOTSServer',
       level: 'debug',
     })
-    log(rPacket, { service: 'mcoserver:MCOTSServer', level: 'debug' })
+    log(JSON.stringify(rPacket), {
+      service: 'mcoserver:MCOTSServer',
+      level: 'debug',
+    })
 
-    return { con, nodes: [rPacket] }
+    return { connection, packetList: [rPacket] }
   }
 
   /**
    *
-   * @param {module:ConnectionObj} con
+   * @param {module:ConnectionObj} connection
    * @param {module:MessageNode} node
    * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
-  async _logout(con: TCPConnection, node: MessageNode) {
+  async _logout(
+    connection: TCPConnection,
+    node: MessageNode,
+  ): Promise<ConnectionWithPackets> {
     const logoutMessage = node
 
     logoutMessage.data = node.serialize()
 
     // Update the appId
-    logoutMessage.appId = con.appId
+    logoutMessage.appId = connection.appId
 
     // Create new response packet
     const pReply = new GenericReplyMessage()
     pReply.msgNo = 101
     pReply.msgReply = 106
-    const rPacket = new MessageNode('SENT')
+    const rPacket = new MessageNode(EMessageDirection.SENT)
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
@@ -154,88 +167,96 @@ export class MCOTServer {
     /** @type MessageNode[] */
     const nodes: MessageNode[] = []
 
-    return { con, nodes }
+    return { connection, packetList: nodes }
   }
 
   /**
    *
-   * @param {ConnectionObj} con
+   * @param {ConnectionObj} connection
    * @param {MessageNode} node
-   * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
+   * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
-  async _setOptions(con: TCPConnection, node: MessageNode) {
+  async _setOptions(
+    connection: TCPConnection,
+    node: MessageNode,
+  ): Promise<ConnectionWithPackets> {
     const setOptionsMessage = node
 
     setOptionsMessage.data = node.serialize()
 
     // Update the appId
-    setOptionsMessage.appId = con.appId
+    setOptionsMessage.appId = connection.appId
 
     // Create new response packet
     const pReply = new GenericReplyMessage()
     pReply.msgNo = 101
     pReply.msgReply = 109
-    const rPacket = new MessageNode('SENT')
+    const rPacket = new MessageNode(EMessageDirection.SENT)
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
     rPacket.dumpPacket()
 
-    return { con, nodes: [rPacket] }
+    return { connection, packetList: [rPacket] }
   }
 
   /**
    *
-   * @param {ConnectionObj} con
+   * @param {ConnectionObj} connection
    * @param {MessageNode} node
-   * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
+   * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
-  async _trackingMessage(con: TCPConnection, node:MessageNode) {
+  async _trackingMessage(
+    connection: TCPConnection,
+    node: MessageNode,
+  ): Promise<ConnectionWithPackets> {
     const trackingMessage = node
 
     trackingMessage.data = node.serialize()
 
     // Update the appId
-    trackingMessage.appId = con.appId
+    trackingMessage.appId = connection.appId
 
     // Create new response packet
     const pReply = new GenericReplyMessage()
     pReply.msgNo = 101
     pReply.msgReply = 440
-    const rPacket = new MessageNode('SENT')
+    const rPacket = new MessageNode(EMessageDirection.SENT)
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
     rPacket.dumpPacket()
 
-    return { con, nodes: [rPacket] }
+    return { connection, packetList: [rPacket] }
   }
 
   /**
    *
-   * @param {module:ConnectionObj} con
+   * @param {module:ConnectionObj} connection
    * @param {module:MessageNode} node
-   * @returns {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
+   * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
-  async _updatePlayerPhysical(con: TCPConnection, node: MessageNode) {
+  async _updatePlayerPhysical(
+    connection: TCPConnection,
+    node: MessageNode,
+  ): Promise<ConnectionWithPackets> {
     const updatePlayerPhysicalMessage = node
 
     updatePlayerPhysicalMessage.data = node.serialize()
 
     // Update the appId
-    updatePlayerPhysicalMessage.appId = con.appId
+    updatePlayerPhysicalMessage.appId = connection.appId
 
     // Create new response packet
     const pReply = new GenericReplyMessage()
     pReply.msgNo = 101
     pReply.msgReply = 266
-    const rPacket = new MessageNode('SENT')
+    const rPacket = new MessageNode(EMessageDirection.SENT)
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
     rPacket.dumpPacket()
 
-    return { con, nodes: [rPacket] }
+    return { connection, packetList: [rPacket] }
   }
 }
-
