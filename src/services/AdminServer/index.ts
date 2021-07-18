@@ -37,7 +37,7 @@ export class AdminServer {
   constructor(mcServer: MCServer) {
     this.config = config
     this.mcServer = mcServer
-    this.serviceName = 'mcoserver:AdminServer0;'
+    this.serviceName = 'mcoserver:AdminServer;'
   }
 
   /**
@@ -104,10 +104,10 @@ export class AdminServer {
     )
     log(
       `Requested recieved,
-      ${{
+      ${JSON.stringify({
         url: request.url,
         remoteAddress: request.socket.remoteAddress,
-      }}`,
+      })}`,
       { service: 'mcoserver:AdminServer' },
     )
     switch (request.url) {

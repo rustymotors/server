@@ -81,11 +81,11 @@ export class GenericRequestMessage {
   dumpPacket(): void {
     log(
       `GenericRequest',
-      ${{
+      ${JSON.stringify({
         msgNo: this.msgNo,
         data: this.data.toString('hex'),
         data2: this.data2.toString('hex'),
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
   }

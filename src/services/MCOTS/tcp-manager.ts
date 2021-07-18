@@ -475,12 +475,12 @@ export async function defaultHandler(
 
   log(
     `Received TCP packet',
-    ${{
+    ${JSON.stringify({
       localPort,
       remoteAddress,
       direction: messageNode.direction,
       data: rawPacket.data.toString('hex'),
-    }}`,
+    })}`,
     { service: 'mcoserver:MCOTSServer' },
   )
   messageNode.dumpPacket()

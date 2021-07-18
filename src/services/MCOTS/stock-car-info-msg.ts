@@ -102,7 +102,7 @@ export class StockCarInfoMessage {
    */
   dumpPacket(): void {
     log(
-      `${{
+      `${JSON.stringify({
         msgNo: this.msgNo,
         starterCash: this.starterCash,
         dealerId: this.dealerId,
@@ -110,7 +110,7 @@ export class StockCarInfoMessage {
         noCars: this.noCars,
         moreToCome: this.moreToCome,
         stockCarList: this.StockCarList.toString(),
-      }}`,
+      })}`,
       { service: this.serviceName, level: 'debug' },
     )
   }

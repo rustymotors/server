@@ -105,7 +105,7 @@ export class LoginMessage {
   dumpPacket(): void {
     log(
       `LoginMsg',
-      ${{
+      ${JSON.stringify({
         msgNo: this.msgNo.toString(),
         customerId: this.customerId.toString(),
         personaId: this.personaId.toString(),
@@ -114,7 +114,7 @@ export class LoginMessage {
         skinId: this.skinId,
         personaName: this.personaName,
         version: this.version,
-      }}`,
+      })}`,
       { service: 'mcoserver:LoginMsg' },
     )
   }

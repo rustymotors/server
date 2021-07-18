@@ -69,12 +69,12 @@ export class SessionManager {
 
     // Log the packet as debug
     debug(
-      `logging raw packet',
-      ${{
+      `logging raw packet,
+      ${JSON.stringify({
         remoteAddress,
         localPort,
         data: data.toString('hex'),
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
 
@@ -83,15 +83,15 @@ export class SessionManager {
       case 8228:
       case 7003: {
         debug(
-          `Recieved NPS packet',
-          ${{
+          `Recieved NPS packet,
+          ${JSON.stringify({
             opCode: rawPacket.data.readInt16BE(0),
             msgName1: npsPacketManager.msgCodetoName(
               rawPacket.data.readInt16BE(0),
             ),
             msgName2: this.getNameFromOpCode(rawPacket.data.readInt16BE(0)),
             localPort,
-          }}`,
+          })}`,
           { service: this.serviceName },
         )
         try {
@@ -174,18 +174,13 @@ export class SessionManager {
   findConnectionByAddressAndPort(
     remoteAddress: string,
     localPort: number,
-  ): TCPConnection {
+  ): TCPConnection | undefined {
     const result = this.connections.find(connection => {
       const match =
         remoteAddress === connection.remoteAddress &&
         localPort === connection.localPort
       return match
     })
-    if (result === undefined) {
-      throw new Error(
-        `Unable to locate connection for ${remoteAddress}:${localPort}`,
-      )
-    }
     return result
   }
 

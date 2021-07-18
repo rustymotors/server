@@ -67,11 +67,11 @@ export class LobbyMessage {
   dumpPacket(): void {
     debug(
       `LobbyMsg',
-      ${{
+      ${JSON.stringify({
         msgNo: this.msgNo,
         dataLength: this.dataLength,
         packet: this.serialize().toString('hex'),
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
   }

@@ -126,11 +126,11 @@ export class NPSUserStatus extends NPSMessage {
   dumpPacket(): void {
     this.dumpPacketHeader('NPSUserStatus')
     debug(
-      `NPSUserStatus',
-      ${{
+      `NPSUserStatus,
+      ${JSON.stringify({
         contextId: this.contextId,
         sessionkey: this.sessionkey,
-      }}`,
+      })}`,
       { service: 'mcoserver:NPSUserStatus' },
     )
   }

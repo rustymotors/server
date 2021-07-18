@@ -113,8 +113,11 @@ export class NPSPacketManager {
   async processNPSPacket(rawPacket: IRawPacket): Promise<TCPConnection> {
     const messageId = rawPacket.data.readInt16BE(0)
     log(
-      `Handling message',
-      ${{ msgName: this.msgCodetoName(messageId), msgId: messageId }}`,
+      `Handling message,
+      ${JSON.stringify({
+        msgName: this.msgCodetoName(messageId),
+        msgId: messageId,
+      })}`,
       { service: this.serviceName },
     )
 
@@ -131,10 +134,10 @@ export class NPSPacketManager {
         process.exitCode = -1
         throw new Error(
           `[npsPacketManager] Recieved a packet',
-          ${{
+          ${JSON.stringify({
             msgId: messageId,
             localPort,
-          }}`,
+          })}`,
         )
     }
   }

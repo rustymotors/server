@@ -153,12 +153,12 @@ export class NPSMessage {
   dumpPacketHeader(messageType: string): void {
     log(
       `NPSMsg/${messageType},
-      ${{
+      ${JSON.stringify({
         direction: this.direction,
         msgNo: this.msgNo.toString(16),
         msgVersion: this.msgVersion,
         msgLength: this.msgLength,
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
   }
@@ -171,14 +171,14 @@ export class NPSMessage {
   dumpPacket(): void {
     debug(
       `NPSMsg/NPSMsg,
-      ${{
+      ${JSON.stringify({
         direction: this.direction,
         msgNo: this.msgNo.toString(16),
         msgVersion: this.msgVersion,
         msgLength: this.msgLength,
         content: this.content.toString('hex'),
         serialized: this.serialize().toString('hex'),
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
   }

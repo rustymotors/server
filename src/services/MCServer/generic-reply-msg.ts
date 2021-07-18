@@ -122,13 +122,13 @@ export class GenericReplyMessage {
   dumpPacket(): void {
     log(
       `GenericReply',
-      ${{
+      ${JSON.stringify({
         msgNo: this.msgNo,
         msgReply: this.msgReply,
         result: this.result.toString('hex'),
         data: this.data.toString('hex'),
         tdata2: this.data2.toString('hex'),
-      }}`,
+      })}`,
       { service: 'mcoserver:GenericReplyMsg' },
     )
   }

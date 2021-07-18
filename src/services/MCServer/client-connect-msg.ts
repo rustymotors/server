@@ -77,14 +77,14 @@ export class ClientConnectMessage {
   dumpPacket(): void {
     log(
       `ClientConnectMsg',
-      ${{
+      ${JSON.stringify({
         msgNo: this.msgNo.toString(),
         customerId: this.customerId.toString(),
         personaId: this.personaId.toString(),
         custName: this.custName,
         personaName: this.personaName,
         mcVersion: this.mcVersion.toString('hex'),
-      }}`,
+      })}`,
       { service: 'mcoserver:ClientConnectMsg' },
     )
   }

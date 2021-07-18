@@ -6,7 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { debug } from '@drazisil/mco-logger'
+import { debug, log } from '@drazisil/mco-logger'
 import { DatabaseManager } from '../shared/database-manager'
 import { NPSMessage } from '../MCOTS/nps-msg'
 import { PersonaServer } from '../PersonaServer/persona-server'
@@ -281,9 +281,18 @@ export class LobbyServer {
     const { customerId } = personas[0]
 
     // Set the encryption keys on the lobby connection
-    /** @type {ISessionRecord} */
-    const keys: ISessionRecord =
-      await databaseManager.fetchSessionKeyByCustomerId(customerId)
+    const keys =
+      await databaseManager.fetchSessionKeyByCustomerId(customerId).catch(error => {
+        log(`Unable to fetch session key for customerId ${customerId}: ${error}`, {
+  service: 'mcoserver:LobbyServer',
+  level: 'error',
+})
+return undefined
+      })
+      if (keys === undefined) {
+  throw new Error('Error fetching session keys!')
+}
+
     const s = connection
 
     // Create the cypher and decipher only if not already set

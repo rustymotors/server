@@ -66,9 +66,9 @@ export class PersonaServer {
       EMessageDirection.RECEIVED,
     ).deserialize(data)
     debug(
-      `NPSMsg request object from _npsSelectGamePersona: ${{
+      `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
         NPSMsg: requestPacket.toJSON(),
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
 
@@ -85,9 +85,9 @@ export class PersonaServer {
     responsePacket.setContent(packetContent)
     debug(
       `NPSMsg response object from _npsSelectGamePersona',
-      ${{
+      ${JSON.stringify({
         NPSMsg: responsePacket.toJSON(),
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
 
@@ -106,9 +106,9 @@ export class PersonaServer {
     ).deserialize(data)
     debug(
       `NPSMsg request object from _npsNewGameAccount',
-      ${{
+      ${JSON.stringify({
         NPSMsg: requestPacket.toJSON(),
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
 
@@ -118,9 +118,9 @@ export class PersonaServer {
     rPacket.msgNo = 0x6_01
     debug(
       `NPSMsg response object from _npsNewGameAccount',
-      ${{
+      ${JSON.stringify({
         NPSMsg: rPacket.toJSON(),
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
 
@@ -140,9 +140,9 @@ export class PersonaServer {
     ).deserialize(data)
     debug(
       `NPSMsg request object from _npsLogoutGameUser',
-      ${{
+      ${JSON.stringify({
         NPSMsg: requestPacket.toJSON(),
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
 
@@ -157,9 +157,9 @@ export class PersonaServer {
     responsePacket.setContent(packetContent)
     debug(
       `NPSMsg response object from _npsLogoutGameUser',
-      ${{
+      ${JSON.stringify({
         NPSMsg: responsePacket.toJSON(),
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
 
@@ -185,9 +185,9 @@ export class PersonaServer {
     ).deserialize(data)
     debug(
       `NPSMsg request object from _npsCheckToken',
-      ${{
+      ${JSON.stringify({
         NPSMsg: requestPacket.toJSON(),
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
 
@@ -209,9 +209,9 @@ export class PersonaServer {
     responsePacket.setContent(packetContent)
     debug(
       `NPSMsg response object from _npsCheckToken',
-      ${{
+      ${JSON.stringify({
         NPSMsg: responsePacket.toJSON(),
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
     responsePacket.dumpPacket()
@@ -237,9 +237,9 @@ export class PersonaServer {
 
     debug(
       `NPSMsg request object from _npsValidatePersonaName',
-      ${{
+      ${JSON.stringify({
         NPSMsg: requestPacket.toJSON(),
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
     requestPacket.dumpPacket()
@@ -249,7 +249,7 @@ export class PersonaServer {
       .slice(18, data.lastIndexOf(0x00))
       .toString()
     const serviceName = data.slice(data.indexOf(0x0a) + 1).toString()
-    debug(`${{ customerId, requestedPersonaName, serviceName }}`, {
+    debug(JSON.stringify({ customerId, requestedPersonaName, serviceName }), {
       service: this.serviceName,
     })
 
@@ -266,9 +266,9 @@ export class PersonaServer {
 
     debug(
       `NPSMsg response object from _npsValidatePersonaName',
-      ${{
+      ${JSON.stringify({
         NPSMsg: responsePacket.toJSON(),
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
     responsePacket.dumpPacket()
@@ -367,16 +367,16 @@ export class PersonaServer {
 
     debug(
       `NPSMsg request object from _npsGetPersonaMaps',
-      ${{
+      ${JSON.stringify({
         NPSMsg: requestPacket.toJSON(),
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
     debug(
       `NPSMsg request object from _npsGetPersonaMaps',
-      ${{
+      ${JSON.stringify({
         NPSMsg: requestPacket.toJSON(),
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
     requestPacket.dumpPacket()
@@ -407,9 +407,9 @@ export class PersonaServer {
         responsePacket.msgNo = 0x6_07
         responsePacket.setContent(personaMapsMessage.serialize())
         debug(
-          `NPSMsg response object from _npsGetPersonaMaps: ${{
+          `NPSMsg response object from _npsGetPersonaMaps: ${JSON.stringify({
             NPSMsg: responsePacket.toJSON(),
-          }}`,
+          })}`,
           { service: this.serviceName },
         )
 
@@ -432,7 +432,11 @@ export class PersonaServer {
     const updatedConnection = connection
     debug(
       `Received Persona packet',
-      ${{ localPort, remoteAddress, data: rawPacket.data.toString('hex') }}`,
+      ${JSON.stringify({
+        localPort,
+        remoteAddress,
+        data: rawPacket.data.toString('hex'),
+      })}`,
       { service: this.serviceName },
     )
     const requestCode = data.readUInt16BE(0).toString(16)
@@ -477,10 +481,10 @@ export class PersonaServer {
 
       default:
         throw new Error(
-          `[personaServer] Unknown code was received ${{
+          `[personaServer] Unknown code was received ${JSON.stringify({
             requestCode,
             localPort,
-          }}`,
+          })}`,
         )
     }
   }
