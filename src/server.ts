@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { log } from '@drazisil/mco-logger'
+import logger from '@drazisil/mco-logger'
 import config, { IAppConfiguration } from '../config/index'
 import { AdminServer } from './services/AdminServer/index'
 import { MCServer } from './services/MCServer/index'
@@ -38,7 +38,7 @@ export class Server {
    * @return {Promise<void>}
    */
   async start(): Promise<void> {
-    log('Starting servers...', { service: 'mcoserver:Server' })
+    logger.log('Starting servers...', { service: 'mcoserver:Server' })
 
     // Start the MC Server
     this.mcServer = new MCServer(this.databaseManager)
@@ -47,9 +47,9 @@ export class Server {
     // Start the Admin server
     this.adminServer = new AdminServer(this.mcServer)
     await this.adminServer.start(this.config)
-    log('Web Server started', { service: 'mcoserver:Server' })
+    logger.log('Web Server started', { service: 'mcoserver:Server' })
 
-    log('Servers started, ready for connections.', {
+    logger.log('Servers started, ready for connections.', {
       service: 'mcoserver:Server',
     })
   }

@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { createServer, Server, Socket } from 'net'
-import { debug, log } from '@drazisil/mco-logger'
+import logger from '@drazisil/mco-logger'
 import { TCPConnection } from './tcpConnection'
 import { SessionManager } from './connection-mgr'
 import { IRawPacket } from '../../types'
@@ -41,7 +41,7 @@ export class ListenerThread {
         timestamp: Date.now(),
       }
       // Dump the raw packet
-      debug(
+      logger.debug(
         `rawPacket's data prior to proccessing, { data: ${rawPacket.data.toString(
           'hex',
         )}}`,
@@ -102,7 +102,7 @@ export class ListenerThread {
     const connection = connectionMgr.findOrNewConnection(socket)
 
     const { localPort, remoteAddress } = socket
-    log(`Client ${remoteAddress} connected to port ${localPort}`, {
+    logger.log(`Client ${remoteAddress} connected to port ${localPort}`, {
       service: 'mcoserver:ListenerThread',
     })
     if (socket.localPort === 7003 && connection.inQueue) {
@@ -116,9 +116,12 @@ export class ListenerThread {
     }
 
     socket.on('end', () => {
-      log(`Client ${remoteAddress} disconnected from port ${localPort}`, {
-        service: 'mcoserver:ListenerThread',
-      })
+      logger.log(
+        `Client ${remoteAddress} disconnected from port ${localPort}`,
+        {
+          service: 'mcoserver:ListenerThread',
+        },
+      )
     })
     socket.on('data', data => {
       this._onData(data, connection)

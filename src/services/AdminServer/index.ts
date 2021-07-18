@@ -6,7 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { log } from '@drazisil/mco-logger'
+import logger from '@drazisil/mco-logger'
 import { IncomingMessage, ServerResponse } from 'http'
 import { createServer, Server } from 'https'
 import { Socket } from 'net'
@@ -98,11 +98,11 @@ export class AdminServer {
    * @param {import("http").ServerResponse} response
    */
   _httpsHandler(request: IncomingMessage, response: ServerResponse): void {
-    log(
+    logger.log(
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
       { service: 'mcoserver:AdminServer' },
     )
-    log(
+    logger.log(
       `Requested recieved,
       ${JSON.stringify({
         url: request.url,
@@ -168,7 +168,7 @@ export class AdminServer {
     }
 
     this.httpsServer.listen({ port: 88, host: '0.0.0.0' }, () => {
-      log('port 88 listening', {
+      logger.log('port 88 listening', {
         service: 'mcoserver:AdminServer',
         level: 'debug',
       })

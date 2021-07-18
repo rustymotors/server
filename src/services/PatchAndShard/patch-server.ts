@@ -10,7 +10,7 @@
 // deepcode ignore HttpToHttps: This is intentional. See above note.
 import { readFileSync } from 'fs'
 import { createServer, IncomingMessage, Server, ServerResponse } from 'http'
-import { debug, log } from '@drazisil/mco-logger'
+import logger from '@drazisil/mco-logger'
 import config, { IAppConfiguration } from '../../../config/index'
 import { ShardEntry } from './shard-entry'
 
@@ -252,7 +252,7 @@ export class PatchServer {
 
     switch (request.url) {
       case '/ShardList/':
-        debug(
+        logger.debug(
           `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
           { service: this.serviceName },
         )
@@ -262,7 +262,7 @@ export class PatchServer {
         break
 
       case '/games/EA_Seattle/MotorCity/UpdateInfo':
-        log(
+        logger.log(
           `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
           { service: this.serviceName },
         )
@@ -272,7 +272,7 @@ export class PatchServer {
         response.end(responseData.body)
         break
       case '/games/EA_Seattle/MotorCity/NPS':
-        log(
+        logger.log(
           `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
           { service: this.serviceName },
         )
@@ -282,7 +282,7 @@ export class PatchServer {
         response.end(responseData.body)
         break
       case '/games/EA_Seattle/MotorCity/MCO':
-        log(
+        logger.log(
           `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
           { service: this.serviceName },
         )
@@ -297,7 +297,7 @@ export class PatchServer {
         response.end('')
 
         // Unknown request, log it
-        log(
+        logger.log(
           `[PATCH] Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
           { service: this.serviceName },
         )
@@ -344,8 +344,8 @@ export class PatchServer {
       throw new Error('Patch server is not defined')
     }
     return this.serverPatch.listen({ port: '80', host: '0.0.0.0' }, () => {
-      debug('port 80 listening', { service: serviceName })
-      log('[patchServer] Patch server is listening...', {
+      logger.debug('port 80 listening', { service: serviceName })
+      logger.log('[patchServer] Patch server is listening...', {
         service: serviceName,
       })
     })

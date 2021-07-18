@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { debug, log } from '@drazisil/mco-logger'
+import logger from '@drazisil/mco-logger'
 import { Socket } from 'net'
 import { IAppConfiguration } from '../../../config/index'
 import { NPS_COMMANDS } from '../../structures'
@@ -68,7 +68,7 @@ export class SessionManager {
     const { remoteAddress, localPort, data } = rawPacket
 
     // Log the packet as debug
-    debug(
+    logger.debug(
       `logging raw packet,
       ${JSON.stringify({
         remoteAddress,
@@ -82,7 +82,7 @@ export class SessionManager {
       case 8226:
       case 8228:
       case 7003: {
-        debug(
+        logger.debug(
           `Recieved NPS packet,
           ${JSON.stringify({
             opCode: rawPacket.data.readInt16BE(0),
@@ -102,7 +102,7 @@ export class SessionManager {
       }
 
       case 43_300: {
-        debug(
+        logger.debug(
           'Recieved MCOTS packet',
           { service: this.serviceName },
           // {
@@ -115,13 +115,13 @@ export class SessionManager {
         )
         const newNode = new MessageNode(EMessageDirection.RECEIVED)
         newNode.deserialize(rawPacket.data)
-        debug(JSON.stringify(newNode), { service: this.serviceName })
+        logger.debug(JSON.stringify(newNode), { service: this.serviceName })
 
         return defaultHandler(rawPacket)
       }
 
       default:
-        debug(JSON.stringify(rawPacket), { service: this.serviceName })
+        logger.debug(JSON.stringify(rawPacket), { service: this.serviceName })
         throw new Error(
           `We received a packet on port ${localPort}. We don't what to do yet, going to throw so the message isn't lost.`,
         )
@@ -258,7 +258,7 @@ export class SessionManager {
 
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort)
     if (con !== undefined) {
-      log(
+      logger.log(
         `[connectionMgr] I have seen connections from ${remoteAddress} on ${localPort} before`,
         { service: this.serviceName },
       )
@@ -271,7 +271,7 @@ export class SessionManager {
       socket,
       this,
     )
-    log(
+    logger.log(
       `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`,
       { service: this.serviceName },
     )

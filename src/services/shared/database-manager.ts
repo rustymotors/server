@@ -181,7 +181,13 @@ export class DatabaseManager {
           'REPLACE INTO sessions (customer_id, sessionkey, skey, context_id, connection_id) VALUES ($customerId, $sessionkey, $skey, $contextId, $connectionId)',
         )
         stmt.run(
-          { $customerId: customerId, $sessionkey: sessionkey, $skey: skey, $contextId: contextId, $connectionId: connectionId },
+          {
+            $customerId: customerId,
+            $sessionkey: sessionkey,
+            $skey: skey,
+            $contextId: contextId,
+            $connectionId: connectionId,
+          },
           error => {
             if (error) {
               reject(new Error(`Unable to update session ke 1y: ${error}`))

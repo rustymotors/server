@@ -6,7 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { debug, log } from '@drazisil/mco-logger'
+import logger from '@drazisil/mco-logger'
 import { DatabaseManager } from '../shared/database-manager'
 import { NPSMessage } from '../MCOTS/nps-msg'
 import { PersonaServer } from '../PersonaServer/persona-server'
@@ -58,7 +58,7 @@ function decryptCmd(con: TCPConnection, cypherCmd: Buffer): TCPConnection {
   const s = con
   const decryptedCommand = s.decipherBufferDES(cypherCmd)
   s.decryptedCmd = decryptedCommand
-  debug(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString('hex')}`, {
+  logger.debug(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString('hex')}`, {
     service: 'mcoserver:LobbyServer',
   })
   return s
@@ -109,7 +109,7 @@ async function sendCommand(
   packetContent.writeUInt16BE(0x01_01, 369)
   packetContent.writeUInt16BE(0x02_2c, 371)
 
-  debug('Sending a dummy response of 0x229 - NPS_MINI_USER_LIST', {
+  logger.debug('Sending a dummy response of 0x229 - NPS_MINI_USER_LIST', {
     service: 'mcoserver:LobbyServer',
   })
 
@@ -153,7 +153,7 @@ export class LobbyServer {
    */
   async dataHandler(rawPacket: IRawPacket): Promise<TCPConnection> {
     const { localPort, remoteAddress } = rawPacket
-    debug(
+    logger.debug(
       `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`,
       { service: 'mcoserver:LobbyServer' },
     )
@@ -168,7 +168,7 @@ export class LobbyServer {
           connection,
           data,
         )
-        debug(
+        logger.debug(
           `Connect responsePacket's data prior to sending: ${JSON.stringify({
             data: responsePacket.getPacketAsString(),
           })}`,
@@ -188,7 +188,7 @@ export class LobbyServer {
       // NpsHeartbeat
       case '217': {
         const responsePacket = this._npsHeartbeat()
-        debug(
+        logger.debug(
           `Heartbeat responsePacket's data prior to sending: ${JSON.stringify({
             data: responsePacket.getPacketAsString(),
           })}`,
@@ -214,7 +214,7 @@ export class LobbyServer {
           )
         }
 
-        debug(
+        logger.debug(
           `encrypedCommand's data prior to sending: ${JSON.stringify({
             data: encryptedCmd.toString('hex'),
           })}`,
@@ -256,7 +256,7 @@ export class LobbyServer {
     rawData: Buffer,
   ): Promise<NPSMessage> {
     const { sock } = connection
-    debug(
+    logger.debug(
       `_npsRequestGameConnectServer: ${JSON.stringify({
         remoteAddress: sock.remoteAddress,
         data: rawData.toString('hex'),
@@ -281,17 +281,21 @@ export class LobbyServer {
     const { customerId } = personas[0]
 
     // Set the encryption keys on the lobby connection
-    const keys =
-      await databaseManager.fetchSessionKeyByCustomerId(customerId).catch(error => {
-        log(`Unable to fetch session key for customerId ${customerId}: ${error}`, {
-  service: 'mcoserver:LobbyServer',
-  level: 'error',
-})
-return undefined
+    const keys = await databaseManager
+      .fetchSessionKeyByCustomerId(customerId)
+      .catch(error => {
+        logger.log(
+          `Unable to fetch session key for customerId ${customerId}: ${error}`,
+          {
+            service: 'mcoserver:LobbyServer',
+            level: 'error',
+          },
+        )
+        return undefined
       })
-      if (keys === undefined) {
-  throw new Error('Error fetching session keys!')
-}
+    if (keys === undefined) {
+      throw new Error('Error fetching session keys!')
+    }
 
     const s = connection
 

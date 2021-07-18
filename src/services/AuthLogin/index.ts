@@ -7,7 +7,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { createServer, Server } from 'https'
-import { debug, log } from '@drazisil/mco-logger'
+import logger from '@drazisil/mco-logger'
 import config, { IAppConfiguration } from '../../../config/index'
 import { _sslOptions } from '../@drazisil/ssl-options'
 import { IncomingMessage, ServerResponse } from 'http'
@@ -58,7 +58,7 @@ export class AuthLogin {
    * @param {import("http").ServerResponse} response
    */
   _httpsHandler(request: IncomingMessage, response: ServerResponse): void {
-    log(
+    logger.log(
       `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
       { service: this.serviceName },
     )
@@ -95,7 +95,7 @@ export class AuthLogin {
       this.httpsServer = createServer(sslOptions, (request, response) => {
         this._httpsHandler(request, response)
       }).listen({ port: 443, host: '0.0.0.0' }, () => {
-        debug('port 443 listening', { service: this.serviceName })
+        logger.debug('port 443 listening', { service: this.serviceName })
       })
     } catch (error) {
       if (error.code === 'EACCES') {
@@ -110,7 +110,7 @@ export class AuthLogin {
 
     this.httpsServer.on('connection', this._socketEventHandler)
     this.httpsServer.on('tlsClientError', error => {
-      log(`[AuthLogin] SSL Socket Client Error: ${error.message}`, {
+      logger.log(`[AuthLogin] SSL Socket Client Error: ${error.message}`, {
         service: this.serviceName,
         level: 'warn',
       })

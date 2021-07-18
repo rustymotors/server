@@ -6,7 +6,7 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { log } from '@drazisil/mco-logger'
+import logger from '@drazisil/mco-logger'
 import { Server } from './server'
 import { AuthLogin } from './services/AuthLogin'
 import { PatchServer } from './services/PatchAndShard/patch-server'
@@ -26,7 +26,7 @@ const authLogin = new AuthLogin()
 
 Promise.all([server.start(), patchAndShardServer.start(), authLogin.start()])
   .then(() => {
-    log('All servers started successfully')
+    logger.log('All servers started successfully')
   })
   .catch(error => {
     process.exitCode = -1

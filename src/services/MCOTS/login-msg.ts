@@ -6,7 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { log } from '@drazisil/mco-logger'
+import logger from '@drazisil/mco-logger'
 
 /**
  * @module LoginMsg
@@ -103,7 +103,7 @@ export class LoginMessage {
    * @return {void}
    */
   dumpPacket(): void {
-    log(
+    logger.log(
       `LoginMsg',
       ${JSON.stringify({
         msgNo: this.msgNo.toString(),

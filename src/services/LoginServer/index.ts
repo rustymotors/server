@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { debug, log } from '@drazisil/mco-logger'
+import logger from '@drazisil/mco-logger'
 import { IAppConfiguration } from '../../../config'
 import { IRawPacket, IUserRecordMini } from '../../types'
 import { TCPConnection } from '../MCServer/tcpConnection'
@@ -47,7 +47,7 @@ export class LoginServer {
     let processed = true
     const { connection, data } = rawPacket
     const { localPort, remoteAddress } = rawPacket
-    log(
+    logger.log(
       `Received Login Server packet: ${JSON.stringify({
         localPort,
         remoteAddress,
@@ -68,7 +68,7 @@ export class LoginServer {
       }
 
       default:
-        debug(
+        logger.debug(
           `Unknown nps code recieved',
           ${JSON.stringify({
             requestCode,
@@ -81,14 +81,14 @@ export class LoginServer {
     }
 
     if (processed && responsePacket) {
-      debug(
+      logger.debug(
         `responsePacket object from dataHandler',
       ${JSON.stringify({
         userStatus: responsePacket.toString('hex'),
       })}`,
         { service: this.serviceName },
       )
-      debug(
+      logger.debug(
         `responsePacket's data prior to sending: ${responsePacket.toString(
           'hex',
         )}`,
@@ -108,7 +108,7 @@ export class LoginServer {
   async _npsGetCustomerIdByContextId(
     contextId: string,
   ): Promise<IUserRecordMini> {
-    debug('Entering _npsGetCustomerIdByContextId...', {
+    logger.debug('Entering _npsGetCustomerIdByContextId...', {
       service: this.serviceName,
     })
     /** @type {IUserRecordMini[]} */
@@ -130,7 +130,7 @@ export class LoginServer {
 
     const userRecord = users.filter(user => user.contextId === contextId)
     if (userRecord.length !== 1) {
-      debug(
+      logger.debug(
         `preparing to leave _npsGetCustomerIdByContextId after not finding record',
         ${JSON.stringify({
           contextId,
@@ -142,7 +142,7 @@ export class LoginServer {
       )
     }
 
-    debug(
+    logger.debug(
       `preparing to leave _npsGetCustomerIdByContextId after finding record',
       ${JSON.stringify({
         contextId,
@@ -169,7 +169,7 @@ export class LoginServer {
     const { sock } = connection
     const { localPort } = sock
     const userStatus = new NPSUserStatus(data)
-    log(
+    logger.log(
       `Received login packet,
       ${JSON.stringify({
         localPort,
@@ -180,7 +180,7 @@ export class LoginServer {
 
     userStatus.extractSessionKeyFromPacket(config['certificate'], data)
 
-    debug(
+    logger.debug(
       `UserStatus object from _userLogin,
       ${JSON.stringify({
         userStatus: userStatus.toJSON(),
@@ -196,7 +196,7 @@ export class LoginServer {
     )
 
     // Save sessionkey in database under customerId
-    debug('Preparing to update session key in db', {
+    logger.debug('Preparing to update session key in db', {
       service: this.serviceName,
     })
     await this.databaseManager
@@ -207,22 +207,20 @@ export class LoginServer {
         connection.id,
       )
       .catch(error => {
-        log(`Unable to update session key 3: ${error}`, {
+        logger.log(`Unable to update session key 3: ${error}`, {
           service: this.serviceName,
           level: 'error',
         })
         throw new Error('Error in userLogin')
       })
 
-      
-
-    log('Session key updated', { service: this.serviceName })
+    logger.log('Session key updated', { service: this.serviceName })
 
     // Create the packet content
     // TODO: This needs to be dynamically generated, right now we are using a
     // a static packet that works _most_ of the time
     const packetContent = premadeLogin()
-    debug(`Using Premade Login: ${packetContent.toString('hex')}`, {
+    logger.debug(`Using Premade Login: ${packetContent.toString('hex')}`, {
       service: this.serviceName,
     })
 
