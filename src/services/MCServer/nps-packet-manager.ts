@@ -39,8 +39,7 @@ export interface IMsgNameMapping {
  * @property {module:LobbyServer} lobbyServer
  */
 export class NPSPacketManager {
-  config: IAppConfiguration
-  database: DatabaseManager
+  database = DatabaseManager.getInstance()
   npsKey: string
   msgNameMapping: IMsgNameMapping[]
   loginServer: LoginServer
@@ -52,9 +51,7 @@ export class NPSPacketManager {
    * @param {module:DatabaseManager} databaseMgr
    * @param {IAppSettings} appSettings
    */
-  constructor(databaseMgr: DatabaseManager, appSettings: IAppConfiguration) {
-    this.config = appSettings
-    this.database = databaseMgr
+  constructor() {
     this.npsKey = ''
     this.msgNameMapping = [
       { id: 0x1_00, name: 'NPS_LOGIN' },
@@ -72,7 +69,7 @@ export class NPSPacketManager {
       { id: 0x11_01, name: 'NPS_CRYPTO_DES_CBC' },
     ]
 
-    this.loginServer = new LoginServer(this.database)
+    this.loginServer = new LoginServer()
     this.personaServer = new PersonaServer()
     this.lobbyServer = new LobbyServer()
     this.serviceName = 'mcoserver:NPSPacketManager'
@@ -125,7 +122,7 @@ export class NPSPacketManager {
 
     switch (localPort) {
       case 8226:
-        return this.loginServer.dataHandler(rawPacket, this.config)
+        return this.loginServer.dataHandler(rawPacket)
       case 8228:
         return this.personaServer.dataHandler(rawPacket)
       case 7003:

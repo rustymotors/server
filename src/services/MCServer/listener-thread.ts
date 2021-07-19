@@ -8,7 +8,7 @@
 import { createServer, Server, Socket } from 'net'
 import logger from '@drazisil/mco-logger'
 import { TCPConnection } from './tcpConnection'
-import { SessionManager } from './connection-mgr'
+import { ConnectionManager } from './connection-mgr'
 import { IRawPacket } from '../../types'
 
 /**
@@ -96,7 +96,7 @@ export class ListenerThread {
    * @param {ConnectionMgr} connectionMgr
    * @return {void}
    */
-  _listener(socket: Socket, connectionMgr: SessionManager): void {
+  _listener(socket: Socket, connectionMgr: ConnectionManager): void {
     // Received a new connection
     // Turn it into a connection object
     const connection = connectionMgr.findOrNewConnection(socket)
@@ -140,7 +140,7 @@ export class ListenerThread {
    */
   async startTCPListener(
     localPort: number,
-    connectionMgr: SessionManager,
+    connectionMgr: ConnectionManager,
   ): Promise<Server> {
     return createServer(socket => {
       this._listener(socket, connectionMgr)

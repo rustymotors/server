@@ -13,7 +13,7 @@ import { PatchServer } from './services/PatchAndShard/patch-server'
 import { DatabaseManager } from './services/shared/database-manager'
 
 // Database manager
-const databaseManager = new DatabaseManager()
+const databaseManager = DatabaseManager.getInstance()
 
 // MCOS Monolith
 const server = new Server(databaseManager)

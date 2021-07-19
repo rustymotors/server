@@ -41,7 +41,7 @@ export class Server {
     logger.log('Starting servers...', { service: 'mcoserver:Server' })
 
     // Start the MC Server
-    this.mcServer = new MCServer(this.databaseManager)
+    this.mcServer = MCServer.getInstance()
     this.mcServer.startServers()
 
     // Start the Admin server

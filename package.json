@@ -20,7 +20,7 @@
     "lint": "eslint src/**/*.ts && prettier --write src test",
     "test": "npm run lint-test",
     "lint-test": "npm run lint && npm run test:only",
-    "test:only": "jest --testPathPattern=test/ --coverage --coverageDirectory=coverage",
+    "test:only": "jest",
     "precommit": "npm run lint-test",
     "postinstall": "mkdir -p db"
   },

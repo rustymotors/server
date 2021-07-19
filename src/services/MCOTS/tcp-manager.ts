@@ -23,7 +23,7 @@ import { IRawPacket } from '../../types'
  */
 
 const mcotServer = new MCOTServer()
-const databaseManager = new DatabaseManager()
+const databaseManager = DatabaseManager.getInstance()
 
 export type ConnectionWithPacket = {
   connection: TCPConnection

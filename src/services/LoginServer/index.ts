@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import logger from '@drazisil/mco-logger'
-import { IAppConfiguration } from '../../../config'
+import { certificate } from '../../../config'
 import { IRawPacket, IUserRecordMini } from '../../types'
 import { TCPConnection } from '../MCServer/tcpConnection'
 import { DatabaseManager } from '../shared/database-manager'
@@ -23,14 +23,10 @@ import { premadeLogin } from './packet'
  * @property {DatabaseManager} databaseManager
  */
 export class LoginServer {
-  databaseManager: DatabaseManager
+  databaseManager = DatabaseManager.getInstance()
   serviceName: string
-  /**
-   *
-   * @param {DatabaseManager} databaseMgr
-   */
-  constructor(databaseMgr: DatabaseManager) {
-    this.databaseManager = databaseMgr
+
+  constructor() {
     this.serviceName = 'mcoserver:LoginServer'
   }
 
@@ -40,10 +36,7 @@ export class LoginServer {
    * @param {IServerConfig} config
    * @return {Promise<ConnectionObj>}
    */
-  async dataHandler(
-    rawPacket: IRawPacket,
-    config: IAppConfiguration,
-  ): Promise<TCPConnection> {
+  async dataHandler(rawPacket: IRawPacket): Promise<TCPConnection> {
     let processed = true
     const { connection, data } = rawPacket
     const { localPort, remoteAddress } = rawPacket
@@ -63,7 +56,7 @@ export class LoginServer {
     switch (requestCode) {
       // NpsUserLogin
       case '501': {
-        responsePacket = await this._userLogin(connection, data, config)
+        responsePacket = await this._userLogin(connection, data)
         break
       }
 
@@ -161,11 +154,7 @@ export class LoginServer {
    * @param {IServerConfig} config
    * @return {Promise<Buffer>}
    */
-  async _userLogin(
-    connection: TCPConnection,
-    data: Buffer,
-    config: IAppConfiguration,
-  ): Promise<Buffer> {
+  async _userLogin(connection: TCPConnection, data: Buffer): Promise<Buffer> {
     const { sock } = connection
     const { localPort } = sock
     const userStatus = new NPSUserStatus(data)
@@ -178,7 +167,7 @@ export class LoginServer {
       { service: this.serviceName },
     )
 
-    userStatus.extractSessionKeyFromPacket(config['certificate'], data)
+    userStatus.extractSessionKeyFromPacket(certificate, data)
 
     logger.debug(
       `UserStatus object from _userLogin,

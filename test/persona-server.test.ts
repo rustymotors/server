@@ -5,11 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, it } from '@jest/globals'
+import { expect, it, jest } from '@jest/globals'
 import { PersonaServer } from '../src/services/PersonaServer/persona-server'
 import { NPSMessage } from '../src/services/MCOTS/nps-msg'
-import { fakeSocket } from './helpers'
 import { EMessageDirection } from '../src/services/MCOTS/message-node'
+import { Socket as fakeSocket } from 'net'
+
+jest.mock('net')
 
 it('PersonaServer Methods', async () => {
   const personaServer = new PersonaServer()
@@ -68,7 +70,7 @@ it('PersonaServer _send()', () => {
   const personaServer = new PersonaServer()
   const data = new NPSMessage(EMessageDirection.SENT)
   expect(() => {
-    personaServer.sendPacket(fakeSocket, data)
+    personaServer.sendPacket(new fakeSocket(), data)
   }).not.toThrow()
 })
 

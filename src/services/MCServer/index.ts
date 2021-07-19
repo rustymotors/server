@@ -8,7 +8,7 @@
 import logger from '@drazisil/mco-logger'
 import config, { IAppConfiguration } from '../../../config/index'
 import { ListenerThread } from './listener-thread'
-import { SessionManager } from './connection-mgr'
+import { ConnectionManager } from './connection-mgr'
 import { DatabaseManager } from '../shared/database-manager'
 
 /**
@@ -23,16 +23,21 @@ import { DatabaseManager } from '../shared/database-manager'
  * @property {ConnectionMgr} mgr
  */
 export class MCServer {
+  static _instance: MCServer
   config: IAppConfiguration
-  mgr: SessionManager
+  mgr: ConnectionManager
   serviceName: string
-  /**
-   *
-   * @param {DatabaseManager} databaseManager
-   */
-  constructor(databaseManager: DatabaseManager) {
+
+  static getInstance() {
+    if (!MCServer._instance) {
+      MCServer._instance = new MCServer()
+    }
+    return MCServer._instance
+  }
+
+  private constructor() {
     this.config = config
-    this.mgr = new SessionManager(databaseManager, this.config)
+    this.mgr = ConnectionManager.getInstance()
     this.serviceName = 'mcoserver:MCServer'
   }
 

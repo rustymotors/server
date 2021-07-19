@@ -10,13 +10,19 @@ import sqlite3 from 'sqlite3'
 import { ISessionRecord } from '../../types'
 
 export class DatabaseManager {
+  static _instance: DatabaseManager
   localDB: sqlite3.Database
   changes: number
   serviceName: string
-  /**
-   *
-   */
-  constructor() {
+
+  public static getInstance() {
+    if (!DatabaseManager._instance) {
+      DatabaseManager._instance = new DatabaseManager()
+    }
+    return DatabaseManager._instance
+  }
+
+  private constructor() {
     this.localDB = new (sqlite3.verbose().Database)('db/mco.db')
 
     const { localDB } = this

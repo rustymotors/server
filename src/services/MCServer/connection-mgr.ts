@@ -7,7 +7,6 @@
 
 import logger from '@drazisil/mco-logger'
 import { Socket } from 'net'
-import { IAppConfiguration } from '../../../config/index'
 import { NPS_COMMANDS } from '../../structures'
 import { IRawPacket } from '../../types'
 import { defaultHandler } from '../MCOTS/tcp-manager'
@@ -16,35 +15,24 @@ import { TCPConnection } from './tcpConnection'
 import { NPSPacketManager } from './nps-packet-manager'
 import { EMessageDirection, MessageNode } from '../MCOTS/message-node'
 
-/**
- * @module ConnectionMgr
- */
 
-/**
- * @class
- * @property {IAppSettings} config
- * @property {module:DatabaseManager} databaseManager
- * @property {module:ConnectionObj[]} connections
- * @property {string[]} banList
- */
-export class SessionManager {
-  config: IAppConfiguration
-  databaseMgr: DatabaseManager
+export class ConnectionManager {
+  static _instance: ConnectionManager
+  databaseMgr = DatabaseManager.getInstance()
   connections: TCPConnection[]
   newConnectionId: number
   banList: string[]
   serviceName: string
-  /**
-   * Creates an instance of ConnectionMgr.
-   * @param {module:DatabaseManager} databaseManager
-   * @param {IAppSettings} appSettings
-   */
-  constructor(
-    databaseManager: DatabaseManager,
-    appSettings: IAppConfiguration,
-  ) {
-    this.config = appSettings
-    this.databaseMgr = databaseManager
+
+  public static getInstance() {
+    if (!ConnectionManager._instance) {
+      ConnectionManager._instance = new ConnectionManager()
+    }
+    return ConnectionManager._instance
+  }
+
+  private constructor() {
+    this.databaseMgr = DatabaseManager.getInstance()
     /**
      * @type {module:ConnectionObj[]}
      */
@@ -57,13 +45,17 @@ export class SessionManager {
     this.serviceName = 'mcoserver:ConnectionMgr'
   }
 
+  newConnection(connectionId: string, socket: Socket) {
+    return new TCPConnection(connectionId, socket, this)
+  }
+
   /**
    * Check incoming data and route it to the correct handler based on localPort
    * @param {IRawPacket} rawPacket
    * @return {Promise} {@link module:ConnectionObj~ConnectionObj}
    */
   async processData(rawPacket: IRawPacket): Promise<TCPConnection> {
-    const npsPacketManager = new NPSPacketManager(this.databaseMgr, this.config)
+    const npsPacketManager = new NPSPacketManager()
 
     const { remoteAddress, localPort, data } = rawPacket
 
@@ -266,10 +258,9 @@ export class SessionManager {
       return con
     }
 
-    const newConnection = new TCPConnection(
+    const newConnection = this.newConnection(
       `${Date.now().toString()}_${this.newConnectionId}`,
       socket,
-      this,
     )
     logger.log(
       `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`,

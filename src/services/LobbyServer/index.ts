@@ -20,7 +20,7 @@ import { EMessageDirection } from '../MCOTS/message-node'
  * @module LobbyServer
  */
 
-const databaseManager = new DatabaseManager()
+const databaseManager = DatabaseManager.getInstance()
 
 /**
  *
