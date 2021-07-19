@@ -7,7 +7,6 @@
 
 import { expect, it } from '@jest/globals'
 import { Socket } from 'net'
-import { EventEmitter } from 'stream'
 import { ConnectionManager } from '../src/services/MCServer/connection-mgr'
 import { ListenerThread } from '../src/services/MCServer/listener-thread'
 
@@ -19,7 +18,6 @@ class FakeSocket extends Socket {
     super()
     this.localPort = 7003
     delete this.remoteAddress
-
   }
 }
 

@@ -7,13 +7,13 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import logger from '@drazisil/mco-logger'
-import { DatabaseManager } from '../shared/database-manager'
-import { NPSMessage } from '../MCOTS/nps-msg'
-import { PersonaServer } from '../PersonaServer/persona-server'
-import { NPSUserInfo } from './nps-user-info'
-import { TCPConnection } from '../MCServer/tcpConnection'
-import { IRawPacket, ISessionRecord } from '../../types'
+import { IRawPacket } from '../../types'
 import { EMessageDirection } from '../MCOTS/message-node'
+import { NPSMessage } from '../MCOTS/nps-msg'
+import { TCPConnection } from '../MCServer/tcpConnection'
+import { PersonaServer } from '../PersonaServer/persona-server'
+import { DatabaseManager } from '../shared/database-manager'
+import { NPSUserInfo } from './nps-user-info'
 
 /**
  * Manages the game connection to the lobby and racing rooms

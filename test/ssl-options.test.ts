@@ -31,7 +31,6 @@ const fakeConfig = {
   defaultLogLevel: 'warn',
 }
 
-
 describe('sslOptions()', () => {
   beforeEach(() => {
     // https://bensmithgall.com/blog/jest-mock-trick if this works!

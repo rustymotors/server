@@ -7,9 +7,8 @@
 
 import logger from '@drazisil/mco-logger'
 import config, { IAppConfiguration } from '../../../config/index'
-import { ListenerThread } from './listener-thread'
 import { ConnectionManager } from './connection-mgr'
-import { DatabaseManager } from '../shared/database-manager'
+import { ListenerThread } from './listener-thread'
 
 /**
  * This class starts all the servers
@@ -28,7 +27,7 @@ export class MCServer {
   mgr: ConnectionManager
   serviceName: string
 
-  static getInstance() {
+  static getInstance(): MCServer {
     if (!MCServer._instance) {
       MCServer._instance = new MCServer()
     }

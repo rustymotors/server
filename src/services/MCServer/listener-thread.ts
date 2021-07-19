@@ -5,11 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { createServer, Server, Socket } from 'net'
 import logger from '@drazisil/mco-logger'
-import { TCPConnection } from './tcpConnection'
-import { ConnectionManager } from './connection-mgr'
+import { createServer, Server, Socket } from 'net'
 import { IRawPacket } from '../../types'
+import { ConnectionManager } from './connection-mgr'
+import { TCPConnection } from './tcpConnection'
 
 /**
  * TCP Listener thread

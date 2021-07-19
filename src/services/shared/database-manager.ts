@@ -15,7 +15,7 @@ export class DatabaseManager {
   changes: number
   serviceName: string
 
-  public static getInstance() {
+  public static getInstance(): DatabaseManager {
     if (!DatabaseManager._instance) {
       DatabaseManager._instance = new DatabaseManager()
     }

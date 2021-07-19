@@ -6,7 +6,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import logger from '@drazisil/mco-logger'
-import { IAppConfiguration } from '../../../config'
 import { IRawPacket } from '../../types'
 import { LobbyServer } from '../LobbyServer'
 import { LoginServer } from '../LoginServer'
@@ -28,16 +27,6 @@ export interface IMsgNameMapping {
   name: string
 }
 
-/**
- * @class
- * @property {module:IAppSettings} config
- * @property {module:DatabaseManager} database
- * @property {string} npsKey
- * @property {module:npsPacketManager~IMsgNameMapping[]} msgNameMapping
- * @property {module:LoginServer} loginServer
- * @property {module:PersonaServer} personaServer
- * @property {module:LobbyServer} lobbyServer
- */
 export class NPSPacketManager {
   database = DatabaseManager.getInstance()
   npsKey: string
@@ -46,11 +35,7 @@ export class NPSPacketManager {
   personaServer: PersonaServer
   lobbyServer: LobbyServer
   serviceName: string
-  /**
-   *
-   * @param {module:DatabaseManager} databaseMgr
-   * @param {IAppSettings} appSettings
-   */
+
   constructor() {
     this.npsKey = ''
     this.msgNameMapping = [

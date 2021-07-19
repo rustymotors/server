@@ -9,12 +9,11 @@ import logger from '@drazisil/mco-logger'
 import { Socket } from 'net'
 import { NPS_COMMANDS } from '../../structures'
 import { IRawPacket } from '../../types'
+import { EMessageDirection, MessageNode } from '../MCOTS/message-node'
 import { defaultHandler } from '../MCOTS/tcp-manager'
 import { DatabaseManager } from '../shared/database-manager'
-import { TCPConnection } from './tcpConnection'
 import { NPSPacketManager } from './nps-packet-manager'
-import { EMessageDirection, MessageNode } from '../MCOTS/message-node'
-
+import { TCPConnection } from './tcpConnection'
 
 export class ConnectionManager {
   static _instance: ConnectionManager
@@ -24,7 +23,7 @@ export class ConnectionManager {
   banList: string[]
   serviceName: string
 
-  public static getInstance() {
+  public static getInstance(): ConnectionManager {
     if (!ConnectionManager._instance) {
       ConnectionManager._instance = new ConnectionManager()
     }
@@ -45,7 +44,7 @@ export class ConnectionManager {
     this.serviceName = 'mcoserver:ConnectionMgr'
   }
 
-  newConnection(connectionId: string, socket: Socket) {
+  newConnection(connectionId: string, socket: Socket): TCPConnection {
     return new TCPConnection(connectionId, socket, this)
   }
 
