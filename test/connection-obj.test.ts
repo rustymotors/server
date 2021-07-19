@@ -5,9 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import { beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { Socket as fakeSocket } from 'net'
-import { expect, it, beforeEach, describe, jest } from '@jest/globals'
-import logger from '@drazisil/mco-logger'
 import { ConnectionManager as fakeConnectionManager } from '../src/services/MCServer/connection-mgr'
 import { TCPConnection } from '../src/services/MCServer/tcpConnection'
 

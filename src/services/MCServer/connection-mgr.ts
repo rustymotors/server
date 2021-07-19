@@ -166,13 +166,12 @@ export class ConnectionManager {
     remoteAddress: string,
     localPort: number,
   ): TCPConnection | undefined {
-    const result = this.connections.find(connection => {
+    return this.connections.find(connection => {
       const match =
         remoteAddress === connection.remoteAddress &&
         localPort === connection.localPort
       return match
     })
-    return result
   }
 
   /**
