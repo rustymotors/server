@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, test } from '@jest/globals'
-import { AuthLogin } from '../src/services/@drazisil/mco-auth/index'
+import { AuthLogin } from './index'
 
 test('WebServer', () => {
   try {

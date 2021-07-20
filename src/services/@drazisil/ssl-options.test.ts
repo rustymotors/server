@@ -13,7 +13,7 @@ import {
   beforeEach,
   afterEach,
 } from '@jest/globals'
-import { _sslOptions } from '../src/services/@drazisil/ssl-options'
+import { _sslOptions } from './ssl-options'
 import { Module } from 'module'
 
 const fakeConfig = {

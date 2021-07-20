@@ -7,7 +7,7 @@
 
 import { expect, describe, it, beforeEach } from '@jest/globals'
 import request from 'supertest'
-import { ShardServer } from '../src/services/@drazisil/mco-shard'
+import { ShardServer } from '.'
 
 let shardServer: ShardServer
 

@@ -7,10 +7,7 @@
 
 import { expect, describe, it, beforeEach } from '@jest/globals'
 import request from 'supertest'
-import {
-  CastanetResponse,
-  PatchServer,
-} from '../src/services/@drazisil/mco-patch'
+import { CastanetResponse, PatchServer } from '.'
 
 let patchServer: PatchServer
 
