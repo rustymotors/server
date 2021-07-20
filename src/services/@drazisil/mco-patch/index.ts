@@ -71,8 +71,8 @@ export class PatchServer {
     const host = config.serverSettings.host || 'localhost'
     const port = config.serverSettings.port || 80
     return this._server.listen({ port, host }, () => {
-      logger.debug('port 80 listening', { service: this._serviceName })
-      logger.log('[patchServer] Patch server is listening...', {
+      logger.debug(`port ${port} listening`, { service: this._serviceName })
+      logger.log('Patch server is listening...', {
         service: this._serviceName,
       })
     })
