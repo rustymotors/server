@@ -8,14 +8,16 @@
 
 import logger from '@drazisil/mco-logger'
 import { MCOServer } from './MCOServer'
-import { AuthLogin } from './services/AuthLogin'
+import { AuthLogin } from './services/@drazisil/mco-auth'
+import { PatchServer } from './services/@drazisil/mco-patch'
 import { PatchAndShardServer } from './services/PatchAndShard/patch-server'
 import { DatabaseManager } from './services/shared/database-manager'
 
 // What servers do we need?
 // * Patch Server
-PatchAndShardServer.getInstance().start()
+PatchServer.getInstance().start()
 // * AuthLogin
+AuthLogin.getInstance().start()
 // * Shard
 // * Persona
 // * Lobby Login
