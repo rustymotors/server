@@ -3,7 +3,7 @@ import http from 'http'
 const config = require('./server.config.js')
 import logger from '@drazisil/mco-logger'
 
-const CastanetResponse = {
+export const CastanetResponse = {
   body: Buffer.from('cafebeef00000000000003', 'hex'),
   header: {
     type: 'Content-Type',

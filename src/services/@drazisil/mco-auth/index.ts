@@ -165,36 +165,4 @@ export class AuthLogin {
       rejectUnauthorized: false,
     }
   }
-
-  //   const sslOptions = await _sslOptions(
-  //     this.config.certificate,
-  //     this._serviceName,
-  //   )
-
-  //   try {
-  //     this.httpsServer = createServer(sslOptions, (request, response) => {
-  //       this._httpsHandler(request, response)
-  //     }).listen({ port: 443, host: '0.0.0.0' }, () => {
-  //       logger.debug('port 443 listening', { service: this._serviceName })
-  //     })
-  //   } catch (error) {
-  //     if (error.code === 'EACCES') {
-  //       process.exitCode = -1
-  //       throw new Error(
-  //         'Unable to start server on port 443! Have you granted access to the node runtime?',
-  //       )
-  //     }
-
-  //     throw error
-  //   }
-
-  //   this.httpsServer.on('connection', this._socketEventHandler)
-  //   this.httpsServer.on('tlsClientError', error => {
-  //     logger.log(`[AuthLogin] SSL Socket Client Error: ${error.message}`, {
-  //       service: this._serviceName,
-  //       level: 'warn',
-  //     })
-  //   })
-  //   return this.httpsServer
-  // }
 }
