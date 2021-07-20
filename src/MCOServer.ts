@@ -19,18 +19,17 @@ import { DatabaseManager } from './services/shared/database-manager'
  * @property {MCServer} mcServer
  * @property {AdminServer} adminServer
  */
-export class Server {
+export class MCOServer {
   config: IAppConfiguration
   databaseManager: DatabaseManager
   serviceName: string
   mcServer: MCServer | undefined
   adminServer: AdminServer | undefined
-  /**
-   * @param {DatabaseManager} databaseManager
-   */
-  constructor(databaseManager: DatabaseManager) {
+
+  constructor() {
     this.config = config
-    this.databaseManager = databaseManager
+    this.databaseManager = DatabaseManager.getInstance()
+
     this.serviceName = 'mcoserver:Server'
   }
 
