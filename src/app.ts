@@ -7,28 +7,38 @@
 */
 
 import logger from '@drazisil/mco-logger'
-import { Server } from './server'
+import { MCOServer } from './MCOServer'
 import { AuthLogin } from './services/AuthLogin'
-import { PatchServer } from './services/PatchAndShard/patch-server'
+import { PatchAndShardServer } from './services/PatchAndShard/patch-server'
 import { DatabaseManager } from './services/shared/database-manager'
 
-// Database manager
-const databaseManager = DatabaseManager.getInstance()
+// What servers do we need?
+// * Patch Server
+PatchAndShardServer.getInstance().start()
+// * AuthLogin
+// * Shard
+// * Persona
+// * Lobby Login
+// * Lobby
+// * MCOTS
 
-// MCOS Monolith
-const server = new Server(databaseManager)
+// // Database manager
+// const databaseManager = DatabaseManager.getInstance()
 
-// MCOS PatchAndShard
-const patchAndShardServer = new PatchServer()
+// // MCOS Monolith
+// const server = new MCOServer()
 
-// MCOS AuthLogin and Shard
-const authLogin = new AuthLogin()
+// // MCOS PatchAndShard
+// const patchAndShardServer = PatchAndShardServer.getInstance()
 
-Promise.all([server.start(), patchAndShardServer.start(), authLogin.start()])
-  .then(() => {
-    logger.log('All servers started successfully')
-  })
-  .catch(error => {
-    process.exitCode = -1
-    throw new Error(`There was an error starting the server: ${error}`)
-  })
+// // MCOS AuthLogin and Shard
+// const authLogin = new AuthLogin()
+
+// Promise.all([server.start(), patchAndShardServer.start(), authLogin.start()])
+//   .then(() => {
+//     logger.log('All servers started successfully')
+//   })
+//   .catch(error => {
+//     process.exitCode = -1
+//     throw new Error(`There was an error starting the server: ${error}`)
+//   })

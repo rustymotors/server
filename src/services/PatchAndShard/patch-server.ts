@@ -48,13 +48,22 @@ export const CastanetResponse: ICastanetResponse = {
  * @property {string[]} possibleShards
  * @property {Server} serverPatch
  */
-export class PatchServer {
+export class PatchAndShardServer {
+  static _instance: PatchAndShardServer
   config: IAppConfiguration
   banList: string[]
   possibleShards: string[]
   serverPatch: Server | undefined
   serviceName: string
-  constructor() {
+
+  static getInstance(): PatchAndShardServer {
+    if (!PatchAndShardServer._instance) {
+      PatchAndShardServer._instance = new PatchAndShardServer()
+    }
+    return PatchAndShardServer._instance
+  }
+
+  private constructor() {
     this.config = config
     /**
      * @type {string[]}

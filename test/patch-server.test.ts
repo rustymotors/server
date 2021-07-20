@@ -9,14 +9,14 @@ import { expect, describe, it, beforeEach } from '@jest/globals'
 import request from 'supertest'
 import {
   CastanetResponse,
-  PatchServer,
+  PatchAndShardServer,
 } from '../src/services/PatchAndShard/patch-server'
 
-let patchServer: PatchServer
+let patchServer: PatchAndShardServer
 
 describe('PatchServer', () => {
   beforeEach(() => {
-    patchServer = new PatchServer()
+    patchServer = PatchAndShardServer.getInstance()
   })
 
   it('PatchServer', () => {
