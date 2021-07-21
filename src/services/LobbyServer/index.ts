@@ -269,7 +269,7 @@ export class LobbyServer {
     userInfo.deserialize(rawData)
     userInfo.dumpInfo()
 
-    const personaManager = new PersonaServer()
+    const personaManager = PersonaServer.getInstance()
 
     const personas = await personaManager.getPersonasByPersonaId(
       userInfo.userId,

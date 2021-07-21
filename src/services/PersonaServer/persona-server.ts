@@ -22,9 +22,18 @@ import { NPSPersonaMapsMessage } from './nps-persona-maps-msg'
  * @property {IPersonaRecord[]} personaList
  */
 export class PersonaServer {
+  static _instance: PersonaServer
   personaList: IPersonaRecord[]
   serviceName: string
-  constructor() {
+
+  static getInstance(): PersonaServer {
+    if (!PersonaServer._instance) {
+      PersonaServer._instance = new PersonaServer()
+    }
+    return PersonaServer._instance
+  }
+
+  private constructor() {
     this.personaList = [
       {
         customerId: 2_868_969_472,

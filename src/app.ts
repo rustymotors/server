@@ -10,17 +10,23 @@ import logger from '@drazisil/mco-logger'
 import { MCOServer } from './MCOServer'
 import { AuthLogin } from './services/@drazisil/mco-auth'
 import { PatchServer } from './services/@drazisil/mco-patch'
+import { RoutingServer } from './services/@drazisil/mco-route'
 import { ShardServer } from './services/@drazisil/mco-shard'
+import { PersonaServer } from './services/PersonaServer/persona-server'
 import { DatabaseManager } from './services/shared/database-manager'
 
 // What servers do we need?
+// * Routing Server
+RoutingServer.getInstance().start()
 // * Patch Server
-PatchServer.getInstance().start()
+// PatchServer.getInstance().start()
 // * AuthLogin
 AuthLogin.getInstance().start()
 // * Shard
-ShardServer.getInstance().start()
+// ShardServer.getInstance().start()
 // * Persona
+//   Persona needs connections to
+//   *
 // * Lobby Login
 // * Lobby
 // * MCOTS

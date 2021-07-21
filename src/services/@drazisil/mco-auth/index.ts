@@ -11,9 +11,10 @@ import logger from '@drazisil/mco-logger'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const config = require('./server.config.js')
 import { IncomingMessage, ServerResponse } from 'http'
-import { Socket } from 'net'
+import net, { Socket } from 'net'
 import { ISslOptions } from '../../../types'
 import { readFileSync } from 'fs'
+import { EServerConnectionAction, EServerConnectionName, IServerConnection } from '../mco-types'
 
 /**
  * Handles web-based user logins
@@ -127,6 +128,24 @@ export class AuthLogin {
     return this._server.listen({ port, host }, () => {
       logger.debug(`port ${port} listening`, { service: this._serviceName })
       logger.log('Auth server listening', { service: this._serviceName })
+
+      // Register service with router
+      let address: net.AddressInfo
+      const netAddress = this._server.address()
+      if (netAddress !== null && typeof netAddress !== 'string') {
+        address = netAddress
+      } else {
+        address = { address: '', port: 0, family: ''}
+      }
+      
+      const payload: IServerConnection = {
+        action: EServerConnectionAction.REGISTER_SERVICE,
+        service: EServerConnectionName.AUTH,
+        host: address.address,
+        port: address.port
+      }
+      const payloadBuffer = Buffer.from(JSON.stringify(payload))
+      this._sendToRouter(payloadBuffer)
     })
   }
 
@@ -164,5 +183,24 @@ export class AuthLogin {
       key,
       rejectUnauthorized: false,
     }
+  }
+
+  _sendToRouter(data: Buffer): void {
+    const client = net.createConnection({ port: 4242 }, () => {
+      // 'connect' listener.
+      logger.debug('Connected to RoutingServer', {
+        service: this._serviceName,
+      })
+      client.end(data)
+    })
+    client.on('data', data => {
+      console.log(data.toString())
+      client.end()
+    })
+    client.on('end', () => {
+      logger.log('disconnected from RoutingServer', {
+        service: this._serviceName,
+      })
+    })
   }
 }

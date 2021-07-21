@@ -33,7 +33,7 @@
     "url": "git@github.com:drazisil/mco-server.git"
   },
   "dependencies": {
-    "@drazisil/mco-logger": "3.0.0",
+    "@drazisil/mco-logger": "3.0.4",
     "sqlite3": "5.0.2"
   },
   "devDependencies": {

@@ -55,7 +55,7 @@ export class NPSPacketManager {
     ]
 
     this.loginServer = new LoginServer()
-    this.personaServer = new PersonaServer()
+    this.personaServer = PersonaServer.getInstance()
     this.lobbyServer = new LobbyServer()
     this.serviceName = 'mcoserver:NPSPacketManager'
   }
