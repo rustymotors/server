@@ -10,7 +10,6 @@
  * @property {number} [serverSettings.port]
  * @property {Object} serviceConnections
  * @property {string} serviceConnections.databaseURL
- * @property {string} defaultLogLevel
  */
 
 module.exports = {
@@ -21,10 +20,8 @@ module.exports = {
   },
   serverSettings: {
     host: 'localhost',
-    port: 443,
   },
   serviceConnections: {
     databaseURL: 'db.mco.db',
   },
-  defaultLogLevel: 'info',
 }

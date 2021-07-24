@@ -19,11 +19,11 @@ import { DatabaseManager } from './services/shared/database-manager'
 // * Routing Server
 RoutingServer.getInstance().start()
 // * Patch Server
-// PatchServer.getInstance().start()
+PatchServer.getInstance().start()
 // * AuthLogin
 AuthLogin.getInstance().start()
 // * Shard
-// ShardServer.getInstance().start()
+ShardServer.getInstance().start()
 // * Persona
 //   Persona needs connections to
 //   *
@@ -40,8 +40,7 @@ AuthLogin.getInstance().start()
 // // MCOS PatchAndShard
 // const patchAndShardServer = PatchAndShardServer.getInstance()
 
-// // MCOS AuthLogin and Shard
-// const authLogin = new AuthLogin()
+// // Admin Server
 
 // Promise.all([server.start(), patchAndShardServer.start(), authLogin.start()])
 //   .then(() => {

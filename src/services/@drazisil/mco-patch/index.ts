@@ -1,7 +1,13 @@
 import http from 'http'
+import net from 'net'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const config = require('./server.config.js')
 import { Logger } from '@drazisil/mco-logger'
+import {
+  EServerConnectionAction,
+  EServerConnectionName,
+  IServerConnection,
+} from '../mco-types'
 
 const { log } = Logger.getInstance()
 export const CastanetResponse = {
@@ -74,6 +80,43 @@ export class PatchServer {
     return this._server.listen({ port, host }, () => {
       log('debug', `port ${port} listening`, { service: this._serviceName })
       log('info', 'Patch server is listening...', {
+        service: this._serviceName,
+      })
+
+      // Register service with router
+      let address: net.AddressInfo
+      const netAddress = this._server.address()
+      if (netAddress !== null && typeof netAddress !== 'string') {
+        address = netAddress
+      } else {
+        address = { address: '', port: 0, family: '' }
+      }
+
+      const payload: IServerConnection = {
+        action: EServerConnectionAction.REGISTER_SERVICE,
+        service: EServerConnectionName.PATCH,
+        host: address.address,
+        port: address.port,
+      }
+      const payloadBuffer = Buffer.from(JSON.stringify(payload))
+      this._sendToRouter(payloadBuffer)
+    })
+  }
+
+  _sendToRouter(data: Buffer): void {
+    const client = net.createConnection({ port: 4242 }, () => {
+      // 'connect' listener.
+      log('debug', 'Connected to RoutingServer', {
+        service: this._serviceName,
+      })
+      client.end(data)
+    })
+    client.on('data', data => {
+      console.log(data.toString())
+      client.end()
+    })
+    client.on('end', () => {
+      log('info', 'disconnected from RoutingServer', {
         service: this._serviceName,
       })
     })
