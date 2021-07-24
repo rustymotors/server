@@ -6,7 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import logger from '@drazisil/mco-logger'
+import { Logger } from '@drazisil/mco-logger'
 import { IncomingMessage, ServerResponse } from 'http'
 import { createServer, Server } from 'https'
 import { Socket } from 'net'
@@ -14,6 +14,7 @@ import config, { IAppConfiguration } from '../../../config/index'
 import { _sslOptions } from '../@drazisil/ssl-options'
 import { MCServer } from '../MCServer/index'
 
+const { log } = Logger.getInstance()
 /**
  * SSL web server for managing the state of the system
  * @module AdminServer
@@ -38,17 +39,6 @@ export class AdminServer {
     this.config = config
     this.mcServer = mcServer
     this.serviceName = 'mcoserver:AdminServer;'
-  }
-
-  /**
-   *
-   * @return {string}
-   */
-  _handleGetBans(): string {
-    const banlist = {
-      mcServer: this.mcServer.mgr.getBans(),
-    }
-    return JSON.stringify(banlist)
   }
 
   /**
@@ -98,11 +88,13 @@ export class AdminServer {
    * @param {import("http").ServerResponse} response
    */
   _httpsHandler(request: IncomingMessage, response: ServerResponse): void {
-    logger.log(
+    log(
+      'info',
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
       { service: 'mcoserver:AdminServer' },
     )
-    logger.log(
+    log(
+      'info',
       `Requested recieved,
       ${JSON.stringify({
         url: request.url,
@@ -118,10 +110,6 @@ export class AdminServer {
       case '/admin/connections/resetAllQueueState':
         response.setHeader('Content-Type', 'text/plain')
         return response.end(this._handleResetAllQueueState())
-
-      case '/admin/bans':
-        response.setHeader('Content-Type', 'application/json; charset=utf-8')
-        return response.end(this._handleGetBans())
 
       default:
         if (request.url && request.url.startsWith('/admin')) {
@@ -168,9 +156,8 @@ export class AdminServer {
     }
 
     this.httpsServer.listen({ port: 88, host: '0.0.0.0' }, () => {
-      logger.log('port 88 listening', {
+      log('debug', 'port 88 listening', {
         service: 'mcoserver:AdminServer',
-        level: 'debug',
       })
     })
     this.httpsServer.on('connection', this._socketEventHandler)

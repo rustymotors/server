@@ -5,8 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import logger from '@drazisil/mco-logger'
+import { Logger } from '@drazisil/mco-logger'
 import { StockCar } from './stock-car'
+
+const { log } = Logger.getInstance()
 
 /**
  * Object for providing information on stock cars
@@ -101,7 +103,8 @@ export class StockCarInfoMessage {
    * @return {void}
    */
   dumpPacket(): void {
-    logger.log(
+    log(
+      'debug',
       `${JSON.stringify({
         msgNo: this.msgNo,
         starterCash: this.starterCash,
@@ -111,7 +114,7 @@ export class StockCarInfoMessage {
         moreToCome: this.moreToCome,
         stockCarList: this.StockCarList.toString(),
       })}`,
-      { service: this.serviceName, level: 'debug' },
+      { service: this.serviceName },
     )
   }
 }

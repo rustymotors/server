@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import logger from '@drazisil/mco-logger'
+import { Logger } from '@drazisil/mco-logger'
 import { Socket } from 'net'
 import { NPS_COMMANDS } from '../../structures'
 import { IRawPacket } from '../../types'
@@ -14,6 +14,8 @@ import { defaultHandler } from '../MCOTS/tcp-manager'
 import { DatabaseManager } from '../shared/database-manager'
 import { NPSPacketManager } from './nps-packet-manager'
 import { TCPConnection } from './tcpConnection'
+
+const { log } = Logger.getInstance()
 
 export class ConnectionManager {
   static _instance: ConnectionManager
@@ -59,7 +61,8 @@ export class ConnectionManager {
     const { remoteAddress, localPort, data } = rawPacket
 
     // Log the packet as debug
-    logger.debug(
+    log(
+      'debug',
       `logging raw packet,
       ${JSON.stringify({
         remoteAddress,
@@ -73,7 +76,8 @@ export class ConnectionManager {
       case 8226:
       case 8228:
       case 7003: {
-        logger.debug(
+        log(
+          'debug',
           `Recieved NPS packet,
           ${JSON.stringify({
             opCode: rawPacket.data.readInt16BE(0),
@@ -93,7 +97,8 @@ export class ConnectionManager {
       }
 
       case 43_300: {
-        logger.debug(
+        log(
+          'debug',
           'Recieved MCOTS packet',
           { service: this.serviceName },
           // {
@@ -106,13 +111,13 @@ export class ConnectionManager {
         )
         const newNode = new MessageNode(EMessageDirection.RECEIVED)
         newNode.deserialize(rawPacket.data)
-        logger.debug(JSON.stringify(newNode), { service: this.serviceName })
+        log('debug', JSON.stringify(newNode), { service: this.serviceName })
 
         return defaultHandler(rawPacket)
       }
 
       default:
-        logger.debug(JSON.stringify(rawPacket), { service: this.serviceName })
+        log('debug', JSON.stringify(rawPacket), { service: this.serviceName })
         throw new Error(
           `We received a packet on port ${localPort}. We don't what to do yet, going to throw so the message isn't lost.`,
         )
@@ -248,7 +253,8 @@ export class ConnectionManager {
 
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort)
     if (con !== undefined) {
-      logger.log(
+      log(
+        'info',
         `[connectionMgr] I have seen connections from ${remoteAddress} on ${localPort} before`,
         { service: this.serviceName },
       )
@@ -260,7 +266,8 @@ export class ConnectionManager {
       `${Date.now().toString()}_${this.newConnectionId}`,
       socket,
     )
-    logger.log(
+    log(
+      'info',
       `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`,
       { service: this.serviceName },
     )

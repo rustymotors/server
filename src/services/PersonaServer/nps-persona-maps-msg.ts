@@ -5,10 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import logger from '@drazisil/mco-logger'
+import { Logger } from '@drazisil/mco-logger'
 import { IPersonaRecord } from '../../types'
 import { EMessageDirection } from '../MCOTS/message-node'
 import { NPSMessage } from '../MCOTS/nps-msg'
+
+const { log } = Logger.getInstance()
 
 /**
  * @module NPSPersonaMapsMsg
@@ -166,42 +168,32 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    */
   dumpPacket(): void {
     this.dumpPacketHeader('NPSPersonaMapsMsg')
-    logger.debug(`personaCount:        ${this.personaCount}`, {
+    log('debug', `personaCount:        ${this.personaCount}`, {
       service: this.serviceName,
     })
     for (const persona of this.personas) {
-      logger.debug(
-        `maxPersonaCount:     ${this.deserializeInt8(persona.maxPersonas)}`,
-        { service: this.serviceName },
-      )
-      logger.debug(
-        `id:                  ${this.deserializeInt32(persona.id)}`,
+      log(
+        'debug',
+        `
+        maxPersonaCount:     ${this.deserializeInt8(persona.maxPersonas)}
+        id:                  ${this.deserializeInt32(persona.id)}
+        shardId:             ${this.deserializeInt32(persona.shardId)}
+        name:                ${this.deserializeString(persona.name)}
+        Packet as hex:       ${this.getPacketAsString()}`,
         {
           service: this.serviceName,
         },
       )
-      logger.debug(
-        `shardId:             ${this.deserializeInt32(persona.shardId)}`,
-        {
-          service: this.serviceName,
-        },
-      )
-      logger.debug(
-        `name:                ${this.deserializeString(persona.name)}`,
+
+      // TODO: Work on this more
+
+      log(
+        'debug',
+        '[/NPSPersonaMapsMsg]======================================',
         {
           service: this.serviceName,
         },
       )
     }
-
-    logger.debug(`Packet as hex:       ${this.getPacketAsString()}`, {
-      service: this.serviceName,
-    })
-
-    // TODO: Work on this more
-
-    logger.debug('[/NPSPersonaMapsMsg]======================================', {
-      service: this.serviceName,
-    })
   }
 }

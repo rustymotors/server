@@ -7,10 +7,12 @@
 
 import { privateDecrypt } from 'crypto'
 import { readFileSync, statSync } from 'fs'
-import logger from '@drazisil/mco-logger'
+import { Logger } from '@drazisil/mco-logger'
 import { INPSMessageJSON, NPSMessage } from '../MCOTS/nps-msg'
 import { IAppConfiguration } from '../../../config'
 import { EMessageDirection } from '../MCOTS/message-node'
+
+const { log } = Logger.getInstance()
 
 /**
  *
@@ -125,7 +127,8 @@ export class NPSUserStatus extends NPSMessage {
    */
   dumpPacket(): void {
     this.dumpPacketHeader('NPSUserStatus')
-    logger.debug(
+    log(
+      'debug',
       `NPSUserStatus,
       ${JSON.stringify({
         contextId: this.contextId,

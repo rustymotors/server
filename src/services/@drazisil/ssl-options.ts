@@ -8,9 +8,11 @@
 
 import { readFile } from 'fs'
 import { promisify } from 'util'
-import logger from '@drazisil/mco-logger'
+import { Logger } from '@drazisil/mco-logger'
 import { IAppConfiguration } from '../../../config'
 import { ISslOptions } from '../../types'
+
+const { log } = Logger.getInstance()
 
 const readFilePromise = promisify(readFile)
 
@@ -37,7 +39,7 @@ export async function _sslOptions(
   certificateSettings: IAppConfiguration['certificate'],
   serviceName: string,
 ): Promise<ISslOptions> {
-  logger.debug(`Reading ${certificateSettings.certFilename}`, {
+  log('debug', `Reading ${certificateSettings.certFilename}`, {
     service: serviceName,
   })
 

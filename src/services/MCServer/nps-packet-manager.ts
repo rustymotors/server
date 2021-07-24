@@ -5,13 +5,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import logger from '@drazisil/mco-logger'
+import { Logger } from '@drazisil/mco-logger'
 import { IRawPacket } from '../../types'
 import { LobbyServer } from '../LobbyServer'
 import { LoginServer } from '../LoginServer'
 import { PersonaServer } from '../PersonaServer/persona-server'
 import { DatabaseManager } from '../shared/database-manager'
 import { TCPConnection } from './tcpConnection'
+
+const { log } = Logger.getInstance()
 
 /**
  * @module npsPacketManager
@@ -94,7 +96,8 @@ export class NPSPacketManager {
    */
   async processNPSPacket(rawPacket: IRawPacket): Promise<TCPConnection> {
     const messageId = rawPacket.data.readInt16BE(0)
-    logger.log(
+    log(
+      'info',
       `Handling message,
       ${JSON.stringify({
         msgName: this.msgCodetoName(messageId),

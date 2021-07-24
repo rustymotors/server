@@ -5,8 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import logger from '@drazisil/mco-logger'
+import { Logger } from '@drazisil/mco-logger'
 import { EMessageDirection } from './message-node'
+
+const { log } = Logger.getInstance()
 
 /**
  * Packet container for NPS messages
@@ -151,7 +153,8 @@ export class NPSMessage {
    * @return {void}
    */
   dumpPacketHeader(messageType: string): void {
-    logger.log(
+    log(
+      'info',
       `NPSMsg/${messageType},
       ${JSON.stringify({
         direction: this.direction,
@@ -169,7 +172,8 @@ export class NPSMessage {
    * @memberof NPSMsg
    */
   dumpPacket(): void {
-    logger.debug(
+    log(
+      'debug',
       `NPSMsg/NPSMsg,
       ${JSON.stringify({
         direction: this.direction,

@@ -1,8 +1,9 @@
 import http from 'http'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const config = require('./server.config.js')
-import logger from '@drazisil/mco-logger'
+import { Logger } from '@drazisil/mco-logger'
 
+const { log } = Logger.getInstance()
 export const CastanetResponse = {
   body: Buffer.from('cafebeef00000000000003', 'hex'),
   header: {
@@ -33,11 +34,10 @@ export class PatchServer {
 
     this._server.on('error', error => {
       process.exitCode = -1
-      logger.log(`Server error: ${error.message}`, {
-        level: 'error',
+      log('error', `Server error: ${error.message}`, {
         service: this._serviceName,
       })
-      logger.log(`Server shutdown: ${process.exitCode}`, {
+      log('info', `Server shutdown: ${process.exitCode}`, {
         service: this._serviceName,
       })
       process.exit()
@@ -51,9 +51,10 @@ export class PatchServer {
       case '/games/EA_Seattle/MotorCity/UpdateInfo':
       case '/games/EA_Seattle/MotorCity/NPS':
       case '/games/EA_Seattle/MotorCity/MCO':
-        logger.log(
+        log(
+          'debug',
           `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
-          { level: 'debug', service: this._serviceName },
+          { service: this._serviceName },
         )
 
         response.setHeader(responseData.header.type, responseData.header.value)
@@ -71,8 +72,8 @@ export class PatchServer {
     const host = config.serverSettings.host || 'localhost'
     const port = config.serverSettings.port || 80
     return this._server.listen({ port, host }, () => {
-      logger.debug(`port ${port} listening`, { service: this._serviceName })
-      logger.log('Patch server is listening...', {
+      log('debug', `port ${port} listening`, { service: this._serviceName })
+      log('info', 'Patch server is listening...', {
         service: this._serviceName,
       })
     })

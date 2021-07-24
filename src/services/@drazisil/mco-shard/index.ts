@@ -8,12 +8,14 @@
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
-import logger from '@drazisil/mco-logger'
+import { Logger } from '@drazisil/mco-logger'
 import { readFileSync } from 'fs'
 import http from 'http'
 import { ShardEntry } from './shard-entry'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const config = require('./server.config.js')
+
+const { log } = Logger.getInstance()
 
 /**
  * Manages patch and update server connections
@@ -52,11 +54,10 @@ export class ShardServer {
 
     this._server.on('error', error => {
       process.exitCode = -1
-      logger.log(`Server error: ${error.message}`, {
-        level: 'error',
+      log('error', `Server error: ${error.message}`, {
         service: this._serviceName,
       })
-      logger.log(`Server shutdown: ${process.exitCode}`, {
+      log('info', `Server shutdown: ${process.exitCode}`, {
         service: this._serviceName,
       })
       process.exit()
@@ -205,7 +206,8 @@ export class ShardServer {
 
     switch (request.url) {
       case '/ShardList/':
-        logger.debug(
+        log(
+          'debug',
           `Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
           { service: this._serviceName },
         )
@@ -220,7 +222,8 @@ export class ShardServer {
         response.end('')
 
         // Unknown request, log it
-        logger.log(
+        log(
+          'info',
           `Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
           { service: this._serviceName },
         )
@@ -228,12 +231,12 @@ export class ShardServer {
     }
   }
 
-  start() {
+  start(): http.Server {
     const host = config.serverSettings.host || 'localhost'
     const port = config.serverSettings.port || 80
     return this._server.listen({ port, host }, () => {
-      logger.debug(`port ${port} listening`, { service: this._serviceName })
-      logger.log('Patch server is listening...', {
+      log('debug', `port ${port} listening`, { service: this._serviceName })
+      log('info', 'Patch server is listening...', {
         service: this._serviceName,
       })
     })

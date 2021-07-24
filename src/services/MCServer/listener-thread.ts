@@ -5,11 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import logger from '@drazisil/mco-logger'
+import { Logger } from '@drazisil/mco-logger'
 import { createServer, Server, Socket } from 'net'
 import { IRawPacket } from '../../types'
 import { ConnectionManager } from './connection-mgr'
 import { TCPConnection } from './tcpConnection'
+
+const { log } = Logger.getInstance()
 
 /**
  * TCP Listener thread
@@ -41,7 +43,8 @@ export class ListenerThread {
         timestamp: Date.now(),
       }
       // Dump the raw packet
-      logger.debug(
+      log(
+        'debug',
         `rawPacket's data prior to proccessing, { data: ${rawPacket.data.toString(
           'hex',
         )}}`,
@@ -102,7 +105,7 @@ export class ListenerThread {
     const connection = connectionMgr.findOrNewConnection(socket)
 
     const { localPort, remoteAddress } = socket
-    logger.log(`Client ${remoteAddress} connected to port ${localPort}`, {
+    log('info', `Client ${remoteAddress} connected to port ${localPort}`, {
       service: 'mcoserver:ListenerThread',
     })
     if (socket.localPort === 7003 && connection.inQueue) {
@@ -116,7 +119,8 @@ export class ListenerThread {
     }
 
     socket.on('end', () => {
-      logger.log(
+      log(
+        'info',
         `Client ${remoteAddress} disconnected from port ${localPort}`,
         {
           service: 'mcoserver:ListenerThread',
