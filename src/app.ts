@@ -31,16 +31,15 @@ ShardServer.getInstance().start()
 // * Lobby
 // * MCOTS
 
-// // Database manager
+// * Database manager
 // const databaseManager = DatabaseManager.getInstance()
 
-// // MCOS Monolith
+// * MCOS Monolith
 // const server = new MCOServer()
 
-// // MCOS PatchAndShard
-// const patchAndShardServer = PatchAndShardServer.getInstance()
-
-// // Admin Server
+// * Admin Server
+//   Admin needs connections to
+//   * MCOServer  
 
 // Promise.all([server.start(), patchAndShardServer.start(), authLogin.start()])
 //   .then(() => {
