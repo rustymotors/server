@@ -1,9 +1,11 @@
 import net from 'net'
-import { IServerConnection } from '../mco-types'
-import logger from '@drazisil/mco-logger'
+import { EServerConnectionAction, IServerConnection } from '../mco-types'
+import { Logger } from '@drazisil/mco-logger'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const config = require('./server.config.js')
+
+const { log } = Logger.getInstance()
 
 export class RoutingServer {
   static _instance: RoutingServer
@@ -23,7 +25,8 @@ export class RoutingServer {
       socket.on('end', () => {
         const { localPort, remoteAddress, remotePort } = socket
 
-        logger.debug(
+        log(
+          'debug',
           `Service ${remoteAddress}:${remotePort} disconnected from port ${localPort}`,
           {
             service: this._serviceName,
@@ -42,7 +45,7 @@ export class RoutingServer {
   }
   private _handleData(data: Buffer): void {
     const payload = data.toString()
-    logger.debug(`Payload: ${payload}`, {
+    log('debug', `Payload: ${payload}`, {
       service: this._serviceName,
     })
 
@@ -51,35 +54,40 @@ export class RoutingServer {
     try {
       payloadJSON = JSON.parse(payload)
     } catch (error) {
-      logger.log(`Error pasing payload!: ${error}`, {
+      log('error', `Error pasing payload!: ${error}`, {
         service: this._serviceName,
-        level: 'error',
       })
       return
     }
 
-    const { service, host, port } = payloadJSON
+    const { action, service, host, port } = payloadJSON
 
     if (service && host && port) {
-      this._serverConnections.push({
+      const newService = {
         service,
         host,
         port,
-      })
+      }
+      this._serverConnections.push(newService)
+      log('silly', JSON.stringify(newService), { service: this._serviceName })
 
       console.debug(this._serverConnections)
+
       return
     }
-    logger.log(`There was an error adding server connection: ${payloadJSON}`, {
-      service: this._serviceName,
-      level: 'error',
-    })
+    log(
+      'error',
+      `There was an error adding server connection: ${payloadJSON}`,
+      {
+        service: this._serviceName,
+      },
+    )
   }
 
   async start(): Promise<net.Server> {
     const port = 4242
     this._server.listen(port, 'localhost', () => {
-      logger.log(`RoutingServer listening on port ${port}`, {
+      log('info', `RoutingServer listening on port ${port}`, {
         service: this._serviceName,
       })
     })

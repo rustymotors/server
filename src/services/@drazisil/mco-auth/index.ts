@@ -7,14 +7,20 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import https from 'https'
-import logger from '@drazisil/mco-logger'
+import { Logger } from '@drazisil/mco-logger'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const config = require('./server.config.js')
 import { IncomingMessage, ServerResponse } from 'http'
 import net, { Socket } from 'net'
 import { ISslOptions } from '../../../types'
 import { readFileSync } from 'fs'
-import { EServerConnectionAction, EServerConnectionName, IServerConnection } from '../mco-types'
+import {
+  EServerConnectionAction,
+  EServerConnectionName,
+  IServerConnection,
+} from '../mco-types'
+
+const { log } = Logger.getInstance()
 
 /**
  * Handles web-based user logins
@@ -61,19 +67,17 @@ export class AuthLogin {
 
     this._server.on('error', error => {
       process.exitCode = -1
-      logger.log(`Server error: ${error.message}`, {
-        level: 'error',
+      log('error', `Server error: ${error.message}`, {
         service: this._serviceName,
       })
-      logger.log(`Server shutdown: ${process.exitCode}`, {
+      log('info', `Server shutdown: ${process.exitCode}`, {
         service: this._serviceName,
       })
       process.exit()
     })
     this._server.on('tlsClientError', error => {
-      logger.log(`[AuthLogin] SSL Socket Client Error: ${error.message}`, {
+      log('warn', `[AuthLogin] SSL Socket Client Error: ${error.message}`, {
         service: this._serviceName,
-        level: 'warn',
       })
     })
   }
@@ -95,7 +99,8 @@ export class AuthLogin {
    * @param {import("http").ServerResponse} response
    */
   handleRequest(request: IncomingMessage, response: ServerResponse): void {
-    logger.log(
+    log(
+      'info',
       `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
       { service: this._serviceName },
     )
@@ -126,8 +131,12 @@ export class AuthLogin {
     const host = config.serverSettings.host || 'localhost'
     const port = config.serverSettings.port || 443
     return this._server.listen({ port, host }, () => {
-      logger.debug(`port ${port} listening`, { service: this._serviceName })
-      logger.log('Auth server listening', { service: this._serviceName })
+      log('debug', `port ${port} listening`, {
+        service: this._serviceName,
+      })
+      log('info', 'Auth server listening', {
+        service: this._serviceName,
+      })
 
       // Register service with router
       let address: net.AddressInfo
@@ -135,14 +144,14 @@ export class AuthLogin {
       if (netAddress !== null && typeof netAddress !== 'string') {
         address = netAddress
       } else {
-        address = { address: '', port: 0, family: ''}
+        address = { address: '', port: 0, family: '' }
       }
-      
+
       const payload: IServerConnection = {
         action: EServerConnectionAction.REGISTER_SERVICE,
         service: EServerConnectionName.AUTH,
         host: address.address,
-        port: address.port
+        port: address.port,
       }
       const payloadBuffer = Buffer.from(JSON.stringify(payload))
       this._sendToRouter(payloadBuffer)
@@ -150,7 +159,7 @@ export class AuthLogin {
   }
 
   _sslOptions(): ISslOptions {
-    logger.debug(`Reading ${this.config.certificate.certFilename}`, {
+    log('debug', `Reading ${this.config.certificate.certFilename}`, {
       service: this._serviceName,
     })
 
@@ -188,7 +197,7 @@ export class AuthLogin {
   _sendToRouter(data: Buffer): void {
     const client = net.createConnection({ port: 4242 }, () => {
       // 'connect' listener.
-      logger.debug('Connected to RoutingServer', {
+      log('debug', 'Connected to RoutingServer', {
         service: this._serviceName,
       })
       client.end(data)
@@ -198,7 +207,7 @@ export class AuthLogin {
       client.end()
     })
     client.on('end', () => {
-      logger.log('disconnected from RoutingServer', {
+      log('info', 'disconnected from RoutingServer', {
         service: this._serviceName,
       })
     })
