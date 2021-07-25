@@ -506,6 +506,84 @@ const NPS_LOGINCLIENT_COMMANDS: InpsCommandMap[] = [
   { name: 'NPS_GET_USER_STATUS', value: 1333, module: 'Login' },
 ]
 
+const NPS_LOGINSERVER_COMMANDS: InpsCommandMap[] = [
+  { name: 'NPS_USER_VALID', value: 1537, module: 'Login' },
+
+  { name: 'NPS_USER_INVALID', value: 1538, module: 'Login' },
+
+  { name: 'NPS_GAME_BLOB', value: 1539, module: 'Login' },
+
+  { name: 'NPS_NO_GAME_BLOB', value: 1540, module: 'Login' },
+
+  { name: 'NPS_NEXT_SERVER', value: 1541, module: 'Login' },
+
+  { name: 'NPS_EA_ACCOUNT_INFO', value: 1542, module: 'Login' },
+
+  { name: 'NPS_GAME_ACCOUNT_INFO', value: 1543, module: 'Login' },
+
+  { name: 'NPS_BUDDY_LIST', value: 1544, module: 'Login' },
+
+  { name: 'NPS_PLAYER_LOCATION', value: 1545, module: 'Login' },
+
+  { name: 'NPS_DB_ERROR', value: 1546, module: 'Login' },
+
+  { name: 'NPS_HS_DATA', value: 1547, module: 'Login' },
+
+  { name: 'NPS_GET_USER_STATUS', value: 1548, module: 'Login' },
+
+  { name: 'NPS_HS_DELETED', value: 1549, module: 'Login' },
+
+  { name: 'NPS_PLAYER_RANK', value: 1550, module: 'Login' },
+
+  { name: 'NPS_TOP_PLAYERS', value: 1551, module: 'Login' },
+
+  { name: 'NPS_USER_NOT_AUTHORIZED', value: 1552, module: 'Login' },
+
+  { name: 'NPS_INVALID_GAME', value: 1553, module: 'Login' },
+
+  { name: 'NPS_NO_GAME_USER', value: 1554, module: 'Login' },
+
+  { name: 'NPS_GAME_ACCOUNT_COUNT', value: 1555, module: 'Login' },
+
+  { name: 'NPS_BUDDY_LIST_COUNT', value: 1556, module: 'Login' },
+
+  { name: 'NPS_BUDDY_INFO', value: 1557, module: 'Login' },
+
+  { name: 'NPS_PERSONA_INFO', value: 1558, module: 'Login' },
+
+  { name: 'NPS_LEADER_BOARD', value: 1559, module: 'Login' },
+
+  { name: 'NPS_LEADER_BOARD_NO_CHARS', value: 1560, module: 'Login' },
+
+  { name: 'NPS_IN_GAME_EMAIL', value: 1561, module: 'Login' },
+
+  { name: 'NPS_SEND_EMAIL_ACK', value: 1562, module: 'Login' },
+
+  { name: 'NPS_IGE_LIST', value: 1563, module: 'Login' },
+
+  { name: 'NPS_AAI_REQUEST_REPLY', value: 1568, module: 'Login' },
+
+  { name: 'NPS_COMM_ERROR', value: 1569, module: 'Login' },
+
+  { name: 'NPS_USER_CREATED', value: 1570, module: 'Login' },
+
+  { name: 'NPS_AUTH_DENIED', value: 1571, module: 'Login' }, // returned when NPS refuses authorization to this class of user
+
+  { name: 'NPS_PERSONA_DELETION_DENY', value: 1572, module: 'Login' },
+
+  { name: 'NPS_DUP_PERSONA', value: 1573, module: 'Login' },
+
+  { name: 'NPS_USER_BANNED', value: 1574, module: 'Login' }, // user has been banned in GLS.
+
+  { name: 'NPS_MISSING_AUTHENTICATOR', value: 1584, module: 'Login' },
+
+  { name: 'NPS_SHARD_PERSONA_LIMIT_REACHED', value: 1600, module: 'Login' }, // we are only allowed one persona per shard.
+
+  { name: 'NPS_SHARD_PERSONA_CREATION_DISABLED', value: 1601, module: 'Login' }, // persona creation on this shard is disabled.
+
+  { name: 'NPS_UNDEFINED_ERROR', value: 1616, module: 'Login' },
+]
+
 /**
  * @type {InpsCommandMap[]}
  */
@@ -519,6 +597,7 @@ const NPS_LOBBY_COMMANDS: InpsCommandMap[] = [
  */
 export const NPS_LOGIN_COMMANDS: InpsCommandMap[] = [
   ...NPS_LOGINCLIENT_COMMANDS,
+  ...NPS_LOGINSERVER_COMMANDS,
 ]
 
 /**
