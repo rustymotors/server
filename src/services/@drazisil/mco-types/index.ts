@@ -1,8 +1,9 @@
 export enum EServerConnectionName {
+  ADMIN = 'Admin',
   AUTH = 'Auth',
-  SHARD = 'Shard',
-  PATCH = 'Patch',
   MCSERVER = 'MCServer',
+  PATCH = 'Patch',
+  SHARD = 'Shard',
 }
 
 export enum EServerConnectionAction {

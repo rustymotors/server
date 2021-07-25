@@ -1,13 +1,8 @@
 import http from 'http'
-import net from 'net'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const config = require('./server.config.js')
 import { Logger } from '@drazisil/mco-logger'
-import {
-  EServerConnectionAction,
-  EServerConnectionName,
-  IServerConnection,
-} from '../mco-types'
+import { EServerConnectionName } from '../mco-types'
 import { RoutingMesh } from '../mco-common'
 
 const { log } = Logger.getInstance()

@@ -3,9 +3,7 @@ import { EServerConnectionAction, IServerConnection } from '../mco-types'
 import { Logger } from '@drazisil/mco-logger'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const config = require('./server.config.js')
 
-Logger.getInstance()._getRaw().transports
 const { log } = Logger.getInstance()
 
 export class RoutingServer {
@@ -63,12 +61,10 @@ export class RoutingServer {
 
     const { action } = payloadJSON
 
-    switch (action) {
-      case EServerConnectionAction.REGISTER_SERVICE:
-        return this._registerNewService(payloadJSON)
-
-      default:
-        throw new Error('Method not implemented.')
+    if (action === EServerConnectionAction.REGISTER_SERVICE) {
+      return this._registerNewService(payloadJSON)
+    } else {
+      throw new Error('Method not implemented.')
     }
   }
 

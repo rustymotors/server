@@ -32,13 +32,16 @@ export class RoutingMesh {
     this._sendToRouter(service, payloadBuffer)
   }
 
-  private _sendToRouter(service: EServerConnectionName, data: Buffer): void {
+  private _sendToRouter(
+    service: EServerConnectionName,
+    inputBuffer: Buffer,
+  ): void {
     const client = net.createConnection({ port: 4242 }, () => {
       // 'connect' listener.
       log('debug', 'Connected to RoutingServer', {
         service,
       })
-      client.end(data)
+      client.end(inputBuffer)
     })
     client.on('data', data => {
       console.log(data.toString())

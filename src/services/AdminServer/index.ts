@@ -8,6 +8,7 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { IncomingMessage, ServerResponse } from 'http'
+import { Http2SecureServer } from 'http2'
 import { createServer, Server } from 'https'
 import { Socket } from 'net'
 import config, { IAppConfiguration } from '../../../config/index'
@@ -137,9 +138,9 @@ export class AdminServer {
    * @param {module:config.config} config
    * @return {Promise<void>}
    */
-  async start(config: IAppConfiguration): Promise<void> {
+  start(config: IAppConfiguration): Server {
     try {
-      const sslOptions = await _sslOptions(config.certificate, this.serviceName)
+      const sslOptions = _sslOptions(config.certificate, this.serviceName)
 
       /** @type {import("https").Server} */
       this.httpsServer = createServer(
@@ -155,11 +156,12 @@ export class AdminServer {
       throw new Error(`${error.message}, ${error.stack}`)
     }
 
-    this.httpsServer.listen({ port: 88, host: '0.0.0.0' }, () => {
+    this.httpsServer.on('connection', this._socketEventHandler)
+
+    return this.httpsServer.listen({ port: 88, host: '0.0.0.0' }, () => {
       log('debug', 'port 88 listening', {
         service: 'mcoserver:AdminServer',
       })
     })
-    this.httpsServer.on('connection', this._socketEventHandler)
   }
 }

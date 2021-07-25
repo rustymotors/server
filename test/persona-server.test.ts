@@ -67,7 +67,6 @@ describe('Persona Server', () => {
   })
 
   it('PersonaServer _send()', () => {
-    const personaServer = PersonaServer.getInstance()
     const data = new NPSMessage(EMessageDirection.SENT)
     expect(() => {
       personaServer.sendPacket(new fakeSocket(), data)
@@ -75,8 +74,6 @@ describe('Persona Server', () => {
   })
 
   it('PersonaServer _npsGetPersonaMapsByCustomerId()', async () => {
-    const personaServer = PersonaServer.getInstance()
-
     const personas1 = await personaServer.getPersonaMapsByCustomerId(
       2_868_969_472,
     )

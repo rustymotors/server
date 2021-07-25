@@ -11,13 +11,8 @@
 import { Logger } from '@drazisil/mco-logger'
 import { readFileSync } from 'fs'
 import http from 'http'
-import net from 'net'
 import { RoutingMesh } from '../mco-common'
-import {
-  EServerConnectionAction,
-  EServerConnectionName,
-  IServerConnection,
-} from '../mco-types'
+import { EServerConnectionName } from '../mco-types'
 import { ShardEntry } from './shard-entry'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const config = require('./server.config.js')
@@ -151,7 +146,7 @@ export class ShardServer {
    */
   _handleGetRegistry(): string {
     const { ipServer } = this._config.serverSettings
-    const dynamicRegistryFile = `Windows Registry Editor Version 5.00
+    return `Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\EACom\\AuthAuth]
 "AuthLoginBaseService"="AuthLogin"
@@ -178,7 +173,6 @@ export class ShardServer {
 "Log"="1"
 
 `
-    return dynamicRegistryFile
   }
 
   /**
@@ -211,31 +205,27 @@ export class ShardServer {
       return response.end('Hello, world!')
     }
 
-    switch (request.url) {
-      case '/ShardList/':
-        log(
-          'debug',
-          `Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
-          { service: this._serviceName },
-        )
+    if (request.url === '/ShardList/') {
+      log(
+        'debug',
+        `Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
+        { service: this._serviceName },
+      )
 
-        response.setHeader('Content-Type', 'text/plain')
-        response.end(this._generateShardList())
-        break
-
-      default:
-        // Is this a hacker?
-        response.statusCode = 404
-        response.end('')
-
-        // Unknown request, log it
-        log(
-          'info',
-          `Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
-          { service: this._serviceName },
-        )
-        break
+      response.setHeader('Content-Type', 'text/plain')
+      return response.end(this._generateShardList())
     }
+
+    // Is this a hacker?
+    response.statusCode = 404
+    response.end('')
+
+    // Unknown request, log it
+    log(
+      'info',
+      `Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
+      { service: this._serviceName },
+    )
   }
 
   start(): http.Server {

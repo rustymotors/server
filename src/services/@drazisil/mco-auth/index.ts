@@ -11,14 +11,10 @@ import { Logger } from '@drazisil/mco-logger'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const config = require('./server.config.js')
 import { IncomingMessage, ServerResponse } from 'http'
-import net, { Socket } from 'net'
+import { Socket } from 'net'
 import { ISslOptions } from '../../../types'
 import { readFileSync } from 'fs'
-import {
-  EServerConnectionAction,
-  EServerConnectionName,
-  IServerConnection,
-} from '../mco-types'
+import { EServerConnectionName } from '../mco-types'
 import { RoutingMesh } from '../mco-common'
 
 const { log } = Logger.getInstance()

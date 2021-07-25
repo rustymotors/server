@@ -20,31 +20,7 @@ describe('PatchServer', () => {
     expect(CastanetResponse.body.toString('hex')).toStrictEqual(
       'cafebeef00000000000003',
     )
-    // expect(patchServer._patchUpdateInfo().body.toString('hex')).toStrictEqual(
-    //   'cafebeef00000000000003',
-    // )
-    // expect(patchServer._patchNPS().body.toString('hex')).toStrictEqual(
-    //   'cafebeef00000000000003',
-    // )
-    // expect(patchServer._patchMCO().body.toString('hex')).toStrictEqual(
-    //   'cafebeef00000000000003',
-    // )
-    // expect(patchServer._generateShardList()).toContain('The Clocktower')
-    // expect(patchServer._getBans()).toStrictEqual([])
   })
-
-  // it('PatchServer - Shardlist', () => {
-  //   request(patchServer._server)
-  //     .get('/ShardList/')
-  //     .then(
-  //       response => {
-  //         expect(response.text).toContain('[The Clocktower]')
-  //       },
-  //       error => {
-  //         console.error(`Error: ${error}`)
-  //       },
-  //     )
-  // })
 
   it('PatchServer - UpdateInfo', () => {
     request(patchServer._server)
