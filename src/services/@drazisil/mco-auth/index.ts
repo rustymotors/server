@@ -19,6 +19,7 @@ import {
   EServerConnectionName,
   IServerConnection,
 } from '../mco-types'
+import { RoutingMesh } from '../mco-common'
 
 const { log } = Logger.getInstance()
 
@@ -139,22 +140,11 @@ export class AuthLogin {
       })
 
       // Register service with router
-      let address: net.AddressInfo
-      const netAddress = this._server.address()
-      if (netAddress !== null && typeof netAddress !== 'string') {
-        address = netAddress
-      } else {
-        address = { address: '', port: 0, family: '' }
-      }
-
-      const payload: IServerConnection = {
-        action: EServerConnectionAction.REGISTER_SERVICE,
-        service: EServerConnectionName.AUTH,
-        host: address.address,
-        port: address.port,
-      }
-      const payloadBuffer = Buffer.from(JSON.stringify(payload))
-      this._sendToRouter(payloadBuffer)
+      RoutingMesh.registerServiceWithRouter(
+        EServerConnectionName.AUTH,
+        host,
+        port,
+      )
     })
   }
 
@@ -192,24 +182,5 @@ export class AuthLogin {
       key,
       rejectUnauthorized: false,
     }
-  }
-
-  _sendToRouter(data: Buffer): void {
-    const client = net.createConnection({ port: 4242 }, () => {
-      // 'connect' listener.
-      log('debug', 'Connected to RoutingServer', {
-        service: this._serviceName,
-      })
-      client.end(data)
-    })
-    client.on('data', data => {
-      console.log(data.toString())
-      client.end()
-    })
-    client.on('end', () => {
-      log('info', 'disconnected from RoutingServer', {
-        service: this._serviceName,
-      })
-    })
   }
 }
