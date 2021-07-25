@@ -114,7 +114,8 @@ export class MCOTServer {
     pReply.msgNo = 325
     pReply.msgReply = 324
     const rPacket = new MessageNode(EMessageDirection.SENT)
-    rPacket.flags = 9
+    rPacket.flags = 8
+    rPacket.seq = lobbiesListMessage.seq + 1
 
     const lobby = Buffer.alloc(12)
     lobby.writeInt32LE(325, 0)
