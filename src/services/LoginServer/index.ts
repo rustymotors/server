@@ -151,6 +151,9 @@ export class LoginServer {
       })}`,
       { service: this.serviceName },
     )
+    log('debug', '<<< _npsGetCustomerIdByContextId', {
+      service: this.serviceName,
+    })
     return userRecord[0]
   }
 
@@ -163,8 +166,10 @@ export class LoginServer {
    * @return {Promise<Buffer>}
    */
   async _userLogin(connection: TCPConnection, data: Buffer): Promise<Buffer> {
+    log('debug', `>>> _userLogin`, { service: this.serviceName })
     const { sock } = connection
     const { localPort } = sock
+    log('debug', `create new NPSUserStatus`, { service: this.serviceName })
     const userStatus = new NPSUserStatus(data)
     log(
       'info',
@@ -234,6 +239,7 @@ export class LoginServer {
     // Don't use queue (+208, but I'm not sure if this includes the header or not)
     Buffer.from([0x00]).copy(packetContent, 208)
 
+    log('debug', `<<< _userLogin`, { service: this.serviceName })
     /**
      * Return the packet twice for debug
      * Debug sends the login request twice, so we need to reply twice
