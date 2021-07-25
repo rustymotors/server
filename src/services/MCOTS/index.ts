@@ -91,7 +91,7 @@ export class MCOTServer {
     connection: TCPConnection,
     node: MessageNode,
   ): Promise<ConnectionWithPackets> {
-    log('debug', 'In _getLobbies...', {
+    log('debug', '>>> _getLobbies...', {
       service: 'mcoserver:MCOTSServer',
     })
     const lobbiesListMessage = node
@@ -128,10 +128,10 @@ export class MCOTServer {
     log('debug', 'Dumping response...', {
       service: 'mcoserver:MCOTSServer',
     })
-    log('debug', JSON.stringify(rPacket), {
+    rPacket.dumpPacket()
+    log('debug', '<<< _getLobbies...', {
       service: 'mcoserver:MCOTSServer',
     })
-
     return { connection, packetList: [rPacket] }
   }
 

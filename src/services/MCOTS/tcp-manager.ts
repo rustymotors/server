@@ -248,11 +248,17 @@ async function processInput(
   const currentMessageNo = node.msgNo
   const currentMessageString = mcotServer._MSG_STRING(currentMessageNo)
 
+  log('debug', `>>> processInput: ${currentMessageString}`, {
+    service: 'mcoserver:MCOTSServer',
+  })
   switch (currentMessageString) {
     case 'MC_SET_OPTIONS':
       try {
         const result = await mcotServer._setOptions(conn, node)
         const responsePackets = result.packetList
+        log('debug', `<<< processInput: ${currentMessageString}`, {
+          service: 'mcoserver:MCOTSServer',
+        })
         return await socketWriteIfOpen(result.connection, responsePackets)
       } catch (error) {
         if (error instanceof Error) {
@@ -266,6 +272,9 @@ async function processInput(
       try {
         const result = await mcotServer._trackingMessage(conn, node)
         const responsePackets = result.packetList
+        log('debug', `<<< processInput: ${currentMessageString}`, {
+          service: 'mcoserver:MCOTSServer',
+        })
         return socketWriteIfOpen(result.connection, responsePackets)
       } catch (error) {
         if (error instanceof Error) {
@@ -279,6 +288,10 @@ async function processInput(
       try {
         const result = await mcotServer._updatePlayerPhysical(conn, node)
         const responsePackets = result.packetList
+        log('debug', `<<< processInput: ${currentMessageString}`, {
+          service: 'mcoserver:MCOTSServer',
+        })
+
         return socketWriteIfOpen(result.connection, responsePackets)
       } catch (error) {
         if (error instanceof Error) {
@@ -293,6 +306,10 @@ async function processInput(
         const result = await clientConnect(conn, node)
         const responsePackets = result.packetList
         // Write the socket
+        log('debug', `<<< processInput: ${currentMessageString}`, {
+          service: 'mcoserver:MCOTSServer',
+        })
+
         return await socketWriteIfOpen(result.connection, responsePackets)
       } catch (error) {
         if (error instanceof Error) {
@@ -308,6 +325,9 @@ async function processInput(
         const result = await mcotServer._login(conn, node)
         const responsePackets = result.packetList
         // Write the socket
+        log('debug', `<<< processInput: ${currentMessageString}`, {
+          service: 'mcoserver:MCOTSServer',
+        })
         return socketWriteIfOpen(result.connection, responsePackets)
       } catch (error) {
         if (error instanceof Error) {
@@ -323,6 +343,9 @@ async function processInput(
         const result = await mcotServer._logout(conn, node)
         const responsePackets = result.packetList
         // Write the socket
+        log('debug', `<<< processInput: ${currentMessageString}`, {
+          service: 'mcoserver:MCOTSServer',
+        })
         return await socketWriteIfOpen(result.connection, responsePackets)
       } catch (error) {
         if (error instanceof Error) {
@@ -335,15 +358,21 @@ async function processInput(
 
     case 'MC_GET_LOBBIES': {
       const result = await mcotServer._getLobbies(conn, node)
-      log('debug', 'Dumping Lobbies response packet...', {
+      log('debug', 'start of _getLobbies response', {
         service: 'mcoserver:MCOTSServer',
       })
-      log('debug', result.packetList.join(), {
+      for (const lobbyPacket of result.packetList) {
+        lobbyPacket.dumpPacket()
+      }
+      log('debug', 'end of _getLobbies response', {
         service: 'mcoserver:MCOTSServer',
       })
       const responsePackets = result.packetList
       try {
         // Write the socket
+        log('debug', `<<< processInput: ${currentMessageString}`, {
+          service: 'mcoserver:MCOTSServer',
+        })
         return await socketWriteIfOpen(result.connection, responsePackets)
       } catch (error) {
         if (error instanceof Error) {
@@ -359,6 +388,9 @@ async function processInput(
         const result = await getStockCarInfo(conn, node)
         const responsePackets = result.packetList
         // Write the socket
+        log('debug', `<<< processInput: ${currentMessageString}`, {
+          service: 'mcoserver:MCOTSServer',
+        })
         return socketWriteIfOpen(result.connection, responsePackets)
       } catch (error) {
         if (error instanceof Error) {
