@@ -3,6 +3,7 @@ export enum EServerConnectionName {
   AUTH = 'Auth',
   MCSERVER = 'MCServer',
   PATCH = 'Patch',
+  PROXY = 'Proxy',
   SHARD = 'Shard',
 }
 

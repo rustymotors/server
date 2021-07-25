@@ -6,11 +6,13 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { MCOServer } from './MCOServer'
 import { AuthLogin } from './services/@drazisil/mco-auth'
 import { PatchServer } from './services/@drazisil/mco-patch'
+import { HTTPProxyServer } from './services/@drazisil/mco-proxy'
 import { RoutingServer } from './services/@drazisil/mco-route'
 import { ShardServer } from './services/@drazisil/mco-shard'
+import { AdminServer } from './services/AdminServer'
+import { MCServer } from './services/MCServer'
 import { PersonaServer } from './services/PersonaServer/persona-server'
 import { DatabaseManager } from './services/shared/database-manager'
 
@@ -23,6 +25,10 @@ PatchServer.getInstance().start()
 AuthLogin.getInstance().start()
 // * Shard
 ShardServer.getInstance().start()
+// HTTPProxy
+// Now that both patch and shard are up, we can proxy requests
+HTTPProxyServer.getInstance().start()
+
 // * Persona
 //   Persona needs connections to
 //   *
@@ -34,11 +40,13 @@ ShardServer.getInstance().start()
 // const databaseManager = DatabaseManager.getInstance()
 
 // * MCOS Monolith
-// const server = new MCOServer()
+const mcServer = MCServer.getInstance()
+mcServer.startServers()
 
 // * Admin Server
 //   Admin needs connections to
 //   * MCOServer
+AdminServer.getInstance(mcServer).start()
 
 // Promise.all([server.start(), patchAndShardServer.start(), authLogin.start()])
 //   .then(() => {

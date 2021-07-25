@@ -8,7 +8,6 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { IncomingMessage, ServerResponse } from 'http'
-import { Http2SecureServer } from 'http2'
 import { createServer, Server } from 'https'
 import { Socket } from 'net'
 import config, { IAppConfiguration } from '../../../config/index'
@@ -28,15 +27,20 @@ const { log } = Logger.getInstance()
  * @property {Server} httpServer
  */
 export class AdminServer {
+  static _instance: AdminServer
   config: IAppConfiguration
   mcServer: MCServer
   serviceName: string
   httpsServer: Server | undefined
-  /**
-   * @class
-   * @param {module:MCServer} mcServer
-   */
-  constructor(mcServer: MCServer) {
+
+  static getInstance(mcServer: MCServer): AdminServer {
+    if (!AdminServer._instance) {
+      AdminServer._instance = new AdminServer(mcServer)
+    }
+    return AdminServer._instance
+  }
+
+  private constructor(mcServer: MCServer) {
     this.config = config
     this.mcServer = mcServer
     this.serviceName = 'mcoserver:AdminServer;'
@@ -138,7 +142,8 @@ export class AdminServer {
    * @param {module:config.config} config
    * @return {Promise<void>}
    */
-  start(config: IAppConfiguration): Server {
+  start(): Server {
+    const config = this.config
     try {
       const sslOptions = _sslOptions(config.certificate, this.serviceName)
 

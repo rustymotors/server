@@ -13,7 +13,7 @@ jest.mock('../src/services/MCServer/index')
 test('AdminServer', () => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const _ = new AdminServer(fakeMCServer.getInstance())
+    const _ = AdminServer.getInstance(fakeMCServer.getInstance())
     expect(true).toBeTruthy()
   } catch (error) {
     expect(error).toBeFalsy()

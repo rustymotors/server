@@ -7,10 +7,8 @@
  * @property {string} certificate.certFilename
  * @property {Object} serverSettings
  * @property {string} serverSettings.ipServer
- * @property {number} [serverSettings.port]
  * @property {Object} serviceConnections
  * @property {string} serviceConnections.databaseURL
- * @property {string} defaultLogLevel
  */
 
 module.exports = {
@@ -19,10 +17,8 @@ module.exports = {
   },
   serverSettings: {
     host: 'localhost',
-    port: 80,
   },
   serviceConnections: {
     databaseURL: 'db.mco.db',
   },
-  defaultLogLevel: 'info',
 }

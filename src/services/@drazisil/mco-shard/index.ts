@@ -73,22 +73,22 @@ export class ShardServer {
    * @memberof! PatchServer
    */
   _generateShardList(): string {
-    const { ipServer } = this._config.serverSettings
+    const { host } = this._config.serverSettings
     const shardClockTower = new ShardEntry(
       'The Clocktower',
       'The Clocktower',
       44,
-      ipServer,
+      host,
       8226,
-      ipServer,
+      host,
       7003,
-      ipServer,
+      host,
       0,
       '',
       'Group-1',
       88,
       2,
-      ipServer,
+      host,
       80,
     )
 
@@ -98,17 +98,17 @@ export class ShardServer {
       'Twin Pines Mall',
       'Twin Pines Mall',
       88,
-      ipServer,
+      host,
       8226,
-      ipServer,
+      host,
       7003,
-      ipServer,
+      host,
       0,
       '',
       'Group-1',
       88,
       2,
-      ipServer,
+      host,
       80,
     )
 
@@ -230,7 +230,7 @@ export class ShardServer {
 
   start(): http.Server {
     const host = config.serverSettings.host || 'localhost'
-    const port = config.serverSettings.port || 80
+    const port = 82
     return this._server.listen({ port, host }, () => {
       log('debug', `port ${port} listening`, { service: this._serviceName })
       log('info', 'Patch server is listening...', {

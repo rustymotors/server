@@ -338,7 +338,7 @@ async function processInput(
       log('debug', 'Dumping Lobbies response packet...', {
         service: 'mcoserver:MCOTSServer',
       })
-      log('debug', JSON.stringify(result.packetList.join()), {
+      log('debug', result.packetList.join(), {
         service: 'mcoserver:MCOTSServer',
       })
       const responsePackets = result.packetList

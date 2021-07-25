@@ -1,35 +1,25 @@
 import http from 'http'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const config = require('./server.config.js')
 import { Logger } from '@drazisil/mco-logger'
 import { EServerConnectionName } from '../mco-types'
 import { RoutingMesh } from '../mco-common'
+import { ShardServer } from '../mco-shard'
+import { PatchServer } from '../mco-patch'
 
 const { log } = Logger.getInstance()
-export const CastanetResponse = {
-  body: Buffer.from('cafebeef00000000000003', 'hex'),
-  header: {
-    type: 'Content-Type',
-    value: 'application/octet-stream',
-  },
-}
 
-export class PatchServer {
-  static _instance: PatchServer
-  _config: typeof config
+export class HTTPProxyServer {
+  static _instance: HTTPProxyServer
   _server: http.Server
-  _serviceName = 'MCOServer:Patch'
+  _serviceName = 'MCOServer:HTTPProxy'
 
-  static getInstance(): PatchServer {
-    if (!PatchServer._instance) {
-      PatchServer._instance = new PatchServer()
+  static getInstance(): HTTPProxyServer {
+    if (!HTTPProxyServer._instance) {
+      HTTPProxyServer._instance = new HTTPProxyServer()
     }
-    return PatchServer._instance
+    return HTTPProxyServer._instance
   }
 
   private constructor() {
-    this._config = config
-
     this._server = http.createServer((request, response) => {
       this.handleRequest(request, response)
     })
@@ -50,41 +40,34 @@ export class PatchServer {
     request: http.IncomingMessage,
     response: http.ServerResponse,
   ): void {
-    const responseData = CastanetResponse
-
+    log(
+      'debug',
+      `Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
+      { service: this._serviceName },
+    )
     switch (request.url) {
       case '/games/EA_Seattle/MotorCity/UpdateInfo':
       case '/games/EA_Seattle/MotorCity/NPS':
       case '/games/EA_Seattle/MotorCity/MCO':
-        log(
-          'debug',
-          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
-          { service: this._serviceName },
-        )
-
-        response.setHeader(responseData.header.type, responseData.header.value)
-        response.end(responseData.body)
-        break
+        return PatchServer.getInstance().handleRequest(request, response)
 
       default:
-        response.statusCode = 404
-        response.end('')
-        break
+        return ShardServer.getInstance()._handleRequest(request, response)
     }
   }
 
   start(): http.Server {
-    const host = config.serverSettings.host || 'localhost'
-    const port = 81
+    const host = 'localhost'
+    const port = 80
     return this._server.listen({ port, host }, () => {
       log('debug', `port ${port} listening`, { service: this._serviceName })
-      log('info', 'Patch server is listening...', {
+      log('info', 'Proxy server is listening...', {
         service: this._serviceName,
       })
 
       // Register service with router
       RoutingMesh.getInstance().registerServiceWithRouter(
-        EServerConnectionName.PATCH,
+        EServerConnectionName.PROXY,
         host,
         port,
       )

@@ -126,7 +126,7 @@ export class AuthLogin {
    */
   async start(): Promise<https.Server> {
     const host = config.serverSettings.host || 'localhost'
-    const port = config.serverSettings.port || 444
+    const port = 443
     return this._server.listen({ port, host }, () => {
       log('debug', `port ${port} listening`, {
         service: this._serviceName,
