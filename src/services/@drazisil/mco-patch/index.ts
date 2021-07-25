@@ -50,7 +50,10 @@ export class PatchServer {
     })
   }
 
-  handleRequest(request: http.IncomingMessage, response: http.ServerResponse) {
+  handleRequest(
+    request: http.IncomingMessage,
+    response: http.ServerResponse,
+  ): void {
     const responseData = CastanetResponse
 
     switch (request.url) {
@@ -74,7 +77,7 @@ export class PatchServer {
     }
   }
 
-  start() {
+  start(): http.Server {
     const host = config.serverSettings.host || 'localhost'
     const port = config.serverSettings.port || 80
     return this._server.listen({ port, host }, () => {
