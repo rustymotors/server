@@ -248,7 +248,7 @@ export class ShardServer {
       })
 
       // Register service with router
-      RoutingMesh.registerServiceWithRouter(
+      RoutingMesh.getInstance().registerServiceWithRouter(
         EServerConnectionName.SHARD,
         host,
         port,

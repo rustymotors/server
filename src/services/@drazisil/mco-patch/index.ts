@@ -88,7 +88,7 @@ export class PatchServer {
       })
 
       // Register service with router
-      RoutingMesh.registerServiceWithRouter(
+      RoutingMesh.getInstance().registerServiceWithRouter(
         EServerConnectionName.PATCH,
         host,
         port,

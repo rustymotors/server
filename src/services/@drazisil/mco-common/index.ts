@@ -1,40 +1,53 @@
 import { Logger } from '@drazisil/mco-logger'
 import net from 'net'
-import { EServerConnectionAction, EServerConnectionName, IServerConnection } from '../mco-types'
+import {
+  EServerConnectionAction,
+  EServerConnectionName,
+  IServerConnection,
+} from '../mco-types'
 
-const {log} = Logger.getInstance()
-
+const { log } = Logger.getInstance()
 
 export class RoutingMesh {
-	static registerServiceWithRouter(service: EServerConnectionName ,host: string, port: number) {
-	
-		const payload: IServerConnection = {
-			action: EServerConnectionAction.REGISTER_SERVICE,
-			service,
-			host,
-			port,
-		}
-		const payloadBuffer = Buffer.from(JSON.stringify(payload))
-		RoutingMesh._sendToRouter(service,payloadBuffer)
-	}
-	
-	static _sendToRouter(service: EServerConnectionName ,data: Buffer): void {
-		const client = net.createConnection({ port: 4242 }, () => {
-			// 'connect' listener.
-			log('debug', 'Connected to RoutingServer', {
-				service,
-			})
-			client.end(data)
-		})
-		client.on('data', data => {
-			console.log(data.toString())
-			client.end()
-		})
-		client.on('end', () => {
-			log('info', 'disconnected from RoutingServer', {
-				service,
-			})
-		})
-	}
-}
+  static getInstance(): RoutingMesh {
+    return new RoutingMesh()
+  }
 
+  private constructor() {
+    // Inrnetionally empty
+  }
+
+  registerServiceWithRouter(
+    service: EServerConnectionName,
+    host: string,
+    port: number,
+  ) {
+    const payload: IServerConnection = {
+      action: EServerConnectionAction.REGISTER_SERVICE,
+      service,
+      host,
+      port,
+    }
+    const payloadBuffer = Buffer.from(JSON.stringify(payload))
+    this._sendToRouter(service, payloadBuffer)
+  }
+
+  private _sendToRouter(service: EServerConnectionName, data: Buffer): void {
+    const client = net.createConnection({ port: 4242 }, () => {
+      // 'connect' listener.
+      log('debug', 'Connected to RoutingServer', {
+        service,
+      })
+      client.end(data)
+    })
+    client.on('data', data => {
+      console.log(data.toString())
+      client.end()
+    })
+    client.on('end', () => {
+      log('info', 'disconnected from RoutingServer', {
+        service,
+      })
+    })
+  }
+}

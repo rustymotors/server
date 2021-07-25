@@ -38,7 +38,7 @@ ShardServer.getInstance().start()
 
 // * Admin Server
 //   Admin needs connections to
-//   * MCOServer  
+//   * MCOServer
 
 // Promise.all([server.start(), patchAndShardServer.start(), authLogin.start()])
 //   .then(() => {

@@ -5,6 +5,7 @@ import { Logger } from '@drazisil/mco-logger'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const config = require('./server.config.js')
 
+Logger.getInstance()._getRaw().transports
 const { log } = Logger.getInstance()
 
 export class RoutingServer {
@@ -69,9 +70,9 @@ export class RoutingServer {
         port,
       }
       this._serverConnections.push(newService)
-      log('silly', JSON.stringify(newService), { service: this._serviceName })
-
-      console.debug(this._serverConnections)
+      log('debug', `Registered new service: ${JSON.stringify(newService)}`, {
+        service: this._serviceName,
+      })
 
       return
     }

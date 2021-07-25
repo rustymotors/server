@@ -140,7 +140,7 @@ export class AuthLogin {
       })
 
       // Register service with router
-      RoutingMesh.registerServiceWithRouter(
+      RoutingMesh.getInstance().registerServiceWithRouter(
         EServerConnectionName.AUTH,
         host,
         port,
