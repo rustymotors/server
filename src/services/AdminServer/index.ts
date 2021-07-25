@@ -6,7 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { log } from '@drazisil/mco-logger'
+import { Logger } from '@drazisil/mco-logger'
 import { IncomingMessage, ServerResponse } from 'http'
 import { createServer, Server } from 'https'
 import { Socket } from 'net'
@@ -14,6 +14,7 @@ import config, { IAppConfiguration } from '../../../config/index'
 import { _sslOptions } from '../@drazisil/ssl-options'
 import { MCServer } from '../MCServer/index'
 
+const { log } = Logger.getInstance()
 /**
  * SSL web server for managing the state of the system
  * @module AdminServer
@@ -26,29 +27,23 @@ import { MCServer } from '../MCServer/index'
  * @property {Server} httpServer
  */
 export class AdminServer {
+  static _instance: AdminServer
   config: IAppConfiguration
   mcServer: MCServer
   serviceName: string
   httpsServer: Server | undefined
-  /**
-   * @class
-   * @param {module:MCServer} mcServer
-   */
-  constructor(mcServer: MCServer) {
-    this.config = config
-    this.mcServer = mcServer
-    this.serviceName = 'mcoserver:AdminServer0;'
+
+  static getInstance(mcServer: MCServer): AdminServer {
+    if (!AdminServer._instance) {
+      AdminServer._instance = new AdminServer(mcServer)
+    }
+    return AdminServer._instance
   }
 
-  /**
-   *
-   * @return {string}
-   */
-  _handleGetBans(): string {
-    const banlist = {
-      mcServer: this.mcServer.mgr.getBans(),
-    }
-    return JSON.stringify(banlist)
+  private constructor(mcServer: MCServer) {
+    this.config = config
+    this.mcServer = mcServer
+    this.serviceName = 'mcoserver:AdminServer;'
   }
 
   /**
@@ -99,15 +94,17 @@ export class AdminServer {
    */
   _httpsHandler(request: IncomingMessage, response: ServerResponse): void {
     log(
+      'info',
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
       { service: 'mcoserver:AdminServer' },
     )
     log(
+      'info',
       `Requested recieved,
-      ${{
+      ${JSON.stringify({
         url: request.url,
         remoteAddress: request.socket.remoteAddress,
-      }}`,
+      })}`,
       { service: 'mcoserver:AdminServer' },
     )
     switch (request.url) {
@@ -118,10 +115,6 @@ export class AdminServer {
       case '/admin/connections/resetAllQueueState':
         response.setHeader('Content-Type', 'text/plain')
         return response.end(this._handleResetAllQueueState())
-
-      case '/admin/bans':
-        response.setHeader('Content-Type', 'application/json; charset=utf-8')
-        return response.end(this._handleGetBans())
 
       default:
         if (request.url && request.url.startsWith('/admin')) {
@@ -149,9 +142,10 @@ export class AdminServer {
    * @param {module:config.config} config
    * @return {Promise<void>}
    */
-  async start(config: IAppConfiguration): Promise<void> {
+  start(): Server {
+    const config = this.config
     try {
-      const sslOptions = await _sslOptions(config.certificate, this.serviceName)
+      const sslOptions = _sslOptions(config.certificate, this.serviceName)
 
       /** @type {import("https").Server} */
       this.httpsServer = createServer(
@@ -167,12 +161,12 @@ export class AdminServer {
       throw new Error(`${error.message}, ${error.stack}`)
     }
 
-    this.httpsServer.listen({ port: 88, host: '0.0.0.0' }, () => {
-      log('port 88 listening', {
+    this.httpsServer.on('connection', this._socketEventHandler)
+
+    return this.httpsServer.listen({ port: 88, host: '0.0.0.0' }, () => {
+      log('debug', 'port 88 listening', {
         service: 'mcoserver:AdminServer',
-        level: 'debug',
       })
     })
-    this.httpsServer.on('connection', this._socketEventHandler)
   }
 }

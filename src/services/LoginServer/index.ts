@@ -5,13 +5,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { debug, log } from '@drazisil/mco-logger'
-import { IAppConfiguration } from '../../../config'
+import { Logger } from '@drazisil/mco-logger'
+import { certificate } from '../../../config'
 import { IRawPacket, IUserRecordMini } from '../../types'
 import { TCPConnection } from '../MCServer/tcpConnection'
 import { DatabaseManager } from '../shared/database-manager'
 import { NPSUserStatus } from './nps-user-status'
 import { premadeLogin } from './packet'
+
+const { log } = Logger.getInstance()
 
 /**
  * Manages the initial game connection setup and teardown.
@@ -23,14 +25,10 @@ import { premadeLogin } from './packet'
  * @property {DatabaseManager} databaseManager
  */
 export class LoginServer {
-  databaseManager: DatabaseManager
+  databaseManager = DatabaseManager.getInstance()
   serviceName: string
-  /**
-   *
-   * @param {DatabaseManager} databaseMgr
-   */
-  constructor(databaseMgr: DatabaseManager) {
-    this.databaseManager = databaseMgr
+
+  constructor() {
     this.serviceName = 'mcoserver:LoginServer'
   }
 
@@ -40,15 +38,16 @@ export class LoginServer {
    * @param {IServerConfig} config
    * @return {Promise<ConnectionObj>}
    */
-  async dataHandler(
-    rawPacket: IRawPacket,
-    config: IAppConfiguration,
-  ): Promise<TCPConnection> {
+  async dataHandler(rawPacket: IRawPacket): Promise<TCPConnection> {
     let processed = true
     const { connection, data } = rawPacket
     const { localPort, remoteAddress } = rawPacket
     log(
-      `Received Login packet: ${JSON.stringify({ localPort, remoteAddress })}`,
+      'info',
+      `Received Login Server packet: ${JSON.stringify({
+        localPort,
+        remoteAddress,
+      })}`,
       { service: this.serviceName },
     )
     // TODO: Check if this can be handled by a MessageNode object
@@ -60,32 +59,35 @@ export class LoginServer {
     switch (requestCode) {
       // NpsUserLogin
       case '501': {
-        responsePacket = await this._userLogin(connection, data, config)
+        responsePacket = await this._userLogin(connection, data)
         break
       }
 
       default:
-        debug(
+        log(
+          'debug',
           `Unknown nps code recieved',
-          ${{
+          ${JSON.stringify({
             requestCode,
             localPort,
             data: rawPacket.data.toString('hex'),
-          }}`,
+          })}`,
           { service: this.serviceName },
         )
         processed = false
     }
 
     if (processed && responsePacket) {
-      debug(
+      log(
+        'debug',
         `responsePacket object from dataHandler',
-      ${{
+      ${JSON.stringify({
         userStatus: responsePacket.toString('hex'),
-      }}`,
+      })}`,
         { service: this.serviceName },
       )
-      debug(
+      log(
+        'debug',
         `responsePacket's data prior to sending: ${responsePacket.toString(
           'hex',
         )}`,
@@ -105,7 +107,7 @@ export class LoginServer {
   async _npsGetCustomerIdByContextId(
     contextId: string,
   ): Promise<IUserRecordMini> {
-    debug('Entering _npsGetCustomerIdByContextId...', {
+    log('debug', '>>> _npsGetCustomerIdByContextId', {
       service: this.serviceName,
     })
     /** @type {IUserRecordMini[]} */
@@ -127,11 +129,12 @@ export class LoginServer {
 
     const userRecord = users.filter(user => user.contextId === contextId)
     if (userRecord.length !== 1) {
-      debug(
+      log(
+        'debug',
         `preparing to leave _npsGetCustomerIdByContextId after not finding record',
-        ${{
+        ${JSON.stringify({
           contextId,
-        }}`,
+        })}`,
         { service: this.serviceName },
       )
       throw new Error(
@@ -139,12 +142,13 @@ export class LoginServer {
       )
     }
 
-    debug(
+    log(
+      'debug',
       `preparing to leave _npsGetCustomerIdByContextId after finding record',
-      ${{
+      ${JSON.stringify({
         contextId,
         userRecord,
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
     return userRecord[0]
@@ -158,30 +162,28 @@ export class LoginServer {
    * @param {IServerConfig} config
    * @return {Promise<Buffer>}
    */
-  async _userLogin(
-    connection: TCPConnection,
-    data: Buffer,
-    config: IAppConfiguration,
-  ): Promise<Buffer> {
+  async _userLogin(connection: TCPConnection, data: Buffer): Promise<Buffer> {
     const { sock } = connection
     const { localPort } = sock
     const userStatus = new NPSUserStatus(data)
     log(
-      `Received login packet',
-      ${{
+      'info',
+      `Received login packet,
+      ${JSON.stringify({
         localPort,
         remoteAddress: connection.remoteAddress,
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
 
-    userStatus.extractSessionKeyFromPacket(config['certificate'], data)
+    userStatus.extractSessionKeyFromPacket(certificate, data)
 
-    debug(
-      `UserStatus object from _userLogin',
-      ${{
+    log(
+      'debug',
+      `UserStatus object from _userLogin,
+      ${JSON.stringify({
         userStatus: userStatus.toJSON(),
-      }}`,
+      })}`,
       { service: this.serviceName },
     )
     userStatus.dumpPacket()
@@ -193,22 +195,30 @@ export class LoginServer {
     )
 
     // Save sessionkey in database under customerId
-    debug('Preparing to update session key in db', {
+    log('debug', 'Preparing to update session key in db', {
       service: this.serviceName,
     })
-    await this.databaseManager._updateSessionKey(
-      customer.customerId,
-      userStatus.sessionkey,
-      userStatus.contextId,
-      connection.id,
-    )
-    log('Session key updated', { service: this.serviceName })
+    await this.databaseManager
+      ._updateSessionKey(
+        customer.customerId,
+        userStatus.sessionkey,
+        userStatus.contextId,
+        connection.id,
+      )
+      .catch(error => {
+        log('error', `Unable to update session key 3: ${error}`, {
+          service: this.serviceName,
+        })
+        throw new Error('Error in userLogin')
+      })
+
+    log('info', 'Session key updated', { service: this.serviceName })
 
     // Create the packet content
     // TODO: This needs to be dynamically generated, right now we are using a
     // a static packet that works _most_ of the time
     const packetContent = premadeLogin()
-    debug(`Using Premade Login: ${packetContent.toString('hex')}`, {
+    log('debug', `Using Premade Login: ${packetContent.toString('hex')}`, {
       service: this.serviceName,
     })
 

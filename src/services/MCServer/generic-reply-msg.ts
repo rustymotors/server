@@ -5,7 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { log } from '@drazisil/mco-logger'
+import { Logger } from '@drazisil/mco-logger'
+
+const { log } = Logger.getInstance()
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
@@ -121,14 +123,15 @@ export class GenericReplyMessage {
    */
   dumpPacket(): void {
     log(
+      'info',
       `GenericReply',
-      ${{
+      ${JSON.stringify({
         msgNo: this.msgNo,
         msgReply: this.msgReply,
         result: this.result.toString('hex'),
         data: this.data.toString('hex'),
         tdata2: this.data2.toString('hex'),
-      }}`,
+      })}`,
       { service: 'mcoserver:GenericReplyMsg' },
     )
   }

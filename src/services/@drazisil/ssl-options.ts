@@ -6,13 +6,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { readFile } from 'fs'
-import { promisify } from 'util'
-import { debug } from '@drazisil/mco-logger'
+import { readFileSync } from 'fs'
+import { Logger } from '@drazisil/mco-logger'
 import { IAppConfiguration } from '../../../config'
 import { ISslOptions } from '../../types'
 
-const readFilePromise = promisify(readFile)
+const { log } = Logger.getInstance()
 
 /**
  *
@@ -33,17 +32,19 @@ const readFilePromise = promisify(readFile)
 
    * @return {Promise<sslOptionsObj>}
    */
-export async function _sslOptions(
+export function _sslOptions(
   certificateSettings: IAppConfiguration['certificate'],
   serviceName: string,
-): Promise<ISslOptions> {
-  debug(`Reading ${certificateSettings.certFilename}`, { service: serviceName })
+): ISslOptions {
+  log('debug', `Reading ${certificateSettings.certFilename}`, {
+    service: serviceName,
+  })
 
   let cert
   let key
 
   try {
-    cert = await readFilePromise(certificateSettings.certFilename, {
+    cert = readFileSync(certificateSettings.certFilename, {
       encoding: 'utf-8',
     })
   } catch (error) {
@@ -53,7 +54,7 @@ export async function _sslOptions(
   }
 
   try {
-    key = await readFilePromise(certificateSettings.privateKeyFilename, {
+    key = readFileSync(certificateSettings.privateKeyFilename, {
       encoding: 'utf-8',
     })
   } catch (error) {

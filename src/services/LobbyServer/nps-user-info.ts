@@ -6,9 +6,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { debug } from '@drazisil/mco-logger'
+import { Logger } from '@drazisil/mco-logger'
 import { EMessageDirection } from '../MCOTS/message-node'
 import { NPSMessage } from '../MCOTS/nps-msg'
+
+const { log } = Logger.getInstance()
 
 /**
  * @module NPSUserInfo
@@ -54,14 +56,14 @@ export class NPSUserInfo extends NPSMessage {
    */
   dumpInfo(): void {
     this.dumpPacketHeader('NPSUserInfo')
-    debug(`UserId:        ${this.userId}`, { service: this.serviceName })
-    debug(`UserName:      ${this.userName.toString()}`, {
+    log('debug', `UserId:        ${this.userId}`, { service: this.serviceName })
+    log('debug', `UserName:      ${this.userName.toString()}`, {
       service: this.serviceName,
     })
-    debug(`UserData:      ${this.userData.toString('hex')}`, {
+    log('debug', `UserData:      ${this.userData.toString('hex')}`, {
       service: this.serviceName,
     })
-    debug('[/NPSUserInfo]======================================', {
+    log('debug', '[/NPSUserInfo]======================================', {
       service: this.serviceName,
     })
   }
