@@ -61,7 +61,19 @@ export class RoutingServer {
       return
     }
 
-    const { action, service, host, port } = payloadJSON
+    const { action } = payloadJSON
+
+    switch (action) {
+      case EServerConnectionAction.REGISTER_SERVICE:
+        return this._registerNewService(payloadJSON)
+
+      default:
+        throw new Error('Method not implemented.')
+    }
+  }
+
+  private _registerNewService(payloadJSON: IServerConnection) {
+    const { service, host, port } = payloadJSON
 
     if (service && host && port) {
       const newService = {
