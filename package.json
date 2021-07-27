@@ -25,7 +25,7 @@
     "precommit": "npm run lint-test",
     "postinstall": "mkdir -p db"
   },
-  "author": "Drazi Crendraven <drazisil@hey.com>",
+  "author": "Drazi Crendraven <drazisil@users.noreply.github.com>",
   "license": "MPL-2.0",
   "private": true,
   "repository": {
