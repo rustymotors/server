@@ -1,0 +1,18 @@
+---------------------------
+Microsoft Visual C++ Runtime Library
+---------------------------
+Assertion failed!
+
+Program: ...les (x86)\EA Games\Motor City Online\MCity.exe
+File: C:\nps\Common\NPSLib\Src\MsgPack.cpp
+Line: 1433
+
+Expression: iStat > 0
+
+For information on how your program can cause an assertion
+failure, see the Visual C++ documentation on asserts
+
+(Press Retry to debug the application - JIT must be enabled)
+---------------------------
+Abort   Retry   Ignore   
+---------------------------

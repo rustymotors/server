@@ -5,10 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from '@drazisil/mco-logger'
 import { LobbyInfoPacket } from './lobby-info'
-
-const { log } = Logger.getInstance()
 
 /**
  * @class
@@ -60,22 +57,5 @@ export class LobbyMessage {
    */
   serialize(): Buffer {
     return this.data
-  }
-
-  /**
-   * DumpPacket
-   * @return {void}
-   */
-  dumpPacket(): void {
-    log(
-      'debug',
-      `LobbyMsg',
-      ${JSON.stringify({
-        msgNo: this.msgNo,
-        dataLength: this.dataLength,
-        packet: this.serialize().toString('hex'),
-      })}`,
-      { service: this.serviceName },
-    )
   }
 }

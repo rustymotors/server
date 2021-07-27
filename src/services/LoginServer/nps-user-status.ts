@@ -7,12 +7,10 @@
 
 import { privateDecrypt } from 'crypto'
 import { readFileSync, statSync } from 'fs'
-import { Logger } from '@drazisil/mco-logger'
+
 import { INPSMessageJSON, NPSMessage } from '../MCOTS/nps-msg'
 import { IAppConfiguration } from '../../../config'
 import { EMessageDirection } from '../MCOTS/message-node'
-
-const { log } = Logger.getInstance()
 
 /**
  *
@@ -66,7 +64,7 @@ export class NPSUserStatus extends NPSMessage {
    * @param {Buffer} packet
    */
   constructor(packet: Buffer) {
-    super(EMessageDirection.RECEIVED)
+    super(EMessageDirection.RECEIVED, 'NPSUserStatus')
     this.sessionkey = ''
 
     // Save the NPS opCode
@@ -110,6 +108,7 @@ export class NPSUserStatus extends NPSMessage {
    */
   toJSON(): INPSMessageJSON {
     return {
+      packetName: this.packetName,
       msgNo: this.msgNo,
       msgLength: this.msgLength,
       msgVersion: this.msgVersion,
@@ -120,21 +119,5 @@ export class NPSUserStatus extends NPSMessage {
       sessionkey: this.sessionkey,
       rawBuffer: this.buffer.toString('hex'),
     }
-  }
-
-  /**
-   * @return {void}
-   */
-  dumpPacket(): void {
-    this.dumpPacketHeader('NPSUserStatus')
-    log(
-      'debug',
-      `NPSUserStatus,
-      ${JSON.stringify({
-        contextId: this.contextId,
-        sessionkey: this.sessionkey,
-      })}`,
-      { service: 'mcoserver:NPSUserStatus' },
-    )
   }
 }

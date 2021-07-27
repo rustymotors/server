@@ -11,7 +11,7 @@ import { AuthLogin } from './index'
 test('WebServer', () => {
   try {
     // eslint-disable-next-line no-unused-vars
-    const _ = AuthLogin.getInstance()
+    AuthLogin.getInstance()
     expect(true).toBeTruthy()
   } catch (error) {
     expect(error).toBeFalsy()

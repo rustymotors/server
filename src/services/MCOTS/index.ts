@@ -13,24 +13,25 @@ import { ConnectionWithPackets } from './tcp-manager'
 
 const { log } = Logger.getInstance()
 
-/**
- * Mangages the game database server
- * @module MCOTSServer
- */
-
-/**
- * @class
- * @property {module:MCO_Logger.logger} logger
- */
 export class MCOTServer {
-  /**
-   * Return the string representation of the numeric opcode
-   *
-   * @param {number} msgID
-   * @return {string}
-   */
+  static _instance: MCOTServer
+  serviceName: string
+
+  static getInstance(): MCOTServer {
+    if (!MCOTServer._instance) {
+      MCOTServer._instance = new MCOTServer()
+    }
+    return MCOTServer._instance
+  }
+
+  private constructor() {
+    this.serviceName = 'mcoServer:MCOTS'
+  }
+
   _MSG_STRING(messageID: number): string {
     switch (messageID) {
+      case 101:
+        return 'MC_LOGIN'
       case 105:
         return 'MC_LOGIN'
       case 106:
@@ -76,7 +77,9 @@ export class MCOTServer {
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
-    rPacket.dumpPacket()
+    log('debug', JSON.stringify(rPacket.toJSON()), {
+      service: this.serviceName,
+    })
 
     return { connection, packetList: [rPacket] }
   }
@@ -128,7 +131,9 @@ export class MCOTServer {
     log('debug', 'Dumping response...', {
       service: 'mcoserver:MCOTSServer',
     })
-    rPacket.dumpPacket()
+    log('debug', JSON.stringify(rPacket.toJSON()), {
+      service: this.serviceName,
+    })
     log('debug', '<<< _getLobbies...', {
       service: 'mcoserver:MCOTSServer',
     })
@@ -160,7 +165,9 @@ export class MCOTServer {
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
-    rPacket.dumpPacket()
+    log('debug', JSON.stringify(rPacket.toJSON()), {
+      service: this.serviceName,
+    })
 
     /** @type MessageNode[] */
     const nodes: MessageNode[] = []
@@ -193,7 +200,9 @@ export class MCOTServer {
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
-    rPacket.dumpPacket()
+    log('debug', JSON.stringify(rPacket.toJSON()), {
+      service: this.serviceName,
+    })
 
     return { connection, packetList: [rPacket] }
   }
@@ -223,7 +232,9 @@ export class MCOTServer {
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
-    rPacket.dumpPacket()
+    log('debug', JSON.stringify(rPacket.toJSON()), {
+      service: this.serviceName,
+    })
 
     return { connection, packetList: [rPacket] }
   }
@@ -253,7 +264,9 @@ export class MCOTServer {
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
-    rPacket.dumpPacket()
+    log('debug', JSON.stringify(rPacket.toJSON()), {
+      service: this.serviceName,
+    })
 
     return { connection, packetList: [rPacket] }
   }

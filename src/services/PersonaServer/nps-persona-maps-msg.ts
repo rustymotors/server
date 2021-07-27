@@ -5,12 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from '@drazisil/mco-logger'
 import { IPersonaRecord } from '../../types'
 import { EMessageDirection } from '../MCOTS/message-node'
 import { NPSMessage } from '../MCOTS/nps-msg'
-
-const { log } = Logger.getInstance()
 
 /**
  * @module NPSPersonaMapsMsg
@@ -57,7 +54,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    * @param {module:MessageNode.MESSAGE_DIRECTION} direction
    */
   constructor(direction: EMessageDirection) {
-    super(direction)
+    super(direction, 'NPSPersonaMapsMessage')
 
     /** @type {IPersonaRecord[]} */
     this.personas = []
@@ -160,40 +157,5 @@ export class NPSPersonaMapsMessage extends NPSMessage {
 
     // Build the packet
     return packetContent
-  }
-
-  /**
-   *
-   * @return {void}
-   */
-  dumpPacket(): void {
-    this.dumpPacketHeader('NPSPersonaMapsMsg')
-    log('debug', `personaCount:        ${this.personaCount}`, {
-      service: this.serviceName,
-    })
-    for (const persona of this.personas) {
-      log(
-        'debug',
-        `
-        maxPersonaCount:     ${this.deserializeInt8(persona.maxPersonas)}
-        id:                  ${this.deserializeInt32(persona.id)}
-        shardId:             ${this.deserializeInt32(persona.shardId)}
-        name:                ${this.deserializeString(persona.name)}
-        Packet as hex:       ${this.getPacketAsString()}`,
-        {
-          service: this.serviceName,
-        },
-      )
-
-      // TODO: Work on this more
-
-      log(
-        'debug',
-        '[/NPSPersonaMapsMsg]======================================',
-        {
-          service: this.serviceName,
-        },
-      )
-    }
   }
 }

@@ -28,7 +28,7 @@ it('MessageNode', () => {
 
   expect(messageNode1.isMCOTS()).toBeTruthy()
   try {
-    messageNode1.dumpPacket()
+    messageNode1.toJSON()
   } catch (error) {
     expect(error).not.toBeNull()
   }

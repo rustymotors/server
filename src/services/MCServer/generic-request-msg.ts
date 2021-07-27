@@ -5,9 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from '@drazisil/mco-logger'
-
-const { log } = Logger.getInstance()
+import { EMessageDirection, MessageNode } from '../MCOTS/message-node'
 
 /**
  * @module GenericRequestMsg
@@ -25,7 +23,7 @@ const { log } = Logger.getInstance()
  * @property {Buffer} data
  * @property {Buffer} data2
  */
-export class GenericRequestMessage {
+export class GenericRequestMessage extends MessageNode {
   msgNo: number
   data: Buffer
   data2: Buffer
@@ -34,6 +32,7 @@ export class GenericRequestMessage {
    *
    */
   constructor() {
+    super(EMessageDirection.RECEIVED)
     this.msgNo = 0
     this.data = Buffer.alloc(4)
     this.data2 = Buffer.alloc(4)
@@ -74,22 +73,5 @@ export class GenericRequestMessage {
     this.data.copy(packet, 2)
     this.data2.copy(packet, 6)
     return packet
-  }
-
-  /**
-   * DumpPacket
-   * @return {void}
-   */
-  dumpPacket(): void {
-    log(
-      'info',
-      `GenericRequest',
-      ${JSON.stringify({
-        msgNo: this.msgNo,
-        data: this.data.toString('hex'),
-        data2: this.data2.toString('hex'),
-      })}`,
-      { service: this.serviceName },
-    )
   }
 }

@@ -5,10 +5,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from '@drazisil/mco-logger'
-
-const { log } = Logger.getInstance()
-
 /**
  * Container objest for Stock cars
  * @module StockCar
@@ -55,22 +51,5 @@ export class StockCar {
     packet.writeInt32LE(this.retailPrice, 4)
     packet.writeInt16LE(this.bIsDealOfTheDay, 8)
     return packet
-  }
-
-  /**
-   * DumpPacket
-   * @return {void}
-   */
-  dumpPacket(): void {
-    log(
-      'debug',
-      `
-    [StockCar]======================================
-    brandedPartId:     ${this.brandedPartId}
-    retailPrice:       ${this.retailPrice}
-    isDealOfTheDay:    ${this.bIsDealOfTheDay}
-    logger.log('[/StockCar]======================================`,
-      { service: this.serviceName },
-    )
   }
 }

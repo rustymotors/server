@@ -101,7 +101,9 @@ async function sendCommand(
   const incommingRequest = new NPSMessage(EMessageDirection.RECEIVED)
   incommingRequest.deserialize(decipheredCommand)
 
-  incommingRequest.dumpPacket()
+  log('debug', JSON.stringify(incommingRequest.toJSON()), {
+    service: 'mcoserver:LobbyServer',
+  })
 
   // Create the packet content
   const packetContent = Buffer.alloc(375)
@@ -119,7 +121,9 @@ async function sendCommand(
   const packetResult = new NPSMessage(EMessageDirection.SENT)
   packetResult.msgNo = 0x2_29
   packetResult.setContent(packetContent)
-  packetResult.dumpPacket()
+  log('debug', JSON.stringify(packetResult.toJSON()), {
+    service: 'mcoserver:LobbyServer',
+  })
 
   const cmdEncrypted = encryptCmd(s, packetResult.getContentAsBuffer())
 
@@ -144,7 +148,9 @@ export class LobbyServer {
     const packetResult = new NPSMessage(EMessageDirection.SENT)
     packetResult.msgNo = 0x1_27
     packetResult.setContent(packetContent)
-    packetResult.dumpPacket()
+    log('debug', JSON.stringify(packetResult.toJSON()), {
+      service: 'mcoserver:LobbyServer',
+    })
     return packetResult
   }
 
@@ -274,7 +280,7 @@ export class LobbyServer {
     // Return a _NPS_UserInfo structure
     const userInfo = new NPSUserInfo(EMessageDirection.RECEIVED)
     userInfo.deserialize(rawData)
-    userInfo.dumpInfo()
+    userInfo.toJSON()
 
     const personaManager = PersonaServer.getInstance()
 
@@ -345,12 +351,14 @@ export class LobbyServer {
     const packetResult = new NPSMessage(EMessageDirection.SENT)
     packetResult.msgNo = 0x1_20
     packetResult.setContent(packetContent)
-    packetResult.dumpPacket()
+    log('debug', JSON.stringify(packetResult.toJSON()), {
+      service: 'mcoserver:LobbyServer',
+    })
 
     return packetResult
   }
 
-  async sendQueueReleasePacket(connection: TCPConnection):  Promise<void> {
+  async sendQueueReleasePacket(connection: TCPConnection): Promise<void> {
     if (connection.sock.localPort === 7003 && connection.inQueue) {
       /**
        * Debug seems hard-coded to use the connection queue

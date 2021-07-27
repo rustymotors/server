@@ -84,7 +84,9 @@ export class PersonaServer {
       { service: this.serviceName },
     )
 
-    requestPacket.dumpPacket()
+    log('debug', JSON.stringify(requestPacket.toJSON()), {
+      service: this.serviceName,
+    })
 
     // Create the packet content
     const packetContent = Buffer.alloc(251)
@@ -104,7 +106,9 @@ export class PersonaServer {
       { service: this.serviceName },
     )
 
-    responsePacket.dumpPacket()
+    log('debug', JSON.stringify(responsePacket.toJSON()), {
+      service: this.serviceName,
+    })
 
     log(
       'debug',
@@ -127,7 +131,9 @@ export class PersonaServer {
       { service: this.serviceName },
     )
 
-    requestPacket.dumpPacket()
+    log('debug', JSON.stringify(requestPacket.toJSON()), {
+      service: this.serviceName,
+    })
 
     const rPacket = new NPSMessage(EMessageDirection.SENT)
     rPacket.msgNo = 0x6_01
@@ -140,7 +146,9 @@ export class PersonaServer {
       { service: this.serviceName },
     )
 
-    rPacket.dumpPacket()
+    log('debug', JSON.stringify(rPacket.toJSON()), {
+      service: this.serviceName,
+    })
 
     return rPacket
   }
@@ -163,7 +171,9 @@ export class PersonaServer {
       { service: this.serviceName },
     )
 
-    requestPacket.dumpPacket()
+    log('debug', JSON.stringify(requestPacket.toJSON()), {
+      service: this.serviceName,
+    })
 
     // Create the packet content
     const packetContent = Buffer.alloc(257)
@@ -181,7 +191,9 @@ export class PersonaServer {
       { service: this.serviceName },
     )
 
-    responsePacket.dumpPacket()
+    log('debug', JSON.stringify(responsePacket.toJSON()), {
+      service: this.serviceName,
+    })
 
     log(
       'debug',
@@ -211,7 +223,9 @@ export class PersonaServer {
       { service: this.serviceName },
     )
 
-    requestPacket.dumpPacket()
+    log('debug', JSON.stringify(requestPacket.toJSON()), {
+      service: this.serviceName,
+    })
 
     const customerId = data.readInt32BE(12)
     const plateName = data.slice(17).toString()
@@ -235,7 +249,9 @@ export class PersonaServer {
       })}`,
       { service: this.serviceName },
     )
-    responsePacket.dumpPacket()
+    log('debug', JSON.stringify(responsePacket.toJSON()), {
+      service: this.serviceName,
+    })
 
     log(
       'debug',
@@ -265,7 +281,9 @@ export class PersonaServer {
       })}`,
       { service: this.serviceName },
     )
-    requestPacket.dumpPacket()
+    log('debug', JSON.stringify(requestPacket.toJSON()), {
+      service: this.serviceName,
+    })
 
     const customerId = data.readInt32BE(12)
     const requestedPersonaName = data
@@ -299,7 +317,9 @@ export class PersonaServer {
       })}`,
       { service: this.serviceName },
     )
-    responsePacket.dumpPacket()
+    log('debug', JSON.stringify(responsePacket.toJSON()), {
+      service: this.serviceName,
+    })
 
     log(
       'debug',
@@ -410,7 +430,9 @@ export class PersonaServer {
       })}`,
       { service: this.serviceName },
     )
-    requestPacket.dumpPacket()
+    log('debug', JSON.stringify(requestPacket.toJSON()), {
+      service: this.serviceName,
+    })
 
     const customerId = Buffer.alloc(4)
     data.copy(customerId, 0, 12)
@@ -446,7 +468,9 @@ export class PersonaServer {
           { service: this.serviceName },
         )
 
-        responsePacket.dumpPacket()
+        log('debug', JSON.stringify(responsePacket.toJSON()), {
+          service: this.serviceName,
+        })
       } catch (error) {
         if (error instanceof Error) {
           throw new TypeError(`Error serializing personaMapsMsg: ${error}`)

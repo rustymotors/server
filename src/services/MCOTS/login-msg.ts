@@ -6,10 +6,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from '@drazisil/mco-logger'
-
-const { log } = Logger.getInstance()
-
 /**
  * @module LoginMsg
  */
@@ -98,27 +94,5 @@ export class LoginMessage {
     this.personaName = buffer.slice(22, 34).toString()
 
     this.version = buffer.slice(34).toString()
-  }
-
-  /**
-   * DumpPacket
-   * @return {void}
-   */
-  dumpPacket(): void {
-    log(
-      'debug',
-      `LoginMsg',
-      ${JSON.stringify({
-        msgNo: this.msgNo.toString(),
-        customerId: this.customerId.toString(),
-        personaId: this.personaId.toString(),
-        lotOwnerId: this.lotOwnerId,
-        brandedPartId: this.brandedPartId,
-        skinId: this.skinId,
-        personaName: this.personaName,
-        version: this.version,
-      })}`,
-      { service: 'mcoserver:LoginMsg' },
-    )
   }
 }

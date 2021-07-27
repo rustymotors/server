@@ -31,7 +31,7 @@ export class AdminServer {
   serviceName: string
   httpsServer: Server
   ROUTES: IRouteEntry[] = [
-    {uri: '/admin/connections', method: 'GET', handler: this._getConnections}
+    { uri: '/admin/connections', method: 'GET', handler: this._getConnections },
   ]
 
   static getInstance(mcServer: MCServer): AdminServer {
@@ -63,8 +63,11 @@ export class AdminServer {
     this.httpsServer.on('connection', this._socketEventHandler)
   }
 
-  _fetchRouteHandler(request: IncomingMessage, response: ServerResponse) {
-    const {url, method} = request
+  _fetchRouteHandler(
+    request: IncomingMessage,
+    response: ServerResponse,
+  ): string {
+    const { url, method } = request
     const foundRoute = this.ROUTES.find((route: IRouteEntry) => {
       return route.uri === url && route.method === method
     })
@@ -74,7 +77,6 @@ export class AdminServer {
     response.statusCode = 404
     return `404: Not found`
   }
-
 
   /**
    *
@@ -135,8 +137,6 @@ export class AdminServer {
     switch (request.url) {
       case '/admin/connections':
         return response.end(this._fetchRouteHandler(request, response))
-        // response.setHeader('Content-Type', 'text/plain')
-        // return response.end(this._getConnections(request, response))
 
       case '/admin/connections/resetAllQueueState':
         response.setHeader('Content-Type', 'text/plain')
@@ -169,8 +169,6 @@ export class AdminServer {
    * @return {Promise<void>}
    */
   start(): Server {
-
-
     return this.httpsServer.listen({ port: 88, host: '0.0.0.0' }, () => {
       log('debug', 'port 88 listening', {
         service: 'mcoserver:AdminServer',

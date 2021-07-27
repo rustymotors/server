@@ -12,7 +12,7 @@
  * @property {string} serviceConnections.databaseURL
  */
 
- module.exports = {
+module.exports = {
   certificate: {
     privateKeyFilename: 'data/private_key.pem',
     publicKeyFilename: 'data/pub.key',

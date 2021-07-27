@@ -191,7 +191,9 @@ export class LoginServer {
       })}`,
       { service: this.serviceName },
     )
-    userStatus.dumpPacket()
+    log('debug', JSON.stringify(userStatus.toJSON()), {
+      service: this.serviceName,
+    })
 
     // Load the customer record by contextId
     // TODO: This needs to be from a database, right now is it static

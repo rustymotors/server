@@ -5,31 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from '@drazisil/mco-logger'
 import { EMessageDirection } from './message-node'
 
-const { log } = Logger.getInstance()
-
-/**
- * Packet container for NPS messages
- * @module NPSMsg
- */
-
-/**
- *
- * @global
- * @typedef {Object} INPSMsgJSON
- * @property {number} msgNo
- * @property {number | null} opCode
- * @property {number} msgLength
- * @property {number} msgVersion
- * @property {string} content
- * @property {string} contextId
- * @property {module:MessageNode.MESSAGE_DIRECTION} direction
- * @property {string | null } sessionkey
- * @property {string} rawBuffer
- */
 export interface INPSMessageJSON {
+  packetName: string
   msgNo: number
   opCode: number | undefined
   msgLength: number
@@ -64,11 +43,16 @@ export class NPSMessage {
   msgLength: number
   direction: EMessageDirection
   serviceName: string
+  packetName: string
   /**
    *
    * @param {module:MessageNode.MESSAGE_DIRECTION} direction - the direction of the message flow
    */
-  constructor(direction: EMessageDirection) {
+  constructor(direction: EMessageDirection, packetName?: string) {
+    this.packetName = 'NPSMessage'
+    if (packetName) {
+      this.packetName = this.packetName.concat(':', packetName)
+    }
     this.msgNo = 0
     this.msgVersion = 0
     this.reserved = 0
@@ -149,50 +133,11 @@ export class NPSMessage {
 
   /**
    *
-   * @param {string} messageType
-   * @return {void}
-   */
-  dumpPacketHeader(messageType: string): void {
-    log(
-      'info',
-      `NPSMsg/${messageType},
-      ${JSON.stringify({
-        direction: this.direction,
-        msgNo: this.msgNo.toString(16),
-        msgVersion: this.msgVersion,
-        msgLength: this.msgLength,
-      })}`,
-      { service: this.serviceName },
-    )
-  }
-
-  /**
-   * DumpPacket
-   * @return {void}
-   * @memberof NPSMsg
-   */
-  dumpPacket(): void {
-    log(
-      'debug',
-      `NPSMsg/NPSMsg,
-      ${JSON.stringify({
-        direction: this.direction,
-        msgNo: this.msgNo.toString(16),
-        msgVersion: this.msgVersion,
-        msgLength: this.msgLength,
-        content: this.content.toString('hex'),
-        serialized: this.serialize().toString('hex'),
-      })}`,
-      { service: this.serviceName },
-    )
-  }
-
-  /**
-   *
    * @return {INPSMsgJSON}
    */
   toJSON(): INPSMessageJSON {
     return {
+      packetName: this.packetName,
       msgNo: this.msgNo,
       contextId: '',
       msgLength: this.msgLength,

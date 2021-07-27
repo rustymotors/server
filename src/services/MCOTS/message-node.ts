@@ -5,9 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from '@drazisil/mco-logger'
-
-const { log } = Logger.getInstance()
+import { MCOTServer } from '.'
 
 /**
  * Packet structure for communications with the game database
@@ -170,27 +168,25 @@ export class MessageNode {
    *
    * @return {void}
    */
-  dumpPacket(): void {
+  toJSON(): Record<string, unknown> {
     let packetContentsArray = this.serialize().toString('hex').match(/../g)
     if (packetContentsArray === null) {
       packetContentsArray = []
     }
 
-    log(
-      'debug',
-      `Message ${JSON.stringify({
-        dataLength: this.dataLength,
-        isMCOTS: this.isMCOTS(),
-        msgNo: this.msgNo,
-        direction: this.direction,
-        seq: this.seq,
-        flags: this.flags,
-        toFrom: this.toFrom,
-        appId: this.appId,
-        packetContents: packetContentsArray.join('') || '',
-      })}`,
-      { service: 'mcoserver:MessageNode' },
-    )
+    return {
+      dataLength: this.dataLength,
+      isMCOTS: this.isMCOTS(),
+      msgNo: `${this.msgNo} / ${MCOTServer.getInstance()._MSG_STRING(
+        this.msgNo,
+      )}`,
+      direction: this.direction,
+      seq: this.seq,
+      flags: this.flags,
+      toFrom: this.toFrom,
+      appId: this.appId,
+      packetContents: packetContentsArray.join('') || '',
+    }
   }
 
   /**

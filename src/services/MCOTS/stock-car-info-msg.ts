@@ -5,10 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from '@drazisil/mco-logger'
+import { EMessageDirection, MessageNode } from './message-node'
 import { StockCar } from './stock-car'
-
-const { log } = Logger.getInstance()
 
 /**
  * Object for providing information on stock cars
@@ -34,7 +32,7 @@ const { log } = Logger.getInstance()
  * @property {number} moreToCome
  * @property {StockCar[]} StockCarList
  */
-export class StockCarInfoMessage {
+export class StockCarInfoMessage extends MessageNode {
   msgNo: number
   starterCash: number
   dealerId: number
@@ -52,6 +50,7 @@ export class StockCarInfoMessage {
    * @memberof StockCarInfoMsg
    */
   constructor(starterCash: number, dealerId: number, brand: number) {
+    super(EMessageDirection.SENT)
     this.msgNo = 141
     this.starterCash = starterCash
     this.dealerId = dealerId
@@ -96,25 +95,5 @@ export class StockCarInfoMessage {
     }
 
     return packet
-  }
-
-  /**
-   * DumpPacket
-   * @return {void}
-   */
-  dumpPacket(): void {
-    log(
-      'debug',
-      `${JSON.stringify({
-        msgNo: this.msgNo,
-        starterCash: this.starterCash,
-        dealerId: this.dealerId,
-        brand: this.brand,
-        noCars: this.noCars,
-        moreToCome: this.moreToCome,
-        stockCarList: this.StockCarList.toString(),
-      })}`,
-      { service: this.serviceName },
-    )
   }
 }

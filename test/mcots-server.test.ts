@@ -8,7 +8,7 @@
 import { describe, expect, test } from '@jest/globals'
 import { MCOTServer } from '../src/services/MCOTS/index'
 
-const mcotServer = new MCOTServer()
+const mcotServer = MCOTServer.getInstance()
 
 describe('MCOTS Server', () => {
   test('msg_string()', () => {

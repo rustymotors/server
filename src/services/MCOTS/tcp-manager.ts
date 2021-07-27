@@ -19,12 +19,9 @@ import { IRawPacket } from '../../types'
 
 const { log } = Logger.getInstance()
 
-/**
- * Manages TCP connection packet processing
- * @module TCPManager
- */
+const serviceName = 'mcoserver:TCPManager'
 
-const mcotServer = new MCOTServer()
+const mcotServer = MCOTServer.getInstance()
 const databaseManager = DatabaseManager.getInstance()
 
 export type ConnectionWithPacket = {
@@ -156,7 +153,9 @@ async function getStockCarInfo(
 ): Promise<ConnectionWithPackets> {
   const getStockCarInfoMessage = new GenericRequestMessage()
   getStockCarInfoMessage.deserialize(packet.data)
-  getStockCarInfoMessage.dumpPacket()
+  log('debug', JSON.stringify(getStockCarInfoMessage.toJSON()), {
+    service: serviceName,
+  })
 
   const stockCarInfoMessage = new StockCarInfoMessage(200, 0, 105)
   stockCarInfoMessage.starterCash = 200
@@ -167,7 +166,9 @@ async function getStockCarInfo(
   stockCarInfoMessage.addStockCar(new StockCar(104, 15, 1)) // Fairlane - Deal of the day
   stockCarInfoMessage.addStockCar(new StockCar(402, 20, 0)) // Century
 
-  stockCarInfoMessage.dumpPacket()
+  log('debug', JSON.stringify(stockCarInfoMessage.toJSON()), {
+    service: serviceName,
+  })
 
   const responsePacket = new MessageNode(EMessageDirection.SENT)
 
@@ -175,7 +176,9 @@ async function getStockCarInfo(
 
   responsePacket.updateBuffer(stockCarInfoMessage.serialize())
 
-  responsePacket.dumpPacket()
+  log('debug', JSON.stringify(responsePacket.toJSON()), {
+    service: serviceName,
+  })
 
   return { connection, packetList: [responsePacket] }
 }
@@ -230,7 +233,9 @@ async function clientConnect(
   const responsePacket = new MessageNode(EMessageDirection.SENT)
   responsePacket.deserialize(packet.serialize())
   responsePacket.updateBuffer(genericReplyMessage.serialize())
-  responsePacket.dumpPacket()
+  log('debug', JSON.stringify(responsePacket.toJSON()), {
+    service: serviceName,
+  })
 
   return { connection, packetList: [responsePacket] }
 }
@@ -362,7 +367,9 @@ async function processInput(
         service: 'mcoserver:MCOTSServer',
       })
       for (const lobbyPacket of result.packetList) {
-        lobbyPacket.dumpPacket()
+        log('debug', JSON.stringify(lobbyPacket.toJSON()), {
+          service: serviceName,
+        })
       }
       log('debug', 'end of _getLobbies response', {
         service: 'mcoserver:MCOTSServer',
@@ -517,7 +524,9 @@ export async function defaultHandler(
     })}`,
     { service: 'mcoserver:MCOTSServer' },
   )
-  messageNode.dumpPacket()
+  log('debug', JSON.stringify(messageNode.toJSON()), {
+    service: serviceName,
+  })
 
   return messageReceived(messageNode, connection)
 }
