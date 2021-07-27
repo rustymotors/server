@@ -349,4 +349,17 @@ export class LobbyServer {
 
     return packetResult
   }
+
+  async sendQueueReleasePacket(connection: TCPConnection):  Promise<void> {
+    if (connection.sock.localPort === 7003 && connection.inQueue) {
+      /**
+       * Debug seems hard-coded to use the connection queue
+       * Craft a packet that tells the client it's allowed to login
+       */
+
+      connection.sock.write(Buffer.from([0x02, 0x30, 0x00, 0x00]))
+      connection.inQueue = false
+    }
+    return
+  }
 }

@@ -8,30 +8,31 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { IncomingMessage, ServerResponse } from 'http'
+
 import { createServer, Server } from 'https'
 import { Socket } from 'net'
-import config, { IAppConfiguration } from '../../../config/index'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const config = require('./server.config.js')
 import { _sslOptions } from '../@drazisil/ssl-options'
 import { MCServer } from '../MCServer/index'
 
 const { log } = Logger.getInstance()
-/**
- * SSL web server for managing the state of the system
- * @module AdminServer
- */
 
-/**
- *
- * @property {config} config
- * @property {MCServer} mcServer
- * @property {Server} httpServer
- */
+interface IRouteEntry {
+  uri: string
+  method: string
+  handler: (req: IncomingMessage, res: ServerResponse) => string
+}
+
 export class AdminServer {
   static _instance: AdminServer
-  config: IAppConfiguration
+  config: typeof config
   mcServer: MCServer
   serviceName: string
-  httpsServer: Server | undefined
+  httpsServer: Server
+  ROUTES: IRouteEntry[] = [
+    {uri: '/admin/connections', method: 'GET', handler: this._getConnections}
+  ]
 
   static getInstance(mcServer: MCServer): AdminServer {
     if (!AdminServer._instance) {
@@ -44,13 +45,42 @@ export class AdminServer {
     this.config = config
     this.mcServer = mcServer
     this.serviceName = 'mcoserver:AdminServer;'
+
+    try {
+      const sslOptions = _sslOptions(config.certificate, this.serviceName)
+
+      /** @type {import("https").Server} */
+      this.httpsServer = createServer(
+        sslOptions,
+        (request: IncomingMessage, response: ServerResponse) => {
+          this._httpsHandler(request, response)
+        },
+      )
+    } catch (error) {
+      throw new Error(`${error.message}, ${error.stack}`)
+    }
+
+    this.httpsServer.on('connection', this._socketEventHandler)
   }
+
+  _fetchRouteHandler(request: IncomingMessage, response: ServerResponse) {
+    const {url, method} = request
+    const foundRoute = this.ROUTES.find((route: IRouteEntry) => {
+      return route.uri === url && route.method === method
+    })
+    if (foundRoute) {
+      return foundRoute.handler.call(this, request, response)
+    }
+    response.statusCode = 404
+    return `404: Not found`
+  }
+
 
   /**
    *
    * @return {string}
    */
-  _handleGetConnections(): string {
+  _getConnections(req: IncomingMessage, res: ServerResponse): string {
     const connections = this.mcServer.mgr.dumpConnections()
     let responseText = ''
     for (const [index, connection] of connections.entries()) {
@@ -62,7 +92,7 @@ export class AdminServer {
         `
       responseText += displayConnection
     }
-
+    res.setHeader('Content-Type', 'text/plain')
     return responseText
   }
 
@@ -87,11 +117,6 @@ export class AdminServer {
     return responseText
   }
 
-  /**
-   * @return {void}
-   * @param {import("http").IncomingMessage} request
-   * @param {import("http").ServerResponse} response
-   */
   _httpsHandler(request: IncomingMessage, response: ServerResponse): void {
     log(
       'info',
@@ -109,8 +134,9 @@ export class AdminServer {
     )
     switch (request.url) {
       case '/admin/connections':
-        response.setHeader('Content-Type', 'text/plain')
-        return response.end(this._handleGetConnections())
+        return response.end(this._fetchRouteHandler(request, response))
+        // response.setHeader('Content-Type', 'text/plain')
+        // return response.end(this._getConnections(request, response))
 
       case '/admin/connections/resetAllQueueState':
         response.setHeader('Content-Type', 'text/plain')
@@ -143,25 +169,7 @@ export class AdminServer {
    * @return {Promise<void>}
    */
   start(): Server {
-    const config = this.config
-    try {
-      const sslOptions = _sslOptions(config.certificate, this.serviceName)
 
-      /** @type {import("https").Server} */
-      this.httpsServer = createServer(
-        sslOptions,
-        (
-          /** @type {import("http").IncomingMessage} */ request: import('http').IncomingMessage,
-          /** @type {import("http").ServerResponse} */ response: import('http').ServerResponse,
-        ) => {
-          this._httpsHandler(request, response)
-        },
-      )
-    } catch (error) {
-      throw new Error(`${error.message}, ${error.stack}`)
-    }
-
-    this.httpsServer.on('connection', this._socketEventHandler)
 
     return this.httpsServer.listen({ port: 88, host: '0.0.0.0' }, () => {
       log('debug', 'port 88 listening', {
