@@ -368,6 +368,5 @@ export class LobbyServer {
       connection.sock.write(Buffer.from([0x02, 0x30, 0x00, 0x00]))
       connection.inQueue = false
     }
-    return
   }
 }
