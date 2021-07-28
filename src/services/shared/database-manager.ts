@@ -137,7 +137,7 @@ export class DatabaseManager {
         )
         stmt.get(customerId, (error, row) => {
           if (error) {
-            reject(new Error(`Unable to fetch session key: ${error}`))
+            return reject(new Error(`Unable to fetch session key: ${error}`))
           }
 
           stmt.finalize()
@@ -145,7 +145,7 @@ export class DatabaseManager {
           resolve(row)
         })
       } catch (error) {
-        reject(new Error(`Unable to fetch session key: ${error}`))
+        return reject(new Error(`Unable to fetch session key: ${error}`))
       }
     })
   }
@@ -160,7 +160,7 @@ export class DatabaseManager {
         )
         stmt.get(connectionId, (error, row) => {
           if (error) {
-            reject(new Error(`Unable to fetch session key: ${error}`))
+            return reject(new Error(`Unable to fetch session key: ${error}`))
           }
 
           stmt.finalize()
