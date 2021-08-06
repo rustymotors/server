@@ -16,4 +16,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: githubocto/repo-visualizer
+      - name: Repo Visualizer
+        uses: githubocto/repo-visualizer@0.3.0
+
