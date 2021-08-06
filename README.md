@@ -37,3 +37,5 @@ Mar 6, 2016
 - Respond correctly to NPS and MCOTS packets
 
 ....
+
+![Visualization of the codebase](./diagram.svg)
