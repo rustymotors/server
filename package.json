@@ -57,7 +57,7 @@
     "prettier-eslint": "13.0.0",
     "sinon": "11.1.2",
     "source-map-support": "0.5.19",
-    "supertest": "6.1.4",
+    "supertest": "6.1.5",
     "testdouble": "3.16.1",
     "ts-jest": "27.0.4",
     "ts-node": "10.2.0",
