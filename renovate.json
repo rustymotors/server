@@ -1,4 +1,9 @@
 {
   "extends": ["config:base"],
-  "rebaseWhen": "behind-base-branch"
+  "rebaseWhen": "behind-base-branch",
+  "postUpgradeTasks": {
+    "commands": ["npm audit"],
+    "fileFilters": [""],
+    "executionMode": "update"
+  }
 }
