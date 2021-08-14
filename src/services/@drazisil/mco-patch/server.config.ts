@@ -7,16 +7,13 @@
  * @property {string} certificate.certFilename
  * @property {Object} serverSettings
  * @property {string} serverSettings.ipServer
- * @property {number} [serverSettings.port]
  * @property {Object} serviceConnections
  * @property {string} serviceConnections.databaseURL
  */
 
-module.exports = {
+export default {
   certificate: {
-    privateKeyFilename: 'data/private_key.pem',
-    publicKeyFilename: 'data/pub.key',
-    certFilename: 'data/mcouniverse.crt',
+    // The patch server does not use ssl
   },
   serverSettings: {
     host: 'localhost',

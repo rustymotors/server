@@ -7,13 +7,15 @@
  * @property {string} certificate.certFilename
  * @property {Object} serverSettings
  * @property {string} serverSettings.ipServer
+ * @property {number} [serverSettings.port]
  * @property {Object} serviceConnections
  * @property {string} serviceConnections.databaseURL
  */
-
-module.exports = {
+const config = {
   certificate: {
-    // The patch server does not use ssl
+    privateKeyFilename: 'data/private_key.pem',
+    publicKeyFilename: 'data/pub.key',
+    certFilename: 'data/mcouniverse.crt',
   },
   serverSettings: {
     host: 'localhost',
@@ -22,3 +24,4 @@ module.exports = {
     databaseURL: 'db.mco.db',
   },
 }
+export default config

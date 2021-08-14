@@ -8,8 +8,7 @@
 
 import https from 'https'
 import { Logger } from '@drazisil/mco-logger'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const config = require('./server.config.js')
+import config from './server.config'
 import { IncomingMessage, ServerResponse } from 'http'
 import { Socket } from 'net'
 import { ISslOptions } from '../../../types'
@@ -168,7 +167,7 @@ export class AuthLogin {
       })
     } catch (error) {
       throw new Error(
-        `Error loading ${this.config.certificateSettings.privateKeyFilename}: (${error}), server must quit!`,
+        `Error loading ${this.config.certificate.privateKeyFilename}: (${error}), server must quit!`,
       )
     }
 

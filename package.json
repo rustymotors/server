@@ -4,7 +4,7 @@
   "description": "a server",
   "main": "index.js",
   "engines": {
-    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+    "node": "^14.13.1 || >=16.0.0"
   },
   "files": [
     "README.md",
@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@drazisil/mco-logger": "4.1.10",
-    "sqlite3": "5.0.2"
+    "sqlite3": "4.2.0"
   },
   "devDependencies": {
     "@babel/cli": "7.14.8",

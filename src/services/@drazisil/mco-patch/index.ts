@@ -1,6 +1,6 @@
 import http from 'http'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const config = require('./server.config.js')
+import config from './server.config'
 import { Logger } from '@drazisil/mco-logger'
 import { EServerConnectionName } from '../mco-types'
 import { RoutingMesh } from '../mco-common'

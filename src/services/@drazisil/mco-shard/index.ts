@@ -5,18 +5,16 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-// This section of the server can not be encrypted. This is an intentional choice for compatibility
-// deepcode ignore HttpToHttps: This is intentional. See above note.
 import { Logger } from '@drazisil/mco-logger'
 import { readFileSync } from 'fs'
 import http from 'http'
 import { RoutingMesh } from '../mco-common'
 import { EServerConnectionName } from '../mco-types'
+import config from './server.config'
 import { ShardEntry } from './shard-entry'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const config = require('./server.config.js')
 
+// This section of the server can not be encrypted. This is an intentional choice for compatibility
+// deepcode ignore HttpToHttps: This is intentional. See above note.
 const { log } = Logger.getInstance()
 
 /**
@@ -121,23 +119,23 @@ export class ShardServer {
     return activeShardList.join('\n')
   }
 
-  /**
-   *
-   * @return {string}
-   * @memberof! WebServer
-   */
-  _handleGetCert(): string {
-    return readFileSync(this._config.certificate.certFilename).toString()
-  }
+  // /**
+  //  *
+  //  * @return {string}
+  //  * @memberof! WebServer
+  //  */
+  // _handleGetCert(): string {
+  //   return readFileSync(this._config.certificate.certFilename).toString()
+  // }
 
-  /**
-   *
-   * @return {string}
-   * @memberof! WebServer
-   */
-  _handleGetKey(): string {
-    return readFileSync(this._config.certificate.publicKeyFilename).toString()
-  }
+  // /**
+  //  *
+  //  * @return {string}
+  //  * @memberof! WebServer
+  //  */
+  // _handleGetKey(): string {
+  //   return readFileSync(this._config.certificate.publicKeyFilename).toString()
+  // }
 
   /**
    *
@@ -145,7 +143,7 @@ export class ShardServer {
    * @memberof! WebServer
    */
   _handleGetRegistry(): string {
-    const { ipServer } = this._config.serverSettings
+    const { host: ipServer } = this._config.serverSettings
     return `Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\EACom\\AuthAuth]
@@ -185,20 +183,20 @@ export class ShardServer {
     request: http.IncomingMessage,
     response: http.ServerResponse,
   ): void {
-    if (request.url === '/cert') {
-      response.setHeader('Content-disposition', 'attachment; filename=cert.pem')
-      return response.end(this._handleGetCert())
-    }
+    // if (request.url === '/cert') {
+    //   response.setHeader('Content-disposition', 'attachment; filename=cert.pem')
+    //   return response.end(this._handleGetCert())
+    // }
 
-    if (request.url === '/key') {
-      response.setHeader('Content-disposition', 'attachment; filename=pub.key')
-      return response.end(this._handleGetKey())
-    }
+    // if (request.url === '/key') {
+    //   response.setHeader('Content-disposition', 'attachment; filename=pub.key')
+    //   return response.end(this._handleGetKey())
+    // }
 
-    if (request.url === '/registry') {
-      response.setHeader('Content-disposition', 'attachment; filename=mco.reg')
-      return response.end(this._handleGetRegistry())
-    }
+    // if (request.url === '/registry') {
+    //   response.setHeader('Content-disposition', 'attachment; filename=mco.reg')
+    //   return response.end(this._handleGetRegistry())
+    // }
 
     if (request.url === '/') {
       response.statusCode = 404
