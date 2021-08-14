@@ -9,11 +9,6 @@ import { expect, test } from '@jest/globals'
 import { AuthLogin } from './index'
 
 test('WebServer', () => {
-  try {
-    // eslint-disable-next-line no-unused-vars
-    const _ = AuthLogin.getInstance()
-    expect(true).toBeTruthy()
-  } catch (error) {
-    expect(error).toBeFalsy()
-  }
+  const _ = AuthLogin.getInstance()
+  expect(_._handleGetTicket()).toEqual(expect.stringMatching(/TRUE/))
 })
