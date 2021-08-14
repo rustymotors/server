@@ -21,7 +21,7 @@ export class RoutingMesh {
     service: EServerConnectionName,
     host: string,
     port: number,
-  ) {
+  ): void {
     const payload: IServerConnection = {
       action: EServerConnectionAction.REGISTER_SERVICE,
       service,
