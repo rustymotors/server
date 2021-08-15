@@ -16,7 +16,7 @@ export default {
     // The patch server does not use ssl
   },
   serverSettings: {
-    host: 'localhost',
+    host: '0.0.0.0',
   },
   serviceConnections: {
     databaseURL: 'db.mco.db',

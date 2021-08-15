@@ -38,7 +38,7 @@ export const certificate: IAppConfiguration['certificate'] = {
   certFilename: 'data/mcouniverse.crt',
 }
 export const serverSettings: IAppConfiguration['serverSettings'] = {
-  ipServer: 'localhost',
+  ipServer: '0.0.0.0',
 }
 export const serviceConnections: IAppConfiguration['serviceConnections'] = {
   databaseURL: 'db.mco.db',

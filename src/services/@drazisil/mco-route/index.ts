@@ -95,7 +95,7 @@ export class RoutingServer {
 
   async start(): Promise<net.Server> {
     const port = 4242
-    this._server.listen(port, 'localhost', () => {
+    this._server.listen(port, '0.0.0.0', () => {
       log('info', `RoutingServer listening on port ${port}`, {
         service: this._serviceName,
       })

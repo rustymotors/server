@@ -57,7 +57,7 @@ export class HTTPProxyServer {
   }
 
   start(): http.Server {
-    const host = 'localhost'
+    const host = '0.0.0.0'
     const port = 80
     return this._server.listen({ port, host }, () => {
       log('debug', `port ${port} listening`, { service: this._serviceName })
