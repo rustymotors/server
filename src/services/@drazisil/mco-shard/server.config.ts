@@ -11,10 +11,12 @@
  */
 const config = {
   certificate: {
-    // The patch server does not use ssl
+    privateKeyFilename: 'data/private_key.pem',
+    publicKeyFilename: 'data/pub.key',
+    certFilename: 'data/mcouniverse.crt',
   },
   serverSettings: {
-    host: 'localhost',
+    host: '0.0.0.0',
   },
   serviceConnections: {
     databaseURL: 'db.mco.db',

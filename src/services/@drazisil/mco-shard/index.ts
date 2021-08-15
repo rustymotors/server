@@ -71,7 +71,8 @@ export class ShardServer {
    * @memberof! PatchServer
    */
   _generateShardList(): string {
-    const { host } = this._config.serverSettings
+    // const { host } = this._config.serverSettings
+    const host = '10.0.0.20'
     const shardClockTower = new ShardEntry(
       'The Clocktower',
       'The Clocktower',
@@ -119,23 +120,23 @@ export class ShardServer {
     return activeShardList.join('\n')
   }
 
-  // /**
-  //  *
-  //  * @return {string}
-  //  * @memberof! WebServer
-  //  */
-  // _handleGetCert(): string {
-  //   return readFileSync(this._config.certificate.certFilename).toString()
-  // }
+  /**
+   *
+   * @return {string}
+   * @memberof! WebServer
+   */
+  _handleGetCert(): string {
+    return readFileSync(this._config.certificate.certFilename).toString()
+  }
 
-  // /**
-  //  *
-  //  * @return {string}
-  //  * @memberof! WebServer
-  //  */
-  // _handleGetKey(): string {
-  //   return readFileSync(this._config.certificate.publicKeyFilename).toString()
-  // }
+  /**
+   *
+   * @return {string}
+   * @memberof! WebServer
+   */
+  _handleGetKey(): string {
+    return readFileSync(this._config.certificate.publicKeyFilename).toString()
+  }
 
   /**
    *
@@ -183,20 +184,20 @@ export class ShardServer {
     request: http.IncomingMessage,
     response: http.ServerResponse,
   ): void {
-    // if (request.url === '/cert') {
-    //   response.setHeader('Content-disposition', 'attachment; filename=cert.pem')
-    //   return response.end(this._handleGetCert())
-    // }
+    if (request.url === '/cert') {
+      response.setHeader('Content-disposition', 'attachment; filename=cert.pem')
+      return response.end(this._handleGetCert())
+    }
 
-    // if (request.url === '/key') {
-    //   response.setHeader('Content-disposition', 'attachment; filename=pub.key')
-    //   return response.end(this._handleGetKey())
-    // }
+    if (request.url === '/key') {
+      response.setHeader('Content-disposition', 'attachment; filename=pub.key')
+      return response.end(this._handleGetKey())
+    }
 
-    // if (request.url === '/registry') {
-    //   response.setHeader('Content-disposition', 'attachment; filename=mco.reg')
-    //   return response.end(this._handleGetRegistry())
-    // }
+    if (request.url === '/registry') {
+      response.setHeader('Content-disposition', 'attachment; filename=mco.reg')
+      return response.end(this._handleGetRegistry())
+    }
 
     if (request.url === '/') {
       response.statusCode = 404
