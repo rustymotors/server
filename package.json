@@ -23,7 +23,7 @@
     "lint-test": "npm run lint && npm run test:only",
     "test:only": "jest",
     "precommit": "npm run lint-test",
-    "postinstall": "mkdir -p db"
+    "postinstall": "npm audit && mkdir -p db"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
   "license": "MPL-2.0",
