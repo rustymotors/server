@@ -13,8 +13,6 @@ import { RoutingServer } from './services/@drazisil/mco-route'
 import { ShardServer } from './services/@drazisil/mco-shard'
 import { AdminServer } from './services/AdminServer'
 import { MCServer } from './services/MCServer'
-import { PersonaServer } from './services/PersonaServer/persona-server'
-import { DatabaseManager } from './services/shared/database-manager'
 
 // What servers do we need?
 // * Routing Server
