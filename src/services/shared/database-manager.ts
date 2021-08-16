@@ -137,15 +137,15 @@ export class DatabaseManager {
         )
         stmt.get(customerId, (error, row) => {
           if (error) {
-            reject(new Error(`Unable to fetch session key: ${error}`))
+            return reject(new Error(`Unable to fetch session key: ${error}`))
           }
 
           stmt.finalize()
           /** @type {ISessionRecord} */
-          resolve(row)
+          return resolve(row)
         })
       } catch (error) {
-        reject(new Error(`Unable to fetch session key: ${error}`))
+        return reject(new Error(`Unable to fetch session key: ${error}`))
       }
     })
   }
@@ -160,15 +160,15 @@ export class DatabaseManager {
         )
         stmt.get(connectionId, (error, row) => {
           if (error) {
-            reject(new Error(`Unable to fetch session key: ${error}`))
+            return reject(new Error(`Unable to fetch session key: ${error}`))
           }
 
           stmt.finalize()
           /** @type {ISessionRecord} */
-          resolve(row)
+          return resolve(row)
         })
       } catch (error) {
-        reject(new Error(`Unable to fetch session key: ${error}`))
+        return reject(new Error(`Unable to fetch session key: ${error}`))
       }
     })
   }
@@ -196,15 +196,15 @@ export class DatabaseManager {
           },
           error => {
             if (error) {
-              reject(new Error(`Unable to update session ke 1y: ${error}`))
+              return reject(new Error(`Unable to update session ke 1y: ${error}`))
             }
 
             stmt.finalize()
-            resolve(/** @type {number} */ this.changes)
+            return resolve(/** @type {number} */ this.changes)
           },
         )
       } catch (error) {
-        reject(new Error(`Unable to update session key 2: ${error}`))
+        return reject(new Error(`Unable to update session key 2: ${error}`))
       }
     })
   }
