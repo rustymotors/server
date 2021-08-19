@@ -7,13 +7,11 @@
 
 import { expect, test, jest } from '@jest/globals'
 import { AdminServer } from '../src/services/AdminServer/index'
-import { MCServer as fakeMCServer } from '../src/services/MCServer/index'
-jest.mock('../src/services/MCServer/index')
 
 test('AdminServer', () => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const _ = AdminServer.getInstance(fakeMCServer.getInstance())
+    const _ = AdminServer.getInstance()
     expect(true).toBeTruthy()
   } catch (error) {
     expect(error).toBeFalsy()

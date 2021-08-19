@@ -15,6 +15,7 @@ import { ISslOptions } from '../mco-types/types'
 import { readFileSync } from 'fs'
 import { EServerConnectionName } from '../mco-types'
 import { RoutingMesh } from '../mco-common'
+import { AdminServer } from '../../AdminServer'
 
 const { log } = Logger.getInstance()
 
@@ -103,6 +104,13 @@ export class AuthLogin {
     if (request.url && request.url.startsWith('/AuthLogin')) {
       response.setHeader('Content-Type', 'text/plain')
       return response.end(this._handleGetTicket())
+    }
+
+    if (
+      request.url &&
+      (request.url.startsWith('/api/') || request.url.startsWith('/admin/'))
+    ) {
+      return AdminServer.getInstance()._httpsHandler(request, response).end()
     }
 
     return response.end('Unknown request.')

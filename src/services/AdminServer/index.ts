@@ -8,12 +8,7 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { IncomingMessage, ServerResponse } from 'http'
-import { createServer, Server } from 'https'
-import { Socket } from 'net'
-import config, { IAppConfiguration } from '../../../config/index'
-import { _sslOptions } from '../@drazisil/ssl-options'
 import { ConnectionManager } from '../@drazisil/mco-session/connection-mgr'
-import { MCServer } from '../MCServer/index'
 
 const { log } = Logger.getInstance()
 /**
@@ -21,35 +16,21 @@ const { log } = Logger.getInstance()
  * @module AdminServer
  */
 
-/**
- *
- * @property {config} config
- * @property {MCServer} mcServer
- * @property {Server} httpServer
- */
 export class AdminServer {
   static _instance: AdminServer
-  config: IAppConfiguration
-  serviceName: string
-  httpsServer: Server | undefined
+  private serviceName = 'mcoserver:AdminServer;'
 
-  static getInstance(mcServer: MCServer): AdminServer {
+  static getInstance(): AdminServer {
     if (!AdminServer._instance) {
-      AdminServer._instance = new AdminServer(mcServer)
+      AdminServer._instance = new AdminServer()
     }
     return AdminServer._instance
   }
 
-  private constructor(mcServer: MCServer) {
-    this.config = config
-    this.serviceName = 'mcoserver:AdminServer;'
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private constructor() {}
 
-  /**
-   *
-   * @return {string}
-   */
-  _handleGetConnections(): string {
+  _getConnections(): string {
     const connections = ConnectionManager.getInstance().dumpConnections()
     let responseText = ''
     for (const [index, connection] of connections.entries()) {
@@ -65,10 +46,6 @@ export class AdminServer {
     return responseText
   }
 
-  /**
-   *
-   * @return {string}
-   */
   _handleResetAllQueueState(): string {
     ConnectionManager.getInstance().resetAllQueueState()
     const connections = ConnectionManager.getInstance().dumpConnections()
@@ -86,16 +63,14 @@ export class AdminServer {
     return responseText
   }
 
-  /**
-   * @return {void}
-   * @param {import("http").IncomingMessage} request
-   * @param {import("http").ServerResponse} response
-   */
-  _httpsHandler(request: IncomingMessage, response: ServerResponse): void {
+  _httpsHandler(
+    request: IncomingMessage,
+    response: ServerResponse,
+  ): ServerResponse {
     log(
       'info',
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
-      { service: 'mcoserver:AdminServer' },
+      { service: this.serviceName },
     )
     log(
       'info',
@@ -107,65 +82,25 @@ export class AdminServer {
       { service: 'mcoserver:AdminServer' },
     )
     switch (request.url) {
-      case '/admin/connections':
+      case '/api/connections':
         response.setHeader('Content-Type', 'text/plain')
-        return response.end(this._handleGetConnections())
+        response.write(this._getConnections())
+        return response
 
-      case '/admin/connections/resetAllQueueState':
+      case '/api/connections/resetAllQueueState':
         response.setHeader('Content-Type', 'text/plain')
-        return response.end(this._handleResetAllQueueState())
+        response.write(this._handleResetAllQueueState())
+        return response
 
       default:
         if (request.url && request.url.startsWith('/admin')) {
-          return response.end('Jiggawatt!')
+          response.write('Jiggawatt!')
+          return response
         }
 
         response.statusCode = 404
-        response.end('Unknown request.')
-        break
+        response.write('Unknown request.')
+        return response
     }
-  }
-
-  /**
-   * @returns {void}
-   * @param {import("net").Socket} socket
-   */
-  _socketEventHandler(socket: Socket): void {
-    socket.on('error', error => {
-      throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`)
-    })
-  }
-
-  /**
-   *
-   * @param {module:config.config} config
-   * @return {Promise<void>}
-   */
-  start(): Server {
-    const config = this.config
-    try {
-      const sslOptions = _sslOptions(config.certificate, this.serviceName)
-
-      /** @type {import("https").Server} */
-      this.httpsServer = createServer(
-        sslOptions,
-        (
-          /** @type {import("http").IncomingMessage} */ request: import('http').IncomingMessage,
-          /** @type {import("http").ServerResponse} */ response: import('http').ServerResponse,
-        ) => {
-          this._httpsHandler(request, response)
-        },
-      )
-    } catch (error) {
-      throw new Error(`${error.message}, ${error.stack}`)
-    }
-
-    this.httpsServer.on('connection', this._socketEventHandler)
-
-    return this.httpsServer.listen({ port: 88, host: '0.0.0.0' }, () => {
-      log('debug', 'port 88 listening', {
-        service: 'mcoserver:AdminServer',
-      })
-    })
   }
 }

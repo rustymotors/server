@@ -11,7 +11,6 @@ import { PatchServer } from './services/@drazisil/mco-patch'
 import { HTTPProxyServer } from './services/@drazisil/mco-proxy'
 import { RoutingServer } from './services/@drazisil/mco-route'
 import { ShardServer } from './services/@drazisil/mco-shard'
-import { AdminServer } from './services/AdminServer'
 import { MCServer } from './services/MCServer'
 
 // What servers do we need?
@@ -40,11 +39,6 @@ HTTPProxyServer.getInstance().start()
 // * MCOS Monolith
 const mcServer = MCServer.getInstance()
 mcServer.startServers()
-
-// * Admin Server
-//   Admin needs connections to
-//   * MCOServer
-AdminServer.getInstance(mcServer).start()
 
 // Promise.all([server.start(), patchAndShardServer.start(), authLogin.start()])
 //   .then(() => {
