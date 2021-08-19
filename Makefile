@@ -7,7 +7,7 @@ certs:
 	@echo "certs regenerated. remember to update pub.key for all clients"
 
 test:
-	@MCO_DB_USER=testingDummy npm test
+	@npm test
 
 start:
 	@LOG_LEVEL=silly npm run start:dev

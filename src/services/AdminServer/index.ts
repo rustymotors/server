@@ -12,6 +12,7 @@ import { createServer, Server } from 'https'
 import { Socket } from 'net'
 import config, { IAppConfiguration } from '../../../config/index'
 import { _sslOptions } from '../@drazisil/ssl-options'
+import { ConnectionManager } from '../MCServer/connection-mgr'
 import { MCServer } from '../MCServer/index'
 
 const { log } = Logger.getInstance()
@@ -29,7 +30,6 @@ const { log } = Logger.getInstance()
 export class AdminServer {
   static _instance: AdminServer
   config: IAppConfiguration
-  mcServer: MCServer
   serviceName: string
   httpsServer: Server | undefined
 
@@ -42,7 +42,6 @@ export class AdminServer {
 
   private constructor(mcServer: MCServer) {
     this.config = config
-    this.mcServer = mcServer
     this.serviceName = 'mcoserver:AdminServer;'
   }
 
@@ -51,7 +50,7 @@ export class AdminServer {
    * @return {string}
    */
   _handleGetConnections(): string {
-    const connections = this.mcServer.mgr.dumpConnections()
+    const connections = ConnectionManager.getInstance().dumpConnections()
     let responseText = ''
     for (const [index, connection] of connections.entries()) {
       const displayConnection = `
@@ -71,8 +70,8 @@ export class AdminServer {
    * @return {string}
    */
   _handleResetAllQueueState(): string {
-    this.mcServer.mgr.resetAllQueueState()
-    const connections = this.mcServer.mgr.dumpConnections()
+    ConnectionManager.getInstance().resetAllQueueState()
+    const connections = ConnectionManager.getInstance().dumpConnections()
     let responseText = 'Queue state reset for all connections\n\n'
     for (const [index, connection] of connections.entries()) {
       const displayConnection = `

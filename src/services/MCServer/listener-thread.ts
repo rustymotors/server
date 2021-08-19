@@ -99,10 +99,11 @@ export class ListenerThread {
    * @param {ConnectionMgr} connectionMgr
    * @return {void}
    */
-  _listener(socket: Socket, connectionMgr: ConnectionManager): void {
+  _listener(socket: Socket): void {
     // Received a new connection
     // Turn it into a connection object
-    const connection = connectionMgr.findOrNewConnection(socket)
+    const connection =
+      ConnectionManager.getInstance().findOrNewConnection(socket)
 
     const { localPort, remoteAddress } = socket
     log('info', `Client ${remoteAddress} connected to port ${localPort}`, {
@@ -142,12 +143,9 @@ export class ListenerThread {
    * create a new TCP socket listener for that port
    *
    */
-  async startTCPListener(
-    localPort: number,
-    connectionMgr: ConnectionManager,
-  ): Promise<Server> {
+  async startTCPListener(localPort: number): Promise<Server> {
     return createServer(socket => {
-      this._listener(socket, connectionMgr)
+      this._listener(socket)
     }).listen({ port: localPort, host: '0.0.0.0' })
   }
 }

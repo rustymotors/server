@@ -7,7 +7,6 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import config, { IAppConfiguration } from '../../../config/index'
-import { ConnectionManager } from './connection-mgr'
 import { ListenerThread } from './listener-thread'
 
 const { log } = Logger.getInstance()
@@ -26,7 +25,6 @@ const { log } = Logger.getInstance()
 export class MCServer {
   static _instance: MCServer
   config: IAppConfiguration
-  mgr: ConnectionManager
   serviceName: string
 
   static getInstance(): MCServer {
@@ -38,7 +36,6 @@ export class MCServer {
 
   private constructor() {
     this.config = config
-    this.mgr = ConnectionManager.getInstance()
     this.serviceName = 'mcoserver:MCServer'
   }
 
@@ -60,7 +57,7 @@ export class MCServer {
     ]
 
     for (const port of tcpPortList) {
-      listenerThread.startTCPListener(port, this.mgr)
+      listenerThread.startTCPListener(port)
       log('debug', `port ${port} listening`, { service: this.serviceName })
     }
 

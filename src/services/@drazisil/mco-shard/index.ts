@@ -72,7 +72,7 @@ export class ShardServer {
    */
   _generateShardList(): string {
     // const { host } = this._config.serverSettings
-    const host = '10.0.0.20'
+    const host = 'localhost'
     const shardClockTower = new ShardEntry(
       'The Clocktower',
       'The Clocktower',

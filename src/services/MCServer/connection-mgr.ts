@@ -47,7 +47,11 @@ export class ConnectionManager {
   }
 
   newConnection(connectionId: string, socket: Socket): TCPConnection {
-    return new TCPConnection(connectionId, socket, ConnectionManager.getInstance())
+    return new TCPConnection(
+      connectionId,
+      socket,
+      ConnectionManager.getInstance(),
+    )
   }
 
   /**

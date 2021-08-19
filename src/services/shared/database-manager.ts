@@ -196,7 +196,9 @@ export class DatabaseManager {
           },
           error => {
             if (error) {
-              return reject(new Error(`Unable to update session ke 1y: ${error}`))
+              return reject(
+                new Error(`Unable to update session ke 1y: ${error}`),
+              )
             }
 
             stmt.finalize()
