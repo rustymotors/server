@@ -12,7 +12,7 @@ import { createServer, Server } from 'https'
 import { Socket } from 'net'
 import config, { IAppConfiguration } from '../../../config/index'
 import { _sslOptions } from '../@drazisil/ssl-options'
-import { ConnectionManager } from '../MCServer/connection-mgr'
+import { ConnectionManager } from '../@drazisil/mco-session/connection-mgr'
 import { MCServer } from '../MCServer/index'
 
 const { log } = Logger.getInstance()

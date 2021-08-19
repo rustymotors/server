@@ -7,9 +7,9 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { createServer, Server, Socket } from 'net'
-import { IRawPacket } from '../../types'
-import { ConnectionManager } from './connection-mgr'
-import { TCPConnection } from './tcpConnection'
+import { IRawPacket } from '../@drazisil/mco-types/types'
+import { ConnectionManager } from '../@drazisil/mco-session/connection-mgr'
+import { TCPConnection } from '../@drazisil/mco-session/tcpConnection'
 
 const { log } = Logger.getInstance()
 

@@ -7,7 +7,7 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { GenericReplyMessage } from '../MCServer/generic-reply-msg'
-import { TCPConnection } from '../MCServer/tcpConnection'
+import { TCPConnection } from '../@drazisil/mco-session/tcpConnection'
 import { EMessageDirection, MessageNode } from './message-node'
 import { ConnectionWithPackets } from './tcp-manager'
 

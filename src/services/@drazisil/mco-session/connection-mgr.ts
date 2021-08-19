@@ -7,12 +7,12 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { Socket } from 'net'
-import { NPS_COMMANDS } from '../../structures'
-import { IRawPacket } from '../../types'
-import { EMessageDirection, MessageNode } from '../MCOTS/message-node'
-import { defaultHandler } from '../MCOTS/tcp-manager'
-import { DatabaseManager } from '../shared/database-manager'
-import { NPSPacketManager } from './nps-packet-manager'
+import { NPS_COMMANDS } from '../mco-types/structures'
+import { IRawPacket } from '../mco-types/types'
+import { EMessageDirection, MessageNode } from '../../MCOTS/message-node'
+import { defaultHandler } from '../../MCOTS/tcp-manager'
+import { DatabaseManager } from '../../shared/database-manager'
+import { NPSPacketManager } from '../../MCServer/nps-packet-manager'
 import { TCPConnection } from './tcpConnection'
 
 const { log } = Logger.getInstance()

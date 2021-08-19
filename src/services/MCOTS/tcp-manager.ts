@@ -14,8 +14,8 @@ import { StockCar } from './stock-car'
 import { StockCarInfoMessage } from './stock-car-info-msg'
 import { MCOTServer } from '.'
 import { EMessageDirection, MessageNode } from './message-node'
-import { TCPConnection } from '../MCServer/tcpConnection'
-import { IRawPacket } from '../../types'
+import { TCPConnection } from '../@drazisil/mco-session/tcpConnection'
+import { IRawPacket } from '../@drazisil/mco-types/types'
 
 const { log } = Logger.getInstance()
 

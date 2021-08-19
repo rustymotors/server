@@ -9,7 +9,7 @@
 import { readFileSync } from 'fs'
 import { Logger } from '@drazisil/mco-logger'
 import { IAppConfiguration } from '../../../config'
-import { ISslOptions } from '../../types'
+import { ISslOptions } from './mco-types/types'
 
 const { log } = Logger.getInstance()
 

@@ -7,8 +7,8 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { certificate } from '../../../config'
-import { IRawPacket, IUserRecordMini } from '../../types'
-import { TCPConnection } from '../MCServer/tcpConnection'
+import { IRawPacket, IUserRecordMini } from '../@drazisil/mco-types/types'
+import { TCPConnection } from '../@drazisil/mco-session/tcpConnection'
 import { DatabaseManager } from '../shared/database-manager'
 import { NPSUserStatus } from './nps-user-status'
 import { premadeLogin } from './packet'

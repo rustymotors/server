@@ -7,7 +7,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import sqlite3 from 'sqlite3'
-import { ISessionRecord } from '../../types'
+import { ISessionRecord } from '../@drazisil/mco-types/types'
 
 export class DatabaseManager {
   static _instance: DatabaseManager

@@ -7,10 +7,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { IRawPacket } from '../../types'
+import { IRawPacket } from '../@drazisil/mco-types/types'
 import { EMessageDirection } from '../MCOTS/message-node'
 import { NPSMessage } from '../MCOTS/nps-msg'
-import { TCPConnection } from '../MCServer/tcpConnection'
+import { TCPConnection } from '../@drazisil/mco-session/tcpConnection'
 import { PersonaServer } from '../PersonaServer/persona-server'
 import { DatabaseManager } from '../shared/database-manager'
 import { NPSUserInfo } from './nps-user-info'

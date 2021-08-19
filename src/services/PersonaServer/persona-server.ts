@@ -7,10 +7,10 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { Socket } from 'net'
-import { IPersonaRecord, IRawPacket } from '../../types'
+import { IPersonaRecord, IRawPacket } from '../@drazisil/mco-types/types'
 import { EMessageDirection } from '../MCOTS/message-node'
 import { NPSMessage } from '../MCOTS/nps-msg'
-import { TCPConnection } from '../MCServer/tcpConnection'
+import { TCPConnection } from '../@drazisil/mco-session/tcpConnection'
 import { NPSPersonaMapsMessage } from './nps-persona-maps-msg'
 
 const { log } = Logger.getInstance()

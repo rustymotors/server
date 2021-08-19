@@ -7,7 +7,7 @@
 
 import { expect, it } from '@jest/globals'
 import { Socket } from 'net'
-import { ConnectionManager } from '../src/services/MCServer/connection-mgr'
+import { ConnectionManager } from '../src/services/@drazisil/mco-session/connection-mgr'
 import { ListenerThread } from '../src/services/MCServer/listener-thread'
 
 class FakeSocket extends Socket {

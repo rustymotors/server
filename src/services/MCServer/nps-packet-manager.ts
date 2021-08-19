@@ -6,12 +6,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { IRawPacket } from '../../types'
+import { IRawPacket } from '../@drazisil/mco-types/types'
 import { LobbyServer } from '../LobbyServer'
 import { LoginServer } from '../LoginServer'
 import { PersonaServer } from '../PersonaServer/persona-server'
 import { DatabaseManager } from '../shared/database-manager'
-import { TCPConnection } from './tcpConnection'
+import { TCPConnection } from '../@drazisil/mco-session/tcpConnection'
 
 const { log } = Logger.getInstance()
 
