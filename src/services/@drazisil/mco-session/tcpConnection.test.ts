@@ -7,10 +7,10 @@
 
 import { beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { Socket as fakeSocket } from 'net'
-import { ConnectionManager as fakeConnectionManager } from '../src/services/@drazisil/mco-session/connection-mgr'
-import { TCPConnection } from '../src/services/@drazisil/mco-session/tcpConnection'
+import { ConnectionManager as fakeConnectionManager } from './connection-mgr'
+import { TCPConnection } from './tcpConnection'
 
-jest.mock('../src/services/@drazisil/mco-session/connection-mgr')
+jest.mock('./connection-mgr')
 jest.mock('net')
 
 it('ConnectionObj', () => {
