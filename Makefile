@@ -8,3 +8,6 @@ certs:
 
 test:
 	@MCO_DB_USER=testingDummy npm test
+
+start:
+	@LOG_LEVEL=silly npm run start:dev
