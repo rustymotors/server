@@ -8,23 +8,22 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { IncomingMessage, ServerResponse } from 'http'
-import { ConnectionManager } from '../@drazisil/mco-session/connection-mgr'
+import { ConnectionManager } from '../mco-session/connection-mgr'
 
 const { log } = Logger.getInstance()
 /**
- * SSL web server for managing the state of the system
  * @module AdminServer
  */
 
-export class AdminServer {
-  static _instance: AdminServer
-  private serviceName = 'mcoserver:AdminServer;'
+export class APIServer {
+  static _instance: APIServer
+  private serviceName = 'mcoserver:APIServer;'
 
-  static getInstance(): AdminServer {
-    if (!AdminServer._instance) {
-      AdminServer._instance = new AdminServer()
+  static getInstance(): APIServer {
+    if (!APIServer._instance) {
+      APIServer._instance = new APIServer()
     }
-    return AdminServer._instance
+    return APIServer._instance
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -69,7 +68,7 @@ export class AdminServer {
   ): ServerResponse {
     log(
       'info',
-      `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
+      `Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
       { service: this.serviceName },
     )
     log(
@@ -79,7 +78,7 @@ export class AdminServer {
         url: request.url,
         remoteAddress: request.socket.remoteAddress,
       })}`,
-      { service: 'mcoserver:AdminServer' },
+      { service: this.serviceName },
     )
     switch (request.url) {
       case '/api/connections':
@@ -93,7 +92,7 @@ export class AdminServer {
         return response
 
       default:
-        if (request.url && request.url.startsWith('/admin')) {
+        if (request.url && request.url.startsWith('/api')) {
           response.write('Jiggawatt!')
           return response
         }

@@ -6,12 +6,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, test, jest } from '@jest/globals'
-import { AdminServer } from '../src/services/AdminServer/index'
+import { APIServer } from './index'
 
-test('AdminServer', () => {
+test('API Server', () => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const _ = AdminServer.getInstance()
+    const _ = APIServer.getInstance()
     expect(true).toBeTruthy()
   } catch (error) {
     expect(error).toBeFalsy()
