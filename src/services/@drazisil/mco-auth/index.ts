@@ -112,7 +112,7 @@ export class AuthLogin {
     }
 
     if (request.url?.startsWith('/admin')) {
-      return AdminServer.getInstance().handleRequest(request, response).end()
+      return AdminServer.getInstance().handleRequest(request, response)
     }
 
     return response.end('Unknown request.')
