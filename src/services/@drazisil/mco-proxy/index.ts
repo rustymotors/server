@@ -1,9 +1,9 @@
-import http from 'http'
 import { Logger } from '@drazisil/mco-logger'
-import { EServerConnectionName } from '../mco-types'
+import http from 'http'
 import { RoutingMesh } from '../mco-common'
-import { ShardServer } from '../mco-shard'
 import { PatchServer } from '../mco-patch'
+import { ShardServer } from '../mco-shard'
+import { EServerConnectionName } from '../mco-types'
 
 const { log } = Logger.getInstance()
 
@@ -45,6 +45,7 @@ export class HTTPProxyServer {
       `Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
       { service: this._serviceName },
     )
+
     switch (request.url) {
       case '/games/EA_Seattle/MotorCity/UpdateInfo':
       case '/games/EA_Seattle/MotorCity/NPS':

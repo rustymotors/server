@@ -16,6 +16,7 @@ import { readFileSync } from 'fs'
 import { EServerConnectionName } from '../mco-types'
 import { RoutingMesh } from '../mco-common'
 import { APIServer } from '../mco-api'
+import { AdminServer } from '../mco-admin'
 
 const { log } = Logger.getInstance()
 
@@ -108,6 +109,10 @@ export class AuthLogin {
 
     if (request.url && request.url.startsWith('/api/')) {
       return APIServer.getInstance()._httpsHandler(request, response).end()
+    }
+
+    if (request.url?.startsWith('/admin')) {
+      return AdminServer.getInstance().handleRequest(request, response).end()
     }
 
     return response.end('Unknown request.')
