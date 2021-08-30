@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@drazisil/mco-logger": "4.1.10",
-    "sqlite3": "4.2.0"
+    "sqlite3": "5.0.2"
   },
   "devDependencies": {
     "@babel/cli": "7.14.8",
