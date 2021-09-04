@@ -6,8 +6,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { EMessageDirection } from '../src/services/MCOTS/message-node'
-import { NPSPersonaMapsMessage } from '../src/services/PersonaServer/nps-persona-maps-msg'
+import { EMessageDirection } from '../services/MCOTS/message-node'
+import { NPSPersonaMapsMessage } from '../services/PersonaServer/nps-persona-maps-msg'
 
 it('NPSPersonaMapsMsg', () => {
   const npsPersonaMapsMessage = new NPSPersonaMapsMessage(

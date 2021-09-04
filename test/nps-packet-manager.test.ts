@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it, describe } from '@jest/globals'
-import { NPSPacketManager } from '../src/services/MCServer/nps-packet-manager'
+import { NPSPacketManager } from '../services/MCServer/nps-packet-manager'
 
 describe('NPSPacketManager', () => {
   it('NPSPacketManger', async () => {

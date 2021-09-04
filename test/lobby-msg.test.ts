@@ -6,8 +6,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { LobbyInfoPacket } from '../src/services/MCOTS/lobby-info'
-import { LobbyMessage } from '../src/services/MCOTS/lobby-msg'
+import { LobbyInfoPacket } from '../services/MCOTS/lobby-info'
+import { LobbyMessage } from '../services/MCOTS/lobby-msg'
 
 const lobbyInfo1 = new LobbyInfoPacket()
 const lobbyMessage1 = new LobbyMessage()

@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { LobbyServer } from '../src/services/LobbyServer/index'
+import { LobbyServer } from '../services/LobbyServer/index'
 
 it('LobbyServer', () => {
   const lobbyServer = new LobbyServer()

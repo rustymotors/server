@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { GenericRequestMessage } from '../src/services/MCServer/generic-request-msg'
+import { GenericRequestMessage } from '../services/MCServer/generic-request-msg'
 
 const genericRequestMessage1 = new GenericRequestMessage()
 

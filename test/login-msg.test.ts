@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { LoginMessage } from '../src/services/MCOTS/login-msg'
+import { LoginMessage } from '../services/MCOTS/login-msg'
 
 const inboundBuffer = Buffer.alloc(42)
 inboundBuffer.write('NotAPerson', 24)

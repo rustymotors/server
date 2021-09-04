@@ -6,8 +6,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { NPSUserInfo } from '../src/services/LobbyServer/nps-user-info'
-import { EMessageDirection } from '../src/services/MCOTS/message-node'
+import { NPSUserInfo } from '../services/LobbyServer/nps-user-info'
+import { EMessageDirection } from '../services/MCOTS/message-node'
 
 it('NPSUserInfo', () => {
   const testPacket = Buffer.concat([

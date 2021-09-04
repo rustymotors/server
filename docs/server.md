@@ -16,7 +16,7 @@ This assumes you know the basics of checking out a git repo. If you don't, pleas
 
 ## Installing
 
-- `npm install`
+- `yarn install`
 
 ### Ports
 
@@ -53,10 +53,8 @@ You will need to open the following ports:
 
 ### Running
 
-Enable Node to use port 80 and 443: `sudo setcap cap_net_bind_service=+ep $(which node)`
+Enable Node to use port 80 and 443: `sudo setcap cap_net_bind_service=+ep $(volta which node)`
 
-- `npm start`
+- `yarn start`
 
 This will start the server running on Docker
-
-Afterwards, run `npm run migrate` to create the database before trying to connect

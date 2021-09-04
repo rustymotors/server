@@ -1,10 +1,14 @@
 {
   "name": "mco-server",
-  "version": "3.0.0-beta1",
+  "version": "0.1.0",
   "description": "a server",
   "main": "index.js",
   "engines": {
     "node": "^14.13.1 || >=16.0.0"
+  },
+  "volta": {
+    "node": "14.17.5",
+    "yarn": "1.22.11"
   },
   "files": [
     "README.md",
@@ -12,18 +16,14 @@
     "AUTHORS"
   ],
   "scripts": {
-    "prestart": "yarn run build",
     "start:dev": "node -r ts-node/register src/app.ts",
     "start": "node --trace-warnings dist/src/app.js",
     "type-check": "tsc --noEmit",
     "type-check:watch": "yarn run type-check -- --watch",
-    "build": "tsc",
     "lint": "eslint src/**/*.ts && prettier --write src test",
     "test": "yarn run lint-test",
     "lint-test": "yarn run lint && yarn run test:only",
-    "test:only": "jest",
-    "precommit": "yarn run lint-test",
-    "postinstall": "yarn audit && mkdir -p db"
+    "test:only": "jest"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
   "license": "MPL-2.0",
@@ -42,6 +42,7 @@
     "@babel/plugin-proposal-class-properties": "7.14.5",
     "@babel/preset-env": "7",
     "@babel/preset-typescript": "7.15.0",
+    "@jest/globals": "^27.1.0",
     "@tsconfig/node14": "1.0.1",
     "@types/node": "16",
     "@types/pg": "8.6.1",
@@ -52,9 +53,11 @@
     "@typescript-eslint/parser": "4.30.0",
     "eslint": "7.32.0",
     "eslint-config-prettier": "8.3.0",
+    "husky": "^7.0.0",
     "jest": "27.1.0",
     "prettier": "2.3.2",
     "prettier-eslint": "13.0.0",
+    "pretty-quick": "^3.1.1",
     "sinon": "11.1.2",
     "source-map-support": "0.5.19",
     "supertest": "6.1.6",

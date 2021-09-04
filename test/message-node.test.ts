@@ -6,10 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import {
-  EMessageDirection,
-  MessageNode,
-} from '../src/services/MCOTS/message-node'
+import { EMessageDirection, MessageNode } from '../services/MCOTS/message-node'
 
 const messageNode1 = new MessageNode(EMessageDirection.RECEIVED)
 messageNode1.deserialize(
