@@ -12,18 +12,18 @@
     "AUTHORS"
   ],
   "scripts": {
-    "prestart": "npm run build",
+    "prestart": "yarn run build",
     "start:dev": "node -r ts-node/register src/app.ts",
     "start": "node --trace-warnings dist/src/app.js",
     "type-check": "tsc --noEmit",
-    "type-check:watch": "npm run type-check -- --watch",
+    "type-check:watch": "yarn run type-check -- --watch",
     "build": "tsc",
     "lint": "eslint src/**/*.ts && prettier --write src test",
-    "test": "npm run lint-test",
-    "lint-test": "npm run lint && npm run test:only",
+    "test": "yarn run lint-test",
+    "lint-test": "yarn run lint && yarn run test:only",
     "test:only": "jest",
-    "precommit": "npm run lint-test",
-    "postinstall": "npm audit && mkdir -p db"
+    "precommit": "yarn run lint-test",
+    "postinstall": "yarn audit && mkdir -p db"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
   "license": "MPL-2.0",
