@@ -157,7 +157,8 @@ export class AdminServer {
           this._httpsHandler(request, response)
         },
       )
-    } catch (error) {
+    } catch (err) {
+      const error = err as Error
       throw new Error(`${error.message}, ${error.stack}`)
     }
 

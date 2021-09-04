@@ -36,7 +36,8 @@ it('ListenerThread - _onData', async () => {
 
   try {
     await listenerThread._onData(Buffer.alloc(5), fakeConnection1)
-  } catch (error) {
+  } catch (err) {
+    const error = err as Error
     expect(error.message).not.toEqual('Remote address is empty')
   }
 
@@ -52,7 +53,8 @@ it('ListenerThread - _onData', async () => {
 
   try {
     await listenerThread._onData(Buffer.alloc(5), fakeConnection3)
-  } catch (error) {
+  } catch (err) {
+    const error = err as Error
     expect(error.message).toContain('Unable to locate name for opCode 0')
   }
 })
