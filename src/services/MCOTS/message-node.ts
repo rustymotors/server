@@ -79,7 +79,8 @@ export class MessageNode {
       // Set message number
 
       this.msgNo = this.data.readInt16LE(0)
-    } catch (error) {
+    } catch (err) {
+      const error = err as Error
       if (error.name.includes('RangeError')) {
         // This is likeley not an MCOTS packet, ignore
         throw new Error(
