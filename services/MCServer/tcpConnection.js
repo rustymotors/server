@@ -6,9 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Cipher, createCipheriv, createDecipheriv, Decipher } from 'crypto'
-import { Socket } from 'net'
-import { ConnectionManager } from './connection-mgr.js'
+import { createCipheriv, createDecipheriv } from 'crypto'
 import { EncryptionManager } from './encryption-mgr.js'
 import { Buffer } from 'buffer'
 

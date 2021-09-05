@@ -7,10 +7,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { createServer, Server, Socket } from 'net'
-import { ConnectionManager } from './connection-mgr.js'
-import { TCPConnection } from './tcpConnection.js'
-import { Buffer } from 'buffer'
+import { createServer } from 'net'
 
 const { log } = Logger.getInstance()
 

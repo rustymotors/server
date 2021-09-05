@@ -8,10 +8,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { IncomingMessage, ServerResponse } from 'http'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { createServer, Server } from 'https'
-import { Socket } from 'net'
 import config from '../../config/index.js'
 import { _sslOptions } from '../@drazisil/ssl-options.js'
 import { MCServer } from '../MCServer/index.js'
