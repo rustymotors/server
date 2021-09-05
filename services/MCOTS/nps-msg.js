@@ -12,6 +12,11 @@ import { Buffer } from 'buffer'
 const { log } = Logger.getInstance()
 
 /**
+ * @global
+ * @typedef {"Recieved" | "Sent" } EMessageDirection
+ */
+
+/**
  * Packet container for NPS messages
  */
 

@@ -9,7 +9,6 @@ import { Buffer } from 'buffer'
 
 import { GenericReplyMessage } from '../MCServer/generic-reply-msg.js'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { TCPConnection } from '../MCServer/tcpConnection.js'
 import { MessageNode } from './message-node.js'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
@@ -24,6 +23,21 @@ const { log } = Logger.getInstance()
  * @property {module:MCO_Logger.logger} logger
  */
 export class MCOTServer {
+  /** @type {MCOTServer} */
+  static _instance
+
+  static getInstance() {
+    if (!MCOTServer._instance) {
+      MCOTServer._instance = new MCOTServer(false)
+    }
+    return MCOTServer._instance
+  }
+
+  constructor(isNew = true) {
+    if (isNew) {
+      throw new Error('Please use getInstance()')
+    }
+  }
   /**
    * Return the string representation of the numeric opcode
    *

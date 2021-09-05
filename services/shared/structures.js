@@ -10,6 +10,14 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Buffer } from 'buffer'
 
+/**
+ * @global
+ * @typedef {Object} InpsCommandMap
+ * @property {string} name
+ * @property {number} value
+ * @property {'Lobby' | 'Login'} module
+ */
+
 export const _NPS_RiffListHeader = {
   StructSize: Buffer.alloc(4), // Uint4B
   NumRiffs: Buffer.alloc(4), // UInt4B

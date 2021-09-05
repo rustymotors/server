@@ -41,6 +41,18 @@ const { log } = Logger.getInstance()
 
 /**
  *
+ * @global
+ * @typedef {Object} IPersonaRecord
+ * @property {number} customerId
+ * @property {Buffer} id
+ * @property {Buffer} maxPersonas
+ * @property {Buffer} name
+ * @property {Buffer} personaCount
+ * @property {Buffer} shardId
+ */
+
+/**
+ *
  * @class
  * @extends {NPSMessage}
  * @property {IPersonaRecord[]} personas

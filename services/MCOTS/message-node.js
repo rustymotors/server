@@ -11,6 +11,11 @@ import { Buffer } from 'buffer'
 const { log } = Logger.getInstance()
 
 /**
+ * @global
+ * @typedef {"Recieved" | "Sent" } EMessageDirection
+ */
+
+/**
  * Packet structure for communications with the game database
  */
 
@@ -71,21 +76,25 @@ export class MessageNode {
 
       this.msgNo = this.data.readInt16LE(0)
     } catch (err) {
-      if (err instanceof Error) {
-        const error = err
-        if (error.name.includes('RangeError')) {
+      if (err.code && err.stack) {
+        // Probably an error
+        if (err.code === 'ERR_OUT_OF_RANGE') {
           // This is likeley not an MCOTS packet, ignore
           throw new Error(
             `[MessageNode] Not long enough to deserialize, only ${packet.length} bytes long`,
           )
-        } else {
-          throw new Error(
-            `[MessageNode] Unable to read msgNo from ${packet.toString(
-              'hex',
-            )}: ${error}`,
-          )
         }
+        throw new Error(
+          `[MessageNode] Unable to read msgNo from ${packet.toString(
+            'hex',
+          )}: ${err}`,
+        )
       }
+      throw new Error(
+        `[MessageNode] Unable to read msgNo from ${packet.toString(
+          'hex',
+        )} Unknow Error!: ${err}`,
+      )
     }
   }
 

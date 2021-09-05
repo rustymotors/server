@@ -8,7 +8,7 @@
 import { expect, it } from '@jest/globals'
 import { LoginServer } from './index.js'
 
-const loginServer = new LoginServer()
+const loginServer = new LoginServer(false)
 
 it('LoginServer', async () => {
   const { customerId, userId } = await loginServer._npsGetCustomerIdByContextId(

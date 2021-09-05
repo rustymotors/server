@@ -6,10 +6,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { EMessageDirection, MessageNode } from './message-node'
+import { MessageNode } from './message-node'
 import { Buffer } from 'buffer'
 
-const messageNode1 = new MessageNode(EMessageDirection.RECEIVED)
+const messageNode1 = new MessageNode('Recieved')
 messageNode1.deserialize(
   Buffer.from([
     0x00, 0x00, 0x54, 0x4f, 0x4d, 0x43, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -19,9 +19,7 @@ messageNode1.deserialize(
 
 it('MessageNode', () => {
   expect(() => {
-    new MessageNode(EMessageDirection.RECEIVED).deserialize(
-      Buffer.from([0x00, 0x00]),
-    )
+    new MessageNode('Recieved').deserialize(Buffer.from([0x00, 0x00]))
   }).toThrow('[MessageNode] Not long enough to deserialize, only 2 bytes long')
 
   expect(messageNode1.isMCOTS()).toBeTruthy()

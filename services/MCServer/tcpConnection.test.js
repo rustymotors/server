@@ -11,7 +11,7 @@ import { ConnectionManager as fakeConnectionManager } from './connection-mgr.js'
 import { TCPConnection } from './tcpConnection.js'
 import { Buffer } from 'buffer'
 
-jest.mock('../services/MCServer/connection-mgr.js')
+jest.mock('./connection-mgr.js')
 jest.mock('net')
 
 it('TCPConnection', () => {

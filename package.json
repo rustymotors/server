@@ -21,7 +21,7 @@
     "start": "node app.js",
     "type-check": "tsc --noEmit",
     "type-check:watch": "yarn run type-check -- --watch",
-    "lint": "eslint src/**/*.ts && prettier --write src test",
+    "lint": "eslint && prettier --write services",
     "test": "yarn run lint-test",
     "lint-test": "yarn run lint && yarn run test:only",
     "test:only": "node --experimental-vm-modules node_modules/.bin/jest"

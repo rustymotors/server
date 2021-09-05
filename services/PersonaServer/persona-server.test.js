@@ -6,12 +6,16 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it, jest, beforeEach, describe } from '@jest/globals'
-import { PersonaServer } from './persona-server'
-import { NPSMessage } from '../MCOTS/nps-msg'
-import { EMessageDirection } from '../MCOTS/message-node'
-import { Socket as fakeSocket } from 'net'
+import { NPSMessage } from '../MCOTS/nps-msg.js'
+import { PersonaServer } from './persona-server.js'
 
-jest.mock('net')
+class fakeSocket {
+  write() {
+    return
+  }
+}
+
+/** @type {PersonaServer} */
 let personaServer
 
 describe('Persona Server', () => {
@@ -37,37 +41,37 @@ describe('Persona Server', () => {
   })
 
   it('PersonaServer _npsSelectGamePersona()', async () => {
-    const data = new NPSMessage(EMessageDirection.SENT).serialize()
+    const data = new NPSMessage('Sent').serialize()
     const results = await personaServer.handleSelectGamePersona(data)
-    expect(results.direction).toEqual(EMessageDirection.SENT)
+    expect(results.direction).toEqual('Sent')
   })
 
   it('PersonaServer _npsNewGameAccount()', async () => {
-    const data = new NPSMessage(EMessageDirection.SENT).serialize()
+    const data = new NPSMessage('Sent').serialize()
     const results = await personaServer.createNewGameAccount(data)
-    expect(results.direction).toEqual(EMessageDirection.SENT)
+    expect(results.direction).toEqual('Sent')
   })
 
   it('PersonaServer _npsLogoutGameUser()', async () => {
-    const data = new NPSMessage(EMessageDirection.SENT).serialize()
+    const data = new NPSMessage('Sent').serialize()
     const results = await personaServer.logoutGameUser(data)
-    expect(results.direction).toEqual(EMessageDirection.SENT)
+    expect(results.direction).toEqual('Sent')
   })
 
   it('PersonaServer _npsCheckToken()', async () => {
-    const data = new NPSMessage(EMessageDirection.SENT).serialize()
+    const data = new NPSMessage('Sent').serialize()
     const results = await personaServer.validateLicencePlate(data)
-    expect(results.direction).toEqual(EMessageDirection.SENT)
+    expect(results.direction).toEqual('Sent')
   })
 
   it('PersonaServer _npsValidatePersonaName()', async () => {
-    const data = new NPSMessage(EMessageDirection.SENT).serialize()
+    const data = new NPSMessage('Sent').serialize()
     const results = await personaServer.validatePersonaName(data)
-    expect(results.direction).toEqual(EMessageDirection.SENT)
+    expect(results.direction).toEqual('Sent')
   })
 
   it('PersonaServer _send()', () => {
-    const data = new NPSMessage(EMessageDirection.SENT)
+    const data = new NPSMessage('Sent')
     expect(() => {
       personaServer.sendPacket(new fakeSocket(), data)
     }).not.toThrow()

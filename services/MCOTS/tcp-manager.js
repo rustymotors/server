@@ -24,7 +24,7 @@ const { log } = Logger.getInstance()
  * Manages TCP connection packet processing
  */
 
-const mcotServer = new MCOTServer()
+const mcotServer = MCOTServer.getInstance()
 const databaseManager = DatabaseManager.getInstance()
 
 /**

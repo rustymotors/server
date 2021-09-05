@@ -7,6 +7,7 @@
 
 import { expect, it } from '@jest/globals'
 import { ClientConnectMessage } from './client-connect-msg'
+import { Buffer } from 'buffer'
 
 it('ClientConnectMsg', () => {
   const clientConnectMessage1 = new ClientConnectMessage(

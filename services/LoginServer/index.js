@@ -29,12 +29,6 @@ export class LoginServer {
   databaseManager = DatabaseManager.getInstance()
   serviceName = 'mcoserver:LoginServer'
 
-  constructor(isNew = true) {
-    if (isNew) {
-      throw new Error('Please use getInstance()')
-    }
-  }
-
   /**
    *
    * @param {IRawPacket} rawPacket

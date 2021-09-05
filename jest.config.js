@@ -1,8 +1,12 @@
-module.exports = {
+export default {
   preset: 'ts-jest',
   testEnvironment: 'node',
   collectCoverage: true,
-  collectCoverageFrom: ['src/**/*.{ts,js}', '!**/vendor/**'],
+  collectCoverageFrom: [
+    'services/**/*.js',
+    '!**/vendor/**',
+    '!services/**/*.test.js',
+  ],
   coverageReporters: ['text', 'html', 'lcov'],
   transform: {},
 }
