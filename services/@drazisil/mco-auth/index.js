@@ -39,6 +39,7 @@ const { log } = Logger.getInstance()
  * @property {Server} httpsServer
  */
 export class AuthLogin {
+  /** @type {AuthLogin} */
   static _instance
   config
   _serviceName = 'MCOServer:Auth'

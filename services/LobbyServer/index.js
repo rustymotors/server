@@ -8,7 +8,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { EMessageDirection } from '../MCOTS/message-node.js'
 import { NPSMessage } from '../MCOTS/nps-msg.js'
 import { TCPConnection } from '../MCServer/tcpConnection.js'
 import { PersonaServer } from '../PersonaServer/persona-server.js'
@@ -93,7 +92,7 @@ async function sendCommand(con, data) {
   ).decryptedCmd
 
   // Marshal the command into an NPS packet
-  const incommingRequest = new NPSMessage(EMessageDirection.RECEIVED)
+  const incommingRequest = new NPSMessage('Recieved')
   incommingRequest.deserialize(decipheredCommand)
 
   incommingRequest.dumpPacket()
@@ -111,7 +110,7 @@ async function sendCommand(con, data) {
   })
 
   // Build the packet
-  const packetResult = new NPSMessage(EMessageDirection.SENT)
+  const packetResult = new NPSMessage('Sent')
   packetResult.msgNo = 0x2_29
   packetResult.setContent(packetContent)
   packetResult.dumpPacket()
@@ -136,7 +135,7 @@ export class LobbyServer {
    */
   _npsHeartbeat() {
     const packetContent = Buffer.alloc(8)
-    const packetResult = new NPSMessage(EMessageDirection.SENT)
+    const packetResult = new NPSMessage('Sent')
     packetResult.msgNo = 0x1_27
     packetResult.setContent(packetContent)
     packetResult.dumpPacket()
@@ -264,7 +263,7 @@ export class LobbyServer {
     )
 
     // Return a _NPS_UserInfo structure
-    const userInfo = new NPSUserInfo(EMessageDirection.RECEIVED)
+    const userInfo = new NPSUserInfo('Recieved')
     userInfo.deserialize(rawData)
     userInfo.dumpInfo()
 
@@ -334,7 +333,7 @@ export class LobbyServer {
     packetContent.writeInt16BE(32, 66)
 
     // Build the packet
-    const packetResult = new NPSMessage(EMessageDirection.SENT)
+    const packetResult = new NPSMessage('Sent')
     packetResult.msgNo = 0x1_20
     packetResult.setContent(packetContent)
     packetResult.dumpPacket()

@@ -9,7 +9,8 @@ import { expect, describe, it, beforeEach } from '@jest/globals'
 import request from 'supertest'
 import { CastanetResponse, PatchServer } from '.'
 
-let patchServer: PatchServer
+/** @type {PatchServer} */
+let patchServer
 
 describe('PatchServer', () => {
   beforeEach(() => {

@@ -14,7 +14,7 @@ import { DatabaseManager } from '../shared/database-manager.js'
 import { StockCar } from './stock-car.js'
 import { StockCarInfoMessage } from './stock-car-info-msg.js'
 import { MCOTServer } from './index.js'
-import { EMessageDirection, MessageNode } from './message-node.js'
+import { MessageNode } from './message-node.js'
 import { TCPConnection } from '../MCServer/tcpConnection.js'
 import { Buffer } from 'buffer'
 
@@ -167,7 +167,7 @@ async function getStockCarInfo(connection, packet) {
 
   stockCarInfoMessage.dumpPacket()
 
-  const responsePacket = new MessageNode(EMessageDirection.SENT)
+  const responsePacket = new MessageNode('Sent')
 
   responsePacket.deserialize(packet.serialize())
 
@@ -222,7 +222,7 @@ async function clientConnect(connection, packet) {
   const genericReplyMessage = new GenericReplyMessage()
   genericReplyMessage.msgNo = 101
   genericReplyMessage.msgReply = 438
-  const responsePacket = new MessageNode(EMessageDirection.SENT)
+  const responsePacket = new MessageNode('Sent')
   responsePacket.deserialize(packet.serialize())
   responsePacket.updateBuffer(genericReplyMessage.serialize())
   responsePacket.dumpPacket()
@@ -458,7 +458,7 @@ async function messageReceived(message, con) {
  */
 export async function defaultHandler(rawPacket) {
   const { connection, remoteAddress, localPort, data } = rawPacket
-  const messageNode = new MessageNode(EMessageDirection.RECEIVED)
+  const messageNode = new MessageNode('Recieved')
   messageNode.deserialize(data)
 
   log(

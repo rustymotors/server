@@ -10,7 +10,7 @@ import { Buffer } from 'buffer'
 import { GenericReplyMessage } from '../MCServer/generic-reply-msg.js'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { TCPConnection } from '../MCServer/tcpConnection.js'
-import { EMessageDirection, MessageNode } from './message-node.js'
+import { MessageNode } from './message-node.js'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 const { log } = Logger.getInstance()
@@ -70,7 +70,7 @@ export class MCOTServer {
     pReply.msgNo = 213
     pReply.msgReply = 105
     pReply.appId = connection.appId
-    const rPacket = new MessageNode(EMessageDirection.SENT)
+    const rPacket = new MessageNode('Sent')
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
@@ -108,7 +108,7 @@ export class MCOTServer {
     const pReply = new GenericReplyMessage()
     pReply.msgNo = 325
     pReply.msgReply = 324
-    const rPacket = new MessageNode(EMessageDirection.SENT)
+    const rPacket = new MessageNode('Sent')
     rPacket.flags = 9
 
     const lobby = Buffer.alloc(12)
@@ -147,7 +147,7 @@ export class MCOTServer {
     const pReply = new GenericReplyMessage()
     pReply.msgNo = 101
     pReply.msgReply = 106
-    const rPacket = new MessageNode(EMessageDirection.SENT)
+    const rPacket = new MessageNode('Sent')
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
@@ -177,7 +177,7 @@ export class MCOTServer {
     const pReply = new GenericReplyMessage()
     pReply.msgNo = 101
     pReply.msgReply = 109
-    const rPacket = new MessageNode(EMessageDirection.SENT)
+    const rPacket = new MessageNode('Sent')
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
@@ -204,7 +204,7 @@ export class MCOTServer {
     const pReply = new GenericReplyMessage()
     pReply.msgNo = 101
     pReply.msgReply = 440
-    const rPacket = new MessageNode(EMessageDirection.SENT)
+    const rPacket = new MessageNode('Sent')
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())
@@ -231,7 +231,7 @@ export class MCOTServer {
     const pReply = new GenericReplyMessage()
     pReply.msgNo = 101
     pReply.msgReply = 266
-    const rPacket = new MessageNode(EMessageDirection.SENT)
+    const rPacket = new MessageNode('Sent')
 
     rPacket.deserialize(node.serialize())
     rPacket.updateBuffer(pReply.serialize())

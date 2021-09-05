@@ -15,18 +15,6 @@ const { log } = Logger.getInstance()
  */
 
 /**
- * @global
- * @readonly
- * @const {object} EMessageDirection
- * @property {string} EMessageDirection.RECIEVED "Recieved"
- * @property {string} EMessageDirection.SENT "Sent"
- */
-export const EMessageDirection = Object.freeze({
-  RECEIVED: 'Recieved',
-  SENT: 'Sent',
-})
-
-/**
  * @class
  * @property {EMessageDirection} direction
  * @property {number} msgNo

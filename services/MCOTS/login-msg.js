@@ -29,22 +29,22 @@ const { log } = Logger.getInstance()
  * @property {Record<string, unknown>} struct
  */
 export class LoginMessage {
-  msgNo: number
-  toFrom: number
-  appId: number
-  customerId: number
-  personaId: number
-  lotOwnerId: number
-  brandedPartId: number
-  skinId: number
-  personaName: string
-  version: string
-  data: Buffer
+  msgNo
+  toFrom
+  appId
+  customerId
+  personaId
+  lotOwnerId
+  brandedPartId
+  skinId
+  personaName
+  version
+  data
   /**
    *
    * @param {Buffer} buffer
    */
-  constructor(buffer: Buffer) {
+  constructor(buffer) {
     this.msgNo = 0
     this.toFrom = 0
     this.appId = 0
@@ -67,7 +67,7 @@ export class LoginMessage {
    * @param {Buffer} buffer
    * @return {void}
    */
-  deserialize(buffer: Buffer): void {
+  deserialize(buffer) {
     try {
       this.msgNo = buffer.readInt16LE(0)
     } catch (error) {
@@ -103,7 +103,7 @@ export class LoginMessage {
    * DumpPacket
    * @return {void}
    */
-  dumpPacket(): void {
+  dumpPacket() {
     log(
       'debug',
       `LoginMsg',

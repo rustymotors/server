@@ -7,6 +7,7 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { LobbyInfoPacket } from './lobby-info'
+import { Buffer } from 'buffer'
 
 const { log } = Logger.getInstance()
 
@@ -20,13 +21,13 @@ const { log } = Logger.getInstance()
  * @property {Buffer} data
  */
 export class LobbyMessage {
-  msgNo: number
-  noLobbies: number
-  moreToCome: number
-  lobbyList: LobbyInfoPacket
-  dataLength: number
-  data: Buffer
-  serviceName: string
+  msgNo
+  noLobbies
+  moreToCome
+  lobbyList
+  dataLength
+  data
+  serviceName
   /**
    *
    */
@@ -58,7 +59,7 @@ export class LobbyMessage {
    *
    * @return {Buffer}
    */
-  serialize(): Buffer {
+  serialize() {
     return this.data
   }
 
@@ -66,7 +67,7 @@ export class LobbyMessage {
    * DumpPacket
    * @return {void}
    */
-  dumpPacket(): void {
+  dumpPacket() {
     log(
       'debug',
       `LobbyMsg',

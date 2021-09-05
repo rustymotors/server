@@ -8,7 +8,6 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { Socket } from 'net'
-import { EMessageDirection } from '../MCOTS/message-node.js'
 import { NPSMessage } from '../MCOTS/nps-msg.js'
 import { TCPConnection } from '../MCServer/tcpConnection.js'
 import { NPSPersonaMapsMessage } from './nps-persona-maps-msg.js'
@@ -90,9 +89,7 @@ export class PersonaServer {
    */
   async handleSelectGamePersona(data) {
     log('debug', '_npsSelectGamePersona...', { service: this.serviceName })
-    const requestPacket = new NPSMessage(
-      EMessageDirection.RECEIVED,
-    ).deserialize(data)
+    const requestPacket = new NPSMessage('Recieved').deserialize(data)
     log(
       'debug',
       `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
@@ -109,7 +106,7 @@ export class PersonaServer {
     // Build the packet
     // Response Code
     // 207 = success
-    const responsePacket = new NPSMessage(EMessageDirection.SENT)
+    const responsePacket = new NPSMessage('Sent')
     responsePacket.msgNo = 0x2_07
     responsePacket.setContent(packetContent)
     log(
@@ -137,9 +134,7 @@ export class PersonaServer {
    * @returns {Promise<NPSMessage>}
    */
   async createNewGameAccount(data) {
-    const requestPacket = new NPSMessage(
-      EMessageDirection.RECEIVED,
-    ).deserialize(data)
+    const requestPacket = new NPSMessage('Recieved').deserialize(data)
     log(
       'debug',
       `NPSMsg request object from _npsNewGameAccount',
@@ -151,7 +146,7 @@ export class PersonaServer {
 
     requestPacket.dumpPacket()
 
-    const rPacket = new NPSMessage(EMessageDirection.SENT)
+    const rPacket = new NPSMessage('Sent')
     rPacket.msgNo = 0x6_01
     log(
       'debug',
@@ -178,9 +173,7 @@ export class PersonaServer {
     log('debug', '[personaServer] Logging out persona...', {
       service: this.serviceName,
     })
-    const requestPacket = new NPSMessage(
-      EMessageDirection.RECEIVED,
-    ).deserialize(data)
+    const requestPacket = new NPSMessage('Recieved').deserialize(data)
     log(
       'debug',
       `NPSMsg request object from _npsLogoutGameUser',
@@ -196,7 +189,7 @@ export class PersonaServer {
     const packetContent = Buffer.alloc(257)
 
     // Build the packet
-    const responsePacket = new NPSMessage(EMessageDirection.SENT)
+    const responsePacket = new NPSMessage('Sent')
     responsePacket.msgNo = 0x6_12
     responsePacket.setContent(packetContent)
     log(
@@ -226,9 +219,7 @@ export class PersonaServer {
    */
   async validateLicencePlate(data) {
     log('debug', '_npsCheckToken...', { service: this.serviceName })
-    const requestPacket = new NPSMessage(
-      EMessageDirection.RECEIVED,
-    ).deserialize(data)
+    const requestPacket = new NPSMessage('Recieved').deserialize(data)
     log(
       'debug',
       `NPSMsg request object from _npsCheckToken',
@@ -251,7 +242,7 @@ export class PersonaServer {
 
     // Build the packet
     // NPS_ACK = 207
-    const responsePacket = new NPSMessage(EMessageDirection.SENT)
+    const responsePacket = new NPSMessage('Sent')
     responsePacket.msgNo = 0x2_07
     responsePacket.setContent(packetContent)
     log(
@@ -280,9 +271,7 @@ export class PersonaServer {
    */
   async validatePersonaName(data) {
     log('debug', '_npsValidatePersonaName...', { service: this.serviceName })
-    const requestPacket = new NPSMessage(
-      EMessageDirection.RECEIVED,
-    ).deserialize(data)
+    const requestPacket = new NPSMessage('Recieved').deserialize(data)
 
     log(
       'debug',
@@ -314,7 +303,7 @@ export class PersonaServer {
 
     // Build the packet
     // NPS_USER_VALID     validation succeeded
-    const responsePacket = new NPSMessage(EMessageDirection.SENT)
+    const responsePacket = new NPSMessage('Sent')
     responsePacket.msgNo = 0x6_01
     responsePacket.setContent(packetContent)
 
@@ -414,9 +403,7 @@ export class PersonaServer {
    */
   async getPersonaMaps(data) {
     log('debug', '_npsGetPersonaMaps...', { service: this.serviceName })
-    const requestPacket = new NPSMessage(
-      EMessageDirection.RECEIVED,
-    ).deserialize(data)
+    const requestPacket = new NPSMessage('Recieved').deserialize(data)
 
     log(
       'debug',
@@ -449,7 +436,7 @@ export class PersonaServer {
 
     let responsePacket
 
-    const personaMapsMessage = new NPSPersonaMapsMessage(EMessageDirection.SENT)
+    const personaMapsMessage = new NPSPersonaMapsMessage('Sent')
 
     if (personas.length === 0) {
       throw new Error(
@@ -459,7 +446,7 @@ export class PersonaServer {
       try {
         personaMapsMessage.loadMaps(personas)
 
-        responsePacket = new NPSMessage(EMessageDirection.SENT)
+        responsePacket = new NPSMessage('Sent')
         responsePacket.msgNo = 0x6_07
         responsePacket.setContent(personaMapsMessage.serialize())
         log(

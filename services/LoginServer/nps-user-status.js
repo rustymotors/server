@@ -9,7 +9,6 @@
 import { privateDecrypt } from 'crypto'
 import { readFileSync, statSync } from 'fs'
 import { Logger } from '@drazisil/mco-logger'
-import { EMessageDirection } from '../MCOTS/message-node.js'
 import { Socket } from 'net'
 import { Buffer } from 'buffer'
 import { NPSMessage } from '../MCOTS/nps-msg.js'
@@ -67,7 +66,7 @@ export class NPSUserStatus extends NPSMessage {
    * @param {Buffer} packet
    */
   constructor(packet) {
-    super(EMessageDirection.RECEIVED)
+    super('Recieved')
     this.sessionkey = ''
 
     // Save the NPS opCode

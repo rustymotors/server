@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { EMessageDirection, MessageNode } from '../MCOTS/message-node.js'
+import { MessageNode } from '../MCOTS/message-node.js'
 import { defaultHandler } from '../MCOTS/tcp-manager.js'
 import { DatabaseManager } from '../shared/database-manager.js'
 import { NPSPacketManager } from './nps-packet-manager.js'
@@ -132,7 +132,7 @@ export class ConnectionManager {
           //   localPort
           // }
         )
-        const newNode = new MessageNode(EMessageDirection.RECEIVED)
+        const newNode = new MessageNode('Recieved')
         newNode.deserialize(rawPacket.data)
         log('debug', JSON.stringify(newNode), { service: this.serviceName })
 

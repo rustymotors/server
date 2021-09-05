@@ -8,7 +8,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { EMessageDirection } from '../MCOTS/message-node.js'
 import { NPSMessage } from '../MCOTS/nps-msg.js'
 import { Buffer } from 'buffer'
 

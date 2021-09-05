@@ -16,16 +16,16 @@ const { log } = Logger.getInstance()
  *
  * @param {import('../../config').IAppConfiguration['certificate']} certificateSettings
  * @param {string} serviceName
- * @return {import('../shared/types').ISslOptions}
+ * @return {ISslOptions}
  */
 export function _sslOptions(certificateSettings, serviceName) {
   log('debug', `Reading ${certificateSettings.certFilename}`, {
     service: serviceName,
   })
 
-  /** @type {import('../shared/types').ISslOptions["cert"]} */
+  /** @type {ISslOptions["cert"]} */
   let cert
-  /** @type {import('../shared/types').ISslOptions["key"]} */
+  /** @type {ISslOptions["key"]} */
   let key
 
   try {

@@ -10,13 +10,18 @@
 
 /**
  * @global
- * @typedef {Object} IRawPacket
+ * @typedef {object} IRawPacket
  * @property {string} connectionId
- * @property {module:ConnectionObj} connection
+ * @property {TCPConnection} connection
  * @property {Buffer} data
  * @property {number} localPort
  * @property {string  | undefined } remoteAddress
  * @property {number} timestamp
+ */
+
+/**
+ * @global
+ * @typedef {"Recieved" | "Sent" } EMessageDirection
  */
 
 /**
