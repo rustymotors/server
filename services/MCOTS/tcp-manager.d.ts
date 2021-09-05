@@ -1,6 +1,6 @@
 import { MessageNode } from './message-node'
 import { TCPConnection } from '../MCServer/tcpConnection'
-import { IRawPacket } from '../../src/types'
+import { IRawPacket } from '../shared/types'
 export declare type ConnectionWithPacket = {
   connection: TCPConnection
   packet: MessageNode

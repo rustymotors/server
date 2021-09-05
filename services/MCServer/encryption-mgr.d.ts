@@ -3,7 +3,6 @@ import { Decipher, Cipher } from 'crypto'
 /**
  * Handles the management of the encryption and decryption
  * of the TCP connections
- * @module EncryptionMgr
  */
 /**
  * @class

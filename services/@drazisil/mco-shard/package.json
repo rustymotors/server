@@ -1,0 +1,7 @@
+{
+  "name": "mco-shared",
+  "type": "module",
+  "exports": {
+    "./": "./index.js"
+  }
+}

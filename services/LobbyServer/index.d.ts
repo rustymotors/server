@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { IRawPacket } from '../../src/types'
+import { IRawPacket } from '../shared/types'
 import { NPSMessage } from '../MCOTS/nps-msg'
 import { TCPConnection } from '../MCServer/tcpConnection'
 /**

@@ -1,5 +1,5 @@
 import sqlite3 from 'sqlite3'
-import { ISessionRecord } from '../../src/types'
+import { ISessionRecord } from './types'
 export declare class DatabaseManager {
   static _instance: DatabaseManager
   localDB: sqlite3.Database

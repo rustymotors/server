@@ -1,0 +1,11 @@
+{
+  "name": "mco-login",
+  "type": "module",
+  "exports": {
+    "./": "./index.js"
+  },
+  "dependencies": {
+    "@drazisil/mco-logger": "^4.1.10",
+    "jest": "^27.1.0"
+  }
+}

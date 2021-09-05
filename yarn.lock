@@ -57,16 +57,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:7, @babel/core@npm:7.15.4, @babel/core@npm:^7.1.0, @babel/core@npm:^7.7.2, @babel/core@npm:^7.7.5":
-  version: 7.15.4
-  resolution: "@babel/core@npm:7.15.4"
+"@babel/core@npm:7.15.5, @babel/core@npm:^7.1.0, @babel/core@npm:^7.15.5, @babel/core@npm:^7.7.2, @babel/core@npm:^7.7.5":
+  version: 7.15.5
+  resolution: "@babel/core@npm:7.15.5"
   dependencies:
     "@babel/code-frame": ^7.14.5
     "@babel/generator": ^7.15.4
     "@babel/helper-compilation-targets": ^7.15.4
     "@babel/helper-module-transforms": ^7.15.4
     "@babel/helpers": ^7.15.4
-    "@babel/parser": ^7.15.4
+    "@babel/parser": ^7.15.5
     "@babel/template": ^7.15.4
     "@babel/traverse": ^7.15.4
     "@babel/types": ^7.15.4
@@ -76,7 +76,7 @@ __metadata:
     json5: ^2.1.2
     semver: ^6.3.0
     source-map: ^0.5.0
-  checksum: fdd7db84b26e06da329a49ba9bad542113982bd3c5b8f822087859f2d7248b21c44d488cb26fa8bec96e1d206c4e4b34809e54b447ff38f5bd7a6a04a9ad0c44
+  checksum: 8121bf74040d98562b773c1e92a174cd53c99a5158ae5a9ef25645ed35d6f821c64155e394cdb04e7dc77a0871ba42a638f6703b2c44a75bc04564b21cad9e1b
   languageName: node
   linkType: hard
 
@@ -356,12 +356,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.1.0, @babel/parser@npm:^7.15.4, @babel/parser@npm:^7.7.2":
-  version: 7.15.4
-  resolution: "@babel/parser@npm:7.15.4"
+"@babel/parser@npm:^7.1.0, @babel/parser@npm:^7.15.4, @babel/parser@npm:^7.15.5, @babel/parser@npm:^7.7.2":
+  version: 7.15.5
+  resolution: "@babel/parser@npm:7.15.5"
   bin:
     parser: ./bin/babel-parser.js
-  checksum: 4ab6794fc7eacf93d4792675c7ab0fb5c73e697a2ef9a85248a0797d1a0b42e97d6112983ef014ace63c2bbb49b60668793a9a334f9bd8bd9e1fc1c76a7f7ce9
+  checksum: abc39a66b9bf6c861e25b07ad99830c4da6ce345135ebe08ee81a0e8d2f62cddc5f1fd825885fcd609a41b59531c856083d880f7836bd89c148136f834dfc3fe
   languageName: node
   linkType: hard
 
@@ -2749,9 +2749,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001251":
-  version: 1.0.30001252
-  resolution: "caniuse-lite@npm:1.0.30001252"
-  checksum: 0d25a2795ca224c1a689b08fe37a5dc6c4c79d80720f927bf7df70ed30c1b1b62c3cc51429eac01902d3fc298d9531b85efec331c2a051e42615c76fa348f118
+  version: 1.0.30001254
+  resolution: "caniuse-lite@npm:1.0.30001254"
+  checksum: 7dd89bbc5c2c202dd120f3dc5f5446cf0e0711edfe0d603456e8d7c4df3973c34587c8a427f92e75be80c30e4ee730e3d309e555adddcce570ffe27a1ad18134
   languageName: node
   linkType: hard
 
@@ -3185,9 +3185,9 @@ __metadata:
   linkType: hard
 
 "deep-is@npm:^0.1.3, deep-is@npm:~0.1.3":
-  version: 0.1.3
-  resolution: "deep-is@npm:0.1.3"
-  checksum: c15b04c3848a89880c94e25b077c19b47d9a30dd99048e70e5f95d943e7b246bee1da0c1376b56b01bc045be2cae7d9b1c856e68e47e9805634327de7c6cb6d5
+  version: 0.1.4
+  resolution: "deep-is@npm:0.1.4"
+  checksum: edb65dd0d7d1b9c40b2f50219aef30e116cedd6fc79290e740972c132c09106d2e80aa0bc8826673dd5a00222d4179c84b36a790eef63a4c4bca75a37ef90804
   languageName: node
   linkType: hard
 
@@ -5546,7 +5546,8 @@ __metadata:
   resolution: "mco-server@workspace:."
   dependencies:
     "@babel/cli": 7
-    "@babel/core": 7
+    "@babel/core": ^7.15.5
+    "@babel/parser": ^7.15.5
     "@babel/plugin-proposal-class-properties": 7.14.5
     "@babel/preset-env": 7
     "@babel/preset-typescript": 7.15.0
@@ -5569,7 +5570,7 @@ __metadata:
     pretty-quick: ^3.1.1
     sinon: 11.1.2
     source-map-support: 0.5.19
-    sqlite3: 4.2.0
+    sqlite3: 4
     supertest: 6.1.6
     testdouble: 3.16.2
     ts-jest: 27.0.5
@@ -7195,7 +7196,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sqlite3@npm:4.2.0":
+"sqlite3@npm:4":
   version: 4.2.0
   resolution: "sqlite3@npm:4.2.0"
   dependencies:

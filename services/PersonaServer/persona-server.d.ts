@@ -1,10 +1,9 @@
 /// <reference types="node" />
 import { Socket } from 'net'
-import { IPersonaRecord, IRawPacket } from '../../src/types'
+import { IPersonaRecord, IRawPacket } from '../shared/types'
 import { NPSMessage } from '../MCOTS/nps-msg'
 import { TCPConnection } from '../MCServer/tcpConnection'
 /**
- * @module PersonaServer
  */
 /**
  * @class

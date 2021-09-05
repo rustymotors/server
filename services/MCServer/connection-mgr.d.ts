@@ -30,7 +30,7 @@ export class ConnectionManager {
    * @return {Promise<TCPConnection>}
    */
   processData(
-    rawPacket: import('../../src/types').IRawPacket,
+    rawPacket: import('../shared/types').IRawPacket,
   ): Promise<TCPConnection>
   /**
    * Get the name connected to the NPS opcode

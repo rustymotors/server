@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { IPersonaRecord } from '../../src/types'
+import { IPersonaRecord } from '../shared/types'
 import { EMessageDirection } from '../MCOTS/message-node'
 import { NPSMessage } from '../MCOTS/nps-msg'
 /**

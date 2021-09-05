@@ -1,4 +1,4 @@
-import { IRawPacket } from '../../src/types'
+import { IRawPacket } from '../shared/types'
 import { LobbyServer } from '../LobbyServer'
 import { LoginServer } from '../LoginServer'
 import { PersonaServer } from '../PersonaServer/persona-server'

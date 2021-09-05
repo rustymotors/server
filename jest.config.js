@@ -2,7 +2,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   collectCoverage: true,
-  collectCoverageFrom: ['src/**/*.ts', '!**/vendor/**'],
+  collectCoverageFrom: ['src/**/*.{ts,js}', '!**/vendor/**'],
   coverageReporters: ['text', 'html', 'lcov'],
-  modulePathIgnorePatterns: ['/*.js'],
+  transform: {},
 }

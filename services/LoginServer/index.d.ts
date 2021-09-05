@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { IRawPacket, IUserRecordMini } from '../../src/types'
+import { IRawPacket, IUserRecordMini } from '../shared/types'
 import { TCPConnection } from '../MCServer/tcpConnection'
 import { DatabaseManager } from '../shared/database-manager'
 /**

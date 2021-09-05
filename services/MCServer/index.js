@@ -6,16 +6,15 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import config from '../../config/index'
-import { ConnectionManager } from './connection-mgr'
-import { ListenerThread } from './listener-thread'
+import config from '../../config/index.js'
+import { ConnectionManager } from './connection-mgr.js'
+import { ListenerThread } from './listener-thread.js'
 
 const { log } = Logger.getInstance()
 
 /**
  * This class starts all the servers
  * TODO: Better document this
- * @module MCServer
  */
 
 /**
