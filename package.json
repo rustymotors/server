@@ -17,7 +17,7 @@
     "AUTHORS"
   ],
   "scripts": {
-    "start:dev": "LOGGING_LEVEL=silly node app.js",
+    "start:dev": "LOG_LEVEL=silly node app.js",
     "start": "node app.js",
     "type-check": "tsc --noEmit",
     "type-check:watch": "yarn run type-check -- --watch",
