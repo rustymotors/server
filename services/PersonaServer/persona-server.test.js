@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, it, jest, beforeEach, describe } from '@jest/globals'
+import { expect, it, beforeEach, describe } from '@jest/globals'
 import { NPSMessage } from '../MCOTS/nps-msg.js'
 import { PersonaServer } from './persona-server.js'
 
