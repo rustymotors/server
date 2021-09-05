@@ -26,15 +26,15 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install
-      - run: npm run test:only
+      - run: yarn install
+      - run: yarn test
       - name: Codecov
         run: |
-            curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import
-            curl -Os https://uploader.codecov.io/latest/codecov-linux
-            curl -Os https://uploader.codecov.io/latest/codecov-linux.SHA256SUM
-            curl -Os https://uploader.codecov.io/latest/codecov-linux.SHA256SUM.sig
-            gpg --verify codecov-linux.SHA256SUM.sig codecov-linux.SHA256SUM
-            shasum -a 256 -c codecov-linux.SHA256SUM
-            chmod +x codecov-linux
-            ./codecov-linux -t 18362b60-86ca-4be2-a8cb-2bc94f4f0bd2 -F ${{ matrix.node-version }}
+          curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import
+          curl -Os https://uploader.codecov.io/latest/codecov-linux
+          curl -Os https://uploader.codecov.io/latest/codecov-linux.SHA256SUM
+          curl -Os https://uploader.codecov.io/latest/codecov-linux.SHA256SUM.sig
+          gpg --verify codecov-linux.SHA256SUM.sig codecov-linux.SHA256SUM
+          shasum -a 256 -c codecov-linux.SHA256SUM
+          chmod +x codecov-linux
+          ./codecov-linux -t 18362b60-86ca-4be2-a8cb-2bc94f4f0bd2 -F ${{ matrix.node-version }}
