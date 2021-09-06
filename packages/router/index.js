@@ -1,19 +1,29 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import net from 'net'
-import { EServerConnectionAction } from '../mco-types/index.js'
+// @ts-check
+import net, { Server } from 'net'
 import { Logger } from '@drazisil/mco-logger'
+import { EServerConnectionAction, IServerConnection } from 'types'
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+/**
+ * @module router
+ */
 
 const { log } = Logger.getInstance()
 
+/**
+ * @property {RoutingServer} _instance
+ * @property {IServerConnection[]} _serverConnections
+ */
 export class RoutingServer {
   static _instance
   _server
-  /** @type {IServerConnection[]} */
   _serverConnections = []
   _serviceName = 'MCOServer:Route'
 
+  /**
+   *
+   * @returns {RoutingServer}
+   */
   static getInstance() {
     if (!RoutingServer._instance) {
       RoutingServer._instance = new RoutingServer(false)
@@ -47,6 +57,9 @@ export class RoutingServer {
       })
     })
   }
+  /**
+   * @param {Buffer} data
+   */
   _handleData(data) {
     const payload = data.toString()
     log('debug', `Payload: ${payload}`, {

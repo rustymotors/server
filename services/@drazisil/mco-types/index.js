@@ -1,3 +1,5 @@
+import types from '../../../packages/types'
+
 /**
  * @global
  * @readonly

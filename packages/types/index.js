@@ -1,18 +1,86 @@
-// Mco-server is a game server, written from scratch, for an old game
-// Copyright (C) <2017-2018>  <Joseph W Becher>
-//
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// @ts-check
+
+import { Cipher, Decipher } from 'crypto'
 
 /**
+ * @global
+ * @readonly
+ * @property {string} REGISTER_SERVICE "Register Service"
  */
+export const EServerConnectionAction = {
+  REGISTER_SERVICE: 'Register Service',
+}
+
+/**
+ * @property {string} id
+ * @property {Buffer} sessionkey
+ * @property {Decipher} in
+ * @property {Cipher} out
+ */
+export class IEncryptionManager {}
+
+/**
+ * @global
+ * @readonly
+ * @property {string} EServerConnectionName.ADMIN "Admin"
+ * @property {string} EServerConnectionName.AUTH "Auth"
+ * @property {string} EServerConnectionName.MCSERVER "MCServer"
+ * @property {string} EServerConnectionName.PATCH "Patch"
+ * @property {string} EServerConnectionName.PROXY "Proxy"
+ * @property {string} EServerConnectionName.SHARD "Shard"
+ */
+export class EServerConnectionName {}
+
+/**
+ * @global
+ * @property {EServerConnectionAction} [IServerConnection.action]
+ * @property {EServerConnectionName} IServerConnection.service
+ * @property {string} IServerConnection.host
+ * @property {number} IServerConnection.port
+ */
+export class IServerConnection {
+  action
+  service
+  host
+  port
+}
+
+/**
+ * @typedef {'Active' | 'Inactive'} ConnectionStatus
+ */
+
+/**
+ * @property { Cipher | null } cipher
+ * @property { Decipher | null} decipher
+ */
+export class ILobbyCiphers {}
+
+/**
+ * @property {string} id
+ * @property {number} appId
+ * @property {ConnectionStatus} status
+ * @property {string} remoteAddress
+ * @property {string} localPort
+ * @property {Socket} sock
+ * @property {null} msgEvent
+ * @property {number} lastMsg
+ * @property {boolean} useEncryption
+ * @property {ILobbyCiphers} encLobby
+ * @property {IEncryptionManager} enc
+ * @property {boolean} isSetupComplete
+ * @property {IConnnectionManager} mgr
+ * @property {boolean} inQueue
+ * @property {Buffer} decryptedCmd
+ * @property {Buffer} encryptedCmd
+ */
+export class ITCPConnection {}
 
 /**
  * @global
  * @typedef {object} IRawPacket
  * @property {string} connectionId
- * @property {TCPConnection} connection
+ * @property {ITCPConnection} connection
  * @property {Buffer} data
  * @property {number} localPort
  * @property {string  | undefined } remoteAddress
@@ -47,13 +115,6 @@
  * @typedef {Object} ISessionRecord
  * @property {string} skey
  * @property {string} sessionkey
- */
-
-/**
- * @global
- * @typedef {Object} MCOTS_Session
- * @property {module:ConnectionObj} con
- * @property {module:MessageNode[]} nodes
  */
 
 /**

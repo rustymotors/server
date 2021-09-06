@@ -5575,7 +5575,10 @@ __metadata:
     testdouble: 3.16.2
     ts-jest: 27.0.5
     ts-node: 10.2.1
+    types: "workspace:packages/types"
     typescript: 4.4.2
+  bin:
+    mco-server: ./bin/mco-server.js
   languageName: unknown
   linkType: soft
 
@@ -6864,6 +6867,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"router@workspace:packages/router":
+  version: 0.0.0-use.local
+  resolution: "router@workspace:packages/router"
+  languageName: unknown
+  linkType: soft
+
 "run-parallel@npm:^1.1.9":
   version: 1.2.0
   resolution: "run-parallel@npm:1.2.0"
@@ -7763,6 +7772,12 @@ __metadata:
   checksum: 99c11aaa8f45189fcfba6b8a4825fd684a321caa9bd7a76a27cf0c7732c174d198b99f449c52c3818107430b5f41c0ccbbfb75cb2ee3ca4a9451710986d61a60
   languageName: node
   linkType: hard
+
+"types@workspace:packages/types":
+  version: 0.0.0-use.local
+  resolution: "types@workspace:packages/types"
+  languageName: unknown
+  linkType: soft
 
 typescript@4.4.2:
   version: 4.4.2

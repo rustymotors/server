@@ -2,7 +2,7 @@
   "name": "mco-server",
   "version": "0.1.0",
   "description": "a server",
-  "main": "index.js",
+  "bin": "./bin/mco-server.js",
   "type": "module",
   "engines": {
     "node": "^14.13.1 || >=16.0.0"
@@ -11,16 +11,19 @@
     "node": "14.17.5",
     "yarn": "1.22.11"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "files": [
     "README.md",
     "CHANGELOG.md",
     "AUTHORS"
   ],
   "scripts": {
-    "start:dev": "LOG_LEVEL=silly node app.js",
-    "start": "node app.js",
-    "type-check": "tsc --noEmit",
-    "type-check:watch": "yarn run type-check -- --watch",
+    "start:dev": "LOG_LEVEL=silly node ./bin/mco-server.js",
+    "start": "node ./bin/mco-server.js",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
     "lint": "eslint && prettier --write services",
     "test": "yarn run lint-test",
     "lint-test": "yarn run lint && yarn run test:only",
@@ -36,7 +39,8 @@
   "dependencies": {
     "@babel/parser": "^7.15.5",
     "@drazisil/mco-logger": "4.1.10",
-    "sqlite3": "4"
+    "sqlite3": "4",
+    "types": "workspace:packages/types"
   },
   "devDependencies": {
     "@babel/cli": "7.15.4",
@@ -67,10 +71,5 @@
     "ts-jest": "27.0.5",
     "ts-node": "10.2.1",
     "typescript": "4.4.2"
-  },
-  "exports": {
-    "./": "./src/app.js",
-    "./structures": "./src/src/structures.js",
-    "./types": "./src/types.js"
   }
 }

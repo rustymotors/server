@@ -1,0 +1,7 @@
+{
+  "name": "mco-types",
+  "type": "module",
+  "exports": {
+    "./": "./index.js"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "router",
+  "packageManager": "yarn@3.0.2",
+  "type": "module",
+  "exports": {
+    "default": "./index.js"
+  }
+}
