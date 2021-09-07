@@ -11,8 +11,8 @@ import https from 'https'
 import { Logger } from '@drazisil/mco-logger'
 import config from './server.config.js'
 import { readFileSync } from 'fs'
-import { EServerConnectionName } from '../mco-types/index.js'
-import { RoutingMesh } from '../mco-common/index.js'
+import { EServerConnectionName } from 'types'
+import { RoutingMesh } from 'router/client'
 import process from 'process'
 
 const { log } = Logger.getInstance()

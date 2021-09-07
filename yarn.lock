@@ -2432,6 +2432,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"auth@workspace:packages/auth":
+  version: 0.0.0-use.local
+  resolution: "auth@workspace:packages/auth"
+  languageName: unknown
+  linkType: soft
+
 "babel-jest@npm:^27.1.0":
   version: 27.1.0
   resolution: "babel-jest@npm:27.1.0"
