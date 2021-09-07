@@ -87,13 +87,13 @@ export class ShardServer {
     /** @type {import('types').ShardEntry} */
     const shardClockTower = {
       name: 'The Clocktower',
-      discription: 'The Clocktower',
+      description: 'The Clocktower',
       id: 44,
       loginServerIp: host,
-      logigServerPort: 8226,
+      loginServerPort: 8226,
       lobbyServerIp: host,
       lobbyServerPort: 7003,
-      mcotsStatusIp: host,
+      mcotsServerIp: host,
       statusId: 0,
       statusReason: '',
       serverGroupName: 'Group-1',
@@ -108,13 +108,13 @@ export class ShardServer {
     /** @type {import('types').ShardEntry} */
     const shardTwinPinesMall = {
       name: 'Twin Pines Mall',
-      discription: 'Twin Pines Mall',
+      description: 'Twin Pines Mall',
       id: 88,
       loginServerIp: host,
       loginServerPort: 8226,
       lobbyServerIp: host,
       lobbyServerPort: 7003,
-      mcotsStatusIp: host,
+      mcotsServerIp: host,
       statusId: 0,
       statusReason: '',
       serverGroupName: 'Group-1',
@@ -128,7 +128,7 @@ export class ShardServer {
 
     /** @type {string[]} */
     const activeShardList = []
-    activeShardList.push(shardClockTower.formatForShardList())
+    activeShardList.push(this.formatForShardList(shardClockTower))
 
     return activeShardList.join('\n')
   }

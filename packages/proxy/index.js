@@ -9,6 +9,9 @@ import process from 'process'
 const { log } = Logger.getInstance()
 
 export class HTTPProxyServer {
+  /**
+   * @type {HTTPProxyServer}
+   */
   static _instance
   _server
   _serviceName = 'MCOServer:HTTPProxy'
@@ -40,6 +43,10 @@ export class HTTPProxyServer {
     })
   }
 
+  /**
+   * @param {http.IncomingMessage} request
+   * @param {http.ServerResponse} response
+   */
   handleRequest(request, response) {
     log(
       'debug',

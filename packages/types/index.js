@@ -244,19 +244,19 @@ export class ITCPConnection {}
 /**
  * @global
  * @typedef {object} ShardEntry
- * @param {string} name
- * @param {string} description
- * @param {number} id
- * @param {string} loginServerIp
- * @param {number} loginServerPort
- * @param {string} lobbyServerIp
- * @param {number} lobbyServerPort
- * @param {string} mcotsServerIp
- * @param {number} statusId
- * @param {string} statusReason
- * @param {string} serverGroupName
- * @param {number} population
- * @param {number} maxPersonasPerUser
- * @param {string} diagnosticServerHost
- * @param {number} diagnosticServerPort
+ * @property {string} name
+ * @property {string} description
+ * @property {number} id
+ * @property {string} loginServerIp
+ * @property {number} loginServerPort
+ * @property {string} lobbyServerIp
+ * @property {number} lobbyServerPort
+ * @property {string} mcotsServerIp
+ * @property {number} statusId
+ * @property {string} statusReason
+ * @property {string} serverGroupName
+ * @property {number} population
+ * @property {number} maxPersonasPerUser
+ * @property {string} diagnosticServerHost
+ * @property {number} diagnosticServerPort
  */

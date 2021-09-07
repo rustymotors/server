@@ -20,6 +20,9 @@ export class RoutingServer {
    */
   static _instance
   _server
+  /**
+   * @type {import('types').IServerConnection[]}
+   */
   _serverConnections = []
   _serviceName = 'MCOServer:Route'
 

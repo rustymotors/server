@@ -8,6 +8,9 @@ import { Buffer } from 'buffer'
 const { log } = Logger.getInstance()
 
 export class RoutingMesh {
+  /**
+   * @type {RoutingMesh}
+   */
   static _instance
   /**
    *

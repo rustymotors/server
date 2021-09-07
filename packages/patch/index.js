@@ -16,6 +16,9 @@ export const CastanetResponse = {
 }
 
 export class PatchServer {
+  /**
+   * @type {PatchServer}
+   */
   static _instance
   _config
   _server
@@ -54,6 +57,10 @@ export class PatchServer {
     })
   }
 
+  /**
+   * @param {http.IncomingMessage} request
+   * @param {http.ServerResponse} response
+   */
   handleRequest(request, response) {
     const responseData = CastanetResponse
 
