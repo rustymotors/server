@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Logger } from '@drazisil/mco-logger'
 import net from 'net'
-import { EServerConnectionAction, EServerConnectionName } from 'types'
+import { EServerConnectionAction } from 'types'
 import { Buffer } from 'buffer'
 
 const { log } = Logger.getInstance()
@@ -26,7 +26,7 @@ export class RoutingMesh {
 
   /**
    *
-   * @param {EServerConnectionName} service
+   * @param {import('types').EServerConnectionName} service
    * @param {string} host
    * @param {number} port
    * @external types
@@ -45,7 +45,7 @@ export class RoutingMesh {
 
   /**
    *
-   * @param {EServerConnectionName} service
+   * @param {import('types').EServerConnectionName} service
    * @param {Buffer} inputBuffer
    * @returns {void}
    */
