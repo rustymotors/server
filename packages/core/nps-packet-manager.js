@@ -9,7 +9,7 @@ import { Logger } from '@drazisil/mco-logger'
 import { LobbyServer } from '../LobbyServer/index.js'
 import { LoginServer } from '../LoginServer/index.js'
 import { PersonaServer } from '../PersonaServer/persona-server.js'
-import { DatabaseManager } from '../shared/database-manager.js'
+import { DatabaseManager } from 'database'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { TCPConnection } from './tcpConnection.js'
 import process from 'process'

@@ -6,12 +6,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { MessageNode } from '../MCOTS/message-node.js'
-import { defaultHandler } from '../MCOTS/tcp-manager.js'
-import { DatabaseManager } from '../shared/database-manager.js'
+import { MessageNode } from '../../services/MCOTS/message-node.js'
+import { defaultHandler } from '../../services/MCOTS/tcp-manager.js'
+import { DatabaseManager } from 'database'
 import { NPSPacketManager } from './nps-packet-manager.js'
 import { TCPConnection } from './tcpConnection.js'
-import { NPS_COMMANDS } from '../shared/structures.js'
+import { NPS_COMMANDS } from '../../services/shared/structures.js'
 import process from 'process'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Socket } from 'net'
@@ -75,7 +75,7 @@ export class ConnectionManager {
 
   /**
    * Check incoming data and route it to the correct handler based on localPort
-   * @param {import('../../src/types').IRawPacket} rawPacket
+   * @param {import('types').IRawPacket} rawPacket
    * @return {Promise<TCPConnection>}
    */
   async processData(rawPacket) {

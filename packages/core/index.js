@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import config from '../../config/index.js'
+import config from 'config'
 import { ConnectionManager } from './connection-mgr.js'
 import { ListenerThread } from './listener-thread.js'
 
@@ -77,5 +77,6 @@ export class MCServer {
     log('info', 'Listening sockets create successfully.', {
       service: this.serviceName,
     })
+    console.log('foo')
   }
 }

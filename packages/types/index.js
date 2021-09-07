@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // @ts-check
 
+import { Cipher, Decipher } from 'crypto'
+
 /**
  * @module types
  */
@@ -46,15 +48,20 @@ export const EServerConnectionName = {
  */
 
 /**
- * @typedef {'Active' | 'Inactive'} ConnectionStatus
+ * @global
+ * @readonly
+ * @enum {string}
  */
+export const ConnectionStatus = {
+  ACTIVE: 'Active',
+  INACTIVE: 'Inactive',
+}
 
 /**
- * @class
+ * @typedef {object} ILobbyCiphers
  * @property { Cipher | null } cipher
  * @property { Decipher | null} decipher
  */
-export class ILobbyCiphers {}
 
 /**
  * @property {string} id

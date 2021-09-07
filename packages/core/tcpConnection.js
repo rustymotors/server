@@ -6,9 +6,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { createCipheriv, createDecipheriv } from 'crypto'
+import { Cipher, createCipheriv, createDecipheriv, Decipher } from 'crypto'
 import { EncryptionManager } from './encryption-mgr.js'
 import { Buffer } from 'buffer'
+import { ConnectionManager } from './connection-mgr.js'
 
 /**
  * Contains the proporties and methods for a TCP connection
@@ -20,8 +21,8 @@ import { Buffer } from 'buffer'
 
 /**
  * @typedef LobbyCiphers
- * @property { crypto.Cipher | null } cipher
- * @property { crypto.Decipher | null} decipher
+ * @property { Cipher | null } cipher
+ * @property { Decipher | null} decipher
  */
 
 /**
@@ -35,31 +36,15 @@ import { Buffer } from 'buffer'
  * @property {null} msgEvent
  * @property {number} lastMsg
  * @property {boolean} useEncryption
- * @property {LobbyCiphers} encLobby
+ * @property {import('types').ILobbyCiphers} encLobby
  * @property {EncryptionManager} enc
  * @property {boolean} isSetupComplete
- * @property {module:ConnectionMgr.ConnectionMgr} mgr
+ * @property {ConnectionManager} mgr
  * @property {boolean} inQueue
  * @property {Buffer} decryptedCmd
  * @property {Buffer} encryptedCmd
  */
 export class TCPConnection {
-  id
-  appId
-  status
-  remoteAddress
-  localPort
-  sock
-  msgEvent
-  lastMsg
-  useEncryption
-  encLobby
-  enc
-  isSetupComplete
-  mgr
-  inQueue
-  decryptedCmd
-  encryptedCmd
   /**
    *
    * @param {string} connectionId
@@ -79,10 +64,10 @@ export class TCPConnection {
     this.msgEvent = null
     this.lastMsg = 0
     this.useEncryption = false
-    /** @type {LobbyCiphers} */
+    /** @type {import('types').ILobbyCiphers} */
     this.encLobby = {
-      cipher: undefined,
-      decipher: undefined,
+      cipher: null,
+      decipher: null,
     }
     this.enc = new EncryptionManager()
     this.isSetupComplete = false
