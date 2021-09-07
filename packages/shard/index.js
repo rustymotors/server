@@ -7,13 +7,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import { Logger } from '@drazisil/mco-logger'
 import { readFileSync } from 'fs'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import http, { Server } from 'http'
+import http from 'http'
+import process from 'process'
 import { RoutingMesh } from 'router/client'
 import { EServerConnectionName } from 'types'
-import config from './server.config.js'
-import { ShardEntry } from './shard-entry.js'
-import process from 'process'
+import config from './config.js'
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
@@ -27,7 +25,7 @@ const { log } = Logger.getInstance()
 
 /**
  * @class
- * @property {config.config} config
+ * @property {IServerConfig} config
  * @property {string[]} banList
  * @property {string[]} possibleShards
  * @property {Server} serverPatch
@@ -86,45 +84,47 @@ export class ShardServer {
   _generateShardList() {
     // const { host } = this._config.serverSettings
     const host = '10.0.0.20'
-    const shardClockTower = new ShardEntry(
-      'The Clocktower',
-      'The Clocktower',
-      44,
-      host,
-      8226,
-      host,
-      7003,
-      host,
-      0,
-      '',
-      'Group-1',
-      88,
-      2,
-      host,
-      80,
-    )
+    /** @type {import('types').ShardEntry} */
+    const shardClockTower = {
+      name: 'The Clocktower',
+      discription: 'The Clocktower',
+      id: 44,
+      loginServerIp: host,
+      logigServerPort: 8226,
+      lobbyServerIp: host,
+      lobbyServerPort: 7003,
+      mcotsStatusIp: host,
+      statusId: 0,
+      statusReason: '',
+      serverGroupName: 'Group-1',
+      population: 88,
+      maxPersonasPerUser: 2,
+      diagnosticServerHost: host,
+      diagnosticServerPort: 80,
+    }
 
-    this._possibleShards.push(shardClockTower.formatForShardList())
+    this._possibleShards.push(this.formatForShardList(shardClockTower))
 
-    const shardTwinPinesMall = new ShardEntry(
-      'Twin Pines Mall',
-      'Twin Pines Mall',
-      88,
-      host,
-      8226,
-      host,
-      7003,
-      host,
-      0,
-      '',
-      'Group-1',
-      88,
-      2,
-      host,
-      80,
-    )
+    /** @type {import('types').ShardEntry} */
+    const shardTwinPinesMall = {
+      name: 'Twin Pines Mall',
+      discription: 'Twin Pines Mall',
+      id: 88,
+      loginServerIp: host,
+      loginServerPort: 8226,
+      lobbyServerIp: host,
+      lobbyServerPort: 7003,
+      mcotsStatusIp: host,
+      statusId: 0,
+      statusReason: '',
+      serverGroupName: 'Group-1',
+      population: 88,
+      maxPersonasPerUser: 2,
+      diagnosticServerHost: host,
+      diagnosticServerPort: 80,
+    }
 
-    this._possibleShards.push(shardTwinPinesMall.formatForShardList())
+    this._possibleShards.push(this.formatForShardList(shardTwinPinesMall))
 
     /** @type {string[]} */
     const activeShardList = []
@@ -235,7 +235,7 @@ export class ShardServer {
 
   /**
    *
-   * @returns {Server}
+   * @returns {import('http').Server}
    */
   start() {
     const host = config.serverSettings.host || 'localhost'
@@ -253,5 +253,27 @@ export class ShardServer {
         port,
       )
     })
+  }
+
+  /**
+   * @param {import('types').ShardEntry} shardRecord
+   * @return {string}
+   */
+  formatForShardList(shardRecord) {
+    return `[${shardRecord.name}]
+      Description=${shardRecord.description}
+      ShardId=${shardRecord.id}
+      LoginServerIP=${shardRecord.loginServerIp}
+      LoginServerPort=${shardRecord.loginServerPort}
+      LobbyServerIP=${shardRecord.lobbyServerIp}
+      LobbyServerPort=${shardRecord.lobbyServerPort}
+      MCOTSServerIP=${shardRecord.mcotsServerIp}
+      StatusId=${shardRecord.statusId}
+      Status_Reason=${shardRecord.statusReason}
+      ServerGroup_Name=${shardRecord.serverGroupName}
+      Population=${shardRecord.population}
+      MaxPersonasPerUser=${shardRecord.maxPersonasPerUser}
+      DiagnosticServerHost=${shardRecord.diagnosticServerHost}
+      DiagnosticServerPort=${shardRecord.diagnosticServerPort}`
   }
 }

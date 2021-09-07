@@ -95,7 +95,7 @@ export class ITCPConnection {}
 /**
  *
  * @global
- * @typedef {Object} IServerConfig
+ * @typedef {object} IServerConfig
  * @property {string} certFilename
  * @property {string} ipServer
  * @property {string} privateKeyFilename
@@ -106,13 +106,13 @@ export class ITCPConnection {}
 /**
  *
  * @global
- * @typedef {Object} IAppSettings
+ * @typedef {object} IAppSettings
  * @property {IServerConfig} serverConfig
  */
 
 /**
  * @global
- * @typedef {Object} ISessionRecord
+ * @typedef {object} ISessionRecord
  * @property {string} skey
  * @property {string} sessionkey
  */
@@ -120,7 +120,7 @@ export class ITCPConnection {}
 /**
  *
  * @global
- * @typedef {Object} IPersonaRecord
+ * @typedef {object} IPersonaRecord
  * @property {number} customerId
  * @property {Buffer} id
  * @property {Buffer} maxPersonas
@@ -131,7 +131,7 @@ export class ITCPConnection {}
 
 /**
  * @global
- * @typedef {Object} ILobbyInfo
+ * @typedef {object} ILobbyInfo
  * @property {number} lobbyId
  * @property {number} racetypeId
  * @property {number} turfId
@@ -218,7 +218,7 @@ export class ITCPConnection {}
 
 /**
  * @global
- * @typedef {Object} ISslOptions
+ * @typedef {object} ISslOptions
  * @property {string} cert
  * @property {boolean} honorCipherOrder
  * @property {string} key
@@ -227,7 +227,7 @@ export class ITCPConnection {}
 
 /**
  * @global
- * @typedef {Object} IUserRecordMini
+ * @typedef {object} IUserRecordMini
  * @property {string} contextId
  * @property {number} customerId
  * @property {number} userId
@@ -235,8 +235,28 @@ export class ITCPConnection {}
 
 /**
  * @global
- * @typedef {Object} InpsCommandMap
+ * @typedef {object} InpsCommandMap
  * @property {string} name
  * @property {number} value
  * @property {'Lobby' | 'Login'} module
+ */
+
+/**
+ * @global
+ * @typedef {object} ShardEntry
+ * @param {string} name
+ * @param {string} description
+ * @param {number} id
+ * @param {string} loginServerIp
+ * @param {number} loginServerPort
+ * @param {string} lobbyServerIp
+ * @param {number} lobbyServerPort
+ * @param {string} mcotsServerIp
+ * @param {number} statusId
+ * @param {string} statusReason
+ * @param {string} serverGroupName
+ * @param {number} population
+ * @param {number} maxPersonasPerUser
+ * @param {string} diagnosticServerHost
+ * @param {number} diagnosticServerPort
  */

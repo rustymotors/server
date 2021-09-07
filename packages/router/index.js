@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // @ts-check
-import net, { Server } from 'net'
+import net from 'net'
 import { Logger } from '@drazisil/mco-logger'
 import { EServerConnectionAction } from 'types'
 
@@ -120,7 +120,7 @@ export class RoutingServer {
 
   /**
    *
-   * @returns {Promise<Server>}
+   * @returns {Promise<import('net').Server>}
    */
   async start() {
     const port = 4242

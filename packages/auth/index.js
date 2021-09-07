@@ -9,7 +9,7 @@
 
 import https from 'https'
 import { Logger } from '@drazisil/mco-logger'
-import config from './server.config.js'
+import config from './config.js'
 import { readFileSync } from 'fs'
 import { EServerConnectionName } from 'types'
 import { RoutingMesh } from 'router/client'
