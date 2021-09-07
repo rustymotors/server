@@ -7,7 +7,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { createServer } from 'net'
+import { createServer, Server, Socket } from 'net'
 
 const { log } = Logger.getInstance()
 
@@ -24,13 +24,13 @@ export class ListenerThread {
    * takes the data buffer and creates a IRawPacket object
    *
    * @param {Buffer} data
-   * @param {TCPConnection} connection
+   * @param {import('types').ITCPConnection} connection
    * @return {Promise<void>}
    */
   async _onData(data, connection) {
     try {
       const { localPort, remoteAddress } = connection.sock
-      /** @type {IRawPacket} */
+      /** @type {import('types').IRawPacket} */
       const rawPacket = {
         connectionId: connection.id,
         connection,
@@ -47,7 +47,7 @@ export class ListenerThread {
         )}}`,
         { service: 'mcoserver:ListenerThread' },
       )
-      /** @type {TCPConnection} */
+      /** @type {import('types').ITCPConnection} */
       let newConnection
       try {
         newConnection = await connection.mgr.processData(rawPacket)
@@ -93,7 +93,7 @@ export class ListenerThread {
    * Server listener method
    *
    * @param {Socket} socket
-   * @param {ConnectionManager} connectionMgr
+   * @param {import('types').IConnectionManager} connectionMgr
    * @return {void}
    */
   _listener(socket, connectionMgr) {
@@ -138,7 +138,7 @@ export class ListenerThread {
    * Given a port and a connection manager object,
    * create a new TCP socket listener for that port
    * @param {number} localPort
-   * @param {ConnectionManager} connectionMgr
+   * @param {import('types').IConnectionManager} connectionMgr
    * @returns {Promise<Server>}
    */
   async startTCPListener(localPort, connectionMgr) {

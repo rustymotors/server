@@ -3,6 +3,7 @@
 
 import { Cipher, Decipher } from 'crypto'
 import { Socket } from 'net'
+import { Database } from 'sqlite3'
 
 /**
  * @module types
@@ -21,11 +22,13 @@ export const EServerConnectionAction = {
  * @typedef {object} IEncryptionManager
  * @property {string} id
  * @property {Buffer} sessionkey
- * @property {Decipher} in
- * @property {Cipher} out
+ * @property {Decipher | undefined} in
+ * @property {Cipher | undefined} out
  * @property {(arg0: Buffer) => Buffer} decrypt
  * @property {(arg0: Buffer) => Buffer} encrypt
- * @property {() => number} getId
+ * @property {() => string} getId
+ * @property {(sessionkey: Buffer) => boolean} setEncryptionKey
+ * @property {() => string} _getSessionKey
  */
 
 /**
@@ -68,27 +71,71 @@ export const ConnectionStatus = {
  */
 
 /**
- * @typedef {object} IConnnectionManager
+ * @typedef {object} IDatabaseManager
+ * @property {Database} localDB
+ * @property {number} changes
+ * @property {string} serviceName
+ * @property {(customerId: number) => Promise<ISessionRecord>} fetchSessionKeyByCustomerId
+ * @property {(connectionId: string) => Promise<ISessionRecord>} fetchSessionKeyByConnectionId
+ * @property {(customerId: number, sessionkey: string, contextId: string, connectionId: string) => Promise<number>} _updateSessionKey
+ */
+
+/**
+ * @global
+ * @typedef {object} IConnectionManager
+ * @property {IDatabaseManager} databaseMgr
+ * @property {ITCPConnection[]} connections
+ * @property {number} newConnectionId
+ * @property {string[]} banList
+ * @property {string} serviceName
+ * @property {(connectionId: string, socket: Socket) => ITCPConnection} newConnection
+ * @property {(rawPacket: IRawPacket) => Promise<ITCPConnection>} processData
+ * @property {(opCode: number) => string} getNameFromOpCode
+ * @property {(name: string) => number} getOpcodeFromName
+ * @property {() => string[]} getBans
+ * @property {(remoteAddress: string, localPort: number) => ITCPConnection | undefined} findConnectionByAddressAndPort
+ * @property {(connectionId: string) => ITCPConnection} findConnectionById
+ * @property {(address: string, port: number, newConnection: ITCPConnection) => Promise<void>} _updateConnectionByAddressAndPort
+ * @property {(socket: Socket) => ITCPConnection} findOrNewConnection
+ * @property {() => void} resetAllQueueState
+ * @property {() => ITCPConnection[]} dumpConnections
  */
 
 /**
  * @typedef {object} IMessageNode
  * @property {(arg0: Buffer) => void} updateBuffer
  * @property {() => Buffer} serialize
+ * @property {(arg0: number) => void} setAppId
+ * @property {(arg0: Buffer) => void} deserialize
+ * @property {(arg0: number) => void} setSeq
+ * @property {(arg0: number) => void} setMsgNo
+ * @property {(packet: Buffer) => void} setMsgHeader
+ * @property {() => boolean} isMCOTS
+ * @property {() => void} dumpPacket
+ * @property {() => number} getLength
  * @property {number} flags
  * @property {number} appId
  * @property {number} toFrom
  * @property {Buffer} data
+ * @property {number} msgNo
+ * @property {number} seq
+ * @property {EMessageDirection} direction
+ * @property {number} dataLength
+ * @property {string} mcoSig
+ * @property {string} BaseMsgHeader
  */
 
 /**
  * @global
  * @typedef {object} ITCPConnection
+ * @property {(arg0: Buffer)=> void} setEncryptionKey
+ * @property {(skey: string) => void} setEncryptionKeyDES
+ * @property {(messageBuffer: Buffer) => Buffer} decipherBufferDES
  * @property {string} id
  * @property {number} appId
  * @property {ConnectionStatus} status
- * @property {string} remoteAddress
- * @property {string} localPort
+ * @property {string | undefined} remoteAddress
+ * @property {number} localPort
  * @property {Socket} sock
  * @property {null} msgEvent
  * @property {number} lastMsg
@@ -96,10 +143,11 @@ export const ConnectionStatus = {
  * @property {ILobbyCiphers} encLobby
  * @property {IEncryptionManager} enc
  * @property {boolean} isSetupComplete
- * @property {IConnnectionManager} mgr
+ * @property {IConnectionManager} mgr
  * @property {boolean} inQueue
  * @property {Buffer} decryptedCmd
  * @property {Buffer} encryptedCmd
+ * @property {(messageBuffer: Buffer) => Buffer} cipherBufferDES
  */
 
 /**

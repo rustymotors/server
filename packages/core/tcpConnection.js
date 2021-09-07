@@ -10,13 +10,10 @@ import { Cipher, createCipheriv, createDecipheriv, Decipher } from 'crypto'
 import { EncryptionManager } from './encryption-mgr.js'
 import { Buffer } from 'buffer'
 import { ConnectionManager } from './connection-mgr.js'
+import { ConnectionStatus } from 'types'
 
 /**
  * Contains the proporties and methods for a TCP connection
- */
-
-/**
- * @typedef {'Active' | 'Inactive'} ConnectionStatus
  */
 
 /**
@@ -31,7 +28,7 @@ import { ConnectionManager } from './connection-mgr.js'
  * @property {number} appId
  * @property {ConnectionStatus} status
  * @property {string} remoteAddress
- * @property {string} localPort
+ * @property {number} localPort
  * @property {import("net").Socket} sock
  * @property {null} msgEvent
  * @property {number} lastMsg

@@ -138,7 +138,7 @@ export class DatabaseManager {
   /**
    *
    * @param {number} customerId
-   * @returns {Promise<ISessionRecord>}
+   * @returns {Promise<import('types').ISessionRecord>}
    */
   async fetchSessionKeyByCustomerId(customerId) {
     return new Promise((resolve, reject) => {
@@ -152,7 +152,7 @@ export class DatabaseManager {
           }
 
           stmt.finalize()
-          /** @type {ISessionRecord} */
+          /** @type {import('types').ISessionRecord} */
           return resolve(row)
         })
       } catch (error) {
@@ -164,7 +164,7 @@ export class DatabaseManager {
   /**
    *
    * @param {string} connectionId
-   * @returns {Promise<ISessionRecord>}
+   * @returns {Promise<import('types').ISessionRecord>}
    */
   async fetchSessionKeyByConnectionId(connectionId) {
     return new Promise((resolve, reject) => {
@@ -178,7 +178,7 @@ export class DatabaseManager {
           }
 
           stmt.finalize()
-          /** @type {ISessionRecord} */
+          /** @type {import('types').ISessionRecord} */
           return resolve(row)
         })
       } catch (error) {

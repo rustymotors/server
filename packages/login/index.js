@@ -7,13 +7,10 @@
 import { Logger } from '@drazisil/mco-logger'
 import { Buffer } from 'buffer'
 
-import { certificate } from '../../config/index.js'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { TCPConnection } from '../../services/MCServer/tcpConnection.js'
-import { DatabaseManager } from '../../services/shared/database-manager.js'
-import { NPSUserStatus } from '../../services/LoginServer/nps-user-status.js'
-import { premadeLogin } from '../../services/LoginServer/packet.js'
+import { certificate } from 'config'
+import { DatabaseManager } from 'database'
+import { NPSUserStatus } from './nps-user-status'
+import { premadeLogin } from './packet'
 
 const { log } = Logger.getInstance()
 
@@ -31,8 +28,8 @@ export class LoginServer {
 
   /**
    *
-   * @param {IRawPacket} rawPacket
-   * @return {Promise<TCPConnection>}
+   * @param {import('types').IRawPacket} rawPacket
+   * @return {Promise<import('types').ITCPConnection>}
    */
   async dataHandler(rawPacket) {
     let processed = true
@@ -151,7 +148,7 @@ export class LoginServer {
   /**
    * Process a UserLogin packet
    * Should return a @link {module:NPSMsg} object
-   * @param {TCPConnection} connection
+   * @param {import('types').ITCPConnection} connection
    * @param {Buffer} data
    * @return {Promise<Buffer>}
    */
