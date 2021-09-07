@@ -8,8 +8,8 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { Socket } from 'net'
-import { NPSMessage } from '../MCOTS/nps-msg.js'
-import { TCPConnection } from '../MCServer/tcpConnection.js'
+import { NPSMessage } from 'transactions'
+import { TCPConnection } from 'core'
 import { NPSPersonaMapsMessage } from './nps-persona-maps-msg.js'
 import { Buffer } from 'buffer'
 
@@ -23,6 +23,9 @@ const { log } = Logger.getInstance()
  * @property {IPersonaRecord[]} personaList
  */
 export class PersonaServer {
+  /**
+   * @type {PersonaServer}
+   */
   static _instance
   personaList
   serviceName
@@ -347,7 +350,7 @@ export class PersonaServer {
   /**
    *
    * @param {number} customerId
-   * @return {Promise<IPersonaRecord[]>}
+   * @return {Promise<import('types').IPersonaRecord[]>}
    */
   async getPersonasByCustomerId(customerId) {
     const results = this.personaList.filter(
@@ -365,7 +368,7 @@ export class PersonaServer {
   /**
    *
    * @param {number} id
-   * @return {Promise<IPersonaRecord[]>}
+   * @return {Promise<import('types').IPersonaRecord[]>}
    */
   async getPersonasByPersonaId(id) {
     const results = this.personaList.filter(persona => {
@@ -384,7 +387,7 @@ export class PersonaServer {
    * TODO: Store in a database, instead of being hard-coded
    *
    * @param {number} customerId
-   * @return {Promise<IPersonaRecord[]>}
+   * @return {Promise<import('types').IPersonaRecord[]>}
    */
   async getPersonaMapsByCustomerId(customerId) {
     switch (customerId) {
@@ -472,8 +475,8 @@ export class PersonaServer {
 
   /**
    *
-   * @param {IRawPacket} rawPacket
-   * @returns {Promise<TCPConnection>}
+   * @param {import('types').IRawPacket} rawPacket
+   * @returns {Promise<import('types').ITCPConnection>}
    */
   async dataHandler(rawPacket) {
     const { connection, data, localPort, remoteAddress } = rawPacket

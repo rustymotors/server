@@ -6,9 +6,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import { Logger } from '@drazisil/mco-logger'
 
-import { LobbyServer } from '../LobbyServer/index.js'
-import { LoginServer } from '../LoginServer/index.js'
-import { PersonaServer } from '../PersonaServer/persona-server.js'
+import { LobbyServer } from 'lobby'
+import { LoginServer } from 'login'
+import { PersonaServer } from 'persona'
 import { DatabaseManager } from 'database'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { TCPConnection } from './tcpConnection.js'

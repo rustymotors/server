@@ -8,10 +8,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { NPSMessage } from '../MCOTS/nps-msg.js'
-import { TCPConnection } from '../MCServer/tcpConnection.js'
-import { PersonaServer } from '../PersonaServer/persona-server.js'
-import { DatabaseManager } from '../shared/database-manager.js'
+import { NPSMessage } from 'transactions'
+import { TCPConnection } from 'core'
+import { PersonaServer } from 'persona'
+import { DatabaseManager } from 'database'
 import { NPSUserInfo } from './nps-user-info.js'
 import { Buffer } from 'buffer'
 import process from 'process'

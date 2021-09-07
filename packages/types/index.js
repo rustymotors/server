@@ -2,6 +2,7 @@
 // @ts-check
 
 import { Cipher, Decipher } from 'crypto'
+import { Socket } from 'net'
 
 /**
  * @module types
@@ -17,12 +18,15 @@ export const EServerConnectionAction = {
 }
 
 /**
+ * @typedef {object} IEncryptionManager
  * @property {string} id
  * @property {Buffer} sessionkey
  * @property {Decipher} in
  * @property {Cipher} out
+ * @property {(arg0: Buffer) => Buffer} decrypt
+ * @property {(arg0: Buffer) => Buffer} encrypt
+ * @property {() => number} getId
  */
-export class IEncryptionManager {}
 
 /**
  * @global
@@ -64,6 +68,22 @@ export const ConnectionStatus = {
  */
 
 /**
+ * @typedef {object} IConnnectionManager
+ */
+
+/**
+ * @typedef {object} IMessageNode
+ * @property {(arg0: Buffer) => void} updateBuffer
+ * @property {() => Buffer} serialize
+ * @property {number} flags
+ * @property {number} appId
+ * @property {number} toFrom
+ * @property {Buffer} data
+ */
+
+/**
+ * @global
+ * @typedef {object} ITCPConnection
  * @property {string} id
  * @property {number} appId
  * @property {ConnectionStatus} status
@@ -81,7 +101,20 @@ export const ConnectionStatus = {
  * @property {Buffer} decryptedCmd
  * @property {Buffer} encryptedCmd
  */
-export class ITCPConnection {}
+
+/**
+ * @global
+ * @typedef {object} ConnectionWithPacket
+ * @property {ITCPConnection} ConnectionWithPacket.connection
+ * @property {IMessageNode} ConnectionWithPacket.packet
+ */
+
+/**
+ * @global
+ * @typedef {object} ConnectionWithPackets
+ * @property {ITCPConnection} ConnectionWithPackets.connection
+ * @property {IMessageNode[]} ConnectionWithPackets.packetList
+ */
 
 /**
  * @global

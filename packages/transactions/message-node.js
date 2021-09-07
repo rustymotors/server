@@ -76,14 +76,12 @@ export class MessageNode {
 
       this.msgNo = this.data.readInt16LE(0)
     } catch (err) {
-      if (err.code && err.stack) {
-        // Probably an error
-        if (err.code === 'ERR_OUT_OF_RANGE') {
-          // This is likeley not an MCOTS packet, ignore
-          throw new Error(
-            `[MessageNode] Not long enough to deserialize, only ${packet.length} bytes long`,
-          )
-        }
+      if (err instanceof RangeError) {
+        throw new Error(
+          `[MessageNode] Not long enough to deserialize, only ${packet.length} bytes long`,
+        )
+      }
+      if (err instanceof Error) {
         throw new Error(
           `[MessageNode] Unable to read msgNo from ${packet.toString(
             'hex',

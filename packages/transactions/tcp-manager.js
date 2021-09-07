@@ -7,15 +7,15 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { ClientConnectMessage } from '../MCServer/client-connect-msg.js'
-import { GenericReplyMessage } from '../MCServer/generic-reply-msg.js'
-import { GenericRequestMessage } from '../MCServer/generic-request-msg.js'
-import { DatabaseManager } from '../shared/database-manager.js'
-import { StockCar } from './stock-car.js'
-import { StockCarInfoMessage } from './stock-car-info-msg.js'
+import { ClientConnectMessage } from 'transactions'
+import { GenericReplyMessage } from 'core'
+import { GenericRequestMessage } from 'core'
+import { DatabaseManager } from 'database'
+import { StockCar } from 'transactions'
+import { StockCarInfoMessage } from 'transactions'
 import { MCOTServer } from './index.js'
 import { MessageNode } from './message-node.js'
-import { TCPConnection } from '../MCServer/tcpConnection.js'
+import { TCPConnection } from 'core'
 import { Buffer } from 'buffer'
 
 const { log } = Logger.getInstance()
@@ -28,24 +28,10 @@ const mcotServer = MCOTServer.getInstance()
 const databaseManager = DatabaseManager.getInstance()
 
 /**
- * @global
- * @typedef {object} ConnectionWithPacket
- * @property {TCPConnection} ConnectionWithPacket.connection
- * @property {MessageNode} ConnectionWithPacket.packet
- */
-
-/**
- * @global
- * @typedef {object} ConnectionWithPackets
- * @property {TCPConnection} ConnectionWithPackets.connection
- * @property {MessageNode[]} ConnectionWithPackets.packetList
- */
-
-/**
  *
- * @param {TCPConnection} connection
- * @param {MessageNode} packet
- * @return {Promise<ConnectionWithPacket>}
+ * @param {import('types').ITCPConnection} connection
+ * @param {import('types').IMessageNode} packet
+ * @return {Promise<import('types').ConnectionWithPacket>}
  */
 async function compressIfNeeded(connection, packet) {
   // Check if compression is needed
@@ -69,9 +55,9 @@ async function compressIfNeeded(connection, packet) {
 
 /**
  *
- * @param {TCPConnection} connection
- * @param {MessageNode} packet
- * @returns {ConnectionWithPackets}
+ * @param {import('types').ITCPConnection} connection
+ * @param {import('types').IMessageNode} packet
+ * @returns {Promise<import('types').ConnectionWithPacket>}
  */
 async function encryptIfNeeded(connection, packet) {
   // Check if encryption is needed
@@ -96,12 +82,12 @@ async function encryptIfNeeded(connection, packet) {
 
 /**
  *
- * @param {TCPConnection} connection
- * @param {MessageNode[]} packetList
- * @return {Promise<TCPConnection>}
+ * @param {import('types').ITCPConnection} connection
+ * @param {import('types').IMessageNode[]} packetList
+ * @return {Promise<import('types').ITCPConnection>}
  */
 async function socketWriteIfOpen(connection, packetList) {
-  /** @type {ConnectionWithPackets} */
+  /** @type {import('types').ConnectionWithPackets} */
   const updatedConnection = {
     connection: connection,
     packetList: packetList,
@@ -147,9 +133,9 @@ async function socketWriteIfOpen(connection, packetList) {
 
 /**
  *
- * @param {TCPConnection} connection
- * @param {MessageNode} packet
- * @return {Promise<ConnectionWithPackets>}
+ * @param {import('types').ITCPConnection} connection
+ * @param {import('types').IMessageNode} packet
+ * @return {Promise<import('types').ConnectionWithPackets>}
  */
 async function getStockCarInfo(connection, packet) {
   const getStockCarInfoMessage = new GenericRequestMessage()
@@ -180,9 +166,9 @@ async function getStockCarInfo(connection, packet) {
 
 /**
  *
- * @param {TCPConnection} connection
- * @param {MessageNode} packet
- * @return {Promise<ConnectionWithPackets>}
+ * @param {import('types').ITCPConnection} connection
+ * @param {import('types').IMessageNode} packet
+ * @return {Promise<import('types').ConnectionWithPackets>}
  */
 async function clientConnect(connection, packet) {
   /**
@@ -232,9 +218,9 @@ async function clientConnect(connection, packet) {
 
 /**
  * Route or process MCOTS commands
- * @param {MessageNode} node
- * @param {TCPConnection} conn
- * @return {Promise<TCPConnection>}
+ * @param {import('types').IMessageNode} node
+ * @param {import('types').ITCPConnection} conn
+ * @return {Promise<import('types').ITCPConnection>}
  */
 async function processInput(node, conn) {
   const currentMessageNo = node.msgNo
@@ -370,10 +356,9 @@ async function processInput(node, conn) {
 }
 
 /**
- *
- * @param {MessageNode} msg
- * @param {TCPConnection} con
- * @return {Promise<TCPConnection>}
+ * @param {import('types').ITCPConnection} con
+ * @return {Promise<import('types').ITCPConnection>}
+ * @param {import('types').IMessageNode} message
  */
 async function messageReceived(message, con) {
   const newConnection = con
@@ -453,8 +438,8 @@ async function messageReceived(message, con) {
 
 /**
  *
- * @param {IRawPacket} rawPacket
- * @return {Promise<TCPConnection>}
+ * @param {import('types').IRawPacket} rawPacket
+ * @return {Promise<import('types').ITCPConnection>}
  */
 export async function defaultHandler(rawPacket) {
   const { connection, remoteAddress, localPort, data } = rawPacket

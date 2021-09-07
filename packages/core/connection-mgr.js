@@ -6,12 +6,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { MessageNode } from '../../services/MCOTS/message-node.js'
-import { defaultHandler } from '../../services/MCOTS/tcp-manager.js'
+import { MessageNode } from 'transactions'
+import { defaultHandler } from 'transactions'
 import { DatabaseManager } from 'database'
 import { NPSPacketManager } from './nps-packet-manager.js'
 import { TCPConnection } from './tcpConnection.js'
-import { NPS_COMMANDS } from '../../services/shared/structures.js'
+import { NPS_COMMANDS } from 'types/structures'
 import process from 'process'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Socket } from 'net'

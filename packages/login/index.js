@@ -10,10 +10,10 @@ import { Buffer } from 'buffer'
 import { certificate } from '../../config/index.js'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { TCPConnection } from '../MCServer/tcpConnection.js'
-import { DatabaseManager } from '../shared/database-manager.js'
-import { NPSUserStatus } from './nps-user-status.js'
-import { premadeLogin } from './packet.js'
+import { TCPConnection } from '../../services/MCServer/tcpConnection.js'
+import { DatabaseManager } from '../../services/shared/database-manager.js'
+import { NPSUserStatus } from '../../services/LoginServer/nps-user-status.js'
+import { premadeLogin } from '../../services/LoginServer/packet.js'
 
 const { log } = Logger.getInstance()
 
@@ -98,13 +98,13 @@ export class LoginServer {
   /**
    *
    * @param {string} contextId
-   * @return {Promise<IUserRecordMini>}
+   * @return {Promise<import('types').IUserRecordMini>}
    */
   async _npsGetCustomerIdByContextId(contextId) {
     log('debug', '>>> _npsGetCustomerIdByContextId', {
       service: this.serviceName,
     })
-    /** @type {IUserRecordMini[]} */
+    /** @type {import('types').IUserRecordMini[]} */
     const users = [
       {
         contextId: '5213dee3a6bcdb133373b2d4f3b9962758',

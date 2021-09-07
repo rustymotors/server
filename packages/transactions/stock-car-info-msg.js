@@ -7,7 +7,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { StockCar } from './stock-car.js'
+import { StockCar } from 'transactions'
 import { Buffer } from 'buffer'
 
 const { log } = Logger.getInstance()
@@ -36,14 +36,6 @@ const { log } = Logger.getInstance()
  * @property {StockCar[]} StockCarList
  */
 export class StockCarInfoMessage {
-  msgNo
-  starterCash
-  dealerId
-  brand
-  noCars
-  moreToCome
-  StockCarList
-  serviceName
   /**
    * Creates an instance of StockCarInfoMsg.
    * @class

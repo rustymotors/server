@@ -9,6 +9,9 @@ import { Logger } from '@drazisil/mco-logger'
 import config from 'config'
 import { ConnectionManager } from './connection-mgr.js'
 import { ListenerThread } from './listener-thread.js'
+import { TCPConnection } from './tcpConnection.js'
+import { GenericReplyMessage } from './generic-reply-msg.js'
+import { GenericRequestMessage } from './generic-request-msg.js'
 
 const { log } = Logger.getInstance()
 
@@ -80,3 +83,4 @@ export class MCServer {
     console.log('foo')
   }
 }
+export { TCPConnection, GenericReplyMessage, GenericRequestMessage }

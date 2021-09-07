@@ -6,8 +6,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it, beforeEach, describe } from '@jest/globals'
-import { NPSMessage } from '../MCOTS/nps-msg.js'
-import { PersonaServer } from './persona-server.js'
+import { NPSMessage } from 'transactions'
+import { PersonaServer } from './index.js'
 
 class fakeSocket {
   write() {

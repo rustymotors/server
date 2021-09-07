@@ -6,11 +6,14 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import { Logger } from '@drazisil/mco-logger'
 import { Buffer } from 'buffer'
+import { defaultHandler } from './tcp-manager.js'
 
-import { GenericReplyMessage } from '../MCServer/generic-reply-msg.js'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { GenericReplyMessage } from '../../services/MCServer/generic-reply-msg.js'
 import { MessageNode } from './message-node.js'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { ClientConnectMessage } from './client-connect-msg.js'
+import { StockCar } from './stock-car.js'
+import { StockCarInfoMessage } from './stock-car-info-msg.js'
+import { NPSMessage } from './nps-msg.js'
 
 const { log } = Logger.getInstance()
 
@@ -74,9 +77,9 @@ export class MCOTServer {
 
   /**
    *
-   * @param {TCPConnection} connection
-   * @param {MessageNode} node
-   * @return {Promise<ConnectionWithPackets>}
+   * @param {import('types').ITCPConnection} connection
+   * @param {import('types').IMessageNode} node
+   * @return {Promise<import('types').ConnectionWithPackets>}
    */
   async _login(connection, node) {
     // Create new response packet
@@ -95,9 +98,9 @@ export class MCOTServer {
 
   /**
    *
-   * @param {TCPConnection} connection
-   * @param {MessageNode} node
-   * @return {Promise<ConnectionWithPackets>}
+   * @param {import('types').ITCPConnection} connection
+   * @param {import('types').IMessageNode} node
+   * @return {Promise<import('types').ConnectionWithPackets>}
    */
   async _getLobbies(connection, node) {
     log('debug', 'In _getLobbies...', {
@@ -145,9 +148,9 @@ export class MCOTServer {
 
   /**
    *
-   * @param {TCPConnection} connection
-   * @param {MessageNode} node
-   * @return {Promise<ConnectionWithPackets>}
+   * @param {import('types').ITCPConnection} connection
+   * @param {import('types').IMessageNode} node
+   * @return {Promise<import('types').ConnectionWithPackets>}
    */
   async _logout(connection, node) {
     const logoutMessage = node
@@ -175,9 +178,9 @@ export class MCOTServer {
 
   /**
    *
-   * @param {TCPConnection} connection
-   * @param {MessageNode} node
-   * @return {Promise<ConnectionWithPackets>}
+   * @param {import('types').ITCPConnection} connection
+   * @param {import('types').IMessageNode} node
+   * @return {Promise<import('types').ConnectionWithPackets>}
    */
   async _setOptions(connection, node) {
     const setOptionsMessage = node
@@ -202,9 +205,9 @@ export class MCOTServer {
 
   /**
    *
-   * @param {TCPConnection} connection
-   * @param {MessageNode} node
-   * @return {Promise<ConnectionWithPackets>}
+   * @param {import('types').ITCPConnection} connection
+   * @param {import('types').IMessageNode} node
+   * @return {Promise<import('types').ConnectionWithPackets>}
    */
   async _trackingMessage(connection, node) {
     const trackingMessage = node
@@ -229,9 +232,9 @@ export class MCOTServer {
 
   /**
    *
-   * @param {TCPConnection} connection
-   * @param {MessageNode} node
-   * @return {Promise<ConnectionWithPackets>}
+   * @param {import('types').ITCPConnection} connection
+   * @param {import('types').IMessageNode} node
+   * @return {Promise<import('types').ConnectionWithPackets>}
    */
   async _updatePlayerPhysical(connection, node) {
     const updatePlayerPhysicalMessage = node
@@ -253,4 +256,13 @@ export class MCOTServer {
 
     return { connection, packetList: [rPacket] }
   }
+}
+
+export {
+  defaultHandler,
+  ClientConnectMessage,
+  MessageNode,
+  StockCar,
+  StockCarInfoMessage,
+  NPSMessage,
 }

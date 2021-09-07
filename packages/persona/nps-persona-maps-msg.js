@@ -7,7 +7,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { NPSMessage } from '../MCOTS/nps-msg.js'
+import { NPSMessage } from 'transactions'
 import { Buffer } from 'buffer'
 
 const { log } = Logger.getInstance()
@@ -68,7 +68,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
   personaCount
   /**
    *
-   * @param {EMessageDirection} direction
+   * @param {import('types').EMessageDirection} direction
    */
   constructor(direction) {
     super(direction)

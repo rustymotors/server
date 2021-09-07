@@ -17,5 +17,5 @@ export class NPSUserInfo extends NPSMessage {
    */
   dumpInfo(): void
 }
-import { NPSMessage } from '../MCOTS/nps-msg.js'
+import { NPSMessage } from '../../packages/transactions/nps-msg.js/index.js'
 import { Buffer } from 'buffer'

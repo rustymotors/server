@@ -102,6 +102,6 @@ export class PersonaServer {
   dataHandler(rawPacket: any): Promise<TCPConnection>
 }
 import { Buffer } from 'buffer'
-import { NPSMessage } from '../MCOTS/nps-msg.js'
+import { NPSMessage } from '../../packages/transactions/nps-msg.js/index.js'
 import { Socket } from 'net'
 import { TCPConnection } from '../MCServer/tcpConnection.js'

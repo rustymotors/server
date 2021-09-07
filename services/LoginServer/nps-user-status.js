@@ -11,7 +11,7 @@ import { readFileSync, statSync } from 'fs'
 import { Logger } from '@drazisil/mco-logger'
 import { Socket } from 'net'
 import { Buffer } from 'buffer'
-import { NPSMessage } from '../MCOTS/nps-msg.js'
+import { NPSMessage } from 'transactions'
 
 const { log } = Logger.getInstance()
 
@@ -85,7 +85,7 @@ export class NPSUserStatus extends NPSMessage {
    * Take 128 bytes
    * They are the utf-8 of the hex bytes that are the key
    *
-   * @param {IAppConfiguration['certificate']} serverConfig
+   * @param {import('config').IAppConfiguration['certificate']} serverConfig
    * @param {Buffer} packet
    * @return {void}
    */
