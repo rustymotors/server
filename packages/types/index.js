@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // @ts-check
 
-import { Cipher, Decipher } from 'crypto'
+/**
+ * @module types
+ */
 
 /**
  * @global
  * @readonly
- * @property {string} REGISTER_SERVICE "Register Service"
+ * @enum {string}
  */
 export const EServerConnectionAction = {
   REGISTER_SERVICE: 'Register Service',
@@ -23,34 +25,32 @@ export class IEncryptionManager {}
 /**
  * @global
  * @readonly
- * @property {string} EServerConnectionName.ADMIN "Admin"
- * @property {string} EServerConnectionName.AUTH "Auth"
- * @property {string} EServerConnectionName.MCSERVER "MCServer"
- * @property {string} EServerConnectionName.PATCH "Patch"
- * @property {string} EServerConnectionName.PROXY "Proxy"
- * @property {string} EServerConnectionName.SHARD "Shard"
+ * @enum {string}
  */
-export class EServerConnectionName {}
+export const EServerConnectionName = {
+  ADMIN: 'Admin',
+  AUTH: 'Auth',
+  MCSERVER: 'MCServer',
+  PATCH: 'Patch',
+  PROXY: 'Proxy',
+  SHARD: 'Shard',
+}
 
 /**
  * @global
- * @property {EServerConnectionAction} [IServerConnection.action]
- * @property {EServerConnectionName} IServerConnection.service
- * @property {string} IServerConnection.host
- * @property {number} IServerConnection.port
+ * @typedef {object} IServerConnection
+ * @property {EServerConnectionAction} [action]
+ * @property {EServerConnectionName} service
+ * @property {string} host
+ * @property {number} port
  */
-export class IServerConnection {
-  action
-  service
-  host
-  port
-}
 
 /**
  * @typedef {'Active' | 'Inactive'} ConnectionStatus
  */
 
 /**
+ * @class
  * @property { Cipher | null } cipher
  * @property { Decipher | null} decipher
  */

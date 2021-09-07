@@ -1,29 +1,43 @@
 import http from 'http'
+import config from './server.config.js'
 import { Logger } from '@drazisil/mco-logger'
-import { EServerConnectionName } from '../mco-types/index.js'
-import { RoutingMesh } from '../mco-common/index.js'
-import { ShardServer } from '../mco-shard/index.js'
-import { PatchServer } from '../mco-patch/index.js'
+import { EServerConnectionName } from 'types'
+import { RoutingMesh } from 'router/client'
+import { Buffer } from 'buffer'
 import process from 'process'
 
 const { log } = Logger.getInstance()
+export const CastanetResponse = {
+  body: Buffer.from('cafebeef00000000000003', 'hex'),
+  header: {
+    type: 'Content-Type',
+    value: 'application/octet-stream',
+  },
+}
 
-export class HTTPProxyServer {
+export class PatchServer {
   static _instance
+  _config
   _server
-  _serviceName = 'MCOServer:HTTPProxy'
+  _serviceName = 'MCOServer:Patch'
 
+  /**
+   *
+   * @returns {PatchServer}
+   */
   static getInstance() {
-    if (!HTTPProxyServer._instance) {
-      HTTPProxyServer._instance = new HTTPProxyServer(false)
+    if (!PatchServer._instance) {
+      PatchServer._instance = new PatchServer(false)
     }
-    return HTTPProxyServer._instance
+    return PatchServer._instance
   }
 
   constructor(isNew = true) {
     if (isNew) {
       throw new Error('Please use getInstance()')
     }
+    this._config = config
+
     this._server = http.createServer((request, response) => {
       this.handleRequest(request, response)
     })
@@ -41,34 +55,41 @@ export class HTTPProxyServer {
   }
 
   handleRequest(request, response) {
-    log(
-      'debug',
-      `Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
-      { service: this._serviceName },
-    )
+    const responseData = CastanetResponse
+
     switch (request.url) {
       case '/games/EA_Seattle/MotorCity/UpdateInfo':
       case '/games/EA_Seattle/MotorCity/NPS':
       case '/games/EA_Seattle/MotorCity/MCO':
-        return PatchServer.getInstance().handleRequest(request, response)
+        log(
+          'debug',
+          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
+          { service: this._serviceName },
+        )
+
+        response.setHeader(responseData.header.type, responseData.header.value)
+        response.end(responseData.body)
+        break
 
       default:
-        return ShardServer.getInstance()._handleRequest(request, response)
+        response.statusCode = 404
+        response.end('')
+        break
     }
   }
 
   start() {
-    const host = '0.0.0.0'
-    const port = 80
+    const host = config.serverSettings.host || 'localhost'
+    const port = 81
     return this._server.listen({ port, host }, () => {
       log('debug', `port ${port} listening`, { service: this._serviceName })
-      log('info', 'Proxy server is listening...', {
+      log('info', 'Patch server is listening...', {
         service: this._serviceName,
       })
 
       // Register service with router
       RoutingMesh.getInstance().registerServiceWithRouter(
-        EServerConnectionName.PROXY,
+        EServerConnectionName.PATCH,
         host,
         port,
       )

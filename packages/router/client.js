@@ -1,16 +1,18 @@
+// @ts-check
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Logger } from '@drazisil/mco-logger'
 import net from 'net'
-import {
-  EServerConnectionAction,
-  EServerConnectionName,
-} from '../mco-types/index.js'
+import { EServerConnectionAction, EServerConnectionName } from 'types'
 import { Buffer } from 'buffer'
 
 const { log } = Logger.getInstance()
 
 export class RoutingMesh {
   static _instance
+  /**
+   *
+   * @returns {RoutingMesh}
+   */
   static getInstance() {
     if (!RoutingMesh._instance) {
       RoutingMesh._instance = new RoutingMesh(false)
@@ -24,12 +26,13 @@ export class RoutingMesh {
 
   /**
    *
-   * @param {typeof EServerConnectionName} service
+   * @param {EServerConnectionName} service
    * @param {string} host
    * @param {number} port
+   * @external types
    */
   registerServiceWithRouter(service, host, port) {
-    /** @type {IServerConnection} */
+    /** @type {import('types').IServerConnection} */
     const payload = {
       action: EServerConnectionAction.REGISTER_SERVICE,
       service,

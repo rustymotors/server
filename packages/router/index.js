@@ -2,7 +2,7 @@
 // @ts-check
 import net, { Server } from 'net'
 import { Logger } from '@drazisil/mco-logger'
-import { EServerConnectionAction, IServerConnection } from 'types'
+import { EServerConnectionAction } from 'types'
 
 /**
  * @module router
@@ -15,6 +15,9 @@ const { log } = Logger.getInstance()
  * @property {IServerConnection[]} _serverConnections
  */
 export class RoutingServer {
+  /**
+   * @type {RoutingServer}
+   */
   static _instance
   _server
   _serverConnections = []
@@ -62,11 +65,11 @@ export class RoutingServer {
    */
   _handleData(data) {
     const payload = data.toString()
-    log('debug', `Payload: ${payload}`, {
+    log('debug', `Payload: ${JSON.stringify(payload)}`, {
       service: this._serviceName,
     })
 
-    /** @type {IServerConnection} */
+    /** @type {import('types').IServerConnection} */
     let payloadJSON
 
     try {
@@ -88,9 +91,7 @@ export class RoutingServer {
   }
 
   /**
-   *
-   * @param {IServerConnection} payloadJSON
-   * @returns
+   * @param {import('types').IServerConnection} payloadJSON
    */
   _registerNewService(payloadJSON) {
     const { service, host, port } = payloadJSON

@@ -1,9 +1,8 @@
 {
-  "name": "router",
+  "name": "patch",
   "packageManager": "yarn@3.0.2",
   "type": "module",
   "exports": {
-    ".": "./index.js",
-    "./client": "./client.js"
+    "default": "./index.js"
   }
 }

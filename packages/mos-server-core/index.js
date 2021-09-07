@@ -6,13 +6,13 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { AuthLogin } from './services/@drazisil/mco-auth/index.js'
-import { PatchServer } from './services/@drazisil/mco-patch/index.js'
-import { HTTPProxyServer } from './packages/proxy/index.js'
-import { RoutingServer } from './services/@drazisil/mco-route/index.js'
-import { ShardServer } from './packages/shard/index.js'
-import { AdminServer } from './services/AdminServer/index.js'
-import { MCServer } from './services/MCServer/index.js'
+import { AuthLogin } from '../../services/@drazisil/mco-auth/index.js'
+import { PatchServer } from '../../services/@drazisil/mco-patch/index.js'
+import { HTTPProxyServer } from '../proxy/index.js'
+import { RoutingServer } from '../../services/@drazisil/mco-route/index.js'
+import { ShardServer } from '../shard/index.js'
+import { AdminServer } from '../../services/AdminServer/index.js'
+import { MCServer } from '../../services/MCServer/index.js'
 
 // What servers do we need?
 // * Routing Server
@@ -54,3 +54,5 @@ AdminServer.getInstance(mcServer).start()
 //     process.exitCode = -1
 //     throw new Error(`There was an error starting the server: ${error}`)
 //   })
+
+export { RoutingServer }

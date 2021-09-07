@@ -2,7 +2,7 @@
   "name": "types",
   "packageManager": "yarn@3.0.2",
   "exports": {
-    "default": "./index.js"
+    ".": "./index.js"
   },
   "type": "module"
 }
