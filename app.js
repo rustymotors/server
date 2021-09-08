@@ -11,7 +11,7 @@ import { PatchServer } from './services/@drazisil/mco-patch/index.js'
 import { HTTPProxyServer } from './packages/proxy/index.js'
 import { RoutingServer } from './services/@drazisil/mco-route/index.js'
 import { ShardServer } from './packages/shard/index.js'
-import { AdminServer } from './services/AdminServer/index.js'
+import { AdminServer } from './packages/admin/index.js'
 import { MCServer } from './packages/core/index.js'
 
 // What servers do we need?

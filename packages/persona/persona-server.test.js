@@ -6,13 +6,13 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it, beforeEach, describe } from '@jest/globals'
+import { Socket } from 'net'
 import { NPSMessage } from 'transactions'
 import { PersonaServer } from './index.js'
 
-class fakeSocket {
-  write() {
-    return
-  }
+const testSocket = new Socket()
+testSocket.write = function () {
+  return true
 }
 
 /** @type {PersonaServer} */
@@ -73,7 +73,7 @@ describe('Persona Server', () => {
   it('PersonaServer _send()', () => {
     const data = new NPSMessage('Sent')
     expect(() => {
-      personaServer.sendPacket(new fakeSocket(), data)
+      personaServer.sendPacket(testSocket, data)
     }).not.toThrow()
   })
 

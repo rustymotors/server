@@ -122,7 +122,7 @@ export const ConnectionStatus = {
  * @property {EMessageDirection} direction
  * @property {number} dataLength
  * @property {string} mcoSig
- * @property {string} BaseMsgHeader
+ * @property {(packet: Buffer) => void} BaseMsgHeader
  */
 
 /**

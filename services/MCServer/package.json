@@ -1,7 +1,0 @@
-{
-  "name": "mco-core",
-  "exports": {
-    "./": "./index.js"
-  },
-  "type": "module"
-}
