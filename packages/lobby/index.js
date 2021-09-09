@@ -144,7 +144,7 @@ export class LobbyServer {
 
   /**
    *
-   * @param {IRawPacket} rawPacket
+   * @param {import('types').IRawPacket} rawPacket
    * @return {Promise<TCPConnection>}
    */
   async dataHandler(rawPacket) {

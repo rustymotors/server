@@ -85,7 +85,7 @@ export class NPSUserStatus extends NPSMessage {
    * Take 128 bytes
    * They are the utf-8 of the hex bytes that are the key
    *
-   * @param {import('config').IAppConfiguration['certificate']} serverConfig
+   * @param {import('types').IAppConfiguration['certificate']} serverConfig
    * @param {Buffer} packet
    * @return {void}
    */
@@ -103,7 +103,7 @@ export class NPSUserStatus extends NPSMessage {
 
   /**
    *
-   * @return {INPSMessageJSON}
+   * @return {import('types').INPSMessageJSON}
    */
   toJSON() {
     return {

@@ -20,21 +20,6 @@ const { log } = Logger.getInstance()
  * Packet container for NPS messages
  */
 
-/**
- *
- * @global
- * @typedef {Object} INPSMsgJSON
- * @property {number} INPSMsgJSON.msgNo
- * @property {number | null} INPSMsgJSON.opCode
- * @property {number} INPSMsgJSON.msgLength
- * @property {number} INPSMsgJSON.msgVersion
- * @property {string} INPSMsgJSON.content
- * @property {string} INPSMsgJSON.contextId
- * @property {EMessageDirection} INPSMsgJSON.direction
- * @property {string | null } INPSMsgJSON.sessionkey
- * @property {string} INPSMsgJSON.rawBuffer
- */
-
 /*
     NPS messages are sent serialized in BE format
 */
@@ -181,7 +166,7 @@ export class NPSMessage {
 
   /**
    *
-   * @return {INPSMsgJSON}
+   * @return {import('types').INPSMessageJSON}
    */
   toJSON() {
     return {

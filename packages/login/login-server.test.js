@@ -6,9 +6,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { LoginServer } from '../../services/LoginServer/index.js'
+import { LoginServer } from 'login'
 
-const loginServer = new LoginServer(false)
+const loginServer = new LoginServer()
 
 it('LoginServer', async () => {
   const { customerId, userId } = await loginServer._npsGetCustomerIdByContextId(

@@ -8,7 +8,7 @@ import { Logger } from '@drazisil/mco-logger'
 import { Buffer } from 'buffer'
 import { defaultHandler } from './tcp-manager.js'
 
-import { GenericReplyMessage } from '../../services/MCServer/generic-reply-msg.js'
+import { GenericReplyMessage } from 'core'
 import { MessageNode } from './message-node.js'
 import { ClientConnectMessage } from './client-connect-msg.js'
 import { StockCar } from './stock-car.js'

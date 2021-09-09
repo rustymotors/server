@@ -6,14 +6,14 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, test, jest } from '@jest/globals'
+import { MCServer } from '../core/index.js'
 import { AdminServer } from './index.js'
-import { MCServer as fakeMCServer } from '../MCServer/index.js'
 jest.mock('./index.js')
 
 test('AdminServer', () => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const _ = AdminServer.getInstance(fakeMCServer.getInstance())
+    const _ = AdminServer.getInstance(MCServer.getInstance())
     expect(true).toBeTruthy()
   } catch (error) {
     expect(error).toBeFalsy()

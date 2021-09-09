@@ -21,13 +21,6 @@ const { log } = Logger.getInstance()
  * @property {Buffer} data
  */
 export class LobbyMessage {
-  msgNo
-  noLobbies
-  moreToCome
-  lobbyList
-  dataLength
-  data
-  serviceName
   /**
    *
    */

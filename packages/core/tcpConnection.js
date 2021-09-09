@@ -36,7 +36,7 @@ import { ConnectionStatus } from 'types'
  * @property {import('types').ILobbyCiphers} encLobby
  * @property {EncryptionManager} enc
  * @property {boolean} isSetupComplete
- * @property {ConnectionManager} mgr
+ * @property {IConnectionManager} mgr
  * @property {boolean} inQueue
  * @property {Buffer} decryptedCmd
  * @property {Buffer} encryptedCmd
@@ -58,7 +58,7 @@ export class TCPConnection {
     this.remoteAddress = sock.remoteAddress
     this.localPort = sock.localPort
     this.sock = sock
-    this.msgEvent = null
+    this.msgEvent = 0
     this.lastMsg = 0
     this.useEncryption = false
     /** @type {import('types').ILobbyCiphers} */

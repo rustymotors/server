@@ -15,7 +15,6 @@ import { StockCar } from 'transactions'
 import { StockCarInfoMessage } from 'transactions'
 import { MCOTServer } from './index.js'
 import { MessageNode } from './message-node.js'
-import { TCPConnection } from 'core'
 import { Buffer } from 'buffer'
 
 const { log } = Logger.getInstance()

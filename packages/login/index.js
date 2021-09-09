@@ -9,7 +9,7 @@ import { Buffer } from 'buffer'
 
 import { certificate } from 'config'
 import { DatabaseManager } from 'database'
-import { NPSUserStatus } from './nps-user-status'
+import { NPSUserStatus } from './nps-user-status.js'
 import { premadeLogin } from './packet'
 
 const { log } = Logger.getInstance()

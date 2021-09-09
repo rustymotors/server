@@ -137,7 +137,7 @@ export const ConnectionStatus = {
  * @property {string | undefined} remoteAddress
  * @property {number} localPort
  * @property {Socket} sock
- * @property {null} msgEvent
+ * @property {number} msgEvent
  * @property {number} lastMsg
  * @property {boolean} useEncryption
  * @property {ILobbyCiphers} encLobby
@@ -347,4 +347,47 @@ export const ConnectionStatus = {
  * @property {number} maxPersonasPerUser
  * @property {string} diagnosticServerHost
  * @property {number} diagnosticServerPort
+ */
+
+/**
+ * @global
+ * @typedef {object} IAppConfiguration
+ * @property {object} IAppConfiguration.certificate
+ * @property {string} IAppConfiguration.certificate.privateKeyFilename
+ * @property {string} IAppConfiguration.certificate.publicKeyFilename
+ * @property {string} IAppConfiguration.certificate.certFilename
+ * @property {object} IAppConfiguration.serverSettings
+ * @property {string} IAppConfiguration.serverSettings.ipServer
+ * @property {object} IAppConfiguration.serviceConnections
+ * @property {string} IAppConfiguration.serviceConnections.databaseURL
+ * @property {string} IAppConfiguration.defaultLogLevel
+ */
+
+/**
+ * @typedef {Object} config
+ * @property {Object} certificate
+ * @property {string} certificate.privateKeyFilename
+ * @property {string} certificate.publicKeyFilename
+ * @property {string} certificate.certFilename
+ * @property {Object} serverSettings
+ * @property {string} serverSettings.ipServer
+ * @property {Object} serviceConnections
+ * @property {string} serviceConnections.databaseURL
+ * @property {string} defaultLogLevel
+ * @global
+ */
+
+/**
+ *
+ * @global
+ * @typedef {Object} INPSMessageJSON
+ * @property {number} INPSMsgJSON.msgNo
+ * @property {number | null} INPSMsgJSON.opCode
+ * @property {number} INPSMsgJSON.msgLength
+ * @property {number} INPSMsgJSON.msgVersion
+ * @property {string} INPSMsgJSON.content
+ * @property {string} INPSMsgJSON.contextId
+ * @property {EMessageDirection} INPSMsgJSON.direction
+ * @property {string | null } INPSMsgJSON.sessionkey
+ * @property {string} INPSMsgJSON.rawBuffer
  */
