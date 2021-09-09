@@ -7,7 +7,7 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { MessageNode } from 'transactions'
-import { defaultHandler } from 'transactions'
+import { TCPManager } from 'transactions'
 import { DatabaseManager } from 'database'
 import { NPSPacketManager } from './nps-packet-manager.js'
 import { TCPConnection } from './tcpConnection.js'
@@ -136,7 +136,7 @@ export class ConnectionManager {
         newNode.deserialize(rawPacket.data)
         log('debug', JSON.stringify(newNode), { service: this.serviceName })
 
-        return defaultHandler(rawPacket)
+        return TCPManager.getInstance().defaultHandler(rawPacket)
       }
 
       default:

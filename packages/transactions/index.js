@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import { Logger } from '@drazisil/mco-logger'
 import { Buffer } from 'buffer'
-import { defaultHandler } from './tcp-manager.js'
+import { TCPManager } from './tcp-manager.js'
 
 import { GenericReplyMessage } from 'core'
 import { MessageNode } from './message-node.js'
@@ -259,7 +259,7 @@ export class MCOTServer {
 }
 
 export {
-  defaultHandler,
+  TCPManager,
   ClientConnectMessage,
   MessageNode,
   StockCar,

@@ -3,7 +3,7 @@
 
 import { Cipher, Decipher } from 'crypto'
 import { Socket } from 'net'
-import { Database } from 'sqlite3'
+import sqlite3 from 'sqlite3'
 
 /**
  * @module types
@@ -72,7 +72,7 @@ export const ConnectionStatus = {
 
 /**
  * @typedef {object} IDatabaseManager
- * @property {Database} localDB
+ * @property {sqlite3.Database} localDB
  * @property {number} changes
  * @property {string} serviceName
  * @property {(customerId: number) => Promise<ISessionRecord>} fetchSessionKeyByCustomerId

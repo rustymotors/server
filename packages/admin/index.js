@@ -9,9 +9,9 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { createServer, Server } from 'https'
-import config from '../../config/index.js'
-import { _sslOptions } from '../config/ssl-options.js'
-import { MCServer } from '../core/index.js'
+import config from 'config'
+import { _sslOptions } from 'config'
+import { MCServer } from 'core'
 
 const { log } = Logger.getInstance()
 /**

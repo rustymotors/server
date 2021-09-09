@@ -1,5 +1,7 @@
 // @ts-check
 
+import { _sslOptions } from './ssl-options.js'
+
 /** @type {import("types").IAppConfiguration["certificate"]} */
 export const certificate = {
   privateKeyFilename: 'data/private_key.pem',
@@ -25,3 +27,4 @@ const config = {
   defaultLogLevel,
 }
 export default config
+export { _sslOptions }

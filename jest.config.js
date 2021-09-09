@@ -2,11 +2,7 @@ export default {
   preset: 'ts-jest',
   testEnvironment: 'node',
   collectCoverage: true,
-  collectCoverageFrom: [
-    'services/**/*.js',
-    '!**/vendor/**',
-    '!services/**/*.test.js',
-  ],
+  collectCoverageFrom: ['packages/**/*.js', '!packages/**/*.test.js'],
   coverageReporters: ['text', 'html', 'lcov'],
   transform: {},
 }

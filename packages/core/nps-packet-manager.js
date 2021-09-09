@@ -9,21 +9,13 @@ import { Logger } from '@drazisil/mco-logger'
 import { LobbyServer } from 'lobby'
 import { LoginServer } from 'login'
 import { PersonaServer } from 'persona'
-import { DatabaseManager } from 'database'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { TCPConnection } from './tcpConnection.js'
 import process from 'process'
+import { DatabaseManager } from 'database'
 
 const { log } = Logger.getInstance()
 
 export class NPSPacketManager {
   database = DatabaseManager.getInstance()
-  npsKey
-  msgNameMapping
-  loginServer
-  personaServer
-  lobbyServer
-  serviceName
 
   constructor() {
     this.npsKey = ''
@@ -79,7 +71,7 @@ export class NPSPacketManager {
   /**
    *
    * @param {module:IRawPacket} rawPacket
-   * @return {Promise<TCPConnection>}
+   * @return {Promise<import('types').ITCPConnection>}
    */
   async processNPSPacket(rawPacket) {
     const messageId = rawPacket.data.readInt16BE(0)

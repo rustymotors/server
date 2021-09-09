@@ -24,7 +24,7 @@
     "start": "node ./bin/mco-server.js",
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "lint": "eslint && prettier --write services",
+    "lint": "eslint && prettier --write packages",
     "test": "yarn run lint-test",
     "lint-test": "yarn run lint && yarn run test:only",
     "test:only": "node --experimental-vm-modules node_modules/.bin/jest"
