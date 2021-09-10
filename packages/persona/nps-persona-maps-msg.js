@@ -9,6 +9,7 @@
 import { Logger } from '@drazisil/mco-logger'
 import { NPSMessage } from 'transactions'
 import { Buffer } from 'buffer'
+import { NPSMessageFactory } from '../transactions/nps-message-factory'
 
 const { log } = Logger.getInstance()
 
@@ -59,19 +60,29 @@ const { log } = Logger.getInstance()
  * @property {number} personaSize
  * @property {number} personaCount
  */
-export class NPSPersonaMapsMessage extends NPSMessage {
+export class NPSPersonaMapsMessage {
   /**
-   * @type {IPersonaRecord[]}
+   *
+   * @param {NPSMessage} message
+   * @returns {NPSPersonaMapsMessage}
    */
-  personas
-  personaSize
-  personaCount
+  static fromMessage(message) {
+    return new NPSPersonaMapsMessage(message.direction)
+  }
+
   /**
    *
    * @param {import('types').EMessageDirection} direction
    */
   constructor(direction) {
-    super(direction)
+    this.msgNo = 0
+    this.msgVersion = 0
+    this.reserved = 0
+    this.content = Buffer.from([0x01, 0x02, 0x03, 0x04])
+    this.msgLength = this.content.length + 12
+    this.direction = direction
+    this.serviceName = 'mcoserver:NPSPersonaMapsMessage'
+    this.messageType = 'NPSPersonaMapsMessage'
 
     /** @type {IPersonaRecord[]} */
     this.personas = []
@@ -178,7 +189,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    * @return {void}
    */
   dumpPacket() {
-    this.dumpPacketHeader('NPSPersonaMapsMsg')
+    NPSMessageFactory.dumpPacketHeader(this, 'NPSPersonaMapsMsg')
     log('debug', `personaCount:        ${this.personaCount}`, {
       service: this.serviceName,
     })
@@ -190,7 +201,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
         id:                  ${this.deserializeInt32(persona.id)}
         shardId:             ${this.deserializeInt32(persona.shardId)}
         name:                ${this.deserializeString(persona.name)}
-        Packet as hex:       ${this.getPacketAsString()}`,
+        Packet as hex:       ${NPSMessageFactory.getPacketAsString(this)}`,
         {
           service: this.serviceName,
         },

@@ -12,6 +12,7 @@ import { Logger } from '@drazisil/mco-logger'
 import { Socket } from 'net'
 import { Buffer } from 'buffer'
 import { NPSMessage } from 'transactions'
+import { NPSMessageFactory } from '../transactions/nps-message-factory'
 
 const { log } = Logger.getInstance()
 
@@ -56,19 +57,49 @@ function fetchPrivateKeyFromFile(privateKeyPath) {
  * @property {string} opCode
  * @property {Buffer} buffer
  */
-export class NPSUserStatus extends NPSMessage {
-  sessionkey
-  opCode
-  contextId
-  buffer
+export class NPSUserStatus {
+  /**
+   *
+   * @param {NPSMessage} message
+   * @returns {NPSUserStatus}
+   */
+  static fromMessage(message) {
+    return new NPSUserStatus(message.direction)
+  }
+
+  /**
+   *
+   * @param {import('types').EMessageDirection} direction
+   */
+  constructor(direction) {
+    this.msgNo = 0
+    this.msgVersion = 0
+    this.reserved = 0
+    this.content = Buffer.from([0x01, 0x02, 0x03, 0x04])
+    this.msgLength = this.content.length + 12
+    this.direction = direction
+    this.serviceName = 'mcoserver:NPSUserStatus'
+    this.messageType = 'NPSUserStatus'
+    this.sessionkey = ''
+    this.opCode = null
+    this.contextId = ''
+    this.buffer = Buffer.alloc(0)
+  }
+
+  /**
+   * @deprecated
+   * @returns {Buffer}
+   */
+  serialize() {
+    return Buffer.alloc(0)
+  }
+
   /**
    *
    * @param {Buffer} packet
+   * @returns {NPSUserStatus}
    */
-  constructor(packet) {
-    super('Recieved')
-    this.sessionkey = ''
-
+  deserialize(packet) {
     // Save the NPS opCode
     this.opCode = packet.readInt16LE(0)
 
@@ -77,6 +108,7 @@ export class NPSUserStatus extends NPSMessage {
 
     // Save the raw packet
     this.buffer = packet
+    return this
   }
 
   /**
@@ -123,7 +155,7 @@ export class NPSUserStatus extends NPSMessage {
    * @return {void}
    */
   dumpPacket() {
-    this.dumpPacketHeader('NPSUserStatus')
+    NPSMessageFactory.dumpPacketHeader(this, 'NPSUserStatus')
     log(
       'debug',
       `NPSUserStatus,

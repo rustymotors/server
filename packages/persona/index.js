@@ -12,6 +12,7 @@ import { NPSMessage } from 'transactions'
 import { TCPConnection } from 'core'
 import { NPSPersonaMapsMessage } from './nps-persona-maps-msg.js'
 import { Buffer } from 'buffer'
+import { NPSMessageFactory } from '../transactions/nps-message-factory.js'
 
 const { log } = Logger.getInstance()
 
@@ -125,7 +126,9 @@ export class PersonaServer {
 
     log(
       'debug',
-      `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`,
+      `[npsSelectGamePersona] responsePacket's data prior to sending: ${NPSMessageFactory.getPacketAsString(
+        responsePacket,
+      )}`,
       { service: this.serviceName },
     )
     return responsePacket
@@ -208,7 +211,9 @@ export class PersonaServer {
 
     log(
       'debug',
-      `[npsLogoutGameUser] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`,
+      `[npsLogoutGameUser] responsePacket's data prior to sending: ${NPSMessageFactory.getPacketAsString(
+        responsePacket,
+      )}`,
       { service: this.serviceName },
     )
     return responsePacket
@@ -260,7 +265,9 @@ export class PersonaServer {
 
     log(
       'debug',
-      `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`,
+      `[npsCheckToken] responsePacket's data prior to sending: ${NPSMessageFactory.getPacketAsString(
+        responsePacket,
+      )}`,
       { service: this.serviceName },
     )
     return responsePacket
@@ -322,7 +329,9 @@ export class PersonaServer {
 
     log(
       'debug',
-      `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`,
+      `[npsValidatePersonaName] responsePacket's data prior to sending: ${NPSMessageFactory.getPacketAsString(
+        responsePacket,
+      )}`,
       { service: this.serviceName },
     )
     return responsePacket

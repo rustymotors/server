@@ -11,6 +11,6 @@ import { Buffer } from 'buffer'
 
 it('NPSUserStatus', () => {
   const testPacket = Buffer.from([0x7b, 0x00])
-  const npsUserStatus = new NPSUserStatus(testPacket)
+  const npsUserStatus = new NPSUserStatus('Recieved').deserialize(testPacket)
   expect(npsUserStatus.opCode).toEqual(123)
 })

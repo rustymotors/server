@@ -76,23 +76,24 @@ export class MessageNode {
 
       this.msgNo = this.data.readInt16LE(0)
     } catch (err) {
-      if (err instanceof RangeError) {
+      if (err instanceof Error && err.name === 'ERR_OUT_OF_RANGE') {
         throw new Error(
           `[MessageNode] Not long enough to deserialize, only ${packet.length} bytes long`,
         )
-      }
-      if (err instanceof Error) {
+      } else if (err instanceof Error) {
         throw new Error(
           `[MessageNode] Unable to read msgNo from ${packet.toString(
             'hex',
           )}: ${err}`,
         )
+      } else {
+        console.dir(err)
+        throw new Error(
+          `[MessageNode] Unable to read msgNo from ${packet.toString(
+            'hex',
+          )} Unknown Error!: ${err}`,
+        )
       }
-      throw new Error(
-        `[MessageNode] Unable to read msgNo from ${packet.toString(
-          'hex',
-        )} Unknow Error!: ${err}`,
-      )
     }
   }
 

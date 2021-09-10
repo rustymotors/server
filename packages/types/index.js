@@ -391,3 +391,34 @@ export const ConnectionStatus = {
  * @property {string | null } INPSMsgJSON.sessionkey
  * @property {string} INPSMsgJSON.rawBuffer
  */
+
+/**
+ * @typedef {object} INPSMessage
+ * @property {string} direction
+ * @property {number} msgNo
+ * @property {number} msgVersion
+ * @property {number} reserved
+ * @property {Buffer} content
+ * @property {number} msgLength
+ * @property {string} messageType
+ * @property {string} serviceName
+ * @property {() => Buffer} serialize
+ *
+ */
+
+/**
+ * @typedef {object} INPSUserInfo
+ * @property {string} direction
+ * @property {number} msgNo
+ * @property {number} msgVersion
+ * @property {number} reserved
+ * @property {Buffer} content
+ * @property {number} msgLength
+ * @property {string} messageType
+ * @property {string} serviceName
+ * @property {number} userId
+ * @property {Buffer} userName
+ * @property {Buffer} userData
+ * @property {string} serviceName
+ *
+ */

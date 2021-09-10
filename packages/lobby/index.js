@@ -15,6 +15,7 @@ import { DatabaseManager } from 'database'
 import { NPSUserInfo } from './nps-user-info.js'
 import { Buffer } from 'buffer'
 import process from 'process'
+import { NPSMessageFactory } from '../transactions/nps-message-factory.js'
 
 const { log } = Logger.getInstance()
 
@@ -168,7 +169,7 @@ export class LobbyServer {
         log(
           'debug',
           `Connect responsePacket's data prior to sending: ${JSON.stringify({
-            data: responsePacket.getPacketAsString(),
+            data: NPSMessageFactory.getPacketAsString(responsePacket),
           })}`,
           { service: 'mcoserver:LobbyServer' },
         )
@@ -189,7 +190,7 @@ export class LobbyServer {
         log(
           'debug',
           `Heartbeat responsePacket's data prior to sending: ${JSON.stringify({
-            data: responsePacket.getPacketAsString(),
+            data: NPSMessageFactory.getPacketAsString(responsePacket),
           })}`,
           { service: 'mcoserver:LobbyServer' },
         )
@@ -341,3 +342,4 @@ export class LobbyServer {
     return packetResult
   }
 }
+export { NPSUserInfo }

@@ -155,7 +155,7 @@ export class LoginServer {
   async _userLogin(connection, data) {
     const { sock } = connection
     const { localPort } = sock
-    const userStatus = new NPSUserStatus(data)
+    const userStatus = new NPSUserStatus('Recieved').deserialize(data)
     log(
       'info',
       `Received login packet,

@@ -36,13 +36,6 @@ const { log } = Logger.getInstance()
  * @property {EMessageDirection} direction
  */
 export class NPSMessage {
-  msgNo
-  msgVersion
-  reserved
-  content
-  msgLength
-  direction
-  serviceName
   /**
    *
    * @param {EMessageDirection} direction - the direction of the message flow
@@ -55,6 +48,7 @@ export class NPSMessage {
     this.msgLength = this.content.length + 12
     this.direction = direction
     this.serviceName = 'mcoserver:NPSMsg'
+    this.messageType = 'NPSMessage'
   }
 
   /**
@@ -73,14 +67,6 @@ export class NPSMessage {
    */
   getContentAsBuffer() {
     return this.content
-  }
-
-  /**
-   *
-   * @return {string}
-   */
-  getPacketAsString() {
-    return this.serialize().toString('hex')
   }
 
   /**
@@ -123,25 +109,6 @@ export class NPSMessage {
     this.msgVersion = packet.readInt16BE(4)
     this.content = packet.slice(12)
     return this
-  }
-
-  /**
-   *
-   * @param {string} messageType
-   * @return {void}
-   */
-  dumpPacketHeader(messageType) {
-    log(
-      'info',
-      `NPSMsg/${messageType},
-      ${JSON.stringify({
-        direction: this.direction,
-        msgNo: this.msgNo.toString(16),
-        msgVersion: this.msgVersion,
-        msgLength: this.msgLength,
-      })}`,
-      { service: this.serviceName },
-    )
   }
 
   /**

@@ -10,6 +10,7 @@
 import { Logger } from '@drazisil/mco-logger'
 import { NPSMessage } from 'transactions'
 import { Buffer } from 'buffer'
+import { NPSMessageFactory } from '../transactions/nps-message-factory'
 
 const { log } = Logger.getInstance()
 
@@ -23,20 +24,65 @@ const { log } = Logger.getInstance()
  * @property {Buffer} userName
  * @property {Buffer} userData
  */
-export class NPSUserInfo extends NPSMessage {
-  userId
-  userName
-  userData
+export class NPSUserInfo {
+  /**
+   *
+   * @param {NPSMessage} message
+   * @returns {NPSUserInfo}
+   */
+  static fromMessage(message) {
+    return new NPSUserInfo(message.direction)
+  }
+
   /**
    *
    * @param {import('types').EMessageDirection} direction
    */
   constructor(direction) {
-    super(direction)
+    this.msgNo = 0
+    this.msgVersion = 0
+    this.reserved = 0
+    this.content = Buffer.from([0x01, 0x02, 0x03, 0x04])
+    this.msgLength = this.content.length + 12
+    this.direction = direction
+    this.serviceName = 'mcoserver:NPSUserInfo'
+    this.messageType = 'NPSUserInfo'
     this.userId = 0
     this.userName = Buffer.from([0x00]) // 30 length
     this.userData = Buffer.from([0x00]) // 64 length
-    this.serviceName = 'mcoserver:NPSUserInfo'
+  }
+
+  /**
+   *
+   * @return {Buffer}
+   */
+  serialize() {
+    try {
+      const packet = Buffer.alloc(this.msgLength)
+      packet.writeInt16BE(this.msgNo, 0)
+      packet.writeInt16BE(this.msgLength, 2)
+      if (this.msgLength > 4) {
+        packet.writeInt16BE(this.msgVersion, 4)
+        packet.writeInt16BE(this.reserved, 6)
+      }
+
+      if (this.msgLength > 8) {
+        packet.writeInt32BE(this.msgLength, 8)
+        this.content.copy(packet, 12)
+      }
+
+      return packet
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new TypeError(
+          `[${this.messageType}] Error in serialize(): ${error}`,
+        )
+      }
+
+      throw new Error(
+        `[${this.messageType}] Error in serialize(), error unknown`,
+      )
+    }
   }
 
   /**
@@ -55,7 +101,7 @@ export class NPSUserInfo extends NPSMessage {
    * @return {void}
    */
   dumpInfo() {
-    this.dumpPacketHeader('NPSUserInfo')
+    NPSMessageFactory.dumpPacketHeader(this, 'NPSUserInfo')
     log('debug', `UserId:        ${this.userId}`, { service: this.serviceName })
     log('debug', `UserName:      ${this.userName.toString()}`, {
       service: this.serviceName,
