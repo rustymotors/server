@@ -101,7 +101,7 @@ export class NPSUserInfo {
    * @return {void}
    */
   dumpInfo() {
-    NPSMessageFactory.dumpPacketHeader(this, 'NPSUserInfo')
+    NPSMessageFactory.dumpPacketHeader(this)
     log('debug', `UserId:        ${this.userId}`, { service: this.serviceName })
     log('debug', `UserName:      ${this.userName.toString()}`, {
       service: this.serviceName,

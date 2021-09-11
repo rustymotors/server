@@ -189,7 +189,7 @@ export class NPSPersonaMapsMessage {
    * @return {void}
    */
   dumpPacket() {
-    NPSMessageFactory.dumpPacketHeader(this, 'NPSPersonaMapsMsg')
+    NPSMessageFactory.dumpPacketHeader(this)
     log('debug', `personaCount:        ${this.personaCount}`, {
       service: this.serviceName,
     })

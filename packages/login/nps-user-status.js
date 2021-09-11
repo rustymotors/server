@@ -155,7 +155,7 @@ export class NPSUserStatus {
    * @return {void}
    */
   dumpPacket() {
-    NPSMessageFactory.dumpPacketHeader(this, 'NPSUserStatus')
+    NPSMessageFactory.dumpPacketHeader(this)
     log(
       'debug',
       `NPSUserStatus,
