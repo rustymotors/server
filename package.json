@@ -6,6 +6,9 @@
   "engines": {
     "node": "^14.13.1 || >=16.0.0"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "files": [
     "README.md",
     "CHANGELOG.md",
@@ -17,8 +20,8 @@
     "start": "node --trace-warnings dist/src/app.js",
     "type-check": "tsc --noEmit",
     "type-check:watch": "yarn run type-check -- --watch",
-    "build": "tsc",
-    "lint": "eslint src/**/*.ts && prettier --write src test",
+    "build": "tsc -b",
+    "lint": "eslint src/**/*.ts && prettier --write packages",
     "test": "yarn run lint-test",
     "lint-test": "yarn run lint && yarn run test:only",
     "test:only": "jest",
