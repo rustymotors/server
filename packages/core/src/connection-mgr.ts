@@ -7,25 +7,25 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { Socket } from 'net'
-import { EMessageDirection, MessageNode } from '@mco-server/transactions'
 import { defaultHandler } from '@mco-server/transactions'
 import { DatabaseManager } from '@mco-server/database'
 import { NPSPacketManager } from './nps-packet-manager'
 import { TCPConnection } from './tcpConnection'
-import { IRawPacket } from "@mco-server/types";
-import { NPS_COMMANDS } from "@mco-server/types";
+import { IRawPacket, ITCPConnection } from "@mco-server/types";
+import { NPS_COMMANDS, IConnectionManager } from "@mco-server/types";
+import { MessageNode, EMessageDirection } from "@mco-server/message-types";
 
 const { log } = Logger.getInstance()
 
 export class ConnectionManager {
   static _instance: ConnectionManager
   databaseMgr = DatabaseManager.getInstance()
-  connections: TCPConnection[]
+  connections: ITCPConnection[]
   newConnectionId: number
   banList: string[]
   serviceName: string
 
-  public static getInstance(): ConnectionManager {
+  public static getInstance(): IConnectionManager {
     if (!ConnectionManager._instance) {
       ConnectionManager._instance = new ConnectionManager()
     }
@@ -46,7 +46,7 @@ export class ConnectionManager {
     this.serviceName = 'mcoserver:ConnectionMgr'
   }
 
-  newConnection(connectionId: string, socket: Socket): TCPConnection {
+  newConnection(connectionId: string, socket: Socket): ITCPConnection {
     return new TCPConnection(
       connectionId,
       socket,
@@ -57,9 +57,9 @@ export class ConnectionManager {
   /**
    * Check incoming data and route it to the correct handler based on localPort
    * @param {IRawPacket} rawPacket
-   * @return {Promise<TCPConnection>}
+   * @return {Promise<ITCPConnection>}
    */
-  async processData(rawPacket: IRawPacket): Promise<TCPConnection> {
+  async processData(rawPacket: IRawPacket): Promise<ITCPConnection> {
     const npsPacketManager = new NPSPacketManager()
 
     const { remoteAddress, localPort, data } = rawPacket
@@ -203,13 +203,13 @@ export class ConnectionManager {
    *
    * @param {string} address
    * @param {number} port
-   * @param {module:ConnectionObj} newConnection
+   * @param {ITCPConnection} newConnection
    * @return {Promise<void>}
    */
   async _updateConnectionByAddressAndPort(
     address: string,
     port: number,
-    newConnection: TCPConnection,
+    newConnection: ITCPConnection,
   ): Promise<void> {
     if (newConnection === undefined) {
       throw new Error(
@@ -244,7 +244,7 @@ export class ConnectionManager {
    * @param {module:net.Socket} socket
    * @return {module:ConnectionObj}
    */
-  findOrNewConnection(socket: Socket): TCPConnection {
+  findOrNewConnection(socket: Socket): ITCPConnection {
     const { remoteAddress, localPort } = socket
     if (!remoteAddress) {
       throw new Error(

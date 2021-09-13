@@ -12,7 +12,8 @@ import { createServer, Server } from 'https'
 import { Socket } from 'net'
 import config, { IAppConfiguration } from '../../config/src/index'
 import { _sslOptions } from '@mco-server/config/ssl-options'
-import { MCServer } from '@mco-server/core'
+import { IMCServer } from "@mco-server/types";
+
 
 const { log } = Logger.getInstance()
 /**
@@ -23,24 +24,24 @@ const { log } = Logger.getInstance()
 /**
  *
  * @property {config} config
- * @property {MCServer} mcServer
+ * @property {IMCServer} mcServer
  * @property {Server} httpServer
  */
 export class AdminServer {
   static _instance: AdminServer
   config: IAppConfiguration
-  mcServer: MCServer
+  mcServer: IMCServer
   serviceName: string
   httpsServer: Server | undefined
 
-  static getInstance(mcServer: MCServer): AdminServer {
+  static getInstance(mcServer: IMCServer): AdminServer {
     if (!AdminServer._instance) {
       AdminServer._instance = new AdminServer(mcServer)
     }
     return AdminServer._instance
   }
 
-  private constructor(mcServer: MCServer) {
+  private constructor(mcServer: IMCServer) {
     this.config = config
     this.mcServer = mcServer
     this.serviceName = 'mcoserver:AdminServer;'

@@ -9,7 +9,7 @@ import { expect, it } from '@jest/globals'
 import {
   EMessageDirection,
   MessageNode,
-} from '../src/services/MCOTS/message-node'
+} from './index'
 
 const messageNode1 = new MessageNode(EMessageDirection.RECEIVED)
 messageNode1.deserialize(

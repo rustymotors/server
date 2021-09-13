@@ -24,6 +24,12 @@
       "path": "packages/core"
     },
     {
+      "path": "packages/database"
+    },
+    {
+      "path": "packages/message-types"
+    },
+    {
       "path": "packages/types"
     }
   ]

@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, test } from '@jest/globals'
-import { StockCarInfoMessage } from '../src/services/MCOTS/stock-car-info-msg'
+import { StockCarInfoMessage } from './index'
 
 const stockCarInfoMessage1 = new StockCarInfoMessage(1, 0, 0)
 

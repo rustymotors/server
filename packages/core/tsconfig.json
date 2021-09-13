@@ -13,6 +13,9 @@
     "allowSyntheticDefaultImports": true,
     "paths": {
       "@mco-server/config": ["../config/src/index.ts"],
+      "@mco-server/database": ["../database/src/index.ts"],
+      "@mco-server/message-types": ["../message-types/src/index.ts"],
+      "@mco-server/transactions": ["../transactions/src/index.ts"],
       "@mco-server/types": ["../types/src/index.ts"]
     }
   },
@@ -21,6 +24,15 @@
   "references": [
     {
       "path": "../config"
+    },
+    {
+      "path": "../database"
+    },
+    {
+      "path": "../message-types"
+    },
+    {
+      "path": "../transactions"
     },
     {
       "path": "../types"

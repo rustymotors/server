@@ -7,9 +7,8 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { createServer, Server, Socket } from 'net'
-import { IRawPacket } from '@mco-server/types'
+import { IRawPacket, ITCPConnection } from '@mco-server/types'
 import { ConnectionManager } from './connection-mgr'
-import { TCPConnection } from './tcpConnection'
 
 const { log } = Logger.getInstance()
 
@@ -30,7 +29,7 @@ export class ListenerThread {
    * @param {TCPConnection} connection
    * @return {Promise<void>}
    */
-  async _onData(data: Buffer, connection: TCPConnection): Promise<void> {
+  async _onData(data: Buffer, connection: ITCPConnection): Promise<void> {
     try {
       const { localPort, remoteAddress } = connection.sock
       /** @type {IRawPacket} */
@@ -51,7 +50,7 @@ export class ListenerThread {
         { service: 'mcoserver:ListenerThread' },
       )
       /** @type {ConnectionObj} */
-      let newConnection: TCPConnection
+      let newConnection: ITCPConnection
       try {
         newConnection = await connection.mgr.processData(rawPacket)
       } catch (error) {
