@@ -7,8 +7,8 @@
 
 import { beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { Socket as fakeSocket } from 'net'
-import { ConnectionManager as fakeConnectionManager } from '../src/services/MCServer/connection-mgr'
-import { TCPConnection } from '../src/services/MCServer/tcpConnection'
+import { ConnectionManager as fakeConnectionManager } from './connection-mgr'
+import { TCPConnection } from './tcpConnection'
 
 jest.mock('../src/services/MCServer/connection-mgr')
 jest.mock('net')

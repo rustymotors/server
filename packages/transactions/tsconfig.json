@@ -13,7 +13,6 @@
       "allowSyntheticDefaultImports": true,
       "paths": {
           "@mco-server/types": ["../types/src/index.ts"],
-          "@mco-server/core": ["../core/src.index.ts"]
       }
     },
     "include": ["src/**/*"],
@@ -21,9 +20,6 @@
     "references": [
         {
             "path": "../types"
-        },
-        {
-            "path": "../core"
         }
     ]
   }

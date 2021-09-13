@@ -13,6 +13,7 @@ import { DatabaseManager } from '@mco-server/database'
 import { NPSPacketManager } from './nps-packet-manager'
 import { TCPConnection } from './tcpConnection'
 import { IRawPacket } from "@mco-server/types";
+import { NPS_COMMANDS } from "@mco-server/types";
 
 const { log } = Logger.getInstance()
 
