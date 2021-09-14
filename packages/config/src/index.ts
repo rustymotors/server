@@ -1,6 +1,6 @@
 // @ts-check
 import { IAppConfiguration } from '@mco-server/types'
-import { _sslOptions } from "./ssl-options";
+import { _sslOptions } from './ssl-options'
 
 /**
  * @module mco_config
@@ -44,4 +44,4 @@ const config: IAppConfiguration = {
   defaultLogLevel,
 }
 export default config
-export {_sslOptions}
+export { _sslOptions }

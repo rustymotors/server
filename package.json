@@ -15,19 +15,19 @@
     "AUTHORS"
   ],
   "scripts": {
-    "prestart": "yarn run build",
-    "start:dev": "node -r ts-node/register src/app.ts",
-    "start": "node --trace-warnings dist/src/app.js",
-    "type-check": "tsc --noEmit",
-    "type-check:watch": "yarn run type-check -- --watch",
-    "build": "tsc -b",
-    "build:clean": "rm -rf ./**/dist",
+    "preinstall": "npx only-allow yarn",
+    "audit": "yarn npm audit",
+    "check:license": "yarn licenses audit --summary --config=licenses.config.js",
+    "start": "node -r ts-node/register bin/app.ts",
+    "check:type": "tsc --noEmit",
+    "check:type:watch": "tsc --noEmit --watch",
+    "build": "tsc --build",
+    "build:clean": "tsc --build --clean",
     "lint": "eslint packages/**/*.ts && prettier --write packages",
     "test": "yarn run lint-test",
     "lint-test": "yarn run lint && yarn run test:only",
     "test:only": "jest",
-    "precommit": "yarn run lint-test",
-    "postinstall": "yarn audit && mkdir -p db"
+    "precommit": "yarn run lint-test"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
   "license": "MPL-2.0",
@@ -48,8 +48,6 @@
     "@babel/preset-typescript": "7.15.0",
     "@tsconfig/node14": "1.0.1",
     "@types/node": "16.7.10",
-    "@types/pg": "8.6.1",
-    "@types/sinon": "10.0.2",
     "@types/sqlite3": "3.1.7",
     "@types/supertest": "2.0.11",
     "@typescript-eslint/eslint-plugin": "4.30.0",
@@ -62,9 +60,13 @@
     "sinon": "11.1.2",
     "source-map-support": "0.5.19",
     "supertest": "6.1.6",
-    "testdouble": "3.16.2",
     "ts-jest": "27.0.5",
     "ts-node": "10.2.1",
     "typescript": "4.4.2"
-  }
+  },
+  "volta": {
+    "node": "16.9.1",
+    "yarn": "2.4.3"
+  },
+  "packageManager": "yarn@3.1.0-rc.5"
 }

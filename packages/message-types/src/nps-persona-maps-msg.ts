@@ -43,7 +43,7 @@ const { log } = Logger.getInstance()
 /**
  *
  * @class
- * @extends {NPSMsg}
+ * @extends {NPSMessage}
  * @property {IPersonaRecord[]} personas
  * @property {number} personaSize
  * @property {number} personaCount

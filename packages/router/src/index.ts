@@ -1,7 +1,7 @@
 import net from 'net'
 import { EServerConnectionAction, IServerConnection } from '@mco-server/types'
 import { Logger } from '@drazisil/mco-logger'
-import { RoutingMesh } from "./client";
+import { RoutingMesh } from './client'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 
@@ -105,4 +105,4 @@ export class RoutingServer {
   }
 }
 
-export {RoutingMesh}
+export { RoutingMesh }
