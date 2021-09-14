@@ -13,7 +13,8 @@
       "allowSyntheticDefaultImports": true,
       "paths": {
         "@mco-server/config": ["../config/src/index.ts"],
-        "@mco-server/types": ["../types/src/index.ts"]
+        "@mco-server/types": ["../types/src/index.ts"],
+        "@mco-server/router": ["../router/src/index.ts"]
       }
     },
     "include": ["src/**/*"],
@@ -24,6 +25,9 @@
       },
       {
         "path": "../types"
+      },
+      {
+        "path": "../router"
       }
     ]
   }

@@ -12,7 +12,10 @@
       "declarationMap": true,
       "allowSyntheticDefaultImports": true,
       "paths": {
-        "@mco-server/types": ["../types/stc.index.ts"]
+        "@mco-server/types": ["../types/src/index.ts"],
+        "@mco-server/router": ["../router/src/index.ts"],
+        "@mco-server/shard":["../shard/src/index.ts"],
+        "@mco-server/patch":["../patch/src/index.ts"]
       }
     },
     "include": ["src/**/*"],
@@ -23,6 +26,15 @@
       },
       {
         "path": "../types"
+      },
+      {
+        "path": "../router"
+      },
+      {
+        "path": "../shard"
+      },
+      {
+        "path": "../patch"
       }
     ]
   }

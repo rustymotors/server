@@ -14,7 +14,9 @@ export interface IEncryptionManager {
   getId: () => string
 }
 
-export interface IMCServer {}
+export interface IMCServer {
+  mgr: IConnectionManager
+}
 
 export interface IDatabaseManager {
   localDB: Database

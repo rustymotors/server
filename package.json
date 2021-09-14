@@ -21,7 +21,7 @@
     "type-check": "tsc --noEmit",
     "type-check:watch": "yarn run type-check -- --watch",
     "build": "tsc -b",
-    "build:clean": "tsc --build --clean",
+    "build:clean": "rm -rf ./**/dist",
     "lint": "eslint packages/**/*.ts && prettier --write packages",
     "test": "yarn run lint-test",
     "lint-test": "yarn run lint && yarn run test:only",

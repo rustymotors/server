@@ -2,8 +2,8 @@ import http from 'http'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import config from './server.config'
 import { Logger } from '@drazisil/mco-logger'
-import { EServerConnectionName } from '../mco-types'
-import { RoutingMesh } from '../mco-common'
+import { EServerConnectionName } from '@mco-server/types'
+import { RoutingMesh } from '@mco-server/router'
 
 const { log } = Logger.getInstance()
 export const CastanetResponse = {

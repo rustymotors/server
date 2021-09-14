@@ -10,9 +10,9 @@ import { Logger } from '@drazisil/mco-logger'
 import { IncomingMessage, ServerResponse } from 'http'
 import { createServer, Server } from 'https'
 import { Socket } from 'net'
-import config, { IAppConfiguration } from '../../config/src/index'
-import { _sslOptions } from '@mco-server/config/ssl-options'
-import { IMCServer } from '@mco-server/types'
+import config from '@mco-server/config'
+import { _sslOptions } from '@mco-server/config'
+import { IAppConfiguration, IMCServer } from '@mco-server/types'
 
 const { log } = Logger.getInstance()
 /**
