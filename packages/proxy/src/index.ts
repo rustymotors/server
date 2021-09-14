@@ -1,9 +1,9 @@
 import http from 'http'
 import { Logger } from '@drazisil/mco-logger'
-import { EServerConnectionName } from '../mco-types'
-import { RoutingMesh } from '../mco-common'
-import { ShardServer } from '../mco-shard'
-import { PatchServer } from '../mco-patch'
+import { EServerConnectionName } from '@mco-server/types'
+import { RoutingMesh } from '@mco-server/router'
+import { ShardServer } from '@mco-server/shard'
+import { PatchServer } from '@mco-server/patch'
 
 const { log } = Logger.getInstance()
 

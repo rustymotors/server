@@ -8,10 +8,10 @@
 import { Logger } from '@drazisil/mco-logger'
 import { readFileSync } from 'fs'
 import http from 'http'
-import { RoutingMesh } from '../mco-common'
-import { EServerConnectionName } from '../mco-types'
+import { EServerConnectionName } from '@mco-server/types'
 import config from './server.config'
 import { ShardEntry } from './shard-entry'
+import { RoutingMesh } from "@mco-server/router";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.

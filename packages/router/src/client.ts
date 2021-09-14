@@ -4,7 +4,7 @@ import {
   EServerConnectionAction,
   EServerConnectionName,
   IServerConnection,
-} from '../mco-types'
+} from '@mco-server/types'
 
 const { log } = Logger.getInstance()
 

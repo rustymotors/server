@@ -15,6 +15,12 @@
   "files": [],
   "references": [
     {
+      "path": "packages/admin"
+    },
+    {
+      "path": "packages/auth"
+    },
+    {
       "path": "packages/config"
     },
     {
@@ -24,7 +30,31 @@
       "path": "packages/database"
     },
     {
+      "path": "packages/lobby"
+    },
+    {
+      "path": "packages/login"
+    },
+    {
       "path": "packages/message-types"
+    },
+    {
+      "path": "packages/patch"
+    },
+    {
+      "path": "packages/persona"
+    },
+    {
+      "path": "packages/proxy"
+    },
+    {
+      "path": "packages/router"
+    },
+    {
+      "path": "packages/shard"
+    },
+    {
+      "path": "packages/transactions"
     },
     {
       "path": "packages/types"
