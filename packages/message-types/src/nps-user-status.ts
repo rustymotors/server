@@ -8,9 +8,9 @@
 import { privateDecrypt } from 'crypto'
 import { readFileSync, statSync } from 'fs'
 import { Logger } from '@drazisil/mco-logger'
-import { INPSMessageJSON, NPSMessage } from '../MCOTS/nps-msg'
-import { IAppConfiguration } from '../../config/src'
-import { EMessageDirection } from '../MCOTS/message-node'
+import { INPSMessageJSON, NPSMessage } from './index'
+import { IAppConfiguration } from '@mco-server/types'
+import { EMessageDirection } from './index'
 
 const { log } = Logger.getInstance()
 

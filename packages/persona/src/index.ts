@@ -7,11 +7,11 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { Socket } from 'net'
-import { IPersonaRecord, IRawPacket } from '../../types'
-import { EMessageDirection } from '../MCOTS/message-node'
-import { NPSMessage } from '../MCOTS/nps-msg'
-import { TCPConnection } from '../MCServer/tcpConnection'
-import { NPSPersonaMapsMessage } from './nps-persona-maps-msg'
+import { IPersonaRecord, IRawPacket } from '@mco-server/types'
+import { EMessageDirection } from '@mco-server/message-types'
+import { NPSMessage } from '@mco-server/message-types'
+import { ITCPConnection } from '@mco-server/types'
+import { NPSPersonaMapsMessage } from '@mco-server/message-types'
 
 const { log } = Logger.getInstance()
 
@@ -459,7 +459,7 @@ export class PersonaServer {
     return responsePacket
   }
 
-  async dataHandler(rawPacket: IRawPacket): Promise<TCPConnection> {
+  async dataHandler(rawPacket: IRawPacket): Promise<ITCPConnection> {
     const { connection, data, localPort, remoteAddress } = rawPacket
     const { sock } = connection
     const updatedConnection = connection

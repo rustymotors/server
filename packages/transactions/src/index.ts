@@ -8,7 +8,12 @@
 import { Logger } from '@drazisil/mco-logger'
 import { ITCPConnection } from '@mco-server/types'
 import { ConnectionWithPackets } from './tcp-manager'
-import { GenericReplyMessage, MessageNode, EMessageDirection } from "@mco-server/message-types";
+import {
+  GenericReplyMessage,
+  MessageNode,
+  EMessageDirection,
+} from '@mco-server/message-types'
+import { defaultHandler } from './tcp-manager'
 
 const { log } = Logger.getInstance()
 
@@ -257,4 +262,4 @@ export class MCOTServer {
   }
 }
 
-
+export { defaultHandler }

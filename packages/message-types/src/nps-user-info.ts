@@ -7,8 +7,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { EMessageDirection } from '../MCOTS/message-node'
-import { NPSMessage } from '../MCOTS/nps-msg'
+import { EMessageDirection } from './index'
+import { NPSMessage } from './index'
 
 const { log } = Logger.getInstance()
 

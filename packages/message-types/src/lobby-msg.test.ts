@@ -6,16 +6,16 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { ClientConnectMessage } from '../src/services/MCServer/client-connect-msg'
+import { LobbyInfoPacket } from './index'
+import { LobbyMessage } from './index'
 
-it('ClientConnectMsg', () => {
-  const clientConnectMessage1 = new ClientConnectMessage(
-    Buffer.concat([
-      Buffer.from([0xb6, 0x01]),
-      Buffer.from('TOMC'),
-      Buffer.alloc(12),
-    ]),
-  )
+const lobbyInfo1 = new LobbyInfoPacket()
+const lobbyMessage1 = new LobbyMessage()
 
-  expect(clientConnectMessage1.msgNo).toEqual(438)
+it('LobbyInfo', () => {
+  expect(lobbyInfo1.toPacket().length).toEqual(567)
+})
+
+it('LobbyMsg', () => {
+  expect(lobbyMessage1.data.length).toEqual(572)
 })

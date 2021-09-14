@@ -6,11 +6,16 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { LobbyServer } from './index'
+import { ClientConnectMessage } from './index'
 
-it('LobbyServer', () => {
-  const lobbyServer = LobbyServer.getInstance()
-  expect(lobbyServer._generateSessionKeyBuffer('123').length).toEqual(64)
+it('ClientConnectMsg', () => {
+  const clientConnectMessage1 = new ClientConnectMessage(
+    Buffer.concat([
+      Buffer.from([0xb6, 0x01]),
+      Buffer.from('TOMC'),
+      Buffer.alloc(12),
+    ]),
+  )
 
-  expect(lobbyServer._npsHeartbeat().msgNo).toEqual(0x01_27)
+  expect(clientConnectMessage1.msgNo).toEqual(438)
 })

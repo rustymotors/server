@@ -14,17 +14,22 @@ export interface IEncryptionManager {
   getId: () => string
 }
 
-export interface IMCServer {
-  
-}
+export interface IMCServer {}
 
 export interface IDatabaseManager {
   localDB: Database
   changes: number
   serviceName: string
   fetchSessionKeyByCustomerId: (customerId: number) => Promise<ISessionRecord>
-  fetchSessionKeyByConnectionId: (connectionId: string) => Promise<ISessionRecord>
-  _updateSessionKey: (customerId: number, sessionkey: string, contextId: string, connectionId: string) => Promise<number>
+  fetchSessionKeyByConnectionId: (
+    connectionId: string,
+  ) => Promise<ISessionRecord>
+  _updateSessionKey: (
+    customerId: number,
+    sessionkey: string,
+    contextId: string,
+    connectionId: string,
+  ) => Promise<number>
 }
 
 export interface IConnectionManager {
@@ -37,9 +42,16 @@ export interface IConnectionManager {
   getNameFromOpCode: (opCode: number) => string
   getOpcodeFromName: (name: string) => number
   getBans: () => string[]
-  findConnectionByAddressAndPort:(remoteAddress: string, localPort: number) => ITCPConnection | undefined
+  findConnectionByAddressAndPort: (
+    remoteAddress: string,
+    localPort: number,
+  ) => ITCPConnection | undefined
   findConnectionById: (connectionId: string) => ITCPConnection
-  _updateConnectionByAddressAndPort: (address: string, port: number, newConnection: ITCPConnection) => Promise<void>
+  _updateConnectionByAddressAndPort: (
+    address: string,
+    port: number,
+    newConnection: ITCPConnection,
+  ) => Promise<void>
   findOrNewConnection: (socket: Socket) => ITCPConnection
   resetAllQueueState: () => void
   dumpConnections: () => ITCPConnection[]

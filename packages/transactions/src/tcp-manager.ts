@@ -6,16 +6,18 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { ClientConnectMessage } from '../MCServer/client-connect-msg'
-import { GenericReplyMessage } from '../MCServer/generic-reply-msg'
-import { GenericRequestMessage } from '../MCServer/generic-request-msg'
-import { DatabaseManager } from '../shared/database-manager'
-import { StockCar } from './stock-car'
-import { StockCarInfoMessage } from './stock-car-info-msg'
+import { DatabaseManager } from '@mco-server/database'
 import { MCOTServer } from '.'
-import { EMessageDirection, MessageNode } from './message-node'
-import { TCPConnection } from '@mco-server/core'
-import { IRawPacket } from '@mco-server/types'
+import {
+  ClientConnectMessage,
+  EMessageDirection,
+  GenericReplyMessage,
+  GenericRequestMessage,
+  MessageNode,
+  StockCar,
+  StockCarInfoMessage,
+} from '@mco-server/message-types'
+import { IRawPacket, ITCPConnection } from '@mco-server/types'
 
 const { log } = Logger.getInstance()
 
@@ -28,12 +30,12 @@ const mcotServer = new MCOTServer()
 const databaseManager = DatabaseManager.getInstance()
 
 export type ConnectionWithPacket = {
-  connection: TCPConnection
+  connection: ITCPConnection
   packet: MessageNode
 }
 
 export type ConnectionWithPackets = {
-  connection: TCPConnection
+  connection: ITCPConnection
   packetList: MessageNode[]
 }
 
@@ -44,7 +46,7 @@ export type ConnectionWithPackets = {
  * @return {Promise<{conn: ConnectionObj, packetToWrite: MessageNode}>}
  */
 async function compressIfNeeded(
-  connection: TCPConnection,
+  connection: ITCPConnection,
   packet: MessageNode,
 ): Promise<ConnectionWithPacket> {
   // Check if compression is needed
@@ -67,7 +69,7 @@ async function compressIfNeeded(
 }
 
 async function encryptIfNeeded(
-  connection: TCPConnection,
+  connection: ITCPConnection,
   packet: MessageNode,
 ): Promise<ConnectionWithPacket> {
   // Check if encryption is needed
@@ -97,9 +99,9 @@ async function encryptIfNeeded(
  * @return {Promise<ConnectionObj>}
  */
 async function socketWriteIfOpen(
-  connection: TCPConnection,
+  connection: ITCPConnection,
   packetList: MessageNode[],
-): Promise<TCPConnection> {
+): Promise<ITCPConnection> {
   const updatedConnection: ConnectionWithPackets = {
     connection: connection,
     packetList: packetList,
@@ -151,7 +153,7 @@ async function socketWriteIfOpen(
  * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
  */
 async function getStockCarInfo(
-  connection: TCPConnection,
+  connection: ITCPConnection,
   packet: MessageNode,
 ): Promise<ConnectionWithPackets> {
   const getStockCarInfoMessage = new GenericRequestMessage()
@@ -187,7 +189,7 @@ async function getStockCarInfo(
  * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
  */
 async function clientConnect(
-  connection: TCPConnection,
+  connection: ITCPConnection,
   packet: MessageNode,
 ): Promise<ConnectionWithPackets> {
   /**
@@ -243,8 +245,8 @@ async function clientConnect(
  */
 async function processInput(
   node: MessageNode,
-  conn: TCPConnection,
-): Promise<TCPConnection> {
+  conn: ITCPConnection,
+): Promise<ITCPConnection> {
   const currentMessageNo = node.msgNo
   const currentMessageString = mcotServer._MSG_STRING(currentMessageNo)
 
@@ -385,8 +387,8 @@ async function processInput(
  */
 async function messageReceived(
   message: MessageNode,
-  con: TCPConnection,
-): Promise<TCPConnection> {
+  con: ITCPConnection,
+): Promise<ITCPConnection> {
   const newConnection = con
   if (!newConnection.useEncryption && message.flags && 0x08) {
     log('debug', 'Turning on encryption', {
@@ -469,7 +471,7 @@ async function messageReceived(
  */
 export async function defaultHandler(
   rawPacket: IRawPacket,
-): Promise<TCPConnection> {
+): Promise<ITCPConnection> {
   const { connection, remoteAddress, localPort, data } = rawPacket
   const messageNode = new MessageNode(EMessageDirection.RECEIVED)
   messageNode.deserialize(data)

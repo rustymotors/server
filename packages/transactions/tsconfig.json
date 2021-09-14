@@ -12,7 +12,7 @@
     "declarationMap": true,
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "@mco-server/core": ["../core/stc/index.ts"],
+      "@mco-server/database": ["../database/src/index.ts"],
       "@mco-server/message-types": ["../message-types/src/index.ts"],
       "@mco-server/types": ["../types/src/index.ts"]
     }
@@ -21,7 +21,7 @@
   "exclude": ["node_modules", "dist"],
   "references": [
     {
-      "path": "../core"
+      "path": "../database"
     },
     {
       "path": "../message-types"

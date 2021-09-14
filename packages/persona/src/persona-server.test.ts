@@ -6,9 +6,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it, jest, beforeEach, describe } from '@jest/globals'
-import { PersonaServer } from '../src/services/PersonaServer/persona-server'
-import { NPSMessage } from '../src/services/MCOTS/nps-msg'
-import { EMessageDirection } from '../src/services/MCOTS/message-node'
+import { PersonaServer } from '.'
+import { NPSMessage } from '@mco-server/message-types'
+import { EMessageDirection } from '@mco-server/message-types'
 import { Socket as fakeSocket } from 'net'
 
 jest.mock('net')

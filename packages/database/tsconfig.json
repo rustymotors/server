@@ -1,26 +1,25 @@
 {
-    "extends": "../../tsconfig.json",
-    "compilerOptions": {
-      "rootDir": ".",
-      "outDir": "./dist",
-      "baseUrl": ".",
-      "sourceMap": true,
-      "resolveJsonModule": true,
-      "composite": true,
-      "allowJs": false,
-      "declaration": true,
-      "declarationMap": true,
-      "allowSyntheticDefaultImports": true,
-      "paths": {
-        "@mco-server/types": ["../types/src/index.ts"],
-      }
-    },
-    "include": ["src/**/*"],
-    "exclude": ["node_modules", "dist"],
-    "references": [
-        {
-            "path": "../types"
-        },
-    ]
-  }
-  
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "composite": true,
+    "allowJs": false,
+    "declaration": true,
+    "declarationMap": true,
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "@mco-server/types": ["../types/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    {
+      "path": "../types"
+    }
+  ]
+}

@@ -14,7 +14,10 @@
     "paths": {
       "@mco-server/config": ["../config/src/index.ts"],
       "@mco-server/database": ["../database/src/index.ts"],
+      "@mco-server/lobby": ["../lobby/src/index.ts"],
+      "@mco-server/login": ["../login/src/index.ts"],
       "@mco-server/message-types": ["../message-types/src/index.ts"],
+      "@mco-server/persona": ["../persona/src/index.ts"],
       "@mco-server/transactions": ["../transactions/src/index.ts"],
       "@mco-server/types": ["../types/src/index.ts"]
     }
@@ -29,7 +32,16 @@
       "path": "../database"
     },
     {
+      "path": "../lobby"
+    },
+    {
+      "path": "../login"
+    },
+    {
       "path": "../message-types"
+    },
+    {
+      "path": "../persona"
     },
     {
       "path": "../transactions"

@@ -7,11 +7,9 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { certificate } from '@mco-server/config'
-import { IRawPacket, IUserRecordMini } from '../../types'
-import { TCPConnection } from '../core/tcpConnection'
-import { DatabaseManager } from '../../database/database-manager'
-import { NPSUserStatus } from './nps-user-status'
-import { premadeLogin } from './packet'
+import { DatabaseManager } from '@mco-server/database'
+import { IRawPacket, ITCPConnection, IUserRecordMini } from '@mco-server/types'
+import { NPSUserStatus, premadeLogin } from '@mco-server/message-types'
 
 const { log } = Logger.getInstance()
 
@@ -25,10 +23,18 @@ const { log } = Logger.getInstance()
  * @property {DatabaseManager} databaseManager
  */
 export class LoginServer {
+  static _instance: LoginServer
   databaseManager = DatabaseManager.getInstance()
   serviceName: string
 
-  constructor() {
+  static getInstance(): LoginServer {
+    if (!LoginServer._instance) {
+      LoginServer._instance = new LoginServer()
+    }
+    return LoginServer._instance
+  }
+
+  private constructor() {
     this.serviceName = 'mcoserver:LoginServer'
   }
 
@@ -38,7 +44,7 @@ export class LoginServer {
    * @param {IServerConfig} config
    * @return {Promise<ConnectionObj>}
    */
-  async dataHandler(rawPacket: IRawPacket): Promise<TCPConnection> {
+  async dataHandler(rawPacket: IRawPacket): Promise<ITCPConnection> {
     let processed = true
     const { connection, data } = rawPacket
     const { localPort, remoteAddress } = rawPacket
@@ -162,7 +168,7 @@ export class LoginServer {
    * @param {IServerConfig} config
    * @return {Promise<Buffer>}
    */
-  async _userLogin(connection: TCPConnection, data: Buffer): Promise<Buffer> {
+  async _userLogin(connection: ITCPConnection, data: Buffer): Promise<Buffer> {
     const { sock } = connection
     const { localPort } = sock
     const userStatus = new NPSUserStatus(data)

@@ -11,9 +11,9 @@ import { defaultHandler } from '@mco-server/transactions'
 import { DatabaseManager } from '@mco-server/database'
 import { NPSPacketManager } from './nps-packet-manager'
 import { TCPConnection } from './tcpConnection'
-import { IRawPacket, ITCPConnection } from "@mco-server/types";
-import { NPS_COMMANDS, IConnectionManager } from "@mco-server/types";
-import { MessageNode, EMessageDirection } from "@mco-server/message-types";
+import { IRawPacket, ITCPConnection } from '@mco-server/types'
+import { NPS_COMMANDS, IConnectionManager } from '@mco-server/types'
+import { MessageNode, EMessageDirection } from '@mco-server/message-types'
 
 const { log } = Logger.getInstance()
 

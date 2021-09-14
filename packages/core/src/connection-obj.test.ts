@@ -10,7 +10,7 @@ import { Socket as fakeSocket } from 'net'
 import { ConnectionManager as fakeConnectionManager } from './connection-mgr'
 import { TCPConnection } from './tcpConnection'
 
-jest.mock('../src/services/MCServer/connection-mgr')
+jest.mock('./connection-mgr')
 jest.mock('net')
 
 it('ConnectionObj', () => {

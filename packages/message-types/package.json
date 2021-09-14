@@ -2,5 +2,8 @@
   "name": "@mco-server/message-types",
   "version": "1.0.0",
   "main": "dist/index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@mco-server/types": "1.0.0"
+  }
 }

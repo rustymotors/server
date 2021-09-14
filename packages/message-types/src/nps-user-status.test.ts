@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from '@jest/globals'
-import { NPSUserStatus } from '../src/services/LoginServer/nps-user-status'
+import { NPSUserStatus } from './nps-user-status'
 
 it('NPSUserStatus', () => {
   const testPacket = Buffer.from([0x7b, 0x00])

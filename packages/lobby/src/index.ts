@@ -7,13 +7,14 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { IRawPacket } from '../../types'
-import { EMessageDirection } from '../MCOTS/message-node'
-import { NPSMessage } from '../MCOTS/nps-msg'
-import { TCPConnection } from '../MCServer/tcpConnection'
-import { PersonaServer } from '../PersonaServer/persona-server'
-import { DatabaseManager } from '../../database/database-manager'
-import { NPSUserInfo } from './nps-user-info'
+import { DatabaseManager } from '@mco-server/database'
+import { IRawPacket, ITCPConnection } from '@mco-server/types'
+import {
+  EMessageDirection,
+  NPSMessage,
+  NPSUserInfo,
+} from '@mco-server/message-types'
+import { PersonaServer } from '@mco-server/persona'
 
 const { log } = Logger.getInstance()
 
@@ -31,9 +32,9 @@ const databaseManager = DatabaseManager.getInstance()
  * @return {Promise<ConnectionObj>}
  */
 async function npsSocketWriteIfOpen(
-  conn: TCPConnection,
+  conn: ITCPConnection,
   buffer: Buffer,
-): Promise<TCPConnection> {
+): Promise<ITCPConnection> {
   const { sock } = conn
   if (sock.writable) {
     // Write the packet to socket
@@ -56,7 +57,7 @@ async function npsSocketWriteIfOpen(
  * @param {ConnectionObj} con
  * @param {Buffer} cypherCmd
  */
-function decryptCmd(con: TCPConnection, cypherCmd: Buffer): TCPConnection {
+function decryptCmd(con: ITCPConnection, cypherCmd: Buffer): ITCPConnection {
   const s = con
   const decryptedCommand = s.decipherBufferDES(cypherCmd)
   s.decryptedCmd = decryptedCommand
@@ -73,7 +74,7 @@ function decryptCmd(con: TCPConnection, cypherCmd: Buffer): TCPConnection {
  * @param {Buffer} cypherCmd
  * @return {ConnectionObj}
  */
-function encryptCmd(con: TCPConnection, cypherCmd: Buffer): TCPConnection {
+function encryptCmd(con: ITCPConnection, cypherCmd: Buffer): ITCPConnection {
   const s = con
   s.encryptedCmd = s.cipherBufferDES(cypherCmd)
   return s
@@ -87,9 +88,9 @@ function encryptCmd(con: TCPConnection, cypherCmd: Buffer): TCPConnection {
  * @return {Promise<ConnectionObj>}
  */
 async function sendCommand(
-  con: TCPConnection,
+  con: ITCPConnection,
   data: Buffer,
-): Promise<TCPConnection> {
+): Promise<ITCPConnection> {
   const s = con
 
   const decipheredCommand = decryptCmd(
@@ -135,6 +136,19 @@ async function sendCommand(
  * @class
  */
 export class LobbyServer {
+  static _instance: LobbyServer
+
+  static getInstance(): LobbyServer {
+    if (!LobbyServer._instance) {
+      LobbyServer._instance = new LobbyServer()
+    }
+    return LobbyServer._instance
+  }
+
+  private constructor() {
+    // Intentually empty
+  }
+
   /**
    *
    * @return NPSMsg}
@@ -153,7 +167,7 @@ export class LobbyServer {
    * @param {IRawPacket} rawPacket
    * @return {Promise<ConnectionObj>}
    */
-  async dataHandler(rawPacket: IRawPacket): Promise<TCPConnection> {
+  async dataHandler(rawPacket: IRawPacket): Promise<ITCPConnection> {
     const { localPort, remoteAddress } = rawPacket
     log(
       'debug',
@@ -258,7 +272,7 @@ export class LobbyServer {
    * @return {Promise<NPSMsg>}
    */
   async _npsRequestGameConnectServer(
-    connection: TCPConnection,
+    connection: ITCPConnection,
     rawData: Buffer,
   ): Promise<NPSMessage> {
     const { sock } = connection

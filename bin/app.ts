@@ -6,13 +6,13 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { AuthLogin } from './services/@drazisil/mco-auth'
-import { PatchServer } from './services/@drazisil/mco-patch'
-import { HTTPProxyServer } from './services/@drazisil/mco-proxy'
-import { RoutingServer } from './services/@drazisil/mco-route'
-import { ShardServer } from './services/@drazisil/mco-shard'
-import { AdminServer } from './services/AdminServer'
-import { MCServer } from './services/MCServer'
+import { RoutingServer } from "@mco-server/router";
+import { PatchServer } from "@mco-server/patch";
+import { AuthLogin } from "@mco-server/auth";
+import { ShardServer } from "@mco-server/shard";
+import { HTTPProxyServer } from "@mco-server/proxy";
+import { MCServer } from "@mco-server/core";
+import { AdminServer } from "@mco-server/admin";
 
 // What servers do we need?
 // * Routing Server

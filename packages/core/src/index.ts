@@ -8,7 +8,7 @@
 import { Logger } from '@drazisil/mco-logger'
 import { IAppConfiguration } from '@mco-server/types'
 import { ConnectionManager } from './connection-mgr'
-import { ConfigurationManager } from "@mco-server/config";
+import { ConfigurationManager } from '@mco-server/config'
 import { ListenerThread } from './listener-thread'
 
 const { log } = Logger.getInstance()

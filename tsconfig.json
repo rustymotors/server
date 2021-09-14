@@ -15,9 +15,6 @@
   "files": [],
   "references": [
     {
-      "path": "packages/admin"
-    },
-    {
       "path": "packages/config"
     },
     {

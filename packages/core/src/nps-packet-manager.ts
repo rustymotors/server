@@ -6,11 +6,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { IRawPacket } from '../../types'
-import { LobbyServer } from '../LobbyServer'
-import { LoginServer } from '../LoginServer'
-import { PersonaServer } from '../persona/persona-server'
-import { DatabaseManager } from '../shared/database-manager'
+import { IRawPacket } from '@mco-server/types'
+import { LobbyServer } from '@mco-server/lobby'
+import { LoginServer } from '@mco-server/login'
+import { PersonaServer } from '@mco-server/persona'
+import { DatabaseManager } from '@mco-server/database'
 import { TCPConnection } from './tcpConnection'
 
 const { log } = Logger.getInstance()
@@ -56,9 +56,9 @@ export class NPSPacketManager {
       { id: 0x11_01, name: 'NPS_CRYPTO_DES_CBC' },
     ]
 
-    this.loginServer = new LoginServer()
+    this.loginServer = LoginServer.getInstance()
     this.personaServer = PersonaServer.getInstance()
-    this.lobbyServer = new LobbyServer()
+    this.lobbyServer = LobbyServer.getInstance()
     this.serviceName = 'mcoserver:NPSPacketManager'
   }
 

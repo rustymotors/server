@@ -1,0 +1,28 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+      "rootDir": ".",
+      "outDir": "./dist",
+      "baseUrl": ".",
+      "sourceMap": true,
+      "resolveJsonModule": true,
+      "composite": true,
+      "allowJs": false,
+      "declaration": true,
+      "declarationMap": true,
+      "allowSyntheticDefaultImports": true,
+      "paths": {
+        "@mco-server/router": ["../packages/router/src/index.ts"],
+        "@mco-server/patch": ["../packages/patch/src/index.ts"],
+        "@mco-server/auth": ["../packages/auth/src/index.ts"],
+        "@mco-server/shard": ["../packages/shard/src/index.ts"],
+        "@mco-server/proxy": ["../packages/proxy/src/index.ts"],
+        "@mco-server/core": ["../packages/core/src/index.ts"],
+        "@mco-server/admin": ["../packages/admin/src/index.ts"]
+      }
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist"],
+    "references": []
+  }
+  
