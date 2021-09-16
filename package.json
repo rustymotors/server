@@ -67,13 +67,9 @@
     "sinon": "11.1.2",
     "source-map-support": "0.5.20",
     "supertest": "6.1.6",
-    "ts-jest": "27",
-    "ts-node": "^10.2.1",
+    "testdouble": "3.16.2",
+    "ts-jest": "27.0.5",
+    "ts-node": "10.2.1",
     "typescript": "4.4.3"
-  },
-  "volta": {
-    "node": "16.9.1",
-    "yarn": "2.4.3"
-  },
-  "packageManager": "yarn@3.1.0-rc.5"
+  }
 }
