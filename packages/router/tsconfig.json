@@ -1,11 +1,9 @@
 {
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "rootDir": ".",
+    "rootDir": "src/",
     "outDir": "./dist",
     "baseUrl": ".",
     "sourceMap": true,
-    "resolveJsonModule": true,
     "composite": true,
     "allowJs": false,
     "declaration": true,
@@ -16,7 +14,8 @@
       "@mco-server/types": ["../types/src/index.ts"]
     }
   },
-  "include": ["src/**/*"],
+  "files": ["src/index.ts", "./src/client.ts"],
+  // "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"],
   "references": [
     {
