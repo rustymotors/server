@@ -7,7 +7,7 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { Socket } from 'net'
-import { defaultHandler } from '@mco-server/transactions'
+import { defaultHandler } from "@mco-server/transactions";
 import { DatabaseManager } from '@mco-server/database'
 import { NPSPacketManager } from './nps-packet-manager'
 import { TCPConnection } from './tcpConnection'

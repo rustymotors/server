@@ -1,17 +1,19 @@
 {
-    "compilerOptions": {
-      "rootDir": "src/",
-      "outDir": "./dist",
-      "baseUrl": ".",
-      "sourceMap": true,
-      "composite": true,
-      "allowJs": false,
-      "declaration": true,
-      "declarationMap": true,
-      "allowSyntheticDefaultImports": true
-    },
-    "files": ["src/index.ts"],
-    // "include": ["src/**/*"],
-    "exclude": ["node_modules", "dist"]
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["ES2019"],
+    "module": "commonjs",
+    "noImplicitReturns": true,
+    "strict": true,
+    "target": "ES2019",
+    "declaration": true,
+    "importHelpers": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "useUnknownInCatchVariables": false
   }
-  
+}

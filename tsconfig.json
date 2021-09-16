@@ -1,36 +1,19 @@
 {
   "compilerOptions": {
-    "incremental": true,
-    "baseUrl": ".",
-    "target": "esnext",
-    "module": "commonjs",
-    "declaration": true,
-    "declarationMap": true,
-    "outDir": "dist",
-    "composite": true,
-    "strict": true,
     "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
     "esModuleInterop": true,
-    "paths": {
-      "@mco-server/*": ["packages/*/src"]
-    }
-  },
-  "files": [],
-  "references": [
-    { "path": "packages/admin" },
-    { "path": "packages/auth" },
-    { "path": "packages/config" },
-    { "path": "packages/core" },
-    { "path": "packages/database" },
-    { "path": "packages/lobby" },
-    { "path": "packages/login" },
-    { "path": "packages/message-types" },
-    { "path": "packages/patch" },
-    { "path": "packages/persona" },
-    { "path": "packages/proxy" },
-    { "path": "packages/router" },
-    { "path": "packages/shard" },
-    { "path": "packages/transactions" },
-    { "path": "packages/types" }
-  ]
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["ES2019"],
+    "module": "commonjs",
+    "noImplicitReturns": true,
+    "strict": true,
+    "target": "ES2019",
+    "declaration": true,
+    "importHelpers": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "useUnknownInCatchVariables": false
+  }
 }
