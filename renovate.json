@@ -1,9 +1,15 @@
 {
   "extends": ["config:base"],
-  "rebaseWhen": "behind-base-branch",
   "postUpgradeTasks": {
-    "commands": ["npm audit"],
+    "commands": ["yarn npm audit"],
     "fileFilters": [""],
     "executionMode": "update"
-  }
+  },
+    "packageRules": [
+    {
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "devDependencies (non-major)"
+    }
+    ]
 }
