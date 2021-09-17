@@ -7,8 +7,7 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { Socket } from 'net'
-import { IPersonaRecord, IRawPacket } from '@mco-server/types'
-import { EMessageDirection } from '@mco-server/message-types'
+import { EMessageDirection, IPersonaRecord, IRawPacket } from '@mco-server/types'
 import { NPSMessage } from '@mco-server/message-types'
 import { ITCPConnection } from '@mco-server/types'
 import { NPSPersonaMapsMessage } from '@mco-server/message-types'
