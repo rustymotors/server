@@ -685,3 +685,45 @@ export const NPS_COMMANDS: InpsCommandMap[] = [
   ...NPS_LOGINCLIENT_COMMANDS,
   { name: 'NPS_CRYPTO_DES_CBC', value: 0x11_01, module: 'Lobby' },
 ]
+
+/**
+ * @typedef {'RECEIVED' | 'SENT'} MESSAGE_DIRECTION
+ *
+ */
+ export enum EMessageDirection {
+  RECEIVED = 'received',
+  SENT = 'sent',
+}
+
+export interface IMessageNode {
+  direction: EMessageDirection
+  msgNo: number
+  seq: number
+  flags: number
+  data: Buffer
+  dataLength: number
+  mcoSig: string
+  toFrom: number
+  appId: number,
+  deserialize: (packet: Buffer) => void
+  serialize: () => Buffer
+  setAppId: (appId: number) => void
+  setMsgNo: (newMessageNo: number) => void
+  setSeq: (newSeq: number) => void
+  setMsgHeader: (packet: Buffer) => void
+  updateBuffer: (buffer: Buffer) => void
+  isMCOTS: () => boolean
+  dumpPacket: () => void
+  getLength: () => number
+  BaseMsgHeader: (packet: Buffer) => void
+}
+
+export type ConnectionWithPacket = {
+  connection: ITCPConnection
+  packet: IMessageNode
+}
+
+export type ConnectionWithPackets = {
+  connection: ITCPConnection
+  packetList: IMessageNode[]
+}

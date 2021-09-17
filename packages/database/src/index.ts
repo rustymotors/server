@@ -6,12 +6,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import sqlite3 from 'sqlite3'
+import { Database, verbose } from 'sqlite3'
 import { ISessionRecord } from '@mco-server/types'
 
 export class DatabaseManager {
   static _instance: DatabaseManager
-  localDB: sqlite3.Database
+  localDB: Database
   changes: number
   serviceName: string
 
@@ -23,7 +23,7 @@ export class DatabaseManager {
   }
 
   private constructor() {
-    this.localDB = new (sqlite3.verbose().Database)('db/mco.db')
+    this.localDB = new (verbose().Database)('db/mco.db')
 
     const { localDB } = this
 

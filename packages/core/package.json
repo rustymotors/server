@@ -4,6 +4,14 @@
   "main": "src/index.ts",
   "license": "MIT",
   "dependencies": {
-    "@mco-server/transactions": "workspace:^"
+    "@drazisil/mco-logger": "^4.1.10",
+    "@mco-server/config": "workspace:^",
+    "@mco-server/database": "workspace:^",
+    "@mco-server/lobby": "workspace:^",
+    "@mco-server/login": "workspace:^",
+    "@mco-server/message-types": "workspace:^",
+    "@mco-server/persona": "workspace:^",
+    "@mco-server/transactions": "workspace:^",
+    "@mco-server/types": "workspace:^"
   }
 }

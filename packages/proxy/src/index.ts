@@ -1,4 +1,4 @@
-import http from 'http'
+import { createServer, IncomingMessage, Server, ServerResponse } from 'http'
 import { Logger } from '@drazisil/mco-logger'
 import { EServerConnectionName } from '@mco-server/types'
 import { RoutingMesh } from '@mco-server/router'
@@ -9,7 +9,7 @@ const { log } = Logger.getInstance()
 
 export class HTTPProxyServer {
   static _instance: HTTPProxyServer
-  _server: http.Server
+  _server: Server
   _serviceName = 'MCOServer:HTTPProxy'
 
   static getInstance(): HTTPProxyServer {
@@ -20,7 +20,7 @@ export class HTTPProxyServer {
   }
 
   private constructor() {
-    this._server = http.createServer((request, response) => {
+    this._server = createServer((request, response) => {
       this.handleRequest(request, response)
     })
 
@@ -37,8 +37,8 @@ export class HTTPProxyServer {
   }
 
   handleRequest(
-    request: http.IncomingMessage,
-    response: http.ServerResponse,
+    request: IncomingMessage,
+    response: ServerResponse,
   ): void {
     log(
       'debug',
@@ -56,7 +56,7 @@ export class HTTPProxyServer {
     }
   }
 
-  start(): http.Server {
+  start(): Server {
     const host = '0.0.0.0'
     const port = 80
     return this._server.listen({ port, host }, () => {

@@ -2,5 +2,12 @@
   "name": "@mco-server/proxy",
   "version": "1.0.0",
   "main": "src/index.ts",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@drazisil/mco-logger": "^4.1.10",
+    "@mco-server/patch": "workspace:^",
+    "@mco-server/router": "workspace:^",
+    "@mco-server/shard": "workspace:^",
+    "@mco-server/types": "workspace:^"
+  }
 }

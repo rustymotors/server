@@ -6,14 +6,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { ITCPConnection } from '@mco-server/types'
-import { ConnectionWithPackets } from './tcp-manager'
+import { ConnectionWithPackets, EMessageDirection, ITCPConnection } from '@mco-server/types'
 import {
   GenericReplyMessage,
   MessageNode,
-  EMessageDirection,
 } from '@mco-server/message-types'
-import { defaultHandler } from './tcp-manager'
+import { TCPManager } from './tcp-manager'
 
 const { log } = Logger.getInstance()
 
@@ -27,6 +25,19 @@ const { log } = Logger.getInstance()
  * @property {module:MCO_Logger.logger} logger
  */
 export class MCOTServer {
+    static _instance: MCOTServer
+
+    static getInstance(): MCOTServer {
+      if (!MCOTServer._instance) {
+        MCOTServer._instance = new MCOTServer()
+      }
+      return MCOTServer._instance
+    }
+
+    private constructor() {
+      // Intentually empty
+    }
+
   /**
    * Return the string representation of the numeric opcode
    *
@@ -65,7 +76,7 @@ export class MCOTServer {
    *
    * @param {ConnectionObj} connection
    * @param {MessageNode} node
-   * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
+   * @return {Promise<ConnectionWithPackets}>}
    */
   async _login(
     connection: ITCPConnection,
@@ -89,7 +100,7 @@ export class MCOTServer {
    *
    * @param {ConnectionObj} connection
    * @param {MessageNode} node
-   * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
+   * @return {Promise<ConnectionWithPackets>}
    */
   async _getLobbies(
     connection: ITCPConnection,
@@ -175,7 +186,7 @@ export class MCOTServer {
    *
    * @param {ConnectionObj} connection
    * @param {MessageNode} node
-   * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
+   * @return {Promise<ConnectionWithPackets>}
    */
   async _setOptions(
     connection: ITCPConnection,
@@ -205,7 +216,7 @@ export class MCOTServer {
    *
    * @param {ConnectionObj} connection
    * @param {MessageNode} node
-   * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
+   * @return {Promise<ConnectionWithPackets>}
    */
   async _trackingMessage(
     connection: ITCPConnection,
@@ -235,7 +246,7 @@ export class MCOTServer {
    *
    * @param {module:ConnectionObj} connection
    * @param {module:MessageNode} node
-   * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
+   * @return {Promise<ConnectionWithPackets>}
    */
   async _updatePlayerPhysical(
     connection: ITCPConnection,
@@ -262,4 +273,4 @@ export class MCOTServer {
   }
 }
 
-export { defaultHandler }
+export { TCPManager }

@@ -8,9 +8,8 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { DatabaseManager } from '@mco-server/database'
-import { IRawPacket, ITCPConnection } from '@mco-server/types'
+import { EMessageDirection, IRawPacket, ITCPConnection } from '@mco-server/types'
 import {
-  EMessageDirection,
   NPSMessage,
   NPSUserInfo,
 } from '@mco-server/message-types'

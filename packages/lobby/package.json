@@ -1,6 +1,13 @@
 {
   "name": "@mco-server/lobby",
   "version": "1.0.0",
-  "main": "dist/index.js",
-  "license": "MIT"
+  "main": "src/index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@drazisil/mco-logger": "^4.1.10",
+    "@mco-server/database": "workspace:^",
+    "@mco-server/message-types": "workspace:^",
+    "@mco-server/persona": "workspace:^",
+    "@mco-server/types": "workspace:^"
+  }
 }

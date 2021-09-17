@@ -1,6 +1,13 @@
 {
   "name": "@mco-server/database",
   "version": "1.0.0",
-  "main": "dist/index.js",
-  "license": "MIT"
+  "main": "src/index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@mco-server/types": "workspace:^",
+    "sqlite3": "4.2.0"
+  },
+  "devDependencies": {
+    "@types/sqlite3": "3.1.7"
+  }
 }

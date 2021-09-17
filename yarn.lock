@@ -1636,26 +1636,51 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mco-server/core@workspace:packages/core"
   dependencies:
+    "@drazisil/mco-logger": ^4.1.10
+    "@mco-server/config": "workspace:^"
+    "@mco-server/database": "workspace:^"
+    "@mco-server/lobby": "workspace:^"
+    "@mco-server/login": "workspace:^"
+    "@mco-server/message-types": "workspace:^"
+    "@mco-server/persona": "workspace:^"
     "@mco-server/transactions": "workspace:^"
+    "@mco-server/types": "workspace:^"
   languageName: unknown
   linkType: soft
 
-"@mco-server/database@workspace:packages/database":
+"@mco-server/database@workspace:^, @mco-server/database@workspace:packages/database":
   version: 0.0.0-use.local
   resolution: "@mco-server/database@workspace:packages/database"
+  dependencies:
+    "@mco-server/types": "workspace:^"
+    "@types/sqlite3": 3.1.7
+    sqlite3: 4.2.0
   languageName: unknown
   linkType: soft
 
-"@mco-server/lobby@workspace:packages/lobby":
+"@mco-server/lobby@workspace:^, @mco-server/lobby@workspace:packages/lobby":
   version: 0.0.0-use.local
   resolution: "@mco-server/lobby@workspace:packages/lobby"
+  dependencies:
+    "@drazisil/mco-logger": ^4.1.10
+    "@mco-server/database": "workspace:^"
+    "@mco-server/message-types": "workspace:^"
+    "@mco-server/persona": "workspace:^"
+    "@mco-server/types": "workspace:^"
   languageName: unknown
   linkType: soft
 
-"@mco-server/message-types@workspace:packages/message-types":
+"@mco-server/login@workspace:^, @mco-server/login@workspace:packages/login":
+  version: 0.0.0-use.local
+  resolution: "@mco-server/login@workspace:packages/login"
+  languageName: unknown
+  linkType: soft
+
+"@mco-server/message-types@workspace:^, @mco-server/message-types@workspace:packages/message-types":
   version: 0.0.0-use.local
   resolution: "@mco-server/message-types@workspace:packages/message-types"
   dependencies:
+    "@drazisil/mco-logger": ^4.1.10
     "@mco-server/types": 1.0.0
   languageName: unknown
   linkType: soft
@@ -1671,7 +1696,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mco-server/persona@workspace:packages/persona":
+"@mco-server/persona@workspace:^, @mco-server/persona@workspace:packages/persona":
   version: 0.0.0-use.local
   resolution: "@mco-server/persona@workspace:packages/persona"
   languageName: unknown
@@ -1680,6 +1705,12 @@ __metadata:
 "@mco-server/proxy@workspace:^, @mco-server/proxy@workspace:packages/proxy":
   version: 0.0.0-use.local
   resolution: "@mco-server/proxy@workspace:packages/proxy"
+  dependencies:
+    "@drazisil/mco-logger": ^4.1.10
+    "@mco-server/patch": "workspace:^"
+    "@mco-server/router": "workspace:^"
+    "@mco-server/shard": "workspace:^"
+    "@mco-server/types": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -1706,6 +1737,11 @@ __metadata:
 "@mco-server/transactions@workspace:^, @mco-server/transactions@workspace:packages/transactions":
   version: 0.0.0-use.local
   resolution: "@mco-server/transactions@workspace:packages/transactions"
+  dependencies:
+    "@drazisil/mco-logger": ^4.1.10
+    "@mco-server/database": "workspace:^"
+    "@mco-server/message-types": "workspace:^"
+    "@mco-server/types": "workspace:^"
   languageName: unknown
   linkType: soft
 

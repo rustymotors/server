@@ -7,13 +7,13 @@
 
 import { Logger } from '@drazisil/mco-logger'
 import { Socket } from 'net'
-import { defaultHandler } from "@mco-server/transactions";
+import { TCPManager } from "@mco-server/transactions";
 import { DatabaseManager } from '@mco-server/database'
 import { NPSPacketManager } from './nps-packet-manager'
 import { TCPConnection } from './tcpConnection'
-import { IRawPacket, ITCPConnection } from '@mco-server/types'
+import { EMessageDirection, IRawPacket, ITCPConnection } from '@mco-server/types'
 import { NPS_COMMANDS, IConnectionManager } from '@mco-server/types'
-import { MessageNode, EMessageDirection } from '@mco-server/message-types'
+import { MessageNode } from '@mco-server/message-types'
 
 const { log } = Logger.getInstance()
 
@@ -117,7 +117,7 @@ export class ConnectionManager {
         newNode.deserialize(rawPacket.data)
         log('debug', JSON.stringify(newNode), { service: this.serviceName })
 
-        return defaultHandler(rawPacket)
+        return TCPManager.getInstance().defaultHandler(rawPacket)
       }
 
       default:
