@@ -1,7 +1,7 @@
-import net from 'net'
 import { EServerConnectionAction, IServerConnection } from '@mco-server/types'
 import { Logger } from '@drazisil/mco-logger'
 import { RoutingMesh } from './client'
+import { Server, createServer } from 'net'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 
@@ -9,7 +9,7 @@ const { log } = Logger.getInstance()
 
 export class RoutingServer {
   static _instance: RoutingServer
-  private _server: net.Server
+  private _server: Server
   private _serverConnections: IServerConnection[] = []
   private _serviceName = 'MCOServer:Route'
 
@@ -21,7 +21,7 @@ export class RoutingServer {
   }
 
   private constructor() {
-    this._server = net.createServer(socket => {
+    this._server = createServer(socket => {
       socket.on('end', () => {
         const { localPort, remoteAddress, remotePort } = socket
 
@@ -94,7 +94,7 @@ export class RoutingServer {
     )
   }
 
-  async start(): Promise<net.Server> {
+  async start(): Promise<Server> {
     const port = 4242
     this._server.listen(port, '0.0.0.0', () => {
       log('info', `RoutingServer listening on port ${port}`, {

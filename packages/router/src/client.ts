@@ -1,10 +1,10 @@
 import { Logger } from '@drazisil/mco-logger'
-import net from 'net'
 import {
   EServerConnectionAction,
   EServerConnectionName,
   IServerConnection,
 } from '@mco-server/types'
+import { createConnection } from 'net'
 
 const { log } = Logger.getInstance()
 
@@ -36,7 +36,7 @@ export class RoutingMesh {
     service: EServerConnectionName,
     inputBuffer: Buffer,
   ): void {
-    const client = net.createConnection({ port: 4242 }, () => {
+    const client = createConnection({ port: 4242 }, () => {
       // 'connect' listener.
       log('debug', 'Connected to RoutingServer', {
         service,

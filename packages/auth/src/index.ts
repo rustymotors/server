@@ -6,15 +6,16 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import https from 'https'
+
 import { Logger } from '@drazisil/mco-logger'
-import config from './server.config'
 import { IncomingMessage, ServerResponse } from 'http'
 import { Socket } from 'net'
-import { ISslOptions } from '@mco-server/types'
+import { IAppConfiguration, ISslOptions } from '@mco-server/types'
 import { readFileSync } from 'fs'
 import { EServerConnectionName } from '@mco-server/types'
 import { RoutingMesh } from '@mco-server/router'
+import { createServer, Server } from 'https'
+import { ConfigurationManager } from '@mco-server/config'
 
 const { log } = Logger.getInstance()
 
@@ -23,26 +24,12 @@ const { log } = Logger.getInstance()
  * @module AuthLogin
  */
 
-/**
- * @class
- * @property {Object} config
- * @property {Object} config.certificate
- * @property {string} config.certificate.privateKeyFilename
- * @property {string} config.certificate.publicKeyFilename
- * @property {string} config.certificate.certFilename
- * @property {Object} config.serverSettings
- * @property {string} config.serverSettings.ipServer
- * @property {Object} config.serviceConnections
- * @property {string} config.serviceConnections.databaseURL
- * @property {string} config.defaultLogLevel
- * @property {Server} httpsServer
- */
 export class AuthLogin {
   static _instance: AuthLogin
-  config: typeof config
+  config: IAppConfiguration
   _serviceName = 'MCOServer:Auth'
 
-  _server: https.Server
+  _server: Server
 
   static getInstance(): AuthLogin {
     if (!AuthLogin._instance) {
@@ -52,9 +39,9 @@ export class AuthLogin {
   }
 
   private constructor() {
-    this.config = config
+    this.config = ConfigurationManager.getInstance().getConfig()
 
-    this._server = https.createServer(
+    this._server = createServer(
       this._sslOptions(),
       (request, response) => {
         this.handleRequest(request, response)
@@ -123,8 +110,8 @@ export class AuthLogin {
    * @returns {Promise<import("https").Server>}
    * @memberof! WebServer
    */
-  async start(): Promise<https.Server> {
-    const host = config.serverSettings.host || 'localhost'
+  async start(): Promise<Server> {
+    const host = this.config.serverSettings.host || 'localhost'
     const port = 443
     return this._server.listen({ port, host }, () => {
       log('debug', `port ${port} listening`, {

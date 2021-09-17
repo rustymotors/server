@@ -18,7 +18,7 @@
     "preinstall": "npx only-allow yarn",
     "audit": "yarn npm audit",
     "check:license": "yarn licenses audit --summary --config=licenses.config.js",
-    "start": "node -r ts-node/register bin/app.ts",
+    "start": "ts-node bin/app.ts",
     "check:type": "tsc --noEmit",
     "check:type:watch": "tsc --noEmit --watch",
     "build": "tsc --build",
@@ -38,6 +38,13 @@
   },
   "dependencies": {
     "@drazisil/mco-logger": "4.1.10",
+    "@mco-server/admin": "workspace:^",
+    "@mco-server/auth": "workspace:^",
+    "@mco-server/core": "workspace:^",
+    "@mco-server/patch": "workspace:^",
+    "@mco-server/proxy": "workspace:^",
+    "@mco-server/router": "workspace:^",
+    "@mco-server/shard": "workspace:^",
     "sqlite3": "4.2.0"
   },
   "devDependencies": {
@@ -61,7 +68,7 @@
     "source-map-support": "0.5.20",
     "supertest": "6.1.6",
     "ts-jest": "27.0.5",
-    "ts-node": "10.2.1",
+    "ts-node": "^10.2.1",
     "typescript": "4.4.2"
   },
   "volta": {

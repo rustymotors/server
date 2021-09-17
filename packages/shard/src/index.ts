@@ -7,11 +7,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import { Logger } from '@drazisil/mco-logger'
 import { readFileSync } from 'fs'
-import http from 'http'
-import { EServerConnectionName } from '@mco-server/types'
-import config from './server.config'
+import { EServerConnectionName, IAppConfiguration } from '@mco-server/types'
 import { ShardEntry } from './shard-entry'
 import { RoutingMesh } from '@mco-server/router'
+import { createServer, Server } from 'https'
+import { ConfigurationManager } from '@mco-server/config'
+import { IncomingMessage, ServerResponse } from 'http'
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
@@ -33,9 +34,9 @@ const { log } = Logger.getInstance()
  */
 export class ShardServer {
   static _instance: ShardServer
-  _config: typeof config
+  _config: IAppConfiguration
   _possibleShards: string[] = []
-  _server: http.Server
+  _server: Server
   _serviceName = 'MCOServer:Shard'
 
   static getInstance(): ShardServer {
@@ -46,9 +47,9 @@ export class ShardServer {
   }
 
   private constructor() {
-    this._config = config
+    this._config = ConfigurationManager.getInstance().getConfig()
 
-    this._server = http.createServer((request, response) => {
+    this._server = createServer((request, response) => {
       this._handleRequest(request, response)
     })
 
@@ -181,8 +182,8 @@ export class ShardServer {
    * @param {import("http").ServerResponse} response
    */
   _handleRequest(
-    request: http.IncomingMessage,
-    response: http.ServerResponse,
+    request: IncomingMessage,
+    response: ServerResponse,
   ): void {
     if (request.url === '/cert') {
       response.setHeader('Content-disposition', 'attachment; filename=cert.pem')
@@ -227,8 +228,8 @@ export class ShardServer {
     )
   }
 
-  start(): http.Server {
-    const host = config.serverSettings.host || 'localhost'
+  start(): Server {
+    const host = this._config.serverSettings.host || 'localhost'
     const port = 82
     return this._server.listen({ port, host }, () => {
       log('debug', `port ${port} listening`, { service: this._serviceName })

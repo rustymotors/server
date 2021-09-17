@@ -1,6 +1,12 @@
 {
   "name": "@mco-server/patch",
   "version": "1.0.0",
-  "main": "dist/index.js",
-  "license": "MIT"
+  "main": "src/index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@drazisil/mco-logger": "^4.1.10",
+    "@mco-server/config": "workspace:^",
+    "@mco-server/router": "workspace:^",
+    "@mco-server/types": "workspace:^"
+  }
 }

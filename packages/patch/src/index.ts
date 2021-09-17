@@ -1,9 +1,8 @@
-import http from 'http'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-import config from './server.config'
 import { Logger } from '@drazisil/mco-logger'
-import { EServerConnectionName } from '@mco-server/types'
+import { EServerConnectionName, IAppConfiguration } from '@mco-server/types'
 import { RoutingMesh } from '@mco-server/router'
+import { createServer, IncomingMessage, Server, ServerResponse } from 'http'
+import { ConfigurationManager } from "@mco-server/config";
 
 const { log } = Logger.getInstance()
 export const CastanetResponse = {
@@ -16,8 +15,8 @@ export const CastanetResponse = {
 
 export class PatchServer {
   static _instance: PatchServer
-  _config: typeof config
-  _server: http.Server
+  _config: IAppConfiguration
+  _server: Server
   _serviceName = 'MCOServer:Patch'
 
   static getInstance(): PatchServer {
@@ -28,9 +27,8 @@ export class PatchServer {
   }
 
   private constructor() {
-    this._config = config
-
-    this._server = http.createServer((request, response) => {
+    this._config = ConfigurationManager.getInstance().getConfig()
+    this._server = createServer((request, response) => {
       this.handleRequest(request, response)
     })
 
@@ -47,8 +45,8 @@ export class PatchServer {
   }
 
   handleRequest(
-    request: http.IncomingMessage,
-    response: http.ServerResponse,
+    request: IncomingMessage,
+    response: ServerResponse,
   ): void {
     const responseData = CastanetResponse
 
@@ -73,8 +71,8 @@ export class PatchServer {
     }
   }
 
-  start(): http.Server {
-    const host = config.serverSettings.host || 'localhost'
+  start(): Server {
+    const host = this._config.serverSettings.host || 'localhost'
     const port = 81
     return this._server.listen({ port, host }, () => {
       log('debug', `port ${port} listening`, { service: this._serviceName })
