@@ -1,6 +1,6 @@
 import { Cipher, Decipher } from 'crypto'
 import { Socket } from 'net'
-import { Database } from 'sqlite3'
+import { Database } from "sqlite";
 
 export interface IEncryptionManager {
   id: string
@@ -19,7 +19,7 @@ export interface IMCServer {
 }
 
 export interface IDatabaseManager {
-  localDB: Database
+  localDB: Database | undefined
   changes: number
   serviceName: string
   fetchSessionKeyByCustomerId: (customerId: number) => Promise<ISessionRecord>

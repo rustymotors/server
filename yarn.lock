@@ -1754,7 +1754,7 @@ __metadata:
   resolution: "@mco-server/types@workspace:packages/types"
   dependencies:
     "@types/sqlite3": 3.1.7
-    sqlite: 4
+    sqlite: 4.0.23
   languageName: unknown
   linkType: soft
 
@@ -7134,7 +7134,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sqlite@npm:4, sqlite@npm:4.0.23":
+"sqlite@npm:4.0.23":
   version: 4.0.23
   resolution: "sqlite@npm:4.0.23"
   checksum: d241407f9d2fce6d571b5575c1a91e7e18fc2de345617f7e078956037ec99ad80ba27fc412adf71f7c60294feb771499ca440d3ae53a6cade1644081ff7a8ef0

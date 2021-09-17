@@ -19,7 +19,7 @@ const { log } = Logger.getInstance()
 
 export class ConnectionManager {
   static _instance: ConnectionManager
-  databaseMgr = DatabaseManager.getInstance()
+  databaseMgr: DatabaseManager
   connections: ITCPConnection[]
   newConnectionId: number
   banList: string[]
@@ -30,10 +30,11 @@ export class ConnectionManager {
       ConnectionManager._instance = new ConnectionManager()
     }
     return ConnectionManager._instance
+    
   }
 
   private constructor() {
-    this.databaseMgr = DatabaseManager.getInstance()
+
     /**
      * @type {module:ConnectionObj[]}
      */
@@ -43,15 +44,17 @@ export class ConnectionManager {
      * @type {string[]}
      */
     this.banList = []
+    this.databaseMgr = DatabaseManager.getInstance()
     this.serviceName = 'mcoserver:ConnectionMgr'
   }
 
   newConnection(connectionId: string, socket: Socket): ITCPConnection {
-    return new TCPConnection(
-      connectionId,
-      socket,
-      ConnectionManager.getInstance(),
-    )
+        return new TCPConnection(
+          connectionId,
+          socket,
+          ConnectionManager.getInstance(),
+        )
+
   }
 
   /**

@@ -13,143 +13,142 @@ export class DatabaseManager {
   static _instance: DatabaseManager
   changes = 0
   serviceName: string
-  localDB: Database<import("sqlite3").Database, import("sqlite3").Statement> | undefined
+  localDB: Database | undefined
 
-  public static async getInstance(): Promise<DatabaseManager> {
+  public static getInstance(): DatabaseManager {
     if (!DatabaseManager._instance) {
       DatabaseManager._instance = new DatabaseManager()
     }
 
     const self = DatabaseManager._instance
 
-    self.localDB = await open({ filename: 'db/mco.db', driver: "sqlite"})
+    open({ filename: 'db/mco.db', driver: "sqlite" }).then(async (db) => {
+      self.localDB = db
 
-    const { localDB } = self
-
-    self.changes = 0
+      self.changes = 0
 
 
-      await localDB.run(`CREATE TABLE IF NOT EXISTS "sessions"
-        (
-          customer_id integer,
-          sessionkey text NOT NULL,
-          skey text NOT NULL,
-          context_id text NOT NULL,
-          connection_id text NOT NULL,
-          CONSTRAINT pk_session PRIMARY KEY(customer_id)
-        );`)
+      await db.run(`CREATE TABLE IF NOT EXISTS "sessions"
+          (
+            customer_id integer,
+            sessionkey text NOT NULL,
+            skey text NOT NULL,
+            context_id text NOT NULL,
+            connection_id text NOT NULL,
+            CONSTRAINT pk_session PRIMARY KEY(customer_id)
+          );`)
 
-      await localDB.run(`CREATE TABLE IF NOT EXISTS "lobbies"
-        (
-          "lobyID" integer NOT NULL,
-          "raceTypeID" integer NOT NULL,
-          "turfID" integer NOT NULL,
-          "riffName" character(32) NOT NULL,
-          "eTerfName" character(265) NOT NULL,
-          "clientArt" character(11) NOT NULL,
-          "elementID" integer NOT NULL,
-          "terfLength" integer NOT NULL,
-          "startSlice" integer NOT NULL,
-          "endSlice" integer NOT NULL,
-          "dragStageLeft" integer NOT NULL,
-          "dragStageRight" integer NOT NULL,
-          "dragStagingSlice" integer NOT NULL,
-          "gridSpreadFactor" real NOT NULL,
-          "linear" smallint NOT NULL,
-          "numPlayersMin" smallint NOT NULL,
-          "numPlayersMax" smallint NOT NULL,
-          "numPlayersDefault" smallint NOT NULL,
-          "bnumPlayersEnable" smallint NOT NULL,
-          "numLapsMin" smallint NOT NULL,
-          "numLapsMax" smallint NOT NULL,
-          "numLapsDefault" smallint NOT NULL,
-          "bnumLapsEnabled" smallint NOT NULL,
-          "numRoundsMin" smallint NOT NULL,
-          "numRoundsMax" smallint NOT NULL,
-          "numRoundsDefault" smallint NOT NULL,
-          "bnumRoundsEnabled" smallint NOT NULL,
-          "bWeatherDefault" smallint NOT NULL,
-          "bWeatherEnabled" smallint NOT NULL,
-          "bNightDefault" smallint NOT NULL,
-          "bNightEnabled" smallint NOT NULL,
-          "bBackwardDefault" smallint NOT NULL,
-          "bBackwardEnabled" smallint NOT NULL,
-          "bTrafficDefault" smallint NOT NULL,
-          "bTrafficEnabled" smallint NOT NULL,
-          "bDamageDefault" smallint NOT NULL,
-          "bDamageEnabled" smallint NOT NULL,
-          "bAIDefault" smallint NOT NULL,
-          "bAIEnabled" smallint NOT NULL,
-          "topDog" character(13) NOT NULL,
-          "terfOwner" character(33) NOT NULL,
-          "qualifingTime" integer NOT NULL,
-          "clubNumPlayers" integer NOT NULL,
-          "clubNumLaps" integer NOT NULL,
-          "clubNumRounds" integer NOT NULL,
-          "bClubNight" smallint NOT NULL,
-          "bClubWeather" smallint NOT NULL,
-          "bClubBackwards" smallint NOT NULL,
-          "topSeedsMP" integer NOT NULL,
-          "lobbyDifficulty" integer NOT NULL,
-          "ttPointForQualify" integer NOT NULL,
-          "ttCashForQualify" integer NOT NULL,
-          "ttPointBonusFasterIncs" integer NOT NULL,
-          "ttCashBonusFasterIncs" integer NOT NULL,
-          "ttTimeIncrements" integer NOT NULL,
-          "victoryPoints1" integer NOT NULL,
-          "victoryCash1" integer NOT NULL,
-          "victoryPoints2" integer NOT NULL,
-          "victoryCash2" integer NOT NULL,
-          "victoryPoints3" integer NOT NULL,
-          "victoryCash3" integer NOT NULL,
-          "minLevel" smallint NOT NULL,
-          "minResetSlice" integer NOT NULL,
-          "maxResetSlice" integer NOT NULL,
-          "bnewbieFlag" smallint NOT NULL,
-          "bdriverHelmetFlag" smallint NOT NULL,
-          "clubNumPlayersMax" smallint NOT NULL,
-          "clubNumPlayersMin" smallint NOT NULL,
-          "clubNumPlayersDefault" smallint NOT NULL,
-          "numClubsMax" smallint NOT NULL,
-          "numClubsMin" smallint NOT NULL,
-          "racePointsFactor" real NOT NULL,
-          "bodyClassMax" smallint NOT NULL,
-          "powerClassMax" smallint NOT NULL,
-          "clubLogoID" integer NOT NULL,
-          "teamtWeather" smallint NOT NULL,
-          "teamtNight" smallint NOT NULL,
-          "teamtBackwards" smallint NOT NULL,
-          "teamtNumLaps" smallint NOT NULL,
-          "raceCashFactor" real NOT NULL
-        );`)
-    
-    
+      await db.run(`CREATE TABLE IF NOT EXISTS "lobbies"
+          (
+            "lobyID" integer NOT NULL,
+            "raceTypeID" integer NOT NULL,
+            "turfID" integer NOT NULL,
+            "riffName" character(32) NOT NULL,
+            "eTerfName" character(265) NOT NULL,
+            "clientArt" character(11) NOT NULL,
+            "elementID" integer NOT NULL,
+            "terfLength" integer NOT NULL,
+            "startSlice" integer NOT NULL,
+            "endSlice" integer NOT NULL,
+            "dragStageLeft" integer NOT NULL,
+            "dragStageRight" integer NOT NULL,
+            "dragStagingSlice" integer NOT NULL,
+            "gridSpreadFactor" real NOT NULL,
+            "linear" smallint NOT NULL,
+            "numPlayersMin" smallint NOT NULL,
+            "numPlayersMax" smallint NOT NULL,
+            "numPlayersDefault" smallint NOT NULL,
+            "bnumPlayersEnable" smallint NOT NULL,
+            "numLapsMin" smallint NOT NULL,
+            "numLapsMax" smallint NOT NULL,
+            "numLapsDefault" smallint NOT NULL,
+            "bnumLapsEnabled" smallint NOT NULL,
+            "numRoundsMin" smallint NOT NULL,
+            "numRoundsMax" smallint NOT NULL,
+            "numRoundsDefault" smallint NOT NULL,
+            "bnumRoundsEnabled" smallint NOT NULL,
+            "bWeatherDefault" smallint NOT NULL,
+            "bWeatherEnabled" smallint NOT NULL,
+            "bNightDefault" smallint NOT NULL,
+            "bNightEnabled" smallint NOT NULL,
+            "bBackwardDefault" smallint NOT NULL,
+            "bBackwardEnabled" smallint NOT NULL,
+            "bTrafficDefault" smallint NOT NULL,
+            "bTrafficEnabled" smallint NOT NULL,
+            "bDamageDefault" smallint NOT NULL,
+            "bDamageEnabled" smallint NOT NULL,
+            "bAIDefault" smallint NOT NULL,
+            "bAIEnabled" smallint NOT NULL,
+            "topDog" character(13) NOT NULL,
+            "terfOwner" character(33) NOT NULL,
+            "qualifingTime" integer NOT NULL,
+            "clubNumPlayers" integer NOT NULL,
+            "clubNumLaps" integer NOT NULL,
+            "clubNumRounds" integer NOT NULL,
+            "bClubNight" smallint NOT NULL,
+            "bClubWeather" smallint NOT NULL,
+            "bClubBackwards" smallint NOT NULL,
+            "topSeedsMP" integer NOT NULL,
+            "lobbyDifficulty" integer NOT NULL,
+            "ttPointForQualify" integer NOT NULL,
+            "ttCashForQualify" integer NOT NULL,
+            "ttPointBonusFasterIncs" integer NOT NULL,
+            "ttCashBonusFasterIncs" integer NOT NULL,
+            "ttTimeIncrements" integer NOT NULL,
+            "victoryPoints1" integer NOT NULL,
+            "victoryCash1" integer NOT NULL,
+            "victoryPoints2" integer NOT NULL,
+            "victoryCash2" integer NOT NULL,
+            "victoryPoints3" integer NOT NULL,
+            "victoryCash3" integer NOT NULL,
+            "minLevel" smallint NOT NULL,
+            "minResetSlice" integer NOT NULL,
+            "maxResetSlice" integer NOT NULL,
+            "bnewbieFlag" smallint NOT NULL,
+            "bdriverHelmetFlag" smallint NOT NULL,
+            "clubNumPlayersMax" smallint NOT NULL,
+            "clubNumPlayersMin" smallint NOT NULL,
+            "clubNumPlayersDefault" smallint NOT NULL,
+            "numClubsMax" smallint NOT NULL,
+            "numClubsMin" smallint NOT NULL,
+            "racePointsFactor" real NOT NULL,
+            "bodyClassMax" smallint NOT NULL,
+            "powerClassMax" smallint NOT NULL,
+            "clubLogoID" integer NOT NULL,
+            "teamtWeather" smallint NOT NULL,
+            "teamtNight" smallint NOT NULL,
+            "teamtBackwards" smallint NOT NULL,
+            "teamtNumLaps" smallint NOT NULL,
+            "raceCashFactor" real NOT NULL
+          );`)
+
+    })
+
 
 
     return DatabaseManager._instance
   }
 
   private constructor() {
-    this.localDB = undefined
     this.serviceName = 'mcoserver:DatabaseMgr'
   }
 
   async fetchSessionKeyByCustomerId(
     customerId: number,
   ): Promise<ISessionRecord> {
-        if (!this.localDB) {
-          throw new Error("Error accessing database. Are you using the instance?");
-          
-        }
-        const stmt = await this.localDB.prepare(
-          'SELECT sessionkey, skey FROM sessions WHERE customer_id = ?',
-        )
+    if (!this.localDB) {
+      throw new Error("Error accessing database. Are you using the instance?");
 
-  const record  = await stmt.get(customerId)
-  if (record === undefined) {
-    throw new Error("Unable to fetch session key");
-  }
-  return record as ISessionRecord
+    }
+    const stmt = await this.localDB.prepare(
+      'SELECT sessionkey, skey FROM sessions WHERE customer_id = ?',
+    )
+
+    const record = await stmt.get(customerId)
+    if (record === undefined) {
+      throw new Error("Unable to fetch session key");
+    }
+    return record as ISessionRecord
 
 
 
@@ -158,18 +157,18 @@ export class DatabaseManager {
   async fetchSessionKeyByConnectionId(
     connectionId: string,
   ): Promise<ISessionRecord> {
-        if (!this.localDB) {
-          throw new Error("Error accessing database. Are you using the instance?");
-          
-        }
-        const stmt = await this.localDB.prepare(
-          'SELECT sessionkey, skey FROM sessions WHERE connection_id = ?',
-        )
-        const record = await stmt.get(connectionId)
-        if (record === undefined) {
-          throw new Error("Unable to fetch session key");
-        }
-        return record as ISessionRecord
+    if (!this.localDB) {
+      throw new Error("Error accessing database. Are you using the instance?");
+
+    }
+    const stmt = await this.localDB.prepare(
+      'SELECT sessionkey, skey FROM sessions WHERE connection_id = ?',
+    )
+    const record = await stmt.get(connectionId)
+    if (record === undefined) {
+      throw new Error("Unable to fetch session key");
+    }
+    return record as ISessionRecord
 
 
   }
@@ -184,22 +183,22 @@ export class DatabaseManager {
 
     if (!this.localDB) {
       throw new Error("Error accessing database. Are you using the instance?");
-      
+
     }
-        const stmt = await this.localDB.prepare(
-          'REPLACE INTO sessions (customer_id, sessionkey, skey, context_id, connection_id) VALUES ($customerId, $sessionkey, $skey, $contextId, $connectionId)',
-        )
-        const record = await stmt.run(
-          {
-            $customerId: customerId,
-            $sessionkey: sessionkey,
-            $skey: skey,
-            $contextId: contextId,
-            $connectionId: connectionId,
-          })
-          if (record === undefined) {
-            throw new Error("Unable to fetch session key");
-          }
-          return 1
+    const stmt = await this.localDB.prepare(
+      'REPLACE INTO sessions (customer_id, sessionkey, skey, context_id, connection_id) VALUES ($customerId, $sessionkey, $skey, $contextId, $connectionId)',
+    )
+    const record = await stmt.run(
+      {
+        $customerId: customerId,
+        $sessionkey: sessionkey,
+        $skey: skey,
+        $contextId: contextId,
+        $connectionId: connectionId,
+      })
+    if (record === undefined) {
+      throw new Error("Unable to fetch session key");
+    }
+    return 1
   }
 }
