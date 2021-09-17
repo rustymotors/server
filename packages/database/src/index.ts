@@ -6,31 +6,30 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Database, verbose } from 'sqlite3'
+import { Database, open } from 'sqlite'
 import { ISessionRecord } from '@mco-server/types'
 
 export class DatabaseManager {
   static _instance: DatabaseManager
-  localDB: Database
-  changes: number
+  changes = 0
   serviceName: string
+  localDB: Database<import("sqlite3").Database, import("sqlite3").Statement> | undefined
 
-  public static getInstance(): DatabaseManager {
+  public static async getInstance(): Promise<DatabaseManager> {
     if (!DatabaseManager._instance) {
       DatabaseManager._instance = new DatabaseManager()
     }
-    return DatabaseManager._instance
-  }
 
-  private constructor() {
-    this.localDB = new (verbose().Database)('db/mco.db')
+    const self = DatabaseManager._instance
 
-    const { localDB } = this
+    self.localDB = await open({ filename: 'db/mco.db', driver: "sqlite"})
 
-    this.changes = 0
+    const { localDB } = self
 
-    this.localDB.serialize(() => {
-      localDB.run(`CREATE TABLE IF NOT EXISTS "sessions"
+    self.changes = 0
+
+
+      await localDB.run(`CREATE TABLE IF NOT EXISTS "sessions"
         (
           customer_id integer,
           sessionkey text NOT NULL,
@@ -40,7 +39,7 @@ export class DatabaseManager {
           CONSTRAINT pk_session PRIMARY KEY(customer_id)
         );`)
 
-      localDB.run(`CREATE TABLE IF NOT EXISTS "lobbies"
+      await localDB.run(`CREATE TABLE IF NOT EXISTS "lobbies"
         (
           "lobyID" integer NOT NULL,
           "raceTypeID" integer NOT NULL,
@@ -123,54 +122,56 @@ export class DatabaseManager {
           "teamtNumLaps" smallint NOT NULL,
           "raceCashFactor" real NOT NULL
         );`)
-    })
+    
+    
+
+
+    return DatabaseManager._instance
+  }
+
+  private constructor() {
+    this.localDB = undefined
     this.serviceName = 'mcoserver:DatabaseMgr'
   }
 
   async fetchSessionKeyByCustomerId(
     customerId: number,
   ): Promise<ISessionRecord> {
-    return new Promise((resolve, reject) => {
-      try {
-        const stmt = this.localDB.prepare(
+        if (!this.localDB) {
+          throw new Error("Error accessing database. Are you using the instance?");
+          
+        }
+        const stmt = await this.localDB.prepare(
           'SELECT sessionkey, skey FROM sessions WHERE customer_id = ?',
         )
-        stmt.get(customerId, (error, row) => {
-          if (error) {
-            return reject(new Error(`Unable to fetch session key: ${error}`))
-          }
 
-          stmt.finalize()
-          /** @type {ISessionRecord} */
-          return resolve(row)
-        })
-      } catch (error) {
-        return reject(new Error(`Unable to fetch session key: ${error}`))
-      }
-    })
+  const record  = await stmt.get(customerId)
+  if (record === undefined) {
+    throw new Error("Unable to fetch session key");
+  }
+  return record as ISessionRecord
+
+
+
   }
 
   async fetchSessionKeyByConnectionId(
     connectionId: string,
   ): Promise<ISessionRecord> {
-    return new Promise((resolve, reject) => {
-      try {
-        const stmt = this.localDB.prepare(
+        if (!this.localDB) {
+          throw new Error("Error accessing database. Are you using the instance?");
+          
+        }
+        const stmt = await this.localDB.prepare(
           'SELECT sessionkey, skey FROM sessions WHERE connection_id = ?',
         )
-        stmt.get(connectionId, (error, row) => {
-          if (error) {
-            return reject(new Error(`Unable to fetch session key: ${error}`))
-          }
+        const record = await stmt.get(connectionId)
+        if (record === undefined) {
+          throw new Error("Unable to fetch session key");
+        }
+        return record as ISessionRecord
 
-          stmt.finalize()
-          /** @type {ISessionRecord} */
-          return resolve(row)
-        })
-      } catch (error) {
-        return reject(new Error(`Unable to fetch session key: ${error}`))
-      }
-    })
+
   }
 
   async _updateSessionKey(
@@ -181,33 +182,24 @@ export class DatabaseManager {
   ): Promise<number> {
     const skey = sessionkey.slice(0, 16)
 
-    return new Promise((resolve, reject) => {
-      try {
-        const stmt = this.localDB.prepare(
+    if (!this.localDB) {
+      throw new Error("Error accessing database. Are you using the instance?");
+      
+    }
+        const stmt = await this.localDB.prepare(
           'REPLACE INTO sessions (customer_id, sessionkey, skey, context_id, connection_id) VALUES ($customerId, $sessionkey, $skey, $contextId, $connectionId)',
         )
-        stmt.run(
+        const record = await stmt.run(
           {
             $customerId: customerId,
             $sessionkey: sessionkey,
             $skey: skey,
             $contextId: contextId,
             $connectionId: connectionId,
-          },
-          error => {
-            if (error) {
-              return reject(
-                new Error(`Unable to update session ke 1y: ${error}`),
-              )
-            }
-
-            stmt.finalize()
-            return resolve(/** @type {number} */ this.changes)
-          },
-        )
-      } catch (error) {
-        return reject(new Error(`Unable to update session key 2: ${error}`))
-      }
-    })
+          })
+          if (record === undefined) {
+            throw new Error("Unable to fetch session key");
+          }
+          return 1
   }
 }
