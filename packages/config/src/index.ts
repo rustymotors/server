@@ -1,6 +1,7 @@
 // @ts-check
 import { IAppConfiguration } from '@mco-server/types'
 import { _sslOptions } from './ssl-options'
+import {savedConfig} from "./config";
 
 /**
  * @module mco_config
@@ -8,7 +9,7 @@ import { _sslOptions } from './ssl-options'
 
 export class ConfigurationManager {
   getConfig(): IAppConfiguration {
-    throw new Error('Method not implemented.')
+    return savedConfig
   }
   static _instance: ConfigurationManager
 
@@ -20,28 +21,8 @@ export class ConfigurationManager {
   }
 
   private constructor() {
-    // Intentually empty
+    // Intentionally empty
   }
 }
 
-export const certificate: IAppConfiguration['certificate'] = {
-  privateKeyFilename: 'data/private_key.pem',
-  publicKeyFilename: 'data/pub.key',
-  certFilename: 'data/mcouniverse.crt',
-}
-export const serverSettings: IAppConfiguration['serverSettings'] = {
-  ipServer: '0.0.0.0',
-}
-export const serviceConnections: IAppConfiguration['serviceConnections'] = {
-  databaseURL: 'db.mco.db',
-}
-export const defaultLogLevel: IAppConfiguration['defaultLogLevel'] = 'info'
-
-const config: IAppConfiguration = {
-  certificate,
-  serverSettings,
-  serviceConnections,
-  defaultLogLevel,
-}
-export default config
 export { _sslOptions }

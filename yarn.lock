@@ -1609,6 +1609,10 @@ __metadata:
 "@mco-server/admin@workspace:^, @mco-server/admin@workspace:packages/admin":
   version: 0.0.0-use.local
   resolution: "@mco-server/admin@workspace:packages/admin"
+  dependencies:
+    "@drazisil/mco-logger": ^4.1.10
+    "@mco-server/config": "workspace:^"
+    "@mco-server/types": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -1673,6 +1677,12 @@ __metadata:
 "@mco-server/login@workspace:^, @mco-server/login@workspace:packages/login":
   version: 0.0.0-use.local
   resolution: "@mco-server/login@workspace:packages/login"
+  dependencies:
+    "@drazisil/mco-logger": ^4.1.10
+    "@mco-server/config": "workspace:^"
+    "@mco-server/database": "workspace:^"
+    "@mco-server/message-types": "workspace:^"
+    "@mco-server/types": "workspace:^"
   languageName: unknown
   linkType: soft
 

@@ -145,7 +145,7 @@ export class ShardServer {
    * @memberof! WebServer
    */
   _handleGetRegistry(): string {
-    const { host: ipServer } = this._config.serverSettings
+    const { ipServer: ipServer } = this._config.serverSettings
     return `Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\EACom\\AuthAuth]
@@ -229,7 +229,7 @@ export class ShardServer {
   }
 
   start(): Server {
-    const host = this._config.serverSettings.host || 'localhost'
+    const host = this._config.serverSettings.ipServer || 'localhost'
     const port = 82
     return this._server.listen({ port, host }, () => {
       log('debug', `port ${port} listening`, { service: this._serviceName })

@@ -2,5 +2,10 @@
   "name": "@mco-server/admin",
   "version": "1.0.0",
   "main": "src/index.ts",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@drazisil/mco-logger": "^4.1.10",
+    "@mco-server/config": "workspace:^",
+    "@mco-server/types": "workspace:^"
+  }
 }

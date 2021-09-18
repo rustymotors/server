@@ -6,10 +6,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from '@drazisil/mco-logger'
-import { certificate } from '@mco-server/config'
 import { DatabaseManager } from '@mco-server/database'
 import { IRawPacket, ITCPConnection, IUserRecordMini } from '@mco-server/types'
 import { NPSUserStatus, premadeLogin } from '@mco-server/message-types'
+import { ConfigurationManager } from '@mco-server/config'
 
 const { log } = Logger.getInstance()
 
@@ -182,7 +182,7 @@ export class LoginServer {
       { service: this.serviceName },
     )
 
-    userStatus.extractSessionKeyFromPacket(certificate, data)
+    userStatus.extractSessionKeyFromPacket(ConfigurationManager.getInstance().getConfig().certificate, data)
 
     log(
       'debug',

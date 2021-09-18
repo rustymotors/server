@@ -10,8 +10,7 @@ import { Logger } from '@drazisil/mco-logger'
 import { IncomingMessage, ServerResponse } from 'http'
 import { createServer, Server } from 'https'
 import { Socket } from 'net'
-import config from '@mco-server/config'
-import { _sslOptions } from '@mco-server/config'
+import { ConfigurationManager, _sslOptions } from '@mco-server/config'
 import { IAppConfiguration, IMCServer } from '@mco-server/types'
 
 const { log } = Logger.getInstance()
@@ -41,7 +40,7 @@ export class AdminServer {
   }
 
   private constructor(mcServer: IMCServer) {
-    this.config = config
+    this.config = ConfigurationManager.getInstance().getConfig()
     this.mcServer = mcServer
     this.serviceName = 'mcoserver:AdminServer;'
   }

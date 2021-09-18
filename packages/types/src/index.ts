@@ -157,7 +157,6 @@ export interface IAppConfiguration {
   }
   serverSettings: {
     ipServer: string
-    host?: string
   }
   serviceConnections: {
     databaseURL: string

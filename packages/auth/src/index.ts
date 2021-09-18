@@ -111,7 +111,7 @@ export class AuthLogin {
    * @memberof! WebServer
    */
   async start(): Promise<Server> {
-    const host = this.config.serverSettings.host || 'localhost'
+    const host = this.config.serverSettings.ipServer || 'localhost'
     const port = 443
     return this._server.listen({ port, host }, () => {
       log('debug', `port ${port} listening`, {

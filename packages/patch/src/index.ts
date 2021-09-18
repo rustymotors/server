@@ -72,7 +72,7 @@ export class PatchServer {
   }
 
   start(): Server {
-    const host = this._config.serverSettings.host || 'localhost'
+    const host = this._config.serverSettings.ipServer || 'localhost'
     const port = 81
     return this._server.listen({ port, host }, () => {
       log('debug', `port ${port} listening`, { service: this._serviceName })

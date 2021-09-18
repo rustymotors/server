@@ -7,8 +7,8 @@
 
 import { Cipher, createCipheriv, createDecipheriv, Decipher } from 'crypto'
 import { Socket } from 'net'
-import { ConnectionManager } from './connection-mgr.js'
-import { EncryptionManager } from './encryption-mgr.js'
+import { ConnectionManager } from './connection-mgr'
+import { EncryptionManager } from './encryption-mgr'
 
 /**
  * Contains the proporties and methods for a TCP connection
