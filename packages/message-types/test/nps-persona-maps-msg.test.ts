@@ -6,16 +6,13 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from "@jest/globals";
-import { LobbyInfoPacket } from "./index";
-import { LobbyMessage } from "./index";
+import { EMessageDirection } from "@mco-server/types";
+import { NPSPersonaMapsMessage } from "../src/index";
 
-const lobbyInfo1 = new LobbyInfoPacket();
-const lobbyMessage1 = new LobbyMessage();
-
-it("LobbyInfo", () => {
-  expect(lobbyInfo1.toPacket().length).toEqual(567);
-});
-
-it("LobbyMsg", () => {
-  expect(lobbyMessage1.data.length).toEqual(572);
+it("NPSPersonaMapsMsg", () => {
+  const npsPersonaMapsMessage = new NPSPersonaMapsMessage(
+    EMessageDirection.RECEIVED
+  );
+  expect(npsPersonaMapsMessage.direction).toEqual(EMessageDirection.RECEIVED);
+  expect(npsPersonaMapsMessage.msgNo).toEqual(0x6_07);
 });

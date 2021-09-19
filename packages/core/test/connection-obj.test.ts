@@ -7,19 +7,16 @@
 
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Socket as fakeSocket } from "net";
-import { ConnectionManager as fakeConnectionManager } from "./connection-mgr";
-import { TCPConnection } from "./tcpConnection";
-
-jest.mock("./connection-mgr");
-jest.mock("net");
-jest.mock("@mco-server/database");
+import { ConnectionManager } from "../src/connection-mgr";
+import { EncryptionManager } from "../src/encryption-mgr";
+import { TCPConnection } from "../src/tcpConnection";
+jest.mock("../src/connection-mgr");
 
 it("ConnectionObj", () => {
-  const testConnection = new TCPConnection(
-    "abc",
-    new fakeSocket(),
-    fakeConnectionManager.getInstance()
-  );
+  const testConnection = new TCPConnection("abc", new fakeSocket());
+
+  testConnection.setManager(ConnectionManager.getInstance());
+  testConnection.setEncryptionManager(new EncryptionManager());
 
   expect(testConnection.status).toEqual("Inactive");
   expect(testConnection.isSetupComplete).toBeFalsy();
@@ -34,16 +31,14 @@ describe("ConnectionObj cross-comms", () => {
   let testConn2: TCPConnection;
 
   beforeEach(() => {
-    testConn1 = new TCPConnection(
-      "def",
-      new fakeSocket(),
-      fakeConnectionManager.getInstance()
-    );
-    testConn2 = new TCPConnection(
-      "ghi",
-      new fakeSocket(),
-      fakeConnectionManager.getInstance()
-    );
+    testConn1 = new TCPConnection("def", new fakeSocket());
+    testConn1.setManager(ConnectionManager.getInstance());
+    testConn1.setEncryptionManager(new EncryptionManager());
+
+    testConn2 = new TCPConnection("ghi", new fakeSocket());
+    testConn2.setManager(ConnectionManager.getInstance());
+    testConn2.setEncryptionManager(new EncryptionManager());
+
     testConn1.setEncryptionKey(Buffer.from("abc123", "hex"));
     testConn2.setEncryptionKey(Buffer.from("abc123", "hex"));
   });
@@ -60,27 +55,35 @@ describe("ConnectionObj cross-comms", () => {
   ]);
 
   it("Connection one is not the same id as connection two", () => {
-    console.log(1, testConn1.enc.getId());
-    console.log(2, testConn2.enc.getId());
-    expect(testConn1.enc.getId()).not.toStrictEqual(testConn2.enc.getId());
+    console.log(1, testConn1.getEncryptionId());
+    console.log(2, testConn2.getEncryptionId());
+    expect(testConn1.getEncryptionId()).not.toStrictEqual(
+      testConn2.getEncryptionId()
+    );
   });
 
   it("Connection Two can decipher Connection One", () => {
-    expect(testConn1.enc).not.toBeNull();
-    const encipheredBuffer = testConn1.enc.encrypt(plainText1);
+    const encipheredBuffer = testConn1.encryptBuffer(plainText1);
     expect(encipheredBuffer).toStrictEqual(cipherText1);
-    expect(testConn2.enc).not.toBeNull();
-    expect(testConn1.enc.decrypt(encipheredBuffer)).toStrictEqual(plainText1);
-    expect(testConn2.enc.decrypt(encipheredBuffer)).toStrictEqual(plainText1);
+    expect(testConn1.decryptBuffer(encipheredBuffer)).toStrictEqual(plainText1);
+    expect(testConn2.decryptBuffer(encipheredBuffer)).toStrictEqual(plainText1);
 
     // Try again
-    const encipheredBuffer2 = testConn1.enc.encrypt(plainText1);
-    expect(testConn1.enc.decrypt(encipheredBuffer2)).toStrictEqual(plainText1);
-    expect(testConn2.enc.decrypt(encipheredBuffer2)).toStrictEqual(plainText1);
+    const encipheredBuffer2 = testConn1.encryptBuffer(plainText1);
+    expect(testConn1.decryptBuffer(encipheredBuffer2)).toStrictEqual(
+      plainText1
+    );
+    expect(testConn2.decryptBuffer(encipheredBuffer2)).toStrictEqual(
+      plainText1
+    );
 
     // And again
-    const encipheredBuffer3 = testConn1.enc.encrypt(plainText1);
-    expect(testConn1.enc.decrypt(encipheredBuffer3)).toStrictEqual(plainText1);
-    expect(testConn2.enc.decrypt(encipheredBuffer3)).toStrictEqual(plainText1);
+    const encipheredBuffer3 = testConn1.encryptBuffer(plainText1);
+    expect(testConn1.decryptBuffer(encipheredBuffer3)).toStrictEqual(
+      plainText1
+    );
+    expect(testConn2.decryptBuffer(encipheredBuffer3)).toStrictEqual(
+      plainText1
+    );
   });
 });

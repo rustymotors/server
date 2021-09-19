@@ -9,8 +9,8 @@ import { Logger } from "@drazisil/mco-logger";
 import { Socket } from "net";
 import {
   EMessageDirection,
-  IPersonaRecord,
-  IRawPacket,
+  PersonaRecord,
+  UnprocessedPacket,
 } from "@mco-server/types";
 import { NPSMessage } from "@mco-server/message-types";
 import { ITCPConnection } from "@mco-server/types";
@@ -28,7 +28,7 @@ const { log } = Logger.getInstance();
  */
 export class PersonaServer {
   static _instance: PersonaServer;
-  personaList: IPersonaRecord[];
+  personaList: PersonaRecord[];
   serviceName: string;
 
   static getInstance(): PersonaServer {
@@ -337,7 +337,7 @@ export class PersonaServer {
    * @param {number} customerId
    * @return {Promise<IPersonaRecord[]>}
    */
-  async getPersonasByCustomerId(customerId: number): Promise<IPersonaRecord[]> {
+  async getPersonasByCustomerId(customerId: number): Promise<PersonaRecord[]> {
     const results = this.personaList.filter(
       (persona) => persona.customerId === customerId
     );
@@ -355,7 +355,7 @@ export class PersonaServer {
    * @param {number} id
    * @return {Promise<IPersonaRecord[]>}
    */
-  async getPersonasByPersonaId(id: number): Promise<IPersonaRecord[]> {
+  async getPersonasByPersonaId(id: number): Promise<PersonaRecord[]> {
     const results = this.personaList.filter((persona) => {
       const match = id === persona.id.readInt32BE(0);
       return match;
@@ -376,7 +376,7 @@ export class PersonaServer {
    */
   async getPersonaMapsByCustomerId(
     customerId: number
-  ): Promise<IPersonaRecord[]> {
+  ): Promise<PersonaRecord[]> {
     switch (customerId) {
       case 2_868_969_472:
       case 5_551_212:
@@ -464,7 +464,7 @@ export class PersonaServer {
     return responsePacket;
   }
 
-  async dataHandler(rawPacket: IRawPacket): Promise<ITCPConnection> {
+  async dataHandler(rawPacket: UnprocessedPacket): Promise<ITCPConnection> {
     const { connection, data, localPort, remoteAddress } = rawPacket;
     const { sock } = connection;
     const updatedConnection = connection;

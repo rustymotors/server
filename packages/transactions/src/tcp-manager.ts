@@ -17,11 +17,12 @@ import {
   StockCarInfoMessage,
 } from "@mco-server/message-types";
 import {
-  IRawPacket,
   ITCPConnection,
   EMessageDirection,
   ConnectionWithPacket,
   ConnectionWithPackets,
+  ITCPManager,
+  UnprocessedPacket,
 } from "@mco-server/types";
 
 const { log } = Logger.getInstance();
@@ -31,12 +32,12 @@ const { log } = Logger.getInstance();
  * @module TCPManager
  */
 
-export class TCPManager {
+export class TCPManager implements ITCPManager {
   static _instance: TCPManager;
   mcotServer: MCOTServer;
   databaseManager: DatabaseManager;
 
-  static getInstance(): TCPManager {
+  static getInstance(): ITCPManager {
     if (!TCPManager._instance) {
       TCPManager._instance = new TCPManager();
     }
@@ -87,11 +88,7 @@ export class TCPManager {
         service: "mcoserver:MCOTSServer",
       });
 
-      if (connection.enc) {
-        packet.updateBuffer(connection.enc.encrypt(packet.data));
-      } else {
-        throw new Error("encryption out on connection is null");
-      }
+      packet.updateBuffer(connection.encryptBuffer(packet.data));
 
       log("debug", `encrypted packet: ${packet.serialize().toString("hex")}`, {
         service: "mcoserver:MCOTSServer",
@@ -101,13 +98,7 @@ export class TCPManager {
     return { connection, packet };
   }
 
-  /**
-   *
-   * @param {ConnectionObj} connection
-   * @param {MessageNode[]} packetList
-   * @return {Promise<ConnectionObj>}
-   */
-  async socketWriteIfOpen(
+  private async socketWriteIfOpen(
     connection: ITCPConnection,
     packetList: MessageNode[]
   ): Promise<ITCPConnection> {
@@ -155,12 +146,6 @@ export class TCPManager {
     return updatedConnection.connection;
   }
 
-  /**
-   *
-   * @param {ConnectionObj} connection
-   * @param {MessageNode} packet
-   * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
-   */
   async getStockCarInfo(
     connection: ITCPConnection,
     packet: MessageNode
@@ -468,14 +453,15 @@ export class TCPManager {
             )}`,
             { service: "mcoserver:MCOTSServer" }
           );
-          if (!newConnection.enc) {
-            throw new Error("ARC4 decrypter is null");
-          }
 
-          log("debug", `Using encryption id: ${newConnection.enc.getId()}`, {
-            service: "mcoserver:MCOTSServer",
-          });
-          const deciphered = newConnection.enc.decrypt(encryptedBuffer);
+          log(
+            "debug",
+            `Using encryption id: ${newConnection.getEncryptionId()}`,
+            {
+              service: "mcoserver:MCOTSServer",
+            }
+          );
+          const deciphered = newConnection.decryptBuffer(encryptedBuffer);
           log(
             "debug",
             `Message buffer after decrypting: ${deciphered.toString("hex")}`,
@@ -508,12 +494,7 @@ export class TCPManager {
     return this.processInput(message, newConnection);
   }
 
-  /**
-   *
-   * @param {IRawPacket} rawPacket
-   * @return {Promise<ConnectionObj>}
-   */
-  async defaultHandler(rawPacket: IRawPacket): Promise<ITCPConnection> {
+  async defaultHandler(rawPacket: UnprocessedPacket): Promise<ITCPConnection> {
     const { connection, remoteAddress, localPort, data } = rawPacket;
     const messageNode = new MessageNode(EMessageDirection.RECEIVED);
     messageNode.deserialize(data);

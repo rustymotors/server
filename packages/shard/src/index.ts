@@ -7,7 +7,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import { Logger } from "@drazisil/mco-logger";
 import { readFileSync } from "fs";
-import { EServerConnectionName, IAppConfiguration } from "@mco-server/types";
+import { EServerConnectionName, AppConfiguration } from "@mco-server/types";
 import { ShardEntry } from "./shard-entry";
 import { RoutingMesh } from "@mco-server/router";
 import { createServer, Server } from "https";
@@ -34,7 +34,7 @@ const { log } = Logger.getInstance();
  */
 export class ShardServer {
   static _instance: ShardServer;
-  _config: IAppConfiguration;
+  _config: AppConfiguration;
   _possibleShards: string[] = [];
   _server: Server;
   _serviceName = "MCOServer:Shard";

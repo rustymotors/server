@@ -10,7 +10,7 @@ import { Logger } from "@drazisil/mco-logger";
 import { DatabaseManager } from "@mco-server/database";
 import {
   EMessageDirection,
-  IRawPacket,
+  UnprocessedPacket,
   ITCPConnection,
 } from "@mco-server/types";
 import { NPSMessage, NPSUserInfo } from "@mco-server/message-types";
@@ -98,6 +98,10 @@ async function sendCommand(
     Buffer.from(data.slice(4))
   ).decryptedCmd;
 
+  if (decipheredCommand === undefined) {
+    throw new Error("There was an error deciphering the NPS command");
+  }
+
   // Marshal the command into an NPS packet
   const incommingRequest = new NPSMessage(EMessageDirection.RECEIVED);
   incommingRequest.deserialize(decipheredCommand);
@@ -123,6 +127,10 @@ async function sendCommand(
   packetResult.dumpPacket();
 
   const cmdEncrypted = encryptCmd(s, packetResult.getContentAsBuffer());
+
+  if (cmdEncrypted.encryptedCmd === undefined) {
+    throw new Error("There was an error ciphering the NPS command");
+  }
 
   cmdEncrypted.encryptedCmd = Buffer.concat([
     Buffer.from([0x11, 0x01]),
@@ -167,7 +175,7 @@ export class LobbyServer {
    * @param {IRawPacket} rawPacket
    * @return {Promise<ConnectionObj>}
    */
-  async dataHandler(rawPacket: IRawPacket): Promise<ITCPConnection> {
+  async dataHandler(rawPacket: UnprocessedPacket): Promise<ITCPConnection> {
     const { localPort, remoteAddress } = rawPacket;
     log(
       "debug",
@@ -225,7 +233,7 @@ export class LobbyServer {
         updatedConnection = await sendCommand(connection, data);
         const { encryptedCmd } = updatedConnection;
 
-        if (encryptedCmd === null) {
+        if (encryptedCmd === undefined) {
           throw new Error(
             `Error with encrypted command, dumping connection: ${JSON.stringify(
               { updatedConnection }
@@ -321,7 +329,7 @@ export class LobbyServer {
     const s = connection;
 
     // Create the cypher and decipher only if not already set
-    if (!s.encLobby.decipher) {
+    if (!s.isLobbyKeysetReady()) {
       try {
         s.setEncryptionKeyDES(keys.skey);
       } catch (error) {

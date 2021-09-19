@@ -7,7 +7,7 @@
 
 import { expect, it } from "@jest/globals";
 import { EMessageDirection } from "@mco-server/types";
-import { MessageNode } from "./index";
+import { MessageNode } from "../src/index";
 
 const messageNode1 = new MessageNode(EMessageDirection.RECEIVED);
 messageNode1.deserialize(

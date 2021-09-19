@@ -6,13 +6,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import * as sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
-import { ISessionRecord } from "@mco-server/types";
+import { IDatabaseManager, SessionRecord } from "@mco-server/types";
 import { Logger } from "@drazisil/mco-logger";
 
 const { log } = Logger.getInstance();
 
-export class DatabaseManager {
+export class DatabaseManager implements IDatabaseManager {
   static _instance: DatabaseManager;
   changes = 0;
   serviceName: string;
@@ -25,7 +26,7 @@ export class DatabaseManager {
 
     const self = DatabaseManager._instance;
 
-    open({ filename: "db/mco.db", driver: "sqlite" })
+    open({ filename: "db/mco.db", driver: sqlite3.Database })
       .then(async (db) => {
         self.localDB = db;
 
@@ -127,9 +128,13 @@ export class DatabaseManager {
       })
       .catch((err) => {
         if (err instanceof Error) {
-          log("error", `${err}`, { service: self.serviceName });
-          throw new Error(`There was an error setting up the database`);
+          const newError = new Error(
+            `There was an error setting up the database: ${err.message}`
+          );
+          log("error", newError.message, { service: self.serviceName });
+          throw newError;
         }
+        throw err;
       });
 
     return DatabaseManager._instance;
@@ -141,7 +146,7 @@ export class DatabaseManager {
 
   async fetchSessionKeyByCustomerId(
     customerId: number
-  ): Promise<ISessionRecord> {
+  ): Promise<SessionRecord> {
     if (!this.localDB) {
       throw new Error("Error accessing database. Are you using the instance?");
     }
@@ -153,12 +158,12 @@ export class DatabaseManager {
     if (record === undefined) {
       throw new Error("Unable to fetch session key");
     }
-    return record as ISessionRecord;
+    return record as SessionRecord;
   }
 
   async fetchSessionKeyByConnectionId(
     connectionId: string
-  ): Promise<ISessionRecord> {
+  ): Promise<SessionRecord> {
     if (!this.localDB) {
       throw new Error("Error accessing database. Are you using the instance?");
     }
@@ -169,7 +174,7 @@ export class DatabaseManager {
     if (record === undefined) {
       throw new Error("Unable to fetch session key");
     }
-    return record as ISessionRecord;
+    return record as SessionRecord;
   }
 
   async _updateSessionKey(

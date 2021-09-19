@@ -1615,6 +1615,17 @@ __metadata:
     "@mco-server/config": "workspace:^"
     "@mco-server/core": "workspace:^"
     "@mco-server/types": "workspace:^"
+    "@types/eslint": ^7
+    "@types/prettier": ^2
+    "@typescript-eslint/eslint-plugin": 4
+    "@typescript-eslint/parser": 4
+    eslint: 7
+    eslint-config-prettier: 8
+    jest: 27.2.0
+    prettier: 2
+    prettier-eslint: 13
+    ts-jest: 27.0.5
+    typescript: 4.4.3
   languageName: unknown
   linkType: soft
 
@@ -1627,6 +1638,17 @@ __metadata:
     "@mco-server/config": "workspace:^"
     "@mco-server/router": "workspace:^"
     "@mco-server/types": "workspace:^"
+    "@types/eslint": ^7
+    "@types/prettier": ^2
+    "@typescript-eslint/eslint-plugin": 4
+    "@typescript-eslint/parser": 4
+    eslint: 7
+    eslint-config-prettier: 8
+    jest: 27.2.0
+    prettier: 2
+    prettier-eslint: 13
+    ts-jest: 27.0.5
+    typescript: 4.4.3
   languageName: unknown
   linkType: soft
 
@@ -1637,6 +1659,17 @@ __metadata:
     "@drazisil/mco-logger": ^4.1.10
     "@jest/globals": 27.2.0
     "@mco-server/types": "workspace:^"
+    "@types/eslint": ^7
+    "@types/prettier": ^2
+    "@typescript-eslint/eslint-plugin": 4
+    "@typescript-eslint/parser": 4
+    eslint: 7
+    eslint-config-prettier: 8
+    jest: 27.2.0
+    prettier: 2
+    prettier-eslint: 13
+    ts-jest: 27.0.5
+    typescript: 4.4.3
   languageName: unknown
   linkType: soft
 
@@ -1654,7 +1687,18 @@ __metadata:
     "@mco-server/persona": "workspace:^"
     "@mco-server/transactions": "workspace:^"
     "@mco-server/types": "workspace:^"
+    "@types/eslint": ^7
+    "@types/prettier": ^2
+    "@typescript-eslint/eslint-plugin": 4
+    "@typescript-eslint/parser": 4
+    eslint: 7
+    eslint-config-prettier: 8
+    jest: 27.2.0
+    prettier: 2
+    prettier-eslint: 13
+    ts-jest: 27.0.5
     tslib: 2.3.1
+    typescript: 4.4.3
   languageName: unknown
   linkType: soft
 
@@ -1664,8 +1708,20 @@ __metadata:
   dependencies:
     "@drazisil/mco-logger": 4.1.10
     "@mco-server/types": "workspace:^"
+    "@types/eslint": ^7
+    "@types/prettier": ^2
+    "@typescript-eslint/eslint-plugin": 4
+    "@typescript-eslint/parser": 4
+    eslint: 7
+    eslint-config-prettier: 8
+    jest: 27.2.0
+    prettier: 2
+    prettier-eslint: 13
     sqlite: 4.0.23
+    sqlite3: 4
+    ts-jest: 27.0.5
     tslib: 2.3.1
+    typescript: 4.4.3
   languageName: unknown
   linkType: soft
 
@@ -1679,6 +1735,17 @@ __metadata:
     "@mco-server/message-types": "workspace:^"
     "@mco-server/persona": "workspace:^"
     "@mco-server/types": "workspace:^"
+    "@types/eslint": ^7
+    "@types/prettier": ^2
+    "@typescript-eslint/eslint-plugin": 4
+    "@typescript-eslint/parser": 4
+    eslint: 7
+    eslint-config-prettier: 8
+    jest: 27.2.0
+    prettier: 2
+    prettier-eslint: 13
+    ts-jest: 27.0.5
+    typescript: 4.4.3
   languageName: unknown
   linkType: soft
 
@@ -1692,6 +1759,17 @@ __metadata:
     "@mco-server/database": "workspace:^"
     "@mco-server/message-types": "workspace:^"
     "@mco-server/types": "workspace:^"
+    "@types/eslint": ^7
+    "@types/prettier": ^2
+    "@typescript-eslint/eslint-plugin": 4
+    "@typescript-eslint/parser": 4
+    eslint: 7
+    eslint-config-prettier: 8
+    jest: 27.2.0
+    prettier: 2
+    prettier-eslint: 13
+    ts-jest: 27.0.5
+    typescript: 4.4.3
   languageName: unknown
   linkType: soft
 
@@ -1702,6 +1780,17 @@ __metadata:
     "@drazisil/mco-logger": ^4.1.10
     "@jest/globals": 27.2.0
     "@mco-server/types": 1.0.0
+    "@types/eslint": ^7
+    "@types/prettier": ^2
+    "@typescript-eslint/eslint-plugin": 4
+    "@typescript-eslint/parser": 4
+    eslint: 7
+    eslint-config-prettier: 8
+    jest: 27.2.0
+    prettier: 2
+    prettier-eslint: 13
+    ts-jest: 27.0.5
+    typescript: 4.4.3
   languageName: unknown
   linkType: soft
 
@@ -1714,9 +1803,20 @@ __metadata:
     "@mco-server/config": "workspace:^"
     "@mco-server/router": "workspace:^"
     "@mco-server/types": "workspace:^"
+    "@types/eslint": ^7
+    "@types/prettier": ^2
     "@types/supertest": 2.0.11
+    "@typescript-eslint/eslint-plugin": 4
+    "@typescript-eslint/parser": 4
+    eslint: 7
+    eslint-config-prettier: 8
+    jest: 27.2.0
+    prettier: 2
+    prettier-eslint: 13
     supertest: 6.1.6
+    ts-jest: 27.0.5
     tslib: 2.3.1
+    typescript: 4.4.3
   languageName: unknown
   linkType: soft
 
@@ -1728,6 +1828,17 @@ __metadata:
     "@jest/globals": 27.2.0
     "@mco-server/message-types": "workspace:^"
     "@mco-server/types": "workspace:^"
+    "@types/eslint": ^7
+    "@types/prettier": ^2
+    "@typescript-eslint/eslint-plugin": 4
+    "@typescript-eslint/parser": 4
+    eslint: 7
+    eslint-config-prettier: 8
+    jest: 27.2.0
+    prettier: 2
+    prettier-eslint: 13
+    ts-jest: 27.0.5
+    typescript: 4.4.3
   languageName: unknown
   linkType: soft
 
@@ -1740,6 +1851,17 @@ __metadata:
     "@mco-server/router": "workspace:^"
     "@mco-server/shard": "workspace:^"
     "@mco-server/types": "workspace:^"
+    "@types/eslint": ^7
+    "@types/prettier": ^2
+    "@typescript-eslint/eslint-plugin": 4
+    "@typescript-eslint/parser": 4
+    eslint: 7
+    eslint-config-prettier: 8
+    jest: 27.2.0
+    prettier: 2
+    prettier-eslint: 13
+    ts-jest: 27.0.5
+    typescript: 4.4.3
   languageName: unknown
   linkType: soft
 
@@ -1749,6 +1871,17 @@ __metadata:
   dependencies:
     "@drazisil/mco-logger": ^4.1.10
     "@mco-server/types": "workspace:^"
+    "@types/eslint": ^7
+    "@types/prettier": ^2
+    "@typescript-eslint/eslint-plugin": 4
+    "@typescript-eslint/parser": 4
+    eslint: 7
+    eslint-config-prettier: 8
+    jest: 27.2.0
+    prettier: 2
+    prettier-eslint: 13
+    ts-jest: 27.0.5
+    typescript: 4.4.3
   languageName: unknown
   linkType: soft
 
@@ -1761,9 +1894,20 @@ __metadata:
     "@mco-server/config": "workspace:^"
     "@mco-server/router": "workspace:^"
     "@mco-server/types": "workspace:^"
+    "@types/eslint": ^7
+    "@types/prettier": ^2
     "@types/supertest": 2.0.11
+    "@typescript-eslint/eslint-plugin": 4
+    "@typescript-eslint/parser": 4
+    eslint: 7
+    eslint-config-prettier: 8
+    jest: 27.2.0
+    prettier: 2
+    prettier-eslint: 13
     supertest: 6.1.6
+    ts-jest: 27.0.5
     tslib: 2.3.1
+    typescript: 4.4.3
   languageName: unknown
   linkType: soft
 
@@ -1776,6 +1920,17 @@ __metadata:
     "@mco-server/database": "workspace:^"
     "@mco-server/message-types": "workspace:^"
     "@mco-server/types": "workspace:^"
+    "@types/eslint": ^7
+    "@types/prettier": ^2
+    "@typescript-eslint/eslint-plugin": 4
+    "@typescript-eslint/parser": 4
+    eslint: 7
+    eslint-config-prettier: 8
+    jest: 27.2.0
+    prettier: 2
+    prettier-eslint: 13
+    ts-jest: 27.0.5
+    typescript: 4.4.3
   languageName: unknown
   linkType: soft
 
@@ -1783,8 +1938,19 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mco-server/types@workspace:packages/types"
   dependencies:
+    "@types/eslint": ^7
+    "@types/prettier": ^2
     "@types/sqlite3": 3.1.7
+    "@typescript-eslint/eslint-plugin": 4
+    "@typescript-eslint/parser": 4
+    eslint: 7
+    eslint-config-prettier: 8
+    jest: 27.2.0
+    prettier: 2
+    prettier-eslint: 13
     sqlite: 4.0.23
+    ts-jest: 27.0.5
+    typescript: 4.4.3
   languageName: unknown
   linkType: soft
 
@@ -2077,6 +2243,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/eslint@npm:^7":
+  version: 7.28.0
+  resolution: "@types/eslint@npm:7.28.0"
+  dependencies:
+    "@types/estree": "*"
+    "@types/json-schema": "*"
+  checksum: 75ac2577d2a2e35bae66f56d2d1c871d5e836b2721cf14bd3df450c9d584eba48fa3b1013fba710245bf4795f16e1df0ed315e543e3199c4815ee4782537d0ae
+  languageName: node
+  linkType: hard
+
+"@types/estree@npm:*":
+  version: 0.0.50
+  resolution: "@types/estree@npm:0.0.50"
+  checksum: 9a2b6a4a8c117f34d08fbda5e8f69b1dfb109f7d149b60b00fd7a9fb6ac545c078bc590aa4ec2f0a256d680cf72c88b3b28b60c326ee38a7bc8ee1ee95624922
+  languageName: node
+  linkType: hard
+
 "@types/graceful-fs@npm:^4.1.2":
   version: 4.1.5
   resolution: "@types/graceful-fs@npm:4.1.5"
@@ -2111,7 +2294,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/json-schema@npm:^7.0.3, @types/json-schema@npm:^7.0.7":
+"@types/json-schema@npm:*, @types/json-schema@npm:^7.0.3, @types/json-schema@npm:^7.0.7":
   version: 7.0.9
   resolution: "@types/json-schema@npm:7.0.9"
   checksum: 259d0e25f11a21ba5c708f7ea47196bd396e379fddb79c76f9f4f62c945879dc21657904914313ec2754e443c5018ea8372362f323f30e0792897fdb2098a705
@@ -2132,7 +2315,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prettier@npm:^2.1.5":
+"@types/prettier@npm:^2, @types/prettier@npm:^2.1.5":
   version: 2.3.2
   resolution: "@types/prettier@npm:2.3.2"
   checksum: c4313e16650811f47b07a0fa7ac0742e966f61283a7292eb667fd4626d760bf3b7d896be3eaabb3354ad45fdbe3a340299b018dd3bcce1ff753d030a8cd2479c
@@ -2190,7 +2373,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:4.31.1":
+"@typescript-eslint/eslint-plugin@npm:4":
   version: 4.31.1
   resolution: "@typescript-eslint/eslint-plugin@npm:4.31.1"
   dependencies:
@@ -2242,7 +2425,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:4.31.1":
+"@typescript-eslint/parser@npm:4":
   version: 4.31.1
   resolution: "@typescript-eslint/parser@npm:4.31.1"
   dependencies:
@@ -3857,7 +4040,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:8.3.0":
+"eslint-config-prettier@npm:8":
   version: 8.3.0
   resolution: "eslint-config-prettier@npm:8.3.0"
   peerDependencies:
@@ -3912,7 +4095,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:7.32.0, eslint@npm:^7.9.0":
+"eslint@npm:7, eslint@npm:^7.9.0":
   version: 7.32.0
   resolution: "eslint@npm:7.32.0"
   dependencies:
@@ -6088,21 +6271,21 @@ __metadata:
     "@types/node": 16.7.10
     "@types/sqlite3": 3.1.7
     "@types/supertest": 2.0.11
-    "@typescript-eslint/eslint-plugin": 4.31.1
-    "@typescript-eslint/parser": 4.31.1
-    eslint: 7.32.0
-    eslint-config-prettier: 8.3.0
+    "@typescript-eslint/eslint-plugin": 4
+    "@typescript-eslint/parser": 4
+    eslint: 7
+    eslint-config-prettier: 8
     jest: 27.2.0
     pm2: 5.1.1
-    prettier: 2.4.1
-    prettier-eslint: 13.0.0
+    prettier: 2
+    prettier-eslint: 13
     sinon: 11.1.2
     source-map-support: 0.5.20
     sqlite3: 4.2.0
     supertest: 6.1.6
     ts-jest: 27.0.5
     ts-node: ^10.2.1
-    typescript: 4.4.2
+    typescript: 4.4.3
   languageName: unknown
   linkType: soft
 
@@ -7074,7 +7257,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-eslint@npm:13.0.0":
+"prettier-eslint@npm:13":
   version: 13.0.0
   resolution: "prettier-eslint@npm:13.0.0"
   dependencies:
@@ -7094,7 +7277,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:2.4.1, prettier@npm:^2.0.0":
+"prettier@npm:2, prettier@npm:^2.0.0":
   version: 2.4.1
   resolution: "prettier@npm:2.4.1"
   bin:
@@ -7934,7 +8117,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sqlite3@npm:4.2.0":
+"sqlite3@npm:4, sqlite3@npm:4.2.0":
   version: 4.2.0
   resolution: "sqlite3@npm:4.2.0"
   dependencies:
@@ -8541,13 +8724,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-typescript@4.4.2:
-  version: 4.4.2
-  resolution: "typescript@npm:4.4.2"
+typescript@4.4.3:
+  version: 4.4.3
+  resolution: "typescript@npm:4.4.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 194e08e9d1971d667d6fd1a0554616b7022312a2319d70e81a64e502a265992061ee7817ed9a69b52bbabe7a9b85e7938cb8c11c433e40a516b277f8c4dacd51
+  checksum: 05823f21796d450531a7e4ab299715d38fd9ded0e4ce7400876053f4b5166ca3dde7a68cecfe72d9086039f03c0b6edba36516fb10ed83c5837d9600532ea4c2
   languageName: node
   linkType: hard
 
@@ -8561,13 +8744,13 @@ typescript@^3.9.3:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@4.4.2#~builtin<compat/typescript>":
-  version: 4.4.2
-  resolution: "typescript@patch:typescript@npm%3A4.4.2#~builtin<compat/typescript>::version=4.4.2&hash=ddd1e8"
+"typescript@patch:typescript@4.4.3#~builtin<compat/typescript>":
+  version: 4.4.3
+  resolution: "typescript@patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=ddd1e8"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 1f30617046271a94d6821fe9da9c4705111e0a2f5479269c82f65aa76b2421ff90def8838dd35b1aa464d015248b06c89ff867bd282f4822b5ee18b7f92f95ee
+  checksum: 79f5c13d21c9dea3eb44d2b7002ff25a0569fefc432e083d65a360e3aca990aca25fc733e14aa6883b5e9a68e3e2f0330a34123e048806f91d701732ece00e6f
   languageName: node
   linkType: hard
 

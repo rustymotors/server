@@ -7,91 +7,85 @@
 
 import { Logger } from "@drazisil/mco-logger";
 import { createServer, Server, Socket } from "net";
-import { IRawPacket, ITCPConnection } from "@mco-server/types";
-import { ConnectionManager } from "./connection-mgr";
+import {
+  UnprocessedPacket,
+  ITCPConnection,
+  IConnectionManager,
+  IListenerThread,
+} from "@mco-server/types";
 
 const { log } = Logger.getInstance();
 
-/**
- * TCP Listener thread
- * @module ListenerThread
- */
+export class ListenerThread implements IListenerThread {
+  static _instance: IListenerThread;
+  serviceName = "mcoserver:ListenerThread";
 
-/**
- * @class
- */
-export class ListenerThread {
+  static getInstance(): IListenerThread {
+    if (!ListenerThread._instance) {
+      ListenerThread._instance = new ListenerThread();
+    }
+    return ListenerThread._instance;
+  }
+
+  private constructor() {
+    // Intentually empty
+  }
+
   /**
    * The onData handler
    * takes the data buffer and creates a IRawPacket object
-   *
-   * @param {Buffer} data
-   * @param {TCPConnection} connection
-   * @return {Promise<void>}
    */
   async _onData(data: Buffer, connection: ITCPConnection): Promise<void> {
+    const { localPort, remoteAddress } = connection.sock;
+    const rawPacket: UnprocessedPacket = {
+      connectionId: connection.id,
+      connection,
+      data,
+      localPort,
+      remoteAddress,
+      timestamp: Date.now(),
+    };
+    // Dump the raw packet
+    log(
+      "debug",
+      `rawPacket's data prior to proccessing, { data: ${rawPacket.data.toString(
+        "hex"
+      )}}`,
+      { service: "mcoserver:ListenerThread" }
+    );
+    let newConnection: ITCPConnection;
     try {
-      const { localPort, remoteAddress } = connection.sock;
-      /** @type {IRawPacket} */
-      const rawPacket: IRawPacket = {
-        connectionId: connection.id,
-        connection,
-        data,
-        localPort,
-        remoteAddress,
-        timestamp: Date.now(),
-      };
-      // Dump the raw packet
-      log(
-        "debug",
-        `rawPacket's data prior to proccessing, { data: ${rawPacket.data.toString(
-          "hex"
-        )}}`,
-        { service: "mcoserver:ListenerThread" }
-      );
-      /** @type {ConnectionObj} */
-      let newConnection: ITCPConnection;
-      try {
-        newConnection = await connection.mgr.processData(rawPacket);
-      } catch (error) {
-        if (error instanceof Error) {
-          log("error", `${error}`, {
-            service: "mcoserver:ListenerThread",
-          });
-          throw new TypeError(`Error in listenerThread::onData 1`);
-        }
-
-        throw new Error("Error in listenerThread::onData 1, error unknown");
-      }
-
-      if (!connection.remoteAddress) {
-        throw new Error(`Remote address is empty: ${connection.toString()}`);
-      }
-
-      try {
-        await connection.mgr._updateConnectionByAddressAndPort(
-          connection.remoteAddress,
-          connection.localPort,
-          newConnection
-        );
-      } catch (error) {
-        if (error instanceof Error) {
-          throw new TypeError(
-            `Error in listenerThread::onData 2: ${error.message}`
-          );
-        }
-
-        throw new Error("Error in listenerThread::onData 2, error unknown");
-      }
+      newConnection = await connection.processPacket(rawPacket);
     } catch (error) {
       if (error instanceof Error) {
-        log("error", `${error}`, {
-          service: "mcoserver:ListenerThread",
-        });
-        throw new TypeError(`Error in listenerThread::onData 3`);
+        const newError = new Error(
+          `There was an error processing the packet: ${error.message}`
+        );
+        log("error", newError.message, { service: this.serviceName });
+        throw newError;
       }
+      throw error;
+    }
 
-      throw new Error("Error in listenerThread::onData 3, error unknown");
+    if (!connection.remoteAddress) {
+      throw new Error(`Remote address is empty: ${connection.toString()}`);
+    }
+
+    try {
+      await connection.updateConnectionByAddressAndPort(
+        connection.remoteAddress,
+        connection.localPort,
+        newConnection
+      );
+    } catch (error) {
+      if (error instanceof Error) {
+        const newError = new Error(
+          `There was an error updating the connection: ${error.message}`
+        );
+        log("error", newError.message, { service: this.serviceName });
+        throw newError;
+      }
+      throw error;
     }
   }
 
@@ -102,7 +96,7 @@ export class ListenerThread {
    * @param {ConnectionMgr} connectionMgr
    * @return {void}
    */
-  _listener(socket: Socket, connectionMgr: ConnectionManager): void {
+  _listener(socket: Socket, connectionMgr: IConnectionManager): void {
     // Received a new connection
     // Turn it into a connection object
     const connection = connectionMgr.findOrNewConnection(socket);
@@ -147,7 +141,7 @@ export class ListenerThread {
    */
   async startTCPListener(
     localPort: number,
-    connectionMgr: ConnectionManager
+    connectionMgr: IConnectionManager
   ): Promise<Server> {
     return createServer((socket) => {
       this._listener(socket, connectionMgr);

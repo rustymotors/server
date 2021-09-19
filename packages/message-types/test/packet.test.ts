@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from "@jest/globals";
-import { premadeLogin } from "./index";
+import { premadeLogin } from "../src/index";
 
 it("LoginServer - Packet", () => {
   const packet = premadeLogin();

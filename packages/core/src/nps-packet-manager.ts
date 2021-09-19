@@ -6,12 +6,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from "@drazisil/mco-logger";
-import { IRawPacket } from "@mco-server/types";
+import { ITCPConnection, UnprocessedPacket } from "@mco-server/types";
 import { LobbyServer } from "@mco-server/lobby";
 import { LoginServer } from "@mco-server/login";
 import { PersonaServer } from "@mco-server/persona";
 import { DatabaseManager } from "@mco-server/database";
-import { TCPConnection } from "./tcpConnection";
 
 const { log } = Logger.getInstance();
 
@@ -94,7 +93,9 @@ export class NPSPacketManager {
    * @param {module:IRawPacket} rawPacket
    * @return {Promise<ConnectionObj>}
    */
-  async processNPSPacket(rawPacket: IRawPacket): Promise<TCPConnection> {
+  async processNPSPacket(
+    rawPacket: UnprocessedPacket
+  ): Promise<ITCPConnection> {
     const messageId = rawPacket.data.readInt16BE(0);
     log(
       "info",

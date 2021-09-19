@@ -6,13 +6,15 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it } from "@jest/globals";
+import { NPSUserInfo } from "../src/index";
 import { EMessageDirection } from "@mco-server/types";
-import { NPSPersonaMapsMessage } from "./index";
 
-it("NPSPersonaMapsMsg", () => {
-  const npsPersonaMapsMessage = new NPSPersonaMapsMessage(
-    EMessageDirection.RECEIVED
-  );
-  expect(npsPersonaMapsMessage.direction).toEqual(EMessageDirection.RECEIVED);
-  expect(npsPersonaMapsMessage.msgNo).toEqual(0x6_07);
+it("NPSUserInfo", () => {
+  const testPacket = Buffer.concat([
+    Buffer.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x84, 0x5f, 0xed]),
+    Buffer.alloc(98),
+  ]);
+  const npsUserInfo = new NPSUserInfo(EMessageDirection.RECEIVED);
+  npsUserInfo.deserialize(testPacket);
+  expect(npsUserInfo.userId).toEqual(8_675_309);
 });

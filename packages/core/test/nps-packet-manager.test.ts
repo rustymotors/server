@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it, describe, jest } from "@jest/globals";
-import { NPSPacketManager } from "./nps-packet-manager";
+import { NPSPacketManager } from "../src/nps-packet-manager";
 
 jest.mock("@mco-server/database");
 

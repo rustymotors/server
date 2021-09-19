@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it, jest } from "@jest/globals";
-import { LoginServer } from "./index";
+import { LoginServer } from "../src/index";
 
 jest.mock("@mco-server/database");
 

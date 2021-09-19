@@ -1,5 +1,5 @@
 // @ts-check
-import { IAppConfiguration } from "@mco-server/types";
+import { AppConfiguration } from "@mco-server/types";
 import { _sslOptions } from "./ssl-options";
 import { savedConfig } from "./config";
 
@@ -8,7 +8,7 @@ import { savedConfig } from "./config";
  */
 
 export class ConfigurationManager {
-  getConfig(): IAppConfiguration {
+  getConfig(): AppConfiguration {
     return savedConfig;
   }
   static _instance: ConfigurationManager;

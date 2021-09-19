@@ -13,17 +13,20 @@ import { NPSPacketManager } from "./nps-packet-manager";
 import { TCPConnection } from "./tcpConnection";
 import {
   EMessageDirection,
-  IRawPacket,
+  IConnectionManager,
+  IDatabaseManager,
   ITCPConnection,
+  UnprocessedPacket,
 } from "@mco-server/types";
-import { NPS_COMMANDS, IConnectionManager } from "@mco-server/types";
+import { NPS_COMMANDS } from "@mco-server/types";
 import { MessageNode } from "@mco-server/message-types";
+import { EncryptionManager } from "./encryption-mgr";
 
 const { log } = Logger.getInstance();
 
-export class ConnectionManager {
-  static _instance: ConnectionManager;
-  databaseMgr: DatabaseManager;
+export class ConnectionManager implements IConnectionManager {
+  static _instance: IConnectionManager;
+  databaseMgr: IDatabaseManager;
   connections: ITCPConnection[];
   newConnectionId: number;
   banList: string[];
@@ -37,9 +40,6 @@ export class ConnectionManager {
   }
 
   private constructor() {
-    /**
-     * @type {module:ConnectionObj[]}
-     */
     this.connections = [];
     this.newConnectionId = 1;
     /**
@@ -51,22 +51,17 @@ export class ConnectionManager {
   }
 
   newConnection(connectionId: string, socket: Socket): ITCPConnection {
-    return new TCPConnection(
-      connectionId,
-      socket,
-      ConnectionManager.getInstance()
-    );
+    const newConnection = new TCPConnection(connectionId, socket);
+    newConnection.setManager(this);
+    newConnection.setEncryptionManager(new EncryptionManager());
+    return newConnection;
   }
 
   /**
    * Check incoming data and route it to the correct handler based on localPort
-   * @param {IRawPacket} rawPacket
-   * @return {Promise<ITCPConnection>}
    */
-  async processData(rawPacket: IRawPacket): Promise<ITCPConnection> {
+  async processData(rawPacket: UnprocessedPacket): Promise<ITCPConnection> {
     const npsPacketManager = new NPSPacketManager();
-
-    Symbol();
 
     const { remoteAddress, localPort, data } = rawPacket;
 
@@ -86,24 +81,46 @@ export class ConnectionManager {
       case 8226:
       case 8228:
       case 7003: {
-        log(
-          "debug",
-          `Recieved NPS packet,
-          ${JSON.stringify({
-            opCode: rawPacket.data.readInt16BE(0),
-            msgName1: npsPacketManager.msgCodetoName(
-              rawPacket.data.readInt16BE(0)
-            ),
-            msgName2: this.getNameFromOpCode(rawPacket.data.readInt16BE(0)),
-            localPort,
-          })}`,
-          { service: this.serviceName }
-        );
+        try {
+          const opCode = rawPacket.data.readInt16BE(0);
+          const msgName1 = npsPacketManager.msgCodetoName(
+            rawPacket.data.readInt16BE(0)
+          );
+          const msgName2 = this.getNameFromOpCode(
+            rawPacket.data.readInt16BE(0)
+          );
+          log(
+            "debug",
+            `Recieved NPS packet,
+            ${JSON.stringify({
+              opCode,
+              msgName1,
+              msgName2,
+              localPort,
+            })}`,
+            { service: this.serviceName }
+          );
+        } catch (error) {
+          if (error instanceof Error) {
+            const newError = new Error(
+              `Error in the recieved packet: ${error.message}`
+            );
+            log("error", newError.message, { service: this.serviceName });
+            throw newError;
+          }
+          throw error;
+        }
         try {
           return await npsPacketManager.processNPSPacket(rawPacket);
         } catch (error) {
-          log("error", `${error}`, { service: this.serviceName });
-          throw new Error(`Error in connectionMgr::processData`);
+          if (error instanceof Error) {
+            const newError = new Error(
+              `There was an error processing the data: ${error.message}`
+            );
+            log("error", newError.message, { service: this.serviceName });
+            throw newError;
+          }
+          throw error;
         }
       }
 
@@ -182,7 +199,7 @@ export class ConnectionManager {
   findConnectionByAddressAndPort(
     remoteAddress: string,
     localPort: number
-  ): TCPConnection | undefined {
+  ): ITCPConnection | undefined {
     return this.connections.find((connection) => {
       const match =
         remoteAddress === connection.remoteAddress &&
@@ -193,10 +210,8 @@ export class ConnectionManager {
 
   /**
    * Locate connection by id in the connections array
-   * @param {string} connectionId
-   * @return {module:ConnectionObj}
    */
-  findConnectionById(connectionId: string): TCPConnection {
+  findConnectionById(connectionId: string): ITCPConnection {
     const results = this.connections.find(
       (connection) => connectionId === connection.id
     );
@@ -207,13 +222,6 @@ export class ConnectionManager {
     return results;
   }
 
-  /**
-   *
-   * @param {string} address
-   * @param {number} port
-   * @param {ITCPConnection} newConnection
-   * @return {Promise<void>}
-   */
   async _updateConnectionByAddressAndPort(
     address: string,
     port: number,
@@ -248,9 +256,6 @@ export class ConnectionManager {
 
   /**
    * Return an existing connection, or a new one
-   *
-   * @param {module:net.Socket} socket
-   * @return {module:ConnectionObj}
    */
   findOrNewConnection(socket: Socket): ITCPConnection {
     const { remoteAddress, localPort } = socket;
@@ -300,10 +305,8 @@ export class ConnectionManager {
 
   /**
    * Dump all connections for debugging
-   *
-   * @return {module:ConnectionObj[]}
    */
-  dumpConnections(): TCPConnection[] {
+  dumpConnections(): ITCPConnection[] {
     return this.connections;
   }
 }

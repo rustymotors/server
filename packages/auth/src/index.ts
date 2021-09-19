@@ -9,7 +9,7 @@
 import { Logger } from "@drazisil/mco-logger";
 import { IncomingMessage, ServerResponse } from "http";
 import { Socket } from "net";
-import { IAppConfiguration, ISslOptions } from "@mco-server/types";
+import { AppConfiguration, SslOptions } from "@mco-server/types";
 import { readFileSync } from "fs";
 import { EServerConnectionName } from "@mco-server/types";
 import { RoutingMesh } from "@mco-server/router";
@@ -25,7 +25,7 @@ const { log } = Logger.getInstance();
 
 export class AuthLogin {
   static _instance: AuthLogin;
-  config: IAppConfiguration;
+  config: AppConfiguration;
   _serviceName = "MCOServer:Auth";
 
   _server: Server;
@@ -126,7 +126,7 @@ export class AuthLogin {
     });
   }
 
-  _sslOptions(): ISslOptions {
+  _sslOptions(): SslOptions {
     log("debug", `Reading ${this.config.certificate.certFilename}`, {
       service: this._serviceName,
     });

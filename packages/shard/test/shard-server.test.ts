@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, describe, it } from "@jest/globals";
-import { ShardServer } from ".";
+import { ShardServer } from "../src";
 
 describe("ShardServer", () => {
   it("should return a shard list", () => {

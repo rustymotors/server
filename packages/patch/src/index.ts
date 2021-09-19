@@ -1,5 +1,5 @@
 import { Logger } from "@drazisil/mco-logger";
-import { EServerConnectionName, IAppConfiguration } from "@mco-server/types";
+import { EServerConnectionName, AppConfiguration } from "@mco-server/types";
 import { RoutingMesh } from "@mco-server/router";
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
 import { ConfigurationManager } from "@mco-server/config";
@@ -15,7 +15,7 @@ export const CastanetResponse = {
 
 export class PatchServer {
   static _instance: PatchServer;
-  _config: IAppConfiguration;
+  _config: AppConfiguration;
   _server: Server;
   _serviceName = "MCOServer:Patch";
 

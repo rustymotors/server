@@ -1,4 +1,7 @@
-import { EServerConnectionAction, IServerConnection } from "@mco-server/types";
+import {
+  EServerConnectionAction,
+  ServerConnectionRecord,
+} from "@mco-server/types";
 import { Logger } from "@drazisil/mco-logger";
 import { RoutingMesh } from "./client";
 import { Server, createServer } from "net";
@@ -10,7 +13,7 @@ const { log } = Logger.getInstance();
 export class RoutingServer {
   static _instance: RoutingServer;
   private _server: Server;
-  private _serverConnections: IServerConnection[] = [];
+  private _serverConnections: ServerConnectionRecord[] = [];
   private _serviceName = "MCOServer:Route";
 
   static getInstance(): RoutingServer {
@@ -49,7 +52,7 @@ export class RoutingServer {
       service: this._serviceName,
     });
 
-    let payloadJSON: IServerConnection;
+    let payloadJSON: ServerConnectionRecord;
 
     try {
       payloadJSON = JSON.parse(payload);
@@ -69,7 +72,7 @@ export class RoutingServer {
     }
   }
 
-  private _registerNewService(payloadJSON: IServerConnection) {
+  private _registerNewService(payloadJSON: ServerConnectionRecord) {
     const { service, host, port } = payloadJSON;
 
     if (service && host && port) {

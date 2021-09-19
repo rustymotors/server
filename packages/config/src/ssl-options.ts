@@ -8,8 +8,8 @@
 
 import { readFileSync } from "fs";
 import { Logger } from "@drazisil/mco-logger";
-import { IAppConfiguration } from "@mco-server/types";
-import { ISslOptions } from "@mco-server/types";
+import { AppConfiguration } from "@mco-server/types";
+import { SslOptions } from "@mco-server/types";
 
 const { log } = Logger.getInstance();
 
@@ -33,9 +33,9 @@ const { log } = Logger.getInstance();
    * @return {Promise<sslOptionsObj>}
    */
 export function _sslOptions(
-  certificateSettings: IAppConfiguration["certificate"],
+  certificateSettings: AppConfiguration["certificate"],
   serviceName: string
-): ISslOptions {
+): SslOptions {
   log("debug", `Reading ${certificateSettings.certFilename}`, {
     service: serviceName,
   });

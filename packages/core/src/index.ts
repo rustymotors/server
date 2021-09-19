@@ -6,7 +6,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from "@drazisil/mco-logger";
-import { IAppConfiguration } from "@mco-server/types";
+import {
+  AppConfiguration,
+  IConnectionManager,
+  IMCServer,
+  ITCPConnection,
+} from "@mco-server/types";
 import { ConnectionManager } from "./connection-mgr";
 import { ConfigurationManager } from "@mco-server/config";
 import { ListenerThread } from "./listener-thread";
@@ -18,13 +23,13 @@ const { log } = Logger.getInstance();
  * @module MCServer
  */
 
-export class MCServer {
-  static _instance: MCServer;
-  config: IAppConfiguration;
-  mgr: ConnectionManager;
+export class MCServer implements IMCServer {
+  static _instance: IMCServer;
+  config: AppConfiguration;
+  private mgr?: IConnectionManager;
   serviceName: string;
 
-  static getInstance(): MCServer {
+  static getInstance(): IMCServer {
     if (!MCServer._instance) {
       MCServer._instance = new MCServer();
     }
@@ -36,6 +41,18 @@ export class MCServer {
     this.mgr = ConnectionManager.getInstance();
     this.serviceName = "mcoserver:MCServer";
   }
+  clearConnectionQueue(): void {
+    if (this.mgr === undefined) {
+      throw new Error("Connection manager not set");
+    }
+    this.mgr.resetAllQueueState();
+  }
+  getConnections(): ITCPConnection[] {
+    if (this.mgr === undefined) {
+      throw new Error("Connection manager is not set");
+    }
+    return this.mgr.dumpConnections();
+  }
 
   /**
    * Start the HTTP, HTTPS and TCP connection listeners
@@ -43,7 +60,7 @@ export class MCServer {
    */
 
   async startServers(): Promise<void> {
-    const listenerThread = new ListenerThread();
+    const listenerThread = ListenerThread.getInstance();
     log("info", "Starting the listening sockets...", {
       service: this.serviceName,
     });
@@ -53,6 +70,10 @@ export class MCServer {
       9002, 9003, 9004, 9005, 9006, 9007, 9008, 9009, 9010, 9011, 9012, 9013,
       9014,
     ];
+
+    if (this.mgr === undefined) {
+      throw new Error("Connection manager is not set");
+    }
 
     for (const port of tcpPortList) {
       listenerThread.startTCPListener(port, this.mgr);

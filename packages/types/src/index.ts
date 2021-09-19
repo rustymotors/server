@@ -1,5 +1,5 @@
 import { Cipher, Decipher } from "crypto";
-import { Socket } from "net";
+import { Server, Socket } from "net";
 import { Database } from "sqlite";
 
 export interface IEncryptionManager {
@@ -15,17 +15,19 @@ export interface IEncryptionManager {
 }
 
 export interface IMCServer {
-  mgr: IConnectionManager;
+  clearConnectionQueue: () => void;
+  getConnections: () => ITCPConnection[];
+  serviceName: string;
 }
 
 export interface IDatabaseManager {
-  localDB: Database | undefined;
+  localDB?: Database;
   changes: number;
   serviceName: string;
-  fetchSessionKeyByCustomerId: (customerId: number) => Promise<ISessionRecord>;
+  fetchSessionKeyByCustomerId: (customerId: number) => Promise<SessionRecord>;
   fetchSessionKeyByConnectionId: (
     connectionId: string
-  ) => Promise<ISessionRecord>;
+  ) => Promise<SessionRecord>;
   _updateSessionKey: (
     customerId: number,
     sessionkey: string,
@@ -34,13 +36,19 @@ export interface IDatabaseManager {
   ) => Promise<number>;
 }
 
+export interface IListenerThread {
+  _onData: (arg0: Buffer, fakeConnection1: ITCPConnection) => Promise<void>;
+  startTCPListener: (port: number, mgr: IConnectionManager) => Promise<Server>;
+  serviceName: string;
+}
+
 export interface IConnectionManager {
   connections: ITCPConnection[];
   newConnectionId: number;
   banList: string[];
   serviceName: string;
   databaseMgr: IDatabaseManager;
-  processData: (rawPacket: IRawPacket) => Promise<ITCPConnection>;
+  processData: (rawPacket: UnprocessedPacket) => Promise<ITCPConnection>;
   getNameFromOpCode: (opCode: number) => string;
   getOpcodeFromName: (name: string) => number;
   getBans: () => string[];
@@ -60,70 +68,99 @@ export interface IConnectionManager {
   newConnection: (connectionId: string, socket: Socket) => ITCPConnection;
 }
 
+export enum EConnectionStatus {
+  ACTIVE = "Active",
+  INACTIVE = "Inactive",
+}
+
+export type LobbyCipers = {
+  cipher?: Cipher;
+  decipher?: Decipher;
+};
+
+export interface ITCPManager {
+  defaultHandler(rawPacket: UnprocessedPacket): Promise<ITCPConnection>;
+  compressIfNeeded: (
+    connection: ITCPConnection,
+    packet: IMessageNode
+  ) => Promise<ConnectionWithPacket>;
+}
+
 export interface ITCPConnection {
+  isLobbyKeysetReady: () => boolean;
+  encryptedCmd?: Buffer;
+  decryptedCmd?: Buffer;
+  updateConnectionByAddressAndPort(
+    remoteAddress: string,
+    localPort: number,
+    newConnection: ITCPConnection
+  ): Promise<void>;
+  processPacket(
+    rawPacket: UnprocessedPacket
+  ): ITCPConnection | PromiseLike<ITCPConnection>;
   id: string;
   appId: number;
-  status: string;
-  remoteAddress: string | undefined;
+  status: EConnectionStatus;
+  remoteAddress?: string;
   localPort: number;
   sock: Socket;
   msgEvent: null;
   lastMsg: number;
   useEncryption: boolean;
-  encLobby: { cipher: Cipher | undefined; decipher: Decipher | undefined };
-  enc: IEncryptionManager;
   isSetupComplete: boolean;
-  mgr: IConnectionManager;
   inQueue: boolean;
-  decryptedCmd: Buffer;
-  encryptedCmd: Buffer;
   setEncryptionKey: (key: Buffer) => void;
   setEncryptionKeyDES: (skey: string) => void;
   cipherBufferDES: (messageBuffer: Buffer) => Buffer;
   decipherBufferDES: (messageBuffer: Buffer) => Buffer;
+  setManager: (manager: IConnectionManager) => void;
+  setEncryptionManager: (manager: IEncryptionManager) => void;
+  getEncryptionId: () => string;
+  encryptBuffer: (buffer: Buffer) => Buffer;
+  decryptBuffer: (buffer: Buffer) => Buffer;
 }
 
-export interface IRawPacket {
+export type UnprocessedPacket = {
   connectionId: string;
   connection: ITCPConnection;
   data: Buffer;
   localPort: number | undefined;
   remoteAddress: string | undefined;
   timestamp: number;
-}
+};
 
-export interface ISessionRecord {
+export type SessionRecord = {
   skey: string;
   sessionkey: string;
-}
+};
 
-export interface IPersonaRecord {
+export type PersonaRecord = {
   customerId: number;
   id: Buffer;
   maxPersonas: Buffer;
   name: Buffer;
   personaCount: Buffer;
   shardId: Buffer;
-}
+};
 
-export interface ISslOptions {
+export type SslOptions = {
   cert: string;
   honorCipherOrder: boolean;
   key: string;
   rejectUnauthorized: boolean;
-}
+};
 
-export interface IUserRecordMini {
+export type UserRecordMini = {
   contextId: string;
   customerId: number;
   userId: number;
-}
+};
 
-export interface InpsCommandMap {
+export type NpsCommandMap = {
   name: string;
   value: number;
   module: "Lobby" | "Login";
-}
+};
 
 export enum EServerConnectionName {
   ADMIN = "Admin",
@@ -142,14 +179,14 @@ export enum EServiceQuery {
   GET_CONNECTIONS = "Get connections",
 }
 
-export interface IServerConnection {
+export type ServerConnectionRecord = {
   action?: EServerConnectionAction;
   service: EServerConnectionName;
   host: string;
   port: number;
-}
+};
 
-export interface IAppConfiguration {
+export type AppConfiguration = {
   certificate: {
     privateKeyFilename: string;
     publicKeyFilename: string;
@@ -162,7 +199,7 @@ export interface IAppConfiguration {
     databaseURL: string;
   };
   defaultLogLevel: string;
-}
+};
 
 export const _NPS_RiffListHeader = {
   StructSize: Buffer.alloc(4), // Uint4B
@@ -506,9 +543,8 @@ export const CompressedHeader = {
 
 /**
  * Commands from the game server to the game client
- * @type {InpsCommandMap[]}
  */
-const NPS_LOBBYSERVER_COMMANDS: InpsCommandMap[] = [
+const NPS_LOBBYSERVER_COMMANDS: NpsCommandMap[] = [
   { name: "NPS_FORCE_LOGOFF", value: 513, module: "Lobby" },
   { name: "NPS_USER_LEFT", value: 514, module: "Lobby" },
   { name: "NPS_USER_JOINED", value: 515, module: "Lobby" },
@@ -560,9 +596,8 @@ const NPS_LOBBYSERVER_COMMANDS: InpsCommandMap[] = [
 
 /**
  * Commands from the game client to the game server
- * @type {InpsCommandMap[]}
  */
-const NPS_LOBBYCLIENT_COMMANDS: InpsCommandMap[] = [
+const NPS_LOBBYCLIENT_COMMANDS: NpsCommandMap[] = [
   { name: "NPS_LOGIN", value: 256, module: "Lobby" },
   { name: "NPS_GET_USER_LIST", value: 257, module: "Lobby" },
   { name: "NPS_GET_MY_USER_DATA", value: 258, module: "Lobby" },
@@ -612,9 +647,8 @@ const NPS_LOBBYCLIENT_COMMANDS: InpsCommandMap[] = [
 
 /**
  * Commands from the game client to the login server
- * @type {InpsCommandMap[]}
  */
-const NPS_LOGINCLIENT_COMMANDS: InpsCommandMap[] = [
+const NPS_LOGINCLIENT_COMMANDS: NpsCommandMap[] = [
   { name: "NPS_USER_LOGIN", value: 1281, module: "Login" },
   { name: "NPS_GAME_LOGIN", value: 1282, module: "Login" },
   { name: "NPS_REGISTER_GAME_LOGIN", value: 1283, module: "Login" },
@@ -661,25 +695,16 @@ const NPS_LOGINCLIENT_COMMANDS: InpsCommandMap[] = [
   { name: "NPS_GET_USER_STATUS", value: 1333, module: "Login" },
 ];
 
-/**
- * @type {InpsCommandMap[]}
- */
-const NPS_LOBBY_COMMANDS: InpsCommandMap[] = [
+const NPS_LOBBY_COMMANDS: NpsCommandMap[] = [
   ...NPS_LOBBYCLIENT_COMMANDS,
   ...NPS_LOBBYSERVER_COMMANDS,
 ];
 
-/**
- * @type {InpsCommandMap[]}
- */
-export const NPS_LOGIN_COMMANDS: InpsCommandMap[] = [
+export const NPS_LOGIN_COMMANDS: NpsCommandMap[] = [
   ...NPS_LOGINCLIENT_COMMANDS,
 ];
 
-/**
- * @type {InpsCommandMap[]}
- */
-export const NPS_COMMANDS: InpsCommandMap[] = [
+export const NPS_COMMANDS: NpsCommandMap[] = [
   ...NPS_LOBBY_COMMANDS,
   ...NPS_LOGINCLIENT_COMMANDS,
   { name: "NPS_CRYPTO_DES_CBC", value: 0x11_01, module: "Lobby" },

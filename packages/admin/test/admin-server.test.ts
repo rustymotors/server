@@ -7,7 +7,7 @@
 
 import { expect, test, jest } from "@jest/globals";
 import { MCServer } from "@mco-server/core";
-import { AdminServer } from "./index";
+import { AdminServer } from "../src/index";
 jest.mock("@mco-server/core");
 jest.mock("net");
 

@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { describe, expect, test } from "@jest/globals";
-import { MCOTServer } from "./index";
+import { MCOTServer } from "../src/index";
 
 const mcotServer = MCOTServer.getInstance();
 

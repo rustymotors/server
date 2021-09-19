@@ -7,7 +7,11 @@
 
 import { Logger } from "@drazisil/mco-logger";
 import { DatabaseManager } from "@mco-server/database";
-import { IRawPacket, ITCPConnection, IUserRecordMini } from "@mco-server/types";
+import {
+  UnprocessedPacket,
+  ITCPConnection,
+  UserRecordMini,
+} from "@mco-server/types";
 import { NPSUserStatus, premadeLogin } from "@mco-server/message-types";
 import { ConfigurationManager } from "@mco-server/config";
 
@@ -44,7 +48,7 @@ export class LoginServer {
    * @param {IServerConfig} config
    * @return {Promise<ConnectionObj>}
    */
-  async dataHandler(rawPacket: IRawPacket): Promise<ITCPConnection> {
+  async dataHandler(rawPacket: UnprocessedPacket): Promise<ITCPConnection> {
     let processed = true;
     const { connection, data } = rawPacket;
     const { localPort, remoteAddress } = rawPacket;
@@ -112,12 +116,11 @@ export class LoginServer {
    */
   async _npsGetCustomerIdByContextId(
     contextId: string
-  ): Promise<IUserRecordMini> {
+  ): Promise<UserRecordMini> {
     log("debug", ">>> _npsGetCustomerIdByContextId", {
       service: this.serviceName,
     });
-    /** @type {IUserRecordMini[]} */
-    const users: IUserRecordMini[] = [
+    const users: UserRecordMini[] = [
       {
         contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
         customerId: 0xac_01_00_00,

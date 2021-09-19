@@ -11,7 +11,7 @@ import { IncomingMessage, ServerResponse } from "http";
 import { createServer, Server } from "https";
 import { Socket } from "net";
 import { ConfigurationManager, _sslOptions } from "@mco-server/config";
-import { IAppConfiguration, IMCServer } from "@mco-server/types";
+import { AppConfiguration, IMCServer } from "@mco-server/types";
 
 const { log } = Logger.getInstance();
 /**
@@ -27,7 +27,7 @@ const { log } = Logger.getInstance();
  */
 export class AdminServer {
   static _instance: AdminServer;
-  config: IAppConfiguration;
+  config: AppConfiguration;
   mcServer: IMCServer;
   serviceName: string;
   httpsServer: Server | undefined;
@@ -50,13 +50,13 @@ export class AdminServer {
    * @return {string}
    */
   _handleGetConnections(): string {
-    const connections = this.mcServer.mgr.dumpConnections();
+    const connections = this.mcServer.getConnections();
     let responseText = "";
     for (const [index, connection] of connections.entries()) {
       const displayConnection = `
         index: ${index} - ${connection.id}
             remoteAddress: ${connection.remoteAddress}:${connection.localPort}
-            Encryption ID: ${connection.enc.getId()}
+            Encryption ID: ${connection.getEncryptionId()}
             inQueue:       ${connection.inQueue}
         `;
       responseText += displayConnection;
@@ -70,14 +70,14 @@ export class AdminServer {
    * @return {string}
    */
   _handleResetAllQueueState(): string {
-    this.mcServer.mgr.resetAllQueueState();
-    const connections = this.mcServer.mgr.dumpConnections();
+    this.mcServer.clearConnectionQueue();
+    const connections = this.mcServer.getConnections();
     let responseText = "Queue state reset for all connections\n\n";
     for (const [index, connection] of connections.entries()) {
       const displayConnection = `
         index: ${index} - ${connection.id}
             remoteAddress: ${connection.remoteAddress}:${connection.localPort}
-            Encryption ID: ${connection.enc.getId()}
+            Encryption ID: ${connection.getEncryptionId()}
             inQueue:       ${connection.inQueue}
         `;
       responseText += displayConnection;

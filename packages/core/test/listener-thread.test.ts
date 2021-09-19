@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // Mco-server is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
@@ -8,8 +9,8 @@
 import { expect, it, jest } from "@jest/globals";
 import { Socket } from "net";
 import { Duplex, EventEmitter } from "stream";
-import { ConnectionManager } from "./connection-mgr";
-import { ListenerThread } from "./listener-thread";
+import { ConnectionManager } from "../src/connection-mgr";
+import { ListenerThread } from "../src/listener-thread";
 
 jest.mock("@mco-server/database");
 
@@ -72,7 +73,7 @@ class SocketFactory extends Duplex implements EventEmitter {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
           async next(
             ..._args: [] | [undefined]
-          ): Promise<IteratorResult<string, any>> {
+          ): Promise<IteratorResult<string, string>> {
             return {
               value: "bar",
               done: false,
@@ -97,7 +98,7 @@ class SocketFactory extends Duplex implements EventEmitter {
 }
 
 it("ListenerThread - _onData", async () => {
-  const listenerThread = new ListenerThread();
+  const listenerThread = ListenerThread.getInstance();
 
   const fakeSocket1 = SocketFactory.createSocket();
   expect(fakeSocket1.localPort).toEqual(7003);
@@ -125,7 +126,7 @@ it("ListenerThread - _onData", async () => {
     fakeSocket3
   );
   fakeConnection3.sock = SocketFactory.createSocket();
-  fakeConnection3.mgr = ConnectionManager.getInstance();
+  fakeConnection3.setManager(ConnectionManager.getInstance());
   fakeConnection3.remoteAddress = undefined;
 
   expect(fakeConnection3.remoteAddress).toEqual(undefined);

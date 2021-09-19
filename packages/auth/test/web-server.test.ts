@@ -6,15 +6,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, test } from "@jest/globals";
-import { StockCar } from "./index";
+import { AuthLogin } from "../src/index";
 
-const stockCar1 = new StockCar(105, 20, 0);
-
-test("StockCar", () => {
-  const { brandedPartId, retailPrice, bIsDealOfTheDay } = stockCar1;
-  expect(brandedPartId).toEqual(105);
-
-  expect(retailPrice).toEqual(20);
-
-  expect(bIsDealOfTheDay).toEqual(0);
+test("WebServer", () => {
+  const _ = AuthLogin.getInstance();
+  expect(_._handleGetTicket()).toEqual(expect.stringMatching(/TRUE/));
 });

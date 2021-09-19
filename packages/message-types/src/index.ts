@@ -2,8 +2,8 @@
 import { Logger } from "@drazisil/mco-logger";
 import {
   EMessageDirection,
-  IAppConfiguration,
-  IPersonaRecord,
+  AppConfiguration,
+  PersonaRecord,
 } from "@mco-server/types";
 import { readFileSync, statSync } from "fs";
 import { privateDecrypt } from "crypto";
@@ -1538,7 +1538,7 @@ export class ClientConnectMessage {
  * @property {number} personaCount
  */
 export class NPSPersonaMapsMessage extends NPSMessage {
-  personas: IPersonaRecord[];
+  personas: PersonaRecord[];
   personaSize: number;
   personaCount: number;
   /**
@@ -1562,7 +1562,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    * @param {IPersonaRecord[]} personas
    * @return {void}
    */
-  loadMaps(personas: IPersonaRecord[]): void {
+  loadMaps(personas: PersonaRecord[]): void {
     this.personaCount = personas.length;
     this.personas = personas;
   }
@@ -1753,7 +1753,7 @@ export class NPSUserStatus extends NPSMessage {
    * @return {void}
    */
   extractSessionKeyFromPacket(
-    serverConfig: IAppConfiguration["certificate"],
+    serverConfig: AppConfiguration["certificate"],
     packet: Buffer
   ): void {
     // Decrypt the sessionkey

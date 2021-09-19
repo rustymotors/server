@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, it, jest, beforeEach, describe } from "@jest/globals";
-import { PersonaServer } from ".";
+import { PersonaServer } from "../src";
 import { NPSMessage } from "@mco-server/message-types";
 import { EMessageDirection } from "@mco-server/types";
 import { Socket as fakeSocket } from "net";

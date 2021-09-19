@@ -7,7 +7,7 @@
 
 import { expect, describe, it, beforeEach } from "@jest/globals";
 import request from "supertest";
-import { CastanetResponse, PatchServer } from ".";
+import { CastanetResponse, PatchServer } from "../src";
 
 let patchServer: PatchServer;
 
