@@ -1,10 +1,14 @@
 // TODO: These are types. They should not log
-import { Logger } from '@drazisil/mco-logger'
-import { EMessageDirection, IAppConfiguration, IPersonaRecord } from '@mco-server/types'
-import { readFileSync, statSync } from 'fs'
-import { privateDecrypt } from 'crypto'
+import { Logger } from "@drazisil/mco-logger";
+import {
+  EMessageDirection,
+  IAppConfiguration,
+  IPersonaRecord,
+} from "@mco-server/types";
+import { readFileSync, statSync } from "fs";
+import { privateDecrypt } from "crypto";
 
-const { log } = Logger.getInstance()
+const { log } = Logger.getInstance();
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
@@ -27,24 +31,24 @@ const { log } = Logger.getInstance()
  * @property {Buffer} data2
  */
 export class GenericReplyMessage {
-  msgNo: number
-  toFrom: number
-  appId: number
-  msgReply: number
-  result: Buffer
-  data: Buffer
-  data2: Buffer
+  msgNo: number;
+  toFrom: number;
+  appId: number;
+  msgReply: number;
+  result: Buffer;
+  data: Buffer;
+  data2: Buffer;
   /**
    *
    */
   constructor() {
-    this.msgNo = 0
-    this.toFrom = 0
-    this.appId = 0
-    this.msgReply = 0
-    this.result = Buffer.alloc(4)
-    this.data = Buffer.alloc(4)
-    this.data2 = Buffer.alloc(4)
+    this.msgNo = 0;
+    this.toFrom = 0;
+    this.appId = 0;
+    this.msgReply = 0;
+    this.result = Buffer.alloc(4);
+    this.data = Buffer.alloc(4);
+    this.data2 = Buffer.alloc(4);
   }
 
   /**
@@ -53,7 +57,7 @@ export class GenericReplyMessage {
    * @return {void}
    */
   setData(value: Buffer): void {
-    this.data = value
+    this.data = value;
   }
 
   /**
@@ -62,7 +66,7 @@ export class GenericReplyMessage {
    * @return {void}
    */
   setData2(value: Buffer): void {
-    this.data2 = value
+    this.data2 = value;
   }
 
   /**
@@ -72,23 +76,23 @@ export class GenericReplyMessage {
    */
   deserialize(buffer: Buffer): void {
     try {
-      this.msgNo = buffer.readInt16LE(0)
+      this.msgNo = buffer.readInt16LE(0);
     } catch (error) {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
       } else {
         throw new TypeError(
           `[GenericReplyMsg] Unable to read msgNo from ${buffer.toString(
-            'hex',
-          )}: ${error}`,
-        )
+            "hex"
+          )}: ${error}`
+        );
       }
     }
 
-    this.msgReply = buffer.readInt16LE(2)
-    this.result = buffer.slice(4, 8)
-    this.data = buffer.slice(8, 12)
-    this.data2 = buffer.slice(12)
+    this.msgReply = buffer.readInt16LE(2);
+    this.result = buffer.slice(4, 8);
+    this.data = buffer.slice(8, 12);
+    this.data2 = buffer.slice(12);
   }
 
   /**
@@ -96,13 +100,13 @@ export class GenericReplyMessage {
    * @return {Buffer}
    */
   serialize(): Buffer {
-    const packet = Buffer.alloc(16)
-    packet.writeInt16LE(this.msgNo, 0)
-    packet.writeInt16LE(this.msgReply, 2)
-    this.result.copy(packet, 4)
-    this.data.copy(packet, 8)
-    this.data2.copy(packet, 12)
-    return packet
+    const packet = Buffer.alloc(16);
+    packet.writeInt16LE(this.msgNo, 0);
+    packet.writeInt16LE(this.msgReply, 2);
+    this.result.copy(packet, 4);
+    this.data.copy(packet, 8);
+    this.data2.copy(packet, 12);
+    return packet;
   }
 
   /**
@@ -111,7 +115,7 @@ export class GenericReplyMessage {
    * @return {void}
    */
   setResult(buffer: Buffer): void {
-    this.result = buffer
+    this.result = buffer;
   }
 
   /**
@@ -120,17 +124,17 @@ export class GenericReplyMessage {
    */
   dumpPacket(): void {
     log(
-      'info',
+      "info",
       `GenericReply',
       ${JSON.stringify({
         msgNo: this.msgNo,
         msgReply: this.msgReply,
-        result: this.result.toString('hex'),
-        data: this.data.toString('hex'),
-        tdata2: this.data2.toString('hex'),
+        result: this.result.toString("hex"),
+        data: this.data.toString("hex"),
+        tdata2: this.data2.toString("hex"),
       })}`,
-      { service: 'mcoserver:GenericReplyMsg' },
-    )
+      { service: "mcoserver:GenericReplyMsg" }
+    );
   }
 }
 
@@ -151,18 +155,18 @@ export class GenericReplyMessage {
  * @property {Buffer} data2
  */
 export class GenericRequestMessage {
-  msgNo: number
-  data: Buffer
-  data2: Buffer
-  serviceName: string
+  msgNo: number;
+  data: Buffer;
+  data2: Buffer;
+  serviceName: string;
   /**
    *
    */
   constructor() {
-    this.msgNo = 0
-    this.data = Buffer.alloc(4)
-    this.data2 = Buffer.alloc(4)
-    this.serviceName = 'mcoserver:GenericRequestMsg'
+    this.msgNo = 0;
+    this.data = Buffer.alloc(4);
+    this.data2 = Buffer.alloc(4);
+    this.serviceName = "mcoserver:GenericRequestMsg";
   }
 
   /**
@@ -172,21 +176,21 @@ export class GenericRequestMessage {
    */
   deserialize(buffer: Buffer): void {
     try {
-      this.msgNo = buffer.readInt16LE(0)
+      this.msgNo = buffer.readInt16LE(0);
     } catch (error) {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
       } else {
         throw new TypeError(
           `[GenericRequestMsg] Unable to read msgNo from ${buffer.toString(
-            'hex',
-          )}: ${error}`,
-        )
+            "hex"
+          )}: ${error}`
+        );
       }
     }
 
-    this.data = buffer.slice(2, 6)
-    this.data2 = buffer.slice(6)
+    this.data = buffer.slice(2, 6);
+    this.data2 = buffer.slice(6);
   }
 
   /**
@@ -194,11 +198,11 @@ export class GenericRequestMessage {
    * @return {Buffer}
    */
   serialize(): Buffer {
-    const packet = Buffer.alloc(16)
-    packet.writeInt16LE(this.msgNo, 0)
-    this.data.copy(packet, 2)
-    this.data2.copy(packet, 6)
-    return packet
+    const packet = Buffer.alloc(16);
+    packet.writeInt16LE(this.msgNo, 0);
+    this.data.copy(packet, 2);
+    this.data2.copy(packet, 6);
+    return packet;
   }
 
   /**
@@ -207,15 +211,15 @@ export class GenericRequestMessage {
    */
   dumpPacket(): void {
     log(
-      'info',
+      "info",
       `GenericRequest',
         ${JSON.stringify({
           msgNo: this.msgNo,
-          data: this.data.toString('hex'),
-          data2: this.data2.toString('hex'),
+          data: this.data.toString("hex"),
+          data2: this.data2.toString("hex"),
         })}`,
-      { service: this.serviceName },
-    )
+      { service: this.serviceName }
+    );
   }
 }
 
@@ -235,10 +239,10 @@ export class GenericRequestMessage {
  * @property {0 | 1} bIsDealOfTheDay
  */
 export class StockCar {
-  brandedPartId: number
-  retailPrice: number
-  bIsDealOfTheDay: number
-  serviceName: string
+  brandedPartId: number;
+  retailPrice: number;
+  bIsDealOfTheDay: number;
+  serviceName: string;
   /**
    * @param {number} brandedPartId
    * @param {number} retailPrice
@@ -247,12 +251,12 @@ export class StockCar {
   constructor(
     brandedPartId: number,
     retailPrice: number,
-    bIsDealOfTheDay: number,
+    bIsDealOfTheDay: number
   ) {
-    this.brandedPartId = brandedPartId
-    this.retailPrice = retailPrice
-    this.bIsDealOfTheDay = bIsDealOfTheDay
-    this.serviceName = 'mcoserver:StockCar'
+    this.brandedPartId = brandedPartId;
+    this.retailPrice = retailPrice;
+    this.bIsDealOfTheDay = bIsDealOfTheDay;
+    this.serviceName = "mcoserver:StockCar";
   }
 
   /**
@@ -260,11 +264,11 @@ export class StockCar {
    * @return {Buffer}
    */
   serialize(): Buffer {
-    const packet = Buffer.alloc(10)
-    packet.writeInt32LE(this.brandedPartId, 0)
-    packet.writeInt32LE(this.retailPrice, 4)
-    packet.writeInt16LE(this.bIsDealOfTheDay, 8)
-    return packet
+    const packet = Buffer.alloc(10);
+    packet.writeInt32LE(this.brandedPartId, 0);
+    packet.writeInt32LE(this.retailPrice, 4);
+    packet.writeInt16LE(this.bIsDealOfTheDay, 8);
+    return packet;
   }
 
   /**
@@ -273,15 +277,15 @@ export class StockCar {
    */
   dumpPacket(): void {
     log(
-      'debug',
+      "debug",
       `
       [StockCar]======================================
       brandedPartId:     ${this.brandedPartId}
       retailPrice:       ${this.retailPrice}
       isDealOfTheDay:    ${this.bIsDealOfTheDay}
       logger.log('[/StockCar]======================================`,
-      { service: this.serviceName },
-    )
+      { service: this.serviceName }
+    );
   }
 }
 
@@ -310,14 +314,14 @@ export class StockCar {
  * @property {StockCar[]} StockCarList
  */
 export class StockCarInfoMessage {
-  msgNo: number
-  starterCash: number
-  dealerId: number
-  brand: number
-  noCars: number
-  moreToCome: number
-  StockCarList: StockCar[]
-  serviceName: string
+  msgNo: number;
+  starterCash: number;
+  dealerId: number;
+  brand: number;
+  noCars: number;
+  moreToCome: number;
+  StockCarList: StockCar[];
+  serviceName: string;
   /**
    * Creates an instance of StockCarInfoMsg.
    * @class
@@ -327,17 +331,17 @@ export class StockCarInfoMessage {
    * @memberof StockCarInfoMsg
    */
   constructor(starterCash: number, dealerId: number, brand: number) {
-    this.msgNo = 141
-    this.starterCash = starterCash
-    this.dealerId = dealerId
-    this.brand = brand
+    this.msgNo = 141;
+    this.starterCash = starterCash;
+    this.dealerId = dealerId;
+    this.brand = brand;
     /** Number of cars */
-    this.noCars = 1
+    this.noCars = 1;
     /** @type {0|1} */
-    this.moreToCome = 0
+    this.moreToCome = 0;
     /** @type {module:StockCar} */
-    this.StockCarList = []
-    this.serviceName = 'mcoserver:StockCarInfoMsg'
+    this.StockCarList = [];
+    this.serviceName = "mcoserver:StockCarInfoMsg";
   }
 
   /**
@@ -346,8 +350,8 @@ export class StockCarInfoMessage {
    * @return {void}
    */
   addStockCar(car: StockCar): void {
-    this.StockCarList.push(car)
-    this.noCars = this.StockCarList.length
+    this.StockCarList.push(car);
+    this.noCars = this.StockCarList.length;
   }
 
   /**
@@ -356,21 +360,21 @@ export class StockCarInfoMessage {
    */
   serialize(): Buffer {
     // This does not count the StockCar array
-    const packet = Buffer.alloc((17 + 9) * this.StockCarList.length)
-    packet.writeInt16LE(this.msgNo, 0)
-    packet.writeInt32LE(this.starterCash, 2)
-    packet.writeInt32LE(this.dealerId, 6)
-    packet.writeInt32LE(this.brand, 10)
-    packet.writeInt16LE(this.noCars, 14)
-    packet.writeInt8(this.moreToCome, 16)
+    const packet = Buffer.alloc((17 + 9) * this.StockCarList.length);
+    packet.writeInt16LE(this.msgNo, 0);
+    packet.writeInt32LE(this.starterCash, 2);
+    packet.writeInt32LE(this.dealerId, 6);
+    packet.writeInt32LE(this.brand, 10);
+    packet.writeInt16LE(this.noCars, 14);
+    packet.writeInt8(this.moreToCome, 16);
     if (this.StockCarList.length > 0) {
       for (const [i, stockCar] of this.StockCarList.entries()) {
-        const offset = 10 * i
-        stockCar.serialize().copy(packet, 17 + offset)
+        const offset = 10 * i;
+        stockCar.serialize().copy(packet, 17 + offset);
       }
     }
 
-    return packet
+    return packet;
   }
 
   /**
@@ -379,7 +383,7 @@ export class StockCarInfoMessage {
    */
   dumpPacket(): void {
     log(
-      'debug',
+      "debug",
       `${JSON.stringify({
         msgNo: this.msgNo,
         starterCash: this.starterCash,
@@ -389,8 +393,8 @@ export class StockCarInfoMessage {
         moreToCome: this.moreToCome,
         stockCarList: this.StockCarList.toString(),
       })}`,
-      { service: this.serviceName },
-    )
+      { service: this.serviceName }
+    );
   }
 }
 
@@ -400,88 +404,88 @@ export class StockCarInfoMessage {
  */
 
 export interface ILobbyInfo {
-  raceCashFactor: number
-  teamtrialbaseTUP: number
-  teamtrialnumlaps: number
-  bteamtrialbackward: number
-  bteamtrialnight: number
-  bteamtrialweather: number
-  clubLogoId: number
-  partPrizesWon: number
-  partPrizesMax: number
-  powerClassMax: number
-  bodyClassMax: number
-  racePointsFactor: number
-  numClubsMin: number
-  clubNumPlayersDefault: number
-  clubNumPlayersMin: number
-  clubNumPlayersMax: number
-  driverHelmetFlag: number
-  newbieFlag: number
-  maxResetSlice: number
-  minResetSlice: number
-  minLevel: number
-  ttvictory_3rd_cash: number
-  ttvictory_3rd_points: number
-  ttvictory_2nd_cash: number
-  ttvictory_2nd_points: number
-  ttvictory_1st_cash: number
-  ttvictory_1st_points: number
-  ttTimeIncrements: number
-  ttCashBonusFasterIncs: number
-  ttPointBonusFasterIncs: number
-  ttCashForQualify: number
-  ttPointForQualify: number
-  lobbyDifficulty: number
-  bestLapTime: number
-  clubBackwards: number
-  clubWeather: number
-  clubNight: number
-  clubNumRounds: number
-  clubNumLaps: number
-  clubNumPlayers: number
-  qualifyingTime: number
-  turfOwner: string
-  topDog: string
-  baienabled: number
-  baidefault: number
-  bdamageenabled: number
-  bdamagedefault: number
-  btrafficenabled: number
-  btrafficdefault: number
-  bbackwardenabled: number
-  bbackwarddefault: number
-  bnightenabled: number
-  bnightdefault: number
-  bweatherenabled: number
-  bweatherdefault: number
-  bnumroundsenabled: number
-  numroundsdefault: number
-  numroundsmax: number
-  numroundsmin: number
-  bnumlapsenabled: number
-  numlapsdefault: number
-  numlapsmax: number
-  numlapsmin: number
-  bnumplayersenabled: number
-  numplayersdefault: number
-  numplayersmax: number
-  numplayersmin: number
-  linear: number
-  gridSpreadFactor: number
-  dragStagingSlice: number
-  dragStageRight: number
-  dragStageLeft: number
-  endSlice: number
-  startSlice: number
-  turfLength: number
-  elementId: number
-  clientArt: string
-  eTurfName: string
-  NPSRiffName: string
-  turfId: number
-  racetypeId: number
-  lobbyId: number
+  raceCashFactor: number;
+  teamtrialbaseTUP: number;
+  teamtrialnumlaps: number;
+  bteamtrialbackward: number;
+  bteamtrialnight: number;
+  bteamtrialweather: number;
+  clubLogoId: number;
+  partPrizesWon: number;
+  partPrizesMax: number;
+  powerClassMax: number;
+  bodyClassMax: number;
+  racePointsFactor: number;
+  numClubsMin: number;
+  clubNumPlayersDefault: number;
+  clubNumPlayersMin: number;
+  clubNumPlayersMax: number;
+  driverHelmetFlag: number;
+  newbieFlag: number;
+  maxResetSlice: number;
+  minResetSlice: number;
+  minLevel: number;
+  ttvictory_3rd_cash: number;
+  ttvictory_3rd_points: number;
+  ttvictory_2nd_cash: number;
+  ttvictory_2nd_points: number;
+  ttvictory_1st_cash: number;
+  ttvictory_1st_points: number;
+  ttTimeIncrements: number;
+  ttCashBonusFasterIncs: number;
+  ttPointBonusFasterIncs: number;
+  ttCashForQualify: number;
+  ttPointForQualify: number;
+  lobbyDifficulty: number;
+  bestLapTime: number;
+  clubBackwards: number;
+  clubWeather: number;
+  clubNight: number;
+  clubNumRounds: number;
+  clubNumLaps: number;
+  clubNumPlayers: number;
+  qualifyingTime: number;
+  turfOwner: string;
+  topDog: string;
+  baienabled: number;
+  baidefault: number;
+  bdamageenabled: number;
+  bdamagedefault: number;
+  btrafficenabled: number;
+  btrafficdefault: number;
+  bbackwardenabled: number;
+  bbackwarddefault: number;
+  bnightenabled: number;
+  bnightdefault: number;
+  bweatherenabled: number;
+  bweatherdefault: number;
+  bnumroundsenabled: number;
+  numroundsdefault: number;
+  numroundsmax: number;
+  numroundsmin: number;
+  bnumlapsenabled: number;
+  numlapsdefault: number;
+  numlapsmax: number;
+  numlapsmin: number;
+  bnumplayersenabled: number;
+  numplayersdefault: number;
+  numplayersmax: number;
+  numplayersmin: number;
+  linear: number;
+  gridSpreadFactor: number;
+  dragStagingSlice: number;
+  dragStageRight: number;
+  dragStageLeft: number;
+  endSlice: number;
+  startSlice: number;
+  turfLength: number;
+  elementId: number;
+  clientArt: string;
+  eTurfName: string;
+  NPSRiffName: string;
+  turfId: number;
+  racetypeId: number;
+  lobbyId: number;
 }
 
 /** @type {ILobbyInfo} */
@@ -494,11 +498,11 @@ const lobbyInfoDefaults: ILobbyInfo = {
   turfId: 0,
 
   // Char NPSRiffName[MC_MAX_NPS_RIFF_NAME]; // 32
-  NPSRiffName: 'main',
+  NPSRiffName: "main",
   // Char eTurfName[256];
-  eTurfName: '',
+  eTurfName: "",
   // Char clientArt[11];
-  clientArt: '',
+  clientArt: "",
   // DWORD    elementID;
   elementId: 0,
   // DWORD    turfLength;
@@ -568,9 +572,9 @@ const lobbyInfoDefaults: ILobbyInfo = {
 
   // Char   topDog[MC_NAME_LENGTH]; = 13
   // Also used for TimeTrial's "Last Weeks Champion"?
-  topDog: '',
+  topDog: "",
   // Char   turfOwner[MAX_CLUB_NAME_LENGTH+1]; = 33 (including the +1)
-  turfOwner: '',
+  turfOwner: "",
   // DWORD  qualifyingTime;
   qualifyingTime: 0,
   // DWORD   clubNumPlayers;
@@ -653,19 +657,19 @@ const lobbyInfoDefaults: ILobbyInfo = {
   teamtrialbaseTUP: 0,
   // Float  raceCashFactor;
   raceCashFactor: 1,
-}
+};
 
 /**
  * @class
  * @property {ILobbyInfo} data
  */
 export class LobbyInfoPacket {
-  data: ILobbyInfo
+  data: ILobbyInfo;
   /**
    *
    */
   constructor() {
-    this.data = lobbyInfoDefaults
+    this.data = lobbyInfoDefaults;
   }
 
   /**
@@ -673,173 +677,173 @@ export class LobbyInfoPacket {
    * @return {Buffer}
    */
   toPacket(): Buffer {
-    const lobbyPacket = Buffer.alloc(567)
+    const lobbyPacket = Buffer.alloc(567);
 
-    lobbyPacket.writeInt32LE(this.data.lobbyId, 0)
-    lobbyPacket.writeInt32LE(this.data.racetypeId, 4)
-    lobbyPacket.writeInt32LE(this.data.turfId, 8)
+    lobbyPacket.writeInt32LE(this.data.lobbyId, 0);
+    lobbyPacket.writeInt32LE(this.data.racetypeId, 4);
+    lobbyPacket.writeInt32LE(this.data.turfId, 8);
 
-    lobbyPacket.write(this.data.NPSRiffName, 12, 32)
+    lobbyPacket.write(this.data.NPSRiffName, 12, 32);
     // Char eTurfName[256];
-    lobbyPacket.write(this.data.eTurfName, 44, 256)
+    lobbyPacket.write(this.data.eTurfName, 44, 256);
     // Char clientArt[11];
-    lobbyPacket.write(this.data.clientArt, 300, 11)
+    lobbyPacket.write(this.data.clientArt, 300, 11);
     // DWORD    elementID;
-    lobbyPacket.writeInt32LE(this.data.elementId, 311)
+    lobbyPacket.writeInt32LE(this.data.elementId, 311);
     // DWORD    turfLength;
-    lobbyPacket.writeInt32LE(this.data.turfLength, 315)
+    lobbyPacket.writeInt32LE(this.data.turfLength, 315);
     // DWORD    startSlice;
-    lobbyPacket.writeInt32LE(this.data.startSlice, 319)
+    lobbyPacket.writeInt32LE(this.data.startSlice, 319);
     // DWORD    endSlice;
-    lobbyPacket.writeInt32LE(this.data.endSlice, 323)
+    lobbyPacket.writeInt32LE(this.data.endSlice, 323);
     // Float    dragStageLeft;
-    lobbyPacket.writeInt32LE(this.data.dragStageLeft, 327)
+    lobbyPacket.writeInt32LE(this.data.dragStageLeft, 327);
     // Float    dragStageRight;
-    lobbyPacket.writeInt32LE(this.data.dragStageRight, 331)
+    lobbyPacket.writeInt32LE(this.data.dragStageRight, 331);
     // DWORD    dragStagingSlice;
-    lobbyPacket.writeInt32LE(this.data.dragStagingSlice, 335)
+    lobbyPacket.writeInt32LE(this.data.dragStagingSlice, 335);
     // Float    gridSpreadFactor;
-    lobbyPacket.writeInt32LE(this.data.gridSpreadFactor, 339)
+    lobbyPacket.writeInt32LE(this.data.gridSpreadFactor, 339);
     // WORD    linear;
-    lobbyPacket.writeInt16LE(this.data.linear, 341)
+    lobbyPacket.writeInt16LE(this.data.linear, 341);
     // WORD    numplayersmin;
-    lobbyPacket.writeInt16LE(this.data.numplayersmin, 343)
+    lobbyPacket.writeInt16LE(this.data.numplayersmin, 343);
     // WORD    numplayersmax;
-    lobbyPacket.writeInt16LE(this.data.numplayersmax, 345)
+    lobbyPacket.writeInt16LE(this.data.numplayersmax, 345);
     // WORD    numplayersdefault;
-    lobbyPacket.writeInt16LE(this.data.numplayersdefault, 347)
+    lobbyPacket.writeInt16LE(this.data.numplayersdefault, 347);
     // WORD    bnumplayersenabled;
-    lobbyPacket.writeInt16LE(this.data.bnumplayersenabled, 349)
+    lobbyPacket.writeInt16LE(this.data.bnumplayersenabled, 349);
     // WORD    numlapsmin;
-    lobbyPacket.writeInt16LE(this.data.numlapsmin, 351)
+    lobbyPacket.writeInt16LE(this.data.numlapsmin, 351);
     // WORD    numlapsmax;
-    lobbyPacket.writeInt16LE(this.data.numlapsmax, 353)
+    lobbyPacket.writeInt16LE(this.data.numlapsmax, 353);
     // WORD    numlapsdefault;
-    lobbyPacket.writeInt16LE(this.data.numlapsdefault, 355)
+    lobbyPacket.writeInt16LE(this.data.numlapsdefault, 355);
     // WORD    bnumlapsenabled;
-    lobbyPacket.writeInt16LE(this.data.bnumlapsenabled, 357)
+    lobbyPacket.writeInt16LE(this.data.bnumlapsenabled, 357);
     // WORD    numroundsmin;
-    lobbyPacket.writeInt16LE(this.data.numroundsmin, 359)
+    lobbyPacket.writeInt16LE(this.data.numroundsmin, 359);
     // WORD    numroundsmax;
-    lobbyPacket.writeInt16LE(this.data.numroundsmax, 361)
+    lobbyPacket.writeInt16LE(this.data.numroundsmax, 361);
     // WORD    numroundsdefault;
-    lobbyPacket.writeInt16LE(this.data.numroundsdefault, 363)
+    lobbyPacket.writeInt16LE(this.data.numroundsdefault, 363);
     // WORD    bnumroundsenabled;
-    lobbyPacket.writeInt16LE(this.data.bnumroundsenabled, 365)
+    lobbyPacket.writeInt16LE(this.data.bnumroundsenabled, 365);
     // WORD    bweatherdefault;
-    lobbyPacket.writeInt16LE(this.data.bweatherdefault, 367)
+    lobbyPacket.writeInt16LE(this.data.bweatherdefault, 367);
     // WORD    bweatherenabled;
-    lobbyPacket.writeInt16LE(this.data.bweatherenabled, 367)
+    lobbyPacket.writeInt16LE(this.data.bweatherenabled, 367);
     // WORD    bnightdefault;
-    lobbyPacket.writeInt16LE(this.data.bnightdefault, 369)
+    lobbyPacket.writeInt16LE(this.data.bnightdefault, 369);
     // WORD    bnightenabled;
-    lobbyPacket.writeInt16LE(this.data.bnightenabled, 371)
+    lobbyPacket.writeInt16LE(this.data.bnightenabled, 371);
     // WORD    bbackwarddefault;
-    lobbyPacket.writeInt16LE(this.data.bbackwarddefault, 373)
+    lobbyPacket.writeInt16LE(this.data.bbackwarddefault, 373);
     // WORD    bbackwardenabled;
-    lobbyPacket.writeInt16LE(this.data.bbackwardenabled, 375)
+    lobbyPacket.writeInt16LE(this.data.bbackwardenabled, 375);
     // WORD    btrafficdefault;
-    lobbyPacket.writeInt16LE(this.data.btrafficdefault, 379)
+    lobbyPacket.writeInt16LE(this.data.btrafficdefault, 379);
     // WORD    btrafficenabled;
-    lobbyPacket.writeInt16LE(this.data.btrafficenabled, 381)
+    lobbyPacket.writeInt16LE(this.data.btrafficenabled, 381);
     // WORD    bdamagedefault;
-    lobbyPacket.writeInt16LE(this.data.bdamagedefault, 383)
+    lobbyPacket.writeInt16LE(this.data.bdamagedefault, 383);
     // WORD    bdamageenabled;
-    lobbyPacket.writeInt16LE(this.data.bdamageenabled, 385)
+    lobbyPacket.writeInt16LE(this.data.bdamageenabled, 385);
     // WORD    baidefault;
-    lobbyPacket.writeInt16LE(this.data.baidefault, 387)
+    lobbyPacket.writeInt16LE(this.data.baidefault, 387);
     // WORD    baienabled;
-    lobbyPacket.writeInt16LE(this.data.baienabled, 389)
+    lobbyPacket.writeInt16LE(this.data.baienabled, 389);
 
     // Char   topDog[MC_NAME_LENGTH]; = 13
     // Also used for TimeTrial's "Last Weeks Champion"?
-    lobbyPacket.write(this.data.topDog, 391, 13)
+    lobbyPacket.write(this.data.topDog, 391, 13);
     // Char   turfOwner[MAX_CLUB_NAME_LENGTH+1]; = 33 (including the +1)
-    lobbyPacket.write(this.data.turfOwner, 404, 33)
+    lobbyPacket.write(this.data.turfOwner, 404, 33);
     // DWORD  qualifyingTime;
-    lobbyPacket.writeInt32LE(this.data.qualifyingTime, 437)
+    lobbyPacket.writeInt32LE(this.data.qualifyingTime, 437);
     // DWORD   clubNumPlayers;
-    lobbyPacket.writeInt32LE(this.data.clubNumPlayers, 441)
+    lobbyPacket.writeInt32LE(this.data.clubNumPlayers, 441);
     // DWORD   clubNumLaps;
-    lobbyPacket.writeInt32LE(this.data.clubNumLaps, 445)
+    lobbyPacket.writeInt32LE(this.data.clubNumLaps, 445);
     // DWORD   clubNumRounds;
-    lobbyPacket.writeInt32LE(this.data.clubNumRounds, 449)
+    lobbyPacket.writeInt32LE(this.data.clubNumRounds, 449);
     // WORD    clubNight;
-    lobbyPacket.writeInt16LE(this.data.clubNight, 453)
+    lobbyPacket.writeInt16LE(this.data.clubNight, 453);
     // WORD    clubWeather;
-    lobbyPacket.writeInt16LE(this.data.clubWeather, 457)
+    lobbyPacket.writeInt16LE(this.data.clubWeather, 457);
     // WORD    clubBackwards;
-    lobbyPacket.writeInt16LE(this.data.clubBackwards, 459)
+    lobbyPacket.writeInt16LE(this.data.clubBackwards, 459);
     // DWORD  bestLapTime; // (64hz ticks)
-    lobbyPacket.writeInt32LE(this.data.bestLapTime, 461)
+    lobbyPacket.writeInt32LE(this.data.bestLapTime, 461);
     // DWORD  lobbyDifficulty;
-    lobbyPacket.writeInt32LE(this.data.lobbyDifficulty, 465)
+    lobbyPacket.writeInt32LE(this.data.lobbyDifficulty, 465);
     // DWORD  ttPointForQualify;
-    lobbyPacket.writeInt32LE(this.data.ttPointForQualify, 469)
+    lobbyPacket.writeInt32LE(this.data.ttPointForQualify, 469);
     // DWORD  ttCashForQualify;
-    lobbyPacket.writeInt32LE(this.data.ttCashForQualify, 471)
+    lobbyPacket.writeInt32LE(this.data.ttCashForQualify, 471);
     // DWORD  ttPointBonusFasterIncs;
-    lobbyPacket.writeInt32LE(this.data.ttPointBonusFasterIncs, 475)
+    lobbyPacket.writeInt32LE(this.data.ttPointBonusFasterIncs, 475);
     // DWORD  ttCashBonusFasterIncs;
-    lobbyPacket.writeInt32LE(this.data.ttCashBonusFasterIncs, 479)
+    lobbyPacket.writeInt32LE(this.data.ttCashBonusFasterIncs, 479);
     // DWORD  ttTimeIncrements;
-    lobbyPacket.writeInt32LE(this.data.ttTimeIncrements, 483)
+    lobbyPacket.writeInt32LE(this.data.ttTimeIncrements, 483);
     // DWORD  ttvictory_1st_points;
-    lobbyPacket.writeInt32LE(this.data.ttvictory_1st_points, 487)
+    lobbyPacket.writeInt32LE(this.data.ttvictory_1st_points, 487);
     // DWORD  ttvictory_1st_cash;
-    lobbyPacket.writeInt32LE(this.data.ttvictory_1st_cash, 491)
+    lobbyPacket.writeInt32LE(this.data.ttvictory_1st_cash, 491);
     // DWORD  ttvictory_2nd_points;
-    lobbyPacket.writeInt32LE(this.data.ttvictory_2nd_points, 495)
+    lobbyPacket.writeInt32LE(this.data.ttvictory_2nd_points, 495);
     // DWORD  ttvictory_2nd_cash;
-    lobbyPacket.writeInt32LE(this.data.ttvictory_2nd_cash, 499)
+    lobbyPacket.writeInt32LE(this.data.ttvictory_2nd_cash, 499);
     // DWORD  ttvictory_3rd_points;
-    lobbyPacket.writeInt32LE(this.data.ttvictory_3rd_points, 503)
+    lobbyPacket.writeInt32LE(this.data.ttvictory_3rd_points, 503);
     // DWORD  ttvictory_3rd_cash;
-    lobbyPacket.writeInt32LE(this.data.ttvictory_3rd_cash, 507)
+    lobbyPacket.writeInt32LE(this.data.ttvictory_3rd_cash, 507);
     // WORD   minLevel;
-    lobbyPacket.writeInt16LE(this.data.minLevel, 511)
+    lobbyPacket.writeInt16LE(this.data.minLevel, 511);
     // DWORD  minResetSlice;
-    lobbyPacket.writeInt32LE(this.data.minResetSlice, 513)
+    lobbyPacket.writeInt32LE(this.data.minResetSlice, 513);
     // DWORD  maxResetSlice;
-    lobbyPacket.writeInt32LE(this.data.maxResetSlice, 517)
+    lobbyPacket.writeInt32LE(this.data.maxResetSlice, 517);
     // WORD   newbieFlag;
-    lobbyPacket.writeInt16LE(this.data.newbieFlag, 521)
+    lobbyPacket.writeInt16LE(this.data.newbieFlag, 521);
     // WORD   driverHelmetFlag;
-    lobbyPacket.writeInt16LE(this.data.driverHelmetFlag, 523)
+    lobbyPacket.writeInt16LE(this.data.driverHelmetFlag, 523);
     // WORD   clubNumPlayersMax;
-    lobbyPacket.writeInt16LE(this.data.clubNumPlayersMax, 525)
+    lobbyPacket.writeInt16LE(this.data.clubNumPlayersMax, 525);
     // WORD   clubNumPlayersMin;
-    lobbyPacket.writeInt16LE(this.data.clubNumPlayersMin, 527)
+    lobbyPacket.writeInt16LE(this.data.clubNumPlayersMin, 527);
     // WORD   clubNumPlayersDefault;
-    lobbyPacket.writeInt16LE(this.data.clubNumPlayersDefault, 529)
+    lobbyPacket.writeInt16LE(this.data.clubNumPlayersDefault, 529);
     // WORD   numClubsMin;
-    lobbyPacket.writeInt16LE(this.data.numClubsMin, 531)
+    lobbyPacket.writeInt16LE(this.data.numClubsMin, 531);
     // Float  racePointsFactor;
-    lobbyPacket.writeInt32LE(this.data.racePointsFactor, 533)
+    lobbyPacket.writeInt32LE(this.data.racePointsFactor, 533);
     // WORD   bodyClassMax;
-    lobbyPacket.writeInt16LE(this.data.bodyClassMax, 537)
+    lobbyPacket.writeInt16LE(this.data.bodyClassMax, 537);
     // WORD   powerClassMax;
-    lobbyPacket.writeInt16LE(this.data.powerClassMax, 539)
+    lobbyPacket.writeInt16LE(this.data.powerClassMax, 539);
     // WORD   partPrizesMax;      // max allowed for this lobby
-    lobbyPacket.writeInt16LE(this.data.partPrizesMax, 541)
+    lobbyPacket.writeInt16LE(this.data.partPrizesMax, 541);
     // WORD   partPrizesWon;      // current users prizes for this lobby
-    lobbyPacket.writeInt16LE(this.data.partPrizesWon, 543)
+    lobbyPacket.writeInt16LE(this.data.partPrizesWon, 543);
     // DWORD  clubLogoID;         // Logo ID for Turf owner
-    lobbyPacket.writeInt32LE(this.data.clubLogoId, 545)
+    lobbyPacket.writeInt32LE(this.data.clubLogoId, 545);
     // WORD   bteamtrialweather;  // Team Trials Weather Flag
-    lobbyPacket.writeInt16LE(this.data.bteamtrialweather, 551)
+    lobbyPacket.writeInt16LE(this.data.bteamtrialweather, 551);
     // WORD   bteamtrialnight;    // Team Trials Night Flag
-    lobbyPacket.writeInt16LE(this.data.bteamtrialnight, 553)
+    lobbyPacket.writeInt16LE(this.data.bteamtrialnight, 553);
     // WORD   bteamtrialbackward; // Team Trials Backwards Flag
-    lobbyPacket.writeInt16LE(this.data.bteamtrialbackward, 555)
+    lobbyPacket.writeInt16LE(this.data.bteamtrialbackward, 555);
     // WORD   teamtrialnumlaps;   // Team Trials Number of Laps
-    lobbyPacket.writeInt16LE(this.data.teamtrialnumlaps, 557)
+    lobbyPacket.writeInt16LE(this.data.teamtrialnumlaps, 557);
     // DWORD  teamtrialbaseTUP;   // Team Trials Base Time Under Par
-    lobbyPacket.writeInt32LE(this.data.teamtrialbaseTUP, 559)
+    lobbyPacket.writeInt32LE(this.data.teamtrialbaseTUP, 559);
     // Float  raceCashFactor;
-    lobbyPacket.writeInt32LE(this.data.raceCashFactor, 563)
+    lobbyPacket.writeInt32LE(this.data.raceCashFactor, 563);
 
-    return lobbyPacket
+    return lobbyPacket;
   }
 }
 
@@ -863,15 +867,15 @@ export class LobbyInfoPacket {
  * @property {string} rawBuffer
  */
 export interface INPSMessageJSON {
-  msgNo: number
-  opCode: number | undefined
-  msgLength: number
-  msgVersion: number
-  content: string
-  contextId: string
-  direction: EMessageDirection
-  sessionkey: string | undefined
-  rawBuffer: string
+  msgNo: number;
+  opCode: number | undefined;
+  msgLength: number;
+  msgVersion: number;
+  content: string;
+  contextId: string;
+  direction: EMessageDirection;
+  sessionkey: string | undefined;
+  rawBuffer: string;
 }
 
 /*
@@ -890,25 +894,25 @@ export interface INPSMessageJSON {
  * @property {MESSAGE_DIRECTION} direction
  */
 export class NPSMessage {
-  msgNo: number
-  msgVersion: number
-  reserved: number
-  content: Buffer
-  msgLength: number
-  direction: EMessageDirection
-  serviceName: string
+  msgNo: number;
+  msgVersion: number;
+  reserved: number;
+  content: Buffer;
+  msgLength: number;
+  direction: EMessageDirection;
+  serviceName: string;
   /**
    *
    * @param {module:MessageNode.MESSAGE_DIRECTION} direction - the direction of the message flow
    */
   constructor(direction: EMessageDirection) {
-    this.msgNo = 0
-    this.msgVersion = 0
-    this.reserved = 0
-    this.content = Buffer.from([0x01, 0x02, 0x03, 0x04])
-    this.msgLength = this.content.length + 12
-    this.direction = direction
-    this.serviceName = 'mcoserver:NPSMsg'
+    this.msgNo = 0;
+    this.msgVersion = 0;
+    this.reserved = 0;
+    this.content = Buffer.from([0x01, 0x02, 0x03, 0x04]);
+    this.msgLength = this.content.length + 12;
+    this.direction = direction;
+    this.serviceName = "mcoserver:NPSMsg";
   }
 
   /**
@@ -917,8 +921,8 @@ export class NPSMessage {
    * @return {void}
    */
   setContent(buffer: Buffer): void {
-    this.content = buffer
-    this.msgLength = this.content.length + 12
+    this.content = buffer;
+    this.msgLength = this.content.length + 12;
   }
 
   /**
@@ -926,7 +930,7 @@ export class NPSMessage {
    * @return {Buffer}
    */
   getContentAsBuffer(): Buffer {
-    return this.content
+    return this.content;
   }
 
   /**
@@ -934,7 +938,7 @@ export class NPSMessage {
    * @return {string}
    */
   getPacketAsString(): string {
-    return this.serialize().toString('hex')
+    return this.serialize().toString("hex");
   }
 
   /**
@@ -943,26 +947,26 @@ export class NPSMessage {
    */
   serialize(): Buffer {
     try {
-      const packet = Buffer.alloc(this.msgLength)
-      packet.writeInt16BE(this.msgNo, 0)
-      packet.writeInt16BE(this.msgLength, 2)
+      const packet = Buffer.alloc(this.msgLength);
+      packet.writeInt16BE(this.msgNo, 0);
+      packet.writeInt16BE(this.msgLength, 2);
       if (this.msgLength > 4) {
-        packet.writeInt16BE(this.msgVersion, 4)
-        packet.writeInt16BE(this.reserved, 6)
+        packet.writeInt16BE(this.msgVersion, 4);
+        packet.writeInt16BE(this.reserved, 6);
       }
 
       if (this.msgLength > 8) {
-        packet.writeInt32BE(this.msgLength, 8)
-        this.content.copy(packet, 12)
+        packet.writeInt32BE(this.msgLength, 8);
+        this.content.copy(packet, 12);
       }
 
-      return packet
+      return packet;
     } catch (error) {
       if (error instanceof Error) {
-        throw new TypeError(`[NPSMsg] Error in serialize(): ${error}`)
+        throw new TypeError(`[NPSMsg] Error in serialize(): ${error}`);
       }
 
-      throw new Error('[NPSMsg] Error in serialize(), error unknown')
+      throw new Error("[NPSMsg] Error in serialize(), error unknown");
     }
   }
 
@@ -973,11 +977,11 @@ export class NPSMessage {
    * @memberof NPSMsg
    */
   deserialize(packet: Buffer): NPSMessage {
-    this.msgNo = packet.readInt16BE(0)
-    this.msgLength = packet.readInt16BE(2)
-    this.msgVersion = packet.readInt16BE(4)
-    this.content = packet.slice(12)
-    return this
+    this.msgNo = packet.readInt16BE(0);
+    this.msgLength = packet.readInt16BE(2);
+    this.msgVersion = packet.readInt16BE(4);
+    this.content = packet.slice(12);
+    return this;
   }
 
   /**
@@ -987,7 +991,7 @@ export class NPSMessage {
    */
   dumpPacketHeader(messageType: string): void {
     log(
-      'info',
+      "info",
       `NPSMsg/${messageType},
         ${JSON.stringify({
           direction: this.direction,
@@ -995,8 +999,8 @@ export class NPSMessage {
           msgVersion: this.msgVersion,
           msgLength: this.msgLength,
         })}`,
-      { service: this.serviceName },
-    )
+      { service: this.serviceName }
+    );
   }
 
   /**
@@ -1006,18 +1010,18 @@ export class NPSMessage {
    */
   dumpPacket(): void {
     log(
-      'debug',
+      "debug",
       `NPSMsg/NPSMsg,
         ${JSON.stringify({
           direction: this.direction,
           msgNo: this.msgNo.toString(16),
           msgVersion: this.msgVersion,
           msgLength: this.msgLength,
-          content: this.content.toString('hex'),
-          serialized: this.serialize().toString('hex'),
+          content: this.content.toString("hex"),
+          serialized: this.serialize().toString("hex"),
         })}`,
-      { service: this.serviceName },
-    )
+      { service: this.serviceName }
+    );
   }
 
   /**
@@ -1027,15 +1031,15 @@ export class NPSMessage {
   toJSON(): INPSMessageJSON {
     return {
       msgNo: this.msgNo,
-      contextId: '',
+      contextId: "",
       msgLength: this.msgLength,
       msgVersion: this.msgVersion,
-      content: this.content.toString('hex'),
+      content: this.content.toString("hex"),
       direction: this.direction,
-      rawBuffer: this.content.toString('hex'),
+      rawBuffer: this.content.toString("hex"),
       opCode: 0,
-      sessionkey: '',
-    }
+      sessionkey: "",
+    };
   }
 }
 
@@ -1059,37 +1063,37 @@ export class NPSMessage {
  * @property {Record<string, unknown>} struct
  */
 export class LoginMessage {
-  msgNo: number
-  toFrom: number
-  appId: number
-  customerId: number
-  personaId: number
-  lotOwnerId: number
-  brandedPartId: number
-  skinId: number
-  personaName: string
-  version: string
-  data: Buffer
+  msgNo: number;
+  toFrom: number;
+  appId: number;
+  customerId: number;
+  personaId: number;
+  lotOwnerId: number;
+  brandedPartId: number;
+  skinId: number;
+  personaName: string;
+  version: string;
+  data: Buffer;
   /**
    *
    * @param {Buffer} buffer
    */
   constructor(buffer: Buffer) {
-    this.msgNo = 0
-    this.toFrom = 0
-    this.appId = 0
+    this.msgNo = 0;
+    this.toFrom = 0;
+    this.appId = 0;
 
     // TODO: Why do I set these if I turn around and deserialize after?
-    this.customerId = 0
-    this.personaId = 0
-    this.lotOwnerId = 0
-    this.brandedPartId = 0
-    this.skinId = 0
-    this.personaName = 'NotAPerson'
-    this.version = '0.0.0.0'
-    this.data = buffer
+    this.customerId = 0;
+    this.personaId = 0;
+    this.lotOwnerId = 0;
+    this.brandedPartId = 0;
+    this.skinId = 0;
+    this.personaName = "NotAPerson";
+    this.version = "0.0.0.0";
+    this.data = buffer;
 
-    this.deserialize(buffer)
+    this.deserialize(buffer);
   }
 
   /**
@@ -1099,34 +1103,34 @@ export class LoginMessage {
    */
   deserialize(buffer: Buffer): void {
     try {
-      this.msgNo = buffer.readInt16LE(0)
+      this.msgNo = buffer.readInt16LE(0);
     } catch (error) {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
       } else if (error instanceof Error) {
         throw new TypeError(
           `[LoginMsg] Unable to read msgNo from ${buffer.toString(
-            'hex',
-          )}: ${error}`,
-        )
+            "hex"
+          )}: ${error}`
+        );
       }
 
       throw new Error(
         `[LoginMsg] Unable to read msgNo from ${buffer.toString(
-          'hex',
-        )}, error unknown`,
-      )
+          "hex"
+        )}, error unknown`
+      );
     }
 
-    this.customerId = buffer.readInt32LE(2)
-    this.personaId = buffer.readInt32LE(6)
+    this.customerId = buffer.readInt32LE(2);
+    this.personaId = buffer.readInt32LE(6);
 
-    this.lotOwnerId = buffer.readInt32LE(10)
-    this.brandedPartId = buffer.readInt32LE(14)
-    this.skinId = buffer.readInt32LE(18)
-    this.personaName = buffer.slice(22, 34).toString()
+    this.lotOwnerId = buffer.readInt32LE(10);
+    this.brandedPartId = buffer.readInt32LE(14);
+    this.skinId = buffer.readInt32LE(18);
+    this.personaName = buffer.slice(22, 34).toString();
 
-    this.version = buffer.slice(34).toString()
+    this.version = buffer.slice(34).toString();
   }
 
   /**
@@ -1135,7 +1139,7 @@ export class LoginMessage {
    */
   dumpPacket(): void {
     log(
-      'debug',
+      "debug",
       `LoginMsg',
         ${JSON.stringify({
           msgNo: this.msgNo.toString(),
@@ -1147,8 +1151,8 @@ export class LoginMessage {
           personaName: this.personaName,
           version: this.version,
         })}`,
-      { service: 'mcoserver:LoginMsg' },
-    )
+      { service: "mcoserver:LoginMsg" }
+    );
   }
 }
 
@@ -1162,38 +1166,38 @@ export class LoginMessage {
  * @property {Buffer} data
  */
 export class LobbyMessage {
-  msgNo: number
-  noLobbies: number
-  moreToCome: number
-  lobbyList: LobbyInfoPacket
-  dataLength: number
-  data: Buffer
-  serviceName: string
+  msgNo: number;
+  noLobbies: number;
+  moreToCome: number;
+  lobbyList: LobbyInfoPacket;
+  dataLength: number;
+  data: Buffer;
+  serviceName: string;
   /**
    *
    */
   constructor() {
-    this.msgNo = 325
+    this.msgNo = 325;
 
-    this.noLobbies = 1
-    this.moreToCome = 0
+    this.noLobbies = 1;
+    this.moreToCome = 0;
 
-    this.lobbyList = new LobbyInfoPacket()
+    this.lobbyList = new LobbyInfoPacket();
     // The expected length here is 572
-    this.dataLength = this.lobbyList.toPacket().length + 5
+    this.dataLength = this.lobbyList.toPacket().length + 5;
 
     if (this.dataLength !== 572) {
       throw new Error(
-        `Unexpected length of packet! Expected 572, recieved ${this.dataLength}`,
-      )
+        `Unexpected length of packet! Expected 572, recieved ${this.dataLength}`
+      );
     }
 
-    this.data = Buffer.alloc(this.dataLength)
-    this.data.writeInt16LE(this.msgNo, 0)
-    this.data.writeInt16LE(this.noLobbies, 2)
-    this.data.writeInt8(this.moreToCome, 4)
-    this.lobbyList.toPacket().copy(this.data, 5)
-    this.serviceName = 'mcoserver:LobbyMsg'
+    this.data = Buffer.alloc(this.dataLength);
+    this.data.writeInt16LE(this.msgNo, 0);
+    this.data.writeInt16LE(this.noLobbies, 2);
+    this.data.writeInt8(this.moreToCome, 4);
+    this.lobbyList.toPacket().copy(this.data, 5);
+    this.serviceName = "mcoserver:LobbyMsg";
   }
 
   /**
@@ -1201,7 +1205,7 @@ export class LobbyMessage {
    * @return {Buffer}
    */
   serialize(): Buffer {
-    return this.data
+    return this.data;
   }
 
   /**
@@ -1210,15 +1214,15 @@ export class LobbyMessage {
    */
   dumpPacket(): void {
     log(
-      'debug',
+      "debug",
       `LobbyMsg',
         ${JSON.stringify({
           msgNo: this.msgNo,
           dataLength: this.dataLength,
-          packet: this.serialize().toString('hex'),
+          packet: this.serialize().toString("hex"),
         })}`,
-      { service: this.serviceName },
-    )
+      { service: this.serviceName }
+    );
   }
 }
 
@@ -1239,30 +1243,30 @@ export class LobbyMessage {
  * @property {number} appId
  */
 export class MessageNode {
-  direction: EMessageDirection
-  msgNo: number
-  seq: number
-  flags: number
-  data: Buffer
-  dataLength: number
-  mcoSig: string
-  toFrom: number
-  appId: number
+  direction: EMessageDirection;
+  msgNo: number;
+  seq: number;
+  flags: number;
+  data: Buffer;
+  dataLength: number;
+  mcoSig: string;
+  toFrom: number;
+  appId: number;
   /**
    *
    * @param {MESSAGE_DIRECTION} direction
    */
   constructor(direction: EMessageDirection) {
-    this.direction = direction
-    this.msgNo = 0
-    this.seq = 999
-    this.flags = 0
-    this.data = Buffer.alloc(0)
-    this.dataLength = 0
-    this.mcoSig = 'NotAValue'
+    this.direction = direction;
+    this.msgNo = 0;
+    this.seq = 999;
+    this.flags = 0;
+    this.data = Buffer.alloc(0);
+    this.dataLength = 0;
+    this.mcoSig = "NotAValue";
 
-    this.toFrom = 0
-    this.appId = 0
+    this.toFrom = 0;
+    this.appId = 0;
   }
 
   /**
@@ -1272,30 +1276,30 @@ export class MessageNode {
    */
   deserialize(packet: Buffer): void {
     try {
-      this.dataLength = packet.readInt16LE(0)
-      this.mcoSig = packet.slice(2, 6).toString()
-      this.seq = packet.readInt16LE(6)
-      this.flags = packet.readInt8(10)
+      this.dataLength = packet.readInt16LE(0);
+      this.mcoSig = packet.slice(2, 6).toString();
+      this.seq = packet.readInt16LE(6);
+      this.flags = packet.readInt8(10);
 
       // Data starts at offset 11
-      this.data = packet.slice(11)
+      this.data = packet.slice(11);
 
       // Set message number
 
-      this.msgNo = this.data.readInt16LE(0)
+      this.msgNo = this.data.readInt16LE(0);
     } catch (err) {
-      const error = err as Error
-      if (error.name.includes('RangeError')) {
+      const error = err as Error;
+      if (error.name.includes("RangeError")) {
         // This is likeley not an MCOTS packet, ignore
         throw new Error(
-          `[MessageNode] Not long enough to deserialize, only ${packet.length} bytes long`,
-        )
+          `[MessageNode] Not long enough to deserialize, only ${packet.length} bytes long`
+        );
       } else {
         throw new Error(
           `[MessageNode] Unable to read msgNo from ${packet.toString(
-            'hex',
-          )}: ${error}`,
-        )
+            "hex"
+          )}: ${error}`
+        );
       }
     }
   }
@@ -1305,13 +1309,13 @@ export class MessageNode {
    * @return {Buffer}
    */
   serialize(): Buffer {
-    const packet = Buffer.alloc(this.dataLength + 2)
-    packet.writeInt16LE(this.dataLength, 0)
-    packet.write(this.mcoSig, 2)
-    packet.writeInt16LE(this.seq, 6)
-    packet.writeInt8(this.flags, 10)
-    this.data.copy(packet, 11)
-    return packet
+    const packet = Buffer.alloc(this.dataLength + 2);
+    packet.writeInt16LE(this.dataLength, 0);
+    packet.write(this.mcoSig, 2);
+    packet.writeInt16LE(this.seq, 6);
+    packet.writeInt8(this.flags, 10);
+    this.data.copy(packet, 11);
+    return packet;
   }
 
   /**
@@ -1320,7 +1324,7 @@ export class MessageNode {
    * @return {void}
    */
   setAppId(appId: number): void {
-    this.appId = appId
+    this.appId = appId;
   }
 
   /**
@@ -1329,8 +1333,8 @@ export class MessageNode {
    * @return {void}
    */
   setMsgNo(newMessageNo: number): void {
-    this.msgNo = newMessageNo
-    this.data.writeInt16LE(this.msgNo, 0)
+    this.msgNo = newMessageNo;
+    this.data.writeInt16LE(this.msgNo, 0);
   }
 
   /**
@@ -1339,7 +1343,7 @@ export class MessageNode {
    * @return {void}
    */
   setSeq(newSeq: number): void {
-    this.seq = newSeq
+    this.seq = newSeq;
   }
 
   /**
@@ -1348,8 +1352,8 @@ export class MessageNode {
    * @return {void}
    */
   setMsgHeader(packet: Buffer): void {
-    const header = Buffer.alloc(6)
-    packet.copy(header, 0, 0, 6)
+    const header = Buffer.alloc(6);
+    packet.copy(header, 0, 0, 6);
   }
 
   /**
@@ -1358,9 +1362,9 @@ export class MessageNode {
    * @return {void}
    */
   updateBuffer(buffer: Buffer): void {
-    this.data = Buffer.from(buffer)
-    this.dataLength = 10 + buffer.length
-    this.msgNo = this.data.readInt16LE(0)
+    this.data = Buffer.from(buffer);
+    this.dataLength = 10 + buffer.length;
+    this.msgNo = this.data.readInt16LE(0);
   }
 
   /**
@@ -1368,7 +1372,7 @@ export class MessageNode {
    * @return {boolean}
    */
   isMCOTS(): boolean {
-    return this.mcoSig === 'TOMC'
+    return this.mcoSig === "TOMC";
   }
 
   /**
@@ -1376,13 +1380,13 @@ export class MessageNode {
    * @return {void}
    */
   dumpPacket(): void {
-    let packetContentsArray = this.serialize().toString('hex').match(/../g)
+    let packetContentsArray = this.serialize().toString("hex").match(/../g);
     if (packetContentsArray === null) {
-      packetContentsArray = []
+      packetContentsArray = [];
     }
 
     log(
-      'debug',
+      "debug",
       `Message ${JSON.stringify({
         dataLength: this.dataLength,
         isMCOTS: this.isMCOTS(),
@@ -1392,10 +1396,10 @@ export class MessageNode {
         flags: this.flags,
         toFrom: this.toFrom,
         appId: this.appId,
-        packetContents: packetContentsArray.join('') || '',
+        packetContents: packetContentsArray.join("") || "",
       })}`,
-      { service: 'mcoserver:MessageNode' },
-    )
+      { service: "mcoserver:MessageNode" }
+    );
   }
 
   /**
@@ -1403,7 +1407,7 @@ export class MessageNode {
    * @return {number}
    */
   getLength(): number {
-    return this.dataLength
+    return this.dataLength;
   }
 
   /**
@@ -1413,7 +1417,7 @@ export class MessageNode {
    */
   BaseMsgHeader(packet: Buffer): void {
     // WORD msgNo;
-    this.msgNo = packet.readInt16LE(0)
+    this.msgNo = packet.readInt16LE(0);
   }
 }
 
@@ -1434,42 +1438,42 @@ export class MessageNode {
  * @property {Buffer} mcVersion
  */
 export class ClientConnectMessage {
-  msgNo: number
-  personaId: number
-  appId: number
-  customerId: number
-  custName: string
-  personaName: string
-  mcVersion: Buffer
+  msgNo: number;
+  personaId: number;
+  appId: number;
+  customerId: number;
+  custName: string;
+  personaName: string;
+  mcVersion: Buffer;
   /**
    *
    * @param {Buffer} buffer
    */
   constructor(buffer: Buffer) {
     try {
-      this.msgNo = buffer.readInt16LE(0)
+      this.msgNo = buffer.readInt16LE(0);
     } catch (error) {
       if (error instanceof RangeError) {
         // This is likeley not an MCOTS packet, ignore
-        this.msgNo = 0
+        this.msgNo = 0;
       } else {
         throw new TypeError(
           `[ClientConnectMsg] Unable to read msgNo from ${buffer.toString(
-            'hex',
-          )}: ${error}`,
-        )
+            "hex"
+          )}: ${error}`
+        );
       }
     }
 
-    this.personaId = buffer.readInt32LE(6)
+    this.personaId = buffer.readInt32LE(6);
 
     // Set the appId to the Persona Id
-    this.appId = this.personaId
+    this.appId = this.personaId;
 
-    this.customerId = buffer.readInt32LE(2)
-    this.custName = buffer.slice(10, 41).toString()
-    this.personaName = buffer.slice(42, 73).toString()
-    this.mcVersion = buffer.slice(74)
+    this.customerId = buffer.readInt32LE(2);
+    this.custName = buffer.slice(10, 41).toString();
+    this.personaName = buffer.slice(42, 73).toString();
+    this.mcVersion = buffer.slice(74);
   }
 
   /**
@@ -1477,7 +1481,7 @@ export class ClientConnectMessage {
    * @return {number}
    */
   getAppId(): number {
-    return this.appId
+    return this.appId;
   }
 
   /**
@@ -1486,7 +1490,7 @@ export class ClientConnectMessage {
    */
   dumpPacket(): void {
     log(
-      'debug',
+      "debug",
       `ClientConnectMsg',
       ${JSON.stringify({
         msgNo: this.msgNo.toString(),
@@ -1494,10 +1498,10 @@ export class ClientConnectMessage {
         personaId: this.personaId.toString(),
         custName: this.custName,
         personaName: this.personaName,
-        mcVersion: this.mcVersion.toString('hex'),
+        mcVersion: this.mcVersion.toString("hex"),
       })}`,
-      { service: 'mcoserver:ClientConnectMsg' },
-    )
+      { service: "mcoserver:ClientConnectMsg" }
+    );
   }
 }
 
@@ -1533,24 +1537,24 @@ export class ClientConnectMessage {
  * @property {number} personaSize
  * @property {number} personaCount
  */
- export class NPSPersonaMapsMessage extends NPSMessage {
-  personas: IPersonaRecord[]
-  personaSize: number
-  personaCount: number
+export class NPSPersonaMapsMessage extends NPSMessage {
+  personas: IPersonaRecord[];
+  personaSize: number;
+  personaCount: number;
   /**
    *
    * @param {module:MessageNode.MESSAGE_DIRECTION} direction
    */
   constructor(direction: EMessageDirection) {
-    super(direction)
+    super(direction);
 
     /** @type {IPersonaRecord[]} */
-    this.personas = []
+    this.personas = [];
     // Public personaSize = 1296;
-    this.personaSize = 38
-    this.msgNo = 0x6_07
-    this.personaCount = 0
-    this.serviceName = 'mcoserver:NPSPersonaMapsMsg'
+    this.personaSize = 38;
+    this.msgNo = 0x6_07;
+    this.personaCount = 0;
+    this.serviceName = "mcoserver:NPSPersonaMapsMsg";
   }
 
   /**
@@ -1559,8 +1563,8 @@ export class ClientConnectMessage {
    * @return {void}
    */
   loadMaps(personas: IPersonaRecord[]): void {
-    this.personaCount = personas.length
-    this.personas = personas
+    this.personaCount = personas.length;
+    this.personas = personas;
   }
 
   /**
@@ -1570,7 +1574,7 @@ export class ClientConnectMessage {
    * @memberof! NPSPersonaMapsMsg
    */
   deserializeInt8(buf: Buffer): number {
-    return buf.readInt8(0)
+    return buf.readInt8(0);
   }
 
   /**
@@ -1580,7 +1584,7 @@ export class ClientConnectMessage {
    * @memberof! NPSPersonaMapsMsg
    */
   deserializeInt32(buf: Buffer): number {
-    return buf.readInt32BE(0)
+    return buf.readInt32BE(0);
   }
 
   /**
@@ -1590,7 +1594,7 @@ export class ClientConnectMessage {
    * @memberof! NPSPersonaMapsMsg
    */
   deserializeString(buf: Buffer): string {
-    return buf.toString('utf8')
+    return buf.toString("utf8");
   }
 
   /**
@@ -1598,53 +1602,53 @@ export class ClientConnectMessage {
    * @return {Buffer}
    */
   serialize(): Buffer {
-    let index = 0
+    let index = 0;
     // Create the packet content
     // const packetContent = Buffer.alloc(40);
-    const packetContent = Buffer.alloc(this.personaSize * this.personaCount)
+    const packetContent = Buffer.alloc(this.personaSize * this.personaCount);
 
     for (const persona of this.personas) {
       // This is the persona count
       packetContent.writeInt16BE(
         this.personaCount,
-        this.personaSize * index + 0,
-      )
+        this.personaSize * index + 0
+      );
 
       // This is the max persona count (confirmed - debug)
       packetContent.writeInt8(
         this.deserializeInt8(persona.maxPersonas),
-        this.personaSize * index + 5,
-      )
+        this.personaSize * index + 5
+      );
 
       // PersonaId
       packetContent.writeUInt32BE(
         this.deserializeInt32(persona.id),
-        this.personaSize * index + 8,
-      )
+        this.personaSize * index + 8
+      );
 
       // Shard ID
       // packetContent.writeInt32BE(this.shardId, 1281);
       packetContent.writeInt32BE(
         this.deserializeInt32(persona.shardId),
-        this.personaSize * index + 12,
-      )
+        this.personaSize * index + 12
+      );
 
       // Length of Persona Name
       packetContent.writeInt16BE(
         persona.name.length,
-        this.personaSize * index + 20,
-      )
+        this.personaSize * index + 20
+      );
 
       // Persona Name = 30-bit null terminated string
       packetContent.write(
         this.deserializeString(persona.name),
-        this.personaSize * index + 22,
-      )
-      index++
+        this.personaSize * index + 22
+      );
+      index++;
     }
 
     // Build the packet
-    return packetContent
+    return packetContent;
   }
 
   /**
@@ -1652,13 +1656,13 @@ export class ClientConnectMessage {
    * @return {void}
    */
   dumpPacket(): void {
-    this.dumpPacketHeader('NPSPersonaMapsMsg')
-    log('debug', `personaCount:        ${this.personaCount}`, {
+    this.dumpPacketHeader("NPSPersonaMapsMsg");
+    log("debug", `personaCount:        ${this.personaCount}`, {
       service: this.serviceName,
-    })
+    });
     for (const persona of this.personas) {
       log(
-        'debug',
+        "debug",
         `
         maxPersonaCount:     ${this.deserializeInt8(persona.maxPersonas)}
         id:                  ${this.deserializeInt32(persona.id)}
@@ -1667,18 +1671,18 @@ export class ClientConnectMessage {
         Packet as hex:       ${this.getPacketAsString()}`,
         {
           service: this.serviceName,
-        },
-      )
+        }
+      );
 
       // TODO: Work on this more
 
       log(
-        'debug',
-        '[/NPSPersonaMapsMsg]======================================',
+        "debug",
+        "[/NPSPersonaMapsMsg]======================================",
         {
           service: this.serviceName,
-        },
-      )
+        }
+      );
     }
   }
 }
@@ -1691,50 +1695,52 @@ export class ClientConnectMessage {
  * @property {string} opCode
  * @property {Buffer} buffer
  */
- export class NPSUserStatus extends NPSMessage {
-  sessionkey: string
-  opCode: number
-  contextId: string
-  buffer: Buffer
+export class NPSUserStatus extends NPSMessage {
+  sessionkey: string;
+  opCode: number;
+  contextId: string;
+  buffer: Buffer;
   /**
    *
    * @param {Buffer} packet
    */
   constructor(packet: Buffer) {
-    super(EMessageDirection.RECEIVED)
-    this.sessionkey = ''
+    super(EMessageDirection.RECEIVED);
+    this.sessionkey = "";
 
     // Save the NPS opCode
-    this.opCode = packet.readInt16LE(0)
+    this.opCode = packet.readInt16LE(0);
 
     // Save the contextId
-    this.contextId = packet.slice(14, 48).toString()
+    this.contextId = packet.slice(14, 48).toString();
 
     // Save the raw packet
-    this.buffer = packet
+    this.buffer = packet;
   }
 
   /**
- * Load the RSA private key
- *
- * @param {string} privateKeyPath
- * @return {string}
- */
-fetchPrivateKeyFromFile(privateKeyPath: string): string {
-  try {
-    statSync(privateKeyPath)
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new TypeError(
-        `[npsUserStatus] Error loading private key: ${error.message}`,
-      )
+   * Load the RSA private key
+   *
+   * @param {string} privateKeyPath
+   * @return {string}
+   */
+  fetchPrivateKeyFromFile(privateKeyPath: string): string {
+    try {
+      statSync(privateKeyPath);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new TypeError(
+          `[npsUserStatus] Error loading private key: ${error.message}`
+        );
+      }
+
+      throw new Error(
+        "[npsUserStatus] Error loading private key, error unknown"
+      );
     }
 
-    throw new Error('[npsUserStatus] Error loading private key, error unknown')
+    return readFileSync(privateKeyPath).toString();
   }
-
-  return readFileSync(privateKeyPath).toString()
-}
 
   /**
    * ExtractSessionKeyFromPacket
@@ -1747,18 +1753,20 @@ fetchPrivateKeyFromFile(privateKeyPath: string): string {
    * @return {void}
    */
   extractSessionKeyFromPacket(
-    serverConfig: IAppConfiguration['certificate'],
-    packet: Buffer,
+    serverConfig: IAppConfiguration["certificate"],
+    packet: Buffer
   ): void {
     // Decrypt the sessionkey
-    const privateKey = this.fetchPrivateKeyFromFile(serverConfig.privateKeyFilename)
+    const privateKey = this.fetchPrivateKeyFromFile(
+      serverConfig.privateKeyFilename
+    );
 
     const sessionkeyString = Buffer.from(
-      packet.slice(52, -10).toString('utf8'),
-      'hex',
-    )
-    const decrypted = privateDecrypt(privateKey, sessionkeyString)
-    this.sessionkey = decrypted.slice(2, -4).toString('hex')
+      packet.slice(52, -10).toString("utf8"),
+      "hex"
+    );
+    const decrypted = privateDecrypt(privateKey, sessionkeyString);
+    this.sessionkey = decrypted.slice(2, -4).toString("hex");
   }
 
   /**
@@ -1770,29 +1778,29 @@ fetchPrivateKeyFromFile(privateKeyPath: string): string {
       msgNo: this.msgNo,
       msgLength: this.msgLength,
       msgVersion: this.msgVersion,
-      content: this.content.toString('hex'),
+      content: this.content.toString("hex"),
       direction: this.direction,
       opCode: this.opCode,
       contextId: this.contextId,
       sessionkey: this.sessionkey,
-      rawBuffer: this.buffer.toString('hex'),
-    }
+      rawBuffer: this.buffer.toString("hex"),
+    };
   }
 
   /**
    * @return {void}
    */
   dumpPacket(): void {
-    this.dumpPacketHeader('NPSUserStatus')
+    this.dumpPacketHeader("NPSUserStatus");
     log(
-      'debug',
+      "debug",
       `NPSUserStatus,
       ${JSON.stringify({
         contextId: this.contextId,
         sessionkey: this.sessionkey,
       })}`,
-      { service: 'mcoserver:NPSUserStatus' },
-    )
+      { service: "mcoserver:NPSUserStatus" }
+    );
   }
 }
 
@@ -1803,20 +1811,20 @@ fetchPrivateKeyFromFile(privateKeyPath: string): string {
  * @property {Buffer} userName
  * @property {Buffer} userData
  */
- export class NPSUserInfo extends NPSMessage {
-  userId: number
-  userName: Buffer
-  userData: Buffer
+export class NPSUserInfo extends NPSMessage {
+  userId: number;
+  userName: Buffer;
+  userData: Buffer;
   /**
    *
    * @param {MESSAGE_DIRECTION} direction
    */
   constructor(direction: EMessageDirection) {
-    super(direction)
-    this.userId = 0
-    this.userName = Buffer.from([0x00]) // 30 length
-    this.userData = Buffer.from([0x00]) // 64 length
-    this.serviceName = 'mcoserver:NPSUserInfo'
+    super(direction);
+    this.userId = 0;
+    this.userName = Buffer.from([0x00]); // 30 length
+    this.userData = Buffer.from([0x00]); // 64 length
+    this.serviceName = "mcoserver:NPSUserInfo";
   }
 
   /**
@@ -1825,27 +1833,29 @@ fetchPrivateKeyFromFile(privateKeyPath: string): string {
    * @return {NPSUserInfo}
    */
   deserialize(rawData: Buffer): NPSUserInfo {
-    this.userId = rawData.readInt32BE(4)
-    this.userName = rawData.slice(8, 38)
-    this.userData = rawData.slice(38)
-    return this
+    this.userId = rawData.readInt32BE(4);
+    this.userName = rawData.slice(8, 38);
+    this.userData = rawData.slice(38);
+    return this;
   }
 
   /**
    * @return {void}
    */
   dumpInfo(): void {
-    this.dumpPacketHeader('NPSUserInfo')
-    log('debug', `UserId:        ${this.userId}`, { service: this.serviceName })
-    log('debug', `UserName:      ${this.userName.toString()}`, {
+    this.dumpPacketHeader("NPSUserInfo");
+    log("debug", `UserId:        ${this.userId}`, {
       service: this.serviceName,
-    })
-    log('debug', `UserData:      ${this.userData.toString('hex')}`, {
+    });
+    log("debug", `UserName:      ${this.userName.toString()}`, {
       service: this.serviceName,
-    })
-    log('debug', '[/NPSUserInfo]======================================', {
+    });
+    log("debug", `UserData:      ${this.userData.toString("hex")}`, {
       service: this.serviceName,
-    })
+    });
+    log("debug", "[/NPSUserInfo]======================================", {
+      service: this.serviceName,
+    });
   }
 }
 
@@ -1854,7 +1864,7 @@ fetchPrivateKeyFromFile(privateKeyPath: string): string {
  *
  * @return {Buffer}
  */
- export function premadeLogin(): Buffer {
+export function premadeLogin(): Buffer {
   // TODO: Generate a dynamic login response message
   return Buffer.from([
     // Live Packet
@@ -2114,5 +2124,5 @@ fetchPrivateKeyFromFile(privateKeyPath: string): string {
     0x00, // (0x8c was old val)
     0x00, // (0x98 was old val)
     0x00, // (0xa6 was old val)
-  ])
+  ]);
 }

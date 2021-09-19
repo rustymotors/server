@@ -6,6 +6,10 @@
   "dependencies": {
     "@drazisil/mco-logger": "^4.1.10",
     "@mco-server/config": "workspace:^",
+    "@mco-server/core": "workspace:^",
     "@mco-server/types": "workspace:^"
+  },
+  "devDependencies": {
+    "@jest/globals": "27.2.0"
   }
 }

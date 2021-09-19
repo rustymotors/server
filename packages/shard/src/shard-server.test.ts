@@ -5,27 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, describe, it, beforeEach } from '@jest/globals'
-import request from 'supertest'
-import { ShardServer } from '.'
+import { expect, describe, it } from "@jest/globals";
+import { ShardServer } from ".";
 
-let shardServer: ShardServer
-
-describe('ShardServer', () => {
-  beforeEach(() => {
-    shardServer = ShardServer.getInstance()
-  })
-
-  it('should return a shard list', () => {
-    request(shardServer._server)
-      .get('/ShardList/')
-      .then(
-        response => {
-          expect(response.text).toContain('[The Clocktower]')
-        },
-        error => {
-          console.error(`Error: ${error}`)
-        },
-      )
-  })
-})
+describe("ShardServer", () => {
+  it("should return a shard list", () => {
+    expect(ShardServer.getInstance()._generateShardList()).toContain(
+      "[The Clocktower]"
+    );
+  });
+});

@@ -11,15 +11,15 @@
  */
 const config = {
   certificate: {
-    privateKeyFilename: 'data/private_key.pem',
-    publicKeyFilename: 'data/pub.key',
-    certFilename: 'data/mcouniverse.crt',
+    privateKeyFilename: "data/private_key.pem",
+    publicKeyFilename: "data/pub.key",
+    certFilename: "data/mcouniverse.crt",
   },
   serverSettings: {
-    host: '0.0.0.0',
+    host: "0.0.0.0",
   },
   serviceConnections: {
-    databaseURL: 'db.mco.db',
+    databaseURL: "db.mco.db",
   },
-}
-export default config
+};
+export default config;

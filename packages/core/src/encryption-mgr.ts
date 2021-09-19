@@ -11,7 +11,7 @@ import {
   randomBytes,
   Decipher,
   Cipher,
-} from 'crypto'
+} from "crypto";
 
 /**
  * Handles the management of the encryption and decryption
@@ -27,20 +27,20 @@ import {
  * @property {crypty.Cipher} out
  */
 export class EncryptionManager {
-  id: string
+  id: string;
   sessionkey: Buffer;
-  in: Decipher | undefined
-  out: Cipher | undefined
+  in: Decipher | undefined;
+  out: Cipher | undefined;
   /**
    *
    */
   constructor() {
     // This hash is used for an id only.
-    const timestamp = (Date.now() + randomBytes(20).join('')).toString()
-    this.id = Buffer.from(timestamp).toString('hex')
-    this.sessionkey = Buffer.alloc(0)
-    this.in = undefined
-    this.out = undefined
+    const timestamp = (Date.now() + randomBytes(20).join("")).toString();
+    this.id = Buffer.from(timestamp).toString("hex");
+    this.sessionkey = Buffer.alloc(0);
+    this.in = undefined;
+    this.out = undefined;
   }
 
   /**
@@ -50,11 +50,11 @@ export class EncryptionManager {
    * @return {boolean}
    */
   setEncryptionKey(sessionkey: Buffer): boolean {
-    this.sessionkey = sessionkey
+    this.sessionkey = sessionkey;
     // File deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
-    this.in = createDecipheriv('rc4', sessionkey, '')
-    this.out = createCipheriv('rc4', sessionkey, '')
-    return true
+    this.in = createDecipheriv("rc4", sessionkey, "");
+    this.out = createCipheriv("rc4", sessionkey, "");
+    return true;
   }
 
   /**
@@ -66,10 +66,10 @@ export class EncryptionManager {
    */
   decrypt(encryptedText: Buffer): Buffer {
     if (this.in === undefined) {
-      throw new Error('No decryption manager found!')
+      throw new Error("No decryption manager found!");
     }
 
-    return Buffer.from(this.in.update(encryptedText))
+    return Buffer.from(this.in.update(encryptedText));
   }
 
   /**
@@ -81,13 +81,13 @@ export class EncryptionManager {
    */
   encrypt(plainText: Buffer): Buffer {
     if (this.out === undefined) {
-      throw new Error('No encryption manager found!')
+      throw new Error("No encryption manager found!");
     }
 
     return Buffer.from(
-      this.out.update(plainText.toString(), 'binary', 'hex'),
-      'hex',
-    )
+      this.out.update(plainText.toString(), "binary", "hex"),
+      "hex"
+    );
   }
 
   /**
@@ -95,7 +95,7 @@ export class EncryptionManager {
    * @return {string}
    */
   _getSessionKey(): string {
-    return this.sessionkey.toString('hex')
+    return this.sessionkey.toString("hex");
   }
 
   /**
@@ -104,6 +104,6 @@ export class EncryptionManager {
    * @return {string}
    */
   getId(): string {
-    return this.id
+    return this.id;
   }
 }

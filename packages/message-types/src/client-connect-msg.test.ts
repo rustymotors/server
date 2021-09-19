@@ -5,17 +5,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, it } from '@jest/globals'
-import { ClientConnectMessage } from './index'
+import { expect, it } from "@jest/globals";
+import { ClientConnectMessage } from "./index";
 
-it('ClientConnectMsg', () => {
+it("ClientConnectMsg", () => {
   const clientConnectMessage1 = new ClientConnectMessage(
     Buffer.concat([
       Buffer.from([0xb6, 0x01]),
-      Buffer.from('TOMC'),
+      Buffer.from("TOMC"),
       Buffer.alloc(12),
-    ]),
-  )
+    ])
+  );
 
-  expect(clientConnectMessage1.msgNo).toEqual(438)
-})
+  expect(clientConnectMessage1.msgNo).toEqual(438);
+});

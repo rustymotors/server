@@ -5,17 +5,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, it } from '@jest/globals'
-import { LobbyInfoPacket } from './index'
-import { LobbyMessage } from './index'
+import { expect, it } from "@jest/globals";
+import { LobbyInfoPacket } from "./index";
+import { LobbyMessage } from "./index";
 
-const lobbyInfo1 = new LobbyInfoPacket()
-const lobbyMessage1 = new LobbyMessage()
+const lobbyInfo1 = new LobbyInfoPacket();
+const lobbyMessage1 = new LobbyMessage();
 
-it('LobbyInfo', () => {
-  expect(lobbyInfo1.toPacket().length).toEqual(567)
-})
+it("LobbyInfo", () => {
+  expect(lobbyInfo1.toPacket().length).toEqual(567);
+});
 
-it('LobbyMsg', () => {
-  expect(lobbyMessage1.data.length).toEqual(572)
-})
+it("LobbyMsg", () => {
+  expect(lobbyMessage1.data.length).toEqual(572);
+});

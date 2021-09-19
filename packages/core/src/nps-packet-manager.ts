@@ -5,15 +5,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from '@drazisil/mco-logger'
-import { IRawPacket } from '@mco-server/types'
-import { LobbyServer } from '@mco-server/lobby'
-import { LoginServer } from '@mco-server/login'
-import { PersonaServer } from '@mco-server/persona'
-import { DatabaseManager } from '@mco-server/database'
-import { TCPConnection } from './tcpConnection'
+import { Logger } from "@drazisil/mco-logger";
+import { IRawPacket } from "@mco-server/types";
+import { LobbyServer } from "@mco-server/lobby";
+import { LoginServer } from "@mco-server/login";
+import { PersonaServer } from "@mco-server/persona";
+import { DatabaseManager } from "@mco-server/database";
+import { TCPConnection } from "./tcpConnection";
 
-const { log } = Logger.getInstance()
+const { log } = Logger.getInstance();
 
 /**
  * @module npsPacketManager
@@ -25,41 +25,41 @@ const { log } = Logger.getInstance()
  * @property {string} name
  */
 export interface IMsgNameMapping {
-  id: number
-  name: string
+  id: number;
+  name: string;
 }
 
 export class NPSPacketManager {
-  database = DatabaseManager.getInstance()
-  npsKey: string
-  msgNameMapping: IMsgNameMapping[]
-  loginServer: LoginServer
-  personaServer: PersonaServer
-  lobbyServer: LobbyServer
-  serviceName: string
+  database = DatabaseManager.getInstance();
+  npsKey: string;
+  msgNameMapping: IMsgNameMapping[];
+  loginServer: LoginServer;
+  personaServer: PersonaServer;
+  lobbyServer: LobbyServer;
+  serviceName: string;
 
   constructor() {
-    this.npsKey = ''
+    this.npsKey = "";
     this.msgNameMapping = [
-      { id: 0x1_00, name: 'NPS_LOGIN' },
-      { id: 0x1_20, name: 'NPS_LOGIN_RESP' },
-      { id: 0x1_28, name: 'NPS_GET_MINI_USER_LIST' },
-      { id: 0x2_07, name: 'NPS_ACK' },
-      { id: 0x2_17, name: 'NPS_HEATBEAT' },
-      { id: 0x2_29, name: 'NPS_MINI_USER_LIST' },
-      { id: 0x3_0c, name: 'NPS_SEND_MINI_RIFF_LIST' },
-      { id: 0x5_01, name: 'NPS_USER_LOGIN' },
-      { id: 0x5_03, name: 'NPS_REGISTER_GAME_LOGIN' },
-      { id: 0x5_07, name: 'NPS_NEW_GAME_ACCOUNT' },
-      { id: 0x5_32, name: 'NPS_GET_PERSONA_MAPS' },
-      { id: 0x6_07, name: 'NPS_GAME_ACCOUNT_INFO' },
-      { id: 0x11_01, name: 'NPS_CRYPTO_DES_CBC' },
-    ]
+      { id: 0x1_00, name: "NPS_LOGIN" },
+      { id: 0x1_20, name: "NPS_LOGIN_RESP" },
+      { id: 0x1_28, name: "NPS_GET_MINI_USER_LIST" },
+      { id: 0x2_07, name: "NPS_ACK" },
+      { id: 0x2_17, name: "NPS_HEATBEAT" },
+      { id: 0x2_29, name: "NPS_MINI_USER_LIST" },
+      { id: 0x3_0c, name: "NPS_SEND_MINI_RIFF_LIST" },
+      { id: 0x5_01, name: "NPS_USER_LOGIN" },
+      { id: 0x5_03, name: "NPS_REGISTER_GAME_LOGIN" },
+      { id: 0x5_07, name: "NPS_NEW_GAME_ACCOUNT" },
+      { id: 0x5_32, name: "NPS_GET_PERSONA_MAPS" },
+      { id: 0x6_07, name: "NPS_GAME_ACCOUNT_INFO" },
+      { id: 0x11_01, name: "NPS_CRYPTO_DES_CBC" },
+    ];
 
-    this.loginServer = LoginServer.getInstance()
-    this.personaServer = PersonaServer.getInstance()
-    this.lobbyServer = LobbyServer.getInstance()
-    this.serviceName = 'mcoserver:NPSPacketManager'
+    this.loginServer = LoginServer.getInstance();
+    this.personaServer = PersonaServer.getInstance();
+    this.lobbyServer = LobbyServer.getInstance();
+    this.serviceName = "mcoserver:NPSPacketManager";
   }
 
   /**
@@ -68,8 +68,8 @@ export class NPSPacketManager {
    * @return {string}
    */
   msgCodetoName(messageId: number): string {
-    const mapping = this.msgNameMapping.find(code => code.id === messageId)
-    return mapping ? mapping.name : 'Unknown msgId'
+    const mapping = this.msgNameMapping.find((code) => code.id === messageId);
+    return mapping ? mapping.name : "Unknown msgId";
   }
 
   /**
@@ -77,7 +77,7 @@ export class NPSPacketManager {
    * @return {string}
    */
   getNPSKey(): string {
-    return this.npsKey
+    return this.npsKey;
   }
 
   /**
@@ -86,7 +86,7 @@ export class NPSPacketManager {
    * @return {void}
    */
   setNPSKey(key: string): void {
-    this.npsKey = key
+    this.npsKey = key;
   }
 
   /**
@@ -95,35 +95,35 @@ export class NPSPacketManager {
    * @return {Promise<ConnectionObj>}
    */
   async processNPSPacket(rawPacket: IRawPacket): Promise<TCPConnection> {
-    const messageId = rawPacket.data.readInt16BE(0)
+    const messageId = rawPacket.data.readInt16BE(0);
     log(
-      'info',
+      "info",
       `Handling message,
       ${JSON.stringify({
         msgName: this.msgCodetoName(messageId),
         msgId: messageId,
       })}`,
-      { service: this.serviceName },
-    )
+      { service: this.serviceName }
+    );
 
-    const { localPort } = rawPacket
+    const { localPort } = rawPacket;
 
     switch (localPort) {
       case 8226:
-        return this.loginServer.dataHandler(rawPacket)
+        return this.loginServer.dataHandler(rawPacket);
       case 8228:
-        return this.personaServer.dataHandler(rawPacket)
+        return this.personaServer.dataHandler(rawPacket);
       case 7003:
-        return this.lobbyServer.dataHandler(rawPacket)
+        return this.lobbyServer.dataHandler(rawPacket);
       default:
-        process.exitCode = -1
+        process.exitCode = -1;
         throw new Error(
           `[npsPacketManager] Recieved a packet',
           ${JSON.stringify({
             msgId: messageId,
             localPort,
-          })}`,
-        )
+          })}`
+        );
     }
   }
 }

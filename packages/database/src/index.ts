@@ -6,29 +6,32 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Database, open } from 'sqlite'
-import { ISessionRecord } from '@mco-server/types'
+import { Database, open } from "sqlite";
+import { ISessionRecord } from "@mco-server/types";
+import { Logger } from "@drazisil/mco-logger";
+
+const { log } = Logger.getInstance();
 
 export class DatabaseManager {
-  static _instance: DatabaseManager
-  changes = 0
-  serviceName: string
-  localDB: Database | undefined
+  static _instance: DatabaseManager;
+  changes = 0;
+  serviceName: string;
+  localDB: Database | undefined;
 
   public static getInstance(): DatabaseManager {
     if (!DatabaseManager._instance) {
-      DatabaseManager._instance = new DatabaseManager()
+      DatabaseManager._instance = new DatabaseManager();
     }
 
-    const self = DatabaseManager._instance
+    const self = DatabaseManager._instance;
 
-    open({ filename: 'db/mco.db', driver: "sqlite" }).then(async (db) => {
-      self.localDB = db
+    open({ filename: "db/mco.db", driver: "sqlite" })
+      .then(async (db) => {
+        self.localDB = db;
 
-      self.changes = 0
+        self.changes = 0;
 
-
-      await db.run(`CREATE TABLE IF NOT EXISTS "sessions"
+        await db.run(`CREATE TABLE IF NOT EXISTS "sessions"
           (
             customer_id integer,
             sessionkey text NOT NULL,
@@ -36,9 +39,9 @@ export class DatabaseManager {
             context_id text NOT NULL,
             connection_id text NOT NULL,
             CONSTRAINT pk_session PRIMARY KEY(customer_id)
-          );`)
+          );`);
 
-      await db.run(`CREATE TABLE IF NOT EXISTS "lobbies"
+        await db.run(`CREATE TABLE IF NOT EXISTS "lobbies"
           (
             "lobyID" integer NOT NULL,
             "raceTypeID" integer NOT NULL,
@@ -120,85 +123,79 @@ export class DatabaseManager {
             "teamtBackwards" smallint NOT NULL,
             "teamtNumLaps" smallint NOT NULL,
             "raceCashFactor" real NOT NULL
-          );`)
+          );`);
+      })
+      .catch((err) => {
+        if (err instanceof Error) {
+          log("error", `${err}`, { service: self.serviceName });
+          throw new Error(`There was an error setting up the database`);
+        }
+      });
 
-    })
-
-
-
-    return DatabaseManager._instance
+    return DatabaseManager._instance;
   }
 
   private constructor() {
-    this.serviceName = 'mcoserver:DatabaseMgr'
+    this.serviceName = "mcoserver:DatabaseMgr";
   }
 
   async fetchSessionKeyByCustomerId(
-    customerId: number,
+    customerId: number
   ): Promise<ISessionRecord> {
     if (!this.localDB) {
       throw new Error("Error accessing database. Are you using the instance?");
-
     }
     const stmt = await this.localDB.prepare(
-      'SELECT sessionkey, skey FROM sessions WHERE customer_id = ?',
-    )
+      "SELECT sessionkey, skey FROM sessions WHERE customer_id = ?"
+    );
 
-    const record = await stmt.get(customerId)
+    const record = await stmt.get(customerId);
     if (record === undefined) {
       throw new Error("Unable to fetch session key");
     }
-    return record as ISessionRecord
-
-
-
+    return record as ISessionRecord;
   }
 
   async fetchSessionKeyByConnectionId(
-    connectionId: string,
+    connectionId: string
   ): Promise<ISessionRecord> {
     if (!this.localDB) {
       throw new Error("Error accessing database. Are you using the instance?");
-
     }
     const stmt = await this.localDB.prepare(
-      'SELECT sessionkey, skey FROM sessions WHERE connection_id = ?',
-    )
-    const record = await stmt.get(connectionId)
+      "SELECT sessionkey, skey FROM sessions WHERE connection_id = ?"
+    );
+    const record = await stmt.get(connectionId);
     if (record === undefined) {
       throw new Error("Unable to fetch session key");
     }
-    return record as ISessionRecord
-
-
+    return record as ISessionRecord;
   }
 
   async _updateSessionKey(
     customerId: number,
     sessionkey: string,
     contextId: string,
-    connectionId: string,
+    connectionId: string
   ): Promise<number> {
-    const skey = sessionkey.slice(0, 16)
+    const skey = sessionkey.slice(0, 16);
 
     if (!this.localDB) {
       throw new Error("Error accessing database. Are you using the instance?");
-
     }
     const stmt = await this.localDB.prepare(
-      'REPLACE INTO sessions (customer_id, sessionkey, skey, context_id, connection_id) VALUES ($customerId, $sessionkey, $skey, $contextId, $connectionId)',
-    )
-    const record = await stmt.run(
-      {
-        $customerId: customerId,
-        $sessionkey: sessionkey,
-        $skey: skey,
-        $contextId: contextId,
-        $connectionId: connectionId,
-      })
+      "REPLACE INTO sessions (customer_id, sessionkey, skey, context_id, connection_id) VALUES ($customerId, $sessionkey, $skey, $contextId, $connectionId)"
+    );
+    const record = await stmt.run({
+      $customerId: customerId,
+      $sessionkey: sessionkey,
+      $skey: skey,
+      $contextId: contextId,
+      $connectionId: connectionId,
+    });
     if (record === undefined) {
       throw new Error("Unable to fetch session key");
     }
-    return 1
+    return 1;
   }
 }

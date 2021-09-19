@@ -5,14 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, it } from '@jest/globals'
-import { EMessageDirection } from './index'
-import { NPSPersonaMapsMessage } from './nps-persona-maps-msg'
+import { expect, it } from "@jest/globals";
+import { EMessageDirection } from "@mco-server/types";
+import { NPSPersonaMapsMessage } from "./index";
 
-it('NPSPersonaMapsMsg', () => {
+it("NPSPersonaMapsMsg", () => {
   const npsPersonaMapsMessage = new NPSPersonaMapsMessage(
-    EMessageDirection.RECEIVED,
-  )
-  expect(npsPersonaMapsMessage.direction).toEqual(EMessageDirection.RECEIVED)
-  expect(npsPersonaMapsMessage.msgNo).toEqual(0x6_07)
-})
+    EMessageDirection.RECEIVED
+  );
+  expect(npsPersonaMapsMessage.direction).toEqual(EMessageDirection.RECEIVED);
+  expect(npsPersonaMapsMessage.msgNo).toEqual(0x6_07);
+});

@@ -1,7 +1,7 @@
 // @ts-check
-import { IAppConfiguration } from '@mco-server/types'
-import { _sslOptions } from './ssl-options'
-import {savedConfig} from "./config";
+import { IAppConfiguration } from "@mco-server/types";
+import { _sslOptions } from "./ssl-options";
+import { savedConfig } from "./config";
 
 /**
  * @module mco_config
@@ -9,15 +9,15 @@ import {savedConfig} from "./config";
 
 export class ConfigurationManager {
   getConfig(): IAppConfiguration {
-    return savedConfig
+    return savedConfig;
   }
-  static _instance: ConfigurationManager
+  static _instance: ConfigurationManager;
 
   static getInstance(): ConfigurationManager {
     if (!ConfigurationManager._instance) {
-      ConfigurationManager._instance = new ConfigurationManager()
+      ConfigurationManager._instance = new ConfigurationManager();
     }
-    return ConfigurationManager._instance
+    return ConfigurationManager._instance;
   }
 
   private constructor() {
@@ -25,4 +25,4 @@ export class ConfigurationManager {
   }
 }
 
-export { _sslOptions }
+export { _sslOptions };

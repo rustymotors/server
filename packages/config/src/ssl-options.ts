@@ -6,12 +6,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { readFileSync } from 'fs'
-import { Logger } from '@drazisil/mco-logger'
-import { IAppConfiguration } from '@mco-server/types'
-import { ISslOptions } from '@mco-server/types'
+import { readFileSync } from "fs";
+import { Logger } from "@drazisil/mco-logger";
+import { IAppConfiguration } from "@mco-server/types";
+import { ISslOptions } from "@mco-server/types";
 
-const { log } = Logger.getInstance()
+const { log } = Logger.getInstance();
 
 /**
  *
@@ -33,34 +33,34 @@ const { log } = Logger.getInstance()
    * @return {Promise<sslOptionsObj>}
    */
 export function _sslOptions(
-  certificateSettings: IAppConfiguration['certificate'],
-  serviceName: string,
+  certificateSettings: IAppConfiguration["certificate"],
+  serviceName: string
 ): ISslOptions {
-  log('debug', `Reading ${certificateSettings.certFilename}`, {
+  log("debug", `Reading ${certificateSettings.certFilename}`, {
     service: serviceName,
-  })
+  });
 
-  let cert
-  let key
+  let cert;
+  let key;
 
   try {
     cert = readFileSync(certificateSettings.certFilename, {
-      encoding: 'utf-8',
-    })
+      encoding: "utf-8",
+    });
   } catch (error) {
     throw new Error(
-      `Error loading ${certificateSettings.certFilename}: (${error}), server must quit!`,
-    )
+      `Error loading ${certificateSettings.certFilename}: (${error}), server must quit!`
+    );
   }
 
   try {
     key = readFileSync(certificateSettings.privateKeyFilename, {
-      encoding: 'utf-8',
-    })
+      encoding: "utf-8",
+    });
   } catch (error) {
     throw new Error(
-      `Error loading ${certificateSettings.privateKeyFilename}: (${error}), server must quit!`,
-    )
+      `Error loading ${certificateSettings.privateKeyFilename}: (${error}), server must quit!`
+    );
   }
 
   return {
@@ -68,5 +68,5 @@ export function _sslOptions(
     honorCipherOrder: true,
     key,
     rejectUnauthorized: false,
-  }
+  };
 }

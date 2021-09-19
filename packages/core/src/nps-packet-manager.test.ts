@@ -5,12 +5,16 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, it, describe } from '@jest/globals'
-import { NPSPacketManager } from './nps-packet-manager.js'
+import { expect, it, describe, jest } from "@jest/globals";
+import { NPSPacketManager } from "./nps-packet-manager";
 
-describe('NPSPacketManager', () => {
-  it('NPSPacketManger', async () => {
-    const npsPacketManager = new NPSPacketManager()
-    expect(npsPacketManager.msgCodetoName(0x2_29)).toEqual('NPS_MINI_USER_LIST')
-  })
-})
+jest.mock("@mco-server/database");
+
+describe("NPSPacketManager", () => {
+  it("NPSPacketManger", async () => {
+    const npsPacketManager = new NPSPacketManager();
+    expect(npsPacketManager.msgCodetoName(0x2_29)).toEqual(
+      "NPS_MINI_USER_LIST"
+    );
+  });
+});

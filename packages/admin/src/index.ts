@@ -6,14 +6,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from '@drazisil/mco-logger'
-import { IncomingMessage, ServerResponse } from 'http'
-import { createServer, Server } from 'https'
-import { Socket } from 'net'
-import { ConfigurationManager, _sslOptions } from '@mco-server/config'
-import { IAppConfiguration, IMCServer } from '@mco-server/types'
+import { Logger } from "@drazisil/mco-logger";
+import { IncomingMessage, ServerResponse } from "http";
+import { createServer, Server } from "https";
+import { Socket } from "net";
+import { ConfigurationManager, _sslOptions } from "@mco-server/config";
+import { IAppConfiguration, IMCServer } from "@mco-server/types";
 
-const { log } = Logger.getInstance()
+const { log } = Logger.getInstance();
 /**
  * SSL web server for managing the state of the system
  * @module AdminServer
@@ -26,23 +26,23 @@ const { log } = Logger.getInstance()
  * @property {Server} httpServer
  */
 export class AdminServer {
-  static _instance: AdminServer
-  config: IAppConfiguration
-  mcServer: IMCServer
-  serviceName: string
-  httpsServer: Server | undefined
+  static _instance: AdminServer;
+  config: IAppConfiguration;
+  mcServer: IMCServer;
+  serviceName: string;
+  httpsServer: Server | undefined;
 
   static getInstance(mcServer: IMCServer): AdminServer {
     if (!AdminServer._instance) {
-      AdminServer._instance = new AdminServer(mcServer)
+      AdminServer._instance = new AdminServer(mcServer);
     }
-    return AdminServer._instance
+    return AdminServer._instance;
   }
 
   private constructor(mcServer: IMCServer) {
-    this.config = ConfigurationManager.getInstance().getConfig()
-    this.mcServer = mcServer
-    this.serviceName = 'mcoserver:AdminServer;'
+    this.config = ConfigurationManager.getInstance().getConfig();
+    this.mcServer = mcServer;
+    this.serviceName = "mcoserver:AdminServer;";
   }
 
   /**
@@ -50,19 +50,19 @@ export class AdminServer {
    * @return {string}
    */
   _handleGetConnections(): string {
-    const connections = this.mcServer.mgr.dumpConnections()
-    let responseText = ''
+    const connections = this.mcServer.mgr.dumpConnections();
+    let responseText = "";
     for (const [index, connection] of connections.entries()) {
       const displayConnection = `
         index: ${index} - ${connection.id}
             remoteAddress: ${connection.remoteAddress}:${connection.localPort}
             Encryption ID: ${connection.enc.getId()}
             inQueue:       ${connection.inQueue}
-        `
-      responseText += displayConnection
+        `;
+      responseText += displayConnection;
     }
 
-    return responseText
+    return responseText;
   }
 
   /**
@@ -70,20 +70,20 @@ export class AdminServer {
    * @return {string}
    */
   _handleResetAllQueueState(): string {
-    this.mcServer.mgr.resetAllQueueState()
-    const connections = this.mcServer.mgr.dumpConnections()
-    let responseText = 'Queue state reset for all connections\n\n'
+    this.mcServer.mgr.resetAllQueueState();
+    const connections = this.mcServer.mgr.dumpConnections();
+    let responseText = "Queue state reset for all connections\n\n";
     for (const [index, connection] of connections.entries()) {
       const displayConnection = `
         index: ${index} - ${connection.id}
             remoteAddress: ${connection.remoteAddress}:${connection.localPort}
             Encryption ID: ${connection.enc.getId()}
             inQueue:       ${connection.inQueue}
-        `
-      responseText += displayConnection
+        `;
+      responseText += displayConnection;
     }
 
-    return responseText
+    return responseText;
   }
 
   /**
@@ -93,36 +93,36 @@ export class AdminServer {
    */
   _httpsHandler(request: IncomingMessage, response: ServerResponse): void {
     log(
-      'info',
+      "info",
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
-      { service: 'mcoserver:AdminServer' },
-    )
+      { service: "mcoserver:AdminServer" }
+    );
     log(
-      'info',
+      "info",
       `Requested recieved,
       ${JSON.stringify({
         url: request.url,
         remoteAddress: request.socket.remoteAddress,
       })}`,
-      { service: 'mcoserver:AdminServer' },
-    )
+      { service: "mcoserver:AdminServer" }
+    );
     switch (request.url) {
-      case '/admin/connections':
-        response.setHeader('Content-Type', 'text/plain')
-        return response.end(this._handleGetConnections())
+      case "/admin/connections":
+        response.setHeader("Content-Type", "text/plain");
+        return response.end(this._handleGetConnections());
 
-      case '/admin/connections/resetAllQueueState':
-        response.setHeader('Content-Type', 'text/plain')
-        return response.end(this._handleResetAllQueueState())
+      case "/admin/connections/resetAllQueueState":
+        response.setHeader("Content-Type", "text/plain");
+        return response.end(this._handleResetAllQueueState());
 
       default:
-        if (request.url && request.url.startsWith('/admin')) {
-          return response.end('Jiggawatt!')
+        if (request.url && request.url.startsWith("/admin")) {
+          return response.end("Jiggawatt!");
         }
 
-        response.statusCode = 404
-        response.end('Unknown request.')
-        break
+        response.statusCode = 404;
+        response.end("Unknown request.");
+        break;
     }
   }
 
@@ -131,9 +131,9 @@ export class AdminServer {
    * @param {import("net").Socket} socket
    */
   _socketEventHandler(socket: Socket): void {
-    socket.on('error', error => {
-      throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`)
-    })
+    socket.on("error", (error) => {
+      throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`);
+    });
   }
 
   /**
@@ -142,31 +142,31 @@ export class AdminServer {
    * @return {Promise<void>}
    */
   start(): Server {
-    const config = this.config
+    const config = this.config;
     try {
-      const sslOptions = _sslOptions(config.certificate, this.serviceName)
+      const sslOptions = _sslOptions(config.certificate, this.serviceName);
 
       /** @type {import("https").Server} */
       this.httpsServer = createServer(
         sslOptions,
         (
-          /** @type {import("http").IncomingMessage} */ request: import('http').IncomingMessage,
-          /** @type {import("http").ServerResponse} */ response: import('http').ServerResponse,
+          /** @type {import("http").IncomingMessage} */ request: import("http").IncomingMessage,
+          /** @type {import("http").ServerResponse} */ response: import("http").ServerResponse
         ) => {
-          this._httpsHandler(request, response)
-        },
-      )
+          this._httpsHandler(request, response);
+        }
+      );
     } catch (err) {
-      const error = err as Error
-      throw new Error(`${error.message}, ${error.stack}`)
+      const error = err as Error;
+      throw new Error(`${error.message}, ${error.stack}`);
     }
 
-    this.httpsServer.on('connection', this._socketEventHandler)
+    this.httpsServer.on("connection", this._socketEventHandler);
 
-    return this.httpsServer.listen({ port: 88, host: '0.0.0.0' }, () => {
-      log('debug', 'port 88 listening', {
-        service: 'mcoserver:AdminServer',
-      })
-    })
+    return this.httpsServer.listen({ port: 88, host: "0.0.0.0" }, () => {
+      log("debug", "port 88 listening", {
+        service: "mcoserver:AdminServer",
+      });
+    });
   }
 }

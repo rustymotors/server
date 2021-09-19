@@ -12,45 +12,45 @@ import {
   jest,
   beforeEach,
   afterEach,
-} from '@jest/globals'
-import { _sslOptions } from './ssl-options'
-import { Module } from 'module'
+} from "@jest/globals";
+import { _sslOptions } from "./ssl-options";
+import { Module } from "module";
 
 const fakeConfig = {
   certificate: {
-    certFilename: '/cert/cert.pem',
-    privateKeyFilename: '/cert/private.key',
-    publicKeyFilename: '',
+    certFilename: "/cert/cert.pem",
+    privateKeyFilename: "/cert/private.key",
+    publicKeyFilename: "",
   },
   serverSettings: {
-    ipServer: '',
+    ipServer: "",
   },
   serviceConnections: {
-    databaseURL: '',
+    databaseURL: "",
   },
-  defaultLogLevel: 'warn',
-}
+  defaultLogLevel: "warn",
+};
 
-describe('sslOptions()', () => {
+describe("sslOptions()", () => {
   beforeEach(() => {
     // https://bensmithgall.com/blog/jest-mock-trick if this works!
-    const mockStatSync = jest.fn()
+    const mockStatSync = jest.fn();
     function mockFs() {
-      const original = Module.createRequire('fs')
-      return { ...original, statSync: mockStatSync }
+      const original = Module.createRequire("fs");
+      return { ...original, statSync: mockStatSync };
     }
 
-    jest.mock('fs', () => mockFs())
-  })
+    jest.mock("fs", () => mockFs());
+  });
 
   afterEach(() => {
-    jest.clearAllMocks()
-  })
+    jest.clearAllMocks();
+  });
 
-  it('will throw an error when unable to locate the certificate', async () => {
+  it("will throw an error when unable to locate the certificate", async () => {
     //  Deepcode ignore WrongNumberOfArgs/test: false positive
     expect(() =>
-      _sslOptions(fakeConfig.certificate, 'testingSSLOptions'),
-    ).toThrowError(/cert.pem/)
-  })
-})
+      _sslOptions(fakeConfig.certificate, "testingSSLOptions")
+    ).toThrowError(/cert.pem/);
+  });
+});

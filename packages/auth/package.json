@@ -8,5 +8,8 @@
     "@mco-server/config": "workspace:^",
     "@mco-server/router": "workspace:^",
     "@mco-server/types": "workspace:^"
+  },
+  "devDependencies": {
+    "@jest/globals": "27.2.0"
   }
 }

@@ -7,5 +7,8 @@
     "@drazisil/mco-logger": "4.1.10",
     "@mco-server/message-types": "workspace:^",
     "@mco-server/types": "workspace:^"
+  },
+  "devDependencies": {
+    "@jest/globals": "27.2.0"
   }
 }

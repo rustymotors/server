@@ -5,13 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, it } from '@jest/globals'
-import { GenericRequestMessage } from './index'
+import { expect, it } from "@jest/globals";
+import { GenericRequestMessage } from "./index";
 
-const genericRequestMessage1 = new GenericRequestMessage()
+const genericRequestMessage1 = new GenericRequestMessage();
 
-it('GenericRequestMsg', () => {
-  const { msgNo } = genericRequestMessage1
-  expect(msgNo).toEqual(0)
-  expect(genericRequestMessage1.serialize()).toStrictEqual(Buffer.alloc(16))
-})
+it("GenericRequestMsg", () => {
+  const { msgNo } = genericRequestMessage1;
+  expect(msgNo).toEqual(0);
+  expect(genericRequestMessage1.serialize()).toStrictEqual(Buffer.alloc(16));
+});

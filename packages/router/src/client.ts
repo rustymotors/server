@@ -1,16 +1,16 @@
-import { Logger } from '@drazisil/mco-logger'
+import { Logger } from "@drazisil/mco-logger";
 import {
   EServerConnectionAction,
   EServerConnectionName,
   IServerConnection,
-} from '@mco-server/types'
-import { createConnection } from 'net'
+} from "@mco-server/types";
+import { createConnection } from "net";
 
-const { log } = Logger.getInstance()
+const { log } = Logger.getInstance();
 
 export class RoutingMesh {
   static getInstance(): RoutingMesh {
-    return new RoutingMesh()
+    return new RoutingMesh();
   }
 
   private constructor() {
@@ -20,37 +20,37 @@ export class RoutingMesh {
   registerServiceWithRouter(
     service: EServerConnectionName,
     host: string,
-    port: number,
+    port: number
   ): void {
     const payload: IServerConnection = {
       action: EServerConnectionAction.REGISTER_SERVICE,
       service,
       host,
       port,
-    }
-    const payloadBuffer = Buffer.from(JSON.stringify(payload))
-    this._sendToRouter(service, payloadBuffer)
+    };
+    const payloadBuffer = Buffer.from(JSON.stringify(payload));
+    this._sendToRouter(service, payloadBuffer);
   }
 
   private _sendToRouter(
     service: EServerConnectionName,
-    inputBuffer: Buffer,
+    inputBuffer: Buffer
   ): void {
     const client = createConnection({ port: 4242 }, () => {
       // 'connect' listener.
-      log('debug', 'Connected to RoutingServer', {
+      log("debug", "Connected to RoutingServer", {
         service,
-      })
-      client.end(inputBuffer)
-    })
-    client.on('data', data => {
-      console.log(data.toString())
-      client.end()
-    })
-    client.on('end', () => {
-      log('info', 'disconnected from RoutingServer', {
+      });
+      client.end(inputBuffer);
+    });
+    client.on("data", (data) => {
+      console.log(data.toString());
+      client.end();
+    });
+    client.on("end", () => {
+      log("info", "disconnected from RoutingServer", {
         service,
-      })
-    })
+      });
+    });
   }
 }

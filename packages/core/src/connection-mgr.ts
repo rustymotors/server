@@ -5,56 +5,57 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from '@drazisil/mco-logger'
-import { Socket } from 'net'
+import { Logger } from "@drazisil/mco-logger";
+import { Socket } from "net";
 import { TCPManager } from "@mco-server/transactions";
-import { DatabaseManager } from '@mco-server/database'
-import { NPSPacketManager } from './nps-packet-manager'
-import { TCPConnection } from './tcpConnection'
-import { EMessageDirection, IRawPacket, ITCPConnection } from '@mco-server/types'
-import { NPS_COMMANDS, IConnectionManager } from '@mco-server/types'
-import { MessageNode } from '@mco-server/message-types'
+import { DatabaseManager } from "@mco-server/database";
+import { NPSPacketManager } from "./nps-packet-manager";
+import { TCPConnection } from "./tcpConnection";
+import {
+  EMessageDirection,
+  IRawPacket,
+  ITCPConnection,
+} from "@mco-server/types";
+import { NPS_COMMANDS, IConnectionManager } from "@mco-server/types";
+import { MessageNode } from "@mco-server/message-types";
 
-const { log } = Logger.getInstance()
+const { log } = Logger.getInstance();
 
 export class ConnectionManager {
-  static _instance: ConnectionManager
-  databaseMgr: DatabaseManager
-  connections: ITCPConnection[]
-  newConnectionId: number
-  banList: string[]
-  serviceName: string
+  static _instance: ConnectionManager;
+  databaseMgr: DatabaseManager;
+  connections: ITCPConnection[];
+  newConnectionId: number;
+  banList: string[];
+  serviceName: string;
 
   public static getInstance(): IConnectionManager {
     if (!ConnectionManager._instance) {
-      ConnectionManager._instance = new ConnectionManager()
+      ConnectionManager._instance = new ConnectionManager();
     }
-    return ConnectionManager._instance
-    
+    return ConnectionManager._instance;
   }
 
   private constructor() {
-
     /**
      * @type {module:ConnectionObj[]}
      */
-    this.connections = []
-    this.newConnectionId = 1
+    this.connections = [];
+    this.newConnectionId = 1;
     /**
      * @type {string[]}
      */
-    this.banList = []
-    this.databaseMgr = DatabaseManager.getInstance()
-    this.serviceName = 'mcoserver:ConnectionMgr'
+    this.banList = [];
+    this.databaseMgr = DatabaseManager.getInstance();
+    this.serviceName = "mcoserver:ConnectionMgr";
   }
 
   newConnection(connectionId: string, socket: Socket): ITCPConnection {
-        return new TCPConnection(
-          connectionId,
-          socket,
-          ConnectionManager.getInstance(),
-        )
-
+    return new TCPConnection(
+      connectionId,
+      socket,
+      ConnectionManager.getInstance()
+    );
   }
 
   /**
@@ -63,51 +64,54 @@ export class ConnectionManager {
    * @return {Promise<ITCPConnection>}
    */
   async processData(rawPacket: IRawPacket): Promise<ITCPConnection> {
-    const npsPacketManager = new NPSPacketManager()
+    const npsPacketManager = new NPSPacketManager();
 
-    const { remoteAddress, localPort, data } = rawPacket
+    Symbol();
+
+    const { remoteAddress, localPort, data } = rawPacket;
 
     // Log the packet as debug
     log(
-      'debug',
+      "debug",
       `logging raw packet,
       ${JSON.stringify({
         remoteAddress,
         localPort,
-        data: data.toString('hex'),
+        data: data.toString("hex"),
       })}`,
-      { service: this.serviceName },
-    )
+      { service: this.serviceName }
+    );
 
     switch (localPort) {
       case 8226:
       case 8228:
       case 7003: {
         log(
-          'debug',
+          "debug",
           `Recieved NPS packet,
           ${JSON.stringify({
             opCode: rawPacket.data.readInt16BE(0),
             msgName1: npsPacketManager.msgCodetoName(
-              rawPacket.data.readInt16BE(0),
+              rawPacket.data.readInt16BE(0)
             ),
             msgName2: this.getNameFromOpCode(rawPacket.data.readInt16BE(0)),
             localPort,
           })}`,
-          { service: this.serviceName },
-        )
+          { service: this.serviceName }
+        );
         try {
-          return await npsPacketManager.processNPSPacket(rawPacket)
+          return await npsPacketManager.processNPSPacket(rawPacket);
         } catch (error) {
-          throw new Error(`Error in connectionMgr::processData ${error}`)
+          log("error", `${error}`, { service: this.serviceName });
+          throw new Error(`Error in connectionMgr::processData`);
         }
       }
 
       case 43_300: {
         log(
-          'debug',
-          'Recieved MCOTS packet',
-          { service: this.serviceName },
+          "debug",
+          "Recieved MCOTS packet",
+          { service: this.serviceName }
           // {
           //   opCode: rawPacket.data.readInt16BE(0),
           //   msgName: `${npsPacketManager.msgCodetoName(
@@ -115,19 +119,20 @@ export class ConnectionManager {
           //   )} / ${this.getNameFromOpCode(rawPacket.data.readInt16BE(0))}`,
           //   localPort
           // }
-        )
-        const newNode = new MessageNode(EMessageDirection.RECEIVED)
-        newNode.deserialize(rawPacket.data)
-        log('debug', JSON.stringify(newNode), { service: this.serviceName })
+        );
+        const newNode = new MessageNode(EMessageDirection.RECEIVED);
+        newNode.deserialize(rawPacket.data);
+        log("debug", JSON.stringify(newNode), { service: this.serviceName });
 
-        return TCPManager.getInstance().defaultHandler(rawPacket)
+        return TCPManager.getInstance().defaultHandler(rawPacket);
       }
 
       default:
-        log('debug', JSON.stringify(rawPacket), { service: this.serviceName })
+        log("debug", JSON.stringify(rawPacket), { service: this.serviceName });
+
         throw new Error(
-          `We received a packet on port ${localPort}. We don't what to do yet, going to throw so the message isn't lost.`,
-        )
+          `We received a packet on port ${localPort}. We don't what to do yet, going to throw so the message isn't lost.`
+        );
     }
   }
 
@@ -137,12 +142,12 @@ export class ConnectionManager {
    * @return {string}
    */
   getNameFromOpCode(opCode: number): string {
-    const opCodeName = NPS_COMMANDS.find(code => code.value === opCode)
+    const opCodeName = NPS_COMMANDS.find((code) => code.value === opCode);
     if (opCodeName === undefined) {
-      throw new Error(`Unable to locate name for opCode ${opCode}`)
+      throw new Error(`Unable to locate name for opCode ${opCode}`);
     }
 
-    return opCodeName.name
+    return opCodeName.name;
   }
 
   /**
@@ -151,12 +156,12 @@ export class ConnectionManager {
    * @return {number}
    */
   getOpcodeFromName(name: string): number {
-    const opCode = NPS_COMMANDS.find(code => code.name === name)
+    const opCode = NPS_COMMANDS.find((code) => code.name === name);
     if (opCode === undefined) {
-      throw new Error(`Unable to locate opcode for name ${name}`)
+      throw new Error(`Unable to locate opcode for name ${name}`);
     }
 
-    return opCode.value
+    return opCode.value;
   }
 
   /**
@@ -164,7 +169,7 @@ export class ConnectionManager {
    * @return {string[]}
    */
   getBans(): string[] {
-    return this.banList
+    return this.banList;
   }
 
   /**
@@ -176,14 +181,14 @@ export class ConnectionManager {
    */
   findConnectionByAddressAndPort(
     remoteAddress: string,
-    localPort: number,
+    localPort: number
   ): TCPConnection | undefined {
-    return this.connections.find(connection => {
+    return this.connections.find((connection) => {
       const match =
         remoteAddress === connection.remoteAddress &&
-        localPort === connection.localPort
-      return match
-    })
+        localPort === connection.localPort;
+      return match;
+    });
   }
 
   /**
@@ -193,13 +198,13 @@ export class ConnectionManager {
    */
   findConnectionById(connectionId: string): TCPConnection {
     const results = this.connections.find(
-      connection => connectionId === connection.id,
-    )
+      (connection) => connectionId === connection.id
+    );
     if (results === undefined) {
-      throw new Error(`Unable to locate connection for id ${connectionId}`)
+      throw new Error(`Unable to locate connection for id ${connectionId}`);
     }
 
-    return results
+    return results;
   }
 
   /**
@@ -212,32 +217,32 @@ export class ConnectionManager {
   async _updateConnectionByAddressAndPort(
     address: string,
     port: number,
-    newConnection: ITCPConnection,
+    newConnection: ITCPConnection
   ): Promise<void> {
     if (newConnection === undefined) {
       throw new Error(
         `Undefined connection: ${JSON.stringify({
           remoteAddress: address,
           localPort: port,
-        })}`,
-      )
+        })}`
+      );
     }
 
     try {
       const index = this.connections.findIndex(
-        connection =>
-          connection.remoteAddress === address && connection.localPort === port,
-      )
-      this.connections.splice(index, 1)
-      this.connections.push(newConnection)
+        (connection) =>
+          connection.remoteAddress === address && connection.localPort === port
+      );
+      this.connections.splice(index, 1);
+      this.connections.push(newConnection);
     } catch (error) {
-      process.exitCode = -1
+      process.exitCode = -1;
       throw new Error(
         `Error updating connection, ${JSON.stringify({
           error,
           connections: this.connections,
-        })}`,
-      )
+        })}`
+      );
     }
   }
 
@@ -248,38 +253,38 @@ export class ConnectionManager {
    * @return {module:ConnectionObj}
    */
   findOrNewConnection(socket: Socket): ITCPConnection {
-    const { remoteAddress, localPort } = socket
+    const { remoteAddress, localPort } = socket;
     if (!remoteAddress) {
       throw new Error(
         `No address in socket: ${JSON.stringify({
           remoteAddress,
           localPort,
-        })}`,
-      )
+        })}`
+      );
     }
 
-    const con = this.findConnectionByAddressAndPort(remoteAddress, localPort)
+    const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
     if (con !== undefined) {
       log(
-        'info',
+        "info",
         `[connectionMgr] I have seen connections from ${remoteAddress} on ${localPort} before`,
-        { service: this.serviceName },
-      )
-      con.sock = socket
-      return con
+        { service: this.serviceName }
+      );
+      con.sock = socket;
+      return con;
     }
 
     const newConnection = this.newConnection(
       `${Date.now().toString()}_${this.newConnectionId}`,
-      socket,
-    )
+      socket
+    );
     log(
-      'info',
+      "info",
       `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`,
-      { service: this.serviceName },
-    )
-    this.connections.push(newConnection)
-    return newConnection
+      { service: this.serviceName }
+    );
+    this.connections.push(newConnection);
+    return newConnection;
   }
 
   /**
@@ -287,10 +292,10 @@ export class ConnectionManager {
    * @return {void}
    */
   resetAllQueueState(): void {
-    this.connections = this.connections.map(connection => {
-      connection.inQueue = true
-      return connection
-    })
+    this.connections = this.connections.map((connection) => {
+      connection.inQueue = true;
+      return connection;
+    });
   }
 
   /**
@@ -299,6 +304,6 @@ export class ConnectionManager {
    * @return {module:ConnectionObj[]}
    */
   dumpConnections(): TCPConnection[] {
-    return this.connections
+    return this.connections;
   }
 }

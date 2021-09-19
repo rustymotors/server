@@ -24,21 +24,21 @@
  * @property {number} diagnosticServerPort
  */
 export class ShardEntry {
-  name: string
-  description: string
-  id: number
-  loginServerIp: string
-  loginServerPort: number
-  lobbyServerIp: string
-  lobbyServerPort: number
-  mcotsServerIp: string
-  statusId: number
-  statusReason: string
-  serverGroupName: string
-  population: number
-  maxPersonasPerUser: number
-  diagnosticServerHost: string
-  diagnosticServerPort: number
+  name: string;
+  description: string;
+  id: number;
+  loginServerIp: string;
+  loginServerPort: number;
+  lobbyServerIp: string;
+  lobbyServerPort: number;
+  mcotsServerIp: string;
+  statusId: number;
+  statusReason: string;
+  serverGroupName: string;
+  population: number;
+  maxPersonasPerUser: number;
+  diagnosticServerHost: string;
+  diagnosticServerPort: number;
   /**
    *
    * @param {string} name
@@ -72,23 +72,23 @@ export class ShardEntry {
     population: number,
     maxPersonasPerUser: number,
     diagnosticServerHost: string,
-    diagnosticServerPort: number,
+    diagnosticServerPort: number
   ) {
-    this.name = name
-    this.description = description
-    this.id = id
-    this.loginServerIp = loginServerIp
-    this.loginServerPort = loginServerPort
-    this.lobbyServerIp = lobbyServerIp
-    this.lobbyServerPort = lobbyServerPort
-    this.mcotsServerIp = mcotsServerIp
-    this.statusId = statusId
-    this.statusReason = statusReason
-    this.serverGroupName = serverGroupName
-    this.population = population
-    this.maxPersonasPerUser = maxPersonasPerUser
-    this.diagnosticServerHost = diagnosticServerHost
-    this.diagnosticServerPort = diagnosticServerPort
+    this.name = name;
+    this.description = description;
+    this.id = id;
+    this.loginServerIp = loginServerIp;
+    this.loginServerPort = loginServerPort;
+    this.lobbyServerIp = lobbyServerIp;
+    this.lobbyServerPort = lobbyServerPort;
+    this.mcotsServerIp = mcotsServerIp;
+    this.statusId = statusId;
+    this.statusReason = statusReason;
+    this.serverGroupName = serverGroupName;
+    this.population = population;
+    this.maxPersonasPerUser = maxPersonasPerUser;
+    this.diagnosticServerHost = diagnosticServerHost;
+    this.diagnosticServerPort = diagnosticServerPort;
   }
 
   /**
@@ -110,6 +110,6 @@ export class ShardEntry {
     Population=${this.population}
     MaxPersonasPerUser=${this.maxPersonasPerUser}
     DiagnosticServerHost=${this.diagnosticServerHost}
-    DiagnosticServerPort=${this.diagnosticServerPort}`
+    DiagnosticServerPort=${this.diagnosticServerPort}`;
   }
 }

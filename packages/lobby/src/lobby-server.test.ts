@@ -5,12 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, it } from '@jest/globals'
-import { LobbyServer } from './index'
+import { expect, it, jest } from "@jest/globals";
+import { LobbyServer } from "./index";
 
-it('LobbyServer', () => {
-  const lobbyServer = LobbyServer.getInstance()
-  expect(lobbyServer._generateSessionKeyBuffer('123').length).toEqual(64)
+jest.mock("@mco-server/database");
 
-  expect(lobbyServer._npsHeartbeat().msgNo).toEqual(0x01_27)
-})
+it("LobbyServer", () => {
+  const lobbyServer = LobbyServer.getInstance();
+  expect(lobbyServer._generateSessionKeyBuffer("123").length).toEqual(64);
+
+  expect(lobbyServer._npsHeartbeat().msgNo).toEqual(0x01_27);
+});

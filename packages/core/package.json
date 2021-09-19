@@ -13,5 +13,9 @@
     "@mco-server/persona": "workspace:^",
     "@mco-server/transactions": "workspace:^",
     "@mco-server/types": "workspace:^"
+  },
+  "devDependencies": {
+    "@jest/globals": "27.2.0",
+    "tslib": "2.3.1"
   }
 }

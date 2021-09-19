@@ -4,6 +4,7 @@
   "main": "src/index.ts",
   "license": "MIT",
   "dependencies": {
+    "@drazisil/mco-logger": "4.1.10",
     "@mco-server/types": "workspace:^",
     "sqlite": "4.0.23",
     "tslib": "2.3.1"

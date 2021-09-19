@@ -5,54 +5,54 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, describe, it, beforeEach } from '@jest/globals'
-import request from 'supertest'
-import { CastanetResponse, PatchServer } from '.'
+import { expect, describe, it, beforeEach } from "@jest/globals";
+import request from "supertest";
+import { CastanetResponse, PatchServer } from ".";
 
-let patchServer: PatchServer
+let patchServer: PatchServer;
 
-describe('PatchServer', () => {
+describe("PatchServer", () => {
   beforeEach(() => {
-    patchServer = PatchServer.getInstance()
-  })
+    patchServer = PatchServer.getInstance();
+  });
 
-  it('PatchServer', () => {
-    expect(CastanetResponse.body.toString('hex')).toStrictEqual(
-      'cafebeef00000000000003',
-    )
-  })
+  it("PatchServer", () => {
+    expect(CastanetResponse.body.toString("hex")).toStrictEqual(
+      "cafebeef00000000000003"
+    );
+  });
 
-  it('PatchServer - UpdateInfo', () => {
+  it("PatchServer - UpdateInfo", () => {
     request(patchServer._server)
-      .get('/games/EA_Seattle/MotorCity/UpdateInfo')
-      .then(response => {
-        expect(response.body).toStrictEqual(CastanetResponse.body)
+      .get("/games/EA_Seattle/MotorCity/UpdateInfo")
+      .then((response) => {
+        expect(response.body).toStrictEqual(CastanetResponse.body);
       })
-      .catch(error => {
-        console.error(error)
-      })
-  })
+      .catch((error) => {
+        console.error(error);
+      });
+  });
 
-  it('PatchServer - NPS', () => {
+  it("PatchServer - NPS", () => {
     request(patchServer._server)
-      .get('/games/EA_Seattle/MotorCity/NPS')
-      .then(response => {
-        expect(response.body).toStrictEqual(CastanetResponse.body)
+      .get("/games/EA_Seattle/MotorCity/NPS")
+      .then((response) => {
+        expect(response.body).toStrictEqual(CastanetResponse.body);
       })
-      .catch(error => {
-        console.error(error)
-      })
-  })
+      .catch((error) => {
+        console.error(error);
+      });
+  });
 
-  it('PatchServer - MCO', done => {
+  it("PatchServer - MCO", (done) => {
     request(patchServer._server)
-      .get('/games/EA_Seattle/MotorCity/MCO')
-      .then(response => {
-        expect(response.body).toStrictEqual(CastanetResponse.body)
-        done()
+      .get("/games/EA_Seattle/MotorCity/MCO")
+      .then((response) => {
+        expect(response.body).toStrictEqual(CastanetResponse.body);
+        done();
       })
-      .catch(error => {
-        console.error(error)
-      })
-  })
-})
+      .catch((error) => {
+        console.error(error);
+      });
+  });
+});

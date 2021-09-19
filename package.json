@@ -45,6 +45,7 @@
     "@mco-server/proxy": "workspace:^",
     "@mco-server/router": "workspace:^",
     "@mco-server/shard": "workspace:^",
+    "pm2": "5.1.1",
     "sqlite3": "4.2.0"
   },
   "devDependencies": {
