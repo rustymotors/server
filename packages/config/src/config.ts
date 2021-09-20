@@ -1,6 +1,6 @@
-import { IAppConfiguration } from "@mco-server/types";
+import { AppConfiguration } from "@mco-server/types";
 
-const savedConfig: IAppConfiguration = {
+const savedConfig: AppConfiguration = {
   certificate: {
     privateKeyFilename: "data/private_key.pem",
     publicKeyFilename: "data/pub.key",

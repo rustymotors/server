@@ -2,7 +2,7 @@ import { Logger } from "@drazisil/mco-logger";
 import {
   EServerConnectionAction,
   EServerConnectionName,
-  IServerConnection,
+  ServerConnectionRecord,
 } from "@mco-server/types";
 import { createConnection } from "net";
 
@@ -22,7 +22,7 @@ export class RoutingMesh {
     host: string,
     port: number
   ): void {
-    const payload: IServerConnection = {
+    const payload: ServerConnectionRecord = {
       action: EServerConnectionAction.REGISTER_SERVICE,
       service,
       host,

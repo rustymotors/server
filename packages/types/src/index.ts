@@ -15,6 +15,7 @@ export interface IEncryptionManager {
 }
 
 export interface IMCServer {
+  startServers: () => Promise<void>;
   clearConnectionQueue: () => void;
   getConnections: () => ITCPConnection[];
   serviceName: string;

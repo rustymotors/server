@@ -26,7 +26,7 @@ export class DatabaseManager implements IDatabaseManager {
 
     const self = DatabaseManager._instance;
 
-    open({ filename: "db/mco.db", driver: sqlite3.Database })
+    open({ filename: "mco.db", driver: sqlite3.Database })
       .then(async (db) => {
         self.localDB = db;
 
