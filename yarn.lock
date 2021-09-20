@@ -1582,7 +1582,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/globals@npm:^27.2.1":
+"@jest/globals@npm:27.2.1, @jest/globals@npm:^27.2.1":
   version: 27.2.1
   resolution: "@jest/globals@npm:27.2.1"
   dependencies:
@@ -1793,7 +1793,7 @@ __metadata:
     "@babel/cli": 7
     "@babel/core": 7
     "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.2.0
+    "@jest/globals": 27.2.1
     "@mco-server/config": "workspace:^"
     "@mco-server/core": "workspace:^"
     "@mco-server/types": "workspace:^"
@@ -1819,7 +1819,7 @@ __metadata:
     "@babel/cli": 7
     "@babel/core": 7
     "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.2.0
+    "@jest/globals": 27.2.1
     "@mco-server/config": "workspace:^"
     "@mco-server/router": "workspace:^"
     "@mco-server/types": "workspace:^"
@@ -1845,7 +1845,7 @@ __metadata:
     "@babel/cli": 7
     "@babel/core": 7
     "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.2.0
+    "@jest/globals": 27.2.1
     "@mco-server/types": "workspace:^"
     "@types/babel__core": ^7
     "@types/eslint": ^7
@@ -1869,7 +1869,7 @@ __metadata:
     "@babel/cli": 7
     "@babel/core": 7
     "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.2.0
+    "@jest/globals": 27.2.1
     "@mco-server/config": "workspace:^"
     "@mco-server/database": "workspace:^"
     "@mco-server/lobby": "workspace:^"
@@ -1901,6 +1901,7 @@ __metadata:
     "@babel/cli": 7
     "@babel/core": 7
     "@drazisil/mco-logger": 4.1.10
+    "@jest/globals": 27.2.1
     "@mco-server/types": "workspace:^"
     "@types/babel__core": ^7
     "@types/eslint": ^7
@@ -1927,7 +1928,7 @@ __metadata:
     "@babel/cli": 7
     "@babel/core": 7
     "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.2.0
+    "@jest/globals": 27.2.1
     "@mco-server/database": "workspace:^"
     "@mco-server/message-types": "workspace:^"
     "@mco-server/persona": "workspace:^"
@@ -1954,7 +1955,7 @@ __metadata:
     "@babel/cli": 7
     "@babel/core": 7
     "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.2.0
+    "@jest/globals": 27.2.1
     "@mco-server/config": "workspace:^"
     "@mco-server/database": "workspace:^"
     "@mco-server/message-types": "workspace:^"
@@ -1981,7 +1982,7 @@ __metadata:
     "@babel/cli": 7
     "@babel/core": 7
     "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.2.0
+    "@jest/globals": 27.2.1
     "@mco-server/types": 1.0.0
     "@types/babel__core": ^7
     "@types/eslint": ^7
@@ -2005,7 +2006,7 @@ __metadata:
     "@babel/cli": 7
     "@babel/core": 7
     "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.2.0
+    "@jest/globals": 27.2.1
     "@mco-server/config": "workspace:^"
     "@mco-server/router": "workspace:^"
     "@mco-server/types": "workspace:^"
@@ -2034,7 +2035,7 @@ __metadata:
     "@babel/cli": 7
     "@babel/core": 7
     "@drazisil/mco-logger": 4.1.10
-    "@jest/globals": 27.2.0
+    "@jest/globals": 27.2.1
     "@mco-server/message-types": "workspace:^"
     "@mco-server/types": "workspace:^"
     "@types/babel__core": ^7
@@ -2059,6 +2060,7 @@ __metadata:
     "@babel/cli": 7
     "@babel/core": 7
     "@drazisil/mco-logger": ^4.1.10
+    "@jest/globals": 27.2.1
     "@mco-server/patch": "workspace:^"
     "@mco-server/router": "workspace:^"
     "@mco-server/shard": "workspace:^"
@@ -2070,7 +2072,7 @@ __metadata:
     "@typescript-eslint/parser": 4
     eslint: 7
     eslint-config-prettier: 8
-    jest: 27.2.0
+    jest: ^27.2.1
     prettier: 2
     prettier-eslint: 13
     ts-jest: 27
@@ -2085,6 +2087,7 @@ __metadata:
     "@babel/cli": 7
     "@babel/core": 7
     "@drazisil/mco-logger": ^4.1.10
+    "@jest/globals": 27.2.1
     "@mco-server/types": "workspace:^"
     "@types/babel__core": ^7
     "@types/eslint": ^7
@@ -2162,6 +2165,7 @@ __metadata:
   dependencies:
     "@babel/cli": 7
     "@babel/core": 7
+    "@jest/globals": 27.2.1
     "@types/babel__core": ^7
     "@types/eslint": ^7
     "@types/prettier": ^2
@@ -5499,7 +5503,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:27.2.1":
+"jest@npm:27.2.1, jest@npm:^27.2.1":
   version: 27.2.1
   resolution: "jest@npm:27.2.1"
   dependencies:
@@ -5832,6 +5836,7 @@ __metadata:
     "@babel/preset-env": 7.15.6
     "@babel/preset-typescript": 7.15.0
     "@drazisil/mco-logger": 4.1.10
+    "@jest/globals": 27.2.1
     "@mco-server/admin": "workspace:^"
     "@mco-server/auth": "workspace:^"
     "@mco-server/core": "workspace:^"
