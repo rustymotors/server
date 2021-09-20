@@ -4,8 +4,6 @@ node_modules
 logs
 coverage
 *.log
-.idea
-.vscode
 .nyc_output
 
 test-reports
@@ -18,3 +16,11 @@ junit.xml
 .dccache
 out/*
 *.db
+
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
