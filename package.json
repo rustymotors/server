@@ -16,6 +16,7 @@
   ],
   "scripts": {
     "preinstall": "npx only-allow yarn",
+    "postinstall": "yarn workspaces foreach install",
     "audit": "yarn npm audit",
     "check:license": "yarn licenses audit --summary --config=licenses.config.js",
     "start": "ts-node bin/app.ts",
