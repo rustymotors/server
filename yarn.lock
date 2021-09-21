@@ -5,7 +5,7 @@ __metadata:
   version: 4
   cacheKey: 8
 
-"@babel/cli@npm:7, @babel/cli@npm:7.15.7":
+"@babel/cli@npm:7.15.7":
   version: 7.15.7
   resolution: "@babel/cli@npm:7.15.7"
   dependencies:
@@ -57,29 +57,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:7, @babel/core@npm:7.15.5":
-  version: 7.15.5
-  resolution: "@babel/core@npm:7.15.5"
-  dependencies:
-    "@babel/code-frame": ^7.14.5
-    "@babel/generator": ^7.15.4
-    "@babel/helper-compilation-targets": ^7.15.4
-    "@babel/helper-module-transforms": ^7.15.4
-    "@babel/helpers": ^7.15.4
-    "@babel/parser": ^7.15.5
-    "@babel/template": ^7.15.4
-    "@babel/traverse": ^7.15.4
-    "@babel/types": ^7.15.4
-    convert-source-map: ^1.7.0
-    debug: ^4.1.0
-    gensync: ^1.0.0-beta.2
-    json5: ^2.1.2
-    semver: ^6.3.0
-    source-map: ^0.5.0
-  checksum: 8121bf74040d98562b773c1e92a174cd53c99a5158ae5a9ef25645ed35d6f821c64155e394cdb04e7dc77a0871ba42a638f6703b2c44a75bc04564b21cad9e1b
-  languageName: node
-  linkType: hard
-
 "@babel/core@npm:7.15.4, @babel/core@npm:^7.1.0, @babel/core@npm:^7.7.2, @babel/core@npm:^7.7.5":
   version: 7.15.4
   resolution: "@babel/core@npm:7.15.4"
@@ -100,6 +77,29 @@ __metadata:
     semver: ^6.3.0
     source-map: ^0.5.0
   checksum: fdd7db84b26e06da329a49ba9bad542113982bd3c5b8f822087859f2d7248b21c44d488cb26fa8bec96e1d206c4e4b34809e54b447ff38f5bd7a6a04a9ad0c44
+  languageName: node
+  linkType: hard
+
+"@babel/core@npm:7.15.5":
+  version: 7.15.5
+  resolution: "@babel/core@npm:7.15.5"
+  dependencies:
+    "@babel/code-frame": ^7.14.5
+    "@babel/generator": ^7.15.4
+    "@babel/helper-compilation-targets": ^7.15.4
+    "@babel/helper-module-transforms": ^7.15.4
+    "@babel/helpers": ^7.15.4
+    "@babel/parser": ^7.15.5
+    "@babel/template": ^7.15.4
+    "@babel/traverse": ^7.15.4
+    "@babel/types": ^7.15.4
+    convert-source-map: ^1.7.0
+    debug: ^4.1.0
+    gensync: ^1.0.0-beta.2
+    json5: ^2.1.2
+    semver: ^6.3.0
+    source-map: ^0.5.0
+  checksum: 8121bf74040d98562b773c1e92a174cd53c99a5158ae5a9ef25645ed35d6f821c64155e394cdb04e7dc77a0871ba42a638f6703b2c44a75bc04564b21cad9e1b
   languageName: node
   linkType: hard
 
@@ -1790,24 +1790,24 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mco-server/admin@workspace:packages/admin"
   dependencies:
-    "@babel/cli": 7
-    "@babel/core": 7
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.5
     "@drazisil/mco-logger": ^4.1.10
     "@jest/globals": 27.2.1
     "@mco-server/config": "workspace:^"
     "@mco-server/core": "workspace:^"
     "@mco-server/types": "workspace:^"
-    "@types/babel__core": ^7
-    "@types/eslint": ^7
-    "@types/prettier": ^2
-    "@typescript-eslint/eslint-plugin": 4
-    "@typescript-eslint/parser": 4
-    eslint: 7
-    eslint-config-prettier: 8
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.0
+    "@types/prettier": 2.3.2
+    "@typescript-eslint/eslint-plugin": 4.31.1
+    "@typescript-eslint/parser": 4.31.1
+    eslint: 7.32.0
+    eslint-config-prettier: 8.3.0
     jest: 27.2.0
-    prettier: 2
-    prettier-eslint: 13
-    ts-jest: 27
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.5
     typescript: 4.4.3
   languageName: unknown
   linkType: soft
@@ -1816,24 +1816,24 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mco-server/auth@workspace:packages/auth"
   dependencies:
-    "@babel/cli": 7
-    "@babel/core": 7
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.5
     "@drazisil/mco-logger": ^4.1.10
     "@jest/globals": 27.2.1
     "@mco-server/config": "workspace:^"
     "@mco-server/router": "workspace:^"
     "@mco-server/types": "workspace:^"
-    "@types/babel__core": ^7
-    "@types/eslint": ^7
-    "@types/prettier": ^2
-    "@typescript-eslint/eslint-plugin": 4
-    "@typescript-eslint/parser": 4
-    eslint: 7
-    eslint-config-prettier: 8
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.0
+    "@types/prettier": 2.3.2
+    "@typescript-eslint/eslint-plugin": 4.31.1
+    "@typescript-eslint/parser": 4.31.1
+    eslint: 7.32.0
+    eslint-config-prettier: 8.3.0
     jest: 27.2.0
-    prettier: 2
-    prettier-eslint: 13
-    ts-jest: 27
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.5
     typescript: 4.4.3
   languageName: unknown
   linkType: soft
@@ -1842,22 +1842,22 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mco-server/config@workspace:packages/config"
   dependencies:
-    "@babel/cli": 7
-    "@babel/core": 7
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.5
     "@drazisil/mco-logger": ^4.1.10
     "@jest/globals": 27.2.1
     "@mco-server/types": "workspace:^"
-    "@types/babel__core": ^7
-    "@types/eslint": ^7
-    "@types/prettier": ^2
-    "@typescript-eslint/eslint-plugin": 4
-    "@typescript-eslint/parser": 4
-    eslint: 7
-    eslint-config-prettier: 8
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.0
+    "@types/prettier": 2.3.2
+    "@typescript-eslint/eslint-plugin": 4.31.1
+    "@typescript-eslint/parser": 4.31.1
+    eslint: 7.32.0
+    eslint-config-prettier: 8.3.0
     jest: 27.2.0
-    prettier: 2
-    prettier-eslint: 13
-    ts-jest: 27
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.5
     typescript: 4.4.3
   languageName: unknown
   linkType: soft
@@ -1866,8 +1866,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mco-server/core@workspace:packages/core"
   dependencies:
-    "@babel/cli": 7
-    "@babel/core": 7
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.5
     "@drazisil/mco-logger": ^4.1.10
     "@jest/globals": 27.2.1
     "@mco-server/config": "workspace:^"
@@ -1878,17 +1878,17 @@ __metadata:
     "@mco-server/persona": "workspace:^"
     "@mco-server/transactions": "workspace:^"
     "@mco-server/types": "workspace:^"
-    "@types/babel__core": ^7
-    "@types/eslint": ^7
-    "@types/prettier": ^2
-    "@typescript-eslint/eslint-plugin": 4
-    "@typescript-eslint/parser": 4
-    eslint: 7
-    eslint-config-prettier: 8
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.0
+    "@types/prettier": 2.3.2
+    "@typescript-eslint/eslint-plugin": 4.31.1
+    "@typescript-eslint/parser": 4.31.1
+    eslint: 7.32.0
+    eslint-config-prettier: 8.3.0
     jest: 27.2.0
-    prettier: 2
-    prettier-eslint: 13
-    ts-jest: 27
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.5
     tslib: 2.3.1
     typescript: 4.4.3
   languageName: unknown
@@ -1898,24 +1898,24 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mco-server/database@workspace:packages/database"
   dependencies:
-    "@babel/cli": 7
-    "@babel/core": 7
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.5
     "@drazisil/mco-logger": 4.1.10
     "@jest/globals": 27.2.1
     "@mco-server/types": "workspace:^"
-    "@types/babel__core": ^7
-    "@types/eslint": ^7
-    "@types/prettier": ^2
-    "@typescript-eslint/eslint-plugin": 4
-    "@typescript-eslint/parser": 4
-    eslint: 7
-    eslint-config-prettier: 8
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.0
+    "@types/prettier": 2.3.2
+    "@typescript-eslint/eslint-plugin": 4.31.1
+    "@typescript-eslint/parser": 4.31.1
+    eslint: 7.32.0
+    eslint-config-prettier: 8.3.0
     jest: 27.2.0
-    prettier: 2
-    prettier-eslint: 13
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
     sqlite: 4.0.23
     sqlite3: 4
-    ts-jest: 27
+    ts-jest: 27.0.5
     tslib: 2.3.1
     typescript: 4.4.3
   languageName: unknown
@@ -1925,25 +1925,25 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mco-server/lobby@workspace:packages/lobby"
   dependencies:
-    "@babel/cli": 7
-    "@babel/core": 7
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.5
     "@drazisil/mco-logger": ^4.1.10
     "@jest/globals": 27.2.1
     "@mco-server/database": "workspace:^"
     "@mco-server/message-types": "workspace:^"
     "@mco-server/persona": "workspace:^"
     "@mco-server/types": "workspace:^"
-    "@types/babel__core": ^7
-    "@types/eslint": ^7
-    "@types/prettier": ^2
-    "@typescript-eslint/eslint-plugin": 4
-    "@typescript-eslint/parser": 4
-    eslint: 7
-    eslint-config-prettier: 8
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.0
+    "@types/prettier": 2.3.2
+    "@typescript-eslint/eslint-plugin": 4.31.1
+    "@typescript-eslint/parser": 4.31.1
+    eslint: 7.32.0
+    eslint-config-prettier: 8.3.0
     jest: 27.2.0
-    prettier: 2
-    prettier-eslint: 13
-    ts-jest: 27
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.5
     typescript: 4.4.3
   languageName: unknown
   linkType: soft
@@ -1952,25 +1952,25 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mco-server/login@workspace:packages/login"
   dependencies:
-    "@babel/cli": 7
-    "@babel/core": 7
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.5
     "@drazisil/mco-logger": ^4.1.10
     "@jest/globals": 27.2.1
     "@mco-server/config": "workspace:^"
     "@mco-server/database": "workspace:^"
     "@mco-server/message-types": "workspace:^"
     "@mco-server/types": "workspace:^"
-    "@types/babel__core": ^7
-    "@types/eslint": ^7
-    "@types/prettier": ^2
-    "@typescript-eslint/eslint-plugin": 4
-    "@typescript-eslint/parser": 4
-    eslint: 7
-    eslint-config-prettier: 8
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.0
+    "@types/prettier": 2.3.2
+    "@typescript-eslint/eslint-plugin": 4.31.1
+    "@typescript-eslint/parser": 4.31.1
+    eslint: 7.32.0
+    eslint-config-prettier: 8.3.0
     jest: 27.2.0
-    prettier: 2
-    prettier-eslint: 13
-    ts-jest: 27
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.5
     typescript: 4.4.3
   languageName: unknown
   linkType: soft
@@ -1979,22 +1979,22 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mco-server/message-types@workspace:packages/message-types"
   dependencies:
-    "@babel/cli": 7
-    "@babel/core": 7
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.5
     "@drazisil/mco-logger": ^4.1.10
     "@jest/globals": 27.2.1
     "@mco-server/types": 1.0.0
-    "@types/babel__core": ^7
-    "@types/eslint": ^7
-    "@types/prettier": ^2
-    "@typescript-eslint/eslint-plugin": 4
-    "@typescript-eslint/parser": 4
-    eslint: 7
-    eslint-config-prettier: 8
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.0
+    "@types/prettier": 2.3.2
+    "@typescript-eslint/eslint-plugin": 4.31.1
+    "@typescript-eslint/parser": 4.31.1
+    eslint: 7.32.0
+    eslint-config-prettier: 8.3.0
     jest: 27.2.0
-    prettier: 2
-    prettier-eslint: 13
-    ts-jest: 27
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.5
     typescript: 4.4.3
   languageName: unknown
   linkType: soft
@@ -2003,26 +2003,26 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mco-server/patch@workspace:packages/patch"
   dependencies:
-    "@babel/cli": 7
-    "@babel/core": 7
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.5
     "@drazisil/mco-logger": ^4.1.10
     "@jest/globals": 27.2.1
     "@mco-server/config": "workspace:^"
     "@mco-server/router": "workspace:^"
     "@mco-server/types": "workspace:^"
-    "@types/babel__core": ^7
-    "@types/eslint": ^7
-    "@types/prettier": ^2
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.0
+    "@types/prettier": 2.3.2
     "@types/supertest": 2.0.11
-    "@typescript-eslint/eslint-plugin": 4
-    "@typescript-eslint/parser": 4
-    eslint: 7
-    eslint-config-prettier: 8
+    "@typescript-eslint/eslint-plugin": 4.31.1
+    "@typescript-eslint/parser": 4.31.1
+    eslint: 7.32.0
+    eslint-config-prettier: 8.3.0
     jest: 27.2.0
-    prettier: 2
-    prettier-eslint: 13
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
     supertest: 6.1.6
-    ts-jest: 27
+    ts-jest: 27.0.5
     tslib: 2.3.1
     typescript: 4.4.3
   languageName: unknown
@@ -2032,23 +2032,23 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mco-server/persona@workspace:packages/persona"
   dependencies:
-    "@babel/cli": 7
-    "@babel/core": 7
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.5
     "@drazisil/mco-logger": 4.1.10
     "@jest/globals": 27.2.1
     "@mco-server/message-types": "workspace:^"
     "@mco-server/types": "workspace:^"
-    "@types/babel__core": ^7
-    "@types/eslint": ^7
-    "@types/prettier": ^2
-    "@typescript-eslint/eslint-plugin": 4
-    "@typescript-eslint/parser": 4
-    eslint: 7
-    eslint-config-prettier: 8
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.0
+    "@types/prettier": 2.3.2
+    "@typescript-eslint/eslint-plugin": 4.31.1
+    "@typescript-eslint/parser": 4.31.1
+    eslint: 7.32.0
+    eslint-config-prettier: 8.3.0
     jest: 27.2.0
-    prettier: 2
-    prettier-eslint: 13
-    ts-jest: 27
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.5
     typescript: 4.4.3
   languageName: unknown
   linkType: soft
@@ -2057,25 +2057,25 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mco-server/proxy@workspace:packages/proxy"
   dependencies:
-    "@babel/cli": 7
-    "@babel/core": 7
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.5
     "@drazisil/mco-logger": ^4.1.10
     "@jest/globals": 27.2.1
     "@mco-server/patch": "workspace:^"
     "@mco-server/router": "workspace:^"
     "@mco-server/shard": "workspace:^"
     "@mco-server/types": "workspace:^"
-    "@types/babel__core": ^7
-    "@types/eslint": ^7
-    "@types/prettier": ^2
-    "@typescript-eslint/eslint-plugin": 4
-    "@typescript-eslint/parser": 4
-    eslint: 7
-    eslint-config-prettier: 8
-    jest: ^27.2.1
-    prettier: 2
-    prettier-eslint: 13
-    ts-jest: 27
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.0
+    "@types/prettier": 2.3.2
+    "@typescript-eslint/eslint-plugin": 4.31.1
+    "@typescript-eslint/parser": 4.31.1
+    eslint: 7.32.0
+    eslint-config-prettier: 8.3.0
+    jest: 27.2.1
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.5
     typescript: 4.4.3
   languageName: unknown
   linkType: soft
@@ -2084,22 +2084,22 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mco-server/router@workspace:packages/router"
   dependencies:
-    "@babel/cli": 7
-    "@babel/core": 7
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.5
     "@drazisil/mco-logger": ^4.1.10
     "@jest/globals": 27.2.1
     "@mco-server/types": "workspace:^"
-    "@types/babel__core": ^7
-    "@types/eslint": ^7
-    "@types/prettier": ^2
-    "@typescript-eslint/eslint-plugin": 4
-    "@typescript-eslint/parser": 4
-    eslint: 7
-    eslint-config-prettier: 8
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.0
+    "@types/prettier": 2.3.2
+    "@typescript-eslint/eslint-plugin": 4.31.1
+    "@typescript-eslint/parser": 4.31.1
+    eslint: 7.32.0
+    eslint-config-prettier: 8.3.0
     jest: 27.2.0
-    prettier: 2
-    prettier-eslint: 13
-    ts-jest: 27
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.5
     typescript: 4.4.3
   languageName: unknown
   linkType: soft
@@ -2108,26 +2108,26 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mco-server/shard@workspace:packages/shard"
   dependencies:
-    "@babel/cli": 7
-    "@babel/core": 7
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.5
     "@drazisil/mco-logger": ^4.1.10
     "@jest/globals": 27.2.0
     "@mco-server/config": "workspace:^"
     "@mco-server/router": "workspace:^"
     "@mco-server/types": "workspace:^"
-    "@types/babel__core": ^7
-    "@types/eslint": ^7
-    "@types/prettier": ^2
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.0
+    "@types/prettier": 2.3.2
     "@types/supertest": 2.0.11
-    "@typescript-eslint/eslint-plugin": 4
-    "@typescript-eslint/parser": 4
-    eslint: 7
-    eslint-config-prettier: 8
+    "@typescript-eslint/eslint-plugin": 4.31.1
+    "@typescript-eslint/parser": 4.31.1
+    eslint: 7.32.0
+    eslint-config-prettier: 8.3.0
     jest: 27.2.0
-    prettier: 2
-    prettier-eslint: 13
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
     supertest: 6.1.6
-    ts-jest: 27
+    ts-jest: 27.0.5
     tslib: 2.3.1
     typescript: 4.4.3
   languageName: unknown
@@ -2137,24 +2137,24 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mco-server/transactions@workspace:packages/transactions"
   dependencies:
-    "@babel/cli": 7
-    "@babel/core": 7
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.5
     "@drazisil/mco-logger": ^4.1.10
     "@jest/globals": 27.2.0
     "@mco-server/database": "workspace:^"
     "@mco-server/message-types": "workspace:^"
     "@mco-server/types": "workspace:^"
-    "@types/babel__core": ^7
-    "@types/eslint": ^7
-    "@types/prettier": ^2
-    "@typescript-eslint/eslint-plugin": 4
-    "@typescript-eslint/parser": 4
-    eslint: 7
-    eslint-config-prettier: 8
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.0
+    "@types/prettier": 2.3.2
+    "@typescript-eslint/eslint-plugin": 4.31.1
+    "@typescript-eslint/parser": 4.31.1
+    eslint: 7.32.0
+    eslint-config-prettier: 8.3.0
     jest: 27.2.0
-    prettier: 2
-    prettier-eslint: 13
-    ts-jest: 27
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.5
     typescript: 4.4.3
   languageName: unknown
   linkType: soft
@@ -2163,20 +2163,20 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mco-server/types@workspace:packages/types"
   dependencies:
-    "@babel/cli": 7
-    "@babel/core": 7
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.5
     "@jest/globals": 27.2.1
-    "@types/babel__core": ^7
-    "@types/eslint": ^7
-    "@types/prettier": ^2
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.0
+    "@types/prettier": 2.3.2
     "@types/sqlite3": 3.1.7
-    "@typescript-eslint/eslint-plugin": 4
-    "@typescript-eslint/parser": 4
-    eslint: 7
-    eslint-config-prettier: 8
+    "@typescript-eslint/eslint-plugin": 4.31.1
+    "@typescript-eslint/parser": 4.31.1
+    eslint: 7.32.0
+    eslint-config-prettier: 8.3.0
     jest: 27.2.1
-    prettier: 2
-    prettier-eslint: 13
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
     sqlite: 4.0.23
     ts-jest: 27.0.5
     typescript: 4.4.3
@@ -2308,7 +2308,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/babel__core@npm:^7":
+"@types/babel__core@npm:7.1.16":
   version: 7.1.16
   resolution: "@types/babel__core@npm:7.1.16"
   dependencies:
@@ -2376,7 +2376,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/eslint@npm:^7":
+"@types/eslint@npm:7.28.0":
   version: 7.28.0
   resolution: "@types/eslint@npm:7.28.0"
   dependencies:
@@ -2441,7 +2441,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prettier@npm:^2, @types/prettier@npm:^2.1.5":
+"@types/prettier@npm:2.3.2, @types/prettier@npm:^2.1.5":
   version: 2.3.2
   resolution: "@types/prettier@npm:2.3.2"
   checksum: c4313e16650811f47b07a0fa7ac0742e966f61283a7292eb667fd4626d760bf3b7d896be3eaabb3354ad45fdbe3a340299b018dd3bcce1ff753d030a8cd2479c
@@ -2499,7 +2499,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:4, @typescript-eslint/eslint-plugin@npm:4.31.1":
+"@typescript-eslint/eslint-plugin@npm:4.31.1":
   version: 4.31.1
   resolution: "@typescript-eslint/eslint-plugin@npm:4.31.1"
   dependencies:
@@ -2551,7 +2551,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:4, @typescript-eslint/parser@npm:4.31.1":
+"@typescript-eslint/parser@npm:4.31.1":
   version: 4.31.1
   resolution: "@typescript-eslint/parser@npm:4.31.1"
   dependencies:
@@ -3805,7 +3805,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:8, eslint-config-prettier@npm:8.3.0":
+"eslint-config-prettier@npm:8.3.0":
   version: 8.3.0
   resolution: "eslint-config-prettier@npm:8.3.0"
   peerDependencies:
@@ -3860,7 +3860,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:7, eslint@npm:7.32.0, eslint@npm:^7.9.0":
+"eslint@npm:7.32.0, eslint@npm:^7.9.0":
   version: 7.32.0
   resolution: "eslint@npm:7.32.0"
   dependencies:
@@ -5503,7 +5503,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:27.2.1, jest@npm:^27.2.1":
+"jest@npm:27.2.1":
   version: 27.2.1
   resolution: "jest@npm:27.2.1"
   dependencies:
@@ -6520,7 +6520,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-eslint@npm:13, prettier-eslint@npm:13.0.0":
+"prettier-eslint@npm:13.0.0":
   version: 13.0.0
   resolution: "prettier-eslint@npm:13.0.0"
   dependencies:
@@ -6540,7 +6540,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:2, prettier@npm:2.4.1":
+"prettier@npm:2.4.1":
   version: 2.4.1
   resolution: "prettier@npm:2.4.1"
   bin:
@@ -7545,7 +7545,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:27, ts-jest@npm:27.0.5":
+"ts-jest@npm:27.0.5":
   version: 27.0.5
   resolution: "ts-jest@npm:27.0.5"
   dependencies:
