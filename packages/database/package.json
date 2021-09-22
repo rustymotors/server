@@ -5,9 +5,14 @@
   "license": "MIT",
   "dependencies": {
     "@drazisil/mco-logger": "4.1.10",
+    "@mco-server/config": "workspace:^",
+    "@mco-server/router": "workspace:^",
     "@mco-server/types": "workspace:^",
+    "@types/node": "^16.9.6",
+    "slonik": "24.1.0",
     "sqlite": "4.0.23",
     "sqlite3": "4",
+    "ts-node": "^10.2.1",
     "tslib": "2.3.1"
   },
   "devDependencies": {

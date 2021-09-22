@@ -8,16 +8,25 @@
 
 import * as sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
-import { IDatabaseManager, SessionRecord } from "@mco-server/types";
+import { AppConfiguration, EServerConnectionName, IDatabaseManager, SessionRecord } from "@mco-server/types";
 import { Logger } from "@drazisil/mco-logger";
+import { ConfigurationManager } from "@mco-server/config";
+import {
+  createPool,
+} from 'slonik';
+import { createServer, IncomingMessage, Server, ServerResponse } from "http";
+import { RoutingMesh } from "@mco-server/router";
 
 const { log } = Logger.getInstance();
 
 export class DatabaseManager implements IDatabaseManager {
   static _instance: DatabaseManager;
+  _config: AppConfiguration;
+  _server: Server;
   changes = 0;
   serviceName: string;
   localDB: Database | undefined;
+  private pool
 
   public static getInstance(): DatabaseManager {
     if (!DatabaseManager._instance) {
@@ -25,6 +34,7 @@ export class DatabaseManager implements IDatabaseManager {
     }
 
     const self = DatabaseManager._instance;
+
 
     open({ filename: "mco.db", driver: sqlite3.Database })
       .then(async (db) => {
@@ -142,6 +152,47 @@ export class DatabaseManager implements IDatabaseManager {
 
   private constructor() {
     this.serviceName = "mcoserver:DatabaseMgr";
+
+    this._config = ConfigurationManager.getInstance().getConfig();
+    this.pool = createPool('postgres://postgres:password@db:5432');
+
+    this._server = createServer((request, response) => {
+      this.handleRequest(request, response);
+    });
+
+    this._server.on("error", (error) => {
+      process.exitCode = -1;
+      log("error", `Server error: ${error.message}`, {
+        service: this.serviceName,
+      });
+      log("info", `Server shutdown: ${process.exitCode}`, {
+        service: this.serviceName,
+      });
+      process.exit();
+    });
+  }
+
+  handleRequest(request: IncomingMessage, response: ServerResponse): void {
+
+    const header = {
+      type: "Content-Type",
+      value: "application/json",
+    }
+
+    switch (request.url) {
+      case "/":
+        response.setHeader(header.type, header.value);
+        response.end(JSON.stringify({
+          status: 200,
+          message: 'Hello'
+        }));
+        break;
+
+      default:
+        response.statusCode = 404;
+        response.end("");
+        break;
+    }
   }
 
   async fetchSessionKeyByCustomerId(
@@ -202,5 +253,23 @@ export class DatabaseManager implements IDatabaseManager {
       throw new Error("Unable to fetch session key");
     }
     return 1;
+  }
+
+  start(): Server {
+    const host = this._config.serverSettings.ipServer || "localhost";
+    const port = 0;
+    return this._server.listen({ port, host }, () => {
+      log("debug", `port ${port} listening`, { service: this.serviceName });
+      log("info", "Patch server is listening...", {
+        service: this.serviceName,
+      });
+
+      // Register service with router
+      RoutingMesh.getInstance().registerServiceWithRouter(
+        EServerConnectionName.DATABASE,
+        host,
+        port
+      );
+    });
   }
 }

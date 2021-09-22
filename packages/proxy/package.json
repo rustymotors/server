@@ -8,7 +8,9 @@
     "@mco-server/patch": "workspace:^",
     "@mco-server/router": "workspace:^",
     "@mco-server/shard": "workspace:^",
-    "@mco-server/types": "workspace:^"
+    "@mco-server/types": "workspace:^",
+    "@types/node": "^16.9.6",
+    "ts-node": "^10.2.1"
   },
   "devDependencies": {
     "@babel/cli": "7.15.7",

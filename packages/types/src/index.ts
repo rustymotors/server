@@ -163,6 +163,7 @@ export type NpsCommandMap = {
   module: "Lobby" | "Login";
 };
 
+
 export enum EServerConnectionName {
   ADMIN = "Admin",
   AUTH = "Auth",
@@ -170,6 +171,7 @@ export enum EServerConnectionName {
   PATCH = "Patch",
   PROXY = "Proxy",
   SHARD = "Shard",
+  DATABASE = "Database"
 }
 
 export enum EServerConnectionAction {

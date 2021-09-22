@@ -1,30 +1,40 @@
 version: '3.4'
 
 services:
-  mcoserver:
-    image: mcoserver
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    environment:
-      NODE_ENV: production
-    ports:
-      - 80
-      - 443
-    labels:
-      - "traefik.http.routers.bin.rule=Host(`bin.docker.localhost`)"
+  # mcoserver:
+  #   image: mcoserver
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile
+  #   environment:
+  #     NODE_ENV: production
+  #   ports:
+  #     - 80
+  #     - 443
+  #   labels:
+  #     - "traefik.http.routers.bin.rule=Host(`bin.docker.localhost`)"
   router:
     image: router
     build:
       context: .
-      dockerfile: packages/router/Dockerfile
+      dockerfile: Dockerfile.router
+    environment:
+      NODE_ENV: production
+      LISTEN_PORT: 4242
+    labels:
+      - "traefik.http.routers.bin.rule=Host(`router.docker.localhost`)"      
+  database:
+    image: database
+    build:
+      context: .
+      dockerfile: Dockerfile.database
     environment:
       NODE_ENV: production
     ports:
       - 80
       - 443
     labels:
-      - "traefik.http.routers.bin.rule=Host(`router.docker.localhost`)"      
+      - "traefik.http.routers.bin.rule=Host(`database.docker.localhost`)"            
   reverse-proxy:
       # The official v2 Traefik docker image
       image: traefik:v2.5

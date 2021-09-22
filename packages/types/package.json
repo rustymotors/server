@@ -4,8 +4,10 @@
   "main": "src/index.ts",
   "license": "MIT",
   "dependencies": {
+    "@types/node": "^16.9.6",
     "@types/sqlite3": "3.1.7",
-    "sqlite": "4.0.23"
+    "sqlite": "4.0.23",
+    "ts-node": "^10.2.1"
   },
   "devDependencies": {
     "@babel/cli": "7.15.7",

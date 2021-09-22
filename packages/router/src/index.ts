@@ -98,7 +98,11 @@ export class RoutingServer {
   }
 
   async start(): Promise<Server> {
-    const port = 4242;
+    let port = 4141
+    if (process.env.LISTEN_PORT && process.env.LISTEN_PORT !== '') {
+      port = Number.parseInt(process.env.LISTEN_PORT)
+    }
+
     this._server.listen(port, "0.0.0.0", () => {
       log("info", `RoutingServer listening on port ${port}`, {
         service: this._serviceName,
