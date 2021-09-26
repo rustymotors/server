@@ -1646,34 +1646,19 @@ __metadata:
     "@mco-server/core": "workspace:^"
     "@mco-server/types": "workspace:^"
     "@types/babel__core": 7.1.16
-<<<<<<< HEAD
     "@types/eslint": 7.28.2
     "@types/node": ^16.9.6
     "@types/prettier": 2.4.1
     "@typescript-eslint/eslint-plugin": 5.2.0
     "@typescript-eslint/parser": 5.2.0
     eslint: 8.1.0
-=======
-    "@types/eslint": 7.28.0
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.3.2
-    "@typescript-eslint/eslint-plugin": 4.31.1
-    "@typescript-eslint/parser": 4.31.1
-    eslint: 7.32.0
->>>>>>> 4de1f7e (chore: update deps)
     eslint-config-prettier: 8.3.0
     jest: 27.3.1
     prettier: 2.4.1
     prettier-eslint: 13.0.0
-<<<<<<< HEAD
     ts-jest: 27.0.7
     ts-node: ^10.2.1
     typescript: 4.4.4
-=======
-    ts-jest: 27.0.5
-    ts-node: ^10.2.1
-    typescript: 4.4.3
->>>>>>> 4de1f7e (chore: update deps)
   languageName: unknown
   linkType: soft
 
@@ -1689,34 +1674,19 @@ __metadata:
     "@mco-server/router": "workspace:^"
     "@mco-server/types": "workspace:^"
     "@types/babel__core": 7.1.16
-<<<<<<< HEAD
     "@types/eslint": 7.28.2
     "@types/node": ^16.9.6
     "@types/prettier": 2.4.1
     "@typescript-eslint/eslint-plugin": 5.2.0
     "@typescript-eslint/parser": 5.2.0
     eslint: 8.1.0
-=======
-    "@types/eslint": 7.28.0
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.3.2
-    "@typescript-eslint/eslint-plugin": 4.31.1
-    "@typescript-eslint/parser": 4.31.1
-    eslint: 7.32.0
->>>>>>> 4de1f7e (chore: update deps)
     eslint-config-prettier: 8.3.0
     jest: 27.3.1
     prettier: 2.4.1
     prettier-eslint: 13.0.0
-<<<<<<< HEAD
     ts-jest: 27.0.7
     ts-node: ^10.2.1
     typescript: 4.4.4
-=======
-    ts-jest: 27.0.5
-    ts-node: ^10.2.1
-    typescript: 4.4.3
->>>>>>> 4de1f7e (chore: update deps)
   languageName: unknown
   linkType: soft
 
@@ -1730,34 +1700,19 @@ __metadata:
     "@jest/globals": 27.3.1
     "@mco-server/types": "workspace:^"
     "@types/babel__core": 7.1.16
-<<<<<<< HEAD
     "@types/eslint": 7.28.2
     "@types/node": ^16.9.6
     "@types/prettier": 2.4.1
     "@typescript-eslint/eslint-plugin": 5.2.0
     "@typescript-eslint/parser": 5.2.0
     eslint: 8.1.0
-=======
-    "@types/eslint": 7.28.0
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.3.2
-    "@typescript-eslint/eslint-plugin": 4.31.1
-    "@typescript-eslint/parser": 4.31.1
-    eslint: 7.32.0
->>>>>>> 4de1f7e (chore: update deps)
     eslint-config-prettier: 8.3.0
     jest: 27.3.1
     prettier: 2.4.1
     prettier-eslint: 13.0.0
-<<<<<<< HEAD
     ts-jest: 27.0.7
     ts-node: ^10.2.1
     typescript: 4.4.4
-=======
-    ts-jest: 27.0.5
-    ts-node: ^10.2.1
-    typescript: 4.4.3
->>>>>>> 4de1f7e (chore: update deps)
   languageName: unknown
   linkType: soft
 
@@ -1778,30 +1733,17 @@ __metadata:
     "@mco-server/transactions": "workspace:^"
     "@mco-server/types": "workspace:^"
     "@types/babel__core": 7.1.16
-<<<<<<< HEAD
     "@types/eslint": 7.28.2
     "@types/node": ^16.9.6
     "@types/prettier": 2.4.1
     "@typescript-eslint/eslint-plugin": 5.2.0
     "@typescript-eslint/parser": 5.2.0
     eslint: 8.1.0
-=======
-    "@types/eslint": 7.28.0
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.3.2
-    "@typescript-eslint/eslint-plugin": 4.31.1
-    "@typescript-eslint/parser": 4.31.1
-    eslint: 7.32.0
->>>>>>> 4de1f7e (chore: update deps)
     eslint-config-prettier: 8.3.0
     jest: 27.3.1
     prettier: 2.4.1
     prettier-eslint: 13.0.0
-<<<<<<< HEAD
     ts-jest: 27.0.7
-=======
-    ts-jest: 27.0.5
->>>>>>> 4de1f7e (chore: update deps)
     ts-node: ^10.2.1
     tslib: 2.3.1
     typescript: 4.4.4
@@ -1820,21 +1762,12 @@ __metadata:
     "@mco-server/router": "workspace:^"
     "@mco-server/types": "workspace:^"
     "@types/babel__core": 7.1.16
-<<<<<<< HEAD
     "@types/eslint": 7.28.2
     "@types/node": ^16.9.6
     "@types/prettier": 2.4.1
     "@typescript-eslint/eslint-plugin": 5.2.0
     "@typescript-eslint/parser": 5.2.0
     eslint: 8.1.0
-=======
-    "@types/eslint": 7.28.0
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.3.2
-    "@typescript-eslint/eslint-plugin": 4.31.1
-    "@typescript-eslint/parser": 4.31.1
-    eslint: 7.32.0
->>>>>>> 4de1f7e (chore: update deps)
     eslint-config-prettier: 8.3.0
     jest: 27.3.1
     prettier: 2.4.1
@@ -1842,11 +1775,7 @@ __metadata:
     slonik: 24.1.0
     sqlite: 4.0.23
     sqlite3: 4
-<<<<<<< HEAD
     ts-jest: 27.0.7
-=======
-    ts-jest: 27.0.5
->>>>>>> 4de1f7e (chore: update deps)
     ts-node: ^10.2.1
     tslib: 2.3.1
     typescript: 4.4.4
@@ -1866,34 +1795,19 @@ __metadata:
     "@mco-server/persona": "workspace:^"
     "@mco-server/types": "workspace:^"
     "@types/babel__core": 7.1.16
-<<<<<<< HEAD
     "@types/eslint": 7.28.2
     "@types/node": ^16.9.6
     "@types/prettier": 2.4.1
     "@typescript-eslint/eslint-plugin": 5.2.0
     "@typescript-eslint/parser": 5.2.0
     eslint: 8.1.0
-=======
-    "@types/eslint": 7.28.0
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.3.2
-    "@typescript-eslint/eslint-plugin": 4.31.1
-    "@typescript-eslint/parser": 4.31.1
-    eslint: 7.32.0
->>>>>>> 4de1f7e (chore: update deps)
     eslint-config-prettier: 8.3.0
     jest: 27.3.1
     prettier: 2.4.1
     prettier-eslint: 13.0.0
-<<<<<<< HEAD
     ts-jest: 27.0.7
     ts-node: ^10.2.1
     typescript: 4.4.4
-=======
-    ts-jest: 27.0.5
-    ts-node: ^10.2.1
-    typescript: 4.4.3
->>>>>>> 4de1f7e (chore: update deps)
   languageName: unknown
   linkType: soft
 
@@ -1910,34 +1824,19 @@ __metadata:
     "@mco-server/message-types": "workspace:^"
     "@mco-server/types": "workspace:^"
     "@types/babel__core": 7.1.16
-<<<<<<< HEAD
     "@types/eslint": 7.28.2
     "@types/node": ^16.9.6
     "@types/prettier": 2.4.1
     "@typescript-eslint/eslint-plugin": 5.2.0
     "@typescript-eslint/parser": 5.2.0
     eslint: 8.1.0
-=======
-    "@types/eslint": 7.28.0
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.3.2
-    "@typescript-eslint/eslint-plugin": 4.31.1
-    "@typescript-eslint/parser": 4.31.1
-    eslint: 7.32.0
->>>>>>> 4de1f7e (chore: update deps)
     eslint-config-prettier: 8.3.0
     jest: 27.3.1
     prettier: 2.4.1
     prettier-eslint: 13.0.0
-<<<<<<< HEAD
     ts-jest: 27.0.7
     ts-node: ^10.2.1
     typescript: 4.4.4
-=======
-    ts-jest: 27.0.5
-    ts-node: ^10.2.1
-    typescript: 4.4.3
->>>>>>> 4de1f7e (chore: update deps)
   languageName: unknown
   linkType: soft
 
@@ -1951,34 +1850,19 @@ __metadata:
     "@jest/globals": 27.3.1
     "@mco-server/types": 1.0.0
     "@types/babel__core": 7.1.16
-<<<<<<< HEAD
     "@types/eslint": 7.28.2
     "@types/node": ^16.9.6
     "@types/prettier": 2.4.1
     "@typescript-eslint/eslint-plugin": 5.2.0
     "@typescript-eslint/parser": 5.2.0
     eslint: 8.1.0
-=======
-    "@types/eslint": 7.28.0
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.3.2
-    "@typescript-eslint/eslint-plugin": 4.31.1
-    "@typescript-eslint/parser": 4.31.1
-    eslint: 7.32.0
->>>>>>> 4de1f7e (chore: update deps)
     eslint-config-prettier: 8.3.0
     jest: 27.3.1
     prettier: 2.4.1
     prettier-eslint: 13.0.0
-<<<<<<< HEAD
     ts-jest: 27.0.7
     ts-node: ^10.2.1
     typescript: 4.4.4
-=======
-    ts-jest: 27.0.5
-    ts-node: ^10.2.1
-    typescript: 4.4.3
->>>>>>> 4de1f7e (chore: update deps)
   languageName: unknown
   linkType: soft
 
@@ -1994,15 +1878,9 @@ __metadata:
     "@mco-server/router": "workspace:^"
     "@mco-server/types": "workspace:^"
     "@types/babel__core": 7.1.16
-<<<<<<< HEAD
     "@types/eslint": 7.28.2
     "@types/node": ^16.9.6
     "@types/prettier": 2.4.1
-=======
-    "@types/eslint": 7.28.0
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.3.2
->>>>>>> 4de1f7e (chore: update deps)
     "@types/supertest": 2.0.11
     "@typescript-eslint/eslint-plugin": 5.2.0
     "@typescript-eslint/parser": 5.2.0
@@ -2012,11 +1890,7 @@ __metadata:
     prettier: 2.4.1
     prettier-eslint: 13.0.0
     supertest: 6.1.6
-<<<<<<< HEAD
     ts-jest: 27.0.7
-=======
-    ts-jest: 27.0.5
->>>>>>> 4de1f7e (chore: update deps)
     ts-node: ^10.2.1
     tslib: 2.3.1
     typescript: 4.4.4
@@ -2034,34 +1908,19 @@ __metadata:
     "@mco-server/message-types": "workspace:^"
     "@mco-server/types": "workspace:^"
     "@types/babel__core": 7.1.16
-<<<<<<< HEAD
     "@types/eslint": 7.28.2
     "@types/node": ^16.9.6
     "@types/prettier": 2.4.1
     "@typescript-eslint/eslint-plugin": 5.2.0
     "@typescript-eslint/parser": 5.2.0
     eslint: 8.1.0
-=======
-    "@types/eslint": 7.28.0
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.3.2
-    "@typescript-eslint/eslint-plugin": 4.31.1
-    "@typescript-eslint/parser": 4.31.1
-    eslint: 7.32.0
->>>>>>> 4de1f7e (chore: update deps)
     eslint-config-prettier: 8.3.0
     jest: 27.3.1
     prettier: 2.4.1
     prettier-eslint: 13.0.0
-<<<<<<< HEAD
     ts-jest: 27.0.7
     ts-node: ^10.2.1
     typescript: 4.4.4
-=======
-    ts-jest: 27.0.5
-    ts-node: ^10.2.1
-    typescript: 4.4.3
->>>>>>> 4de1f7e (chore: update deps)
   languageName: unknown
   linkType: soft
 
@@ -2078,34 +1937,19 @@ __metadata:
     "@mco-server/shard": "workspace:^"
     "@mco-server/types": "workspace:^"
     "@types/babel__core": 7.1.16
-<<<<<<< HEAD
     "@types/eslint": 7.28.2
     "@types/node": ^16.9.6
     "@types/prettier": 2.4.1
     "@typescript-eslint/eslint-plugin": 5.2.0
     "@typescript-eslint/parser": 5.2.0
     eslint: 8.1.0
-=======
-    "@types/eslint": 7.28.0
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.3.2
-    "@typescript-eslint/eslint-plugin": 4.31.1
-    "@typescript-eslint/parser": 4.31.1
-    eslint: 7.32.0
->>>>>>> 4de1f7e (chore: update deps)
     eslint-config-prettier: 8.3.0
     jest: 27.3.1
     prettier: 2.4.1
     prettier-eslint: 13.0.0
-<<<<<<< HEAD
     ts-jest: 27.0.7
     ts-node: ^10.2.1
     typescript: 4.4.4
-=======
-    ts-jest: 27.0.5
-    ts-node: ^10.2.1
-    typescript: 4.4.3
->>>>>>> 4de1f7e (chore: update deps)
   languageName: unknown
   linkType: soft
 
@@ -2119,34 +1963,19 @@ __metadata:
     "@jest/globals": 27.3.1
     "@mco-server/types": "workspace:^"
     "@types/babel__core": 7.1.16
-<<<<<<< HEAD
     "@types/eslint": 7.28.2
     "@types/node": ^16.9.6
     "@types/prettier": 2.4.1
     "@typescript-eslint/eslint-plugin": 5.2.0
     "@typescript-eslint/parser": 5.2.0
     eslint: 8.1.0
-=======
-    "@types/eslint": 7.28.0
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.3.2
-    "@typescript-eslint/eslint-plugin": 4.31.1
-    "@typescript-eslint/parser": 4.31.1
-    eslint: 7.32.0
->>>>>>> 4de1f7e (chore: update deps)
     eslint-config-prettier: 8.3.0
     jest: 27.3.1
     prettier: 2.4.1
     prettier-eslint: 13.0.0
-<<<<<<< HEAD
     ts-jest: 27.0.7
     ts-node: ^10.2.1
     typescript: 4.4.4
-=======
-    ts-jest: 27.0.5
-    ts-node: ^10.2.1
-    typescript: 4.4.3
->>>>>>> 4de1f7e (chore: update deps)
   languageName: unknown
   linkType: soft
 
@@ -2162,15 +1991,9 @@ __metadata:
     "@mco-server/router": "workspace:^"
     "@mco-server/types": "workspace:^"
     "@types/babel__core": 7.1.16
-<<<<<<< HEAD
     "@types/eslint": 7.28.2
     "@types/node": ^16.9.6
     "@types/prettier": 2.4.1
-=======
-    "@types/eslint": 7.28.0
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.3.2
->>>>>>> 4de1f7e (chore: update deps)
     "@types/supertest": 2.0.11
     "@typescript-eslint/eslint-plugin": 5.2.0
     "@typescript-eslint/parser": 5.2.0
@@ -2180,11 +2003,7 @@ __metadata:
     prettier: 2.4.1
     prettier-eslint: 13.0.0
     supertest: 6.1.6
-<<<<<<< HEAD
     ts-jest: 27.0.7
-=======
-    ts-jest: 27.0.5
->>>>>>> 4de1f7e (chore: update deps)
     ts-node: ^10.2.1
     tslib: 2.3.1
     typescript: 4.4.4
@@ -2203,34 +2022,19 @@ __metadata:
     "@mco-server/message-types": "workspace:^"
     "@mco-server/types": "workspace:^"
     "@types/babel__core": 7.1.16
-<<<<<<< HEAD
     "@types/eslint": 7.28.2
     "@types/node": ^16.9.6
     "@types/prettier": 2.4.1
     "@typescript-eslint/eslint-plugin": 5.2.0
     "@typescript-eslint/parser": 5.2.0
     eslint: 8.1.0
-=======
-    "@types/eslint": 7.28.0
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.3.2
-    "@typescript-eslint/eslint-plugin": 4.31.1
-    "@typescript-eslint/parser": 4.31.1
-    eslint: 7.32.0
->>>>>>> 4de1f7e (chore: update deps)
     eslint-config-prettier: 8.3.0
     jest: 27.3.1
     prettier: 2.4.1
     prettier-eslint: 13.0.0
-<<<<<<< HEAD
     ts-jest: 27.0.7
     ts-node: ^10.2.1
     typescript: 4.4.4
-=======
-    ts-jest: 27.0.5
-    ts-node: ^10.2.1
-    typescript: 4.4.3
->>>>>>> 4de1f7e (chore: update deps)
   languageName: unknown
   linkType: soft
 
@@ -2242,15 +2046,9 @@ __metadata:
     "@babel/core": 7.15.8
     "@jest/globals": 27.3.1
     "@types/babel__core": 7.1.16
-<<<<<<< HEAD
     "@types/eslint": 7.28.2
     "@types/node": ^16.9.6
     "@types/prettier": 2.4.1
-=======
-    "@types/eslint": 7.28.0
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.3.2
->>>>>>> 4de1f7e (chore: update deps)
     "@types/sqlite3": 3.1.7
     "@typescript-eslint/eslint-plugin": 5.2.0
     "@typescript-eslint/parser": 5.2.0
@@ -2520,24 +2318,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "@types/prettier@npm:2.4.1, @types/prettier@npm:^2.1.5":
   version: 2.4.1
   resolution: "@types/prettier@npm:2.4.1"
   checksum: df330c2d6fe7c282839b0f17701e069a9c6c96d2ff54704e933a1b3c1b98844d963a7cb00c5629d173604892ceee802312bbaeb8a97f5da21e13db8f653b519e
-=======
-"@types/node@npm:^16.9.6":
-  version: 16.10.1
-  resolution: "@types/node@npm:16.10.1"
-  checksum: 84d7f082e9421fdf1f08dbe00b66848897b2675eacc94a4fa445c4d34cef57c901ecd3276d03ebe110607a848d3df0ab33816aeff51a234e036111dd8ef1422f
-  languageName: node
-  linkType: hard
-
-"@types/prettier@npm:2.3.2, @types/prettier@npm:^2.1.5":
-  version: 2.3.2
-  resolution: "@types/prettier@npm:2.3.2"
-  checksum: c4313e16650811f47b07a0fa7ac0742e966f61283a7292eb667fd4626d760bf3b7d896be3eaabb3354ad45fdbe3a340299b018dd3bcce1ff753d030a8cd2479c
->>>>>>> 4de1f7e (chore: update deps)
   languageName: node
   linkType: hard
 
