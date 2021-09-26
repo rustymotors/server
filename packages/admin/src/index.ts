@@ -6,17 +6,16 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from "@drazisil/mco-logger";
+import { pino } from "pino";
 import { IncomingMessage, ServerResponse } from "http";
 import { createServer, Server } from "https";
 import { Socket } from "net";
 import { ConfigurationManager, _sslOptions } from "mcos-config";
 import { AppConfiguration, IMCServer } from "mcos-types";
 
-const { log } = Logger.getInstance();
+const log = pino();
 /**
  * SSL web server for managing the state of the system
- * @module AdminServer
  */
 
 /**
@@ -92,12 +91,12 @@ export class AdminServer {
    * @param {import("http").ServerResponse} response
    */
   _httpsHandler(request: IncomingMessage, response: ServerResponse): void {
-    log(
+    log.info(
       "info",
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
       { service: "mcoserver:AdminServer" }
     );
-    log(
+    log.info(
       "info",
       `Requested recieved,
       ${JSON.stringify({
@@ -164,7 +163,7 @@ export class AdminServer {
     this.httpsServer.on("connection", this._socketEventHandler);
 
     return this.httpsServer.listen({ port: 88, host: "0.0.0.0" }, () => {
-      log("debug", "port 88 listening", {
+      log.debug("debug", "port 88 listening", {
         service: "mcoserver:AdminServer",
       });
     });

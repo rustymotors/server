@@ -14,13 +14,13 @@ import {
   IDatabaseManager,
   SessionRecord,
 } from "mcos-types";
-import { Logger } from "@drazisil/mco-logger";
+import { pino } from "pino";
 import { ConfigurationManager } from "mcos-config";
 import { createPool } from "slonik";
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
 import { RoutingMesh } from "mcos-router";
 
-const { log } = Logger.getInstance();
+const log = pino();
 
 export class DatabaseManager implements IDatabaseManager {
   static _instance: DatabaseManager;
@@ -143,7 +143,7 @@ export class DatabaseManager implements IDatabaseManager {
           const newError = new Error(
             `There was an error setting up the database: ${err.message}`
           );
-          log("error", newError.message, { service: self.serviceName });
+          log.error("error", newError.message, { service: self.serviceName });
           throw newError;
         }
         throw err;
@@ -164,10 +164,10 @@ export class DatabaseManager implements IDatabaseManager {
 
     this._server.on("error", (error) => {
       process.exitCode = -1;
-      log("error", `Server error: ${error.message}`, {
+      log.error("error", `Server error: ${error.message}`, {
         service: this.serviceName,
       });
-      log("info", `Server shutdown: ${process.exitCode}`, {
+      log.info("info", `Server shutdown: ${process.exitCode}`, {
         service: this.serviceName,
       });
       process.exit();
@@ -262,8 +262,8 @@ export class DatabaseManager implements IDatabaseManager {
     const host = this._config.serverSettings.ipServer || "localhost";
     const port = 0;
     return this._server.listen({ port, host }, () => {
-      log("debug", `port ${port} listening`, { service: this.serviceName });
-      log("info", "Patch server is listening...", {
+      log.debug("debug", `port ${port} listening`, { service: this.serviceName });
+      log.info("info", "Patch server is listening...", {
         service: this.serviceName,
       });
 

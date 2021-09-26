@@ -4,7 +4,6 @@
   "main": "src/index.ts",
   "license": "MIT",
   "dependencies": {
-    "@drazisil/mco-logger": "^4.1.10",
     "@types/node": "^16.9.6",
     "mcos-config": "workspace:^",
     "mcos-database": "workspace:^",
@@ -14,6 +13,7 @@
     "mcos-persona": "workspace:^",
     "mcos-transactions": "workspace:^",
     "mcos-types": "workspace:^",
+    "pino": "next",
     "ts-node": "^10.2.1"
   },
   "devDependencies": {

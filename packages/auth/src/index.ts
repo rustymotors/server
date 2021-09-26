@@ -6,7 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from "@drazisil/mco-logger";
+import { pino } from "pino";
 import { IncomingMessage, ServerResponse } from "http";
 import { Socket } from "net";
 import { AppConfiguration, SslOptions } from "mcos-types";
@@ -16,11 +16,10 @@ import { RoutingMesh } from "mcos-router";
 import { createServer, Server } from "https";
 import { ConfigurationManager } from "mcos-config";
 
-const { log } = Logger.getInstance();
+const log = pino();
 
 /**
  * Handles web-based user logins
- * @module AuthLogin
  */
 
 export class AuthLogin {
@@ -46,16 +45,16 @@ export class AuthLogin {
 
     this._server.on("error", (error) => {
       process.exitCode = -1;
-      log("error", `Server error: ${error.message}`, {
+      log.error("error", `Server error: ${error.message}`, {
         service: this._serviceName,
       });
-      log("info", `Server shutdown: ${process.exitCode}`, {
+      log.info("info", `Server shutdown: ${process.exitCode}`, {
         service: this._serviceName,
       });
       process.exit();
     });
     this._server.on("tlsClientError", (error) => {
-      log("warn", `[AuthLogin] SSL Socket Client Error: ${error.message}`, {
+      log.warn("warn", `[AuthLogin] SSL Socket Client Error: ${error.message}`, {
         service: this._serviceName,
       });
     });
@@ -78,7 +77,7 @@ export class AuthLogin {
    * @param {import("http").ServerResponse} response
    */
   handleRequest(request: IncomingMessage, response: ServerResponse): void {
-    log(
+    log.info(
       "info",
       `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
       { service: this._serviceName }
@@ -110,10 +109,10 @@ export class AuthLogin {
     const host = this.config.serverSettings.ipServer || "localhost";
     const port = 443;
     return this._server.listen({ port, host }, () => {
-      log("debug", `port ${port} listening`, {
+      log.debug("debug", `port ${port} listening`, {
         service: this._serviceName,
       });
-      log("info", "Auth server listening", {
+      log.info("info", "Auth server listening", {
         service: this._serviceName,
       });
 
@@ -127,7 +126,7 @@ export class AuthLogin {
   }
 
   _sslOptions(): SslOptions {
-    log("debug", `Reading ${this.config.certificate.certFilename}`, {
+    log.debug("debug", `Reading ${this.config.certificate.certFilename}`, {
       service: this._serviceName,
     });
 

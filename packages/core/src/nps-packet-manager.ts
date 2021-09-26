@@ -5,14 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from "@drazisil/mco-logger";
+import { pino } from "pino";
 import { ITCPConnection, UnprocessedPacket } from "mcos-types";
 import { LobbyServer } from "mcos-lobby";
 import { LoginServer } from "mcos-login";
 import { PersonaServer } from "mcos-persona";
 import { DatabaseManager } from "mcos-database";
 
-const { log } = Logger.getInstance();
+const log = pino();
 
 /**
  * @module npsPacketManager
@@ -97,7 +97,7 @@ export class NPSPacketManager {
     rawPacket: UnprocessedPacket
   ): Promise<ITCPConnection> {
     const messageId = rawPacket.data.readInt16BE(0);
-    log(
+    log.info(
       "info",
       `Handling message,
       ${JSON.stringify({

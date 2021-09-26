@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from "@drazisil/mco-logger";
+import { pino } from "pino";
 import { DatabaseManager } from "mcos-database";
 import { MCOTServer } from "./index";
 import {
@@ -25,11 +25,10 @@ import {
   UnprocessedPacket,
 } from "mcos-types";
 
-const { log } = Logger.getInstance();
+const log = pino()
 
 /**
  * Manages TCP connection packet processing
- * @module TCPManager
  */
 
 export class TCPManager implements ITCPManager {
@@ -61,11 +60,11 @@ export class TCPManager implements ITCPManager {
   ): Promise<ConnectionWithPacket> {
     // Check if compression is needed
     if (packet.getLength() < 80) {
-      log("debug", "Too small, should not compress", {
+      log.debug("debug", "Too small, should not compress", {
         service: "mcoserver:MCOTSServer",
       });
     } else {
-      log("debug", "This packet should be compressed", {
+      log.debug("debug", "This packet should be compressed", {
         service: "mcoserver:MCOTSServer",
       });
       /* TODO: Write compression.
@@ -84,13 +83,13 @@ export class TCPManager implements ITCPManager {
   ): Promise<ConnectionWithPacket> {
     // Check if encryption is needed
     if (packet.flags - 8 >= 0) {
-      log("debug", "encryption flag is set", {
+      log.debug("debug", "encryption flag is set", {
         service: "mcoserver:MCOTSServer",
       });
 
       packet.updateBuffer(connection.encryptBuffer(packet.data));
 
-      log("debug", `encrypted packet: ${packet.serialize().toString("hex")}`, {
+      log.debug("debug", `encrypted packet: ${packet.serialize().toString("hex")}`, {
         service: "mcoserver:MCOTSServer",
       });
     }
@@ -117,14 +116,14 @@ export class TCPManager implements ITCPManager {
         await this.encryptIfNeeded(connection, compressedPacket)
       ).packet;
       // Log that we are trying to write
-      log(
+      log.debug(
         "debug",
         ` Atempting to write seq: ${encryptedPacket.seq} to conn: ${updatedConnection.connection.id}`,
         { service: "mcoserver:MCOTSServer" }
       );
 
       // Log the buffer we are writing
-      log(
+      log.debug(
         "debug",
         `Writting buffer: ${encryptedPacket.serialize().toString("hex")}`,
         {
@@ -193,7 +192,7 @@ export class TCPManager implements ITCPManager {
     // Not currently using this
     const newMessage = new ClientConnectMessage(packet.data);
 
-    log(
+    log.debug(
       "debug",
       `[TCPManager] Looking up the session key for ${newMessage.customerId}...`,
       { service: "mcoserver:MCOTSServer" }
@@ -201,7 +200,7 @@ export class TCPManager implements ITCPManager {
     const result = await this.databaseManager.fetchSessionKeyByCustomerId(
       newMessage.customerId
     );
-    log("debug", "[TCPManager] Session Key located!", {
+    log.debug("debug", "[TCPManager] Session Key located!", {
       service: "mcoserver:MCOTSServer",
     });
 
@@ -216,7 +215,7 @@ export class TCPManager implements ITCPManager {
     // Update the connection's appId
     connectionWithKey.appId = newMessage.getAppId();
 
-    log("debug", `cust: ${customerId} ID: ${personaId} Name: ${personaName}`, {
+    log.debug("debug", `cust: ${customerId} ID: ${personaId} Name: ${personaName}`, {
       service: "mcoserver:MCOTSServer",
     });
 
@@ -356,10 +355,10 @@ export class TCPManager implements ITCPManager {
 
       case "MC_GET_LOBBIES": {
         const result = await this.mcotServer._getLobbies(conn, node);
-        log("debug", "Dumping Lobbies response packet...", {
+        log.debug("debug", "Dumping Lobbies response packet...", {
           service: "mcoserver:MCOTSServer",
         });
-        log("debug", result.packetList.join(), {
+        log.debug("debug", result.packetList.join(), {
           service: "mcoserver:MCOTSServer",
         });
         const responsePackets = result.packetList;
@@ -421,7 +420,7 @@ export class TCPManager implements ITCPManager {
   ): Promise<ITCPConnection> {
     const newConnection = con;
     if (!newConnection.useEncryption && message.flags && 0x08) {
-      log("debug", "Turning on encryption", {
+      log.debug("debug", "Turning on encryption", {
         service: "mcoserver:MCOTSServer",
       });
       newConnection.useEncryption = true;
@@ -441,13 +440,13 @@ export class TCPManager implements ITCPManager {
            * Attempt to decrypt message
            */
           const encryptedBuffer = Buffer.from(message.data);
-          log(
+          log.debug(
             "debug",
             `Full packet before decrypting: ${encryptedBuffer.toString("hex")}`,
             { service: "mcoserver:MCOTSServer" }
           );
 
-          log(
+          log.debug(
             "debug",
             `Message buffer before decrypting: ${encryptedBuffer.toString(
               "hex"
@@ -455,7 +454,7 @@ export class TCPManager implements ITCPManager {
             { service: "mcoserver:MCOTSServer" }
           );
 
-          log(
+          log.debug(
             "debug",
             `Using encryption id: ${newConnection.getEncryptionId()}`,
             {
@@ -463,7 +462,7 @@ export class TCPManager implements ITCPManager {
             }
           );
           const deciphered = newConnection.decryptBuffer(encryptedBuffer);
-          log(
+          log.debug(
             "debug",
             `Message buffer after decrypting: ${deciphered.toString("hex")}`,
             {
@@ -500,7 +499,7 @@ export class TCPManager implements ITCPManager {
     const messageNode = new MessageNode(EMessageDirection.RECEIVED);
     messageNode.deserialize(data);
 
-    log(
+    log.debug(
       "debug",
       `Received TCP packet',
     ${JSON.stringify({

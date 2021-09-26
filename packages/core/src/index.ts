@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from "@drazisil/mco-logger";
+import { pino } from "pino";
 import {
   AppConfiguration,
   IConnectionManager,
@@ -16,7 +16,7 @@ import { ConnectionManager } from "./connection-mgr";
 import { ConfigurationManager } from "mcos-config";
 import { ListenerThread } from "./listener-thread";
 
-const { log } = Logger.getInstance();
+const log = pino();
 
 /**
  * This class starts all the servers
@@ -61,7 +61,7 @@ export class MCServer implements IMCServer {
 
   async startServers(): Promise<void> {
     const listenerThread = ListenerThread.getInstance();
-    log("info", "Starting the listening sockets...", {
+    log.info("info", "Starting the listening sockets...", {
       service: this.serviceName,
     });
     // TODO: Seperate the PersonaServer ports of 8226 and 8228
@@ -77,10 +77,10 @@ export class MCServer implements IMCServer {
 
     for (const port of tcpPortList) {
       listenerThread.startTCPListener(port, this.mgr);
-      log("debug", `port ${port} listening`, { service: this.serviceName });
+      log.info("debug", `port ${port} listening`, { service: this.serviceName });
     }
 
-    log("info", "Listening sockets create successfully.", {
+    log.info("info", "Listening sockets create successfully.", {
       service: this.serviceName,
     });
   }

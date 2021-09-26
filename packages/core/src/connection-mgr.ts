@@ -5,24 +5,22 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from "@drazisil/mco-logger";
-import { Socket } from "net";
-import { TCPManager } from "mcos-transactions";
 import { DatabaseManager } from "mcos-database";
-import { NPSPacketManager } from "./nps-packet-manager";
-import { TCPConnection } from "./tcpConnection";
+import { MessageNode } from "mcos-messages";
+import { TCPManager } from "mcos-transactions";
 import {
   EMessageDirection,
   IConnectionManager,
   IDatabaseManager,
-  ITCPConnection,
-  UnprocessedPacket,
+  ITCPConnection, NPS_COMMANDS, UnprocessedPacket
 } from "mcos-types";
-import { NPS_COMMANDS } from "mcos-types";
-import { MessageNode } from "mcos-messages";
+import { Socket } from "net";
 import { EncryptionManager } from "./encryption-mgr";
+import { NPSPacketManager } from "./nps-packet-manager";
+import { TCPConnection } from "./tcpConnection";
+import { pino } from "pino";
 
-const { log } = Logger.getInstance();
+const log = pino();
 
 export class ConnectionManager implements IConnectionManager {
   static _instance: IConnectionManager;
@@ -66,7 +64,7 @@ export class ConnectionManager implements IConnectionManager {
     const { remoteAddress, localPort, data } = rawPacket;
 
     // Log the packet as debug
-    log(
+    log.debug(
       "debug",
       `logging raw packet,
       ${JSON.stringify({
@@ -89,7 +87,7 @@ export class ConnectionManager implements IConnectionManager {
           const msgName2 = this.getNameFromOpCode(
             rawPacket.data.readInt16BE(0)
           );
-          log(
+          log.debug(
             "debug",
             `Recieved NPS packet,
             ${JSON.stringify({
@@ -105,7 +103,7 @@ export class ConnectionManager implements IConnectionManager {
             const newError = new Error(
               `Error in the recieved packet: ${error.message}`
             );
-            log("error", newError.message, { service: this.serviceName });
+            log.error("error", newError.message, { service: this.serviceName });
             throw newError;
           }
           throw error;
@@ -117,7 +115,7 @@ export class ConnectionManager implements IConnectionManager {
             const newError = new Error(
               `There was an error processing the data: ${error.message}`
             );
-            log("error", newError.message, { service: this.serviceName });
+            log.error("error", newError.message, { service: this.serviceName });
             throw newError;
           }
           throw error;
@@ -125,7 +123,7 @@ export class ConnectionManager implements IConnectionManager {
       }
 
       case 43_300: {
-        log(
+        log.debug(
           "debug",
           "Recieved MCOTS packet",
           { service: this.serviceName }
@@ -139,13 +137,13 @@ export class ConnectionManager implements IConnectionManager {
         );
         const newNode = new MessageNode(EMessageDirection.RECEIVED);
         newNode.deserialize(rawPacket.data);
-        log("debug", JSON.stringify(newNode), { service: this.serviceName });
+        log.debug("debug", JSON.stringify(newNode), { service: this.serviceName });
 
         return TCPManager.getInstance().defaultHandler(rawPacket);
       }
 
       default:
-        log("debug", JSON.stringify(rawPacket), { service: this.serviceName });
+        log.debug("debug", JSON.stringify(rawPacket), { service: this.serviceName });
 
         throw new Error(
           `We received a packet on port ${localPort}. We don't what to do yet, going to throw so the message isn't lost.`
@@ -279,7 +277,7 @@ export class ConnectionManager implements IConnectionManager {
 
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
     if (con !== undefined) {
-      log(
+      log.info(
         "info",
         `[connectionMgr] I have seen connections from ${remoteAddress} on ${localPort} before`,
         { service: this.serviceName }
@@ -292,7 +290,7 @@ export class ConnectionManager implements IConnectionManager {
       `${Date.now().toString()}_${this.newConnectionId}`,
       socket
     );
-    log(
+    log.info(
       "info",
       `[connectionMgr] I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`,
       { service: this.serviceName }

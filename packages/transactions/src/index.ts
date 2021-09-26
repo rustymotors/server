@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from "@drazisil/mco-logger";
+import { pino } from "pino";
 import {
   ConnectionWithPackets,
   EMessageDirection,
@@ -14,16 +14,10 @@ import {
 import { GenericReplyMessage, MessageNode } from "mcos-messages";
 import { TCPManager } from "./tcp-manager";
 
-const { log } = Logger.getInstance();
+const log = pino();
 
 /**
- * Mangages the game database server
- * @module MCOTSServer
- */
-
-/**
- * @class
- * @property {module:MCO_Logger.logger} logger
+ * Manages the game database server
  */
 export class MCOTServer {
   static _instance: MCOTServer;
@@ -107,7 +101,7 @@ export class MCOTServer {
     connection: ITCPConnection,
     node: MessageNode
   ): Promise<ConnectionWithPackets> {
-    log("debug", "In _getLobbies...", {
+    log.debug("debug", "In _getLobbies...", {
       service: "mcoserver:MCOTSServer",
     });
     const lobbiesListMessage = node;
@@ -116,10 +110,10 @@ export class MCOTServer {
     lobbiesListMessage.appId = connection.appId;
 
     // Dump the packet
-    log("debug", "Dumping request...", {
+    log.debug("debug", "Dumping request...", {
       service: "mcoserver:MCOTSServer",
     });
-    log("debug", JSON.stringify(lobbiesListMessage), {
+    log.debug("debug", JSON.stringify(lobbiesListMessage), {
       service: "mcoserver:MCOTSServer",
     });
 
@@ -140,10 +134,10 @@ export class MCOTServer {
     rPacket.updateBuffer(pReply.serialize());
 
     // // Dump the packet
-    log("debug", "Dumping response...", {
+    log.debug("debug", "Dumping response...", {
       service: "mcoserver:MCOTSServer",
     });
-    log("debug", JSON.stringify(rPacket), {
+    log.debug("debug", JSON.stringify(rPacket), {
       service: "mcoserver:MCOTSServer",
     });
 

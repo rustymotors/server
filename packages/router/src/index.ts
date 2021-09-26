@@ -1,13 +1,13 @@
 import { EServerConnectionAction, ServerConnectionRecord } from "mcos-types";
-import { Logger } from "@drazisil/mco-logger";
 import { RoutingMesh } from "./client";
+import { pino } from "pino";
 
-const { log } = Logger.getInstance();
+const log = pino()
 
 export class RoutingServer {
   static _instance: RoutingServer;
   private _serverConnections: ServerConnectionRecord[] = [];
-  private _serviceName = "MCOServer:Route";
+  serviceName = "MCOServer:Route";
 
   static getInstance(): RoutingServer {
     if (!RoutingServer._instance) {
@@ -21,8 +21,8 @@ export class RoutingServer {
   }
   handleData(data: Buffer): void {
     const payload = data.toString();
-    log("debug", `Payload: ${payload}`, {
-      service: this._serviceName,
+    log.debug("debug", `Payload: ${payload}`, {
+      service: this.serviceName,
     });
 
     let payloadJSON: ServerConnectionRecord;
@@ -30,8 +30,8 @@ export class RoutingServer {
     try {
       payloadJSON = JSON.parse(payload);
     } catch (error) {
-      log("error", `Error pasing payload!: ${error}`, {
-        service: this._serviceName,
+      log.error("error", `Error pasing payload!: ${error}`, {
+        service: this.serviceName,
       });
       return;
     }
@@ -55,17 +55,17 @@ export class RoutingServer {
         port,
       };
       this._serverConnections.push(newService);
-      log("debug", `Registered new service: ${JSON.stringify(newService)}`, {
-        service: this._serviceName,
+      log.debug("debug", `Registered new service: ${JSON.stringify(newService)}`, {
+        service: this.serviceName,
       });
 
       return;
     }
-    log(
+    log.error(
       "error",
       `There was an error adding server connection: ${payloadJSON}`,
       {
-        service: this._serviceName,
+        service: this.serviceName,
       }
     );
   }

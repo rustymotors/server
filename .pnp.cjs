@@ -115,7 +115,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/plugin-proposal-class-properties", "virtual:06ef28086b36e74def08da2c9d29aa6e1f8f813793d98a611473d55e636fc011e0e0230f38041145ce57ad980a88e13c09092b962c7dd418d5796ffbfd0818ee#npm:7.14.5"],
             ["@babel/preset-env", "virtual:06ef28086b36e74def08da2c9d29aa6e1f8f813793d98a611473d55e636fc011e0e0230f38041145ce57ad980a88e13c09092b962c7dd418d5796ffbfd0818ee#npm:7.15.8"],
             ["@babel/preset-typescript", "virtual:06ef28086b36e74def08da2c9d29aa6e1f8f813793d98a611473d55e636fc011e0e0230f38041145ce57ad980a88e13c09092b962c7dd418d5796ffbfd0818ee#npm:7.15.0"],
-            ["@drazisil/mco-logger", "npm:4.1.10"],
             ["@jest/globals", "npm:27.3.1"],
             ["@tsconfig/node14", "npm:1.0.1"],
             ["@types/node", "npm:16.11.6"],
@@ -132,6 +131,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-proxy", "workspace:packages/proxy"],
             ["mcos-router", "workspace:packages/router"],
             ["mcos-shard", "workspace:packages/shard"],
+            ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["sinon", "npm:11.1.2"],
@@ -2571,28 +2571,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["@dabh/diagnostics", [
-        ["npm:2.0.2", {
-          "packageLocation": "./.yarn/cache/@dabh-diagnostics-npm-2.0.2-83eb005a83-4d95cc3124.zip/node_modules/@dabh/diagnostics/",
-          "packageDependencies": [
-            ["@dabh/diagnostics", "npm:2.0.2"],
-            ["colorspace", "npm:1.1.4"],
-            ["enabled", "npm:2.0.0"],
-            ["kuler", "npm:2.0.0"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["@drazisil/mco-logger", [
-        ["npm:4.1.10", {
-          "packageLocation": "./.yarn/cache/@drazisil-mco-logger-npm-4.1.10-5852a20948-75f5c69e51.zip/node_modules/@drazisil/mco-logger/",
-          "packageDependencies": [
-            ["@drazisil/mco-logger", "npm:4.1.10"],
-            ["winston", "npm:3.3.3"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["@eslint/eslintrc", [
         ["npm:0.4.3", {
           "packageLocation": "./.yarn/cache/@eslint-eslintrc-npm-0.4.3-ee1bbcab87-03a7704150.zip/node_modules/@eslint/eslintrc/",
@@ -3938,20 +3916,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["async", [
-        ["npm:3.2.1", {
-          "packageLocation": "./.yarn/cache/async-npm-3.2.1-0f8dd27e98-fcd6dc73d3.zip/node_modules/async/",
-          "packageDependencies": [
-            ["async", "npm:3.2.1"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["asynckit", [
         ["npm:0.4.0", {
           "packageLocation": "./.yarn/cache/asynckit-npm-0.4.0-c718858525-7b78c451df.zip/node_modules/asynckit/",
           "packageDependencies": [
             ["asynckit", "npm:0.4.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["atomic-sleep", [
+        ["npm:1.0.0", {
+          "packageLocation": "./.yarn/cache/atomic-sleep-npm-1.0.0-17d8a762a3-b95275afb2.zip/node_modules/atomic-sleep/",
+          "packageDependencies": [
+            ["atomic-sleep", "npm:1.0.0"]
           ],
           "linkType": "HARD",
         }]
@@ -4548,17 +4526,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["color", [
-        ["npm:3.2.1", {
-          "packageLocation": "./.yarn/cache/color-npm-3.2.1-568cf1014f-f81220e8b7.zip/node_modules/color/",
-          "packageDependencies": [
-            ["color", "npm:3.2.1"],
-            ["color-convert", "npm:1.9.3"],
-            ["color-string", "npm:1.6.0"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["color-convert", [
         ["npm:1.9.3", {
           "packageLocation": "./.yarn/cache/color-convert-npm-1.9.3-1fe690075e-fd7a64a17c.zip/node_modules/color-convert/",
@@ -4589,37 +4556,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/color-name-npm-1.1.4-025792b0ea-b044585952.zip/node_modules/color-name/",
           "packageDependencies": [
             ["color-name", "npm:1.1.4"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["color-string", [
-        ["npm:1.6.0", {
-          "packageLocation": "./.yarn/cache/color-string-npm-1.6.0-94ed25c258-33466a6527.zip/node_modules/color-string/",
-          "packageDependencies": [
-            ["color-string", "npm:1.6.0"],
-            ["color-name", "npm:1.1.4"],
-            ["simple-swizzle", "npm:0.2.2"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["colors", [
-        ["npm:1.4.0", {
-          "packageLocation": "./.yarn/cache/colors-npm-1.4.0-7e2cf12234-98aa2c2418.zip/node_modules/colors/",
-          "packageDependencies": [
-            ["colors", "npm:1.4.0"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["colorspace", [
-        ["npm:1.1.4", {
-          "packageLocation": "./.yarn/cache/colorspace-npm-1.1.4-f01655548a-bb3934ef3c.zip/node_modules/colorspace/",
-          "packageDependencies": [
-            ["colorspace", "npm:1.1.4"],
-            ["color", "npm:3.2.1"],
-            ["text-hex", "npm:1.0.0"]
           ],
           "linkType": "HARD",
         }]
@@ -4994,6 +4930,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["duplexify", [
+        ["npm:4.1.2", {
+          "packageLocation": "./.yarn/cache/duplexify-npm-4.1.2-7f2140a477-964376c61c.zip/node_modules/duplexify/",
+          "packageDependencies": [
+            ["duplexify", "npm:4.1.2"],
+            ["end-of-stream", "npm:1.4.4"],
+            ["inherits", "npm:2.0.4"],
+            ["readable-stream", "npm:3.6.0"],
+            ["stream-shift", "npm:1.0.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["electron-to-chromium", [
         ["npm:1.3.879", {
           "packageLocation": "./.yarn/cache/electron-to-chromium-npm-1.3.879-1b71db6042-9f7bfa6c7b.zip/node_modules/electron-to-chromium/",
@@ -5021,21 +4970,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["enabled", [
-        ["npm:2.0.0", {
-          "packageLocation": "./.yarn/cache/enabled-npm-2.0.0-bf5d96c9d8-9d256d89f4.zip/node_modules/enabled/",
-          "packageDependencies": [
-            ["enabled", "npm:2.0.0"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["encoding", [
         ["npm:0.1.13", {
           "packageLocation": "./.yarn/cache/encoding-npm-0.1.13-82a1837d30-bb98632f8f.zip/node_modules/encoding/",
           "packageDependencies": [
             ["encoding", "npm:0.1.13"],
             ["iconv-lite", "npm:0.6.3"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["end-of-stream", [
+        ["npm:1.4.4", {
+          "packageLocation": "./.yarn/cache/end-of-stream-npm-1.4.4-497fc6dee1-530a5a5a1e.zip/node_modules/end-of-stream/",
+          "packageDependencies": [
+            ["end-of-stream", "npm:1.4.4"],
+            ["once", "npm:1.4.0"]
           ],
           "linkType": "HARD",
         }]
@@ -5532,11 +5482,29 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["fast-redact", [
+        ["npm:3.0.2", {
+          "packageLocation": "./.yarn/cache/fast-redact-npm-3.0.2-98d6f1d433-f4ffdf48f1.zip/node_modules/fast-redact/",
+          "packageDependencies": [
+            ["fast-redact", "npm:3.0.2"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["fast-safe-stringify", [
         ["npm:2.1.1", {
           "packageLocation": "./.yarn/cache/fast-safe-stringify-npm-2.1.1-7ce89033ca-a851cbddc4.zip/node_modules/fast-safe-stringify/",
           "packageDependencies": [
             ["fast-safe-stringify", "npm:2.1.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["fastify-warning", [
+        ["npm:0.2.0", {
+          "packageLocation": "./.yarn/cache/fastify-warning-npm-0.2.0-f9c53563fc-c19ebccf54.zip/node_modules/fastify-warning/",
+          "packageDependencies": [
+            ["fastify-warning", "npm:0.2.0"]
           ],
           "linkType": "HARD",
         }]
@@ -5557,15 +5525,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["fb-watchman", "npm:2.0.1"],
             ["bser", "npm:2.1.1"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["fecha", [
-        ["npm:4.2.1", {
-          "packageLocation": "./.yarn/cache/fecha-npm-4.2.1-40d84f7733-2699347494.zip/node_modules/fecha/",
-          "packageDependencies": [
-            ["fecha", "npm:4.2.1"]
           ],
           "linkType": "HARD",
         }]
@@ -5617,15 +5576,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/flatted-npm-3.2.2-d61e116742-9d5e03fd93.zip/node_modules/flatted/",
           "packageDependencies": [
             ["flatted", "npm:3.2.2"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["fn.name", [
-        ["npm:1.1.0", {
-          "packageLocation": "./.yarn/cache/fn.name-npm-1.1.0-b472333184-e357144f48.zip/node_modules/fn.name/",
-          "packageDependencies": [
-            ["fn.name", "npm:1.1.0"]
           ],
           "linkType": "HARD",
         }]
@@ -6155,15 +6105,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/ip-npm-1.1.5-af36318aa6-30133981f0.zip/node_modules/ip/",
           "packageDependencies": [
             ["ip", "npm:1.1.5"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["is-arrayish", [
-        ["npm:0.3.2", {
-          "packageLocation": "./.yarn/cache/is-arrayish-npm-0.3.2-f856180f79-977e64f54d.zip/node_modules/is-arrayish/",
-          "packageDependencies": [
-            ["is-arrayish", "npm:0.3.2"]
           ],
           "linkType": "HARD",
         }]
@@ -7123,15 +7064,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["kuler", [
-        ["npm:2.0.0", {
-          "packageLocation": "./.yarn/cache/kuler-npm-2.0.0-19e74c9695-9e10b5a165.zip/node_modules/kuler/",
-          "packageDependencies": [
-            ["kuler", "npm:2.0.0"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["leven", [
         ["npm:3.1.0", {
           "packageLocation": "./.yarn/cache/leven-npm-3.1.0-b7697736a3-638401d534.zip/node_modules/leven/",
@@ -7243,20 +7175,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["logform", [
-        ["npm:2.3.0", {
-          "packageLocation": "./.yarn/cache/logform-npm-2.3.0-13155f7f21-a82d36823d.zip/node_modules/logform/",
-          "packageDependencies": [
-            ["logform", "npm:2.3.0"],
-            ["colors", "npm:1.4.0"],
-            ["fecha", "npm:4.2.1"],
-            ["ms", "npm:2.1.3"],
-            ["safe-stable-stringify", "npm:1.1.1"],
-            ["triple-beam", "npm:1.3.0"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["loglevel", [
         ["npm:1.7.1", {
           "packageLocation": "./.yarn/cache/loglevel-npm-1.7.1-46e39bd115-715a4ae69a.zip/node_modules/loglevel/",
@@ -7360,7 +7278,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/plugin-proposal-class-properties", "virtual:06ef28086b36e74def08da2c9d29aa6e1f8f813793d98a611473d55e636fc011e0e0230f38041145ce57ad980a88e13c09092b962c7dd418d5796ffbfd0818ee#npm:7.14.5"],
             ["@babel/preset-env", "virtual:06ef28086b36e74def08da2c9d29aa6e1f8f813793d98a611473d55e636fc011e0e0230f38041145ce57ad980a88e13c09092b962c7dd418d5796ffbfd0818ee#npm:7.15.8"],
             ["@babel/preset-typescript", "virtual:06ef28086b36e74def08da2c9d29aa6e1f8f813793d98a611473d55e636fc011e0e0230f38041145ce57ad980a88e13c09092b962c7dd418d5796ffbfd0818ee#npm:7.15.0"],
-            ["@drazisil/mco-logger", "npm:4.1.10"],
             ["@jest/globals", "npm:27.3.1"],
             ["@tsconfig/node14", "npm:1.0.1"],
             ["@types/node", "npm:16.11.6"],
@@ -7377,6 +7294,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-proxy", "workspace:packages/proxy"],
             ["mcos-router", "workspace:packages/router"],
             ["mcos-shard", "workspace:packages/shard"],
+            ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["sinon", "npm:11.1.2"],
@@ -7397,7 +7315,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-admin", "workspace:packages/admin"],
             ["@babel/cli", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:7.15.7"],
             ["@babel/core", "npm:7.15.8"],
-            ["@drazisil/mco-logger", "npm:4.1.10"],
             ["@jest/globals", "npm:27.3.1"],
             ["@types/babel__core", "npm:7.1.16"],
             ["@types/eslint", "npm:7.28.2"],
@@ -7411,6 +7328,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-config", "workspace:packages/config"],
             ["mcos-core", "workspace:packages/core"],
             ["mcos-types", "workspace:packages/types"],
+            ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["ts-jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.0.7"],
@@ -7427,7 +7345,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-auth", "workspace:packages/auth"],
             ["@babel/cli", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:7.15.7"],
             ["@babel/core", "npm:7.15.8"],
-            ["@drazisil/mco-logger", "npm:4.1.10"],
             ["@jest/globals", "npm:27.3.1"],
             ["@types/babel__core", "npm:7.1.16"],
             ["@types/eslint", "npm:7.28.2"],
@@ -7441,6 +7358,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-config", "workspace:packages/config"],
             ["mcos-router", "workspace:packages/router"],
             ["mcos-types", "workspace:packages/types"],
+            ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["ts-jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.0.7"],
@@ -7457,7 +7375,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-config", "workspace:packages/config"],
             ["@babel/cli", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:7.15.7"],
             ["@babel/core", "npm:7.15.8"],
-            ["@drazisil/mco-logger", "npm:4.1.10"],
             ["@jest/globals", "npm:27.3.1"],
             ["@types/babel__core", "npm:7.1.16"],
             ["@types/eslint", "npm:7.28.2"],
@@ -7469,6 +7386,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-config-prettier", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:8.3.0"],
             ["jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.3.1"],
             ["mcos-types", "workspace:packages/types"],
+            ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["ts-jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.0.7"],
@@ -7485,7 +7403,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-core", "workspace:packages/core"],
             ["@babel/cli", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:7.15.7"],
             ["@babel/core", "npm:7.15.8"],
-            ["@drazisil/mco-logger", "npm:4.1.10"],
             ["@jest/globals", "npm:27.3.1"],
             ["@types/babel__core", "npm:7.1.16"],
             ["@types/eslint", "npm:7.28.2"],
@@ -7504,6 +7421,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-persona", "workspace:packages/persona"],
             ["mcos-transactions", "workspace:packages/transactions"],
             ["mcos-types", "workspace:packages/types"],
+            ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["ts-jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.0.7"],
@@ -7521,7 +7439,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-database", "workspace:packages/database"],
             ["@babel/cli", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:7.15.7"],
             ["@babel/core", "npm:7.15.8"],
-            ["@drazisil/mco-logger", "npm:4.1.10"],
             ["@jest/globals", "npm:27.3.1"],
             ["@types/babel__core", "npm:7.1.16"],
             ["@types/eslint", "npm:7.28.2"],
@@ -7535,6 +7452,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-config", "workspace:packages/config"],
             ["mcos-router", "workspace:packages/router"],
             ["mcos-types", "workspace:packages/types"],
+            ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["slonik", "npm:24.1.0"],
@@ -7555,7 +7473,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-lobby", "workspace:packages/lobby"],
             ["@babel/cli", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:7.15.7"],
             ["@babel/core", "npm:7.15.8"],
-            ["@drazisil/mco-logger", "npm:4.1.10"],
             ["@jest/globals", "npm:27.3.1"],
             ["@types/babel__core", "npm:7.1.16"],
             ["@types/eslint", "npm:7.28.2"],
@@ -7570,6 +7487,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-messages", "workspace:packages/message-types"],
             ["mcos-persona", "workspace:packages/persona"],
             ["mcos-types", "workspace:packages/types"],
+            ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["ts-jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.0.7"],
@@ -7586,7 +7504,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-login", "workspace:packages/login"],
             ["@babel/cli", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:7.15.7"],
             ["@babel/core", "npm:7.15.8"],
-            ["@drazisil/mco-logger", "npm:4.1.10"],
             ["@jest/globals", "npm:27.3.1"],
             ["@types/babel__core", "npm:7.1.16"],
             ["@types/eslint", "npm:7.28.2"],
@@ -7601,6 +7518,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-database", "workspace:packages/database"],
             ["mcos-messages", "workspace:packages/message-types"],
             ["mcos-types", "workspace:packages/types"],
+            ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["ts-jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.0.7"],
@@ -7617,7 +7535,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-messages", "workspace:packages/message-types"],
             ["@babel/cli", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:7.15.7"],
             ["@babel/core", "npm:7.15.8"],
-            ["@drazisil/mco-logger", "npm:4.1.10"],
             ["@jest/globals", "npm:27.3.1"],
             ["@types/babel__core", "npm:7.1.16"],
             ["@types/eslint", "npm:7.28.2"],
@@ -7629,6 +7546,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-config-prettier", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:8.3.0"],
             ["jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.3.1"],
             ["mcos-types", "workspace:packages/types"],
+            ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["ts-jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.0.7"],
@@ -7645,7 +7563,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-patch", "workspace:packages/patch"],
             ["@babel/cli", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:7.15.7"],
             ["@babel/core", "npm:7.15.8"],
-            ["@drazisil/mco-logger", "npm:4.1.10"],
             ["@jest/globals", "npm:27.3.1"],
             ["@types/babel__core", "npm:7.1.16"],
             ["@types/eslint", "npm:7.28.2"],
@@ -7660,6 +7577,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-config", "workspace:packages/config"],
             ["mcos-router", "workspace:packages/router"],
             ["mcos-types", "workspace:packages/types"],
+            ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["supertest", "npm:6.1.6"],
@@ -7678,7 +7596,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-persona", "workspace:packages/persona"],
             ["@babel/cli", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:7.15.7"],
             ["@babel/core", "npm:7.15.8"],
-            ["@drazisil/mco-logger", "npm:4.1.10"],
             ["@jest/globals", "npm:27.3.1"],
             ["@types/babel__core", "npm:7.1.16"],
             ["@types/eslint", "npm:7.28.2"],
@@ -7691,6 +7608,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.3.1"],
             ["mcos-messages", "workspace:packages/message-types"],
             ["mcos-types", "workspace:packages/types"],
+            ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["ts-jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.0.7"],
@@ -7707,7 +7625,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-proxy", "workspace:packages/proxy"],
             ["@babel/cli", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:7.15.7"],
             ["@babel/core", "npm:7.15.8"],
-            ["@drazisil/mco-logger", "npm:4.1.10"],
             ["@jest/globals", "npm:27.3.1"],
             ["@types/babel__core", "npm:7.1.16"],
             ["@types/eslint", "npm:7.28.2"],
@@ -7722,6 +7639,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-router", "workspace:packages/router"],
             ["mcos-shard", "workspace:packages/shard"],
             ["mcos-types", "workspace:packages/types"],
+            ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["ts-jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.0.7"],
@@ -7738,7 +7656,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-router", "workspace:packages/router"],
             ["@babel/cli", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:7.15.7"],
             ["@babel/core", "npm:7.15.8"],
-            ["@drazisil/mco-logger", "npm:4.1.10"],
             ["@jest/globals", "npm:27.3.1"],
             ["@types/babel__core", "npm:7.1.16"],
             ["@types/eslint", "npm:7.28.2"],
@@ -7750,6 +7667,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-config-prettier", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:8.3.0"],
             ["jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.3.1"],
             ["mcos-types", "workspace:packages/types"],
+            ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["ts-jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.0.7"],
@@ -7766,7 +7684,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-shard", "workspace:packages/shard"],
             ["@babel/cli", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:7.15.7"],
             ["@babel/core", "npm:7.15.8"],
-            ["@drazisil/mco-logger", "npm:4.1.10"],
             ["@jest/globals", "npm:27.3.1"],
             ["@types/babel__core", "npm:7.1.16"],
             ["@types/eslint", "npm:7.28.2"],
@@ -7781,6 +7698,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-config", "workspace:packages/config"],
             ["mcos-router", "workspace:packages/router"],
             ["mcos-types", "workspace:packages/types"],
+            ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["supertest", "npm:6.1.6"],
@@ -7799,7 +7717,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-transactions", "workspace:packages/transactions"],
             ["@babel/cli", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:7.15.7"],
             ["@babel/core", "npm:7.15.8"],
-            ["@drazisil/mco-logger", "npm:4.1.10"],
             ["@jest/globals", "npm:27.3.1"],
             ["@types/babel__core", "npm:7.1.16"],
             ["@types/eslint", "npm:7.28.2"],
@@ -7813,6 +7730,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["mcos-database", "workspace:packages/database"],
             ["mcos-messages", "workspace:packages/message-types"],
             ["mcos-types", "workspace:packages/types"],
+            ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["ts-jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.0.7"],
@@ -7840,6 +7758,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint", "npm:8.1.0"],
             ["eslint-config-prettier", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:8.3.0"],
             ["jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.3.1"],
+            ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["sqlite", "npm:4.0.23"],
@@ -8345,22 +8264,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["on-exit-leak-free", [
+        ["npm:0.2.0", {
+          "packageLocation": "./.yarn/cache/on-exit-leak-free-npm-0.2.0-58bc1e8da0-d22b0f0538.zip/node_modules/on-exit-leak-free/",
+          "packageDependencies": [
+            ["on-exit-leak-free", "npm:0.2.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["once", [
         ["npm:1.4.0", {
           "packageLocation": "./.yarn/cache/once-npm-1.4.0-ccf03ef07a-cd0a885013.zip/node_modules/once/",
           "packageDependencies": [
             ["once", "npm:1.4.0"],
             ["wrappy", "npm:1.0.2"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["one-time", [
-        ["npm:1.0.0", {
-          "packageLocation": "./.yarn/cache/one-time-npm-1.0.0-aeaad5e524-fd008d7e99.zip/node_modules/one-time/",
-          "packageDependencies": [
-            ["one-time", "npm:1.0.0"],
-            ["fn.name", "npm:1.1.0"]
           ],
           "linkType": "HARD",
         }]
@@ -8739,6 +8657,45 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["pino", [
+        ["npm:7.0.0-rc.9", {
+          "packageLocation": "./.yarn/cache/pino-npm-7.0.0-rc.9-3554438e7f-9513d0c5ce.zip/node_modules/pino/",
+          "packageDependencies": [
+            ["pino", "npm:7.0.0-rc.9"],
+            ["fast-redact", "npm:3.0.2"],
+            ["fastify-warning", "npm:0.2.0"],
+            ["get-caller-file", "npm:2.0.5"],
+            ["json-stringify-safe", "npm:5.0.1"],
+            ["on-exit-leak-free", "npm:0.2.0"],
+            ["pino-abstract-transport", "npm:0.4.0"],
+            ["pino-std-serializers", "npm:4.0.0"],
+            ["quick-format-unescaped", "npm:4.0.4"],
+            ["sonic-boom", "npm:2.3.0"],
+            ["thread-stream", "npm:0.11.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["pino-abstract-transport", [
+        ["npm:0.4.0", {
+          "packageLocation": "./.yarn/cache/pino-abstract-transport-npm-0.4.0-0d0e316a28-9df1bc78e1.zip/node_modules/pino-abstract-transport/",
+          "packageDependencies": [
+            ["pino-abstract-transport", "npm:0.4.0"],
+            ["duplexify", "npm:4.1.2"],
+            ["split2", "npm:3.2.2"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["pino-std-serializers", [
+        ["npm:4.0.0", {
+          "packageLocation": "./.yarn/cache/pino-std-serializers-npm-4.0.0-391192ed8b-89d487729b.zip/node_modules/pino-std-serializers/",
+          "packageDependencies": [
+            ["pino-std-serializers", "npm:4.0.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["pirates", [
         ["npm:4.0.1", {
           "packageLocation": "./.yarn/cache/pirates-npm-4.0.1-377058e8fc-091e232aac.zip/node_modules/pirates/",
@@ -9002,6 +8959,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["quibble", "npm:0.6.5"],
             ["lodash", "npm:4.17.21"],
             ["resolve", "patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=b382c1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["quick-format-unescaped", [
+        ["npm:4.0.4", {
+          "packageLocation": "./.yarn/cache/quick-format-unescaped-npm-4.0.4-7e22c9b7dc-7bc32b9935.zip/node_modules/quick-format-unescaped/",
+          "packageDependencies": [
+            ["quick-format-unescaped", "npm:4.0.4"]
           ],
           "linkType": "HARD",
         }]
@@ -9305,15 +9271,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["safe-stable-stringify", [
-        ["npm:1.1.1", {
-          "packageLocation": "./.yarn/cache/safe-stable-stringify-npm-1.1.1-1c282e1c55-e32a30720e.zip/node_modules/safe-stable-stringify/",
-          "packageDependencies": [
-            ["safe-stable-stringify", "npm:1.1.1"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["safer-buffer", [
         ["npm:2.1.2", {
           "packageLocation": "./.yarn/cache/safer-buffer-npm-2.1.2-8d5c0b705e-cab8f25ae6.zip/node_modules/safer-buffer/",
@@ -9441,16 +9398,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["simple-swizzle", [
-        ["npm:0.2.2", {
-          "packageLocation": "./.yarn/cache/simple-swizzle-npm-0.2.2-8dee37fad1-a7f3f2ab5c.zip/node_modules/simple-swizzle/",
-          "packageDependencies": [
-            ["simple-swizzle", "npm:0.2.2"],
-            ["is-arrayish", "npm:0.3.2"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["sinon", [
         ["npm:11.1.2", {
           "packageLocation": "./.yarn/cache/sinon-npm-11.1.2-5325724cb2-1d01377e23.zip/node_modules/sinon/",
@@ -9562,6 +9509,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["sonic-boom", [
+        ["npm:2.3.0", {
+          "packageLocation": "./.yarn/cache/sonic-boom-npm-2.3.0-6a1292957e-208329d153.zip/node_modules/sonic-boom/",
+          "packageDependencies": [
+            ["sonic-boom", "npm:2.3.0"],
+            ["atomic-sleep", "npm:1.0.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["source-map", [
         ["npm:0.5.7", {
           "packageLocation": "./.yarn/cache/source-map-npm-0.5.7-7c3f035429-5dc2043b93.zip/node_modules/source-map/",
@@ -9653,21 +9610,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["stack-trace", [
-        ["npm:0.0.10", {
-          "packageLocation": "./.yarn/cache/stack-trace-npm-0.0.10-9460b173e1-473036ad32.zip/node_modules/stack-trace/",
-          "packageDependencies": [
-            ["stack-trace", "npm:0.0.10"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["stack-utils", [
         ["npm:2.0.5", {
           "packageLocation": "./.yarn/cache/stack-utils-npm-2.0.5-e0438f409a-76b69da0f5.zip/node_modules/stack-utils/",
           "packageDependencies": [
             ["stack-utils", "npm:2.0.5"],
             ["escape-string-regexp", "npm:2.0.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["stream-shift", [
+        ["npm:1.0.1", {
+          "packageLocation": "./.yarn/cache/stream-shift-npm-1.0.1-9526210fa7-59b82b44b2.zip/node_modules/stream-shift/",
+          "packageDependencies": [
+            ["stream-shift", "npm:1.0.1"]
           ],
           "linkType": "HARD",
         }]
@@ -9959,15 +9916,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["text-hex", [
-        ["npm:1.0.0", {
-          "packageLocation": "./.yarn/cache/text-hex-npm-1.0.0-22389e4d56-1138f68adc.zip/node_modules/text-hex/",
-          "packageDependencies": [
-            ["text-hex", "npm:1.0.0"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["text-table", [
         ["npm:0.2.0", {
           "packageLocation": "./.yarn/cache/text-table-npm-0.2.0-d92a778b59-b6937a38c8.zip/node_modules/text-table/",
@@ -9982,6 +9930,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/theredoc-npm-1.0.0-5e54692105-9c6c2c010b.zip/node_modules/theredoc/",
           "packageDependencies": [
             ["theredoc", "npm:1.0.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["thread-stream", [
+        ["npm:0.11.1", {
+          "packageLocation": "./.yarn/cache/thread-stream-npm-0.11.1-d7c0babce8-47f9bccc3e.zip/node_modules/thread-stream/",
+          "packageDependencies": [
+            ["thread-stream", "npm:0.11.1"]
           ],
           "linkType": "HARD",
         }]
@@ -10068,15 +10025,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["tr46", "npm:2.1.0"],
             ["punycode", "npm:2.1.1"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["triple-beam", [
-        ["npm:1.3.0", {
-          "packageLocation": "./.yarn/cache/triple-beam-npm-1.3.0-eda4e2a46c-7d7b77d862.zip/node_modules/triple-beam/",
-          "packageDependencies": [
-            ["triple-beam", "npm:1.3.0"]
           ],
           "linkType": "HARD",
         }]
@@ -10608,36 +10556,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["wide-align", "npm:1.1.5"],
             ["string-width", "npm:4.2.3"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["winston", [
-        ["npm:3.3.3", {
-          "packageLocation": "./.yarn/cache/winston-npm-3.3.3-3fa4527b42-89a0a8db4e.zip/node_modules/winston/",
-          "packageDependencies": [
-            ["winston", "npm:3.3.3"],
-            ["@dabh/diagnostics", "npm:2.0.2"],
-            ["async", "npm:3.2.1"],
-            ["is-stream", "npm:2.0.1"],
-            ["logform", "npm:2.3.0"],
-            ["one-time", "npm:1.0.0"],
-            ["readable-stream", "npm:3.6.0"],
-            ["stack-trace", "npm:0.0.10"],
-            ["triple-beam", "npm:1.3.0"],
-            ["winston-transport", "npm:4.4.0"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["winston-transport", [
-        ["npm:4.4.0", {
-          "packageLocation": "./.yarn/cache/winston-transport-npm-4.4.0-e1b3134c1e-953d78d152.zip/node_modules/winston-transport/",
-          "packageDependencies": [
-            ["winston-transport", "npm:4.4.0"],
-            ["logform", "npm:2.3.0"],
-            ["readable-stream", "npm:2.3.7"],
-            ["triple-beam", "npm:1.3.0"]
           ],
           "linkType": "HARD",
         }]

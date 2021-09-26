@@ -1,10 +1,6 @@
-// TODO: These are types. They should not log
-import { Logger } from "@drazisil/mco-logger";
 import { EMessageDirection, AppConfiguration, PersonaRecord } from "mcos-types";
 import { readFileSync, statSync } from "fs";
 import { privateDecrypt } from "crypto";
-
-const { log } = Logger.getInstance();
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
@@ -12,9 +8,6 @@ const { log } = Logger.getInstance();
 // DWORD data;   // specific to the message sent (but usually 0)
 // DWORD data2;
 
-/**
- * @module GenericReplyMsg
- */
 
 /**
  * @class
@@ -118,19 +111,15 @@ export class GenericReplyMessage {
    * DumpPacket
    * @return {void}
    */
-  dumpPacket(): void {
-    log(
-      "info",
-      `GenericReply',
+  dumpPacket(): string {
+    return `GenericReply',
       ${JSON.stringify({
         msgNo: this.msgNo,
         msgReply: this.msgReply,
         result: this.result.toString("hex"),
         data: this.data.toString("hex"),
         tdata2: this.data2.toString("hex"),
-      })}`,
-      { service: "mcoserver:GenericReplyMsg" }
-    );
+      })}`
   }
 }
 
@@ -205,17 +194,13 @@ export class GenericRequestMessage {
    * DumpPacket
    * @return {void}
    */
-  dumpPacket(): void {
-    log(
-      "info",
-      `GenericRequest',
-        ${JSON.stringify({
+  dumpPacket(): string {
+    return `GenericRequest ${JSON.stringify({
           msgNo: this.msgNo,
           data: this.data.toString("hex"),
           data2: this.data2.toString("hex"),
-        })}`,
-      { service: this.serviceName }
-    );
+        })}`
+    
   }
 }
 
@@ -272,16 +257,13 @@ export class StockCar {
    * @return {void}
    */
   dumpPacket(): void {
-    log(
-      "debug",
+    return
       `
       [StockCar]======================================
       brandedPartId:     ${this.brandedPartId}
       retailPrice:       ${this.retailPrice}
       isDealOfTheDay:    ${this.bIsDealOfTheDay}
-      logger.log('[/StockCar]======================================`,
-      { service: this.serviceName }
-    );
+      logger.log('[/StockCar]======================================`
   }
 }
 
@@ -378,8 +360,7 @@ export class StockCarInfoMessage {
    * @return {void}
    */
   dumpPacket(): void {
-    log(
-      "debug",
+    return
       `${JSON.stringify({
         msgNo: this.msgNo,
         starterCash: this.starterCash,
@@ -388,9 +369,7 @@ export class StockCarInfoMessage {
         noCars: this.noCars,
         moreToCome: this.moreToCome,
         stockCarList: this.StockCarList.toString(),
-      })}`,
-      { service: this.serviceName }
-    );
+      })}`
   }
 }
 
@@ -985,18 +964,14 @@ export class NPSMessage {
    * @param {string} messageType
    * @return {void}
    */
-  dumpPacketHeader(messageType: string): void {
-    log(
-      "info",
-      `NPSMsg/${messageType},
+  dumpPacketHeader(messageType: string): string {
+    return `NPSMsg/${messageType},
         ${JSON.stringify({
           direction: this.direction,
           msgNo: this.msgNo.toString(16),
           msgVersion: this.msgVersion,
           msgLength: this.msgLength,
-        })}`,
-      { service: this.serviceName }
-    );
+        })}`
   }
 
   /**
@@ -1004,10 +979,8 @@ export class NPSMessage {
    * @return {void}
    * @memberof NPSMsg
    */
-  dumpPacket(): void {
-    log(
-      "debug",
-      `NPSMsg/NPSMsg,
+  dumpPacket(): string {
+   return `NPSMsg/NPSMsg,
         ${JSON.stringify({
           direction: this.direction,
           msgNo: this.msgNo.toString(16),
@@ -1015,9 +988,7 @@ export class NPSMessage {
           msgLength: this.msgLength,
           content: this.content.toString("hex"),
           serialized: this.serialize().toString("hex"),
-        })}`,
-      { service: this.serviceName }
-    );
+        })}`
   }
 
   /**
@@ -1133,10 +1104,8 @@ export class LoginMessage {
    * DumpPacket
    * @return {void}
    */
-  dumpPacket(): void {
-    log(
-      "debug",
-      `LoginMsg',
+  dumpPacket(): string {
+    return `LoginMsg',
         ${JSON.stringify({
           msgNo: this.msgNo.toString(),
           customerId: this.customerId.toString(),
@@ -1146,9 +1115,7 @@ export class LoginMessage {
           skinId: this.skinId,
           personaName: this.personaName,
           version: this.version,
-        })}`,
-      { service: "mcoserver:LoginMsg" }
-    );
+        })}`
   }
 }
 
@@ -1208,17 +1175,13 @@ export class LobbyMessage {
    * DumpPacket
    * @return {void}
    */
-  dumpPacket(): void {
-    log(
-      "debug",
-      `LobbyMsg',
+  dumpPacket(): string {
+   return `LobbyMsg',
         ${JSON.stringify({
           msgNo: this.msgNo,
           dataLength: this.dataLength,
           packet: this.serialize().toString("hex"),
-        })}`,
-      { service: this.serviceName }
-    );
+        })}`
   }
 }
 
@@ -1375,15 +1338,13 @@ export class MessageNode {
    *
    * @return {void}
    */
-  dumpPacket(): void {
+  dumpPacket(): string {
     let packetContentsArray = this.serialize().toString("hex").match(/../g);
     if (packetContentsArray === null) {
       packetContentsArray = [];
     }
 
-    log(
-      "debug",
-      `Message ${JSON.stringify({
+    return `Message ${JSON.stringify({
         dataLength: this.dataLength,
         isMCOTS: this.isMCOTS(),
         msgNo: this.msgNo,
@@ -1393,9 +1354,7 @@ export class MessageNode {
         toFrom: this.toFrom,
         appId: this.appId,
         packetContents: packetContentsArray.join("") || "",
-      })}`,
-      { service: "mcoserver:MessageNode" }
-    );
+      })}`
   }
 
   /**
@@ -1484,10 +1443,8 @@ export class ClientConnectMessage {
    * DumpPacket
    * @return {void}
    */
-  dumpPacket(): void {
-    log(
-      "debug",
-      `ClientConnectMsg',
+  dumpPacket(): string {
+    return `ClientConnectMsg',
       ${JSON.stringify({
         msgNo: this.msgNo.toString(),
         customerId: this.customerId.toString(),
@@ -1495,9 +1452,7 @@ export class ClientConnectMessage {
         custName: this.custName,
         personaName: this.personaName,
         mcVersion: this.mcVersion.toString("hex"),
-      })}`,
-      { service: "mcoserver:ClientConnectMsg" }
-    );
+      })}`
   }
 }
 
@@ -1651,35 +1606,25 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    *
    * @return {void}
    */
-  dumpPacket(): void {
-    this.dumpPacketHeader("NPSPersonaMapsMsg");
-    log("debug", `personaCount:        ${this.personaCount}`, {
-      service: this.serviceName,
-    });
+  dumpPacket(): string {
+    let message = ''
+    message = message.concat(this.dumpPacketHeader("NPSPersonaMapsMsg"))
+    message = message.concat(`personaCount:        ${this.personaCount}`)
     for (const persona of this.personas) {
-      log(
-        "debug",
+      message = message.concat(
         `
         maxPersonaCount:     ${this.deserializeInt8(persona.maxPersonas)}
         id:                  ${this.deserializeInt32(persona.id)}
         shardId:             ${this.deserializeInt32(persona.shardId)}
         name:                ${this.deserializeString(persona.name)}
-        Packet as hex:       ${this.getPacketAsString()}`,
-        {
-          service: this.serviceName,
-        }
-      );
+        Packet as hex:       ${this.getPacketAsString()}`)
 
       // TODO: Work on this more
 
-      log(
-        "debug",
-        "[/NPSPersonaMapsMsg]======================================",
-        {
-          service: this.serviceName,
-        }
-      );
+      message = message.concat(
+        "[/NPSPersonaMapsMsg]======================================")
     }
+    return message
   }
 }
 
@@ -1786,17 +1731,16 @@ export class NPSUserStatus extends NPSMessage {
   /**
    * @return {void}
    */
-  dumpPacket(): void {
-    this.dumpPacketHeader("NPSUserStatus");
-    log(
-      "debug",
+  dumpPacket(): string {
+    let message = this.dumpPacketHeader("NPSUserStatus");
+    message = message.concat(
+      
       `NPSUserStatus,
       ${JSON.stringify({
         contextId: this.contextId,
         sessionkey: this.sessionkey,
-      })}`,
-      { service: "mcoserver:NPSUserStatus" }
-    );
+      })}`)
+      return message
   }
 }
 
@@ -1838,20 +1782,14 @@ export class NPSUserInfo extends NPSMessage {
   /**
    * @return {void}
    */
-  dumpInfo(): void {
-    this.dumpPacketHeader("NPSUserInfo");
-    log("debug", `UserId:        ${this.userId}`, {
-      service: this.serviceName,
-    });
-    log("debug", `UserName:      ${this.userName.toString()}`, {
-      service: this.serviceName,
-    });
-    log("debug", `UserData:      ${this.userData.toString("hex")}`, {
-      service: this.serviceName,
-    });
-    log("debug", "[/NPSUserInfo]======================================", {
-      service: this.serviceName,
-    });
+  dumpInfo(): string {
+    let message = this.dumpPacketHeader("NPSUserInfo");
+    message = message.concat(
+      `UserId:        ${this.userId}
+       UserName:      ${this.userName.toString()}
+       UserData:      ${this.userData.toString("hex")}
+       [/NPSUserInfo]======================================`);
+       return message
   }
 }
 

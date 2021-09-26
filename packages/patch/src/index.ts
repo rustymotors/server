@@ -1,10 +1,10 @@
-import { Logger } from "@drazisil/mco-logger";
+import { pino } from "pino";
 import { EServerConnectionName, AppConfiguration } from "mcos-types";
 import { RoutingMesh } from "mcos-router";
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
 import { ConfigurationManager } from "mcos-config";
 
-const { log } = Logger.getInstance();
+const log = pino();
 export const CastanetResponse = {
   body: Buffer.from("cafebeef00000000000003", "hex"),
   header: {
@@ -34,10 +34,10 @@ export class PatchServer {
 
     this._server.on("error", (error) => {
       process.exitCode = -1;
-      log("error", `Server error: ${error.message}`, {
+      log.error("error", `Server error: ${error.message}`, {
         service: this._serviceName,
       });
-      log("info", `Server shutdown: ${process.exitCode}`, {
+      log.info("info", `Server shutdown: ${process.exitCode}`, {
         service: this._serviceName,
       });
       process.exit();
@@ -51,7 +51,7 @@ export class PatchServer {
       case "/games/EA_Seattle/MotorCity/UpdateInfo":
       case "/games/EA_Seattle/MotorCity/NPS":
       case "/games/EA_Seattle/MotorCity/MCO":
-        log(
+        log.debug(
           "debug",
           `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
           { service: this._serviceName }
@@ -72,8 +72,8 @@ export class PatchServer {
     const host = this._config.serverSettings.ipServer || "localhost";
     const port = 81;
     return this._server.listen({ port, host }, () => {
-      log("debug", `port ${port} listening`, { service: this._serviceName });
-      log("info", "Patch server is listening...", {
+      log.debug("debug", `port ${port} listening`, { service: this._serviceName });
+      log.info("info", "Patch server is listening...", {
         service: this._serviceName,
       });
 

@@ -6,6 +6,7 @@
   "dependencies": {
     "@types/node": "^16.9.6",
     "@types/sqlite3": "3.1.7",
+    "pino": "next",
     "sqlite": "4.0.23",
     "ts-node": "^10.2.1"
   },

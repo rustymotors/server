@@ -1,15 +1,19 @@
+import { createServer } from "net";
+import { pino } from "pino";
 import { RoutingServer } from "./src/index";
 
 const router = RoutingServer.getInstance()
 
-import { createServer } from "net";
+const log = pino().child({ service: router.serviceName})
 
 const server = createServer()
 server.on("listening", () => {
   const listeningAddress = server.address()
   if (typeof listeningAddress !== 'string' && listeningAddress !== null && listeningAddress.port !== undefined)
-    console.log(`Server is listening on port ${listeningAddress.port}`)
+    log.info(`Server is listening on port ${listeningAddress.port}`)
 })
 server.on("connection", (sock) => {
   sock.on("data", router.handleData)
 })
+
+server.listen(4242)

@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from "@drazisil/mco-logger";
+import { pino } from "pino";
 import { createServer, Server, Socket } from "net";
 import {
   UnprocessedPacket,
@@ -14,7 +14,7 @@ import {
   IListenerThread,
 } from "mcos-types";
 
-const { log } = Logger.getInstance();
+const log = pino();
 
 export class ListenerThread implements IListenerThread {
   static _instance: IListenerThread;
@@ -46,7 +46,7 @@ export class ListenerThread implements IListenerThread {
       timestamp: Date.now(),
     };
     // Dump the raw packet
-    log(
+    log.debug(
       "debug",
       `rawPacket's data prior to proccessing, { data: ${rawPacket.data.toString(
         "hex"
@@ -61,7 +61,7 @@ export class ListenerThread implements IListenerThread {
         const newError = new Error(
           `There was an error processing the packet: ${error.message}`
         );
-        log("error", newError.message, { service: this.serviceName });
+        log.error("error", newError.message, { service: this.serviceName });
         throw newError;
       }
       throw error;
@@ -82,7 +82,7 @@ export class ListenerThread implements IListenerThread {
         const newError = new Error(
           `There was an error updating the connection: ${error.message}`
         );
-        log("error", newError.message, { service: this.serviceName });
+        log.error("error", newError.message, { service: this.serviceName });
         throw newError;
       }
       throw error;
@@ -102,7 +102,7 @@ export class ListenerThread implements IListenerThread {
     const connection = connectionMgr.findOrNewConnection(socket);
 
     const { localPort, remoteAddress } = socket;
-    log("info", `Client ${remoteAddress} connected to port ${localPort}`, {
+    log.info("info", `Client ${remoteAddress} connected to port ${localPort}`, {
       service: "mcoserver:ListenerThread",
     });
     if (socket.localPort === 7003 && connection.inQueue) {
@@ -116,7 +116,7 @@ export class ListenerThread implements IListenerThread {
     }
 
     socket.on("end", () => {
-      log(
+      log.info(
         "info",
         `Client ${remoteAddress} disconnected from port ${localPort}`,
         {

@@ -5,13 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Logger } from "@drazisil/mco-logger";
+import { pino } from "pino";
 import { DatabaseManager } from "mcos-database";
 import { UnprocessedPacket, ITCPConnection, UserRecordMini } from "mcos-types";
 import { NPSUserStatus, premadeLogin } from "mcos-messages";
 import { ConfigurationManager } from "mcos-config";
 
-const { log } = Logger.getInstance();
+const log = pino();
 
 /**
  * Manages the initial game connection setup and teardown.
@@ -48,7 +48,7 @@ export class LoginServer {
     let processed = true;
     const { connection, data } = rawPacket;
     const { localPort, remoteAddress } = rawPacket;
-    log(
+    log.info(
       "info",
       `Received Login Server packet: ${JSON.stringify({
         localPort,
@@ -70,7 +70,7 @@ export class LoginServer {
       }
 
       default:
-        log(
+        log.debug(
           "debug",
           `Unknown nps code recieved',
           ${JSON.stringify({
@@ -84,7 +84,7 @@ export class LoginServer {
     }
 
     if (processed && responsePacket) {
-      log(
+      log.debug(
         "debug",
         `responsePacket object from dataHandler',
       ${JSON.stringify({
@@ -92,7 +92,7 @@ export class LoginServer {
       })}`,
         { service: this.serviceName }
       );
-      log(
+      log.debug(
         "debug",
         `responsePacket's data prior to sending: ${responsePacket.toString(
           "hex"
@@ -113,7 +113,7 @@ export class LoginServer {
   async _npsGetCustomerIdByContextId(
     contextId: string
   ): Promise<UserRecordMini> {
-    log("debug", ">>> _npsGetCustomerIdByContextId", {
+    log.debug("debug", ">>> _npsGetCustomerIdByContextId", {
       service: this.serviceName,
     });
     const users: UserRecordMini[] = [
@@ -134,7 +134,7 @@ export class LoginServer {
 
     const userRecord = users.filter((user) => user.contextId === contextId);
     if (userRecord.length !== 1) {
-      log(
+      log.debug(
         "debug",
         `preparing to leave _npsGetCustomerIdByContextId after not finding record',
         ${JSON.stringify({
@@ -147,7 +147,7 @@ export class LoginServer {
       );
     }
 
-    log(
+    log.debug(
       "debug",
       `preparing to leave _npsGetCustomerIdByContextId after finding record',
       ${JSON.stringify({
@@ -171,7 +171,7 @@ export class LoginServer {
     const { sock } = connection;
     const { localPort } = sock;
     const userStatus = new NPSUserStatus(data);
-    log(
+    log.info(
       "info",
       `Received login packet,
       ${JSON.stringify({
@@ -186,7 +186,7 @@ export class LoginServer {
       data
     );
 
-    log(
+    log.debug(
       "debug",
       `UserStatus object from _userLogin,
       ${JSON.stringify({
@@ -203,7 +203,7 @@ export class LoginServer {
     );
 
     // Save sessionkey in database under customerId
-    log("debug", "Preparing to update session key in db", {
+    log.debug("debug", "Preparing to update session key in db", {
       service: this.serviceName,
     });
     await this.databaseManager
@@ -214,19 +214,19 @@ export class LoginServer {
         connection.id
       )
       .catch((error) => {
-        log("error", `Unable to update session key 3: ${error}`, {
+        log.error("error", `Unable to update session key 3: ${error}`, {
           service: this.serviceName,
         });
         throw new Error("Error in userLogin");
       });
 
-    log("info", "Session key updated", { service: this.serviceName });
+    log.info("info", "Session key updated", { service: this.serviceName });
 
     // Create the packet content
     // TODO: This needs to be dynamically generated, right now we are using a
     // a static packet that works _most_ of the time
     const packetContent = premadeLogin();
-    log("debug", `Using Premade Login: ${packetContent.toString("hex")}`, {
+    log.debug("debug", `Using Premade Login: ${packetContent.toString("hex")}`, {
       service: this.serviceName,
     });
 

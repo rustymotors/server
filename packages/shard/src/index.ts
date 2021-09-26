@@ -5,7 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import { Logger } from "@drazisil/mco-logger";
+import { pino } from "pino";
 import { readFileSync } from "fs";
 import { EServerConnectionName, AppConfiguration } from "mcos-types";
 import { ShardEntry } from "./shard-entry";
@@ -16,13 +16,12 @@ import { IncomingMessage, ServerResponse } from "http";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
-const { log } = Logger.getInstance();
+const log = pino();
 
 /**
  * Manages patch and update server connections
  * Also handles the shard list, and some utility endpoints
  * TODO: Document the endpoints
- * @module PatchServer
  */
 
 /**
@@ -55,10 +54,10 @@ export class ShardServer {
 
     this._server.on("error", (error) => {
       process.exitCode = -1;
-      log("error", `Server error: ${error.message}`, {
+      log.error("error", `Server error: ${error.message}`, {
         service: this._serviceName,
       });
-      log("info", `Server shutdown: ${process.exitCode}`, {
+      log.info("info", `Server shutdown: ${process.exitCode}`, {
         service: this._serviceName,
       });
       process.exit();
@@ -206,7 +205,7 @@ export class ShardServer {
     }
 
     if (request.url === "/ShardList/") {
-      log(
+      log.debug(
         "debug",
         `Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
         { service: this._serviceName }
@@ -221,7 +220,7 @@ export class ShardServer {
     response.end("");
 
     // Unknown request, log it
-    log(
+    log.info(
       "info",
       `Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
       { service: this._serviceName }
@@ -232,8 +231,8 @@ export class ShardServer {
     const host = this._config.serverSettings.ipServer || "localhost";
     const port = 82;
     return this._server.listen({ port, host }, () => {
-      log("debug", `port ${port} listening`, { service: this._serviceName });
-      log("info", "Patch server is listening...", {
+      log.debug("debug", `port ${port} listening`, { service: this._serviceName });
+      log.info("info", "Patch server is listening...", {
         service: this._serviceName,
       });
 

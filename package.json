@@ -36,14 +36,14 @@
     "url": "git@github.com:drazisil/mco-server.git"
   },
   "dependencies": {
-    "@drazisil/mco-logger": "4.1.10",
     "mcos-admin": "workspace:^",
     "mcos-auth": "workspace:^",
     "mcos-core": "workspace:^",
     "mcos-patch": "workspace:^",
     "mcos-proxy": "workspace:^",
     "mcos-router": "workspace:^",
-    "mcos-shard": "workspace:^"
+    "mcos-shard": "workspace:^",
+    "pino": "next"
   },
   "devDependencies": {
     "@babel/cli": "7.15.7",

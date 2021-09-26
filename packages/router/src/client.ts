@@ -1,4 +1,4 @@
-import { Logger } from "@drazisil/mco-logger";
+import { pino } from "pino";
 import {
   EServerConnectionAction,
   EServerConnectionName,
@@ -6,7 +6,7 @@ import {
 } from "mcos-types";
 import { createConnection } from "net";
 
-const { log } = Logger.getInstance();
+const log = pino();
 
 export class RoutingMesh {
   static getInstance(): RoutingMesh {
@@ -38,7 +38,7 @@ export class RoutingMesh {
   ): void {
     const client = createConnection({ port: 4242 }, () => {
       // 'connect' listener.
-      log("debug", "Connected to RoutingServer", {
+      log.debug("debug", "Connected to RoutingServer", {
         service,
       });
       client.end(inputBuffer);
@@ -48,7 +48,7 @@ export class RoutingMesh {
       client.end();
     });
     client.on("end", () => {
-      log("info", "disconnected from RoutingServer", {
+      log.info("info", "disconnected from RoutingServer", {
         service,
       });
     });

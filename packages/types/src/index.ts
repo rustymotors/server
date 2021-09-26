@@ -739,7 +739,7 @@ export interface IMessageNode {
   setMsgHeader: (packet: Buffer) => void;
   updateBuffer: (buffer: Buffer) => void;
   isMCOTS: () => boolean;
-  dumpPacket: () => void;
+  dumpPacket: () => string;
   getLength: () => number;
   BaseMsgHeader: (packet: Buffer) => void;
 }
