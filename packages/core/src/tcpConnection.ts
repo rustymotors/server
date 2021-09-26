@@ -1,4 +1,4 @@
-// Mco-server is a game server, written from scratch, for an old game
+// mcos is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
@@ -12,7 +12,7 @@ import {
   ITCPConnection,
   UnprocessedPacket,
   LobbyCipers,
-} from "@mco-server/types";
+} from "mcos-types";
 import { createCipheriv, createDecipheriv } from "crypto";
 import { Socket } from "net";
 import { Logger } from "@drazisil/mco-logger";

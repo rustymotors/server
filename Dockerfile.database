@@ -14,6 +14,6 @@ EXPOSE 4242
 # EXPOSE 443
 RUN chown -R node /usr/src/app
 USER node
-CMD ["yarn", "workspace", "@mco-server/database", "start"]
+CMD ["yarn", "workspace", "mcos-database", "start"]
 # CMD ["sh"]
 

@@ -1,19 +1,19 @@
 {
-  "name": "@mco-server/core",
+  "name": "mcos-core",
   "version": "1.0.0",
   "main": "src/index.ts",
   "license": "MIT",
   "dependencies": {
     "@drazisil/mco-logger": "^4.1.10",
-    "@mco-server/config": "workspace:^",
-    "@mco-server/database": "workspace:^",
-    "@mco-server/lobby": "workspace:^",
-    "@mco-server/login": "workspace:^",
-    "@mco-server/message-types": "workspace:^",
-    "@mco-server/persona": "workspace:^",
-    "@mco-server/transactions": "workspace:^",
-    "@mco-server/types": "workspace:^",
     "@types/node": "^16.9.6",
+    "mcos-config": "workspace:^",
+    "mcos-database": "workspace:^",
+    "mcos-lobby": "workspace:^",
+    "mcos-login": "workspace:^",
+    "mcos-messages": "workspace:^",
+    "mcos-persona": "workspace:^",
+    "mcos-transactions": "workspace:^",
+    "mcos-types": "workspace:^",
     "ts-node": "^10.2.1"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-// Mco-server is a game server, written from scratch, for an old game
+// mcos is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from "@drazisil/mco-logger";
-import { DatabaseManager } from "@mco-server/database";
+import { DatabaseManager } from "mcos-database";
 import { MCOTServer } from "./index";
 import {
   ClientConnectMessage,
@@ -15,7 +15,7 @@ import {
   MessageNode,
   StockCar,
   StockCarInfoMessage,
-} from "@mco-server/message-types";
+} from "mcos-messages";
 import {
   ITCPConnection,
   EMessageDirection,
@@ -23,7 +23,7 @@ import {
   ConnectionWithPackets,
   ITCPManager,
   UnprocessedPacket,
-} from "@mco-server/types";
+} from "mcos-types";
 
 const { log } = Logger.getInstance();
 

@@ -1,5 +1,5 @@
 {
-  "name": "@mco-server/types",
+  "name": "mcos-types",
   "version": "1.0.0",
   "main": "src/index.ts",
   "license": "MIT",

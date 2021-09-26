@@ -1,4 +1,4 @@
-# MCO-Server
+# mcos
 
 ![Node.js CI](https://github.com/drazisil/mco-server/workflows/Node.js%20CI/badge.svg)
 [![CodeQL](https://github.com/drazisil/mco-server/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/drazisil/mco-server/actions/workflows/codeql-analysis.yml)[![Node.js CI](https://github.com/drazisil/mco-server/actions/workflows/node.yml/badge.svg)](https://github.com/drazisil/mco-server/actions/workflows/node.yml)

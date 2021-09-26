@@ -1,5 +1,5 @@
 // @ts-check
-// Mco-server is a game server, written from scratch, for an old game
+// mcos is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
@@ -7,14 +7,14 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { Logger } from "@drazisil/mco-logger";
-import { DatabaseManager } from "@mco-server/database";
+import { DatabaseManager } from "mcos-database";
 import {
   EMessageDirection,
   UnprocessedPacket,
   ITCPConnection,
-} from "@mco-server/types";
-import { NPSMessage, NPSUserInfo } from "@mco-server/message-types";
-import { PersonaServer } from "@mco-server/persona";
+} from "mcos-types";
+import { NPSMessage, NPSUserInfo } from "mcos-messages";
+import { PersonaServer } from "mcos-persona";
 
 const { log } = Logger.getInstance();
 

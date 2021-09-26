@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// Mco-server is a game server, written from scratch, for an old game
+// mcos is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
@@ -11,7 +11,7 @@ import { SocketFactory } from "./../../test-helpers/socket-factory";
 import { ConnectionManager } from "../src/connection-mgr";
 import { ListenerThread } from "../src/listener-thread";
 
-jest.mock("@mco-server/database");
+jest.mock("mcos-database");
 
 it("ListenerThread - _onData", async () => {
   const listenerThread = ListenerThread.getInstance();

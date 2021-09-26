@@ -1,5 +1,5 @@
 // @ts-check
-import { AppConfiguration } from "@mco-server/types";
+import { AppConfiguration } from "mcos-types";
 import { _sslOptions } from "./ssl-options";
 import { savedConfig } from "./config";
 

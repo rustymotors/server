@@ -1,10 +1,6 @@
 // TODO: These are types. They should not log
 import { Logger } from "@drazisil/mco-logger";
-import {
-  EMessageDirection,
-  AppConfiguration,
-  PersonaRecord,
-} from "@mco-server/types";
+import { EMessageDirection, AppConfiguration, PersonaRecord } from "mcos-types";
 import { readFileSync, statSync } from "fs";
 import { privateDecrypt } from "crypto";
 

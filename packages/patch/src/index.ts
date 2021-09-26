@@ -1,8 +1,8 @@
 import { Logger } from "@drazisil/mco-logger";
-import { EServerConnectionName, AppConfiguration } from "@mco-server/types";
-import { RoutingMesh } from "@mco-server/router";
+import { EServerConnectionName, AppConfiguration } from "mcos-types";
+import { RoutingMesh } from "mcos-router";
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
-import { ConfigurationManager } from "@mco-server/config";
+import { ConfigurationManager } from "mcos-config";
 
 const { log } = Logger.getInstance();
 export const CastanetResponse = {

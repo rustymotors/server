@@ -1,15 +1,15 @@
 {
-  "name": "@mco-server/lobby",
+  "name": "mcos-lobby",
   "version": "1.0.0",
   "main": "src/index.ts",
   "license": "MIT",
   "dependencies": {
     "@drazisil/mco-logger": "^4.1.10",
-    "@mco-server/database": "workspace:^",
-    "@mco-server/message-types": "workspace:^",
-    "@mco-server/persona": "workspace:^",
-    "@mco-server/types": "workspace:^",
     "@types/node": "^16.9.6",
+    "mcos-database": "workspace:^",
+    "mcos-messages": "workspace:^",
+    "mcos-persona": "workspace:^",
+    "mcos-types": "workspace:^",
     "ts-node": "^10.2.1"
   },
   "devDependencies": {

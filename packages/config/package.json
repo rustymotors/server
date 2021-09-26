@@ -1,12 +1,12 @@
 {
-  "name": "@mco-server/config",
+  "name": "mcos-config",
   "version": "1.0.0",
   "main": "src/index.ts",
   "license": "MIT",
   "dependencies": {
     "@drazisil/mco-logger": "^4.1.10",
-    "@mco-server/types": "workspace:^",
     "@types/node": "^16.9.6",
+    "mcos-types": "workspace:^",
     "ts-node": "^10.2.1"
   },
   "devDependencies": {

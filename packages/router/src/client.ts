@@ -3,7 +3,7 @@ import {
   EServerConnectionAction,
   EServerConnectionName,
   ServerConnectionRecord,
-} from "@mco-server/types";
+} from "mcos-types";
 import { createConnection } from "net";
 
 const { log } = Logger.getInstance();

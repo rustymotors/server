@@ -1,14 +1,14 @@
 {
-  "name": "@mco-server/database",
+  "name": "mcos-database",
   "version": "1.0.0",
   "main": "src/index.ts",
   "license": "MIT",
   "dependencies": {
     "@drazisil/mco-logger": "4.1.10",
-    "@mco-server/config": "workspace:^",
-    "@mco-server/router": "workspace:^",
-    "@mco-server/types": "workspace:^",
     "@types/node": "^16.9.6",
+    "mcos-config": "workspace:^",
+    "mcos-router": "workspace:^",
+    "mcos-types": "workspace:^",
     "slonik": "24.1.0",
     "sqlite": "4.0.23",
     "sqlite3": "4",

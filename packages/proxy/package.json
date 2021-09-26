@@ -1,15 +1,15 @@
 {
-  "name": "@mco-server/proxy",
+  "name": "mcos-proxy",
   "version": "1.0.0",
   "main": "src/index.ts",
   "license": "MIT",
   "dependencies": {
     "@drazisil/mco-logger": "^4.1.10",
-    "@mco-server/patch": "workspace:^",
-    "@mco-server/router": "workspace:^",
-    "@mco-server/shard": "workspace:^",
-    "@mco-server/types": "workspace:^",
     "@types/node": "^16.9.6",
+    "mcos-patch": "workspace:^",
+    "mcos-router": "workspace:^",
+    "mcos-shard": "workspace:^",
+    "mcos-types": "workspace:^",
     "ts-node": "^10.2.1"
   },
   "devDependencies": {

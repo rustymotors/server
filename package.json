@@ -1,5 +1,5 @@
 {
-  "name": "mco-server",
+  "name": "mcos",
   "version": "3.0.0-beta1",
   "description": "a server",
   "main": "index.js",
@@ -37,13 +37,13 @@
   },
   "dependencies": {
     "@drazisil/mco-logger": "4.1.10",
-    "@mco-server/admin": "workspace:^",
-    "@mco-server/auth": "workspace:^",
-    "@mco-server/core": "workspace:^",
-    "@mco-server/patch": "workspace:^",
-    "@mco-server/proxy": "workspace:^",
-    "@mco-server/router": "workspace:^",
-    "@mco-server/shard": "workspace:^"
+    "mcos-admin": "workspace:^",
+    "mcos-auth": "workspace:^",
+    "mcos-core": "workspace:^",
+    "mcos-patch": "workspace:^",
+    "mcos-proxy": "workspace:^",
+    "mcos-router": "workspace:^",
+    "mcos-shard": "workspace:^"
   },
   "devDependencies": {
     "@babel/cli": "7.15.7",

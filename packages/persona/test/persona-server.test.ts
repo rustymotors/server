@@ -1,4 +1,4 @@
-// Mco-server is a game server, written from scratch, for an old game
+// mcos is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
@@ -7,9 +7,10 @@
 
 import { expect, it, jest, beforeEach, describe } from "@jest/globals";
 import { PersonaServer } from "../src";
-import { NPSMessage } from "@mco-server/message-types";
-import { EMessageDirection } from "@mco-server/types";
+
 import { SocketFactory } from "./../../test-helpers/socket-factory";
+import { NPSMessage } from "mcos-messages";
+import { EMessageDirection } from "mcos-types";
 
 jest.mock("net");
 let personaServer: PersonaServer;

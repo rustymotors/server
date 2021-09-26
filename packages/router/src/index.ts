@@ -1,18 +1,11 @@
-import {
-  EServerConnectionAction,
-  ServerConnectionRecord,
-} from "@mco-server/types";
+import { EServerConnectionAction, ServerConnectionRecord } from "mcos-types";
 import { Logger } from "@drazisil/mco-logger";
 import { RoutingMesh } from "./client";
-import { Server, createServer } from "net";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 
 const { log } = Logger.getInstance();
 
 export class RoutingServer {
   static _instance: RoutingServer;
-  private _server: Server;
   private _serverConnections: ServerConnectionRecord[] = [];
   private _serviceName = "MCOServer:Route";
 
@@ -24,29 +17,9 @@ export class RoutingServer {
   }
 
   private constructor() {
-    this._server = createServer((socket) => {
-      socket.on("end", () => {
-        const { localPort, remoteAddress, remotePort } = socket;
-
-        log(
-          "debug",
-          `Service ${remoteAddress}:${remotePort} disconnected from port ${localPort}`,
-          {
-            service: this._serviceName,
-          }
-        );
-      });
-      socket.on("data", (data) => {
-        this._handleData(data);
-      });
-      socket.on("error", (error) => {
-        if (!error.message.includes("ECONNRESET")) {
-          throw new Error(`Socket error: ${error}`);
-        }
-      });
-    });
+    // Intentionaly empty
   }
-  private _handleData(data: Buffer): void {
+  handleData(data: Buffer): void {
     const payload = data.toString();
     log("debug", `Payload: ${payload}`, {
       service: this._serviceName,
@@ -95,20 +68,6 @@ export class RoutingServer {
         service: this._serviceName,
       }
     );
-  }
-
-  async start(): Promise<Server> {
-    let port = 4141
-    if (process.env.LISTEN_PORT && process.env.LISTEN_PORT !== '') {
-      port = Number.parseInt(process.env.LISTEN_PORT)
-    }
-
-    this._server.listen(port, "0.0.0.0", () => {
-      log("info", `RoutingServer listening on port ${port}`, {
-        service: this._serviceName,
-      });
-    });
-    return this._server;
   }
 }
 

@@ -1,5 +1,5 @@
 // @ts-check
-// Mco-server is a game server, written from scratch, for an old game
+// mcos is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
@@ -9,12 +9,12 @@
 import { Logger } from "@drazisil/mco-logger";
 import { IncomingMessage, ServerResponse } from "http";
 import { Socket } from "net";
-import { AppConfiguration, SslOptions } from "@mco-server/types";
+import { AppConfiguration, SslOptions } from "mcos-types";
 import { readFileSync } from "fs";
-import { EServerConnectionName } from "@mco-server/types";
-import { RoutingMesh } from "@mco-server/router";
+import { EServerConnectionName } from "mcos-types";
+import { RoutingMesh } from "mcos-router";
 import { createServer, Server } from "https";
-import { ConfigurationManager } from "@mco-server/config";
+import { ConfigurationManager } from "mcos-config";
 
 const { log } = Logger.getInstance();
 

@@ -1,4 +1,4 @@
-// Mco-server is a game server, written from scratch, for an old game
+// mcos is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
@@ -6,9 +6,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { expect, test, jest } from "@jest/globals";
-import { MCServer } from "@mco-server/core";
+import { MCServer } from "mcos-core";
 import { AdminServer } from "../src/index";
-jest.mock("@mco-server/core");
+jest.mock("mcos-core");
 jest.mock("net");
 
 test("AdminServer", () => {

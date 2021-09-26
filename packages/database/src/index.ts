@@ -1,5 +1,5 @@
 // @ts-check
-// Mco-server is a game server, written from scratch, for an old game
+// mcos is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
@@ -8,14 +8,17 @@
 
 import * as sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
-import { AppConfiguration, EServerConnectionName, IDatabaseManager, SessionRecord } from "@mco-server/types";
-import { Logger } from "@drazisil/mco-logger";
-import { ConfigurationManager } from "@mco-server/config";
 import {
-  createPool,
-} from 'slonik';
+  AppConfiguration,
+  EServerConnectionName,
+  IDatabaseManager,
+  SessionRecord,
+} from "mcos-types";
+import { Logger } from "@drazisil/mco-logger";
+import { ConfigurationManager } from "mcos-config";
+import { createPool } from "slonik";
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
-import { RoutingMesh } from "@mco-server/router";
+import { RoutingMesh } from "mcos-router";
 
 const { log } = Logger.getInstance();
 
@@ -26,7 +29,7 @@ export class DatabaseManager implements IDatabaseManager {
   changes = 0;
   serviceName: string;
   localDB: Database | undefined;
-  private pool
+  private pool;
 
   public static getInstance(): DatabaseManager {
     if (!DatabaseManager._instance) {
@@ -34,7 +37,6 @@ export class DatabaseManager implements IDatabaseManager {
     }
 
     const self = DatabaseManager._instance;
-
 
     open({ filename: "mco.db", driver: sqlite3.Database })
       .then(async (db) => {
@@ -154,7 +156,7 @@ export class DatabaseManager implements IDatabaseManager {
     this.serviceName = "mcoserver:DatabaseMgr";
 
     this._config = ConfigurationManager.getInstance().getConfig();
-    this.pool = createPool('postgres://postgres:password@db:5432');
+    this.pool = createPool("postgres://postgres:password@db:5432");
 
     this._server = createServer((request, response) => {
       this.handleRequest(request, response);
@@ -173,19 +175,20 @@ export class DatabaseManager implements IDatabaseManager {
   }
 
   handleRequest(request: IncomingMessage, response: ServerResponse): void {
-
     const header = {
       type: "Content-Type",
       value: "application/json",
-    }
+    };
 
     switch (request.url) {
       case "/":
         response.setHeader(header.type, header.value);
-        response.end(JSON.stringify({
-          status: 200,
-          message: 'Hello'
-        }));
+        response.end(
+          JSON.stringify({
+            status: 200,
+            message: "Hello",
+          })
+        );
         break;
 
       default:

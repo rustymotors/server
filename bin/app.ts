@@ -1,19 +1,19 @@
 /*
- Mco-server is a game server, written from scratch, for an old game
+ mcos is a game server, written from scratch, for an old game
  Copyright (C) <2017-2018>  <Joseph W Becher>
  This Source Code Form is subject to the terms of the Mozilla Public
  License, v. 2.0. If a copy of the MPL was not distributed with this
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-// import { RoutingServer } from "@mco-server/router";
-import { RoutingServer } from "@mco-server/router";
-import { PatchServer } from "@mco-server/patch";
-import { AuthLogin } from "@mco-server/auth";
-import { ShardServer } from "@mco-server/shard";
-import { HTTPProxyServer } from "@mco-server/proxy";
-import { MCServer } from "@mco-server/core";
-import { AdminServer } from "@mco-server/admin";
+// import { RoutingServer } from "mcos-router";
+import { RoutingServer } from "mcos-router";
+import { PatchServer } from "mcos-patch";
+import { AuthLogin } from "mcos-auth";
+import { ShardServer } from "mcos-shard";
+import { HTTPProxyServer } from "mcos-proxy";
+import { MCServer } from "mcos-core";
+import { AdminServer } from "mcos-admin";
 
 // What servers do we need?
 // * Routing Server

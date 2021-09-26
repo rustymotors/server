@@ -1,5 +1,5 @@
 // @ts-check
-// Mco-server is a game server, written from scratch, for an old game
+// mcos is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
@@ -7,11 +7,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import { Logger } from "@drazisil/mco-logger";
 import { readFileSync } from "fs";
-import { EServerConnectionName, AppConfiguration } from "@mco-server/types";
+import { EServerConnectionName, AppConfiguration } from "mcos-types";
 import { ShardEntry } from "./shard-entry";
-import { RoutingMesh } from "@mco-server/router";
+import { RoutingMesh } from "mcos-router";
 import { createServer, Server } from "https";
-import { ConfigurationManager } from "@mco-server/config";
+import { ConfigurationManager } from "mcos-config";
 import { IncomingMessage, ServerResponse } from "http";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility

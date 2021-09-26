@@ -1,15 +1,15 @@
 {
-  "name": "@mco-server/login",
+  "name": "mcos-login",
   "version": "1.0.0",
   "main": "src/index.ts",
   "license": "MIT",
   "dependencies": {
     "@drazisil/mco-logger": "^4.1.10",
-    "@mco-server/config": "workspace:^",
-    "@mco-server/database": "workspace:^",
-    "@mco-server/message-types": "workspace:^",
-    "@mco-server/types": "workspace:^",
     "@types/node": "^16.9.6",
+    "mcos-config": "workspace:^",
+    "mcos-database": "workspace:^",
+    "mcos-messages": "workspace:^",
+    "mcos-types": "workspace:^",
     "ts-node": "^10.2.1"
   },
   "devDependencies": {

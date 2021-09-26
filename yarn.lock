@@ -1634,436 +1634,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mco-server/admin@workspace:^, @mco-server/admin@workspace:packages/admin":
-  version: 0.0.0-use.local
-  resolution: "@mco-server/admin@workspace:packages/admin"
-  dependencies:
-    "@babel/cli": 7.15.7
-    "@babel/core": 7.15.8
-    "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.3.1
-    "@mco-server/config": "workspace:^"
-    "@mco-server/core": "workspace:^"
-    "@mco-server/types": "workspace:^"
-    "@types/babel__core": 7.1.16
-    "@types/eslint": 7.28.2
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.4.1
-    "@typescript-eslint/eslint-plugin": 5.2.0
-    "@typescript-eslint/parser": 5.2.0
-    eslint: 8.1.0
-    eslint-config-prettier: 8.3.0
-    jest: 27.3.1
-    prettier: 2.4.1
-    prettier-eslint: 13.0.0
-    ts-jest: 27.0.7
-    ts-node: ^10.2.1
-    typescript: 4.4.4
-  languageName: unknown
-  linkType: soft
-
-"@mco-server/auth@workspace:^, @mco-server/auth@workspace:packages/auth":
-  version: 0.0.0-use.local
-  resolution: "@mco-server/auth@workspace:packages/auth"
-  dependencies:
-    "@babel/cli": 7.15.7
-    "@babel/core": 7.15.8
-    "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.3.1
-    "@mco-server/config": "workspace:^"
-    "@mco-server/router": "workspace:^"
-    "@mco-server/types": "workspace:^"
-    "@types/babel__core": 7.1.16
-    "@types/eslint": 7.28.2
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.4.1
-    "@typescript-eslint/eslint-plugin": 5.2.0
-    "@typescript-eslint/parser": 5.2.0
-    eslint: 8.1.0
-    eslint-config-prettier: 8.3.0
-    jest: 27.3.1
-    prettier: 2.4.1
-    prettier-eslint: 13.0.0
-    ts-jest: 27.0.7
-    ts-node: ^10.2.1
-    typescript: 4.4.4
-  languageName: unknown
-  linkType: soft
-
-"@mco-server/config@workspace:^, @mco-server/config@workspace:packages/config":
-  version: 0.0.0-use.local
-  resolution: "@mco-server/config@workspace:packages/config"
-  dependencies:
-    "@babel/cli": 7.15.7
-    "@babel/core": 7.15.8
-    "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.3.1
-    "@mco-server/types": "workspace:^"
-    "@types/babel__core": 7.1.16
-    "@types/eslint": 7.28.2
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.4.1
-    "@typescript-eslint/eslint-plugin": 5.2.0
-    "@typescript-eslint/parser": 5.2.0
-    eslint: 8.1.0
-    eslint-config-prettier: 8.3.0
-    jest: 27.3.1
-    prettier: 2.4.1
-    prettier-eslint: 13.0.0
-    ts-jest: 27.0.7
-    ts-node: ^10.2.1
-    typescript: 4.4.4
-  languageName: unknown
-  linkType: soft
-
-"@mco-server/core@workspace:^, @mco-server/core@workspace:packages/core":
-  version: 0.0.0-use.local
-  resolution: "@mco-server/core@workspace:packages/core"
-  dependencies:
-    "@babel/cli": 7.15.7
-    "@babel/core": 7.15.8
-    "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.3.1
-    "@mco-server/config": "workspace:^"
-    "@mco-server/database": "workspace:^"
-    "@mco-server/lobby": "workspace:^"
-    "@mco-server/login": "workspace:^"
-    "@mco-server/message-types": "workspace:^"
-    "@mco-server/persona": "workspace:^"
-    "@mco-server/transactions": "workspace:^"
-    "@mco-server/types": "workspace:^"
-    "@types/babel__core": 7.1.16
-    "@types/eslint": 7.28.2
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.4.1
-    "@typescript-eslint/eslint-plugin": 5.2.0
-    "@typescript-eslint/parser": 5.2.0
-    eslint: 8.1.0
-    eslint-config-prettier: 8.3.0
-    jest: 27.3.1
-    prettier: 2.4.1
-    prettier-eslint: 13.0.0
-    ts-jest: 27.0.7
-    ts-node: ^10.2.1
-    tslib: 2.3.1
-    typescript: 4.4.4
-  languageName: unknown
-  linkType: soft
-
-"@mco-server/database@workspace:^, @mco-server/database@workspace:packages/database":
-  version: 0.0.0-use.local
-  resolution: "@mco-server/database@workspace:packages/database"
-  dependencies:
-    "@babel/cli": 7.15.7
-    "@babel/core": 7.15.8
-    "@drazisil/mco-logger": 4.1.10
-    "@jest/globals": 27.3.1
-    "@mco-server/config": "workspace:^"
-    "@mco-server/router": "workspace:^"
-    "@mco-server/types": "workspace:^"
-    "@types/babel__core": 7.1.16
-    "@types/eslint": 7.28.2
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.4.1
-    "@typescript-eslint/eslint-plugin": 5.2.0
-    "@typescript-eslint/parser": 5.2.0
-    eslint: 8.1.0
-    eslint-config-prettier: 8.3.0
-    jest: 27.3.1
-    prettier: 2.4.1
-    prettier-eslint: 13.0.0
-    slonik: 24.1.0
-    sqlite: 4.0.23
-    sqlite3: 4
-    ts-jest: 27.0.7
-    ts-node: ^10.2.1
-    tslib: 2.3.1
-    typescript: 4.4.4
-  languageName: unknown
-  linkType: soft
-
-"@mco-server/lobby@workspace:^, @mco-server/lobby@workspace:packages/lobby":
-  version: 0.0.0-use.local
-  resolution: "@mco-server/lobby@workspace:packages/lobby"
-  dependencies:
-    "@babel/cli": 7.15.7
-    "@babel/core": 7.15.8
-    "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.3.1
-    "@mco-server/database": "workspace:^"
-    "@mco-server/message-types": "workspace:^"
-    "@mco-server/persona": "workspace:^"
-    "@mco-server/types": "workspace:^"
-    "@types/babel__core": 7.1.16
-    "@types/eslint": 7.28.2
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.4.1
-    "@typescript-eslint/eslint-plugin": 5.2.0
-    "@typescript-eslint/parser": 5.2.0
-    eslint: 8.1.0
-    eslint-config-prettier: 8.3.0
-    jest: 27.3.1
-    prettier: 2.4.1
-    prettier-eslint: 13.0.0
-    ts-jest: 27.0.7
-    ts-node: ^10.2.1
-    typescript: 4.4.4
-  languageName: unknown
-  linkType: soft
-
-"@mco-server/login@workspace:^, @mco-server/login@workspace:packages/login":
-  version: 0.0.0-use.local
-  resolution: "@mco-server/login@workspace:packages/login"
-  dependencies:
-    "@babel/cli": 7.15.7
-    "@babel/core": 7.15.8
-    "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.3.1
-    "@mco-server/config": "workspace:^"
-    "@mco-server/database": "workspace:^"
-    "@mco-server/message-types": "workspace:^"
-    "@mco-server/types": "workspace:^"
-    "@types/babel__core": 7.1.16
-    "@types/eslint": 7.28.2
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.4.1
-    "@typescript-eslint/eslint-plugin": 5.2.0
-    "@typescript-eslint/parser": 5.2.0
-    eslint: 8.1.0
-    eslint-config-prettier: 8.3.0
-    jest: 27.3.1
-    prettier: 2.4.1
-    prettier-eslint: 13.0.0
-    ts-jest: 27.0.7
-    ts-node: ^10.2.1
-    typescript: 4.4.4
-  languageName: unknown
-  linkType: soft
-
-"@mco-server/message-types@workspace:^, @mco-server/message-types@workspace:packages/message-types":
-  version: 0.0.0-use.local
-  resolution: "@mco-server/message-types@workspace:packages/message-types"
-  dependencies:
-    "@babel/cli": 7.15.7
-    "@babel/core": 7.15.8
-    "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.3.1
-    "@mco-server/types": 1.0.0
-    "@types/babel__core": 7.1.16
-    "@types/eslint": 7.28.2
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.4.1
-    "@typescript-eslint/eslint-plugin": 5.2.0
-    "@typescript-eslint/parser": 5.2.0
-    eslint: 8.1.0
-    eslint-config-prettier: 8.3.0
-    jest: 27.3.1
-    prettier: 2.4.1
-    prettier-eslint: 13.0.0
-    ts-jest: 27.0.7
-    ts-node: ^10.2.1
-    typescript: 4.4.4
-  languageName: unknown
-  linkType: soft
-
-"@mco-server/patch@workspace:^, @mco-server/patch@workspace:packages/patch":
-  version: 0.0.0-use.local
-  resolution: "@mco-server/patch@workspace:packages/patch"
-  dependencies:
-    "@babel/cli": 7.15.7
-    "@babel/core": 7.15.8
-    "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.3.1
-    "@mco-server/config": "workspace:^"
-    "@mco-server/router": "workspace:^"
-    "@mco-server/types": "workspace:^"
-    "@types/babel__core": 7.1.16
-    "@types/eslint": 7.28.2
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.4.1
-    "@types/supertest": 2.0.11
-    "@typescript-eslint/eslint-plugin": 5.2.0
-    "@typescript-eslint/parser": 5.2.0
-    eslint: 8.1.0
-    eslint-config-prettier: 8.3.0
-    jest: 27.3.1
-    prettier: 2.4.1
-    prettier-eslint: 13.0.0
-    supertest: 6.1.6
-    ts-jest: 27.0.7
-    ts-node: ^10.2.1
-    tslib: 2.3.1
-    typescript: 4.4.4
-  languageName: unknown
-  linkType: soft
-
-"@mco-server/persona@workspace:^, @mco-server/persona@workspace:packages/persona":
-  version: 0.0.0-use.local
-  resolution: "@mco-server/persona@workspace:packages/persona"
-  dependencies:
-    "@babel/cli": 7.15.7
-    "@babel/core": 7.15.8
-    "@drazisil/mco-logger": 4.1.10
-    "@jest/globals": 27.3.1
-    "@mco-server/message-types": "workspace:^"
-    "@mco-server/types": "workspace:^"
-    "@types/babel__core": 7.1.16
-    "@types/eslint": 7.28.2
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.4.1
-    "@typescript-eslint/eslint-plugin": 5.2.0
-    "@typescript-eslint/parser": 5.2.0
-    eslint: 8.1.0
-    eslint-config-prettier: 8.3.0
-    jest: 27.3.1
-    prettier: 2.4.1
-    prettier-eslint: 13.0.0
-    ts-jest: 27.0.7
-    ts-node: ^10.2.1
-    typescript: 4.4.4
-  languageName: unknown
-  linkType: soft
-
-"@mco-server/proxy@workspace:^, @mco-server/proxy@workspace:packages/proxy":
-  version: 0.0.0-use.local
-  resolution: "@mco-server/proxy@workspace:packages/proxy"
-  dependencies:
-    "@babel/cli": 7.15.7
-    "@babel/core": 7.15.8
-    "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.3.1
-    "@mco-server/patch": "workspace:^"
-    "@mco-server/router": "workspace:^"
-    "@mco-server/shard": "workspace:^"
-    "@mco-server/types": "workspace:^"
-    "@types/babel__core": 7.1.16
-    "@types/eslint": 7.28.2
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.4.1
-    "@typescript-eslint/eslint-plugin": 5.2.0
-    "@typescript-eslint/parser": 5.2.0
-    eslint: 8.1.0
-    eslint-config-prettier: 8.3.0
-    jest: 27.3.1
-    prettier: 2.4.1
-    prettier-eslint: 13.0.0
-    ts-jest: 27.0.7
-    ts-node: ^10.2.1
-    typescript: 4.4.4
-  languageName: unknown
-  linkType: soft
-
-"@mco-server/router@workspace:^, @mco-server/router@workspace:packages/router":
-  version: 0.0.0-use.local
-  resolution: "@mco-server/router@workspace:packages/router"
-  dependencies:
-    "@babel/cli": 7.15.7
-    "@babel/core": 7.15.8
-    "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.3.1
-    "@mco-server/types": "workspace:^"
-    "@types/babel__core": 7.1.16
-    "@types/eslint": 7.28.2
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.4.1
-    "@typescript-eslint/eslint-plugin": 5.2.0
-    "@typescript-eslint/parser": 5.2.0
-    eslint: 8.1.0
-    eslint-config-prettier: 8.3.0
-    jest: 27.3.1
-    prettier: 2.4.1
-    prettier-eslint: 13.0.0
-    ts-jest: 27.0.7
-    ts-node: ^10.2.1
-    typescript: 4.4.4
-  languageName: unknown
-  linkType: soft
-
-"@mco-server/shard@workspace:^, @mco-server/shard@workspace:packages/shard":
-  version: 0.0.0-use.local
-  resolution: "@mco-server/shard@workspace:packages/shard"
-  dependencies:
-    "@babel/cli": 7.15.7
-    "@babel/core": 7.15.8
-    "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.3.1
-    "@mco-server/config": "workspace:^"
-    "@mco-server/router": "workspace:^"
-    "@mco-server/types": "workspace:^"
-    "@types/babel__core": 7.1.16
-    "@types/eslint": 7.28.2
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.4.1
-    "@types/supertest": 2.0.11
-    "@typescript-eslint/eslint-plugin": 5.2.0
-    "@typescript-eslint/parser": 5.2.0
-    eslint: 8.1.0
-    eslint-config-prettier: 8.3.0
-    jest: 27.3.1
-    prettier: 2.4.1
-    prettier-eslint: 13.0.0
-    supertest: 6.1.6
-    ts-jest: 27.0.7
-    ts-node: ^10.2.1
-    tslib: 2.3.1
-    typescript: 4.4.4
-  languageName: unknown
-  linkType: soft
-
-"@mco-server/transactions@workspace:^, @mco-server/transactions@workspace:packages/transactions":
-  version: 0.0.0-use.local
-  resolution: "@mco-server/transactions@workspace:packages/transactions"
-  dependencies:
-    "@babel/cli": 7.15.7
-    "@babel/core": 7.15.8
-    "@drazisil/mco-logger": ^4.1.10
-    "@jest/globals": 27.3.1
-    "@mco-server/database": "workspace:^"
-    "@mco-server/message-types": "workspace:^"
-    "@mco-server/types": "workspace:^"
-    "@types/babel__core": 7.1.16
-    "@types/eslint": 7.28.2
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.4.1
-    "@typescript-eslint/eslint-plugin": 5.2.0
-    "@typescript-eslint/parser": 5.2.0
-    eslint: 8.1.0
-    eslint-config-prettier: 8.3.0
-    jest: 27.3.1
-    prettier: 2.4.1
-    prettier-eslint: 13.0.0
-    ts-jest: 27.0.7
-    ts-node: ^10.2.1
-    typescript: 4.4.4
-  languageName: unknown
-  linkType: soft
-
-"@mco-server/types@1.0.0, @mco-server/types@workspace:^, @mco-server/types@workspace:packages/types":
-  version: 0.0.0-use.local
-  resolution: "@mco-server/types@workspace:packages/types"
-  dependencies:
-    "@babel/cli": 7.15.7
-    "@babel/core": 7.15.8
-    "@jest/globals": 27.3.1
-    "@types/babel__core": 7.1.16
-    "@types/eslint": 7.28.2
-    "@types/node": ^16.9.6
-    "@types/prettier": 2.4.1
-    "@types/sqlite3": 3.1.7
-    "@typescript-eslint/eslint-plugin": 5.2.0
-    "@typescript-eslint/parser": 5.2.0
-    eslint: 8.1.0
-    eslint-config-prettier: 8.3.0
-    jest: 27.3.1
-    prettier: 2.4.1
-    prettier-eslint: 13.0.0
-    sqlite: 4.0.23
-    ts-jest: 27.0.7
-    ts-node: ^10.2.1
-    typescript: 4.4.4
-  languageName: unknown
-  linkType: soft
-
 "@nicolo-ribaudo/chokidar-2@npm:2.1.8-no-fsevents.3":
   version: 2.1.8-no-fsevents.3
   resolution: "@nicolo-ribaudo/chokidar-2@npm:2.1.8-no-fsevents.3"
@@ -5697,9 +5267,439 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mco-server@workspace:.":
+"mcos-admin@workspace:^, mcos-admin@workspace:packages/admin":
   version: 0.0.0-use.local
-  resolution: "mco-server@workspace:."
+  resolution: "mcos-admin@workspace:packages/admin"
+  dependencies:
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.8
+    "@drazisil/mco-logger": ^4.1.10
+    "@jest/globals": 27.3.1
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.2
+    "@types/node": ^16.9.6
+    "@types/prettier": 2.4.1
+    "@typescript-eslint/eslint-plugin": 5.2.0
+    "@typescript-eslint/parser": 5.2.0
+    eslint: 8.1.0
+    eslint-config-prettier: 8.3.0
+    jest: 27.3.1
+    mcos-config: "workspace:^"
+    mcos-core: "workspace:^"
+    mcos-types: "workspace:^"
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.7
+    ts-node: ^10.2.1
+    typescript: 4.4.4
+  languageName: unknown
+  linkType: soft
+
+"mcos-auth@workspace:^, mcos-auth@workspace:packages/auth":
+  version: 0.0.0-use.local
+  resolution: "mcos-auth@workspace:packages/auth"
+  dependencies:
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.8
+    "@drazisil/mco-logger": ^4.1.10
+    "@jest/globals": 27.3.1
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.2
+    "@types/node": ^16.9.6
+    "@types/prettier": 2.4.1
+    "@typescript-eslint/eslint-plugin": 5.2.0
+    "@typescript-eslint/parser": 5.2.0
+    eslint: 8.1.0
+    eslint-config-prettier: 8.3.0
+    jest: 27.3.1
+    mcos-config: "workspace:^"
+    mcos-router: "workspace:^"
+    mcos-types: "workspace:^"
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.7
+    ts-node: ^10.2.1
+    typescript: 4.4.4
+  languageName: unknown
+  linkType: soft
+
+"mcos-config@workspace:^, mcos-config@workspace:packages/config":
+  version: 0.0.0-use.local
+  resolution: "mcos-config@workspace:packages/config"
+  dependencies:
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.8
+    "@drazisil/mco-logger": ^4.1.10
+    "@jest/globals": 27.3.1
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.2
+    "@types/node": ^16.9.6
+    "@types/prettier": 2.4.1
+    "@typescript-eslint/eslint-plugin": 5.2.0
+    "@typescript-eslint/parser": 5.2.0
+    eslint: 8.1.0
+    eslint-config-prettier: 8.3.0
+    jest: 27.3.1
+    mcos-types: "workspace:^"
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.7
+    ts-node: ^10.2.1
+    typescript: 4.4.4
+  languageName: unknown
+  linkType: soft
+
+"mcos-core@workspace:^, mcos-core@workspace:packages/core":
+  version: 0.0.0-use.local
+  resolution: "mcos-core@workspace:packages/core"
+  dependencies:
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.8
+    "@drazisil/mco-logger": ^4.1.10
+    "@jest/globals": 27.3.1
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.2
+    "@types/node": ^16.9.6
+    "@types/prettier": 2.4.1
+    "@typescript-eslint/eslint-plugin": 5.2.0
+    "@typescript-eslint/parser": 5.2.0
+    eslint: 8.1.0
+    eslint-config-prettier: 8.3.0
+    jest: 27.3.1
+    mcos-config: "workspace:^"
+    mcos-database: "workspace:^"
+    mcos-lobby: "workspace:^"
+    mcos-login: "workspace:^"
+    mcos-messages: "workspace:^"
+    mcos-persona: "workspace:^"
+    mcos-transactions: "workspace:^"
+    mcos-types: "workspace:^"
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.7
+    ts-node: ^10.2.1
+    tslib: 2.3.1
+    typescript: 4.4.4
+  languageName: unknown
+  linkType: soft
+
+"mcos-database@workspace:^, mcos-database@workspace:packages/database":
+  version: 0.0.0-use.local
+  resolution: "mcos-database@workspace:packages/database"
+  dependencies:
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.8
+    "@drazisil/mco-logger": 4.1.10
+    "@jest/globals": 27.3.1
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.2
+    "@types/node": ^16.9.6
+    "@types/prettier": 2.4.1
+    "@typescript-eslint/eslint-plugin": 5.2.0
+    "@typescript-eslint/parser": 5.2.0
+    eslint: 8.1.0
+    eslint-config-prettier: 8.3.0
+    jest: 27.3.1
+    mcos-config: "workspace:^"
+    mcos-router: "workspace:^"
+    mcos-types: "workspace:^"
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    slonik: 24.1.0
+    sqlite: 4.0.23
+    sqlite3: 4
+    ts-jest: 27.0.7
+    ts-node: ^10.2.1
+    tslib: 2.3.1
+    typescript: 4.4.4
+  languageName: unknown
+  linkType: soft
+
+"mcos-lobby@workspace:^, mcos-lobby@workspace:packages/lobby":
+  version: 0.0.0-use.local
+  resolution: "mcos-lobby@workspace:packages/lobby"
+  dependencies:
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.8
+    "@drazisil/mco-logger": ^4.1.10
+    "@jest/globals": 27.3.1
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.2
+    "@types/node": ^16.9.6
+    "@types/prettier": 2.4.1
+    "@typescript-eslint/eslint-plugin": 5.2.0
+    "@typescript-eslint/parser": 5.2.0
+    eslint: 8.1.0
+    eslint-config-prettier: 8.3.0
+    jest: 27.3.1
+    mcos-database: "workspace:^"
+    mcos-messages: "workspace:^"
+    mcos-persona: "workspace:^"
+    mcos-types: "workspace:^"
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.7
+    ts-node: ^10.2.1
+    typescript: 4.4.4
+  languageName: unknown
+  linkType: soft
+
+"mcos-login@workspace:^, mcos-login@workspace:packages/login":
+  version: 0.0.0-use.local
+  resolution: "mcos-login@workspace:packages/login"
+  dependencies:
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.8
+    "@drazisil/mco-logger": ^4.1.10
+    "@jest/globals": 27.3.1
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.2
+    "@types/node": ^16.9.6
+    "@types/prettier": 2.4.1
+    "@typescript-eslint/eslint-plugin": 5.2.0
+    "@typescript-eslint/parser": 5.2.0
+    eslint: 8.1.0
+    eslint-config-prettier: 8.3.0
+    jest: 27.3.1
+    mcos-config: "workspace:^"
+    mcos-database: "workspace:^"
+    mcos-messages: "workspace:^"
+    mcos-types: "workspace:^"
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.7
+    ts-node: ^10.2.1
+    typescript: 4.4.4
+  languageName: unknown
+  linkType: soft
+
+"mcos-messages@workspace:^, mcos-messages@workspace:packages/message-types":
+  version: 0.0.0-use.local
+  resolution: "mcos-messages@workspace:packages/message-types"
+  dependencies:
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.8
+    "@drazisil/mco-logger": ^4.1.10
+    "@jest/globals": 27.3.1
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.2
+    "@types/node": ^16.9.6
+    "@types/prettier": 2.4.1
+    "@typescript-eslint/eslint-plugin": 5.2.0
+    "@typescript-eslint/parser": 5.2.0
+    eslint: 8.1.0
+    eslint-config-prettier: 8.3.0
+    jest: 27.3.1
+    mcos-types: 1.0.0
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.7
+    ts-node: ^10.2.1
+    typescript: 4.4.4
+  languageName: unknown
+  linkType: soft
+
+"mcos-patch@workspace:^, mcos-patch@workspace:packages/patch":
+  version: 0.0.0-use.local
+  resolution: "mcos-patch@workspace:packages/patch"
+  dependencies:
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.8
+    "@drazisil/mco-logger": ^4.1.10
+    "@jest/globals": 27.3.1
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.2
+    "@types/node": ^16.9.6
+    "@types/prettier": 2.4.1
+    "@types/supertest": 2.0.11
+    "@typescript-eslint/eslint-plugin": 5.2.0
+    "@typescript-eslint/parser": 5.2.0
+    eslint: 8.1.0
+    eslint-config-prettier: 8.3.0
+    jest: 27.3.1
+    mcos-config: "workspace:^"
+    mcos-router: "workspace:^"
+    mcos-types: "workspace:^"
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    supertest: 6.1.6
+    ts-jest: 27.0.7
+    ts-node: ^10.2.1
+    tslib: 2.3.1
+    typescript: 4.4.4
+  languageName: unknown
+  linkType: soft
+
+"mcos-persona@workspace:^, mcos-persona@workspace:packages/persona":
+  version: 0.0.0-use.local
+  resolution: "mcos-persona@workspace:packages/persona"
+  dependencies:
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.8
+    "@drazisil/mco-logger": 4.1.10
+    "@jest/globals": 27.3.1
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.2
+    "@types/node": ^16.9.6
+    "@types/prettier": 2.4.1
+    "@typescript-eslint/eslint-plugin": 5.2.0
+    "@typescript-eslint/parser": 5.2.0
+    eslint: 8.1.0
+    eslint-config-prettier: 8.3.0
+    jest: 27.3.1
+    mcos-messages: "workspace:^"
+    mcos-types: "workspace:^"
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.7
+    ts-node: ^10.2.1
+    typescript: 4.4.4
+  languageName: unknown
+  linkType: soft
+
+"mcos-proxy@workspace:^, mcos-proxy@workspace:packages/proxy":
+  version: 0.0.0-use.local
+  resolution: "mcos-proxy@workspace:packages/proxy"
+  dependencies:
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.8
+    "@drazisil/mco-logger": ^4.1.10
+    "@jest/globals": 27.3.1
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.2
+    "@types/node": ^16.9.6
+    "@types/prettier": 2.4.1
+    "@typescript-eslint/eslint-plugin": 5.2.0
+    "@typescript-eslint/parser": 5.2.0
+    eslint: 8.1.0
+    eslint-config-prettier: 8.3.0
+    jest: 27.3.1
+    mcos-patch: "workspace:^"
+    mcos-router: "workspace:^"
+    mcos-shard: "workspace:^"
+    mcos-types: "workspace:^"
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.7
+    ts-node: ^10.2.1
+    typescript: 4.4.4
+  languageName: unknown
+  linkType: soft
+
+"mcos-router@workspace:^, mcos-router@workspace:packages/router":
+  version: 0.0.0-use.local
+  resolution: "mcos-router@workspace:packages/router"
+  dependencies:
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.8
+    "@drazisil/mco-logger": ^4.1.10
+    "@jest/globals": 27.3.1
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.2
+    "@types/node": ^16.9.6
+    "@types/prettier": 2.4.1
+    "@typescript-eslint/eslint-plugin": 5.2.0
+    "@typescript-eslint/parser": 5.2.0
+    eslint: 8.1.0
+    eslint-config-prettier: 8.3.0
+    jest: 27.3.1
+    mcos-types: "workspace:^"
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.7
+    ts-node: ^10.2.1
+    typescript: 4.4.4
+  languageName: unknown
+  linkType: soft
+
+"mcos-shard@workspace:^, mcos-shard@workspace:packages/shard":
+  version: 0.0.0-use.local
+  resolution: "mcos-shard@workspace:packages/shard"
+  dependencies:
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.8
+    "@drazisil/mco-logger": ^4.1.10
+    "@jest/globals": 27.3.1
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.2
+    "@types/node": ^16.9.6
+    "@types/prettier": 2.4.1
+    "@types/supertest": 2.0.11
+    "@typescript-eslint/eslint-plugin": 5.2.0
+    "@typescript-eslint/parser": 5.2.0
+    eslint: 8.1.0
+    eslint-config-prettier: 8.3.0
+    jest: 27.3.1
+    mcos-config: "workspace:^"
+    mcos-router: "workspace:^"
+    mcos-types: "workspace:^"
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    supertest: 6.1.6
+    ts-jest: 27.0.7
+    ts-node: ^10.2.1
+    tslib: 2.3.1
+    typescript: 4.4.4
+  languageName: unknown
+  linkType: soft
+
+"mcos-transactions@workspace:^, mcos-transactions@workspace:packages/transactions":
+  version: 0.0.0-use.local
+  resolution: "mcos-transactions@workspace:packages/transactions"
+  dependencies:
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.8
+    "@drazisil/mco-logger": ^4.1.10
+    "@jest/globals": 27.3.1
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.2
+    "@types/node": ^16.9.6
+    "@types/prettier": 2.4.1
+    "@typescript-eslint/eslint-plugin": 5.2.0
+    "@typescript-eslint/parser": 5.2.0
+    eslint: 8.1.0
+    eslint-config-prettier: 8.3.0
+    jest: 27.3.1
+    mcos-database: "workspace:^"
+    mcos-messages: "workspace:^"
+    mcos-types: "workspace:^"
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    ts-jest: 27.0.7
+    ts-node: ^10.2.1
+    typescript: 4.4.4
+  languageName: unknown
+  linkType: soft
+
+"mcos-types@1.0.0, mcos-types@workspace:^, mcos-types@workspace:packages/types":
+  version: 0.0.0-use.local
+  resolution: "mcos-types@workspace:packages/types"
+  dependencies:
+    "@babel/cli": 7.15.7
+    "@babel/core": 7.15.8
+    "@jest/globals": 27.3.1
+    "@types/babel__core": 7.1.16
+    "@types/eslint": 7.28.2
+    "@types/node": ^16.9.6
+    "@types/prettier": 2.4.1
+    "@types/sqlite3": 3.1.7
+    "@typescript-eslint/eslint-plugin": 5.2.0
+    "@typescript-eslint/parser": 5.2.0
+    eslint: 8.1.0
+    eslint-config-prettier: 8.3.0
+    jest: 27.3.1
+    prettier: 2.4.1
+    prettier-eslint: 13.0.0
+    sqlite: 4.0.23
+    ts-jest: 27.0.7
+    ts-node: ^10.2.1
+    typescript: 4.4.4
+  languageName: unknown
+  linkType: soft
+
+"mcos@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "mcos@workspace:."
   dependencies:
     "@babel/cli": 7.15.7
     "@babel/core": 7.15.8
@@ -5708,13 +5708,6 @@ __metadata:
     "@babel/preset-typescript": 7.15.0
     "@drazisil/mco-logger": 4.1.10
     "@jest/globals": 27.3.1
-    "@mco-server/admin": "workspace:^"
-    "@mco-server/auth": "workspace:^"
-    "@mco-server/core": "workspace:^"
-    "@mco-server/patch": "workspace:^"
-    "@mco-server/proxy": "workspace:^"
-    "@mco-server/router": "workspace:^"
-    "@mco-server/shard": "workspace:^"
     "@tsconfig/node14": 1.0.1
     "@types/node": 16.11.6
     "@types/supertest": 2.0.11
@@ -5723,6 +5716,13 @@ __metadata:
     eslint: 8.1.0
     eslint-config-prettier: 8.3.0
     jest: 27.3.1
+    mcos-admin: "workspace:^"
+    mcos-auth: "workspace:^"
+    mcos-core: "workspace:^"
+    mcos-patch: "workspace:^"
+    mcos-proxy: "workspace:^"
+    mcos-router: "workspace:^"
+    mcos-shard: "workspace:^"
     prettier: 2.4.1
     prettier-eslint: 13.0.0
     sinon: 11.1.2

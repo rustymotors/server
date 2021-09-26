@@ -1,4 +1,4 @@
-// Mco-server is a game server, written from scratch, for an old game
+// mcos is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
@@ -11,9 +11,9 @@ import {
   IConnectionManager,
   IMCServer,
   ITCPConnection,
-} from "@mco-server/types";
+} from "mcos-types";
 import { ConnectionManager } from "./connection-mgr";
-import { ConfigurationManager } from "@mco-server/config";
+import { ConfigurationManager } from "mcos-config";
 import { ListenerThread } from "./listener-thread";
 
 const { log } = Logger.getInstance();
