@@ -7,11 +7,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import { pino } from "pino";
 import { readFileSync } from "fs";
-import { EServerConnectionName, AppConfiguration } from "mcos-types";
+import { EServerConnectionName,  } from "mcos-router";
 import { ShardEntry } from "./shard-entry";
 import { RoutingMesh } from "mcos-router";
 import { createServer, Server } from "https";
-import { ConfigurationManager } from "mcos-config";
+import { AppConfiguration, ConfigurationManager } from "mcos-config";
 import { IncomingMessage, ServerResponse } from "http";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility

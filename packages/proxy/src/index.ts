@@ -1,6 +1,6 @@
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
 import { pino } from "pino";
-import { EServerConnectionName } from "mcos-types";
+import { EServerConnectionName } from "mcos-router";
 import { RoutingMesh } from "mcos-router";
 import { ShardServer } from "mcos-shard";
 import { PatchServer } from "mcos-patch";

@@ -7545,6 +7545,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint", "npm:8.1.0"],
             ["eslint-config-prettier", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:8.3.0"],
             ["jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.3.1"],
+            ["mcos-config", "workspace:packages/config"],
             ["mcos-types", "workspace:packages/types"],
             ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],

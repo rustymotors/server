@@ -35,7 +35,7 @@
     "preinstall": "npx only-allow yarn",
     "audit": "yarn npm audit",
     "check:license": "yarn licenses audit --summary --config=licenses.config.js",
-    "start": "ts-node bin/app.ts",
+    "start": "ts-node app.ts",
     "check:type": "tsc --noEmit",
     "check:type:watch": "tsc --noEmit --watch",
     "build": "tsc --build",

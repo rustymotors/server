@@ -1,13 +1,24 @@
-// @ts-check
-import { AppConfiguration } from "mcos-types";
 import { _sslOptions } from "./ssl-options";
 import { savedConfig } from "./config";
+import { Socket } from "net";
 
-/**
- * @module mco_config
- */
+export type AppConfiguration = {
+  certificate: {
+    privateKeyFilename: string;
+    publicKeyFilename: string;
+    certFilename: string;
+  };
+  serverSettings: {
+    ipServer: string;
+  };
+  serviceConnections: {
+    databaseURL: string;
+  };
+  defaultLogLevel: string;
+};
 
 export class ConfigurationManager {
+  serviceName = "MCOServer:Patch"
   getConfig(): AppConfiguration {
     return savedConfig;
   }
@@ -22,6 +33,11 @@ export class ConfigurationManager {
 
   private constructor() {
     // Intentionally empty
+  }
+
+  handleData(sock: Socket):void {
+    throw new Error("Not yet implemented");
+    
   }
 }
 

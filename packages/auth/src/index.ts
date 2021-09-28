@@ -9,12 +9,11 @@
 import { pino } from "pino";
 import { IncomingMessage, ServerResponse } from "http";
 import { Socket } from "net";
-import { AppConfiguration, SslOptions } from "mcos-types";
+import { SslOptions } from "mcos-types";
 import { readFileSync } from "fs";
-import { EServerConnectionName } from "mcos-types";
-import { RoutingMesh } from "mcos-router";
+import { EServerConnectionName, RoutingMesh } from "mcos-router";
 import { createServer, Server } from "https";
-import { ConfigurationManager } from "mcos-config";
+import { AppConfiguration, ConfigurationManager } from "mcos-config";
 
 const log = pino();
 

@@ -8,8 +8,8 @@
 
 import { readFileSync } from "fs";
 import { pino } from "pino";
-import { AppConfiguration } from "mcos-types";
 import { SslOptions } from "mcos-types";
+import { AppConfiguration } from ".";
 
 const log = pino();
 

@@ -1,6 +1,7 @@
-import { EMessageDirection, AppConfiguration, PersonaRecord } from "mcos-types";
+import { EMessageDirection, PersonaRecord } from "mcos-types";
 import { readFileSync, statSync } from "fs";
 import { privateDecrypt } from "crypto";
+import { AppConfiguration } from "mcos-config";
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)

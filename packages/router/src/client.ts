@@ -3,7 +3,7 @@ import {
   EServerConnectionAction,
   EServerConnectionName,
   ServerConnectionRecord,
-} from "mcos-types";
+} from ".";
 import { createConnection } from "net";
 
 const log = pino();
@@ -36,7 +36,7 @@ export class RoutingMesh {
     service: EServerConnectionName,
     inputBuffer: Buffer
   ): void {
-    const client = createConnection({ port: 4242 }, () => {
+    const client = createConnection({ host: "router", port: 4242 }, () => {
       // 'connect' listener.
       log.debug("debug", "Connected to RoutingServer", {
         service,

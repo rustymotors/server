@@ -9,16 +9,14 @@
 import * as sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
 import {
-  AppConfiguration,
-  EServerConnectionName,
   IDatabaseManager,
   SessionRecord,
 } from "mcos-types";
 import { pino } from "pino";
-import { ConfigurationManager } from "mcos-config";
+import { AppConfiguration, ConfigurationManager } from "mcos-config";
 import { createPool } from "slonik";
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
-import { RoutingMesh } from "mcos-router";
+import { EServerConnectionName, RoutingMesh } from "mcos-router";
 
 const log = pino();
 

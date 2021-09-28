@@ -163,46 +163,6 @@ export type NpsCommandMap = {
   module: "Lobby" | "Login";
 };
 
-export enum EServerConnectionName {
-  ADMIN = "Admin",
-  AUTH = "Auth",
-  MCSERVER = "MCServer",
-  PATCH = "Patch",
-  PROXY = "Proxy",
-  SHARD = "Shard",
-  DATABASE = "Database",
-}
-
-export enum EServerConnectionAction {
-  REGISTER_SERVICE = "Register Service",
-}
-
-export enum EServiceQuery {
-  GET_CONNECTIONS = "Get connections",
-}
-
-export type ServerConnectionRecord = {
-  action?: EServerConnectionAction;
-  service: EServerConnectionName;
-  host: string;
-  port: number;
-};
-
-export type AppConfiguration = {
-  certificate: {
-    privateKeyFilename: string;
-    publicKeyFilename: string;
-    certFilename: string;
-  };
-  serverSettings: {
-    ipServer: string;
-  };
-  serviceConnections: {
-    databaseURL: string;
-  };
-  defaultLogLevel: string;
-};
-
 export const _NPS_RiffListHeader = {
   StructSize: Buffer.alloc(4), // Uint4B
   NumRiffs: Buffer.alloc(4), // UInt4B

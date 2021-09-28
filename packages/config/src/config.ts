@@ -1,4 +1,4 @@
-import { AppConfiguration } from "mcos-types";
+import { AppConfiguration } from ".";
 
 const savedConfig: AppConfiguration = {
   certificate: {

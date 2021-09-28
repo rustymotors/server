@@ -5419,7 +5419,8 @@ __metadata:
     eslint: 8.1.0
     eslint-config-prettier: 8.3.0
     jest: 27.3.1
-    mcos-types: 1.0.0
+    mcos-config: "workspace:^"
+    mcos-types: "workspace:^"
     pino: next
     prettier: 2.4.1
     prettier-eslint: 13.0.0
@@ -5601,7 +5602,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"mcos-types@1.0.0, mcos-types@workspace:^, mcos-types@workspace:packages/types":
+"mcos-types@workspace:^, mcos-types@workspace:packages/types":
   version: 0.0.0-use.local
   resolution: "mcos-types@workspace:packages/types"
   dependencies:

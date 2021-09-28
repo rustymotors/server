@@ -13,6 +13,21 @@ services:
   #     - 443
   #   labels:
   #     - "traefik.http.routers.bin.rule=Host(`bin.docker.localhost`)"
+  patch:
+    image: patch
+    build:
+      context: .
+      dockerfile: Dockerfile.patch
+    environment:
+      NODE_ENV: production
+      LISTEN_PORT: 4242
+      LOG_LEVEL: silly
+    ports:
+      - "4242"      
+    labels:
+      - "traefik.http.routers.bin.rule=Host(`patch.docker.localhost`)" 
+    depends_on:
+      - router
   router:
     image: router
     build:
@@ -21,6 +36,9 @@ services:
     environment:
       NODE_ENV: production
       LISTEN_PORT: 4242
+      LOG_LEVEL: silly
+    ports:
+      - "4242"
     labels:
       - "traefik.http.routers.bin.rule=Host(`router.docker.localhost`)"      
   database:
@@ -30,11 +48,14 @@ services:
       dockerfile: Dockerfile.database
     environment:
       NODE_ENV: production
+      LOG_LEVEL: silly
     ports:
-      - 80
-      - 443
+      - "80"
+      - "443"
     labels:
-      - "traefik.http.routers.bin.rule=Host(`database.docker.localhost`)"            
+      - "traefik.http.routers.bin.rule=Host(`database.docker.localhost`)"  
+    depends_on:
+      - router          
   reverse-proxy:
       # The official v2 Traefik docker image
       image: traefik:v2.5
@@ -51,14 +72,9 @@ services:
   db:
     image: postgres:14.0
     ports: 
-      - "5432:5432"
+      - "5432"
     environment: 
-      - "POSTGRES_PASSWORD=password"      
-  whoami:
-    # A container that exposes an API to show its IP address
-    image: traefik/whoami
-    labels:
-      - "traefik.http.routers.whoami.rule=Host(`whoami.docker.localhost`)"      
+      - "POSTGRES_PASSWORD=password"       
   pgadmin:
       image: dpage/pgadmin4:5.7
       environment:
@@ -66,7 +82,7 @@ services:
           PGADMIN_DEFAULT_PASSWORD: password
           PGADMIN_LISTEN_PORT: 80
       ports:
-          - 15432:80
+          - "15432:80"
       volumes:
           - pgadmin:/var/lib/pgadmin
       depends_on:

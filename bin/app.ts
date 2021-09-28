@@ -6,7 +6,6 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { PatchServer } from "mcos-patch";
 import { AuthLogin } from "mcos-auth";
 import { ShardServer } from "mcos-shard";
 import { HTTPProxyServer } from "mcos-proxy";
@@ -17,7 +16,7 @@ import { AdminServer } from "mcos-admin";
 // * Routing Server
 // RoutingServer.getInstance().start()
 // * Patch Server
-PatchServer.getInstance().start()
+// PatchServer.getInstance().start()
 // * AuthLogin
 AuthLogin.getInstance().start()
 // * Shard

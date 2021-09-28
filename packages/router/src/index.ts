@@ -1,8 +1,32 @@
-import { EServerConnectionAction, ServerConnectionRecord } from "mcos-types";
 import { RoutingMesh } from "./client";
 import { pino } from "pino";
 
 const log = pino()
+
+export enum EServerConnectionName {
+  ADMIN = "Admin",
+  AUTH = "Auth",
+  MCSERVER = "MCServer",
+  PATCH = "Patch",
+  PROXY = "Proxy",
+  SHARD = "Shard",
+  DATABASE = "Database",
+}
+
+export enum EServerConnectionAction {
+  REGISTER_SERVICE = "Register Service",
+}
+
+export enum EServiceQuery {
+  GET_CONNECTIONS = "Get connections",
+}
+
+export type ServerConnectionRecord = {
+  action?: EServerConnectionAction;
+  service: EServerConnectionName;
+  host: string;
+  port: number;
+};
 
 export class RoutingServer {
   static _instance: RoutingServer;
@@ -18,31 +42,6 @@ export class RoutingServer {
 
   private constructor() {
     // Intentionaly empty
-  }
-  handleData(data: Buffer): void {
-    const payload = data.toString();
-    log.debug("debug", `Payload: ${payload}`, {
-      service: this.serviceName,
-    });
-
-    let payloadJSON: ServerConnectionRecord;
-
-    try {
-      payloadJSON = JSON.parse(payload);
-    } catch (error) {
-      log.error("error", `Error pasing payload!: ${error}`, {
-        service: this.serviceName,
-      });
-      return;
-    }
-
-    const { action } = payloadJSON;
-
-    if (action === EServerConnectionAction.REGISTER_SERVICE) {
-      return this._registerNewService(payloadJSON);
-    } else {
-      throw new Error("Method not implemented.");
-    }
   }
 
   private _registerNewService(payloadJSON: ServerConnectionRecord) {
@@ -68,6 +67,31 @@ export class RoutingServer {
         service: this.serviceName,
       }
     );
+  }
+  handleData(data: Buffer): void {
+    const payload = data.toString();
+    log.debug("debug", `Payload: ${payload}`, {
+      service: this.serviceName,
+    });
+
+    let payloadJSON: ServerConnectionRecord;
+
+    try {
+      payloadJSON = JSON.parse(payload);
+    } catch (error) {
+      log.error("error", `Error pasing payload!: ${error}`, {
+        service: this.serviceName,
+      });
+      return;
+    }
+
+    const { action } = payloadJSON;
+
+    if (action === EServerConnectionAction.REGISTER_SERVICE) {
+      return this._registerNewService(payloadJSON);
+    } else {
+      throw new Error("Method not implemented.");
+    }
   }
 }
 
