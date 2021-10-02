@@ -1,10 +1,10 @@
 import { createServer } from "net";
-import { pino } from "pino";
+import P from "pino";
 import { RoutingServer } from "./src/index";
 
 const router = RoutingServer.getInstance()
 
-const log = pino().child({ service: router.serviceName})
+const log = P().child({ service: router.serviceName})
 
 const server = createServer()
 server.on("listening", () => {

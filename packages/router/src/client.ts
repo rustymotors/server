@@ -1,4 +1,4 @@
-import { pino } from "pino";
+import P from "pino";
 import {
   EServerConnectionAction,
   EServerConnectionName,
@@ -6,7 +6,7 @@ import {
 } from ".";
 import { createConnection } from "net";
 
-const log = pino();
+const log = P();
 
 export class RoutingMesh {
   static getInstance(): RoutingMesh {

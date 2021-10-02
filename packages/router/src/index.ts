@@ -1,7 +1,7 @@
 import { RoutingMesh } from "./client";
-import { pino } from "pino";
+import P from "pino";
 
-const log = pino()
+const log = P()
 
 export enum EServerConnectionName {
   ADMIN = "Admin",

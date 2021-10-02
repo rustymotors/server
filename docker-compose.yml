@@ -25,13 +25,13 @@ services:
     ports:
       - "4242"      
     labels:
-      - "traefik.http.routers.bin.rule=Host(`patch.docker.localhost`)" 
+      - "traefik.http.patch.bin.rule=Host(`patch.docker.localhost`)" 
     depends_on:
       - router
   router:
     image: router
     build:
-      context: .
+      context: ./packages/router
       dockerfile: Dockerfile.router
     environment:
       NODE_ENV: production
@@ -40,7 +40,7 @@ services:
     ports:
       - "4242"
     labels:
-      - "traefik.http.routers.bin.rule=Host(`router.docker.localhost`)"      
+      - "traefik.http.router.bin.rule=Host(`router.docker.localhost`)"      
   database:
     image: database
     build:
@@ -53,7 +53,7 @@ services:
       - "80"
       - "443"
     labels:
-      - "traefik.http.routers.bin.rule=Host(`database.docker.localhost`)"  
+      - "traefik.http.database.bin.rule=Host(`database.docker.localhost`)"  
     depends_on:
       - router          
   reverse-proxy:
