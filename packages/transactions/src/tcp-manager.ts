@@ -135,10 +135,11 @@ export class TCPManager implements ITCPManager {
         // Write the packet to socket
         connection.sock.write(encryptedPacket.serialize());
       } else {
+        const port: string = connection.sock.localPort?.toString() || ''
         throw new Error(
           `Error writing ${encryptedPacket.serialize()} to ${
             connection.sock.remoteAddress
-          } , ${connection.sock.localPort?.toString()}`
+          } , ${port}`
         );
       }
     }
