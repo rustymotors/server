@@ -65,12 +65,6 @@ export class SocketFactory extends Duplex implements EventEmitter {
               done: false,
             };
           },
-          return: async (value: string): Promise<IteratorResult<string>> => {
-            return {
-              value,
-              done: true,
-            };
-          },
         };
       },
 
