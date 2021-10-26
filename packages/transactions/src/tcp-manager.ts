@@ -138,7 +138,7 @@ export class TCPManager implements ITCPManager {
         throw new Error(
           `Error writing ${encryptedPacket.serialize()} to ${
             connection.sock.remoteAddress
-          } , ${connection.sock.localPort.toString()}`
+          } , ${connection.sock.localPort?.toString()}`
         );
       }
     }
