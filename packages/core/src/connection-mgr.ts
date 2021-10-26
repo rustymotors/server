@@ -268,6 +268,15 @@ export class ConnectionManager implements IConnectionManager {
       );
     }
 
+    if (!localPort) {
+      throw new Error(
+        `No localPort in socket: ${JSON.stringify({
+          remoteAddress,
+          localPort,
+        })}`
+      );
+    }
+
     const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
     if (con !== undefined) {
       log(

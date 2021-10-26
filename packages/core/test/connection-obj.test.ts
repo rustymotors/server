@@ -6,14 +6,14 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { Socket as fakeSocket } from "net";
+import { SocketFactory } from "./../../test-helpers/socket-factory";
 import { ConnectionManager } from "../src/connection-mgr";
 import { EncryptionManager } from "../src/encryption-mgr";
 import { TCPConnection } from "../src/tcpConnection";
 jest.mock("../src/connection-mgr");
 
 it("ConnectionObj", () => {
-  const testConnection = new TCPConnection("abc", new fakeSocket());
+  const testConnection = new TCPConnection("abc", SocketFactory.createSocket());
 
   testConnection.setManager(ConnectionManager.getInstance());
   testConnection.setEncryptionManager(new EncryptionManager());
@@ -31,11 +31,11 @@ describe("ConnectionObj cross-comms", () => {
   let testConn2: TCPConnection;
 
   beforeEach(() => {
-    testConn1 = new TCPConnection("def", new fakeSocket());
+    testConn1 = new TCPConnection("def", SocketFactory.createSocket());
     testConn1.setManager(ConnectionManager.getInstance());
     testConn1.setEncryptionManager(new EncryptionManager());
 
-    testConn2 = new TCPConnection("ghi", new fakeSocket());
+    testConn2 = new TCPConnection("ghi", SocketFactory.createSocket());
     testConn2.setManager(ConnectionManager.getInstance());
     testConn2.setEncryptionManager(new EncryptionManager());
 

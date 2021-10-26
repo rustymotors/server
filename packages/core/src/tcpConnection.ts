@@ -38,6 +38,11 @@ export class TCPConnection implements ITCPConnection {
   decryptedCmd?: Buffer;
 
   constructor(connectionId: string, sock: Socket) {
+    if (typeof sock.localPort === "undefined") {
+      throw new Error(
+        `localPort is undefined, unable to create connection object`
+      );
+    }
     this.id = connectionId;
     this.appId = 0;
     this.status = EConnectionStatus.INACTIVE;
