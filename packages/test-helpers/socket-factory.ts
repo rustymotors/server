@@ -1,0 +1,86 @@
+import { Socket } from "net";
+import { Duplex, EventEmitter } from "stream";
+
+// TODO: refactor into something cleaner https://github.com/drazisil/mco-server/issues/1007
+export class SocketFactory extends Duplex implements EventEmitter {
+  static createSocket(): Socket {
+    const duplex = new Duplex();
+
+    const self: Socket = Object.assign({}, duplex, {
+      localPort: 7003,
+      write: () => true,
+      connect: () => self,
+      setEncoding: () => self,
+      pause: () => self,
+      resume: () => self,
+      setTimeout: () => self,
+      setNoDelay: () => self,
+      setKeepAlive: () => self,
+      address: () => {
+        return { address: "", family: "", port: 0 };
+      },
+      unref: () => self,
+      ref: () => self,
+      bufferSize: 0,
+      bytesRead: 0,
+      bytesWritten: 0,
+      connecting: false,
+      localAddress: "",
+      end: () => self,
+      addListener: () => self,
+      emit: () => false,
+      on: () => self,
+      once: () => self,
+      prependListener: () => self,
+      prependOnceListener: () => self,
+      _write: () => self,
+      _destroy: () => self,
+      _final: () => self,
+      setDefaultEncoding: () => self,
+      cork: () => self,
+      uncork: () => self,
+      _read: () => self,
+      read: () => self,
+      isPaused: () => false,
+      unpipe: () => self,
+      unshift: () => self,
+      wrap: () => self,
+      push: () => true,
+      destroy: () => {
+        return;
+      },
+      removeListener: () => self,
+      [Symbol.asyncIterator](): AsyncIterableIterator<string> {
+        return {
+          [Symbol.asyncIterator](): AsyncIterableIterator<string> {
+            if (this.return !== undefined) {
+              this.return("foo");
+            }
+            return this;
+          },
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+          async next(
+            ..._args: [] | [undefined]
+          ): Promise<IteratorResult<string, string>> {
+            return {
+              value: "bar",
+              done: false,
+            };
+          },
+          return: async (value: string): Promise<IteratorResult<string>> => {
+            return {
+              value,
+              done: true,
+            };
+          },
+        };
+      },
+
+      pipe<T extends NodeJS.WritableStream>(destination: T): T {
+        return destination;
+      },
+    });
+
+    return self;
+  }
+}

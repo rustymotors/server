@@ -9,7 +9,7 @@ import { expect, it, jest, beforeEach, describe } from "@jest/globals";
 import { PersonaServer } from "../src";
 import { NPSMessage } from "@mco-server/message-types";
 import { EMessageDirection } from "@mco-server/types";
-import { Socket as fakeSocket } from "net";
+import { SocketFactory } from "./../../test-helpers/socket-factory";
 
 jest.mock("net");
 let personaServer: PersonaServer;
@@ -69,7 +69,7 @@ describe("Persona Server", () => {
   it("PersonaServer _send()", () => {
     const data = new NPSMessage(EMessageDirection.SENT);
     expect(() => {
-      personaServer.sendPacket(new fakeSocket(), data);
+      personaServer.sendPacket(SocketFactory.createSocket(), data);
     }).not.toThrow();
   });
 
