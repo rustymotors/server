@@ -54,7 +54,13 @@ export class SocketFactory extends Duplex implements EventEmitter {
         return {
           [Symbol.asyncIterator](): AsyncIterableIterator<string> {
             if (this.return !== undefined) {
-              this.return("foo").then(() => {}, () => {});
+              this.return("foo").then(
+                () => {
+                // do nothing.
+              }, 
+              () => {
+                // do nothing.
+              });
             }
             return this;
           },
