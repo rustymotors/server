@@ -54,14 +54,12 @@ export class SocketFactory extends Duplex implements EventEmitter {
         return {
           [Symbol.asyncIterator](): AsyncIterableIterator<string> {
             if (this.return !== undefined) {
-              this.return("foo");
+              this.return("foo").then(() => {}, () => {});
             }
             return this;
           },
           // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-          async next(
-            ..._args: [] | [undefined]
-          ): Promise<IteratorResult<string, string>> {
+          async next(): Promise<IteratorResult<string, string>> {
             return {
               value: "bar",
               done: false,
