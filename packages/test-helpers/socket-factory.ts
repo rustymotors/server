@@ -59,11 +59,8 @@ export class SocketFactory extends Duplex implements EventEmitter {
             return this;
           },
           // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-          async next(): Promise<IteratorResult<string, string>> {
-            return {
-              value: "bar",
-              done: false,
-            };
+          next(): Promise<IteratorResult<string, string>> {
+            return new Promise(() => {});
           },
         };
       },
