@@ -4,10 +4,9 @@
   "main": "src/index.ts",
   "license": "MIT",
   "dependencies": {
-    "@types/node": "^16.9.6",
     "mcos-types": "workspace:^",
     "pino": "next",
-    "ts-node": "^10.2.1"
+    "ts-node": "10.4.0"
   },
   "devDependencies": {
     "@babel/cli": "7.15.7",
@@ -15,6 +14,7 @@
     "@jest/globals": "27.3.1",
     "@types/babel__core": "7.1.16",
     "@types/eslint": "7.28.2",
+    "@types/node": "16.11.6",
     "@types/prettier": "2.4.1",
     "@typescript-eslint/eslint-plugin": "5.2.0",
     "@typescript-eslint/parser": "5.2.0",

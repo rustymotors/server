@@ -4,7 +4,6 @@
   "main": "src/index.ts",
   "license": "MIT",
   "dependencies": {
-    "@types/node": "^16.9.6",
     "mcos-config": "workspace:^",
     "mcos-router": "workspace:^",
     "mcos-types": "workspace:^",
@@ -12,7 +11,7 @@
     "slonik": "24.1.0",
     "sqlite": "4.0.23",
     "sqlite3": "4",
-    "ts-node": "^10.2.1",
+    "ts-node": "10.4.0",
     "tslib": "2.3.1"
   },
   "devDependencies": {
@@ -21,6 +20,7 @@
     "@jest/globals": "27.3.1",
     "@types/babel__core": "7.1.16",
     "@types/eslint": "7.28.2",
+    "@types/node": "16.11.6",
     "@types/prettier": "2.4.1",
     "@typescript-eslint/eslint-plugin": "5.2.0",
     "@typescript-eslint/parser": "5.2.0",
