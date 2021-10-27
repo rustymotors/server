@@ -77,7 +77,9 @@ export class MCServer implements IMCServer {
 
     for (const port of tcpPortList) {
       listenerThread.startTCPListener(port, this.mgr);
-      log.info("debug", `port ${port} listening`, { service: this.serviceName });
+      log.info("debug", `port ${port} listening`, {
+        service: this.serviceName,
+      });
     }
 
     log.info("info", "Listening sockets create successfully.", {

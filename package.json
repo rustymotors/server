@@ -36,6 +36,7 @@
     "url": "git@github.com:drazisil/mco-server.git"
   },
   "dependencies": {
+    "@types/pino": "^6.3.12",
     "mcos-admin": "workspace:^",
     "mcos-auth": "workspace:^",
     "mcos-core": "workspace:^",

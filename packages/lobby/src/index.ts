@@ -61,9 +61,13 @@ function decryptCmd(con: ITCPConnection, cypherCmd: Buffer): ITCPConnection {
   const s = con;
   const decryptedCommand = s.decipherBufferDES(cypherCmd);
   s.decryptedCmd = decryptedCommand;
-  log.debug("debug", `[lobby] Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`, {
-    service: "mcoserver:LobbyServer",
-  });
+  log.debug(
+    "debug",
+    `[lobby] Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`,
+    {
+      service: "mcoserver:LobbyServer",
+    }
+  );
   return s;
 }
 

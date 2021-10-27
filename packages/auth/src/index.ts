@@ -53,9 +53,13 @@ export class AuthLogin {
       process.exit();
     });
     this._server.on("tlsClientError", (error) => {
-      log.warn("warn", `[AuthLogin] SSL Socket Client Error: ${error.message}`, {
-        service: this._serviceName,
-      });
+      log.warn(
+        "warn",
+        `[AuthLogin] SSL Socket Client Error: ${error.message}`,
+        {
+          service: this._serviceName,
+        }
+      );
     });
   }
 

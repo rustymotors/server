@@ -57,7 +57,9 @@ export class HTTPProxyServer {
     const host = "0.0.0.0";
     const port = 80;
     return this._server.listen({ port, host }, () => {
-      log.debug("debug", `port ${port} listening`, { service: this._serviceName });
+      log.debug("debug", `port ${port} listening`, {
+        service: this._serviceName,
+      });
       log.info("info", "Proxy server is listening...", {
         service: this._serviceName,
       });

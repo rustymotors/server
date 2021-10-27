@@ -18,7 +18,7 @@ export type AppConfiguration = {
 };
 
 export class ConfigurationManager {
-  serviceName = "MCOServer:Patch"
+  serviceName = "MCOServer:Patch";
   getConfig(): AppConfiguration {
     return savedConfig;
   }
@@ -35,9 +35,8 @@ export class ConfigurationManager {
     // Intentionally empty
   }
 
-  handleData(sock: Socket):void {
+  handleData(sock: Socket): void {
     throw new Error("Not yet implemented");
-    
   }
 }
 

@@ -118,6 +118,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@jest/globals", "npm:27.3.1"],
             ["@tsconfig/node14", "npm:1.0.1"],
             ["@types/node", "npm:16.11.6"],
+            ["@types/pino", "npm:6.3.12"],
             ["@types/supertest", "npm:2.0.11"],
             ["@typescript-eslint/eslint-plugin", "virtual:06ef28086b36e74def08da2c9d29aa6e1f8f813793d98a611473d55e636fc011e0e0230f38041145ce57ad980a88e13c09092b962c7dd418d5796ffbfd0818ee#npm:5.2.0"],
             ["@typescript-eslint/parser", "virtual:06ef28086b36e74def08da2c9d29aa6e1f8f813793d98a611473d55e636fc011e0e0230f38041145ce57ad980a88e13c09092b962c7dd418d5796ffbfd0818ee#npm:5.2.0"],
@@ -3187,6 +3188,39 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         ["npm:16.11.6", {
           "packageLocation": "./.yarn/cache/@types-node-npm-16.11.6-3a38cc239a-6e19634766.zip/node_modules/@types/node/",
           "packageDependencies": [
+            ["@types/node", "npm:16.11.6"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@types/pino", [
+        ["npm:6.3.12", {
+          "packageLocation": "./.yarn/cache/@types-pino-npm-6.3.12-19c7982858-8017351466.zip/node_modules/@types/pino/",
+          "packageDependencies": [
+            ["@types/pino", "npm:6.3.12"],
+            ["@types/node", "npm:16.11.6"],
+            ["@types/pino-pretty", "npm:4.7.1"],
+            ["@types/pino-std-serializers", "npm:2.4.1"],
+            ["sonic-boom", "npm:2.3.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@types/pino-pretty", [
+        ["npm:4.7.1", {
+          "packageLocation": "./.yarn/cache/@types-pino-pretty-npm-4.7.1-a75d43599e-5a8a80bd42.zip/node_modules/@types/pino-pretty/",
+          "packageDependencies": [
+            ["@types/pino-pretty", "npm:4.7.1"],
+            ["@types/pino", "npm:6.3.12"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@types/pino-std-serializers", [
+        ["npm:2.4.1", {
+          "packageLocation": "./.yarn/cache/@types-pino-std-serializers-npm-2.4.1-e7c36178c0-a156e25882.zip/node_modules/@types/pino-std-serializers/",
+          "packageDependencies": [
+            ["@types/pino-std-serializers", "npm:2.4.1"],
             ["@types/node", "npm:16.11.6"]
           ],
           "linkType": "HARD",
@@ -7290,6 +7324,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@jest/globals", "npm:27.3.1"],
             ["@tsconfig/node14", "npm:1.0.1"],
             ["@types/node", "npm:16.11.6"],
+            ["@types/pino", "npm:6.3.12"],
             ["@types/supertest", "npm:2.0.11"],
             ["@typescript-eslint/eslint-plugin", "virtual:06ef28086b36e74def08da2c9d29aa6e1f8f813793d98a611473d55e636fc011e0e0230f38041145ce57ad980a88e13c09092b962c7dd418d5796ffbfd0818ee#npm:5.2.0"],
             ["@typescript-eslint/parser", "virtual:06ef28086b36e74def08da2c9d29aa6e1f8f813793d98a611473d55e636fc011e0e0230f38041145ce57ad980a88e13c09092b962c7dd418d5796ffbfd0818ee#npm:5.2.0"],
@@ -7670,6 +7705,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/babel__core", "npm:7.1.16"],
             ["@types/eslint", "npm:7.28.2"],
             ["@types/node", "npm:16.11.6"],
+            ["@types/pino", "npm:6.3.12"],
             ["@types/prettier", "npm:2.4.1"],
             ["@typescript-eslint/eslint-plugin", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:5.2.0"],
             ["@typescript-eslint/parser", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:5.2.0"],

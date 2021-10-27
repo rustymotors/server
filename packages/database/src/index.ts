@@ -8,10 +8,7 @@
 
 import * as sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
-import {
-  IDatabaseManager,
-  SessionRecord,
-} from "mcos-types";
+import { IDatabaseManager, SessionRecord } from "mcos-types";
 import { pino } from "pino";
 import { AppConfiguration, ConfigurationManager } from "mcos-config";
 import { createPool } from "slonik";
@@ -260,7 +257,9 @@ export class DatabaseManager implements IDatabaseManager {
     const host = this._config.serverSettings.ipServer || "localhost";
     const port = 0;
     return this._server.listen({ port, host }, () => {
-      log.debug("debug", `port ${port} listening`, { service: this.serviceName });
+      log.debug("debug", `port ${port} listening`, {
+        service: this.serviceName,
+      });
       log.info("info", "Patch server is listening...", {
         service: this.serviceName,
       });

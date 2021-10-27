@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/node": "^16.9.6",
+    "@types/pino": "^6.3.12",
     "mcos-types": "workspace:^",
     "pino": "6.13.3",
     "ts-node": "^10.2.1"

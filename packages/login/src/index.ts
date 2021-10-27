@@ -226,9 +226,13 @@ export class LoginServer {
     // TODO: This needs to be dynamically generated, right now we are using a
     // a static packet that works _most_ of the time
     const packetContent = premadeLogin();
-    log.debug("debug", `Using Premade Login: ${packetContent.toString("hex")}`, {
-      service: this.serviceName,
-    });
+    log.debug(
+      "debug",
+      `Using Premade Login: ${packetContent.toString("hex")}`,
+      {
+        service: this.serviceName,
+      }
+    );
 
     // MsgId: 0x601
     Buffer.from([0x06, 0x01]).copy(packetContent);

@@ -7,7 +7,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import { pino } from "pino";
 import { readFileSync } from "fs";
-import { EServerConnectionName,  } from "mcos-router";
+import { EServerConnectionName } from "mcos-router";
 import { ShardEntry } from "./shard-entry";
 import { RoutingMesh } from "mcos-router";
 import { createServer, Server } from "https";
@@ -231,7 +231,9 @@ export class ShardServer {
     const host = this._config.serverSettings.ipServer || "localhost";
     const port = 82;
     return this._server.listen({ port, host }, () => {
-      log.debug("debug", `port ${port} listening`, { service: this._serviceName });
+      log.debug("debug", `port ${port} listening`, {
+        service: this._serviceName,
+      });
       log.info("info", "Patch server is listening...", {
         service: this._serviceName,
       });

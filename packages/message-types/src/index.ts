@@ -9,7 +9,6 @@ import { AppConfiguration } from "mcos-config";
 // DWORD data;   // specific to the message sent (but usually 0)
 // DWORD data2;
 
-
 /**
  * @class
  * @property {number} msgNo
@@ -120,7 +119,7 @@ export class GenericReplyMessage {
         result: this.result.toString("hex"),
         data: this.data.toString("hex"),
         tdata2: this.data2.toString("hex"),
-      })}`
+      })}`;
   }
 }
 
@@ -197,11 +196,10 @@ export class GenericRequestMessage {
    */
   dumpPacket(): string {
     return `GenericRequest ${JSON.stringify({
-          msgNo: this.msgNo,
-          data: this.data.toString("hex"),
-          data2: this.data2.toString("hex"),
-        })}`
-    
+      msgNo: this.msgNo,
+      data: this.data.toString("hex"),
+      data2: this.data2.toString("hex"),
+    })}`;
   }
 }
 
@@ -258,13 +256,13 @@ export class StockCar {
    * @return {void}
    */
   dumpPacket(): void {
-    return
-      `
+    return;
+    `
       [StockCar]======================================
       brandedPartId:     ${this.brandedPartId}
       retailPrice:       ${this.retailPrice}
       isDealOfTheDay:    ${this.bIsDealOfTheDay}
-      logger.log('[/StockCar]======================================`
+      logger.log('[/StockCar]======================================`;
   }
 }
 
@@ -361,16 +359,16 @@ export class StockCarInfoMessage {
    * @return {void}
    */
   dumpPacket(): void {
-    return
-      `${JSON.stringify({
-        msgNo: this.msgNo,
-        starterCash: this.starterCash,
-        dealerId: this.dealerId,
-        brand: this.brand,
-        noCars: this.noCars,
-        moreToCome: this.moreToCome,
-        stockCarList: this.StockCarList.toString(),
-      })}`
+    return;
+    `${JSON.stringify({
+      msgNo: this.msgNo,
+      starterCash: this.starterCash,
+      dealerId: this.dealerId,
+      brand: this.brand,
+      noCars: this.noCars,
+      moreToCome: this.moreToCome,
+      stockCarList: this.StockCarList.toString(),
+    })}`;
   }
 }
 
@@ -972,7 +970,7 @@ export class NPSMessage {
           msgNo: this.msgNo.toString(16),
           msgVersion: this.msgVersion,
           msgLength: this.msgLength,
-        })}`
+        })}`;
   }
 
   /**
@@ -981,7 +979,7 @@ export class NPSMessage {
    * @memberof NPSMsg
    */
   dumpPacket(): string {
-   return `NPSMsg/NPSMsg,
+    return `NPSMsg/NPSMsg,
         ${JSON.stringify({
           direction: this.direction,
           msgNo: this.msgNo.toString(16),
@@ -989,7 +987,7 @@ export class NPSMessage {
           msgLength: this.msgLength,
           content: this.content.toString("hex"),
           serialized: this.serialize().toString("hex"),
-        })}`
+        })}`;
   }
 
   /**
@@ -1116,7 +1114,7 @@ export class LoginMessage {
           skinId: this.skinId,
           personaName: this.personaName,
           version: this.version,
-        })}`
+        })}`;
   }
 }
 
@@ -1177,12 +1175,12 @@ export class LobbyMessage {
    * @return {void}
    */
   dumpPacket(): string {
-   return `LobbyMsg',
+    return `LobbyMsg',
         ${JSON.stringify({
           msgNo: this.msgNo,
           dataLength: this.dataLength,
           packet: this.serialize().toString("hex"),
-        })}`
+        })}`;
   }
 }
 
@@ -1346,16 +1344,16 @@ export class MessageNode {
     }
 
     return `Message ${JSON.stringify({
-        dataLength: this.dataLength,
-        isMCOTS: this.isMCOTS(),
-        msgNo: this.msgNo,
-        direction: this.direction,
-        seq: this.seq,
-        flags: this.flags,
-        toFrom: this.toFrom,
-        appId: this.appId,
-        packetContents: packetContentsArray.join("") || "",
-      })}`
+      dataLength: this.dataLength,
+      isMCOTS: this.isMCOTS(),
+      msgNo: this.msgNo,
+      direction: this.direction,
+      seq: this.seq,
+      flags: this.flags,
+      toFrom: this.toFrom,
+      appId: this.appId,
+      packetContents: packetContentsArray.join("") || "",
+    })}`;
   }
 
   /**
@@ -1453,7 +1451,7 @@ export class ClientConnectMessage {
         custName: this.custName,
         personaName: this.personaName,
         mcVersion: this.mcVersion.toString("hex"),
-      })}`
+      })}`;
   }
 }
 
@@ -1608,9 +1606,9 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    * @return {void}
    */
   dumpPacket(): string {
-    let message = ''
-    message = message.concat(this.dumpPacketHeader("NPSPersonaMapsMsg"))
-    message = message.concat(`personaCount:        ${this.personaCount}`)
+    let message = "";
+    message = message.concat(this.dumpPacketHeader("NPSPersonaMapsMsg"));
+    message = message.concat(`personaCount:        ${this.personaCount}`);
     for (const persona of this.personas) {
       message = message.concat(
         `
@@ -1618,14 +1616,16 @@ export class NPSPersonaMapsMessage extends NPSMessage {
         id:                  ${this.deserializeInt32(persona.id)}
         shardId:             ${this.deserializeInt32(persona.shardId)}
         name:                ${this.deserializeString(persona.name)}
-        Packet as hex:       ${this.getPacketAsString()}`)
+        Packet as hex:       ${this.getPacketAsString()}`
+      );
 
       // TODO: Work on this more
 
       message = message.concat(
-        "[/NPSPersonaMapsMsg]======================================")
+        "[/NPSPersonaMapsMsg]======================================"
+      );
     }
-    return message
+    return message;
   }
 }
 
@@ -1735,13 +1735,13 @@ export class NPSUserStatus extends NPSMessage {
   dumpPacket(): string {
     let message = this.dumpPacketHeader("NPSUserStatus");
     message = message.concat(
-      
       `NPSUserStatus,
       ${JSON.stringify({
         contextId: this.contextId,
         sessionkey: this.sessionkey,
-      })}`)
-      return message
+      })}`
+    );
+    return message;
   }
 }
 
@@ -1789,8 +1789,9 @@ export class NPSUserInfo extends NPSMessage {
       `UserId:        ${this.userId}
        UserName:      ${this.userName.toString()}
        UserData:      ${this.userData.toString("hex")}
-       [/NPSUserInfo]======================================`);
-       return message
+       [/NPSUserInfo]======================================`
+    );
+    return message;
   }
 }
 

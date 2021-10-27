@@ -25,7 +25,7 @@ import {
   UnprocessedPacket,
 } from "mcos-types";
 
-const log = pino()
+const log = pino();
 
 /**
  * Manages TCP connection packet processing
@@ -89,9 +89,13 @@ export class TCPManager implements ITCPManager {
 
       packet.updateBuffer(connection.encryptBuffer(packet.data));
 
-      log.debug("debug", `encrypted packet: ${packet.serialize().toString("hex")}`, {
-        service: "mcoserver:MCOTSServer",
-      });
+      log.debug(
+        "debug",
+        `encrypted packet: ${packet.serialize().toString("hex")}`,
+        {
+          service: "mcoserver:MCOTSServer",
+        }
+      );
     }
 
     return { connection, packet };
@@ -215,9 +219,13 @@ export class TCPManager implements ITCPManager {
     // Update the connection's appId
     connectionWithKey.appId = newMessage.getAppId();
 
-    log.debug("debug", `cust: ${customerId} ID: ${personaId} Name: ${personaName}`, {
-      service: "mcoserver:MCOTSServer",
-    });
+    log.debug(
+      "debug",
+      `cust: ${customerId} ID: ${personaId} Name: ${personaName}`,
+      {
+        service: "mcoserver:MCOTSServer",
+      }
+    );
 
     // Create new response packet
     const genericReplyMessage = new GenericReplyMessage();

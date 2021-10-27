@@ -1,5 +1,5 @@
 import { pino } from "pino";
-import {  IncomingMessage,  ServerResponse } from "http";
+import { IncomingMessage, ServerResponse } from "http";
 
 const log = pino();
 export const CastanetResponse = {
@@ -22,7 +22,7 @@ export class PatchServer {
   }
 
   private constructor() {
-        // Intentionaly empty
+    // Intentionaly empty
   }
 
   handleRequest(request: IncomingMessage, response: ServerResponse): void {

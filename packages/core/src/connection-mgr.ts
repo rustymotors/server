@@ -12,7 +12,9 @@ import {
   EMessageDirection,
   IConnectionManager,
   IDatabaseManager,
-  ITCPConnection, NPS_COMMANDS, UnprocessedPacket
+  ITCPConnection,
+  NPS_COMMANDS,
+  UnprocessedPacket,
 } from "mcos-types";
 import { Socket } from "net";
 import { EncryptionManager } from "./encryption-mgr";
@@ -137,13 +139,17 @@ export class ConnectionManager implements IConnectionManager {
         );
         const newNode = new MessageNode(EMessageDirection.RECEIVED);
         newNode.deserialize(rawPacket.data);
-        log.debug("debug", JSON.stringify(newNode), { service: this.serviceName });
+        log.debug("debug", JSON.stringify(newNode), {
+          service: this.serviceName,
+        });
 
         return TCPManager.getInstance().defaultHandler(rawPacket);
       }
 
       default:
-        log.debug("debug", JSON.stringify(rawPacket), { service: this.serviceName });
+        log.debug("debug", JSON.stringify(rawPacket), {
+          service: this.serviceName,
+        });
 
         throw new Error(
           `We received a packet on port ${localPort}. We don't what to do yet, going to throw so the message isn't lost.`

@@ -71,7 +71,9 @@ export class PersonaServer {
   }
 
   async handleSelectGamePersona(data: Buffer): Promise<NPSMessage> {
-    log.debug("debug", "_npsSelectGamePersona...", { service: this.serviceName });
+    log.debug("debug", "_npsSelectGamePersona...", {
+      service: this.serviceName,
+    });
     const requestPacket = new NPSMessage(
       EMessageDirection.RECEIVED
     ).deserialize(data);
@@ -214,8 +216,12 @@ export class PersonaServer {
 
     const customerId = data.readInt32BE(12);
     const plateName = data.slice(17).toString();
-    log.debug("debug", `customerId: ${customerId}`, { service: this.serviceName });
-    log.debug("debug", `Plate name: ${plateName}`, { service: this.serviceName });
+    log.debug("debug", `customerId: ${customerId}`, {
+      service: this.serviceName,
+    });
+    log.debug("debug", `Plate name: ${plateName}`, {
+      service: this.serviceName,
+    });
 
     // Create the packet content
 
@@ -251,7 +257,9 @@ export class PersonaServer {
    * @return {Promise<NPSMsg>}
    */
   async validatePersonaName(data: Buffer): Promise<NPSMessage> {
-    log.debug("debug", "_npsValidatePersonaName...", { service: this.serviceName });
+    log.debug("debug", "_npsValidatePersonaName...", {
+      service: this.serviceName,
+    });
     const requestPacket = new NPSMessage(
       EMessageDirection.RECEIVED
     ).deserialize(data);

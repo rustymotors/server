@@ -1,7 +1,7 @@
 import { RoutingMesh } from "./client";
 import P from "pino";
 
-const log = P()
+const log = P();
 
 export enum EServerConnectionName {
   ADMIN = "Admin",
@@ -54,9 +54,13 @@ export class RoutingServer {
         port,
       };
       this._serverConnections.push(newService);
-      log.debug("debug", `Registered new service: ${JSON.stringify(newService)}`, {
-        service: this.serviceName,
-      });
+      log.debug(
+        "debug",
+        `Registered new service: ${JSON.stringify(newService)}`,
+        {
+          service: this.serviceName,
+        }
+      );
 
       return;
     }
