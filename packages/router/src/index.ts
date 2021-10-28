@@ -72,7 +72,7 @@ export class RoutingServer {
       }
     );
   }
-  handleData(data: Buffer): void {
+  handleData(this: RoutingServer, data: Buffer): void {
     const payload = data.toString();
     log.debug("debug", `Payload: ${payload}`, {
       service: this.serviceName,

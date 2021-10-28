@@ -25,7 +25,11 @@ export class PatchServer {
     // Intentionaly empty
   }
 
-  handleRequest(request: IncomingMessage, response: ServerResponse): void {
+  handleRequest(
+    this: PatchServer,
+    request: IncomingMessage,
+    response: ServerResponse
+  ): void {
     const responseData = CastanetResponse;
 
     switch (request.url) {

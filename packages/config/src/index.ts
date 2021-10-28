@@ -35,7 +35,7 @@ export class ConfigurationManager {
     // Intentionally empty
   }
 
-  handleData(sock: Socket): void {
+  handleData(this: ConfigurationManager, sock: Socket): void {
     throw new Error("Not yet implemented");
   }
 }
