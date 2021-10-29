@@ -1,4 +1,3 @@
-// @ts-check
 // mcos is a game server, written from scratch, for an old game
 // Copyright (C) <2017-2018>  <Joseph W Becher>
 //
@@ -10,8 +9,12 @@ import { pino } from "pino";
 import { IncomingMessage, ServerResponse } from "http";
 import { createServer, Server } from "https";
 import { Socket } from "net";
-import { ConfigurationManager, _sslOptions } from "mcos-config";
-import { AppConfiguration, IMCServer } from "mcos-types";
+import {
+  AppConfiguration,
+  ConfigurationManager,
+  _sslOptions,
+} from "mcos-config";
+import { IMCServer } from "mcos-types";
 
 const log = pino();
 /**
@@ -98,7 +101,7 @@ export class AdminServer {
     );
     log.info(
       "info",
-      `Requested recieved,
+      `Request received,
       ${JSON.stringify({
         url: request.url,
         remoteAddress: request.socket.remoteAddress,

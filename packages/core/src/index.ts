@@ -6,14 +6,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { pino } from "pino";
-import {
-  AppConfiguration,
-  IConnectionManager,
-  IMCServer,
-  ITCPConnection,
-} from "mcos-types";
+import { IConnectionManager, IMCServer, ITCPConnection } from "mcos-types";
 import { ConnectionManager } from "./connection-mgr";
-import { ConfigurationManager } from "mcos-config";
+import { AppConfiguration, ConfigurationManager } from "mcos-config";
 import { ListenerThread } from "./listener-thread";
 
 const log = pino();
