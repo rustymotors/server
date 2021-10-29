@@ -23,6 +23,9 @@
     "**/.pnp.*": true
   },
   "cSpell.words": [
+    "Jiggawatt",
+    "mcos",
+    "mcoserver",
     "pino"
   ]
 }
