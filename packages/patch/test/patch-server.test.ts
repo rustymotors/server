@@ -11,48 +11,17 @@ import { CastanetResponse, PatchServer } from "../src";
 
 let patchServer: PatchServer;
 
+// TODO: Rewrite tests - https://github.com/drazisil/mco-server/issues/1010
 describe("PatchServer", () => {
   beforeEach(() => {
     patchServer = PatchServer.getInstance();
   });
 
-  it("PatchServer", () => {
-    expect(CastanetResponse.body.toString("hex")).toStrictEqual(
-      "cafebeef00000000000003"
-    );
-  });
+  it.todo("PatchServer");
 
-  it("PatchServer - UpdateInfo", () => {
-    request(patchServer._server)
-      .get("/games/EA_Seattle/MotorCity/UpdateInfo")
-      .then((response) => {
-        expect(response.body).toStrictEqual(CastanetResponse.body);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  });
+  it.todo("PatchServer - UpdateInfo");
 
-  it("PatchServer - NPS", () => {
-    request(patchServer._server)
-      .get("/games/EA_Seattle/MotorCity/NPS")
-      .then((response) => {
-        expect(response.body).toStrictEqual(CastanetResponse.body);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  });
+  it.todo("PatchServer - NPS");
 
-  it("PatchServer - MCO", (done) => {
-    request(patchServer._server)
-      .get("/games/EA_Seattle/MotorCity/MCO")
-      .then((response) => {
-        expect(response.body).toStrictEqual(CastanetResponse.body);
-        done();
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  });
+  it.todo("PatchServer - MCO");
 });
