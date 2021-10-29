@@ -41,7 +41,7 @@ export class RoutingServer {
   }
 
   private constructor() {
-    // Intentionaly empty
+    // Intentionally empty
   }
 
   private _registerNewService(payloadJSON: ServerConnectionRecord) {
@@ -83,7 +83,7 @@ export class RoutingServer {
     try {
       payloadJSON = JSON.parse(payload);
     } catch (error) {
-      log.error("error", `Error pasing payload!: ${error}`, {
+      log.error("error", `Error passing payload!: ${error}`, {
         service: this.serviceName,
       });
       return;
