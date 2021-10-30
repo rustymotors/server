@@ -6165,15 +6165,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["flatstr", [
-        ["npm:1.0.12", {
-          "packageLocation": "./.yarn/cache/flatstr-npm-1.0.12-4311d37d16-e1bb562c94.zip/node_modules/flatstr/",
-          "packageDependencies": [
-            ["flatstr", "npm:1.0.12"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["flatted", [
         ["npm:3.2.2", {
           "packageLocation": "./.yarn/cache/flatted-npm-3.2.2-d61e116742-9d5e03fd93.zip/node_modules/flatted/",
@@ -8465,7 +8456,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
-            ["slonik", "npm:24.1.0"],
+            ["slonik", "npm:24.1.2"],
             ["sqlite", "npm:4.0.23"],
             ["sqlite3", "npm:4.2.0"],
             ["tap", "virtual:9fbf171e1e70f448e293716c156ce3f0c3d0c22f71fa4a0810a169e3ff4e4af9c752d1d8963b646b16efe39bb9aaf1e87bc2da1911b3a1619f862d6346e56add#npm:15.0.10"],
@@ -8693,7 +8684,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-config-prettier", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:8.3.0"],
             ["jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.3.1"],
             ["mcos-types", "workspace:packages/types"],
-            ["pino", "npm:6.13.3"],
+            ["pino", "npm:7.0.5"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["tap", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:15.0.10"],
@@ -9647,16 +9638,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "SOFT",
         }],
-        ["virtual:9ccbf0d29d134ce19b7c0a6f45720b45fb3758f591dcc17046f64f424d0bf5c2072f56248f48771d303e0842b72afac332d88c047f87e3c65d15f90270dea28a#npm:8.7.1", {
-          "packageLocation": "./.yarn/__virtual__/pg-virtual-ae53625898/0/cache/pg-npm-8.7.1-47be8f5ecd-3a17d9a73d.zip/node_modules/pg/",
+        ["virtual:92064da4f2ea9cd1dcf9335382db5d05f47974fafd58062dabbcd5472ee6e60cc695be3e56fc132fea63e7c9839618bd31ea9a007f467d74926bf0a675f2b61a#npm:8.7.1", {
+          "packageLocation": "./.yarn/__virtual__/pg-virtual-68a9e2c322/0/cache/pg-npm-8.7.1-47be8f5ecd-3a17d9a73d.zip/node_modules/pg/",
           "packageDependencies": [
-            ["pg", "virtual:9ccbf0d29d134ce19b7c0a6f45720b45fb3758f591dcc17046f64f424d0bf5c2072f56248f48771d303e0842b72afac332d88c047f87e3c65d15f90270dea28a#npm:8.7.1"],
+            ["pg", "virtual:92064da4f2ea9cd1dcf9335382db5d05f47974fafd58062dabbcd5472ee6e60cc695be3e56fc132fea63e7c9839618bd31ea9a007f467d74926bf0a675f2b61a#npm:8.7.1"],
             ["@types/pg-native", null],
             ["buffer-writer", "npm:2.0.0"],
             ["packet-reader", "npm:1.0.0"],
             ["pg-connection-string", "npm:2.5.0"],
             ["pg-native", null],
-            ["pg-pool", "virtual:ae53625898be11f28c226cf1c92f5c7292c53ffd0c6a2c9f9ca50ff709745c7595421c595851d107c6eb6453c12ed98c2c002fe0c2485503e6942d7075ac1787#npm:3.4.1"],
+            ["pg-pool", "virtual:68a9e2c3223663aa6cb13e028d8a8dd517952eec01e606235bedc01ca62b858b12275fdc3dabe684a5b896a675b7ce211ec035c859570009dcdab28dd0e3e689#npm:3.4.1"],
             ["pg-protocol", "npm:1.5.0"],
             ["pg-types", "npm:2.2.0"],
             ["pgpass", "npm:1.0.4"]
@@ -9710,12 +9701,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "SOFT",
         }],
-        ["virtual:9ccbf0d29d134ce19b7c0a6f45720b45fb3758f591dcc17046f64f424d0bf5c2072f56248f48771d303e0842b72afac332d88c047f87e3c65d15f90270dea28a#npm:2.7.1", {
-          "packageLocation": "./.yarn/__virtual__/pg-cursor-virtual-76e98e2200/0/cache/pg-cursor-npm-2.7.1-fc4ae405cd-8e1c5d20f6.zip/node_modules/pg-cursor/",
+        ["virtual:92064da4f2ea9cd1dcf9335382db5d05f47974fafd58062dabbcd5472ee6e60cc695be3e56fc132fea63e7c9839618bd31ea9a007f467d74926bf0a675f2b61a#npm:2.7.1", {
+          "packageLocation": "./.yarn/__virtual__/pg-cursor-virtual-e320f8727a/0/cache/pg-cursor-npm-2.7.1-fc4ae405cd-8e1c5d20f6.zip/node_modules/pg-cursor/",
           "packageDependencies": [
-            ["pg-cursor", "virtual:9ccbf0d29d134ce19b7c0a6f45720b45fb3758f591dcc17046f64f424d0bf5c2072f56248f48771d303e0842b72afac332d88c047f87e3c65d15f90270dea28a#npm:2.7.1"],
+            ["pg-cursor", "virtual:92064da4f2ea9cd1dcf9335382db5d05f47974fafd58062dabbcd5472ee6e60cc695be3e56fc132fea63e7c9839618bd31ea9a007f467d74926bf0a675f2b61a#npm:2.7.1"],
             ["@types/pg", null],
-            ["pg", "virtual:9ccbf0d29d134ce19b7c0a6f45720b45fb3758f591dcc17046f64f424d0bf5c2072f56248f48771d303e0842b72afac332d88c047f87e3c65d15f90270dea28a#npm:8.7.1"]
+            ["pg", "virtual:92064da4f2ea9cd1dcf9335382db5d05f47974fafd58062dabbcd5472ee6e60cc695be3e56fc132fea63e7c9839618bd31ea9a007f467d74926bf0a675f2b61a#npm:8.7.1"]
           ],
           "packagePeers": [
             "@types/pg",
@@ -9750,12 +9741,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "SOFT",
         }],
-        ["virtual:ae53625898be11f28c226cf1c92f5c7292c53ffd0c6a2c9f9ca50ff709745c7595421c595851d107c6eb6453c12ed98c2c002fe0c2485503e6942d7075ac1787#npm:3.4.1", {
-          "packageLocation": "./.yarn/__virtual__/pg-pool-virtual-4383022f12/0/cache/pg-pool-npm-3.4.1-14f060ebff-50d68bd99a.zip/node_modules/pg-pool/",
+        ["virtual:68a9e2c3223663aa6cb13e028d8a8dd517952eec01e606235bedc01ca62b858b12275fdc3dabe684a5b896a675b7ce211ec035c859570009dcdab28dd0e3e689#npm:3.4.1", {
+          "packageLocation": "./.yarn/__virtual__/pg-pool-virtual-9e6131d69d/0/cache/pg-pool-npm-3.4.1-14f060ebff-50d68bd99a.zip/node_modules/pg-pool/",
           "packageDependencies": [
-            ["pg-pool", "virtual:ae53625898be11f28c226cf1c92f5c7292c53ffd0c6a2c9f9ca50ff709745c7595421c595851d107c6eb6453c12ed98c2c002fe0c2485503e6942d7075ac1787#npm:3.4.1"],
+            ["pg-pool", "virtual:68a9e2c3223663aa6cb13e028d8a8dd517952eec01e606235bedc01ca62b858b12275fdc3dabe684a5b896a675b7ce211ec035c859570009dcdab28dd0e3e689#npm:3.4.1"],
             ["@types/pg", null],
-            ["pg", "virtual:9ccbf0d29d134ce19b7c0a6f45720b45fb3758f591dcc17046f64f424d0bf5c2072f56248f48771d303e0842b72afac332d88c047f87e3c65d15f90270dea28a#npm:8.7.1"]
+            ["pg", "virtual:92064da4f2ea9cd1dcf9335382db5d05f47974fafd58062dabbcd5472ee6e60cc695be3e56fc132fea63e7c9839618bd31ea9a007f467d74926bf0a675f2b61a#npm:8.7.1"]
           ],
           "packagePeers": [
             "@types/pg",
@@ -9825,24 +9816,27 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["pino", [
-        ["npm:6.13.3", {
-          "packageLocation": "./.yarn/cache/pino-npm-6.13.3-50e2aceb53-a580decd47.zip/node_modules/pino/",
-          "packageDependencies": [
-            ["pino", "npm:6.13.3"],
-            ["fast-redact", "npm:3.0.2"],
-            ["fast-safe-stringify", "npm:2.1.1"],
-            ["fastify-warning", "npm:0.2.0"],
-            ["flatstr", "npm:1.0.12"],
-            ["pino-std-serializers", "npm:3.2.0"],
-            ["quick-format-unescaped", "npm:4.0.4"],
-            ["sonic-boom", "npm:1.4.1"]
-          ],
-          "linkType": "HARD",
-        }],
         ["npm:7.0.0-rc.9", {
           "packageLocation": "./.yarn/cache/pino-npm-7.0.0-rc.9-3554438e7f-9513d0c5ce.zip/node_modules/pino/",
           "packageDependencies": [
             ["pino", "npm:7.0.0-rc.9"],
+            ["fast-redact", "npm:3.0.2"],
+            ["fastify-warning", "npm:0.2.0"],
+            ["get-caller-file", "npm:2.0.5"],
+            ["json-stringify-safe", "npm:5.0.1"],
+            ["on-exit-leak-free", "npm:0.2.0"],
+            ["pino-abstract-transport", "npm:0.4.0"],
+            ["pino-std-serializers", "npm:4.0.0"],
+            ["quick-format-unescaped", "npm:4.0.4"],
+            ["sonic-boom", "npm:2.3.0"],
+            ["thread-stream", "npm:0.11.2"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:7.0.5", {
+          "packageLocation": "./.yarn/cache/pino-npm-7.0.5-23de843545-5690112023.zip/node_modules/pino/",
+          "packageDependencies": [
+            ["pino", "npm:7.0.5"],
             ["fast-redact", "npm:3.0.2"],
             ["fastify-warning", "npm:0.2.0"],
             ["get-caller-file", "npm:2.0.5"],
@@ -9869,13 +9863,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["pino-std-serializers", [
-        ["npm:3.2.0", {
-          "packageLocation": "./.yarn/cache/pino-std-serializers-npm-3.2.0-9fd67503a4-77e29675b1.zip/node_modules/pino-std-serializers/",
-          "packageDependencies": [
-            ["pino-std-serializers", "npm:3.2.0"]
-          ],
-          "linkType": "HARD",
-        }],
         ["npm:4.0.0", {
           "packageLocation": "./.yarn/cache/pino-std-serializers-npm-4.0.0-391192ed8b-89d487729b.zip/node_modules/pino-std-serializers/",
           "packageDependencies": [
@@ -10871,21 +10858,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["slonik", [
-        ["npm:24.1.0", {
-          "packageLocation": "./.yarn/cache/slonik-npm-24.1.0-9ccbf0d29d-4757f466e4.zip/node_modules/slonik/",
+        ["npm:24.1.2", {
+          "packageLocation": "./.yarn/cache/slonik-npm-24.1.2-92064da4f2-d5d39da9ae.zip/node_modules/slonik/",
           "packageDependencies": [
-            ["slonik", "npm:24.1.0"],
+            ["slonik", "npm:24.1.2"],
             ["concat-stream", "npm:2.0.0"],
             ["es6-error", "npm:4.1.1"],
             ["get-stack-trace", "npm:2.1.1"],
             ["hyperid", "npm:2.3.1"],
             ["is-plain-object", "npm:5.0.0"],
             ["iso8601-duration", "npm:1.3.0"],
-            ["pg", "virtual:9ccbf0d29d134ce19b7c0a6f45720b45fb3758f591dcc17046f64f424d0bf5c2072f56248f48771d303e0842b72afac332d88c047f87e3c65d15f90270dea28a#npm:8.7.1"],
+            ["pg", "virtual:92064da4f2ea9cd1dcf9335382db5d05f47974fafd58062dabbcd5472ee6e60cc695be3e56fc132fea63e7c9839618bd31ea9a007f467d74926bf0a675f2b61a#npm:8.7.1"],
             ["pg-connection-string", "npm:2.5.0"],
             ["pg-copy-streams", "npm:5.1.1"],
             ["pg-copy-streams-binary", "npm:2.2.0"],
-            ["pg-cursor", "virtual:9ccbf0d29d134ce19b7c0a6f45720b45fb3758f591dcc17046f64f424d0bf5c2072f56248f48771d303e0842b72afac332d88c047f87e3c65d15f90270dea28a#npm:2.7.1"],
+            ["pg-cursor", "virtual:92064da4f2ea9cd1dcf9335382db5d05f47974fafd58062dabbcd5472ee6e60cc695be3e56fc132fea63e7c9839618bd31ea9a007f467d74926bf0a675f2b61a#npm:2.7.1"],
             ["pg-minify", "npm:1.6.2"],
             ["postgres-array", "npm:3.0.1"],
             ["postgres-interval", "npm:3.0.0"],
@@ -10930,15 +10917,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["sonic-boom", [
-        ["npm:1.4.1", {
-          "packageLocation": "./.yarn/cache/sonic-boom-npm-1.4.1-e42b921f99-189fa8fe5c.zip/node_modules/sonic-boom/",
-          "packageDependencies": [
-            ["sonic-boom", "npm:1.4.1"],
-            ["atomic-sleep", "npm:1.0.0"],
-            ["flatstr", "npm:1.0.12"]
-          ],
-          "linkType": "HARD",
-        }],
         ["npm:2.3.0", {
           "packageLocation": "./.yarn/cache/sonic-boom-npm-2.3.0-6a1292957e-208329d153.zip/node_modules/sonic-boom/",
           "packageDependencies": [
