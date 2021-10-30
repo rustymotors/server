@@ -5384,7 +5384,7 @@ __metadata:
     pino: next
     prettier: 2.4.1
     prettier-eslint: 13.0.0
-    slonik: 24.1.0
+    slonik: 24.1.2
     sqlite: 4.0.23
     sqlite3: 4
     ts-jest: 27.0.7
@@ -7213,9 +7213,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"slonik@npm:24.1.0":
-  version: 24.1.0
-  resolution: "slonik@npm:24.1.0"
+"slonik@npm:24.1.2":
+  version: 24.1.2
+  resolution: "slonik@npm:24.1.2"
   dependencies:
     concat-stream: ^2.0.0
     es6-error: ^4.1.1
@@ -7235,7 +7235,7 @@ __metadata:
     roarr: ^7.0.3
     serialize-error: ^8.1.0
     through2: ^4.0.2
-  checksum: 4757f466e4aa30bf2bbd3da2ec269814f15f4a621e2f31e5f6d71666ab7ffc6a67e2e9ef8b94f2657ef0c0b9996cc61e750c24ad0a64fda97b0bbecd7705d6cd
+  checksum: d5d39da9aea487e9bef605b8a07a5d93b425afa8d57f8aecd785965f8e85d13a420aa61a177c544f8bcda89a765994b44e789b7f23cfcd83637e7a0631e3402b
   languageName: node
   linkType: hard
 
