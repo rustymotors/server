@@ -5,32 +5,32 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { beforeEach, describe, expect, it, jest } from "@jest/globals";
+import t from "tap";
 import { SocketFactory } from "./../../test-helpers/socket-factory";
 import { ConnectionManager } from "../src/connection-mgr";
 import { EncryptionManager } from "../src/encryption-mgr";
 import { TCPConnection } from "../src/tcpConnection";
-jest.mock("../src/connection-mgr");
+t.mock("../src/connection-mgr", {});
 
-it("ConnectionObj", () => {
+t.test("ConnectionObj", () => {
   const testConnection = new TCPConnection("abc", SocketFactory.createSocket());
 
   testConnection.setManager(ConnectionManager.getInstance());
   testConnection.setEncryptionManager(new EncryptionManager());
 
-  expect(testConnection.status).toEqual("Inactive");
-  expect(testConnection.isSetupComplete).toBeFalsy();
+  t.equal(testConnection.status, "Inactive");
+  t.notOk(testConnection.isSetupComplete);
   testConnection.setEncryptionKey(Buffer.from("abc123", "hex"));
-  expect(testConnection.isSetupComplete).toBeTruthy();
+  t.ok(testConnection.isSetupComplete);
 });
 
-describe("ConnectionObj cross-comms", () => {
+t.test("ConnectionObj cross-comms", () => {
   /** @type {ConnectionObj} */
   let testConn1: TCPConnection;
   /** @type {ConnectionObj} */
   let testConn2: TCPConnection;
 
-  beforeEach(() => {
+  t.beforeEach(() => {
     testConn1 = new TCPConnection("def", SocketFactory.createSocket());
     testConn1.setManager(ConnectionManager.getInstance());
     testConn1.setEncryptionManager(new EncryptionManager());
@@ -54,36 +54,26 @@ describe("ConnectionObj cross-comms", () => {
     0x79, 0x70, 0xbf, 0x45,
   ]);
 
-  it("Connection one is not the same id as connection two", () => {
+  t.test("Connection one is not the same id as connection two", () => {
     console.log(1, testConn1.getEncryptionId());
     console.log(2, testConn2.getEncryptionId());
-    expect(testConn1.getEncryptionId()).not.toStrictEqual(
-      testConn2.getEncryptionId()
-    );
+    t.not(testConn1.getEncryptionId(), testConn2.getEncryptionId());
   });
 
-  it("Connection Two can decipher Connection One", () => {
+  t.test("Connection Two can decipher Connection One", () => {
     const encipheredBuffer = testConn1.encryptBuffer(plainText1);
-    expect(encipheredBuffer).toStrictEqual(cipherText1);
-    expect(testConn1.decryptBuffer(encipheredBuffer)).toStrictEqual(plainText1);
-    expect(testConn2.decryptBuffer(encipheredBuffer)).toStrictEqual(plainText1);
+    t.same(encipheredBuffer, cipherText1);
+    t.same(testConn1.decryptBuffer(encipheredBuffer), plainText1);
+    t.same(testConn2.decryptBuffer(encipheredBuffer), plainText1);
 
     // Try again
     const encipheredBuffer2 = testConn1.encryptBuffer(plainText1);
-    expect(testConn1.decryptBuffer(encipheredBuffer2)).toStrictEqual(
-      plainText1
-    );
-    expect(testConn2.decryptBuffer(encipheredBuffer2)).toStrictEqual(
-      plainText1
-    );
+    t.same(testConn1.decryptBuffer(encipheredBuffer2), plainText1);
+    t.same(testConn2.decryptBuffer(encipheredBuffer2), plainText1);
 
     // And again
     const encipheredBuffer3 = testConn1.encryptBuffer(plainText1);
-    expect(testConn1.decryptBuffer(encipheredBuffer3)).toStrictEqual(
-      plainText1
-    );
-    expect(testConn2.decryptBuffer(encipheredBuffer3)).toStrictEqual(
-      plainText1
-    );
+    t.same(testConn1.decryptBuffer(encipheredBuffer3), plainText1);
+    t.same(testConn2.decryptBuffer(encipheredBuffer3), plainText1);
   });
 });

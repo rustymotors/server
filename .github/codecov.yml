@@ -1,3 +1,17 @@
 comment:
   layout: 'files'
-  behavior: 'update'
+  behavior: 'default'
+
+flags:
+  front-end:
+    paths:
+      - src/front-end/code.js
+    carryforward: false
+  back-end:
+    paths:
+      - src/back-end/api_code.py
+    carryforward: true
+  mobile:
+    paths:
+      - src/new/mobile/app_code.java
+    carryforward: true

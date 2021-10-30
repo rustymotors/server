@@ -1,7 +1,5 @@
-import { expect, describe, it } from "@jest/globals";
+import t from "tap";
 
-describe("Proxy Server", () => {
-  it("currently has no tests", () => {
-    expect(true).toBeTruthy();
-  });
+t.test("Proxy Server", () => {
+  t.ok(true, "currently has no tests", { todo: true });
 });

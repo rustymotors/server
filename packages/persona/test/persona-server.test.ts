@@ -5,85 +5,89 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, it, jest, beforeEach, describe } from "@jest/globals";
+import t from "tap";
 import { PersonaServer } from "../src";
 
 import { SocketFactory } from "./../../test-helpers/socket-factory";
 import { NPSMessage } from "mcos-messages";
 import { EMessageDirection } from "mcos-types";
 
-jest.mock("net");
+t.mock("net", {});
 let personaServer: PersonaServer;
 
-describe("Persona Server", () => {
-  beforeEach(() => {
+t.test("Persona Server", () => {
+  t.beforeEach(() => {
     personaServer = PersonaServer.getInstance();
   });
 
-  it("PersonaServer Methods", async () => {
+  t.test("PersonaServer Methods", async () => {
     const results = await personaServer.getPersonasByCustomerId(5_551_212);
-    expect(results.length).toEqual(2);
+    t.equal(results.length, 2);
     const name = results[0].name.toString("utf8");
-    expect(name).toContain("Dr Brown");
+    t.has(name, "Dr Brown");
 
     const personas = await personaServer.getPersonaMapsByCustomerId(5_551_212);
     const id1 = personas[0].id;
     const name1 = personas[0].name;
-    expect(id1.readInt32BE(0)).toEqual(8_675_309);
-    expect(name1.toString("utf8").length).toEqual(30);
+    t.equal(id1.readInt32BE(0), 8_675_309);
+    t.equal(name1.toString("utf8").length, 30);
 
-    await expect(
-      personaServer.getPersonasByCustomerId(123_654)
-    ).rejects.toThrowError(/Unable to locate a persona/);
+    const result = personaServer.getPersonasByCustomerId(123_654);
+    t.throws(
+      function () {
+        () => personaServer.getPersonasByCustomerId(123_654);
+      },
+      { message: /Unable to locate a persona/ }
+    );
   });
 
-  it("PersonaServer _npsSelectGamePersona()", async () => {
+  t.test("PersonaServer _npsSelectGamePersona()", async () => {
     const data = new NPSMessage(EMessageDirection.SENT).serialize();
     const results = await personaServer.handleSelectGamePersona(data);
-    expect(results.direction).toEqual(EMessageDirection.SENT);
+    t.equal(results.direction, EMessageDirection.SENT);
   });
 
-  it("PersonaServer _npsNewGameAccount()", async () => {
+  t.test("PersonaServer _npsNewGameAccount()", async () => {
     const data = new NPSMessage(EMessageDirection.SENT).serialize();
     const results = await personaServer.createNewGameAccount(data);
-    expect(results.direction).toEqual(EMessageDirection.SENT);
+    t.equal(results.direction, EMessageDirection.SENT);
   });
 
-  it("PersonaServer _npsLogoutGameUser()", async () => {
+  t.test("PersonaServer _npsLogoutGameUser()", async () => {
     const data = new NPSMessage(EMessageDirection.SENT).serialize();
     const results = await personaServer.logoutGameUser(data);
-    expect(results.direction).toEqual(EMessageDirection.SENT);
+    t.equal(results.direction, EMessageDirection.SENT);
   });
 
-  it("PersonaServer _npsCheckToken()", async () => {
+  t.test("PersonaServer _npsCheckToken()", async () => {
     const data = new NPSMessage(EMessageDirection.SENT).serialize();
     const results = await personaServer.validateLicencePlate(data);
-    expect(results.direction).toEqual(EMessageDirection.SENT);
+    t.equal(results.direction, EMessageDirection.SENT);
   });
 
-  it("PersonaServer _npsValidatePersonaName()", async () => {
+  t.test("PersonaServer _npsValidatePersonaName()", async () => {
     const data = new NPSMessage(EMessageDirection.SENT).serialize();
     const results = await personaServer.validatePersonaName(data);
-    expect(results.direction).toEqual(EMessageDirection.SENT);
+    t.equal(results.direction, EMessageDirection.SENT);
   });
 
-  it("PersonaServer _send()", () => {
+  t.test("PersonaServer _send()", () => {
     const data = new NPSMessage(EMessageDirection.SENT);
-    expect(() => {
+    t.doesNotThrow(() => {
       personaServer.sendPacket(SocketFactory.createSocket(), data);
-    }).not.toThrow();
+    });
   });
 
-  it("PersonaServer _npsGetPersonaMapsByCustomerId()", async () => {
+  t.test("PersonaServer _npsGetPersonaMapsByCustomerId()", async () => {
     const personas1 = await personaServer.getPersonaMapsByCustomerId(
       2_868_969_472
     );
 
-    expect(personas1.length).toEqual(1);
-    expect(personas1[0].name.toString("utf8")).toContain("Doc Joe");
+    t.equal(personas1.length, 1);
+    t.has(personas1[0].name.toString("utf8"), "Doc Joe");
 
     const personas2 = await personaServer.getPersonaMapsByCustomerId(4);
 
-    expect(personas2.length).toEqual(0);
+    t.equal(personas2.length, 0);
   });
 });

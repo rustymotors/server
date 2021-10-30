@@ -22,6 +22,7 @@
     "@types/eslint": "7.28.2",
     "@types/node": "16.11.6",
     "@types/prettier": "2.4.1",
+    "@types/tap": "15.0.5",
     "@typescript-eslint/eslint-plugin": "5.2.0",
     "@typescript-eslint/parser": "5.2.0",
     "eslint": "8.1.0",
@@ -29,6 +30,7 @@
     "jest": "27.3.1",
     "prettier": "2.4.1",
     "prettier-eslint": "13.0.0",
+    "tap": "15.0.10",
     "ts-jest": "27.0.7",
     "typescript": "4.4.4"
   },
@@ -44,7 +46,7 @@
     "lint": "eslint ./**/*.ts && prettier --write src test",
     "test": "yarn run lint-test",
     "lint-test": "yarn run lint && yarn run test:only",
-    "test:only": "jest",
+    "test:only": "tap --ts --reporter=spec --coverage-report=lcov --coverage-report=html",
     "precommit": "yarn run lint-test"
   }
 }

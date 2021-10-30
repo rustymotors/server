@@ -1,7 +1,5 @@
-import { expect, describe, it } from "@jest/globals";
+import t from "tap";
 
-describe("Database", () => {
-  it("currently has no tests", () => {
-    expect(true).toBeTruthy();
-  });
+t.test("Database", () => {
+  t.ok("currently has no tests", "", { todo: true });
 });

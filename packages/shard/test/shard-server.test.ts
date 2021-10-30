@@ -5,13 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, describe, it } from "@jest/globals";
+import t from "tap";
 import { ShardServer } from "../src";
 
-describe("ShardServer", () => {
-  it("should return a shard list", () => {
-    expect(ShardServer.getInstance()._generateShardList()).toContain(
-      "[The Clocktower]"
-    );
+t.test("ShardServer", (t) => {
+  t.test("should return a shard list", (t) => {
+    t.match(ShardServer.getInstance()._generateShardList(), "[The Clocktower]");
+    t.end()
   });
+  t.end()
 });

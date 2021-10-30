@@ -5,16 +5,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { describe, it, beforeEach } from "@jest/globals";
-import { PatchServer } from "../src";
+import t from "tap"
 
 // TODO: Rewrite tests - https://github.com/drazisil/mco-server/issues/1010
-describe("PatchServer", () => {
-  it.todo("PatchServer");
+t.test("PatchServer", () => {
+  t.ok(true, "PatchServer", {todo: true});
 
-  it.todo("PatchServer - UpdateInfo");
+  t.ok(true, "PatchServer - UpdateInfo", {todo: true});
 
-  it.todo("PatchServer - NPS");
+  t.ok(true, "PatchServer - NPS", {todo: true});
 
-  it.todo("PatchServer - MCO");
+  t.ok(true, "PatchServer - MCO", {todo: true});
 });

@@ -1,7 +1,8 @@
-import { expect, describe, it } from "@jest/globals";
+import t from "tap";
 
-describe("Global Types", () => {
-  it("currently has no tests", () => {
-    expect(true).toBeTruthy();
-  });
+t.test("Global Types", (t) => {
+  t.ok(true, "currently has no tests", { todo: true });
+  t.end()
 });
+
+export {};

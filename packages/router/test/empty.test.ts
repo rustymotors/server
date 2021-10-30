@@ -1,7 +1,8 @@
-import { expect, describe, it } from "@jest/globals";
+import t from "tap";
 
-describe("Router Server", () => {
-  it("currently has no tests", () => {
-    expect(true).toBeTruthy();
-  });
+t.test("Router Server", () => {
+  t.ok("currently has no tests", "", { todo: true });
 });
+t.end()
+
+export {};
