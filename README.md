@@ -1,8 +1,6 @@
 # mcos
 
-![Node.js CI](https://github.com/drazisil/mco-server/workflows/Node.js%20CI/badge.svg)
-[![CodeQL](https://github.com/drazisil/mco-server/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/drazisil/mco-server/actions/workflows/codeql-analysis.yml)[![Node.js CI](https://github.com/drazisil/mco-server/actions/workflows/node.yml/badge.svg)](https://github.com/drazisil/mco-server/actions/workflows/node.yml)
-[![codecov](https://codecov.io/gh/drazisil/mco-server/branch/master/graph/badge.svg)](https://codecov.io/gh/drazisil/mco-server)
+[![Node.js CI](https://github.com/drazisil/mco-server/actions/workflows/node.yml/badge.svg?branch=main)](https://github.com/drazisil/mco-server/actions/workflows/node.yml) [![CodeQL](https://github.com/drazisil/mco-server/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/drazisil/mco-server/actions/workflows/codeql-analysis.yml?branch=main) [![codecov](https://codecov.io/gh/drazisil/mco-server/branch/main/graph/badge.svg)](https://codecov.io/gh/drazisil/mco-server)
 
 ## About
 
