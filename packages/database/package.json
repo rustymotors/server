@@ -8,7 +8,7 @@
     "mcos-router": "workspace:^",
     "mcos-types": "workspace:^",
     "pino": "next",
-    "slonik": "24.1.0",
+    "slonik": "24.1.2",
     "sqlite": "4.0.23",
     "sqlite3": "4",
     "ts-node": "10.4.0",
