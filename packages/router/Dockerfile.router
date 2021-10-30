@@ -1,4 +1,4 @@
-FROM node:16-slim
+FROM node:17-slim
 ENV NODE_ENV=production
 WORKDIR /usr/src/app
 # COPY ["package.json", "yarn.lock", "./bin", "./packages", "./.yarn", "./"]
