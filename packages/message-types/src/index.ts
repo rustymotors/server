@@ -358,8 +358,7 @@ export class StockCarInfoMessage {
    * DumpPacket
    */
   dumpPacket(): string {
-    return (
-    `${JSON.stringify({
+    return `${JSON.stringify({
       msgNo: this.msgNo,
       starterCash: this.starterCash,
       dealerId: this.dealerId,
@@ -367,7 +366,7 @@ export class StockCarInfoMessage {
       noCars: this.noCars,
       moreToCome: this.moreToCome,
       stockCarList: this.StockCarList.toString(),
-    })}`);
+    })}`;
   }
 }
 
