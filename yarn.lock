@@ -5929,7 +5929,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.7.0":
+"lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.7.0":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
@@ -6554,7 +6554,7 @@ __metadata:
     source-map-support: 0.5.20
     supertest: 6.1.6
     tap: 15.0.10
-    testdouble: 3.16.2
+    testdouble: 3.16.3
     ts-jest: 27.0.7
     ts-node: 10.4.0
     tslib: 2.3.1
@@ -7756,13 +7756,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"quibble@npm:^0.6.4":
-  version: 0.6.5
-  resolution: "quibble@npm:0.6.5"
+"quibble@npm:^0.6.6":
+  version: 0.6.6
+  resolution: "quibble@npm:0.6.6"
   dependencies:
-    lodash: ^4.17.14
-    resolve: ^1.11.1
-  checksum: a1e88f948865cbd46ee80100a7265d4e2521193a253cc53dd455e63eb48dfff4c2b3cc4a46ccc1e5e37d9da1e49c60ae00482db5515381e6cbc81977d27957d4
+    lodash: ^4.17.21
+    resolve: ^1.20.0
+  checksum: 80d06b1f9915703d71dbbe7c53956604f1c8e5e95e33528783554442fd7222e0d7eb8ba1ab4a1c3ef8845d2011a5453106d61a235e91648c381dd71773d18284
   languageName: node
   linkType: hard
 
@@ -8066,7 +8066,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@^1.11.1, resolve@^1.14.2, resolve@^1.20.0":
+"resolve@^1.14.2, resolve@^1.20.0":
   version: 1.20.0
   resolution: "resolve@npm:1.20.0"
   dependencies:
@@ -8076,7 +8076,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^1.11.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>":
+"resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>":
   version: 1.20.0
   resolution: "resolve@patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=b382c1"
   dependencies:
@@ -8998,15 +8998,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"testdouble@npm:3.16.2":
-  version: 3.16.2
-  resolution: "testdouble@npm:3.16.2"
+"testdouble@npm:3.16.3":
+  version: 3.16.3
+  resolution: "testdouble@npm:3.16.3"
   dependencies:
     lodash: ^4.17.15
-    quibble: ^0.6.4
+    quibble: ^0.6.6
     stringify-object-es5: ^2.5.0
     theredoc: ^1.0.0
-  checksum: db6d71d178cb56d8b027c15e3120ebe251c3bf7c03cd2aa237bc5381086a13803e9c2b118476a29b8fdb8ff9ec552374e68bc123b3b1191c39541efb642c585e
+  checksum: 6c66880f46a16370b60792f874855f7f5ee3312c8b75fa9845eb81d405e9ba257dac8a8cdb19cd328f9b35e65aa626fb6b03cf54ee66040e08fbb09dcffc6ded
   languageName: node
   linkType: hard
 

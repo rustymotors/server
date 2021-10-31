@@ -140,7 +140,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["source-map-support", "npm:0.5.20"],
             ["supertest", "npm:6.1.6"],
             ["tap", "virtual:9fbf171e1e70f448e293716c156ce3f0c3d0c22f71fa4a0810a169e3ff4e4af9c752d1d8963b646b16efe39bb9aaf1e87bc2da1911b3a1619f862d6346e56add#npm:15.0.10"],
-            ["testdouble", "npm:3.16.2"],
+            ["testdouble", "npm:3.16.3"],
             ["ts-jest", "virtual:06ef28086b36e74def08da2c9d29aa6e1f8f813793d98a611473d55e636fc011e0e0230f38041145ce57ad980a88e13c09092b962c7dd418d5796ffbfd0818ee#npm:27.0.7"],
             ["ts-node", "virtual:9fbf171e1e70f448e293716c156ce3f0c3d0c22f71fa4a0810a169e3ff4e4af9c752d1d8963b646b16efe39bb9aaf1e87bc2da1911b3a1619f862d6346e56add#npm:10.4.0"],
             ["tslib", "npm:2.3.1"],
@@ -8301,7 +8301,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["source-map-support", "npm:0.5.20"],
             ["supertest", "npm:6.1.6"],
             ["tap", "virtual:9fbf171e1e70f448e293716c156ce3f0c3d0c22f71fa4a0810a169e3ff4e4af9c752d1d8963b646b16efe39bb9aaf1e87bc2da1911b3a1619f862d6346e56add#npm:15.0.10"],
-            ["testdouble", "npm:3.16.2"],
+            ["testdouble", "npm:3.16.3"],
             ["ts-jest", "virtual:06ef28086b36e74def08da2c9d29aa6e1f8f813793d98a611473d55e636fc011e0e0230f38041145ce57ad980a88e13c09092b962c7dd418d5796ffbfd0818ee#npm:27.0.7"],
             ["ts-node", "virtual:9fbf171e1e70f448e293716c156ce3f0c3d0c22f71fa4a0810a169e3ff4e4af9c752d1d8963b646b16efe39bb9aaf1e87bc2da1911b3a1619f862d6346e56add#npm:10.4.0"],
             ["tslib", "npm:2.3.1"],
@@ -10181,10 +10181,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["quibble", [
-        ["npm:0.6.5", {
-          "packageLocation": "./.yarn/cache/quibble-npm-0.6.5-b619b73778-a1e88f9488.zip/node_modules/quibble/",
+        ["npm:0.6.6", {
+          "packageLocation": "./.yarn/cache/quibble-npm-0.6.6-bde032a50a-80d06b1f99.zip/node_modules/quibble/",
           "packageDependencies": [
-            ["quibble", "npm:0.6.5"],
+            ["quibble", "npm:0.6.6"],
             ["lodash", "npm:4.17.21"],
             ["resolve", "patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=b382c1"]
           ],
@@ -11575,12 +11575,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["testdouble", [
-        ["npm:3.16.2", {
-          "packageLocation": "./.yarn/cache/testdouble-npm-3.16.2-042129b81c-db6d71d178.zip/node_modules/testdouble/",
+        ["npm:3.16.3", {
+          "packageLocation": "./.yarn/cache/testdouble-npm-3.16.3-b6f28c2dd3-6c66880f46.zip/node_modules/testdouble/",
           "packageDependencies": [
-            ["testdouble", "npm:3.16.2"],
+            ["testdouble", "npm:3.16.3"],
             ["lodash", "npm:4.17.21"],
-            ["quibble", "npm:0.6.5"],
+            ["quibble", "npm:0.6.6"],
             ["stringify-object-es5", "npm:2.5.0"],
             ["theredoc", "npm:1.0.0"]
           ],
