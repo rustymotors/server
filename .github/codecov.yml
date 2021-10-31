@@ -3,15 +3,11 @@ comment:
   behavior: 'default'
 
 flags:
-  front-end:
+  admin:
     paths:
-      - src/front-end/code.js
+      - ^packages/admin/**/*
     carryforward: false
-  back-end:
-    paths:
-      - src/back-end/api_code.py
-    carryforward: true
-  mobile:
-    paths:
-      - src/new/mobile/app_code.java
-    carryforward: true
+  everything-else:
+    ignore:
+      - packages/admin/**/* 
+    carryforward: false
