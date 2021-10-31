@@ -1,74 +1,38 @@
 version: '3.4'
 
 services:
-  # mcoserver:
-  #   image: mcoserver
-  #   build:
-  #     context: .
-  #     dockerfile: ./Dockerfile
-  #   environment:
-  #     NODE_ENV: production
-  #   ports:
-  #     - 80
-  #     - 443
-  #   labels:
-  #     - "traefik.http.routers.bin.rule=Host(`bin.docker.localhost`)"
-  patch:
-    image: patch
-    build:
-      context: .
-      dockerfile: Dockerfile.patch
-    environment:
-      NODE_ENV: production
-      LISTEN_PORT: 4242
-      LOG_LEVEL: silly
-    ports:
-      - "4242"      
-    labels:
-      - "traefik.http.patch.bin.rule=Host(`patch.docker.localhost`)" 
-    depends_on:
-      - router
   router:
     image: router
     build:
-      context: ./packages/router
-      dockerfile: Dockerfile.router
+      context: .
+      dockerfile: ./Dockerfile.router
     environment:
       NODE_ENV: production
       LISTEN_PORT: 4242
       LOG_LEVEL: silly
     ports:
       - "4242"
-    labels:
-      - "traefik.http.router.bin.rule=Host(`router.docker.localhost`)"      
-  database:
-    image: database
+
+  mcoserver:
+    image: mcoserver
     build:
       context: .
-      dockerfile: Dockerfile.database
+      dockerfile: ./Dockerfile
     environment:
       NODE_ENV: production
-      LOG_LEVEL: silly
     ports:
-      - "80"
-      - "443"
-    labels:
-      - "traefik.http.database.bin.rule=Host(`database.docker.localhost`)"  
+      - 880
+      - 4443
     depends_on:
-      - router          
+      - db
+      - router
   reverse-proxy:
-      # The official v2 Traefik docker image
-      image: traefik:v2.5
-      # Enables the web UI and tells Traefik to listen to docker
-      command: --api.insecure=true --providers.docker
-      ports:
-        # The HTTP port
-        - "80:80"
-        # The Web UI (enabled by --api.insecure=true)
-        - "8080:8080"
-      volumes:
-        # So that Traefik can listen to the Docker events
-        - /var/run/docker.sock:/var/run/docker.sock
+    image: nginx:1.21.3
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+        - ./nginx.conf:/etc/nginx/nginx.conf:ro
   db:
     image: postgres:14.0
     ports: 
