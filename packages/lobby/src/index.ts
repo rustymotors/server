@@ -43,7 +43,7 @@ async function npsSocketWriteIfOpen(
     throw new Error(
       `[Lobby] Error writing ${buffer.toString("hex")} to ${
         sock.remoteAddress
-      } , ${sock}`
+      } , ${String(sock)}`
     );
   }
 
@@ -313,7 +313,9 @@ export class LobbyServer {
       .catch((error) => {
         log.debug(
           "error",
-          `Unable to fetch session key for customerId ${customerId}: ${error}`,
+          `Unable to fetch session key for customerId ${customerId.toString()}: ${String(
+            error
+          )}`,
           {
             service: "mcoserver:LobbyServer",
           }
