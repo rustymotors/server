@@ -257,8 +257,6 @@ export class LobbyServer {
           `[Lobby] Unknown code ${requestCode} was received on port 7003`
         );
     }
-
-    return updatedConnection;
   }
 
   /**
