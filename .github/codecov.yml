@@ -5,9 +5,9 @@ comment:
 flags:
   admin:
     paths:
-      - ^packages/admin/**/*
+      - /packages/admin/**/*
     carryforward: false
   everything-else:
-    ignore:
-      - packages/admin/**/* 
+    paths:
+      - /packages/!(admin)/**/* 
     carryforward: false
