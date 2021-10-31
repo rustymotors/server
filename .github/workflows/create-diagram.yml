@@ -1,14 +1,14 @@
 name: Create Diagram
 
 on:
-  push:
-    branches: 
-      - main
+  workflow_run:
+    workflows: ["Node.js CI"]
+    types: [completed]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     strategy:
       matrix:
         node-version: [14.x]
