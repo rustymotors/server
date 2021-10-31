@@ -1,6 +1,8 @@
 import { _sslOptions } from "./ssl-options";
 import { savedConfig } from "./config";
-import { Socket } from "net";
+import P from "pino";
+
+const log = P();
 
 export type AppConfiguration = {
   certificate: {
@@ -35,8 +37,12 @@ export class ConfigurationManager {
     // Intentionally empty
   }
 
-  handleData(this: ConfigurationManager, sock: Socket): void {
-    throw new Error("Not yet implemented");
+  handleData(this: ConfigurationManager, data: Buffer): void {
+    const payload = data.toString();
+    log.debug("debug", `Payload: ${payload}`, {
+      service: this.serviceName,
+    });
+    // TODO: feat: have config server react to payloads - https://github.com/drazisil/mco-server/issues/1017
   }
 }
 

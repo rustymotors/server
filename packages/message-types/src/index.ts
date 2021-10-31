@@ -256,13 +256,12 @@ export class StockCar {
    * @return {void}
    */
   dumpPacket(): string {
-    return (
-    `
+    return `
       [StockCar]======================================
       brandedPartId:     ${this.brandedPartId}
       retailPrice:       ${this.retailPrice}
       isDealOfTheDay:    ${this.bIsDealOfTheDay}
-      logger.log('[/StockCar]======================================`);
+      logger.log('[/StockCar]======================================`;
   }
 }
 
