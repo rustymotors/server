@@ -341,7 +341,7 @@ export class PersonaServer {
    * @param {number} customerId
    * @return {Promise<IPersonaRecord[]>}
    */
-  async getPersonasByCustomerId(customerId: number): Promise<PersonaRecord[]> {
+  getPersonasByCustomerId(customerId: number): PersonaRecord[] {
     const results = this.personaList.filter(
       (persona) => persona.customerId === customerId
     );
