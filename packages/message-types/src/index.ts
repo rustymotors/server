@@ -73,7 +73,7 @@ export class GenericReplyMessage {
         throw new TypeError(
           `[GenericReplyMsg] Unable to read msgNo from ${buffer.toString(
             "hex"
-          )}: ${error}`
+          )}: ${error.toString()}`
         );
       }
     }
@@ -169,7 +169,7 @@ export class GenericRequestMessage {
         throw new TypeError(
           `[GenericRequestMsg] Unable to read msgNo from ${buffer.toString(
             "hex"
-          )}: ${error}`
+          )}: ${error.toString()}`
         );
       }
     }
@@ -261,7 +261,7 @@ export class StockCar {
       brandedPartId:     ${this.brandedPartId}
       retailPrice:       ${this.retailPrice}
       isDealOfTheDay:    ${this.bIsDealOfTheDay}
-      logger.log('[/StockCar]======================================`;
+      [/StockCar]======================================`;
   }
 }
 
@@ -934,7 +934,9 @@ export class NPSMessage {
       return packet;
     } catch (error) {
       if (error instanceof Error) {
-        throw new TypeError(`[NPSMsg] Error in serialize(): ${error}`);
+        throw new TypeError(
+          `[NPSMsg] Error in serialize(): ${error.toString()}`
+        );
       }
 
       throw new Error("[NPSMsg] Error in serialize(), error unknown");
@@ -1074,7 +1076,7 @@ export class LoginMessage {
         throw new TypeError(
           `[LoginMsg] Unable to read msgNo from ${buffer.toString(
             "hex"
-          )}: ${error}`
+          )}: ${error.toString()}`
         );
       }
 
@@ -1147,7 +1149,7 @@ export class LobbyMessage {
 
     if (this.dataLength !== 572) {
       throw new Error(
-        `Unexpected length of packet! Expected 572, recieved ${this.dataLength}`
+        `Unexpected length of packet! Expected 572, recieved ${this.dataLength.toString()}`
       );
     }
 
@@ -1247,13 +1249,13 @@ export class MessageNode {
       if (error.name.includes("RangeError")) {
         // This is likeley not an MCOTS packet, ignore
         throw new Error(
-          `[MessageNode] Not long enough to deserialize, only ${packet.length} bytes long`
+          `[MessageNode] Not long enough to deserialize, only ${packet.length.toString()} bytes long`
         );
       } else {
         throw new Error(
           `[MessageNode] Unable to read msgNo from ${packet.toString(
             "hex"
-          )}: ${error}`
+          )}: ${error.toString()}`
         );
       }
     }
@@ -1411,7 +1413,7 @@ export class ClientConnectMessage {
         throw new TypeError(
           `[ClientConnectMsg] Unable to read msgNo from ${buffer.toString(
             "hex"
-          )}: ${error}`
+          )}: ${error.toString()}`
         );
       }
     }
@@ -1605,14 +1607,20 @@ export class NPSPersonaMapsMessage extends NPSMessage {
   dumpPacket(): string {
     let message = "";
     message = message.concat(this.dumpPacketHeader("NPSPersonaMapsMsg"));
-    message = message.concat(`personaCount:        ${this.personaCount}`);
+    message = message.concat(
+      `personaCount:        ${this.personaCount.toString()}`
+    );
     for (const persona of this.personas) {
       message = message.concat(
         `
-        maxPersonaCount:     ${this.deserializeInt8(persona.maxPersonas)}
-        id:                  ${this.deserializeInt32(persona.id)}
-        shardId:             ${this.deserializeInt32(persona.shardId)}
-        name:                ${this.deserializeString(persona.name)}
+        maxPersonaCount:     ${this.deserializeInt8(
+          persona.maxPersonas
+        ).toString()}
+        id:                  ${this.deserializeInt32(persona.id).toString()}
+        shardId:             ${this.deserializeInt32(
+          persona.shardId
+        ).toString()}
+        name:                ${this.deserializeString(persona.name).toString()}
         Packet as hex:       ${this.getPacketAsString()}`
       );
 
@@ -1669,7 +1677,7 @@ export class NPSUserStatus extends NPSMessage {
     } catch (error) {
       if (error instanceof Error) {
         throw new TypeError(
-          `[npsUserStatus] Error loading private key: ${error.message}`
+          `[npsUserStatus] Error loading private key: ${error.message.toString()}`
         );
       }
 
@@ -1782,10 +1790,11 @@ export class NPSUserInfo extends NPSMessage {
    */
   dumpInfo(): string {
     let message = this.dumpPacketHeader("NPSUserInfo");
+    const { userId, userName, userData } = this;
     message = message.concat(
-      `UserId:        ${this.userId}
-       UserName:      ${this.userName.toString()}
-       UserData:      ${this.userData.toString("hex")}
+      `UserId:        ${userId.toString()}
+       UserName:      ${userName.toString()}
+       UserData:      ${userData.toString("hex")}
        [/NPSUserInfo]======================================`
     );
     return message;
