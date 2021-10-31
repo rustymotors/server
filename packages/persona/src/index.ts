@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { pino } from "pino";
+import P from "pino";
 import { Socket } from "net";
 import {
   EMessageDirection,
@@ -16,7 +16,7 @@ import { NPSMessage } from "mcos-messages";
 import { ITCPConnection } from "mcos-types";
 import { NPSPersonaMapsMessage } from "mcos-messages";
 
-const log = pino();
+const log = P().child({ service: "mcoserver:PersonaServer" });
 
 /**
  * @class
@@ -25,7 +25,6 @@ const log = pino();
 export class PersonaServer {
   static _instance: PersonaServer;
   personaList: PersonaRecord[];
-  serviceName: string;
 
   static getInstance(): PersonaServer {
     if (!PersonaServer._instance) {
@@ -61,7 +60,6 @@ export class PersonaServer {
         shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
       },
     ];
-    this.serviceName = "mcoserver:PersonaServer";
   }
 
   private _generateNameBuffer(name: string): Buffer {
@@ -71,18 +69,14 @@ export class PersonaServer {
   }
 
   async handleSelectGamePersona(data: Buffer): Promise<NPSMessage> {
-    log.debug("debug", "_npsSelectGamePersona...", {
-      service: this.serviceName,
-    });
+    log.debug("_npsSelectGamePersona...");
     const requestPacket = new NPSMessage(
       EMessageDirection.RECEIVED
     ).deserialize(data);
     log.debug(
-      "debug",
       `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
         NPSMsg: requestPacket.toJSON(),
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
 
     requestPacket.dumpPacket();
@@ -97,20 +91,16 @@ export class PersonaServer {
     responsePacket.msgNo = 0x2_07;
     responsePacket.setContent(packetContent);
     log.debug(
-      "debug",
       `NPSMsg response object from _npsSelectGamePersona',
       ${JSON.stringify({
         NPSMsg: responsePacket.toJSON(),
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
 
     responsePacket.dumpPacket();
 
     log.debug(
-      "debug",
-      `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`,
-      { service: this.serviceName }
+      `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return responsePacket;
   }
@@ -120,12 +110,10 @@ export class PersonaServer {
       EMessageDirection.RECEIVED
     ).deserialize(data);
     log.debug(
-      "debug",
       `NPSMsg request object from _npsNewGameAccount',
       ${JSON.stringify({
         NPSMsg: requestPacket.toJSON(),
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
 
     requestPacket.dumpPacket();
@@ -133,12 +121,10 @@ export class PersonaServer {
     const rPacket = new NPSMessage(EMessageDirection.SENT);
     rPacket.msgNo = 0x6_01;
     log.debug(
-      "debug",
       `NPSMsg response object from _npsNewGameAccount',
       ${JSON.stringify({
         NPSMsg: rPacket.toJSON(),
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
 
     rPacket.dumpPacket();
@@ -149,19 +135,15 @@ export class PersonaServer {
   //  * TODO: Change the persona record to show logged out. This requires it to exist first, it is currently hard-coded
   //  * TODO: Locate the connection and delete, or reset it.
   async logoutGameUser(data: Buffer): Promise<NPSMessage> {
-    log.debug("debug", "[personaServer] Logging out persona...", {
-      service: this.serviceName,
-    });
+    log.debug("[personaServer] Logging out persona...");
     const requestPacket = new NPSMessage(
       EMessageDirection.RECEIVED
     ).deserialize(data);
     log.debug(
-      "debug",
       `NPSMsg request object from _npsLogoutGameUser',
       ${JSON.stringify({
         NPSMsg: requestPacket.toJSON(),
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
 
     requestPacket.dumpPacket();
@@ -174,20 +156,16 @@ export class PersonaServer {
     responsePacket.msgNo = 0x6_12;
     responsePacket.setContent(packetContent);
     log.debug(
-      "debug",
       `NPSMsg response object from _npsLogoutGameUser',
       ${JSON.stringify({
         NPSMsg: responsePacket.toJSON(),
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
 
     responsePacket.dumpPacket();
 
     log.debug(
-      "debug",
-      `[npsLogoutGameUser] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`,
-      { service: this.serviceName }
+      `[npsLogoutGameUser] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return responsePacket;
   }
@@ -199,29 +177,23 @@ export class PersonaServer {
    * @return {Promise<NPSMsg>}
    */
   async validateLicencePlate(data: Buffer): Promise<NPSMessage> {
-    log.debug("debug", "_npsCheckToken...", { service: this.serviceName });
+    log.debug("_npsCheckToken...");
     const requestPacket = new NPSMessage(
       EMessageDirection.RECEIVED
     ).deserialize(data);
     log.debug(
-      "debug",
       `NPSMsg request object from _npsCheckToken',
       ${JSON.stringify({
         NPSMsg: requestPacket.toJSON(),
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
 
     requestPacket.dumpPacket();
 
     const customerId = data.readInt32BE(12);
     const plateName = data.slice(17).toString();
-    log.debug("debug", `customerId: ${customerId}`, {
-      service: this.serviceName,
-    });
-    log.debug("debug", `Plate name: ${plateName}`, {
-      service: this.serviceName,
-    });
+    log.debug(`customerId: ${customerId}`);
+    log.debug(`Plate name: ${plateName}`);
 
     // Create the packet content
 
@@ -233,19 +205,15 @@ export class PersonaServer {
     responsePacket.msgNo = 0x2_07;
     responsePacket.setContent(packetContent);
     log.debug(
-      "debug",
       `NPSMsg response object from _npsCheckToken',
       ${JSON.stringify({
         NPSMsg: responsePacket.toJSON(),
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
     responsePacket.dumpPacket();
 
     log.debug(
-      "debug",
-      `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`,
-      { service: this.serviceName }
+      `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return responsePacket;
   }
@@ -257,20 +225,16 @@ export class PersonaServer {
    * @return {Promise<NPSMsg>}
    */
   async validatePersonaName(data: Buffer): Promise<NPSMessage> {
-    log.debug("debug", "_npsValidatePersonaName...", {
-      service: this.serviceName,
-    });
+    log.debug("_npsValidatePersonaName...");
     const requestPacket = new NPSMessage(
       EMessageDirection.RECEIVED
     ).deserialize(data);
 
     log.debug(
-      "debug",
       `NPSMsg request object from _npsValidatePersonaName',
       ${JSON.stringify({
         NPSMsg: requestPacket.toJSON(),
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
     requestPacket.dumpPacket();
 
@@ -280,11 +244,7 @@ export class PersonaServer {
       .toString();
     const serviceName = data.slice(data.indexOf(0x0a) + 1).toString();
     log.debug(
-      "debug",
-      JSON.stringify({ customerId, requestedPersonaName, serviceName }),
-      {
-        service: this.serviceName,
-      }
+      JSON.stringify({ customerId, requestedPersonaName, serviceName })
     );
 
     // Create the packet content
@@ -299,19 +259,15 @@ export class PersonaServer {
     responsePacket.setContent(packetContent);
 
     log.debug(
-      "debug",
       `NPSMsg response object from _npsValidatePersonaName',
       ${JSON.stringify({
         NPSMsg: responsePacket.toJSON(),
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
     responsePacket.dumpPacket();
 
     log.debug(
-      "debug",
-      `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`,
-      { service: this.serviceName }
+      `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return responsePacket;
   }
@@ -390,26 +346,22 @@ export class PersonaServer {
    * @return {Promise<NPSMsg>}
    */
   async getPersonaMaps(data: Buffer): Promise<NPSMessage> {
-    log.debug("debug", "_npsGetPersonaMaps...", { service: this.serviceName });
+    log.debug("_npsGetPersonaMaps...");
     const requestPacket = new NPSMessage(
       EMessageDirection.RECEIVED
     ).deserialize(data);
 
     log.debug(
-      "debug",
       `NPSMsg request object from _npsGetPersonaMaps',
       ${JSON.stringify({
         NPSMsg: requestPacket.toJSON(),
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
     log.debug(
-      "debug",
       `NPSMsg request object from _npsGetPersonaMaps',
       ${JSON.stringify({
         NPSMsg: requestPacket.toJSON(),
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
     requestPacket.dumpPacket();
 
@@ -419,9 +371,7 @@ export class PersonaServer {
       customerId.readUInt32BE(0)
     );
     log.debug(
-      "debug",
-      `${personas.length} personas found for ${customerId.readUInt32BE(0)}`,
-      { service: this.serviceName }
+      `${personas.length} personas found for ${customerId.readUInt32BE(0)}`
     );
 
     let responsePacket;
@@ -442,11 +392,9 @@ export class PersonaServer {
         responsePacket.msgNo = 0x6_07;
         responsePacket.setContent(personaMapsMessage.serialize());
         log.debug(
-          "debug",
           `NPSMsg response object from _npsGetPersonaMaps: ${JSON.stringify({
             NPSMsg: responsePacket.toJSON(),
-          })}`,
-          { service: this.serviceName }
+          })}`
         );
 
         responsePacket.dumpPacket();
@@ -467,14 +415,12 @@ export class PersonaServer {
     const { sock } = connection;
     const updatedConnection = connection;
     log.debug(
-      "debug",
       `Received Persona packet',
       ${JSON.stringify({
         localPort,
         remoteAddress,
         data: rawPacket.data.toString("hex"),
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
     const requestCode = data.readUInt16BE(0).toString(16);
     let responsePacket;

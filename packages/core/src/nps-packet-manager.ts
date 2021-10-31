@@ -5,14 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { pino } from "pino";
+import P from "pino";
 import { ITCPConnection, UnprocessedPacket } from "mcos-types";
 import { LobbyServer } from "mcos-lobby";
 import { LoginServer } from "mcos-login";
 import { PersonaServer } from "mcos-persona";
 import { DatabaseManager } from "mcos-database";
 
-const log = pino();
+const log = P().child({ service: "mcoserver:NPSPacketManager" });
 
 /**
  * @module npsPacketManager
@@ -35,7 +35,6 @@ export class NPSPacketManager {
   loginServer: LoginServer;
   personaServer: PersonaServer;
   lobbyServer: LobbyServer;
-  serviceName: string;
 
   constructor() {
     this.npsKey = "";
@@ -58,7 +57,6 @@ export class NPSPacketManager {
     this.loginServer = LoginServer.getInstance();
     this.personaServer = PersonaServer.getInstance();
     this.lobbyServer = LobbyServer.getInstance();
-    this.serviceName = "mcoserver:NPSPacketManager";
   }
 
   /**
@@ -98,13 +96,11 @@ export class NPSPacketManager {
   ): Promise<ITCPConnection> {
     const messageId = rawPacket.data.readInt16BE(0);
     log.info(
-      "info",
       `Handling message,
       ${JSON.stringify({
         msgName: this.msgCodetoName(messageId),
         msgId: messageId,
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
 
     const { localPort } = rawPacket;

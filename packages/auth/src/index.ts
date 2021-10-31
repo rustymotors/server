@@ -6,7 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { pino } from "pino";
+import P from "pino";
 import { IncomingMessage, ServerResponse } from "http";
 import { Socket } from "net";
 import { SslOptions } from "mcos-types";
@@ -15,7 +15,7 @@ import { EServerConnectionName, RoutingMesh } from "mcos-router";
 import { createServer, Server } from "https";
 import { AppConfiguration, ConfigurationManager } from "mcos-config";
 
-const log = pino();
+const log = P().child({ service: "MCOServer:Auth" });
 
 /**
  * Handles web-based user logins
@@ -24,7 +24,6 @@ const log = pino();
 export class AuthLogin {
   static _instance: AuthLogin;
   config: AppConfiguration;
-  _serviceName = "MCOServer:Auth";
 
   _server: Server;
 
@@ -44,22 +43,12 @@ export class AuthLogin {
 
     this._server.on("error", (error) => {
       process.exitCode = -1;
-      log.error("error", `Server error: ${error.message}`, {
-        service: this._serviceName,
-      });
-      log.info("info", `Server shutdown: ${process.exitCode}`, {
-        service: this._serviceName,
-      });
+      log.error(`Server error: ${error.message}`);
+      log.info(`Server shutdown: ${process.exitCode}`);
       process.exit();
     });
     this._server.on("tlsClientError", (error) => {
-      log.warn(
-        "warn",
-        `[AuthLogin] SSL Socket Client Error: ${error.message}`,
-        {
-          service: this._serviceName,
-        }
-      );
+      log.warn("warn", `[AuthLogin] SSL Socket Client Error: ${error.message}`);
     });
   }
 
@@ -81,9 +70,7 @@ export class AuthLogin {
    */
   handleRequest(request: IncomingMessage, response: ServerResponse): void {
     log.info(
-      "info",
-      `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
-      { service: this._serviceName }
+      `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );
     if (request.url && request.url.startsWith("/AuthLogin")) {
       response.setHeader("Content-Type", "text/plain");
@@ -112,12 +99,8 @@ export class AuthLogin {
     const host = this.config.serverSettings.ipServer || "localhost";
     const port = 443;
     return this._server.listen({ port, host }, () => {
-      log.debug("debug", `port ${port} listening`, {
-        service: this._serviceName,
-      });
-      log.info("info", "Auth server listening", {
-        service: this._serviceName,
-      });
+      log.debug(`port ${port} listening`);
+      log.info("Auth server listening");
 
       // Register service with router
       RoutingMesh.getInstance().registerServiceWithRouter(
@@ -129,9 +112,7 @@ export class AuthLogin {
   }
 
   _sslOptions(): SslOptions {
-    log.debug("debug", `Reading ${this.config.certificate.certFilename}`, {
-      service: this._serviceName,
-    });
+    log.debug(`Reading ${this.config.certificate.certFilename}`);
 
     let cert;
     let key;

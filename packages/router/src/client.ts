@@ -6,7 +6,7 @@ import {
 } from ".";
 import { createConnection } from "net";
 
-const log = P();
+const log = P().child({ service: "MCOServer:RouteClient" });
 
 export class RoutingMesh {
   static getInstance(): RoutingMesh {
@@ -38,9 +38,7 @@ export class RoutingMesh {
   ): void {
     const client = createConnection({ host: "router", port: 4242 }, () => {
       // 'connect' listener.
-      log.debug("debug", "Connected to RoutingServer", {
-        service,
-      });
+      log.debug(`Connected to RoutingServer: ${service}`);
       client.end(inputBuffer);
     });
     client.on("data", (data) => {
@@ -48,9 +46,7 @@ export class RoutingMesh {
       client.end();
     });
     client.on("end", () => {
-      log.info("info", "disconnected from RoutingServer", {
-        service,
-      });
+      log.info(`Disconnected from RoutingServer: ${service}`);
     });
   }
 }

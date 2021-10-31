@@ -1,11 +1,11 @@
 import { EServerConnectionName, RoutingMesh } from "mcos-router";
 import { createServer } from "http";
-import { pino } from "pino";
+import P from "pino";
 import { PatchServer } from "./src/index";
 
 const patch = PatchServer.getInstance();
 
-const log = pino().child({ service: patch.serviceName });
+const log = P().child({ service: "MCOServer:Patch" });
 
 const host = "localhost";
 let port = 81;

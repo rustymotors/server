@@ -2,7 +2,7 @@ import { _sslOptions } from "./ssl-options";
 import { savedConfig } from "./config";
 import P from "pino";
 
-const log = P();
+const log = P().child({ service: "MCOServer:Patch" });
 
 export type AppConfiguration = {
   certificate: {
@@ -20,7 +20,6 @@ export type AppConfiguration = {
 };
 
 export class ConfigurationManager {
-  serviceName = "MCOServer:Patch";
   getConfig(): AppConfiguration {
     return savedConfig;
   }
@@ -39,9 +38,7 @@ export class ConfigurationManager {
 
   handleData(this: ConfigurationManager, data: Buffer): void {
     const payload = data.toString();
-    log.debug("debug", `Payload: ${payload}`, {
-      service: this.serviceName,
-    });
+    log.debug(`Payload: ${payload}`);
     // TODO: feat: have config server react to payloads - https://github.com/drazisil/mco-server/issues/1017
   }
 }

@@ -5,7 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import { pino } from "pino";
+import P from "pino";
 import { readFileSync } from "fs";
 import { EServerConnectionName } from "mcos-router";
 import { ShardEntry } from "./shard-entry";
@@ -16,7 +16,7 @@ import { IncomingMessage, ServerResponse } from "http";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
-const log = pino();
+const log = P().child({ service: "MCOServer:Shard" });
 
 /**
  * Manages patch and update server connections
@@ -36,7 +36,6 @@ export class ShardServer {
   _config: AppConfiguration;
   _possibleShards: string[] = [];
   _server: Server;
-  _serviceName = "MCOServer:Shard";
 
   static getInstance(): ShardServer {
     if (!ShardServer._instance) {
@@ -54,12 +53,8 @@ export class ShardServer {
 
     this._server.on("error", (error) => {
       process.exitCode = -1;
-      log.error("error", `Server error: ${error.message}`, {
-        service: this._serviceName,
-      });
-      log.info("info", `Server shutdown: ${process.exitCode}`, {
-        service: this._serviceName,
-      });
+      log.error(`Server error: ${error.message}`);
+      log.info(`Server shutdown: ${process.exitCode}`);
       process.exit();
     });
   }
@@ -206,9 +201,7 @@ export class ShardServer {
 
     if (request.url === "/ShardList/") {
       log.debug(
-        "debug",
-        `Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
-        { service: this._serviceName }
+        `Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
       );
 
       response.setHeader("Content-Type", "text/plain");
@@ -221,9 +214,7 @@ export class ShardServer {
 
     // Unknown request, log it
     log.info(
-      "info",
-      `Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
-      { service: this._serviceName }
+      `Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );
   }
 
@@ -231,12 +222,8 @@ export class ShardServer {
     const host = this._config.serverSettings.ipServer || "localhost";
     const port = 82;
     return this._server.listen({ port, host }, () => {
-      log.debug("debug", `port ${port} listening`, {
-        service: this._serviceName,
-      });
-      log.info("info", "Patch server is listening...", {
-        service: this._serviceName,
-      });
+      log.debug(`port ${port} listening`);
+      log.info("Patch server is listening...");
 
       // Register service with router
       RoutingMesh.getInstance().registerServiceWithRouter(

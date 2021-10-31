@@ -5,24 +5,21 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { pino } from "pino";
+import P from "pino";
 import { IConnectionManager, IMCServer, ITCPConnection } from "mcos-types";
 import { ConnectionManager } from "./connection-mgr";
 import { AppConfiguration, ConfigurationManager } from "mcos-config";
 import { ListenerThread } from "./listener-thread";
 
-const log = pino();
-
+const log = P().child({ service: "mcoserver:MCServer" });
 /**
  * This class starts all the servers
- * @module MCServer
  */
 
 export class MCServer implements IMCServer {
   static _instance: IMCServer;
   config: AppConfiguration;
   private mgr?: IConnectionManager;
-  serviceName: string;
 
   static getInstance(): IMCServer {
     if (!MCServer._instance) {
@@ -34,7 +31,6 @@ export class MCServer implements IMCServer {
   private constructor() {
     this.config = ConfigurationManager.getInstance().getConfig();
     this.mgr = ConnectionManager.getInstance();
-    this.serviceName = "mcoserver:MCServer";
   }
   clearConnectionQueue(): void {
     if (this.mgr === undefined) {
@@ -56,9 +52,7 @@ export class MCServer implements IMCServer {
 
   async startServers(): Promise<void> {
     const listenerThread = ListenerThread.getInstance();
-    log.info("info", "Starting the listening sockets...", {
-      service: this.serviceName,
-    });
+    log.info({}, "Starting the listening sockets...");
     // TODO: Seperate the PersonaServer ports of 8226 and 8228
     const tcpPortList = [
       6660, 8228, 8226, 7003, 8227, 43_200, 43_300, 43_400, 53_303, 9000, 9001,
@@ -72,13 +66,9 @@ export class MCServer implements IMCServer {
 
     for (const port of tcpPortList) {
       listenerThread.startTCPListener(port, this.mgr);
-      log.info("debug", `port ${port} listening`, {
-        service: this.serviceName,
-      });
+      log.info(`port ${port} listening`);
     }
 
-    log.info("info", "Listening sockets create successfully.", {
-      service: this.serviceName,
-    });
+    log.info("Listening sockets create successfully.");
   }
 }

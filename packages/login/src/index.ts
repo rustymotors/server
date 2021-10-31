@@ -5,13 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { pino } from "pino";
+import P from "pino";
 import { DatabaseManager } from "mcos-database";
 import { UnprocessedPacket, ITCPConnection, UserRecordMini } from "mcos-types";
 import { NPSUserStatus, premadeLogin } from "mcos-messages";
 import { ConfigurationManager } from "mcos-config";
 
-const log = pino();
+const log = P().child({ service: "mcoserver:LoginServer" });
 
 /**
  * Manages the initial game connection setup and teardown.
@@ -25,7 +25,6 @@ const log = pino();
 export class LoginServer {
   static _instance: LoginServer;
   databaseManager = DatabaseManager.getInstance();
-  serviceName: string;
 
   static getInstance(): LoginServer {
     if (!LoginServer._instance) {
@@ -35,7 +34,7 @@ export class LoginServer {
   }
 
   private constructor() {
-    this.serviceName = "mcoserver:LoginServer";
+    // Intentionally empty
   }
 
   /**
@@ -49,12 +48,10 @@ export class LoginServer {
     const { connection, data } = rawPacket;
     const { localPort, remoteAddress } = rawPacket;
     log.info(
-      "info",
       `Received Login Server packet: ${JSON.stringify({
         localPort,
         remoteAddress,
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
     // TODO: Check if this can be handled by a MessageNode object
     const { sock } = connection;
@@ -71,33 +68,27 @@ export class LoginServer {
 
       default:
         log.debug(
-          "debug",
           `Unknown nps code recieved',
           ${JSON.stringify({
             requestCode,
             localPort,
             data: rawPacket.data.toString("hex"),
-          })}`,
-          { service: this.serviceName }
+          })}`
         );
         processed = false;
     }
 
     if (processed && responsePacket) {
       log.debug(
-        "debug",
         `responsePacket object from dataHandler',
       ${JSON.stringify({
         userStatus: responsePacket.toString("hex"),
-      })}`,
-        { service: this.serviceName }
+      })}`
       );
       log.debug(
-        "debug",
         `responsePacket's data prior to sending: ${responsePacket.toString(
           "hex"
-        )}`,
-        { service: this.serviceName }
+        )}`
       );
       sock.write(responsePacket);
     }
@@ -113,9 +104,7 @@ export class LoginServer {
   async _npsGetCustomerIdByContextId(
     contextId: string
   ): Promise<UserRecordMini> {
-    log.debug("debug", ">>> _npsGetCustomerIdByContextId", {
-      service: this.serviceName,
-    });
+    log.debug(">>> _npsGetCustomerIdByContextId");
     const users: UserRecordMini[] = [
       {
         contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
@@ -135,12 +124,10 @@ export class LoginServer {
     const userRecord = users.filter((user) => user.contextId === contextId);
     if (userRecord.length !== 1) {
       log.debug(
-        "debug",
         `preparing to leave _npsGetCustomerIdByContextId after not finding record',
         ${JSON.stringify({
           contextId,
-        })}`,
-        { service: this.serviceName }
+        })}`
       );
       throw new Error(
         `Unable to locate user record matching contextId ${contextId}`
@@ -148,13 +135,11 @@ export class LoginServer {
     }
 
     log.debug(
-      "debug",
       `preparing to leave _npsGetCustomerIdByContextId after finding record',
       ${JSON.stringify({
         contextId,
         userRecord,
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
     return userRecord[0];
   }
@@ -172,13 +157,11 @@ export class LoginServer {
     const { localPort } = sock;
     const userStatus = new NPSUserStatus(data);
     log.info(
-      "info",
       `Received login packet,
       ${JSON.stringify({
         localPort,
         remoteAddress: connection.remoteAddress,
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
 
     userStatus.extractSessionKeyFromPacket(
@@ -187,12 +170,10 @@ export class LoginServer {
     );
 
     log.debug(
-      "debug",
       `UserStatus object from _userLogin,
       ${JSON.stringify({
         userStatus: userStatus.toJSON(),
-      })}`,
-      { service: this.serviceName }
+      })}`
     );
     userStatus.dumpPacket();
 
@@ -203,9 +184,7 @@ export class LoginServer {
     );
 
     // Save sessionkey in database under customerId
-    log.debug("debug", "Preparing to update session key in db", {
-      service: this.serviceName,
-    });
+    log.debug("Preparing to update session key in db");
     await this.databaseManager
       ._updateSessionKey(
         customer.customerId,
@@ -214,25 +193,17 @@ export class LoginServer {
         connection.id
       )
       .catch((error) => {
-        log.error("error", `Unable to update session key 3: ${error}`, {
-          service: this.serviceName,
-        });
+        log.error(`Unable to update session key 3: ${error}`);
         throw new Error("Error in userLogin");
       });
 
-    log.info("info", "Session key updated", { service: this.serviceName });
+    log.info("Session key updated");
 
     // Create the packet content
     // TODO: This needs to be dynamically generated, right now we are using a
     // a static packet that works _most_ of the time
     const packetContent = premadeLogin();
-    log.debug(
-      "debug",
-      `Using Premade Login: ${packetContent.toString("hex")}`,
-      {
-        service: this.serviceName,
-      }
-    );
+    log.debug(`Using Premade Login: ${packetContent.toString("hex")}`);
 
     // MsgId: 0x601
     Buffer.from([0x06, 0x01]).copy(packetContent);

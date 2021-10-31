@@ -1,10 +1,10 @@
 import { createServer } from "net";
-import { pino } from "pino";
+import P from "pino";
 import { ConfigurationManager } from "./src/index";
 
-const config = ConfigurationManager.getInstance();
+const log = P().child({ service: "MCOServer:Patch" });
 
-const log = pino().child({ service: config.serviceName });
+const config = ConfigurationManager.getInstance();
 
 const server = createServer();
 server.on("listening", () => {

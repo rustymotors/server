@@ -1,7 +1,8 @@
-import { pino } from "pino";
+import P from "pino";
 import { IncomingMessage, ServerResponse } from "http";
 
-const log = pino();
+const log = P().child({ service: "MCOServer:Patch" });
+
 export const CastanetResponse = {
   body: Buffer.from("cafebeef00000000000003", "hex"),
   header: {
@@ -12,7 +13,6 @@ export const CastanetResponse = {
 
 export class PatchServer {
   static _instance: PatchServer;
-  serviceName = "MCOServer:Patch";
 
   static getInstance(): PatchServer {
     if (!PatchServer._instance) {
@@ -37,9 +37,7 @@ export class PatchServer {
       case "/games/EA_Seattle/MotorCity/NPS":
       case "/games/EA_Seattle/MotorCity/MCO":
         log.debug(
-          "debug",
-          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
-          { service: this.serviceName }
+          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
         );
 
         response.setHeader(responseData.header.type, responseData.header.value);

@@ -1,7 +1,7 @@
 import { RoutingMesh } from "./client";
 import P from "pino";
 
-const log = P();
+const log = P().child({ service: "MCOServer:Route" });
 
 export enum EServerConnectionName {
   ADMIN = "Admin",
@@ -31,7 +31,6 @@ export type ServerConnectionRecord = {
 export class RoutingServer {
   static _instance: RoutingServer;
   private _serverConnections: ServerConnectionRecord[] = [];
-  serviceName = "MCOServer:Route";
 
   static getInstance(): RoutingServer {
     if (!RoutingServer._instance) {
@@ -54,38 +53,25 @@ export class RoutingServer {
         port,
       };
       this._serverConnections.push(newService);
-      log.debug(
-        "debug",
-        `Registered new service: ${JSON.stringify(newService)}`,
-        {
-          service: this.serviceName,
-        }
-      );
+      log.debug(`Registered new service: ${JSON.stringify(newService)}`);
 
       return;
     }
     log.error(
       "error",
-      `There was an error adding server connection: ${payloadJSON}`,
-      {
-        service: this.serviceName,
-      }
+      `There was an error adding server connection: ${payloadJSON}`
     );
   }
   handleData(this: RoutingServer, data: Buffer): void {
     const payload = data.toString();
-    log.debug("debug", `Payload: ${payload}`, {
-      service: this.serviceName,
-    });
+    log.debug(`Payload: ${payload}`);
 
     let payloadJSON: ServerConnectionRecord;
 
     try {
       payloadJSON = JSON.parse(payload);
     } catch (error) {
-      log.error("error", `Error passing payload!: ${error}`, {
-        service: this.serviceName,
-      });
+      log.error(`Error passing payload!: ${error}`);
       return;
     }
 

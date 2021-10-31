@@ -9,20 +9,19 @@
 import * as sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
 import { IDatabaseManager, SessionRecord } from "mcos-types";
-import { pino } from "pino";
+import P from "pino";
 import { AppConfiguration, ConfigurationManager } from "mcos-config";
 import { createPool } from "slonik";
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
 import { EServerConnectionName, RoutingMesh } from "mcos-router";
 
-const log = pino();
+const log = P().child({ service: "mcoserver:DatabaseMgr" });
 
 export class DatabaseManager implements IDatabaseManager {
   static _instance: DatabaseManager;
   _config: AppConfiguration;
   _server: Server;
   changes = 0;
-  serviceName: string;
   localDB: Database | undefined;
   private pool;
 
@@ -138,7 +137,7 @@ export class DatabaseManager implements IDatabaseManager {
           const newError = new Error(
             `There was an error setting up the database: ${err.message}`
           );
-          log.error("error", newError.message, { service: self.serviceName });
+          log.error(newError.message);
           throw newError;
         }
         throw err;
@@ -148,8 +147,6 @@ export class DatabaseManager implements IDatabaseManager {
   }
 
   private constructor() {
-    this.serviceName = "mcoserver:DatabaseMgr";
-
     this._config = ConfigurationManager.getInstance().getConfig();
     this.pool = createPool("postgres://postgres:password@db:5432");
 
@@ -159,12 +156,8 @@ export class DatabaseManager implements IDatabaseManager {
 
     this._server.on("error", (error) => {
       process.exitCode = -1;
-      log.error("error", `Server error: ${error.message}`, {
-        service: this.serviceName,
-      });
-      log.info("info", `Server shutdown: ${process.exitCode}`, {
-        service: this.serviceName,
-      });
+      log.error(`Server error: ${error.message}`);
+      log.info(`Server shutdown: ${process.exitCode}`);
       process.exit();
     });
   }
@@ -257,12 +250,8 @@ export class DatabaseManager implements IDatabaseManager {
     const host = this._config.serverSettings.ipServer || "localhost";
     const port = 0;
     return this._server.listen({ port, host }, () => {
-      log.debug("debug", `port ${port} listening`, {
-        service: this.serviceName,
-      });
-      log.info("info", "Patch server is listening...", {
-        service: this.serviceName,
-      });
+      log.debug(`port ${port} listening`);
+      log.info("Patch server is listening...");
 
       // Register service with router
       RoutingMesh.getInstance().registerServiceWithRouter(

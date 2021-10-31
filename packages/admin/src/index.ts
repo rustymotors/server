@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { pino } from "pino";
+import P from "pino";
 import { IncomingMessage, ServerResponse } from "http";
 import { createServer, Server } from "https";
 import { Socket } from "net";
@@ -16,7 +16,7 @@ import {
 } from "mcos-config";
 import { IMCServer } from "mcos-types";
 
-const log = pino();
+const log = P().child({ service: "mcoserver:AdminServer;" });
 /**
  * SSL web server for managing the state of the system
  */
@@ -31,7 +31,6 @@ export class AdminServer {
   static _instance: AdminServer;
   config: AppConfiguration;
   mcServer: IMCServer;
-  serviceName: string;
   httpsServer: Server | undefined;
 
   static getInstance(mcServer: IMCServer): AdminServer {
@@ -44,7 +43,6 @@ export class AdminServer {
   private constructor(mcServer: IMCServer) {
     this.config = ConfigurationManager.getInstance().getConfig();
     this.mcServer = mcServer;
-    this.serviceName = "mcoserver:AdminServer;";
   }
 
   /**
@@ -95,18 +93,14 @@ export class AdminServer {
    */
   _httpsHandler(request: IncomingMessage, response: ServerResponse): void {
     log.info(
-      "info",
-      `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
-      { service: "mcoserver:AdminServer" }
+      `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );
     log.info(
-      "info",
       `Request received,
       ${JSON.stringify({
         url: request.url,
         remoteAddress: request.socket.remoteAddress,
-      })}`,
-      { service: "mcoserver:AdminServer" }
+      })}`
     );
     switch (request.url) {
       case "/admin/connections":
@@ -146,7 +140,7 @@ export class AdminServer {
   start(): Server {
     const config = this.config;
     try {
-      const sslOptions = _sslOptions(config.certificate, this.serviceName);
+      const sslOptions = _sslOptions(config.certificate);
 
       /** @type {import("https").Server} */
       this.httpsServer = createServer(
@@ -166,9 +160,12 @@ export class AdminServer {
     this.httpsServer.on("connection", this._socketEventHandler);
 
     return this.httpsServer.listen({ port: 88, host: "0.0.0.0" }, () => {
-      log.debug("debug", "port 88 listening", {
-        service: "mcoserver:AdminServer",
-      });
+      log.debug(
+        {
+          service: "mcoserver:AdminServer",
+        },
+        "port 88 listening"
+      );
     });
   }
 }

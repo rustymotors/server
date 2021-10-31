@@ -18,12 +18,12 @@ import { AdminServer } from "mcos-admin";
 // * Patch Server
 // PatchServer.getInstance().start()
 // * AuthLogin
-AuthLogin.getInstance().start()
+AuthLogin.getInstance().start();
 // * Shard
-ShardServer.getInstance().start()
+ShardServer.getInstance().start();
 // HTTPProxy
 // Now that both patch and shard are up, we can proxy requests
-HTTPProxyServer.getInstance().start()
+HTTPProxyServer.getInstance().start();
 
 // * Persona
 //   Persona needs connections to
@@ -36,13 +36,13 @@ HTTPProxyServer.getInstance().start()
 // const databaseManager = DatabaseManager.getInstance()
 
 // * MCOS Monolith
-const mcServer = MCServer.getInstance()
-mcServer.startServers()
+const mcServer = MCServer.getInstance();
+mcServer.startServers();
 
 // * Admin Server
 //   Admin needs connections to
 //   * MCOServer
-AdminServer.getInstance(mcServer).start()
+AdminServer.getInstance(mcServer).start();
 
 // Promise.all([server.start(), patchAndShardServer.start(), authLogin.start()])
 //   .then(() => {

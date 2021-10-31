@@ -12,6 +12,6 @@ const savedConfig: AppConfiguration = {
   serviceConnections: {
     databaseURL: "db.mco.db",
   },
-  defaultLogLevel: "info",
+  defaultLogLevel: "debug",
 };
 export { savedConfig };

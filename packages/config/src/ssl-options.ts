@@ -7,11 +7,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { readFileSync } from "fs";
-import { pino } from "pino";
+import P from "pino";
 import { SslOptions } from "mcos-types";
 import { AppConfiguration } from ".";
 
-const log = pino();
+const log = P().child({ service: "mcoserver:AdminServer;" });
 
 /**
  *
@@ -33,12 +33,9 @@ const log = pino();
    * @return {Promise<sslOptionsObj>}
    */
 export function _sslOptions(
-  certificateSettings: AppConfiguration["certificate"],
-  serviceName: string
+  certificateSettings: AppConfiguration["certificate"]
 ): SslOptions {
-  log.debug("debug", `Reading ${certificateSettings.certFilename}`, {
-    service: serviceName,
-  });
+  log.debug(`Reading ${certificateSettings.certFilename}`);
 
   let cert;
   let key;

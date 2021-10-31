@@ -15,9 +15,9 @@ import {
 } from "mcos-types";
 import { createCipheriv, createDecipheriv } from "crypto";
 import { Socket } from "net";
-import { pino } from "pino";
+import P from "pino";
 
-const log = pino();
+const log = P().child({ service: "mcoserver:TCPConnection" });
 
 export class TCPConnection implements ITCPConnection {
   id: string;
@@ -195,7 +195,7 @@ export class TCPConnection implements ITCPConnection {
         const newError = new Error(
           `There was an error processing the packet: ${error.message}`
         );
-        log.error("error", newError.message, { service: this.mgr.serviceName });
+        log.error(newError.message);
         throw newError;
       }
       throw error;

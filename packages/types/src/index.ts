@@ -18,13 +18,11 @@ export interface IMCServer {
   startServers: () => Promise<void>;
   clearConnectionQueue: () => void;
   getConnections: () => ITCPConnection[];
-  serviceName: string;
 }
 
 export interface IDatabaseManager {
   localDB?: Database;
   changes: number;
-  serviceName: string;
   fetchSessionKeyByCustomerId: (customerId: number) => Promise<SessionRecord>;
   fetchSessionKeyByConnectionId: (
     connectionId: string
@@ -40,14 +38,12 @@ export interface IDatabaseManager {
 export interface IListenerThread {
   _onData: (arg0: Buffer, fakeConnection1: ITCPConnection) => Promise<void>;
   startTCPListener: (port: number, mgr: IConnectionManager) => Promise<Server>;
-  serviceName: string;
 }
 
 export interface IConnectionManager {
   connections: ITCPConnection[];
   newConnectionId: number;
   banList: string[];
-  serviceName: string;
   databaseMgr: IDatabaseManager;
   processData: (rawPacket: UnprocessedPacket) => Promise<ITCPConnection>;
   getNameFromOpCode: (opCode: number) => string;

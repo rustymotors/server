@@ -28,7 +28,7 @@ t.test("sslOptions()", (t) => {
     "will throw an error when unable to locate the certificate",
     async (t) => {
       //  Deepcode ignore WrongNumberOfArgs/test: false positive
-      t.throws(() => _sslOptions(fakeConfig.certificate, "testingSSLOptions"), {
+      t.throws(() => _sslOptions(fakeConfig.certificate), {
         message: /cert.pem/,
       });
       t.end();

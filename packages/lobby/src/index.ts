@@ -16,7 +16,7 @@ import {
 import { NPSMessage, NPSUserInfo } from "mcos-messages";
 import { PersonaServer } from "mcos-persona";
 
-const log = P();
+const log = P().child({ service: "mcoserver:LobbyServer" });
 
 /**
  * Manages the game connection to the lobby and racing rooms
@@ -61,13 +61,7 @@ function decryptCmd(con: ITCPConnection, cypherCmd: Buffer): ITCPConnection {
   const s = con;
   const decryptedCommand = s.decipherBufferDES(cypherCmd);
   s.decryptedCmd = decryptedCommand;
-  log.debug(
-    "debug",
-    `[lobby] Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`,
-    {
-      service: "mcoserver:LobbyServer",
-    }
-  );
+  log.debug(`[lobby] Deciphered Cmd: ${s.decryptedCmd.toString("hex")}`);
   return s;
 }
 
@@ -120,7 +114,7 @@ async function sendCommand(
   packetContent.writeUInt16BE(0x01_01, 369);
   packetContent.writeUInt16BE(0x02_2c, 371);
 
-  log.debug("debug", "Sending a dummy response of 0x229 - NPS_MINI_USER_LIST", {
+  log.debug("Sending a dummy response of 0x229 - NPS_MINI_USER_LIST", {
     service: "mcoserver:LobbyServer",
   });
 
@@ -182,9 +176,7 @@ export class LobbyServer {
   async dataHandler(rawPacket: UnprocessedPacket): Promise<ITCPConnection> {
     const { localPort, remoteAddress } = rawPacket;
     log.debug(
-      "debug",
-      `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`,
-      { service: "mcoserver:LobbyServer" }
+      `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
     );
     const { connection, data } = rawPacket;
     let updatedConnection = connection;
@@ -198,11 +190,9 @@ export class LobbyServer {
           data
         );
         log.debug(
-          "debug",
           `Connect responsePacket's data prior to sending: ${JSON.stringify({
             data: responsePacket.getPacketAsString(),
-          })}`,
-          { service: "mcoserver:LobbyServer" }
+          })}`
         );
         // TODO: Investigate why this crashes retail
         try {
@@ -217,11 +207,9 @@ export class LobbyServer {
       case "217": {
         const responsePacket = this._npsHeartbeat();
         log.debug(
-          "debug",
           `Heartbeat responsePacket's data prior to sending: ${JSON.stringify({
             data: responsePacket.getPacketAsString(),
-          })}`,
-          { service: "mcoserver:LobbyServer" }
+          })}`
         );
         return npsSocketWriteIfOpen(connection, responsePacket.serialize());
       }
@@ -243,11 +231,9 @@ export class LobbyServer {
         }
 
         log.debug(
-          "debug",
           `encrypedCommand's data prior to sending: ${JSON.stringify({
             data: encryptedCmd.toString("hex"),
-          })}`,
-          { service: "mcoserver:LobbyServer" }
+          })}`
         );
         return npsSocketWriteIfOpen(connection, encryptedCmd);
       }
@@ -283,12 +269,10 @@ export class LobbyServer {
   ): Promise<NPSMessage> {
     const { sock } = connection;
     log.debug(
-      "debug",
       `_npsRequestGameConnectServer: ${JSON.stringify({
         remoteAddress: sock.remoteAddress,
         data: rawData.toString("hex"),
-      })}`,
-      { service: "mcoserver:LobbyServer" }
+      })}`
     );
 
     // Return a _NPS_UserInfo structure
@@ -315,10 +299,7 @@ export class LobbyServer {
           "error",
           `Unable to fetch session key for customerId ${customerId.toString()}: ${String(
             error
-          )}`,
-          {
-            service: "mcoserver:LobbyServer",
-          }
+          )}`
         );
         return undefined;
       });

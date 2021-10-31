@@ -1,16 +1,15 @@
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
-import { pino } from "pino";
+import P from "pino";
 import { EServerConnectionName } from "mcos-router";
 import { RoutingMesh } from "mcos-router";
 import { ShardServer } from "mcos-shard";
 import { PatchServer } from "mcos-patch";
 
-const log = pino();
+const log = P().child({ service: "MCOServer:HTTPProxy" });
 
 export class HTTPProxyServer {
   static _instance: HTTPProxyServer;
   _server: Server;
-  _serviceName = "MCOServer:HTTPProxy";
 
   static getInstance(): HTTPProxyServer {
     if (!HTTPProxyServer._instance) {
@@ -26,21 +25,15 @@ export class HTTPProxyServer {
 
     this._server.on("error", (error) => {
       process.exitCode = -1;
-      log.error("error", `Server error: ${error.message}`, {
-        service: this._serviceName,
-      });
-      log.info("info", `Server shutdown: ${process.exitCode}`, {
-        service: this._serviceName,
-      });
+      log.error(`Server error: ${error.message}`);
+      log.info(`Server shutdown: ${process.exitCode}`);
       process.exit();
     });
   }
 
   handleRequest(request: IncomingMessage, response: ServerResponse): void {
     log.debug(
-      "debug",
-      `Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
-      { service: this._serviceName }
+      `Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
     );
     switch (request.url) {
       case "/games/EA_Seattle/MotorCity/UpdateInfo":
@@ -57,12 +50,8 @@ export class HTTPProxyServer {
     const host = "0.0.0.0";
     const port = 80;
     return this._server.listen({ port, host }, () => {
-      log.debug("debug", `port ${port} listening`, {
-        service: this._serviceName,
-      });
-      log.info("info", "Proxy server is listening...", {
-        service: this._serviceName,
-      });
+      log.debug(`port ${port} listening`);
+      log.info("Proxy server is listening...");
 
       // Register service with router
       RoutingMesh.getInstance().registerServiceWithRouter(

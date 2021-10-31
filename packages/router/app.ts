@@ -4,7 +4,7 @@ import { RoutingServer } from "./src/index";
 
 const router = RoutingServer.getInstance();
 
-const log = P().child({ service: router.serviceName });
+const log = P().child({ service: "MCOServer:Route" });
 
 const server = createServer();
 server.on("listening", () => {
