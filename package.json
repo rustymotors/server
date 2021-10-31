@@ -25,8 +25,8 @@
     "build:clean": "tsc --build --clean",
     "lint": "eslint packages/**/*.ts && prettier --write packages",
     "test": "yarn run lint && yarn run test:only && yarn run test:coverage",
-    "test:only": "tap --ts --reporter=spec --no-coverage",
-    "test:coverage": "tap  --coverage-report=html --coverage-report=lcov --coverage-report=text --no-check-coverage",
+    "test:only": "tap --ts --reporter=spec --no-check-coverage",
+    "test:coverage": "tap  --coverage-report=html --coverage-report=lcov --no-check-coverage",
     "precommit": "yarn run lint-test"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
