@@ -206,13 +206,11 @@ export class LobbyServer {
         );
         // TODO: Investigate why this crashes retail
         try {
-          npsSocketWriteIfOpen(connection, responsePacket.serialize());
+          return npsSocketWriteIfOpen(connection, responsePacket.serialize());
         } catch (error) {
           process.exitCode = -1;
           throw new Error(`Unable to send Connect packet: ${error}`);
         }
-
-        break;
       }
 
       // NpsHeartbeat
@@ -225,8 +223,7 @@ export class LobbyServer {
           })}`,
           { service: "mcoserver:LobbyServer" }
         );
-        npsSocketWriteIfOpen(connection, responsePacket.serialize());
-        break;
+        return npsSocketWriteIfOpen(connection, responsePacket.serialize());
       }
 
       // NpsSendCommand
@@ -252,8 +249,7 @@ export class LobbyServer {
           })}`,
           { service: "mcoserver:LobbyServer" }
         );
-        npsSocketWriteIfOpen(connection, encryptedCmd);
-        break;
+        return npsSocketWriteIfOpen(connection, encryptedCmd);
       }
 
       default:
