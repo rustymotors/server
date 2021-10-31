@@ -5,12 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, test } from "@jest/globals";
+import t from "tap";
 import { StockCarInfoMessage } from "../src/index";
 
 const stockCarInfoMessage1 = new StockCarInfoMessage(1, 0, 0);
 
-test("StockCarInfoMsg", () => {
+t.test("StockCarInfoMsg", (t) => {
   const {
     msgNo,
     starterCash,
@@ -20,17 +20,12 @@ test("StockCarInfoMsg", () => {
     moreToCome,
     StockCarList,
   } = stockCarInfoMessage1;
-  expect(msgNo).toEqual(141);
-
-  expect(starterCash).toEqual(1);
-
-  expect(dealerId).toEqual(0);
-
-  expect(brand).toEqual(0);
-
-  expect(noCars).toEqual(1);
-
-  expect(moreToCome).toEqual(0);
-
-  expect(StockCarList).toStrictEqual([]);
+  t.equal(msgNo, 141);
+  t.equal(starterCash, 1);
+  t.equal(dealerId, 0);
+  t.equal(brand, 0);
+  t.equal(noCars, 1);
+  t.equal(moreToCome, 0);
+  t.same(StockCarList, []);
+  t.end();
 });

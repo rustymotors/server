@@ -5,11 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, it } from "@jest/globals";
+import t from "tap";
 import { NPSUserStatus } from "../src/index";
 
-it("NPSUserStatus", () => {
+t.test("NPSUserStatus", (t) => {
   const testPacket = Buffer.from([0x7b, 0x00]);
   const npsUserStatus = new NPSUserStatus(testPacket);
-  expect(npsUserStatus.opCode).toEqual(123);
+  t.equal(npsUserStatus.opCode, 123);
+  t.end();
 });

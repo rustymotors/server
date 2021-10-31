@@ -12,7 +12,7 @@ import { EncryptionManager } from "../src/encryption-mgr";
 import { TCPConnection } from "../src/tcpConnection";
 t.mock("../src/connection-mgr", {});
 
-t.test("ConnectionObj", () => {
+t.test("ConnectionObj", (t) => {
   const testConnection = new TCPConnection("abc", SocketFactory.createSocket());
 
   testConnection.setManager(ConnectionManager.getInstance());
@@ -22,9 +22,10 @@ t.test("ConnectionObj", () => {
   t.notOk(testConnection.isSetupComplete);
   testConnection.setEncryptionKey(Buffer.from("abc123", "hex"));
   t.ok(testConnection.isSetupComplete);
+  t.end();
 });
 
-t.test("ConnectionObj cross-comms", () => {
+t.test("ConnectionObj cross-comms", (t) => {
   /** @type {ConnectionObj} */
   let testConn1: TCPConnection;
   /** @type {ConnectionObj} */
@@ -54,13 +55,14 @@ t.test("ConnectionObj cross-comms", () => {
     0x79, 0x70, 0xbf, 0x45,
   ]);
 
-  t.test("Connection one is not the same id as connection two", () => {
+  t.test("Connection one is not the same id as connection two", (t) => {
     console.log(1, testConn1.getEncryptionId());
     console.log(2, testConn2.getEncryptionId());
     t.not(testConn1.getEncryptionId(), testConn2.getEncryptionId());
+    t.end();
   });
 
-  t.test("Connection Two can decipher Connection One", () => {
+  t.test("Connection Two can decipher Connection One", (t) => {
     const encipheredBuffer = testConn1.encryptBuffer(plainText1);
     t.same(encipheredBuffer, cipherText1);
     t.same(testConn1.decryptBuffer(encipheredBuffer), plainText1);
@@ -75,5 +77,7 @@ t.test("ConnectionObj cross-comms", () => {
     const encipheredBuffer3 = testConn1.encryptBuffer(plainText1);
     t.same(testConn1.decryptBuffer(encipheredBuffer3), plainText1);
     t.same(testConn2.decryptBuffer(encipheredBuffer3), plainText1);
+    t.end();
   });
+  t.end();
 });

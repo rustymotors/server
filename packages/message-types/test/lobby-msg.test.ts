@@ -5,17 +5,19 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, it } from "@jest/globals";
+import t from "tap";
 import { LobbyInfoPacket } from "../src/index";
 import { LobbyMessage } from "../src/index";
 
 const lobbyInfo1 = new LobbyInfoPacket();
 const lobbyMessage1 = new LobbyMessage();
 
-it("LobbyInfo", () => {
-  expect(lobbyInfo1.toPacket().length).toEqual(567);
+t.test("LobbyInfo", (t) => {
+  t.equal(lobbyInfo1.toPacket().length, 567);
+  t.end();
 });
 
-it("LobbyMsg", () => {
-  expect(lobbyMessage1.data.length).toEqual(572);
+t.test("LobbyMsg", (t) => {
+  t.equal(lobbyMessage1.data.length, 572);
+  t.end();
 });

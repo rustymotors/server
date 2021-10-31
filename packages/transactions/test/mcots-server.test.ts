@@ -13,27 +13,27 @@ const mcotServer = MCOTServer.getInstance();
 t.test("MCOTS Server", (t) => {
   t.test("msg_string()", (t) => {
     t.equal(mcotServer._MSG_STRING(438), "MC_CLIENT_CONNECT_MSG");
-    t.end()
+    t.end();
   });
 
   t.test("msg_string()", (t) => {
     t.equal(mcotServer._MSG_STRING(105), "MC_LOGIN");
-    t.end()
+    t.end();
   });
 
   t.test("msg_string()", (t) => {
     t.equal(mcotServer._MSG_STRING(106), "MC_LOGOUT");
-    t.end()
+    t.end();
   });
 
   t.test("msg_string()", (t) => {
     t.equal(mcotServer._MSG_STRING(109), "MC_SET_OPTIONS");
-    t.end()
+    t.end();
   });
 
   t.test("msg_string()", (t) => {
     t.equal(mcotServer._MSG_STRING(141), "MC_STOCK_CAR_INFO");
-    t.end()
+    t.end();
   });
-  t.end()
+  t.end();
 });

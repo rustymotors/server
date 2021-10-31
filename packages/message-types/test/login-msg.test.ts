@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, it } from "@jest/globals";
+import t from "tap";
 import { LoginMessage } from "../src/index";
 
 const inboundBuffer = Buffer.alloc(42);
@@ -13,7 +13,7 @@ inboundBuffer.write("NotAPerson", 24);
 inboundBuffer.write("0.0.0.0", 34);
 const loginMessage1 = new LoginMessage(inboundBuffer);
 
-it("LoginMsg", () => {
+t.test("LoginMsg", (t) => {
   const {
     appId,
     toFrom,
@@ -27,25 +27,26 @@ it("LoginMsg", () => {
     version,
     data,
   } = loginMessage1;
-  expect(appId).toEqual(0);
+  t.equal(appId, 0);
 
-  expect(toFrom).toEqual(0);
+  t.equal(toFrom, 0);
 
-  expect(msgNo).toEqual(0);
+  t.equal(msgNo, 0);
 
-  expect(customerId).toEqual(0);
+  t.equal(customerId, 0);
 
-  expect(personaId).toEqual(0);
+  t.equal(personaId, 0);
 
-  expect(lotOwnerId).toEqual(0);
+  t.equal(lotOwnerId, 0);
 
-  expect(brandedPartId).toEqual(0);
+  t.equal(brandedPartId, 0);
 
-  expect(skinId).toEqual(0);
+  t.equal(skinId, 0);
 
-  expect(personaName).toContain("NotAPerson");
+  t.match(personaName, "NotAPerson");
 
-  expect(version).toContain("0.0.0.0");
+  t.match(version, "0.0.0.0");
 
-  expect(data).toEqual(inboundBuffer);
+  t.same(data, inboundBuffer);
+  t.end();
 });

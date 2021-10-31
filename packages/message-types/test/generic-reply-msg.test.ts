@@ -5,14 +5,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, it } from "@jest/globals";
+import t from "tap";
 import { GenericReplyMessage } from "../src/index";
 
 const genericReplyMessage1 = new GenericReplyMessage();
 
-it("GenericReplyMsg", () => {
+t.test("GenericReplyMsg", (t) => {
   const { msgNo, toFrom } = genericReplyMessage1;
-  expect(msgNo).toEqual(0);
-  expect(toFrom).toEqual(0);
-  expect(genericReplyMessage1.serialize()).toStrictEqual(Buffer.alloc(16));
+  t.equal(msgNo, 0);
+  t.equal(toFrom, 0);
+  t.same(genericReplyMessage1.serialize(), Buffer.alloc(16));
+  t.end();
 });

@@ -6,18 +6,18 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, it, jest } from "@jest/globals";
+import t from "tap";
 import { SocketFactory } from "./../../test-helpers/socket-factory";
 import { ConnectionManager } from "../src/connection-mgr";
 import { ListenerThread } from "../src/listener-thread";
 
-jest.mock("mcos-database");
+t.mock("mcos-database", {});
 
-it("ListenerThread - _onData", async () => {
+t.test("ListenerThread - _onData", async () => {
   const listenerThread = ListenerThread.getInstance();
 
   const fakeSocket1 = SocketFactory.createSocket();
-  expect(fakeSocket1.localPort).toEqual(7003);
+  t.equal(fakeSocket1.localPort, 7003);
 
   const fakeConnection1 = ConnectionManager.getInstance().newConnection(
     "test_connction_1",
@@ -25,17 +25,17 @@ it("ListenerThread - _onData", async () => {
   );
   fakeConnection1.remoteAddress = "0.0.0.0";
 
-  expect(fakeConnection1.remoteAddress).toEqual("0.0.0.0");
+  t.equal(fakeConnection1.remoteAddress, "0.0.0.0");
 
   try {
     await listenerThread._onData(Buffer.alloc(5), fakeConnection1);
   } catch (err) {
     const error = err as Error;
-    expect(error.message).not.toEqual("Remote address is empty");
+    t.notMatch(error.message, "Remote address is empty");
   }
 
   const fakeSocket3 = SocketFactory.createSocket();
-  expect(fakeSocket3.localPort).toEqual(7003);
+  t.equal(fakeSocket3.localPort, 7003);
 
   const fakeConnection3 = ConnectionManager.getInstance().newConnection(
     "test_connction_3",
@@ -45,12 +45,12 @@ it("ListenerThread - _onData", async () => {
   fakeConnection3.setManager(ConnectionManager.getInstance());
   fakeConnection3.remoteAddress = undefined;
 
-  expect(fakeConnection3.remoteAddress).toEqual(undefined);
+  t.equal(fakeConnection3.remoteAddress, undefined);
 
   try {
     await listenerThread._onData(Buffer.alloc(5), fakeConnection3);
   } catch (err) {
     const error = err as Error;
-    expect(error.message).toContain("Unable to locate name for opCode 0");
+    t.match(error.message, "Unable to locate name for opCode 0");
   }
 });

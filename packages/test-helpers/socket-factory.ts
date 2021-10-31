@@ -56,11 +56,12 @@ export class SocketFactory extends Duplex implements EventEmitter {
             if (this.return !== undefined) {
               this.return("foo").then(
                 () => {
-                // do nothing.
-              }, 
-              () => {
-                // do nothing.
-              });
+                  // do nothing.
+                },
+                () => {
+                  // do nothing.
+                }
+              );
             }
             return this;
           },

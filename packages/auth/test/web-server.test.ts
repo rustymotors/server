@@ -5,10 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, test } from "@jest/globals";
+import t from "tap";
 import { AuthLogin } from "../src/index";
 
-test("WebServer", () => {
+t.test("WebServer", (t) => {
   const _ = AuthLogin.getInstance();
-  expect(_._handleGetTicket()).toEqual(expect.stringMatching(/TRUE/));
+  t.match(_._handleGetTicket(), /TRUE/);
+  t.end();
 });

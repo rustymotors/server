@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, it } from "@jest/globals";
+import t from "tap";
 import { EMessageDirection } from "mcos-types";
 import { MessageNode } from "../src/index";
 
@@ -17,17 +17,18 @@ messageNode1.deserialize(
   ])
 );
 
-it("MessageNode", () => {
-  expect(() => {
+t.test("MessageNode", (t) => {
+  t.throws(() => {
     new MessageNode(EMessageDirection.RECEIVED).deserialize(
       Buffer.from([0x00, 0x00])
     );
-  }).toThrow("[MessageNode] Not long enough to deserialize, only 2 bytes long");
+  }, "[MessageNode] Not long enough to deserialize, only 2 bytes long");
 
-  expect(messageNode1.isMCOTS()).toBeTruthy();
+  t.ok(messageNode1.isMCOTS());
   try {
     messageNode1.dumpPacket();
   } catch (error) {
-    expect(error).not.toBeNull();
+    t.ok(error);
   }
+  t.end();
 });

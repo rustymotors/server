@@ -5,18 +5,18 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, test, jest } from "@jest/globals";
+import t from "tap";
 import { MCServer } from "mcos-core";
 import { AdminServer } from "../src/index";
-jest.mock("mcos-core");
-jest.mock("net");
+t.mock("mcos-core", {});
 
-test("AdminServer", () => {
+t.test("AdminServer", (t) => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const _ = AdminServer.getInstance(MCServer.getInstance());
-    expect(true).toBeTruthy();
+    t.ok(true, "", { todo: true });
   } catch (error) {
-    expect(error).toBeFalsy();
+    t.notOk(error, "", {});
   }
+  t.end();
 });

@@ -5,10 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { expect, it } from "@jest/globals";
+import t from "tap";
 import { premadeLogin } from "../src/index";
 
-it("LoginServer - Packet", () => {
+t.test("LoginServer - Packet", (t) => {
   const packet = premadeLogin();
-  expect(Buffer.isBuffer(packet)).toBeTruthy();
+  t.ok(Buffer.isBuffer(packet));
+  t.end();
 });

@@ -43,9 +43,9 @@
     "build": "tsc --build",
     "build:clean": "tsc --build --clean",
     "lint": "eslint ./**/*.ts && prettier --write src test",
-    "test": "yarn run lint-test",
-    "lint-test": "yarn run lint && yarn run test:only",
-    "test:only": "tap --ts --reporter=spec --coverage-report=lcov --coverage-report=html",
+    "test": "yarn run lint && yarn run test:only && yarn run test:coverage",
+    "test:only": "tap --ts --reporter=spec",
+    "test:coverage": "tap  --coverage-report=html --coverage-report=html test/**/*.ts",
     "precommit": "yarn run lint-test"
   }
 }
