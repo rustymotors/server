@@ -7,7 +7,6 @@
 
 import t from "tap";
 import { _sslOptions } from "../src/ssl-options";
-import { Module } from "module";
 
 const fakeConfig = {
   certificate: {
