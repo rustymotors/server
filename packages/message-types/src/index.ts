@@ -893,7 +893,7 @@ export class NPSMessage {
    */
   setContent(buffer: Buffer): void {
     this.content = buffer;
-    this.msgLength = (this.content.length) + 12;
+    this.msgLength = this.content.length + 12;
   }
 
   /**
@@ -1143,7 +1143,7 @@ export class LobbyMessage {
 
     this.lobbyList = new LobbyInfoPacket();
     // The expected length here is 572
-    this.dataLength = (this.lobbyList.toPacket().length) + 5;
+    this.dataLength = this.lobbyList.toPacket().length + 5;
 
     if (this.dataLength !== 572) {
       throw new Error(
@@ -1318,7 +1318,7 @@ export class MessageNode {
    */
   updateBuffer(buffer: Buffer): void {
     this.data = Buffer.from(buffer);
-    this.dataLength = (buffer.length) + 10;
+    this.dataLength = buffer.length + 10;
     this.msgNo = this.data.readInt16LE(0);
   }
 
