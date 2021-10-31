@@ -1413,7 +1413,7 @@ export class ClientConnectMessage {
         throw new TypeError(
           `[ClientConnectMsg] Unable to read msgNo from ${buffer.toString(
             "hex"
-          )}: ${error.toString()}`
+          )}: ${String(error)}`
         );
       }
     }
