@@ -6,7 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { pino } from "pino";
+import P from "pino";
 import { DatabaseManager } from "mcos-database";
 import {
   EMessageDirection,
@@ -16,7 +16,7 @@ import {
 import { NPSMessage, NPSUserInfo } from "mcos-messages";
 import { PersonaServer } from "mcos-persona";
 
-const log = pino();
+const log = P();
 
 /**
  * Manages the game connection to the lobby and racing rooms
