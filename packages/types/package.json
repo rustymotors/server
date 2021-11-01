@@ -4,6 +4,7 @@
   "main": "src/index.ts",
   "license": "MIT",
   "dependencies": {
+    "@types/node": "16.11.6",
     "@types/sqlite3": "3.1.7",
     "sqlite": "4.0.23",
     "ts-node": "10.4.0"

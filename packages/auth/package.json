@@ -4,6 +4,7 @@
   "main": "src/index.ts",
   "license": "MIT",
   "dependencies": {
+    "@types/node": "16.11.6",
     "mcos-config": "workspace:^",
     "mcos-router": "workspace:^",
     "mcos-types": "workspace:^",
@@ -16,7 +17,6 @@
     "@jest/globals": "27.3.1",
     "@types/babel__core": "7.1.16",
     "@types/eslint": "7.28.2",
-    "@types/node": "16.11.6",
     "@types/prettier": "2.4.1",
     "@types/tap": "15.0.5",
     "@typescript-eslint/eslint-plugin": "5.2.0",
