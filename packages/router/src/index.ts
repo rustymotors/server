@@ -43,7 +43,7 @@ export class RoutingServer {
     // Intentionally empty
   }
 
-  private _registerNewService(payloadJSON: ServerConnectionRecord) {
+  registerNewService(payloadJSON: ServerConnectionRecord) {
     const { service, host, port } = payloadJSON;
 
     if (service && host && port) {
@@ -62,7 +62,7 @@ export class RoutingServer {
       `There was an error adding server connection: ${payloadJSON}`
     );
   }
-  handleData(this: RoutingServer, data: Buffer): void {
+  handleData(data: Buffer): void {
     const payload = data.toString();
     log.debug(`Payload: ${payload}`);
 
@@ -78,7 +78,7 @@ export class RoutingServer {
     const { action } = payloadJSON;
 
     if (action === EServerConnectionAction.REGISTER_SERVICE) {
-      return this._registerNewService(payloadJSON);
+      return RoutingServer.getInstance().registerNewService(payloadJSON);
     } else {
       throw new Error("Method not implemented.");
     }
