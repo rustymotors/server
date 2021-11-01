@@ -14,4 +14,4 @@ EXPOSE 80
 EXPOSE 443
 RUN chown -R node /usr/src/app
 USER node
-CMD ["yarn", "workspace", "start"]
+CMD ["yarn", "workspace", "mcos-router", "start"]
