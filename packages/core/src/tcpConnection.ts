@@ -18,6 +18,7 @@ import { Socket } from "net";
 import P from "pino";
 
 const log = P().child({ service: "mcoserver:TCPConnection" });
+log.level = process.env.LOG_LEVEL || "info";
 
 export class TCPConnection implements ITCPConnection {
   id: string;

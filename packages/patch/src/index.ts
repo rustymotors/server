@@ -2,6 +2,7 @@ import P from "pino";
 import { IncomingMessage, ServerResponse } from "http";
 
 const log = P().child({ service: "MCOServer:Patch" });
+log.level = process.env.LOG_LEVEL || "info";
 
 export const CastanetResponse = {
   body: Buffer.from("cafebeef00000000000003", "hex"),

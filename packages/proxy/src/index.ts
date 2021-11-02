@@ -6,6 +6,7 @@ import { ShardServer } from "mcos-shard";
 import { PatchServer } from "mcos-patch";
 
 const log = P().child({ service: "MCOServer:HTTPProxy" });
+log.level = process.env.LOG_LEVEL || "info";
 
 export class HTTPProxyServer {
   static _instance: HTTPProxyServer;

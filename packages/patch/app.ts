@@ -6,6 +6,7 @@ import { PatchServer } from "./src/index";
 const patch = PatchServer.getInstance();
 
 const log = P().child({ service: "MCOServer:Patch" });
+log.level = process.env.LOG_LEVEL || "info";
 
 const host = "localhost";
 let port = 81;

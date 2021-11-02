@@ -12,6 +12,8 @@ import { AppConfiguration, ConfigurationManager } from "mcos-config";
 import { ListenerThread } from "./listener-thread";
 
 const log = P().child({ service: "mcoserver:MCServer" });
+log.level = process.env.LOG_LEVEL || "info";
+
 /**
  * This class starts all the servers
  */

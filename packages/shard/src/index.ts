@@ -17,6 +17,7 @@ import { IncomingMessage, ServerResponse } from "http";
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
 const log = P().child({ service: "MCOServer:Shard" });
+log.level = process.env.LOG_LEVEL || "info";
 
 /**
  * Manages patch and update server connections

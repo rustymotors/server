@@ -23,6 +23,7 @@ import { TCPConnection } from "./tcpConnection";
 import P from "pino";
 
 const log = P().child({ service: "mcoserver:ConnectionMgr" });
+log.level = process.env.LOG_LEVEL || "info";
 
 export class ConnectionManager implements IConnectionManager {
   static _instance: IConnectionManager;

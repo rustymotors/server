@@ -7,6 +7,7 @@ import {
 import { createConnection } from "net";
 
 const log = P().child({ service: "MCOServer:RouteClient" });
+log.level = process.env.LOG_LEVEL || "info";
 
 export class RoutingMesh {
   static getInstance(): RoutingMesh {

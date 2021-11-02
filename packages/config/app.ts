@@ -3,6 +3,7 @@ import P from "pino";
 import { ConfigurationManager } from "./src/index";
 
 const log = P().child({ service: "MCOServer:Patch" });
+log.level = process.env.LOG_LEVEL || "info";
 
 const config = ConfigurationManager.getInstance();
 

@@ -1,5 +1,5 @@
 FROM node:17-slim
-ENV NODE_ENV=production
+
 WORKDIR /usr/src/app
 RUN apt update && apt install python3 build-essential nano -y
 RUN cp /usr/bin/python3 /usr/bin/python
@@ -14,4 +14,5 @@ EXPOSE 80
 EXPOSE 443
 RUN chown -R node /usr/src/app
 USER node
+
 CMD ["yarn", "start"]

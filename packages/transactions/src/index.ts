@@ -15,6 +15,7 @@ import { GenericReplyMessage, MessageNode } from "mcos-messages";
 import { TCPManager } from "./tcp-manager";
 
 const log = P().child({ service: "mcoserver:MCOTSServer" });
+log.level = process.env.LOG_LEVEL || "info";
 
 /**
  * Manages the game database server

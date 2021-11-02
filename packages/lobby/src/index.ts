@@ -17,6 +17,7 @@ import { NPSMessage, NPSUserInfo } from "mcos-messages";
 import { PersonaServer } from "mcos-persona";
 
 const log = P().child({ service: "mcoserver:LobbyServer" });
+log.level = process.env.LOG_LEVEL || "info";
 
 /**
  * Manages the game connection to the lobby and racing rooms

@@ -12,6 +12,7 @@ import { NPSUserStatus, premadeLogin } from "mcos-messages";
 import { ConfigurationManager } from "mcos-config";
 
 const log = P().child({ service: "mcoserver:LoginServer" });
+log.level = process.env.LOG_LEVEL || "info";
 
 /**
  * Manages the initial game connection setup and teardown.

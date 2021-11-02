@@ -17,6 +17,7 @@ import { ITCPConnection } from "mcos-types";
 import { NPSPersonaMapsMessage } from "mcos-messages";
 
 const log = P().child({ service: "mcoserver:PersonaServer" });
+log.level = process.env.LOG_LEVEL || "info";
 
 /**
  * @class

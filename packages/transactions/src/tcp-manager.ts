@@ -26,6 +26,7 @@ import {
 } from "mcos-types";
 
 const log = P().child({ service: "mcoserver:MCOTSServer" });
+log.level = process.env.LOG_LEVEL || "info";
 
 /**
  * Manages TCP connection packet processing

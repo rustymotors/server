@@ -17,6 +17,7 @@ import {
 import { IMCServer } from "mcos-types";
 
 const log = P().child({ service: "mcoserver:AdminServer;" });
+log.level = process.env.LOG_LEVEL || "info";
 /**
  * SSL web server for managing the state of the system
  */

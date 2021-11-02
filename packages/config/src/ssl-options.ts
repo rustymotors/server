@@ -12,6 +12,7 @@ import { SslOptions } from "mcos-types";
 import { AppConfiguration } from ".";
 
 const log = P().child({ service: "mcoserver:AdminServer;" });
+log.level = process.env.LOG_LEVEL || "info";
 
 /**
  *

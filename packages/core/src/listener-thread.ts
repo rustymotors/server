@@ -15,6 +15,7 @@ import {
 } from "mcos-types";
 
 const log = P().child({ service: "mcoserver:ListenerThread" });
+log.level = process.env.LOG_LEVEL || "info";
 
 export class ListenerThread implements IListenerThread {
   static _instance: IListenerThread;

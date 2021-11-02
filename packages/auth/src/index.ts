@@ -16,6 +16,7 @@ import { createServer, Server } from "https";
 import { AppConfiguration, ConfigurationManager } from "mcos-config";
 
 const log = P().child({ service: "MCOServer:Auth" });
+log.level = process.env.LOG_LEVEL || "info";
 
 /**
  * Handles web-based user logins
@@ -48,7 +49,7 @@ export class AuthLogin {
       process.exit();
     });
     this._server.on("tlsClientError", (error) => {
-      log.warn("warn", `[AuthLogin] SSL Socket Client Error: ${error.message}`);
+      log.warn(`[AuthLogin] SSL Socket Client Error: ${error.message}`);
     });
   }
 

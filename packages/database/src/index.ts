@@ -16,6 +16,7 @@ import { createServer, IncomingMessage, Server, ServerResponse } from "http";
 import { EServerConnectionName, RoutingMesh } from "mcos-router";
 
 const log = P().child({ service: "mcoserver:DatabaseMgr" });
+log.level = process.env.LOG_LEVEL || "info";
 
 export class DatabaseManager implements IDatabaseManager {
   static _instance: DatabaseManager;

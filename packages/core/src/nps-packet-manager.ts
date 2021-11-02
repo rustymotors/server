@@ -13,6 +13,7 @@ import { PersonaServer } from "mcos-persona";
 import { DatabaseManager } from "mcos-database";
 
 const log = P().child({ service: "mcoserver:NPSPacketManager" });
+log.level = process.env.LOG_LEVEL || "info";
 
 /**
  * @module npsPacketManager

@@ -1,7 +1,7 @@
 FROM node:17-slim
-ENV NODE_ENV=production
+
 WORKDIR /usr/src/app
-RUN apt update && apt install python3 build-essential nano -y
+RUN apt update && apt install python3 build-essential nano libcap2-bin net-tools -y
 RUN cp /usr/bin/python3 /usr/bin/python
 # COPY ["package.json", "yarn.lock", "./bin", "./packages", "./.yarn", "./"]
 
@@ -10,8 +10,9 @@ COPY . .
 RUN yarn install
 RUN yarn workspaces foreach install
 COPY ./ .
-EXPOSE 80
-EXPOSE 443
 RUN chown -R node /usr/src/app
+RUN setcap cap_net_bind_service=+ep $(which node)
+
 USER node
+
 CMD ["yarn", "workspace", "mcos-router", "start"]
