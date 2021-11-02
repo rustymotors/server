@@ -44,7 +44,7 @@ export class RoutingServer {
     // Intentionally empty
   }
 
-  registerNewService(payloadJSON: ServerConnectionRecord): void  {
+  registerNewService(payloadJSON: ServerConnectionRecord): void {
     const { service, host, port } = payloadJSON;
 
     if (service && host && port) {
