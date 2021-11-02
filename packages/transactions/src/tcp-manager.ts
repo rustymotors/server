@@ -80,9 +80,7 @@ export class TCPManager implements ITCPManager {
   ): Promise<ConnectionWithPacket> {
     // Check if encryption is needed
     if (packet.flags - 8 >= 0) {
-      log.debug("encryption flag is set", {
-        service: "mcoserver:MCOTSServer",
-      });
+      log.debug("encryption flag is set", );
 
       packet.updateBuffer(connection.encryptBuffer(packet.data));
 
@@ -338,9 +336,7 @@ export class TCPManager implements ITCPManager {
 
       case "MC_GET_LOBBIES": {
         const result = await this.mcotServer._getLobbies(conn, node);
-        log.debug("Dumping Lobbies response packet...", {
-          service: "mcoserver:MCOTSServer",
-        });
+        log.debug("Dumping Lobbies response packet...", );
         log.debug(result.packetList.join());
         const responsePackets = result.packetList;
         try {

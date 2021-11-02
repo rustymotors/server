@@ -59,7 +59,6 @@ export class RoutingServer {
       return;
     }
     log.error(
-      "error",
       `There was an error adding server connection: ${payloadJSON}`
     );
   }

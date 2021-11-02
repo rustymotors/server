@@ -10,9 +10,9 @@ import { IncomingMessage, ServerResponse } from "http";
 import { createServer, Server } from "https";
 import { Socket } from "net";
 import {
+  _sslOptions,
   AppConfiguration,
   ConfigurationManager,
-  _sslOptions,
 } from "mcos-config";
 import { IMCServer } from "mcos-types";
 
@@ -23,7 +23,6 @@ log.level = process.env.LOG_LEVEL || "info";
  */
 
 /**
- *
  * @property {config} config
  * @property {IMCServer} mcServer
  * @property {Server} httpServer
@@ -47,7 +46,6 @@ export class AdminServer {
   }
 
   /**
-   *
    * @return {string}
    */
   _handleGetConnections(): string {
@@ -67,7 +65,6 @@ export class AdminServer {
   }
 
   /**
-   *
    * @return {string}
    */
   _handleResetAllQueueState(): string {
@@ -94,14 +91,16 @@ export class AdminServer {
    */
   _httpsHandler(request: IncomingMessage, response: ServerResponse): void {
     log.info(
-      `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
+      `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
     );
     log.info(
       `Request received,
-      ${JSON.stringify({
-        url: request.url,
-        remoteAddress: request.socket.remoteAddress,
-      })}`
+      ${
+        JSON.stringify({
+          url: request.url,
+          remoteAddress: request.socket.remoteAddress,
+        })
+      }`,
     );
     switch (request.url) {
       case "/admin/connections":
@@ -134,7 +133,6 @@ export class AdminServer {
   }
 
   /**
-   *
    * @param {module:config.config} config
    * @return {Promise<void>}
    */
@@ -147,11 +145,13 @@ export class AdminServer {
       this.httpsServer = createServer(
         sslOptions,
         (
-          /** @type {import("http").IncomingMessage} */ request: import("http").IncomingMessage,
-          /** @type {import("http").ServerResponse} */ response: import("http").ServerResponse
+          /** @type {import("http").IncomingMessage} */ request:
+            import("http").IncomingMessage,
+          /** @type {import("http").ServerResponse} */ response:
+            import("http").ServerResponse,
         ) => {
           this._httpsHandler(request, response);
-        }
+        },
       );
     } catch (err) {
       const error = err as Error;
@@ -162,10 +162,7 @@ export class AdminServer {
 
     return this.httpsServer.listen({ port: 88, host: "0.0.0.0" }, () => {
       log.debug(
-        {
-          service: "mcoserver:AdminServer",
-        },
-        "port 88 listening"
+        "port 88 listening",
       );
     });
   }

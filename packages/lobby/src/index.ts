@@ -115,9 +115,7 @@ async function sendCommand(
   packetContent.writeUInt16BE(0x01_01, 369);
   packetContent.writeUInt16BE(0x02_2c, 371);
 
-  log.debug("Sending a dummy response of 0x229 - NPS_MINI_USER_LIST", {
-    service: "mcoserver:LobbyServer",
-  });
+  log.debug("Sending a dummy response of 0x229 - NPS_MINI_USER_LIST", );
 
   // Build the packet
   const packetResult = new NPSMessage(EMessageDirection.SENT);
@@ -296,7 +294,6 @@ export class LobbyServer {
       .fetchSessionKeyByCustomerId(customerId)
       .catch((error) => {
         log.debug(
-          "error",
           `Unable to fetch session key for customerId ${customerId.toString()}: ${String(
             error
           )}`
