@@ -33,7 +33,7 @@ const databaseManager = DatabaseManager.getInstance();
  */
 async function npsSocketWriteIfOpen(
   conn: ITCPConnection,
-  buffer: Buffer,
+  buffer: Buffer
 ): Promise<ITCPConnection> {
   const { sock } = conn;
   if (sock.writable) {
@@ -41,9 +41,9 @@ async function npsSocketWriteIfOpen(
     sock.write(buffer);
   } else {
     throw new Error(
-      `Error writing ${
-        buffer.toString("hex")
-      } to ${sock.remoteAddress} , ${String(sock)}`,
+      `Error writing ${buffer.toString("hex")} to ${
+        sock.remoteAddress
+      } , ${String(sock)}`
     );
   }
 
@@ -87,13 +87,13 @@ function encryptCmd(con: ITCPConnection, cypherCmd: Buffer): ITCPConnection {
  */
 async function sendCommand(
   con: ITCPConnection,
-  data: Buffer,
+  data: Buffer
 ): Promise<ITCPConnection> {
   const s = con;
 
   const decipheredCommand = decryptCmd(
     s,
-    Buffer.from(data.slice(4)),
+    Buffer.from(data.slice(4))
   ).decryptedCmd;
 
   if (decipheredCommand === undefined) {
@@ -172,7 +172,7 @@ export class LobbyServer {
   async dataHandler(rawPacket: UnprocessedPacket): Promise<ITCPConnection> {
     const { localPort, remoteAddress } = rawPacket;
     log.debug(
-      `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`,
+      `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
     );
     const { connection, data } = rawPacket;
     const requestCode = data.readUInt16BE(0).toString(16);
@@ -182,23 +182,21 @@ export class LobbyServer {
       case "100": {
         const responsePacket = await this._npsRequestGameConnectServer(
           connection,
-          data,
+          data
         );
         log.debug(
-          `Connect responsePacket's data prior to sending: ${
-            JSON.stringify({
-              data: responsePacket.getPacketAsString(),
-            })
-          }`,
+          `Connect responsePacket's data prior to sending: ${JSON.stringify({
+            data: responsePacket.getPacketAsString(),
+          })}`
         );
         // TODO: Investigate why this crashes retail
         try {
           return npsSocketWriteIfOpen(connection, responsePacket.serialize());
         } catch (error) {
-          if(error instanceof Error) {
+          if (error instanceof Error) {
             throw new Error(`Unable to send Connect packet: ${error}`);
           }
-          throw new Error(`Unable to send Connect packet: unknown error`)
+          throw new Error(`Unable to send Connect packet: unknown error`);
         }
       }
 
@@ -207,11 +205,9 @@ export class LobbyServer {
       case "217": {
         const responsePacket = this._npsHeartbeat();
         log.debug(
-          `Heartbeat responsePacket's data prior to sending: ${
-            JSON.stringify({
-              data: responsePacket.getPacketAsString(),
-            })
-          }`,
+          `Heartbeat responsePacket's data prior to sending: ${JSON.stringify({
+            data: responsePacket.getPacketAsString(),
+          })}`
         );
         return npsSocketWriteIfOpen(connection, responsePacket.serialize());
       }
@@ -227,27 +223,23 @@ export class LobbyServer {
 
         if (encryptedCmd === undefined) {
           throw new Error(
-            `Error with encrypted command, dumping connection: ${
-              JSON.stringify(
-                { updatedConnection },
-              )
-            }`,
+            `Error with encrypted command, dumping connection: ${JSON.stringify(
+              { updatedConnection }
+            )}`
           );
         }
 
         log.debug(
-          `encrypedCommand's data prior to sending: ${
-            JSON.stringify({
-              data: encryptedCmd.toString("hex"),
-            })
-          }`,
+          `encrypedCommand's data prior to sending: ${JSON.stringify({
+            data: encryptedCmd.toString("hex"),
+          })}`
         );
         return npsSocketWriteIfOpen(connection, encryptedCmd);
       }
 
       default:
         throw new Error(
-          `Unknown code ${requestCode} was received on port 7003`,
+          `Unknown code ${requestCode} was received on port 7003`
         );
     }
   }
@@ -271,16 +263,14 @@ export class LobbyServer {
    */
   async _npsRequestGameConnectServer(
     connection: ITCPConnection,
-    rawData: Buffer,
+    rawData: Buffer
   ): Promise<NPSMessage> {
     const { sock } = connection;
     log.debug(
-      `_npsRequestGameConnectServer: ${
-        JSON.stringify({
-          remoteAddress: sock.remoteAddress,
-          data: rawData.toString("hex"),
-        })
-      }`,
+      `_npsRequestGameConnectServer: ${JSON.stringify({
+        remoteAddress: sock.remoteAddress,
+        data: rawData.toString("hex"),
+      })}`
     );
 
     // Return a _NPS_UserInfo structure
@@ -291,7 +281,7 @@ export class LobbyServer {
     const personaManager = PersonaServer.getInstance();
 
     const personas = await personaManager.getPersonasByPersonaId(
-      userInfo.userId,
+      userInfo.userId
     );
     if (personas.length === 0) {
       throw new Error("No personas found.");
@@ -305,11 +295,13 @@ export class LobbyServer {
       .catch((error) => {
         if (error instanceof Error) {
           log.debug(
-            `Unable to fetch session key for customerId ${customerId.toString()}: ${error.message})}`,
+            `Unable to fetch session key for customerId ${customerId.toString()}: ${
+              error.message
+            })}`
           );
         }
         log.error(
-          `Unable to fetch session key for customerId ${customerId.toString()}: unknown error}`,
+          `Unable to fetch session key for customerId ${customerId.toString()}: unknown error}`
         );
         return undefined;
       });
@@ -326,17 +318,15 @@ export class LobbyServer {
       } catch (error) {
         if (error instanceof Error) {
           throw new TypeError(
-            `Unable to set session key: ${JSON.stringify({ keys, error })}`,
+            `Unable to set session key: ${JSON.stringify({ keys, error })}`
           );
         }
 
         throw new Error(
-          `Unable to set session key: ${
-            JSON.stringify({
-              keys,
-              error: "unknown",
-            })
-          }`,
+          `Unable to set session key: ${JSON.stringify({
+            keys,
+            error: "unknown",
+          })}`
         );
       }
     }

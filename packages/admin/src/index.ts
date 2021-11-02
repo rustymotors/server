@@ -91,16 +91,14 @@ export class AdminServer {
    */
   _httpsHandler(request: IncomingMessage, response: ServerResponse): void {
     log.info(
-      `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`,
+      `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );
     log.info(
       `Request received,
-      ${
-        JSON.stringify({
-          url: request.url,
-          remoteAddress: request.socket.remoteAddress,
-        })
-      }`,
+      ${JSON.stringify({
+        url: request.url,
+        remoteAddress: request.socket.remoteAddress,
+      })}`
     );
     switch (request.url) {
       case "/admin/connections":
@@ -145,13 +143,11 @@ export class AdminServer {
       this.httpsServer = createServer(
         sslOptions,
         (
-          /** @type {import("http").IncomingMessage} */ request:
-            import("http").IncomingMessage,
-          /** @type {import("http").ServerResponse} */ response:
-            import("http").ServerResponse,
+          /** @type {import("http").IncomingMessage} */ request: import("http").IncomingMessage,
+          /** @type {import("http").ServerResponse} */ response: import("http").ServerResponse
         ) => {
           this._httpsHandler(request, response);
-        },
+        }
       );
     } catch (err) {
       const error = err as Error;
@@ -161,9 +157,7 @@ export class AdminServer {
     this.httpsServer.on("connection", this._socketEventHandler);
 
     return this.httpsServer.listen({ port: 88, host: "0.0.0.0" }, () => {
-      log.debug(
-        "port 88 listening",
-      );
+      log.debug("port 88 listening");
     });
   }
 }

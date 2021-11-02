@@ -58,9 +58,7 @@ export class RoutingServer {
 
       return;
     }
-    log.error(
-      `There was an error adding server connection: ${payloadJSON}`
-    );
+    log.error(`There was an error adding server connection: ${payloadJSON}`);
   }
   handleData(data: Buffer): void {
     const payload = data.toString();
