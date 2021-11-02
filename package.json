@@ -2,7 +2,7 @@
   "name": "mcos",
   "version": "3.0.0-beta1",
   "description": "a server",
-  "main": "index.js",
+  "main": "packages/bin/app.ts",
   "engines": {
     "node": "^14.13.1 || >=16.0.0"
   },
