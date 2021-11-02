@@ -195,8 +195,10 @@ export class LobbyServer {
         try {
           return npsSocketWriteIfOpen(connection, responsePacket.serialize());
         } catch (error) {
-          process.exitCode = -1;
-          throw new Error(`Unable to send Connect packet: ${error}`);
+          if(error instanceof Error) {
+            throw new Error(`Unable to send Connect packet: ${error}`);
+          }
+          throw new Error(`Unable to send Connect packet: unknown error`)
         }
       }
 

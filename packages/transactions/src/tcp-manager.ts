@@ -245,7 +245,7 @@ export class TCPManager implements ITCPManager {
           return this.socketWriteIfOpen(result.connection, responsePackets);
         } catch (error) {
           if (error instanceof Error) {
-            throw new TypeError(`Error in MC_TRACKING_MSG: ${error}`);
+            throw new TypeError(`Error in MC_TRACKING_MSG: ${error.message}`);
           }
 
           throw new Error("Error in MC_TRACKING_MSG, error unknown");
@@ -261,7 +261,7 @@ export class TCPManager implements ITCPManager {
           return this.socketWriteIfOpen(result.connection, responsePackets);
         } catch (error) {
           if (error instanceof Error) {
-            throw new TypeError(`Error in MC_UPDATE_PLAYER_PHYSICAL: ${error}`);
+            throw new TypeError(`Error in MC_UPDATE_PLAYER_PHYSICAL: ${error.message}`);
           }
 
           throw new Error("Error in MC_UPDATE_PLAYER_PHYSICAL, error unknown");
@@ -279,7 +279,7 @@ export class TCPManager implements ITCPManager {
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
-              `[TCPManager] Error writing to socket: ${error}`,
+              `[TCPManager] Error writing to socket: ${error.message}`,
             );
           }
 
@@ -320,7 +320,7 @@ export class TCPManager implements ITCPManager {
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
-              `[TCPManager] Error writing to socket: ${error}`,
+              `[TCPManager] Error writing to socket: ${error.message}`,
             );
           }
 
@@ -363,7 +363,7 @@ export class TCPManager implements ITCPManager {
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
-              `[TCPManager] Error writing to socket: ${error}`,
+              `[TCPManager] Error writing to socket: ${error.message}`,
             );
           }
 
