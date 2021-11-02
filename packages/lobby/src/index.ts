@@ -180,7 +180,6 @@ export class LobbyServer {
       `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
     );
     const { connection, data } = rawPacket;
-    let updatedConnection = connection;
     const requestCode = data.readUInt16BE(0).toString(16);
 
     switch (requestCode) {
@@ -220,7 +219,7 @@ export class LobbyServer {
         // This is an encrypted command
         // Fetch session key
 
-        updatedConnection = await sendCommand(connection, data);
+        const updatedConnection = await sendCommand(connection, data);
         const { encryptedCmd } = updatedConnection;
 
         if (encryptedCmd === undefined) {
