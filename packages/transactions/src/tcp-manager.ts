@@ -17,10 +17,10 @@ import {
   StockCarInfoMessage,
 } from "mcos-messages";
 import {
-  ITCPConnection,
-  EMessageDirection,
   ConnectionWithPacket,
   ConnectionWithPackets,
+  EMessageDirection,
+  ITCPConnection,
   ITCPManager,
   UnprocessedPacket,
 } from "mcos-types";
@@ -50,14 +50,13 @@ export class TCPManager implements ITCPManager {
   }
 
   /**
-   *
    * @param {ConnectionObj} connection
    * @param {MessageNode} packet
    * @return {Promise<{conn: ConnectionObj, packetToWrite: MessageNode}>}
    */
   async compressIfNeeded(
     connection: ITCPConnection,
-    packet: MessageNode
+    packet: MessageNode,
   ): Promise<ConnectionWithPacket> {
     // Check if compression is needed
     if (packet.getLength() < 80) {
@@ -76,11 +75,11 @@ export class TCPManager implements ITCPManager {
 
   async encryptIfNeeded(
     connection: ITCPConnection,
-    packet: MessageNode
+    packet: MessageNode,
   ): Promise<ConnectionWithPacket> {
     // Check if encryption is needed
     if (packet.flags - 8 >= 0) {
-      log.debug("encryption flag is set", );
+      log.debug("encryption flag is set");
 
       packet.updateBuffer(connection.encryptBuffer(packet.data));
 
@@ -92,7 +91,7 @@ export class TCPManager implements ITCPManager {
 
   private async socketWriteIfOpen(
     connection: ITCPConnection,
-    packetList: MessageNode[]
+    packetList: MessageNode[],
   ): Promise<ITCPConnection> {
     const updatedConnection: ConnectionWithPackets = {
       connection: connection,
@@ -110,12 +109,12 @@ export class TCPManager implements ITCPManager {
       ).packet;
       // Log that we are trying to write
       log.debug(
-        ` Atempting to write seq: ${encryptedPacket.seq} to conn: ${updatedConnection.connection.id}`
+        ` Atempting to write seq: ${encryptedPacket.seq} to conn: ${updatedConnection.connection.id}`,
       );
 
       // Log the buffer we are writing
       log.debug(
-        `Writting buffer: ${encryptedPacket.serialize().toString("hex")}`
+        `Writting buffer: ${encryptedPacket.serialize().toString("hex")}`,
       );
       if (connection.sock.writable) {
         // Write the packet to socket
@@ -123,9 +122,7 @@ export class TCPManager implements ITCPManager {
       } else {
         const port: string = connection.sock.localPort?.toString() || "";
         throw new Error(
-          `Error writing ${encryptedPacket.serialize()} to ${
-            connection.sock.remoteAddress
-          } , ${port}`
+          `Error writing ${encryptedPacket.serialize()} to ${connection.sock.remoteAddress} , ${port}`,
         );
       }
     }
@@ -135,7 +132,7 @@ export class TCPManager implements ITCPManager {
 
   async getStockCarInfo(
     connection: ITCPConnection,
-    packet: MessageNode
+    packet: MessageNode,
   ): Promise<ConnectionWithPackets> {
     const getStockCarInfoMessage = new GenericRequestMessage();
     getStockCarInfoMessage.deserialize(packet.data);
@@ -164,14 +161,13 @@ export class TCPManager implements ITCPManager {
   }
 
   /**
-   *
    * @param {ConnectionObj} connection
    * @param {MessageNode} packet
    * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
   async clientConnect(
     connection: ITCPConnection,
-    packet: MessageNode
+    packet: MessageNode,
   ): Promise<ConnectionWithPackets> {
     /**
      * Let's turn it into a ClientConnectMsg
@@ -180,10 +176,10 @@ export class TCPManager implements ITCPManager {
     const newMessage = new ClientConnectMessage(packet.data);
 
     log.debug(
-      `[TCPManager] Looking up the session key for ${newMessage.customerId}...`
+      `[TCPManager] Looking up the session key for ${newMessage.customerId}...`,
     );
     const result = await this.databaseManager.fetchSessionKeyByCustomerId(
-      newMessage.customerId
+      newMessage.customerId,
     );
     log.debug("[TCPManager] Session Key located!");
 
@@ -220,10 +216,10 @@ export class TCPManager implements ITCPManager {
    */
   async processInput(
     node: MessageNode,
-    conn: ITCPConnection
+    conn: ITCPConnection,
   ): Promise<ITCPConnection> {
-    const currentMessageNo = node.msgNo;
-    const currentMessageString = this.mcotServer._MSG_STRING(currentMessageNo);
+    const currentMessageNo: number = node.msgNo;
+    const currentMessageString: string = this.mcotServer._MSG_STRING(currentMessageNo);
 
     switch (currentMessageString) {
       case "MC_SET_OPTIONS":
@@ -232,7 +228,7 @@ export class TCPManager implements ITCPManager {
           const responsePackets = result.packetList;
           return await this.socketWriteIfOpen(
             result.connection,
-            responsePackets
+            responsePackets,
           );
         } catch (error) {
           if (error instanceof Error) {
@@ -259,7 +255,7 @@ export class TCPManager implements ITCPManager {
         try {
           const result = await this.mcotServer._updatePlayerPhysical(
             conn,
-            node
+            node,
           );
           const responsePackets = result.packetList;
           return this.socketWriteIfOpen(result.connection, responsePackets);
@@ -278,17 +274,17 @@ export class TCPManager implements ITCPManager {
           // Write the socket
           return await this.socketWriteIfOpen(
             result.connection,
-            responsePackets
+            responsePackets,
           );
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
-              `[TCPManager] Error writing to socket: ${error}`
+              `[TCPManager] Error writing to socket: ${error}`,
             );
           }
 
           throw new Error(
-            "[TCPManager] Error writing to socket, error unknown"
+            "[TCPManager] Error writing to socket, error unknown",
           );
         }
       }
@@ -302,12 +298,12 @@ export class TCPManager implements ITCPManager {
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
-              `[TCPManager] Error writing to socket: ${error}`
+              `[TCPManager] Error writing to socket: ${error}`,
             );
           }
 
           throw new Error(
-            "[TCPManager] Error writing to socket, error unknown"
+            "[TCPManager] Error writing to socket, error unknown",
           );
         }
       }
@@ -319,41 +315,41 @@ export class TCPManager implements ITCPManager {
           // Write the socket
           return await this.socketWriteIfOpen(
             result.connection,
-            responsePackets
+            responsePackets,
           );
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
-              `[TCPManager] Error writing to socket: ${error}`
+              `[TCPManager] Error writing to socket: ${error}`,
             );
           }
 
           throw new Error(
-            "[TCPManager] Error writing to socket, error unknown"
+            "[TCPManager] Error writing to socket, error unknown",
           );
         }
       }
 
       case "MC_GET_LOBBIES": {
         const result = await this.mcotServer._getLobbies(conn, node);
-        log.debug("Dumping Lobbies response packet...", );
+        log.debug("Dumping Lobbies response packet...");
         log.debug(result.packetList.join());
         const responsePackets = result.packetList;
         try {
           // Write the socket
           return await this.socketWriteIfOpen(
             result.connection,
-            responsePackets
+            responsePackets,
           );
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
-              `[TCPManager] Error writing to socket: ${error}`
+              `[TCPManager] Error writing to socket: ${error}`,
             );
           }
 
           throw new Error(
-            "[TCPManager] Error writing to socket, error unknown"
+            "[TCPManager] Error writing to socket, error unknown",
           );
         }
       }
@@ -367,35 +363,36 @@ export class TCPManager implements ITCPManager {
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
-              `[TCPManager] Error writing to socket: ${error}`
+              `[TCPManager] Error writing to socket: ${error}`,
             );
           }
 
           throw new Error(
-            "[TCPManager] Error writing to socket, error unknown"
+            "[TCPManager] Error writing to socket, error unknown",
           );
         }
       }
 
       default: {
         node.setAppId(conn.appId);
-        throw new Error(`Message Number Not Handled: ${currentMessageNo} (${currentMessageString})
-      conID: ${node.toFrom}  PersonaID: ${node.appId}`);
+        throw new Error(
+          `Message Number Not Handled: ${currentMessageNo} (${currentMessageString})
+      conID: ${node.toFrom}  PersonaID: ${node.appId}`,
+        );
       }
     }
   }
 
   /**
-   *
    * @param {MessageNode} msg
    * @param {ConnectionObj} con
    * @return {Promise<ConnectionObj>}
    */
   async messageReceived(
     message: MessageNode,
-    con: ITCPConnection
+    con: ITCPConnection,
   ): Promise<ITCPConnection> {
-    const newConnection = con;
+    const newConnection: ITCPConnection = con;
     if (!newConnection.useEncryption && message.flags && 0x08) {
       log.debug("Turning on encryption");
       newConnection.useEncryption = true;
@@ -405,7 +402,7 @@ export class TCPManager implements ITCPManager {
     if (message.flags !== 80 && newConnection.useEncryption) {
       if (!newConnection.isSetupComplete) {
         throw new Error(
-          `Decrypt() not yet setup! Disconnecting...conId: ${con.id}`
+          `Decrypt() not yet setup! Disconnecting...conId: ${con.id}`,
         );
       }
 
@@ -414,21 +411,23 @@ export class TCPManager implements ITCPManager {
           /**
            * Attempt to decrypt message
            */
-          const encryptedBuffer = Buffer.from(message.data);
+          const encryptedBuffer: Buffer = Buffer.from(message.data);
           log.debug(
-            `Full packet before decrypting: ${encryptedBuffer.toString("hex")}`
+            `Full packet before decrypting: ${encryptedBuffer.toString("hex")}`,
           );
 
           log.debug(
-            `Message buffer before decrypting: ${encryptedBuffer.toString(
-              "hex"
-            )}`
+            `Message buffer before decrypting: ${
+              encryptedBuffer.toString(
+                "hex",
+              )
+            }`,
           );
 
           log.debug(`Using encryption id: ${newConnection.getEncryptionId()}`);
-          const deciphered = newConnection.decryptBuffer(encryptedBuffer);
+          const deciphered: Buffer = newConnection.decryptBuffer(encryptedBuffer);
           log.debug(
-            `Message buffer after decrypting: ${deciphered.toString("hex")}`
+            `Message buffer after decrypting: ${deciphered.toString("hex")}`,
           );
 
           if (deciphered.readUInt16LE(0) <= 0) {
@@ -440,12 +439,12 @@ export class TCPManager implements ITCPManager {
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
-              `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}: ${error}`
+              `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}: ${error.message}`,
             );
           }
 
           throw new Error(
-            `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}, error unknown`
+            `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}, error unknown`,
           );
         }
       }
@@ -462,12 +461,14 @@ export class TCPManager implements ITCPManager {
 
     log.debug(
       `Received TCP packet',
-    ${JSON.stringify({
-      localPort,
-      remoteAddress,
-      direction: messageNode.direction,
-      data: rawPacket.data.toString("hex"),
-    })}`
+    ${
+        JSON.stringify({
+          localPort,
+          remoteAddress,
+          direction: messageNode.direction,
+          data: rawPacket.data.toString("hex"),
+        })
+      }`,
     );
     messageNode.dumpPacket();
 
