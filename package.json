@@ -15,7 +15,6 @@
     "AUTHORS"
   ],
   "scripts": {
-    "preinstall": "npx only-allow yarn",
     "audit": "yarn npm audit",
     "check:license": "yarn licenses audit --summary --config=licenses.config.js",
     "start": "yarn exec ts-node packages/bin/app.ts",
@@ -39,13 +38,6 @@
   "dependencies": {
     "@types/node": "16.11.6",
     "@types/pino": "6.3.12",
-    "mcos-admin": "workspace:^",
-    "mcos-auth": "workspace:^",
-    "mcos-core": "workspace:^",
-    "mcos-patch": "workspace:^",
-    "mcos-proxy": "workspace:^",
-    "mcos-router": "workspace:^",
-    "mcos-shard": "workspace:^",
     "pino": "next",
     "ts-node": "10.4.0"
   },

@@ -5,9 +5,6 @@
   "license": "MIT",
   "dependencies": {
     "@types/node": "16.11.6",
-    "mcos-config": "workspace:^",
-    "mcos-router": "workspace:^",
-    "mcos-types": "workspace:^",
     "pino": "next",
     "ts-node": "10.4.0"
   },
@@ -34,7 +31,6 @@
     "typescript": "4.4.4"
   },
   "scripts": {
-    "preinstall": "npx only-allow yarn",
     "audit": "yarn npm audit",
     "check:license": "yarn licenses audit --summary --config=licenses.config.js",
     "start": "ts-node app.ts",

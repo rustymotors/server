@@ -1,0 +1,21 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./admin" },
+    { "path": "./auth" },
+    { "path": "./bin"},
+    {"path": "./comfig"},
+    {"path": "./core"},
+    {"path": "./database"},
+    {"path": "./lobby"},
+    {"path": "./login"},
+    {"path": "./message-types"},
+    {"path": "./patch"},
+    {"path": "./persona"},
+    {"path": "./proxy"},
+    {"path": "./router"},
+    {"path": "./shard"},
+    {"path": "./transactions"},
+    {"path": "./types"}
+  ]
+}

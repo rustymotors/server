@@ -30,7 +30,6 @@
     "typescript": "4.4.4"
   },
   "scripts": {
-    "preinstall": "npx only-allow yarn",
     "audit": "yarn npm audit",
     "check:license": "yarn licenses audit --summary --config=licenses.config.js",
     "start": "ts-node bin/app.ts",
