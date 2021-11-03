@@ -8701,7 +8701,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-config-prettier", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:8.3.0"],
             ["jest", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:27.3.1"],
             ["mcos-types", "workspace:packages/types"],
-            ["pino", "npm:7.0.5"],
+            ["pino", "npm:7.1.0"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
             ["tap", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:15.0.10"],
@@ -9855,20 +9855,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "HARD",
         }],
-        ["npm:7.0.5", {
-          "packageLocation": "./.yarn/cache/pino-npm-7.0.5-23de843545-5690112023.zip/node_modules/pino/",
+        ["npm:7.1.0", {
+          "packageLocation": "./.yarn/cache/pino-npm-7.1.0-1036d4845a-9e2b7cf2e5.zip/node_modules/pino/",
           "packageDependencies": [
-            ["pino", "npm:7.0.5"],
+            ["pino", "npm:7.1.0"],
             ["fast-redact", "npm:3.0.2"],
             ["fastify-warning", "npm:0.2.0"],
             ["get-caller-file", "npm:2.0.5"],
-            ["json-stringify-safe", "npm:5.0.1"],
             ["on-exit-leak-free", "npm:0.2.0"],
-            ["pino-abstract-transport", "npm:0.4.0"],
+            ["pino-abstract-transport", "npm:0.5.0"],
             ["pino-std-serializers", "npm:4.0.0"],
             ["quick-format-unescaped", "npm:4.0.4"],
+            ["safe-stable-stringify", "npm:2.2.0"],
             ["sonic-boom", "npm:2.3.0"],
-            ["thread-stream", "npm:0.11.2"]
+            ["thread-stream", "npm:0.12.1"]
           ],
           "linkType": "HARD",
         }]
@@ -9880,6 +9880,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["pino-abstract-transport", "npm:0.4.0"],
             ["duplexify", "npm:4.1.2"],
             ["split2", "npm:3.2.2"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:0.5.0", {
+          "packageLocation": "./.yarn/cache/pino-abstract-transport-npm-0.5.0-2cfa907a2a-c503f867de.zip/node_modules/pino-abstract-transport/",
+          "packageDependencies": [
+            ["pino-abstract-transport", "npm:0.5.0"],
+            ["duplexify", "npm:4.1.2"],
+            ["split2", "npm:4.1.0"]
           ],
           "linkType": "HARD",
         }]
@@ -10661,6 +10670,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["safe-stable-stringify", [
+        ["npm:2.2.0", {
+          "packageLocation": "./.yarn/cache/safe-stable-stringify-npm-2.2.0-336efeb371-09facfbc43.zip/node_modules/safe-stable-stringify/",
+          "packageDependencies": [
+            ["safe-stable-stringify", "npm:2.2.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["safer-buffer", [
         ["npm:2.1.2", {
           "packageLocation": "./.yarn/cache/safer-buffer-npm-2.1.2-8d5c0b705e-cab8f25ae6.zip/node_modules/safer-buffer/",
@@ -11011,6 +11029,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["split2", "npm:3.2.2"],
             ["readable-stream", "npm:3.6.0"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:4.1.0", {
+          "packageLocation": "./.yarn/cache/split2-npm-4.1.0-1c1a4bd984-ec581597cb.zip/node_modules/split2/",
+          "packageDependencies": [
+            ["split2", "npm:4.1.0"]
           ],
           "linkType": "HARD",
         }]
@@ -11551,6 +11576,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/thread-stream-npm-0.11.2-1724def8ca-ca5372b302.zip/node_modules/thread-stream/",
           "packageDependencies": [
             ["thread-stream", "npm:0.11.2"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:0.12.1", {
+          "packageLocation": "./.yarn/cache/thread-stream-npm-0.12.1-39612498fd-4c28ce1aef.zip/node_modules/thread-stream/",
+          "packageDependencies": [
+            ["thread-stream", "npm:0.12.1"]
           ],
           "linkType": "HARD",
         }]
