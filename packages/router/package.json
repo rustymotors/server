@@ -7,7 +7,7 @@
     "@types/node": "16.11.6",
     "@types/pino": "^6.3.12",
     "mcos-types": "workspace:^",
-    "pino": "7.0.5",
+    "pino": "7.1.0",
     "ts-node": "10.4.0",
     "tslib": "2.3.1"
   },

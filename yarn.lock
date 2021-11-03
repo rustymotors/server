@@ -6412,7 +6412,7 @@ __metadata:
     eslint-config-prettier: 8.3.0
     jest: 27.3.1
     mcos-types: "workspace:^"
-    pino: 7.0.5
+    pino: 7.1.0
     prettier: 2.4.1
     prettier-eslint: 13.0.0
     tap: 15.0.10
@@ -7458,6 +7458,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pino-abstract-transport@npm:v0.5.0":
+  version: 0.5.0
+  resolution: "pino-abstract-transport@npm:0.5.0"
+  dependencies:
+    duplexify: ^4.1.2
+    split2: ^4.0.0
+  checksum: c503f867de3189f8217ab9cf794e8a631dddd0029a829f0f985f5511308152ebd53e363764fbc5570b3d1c715b341e3923456ce16ad84cd41be2b9a074ada234
+  languageName: node
+  linkType: hard
+
 "pino-std-serializers@npm:^4.0.0":
   version: 4.0.0
   resolution: "pino-std-serializers@npm:4.0.0"
@@ -7465,23 +7475,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino@npm:7.0.5":
-  version: 7.0.5
-  resolution: "pino@npm:7.0.5"
+"pino@npm:7.1.0":
+  version: 7.1.0
+  resolution: "pino@npm:7.1.0"
   dependencies:
     fast-redact: ^3.0.0
     fastify-warning: ^0.2.0
     get-caller-file: ^2.0.5
-    json-stringify-safe: ^5.0.1
     on-exit-leak-free: ^0.2.0
-    pino-abstract-transport: v0.4.0
+    pino-abstract-transport: v0.5.0
     pino-std-serializers: ^4.0.0
     quick-format-unescaped: ^4.0.3
+    safe-stable-stringify: ^2.1.0
     sonic-boom: ^2.2.1
-    thread-stream: ^0.11.1
+    thread-stream: ^0.12.0
   bin:
     pino: bin.js
-  checksum: 569011202351e1ea00e56a776333194fd681608e5a8a908e3bc4f010da8c21c668d1e1cb20acde2575ae5031d0b73064b780c4078a3bcd72d395f313750ee7e8
+  checksum: 9e2b7cf2e5ea7eac0933ac7a76e8519b30c7634b624d3d954a3dcf307c92a9258492bd443686d3e427c3a80515b6512eed12f2c0d79956a794ac2fc84bbae9a7
   languageName: node
   linkType: hard
 
@@ -8179,6 +8189,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"safe-stable-stringify@npm:^2.1.0":
+  version: 2.2.0
+  resolution: "safe-stable-stringify@npm:2.2.0"
+  checksum: 09facfbc43259f02422ff00ecbb3490d19a7b4f9545852c8a0045bd3d0120bc07f6e5f803f124312c237db688b7051fe85670c817ebba66f8530c5049201e0b2
+  languageName: node
+  linkType: hard
+
 "safer-buffer@npm:>= 2.1.2 < 3, safer-buffer@npm:>= 2.1.2 < 3.0.0, safer-buffer@npm:^2.0.2, safer-buffer@npm:^2.1.0, safer-buffer@npm:~2.1.0":
   version: 2.1.2
   resolution: "safer-buffer@npm:2.1.2"
@@ -8504,6 +8521,13 @@ __metadata:
   dependencies:
     readable-stream: ^3.0.0
   checksum: 8127ddbedd0faf31f232c0e9192fede469913aa8982aa380752e0463b2e31c2359ef6962eb2d24c125bac59eeec76873678d723b1c7ff696216a1cd071e3994a
+  languageName: node
+  linkType: hard
+
+"split2@npm:^4.0.0":
+  version: 4.1.0
+  resolution: "split2@npm:4.1.0"
+  checksum: ec581597cb74c13cdfb5e2047543dd40cb1e8e9803c7b1e0c29ede05f2b4f049b2d6e7f2788a225d544549375719658b8f38e9366364dec35dc7a12edfda5ee5
   languageName: node
   linkType: hard
 
@@ -9010,6 +9034,13 @@ __metadata:
   version: 0.11.2
   resolution: "thread-stream@npm:0.11.2"
   checksum: ca5372b3029ffee24eb928c8d597c5ece114d07c1812a2e2c6a0fc00e4d5f3fad747b84c9a69e8805bfd3c930793378f0c4048a3f5d99ddbb9ee79576e623cdf
+  languageName: node
+  linkType: hard
+
+"thread-stream@npm:^0.12.0":
+  version: 0.12.1
+  resolution: "thread-stream@npm:0.12.1"
+  checksum: 4c28ce1aef2b8e34adb6345ced8538f95e2d1bcc3dd82394a49ce66dd150917e607dd19e35a7a9bf383fd4ac6fd90c6a180f861043dace7dda26be860d9ec9ce
   languageName: node
   linkType: hard
 
