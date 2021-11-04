@@ -136,7 +136,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
-            ["sinon", "npm:11.1.2"],
+            ["sinon", "npm:12.0.1"],
             ["source-map-support", "npm:0.5.20"],
             ["supertest", "npm:6.1.6"],
             ["tap", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:15.0.10"],
@@ -3059,6 +3059,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@sinonjs-fake-timers-npm-8.0.1-df05d407cd-97a78e6f83.zip/node_modules/@sinonjs/fake-timers/",
           "packageDependencies": [
             ["@sinonjs/fake-timers", "npm:8.0.1"],
+            ["@sinonjs/commons", "npm:1.8.3"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:8.1.0", {
+          "packageLocation": "./.yarn/cache/@sinonjs-fake-timers-npm-8.1.0-95c51c96db-09b5a158ce.zip/node_modules/@sinonjs/fake-timers/",
+          "packageDependencies": [
+            ["@sinonjs/fake-timers", "npm:8.1.0"],
             ["@sinonjs/commons", "npm:1.8.3"]
           ],
           "linkType": "HARD",
@@ -8288,7 +8296,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["pino", "npm:7.0.0-rc.9"],
             ["prettier", "npm:2.4.1"],
             ["prettier-eslint", "npm:13.0.0"],
-            ["sinon", "npm:11.1.2"],
+            ["sinon", "npm:12.0.1"],
             ["source-map-support", "npm:0.5.20"],
             ["supertest", "npm:6.1.6"],
             ["tap", "virtual:c83d66e1d1538403237ed04786fd1df3a57ca2dd4d7ab77c1f9afaf1a4aed004b4313f856626ecd88cd75694d5a1956dcaa11f6144421cec08b446368de48cc4#npm:15.0.10"],
@@ -10810,12 +10818,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["sinon", [
-        ["npm:11.1.2", {
-          "packageLocation": "./.yarn/cache/sinon-npm-11.1.2-5325724cb2-1d01377e23.zip/node_modules/sinon/",
+        ["npm:12.0.1", {
+          "packageLocation": "./.yarn/cache/sinon-npm-12.0.1-b9d98d3d3a-a264310c28.zip/node_modules/sinon/",
           "packageDependencies": [
-            ["sinon", "npm:11.1.2"],
+            ["sinon", "npm:12.0.1"],
             ["@sinonjs/commons", "npm:1.8.3"],
-            ["@sinonjs/fake-timers", "npm:7.1.2"],
+            ["@sinonjs/fake-timers", "npm:8.1.0"],
             ["@sinonjs/samsam", "npm:6.0.2"],
             ["diff", "npm:5.0.0"],
             ["nise", "npm:5.1.0"],
