@@ -2,14 +2,14 @@
   "extends": "../tsconfig-base",
   "compilerOptions": {
       "removeComments": false,
-      "outFile": "../../built/shard.js",
+      "outDir": "../../built",
       "preserveConstEnums": true,
       "types": [
           "node"
       ]
   },
-  "references": [],
   "files": [
       "src/index.ts",
+      "src/shard-entry.ts"
   ]
 }

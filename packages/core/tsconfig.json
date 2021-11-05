@@ -1,15 +1,17 @@
 {
   "extends": "../tsconfig-base",
   "compilerOptions": {
-      "removeComments": false,
-      "outFile": "../../built/core.js",
-      "preserveConstEnums": true,
-      "types": [
-          "node"
-      ]
+    "removeComments": false,
+    "outDir": "../../built",
+    "preserveConstEnums": true,
+    "types": ["node"]
   },
-  "references": [],
   "files": [
-      "src/index.ts",
+    "src/connection-mgr.ts",
+    "src//encryption-mgr.ts",
+    "src/index.ts",
+    "src/listener-thread.ts",
+    "src/nps-packet-manager.ts",
+    "src/tcpConnection.ts"
   ]
 }

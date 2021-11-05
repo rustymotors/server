@@ -11,7 +11,6 @@ import { Database, open } from "sqlite";
 import { IDatabaseManager, SessionRecord } from "mcos-types";
 import P from "pino";
 import { AppConfiguration, ConfigurationManager } from "mcos-config";
-import { createPool } from "slonik";
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
 import { EServerConnectionName, RoutingMesh } from "mcos-router";
 
@@ -24,7 +23,6 @@ export class DatabaseManager implements IDatabaseManager {
   _server: Server;
   changes = 0;
   localDB: Database | undefined;
-  private pool;
 
   public static getInstance(): DatabaseManager {
     if (!DatabaseManager._instance) {
@@ -149,7 +147,6 @@ export class DatabaseManager implements IDatabaseManager {
 
   private constructor() {
     this._config = ConfigurationManager.getInstance().getConfig();
-    this.pool = createPool("postgres://postgres:password@db:5432");
 
     this._server = createServer((request, response) => {
       this.handleRequest(request, response);
@@ -250,6 +247,7 @@ export class DatabaseManager implements IDatabaseManager {
   start(): Server {
     const host = this._config.serverSettings.ipServer || "localhost";
     const port = 0;
+    log.debug(`Attempting to bind to port ${port}`)
     return this._server.listen({ port, host }, () => {
       log.debug(`port ${port} listening`);
       log.info("Patch server is listening...");

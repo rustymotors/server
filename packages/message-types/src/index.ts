@@ -73,7 +73,7 @@ export class GenericReplyMessage {
         throw new TypeError(
           `[GenericReplyMsg] Unable to read msgNo from ${buffer.toString(
             "hex"
-          )}: ${error.toString()}`
+          )}: ${String(error)}`
         );
       }
     }
@@ -169,7 +169,7 @@ export class GenericRequestMessage {
         throw new TypeError(
           `[GenericRequestMsg] Unable to read msgNo from ${buffer.toString(
             "hex"
-          )}: ${error.toString()}`
+          )}: ${String(error)}`
         );
       }
     }
@@ -344,9 +344,9 @@ export class StockCarInfoMessage {
     packet.writeInt16LE(this.noCars, 14);
     packet.writeInt8(this.moreToCome, 16);
     if (this.StockCarList.length > 0) {
-      for (const [i, stockCar] of this.StockCarList.entries()) {
+      for (let i = 0; i < this.StockCarList.length; i++) {
         const offset = 10 * i;
-        stockCar.serialize().copy(packet, 17 + offset);
+        this.StockCarList[i].serialize().copy(packet, 17 + offset);
       }
     }
 

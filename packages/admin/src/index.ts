@@ -51,14 +51,15 @@ export class AdminServer {
   _handleGetConnections(): string {
     const connections = this.mcServer.getConnections();
     let responseText = "";
-    for (const [index, connection] of connections.entries()) {
+    for (let i = 0; i < connections.length; i++) {
+      const connection = connections[i];
       const displayConnection = `
-        index: ${index} - ${connection.id}
-            remoteAddress: ${connection.remoteAddress}:${connection.localPort}
-            Encryption ID: ${connection.getEncryptionId()}
-            inQueue:       ${connection.inQueue}
-        `;
-      responseText += displayConnection;
+      index: ${i} - ${connection.id}
+          remoteAddress: ${connection.remoteAddress}:${connection.localPort}
+          Encryption ID: ${connection.getEncryptionId()}
+          inQueue:       ${connection.inQueue}
+      `;
+    responseText += displayConnection;
     }
 
     return responseText;
@@ -71,14 +72,15 @@ export class AdminServer {
     this.mcServer.clearConnectionQueue();
     const connections = this.mcServer.getConnections();
     let responseText = "Queue state reset for all connections\n\n";
-    for (const [index, connection] of connections.entries()) {
+    for (let i = 0; i < connections.length; i++) {
+      const connection = connections[i];
       const displayConnection = `
-        index: ${index} - ${connection.id}
-            remoteAddress: ${connection.remoteAddress}:${connection.localPort}
-            Encryption ID: ${connection.getEncryptionId()}
-            inQueue:       ${connection.inQueue}
-        `;
-      responseText += displayConnection;
+      index: ${i} - ${connection.id}
+          remoteAddress: ${connection.remoteAddress}:${connection.localPort}
+          Encryption ID: ${connection.getEncryptionId()}
+          inQueue:       ${connection.inQueue}
+      `;
+    responseText += displayConnection;
     }
 
     return responseText;
@@ -156,7 +158,11 @@ export class AdminServer {
 
     this.httpsServer.on("connection", this._socketEventHandler);
 
-    return this.httpsServer.listen({ port: 88, host: "0.0.0.0" }, () => {
+    const port = 88
+
+    log.debug(`Attempting to bind to port ${port}`)
+
+    return this.httpsServer.listen({ port, host: "0.0.0.0" }, () => {
       log.debug("port 88 listening");
     });
   }

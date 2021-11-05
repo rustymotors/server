@@ -1,15 +1,10 @@
 {
   "extends": "../tsconfig-base",
   "compilerOptions": {
-      "removeComments": false,
-      "outFile": "../../built/mcos.js",
-      "preserveConstEnums": true,
-      "types": [
-          "node"
-      ]
+    "removeComments": false,
+    "outDir": "../../built",
+    "preserveConstEnums": true,
+    "types": ["node"]
   },
-  "references": [],
-  "files": [
-      "src/index.ts",
-  ]
+  "files": ["app.ts"]
 }

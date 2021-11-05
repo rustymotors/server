@@ -1,20 +1,14 @@
 {
+  "extends": "../tsconfig-base",
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true,
-    "lib": ["ES2019"],
-    "module": "commonjs",
-    "noImplicitReturns": true,
-    "strict": true,
-    "target": "ES2019",
-    "outDir": "./dist",
-    "declaration": true,
-    "importHelpers": true,
-    "isolatedModules": true,
-    "skipLibCheck": true,
-    "useUnknownInCatchVariables": false
-  }
+      "removeComments": false,
+      "outDir": "../../built",
+      "preserveConstEnums": true,
+      "types": [
+          "node"
+      ]
+  },
+  "files": [
+      "src/index.ts",
+  ]
 }

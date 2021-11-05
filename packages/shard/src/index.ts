@@ -222,6 +222,7 @@ export class ShardServer {
   start(): Server {
     const host = this._config.serverSettings.ipServer || "localhost";
     const port = 82;
+    log.debug(`Attempting to bind to port ${port}`)
     return this._server.listen({ port, host }, () => {
       log.debug(`port ${port} listening`);
       log.info("Patch server is listening...");

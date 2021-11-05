@@ -1,5 +1,7 @@
 import P from "pino";
-import { IncomingMessage, ServerResponse } from "http";
+import { createServer, IncomingMessage, ServerResponse } from "http";
+import { RoutingMesh } from "mcos-router"
+import { EServerConnectionName } from "mcos-router";
 
 const log = P().child({ service: "MCOServer:Patch" });
 log.level = process.env.LOG_LEVEL || "info";
@@ -13,6 +15,37 @@ export const CastanetResponse = {
 };
 
 export class PatchServer {
+  start(this: PatchServer) {
+    const host = "localhost";
+    let port = 81;
+
+    if (typeof process.env.LISTEN_PORT !== "undefined") {
+      port = Number.parseInt(process.env.LISTEN_PORT);
+    }
+
+    const server = createServer();
+    server.on("listening", () => {
+      const listeningAddress = server.address();
+      if (
+        typeof listeningAddress !== "string" &&
+        listeningAddress !== null &&
+        listeningAddress.port !== undefined
+      )
+        log.info(`Server is listening on port ${listeningAddress.port}`);
+    });
+    server.on("request", this.handleRequest);
+
+    log.debug(`Attempting to bind to port ${port}`)
+    server.listen(port, host);
+
+    // Register service with router
+    RoutingMesh.getInstance().registerServiceWithRouter(
+      EServerConnectionName.PATCH,
+      host,
+      port
+    );
+
+  }
   static _instance: PatchServer;
 
   static getInstance(): PatchServer {

@@ -1,15 +1,10 @@
 {
   "extends": "../tsconfig-base",
   "compilerOptions": {
-      "removeComments": false,
-      "outFile": "../../built/config.js",
-      "preserveConstEnums": true,
-      "types": [
-          "node"
-      ]
+    "removeComments": false,
+    "outDir": "../../built",
+    "preserveConstEnums": true,
+    "types": ["node"]
   },
-  "references": [],
-  "files": [
-      "src/index.ts",
-  ]
+  "files": ["src/config.ts", "src/index.ts", "src/ssl-options.ts"]
 }

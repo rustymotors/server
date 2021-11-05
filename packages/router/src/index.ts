@@ -1,5 +1,6 @@
 import { RoutingMesh } from "./client";
 import P from "pino";
+import { createServer } from "net";
 
 const log = P().child({ service: "MCOServer:Route" });
 log.level = process.env.LOG_LEVEL || "info";
@@ -30,6 +31,7 @@ export type ServerConnectionRecord = {
 };
 
 export class RoutingServer {
+
   static _instance: RoutingServer;
   private _serverConnections: ServerConnectionRecord[] = [];
 
@@ -60,6 +62,7 @@ export class RoutingServer {
     }
     log.error(`There was an error adding server connection: ${payloadJSON}`);
   }
+  
   handleData(data: Buffer): void {
     const payload = data.toString();
     log.debug(`Payload: ${payload}`);
@@ -80,6 +83,25 @@ export class RoutingServer {
     } else {
       throw new Error("Method not implemented.");
     }
+  }
+
+  start(this: RoutingServer) {
+    const server = createServer();
+    server.on("listening", () => {
+      const listeningAddress = server.address();
+      if (
+        typeof listeningAddress !== "string" &&
+        listeningAddress !== null &&
+        listeningAddress.port !== undefined
+      )
+        log.info(`Server is listening on port ${listeningAddress.port}`);
+    });
+    server.on("connection", (sock) => {
+      sock.on("data", this.handleData);
+    });
+    const port = 4242
+    log.debug(`Attempting to bind to port ${port}`)
+    server.listen(port);
   }
 }
 

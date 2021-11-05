@@ -10,6 +10,7 @@ test-reports
 data/sessions.db
 junit
 dist
+built
 .env
 database.sqlite
 junit.xml

@@ -133,6 +133,7 @@ export class ListenerThread implements IListenerThread {
     localPort: number,
     connectionMgr: IConnectionManager
   ): Promise<Server> {
+    log.debug(`Attempting to bind to port ${localPort}`)
     return createServer((socket) => {
       this._listener(socket, connectionMgr);
     }).listen({ port: localPort, host: "0.0.0.0" });

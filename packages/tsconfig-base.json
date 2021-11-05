@@ -3,13 +3,12 @@
     "pretty": true,
     "lib": ["es2015.iterable", "es2015.generator", "es5"],
     "target": "es5",
-    "moduleResolution": "classic",
+    "moduleResolution": "node",
     "rootDir": ".",
 
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "composite": true,
     "noEmitOnError": true,
 
     "strictNullChecks": true,
@@ -24,7 +23,25 @@
     "alwaysStrict": true,
     "preserveConstEnums": true,
     "newLine": "lf",
-
-    "types": []
+    "baseUrl": ".",
+    "types": [],
+    "paths": {
+      "mcos-admin": ["./admin/src"],
+      "mcos-autj": ["./auth/src"],
+      "mcos-bin": ["./bin"],
+      "mcos-config": ["./config/src"],
+      "mcos-core": ["./core/src"],
+      "mcos-database": ["./database/src"],
+      "mcos-lobby": ["./lobbysrc"],
+      "mcos-login": ["./login/src"],
+      "msco-message-types": ["./message-types/stc"],
+      "mcos-patch": ["./patch/src"],
+      "mcos-persona": ["./persona/src"],
+      "mcos-proxy": ["./proxy/src"],
+      "mcos-router": ["./router/src"],
+      "mcos-shard": ["./shard/stc"],
+      "mcos-transactions": ["./transactions/stc"],
+      "mcos-types": ["./types/stc"]
+    }
   }
 }

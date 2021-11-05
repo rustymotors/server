@@ -2,7 +2,7 @@
   "name": "mcos-persona",
   "version": "1.0.0",
   "main": "src/index.ts",
-  "license": "MIT",
+  "license": "MPL-2.0",
   "dependencies": {
     "@types/node": "16.11.6",
     "pino": "next",
