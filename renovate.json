@@ -1,7 +1,7 @@
 {
   "extends": ["config:base"],
   "postUpgradeTasks": {
-    "commands": ["yarn npm audit"],
+    "commands": ["npm audit"],
     "fileFilters": [""],
     "executionMode": "update"
   },
