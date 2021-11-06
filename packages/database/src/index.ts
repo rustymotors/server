@@ -247,7 +247,7 @@ export class DatabaseManager implements IDatabaseManager {
   start(): Server {
     const host = this._config.serverSettings.ipServer || "localhost";
     const port = 0;
-    log.debug(`Attempting to bind to port ${port}`)
+    log.debug(`Attempting to bind to port ${port}`);
     return this._server.listen({ port, host }, () => {
       log.debug(`port ${port} listening`);
       log.info("Patch server is listening...");

@@ -31,7 +31,6 @@ export type ServerConnectionRecord = {
 };
 
 export class RoutingServer {
-
   static _instance: RoutingServer;
   private _serverConnections: ServerConnectionRecord[] = [];
 
@@ -62,7 +61,7 @@ export class RoutingServer {
     }
     log.error(`There was an error adding server connection: ${payloadJSON}`);
   }
-  
+
   handleData(data: Buffer): void {
     const payload = data.toString();
     log.debug(`Payload: ${payload}`);
@@ -99,8 +98,8 @@ export class RoutingServer {
     server.on("connection", (sock) => {
       sock.on("data", this.handleData);
     });
-    const port = 4242
-    log.debug(`Attempting to bind to port ${port}`)
+    const port = 4242;
+    log.debug(`Attempting to bind to port ${port}`);
     server.listen(port);
   }
 }

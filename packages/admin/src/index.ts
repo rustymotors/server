@@ -59,7 +59,7 @@ export class AdminServer {
           Encryption ID: ${connection.getEncryptionId()}
           inQueue:       ${connection.inQueue}
       `;
-    responseText += displayConnection;
+      responseText += displayConnection;
     }
 
     return responseText;
@@ -80,7 +80,7 @@ export class AdminServer {
           Encryption ID: ${connection.getEncryptionId()}
           inQueue:       ${connection.inQueue}
       `;
-    responseText += displayConnection;
+      responseText += displayConnection;
     }
 
     return responseText;
@@ -158,9 +158,9 @@ export class AdminServer {
 
     this.httpsServer.on("connection", this._socketEventHandler);
 
-    const port = 88
+    const port = 88;
 
-    log.debug(`Attempting to bind to port ${port}`)
+    log.debug(`Attempting to bind to port ${port}`);
 
     return this.httpsServer.listen({ port, host: "0.0.0.0" }, () => {
       log.debug("port 88 listening");

@@ -15,18 +15,18 @@
     "AUTHORS"
   ],
   "scripts": {
-    "audit": "yarn npm audit",
-    "check:license": "yarn licenses audit --summary --config=licenses.config.js",
+    "audit": "npm npm audit",
+    "check:license": "npm licenses audit --summary --config=licenses.config.js",
     "start": "ts-node packages/bin/app.ts",
     "check:type": "tsc --noEmit",
     "check:type:watch": "tsc --noEmit --watch",
     "build": "tsc --build packages",
     "build:clean": "tsc --build --clean",
     "lint": "eslint packages/**/*.ts && prettier --write packages",
-    "test": "yarn run lint && yarn run test:only && yarn run test:coverage",
+    "test": "npm run lint && npm run test:only && npm run test:coverage",
     "test:only": "tap --ts --reporter=spec --no-check-coverage",
     "test:coverage": "tap  --coverage-report=html --coverage-report=lcov --no-check-coverage",
-    "precommit": "yarn run lint-test"
+    "precommit": "npm run lint-test"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
   "license": "MPL-2.0",

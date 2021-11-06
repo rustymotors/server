@@ -1,15 +1,10 @@
 {
   "extends": "../tsconfig-base",
   "compilerOptions": {
-      "removeComments": false,
-      "outDir": "../../built",
-      "preserveConstEnums": true,
-      "types": [
-          "node"
-      ]
+    "removeComments": false,
+    "outDir": "../../built",
+    "preserveConstEnums": true,
+    "types": ["node"]
   },
-  "files": [
-      "src/index.ts",
-      "src/shard-entry.ts"
-  ]
+  "files": ["src/index.ts", "src/shard-entry.ts"]
 }

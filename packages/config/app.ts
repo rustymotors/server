@@ -20,6 +20,6 @@ server.on("listening", () => {
 server.on("connection", (sock) => {
   sock.on("data", config.handleData);
 });
-const port = 4242
-log.debug(`Attempting to bind to port ${port}`)
+const port = 4242;
+log.debug(`Attempting to bind to port ${port}`);
 server.listen(port);

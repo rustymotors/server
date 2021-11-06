@@ -1,6 +1,6 @@
 import P from "pino";
 import { createServer, IncomingMessage, ServerResponse } from "http";
-import { RoutingMesh } from "mcos-router"
+import { RoutingMesh } from "mcos-router";
 import { EServerConnectionName } from "mcos-router";
 
 const log = P().child({ service: "MCOServer:Patch" });
@@ -35,7 +35,7 @@ export class PatchServer {
     });
     server.on("request", this.handleRequest);
 
-    log.debug(`Attempting to bind to port ${port}`)
+    log.debug(`Attempting to bind to port ${port}`);
     server.listen(port, host);
 
     // Register service with router
@@ -44,7 +44,6 @@ export class PatchServer {
       host,
       port
     );
-
   }
   static _instance: PatchServer;
 

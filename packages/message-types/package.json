@@ -29,17 +29,17 @@
     "typescript": "4.4.4"
   },
   "scripts": {
-    "audit": "yarn npm audit",
-    "check:license": "yarn licenses audit --summary --config=licenses.config.js",
+    "audit": "npm npm audit",
+    "check:license": "npm licenses audit --summary --config=licenses.config.js",
     "start": "ts-node app.ts",
     "check:type": "tsc --noEmit",
     "check:type:watch": "tsc --noEmit --watch",
     "build": "tsc --build",
     "build:clean": "tsc --build --clean",
     "lint": "eslint ./**/*.ts && prettier --write src test",
-    "test": "yarn run lint && yarn run test:only && yarn run test:coverage",
+    "test": "npm run lint && npm run test:only && npm run test:coverage",
     "test:only": "tap --ts --reporter=spec",
     "test:coverage": "tap  --coverage-report=html --coverage-report=html test/**/*.ts",
-    "precommit": "yarn run lint-test"
+    "precommit": "npm run lint-test"
   }
 }
