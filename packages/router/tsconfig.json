@@ -1,10 +1,5 @@
 {
-  "extends": "../tsconfig-base",
   "compilerOptions": {
-    "removeComments": false,
-    "outDir": "../../built",
-    "preserveConstEnums": true,
-    "types": ["node"]
-  },
-  "files": ["src/index.ts", "src/client.ts"]
+    "composite": true
+  }
 }

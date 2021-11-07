@@ -1,47 +1,26 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "pretty": true,
-    "lib": ["es2015.iterable", "es2015.generator", "es5"],
-    "target": "es5",
-    "moduleResolution": "node",
-    "rootDir": ".",
-
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "noEmitOnError": true,
-
-    "strictNullChecks": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "strictPropertyInitialization": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-
-    "skipLibCheck": true,
-
-    "alwaysStrict": true,
-    "preserveConstEnums": true,
-    "newLine": "lf",
-    "baseUrl": ".",
-    "types": [],
     "paths": {
       "mcos-admin": ["./admin/src"],
-      "mcos-autj": ["./auth/src"],
+      "mcos-auth": ["./auth/src"],
       "mcos-bin": ["./bin"],
       "mcos-config": ["./config/src"],
       "mcos-core": ["./core/src"],
       "mcos-database": ["./database/src"],
       "mcos-lobby": ["./lobbysrc"],
       "mcos-login": ["./login/src"],
-      "msco-message-types": ["./message-types/stc"],
+      "msco-message": ["./message-types/src"],
       "mcos-patch": ["./patch/src"],
       "mcos-persona": ["./persona/src"],
       "mcos-proxy": ["./proxy/src"],
       "mcos-router": ["./router/src"],
       "mcos-shard": ["./shard/stc"],
-      "mcos-transactions": ["./transactions/stc"],
+      "mcos-transactions": ["./transactions/src"],
       "mcos-types": ["./types/stc"]
     }
-  }
+  },
+  "references": [
+    {"path": "types"}
+  ]
 }

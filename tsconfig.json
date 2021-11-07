@@ -1,20 +1,11 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
+    "outDir": "built",
     "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true,
-    "lib": ["ES2019"],
-    "module": "commonjs",
-    "noImplicitReturns": true,
-    "strict": true,
-    "target": "ES2019",
-    "outDir": "./dist",
-    "declaration": true,
-    "importHelpers": true,
-    "isolatedModules": true,
-    "skipLibCheck": true,
-    "useUnknownInCatchVariables": false
-  }
+    "target": "ES6",
+    "moduleResolution": "node"
+  },
+  "references": [
+    {"path": "packages/tsconfig-base.json"}
+  ]
 }
