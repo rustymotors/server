@@ -1,26 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "paths": {
-      "mcos-admin": ["./admin/src"],
-      "mcos-auth": ["./auth/src"],
-      "mcos-bin": ["./bin"],
-      "mcos-config": ["./config/src"],
-      "mcos-core": ["./core/src"],
-      "mcos-database": ["./database/src"],
-      "mcos-lobby": ["./lobbysrc"],
-      "mcos-login": ["./login/src"],
-      "msco-message": ["./message-types/src"],
-      "mcos-patch": ["./patch/src"],
-      "mcos-persona": ["./persona/src"],
-      "mcos-proxy": ["./proxy/src"],
-      "mcos-router": ["./router/src"],
-      "mcos-shard": ["./shard/stc"],
-      "mcos-transactions": ["./transactions/src"],
-      "mcos-types": ["./types/stc"]
-    }
+    "composite": true,
+    "rootDir": "."
   },
-  "references": [
-    {"path": "types"}
-  ]
+  "references": [{ "path": "types" }]
 }

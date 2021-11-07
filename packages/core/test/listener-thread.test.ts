@@ -11,8 +11,6 @@ import { SocketFactory } from "./../../test-helpers/socket-factory";
 import { ConnectionManager } from "../src/connection-mgr";
 import { ListenerThread } from "../src/listener-thread";
 
-t.mock("mcos-database", {});
-
 t.test("ListenerThread - _onData", async () => {
   const listenerThread = ListenerThread.getInstance();
 
@@ -43,9 +41,9 @@ t.test("ListenerThread - _onData", async () => {
   );
   fakeConnection3.sock = SocketFactory.createSocket();
   fakeConnection3.setManager(ConnectionManager.getInstance());
-  fakeConnection3.remoteAddress = undefined;
+  fakeConnection3.remoteAddress = "";
 
-  t.equal(fakeConnection3.remoteAddress, undefined);
+  t.equal(fakeConnection3.remoteAddress, "");
 
   try {
     await listenerThread._onData(Buffer.alloc(5), fakeConnection3);

@@ -3,7 +3,7 @@ import { savedConfig } from "./config";
 import P from "pino";
 
 const log = P().child({ service: "MCOServer:Patch" });
-log.level = process.env.LOG_LEVEL || "info";
+log.level = process.env["LOG_LEVEL"] || "info";
 
 export type AppConfiguration = {
   certificate: {

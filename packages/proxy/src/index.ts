@@ -1,12 +1,11 @@
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
 import P from "pino";
-import { EServerConnectionName } from "mcos-router";
-import { RoutingMesh } from "mcos-router";
-import { ShardServer } from "mcos-shard";
-import { PatchServer } from "mcos-patch";
+import { EServerConnectionName, RoutingMesh } from "../../router/src/index";
+import { ShardServer } from "../../shard/src/index";
+import { PatchServer } from "../../patch/src/index";
 
 const log = P().child({ service: "MCOServer:HTTPProxy" });
-log.level = process.env.LOG_LEVEL || "info";
+log.level = process.env["LOG_LEVEL"] || "info";
 
 export class HTTPProxyServer {
   static _instance: HTTPProxyServer;

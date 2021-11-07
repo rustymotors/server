@@ -10,12 +10,15 @@ import {
   ConnectionWithPackets,
   EMessageDirection,
   ITCPConnection,
-} from "mcos-types";
-import { GenericReplyMessage, MessageNode } from "mcos-messages";
+} from "../../types/src/index";
+import {
+  GenericReplyMessage,
+  MessageNode,
+} from "../../message-types/src/index";
 import { TCPManager } from "./tcp-manager";
 
 const log = P().child({ service: "mcoserver:MCOTSServer" });
-log.level = process.env.LOG_LEVEL || "info";
+log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
  * Manages the game database server

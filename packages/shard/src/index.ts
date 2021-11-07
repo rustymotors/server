@@ -7,17 +7,16 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import P from "pino";
 import { readFileSync } from "fs";
-import { EServerConnectionName } from "mcos-router";
+import { EServerConnectionName, RoutingMesh } from "../../router/src/index";
 import { ShardEntry } from "./shard-entry";
-import { RoutingMesh } from "mcos-router";
 import { createServer, Server } from "https";
-import { AppConfiguration, ConfigurationManager } from "mcos-config";
+import { AppConfiguration, ConfigurationManager } from "../../config/src/index";
 import { IncomingMessage, ServerResponse } from "http";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
 const log = P().child({ service: "MCOServer:Shard" });
-log.level = process.env.LOG_LEVEL || "info";
+log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
  * Manages patch and update server connections

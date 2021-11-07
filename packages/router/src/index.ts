@@ -3,7 +3,7 @@ import P from "pino";
 import { createServer } from "net";
 
 const log = P().child({ service: "MCOServer:Route" });
-log.level = process.env.LOG_LEVEL || "info";
+log.level = process.env["LOG_LEVEL"] || "info";
 
 export enum EServerConnectionName {
   ADMIN = "Admin",

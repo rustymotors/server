@@ -6,14 +6,14 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import P from "pino";
-import { ITCPConnection, UnprocessedPacket } from "mcos-types";
-import { LobbyServer } from "mcos-lobby";
-import { LoginServer } from "mcos-login";
-import { PersonaServer } from "mcos-persona";
-import { DatabaseManager } from "mcos-database";
+import { ITCPConnection, UnprocessedPacket } from "../../types/src/index";
+import { LobbyServer } from "../../lobby/src/index";
+import { LoginServer } from "../../login/src/index";
+import { PersonaServer } from "../../persona/src/index";
+import { DatabaseManager } from "../../database/src/index";
 
 const log = P().child({ service: "mcoserver:NPSPacketManager" });
-log.level = process.env.LOG_LEVEL || "info";
+log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
  * @module npsPacketManager

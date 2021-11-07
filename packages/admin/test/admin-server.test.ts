@@ -6,17 +6,5 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import t from "tap";
-import { MCServer } from "mcos-core";
-import { AdminServer } from "../src/index";
-t.mock("mcos-core", {});
 
-t.test("AdminServer", (t) => {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const _ = AdminServer.getInstance(MCServer.getInstance());
-    t.ok(true, "", { todo: true });
-  } catch (error) {
-    t.notOk(error, "", {});
-  }
-  t.end();
-});
+t.test("AdminServer", { todo: true });

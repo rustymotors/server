@@ -7,7 +7,7 @@
 
 import t from "tap";
 import { NPSUserInfo } from "../src/index";
-import { EMessageDirection } from "mcos-types";
+import { EMessageDirection } from "../../types/src/index";
 
 t.test("NPSUserInfo", (t) => {
   const testPacket = Buffer.concat([

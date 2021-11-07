@@ -8,21 +8,21 @@
 
 import * as sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
-import { IDatabaseManager, SessionRecord } from "mcos-types";
+import { IDatabaseManager, SessionRecord } from "../../types/src/index";
 import P from "pino";
-import { AppConfiguration, ConfigurationManager } from "mcos-config";
+import { AppConfiguration, ConfigurationManager } from "../../config/src/index";
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
-import { EServerConnectionName, RoutingMesh } from "mcos-router";
+import { EServerConnectionName, RoutingMesh } from "../../router/src/index";
 
 const log = P().child({ service: "mcoserver:DatabaseMgr" });
-log.level = process.env.LOG_LEVEL || "info";
+log.level = process.env["LOG_LEVEL"] || "info";
 
 export class DatabaseManager implements IDatabaseManager {
   static _instance: DatabaseManager;
   _config: AppConfiguration;
   _server: Server;
   changes = 0;
-  localDB: Database | undefined;
+  localDB!: Database;
 
   public static getInstance(): DatabaseManager {
     if (!DatabaseManager._instance) {

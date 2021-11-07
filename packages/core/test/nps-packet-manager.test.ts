@@ -8,8 +8,6 @@
 import t from "tap";
 import { NPSPacketManager } from "../src/nps-packet-manager";
 
-t.mock("mcos-database", {});
-
 t.test("NPSPacketManager", (t) => {
   t.test("NPSPacketManger", async (t) => {
     const npsPacketManager = new NPSPacketManager();

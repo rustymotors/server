@@ -6,13 +6,13 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { RoutingServer } from "mcos-router";
-import { PatchServer } from "mcos-patch";
-import { AuthLogin } from "mcos-auth";
-import { ShardServer } from "mcos-shard";
-import { HTTPProxyServer } from "mcos-proxy";
-import { MCServer } from "mcos-core";
-import { AdminServer } from "mcos-admin";
+import { RoutingServer } from "../router/src/index";
+import { PatchServer } from "../patch/src/index";
+import { AuthLogin } from "../auth/src/index";
+import { ShardServer } from "../shard/src/index";
+import { HTTPProxyServer } from "../proxy/src/index";
+import { MCServer } from "../core/src/index";
+import { AdminServer } from "../admin/src/index";
 
 // What servers do we need?
 // * Routing Server

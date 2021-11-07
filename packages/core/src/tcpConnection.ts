@@ -12,13 +12,13 @@ import {
   ITCPConnection,
   UnprocessedPacket,
   LobbyCipers,
-} from "mcos-types";
+} from "../../types/src/index";
 import { createCipheriv, createDecipheriv } from "crypto";
 import { Socket } from "net";
 import P from "pino";
 
 const log = P().child({ service: "mcoserver:TCPConnection" });
-log.level = process.env.LOG_LEVEL || "info";
+log.level = process.env["LOG_LEVEL"] || "info";
 
 export class TCPConnection implements ITCPConnection {
   id: string;
@@ -47,17 +47,14 @@ export class TCPConnection implements ITCPConnection {
     this.id = connectionId;
     this.appId = 0;
     this.status = EConnectionStatus.INACTIVE;
-    this.remoteAddress = sock.remoteAddress;
+    this.remoteAddress = sock.remoteAddress || "";
     this.localPort = sock.localPort;
     this.sock = sock;
     this.msgEvent = null;
     this.lastMsg = 0;
     this.useEncryption = false;
     /** @type {LobbyCiphers} */
-    this.encLobby = {
-      cipher: undefined,
-      decipher: undefined,
-    };
+    this.encLobby = {};
     this.isSetupComplete = false;
     this.inQueue = true;
   }

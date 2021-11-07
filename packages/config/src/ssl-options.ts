@@ -8,11 +8,11 @@
 
 import { readFileSync } from "fs";
 import P from "pino";
-import { SslOptions } from "mcos-types";
+import { SslOptions } from "../../types/src/index";
 import { AppConfiguration } from ".";
 
 const log = P().child({ service: "mcoserver:AdminServer;" });
-log.level = process.env.LOG_LEVEL || "info";
+log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
  *

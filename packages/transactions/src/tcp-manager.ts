@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import P from "pino";
-import { DatabaseManager } from "mcos-database";
+import { DatabaseManager } from "../../database/src/index";
 import { MCOTServer } from "./index";
 import {
   ClientConnectMessage,
@@ -15,7 +15,7 @@ import {
   MessageNode,
   StockCar,
   StockCarInfoMessage,
-} from "mcos-messages";
+} from "../../message-types/src/index";
 import {
   ConnectionWithPacket,
   ConnectionWithPackets,
@@ -23,10 +23,10 @@ import {
   ITCPConnection,
   ITCPManager,
   UnprocessedPacket,
-} from "mcos-types";
+} from "../../types/src/index";
 
 const log = P().child({ service: "mcoserver:MCOTSServer" });
-log.level = process.env.LOG_LEVEL || "info";
+log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
  * Manages TCP connection packet processing

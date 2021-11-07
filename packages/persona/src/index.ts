@@ -11,13 +11,15 @@ import {
   EMessageDirection,
   PersonaRecord,
   UnprocessedPacket,
-} from "mcos-types";
-import { NPSMessage } from "mcos-messages";
-import { ITCPConnection } from "mcos-types";
-import { NPSPersonaMapsMessage } from "mcos-messages";
+  ITCPConnection,
+} from "../../types/src/index";
+import {
+  NPSMessage,
+  NPSPersonaMapsMessage,
+} from "../../message-types/src/index";
 
 const log = P().child({ service: "mcoserver:PersonaServer" });
-log.level = process.env.LOG_LEVEL || "info";
+log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
  * @class

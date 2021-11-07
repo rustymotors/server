@@ -5,9 +5,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { DatabaseManager } from "mcos-database";
-import { MessageNode } from "mcos-messages";
-import { TCPManager } from "mcos-transactions";
+import { DatabaseManager } from "../../database/src/index";
+import { MessageNode } from "../../message-types/src/index";
+import { TCPManager } from "../../transactions/src/index";
 import {
   EMessageDirection,
   IConnectionManager,
@@ -15,7 +15,7 @@ import {
   ITCPConnection,
   NPS_COMMANDS,
   UnprocessedPacket,
-} from "mcos-types";
+} from "../../types/src/index";
 import { Socket } from "net";
 import { EncryptionManager } from "./encryption-mgr";
 import { NPSPacketManager } from "./nps-packet-manager";
@@ -23,7 +23,7 @@ import { TCPConnection } from "./tcpConnection";
 import P from "pino";
 
 const log = P().child({ service: "mcoserver:ConnectionMgr" });
-log.level = process.env.LOG_LEVEL || "info";
+log.level = process.env["LOG_LEVEL"] || "info";
 
 export class ConnectionManager implements IConnectionManager {
   static _instance: IConnectionManager;

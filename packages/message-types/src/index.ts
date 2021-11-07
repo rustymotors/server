@@ -1,7 +1,7 @@
-import { EMessageDirection, PersonaRecord } from "mcos-types";
+import { EMessageDirection, PersonaRecord } from "../../types/src/index";
 import { readFileSync, statSync } from "fs";
 import { privateDecrypt } from "crypto";
-import { AppConfiguration } from "mcos-config";
+import { AppConfiguration } from "../../config/src/index";
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
@@ -346,7 +346,10 @@ export class StockCarInfoMessage {
     if (this.StockCarList.length > 0) {
       for (let i = 0; i < this.StockCarList.length; i++) {
         const offset = 10 * i;
-        this.StockCarList[i].serialize().copy(packet, 17 + offset);
+        const record = this.StockCarList[i];
+        if (typeof record !== "undefined") {
+          record.serialize().copy(packet, 17 + offset);
+        }
       }
     }
 
@@ -1550,7 +1553,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    *
    * @return {Buffer}
    */
-  serialize(): Buffer {
+  override serialize(): Buffer {
     let index = 0;
     // Create the packet content
     // const packetContent = Buffer.alloc(40);
@@ -1604,7 +1607,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    *
    * @return {void}
    */
-  dumpPacket(): string {
+  override dumpPacket(): string {
     let message = "";
     message = message.concat(this.dumpPacketHeader("NPSPersonaMapsMsg"));
     message = message.concat(
@@ -1720,7 +1723,7 @@ export class NPSUserStatus extends NPSMessage {
    *
    * @return {module:NPSMsg.INPSMsgJSON}
    */
-  toJSON(): INPSMessageJSON {
+  override toJSON(): INPSMessageJSON {
     return {
       msgNo: this.msgNo,
       msgLength: this.msgLength,
@@ -1737,7 +1740,7 @@ export class NPSUserStatus extends NPSMessage {
   /**
    * @return {void}
    */
-  dumpPacket(): string {
+  override dumpPacket(): string {
     let message = this.dumpPacketHeader("NPSUserStatus");
     message = message.concat(
       `NPSUserStatus,
@@ -1778,7 +1781,7 @@ export class NPSUserInfo extends NPSMessage {
    * @param {Buffer} rawData
    * @return {NPSUserInfo}
    */
-  deserialize(rawData: Buffer): NPSUserInfo {
+  override deserialize(rawData: Buffer): NPSUserInfo {
     this.userId = rawData.readInt32BE(4);
     this.userName = rawData.slice(8, 38);
     this.userData = rawData.slice(38);

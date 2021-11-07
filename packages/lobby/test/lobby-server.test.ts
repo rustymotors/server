@@ -8,8 +8,6 @@
 import t from "tap";
 import { LobbyServer } from "../src/index";
 
-t.mock("mcos-database", {});
-
 t.test("LobbyServer", (t) => {
   const lobbyServer = LobbyServer.getInstance();
   t.equal(lobbyServer._generateSessionKeyBuffer("123").length, 64);

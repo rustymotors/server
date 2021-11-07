@@ -7,17 +7,17 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import P from "pino";
-import { DatabaseManager } from "mcos-database";
+import { DatabaseManager } from "../../database/src/index";
 import {
   EMessageDirection,
   ITCPConnection,
   UnprocessedPacket,
-} from "mcos-types";
-import { NPSMessage, NPSUserInfo } from "mcos-messages";
-import { PersonaServer } from "mcos-persona";
+} from "../../types/src/index";
+import { NPSMessage, NPSUserInfo } from "../../message-types/src/index";
+import { PersonaServer } from "../../persona/src/index";
 
 const log = P().child({ service: "mcoserver:LobbyServer" });
-log.level = process.env.LOG_LEVEL || "info";
+log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
  * Manages the game connection to the lobby and racing rooms
@@ -283,7 +283,7 @@ export class LobbyServer {
     const personas = await personaManager.getPersonasByPersonaId(
       userInfo.userId
     );
-    if (personas.length === 0) {
+    if (typeof personas[0] === "undefined") {
       throw new Error("No personas found.");
     }
 
@@ -292,7 +292,7 @@ export class LobbyServer {
     // Set the encryption keys on the lobby connection
     const keys = await databaseManager
       .fetchSessionKeyByCustomerId(customerId)
-      .catch((error) => {
+      .catch((error: unknown) => {
         if (error instanceof Error) {
           log.debug(
             `Unable to fetch session key for customerId ${customerId.toString()}: ${

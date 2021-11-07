@@ -13,11 +13,11 @@ import {
   _sslOptions,
   AppConfiguration,
   ConfigurationManager,
-} from "mcos-config";
-import { IMCServer } from "mcos-types";
+} from "../../config/src/index";
+import { IMCServer } from "../../types/src/index";
 
 const log = P().child({ service: "mcoserver:AdminServer;" });
-log.level = process.env.LOG_LEVEL || "info";
+log.level = process.env["LOG_LEVEL"] || "info";
 /**
  * SSL web server for managing the state of the system
  */
@@ -53,6 +53,9 @@ export class AdminServer {
     let responseText = "";
     for (let i = 0; i < connections.length; i++) {
       const connection = connections[i];
+      if (typeof connection === "undefined") {
+        return "No connections were found";
+      }
       const displayConnection = `
       index: ${i} - ${connection.id}
           remoteAddress: ${connection.remoteAddress}:${connection.localPort}
@@ -74,6 +77,9 @@ export class AdminServer {
     let responseText = "Queue state reset for all connections\n\n";
     for (let i = 0; i < connections.length; i++) {
       const connection = connections[i];
+      if (typeof connection === "undefined") {
+        return responseText.concat("No connections found");
+      }
       const displayConnection = `
       index: ${i} - ${connection.id}
           remoteAddress: ${connection.remoteAddress}:${connection.localPort}

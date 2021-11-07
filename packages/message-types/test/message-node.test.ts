@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import t from "tap";
-import { EMessageDirection } from "mcos-types";
+import { EMessageDirection } from "../../types/src/index";
 import { MessageNode } from "../src/index";
 
 const messageNode1 = new MessageNode(EMessageDirection.RECEIVED);

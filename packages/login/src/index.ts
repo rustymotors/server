@@ -6,13 +6,17 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import P from "pino";
-import { DatabaseManager } from "mcos-database";
-import { UnprocessedPacket, ITCPConnection, UserRecordMini } from "mcos-types";
-import { NPSUserStatus, premadeLogin } from "mcos-messages";
-import { ConfigurationManager } from "mcos-config";
+import { DatabaseManager } from "../../database/src/index";
+import {
+  UnprocessedPacket,
+  ITCPConnection,
+  UserRecordMini,
+} from "../../types/src/index";
+import { NPSUserStatus, premadeLogin } from "../../message-types/src/index";
+import { ConfigurationManager } from "../../config/src/index";
 
 const log = P().child({ service: "mcoserver:LoginServer" });
-log.level = process.env.LOG_LEVEL || "info";
+log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
  * Manages the initial game connection setup and teardown.
@@ -123,7 +127,7 @@ export class LoginServer {
     }
 
     const userRecord = users.filter((user) => user.contextId === contextId);
-    if (userRecord.length !== 1) {
+    if (typeof userRecord[0] === "undefined" || userRecord.length !== 1) {
       log.debug(
         `preparing to leave _npsGetCustomerIdByContextId after not finding record',
         ${JSON.stringify({
@@ -193,8 +197,11 @@ export class LoginServer {
         userStatus.contextId,
         connection.id
       )
-      .catch((error) => {
-        log.error(`Unable to update session key 3: ${error}`);
+      .catch((error: unknown) => {
+        if (error instanceof Error) {
+          log.error(`Unable to update session key 3: ${error.message}`);
+        }
+
         throw new Error("Error in userLogin");
       });
 

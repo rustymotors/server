@@ -1,10 +1,9 @@
 import P from "pino";
 import { createServer, IncomingMessage, ServerResponse } from "http";
-import { RoutingMesh } from "mcos-router";
-import { EServerConnectionName } from "mcos-router";
+import { RoutingMesh, EServerConnectionName } from "../../router/src/index";
 
 const log = P().child({ service: "MCOServer:Patch" });
-log.level = process.env.LOG_LEVEL || "info";
+log.level = process.env["LOG_LEVEL"] || "info";
 
 export const CastanetResponse = {
   body: Buffer.from("cafebeef00000000000003", "hex"),
@@ -19,8 +18,8 @@ export class PatchServer {
     const host = "localhost";
     let port = 81;
 
-    if (typeof process.env.LISTEN_PORT !== "undefined") {
-      port = Number.parseInt(process.env.LISTEN_PORT);
+    if (typeof process.env["LISTEN_PORT"] !== "undefined") {
+      port = Number.parseInt(process.env["LISTEN_PORT"]);
     }
 
     const server = createServer();

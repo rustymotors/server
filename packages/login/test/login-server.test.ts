@@ -8,8 +8,6 @@
 import t from "tap";
 import { LoginServer } from "../src/index";
 
-t.mock("mcos-database", {});
-
 const loginServer = LoginServer.getInstance();
 
 t.test("LoginServer", async () => {

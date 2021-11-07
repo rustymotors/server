@@ -9,8 +9,8 @@ import t from "tap";
 import { PersonaServer } from "../src";
 
 import { SocketFactory } from "./../../test-helpers/socket-factory";
-import { NPSMessage } from "mcos-messages";
-import { EMessageDirection } from "mcos-types";
+import { NPSMessage } from "../../message-types/src/index";
+import { EMessageDirection } from "../../types/src/index";
 
 let personaServer: PersonaServer;
 
@@ -22,14 +22,22 @@ t.test("Persona Server", (t) => {
   t.test("PersonaServer Methods", async (t) => {
     const results = await personaServer.getPersonasByCustomerId(5_551_212);
     t.equal(results.length, 2);
-    const name = results[0].name.toString("utf8");
-    t.match(name, "Dr Brown");
+    if (typeof results[0] !== "undefined") {
+      const name = results[0].name.toString("utf8");
+      t.match(name, "Dr Brown");
+    } else {
+      t.ok(false);
+    }
 
     const personas = await personaServer.getPersonaMapsByCustomerId(5_551_212);
-    const id1 = personas[0].id;
-    const name1 = personas[0].name;
-    t.equal(id1.readInt32BE(0), 8_675_309);
-    t.equal(name1.toString("utf8").length, 30);
+    if (typeof personas[0] !== "undefined") {
+      const id1 = personas[0].id;
+      const name1 = personas[0].name;
+      t.equal(id1.readInt32BE(0), 8_675_309);
+      t.equal(name1.toString("utf8").length, 30);
+    } else {
+      t.ok(false);
+    }
 
     const result = await personaServer.getPersonasByCustomerId(123_654);
     t.equal(result.length, 0);
@@ -85,7 +93,11 @@ t.test("Persona Server", (t) => {
     );
 
     t.equal(personas1.length, 1);
-    t.match(personas1[0].name.toString("utf8"), "Doc Joe");
+    if (typeof personas1[0] !== "undefined") {
+      t.match(personas1[0].name.toString("utf8"), "Doc Joe");
+    } else {
+      t.ok(false);
+    }
 
     const personas2 = await personaServer.getPersonaMapsByCustomerId(4);
 

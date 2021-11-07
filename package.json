@@ -6,9 +6,6 @@
   "engines": {
     "node": "^14.13.1 || >=16.0.0"
   },
-  "workspaces": [
-    "packages/*"
-  ],
   "files": [
     "README.md",
     "CHANGELOG.md",
@@ -18,13 +15,11 @@
     "audit": "npm npm audit",
     "check:license": "npm licenses audit --summary --config=licenses.config.js",
     "start": "ts-node packages/bin/app.ts",
-    "check:type": "tsc --noEmit",
-    "check:type:watch": "tsc --noEmit --watch",
     "build": "tsc --build packages",
     "build:clean": "tsc --build --clean",
     "lint": "eslint packages/**/*.ts && prettier --write packages",
     "test": "npm run lint && npm run test:only && npm run test:coverage",
-    "test:only": "tap --ts --reporter=spec --no-check-coverage",
+    "test:only": "tap --ts --reporter=spec --no-check-coverage packages/**/*.test.ts",
     "test:coverage": "tap  --coverage-report=html --coverage-report=lcov --no-check-coverage",
     "precommit": "npm run lint-test"
   },

@@ -9,14 +9,14 @@
 import P from "pino";
 import { IncomingMessage, ServerResponse } from "http";
 import { Socket } from "net";
-import { SslOptions } from "mcos-types";
+import { SslOptions } from "../../types/src/index";
 import { readFileSync } from "fs";
-import { EServerConnectionName, RoutingMesh } from "mcos-router";
+import { EServerConnectionName, RoutingMesh } from "../../router/src/index";
 import { createServer, Server } from "https";
-import { AppConfiguration, ConfigurationManager } from "mcos-config";
+import { AppConfiguration, ConfigurationManager } from "../../config/src/index";
 
 const log = P().child({ service: "MCOServer:Auth" });
-log.level = process.env.LOG_LEVEL || "info";
+log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
  * Handles web-based user logins
