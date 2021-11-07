@@ -3,6 +3,5 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": "."
-  },
-  "references": [{ "path": "types" }]
+  }
 }

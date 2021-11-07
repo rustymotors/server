@@ -1,9 +1,0 @@
-{
-  "extends": "../tsconfig-base.json",
-  "compilerOptions": {
-    "removeComments": false,
-    "preserveConstEnums": true,
-    "types": ["node"]
-  },
-  "files": ["src/index.ts"]
-}
