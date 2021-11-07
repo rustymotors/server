@@ -5,15 +5,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import t from "tap"
+import t from "tap";
 
 // TODO: Rewrite tests - https://github.com/drazisil/mco-server/issues/1010
 t.test("PatchServer", () => {
-  t.ok(true, "PatchServer", {todo: true});
+  t.ok(true, "PatchServer", { todo: true });
 
-  t.ok(true, "PatchServer - UpdateInfo", {todo: true});
+  t.ok(true, "PatchServer - UpdateInfo", { todo: true });
 
-  t.ok(true, "PatchServer - NPS", {todo: true});
+  t.ok(true, "PatchServer - NPS", { todo: true });
 
-  t.ok(true, "PatchServer - MCO", {todo: true});
+  t.ok(true, "PatchServer - MCO", { todo: true });
 });

@@ -11,7 +11,7 @@ import { ShardServer } from "../src";
 t.test("ShardServer", (t) => {
   t.test("should return a shard list", (t) => {
     t.match(ShardServer.getInstance()._generateShardList(), "[The Clocktower]");
-    t.end()
+    t.end();
   });
-  t.end()
+  t.end();
 });

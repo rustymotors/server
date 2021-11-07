@@ -24,7 +24,7 @@ const fakeConfig = {
   defaultLogLevel: "warn",
 };
 
-t.plan(2)
+t.plan(2);
 
 t.test("sslOptions()", () => {
   t.beforeEach(() => {
