@@ -38,8 +38,8 @@ export function _sslOptions(
 ): SslOptions {
   log.debug(`Reading ${certificateSettings.certFilename}`);
 
-  let cert;
-  let key;
+  let cert = "";
+  let key = "";
 
   try {
     cert = readFileSync(certificateSettings.certFilename, {
