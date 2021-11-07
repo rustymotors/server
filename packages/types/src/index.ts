@@ -77,10 +77,6 @@ export type LobbyCipers = {
 
 export interface ITCPManager {
   defaultHandler(rawPacket: UnprocessedPacket): Promise<ITCPConnection>;
-  compressIfNeeded: (
-    connection: ITCPConnection,
-    packet: IMessageNode
-  ) => Promise<ConnectionWithPacket>;
 }
 
 export interface ITCPConnection {
@@ -703,6 +699,7 @@ export interface IMessageNode {
 export type ConnectionWithPacket = {
   connection: ITCPConnection;
   packet: IMessageNode;
+  lastError?: string;
 };
 
 export type ConnectionWithPackets = {

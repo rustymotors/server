@@ -32,6 +32,85 @@ log.level = process.env["LOG_LEVEL"] || "info";
  * Manages TCP connection packet processing
  */
 
+export async function compressIfNeeded(
+  connection: ITCPConnection,
+  packet: MessageNode
+): Promise<ConnectionWithPacket> {
+  // Check if compression is needed
+  if (packet.getLength() < 80) {
+    log.debug("Too small, should not compress");
+    return { connection, packet, lastError: "Too small, should not compress" };
+  } else {
+    log.debug("This packet should be compressed");
+    /* TODO: Write compression.
+     *
+     * At this time we will still send the packet, to not hang connection
+     * Client will crash though, due to memory access errors
+     */
+  }
+
+  return { connection, packet };
+}
+
+export async function encryptIfNeeded(
+  connection: ITCPConnection,
+  packet: MessageNode
+): Promise<ConnectionWithPacket> {
+  // Check if encryption is needed
+  if (packet.flags - 8 >= 0) {
+    log.debug("encryption flag is set");
+
+    packet.updateBuffer(connection.encryptBuffer(packet.data));
+
+    log.debug(`encrypted packet: ${packet.serialize().toString("hex")}`);
+  }
+
+  return { connection, packet };
+}
+
+export async function socketWriteIfOpen(
+  connection: ITCPConnection,
+  packetList: MessageNode[]
+): Promise<ITCPConnection> {
+  const updatedConnection: ConnectionWithPackets = {
+    connection: connection,
+    packetList: packetList,
+  };
+  // For each node in nodes
+  for (const packet of updatedConnection.packetList) {
+    // Does the packet need to be compressed?
+    const compressedPacket: MessageNode = (
+      await compressIfNeeded(connection, packet)
+    ).packet;
+    // Does the packet need to be encrypted?
+    const encryptedPacket = (
+      await encryptIfNeeded(connection, compressedPacket)
+    ).packet;
+    // Log that we are trying to write
+    log.debug(
+      ` Atempting to write seq: ${encryptedPacket.seq} to conn: ${updatedConnection.connection.id}`
+    );
+
+    // Log the buffer we are writing
+    log.debug(
+      `Writting buffer: ${encryptedPacket.serialize().toString("hex")}`
+    );
+    if (connection.sock.writable) {
+      // Write the packet to socket
+      connection.sock.write(encryptedPacket.serialize());
+    } else {
+      const port: string = connection.sock.localPort?.toString() || "";
+      throw new Error(
+        `Error writing ${encryptedPacket.serialize()} to ${
+          connection.sock.remoteAddress
+        } , ${port}`
+      );
+    }
+  }
+
+  return updatedConnection.connection;
+}
+
 export class TCPManager implements ITCPManager {
   static _instance: TCPManager;
   mcotServer: MCOTServer;
@@ -54,83 +133,6 @@ export class TCPManager implements ITCPManager {
    * @param {MessageNode} packet
    * @return {Promise<{conn: ConnectionObj, packetToWrite: MessageNode}>}
    */
-  async compressIfNeeded(
-    connection: ITCPConnection,
-    packet: MessageNode
-  ): Promise<ConnectionWithPacket> {
-    // Check if compression is needed
-    if (packet.getLength() < 80) {
-      log.debug("Too small, should not compress");
-    } else {
-      log.debug("This packet should be compressed");
-      /* TODO: Write compression.
-       *
-       * At this time we will still send the packet, to not hang connection
-       * Client will crash though, due to memory access errors
-       */
-    }
-
-    return { connection, packet };
-  }
-
-  async encryptIfNeeded(
-    connection: ITCPConnection,
-    packet: MessageNode
-  ): Promise<ConnectionWithPacket> {
-    // Check if encryption is needed
-    if (packet.flags - 8 >= 0) {
-      log.debug("encryption flag is set");
-
-      packet.updateBuffer(connection.encryptBuffer(packet.data));
-
-      log.debug(`encrypted packet: ${packet.serialize().toString("hex")}`);
-    }
-
-    return { connection, packet };
-  }
-
-  private async socketWriteIfOpen(
-    connection: ITCPConnection,
-    packetList: MessageNode[]
-  ): Promise<ITCPConnection> {
-    const updatedConnection: ConnectionWithPackets = {
-      connection: connection,
-      packetList: packetList,
-    };
-    // For each node in nodes
-    for (const packet of updatedConnection.packetList) {
-      // Does the packet need to be compressed?
-      const compressedPacket: MessageNode = (
-        await this.compressIfNeeded(connection, packet)
-      ).packet;
-      // Does the packet need to be encrypted?
-      const encryptedPacket = (
-        await this.encryptIfNeeded(connection, compressedPacket)
-      ).packet;
-      // Log that we are trying to write
-      log.debug(
-        ` Atempting to write seq: ${encryptedPacket.seq} to conn: ${updatedConnection.connection.id}`
-      );
-
-      // Log the buffer we are writing
-      log.debug(
-        `Writting buffer: ${encryptedPacket.serialize().toString("hex")}`
-      );
-      if (connection.sock.writable) {
-        // Write the packet to socket
-        connection.sock.write(encryptedPacket.serialize());
-      } else {
-        const port: string = connection.sock.localPort?.toString() || "";
-        throw new Error(
-          `Error writing ${encryptedPacket.serialize()} to ${
-            connection.sock.remoteAddress
-          } , ${port}`
-        );
-      }
-    }
-
-    return updatedConnection.connection;
-  }
 
   async getStockCarInfo(
     connection: ITCPConnection,
@@ -229,10 +231,7 @@ export class TCPManager implements ITCPManager {
         try {
           const result = await this.mcotServer._setOptions(conn, node);
           const responsePackets = result.packetList;
-          return await this.socketWriteIfOpen(
-            result.connection,
-            responsePackets
-          );
+          return await socketWriteIfOpen(result.connection, responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(`Error in MC_SET_OPTIONS: ${error}`);
@@ -245,7 +244,7 @@ export class TCPManager implements ITCPManager {
         try {
           const result = await this.mcotServer._trackingMessage(conn, node);
           const responsePackets = result.packetList;
-          return this.socketWriteIfOpen(result.connection, responsePackets);
+          return socketWriteIfOpen(result.connection, responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(`Error in MC_TRACKING_MSG: ${error.message}`);
@@ -261,7 +260,7 @@ export class TCPManager implements ITCPManager {
             node
           );
           const responsePackets = result.packetList;
-          return this.socketWriteIfOpen(result.connection, responsePackets);
+          return socketWriteIfOpen(result.connection, responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -277,10 +276,7 @@ export class TCPManager implements ITCPManager {
           const result = await this.clientConnect(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
-          return await this.socketWriteIfOpen(
-            result.connection,
-            responsePackets
-          );
+          return await socketWriteIfOpen(result.connection, responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -299,7 +295,7 @@ export class TCPManager implements ITCPManager {
           const result = await this.mcotServer._login(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
-          return this.socketWriteIfOpen(result.connection, responsePackets);
+          return socketWriteIfOpen(result.connection, responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -318,10 +314,7 @@ export class TCPManager implements ITCPManager {
           const result = await this.mcotServer._logout(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
-          return await this.socketWriteIfOpen(
-            result.connection,
-            responsePackets
-          );
+          return await socketWriteIfOpen(result.connection, responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -342,10 +335,7 @@ export class TCPManager implements ITCPManager {
         const responsePackets = result.packetList;
         try {
           // Write the socket
-          return await this.socketWriteIfOpen(
-            result.connection,
-            responsePackets
-          );
+          return await socketWriteIfOpen(result.connection, responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -364,7 +354,7 @@ export class TCPManager implements ITCPManager {
           const result = await this.getStockCarInfo(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
-          return this.socketWriteIfOpen(result.connection, responsePackets);
+          return socketWriteIfOpen(result.connection, responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
