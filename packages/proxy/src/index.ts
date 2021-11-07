@@ -46,11 +46,11 @@ export class HTTPProxyServer {
     }
   }
 
-  start(): Server {
+  start(): void {
     const host = "0.0.0.0";
     const port = 80;
     log.debug(`Attempting to bind to port ${port}`);
-    return this._server.listen({ port, host }, () => {
+    this._server.listen({ port, host }, () => {
       log.debug(`port ${port} listening`);
       log.info("Proxy server is listening...");
 

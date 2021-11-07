@@ -96,11 +96,11 @@ export class AuthLogin {
    * @returns {Promise<import("https").Server>}
    * @memberof! WebServer
    */
-  async start(): Promise<Server> {
+  start(): void {
     const host = this.config.serverSettings.ipServer || "localhost";
     const port = 443;
     log.debug(`Attempting to bind to port ${port}`);
-    return this._server.listen({ port, host }, () => {
+    this._server.listen({ port, host }, () => {
       log.debug(`port ${port} listening`);
       log.info("Auth server listening");
 
