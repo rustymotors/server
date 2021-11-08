@@ -31,7 +31,7 @@
     "url": "git@github.com:drazisil/mco-server.git"
   },
   "dependencies": {
-    "@types/node": "16.11.6",
+    "@types/node": "16.11.7",
     "@types/pino": "6.3.12",
     "pino": "next",
     "ts-node": "10.4.0"
