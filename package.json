@@ -20,7 +20,7 @@
     "lint": "eslint packages/**/*.ts && prettier --write packages",
     "test": "npm run lint && npm run test:only && npm run test:coverage",
     "test:only": "tap --ts --reporter=spec --no-check-coverage packages/**/*.test.ts",
-    "test:coverage": "tap  --coverage-report=html --coverage-report=lcov --no-check-coverage",
+    "test:coverage": "tap  --coverage-report=html --coverage-report=lcov --no-check-coverage --no-browser",
     "precommit": "npm run lint-test"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
@@ -28,7 +28,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git@github.com:drazisil/mco-server.git"
+    "url": "git@github.com:drazisil/mcos.git"
   },
   "dependencies": {
     "@types/node": "16.11.7",
