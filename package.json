@@ -2,7 +2,7 @@
   "name": "mcos",
   "version": "3.0.0-beta1",
   "description": "a server",
-  "main": "packages/bin/app.ts",
+  "type": "module",
   "engines": {
     "node": "^14.13.1 || >=16.0.0"
   },
@@ -14,7 +14,6 @@
   "scripts": {
     "audit": "npm audit",
     "check:license": "npm licenses audit --summary --config=licenses.config.js",
-    "start": "ts-node packages/app.ts",
     "build": "tsc -p ./packages/tsconfig.json",
     "build:clean": "rm -rf built && npm run build",
     "lint": "eslint packages/**/*.ts && prettier --write packages",
@@ -43,11 +42,11 @@
     "eslint": "8.2.0",
     "eslint-config-prettier": "8.3.0",
     "prettier": "2.4.1",
-    "prettier-eslint": "13.0.0",
+    "prettier-eslint": "^8.2.2",
     "source-map-support": "0.5.20",
     "sqlite": "4.0.23",
-    "sqlite3": "5.0.2",
-    "tap": "15.0.10",
+    "sqlite3": "^4.2.0",
+    "tap": "^12.7.0",
     "testdouble": "3.16.3",
     "treport": "2.0.2",
     "ts-jest": "27.0.7",
