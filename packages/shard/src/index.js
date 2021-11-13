@@ -9,9 +9,10 @@ import P from "pino";
 import { readFileSync } from "fs";
 import { EServerConnectionName, RoutingMesh } from "../../router/src/index";
 import { ShardEntry } from "./shard-entry";
-import { createServer, Server } from "https";
-import { AppConfiguration, ConfigurationManager } from "../../config/src/index";
-import { IncomingMessage, ServerResponse } from "http";
+import { createServer } from "https";
+import { ConfigurationManager } from "../../config/src/index";
+import process from "process";
+
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
@@ -27,11 +28,11 @@ log.level = process.env["LOG_LEVEL"] || "info";
 export class ShardServer {
   /** @type {ShardServer} */
   static _instance;
-  /** @type {AppConfiguration} */
+  /** @type {import("../../config/src/index").AppConfiguration} */
   _config;
   /** @type {string[]} */
   _possibleShards = [];
-  /** @type {Server} */
+  /** @type {import("http").Server} */
   _server;
 
   /**
@@ -168,8 +169,8 @@ export class ShardServer {
   }
 
   /**
-   * @param {IncomingMessage} request
-   * @param {ServerResponse} response
+   * @param {import("http").IncomingMessage} request
+   * @param {import("http").ServerResponse} response
    */
   _handleRequest(request, response) {
     if (request.url === "/cert") {
@@ -216,7 +217,7 @@ export class ShardServer {
 
   /**
    * 
-   * @returns {Server}
+   * @returns {import("http").Server}
    */
   start() {
     const host = this._config.serverSettings.ipServer || "localhost";

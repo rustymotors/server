@@ -5,38 +5,58 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {
-  IEncryptionManager,
-  IConnectionManager,
-  EConnectionStatus,
-  ITCPConnection,
-  UnprocessedPacket,
-  LobbyCipers,
-} from "../../types/src/index";
 import { createCipheriv, createDecipheriv } from "crypto";
 import { Socket } from "net";
 import P from "pino";
+import { ConnectionManager } from "./connection-mgr";
+import { EncryptionManager } from "./encryption-mgr";
 
 const log = P().child({ service: "mcoserver:TCPConnection" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
-export class TCPConnection implements ITCPConnection {
-  id: string;
-  appId: number;
-  status: EConnectionStatus;
-  remoteAddress?: string;
-  localPort: number;
-  sock: Socket;
-  msgEvent: null;
-  lastMsg: number;
-  useEncryption: boolean;
-  private encLobby: LobbyCipers;
-  private enc?: IEncryptionManager;
-  isSetupComplete: boolean;
-  private mgr?: IConnectionManager;
-  inQueue: boolean;
-  encryptedCmd?: Buffer;
-  decryptedCmd?: Buffer;
+export class TCPConnection {
+  /** @type {string} */
+  id;
+  /** @type {number} */
+  appId;
+  /** @type {EConnectionStatus} */
+  status;
+  /** @type {string | undefined} */
+  remoteAddress;
+  /** @type {number} */
+  localPort;
+  /** @type {Socket} */
+  sock;
+  msgEvent = null;
+  /** @type {number} */
+  lastMsg;
+  /** @type {boolean} */
+  useEncryption;
+  /**
+   * @private
+   * @type {LobbyCiphers}
+   */
+  encLobby;
+  /**
+   * @private
+   * @type {EncryptionManager | undefined}
+   */
+  enc;
+  /** @type {boolean} */
+  isSetupComplete;
+  /**
+   * @private
+   * @type {ConnectionManager | undefined}
+   */
+  mgr;
+  /** @type {boolean} */
+  inQueue;
+  /**
+   * @type {Buffer | undefined}
+   */
+  encryptedCmd;
+  /** @type {Buffer | undefined} */
+  decryptedCmd;
 
   constructor(connectionId: string, sock: Socket) {
     if (typeof sock.localPort === "undefined") {

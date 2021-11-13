@@ -1,39 +1,54 @@
 /// <reference types="node" />
-import { DatabaseManager } from "../../database/src/index";
-import { UnprocessedPacket, ITCPConnection, UserRecordMini } from "../../types/src/index";
 /**
  * Manages the initial game connection setup and teardown.
  * @module LoginServer
  */
 /**
+ * @exports
+ * @typedef {Object} UserRecordMini
+ * @property {string} contextId
+ * @property {number} customerId
+ * @property {number} userId
+ */
+/**
  * @class
+ * @property {LoginServer} _instance
  * @property {DatabaseManager} databaseManager
  */
-export declare class LoginServer {
-    static _instance: LoginServer;
-    databaseManager: DatabaseManager;
-    static getInstance(): LoginServer;
-    private constructor();
+export class LoginServer {
+    static _instance: any;
     /**
      *
-     * @param {IRawPacket} rawPacket
-     * @param {IServerConfig} config
-     * @return {Promise<ConnectionObj>}
+     * @returns {LoginServer}
      */
-    dataHandler(rawPacket: UnprocessedPacket): Promise<ITCPConnection>;
+    static getInstance(): LoginServer;
+    databaseManager: DatabaseManager;
+    /**
+     *
+     * @param {UnprocessedPacket} rawPacket
+     * @param {import("../../config/src/index").AppConfiguration} config
+     * @return {Promise<TCPConnection>}
+     */
+    dataHandler(rawPacket: any): Promise<any>;
     /**
      *
      * @param {string} contextId
-     * @return {Promise<IUserRecordMini>}
+     * @return {Promise<UserRecordMini>}
      */
     _npsGetCustomerIdByContextId(contextId: string): Promise<UserRecordMini>;
     /**
      * Process a UserLogin packet
-     * Should return a @link {module:NPSMsg} object
-     * @param {ConnectionObj} connection
+     * Should return a @link {NPSMessage} object
+     * @param {TCPConnection} connection
      * @param {Buffer} data
-     * @param {IServerConfig} config
      * @return {Promise<Buffer>}
      */
-    _userLogin(connection: ITCPConnection, data: Buffer): Promise<Buffer>;
+    _userLogin(connection: any, data: Buffer): Promise<Buffer>;
 }
+export type UserRecordMini = {
+    contextId: string;
+    customerId: number;
+    userId: number;
+};
+import { DatabaseManager } from "../../database/src/index";
+import { Buffer } from "buffer";

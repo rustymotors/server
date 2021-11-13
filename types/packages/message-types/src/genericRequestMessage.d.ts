@@ -1,3 +1,4 @@
+/// <reference types="node" />
 /**
  *
  *
@@ -26,3 +27,4 @@ export class GenericRequestMessage {
      */
     dumpPacket(): string;
 }
+import { Buffer } from "buffer";

@@ -7,24 +7,37 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import * as sqlite3 from "sqlite3";
-import { Database, open } from "sqlite";
-import { IDatabaseManager, SessionRecord } from "../../types/src/index";
+import { open } from "sqlite";
 import P from "pino";
-import { AppConfiguration, ConfigurationManager } from "../../config/src/index";
+import { ConfigurationManager } from "../../config/src/index";
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
 import { EServerConnectionName, RoutingMesh } from "../../router/src/index";
+import process from "process";
+
 
 const log = P().child({ service: "mcoserver:DatabaseMgr" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
-export class DatabaseManager implements IDatabaseManager {
-  static _instance: DatabaseManager;
-  _config: AppConfiguration;
-  _server: Server;
-  changes = 0;
-  localDB!: Database;
+/**
+ * @exports
+ * @typedef {Object} SessionRecord
+ * @property {string} skey
+ * @property {string} sessionkey
+ */
 
-  public static getInstance(): DatabaseManager {
+export class DatabaseManager {
+  /** @type {DatabaseManager} */
+  static _instance;
+  /** @type {import("../../config/src/index").AppConfiguration} */
+  _config;
+  /** @type {Server} */
+  _server;
+  changes = 0;
+  /** @type {import("sqlite").Database} */
+  localDB;
+
+  /** @return {DatabaseManager} */
+  static getInstance() {
     if (!DatabaseManager._instance) {
       DatabaseManager._instance = new DatabaseManager();
     }
@@ -145,7 +158,8 @@ export class DatabaseManager implements IDatabaseManager {
     return DatabaseManager._instance;
   }
 
-  private constructor() {
+  /** @private */
+  constructor() {
     this._config = ConfigurationManager.getInstance().getConfig();
 
     this._server = createServer((request, response) => {
@@ -160,7 +174,12 @@ export class DatabaseManager implements IDatabaseManager {
     });
   }
 
-  handleRequest(request: IncomingMessage, response: ServerResponse): void {
+  /**
+   * 
+   * @param {IncomingMessage} request 
+   * @param {ServerResponse} response 
+   */
+  handleRequest(request, response) {
     const header = {
       type: "Content-Type",
       value: "application/json",
@@ -184,9 +203,14 @@ export class DatabaseManager implements IDatabaseManager {
     }
   }
 
+  /**
+   * 
+   * @param {number} customerId 
+   * @returns {Promise<SessionRecord>}
+   */
   async fetchSessionKeyByCustomerId(
-    customerId: number
-  ): Promise<SessionRecord> {
+    customerId
+  ) {
     if (!this.localDB) {
       throw new Error("Error accessing database. Are you using the instance?");
     }
@@ -194,35 +218,50 @@ export class DatabaseManager implements IDatabaseManager {
       "SELECT sessionkey, skey FROM sessions WHERE customer_id = ?"
     );
 
+    /** @type {SessionRecord} */
     const record = await stmt.get(customerId);
     if (record === undefined) {
       throw new Error("Unable to fetch session key");
     }
-    return record as SessionRecord;
+    return record;
   }
 
+  /**
+   * 
+   * @param {string} connectionId 
+   * @returns {Promise<SessionRecord>}
+   */
   async fetchSessionKeyByConnectionId(
-    connectionId: string
-  ): Promise<SessionRecord> {
+    connectionId
+  ) {
     if (!this.localDB) {
       throw new Error("Error accessing database. Are you using the instance?");
     }
     const stmt = await this.localDB.prepare(
       "SELECT sessionkey, skey FROM sessions WHERE connection_id = ?"
     );
+    /** @type {SessionRecord} */
     const record = await stmt.get(connectionId);
     if (record === undefined) {
       throw new Error("Unable to fetch session key");
     }
-    return record as SessionRecord;
+    return record;
   }
 
+  /**
+   * 
+   * @param {number} customerId 
+   * @param {string} sessionkey 
+   * @param {string} contextId 
+   * @param {string} connectionId 
+   * @returns {Promise<number>}
+   */
   async _updateSessionKey(
-    customerId: number,
-    sessionkey: string,
-    contextId: string,
-    connectionId: string
-  ): Promise<number> {
+    customerId,
+    sessionkey,
+    contextId,
+    connectionId
+  ) {
     const skey = sessionkey.slice(0, 16);
 
     if (!this.localDB) {
@@ -244,7 +283,11 @@ export class DatabaseManager implements IDatabaseManager {
     return 1;
   }
 
-  start(): Server {
+  /**
+   * 
+   * @returns {Server}
+   */
+  start() {
     const host = this._config.serverSettings.ipServer || "localhost";
     const port = 0;
     log.debug(`Attempting to bind to port ${port}`);

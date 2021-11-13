@@ -1,3 +1,4 @@
+/// <reference types="node" />
 export class GenericReplyMessage {
     /** @type {number} */
     msgNo: number;
@@ -40,3 +41,4 @@ export class GenericReplyMessage {
      */
     dumpPacket(): string;
 }
+import { Buffer } from "buffer";

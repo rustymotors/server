@@ -1,22 +1,24 @@
 /// <reference types="node" />
-import { ITCPConnection, UnprocessedPacket } from "../../types/src/index";
-import { NPSMessage } from "../../message-types/src/index";
 /**
  * @class
  */
-export declare class LobbyServer {
+export class LobbyServer {
+    /** @type {LobbyServer} */
     static _instance: LobbyServer;
-    static getInstance(): LobbyServer;
-    private constructor();
     /**
-     * @return NPSMsg}
+     *
+     * @returns {LobbyServer}
+     */
+    static getInstance(): LobbyServer;
+    /**
+     * @return {NPSMessage}
      */
     _npsHeartbeat(): NPSMessage;
     /**
-     * @param {IRawPacket} rawPacket
-     * @return {Promise<ConnectionObj>}
+     * @param {import("../../transactions/src/tcp-manager").UnprocessedPacket} rawPacket
+     * @return {Promise<TCPConnection>}
      */
-    dataHandler(rawPacket: UnprocessedPacket): Promise<ITCPConnection>;
+    dataHandler(rawPacket: import("../../transactions/src/tcp-manager").UnprocessedPacket): Promise<TCPConnection>;
     /**
      * @param {string} key
      * @return {Buffer}
@@ -25,9 +27,12 @@ export declare class LobbyServer {
     /**
      * Handle a request to connect to a game server packet
      *
-     * @param {ConnectionObj} connection
+     * @param {TCPConnection} connection
      * @param {Buffer} rawData
-     * @return {Promise<NPSMsg>}
+     * @return {Promise<NPSMessage>}
      */
-    _npsRequestGameConnectServer(connection: ITCPConnection, rawData: Buffer): Promise<NPSMessage>;
+    _npsRequestGameConnectServer(connection: TCPConnection, rawData: Buffer): Promise<NPSMessage>;
 }
+import { NPSMessage } from "../../message-types/src/index";
+import { TCPConnection } from "../../core/src/tcpConnection";
+import { Buffer } from "buffer";

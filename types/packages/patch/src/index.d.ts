@@ -20,7 +20,6 @@ export class PatchServer {
      * @param {IncomingMessage} request
      * @param {ServerResponse} response
      */
-    handleRequest(request: IncomingMessage, response: ServerResponse): void;
+    handleRequest(request: any, response: any): void;
 }
-import { IncomingMessage } from "http";
-import { ServerResponse } from "http";
+import { Buffer } from "buffer";

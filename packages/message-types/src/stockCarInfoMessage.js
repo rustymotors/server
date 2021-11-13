@@ -1,3 +1,5 @@
+import { Buffer } from "buffer";
+
 /**
  * Object for providing information on stock cars
  */

@@ -1,3 +1,5 @@
+import { Buffer } from "buffer";
+
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // DWORD data;   // specific to the message sent (but usually 0)
 // DWORD data2;

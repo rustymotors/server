@@ -1,4 +1,3 @@
-/// <reference types="node" />
 /**
  * Manages patch and update server connections
  * Also handles the shard list, and some utility endpoints
@@ -12,12 +11,12 @@ export class ShardServer {
      * @returns {ShardServer}
      */
     static getInstance(): ShardServer;
-    /** @type {AppConfiguration} */
-    _config: AppConfiguration;
+    /** @type {import("../../config/src/index").AppConfiguration} */
+    _config: import("../../config/src/index").AppConfiguration;
     /** @type {string[]} */
     _possibleShards: string[];
-    /** @type {Server} */
-    _server: Server;
+    /** @type {import("http").Server} */
+    _server: import("http").Server;
     /**
      * Generate a shard list web document
      *
@@ -40,17 +39,13 @@ export class ShardServer {
      */
     _handleGetRegistry(): string;
     /**
-     * @param {IncomingMessage} request
-     * @param {ServerResponse} response
+     * @param {import("http").IncomingMessage} request
+     * @param {import("http").ServerResponse} response
      */
-    _handleRequest(request: IncomingMessage, response: ServerResponse): void;
+    _handleRequest(request: import("http").IncomingMessage, response: import("http").ServerResponse): void;
     /**
      *
-     * @returns {Server}
+     * @returns {import("http").Server}
      */
-    start(): Server;
+    start(): import("http").Server;
 }
-import { AppConfiguration } from "../../config/src/index";
-import { Server } from "https";
-import { IncomingMessage } from "http";
-import { ServerResponse } from "http";

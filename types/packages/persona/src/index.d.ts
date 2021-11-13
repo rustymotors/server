@@ -66,7 +66,7 @@ export class PersonaServer {
      * @param {Socket} socket
      * @param {NPSMessage} packet
      */
-    sendPacket(socket: Socket, packet: NPSMessage): void;
+    sendPacket(socket: any, packet: NPSMessage): void;
     /**
      *
      * @param {number} customerId
@@ -98,7 +98,7 @@ export class PersonaServer {
      * @param {import("../../transactions/src/tcp-manager").UnprocessedPacket} rawPacket
      * @returns {Promise<TCPConnection}
      */
-    dataHandler(rawPacket: import("../../transactions/src/tcp-manager").UnprocessedPacket): Promise<TCPConnection>;
+    dataHandler(rawPacket: import("../../transactions/src/tcp-manager").UnprocessedPacket): Promise<any>;
 }
 export type PersonaRecord = {
     customerId: number;
@@ -108,6 +108,5 @@ export type PersonaRecord = {
     personaCount: Buffer;
     shardId: Buffer;
 };
+import { Buffer } from "buffer";
 import { NPSMessage } from "../../message-types/src/index";
-import { Socket } from "net";
-import { TCPConnection } from "../../core/src/tcpConnection";

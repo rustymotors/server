@@ -7,13 +7,10 @@
 
 import P from "pino";
 import { DatabaseManager } from "../../database/src/index";
-import {
-  UnprocessedPacket,
-  ITCPConnection,
-  UserRecordMini,
-} from "../../types/src/index";
 import { NPSUserStatus, premadeLogin } from "../../message-types/src/index";
 import { ConfigurationManager } from "../../config/src/index";
+import process from "process";
+import { Buffer } from "buffer";
 
 const log = P().child({ service: "mcoserver:LoginServer" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -24,31 +21,47 @@ log.level = process.env["LOG_LEVEL"] || "info";
  */
 
 /**
+ * @exports
+ * @typedef {Object} UserRecordMini
+ * @property {string} contextId
+ * @property {number} customerId
+ * @property {number} userId
+ */
+
+/**
  * @class
+ * @property {LoginServer} _instance
  * @property {DatabaseManager} databaseManager
  */
 export class LoginServer {
-  static _instance: LoginServer;
+  static _instance;
   databaseManager = DatabaseManager.getInstance();
 
-  static getInstance(): LoginServer {
+  /**
+   * 
+   * @returns {LoginServer}
+   */
+  static getInstance() {
     if (!LoginServer._instance) {
       LoginServer._instance = new LoginServer();
     }
     return LoginServer._instance;
   }
 
-  private constructor() {
+  /**
+   * @private
+   */
+  constructor() {
     // Intentionally empty
   }
 
   /**
    *
-   * @param {IRawPacket} rawPacket
-   * @param {IServerConfig} config
-   * @return {Promise<ConnectionObj>}
+   * @param {UnprocessedPacket} rawPacket
+   * @param {import("../../config/src/index").AppConfiguration} config
+   * @return {Promise<TCPConnection>}
    */
-  async dataHandler(rawPacket: UnprocessedPacket): Promise<ITCPConnection> {
+  async dataHandler(rawPacket) {
     let processed = true;
     const { connection, data } = rawPacket;
     const { localPort, remoteAddress } = rawPacket;
@@ -104,13 +117,14 @@ export class LoginServer {
   /**
    *
    * @param {string} contextId
-   * @return {Promise<IUserRecordMini>}
+   * @return {Promise<UserRecordMini>}
    */
   async _npsGetCustomerIdByContextId(
-    contextId: string
-  ): Promise<UserRecordMini> {
+    contextId
+  ) {
     log.debug(">>> _npsGetCustomerIdByContextId");
-    const users: UserRecordMini[] = [
+    /** @type {UserRecordMini[]} */
+    const users = [
       {
         contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
         customerId: 0xac_01_00_00,
@@ -151,13 +165,12 @@ export class LoginServer {
 
   /**
    * Process a UserLogin packet
-   * Should return a @link {module:NPSMsg} object
-   * @param {ConnectionObj} connection
+   * Should return a @link {NPSMessage} object
+   * @param {TCPConnection} connection
    * @param {Buffer} data
-   * @param {IServerConfig} config
    * @return {Promise<Buffer>}
    */
-  async _userLogin(connection: ITCPConnection, data: Buffer): Promise<Buffer> {
+  async _userLogin(connection, data) {
     const { sock } = connection;
     const { localPort } = sock;
     const userStatus = new NPSUserStatus(data);
@@ -197,7 +210,7 @@ export class LoginServer {
         userStatus.contextId,
         connection.id
       )
-      .catch((error: unknown) => {
+      .catch((error) => {
         if (error instanceof Error) {
           log.error(`Unable to update session key 3: ${error.message}`);
         }

@@ -1,6 +1,8 @@
 import { RoutingMesh } from "./client";
 import P from "pino";
 import { createServer } from "net";
+import process from "process";
+
 
 const log = P().child({ service: "MCOServer:Route" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -32,7 +34,7 @@ export const EServerConnectionAction = {
  * @enum {string}
  */
 export const EServiceQuery = {
-  GET_CONNECTIONS = "Get connections",
+  GET_CONNECTIONS: "Get connections",
 }
 
 /**

@@ -6,12 +6,13 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import P from "pino";
-import { Socket } from "net";
 import {
   NPSMessage,
   NPSPersonaMapsMessage,
 } from "../../message-types/src/index";
-import { TCPConnection } from "../../core/src/tcpConnection";
+import process from "process";
+import { Buffer } from "buffer";
+import { EMessageDirection } from "../../transactions/src/tcp-manager";
 
 const log = P().child({ service: "mcoserver:PersonaServer" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -97,8 +98,7 @@ export class PersonaServer {
    */
   async handleSelectGamePersona(data) {
     log.debug("_npsSelectGamePersona...");
-    const requestPacket = new NPSMessage(
-      EMessageDirection.RECEIVED
+    const requestPacket = new NPSMessage(EMessageDirection.RECEIVED
     ).deserialize(data);
     log.debug(
       `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({

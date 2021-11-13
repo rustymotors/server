@@ -6,12 +6,14 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import P from "pino";
-import { TCPConnection } from "../../core/src/tcpConnection";
 import {
   GenericReplyMessage,
   MessageNode,
 } from "../../message-types/src/index";
-import { TCPManager } from "./tcp-manager";
+import { EMessageDirection, TCPManager } from "./tcp-manager";
+import process from "process";
+import { Buffer } from "buffer";
+
 
 const log = P().child({ service: "mcoserver:MCOTSServer" });
 log.level = process.env["LOG_LEVEL"] || "info";

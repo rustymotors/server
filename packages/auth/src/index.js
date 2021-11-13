@@ -7,12 +7,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import P from "pino";
-import { IncomingMessage, ServerResponse } from "http";
-import { Socket } from "net";
 import { readFileSync } from "fs";
 import { EServerConnectionName, RoutingMesh } from "../../router/src/index";
-import { createServer, Server } from "https";
-import { AppConfiguration, ConfigurationManager } from "../../config/src/index";
+import { createServer } from "https";
+import { ConfigurationManager } from "../../config/src/index";
+import process from "process";
 
 const log = P().child({ service: "MCOServer:Auth" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -34,10 +33,10 @@ log.level = process.env["LOG_LEVEL"] || "info";
 export class AuthLogin {
   /** @type {AuthLogin} */
   static _instance;
-  /** @type {AppConfiguration} */
+  /** @type {import("../../config/src/index").AppConfiguration} */
   config;
 
-  /** @type {Server} */
+  /** @type {import("https").Server} */
   _server;
 
   /**
@@ -80,8 +79,8 @@ export class AuthLogin {
 
   /**
    * 
-   * @param {IncomingMessage} request 
-   * @param {ServerResponse} response 
+   * @param {import('http').IncomingMessage} request 
+   * @param {import('http').ServerResponse} response 
    */
   handleRequest(request, response) {
     log.info(
@@ -93,16 +92,6 @@ export class AuthLogin {
     }
 
     return response.end("Unknown request.");
-  }
-
-  /**
-   * @private
-   * @param {Socket} socket 
-   */
-  _socketEventHandler(socket) {
-    socket.on("error", (error) => {
-      throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`);
-    });
   }
 
   start() {

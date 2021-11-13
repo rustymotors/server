@@ -1,3 +1,4 @@
+/// <reference types="node" />
 /**
  * Container objest for Stock cars
  */
@@ -29,3 +30,4 @@ export class StockCar {
      */
     dumpPacket(): string;
 }
+import { Buffer } from "buffer";

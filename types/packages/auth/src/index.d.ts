@@ -1,4 +1,3 @@
-/// <reference types="node" />
 /**
  * @typedef {Object} SSLOptions
  * @property {string} cert
@@ -18,10 +17,10 @@ export class AuthLogin {
      * @returns {AuthLogin}
      */
     static getInstance(): AuthLogin;
-    /** @type {AppConfiguration} */
-    config: AppConfiguration;
-    /** @type {Server} */
-    _server: Server;
+    /** @type {import("../../config/src/index").AppConfiguration} */
+    config: import("../../config/src/index").AppConfiguration;
+    /** @type {import("https").Server} */
+    _server: import("https").Server;
     /**
      *
      * @return {string}
@@ -29,15 +28,10 @@ export class AuthLogin {
     _handleGetTicket(): string;
     /**
      *
-     * @param {IncomingMessage} request
-     * @param {ServerResponse} response
+     * @param {import('http').IncomingMessage} request
+     * @param {import('http').ServerResponse} response
      */
-    handleRequest(request: IncomingMessage, response: ServerResponse): void;
-    /**
-     * @private
-     * @param {Socket} socket
-     */
-    private _socketEventHandler;
+    handleRequest(request: import('http').IncomingMessage, response: import('http').ServerResponse): void;
     start(): void;
     /**
      * @private
@@ -51,7 +45,3 @@ export type SSLOptions = {
     key: string;
     rejectUnauthorized: boolean;
 };
-import { AppConfiguration } from "../../config/src/index";
-import { Server } from "https";
-import { IncomingMessage } from "http";
-import { ServerResponse } from "http";

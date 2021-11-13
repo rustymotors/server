@@ -1,3 +1,4 @@
+/// <reference types="node" />
 /**
  * @class
  * @property {ILobbyInfo} data
@@ -97,3 +98,4 @@ export type LobbyInfo = {
     racetypeId: number;
     lobbyId: number;
 };
+import { Buffer } from "buffer";

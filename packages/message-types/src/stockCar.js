@@ -1,3 +1,5 @@
+import { Buffer } from "buffer";
+
 /**
  * Container objest for Stock cars
  */

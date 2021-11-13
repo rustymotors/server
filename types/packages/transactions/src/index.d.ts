@@ -22,44 +22,43 @@ export class MCOTServer {
      * @param {MessageNode} node
      * @return {Promise<ConnectionWithPackets}>}
      */
-    _login(connection: TCPConnection, node: MessageNode): Promise<any>;
+    _login(connection: any, node: MessageNode): Promise<any>;
     /**
      *
      * @param {TCPConnection} connection
      * @param {MessageNode} node
      * @return {Promise<ConnectionWithPackets>}
      */
-    _getLobbies(connection: TCPConnection, node: MessageNode): Promise<any>;
+    _getLobbies(connection: any, node: MessageNode): Promise<any>;
     /**
      *
      * @param {TCPConnection} connection
      * @param {MessageNode} node
      * @return {Promise<import("./tcp-manager").ConnectionWithPackets>}
      */
-    _logout(connection: TCPConnection, node: MessageNode): Promise<import("./tcp-manager").ConnectionWithPackets>;
+    _logout(connection: any, node: MessageNode): Promise<import("./tcp-manager").ConnectionWithPackets>;
     /**
      *
      * @param {TCPConnection} connection
      * @param {MessageNode} node
      * @return {Promise<ConnectionWithPackets>}
      */
-    _setOptions(connection: TCPConnection, node: MessageNode): Promise<any>;
+    _setOptions(connection: any, node: MessageNode): Promise<any>;
     /**
      *
      * @param {TCPConnection} connection
      * @param {MessageNode} node
      * @return {Promise<ConnectionWithPackets>}
      */
-    _trackingMessage(connection: TCPConnection, node: MessageNode): Promise<any>;
+    _trackingMessage(connection: any, node: MessageNode): Promise<any>;
     /**
      *
      * @param {TCPConnection} connection
      * @param {MessageNode} node
      * @return {Promise<ConnectionWithPackets>}
      */
-    _updatePlayerPhysical(connection: TCPConnection, node: MessageNode): Promise<any>;
+    _updatePlayerPhysical(connection: any, node: MessageNode): Promise<any>;
 }
 export { TCPManager };
-import { TCPConnection } from "../../core/src/tcpConnection";
 import { MessageNode } from "../../message-types/src/index";
 import { TCPManager } from "./tcp-manager";

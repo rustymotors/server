@@ -16,7 +16,9 @@ import {
   StockCar,
   StockCarInfoMessage,
 } from "../../message-types/src/index";
-import { TCPConnection } from "../../core/src/tcpConnection";
+import process from "process";
+import { Buffer } from "buffer";
+
 
 const log = P().child({ service: "mcoserver:MCOTSServer" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -26,8 +28,8 @@ log.level = process.env["LOG_LEVEL"] || "info";
  * @enum {string}
  */
 export const EMessageDirection = {
-  RECEIVED = "received",
-  SENT = "sent",
+  RECEIVED: "received",
+  SENT: "sent",
 }
 
 /**

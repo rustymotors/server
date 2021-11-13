@@ -122,10 +122,7 @@
 //   timestamp: number;
 // };
 
-// export type SessionRecord = {
-//   skey: string;
-//   sessionkey: string;
-// };
+
 
 // export type PersonaRecord = {
 //   customerId: number;
@@ -143,11 +140,7 @@
 //   rejectUnauthorized: boolean;
 // };
 
-// export type UserRecordMini = {
-//   contextId: string;
-//   customerId: number;
-//   userId: number;
-// };
+
 
 // export type NpsCommandMap = {
 //   name: string;
