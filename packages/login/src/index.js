@@ -49,9 +49,7 @@ class LoginServer {
     if (!LoginServer._instance) {
       LoginServer._instance = new LoginServer();
     }
-    LoginServer._instance.DatabaseManager = await DatabaseManager.getInstance(
-      getConfig()
-    );
+    LoginServer._instance.DatabaseManager = DatabaseManager.getInstance();
     return LoginServer._instance;
   }
 
@@ -64,9 +62,8 @@ class LoginServer {
 
   /**
    *
-   * @param {UnprocessedPacket} rawPacket
-   * @param {import("../../config/src/index").AppConfiguration} config
-   * @return {Promise<TCPConnection>}
+   * @param {import("../../transactions/src/types").UnprocessedPacket} rawPacket
+   * @return {Promise<import("../../core/src/tcpConnection").TCPConnection>}
    */
   async dataHandler(rawPacket) {
     let processed = true;
@@ -171,7 +168,7 @@ class LoginServer {
   /**
    * Process a UserLogin packet
    * Should return a @link {NPSMessage} object
-   * @param {TCPConnection} connection
+   * @param {import("../../core/src/tcpConnection").TCPConnection} connection
    * @param {Buffer} data
    * @return {Promise<Buffer>}
    */

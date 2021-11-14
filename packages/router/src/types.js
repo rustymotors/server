@@ -2,7 +2,7 @@
  * @exports
  * @enum {string}
  */
-const EServerConnectionName = {
+const EServerConnectionService = {
   ADMIN: "Admin",
   AUTH: "Auth",
   MCSERVER: "MCServer",
@@ -31,14 +31,14 @@ const EServiceQuery = {
 /**
  * @export
  * @typedef {Object} ServerConnectionRecord
- * @property {typeof EServerConnectionAction} [action]
- * @property {typeof EServerConnectionName} name
+ * @property {EServerConnectionAction} [action]
+ * @property {EServerConnectionService} service
  * @property {string} host
  * @property {number} port
  */
 
 module.exports = {
-  EServerConnectionName,
+  EServerConnectionService,
   EServerConnectionAction,
   EServiceQuery,
 };

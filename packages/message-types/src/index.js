@@ -107,7 +107,7 @@ class NPSPersonaMapsMessage extends NPSMessage {
   constructor(direction) {
     super(direction);
 
-    /** @type {IPersonaRecord[]} */
+    /** @type {import("../../persona/src/types").PersonaRecord[]} */
     this.personas = [];
     // Public personaSize = 1296;
     this.personaSize = 38;
@@ -117,7 +117,7 @@ class NPSPersonaMapsMessage extends NPSMessage {
 
   /**
    *
-   * @param {PersonaRecord[]} personas
+   * @param {import("../../persona/src/types").PersonaRecord[]} personas
    */
   loadMaps(personas) {
     this.personaCount = personas.length;
@@ -301,7 +301,7 @@ class NPSUserStatus extends NPSMessage {
    * Take 128 bytes
    * They are the utf-8 of the hex bytes that are the key
    *
-   * @param {AppConfiguration["certificate"]} serverConfig
+   * @param {import("../../config/src/index").AppConfiguration["certificate"]} serverConfig
    * @param {Buffer} packet
    */
   extractSessionKeyFromPacket(serverConfig, packet) {
@@ -320,7 +320,7 @@ class NPSUserStatus extends NPSMessage {
 
   /**
    *
-   * @return {INPSMessageJSON}
+   * @return {import("./npsMessage").INPSMessageJSON}
    */
   toJSON() {
     return {

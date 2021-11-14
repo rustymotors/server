@@ -1,4 +1,9 @@
 /// <reference types="node" />
+export type UserRecordMini = {
+    contextId: string;
+    customerId: number;
+    userId: number;
+};
 /**
  * Manages the initial game connection setup and teardown.
  * @module LoginServer
@@ -16,39 +21,34 @@
  * @property {DatabaseManager} databaseManager
  */
 export class LoginServer {
-  static _instance: any;
-  /**
-   *
-   * @returns {LoginServer}
-   */
-  static getInstance(): LoginServer;
-  databaseManager: DatabaseManager;
-  /**
-   *
-   * @param {UnprocessedPacket} rawPacket
-   * @param {import("../../config/src/index").AppConfiguration} config
-   * @return {Promise<TCPConnection>}
-   */
-  dataHandler(rawPacket: any): Promise<any>;
-  /**
-   *
-   * @param {string} contextId
-   * @return {Promise<UserRecordMini>}
-   */
-  _npsGetCustomerIdByContextId(contextId: string): Promise<UserRecordMini>;
-  /**
-   * Process a UserLogin packet
-   * Should return a @link {NPSMessage} object
-   * @param {TCPConnection} connection
-   * @param {Buffer} data
-   * @return {Promise<Buffer>}
-   */
-  _userLogin(connection: any, data: Buffer): Promise<Buffer>;
+    static _instance: any;
+    /**
+     *
+     * @returns {Promise<LoginServer>}
+     */
+    static getInstance(): Promise<LoginServer>;
+    /** @type {DatabaseManager} */
+    databaseManager: DatabaseManager;
+    /**
+     *
+     * @param {import("../../transactions/src/types").UnprocessedPacket} rawPacket
+     * @return {Promise<import("../../core/src/tcpConnection").TCPConnection>}
+     */
+    dataHandler(rawPacket: import("../../transactions/src/types").UnprocessedPacket): Promise<import("../../core/src/tcpConnection").TCPConnection>;
+    /**
+     *
+     * @param {string} contextId
+     * @return {Promise<UserRecordMini>}
+     */
+    _npsGetCustomerIdByContextId(contextId: string): Promise<UserRecordMini>;
+    /**
+     * Process a UserLogin packet
+     * Should return a @link {NPSMessage} object
+     * @param {import("../../core/src/tcpConnection").TCPConnection} connection
+     * @param {Buffer} data
+     * @return {Promise<Buffer>}
+     */
+    _userLogin(connection: import("../../core/src/tcpConnection").TCPConnection, data: Buffer): Promise<Buffer>;
 }
-export type UserRecordMini = {
-  contextId: string;
-  customerId: number;
-  userId: number;
-};
-import { DatabaseManager } from "../../database/src/index";
+import { DatabaseManager } from "../../database/src/index.js";
 import { Buffer } from "buffer";

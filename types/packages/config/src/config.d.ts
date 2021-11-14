@@ -1,3 +1,2 @@
-import { AppConfiguration } from ".";
-declare const savedConfig: AppConfiguration;
-export { savedConfig };
+/** @type {import(".").AppConfiguration} */
+export const savedConfig: import(".").AppConfiguration;

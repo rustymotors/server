@@ -9,7 +9,7 @@ const savedConfig = {
     ipServer: "0.0.0.0",
   },
   serviceConnections: {
-    databaseURL: "db.mco.db",
+    databaseURL: "mco.db",
   },
   defaultLogLevel: "debug",
 };

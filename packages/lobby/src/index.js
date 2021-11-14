@@ -7,14 +7,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const { pino: P } = require("pino");
-const { DatabaseManager } = require("../../database/src/index.js");
 const { NPSUserInfo } = require("../../message-types/src/index.js");
 const { NPSMessage } = require("../../message-types/src/npsMessage.js");
-const { PersonaServer } = require("../../persona/src/index.js");
 const process = require("process");
 const { Buffer } = require("buffer");
 const { EMessageDirection } = require("../../transactions/src/types.js");
-const { getConfig } = require("../../config/src/index.js");
 
 const log = P().child({ service: "mcos:LobbyServer" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -23,8 +20,6 @@ log.level = process.env["LOG_LEVEL"] || "info";
  * Manages the game connection to the lobby and racing rooms
  * @module LobbyServer
  */
-
-const databaseManager = DatabaseManager.getInstance(getConfig());
 
 /**
  * @param {import("../../core/src/tcpConnection").TCPConnection} conn
@@ -167,9 +162,11 @@ class LobbyServer {
 
   /**
    * @param {import("../../transactions/src/types").UnprocessedPacket} rawPacket
+   * @param {import("../../persona/src/index").PersonaServer} personaServer
+   * @param {import("../../database/src/index").DatabaseManager} databaseManager
    * @return {Promise<import("../../core/src/tcpConnection").TCPConnection>}
    */
-  async dataHandler(rawPacket) {
+  async dataHandler(rawPacket, personaServer, databaseManager) {
     const { localPort, remoteAddress } = rawPacket;
     log.debug(
       `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
@@ -182,7 +179,9 @@ class LobbyServer {
       case "100": {
         const responsePacket = await this._npsRequestGameConnectServer(
           connection,
-          data
+          data,
+          personaServer,
+          databaseManager
         );
         log.debug(
           `Connect responsePacket's data prior to sending: ${JSON.stringify({
@@ -258,10 +257,12 @@ class LobbyServer {
    * Handle a request to connect to a game server packet
    *
    * @param {import("../../core/src/tcpConnection").TCPConnection} connection
+   * @param {import("../../persona/src/index").PersonaServer} personaServer
+   * @param {import("../../database/src/index").DatabaseManager} databaseManager
    * @param {Buffer} rawData
    * @return {Promise<NPSMessage>}
    */
-  async _npsRequestGameConnectServer(connection, rawData) {
+  async _npsRequestGameConnectServer(connection, rawData, personaServer, databaseManager) {
     const { sock } = connection;
     log.debug(
       `_npsRequestGameConnectServer: ${JSON.stringify({
@@ -275,9 +276,7 @@ class LobbyServer {
     userInfo.deserialize(rawData);
     userInfo.dumpInfo();
 
-    const personaManager = PersonaServer.getInstance();
-
-    const personas = await personaManager.getPersonasByPersonaId(
+    const personas = await personaServer.getPersonasByPersonaId(
       userInfo.userId
     );
     if (typeof personas[0] === "undefined") {

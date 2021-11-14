@@ -8,11 +8,11 @@
 
 const { pino: P } = require("pino");
 const { readFileSync } = require("fs");
-const { EServerConnectionName } = require("../../router/src/types.js");
 const { RoutingMesh } = require("../../router/src/index.js");
 const { createServer } = require("https");
 const { getConfig } = require("../../config/src/index.js");
 const process = require("process");
+const { EServerConnectionService } = require("../../router/src/types.js");
 
 const log = P().child({ service: "mcos:Auth" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -104,7 +104,7 @@ class AuthLogin {
 
       // Register service with router
       RoutingMesh.getInstance().registerServiceWithRouter(
-        EServerConnectionName.AUTH,
+        EServerConnectionService.AUTH,
         host,
         port
       );

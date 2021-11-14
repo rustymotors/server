@@ -1,4 +1,7 @@
-/// <reference types="node" />
+export type SessionRecord = {
+    skey: string;
+    sessionkey: string;
+};
 /**
  * @exports
  * @typedef {Object} SessionRecord
@@ -6,59 +9,66 @@
  * @property {string} sessionkey
  */
 export class DatabaseManager {
-  /** @type {DatabaseManager} */
-  static _instance: DatabaseManager;
-  /** @return {DatabaseManager} */
-  static getInstance(): DatabaseManager;
-  /** @type {import("../../config/src/index").AppConfiguration} */
-  _config: import("../../config/src/index").AppConfiguration;
-  /** @type {Server} */
-  _server: Server;
-  changes: number;
-  /** @type {import("sqlite").Database} */
-  localDB: import("sqlite").Database;
-  /**
-   *
-   * @param {IncomingMessage} request
-   * @param {ServerResponse} response
-   */
-  handleRequest(request: IncomingMessage, response: ServerResponse): void;
-  /**
-   *
-   * @param {number} customerId
-   * @returns {Promise<SessionRecord>}
-   */
-  fetchSessionKeyByCustomerId(customerId: number): Promise<SessionRecord>;
-  /**
-   *
-   * @param {string} connectionId
-   * @returns {Promise<SessionRecord>}
-   */
-  fetchSessionKeyByConnectionId(connectionId: string): Promise<SessionRecord>;
-  /**
-   *
-   * @param {number} customerId
-   * @param {string} sessionkey
-   * @param {string} contextId
-   * @param {string} connectionId
-   * @returns {Promise<number>}
-   */
-  _updateSessionKey(
-    customerId: number,
-    sessionkey: string,
-    contextId: string,
-    connectionId: string
-  ): Promise<number>;
-  /**
-   *
-   * @returns {Server}
-   */
-  start(): Server;
+    /**
+     * @private
+     * @type {DatabaseManager}
+     */
+    private static _instance;
+    /**
+     * @return {DatabaseManager}
+     */
+    static getInstance(): DatabaseManager;
+    /**
+     * @private
+     * @type {import("../../config/src/index").AppConfiguration}
+     */
+    private _config;
+    /**
+     * @private
+     * @type {import("http").Server}
+     */
+    private _server;
+    /**
+     * @private
+     * @type {import("sqlite").Database | undefined}
+     */
+    private _localDB;
+    closeDB(): Promise<void>;
+    /**
+     *
+     * @param {import("../../config/src/index.js").AppConfiguration} config
+     */
+    init(config: import("../../config/src/index.js").AppConfiguration): Promise<DatabaseManager>;
+    /**
+     *
+     * @param {import("http").IncomingMessage} request
+     * @param {import("http").ServerResponse} response
+     */
+    handleRequest(request: import("http").IncomingMessage, response: import("http").ServerResponse): void;
+    /**
+     *
+     * @param {number} customerId
+     * @returns {Promise<SessionRecord>}
+     */
+    fetchSessionKeyByCustomerId(customerId: number): Promise<SessionRecord>;
+    /**
+     *
+     * @param {string} connectionId
+     * @returns {Promise<SessionRecord>}
+     */
+    fetchSessionKeyByConnectionId(connectionId: string): Promise<SessionRecord>;
+    /**
+     *
+     * @param {number} customerId
+     * @param {string} sessionkey
+     * @param {string} contextId
+     * @param {string} connectionId
+     * @returns {Promise<number>}
+     */
+    _updateSessionKey(customerId: number, sessionkey: string, contextId: string, connectionId: string): Promise<number>;
+    /**
+     *
+     * @returns {import("http").Server}
+     */
+    start(): import("http").Server;
 }
-export type SessionRecord = {
-  skey: string;
-  sessionkey: string;
-};
-import { Server } from "http";
-import { IncomingMessage } from "http";
-import { ServerResponse } from "http";

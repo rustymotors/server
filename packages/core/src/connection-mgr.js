@@ -5,25 +5,23 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { DatabaseManager } = require("../../database/src/index.js");
-const { MessageNode } = require("../../message-types/src/index.js");
-const { TCPManager } = require("../../transactions/src/index.js");
+const { MessageNode } = require("../../message-types/src/messageNode.js");
+const { TCPManager } = require("../../transactions/src/tcp-manager.js");
 const { EncryptionManager } = require("./encryption-mgr.js");
 const { NPSPacketManager } = require("./nps-packet-manager.js");
 const { TCPConnection } = require("./tcpConnection.js");
 const { EMessageDirection } = require("../../transactions/src/types.js");
 
 const { pino: P } = require("pino");
-const { getConfig } = require("../../config/src/index.js");
 
 const log = P().child({ service: "mcos:ConnectionManager" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
 class ConnectionManager {
-  /** @type {ConnectionManager} */
+  /** 
+   * @private
+   * @type {ConnectionManager} */
   static _instance;
-  /** @type {DatabaseManager} */
-  databaseMgr;
   /** @type {TCPConnection[]} */
   connections = [];
   /** @type {number} */
@@ -33,17 +31,13 @@ class ConnectionManager {
 
   /**
    *
-   * @returns {Promise<ConnectionManager>}
+   * @returns {ConnectionManager}
    */
-  static async getInstance() {
+  static getInstance() {
     if (!ConnectionManager._instance) {
       ConnectionManager._instance = new ConnectionManager();
     }
 
-    log.debug("Setting Database manager");
-    ConnectionManager._instance.databaseMgr = await DatabaseManager.getInstance(
-      getConfig()
-    );
     return ConnectionManager._instance;
   }
 
@@ -60,7 +54,7 @@ class ConnectionManager {
   /**
    *
    * @param {string} connectionId
-   * @param {Socket} socket
+   * @param {import("net").Socket} socket
    * @returns {TCPConnection}
    */
   newConnection(connectionId, socket) {
@@ -72,10 +66,15 @@ class ConnectionManager {
 
   /**
    * Check incoming data and route it to the correct handler based on localPort
-   * @param {import("../../transactions/src/tcp-manager").UnprocessedPacket} rawPacket
+   * @param {import("../../transactions/src/types").UnprocessedPacket} rawPacket
+   * @param {import("../../login/src/index").LoginServer} loginServer
+   * @param {import("../../persona/src/index").PersonaServer} personaServer
+   * @param {import("../../lobby/src/index").LobbyServer} lobbyServer
+   * @param {import("../../transactions/src/index").MCOTServer} mcotServer
+   * @param {import("../../database/src/index").DatabaseManager} databaseManager
    * @returns {Promise<TCPConnection>}
    */
-  async processData(rawPacket) {
+  async processData(rawPacket, loginServer, personaServer, lobbyServer, mcotServer, databaseManager) {
     const npsPacketManager = await NPSPacketManager.getInstance();
 
     const { remoteAddress, localPort, data } = rawPacket;
@@ -122,7 +121,7 @@ class ConnectionManager {
           throw error;
         }
         try {
-          return await npsPacketManager.processNPSPacket(rawPacket);
+          return await npsPacketManager.processNPSPacket(rawPacket, loginServer, personaServer, lobbyServer, databaseManager);
         } catch (error) {
           if (error instanceof Error) {
             const newError = new Error(
@@ -141,7 +140,7 @@ class ConnectionManager {
         newNode.deserialize(rawPacket.data);
         log.debug(JSON.stringify(newNode));
 
-        return TCPManager.getInstance().defaultHandler(rawPacket);
+        return (await TCPManager.getInstance()).defaultHandler(rawPacket, mcotServer, databaseManager);
       }
 
       default:
@@ -256,7 +255,7 @@ class ConnectionManager {
 
   /**
    * Return an existing connection, or a new one
-   * @param {Socket} socket
+   * @param {import("net").Socket} socket
    * @returns {TCPConnection}
    */
   findOrNewConnection(socket) {
@@ -323,7 +322,7 @@ class ConnectionManager {
  * @typedef {Object} NpsCommandMap
  * @property {string} name
  * @property {number} value
- * @property {"Lobby" | "Login"} ,odule
+ * @property {"Lobby" | "Login"} module
  */
 
 /**

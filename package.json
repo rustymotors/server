@@ -14,7 +14,7 @@
   "scripts": {
     "audit": "npm audit",
     "check:license": "npm licenses audit --summary --config=licenses.config.js",
-    "build": "tsc -p ./packages/tsconfig.json",
+    "build": "tsc --watch -p ./packages/jsconfig.json",
     "build:clean": "rm -rf built && npm run build",
     "lint": "eslint packages/**/*.js && prettier --write packages",
     "test": "npm run lint && npm run test:only && npm run test:coverage",

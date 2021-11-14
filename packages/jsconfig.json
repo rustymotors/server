@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "checkJs": true,
+    "outDir": "../types"
+  },
+  "include": ["../server.js", "/**/*/js"],
+  "exclude": ["../node_modules"]
+}

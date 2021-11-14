@@ -1,10 +1,19 @@
-/// <reference types="node" />
-import { IncomingMessage, Server, ServerResponse } from "http";
-export declare class HTTPProxyServer {
-  static _instance: HTTPProxyServer;
-  _server: Server;
-  static getInstance(): HTTPProxyServer;
-  private constructor();
-  handleRequest(request: IncomingMessage, response: ServerResponse): void;
-  start(): void;
+export class HTTPProxyServer {
+    /** @type {HTTPProxyServer} */
+    static _instance: HTTPProxyServer;
+    /**
+     *
+     * @returns {HTTPProxyServer}
+     */
+    static getInstance(): HTTPProxyServer;
+    /** @type {import("http").Server} */
+    _server: import("http").Server;
+    /**
+     *
+     * @param {import("http").IncomingMessage} request
+     * @param {import("http").ServerResponse} response
+     * @returns
+     */
+    handleRequest(request: import("http").IncomingMessage, response: import("http").ServerResponse): void;
+    start(): void;
 }

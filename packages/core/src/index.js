@@ -20,7 +20,7 @@ log.level = process.env["LOG_LEVEL"] || "info";
 class MCServer {
   /** @type {MCServer} */
   static _instance;
-  /** @type {AppConfiguration} */
+  /** @type {import("../../config/src/index").AppConfiguration} */
   config;
   /**
    * @private
@@ -50,7 +50,7 @@ class MCServer {
     this.mgr.resetAllQueueState();
   }
 
-  /** @returns {TCPConnection[]} */
+  /** @returns {import("./tcpConnection").TCPConnection[]} */
   getConnections() {
     if (this.mgr === undefined) {
       throw new Error("Connection manager is not set");

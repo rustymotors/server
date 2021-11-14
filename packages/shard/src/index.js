@@ -12,7 +12,7 @@ const { ShardEntry } = require("./shard-entry.js");
 const { createServer } = require("https");
 const { getConfig } = require("../../config/src/index.js");
 const process = require("process");
-const { EServerConnectionName } = require("../../router/src/types.js");
+const { EServerConnectionService } = require("../../router/src/types.js");
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
@@ -229,7 +229,7 @@ class ShardServer {
 
       // Register service with router
       RoutingMesh.getInstance().registerServiceWithRouter(
-        EServerConnectionName.SHARD,
+        EServerConnectionService.SHARD,
         host,
         port
       );

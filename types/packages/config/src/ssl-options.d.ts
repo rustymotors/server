@@ -1,3 +1,9 @@
+export type sslOptionsObj = {
+    cert: string;
+    honorCipherOrder: boolean;
+    key: string;
+    rejectUnauthorized: boolean;
+};
 /**
  *
  * @typedef {Object} sslOptionsObj
@@ -8,16 +14,7 @@
  */
 /**
  *
- * @param {AppConfiguration["certificate"]} certificateSettings
+ * @param {import(".").AppConfiguration["certificate"]} certificateSettings
  * @returns {sslOptionsObj}
  */
-export function _sslOptions(
-  certificateSettings: AppConfiguration["certificate"]
-): sslOptionsObj;
-export type sslOptionsObj = {
-  cert: string;
-  honorCipherOrder: boolean;
-  key: string;
-  rejectUnauthorized: boolean;
-};
-import { AppConfiguration } from ".";
+export function _sslOptions(certificateSettings: import(".").AppConfiguration["certificate"]): sslOptionsObj;

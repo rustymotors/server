@@ -1,9 +1,9 @@
 const { pino: P } = require("pino");
 const { createServer } = require("http");
 const { RoutingMesh } = require("../../router/src/index.js");
-const { EServerConnectionName } = require("../../router/src/types.js");
 const process = require("process");
 const { Buffer } = require("buffer");
+const { EServerConnectionService } = require("../../router/src/types.js");
 
 const log = P().child({ service: "mcos:Patch" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -42,7 +42,7 @@ class PatchServer {
 
     // Register service with router
     RoutingMesh.getInstance().registerServiceWithRouter(
-      EServerConnectionName.PATCH,
+      EServerConnectionService.PATCH,
       host,
       port
     );
@@ -68,8 +68,8 @@ class PatchServer {
 
   /**
    *
-   * @param {IncomingMessage} request
-   * @param {ServerResponse} response
+   * @param {import("http").IncomingMessage} request
+   * @param {import("http").ServerResponse} response
    */
   handleRequest(request, response) {
     const responseData = CastanetResponse;

@@ -12,7 +12,7 @@ class RoutingServer {
   static _instance;
   /**
    * @private
-   * @type {ServerConnectionRecord[]}
+   * @type {import("./types").ServerConnectionRecord[]}
    */
   _serverConnections = [];
 
@@ -34,14 +34,15 @@ class RoutingServer {
 
   /**
    *
-   * @param {ServerConnectionRecord} payloadJSON
+   * @param {import("./types").ServerConnectionRecord} payloadJSON
    * @returns {void}
    */
   registerNewService(payloadJSON) {
-    const { service, host, port } = payloadJSON;
+    const { action, service, host, port } = payloadJSON;
 
     if (service && host && port) {
       const newService = {
+        action,
         service,
         host,
         port,
@@ -63,7 +64,7 @@ class RoutingServer {
     const payload = data.toString();
     log.debug(`Payload: ${payload}`);
 
-    /** @type {ServerConnectionRecord} */
+    /** @type {import("./types").ServerConnectionRecord} */
     let payloadJSON;
 
     try {

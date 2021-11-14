@@ -8,7 +8,7 @@ const log = P().child({ service: "mcos:RouteClient" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
 class RoutingMesh {
-  /** @type {RoutingMesh} */
+  /** @return {RoutingMesh} */
   static getInstance() {
     return new RoutingMesh();
   }
@@ -20,12 +20,12 @@ class RoutingMesh {
 
   /**
    *
-   * @param {EServerConnectionName} service
+   * @param {import("./types").EServerConnectionService} service
    * @param {string} host
    * @param {number} port
    */
   registerServiceWithRouter(service, host, port) {
-    /** @type {ServerConnectionRecord} */
+    /** @type {import("./types").ServerConnectionRecord} */
     const payload = {
       action: EServerConnectionAction.REGISTER_SERVICE,
       service,
@@ -38,7 +38,7 @@ class RoutingMesh {
 
   /**
    * @private
-   * @param {EServerConnectionName} service
+   * @param {import("./types").EServerConnectionService} service
    * @param {Buffer} inputBuffer
    */
   _sendToRouter(service, inputBuffer) {

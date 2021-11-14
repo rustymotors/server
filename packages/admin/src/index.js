@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const P = require("pino");
+const { pino: P } = require("pino");
 const { createServer } = require("https");
 const { getConfig } = require("../../config/src/index.js");
 const { _sslOptions } = require("../../config/src/ssl-options.js");
@@ -20,16 +20,16 @@ log.level = process.env["LOG_LEVEL"] || "info";
 class AdminServer {
   /** @type {AdminServer} */
   static _instance;
-  /** @type {AppConfiguration} */
+  /** @type {import("../../config/src/index").AppConfiguration} */
   config;
-  /** @type {MCServer} */
+  /** @type {import("../../core/src/index").MCServer} */
   mcServer;
-  /** @type {Server | undefined} */
+  /** @type {import("https").Server | undefined} */
   httpsServer;
 
   /**
    *
-   * @param {MCServer | undefined} mcServer
+   * @param {import("../../core/src/index").MCServer | undefined} mcServer
    * @returns {AdminServer}
    */
   static getInstance(mcServer) {
@@ -41,7 +41,7 @@ class AdminServer {
 
   /**
    * @private
-   * @param {MCServer} mcServer
+   * @param {import("../../core/src/index").MCServer} mcServer
    */
   constructor(mcServer) {
     this.config = getConfig();
@@ -143,7 +143,7 @@ class AdminServer {
   }
 
   /**
-   * @return {Server}
+   * @return {import("https").Server}
    */
   start() {
     const config = this.config;

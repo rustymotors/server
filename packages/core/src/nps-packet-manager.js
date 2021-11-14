@@ -6,11 +6,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const { pino: P } = require("pino");
-const { LobbyServer } = require("../../lobby/src/index.js");
-const { LoginServer } = require("../../login/src/index.js");
-const { PersonaServer } = require("../../persona/src/index.js");
-const { DatabaseManager } = require("../../database/src/index.js");
-const { getConfig } = require("../../config/src/index.js");
 
 const log = P().child({ service: "mcos:NPSPacketManager" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -28,31 +23,20 @@ log.level = process.env["LOG_LEVEL"] || "info";
 class NPSPacketManager {
   /** @type {NPSPacketManager} */
   static _instance;
-  database;
   /** @type {string} */
   npsKey;
   /** @type {IMsgNameMapping[]} */
   msgNameMapping = [];
-  /** @type {LoginServer} */
-  loginServer;
-  /** @type {PersonaServer} */
-  personaServer;
-  /** @type {LobbyServer} */
-  lobbyServer;
+
 
   /**
    *
-   * @returns {Promise<NPSPacketManager>}
+   * @returns {NPSPacketManager}
    */
-  static async getInstance() {
+  static getInstance() {
     if (typeof NPSPacketManager._instance === "undefined") {
       NPSPacketManager._instance = new NPSPacketManager();
     }
-
-    NPSPacketManager._instance.database = await DatabaseManager.getInstance(
-      getConfig()
-    );
-    NPSPacketManager._instance.loginServer = LoginServer.getInstance();
 
     return NPSPacketManager._instance;
   }
@@ -74,14 +58,11 @@ class NPSPacketManager {
       { id: 0x6_07, name: "NPS_GAME_ACCOUNT_INFO" },
       { id: 0x11_01, name: "NPS_CRYPTO_DES_CBC" },
     ];
-
-    this.personaServer = PersonaServer.getInstance();
-    this.lobbyServer = LobbyServer.getInstance();
   }
 
   /**
    *
-   * @param {number} msgId
+   * @param {number} messageId
    * @return {string}
    */
   msgCodetoName(messageId) {
@@ -107,10 +88,14 @@ class NPSPacketManager {
 
   /**
    *
-   * @param {import("../../transactions/src/tcp-manager").UnprocessedPacket} rawPacket
-   * @return {Promise<TCPConnection>}
+   * @param {import("../../transactions/src/types").UnprocessedPacket} rawPacket
+   * @param {import("../../login/src/index").LoginServer} loginServer
+   * @param {import("../../persona/src/index").PersonaServer} personaServer
+   * @param {import("../../lobby/src/index").LobbyServer} lobbyServer
+   * @param {import("../../database/src/index").DatabaseManager} databaseManager
+   * @return {Promise<import("../../core/src/tcpConnection").TCPConnection>}
    */
-  async processNPSPacket(rawPacket) {
+  async processNPSPacket(rawPacket, loginServer, personaServer, lobbyServer, databaseManager) {
     const messageId = rawPacket.data.readInt16BE(0);
     log.info(
       `Handling message,
@@ -124,11 +109,11 @@ class NPSPacketManager {
 
     switch (localPort) {
       case 8226:
-        return this.loginServer.dataHandler(rawPacket);
+        return loginServer.dataHandler(rawPacket);
       case 8228:
-        return this.personaServer.dataHandler(rawPacket);
+        return personaServer.dataHandler(rawPacket);
       case 7003:
-        return this.lobbyServer.dataHandler(rawPacket);
+        return lobbyServer.dataHandler(rawPacket, personaServer, databaseManager);
       default:
         process.exitCode = -1;
         throw new Error(

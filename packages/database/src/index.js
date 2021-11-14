@@ -11,8 +11,8 @@ const { open } = require("sqlite");
 const { pino: P } = require("pino");
 const { createServer } = require("http");
 const { RoutingMesh } = require("../../router/src/index.js");
-const { EServerConnectionName } = require("../../router/src/types.js");
 const process = require("process");
+const { EServerConnectionService } = require("../../router/src/types.js");
 
 const log = P().child({ service: "mcos:DatabaseMgr" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -25,37 +25,65 @@ log.level = process.env["LOG_LEVEL"] || "info";
  */
 
 class DatabaseManager {
-  /** @type {DatabaseManager} */
+  /**
+   * @private
+   * @type {DatabaseManager}
+   */
   static _instance;
-  /** @type {import("../../config/src/index").AppConfiguration} */
+  /**
+   * @private
+   * @type {import("../../config/src/index").AppConfiguration}
+   */
   _config;
-  /** @type {import("http").Server} */
+  /**
+   * @private
+   * @type {import("http").Server}
+   */
   _server;
-  changes = 0;
-  /** @type {import("sqlite").Database} */
-  localDB;
+  /**
+   * @private
+   * @type {import("sqlite").Database | undefined}
+   */
+  _localDB;
+
+  async closeDB() {
+    if (typeof this._localDB === "undefined") {
+      throw new Error("Tried to close the database, but it was not open!");
+    }
+
+    this._localDB.close();
+  }
 
   /**
-   * @param {import("../../config/src/index.js").AppConfiguration} config
-   * @return {Promise<DatabaseManager>}
+   * @return {DatabaseManager}
    */
-  static async getInstance(config) {
+  static getInstance() {
+    if (typeof DatabaseManager._instance === "undefined") {
+      DatabaseManager._instance = new DatabaseManager();
+    }
+    return DatabaseManager._instance;
+  }
+
+  /**
+   *
+   * @param {import("../../config/src/index.js").AppConfiguration} config
+   */
+  async init(config) {
     if (typeof config === "undefined") {
       throw new Error(
         "Please remember to pass a valid config to the Database manager"
       );
     }
-    if (typeof DatabaseManager._instance === "undefined") {
-      DatabaseManager._instance = new DatabaseManager(config);
-    }
+    this._config = config;
 
-    const self = DatabaseManager._instance;
     log.debug("Connecting to database");
     try {
-      const db = await open({ filename: "mco.db", driver: sqlite3.Database });
-      self.localDB = db;
+      const db = await open({
+        filename: config.serviceConnections.databaseURL,
+        driver: sqlite3.Database,
+      });
+      this._localDB = db;
 
-      self.changes = 0;
       log.debug("Populating tables");
       await db.run(`CREATE TABLE IF NOT EXISTS "sessions"
           (
@@ -166,13 +194,8 @@ class DatabaseManager {
 
   /**
    * @private
-   * @param {import("../../config/src/index.js").AppConfiguration} config
    * */
-  constructor(config) {
-    if (typeof this._config === "undefined") {
-      this._config = config;
-    }
-
+  constructor() {
     this._server = createServer((request, response) => {
       this.handleRequest(request, response);
     });
@@ -181,7 +204,7 @@ class DatabaseManager {
       process.exitCode = -1;
       log.error(`Server error: ${error.message}`);
       log.info(`Server shutdown: ${process.exitCode}`);
-      throw new Error("Database server quest unexpectedly");
+      throw new Error("Database server quit unexpectedly");
     });
   }
 
@@ -220,10 +243,10 @@ class DatabaseManager {
    * @returns {Promise<SessionRecord>}
    */
   async fetchSessionKeyByCustomerId(customerId) {
-    if (!this.localDB) {
-      throw new Error("Error accessing database. Are you using the instance?");
+    if (typeof this._localDB === "undefined") {
+      throw new Error("Error accessing database. Did you initialize it?");
     }
-    const stmt = await this.localDB.prepare(
+    const stmt = await this._localDB.prepare(
       "SELECT sessionkey, skey FROM sessions WHERE customer_id = ?"
     );
 
@@ -241,10 +264,10 @@ class DatabaseManager {
    * @returns {Promise<SessionRecord>}
    */
   async fetchSessionKeyByConnectionId(connectionId) {
-    if (!this.localDB) {
-      throw new Error("Error accessing database. Are you using the instance?");
+    if (typeof this._localDB === "undefined") {
+      throw new Error("Error accessing database. Did you initialize it?");
     }
-    const stmt = await this.localDB.prepare(
+    const stmt = await this._localDB.prepare(
       "SELECT sessionkey, skey FROM sessions WHERE connection_id = ?"
     );
     /** @type {SessionRecord} */
@@ -264,12 +287,12 @@ class DatabaseManager {
    * @returns {Promise<number>}
    */
   async _updateSessionKey(customerId, sessionkey, contextId, connectionId) {
+    if (typeof this._localDB === "undefined") {
+      throw new Error("Error accessing database. Did you initialize it?");
+    }
     const skey = sessionkey.slice(0, 16);
 
-    if (!this.localDB) {
-      throw new Error("Error accessing database. Are you using the instance?");
-    }
-    const stmt = await this.localDB.prepare(
+    const stmt = await this._localDB.prepare(
       "REPLACE INTO sessions (customer_id, sessionkey, skey, context_id, connection_id) VALUES ($customerId, $sessionkey, $skey, $contextId, $connectionId)"
     );
     const record = await stmt.run({
@@ -299,7 +322,7 @@ class DatabaseManager {
 
       // Register service with router
       RoutingMesh.getInstance().registerServiceWithRouter(
-        EServerConnectionName.DATABASE,
+        EServerConnectionService.DATABASE,
         host,
         port
       );

@@ -76,9 +76,9 @@ class MCOTServer {
 
   /**
    *
-   * @param {TCPConnection} connection
+   * @param {import("../../core/src/tcpConnection").TCPConnection} connection
    * @param {MessageNode} node
-   * @return {Promise<ConnectionWithPackets}>}
+   * @return {Promise<import("./types").ConnectionWithPackets>}
    */
   async _login(connection, node) {
     // Create new response packet
@@ -97,9 +97,9 @@ class MCOTServer {
 
   /**
    *
-   * @param {TCPConnection} connection
+   * @param {import("../../core/src/tcpConnection").TCPConnection} connection
    * @param {MessageNode} node
-   * @return {Promise<ConnectionWithPackets>}
+   * @return {Promise<import("./types").ConnectionWithPackets>}
    */
   async _getLobbies(connection, node) {
     log.debug("In _getLobbies...");
@@ -137,9 +137,9 @@ class MCOTServer {
 
   /**
    *
-   * @param {TCPConnection} connection
+   * @param {import("../../core/src/tcpConnection").TCPConnection} connection
    * @param {MessageNode} node
-   * @return {Promise<import("./tcp-manager").ConnectionWithPackets>}
+   * @return {Promise<import("./types").ConnectionWithPackets>}
    */
   async _logout(connection, node) {
     const logoutMessage = node;
@@ -167,9 +167,9 @@ class MCOTServer {
 
   /**
    *
-   * @param {TCPConnection} connection
+   * @param {import("../../core/src/tcpConnection").TCPConnection} connection
    * @param {MessageNode} node
-   * @return {Promise<ConnectionWithPackets>}
+   * @return {Promise<import("./types").ConnectionWithPackets>}
    */
   async _setOptions(connection, node) {
     const setOptionsMessage = node;
@@ -194,9 +194,9 @@ class MCOTServer {
 
   /**
    *
-   * @param {TCPConnection} connection
+   * @param {import("../../core/src/tcpConnection").TCPConnection} connection
    * @param {MessageNode} node
-   * @return {Promise<ConnectionWithPackets>}
+   * @return {Promise<import("./types").ConnectionWithPackets>}
    */
   async _trackingMessage(connection, node) {
     const trackingMessage = node;
@@ -221,9 +221,9 @@ class MCOTServer {
 
   /**
    *
-   * @param {TCPConnection} connection
+   * @param {import("../../core/src/tcpConnection").TCPConnection} connection
    * @param {MessageNode} node
-   * @return {Promise<ConnectionWithPackets>}
+   * @return {Promise<import("./types").ConnectionWithPackets>}
    */
   async _updatePlayerPhysical(connection, node) {
     const updatePlayerPhysicalMessage = node;

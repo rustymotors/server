@@ -36,7 +36,7 @@ class StockCarInfoMessage {
   noCars;
   /** @type {0 | 1} */
   moreToCome;
-  /** @type {StockCar[]} */
+  /** @type {import("./stockCar").StockCar[]} */
   StockCarList;
   /**
    * Creates an instance of StockCarInfoMsg.
@@ -55,7 +55,7 @@ class StockCarInfoMessage {
 
   /**
    *
-   * @param {StockCar} car
+   * @param {import("./stockCar").StockCar} car
    */
   addStockCar(car) {
     this.StockCarList.push(car);

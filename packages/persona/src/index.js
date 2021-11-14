@@ -16,24 +16,13 @@ const log = P().child({ service: "mcos:PersonaServer" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
- * @export
- * @typedef {Object} PersonaRecord
- * @property {number} customerId
- * @property {Buffer} id
- * @property {Buffer} maxPersonas
- * @property {Buffer} name
- * @property {Buffer} personaCount
- * @property {Buffer} shardId
- */
-
-/**
  * @module
  */
 
 class PersonaServer {
   /** @type {PersonaServer} */
   static _instance;
-  /** @type {PersonaRecord[]} */
+  /** @type {import("./types").PersonaRecord[]} */
   personaList;
 
   /**
@@ -310,7 +299,7 @@ class PersonaServer {
   /**
    *
    *
-   * @param {Socket} socket
+   * @param {import("net").Socket} socket
    * @param {NPSMessage} packet
    */
   sendPacket(socket, packet) {
@@ -328,7 +317,7 @@ class PersonaServer {
   /**
    *
    * @param {number} customerId
-   * @return {Promise<PersonaRecord[]>}
+   * @return {import("./types").PersonaRecord[]}
    */
   getPersonasByCustomerId(customerId) {
     const results = this.personaList.filter(
@@ -340,7 +329,7 @@ class PersonaServer {
   /**
    *
    * @param {number} id
-   * @return {Promise<PersonaRecord[]>}
+   * @return {Promise<import("./types").PersonaRecord[]>}
    */
   async getPersonasByPersonaId(id) {
     const results = this.personaList.filter((persona) => {
@@ -359,7 +348,7 @@ class PersonaServer {
    * TODO: Store in a database, instead of being hard-coded
    *
    * @param {number} customerId
-   * @return {Promise<PersonaRecord[]>}
+   * @return {Promise<import("./types").PersonaRecord[]>}
    */
   async getPersonaMapsByCustomerId(customerId) {
     switch (customerId) {
@@ -443,8 +432,8 @@ class PersonaServer {
 
   /**
    *
-   * @param {import("../../transactions/src/tcp-manager").UnprocessedPacket} rawPacket
-   * @returns {Promise<TCPConnection}
+   * @param {import("../../transactions/src/types").UnprocessedPacket} rawPacket
+   * @returns {Promise<import("../../core/src/tcpConnection").TCPConnection>}
    */
   async dataHandler(rawPacket) {
     const { connection, data, localPort, remoteAddress } = rawPacket;

@@ -40,7 +40,7 @@ class ListenerThread {
    */
   async _onData(data, connection) {
     const { localPort, remoteAddress } = connection.sock;
-    /** @type {import("../../transactions/src/tcp-manager").UnprocessedPacket} */
+    /** @type {import("../../transactions/src/types").UnprocessedPacket} */
     const rawPacket = {
       connectionId: connection.id,
       connection,
@@ -95,8 +95,8 @@ class ListenerThread {
   /**
    * Server listener method
    * @private
-   * @param {Socket} socket
-   * @param {ConnectionManager} connectionMgr
+   * @param {import("net").Socket} socket
+   * @param {import("./connection-mgr").ConnectionManager} connectionMgr
    */
   _listener(socket, connectionMgr) {
     // Received a new connection
@@ -132,8 +132,8 @@ class ListenerThread {
    * Given a port and a connection manager object,
    * create a new TCP socket listener for that port
    * @param {number} localPort
-   * @param {ConnectionManager}
-   * @returns {Promise<Server>}
+   * @param {import("./connection-mgr").ConnectionManager} connectionMgr
+   * @returns {Promise<import("net").Server>}
    */
   async startTCPListener(localPort, connectionMgr) {
     log.debug(`Attempting to bind to port ${localPort}`);

@@ -1,9 +1,9 @@
 const { createServer } = require("http");
 const { pino: P } = require("pino");
 const { RoutingMesh } = require("../../router/src/index.js");
-const { EServerConnectionName } = require("../../router/src/types.js");
 const { ShardServer } = require("../../shard/src/index.js");
 const { PatchServer } = require("../../patch/src/index.js");
+const { EServerConnectionService } = require("../../router/src/types.js");
 
 const log = P().child({ service: "mcos:HTTPProxy" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -11,7 +11,7 @@ log.level = process.env["LOG_LEVEL"] || "info";
 class HTTPProxyServer {
   /** @type {HTTPProxyServer} */
   static _instance;
-  /** @type {Server} */
+  /** @type {import("http").Server} */
   _server;
 
   /**
@@ -41,8 +41,8 @@ class HTTPProxyServer {
 
   /**
    *
-   * @param {IncomingMessage} request
-   * @param {ServerResponse} response
+   * @param {import("http").IncomingMessage} request
+   * @param {import("http").ServerResponse} response
    * @returns
    */
   handleRequest(request, response) {
@@ -70,7 +70,7 @@ class HTTPProxyServer {
 
       // Register service with router
       RoutingMesh.getInstance().registerServiceWithRouter(
-        EServerConnectionName.PROXY,
+        EServerConnectionService.PROXY,
         host,
         port
       );

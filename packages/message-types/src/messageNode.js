@@ -29,7 +29,7 @@ class MessageNode {
   appId;
   /**
    *
-   * @param {EMessageDirection} direction
+   * @param {import("../../transactions/src/types").EMessageDirection} direction
    */
   constructor(direction) {
     this.direction = direction;

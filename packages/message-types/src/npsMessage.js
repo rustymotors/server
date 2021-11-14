@@ -15,7 +15,7 @@ const { Buffer } = require("buffer");
  * @property {number} msgVersion
  * @property {string} content
  * @property {string} contextId
- * @property {EMessageDirection} direction
+ * @property {import("../../transactions/src/types").EMessageDirection} direction
  * @property {string | undefined } sessionkey
  * @property {string} rawBuffer
  */
@@ -46,11 +46,11 @@ class NPSMessage {
   content;
   /** @type {number} */
   msgLength;
-  /** @type {EMessageDirection} */
+  /** @type {import("../../transactions/src/types").EMessageDirection} */
   direction;
   /**
    *
-   * @param {EMessageDirection} direction - the direction of the message flow
+   * @param {import("../../transactions/src/types").EMessageDirection} direction - the direction of the message flow
    */
   constructor(direction) {
     this.msgNo = 0;

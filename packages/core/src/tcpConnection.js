@@ -24,7 +24,7 @@ class TCPConnection {
   remoteAddress;
   /** @type {number} */
   localPort;
-  /** @type {Socket} */
+  /** @type {import("net").Socket} */
   sock;
   msgEvent = null;
   /** @type {number} */
@@ -33,21 +33,20 @@ class TCPConnection {
   useEncryption;
   /**
    * @private
-   * @type {LobbyCiphers}
+   * @type {import("./types").LobbyCiphers}
    */
-  encLobby;
+  encLobby = {
+    cipher: undefined,
+    decipher: undefined,
+  };
   /**
    * @private
-   * @type {EncryptionManager | undefined}
+   * @type {import("./encryption-mgr").EncryptionManager | undefined}
    */
   enc;
   /** @type {boolean} */
   isSetupComplete;
-  /**
-   * @private
-   * @type {ConnectionManager | undefined}
-   */
-  mgr;
+
   /** @type {boolean} */
   inQueue;
   /**
@@ -60,7 +59,7 @@ class TCPConnection {
   /**
    *
    * @param {string} connectionId
-   * @param {Socket} sock
+   * @param {import("net").Socket} sock
    */
   constructor(connectionId, sock) {
     if (typeof sock.localPort === "undefined") {
@@ -77,8 +76,11 @@ class TCPConnection {
     this.msgEvent = null;
     this.lastMsg = 0;
     this.useEncryption = false;
-    /** @type {LobbyCiphers} */
-    this.encLobby = {};
+    /** @type {import("./types").LobbyCiphers} */
+    this.encLobby = {
+      cipher: undefined,
+      decipher: undefined,
+    };
     this.isSetupComplete = false;
     this.inQueue = true;
   }
@@ -116,7 +118,7 @@ class TCPConnection {
 
   /**
    *
-   * @param {ConnectionManager} manager
+   * @param {import("./connection-mgr").ConnectionManager} manager
    */
   setManager(manager) {
     this.mgr = manager;
@@ -124,7 +126,7 @@ class TCPConnection {
 
   /**
    *
-   * @param {EncryptionManager} encryptionManager
+   * @param {import("./encryption-mgr").EncryptionManager} encryptionManager
    */
   setEncryptionManager(encryptionManager) {
     this.enc = encryptionManager;
@@ -238,15 +240,21 @@ class TCPConnection {
 
   /**
    *
-   * @param {UnprocessedPacket} packet
+   * @param {import("../../transactions/src/types").UnprocessedPacket} packet
+   * @param {import("./connection-mgr").ConnectionManager} connectionManager
+   * @param {import("../../login/src/index").LoginServer} loginServer
+   * @param {import("../../persona/src/index").PersonaServer} personaServer
+   * @param {import("../../lobby/src/index").LobbyServer} lobbyServer
+   * @param {import("../../transactions/src/index").MCOTServer} mcotServer
+   * @param {import("../../database/src/index").DatabaseManager} databaseManager
    * @returns {Promise<TCPConnection>}
    */
-  async processPacket(packet) {
+  async processPacket(packet, connectionManager, loginServer, personaServer, lobbyServer, mcotServer, databaseManager) {
     if (this.mgr === undefined) {
       throw new Error("Connection manager is not set");
     }
     try {
-      return this.mgr.processData(packet);
+      return connectionManager.processData(packet, loginServer, personaServer, lobbyServer, mcotServer, databaseManager);
     } catch (error) {
       if (error instanceof Error) {
         const newError = new Error(

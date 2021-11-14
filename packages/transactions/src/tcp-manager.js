@@ -6,20 +6,21 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const { pino: P } = require("pino");
-const { DatabaseManager } = require("../../database/src/index.js");
-const { MCOTServer } = require("./index.js");
+const { ClientConnectMessage } = require("../../message-types/src/index.js");
+const { MessageNode } = require("../../message-types/src/messageNode.js");
 const {
-  ClientConnectMessage,
   GenericReplyMessage,
+} = require("../../message-types/src/genericReplyMessage.js");
+const {
   GenericRequestMessage,
-  MessageNode,
-  StockCar,
+} = require("../../message-types/src/genericRequestMessage.js");
+const { StockCar } = require("../../message-types/src/stockCar.js");
+const {
   StockCarInfoMessage,
-} = require("../../message-types/src/index.js");
+} = require("../../message-types/src/stockCarInfoMessage.js");
 const process = require("process");
 const { Buffer } = require("buffer");
 const { EMessageDirection } = require("./types.js");
-const { getConfig } = require("../../config/src/index.js");
 
 const log = P().child({ service: "mcos:MCOTSServer" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -30,9 +31,9 @@ log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
  *
- * @param {TCPConnection} connection
+ * @param {import("../../core/src/tcpConnection").TCPConnection} connection
  * @param {MessageNode} packet
- * @returns {Promise<ConnectionWithPacket>}
+ * @returns {Promise<import("./types").ConnectionWithPacket>}
  */
 async function compressIfNeeded(connection, packet) {
   // Check if compression is needed
@@ -53,9 +54,9 @@ async function compressIfNeeded(connection, packet) {
 
 /**
  *
- * @param {TCPConnection} connection
+ * @param {import("../../core/src/tcpConnection").TCPConnection} connection
  * @param {MessageNode} packet
- * @returns {Promise<ConnectionWithPacket>}
+ * @returns {Promise<import("./types").ConnectionWithPacket>}
  */
 async function encryptIfNeeded(connection, packet) {
   // Check if encryption is needed
@@ -72,12 +73,12 @@ async function encryptIfNeeded(connection, packet) {
 
 /**
  *
- * @param {TCPConnection} connection
+ * @param {import("../../core/src/tcpConnection").TCPConnection} connection
  * @param {MessageNode[]} packetList
- * @returns {Promise<TCPConnection>}
+ * @returns {Promise<import("../../core/src/tcpConnection").TCPConnection>}
  */
 async function socketWriteIfOpen(connection, packetList) {
-  /** @type {ConnectionWithPackets} */
+  /** @type {import("./types").ConnectionWithPackets} */
   const updatedConnection = {
     connection: connection,
     packetList: packetList,
@@ -119,16 +120,14 @@ async function socketWriteIfOpen(connection, packetList) {
 class TCPManager {
   /** @type {TCPManager} */
   static _instance;
-  /** @type {MCOTServer} */
-  mcotServer;
-  /** @type {DatabaseManager} */
-  databaseManager;
+
+
 
   /**
    *
-   * @returns {TCPManager}
+   * @returns {Promise<TCPManager>}
    */
-  static getInstance() {
+  static async getInstance() {
     if (!TCPManager._instance) {
       TCPManager._instance = new TCPManager();
     }
@@ -137,15 +136,13 @@ class TCPManager {
 
   /** @private */
   constructor() {
-    this.mcotServer = MCOTServer.getInstance();
-    this.databaseManager = DatabaseManager.getInstance(getConfig());
   }
 
   /**
    *
-   * @param {TCPConnection} connection
+   * @param {import("../../core/src/tcpConnection").TCPConnection} connection
    * @param {MessageNode} packet
-   * @returns {Promise<ConnectionWithPackets>}
+   * @returns {Promise<import("./types").ConnectionWithPackets>}
    */
   async getStockCarInfo(connection, packet) {
     const getStockCarInfoMessage = new GenericRequestMessage();
@@ -176,11 +173,12 @@ class TCPManager {
 
   /**
    *
-   * @param {TCPConnection} connection
+   * @param {import("../../core/src/tcpConnection").TCPConnection} connection
    * @param {MessageNode} packet
-   * @returns {Promise<ConnectionWithPackets>}
+   * @param {import("../../database/src/index").DatabaseManager} databaseManager
+   * @returns {Promise<import("./types").ConnectionWithPackets>}
    */
-  async clientConnect(connection, packet) {
+  async clientConnect(connection, packet, databaseManager) {
     /**
      * Let's turn it into a ClientConnectMsg
      */
@@ -190,7 +188,7 @@ class TCPManager {
     log.debug(
       `[TCPManager] Looking up the session key for ${newMessage.customerId}...`
     );
-    const result = await this.databaseManager.fetchSessionKeyByCustomerId(
+    const result = await databaseManager.fetchSessionKeyByCustomerId(
       newMessage.customerId
     );
     log.debug("[TCPManager] Session Key located!");
@@ -223,17 +221,19 @@ class TCPManager {
   /**
    * Route or process MCOTS commands
    * @param {MessageNode} node
-   * @param {TCPConnection} conn
-   * @return {Promise<TCPConnection>}
+   * @param {import("../../core/src/tcpConnection").TCPConnection} conn
+   * @param {import("../../transactions/src/index").MCOTServer} mcotServer
+   * @param {import("../../database/src/index").DatabaseManager} databaseManager
+   * @return {Promise<import("../../core/src/tcpConnection").TCPConnection>}
    */
-  async processInput(node, conn) {
+  async processInput(node, conn, mcotServer, databaseManager) {
     const currentMessageNo = node.msgNo;
-    const currentMessageString = this.mcotServer._MSG_STRING(currentMessageNo);
+    const currentMessageString = mcotServer._MSG_STRING(currentMessageNo);
 
     switch (currentMessageString) {
       case "MC_SET_OPTIONS":
         try {
-          const result = await this.mcotServer._setOptions(conn, node);
+          const result = await mcotServer._setOptions(conn, node);
           const responsePackets = result.packetList;
           return await socketWriteIfOpen(result.connection, responsePackets);
         } catch (error) {
@@ -246,7 +246,7 @@ class TCPManager {
 
       case "MC_TRACKING_MSG":
         try {
-          const result = await this.mcotServer._trackingMessage(conn, node);
+          const result = await mcotServer._trackingMessage(conn, node);
           const responsePackets = result.packetList;
           return socketWriteIfOpen(result.connection, responsePackets);
         } catch (error) {
@@ -259,7 +259,7 @@ class TCPManager {
 
       case "MC_UPDATE_PLAYER_PHYSICAL":
         try {
-          const result = await this.mcotServer._updatePlayerPhysical(
+          const result = await mcotServer._updatePlayerPhysical(
             conn,
             node
           );
@@ -277,7 +277,7 @@ class TCPManager {
 
       case "MC_CLIENT_CONNECT_MSG": {
         try {
-          const result = await this.clientConnect(conn, node);
+          const result = await this.clientConnect(conn, node, databaseManager );
           const responsePackets = result.packetList;
           // Write the socket
           return await socketWriteIfOpen(result.connection, responsePackets);
@@ -296,7 +296,7 @@ class TCPManager {
 
       case "MC_LOGIN": {
         try {
-          const result = await this.mcotServer._login(conn, node);
+          const result = await mcotServer._login(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
           return socketWriteIfOpen(result.connection, responsePackets);
@@ -315,7 +315,7 @@ class TCPManager {
 
       case "MC_LOGOUT": {
         try {
-          const result = await this.mcotServer._logout(conn, node);
+          const result = await mcotServer._logout(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
           return await socketWriteIfOpen(result.connection, responsePackets);
@@ -333,7 +333,7 @@ class TCPManager {
       }
 
       case "MC_GET_LOBBIES": {
-        const result = await this.mcotServer._getLobbies(conn, node);
+        const result = await mcotServer._getLobbies(conn, node);
         log.debug("Dumping Lobbies response packet...");
         log.debug(result.packetList.join());
         const responsePackets = result.packetList;
@@ -383,11 +383,13 @@ class TCPManager {
   }
 
   /**
-   * @param {MessageNode} msg
-   * @param {TCPConnection} con
-   * @return {Promise<TCPConnection>}
+   * @param {MessageNode} message
+   * @param {import("../../core/src/tcpConnection").TCPConnection} con
+   * @param {import("../../transactions/src/index").MCOTServer} mcotServer
+   * @param {import("../../database/src/index").DatabaseManager} databaseManager
+   * @return {Promise<import("../../core/src/tcpConnection").TCPConnection>}
    */
-  async messageReceived(message, con) {
+  async messageReceived(message, con, mcotServer, databaseManager) {
     const newConnection = con;
     if (!newConnection.useEncryption && message.flags && 0x08) {
       log.debug("Turning on encryption");
@@ -445,15 +447,17 @@ class TCPManager {
     }
 
     // Should be good to process now
-    return this.processInput(message, newConnection);
+    return this.processInput(message, newConnection, mcotServer, databaseManager);
   }
 
   /**
    *
-   * @param {UnprocessedPacket} rawPacket
-   * @returns {Promise<TCPConnection>}
+   * @param {import("./types").UnprocessedPacket} rawPacket
+   * @param {import("../../transactions/src/index").MCOTServer} mcotServer
+   * @param {import("../../database/src/index").DatabaseManager} databaseManager
+   * @returns {Promise<import("../../core/src/tcpConnection").TCPConnection>}
    */
-  async defaultHandler(rawPacket) {
+  async defaultHandler(rawPacket, mcotServer, databaseManager) {
     const { connection, remoteAddress, localPort, data } = rawPacket;
     const messageNode = new MessageNode(EMessageDirection.RECEIVED);
     messageNode.deserialize(data);
@@ -469,7 +473,7 @@ class TCPManager {
     );
     messageNode.dumpPacket();
 
-    return this.messageReceived(messageNode, connection);
+    return this.messageReceived(messageNode, connection, mcotServer, databaseManager);
   }
 }
 module.exports = {
