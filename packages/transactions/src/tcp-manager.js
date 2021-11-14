@@ -121,8 +121,6 @@ class TCPManager {
   /** @type {TCPManager} */
   static _instance;
 
-
-
   /**
    *
    * @returns {Promise<TCPManager>}
@@ -135,8 +133,7 @@ class TCPManager {
   }
 
   /** @private */
-  constructor() {
-  }
+  constructor() {}
 
   /**
    *
@@ -259,10 +256,7 @@ class TCPManager {
 
       case "MC_UPDATE_PLAYER_PHYSICAL":
         try {
-          const result = await mcotServer._updatePlayerPhysical(
-            conn,
-            node
-          );
+          const result = await mcotServer._updatePlayerPhysical(conn, node);
           const responsePackets = result.packetList;
           return socketWriteIfOpen(result.connection, responsePackets);
         } catch (error) {
@@ -277,7 +271,7 @@ class TCPManager {
 
       case "MC_CLIENT_CONNECT_MSG": {
         try {
-          const result = await this.clientConnect(conn, node, databaseManager );
+          const result = await this.clientConnect(conn, node, databaseManager);
           const responsePackets = result.packetList;
           // Write the socket
           return await socketWriteIfOpen(result.connection, responsePackets);
@@ -447,7 +441,12 @@ class TCPManager {
     }
 
     // Should be good to process now
-    return this.processInput(message, newConnection, mcotServer, databaseManager);
+    return this.processInput(
+      message,
+      newConnection,
+      mcotServer,
+      databaseManager
+    );
   }
 
   /**
@@ -473,7 +472,12 @@ class TCPManager {
     );
     messageNode.dumpPacket();
 
-    return this.messageReceived(messageNode, connection, mcotServer, databaseManager);
+    return this.messageReceived(
+      messageNode,
+      connection,
+      mcotServer,
+      databaseManager
+    );
   }
 }
 module.exports = {

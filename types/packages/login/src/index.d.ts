@@ -21,20 +21,23 @@ export type UserRecordMini = {
  * @property {DatabaseManager} databaseManager
  */
 export class LoginServer {
-    static _instance: any;
+    /**
+     * @private
+     * @type {LoginServer}
+     */
+    private static _instance;
     /**
      *
-     * @returns {Promise<LoginServer>}
+     * @returns {LoginServer}
      */
-    static getInstance(): Promise<LoginServer>;
-    /** @type {DatabaseManager} */
-    databaseManager: DatabaseManager;
+    static getInstance(): LoginServer;
     /**
      *
      * @param {import("../../transactions/src/types").UnprocessedPacket} rawPacket
+     * @param {import("../../database/src/index").DatabaseManager} databaseManager
      * @return {Promise<import("../../core/src/tcpConnection").TCPConnection>}
      */
-    dataHandler(rawPacket: import("../../transactions/src/types").UnprocessedPacket): Promise<import("../../core/src/tcpConnection").TCPConnection>;
+    dataHandler(rawPacket: import("../../transactions/src/types").UnprocessedPacket, databaseManager: import("../../database/src/index").DatabaseManager): Promise<import("../../core/src/tcpConnection").TCPConnection>;
     /**
      *
      * @param {string} contextId
@@ -46,9 +49,9 @@ export class LoginServer {
      * Should return a @link {NPSMessage} object
      * @param {import("../../core/src/tcpConnection").TCPConnection} connection
      * @param {Buffer} data
+     * @param {import("../../database/src/index").DatabaseManager} databaseManager
      * @return {Promise<Buffer>}
      */
-    _userLogin(connection: import("../../core/src/tcpConnection").TCPConnection, data: Buffer): Promise<Buffer>;
+    _userLogin(connection: import("../../core/src/tcpConnection").TCPConnection, data: Buffer, databaseManager: import("../../database/src/index").DatabaseManager): Promise<Buffer>;
 }
-import { DatabaseManager } from "../../database/src/index.js";
 import { Buffer } from "buffer";

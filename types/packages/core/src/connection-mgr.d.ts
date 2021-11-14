@@ -27,6 +27,20 @@ export class ConnectionManager {
      */
     newConnection(connectionId: string, socket: import("net").Socket): TCPConnection;
     /**
+   *
+   * @param {string} remoteAddress
+   * @param {number} localPort
+   * @param {TCPConnection} newConnection
+   */
+    updateConnectionByAddressAndPort(remoteAddress: string, localPort: number, newConnection: TCPConnection): Promise<void>;
+    clearConnectionQueue(): void;
+    /** @returns {import("./tcpConnection").TCPConnection[]} */
+    getConnections(): import("./tcpConnection").TCPConnection[];
+    /**
+   * @return {string}
+   */
+    handleResetAllQueueState(): string;
+    /**
      * Check incoming data and route it to the correct handler based on localPort
      * @param {import("../../transactions/src/types").UnprocessedPacket} rawPacket
      * @param {import("../../login/src/index").LoginServer} loginServer
@@ -89,6 +103,10 @@ export class ConnectionManager {
      * @returns {TCPConnection[]}
      */
     dumpConnections(): TCPConnection[];
+    /**
+   * @return {string}
+   */
+    handleGetConnections(): string;
 }
 /** @type {NpsCommandMap[]} */
 export const NPS_COMMANDS: NpsCommandMap[];

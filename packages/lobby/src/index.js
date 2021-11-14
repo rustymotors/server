@@ -262,7 +262,12 @@ class LobbyServer {
    * @param {Buffer} rawData
    * @return {Promise<NPSMessage>}
    */
-  async _npsRequestGameConnectServer(connection, rawData, personaServer, databaseManager) {
+  async _npsRequestGameConnectServer(
+    connection,
+    rawData,
+    personaServer,
+    databaseManager
+  ) {
     const { sock } = connection;
     log.debug(
       `_npsRequestGameConnectServer: ${JSON.stringify({

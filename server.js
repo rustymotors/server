@@ -13,6 +13,12 @@ const { ShardServer } = require("./packages/shard/src/index.js");
 const { HTTPProxyServer } = require("./packages/proxy/src/index.js");
 const { MCServer } = require("./packages/core/src/index.js");
 const { AdminServer } = require("./packages/admin/src/index.js");
+const { DatabaseManager } = require("./packages/database/src/index.js");
+const { LoginServer } = require("./packages/login/src/index.js");
+const { ConnectionManager } = require("./packages/core/src/connection-mgr.js");
+const { PersonaServer } = require("./packages/persona/src/index.js");
+const { LobbyServer } = require("./packages/lobby/src/index.js");
+const { MCOTServer } = require("./packages/transactions/src/index.js");
 
 // What servers do we need?
 // * Routing Server
@@ -34,18 +40,23 @@ HTTPProxyServer.getInstance().start();
 // * Lobby
 // * MCOTS
 
-// * Database manager
-// const databaseManager = DatabaseManager.getInstance()
-
 // * MCOS Monolith
-MCServer.getInstance().then(async mcServer => {
-    await mcServer.startServers();
+MCServer.getInstance()
+  .then(async (mcServer) => {
+    await mcServer.startServers(
+      ConnectionManager.getInstance(),
+      LoginServer.getInstance(),
+      PersonaServer.getInstance(),
+      LobbyServer.getInstance(),
+      MCOTServer.getInstance(),
+      DatabaseManager.getInstance(),
+    );
 
     // * Admin Server
     //   Admin needs connections to
     //   * MCServer
-    AdminServer.getInstance(mcServer).start();
-    
+    AdminServer.getInstance().start(ConnectionManager.getInstance());
+
     // Promise.all([server.start(), patchAndShardServer.start(), authLogin.start()])
     //   .then(() => {
     //     logger.log('All servers started successfully')
@@ -53,7 +64,8 @@ MCServer.getInstance().then(async mcServer => {
     //   .catch(error => {
     //     process.exitCode = -1
     //     throw new Error(`There was an error starting the server: ${error}`)
-    //   })    
-}).catch(() => {
-    throw new Error("Help!")
-})
+    //   })
+  })
+  .catch(() => {
+    throw new Error("Help!");
+  });

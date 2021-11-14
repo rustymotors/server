@@ -6,35 +6,18 @@ export class AdminServer {
     static _instance: AdminServer;
     /**
      *
-     * @param {import("../../core/src/index").MCServer | undefined} mcServer
      * @returns {AdminServer}
      */
-    static getInstance(mcServer: import("../../core/src/index").MCServer | undefined): AdminServer;
-    /**
-     * @private
-     * @param {import("../../core/src/index").MCServer} mcServer
-     */
-    private constructor();
+    static getInstance(): AdminServer;
     /** @type {import("../../config/src/index").AppConfiguration} */
     config: import("../../config/src/index").AppConfiguration;
-    /** @type {import("../../core/src/index").MCServer} */
-    mcServer: import("../../core/src/index").MCServer;
     /** @type {import("https").Server | undefined} */
     httpsServer: import("https").Server | undefined;
     /**
      * @private
-     * @return {string}
-     */
-    private _handleGetConnections;
-    /**
-     * @private
-     * @return {string}
-     */
-    private _handleResetAllQueueState;
-    /**
-     * @private
      * @param {import("http").IncomingMessage} request
      * @param {import("http").ServerResponse} response
+     * @param {import("../../core/src/connection-mgr").ConnectionManager} connectionManager
      */
     private _httpsHandler;
     /**
@@ -42,7 +25,8 @@ export class AdminServer {
      */
     _socketEventHandler(socket: import("net").Socket): void;
     /**
+     * @param {import("../../core/src/connection-mgr").ConnectionManager} connectionManager
      * @return {import("https").Server}
      */
-    start(): import("https").Server;
+    start(connectionManager: import("../../core/src/connection-mgr").ConnectionManager): import("https").Server;
 }

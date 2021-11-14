@@ -6,7 +6,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 const { pino: P } = require("pino");
-const { DatabaseManager } = require("../../database/src/index.js");
 const {
   NPSUserStatus,
   premadeLogin,
@@ -37,19 +36,20 @@ log.level = process.env["LOG_LEVEL"] || "info";
  * @property {DatabaseManager} databaseManager
  */
 class LoginServer {
+  /**
+   * @private
+   * @type {LoginServer}
+   */
   static _instance;
-  /** @type {DatabaseManager} */
-  databaseManager;
 
   /**
    *
-   * @returns {Promise<LoginServer>}
+   * @returns {LoginServer}
    */
-  static async getInstance() {
+  static getInstance() {
     if (!LoginServer._instance) {
       LoginServer._instance = new LoginServer();
     }
-    LoginServer._instance.DatabaseManager = DatabaseManager.getInstance();
     return LoginServer._instance;
   }
 
@@ -63,9 +63,10 @@ class LoginServer {
   /**
    *
    * @param {import("../../transactions/src/types").UnprocessedPacket} rawPacket
+   * @param {import("../../database/src/index").DatabaseManager} databaseManager
    * @return {Promise<import("../../core/src/tcpConnection").TCPConnection>}
    */
-  async dataHandler(rawPacket) {
+  async dataHandler(rawPacket, databaseManager) {
     let processed = true;
     const { connection, data } = rawPacket;
     const { localPort, remoteAddress } = rawPacket;
@@ -84,7 +85,11 @@ class LoginServer {
     switch (requestCode) {
       // NpsUserLogin
       case "501": {
-        responsePacket = await this._userLogin(connection, data);
+        responsePacket = await this._userLogin(
+          connection,
+          data,
+          databaseManager
+        );
         break;
       }
 
@@ -170,9 +175,10 @@ class LoginServer {
    * Should return a @link {NPSMessage} object
    * @param {import("../../core/src/tcpConnection").TCPConnection} connection
    * @param {Buffer} data
+   * @param {import("../../database/src/index").DatabaseManager} databaseManager
    * @return {Promise<Buffer>}
    */
-  async _userLogin(connection, data) {
+  async _userLogin(connection, data, databaseManager) {
     const { sock } = connection;
     const { localPort } = sock;
     const userStatus = new NPSUserStatus(data);
@@ -202,7 +208,7 @@ class LoginServer {
 
     // Save sessionkey in database under customerId
     log.debug("Preparing to update session key in db");
-    await this.databaseManager
+    await databaseManager
       ._updateSessionKey(
         customer.customerId,
         userStatus.sessionkey,

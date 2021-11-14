@@ -11,6 +11,11 @@ const { SocketFactory } = require("../../test-helpers/socket-factory.js");
 const { ConnectionManager } = require("../src/connection-mgr.js");
 const { ListenerThread } = require("../src/listener-thread.js");
 const { Buffer } = require("buffer");
+const { LoginServer } = require("../../login/src/index.js");
+const { PersonaServer } = require("../../persona/src/index.js");
+const { LobbyServer } = require("../../lobby/src/index.js");
+const { MCOTServer } = require("../../transactions/src/index.js");
+const { DatabaseManager } = require("../../database/src/index.js");
 
 t.test("ListenerThread - _onData", async () => {
   const listenerThread = ListenerThread.getInstance();
@@ -18,7 +23,7 @@ t.test("ListenerThread - _onData", async () => {
   const fakeSocket1 = SocketFactory.createSocket();
   t.equal(fakeSocket1.localPort, 7003);
 
-  const fakeConnection1 = (await ConnectionManager.getInstance()).newConnection(
+  const fakeConnection1 = ConnectionManager.getInstance().newConnection(
     "test_connction_1",
     fakeSocket1
   );
@@ -27,7 +32,16 @@ t.test("ListenerThread - _onData", async () => {
   t.equal(fakeConnection1.remoteAddress, "0.0.0.0");
 
   try {
-    await listenerThread._onData(Buffer.alloc(5), fakeConnection1);
+    await listenerThread._onData(
+      Buffer.alloc(5),
+      fakeConnection1,
+      ConnectionManager.getInstance(),
+      LoginServer.getInstance(),
+      PersonaServer.getInstance(),
+      LobbyServer.getInstance(),
+      MCOTServer.getInstance(),
+      DatabaseManager.getInstance()
+    );
   } catch (err) {
     if (err instanceof Error) {
       t.notMatch(err.message, "Remote address is empty");
@@ -42,13 +56,21 @@ t.test("ListenerThread - _onData", async () => {
     fakeSocket3
   );
   fakeConnection3.sock = SocketFactory.createSocket();
-  fakeConnection3.setManager(await ConnectionManager.getInstance());
   fakeConnection3.remoteAddress = "";
 
   t.equal(fakeConnection3.remoteAddress, "");
 
   try {
-    await listenerThread._onData(Buffer.alloc(5), fakeConnection3);
+    await listenerThread._onData(
+      Buffer.alloc(5),
+      fakeConnection3,
+      ConnectionManager.getInstance(),
+      LoginServer.getInstance(),
+      PersonaServer.getInstance(),
+      LobbyServer.getInstance(),
+      MCOTServer.getInstance(),
+      DatabaseManager.getInstance()
+    );
   } catch (err) {
     if (err instanceof Error) {
       t.match(err.message, "Unable to locate name for opCode 0");

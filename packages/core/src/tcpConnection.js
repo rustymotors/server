@@ -97,35 +97,6 @@ class TCPConnection {
 
   /**
    *
-   * @param {string} remoteAddress
-   * @param {number} localPort
-   * @param {TCPConnection} newConnection
-   */
-  async updateConnectionByAddressAndPort(
-    remoteAddress,
-    localPort,
-    newConnection
-  ) {
-    if (this.mgr === undefined) {
-      throw new Error("Connection manager not set");
-    }
-    this.mgr._updateConnectionByAddressAndPort(
-      remoteAddress,
-      localPort,
-      newConnection
-    );
-  }
-
-  /**
-   *
-   * @param {import("./connection-mgr").ConnectionManager} manager
-   */
-  setManager(manager) {
-    this.mgr = manager;
-  }
-
-  /**
-   *
    * @param {import("./encryption-mgr").EncryptionManager} encryptionManager
    */
   setEncryptionManager(encryptionManager) {
@@ -249,12 +220,24 @@ class TCPConnection {
    * @param {import("../../database/src/index").DatabaseManager} databaseManager
    * @returns {Promise<TCPConnection>}
    */
-  async processPacket(packet, connectionManager, loginServer, personaServer, lobbyServer, mcotServer, databaseManager) {
-    if (this.mgr === undefined) {
-      throw new Error("Connection manager is not set");
-    }
+  async processPacket(
+    packet,
+    connectionManager,
+    loginServer,
+    personaServer,
+    lobbyServer,
+    mcotServer,
+    databaseManager
+  ) {
     try {
-      return connectionManager.processData(packet, loginServer, personaServer, lobbyServer, mcotServer, databaseManager);
+      return connectionManager.processData(
+        packet,
+        loginServer,
+        personaServer,
+        lobbyServer,
+        mcotServer,
+        databaseManager
+      );
     } catch (error) {
       if (error instanceof Error) {
         const newError = new Error(

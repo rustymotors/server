@@ -50,19 +50,6 @@ export class TCPConnection {
     isLobbyKeysetReady(): boolean;
     /**
      *
-     * @param {string} remoteAddress
-     * @param {number} localPort
-     * @param {TCPConnection} newConnection
-     */
-    updateConnectionByAddressAndPort(remoteAddress: string, localPort: number, newConnection: TCPConnection): Promise<void>;
-    /**
-     *
-     * @param {import("./connection-mgr").ConnectionManager} manager
-     */
-    setManager(manager: import("./connection-mgr").ConnectionManager): void;
-    mgr: import("./connection-mgr").ConnectionManager;
-    /**
-     *
      * @param {import("./encryption-mgr").EncryptionManager} encryptionManager
      */
     setEncryptionManager(encryptionManager: import("./encryption-mgr").EncryptionManager): void;

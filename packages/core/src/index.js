@@ -43,27 +43,25 @@ class MCServer {
     this.config = getConfig();
   }
 
-  clearConnectionQueue() {
-    if (this.mgr === undefined) {
-      throw new Error("Connection manager not set");
-    }
-    this.mgr.resetAllQueueState();
-  }
-
-  /** @returns {import("./tcpConnection").TCPConnection[]} */
-  getConnections() {
-    if (this.mgr === undefined) {
-      throw new Error("Connection manager is not set");
-    }
-    return this.mgr.dumpConnections();
-  }
-
   /**
    * Start the HTTP, HTTPS and TCP connection listeners
+   *    * @param {import("./connection-mgr").ConnectionManager} connectionManager
+   * @param {import("../../login/src/index").LoginServer} loginServer
+   * @param {import("../../persona/src/index").PersonaServer} personaServer
+   * @param {import("../../lobby/src/index").LobbyServer} lobbyServer
+   * @param {import("../../transactions/src/index").MCOTServer} mcotServer
+   * @param {import("../../database/src/index").DatabaseManager} databaseManager
    * @returns {Promise<void>}
    */
 
-  async startServers() {
+  async startServers(
+    connectionManager,
+    loginServer,
+    personaServer,
+    lobbyServer,
+    mcotServer,
+    databaseManager
+  ) {
     const listenerThread = ListenerThread.getInstance();
     log.info({}, "Starting the listening sockets...");
     // TODO: Seperate the PersonaServer ports of 8226 and 8228
@@ -73,12 +71,16 @@ class MCServer {
       9014,
     ];
 
-    if (this.mgr === undefined) {
-      throw new Error("Connection manager is not set");
-    }
-
     for (const port of tcpPortList) {
-      listenerThread.startTCPListener(port, this.mgr);
+      listenerThread.startTCPListener(
+        port,
+        connectionManager,
+        loginServer,
+        personaServer,
+        lobbyServer,
+        mcotServer,
+        databaseManager
+      );
       log.info(`port ${port} listening`);
     }
 

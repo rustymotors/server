@@ -7,7 +7,6 @@
 
 const t = require("tap");
 const { SocketFactory } = require("../../test-helpers/socket-factory.js");
-const { ConnectionManager } = require("../src/connection-mgr.js");
 const { EncryptionManager } = require("../src/encryption-mgr.js");
 const { TCPConnection } = require("../src/tcpConnection.js");
 const { Buffer } = require("buffer");
@@ -15,7 +14,6 @@ const { Buffer } = require("buffer");
 t.test("ConnectionObj", (t) => {
   const testConnection = new TCPConnection("abc", SocketFactory.createSocket());
 
-  testConnection.setManager(ConnectionManager.getInstance());
   testConnection.setEncryptionManager(new EncryptionManager());
 
   t.equal(testConnection.status, "Inactive");
@@ -33,11 +31,9 @@ t.test("ConnectionObj cross-comms", (t) => {
 
   t.beforeEach(() => {
     testConn1 = new TCPConnection("def", SocketFactory.createSocket());
-    testConn1.setManager(ConnectionManager.getInstance());
     testConn1.setEncryptionManager(new EncryptionManager());
 
     testConn2 = new TCPConnection("ghi", SocketFactory.createSocket());
-    testConn2.setManager(ConnectionManager.getInstance());
     testConn2.setEncryptionManager(new EncryptionManager());
 
     testConn1.setEncryptionKey(Buffer.from("abc123", "hex"));

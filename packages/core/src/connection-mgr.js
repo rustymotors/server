@@ -18,7 +18,7 @@ const log = P().child({ service: "mcos:ConnectionManager" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
 class ConnectionManager {
-  /** 
+  /**
    * @private
    * @type {ConnectionManager} */
   static _instance;
@@ -59,9 +59,59 @@ class ConnectionManager {
    */
   newConnection(connectionId, socket) {
     const newConnection = new TCPConnection(connectionId, socket);
-    newConnection.setManager(this);
     newConnection.setEncryptionManager(new EncryptionManager());
     return newConnection;
+  }
+
+  /**
+   *
+   * @param {string} remoteAddress
+   * @param {number} localPort
+   * @param {TCPConnection} newConnection
+   */
+  async updateConnectionByAddressAndPort(
+    remoteAddress,
+    localPort,
+    newConnection
+  ) {
+    this._updateConnectionByAddressAndPort(
+      remoteAddress,
+      localPort,
+      newConnection
+    );
+  }
+
+  clearConnectionQueue() {
+    this.resetAllQueueState();
+  }
+
+  /** @returns {import("./tcpConnection").TCPConnection[]} */
+  getConnections() {
+    return this.dumpConnections();
+  }
+
+  /**
+   * @return {string}
+   */
+  handleResetAllQueueState() {
+    this.clearConnectionQueue();
+    const connections = this.getConnections();
+    let responseText = "Queue state reset for all connections\n\n";
+    for (let i = 0; i < connections.length; i++) {
+      const connection = connections[i];
+      if (typeof connection === "undefined") {
+        return responseText.concat("No connections found");
+      }
+      const displayConnection = `
+      index: ${i} - ${connection.id}
+          remoteAddress: ${connection.remoteAddress}:${connection.localPort}
+          Encryption ID: ${connection.getEncryptionId()}
+          inQueue:       ${connection.inQueue}
+      `;
+      responseText += displayConnection;
+    }
+
+    return responseText;
   }
 
   /**
@@ -74,7 +124,14 @@ class ConnectionManager {
    * @param {import("../../database/src/index").DatabaseManager} databaseManager
    * @returns {Promise<TCPConnection>}
    */
-  async processData(rawPacket, loginServer, personaServer, lobbyServer, mcotServer, databaseManager) {
+  async processData(
+    rawPacket,
+    loginServer,
+    personaServer,
+    lobbyServer,
+    mcotServer,
+    databaseManager
+  ) {
     const npsPacketManager = await NPSPacketManager.getInstance();
 
     const { remoteAddress, localPort, data } = rawPacket;
@@ -121,7 +178,13 @@ class ConnectionManager {
           throw error;
         }
         try {
-          return await npsPacketManager.processNPSPacket(rawPacket, loginServer, personaServer, lobbyServer, databaseManager);
+          return await npsPacketManager.processNPSPacket(
+            rawPacket,
+            loginServer,
+            personaServer,
+            lobbyServer,
+            databaseManager
+          );
         } catch (error) {
           if (error instanceof Error) {
             const newError = new Error(
@@ -140,7 +203,11 @@ class ConnectionManager {
         newNode.deserialize(rawPacket.data);
         log.debug(JSON.stringify(newNode));
 
-        return (await TCPManager.getInstance()).defaultHandler(rawPacket, mcotServer, databaseManager);
+        return (await TCPManager.getInstance()).defaultHandler(
+          rawPacket,
+          mcotServer,
+          databaseManager
+        );
       }
 
       default:
@@ -314,6 +381,29 @@ class ConnectionManager {
    */
   dumpConnections() {
     return this.connections;
+  }
+
+  /**
+   * @return {string}
+   */
+  handleGetConnections() {
+    const connections = this.getConnections();
+    let responseText = "";
+    for (let i = 0; i < connections.length; i++) {
+      const connection = connections[i];
+      if (typeof connection === "undefined") {
+        return "No connections were found";
+      }
+      const displayConnection = `
+        index: ${i} - ${connection.id}
+            remoteAddress: ${connection.remoteAddress}:${connection.localPort}
+            Encryption ID: ${connection.getEncryptionId()}
+            inQueue:       ${connection.inQueue}
+        `;
+      responseText += displayConnection;
+    }
+
+    return responseText;
   }
 }
 

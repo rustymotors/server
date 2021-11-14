@@ -36,9 +36,24 @@ class ListenerThread {
    * takes the data buffer and creates a IRawPacket object
    * @param {Buffer} data
    * @param {import("./tcpConnection").TCPConnection} connection
+   * @param {import("./connection-mgr.js").ConnectionManager} connectionManager
+   * @param {import("../../login/src/index").LoginServer} loginServer
+   * @param {import("../../persona/src/index").PersonaServer} personaServer
+   * @param {import("../../lobby/src/index").LobbyServer} lobbyServer
+   * @param {import("../../transactions/src/index").MCOTServer} mcotServer
+   * @param {import("../../database/src/index").DatabaseManager} databaseManager
    * @returns {Promise<void>}
    */
-  async _onData(data, connection) {
+  async _onData(
+    data,
+    connection,
+    connectionManager,
+    loginServer,
+    personaServer,
+    lobbyServer,
+    mcotServer,
+    databaseManager
+  ) {
     const { localPort, remoteAddress } = connection.sock;
     /** @type {import("../../transactions/src/types").UnprocessedPacket} */
     const rawPacket = {
@@ -58,7 +73,15 @@ class ListenerThread {
     /** @type {import("./tcpConnection").TCPConnection} */
     let newConnection;
     try {
-      newConnection = await connection.processPacket(rawPacket);
+      newConnection = await connection.processPacket(
+        rawPacket,
+        connectionManager,
+        loginServer,
+        personaServer,
+        lobbyServer,
+        mcotServer,
+        databaseManager
+      );
     } catch (error) {
       if (error instanceof Error) {
         const newError = new Error(
@@ -75,7 +98,7 @@ class ListenerThread {
     }
 
     try {
-      await connection.updateConnectionByAddressAndPort(
+      await connectionManager.updateConnectionByAddressAndPort(
         connection.remoteAddress,
         connection.localPort,
         newConnection
@@ -96,12 +119,25 @@ class ListenerThread {
    * Server listener method
    * @private
    * @param {import("net").Socket} socket
-   * @param {import("./connection-mgr").ConnectionManager} connectionMgr
+   * @param {import("./connection-mgr").ConnectionManager} connectionManager
+   * @param {import("../../login/src/index").LoginServer} loginServer
+   * @param {import("../../persona/src/index").PersonaServer} personaServer
+   * @param {import("../../lobby/src/index").LobbyServer} lobbyServer
+   * @param {import("../../transactions/src/index").MCOTServer} mcotServer
+   * @param {import("../../database/src/index").DatabaseManager} databaseManager
    */
-  _listener(socket, connectionMgr) {
+  _listener(
+    socket,
+    connectionManager,
+    loginServer,
+    personaServer,
+    lobbyServer,
+    mcotServer,
+    databaseManager
+  ) {
     // Received a new connection
     // Turn it into a connection object
-    const connection = connectionMgr.findOrNewConnection(socket);
+    const connection = connectionManager.findOrNewConnection(socket);
 
     const { localPort, remoteAddress } = socket;
     log.info(`Client ${remoteAddress} connected to port ${localPort}`);
@@ -119,7 +155,16 @@ class ListenerThread {
       log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
     });
     socket.on("data", (data) => {
-      this._onData(data, connection);
+      this._onData(
+        data,
+        connection,
+        connectionManager,
+        loginServer,
+        personaServer,
+        lobbyServer,
+        mcotServer,
+        databaseManager
+      );
     });
     socket.on("error", (error) => {
       if (!error.message.includes("ECONNRESET")) {
@@ -132,13 +177,34 @@ class ListenerThread {
    * Given a port and a connection manager object,
    * create a new TCP socket listener for that port
    * @param {number} localPort
-   * @param {import("./connection-mgr").ConnectionManager} connectionMgr
+   * @param {import("./connection-mgr").ConnectionManager} connectionManager
+   * @param {import("../../login/src/index").LoginServer} loginServer
+   * @param {import("../../persona/src/index").PersonaServer} personaServer
+   * @param {import("../../lobby/src/index").LobbyServer} lobbyServer
+   * @param {import("../../transactions/src/index").MCOTServer} mcotServer
+   * @param {import("../../database/src/index").DatabaseManager} databaseManager
    * @returns {Promise<import("net").Server>}
    */
-  async startTCPListener(localPort, connectionMgr) {
+  async startTCPListener(
+    localPort,
+    connectionManager,
+    loginServer,
+    personaServer,
+    lobbyServer,
+    mcotServer,
+    databaseManager
+  ) {
     log.debug(`Attempting to bind to port ${localPort}`);
     return createServer((socket) => {
-      this._listener(socket, connectionMgr);
+      this._listener(
+        socket,
+        connectionManager,
+        loginServer,
+        personaServer,
+        lobbyServer,
+        mcotServer,
+        databaseManager
+      );
     }).listen({ port: localPort, host: "0.0.0.0" });
   }
 }

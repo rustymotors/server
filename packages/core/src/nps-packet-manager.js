@@ -28,7 +28,6 @@ class NPSPacketManager {
   /** @type {IMsgNameMapping[]} */
   msgNameMapping = [];
 
-
   /**
    *
    * @returns {NPSPacketManager}
@@ -95,7 +94,13 @@ class NPSPacketManager {
    * @param {import("../../database/src/index").DatabaseManager} databaseManager
    * @return {Promise<import("../../core/src/tcpConnection").TCPConnection>}
    */
-  async processNPSPacket(rawPacket, loginServer, personaServer, lobbyServer, databaseManager) {
+  async processNPSPacket(
+    rawPacket,
+    loginServer,
+    personaServer,
+    lobbyServer,
+    databaseManager
+  ) {
     const messageId = rawPacket.data.readInt16BE(0);
     log.info(
       `Handling message,
@@ -109,11 +114,15 @@ class NPSPacketManager {
 
     switch (localPort) {
       case 8226:
-        return loginServer.dataHandler(rawPacket);
+        return loginServer.dataHandler(rawPacket, databaseManager);
       case 8228:
         return personaServer.dataHandler(rawPacket);
       case 7003:
-        return lobbyServer.dataHandler(rawPacket, personaServer, databaseManager);
+        return lobbyServer.dataHandler(
+          rawPacket,
+          personaServer,
+          databaseManager
+        );
       default:
         process.exitCode = -1;
         throw new Error(
