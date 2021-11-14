@@ -5,16 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import P from "pino";
-import {
-  NPSMessage,
-  NPSPersonaMapsMessage,
-} from "../../message-types/src/index";
-import process from "process";
-import { Buffer } from "buffer";
-import { EMessageDirection } from "../../transactions/src/tcp-manager";
+const { pino: P } = require("pino");
+const process = require("process");
+const { Buffer } = require("buffer");
+const { NPSMessage } = require("../../message-types/src/npsMessage.js");
+const { EMessageDirection } = require("../../transactions/src/types.js");
+const { NPSPersonaMapsMessage } = require("../../message-types/src/index.js");
 
-const log = P().child({ service: "mcoserver:PersonaServer" });
+const log = P().child({ service: "mcos:PersonaServer" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
@@ -28,19 +26,18 @@ log.level = process.env["LOG_LEVEL"] || "info";
  * @property {Buffer} shardId
  */
 
-
 /**
  * @module
  */
 
-export class PersonaServer {
+class PersonaServer {
   /** @type {PersonaServer} */
   static _instance;
   /** @type {PersonaRecord[]} */
   personaList;
 
   /**
-   * 
+   *
    * @returns {PersonaServer}
    */
   static getInstance() {
@@ -82,7 +79,7 @@ export class PersonaServer {
 
   /**
    * @private
-   * @param {string} name 
+   * @param {string} name
    * @returns {Buffer}
    */
   _generateNameBuffer(name) {
@@ -92,13 +89,14 @@ export class PersonaServer {
   }
 
   /**
-   * 
-   * @param {Buffer} data 
+   *
+   * @param {Buffer} data
    * @returns {Promise<NPSMessage>}
    */
   async handleSelectGamePersona(data) {
     log.debug("_npsSelectGamePersona...");
-    const requestPacket = new NPSMessage(EMessageDirection.RECEIVED
+    const requestPacket = new NPSMessage(
+      EMessageDirection.RECEIVED
     ).deserialize(data);
     log.debug(
       `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
@@ -133,8 +131,8 @@ export class PersonaServer {
   }
 
   /**
-   * 
-   * @param {Buffer} data 
+   *
+   * @param {Buffer} data
    * @returns {Promise<NPSMessage>}
    */
   async createNewGameAccount(data) {
@@ -167,8 +165,8 @@ export class PersonaServer {
   //  * TODO: Change the persona record to show logged out. This requires it to exist first, it is currently hard-coded
   //  * TODO: Locate the connection and delete, or reset it.
   /**
-   * 
-   * @param {Buffer} data 
+   *
+   * @param {Buffer} data
    * @returns {Promise<NPSMessage>}
    */
   async logoutGameUser(data) {
@@ -363,9 +361,7 @@ export class PersonaServer {
    * @param {number} customerId
    * @return {Promise<PersonaRecord[]>}
    */
-  async getPersonaMapsByCustomerId(
-    customerId
-  ) {
+  async getPersonaMapsByCustomerId(customerId) {
     switch (customerId) {
       case 2_868_969_472:
       case 5_551_212:
@@ -446,8 +442,8 @@ export class PersonaServer {
   }
 
   /**
-   * 
-   * @param {import("../../transactions/src/tcp-manager").UnprocessedPacket} rawPacket 
+   *
+   * @param {import("../../transactions/src/tcp-manager").UnprocessedPacket} rawPacket
    * @returns {Promise<TCPConnection}
    */
   async dataHandler(rawPacket) {
@@ -512,3 +508,4 @@ export class PersonaServer {
     }
   }
 }
+module.exports = { PersonaServer };

@@ -2,7 +2,7 @@
   "name": "mcos",
   "version": "3.0.0-beta1",
   "description": "a server",
-  "type": "module",
+  "type": "commonjs",
   "engines": {
     "node": "^14.13.1 || >=16.0.0"
   },
@@ -16,10 +16,10 @@
     "check:license": "npm licenses audit --summary --config=licenses.config.js",
     "build": "tsc -p ./packages/tsconfig.json",
     "build:clean": "rm -rf built && npm run build",
-    "lint": "eslint packages/**/*.ts && prettier --write packages",
+    "lint": "eslint packages/**/*.js && prettier --write packages",
     "test": "npm run lint && npm run test:only && npm run test:coverage",
-    "test:only": "tap --ts --reporter=spec --no-check-coverage packages/**/*.test.ts",
-    "test:coverage": "tap  --coverage-report=html --coverage-report=lcov --no-check-coverage --no-browser"
+    "test:only": "tap --reporter=spec --no-check-coverage packages/**/*.test.js",
+    "test:coverage": "tap --coverage-report=html --coverage-report=lcov --no-check-coverage --no-browser"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
   "license": "MPL-2.0",
@@ -35,12 +35,15 @@
     "ts-node": "10.4.0"
   },
   "devDependencies": {
+    "@istanbuljs/esm-loader-hook": "0.1.2",
     "@tsconfig/node16": "1.0.2",
     "@types/tap": "15.0.5",
     "@typescript-eslint/eslint-plugin": "5.3.1",
     "@typescript-eslint/parser": "5.3.1",
-    "eslint": "8.2.0",
+    "eslint": "^8.2.0",
     "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-node": "^11.1.0",
+    "esm": "3.2.25",
     "prettier": "2.4.1",
     "prettier-eslint": "^8.2.2",
     "source-map-support": "0.5.20",

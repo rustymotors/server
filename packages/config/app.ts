@@ -1,8 +1,8 @@
-import { createServer } from "net";
-import P from "pino";
-import { ConfigurationManager } from "./src/index";
+const { createServer } = require("net");
+const { pino: P } = require("pino");
+const { ConfigurationManager } = require("./src/index.js");
 
-const log = P().child({ service: "MCOServer:Patch" });
+const log = P().child({ service: "mcos:Patch" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
 const config = ConfigurationManager.getInstance();

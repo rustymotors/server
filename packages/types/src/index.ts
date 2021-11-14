@@ -1,6 +1,6 @@
-// import { Cipher, Decipher } from "crypto";
-// import { Server, Socket } from "net";
-// import { Database } from "sqlite";
+// import { Cipher, Decipher }= require("crypto";
+// import { Server, Socket }= require("net";
+// import { Database }= require("sqlite";
 
 // export interface IEncryptionManager {
 //   id: string;
@@ -122,8 +122,6 @@
 //   timestamp: number;
 // };
 
-
-
 // export type PersonaRecord = {
 //   customerId: number;
 //   id: Buffer;
@@ -139,8 +137,6 @@
 //   key: string;
 //   rejectUnauthorized: boolean;
 // };
-
-
 
 // export type NpsCommandMap = {
 //   name: string;
@@ -382,7 +378,7 @@
 // //    * @param {Buffer} buffer
 // //    */
 // //   constructor(buffer) {
-// //     this._toFrom = Buffer.alloc(4) // UInt4
+// //     this._to= require( Buffer.alloc(4) // UInt4
 // //     this._appID = Buffer.alloc(4) // UInt4
 // //     this._header = new MessageHead() // UInt4
 // //     this._seq = Buffer.alloc(4) // UInt4
@@ -656,15 +652,6 @@
 //   ...NPS_LOGINCLIENT_COMMANDS,
 //   { name: "NPS_CRYPTO_DES_CBC", value: 0x11_01, module: "Lobby" },
 // ];
-
-// /**
-//  * @typedef {'RECEIVED' | 'SENT'} MESSAGE_DIRECTION
-//  *
-//  */
-// export enum EMessageDirection {
-//   RECEIVED = "received",
-//   SENT = "sent",
-// }
 
 // export interface IMessageNode {
 //   direction: EMessageDirection;

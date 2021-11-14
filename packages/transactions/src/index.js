@@ -5,28 +5,27 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import P from "pino";
-import {
+const { pino: P } = require("pino");
+const { MessageNode } = require("../../message-types/src/messageNode.js");
+const {
   GenericReplyMessage,
-  MessageNode,
-} from "../../message-types/src/index";
-import { EMessageDirection, TCPManager } from "./tcp-manager";
-import process from "process";
-import { Buffer } from "buffer";
+} = require("../../message-types/src/genericReplyMessage.js");
+const { EMessageDirection } = require("./types.js");
+const process = require("process");
+const { Buffer } = require("buffer");
 
-
-const log = P().child({ service: "mcoserver:MCOTSServer" });
+const log = P().child({ service: "mcos:MCOTSServer" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
  * Manages the game database server
  */
-export class MCOTServer {
+class MCOTServer {
   /** @type {MCOTServer} */
   static _instance;
 
   /**
-   * 
+   *
    * @returns {MCOTServer}
    */
   static getInstance() {
@@ -81,10 +80,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {Promise<ConnectionWithPackets}>}
    */
-  async _login(
-    connection,
-    node
-  ) {
+  async _login(connection, node) {
     // Create new response packet
     const pReply = new GenericReplyMessage();
     pReply.msgNo = 213;
@@ -105,10 +101,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {Promise<ConnectionWithPackets>}
    */
-  async _getLobbies(
-    connection,
-    node
-  ) {
+  async _getLobbies(connection, node) {
     log.debug("In _getLobbies...");
     const lobbiesListMessage = node;
 
@@ -148,10 +141,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {Promise<import("./tcp-manager").ConnectionWithPackets>}
    */
-  async _logout(
-    connection,
-    node
-  ) {
+  async _logout(connection, node) {
     const logoutMessage = node;
 
     logoutMessage.data = node.serialize();
@@ -181,10 +171,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {Promise<ConnectionWithPackets>}
    */
-  async _setOptions(
-    connection,
-    node
-  ) {
+  async _setOptions(connection, node) {
     const setOptionsMessage = node;
 
     setOptionsMessage.data = node.serialize();
@@ -211,10 +198,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {Promise<ConnectionWithPackets>}
    */
-  async _trackingMessage(
-    connection,
-    node
-  ) {
+  async _trackingMessage(connection, node) {
     const trackingMessage = node;
 
     trackingMessage.data = node.serialize();
@@ -241,10 +225,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {Promise<ConnectionWithPackets>}
    */
-  async _updatePlayerPhysical(
-    connection,
-    node
-  ) {
+  async _updatePlayerPhysical(connection, node) {
     const updatePlayerPhysicalMessage = node;
 
     updatePlayerPhysicalMessage.data = node.serialize();
@@ -266,4 +247,4 @@ export class MCOTServer {
   }
 }
 
-export { TCPManager };
+module.exports = { MCOTServer };

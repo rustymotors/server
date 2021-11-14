@@ -1,33 +1,12 @@
-import { readFileSync, statSync } from "fs";
-import { privateDecrypt } from "crypto";
-import { EMessageDirection } from "../../transactions/src/tcp-manager";
-export { GenericReplyMessage} from "./genericReplyMessage"
-export {GenericRequestMessage} from "./genericRequestMessage"
-export {StockCar} from "./stockCar"
-export {LobbyInfoPacket} from "./lobbyInfo"
-export {NPSMessage, INPSMessageJSON} from "./npsMessage"
-export {LoginMessage} from "./loginMessage"
-export {StockCarInfoMessage} from "./stockCarInfoMessage"
-export {LobbyMessage} from "./lobbyMessage"
-export {MessageNode} from "./messageNode"
-import { Buffer } from "buffer";
-import { NPSMessage } from ".";
+const { readFileSync, statSync } = require("fs");
+const { privateDecrypt } = require("crypto");
+const { Buffer } = require("buffer");
+const { NPSMessage } = require("./npsMessage.js");
+const { EMessageDirection } = require("../../transactions/src/types.js");
 
 /**
  * @module
  */
-
-
-
-
-
-
-
-
-
-
-
-
 
 /**
  * @module ClientConnectMsg
@@ -45,7 +24,7 @@ import { NPSMessage } from ".";
  * @property {string} personaName
  * @property {Buffer} mcVersion
  */
-export class ClientConnectMessage {
+class ClientConnectMessage {
   msgNo;
   personaId;
   appId;
@@ -110,32 +89,6 @@ export class ClientConnectMessage {
 }
 
 /**
- * @export
- * @typedef InpsPersonaMapsPersonaRecord
- * @property {number} personaCount - uint16
- * @property {number} unknown1 - uint16
- * @property {number} maxPersonas - uint16
- * @property {number} unknown2 - uint16
- * @property {number} id - uint32
- * @property {number} shardId - uint32
- * @property {number} unknown3 - uint16
- * @property {number} unknown4 - uint16
- * @property {number} personaNameLength - uint16
- * @property {string} name - string(16)
- */
-
-/**
- * @exports
- * @typedef InpsPersonaMapsMsgSchema
- * @property {number} msgNo - uint16
- * @property {number} msgLength - uint16
- * @property {number} msgVersion - uint16
- * @property {number} reserved - uint16
- * @property {number} msgChecksum - uint16
- * @property {InpsPersonaMapsPersonaRecord[]} personas
- */
-
-/**
  *
  * @class
  * @extends {NPSMessage}
@@ -143,7 +96,7 @@ export class ClientConnectMessage {
  * @property {number} personaSize
  * @property {number} personaCount
  */
-export class NPSPersonaMapsMessage extends NPSMessage {
+class NPSPersonaMapsMessage extends NPSMessage {
   personas;
   personaSize;
   personaCount;
@@ -295,7 +248,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
  * @property {string} contextId
  * @property {Buffer} buffer
  */
-export class NPSUserStatus extends NPSMessage {
+class NPSUserStatus extends NPSMessage {
   sessionkey;
   opCode;
   contextId;
@@ -351,10 +304,7 @@ export class NPSUserStatus extends NPSMessage {
    * @param {AppConfiguration["certificate"]} serverConfig
    * @param {Buffer} packet
    */
-  extractSessionKeyFromPacket(
-    serverConfig,
-    packet
-  ) {
+  extractSessionKeyFromPacket(serverConfig, packet) {
     // Decrypt the sessionkey
     const privateKey = this.fetchPrivateKeyFromFile(
       serverConfig.privateKeyFilename
@@ -409,7 +359,7 @@ export class NPSUserStatus extends NPSMessage {
  * @property {Buffer} userName
  * @property {Buffer} userData
  */
-export class NPSUserInfo extends NPSMessage {
+class NPSUserInfo extends NPSMessage {
   userId;
   userName;
   userData;
@@ -422,7 +372,7 @@ export class NPSUserInfo extends NPSMessage {
     this.userId = 0;
     this.userName = Buffer.from([0x00]); // 30 length
     this.userData = Buffer.from([0x00]); // 64 length
-    this.serviceName = "mcoserver:NPSUserInfo";
+    this.serviceName = "mcos:NPSUserInfo";
   }
 
   /**
@@ -458,7 +408,7 @@ export class NPSUserInfo extends NPSMessage {
  *
  * @return {Buffer}
  */
-export function premadeLogin() {
+function premadeLogin() {
   // TODO: Generate a dynamic login response message
   return Buffer.from([
     // Live Packet
@@ -720,3 +670,10 @@ export function premadeLogin() {
     0x00, // (0xa6 was old val)
   ]);
 }
+module.exports = {
+  ClientConnectMessage,
+  NPSPersonaMapsMessage,
+  NPSUserInfo,
+  NPSUserStatus,
+  premadeLogin,
+};

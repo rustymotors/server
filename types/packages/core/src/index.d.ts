@@ -1,19 +1,26 @@
-import { IMCServer, ITCPConnection } from "../../types/src/index";
-import { AppConfiguration } from "../../config/src/index";
 /**
  * This class starts all the servers
  */
-export declare class MCServer implements IMCServer {
-    static _instance: IMCServer;
-    config: AppConfiguration;
-    private mgr?;
-    static getInstance(): IMCServer;
-    private constructor();
-    clearConnectionQueue(): void;
-    getConnections(): ITCPConnection[];
-    /**
-     * Start the HTTP, HTTPS and TCP connection listeners
-     * @returns {Promise<void>}
-     */
-    startServers(): Promise<void>;
+export class MCServer {
+  /** @type {MCServer} */
+  static _instance: MCServer;
+  /** @return {MCServer} */
+  static getInstance(): MCServer;
+  /** @type {AppConfiguration} */
+  config: AppConfiguration;
+  /**
+   * @private
+   * @type {ConnectionManager | undefined}
+   */
+  private mgr;
+  clearConnectionQueue(): void;
+  /** @returns {TCPConnection[]} */
+  getConnections(): TCPConnection[];
+  /**
+   * Start the HTTP, HTTPS and TCP connection listeners
+   * @returns {Promise<void>}
+   */
+  startServers(): Promise<void>;
 }
+import { AppConfiguration } from "../../config/src/index";
+import { TCPConnection } from "./tcpConnection";

@@ -1,4 +1,4 @@
-import { Buffer } from "buffer";
+const { Buffer } = require("buffer");
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // DWORD data;   // specific to the message sent (but usually 0)
@@ -12,7 +12,7 @@ import { Buffer } from "buffer";
  * @property {Buffer} data
  * @property {Buffer} data2
  */
-export class GenericRequestMessage {
+class GenericRequestMessage {
   msgNo;
   data;
   data2;
@@ -72,3 +72,4 @@ export class GenericRequestMessage {
     })}`;
   }
 }
+module.exports = { GenericRequestMessage };

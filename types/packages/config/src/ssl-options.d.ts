@@ -1,5 +1,3 @@
-import { SslOptions } from "../../types/src/index";
-import { AppConfiguration } from ".";
 /**
  *
  * @typedef {Object} sslOptionsObj
@@ -9,13 +7,17 @@ import { AppConfiguration } from ".";
  * @property {boolean} rejectUnauthorized
  */
 /**
-   *
- * @param {Object} certificateSettings
- * @param {string} certificateSettings.privateKeyFilename
- * @param {string} certificateSettings.publicKeyFilename
- * @param {string} certificateSettings.certFilename
- * @param {string} serviceName
-
-   * @return {Promise<sslOptionsObj>}
-   */
-export declare function _sslOptions(certificateSettings: AppConfiguration["certificate"]): SslOptions;
+ *
+ * @param {AppConfiguration["certificate"]} certificateSettings
+ * @returns {sslOptionsObj}
+ */
+export function _sslOptions(
+  certificateSettings: AppConfiguration["certificate"]
+): sslOptionsObj;
+export type sslOptionsObj = {
+  cert: string;
+  honorCipherOrder: boolean;
+  key: string;
+  rejectUnauthorized: boolean;
+};
+import { AppConfiguration } from ".";

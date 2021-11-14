@@ -1,53 +1,13 @@
-import { RoutingMesh } from "./client";
-import P from "pino";
-import { createServer } from "net";
-import process from "process";
+const { pino: P } = require("pino");
+const { createServer } = require("net");
+const { RoutingMesh } = require("./client.js");
+const process = require("process");
+const { EServerConnectionAction } = require("./types.js");
 
-
-const log = P().child({ service: "MCOServer:Route" });
+const log = P().child({ service: "mcos:Route" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
-/** 
- * @exports
- * @enum {string}
- */
-export const EServerConnectionName = {
-  ADMIN: "Admin",
-  AUTH: "Auth",
-  MCSERVER: "MCServer",
-  PATCH: "Patch",
-  PROXY: "Proxy",
-  SHARD: "Shard",
-  DATABASE: "Database",
-}
-
-/**
- * @exports
- * @enum {string}
- */
-export const EServerConnectionAction = {
-  REGISTER_SERVICE: "Register Service",
-}
-
-/**
- * @exports
- * @enum {string}
- */
-export const EServiceQuery = {
-  GET_CONNECTIONS: "Get connections",
-}
-
-/**
- * @export
- * @typedef {Object} ServerConnectionRecord
- * @property {typeof EServerConnectionAction} [action]
- * @property {typeof EServerConnectionName} name
- * @property {string} host
- * @property {number} port
- */
-
-
-export class RoutingServer {
+class RoutingServer {
   /** @type {RoutingServer} */
   static _instance;
   /**
@@ -57,7 +17,7 @@ export class RoutingServer {
   _serverConnections = [];
 
   /**
-   * 
+   *
    * @returns {RoutingServer}
    */
   static getInstance() {
@@ -73,8 +33,8 @@ export class RoutingServer {
   }
 
   /**
-   * 
-   * @param {ServerConnectionRecord} payloadJSON 
+   *
+   * @param {ServerConnectionRecord} payloadJSON
    * @returns {void}
    */
   registerNewService(payloadJSON) {
@@ -95,8 +55,8 @@ export class RoutingServer {
   }
 
   /**
-   * 
-   * @param {Buffer} data 
+   *
+   * @param {Buffer} data
    * @returns {void}
    */
   handleData(data) {
@@ -142,4 +102,7 @@ export class RoutingServer {
   }
 }
 
-export { RoutingMesh };
+module.exports = {
+  RoutingServer,
+  RoutingMesh,
+};

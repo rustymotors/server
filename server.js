@@ -6,13 +6,13 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { RoutingServer } from "./packages/router/src/index.js";
-import { PatchServer } from "./packages/patch/src/index.js";
-import { AuthLogin } from "./packages/auth/src/index.js";
-import { ShardServer } from "./packages/shard/src/index.js";
-import { HTTPProxyServer } from "./packages/proxy/src/index.js";
-import { MCServer } from "./packages/core/src/index";
-import { AdminServer } from "./packages/admin/src/index";
+const { RoutingServer } = require("./packages/router/src/index.js");
+const { PatchServer } = require("./packages/patch/src/index.js");
+const { AuthLogin } = require("./packages/auth/src/index.js");
+const { ShardServer } = require("./packages/shard/src/index.js");
+const { HTTPProxyServer } = require("./packages/proxy/src/index.js");
+const { MCServer } = require("./packages/core/src/index.js");
+const { AdminServer } = require("./packages/admin/src/index.js");
 
 // What servers do we need?
 // * Routing Server
@@ -38,19 +38,22 @@ HTTPProxyServer.getInstance().start();
 // const databaseManager = DatabaseManager.getInstance()
 
 // * MCOS Monolith
-const mcServer = MCServer.getInstance();
-mcServer.startServers();
+MCServer.getInstance().then(async mcServer => {
+    await mcServer.startServers();
 
-// * Admin Server
-//   Admin needs connections to
-//   * MCOServer
-AdminServer.getInstance(mcServer).start();
-
-// Promise.all([server.start(), patchAndShardServer.start(), authLogin.start()])
-//   .then(() => {
-//     logger.log('All servers started successfully')
-//   })
-//   .catch(error => {
-//     process.exitCode = -1
-//     throw new Error(`There was an error starting the server: ${error}`)
-//   })
+    // * Admin Server
+    //   Admin needs connections to
+    //   * MCServer
+    AdminServer.getInstance(mcServer).start();
+    
+    // Promise.all([server.start(), patchAndShardServer.start(), authLogin.start()])
+    //   .then(() => {
+    //     logger.log('All servers started successfully')
+    //   })
+    //   .catch(error => {
+    //     process.exitCode = -1
+    //     throw new Error(`There was an error starting the server: ${error}`)
+    //   })    
+}).catch(() => {
+    throw new Error("Help!")
+})

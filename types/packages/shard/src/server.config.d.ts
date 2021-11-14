@@ -10,16 +10,16 @@
  * @property {string} serviceConnections.databaseURL
  */
 declare const config: {
-    certificate: {
-        privateKeyFilename: string;
-        publicKeyFilename: string;
-        certFilename: string;
-    };
-    serverSettings: {
-        host: string;
-    };
-    serviceConnections: {
-        databaseURL: string;
-    };
+  certificate: {
+    privateKeyFilename: string;
+    publicKeyFilename: string;
+    certFilename: string;
+  };
+  serverSettings: {
+    host: string;
+  };
+  serviceConnections: {
+    databaseURL: string;
+  };
 };
 export default config;

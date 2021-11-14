@@ -5,16 +5,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { createCipheriv, createDecipheriv } from "crypto";
-import { Socket } from "net";
-import P from "pino";
-import { ConnectionManager } from "./connection-mgr";
-import { EncryptionManager } from "./encryption-mgr";
+const { createCipheriv, createDecipheriv } = require("crypto");
+const { pino: P } = require("pino");
+const { EConnectionStatus } = require("./types.js");
+const { Buffer } = require("buffer");
 
-const log = P().child({ service: "mcoserver:TCPConnection" });
+const log = P().child({ service: "mcos:TCPConnection" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
-export class TCPConnection {
+class TCPConnection {
   /** @type {string} */
   id;
   /** @type {number} */
@@ -58,7 +57,12 @@ export class TCPConnection {
   /** @type {Buffer | undefined} */
   decryptedCmd;
 
-  constructor(connectionId: string, sock: Socket) {
+  /**
+   *
+   * @param {string} connectionId
+   * @param {Socket} sock
+   */
+  constructor(connectionId, sock) {
     if (typeof sock.localPort === "undefined") {
       throw new Error(
         `localPort is undefined, unable to create connection object`
@@ -78,16 +82,28 @@ export class TCPConnection {
     this.isSetupComplete = false;
     this.inQueue = true;
   }
-  isLobbyKeysetReady(): boolean {
+
+  /**
+   *
+   * @returns {boolean}
+   */
+  isLobbyKeysetReady() {
     return (
       this.encLobby.cipher !== undefined && this.encLobby.decipher !== undefined
     );
   }
+
+  /**
+   *
+   * @param {string} remoteAddress
+   * @param {number} localPort
+   * @param {TCPConnection} newConnection
+   */
   async updateConnectionByAddressAndPort(
-    remoteAddress: string,
-    localPort: number,
-    newConnection: ITCPConnection
-  ): Promise<void> {
+    remoteAddress,
+    localPort,
+    newConnection
+  ) {
     if (this.mgr === undefined) {
       throw new Error("Connection manager not set");
     }
@@ -98,29 +114,51 @@ export class TCPConnection {
     );
   }
 
-  setManager(manager: IConnectionManager): void {
+  /**
+   *
+   * @param {ConnectionManager} manager
+   */
+  setManager(manager) {
     this.mgr = manager;
   }
 
-  setEncryptionManager(encryptionManager: IEncryptionManager): void {
+  /**
+   *
+   * @param {EncryptionManager} encryptionManager
+   */
+  setEncryptionManager(encryptionManager) {
     this.enc = encryptionManager;
   }
 
-  getEncryptionId(): string {
+  /**
+   *
+   * @returns {string}
+   */
+  getEncryptionId() {
     if (this.enc === undefined) {
       throw new Error("Encryption manager not set");
     }
     return this.enc.getId();
   }
 
-  encryptBuffer(buffer: Buffer): Buffer {
+  /**
+   *
+   * @param {Buffer} buffer
+   * @returns {Buffer}
+   */
+  encryptBuffer(buffer) {
     if (this.enc === undefined) {
       throw new Error("Encryption manager not set");
     }
     return this.enc.encrypt(buffer);
   }
 
-  decryptBuffer(buffer: Buffer): Buffer {
+  /**
+   *
+   * @param {Buffer} buffer
+   * @returns {Buffer}
+   */
+  decryptBuffer(buffer) {
     if (this.enc === undefined) {
       throw new Error("Encryption manager not set");
     }
@@ -130,9 +168,8 @@ export class TCPConnection {
   /**
    *
    * @param {Buffer} key
-   * @return {void}
    */
-  setEncryptionKey(key: Buffer): void {
+  setEncryptionKey(key) {
     if (this.enc === undefined) {
       throw new Error("Encryption manager is not set");
     }
@@ -140,12 +177,9 @@ export class TCPConnection {
   }
 
   /**
-   * SetEncryptionKeyDES
-   *
    * @param {string} skey
-   * @return {void}
    */
-  setEncryptionKeyDES(skey: string): void {
+  setEncryptionKeyDES(skey) {
     // Deepcode ignore HardcodedSecret: This uses an empty IV
     const desIV = Buffer.alloc(8);
 
@@ -180,7 +214,7 @@ export class TCPConnection {
    * @param {Buffer} messageBuffer
    * @return {Buffer}
    */
-  cipherBufferDES(messageBuffer: Buffer): Buffer {
+  cipherBufferDES(messageBuffer) {
     if (this.encLobby.cipher) {
       return this.encLobby.cipher.update(messageBuffer);
     }
@@ -194,7 +228,7 @@ export class TCPConnection {
    * @param {Buffer} messageBuffer
    * @return {Buffer}
    */
-  decipherBufferDES(messageBuffer: Buffer): Buffer {
+  decipherBufferDES(messageBuffer) {
     if (this.encLobby.decipher) {
       return this.encLobby.decipher.update(messageBuffer);
     }
@@ -202,7 +236,12 @@ export class TCPConnection {
     throw new Error("No DES decipher set on connection");
   }
 
-  async processPacket(packet: UnprocessedPacket): Promise<ITCPConnection> {
+  /**
+   *
+   * @param {UnprocessedPacket} packet
+   * @returns {Promise<TCPConnection>}
+   */
+  async processPacket(packet) {
     if (this.mgr === undefined) {
       throw new Error("Connection manager is not set");
     }
@@ -220,3 +259,4 @@ export class TCPConnection {
     }
   }
 }
+module.exports = { TCPConnection };

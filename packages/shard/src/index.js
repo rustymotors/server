@@ -5,18 +5,18 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import P from "pino";
-import { readFileSync } from "fs";
-import { EServerConnectionName, RoutingMesh } from "../../router/src/index";
-import { ShardEntry } from "./shard-entry";
-import { createServer } from "https";
-import { ConfigurationManager } from "../../config/src/index";
-import process from "process";
-
+const { pino: P } = require("pino");
+const { readFileSync } = require("fs");
+const { RoutingMesh } = require("../../router/src/index.js");
+const { ShardEntry } = require("./shard-entry.js");
+const { createServer } = require("https");
+const { getConfig } = require("../../config/src/index.js");
+const process = require("process");
+const { EServerConnectionName } = require("../../router/src/types.js");
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
-const log = P().child({ service: "MCOServer:Shard" });
+const log = P().child({ service: "mcos:Shard" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
@@ -25,7 +25,7 @@ log.level = process.env["LOG_LEVEL"] || "info";
  * TODO: Document the endpoints
  */
 
-export class ShardServer {
+class ShardServer {
   /** @type {ShardServer} */
   static _instance;
   /** @type {import("../../config/src/index").AppConfiguration} */
@@ -36,7 +36,7 @@ export class ShardServer {
   _server;
 
   /**
-   * 
+   *
    * @returns {ShardServer}
    */
   static getInstance() {
@@ -48,7 +48,7 @@ export class ShardServer {
 
   /** @private */
   constructor() {
-    this._config = ConfigurationManager.getInstance().getConfig();
+    this._config = getConfig();
 
     this._server = createServer((request, response) => {
       this._handleRequest(request, response);
@@ -58,7 +58,7 @@ export class ShardServer {
       process.exitCode = -1;
       log.error(`Server error: ${error.message}`);
       log.info(`Server shutdown: ${process.exitCode}`);
-      process.exit();
+      throw new Error("Shard server quest unexpectedly");
     });
   }
 
@@ -216,7 +216,7 @@ export class ShardServer {
   }
 
   /**
-   * 
+   *
    * @returns {import("http").Server}
    */
   start() {
@@ -236,3 +236,4 @@ export class ShardServer {
     });
   }
 }
+module.exports = { ShardServer };

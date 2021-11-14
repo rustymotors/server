@@ -5,14 +5,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import P from "pino";
-import { DatabaseManager } from "../../database/src/index";
-import { NPSUserStatus, premadeLogin } from "../../message-types/src/index";
-import { ConfigurationManager } from "../../config/src/index";
-import process from "process";
-import { Buffer } from "buffer";
+const { pino: P } = require("pino");
+const { DatabaseManager } = require("../../database/src/index.js");
+const {
+  NPSUserStatus,
+  premadeLogin,
+} = require("../../message-types/src/index.js");
+const { getConfig } = require("../../config/src/index.js");
+const process = require("process");
+const { Buffer } = require("buffer");
 
-const log = P().child({ service: "mcoserver:LoginServer" });
+const log = P().child({ service: "mcos:LoginServer" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
@@ -33,18 +36,22 @@ log.level = process.env["LOG_LEVEL"] || "info";
  * @property {LoginServer} _instance
  * @property {DatabaseManager} databaseManager
  */
-export class LoginServer {
+class LoginServer {
   static _instance;
-  databaseManager = DatabaseManager.getInstance();
+  /** @type {DatabaseManager} */
+  databaseManager;
 
   /**
-   * 
-   * @returns {LoginServer}
+   *
+   * @returns {Promise<LoginServer>}
    */
-  static getInstance() {
+  static async getInstance() {
     if (!LoginServer._instance) {
       LoginServer._instance = new LoginServer();
     }
+    LoginServer._instance.DatabaseManager = await DatabaseManager.getInstance(
+      getConfig()
+    );
     return LoginServer._instance;
   }
 
@@ -119,9 +126,7 @@ export class LoginServer {
    * @param {string} contextId
    * @return {Promise<UserRecordMini>}
    */
-  async _npsGetCustomerIdByContextId(
-    contextId
-  ) {
+  async _npsGetCustomerIdByContextId(contextId) {
     log.debug(">>> _npsGetCustomerIdByContextId");
     /** @type {UserRecordMini[]} */
     const users = [
@@ -182,10 +187,7 @@ export class LoginServer {
       })}`
     );
 
-    userStatus.extractSessionKeyFromPacket(
-      ConfigurationManager.getInstance().getConfig().certificate,
-      data
-    );
+    userStatus.extractSessionKeyFromPacket(getConfig().certificate, data);
 
     log.debug(
       `UserStatus object from _userLogin,
@@ -246,3 +248,4 @@ export class LoginServer {
     return Buffer.concat([packetContent, packetContent]);
   }
 }
+module.exports = { LoginServer };

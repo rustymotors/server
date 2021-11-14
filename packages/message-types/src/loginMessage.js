@@ -17,7 +17,7 @@
  * @property {Buffer} data
  * @property {Record<string, unknown>} struct
  */
-export class LoginMessage {
+class LoginMessage {
   msgNo;
   toFrom;
   appId;
@@ -105,3 +105,4 @@ export class LoginMessage {
         })}`;
   }
 }
+module.exports = { LoginMessage };

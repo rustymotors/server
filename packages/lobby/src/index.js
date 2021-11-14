@@ -6,17 +6,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import P from "pino";
-import { DatabaseManager } from "../../database/src/index";
-import { NPSMessage, NPSUserInfo } from "../../message-types/src/index";
-import { PersonaServer } from "../../persona/src/index";
-import process from "process";
-import { Buffer } from "buffer";
-import { EMessageDirection } from "../../transactions/src/tcp-manager";
-import { TCPConnection } from "../../core/src/tcpConnection";
+const { pino: P } = require("pino");
+const { DatabaseManager } = require("../../database/src/index.js");
+const { NPSUserInfo } = require("../../message-types/src/index.js");
+const { NPSMessage } = require("../../message-types/src/npsMessage.js");
+const { PersonaServer } = require("../../persona/src/index.js");
+const process = require("process");
+const { Buffer } = require("buffer");
+const { EMessageDirection } = require("../../transactions/src/types.js");
+const { getConfig } = require("../../config/src/index.js");
 
-
-const log = P().child({ service: "mcoserver:LobbyServer" });
+const log = P().child({ service: "mcos:LobbyServer" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
@@ -24,17 +24,14 @@ log.level = process.env["LOG_LEVEL"] || "info";
  * @module LobbyServer
  */
 
-const databaseManager = DatabaseManager.getInstance();
+const databaseManager = DatabaseManager.getInstance(getConfig());
 
 /**
- * @param {TCPConnection} conn
+ * @param {import("../../core/src/tcpConnection").TCPConnection} conn
  * @param {Buffer} buffer
- * @return {Promise<TCPConnection>}
+ * @return {Promise<import("../../core/src/tcpConnection").TCPConnection>}
  */
-async function npsSocketWriteIfOpen(
-  conn,
-  buffer
-) {
+async function npsSocketWriteIfOpen(conn, buffer) {
   const { sock } = conn;
   if (sock.writable) {
     // Write the packet to socket
@@ -53,8 +50,8 @@ async function npsSocketWriteIfOpen(
 /**
  * Takes an encrypted command packet and returns the decrypted bytes
  *
- * @return {TCPConnection}
- * @param {TCPConnection} con
+ * @return {import("../../core/src/tcpConnection").TCPConnection}
+ * @param {import("../../core/src/tcpConnection").TCPConnection} con
  * @param {Buffer} cypherCmd
  */
 function decryptCmd(con, cypherCmd) {
@@ -68,9 +65,9 @@ function decryptCmd(con, cypherCmd) {
 /**
  * Takes an plaintext command packet and return the encrypted bytes
  *
- * @param {TCPConnection} con
+ * @param {import("../../core/src/tcpConnection").TCPConnection} con
  * @param {Buffer} cypherCmd
- * @return {TCPConnection}
+ * @return {import("../../core/src/tcpConnection").TCPConnection}
  */
 function encryptCmd(con, cypherCmd) {
   const s = con;
@@ -81,14 +78,11 @@ function encryptCmd(con, cypherCmd) {
 /**
  * Takes a plaintext command packet, encrypts it, and sends it across the connection's socket
  *
- * @param {TCPConnection} con
+ * @param {import("../../core/src/tcpConnection").TCPConnection} con
  * @param {Buffer} data
- * @return {Promise<TCPConnection>}
+ * @return {Promise<import("../../core/src/tcpConnection").TCPConnection>}
  */
-async function sendCommand(
-  con,
-  data
-) {
+async function sendCommand(con, data) {
   const s = con;
 
   const decipheredCommand = decryptCmd(
@@ -139,12 +133,12 @@ async function sendCommand(
 /**
  * @class
  */
-export class LobbyServer {
+class LobbyServer {
   /** @type {LobbyServer} */
   static _instance;
 
   /**
-   * 
+   *
    * @returns {LobbyServer}
    */
   static getInstance() {
@@ -172,8 +166,8 @@ export class LobbyServer {
   }
 
   /**
-   * @param {import("../../transactions/src/tcp-manager").UnprocessedPacket} rawPacket
-   * @return {Promise<TCPConnection>}
+   * @param {import("../../transactions/src/types").UnprocessedPacket} rawPacket
+   * @return {Promise<import("../../core/src/tcpConnection").TCPConnection>}
    */
   async dataHandler(rawPacket) {
     const { localPort, remoteAddress } = rawPacket;
@@ -263,14 +257,11 @@ export class LobbyServer {
   /**
    * Handle a request to connect to a game server packet
    *
-   * @param {TCPConnection} connection
+   * @param {import("../../core/src/tcpConnection").TCPConnection} connection
    * @param {Buffer} rawData
    * @return {Promise<NPSMessage>}
    */
-  async _npsRequestGameConnectServer(
-    connection,
-    rawData
-  ) {
+  async _npsRequestGameConnectServer(connection, rawData) {
     const { sock } = connection;
     log.debug(
       `_npsRequestGameConnectServer: ${JSON.stringify({
@@ -361,3 +352,4 @@ export class LobbyServer {
     return packetResult;
   }
 }
+module.exports = { LobbyServer };

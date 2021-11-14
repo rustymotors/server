@@ -1,13 +1,14 @@
-import P from "pino";
-import { createServer } from "http";
-import { RoutingMesh, EServerConnectionName } from "../../router/src/index";
-import process from "process";
-import { Buffer } from "buffer";
+const { pino: P } = require("pino");
+const { createServer } = require("http");
+const { RoutingMesh } = require("../../router/src/index.js");
+const { EServerConnectionName } = require("../../router/src/types.js");
+const process = require("process");
+const { Buffer } = require("buffer");
 
-const log = P().child({ service: "MCOServer:Patch" });
+const log = P().child({ service: "mcos:Patch" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
-export const CastanetResponse = {
+const CastanetResponse = {
   body: Buffer.from("cafebeef00000000000003", "hex"),
   header: {
     type: "Content-Type",
@@ -15,7 +16,7 @@ export const CastanetResponse = {
   },
 };
 
-export class PatchServer {
+class PatchServer {
   start() {
     const host = "localhost";
     let port = 81;
@@ -50,7 +51,7 @@ export class PatchServer {
   static _instance;
 
   /**
-   * 
+   *
    * @returns {PatchServer}
    */
   static getInstance() {
@@ -66,14 +67,11 @@ export class PatchServer {
   }
 
   /**
-   * 
-   * @param {IncomingMessage} request 
-   * @param {ServerResponse} response 
+   *
+   * @param {IncomingMessage} request
+   * @param {ServerResponse} response
    */
-  handleRequest(
-    request,
-    response
-  ) {
+  handleRequest(request, response) {
     const responseData = CastanetResponse;
 
     switch (request.url) {
@@ -95,3 +93,4 @@ export class PatchServer {
     }
   }
 }
+module.exports = { CastanetResponse, PatchServer };

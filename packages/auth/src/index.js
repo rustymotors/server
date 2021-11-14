@@ -6,14 +6,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import P from "pino";
-import { readFileSync } from "fs";
-import { EServerConnectionName, RoutingMesh } from "../../router/src/index";
-import { createServer } from "https";
-import { ConfigurationManager } from "../../config/src/index";
-import process from "process";
+const { pino: P } = require("pino");
+const { readFileSync } = require("fs");
+const { EServerConnectionName } = require("../../router/src/types.js");
+const { RoutingMesh } = require("../../router/src/index.js");
+const { createServer } = require("https");
+const { getConfig } = require("../../config/src/index.js");
+const process = require("process");
 
-const log = P().child({ service: "MCOServer:Auth" });
+const log = P().child({ service: "mcos:Auth" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
@@ -24,13 +25,12 @@ log.level = process.env["LOG_LEVEL"] || "info";
  * @property {boolean} rejectUnauthorized
  */
 
-
 /**
  * @exports
  * Handles web-based user logins
  */
 
-export class AuthLogin {
+class AuthLogin {
   /** @type {AuthLogin} */
   static _instance;
   /** @type {import("../../config/src/index").AppConfiguration} */
@@ -40,7 +40,7 @@ export class AuthLogin {
   _server;
 
   /**
-   * 
+   *
    * @returns {AuthLogin}
    */
   static getInstance() {
@@ -52,7 +52,7 @@ export class AuthLogin {
 
   /** @private */
   constructor() {
-    this.config = ConfigurationManager.getInstance().getConfig();
+    this.config = getConfig();
 
     this._server = createServer(this._sslOptions(), (request, response) => {
       this.handleRequest(request, response);
@@ -62,7 +62,7 @@ export class AuthLogin {
       process.exitCode = -1;
       log.error(`Server error: ${error.message}`);
       log.info(`Server shutdown: ${process.exitCode}`);
-      process.exit();
+      throw new Error(`Auth server shutdown unexpectedly`);
     });
     this._server.on("tlsClientError", (error) => {
       log.warn(`[AuthLogin] SSL Socket Client Error: ${error.message}`);
@@ -78,9 +78,9 @@ export class AuthLogin {
   }
 
   /**
-   * 
-   * @param {import('http').IncomingMessage} request 
-   * @param {import('http').ServerResponse} response 
+   *
+   * @param {import('http').IncomingMessage} request
+   * @param {import('http').ServerResponse} response
    */
   handleRequest(request, response) {
     log.info(
@@ -111,7 +111,7 @@ export class AuthLogin {
     });
   }
 
-  /** 
+  /**
    * @private
    * @returns {SSLOptions}
    */
@@ -149,3 +149,4 @@ export class AuthLogin {
     };
   }
 }
+module.exports = { AuthLogin };

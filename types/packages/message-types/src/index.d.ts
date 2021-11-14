@@ -32,28 +32,28 @@ export { MessageNode } from "./messageNode";
  * @property {Buffer} mcVersion
  */
 export class ClientConnectMessage {
-    /**
-     *
-     * @param {Buffer} buffer
-     */
-    constructor(buffer: Buffer);
-    msgNo: number;
-    personaId: number;
-    appId: number;
-    customerId: number;
-    custName: string;
-    personaName: string;
-    mcVersion: Buffer;
-    /**
-     *
-     * @return {number}
-     */
-    getAppId(): number;
-    /**
-     * DumpPacket
-     * @return {string}
-     */
-    dumpPacket(): string;
+  /**
+   *
+   * @param {Buffer} buffer
+   */
+  constructor(buffer: Buffer);
+  msgNo: number;
+  personaId: number;
+  appId: number;
+  customerId: number;
+  custName: string;
+  personaName: string;
+  mcVersion: Buffer;
+  /**
+   *
+   * @return {number}
+   */
+  getAppId(): number;
+  /**
+   * DumpPacket
+   * @return {string}
+   */
+  dumpPacket(): string;
 }
 /**
  * @export
@@ -88,37 +88,37 @@ export class ClientConnectMessage {
  * @property {number} personaCount
  */
 export class NPSPersonaMapsMessage extends NPSMessage {
-    /**
-     *
-     * @param {EMessageDirection} direction
-     */
-    constructor(direction: EMessageDirection);
-    personas: any[];
-    personaSize: number;
-    personaCount: number;
-    /**
-     *
-     * @param {PersonaRecord[]} personas
-     */
-    loadMaps(personas: any[]): void;
-    /**
-     *
-     * @param {Buffer} buf
-     * @return {number}
-     */
-    deserializeInt8(buf: Buffer): number;
-    /**
-     *
-     * @param {Buffer} buf
-     * @return {number}
-     */
-    deserializeInt32(buf: Buffer): number;
-    /**
-     *
-     * @param {Buffer} buf
-     * @return {string}
-     */
-    deserializeString(buf: Buffer): string;
+  /**
+   *
+   * @param {EMessageDirection} direction
+   */
+  constructor(direction: EMessageDirection);
+  personas: any[];
+  personaSize: number;
+  personaCount: number;
+  /**
+   *
+   * @param {PersonaRecord[]} personas
+   */
+  loadMaps(personas: any[]): void;
+  /**
+   *
+   * @param {Buffer} buf
+   * @return {number}
+   */
+  deserializeInt8(buf: Buffer): number;
+  /**
+   *
+   * @param {Buffer} buf
+   * @return {number}
+   */
+  deserializeInt32(buf: Buffer): number;
+  /**
+   *
+   * @param {Buffer} buf
+   * @return {string}
+   */
+  deserializeString(buf: Buffer): string;
 }
 /**
  *
@@ -130,32 +130,32 @@ export class NPSPersonaMapsMessage extends NPSMessage {
  * @property {Buffer} buffer
  */
 export class NPSUserStatus extends NPSMessage {
-    /**
-     *
-     * @param {Buffer} packet
-     */
-    constructor(packet: Buffer);
-    sessionkey: string;
-    opCode: number;
-    contextId: string;
-    buffer: Buffer;
-    /**
-     * Load the RSA private key
-     *
-     * @param {string} privateKeyPath
-     * @return {string}
-     */
-    fetchPrivateKeyFromFile(privateKeyPath: string): string;
-    /**
-     * ExtractSessionKeyFromPacket
-     *
-     * Take 128 bytes
-     * They are the utf-8 of the hex bytes that are the key
-     *
-     * @param {AppConfiguration["certificate"]} serverConfig
-     * @param {Buffer} packet
-     */
-    extractSessionKeyFromPacket(serverConfig: any, packet: Buffer): void;
+  /**
+   *
+   * @param {Buffer} packet
+   */
+  constructor(packet: Buffer);
+  sessionkey: string;
+  opCode: number;
+  contextId: string;
+  buffer: Buffer;
+  /**
+   * Load the RSA private key
+   *
+   * @param {string} privateKeyPath
+   * @return {string}
+   */
+  fetchPrivateKeyFromFile(privateKeyPath: string): string;
+  /**
+   * ExtractSessionKeyFromPacket
+   *
+   * Take 128 bytes
+   * They are the utf-8 of the hex bytes that are the key
+   *
+   * @param {AppConfiguration["certificate"]} serverConfig
+   * @param {Buffer} packet
+   */
+  extractSessionKeyFromPacket(serverConfig: any, packet: Buffer): void;
 }
 /**
  * @class
@@ -165,83 +165,83 @@ export class NPSUserStatus extends NPSMessage {
  * @property {Buffer} userData
  */
 export class NPSUserInfo extends NPSMessage {
-    /**
-     *
-     * @param {EMessageDirection} direction
-     */
-    constructor(direction: EMessageDirection);
-    userId: number;
-    userName: Buffer;
-    userData: Buffer;
-    /**
-     * @return {string}
-     */
-    dumpInfo(): string;
+  /**
+   *
+   * @param {EMessageDirection} direction
+   */
+  constructor(direction: EMessageDirection);
+  userId: number;
+  userName: Buffer;
+  userData: Buffer;
+  /**
+   * @return {string}
+   */
+  dumpInfo(): string;
 }
 export type InpsPersonaMapsPersonaRecord = {
-    /**
-     * - uint16
-     */
-    personaCount: number;
-    /**
-     * - uint16
-     */
-    unknown1: number;
-    /**
-     * - uint16
-     */
-    maxPersonas: number;
-    /**
-     * - uint16
-     */
-    unknown2: number;
-    /**
-     * - uint32
-     */
-    id: number;
-    /**
-     * - uint32
-     */
-    shardId: number;
-    /**
-     * - uint16
-     */
-    unknown3: number;
-    /**
-     * - uint16
-     */
-    unknown4: number;
-    /**
-     * - uint16
-     */
-    personaNameLength: number;
-    /**
-     * - string(16)
-     */
-    name: string;
+  /**
+   * - uint16
+   */
+  personaCount: number;
+  /**
+   * - uint16
+   */
+  unknown1: number;
+  /**
+   * - uint16
+   */
+  maxPersonas: number;
+  /**
+   * - uint16
+   */
+  unknown2: number;
+  /**
+   * - uint32
+   */
+  id: number;
+  /**
+   * - uint32
+   */
+  shardId: number;
+  /**
+   * - uint16
+   */
+  unknown3: number;
+  /**
+   * - uint16
+   */
+  unknown4: number;
+  /**
+   * - uint16
+   */
+  personaNameLength: number;
+  /**
+   * - string(16)
+   */
+  name: string;
 };
 export type InpsPersonaMapsMsgSchema = {
-    /**
-     * - uint16
-     */
-    msgNo: number;
-    /**
-     * - uint16
-     */
-    msgLength: number;
-    /**
-     * - uint16
-     */
-    msgVersion: number;
-    /**
-     * - uint16
-     */
-    reserved: number;
-    /**
-     * - uint16
-     */
-    msgChecksum: number;
-    personas: InpsPersonaMapsPersonaRecord[];
+  /**
+   * - uint16
+   */
+  msgNo: number;
+  /**
+   * - uint16
+   */
+  msgLength: number;
+  /**
+   * - uint16
+   */
+  msgVersion: number;
+  /**
+   * - uint16
+   */
+  reserved: number;
+  /**
+   * - uint16
+   */
+  msgChecksum: number;
+  personas: InpsPersonaMapsPersonaRecord[];
 };
 import { Buffer } from "buffer";
 import { NPSMessage } from ".";

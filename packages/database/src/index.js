@@ -6,16 +6,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import * as sqlite3 from "sqlite3";
-import { open } from "sqlite";
-import P from "pino";
-import { ConfigurationManager } from "../../config/src/index";
-import { createServer, IncomingMessage, Server, ServerResponse } from "http";
-import { EServerConnectionName, RoutingMesh } from "../../router/src/index";
-import process from "process";
+const sqlite3 = require("sqlite3");
+const { open } = require("sqlite");
+const { pino: P } = require("pino");
+const { createServer } = require("http");
+const { RoutingMesh } = require("../../router/src/index.js");
+const { EServerConnectionName } = require("../../router/src/types.js");
+const process = require("process");
 
-
-const log = P().child({ service: "mcoserver:DatabaseMgr" });
+const log = P().child({ service: "mcos:DatabaseMgr" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
 /**
@@ -25,32 +24,40 @@ log.level = process.env["LOG_LEVEL"] || "info";
  * @property {string} sessionkey
  */
 
-export class DatabaseManager {
+class DatabaseManager {
   /** @type {DatabaseManager} */
   static _instance;
   /** @type {import("../../config/src/index").AppConfiguration} */
   _config;
-  /** @type {Server} */
+  /** @type {import("http").Server} */
   _server;
   changes = 0;
   /** @type {import("sqlite").Database} */
   localDB;
 
-  /** @return {DatabaseManager} */
-  static getInstance() {
-    if (!DatabaseManager._instance) {
-      DatabaseManager._instance = new DatabaseManager();
+  /**
+   * @param {import("../../config/src/index.js").AppConfiguration} config
+   * @return {Promise<DatabaseManager>}
+   */
+  static async getInstance(config) {
+    if (typeof config === "undefined") {
+      throw new Error(
+        "Please remember to pass a valid config to the Database manager"
+      );
+    }
+    if (typeof DatabaseManager._instance === "undefined") {
+      DatabaseManager._instance = new DatabaseManager(config);
     }
 
     const self = DatabaseManager._instance;
+    log.debug("Connecting to database");
+    try {
+      const db = await open({ filename: "mco.db", driver: sqlite3.Database });
+      self.localDB = db;
 
-    open({ filename: "mco.db", driver: sqlite3.Database })
-      .then(async (db) => {
-        self.localDB = db;
-
-        self.changes = 0;
-
-        await db.run(`CREATE TABLE IF NOT EXISTS "sessions"
+      self.changes = 0;
+      log.debug("Populating tables");
+      await db.run(`CREATE TABLE IF NOT EXISTS "sessions"
           (
             customer_id integer,
             sessionkey text NOT NULL,
@@ -60,7 +67,7 @@ export class DatabaseManager {
             CONSTRAINT pk_session PRIMARY KEY(customer_id)
           );`);
 
-        await db.run(`CREATE TABLE IF NOT EXISTS "lobbies"
+      await db.run(`CREATE TABLE IF NOT EXISTS "lobbies"
           (
             "lobyID" integer NOT NULL,
             "raceTypeID" integer NOT NULL,
@@ -143,24 +150,28 @@ export class DatabaseManager {
             "teamtNumLaps" smallint NOT NULL,
             "raceCashFactor" real NOT NULL
           );`);
-      })
-      .catch((err) => {
-        if (err instanceof Error) {
-          const newError = new Error(
-            `There was an error setting up the database: ${err.message}`
-          );
-          log.error(newError.message);
-          throw newError;
-        }
-        throw err;
-      });
-
-    return DatabaseManager._instance;
+      log.debug("Database initialized");
+      return DatabaseManager._instance;
+    } catch (err) {
+      if (err instanceof Error) {
+        const newError = new Error(
+          `There was an error setting up the database: ${err.message}`
+        );
+        log.error(newError.message);
+        throw newError;
+      }
+      throw err;
+    }
   }
 
-  /** @private */
-  constructor() {
-    this._config = ConfigurationManager.getInstance().getConfig();
+  /**
+   * @private
+   * @param {import("../../config/src/index.js").AppConfiguration} config
+   * */
+  constructor(config) {
+    if (typeof this._config === "undefined") {
+      this._config = config;
+    }
 
     this._server = createServer((request, response) => {
       this.handleRequest(request, response);
@@ -170,14 +181,14 @@ export class DatabaseManager {
       process.exitCode = -1;
       log.error(`Server error: ${error.message}`);
       log.info(`Server shutdown: ${process.exitCode}`);
-      process.exit();
+      throw new Error("Database server quest unexpectedly");
     });
   }
 
   /**
-   * 
-   * @param {IncomingMessage} request 
-   * @param {ServerResponse} response 
+   *
+   * @param {import("http").IncomingMessage} request
+   * @param {import("http").ServerResponse} response
    */
   handleRequest(request, response) {
     const header = {
@@ -204,13 +215,11 @@ export class DatabaseManager {
   }
 
   /**
-   * 
-   * @param {number} customerId 
+   *
+   * @param {number} customerId
    * @returns {Promise<SessionRecord>}
    */
-  async fetchSessionKeyByCustomerId(
-    customerId
-  ) {
+  async fetchSessionKeyByCustomerId(customerId) {
     if (!this.localDB) {
       throw new Error("Error accessing database. Are you using the instance?");
     }
@@ -227,13 +236,11 @@ export class DatabaseManager {
   }
 
   /**
-   * 
-   * @param {string} connectionId 
+   *
+   * @param {string} connectionId
    * @returns {Promise<SessionRecord>}
    */
-  async fetchSessionKeyByConnectionId(
-    connectionId
-  ) {
+  async fetchSessionKeyByConnectionId(connectionId) {
     if (!this.localDB) {
       throw new Error("Error accessing database. Are you using the instance?");
     }
@@ -249,19 +256,14 @@ export class DatabaseManager {
   }
 
   /**
-   * 
-   * @param {number} customerId 
-   * @param {string} sessionkey 
-   * @param {string} contextId 
-   * @param {string} connectionId 
+   *
+   * @param {number} customerId
+   * @param {string} sessionkey
+   * @param {string} contextId
+   * @param {string} connectionId
    * @returns {Promise<number>}
    */
-  async _updateSessionKey(
-    customerId,
-    sessionkey,
-    contextId,
-    connectionId
-  ) {
+  async _updateSessionKey(customerId, sessionkey, contextId, connectionId) {
     const skey = sessionkey.slice(0, 16);
 
     if (!this.localDB) {
@@ -284,8 +286,8 @@ export class DatabaseManager {
   }
 
   /**
-   * 
-   * @returns {Server}
+   *
+   * @returns {import("http").Server}
    */
   start() {
     const host = this._config.serverSettings.ipServer || "localhost";
@@ -304,3 +306,4 @@ export class DatabaseManager {
     });
   }
 }
+module.exports = { DatabaseManager };

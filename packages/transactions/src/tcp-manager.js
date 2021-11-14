@@ -5,73 +5,36 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import P from "pino";
-import { DatabaseManager } from "../../database/src/index";
-import { MCOTServer } from "./index";
-import {
+const { pino: P } = require("pino");
+const { DatabaseManager } = require("../../database/src/index.js");
+const { MCOTServer } = require("./index.js");
+const {
   ClientConnectMessage,
   GenericReplyMessage,
   GenericRequestMessage,
   MessageNode,
   StockCar,
   StockCarInfoMessage,
-} from "../../message-types/src/index";
-import process from "process";
-import { Buffer } from "buffer";
+} = require("../../message-types/src/index.js");
+const process = require("process");
+const { Buffer } = require("buffer");
+const { EMessageDirection } = require("./types.js");
+const { getConfig } = require("../../config/src/index.js");
 
-
-const log = P().child({ service: "mcoserver:MCOTSServer" });
+const log = P().child({ service: "mcos:MCOTSServer" });
 log.level = process.env["LOG_LEVEL"] || "info";
-
-/**
- * @exports
- * @enum {string}
- */
-export const EMessageDirection = {
-  RECEIVED: "received",
-  SENT: "sent",
-}
-
-/**
- * @exports
- * @typedef {Object} ConnectionWithPacket
- * @property {TCPConnection} connection
- * @property {MessageNode} packet
- * @property {string} [lastError]
- */
-
-/**
- * @exports
- * @typedef {Object} ConnectionWithPackets
- * @property {TCPConnection} connection
- * @property {MessageNode[]} packetList
- */
-
-/**
- * @exports
- * @typedef {Object} UnprocessedPacket
- * @property {string} connectionId
- * @property {TCPConnection} connection
- * @property {Buffer} data
- * @property {number | undefined} localPort
- * @property {string | undefined} remoteAddress
- * @property {number} timestamp
- */
 
 /**
  * Manages TCP connection packet processing
  */
 
 /**
- * 
- * @param {TCPConnection} connection 
- * @param {MessageNode} packet 
+ *
+ * @param {TCPConnection} connection
+ * @param {MessageNode} packet
  * @returns {Promise<ConnectionWithPacket>}
  */
-export async function compressIfNeeded(
-  connection,
-  packet
-) {
+async function compressIfNeeded(connection, packet) {
   // Check if compression is needed
   if (packet.getLength() < 80) {
     log.debug("Too small, should not compress");
@@ -89,15 +52,12 @@ export async function compressIfNeeded(
 }
 
 /**
- * 
- * @param {TCPConnection} connection 
- * @param {MessageNode} packet 
+ *
+ * @param {TCPConnection} connection
+ * @param {MessageNode} packet
  * @returns {Promise<ConnectionWithPacket>}
  */
-export async function encryptIfNeeded(
-  connection,
-  packet
-) {
+async function encryptIfNeeded(connection, packet) {
   // Check if encryption is needed
   if (packet.flags - 8 >= 0) {
     log.debug("encryption flag is set");
@@ -111,15 +71,12 @@ export async function encryptIfNeeded(
 }
 
 /**
- * 
- * @param {TCPConnection} connection 
- * @param {MessageNode[]} packetList 
+ *
+ * @param {TCPConnection} connection
+ * @param {MessageNode[]} packetList
  * @returns {Promise<TCPConnection>}
  */
-export async function socketWriteIfOpen(
-  connection,
-  packetList
-) {
+async function socketWriteIfOpen(connection, packetList) {
   /** @type {ConnectionWithPackets} */
   const updatedConnection = {
     connection: connection,
@@ -128,9 +85,8 @@ export async function socketWriteIfOpen(
   // For each node in nodes
   for (const packet of updatedConnection.packetList) {
     // Does the packet need to be compressed?
-    const compressedPacket = (
-      await compressIfNeeded(connection, packet)
-    ).packet;
+    const compressedPacket = (await compressIfNeeded(connection, packet))
+      .packet;
     // Does the packet need to be encrypted?
     const encryptedPacket = (
       await encryptIfNeeded(connection, compressedPacket)
@@ -148,7 +104,7 @@ export async function socketWriteIfOpen(
       // Write the packet to socket
       connection.sock.write(encryptedPacket.serialize());
     } else {
-      const port= connection.sock.localPort?.toString() || "";
+      const port = connection.sock.localPort?.toString() || "";
       throw new Error(
         `Error writing ${encryptedPacket.serialize()} to ${
           connection.sock.remoteAddress
@@ -160,7 +116,7 @@ export async function socketWriteIfOpen(
   return updatedConnection.connection;
 }
 
-export class TCPManager {
+class TCPManager {
   /** @type {TCPManager} */
   static _instance;
   /** @type {MCOTServer} */
@@ -169,7 +125,7 @@ export class TCPManager {
   databaseManager;
 
   /**
-   * 
+   *
    * @returns {TCPManager}
    */
   static getInstance() {
@@ -182,19 +138,16 @@ export class TCPManager {
   /** @private */
   constructor() {
     this.mcotServer = MCOTServer.getInstance();
-    this.databaseManager = DatabaseManager.getInstance();
+    this.databaseManager = DatabaseManager.getInstance(getConfig());
   }
 
   /**
-   * 
-   * @param {TCPConnection} connection 
-   * @param {MessageNode} packet 
+   *
+   * @param {TCPConnection} connection
+   * @param {MessageNode} packet
    * @returns {Promise<ConnectionWithPackets>}
    */
-  async getStockCarInfo(
-    connection,
-    packet
-  ) {
+  async getStockCarInfo(connection, packet) {
     const getStockCarInfoMessage = new GenericRequestMessage();
     getStockCarInfoMessage.deserialize(packet.data);
     getStockCarInfoMessage.dumpPacket();
@@ -221,17 +174,13 @@ export class TCPManager {
     return { connection, packetList: [responsePacket] };
   }
 
-
   /**
-   * 
-   * @param {TCPConnection} connection 
-   * @param {MessageNode} packet 
+   *
+   * @param {TCPConnection} connection
+   * @param {MessageNode} packet
    * @returns {Promise<ConnectionWithPackets>}
    */
-  async clientConnect(
-    connection,
-    packet
-  ) {
+  async clientConnect(connection, packet) {
     /**
      * Let's turn it into a ClientConnectMsg
      */
@@ -277,13 +226,9 @@ export class TCPManager {
    * @param {TCPConnection} conn
    * @return {Promise<TCPConnection>}
    */
-  async processInput(
-    node,
-    conn
-  ) {
+  async processInput(node, conn) {
     const currentMessageNo = node.msgNo;
-    const currentMessageString =
-      this.mcotServer._MSG_STRING(currentMessageNo);
+    const currentMessageString = this.mcotServer._MSG_STRING(currentMessageNo);
 
     switch (currentMessageString) {
       case "MC_SET_OPTIONS":
@@ -442,10 +387,7 @@ export class TCPManager {
    * @param {TCPConnection} con
    * @return {Promise<TCPConnection>}
    */
-  async messageReceived(
-    message,
-    con
-  ) {
+  async messageReceived(message, con) {
     const newConnection = con;
     if (!newConnection.useEncryption && message.flags && 0x08) {
       log.debug("Turning on encryption");
@@ -477,8 +419,7 @@ export class TCPManager {
           );
 
           log.debug(`Using encryption id: ${newConnection.getEncryptionId()}`);
-          const deciphered =
-            newConnection.decryptBuffer(encryptedBuffer);
+          const deciphered = newConnection.decryptBuffer(encryptedBuffer);
           log.debug(
             `Message buffer after decrypting: ${deciphered.toString("hex")}`
           );
@@ -508,8 +449,8 @@ export class TCPManager {
   }
 
   /**
-   * 
-   * @param {UnprocessedPacket} rawPacket 
+   *
+   * @param {UnprocessedPacket} rawPacket
    * @returns {Promise<TCPConnection>}
    */
   async defaultHandler(rawPacket) {
@@ -531,3 +472,8 @@ export class TCPManager {
     return this.messageReceived(messageNode, connection);
   }
 }
+module.exports = {
+  compressIfNeeded,
+  encryptIfNeeded,
+  TCPManager,
+};
