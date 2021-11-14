@@ -20,8 +20,8 @@ export class MessageNode {
      *
      * @param {import("../../transactions/src/types").EMessageDirection} direction
      */
-    constructor(direction: import("../../transactions/src/types").EMessageDirection);
-    direction: string;
+    constructor(direction: any);
+    direction: any;
     msgNo: number;
     seq: number;
     flags: number;

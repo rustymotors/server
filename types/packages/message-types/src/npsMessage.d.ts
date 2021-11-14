@@ -6,7 +6,7 @@ export type INPSMessageJSON = {
     msgVersion: number;
     content: string;
     contextId: string;
-    direction: import("../../transactions/src/types").EMessageDirection;
+    direction: any;
     sessionkey: string | undefined;
     rawBuffer: string;
 };
@@ -42,7 +42,7 @@ export class NPSMessage {
      *
      * @param {import("../../transactions/src/types").EMessageDirection} direction - the direction of the message flow
      */
-    constructor(direction: import("../../transactions/src/types").EMessageDirection);
+    constructor(direction: any);
     /** @type {number} */
     msgNo: number;
     /** @type {number} */
@@ -54,7 +54,7 @@ export class NPSMessage {
     /** @type {number} */
     msgLength: number;
     /** @type {import("../../transactions/src/types").EMessageDirection} */
-    direction: import("../../transactions/src/types").EMessageDirection;
+    direction: any;
     serviceName: string;
     /**
      *

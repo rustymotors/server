@@ -9,5 +9,22 @@
     "outDir": "../types"
   },
   "include": ["../server.js", "/**/*/js"],
-  "exclude": ["../node_modules"]
+  "exclude": ["../node_modules"],
+  "references": [
+    { "path": "./admin/jsconfig.json" },
+    { "path": "./auth/jsconfig.json" },
+    { "path": "./config/jsconfig.json" },
+    { "path": "./core/jsconfig.json" },
+    { "path": "./database/jsconfig.json" },
+    { "path": "./database/jsconfig.json" },
+    { "path": "./lobby/jsconfig.json" },
+    { "path": "./login/jsconfig.json" },
+    { "path": "./message-types/jsconfig.json" },
+    { "path": "./patch/jsconfig.json" },
+    { "path": "./persona/jsconfig.json" },
+    { "path": "./proxy/jsconfig.json" },
+    { "path": "./router/jsconfig.json" },
+    { "path": "./shard/jsconfig.json" },
+    { "path": "./transactions/jsconfig.json" }
+  ]
 }

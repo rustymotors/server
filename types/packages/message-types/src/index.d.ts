@@ -57,7 +57,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
      *
      * @param {import("../../persona/src/types").PersonaRecord[]} personas
      */
-    loadMaps(personas: import("../../persona/src/types").PersonaRecord[]): void;
+    loadMaps(personas: any[]): void;
     /**
      *
      * @param {Buffer} buf

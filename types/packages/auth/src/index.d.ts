@@ -24,7 +24,7 @@ export class AuthLogin {
      */
     static getInstance(): AuthLogin;
     /** @type {import("../../config/src/index").AppConfiguration} */
-    config: import("../../config/src/index").AppConfiguration;
+    config: any;
     /** @type {import("https").Server} */
     _server: import("https").Server;
     /**

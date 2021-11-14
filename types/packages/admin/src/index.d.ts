@@ -10,7 +10,7 @@ export class AdminServer {
      */
     static getInstance(): AdminServer;
     /** @type {import("../../config/src/index").AppConfiguration} */
-    config: import("../../config/src/index").AppConfiguration;
+    config: any;
     /** @type {import("https").Server | undefined} */
     httpsServer: import("https").Server | undefined;
     /**
@@ -28,5 +28,5 @@ export class AdminServer {
      * @param {import("../../core/src/connection-mgr").ConnectionManager} connectionManager
      * @return {import("https").Server}
      */
-    start(connectionManager: import("../../core/src/connection-mgr").ConnectionManager): import("https").Server;
+    start(connectionManager: any): import("https").Server;
 }

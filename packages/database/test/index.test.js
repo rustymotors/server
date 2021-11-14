@@ -18,8 +18,6 @@ const testConfig = {
 };
 
 t.test("Database", async (t) => {
-  t.ok(await DatabaseManager.getInstance().closeDB());
-
   t.doesNotThrow(() => DatabaseManager.getInstance());
   const db = DatabaseManager.getInstance();
   await db.init(testConfig);

@@ -88,7 +88,7 @@ export class PersonaServer {
      * @param {import("../../transactions/src/types").UnprocessedPacket} rawPacket
      * @returns {Promise<import("../../core/src/tcpConnection").TCPConnection>}
      */
-    dataHandler(rawPacket: import("../../transactions/src/types").UnprocessedPacket): Promise<import("../../core/src/tcpConnection").TCPConnection>;
+    dataHandler(rawPacket: any): Promise<import("../../core/src/tcpConnection").TCPConnection>;
 }
 import { Buffer } from "buffer";
 import { NPSMessage } from "../../message-types/src/npsMessage.js";

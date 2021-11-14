@@ -27,18 +27,18 @@ export class ConnectionManager {
      */
     newConnection(connectionId: string, socket: import("net").Socket): TCPConnection;
     /**
-   *
-   * @param {string} remoteAddress
-   * @param {number} localPort
-   * @param {TCPConnection} newConnection
-   */
+     *
+     * @param {string} remoteAddress
+     * @param {number} localPort
+     * @param {TCPConnection} newConnection
+     */
     updateConnectionByAddressAndPort(remoteAddress: string, localPort: number, newConnection: TCPConnection): Promise<void>;
     clearConnectionQueue(): void;
     /** @returns {import("./tcpConnection").TCPConnection[]} */
     getConnections(): import("./tcpConnection").TCPConnection[];
     /**
-   * @return {string}
-   */
+     * @return {string}
+     */
     handleResetAllQueueState(): string;
     /**
      * Check incoming data and route it to the correct handler based on localPort
@@ -50,7 +50,7 @@ export class ConnectionManager {
      * @param {import("../../database/src/index").DatabaseManager} databaseManager
      * @returns {Promise<TCPConnection>}
      */
-    processData(rawPacket: import("../../transactions/src/types").UnprocessedPacket, loginServer: import("../../login/src/index").LoginServer, personaServer: import("../../persona/src/index").PersonaServer, lobbyServer: import("../../lobby/src/index").LobbyServer, mcotServer: import("../../transactions/src/index").MCOTServer, databaseManager: import("../../database/src/index").DatabaseManager): Promise<TCPConnection>;
+    processData(rawPacket: any, loginServer: any, personaServer: any, lobbyServer: any, mcotServer: any, databaseManager: any): Promise<TCPConnection>;
     /**
      * Get the name connected to the NPS opcode
      * @param {number} opCode
@@ -104,8 +104,8 @@ export class ConnectionManager {
      */
     dumpConnections(): TCPConnection[];
     /**
-   * @return {string}
-   */
+     * @return {string}
+     */
     handleGetConnections(): string;
 }
 /** @type {NpsCommandMap[]} */

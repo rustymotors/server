@@ -47,5 +47,5 @@ export class NPSPacketManager {
      * @param {import("../../database/src/index").DatabaseManager} databaseManager
      * @return {Promise<import("../../core/src/tcpConnection").TCPConnection>}
      */
-    processNPSPacket(rawPacket: import("../../transactions/src/types").UnprocessedPacket, loginServer: import("../../login/src/index").LoginServer, personaServer: import("../../persona/src/index").PersonaServer, lobbyServer: import("../../lobby/src/index").LobbyServer, databaseManager: import("../../database/src/index").DatabaseManager): Promise<import("../../core/src/tcpConnection").TCPConnection>;
+    processNPSPacket(rawPacket: any, loginServer: any, personaServer: any, lobbyServer: any, databaseManager: any): Promise<import("../../core/src/tcpConnection").TCPConnection>;
 }

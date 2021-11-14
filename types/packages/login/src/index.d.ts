@@ -37,7 +37,7 @@ export class LoginServer {
      * @param {import("../../database/src/index").DatabaseManager} databaseManager
      * @return {Promise<import("../../core/src/tcpConnection").TCPConnection>}
      */
-    dataHandler(rawPacket: import("../../transactions/src/types").UnprocessedPacket, databaseManager: import("../../database/src/index").DatabaseManager): Promise<import("../../core/src/tcpConnection").TCPConnection>;
+    dataHandler(rawPacket: any, databaseManager: import("../../database/src/index").DatabaseManager): Promise<import("../../core/src/tcpConnection").TCPConnection>;
     /**
      *
      * @param {string} contextId

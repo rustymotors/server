@@ -13,14 +13,14 @@ export class LobbyServer {
     /**
      * @return {NPSMessage}
      */
-    _npsHeartbeat(): NPSMessage;
+    _npsHeartbeat(): any;
     /**
      * @param {import("../../transactions/src/types").UnprocessedPacket} rawPacket
      * @param {import("../../persona/src/index").PersonaServer} personaServer
      * @param {import("../../database/src/index").DatabaseManager} databaseManager
      * @return {Promise<import("../../core/src/tcpConnection").TCPConnection>}
      */
-    dataHandler(rawPacket: import("../../transactions/src/types").UnprocessedPacket, personaServer: import("../../persona/src/index").PersonaServer, databaseManager: import("../../database/src/index").DatabaseManager): Promise<import("../../core/src/tcpConnection").TCPConnection>;
+    dataHandler(rawPacket: any, personaServer: any, databaseManager: import("../../database/src/index").DatabaseManager): Promise<import("../../core/src/tcpConnection").TCPConnection>;
     /**
      * @param {string} key
      * @return {Buffer}
@@ -35,7 +35,6 @@ export class LobbyServer {
      * @param {Buffer} rawData
      * @return {Promise<NPSMessage>}
      */
-    _npsRequestGameConnectServer(connection: import("../../core/src/tcpConnection").TCPConnection, rawData: Buffer, personaServer: import("../../persona/src/index").PersonaServer, databaseManager: import("../../database/src/index").DatabaseManager): Promise<NPSMessage>;
+    _npsRequestGameConnectServer(connection: import("../../core/src/tcpConnection").TCPConnection, rawData: Buffer, personaServer: any, databaseManager: import("../../database/src/index").DatabaseManager): Promise<any>;
 }
-import { NPSMessage } from "../../message-types/src/npsMessage.js";
 import { Buffer } from "buffer";

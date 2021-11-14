@@ -14,6 +14,6 @@ export class HTTPProxyServer {
      * @param {import("http").ServerResponse} response
      * @returns
      */
-    handleRequest(request: import("http").IncomingMessage, response: import("http").ServerResponse): void;
+    handleRequest(request: import("http").IncomingMessage, response: import("http").ServerResponse): any;
     start(): void;
 }

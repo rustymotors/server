@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "checkJs": true
+  },
+  "exclude": ["node_modules", "**/node_modules/*"]
+}

@@ -104,7 +104,7 @@ export class TCPConnection {
      * @param {import("../../database/src/index").DatabaseManager} databaseManager
      * @returns {Promise<TCPConnection>}
      */
-    processPacket(packet: import("../../transactions/src/types").UnprocessedPacket, connectionManager: import("./connection-mgr").ConnectionManager, loginServer: import("../../login/src/index").LoginServer, personaServer: import("../../persona/src/index").PersonaServer, lobbyServer: import("../../lobby/src/index").LobbyServer, mcotServer: import("../../transactions/src/index").MCOTServer, databaseManager: import("../../database/src/index").DatabaseManager): Promise<TCPConnection>;
+    processPacket(packet: any, connectionManager: import("./connection-mgr").ConnectionManager, loginServer: any, personaServer: any, lobbyServer: any, mcotServer: any, databaseManager: any): Promise<TCPConnection>;
 }
 import { EConnectionStatus } from "./types.js";
 import { Buffer } from "buffer";

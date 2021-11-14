@@ -19,7 +19,7 @@ export class ListenerThread {
      * @param {import("../../database/src/index").DatabaseManager} databaseManager
      * @returns {Promise<void>}
      */
-    _onData(data: Buffer, connection: import("./tcpConnection").TCPConnection, connectionManager: import("./connection-mgr.js").ConnectionManager, loginServer: import("../../login/src/index").LoginServer, personaServer: import("../../persona/src/index").PersonaServer, lobbyServer: import("../../lobby/src/index").LobbyServer, mcotServer: import("../../transactions/src/index").MCOTServer, databaseManager: import("../../database/src/index").DatabaseManager): Promise<void>;
+    _onData(data: Buffer, connection: import("./tcpConnection").TCPConnection, connectionManager: import("./connection-mgr.js").ConnectionManager, loginServer: any, personaServer: any, lobbyServer: any, mcotServer: any, databaseManager: any): Promise<void>;
     /**
      * Server listener method
      * @private
@@ -44,5 +44,5 @@ export class ListenerThread {
      * @param {import("../../database/src/index").DatabaseManager} databaseManager
      * @returns {Promise<import("net").Server>}
      */
-    startTCPListener(localPort: number, connectionManager: import("./connection-mgr").ConnectionManager, loginServer: import("../../login/src/index").LoginServer, personaServer: import("../../persona/src/index").PersonaServer, lobbyServer: import("../../lobby/src/index").LobbyServer, mcotServer: import("../../transactions/src/index").MCOTServer, databaseManager: import("../../database/src/index").DatabaseManager): Promise<import("net").Server>;
+    startTCPListener(localPort: number, connectionManager: import("./connection-mgr").ConnectionManager, loginServer: any, personaServer: any, lobbyServer: any, mcotServer: any, databaseManager: any): Promise<import("net").Server>;
 }

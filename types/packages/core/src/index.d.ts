@@ -23,5 +23,5 @@ export class MCServer {
      * @param {import("../../database/src/index").DatabaseManager} databaseManager
      * @returns {Promise<void>}
      */
-    startServers(connectionManager: any, loginServer: import("../../login/src/index").LoginServer, personaServer: import("../../persona/src/index").PersonaServer, lobbyServer: import("../../lobby/src/index").LobbyServer, mcotServer: import("../../transactions/src/index").MCOTServer, databaseManager: import("../../database/src/index").DatabaseManager): Promise<void>;
+    startServers(connectionManager: any, loginServer: any, personaServer: any, lobbyServer: any, mcotServer: any, databaseManager: any): Promise<void>;
 }
