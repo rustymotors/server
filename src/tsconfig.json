@@ -1,0 +1,54 @@
+{
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./types"
+    },
+    {
+      "path": "./config"
+    },
+    {
+      "path": "./router"
+    },
+    {
+      "path": "./shard"
+    },
+    {
+      "path": "./patch"
+    },
+    {
+      "path": "./proxy"
+    },
+    {
+      "path": "./database"
+    },
+    {
+      "path": "./auth"
+    },
+    {
+      "path": "./message-types"
+    },
+    {
+      "path": "./transactions"
+    },
+    {
+      "path": "./core"
+    },
+    {
+      "path": "./persona"
+    },
+    {
+      "path": "./lobby"
+    },
+    {
+      "path": "./login"
+    },
+    {
+      "path": "./admin"
+    },
+    {
+      "path": "./bin"
+    }
+  ]
+}
