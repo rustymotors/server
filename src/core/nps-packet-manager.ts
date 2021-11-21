@@ -6,11 +6,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import P from "pino";
-import { ITCPConnection, UnprocessedPacket } from "../types/index";
+import { UnprocessedPacket } from "../types/index";
 import { LobbyServer } from "../lobby/index";
 import { LoginServer } from "../login/index";
 import { PersonaServer } from "../persona/index";
 import { DatabaseManager } from "../database/index";
+import { TCPConnection } from "./tcpConnection";
 
 const log = P().child({ service: "mcoserver:NPSPacketManager" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -54,6 +55,7 @@ export class NPSPacketManager {
       { id: 0x6_07, name: "NPS_GAME_ACCOUNT_INFO" },
       { id: 0x11_01, name: "NPS_CRYPTO_DES_CBC" },
     ];
+    this.database.init();
 
     this.loginServer = LoginServer.getInstance();
     this.personaServer = PersonaServer.getInstance();
@@ -92,9 +94,7 @@ export class NPSPacketManager {
    * @param {module:IRawPacket} rawPacket
    * @return {Promise<ConnectionObj>}
    */
-  async processNPSPacket(
-    rawPacket: UnprocessedPacket
-  ): Promise<ITCPConnection> {
+  async processNPSPacket(rawPacket: UnprocessedPacket): Promise<TCPConnection> {
     const messageId = rawPacket.data.readInt16BE(0);
     log.info(
       `Handling message,

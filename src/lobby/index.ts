@@ -8,13 +8,10 @@
 
 import P from "pino";
 import { DatabaseManager } from "../database/index";
-import {
-  EMessageDirection,
-  ITCPConnection,
-  UnprocessedPacket,
-} from "../types/index";
+import { EMessageDirection, UnprocessedPacket } from "../types/index";
 import { NPSMessage, NPSUserInfo } from "../message-types/index";
 import { PersonaServer } from "../persona/index";
+import { TCPConnection } from "../core/tcpConnection";
 
 const log = P().child({ service: "mcoserver:LobbyServer" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -24,17 +21,15 @@ log.level = process.env["LOG_LEVEL"] || "info";
  * @module LobbyServer
  */
 
-const databaseManager = DatabaseManager.getInstance();
-
 /**
  * @param {ConnectionObj} conn
  * @param {Buffer} buffer
  * @return {Promise<ConnectionObj>}
  */
 async function npsSocketWriteIfOpen(
-  conn: ITCPConnection,
+  conn: TCPConnection,
   buffer: Buffer
-): Promise<ITCPConnection> {
+): Promise<TCPConnection> {
   const { sock } = conn;
   if (sock.writable) {
     // Write the packet to socket
@@ -57,7 +52,7 @@ async function npsSocketWriteIfOpen(
  * @param {ConnectionObj} con
  * @param {Buffer} cypherCmd
  */
-function decryptCmd(con: ITCPConnection, cypherCmd: Buffer): ITCPConnection {
+function decryptCmd(con: TCPConnection, cypherCmd: Buffer): TCPConnection {
   const s = con;
   const decryptedCommand = s.decipherBufferDES(cypherCmd);
   s.decryptedCmd = decryptedCommand;
@@ -72,7 +67,7 @@ function decryptCmd(con: ITCPConnection, cypherCmd: Buffer): ITCPConnection {
  * @param {Buffer} cypherCmd
  * @return {ConnectionObj}
  */
-function encryptCmd(con: ITCPConnection, cypherCmd: Buffer): ITCPConnection {
+function encryptCmd(con: TCPConnection, cypherCmd: Buffer): TCPConnection {
   const s = con;
   s.encryptedCmd = s.cipherBufferDES(cypherCmd);
   return s;
@@ -86,9 +81,9 @@ function encryptCmd(con: ITCPConnection, cypherCmd: Buffer): ITCPConnection {
  * @return {Promise<ConnectionObj>}
  */
 async function sendCommand(
-  con: ITCPConnection,
+  con: TCPConnection,
   data: Buffer
-): Promise<ITCPConnection> {
+): Promise<TCPConnection> {
   const s = con;
 
   const decipheredCommand = decryptCmd(
@@ -169,7 +164,7 @@ export class LobbyServer {
    * @param {IRawPacket} rawPacket
    * @return {Promise<ConnectionObj>}
    */
-  async dataHandler(rawPacket: UnprocessedPacket): Promise<ITCPConnection> {
+  async dataHandler(rawPacket: UnprocessedPacket): Promise<TCPConnection> {
     const { localPort, remoteAddress } = rawPacket;
     log.debug(
       `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
@@ -261,8 +256,8 @@ export class LobbyServer {
    * @param {Buffer} rawData
    * @return {Promise<NPSMsg>}
    */
-  async _npsRequestGameConnectServer(
-    connection: ITCPConnection,
+  private async _npsRequestGameConnectServer(
+    connection: TCPConnection,
     rawData: Buffer
   ): Promise<NPSMessage> {
     const { sock } = connection;
@@ -290,6 +285,8 @@ export class LobbyServer {
     const { customerId } = personas[0];
 
     // Set the encryption keys on the lobby connection
+    const databaseManager = DatabaseManager.getInstance();
+    await databaseManager.init();
     const keys = await databaseManager
       .fetchSessionKeyByCustomerId(customerId)
       .catch((error: unknown) => {

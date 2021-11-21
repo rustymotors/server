@@ -6,21 +6,20 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import {
-  IEncryptionManager,
-  IConnectionManager,
   EConnectionStatus,
-  ITCPConnection,
   UnprocessedPacket,
   LobbyCipers,
 } from "../types/index";
 import { createCipheriv, createDecipheriv } from "crypto";
 import { Socket } from "net";
 import P from "pino";
+import { EncryptionManager } from "./encryption-mgr";
+import { ConnectionManager } from "./connection-mgr";
 
 const log = P().child({ service: "mcoserver:TCPConnection" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
-export class TCPConnection implements ITCPConnection {
+export class TCPConnection {
   id: string;
   appId: number;
   status: EConnectionStatus;
@@ -31,9 +30,9 @@ export class TCPConnection implements ITCPConnection {
   lastMsg: number;
   useEncryption: boolean;
   private encLobby: LobbyCipers;
-  private enc?: IEncryptionManager;
+  private enc?: EncryptionManager;
   isSetupComplete: boolean;
-  private mgr?: IConnectionManager;
+  private mgr?: ConnectionManager;
   inQueue: boolean;
   encryptedCmd?: Buffer;
   decryptedCmd?: Buffer;
@@ -66,7 +65,7 @@ export class TCPConnection implements ITCPConnection {
   async updateConnectionByAddressAndPort(
     remoteAddress: string,
     localPort: number,
-    newConnection: ITCPConnection
+    newConnection: TCPConnection
   ): Promise<void> {
     if (this.mgr === undefined) {
       throw new Error("Connection manager not set");
@@ -78,11 +77,11 @@ export class TCPConnection implements ITCPConnection {
     );
   }
 
-  setManager(manager: IConnectionManager): void {
+  setManager(manager: ConnectionManager): void {
     this.mgr = manager;
   }
 
-  setEncryptionManager(encryptionManager: IEncryptionManager): void {
+  setEncryptionManager(encryptionManager: EncryptionManager): void {
     this.enc = encryptionManager;
   }
 
@@ -182,7 +181,7 @@ export class TCPConnection implements ITCPConnection {
     throw new Error("No DES decipher set on connection");
   }
 
-  async processPacket(packet: UnprocessedPacket): Promise<ITCPConnection> {
+  async processPacket(packet: UnprocessedPacket): Promise<TCPConnection> {
     if (this.mgr === undefined) {
       throw new Error("Connection manager is not set");
     }

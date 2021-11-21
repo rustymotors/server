@@ -23,10 +23,10 @@ log.level = process.env["LOG_LEVEL"] || "info";
  */
 
 export class AuthLogin {
-  static _instance: AuthLogin;
+  private static _instance: AuthLogin;
   config: AppConfiguration;
 
-  _server: Server;
+  private _server: Server;
 
   static getInstance(): AuthLogin {
     if (!AuthLogin._instance) {

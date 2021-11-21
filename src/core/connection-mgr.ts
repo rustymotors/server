@@ -7,12 +7,8 @@
 
 import { DatabaseManager } from "../database/index";
 import { MessageNode } from "../message-types/index";
-import { TCPManager } from "../transactions/index";
 import {
   EMessageDirection,
-  IConnectionManager,
-  IDatabaseManager,
-  ITCPConnection,
   NPS_COMMANDS,
   UnprocessedPacket,
 } from "../types/index";
@@ -20,19 +16,20 @@ import { Socket } from "net";
 import { EncryptionManager } from "./encryption-mgr";
 import { NPSPacketManager } from "./nps-packet-manager";
 import { TCPConnection } from "./tcpConnection";
+import { MCOTServer } from "../transactions";
 import P from "pino";
 
 const log = P().child({ service: "mcoserver:ConnectionMgr" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
-export class ConnectionManager implements IConnectionManager {
-  static _instance: IConnectionManager;
-  databaseMgr: IDatabaseManager;
-  connections: ITCPConnection[];
+export class ConnectionManager {
+  private static _instance: ConnectionManager;
+  databaseMgr: DatabaseManager;
+  connections: TCPConnection[];
   newConnectionId: number;
   banList: string[];
 
-  public static getInstance(): IConnectionManager {
+  public static getInstance(): ConnectionManager {
     if (!ConnectionManager._instance) {
       ConnectionManager._instance = new ConnectionManager();
     }
@@ -47,9 +44,10 @@ export class ConnectionManager implements IConnectionManager {
      */
     this.banList = [];
     this.databaseMgr = DatabaseManager.getInstance();
+    this.databaseMgr.init();
   }
 
-  newConnection(connectionId: string, socket: Socket): ITCPConnection {
+  newConnection(connectionId: string, socket: Socket): TCPConnection {
     const newConnection = new TCPConnection(connectionId, socket);
     newConnection.setManager(this);
     newConnection.setEncryptionManager(new EncryptionManager());
@@ -59,7 +57,7 @@ export class ConnectionManager implements IConnectionManager {
   /**
    * Check incoming data and route it to the correct handler based on localPort
    */
-  async processData(rawPacket: UnprocessedPacket): Promise<ITCPConnection> {
+  async processData(rawPacket: UnprocessedPacket): Promise<TCPConnection> {
     const npsPacketManager = new NPSPacketManager();
 
     const { remoteAddress, localPort, data } = rawPacket;
@@ -135,7 +133,7 @@ export class ConnectionManager implements IConnectionManager {
         newNode.deserialize(rawPacket.data);
         log.debug(JSON.stringify(newNode));
 
-        return TCPManager.getInstance().defaultHandler(rawPacket);
+        return MCOTServer.getInstance().defaultHandler(rawPacket);
       }
 
       default:
@@ -193,7 +191,7 @@ export class ConnectionManager implements IConnectionManager {
   findConnectionByAddressAndPort(
     remoteAddress: string,
     localPort: number
-  ): ITCPConnection | undefined {
+  ): TCPConnection | undefined {
     return this.connections.find((connection) => {
       const match =
         remoteAddress === connection.remoteAddress &&
@@ -205,7 +203,7 @@ export class ConnectionManager implements IConnectionManager {
   /**
    * Locate connection by id in the connections array
    */
-  findConnectionById(connectionId: string): ITCPConnection {
+  findConnectionById(connectionId: string): TCPConnection {
     const results = this.connections.find(
       (connection) => connectionId === connection.id
     );
@@ -219,7 +217,7 @@ export class ConnectionManager implements IConnectionManager {
   async _updateConnectionByAddressAndPort(
     address: string,
     port: number,
-    newConnection: ITCPConnection
+    newConnection: TCPConnection
   ): Promise<void> {
     if (newConnection === undefined) {
       throw new Error(
@@ -251,7 +249,7 @@ export class ConnectionManager implements IConnectionManager {
   /**
    * Return an existing connection, or a new one
    */
-  findOrNewConnection(socket: Socket): ITCPConnection {
+  findOrNewConnection(socket: Socket): TCPConnection {
     const { remoteAddress, localPort } = socket;
     if (!remoteAddress) {
       throw new Error(
@@ -305,7 +303,7 @@ export class ConnectionManager implements IConnectionManager {
   /**
    * Dump all connections for debugging
    */
-  dumpConnections(): ITCPConnection[] {
+  dumpConnections(): TCPConnection[] {
     return this.connections;
   }
 }

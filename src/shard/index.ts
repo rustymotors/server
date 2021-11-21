@@ -34,7 +34,7 @@ log.level = process.env["LOG_LEVEL"] || "info";
 export class ShardServer {
   static _instance: ShardServer;
   _config: AppConfiguration;
-  _possibleShards: string[] = [];
+  private _possibleShards: string[] = [];
   _server: Server;
 
   static getInstance(): ShardServer {

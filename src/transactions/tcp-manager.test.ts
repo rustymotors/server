@@ -3,7 +3,7 @@ import { MessageNode } from "../message-types/index";
 import { SocketFactory } from "../socket-factory";
 import { TCPConnection } from "../core/tcpConnection";
 import t from "tap";
-import { compressIfNeeded } from "./tcp-manager";
+import { compressIfNeeded } from ".";
 
 t.test("TCP Manager", (t) => {
   t.test("compressIfNeeded()", async (t) => {

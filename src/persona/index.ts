@@ -11,9 +11,9 @@ import {
   EMessageDirection,
   PersonaRecord,
   UnprocessedPacket,
-  ITCPConnection,
 } from "../types/index";
 import { NPSMessage, NPSPersonaMapsMessage } from "../message-types/index";
+import { TCPConnection } from "../core/tcpConnection";
 
 const log = P().child({ service: "mcoserver:PersonaServer" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -410,7 +410,7 @@ export class PersonaServer {
     return responsePacket;
   }
 
-  async dataHandler(rawPacket: UnprocessedPacket): Promise<ITCPConnection> {
+  async dataHandler(rawPacket: UnprocessedPacket): Promise<TCPConnection> {
     const { connection, data, localPort, remoteAddress } = rawPacket;
     const { sock } = connection;
     const updatedConnection = connection;

@@ -6,10 +6,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import P from "pino";
-import { IConnectionManager, IMCServer, ITCPConnection } from "../types/index";
-import { ConnectionManager } from "./connection-mgr";
 import { AppConfiguration, ConfigurationManager } from "../config/index";
+import { ConnectionManager } from "./connection-mgr";
 import { ListenerThread } from "./listener-thread";
+import { TCPConnection } from "./tcpConnection";
 
 const log = P().child({ service: "mcoserver:MCServer" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -18,12 +18,12 @@ log.level = process.env["LOG_LEVEL"] || "info";
  * This class starts all the servers
  */
 
-export class MCServer implements IMCServer {
-  static _instance: IMCServer;
+export class MCServer {
+  private static _instance: MCServer;
   config: AppConfiguration;
-  private mgr?: IConnectionManager;
+  private mgr?: ConnectionManager;
 
-  static getInstance(): IMCServer {
+  static getInstance(): MCServer {
     if (!MCServer._instance) {
       MCServer._instance = new MCServer();
     }
@@ -40,7 +40,7 @@ export class MCServer implements IMCServer {
     }
     this.mgr.resetAllQueueState();
   }
-  getConnections(): ITCPConnection[] {
+  getConnections(): TCPConnection[] {
     if (this.mgr === undefined) {
       throw new Error("Connection manager is not set");
     }

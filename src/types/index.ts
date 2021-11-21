@@ -1,69 +1,5 @@
 import { Cipher, Decipher } from "crypto";
-import { Server, Socket } from "net";
-import { Database } from "sqlite";
-
-export interface IEncryptionManager {
-  id: string;
-  sessionkey: Buffer;
-  in: Decipher | undefined;
-  out: Cipher | undefined;
-  setEncryptionKey: (sessionkey: Buffer) => boolean;
-  decrypt: (encryptedText: Buffer) => Buffer;
-  encrypt: (plainText: Buffer) => Buffer;
-  _getSessionKey: () => string;
-  getId: () => string;
-}
-
-export interface IMCServer {
-  startServers: () => Promise<void>;
-  clearConnectionQueue: () => void;
-  getConnections: () => ITCPConnection[];
-}
-
-export interface IDatabaseManager {
-  localDB?: Database;
-  changes: number;
-  fetchSessionKeyByCustomerId: (customerId: number) => Promise<SessionRecord>;
-  fetchSessionKeyByConnectionId: (
-    connectionId: string
-  ) => Promise<SessionRecord>;
-  _updateSessionKey: (
-    customerId: number,
-    sessionkey: string,
-    contextId: string,
-    connectionId: string
-  ) => Promise<number>;
-}
-
-export interface IListenerThread {
-  _onData: (arg0: Buffer, fakeConnection1: ITCPConnection) => Promise<void>;
-  startTCPListener: (port: number, mgr: IConnectionManager) => Promise<Server>;
-}
-
-export interface IConnectionManager {
-  connections: ITCPConnection[];
-  newConnectionId: number;
-  banList: string[];
-  databaseMgr: IDatabaseManager;
-  processData: (rawPacket: UnprocessedPacket) => Promise<ITCPConnection>;
-  getNameFromOpCode: (opCode: number) => string;
-  getOpcodeFromName: (name: string) => number;
-  getBans: () => string[];
-  findConnectionByAddressAndPort: (
-    remoteAddress: string,
-    localPort: number
-  ) => ITCPConnection | undefined;
-  findConnectionById: (connectionId: string) => ITCPConnection;
-  _updateConnectionByAddressAndPort: (
-    address: string,
-    port: number,
-    newConnection: ITCPConnection
-  ) => Promise<void>;
-  findOrNewConnection: (socket: Socket) => ITCPConnection;
-  resetAllQueueState: () => void;
-  dumpConnections: () => ITCPConnection[];
-  newConnection: (connectionId: string, socket: Socket) => ITCPConnection;
-}
+import { TCPConnection } from "../core/tcpConnection";
 
 export enum EConnectionStatus {
   ACTIVE = "Active",
@@ -75,47 +11,9 @@ export type LobbyCipers = {
   decipher?: Decipher;
 };
 
-export interface ITCPManager {
-  defaultHandler(rawPacket: UnprocessedPacket): Promise<ITCPConnection>;
-}
-
-export interface ITCPConnection {
-  isLobbyKeysetReady: () => boolean;
-  encryptedCmd?: Buffer;
-  decryptedCmd?: Buffer;
-  updateConnectionByAddressAndPort(
-    remoteAddress: string,
-    localPort: number,
-    newConnection: ITCPConnection
-  ): Promise<void>;
-  processPacket(
-    rawPacket: UnprocessedPacket
-  ): ITCPConnection | PromiseLike<ITCPConnection>;
-  id: string;
-  appId: number;
-  status: EConnectionStatus;
-  remoteAddress?: string;
-  localPort: number;
-  sock: Socket;
-  msgEvent: null;
-  lastMsg: number;
-  useEncryption: boolean;
-  isSetupComplete: boolean;
-  inQueue: boolean;
-  setEncryptionKey: (key: Buffer) => void;
-  setEncryptionKeyDES: (skey: string) => void;
-  cipherBufferDES: (messageBuffer: Buffer) => Buffer;
-  decipherBufferDES: (messageBuffer: Buffer) => Buffer;
-  setManager: (manager: IConnectionManager) => void;
-  setEncryptionManager: (manager: IEncryptionManager) => void;
-  getEncryptionId: () => string;
-  encryptBuffer: (buffer: Buffer) => Buffer;
-  decryptBuffer: (buffer: Buffer) => Buffer;
-}
-
 export type UnprocessedPacket = {
   connectionId: string;
-  connection: ITCPConnection;
+  connection: TCPConnection;
   data: Buffer;
   localPort: number | undefined;
   remoteAddress: string | undefined;
@@ -322,8 +220,8 @@ export const NPS_GetPersonaMapListRequest = {
  * @property {Buffer} _mcosig
  */
 export class MessageHead {
-  _length: Buffer;
-  _mcosig: Buffer;
+  private _length: Buffer;
+  private _mcosig: Buffer;
   /**
    *
    */
@@ -372,128 +270,6 @@ export const CompressedHeader = {
   uncompressedLength: Buffer.alloc(4), // Uint4B
   data: Buffer.alloc(0), // [0] Uint4B
 };
-
-// /**
-//  * @class MessageNode
-//  * @property {Buffer} _toFrom
-//  * @property {Buffer} _appID
-//  * @property {Buffer} _header
-//  * @property {Buffer} _seq
-//  * @property {Buffer} _flags
-//  * @property {Buffer} _buffer
-//  * @property {Buffer} _rawBuffer
-//  */
-// export class MessageNode {
-//   /**
-//    *
-//    * @param {Buffer} buffer
-//    */
-//   constructor(buffer) {
-//     this._toFrom = Buffer.alloc(4) // UInt4
-//     this._appID = Buffer.alloc(4) // UInt4
-//     this._header = new MessageHead() // UInt4
-//     this._seq = Buffer.alloc(4) // UInt4
-//     this._flags = Buffer.alloc(4) // UInt4
-//     this._rawBuffer = buffer
-//     this._buffer = buffer.slice(16)
-//   }
-
-//   /**
-//    * @returns {number}
-//    */
-//   get toFrom() {
-//     return this._toFrom.readInt32BE()
-//   }
-
-//   /**
-//    * @param {number} value
-//    */
-//   set toFrom(value) {
-//     this._toFrom.writeInt32BE(value)
-//   }
-
-//   /**
-//    * @returns {number}
-//    */
-//   get appId() {
-//     return this._appID.readInt32BE()
-//   }
-
-//   /**
-//    * @param {number} value
-//    */
-//   set appId(value) {
-//     this._appID.writeInt32BE(value)
-//   }
-
-//   /**
-//    * @returns {MessageHead}
-//    */
-//   get header() {
-//     return this._header
-//   }
-
-//   /**
-//    * @returns {number}
-//    */
-//   get seq() {
-//     return this._seq.readInt32BE()
-//   }
-
-//   /**
-//    * @param {number} value
-//    */
-//   set seq(value) {
-//     this._seq.writeInt32BE(value)
-//   }
-
-//   /**
-//    * @returns {number}
-//    */
-//   get flags() {
-//     return this._flags.readInt32BE()
-//   }
-
-//   /**
-//    * @param {number} value
-//    */
-//   set flags(value) {
-//     this._flags.writeInt32BE(value)
-//   }
-
-//   /**
-//    * @returns {Buffer}
-//    */
-//   get buffer() {
-//     return this._buffer
-//   }
-
-//   /**
-//    * @param {Buffer} value
-//    */
-//   set buffer(value) {
-//     this._buffer = value
-//   }
-
-//   /**
-//    * @returns {Buffer}
-//    */
-//   get rawBuffer() {
-//     return this._rawBuffer
-//   }
-
-//   /**
-//    *
-//    * @param {Buffer} buffer
-//    * @returns {MessageNode}
-//    */
-//   static fromBuffer(buffer) {
-//     const newNode = new MessageNode(buffer)
-//     newNode.header.length = 24 + buffer.byteLength
-//     newNode.header.mcosig = buffer.slice(2, 6)
-//     return newNode
-//   }
-// }
 
 /**
  * Commands from the game server to the game client
@@ -697,12 +473,12 @@ export interface IMessageNode {
 }
 
 export type ConnectionWithPacket = {
-  connection: ITCPConnection;
+  connection: TCPConnection;
   packet: IMessageNode;
   lastError?: string;
 };
 
 export type ConnectionWithPackets = {
-  connection: ITCPConnection;
+  connection: TCPConnection;
   packetList: IMessageNode[];
 };

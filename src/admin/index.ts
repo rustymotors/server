@@ -14,7 +14,7 @@ import {
   AppConfiguration,
   ConfigurationManager,
 } from "../config/index";
-import { IMCServer } from "../types/index";
+import { MCServer } from "../core";
 
 const log = P().child({ service: "mcoserver:AdminServer;" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -28,19 +28,19 @@ log.level = process.env["LOG_LEVEL"] || "info";
  * @property {Server} httpServer
  */
 export class AdminServer {
-  static _instance: AdminServer;
+  private static _instance: AdminServer;
   config: AppConfiguration;
-  mcServer: IMCServer;
+  mcServer: MCServer;
   httpsServer: Server | undefined;
 
-  static getInstance(mcServer: IMCServer): AdminServer {
+  static getInstance(mcServer: MCServer): AdminServer {
     if (!AdminServer._instance) {
       AdminServer._instance = new AdminServer(mcServer);
     }
     return AdminServer._instance;
   }
 
-  private constructor(mcServer: IMCServer) {
+  private constructor(mcServer: MCServer) {
     this.config = ConfigurationManager.getInstance().getConfig();
     this.mcServer = mcServer;
   }
@@ -97,7 +97,10 @@ export class AdminServer {
    * @param {import("http").IncomingMessage} request
    * @param {import("http").ServerResponse} response
    */
-  _httpsHandler(request: IncomingMessage, response: ServerResponse): void {
+  private _httpsHandler(
+    request: IncomingMessage,
+    response: ServerResponse
+  ): void {
     log.info(
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );
@@ -132,7 +135,7 @@ export class AdminServer {
    * @returns {void}
    * @param {import("net").Socket} socket
    */
-  _socketEventHandler(socket: Socket): void {
+  private _socketEventHandler(socket: Socket): void {
     socket.on("error", (error) => {
       throw new Error(`[AdminServer] SSL Socket Error: ${error.message}`);
     });

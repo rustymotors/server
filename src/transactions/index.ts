@@ -7,12 +7,21 @@
 
 import P from "pino";
 import {
+  ConnectionWithPacket,
   ConnectionWithPackets,
   EMessageDirection,
-  ITCPConnection,
+  UnprocessedPacket,
 } from "../types/index";
-import { GenericReplyMessage, MessageNode } from "../message-types/index";
-import { TCPManager } from "./tcp-manager";
+import {
+  ClientConnectMessage,
+  GenericReplyMessage,
+  GenericRequestMessage,
+  MessageNode,
+  StockCar,
+  StockCarInfoMessage,
+} from "../message-types/index";
+import { TCPConnection } from "../core/tcpConnection";
+import { DatabaseManager } from "../database";
 
 const log = P().child({ service: "mcoserver:MCOTSServer" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -21,7 +30,8 @@ log.level = process.env["LOG_LEVEL"] || "info";
  * Manages the game database server
  */
 export class MCOTServer {
-  static _instance: MCOTServer;
+  private static _instance: MCOTServer;
+  private databaseManager: DatabaseManager;
 
   static getInstance(): MCOTServer {
     if (!MCOTServer._instance) {
@@ -31,7 +41,7 @@ export class MCOTServer {
   }
 
   private constructor() {
-    // Intentually empty
+    this.databaseManager = DatabaseManager.getInstance();
   }
 
   /**
@@ -74,8 +84,8 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {Promise<ConnectionWithPackets}>}
    */
-  async _login(
-    connection: ITCPConnection,
+  private async _login(
+    connection: TCPConnection,
     node: MessageNode
   ): Promise<ConnectionWithPackets> {
     // Create new response packet
@@ -98,8 +108,8 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {Promise<ConnectionWithPackets>}
    */
-  async _getLobbies(
-    connection: ITCPConnection,
+  private async _getLobbies(
+    connection: TCPConnection,
     node: MessageNode
   ): Promise<ConnectionWithPackets> {
     log.debug("In _getLobbies...");
@@ -141,8 +151,8 @@ export class MCOTServer {
    * @param {module:MessageNode} node
    * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
-  async _logout(
-    connection: ITCPConnection,
+  private async _logout(
+    connection: TCPConnection,
     node: MessageNode
   ): Promise<ConnectionWithPackets> {
     const logoutMessage = node;
@@ -174,8 +184,8 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {Promise<ConnectionWithPackets>}
    */
-  async _setOptions(
-    connection: ITCPConnection,
+  private async _setOptions(
+    connection: TCPConnection,
     node: MessageNode
   ): Promise<ConnectionWithPackets> {
     const setOptionsMessage = node;
@@ -204,8 +214,8 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {Promise<ConnectionWithPackets>}
    */
-  async _trackingMessage(
-    connection: ITCPConnection,
+  private async _trackingMessage(
+    connection: TCPConnection,
     node: MessageNode
   ): Promise<ConnectionWithPackets> {
     const trackingMessage = node;
@@ -234,8 +244,8 @@ export class MCOTServer {
    * @param {module:MessageNode} node
    * @return {Promise<ConnectionWithPackets>}
    */
-  async _updatePlayerPhysical(
-    connection: ITCPConnection,
+  private async _updatePlayerPhysical(
+    connection: TCPConnection,
     node: MessageNode
   ): Promise<ConnectionWithPackets> {
     const updatePlayerPhysicalMessage = node;
@@ -257,6 +267,440 @@ export class MCOTServer {
 
     return { connection, packetList: [rPacket] };
   }
+
+  async getStockCarInfo(
+    connection: TCPConnection,
+    packet: MessageNode
+  ): Promise<ConnectionWithPackets> {
+    const getStockCarInfoMessage = new GenericRequestMessage();
+    getStockCarInfoMessage.deserialize(packet.data);
+    getStockCarInfoMessage.dumpPacket();
+
+    const stockCarInfoMessage = new StockCarInfoMessage(200, 0, 105);
+    stockCarInfoMessage.starterCash = 200;
+    stockCarInfoMessage.dealerId = 8;
+    stockCarInfoMessage.brand = 105;
+
+    stockCarInfoMessage.addStockCar(new StockCar(113, 20, 0)); // Bel-air
+    stockCarInfoMessage.addStockCar(new StockCar(104, 15, 1)); // Fairlane - Deal of the day
+    stockCarInfoMessage.addStockCar(new StockCar(402, 20, 0)); // Century
+
+    stockCarInfoMessage.dumpPacket();
+
+    const responsePacket = new MessageNode(EMessageDirection.SENT);
+
+    responsePacket.deserialize(packet.serialize());
+
+    responsePacket.updateBuffer(stockCarInfoMessage.serialize());
+
+    responsePacket.dumpPacket();
+
+    return { connection, packetList: [responsePacket] };
+  }
+
+  /**
+   * @param {ConnectionObj} connection
+   * @param {MessageNode} packet
+   * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
+   */
+  async clientConnect(
+    connection: TCPConnection,
+    packet: MessageNode
+  ): Promise<ConnectionWithPackets> {
+    /**
+     * Let's turn it into a ClientConnectMsg
+     */
+    // Not currently using this
+    const newMessage = new ClientConnectMessage(packet.data);
+
+    log.debug(
+      `[TCPManager] Looking up the session key for ${newMessage.customerId}...`
+    );
+    const result = await this.databaseManager.fetchSessionKeyByCustomerId(
+      newMessage.customerId
+    );
+    log.debug("[TCPManager] Session Key located!");
+
+    const connectionWithKey = connection;
+
+    const { customerId, personaId, personaName } = newMessage;
+    const { sessionkey } = result;
+
+    const stringKey = Buffer.from(sessionkey, "hex");
+    connectionWithKey.setEncryptionKey(Buffer.from(stringKey.slice(0, 16)));
+
+    // Update the connection's appId
+    connectionWithKey.appId = newMessage.getAppId();
+
+    log.debug(`cust: ${customerId} ID: ${personaId} Name: ${personaName}`);
+
+    // Create new response packet
+    const genericReplyMessage = new GenericReplyMessage();
+    genericReplyMessage.msgNo = 101;
+    genericReplyMessage.msgReply = 438;
+    const responsePacket = new MessageNode(EMessageDirection.SENT);
+    responsePacket.deserialize(packet.serialize());
+    responsePacket.updateBuffer(genericReplyMessage.serialize());
+    responsePacket.dumpPacket();
+
+    return { connection, packetList: [responsePacket] };
+  }
+
+  /**
+   * Route or process MCOTS commands
+   * @param {MessageNode} node
+   * @param {ConnectionObj} conn
+   * @return {Promise<ConnectionObj>}
+   */
+  async processInput(
+    node: MessageNode,
+    conn: TCPConnection
+  ): Promise<TCPConnection> {
+    const currentMessageNo: number = node.msgNo;
+    const currentMessageString: string = this._MSG_STRING(currentMessageNo);
+
+    switch (currentMessageString) {
+      case "MC_SET_OPTIONS":
+        try {
+          const result = await this._setOptions(conn, node);
+          const responsePackets = result.packetList;
+          return await socketWriteIfOpen(result.connection, responsePackets);
+        } catch (error) {
+          if (error instanceof Error) {
+            throw new TypeError(`Error in MC_SET_OPTIONS: ${error}`);
+          }
+
+          throw new Error("Error in MC_SET_OPTIONS, error unknown");
+        }
+
+      case "MC_TRACKING_MSG":
+        try {
+          const result = await this._trackingMessage(conn, node);
+          const responsePackets = result.packetList;
+          return socketWriteIfOpen(result.connection, responsePackets);
+        } catch (error) {
+          if (error instanceof Error) {
+            throw new TypeError(`Error in MC_TRACKING_MSG: ${error.message}`);
+          }
+
+          throw new Error("Error in MC_TRACKING_MSG, error unknown");
+        }
+
+      case "MC_UPDATE_PLAYER_PHYSICAL":
+        try {
+          const result = await this._updatePlayerPhysical(conn, node);
+          const responsePackets = result.packetList;
+          return socketWriteIfOpen(result.connection, responsePackets);
+        } catch (error) {
+          if (error instanceof Error) {
+            throw new TypeError(
+              `Error in MC_UPDATE_PLAYER_PHYSICAL: ${error.message}`
+            );
+          }
+
+          throw new Error("Error in MC_UPDATE_PLAYER_PHYSICAL, error unknown");
+        }
+
+      case "MC_CLIENT_CONNECT_MSG": {
+        try {
+          const result = await this.clientConnect(conn, node);
+          const responsePackets = result.packetList;
+          // Write the socket
+          return await socketWriteIfOpen(result.connection, responsePackets);
+        } catch (error) {
+          if (error instanceof Error) {
+            throw new TypeError(
+              `[TCPManager] Error writing to socket: ${error.message}`
+            );
+          }
+
+          throw new Error(
+            "[TCPManager] Error writing to socket, error unknown"
+          );
+        }
+      }
+
+      case "MC_LOGIN": {
+        try {
+          const result = await this._login(conn, node);
+          const responsePackets = result.packetList;
+          // Write the socket
+          return socketWriteIfOpen(result.connection, responsePackets);
+        } catch (error) {
+          if (error instanceof Error) {
+            throw new TypeError(
+              `[TCPManager] Error writing to socket: ${error}`
+            );
+          }
+
+          throw new Error(
+            "[TCPManager] Error writing to socket, error unknown"
+          );
+        }
+      }
+
+      case "MC_LOGOUT": {
+        try {
+          const result = await this._logout(conn, node);
+          const responsePackets = result.packetList;
+          // Write the socket
+          return await socketWriteIfOpen(result.connection, responsePackets);
+        } catch (error) {
+          if (error instanceof Error) {
+            throw new TypeError(
+              `[TCPManager] Error writing to socket: ${error.message}`
+            );
+          }
+
+          throw new Error(
+            "[TCPManager] Error writing to socket, error unknown"
+          );
+        }
+      }
+
+      case "MC_GET_LOBBIES": {
+        const result = await this._getLobbies(conn, node);
+        log.debug("Dumping Lobbies response packet...");
+        log.debug(result.packetList.join());
+        const responsePackets = result.packetList;
+        try {
+          // Write the socket
+          return await socketWriteIfOpen(result.connection, responsePackets);
+        } catch (error) {
+          if (error instanceof Error) {
+            throw new TypeError(
+              `[TCPManager] Error writing to socket: ${error}`
+            );
+          }
+
+          throw new Error(
+            "[TCPManager] Error writing to socket, error unknown"
+          );
+        }
+      }
+
+      case "MC_STOCK_CAR_INFO": {
+        try {
+          const result = await this.getStockCarInfo(conn, node);
+          const responsePackets = result.packetList;
+          // Write the socket
+          return socketWriteIfOpen(result.connection, responsePackets);
+        } catch (error) {
+          if (error instanceof Error) {
+            throw new TypeError(
+              `[TCPManager] Error writing to socket: ${error.message}`
+            );
+          }
+
+          throw new Error(
+            "[TCPManager] Error writing to socket, error unknown"
+          );
+        }
+      }
+
+      default: {
+        node.setAppId(conn.appId);
+        throw new Error(
+          `Message Number Not Handled: ${currentMessageNo} (${currentMessageString})
+      conID: ${node.toFrom}  PersonaID: ${node.appId}`
+        );
+      }
+    }
+  }
+
+  /**
+   * @param {MessageNode} msg
+   * @param {ConnectionObj} con
+   * @return {Promise<ConnectionObj>}
+   */
+  async messageReceived(
+    message: MessageNode,
+    con: TCPConnection
+  ): Promise<TCPConnection> {
+    const newConnection: TCPConnection = con;
+    if (!newConnection.useEncryption && message.flags && 0x08) {
+      log.debug("Turning on encryption");
+      newConnection.useEncryption = true;
+    }
+
+    // If not a Heartbeat
+    if (message.flags !== 80 && newConnection.useEncryption) {
+      if (!newConnection.isSetupComplete) {
+        throw new Error(
+          `Decrypt() not yet setup! Disconnecting...conId: ${con.id}`
+        );
+      }
+
+      if (message.flags - 8 >= 0) {
+        try {
+          /**
+           * Attempt to decrypt message
+           */
+          const encryptedBuffer: Buffer = Buffer.from(message.data);
+          log.debug(
+            `Full packet before decrypting: ${encryptedBuffer.toString("hex")}`
+          );
+
+          log.debug(
+            `Message buffer before decrypting: ${encryptedBuffer.toString(
+              "hex"
+            )}`
+          );
+
+          log.debug(`Using encryption id: ${newConnection.getEncryptionId()}`);
+          const deciphered: Buffer =
+            newConnection.decryptBuffer(encryptedBuffer);
+          log.debug(
+            `Message buffer after decrypting: ${deciphered.toString("hex")}`
+          );
+
+          if (deciphered.readUInt16LE(0) <= 0) {
+            throw new Error("Failure deciphering message, exiting.");
+          }
+
+          // Update the MessageNode with the deciphered buffer
+          message.updateBuffer(deciphered);
+        } catch (error) {
+          if (error instanceof Error) {
+            throw new TypeError(
+              `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}: ${error.message}`
+            );
+          }
+
+          throw new Error(
+            `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}, error unknown`
+          );
+        }
+      }
+    }
+
+    // Should be good to process now
+    return this.processInput(message, newConnection);
+  }
+
+  async defaultHandler(rawPacket: UnprocessedPacket): Promise<TCPConnection> {
+    const { connection, remoteAddress, localPort, data } = rawPacket;
+    const messageNode = new MessageNode(EMessageDirection.RECEIVED);
+    messageNode.deserialize(data);
+
+    log.debug(
+      `Received TCP packet',
+    ${JSON.stringify({
+      localPort,
+      remoteAddress,
+      direction: messageNode.direction,
+      data: rawPacket.data.toString("hex"),
+    })}`
+    );
+    messageNode.dumpPacket();
+
+    return this.messageReceived(messageNode, connection);
+  }
 }
 
-export { TCPManager };
+/**
+ * Manages TCP connection packet processing
+ */
+
+export async function compressIfNeeded(
+  connection: TCPConnection,
+  packet: MessageNode
+): Promise<ConnectionWithPacket> {
+  // Check if compression is needed
+  if (packet.getLength() < 80) {
+    log.debug("Too small, should not compress");
+    return { connection, packet, lastError: "Too small, should not compress" };
+  } else {
+    log.debug("This packet should be compressed");
+    /* TODO: Write compression.
+     *
+     * At this time we will still send the packet, to not hang connection
+     * Client will crash though, due to memory access errors
+     */
+  }
+
+  return { connection, packet };
+}
+
+export async function encryptIfNeeded(
+  connection: TCPConnection,
+  packet: MessageNode
+): Promise<ConnectionWithPacket> {
+  // Check if encryption is needed
+  if (packet.flags - 8 >= 0) {
+    log.debug("encryption flag is set");
+
+    packet.updateBuffer(connection.encryptBuffer(packet.data));
+
+    log.debug(`encrypted packet: ${packet.serialize().toString("hex")}`);
+  }
+
+  return { connection, packet };
+}
+
+export async function socketWriteIfOpen(
+  connection: TCPConnection,
+  packetList: MessageNode[]
+): Promise<TCPConnection> {
+  const updatedConnection: ConnectionWithPackets = {
+    connection: connection,
+    packetList: packetList,
+  };
+  // For each node in nodes
+  for (const packet of updatedConnection.packetList) {
+    // Does the packet need to be compressed?
+    const compressedPacket: MessageNode = (
+      await compressIfNeeded(connection, packet)
+    ).packet;
+    // Does the packet need to be encrypted?
+    const encryptedPacket = (
+      await encryptIfNeeded(connection, compressedPacket)
+    ).packet;
+    // Log that we are trying to write
+    log.debug(
+      ` Atempting to write seq: ${encryptedPacket.seq} to conn: ${updatedConnection.connection.id}`
+    );
+
+    // Log the buffer we are writing
+    log.debug(
+      `Writting buffer: ${encryptedPacket.serialize().toString("hex")}`
+    );
+    if (connection.sock.writable) {
+      // Write the packet to socket
+      connection.sock.write(encryptedPacket.serialize());
+    } else {
+      const port: string = connection.sock.localPort?.toString() || "";
+      throw new Error(
+        `Error writing ${encryptedPacket.serialize()} to ${
+          connection.sock.remoteAddress
+        } , ${port}`
+      );
+    }
+  }
+
+  return updatedConnection.connection;
+}
+
+export class TCPManager {
+  private static _instance: TCPManager;
+  mcotServer: MCOTServer;
+  databaseManager: DatabaseManager;
+
+  static getInstance(): TCPManager {
+    if (!TCPManager._instance) {
+      TCPManager._instance = new TCPManager();
+    }
+    return TCPManager._instance;
+  }
+
+  private constructor() {
+    this.mcotServer = MCOTServer.getInstance();
+    this.databaseManager = DatabaseManager.getInstance();
+  }
+
+  /**
+   * @param {ConnectionObj} connection
+   * @param {MessageNode} packet
+   * @return {Promise<{conn: ConnectionObj, packetToWrite: MessageNode}>}
+   */
+}

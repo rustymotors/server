@@ -7,13 +7,10 @@
 
 import P from "pino";
 import { DatabaseManager } from "../database/index";
-import {
-  UnprocessedPacket,
-  ITCPConnection,
-  UserRecordMini,
-} from "../types/index";
+import { UnprocessedPacket, UserRecordMini } from "../types/index";
 import { NPSUserStatus, premadeLogin } from "../message-types/index";
 import { ConfigurationManager } from "../config/index";
+import { TCPConnection } from "../core/tcpConnection";
 
 const log = P().child({ service: "mcoserver:LoginServer" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -48,7 +45,7 @@ export class LoginServer {
    * @param {IServerConfig} config
    * @return {Promise<ConnectionObj>}
    */
-  async dataHandler(rawPacket: UnprocessedPacket): Promise<ITCPConnection> {
+  async dataHandler(rawPacket: UnprocessedPacket): Promise<TCPConnection> {
     let processed = true;
     const { connection, data } = rawPacket;
     const { localPort, remoteAddress } = rawPacket;
@@ -157,7 +154,10 @@ export class LoginServer {
    * @param {IServerConfig} config
    * @return {Promise<Buffer>}
    */
-  async _userLogin(connection: ITCPConnection, data: Buffer): Promise<Buffer> {
+  private async _userLogin(
+    connection: TCPConnection,
+    data: Buffer
+  ): Promise<Buffer> {
     const { sock } = connection;
     const { localPort } = sock;
     const userStatus = new NPSUserStatus(data);
@@ -191,7 +191,7 @@ export class LoginServer {
     // Save sessionkey in database under customerId
     log.debug("Preparing to update session key in db");
     await this.databaseManager
-      ._updateSessionKey(
+      .updateSessionKey(
         customer.customerId,
         userStatus.sessionkey,
         userStatus.contextId,

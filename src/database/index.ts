@@ -8,7 +8,7 @@
 
 import * as sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
-import { IDatabaseManager, SessionRecord } from "../types/index";
+import { SessionRecord } from "../types/index";
 import P from "pino";
 import { AppConfiguration, ConfigurationManager } from "../config/index";
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
@@ -17,8 +17,8 @@ import { EServerConnectionName, RoutingMesh } from "../router/index";
 const log = P().child({ service: "mcoserver:DatabaseMgr" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
-export class DatabaseManager implements IDatabaseManager {
-  static _instance: DatabaseManager;
+export class DatabaseManager {
+  private static _instance: DatabaseManager;
   _config: AppConfiguration;
   _server: Server;
   changes = 0;
@@ -29,120 +29,127 @@ export class DatabaseManager implements IDatabaseManager {
       DatabaseManager._instance = new DatabaseManager();
     }
 
-    const self = DatabaseManager._instance;
-
-    open({ filename: "mco.db", driver: sqlite3.Database })
-      .then(async (db) => {
-        self.localDB = db;
-
-        self.changes = 0;
-
-        await db.run(`CREATE TABLE IF NOT EXISTS "sessions"
-          (
-            customer_id integer,
-            sessionkey text NOT NULL,
-            skey text NOT NULL,
-            context_id text NOT NULL,
-            connection_id text NOT NULL,
-            CONSTRAINT pk_session PRIMARY KEY(customer_id)
-          );`);
-
-        await db.run(`CREATE TABLE IF NOT EXISTS "lobbies"
-          (
-            "lobyID" integer NOT NULL,
-            "raceTypeID" integer NOT NULL,
-            "turfID" integer NOT NULL,
-            "riffName" character(32) NOT NULL,
-            "eTerfName" character(265) NOT NULL,
-            "clientArt" character(11) NOT NULL,
-            "elementID" integer NOT NULL,
-            "terfLength" integer NOT NULL,
-            "startSlice" integer NOT NULL,
-            "endSlice" integer NOT NULL,
-            "dragStageLeft" integer NOT NULL,
-            "dragStageRight" integer NOT NULL,
-            "dragStagingSlice" integer NOT NULL,
-            "gridSpreadFactor" real NOT NULL,
-            "linear" smallint NOT NULL,
-            "numPlayersMin" smallint NOT NULL,
-            "numPlayersMax" smallint NOT NULL,
-            "numPlayersDefault" smallint NOT NULL,
-            "bnumPlayersEnable" smallint NOT NULL,
-            "numLapsMin" smallint NOT NULL,
-            "numLapsMax" smallint NOT NULL,
-            "numLapsDefault" smallint NOT NULL,
-            "bnumLapsEnabled" smallint NOT NULL,
-            "numRoundsMin" smallint NOT NULL,
-            "numRoundsMax" smallint NOT NULL,
-            "numRoundsDefault" smallint NOT NULL,
-            "bnumRoundsEnabled" smallint NOT NULL,
-            "bWeatherDefault" smallint NOT NULL,
-            "bWeatherEnabled" smallint NOT NULL,
-            "bNightDefault" smallint NOT NULL,
-            "bNightEnabled" smallint NOT NULL,
-            "bBackwardDefault" smallint NOT NULL,
-            "bBackwardEnabled" smallint NOT NULL,
-            "bTrafficDefault" smallint NOT NULL,
-            "bTrafficEnabled" smallint NOT NULL,
-            "bDamageDefault" smallint NOT NULL,
-            "bDamageEnabled" smallint NOT NULL,
-            "bAIDefault" smallint NOT NULL,
-            "bAIEnabled" smallint NOT NULL,
-            "topDog" character(13) NOT NULL,
-            "terfOwner" character(33) NOT NULL,
-            "qualifingTime" integer NOT NULL,
-            "clubNumPlayers" integer NOT NULL,
-            "clubNumLaps" integer NOT NULL,
-            "clubNumRounds" integer NOT NULL,
-            "bClubNight" smallint NOT NULL,
-            "bClubWeather" smallint NOT NULL,
-            "bClubBackwards" smallint NOT NULL,
-            "topSeedsMP" integer NOT NULL,
-            "lobbyDifficulty" integer NOT NULL,
-            "ttPointForQualify" integer NOT NULL,
-            "ttCashForQualify" integer NOT NULL,
-            "ttPointBonusFasterIncs" integer NOT NULL,
-            "ttCashBonusFasterIncs" integer NOT NULL,
-            "ttTimeIncrements" integer NOT NULL,
-            "victoryPoints1" integer NOT NULL,
-            "victoryCash1" integer NOT NULL,
-            "victoryPoints2" integer NOT NULL,
-            "victoryCash2" integer NOT NULL,
-            "victoryPoints3" integer NOT NULL,
-            "victoryCash3" integer NOT NULL,
-            "minLevel" smallint NOT NULL,
-            "minResetSlice" integer NOT NULL,
-            "maxResetSlice" integer NOT NULL,
-            "bnewbieFlag" smallint NOT NULL,
-            "bdriverHelmetFlag" smallint NOT NULL,
-            "clubNumPlayersMax" smallint NOT NULL,
-            "clubNumPlayersMin" smallint NOT NULL,
-            "clubNumPlayersDefault" smallint NOT NULL,
-            "numClubsMax" smallint NOT NULL,
-            "numClubsMin" smallint NOT NULL,
-            "racePointsFactor" real NOT NULL,
-            "bodyClassMax" smallint NOT NULL,
-            "powerClassMax" smallint NOT NULL,
-            "clubLogoID" integer NOT NULL,
-            "teamtWeather" smallint NOT NULL,
-            "teamtNight" smallint NOT NULL,
-            "teamtBackwards" smallint NOT NULL,
-            "teamtNumLaps" smallint NOT NULL,
-            "raceCashFactor" real NOT NULL
-          );`);
-      })
-      .catch((err) => {
-        if (err instanceof Error) {
-          const newError = new Error(
-            `There was an error setting up the database: ${err.message}`
-          );
-          log.error(newError.message);
-          throw newError;
-        }
-        throw err;
-      });
-
     return DatabaseManager._instance;
+  }
+
+  async init() {
+    if (typeof this.localDB === "undefined") {
+      log.debug(`Initializing the database...`);
+
+      const self = DatabaseManager._instance;
+
+      open({ filename: "mco.db", driver: sqlite3.Database })
+        .then(async (db) => {
+          self.localDB = db;
+
+          self.changes = 0;
+
+          await db.run(`CREATE TABLE IF NOT EXISTS "sessions"
+            (
+              customer_id integer,
+              sessionkey text NOT NULL,
+              skey text NOT NULL,
+              context_id text NOT NULL,
+              connection_id text NOT NULL,
+              CONSTRAINT pk_session PRIMARY KEY(customer_id)
+            );`);
+
+          await db.run(`CREATE TABLE IF NOT EXISTS "lobbies"
+            (
+              "lobyID" integer NOT NULL,
+              "raceTypeID" integer NOT NULL,
+              "turfID" integer NOT NULL,
+              "riffName" character(32) NOT NULL,
+              "eTerfName" character(265) NOT NULL,
+              "clientArt" character(11) NOT NULL,
+              "elementID" integer NOT NULL,
+              "terfLength" integer NOT NULL,
+              "startSlice" integer NOT NULL,
+              "endSlice" integer NOT NULL,
+              "dragStageLeft" integer NOT NULL,
+              "dragStageRight" integer NOT NULL,
+              "dragStagingSlice" integer NOT NULL,
+              "gridSpreadFactor" real NOT NULL,
+              "linear" smallint NOT NULL,
+              "numPlayersMin" smallint NOT NULL,
+              "numPlayersMax" smallint NOT NULL,
+              "numPlayersDefault" smallint NOT NULL,
+              "bnumPlayersEnable" smallint NOT NULL,
+              "numLapsMin" smallint NOT NULL,
+              "numLapsMax" smallint NOT NULL,
+              "numLapsDefault" smallint NOT NULL,
+              "bnumLapsEnabled" smallint NOT NULL,
+              "numRoundsMin" smallint NOT NULL,
+              "numRoundsMax" smallint NOT NULL,
+              "numRoundsDefault" smallint NOT NULL,
+              "bnumRoundsEnabled" smallint NOT NULL,
+              "bWeatherDefault" smallint NOT NULL,
+              "bWeatherEnabled" smallint NOT NULL,
+              "bNightDefault" smallint NOT NULL,
+              "bNightEnabled" smallint NOT NULL,
+              "bBackwardDefault" smallint NOT NULL,
+              "bBackwardEnabled" smallint NOT NULL,
+              "bTrafficDefault" smallint NOT NULL,
+              "bTrafficEnabled" smallint NOT NULL,
+              "bDamageDefault" smallint NOT NULL,
+              "bDamageEnabled" smallint NOT NULL,
+              "bAIDefault" smallint NOT NULL,
+              "bAIEnabled" smallint NOT NULL,
+              "topDog" character(13) NOT NULL,
+              "terfOwner" character(33) NOT NULL,
+              "qualifingTime" integer NOT NULL,
+              "clubNumPlayers" integer NOT NULL,
+              "clubNumLaps" integer NOT NULL,
+              "clubNumRounds" integer NOT NULL,
+              "bClubNight" smallint NOT NULL,
+              "bClubWeather" smallint NOT NULL,
+              "bClubBackwards" smallint NOT NULL,
+              "topSeedsMP" integer NOT NULL,
+              "lobbyDifficulty" integer NOT NULL,
+              "ttPointForQualify" integer NOT NULL,
+              "ttCashForQualify" integer NOT NULL,
+              "ttPointBonusFasterIncs" integer NOT NULL,
+              "ttCashBonusFasterIncs" integer NOT NULL,
+              "ttTimeIncrements" integer NOT NULL,
+              "victoryPoints1" integer NOT NULL,
+              "victoryCash1" integer NOT NULL,
+              "victoryPoints2" integer NOT NULL,
+              "victoryCash2" integer NOT NULL,
+              "victoryPoints3" integer NOT NULL,
+              "victoryCash3" integer NOT NULL,
+              "minLevel" smallint NOT NULL,
+              "minResetSlice" integer NOT NULL,
+              "maxResetSlice" integer NOT NULL,
+              "bnewbieFlag" smallint NOT NULL,
+              "bdriverHelmetFlag" smallint NOT NULL,
+              "clubNumPlayersMax" smallint NOT NULL,
+              "clubNumPlayersMin" smallint NOT NULL,
+              "clubNumPlayersDefault" smallint NOT NULL,
+              "numClubsMax" smallint NOT NULL,
+              "numClubsMin" smallint NOT NULL,
+              "racePointsFactor" real NOT NULL,
+              "bodyClassMax" smallint NOT NULL,
+              "powerClassMax" smallint NOT NULL,
+              "clubLogoID" integer NOT NULL,
+              "teamtWeather" smallint NOT NULL,
+              "teamtNight" smallint NOT NULL,
+              "teamtBackwards" smallint NOT NULL,
+              "teamtNumLaps" smallint NOT NULL,
+              "raceCashFactor" real NOT NULL
+            );`);
+          log.debug(`Database initialized`);
+        })
+        .catch((err) => {
+          if (err instanceof Error) {
+            const newError = new Error(
+              `There was an error setting up the database: ${err.message}`
+            );
+            log.error(newError.message);
+            throw newError;
+          }
+          throw err;
+        });
+    }
   }
 
   private constructor() {
@@ -217,7 +224,7 @@ export class DatabaseManager implements IDatabaseManager {
     return record as SessionRecord;
   }
 
-  async _updateSessionKey(
+  async updateSessionKey(
     customerId: number,
     sessionkey: string,
     contextId: string,

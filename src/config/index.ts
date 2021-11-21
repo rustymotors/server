@@ -24,7 +24,7 @@ export class ConfigurationManager {
   getConfig(): AppConfiguration {
     return savedConfig;
   }
-  static _instance: ConfigurationManager;
+  private static _instance: ConfigurationManager;
 
   static getInstance(): ConfigurationManager {
     if (!ConfigurationManager._instance) {

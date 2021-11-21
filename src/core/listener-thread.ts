@@ -7,20 +7,17 @@
 
 import P from "pino";
 import { createServer, Server, Socket } from "net";
-import {
-  UnprocessedPacket,
-  ITCPConnection,
-  IConnectionManager,
-  IListenerThread,
-} from "../types/index";
+import { UnprocessedPacket } from "../types/index";
+import { TCPConnection } from "./tcpConnection";
+import { ConnectionManager } from "./connection-mgr";
 
 const log = P().child({ service: "mcoserver:ListenerThread" });
 log.level = process.env["LOG_LEVEL"] || "info";
 
-export class ListenerThread implements IListenerThread {
-  static _instance: IListenerThread;
+export class ListenerThread {
+  private static _instance: ListenerThread;
 
-  static getInstance(): IListenerThread {
+  static getInstance(): ListenerThread {
     if (!ListenerThread._instance) {
       ListenerThread._instance = new ListenerThread();
     }
@@ -35,7 +32,10 @@ export class ListenerThread implements IListenerThread {
    * The onData handler
    * takes the data buffer and creates a IRawPacket object
    */
-  async _onData(data: Buffer, connection: ITCPConnection): Promise<void> {
+  private async _onData(
+    data: Buffer,
+    connection: TCPConnection
+  ): Promise<void> {
     const { localPort, remoteAddress } = connection.sock;
     const rawPacket: UnprocessedPacket = {
       connectionId: connection.id,
@@ -51,7 +51,7 @@ export class ListenerThread implements IListenerThread {
         "hex"
       )}}`
     );
-    let newConnection: ITCPConnection;
+    let newConnection: TCPConnection;
     try {
       newConnection = await connection.processPacket(rawPacket);
     } catch (error) {
@@ -94,7 +94,7 @@ export class ListenerThread implements IListenerThread {
    * @param {ConnectionMgr} connectionMgr
    * @return {void}
    */
-  _listener(socket: Socket, connectionMgr: IConnectionManager): void {
+  private _listener(socket: Socket, connectionMgr: ConnectionManager): void {
     // Received a new connection
     // Turn it into a connection object
     const connection = connectionMgr.findOrNewConnection(socket);
@@ -131,7 +131,7 @@ export class ListenerThread implements IListenerThread {
    */
   async startTCPListener(
     localPort: number,
-    connectionMgr: IConnectionManager
+    connectionMgr: ConnectionManager
   ): Promise<Server> {
     log.debug(`Attempting to bind to port ${localPort}`);
     return createServer((socket) => {
