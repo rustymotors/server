@@ -6,11 +6,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import P from "pino";
-import { UnprocessedPacket } from "../types/index";
+import { DatabaseManager } from "../database/index";
 import { LobbyServer } from "../lobby/index";
 import { LoginServer } from "../login/index";
 import { PersonaServer } from "../persona/index";
-import { DatabaseManager } from "../database/index";
+import { UnprocessedPacket } from "../types/index";
 import { TCPConnection } from "./tcpConnection";
 
 const log = P().child({ service: "mcoserver:NPSPacketManager" });

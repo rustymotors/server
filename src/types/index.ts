@@ -1,11 +1,6 @@
 import { Cipher, Decipher } from "crypto";
 import { TCPConnection } from "../core/tcpConnection";
 
-export enum EConnectionStatus {
-  ACTIVE = "Active",
-  INACTIVE = "Inactive",
-}
-
 export type LobbyCipers = {
   cipher?: Cipher;
   decipher?: Decipher;

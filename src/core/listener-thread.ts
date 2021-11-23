@@ -5,11 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import type { Server, Socket } from "net";
+import { createServer } from "net";
 import P from "pino";
-import { createServer, Server, Socket } from "net";
-import { UnprocessedPacket } from "../types/index";
-import { TCPConnection } from "./tcpConnection";
+import type { UnprocessedPacket } from "../types/index";
 import { ConnectionManager } from "./connection-mgr";
+import { TCPConnection } from "./tcpConnection";
 
 const log = P().child({ service: "mcoserver:ListenerThread" });
 log.level = process.env["LOG_LEVEL"] || "info";

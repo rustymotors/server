@@ -5,19 +5,20 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {
-  EConnectionStatus,
-  UnprocessedPacket,
-  LobbyCipers,
-} from "../types/index";
 import { createCipheriv, createDecipheriv } from "crypto";
-import { Socket } from "net";
+import type { Socket } from "net";
 import P from "pino";
-import { EncryptionManager } from "./encryption-mgr";
+import type { LobbyCipers, UnprocessedPacket } from "../types/index";
 import { ConnectionManager } from "./connection-mgr";
+import { EncryptionManager } from "./encryption-mgr";
 
 const log = P().child({ service: "mcoserver:TCPConnection" });
 log.level = process.env["LOG_LEVEL"] || "info";
+
+export enum EConnectionStatus {
+  ACTIVE = "Active",
+  INACTIVE = "Inactive",
+}
 
 export class TCPConnection {
   id: string;

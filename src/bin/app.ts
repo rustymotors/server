@@ -6,13 +6,13 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { RoutingServer } from "../router/index";
-import { PatchServer } from "../patch/index";
-import { AuthLogin } from "../auth/index";
-import { ShardServer } from "../shard/index";
-import { HTTPProxyServer } from "../proxy/index";
-import { MCServer } from "../core/index";
 import { AdminServer } from "../admin/index";
+import { AuthLogin } from "../auth/index";
+import { MCServer } from "../core/index";
+import { PatchServer } from "../patch/index";
+import { HTTPProxyServer } from "../proxy/index";
+import { RoutingServer } from "../router/index";
+import { ShardServer } from "../shard/index";
 
 // What servers do we need?
 // * Routing Server
