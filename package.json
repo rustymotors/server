@@ -30,7 +30,7 @@
     "url": "git@github.com:drazisil/mcos.git"
   },
   "dependencies": {
-    "@types/node": "16.11.9",
+    "@types/node": "16.11.10",
     "@types/pino": "7.0.4",
     "pino": "next"
   },
