@@ -6,6 +6,8 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
+import * as dotenv from 'dotenv-safe';
+dotenv.config()
 import P from "pino";
 import { AdminServer } from "../admin/index";
 import { AuthLogin } from "../auth/index";

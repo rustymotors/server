@@ -9,8 +9,7 @@ import type { IncomingMessage, ServerResponse } from "http";
 import { createServer } from "https";
 import type { Server, Socket } from "net";
 import P from "pino";
-import type { AppConfiguration } from "../config/index";
-import { ConfigurationManager, _sslOptions } from "../config/index";
+import { _sslOptions } from "../config/ssl-options";
 import { ConnectionManager } from "../core/connection-mgr";
 
 const log = P().child({ service: "mcoserver:AdminServer;" });
@@ -26,7 +25,6 @@ log.level = process.env["LOG_LEVEL"] || "info";
  */
 export class AdminServer {
   private static _instance: AdminServer;
-  config: AppConfiguration;
   httpsServer: Server | undefined;
 
   static getInstance(): AdminServer {
@@ -37,7 +35,7 @@ export class AdminServer {
   }
 
   private constructor() {
-    this.config = ConfigurationManager.getInstance().getConfig();
+    // Intentionally empty
   }
 
   /**
@@ -141,9 +139,8 @@ export class AdminServer {
    * @return {Promise<void>}
    */
   start(): Server {
-    const config = this.config;
     try {
-      const sslOptions = _sslOptions(config.certificate);
+      const sslOptions = _sslOptions();
 
       /** @type {import("https").Server} */
       this.httpsServer = createServer(

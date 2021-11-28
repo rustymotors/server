@@ -1,7 +1,6 @@
 import { EMessageDirection, PersonaRecord } from "../types/index";
 import { readFileSync, statSync } from "fs";
 import { privateDecrypt } from "crypto";
-import { AppConfiguration } from "../config/index";
 import { NPacket } from "../server/npacket";
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
@@ -1704,17 +1703,19 @@ export class NPSUserStatus extends NPSMessage {
    * Take 128 bytes
    * They are the utf-8 of the hex bytes that are the key
    *
-   * @param {IServerConfig} serverConfig
    * @param {Buffer} packet
    * @return {void}
    */
   extractSessionKeyFromPacket(
-    serverConfig: AppConfiguration["certificate"],
     packet: Buffer
   ): void {
+if (!process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE) {
+  throw new Error("Please set MCOS__CERTIFICATE__PRIVATE_KEY_FILE");
+
+}
     // Decrypt the sessionkey
     const privateKey = this.fetchPrivateKeyFromFile(
-      serverConfig.privateKeyFilename
+      process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE
     );
 
     const sessionkeyString = Buffer.from(

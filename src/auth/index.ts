@@ -6,12 +6,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import * as dotenv from 'dotenv-safe';
+dotenv.config()
+
 import { readFileSync } from "fs";
 import { IncomingMessage, ServerResponse } from "http";
 import { createServer, Server } from "https";
 import { Socket } from "net";
 import P from "pino";
-import { AppConfiguration, ConfigurationManager } from "../config/index";
 import { EServerConnectionName, RoutingMesh } from "../router/index";
 import { SslOptions } from "../types/index";
 
@@ -24,7 +26,6 @@ log.level = process.env["LOG_LEVEL"] || "info";
 
 export class AuthLogin {
   private static _instance: AuthLogin;
-  config: AppConfiguration;
 
   private _server: Server;
 
@@ -36,7 +37,6 @@ export class AuthLogin {
   }
 
   private constructor() {
-    this.config = ConfigurationManager.getInstance().getConfig();
 
     this._server = createServer(this._sslOptions(), (request, response) => {
       this.handleRequest(request, response);
@@ -97,7 +97,11 @@ export class AuthLogin {
    * @memberof! WebServer
    */
   start(): void {
-    const host = this.config.serverSettings.ipServer || "localhost";
+    if (!process.env.MCOS__SETTINGS__LISTEN_IP) {
+      throw new Error("Please set MCOS__SETTINGS__LISTEN_IP");
+
+    }
+    const host = process.env.MCOS__SETTINGS__LISTEN_IP;
     const port = 443;
     log.debug(`Attempting to bind to port ${port}`);
     this._server.listen({ port, host }, () => {
@@ -114,28 +118,35 @@ export class AuthLogin {
   }
 
   _sslOptions(): SslOptions {
-    log.debug(`Reading ${this.config.certificate.certFilename}`);
+    log.debug(`Reading ${process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE}`);
 
     let cert;
     let key;
 
     try {
-      cert = readFileSync(this.config.certificate.certFilename, {
+      if (!process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE) {
+        throw new Error('Please set MCOS__CERTIFICATE__CERTIFICATE_FILE')
+      }
+      cert = readFileSync(process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE, {
         encoding: "utf-8",
       });
     } catch (error) {
       throw new Error(
-        `Error loading ${this.config.certificate.certFilename}: (${error}), server must quit!`
+        `Error loading ${process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE}: (${error}), server must quit!`
       );
     }
 
     try {
-      key = readFileSync(this.config.certificate.privateKeyFilename, {
+      if (!process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE) {
+        throw new Error("Please set MCOS__CERTIFICATE__PRIVATE_KEY_FILE");
+
+      }
+      key = readFileSync(process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE, {
         encoding: "utf-8",
       });
     } catch (error) {
       throw new Error(
-        `Error loading ${this.config.certificate.privateKeyFilename}: (${error}), server must quit!`
+        `Error loading ${process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE}: (${error}), server must quit!`
       );
     }
 

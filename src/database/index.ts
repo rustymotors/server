@@ -10,7 +10,6 @@ import * as sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
 import { SessionRecord } from "../types/index";
 import P from "pino";
-import { AppConfiguration, ConfigurationManager } from "../config/index";
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
 import { EServerConnectionName, RoutingMesh } from "../router/index";
 
@@ -19,7 +18,6 @@ log.level = process.env["LOG_LEVEL"] || "info";
 
 export class DatabaseManager {
   private static _instance: DatabaseManager;
-  _config: AppConfiguration;
   _server: Server;
   changes = 0;
   localDB!: Database;
@@ -153,7 +151,6 @@ export class DatabaseManager {
   }
 
   private constructor() {
-    this._config = ConfigurationManager.getInstance().getConfig();
 
     this._server = createServer((request, response) => {
       this.handleRequest(request, response);
@@ -252,7 +249,11 @@ export class DatabaseManager {
   }
 
   start(): Server {
-    const host = this._config.serverSettings.ipServer || "localhost";
+    if (!process.env.MCOS__SETTINGS__LISTEN_IP) {
+throw new Error("Please set MCOS__SETTINGS__LISTEN_IP");
+
+    }
+    const host = process.env.MCOS__SETTINGS__LISTEN_IP;
     const port = 0;
     log.debug(`Attempting to bind to port ${port}`);
     return this._server.listen({ port, host }, () => {

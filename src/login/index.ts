@@ -9,7 +9,6 @@ import P from "pino";
 import { DatabaseManager } from "../database/index";
 import { UnprocessedPacket, UserRecordMini } from "../types/index";
 import { NPSUserStatus, premadeLogin } from "../message-types/index";
-import { ConfigurationManager } from "../config/index";
 import { TCPConnection } from "../core/tcpConnection";
 
 const log = P().child({ service: "mcoserver:LoginServer" });
@@ -170,7 +169,6 @@ export class LoginServer {
     );
 
     userStatus.extractSessionKeyFromPacket(
-      ConfigurationManager.getInstance().getConfig().certificate,
       data
     );
 

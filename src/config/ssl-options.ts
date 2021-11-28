@@ -9,7 +9,6 @@
 import { readFileSync } from "fs";
 import P from "pino";
 import { SslOptions } from "../types";
-import { AppConfiguration } from "./index";
 
 const log = P().child({ service: "mcoserver:AdminServer;" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -34,30 +33,37 @@ log.level = process.env["LOG_LEVEL"] || "info";
    * @return {Promise<sslOptionsObj>}
    */
 export function _sslOptions(
-  certificateSettings: AppConfiguration["certificate"]
 ): SslOptions {
-  log.debug(`Reading ${certificateSettings.certFilename}`);
+  if (!process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE) {
+    throw new Error("Please set MCOS__CERTIFICATE__PRIVATE_KEY_FILE");
+  }
+  if (!process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE) {
+    throw new Error("Please set MCOS__CERTIFICATE__CERTIFICATE_FILE");
+
+  }
+
+  log.debug(`Reading ${process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE}`);
 
   let cert = "";
   let key = "";
 
   try {
-    cert = readFileSync(certificateSettings.certFilename, {
+    cert = readFileSync(process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE, {
       encoding: "utf-8",
     });
   } catch (error) {
     throw new Error(
-      `Error loading ${certificateSettings.certFilename}: (${error}), server must quit!`
+      `Error loading ${process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE}: (${error}), server must quit!`
     );
   }
 
   try {
-    key = readFileSync(certificateSettings.privateKeyFilename, {
+    key = readFileSync(process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE, {
       encoding: "utf-8",
     });
   } catch (error) {
     throw new Error(
-      `Error loading ${certificateSettings.privateKeyFilename}: (${error}), server must quit!`
+      `Error loading ${process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE}: (${error}), server must quit!`
     );
   }
 
