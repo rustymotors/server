@@ -130,13 +130,10 @@ export class ListenerThread {
    * create a new TCP socket listener for that port
    *
    */
-  async startTCPListener(
-    localPort: number,
-    connectionMgr: ConnectionManager
-  ): Promise<Server> {
+  async startTCPListener(localPort: number): Promise<Server> {
     log.debug(`Attempting to bind to port ${localPort}`);
     return createServer((socket) => {
-      this._listener(socket, connectionMgr);
+      this._listener(socket, ConnectionManager.getInstance());
     }).listen({ port: localPort, host: "0.0.0.0" });
   }
 }

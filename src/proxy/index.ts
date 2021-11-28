@@ -47,7 +47,7 @@ export class HTTPProxyServer {
   }
 
   start(): void {
-    const host = "0.0.0.0";
+    const host = "localhost";
     const port = 80;
     log.debug(`Attempting to bind to port ${port}`);
     this._server.listen({ port, host }, () => {

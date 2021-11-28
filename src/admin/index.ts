@@ -11,7 +11,7 @@ import type { Server, Socket } from "net";
 import P from "pino";
 import type { AppConfiguration } from "../config/index";
 import { ConfigurationManager, _sslOptions } from "../config/index";
-import { MCServer } from "../core";
+import { ConnectionManager } from "../core/connection-mgr";
 
 const log = P().child({ service: "mcoserver:AdminServer;" });
 log.level = process.env["LOG_LEVEL"] || "info";
@@ -27,26 +27,24 @@ log.level = process.env["LOG_LEVEL"] || "info";
 export class AdminServer {
   private static _instance: AdminServer;
   config: AppConfiguration;
-  mcServer: MCServer;
   httpsServer: Server | undefined;
 
-  static getInstance(mcServer: MCServer): AdminServer {
+  static getInstance(): AdminServer {
     if (!AdminServer._instance) {
-      AdminServer._instance = new AdminServer(mcServer);
+      AdminServer._instance = new AdminServer();
     }
     return AdminServer._instance;
   }
 
-  private constructor(mcServer: MCServer) {
+  private constructor() {
     this.config = ConfigurationManager.getInstance().getConfig();
-    this.mcServer = mcServer;
   }
 
   /**
    * @return {string}
    */
   _handleGetConnections(): string {
-    const connections = this.mcServer.getConnections();
+    const connections = ConnectionManager.getInstance().dumpConnections();
     let responseText = "";
     for (let i = 0; i < connections.length; i++) {
       const connection = connections[i];
@@ -69,8 +67,8 @@ export class AdminServer {
    * @return {string}
    */
   _handleResetAllQueueState(): string {
-    this.mcServer.clearConnectionQueue();
-    const connections = this.mcServer.getConnections();
+    ConnectionManager.getInstance().resetAllQueueState();
+    const connections = ConnectionManager.getInstance().dumpConnections();
     let responseText = "Queue state reset for all connections\n\n";
     for (let i = 0; i < connections.length; i++) {
       const connection = connections[i];

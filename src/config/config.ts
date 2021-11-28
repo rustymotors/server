@@ -7,7 +7,7 @@ const savedConfig: AppConfiguration = {
     certFilename: "data/mcouniverse.crt",
   },
   serverSettings: {
-    ipServer: "0.0.0.0",
+    ipServer: "localhost",
   },
   serviceConnections: {
     databaseURL: "db.mco.db",

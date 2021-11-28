@@ -16,7 +16,7 @@ const config = {
     certFilename: "data/mcouniverse.crt",
   },
   serverSettings: {
-    host: "0.0.0.0",
+    host: "localhost",
   },
   serviceConnections: {
     databaseURL: "db.mco.db",

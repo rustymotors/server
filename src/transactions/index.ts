@@ -680,27 +680,3 @@ export async function socketWriteIfOpen(
 
   return updatedConnection.connection;
 }
-
-export class TCPManager {
-  private static _instance: TCPManager;
-  mcotServer: MCOTServer;
-  databaseManager: DatabaseManager;
-
-  static getInstance(): TCPManager {
-    if (!TCPManager._instance) {
-      TCPManager._instance = new TCPManager();
-    }
-    return TCPManager._instance;
-  }
-
-  private constructor() {
-    this.mcotServer = MCOTServer.getInstance();
-    this.databaseManager = DatabaseManager.getInstance();
-  }
-
-  /**
-   * @param {ConnectionObj} connection
-   * @param {MessageNode} packet
-   * @return {Promise<{conn: ConnectionObj, packetToWrite: MessageNode}>}
-   */
-}

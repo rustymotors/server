@@ -18,8 +18,14 @@ import { NPSPacketManager } from "./nps-packet-manager";
 import { TCPConnection } from "./tcpConnection";
 import { MCOTServer } from "../transactions";
 import P from "pino";
+import { MPacket } from "../server/mpacket";
+import { NPacket } from "../server/npacket";
+import { MCOS } from "../server/index";
 
-const log = P().child({ service: "mcoserver:ConnectionMgr" });
+// TODO: create a central loggers with colorize: true
+const log = P({ prettyPrint: { colorize: true } }).child({
+  service: "mcoserver:ConnectionMgr",
+});
 log.level = process.env["LOG_LEVEL"] || "info";
 
 export class ConnectionManager {
@@ -72,24 +78,20 @@ export class ConnectionManager {
       })}`
     );
 
+    log.debug(`isMCOT: ${MCOS.isMCOT(rawPacket.data)}`);
+
     switch (localPort) {
       case 8226:
       case 8228:
       case 7003: {
         try {
           const opCode = rawPacket.data.readInt16BE(0);
-          const msgName1 = npsPacketManager.msgCodetoName(
-            rawPacket.data.readInt16BE(0)
-          );
-          const msgName2 = this.getNameFromOpCode(
-            rawPacket.data.readInt16BE(0)
-          );
+          const msgName = this.getNameFromOpCode(rawPacket.data.readInt16BE(0));
           log.debug(
             `Recieved NPS packet,
             ${JSON.stringify({
               opCode,
-              msgName1,
-              msgName2,
+              msgName,
               localPort,
             })}`
           );
@@ -104,6 +106,10 @@ export class ConnectionManager {
           throw error;
         }
         try {
+          const recievedPacket = NPacket.deserialize(rawPacket.data);
+
+          log.debug(`nPacket: ${recievedPacket}`);
+
           return await npsPacketManager.processNPSPacket(rawPacket);
         } catch (error) {
           if (error instanceof Error) {
@@ -118,20 +124,14 @@ export class ConnectionManager {
       }
 
       case 43_300: {
-        log.debug(
-          "Recieved MCOTS packet"
-
-          // {
-          //   opCode: rawPacket.data.readInt16BE(0),
-          //   msgName: `${npsPacketManager.msgCodetoName(
-          //     rawPacket.data.readInt16BE(0)
-          //   )} / ${this.getNameFromOpCode(rawPacket.data.readInt16BE(0))}`,
-          //   localPort
-          // }
-        );
+        log.debug("Recieved MCOTS packet");
         const newNode = new MessageNode(EMessageDirection.RECEIVED);
         newNode.deserialize(rawPacket.data);
         log.debug(JSON.stringify(newNode));
+
+        const recievedPacket = MPacket.deserialize(data);
+
+        log.debug(`mPacket: ${recievedPacket}`);
 
         return MCOTServer.getInstance().defaultHandler(rawPacket);
       }

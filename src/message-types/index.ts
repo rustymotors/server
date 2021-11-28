@@ -2,6 +2,7 @@ import { EMessageDirection, PersonaRecord } from "../types/index";
 import { readFileSync, statSync } from "fs";
 import { privateDecrypt } from "crypto";
 import { AppConfiguration } from "../config/index";
+import { NPacket } from "../server/npacket";
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
@@ -957,6 +958,11 @@ export class NPSMessage {
     this.msgLength = packet.readInt16BE(2);
     this.msgVersion = packet.readInt16BE(4);
     this.content = packet.slice(12);
+
+    const nPacket = NPacket.deserialize(packet);
+
+    console.log(nPacket.getJSON());
+
     return this;
   }
 
