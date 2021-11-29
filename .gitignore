@@ -1,5 +1,5 @@
-.env # do not commit env settings
-.vscode # Do not commit IDE settings
+*.env
+.vscode
 node_modules
 logs
 coverage
@@ -11,8 +11,7 @@ data/sessions.db
 junit
 dist
 built
-.env
-database.sqlite
+*.sqlite
 junit.xml
 .dccache
 out/*
