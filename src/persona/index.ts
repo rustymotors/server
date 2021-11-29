@@ -410,8 +410,8 @@ export class PersonaServer {
   }
 
   async dataHandler(rawPacket: UnprocessedPacket): Promise<TCPConnection> {
-    const { connection, data, localPort, remoteAddress } = rawPacket;
-    const { sock } = connection;
+    const { connection, data } = rawPacket;
+    const { sock, localPort, remoteAddress } = connection;
     const updatedConnection = connection;
     log.debug(
       `Received Persona packet',

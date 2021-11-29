@@ -36,13 +36,10 @@ export class ListenerThread {
     data: Buffer,
     connection: TCPConnection
   ): Promise<void> {
-    const { localPort, remoteAddress } = connection.sock;
     const rawPacket: UnprocessedPacket = {
       connectionId: connection.id,
       connection,
       data,
-      localPort,
-      remoteAddress,
       timestamp: Date.now(),
     };
     // Dump the raw packet

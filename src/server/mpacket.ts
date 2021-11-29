@@ -1,6 +1,8 @@
 import { Buffer } from "buffer";
 
 export class MPacket {
+  /** the connection this packet belongs to. May be blank if newly created */
+  private connectionId = "";
   // /** the creator of the packet*/
   // private source = -1
   /** the user id this packet is about */
@@ -36,17 +38,6 @@ export class MPacket {
   /** has deserialize() been called? */
   public wasDeserialized = false;
 
-  // private getFlagsByte(): Buffer[1] {
-  //     let flags = 0
-  //     if ( this.flags.isHeartbeat) flags = flags ^ 0x80
-  //     if ( this.flags.isLastPacket) flags = flags ^ 0x10
-  //     if ( this.flags.useEncryption) flags = flags ^ 0x08
-  //     if ( this.flags.isText) flags = flags ^ 0x04
-  //     if ( this.flags.isCompressed) flags = flags ^ 0x02
-  //     if ( this.flags.shouldCompress) flags = flags ^ 0x01
-  //     return flags
-  // }
-
   private setFlags(flagsByte: Buffer[1]) {
     if (flagsByte & 0x80) this.flags.isHeartbeat = true;
     if (flagsByte & 0x10) this.flags.isLastPacket = true;
@@ -56,8 +47,9 @@ export class MPacket {
     if (flagsByte & 0x01) this.flags.shouldCompress = true;
   }
 
-  public static deserialize(inputBuffer: Buffer): MPacket {
+  public static deserialize(inputBuffer: Buffer, connectionId = ""): MPacket {
     const newMPacket = new MPacket();
+    newMPacket.connectionId = connectionId;
     newMPacket.packetSize = inputBuffer.readUInt16LE(0);
     newMPacket.headerId = inputBuffer.toString("utf8", 2, 6);
     newMPacket.sequenceNumber = inputBuffer.readUInt16LE(6);
@@ -79,6 +71,10 @@ export class MPacket {
 
   public toString() {
     return JSON.stringify(this.getJSON());
+  }
+
+  public getConnectionId() {
+    return this.connectionId;
   }
 
   public getUserId() {

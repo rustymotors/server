@@ -164,7 +164,7 @@ export class LobbyServer {
    * @return {Promise<ConnectionObj>}
    */
   async dataHandler(rawPacket: UnprocessedPacket): Promise<TCPConnection> {
-    const { localPort, remoteAddress } = rawPacket;
+    const { localPort, remoteAddress } = rawPacket.connection;
     log.debug(
       `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
     );

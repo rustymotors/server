@@ -10,8 +10,6 @@ export type UnprocessedPacket = {
   connectionId: string;
   connection: TCPConnection;
   data: Buffer;
-  localPort: number | undefined;
-  remoteAddress: string | undefined;
   timestamp: number;
 };
 

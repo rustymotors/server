@@ -46,7 +46,7 @@ export class LoginServer {
   async dataHandler(rawPacket: UnprocessedPacket): Promise<TCPConnection> {
     let processed = true;
     const { connection, data } = rawPacket;
-    const { localPort, remoteAddress } = rawPacket;
+    const { localPort, remoteAddress } = rawPacket.connection;
     log.info(
       `Received Login Server packet: ${JSON.stringify({
         localPort,
@@ -205,6 +205,7 @@ export class LoginServer {
     // Create the packet content
     // TODO: This needs to be dynamically generated, right now we are using a
     // a static packet that works _most_ of the time
+    // TODO: investigate if funk/hip hop is the only radio that works.
     const packetContent = premadeLogin();
     log.debug(`Using Premade Login: ${packetContent.toString("hex")}`);
 

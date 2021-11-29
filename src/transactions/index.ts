@@ -578,7 +578,8 @@ export class MCOTServer {
   }
 
   async defaultHandler(rawPacket: UnprocessedPacket): Promise<TCPConnection> {
-    const { connection, remoteAddress, localPort, data } = rawPacket;
+    const { connection, data } = rawPacket;
+    const { remoteAddress, localPort } = connection;
     const messageNode = new MessageNode(EMessageDirection.RECEIVED);
     messageNode.deserialize(data);
 

@@ -18,8 +18,6 @@ import { NPSPacketManager } from "./nps-packet-manager";
 import { TCPConnection } from "./tcpConnection";
 import { MCOTServer } from "../transactions";
 import { logger } from "../logger/index";
-import { MPacket } from "../server/mpacket";
-import { NPacket } from "../server/npacket";
 import { isMCOT, routePacket } from "../server/index";
 import { randomUUID } from "crypto";
 
@@ -62,7 +60,8 @@ export class ConnectionManager {
   async processData(rawPacket: UnprocessedPacket): Promise<TCPConnection> {
     const npsPacketManager = new NPSPacketManager();
 
-    const { remoteAddress, localPort, data } = rawPacket;
+    const { data } = rawPacket;
+    const { remoteAddress, localPort } = rawPacket.connection;
 
     // Log the packet as debug
     log.debug(
@@ -75,9 +74,9 @@ export class ConnectionManager {
     );
 
     if (isMCOT(rawPacket.data)) {
-      routePacket(rawPacket, 'tomc')
+      routePacket(rawPacket, "tomc");
     } else {
-      routePacket(rawPacket, 'tcp')
+      routePacket(rawPacket, "tcp");
     }
 
     switch (localPort) {
@@ -106,10 +105,6 @@ export class ConnectionManager {
           throw error;
         }
         try {
-          const recievedPacket = NPacket.deserialize(rawPacket.data);
-
-          log.debug(`nPacket: ${recievedPacket}`);
-
           return await npsPacketManager.processNPSPacket(rawPacket);
         } catch (error) {
           if (error instanceof Error) {
@@ -128,10 +123,6 @@ export class ConnectionManager {
         const newNode = new MessageNode(EMessageDirection.RECEIVED);
         newNode.deserialize(rawPacket.data);
         log.debug(JSON.stringify(newNode));
-
-        const recievedPacket = MPacket.deserialize(data);
-
-        log.debug(`mPacket: ${recievedPacket}`);
 
         return MCOTServer.getInstance().defaultHandler(rawPacket);
       }

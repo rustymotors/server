@@ -102,7 +102,7 @@ export class NPSPacketManager {
       })}`
     );
 
-    const { localPort } = rawPacket;
+    const { localPort } = rawPacket.connection;
 
     switch (localPort) {
       case 8226:

@@ -1,6 +1,9 @@
 import { Buffer } from "buffer";
 
 export class NPacket {
+  /** the connection this packet belongs to. May be blank if newly created */
+  private connectionId = "";
+
   /** length of the packet when serialized */
   private length = -1;
 
@@ -16,9 +19,10 @@ export class NPacket {
   /** was the packet deserilized? */
   public wasDeserialized = false;
 
-  public static deserialize(inputBuffer: Buffer): NPacket {
+  public static deserialize(inputBuffer: Buffer, connectionId = ""): NPacket {
     const newMessage = new NPacket();
 
+    newMessage.connectionId = connectionId;
     newMessage.packetTypeId = inputBuffer.readInt16BE(0);
     newMessage.length = inputBuffer.readInt16BE(2);
     newMessage.messageVersion = inputBuffer.readInt16BE(4);
@@ -35,6 +39,10 @@ export class NPacket {
   public serialize() {
     const newPacket = Buffer.alloc(this.length);
     this.buffer.copy(newPacket);
+  }
+
+  public getConnectionId() {
+    return this.connectionId;
   }
 
   public getJSON() {
