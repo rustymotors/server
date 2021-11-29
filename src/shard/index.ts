@@ -6,10 +6,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import * as dotenv from 'dotenv-safe';
-dotenv.config()
+import * as dotenv from "dotenv-safe";
+dotenv.config();
 
-import P from "pino";
+import { logger } from "../logger/index";
 import { readFileSync } from "fs";
 import { EServerConnectionName, RoutingMesh } from "../router";
 import { ShardEntry } from "./shard-entry";
@@ -18,8 +18,7 @@ import { IncomingMessage, ServerResponse } from "http";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
-const log = P().child({ service: "MCOServer:Shard" });
-log.level = process.env["LOG_LEVEL"] || "info";
+const log = logger.child({ service: "MCOServer:Shard" });
 
 /**
  * Manages patch and update server connections
@@ -47,7 +46,6 @@ export class ShardServer {
   }
 
   private constructor() {
-
     this._server = createServer((request, response) => {
       this._handleRequest(request, response);
     });
@@ -68,7 +66,7 @@ export class ShardServer {
    */
   _generateShardList(): string {
     if (!process.env.MCOS__SETTINGS__SHARD_IP) {
-      throw new Error(`Please set MCOS__SETTINGS__SHARD_IP`)
+      throw new Error(`Please set MCOS__SETTINGS__SHARD_IP`);
     }
     const host = process.env.MCOS__SETTINGS__SHARD_IP;
     const shardClockTower = new ShardEntry(
@@ -125,9 +123,11 @@ export class ShardServer {
    */
   _handleGetCert(): string {
     if (!process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE) {
-      throw new Error('Pleas set MCOS__CERTIFICATE__CERTIFICATE_FILE')
+      throw new Error("Pleas set MCOS__CERTIFICATE__CERTIFICATE_FILE");
     }
-    return readFileSync(process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE).toString();
+    return readFileSync(
+      process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE
+    ).toString();
   }
 
   /**
@@ -137,9 +137,11 @@ export class ShardServer {
    */
   _handleGetKey(): string {
     if (!process.env.MCOS__CERTIFICATE__PUBLIC_KEY_FILE) {
-      throw new Error('Please set MCOS__CERTIFICATE__PUBLIC_KEY_FILE')
+      throw new Error("Please set MCOS__CERTIFICATE__PUBLIC_KEY_FILE");
     }
-    return readFileSync(process.env.MCOS__CERTIFICATE__PUBLIC_KEY_FILE).toString();
+    return readFileSync(
+      process.env.MCOS__CERTIFICATE__PUBLIC_KEY_FILE
+    ).toString();
   }
 
   /**
@@ -149,7 +151,7 @@ export class ShardServer {
    */
   _handleGetRegistry(): string {
     if (!process.env.MCOS__SETTINGS__AUTH_IP) {
-      throw new Error('Please set MCOS__SETTINGS__AUTH_IP')
+      throw new Error("Please set MCOS__SETTINGS__AUTH_IP");
     }
     const ipServer = process.env.MCOS__SETTINGS__AUTH_IP;
     return `Windows Registry Editor Version 5.00
@@ -233,7 +235,6 @@ export class ShardServer {
   start(): Server {
     if (!process.env.MCOS__SETTINGS__LISTEN_IP) {
       throw new Error("Please set MCOS__SETTINGS__LISTEN_IP");
-
     }
     const host = process.env.MCOS__SETTINGS__LISTEN_IP;
     const port = 82;

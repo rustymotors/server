@@ -8,9 +8,9 @@
 import {
   createDecipheriv,
   createCipheriv,
-  randomBytes,
   Decipher,
   Cipher,
+  randomUUID,
 } from "crypto";
 
 /**
@@ -35,9 +35,7 @@ export class EncryptionManager {
    *
    */
   constructor() {
-    // This hash is used for an id only.
-    const timestamp = (Date.now() + randomBytes(20).join("")).toString();
-    this.id = Buffer.from(timestamp).toString("hex");
+    this.id = randomUUID();
     this.sessionkey = Buffer.alloc(0);
     this.in = undefined;
     this.out = undefined;

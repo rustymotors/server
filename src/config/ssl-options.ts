@@ -7,11 +7,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { readFileSync } from "fs";
-import P from "pino";
+import { logger } from "../logger/index";
 import { SslOptions } from "../types";
 
-const log = P().child({ service: "mcoserver:AdminServer;" });
-log.level = process.env["LOG_LEVEL"] || "info";
+const log = logger.child({ service: "mcoserver:AdminServer;" });
 
 /**
  *
@@ -32,14 +31,12 @@ log.level = process.env["LOG_LEVEL"] || "info";
 
    * @return {Promise<sslOptionsObj>}
    */
-export function _sslOptions(
-): SslOptions {
+export function _sslOptions(): SslOptions {
   if (!process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE) {
     throw new Error("Please set MCOS__CERTIFICATE__PRIVATE_KEY_FILE");
   }
   if (!process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE) {
     throw new Error("Please set MCOS__CERTIFICATE__CERTIFICATE_FILE");
-
   }
 
   log.debug(`Reading ${process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE}`);

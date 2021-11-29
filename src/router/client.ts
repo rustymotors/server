@@ -1,4 +1,4 @@
-import P from "pino";
+import { logger } from "../logger/index";
 import {
   EServerConnectionAction,
   EServerConnectionName,
@@ -6,8 +6,7 @@ import {
 } from "./index";
 import { createConnection } from "net";
 
-const log = P().child({ service: "MCOServer:RouteClient" });
-log.level = process.env["LOG_LEVEL"] || "info";
+const log = logger.child({ service: "MCOServer:RouteClient" });
 
 export class RoutingMesh {
   static getInstance(): RoutingMesh {
@@ -42,8 +41,7 @@ export class RoutingMesh {
       log.debug(`Connected to RoutingServer: ${service}`);
       client.end(inputBuffer);
     });
-    client.on("data", (data) => {
-      console.log(data.toString());
+    client.on("data", () => {
       client.end();
     });
     client.on("end", () => {

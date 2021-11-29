@@ -6,19 +6,18 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import * as dotenv from 'dotenv-safe';
-dotenv.config()
+import * as dotenv from "dotenv-safe";
+dotenv.config();
 
 import { readFileSync } from "fs";
 import { IncomingMessage, ServerResponse } from "http";
 import { createServer, Server } from "https";
 import { Socket } from "net";
-import P from "pino";
+import { logger } from "../logger/index";
 import { EServerConnectionName, RoutingMesh } from "../router/index";
 import { SslOptions } from "../types/index";
 
-const log = P().child({ service: "MCOServer:Auth" });
-log.level = process.env["LOG_LEVEL"] || "info";
+const log = logger.child({ service: "MCOServer:Auth" });
 
 /**
  * Handles web-based user logins
@@ -37,7 +36,6 @@ export class AuthLogin {
   }
 
   private constructor() {
-
     this._server = createServer(this._sslOptions(), (request, response) => {
       this.handleRequest(request, response);
     });
@@ -99,7 +97,6 @@ export class AuthLogin {
   start(): void {
     if (!process.env.MCOS__SETTINGS__LISTEN_IP) {
       throw new Error("Please set MCOS__SETTINGS__LISTEN_IP");
-
     }
     const host = process.env.MCOS__SETTINGS__LISTEN_IP;
     const port = 443;
@@ -125,7 +122,7 @@ export class AuthLogin {
 
     try {
       if (!process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE) {
-        throw new Error('Please set MCOS__CERTIFICATE__CERTIFICATE_FILE')
+        throw new Error("Please set MCOS__CERTIFICATE__CERTIFICATE_FILE");
       }
       cert = readFileSync(process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE, {
         encoding: "utf-8",
@@ -139,7 +136,6 @@ export class AuthLogin {
     try {
       if (!process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE) {
         throw new Error("Please set MCOS__CERTIFICATE__PRIVATE_KEY_FILE");
-
       }
       key = readFileSync(process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE, {
         encoding: "utf-8",

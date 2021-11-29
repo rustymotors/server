@@ -7,13 +7,12 @@
 
 import type { Server, Socket } from "net";
 import { createServer } from "net";
-import P from "pino";
+import { logger } from "../logger/index";
 import type { UnprocessedPacket } from "../types/index";
 import { ConnectionManager } from "./connection-mgr";
 import { TCPConnection } from "./tcpConnection";
 
-const log = P().child({ service: "mcoserver:ListenerThread" });
-log.level = process.env["LOG_LEVEL"] || "info";
+const log = logger.child({ service: "mcoserver:ListenerThread" });
 
 export class ListenerThread {
   private static _instance: ListenerThread;

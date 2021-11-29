@@ -1,9 +1,8 @@
-import P from "pino";
+import { logger } from "../logger/index";
 import { createServer, IncomingMessage, ServerResponse } from "http";
 import { RoutingMesh, EServerConnectionName } from "../router";
 
-const log = P().child({ service: "MCOServer:Patch" });
-log.level = process.env["LOG_LEVEL"] || "info";
+const log = logger.child({ service: "MCOServer:Patch" });
 
 export const CastanetResponse = {
   body: Buffer.from("cafebeef00000000000003", "hex"),

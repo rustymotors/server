@@ -1,11 +1,10 @@
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
-import P from "pino";
+import { logger } from "../logger/index";
 import { EServerConnectionName, RoutingMesh } from "../router";
 import { ShardServer } from "../shard/index";
 import { PatchServer } from "../patch/index";
 
-const log = P().child({ service: "MCOServer:HTTPProxy" });
-log.level = process.env["LOG_LEVEL"] || "info";
+const log = logger.child({ service: "MCOServer:HTTPProxy" });
 
 export class HTTPProxyServer {
   static _instance: HTTPProxyServer;

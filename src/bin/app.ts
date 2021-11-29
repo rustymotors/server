@@ -6,9 +6,9 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import * as dotenv from 'dotenv-safe';
-dotenv.config()
-import P from "pino";
+import * as dotenv from "dotenv-safe";
+dotenv.config();
+import { logger } from "../logger/index";
 import { AdminServer } from "../admin/index";
 import { AuthLogin } from "../auth/index";
 import { ListenerThread } from "../core/listener-thread";
@@ -17,8 +17,7 @@ import { HTTPProxyServer } from "../proxy/index";
 import { RoutingServer } from "../router/index";
 import { ShardServer } from "../shard/index";
 
-const log = P().child({ service: "mcos" });
-log.level = process.env["LOG_LEVEL"] || "info";
+const log = logger.child({ service: "mcos" });
 
 // What servers do we need?
 // * Routing Server

@@ -8,12 +8,12 @@
 import type { IncomingMessage, ServerResponse } from "http";
 import { createServer } from "https";
 import type { Server, Socket } from "net";
-import P from "pino";
+import { logger } from "../logger/index";
 import { _sslOptions } from "../config/ssl-options";
 import { ConnectionManager } from "../core/connection-mgr";
 
-const log = P().child({ service: "mcoserver:AdminServer;" });
-log.level = process.env["LOG_LEVEL"] || "info";
+const log = logger.child({ service: "mcoserver:AdminServer;" });
+
 /**
  * SSL web server for managing the state of the system
  */

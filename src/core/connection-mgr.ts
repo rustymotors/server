@@ -17,22 +17,20 @@ import { EncryptionManager } from "./encryption-mgr";
 import { NPSPacketManager } from "./nps-packet-manager";
 import { TCPConnection } from "./tcpConnection";
 import { MCOTServer } from "../transactions";
-import P from "pino";
+import { logger } from "../logger/index";
 import { MPacket } from "../server/mpacket";
 import { NPacket } from "../server/npacket";
-import { MCOS } from "../server/index";
+import { isMCOT, routePacket } from "../server/index";
+import { randomUUID } from "crypto";
 
-// TODO: create a central loggers with colorize: true
-const log = P({ prettyPrint: { colorize: true } }).child({
+const log = logger.child({
   service: "mcoserver:ConnectionMgr",
 });
-log.level = process.env["LOG_LEVEL"] || "info";
 
 export class ConnectionManager {
   private static _instance: ConnectionManager;
   databaseMgr: DatabaseManager;
   connections: TCPConnection[];
-  newConnectionId: number;
   banList: string[];
 
   public static getInstance(): ConnectionManager {
@@ -44,13 +42,11 @@ export class ConnectionManager {
 
   private constructor() {
     this.connections = [];
-    this.newConnectionId = 1;
     /**
      * @type {string[]}
      */
     this.banList = [];
     this.databaseMgr = DatabaseManager.getInstance();
-    this.databaseMgr.init();
   }
 
   newConnection(connectionId: string, socket: Socket): TCPConnection {
@@ -78,7 +74,11 @@ export class ConnectionManager {
       })}`
     );
 
-    log.debug(`isMCOT: ${MCOS.isMCOT(rawPacket.data)}`);
+    if (isMCOT(rawPacket.data)) {
+      routePacket(rawPacket, 'tomc')
+    } else {
+      routePacket(rawPacket, 'tcp')
+    }
 
     switch (localPort) {
       case 8226:
@@ -278,10 +278,7 @@ export class ConnectionManager {
       return con;
     }
 
-    const newConnection = this.newConnection(
-      `${Date.now().toString()}_${this.newConnectionId}`,
-      socket
-    );
+    const newConnection = this.newConnection(randomUUID(), socket);
     log.info(
       `I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`
     );

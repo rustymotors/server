@@ -1,9 +1,8 @@
 import { RoutingMesh } from "./client";
-import P from "pino";
+import { logger } from "../logger/index";
 import { createServer } from "net";
 
-const log = P().child({ service: "MCOServer:Route" });
-log.level = process.env["LOG_LEVEL"] || "info";
+const log = logger.child({ service: "MCOServer:Route" });
 
 export enum EServerConnectionName {
   ADMIN = "Admin",

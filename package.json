@@ -34,8 +34,7 @@
     "@types/node": "16.11.10",
     "@types/pino": "7.0.4",
     "dotenv-safe": "8.2.0",
-    "pino": "next",
-    "pino-pretty": "7.2.0"
+    "pino": "next"
   },
   "devDependencies": {
     "@tsconfig/node16": "1.0.2",

@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import P from "pino";
+import { logger } from "../logger/index";
 import {
   ConnectionWithPacket,
   ConnectionWithPackets,
@@ -23,8 +23,7 @@ import {
 import { TCPConnection } from "../core/tcpConnection";
 import { DatabaseManager } from "../database";
 
-const log = P().child({ service: "mcoserver:MCOTSServer" });
-log.level = process.env["LOG_LEVEL"] || "info";
+const log = logger.child({ service: "mcoserver:MCOTSServer" });
 
 /**
  * Manages the game database server
@@ -461,7 +460,7 @@ export class MCOTServer {
       case "MC_GET_LOBBIES": {
         const result = await this._getLobbies(conn, node);
         log.debug("Dumping Lobbies response packet...");
-        log.debug(result.packetList.join());
+        log.debug(result.packetList.join().toString());
         const responsePackets = result.packetList;
         try {
           // Write the socket

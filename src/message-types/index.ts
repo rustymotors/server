@@ -1,7 +1,6 @@
 import { EMessageDirection, PersonaRecord } from "../types/index";
 import { readFileSync, statSync } from "fs";
 import { privateDecrypt } from "crypto";
-import { NPacket } from "../server/npacket";
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
@@ -957,11 +956,6 @@ export class NPSMessage {
     this.msgLength = packet.readInt16BE(2);
     this.msgVersion = packet.readInt16BE(4);
     this.content = packet.slice(12);
-
-    const nPacket = NPacket.deserialize(packet);
-
-    console.log(nPacket.getJSON());
-
     return this;
   }
 
@@ -1363,6 +1357,10 @@ export class MessageNode {
     })}`;
   }
 
+  toString() {
+    return this.dumpPacket();
+  }
+
   /**
    *
    * @return {number}
@@ -1706,13 +1704,10 @@ export class NPSUserStatus extends NPSMessage {
    * @param {Buffer} packet
    * @return {void}
    */
-  extractSessionKeyFromPacket(
-    packet: Buffer
-  ): void {
-if (!process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE) {
-  throw new Error("Please set MCOS__CERTIFICATE__PRIVATE_KEY_FILE");
-
-}
+  extractSessionKeyFromPacket(packet: Buffer): void {
+    if (!process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE) {
+      throw new Error("Please set MCOS__CERTIFICATE__PRIVATE_KEY_FILE");
+    }
     // Decrypt the sessionkey
     const privateKey = this.fetchPrivateKeyFromFile(
       process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE

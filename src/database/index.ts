@@ -9,12 +9,11 @@
 import * as sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
 import { SessionRecord } from "../types/index";
-import P from "pino";
+import { logger } from "../logger/index";
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
 import { EServerConnectionName, RoutingMesh } from "../router/index";
 
-const log = P().child({ service: "mcoserver:DatabaseMgr" });
-log.level = process.env["LOG_LEVEL"] || "info";
+const log = logger.child({ service: "mcoserver:DatabaseMgr" });
 
 export class DatabaseManager {
   private static _instance: DatabaseManager;
@@ -26,8 +25,9 @@ export class DatabaseManager {
     if (!DatabaseManager._instance) {
       DatabaseManager._instance = new DatabaseManager();
     }
-
-    return DatabaseManager._instance;
+    const self = DatabaseManager._instance;
+    self.init();
+    return self;
   }
 
   async init() {
@@ -151,7 +151,6 @@ export class DatabaseManager {
   }
 
   private constructor() {
-
     this._server = createServer((request, response) => {
       this.handleRequest(request, response);
     });
@@ -250,8 +249,7 @@ export class DatabaseManager {
 
   start(): Server {
     if (!process.env.MCOS__SETTINGS__LISTEN_IP) {
-throw new Error("Please set MCOS__SETTINGS__LISTEN_IP");
-
+      throw new Error("Please set MCOS__SETTINGS__LISTEN_IP");
     }
     const host = process.env.MCOS__SETTINGS__LISTEN_IP;
     const port = 0;

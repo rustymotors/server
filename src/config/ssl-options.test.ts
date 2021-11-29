@@ -8,29 +8,16 @@
 import t from "tap";
 import { _sslOptions } from "./ssl-options";
 
-const fakeConfig = {
-  certificate: {
-    certFilename: "/cert/cert.pem",
-    privateKeyFilename: "/cert/private.key",
-    publicKeyFilename: "",
-  },
-  serverSettings: {
-    ipServer: "",
-  },
-  serviceConnections: {
-    databaseURL: "",
-  },
-  defaultLogLevel: "warn",
-};
-
 t.test("sslOptions()", (t) => {
   t.test(
     "will throw an error when unable to locate the certificate",
     async (t) => {
+      process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE = "/cert/cert.pem";
       //  Deepcode ignore WrongNumberOfArgs/test: false positive
-      t.throws(() => _sslOptions(fakeConfig.certificate), {
+      t.throws(() => _sslOptions(), {
         message: /cert.pem/,
       });
+      delete process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE;
       t.end();
     }
   );

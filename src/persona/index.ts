@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import P from "pino";
+import { logger } from "../logger/index";
 import { Socket } from "net";
 import {
   EMessageDirection,
@@ -15,8 +15,7 @@ import {
 import { NPSMessage, NPSPersonaMapsMessage } from "../message-types/index";
 import { TCPConnection } from "../core/tcpConnection";
 
-const log = P().child({ service: "mcoserver:PersonaServer" });
-log.level = process.env["LOG_LEVEL"] || "info";
+const log = logger.child({ service: "mcoserver:PersonaServer" });
 
 /**
  * @class

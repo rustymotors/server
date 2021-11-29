@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import P from "pino";
+import { logger } from "../logger/index";
 import { DatabaseManager } from "../database/index";
 import { LobbyServer } from "../lobby/index";
 import { LoginServer } from "../login/index";
@@ -13,8 +13,7 @@ import { PersonaServer } from "../persona/index";
 import { UnprocessedPacket } from "../types/index";
 import { TCPConnection } from "./tcpConnection";
 
-const log = P().child({ service: "mcoserver:NPSPacketManager" });
-log.level = process.env["LOG_LEVEL"] || "info";
+const log = logger.child({ service: "mcoserver:NPSPacketManager" });
 
 /**
  * @module npsPacketManager
@@ -55,7 +54,6 @@ export class NPSPacketManager {
       { id: 0x6_07, name: "NPS_GAME_ACCOUNT_INFO" },
       { id: 0x11_01, name: "NPS_CRYPTO_DES_CBC" },
     ];
-    this.database.init();
 
     this.loginServer = LoginServer.getInstance();
     this.personaServer = PersonaServer.getInstance();

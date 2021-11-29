@@ -7,13 +7,12 @@
 
 import { createCipheriv, createDecipheriv } from "crypto";
 import type { Socket } from "net";
-import P from "pino";
+import { logger } from "../logger/index";
 import type { LobbyCipers, UnprocessedPacket } from "../types/index";
 import { ConnectionManager } from "./connection-mgr";
 import { EncryptionManager } from "./encryption-mgr";
 
-const log = P().child({ service: "mcoserver:TCPConnection" });
-log.level = process.env["LOG_LEVEL"] || "info";
+const log = logger.child({ service: "mcoserver:TCPConnection" });
 
 export enum EConnectionStatus {
   ACTIVE = "Active",
