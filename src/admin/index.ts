@@ -9,8 +9,10 @@ import type { IncomingMessage, ServerResponse } from "http";
 import { createServer } from "https";
 import type { Server, Socket } from "net";
 import { logger } from "../logger/index";
-import { _sslOptions } from "../config/ssl-options";
 import { ConnectionManager } from "../core/connection-mgr";
+import config from "../config/appconfig";
+import { SslOptions } from "../types";
+import { readFileSync } from "fs";
 
 const log = logger.child({ service: "mcoserver:AdminServer;" });
 
@@ -167,4 +169,43 @@ export class AdminServer {
       log.debug("port 88 listening");
     });
   }
+}
+function _sslOptions(): SslOptions {
+  log.debug(`Reading ssl certificate...`);
+
+  let cert;
+  let key;
+
+  try {
+    if (!config.MCOS.CERTIFICATE.CERTIFICATE_FILE) {
+      throw new Error("Please set MCOS__CERTIFICATE__CERTIFICATE_FILE");
+    }
+    cert = readFileSync(config.MCOS.CERTIFICATE.CERTIFICATE_FILE, {
+      encoding: "utf-8",
+    });
+  } catch (error) {
+    throw new Error(
+      `Error loading ${config.MCOS.CERTIFICATE.CERTIFICATE_FILE}: (${error}), server must quit!`
+    );
+  }
+
+  try {
+    if (!config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE) {
+      throw new Error("Please set MCOS__CERTIFICATE__PRIVATE_KEY_FILE");
+    }
+    key = readFileSync(config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE, {
+      encoding: "utf-8",
+    });
+  } catch (error) {
+    throw new Error(
+      `Error loading ${config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE}: (${error}), server must quit!`
+    );
+  }
+
+  return {
+    cert,
+    honorCipherOrder: true,
+    key,
+    rejectUnauthorized: false,
+  };
 }

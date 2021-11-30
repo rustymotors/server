@@ -8,18 +8,18 @@
 
 import * as sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
-import { SessionRecord } from "../types/index";
+import type { SessionRecord } from "../types/index";
 import { logger } from "../logger/index";
-import { createServer, IncomingMessage, Server, ServerResponse } from "http";
-import { EServerConnectionName, RoutingMesh } from "../router/index";
+import type { IncomingMessage, ServerResponse } from "http";
+import config from "../config/appconfig";
 
 const log = logger.child({ service: "mcoserver:DatabaseMgr" });
 
 export class DatabaseManager {
   private static _instance: DatabaseManager;
-  _server: Server;
+  private connectionURI: string;
   changes = 0;
-  localDB!: Database;
+  localDB: Database | undefined;
 
   public static getInstance(): DatabaseManager {
     if (!DatabaseManager._instance) {
@@ -36,7 +36,7 @@ export class DatabaseManager {
 
       const self = DatabaseManager._instance;
 
-      open({ filename: "mco.db", driver: sqlite3.Database })
+      open({ filename: this.connectionURI, driver: sqlite3.Database })
         .then(async (db) => {
           self.localDB = db;
 
@@ -151,16 +151,10 @@ export class DatabaseManager {
   }
 
   private constructor() {
-    this._server = createServer((request, response) => {
-      this.handleRequest(request, response);
-    });
-
-    this._server.on("error", (error) => {
-      process.exitCode = -1;
-      log.error(`Server error: ${error.message}`);
-      log.info(`Server shutdown: ${process.exitCode}`);
-      process.exit();
-    });
+    if (!config.MCOS.SETTINGS.DATABASE_CONNECTION_URI) {
+      throw new Error("Please set MCOS__SETTINGS__DATABASE_CONNECTION_URI");
+    }
+    this.connectionURI = config.MCOS.SETTINGS.DATABASE_CONNECTION_URI;
   }
 
   handleRequest(request: IncomingMessage, response: ServerResponse): void {
@@ -245,25 +239,5 @@ export class DatabaseManager {
       throw new Error("Unable to fetch session key");
     }
     return 1;
-  }
-
-  start(): Server {
-    if (!process.env.MCOS__SETTINGS__LISTEN_IP) {
-      throw new Error("Please set MCOS__SETTINGS__LISTEN_IP");
-    }
-    const host = process.env.MCOS__SETTINGS__LISTEN_IP;
-    const port = 0;
-    log.debug(`Attempting to bind to port ${port}`);
-    return this._server.listen({ port, host }, () => {
-      log.debug(`port ${port} listening`);
-      log.info("Patch server is listening...");
-
-      // Register service with router
-      RoutingMesh.getInstance().registerServiceWithRouter(
-        EServerConnectionName.DATABASE,
-        host,
-        port
-      );
-    });
   }
 }

@@ -20,7 +20,10 @@ export async function routePacket(
         { connection_id: inputConnection.connectionId },
         "routing packet to the game database"
       );
-      const recievedPacket = MPacket.deserialize(inputConnection.data, inputConnection.connectionId);
+      const recievedPacket = MPacket.deserialize(
+        inputConnection.data,
+        inputConnection.connectionId
+      );
 
       log.debug(`mPacket: ${recievedPacket}`);
       gameService.processPacket(recievedPacket);
@@ -32,7 +35,10 @@ export async function routePacket(
         { connection_id: inputConnection.connectionId },
         "routing packet to user services"
       );
-      const recievedPacket = NPacket.deserialize(inputConnection.data, inputConnection.connectionId);
+      const recievedPacket = NPacket.deserialize(
+        inputConnection.data,
+        inputConnection.connectionId
+      );
 
       log.debug(`nPacket: ${recievedPacket}`);
       userService.processPacket(recievedPacket);

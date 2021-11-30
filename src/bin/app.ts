@@ -6,43 +6,19 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import * as dotenv from "dotenv-safe";
-dotenv.config();
 import { logger } from "../logger/index";
 import { AdminServer } from "../admin/index";
 import { AuthLogin } from "../auth/index";
 import { ListenerThread } from "../core/listener-thread";
-import { PatchServer } from "../patch/index";
 import { HTTPProxyServer } from "../proxy/index";
 import { RoutingServer } from "../router/index";
-import { ShardServer } from "../shard/index";
 
 const log = logger.child({ service: "mcos" });
 
-// What servers do we need?
-// * Routing Server
 RoutingServer.getInstance().start();
-// * Patch Server
-PatchServer.getInstance().start();
-// * AuthLogin
 AuthLogin.getInstance().start();
-// * Shard
-ShardServer.getInstance().start();
-// HTTPProxy
-// Now that both patch and shard are up, we can proxy requests
 HTTPProxyServer.getInstance().start();
 
-// * Persona
-//   Persona needs connections to
-//   *
-// * Lobby Login
-// * Lobby
-// * MCOTS
-
-// * Database manager
-// const databaseManager = DatabaseManager.getInstance()
-
-// * MCOS Monolith
 const listenerThread = ListenerThread.getInstance();
 log.info({}, "Starting the listening sockets...");
 // TODO: Seperate the PersonaServer ports of 8226 and 8228
@@ -58,16 +34,4 @@ for (const port of tcpPortList) {
 
 log.info("Listening sockets create successfully.");
 
-// * Admin Server
-//   Admin needs connections to
-//   * MCOServer
 AdminServer.getInstance().start();
-
-// Promise.all([server.start(), patchAndShardServer.start(), authLogin.start()])
-//   .then(() => {
-//     logger.log('All servers started successfully')
-//   })
-//   .catch(error => {
-//     process.exitCode = -1
-//     throw new Error(`There was an error starting the server: ${error}`)
-//   })

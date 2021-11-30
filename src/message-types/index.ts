@@ -1,6 +1,7 @@
 import { EMessageDirection, PersonaRecord } from "../types/index";
 import { readFileSync, statSync } from "fs";
 import { privateDecrypt } from "crypto";
+import config from "../config/appconfig";
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
@@ -1705,12 +1706,12 @@ export class NPSUserStatus extends NPSMessage {
    * @return {void}
    */
   extractSessionKeyFromPacket(packet: Buffer): void {
-    if (!process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE) {
+    if (!config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE) {
       throw new Error("Please set MCOS__CERTIFICATE__PRIVATE_KEY_FILE");
     }
     // Decrypt the sessionkey
     const privateKey = this.fetchPrivateKeyFromFile(
-      process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE
+      config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE
     );
 
     const sessionkeyString = Buffer.from(

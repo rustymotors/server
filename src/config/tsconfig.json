@@ -4,6 +4,6 @@
     "outDir": "../../built",
     "types": ["node"]
   },
-  "files": ["ssl-options.ts"],
+  "files": ["appconfig.ts"],
   "references": []
 }

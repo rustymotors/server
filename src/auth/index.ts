@@ -6,8 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import * as dotenv from "dotenv-safe";
-dotenv.config();
+import config from "../config/appconfig";
 
 import { readFileSync } from "fs";
 import { IncomingMessage, ServerResponse } from "http";
@@ -95,10 +94,10 @@ export class AuthLogin {
    * @memberof! WebServer
    */
   start(): void {
-    if (!process.env.MCOS__SETTINGS__LISTEN_IP) {
-      throw new Error("Please set MCOS__SETTINGS__LISTEN_IP");
+    if (!config.MCOS.SETTINGS.AUTH_LISTEN_HOST) {
+      throw new Error("Please set MCOS__SETTINGS__AUTH_LISTEN_HOST");
     }
-    const host = process.env.MCOS__SETTINGS__LISTEN_IP;
+    const host = config.MCOS.SETTINGS.AUTH_LISTEN_HOST;
     const port = 443;
     log.debug(`Attempting to bind to port ${port}`);
     this._server.listen({ port, host }, () => {
@@ -115,34 +114,34 @@ export class AuthLogin {
   }
 
   _sslOptions(): SslOptions {
-    log.debug(`Reading ${process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE}`);
+    log.debug(`Reading ssl certificate...`);
 
     let cert;
     let key;
 
     try {
-      if (!process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE) {
+      if (!config.MCOS.CERTIFICATE.CERTIFICATE_FILE) {
         throw new Error("Please set MCOS__CERTIFICATE__CERTIFICATE_FILE");
       }
-      cert = readFileSync(process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE, {
+      cert = readFileSync(config.MCOS.CERTIFICATE.CERTIFICATE_FILE, {
         encoding: "utf-8",
       });
     } catch (error) {
       throw new Error(
-        `Error loading ${process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE}: (${error}), server must quit!`
+        `Error loading ${config.MCOS.CERTIFICATE.CERTIFICATE_FILE}: (${error}), server must quit!`
       );
     }
 
     try {
-      if (!process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE) {
+      if (!config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE) {
         throw new Error("Please set MCOS__CERTIFICATE__PRIVATE_KEY_FILE");
       }
-      key = readFileSync(process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE, {
+      key = readFileSync(config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE, {
         encoding: "utf-8",
       });
     } catch (error) {
       throw new Error(
-        `Error loading ${process.env.MCOS__CERTIFICATE__PRIVATE_KEY_FILE}: (${error}), server must quit!`
+        `Error loading ${config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE}: (${error}), server must quit!`
       );
     }
 

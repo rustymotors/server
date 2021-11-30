@@ -1,6 +1,7 @@
 import { logger } from "../logger/index";
 import { createServer, IncomingMessage, ServerResponse } from "http";
 import { RoutingMesh, EServerConnectionName } from "../router";
+import config from "../config/appconfig";
 
 const log = logger.child({ service: "MCOServer:Patch" });
 
@@ -14,12 +15,11 @@ export const CastanetResponse = {
 
 export class PatchServer {
   start(this: PatchServer) {
-    const host = "localhost";
-    let port = 81;
-
-    if (typeof process.env["LISTEN_PORT"] !== "undefined") {
-      port = Number.parseInt(process.env["LISTEN_PORT"]);
+    if (!config.MCOS.SETTINGS.PATCH_LISTEN_HOST) {
+      throw new Error("Please set MCOS__SETTINGS__PATCH_LISTEN_HOST");
     }
+    const host = config.MCOS.SETTINGS.PATCH_LISTEN_HOST;
+    const port = 80;
 
     const server = createServer();
     server.on("listening", () => {

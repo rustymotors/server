@@ -6,9 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import * as dotenv from "dotenv-safe";
-dotenv.config();
-
+import config from "../config/appconfig";
 import { logger } from "../logger/index";
 import { readFileSync } from "fs";
 import { EServerConnectionName, RoutingMesh } from "../router";
@@ -65,25 +63,25 @@ export class ShardServer {
    * @memberof! PatchServer
    */
   _generateShardList(): string {
-    if (!process.env.MCOS__SETTINGS__SHARD_IP) {
-      throw new Error(`Please set MCOS__SETTINGS__SHARD_IP`);
+    if (!config.MCOS.SETTINGS.SHARD_EXTERNAL_HOST) {
+      throw new Error(`Please set MCOS__SETTINGS__SHARD_EXTERNAL_HOST`);
     }
-    const host = process.env.MCOS__SETTINGS__SHARD_IP;
+    const shardHost = config.MCOS.SETTINGS.SHARD_EXTERNAL_HOST;
     const shardClockTower = new ShardEntry(
       "The Clocktower",
       "The Clocktower",
       44,
-      host,
+      shardHost,
       8226,
-      host,
+      shardHost,
       7003,
-      host,
+      shardHost,
       0,
       "",
       "Group-1",
       88,
       2,
-      host,
+      shardHost,
       80
     );
 
@@ -93,17 +91,17 @@ export class ShardServer {
       "Twin Pines Mall",
       "Twin Pines Mall",
       88,
-      host,
+      shardHost,
       8226,
-      host,
+      shardHost,
       7003,
-      host,
+      shardHost,
       0,
       "",
       "Group-1",
       88,
       2,
-      host,
+      shardHost,
       80
     );
 
@@ -122,12 +120,10 @@ export class ShardServer {
    * @memberof! WebServer
    */
   _handleGetCert(): string {
-    if (!process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE) {
+    if (!config.MCOS.CERTIFICATE.CERTIFICATE_FILE) {
       throw new Error("Pleas set MCOS__CERTIFICATE__CERTIFICATE_FILE");
     }
-    return readFileSync(
-      process.env.MCOS__CERTIFICATE__CERTIFICATE_FILE
-    ).toString();
+    return readFileSync(config.MCOS.CERTIFICATE.CERTIFICATE_FILE).toString();
   }
 
   /**
@@ -136,12 +132,10 @@ export class ShardServer {
    * @memberof! WebServer
    */
   _handleGetKey(): string {
-    if (!process.env.MCOS__CERTIFICATE__PUBLIC_KEY_FILE) {
+    if (!config.MCOS.CERTIFICATE.PUBLIC_KEY_FILE) {
       throw new Error("Please set MCOS__CERTIFICATE__PUBLIC_KEY_FILE");
     }
-    return readFileSync(
-      process.env.MCOS__CERTIFICATE__PUBLIC_KEY_FILE
-    ).toString();
+    return readFileSync(config.MCOS.CERTIFICATE.PUBLIC_KEY_FILE).toString();
   }
 
   /**
@@ -150,32 +144,40 @@ export class ShardServer {
    * @memberof! WebServer
    */
   _handleGetRegistry(): string {
-    if (!process.env.MCOS__SETTINGS__AUTH_IP) {
-      throw new Error("Please set MCOS__SETTINGS__AUTH_IP");
+    if (!config.MCOS.SETTINGS.AUTH_EXTERNAL_HOST) {
+      throw new Error("Please set MCOS__SETTINGS__AUTH_EXTERNAL_HOST");
     }
-    const ipServer = process.env.MCOS__SETTINGS__AUTH_IP;
+    if (!config.MCOS.SETTINGS.SHARD_EXTERNAL_HOST) {
+      throw new Error("Please set MCOS__SETTINGS__SHARD_EXTERNAL_HOST");
+    }
+    if (!config.MCOS.SETTINGS.PATCH_EXTERNAL_HOST) {
+      throw new Error("Please set MCOS__SETTINGS__PATCH_EXTERNAL_HOST");
+    }
+    const patchHost = config.MCOS.SETTINGS.PATCH_EXTERNAL_HOST;
+    const authHost = config.MCOS.SETTINGS.AUTH_EXTERNAL_HOST;
+    const shardHost = config.MCOS.SETTINGS.SHARD_EXTERNAL_HOST;
     return `Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\EACom\\AuthAuth]
 "AuthLoginBaseService"="AuthLogin"
-"AuthLoginServer"="${ipServer}"
+"AuthLoginServer"="${authHost}"
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City]
 "GamePatch"="games/EA_Seattle/MotorCity/MCO"
 "UpdateInfoPatch"="games/EA_Seattle/MotorCity/UpdateInfo"
 "NPSPatch"="games/EA_Seattle/MotorCity/NPS"
-"PatchServerIP"="${ipServer}"
+"PatchServerIP"="${patchHost}"
 "PatchServerPort"="80"
-"CreateAccount"="${ipServer}/SubscribeEntry.jsp?prodID=REG-MCO"
+"CreateAccount"="${authHost}/SubscribeEntry.jsp?prodID=REG-MCO"
 "Language"="English"
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City\\1.0]
-"ShardUrl"="http://${ipServer}/ShardList/"
-"ShardUrlDev"="http://${ipServer}/ShardList/"
+"ShardUrl"="http://${shardHost}/ShardList/"
+"ShardUrlDev"="http://${shardHost}/ShardList/"
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City\\AuthAuth]
 "AuthLoginBaseService"="AuthLogin"
-"AuthLoginServer"="${ipServer}"
+"AuthLoginServer"="${authHost}"
 
 [HKEY_LOCAL_MACHINE\\Software\\WOW6432Node\\Electronic Arts\\Network Play System]
 "Log"="1"
@@ -233,15 +235,15 @@ export class ShardServer {
   }
 
   start(): Server {
-    if (!process.env.MCOS__SETTINGS__LISTEN_IP) {
-      throw new Error("Please set MCOS__SETTINGS__LISTEN_IP");
+    if (!config.MCOS.SETTINGS.SHARD_LISTEN_HOST) {
+      throw new Error("Please set MCOS__SETTINGS__SHARD_LISTEN_HOST");
     }
-    const host = process.env.MCOS__SETTINGS__LISTEN_IP;
+    const host = config.MCOS.SETTINGS.SHARD_LISTEN_HOST;
     const port = 82;
     log.debug(`Attempting to bind to port ${port}`);
     return this._server.listen({ port, host }, () => {
       log.debug(`port ${port} listening`);
-      log.info("Patch server is listening...");
+      log.info("Shard server is listening...");
 
       // Register service with router
       RoutingMesh.getInstance().registerServiceWithRouter(
