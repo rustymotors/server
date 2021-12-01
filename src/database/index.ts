@@ -26,7 +26,7 @@ export class DatabaseManager {
       DatabaseManager._instance = new DatabaseManager();
     }
     const self = DatabaseManager._instance;
-    self.init();
+    void self.init();
     return self;
   }
 

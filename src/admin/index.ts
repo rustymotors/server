@@ -20,6 +20,46 @@ const log = logger.child({ service: "mcoserver:AdminServer;" });
  * SSL web server for managing the state of the system
  */
 
+function _sslOptions(): SslOptions {
+  log.debug(`Reading ssl certificate...`);
+
+  let cert;
+  let key;
+
+  try {
+    if (!config.MCOS.CERTIFICATE.CERTIFICATE_FILE) {
+      throw new Error("Please set MCOS__CERTIFICATE__CERTIFICATE_FILE");
+    }
+    cert = readFileSync(config.MCOS.CERTIFICATE.CERTIFICATE_FILE, {
+      encoding: "utf-8",
+    });
+  } catch (error) {
+    throw new Error(
+      `Error loading ${config.MCOS.CERTIFICATE.CERTIFICATE_FILE}: (${error}), server must quit!`
+    );
+  }
+
+  try {
+    if (!config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE) {
+      throw new Error("Please set MCOS__CERTIFICATE__PRIVATE_KEY_FILE");
+    }
+    key = readFileSync(config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE, {
+      encoding: "utf-8",
+    });
+  } catch (error) {
+    throw new Error(
+      `Error loading ${config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE}: (${error}), server must quit!`
+    );
+  }
+
+  return {
+    cert,
+    honorCipherOrder: true,
+    key,
+    rejectUnauthorized: false,
+  };
+}
+
 /**
  * @property {config} config
  * @property {IMCServer} mcServer
@@ -159,7 +199,7 @@ export class AdminServer {
       throw new Error(`${error.message}, ${error.stack}`);
     }
 
-    this.httpsServer.on("connection", this._socketEventHandler);
+    this.httpsServer.on("connection", this._socketEventHandler.bind(this));
 
     const port = 88;
 
@@ -169,43 +209,4 @@ export class AdminServer {
       log.debug("port 88 listening");
     });
   }
-}
-function _sslOptions(): SslOptions {
-  log.debug(`Reading ssl certificate...`);
-
-  let cert;
-  let key;
-
-  try {
-    if (!config.MCOS.CERTIFICATE.CERTIFICATE_FILE) {
-      throw new Error("Please set MCOS__CERTIFICATE__CERTIFICATE_FILE");
-    }
-    cert = readFileSync(config.MCOS.CERTIFICATE.CERTIFICATE_FILE, {
-      encoding: "utf-8",
-    });
-  } catch (error) {
-    throw new Error(
-      `Error loading ${config.MCOS.CERTIFICATE.CERTIFICATE_FILE}: (${error}), server must quit!`
-    );
-  }
-
-  try {
-    if (!config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE) {
-      throw new Error("Please set MCOS__CERTIFICATE__PRIVATE_KEY_FILE");
-    }
-    key = readFileSync(config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE, {
-      encoding: "utf-8",
-    });
-  } catch (error) {
-    throw new Error(
-      `Error loading ${config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE}: (${error}), server must quit!`
-    );
-  }
-
-  return {
-    cert,
-    honorCipherOrder: true,
-    key,
-    rejectUnauthorized: false,
-  };
 }

@@ -26,7 +26,7 @@ export async function routePacket(
       );
 
       log.debug(`mPacket: ${recievedPacket}`);
-      gameService.processPacket(recievedPacket);
+      void gameService.processPacket(recievedPacket);
 
       break;
     }
@@ -41,7 +41,7 @@ export async function routePacket(
       );
 
       log.debug(`nPacket: ${recievedPacket}`);
-      userService.processPacket(recievedPacket);
+      void userService.processPacket(recievedPacket);
       break;
     }
   }

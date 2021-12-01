@@ -126,7 +126,7 @@ export class ListenerThread {
    * create a new TCP socket listener for that port
    *
    */
-  async startTCPListener(localPort: number): Promise<Server> {
+  startTCPListener(localPort: number): Server {
     log.debug(`Attempting to bind to port ${localPort}`);
     return createServer((socket) => {
       this._listener(socket, ConnectionManager.getInstance());

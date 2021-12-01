@@ -31,7 +31,7 @@ export class PatchServer {
       )
         log.info(`Server is listening on port ${listeningAddress.port}`);
     });
-    server.on("request", this.handleRequest);
+    server.on("request", this.handleRequest.bind(this));
 
     log.debug(`Attempting to bind to port ${port}`);
     server.listen(port, host);
