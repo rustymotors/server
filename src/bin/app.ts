@@ -7,18 +7,22 @@
 */
 
 import { logger } from "../logger/index";
-import { AdminServer } from "../admin/index";
-import { AuthLogin } from "../auth/index";
+// import { AdminServer } from "../admin/index";
+// import { AuthLogin } from "../auth/index";
 import { ListenerThread } from "../core/listener-thread";
-import { startHTTPListeners } from "../server/connectionEndpoints"
+import {
+  startHTTPListener,
+  startSSLListener,
+} from "../server/connectionEndpoints";
 
 const log = logger.child({ service: "mcos" });
 
-Error.stackTraceLimit = 20
+Error.stackTraceLimit = 20;
 
-startHTTPListeners()
+startHTTPListener();
+startSSLListener();
 
-AuthLogin.getInstance().start();
+// AuthLogin.getInstance().start();
 // HTTPProxyServer.getInstance().start();
 
 const listenerThread = ListenerThread.getInstance();
@@ -36,4 +40,4 @@ for (const port of tcpPortList) {
 
 log.info("Listening sockets create successfully.");
 
-AdminServer.getInstance().start();
+// AdminServer.getInstance().start();

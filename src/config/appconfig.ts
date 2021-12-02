@@ -7,8 +7,10 @@ export default {
     },
 
     SETTINGS: {
-      HTTP_LISTEN_HOST: 'localhost',
-      HTTP_EXTERNAL_HOST: 'localhost',
+      HTTP_LISTEN_HOST: "localhost",
+      HTTP_EXTERNAL_HOST: "localhost",
+      SSL_LISTEN_HOST: "localhost",
+      SSL_EXTERNAL_HOST: "localhost",
       SHARD_LISTEN_HOST: "localhost",
       SHARD_EXTERNAL_HOST: "localhost",
       AUTH_LISTEN_HOST: "localhost",

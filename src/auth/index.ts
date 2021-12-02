@@ -6,15 +6,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import config from "../config/appconfig";
+// import config from "../config/appconfig";
 
-import { readFileSync } from "fs";
+// import { readFileSync } from "fs";
 import { IncomingMessage, ServerResponse } from "http";
-import { createServer, Server } from "https";
+// import { createServer, Server } from "https";
 import { Socket } from "net";
 import { logger } from "../logger/index";
 // import { EServerConnectionName, RoutingMesh } from "../router/index";
-import { SslOptions } from "../types/index";
+// import { SslOptions } from "../types/index";
 
 const log = logger.child({ service: "MCOServer:Auth" });
 
@@ -25,7 +25,7 @@ const log = logger.child({ service: "MCOServer:Auth" });
 export class AuthLogin {
   private static _instance: AuthLogin;
 
-  private _server: Server;
+  // private _server: Server;
 
   static getInstance(): AuthLogin {
     if (!AuthLogin._instance) {
@@ -35,19 +35,18 @@ export class AuthLogin {
   }
 
   private constructor() {
-    this._server = createServer(this._sslOptions(), (request, response) => {
-      this.handleRequest(request, response);
-    });
-
-    this._server.on("error", (error) => {
-      process.exitCode = -1;
-      log.error(`Server error: ${error.message}`);
-      log.info(`Server shutdown: ${process.exitCode}`);
-      process.exit();
-    });
-    this._server.on("tlsClientError", (error) => {
-      log.warn(`[AuthLogin] SSL Socket Client Error: ${error.message}`);
-    });
+    // this._server = createServer(this._sslOptions(), (request, response) => {
+    //   this.handleRequest(request, response);
+    // });
+    // this._server.on("error", (error) => {
+    //   process.exitCode = -1;
+    //   log.error(`Server error: ${error.message}`);
+    //   log.info(`Server shutdown: ${process.exitCode}`);
+    //   process.exit();
+    // });
+    // this._server.on("tlsClientError", (error) => {
+    //   log.warn(`[AuthLogin] SSL Socket Client Error: ${error.message}`);
+    // });
   }
 
   /**
@@ -93,63 +92,63 @@ export class AuthLogin {
    * @returns {Promise<import("https").Server>}
    * @memberof! WebServer
    */
-  start(): void {
-    if (!config.MCOS.SETTINGS.AUTH_LISTEN_HOST) {
-      throw new Error("Please set MCOS__SETTINGS__AUTH_LISTEN_HOST");
-    }
-    const host = config.MCOS.SETTINGS.AUTH_LISTEN_HOST;
-    const port = 443;
-    log.debug(`Attempting to bind to port ${port}`);
-    this._server.listen({ port, host }, () => {
-      log.debug(`port ${port} listening`);
-      log.info("Auth server listening");
+  // start(): void {
+  //   if (!config.MCOS.SETTINGS.AUTH_LISTEN_HOST) {
+  //     throw new Error("Please set MCOS__SETTINGS__AUTH_LISTEN_HOST");
+  //   }
+  //   const host = config.MCOS.SETTINGS.AUTH_LISTEN_HOST;
+  //   const port = 443;
+  //   log.debug(`Attempting to bind to port ${port}`);
+  //   this._server.listen({ port, host }, () => {
+  //     log.debug(`port ${port} listening`);
+  //     log.info("Auth server listening");
 
-      // // Register service with router
-      // RoutingMesh.getInstance().registerServiceWithRouter(
-      //   EServerConnectionName.AUTH,
-      //   host,
-      //   port
-      // );
-    });
-  }
+  //     // // Register service with router
+  //     // RoutingMesh.getInstance().registerServiceWithRouter(
+  //     //   EServerConnectionName.AUTH,
+  //     //   host,
+  //     //   port
+  //     // );
+  //   });
+  // }
 
-  _sslOptions(): SslOptions {
-    log.debug(`Reading ssl certificate...`);
+  //   _sslOptions(): SslOptions {
+  //     log.debug(`Reading ssl certificate...`);
 
-    let cert;
-    let key;
+  //     let cert;
+  //     let key;
 
-    try {
-      if (!config.MCOS.CERTIFICATE.CERTIFICATE_FILE) {
-        throw new Error("Please set MCOS__CERTIFICATE__CERTIFICATE_FILE");
-      }
-      cert = readFileSync(config.MCOS.CERTIFICATE.CERTIFICATE_FILE, {
-        encoding: "utf-8",
-      });
-    } catch (error) {
-      throw new Error(
-        `Error loading ${config.MCOS.CERTIFICATE.CERTIFICATE_FILE}: (${error}), server must quit!`
-      );
-    }
+  //     try {
+  //       if (!config.MCOS.CERTIFICATE.CERTIFICATE_FILE) {
+  //         throw new Error("Please set MCOS__CERTIFICATE__CERTIFICATE_FILE");
+  //       }
+  //       cert = readFileSync(config.MCOS.CERTIFICATE.CERTIFICATE_FILE, {
+  //         encoding: "utf-8",
+  //       });
+  //     } catch (error) {
+  //       throw new Error(
+  //         `Error loading ${config.MCOS.CERTIFICATE.CERTIFICATE_FILE}: (${error}), server must quit!`
+  //       );
+  //     }
 
-    try {
-      if (!config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE) {
-        throw new Error("Please set MCOS__CERTIFICATE__PRIVATE_KEY_FILE");
-      }
-      key = readFileSync(config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE, {
-        encoding: "utf-8",
-      });
-    } catch (error) {
-      throw new Error(
-        `Error loading ${config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE}: (${error}), server must quit!`
-      );
-    }
+  //     try {
+  //       if (!config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE) {
+  //         throw new Error("Please set MCOS__CERTIFICATE__PRIVATE_KEY_FILE");
+  //       }
+  //       key = readFileSync(config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE, {
+  //         encoding: "utf-8",
+  //       });
+  //     } catch (error) {
+  //       throw new Error(
+  //         `Error loading ${config.MCOS.CERTIFICATE.PRIVATE_KEY_FILE}: (${error}), server must quit!`
+  //       );
+  //     }
 
-    return {
-      cert,
-      honorCipherOrder: true,
-      key,
-      rejectUnauthorized: false,
-    };
-  }
+  //     return {
+  //       cert,
+  //       honorCipherOrder: true,
+  //       key,
+  //       rejectUnauthorized: false,
+  //     };
+  //   }
 }
