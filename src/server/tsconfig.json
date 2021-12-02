@@ -4,6 +4,6 @@
     "outDir": "../../built",
     "types": ["node"]
   },
-  "files": ["index.ts", "mpacket.ts", "npacket.ts"],
+  "files": ["index.ts", "mpacket.ts", "npacket.ts", "connectionEndpoints.ts"],
   "references": []
 }

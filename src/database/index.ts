@@ -10,7 +10,6 @@ import * as sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
 import type { SessionRecord } from "../types/index";
 import { logger } from "../logger/index";
-import type { IncomingMessage, ServerResponse } from "http";
 import config from "../config/appconfig";
 
 const log = logger.child({ service: "mcoserver:DatabaseMgr" });
@@ -26,7 +25,6 @@ export class DatabaseManager {
       DatabaseManager._instance = new DatabaseManager();
     }
     const self = DatabaseManager._instance;
-    void self.init();
     return self;
   }
 
@@ -34,15 +32,19 @@ export class DatabaseManager {
     if (typeof this.localDB === "undefined") {
       log.debug(`Initializing the database...`);
 
-      const self = DatabaseManager._instance;
+      try {
+        const self = DatabaseManager._instance;
 
-      open({ filename: this.connectionURI, driver: sqlite3.Database })
-        .then(async (db) => {
-          self.localDB = db;
+        const db = await open({
+          filename: this.connectionURI,
+          driver: sqlite3.Database,
+        });
 
-          self.changes = 0;
+        self.localDB = db;
 
-          await db.run(`CREATE TABLE IF NOT EXISTS "sessions"
+        self.changes = 0;
+
+        await db.run(`CREATE TABLE IF NOT EXISTS "sessions"
             (
               customer_id integer,
               sessionkey text NOT NULL,
@@ -52,7 +54,7 @@ export class DatabaseManager {
               CONSTRAINT pk_session PRIMARY KEY(customer_id)
             );`);
 
-          await db.run(`CREATE TABLE IF NOT EXISTS "lobbies"
+        await db.run(`CREATE TABLE IF NOT EXISTS "lobbies"
             (
               "lobyID" integer NOT NULL,
               "raceTypeID" integer NOT NULL,
@@ -135,18 +137,17 @@ export class DatabaseManager {
               "teamtNumLaps" smallint NOT NULL,
               "raceCashFactor" real NOT NULL
             );`);
-          log.debug(`Database initialized`);
-        })
-        .catch((err) => {
-          if (err instanceof Error) {
-            const newError = new Error(
-              `There was an error setting up the database: ${err.message}`
-            );
-            log.error(newError.message);
-            throw newError;
-          }
-          throw err;
-        });
+        log.debug(`Database initialized`);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          const newError = new Error(
+            `There was an error setting up the database: ${err.message}`
+          );
+          log.error(newError.message);
+          throw newError;
+        }
+        throw err;
+      }
     }
   }
 
@@ -157,34 +158,12 @@ export class DatabaseManager {
     this.connectionURI = config.MCOS.SETTINGS.DATABASE_CONNECTION_URI;
   }
 
-  handleRequest(request: IncomingMessage, response: ServerResponse): void {
-    const header = {
-      type: "Content-Type",
-      value: "application/json",
-    };
-
-    switch (request.url) {
-      case "/":
-        response.setHeader(header.type, header.value);
-        response.end(
-          JSON.stringify({
-            status: 200,
-            message: "Hello",
-          })
-        );
-        break;
-
-      default:
-        response.statusCode = 404;
-        response.end("");
-        break;
-    }
-  }
-
   async fetchSessionKeyByCustomerId(
     customerId: number
   ): Promise<SessionRecord> {
+    await this.init();
     if (!this.localDB) {
+      log.warn("Database not ready in fetchSessionKeyByCustomerId()");
       throw new Error("Error accessing database. Are you using the instance?");
     }
     const stmt = await this.localDB.prepare(
@@ -193,6 +172,7 @@ export class DatabaseManager {
 
     const record = await stmt.get(customerId);
     if (record === undefined) {
+      log.debug("Unable to locate session key");
       throw new Error("Unable to fetch session key");
     }
     return record as SessionRecord;
@@ -201,7 +181,9 @@ export class DatabaseManager {
   async fetchSessionKeyByConnectionId(
     connectionId: string
   ): Promise<SessionRecord> {
+    await this.init();
     if (!this.localDB) {
+      log.warn("Database not ready in fetchSessionKeyByConnectionId()");
       throw new Error("Error accessing database. Are you using the instance?");
     }
     const stmt = await this.localDB.prepare(
@@ -220,9 +202,11 @@ export class DatabaseManager {
     contextId: string,
     connectionId: string
   ): Promise<number> {
+    await this.init();
     const skey = sessionkey.slice(0, 16);
 
     if (!this.localDB) {
+      log.warn("Database not ready in updateSessionKey()");
       throw new Error("Error accessing database. Are you using the instance?");
     }
     const stmt = await this.localDB.prepare(

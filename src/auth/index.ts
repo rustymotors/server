@@ -13,7 +13,7 @@ import { IncomingMessage, ServerResponse } from "http";
 import { createServer, Server } from "https";
 import { Socket } from "net";
 import { logger } from "../logger/index";
-import { EServerConnectionName, RoutingMesh } from "../router/index";
+// import { EServerConnectionName, RoutingMesh } from "../router/index";
 import { SslOptions } from "../types/index";
 
 const log = logger.child({ service: "MCOServer:Auth" });
@@ -104,12 +104,12 @@ export class AuthLogin {
       log.debug(`port ${port} listening`);
       log.info("Auth server listening");
 
-      // Register service with router
-      RoutingMesh.getInstance().registerServiceWithRouter(
-        EServerConnectionName.AUTH,
-        host,
-        port
-      );
+      // // Register service with router
+      // RoutingMesh.getInstance().registerServiceWithRouter(
+      //   EServerConnectionName.AUTH,
+      //   host,
+      //   port
+      // );
     });
   }
 

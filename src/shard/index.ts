@@ -9,7 +9,7 @@
 import config from "../config/appconfig";
 import { logger } from "../logger/index";
 import { readFileSync } from "fs";
-import { EServerConnectionName, RoutingMesh } from "../router";
+// import { EServerConnectionName, RoutingMesh } from "../router";
 import { ShardEntry } from "./shard-entry";
 import { createServer, Server } from "https";
 import { IncomingMessage, ServerResponse } from "http";
@@ -239,18 +239,18 @@ export class ShardServer {
       throw new Error("Please set MCOS__SETTINGS__SHARD_LISTEN_HOST");
     }
     const host = config.MCOS.SETTINGS.SHARD_LISTEN_HOST;
-    const port = 82;
+    const port = 80;
     log.debug(`Attempting to bind to port ${port}`);
     return this._server.listen({ port, host }, () => {
       log.debug(`port ${port} listening`);
       log.info("Shard server is listening...");
 
-      // Register service with router
-      RoutingMesh.getInstance().registerServiceWithRouter(
-        EServerConnectionName.SHARD,
-        host,
-        port
-      );
+      // // Register service with router
+      // RoutingMesh.getInstance().registerServiceWithRouter(
+      //   EServerConnectionName.SHARD,
+      //   host,
+      //   port
+      // );
     });
   }
 }

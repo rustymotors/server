@@ -1,6 +1,6 @@
 import { logger } from "../logger/index";
 import { createServer, IncomingMessage, ServerResponse } from "http";
-import { RoutingMesh, EServerConnectionName } from "../router";
+// import { RoutingMesh, EServerConnectionName } from "../router";
 import config from "../config/appconfig";
 
 const log = logger.child({ service: "MCOServer:Patch" });
@@ -36,12 +36,12 @@ export class PatchServer {
     log.debug(`Attempting to bind to port ${port}`);
     server.listen(port, host);
 
-    // Register service with router
-    RoutingMesh.getInstance().registerServiceWithRouter(
-      EServerConnectionName.PATCH,
-      host,
-      port
-    );
+    // // Register service with router
+    // RoutingMesh.getInstance().registerServiceWithRouter(
+    //   EServerConnectionName.PATCH,
+    //   host,
+    //   port
+    // );
   }
   static _instance: PatchServer;
 

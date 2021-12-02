@@ -10,14 +10,16 @@ import { logger } from "../logger/index";
 import { AdminServer } from "../admin/index";
 import { AuthLogin } from "../auth/index";
 import { ListenerThread } from "../core/listener-thread";
-import { HTTPProxyServer } from "../proxy/index";
-import { RoutingServer } from "../router/index";
+import { startHTTPListeners } from "../server/connectionEndpoints"
 
 const log = logger.child({ service: "mcos" });
 
-RoutingServer.getInstance().start();
+Error.stackTraceLimit = 20
+
+startHTTPListeners()
+
 AuthLogin.getInstance().start();
-HTTPProxyServer.getInstance().start();
+// HTTPProxyServer.getInstance().start();
 
 const listenerThread = ListenerThread.getInstance();
 log.info({}, "Starting the listening sockets...");
