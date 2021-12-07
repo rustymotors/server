@@ -9,7 +9,7 @@
       "version": "3.0.0-beta1",
       "license": "MPL-2.0",
       "dependencies": {
-        "@types/node": "16.11.10",
+        "@types/node": "16.11.12",
         "@types/pino": "7.0.4",
         "pino": "next"
       },
@@ -1548,9 +1548,9 @@
       "dev": true
     },
     "node_modules/@types/node": {
-      "version": "16.11.10",
-      "resolved": "https://registry.npmjs.org/@types/node/-/node-16.11.10.tgz",
-      "integrity": "sha512-3aRnHa1KlOEEhJ6+CvyHKK5vE9BcLGjtUpwvqYLRvYNQKMfabu3BwfJaA/SLW8dxe28LsNDjtHwePTuzn3gmOA=="
+      "version": "16.11.12",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-16.11.12.tgz",
+      "integrity": "sha512-+2Iggwg7PxoO5Kyhvsq9VarmPbIelXP070HMImEpbtGCoyWNINQj4wzjbQCXzdHTRXnqufutJb5KAURZANNBAw=="
     },
     "node_modules/@types/pino": {
       "version": "7.0.4",
@@ -14290,9 +14290,9 @@
       "dev": true
     },
     "@types/node": {
-      "version": "16.11.10",
-      "resolved": "https://registry.npmjs.org/@types/node/-/node-16.11.10.tgz",
-      "integrity": "sha512-3aRnHa1KlOEEhJ6+CvyHKK5vE9BcLGjtUpwvqYLRvYNQKMfabu3BwfJaA/SLW8dxe28LsNDjtHwePTuzn3gmOA=="
+      "version": "16.11.12",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-16.11.12.tgz",
+      "integrity": "sha512-+2Iggwg7PxoO5Kyhvsq9VarmPbIelXP070HMImEpbtGCoyWNINQj4wzjbQCXzdHTRXnqufutJb5KAURZANNBAw=="
     },
     "@types/pino": {
       "version": "7.0.4",
