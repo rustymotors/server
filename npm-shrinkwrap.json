@@ -1,15 +1,15 @@
 {
   "name": "mcos",
-  "version": "3.0.0-beta1",
+  "version": "3.1.0-beta1",
   "lockfileVersion": 2,
   "requires": true,
   "packages": {
     "": {
       "name": "mcos",
-      "version": "3.0.0-beta1",
+      "version": "3.1.0-beta1",
       "license": "MPL-2.0",
       "dependencies": {
-        "@types/node": "16.11.12",
+        "@types/node": "16.11.13",
         "@types/pino": "7.0.4",
         "pino": "next"
       },
@@ -1548,9 +1548,9 @@
       "dev": true
     },
     "node_modules/@types/node": {
-      "version": "16.11.12",
-      "resolved": "https://registry.npmjs.org/@types/node/-/node-16.11.12.tgz",
-      "integrity": "sha512-+2Iggwg7PxoO5Kyhvsq9VarmPbIelXP070HMImEpbtGCoyWNINQj4wzjbQCXzdHTRXnqufutJb5KAURZANNBAw=="
+      "version": "16.11.13",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-16.11.13.tgz",
+      "integrity": "sha512-eUXZzHLHoZqj1frtUetNkUetYoJ6X55UmrVnFD4DMhVeAmwLjniZhtBmsRiemQh4uq4G3vUra/Ws/hs9vEvL3Q=="
     },
     "node_modules/@types/pino": {
       "version": "7.0.4",
@@ -14312,9 +14312,9 @@
       "dev": true
     },
     "@types/node": {
-      "version": "16.11.12",
-      "resolved": "https://registry.npmjs.org/@types/node/-/node-16.11.12.tgz",
-      "integrity": "sha512-+2Iggwg7PxoO5Kyhvsq9VarmPbIelXP070HMImEpbtGCoyWNINQj4wzjbQCXzdHTRXnqufutJb5KAURZANNBAw=="
+      "version": "16.11.13",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-16.11.13.tgz",
+      "integrity": "sha512-eUXZzHLHoZqj1frtUetNkUetYoJ6X55UmrVnFD4DMhVeAmwLjniZhtBmsRiemQh4uq4G3vUra/Ws/hs9vEvL3Q=="
     },
     "@types/pino": {
       "version": "7.0.4",
