@@ -1,6 +1,5 @@
 *.env
 .vscode
-node_modules
 logs
 coverage
 *.log
@@ -9,7 +8,6 @@ coverage
 test-reports
 data/sessions.db
 junit
-dist
 built
 *.sqlite
 junit.xml
