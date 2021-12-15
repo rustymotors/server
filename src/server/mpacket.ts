@@ -1,4 +1,6 @@
 import { Buffer } from "buffer";
+import { logger } from "../logger/index";
+const log = logger.child({ service: "mpacket" });
 
 export class MPacket {
   /** the connection this packet belongs to. May be blank if newly created */
@@ -57,6 +59,13 @@ export class MPacket {
     newMPacket.buffer = inputBuffer.slice(9);
     newMPacket.wasDeserialized = true;
     return newMPacket;
+  }
+
+  async processPacket() {
+    log.debug(
+      { connection_id: this.getConnectionId() },
+      "Start processing packet"
+    );
   }
 
   public getFlags() {

@@ -18,7 +18,8 @@ import { NPSPacketManager } from "./nps-packet-manager";
 import { TCPConnection } from "./tcpConnection";
 import { MCOTServer } from "../transactions";
 import { logger } from "../logger/index";
-import { isMCOT, routePacket } from "../server/index";
+import { isMCOT } from "../server/index";
+import { wrapPacket} from "../server/packetFactory"
 import { randomUUID } from "crypto";
 
 const log = logger.child({
@@ -73,11 +74,13 @@ export class ConnectionManager {
       })}`
     );
 
+    let packetType = 'tcp'
+
     if (isMCOT(rawPacket.data)) {
-      routePacket(rawPacket, "tomc");
-    } else {
-      routePacket(rawPacket, "tcp");
+      packetType = "tomc";
     }
+
+    await wrapPacket(rawPacket, packetType).processPacket()
 
     switch (localPort) {
       case 8226:

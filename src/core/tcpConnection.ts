@@ -19,6 +19,9 @@ export enum EConnectionStatus {
   INACTIVE = "Inactive",
 }
 
+/**
+ * Container for all TCP connections
+ */
 export class TCPConnection {
   id: string;
   appId: number;
@@ -168,10 +171,8 @@ export class TCPConnection {
   }
 
   /**
-   * DecipherBufferDES
+   * Decrypt a command that is encrypted with DES
    *
-   * @param {Buffer} messageBuffer
-   * @return {Buffer}
    */
   decipherBufferDES(messageBuffer: Buffer): Buffer {
     if (this.encLobby.decipher) {

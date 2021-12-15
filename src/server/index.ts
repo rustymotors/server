@@ -10,6 +10,8 @@ export function isMCOT(inputBuffer: Buffer) {
   return inputBuffer.toString("utf8", 2, 6) === "TOMC";
 }
 
+
+
 export async function routePacket(
   inputConnection: UnprocessedPacket,
   packetClass: "tomc" | "tcp"
