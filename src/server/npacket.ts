@@ -1,4 +1,6 @@
 import { Buffer } from "buffer";
+import { logger } from "../logger/index";
+const log = logger.child({ service: "npacket" });
 
 export class NPacket {
   /** the connection this packet belongs to. May be blank if newly created */
@@ -39,6 +41,13 @@ export class NPacket {
   public serialize() {
     const newPacket = Buffer.alloc(this.length);
     this.buffer.copy(newPacket);
+  }
+
+  async processPacket() {
+    log.debug(
+      { connection_id: this.getConnectionId() },
+      "Start processing packet"
+    );
   }
 
   public getConnectionId() {
