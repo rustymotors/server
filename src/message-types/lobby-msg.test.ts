@@ -5,18 +5,18 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import t from "tap";
+import test from "ava";
 import { LobbyInfoPacket, LobbyMessage } from "./index";
 
 const lobbyInfo1 = new LobbyInfoPacket();
 const lobbyMessage1 = new LobbyMessage();
 
-t.test("LobbyInfo", (t) => {
-  t.equal(lobbyInfo1.toPacket().length, 567);
-  t.end();
+test("LobbyInfo", (t) => {
+  t.is(lobbyInfo1.toPacket().length, 567);
+  
 });
 
-t.test("LobbyMsg", (t) => {
-  t.equal(lobbyMessage1.data.length, 572);
-  t.end();
+test("LobbyMsg", (t) => {
+  t.is(lobbyMessage1.data.length, 572);
+  
 });

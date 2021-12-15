@@ -5,13 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import t from "tap";
+import test from "ava";
 import { ShardServer } from "./index";
 
-t.test("ShardServer", (t) => {
-  t.test("should return a shard list", (t) => {
-    t.match(ShardServer.getInstance()._generateShardList(), "[The Clocktower]");
-    t.end();
+  test("ShardServer - should return a shard list", (t) => {
+    t.is(ShardServer.getInstance()._generateShardList(), "[The Clocktower]");
+
   });
-  t.end();
-});

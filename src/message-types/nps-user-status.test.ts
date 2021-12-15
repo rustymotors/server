@@ -5,12 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import t from "tap";
+import test from "ava";
 import { NPSUserStatus } from "./index";
 
-t.test("NPSUserStatus", (t) => {
+test("NPSUserStatus", (t) => {
   const testPacket = Buffer.from([0x7b, 0x00]);
   const npsUserStatus = new NPSUserStatus(testPacket);
-  t.equal(npsUserStatus.opCode, 123);
-  t.end();
+  t.is(npsUserStatus.opCode, 123);
+  
 });

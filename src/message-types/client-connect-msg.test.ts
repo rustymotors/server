@@ -5,10 +5,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import t from "tap";
+import test from "ava";
 import { ClientConnectMessage } from "./index";
 
-t.test("ClientConnectMsg", (t) => {
+test("ClientConnectMsg", (t) => {
   const clientConnectMessage1 = new ClientConnectMessage(
     Buffer.concat([
       Buffer.from([0xb6, 0x01]),
@@ -17,6 +17,6 @@ t.test("ClientConnectMsg", (t) => {
     ])
   );
 
-  t.equal(clientConnectMessage1.msgNo, 438);
-  t.end();
+  t.is(clientConnectMessage1.msgNo, 438);
+  
 });

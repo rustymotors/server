@@ -5,17 +5,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import t from "tap";
+import test from "ava";
 import { StockCar } from "./index";
 
 const stockCar1 = new StockCar(105, 20, 0);
 
-t.test("StockCar", (t) => {
+test("StockCar", (t) => {
   const { brandedPartId, retailPrice, bIsDealOfTheDay } = stockCar1;
-  t.equal(brandedPartId, 105);
+  t.is(brandedPartId, 105);
 
-  t.equal(retailPrice, 20);
+  t.is(retailPrice, 20);
 
-  t.equal(bIsDealOfTheDay, 0);
-  t.end();
+  t.is(bIsDealOfTheDay, 0);
+  
 });

@@ -5,33 +5,32 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import t from "tap";
+import test from "ava";
 import { SocketFactory } from "../socket-factory";
 import { ConnectionManager } from "./connection-mgr";
 import { EncryptionManager } from "./encryption-mgr";
 import { TCPConnection } from "./tcpConnection";
-t.mock("./connection-mgr", {});
 
-t.test("ConnectionObj", (t) => {
+test("ConnectionObj", (t) => {
   const testConnection = new TCPConnection("abc", SocketFactory.createSocket());
 
   testConnection.setManager(ConnectionManager.getInstance());
   testConnection.setEncryptionManager(new EncryptionManager());
 
-  t.equal(testConnection.status, "Inactive");
-  t.notOk(testConnection.isSetupComplete);
+  t.is(testConnection.status, "Inactive");
+  t.false(testConnection.isSetupComplete);
   testConnection.setEncryptionKey(Buffer.from("abc123", "hex"));
-  t.ok(testConnection.isSetupComplete);
-  t.end();
+  t.true(testConnection.isSetupComplete);
+  
 });
 
-t.test("ConnectionObj cross-comms", (t) => {
+test("ConnectionObj cross-comms", (t) => {
   /** @type {ConnectionObj} */
   let testConn1: TCPConnection;
   /** @type {ConnectionObj} */
   let testConn2: TCPConnection;
 
-  t.beforeEach(() => {
+  test.beforeEach(() => {
     testConn1 = new TCPConnection("def", SocketFactory.createSocket());
     testConn1.setManager(ConnectionManager.getInstance());
     testConn1.setEncryptionManager(new EncryptionManager());
@@ -55,29 +54,29 @@ t.test("ConnectionObj cross-comms", (t) => {
     0x79, 0x70, 0xbf, 0x45,
   ]);
 
-  t.test("Connection one is not the same id as connection two", (t) => {
+  test("Connection one is not the same id as connection two", (t) => {
     console.log(1, testConn1.getEncryptionId());
     console.log(2, testConn2.getEncryptionId());
     t.not(testConn1.getEncryptionId(), testConn2.getEncryptionId());
-    t.end();
+
   });
 
-  t.test("Connection Two can decipher Connection One", (t) => {
+  test("Connection Two can decipher Connection One", (t) => {
     const encipheredBuffer = testConn1.encryptBuffer(plainText1);
-    t.same(encipheredBuffer, cipherText1);
-    t.same(testConn1.decryptBuffer(encipheredBuffer), plainText1);
-    t.same(testConn2.decryptBuffer(encipheredBuffer), plainText1);
+    t.is(encipheredBuffer, cipherText1);
+    t.is(testConn1.decryptBuffer(encipheredBuffer), plainText1);
+    t.is(testConn2.decryptBuffer(encipheredBuffer), plainText1);
 
     // Try again
     const encipheredBuffer2 = testConn1.encryptBuffer(plainText1);
-    t.same(testConn1.decryptBuffer(encipheredBuffer2), plainText1);
-    t.same(testConn2.decryptBuffer(encipheredBuffer2), plainText1);
+    t.is(testConn1.decryptBuffer(encipheredBuffer2), plainText1);
+    t.is(testConn2.decryptBuffer(encipheredBuffer2), plainText1);
 
     // And again
     const encipheredBuffer3 = testConn1.encryptBuffer(plainText1);
-    t.same(testConn1.decryptBuffer(encipheredBuffer3), plainText1);
-    t.same(testConn2.decryptBuffer(encipheredBuffer3), plainText1);
-    t.end();
+    t.is(testConn1.decryptBuffer(encipheredBuffer3), plainText1);
+    t.is(testConn2.decryptBuffer(encipheredBuffer3), plainText1);
+
   });
-  t.end();
+  
 });

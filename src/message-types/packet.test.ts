@@ -5,11 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import t from "tap";
+import test from "ava";
 import { premadeLogin } from "./index";
 
-t.test("LoginServer - Packet", (t) => {
+test("LoginServer - Packet", (t) => {
   const packet = premadeLogin();
-  t.ok(Buffer.isBuffer(packet));
-  t.end();
+  t.true(Buffer.isBuffer(packet));
+  
 });

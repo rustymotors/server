@@ -5,11 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import t from "tap";
+import test from "ava";
 import { AuthLogin } from "./index";
 
-t.test("WebServer", (t) => {
+test("WebServer", (t) => {
   const _ = AuthLogin.getInstance();
-  t.match(_._handleGetTicket(), /TRUE/);
-  t.end();
+  t.like(_._handleGetTicket(), /TRUE/);
+  
 });

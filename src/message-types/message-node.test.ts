@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import t from "tap";
+import test from "ava";
 import { EMessageDirection } from "../types/index";
 import { MessageNode } from "./index";
 
@@ -17,18 +17,18 @@ messageNode1.deserialize(
   ])
 );
 
-t.test("MessageNode", (t) => {
+test("MessageNode", (t) => {
   t.throws(() => {
     new MessageNode(EMessageDirection.RECEIVED).deserialize(
       Buffer.from([0x00, 0x00])
     );
-  }, "[MessageNode] Not long enough to deserialize, only 2 bytes long");
+  },undefined, "[MessageNode] Not long enough to deserialize, only 2 bytes long");
 
-  t.ok(messageNode1.isMCOTS());
+  t.true(messageNode1.isMCOTS());
   try {
     messageNode1.dumpPacket();
   } catch (error) {
-    t.ok(error);
+    t.true(error);
   }
-  t.end();
+  
 });

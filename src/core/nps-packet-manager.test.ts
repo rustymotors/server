@@ -5,14 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import t from "tap";
+import test from "ava";
 import { NPSPacketManager } from "./nps-packet-manager";
 
-t.test("NPSPacketManager", (t) => {
-  t.test("NPSPacketManger", async (t) => {
+test("NPSPacketManager", (t) => {
+  test("NPSPacketManger", async (t) => {
     const npsPacketManager = new NPSPacketManager();
-    t.equal(npsPacketManager.msgCodetoName(0x2_29), "NPS_MINI_USER_LIST");
-    t.end();
+    t.is(npsPacketManager.msgCodetoName(0x2_29), "NPS_MINI_USER_LIST");
+
   });
-  t.end();
+  
 });

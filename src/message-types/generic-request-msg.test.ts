@@ -5,14 +5,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import t from "tap";
+import test from "ava";
 import { GenericRequestMessage } from "./index";
 
 const genericRequestMessage1 = new GenericRequestMessage();
 
-t.test("GenericRequestMsg", (t) => {
+test("GenericRequestMsg", (t) => {
   const { msgNo } = genericRequestMessage1;
-  t.equal(msgNo, 0);
-  t.same(genericRequestMessage1.serialize(), Buffer.alloc(16));
-  t.end();
+  t.is(msgNo, 0);
+  t.is(genericRequestMessage1.serialize(), Buffer.alloc(16));
+  
 });
