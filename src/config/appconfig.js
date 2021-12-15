@@ -1,0 +1,27 @@
+"use strict";
+exports.__esModule = true;
+exports["default"] = {
+    MCOS: {
+        CERTIFICATE: {
+            PRIVATE_KEY_FILE: "data/private_key.pem",
+            PUBLIC_KEY_FILE: "data/pub.key",
+            CERTIFICATE_FILE: "data/mcouniverse.crt"
+        },
+        SETTINGS: {
+            HTTP_LISTEN_HOST: "localhost",
+            HTTP_EXTERNAL_HOST: "localhost",
+            SSL_LISTEN_HOST: "localhost",
+            SSL_EXTERNAL_HOST: "localhost",
+            SHARD_LISTEN_HOST: "localhost",
+            SHARD_EXTERNAL_HOST: "localhost",
+            AUTH_LISTEN_HOST: "localhost",
+            AUTH_EXTERNAL_HOST: "localhost",
+            PATCH_LISTEN_HOST: "localhost",
+            PATCH_EXTERNAL_HOST: "localhost",
+            LISTEN_IP: "localhost",
+            AUTH_IP: "localhost",
+            DATABASE_CONNECTION_URI: "db.mco.db",
+            LOG_LEVEL: "debug"
+        }
+    }
+};

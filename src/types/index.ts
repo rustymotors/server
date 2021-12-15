@@ -226,33 +226,8 @@ export class MessageHead {
     this._mcosig = Buffer.alloc(4); // UInt4B
   }
 
-  /**
-   * @return {number}
-   */
-  get length(): number {
-    return this._length.readInt16BE();
-  }
 
-  /**
-   * @param {number} value
-   */
-  set length(value: number) {
-    this._length.writeInt16BE(value);
-  }
 
-  /**
-   * @return {Buffer}
-   */
-  get mcosig(): Buffer {
-    return this._mcosig;
-  }
-
-  /**
-   * @param {Buffer} value
-   */
-  set mcosig(value: Buffer) {
-    this._mcosig = value;
-  }
 }
 
 export const BaseMessageHeader = {
