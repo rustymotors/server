@@ -15,7 +15,7 @@
     "audit": "npm audit",
     "check:license": "npm licenses audit --summary --config=licenses.config.js",
     "start": "node built/bin/app.js | ./node_modules/.bin/pino-pretty",
-    "build": "npx tsc -b src/tsconfig.json --verbose",
+    "build": "npx tsc --build --verbose",
     "build:clean": "rm -rf built && npm run build",
     "lint": "eslint src/**/*.ts && prettier --write src",
     "test": "npm run lint && npm run test:only && npm run test:coverage",
