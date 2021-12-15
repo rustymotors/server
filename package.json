@@ -14,7 +14,7 @@
   "scripts": {
     "audit": "npm audit",
     "check:license": "npm licenses audit --summary --config=licenses.config.js",
-    "start": "node built/bin/app.js | ./node_modules/.bin/pino-pretty",
+    "start": "node src/bin/app.js | ./node_modules/.bin/pino-pretty",
     "build": "npx tsc --build --verbose",
     "build:clean": "rm -rf built && npm run build",
     "test": "npm run test:only && npm run test:coverage",
