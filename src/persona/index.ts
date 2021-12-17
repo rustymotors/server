@@ -67,6 +67,9 @@ export class PersonaServer {
     return nameBuffer;
   }
 
+  /**
+   * Selects a game persona and marks it as in use
+   */
   async handleSelectGamePersona(data: Buffer): Promise<NPSMessage> {
     log.debug("_npsSelectGamePersona...");
     const requestPacket = new NPSMessage(
@@ -104,6 +107,9 @@ export class PersonaServer {
     return Promise.resolve(responsePacket);
   }
 
+  /**
+   * Create a new game persona record
+   */
   async createNewGameAccount(data: Buffer): Promise<NPSMessage> {
     const requestPacket = new NPSMessage(
       EMessageDirection.RECEIVED
@@ -133,6 +139,9 @@ export class PersonaServer {
 
   //  * TODO: Change the persona record to show logged out. This requires it to exist first, it is currently hard-coded
   //  * TODO: Locate the connection and delete, or reset it.
+  /**
+   * Log out a game persona
+   */
   async logoutGameUser(data: Buffer): Promise<NPSMessage> {
     log.debug("[personaServer] Logging out persona...");
     const requestPacket = new NPSMessage(
@@ -171,9 +180,6 @@ export class PersonaServer {
 
   /**
    * Handle a check token packet
-   *
-   * @param {Buffer} data
-   * @return {Promise<NPSMsg>}
    */
   async validateLicencePlate(data: Buffer): Promise<NPSMessage> {
     log.debug("_npsCheckToken...");
@@ -409,6 +415,9 @@ export class PersonaServer {
     return responsePacket;
   }
 
+  /**
+   * Handle inbound packets for the persona server
+   */
   async dataHandler(rawPacket: UnprocessedPacket): Promise<TCPConnection> {
     const { connection, data } = rawPacket;
     const { sock, localPort, remoteAddress } = connection;
