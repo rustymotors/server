@@ -284,7 +284,7 @@ export class PersonaServer {
       socket.write(packet.serialize());
     } catch (error) {
       if (error instanceof Error) {
-        throw new TypeError(`Unable to send packet: ${error}`);
+        throw new TypeError(`Unable to send packet: ${error.message}`);
       }
 
       throw new Error("Unable to send packet, error unknown");
@@ -399,7 +399,7 @@ export class PersonaServer {
         responsePacket.dumpPacket();
       } catch (error) {
         if (error instanceof Error) {
-          throw new TypeError(`Error serializing personaMapsMsg: ${error}`);
+          throw new TypeError(`Error serializing personaMapsMsg: ${error.message}`);
         }
 
         throw new Error("Error serializing personaMapsMsg, error unknonw");
