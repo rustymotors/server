@@ -67,6 +67,9 @@ export class PersonaServer {
     return nameBuffer;
   }
 
+  /**
+   * Selects a game persona and marks it as in use
+   */
   async handleSelectGamePersona(data: Buffer): Promise<NPSMessage> {
     log.debug("_npsSelectGamePersona...");
     const requestPacket = new NPSMessage(
@@ -101,9 +104,12 @@ export class PersonaServer {
     log.debug(
       `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
-    return responsePacket;
+    return Promise.resolve(responsePacket);
   }
 
+  /**
+   * Create a new game persona record
+   */
   async createNewGameAccount(data: Buffer): Promise<NPSMessage> {
     const requestPacket = new NPSMessage(
       EMessageDirection.RECEIVED
@@ -128,11 +134,14 @@ export class PersonaServer {
 
     rPacket.dumpPacket();
 
-    return rPacket;
+    return Promise.resolve(rPacket);
   }
 
   //  * TODO: Change the persona record to show logged out. This requires it to exist first, it is currently hard-coded
   //  * TODO: Locate the connection and delete, or reset it.
+  /**
+   * Log out a game persona
+   */
   async logoutGameUser(data: Buffer): Promise<NPSMessage> {
     log.debug("[personaServer] Logging out persona...");
     const requestPacket = new NPSMessage(
@@ -166,14 +175,11 @@ export class PersonaServer {
     log.debug(
       `[npsLogoutGameUser] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
-    return responsePacket;
+    return Promise.resolve(responsePacket);
   }
 
   /**
    * Handle a check token packet
-   *
-   * @param {Buffer} data
-   * @return {Promise<NPSMsg>}
    */
   async validateLicencePlate(data: Buffer): Promise<NPSMessage> {
     log.debug("_npsCheckToken...");
@@ -191,8 +197,8 @@ export class PersonaServer {
 
     const customerId = data.readInt32BE(12);
     const plateName = data.slice(17).toString();
-    log.debug(`customerId: ${customerId}`);
-    log.debug(`Plate name: ${plateName}`);
+    log.debug(`customerId: ${customerId}`); // skipcq: JS-0378
+    log.debug(`Plate name: ${plateName}`); // skipcq: JS-0378
 
     // Create the packet content
 
@@ -214,7 +220,7 @@ export class PersonaServer {
     log.debug(
       `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
-    return responsePacket;
+    return Promise.resolve(responsePacket);
   }
 
   /**
@@ -241,7 +247,7 @@ export class PersonaServer {
     const requestedPersonaName = data
       .slice(18, data.lastIndexOf(0x00))
       .toString();
-    const serviceName = data.slice(data.indexOf(0x0a) + 1).toString();
+    const serviceName = data.slice(data.indexOf(0x0a) + 1).toString(); // skipcq: JS-0377
     log.debug(
       JSON.stringify({ customerId, requestedPersonaName, serviceName })
     );
@@ -268,7 +274,7 @@ export class PersonaServer {
     log.debug(
       `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
-    return responsePacket;
+    return Promise.resolve(responsePacket);
   }
 
   /**
@@ -284,7 +290,7 @@ export class PersonaServer {
       socket.write(packet.serialize());
     } catch (error) {
       if (error instanceof Error) {
-        throw new TypeError(`Unable to send packet: ${error}`);
+        throw new TypeError(`Unable to send packet: ${error.message}`);
       }
 
       throw new Error("Unable to send packet, error unknown");
@@ -296,11 +302,11 @@ export class PersonaServer {
    * @param {number} customerId
    * @return {Promise<IPersonaRecord[]>}
    */
-  getPersonasByCustomerId(customerId: number): PersonaRecord[] {
+  async getPersonasByCustomerId(customerId: number): Promise<PersonaRecord[]> {
     const results = this.personaList.filter(
       (persona) => persona.customerId === customerId
     );
-    return results;
+    return Promise.resolve(results);
   }
 
   /**
@@ -317,7 +323,7 @@ export class PersonaServer {
       throw new Error(`Unable to locate a persona for id: ${id}`);
     }
 
-    return results;
+    return Promise.resolve(results);
   }
 
   /**
@@ -399,7 +405,7 @@ export class PersonaServer {
         responsePacket.dumpPacket();
       } catch (error) {
         if (error instanceof Error) {
-          throw new TypeError(`Error serializing personaMapsMsg: ${error}`);
+          throw new TypeError(`Error serializing personaMapsMsg: ${error.message}`);
         }
 
         throw new Error("Error serializing personaMapsMsg, error unknonw");
@@ -409,6 +415,9 @@ export class PersonaServer {
     return responsePacket;
   }
 
+  /**
+   * Handle inbound packets for the persona server
+   */
   async dataHandler(rawPacket: UnprocessedPacket): Promise<TCPConnection> {
     const { connection, data } = rawPacket;
     const { sock, localPort, remoteAddress } = connection;

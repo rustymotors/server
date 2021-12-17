@@ -2,11 +2,10 @@ import { EMessageDirection } from "../types/index";
 import { MessageNode } from "../message-types/index";
 import { SocketFactory } from "../socket-factory";
 import { TCPConnection } from "../core/tcpConnection";
-import t from "tap";
+import test from "ava";
 import { compressIfNeeded } from ".";
 
-t.test("TCP Manager", (t) => {
-  t.test("compressIfNeeded()", async (t) => {
+  test("TCP Manager - compressIfNeeded()", async (t) => {
     const testNode = new MessageNode(EMessageDirection.SENT);
     const testBuffer = Buffer.alloc(20);
     testNode.updateBuffer(testBuffer);
@@ -15,9 +14,8 @@ t.test("TCP Manager", (t) => {
       SocketFactory.createSocket()
     );
     const result = await compressIfNeeded(testConnection, testNode);
-    t.match(result.lastError, "Too small, should not compress");
-    t.end();
+    t.is(result.lastError, "Too small, should not compress");
+
   });
 
-  t.end();
-});
+  

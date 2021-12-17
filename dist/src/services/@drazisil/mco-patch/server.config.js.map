@@ -1,1 +1,0 @@
-{"version":3,"file":"server.config.js","sourceRoot":"","sources":["../../../../../src/services/@drazisil/mco-patch/server.config.ts"],"names":[],"mappings":";AAAA,YAAY;AACZ;;;;;;;;;;GAUG;;AAEH,kBAAe;IACb,WAAW,EAAE;IACX,oCAAoC;KACrC;IACD,cAAc,EAAE;QACd,IAAI,EAAE,SAAS;KAChB;IACD,kBAAkB,EAAE;QAClB,WAAW,EAAE,WAAW;KACzB;CACF,CAAA"}

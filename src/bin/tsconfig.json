@@ -1,9 +1,0 @@
-{
-  "extends": "../tsconfig-noncomposite-base",
-  "compilerOptions": {
-    "outDir": "../../built",
-    "types": ["node"]
-  },
-  "files": ["app.ts"],
-  "references": []
-}

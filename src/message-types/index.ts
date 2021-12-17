@@ -74,7 +74,7 @@ export class GenericReplyMessage {
           `[GenericReplyMsg] Unable to read msgNo from ${buffer.toString(
             "hex"
           )}: ${String(error)}`
-        );
+        ); // skipcq: JS-0378
       }
     }
 
@@ -169,7 +169,7 @@ export class GenericRequestMessage {
         throw new TypeError(
           `[GenericRequestMsg] Unable to read msgNo from ${buffer.toString(
             "hex"
-          )}: ${String(error)}`
+          )}: ${String(error)}`  // skipcq: JS-0378
         );
       }
     }
@@ -884,7 +884,7 @@ export class NPSMessage {
     this.msgVersion = 0;
     this.reserved = 0;
     this.content = Buffer.from([0x01, 0x02, 0x03, 0x04]);
-    this.msgLength = this.content.length + 12;
+    this.msgLength = this.content.length + 12; // skipcq: JS-0377
     this.direction = direction;
     this.serviceName = "mcoserver:NPSMsg";
   }
@@ -896,7 +896,7 @@ export class NPSMessage {
    */
   setContent(buffer: Buffer): void {
     this.content = buffer;
-    this.msgLength = this.content.length + 12;
+    this.msgLength = this.content.length + 12; // skipcq: JS-0377
   }
 
   /**
@@ -1079,7 +1079,7 @@ export class LoginMessage {
         throw new TypeError(
           `[LoginMsg] Unable to read msgNo from ${buffer.toString(
             "hex"
-          )}: ${error.toString()}`
+          )}: ${error.toString()}` // skipcq: JS-0378
         );
       }
 
@@ -1087,7 +1087,7 @@ export class LoginMessage {
         `[LoginMsg] Unable to read msgNo from ${buffer.toString(
           "hex"
         )}, error unknown`
-      );
+      ); // skipcq: JS-0378
     }
 
     this.customerId = buffer.readInt32LE(2);
@@ -1096,9 +1096,10 @@ export class LoginMessage {
     this.lotOwnerId = buffer.readInt32LE(10);
     this.brandedPartId = buffer.readInt32LE(14);
     this.skinId = buffer.readInt32LE(18);
-    this.personaName = buffer.slice(22, 34).toString();
+    this.personaName = buffer.slice(22, 34).toString("utf8");
 
-    this.version = buffer.slice(34).toString();
+    // TODO: Do not take the rest of the buffer, grab the correct size slice
+    this.version = buffer.slice(34).toString("utf8");
   }
 
   /**
@@ -1148,7 +1149,7 @@ export class LobbyMessage {
 
     this.lobbyList = new LobbyInfoPacket();
     // The expected length here is 572
-    this.dataLength = this.lobbyList.toPacket().length + 5;
+    this.dataLength = this.lobbyList.toPacket().length + 5; // skipcq: JS-0377
 
     if (this.dataLength !== 572) {
       throw new Error(
@@ -1269,7 +1270,7 @@ export class MessageNode {
    * @return {Buffer}
    */
   serialize(): Buffer {
-    const packet = Buffer.alloc(this.dataLength + 2);
+    const packet = Buffer.alloc(this.dataLength + 2); // skipcq: JS-0377
     packet.writeInt16LE(this.dataLength, 0);
     packet.write(this.mcoSig, 2);
     packet.writeInt16LE(this.seq, 6);
@@ -1323,7 +1324,7 @@ export class MessageNode {
    */
   updateBuffer(buffer: Buffer): void {
     this.data = Buffer.from(buffer);
-    this.dataLength = buffer.length + 10;
+    this.dataLength = buffer.length + 10; // skipcq: JS-0377
     this.msgNo = this.data.readInt16LE(0);
   }
 
@@ -1358,7 +1359,7 @@ export class MessageNode {
     })}`;
   }
 
-  toString() {
+  toString(): string {
     return this.dumpPacket();
   }
 
@@ -1420,7 +1421,7 @@ export class ClientConnectMessage {
         throw new TypeError(
           `[ClientConnectMsg] Unable to read msgNo from ${buffer.toString(
             "hex"
-          )}: ${String(error)}`
+          )}: ${String(error)}` // skipcq: JS-0378
         );
       }
     }
@@ -1797,12 +1798,15 @@ export class NPSUserInfo extends NPSMessage {
   dumpInfo(): string {
     let message = this.dumpPacketHeader("NPSUserInfo");
     const { userId, userName, userData } = this;
+    const userIdString = userId.toString()
+    const userNameString = userName.toString("utf-8")
+    const userDataStringHex = userData.toString("hex")
     message = message.concat(
-      `UserId:        ${userId.toString()}
-       UserName:      ${userName.toString()}
-       UserData:      ${userData.toString("hex")}
+      `UserId:        ${userIdString}
+       UserName:      ${userNameString}
+       UserData:      ${userDataStringHex}  
        [/NPSUserInfo]======================================`
-    );
+    ); // skipcq: JS-0378
     return message;
   }
 }

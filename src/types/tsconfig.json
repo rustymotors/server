@@ -1,9 +1,0 @@
-{
-  "extends": "../tsconfig-noncomposite-base",
-  "compilerOptions": {
-    "outDir": "../../built",
-    "types": ["node", "sqlite"]
-  },
-  "files": ["index.ts"],
-  "references": []
-}

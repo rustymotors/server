@@ -5,13 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import t from "tap";
+import test from "ava";
 import { LobbyServer } from "./index";
 
-t.test("LobbyServer", (t) => {
+test("LobbyServer", (t) => {
   const lobbyServer = LobbyServer.getInstance();
-  t.equal(lobbyServer._generateSessionKeyBuffer("123").length, 64);
+  t.is(lobbyServer._generateSessionKeyBuffer("123").length, 64);
 
-  t.equal(lobbyServer._npsHeartbeat().msgNo, 0x01_27);
-  t.end();
+  t.is(lobbyServer._npsHeartbeat().msgNo, 0x01_27);
+  
 });

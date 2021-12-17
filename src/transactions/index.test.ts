@@ -5,96 +5,93 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import t from "tap";
+import test from "ava";
 import { MCOTServer } from "./index";
 
-t.test("MCOTS Server", (t) => {
-  t.test("getInstance always returns the same object", (t) => {
+  test("MCOTS Server - getInstance always returns the same object", (t) => {
     const s1 = MCOTServer.getInstance();
 
-    t.equal(typeof s1.defaultHandler, "function");
+    t.is(typeof s1.defaultHandler, "function");
 
     const s2 = MCOTServer.getInstance();
 
-    t.equal(s1, s2);
-    t.end();
+    t.is(s1, s2);
+
   });
 
-  t.test("msg_string()", (t) => {
+  test("MCOTS Server - msg_string() 1", (t) => {
     const mcotServer = MCOTServer.getInstance();
 
-    t.equal(mcotServer._MSG_STRING(438), "MC_CLIENT_CONNECT_MSG");
-    t.end();
+    t.is(mcotServer._MSG_STRING(438), "MC_CLIENT_CONNECT_MSG");
+
   });
 
-  t.test("msg_string()", (t) => {
+  test("MCOTS Server - msg_string() 2", (t) => {
     const mcotServer = MCOTServer.getInstance();
 
-    t.equal(mcotServer._MSG_STRING(105), "MC_LOGIN");
-    t.end();
+    t.is(mcotServer._MSG_STRING(105), "MC_LOGIN");
+
   });
 
-  t.test("msg_string()", (t) => {
+  test("MCOTS Server - msg_string() 3", (t) => {
     const mcotServer = MCOTServer.getInstance();
 
-    t.equal(mcotServer._MSG_STRING(106), "MC_LOGOUT");
-    t.end();
+    t.is(mcotServer._MSG_STRING(106), "MC_LOGOUT");
+
   });
 
-  t.test("msg_string()", (t) => {
+  test("MCOTS Server - msg_string() 4", (t) => {
     const mcotServer = MCOTServer.getInstance();
 
-    t.equal(mcotServer._MSG_STRING(109), "MC_SET_OPTIONS");
-    t.end();
+    t.is(mcotServer._MSG_STRING(109), "MC_SET_OPTIONS");
+
   });
 
-  t.test("msg_string()", (t) => {
+  test("MCOTS Server - msg_string() 5", (t) => {
     const mcotServer = MCOTServer.getInstance();
 
-    t.equal(mcotServer._MSG_STRING(141), "MC_STOCK_CAR_INFO");
-    t.end();
+    t.is(mcotServer._MSG_STRING(141), "MC_STOCK_CAR_INFO");
+
   });
 
-  t.test("msg_string()", (t) => {
+  test("MCOTS Server - msg_string() 6", (t) => {
     const mcotServer = MCOTServer.getInstance();
 
-    t.equal(mcotServer._MSG_STRING(213), "MC_LOGIN_COMPLETE");
-    t.end();
+    t.is(mcotServer._MSG_STRING(213), "MC_LOGIN_COMPLETE");
+
   });
 
-  t.test("msg_string()", (t) => {
+  test("MCOTS Server - msg_string() 7", (t) => {
     const mcotServer = MCOTServer.getInstance();
 
-    t.equal(mcotServer._MSG_STRING(266), "MC_UPDATE_PLAYER_PHYSICAL");
-    t.end();
+    t.is(mcotServer._MSG_STRING(266), "MC_UPDATE_PLAYER_PHYSICAL");
+
   });
 
-  t.test("msg_string()", (t) => {
+  test("MCOTS Server - msg_string() 8", (t) => {
     const mcotServer = MCOTServer.getInstance();
 
-    t.equal(mcotServer._MSG_STRING(324), "MC_GET_LOBBIES");
-    t.end();
+    t.is(mcotServer._MSG_STRING(324), "MC_GET_LOBBIES");
+
   });
 
-  t.test("msg_string()", (t) => {
+  test("MCOTS Server - msg_string() 9", (t) => {
     const mcotServer = MCOTServer.getInstance();
 
-    t.equal(mcotServer._MSG_STRING(325), "MC_LOBBIES");
-    t.end();
+    t.is(mcotServer._MSG_STRING(325), "MC_LOBBIES");
+
   });
 
-  t.test("msg_string()", (t) => {
+  test("MCOTS Server - msg_string() 10", (t) => {
     const mcotServer = MCOTServer.getInstance();
 
-    t.equal(mcotServer._MSG_STRING(440), "MC_TRACKING_MSG");
-    t.end();
+    t.is(mcotServer._MSG_STRING(440), "MC_TRACKING_MSG");
+
   });
 
-  t.test("msg_string()", (t) => {
+  test("MCOTS Server - msg_string() 11", (t) => {
     const mcotServer = MCOTServer.getInstance();
 
-    t.equal(mcotServer._MSG_STRING(999), "Unknown");
-    t.end();
+    t.is(mcotServer._MSG_STRING(999), "Unknown");
+
   });
-  t.end();
-});
