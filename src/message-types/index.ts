@@ -1798,10 +1798,13 @@ export class NPSUserInfo extends NPSMessage {
   dumpInfo(): string {
     let message = this.dumpPacketHeader("NPSUserInfo");
     const { userId, userName, userData } = this;
+    const userIdString = userId.toString()
+    const userNameString = userName.toString("utf-8")
+    const userDataStringHex = userData.toString("hex")
     message = message.concat(
-      `UserId:        ${userId.toString()}
-       UserName:      ${userName.toString()}
-       UserData:      ${userData.toString("hex")}
+      `UserId:        ${userIdString}
+       UserName:      ${userNameString}
+       UserData:      ${userDataStringHex}
        [/NPSUserInfo]======================================`
     );
     return message;
