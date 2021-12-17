@@ -1359,7 +1359,7 @@ export class MessageNode {
     })}`;
   }
 
-  toString() {
+  toString(): string {
     return this.dumpPacket();
   }
 
