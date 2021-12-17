@@ -1098,6 +1098,7 @@ export class LoginMessage {
     this.skinId = buffer.readInt32LE(18);
     this.personaName = buffer.slice(22, 34).toString("utf8");
 
+    // TODO: Do not take the rest of the buffer, grab the correct size slice
     this.version = buffer.slice(34).toString("utf8");
   }
 
