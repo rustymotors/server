@@ -247,7 +247,7 @@ export class PersonaServer {
     const requestedPersonaName = data
       .slice(18, data.lastIndexOf(0x00))
       .toString();
-    const serviceName = data.slice(data.indexOf(0x0a) + 1).toString();
+    const serviceName = data.slice(data.indexOf(0x0a) + 1).toString(); // skipcq: JS-0377
     log.debug(
       JSON.stringify({ customerId, requestedPersonaName, serviceName })
     );

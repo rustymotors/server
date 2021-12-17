@@ -884,7 +884,7 @@ export class NPSMessage {
     this.msgVersion = 0;
     this.reserved = 0;
     this.content = Buffer.from([0x01, 0x02, 0x03, 0x04]);
-    this.msgLength = this.content.length + 12;
+    this.msgLength = this.content.length + 12; // skipcq: JS-0377
     this.direction = direction;
     this.serviceName = "mcoserver:NPSMsg";
   }
@@ -896,7 +896,7 @@ export class NPSMessage {
    */
   setContent(buffer: Buffer): void {
     this.content = buffer;
-    this.msgLength = this.content.length + 12;
+    this.msgLength = this.content.length + 12; // skipcq: JS-0377
   }
 
   /**
@@ -1149,7 +1149,7 @@ export class LobbyMessage {
 
     this.lobbyList = new LobbyInfoPacket();
     // The expected length here is 572
-    this.dataLength = this.lobbyList.toPacket().length + 5;
+    this.dataLength = this.lobbyList.toPacket().length + 5; // skipcq: JS-0377
 
     if (this.dataLength !== 572) {
       throw new Error(
@@ -1270,7 +1270,7 @@ export class MessageNode {
    * @return {Buffer}
    */
   serialize(): Buffer {
-    const packet = Buffer.alloc(this.dataLength + 2);
+    const packet = Buffer.alloc(this.dataLength + 2); // skipcq: JS-0377
     packet.writeInt16LE(this.dataLength, 0);
     packet.write(this.mcoSig, 2);
     packet.writeInt16LE(this.seq, 6);
@@ -1324,7 +1324,7 @@ export class MessageNode {
    */
   updateBuffer(buffer: Buffer): void {
     this.data = Buffer.from(buffer);
-    this.dataLength = buffer.length + 10;
+    this.dataLength = buffer.length + 10; // skipcq: JS-0377
     this.msgNo = this.data.readInt16LE(0);
   }
 
