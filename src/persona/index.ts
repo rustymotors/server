@@ -128,7 +128,7 @@ export class PersonaServer {
 
     rPacket.dumpPacket();
 
-    return rPacket;
+    return Promise.resolve(rPacket);
   }
 
   //  * TODO: Change the persona record to show logged out. This requires it to exist first, it is currently hard-coded
@@ -166,7 +166,7 @@ export class PersonaServer {
     log.debug(
       `[npsLogoutGameUser] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
-    return responsePacket;
+    return Promise.resolve(responsePacket);
   }
 
   /**
@@ -214,7 +214,7 @@ export class PersonaServer {
     log.debug(
       `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
-    return responsePacket;
+    return Promise.resolve(responsePacket);
   }
 
   /**
@@ -268,7 +268,7 @@ export class PersonaServer {
     log.debug(
       `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
-    return responsePacket;
+    return Promise.resolve(responsePacket);
   }
 
   /**
@@ -300,7 +300,7 @@ export class PersonaServer {
     const results = this.personaList.filter(
       (persona) => persona.customerId === customerId
     );
-    return results;
+    return Promise.resolve(results);
   }
 
   /**
@@ -317,7 +317,7 @@ export class PersonaServer {
       throw new Error(`Unable to locate a persona for id: ${id}`);
     }
 
-    return results;
+    return Promise.resolve(results);
   }
 
   /**
