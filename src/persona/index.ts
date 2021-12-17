@@ -101,7 +101,7 @@ export class PersonaServer {
     log.debug(
       `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
-    return responsePacket;
+    return Promise.resolve(responsePacket);
   }
 
   async createNewGameAccount(data: Buffer): Promise<NPSMessage> {
