@@ -74,7 +74,7 @@ export class GenericReplyMessage {
           `[GenericReplyMsg] Unable to read msgNo from ${buffer.toString(
             "hex"
           )}: ${String(error)}`
-        );
+        ); // skipcq: JS-0378
       }
     }
 
@@ -169,7 +169,7 @@ export class GenericRequestMessage {
         throw new TypeError(
           `[GenericRequestMsg] Unable to read msgNo from ${buffer.toString(
             "hex"
-          )}: ${String(error)}`
+          )}: ${String(error)}`  // skipcq: JS-0378
         );
       }
     }
@@ -1079,7 +1079,7 @@ export class LoginMessage {
         throw new TypeError(
           `[LoginMsg] Unable to read msgNo from ${buffer.toString(
             "hex"
-          )}: ${error.toString()}`
+          )}: ${error.toString()}` // skipcq: JS-0378
         );
       }
 
@@ -1087,7 +1087,7 @@ export class LoginMessage {
         `[LoginMsg] Unable to read msgNo from ${buffer.toString(
           "hex"
         )}, error unknown`
-      );
+      ); // skipcq: JS-0378
     }
 
     this.customerId = buffer.readInt32LE(2);
@@ -1421,7 +1421,7 @@ export class ClientConnectMessage {
         throw new TypeError(
           `[ClientConnectMsg] Unable to read msgNo from ${buffer.toString(
             "hex"
-          )}: ${String(error)}`
+          )}: ${String(error)}` // skipcq: JS-0378
         );
       }
     }
@@ -1804,9 +1804,9 @@ export class NPSUserInfo extends NPSMessage {
     message = message.concat(
       `UserId:        ${userIdString}
        UserName:      ${userNameString}
-       UserData:      ${userDataStringHex}
+       UserData:      ${userDataStringHex}  
        [/NPSUserInfo]======================================`
-    );
+    ); // skipcq: JS-0378
     return message;
   }
 }

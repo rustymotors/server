@@ -197,8 +197,8 @@ export class PersonaServer {
 
     const customerId = data.readInt32BE(12);
     const plateName = data.slice(17).toString();
-    log.debug(`customerId: ${customerId}`);
-    log.debug(`Plate name: ${plateName}`);
+    log.debug(`customerId: ${customerId}`); // skipcq: JS-0378
+    log.debug(`Plate name: ${plateName}`); // skipcq: JS-0378
 
     // Create the packet content
 
