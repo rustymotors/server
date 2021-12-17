@@ -21,7 +21,7 @@ test("ConnectionObj", (t) => {
 
   t.is(testConnection.status, "Inactive");
   t.false(testConnection.isSetupComplete);
-  testConnection.setEncryptionKey(Buffer.from("abc123", "hex"));
+  testConnection.setEncryptionKey(Buffer.from("abc123", "hex")); // lgtm [js/hardcoded-credentials]
   t.true(testConnection.isSetupComplete);
 
 });
