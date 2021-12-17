@@ -1096,9 +1096,9 @@ export class LoginMessage {
     this.lotOwnerId = buffer.readInt32LE(10);
     this.brandedPartId = buffer.readInt32LE(14);
     this.skinId = buffer.readInt32LE(18);
-    this.personaName = buffer.slice(22, 34).toString();
+    this.personaName = buffer.slice(22, 34).toString("utf8");
 
-    this.version = buffer.slice(34).toString();
+    this.version = buffer.slice(34).toString("utf8");
   }
 
   /**
