@@ -14,6 +14,6 @@ test("GenericReplyMsg", (t) => {
   const { msgNo, toFrom } = genericReplyMessage1;
   t.is(msgNo, 0);
   t.is(toFrom, 0);
-  t.is(genericReplyMessage1.serialize(), Buffer.alloc(16));
+  t.deepEqual(genericReplyMessage1.serialize(), Buffer.alloc(16));
   
 });

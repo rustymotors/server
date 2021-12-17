@@ -12,7 +12,7 @@ import { MessageNode } from "./index";
 const messageNode1 = new MessageNode(EMessageDirection.RECEIVED);
 messageNode1.deserialize(
   Buffer.from([
-    0x00, 0x00, 0x54, 0x4f, 0x4d, 0x43, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x16, 0x00, 0x54, 0x4f, 0x4d, 0x43, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   ])
 );
@@ -25,10 +25,6 @@ test("MessageNode", (t) => {
   },undefined, "[MessageNode] Not long enough to deserialize, only 2 bytes long");
 
   t.true(messageNode1.isMCOTS());
-  try {
-    messageNode1.dumpPacket();
-  } catch (error) {
-    t.true(error);
-  }
-  
+  t.is(messageNode1.seq, 6)
+  t.regex(messageNode1.dumpPacket(), /1600544f4d43/); 
 });

@@ -9,6 +9,6 @@ import test from "ava";
 import { ShardServer } from "./index";
 
   test("ShardServer - should return a shard list", (t) => {
-    t.is(ShardServer.getInstance()._generateShardList(), "[The Clocktower]");
+    t.regex(ShardServer.getInstance()._generateShardList(), /[The Clocktower]/);
 
   });

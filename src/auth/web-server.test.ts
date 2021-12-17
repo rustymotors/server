@@ -10,6 +10,6 @@ import { AuthLogin } from "./index";
 
 test("WebServer", (t) => {
   const _ = AuthLogin.getInstance();
-  t.like(_._handleGetTicket(), /TRUE/);
+  t.regex(_._handleGetTicket(), /TRUE/);
   
 });

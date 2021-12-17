@@ -13,6 +13,6 @@ const genericRequestMessage1 = new GenericRequestMessage();
 test("GenericRequestMsg", (t) => {
   const { msgNo } = genericRequestMessage1;
   t.is(msgNo, 0);
-  t.is(genericRequestMessage1.serialize(), Buffer.alloc(16));
+  t.deepEqual(genericRequestMessage1.serialize(), Buffer.alloc(16));
   
 });

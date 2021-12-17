@@ -8,7 +8,7 @@
 import test from "ava";
 import { LoginMessage } from "./index";
 
-const inboundBuffer = Buffer.alloc(42);
+const inboundBuffer = Buffer.alloc(41);
 inboundBuffer.write("NotAPerson", 24);
 inboundBuffer.write("0.0.0.0", 34);
 const loginMessage1 = new LoginMessage(inboundBuffer);
@@ -43,9 +43,9 @@ test("LoginMsg", (t) => {
 
   t.is(skinId, 0);
 
-  t.is(personaName, "NotAPerson");
+  t.deepEqual(Buffer.from(personaName), Buffer.from("\0\0NotAPerson"));
 
-  t.is(version, "0.0.0.0");
+  t.deepEqual(Buffer.from(version), Buffer.from("0.0.0.0"));
 
   t.is(data, inboundBuffer);
   

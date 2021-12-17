@@ -23,7 +23,9 @@ let personaServer: PersonaServer;
     t.is(results.length, 2);
     if (typeof results[0] !== "undefined") {
       const name = results[0].name.toString("utf8");
-      t.is(name, "Dr Brown");
+      t.true(results[0].name instanceof Buffer)
+      t.is(results[0].name.length, 30)
+      t.true(name.startsWith("Dr Brown"));
     } else {
       t.true(false);
     }
@@ -93,7 +95,8 @@ let personaServer: PersonaServer;
 
     t.is(personas1.length, 1);
     if (typeof personas1[0] !== "undefined") {
-      t.deepEqual(personas1[0].name.toString("utf8"), "Doc Joe");
+      t.is(personas1[0].name.length, 30)
+      t.true(personas1[0].name.toString("utf8").startsWith("Doc Joe"));
     } else {
       t.true(false);
     }
