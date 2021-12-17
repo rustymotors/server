@@ -63,8 +63,6 @@ test.beforeEach(() => {
 
 
 test("ConnectionObj cross-comms - Connection one is not the same id as connection two", (t) => {
-  console.log(1, testConn1.getEncryptionId());
-  console.log(2, testConn2.getEncryptionId());
   t.not(testConn1.getEncryptionId(), testConn2.getEncryptionId());
 
 });
