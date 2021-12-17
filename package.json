@@ -17,9 +17,7 @@
     "start": "node src/bin/app.js | ./node_modules/.bin/pino-pretty",
     "build": "npx tsc --build --verbose",
     "build:clean": "rm -rf built && npm run build",
-    "test": "npm run test:only && npm run test:coverage",
-    "test:only": "tap --ts --reporter=spec --no-check-coverage src/**/*.test.ts",
-    "test:coverage": "tap  --coverage-report=html --coverage-report=lcov --no-check-coverage --no-browser"
+    "test": "ava"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
   "license": "MPL-2.0",
