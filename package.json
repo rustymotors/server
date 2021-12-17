@@ -17,7 +17,7 @@
     "start": "node src/bin/app.js | ./node_modules/.bin/pino-pretty",
     "build": "npx tsc --build --verbose",
     "build:clean": "rm -rf built && npm run build",
-    "test": "ava"
+    "test": "c8 ava"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
   "license": "MPL-2.0",
@@ -38,6 +38,7 @@
     "@typescript-eslint/eslint-plugin": "5.6.0",
     "@typescript-eslint/parser": "5.6.0",
     "ava": "^3.15.0",
+    "c8": "^7.10.0",
     "chai": "4.3.4",
     "eslint": "8.4.1",
     "eslint-config-prettier": "8.3.0",
@@ -54,20 +55,16 @@
     "ts-jest": "27.1.1",
     "typescript": "4.5.2"
   },
-  "nyc": {
-    "reporter": [
-      "text",
-      "cobertura",
-      "html"
-    ],
-    "useSpawnWrap": true
-  },
   "ava": {
-		"extensions": [
-			"ts"
-		],
-		"require": [
-			"ts-node/register"
-		]
-	}
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
+  },
+  "c8": {
+    "reporter": ["text", "cobertura", "html"],
+    "src": ["src"]
+  }
 }
