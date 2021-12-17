@@ -8,7 +8,7 @@
 import test from "ava";
 import { NPSPacketManager } from "./nps-packet-manager";
 
-  test("NPSPacketManger", async (t) => {
+  test("NPSPacketManger", (t) => {
     const npsPacketManager = new NPSPacketManager();
     t.is(npsPacketManager.msgCodetoName(0x2_29), "NPS_MINI_USER_LIST");
 
