@@ -32,12 +32,12 @@
     "pino": "next"
   },
   "devDependencies": {
-    "@tsconfig/node16": "^1.0.2",
+    "@tsconfig/node16": "1.0.2",
     "@types/chai": "4.3.0",
     "@types/tap": "15.0.5",
     "@typescript-eslint/eslint-plugin": "5.7.0",
     "@typescript-eslint/parser": "5.7.0",
-    "ava": "^3.15.0",
+    "ava": "3.15.0",
     "chai": "4.3.4",
     "eslint": "8.5.0",
     "eslint-config-prettier": "8.3.0",
