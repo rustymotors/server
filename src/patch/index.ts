@@ -13,7 +13,14 @@ export const CastanetResponse = {
   },
 };
 
+/**
+ * The PatchServer class handles HTTP requests from the client for patching and upgrades
+ * @class
+ */
 export class PatchServer {
+  /**
+   * Starts the HTTP listener
+   */
   start(this: PatchServer): void {
     if (!config.MCOS.SETTINGS.PATCH_LISTEN_HOST) {
       throw new Error("Please set MCOS__SETTINGS__PATCH_LISTEN_HOST");
@@ -38,6 +45,10 @@ export class PatchServer {
   }
   static _instance: PatchServer;
 
+  /**
+   * Return the instance of the PatchServer class
+   * @returns {PatchServer}
+   */
   static getInstance(): PatchServer {
     if (!PatchServer._instance) {
       PatchServer._instance = new PatchServer();
@@ -62,6 +73,12 @@ export class PatchServer {
     return response.end(CastanetResponse.body);
   }
 
+  /**
+   * Routes incomming HTTP requests
+   * @param {IncomingMessage} request 
+   * @param {ServerResponse} response 
+   * @returns {ServerResponse}
+   */
   handleRequest(
     this: PatchServer,
     request: IncomingMessage,

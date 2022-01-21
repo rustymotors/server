@@ -5,6 +5,12 @@ import { ShardServer } from "../shard";
 
 const log = logger.child({ service: "http" });
 
+/**
+ * Routes incomming HTTP requests
+ * @param {IncomingMessage} req 
+ * @param {ServerResponse} res 
+ * @returns {ServerResponse}
+ */
 export function httpListener(req: IncomingMessage, res: ServerResponse): ServerResponse {
   if (
     req.url === "/games/EA_Seattle/MotorCity/UpdateInfo" ||

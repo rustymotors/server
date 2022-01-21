@@ -36,6 +36,10 @@ export class ShardServer {
   private _possibleShards: string[] = [];
   _server: Server;
 
+  /**
+   * Return the instance of the ShardServer class
+   * @returns {ShardServer}
+   */
   static getInstance(): ShardServer {
     if (!ShardServer._instance) {
       ShardServer._instance = new ShardServer();
@@ -234,6 +238,10 @@ export class ShardServer {
     return response
   }
 
+  /**
+   * Start the shard server listener
+   * @returns {void}
+   */
   start(): Server {
     if (!config.MCOS.SETTINGS.SHARD_LISTEN_HOST) {
       throw new Error("Please set MCOS__SETTINGS__SHARD_LISTEN_HOST");

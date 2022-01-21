@@ -5,6 +5,12 @@ import { logger } from "../logger";
 
 const log = logger.child({ service: "ssl" });
 
+/**
+ * Routes incomming SSL requests
+ * @param {IncomingMessage} req 
+ * @param {ServerResponse} res 
+ * @returns {ServerResponse}
+ */
 export function sslListener(req: IncomingMessage, res: ServerResponse): ServerResponse {
   if (req.url && req.url.startsWith("/AuthLogin")) {
     log.debug("ssl routing request to login web server");
