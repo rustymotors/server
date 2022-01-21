@@ -37,7 +37,7 @@ function _sslOptions() {
     });
   } catch (error) {
     throw new Error(
-      `Error loading ssl configuration files: (${error}), server must quit!`
+      `Error loading ssl configuration files: (${String(error)}), server must quit!`
     );
   }
 
@@ -53,8 +53,8 @@ export function startSSLListener(): sslServer {
   try {
     const { SSL_LISTEN_HOST, SSL_EXTERNAL_HOST } = APP_CONFIG.MCOS.SETTINGS;
     const server = createSSLServer(_sslOptions(), sslListener);
-    server.on("tlsClientError", (error) => {
-      log.warn(`[AuthLogin] SSL Socket Client Error: ${error.message}`);
+    server.on("tlsClientError", (error: Error) => {
+      log.warn(`SSL Socket Client Error: ${error.message}`);
     });
     server.listen(443, SSL_LISTEN_HOST, () => {
       log.debug(
@@ -64,7 +64,9 @@ export function startSSLListener(): sslServer {
     });
     return server;
   } catch (err) {
-    const error = err as Error;
-    throw new Error(`${error.message}, ${error.stack}`);
+    if (err instanceof Error) {
+      throw new Error(`Unable to start the SSL listener: ${err.message}, ${err.stack}`);  
+    }
+    throw new Error(`Unknown Error${String(err)}`);
   }
 }

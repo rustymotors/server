@@ -50,7 +50,7 @@ export class ShardServer {
   }
 
   private constructor(config: AppConfiguration) {
-    this._server = createServer(this._handleRequest);
+    this._server = createServer(() => this._handleRequest);
     this.config = config
 
     this._server.on("error", (error: Error) => {
