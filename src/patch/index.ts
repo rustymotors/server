@@ -14,7 +14,7 @@ export const CastanetResponse = {
 };
 
 export class PatchServer {
-  start(this: PatchServer) {
+  start(this: PatchServer): void {
     if (!config.MCOS.SETTINGS.PATCH_LISTEN_HOST) {
       throw new Error("Please set MCOS__SETTINGS__PATCH_LISTEN_HOST");
     }
@@ -35,13 +35,6 @@ export class PatchServer {
 
     log.debug(`Attempting to bind to port ${port}`);
     server.listen(port, host);
-
-    // // Register service with router
-    // RoutingMesh.getInstance().registerServiceWithRouter(
-    //   EServerConnectionName.PATCH,
-    //   host,
-    //   port
-    // );
   }
   static _instance: PatchServer;
 
