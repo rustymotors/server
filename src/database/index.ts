@@ -14,12 +14,20 @@ import {APP_CONFIG} from "../config/appconfig";
 
 const log = logger.child({ service: "mcoserver:DatabaseMgr" });
 
+/**
+ * This class abstracts database methods
+ * @class
+ */
 export class DatabaseManager {
   private static _instance: DatabaseManager;
   private connectionURI: string;
   changes = 0;
   localDB: Database | undefined;
 
+  /**
+   * Return the instance of the DatabaseManager class
+   * @returns {DatabaseManager}
+   */
   public static getInstance(): DatabaseManager {
     if (!DatabaseManager._instance) {
       DatabaseManager._instance = new DatabaseManager();
@@ -28,7 +36,11 @@ export class DatabaseManager {
     return self;
   }
 
-  async init() {
+  /**
+   * Initialize database and set up schemas if needed
+   * @returns {Promise<void}
+   */  
+  async init(): Promise<void> {
     if (typeof this.localDB === "undefined") {
       log.debug(`Initializing the database...`);
 
@@ -158,6 +170,11 @@ export class DatabaseManager {
     this.connectionURI = APP_CONFIG.MCOS.SETTINGS.DATABASE_CONNECTION_URI;
   }
 
+  /**
+   * Locate customer session encryption key in the database
+   * @param {number} customerId 
+   * @returns {SessionRecord}
+   */
   async fetchSessionKeyByCustomerId(
     customerId: number
   ): Promise<SessionRecord> {
@@ -178,7 +195,12 @@ export class DatabaseManager {
     return record as SessionRecord;
   }
 
-  async fetchSessionKeyByConnectionId(
+  /**
+   * Locate customer session encryption key in the database
+   * @param {number} customerId 
+   * @returns {SessionRecord}
+   */
+   async fetchSessionKeyByConnectionId(
     connectionId: string
   ): Promise<SessionRecord> {
     await this.init();
@@ -196,6 +218,14 @@ export class DatabaseManager {
     return record as SessionRecord;
   }
 
+  /**
+   * Create or overwrite a customer's session key record
+   * @param {number} customerId 
+   * @param {string} sessionkey 
+   * @param {string} contextId 
+   * @param {string} connectionId 
+   * @returns {Promise<number}
+   */
   async updateSessionKey(
     customerId: number,
     sessionkey: string,

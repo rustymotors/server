@@ -1359,6 +1359,10 @@ export class MessageNode {
     })}`;
   }
 
+  /**
+   * Returns a formatted representation of the packet as a string
+   * @returns {string}
+   */
   toString(): string {
     return this.dumpPacket();
   }

@@ -8,6 +8,10 @@ import { readFileSync } from "fs";
 
 const log = logger.child({ service: "http" });
 
+/**
+ * Start the HTTP listener
+ * @returns {httpServer}
+ */
 export function startHTTPListener(): httpServer {
   const { HTTP_LISTEN_HOST, HTTP_EXTERNAL_HOST } = APP_CONFIG.MCOS.SETTINGS;
   log.debug(`Attempting to start the http listener on ${HTTP_LISTEN_HOST}:80`);
@@ -19,36 +23,53 @@ export function startHTTPListener(): httpServer {
   });
 }
 
-function _sslOptions() {
+/**
+ * Creates an sslOptions object for use with SSL servers
+ * @returns {{
+  cert: string,
+  honorCipherOrder: boolean,
+  key: string,
+  rejectUnauthorized: boolean
+}}
+ */
+function _sslOptions(): {
+  cert: string,
+  honorCipherOrder: boolean,
+  key: string,
+  rejectUnauthorized: boolean
+} {
   log.debug(`Reading ssl certificate...`);
-
-  let cert;
-  let key;
 
   try {
     const { CERTIFICATE_FILE, PRIVATE_KEY_FILE } = APP_CONFIG.MCOS.CERTIFICATE;
     log.debug(`Loading ${CERTIFICATE_FILE}...`);
-    cert = readFileSync(CERTIFICATE_FILE, {
+    const cert = readFileSync(CERTIFICATE_FILE, {
       encoding: "utf-8",
     });
     log.debug(`Loading ${PRIVATE_KEY_FILE}...`);
-    key = readFileSync(PRIVATE_KEY_FILE, {
+    const key = readFileSync(PRIVATE_KEY_FILE, {
       encoding: "utf-8",
     });
+
+    return {
+      cert,
+      honorCipherOrder: true,
+      key,
+      rejectUnauthorized: false,
+    };
+  
   } catch (error) {
     throw new Error(
       `Error loading ssl configuration files: (${String(error)}), server must quit!`
     );
   }
 
-  return {
-    cert,
-    honorCipherOrder: true,
-    key,
-    rejectUnauthorized: false,
-  };
 }
 
+/**
+ * Starts the SSL listener
+ * @returns {sslServer}
+ */
 export function startSSLListener(): sslServer {
   try {
     const { SSL_LISTEN_HOST, SSL_EXTERNAL_HOST } = APP_CONFIG.MCOS.SETTINGS;
