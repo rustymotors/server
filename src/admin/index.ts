@@ -128,14 +128,14 @@ export class AdminServer {
   }
 
   /**
-   * @return {void}
+   * @return {ServerResponse}
    * @param {import("http").IncomingMessage} request
    * @param {import("http").ServerResponse} response
    */
   public handleRequest(
     request: IncomingMessage,
     response: ServerResponse
-  ): void {
+  ): ServerResponse {
     log.info(
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );
@@ -160,6 +160,7 @@ export class AdminServer {
           return response.end("Jiggawatt!");
         }
     }
+    return response.end()
   }
 
   /**

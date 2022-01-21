@@ -60,25 +60,28 @@ export class PatchServer {
     this: PatchServer,
     request: IncomingMessage,
     response: ServerResponse
-  ): void {
+  ): ServerResponse {
     const responseData = CastanetResponse;
 
     switch (request.url) {
       case "/games/EA_Seattle/MotorCity/UpdateInfo":
       case "/games/EA_Seattle/MotorCity/NPS":
-      case "/games/EA_Seattle/MotorCity/MCO":
+      case "/games/EA_Seattle/MotorCity/MCO": {
         log.debug(
           `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
         );
 
         response.setHeader(responseData.header.type, responseData.header.value);
-        response.end(responseData.body);
-        break;
+        return response.end(responseData.body);
 
-      default:
+      }
+
+      default: {
         response.statusCode = 404;
-        response.end("");
-        break;
+        return response.end("");
+
+      }
     }
+    return response.end()
   }
 }

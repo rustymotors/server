@@ -186,12 +186,11 @@ export class ShardServer {
   }
 
   /**
-   * @return {void}
-   * @memberof ! PatchServer
+   * @return {ServerResponse}
    * @param {import("http").IncomingMessage} request
    * @param {import("http").ServerResponse} response
    */
-  _handleRequest(request: IncomingMessage, response: ServerResponse): void {
+  _handleRequest(request: IncomingMessage, response: ServerResponse): ServerResponse {
     if (request.url === "/cert") {
       response.setHeader(
         "Content-disposition",
@@ -232,6 +231,7 @@ export class ShardServer {
     log.info(
       `Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );
+    return response
   }
 
   start(): Server {

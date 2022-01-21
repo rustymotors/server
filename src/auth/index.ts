@@ -60,12 +60,11 @@ export class AuthLogin {
 
   // File deepcode ignore NoRateLimitingForExpensiveWebOperation: Not using express, unsure how to handle rate limiting on raw http
   /**
-   * @returns {void}
-   * @memberof ! WebServer
+   * @returns {ServerResponse}
    * @param {import("http").IncomingMessage} request
    * @param {import("http").ServerResponse} response
    */
-  handleRequest(request: IncomingMessage, response: ServerResponse): void {
+  handleRequest(request: IncomingMessage, response: ServerResponse): ServerResponse {
     log.info(
       `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );

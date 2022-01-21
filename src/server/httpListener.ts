@@ -5,7 +5,7 @@ import { ShardServer } from "../shard";
 
 const log = logger.child({ service: "http" });
 
-export function httpListener(req: IncomingMessage, res: ServerResponse): void {
+export function httpListener(req: IncomingMessage, res: ServerResponse): ServerResponse {
   if (
     req.url === "/games/EA_Seattle/MotorCity/UpdateInfo" ||
     req.url === "/games/EA_Seattle/MotorCity/NPS" ||
@@ -28,5 +28,5 @@ export function httpListener(req: IncomingMessage, res: ServerResponse): void {
     `Unexpected request for ${req.url} from ${req.socket.remoteAddress}, skipping.`
   );
   res.statusCode = 404;
-  res.end("Not found");
+  return res.end("Not found");
 }
