@@ -48,7 +48,7 @@ export class ShardServer {
       this._handleRequest(request, response);
     });
 
-    this._server.on("error", (error) => {
+    this._server.on("error", (error: Error) => {
       process.exitCode = -1;
       log.error(`Server error: ${error.message}`);
       log.info(`Server shutdown: ${process.exitCode}`);

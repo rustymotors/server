@@ -81,7 +81,7 @@ export class AuthLogin {
    * @param {import("net").Socket} socket
    */
   _socketEventHandler(socket: Socket): void {
-    socket.on("error", (error) => {
+    socket.on("error", (error: Error) => {
       throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`);
     });
   }
