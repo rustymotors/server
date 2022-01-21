@@ -60,6 +60,12 @@ export class PatchServer {
     // Intentionaly empty
   }
 
+  /**
+   * Returns the hard-coded value that tells the client there are no updates or patches
+   * @param {IncomingMessage} request 
+   * @param {ServerResponse} response 
+   * @returns {ServerResponse}
+   */
   castanetResponse(
     request: IncomingMessage,
     response: ServerResponse
