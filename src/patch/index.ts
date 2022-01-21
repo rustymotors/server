@@ -56,32 +56,31 @@ export class PatchServer {
     // Intentionaly empty
   }
 
+  castanetResponse(
+    request: IncomingMessage,
+    response: ServerResponse
+  ): ServerResponse {
+
+    log.debug(
+      `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
+    );
+
+    response.setHeader(CastanetResponse.header.type, CastanetResponse.header.value);
+    return response.end(CastanetResponse.body);
+  }
+
   handleRequest(
     this: PatchServer,
     request: IncomingMessage,
     response: ServerResponse
   ): ServerResponse {
-    const responseData = CastanetResponse;
 
     switch (request.url) {
-      case "/games/EA_Seattle/MotorCity/UpdateInfo":
-      case "/games/EA_Seattle/MotorCity/NPS":
-      case "/games/EA_Seattle/MotorCity/MCO": {
-        log.debug(
-          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
-        );
-
-        response.setHeader(responseData.header.type, responseData.header.value);
-        return response.end(responseData.body);
-
-      }
-
-      default: {
-        response.statusCode = 404;
-        return response.end("");
-
-      }
+      case "/games/EA_Seattle/MotorCity/UpdateInfo": { return this.castanetResponse(request, response) }
+      case "/games/EA_Seattle/MotorCity/NPS": { return this.castanetResponse(request, response) }
+      case "/games/EA_Seattle/MotorCity/MCO": { return this.castanetResponse(request, response) }
     }
-    return response.end()
+    response.statusCode = 404;
+    return response.end("");
   }
 }
