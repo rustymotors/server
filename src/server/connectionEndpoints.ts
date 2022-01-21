@@ -1,4 +1,4 @@
-import config from "../config/appconfig";
+import {APP_CONFIG} from "../config/appconfig";
 import { createServer as createHTTPServer, Server as httpServer } from "http";
 import { createServer as createSSLServer, Server as sslServer } from "https";
 import { logger } from "../logger/index";
@@ -9,7 +9,7 @@ import { readFileSync } from "fs";
 const log = logger.child({ service: "http" });
 
 export function startHTTPListener(): httpServer {
-  const { HTTP_LISTEN_HOST, HTTP_EXTERNAL_HOST } = config.MCOS.SETTINGS;
+  const { HTTP_LISTEN_HOST, HTTP_EXTERNAL_HOST } = APP_CONFIG.MCOS.SETTINGS;
   log.debug(`Attempting to start the http listener on ${HTTP_LISTEN_HOST}:80`);
   return createHTTPServer(httpListener).listen(80, HTTP_LISTEN_HOST, () => {
     log.debug(
@@ -26,7 +26,7 @@ function _sslOptions() {
   let key;
 
   try {
-    const { CERTIFICATE_FILE, PRIVATE_KEY_FILE } = config.MCOS.CERTIFICATE;
+    const { CERTIFICATE_FILE, PRIVATE_KEY_FILE } = APP_CONFIG.MCOS.CERTIFICATE;
     log.debug(`Loading ${CERTIFICATE_FILE}...`);
     cert = readFileSync(CERTIFICATE_FILE, {
       encoding: "utf-8",
@@ -51,7 +51,7 @@ function _sslOptions() {
 
 export function startSSLListener(): sslServer {
   try {
-    const { SSL_LISTEN_HOST, SSL_EXTERNAL_HOST } = config.MCOS.SETTINGS;
+    const { SSL_LISTEN_HOST, SSL_EXTERNAL_HOST } = APP_CONFIG.MCOS.SETTINGS;
     const server = createSSLServer(_sslOptions(), sslListener);
     server.on("tlsClientError", (error) => {
       log.warn(`[AuthLogin] SSL Socket Client Error: ${error.message}`);

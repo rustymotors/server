@@ -10,7 +10,7 @@ import * as sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
 import type { SessionRecord } from "../types/index";
 import { logger } from "../logger/index";
-import config from "../config/appconfig";
+import {APP_CONFIG} from "../config/appconfig";
 
 const log = logger.child({ service: "mcoserver:DatabaseMgr" });
 
@@ -152,10 +152,10 @@ export class DatabaseManager {
   }
 
   private constructor() {
-    if (!config.MCOS.SETTINGS.DATABASE_CONNECTION_URI) {
+    if (!APP_CONFIG.MCOS.SETTINGS.DATABASE_CONNECTION_URI) {
       throw new Error("Please set MCOS__SETTINGS__DATABASE_CONNECTION_URI");
     }
-    this.connectionURI = config.MCOS.SETTINGS.DATABASE_CONNECTION_URI;
+    this.connectionURI = APP_CONFIG.MCOS.SETTINGS.DATABASE_CONNECTION_URI;
   }
 
   async fetchSessionKeyByCustomerId(

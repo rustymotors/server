@@ -6,13 +6,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import config from "../config/appconfig";
 import { logger } from "../logger/index";
 import { readFileSync } from "fs";
 // import { EServerConnectionName, RoutingMesh } from "../router";
 import { ShardEntry } from "./shard-entry";
 import { createServer, Server } from "https";
 import { IncomingMessage, ServerResponse } from "http";
+import type { AppConfiguration } from "../config/appconfig";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
@@ -35,22 +35,23 @@ export class ShardServer {
   static _instance: ShardServer;
   private _possibleShards: string[] = [];
   _server: Server;
+  config: AppConfiguration;
 
   /**
    * Return the instance of the ShardServer class
+   * @param {AppConfiguration} config
    * @returns {ShardServer}
    */
-  static getInstance(): ShardServer {
+  static getInstance(config: AppConfiguration): ShardServer {
     if (!ShardServer._instance) {
-      ShardServer._instance = new ShardServer();
+      ShardServer._instance = new ShardServer(config);
     }
     return ShardServer._instance;
   }
 
-  private constructor() {
-    this._server = createServer((request, response) => {
-      this._handleRequest(request, response);
-    });
+  private constructor(config: AppConfiguration) {
+    this._server = createServer(this._handleRequest);
+    this.config = config
 
     this._server.on("error", (error: Error) => {
       process.exitCode = -1;
@@ -67,10 +68,10 @@ export class ShardServer {
    * @memberof! PatchServer
    */
   _generateShardList(): string {
-    if (!config.MCOS.SETTINGS.SHARD_EXTERNAL_HOST) {
+    if (!this.config.MCOS.SETTINGS.SHARD_EXTERNAL_HOST) {
       throw new Error(`Please set MCOS__SETTINGS__SHARD_EXTERNAL_HOST`);
     }
-    const shardHost = config.MCOS.SETTINGS.SHARD_EXTERNAL_HOST;
+    const shardHost = this.config.MCOS.SETTINGS.SHARD_EXTERNAL_HOST;
     const shardClockTower = new ShardEntry(
       "The Clocktower",
       "The Clocktower",
@@ -124,10 +125,10 @@ export class ShardServer {
    * @memberof! WebServer
    */
   _handleGetCert(): string {
-    if (!config.MCOS.CERTIFICATE.CERTIFICATE_FILE) {
+    if (!this.config.MCOS.CERTIFICATE.CERTIFICATE_FILE) {
       throw new Error("Pleas set MCOS__CERTIFICATE__CERTIFICATE_FILE");
     }
-    return readFileSync(config.MCOS.CERTIFICATE.CERTIFICATE_FILE).toString();
+    return readFileSync(this.config.MCOS.CERTIFICATE.CERTIFICATE_FILE).toString();
   }
 
   /**
@@ -136,10 +137,10 @@ export class ShardServer {
    * @memberof! WebServer
    */
   _handleGetKey(): string {
-    if (!config.MCOS.CERTIFICATE.PUBLIC_KEY_FILE) {
+    if (!this.config.MCOS.CERTIFICATE.PUBLIC_KEY_FILE) {
       throw new Error("Please set MCOS__CERTIFICATE__PUBLIC_KEY_FILE");
     }
-    return readFileSync(config.MCOS.CERTIFICATE.PUBLIC_KEY_FILE).toString();
+    return readFileSync(this.config.MCOS.CERTIFICATE.PUBLIC_KEY_FILE).toString();
   }
 
   /**
@@ -148,18 +149,18 @@ export class ShardServer {
    * @memberof! WebServer
    */
   _handleGetRegistry(): string {
-    if (!config.MCOS.SETTINGS.AUTH_EXTERNAL_HOST) {
+    if (!this.config.MCOS.SETTINGS.AUTH_EXTERNAL_HOST) {
       throw new Error("Please set MCOS__SETTINGS__AUTH_EXTERNAL_HOST");
     }
-    if (!config.MCOS.SETTINGS.SHARD_EXTERNAL_HOST) {
+    if (!this.config.MCOS.SETTINGS.SHARD_EXTERNAL_HOST) {
       throw new Error("Please set MCOS__SETTINGS__SHARD_EXTERNAL_HOST");
     }
-    if (!config.MCOS.SETTINGS.PATCH_EXTERNAL_HOST) {
+    if (!this.config.MCOS.SETTINGS.PATCH_EXTERNAL_HOST) {
       throw new Error("Please set MCOS__SETTINGS__PATCH_EXTERNAL_HOST");
     }
-    const patchHost = config.MCOS.SETTINGS.PATCH_EXTERNAL_HOST;
-    const authHost = config.MCOS.SETTINGS.AUTH_EXTERNAL_HOST;
-    const shardHost = config.MCOS.SETTINGS.SHARD_EXTERNAL_HOST;
+    const patchHost = this.config.MCOS.SETTINGS.PATCH_EXTERNAL_HOST;
+    const authHost = this.config.MCOS.SETTINGS.AUTH_EXTERNAL_HOST;
+    const shardHost = this.config.MCOS.SETTINGS.SHARD_EXTERNAL_HOST;
     return `Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\EACom\\AuthAuth]
@@ -243,22 +244,15 @@ export class ShardServer {
    * @returns {void}
    */
   start(): Server {
-    if (!config.MCOS.SETTINGS.SHARD_LISTEN_HOST) {
+    if (!this.config.MCOS.SETTINGS.SHARD_LISTEN_HOST) {
       throw new Error("Please set MCOS__SETTINGS__SHARD_LISTEN_HOST");
     }
-    const host = config.MCOS.SETTINGS.SHARD_LISTEN_HOST;
+    const host = this.config.MCOS.SETTINGS.SHARD_LISTEN_HOST;
     const port = 80;
     log.debug(`Attempting to bind to port ${port}`);
     return this._server.listen({ port, host }, () => {
       log.debug(`port ${port} listening`);
       log.info("Shard server is listening...");
-
-      // // Register service with router
-      // RoutingMesh.getInstance().registerServiceWithRouter(
-      //   EServerConnectionName.SHARD,
-      //   host,
-      //   port
-      // );
     });
   }
 }

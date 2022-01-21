@@ -1,7 +1,7 @@
 import { logger } from "../logger/index";
 import { createServer, IncomingMessage, ServerResponse } from "http";
 // import { RoutingMesh, EServerConnectionName } from "../router";
-import config from "../config/appconfig";
+import {AppConfiguration} from "../config/appconfig";
 
 const log = logger.child({ service: "MCOServer:Patch" });
 
@@ -22,10 +22,10 @@ export class PatchServer {
    * Starts the HTTP listener
    */
   start(this: PatchServer): void {
-    if (!config.MCOS.SETTINGS.PATCH_LISTEN_HOST) {
+    if (!this.config.MCOS.SETTINGS.PATCH_LISTEN_HOST) {
       throw new Error("Please set MCOS__SETTINGS__PATCH_LISTEN_HOST");
     }
-    const host = config.MCOS.SETTINGS.PATCH_LISTEN_HOST;
+    const host = this.config.MCOS.SETTINGS.PATCH_LISTEN_HOST;
     const port = 80;
 
     const server = createServer();
@@ -44,20 +44,21 @@ export class PatchServer {
     server.listen(port, host);
   }
   static _instance: PatchServer;
+  config: AppConfiguration
 
   /**
    * Return the instance of the PatchServer class
    * @returns {PatchServer}
    */
-  static getInstance(): PatchServer {
+  static getInstance(config: AppConfiguration): PatchServer {
     if (!PatchServer._instance) {
-      PatchServer._instance = new PatchServer();
+      PatchServer._instance = new PatchServer(config);
     }
     return PatchServer._instance;
   }
 
-  private constructor() {
-    // Intentionaly empty
+  private constructor(config: AppConfiguration) {
+    this.config = config
   }
 
   /**

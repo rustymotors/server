@@ -1,3 +1,4 @@
+import {APP_CONFIG} from "../config/appconfig";
 import { IncomingMessage, ServerResponse } from "http";
 import { logger } from "../logger";
 import { PatchServer } from "../patch";
@@ -18,7 +19,7 @@ export function httpListener(req: IncomingMessage, res: ServerResponse): ServerR
     req.url === "/games/EA_Seattle/MotorCity/MCO"
   ) {
     log.debug("http routing request to patch server");
-    return PatchServer.getInstance().handleRequest(req, res);
+    return PatchServer.getInstance(APP_CONFIG).handleRequest(req, res);
   }
   if (
     req.url === "/cert" ||
@@ -27,7 +28,7 @@ export function httpListener(req: IncomingMessage, res: ServerResponse): ServerR
     req.url === "/ShardList/"
   ) {
     log.debug("http routing request to shard server");
-    return ShardServer.getInstance()._handleRequest(req, res);
+    return ShardServer.getInstance(APP_CONFIG)._handleRequest(req, res);
   }
 
   log.warn(
