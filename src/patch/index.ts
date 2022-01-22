@@ -1,7 +1,7 @@
 import { logger } from "../logger/index";
 import { createServer, IncomingMessage, ServerResponse } from "http";
 // import { RoutingMesh, EServerConnectionName } from "../router";
-import config from "../config/appconfig";
+import {AppConfiguration} from "../config/appconfig";
 
 const log = logger.child({ service: "MCOServer:Patch" });
 
@@ -13,12 +13,19 @@ export const CastanetResponse = {
   },
 };
 
+/**
+ * The PatchServer class handles HTTP requests from the client for patching and upgrades
+ * @class
+ */
 export class PatchServer {
-  start(this: PatchServer) {
-    if (!config.MCOS.SETTINGS.PATCH_LISTEN_HOST) {
+  /**
+   * Starts the HTTP listener
+   */
+  start(this: PatchServer): void {
+    if (!this.config.MCOS.SETTINGS.PATCH_LISTEN_HOST) {
       throw new Error("Please set MCOS__SETTINGS__PATCH_LISTEN_HOST");
     }
-    const host = config.MCOS.SETTINGS.PATCH_LISTEN_HOST;
+    const host = this.config.MCOS.SETTINGS.PATCH_LISTEN_HOST;
     const port = 80;
 
     const server = createServer();
@@ -35,50 +42,62 @@ export class PatchServer {
 
     log.debug(`Attempting to bind to port ${port}`);
     server.listen(port, host);
-
-    // // Register service with router
-    // RoutingMesh.getInstance().registerServiceWithRouter(
-    //   EServerConnectionName.PATCH,
-    //   host,
-    //   port
-    // );
   }
   static _instance: PatchServer;
+  config: AppConfiguration
 
-  static getInstance(): PatchServer {
+  /**
+   * Return the instance of the PatchServer class
+   * @returns {PatchServer}
+   */
+  static getInstance(config: AppConfiguration): PatchServer {
     if (!PatchServer._instance) {
-      PatchServer._instance = new PatchServer();
+      PatchServer._instance = new PatchServer(config);
     }
     return PatchServer._instance;
   }
 
-  private constructor() {
-    // Intentionaly empty
+  private constructor(config: AppConfiguration) {
+    this.config = config
   }
 
+  /**
+   * Returns the hard-coded value that tells the client there are no updates or patches
+   * @param {IncomingMessage} request 
+   * @param {ServerResponse} response 
+   * @returns {ServerResponse}
+   */
+  castanetResponse(
+    request: IncomingMessage,
+    response: ServerResponse
+  ): ServerResponse {
+
+    log.debug(
+      `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
+    );
+
+    response.setHeader(CastanetResponse.header.type, CastanetResponse.header.value);
+    return response.end(CastanetResponse.body);
+  }
+
+  /**
+   * Routes incomming HTTP requests
+   * @param {IncomingMessage} request 
+   * @param {ServerResponse} response 
+   * @returns {ServerResponse}
+   */
   handleRequest(
     this: PatchServer,
     request: IncomingMessage,
     response: ServerResponse
-  ): void {
-    const responseData = CastanetResponse;
+  ): ServerResponse {
 
     switch (request.url) {
-      case "/games/EA_Seattle/MotorCity/UpdateInfo":
-      case "/games/EA_Seattle/MotorCity/NPS":
-      case "/games/EA_Seattle/MotorCity/MCO":
-        log.debug(
-          `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
-        );
-
-        response.setHeader(responseData.header.type, responseData.header.value);
-        response.end(responseData.body);
-        break;
-
-      default:
-        response.statusCode = 404;
-        response.end("");
-        break;
+      case "/games/EA_Seattle/MotorCity/UpdateInfo": { return this.castanetResponse(request, response) }
+      case "/games/EA_Seattle/MotorCity/NPS": { return this.castanetResponse(request, response) }
+      case "/games/EA_Seattle/MotorCity/MCO": { return this.castanetResponse(request, response) }
     }
+    response.statusCode = 404;
+    return response.end("");
   }
 }

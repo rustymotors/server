@@ -28,16 +28,14 @@ test("ConnectionObj", (t) => {
 
 
 test("ConnectionObj cross-comms - Connection one is not the same id as connection two", (t) => {
-  /** @type {ConnectionObj} */
-  let testConn1: TCPConnection;
-  /** @type {ConnectionObj} */
-  let testConn2: TCPConnection;
 
-  testConn1 = new TCPConnection("def", SocketFactory.createSocket());
+  /** @type {ConnectionObj} */
+  const testConn1 = new TCPConnection("def", SocketFactory.createSocket());
   testConn1.setManager(ConnectionManager.getInstance());
   testConn1.setEncryptionManager(new EncryptionManager());
 
-  testConn2 = new TCPConnection("ghi", SocketFactory.createSocket());
+  /** @type {ConnectionObj} */
+  const testConn2 = new TCPConnection("ghi", SocketFactory.createSocket());
   testConn2.setManager(ConnectionManager.getInstance());
   testConn2.setEncryptionManager(new EncryptionManager());
 
@@ -50,10 +48,6 @@ test("ConnectionObj cross-comms - Connection one is not the same id as connectio
 });
 
 test("ConnectionObj cross-comms - Connection Two can decipher Connection One", (t) => {
-  /** @type {ConnectionObj} */
-  let testConn1: TCPConnection;
-  /** @type {ConnectionObj} */
-  let testConn2: TCPConnection;
 
   const plainText1 = Buffer.from(
     "I'm a very a secret message. Please don't decode me!"
@@ -66,11 +60,13 @@ test("ConnectionObj cross-comms - Connection Two can decipher Connection One", (
     0x79, 0x70, 0xbf, 0x45,
   ]);
 
-  testConn1 = new TCPConnection("def", SocketFactory.createSocket());
+  /** @type {ConnectionObj} */
+  const testConn1 = new TCPConnection("def", SocketFactory.createSocket());
   testConn1.setManager(ConnectionManager.getInstance());
   testConn1.setEncryptionManager(new EncryptionManager());
 
-  testConn2 = new TCPConnection("ghi", SocketFactory.createSocket());
+  /** @type {ConnectionObj} */
+  const testConn2 = new TCPConnection("ghi", SocketFactory.createSocket());
   testConn2.setManager(ConnectionManager.getInstance());
   testConn2.setEncryptionManager(new EncryptionManager());
 

@@ -9,13 +9,13 @@
       "version": "3.1.0-beta1",
       "license": "MPL-2.0",
       "dependencies": {
-        "@types/node": "16.11.21",
-        "@types/pino": "7.0.4",
         "pino": "next"
       },
       "devDependencies": {
         "@tsconfig/node16": "1.0.2",
         "@types/chai": "4.3.0",
+        "@types/node": "^17.0.10",
+        "@types/pino": "^7.0.5",
         "@types/tap": "15.0.5",
         "@typescript-eslint/eslint-plugin": "5.10.0",
         "@typescript-eslint/parser": "5.10.0",
@@ -34,6 +34,7 @@
         "testdouble": "3.16.4",
         "testdouble-chai": "0.5.0",
         "ts-jest": "27.1.3",
+        "ts-node": "^10.4.0",
         "typescript": "4.5.4"
       },
       "engines": {
@@ -578,8 +579,6 @@
       "resolved": "https://registry.npmjs.org/@cspotcode/source-map-consumer/-/source-map-consumer-0.8.0.tgz",
       "integrity": "sha512-41qniHzTU8yAGbCp04ohlmSrZf8bkf/iJsl3V0dRGsQN/5GFfx+LbCSsCpp2gqrqjTVg/K6O8ycoV35JIwAzAg==",
       "dev": true,
-      "optional": true,
-      "peer": true,
       "engines": {
         "node": ">= 12"
       }
@@ -589,8 +588,6 @@
       "resolved": "https://registry.npmjs.org/@cspotcode/source-map-support/-/source-map-support-0.7.0.tgz",
       "integrity": "sha512-X4xqRHqN8ACt2aHVe51OxeA2HjbcL4MqFqXkrmQszJ1NOUuUu5u6Vqx/0lZSVNku7velL5FC/s5uEAj1lsBMhA==",
       "dev": true,
-      "optional": true,
-      "peer": true,
       "dependencies": {
         "@cspotcode/source-map-consumer": "0.8.0"
       },
@@ -1474,25 +1471,19 @@
       "version": "1.0.8",
       "resolved": "https://registry.npmjs.org/@tsconfig/node10/-/node10-1.0.8.tgz",
       "integrity": "sha512-6XFfSQmMgq0CFLY1MslA/CPUfhIL919M1rMsa5lP2P097N2Wd1sSX0tx1u4olM16fLNhtHZpRhedZJphNJqmZg==",
-      "dev": true,
-      "optional": true,
-      "peer": true
+      "dev": true
     },
     "node_modules/@tsconfig/node12": {
       "version": "1.0.9",
       "resolved": "https://registry.npmjs.org/@tsconfig/node12/-/node12-1.0.9.tgz",
       "integrity": "sha512-/yBMcem+fbvhSREH+s14YJi18sp7J9jpuhYByADT2rypfajMZZN4WQ6zBGgBKp53NKmqI36wFYDb3yaMPurITw==",
-      "dev": true,
-      "optional": true,
-      "peer": true
+      "dev": true
     },
     "node_modules/@tsconfig/node14": {
       "version": "1.0.1",
       "resolved": "https://registry.npmjs.org/@tsconfig/node14/-/node14-1.0.1.tgz",
       "integrity": "sha512-509r2+yARFfHHE7T6Puu2jjkoycftovhXRqW328PDXTVGKihlb1P8Z9mMZH04ebyajfRY7dedfGynlrFHJUQCg==",
-      "dev": true,
-      "optional": true,
-      "peer": true
+      "dev": true
     },
     "node_modules/@tsconfig/node16": {
       "version": "1.0.2",
@@ -1598,9 +1589,10 @@
       "dev": true
     },
     "node_modules/@types/node": {
-      "version": "16.11.21",
-      "resolved": "https://registry.npmjs.org/@types/node/-/node-16.11.21.tgz",
-      "integrity": "sha512-Pf8M1XD9i1ksZEcCP8vuSNwooJ/bZapNmIzpmsMaL+jMI+8mEYU3PKvs+xDNuQcJWF/x24WzY4qxLtB0zNow9A=="
+      "version": "17.0.10",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-17.0.10.tgz",
+      "integrity": "sha512-S/3xB4KzyFxYGCppyDt68yzBU9ysL88lSdIah4D6cptdcltc4NCPCAMc0+PCpg/lLIyC7IPvj2Z52OJWeIUkog==",
+      "dev": true
     },
     "node_modules/@types/normalize-package-data": {
       "version": "2.4.1",
@@ -1609,9 +1601,11 @@
       "dev": true
     },
     "node_modules/@types/pino": {
-      "version": "7.0.4",
-      "resolved": "https://registry.npmjs.org/@types/pino/-/pino-7.0.4.tgz",
-      "integrity": "sha512-yKw1UbZOTe7vP1xMQT+oz3FexwgIpBTrM+AC62vWgAkNRULgLTJWfYX+H5/sKPm8VXFbIcXkC3VZPyuaNioZFg==",
+      "version": "7.0.5",
+      "resolved": "https://registry.npmjs.org/@types/pino/-/pino-7.0.5.tgz",
+      "integrity": "sha512-wKoab31pknvILkxAF8ss+v9iNyhw5Iu/0jLtRkUD74cNfOOLJNnqfFKAv0r7wVaTQxRZtWrMpGfShwwBjOcgcg==",
+      "deprecated": "This is a stub types definition. pino provides its own type definitions, so you do not need this installed.",
+      "dev": true,
       "dependencies": {
         "pino": "*"
       }
@@ -2137,9 +2131,7 @@
       "version": "4.1.3",
       "resolved": "https://registry.npmjs.org/arg/-/arg-4.1.3.tgz",
       "integrity": "sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==",
-      "dev": true,
-      "optional": true,
-      "peer": true
+      "dev": true
     },
     "node_modules/argparse": {
       "version": "2.0.1",
@@ -3574,9 +3566,7 @@
       "version": "1.1.1",
       "resolved": "https://registry.npmjs.org/create-require/-/create-require-1.1.1.tgz",
       "integrity": "sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==",
-      "dev": true,
-      "optional": true,
-      "peer": true
+      "dev": true
     },
     "node_modules/cross-spawn": {
       "version": "7.0.3",
@@ -14033,8 +14023,6 @@
       "resolved": "https://registry.npmjs.org/ts-node/-/ts-node-10.4.0.tgz",
       "integrity": "sha512-g0FlPvvCXSIO1JDF6S232P5jPYqBkRL9qly81ZgAOSU7rwI0stphCgd2kLiCrU9DjQCrJMWEqcNSjQL02s6d8A==",
       "dev": true,
-      "optional": true,
-      "peer": true,
       "dependencies": {
         "@cspotcode/source-map-support": "0.7.0",
         "@tsconfig/node10": "^1.0.7",
@@ -14076,8 +14064,6 @@
       "resolved": "https://registry.npmjs.org/acorn-walk/-/acorn-walk-8.2.0.tgz",
       "integrity": "sha512-k+iyHEuPgSw6SbuDpGQM+06HQUa04DZ3o+F6CSzXMvvI5KMvnaEqXe+YVe555R9nn6GPt404fos4wcgpw12SDA==",
       "dev": true,
-      "optional": true,
-      "peer": true,
       "engines": {
         "node": ">=0.4.0"
       }
@@ -14933,8 +14919,6 @@
       "resolved": "https://registry.npmjs.org/yn/-/yn-3.1.1.tgz",
       "integrity": "sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==",
       "dev": true,
-      "optional": true,
-      "peer": true,
       "engines": {
         "node": ">=6"
       }
@@ -15359,17 +15343,13 @@
       "version": "0.8.0",
       "resolved": "https://registry.npmjs.org/@cspotcode/source-map-consumer/-/source-map-consumer-0.8.0.tgz",
       "integrity": "sha512-41qniHzTU8yAGbCp04ohlmSrZf8bkf/iJsl3V0dRGsQN/5GFfx+LbCSsCpp2gqrqjTVg/K6O8ycoV35JIwAzAg==",
-      "dev": true,
-      "optional": true,
-      "peer": true
+      "dev": true
     },
     "@cspotcode/source-map-support": {
       "version": "0.7.0",
       "resolved": "https://registry.npmjs.org/@cspotcode/source-map-support/-/source-map-support-0.7.0.tgz",
       "integrity": "sha512-X4xqRHqN8ACt2aHVe51OxeA2HjbcL4MqFqXkrmQszJ1NOUuUu5u6Vqx/0lZSVNku7velL5FC/s5uEAj1lsBMhA==",
       "dev": true,
-      "optional": true,
-      "peer": true,
       "requires": {
         "@cspotcode/source-map-consumer": "0.8.0"
       }
@@ -16052,25 +16032,19 @@
       "version": "1.0.8",
       "resolved": "https://registry.npmjs.org/@tsconfig/node10/-/node10-1.0.8.tgz",
       "integrity": "sha512-6XFfSQmMgq0CFLY1MslA/CPUfhIL919M1rMsa5lP2P097N2Wd1sSX0tx1u4olM16fLNhtHZpRhedZJphNJqmZg==",
-      "dev": true,
-      "optional": true,
-      "peer": true
+      "dev": true
     },
     "@tsconfig/node12": {
       "version": "1.0.9",
       "resolved": "https://registry.npmjs.org/@tsconfig/node12/-/node12-1.0.9.tgz",
       "integrity": "sha512-/yBMcem+fbvhSREH+s14YJi18sp7J9jpuhYByADT2rypfajMZZN4WQ6zBGgBKp53NKmqI36wFYDb3yaMPurITw==",
-      "dev": true,
-      "optional": true,
-      "peer": true
+      "dev": true
     },
     "@tsconfig/node14": {
       "version": "1.0.1",
       "resolved": "https://registry.npmjs.org/@tsconfig/node14/-/node14-1.0.1.tgz",
       "integrity": "sha512-509r2+yARFfHHE7T6Puu2jjkoycftovhXRqW328PDXTVGKihlb1P8Z9mMZH04ebyajfRY7dedfGynlrFHJUQCg==",
-      "dev": true,
-      "optional": true,
-      "peer": true
+      "dev": true
     },
     "@tsconfig/node16": {
       "version": "1.0.2",
@@ -16176,9 +16150,10 @@
       "dev": true
     },
     "@types/node": {
-      "version": "16.11.21",
-      "resolved": "https://registry.npmjs.org/@types/node/-/node-16.11.21.tgz",
-      "integrity": "sha512-Pf8M1XD9i1ksZEcCP8vuSNwooJ/bZapNmIzpmsMaL+jMI+8mEYU3PKvs+xDNuQcJWF/x24WzY4qxLtB0zNow9A=="
+      "version": "17.0.10",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-17.0.10.tgz",
+      "integrity": "sha512-S/3xB4KzyFxYGCppyDt68yzBU9ysL88lSdIah4D6cptdcltc4NCPCAMc0+PCpg/lLIyC7IPvj2Z52OJWeIUkog==",
+      "dev": true
     },
     "@types/normalize-package-data": {
       "version": "2.4.1",
@@ -16187,9 +16162,10 @@
       "dev": true
     },
     "@types/pino": {
-      "version": "7.0.4",
-      "resolved": "https://registry.npmjs.org/@types/pino/-/pino-7.0.4.tgz",
-      "integrity": "sha512-yKw1UbZOTe7vP1xMQT+oz3FexwgIpBTrM+AC62vWgAkNRULgLTJWfYX+H5/sKPm8VXFbIcXkC3VZPyuaNioZFg==",
+      "version": "7.0.5",
+      "resolved": "https://registry.npmjs.org/@types/pino/-/pino-7.0.5.tgz",
+      "integrity": "sha512-wKoab31pknvILkxAF8ss+v9iNyhw5Iu/0jLtRkUD74cNfOOLJNnqfFKAv0r7wVaTQxRZtWrMpGfShwwBjOcgcg==",
+      "dev": true,
       "requires": {
         "pino": "*"
       }
@@ -16570,9 +16546,7 @@
       "version": "4.1.3",
       "resolved": "https://registry.npmjs.org/arg/-/arg-4.1.3.tgz",
       "integrity": "sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==",
-      "dev": true,
-      "optional": true,
-      "peer": true
+      "dev": true
     },
     "argparse": {
       "version": "2.0.1",
@@ -17675,9 +17649,7 @@
       "version": "1.1.1",
       "resolved": "https://registry.npmjs.org/create-require/-/create-require-1.1.1.tgz",
       "integrity": "sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==",
-      "dev": true,
-      "optional": true,
-      "peer": true
+      "dev": true
     },
     "cross-spawn": {
       "version": "7.0.3",
@@ -25383,8 +25355,6 @@
       "resolved": "https://registry.npmjs.org/ts-node/-/ts-node-10.4.0.tgz",
       "integrity": "sha512-g0FlPvvCXSIO1JDF6S232P5jPYqBkRL9qly81ZgAOSU7rwI0stphCgd2kLiCrU9DjQCrJMWEqcNSjQL02s6d8A==",
       "dev": true,
-      "optional": true,
-      "peer": true,
       "requires": {
         "@cspotcode/source-map-support": "0.7.0",
         "@tsconfig/node10": "^1.0.7",
@@ -25404,9 +25374,7 @@
           "version": "8.2.0",
           "resolved": "https://registry.npmjs.org/acorn-walk/-/acorn-walk-8.2.0.tgz",
           "integrity": "sha512-k+iyHEuPgSw6SbuDpGQM+06HQUa04DZ3o+F6CSzXMvvI5KMvnaEqXe+YVe555R9nn6GPt404fos4wcgpw12SDA==",
-          "dev": true,
-          "optional": true,
-          "peer": true
+          "dev": true
         }
       }
     },
@@ -26064,9 +26032,7 @@
       "version": "3.1.1",
       "resolved": "https://registry.npmjs.org/yn/-/yn-3.1.1.tgz",
       "integrity": "sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==",
-      "dev": true,
-      "optional": true,
-      "peer": true
+      "dev": true
     },
     "yocto-queue": {
       "version": "0.1.0",

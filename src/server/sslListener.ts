@@ -5,7 +5,13 @@ import { logger } from "../logger";
 
 const log = logger.child({ service: "ssl" });
 
-export function sslListener(req: IncomingMessage, res: ServerResponse): void {
+/**
+ * Routes incomming SSL requests
+ * @param {IncomingMessage} req 
+ * @param {ServerResponse} res 
+ * @returns {ServerResponse}
+ */
+export function sslListener(req: IncomingMessage, res: ServerResponse): ServerResponse {
   if (req.url && req.url.startsWith("/AuthLogin")) {
     log.debug("ssl routing request to login web server");
     return AuthLogin.getInstance().handleRequest(req, res);
@@ -25,5 +31,5 @@ export function sslListener(req: IncomingMessage, res: ServerResponse): void {
     `Unexpected request for ${req.url} from ${req.socket.remoteAddress}, skipping.`
   );
   res.statusCode = 404;
-  res.end("Not found");
+  return res.end("Not found");
 }

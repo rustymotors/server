@@ -1,5 +1,4 @@
 *.env
-.vscode
 logs
 coverage
 *.log
@@ -8,7 +7,7 @@ coverage
 test-reports
 data/sessions.db
 junit
-built
+dist
 *.sqlite
 junit.xml
 .dccache
