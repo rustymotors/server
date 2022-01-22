@@ -23,7 +23,7 @@ const testConfig: AppConfiguration = {
       SSL_LISTEN_HOST: "",
       SSL_EXTERNAL_HOST: "",
       SHARD_LISTEN_HOST: "",
-      SHARD_EXTERNAL_HOST: "",
+      SHARD_EXTERNAL_HOST: "localhost",
       AUTH_LISTEN_HOST: "",
       AUTH_EXTERNAL_HOST: "",
       PATCH_LISTEN_HOST: "",
