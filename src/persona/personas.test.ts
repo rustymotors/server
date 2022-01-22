@@ -1,4 +1,5 @@
-import { fetchPersonas } from "./index";
+import { createEmptyNPSMessage } from "../factories/npsMessageFactory";
+import { fetchPersonas, handleSelectGamePersona } from "./index";
 
 describe('fetchPersonas()', () => {
     test('should return multiple persona records', () => {
@@ -9,5 +10,18 @@ describe('fetchPersonas()', () => {
 
         // Assert
         expect(personaList.length).toBeGreaterThan(0)
+    })
+})
+
+describe('handleSelectGamePersona()', () => {
+    test('when passed an NPSMessage, should return an NPSMessage with the msgNo set to 0x2_07', async () => {
+        // Arrange
+        const inboundMessage = createEmptyNPSMessage({})
+
+        // Act
+        const outboundMessage = await handleSelectGamePersona(inboundMessage)
+
+        // Assert
+        expect(outboundMessage.msgNo).toEqual(0x2_07)
     })
 })

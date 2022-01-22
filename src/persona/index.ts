@@ -37,7 +37,7 @@ export function generateNameBuffer(name: string, size: number, encoding: BufferE
  * Return a list of all personas
  * @returns {PersonaRecord[]}
  */
-export function fetchPersonas(): PersonaRecord[] {  
+export function fetchPersonas(): PersonaRecord[] {
   const personaList: PersonaRecord[] = [
     {
       customerId: 2_868_969_472,
@@ -68,6 +68,45 @@ export function fetchPersonas(): PersonaRecord[] {
 }
 
 /**
+   * Selects a game persona and marks it as in use
+   * @param {NPSMessage} requestPacket
+   * @returns {Promise<NPSMessage>}
+   */
+export async function handleSelectGamePersona(requestPacket: NPSMessage): Promise<NPSMessage> {
+  log.debug("_npsSelectGamePersona...");
+  log.debug(
+    `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
+      NPSMsg: requestPacket.toJSON(),
+    })}`
+  );
+
+  requestPacket.dumpPacket();
+
+  // Create the packet content
+  const packetContent = Buffer.alloc(251);
+
+  // Build the packet
+  // Response Code
+  // 207 = success
+  const responsePacket = new NPSMessage(EMessageDirection.SENT);
+  responsePacket.msgNo = 0x2_07;
+  responsePacket.setContent(packetContent);
+  log.debug(
+    `NPSMsg response object from _npsSelectGamePersona',
+    ${JSON.stringify({
+      NPSMsg: responsePacket.toJSON(),
+    })}`
+  );
+
+  responsePacket.dumpPacket();
+
+  log.debug(
+    `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
+  );
+  return Promise.resolve(responsePacket);
+}
+
+/**
  * @class
  * @property {IPersonaRecord[]} personaList
  */
@@ -86,45 +125,7 @@ export class PersonaServer {
   }
 
 
-  /**
-   * Selects a game persona and marks it as in use
-   */
-  async handleSelectGamePersona(data: Buffer): Promise<NPSMessage> {
-    log.debug("_npsSelectGamePersona...");
-    const requestPacket = new NPSMessage(
-      EMessageDirection.RECEIVED
-    ).deserialize(data);
-    log.debug(
-      `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
-        NPSMsg: requestPacket.toJSON(),
-      })}`
-    );
 
-    requestPacket.dumpPacket();
-
-    // Create the packet content
-    const packetContent = Buffer.alloc(251);
-
-    // Build the packet
-    // Response Code
-    // 207 = success
-    const responsePacket = new NPSMessage(EMessageDirection.SENT);
-    responsePacket.msgNo = 0x2_07;
-    responsePacket.setContent(packetContent);
-    log.debug(
-      `NPSMsg response object from _npsSelectGamePersona',
-      ${JSON.stringify({
-        NPSMsg: responsePacket.toJSON(),
-      })}`
-    );
-
-    responsePacket.dumpPacket();
-
-    log.debug(
-      `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
-    );
-    return Promise.resolve(responsePacket);
-  }
 
   /**
    * Create a new game persona record
@@ -455,11 +456,16 @@ export class PersonaServer {
     let responsePacket;
 
     switch (requestCode) {
-      case "503":
+      case "503": {
+        const requestPacket = new NPSMessage(
+          EMessageDirection.RECEIVED
+        ).deserialize(data);
         // NPS_REGISTER_GAME_LOGIN = 0x503
-        responsePacket = await this.handleSelectGamePersona(data);
+        responsePacket = await handleSelectGamePersona(requestPacket);
         this.sendPacket(sock, responsePacket);
         return updatedConnection;
+
+      }
 
       case "507":
         // NPS_NEW_GAME_ACCOUNT == 0x507
