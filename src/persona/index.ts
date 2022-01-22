@@ -405,8 +405,6 @@ export class PersonaServer {
       `${personas.length} personas found for ${customerId.readUInt32BE(0)}`
     );
 
-    let responsePacket;
-
     const personaMapsMessage = new NPSPersonaMapsMessage(
       EMessageDirection.SENT
     );
@@ -419,7 +417,7 @@ export class PersonaServer {
       try {
         personaMapsMessage.loadMaps(personas);
 
-        responsePacket = new NPSMessage(EMessageDirection.SENT);
+        const responsePacket = new NPSMessage(EMessageDirection.SENT);
         responsePacket.msgNo = 0x6_07;
         responsePacket.setContent(personaMapsMessage.serialize());
         log.debug(
@@ -429,6 +427,9 @@ export class PersonaServer {
         );
 
         responsePacket.dumpPacket();
+
+        return responsePacket;
+
       } catch (error) {
         if (error instanceof Error) {
           throw new TypeError(`Error serializing personaMapsMsg: ${error.message}`);
@@ -438,7 +439,6 @@ export class PersonaServer {
       }
     }
 
-    return responsePacket;
   }
 
   /**
