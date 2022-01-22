@@ -17,13 +17,62 @@ import { TCPConnection } from "../core/tcpConnection";
 
 const log = logger.child({ service: "mcoserver:PersonaServer" });
 
+const NAME_BUFFER_SIZE = 30
+
+/**
+ * Return string as buffer
+ * @param {string} name 
+ * @param {number} size
+ * @param {BufferEncoding} [="utf8"]
+ * @returns {Buffer}
+ */
+export function generateNameBuffer(name: string, size: number, encoding: BufferEncoding = "utf8"): Buffer {
+  const nameBuffer = Buffer.alloc(size);
+  Buffer.from(name, encoding).copy(nameBuffer);
+  return nameBuffer;
+}
+
+
+/**
+ * Return a list of all personas
+ * @returns {PersonaRecord[]}
+ */
+export function fetchPersonas(): PersonaRecord[] {  
+  const personaList: PersonaRecord[] = [
+    {
+      customerId: 2_868_969_472,
+      id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
+      maxPersonas: Buffer.from([0x01]),
+      name: generateNameBuffer("Doc Joe", NAME_BUFFER_SIZE),
+      personaCount: Buffer.from([0x00, 0x01]),
+      shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
+    },
+    {
+      customerId: 5_551_212,
+      id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
+      maxPersonas: Buffer.from([0x02]),
+      name: generateNameBuffer("Dr Brown", NAME_BUFFER_SIZE),
+      personaCount: Buffer.from([0x00, 0x01]),
+      shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
+    },
+    {
+      customerId: 5_551_212,
+      id: Buffer.from([0x00, 0x84, 0x5f, 0xee]),
+      maxPersonas: Buffer.from([0x02]),
+      name: generateNameBuffer("Morty Dr", NAME_BUFFER_SIZE),
+      personaCount: Buffer.from([0x00, 0x01]),
+      shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
+    },
+  ];
+  return personaList
+}
+
 /**
  * @class
  * @property {IPersonaRecord[]} personaList
  */
 export class PersonaServer {
   static _instance: PersonaServer;
-  personaList: PersonaRecord[];
 
   static getInstance(): PersonaServer {
     if (!PersonaServer._instance) {
@@ -33,39 +82,9 @@ export class PersonaServer {
   }
 
   private constructor() {
-    this.personaList = [
-      {
-        customerId: 2_868_969_472,
-        id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
-        maxPersonas: Buffer.from([0x01]),
-        name: this._generateNameBuffer("Doc Joe"),
-        personaCount: Buffer.from([0x00, 0x01]),
-        shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
-      },
-      {
-        customerId: 5_551_212,
-        id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
-        maxPersonas: Buffer.from([0x02]),
-        name: this._generateNameBuffer("Dr Brown"),
-        personaCount: Buffer.from([0x00, 0x01]),
-        shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
-      },
-      {
-        customerId: 5_551_212,
-        id: Buffer.from([0x00, 0x84, 0x5f, 0xee]),
-        maxPersonas: Buffer.from([0x02]),
-        name: this._generateNameBuffer("Morty Dr"),
-        personaCount: Buffer.from([0x00, 0x01]),
-        shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
-      },
-    ];
+    // Intentionally empty
   }
 
-  private _generateNameBuffer(name: string): Buffer {
-    const nameBuffer = Buffer.alloc(30);
-    Buffer.from(name, "utf8").copy(nameBuffer);
-    return nameBuffer;
-  }
 
   /**
    * Selects a game persona and marks it as in use
@@ -303,7 +322,8 @@ export class PersonaServer {
    * @return {Promise<IPersonaRecord[]>}
    */
   async getPersonasByCustomerId(customerId: number): Promise<PersonaRecord[]> {
-    const results = this.personaList.filter(
+    const allPersonas = fetchPersonas()
+    const results = allPersonas.filter(
       (persona) => persona.customerId === customerId
     );
     return Promise.resolve(results);
@@ -315,7 +335,8 @@ export class PersonaServer {
    * @return {Promise<IPersonaRecord[]>}
    */
   async getPersonasByPersonaId(id: number): Promise<PersonaRecord[]> {
-    const results = this.personaList.filter((persona) => {
+    const allPersonas = fetchPersonas()
+    const results = allPersonas.filter((persona) => {
       const match = id === persona.id.readInt32BE(0);
       return match;
     });
