@@ -8,7 +8,6 @@
 
 import { logger } from "../logger/index";
 import { readFileSync } from "fs";
-// import { EServerConnectionName, RoutingMesh } from "../router";
 import { ShardEntry } from "./shard-entry";
 import { createServer, Server } from "https";
 import { IncomingMessage, ServerResponse } from "http";
@@ -34,7 +33,7 @@ const log = logger.child({ service: "MCOServer:Shard" });
 export class ShardServer {
   static _instance: ShardServer;
   private _possibleShards: string[] = [];
-  _server: Server;
+  private _server: Server;
   config: AppConfiguration;
 
   /**
@@ -50,7 +49,7 @@ export class ShardServer {
   }
 
   private constructor(config: AppConfiguration) {
-    this._server = createServer(() => this._handleRequest);
+    this._server = createServer(this._handleRequest.bind(this));
     this.config = config
 
     this._server.on("error", (error: Error) => {
