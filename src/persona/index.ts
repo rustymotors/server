@@ -113,6 +113,10 @@ export async function handleSelectGamePersona(requestPacket: NPSMessage): Promis
 export class PersonaServer {
   static _instance: PersonaServer;
 
+  /**
+   * Return the instance of the Persona Server class
+   * @returns {PersonaServer}
+   */
   static getInstance(): PersonaServer {
     if (!PersonaServer._instance) {
       PersonaServer._instance = new PersonaServer();
@@ -453,7 +457,6 @@ export class PersonaServer {
       })}`
     );
     const requestCode = data.readUInt16BE(0).toString(16);
-    let responsePacket;
 
     switch (requestCode) {
       case "503": {
@@ -461,49 +464,51 @@ export class PersonaServer {
           EMessageDirection.RECEIVED
         ).deserialize(data);
         // NPS_REGISTER_GAME_LOGIN = 0x503
-        responsePacket = await handleSelectGamePersona(requestPacket);
+        const responsePacket = await handleSelectGamePersona(requestPacket);
         this.sendPacket(sock, responsePacket);
         return updatedConnection;
-
       }
 
-      case "507":
+      case "507": {
         // NPS_NEW_GAME_ACCOUNT == 0x507
-        responsePacket = await this.createNewGameAccount(data);
+        const responsePacket = await this.createNewGameAccount(data);
         this.sendPacket(sock, responsePacket);
         return updatedConnection;
+      }
 
-      case "50f":
+      case "50f": {
         // NPS_REGISTER_GAME_LOGOUT = 0x50F
-        responsePacket = await this.logoutGameUser(data);
+        const responsePacket = await this.logoutGameUser(data);
         this.sendPacket(sock, responsePacket);
         return updatedConnection;
+      }
 
-      case "532":
+      case "532": {
         // NPS_GET_PERSONA_MAPS = 0x532
-        responsePacket = await this.getPersonaMaps(data);
+        const responsePacket = await this.getPersonaMaps(data);
         this.sendPacket(sock, responsePacket);
         return updatedConnection;
+      }
 
-      case "533":
+      case "533": {
         // NPS_VALIDATE_PERSONA_NAME   = 0x533
-        responsePacket = await this.validatePersonaName(data);
+        const responsePacket = await this.validatePersonaName(data);
         this.sendPacket(sock, responsePacket);
         return updatedConnection;
-
-      case "534":
+      }
+      case "534": {
         // NPS_CHECK_TOKEN   = 0x534
-        responsePacket = await this.validateLicencePlate(data);
+        const responsePacket = await this.validateLicencePlate(data);
         this.sendPacket(sock, responsePacket);
         return updatedConnection;
-
-      default:
-        throw new Error(
-          `[personaServer] Unknown code was received ${JSON.stringify({
-            requestCode,
-            localPort,
-          })}`
-        );
+      }
     }
+    throw new Error(
+      `[personaServer] Unknown code was received ${JSON.stringify({
+        requestCode,
+        localPort,
+      })}`
+    );
+
   }
 }

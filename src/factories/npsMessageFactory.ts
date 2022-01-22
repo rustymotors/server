@@ -3,6 +3,11 @@ import { EMessageDirection } from "../types";
 
 
 
+/**
+ * Create a fresh NPSMessage with known values
+ * @param {Partial<NPSMessageValues>} optionOverrides
+ * @returns {NPSMessage}
+ */
 export function createEmptyNPSMessage(optionOverrides: Partial<NPSMessageValues>): NPSMessage {
     const msgNo = optionOverrides.msgNo || 0;
     const msgVersion = optionOverrides.msgVersion || 0;
