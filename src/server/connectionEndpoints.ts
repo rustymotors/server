@@ -86,7 +86,7 @@ export function startSSLListener(): sslServer {
     return server;
   } catch (err) {
     if (err instanceof Error) {
-      throw new Error(`Unable to start the SSL listener: ${err.message}, ${err.stack}`);  
+      throw new Error(`Unable to start the SSL listener: ${String(err.message)}, ${err.stack}`);  
     }
     throw new Error(`Unknown Error${String(err)}`);
   }
