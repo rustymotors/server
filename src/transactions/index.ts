@@ -7,7 +7,6 @@
 
 import { logger } from "../logger/index";
 import {
-  ConnectionWithPacket,
   ConnectionWithPackets,
   EMessageDirection,
   UnprocessedPacket,
