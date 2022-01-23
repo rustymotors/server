@@ -212,11 +212,11 @@ export class ConnectionManager {
     return results;
   }
 
-  async _updateConnectionByAddressAndPort(
+  _updateConnectionByAddressAndPort(
     address: string,
     port: number,
     newConnection: TCPConnection
-  ): Promise<void> {
+  ): TCPConnection[] {
     if (newConnection === undefined) {
       throw new Error(
         `Undefined connection: ${JSON.stringify({
@@ -233,6 +233,7 @@ export class ConnectionManager {
       );
       this.connections.splice(index, 1);
       this.connections.push(newConnection);
+      return this.connections
     } catch (error) {
       process.exitCode = -1;
       throw new Error(

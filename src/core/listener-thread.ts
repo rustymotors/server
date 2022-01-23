@@ -117,11 +117,14 @@ export class ListenerThread {
       log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
     });
     socket.on("data", (data) => {
-      this._onData(data, connectionRecord);
+      this._onData(data, connectionRecord).then(
+        () => {},
+        () => {},
+      );
     });
     socket.on("error", (error) => {
       if (!error.message.includes("ECONNRESET")) {
-        throw new Error(`Socket error: ${error}`);
+        throw new Error(`Socket error: ${error.message}`);
       }
     });
   }

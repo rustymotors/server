@@ -31,6 +31,10 @@ export class MCOTServer {
   private static _instance: MCOTServer;
   private databaseManager: DatabaseManager;
 
+  /**
+   * Get the instance of the transactions server
+   * @returns {MCOTServer}
+   */
   static getInstance(): MCOTServer {
     if (!MCOTServer._instance) {
       MCOTServer._instance = new MCOTServer();
@@ -82,10 +86,10 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {Promise<ConnectionWithPackets}>}
    */
-  private async _login(
+  private _login(
     connection: TCPConnection,
     node: MessageNode
-  ): Promise<ConnectionWithPackets> {
+  ): ConnectionWithPackets {
     // Create new response packet
     const pReply = new GenericReplyMessage();
     pReply.msgNo = 213;
@@ -106,10 +110,10 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {Promise<ConnectionWithPackets>}
    */
-  private async _getLobbies(
+  private _getLobbies(
     connection: TCPConnection,
     node: MessageNode
-  ): Promise<ConnectionWithPackets> {
+  ): ConnectionWithPackets {
     log.debug("In _getLobbies...");
     const lobbiesListMessage = node;
 
@@ -150,10 +154,10 @@ export class MCOTServer {
    * @param {module:MessageNode} node
    * @return {Promise<{con: ConnectionObj, nodes: MessageNode[]}>}
    */
-  private async _logout(
+  private _logout(
     connection: TCPConnection,
     node: MessageNode
-  ): Promise<ConnectionWithPackets> {
+  ): ConnectionWithPackets {
     const logoutMessage = node;
 
     logoutMessage.data = node.serialize();
@@ -213,10 +217,10 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {Promise<ConnectionWithPackets>}
    */
-  private async _trackingMessage(
+  private _trackingMessage(
     connection: TCPConnection,
     node: MessageNode
-  ): Promise<ConnectionWithPackets> {
+  ): ConnectionWithPackets {
     const trackingMessage = node;
 
     trackingMessage.data = node.serialize();
@@ -243,10 +247,10 @@ export class MCOTServer {
    * @param {module:MessageNode} node
    * @return {Promise<ConnectionWithPackets>}
    */
-  private async _updatePlayerPhysical(
+  private _updatePlayerPhysical(
     connection: TCPConnection,
     node: MessageNode
-  ): Promise<ConnectionWithPackets> {
+  ): ConnectionWithPackets {
     const updatePlayerPhysicalMessage = node;
 
     updatePlayerPhysicalMessage.data = node.serialize();
@@ -267,10 +271,16 @@ export class MCOTServer {
     return { connection, packetList: [rPacket] };
   }
 
-  async getStockCarInfo(
+  /**
+   * Handles the getStockCarInfo message
+   * @param {TCPConnection} connection 
+   * @param {MessageNode} packet 
+   * @returns {ConnectionWithPackets}
+   */
+  getStockCarInfo(
     connection: TCPConnection,
     packet: MessageNode
-  ): Promise<ConnectionWithPackets> {
+  ): ConnectionWithPackets {
     const getStockCarInfoMessage = new GenericRequestMessage();
     getStockCarInfoMessage.deserialize(packet.data);
     getStockCarInfoMessage.dumpPacket();
@@ -368,7 +378,7 @@ export class MCOTServer {
           return await result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
-            throw new TypeError(`Error in MC_SET_OPTIONS: ${error}`);
+            throw new TypeError(`Error in MC_SET_OPTIONS: ${error.message}`);
           }
 
           throw new Error("Error in MC_SET_OPTIONS, error unknown");
@@ -470,7 +480,7 @@ export class MCOTServer {
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
-              `[TCPManager] Error writing to socket: ${error}`
+              `[TCPManager] Error writing to socket: ${error.message}`
             );
           }
 
@@ -579,6 +589,11 @@ export class MCOTServer {
     return this.processInput(message, newConnection);
   }
 
+  /**
+   * Entry poi t for packets into the transactions server
+   * @param {UnprocessedPacket} rawPacket 
+   * @returns {Promise<TCPConnection>}
+   */
   async defaultHandler(rawPacket: UnprocessedPacket): Promise<TCPConnection> {
     const { connection, data } = rawPacket;
     const { remoteAddress, localPort } = connection;

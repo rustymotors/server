@@ -61,34 +61,62 @@ export class TCPConnection {
     this.isSetupComplete = false;
     this.inQueue = true;
   }
+  /**
+   * Has the encryption keyset for lobby messages been created?
+   * @returns {boolean}
+   */
   isLobbyKeysetReady(): boolean {
     return (
       this.encLobby.cipher !== undefined && this.encLobby.decipher !== undefined
     );
   }
-  async updateConnectionByAddressAndPort(
+  
+  /**
+   * Update connection record
+   * @param {string} remoteAddress 
+   * @param {number} localPort 
+   * @param {TCPConnection} newConnection 
+   * @returns {TCPConnection[]}
+   */
+  updateConnectionByAddressAndPort(
     remoteAddress: string,
     localPort: number,
     newConnection: TCPConnection
-  ): Promise<void> {
+  ): TCPConnection[] {
     if (this.mgr === undefined) {
       throw new Error("Connection manager not set");
     }
-    this.mgr._updateConnectionByAddressAndPort(
+    return this.mgr._updateConnectionByAddressAndPort(
       remoteAddress,
       localPort,
       newConnection
     );
   }
 
-  setManager(manager: ConnectionManager): void {
+  /**
+   * Set the connection manager
+   * @param {ConnectionManager} manager 
+   * @returns {TCPConnection}
+   */
+  setManager(manager: ConnectionManager): TCPConnection {
     this.mgr = manager;
+    return this
   }
 
-  setEncryptionManager(encryptionManager: EncryptionManager): void {
+  /**
+   * Set the encryption manager
+   * @param encryptionManager 
+   * @returns {TCPConnection}
+   */
+  setEncryptionManager(encryptionManager: EncryptionManager): TCPConnection {
     this.enc = encryptionManager;
+    return this
   }
 
+  /**
+   * Return the encryption manager id
+   * @returns {string}
+   */
   getEncryptionId(): string {
     if (this.enc === undefined) {
       throw new Error("Encryption manager not set");
@@ -96,6 +124,11 @@ export class TCPConnection {
     return this.enc.getId();
   }
 
+  /**
+   * Encrypt the buffer contents
+   * @param {Buffer} buffer 
+   * @returns {Buffer}
+   */
   encryptBuffer(buffer: Buffer): Buffer {
     if (this.enc === undefined) {
       throw new Error("Encryption manager not set");
@@ -150,8 +183,12 @@ export class TCPConnection {
         desIV
       );
       this.encLobby.decipher.setAutoPadding(false);
-    } catch (error) {
-      throw new Error(`Error setting decipher: ${error}`);
+    } catch (err) {
+      if (err instanceof Error) {
+        throw new Error(`Error setting decipher: ${err.message}`);  
+      }
+      throw err
+      
     }
 
     this.isSetupComplete = true;
@@ -206,9 +243,9 @@ export class TCPConnection {
    * @param {MessageNode} packet 
    * @returns {Promise<ConnectionWithPacket>}
    */
-  async compressIfNeeded(
+  compressIfNeeded(
     packet: MessageNode
-  ): Promise<ConnectionWithPacket> {
+  ): ConnectionWithPacket {
     // Check if compression is needed
     if (packet.getLength() < 80) {
       log.debug("Too small, should not compress");
@@ -230,9 +267,9 @@ export class TCPConnection {
    * @param {MessageNode} packet 
    * @returns {Promise<ConnectionWithPacket>}
    */
-  async encryptIfNeeded(
+  encryptIfNeeded(
     packet: MessageNode
-  ): Promise<ConnectionWithPacket> {
+  ): ConnectionWithPacket {
     // Check if encryption is needed
     if (packet.flags - 8 >= 0) {
       log.debug("encryption flag is set");
