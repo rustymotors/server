@@ -7,7 +7,7 @@
 
 import type { IncomingMessage, ServerResponse } from "http";
 import { logger } from "../logger/index";
-import { ConnectionManager } from "../core/connection-mgr";
+import { getConnectionManager } from "../core/connection-mgr";
 
 const log = logger.child({ service: "mcoserver:AdminServer;" });
 
@@ -35,7 +35,7 @@ export class AdminServer {
    * @return {string}
    */
   _handleGetConnections(): string {
-    const connections = ConnectionManager.getInstance().dumpConnections();
+    const connections = getConnectionManager().fetchConnectionList();
     let responseText = "";
 
     if (connections.length === 0) {
@@ -65,8 +65,8 @@ export class AdminServer {
    * @return {string}
    */
   _handleResetAllQueueState(): string {
-    ConnectionManager.getInstance().resetAllQueueState();
-    const connections = ConnectionManager.getInstance().dumpConnections();
+    getConnectionManager().returnAllConnectionsToQueue()
+    const connections = getConnectionManager().fetchConnectionList();
     let responseText = "Queue state reset for all connections\n\n";
 
     if (connections.length === 0) {

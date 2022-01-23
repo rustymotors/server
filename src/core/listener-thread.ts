@@ -94,25 +94,30 @@ export class ListenerThread {
   private _listener(socket: Socket, connectionMgr: ConnectionManager): void {
     // Received a new connection
     // Turn it into a connection object
-    const connection = connectionMgr.findOrNewConnection(socket);
+    const connectionRecord = connectionMgr.findOrNewConnection(socket);
+
+    if (connectionRecord === null) {
+      log.fatal('Unable to attach the socket to a connection.')
+      return
+    }
 
     const { localPort, remoteAddress } = socket;
     log.info(`Client ${remoteAddress} connected to port ${localPort}`);
-    if (socket.localPort === 7003 && connection.inQueue) {
+    if (socket.localPort === 7003 && connectionRecord.inQueue) {
       /**
        * Debug seems hard-coded to use the connection queue
        * Craft a packet that tells the client it's allowed to login
        */
 
       // socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]))
-      connection.inQueue = false;
+      connectionRecord.inQueue = false;
     }
 
     socket.on("end", () => {
       log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
     });
     socket.on("data", (data) => {
-      this._onData(data, connection);
+      this._onData(data, connectionRecord);
     });
     socket.on("error", (error) => {
       if (!error.message.includes("ECONNRESET")) {
