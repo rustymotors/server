@@ -76,7 +76,16 @@ export class ConnectionManager {
       packetType = "tomc";
     }
 
+    log.debug(`Identified packet type as ${packetType} on port ${rawPacket.connection.localPort}`)
+
+    log.debug('Attempting to wrap packet')
     await wrapPacket(rawPacket, packetType).processPacket()
+    log.debug('Wrapping packet successful')
+
+    if (localPort === 8226) { log.debug('Packet has requested the login server') }
+    if (localPort === 8228) { log.debug('Packet has requested the persona server') }
+    if (localPort === 7003) { log.debug('Packet has requested the lobby server') }
+    if (localPort === 43300) { log.debug('Packet has requested the transactions server') }
 
     switch (localPort) {
       case 8226:

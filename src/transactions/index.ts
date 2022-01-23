@@ -129,6 +129,7 @@ export class MCOTServer {
     pReply.msgReply = 324;
     const rPacket = new MessageNode(EMessageDirection.SENT);
     rPacket.flags = 9;
+    rPacket.setSeq(node.seq)
 
     const lobby = Buffer.alloc(12);
     lobby.writeInt32LE(325, 0);
@@ -358,12 +359,14 @@ export class MCOTServer {
     const currentMessageNo: number = node.msgNo;
     const currentMessageString: string = this._MSG_STRING(currentMessageNo);
 
+    log.debug(`We are attempting to process a message with id ${currentMessageNo}(${currentMessageString})`)
+
     switch (currentMessageString) {
       case "MC_SET_OPTIONS":
         try {
           const result = await this._setOptions(conn, node);
           const responsePackets = result.packetList;
-          return await socketWriteIfOpen(result.connection, responsePackets);
+          return await result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(`Error in MC_SET_OPTIONS: ${error}`);
@@ -376,7 +379,7 @@ export class MCOTServer {
         try {
           const result = await this._trackingMessage(conn, node);
           const responsePackets = result.packetList;
-          return socketWriteIfOpen(result.connection, responsePackets);
+          return await result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(`Error in MC_TRACKING_MSG: ${error.message}`);
@@ -389,7 +392,7 @@ export class MCOTServer {
         try {
           const result = await this._updatePlayerPhysical(conn, node);
           const responsePackets = result.packetList;
-          return socketWriteIfOpen(result.connection, responsePackets);
+          return await result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -405,7 +408,7 @@ export class MCOTServer {
           const result = await this.clientConnect(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
-          return await socketWriteIfOpen(result.connection, responsePackets);
+          return await result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -424,7 +427,7 @@ export class MCOTServer {
           const result = await this._login(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
-          return socketWriteIfOpen(result.connection, responsePackets);
+          return await result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -443,7 +446,7 @@ export class MCOTServer {
           const result = await this._logout(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
-          return await socketWriteIfOpen(result.connection, responsePackets);
+          return await result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -464,7 +467,7 @@ export class MCOTServer {
         const responsePackets = result.packetList;
         try {
           // Write the socket
-          return await socketWriteIfOpen(result.connection, responsePackets);
+          return await result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -483,7 +486,7 @@ export class MCOTServer {
           const result = await this.getStockCarInfo(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
-          return socketWriteIfOpen(result.connection, responsePackets);
+          return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -596,87 +599,4 @@ export class MCOTServer {
 
     return this.messageReceived(messageNode, connection);
   }
-}
-
-/**
- * Manages TCP connection packet processing
- */
-
-export async function compressIfNeeded(
-  connection: TCPConnection,
-  packet: MessageNode
-): Promise<ConnectionWithPacket> {
-  // Check if compression is needed
-  if (packet.getLength() < 80) {
-    log.debug("Too small, should not compress");
-    return { connection, packet, lastError: "Too small, should not compress" };
-  } else {
-    log.debug("This packet should be compressed");
-    /* TODO: Write compression.
-     *
-     * At this time we will still send the packet, to not hang connection
-     * Client will crash though, due to memory access errors
-     */
-  }
-
-  return { connection, packet };
-}
-
-export async function encryptIfNeeded(
-  connection: TCPConnection,
-  packet: MessageNode
-): Promise<ConnectionWithPacket> {
-  // Check if encryption is needed
-  if (packet.flags - 8 >= 0) {
-    log.debug("encryption flag is set");
-
-    packet.updateBuffer(connection.encryptBuffer(packet.data));
-
-    log.debug(`encrypted packet: ${packet.serialize().toString("hex")}`);
-  }
-
-  return { connection, packet };
-}
-
-export async function socketWriteIfOpen(
-  connection: TCPConnection,
-  packetList: MessageNode[]
-): Promise<TCPConnection> {
-  const updatedConnection: ConnectionWithPackets = {
-    connection: connection,
-    packetList: packetList,
-  };
-  // For each node in nodes
-  for (const packet of updatedConnection.packetList) {
-    // Does the packet need to be compressed?
-    const compressedPacket: MessageNode = (
-      await compressIfNeeded(connection, packet)
-    ).packet;
-    // Does the packet need to be encrypted?
-    const encryptedPacket = (
-      await encryptIfNeeded(connection, compressedPacket)
-    ).packet;
-    // Log that we are trying to write
-    log.debug(
-      ` Atempting to write seq: ${encryptedPacket.seq} to conn: ${updatedConnection.connection.id}`
-    );
-
-    // Log the buffer we are writing
-    log.debug(
-      `Writting buffer: ${encryptedPacket.serialize().toString("hex")}`
-    );
-    if (connection.sock.writable) {
-      // Write the packet to socket
-      connection.sock.write(encryptedPacket.serialize());
-    } else {
-      const port: string = connection.sock.localPort?.toString() || "";
-      throw new Error(
-        `Error writing ${encryptedPacket.serialize()} to ${
-          connection.sock.remoteAddress
-        } , ${port}`
-      );
-    }
-  }
-
-  return updatedConnection.connection;
 }
