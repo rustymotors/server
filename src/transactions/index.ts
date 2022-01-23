@@ -573,7 +573,7 @@ export class MCOTServer {
       }
     }
 
-    // Should be good to process now
+    log.debug('Calling processInput()')
     return this.processInput(message, newConnection);
   }
 
