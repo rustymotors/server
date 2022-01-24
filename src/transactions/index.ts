@@ -440,7 +440,7 @@ export class MCOTServer {
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
-              `[TCPManager] Error writing to socket: ${error}`
+              `[TCPManager] Error writing to socket: ${error.message}`
             );
           }
 

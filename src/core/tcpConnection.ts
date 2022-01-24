@@ -172,8 +172,11 @@ export class TCPConnection {
         desIV
       );
       this.encLobby.cipher.setAutoPadding(false);
-    } catch (error) {
-      throw new Error(`Error setting cipher: ${error}`);
+    } catch (err) {
+      if (err instanceof Error) {
+        throw new Error(`Error setting cipher: ${err.message}`);  
+      }
+      throw err
     }
 
     try {

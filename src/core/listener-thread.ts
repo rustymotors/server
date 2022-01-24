@@ -121,7 +121,7 @@ export class ListenerThread {
         // Intentionally empty
       );
     });
-    socket.on("error", (error) => {
+    socket.on("error", (error: Error) => {
       if (!error.message.includes("ECONNRESET")) {
         throw new Error(`Socket error: ${error.message}`);
       }
