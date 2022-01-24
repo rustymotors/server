@@ -373,7 +373,7 @@ export class MCOTServer {
     switch (currentMessageString) {
       case "MC_SET_OPTIONS":
         try {
-          const result = await this._setOptions(conn, node);
+          const result = this._setOptions(conn, node);
           const responsePackets = result.packetList;
           return await result.connection.tryWritePackets(responsePackets);
         } catch (error) {
