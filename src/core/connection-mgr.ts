@@ -131,7 +131,7 @@ export class ConnectionManager {
         newNode.deserialize(rawPacket.data);
         log.debug(JSON.stringify(newNode));
 
-        return MCOTServer.getInstance().defaultHandler(rawPacket);
+        return MCOTServer.getTransactionServer().defaultHandler(rawPacket);
       }
 
       default:
