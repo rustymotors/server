@@ -286,13 +286,13 @@ export class TCPConnection {
   }
 
   /**
-   * Attempt to write packet(s) to tye socjet
+   * Attempt to write packet(s) to the socjet
    * @param {MessageNode[]} packetList 
    * @returns {Promise<TCPConnection>}
    */
-  async tryWritePackets(
+  tryWritePackets(
     packetList: MessageNode[]
-  ): Promise<TCPConnection> {
+  ): TCPConnection {
     const updatedConnection: ConnectionWithPackets = {
       connection: this,
       packetList: packetList,
