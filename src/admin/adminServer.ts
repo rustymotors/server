@@ -20,7 +20,7 @@ export class AdminServer {
   private static _instance: AdminServer;
   // httpsServer: Server | undefined;
 
-  public static getAdminServer(): AdminServer {
+  public static getAdminServer(this: void): AdminServer {
     if (!AdminServer._instance) {
       AdminServer._instance = new AdminServer();
     }
