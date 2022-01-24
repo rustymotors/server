@@ -67,7 +67,7 @@ export class ListenerThread {
     }
 
     try {
-      await connection.updateConnectionByAddressAndPort(
+      connection.updateConnectionByAddressAndPort(
         connection.remoteAddress,
         connection.localPort,
         newConnection

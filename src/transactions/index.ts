@@ -386,7 +386,7 @@ export class MCOTServer {
 
       case "MC_TRACKING_MSG":
         try {
-          const result = await this._trackingMessage(conn, node);
+          const result = this._trackingMessage(conn, node);
           const responsePackets = result.packetList;
           return await result.connection.tryWritePackets(responsePackets);
         } catch (error) {
@@ -399,7 +399,7 @@ export class MCOTServer {
 
       case "MC_UPDATE_PLAYER_PHYSICAL":
         try {
-          const result = await this._updatePlayerPhysical(conn, node);
+          const result = this._updatePlayerPhysical(conn, node);
           const responsePackets = result.packetList;
           return await result.connection.tryWritePackets(responsePackets);
         } catch (error) {
@@ -433,7 +433,7 @@ export class MCOTServer {
 
       case "MC_LOGIN": {
         try {
-          const result = await this._login(conn, node);
+          const result = this._login(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
           return await result.connection.tryWritePackets(responsePackets);
@@ -452,7 +452,7 @@ export class MCOTServer {
 
       case "MC_LOGOUT": {
         try {
-          const result = await this._logout(conn, node);
+          const result = this._logout(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
           return await result.connection.tryWritePackets(responsePackets);
@@ -470,7 +470,7 @@ export class MCOTServer {
       }
 
       case "MC_GET_LOBBIES": {
-        const result = await this._getLobbies(conn, node);
+        const result = this._getLobbies(conn, node);
         log.debug("Dumping Lobbies response packet...");
         log.debug(result.packetList.join().toString());
         const responsePackets = result.packetList;
@@ -492,7 +492,7 @@ export class MCOTServer {
 
       case "MC_STOCK_CAR_INFO": {
         try {
-          const result = await this.getStockCarInfo(conn, node);
+          const result = this.getStockCarInfo(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
           return result.connection.tryWritePackets(responsePackets);

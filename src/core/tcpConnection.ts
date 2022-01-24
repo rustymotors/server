@@ -70,7 +70,7 @@ export class TCPConnection {
       this.encLobby.cipher !== undefined && this.encLobby.decipher !== undefined
     );
   }
-  
+
   /**
    * Update connection record
    * @param {string} remoteAddress 
@@ -185,10 +185,10 @@ export class TCPConnection {
       this.encLobby.decipher.setAutoPadding(false);
     } catch (err) {
       if (err instanceof Error) {
-        throw new Error(`Error setting decipher: ${err.message}`);  
+        throw new Error(`Error setting decipher: ${err.message}`);
       }
       throw err
-      
+
     }
 
     this.isSetupComplete = true;
@@ -258,7 +258,7 @@ export class TCPConnection {
        * Client will crash though, due to memory access errors
        */
     }
-  
+
     return { connection: this, packet };
   }
 
@@ -273,20 +273,20 @@ export class TCPConnection {
     // Check if encryption is needed
     if (packet.flags - 8 >= 0) {
       log.debug("encryption flag is set");
-  
+
       packet.updateBuffer(this.encryptBuffer(packet.data));
-  
+
       log.debug(`encrypted packet: ${packet.serialize().toString("hex")}`);
     }
-  
+
     return { connection: this, packet };
   }
 
- /**
-  * Attempt to write packet(s) to tye socjet
-  * @param {MessageNode[]} packetList 
-  * @returns {Promise<TCPConnection>}
-  */
+  /**
+   * Attempt to write packet(s) to tye socjet
+   * @param {MessageNode[]} packetList 
+   * @returns {Promise<TCPConnection>}
+   */
   async tryWritePackets(
     packetList: MessageNode[]
   ): Promise<TCPConnection> {
@@ -298,17 +298,17 @@ export class TCPConnection {
     for (const packet of updatedConnection.packetList) {
       // Does the packet need to be compressed?
       const compressedPacket: MessageNode = (
-        await this.compressIfNeeded(packet)
+        this.compressIfNeeded(packet)
       ).packet;
       // Does the packet need to be encrypted?
       const encryptedPacket = (
-        await this.encryptIfNeeded(compressedPacket)
+        this.encryptIfNeeded(compressedPacket)
       ).packet;
       // Log that we are trying to write
       log.debug(
         ` Atempting to write seq: ${encryptedPacket.seq} to conn: ${updatedConnection.connection.id}`
       );
-  
+
       // Log the buffer we are writing
       log.debug(
         `Writting buffer: ${encryptedPacket.serialize().toString("hex")}`
@@ -319,13 +319,12 @@ export class TCPConnection {
       } else {
         const port: string = this.sock.localPort?.toString() || "";
         throw new Error(
-          `Error writing ${encryptedPacket.serialize()} to ${
-            this.sock.remoteAddress
+          `Error writing ${encryptedPacket.serialize()} to ${this.sock.remoteAddress
           } , ${port}`
         );
       }
     }
-  
+
     return updatedConnection.connection
   }
 }
