@@ -117,9 +117,7 @@ export class ListenerThread {
       log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
     });
     socket.on("data", (data) => {
-      this._onData(data, connectionRecord).then(
-        // Intentionally empty
-      );
+      void this._onData(data, connectionRecord)
     });
     socket.on("error", (error: Error) => {
       if (!error.message.includes("ECONNRESET")) {

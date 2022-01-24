@@ -24,7 +24,7 @@ export function sslListener(req: IncomingMessage, res: ServerResponse): ServerRe
       req.url.startsWith("/admin"))
   ) {
     log.debug("ssl routing request to admin web server");
-    return AdminServer.getInstance().handleRequest(req, res);
+    return AdminServer.getAdminServer().handleRequest(req, res);
   }
 
   log.warn(
