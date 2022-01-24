@@ -25,6 +25,10 @@ const log = logger.child({
   service: "ConnectionManager",
 });
 
+/**
+ * Manages the connection objects that connect the network sockets to server metadata
+ * @class
+ */
 export class ConnectionManager {
   private static _instance: ConnectionManager;
   private connections: TCPConnection[] = [];
@@ -43,6 +47,12 @@ export class ConnectionManager {
      */
   }
 
+  /**
+   * Creates a new connection object for the socket and adds to list
+   * @param {string} connectionId 
+   * @param {Socket} socket 
+   * @returns {TCPConnection}
+   */
   newConnection(connectionId: string, socket: Socket): TCPConnection {
     const newConnection = new TCPConnection(connectionId, socket);
     newConnection.setManager(this);

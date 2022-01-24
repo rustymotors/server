@@ -14,6 +14,10 @@ import { TCPConnection } from "./tcpConnection";
 
 const log = logger.child({ service: "mcoserver:ListenerThread" });
 
+/**
+ * Handles all incomming TCP connections
+ * @class
+ */
 export class ListenerThread {
   private static _instance: ListenerThread;
 

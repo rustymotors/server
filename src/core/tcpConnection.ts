@@ -136,6 +136,11 @@ export class TCPConnection {
     return this.enc.encrypt(buffer);
   }
 
+  /**
+   * Decrypt the buffer contents
+   * @param {Buffer} buffer 
+   * @returns {Buffer}
+   */
   decryptBuffer(buffer: Buffer): Buffer {
     if (this.enc === undefined) {
       throw new Error("Encryption manager not set");
@@ -223,6 +228,11 @@ export class TCPConnection {
     throw new Error("No DES decipher set on connection");
   }
 
+  /**
+   * Replays the unproccessed packet to the connection manager
+   * @param {UnprocessedPacket} packet 
+   * @returns {Promise<TCPConnection>}
+   */
   async processPacket(packet: UnprocessedPacket): Promise<TCPConnection> {
     if (this.mgr === undefined) {
       throw new Error("Connection manager is not set");
