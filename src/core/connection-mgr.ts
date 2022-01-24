@@ -34,7 +34,7 @@ export class ConnectionManager {
   private connections: TCPConnection[] = [];
   private banList: string[] = [];
 
-  public static getInstance(): ConnectionManager {
+  public static getConnectionManager(this: void): ConnectionManager {
     if (!ConnectionManager._instance) {
       ConnectionManager._instance = new ConnectionManager();
     }
@@ -330,6 +330,6 @@ export class ConnectionManager {
  * @returns {ConnectionManager}
  */
 export function getConnectionManager(): ConnectionManager {
-  return ConnectionManager.getInstance()
+  return ConnectionManager.getConnectionManager()
 }
 

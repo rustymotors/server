@@ -138,7 +138,7 @@ export class ListenerThread {
   startTCPListener(localPort: number): Server {
     log.debug(`Attempting to bind to port ${localPort}`);
     return createServer((socket) => {
-      this._listener(socket, ConnectionManager.getInstance());
+      this._listener(socket, ConnectionManager.getConnectionManager());
     }).listen({ port: localPort, host: "0.0.0.0" });
   }
 }
