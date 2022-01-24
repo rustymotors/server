@@ -118,8 +118,7 @@ export class ListenerThread {
     });
     socket.on("data", (data) => {
       this._onData(data, connectionRecord).then(
-        () => {},
-        () => {},
+        // Intentionally empty
       );
     });
     socket.on("error", (error) => {
