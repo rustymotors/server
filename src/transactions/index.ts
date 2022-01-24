@@ -187,10 +187,10 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {Promise<ConnectionWithPackets>}
    */
-  private async _setOptions(
+  private _setOptions(
     connection: TCPConnection,
     node: MessageNode
-  ): Promise<ConnectionWithPackets> {
+  ): ConnectionWithPackets {
     const setOptionsMessage = node;
 
     setOptionsMessage.data = node.serialize();
