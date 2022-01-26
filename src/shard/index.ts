@@ -194,6 +194,7 @@ export class ShardServer {
    * @param {import("http").IncomingMessage} request
    * @param {import("http").ServerResponse} response
    */
+  // deepcode ignore NoRateLimitingForExpensiveWebOperation: Very unlikely to be DDos'ed
   _handleRequest(request: IncomingMessage, response: ServerResponse): ServerResponse {
     if (request.url === "/cert") {
       response.setHeader(
