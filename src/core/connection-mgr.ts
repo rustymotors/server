@@ -5,7 +5,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { DatabaseManager } from "../database/index";
 import { MessageNode } from "../message-types/index";
 import {
   EMessageDirection,
@@ -23,16 +22,19 @@ import { wrapPacket} from "../server/packetFactory"
 import { randomUUID } from "crypto";
 
 const log = logger.child({
-  service: "mcoserver:ConnectionMgr",
+  service: "ConnectionManager",
 });
 
+/**
+ * Manages the connection objects that connect the network sockets to server metadata
+ * @class
+ */
 export class ConnectionManager {
   private static _instance: ConnectionManager;
-  databaseMgr: DatabaseManager;
-  connections: TCPConnection[];
-  banList: string[];
+  private connections: TCPConnection[] = [];
+  private banList: string[] = [];
 
-  public static getInstance(): ConnectionManager {
+  public static getConnectionManager(this: void): ConnectionManager {
     if (!ConnectionManager._instance) {
       ConnectionManager._instance = new ConnectionManager();
     }
@@ -40,14 +42,17 @@ export class ConnectionManager {
   }
 
   private constructor() {
-    this.connections = [];
     /**
      * @type {string[]}
      */
-    this.banList = [];
-    this.databaseMgr = DatabaseManager.getInstance();
   }
 
+  /**
+   * Creates a new connection object for the socket and adds to list
+   * @param {string} connectionId 
+   * @param {Socket} socket 
+   * @returns {TCPConnection}
+   */
   newConnection(connectionId: string, socket: Socket): TCPConnection {
     const newConnection = new TCPConnection(connectionId, socket);
     newConnection.setManager(this);
@@ -80,7 +85,16 @@ export class ConnectionManager {
       packetType = "tomc";
     }
 
+    log.debug(`Identified packet type as ${packetType} on port ${rawPacket.connection.localPort}`)
+
+    log.debug('Attempting to wrap packet')
     await wrapPacket(rawPacket, packetType).processPacket()
+    log.debug('Wrapping packet successful')
+
+    if (localPort === 8226) { log.debug('Packet has requested the login server') }
+    if (localPort === 8228) { log.debug('Packet has requested the persona server') }
+    if (localPort === 7003) { log.debug('Packet has requested the lobby server') }
+    if (localPort === 43300) { log.debug('Packet has requested the transactions server') }
 
     switch (localPort) {
       case 8226:
@@ -127,7 +141,7 @@ export class ConnectionManager {
         newNode.deserialize(rawPacket.data);
         log.debug(JSON.stringify(newNode));
 
-        return MCOTServer.getInstance().defaultHandler(rawPacket);
+        return MCOTServer.getTransactionServer().defaultHandler(rawPacket);
       }
 
       default:
@@ -180,18 +194,18 @@ export class ConnectionManager {
    * @param {string} remoteAddress
    * @param {number} localPort
    * @memberof ConnectionMgr
-   * @return {module:ConnectionObj}
+   * @return {TCPConnection || null}
    */
   findConnectionByAddressAndPort(
     remoteAddress: string,
     localPort: number
-  ): TCPConnection | undefined {
+  ): TCPConnection | null {
     return this.connections.find((connection) => {
       const match =
         remoteAddress === connection.remoteAddress &&
         localPort === connection.localPort;
       return match;
-    });
+    }) || null;
   }
 
   /**
@@ -208,11 +222,11 @@ export class ConnectionManager {
     return results;
   }
 
-  async _updateConnectionByAddressAndPort(
+  _updateConnectionByAddressAndPort(
     address: string,
     port: number,
     newConnection: TCPConnection
-  ): Promise<void> {
+  ): TCPConnection[] {
     if (newConnection === undefined) {
       throw new Error(
         `Undefined connection: ${JSON.stringify({
@@ -229,6 +243,7 @@ export class ConnectionManager {
       );
       this.connections.splice(index, 1);
       this.connections.push(newConnection);
+      return this.connections
     } catch (error) {
       process.exitCode = -1;
       throw new Error(
@@ -242,59 +257,79 @@ export class ConnectionManager {
 
   /**
    * Return an existing connection, or a new one
+   * @returns {TCPConnection}
    */
-  findOrNewConnection(socket: Socket): TCPConnection {
-    const { remoteAddress, localPort } = socket;
-    if (!remoteAddress) {
-      throw new Error(
-        `No address in socket: ${JSON.stringify({
-          remoteAddress,
-          localPort,
-        })}`
-      );
+  findOrNewConnection(socket: Socket): TCPConnection | null {
+    if (typeof socket.remoteAddress === "undefined") {
+      log.fatal('The socket is missing a remoteAddress, unable to use.')
+      return null
     }
 
-    if (!localPort) {
-      throw new Error(
-        `No localPort in socket: ${JSON.stringify({
-          remoteAddress,
-          localPort,
-        })}`
-      );
+    if (typeof socket.localPort === "undefined") {
+      log.fatal('The socket is missing a localPost, unable to use.')
+      return null
     }
 
-    const con = this.findConnectionByAddressAndPort(remoteAddress, localPort);
-    if (con !== undefined) {
+    const existingConnection = this.findConnectionByAddressAndPort(socket.remoteAddress, socket.localPort);
+    if (existingConnection) {
       log.info(
-        `I have seen connections from ${remoteAddress} on ${localPort} before`
-      );
-      con.sock = socket;
-      return con;
+        `I have seen connections from ${socket.remoteAddress} on ${socket.localPort} before`
+      );      
+      existingConnection.sock = socket;
+      log.debug('Returning found connection after attaching socket')
+      return existingConnection;
     }
 
-    const newConnection = this.newConnection(randomUUID(), socket);
+    const newConnectionId = randomUUID()
+    log.debug(`Creating new connection with id ${newConnectionId}`)
+    const newConnection = this.newConnection(newConnectionId, socket);
     log.info(
-      `I have not seen connections from ${remoteAddress} on ${localPort} before, adding it.`
+      `I have not seen connections from ${socket.remoteAddress} on ${socket.localPort} before, adding it.`
     );
-    this.connections.push(newConnection);
+    const updatedConnectionList = this.addConnection(newConnection)
+    log.debug(`Connection with id of ${newConnection.id} has been added. The connection list now contains ${updatedConnectionList.length} connections.`)
     return newConnection;
   }
 
+  addConnection(connection: TCPConnection): TCPConnection[] {
+    this.connections.push(connection)
+    return this.connections
+  }
+
   /**
-   *
-   * @return {void}
+   * Places all connection into the queue 
+   * @return {TCPConnection[]}
    */
-  resetAllQueueState(): void {
+  returnAllConnectionsToQueue(): TCPConnection[] {
     this.connections = this.connections.map((connection) => {
       connection.inQueue = true;
       return connection;
     });
+    return this.connections
+  }
+
+  /**
+   * Resets the connections list
+   * @returns {TCPConnection[]}
+   */
+  clearConnectionList(): TCPConnection[] {
+    this.connections = []
+    return this.connections
   }
 
   /**
    * Dump all connections for debugging
    */
-  dumpConnections(): TCPConnection[] {
+  fetchConnectionList(): TCPConnection[] {
     return this.connections;
   }
 }
+
+/**
+ * Return the ConnectionManager class instance
+ * @returns {ConnectionManager}
+ */
+export function getConnectionManager(): ConnectionManager {
+  return ConnectionManager.getConnectionManager()
+}
+

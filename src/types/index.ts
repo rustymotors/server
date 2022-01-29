@@ -415,6 +415,7 @@ export const NPS_COMMANDS: NpsCommandMap[] = [
 export enum EMessageDirection {
   RECEIVED = "received",
   SENT = "sent",
+  UNDEFINED = "not set"
 }
 
 export interface IMessageNode {

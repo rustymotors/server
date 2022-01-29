@@ -852,6 +852,16 @@ export interface INPSMessageJSON {
   rawBuffer: string;
 }
 
+export interface NPSMessageValues {
+  msgNo: number;
+  msgVersion: number;
+  reserved: number;
+  content: Buffer;
+  msgLength: number;
+  direction: EMessageDirection;
+  serviceName: string;
+}
+
 /*
       NPS messages are sent serialized in BE format
   */

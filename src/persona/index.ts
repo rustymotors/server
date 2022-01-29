@@ -17,14 +17,106 @@ import { TCPConnection } from "../core/tcpConnection";
 
 const log = logger.child({ service: "mcoserver:PersonaServer" });
 
+const NAME_BUFFER_SIZE = 30
+
+/**
+ * Return string as buffer
+ * @param {string} name 
+ * @param {number} size
+ * @param {BufferEncoding} [="utf8"]
+ * @returns {Buffer}
+ */
+export function generateNameBuffer(name: string, size: number, encoding: BufferEncoding = "utf8"): Buffer {
+  const nameBuffer = Buffer.alloc(size);
+  Buffer.from(name, encoding).copy(nameBuffer);
+  return nameBuffer;
+}
+
+
+/**
+ * Return a list of all personas
+ * @returns {PersonaRecord[]}
+ */
+export function fetchPersonas(): PersonaRecord[] {
+  const personaList: PersonaRecord[] = [
+    {
+      customerId: 2_868_969_472,
+      id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
+      maxPersonas: Buffer.from([0x01]),
+      name: generateNameBuffer("Doc Joe", NAME_BUFFER_SIZE),
+      personaCount: Buffer.from([0x00, 0x01]),
+      shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
+    },
+    {
+      customerId: 5_551_212,
+      id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
+      maxPersonas: Buffer.from([0x02]),
+      name: generateNameBuffer("Dr Brown", NAME_BUFFER_SIZE),
+      personaCount: Buffer.from([0x00, 0x01]),
+      shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
+    },
+    {
+      customerId: 5_551_212,
+      id: Buffer.from([0x00, 0x84, 0x5f, 0xee]),
+      maxPersonas: Buffer.from([0x02]),
+      name: generateNameBuffer("Morty Dr", NAME_BUFFER_SIZE),
+      personaCount: Buffer.from([0x00, 0x01]),
+      shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
+    },
+  ];
+  return personaList
+}
+
+/**
+   * Selects a game persona and marks it as in use
+   * @param {NPSMessage} requestPacket
+   * @returns {Promise<NPSMessage>}
+   */
+export async function handleSelectGamePersona(requestPacket: NPSMessage): Promise<NPSMessage> {
+  log.debug("_npsSelectGamePersona...");
+  log.debug(
+    `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
+      NPSMsg: requestPacket.toJSON(),
+    })}`
+  );
+
+  requestPacket.dumpPacket();
+
+  // Create the packet content
+  const packetContent = Buffer.alloc(251);
+
+  // Build the packet
+  // Response Code
+  // 207 = success
+  const responsePacket = new NPSMessage(EMessageDirection.SENT);
+  responsePacket.msgNo = 0x2_07;
+  responsePacket.setContent(packetContent);
+  log.debug(
+    `NPSMsg response object from _npsSelectGamePersona',
+    ${JSON.stringify({
+      NPSMsg: responsePacket.toJSON(),
+    })}`
+  );
+
+  responsePacket.dumpPacket();
+
+  log.debug(
+    `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
+  );
+  return Promise.resolve(responsePacket);
+}
+
 /**
  * @class
  * @property {IPersonaRecord[]} personaList
  */
 export class PersonaServer {
   static _instance: PersonaServer;
-  personaList: PersonaRecord[];
 
+  /**
+   * Return the instance of the Persona Server class
+   * @returns {PersonaServer}
+   */
   static getInstance(): PersonaServer {
     if (!PersonaServer._instance) {
       PersonaServer._instance = new PersonaServer();
@@ -33,79 +125,11 @@ export class PersonaServer {
   }
 
   private constructor() {
-    this.personaList = [
-      {
-        customerId: 2_868_969_472,
-        id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
-        maxPersonas: Buffer.from([0x01]),
-        name: this._generateNameBuffer("Doc Joe"),
-        personaCount: Buffer.from([0x00, 0x01]),
-        shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
-      },
-      {
-        customerId: 5_551_212,
-        id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
-        maxPersonas: Buffer.from([0x02]),
-        name: this._generateNameBuffer("Dr Brown"),
-        personaCount: Buffer.from([0x00, 0x01]),
-        shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
-      },
-      {
-        customerId: 5_551_212,
-        id: Buffer.from([0x00, 0x84, 0x5f, 0xee]),
-        maxPersonas: Buffer.from([0x02]),
-        name: this._generateNameBuffer("Morty Dr"),
-        personaCount: Buffer.from([0x00, 0x01]),
-        shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
-      },
-    ];
+    // Intentionally empty
   }
 
-  private _generateNameBuffer(name: string): Buffer {
-    const nameBuffer = Buffer.alloc(30);
-    Buffer.from(name, "utf8").copy(nameBuffer);
-    return nameBuffer;
-  }
 
-  /**
-   * Selects a game persona and marks it as in use
-   */
-  async handleSelectGamePersona(data: Buffer): Promise<NPSMessage> {
-    log.debug("_npsSelectGamePersona...");
-    const requestPacket = new NPSMessage(
-      EMessageDirection.RECEIVED
-    ).deserialize(data);
-    log.debug(
-      `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
-        NPSMsg: requestPacket.toJSON(),
-      })}`
-    );
 
-    requestPacket.dumpPacket();
-
-    // Create the packet content
-    const packetContent = Buffer.alloc(251);
-
-    // Build the packet
-    // Response Code
-    // 207 = success
-    const responsePacket = new NPSMessage(EMessageDirection.SENT);
-    responsePacket.msgNo = 0x2_07;
-    responsePacket.setContent(packetContent);
-    log.debug(
-      `NPSMsg response object from _npsSelectGamePersona',
-      ${JSON.stringify({
-        NPSMsg: responsePacket.toJSON(),
-      })}`
-    );
-
-    responsePacket.dumpPacket();
-
-    log.debug(
-      `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
-    );
-    return Promise.resolve(responsePacket);
-  }
 
   /**
    * Create a new game persona record
@@ -303,7 +327,8 @@ export class PersonaServer {
    * @return {Promise<IPersonaRecord[]>}
    */
   async getPersonasByCustomerId(customerId: number): Promise<PersonaRecord[]> {
-    const results = this.personaList.filter(
+    const allPersonas = fetchPersonas()
+    const results = allPersonas.filter(
       (persona) => persona.customerId === customerId
     );
     return Promise.resolve(results);
@@ -315,7 +340,8 @@ export class PersonaServer {
    * @return {Promise<IPersonaRecord[]>}
    */
   async getPersonasByPersonaId(id: number): Promise<PersonaRecord[]> {
-    const results = this.personaList.filter((persona) => {
+    const allPersonas = fetchPersonas()
+    const results = allPersonas.filter((persona) => {
       const match = id === persona.id.readInt32BE(0);
       return match;
     });
@@ -379,8 +405,6 @@ export class PersonaServer {
       `${personas.length} personas found for ${customerId.readUInt32BE(0)}`
     );
 
-    let responsePacket;
-
     const personaMapsMessage = new NPSPersonaMapsMessage(
       EMessageDirection.SENT
     );
@@ -393,7 +417,7 @@ export class PersonaServer {
       try {
         personaMapsMessage.loadMaps(personas);
 
-        responsePacket = new NPSMessage(EMessageDirection.SENT);
+        const responsePacket = new NPSMessage(EMessageDirection.SENT);
         responsePacket.msgNo = 0x6_07;
         responsePacket.setContent(personaMapsMessage.serialize());
         log.debug(
@@ -403,6 +427,9 @@ export class PersonaServer {
         );
 
         responsePacket.dumpPacket();
+
+        return responsePacket;
+
       } catch (error) {
         if (error instanceof Error) {
           throw new TypeError(`Error serializing personaMapsMsg: ${error.message}`);
@@ -412,7 +439,6 @@ export class PersonaServer {
       }
     }
 
-    return responsePacket;
   }
 
   /**
@@ -431,52 +457,58 @@ export class PersonaServer {
       })}`
     );
     const requestCode = data.readUInt16BE(0).toString(16);
-    let responsePacket;
 
     switch (requestCode) {
-      case "503":
+      case "503": {
+        const requestPacket = new NPSMessage(
+          EMessageDirection.RECEIVED
+        ).deserialize(data);
         // NPS_REGISTER_GAME_LOGIN = 0x503
-        responsePacket = await this.handleSelectGamePersona(data);
+        const responsePacket = await handleSelectGamePersona(requestPacket);
         this.sendPacket(sock, responsePacket);
         return updatedConnection;
+      }
 
-      case "507":
+      case "507": {
         // NPS_NEW_GAME_ACCOUNT == 0x507
-        responsePacket = await this.createNewGameAccount(data);
+        const responsePacket = await this.createNewGameAccount(data);
         this.sendPacket(sock, responsePacket);
         return updatedConnection;
+      }
 
-      case "50f":
+      case "50f": {
         // NPS_REGISTER_GAME_LOGOUT = 0x50F
-        responsePacket = await this.logoutGameUser(data);
+        const responsePacket = await this.logoutGameUser(data);
         this.sendPacket(sock, responsePacket);
         return updatedConnection;
+      }
 
-      case "532":
+      case "532": {
         // NPS_GET_PERSONA_MAPS = 0x532
-        responsePacket = await this.getPersonaMaps(data);
+        const responsePacket = await this.getPersonaMaps(data);
         this.sendPacket(sock, responsePacket);
         return updatedConnection;
+      }
 
-      case "533":
+      case "533": {
         // NPS_VALIDATE_PERSONA_NAME   = 0x533
-        responsePacket = await this.validatePersonaName(data);
+        const responsePacket = await this.validatePersonaName(data);
         this.sendPacket(sock, responsePacket);
         return updatedConnection;
-
-      case "534":
+      }
+      case "534": {
         // NPS_CHECK_TOKEN   = 0x534
-        responsePacket = await this.validateLicencePlate(data);
+        const responsePacket = await this.validateLicencePlate(data);
         this.sendPacket(sock, responsePacket);
         return updatedConnection;
-
-      default:
-        throw new Error(
-          `[personaServer] Unknown code was received ${JSON.stringify({
-            requestCode,
-            localPort,
-          })}`
-        );
+      }
     }
+    throw new Error(
+      `[personaServer] Unknown code was received ${JSON.stringify({
+        requestCode,
+        localPort,
+      })}`
+    );
+
   }
 }

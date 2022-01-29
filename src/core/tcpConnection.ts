@@ -8,7 +8,8 @@
 import { createCipheriv, createDecipheriv } from "crypto";
 import type { Socket } from "net";
 import { logger } from "../logger/index";
-import type { LobbyCipers, UnprocessedPacket } from "../types/index";
+import { MessageNode } from "../message-types";
+import type { ConnectionWithPacket, ConnectionWithPackets, LobbyCipers, UnprocessedPacket } from "../types/index";
 import { ConnectionManager } from "./connection-mgr";
 import { EncryptionManager } from "./encryption-mgr";
 
@@ -60,34 +61,62 @@ export class TCPConnection {
     this.isSetupComplete = false;
     this.inQueue = true;
   }
+  /**
+   * Has the encryption keyset for lobby messages been created?
+   * @returns {boolean}
+   */
   isLobbyKeysetReady(): boolean {
     return (
       this.encLobby.cipher !== undefined && this.encLobby.decipher !== undefined
     );
   }
-  async updateConnectionByAddressAndPort(
+
+  /**
+   * Update connection record
+   * @param {string} remoteAddress 
+   * @param {number} localPort 
+   * @param {TCPConnection} newConnection 
+   * @returns {TCPConnection[]}
+   */
+  updateConnectionByAddressAndPort(
     remoteAddress: string,
     localPort: number,
     newConnection: TCPConnection
-  ): Promise<void> {
+  ): TCPConnection[] {
     if (this.mgr === undefined) {
       throw new Error("Connection manager not set");
     }
-    this.mgr._updateConnectionByAddressAndPort(
+    return this.mgr._updateConnectionByAddressAndPort(
       remoteAddress,
       localPort,
       newConnection
     );
   }
 
-  setManager(manager: ConnectionManager): void {
+  /**
+   * Set the connection manager
+   * @param {ConnectionManager} manager 
+   * @returns {TCPConnection}
+   */
+  setManager(manager: ConnectionManager): TCPConnection {
     this.mgr = manager;
+    return this
   }
 
-  setEncryptionManager(encryptionManager: EncryptionManager): void {
+  /**
+   * Set the encryption manager
+   * @param encryptionManager 
+   * @returns {TCPConnection}
+   */
+  setEncryptionManager(encryptionManager: EncryptionManager): TCPConnection {
     this.enc = encryptionManager;
+    return this
   }
 
+  /**
+   * Return the encryption manager id
+   * @returns {string}
+   */
   getEncryptionId(): string {
     if (this.enc === undefined) {
       throw new Error("Encryption manager not set");
@@ -95,6 +124,11 @@ export class TCPConnection {
     return this.enc.getId();
   }
 
+  /**
+   * Encrypt the buffer contents
+   * @param {Buffer} buffer 
+   * @returns {Buffer}
+   */
   encryptBuffer(buffer: Buffer): Buffer {
     if (this.enc === undefined) {
       throw new Error("Encryption manager not set");
@@ -102,6 +136,11 @@ export class TCPConnection {
     return this.enc.encrypt(buffer);
   }
 
+  /**
+   * Decrypt the buffer contents
+   * @param {Buffer} buffer 
+   * @returns {Buffer}
+   */
   decryptBuffer(buffer: Buffer): Buffer {
     if (this.enc === undefined) {
       throw new Error("Encryption manager not set");
@@ -138,8 +177,11 @@ export class TCPConnection {
         desIV
       );
       this.encLobby.cipher.setAutoPadding(false);
-    } catch (error) {
-      throw new Error(`Error setting cipher: ${error}`);
+    } catch (err) {
+      if (err instanceof Error) {
+        throw new Error(`Error setting cipher: ${err.message}`);  
+      }
+      throw err
     }
 
     try {
@@ -149,8 +191,12 @@ export class TCPConnection {
         desIV
       );
       this.encLobby.decipher.setAutoPadding(false);
-    } catch (error) {
-      throw new Error(`Error setting decipher: ${error}`);
+    } catch (err) {
+      if (err instanceof Error) {
+        throw new Error(`Error setting decipher: ${err.message}`);
+      }
+      throw err
+
     }
 
     this.isSetupComplete = true;
@@ -182,6 +228,11 @@ export class TCPConnection {
     throw new Error("No DES decipher set on connection");
   }
 
+  /**
+   * Replays the unproccessed packet to the connection manager
+   * @param {UnprocessedPacket} packet 
+   * @returns {Promise<TCPConnection>}
+   */
   async processPacket(packet: UnprocessedPacket): Promise<TCPConnection> {
     if (this.mgr === undefined) {
       throw new Error("Connection manager is not set");
@@ -198,5 +249,95 @@ export class TCPConnection {
       }
       throw error;
     }
+  }
+
+  /**
+   * 
+   * @param {MessageNode} packet 
+   * @returns {Promise<ConnectionWithPacket>}
+   */
+  compressIfNeeded(
+    packet: MessageNode
+  ): ConnectionWithPacket {
+    // Check if compression is needed
+    if (packet.getLength() < 80) {
+      log.debug("Too small, should not compress");
+      return { connection: this, packet, lastError: "Too small, should not compress" };
+    } else {
+      log.debug("This packet should be compressed");
+      /* TODO: Write compression.
+       *
+       * At this time we will still send the packet, to not hang connection
+       * Client will crash though, due to memory access errors
+       */
+    }
+
+    return { connection: this, packet };
+  }
+
+  /**
+   * 
+   * @param {MessageNode} packet 
+   * @returns {Promise<ConnectionWithPacket>}
+   */
+  encryptIfNeeded(
+    packet: MessageNode
+  ): ConnectionWithPacket {
+    // Check if encryption is needed
+    if (packet.flags - 8 >= 0) {
+      log.debug("encryption flag is set");
+
+      packet.updateBuffer(this.encryptBuffer(packet.data));
+
+      log.debug(`encrypted packet: ${packet.serialize().toString("hex")}`);
+    }
+
+    return { connection: this, packet };
+  }
+
+  /**
+   * Attempt to write packet(s) to the socjet
+   * @param {MessageNode[]} packetList 
+   * @returns {Promise<TCPConnection>}
+   */
+  tryWritePackets(
+    packetList: MessageNode[]
+  ): TCPConnection {
+    const updatedConnection: ConnectionWithPackets = {
+      connection: this,
+      packetList: packetList,
+    };
+    // For each node in nodes
+    for (const packet of updatedConnection.packetList) {
+      // Does the packet need to be compressed?
+      const compressedPacket: MessageNode = (
+        this.compressIfNeeded(packet)
+      ).packet;
+      // Does the packet need to be encrypted?
+      const encryptedPacket = (
+        this.encryptIfNeeded(compressedPacket)
+      ).packet;
+      // Log that we are trying to write
+      log.debug(
+        ` Atempting to write seq: ${encryptedPacket.seq} to conn: ${updatedConnection.connection.id}`
+      );
+
+      // Log the buffer we are writing
+      log.debug(
+        `Writting buffer: ${encryptedPacket.serialize().toString("hex")}`
+      );
+      if (this.sock.writable) {
+        // Write the packet to socket
+        this.sock.write(encryptedPacket.serialize());
+      } else {
+        const port: string = this.sock.localPort?.toString() || "";
+        throw new Error(
+          `Error writing ${encryptedPacket.serialize()} to ${this.sock.remoteAddress
+          } , ${port}`
+        );
+      }
+    }
+
+    return updatedConnection.connection
   }
 }
