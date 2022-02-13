@@ -12,7 +12,6 @@
     "AUTHORS"
   ],
   "scripts": {
-    "audit": "npm audit",
     "lint": "eslint . --fix",
     "check:license": "npm licenses audit --summary --config=licenses.config.js",
     "start": "node dist/bin/app.js | ./node_modules/.bin/pino-pretty",
