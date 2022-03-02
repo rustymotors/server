@@ -1,12 +1,20 @@
-import {APP_CONFIG} from "../config/appconfig";
+import { APP_CONFIG } from "../config/appconfig";
 import { createServer as createHTTPServer, Server as httpServer } from "http";
 import { createServer as createSSLServer, Server as sslServer } from "https";
+import { createSecureContext, SecureContext } from "tls";
 import { logger } from "../logger/index";
 import { httpListener } from "./httpListener";
 import { sslListener } from "./sslListener";
 import { readFileSync } from "fs";
 
 const log = logger.child({ service: "http" });
+
+export interface SSLContext extends SecureContext {
+  cert: string
+  honorCipherOrder: boolean
+  key: string
+  rejectUnauthorized: boolean
+}
 
 /**
  * Start the HTTP listener
@@ -32,12 +40,7 @@ export function startHTTPListener(): httpServer {
   rejectUnauthorized: boolean
 }}
  */
-function _sslOptions(): {
-  cert: string,
-  honorCipherOrder: boolean,
-  key: string,
-  rejectUnauthorized: boolean
-} {
+function _sslOptions(): SSLContext{
   log.debug(`Reading ssl certificate...`);
 
   try {
@@ -52,18 +55,19 @@ function _sslOptions(): {
     });
 
     return {
-      cert,
+      context: createSecureContext(),
+      cert,      
       honorCipherOrder: true,
       key,
       rejectUnauthorized: false,
     };
-  
   } catch (error) {
     throw new Error(
-      `Error loading ssl configuration files: (${String(error)}), server must quit!`
+      `Error loading ssl configuration files: (${String(
+        error
+      )}), server must quit!`
     );
   }
-
 }
 
 /**
@@ -72,10 +76,18 @@ function _sslOptions(): {
  */
 export function startSSLListener(): sslServer {
   try {
+    const defaults = _sslOptions()
     const { SSL_LISTEN_HOST, SSL_EXTERNAL_HOST } = APP_CONFIG.MCOS.SETTINGS;
-    const server = createSSLServer(_sslOptions(), sslListener);
+    const server = createSSLServer({
+      minVersion: 'TLSv1.2',
+      cert: defaults.cert,      
+      honorCipherOrder: true,
+      key: defaults.key,
+      rejectUnauthorized: false,
+    }, sslListener);
     server.on("tlsClientError", (error: Error) => {
       log.warn(`SSL Socket Client Error: ${error.message}`);
+      log.warn(error)
     });
     server.listen(443, SSL_LISTEN_HOST, () => {
       log.debug(
@@ -86,7 +98,9 @@ export function startSSLListener(): sslServer {
     return server;
   } catch (err) {
     if (err instanceof Error) {
-      throw new Error(`Unable to start the SSL listener: ${err.message}, ${String(err.stack)}`);  
+      throw new Error(
+        `Unable to start the SSL listener: ${err.message}, ${String(err.stack)}`
+      );
     }
     throw new Error(`Unknown Error${String(err)}`);
   }

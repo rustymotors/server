@@ -9,7 +9,12 @@ import { createCipheriv, createDecipheriv } from "crypto";
 import type { Socket } from "net";
 import { logger } from "../logger/index";
 import { MessageNode } from "../message-types";
-import type { ConnectionWithPacket, ConnectionWithPackets, LobbyCipers, UnprocessedPacket } from "../types/index";
+import type {
+  ConnectionWithPacket,
+  ConnectionWithPackets,
+  LobbyCipers,
+  UnprocessedPacket,
+} from "../types/index";
 import { ConnectionManager } from "./connection-mgr";
 import { EncryptionManager } from "./encryption-mgr";
 
@@ -73,9 +78,9 @@ export class TCPConnection {
 
   /**
    * Update connection record
-   * @param {string} remoteAddress 
-   * @param {number} localPort 
-   * @param {TCPConnection} newConnection 
+   * @param {string} remoteAddress
+   * @param {number} localPort
+   * @param {TCPConnection} newConnection
    * @returns {TCPConnection[]}
    */
   updateConnectionByAddressAndPort(
@@ -95,22 +100,22 @@ export class TCPConnection {
 
   /**
    * Set the connection manager
-   * @param {ConnectionManager} manager 
+   * @param {ConnectionManager} manager
    * @returns {TCPConnection}
    */
   setManager(manager: ConnectionManager): TCPConnection {
     this.mgr = manager;
-    return this
+    return this;
   }
 
   /**
    * Set the encryption manager
-   * @param encryptionManager 
+   * @param encryptionManager
    * @returns {TCPConnection}
    */
   setEncryptionManager(encryptionManager: EncryptionManager): TCPConnection {
     this.enc = encryptionManager;
-    return this
+    return this;
   }
 
   /**
@@ -126,7 +131,7 @@ export class TCPConnection {
 
   /**
    * Encrypt the buffer contents
-   * @param {Buffer} buffer 
+   * @param {Buffer} buffer
    * @returns {Buffer}
    */
   encryptBuffer(buffer: Buffer): Buffer {
@@ -138,7 +143,7 @@ export class TCPConnection {
 
   /**
    * Decrypt the buffer contents
-   * @param {Buffer} buffer 
+   * @param {Buffer} buffer
    * @returns {Buffer}
    */
   decryptBuffer(buffer: Buffer): Buffer {
@@ -179,9 +184,9 @@ export class TCPConnection {
       this.encLobby.cipher.setAutoPadding(false);
     } catch (err) {
       if (err instanceof Error) {
-        throw new Error(`Error setting cipher: ${err.message}`);  
+        throw new Error(`Error setting cipher: ${err.message}`);
       }
-      throw err
+      throw err;
     }
 
     try {
@@ -195,8 +200,7 @@ export class TCPConnection {
       if (err instanceof Error) {
         throw new Error(`Error setting decipher: ${err.message}`);
       }
-      throw err
-
+      throw err;
     }
 
     this.isSetupComplete = true;
@@ -230,7 +234,7 @@ export class TCPConnection {
 
   /**
    * Replays the unproccessed packet to the connection manager
-   * @param {UnprocessedPacket} packet 
+   * @param {UnprocessedPacket} packet
    * @returns {Promise<TCPConnection>}
    */
   async processPacket(packet: UnprocessedPacket): Promise<TCPConnection> {
@@ -252,17 +256,19 @@ export class TCPConnection {
   }
 
   /**
-   * 
-   * @param {MessageNode} packet 
+   *
+   * @param {MessageNode} packet
    * @returns {Promise<ConnectionWithPacket>}
    */
-  compressIfNeeded(
-    packet: MessageNode
-  ): ConnectionWithPacket {
+  compressIfNeeded(packet: MessageNode): ConnectionWithPacket {
     // Check if compression is needed
     if (packet.getLength() < 80) {
       log.debug("Too small, should not compress");
-      return { connection: this, packet, lastError: "Too small, should not compress" };
+      return {
+        connection: this,
+        packet,
+        lastError: "Too small, should not compress",
+      };
     } else {
       log.debug("This packet should be compressed");
       /* TODO: Write compression.
@@ -276,13 +282,11 @@ export class TCPConnection {
   }
 
   /**
-   * 
-   * @param {MessageNode} packet 
+   *
+   * @param {MessageNode} packet
    * @returns {Promise<ConnectionWithPacket>}
    */
-  encryptIfNeeded(
-    packet: MessageNode
-  ): ConnectionWithPacket {
+  encryptIfNeeded(packet: MessageNode): ConnectionWithPacket {
     // Check if encryption is needed
     if (packet.flags - 8 >= 0) {
       log.debug("encryption flag is set");
@@ -297,12 +301,10 @@ export class TCPConnection {
 
   /**
    * Attempt to write packet(s) to the socjet
-   * @param {MessageNode[]} packetList 
+   * @param {MessageNode[]} packetList
    * @returns {Promise<TCPConnection>}
    */
-  tryWritePackets(
-    packetList: MessageNode[]
-  ): TCPConnection {
+  tryWritePackets(packetList: MessageNode[]): TCPConnection {
     const updatedConnection: ConnectionWithPackets = {
       connection: this,
       packetList: packetList,
@@ -310,13 +312,10 @@ export class TCPConnection {
     // For each node in nodes
     for (const packet of updatedConnection.packetList) {
       // Does the packet need to be compressed?
-      const compressedPacket: MessageNode = (
-        this.compressIfNeeded(packet)
-      ).packet;
+      const compressedPacket: MessageNode =
+        this.compressIfNeeded(packet).packet;
       // Does the packet need to be encrypted?
-      const encryptedPacket = (
-        this.encryptIfNeeded(compressedPacket)
-      ).packet;
+      const encryptedPacket = this.encryptIfNeeded(compressedPacket).packet;
       // Log that we are trying to write
       log.debug(
         ` Atempting to write seq: ${encryptedPacket.seq} to conn: ${updatedConnection.connection.id}`
@@ -332,12 +331,13 @@ export class TCPConnection {
       } else {
         const port: string = this.sock.localPort?.toString() || "";
         throw new Error(
-          `Error writing ${encryptedPacket.serialize()} to ${this.sock.remoteAddress
+          `Error writing ${encryptedPacket.serialize()} to ${
+            this.sock.remoteAddress
           } , ${port}`
         );
       }
     }
 
-    return updatedConnection.connection
+    return updatedConnection.connection;
   }
 }

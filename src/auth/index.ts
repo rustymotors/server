@@ -64,7 +64,10 @@ export class AuthLogin {
    * @param {import("http").IncomingMessage} request
    * @param {import("http").ServerResponse} response
    */
-  handleRequest(request: IncomingMessage, response: ServerResponse): ServerResponse {
+  handleRequest(
+    request: IncomingMessage,
+    response: ServerResponse
+  ): ServerResponse {
     log.info(
       `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );

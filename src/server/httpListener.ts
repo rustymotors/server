@@ -1,4 +1,4 @@
-import {APP_CONFIG} from "../config/appconfig";
+import { APP_CONFIG } from "../config/appconfig";
 import { IncomingMessage, ServerResponse } from "http";
 import { logger } from "../logger";
 import { PatchServer } from "../patch";
@@ -8,11 +8,14 @@ const log = logger.child({ service: "http" });
 
 /**
  * Routes incomming HTTP requests
- * @param {IncomingMessage} req 
- * @param {ServerResponse} res 
+ * @param {IncomingMessage} req
+ * @param {ServerResponse} res
  * @returns {ServerResponse}
  */
-export function httpListener(req: IncomingMessage, res: ServerResponse): ServerResponse {
+export function httpListener(
+  req: IncomingMessage,
+  res: ServerResponse
+): ServerResponse {
   if (
     req.url === "/games/EA_Seattle/MotorCity/UpdateInfo" ||
     req.url === "/games/EA_Seattle/MotorCity/NPS" ||
