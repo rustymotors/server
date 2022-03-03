@@ -8,7 +8,7 @@ import net from 'net';
 function _bufferToString(data: Buffer) {
     let outputStringArray: string[] = []
     for (let index = 0; index < data.length; index++) {
-        outputStringArray.push(`0x${data[index].toString(16)}`);        
+        outputStringArray.push(`0x${data[index].toString(16).padStart(2, '0')}`);        
     }
     return outputStringArray.join(', ')
 }
