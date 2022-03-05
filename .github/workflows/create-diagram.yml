@@ -14,6 +14,6 @@ jobs:
         node-version: [16.x]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Repo Visualizer
         uses: githubocto/repo-visualizer@0.7.1
