@@ -71,6 +71,13 @@ function _checkContentType(firstByte: number) {
   return "Unknown";
 }
 
+/**
+ * 
+ * @param {Buffer} data 
+ * @param connectionRecord 
+ * @private
+ * @returns 
+ */
 function _onData(data: Buffer, connectionRecord: SSLConnectionRecord) {
   const firstByte = data[0];
 
@@ -110,7 +117,7 @@ function _onData(data: Buffer, connectionRecord: SSLConnectionRecord) {
 
 class SSLConnectionRecord {
   private _socket: Socket;
-  private _connectionState: SSLConnectionState
+  private _connectionState: SSLConnectionState = SSLConnectionState["CLIENT-HELLO"]
   private _id: string = "";
 
   get id() {
@@ -216,6 +223,7 @@ function _listener(listeningSocket: Socket) {
 const server = net.createServer(_listener);
 
 server.on("error", (err) => {
+  console.error(`There was an error: ${err.message}`)
   throw err;
 });
 server.listen(443, () => {
