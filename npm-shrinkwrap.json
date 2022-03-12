@@ -3301,8 +3301,9 @@
     },
     "node_modules/asynckit": {
       "version": "0.4.0",
-      "dev": true,
-      "license": "MIT"
+      "resolved": "https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz",
+      "integrity": "sha1-x57Zf380y48robyXkLzDZkdLS3k=",
+      "dev": true
     },
     "node_modules/atomic-sleep": {
       "version": "1.0.0",
@@ -3863,7 +3864,6 @@
     "node_modules/combined-stream": {
       "version": "1.0.8",
       "dev": true,
-      "license": "MIT",
       "dependencies": {
         "delayed-stream": "~1.0.0"
       },
@@ -4079,7 +4079,6 @@
     "node_modules/delayed-stream": {
       "version": "1.0.0",
       "dev": true,
-      "license": "MIT",
       "engines": {
         "node": ">=0.4.0"
       }
@@ -7732,7 +7731,6 @@
     "node_modules/mime-db": {
       "version": "1.50.0",
       "dev": true,
-      "license": "MIT",
       "engines": {
         "node": ">= 0.6"
       }
@@ -7740,7 +7738,6 @@
     "node_modules/mime-types": {
       "version": "2.1.33",
       "dev": true,
-      "license": "MIT",
       "dependencies": {
         "mime-db": "1.50.0"
       },
@@ -7986,8 +7983,9 @@
     },
     "node_modules/ms": {
       "version": "2.1.2",
-      "dev": true,
-      "license": "MIT"
+      "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.2.tgz",
+      "integrity": "sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==",
+      "dev": true
     },
     "node_modules/nanoid": {
       "version": "3.3.1",
@@ -8115,19 +8113,6 @@
       "version": "2.0.1",
       "dev": true,
       "license": "MIT"
-    },
-    "node_modules/nopt": {
-      "version": "3.0.6",
-      "resolved": "https://registry.npmjs.org/nopt/-/nopt-3.0.6.tgz",
-      "integrity": "sha1-xkZdvwirzU2zWTF/eaxopkayj/k=",
-      "dev": true,
-      "optional": true,
-      "dependencies": {
-        "abbrev": "1"
-      },
-      "bin": {
-        "nopt": "bin/nopt.js"
-      }
     },
     "node_modules/normalize-path": {
       "version": "3.0.0",
@@ -9099,8 +9084,9 @@
     },
     "node_modules/psl": {
       "version": "1.8.0",
-      "dev": true,
-      "license": "MIT"
+      "resolved": "https://registry.npmjs.org/psl/-/psl-1.8.0.tgz",
+      "integrity": "sha512-RIdOzyoavK+hA18OGGWDqUTsCLhtA7IcZ/6NCs4fFJaHBDab+pDDmDIByWFRQJq2Cd7r1OoQxBGKOaztq+hjIQ==",
+      "dev": true
     },
     "node_modules/pump": {
       "version": "3.0.0",
@@ -9997,19 +9983,6 @@
       },
       "engines": {
         "node": ">=8"
-      }
-    },
-    "node_modules/tar": {
-      "version": "2.2.2",
-      "resolved": "https://registry.npmjs.org/tar/-/tar-2.2.2.tgz",
-      "integrity": "sha512-FCEhQ/4rE1zYv9rYXJw/msRqsnmlje5jHP6huWeBZ704jUTy02c5AZyWujpMR1ax6mVw9NyJMfuK2CMDWVIfgA==",
-      "deprecated": "This version of tar is no longer supported, and will not receive security updates. Please upgrade asap.",
-      "dev": true,
-      "optional": true,
-      "dependencies": {
-        "block-stream": "*",
-        "fstream": "^1.0.12",
-        "inherits": "2"
       }
     },
     "node_modules/terminal-link": {
@@ -12912,6 +12885,8 @@
     },
     "asynckit": {
       "version": "0.4.0",
+      "resolved": "https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz",
+      "integrity": "sha1-x57Zf380y48robyXkLzDZkdLS3k=",
       "dev": true
     },
     "atomic-sleep": {
@@ -16077,6 +16052,8 @@
     },
     "ms": {
       "version": "2.1.2",
+      "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.2.tgz",
+      "integrity": "sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==",
       "dev": true
     },
     "nanoid": {
@@ -16168,16 +16145,6 @@
     "node-releases": {
       "version": "2.0.1",
       "dev": true
-    },
-    "nopt": {
-      "version": "3.0.6",
-      "resolved": "https://registry.npmjs.org/nopt/-/nopt-3.0.6.tgz",
-      "integrity": "sha1-xkZdvwirzU2zWTF/eaxopkayj/k=",
-      "dev": true,
-      "optional": true,
-      "requires": {
-        "abbrev": "1"
-      }
     },
     "normalize-path": {
       "version": "3.0.0",
@@ -16857,6 +16824,8 @@
     },
     "psl": {
       "version": "1.8.0",
+      "resolved": "https://registry.npmjs.org/psl/-/psl-1.8.0.tgz",
+      "integrity": "sha512-RIdOzyoavK+hA18OGGWDqUTsCLhtA7IcZ/6NCs4fFJaHBDab+pDDmDIByWFRQJq2Cd7r1OoQxBGKOaztq+hjIQ==",
       "dev": true
     },
     "pump": {
@@ -17472,18 +17441,6 @@
             "strip-ansi": "^6.0.1"
           }
         }
-      }
-    },
-    "tar": {
-      "version": "2.2.2",
-      "resolved": "https://registry.npmjs.org/tar/-/tar-2.2.2.tgz",
-      "integrity": "sha512-FCEhQ/4rE1zYv9rYXJw/msRqsnmlje5jHP6huWeBZ704jUTy02c5AZyWujpMR1ax6mVw9NyJMfuK2CMDWVIfgA==",
-      "dev": true,
-      "optional": true,
-      "requires": {
-        "block-stream": "*",
-        "fstream": "^1.0.12",
-        "inherits": "2"
       }
     },
     "terminal-link": {
