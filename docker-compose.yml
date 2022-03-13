@@ -1,0 +1,34 @@
+# Use postgres/example user/password credentials
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+  
+  node:
+    image: "node:16"
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=production
+      - PGHOST=db
+      - PGUSER=postgres
+      - PGDATABASE=postgres
+      - PGPASSWORD=example
+    volumes:
+      - ./:/home/node/app
+    expose:
+      - "8081"
+    command: "npx ts-node src/auth/server.ts"
+    depends_on:
+      - db

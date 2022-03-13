@@ -4,6 +4,7 @@
  */
 
 import net, { Socket } from "net";
+import { Client } from 'pg';
 
 
 /**
@@ -37,9 +38,9 @@ function _bufferToString(data: Buffer) {
 }
 
 enum SSLConnectionState {
-  "NEW_CONNECTION",
-  "ERRORED_CONNECTION",
-  "CLIENT-HELLO",
+  'NEW_CONNECTION' = 'new connection',
+  'ERRORED_CONNECTION' = 'errored connection',
+  'CLIENT-HELLO' = 'client hello',
 }
 
 interface SSLRecord {
@@ -79,50 +80,13 @@ function _checkContentType(firstByte: number) {
  * @returns 
  */
 function _onData(data: Buffer, connectionRecord: SSLConnectionRecord) {
-  const firstByte = data[0];
 
-  const dataContentType = _checkContentType(firstByte);
-
-  if (dataContentType !== "Unknown") {
-    const error = connectionRecord.closeWithError(
-      `Detected packet as valid TLS, ignoring and closing the socket`
-    );
-
-    if (error) {
-      console.error(error);
-    }
-
-    return;
-  }
-
-  console.log(_checkContentType(firstByte));
-
-  console.log(`MSB of first byte is set: ${Boolean(data[0] && 0x80)}`);
-
-  const sslRecord: SSLRecord = {
-    totalHeaderLengthInBytes: data[0] && 0x80 ? 2 : 3,
-  };
-
-  const recordLength = ((data[0] & 0x7f) << 8) | data[1];
-
-  sslRecord.bodyBytes = parseRecordBody(
-    data,
-    sslRecord.totalHeaderLengthInBytes
-  );
-
-  console.log(_bufferToString(data));
-
-  console.dir(sslRecord);
 }
 
 class SSLConnectionRecord {
-  private _socket: Socket;
-  private _connectionState: SSLConnectionState = SSLConnectionState["CLIENT-HELLO"]
-  private _id: string = "";
-
-  get id() {
-    return this._id;
-  }
+  public connectionState: SSLConnectionState = SSLConnectionState["CLIENT-HELLO"]
+  public id: string = "";
+  public sock: Socket;
 
   /**
    * createConnectionId
@@ -133,21 +97,68 @@ class SSLConnectionRecord {
   }
 
   constructor(socket: Socket) {
-    this._connectionState = SSLConnectionState.NEW_CONNECTION
-    this._socket = socket;
-    this._id = SSLConnectionRecord.createConnectionId(socket);
+    this.connectionState = SSLConnectionState.NEW_CONNECTION
+    this.sock = socket;
+    this.id = SSLConnectionRecord.createConnectionId(socket);
   }
+
+}
 
   /**
    * closeWithError
    * Closes the underlying Socket, returns an optional error
    */
-  public closeWithError(error?: string): string | void {
-    this._connectionState = SSLConnectionState.ERRORED_CONNECTION
-    this._socket.end();
-    return error;
+   const closeWithError = (sock: Socket, error?: string): never => {
+    sock.end();
+    console.error(error)
+    process.exit(-1)
   }
-}
+
+  /**
+ * 
+ * @param {Buffer} data 
+ * @private
+ * @returns 
+ */
+   const processIncomingData = (connectionRecord: SSLConnectionRecord, data: Buffer) => {
+    const firstByte = data[0];
+
+    const dataContentType = _checkContentType(firstByte);
+  
+    if (dataContentType !== "Unknown") {
+      closeWithError(connectionRecord.sock, 
+        `Detected packet as valid TLS, ignoring and closing the socket`
+      ); 
+    }
+  
+    console.log(_checkContentType(firstByte));
+  
+    console.log(`MSB of first byte is set: ${Boolean(data[0] && 0x80)}`);
+  
+    const sslRecord: SSLRecord = {
+      totalHeaderLengthInBytes: data[0] && 0x80 ? 2 : 3,
+    };
+  
+    const recordLength = ((data[0] & 0x7f) << 8) | data[1];
+
+    // Get the current connection state
+    const connectionState = connectionRecord.connectionState
+    console.log(`Current conection state: ${connectionState}`)
+
+    if (connectionState === SSLConnectionState["CLIENT-HELLO"]) {
+      
+    }
+  
+    sslRecord.bodyBytes = parseRecordBody(
+      data,
+      sslRecord.totalHeaderLengthInBytes
+    );
+  
+    console.log(_bufferToString(data));
+  
+    console.dir(sslRecord);
+  }
+ 
 
 class SSLConnectionManager {
   private _connections: SSLConnectionRecord[] = [];
@@ -177,6 +188,7 @@ class SSLConnectionManager {
     this._connections.push(connection);
     return connection;
   }
+  
 
   /**
    * getConnections
@@ -216,16 +228,37 @@ function _listener(listeningSocket: Socket) {
     console.log("client disconnected\n\n");
   });
   listeningSocket.on("data", (data) => {
-    _onData(data, connectionRecord);
+    processIncomingData(connectionRecord, data)
   });
 }
 
-const server = net.createServer(_listener);
+const client = new Client()
 
-server.on("error", (err) => {
-  console.error(`There was an error: ${err.message}`)
-  throw err;
-});
-server.listen(443, () => {
-  console.log("server bound");
-});
+async function main() {
+
+  await client.connect()
+  
+  const res = await client.query('SELECT $1::text as message', ['Hello world!'])
+  console.log(res.rows[0].message) // Hello world!
+  await client.end()
+  
+  const server = net.createServer(_listener);
+  
+  server.on("error", (err) => {
+    console.error(`There was an error: ${err.message}`)
+    throw err;
+  });
+  server.listen(443, () => {
+    console.log("server bound");
+  });
+  
+  process.on('uncaughtException', err => {
+    console.error(`Uncaught Exception!`)
+    process.exitCode = -1
+    console.error(err.message)
+    console.error(err.stack)
+  })
+}
+
+main()
+
