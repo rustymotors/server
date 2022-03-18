@@ -79,8 +79,9 @@ export function startSSLListener(): sslServer {
     const defaults = _sslOptions()
     const { SSL_LISTEN_HOST, SSL_EXTERNAL_HOST } = APP_CONFIG.MCOS.SETTINGS;
     const server = createSSLServer({
-      minVersion: 'TLSv1.2',
-      cert: defaults.cert,      
+      minVersion: 'TLSv1',
+      cert: defaults.cert,
+      ciphers: 'HIGH:MEDIUM',      
       honorCipherOrder: true,
       key: defaults.key,
       rejectUnauthorized: false,
@@ -89,12 +90,12 @@ export function startSSLListener(): sslServer {
       log.warn(`SSL Socket Client Error: ${error.message}`);
       log.warn(error)
     });
-    server.listen(443, SSL_LISTEN_HOST, () => {
-      log.debug(
-        `ssl endpoint listening on ${SSL_LISTEN_HOST}:443 is accessable on ${SSL_EXTERNAL_HOST}:443`
-      );
-      log.info("ssl server is listening...");
-    });
+    // server.listen(443, SSL_LISTEN_HOST, () => {
+    //   log.debug(
+    //     `ssl endpoint listening on ${SSL_LISTEN_HOST}:443 is accessable on ${SSL_EXTERNAL_HOST}:443`
+    //   );
+    //   log.info("ssl server is listening...");
+    // });
     return server;
   } catch (err) {
     if (err instanceof Error) {

@@ -3,6 +3,7 @@ import { IncomingMessage, ServerResponse } from "http";
 import { logger } from "../logger";
 import { PatchServer } from "../patch";
 import { ShardServer } from "../shard";
+import { AuthLogin } from "../auth";
 
 const log = logger.child({ service: "http" });
 
@@ -16,6 +17,11 @@ export function httpListener(
   req: IncomingMessage,
   res: ServerResponse
 ): ServerResponse {
+  if (req.url && req.url.startsWith("/AuthLogin")) {
+    log.debug("ssl routing request to login web server");
+    return AuthLogin.getInstance().handleRequest(req, res);
+  }
+
   if (
     req.url === "/games/EA_Seattle/MotorCity/UpdateInfo" ||
     req.url === "/games/EA_Seattle/MotorCity/NPS" ||
