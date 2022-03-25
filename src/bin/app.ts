@@ -7,23 +7,14 @@
 */
 
 import { logger } from "../logger/index";
-// import { AdminServer } from "../admin/index";
-// import { AuthLogin } from "../auth/index";
 import { ListenerThread } from "../core/listener-thread";
-import {
-  startHTTPListener,
-  startSSLListener,
-} from "../server/connectionEndpoints";
+import { startHTTPListener } from "../server/connectionEndpoints";
 
 const log = logger.child({ service: "mcos" });
 
 Error.stackTraceLimit = 20;
 
 startHTTPListener();
-// startSSLListener();
-
-// AuthLogin.getInstance().start();
-// HTTPProxyServer.getInstance().start();
 
 const listenerThread = ListenerThread.getInstance();
 log.info({}, "Starting the listening sockets...");
@@ -39,5 +30,3 @@ for (const port of tcpPortList) {
 }
 
 log.info("Listening sockets create successfully.");
-
-// AdminServer.getInstance().start();
