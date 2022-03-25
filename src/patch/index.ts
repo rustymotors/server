@@ -1,7 +1,7 @@
 import { logger } from "../logger/index";
 import { createServer, IncomingMessage, ServerResponse } from "http";
 // import { RoutingMesh, EServerConnectionName } from "../router";
-import {AppConfiguration} from "../config/appconfig";
+import { AppConfiguration } from "../config/appconfig";
 
 const log = logger.child({ service: "MCOServer:Patch" });
 
@@ -44,7 +44,7 @@ export class PatchServer {
     server.listen(port, host);
   }
   static _instance: PatchServer;
-  config: AppConfiguration
+  config: AppConfiguration;
 
   /**
    * Return the instance of the PatchServer class
@@ -58,32 +58,34 @@ export class PatchServer {
   }
 
   private constructor(config: AppConfiguration) {
-    this.config = config
+    this.config = config;
   }
 
   /**
    * Returns the hard-coded value that tells the client there are no updates or patches
-   * @param {IncomingMessage} request 
-   * @param {ServerResponse} response 
+   * @param {IncomingMessage} request
+   * @param {ServerResponse} response
    * @returns {ServerResponse}
    */
   castanetResponse(
     request: IncomingMessage,
     response: ServerResponse
   ): ServerResponse {
-
     log.debug(
       `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
     );
 
-    response.setHeader(CastanetResponse.header.type, CastanetResponse.header.value);
+    response.setHeader(
+      CastanetResponse.header.type,
+      CastanetResponse.header.value
+    );
     return response.end(CastanetResponse.body);
   }
 
   /**
    * Routes incomming HTTP requests
-   * @param {IncomingMessage} request 
-   * @param {ServerResponse} response 
+   * @param {IncomingMessage} request
+   * @param {ServerResponse} response
    * @returns {ServerResponse}
    */
   handleRequest(
@@ -91,11 +93,16 @@ export class PatchServer {
     request: IncomingMessage,
     response: ServerResponse
   ): ServerResponse {
-
     switch (request.url) {
-      case "/games/EA_Seattle/MotorCity/UpdateInfo": { return this.castanetResponse(request, response) }
-      case "/games/EA_Seattle/MotorCity/NPS": { return this.castanetResponse(request, response) }
-      case "/games/EA_Seattle/MotorCity/MCO": { return this.castanetResponse(request, response) }
+      case "/games/EA_Seattle/MotorCity/UpdateInfo": {
+        return this.castanetResponse(request, response);
+      }
+      case "/games/EA_Seattle/MotorCity/NPS": {
+        return this.castanetResponse(request, response);
+      }
+      case "/games/EA_Seattle/MotorCity/MCO": {
+        return this.castanetResponse(request, response);
+      }
     }
     response.statusCode = 404;
     return response.end("");

@@ -17,21 +17,24 @@ import { TCPConnection } from "../core/tcpConnection";
 
 const log = logger.child({ service: "mcoserver:PersonaServer" });
 
-const NAME_BUFFER_SIZE = 30
+const NAME_BUFFER_SIZE = 30;
 
 /**
  * Return string as buffer
- * @param {string} name 
+ * @param {string} name
  * @param {number} size
  * @param {BufferEncoding} [="utf8"]
  * @returns {Buffer}
  */
-export function generateNameBuffer(name: string, size: number, encoding: BufferEncoding = "utf8"): Buffer {
+export function generateNameBuffer(
+  name: string,
+  size: number,
+  encoding: BufferEncoding = "utf8"
+): Buffer {
   const nameBuffer = Buffer.alloc(size);
   Buffer.from(name, encoding).copy(nameBuffer);
   return nameBuffer;
 }
-
 
 /**
  * Return a list of all personas
@@ -64,15 +67,17 @@ export function fetchPersonas(): PersonaRecord[] {
       shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
     },
   ];
-  return personaList
+  return personaList;
 }
 
 /**
-   * Selects a game persona and marks it as in use
-   * @param {NPSMessage} requestPacket
-   * @returns {Promise<NPSMessage>}
-   */
-export async function handleSelectGamePersona(requestPacket: NPSMessage): Promise<NPSMessage> {
+ * Selects a game persona and marks it as in use
+ * @param {NPSMessage} requestPacket
+ * @returns {Promise<NPSMessage>}
+ */
+export async function handleSelectGamePersona(
+  requestPacket: NPSMessage
+): Promise<NPSMessage> {
   log.debug("_npsSelectGamePersona...");
   log.debug(
     `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
@@ -127,9 +132,6 @@ export class PersonaServer {
   private constructor() {
     // Intentionally empty
   }
-
-
-
 
   /**
    * Create a new game persona record
@@ -327,7 +329,7 @@ export class PersonaServer {
    * @return {Promise<IPersonaRecord[]>}
    */
   async getPersonasByCustomerId(customerId: number): Promise<PersonaRecord[]> {
-    const allPersonas = fetchPersonas()
+    const allPersonas = fetchPersonas();
     const results = allPersonas.filter(
       (persona) => persona.customerId === customerId
     );
@@ -340,7 +342,7 @@ export class PersonaServer {
    * @return {Promise<IPersonaRecord[]>}
    */
   async getPersonasByPersonaId(id: number): Promise<PersonaRecord[]> {
-    const allPersonas = fetchPersonas()
+    const allPersonas = fetchPersonas();
     const results = allPersonas.filter((persona) => {
       const match = id === persona.id.readInt32BE(0);
       return match;
@@ -429,16 +431,16 @@ export class PersonaServer {
         responsePacket.dumpPacket();
 
         return responsePacket;
-
       } catch (error) {
         if (error instanceof Error) {
-          throw new TypeError(`Error serializing personaMapsMsg: ${error.message}`);
+          throw new TypeError(
+            `Error serializing personaMapsMsg: ${error.message}`
+          );
         }
 
         throw new Error("Error serializing personaMapsMsg, error unknonw");
       }
     }
-
   }
 
   /**
@@ -509,6 +511,5 @@ export class PersonaServer {
         localPort,
       })}`
     );
-
   }
 }

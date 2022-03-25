@@ -101,8 +101,8 @@ export class ListenerThread {
     const connectionRecord = connectionMgr.findOrNewConnection(socket);
 
     if (connectionRecord === null) {
-      log.fatal('Unable to attach the socket to a connection.')
-      return
+      log.fatal("Unable to attach the socket to a connection.");
+      return;
     }
 
     const { localPort, remoteAddress } = socket;
@@ -121,7 +121,7 @@ export class ListenerThread {
       log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
     });
     socket.on("data", (data) => {
-      void this._onData(data, connectionRecord)
+      void this._onData(data, connectionRecord);
     });
     socket.on("error", (error: Error) => {
       if (!error.message.includes("ECONNRESET")) {

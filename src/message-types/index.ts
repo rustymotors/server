@@ -1,7 +1,7 @@
 import { EMessageDirection, PersonaRecord } from "../types/index";
 import { readFileSync, statSync } from "fs";
 import { privateDecrypt } from "crypto";
-import {APP_CONFIG} from "../config/appconfig";
+import { APP_CONFIG } from "../config/appconfig";
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
@@ -169,7 +169,7 @@ export class GenericRequestMessage {
         throw new TypeError(
           `[GenericRequestMsg] Unable to read msgNo from ${buffer.toString(
             "hex"
-          )}: ${String(error)}`  // skipcq: JS-0378
+          )}: ${String(error)}` // skipcq: JS-0378
         );
       }
     }
@@ -1812,9 +1812,9 @@ export class NPSUserInfo extends NPSMessage {
   dumpInfo(): string {
     let message = this.dumpPacketHeader("NPSUserInfo");
     const { userId, userName, userData } = this;
-    const userIdString = userId.toString()
-    const userNameString = userName.toString("utf-8")
-    const userDataStringHex = userData.toString("hex")
+    const userIdString = userId.toString();
+    const userNameString = userName.toString("utf-8");
+    const userDataStringHex = userData.toString("hex");
     message = message.concat(
       `UserId:        ${userIdString}
        UserName:      ${userNameString}

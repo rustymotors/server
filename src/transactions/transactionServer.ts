@@ -132,7 +132,7 @@ export class MCOTServer {
     pReply.msgReply = 324;
     const rPacket = new MessageNode(EMessageDirection.SENT);
     rPacket.flags = 9;
-    rPacket.setSeq(node.seq)
+    rPacket.setSeq(node.seq);
 
     const lobby = Buffer.alloc(12);
     lobby.writeInt32LE(325, 0);
@@ -273,8 +273,8 @@ export class MCOTServer {
 
   /**
    * Handles the getStockCarInfo message
-   * @param {TCPConnection} connection 
-   * @param {MessageNode} packet 
+   * @param {TCPConnection} connection
+   * @param {MessageNode} packet
    * @returns {ConnectionWithPackets}
    */
   getStockCarInfo(
@@ -368,7 +368,9 @@ export class MCOTServer {
     const currentMessageNo: number = node.msgNo;
     const currentMessageString: string = this._MSG_STRING(currentMessageNo);
 
-    log.debug(`We are attempting to process a message with id ${currentMessageNo}(${currentMessageString})`)
+    log.debug(
+      `We are attempting to process a message with id ${currentMessageNo}(${currentMessageString})`
+    );
 
     switch (currentMessageString) {
       case "MC_SET_OPTIONS":
@@ -585,13 +587,13 @@ export class MCOTServer {
       }
     }
 
-    log.debug('Calling processInput()')
+    log.debug("Calling processInput()");
     return this.processInput(message, newConnection);
   }
 
   /**
    * Entry poi t for packets into the transactions server
-   * @param {UnprocessedPacket} rawPacket 
+   * @param {UnprocessedPacket} rawPacket
    * @returns {Promise<TCPConnection>}
    */
   async defaultHandler(rawPacket: UnprocessedPacket): Promise<TCPConnection> {

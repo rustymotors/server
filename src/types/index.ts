@@ -225,9 +225,6 @@ export class MessageHead {
     /** @type {Buffer} */
     this._mcosig = Buffer.alloc(4); // UInt4B
   }
-
-
-
 }
 
 export const BaseMessageHeader = {
@@ -415,7 +412,7 @@ export const NPS_COMMANDS: NpsCommandMap[] = [
 export enum EMessageDirection {
   RECEIVED = "received",
   SENT = "sent",
-  UNDEFINED = "not set"
+  UNDEFINED = "not set",
 }
 
 export interface IMessageNode {

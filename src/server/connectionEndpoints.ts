@@ -1,4 +1,4 @@
-import {APP_CONFIG} from "../config/appconfig";
+import { APP_CONFIG } from "../config/appconfig";
 import { createServer as createHTTPServer, Server as httpServer } from "http";
 import { createServer as createSSLServer, Server as sslServer } from "https";
 import { logger } from "../logger/index";
@@ -33,10 +33,10 @@ export function startHTTPListener(): httpServer {
 }}
  */
 function _sslOptions(): {
-  cert: string,
-  honorCipherOrder: boolean,
-  key: string,
-  rejectUnauthorized: boolean
+  cert: string;
+  honorCipherOrder: boolean;
+  key: string;
+  rejectUnauthorized: boolean;
 } {
   log.debug(`Reading ssl certificate...`);
 
@@ -57,13 +57,13 @@ function _sslOptions(): {
       key,
       rejectUnauthorized: false,
     };
-  
   } catch (error) {
     throw new Error(
-      `Error loading ssl configuration files: (${String(error)}), server must quit!`
+      `Error loading ssl configuration files: (${String(
+        error
+      )}), server must quit!`
     );
   }
-
 }
 
 /**
@@ -86,7 +86,9 @@ export function startSSLListener(): sslServer {
     return server;
   } catch (err) {
     if (err instanceof Error) {
-      throw new Error(`Unable to start the SSL listener: ${err.message}, ${String(err.stack)}`);  
+      throw new Error(
+        `Unable to start the SSL listener: ${err.message}, ${String(err.stack)}`
+      );
     }
     throw new Error(`Unknown Error${String(err)}`);
   }

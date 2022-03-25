@@ -18,7 +18,7 @@ import { TCPConnection } from "./tcpConnection";
 import { MCOTServer } from "../transactions";
 import { logger } from "../logger/index";
 import { isMCOT } from "../server/index";
-import { wrapPacket} from "../server/packetFactory"
+import { wrapPacket } from "../server/packetFactory";
 import { randomUUID } from "crypto";
 
 const log = logger.child({
@@ -49,8 +49,8 @@ export class ConnectionManager {
 
   /**
    * Creates a new connection object for the socket and adds to list
-   * @param {string} connectionId 
-   * @param {Socket} socket 
+   * @param {string} connectionId
+   * @param {Socket} socket
    * @returns {TCPConnection}
    */
   newConnection(connectionId: string, socket: Socket): TCPConnection {
@@ -79,22 +79,32 @@ export class ConnectionManager {
       })}`
     );
 
-    let packetType = 'tcp'
+    let packetType = "tcp";
 
     if (isMCOT(rawPacket.data)) {
       packetType = "tomc";
     }
 
-    log.debug(`Identified packet type as ${packetType} on port ${rawPacket.connection.localPort}`)
+    log.debug(
+      `Identified packet type as ${packetType} on port ${rawPacket.connection.localPort}`
+    );
 
-    log.debug('Attempting to wrap packet')
-    await wrapPacket(rawPacket, packetType).processPacket()
-    log.debug('Wrapping packet successful')
+    log.debug("Attempting to wrap packet");
+    await wrapPacket(rawPacket, packetType).processPacket();
+    log.debug("Wrapping packet successful");
 
-    if (localPort === 8226) { log.debug('Packet has requested the login server') }
-    if (localPort === 8228) { log.debug('Packet has requested the persona server') }
-    if (localPort === 7003) { log.debug('Packet has requested the lobby server') }
-    if (localPort === 43300) { log.debug('Packet has requested the transactions server') }
+    if (localPort === 8226) {
+      log.debug("Packet has requested the login server");
+    }
+    if (localPort === 8228) {
+      log.debug("Packet has requested the persona server");
+    }
+    if (localPort === 7003) {
+      log.debug("Packet has requested the lobby server");
+    }
+    if (localPort === 43300) {
+      log.debug("Packet has requested the transactions server");
+    }
 
     switch (localPort) {
       case 8226:
@@ -200,12 +210,14 @@ export class ConnectionManager {
     remoteAddress: string,
     localPort: number
   ): TCPConnection | null {
-    return this.connections.find((connection) => {
-      const match =
-        remoteAddress === connection.remoteAddress &&
-        localPort === connection.localPort;
-      return match;
-    }) || null;
+    return (
+      this.connections.find((connection) => {
+        const match =
+          remoteAddress === connection.remoteAddress &&
+          localPort === connection.localPort;
+        return match;
+      }) || null
+    );
   }
 
   /**
@@ -243,7 +255,7 @@ export class ConnectionManager {
       );
       this.connections.splice(index, 1);
       this.connections.push(newConnection);
-      return this.connections
+      return this.connections;
     } catch (error) {
       process.exitCode = -1;
       throw new Error(
@@ -261,43 +273,48 @@ export class ConnectionManager {
    */
   findOrNewConnection(socket: Socket): TCPConnection | null {
     if (typeof socket.remoteAddress === "undefined") {
-      log.fatal('The socket is missing a remoteAddress, unable to use.')
-      return null
+      log.fatal("The socket is missing a remoteAddress, unable to use.");
+      return null;
     }
 
     if (typeof socket.localPort === "undefined") {
-      log.fatal('The socket is missing a localPost, unable to use.')
-      return null
+      log.fatal("The socket is missing a localPost, unable to use.");
+      return null;
     }
 
-    const existingConnection = this.findConnectionByAddressAndPort(socket.remoteAddress, socket.localPort);
+    const existingConnection = this.findConnectionByAddressAndPort(
+      socket.remoteAddress,
+      socket.localPort
+    );
     if (existingConnection) {
       log.info(
         `I have seen connections from ${socket.remoteAddress} on ${socket.localPort} before`
-      );      
+      );
       existingConnection.sock = socket;
-      log.debug('Returning found connection after attaching socket')
+      log.debug("Returning found connection after attaching socket");
       return existingConnection;
     }
 
-    const newConnectionId = randomUUID()
-    log.debug(`Creating new connection with id ${newConnectionId}`)
+    const newConnectionId = randomUUID();
+    log.debug(`Creating new connection with id ${newConnectionId}`);
     const newConnection = this.newConnection(newConnectionId, socket);
     log.info(
       `I have not seen connections from ${socket.remoteAddress} on ${socket.localPort} before, adding it.`
     );
-    const updatedConnectionList = this.addConnection(newConnection)
-    log.debug(`Connection with id of ${newConnection.id} has been added. The connection list now contains ${updatedConnectionList.length} connections.`)
+    const updatedConnectionList = this.addConnection(newConnection);
+    log.debug(
+      `Connection with id of ${newConnection.id} has been added. The connection list now contains ${updatedConnectionList.length} connections.`
+    );
     return newConnection;
   }
 
   addConnection(connection: TCPConnection): TCPConnection[] {
-    this.connections.push(connection)
-    return this.connections
+    this.connections.push(connection);
+    return this.connections;
   }
 
   /**
-   * Places all connection into the queue 
+   * Places all connection into the queue
    * @return {TCPConnection[]}
    */
   returnAllConnectionsToQueue(): TCPConnection[] {
@@ -305,7 +322,7 @@ export class ConnectionManager {
       connection.inQueue = true;
       return connection;
     });
-    return this.connections
+    return this.connections;
   }
 
   /**
@@ -313,8 +330,8 @@ export class ConnectionManager {
    * @returns {TCPConnection[]}
    */
   clearConnectionList(): TCPConnection[] {
-    this.connections = []
-    return this.connections
+    this.connections = [];
+    return this.connections;
   }
 
   /**
@@ -330,6 +347,5 @@ export class ConnectionManager {
  * @returns {ConnectionManager}
  */
 export function getConnectionManager(): ConnectionManager {
-  return ConnectionManager.getConnectionManager()
+  return ConnectionManager.getConnectionManager();
 }
-

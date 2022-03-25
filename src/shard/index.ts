@@ -50,7 +50,7 @@ export class ShardServer {
 
   private constructor(config: AppConfiguration) {
     this._server = createServer(this._handleRequest.bind(this));
-    this.config = config
+    this.config = config;
 
     this._server.on("error", (error: Error) => {
       process.exitCode = -1;
@@ -127,7 +127,9 @@ export class ShardServer {
     if (!this.config.MCOS.CERTIFICATE.CERTIFICATE_FILE) {
       throw new Error("Pleas set MCOS__CERTIFICATE__CERTIFICATE_FILE");
     }
-    return readFileSync(this.config.MCOS.CERTIFICATE.CERTIFICATE_FILE).toString();
+    return readFileSync(
+      this.config.MCOS.CERTIFICATE.CERTIFICATE_FILE
+    ).toString();
   }
 
   /**
@@ -139,7 +141,9 @@ export class ShardServer {
     if (!this.config.MCOS.CERTIFICATE.PUBLIC_KEY_FILE) {
       throw new Error("Please set MCOS__CERTIFICATE__PUBLIC_KEY_FILE");
     }
-    return readFileSync(this.config.MCOS.CERTIFICATE.PUBLIC_KEY_FILE).toString();
+    return readFileSync(
+      this.config.MCOS.CERTIFICATE.PUBLIC_KEY_FILE
+    ).toString();
   }
 
   /**
@@ -195,7 +199,10 @@ export class ShardServer {
    * @param {import("http").ServerResponse} response
    */
   // deepcode ignore NoRateLimitingForExpensiveWebOperation: Very unlikely to be DDos'ed
-  _handleRequest(request: IncomingMessage, response: ServerResponse): ServerResponse {
+  _handleRequest(
+    request: IncomingMessage,
+    response: ServerResponse
+  ): ServerResponse {
     if (request.url === "/cert") {
       response.setHeader(
         "Content-disposition",
@@ -236,7 +243,7 @@ export class ShardServer {
     log.info(
       `Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );
-    return response
+    return response;
   }
 
   /**
