@@ -20,7 +20,7 @@ const log = logger.child({ service: "mcos" });
 Error.stackTraceLimit = 20;
 
 startHTTPListener();
-startSSLListener();
+// startSSLListener();
 
 // AuthLogin.getInstance().start();
 // HTTPProxyServer.getInstance().start();

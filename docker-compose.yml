@@ -3,6 +3,14 @@ version: '3.1'
 
 services:
 
+  nginx:
+    build:
+      context: src/auth
+    ports:
+      - "443:443"
+    depends_on:
+      - node
+
   db:
     image: postgres
     restart: always
@@ -13,7 +21,7 @@ services:
     image: adminer
     restart: always
     ports:
-      - 8080:8080
+      - "8080:8080"
   
   node:
     image: "node:16"
@@ -28,7 +36,7 @@ services:
     volumes:
       - ./:/home/node/app
     expose:
-      - "8081"
-    command: "npx ts-node src/auth/server.ts"
+      - "80:80"
+    command: "npm start"
     depends_on:
       - db

@@ -14,7 +14,7 @@
   "scripts": {
     "lint": "eslint . --fix  && npx prettier --write .",
     "check:license": "npm licenses audit --summary --config=licenses.config.js",
-    "start": "node dist/bin/app.js | ./node_modules/.bin/pino-pretty",
+    "start": "node dist/bin/app.js",
     "dev": "ts-node src/bin/app.ts | ./node_modules/.bin/pino-pretty",
     "build": "tsc --build --verbose",
     "watch": "tsc --noEmit --watch src/bin/app.ts",
