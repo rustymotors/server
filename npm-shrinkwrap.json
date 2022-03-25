@@ -2523,16 +2523,6 @@
       "integrity": "sha512-S/3xB4KzyFxYGCppyDt68yzBU9ysL88lSdIah4D6cptdcltc4NCPCAMc0+PCpg/lLIyC7IPvj2Z52OJWeIUkog==",
       "dev": true
     },
-    "node_modules/@types/pino": {
-      "version": "7.0.5",
-      "resolved": "https://registry.npmjs.org/@types/pino/-/pino-7.0.5.tgz",
-      "integrity": "sha512-wKoab31pknvILkxAF8ss+v9iNyhw5Iu/0jLtRkUD74cNfOOLJNnqfFKAv0r7wVaTQxRZtWrMpGfShwwBjOcgcg==",
-      "deprecated": "This is a stub types definition. pino provides its own type definitions, so you do not need this installed.",
-      "dev": true,
-      "dependencies": {
-        "pino": "*"
-      }
-    },
     "node_modules/@types/prettier": {
       "version": "2.4.1",
       "dev": true,
@@ -4732,14 +4722,6 @@
       "version": "2.0.6",
       "dev": true,
       "license": "MIT"
-    },
-    "node_modules/fast-redact": {
-      "version": "3.0.2",
-      "dev": true,
-      "license": "MIT",
-      "engines": {
-        "node": ">=6"
-      }
     },
     "node_modules/fast-safe-stringify": {
       "version": "2.1.1",
@@ -8387,26 +8369,6 @@
         "url": "https://github.com/sponsors/jonschlinkert"
       }
     },
-    "node_modules/pino": {
-      "version": "7.8.0",
-      "dev": true,
-      "license": "MIT",
-      "dependencies": {
-        "fast-redact": "^3.0.0",
-        "on-exit-leak-free": "^0.2.0",
-        "pino-abstract-transport": "v0.5.0",
-        "pino-std-serializers": "^4.0.0",
-        "process-warning": "^1.0.0",
-        "quick-format-unescaped": "^4.0.3",
-        "real-require": "^0.1.0",
-        "safe-stable-stringify": "^2.1.0",
-        "sonic-boom": "^2.2.1",
-        "thread-stream": "^0.13.0"
-      },
-      "bin": {
-        "pino": "bin.js"
-      }
-    },
     "node_modules/pino-abstract-transport": {
       "version": "0.5.0",
       "dev": true,
@@ -8439,11 +8401,6 @@
       "bin": {
         "pino-pretty": "bin.js"
       }
-    },
-    "node_modules/pino-std-serializers": {
-      "version": "4.0.0",
-      "dev": true,
-      "license": "MIT"
     },
     "node_modules/pirates": {
       "version": "4.0.4",
@@ -8973,11 +8930,6 @@
       "integrity": "sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==",
       "dev": true
     },
-    "node_modules/process-warning": {
-      "version": "1.0.0",
-      "dev": true,
-      "license": "MIT"
-    },
     "node_modules/progress": {
       "version": "2.0.3",
       "resolved": "https://registry.npmjs.org/progress/-/progress-2.0.3.tgz",
@@ -9052,11 +9004,6 @@
       ],
       "license": "MIT"
     },
-    "node_modules/quick-format-unescaped": {
-      "version": "4.0.4",
-      "dev": true,
-      "license": "MIT"
-    },
     "node_modules/randombytes": {
       "version": "2.1.0",
       "dev": true,
@@ -9116,14 +9063,6 @@
       },
       "engines": {
         "node": ">=8.10.0"
-      }
-    },
-    "node_modules/real-require": {
-      "version": "0.1.0",
-      "dev": true,
-      "license": "MIT",
-      "engines": {
-        "node": ">= 12.13.0"
       }
     },
     "node_modules/regenerate": {
@@ -9394,14 +9333,6 @@
       "version": "5.1.2",
       "dev": true,
       "license": "MIT"
-    },
-    "node_modules/safe-stable-stringify": {
-      "version": "2.3.1",
-      "dev": true,
-      "license": "MIT",
-      "engines": {
-        "node": ">=10"
-      }
     },
     "node_modules/safer-buffer": {
       "version": "2.1.2",
@@ -9936,14 +9867,6 @@
       "version": "0.2.0",
       "dev": true,
       "license": "MIT"
-    },
-    "node_modules/thread-stream": {
-      "version": "0.13.2",
-      "dev": true,
-      "license": "MIT",
-      "dependencies": {
-        "real-require": "^0.1.0"
-      }
     },
     "node_modules/throat": {
       "version": "6.0.1",
@@ -12323,15 +12246,6 @@
       "integrity": "sha512-S/3xB4KzyFxYGCppyDt68yzBU9ysL88lSdIah4D6cptdcltc4NCPCAMc0+PCpg/lLIyC7IPvj2Z52OJWeIUkog==",
       "dev": true
     },
-    "@types/pino": {
-      "version": "7.0.5",
-      "resolved": "https://registry.npmjs.org/@types/pino/-/pino-7.0.5.tgz",
-      "integrity": "sha512-wKoab31pknvILkxAF8ss+v9iNyhw5Iu/0jLtRkUD74cNfOOLJNnqfFKAv0r7wVaTQxRZtWrMpGfShwwBjOcgcg==",
-      "dev": true,
-      "requires": {
-        "pino": "*"
-      }
-    },
     "@types/prettier": {
       "version": "2.4.1",
       "dev": true,
@@ -12531,72 +12445,6 @@
       "dependencies": {
         "semver": {
           "version": "7.3.5",
-          "dev": true,
-          "requires": {
-            "lru-cache": "^6.0.0"
-          }
-        }
-      }
-    },
-    "@typescript-eslint/utils": {
-      "version": "5.15.0",
-      "resolved": "https://registry.npmjs.org/@typescript-eslint/utils/-/utils-5.15.0.tgz",
-      "integrity": "sha512-081rWu2IPKOgTOhHUk/QfxuFog8m4wxW43sXNOMSCdh578tGJ1PAaWPsj42LOa7pguh173tNlMigsbrHvh/mtA==",
-      "dev": true,
-      "requires": {
-        "@types/json-schema": "^7.0.9",
-        "@typescript-eslint/scope-manager": "5.15.0",
-        "@typescript-eslint/types": "5.15.0",
-        "@typescript-eslint/typescript-estree": "5.15.0",
-        "eslint-scope": "^5.1.1",
-        "eslint-utils": "^3.0.0"
-      },
-      "dependencies": {
-        "@typescript-eslint/scope-manager": {
-          "version": "5.15.0",
-          "resolved": "https://registry.npmjs.org/@typescript-eslint/scope-manager/-/scope-manager-5.15.0.tgz",
-          "integrity": "sha512-EFiZcSKrHh4kWk0pZaa+YNJosvKE50EnmN4IfgjkA3bTHElPtYcd2U37QQkNTqwMCS7LXeDeZzEqnsOH8chjSg==",
-          "dev": true,
-          "requires": {
-            "@typescript-eslint/types": "5.15.0",
-            "@typescript-eslint/visitor-keys": "5.15.0"
-          }
-        },
-        "@typescript-eslint/types": {
-          "version": "5.15.0",
-          "resolved": "https://registry.npmjs.org/@typescript-eslint/types/-/types-5.15.0.tgz",
-          "integrity": "sha512-yEiTN4MDy23vvsIksrShjNwQl2vl6kJeG9YkVJXjXZnkJElzVK8nfPsWKYxcsGWG8GhurYXP4/KGj3aZAxbeOA==",
-          "dev": true
-        },
-        "@typescript-eslint/typescript-estree": {
-          "version": "5.15.0",
-          "resolved": "https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-5.15.0.tgz",
-          "integrity": "sha512-Hb0e3dGc35b75xLzixM3cSbG1sSbrTBQDfIScqdyvrfJZVEi4XWAT+UL/HMxEdrJNB8Yk28SKxPLtAhfCbBInA==",
-          "dev": true,
-          "requires": {
-            "@typescript-eslint/types": "5.15.0",
-            "@typescript-eslint/visitor-keys": "5.15.0",
-            "debug": "^4.3.2",
-            "globby": "^11.0.4",
-            "is-glob": "^4.0.3",
-            "semver": "^7.3.5",
-            "tsutils": "^3.21.0"
-          }
-        },
-        "@typescript-eslint/visitor-keys": {
-          "version": "5.15.0",
-          "resolved": "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-5.15.0.tgz",
-          "integrity": "sha512-+vX5FKtgvyHbmIJdxMJ2jKm9z2BIlXJiuewI8dsDYMp5LzPUcuTT78Ya5iwvQg3VqSVdmxyM8Anj1Jeq7733ZQ==",
-          "dev": true,
-          "requires": {
-            "@typescript-eslint/types": "5.15.0",
-            "eslint-visitor-keys": "^3.0.0"
-          }
-        },
-        "semver": {
-          "version": "7.3.5",
-          "resolved": "https://registry.npmjs.org/semver/-/semver-7.3.5.tgz",
-          "integrity": "sha512-PoeGJYh8HK4BTO/a9Tf6ZG3veo/A7ZVsYrSA6J8ny9nb3B1VrpkuN+z9OE5wfE5p6H4LchYZsegiQgbJD94ZFQ==",
           "dev": true,
           "requires": {
             "lru-cache": "^6.0.0"
@@ -13855,10 +13703,6 @@
     },
     "fast-levenshtein": {
       "version": "2.0.6",
-      "dev": true
-    },
-    "fast-redact": {
-      "version": "3.0.2",
       "dev": true
     },
     "fast-safe-stringify": {
@@ -16335,22 +16179,6 @@
       "version": "2.3.0",
       "dev": true
     },
-    "pino": {
-      "version": "7.8.0",
-      "dev": true,
-      "requires": {
-        "fast-redact": "^3.0.0",
-        "on-exit-leak-free": "^0.2.0",
-        "pino-abstract-transport": "v0.5.0",
-        "pino-std-serializers": "^4.0.0",
-        "process-warning": "^1.0.0",
-        "quick-format-unescaped": "^4.0.3",
-        "real-require": "^0.1.0",
-        "safe-stable-stringify": "^2.1.0",
-        "sonic-boom": "^2.2.1",
-        "thread-stream": "^0.13.0"
-      }
-    },
     "pino-abstract-transport": {
       "version": "0.5.0",
       "dev": true,
@@ -16379,10 +16207,6 @@
         "sonic-boom": "^2.2.0",
         "strip-json-comments": "^3.1.1"
       }
-    },
-    "pino-std-serializers": {
-      "version": "4.0.0",
-      "dev": true
     },
     "pirates": {
       "version": "4.0.4",
@@ -16747,10 +16571,6 @@
       "integrity": "sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==",
       "dev": true
     },
-    "process-warning": {
-      "version": "1.0.0",
-      "dev": true
-    },
     "progress": {
       "version": "2.0.3",
       "resolved": "https://registry.npmjs.org/progress/-/progress-2.0.3.tgz",
@@ -16793,10 +16613,6 @@
     },
     "queue-microtask": {
       "version": "1.2.3",
-      "dev": true
-    },
-    "quick-format-unescaped": {
-      "version": "4.0.4",
       "dev": true
     },
     "randombytes": {
@@ -16845,10 +16661,6 @@
       "requires": {
         "picomatch": "^2.2.1"
       }
-    },
-    "real-require": {
-      "version": "0.1.0",
-      "dev": true
     },
     "regenerate": {
       "version": "1.4.2",
@@ -17031,10 +16843,6 @@
     },
     "safe-buffer": {
       "version": "5.1.2",
-      "dev": true
-    },
-    "safe-stable-stringify": {
-      "version": "2.3.1",
       "dev": true
     },
     "safer-buffer": {
@@ -17408,13 +17216,6 @@
     "text-table": {
       "version": "0.2.0",
       "dev": true
-    },
-    "thread-stream": {
-      "version": "0.13.2",
-      "dev": true,
-      "requires": {
-        "real-require": "^0.1.0"
-      }
     },
     "throat": {
       "version": "6.0.1",
