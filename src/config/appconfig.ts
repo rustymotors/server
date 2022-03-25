@@ -1,28 +1,28 @@
 export interface AppConfiguration {
   MCOS: {
     CERTIFICATE: {
-      PRIVATE_KEY_FILE: string,
-      PUBLIC_KEY_FILE: string,
-      CERTIFICATE_FILE: string,
-    },
+      PRIVATE_KEY_FILE: string;
+      PUBLIC_KEY_FILE: string;
+      CERTIFICATE_FILE: string;
+    };
 
     SETTINGS: {
-      HTTP_LISTEN_HOST: string,
-      HTTP_EXTERNAL_HOST: string,
-      SSL_LISTEN_HOST: string,
-      SSL_EXTERNAL_HOST: string,
-      SHARD_LISTEN_HOST: string,
-      SHARD_EXTERNAL_HOST: string,
-      AUTH_LISTEN_HOST: string,
-      AUTH_EXTERNAL_HOST: string,
-      PATCH_LISTEN_HOST: string,
-      PATCH_EXTERNAL_HOST: string,
-      LISTEN_IP: string,
-      AUTH_IP: string,
-      DATABASE_CONNECTION_URI: string,
-      LOG_LEVEL: string,
-    },
-  },
+      HTTP_LISTEN_HOST: string;
+      HTTP_EXTERNAL_HOST: string;
+      SSL_LISTEN_HOST: string;
+      SSL_EXTERNAL_HOST: string;
+      SHARD_LISTEN_HOST: string;
+      SHARD_EXTERNAL_HOST: string;
+      AUTH_LISTEN_HOST: string;
+      AUTH_EXTERNAL_HOST: string;
+      PATCH_LISTEN_HOST: string;
+      PATCH_EXTERNAL_HOST: string;
+      LISTEN_IP: string;
+      AUTH_IP: string;
+      DATABASE_CONNECTION_URI: string;
+      LOG_LEVEL: string;
+    };
+  };
 }
 
 export const APP_CONFIG: AppConfiguration = {

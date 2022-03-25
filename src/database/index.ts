@@ -10,7 +10,7 @@ import * as sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
 import type { SessionRecord } from "../types/index";
 import { logger } from "../logger/index";
-import {APP_CONFIG} from "../config/appconfig";
+import { APP_CONFIG } from "../config/appconfig";
 
 const log = logger.child({ service: "mcoserver:DatabaseMgr" });
 
@@ -39,7 +39,7 @@ export class DatabaseManager {
   /**
    * Initialize database and set up schemas if needed
    * @returns {Promise<void}
-   */  
+   */
   async init(): Promise<void> {
     if (typeof this.localDB === "undefined") {
       log.debug(`Initializing the database...`);
@@ -172,7 +172,7 @@ export class DatabaseManager {
 
   /**
    * Locate customer session encryption key in the database
-   * @param {number} customerId 
+   * @param {number} customerId
    * @returns {SessionRecord}
    */
   async fetchSessionKeyByCustomerId(
@@ -197,10 +197,10 @@ export class DatabaseManager {
 
   /**
    * Locate customer session encryption key in the database
-   * @param {number} customerId 
+   * @param {number} customerId
    * @returns {SessionRecord}
    */
-   async fetchSessionKeyByConnectionId(
+  async fetchSessionKeyByConnectionId(
     connectionId: string
   ): Promise<SessionRecord> {
     await this.init();
@@ -220,10 +220,10 @@ export class DatabaseManager {
 
   /**
    * Create or overwrite a customer's session key record
-   * @param {number} customerId 
-   * @param {string} sessionkey 
-   * @param {string} contextId 
-   * @param {string} connectionId 
+   * @param {number} customerId
+   * @param {string} sessionkey
+   * @param {string} contextId
+   * @param {string} connectionId
    * @returns {Promise<number}
    */
   async updateSessionKey(

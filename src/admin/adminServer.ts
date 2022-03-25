@@ -46,7 +46,7 @@ export class AdminServer {
       const connection = connections[i];
 
       if (typeof connection.remoteAddress === "undefined") {
-        connection.remoteAddress = 'unknown'
+        connection.remoteAddress = "unknown";
       }
 
       const displayConnection = `
@@ -65,7 +65,7 @@ export class AdminServer {
    * @return {string}
    */
   _handleResetAllQueueState(): string {
-    getConnectionManager().returnAllConnectionsToQueue()
+    getConnectionManager().returnAllConnectionsToQueue();
     const connections = getConnectionManager().fetchConnectionList();
     let responseText = "Queue state reset for all connections\n\n";
 
@@ -77,7 +77,7 @@ export class AdminServer {
       const connection = connections[i];
 
       if (typeof connection.remoteAddress === "undefined") {
-        connection.remoteAddress = 'unknown'
+        connection.remoteAddress = "unknown";
       }
 
       const displayConnection = `
@@ -125,6 +125,6 @@ export class AdminServer {
           return response.end("Jiggawatt!");
         }
     }
-    return response.end()
+    return response.end();
   }
 }
