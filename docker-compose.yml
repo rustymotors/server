@@ -1,11 +1,10 @@
-# Use postgres/example user/password credentials
 version: '3.1'
 
 services:
 
   nginx:
     build:
-      context: src/auth
+      context: services/sslProxy
     ports:
       - "443:443"
     depends_on:
@@ -37,6 +36,5 @@ services:
       - ./:/home/node/app
     expose:
       - "80:80"
-    command: "npm start"
     depends_on:
       - db
