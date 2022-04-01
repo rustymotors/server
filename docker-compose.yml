@@ -1,0 +1,27 @@
+version: '3.1'
+
+services:
+
+  nginx:
+    build:
+      context: services/sslProxy
+    ports:
+      - "443:443"
+    depends_on:
+      - node
+
+  node:
+    image: "node:16"
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      - ENV NODE_ENV=production
+      - ENV PGHOST=db
+      - ENV PGUSER=postgres
+      - ENV PGDATABASE=postgres
+      - ENV PGPASSWORD=example=value
+    volumes:
+      - ./:/home/node/app
+    expose:
+      - "80:80"
+    command: "npm start"

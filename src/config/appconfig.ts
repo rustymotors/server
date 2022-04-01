@@ -17,8 +17,6 @@ export interface AppConfiguration {
       AUTH_EXTERNAL_HOST: string;
       PATCH_LISTEN_HOST: string;
       PATCH_EXTERNAL_HOST: string;
-      LISTEN_IP: string;
-      AUTH_IP: string;
       DATABASE_CONNECTION_URI: string;
       LOG_LEVEL: string;
     };
@@ -34,18 +32,16 @@ export const APP_CONFIG: AppConfiguration = {
     },
 
     SETTINGS: {
-      HTTP_LISTEN_HOST: "localhost",
-      HTTP_EXTERNAL_HOST: "localhost",
-      SSL_LISTEN_HOST: "localhost",
-      SSL_EXTERNAL_HOST: "localhost",
-      SHARD_LISTEN_HOST: "localhost",
-      SHARD_EXTERNAL_HOST: "localhost",
-      AUTH_LISTEN_HOST: "localhost",
-      AUTH_EXTERNAL_HOST: "localhost",
-      PATCH_LISTEN_HOST: "localhost",
-      PATCH_EXTERNAL_HOST: "localhost",
-      LISTEN_IP: "localhost",
-      AUTH_IP: "localhost",
+      HTTP_LISTEN_HOST: "0.0.0.0",
+      HTTP_EXTERNAL_HOST: "10.10.5.20",
+      SSL_LISTEN_HOST: "0.0.0.0",
+      SSL_EXTERNAL_HOST: "10.10.5.20",
+      SHARD_LISTEN_HOST: "0.0.0.0",
+      SHARD_EXTERNAL_HOST: "10.10.5.20",
+      AUTH_LISTEN_HOST: "0.0.0.0",
+      AUTH_EXTERNAL_HOST: "10.10.5.20",
+      PATCH_LISTEN_HOST: "0.0.0.0",
+      PATCH_EXTERNAL_HOST: "10.10.5.20",
       DATABASE_CONNECTION_URI: "db.mco.db",
       LOG_LEVEL: "debug",
     },
