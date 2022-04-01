@@ -11,7 +11,7 @@ services:
       - node
 
   node:
-    image: "node:16"
+    image: "node:17"
     user: "node"
     working_dir: /home/node/app
     environment:
