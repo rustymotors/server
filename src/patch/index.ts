@@ -93,16 +93,12 @@ export class PatchServer {
     request: IncomingMessage,
     response: ServerResponse
   ): ServerResponse {
-    switch (request.url) {
-      case "/games/EA_Seattle/MotorCity/UpdateInfo": {
-        return this.castanetResponse(request, response);
-      }
-      case "/games/EA_Seattle/MotorCity/NPS": {
-        return this.castanetResponse(request, response);
-      }
-      case "/games/EA_Seattle/MotorCity/MCO": {
-        return this.castanetResponse(request, response);
-      }
+    if (
+      request.url === "/games/EA_Seattle/MotorCity/UpdateInfo" ||
+      request.url === "/games/EA_Seattle/MotorCity/NPS" ||
+      request.url === "/games/EA_Seattle/MotorCity/MCO"
+    ) {
+      return this.castanetResponse(request, response);
     }
     response.statusCode = 404;
     return response.end("");
