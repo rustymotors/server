@@ -8,6 +8,6 @@ module.exports = {
     "!**/node_modules/**",
   ],
   coverageReporters: [
-    "text-summary", "html", "cobertura"
+    "text", "html", "cobertura"
   ]
 };
