@@ -99,7 +99,6 @@ export class PatchServer {
       request.url === "/games/EA_Seattle/MotorCity/MCO"
     ) {
       return this.castanetResponse(request, response);
-
     }
 
     response.statusCode = 404;
