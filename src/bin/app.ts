@@ -10,7 +10,6 @@ import { logger } from "../logger/index";
 import { ListenerThread } from "../core/listener-thread";
 import { startHTTPListener } from "../server/connectionEndpoints";
 
-
 const log = logger.child({ service: "mcos" });
 
 startHTTPListener();

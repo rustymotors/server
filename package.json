@@ -12,7 +12,7 @@
     "AUTHORS"
   ],
   "scripts": {
-    "lint": "eslint . --fix  && npx prettier --write .",
+    "lint": "eslint . --fix && npx prettier -w .",
     "check:license": "npm licenses audit --summary --config=licenses.config.js",
     "start": "node dist/bin/app.js",
     "dev": "ts-node src/bin/app.ts | ./node_modules/.bin/pino-pretty",
