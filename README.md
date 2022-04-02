@@ -22,7 +22,7 @@ There's a brief explanation of the thought process here [link](https://github.co
 
 ## Started
 
-Mar 6, 2016 
+Mar 6, 2016
 
 ## Current Status
 
