@@ -1,9 +1,8 @@
-
 /**
  * Data structure holding Type-Length-Value data
  * @param {Buffer} type
- * @param {Buffer} length 
- * @param {Buffer} value 
+ * @param {Buffer} length
+ * @param {Buffer} value
  * @param {'BIG' | 'LITTLE'} [endian='BIG']
  */
 export class TLVRecord {

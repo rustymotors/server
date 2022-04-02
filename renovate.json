@@ -5,7 +5,7 @@
     "fileFilters": [""],
     "executionMode": "update"
   },
-    "packageRules": [
+  "packageRules": [
     {
       "matchDepTypes": ["devDependencies"],
       "matchUpdateTypes": ["patch", "minor"],
@@ -15,6 +15,6 @@
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "groupName": "dependencies (non-major)",
       "automerge": true
-    }          
-    ]
+    }
+  ]
 }

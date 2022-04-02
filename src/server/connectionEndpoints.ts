@@ -27,4 +27,3 @@ export function startHTTPListener(): httpServer {
     log.info("http server is listening...");
   });
 }
-

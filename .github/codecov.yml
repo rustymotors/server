@@ -1,6 +1,6 @@
 comment:
-  layout: 'files'
-  behavior: 'default'
+  layout: "files"
+  behavior: "default"
 
 flags:
   admin:
@@ -9,5 +9,5 @@ flags:
     carryforward: false
   everything-else:
     ignore:
-      - src/admin/**/* 
+      - src/admin/**/*
     carryforward: false
