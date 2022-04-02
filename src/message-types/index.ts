@@ -1813,7 +1813,7 @@ export class NPSUserInfo extends NPSMessage {
     let message = this.dumpPacketHeader("NPSUserInfo");
     const { userId, userName, userData } = this;
     const userIdString = userId.toString();
-    const userNameString = userName.toString("utf-8");
+    const userNameString = userName.toString("utf8");
     const userDataStringHex = userData.toString("hex");
     message = message.concat(
       `UserId:        ${userIdString}
