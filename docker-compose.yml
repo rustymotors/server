@@ -24,3 +24,7 @@ services:
     expose:
       - "80:80"
     command: "npm start"
+    ports:
+      - "80:80"
+    depends_on:
+      - db
