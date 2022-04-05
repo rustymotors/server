@@ -4,6 +4,7 @@ import { logger } from "../logger";
 import { PatchServer } from "../patch";
 import { ShardServer } from "../shard";
 import { AuthLogin } from "../auth";
+import { AdminServer } from "../admin";
 
 const log = logger.child({ service: "http" });
 
@@ -20,6 +21,16 @@ export function httpListener(
   if (req.url && req.url.startsWith("/AuthLogin")) {
     log.debug("ssl routing request to login web server");
     return AuthLogin.getInstance().handleRequest(req, res);
+  }
+
+  if (
+    req.url &&
+    (req.url === "/admin/connections" ||
+      req.url === "/admin/connections/resetAllQueueState" ||
+      req.url.startsWith("/admin"))
+  ) {
+    log.debug("ssl routing request to admin web server");
+    return AdminServer.getAdminServer().handleRequest(req, res);
   }
 
   if (
