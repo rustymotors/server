@@ -113,7 +113,7 @@ export class ListenerThread {
        * Craft a packet that tells the client it's allowed to login
        */
 
-      // socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]))
+      socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]))
       connectionRecord.inQueue = false;
     }
 
