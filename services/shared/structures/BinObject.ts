@@ -22,7 +22,7 @@ export class BinObject {
     protected _fields: IBinaryField[] = []
 /**
  * Get field by name
- *
+ * TODO: Investigate possible intellisense for fields
  * @param {string} fieldname
  * @return {*}  {IBinaryField}
  * @memberof BinObject
