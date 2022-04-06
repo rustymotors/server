@@ -1,5 +1,11 @@
 import { BinObject, EBinaryFieldType } from "../../shared/structures/BinObject";
-
+/**
+ * NPS LobbyList structure
+ *
+ * @export
+ * @class LobbyList
+ * @extends {BinObject}
+ */
 export class LobbyList extends BinObject {
   private MC_MAX_NPS_RIFF_NAME = 32;
   private MC_NAME_LENGTH = 13;

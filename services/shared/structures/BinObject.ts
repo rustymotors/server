@@ -11,12 +11,23 @@ export interface IBinaryField {
     value: Buffer,
     notes?: string
 }
-
+/**
+ * Container for binary fields
+ *
+ * @export
+ * @class BinObject
+ */
 export class BinObject {
     protected _byteOrder: 'big' | 'little' = 'little'
     protected _fields: IBinaryField[] = []
-
-    public getField(fieldname: string): IBinaryField {
+/**
+ * Get field by name
+ *
+ * @param {string} fieldname
+ * @return {*}  {IBinaryField}
+ * @memberof BinObject
+ */
+public getField(fieldname: string): IBinaryField {
         const selectedField = this._fields.find(field => {
             return field.name === fieldname
         })
