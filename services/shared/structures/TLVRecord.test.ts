@@ -1,4 +1,4 @@
-import { TLVRecord, TLVRecordArray } from "./structures";
+import { TLVRecord, TLVRecordArray } from "./TLVRecord";
 
 describe("TLVRecord", () => {
   test("type property should return a number when field length is 1", () => {
