@@ -6,11 +6,36 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
+import { ICoreConfig, MCOServer } from "../../services/core";
 import { logger } from "../logger/index";
 import { ListenerThread } from "../core/listener-thread";
 import { startHTTPListener } from "../server/connectionEndpoints";
 
 const log = logger.child({ service: "mcos" });
+
+const coreConfig: ICoreConfig = {
+  logger,
+  externalHost: '0.0.0.0',
+  ports: [
+    80
+  ]
+}
+
+try {
+  const s = MCOServer.init(coreConfig)
+  s.run()
+  // s.stop()
+} catch (e: unknown) {
+  log.error("Error in core server")
+  if (e instanceof Error) {
+    log.error(e.message)
+  } else {
+    throw e
+  }
+  log.error('Server exiting')
+  process.exit(1)
+}
+
 
 startHTTPListener();
 
