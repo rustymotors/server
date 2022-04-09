@@ -2,9 +2,9 @@
   "preset": "ts-jest",
   "extensionsToTreatAsEsm": [".ts"],
   "globals": {
-      "ts-jest": {
-          "useESM": true
-      }
+    "ts-jest": {
+      "useESM": true
+    }
   },
   "testEnvironment": "node",
   "collectCoverage": true,

@@ -227,11 +227,11 @@ export class MessageHead {
   }
 
   get length() {
-    return this._length
+    return this._length;
   }
 
   get mcosig() {
-    return this._mcosig
+    return this._mcosig;
   }
 }
 

@@ -1,3 +1,1 @@
-export class LobbyMessage {
-    
-}
+export class LobbyMessage {}

@@ -13,7 +13,7 @@
   ],
   "type": "module",
   "scripts": {
-    "lint": "eslint . --fix && npx prettier -w .",
+    "lint": "eslint . --fix && npx prettier -w app.ts services src",
     "check:license": "npm licenses audit --summary --config=licenses.config.js",
     "start": "node dist/app.js | ./node_modules/.bin/pino-pretty",
     "dev": "node --loader ts-node/esm app.ts | ./node_modules/.bin/pino-pretty",

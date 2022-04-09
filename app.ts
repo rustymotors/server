@@ -15,28 +15,24 @@ const log = logger.child({ service: "mcos" });
 
 const coreConfig: ICoreConfig = {
   logger,
-  externalHost: '0.0.0.0',
-  ports: [
-    80,
-    443,
-  ]
-}
+  externalHost: "0.0.0.0",
+  ports: [80, 443],
+};
 
 try {
-  const s = MCOServer.init(coreConfig)
-  await s.run()
-  await s.stop()
+  const s = MCOServer.init(coreConfig);
+  await s.run();
+  await s.stop();
 } catch (e: unknown) {
-  log.error("Error in core server")
+  log.error("Error in core server");
   if (e instanceof Error) {
-    log.error(e.message)
+    log.error(e.message);
   } else {
-    throw e
+    throw e;
   }
-  log.error('Server exiting')
-  process.exit(1)
+  log.error("Server exiting");
+  process.exit(1);
 }
-
 
 const listenerThread = ListenerThread.getInstance();
 log.info({}, "Starting the listening sockets...");
@@ -51,4 +47,3 @@ for (const port of tcpPortList) {
 }
 
 log.info("Listening sockets create successfully.");
-
