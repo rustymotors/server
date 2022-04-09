@@ -313,6 +313,7 @@ export class PersonaServer {
    */
   sendPacket(socket: Socket, packet: NPSMessage): void {
     try {
+      // deepcode ignore WrongNumberOfArgs: False alert
       socket.write(packet.serialize());
     } catch (error) {
       if (error instanceof Error) {

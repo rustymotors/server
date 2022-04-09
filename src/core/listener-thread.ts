@@ -20,8 +20,14 @@ const log = logger.child({ service: "mcoserver:ListenerThread" });
  */
 export class ListenerThread {
   private static _instance: ListenerThread;
-
-  static getInstance(): ListenerThread {
+/**
+ * Get the single instamce of the connection listener
+ *
+ * @static
+ * @return {*}  {ListenerThread}
+ * @memberof ListenerThread
+ */
+static getInstance(): ListenerThread {
     if (!ListenerThread._instance) {
       ListenerThread._instance = new ListenerThread();
     }
@@ -52,7 +58,7 @@ export class ListenerThread {
         "hex"
       )}}`
     );
-    let newConnection: TCPConnection;
+    let newConnection: TCPConnection | null = null;
     try {
       newConnection = await connection.processPacket(rawPacket);
     } catch (error) {

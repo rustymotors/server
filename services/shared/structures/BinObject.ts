@@ -47,7 +47,7 @@ export class BinObject {
    * @param {Buffer} newValue
    * @memberof BinObject
    */
-  public updateFieldValue(fieldname: string, newValue: Buffer) {
+  public updateFieldValue(fieldname: string, newValue: Buffer): void {
     this._fields.forEach((field: IBinaryField) => {
       if (field.name === fieldname) {
         if (newValue.byteLength > field.size) {

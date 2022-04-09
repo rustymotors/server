@@ -35,7 +35,7 @@ export class MCOTServer {
    * Get the instance of the transactions server
    * @returns {MCOTServer}
    */
-  static getTransactionServer(): MCOTServer {
+  public static getTransactionServer(this: void): MCOTServer {
     if (!MCOTServer._instance) {
       MCOTServer._instance = new MCOTServer();
     }
@@ -377,7 +377,7 @@ export class MCOTServer {
         try {
           const result = this._setOptions(conn, node);
           const responsePackets = result.packetList;
-          return await result.connection.tryWritePackets(responsePackets);
+          return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(`Error in MC_SET_OPTIONS: ${error.message}`);
@@ -390,7 +390,7 @@ export class MCOTServer {
         try {
           const result = this._trackingMessage(conn, node);
           const responsePackets = result.packetList;
-          return await result.connection.tryWritePackets(responsePackets);
+          return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(`Error in MC_TRACKING_MSG: ${error.message}`);
@@ -403,7 +403,7 @@ export class MCOTServer {
         try {
           const result = this._updatePlayerPhysical(conn, node);
           const responsePackets = result.packetList;
-          return await result.connection.tryWritePackets(responsePackets);
+          return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -419,7 +419,7 @@ export class MCOTServer {
           const result = await this.clientConnect(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
-          return await result.connection.tryWritePackets(responsePackets);
+          return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -438,7 +438,7 @@ export class MCOTServer {
           const result = this._login(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
-          return await result.connection.tryWritePackets(responsePackets);
+          return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -457,7 +457,7 @@ export class MCOTServer {
           const result = this._logout(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
-          return await result.connection.tryWritePackets(responsePackets);
+          return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -478,7 +478,7 @@ export class MCOTServer {
         const responsePackets = result.packetList;
         try {
           // Write the socket
-          return await result.connection.tryWritePackets(responsePackets);
+          return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -616,3 +616,5 @@ export class MCOTServer {
     return this.messageReceived(messageNode, connection);
   }
 }
+
+export const getTransactionServer = MCOTServer.getTransactionServer;

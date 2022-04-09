@@ -83,7 +83,7 @@ export class TCPConnection {
    * @param {TCPConnection} newConnection
    * @returns {TCPConnection[]}
    */
-  updateConnectionByAddressAndPort(
+  public updateConnectionByAddressAndPort(
     remoteAddress: string,
     localPort: number,
     newConnection: TCPConnection
@@ -91,7 +91,7 @@ export class TCPConnection {
     if (this.mgr === undefined) {
       throw new Error("Connection manager not set");
     }
-    return this.mgr._updateConnectionByAddressAndPort(
+    return this.mgr.updateConnectionByAddressAndPort(
       remoteAddress,
       localPort,
       newConnection

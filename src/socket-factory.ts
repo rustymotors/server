@@ -1,8 +1,23 @@
 import type { Socket } from "net";
 import { Duplex, EventEmitter } from "stream";
 
-// TODO: refactor into something cleaner https://github.com/drazisil/mco-server/issues/1007
+/**
+ * Generate test objects that match the signature of net.Socket
+ *
+ * @export
+ * @class SocketFactory
+ * @extends {Duplex}
+ * @implements {EventEmitter}
+ */
 export class SocketFactory extends Duplex implements EventEmitter {
+
+  /**
+   * Generate a fake "socket" onkject for testing
+   *
+   * @static
+   * @return {*}  {Socket}
+   * @memberof SocketFactory
+   */
   static createSocket(): Socket {
     const duplex = new Duplex();
 

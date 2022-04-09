@@ -28,7 +28,12 @@ export interface IMsgNameMapping {
   id: number;
   name: string;
 }
-
+/**
+ *  Handles incoming NPS packets
+ *
+ * @export
+ * @class NPSPacketManager
+ */
 export class NPSPacketManager {
   database = DatabaseManager.getInstance();
   npsKey: string;

@@ -4,7 +4,13 @@ import {
   IBinaryField,
 } from "../../shared/structures/BinObject";
 import { LobbyInfo } from "./LobbyInfo";
-
+/**
+ * This structure holds the fields for a LobbyMsg packet
+ *
+ * @export
+ * @class LobbyMsg
+ * @extends {BinObject}
+ */
 export class LobbyMsg extends BinObject {
   protected _byteOrder: "big" | "little" = "little";
   protected _fields: IBinaryField[] = [
@@ -32,8 +38,13 @@ export class LobbyMsg extends BinObject {
   ];
 
   private lobbies: LobbyInfo[] = [];
-
-  public pushLobby(lobbyToAdd: LobbyInfo) {
+/**
+ * Add a new lobby info record to the internal list
+ *
+ * @param {LobbyInfo} lobbyToAdd
+ * @memberof LobbyMsg
+ */
+public pushLobby(lobbyToAdd: LobbyInfo): void {
     this.lobbies.push(lobbyToAdd);
     const newLobbyCount = Buffer.alloc(2);
     newLobbyCount.writeInt16LE(this.lobbies.length);

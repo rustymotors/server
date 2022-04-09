@@ -9,24 +9,43 @@ export interface ICoreConfig {
   externalHost: string;
   ports?: number[];
 }
-
+/**
+ * Primany server class
+ *
+ * @export
+ * @class MCOServer
+ */
 export class MCOServer {
-  private _config: ICoreConfig = {
-    externalHost: "0.0.0.0",
-  };
+  private _config: ICoreConfig;
   private _log: P.Logger;
   private _running = false;
   private _listeningServers: Server[] = [];
-
-  private _httpListener(
+/**
+ * Handle http socket connections
+ *
+ * @private
+ * @param {http.IncomingMessage} req
+ * @param {http.ServerResponse} res
+ * @param {P.Logger} log
+ * @memberof MCOServer
+ */
+private _httpListener(
     req: http.IncomingMessage,
     res: http.ServerResponse,
     log: P.Logger
   ) {
     log.debug(`url: ${req.url}`);
   }
-
-  private _listener(incomingSocket: Socket, log: P.Logger) {
+  /**
+   * Handle incomming socket connections
+   *
+   * @private
+   * @param {Socket} incomingSocket
+   * @param {P.Logger} log
+   * @return {void}
+   * @memberof MCOServer
+   */
+  private _listener(incomingSocket: Socket, log: P.Logger): void {
     log.debug(
       `Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
     );
@@ -36,21 +55,27 @@ export class MCOServer {
       log.debug("Web request");
       const newServer = new http.Server(httpListener);
       // Send the socket to the http server instance
-      return newServer.emit("connection", incomingSocket);
+      void newServer.emit("connection", incomingSocket);
+      return;
     }
 
     // This is a 'normal' TCP socket
     incomingSocket.on("end", () => {
       // log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
     });
-    incomingSocket.on("data", (data) => {
-      console.log(data);
-
-      // void this._onData(data, connectionRecord);
+    incomingSocket.on("data", (data: Buffer) => {
+      // TODO: Process socket data
+      this._log.debug(`Recieved some data: ${data.toString("hex")}`);
     });
   }
-
-  get isRunning() {
+  /**
+   * Is the server in a running state?
+   *
+   * @readonly
+   * @type {boolean}
+   * @memberof MCOServer
+   */
+  get isRunning(): boolean {
     return this._running;
   }
 
@@ -61,12 +86,23 @@ export class MCOServer {
     }
     this._log = this._config.logger.child({ service: "mcos:core" });
   }
-
-  public static init(config: ICoreConfig) {
+  /**
+   * Get an instance of the primary server
+   *
+   * @static
+   * @param {ICoreConfig} config
+   * @return {MCOServer}
+   * @memberof MCOServer
+   */
+  public static init(config: ICoreConfig): MCOServer {
     return new MCOServer(config);
   }
-
-  public async run() {
+  /**
+   * Start port listeners and ,move server to running state
+   *
+   * @memberof MCOServer
+   */
+  public run(): void {
     this._log.info("Server starting");
 
     if (typeof this._config.ports === "undefined") {
@@ -89,8 +125,12 @@ export class MCOServer {
 
     this._running = true;
   }
-
-  public async stop() {
+  /**
+   * Close all listening ports and move server to stopped state
+   *
+   * @memberof MCOServer
+   */
+  public stop(): void {
     this._running = false;
     this._log.debug(
       `There are ${this._listeningServers.length} servers listening`

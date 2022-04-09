@@ -2,6 +2,15 @@ import { Buffer } from "buffer";
 import { logger } from "../logger/index.js";
 const log = logger.child({ service: "mpacket" });
 
+export interface IMPacketFlags {
+  shouldCompress: boolean;
+  isText: boolean;
+  useEncryption: boolean;
+  isLastPacket: boolean;
+  isHeartbeat: boolean;
+  isCompressed: boolean;
+}
+
 export class MPacket {
   /** the connection this packet belongs to. May be blank if newly created */
   private connectionId = "";
@@ -39,8 +48,14 @@ export class MPacket {
   public buffer = Buffer.alloc(0);
   /** has deserialize() been called? */
   public wasDeserialized = false;
-
-  private setFlags(flagsByte: Buffer[1]) {
+/**
+ * Set the internal flags
+ *
+ * @private
+ * @param {Buffer[1]} flagsByte
+ * @memberof MPacket
+ */
+private setFlags(flagsByte: Buffer[1]) {
     if (flagsByte & 0x80) this.flags.isHeartbeat = true;
     if (flagsByte & 0x10) this.flags.isLastPacket = true;
     if (flagsByte & 0x08) this.flags.useEncryption = true;
@@ -48,8 +63,16 @@ export class MPacket {
     if (flagsByte & 0x02) this.flags.isCompressed = true;
     if (flagsByte & 0x01) this.flags.shouldCompress = true;
   }
-
-  public static deserialize(inputBuffer: Buffer, connectionId = ""): MPacket {
+/**
+ * Marchell raw Buffer into an MPacket structure
+ *
+ * @static
+ * @param {Buffer} inputBuffer
+ * @param {string} [connectionId=""]
+ * @return {*}  {MPacket}
+ * @memberof MPacket
+ */
+public static deserialize(inputBuffer: Buffer, connectionId = ""): MPacket {
     const newMPacket = new MPacket();
     newMPacket.connectionId = connectionId;
     newMPacket.packetSize = inputBuffer.readUInt16LE(0);
@@ -60,37 +83,71 @@ export class MPacket {
     newMPacket.wasDeserialized = true;
     return newMPacket;
   }
-
-  async processPacket() {
+/**
+ * Handle incomming MPacket
+ *
+ * @memberof MPacket
+ */
+public processPacket(): void {
     log.debug(
       { connection_id: this.getConnectionId() },
       "Start processing packet"
     );
   }
-
-  public getFlags() {
+/**
+ * Get packet flags
+ *
+ * @return {*}  {IMPacketFlags}
+ * @memberof MPacket
+ */
+public getFlags(): IMPacketFlags {
     return this.flags;
   }
-
+  /**
+   * Get packet as JSON
+   *
+   * @return {*}
+   * @memberof MPacket
+   */
   public getJSON() {
     const { packetSize, headerId, sequenceNumber, flags, wasDeserialized } =
       this;
     return { packetSize, headerId, sequenceNumber, flags, wasDeserialized };
   }
-
-  public toString() {
+  /**
+   * Get packet as string
+   *
+   * @return {*}  {string}
+   * @memberof MPacket
+   */
+  public toString(): string {
     return JSON.stringify(this.getJSON());
   }
-
-  public getConnectionId() {
+  /**
+   * Get the connection id
+   *
+   * @return {*}  {string}
+   * @memberof MPacket
+   */
+  public getConnectionId(): string {
     return this.connectionId;
   }
-
-  public getUserId() {
+  /**
+   * Get the user id
+   *
+   * @return {*}  {number}
+   * @memberof MPacket
+   */
+  public getUserId(): number {
     return this.userid;
   }
-
-  public setUserId(userId: number) {
+  /**
+   * Set the user id
+   *
+   * @param {number} userId
+   * @memberof MPacket
+   */
+  public setUserId(userId: number): void {
     this.userid = userId;
   }
 }

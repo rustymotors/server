@@ -33,8 +33,15 @@ export class ConnectionManager {
   private static _instance: ConnectionManager;
   private connections: TCPConnection[] = [];
   private banList: string[] = [];
-
-  public static getConnectionManager(this: void): ConnectionManager {
+/**
+ * Get the single instance of the connection manager
+ *
+ * @static
+ * @param {void} this
+ * @return {*}  {ConnectionManager}
+ * @memberof ConnectionManager
+ */
+public static getConnectionManager(this: void): ConnectionManager {
     if (!ConnectionManager._instance) {
       ConnectionManager._instance = new ConnectionManager();
     }
@@ -90,7 +97,7 @@ export class ConnectionManager {
     );
 
     log.debug("Attempting to wrap packet");
-    await wrapPacket(rawPacket, packetType).processPacket();
+    wrapPacket(rawPacket, packetType).processPacket();
     log.debug("Wrapping packet successful");
 
     if (localPort === 8226) {
@@ -233,8 +240,16 @@ export class ConnectionManager {
 
     return results;
   }
-
-  _updateConnectionByAddressAndPort(
+  /**
+   * Update the internal connection record
+   *
+   * @param {string} address
+   * @param {number} port
+   * @param {TCPConnection} newConnection
+   * @return {*}  {TCPConnection[]} the updated connection
+   * @memberof ConnectionManager
+   */
+  public updateConnectionByAddressAndPort(
     address: string,
     port: number,
     newConnection: TCPConnection
@@ -307,8 +322,14 @@ export class ConnectionManager {
     );
     return newConnection;
   }
-
-  addConnection(connection: TCPConnection): TCPConnection[] {
+  /**
+   * Add new connection to internal list
+   *
+   * @param {TCPConnection} connection
+   * @return {*}  {TCPConnection[]}
+   * @memberof ConnectionManager
+   */
+  public addConnection(connection: TCPConnection): TCPConnection[] {
     this.connections.push(connection);
     return this.connections;
   }

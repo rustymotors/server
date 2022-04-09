@@ -21,8 +21,8 @@ const coreConfig: ICoreConfig = {
 
 try {
   const s = MCOServer.init(coreConfig);
-  await s.run();
-  await s.stop();
+  s.run();
+  s.stop();
 } catch (e: unknown) {
   log.error("Error in core server");
   if (e instanceof Error) {
@@ -47,3 +47,4 @@ for (const port of tcpPortList) {
 }
 
 log.info("Listening sockets create successfully.");
+
