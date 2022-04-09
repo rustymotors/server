@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from "http";
-import { getAdminServer } from "./index";
-import { SocketFactory } from "../socket-factory";
+import { getAdminServer } from "./index.js";
+import { SocketFactory } from "../socket-factory.js";
 
 describe("AdminServer", () => {
   test("handleRequest(), when passed an IncommingRequest and a ServerResponse, returns a ServerResponse", () => {

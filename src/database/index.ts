@@ -8,9 +8,9 @@
 
 import * as sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
-import type { SessionRecord } from "../types/index";
-import { logger } from "../logger/index";
-import { APP_CONFIG } from "../config/appconfig";
+import type { SessionRecord } from "../types/index.js";
+import { logger } from "../logger/index.js";
+import { APP_CONFIG } from "../config/appconfig.js";
 
 const log = logger.child({ service: "mcoserver:DatabaseMgr" });
 

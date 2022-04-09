@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { logger } from "../logger/index";
+import { logger } from "../logger/index.js";
 const log = logger.child({ service: "npacket" });
 
 export class NPacket {

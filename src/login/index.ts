@@ -5,11 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { logger } from "../logger/index";
-import { DatabaseManager } from "../database/index";
-import { UnprocessedPacket, UserRecordMini } from "../types/index";
-import { NPSUserStatus, premadeLogin } from "../message-types/index";
-import { TCPConnection } from "../core/tcpConnection";
+import { logger } from "../logger/index.js";
+import { DatabaseManager } from "../database/index.js";
+import type { UnprocessedPacket, UserRecordMini } from "../types/index.js";
+import { NPSUserStatus, premadeLogin } from "../message-types/index.js";
+import type { TCPConnection } from "../core/tcpConnection.js";
 
 const log = logger.child({ service: "mcoserver:LoginServer" });
 

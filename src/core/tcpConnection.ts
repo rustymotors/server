@@ -7,16 +7,16 @@
 
 import { createCipheriv, createDecipheriv } from "crypto";
 import type { Socket } from "net";
-import { logger } from "../logger/index";
-import { MessageNode } from "../message-types";
+import { logger } from "../logger/index.js";
+import type { MessageNode } from "../message-types/index.js";
 import type {
   ConnectionWithPacket,
   ConnectionWithPackets,
   LobbyCipers,
   UnprocessedPacket,
-} from "../types/index";
-import { ConnectionManager } from "./connection-mgr";
-import { EncryptionManager } from "./encryption-mgr";
+} from "../types/index.js";
+import type { ConnectionManager } from "./connection-mgr.js";
+import type { EncryptionManager } from "./encryption-mgr.js";
 
 const log = logger.child({ service: "mcoserver:TCPConnection" });
 

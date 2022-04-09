@@ -5,12 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { logger } from "../logger/index";
+import { logger } from "../logger/index.js";
 import {
   ConnectionWithPackets,
   EMessageDirection,
   UnprocessedPacket,
-} from "../types/index";
+} from "../types/index.js";
 import {
   ClientConnectMessage,
   GenericReplyMessage,
@@ -18,9 +18,9 @@ import {
   MessageNode,
   StockCar,
   StockCarInfoMessage,
-} from "../message-types/index";
-import { TCPConnection } from "../core/tcpConnection";
-import { DatabaseManager } from "../database";
+} from "../message-types/index.js";
+import type { TCPConnection } from "../core/tcpConnection.js";
+import { DatabaseManager } from "../database/index.js";
 
 const log = logger.child({ service: "mcoserver:MCOTSServer" });
 

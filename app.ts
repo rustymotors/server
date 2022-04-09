@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
  mcos is a game server, written from scratch, for an old game
  Copyright (C) <2017-2021>  <Drazi Crendraven>
@@ -6,10 +7,9 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-import { ICoreConfig, MCOServer } from "../../services/core";
-import { logger } from "../logger/index";
-import { ListenerThread } from "../core/listener-thread";
-import { startHTTPListener } from "../server/connectionEndpoints";
+import { ICoreConfig, MCOServer } from "./services/core/index.js";
+import { logger } from "./src/logger/index.js";
+import { ListenerThread } from "./src/core/listener-thread.js";
 
 const log = logger.child({ service: "mcos" });
 
@@ -17,14 +17,15 @@ const coreConfig: ICoreConfig = {
   logger,
   externalHost: '0.0.0.0',
   ports: [
-    80
+    80,
+    443,
   ]
 }
 
 try {
   const s = MCOServer.init(coreConfig)
-  s.run()
-  // s.stop()
+  await s.run()
+  await s.stop()
 } catch (e: unknown) {
   log.error("Error in core server")
   if (e instanceof Error) {
@@ -36,8 +37,6 @@ try {
   process.exit(1)
 }
 
-
-startHTTPListener();
 
 const listenerThread = ListenerThread.getInstance();
 log.info({}, "Starting the listening sockets...");
@@ -52,3 +51,4 @@ for (const port of tcpPortList) {
 }
 
 log.info("Listening sockets create successfully.");
+

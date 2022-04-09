@@ -7,10 +7,10 @@
 
 import type { Server, Socket } from "net";
 import { createServer } from "net";
-import { logger } from "../logger/index";
-import type { UnprocessedPacket } from "../types/index";
-import { ConnectionManager } from "./connection-mgr";
-import { TCPConnection } from "./tcpConnection";
+import { logger } from "../logger/index.js";
+import type { UnprocessedPacket } from "../types/index.js";
+import { ConnectionManager } from "./connection-mgr.js";
+import { TCPConnection } from "./tcpConnection.js";
 
 const log = logger.child({ service: "mcoserver:ListenerThread" });
 

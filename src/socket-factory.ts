@@ -1,4 +1,4 @@
-import { Socket } from "net";
+import type { Socket } from "net";
 import { Duplex, EventEmitter } from "stream";
 
 // TODO: refactor into something cleaner https://github.com/drazisil/mco-server/issues/1007

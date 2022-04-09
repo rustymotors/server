@@ -5,15 +5,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { logger } from "../logger/index";
-import { Socket } from "net";
+import { logger } from "../logger/index.js";
+import type { Socket } from "net";
 import {
   EMessageDirection,
   PersonaRecord,
   UnprocessedPacket,
-} from "../types/index";
-import { NPSMessage, NPSPersonaMapsMessage } from "../message-types/index";
-import { TCPConnection } from "../core/tcpConnection";
+} from "../types/index.js";
+import { NPSMessage, NPSPersonaMapsMessage } from "../message-types/index.js";
+import type { TCPConnection } from "../core/tcpConnection.js";
 
 const log = logger.child({ service: "mcoserver:PersonaServer" });
 

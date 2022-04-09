@@ -5,20 +5,20 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { MessageNode } from "../message-types/index";
+import { MessageNode } from "../message-types/index.js";
 import {
   EMessageDirection,
   NPS_COMMANDS,
   UnprocessedPacket,
-} from "../types/index";
-import { Socket } from "net";
-import { EncryptionManager } from "./encryption-mgr";
-import { NPSPacketManager } from "./nps-packet-manager";
-import { TCPConnection } from "./tcpConnection";
-import { MCOTServer } from "../transactions";
-import { logger } from "../logger/index";
-import { isMCOT } from "../server/index";
-import { wrapPacket } from "../server/packetFactory";
+} from "../types/index.js";
+import type { Socket } from "net";
+import { EncryptionManager } from "./encryption-mgr.js";
+import { NPSPacketManager } from "./nps-packet-manager.js";
+import { TCPConnection } from "./tcpConnection.js";
+import { MCOTServer } from "../transactions/index.js";
+import { logger } from "../logger/index.js";
+import { isMCOT } from "../server/index.js";
+import { wrapPacket } from "../server/packetFactory.js";
 import { randomUUID } from "crypto";
 
 const log = logger.child({

@@ -6,8 +6,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import type { IncomingMessage, ServerResponse } from "http";
-import { logger } from "../logger/index";
-import { getConnectionManager } from "../core/connection-mgr";
+import { logger } from "../logger/index.js";
+import { getConnectionManager } from "../core/connection-mgr.js";
 
 const log = logger.child({ service: "mcoserver:AdminServer;" });
 
@@ -45,6 +45,10 @@ export class AdminServer {
     for (let i = 0; i < connections.length; i++) {
       const connection = connections[i];
 
+      if (typeof connection === "undefined") {
+        break;
+      }
+
       if (typeof connection.remoteAddress === "undefined") {
         connection.remoteAddress = "unknown";
       }
@@ -75,6 +79,10 @@ export class AdminServer {
 
     for (let i = 0; i < connections.length; i++) {
       const connection = connections[i];
+
+      if (typeof connection === "undefined") {
+        break;
+      }
 
       if (typeof connection.remoteAddress === "undefined") {
         connection.remoteAddress = "unknown";

@@ -1,5 +1,5 @@
-import { logger } from "../logger";
-import { MPacket } from "./mpacket";
+import { logger } from "../logger/index.js";
+import type { MPacket } from "./mpacket.js";
 const log = logger.child({ service: "game_service" });
 
 export async function processPacket(inputPacket: MPacket) {

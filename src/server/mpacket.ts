@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { logger } from "../logger/index";
+import { logger } from "../logger/index.js";
 const log = logger.child({ service: "mpacket" });
 
 export class MPacket {
@@ -55,7 +55,7 @@ export class MPacket {
     newMPacket.packetSize = inputBuffer.readUInt16LE(0);
     newMPacket.headerId = inputBuffer.toString("utf8", 2, 6);
     newMPacket.sequenceNumber = inputBuffer.readUInt16LE(6);
-    newMPacket.setFlags(inputBuffer[8]);
+    newMPacket.setFlags(inputBuffer[8] || 0);
     newMPacket.buffer = inputBuffer.slice(9);
     newMPacket.wasDeserialized = true;
     return newMPacket;

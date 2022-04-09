@@ -2,7 +2,7 @@
   "name": "mcos",
   "version": "3.1.0-beta1",
   "description": "a server",
-  "main": "packages/bin/app.ts",
+  "main": "app.ts",
   "engines": {
     "node": "^14.13.1 || >=16.0.0"
   },
@@ -11,16 +11,17 @@
     "CHANGELOG.md",
     "AUTHORS"
   ],
+  "type": "module",
   "scripts": {
     "lint": "eslint . --fix && npx prettier -w .",
     "check:license": "npm licenses audit --summary --config=licenses.config.js",
-    "start": "node dist/bin/app.js | ./node_modules/.bin/pino-pretty",
-    "dev": "ts-node src/bin/app.ts | ./node_modules/.bin/pino-pretty",
+    "start": "node dist/app.js | ./node_modules/.bin/pino-pretty",
+    "dev": "node --loader ts-node/esm app.ts | ./node_modules/.bin/pino-pretty",
     "build": "tsc --build --verbose",
     "watch": "tsc --noEmit --watch src/bin/app.ts",
     "clean": "rm -rf dist",
     "build:clean": "npm run clean && npm run build",
-    "test": "jest",
+    "test": "node --experimental-vm-modules -r ts-node/register node_modules/.bin/jest --runInBand --config jest.config.json",
     "test:watch": "jest --watch"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",

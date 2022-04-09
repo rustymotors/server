@@ -1,4 +1,4 @@
-import { LobbyInfo } from "./LobbyInfo";
+import { LobbyInfo } from "./LobbyInfo.js";
 
 describe('LobbyInfo', () => {
     test('inherits getField() from parent class', () => {

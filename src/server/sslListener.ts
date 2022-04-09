@@ -1,4 +1,4 @@
-import { IncomingMessage, ServerResponse } from "http";
+import type { IncomingMessage, ServerResponse } from "http";
 import { AuthLogin } from "../auth";
 import { AdminServer } from "../admin";
 import { logger } from "../logger";

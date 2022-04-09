@@ -1,7 +1,6 @@
-import { logger } from "../logger/index";
+import { logger } from "../logger/index.js";
 import { createServer, IncomingMessage, ServerResponse } from "http";
-// import { RoutingMesh, EServerConnectionName } from "../router";
-import { AppConfiguration } from "../config/appconfig";
+import type { AppConfiguration } from "../config/appconfig.js";
 
 const log = logger.child({ service: "MCOServer:Patch" });
 

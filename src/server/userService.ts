@@ -1,5 +1,5 @@
-import { logger } from "../logger";
-import { NPacket } from "./npacket";
+import { logger } from "../logger/index.js";
+import type { NPacket } from "./npacket.js";
 const log = logger.child({ service: "user_service" });
 
 export async function processPacket(inputPacket: NPacket) {

@@ -1,9 +1,9 @@
-import { logger } from "../logger";
-import { UnprocessedPacket } from "../types";
-import { MPacket } from "./mpacket";
-import { NPacket } from "./npacket";
-import userService from "./userService";
-import gameService from "./gameService";
+import { logger } from "../logger/index.js";
+import type { UnprocessedPacket } from "../types/index.js";
+import { MPacket } from "./mpacket.js";
+import { NPacket } from "./npacket.js";
+import userService from "./userService.js";
+import gameService from "./gameService.js";
 const log = logger.child({ service: "server" });
 
 export function isMCOT(inputBuffer: Buffer) {
