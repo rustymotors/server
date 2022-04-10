@@ -7,6 +7,10 @@
   },
   "packageRules": [
     {
+      "matchPackageNames": ["nginx"],
+      "allowedVersions": "1.9.8"
+    },
+    {
       "matchDepTypes": ["devDependencies"],
       "matchUpdateTypes": ["patch", "minor"],
       "groupName": "devDependencies (non-major)"
