@@ -25,14 +25,14 @@ const log = logger.child({ service: "mcoserver:LoginServer" });
 export class LoginServer {
   static _instance: LoginServer;
   databaseManager = DatabaseManager.getInstance();
-/**
- * Get the single instance of the login server
- *
- * @static
- * @return {*}  {LoginServer}
- * @memberof LoginServer
- */
-static getInstance(): LoginServer {
+  /**
+   * Get the single instance of the login server
+   *
+   * @static
+   * @return {*}  {LoginServer}
+   * @memberof LoginServer
+   */
+  static getInstance(): LoginServer {
     if (!LoginServer._instance) {
       LoginServer._instance = new LoginServer();
     }
@@ -92,12 +92,8 @@ static getInstance(): LoginServer {
       })}`
       );
       if (responsePacket instanceof Buffer) {
-        // skipcq: JS-0378 it is confirmed above that responsePacket is a Buffer 
-        log.debug(
-          `responsePacket's data prior to sending: ${responsePacket.toString(
-            "hex"
-          )}`
-        );          
+        const packetString: string = responsePacket.toString("hex");
+        log.debug(`responsePacket's data prior to sending: ${packetString}`);
       }
       sock.write(responsePacket);
     }
@@ -110,9 +106,7 @@ static getInstance(): LoginServer {
    * @param {string} contextId
    * @return {Promise<IUserRecordMini>}
    */
-  public _npsGetCustomerIdByContextId(
-    contextId: string
-  ): UserRecordMini {
+  public _npsGetCustomerIdByContextId(contextId: string): UserRecordMini {
     log.debug(">>> _npsGetCustomerIdByContextId");
     const users: UserRecordMini[] = [
       {
@@ -188,9 +182,7 @@ static getInstance(): LoginServer {
 
     // Load the customer record by contextId
     // TODO: This needs to be from a database, right now is it static
-    const customer = this._npsGetCustomerIdByContextId(
-      userStatus.contextId
-    );
+    const customer = this._npsGetCustomerIdByContextId(userStatus.contextId);
 
     // Save sessionkey in database under customerId
     log.debug("Preparing to update session key in db");
