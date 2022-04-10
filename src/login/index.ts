@@ -92,6 +92,7 @@ static getInstance(): LoginServer {
       })}`
       );
       if (responsePacket instanceof Buffer) {
+        // skipcq: JS-0378 it is confirmed above that responsePacket is a Buffer 
         log.debug(
           `responsePacket's data prior to sending: ${responsePacket.toString(
             "hex"
