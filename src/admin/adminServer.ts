@@ -38,16 +38,8 @@ export class AdminServer {
     const connections = getConnectionManager().fetchConnectionList();
     let responseText = "";
 
-    if (connections.length === 0) {
-      return "No connections were found";
-    }
-
     for (let i = 0; i < connections.length; i++) {
       const connection = connections[i];
-
-      if (typeof connection === "undefined") {
-        break;
-      }
 
       if (typeof connection.remoteAddress === "undefined") {
         connection.remoteAddress = "unknown";
@@ -79,10 +71,6 @@ export class AdminServer {
 
     for (let i = 0; i < connections.length; i++) {
       const connection = connections[i];
-
-      if (typeof connection === "undefined") {
-        break;
-      }
 
       if (typeof connection.remoteAddress === "undefined") {
         connection.remoteAddress = "unknown";
@@ -119,20 +107,31 @@ export class AdminServer {
         remoteAddress: request.socket.remoteAddress,
       })}`
     );
+
+    let responseString = "";
+    let responseStatus = 404
+
     switch (request.url) {
-      case "/admin/connections":
+      case "/admin/connections": {
         response.setHeader("Content-Type", "text/plain");
-        return response.end(this._handleGetConnections());
-
-      case "/admin/connections/resetAllQueueState":
+        response.statusCode = 200
+        responseString = this._handleGetConnections();
+        break;
+      }
+      case "/admin/connections/resetAllQueueState": {
         response.setHeader("Content-Type", "text/plain");
-        return response.end(this._handleResetAllQueueState());
-
-      default:
+        response.statusCode = 200
+        responseString = this._handleResetAllQueueState();
+        break
+      }
+      default: {
         if (request.url && request.url.startsWith("/admin")) {
-          return response.end("Jiggawatt!");
+          response.statusCode = 404
+          responseString = "Jiggawatt!";
         }
+        break;
+      }
     }
-    return response.end();
+    return response.end(responseString);
   }
 }
