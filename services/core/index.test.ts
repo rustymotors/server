@@ -23,7 +23,7 @@ describe('MCOServer', function() {
             logger,
             ports: [9999]
         }
-        let server: MCOServer | null = MCOServer.init(testConfig)
+        const server: MCOServer = MCOServer.init(testConfig)
         expect(server.isRunning).toBeFalsy()
 
         // Act

@@ -109,7 +109,6 @@ export class AdminServer {
     );
 
     let responseString = "";
-    let responseStatus = 404
 
     switch (request.url) {
       case "/admin/connections": {

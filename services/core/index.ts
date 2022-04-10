@@ -1,4 +1,4 @@
-import { Server, Socket, SocketAddress } from "net";
+import { Server, Socket  } from "net";
 import type P from "pino";
 import { createServer } from "net";
 import { httpListener } from "../../src/server/httpListener.js";
