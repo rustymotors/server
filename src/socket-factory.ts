@@ -12,7 +12,7 @@ import { Duplex, EventEmitter } from "stream";
 export class SocketFactory extends Duplex implements EventEmitter {
 
   /**
-   * Generate a fake "socket" onkject for testing
+   * Generate a fake "socket" onbject for testing
    *
    * @static
    * @return {*}  {Socket}
