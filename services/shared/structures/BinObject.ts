@@ -40,6 +40,12 @@ export class BinObject {
 
     return selectedField;
   }
+
+  public addField(fieldRecord: IBinaryField): void {
+    // TODO: check for duplicated records
+    this._fields.push(fieldRecord)
+  }
+
   /**
    * Update field by name with value
    *
