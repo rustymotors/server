@@ -16,7 +16,11 @@ const log = logger.child({ service: "mcos" });
 const coreConfig: ICoreConfig = {
   logger,
   externalHost: "0.0.0.0",
-  ports: [80, 443],
+  ports: [
+    80, 6660, 7003, 8228, 8226, 8227, 9000, 9001, 9002, 9003, 9004, 9005,
+    9006, 9007, 9008, 9009, 9010, 9011, 9012, 9013, 9014, 43_200, 43_300,
+    43_400, 53_303,
+  ],
 };
 
 try {
@@ -33,18 +37,3 @@ try {
   log.error("Server exiting");
   process.exit(1);
 }
-
-const listenerThread = ListenerThread.getInstance();
-log.info({}, "Starting the listening sockets...");
-const tcpPortList = [
-  6660, 8228, 8226, 7003, 8227, 43_200, 43_300, 43_400, 53_303, 9000, 9001,
-  9002, 9003, 9004, 9005, 9006, 9007, 9008, 9009, 9010, 9011, 9012, 9013, 9014,
-];
-
-for (const port of tcpPortList) {
-  listenerThread.startTCPListener(port);
-  log.info(`port ${port} listening`);
-}
-
-log.info("Listening sockets create successfully.");
-

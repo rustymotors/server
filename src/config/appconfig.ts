@@ -42,7 +42,7 @@ export const APP_CONFIG: AppConfiguration = {
       AUTH_EXTERNAL_HOST: "10.10.5.20",
       PATCH_LISTEN_HOST: "0.0.0.0",
       PATCH_EXTERNAL_HOST: "10.10.5.20",
-      DATABASE_CONNECTION_URI: "db.mco.db",
+      DATABASE_CONNECTION_URI: "postgresql://postgres:password@db:5432/mcos",
       LOG_LEVEL: "debug",
     },
   },

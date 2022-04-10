@@ -3,6 +3,8 @@ import type P from "pino";
 import { createServer } from "net";
 import { httpListener } from "../../src/server/httpListener.js";
 import * as http from "http";
+import { ListenerThread } from "../../src/core/listener-thread.js";
+import { ConnectionManager } from "../../src/core/connection-mgr.js";
 
 export interface ICoreConfig {
   logger?: P.Logger;
@@ -20,16 +22,16 @@ export class MCOServer {
   private _log: P.Logger;
   private _running = false;
   private _listeningServers: Server[] = [];
-/**
- * Handle http socket connections
- *
- * @private
- * @param {http.IncomingMessage} req
- * @param {http.ServerResponse} res
- * @param {P.Logger} log
- * @memberof MCOServer
- */
-private _httpListener(
+  /**
+   * Handle http socket connections
+   *
+   * @private
+   * @param {http.IncomingMessage} req
+   * @param {http.ServerResponse} res
+   * @param {P.Logger} log
+   * @memberof MCOServer
+   */
+  private _httpListener(
     req: http.IncomingMessage,
     res: http.ServerResponse,
     log: P.Logger
@@ -60,13 +62,7 @@ private _httpListener(
     }
 
     // This is a 'normal' TCP socket
-    incomingSocket.on("end", () => {
-      // log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
-    });
-    incomingSocket.on("data", (data: Buffer) => {
-      // TODO: Process socket data
-      this._log.debug(`Recieved some data: ${data.toString("hex")}`);
-    });
+    void ListenerThread.getInstance().tcpListener(incomingSocket, ConnectionManager.getConnectionManager());
   }
   /**
    * Is the server in a running state?

@@ -20,14 +20,14 @@ const log = logger.child({ service: "mcoserver:ListenerThread" });
  */
 export class ListenerThread {
   private static _instance: ListenerThread;
-/**
- * Get the single instamce of the connection listener
- *
- * @static
- * @return {*}  {ListenerThread}
- * @memberof ListenerThread
- */
-static getInstance(): ListenerThread {
+  /**
+   * Get the single instamce of the connection listener
+   *
+   * @static
+   * @return {*}  {ListenerThread}
+   * @memberof ListenerThread
+   */
+  static getInstance(): ListenerThread {
     if (!ListenerThread._instance) {
       ListenerThread._instance = new ListenerThread();
     }
@@ -38,11 +38,16 @@ static getInstance(): ListenerThread {
     // Intentually empty
   }
 
+
   /**
    * The onData handler
    * takes the data buffer and creates a IRawPacket object
+   * @param {Buffer} data
+   * @param {TCPConnection} connection
+   * @return {*}  {Promise<void>}
+   * @memberof ListenerThread
    */
-  private async _onData(
+  async onTCPData(
     data: Buffer,
     connection: TCPConnection
   ): Promise<void> {
@@ -101,7 +106,7 @@ static getInstance(): ListenerThread {
    * @param {ConnectionMgr} connectionMgr
    * @return {void}
    */
-  private _listener(socket: Socket, connectionMgr: ConnectionManager): void {
+  public tcpListener(socket: Socket, connectionMgr: ConnectionManager): void {
     // Received a new connection
     // Turn it into a connection object
     const connectionRecord = connectionMgr.findOrNewConnection(socket);
@@ -127,7 +132,7 @@ static getInstance(): ListenerThread {
       log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
     });
     socket.on("data", (data) => {
-      void this._onData(data, connectionRecord);
+      void this.onTCPData(data, connectionRecord);
     });
     socket.on("error", (error: Error) => {
       if (!error.message.includes("ECONNRESET")) {
@@ -144,7 +149,7 @@ static getInstance(): ListenerThread {
   startTCPListener(localPort: number): Server {
     log.debug(`Attempting to bind to port ${localPort}`);
     return createServer((socket) => {
-      this._listener(socket, ConnectionManager.getConnectionManager());
+      this.tcpListener(socket, ConnectionManager.getConnectionManager());
     }).listen({ port: localPort, host: "0.0.0.0" });
   }
 }
