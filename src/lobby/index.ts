@@ -6,12 +6,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { logger } from "../logger/index";
-import { DatabaseManager } from "../database/index";
-import { EMessageDirection, UnprocessedPacket } from "../types/index";
-import { NPSMessage, NPSUserInfo } from "../message-types/index";
-import { PersonaServer } from "../persona/index";
-import { TCPConnection } from "../core/tcpConnection";
+import { logger } from "../logger/index.js";
+import { DatabaseManager } from "../database/index.js";
+import { EMessageDirection, UnprocessedPacket } from "../types/index.js";
+import { NPSMessage, NPSUserInfo } from "../message-types/index.js";
+import { PersonaServer } from "../persona/index.js";
+import { TCPConnection } from "../core/tcpConnection.js";
 
 const log = logger.child({ service: "mcoserver:LobbyServer" });
 
@@ -25,10 +25,10 @@ const log = logger.child({ service: "mcoserver:LobbyServer" });
  * @param {Buffer} buffer
  * @return {Promise<ConnectionObj>}
  */
-async function npsSocketWriteIfOpen(
+function npsSocketWriteIfOpen(
   conn: TCPConnection,
   buffer: Buffer
-): Promise<TCPConnection> {
+): TCPConnection {
   const { sock } = conn;
   if (sock.writable) {
     // Write the packet to socket
@@ -77,12 +77,12 @@ function encryptCmd(con: TCPConnection, cypherCmd: Buffer): TCPConnection {
  *
  * @param {ConnectionObj} con
  * @param {Buffer} data
- * @return {Promise<ConnectionObj>}
+ * @return {TCPConnection}
  */
-async function sendCommand(
+function sendCommand(
   con: TCPConnection,
   data: Buffer
-): Promise<TCPConnection> {
+): TCPConnection {
   const s = con;
 
   const decipheredCommand = decryptCmd(
@@ -135,8 +135,14 @@ async function sendCommand(
  */
 export class LobbyServer {
   static _instance: LobbyServer;
-
-  static getInstance(): LobbyServer {
+/**
+ * Get the single instance of the lobby service
+ *
+ * @static
+ * @return {*}  {LobbyServer}
+ * @memberof LobbyServer
+ */
+static getInstance(): LobbyServer {
     if (!LobbyServer._instance) {
       LobbyServer._instance = new LobbyServer();
     }
@@ -188,7 +194,7 @@ export class LobbyServer {
           return npsSocketWriteIfOpen(connection, responsePacket.serialize());
         } catch (error) {
           if (error instanceof Error) {
-            throw new Error(`Unable to send Connect packet: ${error}`);
+            throw new Error(`Unable to send Connect packet: ${error.message}`);
           }
           throw new Error(`Unable to send Connect packet: unknown error`);
         }
@@ -212,7 +218,7 @@ export class LobbyServer {
         // This is an encrypted command
         // Fetch session key
 
-        const updatedConnection = await sendCommand(connection, data);
+        const updatedConnection = sendCommand(connection, data);
         const { encryptedCmd } = updatedConnection;
 
         if (encryptedCmd === undefined) {

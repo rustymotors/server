@@ -40,28 +40,38 @@ export class BinObject {
 
     return selectedField;
   }
-/**
- * Update field by name with value
- *
- * @param {string} fieldname
- * @param {Buffer} newValue
- * @memberof BinObject
- */
-public updateFieldValue(fieldname: string, newValue: Buffer) {
-      this._fields.forEach((field: IBinaryField) => {
-          if (field.name === fieldname) {
-              if (newValue.byteLength > field.size) {
-                  throw new Error("Value exceeds field size");                  
-              }
 
-              field.value = Buffer.concat([Buffer.alloc(field.size - newValue.byteLength), newValue])
+  public addField(fieldRecord: IBinaryField): void {
+    // TODO: check for duplicated records
+    this._fields.push(fieldRecord)
+  }
 
-              if (field.size !== field.value.byteLength) {
-                  throw new Error("There was an error updating field value. Size mismatch");
-                  
-              }
-              return
-          }
-      })
+  /**
+   * Update field by name with value
+   *
+   * @param {string} fieldname
+   * @param {Buffer} newValue
+   * @memberof BinObject
+   */
+  public updateFieldValue(fieldname: string, newValue: Buffer): void {
+    this._fields.forEach((field: IBinaryField) => {
+      if (field.name === fieldname) {
+        if (newValue.byteLength > field.size) {
+          throw new Error("Value exceeds field size");
+        }
+
+        field.value = Buffer.concat([
+          Buffer.alloc(field.size - newValue.byteLength),
+          newValue,
+        ]);
+
+        if (field.size !== field.value.byteLength) {
+          throw new Error(
+            "There was an error updating field value. Size mismatch"
+          );
+        }
+        return;
+      }
+    });
   }
 }

@@ -5,11 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { logger } from "../logger/index";
-import { DatabaseManager } from "../database/index";
-import { UnprocessedPacket, UserRecordMini } from "../types/index";
-import { NPSUserStatus, premadeLogin } from "../message-types/index";
-import { TCPConnection } from "../core/tcpConnection";
+import { logger } from "../logger/index.js";
+import { DatabaseManager } from "../database/index.js";
+import type { UnprocessedPacket, UserRecordMini } from "../types/index.js";
+import { NPSUserStatus, premadeLogin } from "../message-types/index.js";
+import type { TCPConnection } from "../core/tcpConnection.js";
 
 const log = logger.child({ service: "mcoserver:LoginServer" });
 
@@ -25,7 +25,13 @@ const log = logger.child({ service: "mcoserver:LoginServer" });
 export class LoginServer {
   static _instance: LoginServer;
   databaseManager = DatabaseManager.getInstance();
-
+  /**
+   * Get the single instance of the login server
+   *
+   * @static
+   * @return {*}  {LoginServer}
+   * @memberof LoginServer
+   */
   static getInstance(): LoginServer {
     if (!LoginServer._instance) {
       LoginServer._instance = new LoginServer();
@@ -57,7 +63,7 @@ export class LoginServer {
     const { sock } = connection;
     const requestCode = data.readUInt16BE(0).toString(16);
 
-    let responsePacket;
+    let responsePacket: Buffer | null = null;
 
     switch (requestCode) {
       // NpsUserLogin
@@ -78,18 +84,17 @@ export class LoginServer {
         processed = false;
     }
 
-    if (processed && responsePacket) {
+    if (processed === true && responsePacket !== null) {
       log.debug(
         `responsePacket object from dataHandler',
       ${JSON.stringify({
         userStatus: responsePacket.toString("hex"),
       })}`
       );
-      log.debug(
-        `responsePacket's data prior to sending: ${responsePacket.toString(
-          "hex"
-        )}`
-      );
+      if (responsePacket instanceof Buffer) {
+        const packetString: string = responsePacket.toString("hex");
+        log.debug(`responsePacket's data prior to sending: ${packetString}`);
+      }
       sock.write(responsePacket);
     }
 
@@ -101,9 +106,7 @@ export class LoginServer {
    * @param {string} contextId
    * @return {Promise<IUserRecordMini>}
    */
-  async _npsGetCustomerIdByContextId(
-    contextId: string
-  ): Promise<UserRecordMini> {
+  public _npsGetCustomerIdByContextId(contextId: string): UserRecordMini {
     log.debug(">>> _npsGetCustomerIdByContextId");
     const users: UserRecordMini[] = [
       {
@@ -179,9 +182,7 @@ export class LoginServer {
 
     // Load the customer record by contextId
     // TODO: This needs to be from a database, right now is it static
-    const customer = await this._npsGetCustomerIdByContextId(
-      userStatus.contextId
-    );
+    const customer = this._npsGetCustomerIdByContextId(userStatus.contextId);
 
     // Save sessionkey in database under customerId
     log.debug("Preparing to update session key in db");

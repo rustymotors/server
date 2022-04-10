@@ -6,12 +6,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { logger } from "../logger/index";
+import { logger } from "../logger/index.js";
 import { readFileSync } from "fs";
-import { ShardEntry } from "./shard-entry";
+import { ShardEntry } from "./shard-entry.js";
 import { createServer, Server } from "https";
-import { IncomingMessage, ServerResponse } from "http";
-import type { AppConfiguration } from "../config/appconfig";
+import type { IncomingMessage, ServerResponse } from "http";
+import type { AppConfiguration } from "../config/appconfig.js";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.

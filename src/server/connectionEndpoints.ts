@@ -1,8 +1,8 @@
-import { APP_CONFIG } from "../config/appconfig";
+import { APP_CONFIG } from "../config/appconfig.js";
 import { createServer as createHTTPServer, Server as httpServer } from "http";
-import { SecureContext } from "tls";
-import { logger } from "../logger/index";
-import { httpListener } from "./httpListener";
+import type { SecureContext } from "tls";
+import { logger } from "../logger/index.js";
+import { httpListener } from "./httpListener.js";
 
 const log = logger.child({ service: "http" });
 

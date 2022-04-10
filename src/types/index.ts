@@ -1,5 +1,5 @@
-import { Cipher, Decipher } from "crypto";
-import { TCPConnection } from "../core/tcpConnection";
+import type { Cipher, Decipher } from "crypto";
+import type { TCPConnection } from "../core/tcpConnection";
 
 export type LobbyCipers = {
   cipher?: Cipher;
@@ -224,6 +224,14 @@ export class MessageHead {
     this._length = Buffer.alloc(2); // UInt4B
     /** @type {Buffer} */
     this._mcosig = Buffer.alloc(4); // UInt4B
+  }
+
+  get length() {
+    return this._length;
+  }
+
+  get mcosig() {
+    return this._mcosig;
   }
 }
 

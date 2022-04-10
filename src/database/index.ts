@@ -6,11 +6,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import * as sqlite3 from "sqlite3";
-import { Database, open } from "sqlite";
-import type { SessionRecord } from "../types/index";
-import { logger } from "../logger/index";
-import { APP_CONFIG } from "../config/appconfig";
+import pg from "pg";
+const { Client } = pg;
+import type { SessionRecord } from "../types/index.js";
+import { logger } from "../logger/index.js";
+import { APP_CONFIG } from "../config/appconfig.js";
 
 const log = logger.child({ service: "mcoserver:DatabaseMgr" });
 
@@ -22,7 +22,7 @@ export class DatabaseManager {
   private static _instance: DatabaseManager;
   private connectionURI: string;
   changes = 0;
-  localDB: Database | undefined;
+  localDB: pg.Client | undefined;
 
   /**
    * Return the instance of the DatabaseManager class
@@ -47,16 +47,17 @@ export class DatabaseManager {
       try {
         const self = DatabaseManager._instance;
 
-        const db = await open({
-          filename: this.connectionURI,
-          driver: sqlite3.Database,
+        const db = new Client({
+          connectionString: APP_CONFIG.MCOS.SETTINGS.DATABASE_CONNECTION_URI,
         });
+
+        await db.connect();
 
         self.localDB = db;
 
         self.changes = 0;
 
-        await db.run(`CREATE TABLE IF NOT EXISTS "sessions"
+        await db.query(`CREATE TABLE IF NOT EXISTS "sessions"
             (
               customer_id integer,
               sessionkey text NOT NULL,
@@ -66,7 +67,7 @@ export class DatabaseManager {
               CONSTRAINT pk_session PRIMARY KEY(customer_id)
             );`);
 
-        await db.run(`CREATE TABLE IF NOT EXISTS "lobbies"
+        await db.query(`CREATE TABLE IF NOT EXISTS "lobbies"
             (
               "lobyID" integer NOT NULL,
               "raceTypeID" integer NOT NULL,
@@ -183,16 +184,15 @@ export class DatabaseManager {
       log.warn("Database not ready in fetchSessionKeyByCustomerId()");
       throw new Error("Error accessing database. Are you using the instance?");
     }
-    const stmt = await this.localDB.prepare(
-      "SELECT sessionkey, skey FROM sessions WHERE customer_id = ?"
+    const record = await this.localDB.query(
+      "SELECT sessionkey, skey FROM sessions WHERE customer_id = $1",
+      [customerId]
     );
-
-    const record = await stmt.get(customerId);
     if (record === undefined) {
       log.debug("Unable to locate session key");
       throw new Error("Unable to fetch session key");
     }
-    return record as SessionRecord;
+    return record.rows[0] as SessionRecord;
   }
 
   /**
@@ -208,14 +208,14 @@ export class DatabaseManager {
       log.warn("Database not ready in fetchSessionKeyByConnectionId()");
       throw new Error("Error accessing database. Are you using the instance?");
     }
-    const stmt = await this.localDB.prepare(
-      "SELECT sessionkey, skey FROM sessions WHERE connection_id = ?"
+    const record = await this.localDB.query(
+      "SELECT sessionkey, skey FROM sessions WHERE connection_id = $1",
+      [connectionId]
     );
-    const record = await stmt.get(connectionId);
     if (record === undefined) {
       throw new Error("Unable to fetch session key");
     }
-    return record as SessionRecord;
+    return record.rows[0] as SessionRecord;
   }
 
   /**
@@ -239,16 +239,13 @@ export class DatabaseManager {
       log.warn("Database not ready in updateSessionKey()");
       throw new Error("Error accessing database. Are you using the instance?");
     }
-    const stmt = await this.localDB.prepare(
-      "REPLACE INTO sessions (customer_id, sessionkey, skey, context_id, connection_id) VALUES ($customerId, $sessionkey, $skey, $contextId, $connectionId)"
+    const record = await this.localDB.query(
+      `INSERT INTO sessions (customer_id, sessionkey, skey, context_id, connection_id) 
+        VALUES ($1, $2, $3, $4, $5) 
+      ON CONFLICT (customer_id) 
+        DO UPDATE SET sessionkey = $2, skey = $3;`,
+      [customerId, sessionkey, skey, contextId, connectionId]
     );
-    const record = await stmt.run({
-      $customerId: customerId,
-      $sessionkey: sessionkey,
-      $skey: skey,
-      $contextId: contextId,
-      $connectionId: connectionId,
-    });
     if (record === undefined) {
       throw new Error("Unable to fetch session key");
     }

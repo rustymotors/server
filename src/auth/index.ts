@@ -6,15 +6,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-// import config from "../config/appconfig";
-
-// import { readFileSync } from "fs";
-import { IncomingMessage, ServerResponse } from "http";
-// import { createServer, Server } from "https";
-import { Socket } from "net";
-import { logger } from "../logger/index";
-// import { EServerConnectionName, RoutingMesh } from "../router/index";
-// import { SslOptions } from "../types/index";
+import type { IncomingMessage, ServerResponse } from "http";
+import type { Socket } from "net";
+import { logger } from "../logger/index.js";
 
 const log = logger.child({ service: "MCOServer:Auth" });
 

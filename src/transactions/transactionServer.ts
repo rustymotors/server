@@ -5,12 +5,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { logger } from "../logger/index";
+import { logger } from "../logger/index.js";
 import {
   ConnectionWithPackets,
   EMessageDirection,
   UnprocessedPacket,
-} from "../types/index";
+} from "../types/index.js";
 import {
   ClientConnectMessage,
   GenericReplyMessage,
@@ -18,9 +18,9 @@ import {
   MessageNode,
   StockCar,
   StockCarInfoMessage,
-} from "../message-types/index";
-import { TCPConnection } from "../core/tcpConnection";
-import { DatabaseManager } from "../database";
+} from "../message-types/index.js";
+import type { TCPConnection } from "../core/tcpConnection.js";
+import { DatabaseManager } from "../database/index.js";
 
 const log = logger.child({ service: "mcoserver:MCOTSServer" });
 
@@ -35,7 +35,7 @@ export class MCOTServer {
    * Get the instance of the transactions server
    * @returns {MCOTServer}
    */
-  static getTransactionServer(): MCOTServer {
+  public static getTransactionServer(this: void): MCOTServer {
     if (!MCOTServer._instance) {
       MCOTServer._instance = new MCOTServer();
     }
@@ -377,7 +377,7 @@ export class MCOTServer {
         try {
           const result = this._setOptions(conn, node);
           const responsePackets = result.packetList;
-          return await result.connection.tryWritePackets(responsePackets);
+          return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(`Error in MC_SET_OPTIONS: ${error.message}`);
@@ -390,7 +390,7 @@ export class MCOTServer {
         try {
           const result = this._trackingMessage(conn, node);
           const responsePackets = result.packetList;
-          return await result.connection.tryWritePackets(responsePackets);
+          return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(`Error in MC_TRACKING_MSG: ${error.message}`);
@@ -403,7 +403,7 @@ export class MCOTServer {
         try {
           const result = this._updatePlayerPhysical(conn, node);
           const responsePackets = result.packetList;
-          return await result.connection.tryWritePackets(responsePackets);
+          return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -419,7 +419,7 @@ export class MCOTServer {
           const result = await this.clientConnect(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
-          return await result.connection.tryWritePackets(responsePackets);
+          return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -438,7 +438,7 @@ export class MCOTServer {
           const result = this._login(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
-          return await result.connection.tryWritePackets(responsePackets);
+          return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -457,7 +457,7 @@ export class MCOTServer {
           const result = this._logout(conn, node);
           const responsePackets = result.packetList;
           // Write the socket
-          return await result.connection.tryWritePackets(responsePackets);
+          return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -478,7 +478,7 @@ export class MCOTServer {
         const responsePackets = result.packetList;
         try {
           // Write the socket
-          return await result.connection.tryWritePackets(responsePackets);
+          return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
           if (error instanceof Error) {
             throw new TypeError(
@@ -616,3 +616,5 @@ export class MCOTServer {
     return this.messageReceived(messageNode, connection);
   }
 }
+
+export const getTransactionServer = MCOTServer.getTransactionServer;

@@ -7,10 +7,10 @@
 
 import type { Server, Socket } from "net";
 import { createServer } from "net";
-import { logger } from "../logger/index";
-import type { UnprocessedPacket } from "../types/index";
-import { ConnectionManager } from "./connection-mgr";
-import { TCPConnection } from "./tcpConnection";
+import { logger } from "../logger/index.js";
+import type { UnprocessedPacket } from "../types/index.js";
+import { ConnectionManager } from "./connection-mgr.js";
+import { TCPConnection } from "./tcpConnection.js";
 
 const log = logger.child({ service: "mcoserver:ListenerThread" });
 
@@ -20,7 +20,13 @@ const log = logger.child({ service: "mcoserver:ListenerThread" });
  */
 export class ListenerThread {
   private static _instance: ListenerThread;
-
+  /**
+   * Get the single instamce of the connection listener
+   *
+   * @static
+   * @return {*}  {ListenerThread}
+   * @memberof ListenerThread
+   */
   static getInstance(): ListenerThread {
     if (!ListenerThread._instance) {
       ListenerThread._instance = new ListenerThread();
@@ -32,11 +38,16 @@ export class ListenerThread {
     // Intentually empty
   }
 
+
   /**
    * The onData handler
    * takes the data buffer and creates a IRawPacket object
+   * @param {Buffer} data
+   * @param {TCPConnection} connection
+   * @return {*}  {Promise<void>}
+   * @memberof ListenerThread
    */
-  private async _onData(
+  async onTCPData(
     data: Buffer,
     connection: TCPConnection
   ): Promise<void> {
@@ -52,7 +63,7 @@ export class ListenerThread {
         "hex"
       )}}`
     );
-    let newConnection: TCPConnection;
+    let newConnection: TCPConnection | null = null;
     try {
       newConnection = await connection.processPacket(rawPacket);
     } catch (error) {
@@ -95,7 +106,7 @@ export class ListenerThread {
    * @param {ConnectionMgr} connectionMgr
    * @return {void}
    */
-  private _listener(socket: Socket, connectionMgr: ConnectionManager): void {
+  public tcpListener(socket: Socket, connectionMgr: ConnectionManager): void {
     // Received a new connection
     // Turn it into a connection object
     const connectionRecord = connectionMgr.findOrNewConnection(socket);
@@ -113,7 +124,7 @@ export class ListenerThread {
        * Craft a packet that tells the client it's allowed to login
        */
 
-      socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]))
+      socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
       connectionRecord.inQueue = false;
     }
 
@@ -121,7 +132,7 @@ export class ListenerThread {
       log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
     });
     socket.on("data", (data) => {
-      void this._onData(data, connectionRecord);
+      void this.onTCPData(data, connectionRecord);
     });
     socket.on("error", (error: Error) => {
       if (!error.message.includes("ECONNRESET")) {
@@ -138,7 +149,7 @@ export class ListenerThread {
   startTCPListener(localPort: number): Server {
     log.debug(`Attempting to bind to port ${localPort}`);
     return createServer((socket) => {
-      this._listener(socket, ConnectionManager.getConnectionManager());
+      this.tcpListener(socket, ConnectionManager.getConnectionManager());
     }).listen({ port: localPort, host: "0.0.0.0" });
   }
 }

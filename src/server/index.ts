@@ -1,19 +1,31 @@
-import { logger } from "../logger";
-import { UnprocessedPacket } from "../types";
-import { MPacket } from "./mpacket";
-import { NPacket } from "./npacket";
-import userService from "./userService";
-import gameService from "./gameService";
+import { logger } from "../logger/index.js";
+import type { UnprocessedPacket } from "../types/index.js";
+import { MPacket } from "./mpacket.js";
+import { NPacket } from "./npacket.js";
+import userService from "./userService.js";
+import gameService from "./gameService.js";
 const log = logger.child({ service: "server" });
-
-export function isMCOT(inputBuffer: Buffer) {
+/**
+ * Is this an MCOT bound packet?
+ *
+ * @export
+ * @param {Buffer} inputBuffer
+ * @return {*}  {boolean}
+ */
+export function isMCOT(inputBuffer: Buffer): boolean {
   return inputBuffer.toString("utf8", 2, 6) === "TOMC";
 }
-
-export async function routePacket(
+/**
+ * Route raw packet to correct service based on type
+ *
+ * @export
+ * @param {UnprocessedPacket} inputConnection
+ * @param {("tomc" | "tcp")} packetClass
+ */
+export function routePacket(
   inputConnection: UnprocessedPacket,
   packetClass: "tomc" | "tcp"
-) {
+): void {
   switch (packetClass) {
     case "tomc": {
       log.debug(
@@ -25,7 +37,7 @@ export async function routePacket(
         inputConnection.connectionId
       );
 
-      log.debug(`mPacket: ${recievedPacket}`);
+      log.debug(`mPacket: ${recievedPacket.toString()}`);
       void gameService.processPacket(recievedPacket);
 
       break;
@@ -40,7 +52,7 @@ export async function routePacket(
         inputConnection.connectionId
       );
 
-      log.debug(`nPacket: ${recievedPacket}`);
+      log.debug(`nPacket: ${recievedPacket.toString()}`);
       void userService.processPacket(recievedPacket);
       break;
     }

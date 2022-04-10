@@ -5,13 +5,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { logger } from "../logger/index";
-import { DatabaseManager } from "../database/index";
-import { LobbyServer } from "../lobby/index";
-import { LoginServer } from "../login/index";
-import { PersonaServer } from "../persona/index";
-import { UnprocessedPacket } from "../types/index";
-import { TCPConnection } from "./tcpConnection";
+import { logger } from "../logger/index.js";
+import { DatabaseManager } from "../database/index.js";
+import { LobbyServer } from "../lobby/index.js";
+import { LoginServer } from "../login/index.js";
+import { PersonaServer } from "../persona/index.js";
+import { UnprocessedPacket } from "../types/index.js";
+import { TCPConnection } from "./tcpConnection.js";
 
 const log = logger.child({ service: "mcoserver:NPSPacketManager" });
 
@@ -28,7 +28,12 @@ export interface IMsgNameMapping {
   id: number;
   name: string;
 }
-
+/**
+ *  Handles incoming NPS packets
+ *
+ * @export
+ * @class NPSPacketManager
+ */
 export class NPSPacketManager {
   database = DatabaseManager.getInstance();
   npsKey: string;

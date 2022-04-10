@@ -1,5 +1,5 @@
-import { createEmptyNPSMessage } from "../factories/npsMessageFactory";
-import { fetchPersonas, handleSelectGamePersona } from "./index";
+import { createEmptyNPSMessage } from "../factories/npsMessageFactory.js";
+import { fetchPersonas, handleSelectGamePersona } from "./index.js";
 
 describe("fetchPersonas()", () => {
   test("should return multiple persona records", () => {

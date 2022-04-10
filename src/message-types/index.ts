@@ -1,7 +1,7 @@
-import { EMessageDirection, PersonaRecord } from "../types/index";
+import { EMessageDirection, PersonaRecord } from "../types/index.js";
 import { readFileSync, statSync } from "fs";
 import { privateDecrypt } from "crypto";
-import { APP_CONFIG } from "../config/appconfig";
+import { APP_CONFIG } from "../config/appconfig.js";
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)

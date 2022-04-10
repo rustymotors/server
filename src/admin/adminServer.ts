@@ -6,8 +6,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import type { IncomingMessage, ServerResponse } from "http";
-import { logger } from "../logger/index";
-import { getConnectionManager } from "../core/connection-mgr";
+import { logger } from "../logger/index.js";
+import { getConnectionManager } from "../core/connection-mgr.js";
 
 const log = logger.child({ service: "mcoserver:AdminServer;" });
 
@@ -37,10 +37,6 @@ export class AdminServer {
   _handleGetConnections(): string {
     const connections = getConnectionManager().fetchConnectionList();
     let responseText = "";
-
-    if (connections.length === 0) {
-      return "No connections were found";
-    }
 
     for (let i = 0; i < connections.length; i++) {
       const connection = connections[i];
@@ -111,20 +107,30 @@ export class AdminServer {
         remoteAddress: request.socket.remoteAddress,
       })}`
     );
+
+    let responseString = "";
+
     switch (request.url) {
-      case "/admin/connections":
+      case "/admin/connections": {
         response.setHeader("Content-Type", "text/plain");
-        return response.end(this._handleGetConnections());
-
-      case "/admin/connections/resetAllQueueState":
+        response.statusCode = 200
+        responseString = this._handleGetConnections();
+        break;
+      }
+      case "/admin/connections/resetAllQueueState": {
         response.setHeader("Content-Type", "text/plain");
-        return response.end(this._handleResetAllQueueState());
-
-      default:
+        response.statusCode = 200
+        responseString = this._handleResetAllQueueState();
+        break
+      }
+      default: {
         if (request.url && request.url.startsWith("/admin")) {
-          return response.end("Jiggawatt!");
+          response.statusCode = 404
+          responseString = "Jiggawatt!";
         }
+        break;
+      }
     }
-    return response.end();
+    return response.end(responseString);
   }
 }

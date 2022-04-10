@@ -1,10 +1,10 @@
-import { APP_CONFIG } from "../config/appconfig";
-import { IncomingMessage, ServerResponse } from "http";
-import { logger } from "../logger";
-import { PatchServer } from "../patch";
-import { ShardServer } from "../shard";
-import { AuthLogin } from "../auth";
-import { AdminServer } from "../admin";
+import { APP_CONFIG } from "../config/appconfig.js";
+import type { IncomingMessage, ServerResponse } from "http";
+import { logger } from "../logger/index.js";
+import { PatchServer } from "../patch/index.js";
+import { ShardServer } from "../shard/index.js";
+import { AuthLogin } from "../auth/index.js";
+import { AdminServer } from "../admin/index.js";
 
 const log = logger.child({ service: "http" });
 

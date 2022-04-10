@@ -9,6 +9,27 @@ services:
     depends_on:
       - node
 
+  db:
+    image: postgres:14.0
+    ports:
+      - "5432"
+      # TODO: remove before prod https://github.com/drazisil/mco-server/issues/1008
+    environment:
+      - "POSTGRES_PASSWORD=password"
+  pgadmin:
+    image: dpage/pgadmin4:6.8
+    # TODO: remove these before prod https://github.com/drazisil/mco-server/issues/1008
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - "15432:80"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    depends_on:
+      - db
+
   node:
     image: "node:16"
     user: "node"
@@ -34,3 +55,8 @@ services:
       - "43400:43400"
       - "53303:53303"
       - "9000-9014:9000-9014"
+    depends_on:
+      - db
+
+volumes:
+  pgadmin:

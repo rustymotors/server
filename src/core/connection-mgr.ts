@@ -5,20 +5,20 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { MessageNode } from "../message-types/index";
+import { MessageNode } from "../message-types/index.js";
 import {
   EMessageDirection,
   NPS_COMMANDS,
   UnprocessedPacket,
-} from "../types/index";
-import { Socket } from "net";
-import { EncryptionManager } from "./encryption-mgr";
-import { NPSPacketManager } from "./nps-packet-manager";
-import { TCPConnection } from "./tcpConnection";
-import { MCOTServer } from "../transactions";
-import { logger } from "../logger/index";
-import { isMCOT } from "../server/index";
-import { wrapPacket } from "../server/packetFactory";
+} from "../types/index.js";
+import type { Socket } from "net";
+import { EncryptionManager } from "./encryption-mgr.js";
+import { NPSPacketManager } from "./nps-packet-manager.js";
+import { TCPConnection } from "./tcpConnection.js";
+import { MCOTServer } from "../transactions/index.js";
+import { logger } from "../logger/index.js";
+import { isMCOT } from "../server/index.js";
+import { wrapPacket } from "../server/packetFactory.js";
 import { randomUUID } from "crypto";
 
 const log = logger.child({
@@ -33,8 +33,15 @@ export class ConnectionManager {
   private static _instance: ConnectionManager;
   private connections: TCPConnection[] = [];
   private banList: string[] = [];
-
-  public static getConnectionManager(this: void): ConnectionManager {
+/**
+ * Get the single instance of the connection manager
+ *
+ * @static
+ * @param {void} this
+ * @return {*}  {ConnectionManager}
+ * @memberof ConnectionManager
+ */
+public static getConnectionManager(this: void): ConnectionManager {
     if (!ConnectionManager._instance) {
       ConnectionManager._instance = new ConnectionManager();
     }
@@ -90,7 +97,7 @@ export class ConnectionManager {
     );
 
     log.debug("Attempting to wrap packet");
-    await wrapPacket(rawPacket, packetType).processPacket();
+    wrapPacket(rawPacket, packetType).processPacket();
     log.debug("Wrapping packet successful");
 
     if (localPort === 8226) {
@@ -233,8 +240,16 @@ export class ConnectionManager {
 
     return results;
   }
-
-  _updateConnectionByAddressAndPort(
+  /**
+   * Update the internal connection record
+   *
+   * @param {string} address
+   * @param {number} port
+   * @param {TCPConnection} newConnection
+   * @return {*}  {TCPConnection[]} the updated connection
+   * @memberof ConnectionManager
+   */
+  public updateConnectionByAddressAndPort(
     address: string,
     port: number,
     newConnection: TCPConnection
@@ -307,8 +322,14 @@ export class ConnectionManager {
     );
     return newConnection;
   }
-
-  addConnection(connection: TCPConnection): TCPConnection[] {
+  /**
+   * Add new connection to internal list
+   *
+   * @param {TCPConnection} connection
+   * @return {*}  {TCPConnection[]}
+   * @memberof ConnectionManager
+   */
+  public addConnection(connection: TCPConnection): TCPConnection[] {
     this.connections.push(connection);
     return this.connections;
   }
