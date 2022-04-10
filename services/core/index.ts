@@ -5,6 +5,7 @@ import { httpListener } from "../../src/server/httpListener.js";
 import * as http from "http";
 import { ListenerThread } from "../../src/core/listener-thread.js";
 import { ConnectionManager } from "../../src/core/connection-mgr.js";
+import { EventEmitter } from "events";
 
 export interface ICoreConfig {
   logger?: P.Logger;
@@ -17,27 +18,12 @@ export interface ICoreConfig {
  * @export
  * @class MCOServer
  */
-export class MCOServer {
+export class MCOServer extends EventEmitter {
   private _config: ICoreConfig;
   private _log: P.Logger;
   private _running = false;
   private _listeningServers: Server[] = [];
-  /**
-   * Handle http socket connections
-   *
-   * @private
-   * @param {http.IncomingMessage} req
-   * @param {http.ServerResponse} res
-   * @param {P.Logger} log
-   * @memberof MCOServer
-   */
-  private _httpListener(
-    req: http.IncomingMessage,
-    res: http.ServerResponse,
-    log: P.Logger
-  ) {
-    log.debug(`url: ${req.url}`);
-  }
+
   /**
    * Handle incomming socket connections
    *
@@ -74,8 +60,18 @@ export class MCOServer {
   get isRunning(): boolean {
     return this._running;
   }
+/**
+ * Get the number of listening servers
+ *
+ * @readonly
+ * @memberof MCOServer
+ */
+get serverCount() {
+    return this._listeningServers.length
+  }
 
   private constructor(config: ICoreConfig) {
+    super()
     this._config = config;
     if (!this._config.logger) {
       throw new Error("Logger was not passed in the config");
@@ -108,7 +104,8 @@ export class MCOServer {
     for (let index = 0; index < this._config.ports.length; index++) {
       const port = this._config.ports[index];
       const newServer = createServer((s: Socket) => {
-        return this._listener(s, this._log);
+        this._listener(s, this._log);
+        return
       });
       newServer.on("error", (err) => {
         throw err;
@@ -120,6 +117,7 @@ export class MCOServer {
     }
 
     this._running = true;
+    this.emit('started', this)
   }
   /**
    * Close all listening ports and move server to stopped state
@@ -129,26 +127,15 @@ export class MCOServer {
   public stop(): void {
     this._running = false;
     this._log.debug(
-      `There are ${this._listeningServers.length} servers listening`
+      `There are ${this.serverCount} servers listening`
     );
+    
     for (let index = 0; index < this._listeningServers.length; index++) {
       const server = this._listeningServers[index];
-
-      if (typeof server === "undefined") {
-        break;
-      }
-
-      this._log.debug(`Server ${index} is listening: ${server.listening}`);
-      const addressInfo = server.address();
-
-      if (addressInfo instanceof SocketAddress) {
-        this._log.debug(`Closing port ${addressInfo.port}`);
-      } else {
-        this._log.debug(`server address is ${addressInfo}`);
-      }
-
-      server.close();
+      server.emit("close", this)
     }
+    this._listeningServers = []
     this._log.info("Servers closed");
+    this.emit('stopped')
   }
 }
