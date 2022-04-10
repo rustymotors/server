@@ -9,7 +9,6 @@
 
 import { ICoreConfig, MCOServer } from "./services/core/index.js";
 import { logger } from "./src/logger/index.js";
-import { ListenerThread } from "./src/core/listener-thread.js";
 
 const log = logger.child({ service: "mcos" });
 
