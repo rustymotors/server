@@ -2,13 +2,15 @@
   "compilerOptions": {
     "allowJs": true,
     "checkJs": true,
-    "outDir": "dist",
     "module": "es2022",
+    "strict": true,
+    "noImplicitAny": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "target": "es2022"
+    "target": "es2022",
+    "noEmit": true
   },
-  "include": ["src", "app.ts"],
+  "include": ["packages", "src", "services", "app.js"],
   "exclude": ["node_modules"],
   "esm": "true"
 }
