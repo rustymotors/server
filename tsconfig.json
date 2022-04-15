@@ -4,13 +4,15 @@
     "checkJs": true,
     "module": "es2022",
     "strict": true,
+    "declarationDir": "dist",
     "noImplicitAny": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "target": "es2022",
-    "noEmit": true
+    "declaration": true,
+    "emitDeclarationOnly": true
   },
-  "include": ["packages", "src", "services", "app.js"],
+  "include": ["packages", "app.js"],
   "exclude": ["node_modules"],
   "esm": "true"
 }
