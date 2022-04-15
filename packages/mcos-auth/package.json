@@ -1,0 +1,5 @@
+{
+    "name": "mcos-auth",
+    "type": "module",
+    "exports": "./index.js"
+}

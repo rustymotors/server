@@ -1,8 +1,7 @@
 {
   "name": "mcos",
-  "version": "3.1.0-beta1",
+  "version": "3.2.0-beta1",
   "description": "a server",
-  "main": "app.ts",
   "engines": {
     "node": "^14.13.1 || >=16.0.0"
   },
@@ -15,13 +14,13 @@
   "scripts": {
     "lint": "eslint . --fix && npx prettier -w app.ts services src",
     "check:license": "npm licenses audit --summary --config=licenses.config.js",
-    "start": "node dist/app.js | ./node_modules/.bin/pino-pretty",
-    "dev": "node --loader ts-node/esm app.ts | ./node_modules/.bin/pino-pretty",
+    "start": "node bin/app.js | ./node_modules/.bin/pino-pretty",
+    "dev": "node bin/app.js | ./node_modules/.bin/pino-pretty",
     "build": "tsc --build --verbose",
     "watch": "tsc --noEmit --watch src/bin/app.ts",
     "clean": "rm -rf dist",
     "build:clean": "npm run clean && npm run build",
-    "test": "node --experimental-vm-modules -r ts-node/register node_modules/.bin/jest --runInBand --detectOpenHandles --force-exit --config jest.config.json"
+    "test": "node --experimental-vm-modules --no-warnings -r ts-node/register node_modules/.bin/jest --runInBand --detectOpenHandles --force-exit --config jest.config.json"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
   "license": "MPL-2.0",
@@ -32,6 +31,8 @@
   },
   "dependencies": {
     "@types/pg": "8.6.5",
+    "mcos-core": "*",
+    "mcos-shared": "*",
     "pg": "8.7.3",
     "pino": "next",
     "ts-node": "10.7.0",
@@ -69,5 +70,18 @@
   "volta": {
     "node": "16.14.2",
     "npm": "8.7.0"
-  }
+  },
+  "workspaces": [
+    "packages/mcos-shared",
+    "packages/mcos-core",
+    "packages/mcos-patch",
+    "packages/mcos-shard",
+    "packages/mcos-auth",
+    "packages/mcos-admin",
+    "packages/mcos-database",
+    "packages/mcos-transactions",
+    "packages/mcos-persona",
+    "packages/mcos-login",
+    "packages/mcos-lobby"
+  ]
 }

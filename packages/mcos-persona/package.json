@@ -1,0 +1,5 @@
+{
+    "name": "mcos-persona",
+    "type": "module",
+    "exports": "./index.js"
+}

@@ -30,7 +30,6 @@ start:
 	@LOG_LEVEL=silly npm run start:dev
 
 prod_node:
-	npm run build
 	docker-compose up -d  --build
 
 enable-node:

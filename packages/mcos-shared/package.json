@@ -1,0 +1,14 @@
+{
+  "name": "mcos-shared",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./config": "./config/index.js",
+    "./logger": "./logger/index.js",
+    "./types": "./types/index.js"
+  },
+  "dependencies": {
+    "mcos-core": "*",
+    "pino": "^7.10.0"
+  }
+}

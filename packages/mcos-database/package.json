@@ -1,0 +1,5 @@
+{
+    "name": "mcos-database",
+    "type": "module",
+    "exports": "./index.js"
+}

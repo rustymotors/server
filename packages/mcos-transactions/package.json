@@ -1,0 +1,5 @@
+{
+    "name": "mcos-transactions",
+    "type": "module",
+    "exports": "./index.js"
+}

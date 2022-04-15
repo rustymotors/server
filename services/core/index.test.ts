@@ -15,23 +15,4 @@ describe('MCOServer', function() {
         // Assert
         expect(server instanceof MCOServer).toBeTruthy()
     })
-
-    it('run() should set isRunning to true', function(done) {
-        // Arrange
-        const testConfig: ICoreConfig = {
-            externalHost: '',
-            logger,
-            ports: [9999]
-        }
-        const server: MCOServer = MCOServer.init(testConfig)
-        expect(server.isRunning).toBeFalsy()
-
-        // Act
-        server.run()
-
-        // Assert
-        expect(server.isRunning).toBeTruthy()
-        server.stop()
-        done()      
-    })
 })

@@ -1,0 +1,5 @@
+{
+    "name": "mcos-patch",
+    "type": "module",
+    "exports": "./index.js"
+}
