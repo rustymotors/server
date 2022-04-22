@@ -10,7 +10,6 @@ import { DatabaseManager } from "mcos-database";
 import { LobbyServer } from "mcos-lobby";
 import { LoginServer } from "mcos-login";
 import { PersonaServer } from "mcos-persona";
-import { TCPConnection } from "./tcpConnection.js";
 
 const log = logger.child({ service: "mcoserver:NPSPacketManager" });
 
@@ -122,7 +121,7 @@ export class NPSPacketManager {
   /**
    *
    * @param {import("mcos-shared/types").UnprocessedPacket} rawPacket
-   * @return {Promise<TCPConnection>}
+   * @return {Promise<import("mcos-core").TCPConnection>}
    */
   async processNPSPacket(rawPacket) {
     const messageId = rawPacket.data.readInt16BE(0);

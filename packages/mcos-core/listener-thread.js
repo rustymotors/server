@@ -8,7 +8,7 @@
 import { createServer, Socket } from "node:net";
 import { logger } from "mcos-shared/logger";
 import { ConnectionManager } from "./connection-mgr.js";
-import { TCPConnection } from "./tcpConnection.js";
+
 
 const log = logger.child({ service: "mcoserver:ListenerThread" });
 
@@ -56,7 +56,7 @@ export class ListenerThread {
    * The onData handler
    * takes the data buffer and creates a {@link UnprocessedPacket} object
    * @param {Buffer} data
-   * @param {TCPConnection} connection
+   * @param {import("mcos-core").TCPConnection} connection
    * @return {Promise<void>}
    * @memberof ListenerThread
    */
@@ -77,7 +77,7 @@ export class ListenerThread {
         "hex"
       )}}`
     );
-    /** @type {TCPConnection | null} */
+    /** @type {import("mcos-core").TCPConnection | null} */
     let newConnection = null;
     try {
       newConnection = await connection.processPacket(rawPacket);

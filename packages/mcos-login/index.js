@@ -8,7 +8,6 @@
 import { logger } from "mcos-shared/logger";
 import { DatabaseManager } from "mcos-database";
 import { NPSUserStatus, premadeLogin } from "mcos-shared/types";
-import { TCPConnection } from "mcos-core";
 
 const log = logger.child({ service: "mcoserver:LoginServer" });
 
@@ -59,7 +58,7 @@ export class LoginServer {
   /**
    *
    * @param {import("mcos-shared/types").UnprocessedPacket} rawPacket
-   * @return {Promise<TCPConnection>}
+   * @return {Promise<import("mcos-core").TCPConnection>}
    */
   async dataHandler(rawPacket) {
     let processed = true;
@@ -166,7 +165,7 @@ export class LoginServer {
    * Process a UserLogin packet
    * Should return a {@link NPSMessage} object
    * @private
-   * @param {TCPConnection} connection
+   * @param {import("mcos-core").TCPConnection} connection
    * @param {Buffer} data
    * @return {Promise<Buffer>}
    */

@@ -10,7 +10,6 @@ import { logger } from "mcos-shared/logger";
 import { DatabaseManager } from "mcos-database";
 import { NPSMessage, NPSUserInfo } from "mcos-shared/types";
 import { PersonaServer } from "mcos-persona";
-import { TCPConnection } from "mcos-core";
 
 const log = logger.child({ service: "mcoserver:LobbyServer" });
 
@@ -20,9 +19,9 @@ const log = logger.child({ service: "mcoserver:LobbyServer" });
  */
 
 /**
- * @param {TCPConnection} conn
+ * @param {import("mcos-core").TCPConnection} conn
  * @param {Buffer} buffer
- * @return {TCPConnection}
+ * @return {import("mcos-core").TCPConnection}
  */
 function npsSocketWriteIfOpen(
   conn,
@@ -46,8 +45,8 @@ function npsSocketWriteIfOpen(
 /**
  * Takes an encrypted command packet and returns the decrypted bytes
  *
- * @return {TCPConnection}
- * @param {TCPConnection} con
+ * @return {import("mcos-core").TCPConnection}
+ * @param {import("mcos-core").TCPConnection} con
  * @param {Buffer} cypherCmd
  */
 function decryptCmd(con, cypherCmd) {
@@ -61,9 +60,9 @@ function decryptCmd(con, cypherCmd) {
 /**
  * Takes an plaintext command packet and return the encrypted bytes
  *
- * @param {TCPConnection} con
+ * @param {import("mcos-core").TCPConnection} con
  * @param {Buffer} cypherCmd
- * @return {TCPConnection}
+ * @return {import("mcos-core").TCPConnection}
  */
 function encryptCmd(con, cypherCmd) {
   const s = con;
@@ -74,9 +73,9 @@ function encryptCmd(con, cypherCmd) {
 /**
  * Takes a plaintext command packet, encrypts it, and sends it across the connection's socket
  *
- * @param {TCPConnection} con
+ * @param {import("mcos-core").TCPConnection} con
  * @param {Buffer} data
- * @return {TCPConnection}
+ * @return {import("mcos-core").TCPConnection}
  */
 function sendCommand(
   con,
@@ -181,7 +180,7 @@ static getInstance() {
 
   /**
    * @param {import("mcos-shared/types").UnprocessedPacket} rawPacket
-   * @return {Promise<TCPConnection>}
+   * @return {Promise<import("mcos-core").TCPConnection>}
    */
   async dataHandler(rawPacket) {
     const { localPort, remoteAddress } = rawPacket.connection;
@@ -272,7 +271,7 @@ static getInstance() {
    * Handle a request to connect to a game server packet
    *
    * @private
-   * @param {TCPConnection} connection
+   * @param {import("mcos-core").TCPConnection} connection
    * @param {Buffer} rawData
    * @return {Promise<NPSMessage>}
    */

@@ -15,7 +15,6 @@ import { TCPConnection } from "./tcpConnection.js";
 import { MCOTServer } from "mcos-transactions";
 import { logger } from "mcos-shared/logger";
 import { randomUUID } from "node:crypto";
-import { Socket } from "node:net";
 import { isMCOT } from "./index.js";
 
 const log = logger.child({
@@ -80,7 +79,7 @@ static getConnectionManager() {
   /**
    * Creates a new connection object for the socket and adds to list
    * @param {string} connectionId
-   * @param {Socket} socket
+   * @param {import("node:net").Socket} socket
    * @returns {TCPConnection}
    */
   newConnection(connectionId, socket) {
@@ -314,7 +313,7 @@ findConnectionById(connectionId) {
   /**
    * Return an existing connection, or a new one
    *
-   * @param {Socket} socket
+   * @param {import("node:net").Socket} socket
    * @return {TCPConnection | null}
    * @memberof ConnectionManager
    */

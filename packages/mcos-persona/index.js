@@ -5,7 +5,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { TCPConnection } from "mcos-core";
 import { logger } from "mcos-shared/logger";
 import { NPSMessage, NPSPersonaMapsMessage } from "mcos-shared/types";
 
@@ -470,7 +469,7 @@ export class PersonaServer {
    * Handle inbound packets for the persona server
    *
    * @param {import("mcos-shared/types").UnprocessedPacket} rawPacket
-   * @return {Promise<TCPConnection>}
+   * @return {Promise<import("mcos-core").TCPConnection>}
    * @memberof PersonaServer
    */
   async dataHandler(rawPacket) {
