@@ -2,7 +2,7 @@ import { describe } from "mocha"
 import chai from "chai"
 import { AdminServer } from "./index.js"
 
-const should = chai.should()
+chai.should()
 
 describe('AdminServer', function() {
     describe('.getAdminServer', function() {
