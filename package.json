@@ -14,7 +14,8 @@
   "scripts": {
     "lint": "eslint bin/app.js packages/**/*.js --fix && npx prettier -w bin/app.js packages/**/*.js",
     "check:license": "npm licenses audit --summary --config=licenses.config.js",
-    "test": "tsc && c8 mocha packages/**/*test.js"
+    "test": "tsc && c8 mocha packages/**/*test.js",
+    "start": "node bin/app.js | ./node_modules/.bin/pino-pretty"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
   "license": "MPL-2.0",
