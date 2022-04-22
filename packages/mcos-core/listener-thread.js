@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { createServer, Socket } from "node:net";
+import { createServer } from "node:net";
 import { logger } from "mcos-shared/logger";
 import { ConnectionManager } from "./connection-mgr.js";
 
@@ -117,7 +117,7 @@ export class ListenerThread {
   /**
    * Server listener method
    *
-   * @param {Socket} socket
+   * @param {import("node:net").Socket} socket
    * @param {ConnectionManager} connectionMgr
    * @return {void}
    */

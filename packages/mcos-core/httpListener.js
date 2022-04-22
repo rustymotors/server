@@ -4,15 +4,14 @@ import { PatchServer } from "mcos-patch";
 import { ShardServer } from "mcos-shard";
 import { AuthLogin } from "mcos-auth";
 import { AdminServer } from "mcos-admin";
-import { IncomingMessage, ServerResponse } from "node:http";
 
 const log = logger.child({ service: "http" });
 
 /**
  * Routes incomming HTTP requests
- * @param {IncomingMessage} req
- * @param {ServerResponse} res
- * @returns {ServerResponse}
+ * @param {import("node:http").IncomingMessage} req
+ * @param {import("node:http").ServerResponse} res
+ * @returns {import("node:http").ServerResponse}
  */
 export function httpListener(req, res) {
   if (req.url && req.url.startsWith("/AuthLogin")) {

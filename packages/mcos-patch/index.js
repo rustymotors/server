@@ -1,5 +1,5 @@
 import { logger } from "mcos-shared/logger";
-import { createServer, IncomingMessage, ServerResponse } from "node:http";
+import { createServer } from "node:http";
 
 const log = logger.child({ service: "MCOServer:Patch" });
 
@@ -87,9 +87,9 @@ export class PatchServer {
 
   /**
    * Returns the hard-coded value that tells the client there are no updates or patches
-   * @param {IncomingMessage} request
-   * @param {ServerResponse} response
-   * @returns {ServerResponse}
+   * @param {import("node:http").IncomingMessage} request
+   * @param {import("node:http").ServerResponse} response
+   * @returns {import("node:http").ServerResponse}
    */
   castanetResponse(
     request,
@@ -108,9 +108,9 @@ export class PatchServer {
 
   /**
    * Routes incomming HTTP requests
-   * @param {IncomingMessage} request
-   * @param {ServerResponse} response
-   * @returns {ServerResponse}
+   * @param {import("node:http").IncomingMessage} request
+   * @param {import("node:http").ServerResponse} response
+   * @returns {import("node:http").ServerResponse}
    */
   handleRequest(
     request,

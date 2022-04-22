@@ -9,7 +9,6 @@ import { createCipheriv, createDecipheriv } from "node:crypto";
 import { logger } from "mcos-shared/logger";
 import { EncryptionManager } from "./encryption-mgr.js";
 import { MessageNode  } from "mcos-shared/types";
-import { Socket } from "node:net";
 import { ConnectionManager } from "./connection-mgr.js";
 
 const log = logger.child({ service: "mcoserver:TCPConnection" });
@@ -62,7 +61,7 @@ export class TCPConnection {
   /**
    *
    *
-   * @type {Socket}
+   * @type {import("node:net").Socket}
    * @memberof TCPConnection
    */
   sock;
@@ -143,7 +142,7 @@ export class TCPConnection {
   /**
    * Creates an instance of TCPConnection.
    * @param {string} connectionId
-   * @param {Socket} sock
+   * @param {import("node:net").Socket} sock
    * @memberof TCPConnection
    */
   constructor(connectionId, sock) {

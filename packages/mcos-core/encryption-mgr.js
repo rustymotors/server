@@ -8,8 +8,6 @@
 import {
     createDecipheriv,
     createCipheriv,
-    Decipher,
-    Cipher,
     randomUUID,
   } from "node:crypto";
   
@@ -23,8 +21,8 @@ import {
    * @class
    * @property {string} id
    * @property {Buffer} sessionkey
-   * @property {crypto.Decipher} in
-   * @property {crypty.Cipher} out
+   * @property {import("node:crypto").Decipher} in
+   * @property {import("node:crypto").Cipher} out
    */
   export class EncryptionManager {
     /**
@@ -44,14 +42,14 @@ import {
     /**
      *
      *
-     * @type {Decipher | undefined}
+     * @type {import("node:crypto").Decipher | undefined}
      * @memberof EncryptionManager
      */
     in;
     /**
      *
      *
-     * @type {(Cipher | undefined)}
+     * @type {(import("node:crypto").Cipher | undefined)}
      * @memberof EncryptionManager
      */
     out;

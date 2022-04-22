@@ -1,10 +1,9 @@
-import { Server, Socket, createServer  } from "node:net";
+import { createServer  } from "node:net";
 import { httpListener } from "./httpListener.js";
 import http from "node:http";
 import { ListenerThread } from "./listener-thread.js";
 import { ConnectionManager } from "./connection-mgr.js";
 import { EventEmitter } from "node:events";
-import pino from "pino";
 export { TCPConnection} from "./tcpConnection.js"
 export {getConnectionManager} from "./connection-mgr.js"
 
@@ -25,7 +24,7 @@ export {getConnectionManager} from "./connection-mgr.js"
  *
  * @export
  * @typedef ICoreConfig
- * @property {pino.Logger} [logger]
+ * @property {import("pino").Logger} [logger]
  * @property {string} externalHost
  * @property {number[]} [ports=[]]
  */
@@ -47,7 +46,7 @@ export class MCOServer extends EventEmitter {
   /**
    *
    * @private
-   * @type {pino.Logger}
+   * @type {import("pino").Logger}
    * @memberof MCOServer
    */
   _log;
@@ -62,7 +61,7 @@ export class MCOServer extends EventEmitter {
     /**
    *
    * @private
-   * @type {Server[]}
+   * @type {import("node:net").Server[]}
    * @memberof MCOServer
    */
 
@@ -72,8 +71,8 @@ export class MCOServer extends EventEmitter {
    * Handle incomming socket connections
    *
    * @private
-   * @param {Socket} incomingSocket
-   * @param {pino.Logger} log
+   * @param {import("node:net").Socket} incomingSocket
+   * @param {import("pino").Logger} log
    * @return {void}
    * @memberof MCOServer
    */

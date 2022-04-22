@@ -7,7 +7,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { logger } from "mcos-shared/logger";
-import { ServerResponse } from "node:http";
 
 const log = logger.child({ service: "MCOServer:Auth" });
 
@@ -65,9 +64,9 @@ export class AuthLogin {
   /**
    * Handle incoming http requests 
    * 
-   * @returns {ServerResponse}
-   * @param {import("http").IncomingMessage} request
-   * @param {import("http").ServerResponse} response
+   * @returns {import("node:http").ServerResponse}
+   * @param {import("node:http").IncomingMessage} request
+   * @param {import("node:http").ServerResponse} response
    */
   handleRequest(
     request,
