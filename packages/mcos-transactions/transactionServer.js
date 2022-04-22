@@ -577,7 +577,7 @@ export class MCOTServer {
   }
 
   /**
-   * Entry poi t for packets into the transactions server
+   * Entry point for packets into the transactions server
    * @param {import("mcos-shared/types").UnprocessedPacket} rawPacket
    * @returns {Promise<import('mcos-core').TCPConnection>}
    */
