@@ -12,7 +12,7 @@
     "declaration": true,
     "emitDeclarationOnly": true
   },
-  "include": ["packages", "app.js"],
+  "include": ["packages", "bin/app.js"],
   "exclude": ["node_modules"],
   "esm": "true"
 }

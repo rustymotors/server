@@ -12,7 +12,7 @@ import { MCOServer } from "mcos-core";
 
 const log = logger.child({ service: "mcos" });
 
-/** @type {ICoreConfig} */
+/** @type {import("mcos-core").ICoreConfig} */
 const coreConfig = {
   logger,
   externalHost: "0.0.0.0",
