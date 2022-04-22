@@ -69,31 +69,26 @@ export class MCOTServer {
    * @return {string}
    */
   _MSG_STRING(messageID) {
-    switch (messageID) {
-      case 105:
-        return "MC_LOGIN";
-      case 106:
-        return "MC_LOGOUT";
-      case 109:
-        return "MC_SET_OPTIONS";
-      case 141:
-        return "MC_STOCK_CAR_INFO";
-      case 213:
-        return "MC_LOGIN_COMPLETE";
-      case 266:
-        return "MC_UPDATE_PLAYER_PHYSICAL";
-      case 324:
-        return "MC_GET_LOBBIES";
-      case 325:
-        return "MC_LOBBIES";
-      case 438:
-        return "MC_CLIENT_CONNECT_MSG";
-      case 440:
-        return "MC_TRACKING_MSG";
+    const messageIds = [
+      {id: 105, name:  'MC_LOGIN'},
+      {id: 106, name: 'MC_LOGOUT'},
+      {id: 109, name: 'MC_SET_OPTIONS' },
+      {id: 141, name: 'MC_STOCK_CAR_INFO'},
+      {id: 213, name: 'MC_LOGIN_COMPLETE'},
+      {id: 266, name: 'MC_UPDATE_PLAYER_PHYSICAL'},
+      {id: 324, name: 'MC_GET_LOBBIES'},
+      {id: 325, name: 'MC_LOBBIES'},
+      {id: 438, name: 'MC_CLIENT_CONNECT_MSG'},
+      {id: 440, name: 'MC_TRACKING_MSG'}
+    ]
 
-      default:
-        return "Unknown";
+    const result = messageIds.find(id => id.id === messageID)
+
+    if (typeof result !== "undefined") {
+      return result.name
     }
+    
+        return "Unknown";
   }
 
   /**
@@ -367,109 +362,137 @@ export class MCOTServer {
       `We are attempting to process a message with id ${currentMessageNo}(${currentMessageString})`
     );
 
-    switch (currentMessageString) {
-      case "MC_SET_OPTIONS":
-        try {
-          return this.handleSetOptions(conn, node);
-        } catch (error) {
-          throw new TypeError(`Error in MC_SET_OPTIONS: ${String(error)}`);
-        }
+    const messageHandlers = [
+      {name: 'MC_SET_OPTIONS', handler: this.handleSetOptions, errorMessage: `Error in MC_SET_OPTIONS`},
+      {name: 'MC_TRACKING_MSG', handler: this.handleTrackingMessage,errorMessage: `Error in MC_TRACKING_MSG`},
+      {name: 'MC_UPDATE_PLAYER_PHYSICAL', handler: this.handleUpdatePlayerPhysical,errorMessage: `Error in MC_UPDATE_PLAYER_PHYSICAL`},
+      {name: 'MC_CLIENT_CONNECT_MSG', handler: this.handleClientConnect,errorMessage: `[TCPManager] Error writing to socket`},
+      {name: 'MC_LOGIN', handler: this.handleLoginMessage,errorMessage: `[TCPManager] Error writing to socket`},
+      {name: 'MC_LOGOUT', handler: this.handleLogoutMessage,errorMessage: `[TCPManager] Error writing to socket`},
+      {name: 'MC_GET_LOBBIES', handler: this.handleGetLobbiesMessage,errorMessage: `[TCPManager] Error writing to socket`},
+      {name: 'MC_STOCK_CAR_INFO', handler: this.handleShockCarInfoMessage,errorMessage: `[TCPManager] Error writing to socket`}
+    ]
 
-      case "MC_TRACKING_MSG":
-        try {
-          const result = this._trackingMessage(conn, node);
-          const responsePackets = result.packetList;
-          return result.connection.tryWritePackets(responsePackets);
-        } catch (error) {
-          throw new TypeError(`Error in MC_TRACKING_MSG: ${String(error)}`);
-        }
+    const result = messageHandlers.find(msg => msg.name === currentMessageString)
 
-      case "MC_UPDATE_PLAYER_PHYSICAL":
-        try {
-          const result = this._updatePlayerPhysical(conn, node);
-          const responsePackets = result.packetList;
-          return result.connection.tryWritePackets(responsePackets);
-        } catch (error) {
-          throw new TypeError(
-            `Error in MC_UPDATE_PLAYER_PHYSICAL: ${String(error)}`
-          );
-        }
-
-      case "MC_CLIENT_CONNECT_MSG": {
-        try {
-          const result = await this.clientConnect(conn, node);
-          const responsePackets = result.packetList;
-          // Write the socket
-          return result.connection.tryWritePackets(responsePackets);
-        } catch (error) {
-          throw new Error(
-            `[TCPManager] Error writing to socket: ${String(error)}`
-          );
-        }
+    if (typeof result !== "undefined") {
+      try {
+        return result.handler(conn, node)
+      } catch (error) {
+        throw new Error(`${result.errorMessage}: ${String(error)}`)
       }
+    }
 
-      case "MC_LOGIN": {
-        try {
-          const result = this._login(conn, node);
-          const responsePackets = result.packetList;
-          // Write the socket
-          return result.connection.tryWritePackets(responsePackets);
-        } catch (error) {
-          throw new Error(
-            `[TCPManager] Error writing to socket: ${String(error)}`
-          );
-        }
-      }
-
-      case "MC_LOGOUT": {
-        try {
-          const result = this._logout(conn, node);
-          const responsePackets = result.packetList;
-          // Write the socket
-          return result.connection.tryWritePackets(responsePackets);
-        } catch (error) {
-          throw new Error(
-            `[TCPManager] Error writing to socket: ${String(error)}`
-          );
-        }
-      }
-
-      case "MC_GET_LOBBIES": {
-        const result = this._getLobbies(conn, node);
-        log.debug("Dumping Lobbies response packet...");
-        log.debug(result.packetList.join().toString());
-        const responsePackets = result.packetList;
-        try {
-          // Write the socket
-          return result.connection.tryWritePackets(responsePackets);
-        } catch (error) {
-          throw new Error(
-            `[TCPManager] Error writing to socket: ${String(error)}`
-          );
-        }
-      }
-
-      case "MC_STOCK_CAR_INFO": {
-        try {
-          const result = this.getStockCarInfo(conn, node);
-          const responsePackets = result.packetList;
-          // Write the socket
-          return result.connection.tryWritePackets(responsePackets);
-        } catch (error) {
-          throw new Error(
-            `[TCPManager] Error writing to socket: ${String(error)}`
-          );
-        }
-      }
-
-      default: {
         node.setAppId(conn.appId);
         throw new Error(
           `Message Number Not Handled: ${currentMessageNo} (${currentMessageString})
       conID: ${node.toFrom}  PersonaID: ${node.appId}`
         );
-      }
-    }
+  }
+
+  /**
+   *
+   *
+   * @param {import('mcos-core').TCPConnection} conn
+   * @param {MessageNode} node
+   * @return {import('mcos-core').TCPConnection}
+   * @memberof MCOTServer
+   */
+  handleShockCarInfoMessage(conn, node) {
+    const result = this.getStockCarInfo(conn, node);
+    const responsePackets = result.packetList;
+    // Write the socket
+    return result.connection.tryWritePackets(responsePackets);
+  }
+
+  /**
+   *
+   *
+   * @param {import('mcos-core').TCPConnection} conn
+   * @param {MessageNode} node
+   * @return {import('mcos-core').TCPConnection}
+   * @memberof MCOTServer
+   */
+  handleGetLobbiesMessage(conn, node) {
+    const result = this._getLobbies(conn, node);
+    log.debug("Dumping Lobbies response packet...");
+    log.debug(result.packetList.join().toString());
+    const responsePackets = result.packetList;
+    // Write the socket
+    return result.connection.tryWritePackets(responsePackets);
+  }
+
+  /**
+   *
+   *
+   * @param {import('mcos-core').TCPConnection} conn
+   * @param {MessageNode} node
+   * @return {import('mcos-core').TCPConnection}
+   * @memberof MCOTServer
+   */
+  handleLogoutMessage(conn, node) {
+    const result = this._logout(conn, node);
+    const responsePackets = result.packetList;
+    // Write the socket
+    return result.connection.tryWritePackets(responsePackets);
+  }
+
+  /**
+   *
+   *
+   * @param {import('mcos-core').TCPConnection} conn
+   * @param {MessageNode} node
+   * @return {import('mcos-core').TCPConnection}
+   * @memberof MCOTServer
+   */
+  handleLoginMessage(conn, node) {
+    const result = this._login(conn, node);
+    const responsePackets = result.packetList;
+    // Write the socket
+    return result.connection.tryWritePackets(responsePackets);
+  }
+
+  /**
+   *
+   *
+   * @param {import('mcos-core').TCPConnection} conn
+   * @param {MessageNode} node
+   * @return {Promise<import('mcos-core').TCPConnection>}
+   * @memberof MCOTServer
+   */
+  async handleClientConnect(conn, node) {
+    const result = await this.clientConnect(conn, node);
+    const responsePackets = result.packetList;
+    // Write the socket
+    return result.connection.tryWritePackets(responsePackets);
+  }
+
+  /**
+   *
+   *
+   * @param {import('mcos-core').TCPConnection} conn
+   * @param {MessageNode} node
+   * @return {import('mcos-core').TCPConnection}
+   * @memberof MCOTServer
+   */
+  handleUpdatePlayerPhysical(conn, node) {
+    const result = this._updatePlayerPhysical(conn, node);
+    const responsePackets = result.packetList;
+    return result.connection.tryWritePackets(responsePackets);
+  }
+
+  /**
+   *
+   *
+   * @param {import('mcos-core').TCPConnection} conn
+   * @param {MessageNode} node
+   * @return {import('mcos-core').TCPConnection}
+   * @memberof MCOTServer
+   */
+  handleTrackingMessage(conn, node) {
+    const result = this._trackingMessage(conn, node);
+    const responsePackets = result.packetList;
+    return result.connection.tryWritePackets(responsePackets);
   }
 
   /**
