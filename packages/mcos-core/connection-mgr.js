@@ -16,6 +16,7 @@ import { MCOTServer } from "mcos-transactions";
 import { logger } from "mcos-shared/logger";
 import { randomUUID } from "node:crypto";
 import { isMCOT } from "./index.js";
+import { errorMessage } from "mcos-shared";
 
 const log = logger.child({
   service: "ConnectionManager",
@@ -93,7 +94,7 @@ static getConnectionManager() {
    * Check incoming data and route it to the correct handler based on localPort
    *
    * @param {import("mcos-shared/types").UnprocessedPacket} rawPacket
-   * @return {Promise<TCPConnection>}
+   * @return {Promise<{err: Error | null, data: TCPConnection | null}>}
    * @memberof ConnectionManager
    */
   async processData(rawPacket) {
@@ -151,26 +152,18 @@ static getConnectionManager() {
             })}`
           );
         } catch (error) {
-          if (error instanceof Error) {
-            const newError = new Error(
-              `Error in the recieved packet: ${error.message}`
-            );
-            log.error(newError.message);
-            throw newError;
-          }
-          throw error;
+          log.error(errorMessage(error))
+          return {err: new Error(
+            `Error in the recieved packet: ${errorMessage(error)}`
+          ), data: null}
         }
         try {
-          return await npsPacketManager.processNPSPacket(rawPacket);
+          return {err: null, data: await npsPacketManager.processNPSPacket(rawPacket)};
         } catch (error) {
-          if (error instanceof Error) {
-            const newError = new Error(
-              `There was an error processing the data: ${error.message}`
-            );
-            log.error(newError.message);
-            throw newError;
-          }
-          throw error;
+            log.error(errorMessage(error))
+            return {err:  new Error(
+              `There was an error processing the data: ${errorMessage(error)}`
+            ), data: null};
         }
       }
 

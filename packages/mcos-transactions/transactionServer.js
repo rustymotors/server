@@ -15,6 +15,7 @@ import {
   StockCarInfoMessage,
 } from "mcos-shared/types";
 import { DatabaseManager } from "mcos-database";
+import { errorMessage } from "mcos-shared";
 
 const log = logger.child({ service: "mcoserver:MCOTSServer" });
 
@@ -70,25 +71,25 @@ export class MCOTServer {
    */
   _MSG_STRING(messageID) {
     const messageIds = [
-      {id: 105, name:  'MC_LOGIN'},
-      {id: 106, name: 'MC_LOGOUT'},
-      {id: 109, name: 'MC_SET_OPTIONS' },
-      {id: 141, name: 'MC_STOCK_CAR_INFO'},
-      {id: 213, name: 'MC_LOGIN_COMPLETE'},
-      {id: 266, name: 'MC_UPDATE_PLAYER_PHYSICAL'},
-      {id: 324, name: 'MC_GET_LOBBIES'},
-      {id: 325, name: 'MC_LOBBIES'},
-      {id: 438, name: 'MC_CLIENT_CONNECT_MSG'},
-      {id: 440, name: 'MC_TRACKING_MSG'}
-    ]
+      { id: 105, name: "MC_LOGIN" },
+      { id: 106, name: "MC_LOGOUT" },
+      { id: 109, name: "MC_SET_OPTIONS" },
+      { id: 141, name: "MC_STOCK_CAR_INFO" },
+      { id: 213, name: "MC_LOGIN_COMPLETE" },
+      { id: 266, name: "MC_UPDATE_PLAYER_PHYSICAL" },
+      { id: 324, name: "MC_GET_LOBBIES" },
+      { id: 325, name: "MC_LOBBIES" },
+      { id: 438, name: "MC_CLIENT_CONNECT_MSG" },
+      { id: 440, name: "MC_TRACKING_MSG" },
+    ];
 
-    const result = messageIds.find(id => id.id === messageID)
+    const result = messageIds.find((id) => id.id === messageID);
 
     if (typeof result !== "undefined") {
-      return result.name
+      return result.name;
     }
-    
-        return "Unknown";
+
+    return "Unknown";
   }
 
   /**
@@ -352,7 +353,7 @@ export class MCOTServer {
    * Route or process MCOTS commands
    * @param {MessageNode} node
    * @param {import('mcos-core').TCPConnection} conn
-   * @return {Promise<import('mcos-core').TCPConnection>}
+   * @return {Promise<{err: Error | null, data: import('mcos-core').TCPConnection | null}>}
    */
   async processInput(node, conn) {
     const currentMessageNo = node.msgNo;
@@ -363,32 +364,72 @@ export class MCOTServer {
     );
 
     const messageHandlers = [
-      {name: 'MC_SET_OPTIONS', handler: this.handleSetOptions.bind(this), errorMessage: `Error in MC_SET_OPTIONS`},
-      {name: 'MC_TRACKING_MSG', handler: this.handleTrackingMessage.bind(this),errorMessage: `Error in MC_TRACKING_MSG`},
-      {name: 'MC_UPDATE_PLAYER_PHYSICAL', handler: this.handleUpdatePlayerPhysical.bind(this),errorMessage: `Error in MC_UPDATE_PLAYER_PHYSICAL`},
-      {name: 'MC_CLIENT_CONNECT_MSG', handler: this.handleClientConnect.bind(this),errorMessage: `[TCPManager] Error writing to socket`},
-      {name: 'MC_LOGIN', handler: this.handleLoginMessage.bind(this),errorMessage: `[TCPManager] Error writing to socket`},
-      {name: 'MC_LOGOUT', handler: this.handleLogoutMessage.bind(this),errorMessage: `[TCPManager] Error writing to socket`},
-      {name: 'MC_GET_LOBBIES', handler: this.handleGetLobbiesMessage.bind(this),errorMessage: `[TCPManager] Error writing to socket`},
-      {name: 'MC_STOCK_CAR_INFO', handler: this.handleShockCarInfoMessage.bind(this),errorMessage: `[TCPManager] Error writing to socket`}
-    ]
+      {
+        name: "MC_SET_OPTIONS",
+        handler: this.handleSetOptions.bind(this),
+        errorMessage: `Error in MC_SET_OPTIONS`,
+      },
+      {
+        name: "MC_TRACKING_MSG",
+        handler: this.handleTrackingMessage.bind(this),
+        errorMessage: `Error in MC_TRACKING_MSG`,
+      },
+      {
+        name: "MC_UPDATE_PLAYER_PHYSICAL",
+        handler: this.handleUpdatePlayerPhysical.bind(this),
+        errorMessage: `Error in MC_UPDATE_PLAYER_PHYSICAL`,
+      },
+      {
+        name: "MC_CLIENT_CONNECT_MSG",
+        handler: this.handleClientConnect.bind(this),
+        errorMessage: `[TCPManager] Error writing to socket`,
+      },
+      {
+        name: "MC_LOGIN",
+        handler: this.handleLoginMessage.bind(this),
+        errorMessage: `[TCPManager] Error writing to socket`,
+      },
+      {
+        name: "MC_LOGOUT",
+        handler: this.handleLogoutMessage.bind(this),
+        errorMessage: `[TCPManager] Error writing to socket`,
+      },
+      {
+        name: "MC_GET_LOBBIES",
+        handler: this.handleGetLobbiesMessage.bind(this),
+        errorMessage: `[TCPManager] Error writing to socket`,
+      },
+      {
+        name: "MC_STOCK_CAR_INFO",
+        handler: this.handleShockCarInfoMessage.bind(this),
+        errorMessage: `[TCPManager] Error writing to socket`,
+      },
+    ];
 
-    const result = messageHandlers.find(msg => msg.name === currentMessageString)
+    const result = messageHandlers.find(
+      (msg) => msg.name === currentMessageString
+    );
 
     if (typeof result !== "undefined") {
       try {
-        const connection = await result.handler(conn, node)
-        return connection
+        const connection = await result.handler(conn, node);
+        return { err: null, data: connection };
       } catch (error) {
-        throw new Error(`${result.errorMessage}: ${String(error)}`)
+        return {
+          err: new Error(`${result.errorMessage}: ${String(error)}`),
+          data: null,
+        };
       }
     }
 
-        node.setAppId(conn.appId);
-        throw new Error(
-          `Message Number Not Handled: ${currentMessageNo} (${currentMessageString})
+    node.setAppId(conn.appId);
+    return {
+      err: new Error(
+        `Message Number Not Handled: ${currentMessageNo} (${currentMessageString})
       conID: ${node.toFrom}  PersonaID: ${node.appId}`
-        );
+      ),
+      data: null,
+    };
   }
 
   /**
@@ -511,9 +552,51 @@ export class MCOTServer {
   }
 
   /**
+   *
+   *
+   * @param {import('mcos-shared/types').MessageNode} message
+   * @param {import('mcos-core').TCPConnection} newConnection
+   * @return {*}
+   * @memberof MCOTServer
+   */
+  isEncryptedFlagSet(message, newConnection) {
+    return message.flags !== 80 && newConnection.useEncryption;
+  }
+
+  /**
+   *
+   *
+   * @param {import('mcos-shared/types').MessageNode} message
+   * @param {import('mcos-core').TCPConnection} newConnection
+   * @memberof MCOTServer
+   */
+  decryptBuffer(message, newConnection) {
+    const encryptedBuffer = Buffer.from(message.data);
+    log.debug(
+      `Full packet before decrypting: ${encryptedBuffer.toString("hex")}`
+    );
+
+    log.debug(
+      `Message buffer before decrypting: ${encryptedBuffer.toString("hex")}`
+    );
+
+    log.debug(`Using encryption id: ${newConnection.getEncryptionId()}`);
+    const deciphered = newConnection.decryptBuffer(encryptedBuffer);
+    log.debug(`Message buffer after decrypting: ${deciphered.toString("hex")}`);
+
+    if (deciphered.readUInt16LE(0) <= 0) {
+      return {
+        err: new Error("Failure deciphering message, exiting."),
+        data: null,
+      };
+    }
+    return { err: null, data: deciphered };
+  }
+
+  /**
    * @param {MessageNode} message
    * @param {import('mcos-core').TCPConnection} con
-   * @return {Promise<import('mcos-core').TCPConnection>}
+   * @return {Promise<{err: Error | null, data: null | import('mcos-core').TCPConnection}>}
    */
   async messageReceived(message, con) {
     const newConnection = con;
@@ -523,52 +606,23 @@ export class MCOTServer {
     }
 
     // If not a Heartbeat
-    if (message.flags !== 80 && newConnection.useEncryption) {
+    if (this.isEncryptedFlagSet(message, newConnection)) {
       if (!newConnection.isSetupComplete) {
-        throw new Error(
-          `Decrypt() not yet setup! Disconnecting...conId: ${con.id}`
-        );
+        return {
+          err: new Error(
+            `Decrypt() not yet setup! Disconnecting...conId: ${con.id}`
+          ),
+          data: null,
+        };
       }
 
       if (message.flags - 8 >= 0) {
-        try {
-          /**
-           * Attempt to decrypt message
-           */
-          const encryptedBuffer = Buffer.from(message.data);
-          log.debug(
-            `Full packet before decrypting: ${encryptedBuffer.toString("hex")}`
-          );
-
-          log.debug(
-            `Message buffer before decrypting: ${encryptedBuffer.toString(
-              "hex"
-            )}`
-          );
-
-          log.debug(`Using encryption id: ${newConnection.getEncryptionId()}`);
-          const deciphered = newConnection.decryptBuffer(encryptedBuffer);
-          log.debug(
-            `Message buffer after decrypting: ${deciphered.toString("hex")}`
-          );
-
-          if (deciphered.readUInt16LE(0) <= 0) {
-            throw new Error("Failure deciphering message, exiting.");
-          }
-
-          // Update the MessageNode with the deciphered buffer
-          message.updateBuffer(deciphered);
-        } catch (error) {
-          if (error instanceof Error) {
-            throw new TypeError(
-              `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}: ${error.message}`
-            );
-          }
-
-          throw new Error(
-            `Decrypt() exception thrown! Disconnecting...conId:${newConnection.id}, error unknown`
-          );
+        const deciphered = this.tryDecryptBuffer(message, newConnection);
+        if (deciphered.err || deciphered.data === null) {
+          return {err: deciphered.err, data: null}
         }
+        // Update the MessageNode with the deciphered buffer
+        message.updateBuffer(deciphered.data);
       }
     }
 
@@ -577,9 +631,35 @@ export class MCOTServer {
   }
 
   /**
+   *
+   *
+   * @param {import('mcos-shared/types').MessageNode} message
+   * @param {import('mcos-core').TCPConnection} newConnection
+   * @return {{err: Error | null, data: Buffer | null}}
+   * @memberof MCOTServer
+   */
+  tryDecryptBuffer(message, newConnection) {
+    try {
+      return {
+        err: null,
+        data: this.decryptBuffer(message, newConnection).data,
+      };
+    } catch (error) {
+      return {
+        err: new Error(
+          `Decrypt() exception thrown! Disconnecting...conId:${
+            newConnection.id
+          }: ${errorMessage(error)}`
+        ),
+        data: null,
+      };
+    }
+  }
+
+  /**
    * Entry point for packets into the transactions server
    * @param {import("mcos-shared/types").UnprocessedPacket} rawPacket
-   * @returns {Promise<import('mcos-core').TCPConnection>}
+   * @returns {Promise<{err: Error | null, data: import('mcos-core').TCPConnection | null}>}
    */
   async defaultHandler(rawPacket) {
     const { connection, data } = rawPacket;
@@ -598,7 +678,13 @@ export class MCOTServer {
     );
     messageNode.dumpPacket();
 
-    return this.messageReceived(messageNode, connection);
+    const processedPacket = this.messageReceived(messageNode, connection);
+
+    if ((await processedPacket).err || (await processedPacket).data === null) {
+      return {err: (await processedPacket).err, data: null}
+    }
+
+    return {err: null, data: (await processedPacket).data}
   }
 }
 

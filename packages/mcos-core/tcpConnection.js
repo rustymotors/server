@@ -7,6 +7,7 @@
 
 import { createCipheriv, createDecipheriv } from "node:crypto";
 import { logger } from "mcos-shared/logger";
+import { errorMessage } from "mcos-shared";
 
 const log = logger.child({ service: "mcoserver:TCPConnection" });
 
@@ -331,23 +332,19 @@ export class TCPConnection {
   /**
    * Replays the unproccessed packet to the connection manager
    * @param {import("mcos-shared/types").UnprocessedPacket} packet
-   * @returns {Promise<TCPConnection>}
+   * @returns {Promise<{err: Error | null, data: TCPConnection | null}>}
    */
   async processPacket(packet) {
     if (this.mgr === undefined) {
-      throw new Error("Connection manager is not set");
+      return {err: new Error("Connection manager is not set"), data: null};
     }
     try {
       return this.mgr.processData(packet);
     } catch (error) {
-      if (error instanceof Error) {
-        const newError = new Error(
-          `There was an error processing the packet: ${error.message}`
-        );
-        log.error(newError.message);
-        throw newError;
-      }
-      throw error;
+      log.error(errorMessage(error))
+      return {err:  new Error(
+          `There was an error processing the packet: ${errorMessage(error)}`
+        ), data: null};
     }
   }
 

@@ -8,6 +8,7 @@
 import { createServer } from "node:net";
 import { logger } from "mcos-shared/logger";
 import { ConnectionManager } from "./connection-mgr.js";
+import { errorMessage } from "mcos-shared";
 
 
 const log = logger.child({ service: "mcoserver:ListenerThread" });
@@ -77,19 +78,13 @@ export class ListenerThread {
         "hex"
       )}}`
     );
-    /** @type {import("mcos-core").TCPConnection | null} */
-    let newConnection = null;
-    try {
-      newConnection = await connection.processPacket(rawPacket);
-    } catch (error) {
-      if (error instanceof Error) {
-        const newError = new Error(
-          `There was an error processing the packet: ${error.message}`
+    /** @type {{err: Error | null, data: import("mcos-core").TCPConnection | null}} */
+      let processedPacket = await connection.processPacket(rawPacket);
+      if (processedPacket.err || processedPacket.data === null) {
+        log.error(errorMessage(processedPacket.err))
+        throw new Error(
+          `There was an error processing the packet: ${errorMessage(processedPacket.err)}`
         );
-        log.error(newError.message);
-        throw newError;
-      }
-      throw error;
     }
 
     if (!connection.remoteAddress) {
@@ -100,7 +95,7 @@ export class ListenerThread {
       connection.updateConnectionByAddressAndPort(
         connection.remoteAddress,
         connection.localPort,
-        newConnection
+        processedPacket.data
       );
     } catch (error) {
       if (error instanceof Error) {
@@ -153,8 +148,7 @@ export class ListenerThread {
       if (error instanceof Error) {
         if (!error.message.includes("ECONNRESET")) {
           throw new Error(`Socket error: ${error.message}`);
-        }
-        throw error          
+        }      
       }
       throw new Error(`Unknown error: ${String(error)}`)
     });
