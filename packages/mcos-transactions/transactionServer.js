@@ -53,7 +53,7 @@ export class MCOTServer {
 
   /**
    * Creates an instance of MCOTServer.
-   * 
+   *
    * Please use {@link MCOTServer.getTransactionServer()} instead
    * @internal
    * @memberof MCOTServer
@@ -103,10 +103,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}>}
    */
-  _login(
-    connection,
-    node
-  ) {
+  _login(connection, node) {
     // Create new response packet
     const pReply = new GenericReplyMessage();
     pReply.msgNo = 213;
@@ -128,10 +125,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}
    */
-  _getLobbies(
-    connection,
-    node
-  ) {
+  _getLobbies(connection, node) {
     log.debug("In _getLobbies...");
     const lobbiesListMessage = node;
 
@@ -173,10 +167,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}
    */
-  _logout(
-    connection,
-    node
-  ) {
+  _logout(connection, node) {
     const logoutMessage = node;
 
     logoutMessage.data = node.serialize();
@@ -207,10 +198,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}
    */
-  _setOptions(
-    connection,
-    node
-  ) {
+  _setOptions(connection, node) {
     const setOptionsMessage = node;
 
     setOptionsMessage.data = node.serialize();
@@ -238,10 +226,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}
    */
-  _trackingMessage(
-    connection,
-    node
-  ) {
+  _trackingMessage(connection, node) {
     const trackingMessage = node;
 
     trackingMessage.data = node.serialize();
@@ -269,10 +254,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}
    */
-  _updatePlayerPhysical(
-    connection,
-    node
-  ) {
+  _updatePlayerPhysical(connection, node) {
     const updatePlayerPhysicalMessage = node;
 
     updatePlayerPhysicalMessage.data = node.serialize();
@@ -299,10 +281,7 @@ export class MCOTServer {
    * @param {MessageNode} packet
    * @returns {import("mcos-shared/types").ConnectionWithPackets}
    */
-  getStockCarInfo(
-    connection,
-    packet
-  ) {
+  getStockCarInfo(connection, packet) {
     const getStockCarInfoMessage = new GenericRequestMessage();
     getStockCarInfoMessage.deserialize(packet.data);
     getStockCarInfoMessage.dumpPacket();
@@ -334,10 +313,7 @@ export class MCOTServer {
    * @param {MessageNode} packet
    * @return {Promise<import("mcos-shared/types").ConnectionWithPackets>}
    */
-  async clientConnect(
-    connection,
-    packet
-  ) {
+  async clientConnect(connection, packet) {
     /**
      * Let's turn it into a ClientConnectMsg
      */
@@ -383,10 +359,7 @@ export class MCOTServer {
    * @param {import('mcos-core').TCPConnection} conn
    * @return {Promise<import('mcos-core').TCPConnection>}
    */
-  async processInput(
-    node,
-    conn
-  ) {
+  async processInput(node, conn) {
     const currentMessageNo = node.msgNo;
     const currentMessageString = this._MSG_STRING(currentMessageNo);
 
@@ -397,15 +370,9 @@ export class MCOTServer {
     switch (currentMessageString) {
       case "MC_SET_OPTIONS":
         try {
-          const result = this._setOptions(conn, node);
-          const responsePackets = result.packetList;
-          return result.connection.tryWritePackets(responsePackets);
+          return this.handleSetOptions(conn, node);
         } catch (error) {
-          if (error instanceof Error) {
-            throw new TypeError(`Error in MC_SET_OPTIONS: ${error.message}`);
-          }
-
-          throw new Error("Error in MC_SET_OPTIONS, error unknown");
+          throw new TypeError(`Error in MC_SET_OPTIONS: ${String(error)}`);
         }
 
       case "MC_TRACKING_MSG":
@@ -414,11 +381,7 @@ export class MCOTServer {
           const responsePackets = result.packetList;
           return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
-          if (error instanceof Error) {
-            throw new TypeError(`Error in MC_TRACKING_MSG: ${error.message}`);
-          }
-
-          throw new Error("Error in MC_TRACKING_MSG, error unknown");
+          throw new TypeError(`Error in MC_TRACKING_MSG: ${String(error)}`);
         }
 
       case "MC_UPDATE_PLAYER_PHYSICAL":
@@ -427,13 +390,9 @@ export class MCOTServer {
           const responsePackets = result.packetList;
           return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
-          if (error instanceof Error) {
-            throw new TypeError(
-              `Error in MC_UPDATE_PLAYER_PHYSICAL: ${error.message}`
-            );
-          }
-
-          throw new Error("Error in MC_UPDATE_PLAYER_PHYSICAL, error unknown");
+          throw new TypeError(
+            `Error in MC_UPDATE_PLAYER_PHYSICAL: ${String(error)}`
+          );
         }
 
       case "MC_CLIENT_CONNECT_MSG": {
@@ -443,14 +402,8 @@ export class MCOTServer {
           // Write the socket
           return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
-          if (error instanceof Error) {
-            throw new TypeError(
-              `[TCPManager] Error writing to socket: ${error.message}`
-            );
-          }
-
           throw new Error(
-            "[TCPManager] Error writing to socket, error unknown"
+            `[TCPManager] Error writing to socket: ${String(error)}`
           );
         }
       }
@@ -462,14 +415,8 @@ export class MCOTServer {
           // Write the socket
           return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
-          if (error instanceof Error) {
-            throw new TypeError(
-              `[TCPManager] Error writing to socket: ${error.message}`
-            );
-          }
-
           throw new Error(
-            "[TCPManager] Error writing to socket, error unknown"
+            `[TCPManager] Error writing to socket: ${String(error)}`
           );
         }
       }
@@ -481,14 +428,8 @@ export class MCOTServer {
           // Write the socket
           return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
-          if (error instanceof Error) {
-            throw new TypeError(
-              `[TCPManager] Error writing to socket: ${error.message}`
-            );
-          }
-
           throw new Error(
-            "[TCPManager] Error writing to socket, error unknown"
+            `[TCPManager] Error writing to socket: ${String(error)}`
           );
         }
       }
@@ -502,14 +443,8 @@ export class MCOTServer {
           // Write the socket
           return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
-          if (error instanceof Error) {
-            throw new TypeError(
-              `[TCPManager] Error writing to socket: ${error.message}`
-            );
-          }
-
           throw new Error(
-            "[TCPManager] Error writing to socket, error unknown"
+            `[TCPManager] Error writing to socket: ${String(error)}`
           );
         }
       }
@@ -521,14 +456,8 @@ export class MCOTServer {
           // Write the socket
           return result.connection.tryWritePackets(responsePackets);
         } catch (error) {
-          if (error instanceof Error) {
-            throw new TypeError(
-              `[TCPManager] Error writing to socket: ${error.message}`
-            );
-          }
-
           throw new Error(
-            "[TCPManager] Error writing to socket, error unknown"
+            `[TCPManager] Error writing to socket: ${String(error)}`
           );
         }
       }
@@ -544,14 +473,25 @@ export class MCOTServer {
   }
 
   /**
+   *
+   *
+   * @param {import('mcos-core').TCPConnection} conn
+   * @param {MessageNode} node
+   * @return {import('mcos-core').TCPConnection}
+   * @memberof MCOTServer
+   */
+  handleSetOptions(conn, node) {
+    const result = this._setOptions(conn, node);
+    const responsePackets = result.packetList;
+    return result.connection.tryWritePackets(responsePackets);
+  }
+
+  /**
    * @param {MessageNode} message
    * @param {import('mcos-core').TCPConnection} con
    * @return {Promise<import('mcos-core').TCPConnection>}
    */
-  async messageReceived(
-    message,
-    con
-  ) {
+  async messageReceived(message, con) {
     const newConnection = con;
     if (!newConnection.useEncryption && message.flags && 0x08) {
       log.debug("Turning on encryption");
@@ -583,8 +523,7 @@ export class MCOTServer {
           );
 
           log.debug(`Using encryption id: ${newConnection.getEncryptionId()}`);
-          const deciphered =
-            newConnection.decryptBuffer(encryptedBuffer);
+          const deciphered = newConnection.decryptBuffer(encryptedBuffer);
           log.debug(
             `Message buffer after decrypting: ${deciphered.toString("hex")}`
           );
