@@ -15,7 +15,6 @@ import {
   StockCarInfoMessage,
 } from "mcos-shared/types";
 import { DatabaseManager } from "mcos-database";
-import { TCPConnection } from "mcos-core";
 
 const log = logger.child({ service: "mcoserver:MCOTSServer" });
 
@@ -100,7 +99,7 @@ export class MCOTServer {
   /**
    *
    * @private
-   * @param {TCPConnection} connection
+   * @param {import('mcos-core').TCPConnection} connection
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}>}
    */
@@ -125,7 +124,7 @@ export class MCOTServer {
   /**
    *
    * @private
-   * @param {TCPConnection} connection
+   * @param {import('mcos-core').TCPConnection} connection
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}
    */
@@ -170,7 +169,7 @@ export class MCOTServer {
   /**
    *
    * @private
-   * @param {TCPConnection} connection
+   * @param {import('mcos-core').TCPConnection} connection
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}
    */
@@ -204,7 +203,7 @@ export class MCOTServer {
   /**
    *
    * @private
-   * @param {TCPConnection} connection
+   * @param {import('mcos-core').TCPConnection} connection
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}
    */
@@ -235,7 +234,7 @@ export class MCOTServer {
   /**
    *
    * @private
-   * @param {TCPConnection} connection
+   * @param {import('mcos-core').TCPConnection} connection
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}
    */
@@ -266,7 +265,7 @@ export class MCOTServer {
   /**
    *
    * @private
-   * @param {TCPConnection} connection
+   * @param {import('mcos-core').TCPConnection} connection
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}
    */
@@ -296,7 +295,7 @@ export class MCOTServer {
 
   /**
    * Handles the getStockCarInfo message
-   * @param {TCPConnection} connection
+   * @param {import('mcos-core').TCPConnection} connection
    * @param {MessageNode} packet
    * @returns {import("mcos-shared/types").ConnectionWithPackets}
    */
@@ -331,7 +330,7 @@ export class MCOTServer {
   }
 
   /**
-   * @param {TCPConnection} connection
+   * @param {import('mcos-core').TCPConnection} connection
    * @param {MessageNode} packet
    * @return {Promise<import("mcos-shared/types").ConnectionWithPackets>}
    */
@@ -381,8 +380,8 @@ export class MCOTServer {
   /**
    * Route or process MCOTS commands
    * @param {MessageNode} node
-   * @param {TCPConnection} conn
-   * @return {Promise<TCPConnection>}
+   * @param {import('mcos-core').TCPConnection} conn
+   * @return {Promise<import('mcos-core').TCPConnection>}
    */
   async processInput(
     node,
@@ -546,8 +545,8 @@ export class MCOTServer {
 
   /**
    * @param {MessageNode} message
-   * @param {TCPConnection} con
-   * @return {Promise<TCPConnection>}
+   * @param {import('mcos-core').TCPConnection} con
+   * @return {Promise<import('mcos-core').TCPConnection>}
    */
   async messageReceived(
     message,
@@ -617,7 +616,7 @@ export class MCOTServer {
   /**
    * Entry poi t for packets into the transactions server
    * @param {import("mcos-shared/types").UnprocessedPacket} rawPacket
-   * @returns {Promise<TCPConnection>}
+   * @returns {Promise<import('mcos-core').TCPConnection>}
    */
   async defaultHandler(rawPacket) {
     const { connection, data } = rawPacket;

@@ -1,20 +1,19 @@
-import { Cipher, Decipher, privateDecrypt } from "crypto";
-import { TCPConnection } from "mcos-core";
+import { privateDecrypt } from "node:crypto";
 import { readFileSync, statSync } from "node:fs";
 import { APP_CONFIG } from "../config/index.js";
 
 /**
  * @export
  * @typedef LobbyCiphers
- * @property {Cipher} [cipher]
- * @property {Decipher} [decipher]
+ * @property {import('node:crypto').Cipher} [cipher]
+ * @property {import('node:crypto').Decipher} [decipher]
  */
 
 /**
  * @export
  * @typedef UnprocessedPacket
  * @property {string} connectionId
- * @property {TCPConnection} connection
+ * @property {import('mcos-core').TCPConnection} connection
  * @property {Buffer} data
  * @property {number} timestamp
  */
@@ -495,14 +494,14 @@ export class MessageNode {
 /**
  * @export
  * @typedef ConnectionWithPackets
- * @property {TCPConnection} connection
+ * @property {import('mcos-core').TCPConnection} connection
  * @property {MessageNode[]} packetList
  */
 
 /**
  * @export
  * @typedef ConnectionWithPacket
- * @property {TCPConnection} connection
+ * @property {import('mcos-core').TCPConnection} connection
  * @property {MessageNode} packet
  * @property {string} [lastError]
  */

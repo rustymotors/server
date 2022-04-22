@@ -8,7 +8,6 @@
 import { TCPConnection } from "mcos-core";
 import { logger } from "mcos-shared/logger";
 import { NPSMessage, NPSPersonaMapsMessage } from "mcos-shared/types";
-import { Socket } from "node:net";
 
 const log = logger.child({ service: "mcoserver:PersonaServer" });
 
@@ -328,7 +327,7 @@ export class PersonaServer {
   /**
    *
    *
-   * @param {Socket} socket
+   * @param {import('node:net').Socket} socket
    * @param {NPSMessage} packet
    * @return {void}
    * @memberof PersonaServer
