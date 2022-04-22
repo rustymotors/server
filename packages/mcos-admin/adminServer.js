@@ -7,7 +7,6 @@
 
 import { logger } from "mcos-shared/logger";
 import { getConnectionManager } from "mcos-core";
-import { ServerResponse } from "node:http";
 
 const log = logger.child({ service: "mcoserver:AdminServer;" });
 
@@ -114,7 +113,7 @@ export class AdminServer {
   /**
    * Handle incomming http requests
    * 
-   * @return {ServerResponse}
+   * @return {import("node:http").ServerResponse}
    * @param {import("http").IncomingMessage} request
    * @param {import("http").ServerResponse} response
    */
