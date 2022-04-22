@@ -7,9 +7,6 @@
 
 import { createCipheriv, createDecipheriv } from "node:crypto";
 import { logger } from "mcos-shared/logger";
-import { EncryptionManager } from "./encryption-mgr.js";
-import { MessageNode  } from "mcos-shared/types";
-import { ConnectionManager } from "./connection-mgr.js";
 
 const log = logger.child({ service: "mcoserver:TCPConnection" });
 
@@ -98,7 +95,7 @@ export class TCPConnection {
    *
    *
    * @private
-   * @type {EncryptionManager | undefined} [enc]
+   * @type {import("mcos-core").EncryptionManager | undefined} [enc]
    * @memberof TCPConnection
    */
   enc;
@@ -113,7 +110,7 @@ export class TCPConnection {
    *
    *
    * @private
-   * @type {ConnectionManager | undefined} [mgr]
+   * @type {import("mcos-core").ConnectionManager | undefined} [mgr]
    * @memberof TCPConnection
    */
   mgr;
@@ -199,7 +196,7 @@ export class TCPConnection {
 
   /**
    * Set the connection manager
-   * @param {ConnectionManager} manager
+   * @param {import("mcos-core").ConnectionManager} manager
    * @returns {TCPConnection}
    */
   setManager(manager) {
@@ -209,7 +206,7 @@ export class TCPConnection {
 
   /**
    * Set the encryption manager
-   * @param {EncryptionManager} encryptionManager
+   * @param {import("mcos-core").EncryptionManager} encryptionManager
    * @returns {TCPConnection}
    */
   setEncryptionManager(encryptionManager) {
@@ -356,7 +353,7 @@ export class TCPConnection {
 
   /**
    *
-   * @param {MessageNode} packet
+   * @param {import("mcos-shared/types").MessageNode} packet
    * @returns {import("mcos-shared/types").ConnectionWithPacket}
    */
   compressIfNeeded(packet) {
@@ -382,7 +379,7 @@ export class TCPConnection {
 
   /**
    *
-   * @param {MessageNode} packet
+   * @param {import("mcos-shared/types").MessageNode} packet
    * @returns {import("mcos-shared/types").ConnectionWithPacket}
    */
   encryptIfNeeded(packet) {
@@ -400,7 +397,7 @@ export class TCPConnection {
 
   /**
    * Attempt to write packet(s) to the socjet
-   * @param {MessageNode[]} packetList
+   * @param {import("mcos-shared/types").MessageNode[]} packetList
    * @returns {TCPConnection}
    */
   tryWritePackets(packetList) {
@@ -412,7 +409,7 @@ export class TCPConnection {
     // For each node in nodes
     for (const packet of updatedConnection.packetList) {
       // Does the packet need to be compressed?
-      /** @type {MessageNode} */
+      /** @type {import("mcos-shared/types").MessageNode} */
       const compressedPacket =
         this.compressIfNeeded(packet).packet;
       // Does the packet need to be encrypted?

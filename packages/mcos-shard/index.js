@@ -9,8 +9,7 @@
 import { logger } from "mcos-shared/logger";
 import { readFileSync } from "node:fs";
 import { ShardEntry } from "./shard-entry.js";
-import { createServer, Server } from "node:https";
-import { ServerResponse } from "node:http";
+import { createServer } from "node:https";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
@@ -50,7 +49,7 @@ export class ShardServer {
    *
    *
    * @private
-   * @type {Server}
+   * @type {import("node:http").Server}
    * @memberof ShardServer
    */
   _server;
@@ -233,7 +232,7 @@ export class ShardServer {
 
   /**
    * Handle incoming http requests
-   * @return {ServerResponse}
+   * @return {import("node:http").ServerResponse}
    * @param {import("http").IncomingMessage} request
    * @param {import("http").ServerResponse} response
    */
@@ -287,7 +286,7 @@ export class ShardServer {
 
   /**
    * Start the shard server listener
-   * @returns {Server}
+   * @returns {import("node:http").Server}
    */
   start() {
     if (!this.config.MCOS.SETTINGS.SHARD_LISTEN_HOST) {

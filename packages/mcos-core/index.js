@@ -5,7 +5,8 @@ import { ListenerThread } from "./listener-thread.js";
 import { ConnectionManager } from "./connection-mgr.js";
 import { EventEmitter } from "node:events";
 export { TCPConnection} from "./tcpConnection.js"
-export {getConnectionManager} from "./connection-mgr.js"
+export {getConnectionManager, ConnectionManager} from "./connection-mgr.js"
+export { EncryptionManager} from "./encryption-mgr.js"
 
 /**
  * Is this an MCOT bound packet?
