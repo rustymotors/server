@@ -363,21 +363,22 @@ export class MCOTServer {
     );
 
     const messageHandlers = [
-      {name: 'MC_SET_OPTIONS', handler: this.handleSetOptions, errorMessage: `Error in MC_SET_OPTIONS`},
-      {name: 'MC_TRACKING_MSG', handler: this.handleTrackingMessage,errorMessage: `Error in MC_TRACKING_MSG`},
-      {name: 'MC_UPDATE_PLAYER_PHYSICAL', handler: this.handleUpdatePlayerPhysical,errorMessage: `Error in MC_UPDATE_PLAYER_PHYSICAL`},
-      {name: 'MC_CLIENT_CONNECT_MSG', handler: this.handleClientConnect,errorMessage: `[TCPManager] Error writing to socket`},
-      {name: 'MC_LOGIN', handler: this.handleLoginMessage,errorMessage: `[TCPManager] Error writing to socket`},
-      {name: 'MC_LOGOUT', handler: this.handleLogoutMessage,errorMessage: `[TCPManager] Error writing to socket`},
-      {name: 'MC_GET_LOBBIES', handler: this.handleGetLobbiesMessage,errorMessage: `[TCPManager] Error writing to socket`},
-      {name: 'MC_STOCK_CAR_INFO', handler: this.handleShockCarInfoMessage,errorMessage: `[TCPManager] Error writing to socket`}
+      {name: 'MC_SET_OPTIONS', handler: this.handleSetOptions.bind(this), errorMessage: `Error in MC_SET_OPTIONS`},
+      {name: 'MC_TRACKING_MSG', handler: this.handleTrackingMessage.bind(this),errorMessage: `Error in MC_TRACKING_MSG`},
+      {name: 'MC_UPDATE_PLAYER_PHYSICAL', handler: this.handleUpdatePlayerPhysical.bind(this),errorMessage: `Error in MC_UPDATE_PLAYER_PHYSICAL`},
+      {name: 'MC_CLIENT_CONNECT_MSG', handler: this.handleClientConnect.bind(this),errorMessage: `[TCPManager] Error writing to socket`},
+      {name: 'MC_LOGIN', handler: this.handleLoginMessage.bind(this),errorMessage: `[TCPManager] Error writing to socket`},
+      {name: 'MC_LOGOUT', handler: this.handleLogoutMessage.bind(this),errorMessage: `[TCPManager] Error writing to socket`},
+      {name: 'MC_GET_LOBBIES', handler: this.handleGetLobbiesMessage.bind(this),errorMessage: `[TCPManager] Error writing to socket`},
+      {name: 'MC_STOCK_CAR_INFO', handler: this.handleShockCarInfoMessage.bind(this),errorMessage: `[TCPManager] Error writing to socket`}
     ]
 
     const result = messageHandlers.find(msg => msg.name === currentMessageString)
 
     if (typeof result !== "undefined") {
       try {
-        return result.handler(conn, node)
+        const connection = await result.handler(conn, node)
+        return connection
       } catch (error) {
         throw new Error(`${result.errorMessage}: ${String(error)}`)
       }
