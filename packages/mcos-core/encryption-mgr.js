@@ -5,7 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { createDecipheriv, createCipheriv, randomUUID } from "node:crypto";
+import { createDecipheriv, createCipheriv, randomUUID } from 'node:crypto'
 
 /**
  * Handles the management of the encryption and decryption
@@ -27,7 +27,7 @@ export class EncryptionManager {
    * @type {string}
    * @memberof EncryptionManager
    */
-  id;
+  id
   /**
    *
    *
@@ -41,24 +41,24 @@ export class EncryptionManager {
    * @type {import("node:crypto").Decipher | undefined}
    * @memberof EncryptionManager
    */
-  in;
+  in
   /**
    *
    *
    * @type {(import("node:crypto").Cipher | undefined)}
    * @memberof EncryptionManager
    */
-  out;
+  out
 
   /**
    * Creates an instance of EncryptionManager.
    * @memberof EncryptionManager
    */
-  constructor() {
-    this.id = randomUUID();
-    this.sessionkey = Buffer.alloc(0);
-    this.in = undefined;
-    this.out = undefined;
+  constructor () {
+    this.id = randomUUID()
+    this.sessionkey = Buffer.alloc(0)
+    this.in = undefined
+    this.out = undefined
   }
 
   /**
@@ -67,12 +67,12 @@ export class EncryptionManager {
    * @param {Buffer} sessionkey
    * @return {boolean}
    */
-  setEncryptionKey(sessionkey) {
-    this.sessionkey = sessionkey;
+  setEncryptionKey (sessionkey) {
+    this.sessionkey = sessionkey
     // File deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
-    this.in = createDecipheriv("rc4", sessionkey, "");
-    this.out = createCipheriv("rc4", sessionkey, "");
-    return true;
+    this.in = createDecipheriv('rc4', sessionkey, '')
+    this.out = createCipheriv('rc4', sessionkey, '')
+    return true
   }
 
   /**
@@ -82,12 +82,12 @@ export class EncryptionManager {
    * @return {Buffer}
    * @memberof EncryptionMgr
    */
-  decrypt(encryptedText) {
+  decrypt (encryptedText) {
     if (this.in === undefined) {
-      throw new Error("No decryption manager found!");
+      throw new Error('No decryption manager found!')
     }
 
-    return Buffer.from(this.in.update(encryptedText));
+    return Buffer.from(this.in.update(encryptedText))
   }
 
   /**
@@ -97,23 +97,23 @@ export class EncryptionManager {
    * @return {Buffer}
    * @memberof EncryptionMgr
    */
-  encrypt(plainText) {
+  encrypt (plainText) {
     if (this.out === undefined) {
-      throw new Error("No encryption manager found!");
+      throw new Error('No encryption manager found!')
     }
 
     return Buffer.from(
-      this.out.update(plainText.toString(), "binary", "hex"),
-      "hex"
-    );
+      this.out.update(plainText.toString(), 'binary', 'hex'),
+      'hex'
+    )
   }
 
   /**
    *
    * @return {string}
    */
-  _getSessionKey() {
-    return this.sessionkey.toString("hex");
+  _getSessionKey () {
+    return this.sessionkey.toString('hex')
   }
 
   /**
@@ -121,7 +121,7 @@ export class EncryptionManager {
    *
    * @return {string}
    */
-  getId() {
-    return this.id;
+  getId () {
+    return this.id
   }
 }
