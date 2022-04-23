@@ -27,7 +27,7 @@ export class DatabaseManager {
    * @memberof DatabaseManager
    */
   static _instance
-  
+
   /**
    * Return the instance of the DatabaseManager class
    * @returns {DatabaseManager}

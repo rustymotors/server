@@ -53,7 +53,7 @@ export class MCOTServer {
    * @memberof MCOTServer
    */
   constructor () {
-    /** @type {DatabaseManager} */  
+    /** @type {DatabaseManager} */
     this.databaseManager = DatabaseManager.getInstance()
   }
 

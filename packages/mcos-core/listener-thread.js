@@ -27,7 +27,7 @@ export class ListenerThread {
    * @type {ListenerThread}
    * @memberof ListenerThread
    */
-  static _instance;
+  static _instance
   /**
    * Get the single instance of the connection listener
    *

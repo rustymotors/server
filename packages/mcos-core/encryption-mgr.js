@@ -31,7 +31,7 @@ export class EncryptionManager {
      * @type {string}
      * @memberof EncryptionManager
      */
-  id;
+  id
   /**
      *
      *
