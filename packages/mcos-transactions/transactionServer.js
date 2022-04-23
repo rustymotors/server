@@ -21,6 +21,7 @@ const log = logger.child({ service: 'mcoserver:MCOTSServer' })
 
 /**
  * Manages the game database server
+ * @classdesc
  */
 export class MCOTServer {
   /**
@@ -32,14 +33,6 @@ export class MCOTServer {
    * @memberof MCOTServer
    */
   static _instance
-  /**
-   *
-   *
-   * @private
-   * @type {DatabaseManager}
-   * @memberof MCOTServer
-   */
-  databaseManager
 
   /**
    * Get the instance of the transactions server
@@ -60,6 +53,7 @@ export class MCOTServer {
    * @memberof MCOTServer
    */
   constructor () {
+    /** @type {DatabaseManager} */  
     this.databaseManager = DatabaseManager.getInstance()
   }
 
