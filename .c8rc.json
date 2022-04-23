@@ -1,8 +1,4 @@
 {
-    "all": true,
-    "reporter": [
-        "text",
-        "cobertura",
-        "html"
-    ]
+  "all": true,
+  "reporter": ["text", "cobertura", "html"]
 }
