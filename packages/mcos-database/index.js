@@ -170,7 +170,6 @@ export class DatabaseManager {
    * Creates an instance of DatabaseManager.
    *
    * Please use {@link DatabaseManager.getInstance()} instead
-   * @internal
    * @memberof DatabaseManager
    */
   constructor () {

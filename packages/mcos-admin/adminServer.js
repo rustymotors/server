@@ -46,7 +46,6 @@ export class AdminServer {
    * Creates an instance of AdminServer.
    *
    * Please use {@link AdminServer.getInstance()} instead
-   * @internal
    * @memberof AdminServer
    */
 
