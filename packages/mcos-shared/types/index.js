@@ -250,6 +250,15 @@ export const NPS_COMMANDS = [
  */
 
 /**
+ *
+ *
+ * @export
+ * @typedef ICoreConfig
+ * @property {string} externalHost
+ * @property {number[]} [ports=[]]
+ */
+
+/**
  * @class
  */
 export class MessageNode {
