@@ -54,7 +54,7 @@ export class MCOTServer {
 
   /**
    * Creates an instance of MCOTServer.
-   * 
+   *
    * Please use {@link MCOTServer.getTransactionServer()} instead
    * @internal
    * @memberof MCOTServer
@@ -104,10 +104,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}>}
    */
-  _login(
-    connection,
-    node
-  ) {
+  _login(connection, node) {
     // Create new response packet
     const pReply = new GenericReplyMessage();
     pReply.msgNo = 213;
@@ -129,10 +126,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}
    */
-  _getLobbies(
-    connection,
-    node
-  ) {
+  _getLobbies(connection, node) {
     log.debug("In _getLobbies...");
     const lobbiesListMessage = node;
 
@@ -174,10 +168,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}
    */
-  _logout(
-    connection,
-    node
-  ) {
+  _logout(connection, node) {
     const logoutMessage = node;
 
     logoutMessage.data = node.serialize();
@@ -208,10 +199,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}
    */
-  _setOptions(
-    connection,
-    node
-  ) {
+  _setOptions(connection, node) {
     const setOptionsMessage = node;
 
     setOptionsMessage.data = node.serialize();
@@ -239,10 +227,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}
    */
-  _trackingMessage(
-    connection,
-    node
-  ) {
+  _trackingMessage(connection, node) {
     const trackingMessage = node;
 
     trackingMessage.data = node.serialize();
@@ -270,10 +255,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {import("mcos-shared/types").ConnectionWithPackets}
    */
-  _updatePlayerPhysical(
-    connection,
-    node
-  ) {
+  _updatePlayerPhysical(connection, node) {
     const updatePlayerPhysicalMessage = node;
 
     updatePlayerPhysicalMessage.data = node.serialize();
@@ -300,10 +282,7 @@ export class MCOTServer {
    * @param {MessageNode} packet
    * @returns {import("mcos-shared/types").ConnectionWithPackets}
    */
-  getStockCarInfo(
-    connection,
-    packet
-  ) {
+  getStockCarInfo(connection, packet) {
     const getStockCarInfoMessage = new GenericRequestMessage();
     getStockCarInfoMessage.deserialize(packet.data);
     getStockCarInfoMessage.dumpPacket();
@@ -335,10 +314,7 @@ export class MCOTServer {
    * @param {MessageNode} packet
    * @return {Promise<import("mcos-shared/types").ConnectionWithPackets>}
    */
-  async clientConnect(
-    connection,
-    packet
-  ) {
+  async clientConnect(connection, packet) {
     /**
      * Let's turn it into a ClientConnectMsg
      */
@@ -384,10 +360,7 @@ export class MCOTServer {
    * @param {TCPConnection} conn
    * @return {Promise<TCPConnection>}
    */
-  async processInput(
-    node,
-    conn
-  ) {
+  async processInput(node, conn) {
     const currentMessageNo = node.msgNo;
     const currentMessageString = this._MSG_STRING(currentMessageNo);
 
@@ -549,10 +522,7 @@ export class MCOTServer {
    * @param {TCPConnection} con
    * @return {Promise<TCPConnection>}
    */
-  async messageReceived(
-    message,
-    con
-  ) {
+  async messageReceived(message, con) {
     const newConnection = con;
     if (!newConnection.useEncryption && message.flags && 0x08) {
       log.debug("Turning on encryption");
@@ -584,8 +554,7 @@ export class MCOTServer {
           );
 
           log.debug(`Using encryption id: ${newConnection.getEncryptionId()}`);
-          const deciphered =
-            newConnection.decryptBuffer(encryptedBuffer);
+          const deciphered = newConnection.decryptBuffer(encryptedBuffer);
           log.debug(
             `Message buffer after decrypting: ${deciphered.toString("hex")}`
           );

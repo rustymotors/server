@@ -8,17 +8,16 @@
 import { createCipheriv, createDecipheriv } from "node:crypto";
 import { logger } from "mcos-shared/logger";
 import { EncryptionManager } from "./encryption-mgr.js";
-import { MessageNode  } from "mcos-shared/types";
+import { MessageNode } from "mcos-shared/types";
 import { Socket } from "node:net";
 import { ConnectionManager } from "./connection-mgr.js";
 
 const log = logger.child({ service: "mcoserver:TCPConnection" });
 
-
 /**
  * @export
  * @typedef {'Active' | 'Inactive'} EConnectionStatus
- * 
+ *
  */
 
 /**
@@ -183,11 +182,7 @@ export class TCPConnection {
    * @param {TCPConnection} newConnection
    * @returns {TCPConnection[]}
    */
-  updateConnectionByAddressAndPort(
-    remoteAddress,
-    localPort,
-    newConnection
-  ) {
+  updateConnectionByAddressAndPort(remoteAddress, localPort, newConnection) {
     if (this.mgr === undefined) {
       throw new Error("Connection manager not set");
     }
@@ -414,8 +409,7 @@ export class TCPConnection {
     for (const packet of updatedConnection.packetList) {
       // Does the packet need to be compressed?
       /** @type {MessageNode} */
-      const compressedPacket =
-        this.compressIfNeeded(packet).packet;
+      const compressedPacket = this.compressIfNeeded(packet).packet;
       // Does the packet need to be encrypted?
       const encryptedPacket = this.encryptIfNeeded(compressedPacket).packet;
       // Log that we are trying to write

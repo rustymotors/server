@@ -1,12 +1,12 @@
-import { Server, Socket, createServer  } from "node:net";
+import { Server, Socket, createServer } from "node:net";
 import { httpListener } from "./httpListener.js";
 import http from "node:http";
 import { ListenerThread } from "./listener-thread.js";
 import { ConnectionManager } from "./connection-mgr.js";
 import { EventEmitter } from "node:events";
 import pino from "pino";
-export { TCPConnection} from "./tcpConnection.js"
-export {getConnectionManager} from "./connection-mgr.js"
+export { TCPConnection } from "./tcpConnection.js";
+export { getConnectionManager } from "./connection-mgr.js";
 
 /**
  * Is this an MCOT bound packet?
@@ -15,10 +15,9 @@ export {getConnectionManager} from "./connection-mgr.js"
  * @param {Buffer} inputBuffer
  * @return {boolean}
  */
- export function isMCOT(inputBuffer) {
+export function isMCOT(inputBuffer) {
   return inputBuffer.toString("utf8", 2, 6) === "TOMC";
 }
-
 
 /**
  *
@@ -51,7 +50,7 @@ export class MCOServer extends EventEmitter {
    * @memberof MCOServer
    */
   _log;
-    /**
+  /**
    *
    * @private
    * @type {boolean}
@@ -59,7 +58,7 @@ export class MCOServer extends EventEmitter {
    */
 
   _running = false;
-    /**
+  /**
    *
    * @private
    * @type {Server[]}
@@ -92,7 +91,10 @@ export class MCOServer extends EventEmitter {
     }
 
     // This is a 'normal' TCP socket
-    void ListenerThread.getInstance().tcpListener(incomingSocket, ConnectionManager.getConnectionManager());
+    void ListenerThread.getInstance().tcpListener(
+      incomingSocket,
+      ConnectionManager.getConnectionManager()
+    );
   }
   /**
    * Is the server in a running state?
@@ -105,26 +107,26 @@ export class MCOServer extends EventEmitter {
   get isRunning() {
     return this._running;
   }
-/**
- * Get the number of listening servers
- *
- * @readonly
- * @return {number}
- * @memberof MCOServer
- */
-get serverCount() {
-    return this._listeningServers.length
+  /**
+   * Get the number of listening servers
+   *
+   * @readonly
+   * @return {number}
+   * @memberof MCOServer
+   */
+  get serverCount() {
+    return this._listeningServers.length;
   }
-/**
- * Creates an instance of MCOServer.
- * 
- * Please use {@link MCOServer.init()} instead
- * @internal
- * @param {ICoreConfig} config
- * @memberof MCOServer
- */
-constructor(config) {
-    super()
+  /**
+   * Creates an instance of MCOServer.
+   *
+   * Please use {@link MCOServer.init()} instead
+   * @internal
+   * @param {ICoreConfig} config
+   * @memberof MCOServer
+   */
+  constructor(config) {
+    super();
     this._config = config;
     if (!this._config.logger) {
       throw new Error("Logger was not passed in the config");
@@ -159,7 +161,7 @@ constructor(config) {
       const port = this._config.ports[index];
       const newServer = createServer((s) => {
         this._listener(s, this._log);
-        return
+        return;
       });
       newServer.on("error", (err) => {
         throw err;
@@ -171,7 +173,7 @@ constructor(config) {
     }
 
     this._running = true;
-    this.emit('started', this)
+    this.emit("started", this);
   }
   /**
    * Close all listening ports and move server to stopped state
@@ -181,16 +183,14 @@ constructor(config) {
    */
   stop() {
     this._running = false;
-    this._log.debug(
-      `There are ${this.serverCount} servers listening`
-    );
-    
+    this._log.debug(`There are ${this.serverCount} servers listening`);
+
     for (let index = 0; index < this._listeningServers.length; index++) {
       const server = this._listeningServers[index];
-      server.emit("close", this)
+      server.emit("close", this);
     }
-    this._listeningServers = []
+    this._listeningServers = [];
     this._log.info("Servers closed");
-    this.emit('stopped')
+    this.emit("stopped");
   }
 }

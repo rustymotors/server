@@ -47,7 +47,7 @@ export class LoginServer {
 
   /**
    * Creates an instance of LoginServer.
-   * 
+   *
    * Please use {@link LoginServer.getInstance()} instead
    * @internal
    * @memberof LoginServer
@@ -170,10 +170,7 @@ export class LoginServer {
    * @param {Buffer} data
    * @return {Promise<Buffer>}
    */
-  async _userLogin(
-    connection,
-    data
-  ) {
+  async _userLogin(connection, data) {
     const { sock } = connection;
     const { localPort } = sock;
     const userStatus = new NPSUserStatus(data);

@@ -75,7 +75,7 @@ export class PatchServer {
 
   /**
    * Creates an instance of PatchServer.
-   * 
+   *
    * Please use {@link PatchServer.getInstance()} instead
    * @internal
    * @param {import("mcos-shared/config").AppConfiguration} config
@@ -91,10 +91,7 @@ export class PatchServer {
    * @param {ServerResponse} response
    * @returns {ServerResponse}
    */
-  castanetResponse(
-    request,
-    response
-  ) {
+  castanetResponse(request, response) {
     log.debug(
       `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
     );
@@ -112,10 +109,7 @@ export class PatchServer {
    * @param {ServerResponse} response
    * @returns {ServerResponse}
    */
-  handleRequest(
-    request,
-    response
-  ) {
+  handleRequest(request, response) {
     if (
       request.url === "/games/EA_Seattle/MotorCity/UpdateInfo" ||
       request.url === "/games/EA_Seattle/MotorCity/NPS" ||

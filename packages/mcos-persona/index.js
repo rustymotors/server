@@ -21,11 +21,7 @@ const NAME_BUFFER_SIZE = 30;
  * @param {BufferEncoding} [encoding="utf8"]
  * @returns {Buffer}
  */
-export function generateNameBuffer(
-  name,
-  size,
-  encoding = "utf8"
-) {
+export function generateNameBuffer(name, size, encoding = "utf8") {
   const nameBuffer = Buffer.alloc(size);
   Buffer.from(name, encoding).copy(nameBuffer);
   return nameBuffer;
@@ -71,9 +67,7 @@ export function fetchPersonas() {
  * @param {NPSMessage} requestPacket
  * @returns {Promise<NPSMessage>}
  */
-export async function handleSelectGamePersona(
-  requestPacket
-) {
+export async function handleSelectGamePersona(requestPacket) {
   log.debug("_npsSelectGamePersona...");
   log.debug(
     `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
@@ -134,7 +128,7 @@ export class PersonaServer {
 
   /**
    * Creates an instance of PersonaServer.
-   * 
+   *
    * Please use {@link PersonaServer.getInstance()} instead
    * @internal
    * @memberof PersonaServer
@@ -151,9 +145,7 @@ export class PersonaServer {
    * @memberof PersonaServer
    */
   async createNewGameAccount(data) {
-    const requestPacket = new NPSMessage(
-      "recieved"
-    ).deserialize(data);
+    const requestPacket = new NPSMessage("recieved").deserialize(data);
     log.debug(
       `NPSMsg request object from _npsNewGameAccount',
       ${JSON.stringify({
@@ -188,9 +180,7 @@ export class PersonaServer {
    */
   async logoutGameUser(data) {
     log.debug("[personaServer] Logging out persona...");
-    const requestPacket = new NPSMessage(
-      "recieved"
-    ).deserialize(data);
+    const requestPacket = new NPSMessage("recieved").deserialize(data);
     log.debug(
       `NPSMsg request object from _npsLogoutGameUser',
       ${JSON.stringify({
@@ -231,9 +221,7 @@ export class PersonaServer {
    */
   async validateLicencePlate(data) {
     log.debug("_npsCheckToken...");
-    const requestPacket = new NPSMessage(
-      "recieved"
-    ).deserialize(data);
+    const requestPacket = new NPSMessage("recieved").deserialize(data);
     log.debug(
       `NPSMsg request object from _npsCheckToken',
       ${JSON.stringify({
@@ -279,9 +267,7 @@ export class PersonaServer {
    */
   async validatePersonaName(data) {
     log.debug("_npsValidatePersonaName...");
-    const requestPacket = new NPSMessage(
-      "recieved"
-    ).deserialize(data);
+    const requestPacket = new NPSMessage("recieved").deserialize(data);
 
     log.debug(
       `NPSMsg request object from _npsValidatePersonaName',
@@ -379,15 +365,13 @@ export class PersonaServer {
 
   /**
    * Lookup all personas owned by the customer id
-   * 
+   *
    * TODO: Store in a database, instead of being hard-coded
    *
    * @param {number} customerId
    * @return {Promise<import("mcos-shared/types").PersonaRecord[]>}
    */
-  async getPersonaMapsByCustomerId(
-    customerId
-  ) {
+  async getPersonaMapsByCustomerId(customerId) {
     switch (customerId) {
       case 2_868_969_472:
       case 5_551_212:
@@ -404,9 +388,7 @@ export class PersonaServer {
    */
   async getPersonaMaps(data) {
     log.debug("_npsGetPersonaMaps...");
-    const requestPacket = new NPSMessage(
-      "recieved"
-    ).deserialize(data);
+    const requestPacket = new NPSMessage("recieved").deserialize(data);
 
     log.debug(
       `NPSMsg request object from _npsGetPersonaMaps',
@@ -431,9 +413,7 @@ export class PersonaServer {
       `${personas.length} personas found for ${customerId.readUInt32BE(0)}`
     );
 
-    const personaMapsMessage = new NPSPersonaMapsMessage(
-      "sent"
-    );
+    const personaMapsMessage = new NPSPersonaMapsMessage("sent");
 
     if (personas.length === 0) {
       throw new Error(
@@ -490,9 +470,7 @@ export class PersonaServer {
 
     switch (requestCode) {
       case "503": {
-        const requestPacket = new NPSMessage(
-          "recieved"
-        ).deserialize(data);
+        const requestPacket = new NPSMessage("recieved").deserialize(data);
         // NPS_REGISTER_GAME_LOGIN = 0x503
         const responsePacket = await handleSelectGamePersona(requestPacket);
         this.sendPacket(sock, responsePacket);

@@ -42,7 +42,7 @@ export class ListenerThread {
 
   /**
    * Creates an instance of ListenerThread.
-   * 
+   *
    * Please use {@link ListenerThread.getInstance()} instead
    * @internal
    * @memberof ListenerThread
@@ -50,7 +50,6 @@ export class ListenerThread {
   constructor() {
     // Intentionally empty
   }
-
 
   /**
    * The onData handler
@@ -60,10 +59,7 @@ export class ListenerThread {
    * @return {Promise<void>}
    * @memberof ListenerThread
    */
-  async onTCPData(
-    data,
-    connection
-  ) {
+  async onTCPData(data, connection) {
     /** @type {import("mcos-shared/types").UnprocessedPacket} */
     const rawPacket = {
       connectionId: connection.id,
@@ -154,9 +150,9 @@ export class ListenerThread {
         if (!error.message.includes("ECONNRESET")) {
           throw new Error(`Socket error: ${error.message}`);
         }
-        throw error          
+        throw error;
       }
-      throw new Error(`Unknown error: ${String(error)}`)
+      throw new Error(`Unknown error: ${String(error)}`);
     });
   }
 

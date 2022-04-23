@@ -1,5 +1,5 @@
 {
-    "name": "mcos-admin",
-    "type": "module",
-    "exports": "./index.js"
+  "name": "mcos-admin",
+  "type": "module",
+  "exports": "./index.js"
 }

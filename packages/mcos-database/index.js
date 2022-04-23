@@ -175,7 +175,7 @@ export class DatabaseManager {
 
   /**
    * Creates an instance of DatabaseManager.
-   * 
+   *
    * Please use {@link DatabaseManager.getInstance()} instead
    * @internal
    * @memberof DatabaseManager
@@ -192,9 +192,7 @@ export class DatabaseManager {
    * @param {number} customerId
    * @returns {Promise<import("mcos-shared/types").SessionRecord>}
    */
-  async fetchSessionKeyByCustomerId(
-    customerId
-  ) {
+  async fetchSessionKeyByCustomerId(customerId) {
     await this.init();
     if (!this.localDB) {
       log.warn("Database not ready in fetchSessionKeyByCustomerId()");
@@ -216,9 +214,7 @@ export class DatabaseManager {
    * @param {number} connectionId
    * @returns {Promise<import("mcos-shared/types").SessionRecord>}
    */
-  async fetchSessionKeyByConnectionId(
-    connectionId
-  ) {
+  async fetchSessionKeyByConnectionId(connectionId) {
     await this.init();
     if (!this.localDB) {
       log.warn("Database not ready in fetchSessionKeyByConnectionId()");
@@ -242,12 +238,7 @@ export class DatabaseManager {
    * @param {string} connectionId
    * @returns {Promise<number>}
    */
-  async updateSessionKey(
-    customerId,
-    sessionkey,
-    contextId,
-    connectionId
-  ) {
+  async updateSessionKey(customerId, sessionkey, contextId, connectionId) {
     await this.init();
     const skey = sessionkey.slice(0, 16);
 

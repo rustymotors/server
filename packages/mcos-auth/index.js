@@ -42,13 +42,13 @@ export class AuthLogin {
 
   /**
    * Creates an instance of AuthLogin.
-   * 
+   *
    * Please use {@link AuthLogin.getInstance()} instead
    * @internal
    * @memberof AuthLogin
    */
   constructor() {
-      // Intentionally empty
+    // Intentionally empty
   }
 
   /**
@@ -63,16 +63,13 @@ export class AuthLogin {
 
   // File deepcode ignore NoRateLimitingForExpensiveWebOperation: Not using express, unsure how to handle rate limiting on raw http
   /**
-   * Handle incoming http requests 
-   * 
+   * Handle incoming http requests
+   *
    * @returns {ServerResponse}
    * @param {import("http").IncomingMessage} request
    * @param {import("http").ServerResponse} response
    */
-  handleRequest(
-    request,
-    response
-  ) {
+  handleRequest(request, response) {
     log.info(
       `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );

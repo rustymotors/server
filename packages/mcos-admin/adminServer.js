@@ -17,15 +17,15 @@ const log = logger.child({ service: "mcoserver:AdminServer;" });
  * @property {Server} httpServer
  */
 export class AdminServer {
-    /**
-     *
-     *
-     * @private
-     * @static
-     * @type {AdminServer}
-     * @memberof AdminServer
-     */
-    static _instance;
+  /**
+   *
+   *
+   * @private
+   * @static
+   * @type {AdminServer}
+   * @memberof AdminServer
+   */
+  static _instance;
 
   /**
    * Get the single instance of the class
@@ -43,7 +43,7 @@ export class AdminServer {
 
   /**
    * Creates an instance of AdminServer.
-   * 
+   *
    * Please use {@link AdminServer.getInstance()} instead
    * @internal
    * @memberof AdminServer
@@ -113,15 +113,12 @@ export class AdminServer {
 
   /**
    * Handle incomming http requests
-   * 
+   *
    * @return {ServerResponse}
    * @param {import("http").IncomingMessage} request
    * @param {import("http").ServerResponse} response
    */
-  handleRequest(
-    request,
-    response
-  ) {
+  handleRequest(request, response) {
     log.info(
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );
@@ -138,19 +135,19 @@ export class AdminServer {
     switch (request.url) {
       case "/admin/connections": {
         response.setHeader("Content-Type", "text/plain");
-        response.statusCode = 200
+        response.statusCode = 200;
         responseString = this._handleGetConnections();
         break;
       }
       case "/admin/connections/resetAllQueueState": {
         response.setHeader("Content-Type", "text/plain");
-        response.statusCode = 200
+        response.statusCode = 200;
         responseString = this._handleResetAllQueueState();
-        break
+        break;
       }
       default: {
         if (request.url && request.url.startsWith("/admin")) {
-          response.statusCode = 404
+          response.statusCode = 404;
           responseString = "Jiggawatt!";
         }
         break;

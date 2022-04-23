@@ -24,10 +24,7 @@ const log = logger.child({ service: "mcoserver:LobbyServer" });
  * @param {Buffer} buffer
  * @return {TCPConnection}
  */
-function npsSocketWriteIfOpen(
-  conn,
-  buffer
-) {
+function npsSocketWriteIfOpen(conn, buffer) {
   const { sock } = conn;
   if (sock.writable) {
     // Write the packet to socket
@@ -78,10 +75,7 @@ function encryptCmd(con, cypherCmd) {
  * @param {Buffer} data
  * @return {TCPConnection}
  */
-function sendCommand(
-  con,
-  data
-) {
+function sendCommand(con, data) {
   const s = con;
 
   const decipheredCommand = decryptCmd(
@@ -141,14 +135,14 @@ export class LobbyServer {
    * @memberof LobbyServer
    */
   static _instance;
-/**
- * Get the single instance of the lobby service
- *
- * @static
- * @return {LobbyServer}
- * @memberof LobbyServer
- */
-static getInstance() {
+  /**
+   * Get the single instance of the lobby service
+   *
+   * @static
+   * @return {LobbyServer}
+   * @memberof LobbyServer
+   */
+  static getInstance() {
     if (!LobbyServer._instance) {
       LobbyServer._instance = new LobbyServer();
     }
@@ -157,7 +151,7 @@ static getInstance() {
 
   /**
    * Creates an instance of LobbyServer.
-   * 
+   *
    * Please use {@link LobbyServer.getInstance()} instead
    * @internal
    * @memberof LobbyServer
@@ -276,10 +270,7 @@ static getInstance() {
    * @param {Buffer} rawData
    * @return {Promise<NPSMessage>}
    */
-  async _npsRequestGameConnectServer(
-    connection,
-    rawData
-  ) {
+  async _npsRequestGameConnectServer(connection, rawData) {
     const { sock } = connection;
     log.debug(
       `_npsRequestGameConnectServer: ${JSON.stringify({

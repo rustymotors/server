@@ -5,10 +5,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import {
-  NPS_COMMANDS,
-  MessageNode
-} from "mcos-shared/types";
+import { NPS_COMMANDS, MessageNode } from "mcos-shared/types";
 import { EncryptionManager } from "./encryption-mgr.js";
 import { NPSPacketManager } from "./nps-packet-manager.js";
 import { TCPConnection } from "./tcpConnection.js";
@@ -52,14 +49,14 @@ export class ConnectionManager {
    * @memberof ConnectionManager
    */
   _banList = [];
-/**
- * Get the single instance of the connection manager
- *
- * @static
- * @return {*}  {ConnectionManager}
- * @memberof ConnectionManager
- */
-static getConnectionManager() {
+  /**
+   * Get the single instance of the connection manager
+   *
+   * @static
+   * @return {*}  {ConnectionManager}
+   * @memberof ConnectionManager
+   */
+  static getConnectionManager() {
     if (!ConnectionManager._instance) {
       ConnectionManager._instance = new ConnectionManager();
     }
@@ -68,13 +65,13 @@ static getConnectionManager() {
 
   /**
    * Creates an instance of ConnectionManager.
-   * 
+   *
    * Use {@link ConnectionManager.getConnectionManager()} instead
    * @internal
    * @memberof ConnectionManager
    */
   constructor() {
-      // Intentionally empty
+    // Intentionally empty
   }
 
   /**
@@ -223,7 +220,7 @@ static getConnectionManager() {
 
   /**
    * Get the internal banns list
-   * 
+   *
    * @deprecated
    * @return {string[]}
    */
@@ -238,10 +235,7 @@ static getConnectionManager() {
    * @memberof ConnectionMgr
    * @return {TCPConnection | null}
    */
-  findConnectionByAddressAndPort(
-    remoteAddress,
-    localPort
-  ) {
+  findConnectionByAddressAndPort(remoteAddress, localPort) {
     return (
       this._connections.find((connection) => {
         const match =
@@ -254,12 +248,12 @@ static getConnectionManager() {
 
   /**
    * Locate connection by id in the connections array
- *
- * @param {string} connectionId
- * @return {*}  {TCPConnection}
- * @memberof ConnectionManager
- */
-findConnectionById(connectionId) {
+   *
+   * @param {string} connectionId
+   * @return {*}  {TCPConnection}
+   * @memberof ConnectionManager
+   */
+  findConnectionById(connectionId) {
     const results = this._connections.find(
       (connection) => connectionId === connection.id
     );
@@ -278,11 +272,7 @@ findConnectionById(connectionId) {
    * @return {*}  {TCPConnection[]} the updated connection
    * @memberof ConnectionManager
    */
-  updateConnectionByAddressAndPort(
-    address,
-    port,
-    newConnection
-  ) {
+  updateConnectionByAddressAndPort(address, port, newConnection) {
     if (newConnection === undefined) {
       throw new Error(
         `Undefined connection: ${JSON.stringify({

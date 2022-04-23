@@ -45,7 +45,7 @@ export class ShardServer {
    * @type {string[]}
    * @memberof ShardServer
    */
-  _possibleShards= [];
+  _possibleShards = [];
   /**
    *
    *
@@ -76,7 +76,7 @@ export class ShardServer {
 
   /**
    * Creates an instance of ShardServer.
-   * 
+   *
    * Please use {@link ShardServer.getInstance()} instead
    * @internal
    * @param {import("mcos-shared/config").AppConfiguration} config
@@ -238,10 +238,7 @@ export class ShardServer {
    * @param {import("http").ServerResponse} response
    */
   // deepcode ignore NoRateLimitingForExpensiveWebOperation: Very unlikely to be DDos'ed
-  handleRequest(
-    request,
-    response
-  ) {
+  handleRequest(request, response) {
     if (request.url === "/cert") {
       response.setHeader(
         "Content-disposition",
