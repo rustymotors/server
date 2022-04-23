@@ -13,10 +13,10 @@
   "type": "module",
   "scripts": {
     "format": "prettier-eslint",
-    "test": "tsc && standard && eslint && c8 mocha packages/**/*test.js",
+    "test": "tsc && standard && eslint && c8 mocha",
     "prod": "make prod_node",
     "prod:stop": "docker-compose stop",
-    "start": "node bin/app.js"
+    "start": "node app.js"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
   "license": "MPL-2.0",
@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@types/pg": "8.6.5",
+    "mcos-admin": "*",
     "mcos-core": "*",
     "mcos-shared": "*",
     "pg": "8.7.3",

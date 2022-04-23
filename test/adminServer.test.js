@@ -1,6 +1,6 @@
 import chai from 'chai'
 import { describe, it } from 'mocha'
-import { AdminServer } from './index.js'
+import { AdminServer } from 'mcos-admin'
 
 chai.should()
 
