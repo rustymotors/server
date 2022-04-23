@@ -23,81 +23,66 @@
  * @property {string} diagnosticServerHost
  * @property {number} diagnosticServerPort
  */
- export class ShardEntry {
-    name;
-    description;
-    id;
-    loginServerIp;
-    loginServerPort;
-    lobbyServerIp;
-    lobbyServerPort;
-    mcotsServerIp;
-    statusId;
-    statusReason;
-    serverGroupName;
-    population;
-    maxPersonasPerUser;
-    diagnosticServerHost;
-    diagnosticServerPort;
-    /**
-     *
-     * @param {string} name
-     * @param {string} description
-     * @param {number} id
-     * @param {string} loginServerIp
-     * @param {number} loginServerPort
-     * @param {string} lobbyServerIp
-     * @param {number} lobbyServerPort
-     * @param {string} mcotsServerIp
-     * @param {number} statusId
-     * @param {string} statusReason
-     * @param {string} serverGroupName
-     * @param {number} population
-     * @param {number} maxPersonasPerUser
-     * @param {string} diagnosticServerHost
-     * @param {number} diagnosticServerPort
-     */
-    constructor(
-      name,
-      description,
-      id,
-      loginServerIp,
-      loginServerPort,
-      lobbyServerIp,
-      lobbyServerPort,
-      mcotsServerIp,
-      statusId,
-      statusReason,
-      serverGroupName,
-      population,
-      maxPersonasPerUser,
-      diagnosticServerHost,
-      diagnosticServerPort
-    ) {
-      this.name = name;
-      this.description = description;
-      this.id = id;
-      this.loginServerIp = loginServerIp;
-      this.loginServerPort = loginServerPort;
-      this.lobbyServerIp = lobbyServerIp;
-      this.lobbyServerPort = lobbyServerPort;
-      this.mcotsServerIp = mcotsServerIp;
-      this.statusId = statusId;
-      this.statusReason = statusReason;
-      this.serverGroupName = serverGroupName;
-      this.population = population;
-      this.maxPersonasPerUser = maxPersonasPerUser;
-      this.diagnosticServerHost = diagnosticServerHost;
-      this.diagnosticServerPort = diagnosticServerPort;
-    }
-  
-    /**
-     * Return the entry in a formatted string
-     * 
-     * @return {string}
-     */
-    formatForShardList() {
-      return `[${this.name}]
+export class ShardEntry {
+  /**
+   *
+   * @param {string} name
+   * @param {string} description
+   * @param {number} id
+   * @param {string} loginServerIp
+   * @param {number} loginServerPort
+   * @param {string} lobbyServerIp
+   * @param {number} lobbyServerPort
+   * @param {string} mcotsServerIp
+   * @param {number} statusId
+   * @param {string} statusReason
+   * @param {string} serverGroupName
+   * @param {number} population
+   * @param {number} maxPersonasPerUser
+   * @param {string} diagnosticServerHost
+   * @param {number} diagnosticServerPort
+   */
+  constructor (
+    name,
+    description,
+    id,
+    loginServerIp,
+    loginServerPort,
+    lobbyServerIp,
+    lobbyServerPort,
+    mcotsServerIp,
+    statusId,
+    statusReason,
+    serverGroupName,
+    population,
+    maxPersonasPerUser,
+    diagnosticServerHost,
+    diagnosticServerPort
+  ) {
+    this.name = name
+    this.description = description
+    this.id = id
+    this.loginServerIp = loginServerIp
+    this.loginServerPort = loginServerPort
+    this.lobbyServerIp = lobbyServerIp
+    this.lobbyServerPort = lobbyServerPort
+    this.mcotsServerIp = mcotsServerIp
+    this.statusId = statusId
+    this.statusReason = statusReason
+    this.serverGroupName = serverGroupName
+    this.population = population
+    this.maxPersonasPerUser = maxPersonasPerUser
+    this.diagnosticServerHost = diagnosticServerHost
+    this.diagnosticServerPort = diagnosticServerPort
+  }
+
+  /**
+   * Return the entry in a formatted string
+   *
+   * @return {string}
+   */
+  formatForShardList () {
+    return `[${this.name}]
       Description=${this.description}
       ShardId=${this.id}
       LoginServerIP=${this.loginServerIp}
@@ -111,7 +96,6 @@
       Population=${this.population}
       MaxPersonasPerUser=${this.maxPersonasPerUser}
       DiagnosticServerHost=${this.diagnosticServerHost}
-      DiagnosticServerPort=${this.diagnosticServerPort}`;
-    }
+      DiagnosticServerPort=${this.diagnosticServerPort}`
   }
-  
+}

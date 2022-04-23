@@ -1,13 +1,16 @@
 version = 1
 
 [[analyzers]]
+name = "docker"
+enabled = true
+
+[[analyzers]]
+name = "test-coverage"
+enabled = true
+
+[[analyzers]]
 name = "javascript"
 enabled = true
-
-[[transformers]]
-name = "standardjs"
-enabled = true
-
-[[transformers]]
-name = "prettier"
-enabled = true
+    [analyzers.meta]
+    module_system = "es-modules"
+    style_guide = "standard"
