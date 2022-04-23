@@ -32,7 +32,6 @@ export class ShardServer {
    *
    *
    * @static
-   * @internal
    * @type {ShardServer}
    * @memberof ShardServer
    */
@@ -70,7 +69,6 @@ export class ShardServer {
    * Creates an instance of ShardServer.
    *
    * Please use {@link ShardServer.getInstance()} instead
-   * @internal
    * @param {import("mcos-shared/config").AppConfiguration} config
    * @memberof ShardServer
    */

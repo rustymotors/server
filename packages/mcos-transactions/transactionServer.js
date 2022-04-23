@@ -49,7 +49,6 @@ export class MCOTServer {
    * Creates an instance of MCOTServer.
    *
    * Please use {@link MCOTServer.getTransactionServer()} instead
-   * @internal
    * @memberof MCOTServer
    */
   constructor () {

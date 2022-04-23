@@ -72,7 +72,6 @@ export class PatchServer {
    * Creates an instance of PatchServer.
    *
    * Please use {@link PatchServer.getInstance()} instead
-   * @internal
    * @param {import("mcos-shared/config").AppConfiguration} config
    * @memberof PatchServer
    */
