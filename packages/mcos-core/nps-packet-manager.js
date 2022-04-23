@@ -32,42 +32,6 @@ const log = logger.child({ service: 'mcoserver:NPSPacketManager' })
  */
 export class NPSPacketManager {
   database = DatabaseManager.getInstance()
-  /**
-   *
-   *
-   * @type {string}
-   * @memberof NPSPacketManager
-   */
-  npsKey
-  /**
-   *
-   *
-   * @type {IMsgNameMapping[]}
-   * @memberof NPSPacketManager
-   */
-  msgNameMapping = []
-  /**
-   *
-   *
-   * @type {LoginServer}
-   * @memberof NPSPacketManager
-   */
-  loginServer
-  /**
-   *
-   *
-   * @type {PersonaServer}
-   * @memberof NPSPacketManager
-   */
-  personaServer
-  /**
-   *
-   *
-   * @type {LobbyServer}
-   * @memberof NPSPacketManager
-   */
-  lobbyServer
-
   constructor () {
     this.npsKey = ''
     this.msgNameMapping = [

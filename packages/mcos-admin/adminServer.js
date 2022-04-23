@@ -26,7 +26,7 @@ export class AdminServer {
      * @type {AdminServer}
      * @memberof AdminServer
      */
-  static _instance
+  static _instance;
 
   /**
    * Get the single instance of the class

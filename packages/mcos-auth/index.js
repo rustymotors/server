@@ -24,7 +24,7 @@ export class AuthLogin {
    * @type {AuthLogin}
    * @memberof AuthLogin
    */
-  static _instance
+  static _instance;
 
   /**
    * Get the single instance of the class

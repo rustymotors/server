@@ -8,6 +8,7 @@
 import { createCipheriv, createDecipheriv } from 'node:crypto'
 import { logger } from 'mcos-shared/logger'
 import { errorMessage } from 'mcos-shared'
+import { Socket } from 'node:net'
 
 const log = logger.child({ service: 'mcoserver:TCPConnection' })
 
@@ -21,121 +22,6 @@ const log = logger.child({ service: 'mcoserver:TCPConnection' })
  * Container for all TCP connections
  */
 export class TCPConnection {
-  /**
-   *
-   *
-   * @type {string}
-   * @memberof TCPConnection
-   */
-  id
-  /**
-   *
-   *
-   * @type {number}
-   * @memberof TCPConnection
-   */
-  appId
-  /**
-   *
-   *
-   * @type {EConnectionStatus}
-   * @memberof TCPConnection
-   */
-  status
-  /**
-   *
-   * @type {string} [remoteAddress]
-   * @memberof TCPConnection
-   */
-  remoteAddress
-  /**
-   *
-   *
-   * @type {number}
-   * @memberof TCPConnection
-   */
-  localPort
-  /**
-   *
-   *
-   * @type {import("node:net").Socket}
-   * @memberof TCPConnection
-   */
-  sock
-  /**
-   *
-   *
-   * @type {null}
-   * @memberof TCPConnection
-   */
-  msgEvent
-  /**
-   *
-   *
-   * @type {number}
-   * @memberof TCPConnection
-   */
-  lastMsg
-  /**
-   *
-   *
-   * @type {boolean}
-   * @memberof TCPConnection
-   */
-  useEncryption
-  /**
-   *
-   *
-   * @private
-   * @type {import("mcos-shared/types").LobbyCiphers}
-   * @memberof TCPConnection
-   */
-  encLobby
-  /**
-   *
-   *
-   * @private
-   * @type {import("mcos-core").EncryptionManager | undefined} [enc]
-   * @memberof TCPConnection
-   */
-  enc
-  /**
-   *
-   *
-   * @type {boolean}
-   * @memberof TCPConnection
-   */
-  isSetupComplete
-  /**
-   *
-   *
-   * @private
-   * @type {import("mcos-core").ConnectionManager | undefined} [mgr]
-   * @memberof TCPConnection
-   */
-  mgr
-  /**
-   *
-   *
-   * @type {boolean}
-   * @memberof TCPConnection
-   */
-  inQueue
-  /**
-   *
-   *
-   * @type {Buffer | undefined} [encryptedCmd]
-   * @memberof TCPConnection
-   */
-  encryptedCmd
-  /**
-   *
-   *
-   * @type {Buffer | undefined} [decryptedCmd]
-   * @memberof TCPConnection
-   */
-  decryptedCmd
-
   /**
    * Creates an instance of TCPConnection.
    * @param {string} connectionId
@@ -154,7 +40,6 @@ export class TCPConnection {
     this.remoteAddress = sock.remoteAddress || ''
     this.localPort = sock.localPort
     this.sock = sock
-    this.msgEvent = null
     this.lastMsg = 0
     this.useEncryption = false
     /** @type {import("mcos-shared/types").LobbyCiphers} */

@@ -50,13 +50,6 @@ export class PatchServer {
    * @memberof PatchServer
    */
   static _instance
-  /**
-   *
-   *
-   * @type {import("mcos-shared/config").AppConfiguration}
-   * @memberof PatchServer
-   */
-  config
 
   /**
    * Return the instance of the PatchServer class
@@ -82,6 +75,7 @@ export class PatchServer {
    * @memberof PatchServer
    */
   constructor (config) {
+    /** @type {import("mcos-shared/config").AppConfiguration} */
     this.config = config
   }
 

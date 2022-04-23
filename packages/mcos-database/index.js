@@ -27,14 +27,7 @@ export class DatabaseManager {
    * @memberof DatabaseManager
    */
   static _instance
-  /**
-   *
-   *
-   * @type {pg.Client | undefined}
-   * @memberof DatabaseManager
-   */
-  localDB
-
+  
   /**
    * Return the instance of the DatabaseManager class
    * @returns {DatabaseManager}
@@ -185,6 +178,8 @@ export class DatabaseManager {
       throw new Error('Please set MCOS__SETTINGS__DATABASE_CONNECTION_URI')
     }
     this.connectionURI = APP_CONFIG.MCOS.SETTINGS.DATABASE_CONNECTION_URI
+    /** @type {pg.Client | undefined} */
+    this.localDB = undefined
   }
 
   /**
