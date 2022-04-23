@@ -4,9 +4,9 @@
  * @param {unknown} error
  * @return {string}
  */
-export function errorMessage(error) {
+export function errorMessage (error) {
   if (error instanceof Error) {
-    return error.message;
+    return error.message
   }
-  return String(error);
+  return String(error)
 }
