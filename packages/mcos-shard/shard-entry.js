@@ -24,21 +24,6 @@
  * @property {number} diagnosticServerPort
  */
 export class ShardEntry {
-  name
-  description
-  id
-  loginServerIp
-  loginServerPort
-  lobbyServerIp
-  lobbyServerPort
-  mcotsServerIp
-  statusId
-  statusReason
-  serverGroupName
-  population
-  maxPersonasPerUser
-  diagnosticServerHost
-  diagnosticServerPort
   /**
      *
      * @param {string} name
