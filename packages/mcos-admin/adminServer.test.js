@@ -1,5 +1,5 @@
-import { describe } from "mocha"
 import chai from "chai"
+import { describe } from "mocha"
 import { AdminServer } from "./index.js"
 
 chai.should()

@@ -5,8 +5,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { logger } from "mcos-shared/logger";
 import { getConnectionManager } from "mcos-core";
+import { logger } from "mcos-shared/logger";
 
 const log = logger.child({ service: "mcoserver:AdminServer;" });
 
