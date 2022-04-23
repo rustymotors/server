@@ -5,17 +5,16 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { createCipheriv, createDecipheriv } from "node:crypto";
-import { logger } from "mcos-shared/logger";
-import { errorMessage } from "mcos-shared";
+import { createCipheriv, createDecipheriv } from 'node:crypto'
+import { logger } from 'mcos-shared/logger'
+import { errorMessage } from 'mcos-shared'
 
-const log = logger.child({ service: "mcoserver:TCPConnection" });
-
+const log = logger.child({ service: 'mcoserver:TCPConnection' })
 
 /**
  * @export
  * @typedef {'Active' | 'Inactive'} EConnectionStatus
- * 
+ *
  */
 
 /**
@@ -28,62 +27,62 @@ export class TCPConnection {
    * @type {string}
    * @memberof TCPConnection
    */
-  id;
+  id
   /**
    *
    *
    * @type {number}
    * @memberof TCPConnection
    */
-  appId;
+  appId
   /**
    *
    *
    * @type {EConnectionStatus}
    * @memberof TCPConnection
    */
-  status;
+  status
   /**
    *
    * @type {string} [remoteAddress]
    * @memberof TCPConnection
    */
-  remoteAddress;
+  remoteAddress
   /**
    *
    *
    * @type {number}
    * @memberof TCPConnection
    */
-  localPort;
+  localPort
   /**
    *
    *
    * @type {import("node:net").Socket}
    * @memberof TCPConnection
    */
-  sock;
+  sock
   /**
    *
    *
    * @type {null}
    * @memberof TCPConnection
    */
-  msgEvent;
+  msgEvent
   /**
    *
    *
    * @type {number}
    * @memberof TCPConnection
    */
-  lastMsg;
+  lastMsg
   /**
    *
    *
    * @type {boolean}
    * @memberof TCPConnection
    */
-  useEncryption;
+  useEncryption
   /**
    *
    *
@@ -91,7 +90,7 @@ export class TCPConnection {
    * @type {import("mcos-shared/types").LobbyCiphers}
    * @memberof TCPConnection
    */
-  encLobby;
+  encLobby
   /**
    *
    *
@@ -99,14 +98,14 @@ export class TCPConnection {
    * @type {import("mcos-core").EncryptionManager | undefined} [enc]
    * @memberof TCPConnection
    */
-  enc;
+  enc
   /**
    *
    *
    * @type {boolean}
    * @memberof TCPConnection
    */
-  isSetupComplete;
+  isSetupComplete
   /**
    *
    *
@@ -114,28 +113,28 @@ export class TCPConnection {
    * @type {import("mcos-core").ConnectionManager | undefined} [mgr]
    * @memberof TCPConnection
    */
-  mgr;
+  mgr
   /**
    *
    *
    * @type {boolean}
    * @memberof TCPConnection
    */
-  inQueue;
+  inQueue
   /**
    *
    *
    * @type {Buffer | undefined} [encryptedCmd]
    * @memberof TCPConnection
    */
-  encryptedCmd;
+  encryptedCmd
   /**
    *
    *
    * @type {Buffer | undefined} [decryptedCmd]
    * @memberof TCPConnection
    */
-  decryptedCmd;
+  decryptedCmd
 
   /**
    * Creates an instance of TCPConnection.
@@ -143,34 +142,35 @@ export class TCPConnection {
    * @param {import("node:net").Socket} sock
    * @memberof TCPConnection
    */
-  constructor(connectionId, sock) {
-    if (typeof sock.localPort === "undefined") {
+  constructor (connectionId, sock) {
+    if (typeof sock.localPort === 'undefined') {
       throw new Error(
-        `localPort is undefined, unable to create connection object`
-      );
+        'localPort is undefined, unable to create connection object'
+      )
     }
-    this.id = connectionId;
-    this.appId = 0;
-    this.status = "Inactive";
-    this.remoteAddress = sock.remoteAddress || "";
-    this.localPort = sock.localPort;
-    this.sock = sock;
-    this.msgEvent = null;
-    this.lastMsg = 0;
-    this.useEncryption = false;
+    this.id = connectionId
+    this.appId = 0
+    this.status = 'Inactive'
+    this.remoteAddress = sock.remoteAddress || ''
+    this.localPort = sock.localPort
+    this.sock = sock
+    this.msgEvent = null
+    this.lastMsg = 0
+    this.useEncryption = false
     /** @type {import("mcos-shared/types").LobbyCiphers} */
-    this.encLobby = {};
-    this.isSetupComplete = false;
-    this.inQueue = true;
+    this.encLobby = {}
+    this.isSetupComplete = false
+    this.inQueue = true
   }
+
   /**
    * Has the encryption keyset for lobby messages been created?
    * @returns {boolean}
    */
-  isLobbyKeysetReady() {
+  isLobbyKeysetReady () {
     return (
       this.encLobby.cipher !== undefined && this.encLobby.decipher !== undefined
-    );
+    )
   }
 
   /**
@@ -180,19 +180,19 @@ export class TCPConnection {
    * @param {TCPConnection} newConnection
    * @returns {TCPConnection[]}
    */
-  updateConnectionByAddressAndPort(
+  updateConnectionByAddressAndPort (
     remoteAddress,
     localPort,
     newConnection
   ) {
     if (this.mgr === undefined) {
-      throw new Error("Connection manager not set");
+      throw new Error('Connection manager not set')
     }
     return this.mgr.updateConnectionByAddressAndPort(
       remoteAddress,
       localPort,
       newConnection
-    );
+    )
   }
 
   /**
@@ -200,9 +200,9 @@ export class TCPConnection {
    * @param {import("mcos-core").ConnectionManager} manager
    * @returns {TCPConnection}
    */
-  setManager(manager) {
-    this.mgr = manager;
-    return this;
+  setManager (manager) {
+    this.mgr = manager
+    return this
   }
 
   /**
@@ -210,20 +210,20 @@ export class TCPConnection {
    * @param {import("mcos-core").EncryptionManager} encryptionManager
    * @returns {TCPConnection}
    */
-  setEncryptionManager(encryptionManager) {
-    this.enc = encryptionManager;
-    return this;
+  setEncryptionManager (encryptionManager) {
+    this.enc = encryptionManager
+    return this
   }
 
   /**
    * Return the encryption manager id
    * @returns {string}
    */
-  getEncryptionId() {
+  getEncryptionId () {
     if (this.enc === undefined) {
-      throw new Error("Encryption manager not set");
+      throw new Error('Encryption manager not set')
     }
-    return this.enc.getId();
+    return this.enc.getId()
   }
 
   /**
@@ -231,11 +231,11 @@ export class TCPConnection {
    * @param {Buffer} buffer
    * @returns {Buffer}
    */
-  encryptBuffer(buffer) {
+  encryptBuffer (buffer) {
     if (this.enc === undefined) {
-      throw new Error("Encryption manager not set");
+      throw new Error('Encryption manager not set')
     }
-    return this.enc.encrypt(buffer);
+    return this.enc.encrypt(buffer)
   }
 
   /**
@@ -243,11 +243,11 @@ export class TCPConnection {
    * @param {Buffer} buffer
    * @returns {Buffer}
    */
-  decryptBuffer(buffer) {
+  decryptBuffer (buffer) {
     if (this.enc === undefined) {
-      throw new Error("Encryption manager not set");
+      throw new Error('Encryption manager not set')
     }
-    return this.enc.decrypt(buffer);
+    return this.enc.decrypt(buffer)
   }
 
   /**
@@ -255,11 +255,11 @@ export class TCPConnection {
    * @param {Buffer} key
    * @return {void}
    */
-  setEncryptionKey(key) {
+  setEncryptionKey (key) {
     if (this.enc === undefined) {
-      throw new Error("Encryption manager is not set");
+      throw new Error('Encryption manager is not set')
     }
-    this.isSetupComplete = this.enc.setEncryptionKey(key);
+    this.isSetupComplete = this.enc.setEncryptionKey(key)
   }
 
   /**
@@ -268,39 +268,39 @@ export class TCPConnection {
    * @param {string} skey
    * @return {void}
    */
-  setEncryptionKeyDES(skey) {
+  setEncryptionKeyDES (skey) {
     // Deepcode ignore HardcodedSecret: This uses an empty IV
-    const desIV = Buffer.alloc(8);
+    const desIV = Buffer.alloc(8)
 
     try {
       this.encLobby.cipher = createCipheriv(
-        "des-cbc",
-        Buffer.from(skey, "hex"),
+        'des-cbc',
+        Buffer.from(skey, 'hex'),
         desIV
-      );
-      this.encLobby.cipher.setAutoPadding(false);
+      )
+      this.encLobby.cipher.setAutoPadding(false)
     } catch (err) {
       if (err instanceof Error) {
-        throw new Error(`Error setting cipher: ${err.message}`);
+        throw new Error(`Error setting cipher: ${err.message}`)
       }
-      throw err;
+      throw err
     }
 
     try {
       this.encLobby.decipher = createDecipheriv(
-        "des-cbc",
-        Buffer.from(skey, "hex"),
+        'des-cbc',
+        Buffer.from(skey, 'hex'),
         desIV
-      );
-      this.encLobby.decipher.setAutoPadding(false);
+      )
+      this.encLobby.decipher.setAutoPadding(false)
     } catch (err) {
       if (err instanceof Error) {
-        throw new Error(`Error setting decipher: ${err.message}`);
+        throw new Error(`Error setting decipher: ${err.message}`)
       }
-      throw err;
+      throw err
     }
 
-    this.isSetupComplete = true;
+    this.isSetupComplete = true
   }
 
   /**
@@ -309,24 +309,24 @@ export class TCPConnection {
    * @param {Buffer} messageBuffer
    * @return {Buffer}
    */
-  cipherBufferDES(messageBuffer) {
+  cipherBufferDES (messageBuffer) {
     if (this.encLobby.cipher) {
-      return this.encLobby.cipher.update(messageBuffer);
+      return this.encLobby.cipher.update(messageBuffer)
     }
 
-    throw new Error("No DES cipher set on connection");
+    throw new Error('No DES cipher set on connection')
   }
 
   /**
    * Decrypt a command that is encrypted with DES
    * @param {Buffer} messageBuffer
    */
-  decipherBufferDES(messageBuffer) {
+  decipherBufferDES (messageBuffer) {
     if (this.encLobby.decipher) {
-      return this.encLobby.decipher.update(messageBuffer);
+      return this.encLobby.decipher.update(messageBuffer)
     }
 
-    throw new Error("No DES decipher set on connection");
+    throw new Error('No DES decipher set on connection')
   }
 
   /**
@@ -334,17 +334,20 @@ export class TCPConnection {
    * @param {import("mcos-shared/types").UnprocessedPacket} packet
    * @returns {Promise<{err: Error | null, data: TCPConnection | null}>}
    */
-  async processPacket(packet) {
+  async processPacket (packet) {
     if (this.mgr === undefined) {
-      return {err: new Error("Connection manager is not set"), data: null};
+      return { err: new Error('Connection manager is not set'), data: null }
     }
     try {
-      return this.mgr.processData(packet);
+      return this.mgr.processData(packet)
     } catch (error) {
       log.error(errorMessage(error))
-      return {err:  new Error(
+      return {
+        err: new Error(
           `There was an error processing the packet: ${errorMessage(error)}`
-        ), data: null};
+        ),
+        data: null
+      }
     }
   }
 
@@ -353,17 +356,17 @@ export class TCPConnection {
    * @param {import("mcos-shared/types").MessageNode} packet
    * @returns {import("mcos-shared/types").ConnectionWithPacket}
    */
-  compressIfNeeded(packet) {
+  compressIfNeeded (packet) {
     // Check if compression is needed
     if (packet.getLength() < 80) {
-      log.debug("Too small, should not compress");
+      log.debug('Too small, should not compress')
       return {
         connection: this,
         packet,
-        lastError: "Too small, should not compress",
-      };
+        lastError: 'Too small, should not compress'
+      }
     } else {
-      log.debug("This packet should be compressed");
+      log.debug('This packet should be compressed')
       /* TODO: Write compression.
        *
        * At this time we will still send the packet, to not hang connection
@@ -371,7 +374,7 @@ export class TCPConnection {
        */
     }
 
-    return { connection: this, packet };
+    return { connection: this, packet }
   }
 
   /**
@@ -379,17 +382,17 @@ export class TCPConnection {
    * @param {import("mcos-shared/types").MessageNode} packet
    * @returns {import("mcos-shared/types").ConnectionWithPacket}
    */
-  encryptIfNeeded(packet) {
+  encryptIfNeeded (packet) {
     // Check if encryption is needed
     if (packet.flags - 8 >= 0) {
-      log.debug("encryption flag is set");
+      log.debug('encryption flag is set')
 
-      packet.updateBuffer(this.encryptBuffer(packet.data));
+      packet.updateBuffer(this.encryptBuffer(packet.data))
 
-      log.debug(`encrypted packet: ${packet.serialize().toString("hex")}`);
+      log.debug(`encrypted packet: ${packet.serialize().toString('hex')}`)
     }
 
-    return { connection: this, packet };
+    return { connection: this, packet }
   }
 
   /**
@@ -397,43 +400,43 @@ export class TCPConnection {
    * @param {import("mcos-shared/types").MessageNode[]} packetList
    * @returns {TCPConnection}
    */
-  tryWritePackets(packetList) {
+  tryWritePackets (packetList) {
     /** @type {import("mcos-shared/types").ConnectionWithPackets} */
     const updatedConnection = {
       connection: this,
-      packetList: packetList,
-    };
+      packetList
+    }
     // For each node in nodes
     for (const packet of updatedConnection.packetList) {
       // Does the packet need to be compressed?
       /** @type {import("mcos-shared/types").MessageNode} */
       const compressedPacket =
-        this.compressIfNeeded(packet).packet;
+        this.compressIfNeeded(packet).packet
       // Does the packet need to be encrypted?
-      const encryptedPacket = this.encryptIfNeeded(compressedPacket).packet;
+      const encryptedPacket = this.encryptIfNeeded(compressedPacket).packet
       // Log that we are trying to write
       log.debug(
         ` Atempting to write seq: ${encryptedPacket.seq} to conn: ${updatedConnection.connection.id}`
-      );
+      )
 
       // Log the buffer we are writing
       log.debug(
-        `Writting buffer: ${encryptedPacket.serialize().toString("hex")}`
-      );
+        `Writting buffer: ${encryptedPacket.serialize().toString('hex')}`
+      )
       if (this.sock.writable) {
         // Write the packet to socket
-        this.sock.write(encryptedPacket.serialize());
+        this.sock.write(encryptedPacket.serialize())
       } else {
         /** @type {string} */
-        const port = this.sock.localPort?.toString() || "";
+        const port = this.sock.localPort?.toString() || ''
         throw new Error(
           `Error writing ${encryptedPacket.serialize()} to ${
             this.sock.remoteAddress
           } , ${port}`
-        );
+        )
       }
     }
 
-    return updatedConnection.connection;
+    return updatedConnection.connection
   }
 }

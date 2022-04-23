@@ -5,11 +5,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { logger } from "mcos-shared/logger";
-import { DatabaseManager } from "mcos-database";
-import { NPSUserStatus, premadeLogin } from "mcos-shared/types";
+import { logger } from 'mcos-shared/logger'
+import { DatabaseManager } from 'mcos-database'
+import { NPSUserStatus, premadeLogin } from 'mcos-shared/types'
 
-const log = logger.child({ service: "mcoserver:LoginServer" });
+const log = logger.child({ service: 'mcoserver:LoginServer' })
 
 /**
  * Manages the initial game connection setup and teardown.
@@ -17,7 +17,8 @@ const log = logger.child({ service: "mcoserver:LoginServer" });
  */
 
 /**
- * @class
+ * Please use {@link LoginServer.getInstance()}
+ * @classdesc
  * @property {DatabaseManager} databaseManager
  */
 export class LoginServer {
@@ -28,8 +29,8 @@ export class LoginServer {
    * @type {LoginServer}
    * @memberof LoginServer
    */
-  static _instance;
-  databaseManager = DatabaseManager.getInstance();
+  static _instance
+  databaseManager = DatabaseManager.getInstance()
   /**
    * Get the single instance of the login server
    *
@@ -37,22 +38,11 @@ export class LoginServer {
    * @return {LoginServer}
    * @memberof LoginServer
    */
-  static getInstance() {
+  static getInstance () {
     if (!LoginServer._instance) {
-      LoginServer._instance = new LoginServer();
+      LoginServer._instance = new LoginServer()
     }
-    return LoginServer._instance;
-  }
-
-  /**
-   * Creates an instance of LoginServer.
-   * 
-   * Please use {@link LoginServer.getInstance()} instead
-   * @internal
-   * @memberof LoginServer
-   */
-  constructor() {
-    // Intentionally empty
+    return LoginServer._instance
   }
 
   /**
@@ -60,28 +50,28 @@ export class LoginServer {
    * @param {import("mcos-shared/types").UnprocessedPacket} rawPacket
    * @return {Promise<import("mcos-core").TCPConnection>}
    */
-  async dataHandler(rawPacket) {
-    let processed = true;
-    const { connection, data } = rawPacket;
-    const { localPort, remoteAddress } = rawPacket.connection;
+  async dataHandler (rawPacket) {
+    let processed = true
+    const { connection, data } = rawPacket
+    const { localPort, remoteAddress } = rawPacket.connection
     log.info(
       `Received Login Server packet: ${JSON.stringify({
         localPort,
-        remoteAddress,
+        remoteAddress
       })}`
-    );
+    )
     // TODO: Check if this can be handled by a MessageNode object
-    const { sock } = connection;
-    const requestCode = data.readUInt16BE(0).toString(16);
+    const { sock } = connection
+    const requestCode = data.readUInt16BE(0).toString(16)
 
     /** @type {Buffer | null} */
-    let responsePacket = null;
+    let responsePacket = null
 
     switch (requestCode) {
       // NpsUserLogin
-      case "501": {
-        responsePacket = await this._userLogin(connection, data);
-        break;
+      case '501': {
+        responsePacket = await this._userLogin(connection, data)
+        break
       }
 
       default:
@@ -90,27 +80,27 @@ export class LoginServer {
           ${JSON.stringify({
             requestCode,
             localPort,
-            data: rawPacket.data.toString("hex"),
+            data: rawPacket.data.toString('hex')
           })}`
-        );
-        processed = false;
+        )
+        processed = false
     }
 
     if (processed === true && responsePacket !== null) {
       log.debug(
         `responsePacket object from dataHandler',
       ${JSON.stringify({
-        userStatus: responsePacket.toString("hex"),
+        userStatus: responsePacket.toString('hex')
       })}`
-      );
+      )
       if (responsePacket instanceof Buffer) {
-        const packetString = responsePacket.toString("hex");
-        log.debug(`responsePacket's data prior to sending: ${packetString}`);
+        const packetString = responsePacket.toString('hex')
+        log.debug(`responsePacket's data prior to sending: ${packetString}`)
       }
-      sock.write(responsePacket);
+      sock.write(responsePacket)
     }
 
-    return connection;
+    return connection
   }
 
   /**
@@ -119,46 +109,46 @@ export class LoginServer {
    * @param {string} contextId
    * @return {import("mcos-shared/types").UserRecordMini}
    */
-  _npsGetCustomerIdByContextId(contextId) {
-    log.debug(">>> _npsGetCustomerIdByContextId");
+  _npsGetCustomerIdByContextId (contextId) {
+    log.debug('>>> _npsGetCustomerIdByContextId')
     /** @type {import("mcos-shared/types").UserRecordMini[]} */
     const users = [
       {
-        contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
+        contextId: '5213dee3a6bcdb133373b2d4f3b9962758',
         customerId: 0xac_01_00_00,
-        userId: 0x00_00_00_02,
+        userId: 0x00_00_00_02
       },
       {
-        contextId: "d316cd2dd6bf870893dfbaaf17f965884e",
+        contextId: 'd316cd2dd6bf870893dfbaaf17f965884e',
         customerId: 0x00_54_b4_6c,
-        userId: 0x00_00_00_01,
-      },
-    ];
-    if (contextId.toString() === "") {
-      throw new Error(`Unknown contextId: ${contextId.toString()}`);
+        userId: 0x00_00_00_01
+      }
+    ]
+    if (contextId.toString() === '') {
+      throw new Error(`Unknown contextId: ${contextId.toString()}`)
     }
 
-    const userRecord = users.filter((user) => user.contextId === contextId);
-    if (typeof userRecord[0] === "undefined" || userRecord.length !== 1) {
+    const userRecord = users.filter((user) => user.contextId === contextId)
+    if (typeof userRecord[0] === 'undefined' || userRecord.length !== 1) {
       log.debug(
         `preparing to leave _npsGetCustomerIdByContextId after not finding record',
         ${JSON.stringify({
-          contextId,
+          contextId
         })}`
-      );
+      )
       throw new Error(
         `Unable to locate user record matching contextId ${contextId}`
-      );
+      )
     }
 
     log.debug(
       `preparing to leave _npsGetCustomerIdByContextId after finding record',
       ${JSON.stringify({
         contextId,
-        userRecord,
+        userRecord
       })}`
-    );
-    return userRecord[0];
+    )
+    return userRecord[0]
   }
 
   /**
@@ -169,37 +159,37 @@ export class LoginServer {
    * @param {Buffer} data
    * @return {Promise<Buffer>}
    */
-  async _userLogin(
+  async _userLogin (
     connection,
     data
   ) {
-    const { sock } = connection;
-    const { localPort } = sock;
-    const userStatus = new NPSUserStatus(data);
+    const { sock } = connection
+    const { localPort } = sock
+    const userStatus = new NPSUserStatus(data)
     log.info(
       `Received login packet,
       ${JSON.stringify({
         localPort,
-        remoteAddress: connection.remoteAddress,
+        remoteAddress: connection.remoteAddress
       })}`
-    );
+    )
 
-    userStatus.extractSessionKeyFromPacket(data);
+    userStatus.extractSessionKeyFromPacket(data)
 
     log.debug(
       `UserStatus object from _userLogin,
       ${JSON.stringify({
-        userStatus: userStatus.toJSON(),
+        userStatus: userStatus.toJSON()
       })}`
-    );
-    userStatus.dumpPacket();
+    )
+    userStatus.dumpPacket()
 
     // Load the customer record by contextId
     // TODO: This needs to be from a database, right now is it static
-    const customer = this._npsGetCustomerIdByContextId(userStatus.contextId);
+    const customer = this._npsGetCustomerIdByContextId(userStatus.contextId)
 
     // Save sessionkey in database under customerId
-    log.debug("Preparing to update session key in db");
+    log.debug('Preparing to update session key in db')
     await this.databaseManager
       .updateSessionKey(
         customer.customerId,
@@ -209,38 +199,38 @@ export class LoginServer {
       )
       .catch((/** @type {unknown} */ error) => {
         if (error instanceof Error) {
-          log.error(`Unable to update session key 3: ${error.message}`);
+          log.error(`Unable to update session key 3: ${error.message}`)
         }
 
-        throw new Error("Error in userLogin");
-      });
+        throw new Error('Error in userLogin')
+      })
 
-    log.info("Session key updated");
+    log.info('Session key updated')
 
     // Create the packet content
     // TODO: This needs to be dynamically generated, right now we are using a
     // a static packet that works _most_ of the time
     // TODO: investigate if funk/hip hop is the only radio that works.
-    const packetContent = premadeLogin();
-    log.debug(`Using Premade Login: ${packetContent.toString("hex")}`);
+    const packetContent = premadeLogin()
+    log.debug(`Using Premade Login: ${packetContent.toString('hex')}`)
 
     // MsgId: 0x601
-    Buffer.from([0x06, 0x01]).copy(packetContent);
+    Buffer.from([0x06, 0x01]).copy(packetContent)
 
     // Packet length: 0x0100 = 256
-    Buffer.from([0x01, 0x00]).copy(packetContent, 2);
+    Buffer.from([0x01, 0x00]).copy(packetContent, 2)
 
     // Load the customer id
-    packetContent.writeInt32BE(customer.customerId, 12);
+    packetContent.writeInt32BE(customer.customerId, 12)
 
     // Don't use queue (+208, but I'm not sure if this includes the header or not)
-    Buffer.from([0x00]).copy(packetContent, 208);
+    Buffer.from([0x00]).copy(packetContent, 208)
 
     /**
      * Return the packet twice for debug
      * Debug sends the login request twice, so we need to reply twice
      * Then send ok to login packet
      */
-    return Buffer.concat([packetContent, packetContent]);
+    return Buffer.concat([packetContent, packetContent])
   }
 }
