@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node
 /*
  mcos is a game server, written from scratch, for an old game
  Copyright (C) <2017-2021>  <Drazi Crendraven>
