@@ -240,7 +240,7 @@ export const NPS_LOGIN_COMMANDS = [...NPS_LOGINCLIENT_COMMANDS]
 export const NPS_COMMANDS = [
   ...NPS_LOBBY_COMMANDS,
   ...NPS_LOGINCLIENT_COMMANDS,
-  { name: 'NPS_CRYPTO_DES_CBC', value: 0x11_01, module: 'Lobby' }
+  { name: 'NPS_CRYPTO_DES_CBC', value: 0x1101, module: 'Lobby' }
 ]
 
 /**
