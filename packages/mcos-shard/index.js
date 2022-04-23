@@ -37,14 +37,7 @@ export class ShardServer {
    * @memberof ShardServer
    */
   static instance
-  /**
-   *
-   *
-   * @private
-   * @type {string[]}
-   * @memberof ShardServer
-   */
-  _possibleShards = []
+
   /**
    *
    *
@@ -84,6 +77,8 @@ export class ShardServer {
   constructor (config) {
     this._server = createServer(this.handleRequest.bind(this))
     this.config = config
+    /** @type {string[]} */
+    this._possibleShards = []
 
     this._server.on('error', (error) => {
       process.exitCode = -1
