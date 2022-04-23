@@ -37,7 +37,7 @@ export function fetchPersonas () {
   /** @type {import("mcos-shared/types").PersonaRecord[]} */
   const personaList = [
     {
-      customerId: 2_868_969_472,
+      customerId: 2868969472,
       id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
       maxPersonas: Buffer.from([0x01]),
       name: generateNameBuffer('Doc Joe', NAME_BUFFER_SIZE),
@@ -45,7 +45,7 @@ export function fetchPersonas () {
       shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c])
     },
     {
-      customerId: 5_551_212,
+      customerId: 5551212,
       id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
       maxPersonas: Buffer.from([0x02]),
       name: generateNameBuffer('Dr Brown', NAME_BUFFER_SIZE),
@@ -53,7 +53,7 @@ export function fetchPersonas () {
       shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c])
     },
     {
-      customerId: 5_551_212,
+      customerId: 5551212,
       id: Buffer.from([0x00, 0x84, 0x5f, 0xee]),
       maxPersonas: Buffer.from([0x02]),
       name: generateNameBuffer('Morty Dr', NAME_BUFFER_SIZE),
