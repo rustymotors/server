@@ -7,12 +7,13 @@ This assumes you know the basics of checking out a git repo. If you don't, pleas
 - Linux
   \*\* If you want to try running on Windows it may work, but I'm not going to support it
 - NodeJS
+- [Docker](https://docs.docker.com/compose/install/) (A way to see the logs of the node pod would be very helpful if you need to file a bug report)
 
 ### Configure server settings
 
-- In `src/services/shared/config.json`, change the IP address to the external IP of the machine the server is running on;
+- In `packages/mcos-shared/config/index.js`, change the IP address for all `*_EXTERNAL_HOST` values to the external IP of the machine the server is running on
 
-- Generate the SSL cert and keys using `scripts/make_certs.sh`
+- Generate the SSL cert and keys using `make certs`
 
 ## Installing
 
@@ -33,28 +34,15 @@ You will need to open the following ports:
 - 43300
 - 43400
 - 53303
-- 9000
-- 9001
-- 9002
-- 9003
-- 9004
-- 9005
-- 9006
-- 9007
-- 9008
-- 9009
-- 9010
-- 9011
-- 9012
-- 9013
-- 9014
+- 9000 - 9014 (not yet used, I think they are for UDP client racing
 
-- 88 - Admin UI (optional)
 
 ### Running
 
 Enable Node to use port 80 and 443: `make enable-node`
 
-- `npm start`
+- `nmake prod_node`
 
-This will start the server
+This will start the server cluster which involves the database, SSL gateway, and server(s)
+
+🤞 If someththing explodes, open an issue or ping me on Discord. I might have forgoten a step.
