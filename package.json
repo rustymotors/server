@@ -13,13 +13,13 @@
   "type": "module",
   "scripts": {
     "format": "prettier-eslint",
-    "test": "tsc && standard && eslint && c8 mocha",
+    "test": "tsc && standard --fix && eslint && c8 mocha",
     "prod": "make prod_node",
     "prod:stop": "docker-compose stop",
     "start": "node app.js"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
-  "license": "MPL-2.0",
+  "license": "AGPL-3.0",
   "private": true,
   "repository": {
     "type": "git",
