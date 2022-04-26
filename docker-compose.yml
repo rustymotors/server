@@ -32,7 +32,7 @@ services:
       - db
 
   node:
-    image: "node:16"
+    image: "node:18"
     user: "node"
     working_dir: /home/node/app
     environment:
