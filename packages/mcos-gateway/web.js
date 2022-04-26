@@ -5,7 +5,7 @@ import { ShardServer } from 'mcos-shard'
 import { APP_CONFIG } from 'mcos-shared/config'
 import { logger } from 'mcos-shared/logger'
 
-const log = logger.child({ service: 'mcos:core:http' })
+const log = logger.child({ service: 'mcos:gateway:web' })
 
 /**
  * Routes incomming HTTP requests

@@ -8,8 +8,9 @@
 import { logger } from 'mcos-shared/logger'
 import { DatabaseManager } from 'mcos-database'
 import { LobbyServer } from 'mcos-lobby'
-import { LoginServer } from 'mcos-login'
-import { PersonaServer } from 'mcos-persona'
+import { recieveLoginData } from 'mcos-login'
+import { TCPConnection } from './tcpConnection.js'
+import { recievePersonaData } from 'mcos-persona'
 
 const log = logger.child({ service: 'mcoserver:NPSPacketManager' })
 
@@ -50,8 +51,6 @@ export class NPSPacketManager {
       { id: 0x11_01, name: 'NPS_CRYPTO_DES_CBC' }
     ]
 
-    this.loginServer = LoginServer.getInstance()
-    this.personaServer = PersonaServer.getInstance()
     this.lobbyServer = LobbyServer.getInstance()
   }
 
@@ -100,12 +99,64 @@ export class NPSPacketManager {
     const { localPort } = rawPacket.connection
 
     switch (localPort) {
-      case 8226:
-        return this.loginServer.dataHandler(rawPacket)
-      case 8228:
-        return this.personaServer.dataHandler(rawPacket)
-      case 7003:
-        return this.lobbyServer.dataHandler(rawPacket)
+      case 8226: {
+        // Migrate to BufferWithConnection
+        /** @type {import('mcos-shared/types').BufferWithConnection} */
+        const inboundConnection = {
+          connectionId: rawPacket.connectionId,
+          connection: {
+            socket: rawPacket.connection.sock,
+            seq: 0,
+            id: rawPacket.connectionId,
+            appId: rawPacket.connection.appId,
+            lastMsg: rawPacket.connection.lastMsg,
+            inQueue: rawPacket.connection.inQueue
+          },
+          data: rawPacket.data,
+          timestamp: rawPacket.timestamp
+        }
+        const result = await recieveLoginData(inboundConnection)
+        log.debug('Back in packet manager with port 8226')
+        if (result.data && !result.errMessage) {
+        // Migrate back to TCPConnection
+          const outboundConnection = new TCPConnection(result.data.connectionId, result.data.connection.socket)
+          return outboundConnection
+        }
+        throw new Error(`Error with login results: ${result.errMessage}`)
+      }
+      case 8228: {
+        // Migrate to a BufferWithConnection
+        /** @type {import('mcos-shared/types').BufferWithConnection} */
+        const dataConnection = {
+          connectionId: rawPacket.connectionId,
+          /** @type {import('mcos-shared/types').SocketWithConnectionInfo} */
+          connection: {
+            socket: rawPacket.connection.sock,
+            seq: 0,
+            id: rawPacket.connectionId,
+            appId: rawPacket.connection.appId,
+            lastMsg: rawPacket.connection.lastMsg,
+            inQueue: rawPacket.connection.inQueue
+
+          },
+          data: rawPacket.data,
+          timestamp: rawPacket.timestamp
+
+        }
+        const result = await recievePersonaData(dataConnection)
+        log.debug('Back from dataHandler with port 8228')
+        if (result.data && !result.errMessage) {
+          // Migrate back to TCPConnection
+          const outboundConnection = new TCPConnection(result.data.connectionId, result.data.connection.socket)
+          return outboundConnection
+        }
+        throw new Error(`Error with persona results: ${result.errMessage}`)
+      }
+      case 7003: {
+        const result = this.lobbyServer.dataHandler(rawPacket)
+        log.debug('Back from dataHandler with port 7003')
+        return result
+      }
       default:
         process.exitCode = -1
         throw new Error(

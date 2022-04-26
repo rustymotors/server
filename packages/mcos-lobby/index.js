@@ -9,7 +9,8 @@
 import { logger } from 'mcos-shared/logger'
 import { DatabaseManager } from 'mcos-database'
 import { NPSMessage, NPSUserInfo } from 'mcos-shared/types'
-import { PersonaServer } from 'mcos-persona'
+import { getPersonasByPersonaId } from 'mcos-persona'
+import { errorMessage } from 'mcos-shared'
 
 const log = logger.child({ service: 'mcoserver:LobbyServer' })
 
@@ -162,192 +163,209 @@ export class LobbyServer {
     return packetResult
   }
 
-  /**
-   * @param {import("mcos-shared/types").UnprocessedPacket} rawPacket
-   * @return {Promise<import("mcos-core").TCPConnection>}
-   */
-  async dataHandler (rawPacket) {
-    const { localPort, remoteAddress } = rawPacket.connection
-    log.debug(
-      `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
-    )
-    const { connection, data } = rawPacket
-    const requestCode = data.readUInt16BE(0).toString(16)
+  
 
-    switch (requestCode) {
-      // _npsRequestGameConnectServer
-      case '100': {
-        const responsePacket = await this._npsRequestGameConnectServer(
-          connection,
-          data
-        )
-        log.debug(
-          `Connect responsePacket's data prior to sending: ${JSON.stringify({
-            data: responsePacket.getPacketAsString()
-          })}`
-        )
-        // TODO: Investigate why this crashes retail
-        try {
-          return npsSocketWriteIfOpen(connection, responsePacket.serialize())
-        } catch (error) {
-          if (error instanceof Error) {
-            throw new Error(`Unable to send Connect packet: ${error.message}`)
-          }
-          throw new Error('Unable to send Connect packet: unknown error')
-        }
-      }
 
-      // NpsHeartbeat
 
-      case '217': {
-        const responsePacket = this._npsHeartbeat()
-        log.debug(
-          `Heartbeat responsePacket's data prior to sending: ${JSON.stringify({
-            data: responsePacket.getPacketAsString()
-          })}`
-        )
-        return npsSocketWriteIfOpen(connection, responsePacket.serialize())
-      }
-
-      // NpsSendCommand
-
-      case '1101': {
-        // This is an encrypted command
-        // Fetch session key
-
-        const updatedConnection = sendCommand(connection, data)
-        const { encryptedCmd } = updatedConnection
-
-        if (encryptedCmd === undefined) {
-          throw new Error(
-            `Error with encrypted command, dumping connection: ${JSON.stringify(
-              { updatedConnection }
-            )}`
-          )
-        }
-
-        log.debug(
-          `encrypedCommand's data prior to sending: ${JSON.stringify({
-            data: encryptedCmd.toString('hex')
-          })}`
-        )
-        return npsSocketWriteIfOpen(connection, encryptedCmd)
-      }
-
-      default:
-        throw new Error(
-          `Unknown code ${requestCode} was received on port 7003`
-        )
-    }
-  }
+  
+}
 
   /**
    * @param {string} key
    * @return {Buffer}
    */
-  _generateSessionKeyBuffer (key) {
+   function _generateSessionKeyBuffer (key) {
     const nameBuffer = Buffer.alloc(64)
     Buffer.from(key, 'utf8').copy(nameBuffer)
     return nameBuffer
   }
 
-  /**
+/**
    * Handle a request to connect to a game server packet
    *
    * @private
-   * @param {import("mcos-core").TCPConnection} connection
-   * @param {Buffer} rawData
+   * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
    * @return {Promise<NPSMessage>}
    */
-  async _npsRequestGameConnectServer (connection, rawData) {
-    const { sock } = connection
-    log.debug(
-      `_npsRequestGameConnectServer: ${JSON.stringify({
-        remoteAddress: sock.remoteAddress,
-        data: rawData.toString('hex')
-      })}`
-    )
+ async function _npsRequestGameConnectServer (dataConnection) {
+  log.debug(
+    `_npsRequestGameConnectServer: ${JSON.stringify({
+      remoteAddress: dataConnection.connection.socket.remoteAddress,
+      data: dataConnection.data.toString('hex')
+    })}`
+  )
 
-    // Return a _NPS_UserInfo structure
-    const userInfo = new NPSUserInfo('recieved')
-    userInfo.deserialize(rawData)
-    userInfo.dumpInfo()
+  // Return a _NPS_UserInfo structure
+  const userInfo = new NPSUserInfo('recieved')
+  userInfo.deserialize(dataConnection.data)
+  userInfo.dumpInfo()
 
-    const personaManager = PersonaServer.getInstance()
+  const personas = await getPersonasByPersonaId(
+    userInfo.userId
+  )
+  if (typeof personas[0] === 'undefined') {
+    throw new Error('No personas found.')
+  }
 
-    const personas = await personaManager.getPersonasByPersonaId(
-      userInfo.userId
-    )
-    if (typeof personas[0] === 'undefined') {
-      throw new Error('No personas found.')
-    }
+  const { customerId } = personas[0]
 
-    const { customerId } = personas[0]
-
-    // Set the encryption keys on the lobby connection
-    const databaseManager = DatabaseManager.getInstance()
-    const keys = await databaseManager
-      .fetchSessionKeyByCustomerId(customerId)
-      .catch((/** @type {unknown} */ error) => {
-        if (error instanceof Error) {
-          log.debug(
-            `Unable to fetch session key for customerId ${customerId.toString()}: ${
-              error.message
-            })}`
-          )
-        }
-        log.error(
-          `Unable to fetch session key for customerId ${customerId.toString()}: unknown error}`
-        )
-        return undefined
-      })
-    if (keys === undefined) {
-      throw new Error('Error fetching session keys!')
-    }
-
-    const s = connection
-
-    // Create the cypher and decipher only if not already set
-    if (!s.isLobbyKeysetReady()) {
-      try {
-        s.setEncryptionKeyDES(keys.skey)
-      } catch (error) {
-        if (error instanceof Error) {
-          throw new TypeError(
-            `Unable to set session key: ${JSON.stringify({ keys, error })}`
-          )
-        }
-
-        throw new Error(
-          `Unable to set session key: ${JSON.stringify({
-            keys,
-            error: 'unknown'
+  // Set the encryption keys on the lobby connection
+  const databaseManager = DatabaseManager.getInstance()
+  const keys = await databaseManager
+    .fetchSessionKeyByCustomerId(customerId)
+    .catch((/** @type {unknown} */ error) => {
+      if (error instanceof Error) {
+        log.debug(
+          `Unable to fetch session key for customerId ${customerId.toString()}: ${
+            error.message
           })}`
         )
       }
+      log.error(
+        `Unable to fetch session key for customerId ${customerId.toString()}: unknown error}`
+      )
+      return undefined
+    })
+  if (keys === undefined) {
+    throw new Error('Error fetching session keys!')
+  }
+
+  const s = dataConnection
+
+  // Create the cypher and decipher only if not already set
+  if (!s.isLobbyKeysetReady()) {
+    try {
+      s.setEncryptionKeyDES(keys.skey)
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new TypeError(
+          `Unable to set session key: ${JSON.stringify({ keys, error })}`
+        )
+      }
+
+      throw new Error(
+        `Unable to set session key: ${JSON.stringify({
+          keys,
+          error: 'unknown'
+        })}`
+      )
+    }
+  }
+
+  const packetContent = Buffer.alloc(72)
+
+  // This response is a NPS_UserStatus
+
+  // Ban and Gag
+
+  // NPS_USERID - User ID - persona id - long
+  Buffer.from([0x00, 0x84, 0x5f, 0xed]).copy(packetContent)
+
+  // SessionKeyStr (32)
+  _generateSessionKeyBuffer(keys.sessionkey).copy(packetContent, 4)
+
+  // SessionKeyLen - int
+  packetContent.writeInt16BE(32, 66)
+
+  // Build the packet
+  const packetResult = new NPSMessage('sent')
+  packetResult.msgNo = 0x1_20
+  packetResult.setContent(packetContent)
+  packetResult.dumpPacket()
+
+  return packetResult
+}
+
+/**
+   * @param {import("mcos-shared/types").BufferWithConnection} dataConnection
+   * @return {Promise<import('mcos-shared/types').BufferWithConnection>}
+   */
+ async function dataHandler (dataConnection) {
+  const { localPort, remoteAddress } = dataConnection.connection.socket
+  log.debug(
+    `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
+  )
+  const { connection, data } = dataConnection
+  const requestCode = data.readUInt16BE(0).toString(16)
+
+  switch (requestCode) {
+    // _npsRequestGameConnectServer
+    case '100': {
+      const responsePacket = await _npsRequestGameConnectServer(
+dataConnection
+      )
+      log.debug(
+        `Connect responsePacket's data prior to sending: ${JSON.stringify({
+          data: responsePacket.getPacketAsString()
+        })}`
+      )
+      // TODO: Investigate why this crashes retail
+      try {
+        return npsSocketWriteIfOpen(connection, responsePacket.serialize())
+      } catch (error) {
+        if (error instanceof Error) {
+          throw new Error(`Unable to send Connect packet: ${error.message}`)
+        }
+        throw new Error('Unable to send Connect packet: unknown error')
+      }
     }
 
-    const packetContent = Buffer.alloc(72)
+    // NpsHeartbeat
 
-    // This response is a NPS_UserStatus
+    case '217': {
+      const responsePacket = this._npsHeartbeat()
+      log.debug(
+        `Heartbeat responsePacket's data prior to sending: ${JSON.stringify({
+          data: responsePacket.getPacketAsString()
+        })}`
+      )
+      return npsSocketWriteIfOpen(connection, responsePacket.serialize())
+    }
 
-    // Ban and Gag
+    // NpsSendCommand
 
-    // NPS_USERID - User ID - persona id - long
-    Buffer.from([0x00, 0x84, 0x5f, 0xed]).copy(packetContent)
+    case '1101': {
+      // This is an encrypted command
+      // Fetch session key
 
-    // SessionKeyStr (32)
-    this._generateSessionKeyBuffer(keys.sessionkey).copy(packetContent, 4)
+      const updatedConnection = sendCommand(connection, data)
+      const { encryptedCmd } = updatedConnection
 
-    // SessionKeyLen - int
-    packetContent.writeInt16BE(32, 66)
+      if (encryptedCmd === undefined) {
+        throw new Error(
+          `Error with encrypted command, dumping connection: ${JSON.stringify(
+            { updatedConnection }
+          )}`
+        )
+      }
 
-    // Build the packet
-    const packetResult = new NPSMessage('sent')
-    packetResult.msgNo = 0x1_20
-    packetResult.setContent(packetContent)
-    packetResult.dumpPacket()
+      log.debug(
+        `encrypedCommand's data prior to sending: ${JSON.stringify({
+          data: encryptedCmd.toString('hex')
+        })}`
+      )
+      return npsSocketWriteIfOpen(connection, encryptedCmd)
+    }
 
-    return packetResult
+    default:
+      throw new Error(
+        `Unknown code ${requestCode} was received on port 7003`
+      )
+  }
+}
+
+/**
+ * Entry and exit point for the lobby service
+ *
+ * @export
+ * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
+ * @return {Promise<{errMessage: string | null, data: import('mcos-shared/types').BufferWithConnection | null}>}
+ */
+export async function recieveLobbyData(dataConnection) {
+  try {
+    return { errMessage: null, data: await handleData(dataConnection) }
+  } catch (error) {
+    const errMessage = `There was an error in the lobby service: ${errorMessage(error)}`
+    return { errMessage, data: null }
   }
 }

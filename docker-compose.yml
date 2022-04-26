@@ -16,6 +16,7 @@ services:
       # TODO: remove before prod https://github.com/drazisil/mco-server/issues/1008
     environment:
       - "POSTGRES_PASSWORD=password"
+      - "POSTGRES_DB=mcos"
   pgadmin:
     image: dpage/pgadmin4:6.8
     # TODO: remove these before prod https://github.com/drazisil/mco-server/issues/1008

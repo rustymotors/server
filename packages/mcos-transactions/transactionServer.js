@@ -672,6 +672,7 @@ export class MCOTServer {
     messageNode.dumpPacket()
 
     const processedPacket = this.messageReceived(messageNode, connection)
+    log.debug('Back in transacation server')
 
     if ((await processedPacket).err || (await processedPacket).data === null) {
       return { err: (await processedPacket).err, data: null }

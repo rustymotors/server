@@ -1,30 +1,15 @@
 import { logger } from 'mcos-shared/logger'
 import http from 'node:http'
 import { createServer } from 'node:net'
-import { ConnectionManager } from './connection-mgr.js'
-import { httpListener } from './httpListener.js'
-import { ListenerThread } from './listener-thread.js'
-export { ConnectionManager, getConnectionManager } from './connection-mgr.js'
-export { EncryptionManager } from './encryption-mgr.js'
-export { TCPConnection } from './tcpConnection.js'
+import { socketListener } from './sockets.js'
+import { httpListener } from './web.js'
 
-const log = logger.child({ service: 'mcos:core' })
+const log = logger.child({ service: 'mcos:gateway' })
 
 const listeningPortList = [
   80, 6660, 7003, 8228, 8226, 8227, 9000, 9001, 9002, 9003, 9004, 9005, 9006,
   9007, 9008, 9009, 9010, 9011, 9012, 9013, 9014, 43200, 43300, 43400, 53303
 ]
-
-/**
- * Is this an MCOT bound packet?
- *
- * @export
- * @param {Buffer} inputBuffer
- * @return {boolean}
- */
-export function isMCOT (inputBuffer) {
-  return inputBuffer.toString('utf8', 2, 6) === 'TOMC'
-}
 
 /**
  * A server
@@ -54,7 +39,7 @@ export class MCOServer {
    */
   _listener (incomingSocket) {
     log.debug(
-      `Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort} in core`
+      `Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
     )
 
     // Is this an HTTP request?
@@ -67,10 +52,7 @@ export class MCOServer {
     }
 
     // This is a 'normal' TCP socket
-    ListenerThread.getInstance().tcpListener(
-      incomingSocket,
-      ConnectionManager.getConnectionManager()
-    )
+    socketListener(incomingSocket)
   }
 
   /**

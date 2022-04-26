@@ -148,10 +148,12 @@ export class ConnectionManager {
           }
         }
         try {
-          return {
+          const result = {
             err: null,
             data: await npsPacketManager.processNPSPacket(rawPacket)
           }
+          log.debug('Back in connection manager from process nps packet')
+          return result
         } catch (error) {
           log.error(errorMessage(error))
           return {

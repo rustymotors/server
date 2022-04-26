@@ -335,7 +335,9 @@ export class TCPConnection {
       return { err: new Error('Connection manager is not set'), data: null }
     }
     try {
-      return this.mgr.processData(packet)
+      const result = this.mgr.processData(packet)
+      log.debug('Back in TCP Connection')
+      return result
     } catch (error) {
       log.error(errorMessage(error))
       return {

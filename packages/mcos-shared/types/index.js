@@ -1760,3 +1760,35 @@ export class NPSUserInfo extends NPSMessage {
     return message
   }
 }
+
+/**
+   * Socket with connection properties
+   * @export
+   * @typedef {object} SocketWithConnectionInfo
+   * @property {import('node:net').Socket} socket
+   * @property {number} seq
+   * @property {string} id
+   * @property {number} appId
+   * @property {number} lastMsg
+   * @property {boolean} inQueue
+   *
+   */
+
+/**
+ * @export
+ * @typedef {object} BufferWithConnection
+ * @property {string} connectionId
+ * @property {SocketWithConnectionInfo} connection
+ * @property {Buffer} data
+ * @property {number} timestamp
+ */
+
+/**
+ * @export
+ * @typedef {object} EncryptionSession
+ * @property {string} connectionId
+ * @property {string} sessionKey
+ * @property {string} shortKey
+ * @property {import('node:crypto').Cipher} cypher
+ * @property {import('node:crypto').Decipher} decypher
+ */

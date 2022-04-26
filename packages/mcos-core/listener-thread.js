@@ -66,6 +66,7 @@ export class ListenerThread {
     )
     /** @type {{err: Error | null, data: import("mcos-core").TCPConnection | null}} */
     const processedPacket = await connection.processPacket(rawPacket)
+    log.debug('Back in listener thread')
     if (processedPacket.err || processedPacket.data === null) {
       log.error(errorMessage(processedPacket.err))
       throw new Error(
