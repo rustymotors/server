@@ -1,5 +1,8 @@
 {
     "name": "mcos-transactions",
     "type": "module",
-    "exports": "./index.js"
+    "exports": {
+        ".": "./index.js",
+        "./handlers": "./handlers.js"
+    }
 }

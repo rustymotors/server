@@ -11,15 +11,6 @@ import { APP_CONFIG } from '../config/index.js'
 
 /**
  * @export
- * @typedef UnprocessedPacket
- * @property {string} connectionId
- * @property {import('mcos-core').TCPConnection} connection
- * @property {Buffer} data
- * @property {number} timestamp
- */
-
-/**
- * @export
  * @typedef SessionRecord
  * @property {string} skey
  * @property {string} sessionkey
@@ -499,21 +490,6 @@ export class MessageNode {
     this.msgNo = packet.readInt16LE(0)
   }
 }
-
-/**
- * @export
- * @typedef ConnectionWithPackets
- * @property {import('mcos-core').TCPConnection} connection
- * @property {MessageNode[]} packetList
- */
-
-/**
- * @export
- * @typedef ConnectionWithPacket
- * @property {import('mcos-core').TCPConnection} connection
- * @property {MessageNode} packet
- * @property {string} [lastError]
- */
 
 /**
  * @module ClientConnectMsg
@@ -1771,6 +1747,8 @@ export class NPSUserInfo extends NPSMessage {
    * @property {number} appId
    * @property {number} lastMsg
    * @property {boolean} inQueue
+   * @property {boolean} useEncryption
+   * @property {EncryptionSession} [encryptionSession]
    *
    */
 
@@ -1789,6 +1767,49 @@ export class NPSUserInfo extends NPSMessage {
  * @property {string} connectionId
  * @property {string} sessionKey
  * @property {string} shortKey
- * @property {import('node:crypto').Cipher} cypher
- * @property {import('node:crypto').Decipher} decypher
+ * @property {import('node:crypto').Cipher} cipher
+ * @property {import('node:crypto').Decipher} decipher
+ */
+
+/**
+ * N+ messages, ready for sending, with related connection
+ * @export
+ * @typedef {object} GSMessageArrayWithConnection
+ * @property {SocketWithConnectionInfo} connection
+ * @property {NPSMessage[]} messages
+ */
+
+/**
+ * N+ messages, ready for sending, with related connection
+ * @export
+ * @typedef {object} TSMessageArrayWithConnection
+ * @property {SocketWithConnectionInfo} connection
+ * @property {MessageNode[]} messages
+ */
+
+/**
+ * @export
+ * @typedef {object} GServiceResponse
+ * @property {Error | null} err
+ * @property {GSMessageArrayWithConnection | undefined} response
+ */
+
+/**
+ * @export
+ * @typedef {object} TServiceResponse
+ * @property {Error | null} err
+ * @property {TSMessageArrayWithConnection | undefined} response
+ */
+
+/**
+ * The blueprint for a service
+ *
+ * Takes in a buffer representing a single unprocessed raw message
+ * and returns an array of processed message objects ready to send,
+ * with the related connection object
+ *
+ * @export
+ * @interface IServiceAPI
+ * @param {BufferWithConnection} dataConnection
+ * @return {ServiceResponse}
  */

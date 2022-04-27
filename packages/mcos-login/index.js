@@ -6,7 +6,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { logger } from 'mcos-shared/logger'
-import { DatabaseManager } from 'mcos-database'
+import { DatabaseManager, updateSessionKey } from 'mcos-database'
 import { NPSUserStatus, premadeLogin } from 'mcos-shared/types'
 import { errorMessage } from 'mcos-shared'
 
@@ -29,7 +29,7 @@ const userRecords = [
    * Process a UserLogin packet
    * @private
    * @param {import("mcos-shared/types").BufferWithConnection} dataConnection
-   * @return {Promise<import('mcos-shared/types').BufferWithConnection>}
+   * @return {Promise<import('mcos-shared/types').GSMessageArrayWithConnection>}
    */
 async function login (dataConnection) {
   const { connectionId, data } = dataConnection
@@ -67,13 +67,12 @@ async function login (dataConnection) {
 
   // Save sessionkey in database under customerId
   log.debug('Preparing to update session key in db')
-  await DatabaseManager.getInstance()
-    .updateSessionKey(
-      userRecord.customerId,
-      sessionkey,
-      contextId,
-      connectionId
-    )
+  await updateSessionKey(
+    userRecord.customerId,
+    sessionkey,
+    contextId,
+    connectionId
+  )
     .catch((/** @type {unknown} */ error) => {
       log.error(`Unable to update session key 3: ${errorMessage(error)}`)
       throw new Error('Error in userLogin')
@@ -85,6 +84,7 @@ async function login (dataConnection) {
   // TODO: This needs to be dynamically generated, right now we are using a
   // a static packet that works _most_ of the time
   // TODO: investigate if funk/hip hop is the only radio that works.
+  // TODO: Marshall this into NPSMessage packets
   const packetContent = premadeLogin()
   log.debug(`Using Premade Login: ${packetContent.toString('hex')}`)
 
@@ -107,9 +107,13 @@ async function login (dataConnection) {
    */
 
   // Update the data buffer
-  dataConnection.data = Buffer.concat([packetContent, packetContent])
+  /** @type {import('mcos-shared/types').GSMessageArrayWithConnection} */
+  const response = {
+    connection: dataConnection.connection,
+    messages: [packetContent, packetContent]
+  }
   log.debug('Leaving login')
-  return dataConnection
+  return response
 }
 
 const messageHandlers = [
@@ -123,7 +127,7 @@ const messageHandlers = [
  *
  *
  * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
- * @return {Promise<import('mcos-shared/types').BufferWithConnection>}
+ * @return {Promise<import('mcos-shared/types').GSMessageArrayWithConnection>}
  */
 async function handleData (dataConnection) {
   const { connectionId, data } = dataConnection
@@ -157,13 +161,13 @@ async function handleData (dataConnection) {
  *
  * @export
  * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
- * @return {Promise<{errMessage: string | null, data: import('mcos-shared/types').BufferWithConnection | null}>}
+ * @return {Promise<import('mcos-shared/types').GServiceResponse>}
  */
-export async function recieveLoginData (dataConnection) {
+export async function receiveLoginData (dataConnection) {
   try {
-    return { errMessage: null, data: await handleData(dataConnection) }
+    return { err: null, response: await handleData(dataConnection) }
   } catch (error) {
     const errMessage = `There was an error in the login service: ${errorMessage(error)}`
-    return { errMessage, data: null }
+    return { err: new Error(errMessage), response: undefined }
   }
 }

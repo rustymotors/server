@@ -69,15 +69,4 @@ export class AuthLogin {
 
     return response.end('Unknown request.')
   }
-
-  /**
-   * @private
-   * @returns {void}
-   * @param {import("net").Socket} socket
-   */
-  _socketEventHandler (socket) {
-    socket.on('error', (error) => {
-      throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`)
-    })
-  }
 }

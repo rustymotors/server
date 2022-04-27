@@ -6,11 +6,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { logger } from 'mcos-shared/logger'
 import { DatabaseManager } from 'mcos-database'
-import { NPSMessage, NPSUserInfo } from 'mcos-shared/types'
 import { getPersonasByPersonaId } from 'mcos-persona'
 import { errorMessage } from 'mcos-shared'
+import { cipherBufferDES, decipherBufferDES, selectOrCreateEncryptors } from 'mcos-shared/encryption'
+import { logger } from 'mcos-shared/logger'
+import { NPSMessage, NPSUserInfo } from 'mcos-shared/types'
 
 const log = logger.child({ service: 'mcoserver:LobbyServer' })
 
@@ -24,48 +25,61 @@ const log = logger.child({ service: 'mcoserver:LobbyServer' })
  * @param {Buffer} buffer
  * @return {import("mcos-core").TCPConnection}
  */
-function npsSocketWriteIfOpen (conn, buffer) {
-  const { sock } = conn
-  if (sock.writable) {
-    // Write the packet to socket
-    sock.write(buffer)
-  } else {
-    throw new Error(
-      `Error writing ${buffer.toString('hex')} to ${
-        sock.remoteAddress
-      } , ${String(sock)}`
-    )
-  }
+// function npsSocketWriteIfOpen (conn, buffer) {
+//   const { sock } = conn
+//   if (sock.writable) {
+//     // Write the packet to socket
+//     sock.write(buffer)
+//   } else {
+//     throw new Error(
+//       `Error writing ${buffer.toString('hex')} to ${
+//         sock.remoteAddress
+//       } , ${String(sock)}`
+//     )
+//   }
 
-  return conn
-}
+//   return conn
+// }
 
 /**
  * Takes an encrypted command packet and returns the decrypted bytes
  *
- * @return {import("mcos-core").TCPConnection}
- * @param {import("mcos-core").TCPConnection} con
- * @param {Buffer} cypherCmd
+ * @return {import('mcos-shared/types').BufferWithConnection}
+ * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
+ * @param {Buffer} encryptedCommand
  */
-function decryptCmd (con, cypherCmd) {
-  const s = con
-  const decryptedCommand = s.decipherBufferDES(cypherCmd)
-  s.decryptedCmd = decryptedCommand
-  log.debug(`[Deciphered Cmd: ${s.decryptedCmd.toString('hex')}`)
-  return s
+function decryptCmd (dataConnection, encryptedCommand) {
+  if (typeof dataConnection.connection.encryptionSession === 'undefined') {
+    const errMessage = `Unable to locate encryption session for connection id ${dataConnection.connectionId}`
+    log.error(errMessage)
+    throw new Error(errMessage)
+  }
+  const result = decipherBufferDES(dataConnection.connection.encryptionSession, encryptedCommand)
+  log.debug(`[Deciphered Cmd: ${result.data.toString('hex')}`)
+  dataConnection.connection.encryptionSession = result.session
+  dataConnection.data = result.data
+  return dataConnection
 }
 
 /**
  * Takes an plaintext command packet and return the encrypted bytes
  *
- * @param {import("mcos-core").TCPConnection} con
- * @param {Buffer} cypherCmd
- * @return {import("mcos-core").TCPConnection}
+ * @return {import('mcos-shared/types').BufferWithConnection}
+ * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
+ * @param {Buffer} plaintextCommand
  */
-function encryptCmd (con, cypherCmd) {
-  const s = con
-  s.encryptedCmd = s.cipherBufferDES(cypherCmd)
-  return s
+function encryptCmd (dataConnection, plaintextCommand) {
+  if (typeof dataConnection.connection.encryptionSession === 'undefined') {
+    const errMessage = `Unable to locate encryption session for connection id ${dataConnection.connectionId}`
+    log.error(errMessage)
+    throw new Error(errMessage)
+  }
+
+  const result = cipherBufferDES(dataConnection.connection.encryptionSession, plaintextCommand)
+  log.debug(`[ciphered Cmd: ${result.data.toString('hex')}`)
+  dataConnection.connection.encryptionSession = result.session
+  dataConnection.data = result.data
+  return dataConnection
 }
 
 /**
@@ -75,110 +89,82 @@ function encryptCmd (con, cypherCmd) {
  * @param {Buffer} data
  * @return {import("mcos-core").TCPConnection}
  */
-function sendCommand (con, data) {
-  const s = con
+// function sendCommand (con, data) {
 
-  const decipheredCommand = decryptCmd(
-    s,
-    Buffer.from(data.slice(4))
-  ).decryptedCmd
+//   // Marshal the command into an NPS packet
+//   const incommingRequest = new NPSMessage('recieved')
+//   incommingRequest.deserialize(decipheredCommand)
 
-  if (decipheredCommand === undefined) {
-    throw new Error('There was an error deciphering the NPS command')
-  }
+//   incommingRequest.dumpPacket()
 
-  // Marshal the command into an NPS packet
-  const incommingRequest = new NPSMessage('recieved')
-  incommingRequest.deserialize(decipheredCommand)
+//   // Create the packet content
+//   const packetContent = Buffer.alloc(375)
 
-  incommingRequest.dumpPacket()
+//   // Add the response code
+//   packetContent.writeUInt16BE(0x02_19, 367)
+//   packetContent.writeUInt16BE(0x01_01, 369)
+//   packetContent.writeUInt16BE(0x02_2c, 371)
 
-  // Create the packet content
-  const packetContent = Buffer.alloc(375)
+//   log.debug('Sending a dummy response of 0x229 - NPS_MINI_USER_LIST')
 
-  // Add the response code
-  packetContent.writeUInt16BE(0x02_19, 367)
-  packetContent.writeUInt16BE(0x01_01, 369)
-  packetContent.writeUInt16BE(0x02_2c, 371)
+//   // Build the packet
+//   const packetResult = new NPSMessage('sent')
+//   packetResult.msgNo = 0x2_29
+//   packetResult.setContent(packetContent)
+//   packetResult.dumpPacket()
 
-  log.debug('Sending a dummy response of 0x229 - NPS_MINI_USER_LIST')
+//   const cmdEncrypted = encryptCmd(s, packetResult.getContentAsBuffer())
 
-  // Build the packet
-  const packetResult = new NPSMessage('sent')
-  packetResult.msgNo = 0x2_29
-  packetResult.setContent(packetContent)
-  packetResult.dumpPacket()
+//   if (cmdEncrypted.encryptedCmd === undefined) {
+//     throw new Error('There was an error ciphering the NPS command')
+//   }
 
-  const cmdEncrypted = encryptCmd(s, packetResult.getContentAsBuffer())
+//   cmdEncrypted.encryptedCmd = Buffer.concat([
+//     Buffer.from([0x11, 0x01]),
+//     cmdEncrypted.encryptedCmd
+//   ])
 
-  if (cmdEncrypted.encryptedCmd === undefined) {
-    throw new Error('There was an error ciphering the NPS command')
-  }
-
-  cmdEncrypted.encryptedCmd = Buffer.concat([
-    Buffer.from([0x11, 0x01]),
-    cmdEncrypted.encryptedCmd
-  ])
-
-  return cmdEncrypted
-}
+//   return cmdEncrypted
+// }
 
 /**
  * Please use {@link LobbyServer.getInstance()}
  * @classdesc
  */
-export class LobbyServer {
-  /**
-   *
-   *
-   * @static
-   * @type {LobbyServer}
-   * @memberof LobbyServer
-   */
-  static _instance
-  /**
-   * Get the single instance of the lobby service
-   *
-   * @static
-   * @return {LobbyServer}
-   * @memberof LobbyServer
-   */
-  static getInstance () {
-    if (!LobbyServer._instance) {
-      LobbyServer._instance = new LobbyServer()
-    }
-    return LobbyServer._instance
-  }
+// export class LobbyServer {
+//   /**
+//    *
+//    *
+//    * @static
+//    * @type {LobbyServer}
+//    * @memberof LobbyServer
+//    */
+//   static _instance
+//   /**
+//    * Get the single instance of the lobby service
+//    *
+//    * @static
+//    * @return {LobbyServer}
+//    * @memberof LobbyServer
+//    */
+//   static getInstance () {
+//     if (!LobbyServer._instance) {
+//       LobbyServer._instance = new LobbyServer()
+//     }
+//     return LobbyServer._instance
+//   }
 
-  /**
-   * @private
-   * @return {NPSMessage}}
-   */
-  _npsHeartbeat () {
-    const packetContent = Buffer.alloc(8)
-    const packetResult = new NPSMessage('sent')
-    packetResult.msgNo = 0x1_27
-    packetResult.setContent(packetContent)
-    packetResult.dumpPacket()
-    return packetResult
-  }
+// }
 
-  
-
-
-
-  
-}
-
-  /**
+/**
    * @param {string} key
    * @return {Buffer}
    */
-   function _generateSessionKeyBuffer (key) {
-    const nameBuffer = Buffer.alloc(64)
-    Buffer.from(key, 'utf8').copy(nameBuffer)
-    return nameBuffer
-  }
+function _generateSessionKeyBuffer (key) {
+  const nameBuffer = Buffer.alloc(64)
+  Buffer.from(key, 'utf8').copy(nameBuffer)
+  return nameBuffer
+}
 
 /**
    * Handle a request to connect to a game server packet
@@ -187,7 +173,7 @@ export class LobbyServer {
    * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
    * @return {Promise<NPSMessage>}
    */
- async function _npsRequestGameConnectServer (dataConnection) {
+async function _npsRequestGameConnectServer (dataConnection) {
   log.debug(
     `_npsRequestGameConnectServer: ${JSON.stringify({
       remoteAddress: dataConnection.connection.socket.remoteAddress,
@@ -230,27 +216,10 @@ export class LobbyServer {
     throw new Error('Error fetching session keys!')
   }
 
-  const s = dataConnection
+  /** @type {import('mcos-shared/types').EncryptionSession} */
+  const encryptionSession = selectOrCreateEncryptors(dataConnection, keys)
 
-  // Create the cypher and decipher only if not already set
-  if (!s.isLobbyKeysetReady()) {
-    try {
-      s.setEncryptionKeyDES(keys.skey)
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new TypeError(
-          `Unable to set session key: ${JSON.stringify({ keys, error })}`
-        )
-      }
-
-      throw new Error(
-        `Unable to set session key: ${JSON.stringify({
-          keys,
-          error: 'unknown'
-        })}`
-      )
-    }
-  }
+  dataConnection.connection.encryptionSession = encryptionSession
 
   const packetContent = Buffer.alloc(72)
 
@@ -277,74 +246,76 @@ export class LobbyServer {
 }
 
 /**
+   * @private
+   * @return {NPSMessage}}
+   */
+function _npsHeartbeat () {
+  const packetContent = Buffer.alloc(8)
+  const packetResult = new NPSMessage('sent')
+  packetResult.msgNo = 0x1_27
+  packetResult.setContent(packetContent)
+  packetResult.dumpPacket()
+  return packetResult
+}
+
+/**
+ *
+ *
+ * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
+ * @return {import('mcos-shared/types').BufferWithConnection}
+ */
+function handleEncryptedNPSCommand (dataConnection) {
+  // Decipher
+  const { data } = dataConnection
+  const decipheredConnection = decryptCmd(dataConnection,
+    Buffer.from(data.slice(4))
+  )
+
+  const responseConnection = handleCommand(decipheredConnection)
+
+  // Encipher
+  const encipheredConnection = encryptCmd(responseConnection, responseConnection.data)
+
+  return encipheredConnection
+}
+
+/**
    * @param {import("mcos-shared/types").BufferWithConnection} dataConnection
    * @return {Promise<import('mcos-shared/types').BufferWithConnection>}
    */
- async function dataHandler (dataConnection) {
+async function handleData (dataConnection) {
   const { localPort, remoteAddress } = dataConnection.connection.socket
   log.debug(
     `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
   )
-  const { connection, data } = dataConnection
+  const { data } = dataConnection
   const requestCode = data.readUInt16BE(0).toString(16)
 
   switch (requestCode) {
     // _npsRequestGameConnectServer
     case '100': {
       const responsePacket = await _npsRequestGameConnectServer(
-dataConnection
+        dataConnection
       )
-      log.debug(
-        `Connect responsePacket's data prior to sending: ${JSON.stringify({
-          data: responsePacket.getPacketAsString()
-        })}`
-      )
-      // TODO: Investigate why this crashes retail
-      try {
-        return npsSocketWriteIfOpen(connection, responsePacket.serialize())
-      } catch (error) {
-        if (error instanceof Error) {
-          throw new Error(`Unable to send Connect packet: ${error.message}`)
-        }
-        throw new Error('Unable to send Connect packet: unknown error')
-      }
+      dataConnection.data = responsePacket.serialize()
+      return dataConnection
     }
 
     // NpsHeartbeat
 
     case '217': {
-      const responsePacket = this._npsHeartbeat()
-      log.debug(
-        `Heartbeat responsePacket's data prior to sending: ${JSON.stringify({
-          data: responsePacket.getPacketAsString()
-        })}`
-      )
-      return npsSocketWriteIfOpen(connection, responsePacket.serialize())
+      const responsePacket = _npsHeartbeat()
+      dataConnection.data = responsePacket.serialize()
+      return dataConnection
     }
 
     // NpsSendCommand
 
     case '1101': {
       // This is an encrypted command
-      // Fetch session key
 
-      const updatedConnection = sendCommand(connection, data)
-      const { encryptedCmd } = updatedConnection
-
-      if (encryptedCmd === undefined) {
-        throw new Error(
-          `Error with encrypted command, dumping connection: ${JSON.stringify(
-            { updatedConnection }
-          )}`
-        )
-      }
-
-      log.debug(
-        `encrypedCommand's data prior to sending: ${JSON.stringify({
-          data: encryptedCmd.toString('hex')
-        })}`
-      )
-      return npsSocketWriteIfOpen(connection, encryptedCmd)
+      const result = handleEncryptedNPSCommand(dataConnection)
+      return result
     }
 
     default:
@@ -359,13 +330,48 @@ dataConnection
  *
  * @export
  * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
- * @return {Promise<{errMessage: string | null, data: import('mcos-shared/types').BufferWithConnection | null}>}
+ * @return {Promise<import('mcos-shared/types').ServiceResponse>}
  */
-export async function recieveLobbyData(dataConnection) {
+export async function receiveLobbyData (dataConnection) {
   try {
     return { errMessage: null, data: await handleData(dataConnection) }
   } catch (error) {
     const errMessage = `There was an error in the lobby service: ${errorMessage(error)}`
     return { errMessage, data: null }
   }
+}
+
+/**
+ *
+ *
+ * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
+ * @return {import('mcos-shared/types').BufferWithConnection}
+ */
+function handleCommand (dataConnection) {
+  const { data } = dataConnection
+
+  // Marshal the command into an NPS packet
+  const incommingRequest = new NPSMessage('recieved')
+  incommingRequest.deserialize(data)
+
+  incommingRequest.dumpPacket()
+
+  // Create the packet content
+  const packetContent = Buffer.alloc(375)
+
+  // Add the response code
+  packetContent.writeUInt16BE(0x02_19, 367)
+  packetContent.writeUInt16BE(0x01_01, 369)
+  packetContent.writeUInt16BE(0x02_2c, 371)
+
+  log.debug('Sending a dummy response of 0x229 - NPS_MINI_USER_LIST')
+
+  // Build the packet
+  const packetResult = new NPSMessage('sent')
+  packetResult.msgNo = 0x2_29
+  packetResult.setContent(packetContent)
+  packetResult.dumpPacket()
+
+  dataConnection.data = packetResult.serialize()
+  return dataConnection
 }

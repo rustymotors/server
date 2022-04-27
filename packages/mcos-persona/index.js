@@ -442,7 +442,7 @@ async function validateLicencePlate (data) {
  *
  *
  * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
- * @return {Promise<import('mcos-shared/types').BufferWithConnection>}
+ * @return {Promise<import('mcos-shared/types').GSMessageArrayWithConnection>}
  */
 async function handleData (dataConnection) {
   const { connection, data } = dataConnection
@@ -462,42 +462,66 @@ async function handleData (dataConnection) {
       const requestPacket = new NPSMessage('recieved').deserialize(data)
       // NPS_REGISTER_GAME_LOGIN = 0x503
       const responsePacket = await handleSelectGamePersona(requestPacket)
-      dataConnection.data = responsePacket.serialize()
-      return dataConnection
+      /** @type {import('mcos-shared/types').GSMessageArrayWithConnection} */
+      const response = {
+        connection: dataConnection.connection,
+        messages: [responsePacket]
+      }
+      return response
     }
 
     case '507': {
       // NPS_NEW_GAME_ACCOUNT == 0x507
       const responsePacket = await createNewGameAccount(data)
-      dataConnection.data = responsePacket.serialize()
-      return dataConnection
+      /** @type {import('mcos-shared/types').GSMessageArrayWithConnection} */
+      const response = {
+        connection: dataConnection.connection,
+        messages: [responsePacket]
+      }
+      return response
     }
 
     case '50f': {
       // NPS_REGISTER_GAME_LOGOUT = 0x50F
       const responsePacket = await logoutGameUser(data)
-      dataConnection.data = responsePacket.serialize()
-      return dataConnection
+      /** @type {import('mcos-shared/types').GSMessageArrayWithConnection} */
+      const response = {
+        connection: dataConnection.connection,
+        messages: [responsePacket]
+      }
+      return response
     }
 
     case '532': {
       // NPS_GET_PERSONA_MAPS = 0x532
       const responsePacket = await getPersonaMaps(data)
-      dataConnection.data = responsePacket.serialize()
-      return dataConnection
+      /** @type {import('mcos-shared/types').GSMessageArrayWithConnection} */
+      const response = {
+        connection: dataConnection.connection,
+        messages: [responsePacket]
+      }
+      return response
     }
 
     case '533': {
       // NPS_VALIDATE_PERSONA_NAME   = 0x533
       const responsePacket = await validatePersonaName(data)
-      dataConnection.data = responsePacket.serialize()
-      return dataConnection
+      /** @type {import('mcos-shared/types').GSMessageArrayWithConnection} */
+      const response = {
+        connection: dataConnection.connection,
+        messages: [responsePacket]
+      }
+      return response
     }
     case '534': {
       // NPS_CHECK_TOKEN   = 0x534
       const responsePacket = await validateLicencePlate(data)
-      dataConnection.data = responsePacket.serialize()
-      return dataConnection
+      /** @type {import('mcos-shared/types').GSMessageArrayWithConnection} */
+      const response = {
+        connection: dataConnection.connection,
+        messages: [responsePacket]
+      }
+      return response
     }
   }
   throw new Error(
@@ -513,14 +537,18 @@ async function handleData (dataConnection) {
  *
  * @export
  * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
- * @return {Promise<{errMessage: string | null, data: import('mcos-shared/types').BufferWithConnection | null}>}
+ * @return {Promise<import('mcos-shared/types').GServiceResponse>}
  */
-export async function recievePersonaData (dataConnection) {
+export async function receivePersonaData (dataConnection) {
   try {
-    return { errMessage: null, data: await handleData(dataConnection) }
+    const serviceResponse = await await handleData(dataConnection)
+    return {
+      err: null,
+      response: serviceResponse
+    }
   } catch (error) {
     const errMessage = `There was an error in the persona service: ${errorMessage(error)}`
     log.error(errMessage)
-    return { errMessage, data: null }
+    return { err: new Error(errMessage), response: undefined }
   }
 }

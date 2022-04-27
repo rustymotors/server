@@ -9,9 +9,10 @@
 import pg from 'pg'
 import { logger } from 'mcos-shared/logger'
 import { APP_CONFIG } from 'mcos-shared/config'
+import { errorMessage } from 'mcos-shared'
 const { Client } = pg
 
-const log = logger.child({ service: 'mcoserver:DatabaseMgr' })
+const log = logger.child({ service: 'mcos:database' })
 
 /**
  * This class abstracts database methods
@@ -30,14 +31,21 @@ export class DatabaseManager {
 
   /**
    * Return the instance of the DatabaseManager class
-   * @returns {DatabaseManager}
+   * @returns {Promise<pg.Client>}
    */
-  static getInstance () {
+  static async getInstance () {
     if (!DatabaseManager._instance) {
       DatabaseManager._instance = new DatabaseManager()
     }
     const self = DatabaseManager._instance
-    return self
+    await self.init()
+    if (typeof self.localDB === 'undefined') {
+      const errMessage = 'Error getting the database instance'
+      log.error(errMessage)
+      throw new Error(errMessage)
+    } else {
+      return self.localDB
+    }
   }
 
   /**
@@ -153,15 +161,10 @@ export class DatabaseManager {
               "raceCashFactor" real NOT NULL
             );`)
         log.debug('Database initialized')
-      } catch (/** @type {unknown} */ err) {
-        if (err instanceof Error) {
-          const newError = new Error(
-            `There was an error setting up the database: ${err.message}`
-          )
-          log.error(newError.message)
-          throw newError
-        }
-        throw err
+      } catch (error) {
+        const errMessage = `There was an error setting up the database: ${errorMessage(error)}`
+        log.error(errMessage)
+        throw new Error(errMessage)
       }
     }
   }
@@ -223,8 +226,9 @@ export class DatabaseManager {
     }
     return record.rows[0]
   }
+}
 
-  /**
+/**
    * Create or overwrite a customer's session key record
    * @param {number} customerId
    * @param {string} sessionkey
@@ -232,24 +236,18 @@ export class DatabaseManager {
    * @param {string} connectionId
    * @returns {Promise<number>}
    */
-  async updateSessionKey (customerId, sessionkey, contextId, connectionId) {
-    await this.init()
-    const skey = sessionkey.slice(0, 16)
+export async function updateSessionKey (customerId, sessionkey, contextId, connectionId) {
+  const skey = sessionkey.slice(0, 16)
 
-    if (!this.localDB) {
-      log.warn('Database not ready in updateSessionKey()')
-      throw new Error('Error accessing database. Are you using the instance?')
-    }
-    const record = await this.localDB.query(
+  const record = (await DatabaseManager.getInstance()).query(
       `INSERT INTO sessions (customer_id, sessionkey, skey, context_id, connection_id) 
         VALUES ($1, $2, $3, $4, $5) 
       ON CONFLICT (customer_id) 
         DO UPDATE SET sessionkey = $2, skey = $3;`,
       [customerId, sessionkey, skey, contextId, connectionId]
-    )
-    if (record === undefined) {
-      throw new Error('Unable to fetch session key')
-    }
-    return 1
+  )
+  if (record === undefined) {
+    throw new Error('Unable to fetch session key')
   }
+  return 1
 }
