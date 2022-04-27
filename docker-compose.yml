@@ -35,12 +35,6 @@ services:
     image: "node:18"
     user: "node"
     working_dir: /home/node/app
-    environment:
-      - ENV NODE_ENV=production
-      - ENV PGHOST=db
-      - ENV PGUSER=postgres
-      - ENV PGDATABASE=postgres
-      - ENV PGPASSWORD=example=value
     volumes:
       - ./:/home/node/app
     command: "npm start"
