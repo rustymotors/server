@@ -1784,8 +1784,8 @@ export class NPSUserInfo extends NPSMessage {
    * @property {import('node:net').Socket} socket
    * @property {number} seq
    * @property {string} id
-   * @property {number} appId
-   * @property {number} lastMsg
+   * @property {number} personaId (appId)
+   * @property {number}  lastMsgTimestamp
    * @property {boolean} inQueue
    * @property {boolean} useEncryption
    * @property {EncryptionSession} [encryptionSession]
@@ -1807,10 +1807,10 @@ export class NPSUserInfo extends NPSMessage {
  * @property {string} connectionId
  * @property {string} sessionKey
  * @property {string} shortKey
- * @property {import('node:crypto').Cipher} gsCipher
- * @property {import('node:crypto').Decipher} gsDecipher
- * @property {import('node:crypto').Cipher} tsCipher
- * @property {import('node:crypto').Decipher} tsDecipher
+ * @property {import('node:crypto').Cipher} gsCipher - des-cbc, uses skey
+ * @property {import('node:crypto').Decipher} gsDecipher - des-cbc, uses skey
+ * @property {import('node:crypto').Cipher} tsCipher - rc4, uses sessionkey
+ * @property {import('node:crypto').Decipher} tsDecipher - rc4, uses sessionkey
  */
 
 /**

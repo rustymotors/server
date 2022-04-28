@@ -33,7 +33,7 @@ function _setOptions (connection, node) {
   setOptionsMessage.data = node.serialize()
 
   // Update the appId
-  setOptionsMessage.appId = connection.appId
+  setOptionsMessage.appId = connection.personaId
 
   // Create new response packet
   const pReply = new GenericReplyMessage()
@@ -74,7 +74,7 @@ function _trackingMessage (connection, node) {
   trackingMessage.data = node.serialize()
 
   // Update the appId
-  trackingMessage.appId = connection.appId
+  trackingMessage.appId = connection.personaId
 
   // Create new response packet
   const pReply = new GenericReplyMessage()
@@ -115,7 +115,7 @@ function _updatePlayerPhysical (connection, node) {
   updatePlayerPhysicalMessage.data = node.serialize()
 
   // Update the appId
-  updatePlayerPhysicalMessage.appId = connection.appId
+  updatePlayerPhysicalMessage.appId = connection.personaId
 
   // Create new response packet
   const pReply = new GenericReplyMessage()
@@ -173,7 +173,7 @@ async function clientConnect (connection, packet) {
   //   connectionWithKey.setEncryptionKey(Buffer.from(stringKey.slice(0, 16)))
 
   // Update the connection's appId
-  connectionWithKey.appId = newMessage.getAppId()
+  connectionWithKey.personaId = newMessage.getAppId()
 
   log.debug(`cust: ${customerId} ID: ${personaId} Name: ${personaName}`)
 
@@ -217,7 +217,7 @@ function _login (connection, node) {
   const pReply = new GenericReplyMessage()
   pReply.msgNo = 213
   pReply.msgReply = 105
-  pReply.appId = connection.appId
+  pReply.appId = connection.personaId
   const rPacket = new MessageNode('sent')
 
   rPacket.deserialize(node.serialize())
@@ -256,7 +256,7 @@ function _logout (connection, node) {
   logoutMessage.data = node.serialize()
 
   // Update the appId
-  logoutMessage.appId = connection.appId
+  logoutMessage.appId = connection.personaId
 
   // Create new response packet
   const pReply = new GenericReplyMessage()
@@ -301,7 +301,7 @@ function _getLobbies (connection, node) {
   const lobbiesListMessage = node
 
   // Update the appId
-  lobbiesListMessage.appId = connection.appId
+  lobbiesListMessage.appId = connection.personaId
 
   // Dump the packet
   log.debug('Dumping request...')

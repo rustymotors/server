@@ -50,8 +50,8 @@ export function selectConnection (socket) {
     seq: 0,
     id: newConnectionId,
     socket,
-    appId: 0,
-    lastMsg: 0,
+    personaId: 0,
+    lastMsgTimestamp: 0,
     inQueue: true,
     useEncryption: false
   }

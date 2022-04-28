@@ -148,7 +148,7 @@ async function processInput (dataConnection, node) {
     }
   }
 
-  node.setAppId(dataConnection.connection.appId)
+  node.setAppId(dataConnection.connection.personaId)
   return {
     err: new Error(`Message Number Not Handled: ${currentMessageNo} (${currentMessageString})
         conID: ${node.toFrom}  PersonaID: ${node.appId}`),
