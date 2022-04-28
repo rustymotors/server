@@ -15,15 +15,16 @@ services:
       - "5432"
       # TODO: remove before prod https://github.com/drazisil/mco-server/issues/1008
     environment:
-      - "POSTGRES_PASSWORD=password"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_DB: "mcos"
   pgadmin:
     image: dpage/pgadmin4:6.8
     # TODO: remove these before prod https://github.com/drazisil/mco-server/issues/1008
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
-      PGADMIN_DEFAULT_PASSWORD: password
-      PGADMIN_LISTEN_PORT: 80
-      POSTGRES_DB: mcos
+      PGADMIN_DEFAULT_EMAIL: "admin@pgadmin.com"
+      PGADMIN_DEFAULT_PASSWORD: "password"
+      PGADMIN_LISTEN_PORT: "80"
+      POSTGRES_DB: "mcos"
     ports:
       - "15432:80"
     volumes:

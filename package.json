@@ -16,7 +16,7 @@
     "test": "tsc && standard --fix && eslint && c8 mocha",
     "prod": "make prod_node",
     "prod:stop": "docker-compose stop",
-    "start": "node app.js"
+    "start": "node --openssl-legacy-provider app.js"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
   "license": "AGPL-3.0",

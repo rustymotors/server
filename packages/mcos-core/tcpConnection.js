@@ -285,9 +285,8 @@ export class TCPConnection {
       )
       this.encLobby.cipher.setAutoPadding(false)
     } catch (err) {
-      if (err instanceof Error) {
-        throw new Error(`Error setting cipher: ${err.message}`)
-      }
+      const errMessage = `Error setting cipher: ${errorMessage(err)}`
+      log.error(errMessage)
       throw err
     }
 
@@ -299,9 +298,8 @@ export class TCPConnection {
       )
       this.encLobby.decipher.setAutoPadding(false)
     } catch (err) {
-      if (err instanceof Error) {
-        throw new Error(`Error setting decipher: ${err.message}`)
-      }
+      const errMessage = `Error setting decipher: ${errorMessage(err)}`
+      log.error(errMessage)
       throw err
     }
 

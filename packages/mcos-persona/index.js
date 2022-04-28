@@ -14,60 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { errorMessage } from 'mcos-shared'
 import { logger } from 'mcos-shared/logger'
 import { NPSMessage, NPSPersonaMapsMessage } from 'mcos-shared/types'
+import { handleData, personaRecords } from './internal.js'
 
 const log = logger.child({ service: 'mcoserver:PersonaServer' })
-
-const NAME_BUFFER_SIZE = 30
-
-/**
- * Return string as buffer
- * @param {string} name
- * @param {number} size
- * @param {BufferEncoding} [encoding="utf8"]
- * @returns {Buffer}
- */
-export function generateNameBuffer (name, size, encoding = 'utf8') {
-  const nameBuffer = Buffer.alloc(size)
-  Buffer.from(name, encoding).copy(nameBuffer)
-  return nameBuffer
-}
-
-/**
- * Return a list of all personas
- * @returns {import("mcos-shared/types").PersonaRecord[]}
- */
-export function fetchPersonas () {
-  /** @type {import("mcos-shared/types").PersonaRecord[]} */
-  const personaList = [
-    {
-      customerId: 2868969472,
-      id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
-      maxPersonas: Buffer.from([0x01]),
-      name: generateNameBuffer('Doc Joe', NAME_BUFFER_SIZE),
-      personaCount: Buffer.from([0x00, 0x01]),
-      shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c])
-    },
-    {
-      customerId: 5551212,
-      id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
-      maxPersonas: Buffer.from([0x02]),
-      name: generateNameBuffer('Dr Brown', NAME_BUFFER_SIZE),
-      personaCount: Buffer.from([0x00, 0x01]),
-      shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c])
-    },
-    {
-      customerId: 5551212,
-      id: Buffer.from([0x00, 0x84, 0x5f, 0xee]),
-      maxPersonas: Buffer.from([0x02]),
-      name: generateNameBuffer('Morty Dr', NAME_BUFFER_SIZE),
-      personaCount: Buffer.from([0x00, 0x01]),
-      shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c])
-    }
-  ]
-  return personaList
-}
 
 /**
  * Selects a game persona and marks it as in use
@@ -335,28 +287,9 @@ export class PersonaServer {
    * @return {Promise<import("mcos-shared/types").PersonaRecord[]>}
    */
   async getPersonasByCustomerId (customerId) {
-    const allPersonas = fetchPersonas()
-    const results = allPersonas.filter(
+    const results = personaRecords.filter(
       (persona) => persona.customerId === customerId
     )
-    return Promise.resolve(results)
-  }
-
-  /**
-   *
-   * @param {number} id
-   * @return {Promise<import("mcos-shared/types").PersonaRecord[]>}
-   */
-  async getPersonasByPersonaId (id) {
-    const allPersonas = fetchPersonas()
-    const results = allPersonas.filter((persona) => {
-      const match = id === persona.id.readInt32BE(0)
-      return match
-    })
-    if (results.length === 0) {
-      throw new Error(`Unable to locate a persona for id: ${id}`)
-    }
-
     return Promise.resolve(results)
   }
 
@@ -516,3 +449,26 @@ export class PersonaServer {
     )
   }
 }
+
+/**
+ * Entry and exit point for the persona service
+ *
+ * @export
+ * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
+ * @return {Promise<import('mcos-shared/types').GServiceResponse>}
+ */
+export async function receivePersonaData (dataConnection) {
+  try {
+    const serviceResponse = await await handleData(dataConnection)
+    return {
+      err: null,
+      response: serviceResponse
+    }
+  } catch (error) {
+    const errMessage = `There was an error in the persona service: ${errorMessage(error)}`
+    log.error(errMessage)
+    return { err: new Error(errMessage), response: undefined }
+  }
+}
+
+export { getPersonasByPersonaId } from './internal.js'
