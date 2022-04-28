@@ -16,8 +16,9 @@
 
 import { createServer } from 'node:net'
 import { logger } from 'mcos-shared/logger'
-import { ConnectionManager } from './connection-mgr.js'
 import { errorMessage } from 'mcos-shared'
+import { processPacket } from '../mcos-gateway/sockets.js'
+import { findOrNewConnection, updateConnectionByAddressAndPort } from '../mcos-gateway/connections.js'
 
 const log = logger.child({ service: 'mcoserver:ListenerThread' })
 
@@ -74,7 +75,7 @@ export class ListenerThread {
       )}}`
     )
     /** @type {{err: Error | null, data: import("mcos-core").TCPConnection | null}} */
-    const processedPacket = await connection.processPacket(rawPacket)
+    const processedPacket = await processPacket(rawPacket)
     if (processedPacket.err || processedPacket.data === null) {
       log.error(errorMessage(processedPacket.err))
       throw new Error(
@@ -89,7 +90,7 @@ export class ListenerThread {
     }
 
     try {
-      connection.updateConnectionByAddressAndPort(
+      updateConnectionByAddressAndPort(
         connection.remoteAddress,
         connection.localPort,
         processedPacket.data
@@ -110,13 +111,12 @@ export class ListenerThread {
    * Server listener method
    *
    * @param {import("node:net").Socket} socket
-   * @param {ConnectionManager} connectionMgr
    * @return {void}
    */
-  tcpListener (socket, connectionMgr) {
+  tcpListener (socket) {
     // Received a new connection
     // Turn it into a connection object
-    const connectionRecord = connectionMgr.findOrNewConnection(socket)
+    const connectionRecord = findOrNewConnection(socket)
 
     if (connectionRecord === null) {
       log.fatal('Unable to attach the socket to a connection.')
@@ -161,7 +161,7 @@ export class ListenerThread {
   startTCPListener (localPort) {
     log.debug(`Attempting to bind to port ${localPort}`)
     return createServer((socket) => {
-      this.tcpListener(socket, ConnectionManager.getConnectionManager())
+      this.tcpListener(socket)
     }).listen({ port: localPort, host: '0.0.0.0' })
   }
 }

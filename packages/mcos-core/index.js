@@ -18,11 +18,10 @@ import { createServer } from 'node:net'
 import { httpListener } from './httpListener.js'
 import http from 'node:http'
 import { ListenerThread } from './listener-thread.js'
-import { ConnectionManager } from './connection-mgr.js'
 import { EventEmitter } from 'node:events'
 export { TCPConnection } from './tcpConnection.js'
-export { getConnectionManager, ConnectionManager } from './connection-mgr.js'
 export { EncryptionManager } from './encryption-mgr.js'
+export { NPSPacketManager } from './nps-packet-manager.js'
 
 /**
  * Is this an MCOT bound packet?
@@ -108,8 +107,7 @@ export class MCOServer extends EventEmitter {
 
     // This is a 'normal' TCP socket
     ListenerThread.getInstance().tcpListener(
-      incomingSocket,
-      ConnectionManager.getConnectionManager()
+      incomingSocket
     )
   }
 

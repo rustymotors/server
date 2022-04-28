@@ -118,14 +118,6 @@ export class TCPConnection {
   /**
    *
    *
-   * @private
-   * @type {import("mcos-core").ConnectionManager | undefined} [mgr]
-   * @memberof TCPConnection
-   */
-  mgr
-  /**
-   *
-   *
    * @type {boolean}
    * @memberof TCPConnection
    */
@@ -180,34 +172,6 @@ export class TCPConnection {
     return (
       this.encLobby.cipher !== undefined && this.encLobby.decipher !== undefined
     )
-  }
-
-  /**
-   * Update connection record
-   * @param {string} remoteAddress
-   * @param {number} localPort
-   * @param {TCPConnection} newConnection
-   * @returns {TCPConnection[]}
-   */
-  updateConnectionByAddressAndPort (remoteAddress, localPort, newConnection) {
-    if (this.mgr === undefined) {
-      throw new Error('Connection manager not set')
-    }
-    return this.mgr.updateConnectionByAddressAndPort(
-      remoteAddress,
-      localPort,
-      newConnection
-    )
-  }
-
-  /**
-   * Set the connection manager
-   * @param {import("mcos-core").ConnectionManager} manager
-   * @returns {TCPConnection}
-   */
-  setManager (manager) {
-    this.mgr = manager
-    return this
   }
 
   /**
@@ -330,28 +294,6 @@ export class TCPConnection {
     }
 
     throw new Error('No DES decipher set on connection')
-  }
-
-  /**
-   * Replays the unproccessed packet to the connection manager
-   * @param {import("mcos-shared/types").UnprocessedPacket} packet
-   * @returns {Promise<{err: Error | null, data: TCPConnection | null}>}
-   */
-  async processPacket (packet) {
-    if (this.mgr === undefined) {
-      return { err: new Error('Connection manager is not set'), data: null }
-    }
-    try {
-      return this.mgr.processData(packet)
-    } catch (error) {
-      log.error(errorMessage(error))
-      return {
-        err: new Error(
-          `There was an error processing the packet: ${errorMessage(error)}`
-        ),
-        data: null
-      }
-    }
   }
 
   /**

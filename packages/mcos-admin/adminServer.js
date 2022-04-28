@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getConnectionManager } from 'mcos-core'
 import { logger } from 'mcos-shared/logger'
+import { getAllConnections } from '../mcos-gateway/connections.js'
 
 const log = logger.child({ service: 'mcoserver:AdminServer;' })
 
@@ -64,52 +64,15 @@ export class AdminServer {
    * @return {string}
    */
   _handleGetConnections () {
-    const connections = getConnectionManager().fetchConnectionList()
+    const connections = getAllConnections()
     let responseText = ''
 
     for (let i = 0; i < connections.length; i++) {
       const connection = connections[i]
 
-      if (typeof connection.remoteAddress === 'undefined') {
-        connection.remoteAddress = 'unknown'
-      }
-
       const displayConnection = `
       index: ${i} - ${connection.id}
-          remoteAddress: ${connection.remoteAddress}:${connection.localPort}
-          Encryption ID: ${connection.getEncryptionId()}
-          inQueue:       ${connection.inQueue}
-      `
-      responseText += displayConnection
-    }
-
-    return responseText
-  }
-
-  /**
-   * @private
-   * @return {string}
-   */
-  _handleResetAllQueueState () {
-    getConnectionManager().returnAllConnectionsToQueue()
-    const connections = getConnectionManager().fetchConnectionList()
-    let responseText = 'Queue state reset for all connections\n\n'
-
-    if (connections.length === 0) {
-      return 'No connections were found'
-    }
-
-    for (let i = 0; i < connections.length; i++) {
-      const connection = connections[i]
-
-      if (typeof connection.remoteAddress === 'undefined') {
-        connection.remoteAddress = 'unknown'
-      }
-
-      const displayConnection = `
-      index: ${i} - ${connection.id}
-          remoteAddress: ${connection.remoteAddress}:${connection.localPort}
-          Encryption ID: ${connection.getEncryptionId()}
+          remoteAddress: ${connection.socket.remoteAddress}:${connection.socket.localPort}
           inQueue:       ${connection.inQueue}
       `
       responseText += displayConnection
@@ -144,12 +107,6 @@ export class AdminServer {
         response.setHeader('Content-Type', 'text/plain')
         response.statusCode = 200
         responseString = this._handleGetConnections()
-        break
-      }
-      case '/admin/connections/resetAllQueueState': {
-        response.setHeader('Content-Type', 'text/plain')
-        response.statusCode = 200
-        responseString = this._handleResetAllQueueState()
         break
       }
       default: {

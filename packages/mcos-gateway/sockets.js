@@ -16,7 +16,7 @@
 
 import { logger } from 'mcos-shared/logger'
 import { errorMessage } from 'mcos-shared'
-import { selectConnection, updateConnection } from './connections.js'
+import { processData, selectConnection, updateConnection } from './connections.js'
 import { receiveLoginData } from 'mcos-login'
 import { receivePersonaData } from 'mcos-persona'
 import { receiveLobbyData } from 'mcos-lobby'
@@ -281,4 +281,24 @@ async function handleInboundTransactionData (localPort, networkBuffer) {
 
   // TODO: Compress and encrypt if needed
   return result
+}
+
+/**
+   * Replays the unproccessed packet to the connection manager
+   * @param {import("mcos-shared/types").UnprocessedPacket} packet
+   * @returns {Promise<{err: Error | null, data: import("mcos-core").TCPConnection | null}>}
+   */
+export async function processPacket (packet) {
+  // Locate the conection manager
+  try {
+    return processData(packet)
+  } catch (error) {
+    log.error(errorMessage(error))
+    return {
+      err: new Error(
+          `There was an error processing the packet: ${errorMessage(error)}`
+      ),
+      data: null
+    }
+  }
 }
