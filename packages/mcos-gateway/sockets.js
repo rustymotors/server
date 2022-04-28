@@ -148,14 +148,7 @@ async function onData (data, connection) {
       outboundConnection
     )
   } catch (error) {
-    if (error instanceof Error) {
-      const newError = new Error(
-          `There was an error updating the connection: ${error.message}`
-      )
-      log.error(newError.message)
-      throw newError
-    }
-    throw error
+
   }
 }
 
