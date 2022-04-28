@@ -459,7 +459,7 @@ export class PersonaServer {
  */
 export async function receivePersonaData (dataConnection) {
   try {
-    const serviceResponse = await await handleData(dataConnection)
+    const serviceResponse = await handleData(dataConnection)
     return {
       err: null,
       response: serviceResponse
