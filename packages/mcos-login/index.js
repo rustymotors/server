@@ -17,6 +17,8 @@
 import { logger } from 'mcos-shared/logger'
 import { DatabaseManager } from 'mcos-database'
 import { NPSUserStatus, premadeLogin } from 'mcos-shared/types'
+import { errorMessage } from 'mcos-shared'
+import { handleData } from './internal.js'
 
 const log = logger.child({ service: 'mcoserver:LoginServer' })
 
@@ -238,5 +240,24 @@ export class LoginServer {
      * Then send ok to login packet
      */
     return Buffer.concat([packetContent, packetContent])
+  }
+}
+
+/// ==============
+/// ==============
+
+/**
+ * Entry and exit point of the Login service
+ *
+ * @export
+ * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
+ * @return {Promise<import('mcos-shared/types').GServiceResponse>}
+ */
+export async function receiveLoginData (dataConnection) {
+  try {
+    return { err: null, response: await handleData(dataConnection) }
+  } catch (error) {
+    const errMessage = `There was an error in the login service: ${errorMessage(error)}`
+    return { err: new Error(errMessage), response: undefined }
   }
 }

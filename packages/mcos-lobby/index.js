@@ -17,7 +17,9 @@
 import { logger } from 'mcos-shared/logger'
 import { DatabaseManager } from 'mcos-database'
 import { NPSMessage, NPSUserInfo } from 'mcos-shared/types'
-import { PersonaServer } from 'mcos-persona'
+import { getPersonasByPersonaId } from 'mcos-persona'
+import { handleData, _generateSessionKeyBuffer } from './internal.js'
+import { errorMessage } from 'mcos-shared'
 
 const log = logger.child({ service: 'mcoserver:LobbyServer' })
 
@@ -250,16 +252,6 @@ export class LobbyServer {
   }
 
   /**
-   * @param {string} key
-   * @return {Buffer}
-   */
-  _generateSessionKeyBuffer (key) {
-    const nameBuffer = Buffer.alloc(64)
-    Buffer.from(key, 'utf8').copy(nameBuffer)
-    return nameBuffer
-  }
-
-  /**
    * Handle a request to connect to a game server packet
    *
    * @private
@@ -281,9 +273,7 @@ export class LobbyServer {
     userInfo.deserialize(rawData)
     userInfo.dumpInfo()
 
-    const personaManager = PersonaServer.getInstance()
-
-    const personas = await personaManager.getPersonasByPersonaId(
+    const personas = await getPersonasByPersonaId(
       userInfo.userId
     )
     if (typeof personas[0] === 'undefined') {
@@ -320,18 +310,9 @@ export class LobbyServer {
       try {
         s.setEncryptionKeyDES(keys.skey)
       } catch (error) {
-        if (error instanceof Error) {
-          throw new TypeError(
-            `Unable to set session key: ${JSON.stringify({ keys, error })}`
-          )
-        }
-
-        throw new Error(
-          `Unable to set session key: ${JSON.stringify({
-            keys,
-            error: 'unknown'
-          })}`
-        )
+        const errMessage = `Error setting session keys: ${JSON.stringify({ keys, error: errorMessage(error) })}`
+        log.error(errMessage)
+        throw new Error(errMessage)
       }
     }
 
@@ -345,7 +326,7 @@ export class LobbyServer {
     Buffer.from([0x00, 0x84, 0x5f, 0xed]).copy(packetContent)
 
     // SessionKeyStr (32)
-    this._generateSessionKeyBuffer(keys.sessionkey).copy(packetContent, 4)
+    _generateSessionKeyBuffer(keys.sessionkey).copy(packetContent, 4)
 
     // SessionKeyLen - int
     packetContent.writeInt16BE(32, 66)
@@ -357,5 +338,22 @@ export class LobbyServer {
     packetResult.dumpPacket()
 
     return packetResult
+  }
+}
+
+/**
+ * Entry and exit point for the lobby service
+ *
+ * @export
+ * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
+ * @return {Promise<import('mcos-shared/types').GServiceResponse>}
+ */
+export async function receiveLobbyData (dataConnection) {
+  try {
+    return { err: null, response: await handleData(dataConnection) }
+  } catch (error) {
+    const errMessage = `There was an error in the lobby service: ${errorMessage(error)}`
+    log.error(errMessage)
+    return { err: new Error(errMessage), response: undefined }
   }
 }

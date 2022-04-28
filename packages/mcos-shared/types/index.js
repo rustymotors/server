@@ -1767,3 +1767,91 @@ export class NPSUserInfo extends NPSMessage {
     return message
   }
 }
+
+/**
+ *
+ *
+ * @export
+ * @typedef ICoreConfig
+ * @property {string} externalHost
+ * @property {number[]} [ports=[]]
+ */
+
+/**
+   * Socket with connection properties
+   * @export
+   * @typedef {object} SocketWithConnectionInfo
+   * @property {import('node:net').Socket} socket
+   * @property {number} seq
+   * @property {string} id
+   * @property {number} appId
+   * @property {number} lastMsg
+   * @property {boolean} inQueue
+   * @property {boolean} useEncryption
+   * @property {EncryptionSession} [encryptionSession]
+   *
+   */
+
+/**
+ * @export
+ * @typedef {object} BufferWithConnection
+ * @property {string} connectionId
+ * @property {SocketWithConnectionInfo} connection
+ * @property {Buffer} data
+ * @property {number} timestamp
+ */
+
+/**
+ * @export
+ * @typedef {object} EncryptionSession
+ * @property {string} connectionId
+ * @property {string} sessionKey
+ * @property {string} shortKey
+ * @property {import('node:crypto').Cipher} gsCipher
+ * @property {import('node:crypto').Decipher} gsDecipher
+ * @property {import('node:crypto').Cipher} tsCipher
+ * @property {import('node:crypto').Decipher} tsDecipher
+ */
+
+/**
+ * N+ messages, ready for sending, with related connection
+ * @export
+ * @typedef {object} GSMessageArrayWithConnection
+ * @property {SocketWithConnectionInfo} connection
+ * @property {NPSMessage[]} messages
+ */
+
+/**
+ * N+ messages, ready for sending, with related connection
+ * @export
+ * @typedef {object} TSMessageArrayWithConnection
+ * @property {SocketWithConnectionInfo} connection
+ * @property {MessageNode[]} messages
+ */
+
+/**
+ * @export
+ * @typedef {object} GServiceResponse
+ * @property {Error | null} err
+ * @property {GSMessageArrayWithConnection | undefined} response
+ */
+
+/**
+ * @export
+ * @typedef {object} TServiceResponse
+ * @property {Error | null} err
+ * @property {TSMessageArrayWithConnection | undefined} response
+ */
+
+/**
+ * The blueprint for a service
+ *
+ * Takes in a buffer representing a single unprocessed raw message
+ * and returns an array of processed message objects ready to send,
+ * with the related connection object
+ *
+ * @export
+ * @interface IServiceAPI
+ * @param {BufferWithConnection} dataConnection
+ * @return {ServiceResponse}
+ */

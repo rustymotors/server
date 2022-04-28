@@ -4,6 +4,7 @@
   "exports": {
     ".": "./index.js",
     "./config": "./config/index.js",
+    "./encryption": "./encryption.js",
     "./logger": "./logger/index.js",
     "./types": "./types/index.js"
   },
