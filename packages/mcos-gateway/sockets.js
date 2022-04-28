@@ -111,7 +111,7 @@ async function onData (data, connection) {
 
   await handleInboundTransactionData(localPort, networkBuffer)
 
-  if (result.err || typeof result.response === 'undefined') {
+  if (result.err) {
     log.error(errorMessage(result.err))
     throw new Error(
         `There was an error processing the packet: ${errorMessage(result.err)}`
@@ -148,7 +148,10 @@ async function onData (data, connection) {
       outboundConnection
     )
   } catch (error) {
+    const errMessage = `There was an error updating the connection: ${errorMessage(error)}`
 
+    log.error(errMessage)
+    throw new Error(errMessage)
   }
 }
 
