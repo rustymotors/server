@@ -619,7 +619,16 @@ export class ClientConnectMessage {
  * @property {Buffer} data2
  */
 export class GenericReplyMessage {
-  msgNo
+  /**
+   * One of
+   *
+   * * MC_SUCCESS = 101 : Used with GenericReply structure to indicate that the request succeeded
+   *
+   * * MC_FAILED = 102  : Used with GenericReply structure to indicate that the request failed
+   *
+   * * MC_GENERIC_REPLY : Used with GenericReply structure for messages that return data
+   */
+  msgNo // 2 bytes
   toFrom
   appId
   msgReply
