@@ -125,21 +125,21 @@ export class ListenerThread {
 
     const { localPort, remoteAddress } = socket
     log.info(`Client ${remoteAddress} connected to port ${localPort}`)
-    if (socket.localPort === 7003 && connectionRecord.inQueue) {
+    if (socket.localPort === 7003 && connectionRecord.modern.inQueue) {
       /**
        * Debug seems hard-coded to use the connection queue
        * Craft a packet that tells the client it's allowed to login
        */
 
       socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]))
-      connectionRecord.inQueue = false
+      connectionRecord.modern.inQueue = false
     }
 
     socket.on('end', () => {
       log.info(`Client ${remoteAddress} disconnected from port ${localPort}`)
     })
     socket.on('data', (/** @type {Buffer} */ data) => {
-      this.onTCPData(data, connectionRecord)
+      this.onTCPData(data, connectionRecord.legacy)
     })
     socket.on('error', (/** @type {unknown} */ error) => {
       const message = errorMessage(error)

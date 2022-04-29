@@ -154,7 +154,7 @@ export function updateConnectionByAddressAndPort (address, port, newConnection) 
    * Locate connection by remoteAddress and localPort in the connections array
    * @param {string} remoteAddress
    * @param {number} localPort
-   * @return {import("mcos-core").TCPConnection | null}
+   * @return {{ legacy: import("mcos-core").TCPConnection, modern: import('mcos-shared/types').SocketWithConnectionInfo} | null}
    */
 function findConnectionByAddressAndPort (remoteAddress, localPort) {
   const record =
@@ -168,39 +168,39 @@ function findConnectionByAddressAndPort (remoteAddress, localPort) {
     return null
   }
   const newConnection = new TCPConnection(record.id, record.socket)
-  return newConnection
+  return { legacy: newConnection, modern: record }
 }
 
 /**
    * Creates a new connection object for the socket and adds to list
    * @param {string} connectionId
    * @param {import("node:net").Socket} socket
-   * @returns {TCPConnection}
+   * @returns {{ legacy: import("mcos-core").TCPConnection, modern: import('mcos-shared/types').SocketWithConnectionInfo}}
    */
 function createNewConnection (connectionId, socket) {
   const newConnection = new TCPConnection(connectionId, socket)
+  /** @type {import('mcos-shared/types').SocketWithConnectionInfo} */
+  const newConnectionRecord = {
+    socket,
+    seq: 0,
+    id: connectionId,
+    personaId: 0,
+    lastMsgTimestamp: 0,
+    inQueue: true,
+    useEncryption: false
+  }
   newConnection.setEncryptionManager(new EncryptionManager())
-  return newConnection
+  return { legacy: newConnection, modern: newConnectionRecord }
 }
 
 /**
    * Add new connection to internal list
    *
-   * @param {TCPConnection} connection
+   * @param {import('mcos-shared/types').SocketWithConnectionInfo} connection
    * @return {import('mcos-shared/types').SocketWithConnectionInfo[]}
    */
 function addConnection (connection) {
-  /** @type {import('mcos-shared/types').SocketWithConnectionInfo} */
-  const newConnection = {
-    socket: connection.sock,
-    seq: 0,
-    id: connection.id,
-    personaId: connection.appId,
-    lastMsgTimestamp: connection.lastMsg,
-    inQueue: connection.inQueue,
-    useEncryption: connection.useEncryption
-  }
-  connectionList.push(newConnection)
+  connectionList.push(connection)
   return connectionList
 }
 
@@ -208,7 +208,7 @@ function addConnection (connection) {
    * Return an existing connection, or a new one
    *
    * @param {import("node:net").Socket} socket
-   * @return {import("mcos-core").TCPConnection | null}
+   * @return {{ legacy: import("mcos-core").TCPConnection, modern: import('mcos-shared/types').SocketWithConnectionInfo} | null}
    */
 export function findOrNewConnection (socket) {
   if (typeof socket.remoteAddress === 'undefined') {
@@ -229,8 +229,14 @@ export function findOrNewConnection (socket) {
     log.info(
       `I have seen connections from ${socket.remoteAddress} on ${socket.localPort} before`
     )
-    existingConnection.sock = socket
-    log.debug('Returning found connection after attaching socket')
+
+    // Legacy
+    existingConnection.legacy.sock = socket
+    log.debug('[L] Returning found connection after attaching socket')
+
+    // Modern
+    existingConnection.modern.socket = socket
+    log.debug('[M] Returning found connection after attaching socket')
     return existingConnection
   }
 
@@ -240,9 +246,9 @@ export function findOrNewConnection (socket) {
   log.info(
     `I have not seen connections from ${socket.remoteAddress} on ${socket.localPort} before, adding it.`
   )
-  const updatedConnectionList = addConnection(newConnection)
+  const updatedConnectionList = addConnection(newConnection.modern)
   log.debug(
-    `Connection with id of ${newConnection.id} has been added. The connection list now contains ${updatedConnectionList.length} connections.`
+    `Connection with id of ${newConnection.modern.id} has been added. The connection list now contains ${updatedConnectionList.length} connections.`
   )
   return newConnection
 }

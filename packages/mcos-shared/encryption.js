@@ -91,6 +91,26 @@ export function selectEncryptors (dataConnection) {
 
 /**
   *
+  * @param {import("./types/index.js").SocketWithConnectionInfo} dataConnection
+  * @return {import("./types/index.js").EncryptionSession}
+  */
+export function selectEncryptorsForSocket (dataConnection) {
+  const existingEncryptor = encryptionSessions.find(e => {
+    return e.connectionId === dataConnection.id
+  })
+
+  if (typeof existingEncryptor !== 'undefined') {
+    log.debug(`Located existing encryption session for socket with connection id ${dataConnection.id}`)
+    return existingEncryptor
+  }
+
+  const errMessage = `Unable to select encryptors for socket with connection id ${dataConnection.id}`
+  log.error(errMessage)
+  throw new Error(errMessage)
+}
+
+/**
+  *
   * @param {import("./types/index.js").BufferWithConnection} dataConnection
   * @param {import("./types/index.js").SessionRecord} keys
   * @return {import("./types/index.js").EncryptionSession}
