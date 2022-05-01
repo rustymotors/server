@@ -6,6 +6,7 @@
     "./config": "./config/index.js",
     "./encryption": "./encryption.js",
     "./logger": "./logger/index.js",
+    "./structures": "./structures/index.js",
     "./types": "./types/index.js"
   },
   "dependencies": {
