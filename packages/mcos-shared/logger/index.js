@@ -15,11 +15,85 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { APP_CONFIG } from 'mcos-shared/config'
-import P from 'pino'
 
-const logger = P({
-  level: APP_CONFIG.MCOS.SETTINGS.LOG_LEVEL || 'info',
-  name: 'mcos'
-})
+const logger = {
+  /**
+   * @param {object} options
+   * @param {string} [options.service]
+   */
+  child: (options) => {
+    /** @typedef {'all' | 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal' | 'off'} ELOGGING_LEVELS */
+    /** @typedef {0 | 10 | 20 | 30 | 40 | 50 | 60 | 100} ELOGGING_LEVELS_NUM */
+    /**
+     * @param {ELOGGING_LEVELS_NUM} level
+     * @param {string} message
+     */
+    const callLog = (level, message) => {
+      if (systemLogLevel <= level) {
+        console.log(`{"level":${level}, "time":"${Date.now()}","pid":${process.pid}, "name":"${name}", ${service} "msg": "${message}"}`)
+      }
+    }
+    /** @param {string | undefined} level */
+    const toLevel = (level) => {
+      if (typeof level === 'undefined') {
+        return 30
+      }
+      if (level === 'all') {
+        return 0
+      }
+      if (level === 'trace') {
+        return 10
+      }
+      if (level === 'debug') {
+        return 20
+      }
+      if (level === 'info') {
+        return 30
+      }
+      if (level === 'warn') {
+        return 40
+      }
+      if (level === 'error') {
+        return 50
+      }
+      if (level === 'fatal') {
+        return 60
+      }
+      if (level === 'off') {
+        return 100
+      }
+
+      return 30
+    }
+    const systemLogLevel = toLevel(APP_CONFIG.MCOS.SETTINGS.LOG_LEVEL) || 30
+    const name = 'mcos'
+    let service = ''
+    if (options.service) {
+      service = `"service":"${options.service}, "`
+    }
+    return {
+      /** @param {string} message */
+      trace: (message) => { callLog(10, message) },
+      /** @param {string} message */
+      debug: (message) => { callLog(20, message) },
+      /** @param {string} message */
+      info: (message) => { callLog(30, message) },
+      /** @param {string} message */
+      warn: (message) => { callLog(40, message) },
+      /** @param {string} message */
+      error: (message) => { callLog(50, message) },
+      /** @param {string} message */
+      fatal: (message) => { callLog(60, message) },
+      /**
+       * @param {ELOGGING_LEVELS} level
+       * @param {string} message
+       */
+      log: (level, message) => { callLog(30, message) }
+
+    }
+  }
+}
+
+// `{"level":30,"time":1651694127211,"pid":19,"hostname":"4a44b787f50f","name":"mcos","service":"mcos:gateway:connections","msg":"I have not seen connections from 10.10.5.8 on 8228 before, adding it."}`
 
 export { logger }

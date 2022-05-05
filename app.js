@@ -21,7 +21,6 @@ const log = logger.child({ service: 'mcos' })
 
 /** @type {import("mcos-core").ICoreConfig} */
 const coreConfig = {
-  logger,
   externalHost: '0.0.0.0',
   ports: [
     80, 6660, 7003, 8228, 8226, 8227, 9000, 9001, 9002, 9003, 9004, 9005, 9006,

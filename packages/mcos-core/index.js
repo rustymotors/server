@@ -19,6 +19,7 @@ import { httpListener } from './httpListener.js'
 import http from 'node:http'
 import { ListenerThread } from './listener-thread.js'
 import { EventEmitter } from 'node:events'
+import { logger } from 'mcos-shared/logger'
 export { TCPConnection } from './tcpConnection.js'
 export { EncryptionManager } from './encryption-mgr.js'
 export { NPSPacketManager } from './nps-packet-manager.js'
@@ -39,7 +40,6 @@ export function isMCOT (inputBuffer) {
  *
  * @export
  * @typedef ICoreConfig
- * @property {import("pino").Logger} [logger]
  * @property {string} externalHost
  * @property {number[]} [ports=[]]
  */
@@ -61,7 +61,7 @@ export class MCOServer extends EventEmitter {
   /**
    *
    * @private
-   * @type {import("pino").Logger}
+   * @type {import("mcos-shared/logger").logger}
    * @memberof MCOServer
    */
   _log
@@ -145,10 +145,8 @@ export class MCOServer extends EventEmitter {
   constructor (config) {
     super()
     this._config = config
-    if (!this._config.logger) {
-      throw new Error('Logger was not passed in the config')
-    }
-    this._log = this._config.logger.child({ service: 'mcos:core' })
+
+    this._log = logger.child({ service: 'mcos:core' })
   }
 
   /**
