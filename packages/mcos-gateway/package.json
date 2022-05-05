@@ -2,10 +2,9 @@
     "name": "mcos-gateway",
     "type": "module",
     "exports": {
-        ".": "./index.js",
-        "./sockets": "./sockets.js",
-        "./web": "./web.js",
-        "./connections": "./connections.js"
+        ".": "./built/index.js",
+        "./sockets": "./built/sockets.js",
+        "./web": "./built/web.js"
     },
     "dependencies": {}
 }

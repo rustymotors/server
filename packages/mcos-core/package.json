@@ -2,10 +2,9 @@
     "name": "mcos-core",
     "type": "module",
     "exports": {
-        ".": "./index.js"
+        ".": "./built/index.js"
     },
     "dependencies": {
-        "mcos-admin": "*",
         "mcos-auth": "*",
         "mcos-database": "*",
         "mcos-login": "*",

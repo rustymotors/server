@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import chai from 'chai'
-import { AdminServer } from 'mcos-admin'
+import { AdminServer } from 'mcos-gateway'
 import { describe, it } from 'mocha'
 
 chai.should()

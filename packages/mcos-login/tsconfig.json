@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.root.json",
+  "compilerOptions": {
+    "module": "ES2022",
+    "outDir": "./built",
+    "rootDir": "./src",
+    "baseUrl": ".",
+    "paths": {
+      "mcos-database":["../mcos-database/built"],
+      "mcos-shared":["../mcos-shared/built"],
+      "mcos-shared/logger":["../mcos-shared/built/logger"],
+      "mcos-shared/structures":["../mcos-shared/built/structures"],
+      "mcos-shared/types":["../mcos-shared/built/types"]
+    }
+  },
+  "exclude": ["built"]
+}

@@ -38,6 +38,8 @@ services:
     working_dir: /home/node/app
     volumes:
       - ./:/home/node/app
+    environment:
+      - DEBUG=mcos:*
     command: "npm start"
     ports:
       - "80:80"
@@ -51,7 +53,7 @@ services:
       - "43400:43400"
       - "53303:53303"
       - "9000-9014:9000-9014"
-    restart: always
+    # restart: always
     depends_on:
       - db
 

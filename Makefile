@@ -31,7 +31,11 @@ start:
 	@LOG_LEVEL=silly npm run start:dev
 
 prod_node:
+	tsc -b --verbose
 	docker-compose up -d  --build
+
+down:
+	docker-compose down
 
 enable-node:
 	@sudo setcap cap_net_bind_service=+ep $(which node)

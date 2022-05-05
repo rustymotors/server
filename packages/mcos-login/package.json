@@ -1,5 +1,8 @@
 {
     "name": "mcos-login",
     "type": "module",
-    "exports": "./index.js"
+    "exports": {
+      ".": "./built/index.js",
+      "./messages": "./built/messages.js"
+    }
 }

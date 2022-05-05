@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "allowJs": true,
+    "checkJs": true,
+    "module": "es2022",
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "target": "es2022",
+    "sourceMap": true,
+    "declarationMap": true
+  },
+  "esm": "true"
+}

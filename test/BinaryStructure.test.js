@@ -38,7 +38,18 @@ describe('BinaryStructure', () => {
 
       // Assert
       (() => {
-        return testStructure.serialize(inputStream)
+        return testStructure.deserialize(inputStream)
+      }).should.throw()
+    })
+  })
+  describe('#get', () => {
+    it('should throw when passed a name not found in the internal fields array', () => {
+      // Arrange
+      const testStructure = new BinaryStructure();
+
+      // Assert
+      (() => {
+        return testStructure.get('someFiled')
       }).should.throw()
     })
   })

@@ -1,18 +1,29 @@
 {
-  "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
-    "module": "es2022",
-    "strict": true,
-    "declarationDir": "dist",
-    "noImplicitAny": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "target": "es2022",
-    "declaration": true,
-    "emitDeclarationOnly": true
-  },
-  "include": ["packages", "app.js"],
-  "exclude": ["node_modules"],
-  "esm": "true"
+  "references": [
+    {
+      "path": "./packages/mcos-shared"
+    },
+    {
+      "path": "./packages/mcos-database"
+    },
+    {
+      "path": "./packages/mcos-persona"
+    },
+    {
+      "path": "./packages/mcos-login"
+    },
+    {
+      "path": "./packages/mcos-auth"
+    },
+    {
+      "path": "./packages/mcos-patch"
+    },
+    {
+      "path": "./packages/mcos-shard"
+    },
+    {
+      "path": "./packages/mcos-gateway"
+    }
+  ],
+  "files": []
 }

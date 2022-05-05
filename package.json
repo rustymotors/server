@@ -13,10 +13,11 @@
   "type": "module",
   "scripts": {
     "format": "prettier-eslint",
-    "test": "tsc && standard --fix && eslint && c8 mocha",
+    "test": "tsc -b --verbose && standard --fix && eslint && c8 mocha",
     "prod": "make prod_node",
     "prod:stop": "docker-compose stop",
-    "start": "node --openssl-legacy-provider app.js"
+    "start": "node --trace-deprecation --abort-on-uncaught-exception -r ts-node/register --openssl-legacy-provider src/app.js",
+    "start:docker":"tsc -b --verbose && npm ci && npm start"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
   "license": "AGPL-3.0",
@@ -27,11 +28,12 @@
   },
   "dependencies": {
     "@types/pg": "8.6.5",
-    "mcos-admin": "*",
     "mcos-core": "*",
-    "mcos-shared": "*",
+    "mcos-gateway": "*",
+    "mcos-lobby": "*",
+    "mcos-login": "*",
     "pg": "8.7.3",
-    "pino": "next",
+    "ts-node": "10.7.0",
     "typescript": "4.6.4"
   },
   "devDependencies": {
@@ -54,16 +56,16 @@
     "useSpawnWrap": true
   },
   "volta": {
-    "node": "16.15.0",
+    "node": "18.1.0",
     "npm": "8.9.0"
   },
   "workspaces": [
     "packages/mcos-shared",
     "packages/mcos-core",
+    "packages/mcos-gateway",
     "packages/mcos-patch",
     "packages/mcos-shard",
     "packages/mcos-auth",
-    "packages/mcos-admin",
     "packages/mcos-database",
     "packages/mcos-transactions",
     "packages/mcos-persona",

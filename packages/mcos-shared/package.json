@@ -2,15 +2,10 @@
   "name": "mcos-shared",
   "type": "module",
   "exports": {
-    ".": "./index.js",
-    "./config": "./config/index.js",
-    "./encryption": "./encryption.js",
-    "./logger": "./logger/index.js",
-    "./structures": "./structures/index.js",
-    "./types": "./types/index.js"
-  },
-  "dependencies": {
-    "mcos-core": "*",
-    "pino": "^7.10.0"
+    ".": "./built/index.js",
+    "./config": "./built/config/index.js",
+    "./logger": "./built/logger/index.js",
+    "./structures": "./built/structures/index.js",
+    "./types": "./built/types/index.js"
   }
 }
