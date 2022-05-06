@@ -7,7 +7,7 @@ coverage
 test-reports
 data/sessions.db
 junit
-dist
+built
 *.sqlite
 junit.xml
 .dccache
