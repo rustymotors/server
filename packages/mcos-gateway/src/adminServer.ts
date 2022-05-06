@@ -17,7 +17,7 @@
 import { logger } from 'mcos-shared/logger'
 import { getAllConnections } from './index.js'
 
-const log = logger.child({ service: 'mcoserver:AdminServer;' })
+const log = logger.child({ service: 'mcos:gateway:admin' })
 
 /**
  * Please use {@link AdminServer.getAdminServer()}
@@ -35,7 +35,7 @@ export class AdminServer {
    * @type {AdminServer}
    * @memberof AdminServer
    */
-  static _instance
+  static _instance: AdminServer
 
   /**
    * Get the single instance of the class
@@ -44,7 +44,7 @@ export class AdminServer {
    * @return {AdminServer}
    * @memberof AdminServer
    */
-  static getAdminServer () {
+  static getAdminServer (): AdminServer {
     if (!AdminServer._instance) {
       AdminServer._instance = new AdminServer()
     }
@@ -63,7 +63,7 @@ export class AdminServer {
    * @private
    * @return {string}
    */
-  _handleGetConnections () {
+  _handleGetConnections (): string {
     const connections = getAllConnections()
     let responseText = ''
 
@@ -72,7 +72,7 @@ export class AdminServer {
 
       const displayConnection = `
       index: ${i} - ${connection.id}
-          remoteAddress: ${connection.socket.remoteAddress}:${connection.socket.localPort}
+          remoteAddress: ${connection.socket.remoteAddress}:${connection.localPort}
           inQueue:       ${connection.inQueue}
       `
       responseText += displayConnection
@@ -88,7 +88,7 @@ export class AdminServer {
    * @param {import("http").IncomingMessage} request
    * @param {import("http").ServerResponse} response
    */
-  handleRequest (request, response) {
+  handleRequest (request: import("http").IncomingMessage, response: import("http").ServerResponse): import("node:http").ServerResponse {
     log.info(
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     )

@@ -1,10 +1,14 @@
-FROM node:18
+FROM docker.elastic.co/beats/elastic-agent-complete:8.2.0
 
 WORKDIR /home/node/app
 
+RUN curl https://get.volta.sh | bash
+
+RUN ~/.volta/bin/volta install node@18
+
 COPY package*.json ./
 
-RUN npm install
+RUN ~/.volta/bin/volta run npm ci
 # If you are building your code for production
 # RUN npm ci --only=production
 
@@ -22,4 +26,4 @@ EXPOSE 43300
 EXPOSE 43400
 EXPOSE 53303
 
-CMD [ "npm", "run", "start:docker" ]
+CMD [ "make", "docker-init" ]

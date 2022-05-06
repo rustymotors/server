@@ -17,34 +17,31 @@
 import { createCipheriv, createDecipheriv } from 'node:crypto'
 import { errorMessage } from './index.js'
 import { logger } from './logger/index.js'
+import { BufferWithConnection, EncryptionSession, SessionRecord, SocketWithConnectionInfo } from './types/index.js'
 
 const log = logger.child({ service: 'mcos:shared:encryption' })
 
-/** @type {import("./types/index.js").EncryptionSession[]} */
-const encryptionSessions = []
+const encryptionSessions: EncryptionSession[] = []
 
-/**
-  *
-  * @param {import("./types/index.js").BufferWithConnection} dataConnection
-  * @param {import("./types/index.js").SessionRecord} keys
-  * @return {import("./types/index.js").EncryptionSession}
-  */
-function generateEncryptionPair (dataConnection, keys) {
+function generateEncryptionPair (dataConnection: SocketWithConnectionInfo, keys: SessionRecord): EncryptionSession {
   // For use on Lobby packets
+  const { sessionkey, skey} = keys
+  const stringKey = Buffer.from(sessionkey, "hex");
+  Buffer.from(stringKey.slice(0, 16))
 
   // Deepcode ignore HardcodedSecret: This uses an empty IV
   const desIV = Buffer.alloc(8)
 
   const gsCipher = createCipheriv(
     'des-cbc',
-    Buffer.from(keys.skey, 'hex'),
+    Buffer.from(skey, 'hex'),
     desIV
   )
   gsCipher.setAutoPadding(false)
 
   const gsDecipher = createDecipheriv(
     'des-cbc',
-    Buffer.from(keys.skey, 'hex'),
+    Buffer.from(skey, 'hex'),
     desIV
   )
   gsDecipher.setAutoPadding(false)
@@ -52,12 +49,13 @@ function generateEncryptionPair (dataConnection, keys) {
   // For use on messageNode packets
 
   // File deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
-  const tsCipher = createCipheriv('rc4', keys.sessionkey, '')
-  const tsDecipher = createDecipheriv('rc4', keys.sessionkey, '')
+  const tsCipher = createCipheriv('rc4', stringKey.slice(0, 16), '')
+  const tsDecipher = createDecipheriv('rc4', stringKey.slice(0, 16), '')
 
-  /** @type {import("./types/index.js").EncryptionSession} */
-  const newSession = {
-    connectionId: dataConnection.connectionId,
+  const newSession: EncryptionSession = {
+    connectionId: dataConnection.id,
+    remoteAddress: dataConnection.remoteAddress,
+    localPort: dataConnection.localPort,
     sessionKey: keys.sessionkey,
     shortKey: keys.skey,
     gsCipher,
@@ -69,14 +67,20 @@ function generateEncryptionPair (dataConnection, keys) {
   return newSession
 }
 
-/**
-  *
-  * @param {import("./types/index.js").BufferWithConnection} dataConnection
-  * @return {import("./types/index.js").EncryptionSession}
-  */
-export function selectEncryptors (dataConnection) {
+export function selectEncryptors (dataConnection: BufferWithConnection): EncryptionSession {
+  const { localPort, remoteAddress } = dataConnection.connection
+
+  if (typeof localPort === 'undefined' || typeof remoteAddress === 'undefined') {
+    const errMessage = `[selectEncryptors]Either localPort or remoteAddress is missing on socket. Can not continue.`
+    log.error(errMessage)
+    throw new Error(errMessage)
+  }
+  const wantedId = `${remoteAddress}:${localPort}`
+
   const existingEncryptor = encryptionSessions.find(e => {
-    return e.connectionId === dataConnection.connectionId
+    const thisId = `${e.remoteAddress}:${e.localPort}`
+    log.trace(`[selectEncryptors] Checking ${thisId} === ${wantedId} ?`)
+    return thisId === wantedId
   })
 
   if (typeof existingEncryptor !== 'undefined') {
@@ -89,14 +93,20 @@ export function selectEncryptors (dataConnection) {
   throw new Error(errMessage)
 }
 
-/**
-  *
-  * @param {import("./types/index.js").SocketWithConnectionInfo} dataConnection
-  * @return {import("./types/index.js").EncryptionSession}
-  */
-export function selectEncryptorsForSocket (dataConnection) {
+export function selectEncryptorsForSocket (dataConnection: SocketWithConnectionInfo): EncryptionSession {
+  const { localPort, remoteAddress } = dataConnection
+
+  if (typeof localPort === 'undefined' || typeof remoteAddress === 'undefined') {
+    const errMessage = `[selectEncryptorsForSocket]Either localPort or remoteAddress is missing on socket. Can not continue.`
+    log.error(errMessage)
+    throw new Error(errMessage)
+  }
+  const wantedId = `${remoteAddress}:${localPort}`
+
   const existingEncryptor = encryptionSessions.find(e => {
-    return e.connectionId === dataConnection.id
+    const thisId = `${e.remoteAddress}:${e.localPort}`
+    log.trace(`[selectEncryptorsForSocket] Checking ${thisId} === ${wantedId} ?`)
+    return thisId === wantedId
   })
 
   if (typeof existingEncryptor !== 'undefined') {
@@ -109,26 +119,32 @@ export function selectEncryptorsForSocket (dataConnection) {
   throw new Error(errMessage)
 }
 
-/**
-  *
-  * @param {import("./types/index.js").BufferWithConnection} dataConnection
-  * @param {import("./types/index.js").SessionRecord} keys
-  * @return {import("./types/index.js").EncryptionSession}
-  */
-export function selectOrCreateEncryptors (dataConnection, keys) {
+export function selectOrCreateEncryptors (dataConnection: SocketWithConnectionInfo, keys: SessionRecord): EncryptionSession {
+  const { localPort, remoteAddress } = dataConnection
+
+  if (typeof localPort === 'undefined' || typeof remoteAddress === 'undefined') {
+    const errMessage = `[selectOrCreateEncryptors]Either localPort or remoteAddress is missing on socket. Can not continue.`
+    log.error(errMessage)
+    throw new Error(errMessage)
+  }
+  const wantedId = `${remoteAddress}:${localPort}`
+
   const existingEncryptor = encryptionSessions.find(e => {
-    return e.connectionId === dataConnection.connectionId
+    const thisId = `${e.remoteAddress}:${e.localPort}`
+    log.trace(`[selectEncryptors] Checking ${thisId} === ${wantedId} ?`)
+    return thisId === wantedId
   })
 
   if (typeof existingEncryptor !== 'undefined') {
-    log.debug(`Located existing encryption session for connection id ${dataConnection.connectionId}`)
+    log.debug(`Located existing encryption session for connection id ${dataConnection.id}`)
     return existingEncryptor
   }
+
 
   const newSession = generateEncryptionPair(dataConnection, keys)
 
   log.debug(
-          `Generated new encryption session for connection id ${dataConnection.connectionId}`
+          `Generated new encryption session for connection id ${dataConnection.id}`
   )
 
   encryptionSessions.push(newSession)
@@ -138,11 +154,8 @@ export function selectOrCreateEncryptors (dataConnection, keys) {
 
 /**
    * Update the internal connection record
-   *
-   * @param {string} connectionId
-   * @param {import("./types").EncryptionSession} updatedSession
    */
-export function updateEncryptionSession (connectionId, updatedSession) {
+export function updateEncryptionSession (connectionId: string, updatedSession: EncryptionSession) {
   try {
     const index = encryptionSessions.findIndex(
       e => {
@@ -151,6 +164,7 @@ export function updateEncryptionSession (connectionId, updatedSession) {
     )
     encryptionSessions.splice(index, 1)
     encryptionSessions.push(updatedSession)
+    log.debug(`Updated encryption session for id: ${connectionId}`)
   } catch (error) {
     throw new Error(
             `Error updating connection, ${errorMessage(error)}`
@@ -164,7 +178,7 @@ export function updateEncryptionSession (connectionId, updatedSession) {
    * @param {Buffer} data
    * @return {{session: import('./types/index.js').EncryptionSession, data: Buffer}}
    */
-export function cipherBufferDES (encryptionSession, data) {
+export function cipherBufferDES (encryptionSession: EncryptionSession, data: Buffer): { session: EncryptionSession; data: Buffer } {
   if (encryptionSession.gsCipher) {
     const ciphered = encryptionSession.gsCipher.update(data)
     return {
@@ -182,7 +196,7 @@ export function cipherBufferDES (encryptionSession, data) {
    * @param {Buffer} data
    * @return {{session: import('./types/index.js').EncryptionSession, data: Buffer}}
    */
-export function decipherBufferDES (encryptionSession, data) {
+export function decipherBufferDES (encryptionSession: EncryptionSession, data: Buffer): { session: EncryptionSession; data: Buffer } {
   if (encryptionSession.gsDecipher) {
     const deciphered = encryptionSession.gsDecipher.update(data)
     return {
@@ -196,11 +210,8 @@ export function decipherBufferDES (encryptionSession, data) {
 
 /**
    * Decrypt the buffer contents
-   * @param {import("./types/index.js").BufferWithConnection} dataConnection
-   * @param {Buffer} buffer
-   * @returns {{session: import('./types/index.js').EncryptionSession, data: Buffer}}
    */
-export function decryptBuffer (dataConnection, buffer) {
+export function decryptBuffer (dataConnection: BufferWithConnection, buffer: Buffer): { session: EncryptionSession; data: Buffer } {
   const encryptionSession = selectEncryptors(dataConnection)
   const deciphered = encryptionSession.tsDecipher.update(buffer)
   return {

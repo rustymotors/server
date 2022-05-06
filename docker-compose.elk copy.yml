@@ -42,24 +42,6 @@ services:
           "      - localhost\n"\
           "    ip:\n"\
           "      - 127.0.0.1\n"\
-          "  - name: es-fleet\n"\
-          "    dns:\n"\
-          "      - es-fleet\n"\
-          "      - localhost\n"\
-          "    ip:\n"\
-          "      - 127.0.0.1\n"\
-          "  - name: node\n"\
-          "    dns:\n"\
-          "      - node\n"\
-          "      - localhost\n"\
-          "    ip:\n"\
-          "      - 127.0.0.1\n"\
-          "  - name: es-agent01\n"\
-          "    dns:\n"\
-          "      - es-agent01\n"\
-          "      - localhost\n"\
-          "    ip:\n"\
-          "      - 127.0.0.1\n"\
           > config/certs/instances.yml;
           bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
           unzip config/certs/certs.zip -d config/certs;
@@ -85,10 +67,6 @@ services:
       setup:
         condition: service_healthy
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-    networks:
-      default:
-        aliases:
-          - elasticsearch
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
       - esdata01:/usr/share/elasticsearch/data
@@ -214,33 +192,6 @@ services:
       timeout: 10s
       retries: 120
 
-  es-fleet:
-    image: docker.elastic.co/beats/elastic-agent-complete:${STACK_VERSION}
-    ports:
-      - "8220:8220"
-    environment:
-      - FLEET_SERVER_ENABLE=1
-      - FLEET_SERVER_ELASTICSEARCH_HOST=https://es01:9200
-      - FLEET_SERVER_SERVICE_TOKEN=${FLEET_SERVER_SERVICE_TOKEN}
-      - FLEET_SERVER_POLICY=fleet-server-policy
-      - FLEET_SERVER_ELASTICSEARCH_INSECURE=1
-      - ELASTICSEARCH_CA=/usr/share/elasticsearch/config/certs/ca/ca.crt
-    volumes:
-      - certs:/usr/share/elasticsearch/config/certs
-      - esfleetdata:/usr/share/elasticsearch/data
-
-  esagent01:
-    image: docker.elastic.co/beats/elastic-agent-complete:${STACK_VERSION}
-    environment:
-      - FLEET_ENROLL=1
-      - FLEET_INSECURE=1
-      - FLEET_URL=https://es-fleet:8220
-      - FLEET_ENROLLMENT_TOKEN=${AGENT_SERVICE_TOKEN}
-      - FLEET_ELASTICSEARCH_CA=/usr/share/elasticsearch/config/certs/ca/ca.crt
-      - FLEET_CA=/usr/share/elasticsearch/config/certs/ca/ca.crt
-    volumes:
-      - certs:/usr/share/elasticsearch/config/certs
-
   kibana:
     depends_on:
       es01:
@@ -308,18 +259,14 @@ services:
       - db
 
   node:
-    image: "mcos/server"
-    build: .
+    image: "node:18"
+    user: "node"
     working_dir: /home/node/app
     volumes:
-      - certs:/usr/share/kibana/config/certs
       - ./:/home/node/app
     environment:
       - DEBUG=mcos:*
-      - FLEET_INSECURE=1
-      - FLEET_URL=https://es-fleet:8220
-      - FLEET_ENROLLMENT_TOKEN=${AGENT_SERVICE_TOKEN}
-
+    command: "make docker-init"
     ports:
       - "80:80"
       - "6660:6660"
@@ -335,15 +282,6 @@ services:
     # restart: always
     logging:
       driver: "journald"
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "curl -s http://localhost:80/admin/ | grep -q 'Jiggawatt!'"
-        ]
-      interval: 10s
-      timeout: 10s
-      retries: 120
     depends_on:
       - db
       - es01
@@ -357,8 +295,6 @@ volumes:
   esdata02:
     driver: local
   esdata03:
-    driver: local
-  esfleetdata:
     driver: local
   kibanadata:
     driver: local

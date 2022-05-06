@@ -20,11 +20,10 @@ import { errorMessage } from './index.js'
 
 const log = logger.child({ service: 'mcoserver:TCPConnection' })
 
-/**
- * @export
- * @typedef {'Active' | 'Inactive'} EConnectionStatus
- *
- */
+export enum ECONNECTION_STATUS {
+  'Active' = 'Active',
+  'Inactive' = 'Inactive'
+}
 
 /**
  * Container for all TCP connections
@@ -36,62 +35,62 @@ export class TCPConnection {
    * @type {string}
    * @memberof TCPConnection
    */
-  id
+  id: string
   /**
    *
    *
    * @type {number}
    * @memberof TCPConnection
    */
-  appId
+  appId: number
   /**
    *
    *
    * @type {EConnectionStatus}
    * @memberof TCPConnection
    */
-  status
+  status: ECONNECTION_STATUS
   /**
    *
    * @type {string} [remoteAddress]
    * @memberof TCPConnection
    */
-  remoteAddress
+  remoteAddress: string
   /**
    *
    *
    * @type {number}
    * @memberof TCPConnection
    */
-  localPort
+  localPort: number
   /**
    *
    *
    * @type {import("node:net").Socket}
    * @memberof TCPConnection
    */
-  sock
+  sock: import("node:net").Socket
   /**
    *
    *
    * @type {null}
    * @memberof TCPConnection
    */
-  msgEvent
+  msgEvent: null
   /**
    *
    *
    * @type {number}
    * @memberof TCPConnection
    */
-  lastMsg
+  lastMsg: number
   /**
    *
    *
    * @type {boolean}
    * @memberof TCPConnection
    */
-  useEncryption
+  useEncryption: boolean
   /**
    *
    *
@@ -99,7 +98,7 @@ export class TCPConnection {
    * @type {import("./types").LobbyCiphers}
    * @memberof TCPConnection
    */
-  encLobby
+  encLobby: import("./types").LobbyCiphers
   /**
    *
    *
@@ -107,35 +106,35 @@ export class TCPConnection {
    * @type {import(".").EncryptionManager | undefined} [enc]
    * @memberof TCPConnection
    */
-  enc
+  enc: import(".").EncryptionManager | undefined
   /**
    *
    *
    * @type {boolean}
    * @memberof TCPConnection
    */
-  isSetupComplete
+  isSetupComplete: boolean
   /**
    *
    *
    * @type {boolean}
    * @memberof TCPConnection
    */
-  inQueue
+  inQueue: boolean
   /**
    *
    *
    * @type {Buffer | undefined} [encryptedCmd]
    * @memberof TCPConnection
    */
-  encryptedCmd
+  encryptedCmd: Buffer | undefined
   /**
    *
    *
    * @type {Buffer | undefined} [decryptedCmd]
    * @memberof TCPConnection
    */
-  decryptedCmd
+  decryptedCmd: Buffer | undefined
 
   /**
    * Creates an instance of TCPConnection.
@@ -143,7 +142,7 @@ export class TCPConnection {
    * @param {import("node:net").Socket} sock
    * @memberof TCPConnection
    */
-  constructor (connectionId, sock) {
+  constructor (connectionId: string, sock: import("node:net").Socket) {
     if (typeof sock.localPort === 'undefined') {
       throw new Error(
         'localPort is undefined, unable to create connection object'
@@ -151,7 +150,7 @@ export class TCPConnection {
     }
     this.id = connectionId
     this.appId = 0
-    this.status = 'Inactive'
+    this.status = ECONNECTION_STATUS.Inactive
     this.remoteAddress = sock.remoteAddress || ''
     this.localPort = sock.localPort
     this.sock = sock
@@ -168,7 +167,7 @@ export class TCPConnection {
    * Has the encryption keyset for lobby messages been created?
    * @returns {boolean}
    */
-  isLobbyKeysetReady () {
+  isLobbyKeysetReady (): boolean {
     return (
       this.encLobby.cipher !== undefined && this.encLobby.decipher !== undefined
     )
@@ -179,7 +178,7 @@ export class TCPConnection {
    * @param {import(".").EncryptionManager} encryptionManager
    * @returns {TCPConnection}
    */
-  setEncryptionManager (encryptionManager) {
+  setEncryptionManager (encryptionManager: import(".").EncryptionManager): TCPConnection {
     this.enc = encryptionManager
     return this
   }
@@ -188,7 +187,7 @@ export class TCPConnection {
    * Return the encryption manager id
    * @returns {string}
    */
-  getEncryptionId () {
+  getEncryptionId (): string {
     if (this.enc === undefined) {
       throw new Error('Encryption manager not set')
     }
@@ -200,7 +199,7 @@ export class TCPConnection {
    * @param {Buffer} buffer
    * @returns {Buffer}
    */
-  encryptBuffer (buffer) {
+  encryptBuffer (buffer: Buffer): Buffer {
     if (this.enc === undefined) {
       throw new Error('Encryption manager not set')
     }
@@ -212,7 +211,7 @@ export class TCPConnection {
    * @param {Buffer} buffer
    * @returns {Buffer}
    */
-  decryptBuffer (buffer) {
+  decryptBuffer (buffer: Buffer): Buffer {
     if (this.enc === undefined) {
       throw new Error('Encryption manager not set')
     }
@@ -224,7 +223,7 @@ export class TCPConnection {
    * @param {Buffer} key
    * @return {void}
    */
-  setEncryptionKey (key) {
+  setEncryptionKey (key: Buffer): void {
     if (this.enc === undefined) {
       throw new Error('Encryption manager is not set')
     }
@@ -237,7 +236,7 @@ export class TCPConnection {
    * @param {string} skey
    * @return {void}
    */
-  setEncryptionKeyDES (skey) {
+  setEncryptionKeyDES (skey: string): void {
     // Deepcode ignore HardcodedSecret: This uses an empty IV
     const desIV = Buffer.alloc(8)
 
@@ -276,7 +275,7 @@ export class TCPConnection {
    * @param {Buffer} messageBuffer
    * @return {Buffer}
    */
-  cipherBufferDES (messageBuffer) {
+  cipherBufferDES (messageBuffer: Buffer): Buffer {
     if (this.encLobby.cipher) {
       return this.encLobby.cipher.update(messageBuffer)
     }
@@ -288,7 +287,7 @@ export class TCPConnection {
    * Decrypt a command that is encrypted with DES
    * @param {Buffer} messageBuffer
    */
-  decipherBufferDES (messageBuffer) {
+  decipherBufferDES (messageBuffer: Buffer) {
     if (this.encLobby.decipher) {
       return this.encLobby.decipher.update(messageBuffer)
     }
@@ -301,7 +300,7 @@ export class TCPConnection {
    * @param {import("./types").MessageNode} packet
    * @returns {{connection: TCPConnection, packet: import("./types").MessageNode, lastError?: string}}
    */
-  compressIfNeeded (packet) {
+  compressIfNeeded (packet: import("./types").MessageNode): { connection: TCPConnection; packet: import("./types").MessageNode; lastError?: string } {
     // Check if compression is needed
     if (packet.getLength() < 80) {
       log.debug('Too small, should not compress')
@@ -327,7 +326,7 @@ export class TCPConnection {
    * @param {import("./types").MessageNode} packet
    * @returns {{connection: TCPConnection, packet: import("./types").MessageNode}}
    */
-  encryptIfNeeded (packet) {
+  encryptIfNeeded (packet: import("./types").MessageNode): { connection: TCPConnection; packet: import("./types").MessageNode } {
     // Check if encryption is needed
     if (packet.flags - 8 >= 0) {
       log.debug('encryption flag is set')
@@ -345,9 +344,9 @@ export class TCPConnection {
    * @param {import("./types").MessageNode[]} packetList
    * @returns {TCPConnection}
    */
-  tryWritePackets (packetList) {
+  tryWritePackets (packetList: import("./types").MessageNode[]): TCPConnection {
     /** @type {{connection: TCPConnection, packetList: import("./types").MessageNode[]}} */
-    const updatedConnection = {
+    const updatedConnection: { connection: TCPConnection; packetList: import("./types").MessageNode[] } = {
       connection: this,
       packetList
     }
@@ -355,7 +354,7 @@ export class TCPConnection {
     for (const packet of updatedConnection.packetList) {
       // Does the packet need to be compressed?
       /** @type {import("./types").MessageNode} */
-      const compressedPacket = this.compressIfNeeded(packet).packet
+      const compressedPacket: import("./types").MessageNode = this.compressIfNeeded(packet).packet
       // Does the packet need to be encrypted?
       const encryptedPacket = this.encryptIfNeeded(compressedPacket).packet
       // Log that we are trying to write
@@ -372,7 +371,7 @@ export class TCPConnection {
         this.sock.write(encryptedPacket.serialize())
       } else {
         /** @type {string} */
-        const port = this.sock.localPort?.toString() || ''
+        const port: string = this.sock.localPort?.toString() || ''
         throw new Error(
           `Error writing ${encryptedPacket.serialize()} to ${
             this.sock.remoteAddress

@@ -5,7 +5,6 @@ coverage
 .nyc_output
 
 test-reports
-data/sessions.db
 junit
 built
 *.sqlite
@@ -14,5 +13,4 @@ junit.xml
 out/*
 *.db
 node_modules
-src/**/*.js
 .DS_Store

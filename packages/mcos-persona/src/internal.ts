@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { logger } from 'mcos-shared/logger'
-import { NPSMessage, NPSPersonaMapsMessage } from 'mcos-shared/types'
+import { BufferWithConnection, GSMessageArrayWithConnection, NPSMessage, NPSPersonaMapsMessage } from 'mcos-shared/types'
 
 const log = logger.child({ service: 'mcos:persona' })
 
@@ -28,7 +28,7 @@ const NAME_BUFFER_SIZE = 30
  * @param {BufferEncoding} [encoding="utf8"]
  * @returns {Buffer}
  */
-export function generateNameBuffer (name, size, encoding = 'utf8') {
+export function generateNameBuffer (name: string, size: number, encoding: BufferEncoding = 'utf8'): Buffer {
   const nameBuffer = Buffer.alloc(size)
   Buffer.from(name, encoding).copy(nameBuffer)
   return nameBuffer
@@ -71,7 +71,7 @@ export const personaRecords = [
    * @param {number} id
    * @return {Promise<import("mcos-shared/types").PersonaRecord[]>}
    */
-export async function getPersonasByPersonaId (id) {
+export async function getPersonasByPersonaId (id: number) {
   const results = personaRecords.filter((persona) => {
     const match = id === persona.id.readInt32BE(0)
     return match
@@ -88,7 +88,7 @@ export async function getPersonasByPersonaId (id) {
  * @param {NPSMessage} requestPacket
  * @returns {Promise<NPSMessage>}
  */
-export async function handleSelectGamePersona (requestPacket) {
+export async function handleSelectGamePersona (requestPacket: NPSMessage): Promise<NPSMessage> {
   log.debug('_npsSelectGamePersona...')
   log.debug(
     `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
@@ -129,7 +129,7 @@ export async function handleSelectGamePersona (requestPacket) {
  * @return {Promise<NPSMessage>}
  * @memberof PersonaServer
  */
-async function createNewGameAccount (data) {
+async function createNewGameAccount (data: Buffer): Promise<NPSMessage> {
   const requestPacket = new NPSMessage('recieved').deserialize(data)
   log.debug(
     `NPSMsg request object from _npsNewGameAccount',
@@ -163,7 +163,7 @@ async function createNewGameAccount (data) {
  * @return {Promise<NPSMessage>}
  * @memberof PersonaServer
  */
-async function logoutGameUser (data) {
+async function logoutGameUser (data: Buffer) {
   log.debug('[personaServer] Logging out persona...')
   const requestPacket = new NPSMessage('recieved').deserialize(data)
   log.debug(
@@ -202,7 +202,7 @@ async function logoutGameUser (data) {
    * @param {number} customerId
    * @return {Promise<import("mcos-shared/types").PersonaRecord[]>}
    */
-async function getPersonasByCustomerId (customerId) {
+async function getPersonasByCustomerId (customerId: number) {
   const results = personaRecords.filter(
     (persona) => persona.customerId === customerId
   )
@@ -217,7 +217,7 @@ async function getPersonasByCustomerId (customerId) {
    * @param {number} customerId
    * @return {Promise<import("mcos-shared/types").PersonaRecord[]>}
    */
-async function getPersonaMapsByCustomerId (customerId) {
+async function getPersonaMapsByCustomerId (customerId: number) {
   switch (customerId) {
     case 2_868_969_472:
     case 5_551_212:
@@ -232,7 +232,7 @@ async function getPersonaMapsByCustomerId (customerId) {
    * @param {Buffer} data
    * @return {Promise<NPSMessage>}
    */
-async function getPersonaMaps (data) {
+async function getPersonaMaps (data: Buffer) {
   log.debug('_npsGetPersonaMaps...')
   const requestPacket = new NPSMessage('recieved').deserialize(data)
 
@@ -299,7 +299,7 @@ async function getPersonaMaps (data) {
    * @param {Buffer} data
    * @return {Promise<NPSMessage>}
    */
-async function validatePersonaName (data) {
+async function validatePersonaName (data: Buffer) {
   log.debug('_npsValidatePersonaName...')
   const requestPacket = new NPSMessage('recieved').deserialize(data)
 
@@ -352,7 +352,7 @@ async function validatePersonaName (data) {
    * @return {Promise<NPSMessage>}
    * @memberof PersonaServer
    */
-async function validateLicencePlate (data) {
+async function validateLicencePlate (data: Buffer) {
   log.debug('_npsCheckToken...')
   const requestPacket = new NPSMessage('recieved').deserialize(data)
   log.debug(
@@ -398,13 +398,13 @@ async function validateLicencePlate (data) {
  * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
  * @return {Promise<import('mcos-shared/types').GSMessageArrayWithConnection>}
  */
-export async function handleData (dataConnection) {
+export async function handleData (dataConnection: BufferWithConnection): Promise<GSMessageArrayWithConnection> {
   const { connection, data } = dataConnection
-  const { socket } = connection
+  const { socket, localPort } = connection
   log.debug(
     `Received Persona packet',
     ${JSON.stringify({
-      localPort: socket.localPort,
+      localPort,
       remoteAddress: socket.remoteAddress,
       data: data.toString('hex')
     })}`

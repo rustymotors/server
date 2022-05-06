@@ -13,6 +13,9 @@
       "path": "./packages/mcos-login"
     },
     {
+      "path": "./packages/mcos-lobby"
+    },
+    {
       "path": "./packages/mcos-auth"
     },
     {
@@ -23,6 +26,9 @@
     },
     {
       "path": "./packages/mcos-gateway"
+    },
+    {
+      "path": "./packages/mcos-transactions"
     }
   ],
   "files": []

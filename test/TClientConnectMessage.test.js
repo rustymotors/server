@@ -22,12 +22,12 @@ chai.should()
 
 describe('TClientConnectMessage', () => {
   describe('.byteLength', () => {
-    it('should have a value of 85', () => {
+    it('should have a value of 51', () => {
       // Arrange
       const testMessage = new TClientConnectMessage()
 
       // Assert
-      testMessage.byteLength.should.equal(85)
+      testMessage.byteLength.should.equal(51)
     })
   })
   describe('#get', () => {
@@ -35,7 +35,7 @@ describe('TClientConnectMessage', () => {
       // Arrange
       const testMessage = new TClientConnectMessage()
       /** @type {import('mcos-shared/structures/BinaryStructure').ByteField} */
-      const expectedField = { name: 'customerId', size: 4, offset: 11, type: 'u32', value: Buffer.alloc(4), order: 'little' }
+      const expectedField = { name: 'customerId', size: 4, offset: 13, type: 'u32', value: Buffer.alloc(4), order: 'little' }
 
       // Assert
       testMessage.get('customerId').should.deep.equal(expectedField)

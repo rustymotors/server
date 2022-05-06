@@ -15,12 +15,15 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { logger } from 'mcos-shared/logger'
-import { errorMessage, toHex } from 'mcos-shared'
+import { errorMessage, TCPConnection, toHex, logAndThrow } from 'mcos-shared'
 import { processData, selectConnection, updateConnection } from './connections.js'
 import { receiveLoginData } from 'mcos-login'
 import { receivePersonaData } from 'mcos-persona'
 import { receiveLobbyData } from 'mcos-lobby'
 import { receiveTransactionsData } from 'mcos-transactions'
+import { GServiceResponse, MessageNode, SocketWithConnectionInfo, TServiceResponse } from 'mcos-shared/types'
+import { Socket } from 'net'
+import { BufferWithConnection } from 'mcos-shared/types'
 
 const log = logger.child({ service: 'mcos:gateway:sockets' })
 
@@ -69,11 +72,11 @@ const log = logger.child({ service: 'mcos:gateway:sockets' })
    * @param {import('mcos-shared/types').SocketWithConnectionInfo} connection
    * @return {Promise<void>}
    */
-async function onData (data, connection) {
+async function onData(data: Buffer, connection: SocketWithConnectionInfo) {
   log.debug(
-      `data prior to proccessing: ${data.toString(
-        'hex'
-      )}`
+    `data prior to proccessing: ${data.toString(
+      'hex'
+    )}`
   )
 
   // Link the data and the connection together
@@ -85,7 +88,7 @@ async function onData (data, connection) {
     timestamp: Date.now()
   }
 
-  const { localPort } = networkBuffer.connection.socket
+  const { localPort, remoteAddress } = networkBuffer.connection.socket
 
   if (typeof localPort === 'undefined') {
     // Somehow we have recived a connection without a local post specified
@@ -95,8 +98,19 @@ async function onData (data, connection) {
     return
   }
 
-  /** @type {import('mcos-shared/types').GServiceResponse | import('mcos-shared/types').TServiceResponse} */
-  let result = { err: null, response: undefined }
+  if (typeof remoteAddress === 'undefined') {
+    // Somehow we have recived a connection without a local post specified
+    log.error(`Error locating remote address for socket, connection id: ${networkBuffer.connectionId}`)
+    log.error('Closing socket.')
+    networkBuffer.connection.socket.end()
+    return
+  }
+
+  // Move remote address and local port forward
+  networkBuffer.connection.remoteAddress = remoteAddress
+  networkBuffer.connection.localPort = localPort
+
+  let result: GServiceResponse | TServiceResponse = { err: null, response: undefined }
 
   // Route the data to the correct service
   // There are 2 happy paths from this point
@@ -132,25 +146,29 @@ async function onData (data, connection) {
     return
   }
 
-  const messages = result.response.messages
+  const   messages = result.response.messages
 
-  // Count the response packets
+  const outboundConnection = result.response.connection
 
   const packetCount = messages.length
   log.debug(`There are ${packetCount} messages ready for sending`)
   if (messages.length >= 1) {
-    messages.forEach(f => {
-      log.trace(`Message: ${toHex(f.serialize())}`)
+    messages.forEach((f: { serialize: () => Buffer }) => {
+      if (outboundConnection.useEncryption && f instanceof MessageNode) {
+        if (typeof outboundConnection.encryptionSession === 'undefined' || typeof f.data === 'undefined') {
+          const errMessage = 'There was a fatal error attempting to encrypt the message!'
+          log.trace(`usingEncryption? ${outboundConnection.useEncryption}, packetLength: ${f.data.byteLength}/${f.dataLength}`)
+          logAndThrow(log.service, errMessage)
+        } else {
+          log.trace(`Message prior to encryption: ${toHex(f.serialize())}`)
+          f.updateBuffer(outboundConnection.encryptionSession.tsCipher.update(f.data))
+        }
+      }
+
+      log.trace(`Sending Message: ${toHex(f.serialize())}`)
+      outboundConnection.socket.write(f.serialize())
     })
   }
-
-  const outboundConnection = result.response.connection
-
-  // At this point the packets should be read to go. Compressed, encrypted, etc.
-
-  messages.forEach(m => {
-    outboundConnection.socket.write(m.serialize())
-  })
 
   // Update the connection
   try {
@@ -161,10 +179,11 @@ async function onData (data, connection) {
   } catch (error) {
     const errMessage = `There was an error updating the connection: ${errorMessage(error)}`
 
-    log.error(errMessage)
-    throw new Error(errMessage)
+    logAndThrow(log.service, errMessage)
   }
 }
+
+
 
 /**
    * Server listener method
@@ -172,7 +191,7 @@ async function onData (data, connection) {
    * @param {import("node:net").Socket} socket
    * @return {void}
    */
-export function socketListener (socket) {
+export function socketListener(socket: Socket) {
   // Received a new connection
   // Turn it into a connection object
   const connectionRecord = selectConnection(socket)
@@ -195,10 +214,10 @@ export function socketListener (socket) {
   socket.on('end', () => {
     log.info(`Client ${remoteAddress} disconnected from port ${localPort}`)
   })
-  socket.on('data', (/** @type {Buffer} */ data) => {
+  socket.on('data', (/** @type {Buffer} */ data: any) => {
     onData(data, connectionRecord)
   })
-  socket.on('error', (/** @type {unknown} */ error) => {
+  socket.on('error', (/** @type {unknown} */ error: unknown) => {
     const message = errorMessage(error)
     if (message.includes('ECONNRESET')) {
       return log.warn('Connection was reset')
@@ -237,9 +256,9 @@ export function socketListener (socket) {
  * @param {import('mcos-shared/types').BufferWithConnection} networkBuffer
  * @return {Promise<import('mcos-shared/types').GServiceResponse>}
  */
-async function handleInboundGameData (localPort, networkBuffer) {
+async function handleInboundGameData(localPort: number, networkBuffer: BufferWithConnection) {
   /** @type {import('mcos-shared/types').GServiceResponse} */
-  let result = { err: null, response: undefined }
+  let result: GServiceResponse = { err: null, response: undefined }
   let handledPackets = false
 
   if (localPort === 8226) {
@@ -276,9 +295,8 @@ async function handleInboundGameData (localPort, networkBuffer) {
  * @param {import('mcos-shared/types').BufferWithConnection} networkBuffer
  * @return {Promise<import('mcos-shared/types').TServiceResponse>}
  */
-async function handleInboundTransactionData (localPort, networkBuffer) {
-  /** @type {import('mcos-shared/types').TServiceResponse} */
-  let result = { err: null, response: undefined }
+async function handleInboundTransactionData(localPort: number, networkBuffer: BufferWithConnection) {
+  let result: TServiceResponse = { err: null, response: undefined }
   let handledPackets = false
 
   if (localPort === 43300) {
@@ -301,7 +319,7 @@ async function handleInboundTransactionData (localPort, networkBuffer) {
    * @param {{connection: import("mcos-shared").TCPConnection, data: Buffer}} packet
    * @returns {Promise<{err: Error | null, data: import("mcos-shared").TCPConnection | null}>}
    */
-export async function processPacket (packet) {
+export async function processPacket(packet: { connection: TCPConnection; data: Buffer }) {
   // Locate the conection manager
   try {
     return await processData(packet)
@@ -309,7 +327,7 @@ export async function processPacket (packet) {
     log.error(errorMessage(error))
     return {
       err: new Error(
-          `There was an error processing the packet: ${errorMessage(error)}`
+        `There was an error processing the packet: ${errorMessage(error)}`
       ),
       data: null
     }

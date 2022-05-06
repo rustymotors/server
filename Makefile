@@ -32,10 +32,15 @@ start:
 
 prod_node:
 	tsc -b --verbose
-	docker-compose up -d  --build
+	docker-compose --file docker-compose.yml up -d --build
+	docker-compose logs -f --tail 1000 node
 
 down:
 	docker-compose down
 
 enable-node:
 	@sudo setcap cap_net_bind_service=+ep $(which node)
+
+docker-init:
+	mkdir -p log/mcos
+	@npm run start:docker -s

@@ -16,6 +16,7 @@
 
 import { errorMessage } from 'mcos-shared'
 import { logger } from 'mcos-shared/logger'
+import { BufferWithConnection, TServiceResponse } from 'mcos-shared/types'
 import { handleData } from './internal.js'
 
 export { MCOTServer, getTransactionServer } from './transactionServer.js'
@@ -29,7 +30,8 @@ const log = logger.child({ service: 'mcos:transactions' })
  * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
  * @return {Promise<import('mcos-shared/types').TServiceResponse>}
  */
-export async function receiveTransactionsData (dataConnection) {
+export async function receiveTransactionsData (dataConnection: BufferWithConnection): Promise<TServiceResponse> {
+  log.debug(`Entering receiveTransactionsData`)
   try {
     const result = await handleData(dataConnection)
     log.debug('Exiting the transactions service')

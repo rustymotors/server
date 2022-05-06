@@ -14,9 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { logger } from './logger/index.js'
+
 export { TCPConnection } from './tcpConnection.js'
 export { EncryptionManager } from './encryption-mgr.js'
 export { selectEncryptors, selectEncryptorsForSocket, selectOrCreateEncryptors, updateEncryptionSession, decipherBufferDES, decryptBuffer, cipherBufferDES } from './encryption.js'
+
+const log = logger.child({ service: '' })
 
 /**
  *
@@ -24,7 +28,7 @@ export { selectEncryptors, selectEncryptorsForSocket, selectOrCreateEncryptors, 
  * @param {unknown} error
  * @return {string}
  */
-export function errorMessage (error) {
+export function errorMessage (error: unknown) {
   if (error instanceof Error) {
     return error.message
   }
@@ -38,11 +42,17 @@ export function errorMessage (error) {
  * @param {Buffer} data
  * @return {string}
  */
-export function toHex (data) {
+export function toHex (data: Buffer): string {
   /** @type {string[]} */
-  const bytes = []
+  const bytes: string[] = []
   data.forEach(b => {
     bytes.push(b.toString(16).toUpperCase().padStart(2, '0'))
   })
   return bytes.join('')
+}
+
+export function logAndThrow(service: string, errMessage: string): never {
+  log.service = service
+  log.error(errMessage)
+  throw new Error(errMessage)
 }

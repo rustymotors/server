@@ -14,51 +14,46 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { privateDecrypt } from 'node:crypto'
+import { Cipher, Decipher, privateDecrypt } from 'node:crypto'
 import { readFileSync, statSync } from 'node:fs'
+import { Socket } from 'node:net'
+import { URL } from 'node:url'
 import { APP_CONFIG } from '../config/index.js'
 export { TClientConnectMessage } from './TClientConnectMessage.js'
+export { TLoginMessage} from './TLoginMessage.js'
+export { TLobbyMessage, LobbyInfo} from './TLobbyMessage.js'
 
-/**
- * @export
- * @typedef LobbyCiphers
- * @property {import('node:crypto').Cipher} [cipher]
- * @property {import('node:crypto').Decipher} [decipher]
- */
+export interface LobbyCiphers {
+  cipher?: Cipher
+  decipher?: Decipher
+}
 
-/**
- * @export
- * @typedef SessionRecord
- * @property {string} skey
- * @property {string} sessionkey
- */
+export interface SessionRecord {
+  skey: string
+  sessionkey: string
+}
 
-/**
- * @export
- * @typedef PersonaRecord
- * @property {number} customerId
- * @property {Buffer} id
- * @property {Buffer} maxPersonas
- * @property {Buffer} name
- * @property {Buffer} personaCount
- * @property {Buffer} shardId
- */
 
-/**
- * @export
- * @typedef UserRecordMini
- * @property {string} contextId
- * @property {number} customerId
- * @property {number} userId
- */
+export interface PersonaRecord {
+  customerId: number
+  id: Buffer
+  maxPersonas: Buffer
+  name: Buffer
+  personaCount: Buffer
+  shardId: Buffer
+}
 
-/**
- * @export
- * @typedef NpsCommandMap
- * @property {string} name
- * @property {number} value
- * @property {'Lobby' | 'Login'} module
- */
+export interface UserRecordMini {
+  contextId: string,
+  customerId: number,
+  userId: number
+}
+
+export interface NpsCommandMap {
+  name: string
+  value: number
+  module: 'Lobby' | 'Login'
+}
 
 /**
  * Commands from the game server to the game client
@@ -66,7 +61,7 @@ export { TClientConnectMessage } from './TClientConnectMessage.js'
  * @readonly
  * @type {NpsCommandMap[]}
  */
-export const NPS_LOBBYSERVER_COMMANDS = [
+export const NPS_LOBBYSERVER_COMMANDS: NpsCommandMap[] = [
   { name: 'NPS_FORCE_LOGOFF', value: 513, module: 'Lobby' },
   { name: 'NPS_USER_LEFT', value: 514, module: 'Lobby' },
   { name: 'NPS_USER_JOINED', value: 515, module: 'Lobby' },
@@ -122,7 +117,7 @@ export const NPS_LOBBYSERVER_COMMANDS = [
  * @readonly
  * @type {NpsCommandMap[]}
  */
-export const NPS_LOBBYCLIENT_COMMANDS = [
+export const NPS_LOBBYCLIENT_COMMANDS: NpsCommandMap[] = [
   { name: 'NPS_LOGIN', value: 256, module: 'Lobby' },
   { name: 'NPS_GET_USER_LIST', value: 257, module: 'Lobby' },
   { name: 'NPS_GET_MY_USER_DATA', value: 258, module: 'Lobby' },
@@ -176,7 +171,7 @@ export const NPS_LOBBYCLIENT_COMMANDS = [
  * @readonly
  * @type {NpsCommandMap[]}
  */
-export const NPS_LOGINCLIENT_COMMANDS = [
+export const NPS_LOGINCLIENT_COMMANDS: NpsCommandMap[] = [
   { name: 'NPS_USER_LOGIN', value: 1281, module: 'Login' },
   { name: 'NPS_GAME_LOGIN', value: 1282, module: 'Login' },
   { name: 'NPS_REGISTER_GAME_LOGIN', value: 1283, module: 'Login' },
@@ -228,7 +223,7 @@ export const NPS_LOGINCLIENT_COMMANDS = [
  * @readonly
  * @type {NpsCommandMap[]}
  */
-export const NPS_LOBBY_COMMANDS = [
+export const NPS_LOBBY_COMMANDS: NpsCommandMap[] = [
   ...NPS_LOBBYCLIENT_COMMANDS,
   ...NPS_LOBBYSERVER_COMMANDS
 ]
@@ -238,24 +233,24 @@ export const NPS_LOBBY_COMMANDS = [
  * @readonly
  * @type {NpsCommandMap[]}
  */
-export const NPS_LOGIN_COMMANDS = [...NPS_LOGINCLIENT_COMMANDS]
+export const NPS_LOGIN_COMMANDS: NpsCommandMap[] = [...NPS_LOGINCLIENT_COMMANDS]
 
 /**
  * @export
  * @readonly
  * @type {NpsCommandMap[]}
  */
-export const NPS_COMMANDS = [
+export const NPS_COMMANDS: NpsCommandMap[] = [
   ...NPS_LOBBY_COMMANDS,
   ...NPS_LOGINCLIENT_COMMANDS,
   { name: 'NPS_CRYPTO_DES_CBC', value: 0x1101, module: 'Lobby' }
 ]
 
-/**
- * @export
- * @typedef {'recieved' | 'sent' | 'not set'} EMESSAGE_DIRECTION
- *
- */
+export enum EMESSAGE_DIRECTION {
+  'recieved' = 'recieved',
+  'sent' = 'sent',
+  'not set' = 'not set'
+}
 
 /**
  * @class
@@ -267,68 +262,69 @@ export class MessageNode {
    * @type {EMESSAGE_DIRECTION}
    * @memberof MessageNode
    */
-  direction
+  direction: EMESSAGE_DIRECTION
   /**
    *
    *
    * @type {number}
    * @memberof MessageNode
    */
-  msgNo
+  msgNo: number
   /**
    *
    *
    * @type {number}
    * @memberof MessageNode
    */
-  seq
+  seq: number
   /**
    *
    *
    * @type {number}
    * @memberof MessageNode
    */
-  flags
+  flags: number
   /**
    *
    *
    * @type {Buffer}
    * @memberof MessageNode
    */
-  data
+  data: Buffer
   /**
    *
    *
    * @type {number}
    * @memberof MessageNode
    */
-  dataLength
+  dataLength: number
   /**
    *
    *
    * @type {string}
    * @memberof MessageNode
    */
-  mcoSig
+  mcoSig: string
   /**
    *
    *
    * @type {number}
    * @memberof MessageNode
    */
-  toFrom
+  toFrom: number
   /**
    *
    *
    * @type {number}
    * @memberof MessageNode
    */
-  appId
+  appId: number
+  rawPacket: Buffer
   /**
    *
    * @param {EMESSAGE_DIRECTION} direction
    */
-  constructor (direction) {
+  constructor (direction: any) {
     this.direction = direction
     this.msgNo = 0
     this.seq = 999
@@ -342,12 +338,7 @@ export class MessageNode {
     this.rawPacket = Buffer.alloc(0)
   }
 
-  /**
-   *
-   * @param {Buffer} packet
-   * @return {void}
-   */
-  deserialize (packet) {
+  deserialize (packet: Buffer): void {
     try {
       this.rawPacket = packet
       this.dataLength = packet.readInt16LE(0)
@@ -384,7 +375,7 @@ export class MessageNode {
    *
    * @return {Buffer}
    */
-  serialize () {
+  serialize (): Buffer {
     const packet = Buffer.alloc(this.dataLength + 2) // skipcq: JS-0377
     packet.writeInt16LE(this.dataLength, 0)
     packet.write(this.mcoSig, 2)
@@ -399,7 +390,7 @@ export class MessageNode {
    * @param {number} appId
    * @return {void}
    */
-  setAppId (appId) {
+  setAppId (appId: number): void {
     this.appId = appId
   }
 
@@ -408,7 +399,7 @@ export class MessageNode {
    * @param {number} newMessageNo
    * @return {void}
    */
-  setMsgNo (newMessageNo) {
+  setMsgNo (newMessageNo: number): void {
     this.msgNo = newMessageNo
     this.data.writeInt16LE(this.msgNo, 0)
   }
@@ -418,7 +409,7 @@ export class MessageNode {
    * @param {number} newSeq
    * @return {void}
    */
-  setSeq (newSeq) {
+  setSeq (newSeq: number): void {
     this.seq = newSeq
   }
 
@@ -427,7 +418,7 @@ export class MessageNode {
    * @param {Buffer} packet
    * @return {void}
    */
-  setMsgHeader (packet) {
+  setMsgHeader (packet: Buffer): void {
     const header = Buffer.alloc(6)
     packet.copy(header, 0, 0, 6)
   }
@@ -437,7 +428,7 @@ export class MessageNode {
    * @param {Buffer} buffer
    * @return {void}
    */
-  updateBuffer (buffer) {
+  updateBuffer (buffer: Buffer): void {
     this.data = Buffer.from(buffer)
     this.dataLength = buffer.length + 10 // skipcq: JS-0377
     this.msgNo = this.data.readInt16LE(0)
@@ -447,7 +438,7 @@ export class MessageNode {
    *
    * @return {boolean}
    */
-  isMCOTS () {
+  isMCOTS (): boolean {
     return this.mcoSig === 'TOMC'
   }
 
@@ -455,7 +446,7 @@ export class MessageNode {
    *
    * @return {string}
    */
-  dumpPacket () {
+  dumpPacket (): string {
     let packetContentsArray = this.serialize().toString('hex').match(/../g)
     if (packetContentsArray === null) {
       packetContentsArray = []
@@ -478,7 +469,7 @@ export class MessageNode {
    * Returns a formatted representation of the packet as a string
    * @returns {string}
    */
-  toString () {
+  toString (): string {
     return this.dumpPacket()
   }
 
@@ -486,7 +477,7 @@ export class MessageNode {
    *
    * @return {number}
    */
-  getLength () {
+  getLength (): number {
     return this.dataLength
   }
 
@@ -495,7 +486,7 @@ export class MessageNode {
    * @param {Buffer} packet
    * @return {void}
    */
-  BaseMsgHeader (packet) {
+  BaseMsgHeader (packet: { readInt16LE: (arg0: number) => number }): void {
     // WORD msgNo;
     this.msgNo = packet.readInt16LE(0)
   }
@@ -552,7 +543,7 @@ export class GenericReplyMessage {
    * @param {Buffer} value
    * @return {void}
    */
-  setData (value) {
+  setData (value: Buffer): void {
     this.data = value
   }
 
@@ -561,7 +552,7 @@ export class GenericReplyMessage {
    * @param {Buffer} value
    * @return {void}
    */
-  setData2 (value) {
+  setData2 (value: Buffer): void {
     this.data2 = value
   }
 
@@ -570,7 +561,7 @@ export class GenericReplyMessage {
    * @param {Buffer} buffer
    * @return {void}
    */
-  deserialize (buffer) {
+  deserialize (buffer: Buffer): void {
     try {
       this.msgNo = buffer.readInt16LE(0)
     } catch (error) {
@@ -595,7 +586,7 @@ export class GenericReplyMessage {
    *
    * @return {Buffer}
    */
-  serialize () {
+  serialize (): Buffer {
     const packet = Buffer.alloc(16)
     packet.writeInt16LE(this.msgNo, 0)
     packet.writeInt16LE(this.msgReply, 2)
@@ -610,7 +601,7 @@ export class GenericReplyMessage {
    * @param {Buffer} buffer
    * @return {void}
    */
-  setResult (buffer) {
+  setResult (buffer: Buffer): void {
     this.result = buffer
   }
 
@@ -618,7 +609,7 @@ export class GenericReplyMessage {
    * DumpPacket
    * @return {string}
    */
-  dumpPacket () {
+  dumpPacket (): string {
     return `GenericReply',
         ${JSON.stringify({
           msgNo: this.msgNo,
@@ -667,7 +658,7 @@ export class GenericRequestMessage {
    * @param {Buffer} buffer
    * @return {void}
    */
-  deserialize (buffer) {
+  deserialize (buffer: Buffer): void {
     try {
       this.msgNo = buffer.readInt16LE(0)
     } catch (error) {
@@ -690,7 +681,7 @@ export class GenericRequestMessage {
    *
    * @return {Buffer}
    */
-  serialize () {
+  serialize (): Buffer {
     const packet = Buffer.alloc(16)
     packet.writeInt16LE(this.msgNo, 0)
     this.data.copy(packet, 2)
@@ -702,7 +693,7 @@ export class GenericRequestMessage {
    * DumpPacket
    * @return {string}
    */
-  dumpPacket () {
+  dumpPacket (): string {
     return `GenericRequest ${JSON.stringify({
       msgNo: this.msgNo,
       data: this.data.toString('hex'),
@@ -736,7 +727,7 @@ export class StockCar {
    * @param {number} retailPrice
    * @param {0|1} bIsDealOfTheDay
    */
-  constructor (brandedPartId, retailPrice, bIsDealOfTheDay) {
+  constructor (brandedPartId: any, retailPrice: any, bIsDealOfTheDay: any) {
     this.brandedPartId = brandedPartId
     this.retailPrice = retailPrice
     this.bIsDealOfTheDay = bIsDealOfTheDay
@@ -747,7 +738,7 @@ export class StockCar {
    *
    * @return {Buffer}
    */
-  serialize () {
+  serialize (): Buffer {
     const packet = Buffer.alloc(10)
     packet.writeInt32LE(this.brandedPartId, 0)
     packet.writeInt32LE(this.retailPrice, 4)
@@ -759,7 +750,7 @@ export class StockCar {
    * DumpPacket
    * @return {string}
    */
-  dumpPacket () {
+  dumpPacket (): string {
     return `
         [StockCar]======================================
         brandedPartId:     ${this.brandedPartId}
@@ -805,14 +796,14 @@ export class StockCarInfoMessage {
    * @type {StockCar[]}
    * @memberof StockCarInfoMessage
    */
-  StockCarList = []
+  StockCarList: StockCar[] = []
   /**
    *
    *
    * @type {string}
    * @memberof StockCarInfoMessage
    */
-  serviceName
+  serviceName: string
   /**
    * Creates an instance of StockCarInfoMsg.
    * @class
@@ -821,7 +812,7 @@ export class StockCarInfoMessage {
    * @param {number} brand
    * @memberof StockCarInfoMsg
    */
-  constructor (starterCash, dealerId, brand) {
+  constructor (starterCash: any, dealerId: any, brand: any) {
     this.msgNo = 141
     this.starterCash = starterCash
     this.dealerId = dealerId
@@ -840,7 +831,7 @@ export class StockCarInfoMessage {
    * @param {StockCar} car
    * @return {void}
    */
-  addStockCar (car) {
+  addStockCar (car: any): void {
     this.StockCarList.push(car)
     this.noCars = this.StockCarList.length
   }
@@ -849,7 +840,7 @@ export class StockCarInfoMessage {
    *
    * @return {Buffer}
    */
-  serialize () {
+  serialize (): Buffer {
     // This does not count the StockCar array
     const packet = Buffer.alloc((17 + 9) * this.StockCarList.length)
     packet.writeInt16LE(this.msgNo, 0)
@@ -875,7 +866,7 @@ export class StockCarInfoMessage {
    * DumpPacket
    * @return {string}
    */
-  dumpPacket () {
+  dumpPacket (): string {
     return `${JSON.stringify({
       msgNo: this.msgNo,
       starterCash: this.starterCash,
@@ -910,7 +901,7 @@ export class NPSMessage {
    *
    * @param {EMESSAGE_DIRECTION} direction - the direction of the message flow
    */
-  constructor (direction) {
+  constructor (direction: any) {
     this.msgNo = 0
     this.msgVersion = 0
     this.reserved = 0
@@ -925,7 +916,7 @@ export class NPSMessage {
    * @param {Buffer} buffer
    * @return {void}
    */
-  setContent (buffer) {
+  setContent (buffer: Buffer): void {
     this.content = buffer
     this.msgLength = this.content.length + 12 // skipcq: JS-0377
   }
@@ -934,7 +925,7 @@ export class NPSMessage {
    *
    * @return {Buffer}
    */
-  getContentAsBuffer () {
+  getContentAsBuffer (): Buffer {
     return this.content
   }
 
@@ -942,7 +933,7 @@ export class NPSMessage {
    *
    * @return {string}
    */
-  getPacketAsString () {
+  getPacketAsString (): string {
     return this.serialize().toString('hex')
   }
 
@@ -950,7 +941,7 @@ export class NPSMessage {
    *
    * @return {Buffer}
    */
-  serialize () {
+  serialize (): Buffer {
     try {
       const packet = Buffer.alloc(this.msgLength)
       packet.writeInt16BE(this.msgNo, 0)
@@ -983,7 +974,7 @@ export class NPSMessage {
    * @return {NPSMessage}
    * @memberof NPSMessage
    */
-  deserialize (packet) {
+  deserialize (packet: { readInt16BE: (arg0: number) => number; slice: (arg0: number) => Buffer }): NPSMessage {
     this.msgNo = packet.readInt16BE(0)
     this.msgLength = packet.readInt16BE(2)
     this.msgVersion = packet.readInt16BE(4)
@@ -996,7 +987,7 @@ export class NPSMessage {
    * @param {string} messageType
    * @return {string}
    */
-  dumpPacketHeader (messageType) {
+  dumpPacketHeader (messageType: string): string {
     return `NPSMsg/${messageType},
           ${JSON.stringify({
             direction: this.direction,
@@ -1011,7 +1002,7 @@ export class NPSMessage {
    * @return {string}
    * @memberof NPSMsg
    */
-  dumpPacket () {
+  dumpPacket (): string {
     return `NPSMsg/NPSMsg,
           ${JSON.stringify({
             direction: this.direction,
@@ -1027,7 +1018,7 @@ export class NPSMessage {
    *
    * @return {INPSMessageJSON}
    */
-  toJSON () {
+  toJSON (): INPSMessageJSON {
     return {
       msgNo: this.msgNo,
       contextId: '',
@@ -1056,14 +1047,14 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    * @type {PersonaRecord[]}
    * @memberof NPSPersonaMapsMessage
    */
-  personas = []
+  personas: PersonaRecord[] = []
   personaSize
   personaCount
   /**
    *
    * @param {EMESSAGE_DIRECTION} direction
    */
-  constructor (direction) {
+  constructor (direction: any) {
     super(direction)
 
     /** @type {PersonaRecord[]} */
@@ -1080,7 +1071,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    * @param {PersonaRecord[]} personas
    * @return {void}
    */
-  loadMaps (personas) {
+  loadMaps (personas: PersonaRecord[]): void {
     this.personaCount = personas.length
     this.personas = personas
   }
@@ -1091,7 +1082,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    * @return {number}
    * @memberof! NPSPersonaMapsMsg
    */
-  deserializeInt8 (buf) {
+  deserializeInt8 (buf: { readInt8: (arg0: number) => any }): number {
     return buf.readInt8(0)
   }
 
@@ -1101,7 +1092,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    * @return {number}
    * @memberof! NPSPersonaMapsMsg
    */
-  deserializeInt32 (buf) {
+  deserializeInt32 (buf: { readInt32BE: (arg0: number) => any }): number {
     return buf.readInt32BE(0)
   }
 
@@ -1111,7 +1102,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    * @return {string}
    * @memberof! NPSPersonaMapsMsg
    */
-  deserializeString (buf) {
+  deserializeString (buf: Buffer): string {
     return buf.toString('utf8')
   }
 
@@ -1120,7 +1111,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    * @override
    * @return {Buffer}
    */
-  serialize () {
+  serialize (): Buffer {
     let index = 0
     // Create the packet content
     // const packetContent = Buffer.alloc(40);
@@ -1175,7 +1166,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    * @override
    * @return {string}
    */
-  dumpPacket () {
+  dumpPacket (): string {
     let message = ''
     message = message.concat(this.dumpPacketHeader('NPSPersonaMapsMsg'))
     message = message.concat(
@@ -1207,20 +1198,17 @@ export class NPSPersonaMapsMessage extends NPSMessage {
   }
 }
 
-/**
- *
- * @global
- * @typedef {Object} INPSMessageJSON
- * @property {number} msgNo
- * @property {number | null} opCode
- * @property {number} msgLength
- * @property {number} msgVersion
- * @property {string} content
- * @property {string} contextId
- * @property {EMESSAGE_DIRECTION} direction
- * @property {string | null } sessionkey
- * @property {string} rawBuffer
- */
+export interface INPSMessageJSON {
+  msgNo: number
+  opCode: number | null
+  msgLength: number
+  msgVersion: number
+  content: string
+  contextId: string
+  direction: EMESSAGE_DIRECTION
+  sessionkey: string | null
+  rawBuffer: string
+}
 
 /**
  *
@@ -1253,7 +1241,7 @@ export class NPSUserStatus extends NPSMessage {
    *
    * @param {Buffer} packet
    */
-  constructor (packet) {
+  constructor (packet: Buffer) {
     super('recieved')
     this.sessionkey = ''
 
@@ -1273,7 +1261,7 @@ export class NPSUserStatus extends NPSMessage {
    * @param {string} privateKeyPath
    * @return {string}
    */
-  fetchPrivateKeyFromFile (privateKeyPath) {
+  fetchPrivateKeyFromFile (privateKeyPath: string): string {
     try {
       statSync(privateKeyPath)
     } catch (error) {
@@ -1300,7 +1288,7 @@ export class NPSUserStatus extends NPSMessage {
    * @param {Buffer} packet
    * @return {void}
    */
-  extractSessionKeyFromPacket (packet) {
+  extractSessionKeyFromPacket (packet: Buffer): void {
     if (!APP_CONFIG.MCOS.CERTIFICATE.PRIVATE_KEY_FILE) {
       throw new Error('Please set MCOS__CERTIFICATE__PRIVATE_KEY_FILE')
     }
@@ -1322,7 +1310,7 @@ export class NPSUserStatus extends NPSMessage {
    * @override
    * @return {INPSMessageJSON}
    */
-  toJSON () {
+  toJSON (): INPSMessageJSON {
     return {
       msgNo: this.msgNo,
       msgLength: this.msgLength,
@@ -1340,7 +1328,7 @@ export class NPSUserStatus extends NPSMessage {
    * @override
    * @return {string}
    */
-  dumpPacket () {
+  dumpPacket (): string {
     let message = this.dumpPacketHeader('NPSUserStatus')
     message = message.concat(
       `NPSUserStatus,
@@ -1358,7 +1346,7 @@ export class NPSUserStatus extends NPSMessage {
  *
  * @return {Buffer}
  */
-export function premadeLogin () {
+export function premadeLogin (): Buffer {
   // TODO: Generate a dynamic login response message
   return Buffer.from([
     // Live Packet
@@ -1636,7 +1624,7 @@ export class NPSUserInfo extends NPSMessage {
    *
    * @param {EMESSAGE_DIRECTION} direction
    */
-  constructor (direction) {
+  constructor (direction: any) {
     super(direction)
     this.userId = 0
     this.userName = Buffer.from([0x00]) // 30 length
@@ -1650,7 +1638,7 @@ export class NPSUserInfo extends NPSMessage {
    * @param {Buffer} rawData
    * @return {NPSUserInfo}
    */
-  deserialize (rawData) {
+  deserialize (rawData: Buffer): NPSUserInfo {
     this.userId = rawData.readInt32BE(4)
     this.userName = rawData.slice(8, 38)
     this.userData = rawData.slice(38)
@@ -1660,7 +1648,7 @@ export class NPSUserInfo extends NPSMessage {
   /**
    * @return {string}
    */
-  dumpInfo () {
+  dumpInfo (): string {
     let message = this.dumpPacketHeader('NPSUserInfo')
     const { userId, userName, userData } = this
     const userIdString = userId.toString()
@@ -1687,69 +1675,64 @@ export class NPSUserInfo extends NPSMessage {
 
 /**
    * Socket with connection properties
-   * @export
-   * @typedef {object} SocketWithConnectionInfo
-   * @property {import('node:net').Socket} socket
-   * @property {number} seq
-   * @property {string} id
-   * @property {number} personaId (appId)
-   * @property {number}  lastMsgTimestamp
-   * @property {boolean} inQueue
-   * @property {boolean} useEncryption
-   * @property {EncryptionSession} [encryptionSession]
-   *
    */
+export interface SocketWithConnectionInfo {
+  socket: Socket
+  seq: number
+  id: string
+  remoteAddress: string
+  localPort: number
+  personaId: number // appId
+  lastMessageTimestamp: number
+  inQueue: boolean
+  useEncryption: boolean
+  encryptionSession?: EncryptionSession
+}
 
-/**
- * @export
- * @typedef {object} BufferWithConnection
- * @property {string} connectionId
- * @property {SocketWithConnectionInfo} connection
- * @property {Buffer} data
- * @property {number} timestamp
- */
+export interface BufferWithConnection {
+  connectionId: string
+  connection: SocketWithConnectionInfo
+  data: Buffer
+  timestamp: number
+}
 
-/**
- * @export
- * @typedef {object} EncryptionSession
- * @property {string} connectionId
- * @property {string} sessionKey
- * @property {string} shortKey
- * @property {import('node:crypto').Cipher} gsCipher - des-cbc, uses skey
- * @property {import('node:crypto').Decipher} gsDecipher - des-cbc, uses skey
- * @property {import('node:crypto').Cipher} tsCipher - rc4, uses sessionkey
- * @property {import('node:crypto').Decipher} tsDecipher - rc4, uses sessionkey
- */
+export interface EncryptionSession {
+  connectionId: string
+  remoteAddress: string
+  localPort: number
+  sessionKey: string
+  shortKey: string
+  gsCipher: Cipher // des-cbc, uses skey
+  gsDecipher: Decipher // des-cbc, uses skey
+  tsCipher: Cipher // rc4, uses sessionkey
+  tsDecipher: Decipher // rc4, uses sessionkey
+}
 
 /**
  * N+ messages, ready for sending, with related connection
- * @export
- * @typedef {object} GSMessageArrayWithConnection
- * @property {SocketWithConnectionInfo} connection
- * @property {NPSMessage[]} messages
  */
+export interface GSMessageArrayWithConnection {
+  connection: SocketWithConnectionInfo
+  messages: NPSMessage[]
+}
 
 /**
  * N+ messages, ready for sending, with related connection
- * @export
- * @typedef {object} TSMessageArrayWithConnection
- * @property {SocketWithConnectionInfo} connection
- * @property {MessageNode[]} messages
  */
+export interface TSMessageArrayWithConnection {
+  connection: SocketWithConnectionInfo
+  messages: MessageNode[]
+}
 
-/**
- * @export
- * @typedef {object} GServiceResponse
- * @property {Error | null} err
- * @property {GSMessageArrayWithConnection | undefined} response
- */
+export interface GServiceResponse {
+  err: Error | null
+  response?: GSMessageArrayWithConnection
+}
 
-/**
- * @export
- * @typedef {object} TServiceResponse
- * @property {Error | null} err
- * @property {TSMessageArrayWithConnection | undefined} response
- */
+export interface TServiceResponse {
+  err: Error | null
+  response?: TSMessageArrayWithConnection
+}
 
 /**
  * The blueprint for a service

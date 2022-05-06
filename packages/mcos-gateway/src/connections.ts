@@ -16,15 +16,16 @@
 
 import { EncryptionManager, errorMessage, TCPConnection } from 'mcos-shared'
 import { logger } from 'mcos-shared/logger'
-import { MessageNode, NPS_COMMANDS } from 'mcos-shared/types'
+import { MessageNode, NPS_COMMANDS, SocketWithConnectionInfo } from 'mcos-shared/types'
 import { getTransactionServer } from 'mcos-transactions'
 import { randomUUID } from 'node:crypto'
+import { Socket } from 'node:net'
 import { NPSPacketManager } from './nps-packet-manager.js'
 
 const log = logger.child({ service: 'mcos:gateway:connections' })
 
 /** @type {import("mcos-shared/types").SocketWithConnectionInfo[]} */
-const connectionList = []
+const connectionList: SocketWithConnectionInfo[] = []
 
 /**
  *
@@ -32,7 +33,7 @@ const connectionList = []
  * @export
  * @return {import('mcos-shared/types').SocketWithConnectionInfo[]}
  */
-export function getAllConnections () {
+export function getAllConnections (): SocketWithConnectionInfo[] {
   return connectionList
 }
 
@@ -42,9 +43,18 @@ export function getAllConnections () {
    * @param {import("node:net").Socket} socket
    * @return {import('mcos-shared/types').SocketWithConnectionInfo}
    */
-export function selectConnection (socket) {
+export function selectConnection (socket: Socket): SocketWithConnectionInfo {
+
+  const { localPort, remoteAddress } = socket
+
+  if (typeof localPort === 'undefined' || typeof remoteAddress === 'undefined') {
+    const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`
+    log.error(errMessage)
+    throw new Error(errMessage)
+  }
+
   const existingConnection = connectionList.find(c => {
-    return c.socket.remoteAddress === socket.remoteAddress && c.socket.localPort === socket.localPort
+    return c.socket.remoteAddress === remoteAddress && c.localPort === localPort
   })
 
   if (typeof existingConnection !== 'undefined') {
@@ -59,12 +69,14 @@ export function selectConnection (socket) {
   const newConnectionId = randomUUID()
   log.debug(`Creating new connection with id ${newConnectionId}`)
   /** @type {import("mcos-shared/types").SocketWithConnectionInfo} */
-  const newConnection = {
+  const newConnection: SocketWithConnectionInfo = {
     seq: 0,
     id: newConnectionId,
     socket,
+    remoteAddress: socket.remoteAddress || '',
+    localPort: socket.localPort || 0,
     personaId: 0,
-    lastMsgTimestamp: 0,
+    lastMessageTimestamp: 0,
     inQueue: true,
     useEncryption: false
   }
@@ -87,7 +99,7 @@ export function selectConnection (socket) {
    * @param {string} connectionId
    * @param {import("mcos-shared/types").SocketWithConnectionInfo} updatedConnection
    */
-export function updateConnection (connectionId, updatedConnection) {
+export function updateConnection (connectionId: string, updatedConnection: SocketWithConnectionInfo) {
   log.trace(`Updating connection with id: ${connectionId}`)
   try {
     const index = connectionList.findIndex(
@@ -112,7 +124,7 @@ export function updateConnection (connectionId, updatedConnection) {
    * @param {import("mcos-shared").TCPConnection} newConnection
    * @return {*}  {TCPConnection[]} the updated connection
    */
-export function updateConnectionByAddressAndPort (address, port, newConnection) {
+export function updateConnectionByAddressAndPort (address: string, port: number, newConnection: TCPConnection): any {
   if (newConnection === undefined) {
     throw new Error(
       `Undefined connection: ${JSON.stringify({
@@ -128,13 +140,14 @@ export function updateConnectionByAddressAndPort (address, port, newConnection) 
         c.socket.remoteAddress === address && c.socket.localPort === port
     )
     connectionList.splice(index, 1)
-    /** @type {import('mcos-shared/types').SocketWithConnectionInfo} */
-    const newConnectionRecord = {
+    const newConnectionRecord: SocketWithConnectionInfo = {
       socket: newConnection.sock,
+      remoteAddress: address,
+      localPort: newConnection.sock.localPort || 0,
       seq: 0,
       id: newConnection.id,
       personaId: newConnection.appId,
-      lastMsgTimestamp: newConnection.lastMsg,
+      lastMessageTimestamp: newConnection.lastMsg,
       inQueue: newConnection.inQueue,
       useEncryption: newConnection.useEncryption
     }
@@ -157,12 +170,12 @@ export function updateConnectionByAddressAndPort (address, port, newConnection) 
    * @param {number} localPort
    * @return {{ legacy: import("mcos-shared").TCPConnection, modern: import('mcos-shared/types').SocketWithConnectionInfo} | null}
    */
-function findConnectionByAddressAndPort (remoteAddress, localPort) {
+function findConnectionByAddressAndPort (remoteAddress: string, localPort: number): { legacy: TCPConnection; modern: SocketWithConnectionInfo } | null {
   const record =
       connectionList.find((c) => {
         const match =
-          remoteAddress === c.socket.remoteAddress &&
-          localPort === c.socket.localPort
+        c.socket.remoteAddress === remoteAddress  &&
+        c.localPort === localPort
         return match
       }) || null
   if (!record) {
@@ -178,15 +191,26 @@ function findConnectionByAddressAndPort (remoteAddress, localPort) {
    * @param {import("node:net").Socket} socket
    * @returns {{ legacy: import("mcos-shared").TCPConnection, modern: import('mcos-shared/types').SocketWithConnectionInfo}}
    */
-function createNewConnection (connectionId, socket) {
+function createNewConnection (connectionId: string, socket: Socket): { legacy: TCPConnection; modern: SocketWithConnectionInfo } {
   const newConnection = new TCPConnection(connectionId, socket)
+
+  const { localPort, remoteAddress } = socket
+
+  if (typeof localPort === 'undefined' || typeof remoteAddress === 'undefined') {
+    const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`
+    log.error(errMessage)
+    throw new Error(errMessage)
+  }
+
   /** @type {import('mcos-shared/types').SocketWithConnectionInfo} */
-  const newConnectionRecord = {
+  const newConnectionRecord: SocketWithConnectionInfo = {
     socket,
+    remoteAddress,
+    localPort,
     seq: 0,
     id: connectionId,
     personaId: 0,
-    lastMsgTimestamp: 0,
+    lastMessageTimestamp: 0,
     inQueue: true,
     useEncryption: false
   }
@@ -200,7 +224,7 @@ function createNewConnection (connectionId, socket) {
    * @param {import('mcos-shared/types').SocketWithConnectionInfo} connection
    * @return {import('mcos-shared/types').SocketWithConnectionInfo[]}
    */
-function addConnection (connection) {
+function addConnection (connection: SocketWithConnectionInfo): SocketWithConnectionInfo[] {
   connectionList.push(connection)
   return connectionList
 }
@@ -211,20 +235,18 @@ function addConnection (connection) {
    * @param {import("node:net").Socket} socket
    * @return {{ legacy: import("mcos-shared").TCPConnection, modern: import('mcos-shared/types').SocketWithConnectionInfo} | null}
    */
-export function findOrNewConnection (socket) {
-  if (typeof socket.remoteAddress === 'undefined') {
-    log.fatal('The socket is missing a remoteAddress, unable to use.')
-    return null
-  }
+export function findOrNewConnection (socket: Socket): { legacy: TCPConnection; modern: SocketWithConnectionInfo } | null {
+  const { localPort, remoteAddress } = socket
 
-  if (typeof socket.localPort === 'undefined') {
-    log.fatal('The socket is missing a localPost, unable to use.')
-    return null
+  if (typeof localPort === 'undefined' || typeof remoteAddress === 'undefined') {
+    const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`
+    log.error(errMessage)
+    throw new Error(errMessage)
   }
 
   const existingConnection = findConnectionByAddressAndPort(
-    socket.remoteAddress,
-    socket.localPort
+    remoteAddress,
+    localPort
   )
   if (existingConnection) {
     log.info(
@@ -259,7 +281,7 @@ export function findOrNewConnection (socket) {
    * @param {number} opCode
    * @return {string}
    */
-function getNameFromOpCode (opCode) {
+function getNameFromOpCode (opCode: number): string {
   const opCodeName = NPS_COMMANDS.find((code) => code.value === opCode)
   if (opCodeName === undefined) {
     throw new Error(`Unable to locate name for opCode ${opCode}`)
@@ -275,7 +297,7 @@ function getNameFromOpCode (opCode) {
  * @param {Buffer} inputBuffer
  * @return {boolean}
  */
-export function isMCOT (inputBuffer) {
+export function isMCOT (inputBuffer: Buffer): boolean {
   return inputBuffer.toString('utf8', 2, 6) === 'TOMC'
 }
 
@@ -285,7 +307,7 @@ export function isMCOT (inputBuffer) {
    * @param {{connection: import('mcos-shared').TCPConnection, data: Buffer}} rawPacket
    * @return {Promise<{err: Error | null, data: TCPConnection | null}>}
    */
-export async function processData (rawPacket) {
+export async function processData (rawPacket: { connection: import('mcos-shared/built').TCPConnection; data: Buffer }): Promise<{ err: Error | null; data: TCPConnection | null }> {
   const npsPacketManager = new NPSPacketManager()
 
   const { data } = rawPacket

@@ -15,9 +15,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { DatabaseManager } from 'mcos-database'
-import { toHex } from 'mcos-shared'
+import { selectOrCreateEncryptors, toHex } from 'mcos-shared'
 import { logger } from 'mcos-shared/logger'
-import { GenericReplyMessage, GenericRequestMessage, MessageNode, StockCar, StockCarInfoMessage, TClientConnectMessage } from 'mcos-shared/types'
+import { GenericReplyMessage, GenericRequestMessage, MessageNode, SocketWithConnectionInfo, StockCar, StockCarInfoMessage, TClientConnectMessage, TLoginMessage, TSMessageArrayWithConnection } from 'mcos-shared/types'
 
 const log = logger.child({ service: 'mcos:transactions:handlers' })
 
@@ -28,7 +28,7 @@ const log = logger.child({ service: 'mcos:transactions:handlers' })
  * @param {MessageNode} node
  * @return {import("mcos-shared/types").TSMessageArrayWithConnection}
  */
-function _setOptions (connection, node) {
+function _setOptions (connection: SocketWithConnectionInfo, node: MessageNode) {
   const setOptionsMessage = node
 
   setOptionsMessage.data = node.serialize()
@@ -57,7 +57,7 @@ function _setOptions (connection, node) {
  * @return {import('mcos-shared/types').TSMessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleSetOptions (conn, node) {
+function handleSetOptions (conn: SocketWithConnectionInfo, node: MessageNode) {
   const result = _setOptions(conn, node)
   return result
 }
@@ -69,7 +69,7 @@ function handleSetOptions (conn, node) {
 * @param {MessageNode} node
 * @return {import("mcos-shared/types").TSMessageArrayWithConnection}
 */
-function _trackingMessage (connection, node) {
+function _trackingMessage (connection: SocketWithConnectionInfo, node: MessageNode) {
   const trackingMessage = node
 
   trackingMessage.data = node.serialize()
@@ -98,7 +98,7 @@ function _trackingMessage (connection, node) {
  * @return {import('mcos-shared/types').TSMessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleTrackingMessage (conn, node) {
+function handleTrackingMessage (conn: SocketWithConnectionInfo, node: MessageNode) {
   const result = _trackingMessage(conn, node)
   return result
 }
@@ -110,7 +110,7 @@ function handleTrackingMessage (conn, node) {
 * @param {MessageNode} node
 * @return {import("mcos-shared/types").TSMessageArrayWithConnection}
 */
-function _updatePlayerPhysical (connection, node) {
+function _updatePlayerPhysical (connection: SocketWithConnectionInfo, node: MessageNode) {
   const updatePlayerPhysicalMessage = node
 
   updatePlayerPhysicalMessage.data = node.serialize()
@@ -139,7 +139,7 @@ function _updatePlayerPhysical (connection, node) {
  * @return {import('mcos-shared/types').TSMessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleUpdatePlayerPhysical (conn, node) {
+function handleUpdatePlayerPhysical (conn: SocketWithConnectionInfo, node: MessageNode) {
   const result = _updatePlayerPhysical(conn, node)
   return result
 }
@@ -149,7 +149,7 @@ function handleUpdatePlayerPhysical (conn, node) {
 * @param {MessageNode} packet
 * @return {Promise<import("mcos-shared/types").TSMessageArrayWithConnection>}
 */
-async function clientConnect (connection, packet) {
+async function clientConnect (connection: SocketWithConnectionInfo, packet: MessageNode): Promise<TSMessageArrayWithConnection> {
   /**
      * Let's turn it into a ClientConnectMsg
      */
@@ -168,18 +168,20 @@ async function clientConnect (connection, packet) {
         `[TCPManager] Looking up the session key for ${customerId}...`
   )
 
-  await DatabaseManager.getInstance().fetchSessionKeyByCustomerId(
+  const result = await DatabaseManager.getInstance().fetchSessionKeyByCustomerId(
     customerId
   )
   log.debug('[TCPManager] Session Key located!')
 
   const connectionWithKey = connection
 
-  //   const { sessionkey } = result
+  // const { sessionkey } = result
 
-  //   const stringKey = Buffer.from(sessionkey, 'hex')
+  // const stringKey = Buffer.from(sessionkey, 'hex')
 
-  //   connectionWithKey.setEncryptionKey(Buffer.from(stringKey.slice(0, 16)))
+  selectOrCreateEncryptors(connection, result)
+
+  // connectionWithKey.setEncryptionKey(Buffer.from(stringKey.slice(0, 16)))
 
   // Update the connection's appId
   connectionWithKey.personaId = newMessage.getAppId()
@@ -216,7 +218,7 @@ async function clientConnect (connection, packet) {
   * @return {Promise<import('mcos-shared/types').TSMessageArrayWithConnection>}
   * @memberof MCOTServer
   */
-async function handleClientConnect (conn, node) {
+async function handleClientConnect (conn: SocketWithConnectionInfo, node: MessageNode): Promise<TSMessageArrayWithConnection> {
   const result = await clientConnect(conn, node)
   return {
     connection: result.connection,
@@ -231,7 +233,13 @@ async function handleClientConnect (conn, node) {
 * @param {MessageNode} node
 * @return {import("mcos-shared/types").TSMessageArrayWithConnection}>}
 */
-function _login (connection, node) {
+function _login (connection: SocketWithConnectionInfo, node: MessageNode) {
+
+  // Read the inbound packet
+  const loginMessage = new TLoginMessage()
+  loginMessage.deserialize(node.rawPacket)
+  log.trace(`Received LoginMessage: ${JSON.stringify(loginMessage)}`)
+
   // Create new response packet
   const pReply = new GenericReplyMessage()
   pReply.msgNo = 213
@@ -254,7 +262,7 @@ function _login (connection, node) {
  * @return {import('mcos-shared/types').TSMessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleLoginMessage (conn, node) {
+function handleLoginMessage (conn: SocketWithConnectionInfo, node: MessageNode) {
   const result = _login(conn, node)
   return {
     connection: result.connection,
@@ -269,7 +277,7 @@ function handleLoginMessage (conn, node) {
 * @param {MessageNode} node
 * @return {import("mcos-shared/types").TSMessageArrayWithConnection}
 */
-function _logout (connection, node) {
+function _logout (connection: SocketWithConnectionInfo, node: MessageNode) {
   const logoutMessage = node
 
   logoutMessage.data = node.serialize()
@@ -288,7 +296,7 @@ function _logout (connection, node) {
   rPacket.dumpPacket()
 
   /** @type {MessageNode[]} */
-  const nodes = []
+  const nodes: MessageNode[] = []
 
   return { connection, messages: nodes }
 }
@@ -300,7 +308,7 @@ function _logout (connection, node) {
 * @param {MessageNode} node
 * @return {import('mcos-shared/types').TSMessageArrayWithConnection}
 */
-function handleLogoutMessage (conn, node) {
+function handleLogoutMessage (conn: SocketWithConnectionInfo, node: MessageNode) {
   const result = _logout(conn, node)
   return {
     connection: result.connection,
@@ -315,7 +323,7 @@ function handleLogoutMessage (conn, node) {
 * @param {MessageNode} node
 * @return {import("mcos-shared/types").TSMessageArrayWithConnection}
 */
-function _getLobbies (connection, node) {
+function _getLobbies (connection: SocketWithConnectionInfo, node: MessageNode): TSMessageArrayWithConnection {
   log.debug('In _getLobbies...')
   const lobbiesListMessage = node
 
@@ -343,7 +351,7 @@ function _getLobbies (connection, node) {
 
   rPacket.updateBuffer(pReply.serialize())
 
-  // // Dump the packet
+  // Dump the packet
   log.debug('Dumping response...')
   log.debug(JSON.stringify(rPacket))
 
@@ -358,7 +366,7 @@ function _getLobbies (connection, node) {
    * @return {import('mcos-shared/types').TSMessageArrayWithConnection}
    * @memberof MCOTServer
    */
-function handleGetLobbiesMessage (conn, node) {
+function handleGetLobbiesMessage (conn: SocketWithConnectionInfo, node: MessageNode): TSMessageArrayWithConnection {
   const result = _getLobbies(conn, node)
   log.debug('Dumping Lobbies response packet...')
   log.debug(result.messages.join().toString())
@@ -374,7 +382,7 @@ function handleGetLobbiesMessage (conn, node) {
 * @param {MessageNode} packet
 * @returns {import("mcos-shared/types").TSMessageArrayWithConnection}
 */
-function getStockCarInfo (connection, packet) {
+function getStockCarInfo (connection: SocketWithConnectionInfo, packet: MessageNode) {
   const getStockCarInfoMessage = new GenericRequestMessage()
   getStockCarInfoMessage.deserialize(packet.data)
   getStockCarInfoMessage.dumpPacket()
@@ -408,7 +416,7 @@ function getStockCarInfo (connection, packet) {
 * @param {MessageNode} node
 * @return {import('mcos-shared/types').TSMessageArrayWithConnection}
 */
-function handleShockCarInfoMessage (conn, node) {
+function handleShockCarInfoMessage (conn: SocketWithConnectionInfo, node: MessageNode) {
   const result = getStockCarInfo(conn, node)
   return {
     connection: result.connection,

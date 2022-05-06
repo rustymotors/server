@@ -94,8 +94,8 @@ export class NPSPacketManager {
 
   /**
    *
-   * @param {{connection: import("mcos-shared").TCPConnection, data: Buffer}} rawPacket
-   * @return {Promise<import("mcos-shared").TCPConnection>}
+   * @param {{connection: import("mcos-shared/built").TCPConnection, data: Buffer}} rawPacket
+   * @return {Promise<import("mcos-shared/built").TCPConnection>}
    */
   async processNPSPacket (rawPacket) {
     const messageId = rawPacket.data.readInt16BE(0)

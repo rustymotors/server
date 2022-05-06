@@ -18,7 +18,7 @@ import { DatabaseManager } from 'mcos-database'
 import { getPersonasByPersonaId } from 'mcos-persona'
 import { toHex, cipherBufferDES, decipherBufferDES, selectOrCreateEncryptors } from 'mcos-shared'
 import { logger } from 'mcos-shared/logger'
-import { NPSMessage, NPSUserInfo } from 'mcos-shared/types'
+import { BufferWithConnection, EncryptionSession, NPSMessage, NPSUserInfo, SocketWithConnectionInfo } from 'mcos-shared/types'
 
 const log = logger.child({ service: 'mcos:lobby' })
 
@@ -26,7 +26,7 @@ const log = logger.child({ service: 'mcos:lobby' })
    * @param {string} key
    * @return {Buffer}
    */
-export function _generateSessionKeyBuffer (key) {
+export function _generateSessionKeyBuffer (key: string) {
   const nameBuffer = Buffer.alloc(64)
   Buffer.from(key, 'utf8').copy(nameBuffer)
   return nameBuffer
@@ -39,12 +39,13 @@ export function _generateSessionKeyBuffer (key) {
    * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
    * @return {Promise<NPSMessage>}
    */
-async function _npsRequestGameConnectServer (dataConnection) {
+async function _npsRequestGameConnectServer (dataConnection: BufferWithConnection) {
   log.trace(`[inner] Raw bytes in _npsRequestGameConnectServer: ${toHex(dataConnection.data)}`)
 
   log.debug(
       `_npsRequestGameConnectServer: ${JSON.stringify({
-        remoteAddress: dataConnection.connection.socket.remoteAddress,
+        remoteAddress: dataConnection.connection.remoteAddress,
+        localPort: dataConnection.connection.localPort,
         data: dataConnection.data.toString('hex')
       })}`
   )
@@ -84,8 +85,7 @@ async function _npsRequestGameConnectServer (dataConnection) {
     throw new Error('Error fetching session keys!')
   }
 
-  /** @type {import('mcos-shared/types').EncryptionSession} */
-  const encryptionSession = selectOrCreateEncryptors(dataConnection, keys)
+  const encryptionSession: EncryptionSession = selectOrCreateEncryptors(dataConnection.connection, keys)
 
   dataConnection.connection.encryptionSession = encryptionSession
 
@@ -133,7 +133,7 @@ function _npsHeartbeat () {
  * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
  * @param {Buffer} encryptedCommand
  */
-function decryptCmd (dataConnection, encryptedCommand) {
+function decryptCmd (dataConnection: BufferWithConnection, encryptedCommand: Buffer) {
   if (typeof dataConnection.connection.encryptionSession === 'undefined') {
     const errMessage = `Unable to locate encryption session for connection id ${dataConnection.connectionId}`
     log.error(errMessage)
@@ -153,7 +153,7 @@ function decryptCmd (dataConnection, encryptedCommand) {
    * @param {import('mcos-shared/types').SocketWithConnectionInfo} dataConnection
    * @param {Buffer} plaintextCommand
    */
-function encryptCmd (dataConnection, plaintextCommand) {
+function encryptCmd (dataConnection: SocketWithConnectionInfo, plaintextCommand: Buffer) {
   if (typeof dataConnection.encryptionSession === 'undefined') {
     const errMessage = `Unable to locate encryption session for connection id ${dataConnection.id}`
     log.error(errMessage)
@@ -175,7 +175,7 @@ function encryptCmd (dataConnection, plaintextCommand) {
  * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
  * @return {import('mcos-shared/types').GSMessageArrayWithConnection}
  */
-function handleCommand (dataConnection) {
+function handleCommand (dataConnection: BufferWithConnection) {
   const { data } = dataConnection
 
   // Marshal the command into an NPS packet
@@ -212,7 +212,7 @@ function handleCommand (dataConnection) {
  * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
  * @return {import('mcos-shared/types').GSMessageArrayWithConnection}
  */
-function handleEncryptedNPSCommand (dataConnection) {
+function handleEncryptedNPSCommand (dataConnection: BufferWithConnection) {
   // Decipher
   const { data } = dataConnection
   const decipheredConnection = decryptCmd(dataConnection,
@@ -233,7 +233,7 @@ function handleEncryptedNPSCommand (dataConnection) {
 * @param {import("mcos-shared/types").BufferWithConnection} dataConnection
 * @return {Promise<import('mcos-shared/types').GSMessageArrayWithConnection>}
 */
-export async function handleData (dataConnection) {
+export async function handleData (dataConnection: BufferWithConnection) {
   const { localPort, remoteAddress } = dataConnection.connection.socket
   log.debug(
  `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`

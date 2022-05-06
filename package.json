@@ -17,7 +17,7 @@
     "prod": "make prod_node",
     "prod:stop": "docker-compose stop",
     "start": "node --trace-deprecation --abort-on-uncaught-exception -r ts-node/register --openssl-legacy-provider src/app.js",
-    "start:docker":"tsc -b --verbose && npm ci && npm start"
+    "start:docker":"npm start 2>&1 | tee -a log/mcos/trace.log"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
   "license": "AGPL-3.0",
