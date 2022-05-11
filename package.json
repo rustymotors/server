@@ -56,8 +56,8 @@
     "useSpawnWrap": true
   },
   "volta": {
-    "node": "18.1.0",
-    "npm": "8.9.0"
+    "node": "16.15.0",
+    "npm": "8.10.0"
   },
   "workspaces": [
     "packages/mcos-shared",
