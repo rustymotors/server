@@ -1,5 +1,8 @@
 {
   "extends": ["config:base"],
+  "reviewers": [
+    "drazisil"
+  ],  
   "packageRules": [
     {
       "matchPackageNames": ["nginx"],
@@ -8,7 +11,8 @@
     {
       "matchDepTypes": ["devDependencies"],
       "matchUpdateTypes": ["patch", "minor"],
-      "groupName": "devDependencies (non-major)"
+      "groupName": "devDependencies (non-major)",
+      "automerge": true
     },
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
