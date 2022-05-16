@@ -1,0 +1,1 @@
+All files in this directory, with the exception of this Readme, have been taken from GitHub, as of the date of this archive https://web.archive.org/web/20220513134857/https://github.com/diasurgical/devilution/tree/master/3rdParty/PKWare
