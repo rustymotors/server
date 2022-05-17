@@ -1,8 +1,5 @@
 {
     "name": "mcos-lobby",
     "type": "module",
-    "exports": "./built/index.js",
-    "dependencies": {
-        "mcos-core": "*"
-    }
+    "exports": "./built/index.js"
 }

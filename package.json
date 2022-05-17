@@ -28,7 +28,6 @@
   },
   "dependencies": {
     "@types/pg": "8.6.5",
-    "mcos-core": "*",
     "mcos-gateway": "*",
     "mcos-lobby": "*",
     "mcos-login": "*",
@@ -62,7 +61,6 @@
   },
   "workspaces": [
     "packages/mcos-shared",
-    "packages/mcos-core",
     "packages/mcos-gateway",
     "packages/mcos-patch",
     "packages/mcos-shard",
