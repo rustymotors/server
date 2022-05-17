@@ -13,10 +13,11 @@
   "type": "module",
   "scripts": {
     "format": "prettier-eslint",
-    "test": "tsc && standard --fix && eslint && c8 mocha",
+    "test": "tsc -b --verbose && standard --fix && eslint && c8 mocha --recursive \"packages/**/*.test.js\" \"test\"",
     "prod": "make prod_node",
     "prod:stop": "docker-compose stop",
-    "start": "node --trace-deprecation --abort-on-uncaught-exception -r ts-node/register --openssl-legacy-provider app.js"
+    "start": "node --trace-deprecation --abort-on-uncaught-exception -r ts-node/register --openssl-legacy-provider src/app.js",
+    "start:docker":"npm start 2>&1 | tee -a log/mcos/trace.log"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
   "license": "AGPL-3.0",

@@ -5,14 +5,12 @@ coverage
 .nyc_output
 
 test-reports
-data/sessions.db
 junit
-dist
+built
 *.sqlite
 junit.xml
 .dccache
 out/*
 *.db
 node_modules
-src/**/*.js
 .DS_Store
