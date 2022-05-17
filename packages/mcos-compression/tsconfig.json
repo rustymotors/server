@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.root.json",
+  "compilerOptions": {
+    "module": "ES2022",
+    "outDir": "./built",
+    "rootDirs": ["./src", "./test"],
+    "baseUrl": "."
+  },
+  "exclude": [
+    "built"
+  ]
+}
