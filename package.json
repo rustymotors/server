@@ -32,6 +32,7 @@
     "mcos-gateway": "*",
     "mcos-lobby": "*",
     "mcos-login": "*",
+    "mcos-shared": "*",
     "pg": "8.7.3",
     "ts-node": "10.7.0",
     "typescript": "4.6.4"
