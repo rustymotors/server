@@ -48,6 +48,9 @@
     "built"
   ],
   "references": [
-    {"path": "../mcos-patch"}
+    {"path": "../mcos-auth"},
+    {"path": "../mcos-patch"},
+    {"path": "../mcos-shard"},
+    {"path": "../mcos-lobby"}
   ]
 }
