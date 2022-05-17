@@ -51,6 +51,7 @@
     {"path": "../mcos-auth"},
     {"path": "../mcos-patch"},
     {"path": "../mcos-shard"},
-    {"path": "../mcos-lobby"}
+    {"path": "../mcos-lobby"},
+    {"path": "../mcos-transactions"}
   ]
 }
