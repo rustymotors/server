@@ -111,7 +111,7 @@ services:
       - xpack.security.transport.ssl.key=certs/es01/es01.key
       - xpack.security.transport.ssl.certificate=certs/es01/es01.crt
       - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
-      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.verification_mode=none
       - xpack.license.self_generated.type=${LICENSE}
     mem_limit: ${MEM_LIMIT}
     ulimits:
@@ -153,7 +153,7 @@ services:
       - xpack.security.transport.ssl.key=certs/es02/es02.key
       - xpack.security.transport.ssl.certificate=certs/es02/es02.crt
       - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
-      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.verification_mode=none
       - xpack.license.self_generated.type=${LICENSE}
     mem_limit: ${MEM_LIMIT}
     ulimits:
@@ -195,7 +195,7 @@ services:
       - xpack.security.transport.ssl.key=certs/es03/es03.key
       - xpack.security.transport.ssl.certificate=certs/es03/es03.crt
       - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
-      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.verification_mode=none
       - xpack.license.self_generated.type=${LICENSE}
     mem_limit: ${MEM_LIMIT}
     ulimits:
@@ -312,14 +312,17 @@ services:
     build: .
     working_dir: /home/node/app
     volumes:
-      - certs:/usr/share/kibana/config/certs
+      - certs:/usr/share/elasticsearch/config/certs
       - ./:/home/node/app
     environment:
       - DEBUG=mcos:*
+      - FLEET_ENROLL=1
       - FLEET_INSECURE=1
       - FLEET_URL=https://es-fleet:8220
       - FLEET_ENROLLMENT_TOKEN=${AGENT_SERVICE_TOKEN}
-
+      - FLEET_ELASTICSEARCH_CA=/usr/share/elasticsearch/config/certs/ca/ca.crt
+      - FLEET_CA=/usr/share/elasticsearch/config/certs/ca/ca.crt
+    command:  make docker-init
     ports:
       - "80:80"
       - "6660:6660"
