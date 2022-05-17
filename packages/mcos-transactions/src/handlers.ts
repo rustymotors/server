@@ -17,7 +17,7 @@
 import { DatabaseManager } from 'mcos-database'
 import { selectOrCreateEncryptors, toHex } from 'mcos-shared'
 import { logger } from 'mcos-shared/logger'
-import { GenericReplyMessage, GenericRequestMessage, MessageNode, SocketWithConnectionInfo, StockCar, StockCarInfoMessage, TClientConnectMessage, TLoginMessage, TSMessageArrayWithConnection } from 'mcos-shared/types'
+import { GenericReplyMessage, GenericRequestMessage, MessageNode, SocketWithConnectionInfo, StockCar, StockCarInfoMessage, TClientConnectMessage, TLobbyMessage, TLoginMessage, TSMessageArrayWithConnection } from 'mcos-shared/types'
 
 const log = logger.child({ service: 'mcos:transactions:handlers' })
 
@@ -325,6 +325,13 @@ function handleLogoutMessage (conn: SocketWithConnectionInfo, node: MessageNode)
 */
 function _getLobbies (connection: SocketWithConnectionInfo, node: MessageNode): TSMessageArrayWithConnection {
   log.debug('In _getLobbies...')
+
+  const lobbyRequest = new GenericRequestMessage()
+  lobbyRequest.deserialize(node.rawPacket)
+  log.trace(`Received GenericRequestMessage: ${JSON.stringify(lobbyRequest)}`)
+
+
+
   const lobbiesListMessage = node
 
   // Update the appId
@@ -341,7 +348,7 @@ function _getLobbies (connection: SocketWithConnectionInfo, node: MessageNode): 
   pReply.msgNo = 325
   pReply.msgReply = 324
   const rPacket = new MessageNode('sent')
-  rPacket.flags = 9
+  rPacket.flags = 8
   rPacket.setSeq(node.seq)
 
   const lobby = Buffer.alloc(12)
@@ -355,7 +362,14 @@ function _getLobbies (connection: SocketWithConnectionInfo, node: MessageNode): 
   log.debug('Dumping response...')
   log.debug(JSON.stringify(rPacket))
 
-  return { connection, messages: [rPacket] }
+  const lobbyResponse = new TLobbyMessage()
+  lobbyResponse.setValueNumber('dataLength', 16)
+  lobbyResponse.setValueNumber('seq', node.seq)
+  lobbyResponse.setValueNumber('msgNo', 325)
+  lobbyResponse.setValueNumber('numberOfLobbies', 0)
+  lobbyResponse.setValueNumber('moreMessages?', 0)
+
+  return { connection, messages: [lobbyResponse] }
 }
 
 /**

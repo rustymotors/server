@@ -27,7 +27,7 @@ describe('GSMessageBase', () => {
       const testMessage = new GSMessageBase()
 
       // Assert
-      testMessage.byteLength.should.equal(2)
+      testMessage.byteLength.should.equal(10)
     })
   })
   describe('#deserialize', () => {
@@ -36,7 +36,7 @@ describe('GSMessageBase', () => {
       const testMessage = new GSMessageBase();
 
       // Assert
-      (() => { return testMessage.deserialize(Buffer.from([1, 2, 3, 4])) }).should.throw()
+      (() => { return testMessage.deserialize(Buffer.from([1, 2, 3, 4])) }).should.not.throw()
     })
   })
   describe('#get', () => {
@@ -44,10 +44,10 @@ describe('GSMessageBase', () => {
       // Arrange
       const testMessage = new GSMessageBase()
       /** @type {import('mcos-shared/structures/BinaryStructure').ByteField} */
-      const expectedField = { name: 'msgNo', size: 2, offset: 0, type: 'u16', value: Buffer.alloc(2), order: 'little' }
+      const expectedField = { name: 'msgId', size: 2, offset: 0, type: 'u16', value: Buffer.alloc(2), order: 'little' }
 
       // Assert
-      testMessage.get('msgNo').should.deep.equal(expectedField)
+      testMessage.get('msgId').should.deep.equal(expectedField)
     })
   })
 })

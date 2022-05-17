@@ -264,6 +264,10 @@ export class LobbyServer {
    */
   async _npsRequestGameConnectServer (connection, rawData) {
     log.trace(`[legacy] Raw bytes in _npsRequestGameConnectServer: ${toHex(rawData)}`)
+
+    // TODO: inbound shoud be a _NPS_LoginInfo that has been packed (pack code: "llpppb")
+    // TODO: outbound packet should be a _NPS_UserInfo
+
     const { sock } = connection
     log.debug(
       `_npsRequestGameConnectServer: ${JSON.stringify({
@@ -273,6 +277,7 @@ export class LobbyServer {
     )
 
     // Return a _NPS_UserInfo structure
+
     const userInfo = new NPSUserInfo('recieved')
     userInfo.deserialize(rawData)
     userInfo.dumpInfo()

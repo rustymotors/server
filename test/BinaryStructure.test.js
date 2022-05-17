@@ -22,7 +22,7 @@ chai.should()
 
 describe('BinaryStructure', () => {
   describe('.byteLength', () => {
-    it('should hvave a value of 0', () => {
+    it('should have a value of 0', () => {
       // Arrange
       const testStructure = new BinaryStructure()
 

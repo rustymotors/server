@@ -261,6 +261,8 @@ async function getPersonaMaps (data: Buffer) {
 
   const personaMapsMessage = new NPSPersonaMapsMessage('sent')
 
+  // TODO: I think this is a list of _UserGameData
+
   if (personas.length === 0) {
     throw new Error(
         `No personas found for customer Id: ${customerId.readUInt32BE(0)}`

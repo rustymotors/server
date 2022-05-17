@@ -2,7 +2,6 @@
     "name": "mcos-login",
     "type": "module",
     "exports": {
-      ".": "./built/index.js",
-      "./messages": "./built/messages.js"
+      ".": "./built/index.js"
     }
 }

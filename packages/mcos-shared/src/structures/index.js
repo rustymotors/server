@@ -15,7 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 export { BinaryStructure } from './BinaryStructure.js'
-export { GSMessageBase, TSMessageBase } from './MessageBase.js'
+export { TSMessageBase } from './TMessageBase.js'
+export { GSMessageBase } from './GMessageBase.js'
 
 /**
  * @export

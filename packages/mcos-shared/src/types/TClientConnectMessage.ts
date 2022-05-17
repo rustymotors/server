@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { logger } from '../logger/index.js'
-import { TSMessageBase } from '../structures/MessageBase.js'
+import { TSMessageBase } from '../structures/TMessageBase.js'
 
 const log = logger.child({ service: 'mcos:shared:types' })
 

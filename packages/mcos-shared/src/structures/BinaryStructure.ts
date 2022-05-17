@@ -19,11 +19,7 @@ import { logger } from '../logger/index.js'
 
 const log = logger.child({ service: 'mcos:shared:structures' })
 
-/**
- * @export
- * @readonly
- * @typedef {'boolean' | 'binary' | 'byte' | 'char' | 'u16' | 'u32'} FIELD_TYPE
- */
+type FIELD_TYPE = 'boolean' | 'binary' | 'byte' | 'char' | 'u16' | 'u32'
 
 /**
  * @class
@@ -36,23 +32,23 @@ const log = logger.child({ service: 'mcos:shared:structures' })
  */
 export class ByteField {
   /** @type {string} */
-  name
+  name: string
   /** @type {'big' | 'little'} */
-  order
+  order: 'big' | 'little'
   /** @type {number} */
-  offset
+  offset: number
   /** @type {number} */
-  size
+  size: number
   /** @type {FIELD_TYPE} */
-  type
+  type: FIELD_TYPE
   /** @type {Buffer} */
-  value
+  value: Buffer
   /**
    * Creates an instance of ByteField.
    * @param {ByteField} newField
    * @memberof ByteField
    */
-  constructor (newField) {
+  constructor (newField: ByteField) {
     this.name = newField.name
     this.order = newField.order
     this.offset = newField.offset
@@ -61,6 +57,8 @@ export class ByteField {
     this.value = newField.value
   }
 }
+
+
 
 export class BinaryStructure {
   /**
@@ -77,7 +75,7 @@ export class BinaryStructure {
      * @protected
      * @type {ByteField[]}
      */
-  _fields = []
+  _fields : ByteField[]= []
 
   constructor () {
     log.trace('new BinaryStructure')
@@ -89,7 +87,7 @@ export class BinaryStructure {
    * @param {{name: string, order: "big" | "little", size: number, type: FIELD_TYPE, value: Buffer }} field
    * @memberof BinaryStructure
    */
-  _add (field) {
+  _add (field: {name: string, order: "big" | "little", size: number, type: FIELD_TYPE, value: Buffer }) {
     const newField = { ...field, offset: this._byteOffset }
     log.trace(`Adding ${JSON.stringify(newField)}`)
     this._fields.push(newField)
@@ -116,10 +114,12 @@ export class BinaryStructure {
    * @param {Buffer} byteStream
    * @memberof BinaryStructure
    */
-  deserialize (byteStream) {
+  deserialize (byteStream: Buffer) {
     if (byteStream.byteLength > this._byteLength) {
-      throw new Error('There are not enough fields to hold the bytestream. ' +
-        'Please slice() the input is you are using part.')
+      const errMessage = 'There are not enough fields to hold the bytestream. ' +
+      'Please slice() the input if you are using part.'
+      log.error(errMessage)
+      throw new Error(errMessage)
     }
 
     log.debug(`Attempting to deserialize ${byteStream.byteLength} bytes into ${this._fields.length} fields for a total of ${this._byteLength} bytes`)
@@ -146,7 +146,7 @@ export class BinaryStructure {
    * @return {ByteField}
    * @memberof BinaryStructure
    */
-  get (fieldName) {
+  get (fieldName: string): ByteField {
     const selectedField = this._fields.find(f => {
       return f.name === fieldName
     })
@@ -162,7 +162,7 @@ export class BinaryStructure {
    * @param {string} fieldName
    * @memberof BinaryStructure
    */
-  getValue (fieldName) {
+  getValue (fieldName: string) {
     log.trace('Calling get() in BinaryStructure..')
     const selectedField = this.get(fieldName)
     log.trace('Calling get() in BinaryStructure.. success')
@@ -194,6 +194,49 @@ export class BinaryStructure {
     } catch (error) {
       log.trace('Calling get() in BinaryStructure.. fail!')
       const errMessage = `Error in getValueX: ${errorMessage(error)}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${value.byteLength}, ${value}`
+      throw new Error(errMessage)
+    }
+  }
+
+  setValueNumber (fieldName: string, newValue: number) {
+    log.trace('Calling setValueNumber() in BinaryStructure..')
+    const selectedField = this.get(fieldName)
+    log.trace('Calling get() in BinaryStructure.. success')
+    let { type, order, value } = selectedField
+    log.debug(`Setting a value of ${newValue} to the ${selectedField.name} field with type of ${type})`)
+    try {
+      if (type === 'boolean') {
+        if (newValue === 1 || newValue === 0) {
+          value.writeInt8(newValue)
+          return
+        }
+        const errMessage = `Value must be 0 or 1 for a boolean type`
+        log.error(errMessage)
+        throw new Error(errMessage)
+      }
+      if (type === 'u16') {
+        if (order === 'big') {
+          value.writeUInt16BE(newValue)
+          return
+        }
+        value.writeUInt16LE(newValue)
+        return
+      }
+      if (type === 'u32') {
+        if (order === 'big') {
+          value.writeUInt32BE(newValue)
+          return
+        }
+        value.writeUInt32LE(newValue)
+        return
+      }
+      const errMessage = `${selectedField.name} is not a number. It is type ${selectedField.type}`
+      log.error(errMessage)
+      throw new Error(errMessage)
+
+    } catch (error) {
+      log.trace('Calling get() in BinaryStructure.. fail!')
+      const errMessage = `Error in newValueNumber: ${errorMessage(error)}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${value.byteLength}, ${newValue}`
       throw new Error(errMessage)
     }
   }

@@ -18,6 +18,7 @@ import { DatabaseManager } from 'mcos-database'
 import { errorMessage } from 'mcos-shared'
 import { logger } from 'mcos-shared/logger'
 import { NPSMessage, NPSUserStatus, premadeLogin } from 'mcos-shared/types'
+import { GSMessageBase } from 'mcos-shared/structures'
 
 const log = logger.child({ service: 'mcos:login' })
 
@@ -47,6 +48,10 @@ async function login (dataConnection) {
   log.info(
       `Received login packet: ${connectionId}`
   )
+
+  const newGameMessage = new GSMessageBase()
+  newGameMessage.deserialize(data.slice(0, 10))
+  log.trace(`Raw game message: ${JSON.stringify(newGameMessage)}`)
 
   const userStatus = new NPSUserStatus(data)
 

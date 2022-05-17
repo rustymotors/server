@@ -17,7 +17,7 @@
 import { Cipher, Decipher, privateDecrypt } from 'node:crypto'
 import { readFileSync, statSync } from 'node:fs'
 import { Socket } from 'node:net'
-import { URL } from 'node:url'
+import { TSMessageBase } from '../structures/TMessageBase.js'
 import { APP_CONFIG } from '../config/index.js'
 export { TClientConnectMessage } from './TClientConnectMessage.js'
 export { TLoginMessage} from './TLoginMessage.js'
@@ -1721,7 +1721,7 @@ export interface GSMessageArrayWithConnection {
  */
 export interface TSMessageArrayWithConnection {
   connection: SocketWithConnectionInfo
-  messages: MessageNode[]
+  messages: MessageNode[] | TSMessageBase[]
 }
 
 export interface GServiceResponse {

@@ -16,7 +16,7 @@
 
 import { BinaryStructure } from '../structures/BinaryStructure.js'
 import { logger } from '../logger/index.js'
-import { TSMessageBase } from '../structures/MessageBase.js'
+import { TSMessageBase } from '../structures/TMessageBase.js'
 
 const log = logger.child({ service: 'mcos:shared:types' })
 
@@ -34,7 +34,6 @@ const log = logger.child({ service: 'mcos:shared:types' })
  */
 
 export class TLobbyMessage extends TSMessageBase {
-  appId = 0
 
   /**
  * Creates an instance of TLobbyMessage.
@@ -48,14 +47,6 @@ export class TLobbyMessage extends TSMessageBase {
     this._add({ name: 'moreMessages?', order: 'little', size: 1, type: 'boolean', value: Buffer.alloc(1) })
     this._add({ name: 'lobbyList', order: 'little', size: 1, type: 'binary', value: Buffer.alloc(1) })
     // 5+ bytes + 11 in super = 16+ bytes
-  }
-
-  /**
-   *
-   * @return {number}
-   */
-  getAppId () {
-    return this.appId
   }
 
   /**

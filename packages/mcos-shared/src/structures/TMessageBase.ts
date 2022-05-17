@@ -23,29 +23,6 @@ const log = logger.child({ service: 'mcos:shared:structures' })
  * @class
  * @extends {BinaryStructure}
  */
-export class GSMessageBase extends BinaryStructure {
-  /**
-   * What byte order are the fields?
-   * @type {'big' | 'little'}
-   */
-  _byteOrder = 'big'
-  constructor () {
-    super()
-    log.trace('new TSMessageBase')
-    this._add({
-      name: 'msgNo',
-      order: 'little',
-      type: 'u16',
-      size: 2,
-      value: Buffer.alloc(2)
-    })
-  }
-}
-
-/**
- * @class
- * @extends {BinaryStructure}
- */
 export class TSMessageBase extends BinaryStructure {
   /**
    * What byte order are the fields?
@@ -68,7 +45,7 @@ export class TSMessageBase extends BinaryStructure {
       order: 'little',
       type: 'char',
       size: 4,
-      value: Buffer.alloc(4)
+      value: Buffer.from([84, 79, 77, 67]) // TOMC
     })
 
     this._add({
@@ -84,7 +61,7 @@ export class TSMessageBase extends BinaryStructure {
       order: 'little',
       type: 'byte',
       size: 1,
-      value: Buffer.alloc(1)
+      value: Buffer.from([8])
     })
   }
   // 11 bytes total in this class
