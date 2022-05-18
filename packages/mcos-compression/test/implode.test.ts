@@ -28,11 +28,11 @@ describe('MCOSCompress', () => {
       const testWorkBuf = createEmptyTCompStruct()
 
       // Act
-      testWorkBuf.inBuff = Buffer.from([0x01, 0x02, 0x03, 0x04])
+      testWorkBuf.workBuff = Buffer.from([0x01, 0x02, 0x03, 0x04])
 
       // Assert
       throws(() => {
-        implode(Buffer.alloc(0), Buffer.alloc(0), testWorkBuf, Buffer.alloc(0), Buffer.alloc(0), 0)
+        implode(new ReadableStream(), new WritableStream(), testWorkBuf, Buffer.alloc(0), 0, 0)
       })
     })
     it('should return a number when passed a valid "workBuf', () => {
@@ -41,10 +41,10 @@ describe('MCOSCompress', () => {
       const testWorkBuf = createEmptyTCompStruct()
 
       // Act
-      const r = implode(Buffer.alloc(0), Buffer.alloc(0), testWorkBuf, Buffer.alloc(0), Buffer.alloc(0), 0)
+      const r = implode(new ReadableStream(), new WritableStream(), testWorkBuf, Buffer.alloc(0), 0, 0)
 
       // Assert
-      assert.ok(typeof r === 'number')
+      assert.ok(typeof r.status === 'number')
 
     })
     it('should compress a data stream')
