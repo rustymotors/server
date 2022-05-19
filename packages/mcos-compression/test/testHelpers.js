@@ -44,7 +44,9 @@ export function createEmptyTCompStruct () {
     cType: 0,
     nChBits: [],
     nChCodes: [],
-    workBuff: Buffer.alloc(0)
+    workBuff: Buffer.alloc(0),
+    readBuf: Buffer.alloc(0),
+    writeBuf: Buffer.alloc(0)
   }
 }
 
@@ -80,6 +82,8 @@ export function createEmptyTDCompStruct () {
     ExLenBits: Buffer.alloc(0),
     extraBits: Buffer.alloc(0),
     param: {},
-    DistPosCodes: []
+    DistPosCodes: [],
+    readBuf: Buffer.alloc(0),
+    writeBuf: Buffer.alloc(0)
   }
 }

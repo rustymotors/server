@@ -56,7 +56,7 @@
     "useSpawnWrap": true
   },
   "volta": {
-    "node": "18.1.0",
+    "node": "8.2.1",
     "npm": "8.10.0"
   },
   "workspaces": [

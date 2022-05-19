@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import assert from "assert";
-import { isConstructorDeclaration } from "typescript";
-import { CMP_ASCII, CMP_BINARY, CMP_IMPLODE_DICT_SIZE1, CMP_IMPLODE_DICT_SIZE2, CMP_IMPLODE_DICT_SIZE3, CMP_INVALID_DICTSIZE, CMP_INVALID_MODE, CMP_NO_ERROR, TCmpStruct } from "./types.js";
+import assert from "node:assert";
+import { Buffer } from "node:buffer";
+import { CMP_ASCII, CMP_BINARY, CMP_IMPLODE_DICT_SIZE1, CMP_IMPLODE_DICT_SIZE2, CMP_IMPLODE_DICT_SIZE3, CMP_INVALID_DICTSIZE, CMP_INVALID_MODE, CMP_NO_ERROR, ReadBuff, TCmpStruct, WriteBuff } from "./types.js";
 
 const DIST_BITS: number[]  =
 [
@@ -111,17 +111,17 @@ const CH_CODE_ASC: number[] =
 
 /**
  *
- * @param {NodeJS.ReadableStream} readBuf
- * @param {NodeJS.WritableStream} writeBuf
+ * @param {Buffer} readBuf
+ * @param {Buffer} writeBuf
  * @param {TCmpStruct} workBuf
  * @param {Buffer} param
  * @param {0 | 1} type
  *        0 = CMP_ASCII
  *        1 = CMP_BINARY
  * @param {number} dSize
- * @returns {{status: number, results?: WritableStream}}
+ * @returns {{status: number, results?: Buffer}}
  */
-export function implode(readBuf: ReadableStream, writeBuf: WritableStream, workBuf: TCmpStruct, param: Buffer, type: 0 | 1, dSize: number): {status: number, results?: WritableStream} {
+export function implode(readBuf: Buffer, writeBuf: Buffer, workBuf: TCmpStruct, param: Buffer, type: 0 | 1, dSize: number): {status: number, results?: Buffer} {
   const pWork = workBuf
 
   let nChCode = 0
@@ -131,11 +131,11 @@ export function implode(readBuf: ReadableStream, writeBuf: WritableStream, workB
 
   // Fill the work buffer information
   // Note: The caller must zero the "work_buf" before passing it to implode
-  assert(workBuf.workBuff.compare(Buffer.alloc(workBuf.workBuff.byteLength)) === 0, `workBuf is not empty!`)
+  assert(workBuf.workBuff.equals(Buffer.alloc(workBuf.workBuff.byteLength)) === true, `workBuf is not empty!`)
 
 
-  pWork.readBuf = readBuf
-  pWork.writeBuf = writeBuf
+  pWork.readBuf = new ReadBuff(readBuf)
+  pWork.writeBuf = new WriteBuff()
   pWork.dSizeBytes = dSize
   pWork.cType = type
   pWork.param = param
@@ -202,6 +202,37 @@ export function implode(readBuf: ReadableStream, writeBuf: WritableStream, workB
   // Copy the distance codes and distance bits and perform the compression
   pWork.distCodes = DIST_CODE
   pWork.distBits = DIST_BITS
+  writeCmpData(pWork)
 
   return { status: CMP_NO_ERROR, results: writeBuf }
 }
+function writeCmpData(pWork: TCmpStruct) {
+  let inputDataEnd = 0                                        // Pointer to the end of the input data
+  let inputData = pWork.workBuff + pWork.dSizeBytes + 0x204   // ! data start address, I think
+  let inputDataEnded = false                                  // If 1, then all data from the input stream have been already loaded
+  let saveRepLength = 0                                       // Saved length of current repetition
+  let saveDistance = 0                                        // Saved distance of current repetition
+  let repLength = 0                                           // Length of the found repetition
+  let phase = 0                                               //
+
+  // Store the compression type and dictionary size
+  pWork.outBuff[0] = pWork.cType
+  pWork.outBuff[1] = pWork.dSizeBits
+  pWork.outBytes = 2
+
+  // Reset output buffer to zero
+  pWork.outBuff.fill(0, 2)
+  pWork.outBits = 0
+
+  while (!inputDataEnded) {
+    let bytesToLoad = 0x1000
+    let totalLoaded = 0
+    let bytesLoaded = 0
+
+    // Load the bytes from the input stream, up to 0x1000 bytes
+    while (bytesToLoad != 0) {
+      bytesLoaded = pWork.readBuf.read(bytesToLoad, pWork.param)
+    }
+  }
+}
+

@@ -72,9 +72,9 @@ export interface TCmpStruct {
   /** 09B0: User parameter */
   param: {}                // 09B0: User parameter
   /** 9B4 */
-  readBuf?: ReadableStream      // 9B4
+  readBuf: ReadBuff      // 9B4
   /** 9B8 */
-  writeBuf?: WritableStream     // 9B8
+  writeBuf: WriteBuff     // 9B8
 
   /** [0x204] 09BC: */
   offs09BC: Buffer              // 09BC:
@@ -174,6 +174,38 @@ export interface TDCmpStruct {
   ExLenBits: Buffer             // 3104: [0x10] Number of valid bits for copied blocks
   /** 3114: [0x10] Buffer for ??? */
   LenBase: Buffer               // 3114: [0x10] Buffer for ???
-  readBuf?: ReadableStream
-  writeBuf?: WritableStream
+  readBuf: ReadBuff
+  writeBuf: WriteBuff
 }
+
+export class ReadBuff {
+  private buffer: number[];
+  constructor(inBuffer: Buffer) {
+    this.buffer = Array.from(inBuffer)
+  }
+
+  public read(size: number, _param?: {}) {
+    let bits: number[] = []
+    for (let index = 0; index < size; index++) {
+      const b = this.buffer.shift()
+      if (typeof b !== 'undefined') {
+        bits.push(b)
+      }
+
+    }
+    return bits
+  }
+}
+
+export class WriteBuff {
+  private buffer: number[] = [];
+
+  public write(data: number[]) {
+    this.buffer.concat(data)
+  }
+
+  public asBuffer() {
+    return Buffer.from(this.buffer)
+  }
+}
+
