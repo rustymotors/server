@@ -67,6 +67,11 @@ function generateEncryptionPair (dataConnection: SocketWithConnectionInfo, keys:
   return newSession
 }
 
+/**
+ *
+ * @param {BufferWithConnection} dataConnection
+ * @returns {EncryptionSession}
+ */
 export function selectEncryptors (dataConnection: BufferWithConnection): EncryptionSession {
   const { localPort, remoteAddress } = dataConnection.connection
 
@@ -93,6 +98,11 @@ export function selectEncryptors (dataConnection: BufferWithConnection): Encrypt
   throw new Error(errMessage)
 }
 
+/**
+ *
+ * @param {SocketWithConnectionInfo} dataConnection
+ * @returns {EncryptionSession}
+ */
 export function selectEncryptorsForSocket (dataConnection: SocketWithConnectionInfo): EncryptionSession {
   const { localPort, remoteAddress } = dataConnection
 
@@ -119,6 +129,12 @@ export function selectEncryptorsForSocket (dataConnection: SocketWithConnectionI
   throw new Error(errMessage)
 }
 
+/**
+ *
+ * @param {SocketWithConnectionInfo} dataConnection
+ * @param {SessionRecord} keys
+ * @returns {EncryptionSession}
+ */
 export function selectOrCreateEncryptors (dataConnection: SocketWithConnectionInfo, keys: SessionRecord): EncryptionSession {
   const { localPort, remoteAddress } = dataConnection
 

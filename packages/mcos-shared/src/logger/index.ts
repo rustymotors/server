@@ -28,6 +28,9 @@ const ELOGGING_LEVELS: Record<string, number> = {
 }
 
 
+/**
+ * @class
+ */
 class MCOSLogger {
   systemLogLevel: number
   service: string
@@ -37,9 +40,19 @@ class MCOSLogger {
     this.service = options?.service || ''
     this.name = 'mcos'
   }
+  /**
+   *
+   * @param {{service: string}} options
+   * @returns
+   */
   static child(options: {service: string}): MCOSLogger {
     return new MCOSLogger(options)
   }
+  /**
+   *
+   * @param {number} level
+   * @param {string} message
+   */
   private callLog (level: number, message: string) {
     if (this.systemLogLevel <= level) {
       // skipcq: JS-0002 - This is intentional and is the only time console is used

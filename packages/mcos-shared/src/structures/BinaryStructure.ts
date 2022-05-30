@@ -198,6 +198,12 @@ export class BinaryStructure {
     }
   }
 
+  /**
+   *
+   * @param {string} fieldName
+   * @param {number} newValue
+   * @returns
+   */
   setValueNumber (fieldName: string, newValue: number): void {
     log.trace('Calling setValueNumber() in BinaryStructure..')
     const selectedField = this.get(fieldName)

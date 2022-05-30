@@ -178,12 +178,21 @@ export interface TDCmpStruct {
   writeBuf: WriteBuff
 }
 
+/**
+ * @class
+ */
 export class ReadBuff {
   private buffer: number[];
   constructor(inBuffer: Buffer) {
     this.buffer = Array.from(inBuffer)
   }
 
+  /**
+   *
+   * @param {number} size
+   * @param {{} | undefined} _param
+   * @returns
+   */
   public read(size: number, _param?: {}) {
     let bits: number[] = []
     for (let index = 0; index < size; index++) {
@@ -197,13 +206,24 @@ export class ReadBuff {
   }
 }
 
+/**
+ * @class
+ */
 export class WriteBuff {
   private buffer: number[] = [];
 
+  /**
+   *
+   * @param {number[]} data
+   */
   public write(data: number[]): void {
     this.buffer.concat(data)
   }
 
+  /**
+   *
+   * @returns {Buffer}
+   */
   public asBuffer(): Buffer {
     return Buffer.from(this.buffer)
   }

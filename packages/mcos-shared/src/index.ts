@@ -51,6 +51,11 @@ export function toHex (data: Buffer): string {
   return bytes.join('')
 }
 
+/**
+ *
+ * @param {string} service
+ * @param {string} errMessage
+ */
 export function logAndThrow(service: string, errMessage: string): never {
   log.service = service
   log.error(errMessage)

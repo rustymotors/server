@@ -338,6 +338,10 @@ export class MessageNode {
     this.rawPacket = Buffer.alloc(0)
   }
 
+  /**
+   *
+   * @param {BufferWithConnection} packet
+   */
   deserialize (packet: Buffer): void {
     try {
       this.rawPacket = packet

@@ -32,7 +32,6 @@ const log = logger.child({ service: 'mcos:shared:types' })
  * @property {string} personaName
  * @property {Buffer} mcVersion
  */
-
 export class TLobbyMessage extends TSMessageBase {
 
   /**
