@@ -230,7 +230,7 @@ function writeCmpData(pWork: TCmpStruct) {
     let bytesLoaded = 0
 
     // Load the bytes from the input stream, up to 0x1000 bytes
-    while (bytesToLoad != 0) {
+    while (bytesToLoad !== 0) {
       bytesLoaded = Number.parseInt(pWork.readBuf.read(bytesToLoad, pWork.param).join(''))
     }
   }
