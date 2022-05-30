@@ -133,7 +133,6 @@ async function onData(data: Buffer, connection: SocketWithConnectionInfo): Promi
 
   if (result.err) {
     log.error(`[socket]There was an error processing the packet: ${errorMessage(result.err)}`)
-    console.trace()
     process.exitCode = -1
     return
   }
