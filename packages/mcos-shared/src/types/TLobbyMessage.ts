@@ -53,7 +53,7 @@ export class TLobbyMessage extends TSMessageBase {
    * DumpPacket
    * @return {string}
    */
-  dumpPacket () {
+  dumpPacket (): string {
     return `TLobbyMessage',
         ${JSON.stringify(this
       ._fields)}`

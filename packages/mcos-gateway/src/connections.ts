@@ -99,7 +99,7 @@ export function selectConnection (socket: Socket): SocketWithConnectionInfo {
    * @param {string} connectionId
    * @param {import("mcos-shared/types").SocketWithConnectionInfo} updatedConnection
    */
-export function updateConnection (connectionId: string, updatedConnection: SocketWithConnectionInfo) {
+export function updateConnection (connectionId: string, updatedConnection: SocketWithConnectionInfo): void {
   log.trace(`Updating connection with id: ${connectionId}`)
   try {
     const index = connectionList.findIndex(
@@ -124,7 +124,7 @@ export function updateConnection (connectionId: string, updatedConnection: Socke
    * @param {import("mcos-shared").TCPConnection} newConnection
    * @return {*}  {TCPConnection[]} the updated connection
    */
-export function updateConnectionByAddressAndPort (address: string, port: number, newConnection: TCPConnection): any {
+export function updateConnectionByAddressAndPort (address: string, port: number, newConnection: TCPConnection): SocketWithConnectionInfo[] {
   if (newConnection === undefined) {
     throw new Error(
       `Undefined connection: ${JSON.stringify({

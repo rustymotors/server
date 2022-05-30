@@ -55,7 +55,7 @@ export class TClientConnectMessage extends TSMessageBase {
    *
    * @return {number}
    */
-  getAppId () {
+  getAppId (): number {
     return this.appId
   }
 
@@ -63,7 +63,7 @@ export class TClientConnectMessage extends TSMessageBase {
    * DumpPacket
    * @return {string}
    */
-  dumpPacket () {
+  dumpPacket (): string {
     return `ClientConnectMsg',
         ${JSON.stringify(this
       ._fields)}`

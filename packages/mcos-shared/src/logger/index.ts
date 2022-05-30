@@ -46,22 +46,22 @@ class MCOSLogger {
     }
   }
       /** @param {string} message */
-      trace (message: string) { this.callLog(10, message) }
+      trace (message: string): void { this.callLog(10, message) }
       /** @param {string} message */
-      debug (message: string) { this.callLog(20, message) }
+      debug (message: string): void { this.callLog(20, message) }
       /** @param {string} message */
-      info (message: string) { this.callLog(30, message) }
+      info (message: string): void { this.callLog(30, message) }
       /** @param {string} message */
-      warn (message: string) { this.callLog(40, message) }
+      warn (message: string): void { this.callLog(40, message) }
       /** @param {string} message */
-      error (message: string) { this.callLog(50, message) }
+      error (message: string): void { this.callLog(50, message) }
       /** @param {string} message */
-      fatal (message: string) { this.callLog(60, message) }
+      fatal (message: string): void { this.callLog(60, message) }
       /**
        * @param {ELOGGING_LEVELS} level
        * @param {string} message
        */
-      log (level: string, message: string) { this.callLog(ELOGGING_LEVELS[level] | 30, message) }
+      log (level: string, message: string): void { this.callLog(ELOGGING_LEVELS[level] | 30, message) }
 
 }
 

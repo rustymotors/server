@@ -155,7 +155,7 @@ export function selectOrCreateEncryptors (dataConnection: SocketWithConnectionIn
 /**
    * Update the internal connection record
    */
-export function updateEncryptionSession (connectionId: string, updatedSession: EncryptionSession) {
+export function updateEncryptionSession (connectionId: string, updatedSession: EncryptionSession): void {
   try {
     const index = encryptionSessions.findIndex(
       e => {

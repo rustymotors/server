@@ -200,11 +200,11 @@ export class ReadBuff {
 export class WriteBuff {
   private buffer: number[] = [];
 
-  public write(data: number[]) {
+  public write(data: number[]): void {
     this.buffer.concat(data)
   }
 
-  public asBuffer() {
+  public asBuffer(): Buffer {
     return Buffer.from(this.buffer)
   }
 }

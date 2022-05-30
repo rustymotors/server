@@ -28,7 +28,7 @@ export class GSMessageBase extends BinaryStructure {
    * What byte order are the fields?
    * @type {'big' | 'little'}
    */
-  _byteOrder = 'little'
+  _byteOrder: 'big' | 'little' = 'little'
   constructor() {
     super()
     log.trace('new GSMessageBase')
@@ -72,7 +72,7 @@ export class GSMessageBase extends BinaryStructure {
   }
   // 10 bytes total in this class
 
-  calulateChecksum() {
+  calulateChecksum(): void {
     this.setValueNumber('checksum', (this.getValue('totalMsgLen') as number + (this.getValue('msgVersion') as number << 8)))
   }
 }

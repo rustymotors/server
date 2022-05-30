@@ -28,7 +28,7 @@ const log = logger.child({ service: '' })
  * @param {unknown} error
  * @return {string}
  */
-export function errorMessage (error: unknown) {
+export function errorMessage (error: unknown): string {
   if (error instanceof Error) {
     return error.message
   }

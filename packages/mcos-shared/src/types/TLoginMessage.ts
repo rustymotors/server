@@ -57,7 +57,7 @@ export class TLoginMessage extends TSMessageBase {
    *
    * @return {number}
    */
-  getAppId () {
+  getAppId (): number {
     return this.appId
   }
 
@@ -65,7 +65,7 @@ export class TLoginMessage extends TSMessageBase {
    * DumpPacket
    * @return {string}
    */
-  dumpPacket () {
+  dumpPacket (): string {
     return `TLoginMessage',
         ${JSON.stringify(this
       ._fields)}`

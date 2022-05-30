@@ -87,7 +87,7 @@ export class BinaryStructure {
    * @param {{name: string, order: "big" | "little", size: number, type: FIELD_TYPE, value: Buffer }} field
    * @memberof BinaryStructure
    */
-  _add (field: {name: string, order: "big" | "little", size: number, type: FIELD_TYPE, value: Buffer }) {
+  _add (field: {name: string, order: "big" | "little", size: number, type: FIELD_TYPE, value: Buffer }): void {
     const newField = { ...field, offset: this._byteOffset }
     log.trace(`Adding ${JSON.stringify(newField)}`)
     this._fields.push(newField)
@@ -101,7 +101,7 @@ export class BinaryStructure {
      * @return {Buffer}
      * @memberof BinaryStructure
      */
-  serialize () {
+  serialize (): Buffer {
     let responseBuffer = Buffer.alloc(0)
     this._fields.forEach(f => {
       responseBuffer = Buffer.concat([responseBuffer, f.value])
@@ -114,7 +114,7 @@ export class BinaryStructure {
    * @param {Buffer} byteStream
    * @memberof BinaryStructure
    */
-  deserialize (byteStream: Buffer) {
+  deserialize (byteStream: Buffer): void {
     if (byteStream.byteLength > this._byteLength) {
       const errMessage = 'There are not enough fields to hold the bytestream. ' +
       'Please slice() the input if you are using part.'
@@ -136,7 +136,7 @@ export class BinaryStructure {
     })
   }
 
-  get byteLength () {
+  get byteLength (): number {
     return this._byteLength
   }
 
@@ -162,7 +162,7 @@ export class BinaryStructure {
    * @param {string} fieldName
    * @memberof BinaryStructure
    */
-  getValue (fieldName: string) {
+  getValue (fieldName: string): string | number | boolean {
     log.trace('Calling get() in BinaryStructure..')
     const selectedField = this.get(fieldName)
     log.trace('Calling get() in BinaryStructure.. success')
@@ -198,7 +198,7 @@ export class BinaryStructure {
     }
   }
 
-  setValueNumber (fieldName: string, newValue: number) {
+  setValueNumber (fieldName: string, newValue: number): void {
     log.trace('Calling setValueNumber() in BinaryStructure..')
     const selectedField = this.get(fieldName)
     log.trace('Calling get() in BinaryStructure.. success')
