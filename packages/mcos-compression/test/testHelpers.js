@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { ReadBuff, WriteBuff } from './types.js'
+
 /**
  * @description
  * @author Drazi Crendraven
@@ -45,8 +47,8 @@ export function createEmptyTCompStruct () {
     nChBits: [],
     nChCodes: [],
     workBuff: Buffer.alloc(0),
-    readBuf: Buffer.alloc(0),
-    writeBuf: Buffer.alloc(0)
+    readBuf: new ReadBuff(Buffer.alloc(0)),
+    writeBuf: new WriteBuff()
   }
 }
 
@@ -83,7 +85,7 @@ export function createEmptyTDCompStruct () {
     extraBits: Buffer.alloc(0),
     param: {},
     DistPosCodes: [],
-    readBuf: Buffer.alloc(0),
-    writeBuf: Buffer.alloc(0)
+    readBuf: new ReadBuff(Buffer.alloc(0)),
+    writeBuf: new WriteBuff()
   }
 }

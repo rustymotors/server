@@ -208,7 +208,7 @@ export function implode(readBuf: Buffer, writeBuf: Buffer, workBuf: TCmpStruct, 
 }
 function writeCmpData(pWork: TCmpStruct) {
   let inputDataEnd = 0                                        // Pointer to the end of the input data
-  let inputData = pWork.workBuff + pWork.dSizeBytes + 0x204   // ! data start address, I think
+  let inputData = pWork.workBuff.toString('hex') + pWork.dSizeBytes + 0x204   // ! data start address, I think
   let inputDataEnded = false                                  // If 1, then all data from the input stream have been already loaded
   let saveRepLength = 0                                       // Saved length of current repetition
   let saveDistance = 0                                        // Saved distance of current repetition
@@ -231,7 +231,7 @@ function writeCmpData(pWork: TCmpStruct) {
 
     // Load the bytes from the input stream, up to 0x1000 bytes
     while (bytesToLoad != 0) {
-      bytesLoaded = pWork.readBuf.read(bytesToLoad, pWork.param)
+      bytesLoaded = Number.parseInt(pWork.readBuf.read(bytesToLoad, pWork.param).join(''))
     }
   }
 }
