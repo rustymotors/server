@@ -285,7 +285,7 @@ services:
       - node
 
   db:
-    image: postgres:14.2
+    image: postgres:14.3
     ports:
       - "5432"
       # TODO: remove before prod https://github.com/drazisil/mco-server/issues/1008
@@ -293,7 +293,7 @@ services:
       POSTGRES_PASSWORD: "password"
       POSTGRES_DB: "mcos"
   pgadmin:
-    image: dpage/pgadmin4:6.8
+    image: dpage/pgadmin4:6.9
     # TODO: remove these before prod https://github.com/drazisil/mco-server/issues/1008
     environment:
       PGADMIN_DEFAULT_EMAIL: "admin@pgadmin.com"
