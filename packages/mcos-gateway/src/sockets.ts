@@ -214,8 +214,8 @@ export function socketListener(socket: Socket): void {
   socket.on('end', () => {
     log.info(`Client ${remoteAddress} disconnected from port ${localPort}`)
   })
-  socket.on('data', (/** @type {Buffer} */ data: any) => {
-    onData(data, connectionRecord)
+  socket.on('data', (/** @type {Buffer} */ data: Buffer) => {
+    void onData(data, connectionRecord)
   })
   socket.on('error', (/** @type {unknown} */ error: unknown) => {
     const message = errorMessage(error)
