@@ -148,13 +148,14 @@ export function implode(readBuf: Buffer, writeBuf: Buffer, workBuf: TCmpStruct, 
       pWork.dSizeBits++
       pWork.dSizeMask |= 0x20
       // No break here !!!
-
+      // falls through
     }
 
     case CMP_IMPLODE_DICT_SIZE2: {
       pWork.dSizeBits++
       pWork.dSizeMask |= 0x10
       // No break here !!!
+      // falls through
     }
 
     case CMP_IMPLODE_DICT_SIZE1: {
