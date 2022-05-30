@@ -2,6 +2,7 @@ FROM docker.elastic.co/beats/elastic-agent-complete:8.2.0
 
 WORKDIR /home/node/app
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl https://get.volta.sh | bash
 
 RUN ~/.volta/bin/volta install node@18
