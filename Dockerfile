@@ -1,4 +1,4 @@
-FROM docker.elastic.co/beats/elastic-agent-complete:8.2.3
+FROM docker.elastic.co/beats/elastic-agent-complete:8.3.0
 
 WORKDIR /home/node/app
 
