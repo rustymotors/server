@@ -14,12 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import pg from 'pg'
-import { logger } from 'mcos-shared/logger'
-import { APP_CONFIG } from 'mcos-shared/config'
-const { Client } = pg
+import pg from "pg";
+import { logger } from "mcos-shared/logger";
+import { APP_CONFIG } from "mcos-shared/config";
+import { Session } from "./models/Session.js";
+import { Lobby } from "./models/Lobby.js";
+const { Client } = pg;
 
-const log = logger.child({ service: 'mcoserver:DatabaseMgr' })
+const log = logger.child({ service: "mcoserver:DatabaseMgr" });
 
 /**
  * This class abstracts database methods
@@ -34,142 +36,52 @@ export class DatabaseManager {
    * @type {DatabaseManager}
    * @memberof DatabaseManager
    */
-  static _instance
+  static _instance;
 
   /**
    * Return the instance of the DatabaseManager class
    * @returns {DatabaseManager}
    */
-  static getInstance () {
+  static getInstance() {
     if (!DatabaseManager._instance) {
-      DatabaseManager._instance = new DatabaseManager()
+      DatabaseManager._instance = new DatabaseManager();
     }
-    const self = DatabaseManager._instance
-    return self
+    const self = DatabaseManager._instance;
+    return self;
   }
 
   /**
    * Initialize database and set up schemas if needed
    * @returns {Promise<void>}
    */
-  async init () {
-    if (typeof this.localDB === 'undefined') {
-      log.debug('Initializing the database...')
+  async init() {
+    if (typeof this.localDB === "undefined") {
+      log.debug("Initializing the database...");
 
       try {
-        const self = DatabaseManager._instance
+        const self = DatabaseManager._instance;
 
         const db = new Client({
-          connectionString: APP_CONFIG.MCOS.SETTINGS.DATABASE_CONNECTION_URI
-        })
+          connectionString: process.env.CONNECTION_URL,
+        });
 
-        await db.connect()
+        await db.connect();
 
-        self.localDB = db
+        self.localDB = db;
 
-        await db.query(`CREATE TABLE IF NOT EXISTS "sessions"
-            (
-              customer_id integer,
-              sessionkey text NOT NULL,
-              skey text NOT NULL,
-              context_id text NOT NULL,
-              connection_id text NOT NULL,
-              CONSTRAINT pk_session PRIMARY KEY(customer_id)
-            );`)
+        await db.query(Session.schema);
 
-        await db.query(`CREATE TABLE IF NOT EXISTS "lobbies"
-            (
-              "lobyID" integer NOT NULL,
-              "raceTypeID" integer NOT NULL,
-              "turfID" integer NOT NULL,
-              "riffName" character(32) NOT NULL,
-              "eTerfName" character(265) NOT NULL,
-              "clientArt" character(11) NOT NULL,
-              "elementID" integer NOT NULL,
-              "terfLength" integer NOT NULL,
-              "startSlice" integer NOT NULL,
-              "endSlice" integer NOT NULL,
-              "dragStageLeft" integer NOT NULL,
-              "dragStageRight" integer NOT NULL,
-              "dragStagingSlice" integer NOT NULL,
-              "gridSpreadFactor" real NOT NULL,
-              "linear" smallint NOT NULL,
-              "numPlayersMin" smallint NOT NULL,
-              "numPlayersMax" smallint NOT NULL,
-              "numPlayersDefault" smallint NOT NULL,
-              "bnumPlayersEnable" smallint NOT NULL,
-              "numLapsMin" smallint NOT NULL,
-              "numLapsMax" smallint NOT NULL,
-              "numLapsDefault" smallint NOT NULL,
-              "bnumLapsEnabled" smallint NOT NULL,
-              "numRoundsMin" smallint NOT NULL,
-              "numRoundsMax" smallint NOT NULL,
-              "numRoundsDefault" smallint NOT NULL,
-              "bnumRoundsEnabled" smallint NOT NULL,
-              "bWeatherDefault" smallint NOT NULL,
-              "bWeatherEnabled" smallint NOT NULL,
-              "bNightDefault" smallint NOT NULL,
-              "bNightEnabled" smallint NOT NULL,
-              "bBackwardDefault" smallint NOT NULL,
-              "bBackwardEnabled" smallint NOT NULL,
-              "bTrafficDefault" smallint NOT NULL,
-              "bTrafficEnabled" smallint NOT NULL,
-              "bDamageDefault" smallint NOT NULL,
-              "bDamageEnabled" smallint NOT NULL,
-              "bAIDefault" smallint NOT NULL,
-              "bAIEnabled" smallint NOT NULL,
-              "topDog" character(13) NOT NULL,
-              "terfOwner" character(33) NOT NULL,
-              "qualifingTime" integer NOT NULL,
-              "clubNumPlayers" integer NOT NULL,
-              "clubNumLaps" integer NOT NULL,
-              "clubNumRounds" integer NOT NULL,
-              "bClubNight" smallint NOT NULL,
-              "bClubWeather" smallint NOT NULL,
-              "bClubBackwards" smallint NOT NULL,
-              "topSeedsMP" integer NOT NULL,
-              "lobbyDifficulty" integer NOT NULL,
-              "ttPointForQualify" integer NOT NULL,
-              "ttCashForQualify" integer NOT NULL,
-              "ttPointBonusFasterIncs" integer NOT NULL,
-              "ttCashBonusFasterIncs" integer NOT NULL,
-              "ttTimeIncrements" integer NOT NULL,
-              "victoryPoints1" integer NOT NULL,
-              "victoryCash1" integer NOT NULL,
-              "victoryPoints2" integer NOT NULL,
-              "victoryCash2" integer NOT NULL,
-              "victoryPoints3" integer NOT NULL,
-              "victoryCash3" integer NOT NULL,
-              "minLevel" smallint NOT NULL,
-              "minResetSlice" integer NOT NULL,
-              "maxResetSlice" integer NOT NULL,
-              "bnewbieFlag" smallint NOT NULL,
-              "bdriverHelmetFlag" smallint NOT NULL,
-              "clubNumPlayersMax" smallint NOT NULL,
-              "clubNumPlayersMin" smallint NOT NULL,
-              "clubNumPlayersDefault" smallint NOT NULL,
-              "numClubsMax" smallint NOT NULL,
-              "numClubsMin" smallint NOT NULL,
-              "racePointsFactor" real NOT NULL,
-              "bodyClassMax" smallint NOT NULL,
-              "powerClassMax" smallint NOT NULL,
-              "clubLogoID" integer NOT NULL,
-              "teamtWeather" smallint NOT NULL,
-              "teamtNight" smallint NOT NULL,
-              "teamtBackwards" smallint NOT NULL,
-              "teamtNumLaps" smallint NOT NULL,
-              "raceCashFactor" real NOT NULL
-            );`)
-        log.debug('Database initialized')
+        await db.query(Lobby.schema);
+        log.debug("Database initialized");
       } catch (/** @type {unknown} */ err) {
         if (err instanceof Error) {
           const newError = new Error(
             `There was an error setting up the database: ${err.message}`
-          )
-          log.error(newError.message)
-          throw newError
+          );
+          log.error(newError.message);
+          throw newError;
         }
-        throw err
+        throw err;
       }
     }
   }
@@ -180,13 +92,13 @@ export class DatabaseManager {
    * Please use {@link DatabaseManager.getInstance()} instead
    * @memberof DatabaseManager
    */
-  constructor () {
-    if (!APP_CONFIG.MCOS.SETTINGS.DATABASE_CONNECTION_URI) {
-      throw new Error('Please set MCOS__SETTINGS__DATABASE_CONNECTION_URI')
+  constructor() {
+    if (!process.env.CONNECTION_URL) {
+      throw new Error("Please set CONNECTION_URL");
     }
-    this.connectionURI = APP_CONFIG.MCOS.SETTINGS.DATABASE_CONNECTION_URI
+    this.connectionURI = process.env.CONNECTION_URL;
     /** @type {pg.Client | undefined} */
-    this.localDB = undefined
+    this.localDB = undefined;
   }
 
   /**
@@ -194,21 +106,21 @@ export class DatabaseManager {
    * @param {number} customerId
    * @returns {Promise<import("mcos-shared/types").SessionRecord>}
    */
-  async fetchSessionKeyByCustomerId (customerId) {
-    await this.init()
+  async fetchSessionKeyByCustomerId(customerId) {
+    await this.init();
     if (!this.localDB) {
-      log.warn('Database not ready in fetchSessionKeyByCustomerId()')
-      throw new Error('Error accessing database. Are you using the instance?')
+      log.warn("Database not ready in fetchSessionKeyByCustomerId()");
+      throw new Error("Error accessing database. Are you using the instance?");
     }
     const record = await this.localDB.query(
-      'SELECT sessionkey, skey FROM sessions WHERE customer_id = $1',
+      "SELECT sessionkey, skey FROM sessions WHERE customer_id = $1",
       [customerId]
-    )
+    );
     if (record === undefined) {
-      log.debug('Unable to locate session key')
-      throw new Error('Unable to fetch session key')
+      log.debug("Unable to locate session key");
+      throw new Error("Unable to fetch session key");
     }
-    return record.rows[0]
+    return record.rows[0];
   }
 
   /**
@@ -216,20 +128,20 @@ export class DatabaseManager {
    * @param {number} connectionId
    * @returns {Promise<import("mcos-shared/types").SessionRecord>}
    */
-  async fetchSessionKeyByConnectionId (connectionId) {
-    await this.init()
+  async fetchSessionKeyByConnectionId(connectionId) {
+    await this.init();
     if (!this.localDB) {
-      log.warn('Database not ready in fetchSessionKeyByConnectionId()')
-      throw new Error('Error accessing database. Are you using the instance?')
+      log.warn("Database not ready in fetchSessionKeyByConnectionId()");
+      throw new Error("Error accessing database. Are you using the instance?");
     }
     const record = await this.localDB.query(
-      'SELECT sessionkey, skey FROM sessions WHERE connection_id = $1',
+      "SELECT sessionkey, skey FROM sessions WHERE connection_id = $1",
       [connectionId]
-    )
+    );
     if (record === undefined) {
-      throw new Error('Unable to fetch session key')
+      throw new Error("Unable to fetch session key");
     }
-    return record.rows[0]
+    return record.rows[0];
   }
 
   /**
@@ -240,13 +152,13 @@ export class DatabaseManager {
    * @param {string} connectionId
    * @returns {Promise<number>}
    */
-  async updateSessionKey (customerId, sessionkey, contextId, connectionId) {
-    await this.init()
-    const skey = sessionkey.slice(0, 16)
+  async updateSessionKey(customerId, sessionkey, contextId, connectionId) {
+    await this.init();
+    const skey = sessionkey.slice(0, 16);
 
     if (!this.localDB) {
-      log.warn('Database not ready in updateSessionKey()')
-      throw new Error('Error accessing database. Are you using the instance?')
+      log.warn("Database not ready in updateSessionKey()");
+      throw new Error("Error accessing database. Are you using the instance?");
     }
     const record = await this.localDB.query(
       `INSERT INTO sessions (customer_id, sessionkey, skey, context_id, connection_id)
@@ -254,10 +166,10 @@ export class DatabaseManager {
       ON CONFLICT (customer_id)
         DO UPDATE SET sessionkey = $2, skey = $3;`,
       [customerId, sessionkey, skey, contextId, connectionId]
-    )
+    );
     if (record === undefined) {
-      throw new Error('Unable to fetch session key')
+      throw new Error("Unable to fetch session key");
     }
-    return 1
+    return 1;
   }
 }

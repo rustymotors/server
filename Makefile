@@ -24,6 +24,7 @@ test:
 	@cd packages/proxy && npm test && cd ../..
 	@cd packages/router && npm test && cd ../..
 	@cd packages/shard && npm test && cd ../..
+	@cd packages/shared && npm test && cd ../..
 	@cd packages/transactions && npm test && cd ../..
 
 
@@ -44,3 +45,5 @@ enable-node:
 docker-init:
 	mkdir -p log/mcos
 	@npm run start:docker -s
+
+.PHONEY: test

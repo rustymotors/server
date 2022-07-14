@@ -16,6 +16,7 @@
 
 import { logger } from 'mcos-shared/logger'
 import { BufferWithConnection, GSMessageArrayWithConnection, NPSMessage, NPSPersonaMapsMessage } from 'mcos-shared/types'
+import { MessagePacket } from 'mcos-shared/structures'
 
 const log = logger.child({ service: 'mcos:persona' })
 
@@ -242,12 +243,7 @@ async function getPersonaMaps (data: Buffer) {
         NPSMsg: requestPacket.toJSON()
       })}`
   )
-  log.debug(
-      `NPSMsg request object from _npsGetPersonaMaps',
-      ${JSON.stringify({
-        NPSMsg: requestPacket.toJSON()
-      })}`
-  )
+
   requestPacket.dumpPacket()
 
   const customerId = Buffer.alloc(4)
@@ -260,6 +256,8 @@ async function getPersonaMaps (data: Buffer) {
   )
 
   const personaMapsMessage = new NPSPersonaMapsMessage('sent')
+
+  // this is a GLDP_PersonaList::GLDP_PersonaList
 
   // TODO: I think this is a list of _UserGameData
 
@@ -281,6 +279,10 @@ async function getPersonaMaps (data: Buffer) {
       )
 
       responsePacket.dumpPacket()
+
+      const personaMapsPacket = MessagePacket.fromBuffer(responsePacket.serialize())
+
+      log.debug(`!!! outbound persona maps response packet: ${personaMapsPacket.buffer.toString("hex")}`)
 
       return responsePacket
     } catch (error) {

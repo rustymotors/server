@@ -35,7 +35,6 @@
  * @property {string} MCOS.SETTINGS.AUTH_EXTERNAL_HOST
  * @property {string} MCOS.SETTINGS.PATCH_LISTEN_HOST
  * @property {string} MCOS.SETTINGS.PATCH_EXTERNAL_HOST
- * @property {string} MCOS.SETTINGS.DATABASE_CONNECTION_URI
  * @property {string} MCOS.SETTINGS.LOG_LEVEL
  */
 
@@ -59,7 +58,6 @@ export const APP_CONFIG = {
       AUTH_EXTERNAL_HOST: '10.10.5.20',
       PATCH_LISTEN_HOST: '0.0.0.0',
       PATCH_EXTERNAL_HOST: '10.10.5.20',
-      DATABASE_CONNECTION_URI: 'postgresql://postgres:password@db:5432/mcos',
       LOG_LEVEL: 'trace'
     }
   }

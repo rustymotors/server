@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { logger } from 'mcos-shared/logger'
+import { MessagePacket } from 'mcos-shared/structures'
 import { DatabaseManager } from 'mcos-database'
 import { NPSMessage, NPSUserInfo } from 'mcos-shared/types'
 import { getPersonasByPersonaId } from 'mcos-persona'
@@ -40,8 +41,7 @@ function npsSocketWriteIfOpen (conn, buffer) {
     sock.write(buffer)
   } else {
     throw new Error(
-      `Error writing ${buffer.toString('hex')} to ${
-        sock.remoteAddress
+      `Error writing ${buffer.toString('hex')} to ${sock.remoteAddress
       } , ${String(sock)}`
     )
   }
@@ -265,7 +265,7 @@ export class LobbyServer {
   async _npsRequestGameConnectServer (connection, rawData) {
     log.trace(`[legacy] Raw bytes in _npsRequestGameConnectServer: ${toHex(rawData)}`)
 
-    // TODO: inbound shoud be a _NPS_LoginInfo that has been packed (pack code: "llpppb")
+    // TODO: inbound should be a _NPS_LoginInfo that has been packed (pack code: "llpppb")
     // TODO: outbound packet should be a _NPS_UserInfo
 
     const { sock } = connection
@@ -275,6 +275,11 @@ export class LobbyServer {
         data: rawData.toString('hex')
       })}`
     )
+
+    // since rawData is a buffer at this point, let's place it in a message structure
+    const inboundMessage = MessagePacket.fromBuffer(rawData)
+
+    log.debug(`message buffer (${inboundMessage.buffer.toString('hex')})`)
 
     // Return a _NPS_UserInfo structure
 
@@ -298,8 +303,7 @@ export class LobbyServer {
       .catch((/** @type {unknown} */ error) => {
         if (error instanceof Error) {
           log.debug(
-            `Unable to fetch session key for customerId ${customerId.toString()}: ${
-              error.message
+            `Unable to fetch session key for customerId ${customerId.toString()}: ${error.message
             })}`
           )
         }
