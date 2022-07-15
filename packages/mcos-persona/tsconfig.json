@@ -8,7 +8,8 @@
     "paths": {
       "mcos-shared":["../mcos-shared/built"],
       "mcos-shared/logger":["../mcos-shared/built/logger"],
-      "mcos-shared/types":["../mcos-shared/built/types"]
+      "mcos-shared/types":["../mcos-shared/built/types"],
+      "mcos-shared/structures":["../mcos-shared/built/structures"]
     }
   },
   "exclude": ["built"],

@@ -14,19 +14,25 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-export { BinaryStructure } from './BinaryStructure.js'
-export { TSMessageBase } from './TMessageBase.js'
-export { GSMessageBase } from './GMessageBase.js'
-export { MessagePacket } from './MessagePacket.js'
 
-/**
- * @export
- * @typedef {object} TIMESTAMP_STRUCT
- * @property {number} year - 2 bytes
- * @property {number} month - 2 bytes
- * @property {number} day - 2 bytes
- * @property {number} hour - 2 bytes
- * @property {number} minute - 2 bytes
- * @property {number} second - 2 bytes
- * @property {number} fraction - 2 bytes
- */
+export class MessagePacket {
+  private _buffer: Buffer = Buffer.alloc(0)
+
+  static fromBuffer(buffer: Buffer): MessagePacket {
+    const newMessage = new MessagePacket()
+    newMessage.setBuffer(buffer)
+    return newMessage
+  }
+
+  /**
+   * Will replace internal buffer without warning
+   * @param buffer
+   */
+  public setBuffer(buffer: Buffer): void {
+    this._buffer = buffer
+  }
+
+  public get buffer(): Buffer {
+    return this._buffer
+  }
+}
