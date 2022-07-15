@@ -23,6 +23,6 @@ describe("MessagePacket class", function() {
     const buffer = newMessagePacket.buffer
 
     // assert
-    expect(buffer).equal(expectedBuffer)
+    expect(buffer).deep.equal(expectedBuffer)
   })
 })
