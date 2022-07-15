@@ -40,6 +40,7 @@ services:
       - ./:/home/node/app
     environment:
       - DEBUG=mcos:*
+      - CONNECTION_URL=postgresql://postgres:password@db:5432/mcos
     command: "make docker-init"
     ports:
       - "80:80"
