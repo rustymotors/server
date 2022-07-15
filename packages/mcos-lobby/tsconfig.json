@@ -16,6 +16,9 @@
       "mcos-shared/logger": [
         "../mcos-shared/built/logger"
       ],
+      "mcos-shared/structures": [
+        "../mcos-shared/built/structures"
+      ],
       "mcos-shared/types": [
         "../mcos-shared/built/types"
       ],

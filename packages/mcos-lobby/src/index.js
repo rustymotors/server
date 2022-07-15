@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { logger } from 'mcos-shared/logger'
+import { MessagePacket } from 'mcos-shared/structures'
 import { DatabaseManager } from 'mcos-database'
 import { NPSMessage, NPSUserInfo } from 'mcos-shared/types'
 import { getPersonasByPersonaId } from 'mcos-persona'
@@ -275,6 +276,11 @@ export class LobbyServer {
         data: rawData.toString('hex')
       })}`
     )
+
+    // since rawData is a buffer at this point, let's place it in a message structure
+    const inboundMessage = MessagePacket.fromBuffer(rawData)
+
+    log.debug(`message buffer (${inboundMessage.buffer.toString('hex')})`)
 
     // Return a _NPS_UserInfo structure
 

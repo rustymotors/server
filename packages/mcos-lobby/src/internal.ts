@@ -17,6 +17,7 @@
 import { DatabaseManager } from 'mcos-database'
 import { getPersonasByPersonaId } from 'mcos-persona'
 import { toHex, cipherBufferDES, decipherBufferDES, selectOrCreateEncryptors } from 'mcos-shared'
+import { MessagePacket } from 'mcos-shared/structures'
 import { logger } from 'mcos-shared/logger'
 import { BufferWithConnection, EncryptionSession, NPSMessage, NPSUserInfo, SocketWithConnectionInfo } from 'mcos-shared/types'
 
@@ -49,6 +50,11 @@ async function _npsRequestGameConnectServer (dataConnection: BufferWithConnectio
         data: dataConnection.data.toString('hex')
       })}`
   )
+
+  // since the data is a buffer at this point, let's place it in a message structure
+  const inboundMessage = MessagePacket.fromBuffer(dataConnection.data)
+
+  log.debug(`message buffer (${inboundMessage.buffer.toString('hex')})`)
 
   // Return a _NPS_UserInfo structure
   const userInfo = new NPSUserInfo('recieved')
@@ -109,6 +115,10 @@ async function _npsRequestGameConnectServer (dataConnection: BufferWithConnectio
   packetResult.msgNo = 0x1_20
   packetResult.setContent(packetContent)
   packetResult.dumpPacket()
+
+  const loginResponsePacket = MessagePacket.fromBuffer(packetResult.serialize())
+
+  log.debug(`!!! outbound lobby login response packet: ${loginResponsePacket.buffer.toString("hex")}`)
 
   return packetResult
 }
