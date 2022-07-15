@@ -35,8 +35,4 @@ export class MessagePacket {
   public get buffer(): Buffer {
     return this._buffer
   }
-
-  private _unpack() {
-
-  }
 }
