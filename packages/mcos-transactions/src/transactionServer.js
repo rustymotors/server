@@ -383,17 +383,17 @@ export class MCOTServer {
     const messageHandlers = [
       {
         name: 'MC_SET_OPTIONS',
-        handler: this.handleSetOptions.bind(this),
+        handler: MCOTServer.handleSetOptions.bind(this),
         errorMessage: 'Error in MC_SET_OPTIONS'
       },
       {
         name: 'MC_TRACKING_MSG',
-        handler: this.handleTrackingMessage.bind(this),
+        handler: MCOTServer.handleTrackingMessage.bind(this),
         errorMessage: 'Error in MC_TRACKING_MSG'
       },
       {
         name: 'MC_UPDATE_PLAYER_PHYSICAL',
-        handler: this.handleUpdatePlayerPhysical.bind(this),
+        handler: MCOTServer.handleUpdatePlayerPhysical.bind(this),
         errorMessage: 'Error in MC_UPDATE_PLAYER_PHYSICAL'
       },
       {
@@ -403,22 +403,22 @@ export class MCOTServer {
       },
       {
         name: 'MC_LOGIN',
-        handler: this.handleLoginMessage.bind(this),
+        handler: MCOTServer.handleLoginMessage.bind(this),
         errorMessage: 'Error with MC_LOGIN'
       },
       {
         name: 'MC_LOGOUT',
-        handler: this.handleLogoutMessage.bind(this),
+        handler: MCOTServer.handleLogoutMessage.bind(this),
         errorMessage: 'Error with MC_LOGOUT'
       },
       {
         name: 'MC_GET_LOBBIES',
-        handler: this.handleGetLobbiesMessage.bind(this),
+        handler: MCOTServer.handleGetLobbiesMessage.bind(this),
         errorMessage: 'Error with MC_GET_LOBBIES'
       },
       {
         name: 'MC_STOCK_CAR_INFO',
-        handler: this.handleShockCarInfoMessage.bind(this),
+        handler: MCOTServer.handleShockCarInfoMessage.bind(this),
         errorMessage: 'Error with MC_STOCK_CAR_INFO'
       }
     ]
@@ -457,7 +457,7 @@ export class MCOTServer {
    * @return {import('mcos-shared').TCPConnection}
    * @memberof MCOTServer
    */
-  handleShockCarInfoMessage (conn, node) {
+  static handleShockCarInfoMessage (conn, node) {
     const result = MCOTServer.getStockCarInfo(conn, node)
     const responsePackets = result.packetList
     // Write the socket
@@ -472,7 +472,7 @@ export class MCOTServer {
    * @return {import('mcos-shared').TCPConnection}
    * @memberof MCOTServer
    */
-  handleGetLobbiesMessage (conn, node) {
+  static handleGetLobbiesMessage (conn, node) {
     const result = MCOTServer.getLobbies(conn, node)
     log.debug('Dumping Lobbies response packet...')
     log.debug(result.packetList.join().toString())
@@ -489,7 +489,7 @@ export class MCOTServer {
    * @return {import('mcos-shared').TCPConnection}
    * @memberof MCOTServer
    */
-  handleLogoutMessage (conn, node) {
+  static handleLogoutMessage (conn, node) {
     const result = MCOTServer.logout(conn, node)
     const responsePackets = result.packetList
     // Write the socket
@@ -504,7 +504,7 @@ export class MCOTServer {
    * @return {import('mcos-shared').TCPConnection}
    * @memberof MCOTServer
    */
-  handleLoginMessage (conn, node) {
+  static handleLoginMessage (conn, node) {
     const result = MCOTServer.login(conn, node)
     const responsePackets = result.packetList
     // Write the socket
@@ -536,7 +536,7 @@ export class MCOTServer {
    * @return {import('mcos-shared').TCPConnection}
    * @memberof MCOTServer
    */
-  handleUpdatePlayerPhysical (conn, node) {
+  static handleUpdatePlayerPhysical (conn, node) {
     const result = MCOTServer.updatePlayerPhysical(conn, node)
     const responsePackets = result.packetList
     return result.connection.tryWritePackets(responsePackets)
@@ -550,7 +550,7 @@ export class MCOTServer {
    * @return {import('mcos-shared').TCPConnection}
    * @memberof MCOTServer
    */
-  handleTrackingMessage (conn, node) {
+  static handleTrackingMessage (conn, node) {
     const result = MCOTServer.trackingMessage(conn, node)
     const responsePackets = result.packetList
     return result.connection.tryWritePackets(responsePackets)
@@ -564,7 +564,7 @@ export class MCOTServer {
    * @return {import('mcos-shared').TCPConnection}
    * @memberof MCOTServer
    */
-  handleSetOptions (conn, node) {
+  static handleSetOptions (conn, node) {
     const result = MCOTServer.setOptions(conn, node)
     const responsePackets = result.packetList
     return result.connection.tryWritePackets(responsePackets)
@@ -636,7 +636,7 @@ export class MCOTServer {
       }
 
       if (message.flags - 8 >= 0) {
-        const deciphered = this.tryDecryptBuffer(message, newConnection)
+        const deciphered = MCOTServer.tryDecryptBuffer(message, newConnection)
         if (deciphered.err || deciphered.data === null) {
           return { err: deciphered.err, data: null }
         }
@@ -657,7 +657,7 @@ export class MCOTServer {
    * @return {{err: Error | null, data: Buffer | null}}
    * @memberof MCOTServer
    */
-  tryDecryptBuffer (message, newConnection) {
+  static tryDecryptBuffer (message, newConnection) {
     try {
       return {
         err: null,
