@@ -357,7 +357,7 @@ export class MessageNode {
       this.msgNo = this.data.readInt16LE(0)
     } catch (err) {
       if (err instanceof Error) {
-        if (err.name.includes('RangeError')) {
+        if (err.name.includes('RangeError') === true) {
           // This is likeley not an MCOTS packet, ignore
           throw new Error(
             `[MessageNode] Not long enough to deserialize, only ${packet.length.toString()} bytes long`
