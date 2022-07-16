@@ -29,6 +29,7 @@ function handleRequest(request: IncomingMessage): ResponseJSON {
   request.setEncoding("utf8");
   const requestJSON = parseRequest(request.read());
 
+  // TODO: #1167 Create handlers for database microservice requests
   const requestHandler = handlers.find((handler: RequestHandler) => {
     return handler.requestCode === requestJSON.requestCode;
   });
