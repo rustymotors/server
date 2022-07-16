@@ -371,7 +371,7 @@ export class TCPConnection {
         this.sock.write(encryptedPacket.serialize())
       } else {
         /** @type {string} */
-        const port: string = this.sock.localPort?.toString() || ''
+        const port: string = typeof this.sock.localPort !== "undefined" ? this.sock.localPort?.toString() : ''
         throw new Error(
           `Error writing ${encryptedPacket.serialize()} to ${
             this.sock.remoteAddress
