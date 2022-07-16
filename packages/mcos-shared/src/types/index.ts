@@ -464,7 +464,7 @@ export class MessageNode {
       flags: this.flags,
       toFrom: this.toFrom,
       appId: this.appId,
-      packetContents: packetContentsArray.join('') || ''
+      packetContents: packetContentsArray.join('')
     })}`
   }
 
