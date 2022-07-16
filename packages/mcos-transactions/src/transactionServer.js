@@ -71,7 +71,7 @@ export class MCOTServer {
    * @param {number} messageID
    * @return {string}
    */
-  _MSG_STRING (messageID) {
+  static MSG_STRING (messageID) {
     const messageIds = [
       { id: 105, name: 'MC_LOGIN' },
       { id: 106, name: 'MC_LOGOUT' },
@@ -101,7 +101,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {{connection: import('mcos-shared').TCPConnection, packetList: MessageNode[]}}>}
    */
-  _login (connection, node) {
+  static login (connection, node) {
     // Create new response packet
     const pReply = new GenericReplyMessage()
     pReply.msgNo = 213
@@ -123,7 +123,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {{connection: import('mcos-shared').TCPConnection, packetList: MessageNode[]}}
    */
-  _getLobbies (connection, node) {
+  static getLobbies (connection, node) {
     log.debug('In _getLobbies...')
     const lobbiesListMessage = node
 
@@ -162,7 +162,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {{connection: import('mcos-shared').TCPConnection, packetList: MessageNode[]}}
    */
-  _logout (connection, node) {
+  static logout (connection, node) {
     const logoutMessage = node
 
     logoutMessage.data = node.serialize()
@@ -193,7 +193,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {{connection: import('mcos-shared').TCPConnection, packetList: MessageNode[]}}
    */
-  _setOptions (connection, node) {
+  static setOptions (connection, node) {
     const setOptionsMessage = node
 
     setOptionsMessage.data = node.serialize()
@@ -221,7 +221,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {{connection: import('mcos-shared').TCPConnection, packetList: MessageNode[]}}
    */
-  _trackingMessage (connection, node) {
+  static trackingMessage (connection, node) {
     const trackingMessage = node
 
     trackingMessage.data = node.serialize()
@@ -249,7 +249,7 @@ export class MCOTServer {
    * @param {MessageNode} node
    * @return {{connection: import('mcos-shared').TCPConnection, packetList: MessageNode[]}}
    */
-  _updatePlayerPhysical (connection, node) {
+  static updatePlayerPhysical (connection, node) {
     const updatePlayerPhysicalMessage = node
 
     updatePlayerPhysicalMessage.data = node.serialize()
@@ -276,7 +276,7 @@ export class MCOTServer {
    * @param {MessageNode} packet
    * @returns {{connection: import('mcos-shared').TCPConnection, packetList: MessageNode[]}}
    */
-  getStockCarInfo (connection, packet) {
+  static getStockCarInfo (connection, packet) {
     const getStockCarInfoMessage = new GenericRequestMessage()
     getStockCarInfoMessage.deserialize(packet.data)
     getStockCarInfoMessage.dumpPacket()
@@ -374,7 +374,7 @@ export class MCOTServer {
    */
   async processInput (node, conn) {
     const currentMessageNo = node.msgNo
-    const currentMessageString = this._MSG_STRING(currentMessageNo)
+    const currentMessageString = MCOTServer.MSG_STRING(currentMessageNo)
 
     log.debug(
       `We are attempting to process a message with id ${currentMessageNo}(${currentMessageString})`
@@ -458,7 +458,7 @@ export class MCOTServer {
    * @memberof MCOTServer
    */
   handleShockCarInfoMessage (conn, node) {
-    const result = this.getStockCarInfo(conn, node)
+    const result = MCOTServer.getStockCarInfo(conn, node)
     const responsePackets = result.packetList
     // Write the socket
     return result.connection.tryWritePackets(responsePackets)
@@ -473,7 +473,7 @@ export class MCOTServer {
    * @memberof MCOTServer
    */
   handleGetLobbiesMessage (conn, node) {
-    const result = this._getLobbies(conn, node)
+    const result = MCOTServer.getLobbies(conn, node)
     log.debug('Dumping Lobbies response packet...')
     log.debug(result.packetList.join().toString())
     const responsePackets = result.packetList
@@ -490,7 +490,7 @@ export class MCOTServer {
    * @memberof MCOTServer
    */
   handleLogoutMessage (conn, node) {
-    const result = this._logout(conn, node)
+    const result = MCOTServer.logout(conn, node)
     const responsePackets = result.packetList
     // Write the socket
     return result.connection.tryWritePackets(responsePackets)
@@ -505,7 +505,7 @@ export class MCOTServer {
    * @memberof MCOTServer
    */
   handleLoginMessage (conn, node) {
-    const result = this._login(conn, node)
+    const result = MCOTServer.login(conn, node)
     const responsePackets = result.packetList
     // Write the socket
     return result.connection.tryWritePackets(responsePackets)
@@ -537,7 +537,7 @@ export class MCOTServer {
    * @memberof MCOTServer
    */
   handleUpdatePlayerPhysical (conn, node) {
-    const result = this._updatePlayerPhysical(conn, node)
+    const result = MCOTServer.updatePlayerPhysical(conn, node)
     const responsePackets = result.packetList
     return result.connection.tryWritePackets(responsePackets)
   }
@@ -551,7 +551,7 @@ export class MCOTServer {
    * @memberof MCOTServer
    */
   handleTrackingMessage (conn, node) {
-    const result = this._trackingMessage(conn, node)
+    const result = MCOTServer.trackingMessage(conn, node)
     const responsePackets = result.packetList
     return result.connection.tryWritePackets(responsePackets)
   }
@@ -565,7 +565,7 @@ export class MCOTServer {
    * @memberof MCOTServer
    */
   handleSetOptions (conn, node) {
-    const result = this._setOptions(conn, node)
+    const result = MCOTServer.setOptions(conn, node)
     const responsePackets = result.packetList
     return result.connection.tryWritePackets(responsePackets)
   }
@@ -578,7 +578,7 @@ export class MCOTServer {
    * @return {*}
    * @memberof MCOTServer
    */
-  isEncryptedFlagSet (message, newConnection) {
+  static isEncryptedFlagSet (message, newConnection) {
     return message.flags !== 80 && newConnection.useEncryption
   }
 
@@ -589,7 +589,7 @@ export class MCOTServer {
    * @param {import('mcos-shared').TCPConnection} newConnection
    * @memberof MCOTServer
    */
-  decryptBuffer (message, newConnection) {
+  static decryptBuffer (message, newConnection) {
     const encryptedBuffer = Buffer.from(message.data)
     log.debug(
       `Full packet before decrypting: ${encryptedBuffer.toString('hex')}`
@@ -625,7 +625,7 @@ export class MCOTServer {
     }
 
     // If not a Heartbeat
-    if (this.isEncryptedFlagSet(message, newConnection)) {
+    if (MCOTServer.isEncryptedFlagSet(message, newConnection)) {
       if (!newConnection.isSetupComplete) {
         return {
           err: new Error(
@@ -661,7 +661,7 @@ export class MCOTServer {
     try {
       return {
         err: null,
-        data: this.decryptBuffer(message, newConnection).data
+        data: MCOTServer.decryptBuffer(message, newConnection).data
       }
     } catch (error) {
       return {
