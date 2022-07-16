@@ -131,7 +131,7 @@ async function onData(data: Buffer, connection: SocketWithConnectionInfo): Promi
     result = await handleInboundTransactionData(localPort, networkBuffer)
   }
 
-  if (result.err) {
+  if (result.err !== null) {
     log.error(`[socket]There was an error processing the packet: ${errorMessage(result.err)}`)
     process.exitCode = -1
     return
@@ -153,7 +153,7 @@ async function onData(data: Buffer, connection: SocketWithConnectionInfo): Promi
   log.debug(`There are ${packetCount} messages ready for sending`)
   if (messages.length >= 1) {
     messages.forEach((f: { serialize: () => Buffer }) => {
-      if (outboundConnection.useEncryption && f instanceof MessageNode) {
+      if (outboundConnection.useEncryption === true && f instanceof MessageNode) {
         if (typeof outboundConnection.encryptionSession === 'undefined' || typeof f.data === 'undefined') {
           const errMessage = 'There was a fatal error attempting to encrypt the message!'
           log.trace(`usingEncryption? ${outboundConnection.useEncryption}, packetLength: ${f.data.byteLength}/${f.dataLength}`)
@@ -197,7 +197,7 @@ export function socketListener(socket: Socket): void {
 
   const { localPort, remoteAddress } = socket
   log.info(`Client ${remoteAddress} connected to port ${localPort}`)
-  if (socket.localPort === 7003 && connectionRecord.inQueue) {
+  if (socket.localPort === 7003 && connectionRecord.inQueue === true) {
     /**
        * Debug seems hard-coded to use the connection queue
        * Craft a packet that tells the client it's allowed to login
@@ -218,7 +218,7 @@ export function socketListener(socket: Socket): void {
   })
   socket.on('error', (/** @type {unknown} */ error: unknown) => {
     const message = errorMessage(error)
-    if (message.includes('ECONNRESET')) {
+    if (message.includes('ECONNRESET') === true) {
       return log.warn('Connection was reset')
     }
     log.error(`Socket error: ${errorMessage(error)}`)
