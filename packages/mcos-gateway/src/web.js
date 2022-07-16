@@ -18,7 +18,6 @@ import { AdminServer } from './adminServer.js'
 import { AuthLogin } from 'mcos-auth'
 import { PatchServer } from 'mcos-patch'
 import { ShardServer } from 'mcos-shard'
-import { APP_CONFIG } from 'mcos-shared/config'
 import { logger } from 'mcos-shared/logger'
 
 const log = logger.child({ service: 'mcos:gateway:web' })
@@ -51,7 +50,7 @@ export function httpListener (req, res) {
     req.url === '/games/EA_Seattle/MotorCity/MCO'
   ) {
     log.debug('http routing request to patch server')
-    return PatchServer.getInstance(APP_CONFIG).handleRequest(req, res)
+    return PatchServer.getInstance().handleRequest(req, res)
   }
   if (
     req.url === '/cert' ||
@@ -60,7 +59,7 @@ export function httpListener (req, res) {
     req.url === '/ShardList/'
   ) {
     log.debug('http routing request to shard server')
-    return ShardServer.getInstance(APP_CONFIG).handleRequest(req, res)
+    return ShardServer.getInstance().handleRequest(req, res)
   }
 
   log.warn(

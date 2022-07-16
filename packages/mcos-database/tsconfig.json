@@ -6,7 +6,6 @@
     "rootDir": "./src",
     "baseUrl": ".",
     "paths": {
-      "mcos-shared/config":["../mcos-shared/built/config"],
       "mcos-shared/logger":["../mcos-shared/built/logger"],
       "mcos-shared/types":["../mcos-shared/built/types"]
     }

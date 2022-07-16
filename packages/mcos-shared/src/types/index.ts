@@ -18,7 +18,6 @@ import { Cipher, Decipher, privateDecrypt } from 'node:crypto'
 import { readFileSync, statSync } from 'node:fs'
 import { Socket } from 'node:net'
 import { TSMessageBase } from '../structures/TMessageBase.js'
-import { APP_CONFIG } from '../config/index.js'
 export { TClientConnectMessage } from './TClientConnectMessage.js'
 export { TLoginMessage} from './TLoginMessage.js'
 export { TLobbyMessage, LobbyInfo} from './TLobbyMessage.js'
@@ -358,7 +357,7 @@ export class MessageNode {
       this.msgNo = this.data.readInt16LE(0)
     } catch (err) {
       if (err instanceof Error) {
-        if (err.name.includes('RangeError')) {
+        if (err.name.includes('RangeError') === true) {
           // This is likeley not an MCOTS packet, ignore
           throw new Error(
             `[MessageNode] Not long enough to deserialize, only ${packet.length.toString()} bytes long`
@@ -367,7 +366,7 @@ export class MessageNode {
           throw new Error(
             `[MessageNode] Unable to read msgNo from ${packet.toString(
               'hex'
-            )}: ${err.toString()}`
+            )}: ${err.message}`
           )
         }
       }
@@ -465,7 +464,7 @@ export class MessageNode {
       flags: this.flags,
       toFrom: this.toFrom,
       appId: this.appId,
-      packetContents: packetContentsArray.join('') || ''
+      packetContents: packetContentsArray.join('')
     })}`
   }
 
@@ -964,10 +963,9 @@ export class NPSMessage {
     } catch (error) {
       if (error instanceof Error) {
         throw new TypeError(
-          `[NPSMsg] Error in serialize(): ${error.toString()}`
+          `[NPSMsg] Error in serialize(): ${error.message}`
         )
       }
-
       throw new Error('[NPSMsg] Error in serialize(), error unknown')
     }
   }
@@ -1293,12 +1291,12 @@ export class NPSUserStatus extends NPSMessage {
    * @return {void}
    */
   extractSessionKeyFromPacket (packet: Buffer): void {
-    if (!APP_CONFIG.MCOS.CERTIFICATE.PRIVATE_KEY_FILE) {
-      throw new Error('Please set MCOS__CERTIFICATE__PRIVATE_KEY_FILE')
+    if (typeof process.env.PRIVATE_KEY_FILE === "undefined") {
+      throw new Error('Please set PRIVATE_KEY_FILE')
     }
     // Decrypt the sessionkey
     const privateKey = this.fetchPrivateKeyFromFile(
-      APP_CONFIG.MCOS.CERTIFICATE.PRIVATE_KEY_FILE
+      process.env.PRIVATE_KEY_FILE
     )
 
     const sessionkeyString = Buffer.from(

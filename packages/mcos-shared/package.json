@@ -3,7 +3,6 @@
   "type": "module",
   "exports": {
     ".": "./built/index.js",
-    "./config": "./built/config/index.js",
     "./logger": "./built/logger/index.js",
     "./structures": "./built/structures/index.js",
     "./types": "./built/types/index.js"

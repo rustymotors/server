@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { APP_CONFIG } from '../config/index.js'
-
 const ELOGGING_LEVELS: Record<string, number> = {
   'all': 0,
   'trace': 10,
@@ -32,12 +30,17 @@ const ELOGGING_LEVELS: Record<string, number> = {
  * @class
  */
 class MCOSLogger {
-  systemLogLevel: number
-  service: string
+  systemLogLevel = 30
+  service = ''
   name: string
   constructor(options?: {service: string}) {
-    this.systemLogLevel = ELOGGING_LEVELS[APP_CONFIG.MCOS.SETTINGS.LOG_LEVEL] || 30
-    this.service = options?.service || ''
+    const logLevel = process.env.LOG_LEVEL
+    if (typeof logLevel !== "undefined" && typeof ELOGGING_LEVELS[logLevel] !== "undefined") {
+      this.systemLogLevel = ELOGGING_LEVELS[logLevel]
+    }
+    if (typeof options !== "undefined" && typeof options.service !== "undefined") {
+      this.service = options.service
+    }
     this.name = 'mcos'
   }
   /**
@@ -53,7 +56,7 @@ class MCOSLogger {
    * @param {number} level
    * @param {string} message
    */
-  private callLog (level: number, message: string) {
+  private callLog (level: number, message: string): void {
     if (this.systemLogLevel <= level) {
       // skipcq: JS-0002 - This is intentional and is the only time console is used
       console.log(`{"level":${level}, "time":"${Date.now()}","pid":${process.pid}, "name":"${this.name}", ${this.service} "msg": "${message}"}`)
