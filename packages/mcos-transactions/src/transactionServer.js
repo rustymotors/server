@@ -646,7 +646,17 @@ export class MCOTServer {
     }
 
     log.debug('Calling processInput()')
-    return await this.processInput(message, newConnection)
+    try {
+      return await this.processInput(message, newConnection)
+    } catch (error) {
+      const errMessage = String(error).toString()
+      return {
+        err: new Error(
+          `There was an error calling processInput: ${errMessage}`
+        ),
+        data: null
+      }
+    }
   }
 
   /**
