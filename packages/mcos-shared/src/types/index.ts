@@ -366,7 +366,7 @@ export class MessageNode {
           throw new Error(
             `[MessageNode] Unable to read msgNo from ${packet.toString(
               'hex'
-            )}: ${err.toString()}`
+            )}: ${err.message}`
           )
         }
       }
@@ -963,7 +963,7 @@ export class NPSMessage {
     } catch (error) {
       if (error instanceof Error) {
         throw new TypeError(
-          `[NPSMsg] Error in serialize(): ${error.toString()}`
+          `[NPSMsg] Error in serialize(): ${error.message)}`
         )
       }
 
