@@ -213,10 +213,10 @@ export function socketListener(socket: Socket): void {
   socket.on('end', () => {
     log.info(`Client ${remoteAddress} disconnected from port ${localPort}`)
   })
-  socket.on('data', (/** @type {Buffer} */ data: Buffer) => {
-    void onData(data, connectionRecord)
+  socket.on('data', async (data): Promise<void> => {
+    await onData(data, connectionRecord)
   })
-  socket.on('error', (/** @type {unknown} */ error: unknown) => {
+  socket.on('error', (error) => {
     const message = errorMessage(error)
     if (message.includes('ECONNRESET') === true) {
       return log.warn('Connection was reset')
