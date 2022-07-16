@@ -71,7 +71,7 @@ export class LoginServer {
         remoteAddress
       })}`
     )
-    // TODO: Check if this can be handled by a MessageNode object
+    // TODO: #1174 Check if inbound login server packet can be converted into a MessageNode object
     const { sock } = connection
     const requestCode = data.readUInt16BE(0).toString(16)
 
@@ -193,7 +193,7 @@ export class LoginServer {
     userStatus.dumpPacket()
 
     // Load the customer record by contextId
-    // TODO: This needs to be from a database, right now is it static
+    // TODO: #1175 Move customer records from being hard-coded to database records
     const customer = this._npsGetCustomerIdByContextId(userStatus.contextId)
 
     // Save sessionkey in database under customerId
@@ -216,9 +216,7 @@ export class LoginServer {
     log.info('Session key updated')
 
     // Create the packet content
-    // TODO: This needs to be dynamically generated, right now we are using a
-    // a static packet that works _most_ of the time
-    // TODO: investigate if funk/hip hop is the only radio that works.
+    // TODO: #1176 Return the login connection response packet as a MessagePacket object
     const packetContent = premadeLogin()
     log.debug(`Using Premade Login: ${packetContent.toString('hex')}`)
 

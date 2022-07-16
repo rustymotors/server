@@ -328,7 +328,7 @@ async function validatePersonaName (data: Buffer) {
   )
 
   // Create the packet content
-  // TODO: Create a real personas map packet, instead of using a fake one that (mostly) works
+  // TODO: #1178 Return the validate persona name response as a MessagePacket object
 
   const packetContent = Buffer.alloc(256)
 
