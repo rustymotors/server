@@ -31,11 +31,13 @@ const ELOGGING_LEVELS: Record<string, number> = {
  */
 class MCOSLogger {
   systemLogLevel: number
-  service: string
+  service = ''
   name: string
   constructor(options?: {service: string}) {
     this.systemLogLevel = ELOGGING_LEVELS[process.env.LOG_LEVEL || 'info']
-    this.service = options?.service || ''
+    if (typeof options !== "undefined" && typeof options.service !== "undefined") {
+      this.service = options.service
+    }
     this.name = 'mcos'
   }
   /**
