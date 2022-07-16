@@ -278,7 +278,7 @@ async function handleInboundGameData(localPort: number, networkBuffer: BufferWit
     handledPackets = true
   }
 
-  if (handledPackets !== true) {
+  if (!handledPackets) {
     log.debug('The packet was not for a game service')
     return result
   }
