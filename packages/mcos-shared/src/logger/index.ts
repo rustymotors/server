@@ -51,7 +51,7 @@ class MCOSLogger {
    * @param {number} level
    * @param {string} message
    */
-  private callLog (level: number, message: string) {
+  private callLog (level: number, message: string): void {
     if (this.systemLogLevel <= level) {
       // skipcq: JS-0002 - This is intentional and is the only time console is used
       console.log(`{"level":${level}, "time":"${Date.now()}","pid":${process.pid}, "name":"${this.name}", ${this.service} "msg": "${message}"}`)
