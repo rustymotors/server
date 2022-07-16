@@ -963,10 +963,9 @@ export class NPSMessage {
     } catch (error) {
       if (error instanceof Error) {
         throw new TypeError(
-          `[NPSMsg] Error in serialize(): ${error.message)}`
+          `[NPSMsg] Error in serialize(): ${error.message}`
         )
       }
-
       throw new Error('[NPSMsg] Error in serialize(), error unknown')
     }
   }
