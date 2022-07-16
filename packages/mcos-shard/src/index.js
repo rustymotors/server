@@ -53,22 +53,14 @@ export class ShardServer {
    * @memberof ShardServer
    */
   _server
-  /**
-   *
-   *
-   * @type {import("mcos-shared/config").AppConfiguration}
-   * @memberof ShardServer
-   */
-  config
 
   /**
    * Return the instance of the ShardServer class
-   * @param {import("mcos-shared/config").AppConfiguration} config
    * @returns {ShardServer}
    */
-  static getInstance (config) {
+  static getInstance () {
     if (typeof ShardServer.instance === 'undefined') {
-      ShardServer.instance = new ShardServer(config)
+      ShardServer.instance = new ShardServer()
     }
     return ShardServer.instance
   }
@@ -77,12 +69,10 @@ export class ShardServer {
    * Creates an instance of ShardServer.
    *
    * Please use {@link ShardServer.getInstance()} instead
-   * @param {import("mcos-shared/config").AppConfiguration} config
    * @memberof ShardServer
    */
-  constructor (config) {
+  constructor () {
     this._server = createServer(this.handleRequest.bind(this))
-    this.config = config
     /** @type {string[]} */
     this._possibleShards = []
 
@@ -102,10 +92,10 @@ export class ShardServer {
    * @memberof! PatchServer
    */
   _generateShardList () {
-    if (!this.config.MCOS.SETTINGS.SHARD_EXTERNAL_HOST) {
-      throw new Error('Please set MCOS__SETTINGS__SHARD_EXTERNAL_HOST')
+    if (typeof process.env.EXTERNAL_HOST === 'undefined') {
+      throw new Error('Please set EXTERNAL_HOST')
     }
-    const shardHost = this.config.MCOS.SETTINGS.SHARD_EXTERNAL_HOST
+    const shardHost = process.env.EXTERNAL_HOST
     const shardClockTower = new ShardEntry(
       'The Clocktower',
       'The Clocktower',
@@ -160,11 +150,11 @@ export class ShardServer {
    * @memberof! WebServer
    */
   _handleGetCert () {
-    if (!this.config.MCOS.CERTIFICATE.CERTIFICATE_FILE) {
-      throw new Error('Pleas set MCOS__CERTIFICATE__CERTIFICATE_FILE')
+    if (typeof process.env.CERTIFICATE_FILE === 'undefined') {
+      throw new Error('Pleas set CERTIFICATE_FILE')
     }
     return readFileSync(
-      this.config.MCOS.CERTIFICATE.CERTIFICATE_FILE
+      process.env.CERTIFICATE_FILE
     ).toString()
   }
 
@@ -175,11 +165,11 @@ export class ShardServer {
    * @memberof! WebServer
    */
   _handleGetKey () {
-    if (!this.config.MCOS.CERTIFICATE.PUBLIC_KEY_FILE) {
-      throw new Error('Please set MCOS__CERTIFICATE__PUBLIC_KEY_FILE')
+    if (typeof process.env.PUBLIC_KEY_FILE === 'undefined') {
+      throw new Error('Please set PUBLIC_KEY_FILE')
     }
     return readFileSync(
-      this.config.MCOS.CERTIFICATE.PUBLIC_KEY_FILE
+      process.env.PUBLIC_KEY_FILE
     ).toString()
   }
 
@@ -190,18 +180,13 @@ export class ShardServer {
    * @memberof! WebServer
    */
   _handleGetRegistry () {
-    if (!this.config.MCOS.SETTINGS.AUTH_EXTERNAL_HOST) {
-      throw new Error('Please set MCOS__SETTINGS__AUTH_EXTERNAL_HOST')
+    if (typeof process.env.EXTERNAL_HOST === 'undefined') {
+      throw new Error('Please set EXTERNAL_HOST')
     }
-    if (!this.config.MCOS.SETTINGS.SHARD_EXTERNAL_HOST) {
-      throw new Error('Please set MCOS__SETTINGS__SHARD_EXTERNAL_HOST')
-    }
-    if (!this.config.MCOS.SETTINGS.PATCH_EXTERNAL_HOST) {
-      throw new Error('Please set MCOS__SETTINGS__PATCH_EXTERNAL_HOST')
-    }
-    const patchHost = this.config.MCOS.SETTINGS.PATCH_EXTERNAL_HOST
-    const authHost = this.config.MCOS.SETTINGS.AUTH_EXTERNAL_HOST
-    const shardHost = this.config.MCOS.SETTINGS.SHARD_EXTERNAL_HOST
+    const externalHost = process.env.EXTERNAL_HOST
+    const patchHost = externalHost
+    const authHost = externalHost
+    const shardHost = externalHost
     return `Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\EACom\\AuthAuth]
@@ -287,10 +272,7 @@ export class ShardServer {
    * @returns {import("node:http").Server}
    */
   start () {
-    if (!this.config.MCOS.SETTINGS.SHARD_LISTEN_HOST) {
-      throw new Error('Please set MCOS__SETTINGS__SHARD_LISTEN_HOST')
-    }
-    const host = this.config.MCOS.SETTINGS.SHARD_LISTEN_HOST
+    const host = '0.0.0.0'
     const port = 80
     log.debug(`Attempting to bind to port ${port}`)
     return this._server.listen({ port, host }, () => {

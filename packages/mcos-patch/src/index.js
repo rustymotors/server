@@ -30,16 +30,14 @@ export const CastanetResponse = {
 /**
  * The PatchServer class handles HTTP requests from the client for patching and upgrades
  * @class
+ * Please use {@link PatchServer.getInstance()} to access
  */
 export class PatchServer {
   /**
    * Starts the HTTP listener
    */
   start () {
-    if (!this.config.MCOS.SETTINGS.PATCH_LISTEN_HOST) {
-      throw new Error('Please set MCOS__SETTINGS__PATCH_LISTEN_HOST')
-    }
-    const host = this.config.MCOS.SETTINGS.PATCH_LISTEN_HOST
+    const host = '0.0.0.0'
     const port = 80
 
     const server = createServer()
@@ -73,27 +71,14 @@ export class PatchServer {
    * Return the instance of the PatchServer class
    *
    * @static
-   * @param {import("mcos-shared/config").AppConfiguration} config
    * @return {PatchServer}
    * @memberof PatchServer
    */
-  static getInstance (config) {
+  static getInstance () {
     if (!PatchServer._instance) {
-      PatchServer._instance = new PatchServer(config)
+      PatchServer._instance = new PatchServer()
     }
     return PatchServer._instance
-  }
-
-  /**
-   * Creates an instance of PatchServer.
-   *
-   * Please use {@link PatchServer.getInstance()} instead
-   * @param {import("mcos-shared/config").AppConfiguration} config
-   * @memberof PatchServer
-   */
-  constructor (config) {
-    /** @type {import("mcos-shared/config").AppConfiguration} */
-    this.config = config
   }
 
   /**

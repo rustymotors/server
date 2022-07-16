@@ -18,7 +18,6 @@ import { Cipher, Decipher, privateDecrypt } from 'node:crypto'
 import { readFileSync, statSync } from 'node:fs'
 import { Socket } from 'node:net'
 import { TSMessageBase } from '../structures/TMessageBase.js'
-import { APP_CONFIG } from '../config/index.js'
 export { TClientConnectMessage } from './TClientConnectMessage.js'
 export { TLoginMessage} from './TLoginMessage.js'
 export { TLobbyMessage, LobbyInfo} from './TLobbyMessage.js'
@@ -1293,12 +1292,12 @@ export class NPSUserStatus extends NPSMessage {
    * @return {void}
    */
   extractSessionKeyFromPacket (packet: Buffer): void {
-    if (!APP_CONFIG.MCOS.CERTIFICATE.PRIVATE_KEY_FILE) {
-      throw new Error('Please set MCOS__CERTIFICATE__PRIVATE_KEY_FILE')
+    if (typeof process.env.PRIVATE_KEY_FILE === "undefined") {
+      throw new Error('Please set PRIVATE_KEY_FILE')
     }
     // Decrypt the sessionkey
     const privateKey = this.fetchPrivateKeyFromFile(
-      APP_CONFIG.MCOS.CERTIFICATE.PRIVATE_KEY_FILE
+      process.env.PRIVATE_KEY_FILE
     )
 
     const sessionkeyString = Buffer.from(

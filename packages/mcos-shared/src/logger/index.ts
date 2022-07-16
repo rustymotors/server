@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { APP_CONFIG } from '../config/index.js'
-
 const ELOGGING_LEVELS: Record<string, number> = {
   'all': 0,
   'trace': 10,
@@ -36,7 +34,7 @@ class MCOSLogger {
   service: string
   name: string
   constructor(options?: {service: string}) {
-    this.systemLogLevel = ELOGGING_LEVELS[APP_CONFIG.MCOS.SETTINGS.LOG_LEVEL] || 30
+    this.systemLogLevel = ELOGGING_LEVELS[process.env.LOG_LEVEL || 'info']
     this.service = options?.service || ''
     this.name = 'mcos'
   }
