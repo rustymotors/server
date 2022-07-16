@@ -139,7 +139,7 @@ async function onData(data: Buffer, connection: SocketWithConnectionInfo): Promi
 
   if (typeof result.response === 'undefined') {
     // This is probably an error, let's assume it's not. For now.
-    // TODO: verify there are no happy paths where the services would return zero packets
+    // TODO: #1169 verify there are no happy paths where the services would return zero packets
     const message = 'There were zero packets returned for processing'
     log.info(message)
     return
@@ -283,7 +283,7 @@ async function handleInboundGameData(localPort: number, networkBuffer: BufferWit
     return result
   }
 
-  // TODO: Compress and encrypt if needed
+  // TODO: #1170 Create compression method and compress packet if needed
   return result
 }
 
@@ -309,7 +309,7 @@ async function handleInboundTransactionData(localPort: number, networkBuffer: Bu
     return result
   }
 
-  // TODO: Compress and encrypt if needed
+  // TODO: #1170 Create compression method and compress packet if needed
   return result
 }
 

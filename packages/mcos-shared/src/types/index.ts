@@ -1192,7 +1192,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
           Packet as hex:       ${this.getPacketAsString()}`
       )
 
-      // TODO: Work on this more
+      // TODO: #1180 Migrate the persona maps response packet into a MessagePacket object
 
       message = message.concat(
         '[/NPSPersonaMapsMsg]======================================'
@@ -1351,7 +1351,7 @@ export class NPSUserStatus extends NPSMessage {
  * @return {Buffer}
  */
 export function premadeLogin (): Buffer {
-  // TODO: Generate a dynamic login response message
+  // TODO: #1181 Generate a dynamic login response message
   return Buffer.from([
     // Live Packet
     0x06, // +0

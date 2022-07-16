@@ -311,8 +311,8 @@ export class TCPConnection {
       }
     } else {
       log.debug('This packet should be compressed')
-      /* TODO: Write compression.
-       *
+      // TODO: #1170 Create compression method and compress packet if needed
+      /*
        * At this time we will still send the packet, to not hang connection
        * Client will crash though, due to memory access errors
        */

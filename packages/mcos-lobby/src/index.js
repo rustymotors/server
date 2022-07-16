@@ -197,11 +197,22 @@ export class LobbyServer {
             data: responsePacket.getPacketAsString()
           })}`
         )
-        // TODO: Investigate why this crashes retail
+        // BUG: #1171 Client sometimes crashes when this packet is sent
         try {
-          log.trace(`[legacy] Raw bytes in _npsRequestGameConnectServer(pre-write): ${toHex(responsePacket.serialize())}`)
-          const updatedConnection = npsSocketWriteIfOpen(connection, responsePacket.serialize())
-          log.trace(`[legacy] Raw bytes in _npsRequestGameConnectServer(post-write): ${toHex(responsePacket.serialize())}`)
+          log.trace(
+            `[legacy] Raw bytes in _npsRequestGameConnectServer(pre-write): ${toHex(
+              responsePacket.serialize()
+            )}`
+          )
+          const updatedConnection = npsSocketWriteIfOpen(
+            connection,
+            responsePacket.serialize()
+          )
+          log.trace(
+            `[legacy] Raw bytes in _npsRequestGameConnectServer(post-write): ${toHex(
+              responsePacket.serialize()
+            )}`
+          )
           return updatedConnection
         } catch (error) {
           if (error instanceof Error) {
@@ -264,10 +275,12 @@ export class LobbyServer {
    * @return {Promise<NPSMessage>}
    */
   async _npsRequestGameConnectServer (connection, rawData) {
-    log.trace(`[legacy] Raw bytes in _npsRequestGameConnectServer: ${toHex(rawData)}`)
+    log.trace(
+      `[legacy] Raw bytes in _npsRequestGameConnectServer: ${toHex(rawData)}`
+    )
 
-    // TODO: inbound shoud be a _NPS_LoginInfo that has been packed (pack code: "llpppb")
-    // TODO: outbound packet should be a _NPS_UserInfo
+    // inbound shoud be a _NPS_LoginInfo that has been packed (pack code: "llpppb")
+    // TODO: #1173 Convert inbound connection packet into a MessagePacket object
 
     const { sock } = connection
     log.debug(
@@ -288,9 +301,7 @@ export class LobbyServer {
     userInfo.deserialize(rawData)
     userInfo.dumpInfo()
 
-    const personas = await getPersonasByPersonaId(
-      userInfo.userId
-    )
+    const personas = await getPersonasByPersonaId(userInfo.userId)
     if (typeof personas[0] === 'undefined') {
       throw new Error('No personas found.')
     }
@@ -325,7 +336,10 @@ export class LobbyServer {
       try {
         s.setEncryptionKeyDES(keys.skey)
       } catch (error) {
-        const errMessage = `Error setting session keys: ${JSON.stringify({ keys, error: errorMessage(error) })}`
+        const errMessage = `Error setting session keys: ${JSON.stringify({
+          keys,
+          error: errorMessage(error)
+        })}`
         log.error(errMessage)
         throw new Error(errMessage)
       }
@@ -352,6 +366,9 @@ export class LobbyServer {
     packetResult.setContent(packetContent)
     packetResult.dumpPacket()
 
+    // outbound packet should be a _NPS_UserInfo
+    // TODO: #1172 Return an MessagePacket object to the server to send to the client
+
     return packetResult
   }
 }
@@ -367,7 +384,9 @@ export async function receiveLobbyData (dataConnection) {
   try {
     return { err: null, response: await handleData(dataConnection) }
   } catch (error) {
-    const errMessage = `There was an error in the lobby service: ${errorMessage(error)}`
+    const errMessage = `There was an error in the lobby service: ${errorMessage(
+      error
+    )}`
     log.error(errMessage)
     return { err: new Error(errMessage), response: undefined }
   }

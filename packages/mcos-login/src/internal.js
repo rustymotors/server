@@ -68,7 +68,7 @@ async function login (dataConnection) {
   userStatus.dumpPacket()
 
   // Load the customer record by contextId
-  // TODO: This needs to be from a database, right now is it static
+  // TODO: #1175 Move customer records from being hard-coded to database records
   const userRecord = userRecords.find(r => {
     return r.contextId === contextId
   })
@@ -96,10 +96,7 @@ async function login (dataConnection) {
   log.info('Session key updated')
 
   // Create the packet content
-  // TODO: This needs to be dynamically generated, right now we are using a
-  // a static packet that works _most_ of the time
-  // TODO: investigate if funk/hip hop is the only radio that works.
-  // TODO: Marshall this into NPSMessage packets
+  // TODO: #1176 Return the login connection response packet as a MessagePacket object
   const packetContent = premadeLogin()
   log.debug(`Using Premade Login: ${packetContent.toString('hex')}`)
 
