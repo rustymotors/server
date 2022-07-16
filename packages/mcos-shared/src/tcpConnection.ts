@@ -344,9 +344,9 @@ export class TCPConnection {
    * @param {import("./types").MessageNode[]} packetList
    * @returns {TCPConnection}
    */
-  tryWritePackets (packetList: import("./types").MessageNode[]): TCPConnection {
+  tryWritePackets (packetList: Array<import("./types").MessageNode>): TCPConnection {
     /** @type {{connection: TCPConnection, packetList: import("./types").MessageNode[]}} */
-    const updatedConnection: { connection: TCPConnection; packetList: import("./types").MessageNode[] } = {
+    const updatedConnection: { connection: TCPConnection; packetList: Array<import("./types").MessageNode> } = {
       connection: this,
       packetList
     }
