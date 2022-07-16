@@ -24,9 +24,72 @@ import { createServer } from 'node:https'
 const log = logger.child({ service: 'MCOServer:Shard' })
 
 /**
+ * Read the TLS certificate file
+ * @return {string}
+ */
+function handleGetCert () {
+  if (typeof process.env.CERTIFICATE_FILE === 'undefined') {
+    throw new Error('Pleas set CERTIFICATE_FILE')
+  }
+  return readFileSync(process.env.CERTIFICATE_FILE).toString()
+}
+
+/**
+ * Generate Windows registry configuration file for clients
+ * @return {string}
+ */
+function handleGetRegistry () {
+  if (typeof process.env.EXTERNAL_HOST === 'undefined') {
+    throw new Error('Please set EXTERNAL_HOST')
+  }
+  const externalHost = process.env.EXTERNAL_HOST
+  const patchHost = externalHost
+  const authHost = externalHost
+  const shardHost = externalHost
+  return `Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\EACom\\AuthAuth]
+"AuthLoginBaseService"="AuthLogin"
+"AuthLoginServer"="${authHost}"
+
+[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City]
+"GamePatch"="games/EA_Seattle/MotorCity/MCO"
+"UpdateInfoPatch"="games/EA_Seattle/MotorCity/UpdateInfo"
+"NPSPatch"="games/EA_Seattle/MotorCity/NPS"
+"PatchServerIP"="${patchHost}"
+"PatchServerPort"="80"
+"CreateAccount"="${authHost}/SubscribeEntry.jsp?prodID=REG-MCO"
+"Language"="English"
+
+[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City\\1.0]
+"ShardUrl"="http://${shardHost}/ShardList/"
+"ShardUrlDev"="http://${shardHost}/ShardList/"
+
+[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City\\AuthAuth]
+"AuthLoginBaseService"="AuthLogin"
+"AuthLoginServer"="${authHost}"
+
+[HKEY_LOCAL_MACHINE\\Software\\WOW6432Node\\Electronic Arts\\Network Play System]
+"Log"="1"
+
+`
+}
+
+/**
+ *  Read TLS public key file to string
+ * @return {string}
+ */
+function handleGetKey () {
+  if (typeof process.env.PUBLIC_KEY_FILE === 'undefined') {
+    throw new Error('Please set PUBLIC_KEY_FILE')
+  }
+  return readFileSync(process.env.PUBLIC_KEY_FILE).toString()
+}
+
+// TODO: #1201 Document the shard server endpoints
+/**
  * Manages patch and update server connections
  * Also handles the shard list, and some utility endpoints
- * TODO: Document the endpoints
  */
 
 /**
@@ -144,79 +207,6 @@ export class ShardServer {
   }
 
   /**
-   *
-   * @private
-   * @return {string}
-   * @memberof! WebServer
-   */
-  _handleGetCert () {
-    if (typeof process.env.CERTIFICATE_FILE === 'undefined') {
-      throw new Error('Pleas set CERTIFICATE_FILE')
-    }
-    return readFileSync(
-      process.env.CERTIFICATE_FILE
-    ).toString()
-  }
-
-  /**
-   *
-   * @private
-   * @return {string}
-   * @memberof! WebServer
-   */
-  _handleGetKey () {
-    if (typeof process.env.PUBLIC_KEY_FILE === 'undefined') {
-      throw new Error('Please set PUBLIC_KEY_FILE')
-    }
-    return readFileSync(
-      process.env.PUBLIC_KEY_FILE
-    ).toString()
-  }
-
-  /**
-   *
-   * @private
-   * @return {string}
-   * @memberof! WebServer
-   */
-  _handleGetRegistry () {
-    if (typeof process.env.EXTERNAL_HOST === 'undefined') {
-      throw new Error('Please set EXTERNAL_HOST')
-    }
-    const externalHost = process.env.EXTERNAL_HOST
-    const patchHost = externalHost
-    const authHost = externalHost
-    const shardHost = externalHost
-    return `Windows Registry Editor Version 5.00
-
-[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\EACom\\AuthAuth]
-"AuthLoginBaseService"="AuthLogin"
-"AuthLoginServer"="${authHost}"
-
-[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City]
-"GamePatch"="games/EA_Seattle/MotorCity/MCO"
-"UpdateInfoPatch"="games/EA_Seattle/MotorCity/UpdateInfo"
-"NPSPatch"="games/EA_Seattle/MotorCity/NPS"
-"PatchServerIP"="${patchHost}"
-"PatchServerPort"="80"
-"CreateAccount"="${authHost}/SubscribeEntry.jsp?prodID=REG-MCO"
-"Language"="English"
-
-[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City\\1.0]
-"ShardUrl"="http://${shardHost}/ShardList/"
-"ShardUrlDev"="http://${shardHost}/ShardList/"
-
-[HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Electronic Arts\\Motor City\\AuthAuth]
-"AuthLoginBaseService"="AuthLogin"
-"AuthLoginServer"="${authHost}"
-
-[HKEY_LOCAL_MACHINE\\Software\\WOW6432Node\\Electronic Arts\\Network Play System]
-"Log"="1"
-
-`
-  }
-
-  /**
    * Handle incoming http requests
    * @return {import("node:http").ServerResponse}
    * @param {import("http").IncomingMessage} request
@@ -229,17 +219,17 @@ export class ShardServer {
         'Content-disposition',
         'attachment; filename=cert.pem'
       )
-      return response.end(this._handleGetCert())
+      return response.end(handleGetCert())
     }
 
     if (request.url === '/key') {
       response.setHeader('Content-disposition', 'attachment; filename=pub.key')
-      return response.end(this._handleGetKey())
+      return response.end(handleGetKey())
     }
 
     if (request.url === '/registry') {
       response.setHeader('Content-disposition', 'attachment; filename=mco.reg')
-      return response.end(this._handleGetRegistry())
+      return response.end(handleGetRegistry())
     }
 
     if (request.url === '/') {
