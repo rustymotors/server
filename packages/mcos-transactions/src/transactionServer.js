@@ -646,7 +646,7 @@ export class MCOTServer {
     }
 
     log.debug('Calling processInput()')
-    return this.processInput(message, newConnection)
+    return await this.processInput(message, newConnection)
   }
 
   /**
