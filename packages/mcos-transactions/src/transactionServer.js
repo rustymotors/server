@@ -347,12 +347,12 @@ function setOptions (connection, node) {
      * @return {{connection: import('mcos-shared').TCPConnection, packetList: MessageNode[]}}
      */
 function trackingMessage (connection, node) {
-  const trackingMessage = node
+  const trackingMessageRequest = node
 
-  trackingMessage.data = node.serialize()
+  trackingMessageRequest.data = node.serialize()
 
   // Update the appId
-  trackingMessage.appId = connection.appId
+  trackingMessageRequest.appId = connection.appId
 
   // Create new response packet
   const pReply = new GenericReplyMessage()
