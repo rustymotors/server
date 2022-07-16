@@ -14,19 +14,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from 'mcos-shared/logger'
-import { errorMessage, TCPConnection, toHex, logAndThrow } from 'mcos-shared'
-import { processData, selectConnection, updateConnection } from './connections.js'
+import { receiveLobbyData } from 'mcos-lobby'
 import { receiveLoginData } from 'mcos-login'
 import { receivePersonaData } from 'mcos-persona'
-import { receiveLobbyData } from 'mcos-lobby'
+import { errorMessage, logAndThrow, TCPConnection, toHex } from 'mcos-shared'
+import { logger } from 'mcos-shared/logger'
+import { BufferWithConnection, GServiceResponse, MessageNode, SocketWithConnectionInfo, TServiceResponse } from 'mcos-shared/types'
 import { receiveTransactionsData } from 'mcos-transactions'
-import { GServiceResponse, MessageNode, SocketWithConnectionInfo, TServiceResponse } from 'mcos-shared/types'
 import { Socket } from 'net'
-import { BufferWithConnection } from 'mcos-shared/types'
+import { processData, selectConnection, updateConnection } from './connections.js'
 
 const log = logger.child({ service: 'mcos:gateway:sockets' })
 
+// TODO: #1193 Remove commented out code
 /**
    * Attempt to write packet(s) to the socket
    * @param {import("mcos-shared/types").BufferWithConnection} dataConnection
