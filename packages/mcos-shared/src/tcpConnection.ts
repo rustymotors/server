@@ -151,7 +151,7 @@ export class TCPConnection {
     this.id = connectionId
     this.appId = 0
     this.status = ECONNECTION_STATUS.Inactive
-    this.remoteAddress = sock.remoteAddress || ''
+    this.remoteAddress = typeof sock.remoteAddress !== "undefined" ? sock.remoteAddress : ''
     this.localPort = sock.localPort
     this.sock = sock
     this.msgEvent = null
@@ -169,7 +169,7 @@ export class TCPConnection {
    */
   isLobbyKeysetReady (): boolean {
     return (
-      this.encLobby.cipher !== undefined && this.encLobby.decipher !== undefined
+      typeof this.encLobby.cipher !== "undefined" && typeof this.encLobby.decipher !== "undefined"
     )
   }
 
@@ -188,7 +188,7 @@ export class TCPConnection {
    * @returns {string}
    */
   getEncryptionId (): string {
-    if (this.enc === undefined) {
+    if (typeof this.enc === "undefined") {
       throw new Error('Encryption manager not set')
     }
     return this.enc.getId()
@@ -200,7 +200,7 @@ export class TCPConnection {
    * @returns {Buffer}
    */
   encryptBuffer (buffer: Buffer): Buffer {
-    if (this.enc === undefined) {
+    if (typeof this.enc === "undefined") {
       throw new Error('Encryption manager not set')
     }
     return this.enc.encrypt(buffer)
@@ -212,7 +212,7 @@ export class TCPConnection {
    * @returns {Buffer}
    */
   decryptBuffer (buffer: Buffer): Buffer {
-    if (this.enc === undefined) {
+    if (typeof this.enc === "undefined") {
       throw new Error('Encryption manager not set')
     }
     return this.enc.decrypt(buffer)
@@ -224,7 +224,7 @@ export class TCPConnection {
    * @return {void}
    */
   setEncryptionKey (key: Buffer): void {
-    if (this.enc === undefined) {
+    if (typeof this.enc === "undefined") {
       throw new Error('Encryption manager is not set')
     }
     this.isSetupComplete = this.enc.setEncryptionKey(key)
@@ -276,7 +276,7 @@ export class TCPConnection {
    * @return {Buffer}
    */
   cipherBufferDES (messageBuffer: Buffer): Buffer {
-    if (this.encLobby.cipher) {
+    if (typeof this.encLobby.cipher !== "undefined") {
       return this.encLobby.cipher.update(messageBuffer)
     }
 
@@ -288,7 +288,7 @@ export class TCPConnection {
    * @param {Buffer} messageBuffer
    */
   decipherBufferDES (messageBuffer: Buffer): Buffer {
-    if (this.encLobby.decipher) {
+    if (typeof this.encLobby.decipher !== "undefined") {
       return this.encLobby.decipher.update(messageBuffer)
     }
 
@@ -366,7 +366,7 @@ export class TCPConnection {
       log.debug(
         `Writting buffer: ${encryptedPacket.serialize().toString('hex')}`
       )
-      if (this.sock.writable) {
+      if (this.sock.writable === true) {
         // Write the packet to socket
         this.sock.write(encryptedPacket.serialize())
       } else {
