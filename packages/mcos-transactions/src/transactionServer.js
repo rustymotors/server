@@ -134,9 +134,6 @@ export class MCOTServer {
     log.debug('Dumping request...')
     log.debug(JSON.stringify(lobbiesListMessage))
 
-    // Create new response packet
-    // const lobbyMsg = new LobbyMsg()
-
     const pReply = new GenericReplyMessage()
     pReply.msgNo = 325
     pReply.msgReply = 324
@@ -151,7 +148,7 @@ export class MCOTServer {
 
     rPacket.updateBuffer(pReply.serialize())
 
-    // // Dump the packet
+    // Dump the packet
     log.debug('Dumping response...')
     log.debug(JSON.stringify(rPacket))
 
