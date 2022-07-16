@@ -1,4 +1,4 @@
-export type ResponseJSON = {
+export interface ResponseJSON {
   /** A valid HTTP status code */
   statusCode: number;
   responseContent: {
@@ -7,9 +7,9 @@ export type ResponseJSON = {
     /** Depending on the expected result, this field may be a string-ified JSON object */
     message: string;
   };
-};
+}
 
-export type RequestJSON = {
+export interface RequestJSON {
   /**
    * This is a valid command that there is a requestHandler registered for,
    */
@@ -18,9 +18,9 @@ export type RequestJSON = {
    * This is most likely a string-ified JSON object.
    */
   requestContent: string;
-};
+}
 
-export type RequestHandler = {
+export interface RequestHandler {
   requestCode: string;
   handlerFunction: (requestJSON: RequestJSON) => ResponseJSON;
-};
+}

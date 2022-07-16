@@ -151,7 +151,7 @@ export class TCPConnection {
     this.id = connectionId
     this.appId = 0
     this.status = ECONNECTION_STATUS.Inactive
-    this.remoteAddress = sock.remoteAddress || ''
+    this.remoteAddress = typeof sock.remoteAddress !== "undefined" ? sock.remoteAddress : ''
     this.localPort = sock.localPort
     this.sock = sock
     this.msgEvent = null
@@ -169,7 +169,7 @@ export class TCPConnection {
    */
   isLobbyKeysetReady (): boolean {
     return (
-      this.encLobby.cipher !== undefined && this.encLobby.decipher !== undefined
+      typeof this.encLobby.cipher !== "undefined" && typeof this.encLobby.decipher !== "undefined"
     )
   }
 
@@ -188,7 +188,7 @@ export class TCPConnection {
    * @returns {string}
    */
   getEncryptionId (): string {
-    if (this.enc === undefined) {
+    if (typeof this.enc === "undefined") {
       throw new Error('Encryption manager not set')
     }
     return this.enc.getId()
@@ -200,7 +200,7 @@ export class TCPConnection {
    * @returns {Buffer}
    */
   encryptBuffer (buffer: Buffer): Buffer {
-    if (this.enc === undefined) {
+    if (typeof this.enc === "undefined") {
       throw new Error('Encryption manager not set')
     }
     return this.enc.encrypt(buffer)
@@ -212,7 +212,7 @@ export class TCPConnection {
    * @returns {Buffer}
    */
   decryptBuffer (buffer: Buffer): Buffer {
-    if (this.enc === undefined) {
+    if (typeof this.enc === "undefined") {
       throw new Error('Encryption manager not set')
     }
     return this.enc.decrypt(buffer)
@@ -224,7 +224,7 @@ export class TCPConnection {
    * @return {void}
    */
   setEncryptionKey (key: Buffer): void {
-    if (this.enc === undefined) {
+    if (typeof this.enc === "undefined") {
       throw new Error('Encryption manager is not set')
     }
     this.isSetupComplete = this.enc.setEncryptionKey(key)
@@ -276,7 +276,7 @@ export class TCPConnection {
    * @return {Buffer}
    */
   cipherBufferDES (messageBuffer: Buffer): Buffer {
-    if (this.encLobby.cipher) {
+    if (typeof this.encLobby.cipher !== "undefined") {
       return this.encLobby.cipher.update(messageBuffer)
     }
 
@@ -287,8 +287,8 @@ export class TCPConnection {
    * Decrypt a command that is encrypted with DES
    * @param {Buffer} messageBuffer
    */
-  decipherBufferDES (messageBuffer: Buffer) {
-    if (this.encLobby.decipher) {
+  decipherBufferDES (messageBuffer: Buffer): Buffer {
+    if (typeof this.encLobby.decipher !== "undefined") {
       return this.encLobby.decipher.update(messageBuffer)
     }
 
@@ -311,8 +311,8 @@ export class TCPConnection {
       }
     } else {
       log.debug('This packet should be compressed')
-      /* TODO: Write compression.
-       *
+      // TODO: #1170 Create compression method and compress packet if needed
+      /*
        * At this time we will still send the packet, to not hang connection
        * Client will crash though, due to memory access errors
        */
@@ -344,9 +344,9 @@ export class TCPConnection {
    * @param {import("./types").MessageNode[]} packetList
    * @returns {TCPConnection}
    */
-  tryWritePackets (packetList: import("./types").MessageNode[]): TCPConnection {
+  tryWritePackets (packetList: Array<import("./types").MessageNode>): TCPConnection {
     /** @type {{connection: TCPConnection, packetList: import("./types").MessageNode[]}} */
-    const updatedConnection: { connection: TCPConnection; packetList: import("./types").MessageNode[] } = {
+    const updatedConnection: { connection: TCPConnection; packetList: Array<import("./types").MessageNode> } = {
       connection: this,
       packetList
     }
@@ -366,12 +366,12 @@ export class TCPConnection {
       log.debug(
         `Writting buffer: ${encryptedPacket.serialize().toString('hex')}`
       )
-      if (this.sock.writable) {
+      if (this.sock.writable === true) {
         // Write the packet to socket
         this.sock.write(encryptedPacket.serialize())
       } else {
         /** @type {string} */
-        const port: string = this.sock.localPort?.toString() || ''
+        const port: string = typeof this.sock.localPort !== "undefined" ? this.sock.localPort?.toString() : ''
         throw new Error(
           `Error writing ${encryptedPacket.serialize()} to ${
             this.sock.remoteAddress

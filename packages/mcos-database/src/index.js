@@ -14,12 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import pg from "pg";
-import { logger } from "mcos-shared/logger";
-import { APP_CONFIG } from "mcos-shared/config";
+import pg from 'pg'
+import { logger } from 'mcos-shared/logger'
 import { Session } from "./models/Session.js";
 import { Lobby } from "./models/Lobby.js";
-const { Client } = pg;
+const { Client } = pg
 
 const log = logger.child({ service: "mcoserver:DatabaseMgr" });
 
@@ -62,17 +61,18 @@ export class DatabaseManager {
         const self = DatabaseManager._instance;
 
         const db = new Client({
-          connectionString: process.env.CONNECTION_URL,
-        });
+
+          connectionString: process.env.CONNECTION_URL
+        })
 
         await db.connect();
 
         self.localDB = db;
 
-        await db.query(Session.schema);
+        await db.query(Session.schema)
 
-        await db.query(Lobby.schema);
-        log.debug("Database initialized");
+        await db.query(Lobby.schema)
+        log.debug('Database initialized')
       } catch (/** @type {unknown} */ err) {
         if (err instanceof Error) {
           const newError = new Error(
@@ -92,11 +92,11 @@ export class DatabaseManager {
    * Please use {@link DatabaseManager.getInstance()} instead
    * @memberof DatabaseManager
    */
-  constructor() {
+  constructor () {
     if (!process.env.CONNECTION_URL) {
-      throw new Error("Please set CONNECTION_URL");
+      throw new Error('Please set CONNECTION_URL')
     }
-    this.connectionURI = process.env.CONNECTION_URL;
+    this.connectionURI = process.env.CONNECTION_URL
     /** @type {pg.Client | undefined} */
     this.localDB = undefined;
   }

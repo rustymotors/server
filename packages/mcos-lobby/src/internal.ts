@@ -51,10 +51,10 @@ async function _npsRequestGameConnectServer (dataConnection: BufferWithConnectio
       })}`
   )
 
-      // since the data is a buffer at this point, let's place it in a message structure
-      const inboundMessage = MessagePacket.fromBuffer(dataConnection.data)
+  // since the data is a buffer at this point, let's place it in a message structure
+  const inboundMessage = MessagePacket.fromBuffer(dataConnection.data)
 
-      log.debug(`message buffer (${inboundMessage.buffer.toString('hex')})`)
+  log.debug(`message buffer (${inboundMessage.buffer.toString('hex')})`)
 
   // Return a _NPS_UserInfo structure
   const userInfo = new NPSUserInfo('recieved')

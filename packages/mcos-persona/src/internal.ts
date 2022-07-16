@@ -259,8 +259,6 @@ async function getPersonaMaps (data: Buffer) {
 
   // this is a GLDP_PersonaList::GLDP_PersonaList
 
-  // TODO: I think this is a list of _UserGameData
-
   if (personas.length === 0) {
     throw new Error(
         `No personas found for customer Id: ${customerId.readUInt32BE(0)}`
@@ -325,7 +323,7 @@ async function validatePersonaName (data: Buffer) {
   )
 
   // Create the packet content
-  // TODO: Create a real personas map packet, instead of using a fake one that (mostly) works
+  // TODO: #1178 Return the validate persona name response as a MessagePacket object
 
   const packetContent = Buffer.alloc(256)
 

@@ -34,7 +34,7 @@ start:
 prod_node:
 	tsc -b --verbose
 	docker-compose --file docker-compose.yml up -d --build
-	docker-compose logs -f --tail 1000 node
+	docker-compose logs -f --tail 1000
 
 down:
 	docker-compose down

@@ -29,6 +29,7 @@ function handleRequest(request: IncomingMessage): ResponseJSON {
   request.setEncoding("utf8");
   const requestJSON = parseRequest(request.read());
 
+  // TODO: #1167 Create handlers for database microservice requests
   const requestHandler = handlers.find((handler: RequestHandler) => {
     return handler.requestCode === requestJSON.requestCode;
   });
@@ -56,6 +57,7 @@ function parseRequest(requestString: string) {
     const requestJSON = { requestCode, requestContent };
     return requestJSON;
   } catch (error) {
-    throw new Error(`Unknown error while pasing request: ${new String(error)}`);
+    const errMessage =  String(error).toString()
+    throw new Error(`Unknown error while pasing request: ${errMessage}`);
   }
 }
