@@ -14,18 +14,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from 'mcos-shared/logger'
-import { createServer } from 'node:http'
+import { logger } from "mcos-shared/logger";
+import { createServer } from "node:http";
 
-const log = logger.child({ service: 'MCOServer:Patch' })
+const log = logger.child({ service: "MCOServer:Patch" });
 
 export const CastanetResponse = {
-  body: Buffer.from('cafebeef00000000000003', 'hex'),
+  body: Buffer.from("cafebeef00000000000003", "hex"),
   header: {
-    type: 'Content-Type',
-    value: 'application/octet-stream'
-  }
-}
+    type: "Content-Type",
+    value: "application/octet-stream",
+  },
+};
 
 /**
  * The PatchServer class handles HTTP requests from the client for patching and upgrades
@@ -36,25 +36,21 @@ export class PatchServer {
   /**
    * Starts the HTTP listener
    */
-  start () {
-    const host = '0.0.0.0'
-    const port = 80
+  start() {
+    const host = "0.0.0.0";
+    const port = 80;
 
-    const server = createServer()
-    server.on('listening', () => {
-      const listeningAddress = server.address()
-      if (
-        typeof listeningAddress !== 'string' &&
-        listeningAddress !== null &&
-        listeningAddress.port !== undefined
-      ) {
-        log.info(`Server is listening on port ${listeningAddress.port}`)
+    const server = createServer();
+    server.on("listening", () => {
+      const listeningAddress = server.address();
+      if (typeof listeningAddress !== "string" && listeningAddress !== null) {
+        log.info(`Server is listening on port ${listeningAddress.port}`);
       }
-    })
-    server.on('request', this.handleRequest.bind(this))
+    });
+    server.on("request", this.handleRequest.bind(this));
 
-    log.debug(`Attempting to bind to port ${port}`)
-    server.listen(port, host)
+    log.debug(`Attempting to bind to port ${port}`);
+    server.listen(port, host);
   }
 
   /**
@@ -65,7 +61,7 @@ export class PatchServer {
    * @type {PatchServer}
    * @memberof PatchServer
    */
-  static _instance
+  static _instance;
 
   /**
    * Return the instance of the PatchServer class
@@ -74,11 +70,11 @@ export class PatchServer {
    * @return {PatchServer}
    * @memberof PatchServer
    */
-  static getInstance () {
+  static getInstance() {
     if (!PatchServer._instance) {
-      PatchServer._instance = new PatchServer()
+      PatchServer._instance = new PatchServer();
     }
-    return PatchServer._instance
+    return PatchServer._instance;
   }
 
   /**
@@ -87,16 +83,16 @@ export class PatchServer {
    * @param {import("node:http").ServerResponse} response
    * @returns {import("node:http").ServerResponse}
    */
-  castanetResponse (request, response) {
+  castanetResponse(request, response) {
     log.debug(
       `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
-    )
+    );
 
     response.setHeader(
       CastanetResponse.header.type,
       CastanetResponse.header.value
-    )
-    return response.end(CastanetResponse.body)
+    );
+    return response.end(CastanetResponse.body);
   }
 
   /**
@@ -105,15 +101,15 @@ export class PatchServer {
    * @param {import("node:http").ServerResponse} response
    * @returns {import("node:http").ServerResponse}
    */
-  handleRequest (request, response) {
+  handleRequest(request, response) {
     if (
-      request.url === '/games/EA_Seattle/MotorCity/UpdateInfo' ||
-      request.url === '/games/EA_Seattle/MotorCity/NPS' ||
-      request.url === '/games/EA_Seattle/MotorCity/MCO'
+      request.url === "/games/EA_Seattle/MotorCity/UpdateInfo" ||
+      request.url === "/games/EA_Seattle/MotorCity/NPS" ||
+      request.url === "/games/EA_Seattle/MotorCity/MCO"
     ) {
-      return this.castanetResponse(request, response)
+      return this.castanetResponse(request, response);
     }
-    response.statusCode = 404
-    return response.end('')
+    response.statusCode = 404;
+    return response.end("");
   }
 }
