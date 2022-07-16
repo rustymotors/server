@@ -287,7 +287,7 @@ export class TCPConnection {
    * Decrypt a command that is encrypted with DES
    * @param {Buffer} messageBuffer
    */
-  decipherBufferDES (messageBuffer: Buffer) {
+  decipherBufferDES (messageBuffer: Buffer): Buffer {
     if (this.encLobby.decipher) {
       return this.encLobby.decipher.update(messageBuffer)
     }
