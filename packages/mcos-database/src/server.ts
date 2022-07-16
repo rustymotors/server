@@ -57,7 +57,7 @@ function parseRequest(requestString: string) {
     const requestJSON = { requestCode, requestContent };
     return requestJSON;
   } catch (error) {
-    const errMessage = new String(error).toString()
+    const errMessage =  String(error).toString()
     throw new Error(`Unknown error while pasing request: ${errMessage}`);
   }
 }
