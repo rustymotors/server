@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from 'mcos-shared/logger'
-import { MCOServer } from 'mcos-gateway'
+import { logger } from '../packages/mcos-shared/src/logger/index.js'
+import { MCOServer } from '../packages/mcos-gateway/src/index.js'
 
 const log = logger.child({ service: 'mcos' })
 

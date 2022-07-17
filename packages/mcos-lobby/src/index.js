@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { logger } from 'mcos-shared/logger'
-import { MessagePacket } from 'mcos-shared/structures'
+import { MessagePacket } from 'mcos-shared/built/structures/index.js'
 import { DatabaseManager } from 'mcos-database'
 import { NPSMessage, NPSUserInfo } from 'mcos-shared/types'
 import { getPersonasByPersonaId } from 'mcos-persona'

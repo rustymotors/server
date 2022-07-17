@@ -1,6 +1,5 @@
 {
     "name": "mcos-gateway",
-    "type": "module",
     "exports": {
         ".": "./built/index.js",
         "./sockets": "./built/sockets.js",

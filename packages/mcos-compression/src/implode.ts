@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import assert from "node:assert";
+import * as assert from "node:assert";
 import { Buffer } from "node:buffer";
 import { CMP_ASCII, CMP_BINARY, CMP_IMPLODE_DICT_SIZE1, CMP_IMPLODE_DICT_SIZE2, CMP_IMPLODE_DICT_SIZE3, CMP_INVALID_DICTSIZE, CMP_INVALID_MODE, CMP_NO_ERROR, ReadBuff, TCmpStruct, WriteBuff } from "./types.js";
 

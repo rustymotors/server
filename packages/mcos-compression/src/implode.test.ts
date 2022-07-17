@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import assert, { throws } from 'assert'
+import { ok, throws} from 'node:assert'
 import { describe, it } from 'mocha'
-import { implode } from '../src/implode.js'
+import { implode } from './implode.js'
 import { createEmptyTCompStruct } from './testHelpers.js'
 
 describe('MCOSCompress', () => {
@@ -25,7 +25,7 @@ describe('MCOSCompress', () => {
     it('should throw an assertion error when "workBuf" is not zero', () => {
       // Arrange
       /** @type {import('./types.js').TCmpStruct} */
-      const testWorkBuf = createEmptyTCompStruct()
+      const testWorkBuf: import('./types.js').TCmpStruct = createEmptyTCompStruct()
 
       // Act
       testWorkBuf.workBuff = Buffer.from([0x01, 0x02, 0x03, 0x04])
@@ -38,13 +38,13 @@ describe('MCOSCompress', () => {
     it('should return a number when passed a valid "workBuf', () => {
       // Arrange
       /** @type {import('./types.js').TCmpStruct} */
-      const testWorkBuf = createEmptyTCompStruct()
+      const testWorkBuf: import('./types.js').TCmpStruct = createEmptyTCompStruct()
 
       // Act
       const r = implode(Buffer.alloc(0), Buffer.alloc(0), testWorkBuf, Buffer.alloc(0), 0, 0)
 
       // Assert
-      assert.ok(typeof r.status === 'number')
+      ok(typeof r.status === 'number')
 
     })
     it('should compress a data stream')

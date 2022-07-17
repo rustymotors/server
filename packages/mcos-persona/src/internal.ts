@@ -16,7 +16,7 @@
 
 import { logger } from 'mcos-shared/logger'
 import { BufferWithConnection, GSMessageArrayWithConnection, NPSMessage, NPSPersonaMapsMessage } from 'mcos-shared/types'
-import { MessagePacket } from 'mcos-shared/structures'
+import { MessagePacket } from 'mcos-shared/built/structures'
 
 const log = logger.child({ service: 'mcos:persona' })
 

@@ -36,28 +36,28 @@ export class EncryptionManager {
    * @type {string}
    * @memberof EncryptionManager
    */
-  id
+  id: string
   /**
    *
    *
    * @type {Buffer}
    * @memberof EncryptionManager
    */
-  sessionkey;
+  sessionkey: Buffer;
   /**
    *
    *
    * @type {import("node:crypto").Decipher | undefined}
    * @memberof EncryptionManager
    */
-  in
+  in: import("node:crypto").Decipher | undefined
   /**
    *
    *
    * @type {(import("node:crypto").Cipher | undefined)}
    * @memberof EncryptionManager
    */
-  out
+  out: (import("node:crypto").Cipher | undefined)
 
   /**
    * Creates an instance of EncryptionManager.
@@ -76,7 +76,7 @@ export class EncryptionManager {
    * @param {Buffer} sessionkey
    * @return {boolean}
    */
-  setEncryptionKey (sessionkey) {
+  setEncryptionKey (sessionkey: Buffer): boolean {
     this.sessionkey = sessionkey
     // File deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
     this.in = createDecipheriv('rc4', sessionkey, '')
@@ -91,7 +91,7 @@ export class EncryptionManager {
    * @return {Buffer}
    * @memberof EncryptionMgr
    */
-  decrypt (encryptedText) {
+  decrypt (encryptedText: Buffer): Buffer {
     if (this.in === undefined) {
       throw new Error('No decryption manager found!')
     }
@@ -106,7 +106,7 @@ export class EncryptionManager {
    * @return {Buffer}
    * @memberof EncryptionMgr
    */
-  encrypt (plainText) {
+  encrypt (plainText: Buffer): Buffer {
     if (this.out === undefined) {
       throw new Error('No encryption manager found!')
     }
@@ -121,7 +121,7 @@ export class EncryptionManager {
    *
    * @return {string}
    */
-  _getSessionKey () {
+  _getSessionKey (): string {
     return this.sessionkey.toString('hex')
   }
 
@@ -130,7 +130,7 @@ export class EncryptionManager {
    *
    * @return {string}
    */
-  getId () {
+  getId (): string {
     return this.id
   }
 }

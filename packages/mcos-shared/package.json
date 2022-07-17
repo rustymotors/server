@@ -1,10 +1,9 @@
 {
   "name": "mcos-shared",
-  "type": "module",
   "exports": {
-    ".": "./built/index.js",
-    "./logger": "./built/logger/index.js",
-    "./structures": "./built/structures/index.js",
-    "./types": "./built/types/index.js"
+    ".": "./src/index.js",
+    "./logger": "./src/logger/index.js",
+    "./structures": "./src/structures/index.js",
+    "./types": "./src/types/index.js"
   }
 }

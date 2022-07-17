@@ -1,5 +1,4 @@
 {
     "name": "mcos-shard",
-    "type": "module",
     "exports": "./built/index.js"
 }

@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { logger } from 'mcos-shared/logger'
-import http from 'node:http'
+import * as http from 'node:http'
 import { createServer } from 'node:net'
 import { socketListener } from './sockets.js'
 import { httpListener } from './web.js'

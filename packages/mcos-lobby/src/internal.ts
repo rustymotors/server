@@ -17,7 +17,7 @@
 import { DatabaseManager } from 'mcos-database'
 import { getPersonasByPersonaId } from 'mcos-persona'
 import { toHex, cipherBufferDES, decipherBufferDES, selectOrCreateEncryptors } from 'mcos-shared'
-import { MessagePacket } from 'mcos-shared/structures'
+import { MessagePacket } from 'mcos-shared/built/structures'
 import { logger } from 'mcos-shared/logger'
 import { BufferWithConnection, EncryptionSession, NPSMessage, NPSUserInfo, SocketWithConnectionInfo } from 'mcos-shared/types'
 

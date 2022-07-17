@@ -10,13 +10,13 @@
     "CHANGELOG.md",
     "AUTHORS"
   ],
-  "type": "module",
   "scripts": {
+    "build": "tsc -b --verbose",
     "format": "prettier-eslint",
-    "test": "tsc -b --verbose && standard --fix && eslint && c8 mocha --recursive \"packages/**/*.test.js\" \"test\"",
+    "test": "standard --fix && eslint && c8 mocha",
     "prod": "make prod_node",
     "prod:stop": "docker-compose stop",
-    "start:dev": "node --trace-deprecation --abort-on-uncaught-exception -r ts-node/register --openssl-legacy-provider src/app.js",
+    "start:dev": "node --trace-deprecation --abort-on-uncaught-exception -r ts-node/register --openssl-legacy-provider src/app.ts",
     "start:docker": "npm run start:dev 2>&1 | tee -a log/mcos/trace.log"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
@@ -33,7 +33,7 @@
     "mcos-login": "*",
     "mcos-shared": "*",
     "pg": "8.7.3",
-    "ts-node": "10.9.1",
+    "ts-node": "^10.9.1",
     "typescript": "4.7.4"
   },
   "devDependencies": {

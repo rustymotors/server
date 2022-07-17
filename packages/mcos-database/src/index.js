@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import pg from 'pg'
+import * as pg from 'pg'
 import { logger } from 'mcos-shared/logger'
 import { Session } from './models/Session.js'
 import { Lobby } from './models/Lobby.js'

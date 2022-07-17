@@ -9,10 +9,9 @@
     "noImplicitThis": true,
     "noImplicitReturns": true,
     "moduleResolution": "node",
-    "esModuleInterop": true,
     "target": "es2022",
     "sourceMap": true,
-    "declarationMap": true
-  },
-  "esm": "true"
+    "declarationMap": true,
+    "emitDeclarationOnly": true
+  }
 }

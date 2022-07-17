@@ -14,43 +14,31 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import chai from 'chai'
-import { BinaryStructure } from 'mcos-shared/structures'
+import * as chai from 'chai'
+import { TClientConnectMessage } from './TClientConnectMessage.js'
 import { describe, it } from 'mocha'
 
 chai.should()
 
-describe('BinaryStructure', () => {
+describe('TClientConnectMessage', () => {
   describe('.byteLength', () => {
-    it('should have a value of 0', () => {
+    it('should have a value of 51', () => {
       // Arrange
-      const testStructure = new BinaryStructure()
+      const testMessage = new TClientConnectMessage()
 
       // Assert
-      testStructure.byteLength.should.equal(0)
-    })
-  })
-  describe('#serialize', () => {
-    it('should throw when passed a byteStream larger then the internal fields array', () => {
-      // Arrange
-      const inputStream = Buffer.from('This is a pretty decent size.')
-      const testStructure = new BinaryStructure();
-
-      // Assert
-      (() => {
-        return testStructure.deserialize(inputStream)
-      }).should.throw()
+      testMessage.byteLength.should.equal(51)
     })
   })
   describe('#get', () => {
-    it('should throw when passed a name not found in the internal fields array', () => {
+    it('should return a ByteField object when passed a valid field name', () => {
       // Arrange
-      const testStructure = new BinaryStructure();
+      const testMessage = new TClientConnectMessage()
+      /** @type {import('../structures/BinaryStructure').ByteField} */
+      const expectedField = { name: 'customerId', size: 4, offset: 13, type: 'u32', value: Buffer.alloc(4), order: 'little' }
 
       // Assert
-      (() => {
-        return testStructure.get('someFiled')
-      }).should.throw()
+      testMessage.get('customerId').should.deep.equal(expectedField)
     })
   })
 })

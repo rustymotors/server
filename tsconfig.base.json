@@ -11,10 +11,11 @@
     "noUnusedParameters": true,
     "strict": true,
     "strictNullChecks": true,
+    "emitDeclarationOnly": true,
     "module": "ES2022",
     "outDir": "./built",
     "rootDir": "./src",
-    "baseUrl": "."
+    "baseUrl": ".",
   },
   "exclude": ["built"]
 }
