@@ -28,7 +28,7 @@ const log = logger.child({ service: 'mcos:transactions' })
    * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
    * @return {boolean}
    */
-function shouldMessageBeEncrypted (message: MessageNode, dataConnection: BufferWithConnection) {
+function shouldMessageBeEncrypted (message: MessageNode, dataConnection: BufferWithConnection): boolean {
   return message.flags !== 80 && dataConnection.connection.useEncryption
 }
 
@@ -39,7 +39,7 @@ function shouldMessageBeEncrypted (message: MessageNode, dataConnection: BufferW
    * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
    * @return {{err: Error | null, data: Buffer | null}}
    */
-function decryptTransactionBuffer (message: MessageNode, dataConnection: BufferWithConnection) {
+function decryptTransactionBuffer (message: MessageNode, dataConnection: BufferWithConnection): { err: Error | null; data: Buffer | null } {
   const encryptedBuffer = Buffer.from(message.data)
   log.debug(
             `Full packet before decrypting: ${encryptedBuffer.toString('hex')}`
@@ -68,7 +68,7 @@ function decryptTransactionBuffer (message: MessageNode, dataConnection: BufferW
    * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
    * @return {{err: Error | null, data: Buffer | null}}
    */
-function tryDecryptBuffer (message: MessageNode, dataConnection: BufferWithConnection) {
+function tryDecryptBuffer (message: MessageNode, dataConnection: BufferWithConnection): {err: Error | null, data: Buffer | null} {
   try {
     return {
       err: null,
@@ -92,7 +92,7 @@ function tryDecryptBuffer (message: MessageNode, dataConnection: BufferWithConne
    * @param {number} messageID
    * @return {string}
    */
-function _MSG_STRING (messageID: number) {
+function _MSG_STRING (messageID: number): string {
   const messageIds = [
     { id: 105, name: 'MC_LOGIN' },
     { id: 106, name: 'MC_LOGOUT' },
@@ -152,7 +152,7 @@ async function processInput (dataConnection: BufferWithConnection, node: Message
   }
 }
 
-async function messageReceived (message: MessageNode, dataConnection: BufferWithConnection) {
+async function messageReceived (message: MessageNode, dataConnection: BufferWithConnection): Promise<TServiceResponse> {
   // if (message.flags && 0x08) {
   //     selectEncryptors(dataConnection.)
   //   log.debug('Turning on encryption')
