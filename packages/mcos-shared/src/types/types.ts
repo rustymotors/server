@@ -45,18 +45,18 @@ export interface IMessageNode {
   toFrom: number
   appId: number
   rawPacket: Buffer
-  deserialize (packet: Buffer): void
-  serialize (): Buffer
-  setAppId (appId: number): void
-  setMsgNo (newMessageNo: number): void
-  setSeq (newSeq: number): void
-  setMsgHeader (packet: Buffer): void
-  updateBuffer (buffer: Buffer): void
-  isMCOTS (): boolean
-  dumpPacket (): string
-  toString (): string
-  getLength (): number
-  BaseMsgHeader (packet: { readInt16LE: (arg0: number) => number }): void
+  deserialize: (packet: Buffer) => void
+  serialize: () => Buffer
+  setAppId: (appId: number) => void
+  setMsgNo: (newMessageNo: number) => void
+  setSeq: (newSeq: number) => void
+  setMsgHeader: (packet: Buffer) => void
+  updateBuffer: (buffer: Buffer) => void
+  isMCOTS: () => boolean
+  dumpPacket: () => string
+  toString: () => string
+  getLength: () => number
+  BaseMsgHeader: (packet: { readInt16LE: (arg0: number) => number }) => void
 }
 
 
@@ -69,13 +69,13 @@ export interface INPSMessage {
   msgLength: number
   direction: "sent" | "received"
   serviceName: string
-  setContent (buffer: Buffer): void
-  getContentAsBuffer (): Buffer
-  getPacketAsString (): string
-  serialize (): Buffer
-  deserialize (packet: { readInt16BE: (arg0: number) => number; slice: (arg0: number) => Buffer }): INPSMessage
-  dumpPacketHeader (messageType: string): string
-  dumpPacket (): string
+  setContent: (buffer: Buffer) => void
+  getContentAsBuffer: () => Buffer
+  getPacketAsString: () => string
+  serialize: () => Buffer
+  deserialize: (packet: { readInt16BE: (arg0: number) => number; slice: (arg0: number) => Buffer }) => INPSMessage
+  dumpPacketHeader: (messageType: string) => string
+  dumpPacket: () => string
 
 }
 
