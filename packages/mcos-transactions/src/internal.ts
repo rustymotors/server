@@ -195,7 +195,7 @@ export async function handleData (dataConnection: BufferWithConnection): Promise
     throw new Error(errMessage)
   }
 
-  const messageNode = new MessageNode('recieved')
+  const messageNode = new MessageNode("received")
   messageNode.deserialize(data)
 
   log.debug(

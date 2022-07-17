@@ -389,7 +389,7 @@ export async function processData (rawPacket: { connection: import('mcos-shared/
     case 43_300: {
       const dataLength = rawPacket.data.byteLength
       log.debug(`Recieved Raw packet of ${dataLength} bytes: ${rawPacket.data.toString('hex')}`)
-      const newNode = new MessageNode('recieved')
+      const newNode = new MessageNode('received')
       newNode.deserialize(rawPacket.data)
       log.debug(`Recieved MCOTS packet of ${newNode.dataLength} bytes: ${newNode.toString()}`)
       log.trace('[listen] In processData(pre-defaultHandler)')
