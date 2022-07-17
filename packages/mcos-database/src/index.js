@@ -16,8 +16,8 @@
 
 import pg from 'pg'
 import { logger } from 'mcos-shared/logger'
-import { Session } from "./models/Session.js";
-import { Lobby } from "./models/Lobby.js";
+import { Session } from './models/Session.js'
+import { Lobby } from './models/Lobby.js'
 const { Client } = pg
 
 const log = logger.child({ service: 'mcoserver:DatabaseMgr' })

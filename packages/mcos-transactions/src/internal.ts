@@ -28,7 +28,7 @@ const log = logger.child({ service: 'mcos:transactions' })
    * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
    * @return {boolean}
    */
-function shouldMessageBeEncrypted (message: MessageNode, dataConnection: BufferWithConnection) {
+function shouldMessageBeEncrypted (message: MessageNode, dataConnection: BufferWithConnection): boolean {
   return message.flags !== 80 && dataConnection.connection.useEncryption
 }
 
@@ -39,7 +39,7 @@ function shouldMessageBeEncrypted (message: MessageNode, dataConnection: BufferW
    * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
    * @return {{err: Error | null, data: Buffer | null}}
    */
-function decryptTransactionBuffer (message: MessageNode, dataConnection: BufferWithConnection) {
+function decryptTransactionBuffer (message: MessageNode, dataConnection: BufferWithConnection): { err: Error | null; data: Buffer | null } {
   const encryptedBuffer = Buffer.from(message.data)
   log.debug(
             `Full packet before decrypting: ${encryptedBuffer.toString('hex')}`
@@ -68,7 +68,7 @@ function decryptTransactionBuffer (message: MessageNode, dataConnection: BufferW
    * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
    * @return {{err: Error | null, data: Buffer | null}}
    */
-function tryDecryptBuffer (message: MessageNode, dataConnection: BufferWithConnection) {
+function tryDecryptBuffer (message: MessageNode, dataConnection: BufferWithConnection): {err: Error | null, data: Buffer | null} {
   try {
     return {
       err: null,
@@ -92,7 +92,7 @@ function tryDecryptBuffer (message: MessageNode, dataConnection: BufferWithConne
    * @param {number} messageID
    * @return {string}
    */
-function _MSG_STRING (messageID: number) {
+function _MSG_STRING (messageID: number): string {
   const messageIds = [
     { id: 105, name: 'MC_LOGIN' },
     { id: 106, name: 'MC_LOGOUT' },
@@ -152,7 +152,7 @@ async function processInput (dataConnection: BufferWithConnection, node: Message
   }
 }
 
-async function messageReceived (message: MessageNode, dataConnection: BufferWithConnection) {
+async function messageReceived (message: MessageNode, dataConnection: BufferWithConnection): Promise<TServiceResponse> {
   // if (message.flags && 0x08) {
   //     selectEncryptors(dataConnection.)
   //   log.debug('Turning on encryption')
@@ -169,7 +169,7 @@ async function messageReceived (message: MessageNode, dataConnection: BufferWith
 
     if (message.flags - 8 >= 0) {
       const result = tryDecryptBuffer(message, dataConnection)
-      if (result.err || result.data === null) {
+      if (result.err !== null || result.data === null) {
         return { err: new Error(errorMessage(result.err)), response: undefined }
       }
       // Update the MessageNode with the deciphered buffer
@@ -195,7 +195,7 @@ export async function handleData (dataConnection: BufferWithConnection): Promise
     throw new Error(errMessage)
   }
 
-  const messageNode = new MessageNode('recieved')
+  const messageNode = new MessageNode("received")
   messageNode.deserialize(data)
 
   log.debug(
@@ -209,7 +209,7 @@ export async function handleData (dataConnection: BufferWithConnection): Promise
   )
   messageNode.dumpPacket()
 
-  if (messageNode.flags && 8) {
+  if (messageNode.flags && 8 > 0 ) {
     // Message is encrypted, message number is not usable. yet.
     const encrypters: EncryptionSession = selectEncryptors(dataConnection)
     messageNode.updateBuffer(encrypters.tsDecipher.update(messageNode.data))
@@ -223,7 +223,7 @@ export async function handleData (dataConnection: BufferWithConnection): Promise
   const processedPacket = await messageReceived(messageNode, dataConnection)
   log.debug('Back in transacation server')
 
-  if (processedPacket.err || typeof processedPacket.response === 'undefined') {
+  if (processedPacket.err !== null || typeof processedPacket.response === 'undefined') {
     const errMessage = `Error processing packet: ${processedPacket.err}`
     log.error(errMessage)
     throw new Error(errMessage)

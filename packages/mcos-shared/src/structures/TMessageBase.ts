@@ -15,9 +15,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { logger } from '../logger/index.js'
-import { BinaryStructure } from './BinaryStructure.js'
+import { BinaryStructure, IBinaryStructure } from './BinaryStructure.js'
 
 const log = logger.child({ service: 'mcos:shared:structures' })
+
+export interface ITSMessageBase extends IBinaryStructure {}
 
 /**
  * @class

@@ -21,6 +21,15 @@ const log = logger.child({ service: 'mcos:shared:structures' })
 
 type FIELD_TYPE = 'boolean' | 'binary' | 'byte' | 'char' | 'u16' | 'u32'
 
+export interface IByteField {
+  name: string
+  order: 'little' | 'big'
+  offset: number
+  size: number
+  type: FIELD_TYPE
+  value: Buffer
+}
+
 /**
  * @class
  * @property {string} name
@@ -30,7 +39,7 @@ type FIELD_TYPE = 'boolean' | 'binary' | 'byte' | 'char' | 'u16' | 'u32'
  * @property {FIELD_TYPE} type
  * @property {Buffer} value
  */
-export class ByteField {
+export class ByteField implements IByteField {
   /** @type {string} */
   name: string
   /** @type {'big' | 'little'} */
@@ -58,9 +67,18 @@ export class ByteField {
   }
 }
 
+export interface IBinaryStructure {
+  serialize: () => Buffer
+  deserialize: (byteStream: Buffer) => void
+  byteLength: number
+  get: (fieldName: string) => IByteField
+  getValue: (fieldName: string) => string | number | boolean
+  setValueNumber: (fieldName: string, newValue: number) => void
+}
 
 
-export class BinaryStructure {
+
+export class BinaryStructure implements IBinaryStructure {
   /**
    * Holds the next offset to be used when adding a field
    * @protected

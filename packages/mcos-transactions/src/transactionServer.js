@@ -683,7 +683,7 @@ export class MCOTServer {
   async defaultHandler (rawPacket) {
     const { connection, data } = rawPacket
     const { remoteAddress, localPort } = connection
-    const messageNode = new MessageNode('recieved')
+    const messageNode = new MessageNode('received')
     messageNode.deserialize(data)
 
     log.debug(
