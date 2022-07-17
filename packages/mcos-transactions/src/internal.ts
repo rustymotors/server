@@ -169,7 +169,7 @@ async function messageReceived (message: MessageNode, dataConnection: BufferWith
 
     if (message.flags - 8 >= 0) {
       const result = tryDecryptBuffer(message, dataConnection)
-      if (result.err || result.data === null) {
+      if (result.err !== null || result.data === null) {
         return { err: new Error(errorMessage(result.err)), response: undefined }
       }
       // Update the MessageNode with the deciphered buffer
@@ -209,7 +209,7 @@ export async function handleData (dataConnection: BufferWithConnection): Promise
   )
   messageNode.dumpPacket()
 
-  if (messageNode.flags && 8) {
+  if (messageNode.flags && 8 > 0 ) {
     // Message is encrypted, message number is not usable. yet.
     const encrypters: EncryptionSession = selectEncryptors(dataConnection)
     messageNode.updateBuffer(encrypters.tsDecipher.update(messageNode.data))
@@ -223,7 +223,7 @@ export async function handleData (dataConnection: BufferWithConnection): Promise
   const processedPacket = await messageReceived(messageNode, dataConnection)
   log.debug('Back in transacation server')
 
-  if (processedPacket.err || typeof processedPacket.response === 'undefined') {
+  if (processedPacket.err !== null || typeof processedPacket.response === 'undefined') {
     const errMessage = `Error processing packet: ${processedPacket.err}`
     log.error(errMessage)
     throw new Error(errMessage)
