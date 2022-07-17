@@ -68,12 +68,12 @@ export class ByteField implements IByteField {
 }
 
 export interface IBinaryStructure {
-  serialize (): Buffer
-  deserialize (byteStream: Buffer): void
+  serialize: () => Buffer
+  deserialize: (byteStream: Buffer) => void
   byteLength: number
-  get (fieldName: string): IByteField
-  getValue (fieldName: string): string | number | boolean
-  setValueNumber (fieldName: string, newValue: number): void
+  get: (fieldName: string) => IByteField
+  getValue: (fieldName: string) => string | number | boolean
+  setValueNumber: (fieldName: string, newValue: number) => void
 }
 
 
