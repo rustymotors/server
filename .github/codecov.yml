@@ -1,13 +1,58 @@
 comment:
-  layout: "files"
+  layout: "files,flags"
   behavior: "default"
 
 flags:
-  admin:
-    paths:
-      - src/admin/**/*
-    carryforward: false
-  everything-else:
-    ignore:
-      - src/admin/**/*
-    carryforward: false
+  auth:
+    paths: 
+      - packages/mco-auth/**
+    carryforward: true
+  database:
+    paths: 
+      - packages/mco-database/**
+    carryforward: true
+  gateway:
+    paths: 
+      - packages/mco-gateway/**
+    carryforward: true
+  lobby:
+    paths: 
+      - packages/mco-lobby/**
+    carryforward: true
+  login:
+    paths: 
+      - packages/mco-login/**
+    carryforward: true
+  patch:
+    paths: 
+      - packages/mco-patch/**
+    carryforward: true
+  persona:
+    paths: 
+      - packages/mco-persona/**
+    carryforward: true
+  shard:
+    paths: 
+      - packages/mco-shard/**
+    carryforward: true
+  shared-logger:
+    paths: 
+      - packages/mco-shared/src/logger/**
+    carryforward: true
+  shared-structures:
+    paths: 
+      - packages/mco-shared/src/structures**
+    carryforward: true
+  shared-types:
+    paths: 
+      - packages/mco-shared/types/**
+    carryforward: true
+  shared:
+    paths: 
+      - packages/mco-shared/**
+    carryforward: true
+  transactions:
+    paths: 
+      - packages/mco-transactions/**
+    carryforward: true
+
