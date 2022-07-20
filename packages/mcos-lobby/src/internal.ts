@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { DatabaseManager } from 'mcos-database'
-import { getPersonasByPersonaId } from 'mcos-persona'
-import { toHex, cipherBufferDES, decipherBufferDES, selectOrCreateEncryptors } from 'mcos-shared'
-import { MessagePacket } from 'mcos-shared/structures'
-import { logger } from 'mcos-shared/logger'
-import { BufferWithConnection, EncryptionSession, NPSMessage, NPSUserInfo, SocketWithConnectionInfo } from 'mcos-shared/types'
+import { DatabaseManager } from '../../mcos-database/src/index.js'
+import { getPersonasByPersonaId } from '../../mcos-persona/src/index.js'
+import { toHex, cipherBufferDES, decipherBufferDES, selectOrCreateEncryptors } from '../../mcos-shared/src/index.js'
+import { MessagePacket } from '../../mcos-shared/src/structures/index.js'
+import { logger } from '../../mcos-shared/src/logger/index.js'
+import { BufferWithConnection, EncryptionSession, NPSMessage, NPSUserInfo, SocketWithConnectionInfo } from '../../mcos-shared/src/types/index.js'
 
 const log = logger.child({ service: 'mcos:lobby' })
 

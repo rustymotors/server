@@ -1,5 +1,5 @@
 import { MessageNode } from './MessageNode.js';
-import { IMessageNode } from './types.js';
+import type { IMessageNode } from './types.js';
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // DWORD data;   // specific to the message sent (but usually 0)
@@ -17,8 +17,8 @@ import { IMessageNode } from './types.js';
 
 
 export class GenericRequestMessage extends MessageNode implements IMessageNode {
-  msgNo;
-  data;
+  override msgNo;
+  override data;
   data2;
   serviceName;
   /**
@@ -37,7 +37,7 @@ export class GenericRequestMessage extends MessageNode implements IMessageNode {
    * @param {Buffer} buffer
    * @return {void}
    */
-  deserialize(buffer: Buffer): void {
+  override deserialize(buffer: Buffer): void {
     try {
       this.msgNo = buffer.readInt16LE(0);
     } catch (error) {
@@ -60,7 +60,7 @@ export class GenericRequestMessage extends MessageNode implements IMessageNode {
    *
    * @return {Buffer}
    */
-  serialize(): Buffer {
+  override serialize(): Buffer {
     const packet = Buffer.alloc(16);
     packet.writeInt16LE(this.msgNo, 0);
     this.data.copy(packet, 2);
@@ -72,7 +72,7 @@ export class GenericRequestMessage extends MessageNode implements IMessageNode {
    * DumpPacket
    * @return {string}
    */
-  dumpPacket(): string {
+  override dumpPacket(): string {
     return `GenericRequest ${JSON.stringify({
       msgNo: this.msgNo,
       data: this.data.toString('hex'),

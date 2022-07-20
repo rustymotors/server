@@ -1,5 +1,0 @@
-{
-    "name": "mcos-auth",
-    "type": "module",
-    "exports": "./built/index.js"
-}

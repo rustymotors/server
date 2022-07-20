@@ -1,7 +1,7 @@
 import { privateDecrypt } from 'node:crypto';
 import { readFileSync, statSync } from 'node:fs';
 import { NPSMessage } from './NPSMessage.js';
-import { INPSMessageJSON } from './types.js';
+import type { INPSMessageJSON } from './types.js';
 
 /**
  *
@@ -82,12 +82,12 @@ export class NPSUserStatus extends NPSMessage {
    * @return {void}
    */
   extractSessionKeyFromPacket(packet: Buffer): void {
-    if (typeof process.env.PRIVATE_KEY_FILE === "undefined") {
+    if (typeof process.env['PRIVATE_KEY_FILE'] === "undefined") {
       throw new Error('Please set PRIVATE_KEY_FILE');
     }
     // Decrypt the sessionkey
     const privateKey = this.fetchPrivateKeyFromFile(
-      process.env.PRIVATE_KEY_FILE
+      process.env['PRIVATE_KEY_FILE']
     );
 
     const sessionkeyString = Buffer.from(
@@ -103,7 +103,7 @@ export class NPSUserStatus extends NPSMessage {
    * @override
    * @return {INPSMessageJSON}
    */
-  toJSON(): INPSMessageJSON {
+  override toJSON(): INPSMessageJSON {
     return {
       msgNo: this.msgNo,
       msgLength: this.msgLength,
@@ -121,7 +121,7 @@ export class NPSUserStatus extends NPSMessage {
    * @override
    * @return {string}
    */
-  dumpPacket(): string {
+  override dumpPacket(): string {
     let message = this.dumpPacketHeader('NPSUserStatus');
     message = message.concat(
       `NPSUserStatus,

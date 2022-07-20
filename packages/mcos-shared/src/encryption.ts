@@ -17,7 +17,7 @@
 import { createCipheriv, createDecipheriv } from 'node:crypto'
 import { errorMessage } from './index.js'
 import { logger } from './logger/index.js'
-import { BufferWithConnection, EncryptionSession, SessionRecord, SocketWithConnectionInfo } from './types/index.js'
+import type { BufferWithConnection, EncryptionSession, SessionRecord, SocketWithConnectionInfo } from './types/index.js'
 
 const log = logger.child({ service: 'mcos:shared:encryption' })
 

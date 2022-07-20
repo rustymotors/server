@@ -1,5 +1,0 @@
-{
-    "name": "mcos-lobby",
-    "type": "module",
-    "exports": "./built/index.js"
-}

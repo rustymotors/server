@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { EncryptionManager, errorMessage, TCPConnection } from 'mcos-shared'
-import { logger } from 'mcos-shared/logger'
-import { MessageNode, NPS_COMMANDS, SocketWithConnectionInfo } from 'mcos-shared/types'
-import { getTransactionServer } from 'mcos-transactions'
+import { EncryptionManager, errorMessage, TCPConnection } from '../../mcos-shared/src/index.js'
+import { logger } from '../../mcos-shared/src/logger/index.js'
+import { MessageNode, NPS_COMMANDS, SocketWithConnectionInfo } from '../../mcos-shared/src/types/index.js'
+import { getTransactionServer } from '../../mcos-transactions/src/index.js'
 import { randomUUID } from 'node:crypto'
-import { Socket } from 'node:net'
+import type { Socket } from 'node:net'
 import { NPSPacketManager } from './nps-packet-manager.js'
 
 const log = logger.child({ service: 'mcos:gateway:connections' })
@@ -307,7 +307,7 @@ export function isMCOT (inputBuffer: Buffer): boolean {
    * @param {{connection: import('mcos-shared').TCPConnection, data: Buffer}} rawPacket
    * @return {Promise<{err: Error | null, data: TCPConnection | null}>}
    */
-export async function processData (rawPacket: { connection: import('mcos-shared/built').TCPConnection; data: Buffer }): Promise<{ err: Error | null; data: TCPConnection | null }> {
+export async function processData (rawPacket: { connection: import('../../mcos-shared/src/index.js').TCPConnection; data: Buffer }): Promise<{ err: Error | null; data: TCPConnection | null }> {
   const npsPacketManager = new NPSPacketManager()
 
   const { data } = rawPacket

@@ -1,38 +1,29 @@
 {
-  "references": [
-    {
-      "path": "./packages/mcos-shared"
-    },
-    {
-      "path": "./packages/mcos-database"
-    },
-    {
-      "path": "./packages/mcos-persona"
-    },
-    {
-      "path": "./packages/mcos-login"
-    },
-    {
-      "path": "./packages/mcos-lobby"
-    },
-    {
-      "path": "./packages/mcos-auth"
-    },
-    {
-      "path": "./packages/mcos-patch"
-    },
-    {
-      "path": "./packages/mcos-shard"
-    },
-    {
-      "path": "./packages/mcos-gateway"
-    },
-    {
-      "path": "./packages/mcos-transactions"
-    },
-    {
-      "path": "./packages/mcos-compression"
-    }
-  ],
-  "files": []
+  "compilerOptions": {
+    "types": ["mocha","node"],
+    "lib": ["es2022"],
+    "module": "es2022",
+    "target": "es2022",
+    "strict": true,
+    "outDir": "built",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "exactOptionalPropertyTypes": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "importsNotUsedAsValues": "error",
+    "checkJs": true
+  },
+  "exclude": ["node_modules", "coverage", "built"]
 }
