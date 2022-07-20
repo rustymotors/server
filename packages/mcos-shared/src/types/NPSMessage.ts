@@ -1,4 +1,4 @@
-import { INPSMessage, INPSMessageJSON } from './index';
+import type { INPSMessage, INPSMessageJSON } from './index.js';
 
 /**
  * @class

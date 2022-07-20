@@ -46,6 +46,7 @@ services:
       - PRIVATE_KEY_FILE=data/private_key.pem
       - PUBLIC_KEY_FILE=data/pub.key
       - CERTIFICATE_FILE=data/mcouniverse.crt
+      - LOG_LEVEL=debug
     command: "make docker-init"
     ports:
       - "80:80"

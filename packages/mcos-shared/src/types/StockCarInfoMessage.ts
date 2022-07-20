@@ -1,6 +1,6 @@
 import { MessageNode } from './MessageNode.js';
-import { StockCar } from './StockCar.js';
-import { IMessageNode } from './types.js';
+import type { StockCar } from './StockCar.js';
+import type { IMessageNode } from './types.js';
 
 /**
  * Object for providing information on stock cars
@@ -28,7 +28,7 @@ import { IMessageNode } from './types.js';
 
 
 export class StockCarInfoMessage extends MessageNode implements IMessageNode {
-  msgNo;
+  override msgNo;
   starterCash;
   dealerId;
   brand;
@@ -84,7 +84,7 @@ export class StockCarInfoMessage extends MessageNode implements IMessageNode {
    *
    * @return {Buffer}
    */
-  serialize(): Buffer {
+  override serialize(): Buffer {
     // This does not count the StockCar array
     const packet = Buffer.alloc((17 + 9) * this.StockCarList.length);
     packet.writeInt16LE(this.msgNo, 0);
@@ -110,7 +110,7 @@ export class StockCarInfoMessage extends MessageNode implements IMessageNode {
    * DumpPacket
    * @return {string}
    */
-  dumpPacket(): string {
+  override dumpPacket(): string {
     return `${JSON.stringify({
       msgNo: this.msgNo,
       starterCash: this.starterCash,

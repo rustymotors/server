@@ -1,5 +1,0 @@
-{
-    "name": "mcos-database",
-    "type": "module",
-    "exports": "./built/index.js"
-}

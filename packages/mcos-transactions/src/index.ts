@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { errorMessage } from 'mcos-shared'
-import { logger } from 'mcos-shared/logger'
-import { BufferWithConnection, TServiceResponse } from 'mcos-shared/types'
+import { errorMessage } from '../../mcos-shared/src/index.js'
+import { logger } from '../../mcos-shared/src/logger/index.js'
+import type { BufferWithConnection, TServiceResponse } from '../../mcos-shared/src/types/index.js'
 import { handleData } from './internal.js'
 
 export { MCOTServer, getTransactionServer } from './transactionServer.js'

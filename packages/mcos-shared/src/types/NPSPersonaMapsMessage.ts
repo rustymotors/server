@@ -1,5 +1,5 @@
 import { NPSMessage } from './NPSMessage.js';
-import { INPSMessage, PersonaRecord } from './types.js';
+import type { INPSMessage, PersonaRecord } from './types.js';
 
 /**
  *
@@ -80,7 +80,7 @@ export class NPSPersonaMapsMessage extends NPSMessage implements INPSMessage {
    * @override
    * @return {Buffer}
    */
-  serialize(): Buffer {
+  override serialize(): Buffer {
     let index = 0;
     // Create the packet content
     // const packetContent = Buffer.alloc(40);
@@ -135,7 +135,7 @@ export class NPSPersonaMapsMessage extends NPSMessage implements INPSMessage {
    * @override
    * @return {string}
    */
-  dumpPacket(): string {
+  override dumpPacket(): string {
     let message = '';
     message = message.concat(this.dumpPacketHeader('NPSPersonaMapsMsg'));
     message = message.concat(

@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { decryptBuffer, errorMessage, selectEncryptors, toHex } from 'mcos-shared'
-import { logger } from 'mcos-shared/logger'
-import { BufferWithConnection, EncryptionSession, MessageNode, TServiceResponse, TSMessageArrayWithConnection } from 'mcos-shared/types'
+import { decryptBuffer, errorMessage, selectEncryptors, toHex } from '../../mcos-shared/src/index.js'
+import { logger } from '../../mcos-shared/src/logger/index.js'
+import { BufferWithConnection, EncryptionSession, MessageNode, TServiceResponse, TSMessageArrayWithConnection } from '../../mcos-shared/src/types/index.js'
 import { messageHandlers } from './handlers.js'
 
 const log = logger.child({ service: 'mcos:transactions' })

@@ -13,7 +13,7 @@
   "type": "module",
   "scripts": {
     "format": "prettier-eslint",
-    "test": "tsc -b --verbose && standard --fix && eslint && c8 mocha --recursive \"packages/**/*.test.js\" \"test\"",
+    "test": "c8 ts-node --esm node_modules/.bin/mocha \"packages/**/*.test.ts\"",
     "prod": "make prod_node",
     "prod:stop": "docker-compose stop",
     "start:dev": "node --trace-deprecation --abort-on-uncaught-exception -r ts-node/register --openssl-legacy-provider src/app.js",
@@ -33,13 +33,12 @@
     "mcos-login": "*",
     "mcos-shared": "*",
     "pg": "8.7.3",
-    "ts-node": "10.9.1",
-    "typescript": "4.7.4"
+    "ts-node": "10.9.1"
   },
   "devDependencies": {
     "@types/chai": "4.3.1",
     "@types/mocha": "9.1.1",
-    "@types/node": "17.0.10",
+    "@types/node": "^18.0.6",
     "c8": "7.12.0",
     "chai": "4.3.6",
     "eslint": "8.20.0",
@@ -47,29 +46,8 @@
     "source-map-support": "0.5.21",
     "standard": "17.0.0"
   },
-  "nyc": {
-    "reporter": [
-      "text",
-      "cobertura",
-      "html"
-    ],
-    "useSpawnWrap": true
-  },
-  "workspaces": [
-    "packages/mcos-shared",
-    "packages/mcos-gateway",
-    "packages/mcos-patch",
-    "packages/mcos-shard",
-    "packages/mcos-auth",
-    "packages/mcos-database",
-    "packages/mcos-transactions",
-    "packages/mcos-persona",
-    "packages/mcos-login",
-    "packages/mcos-lobby",
-    "packages/mcos-compression"
-  ],
   "volta": {
-    "node": "16.16.0",
+    "node": "18.6.0",
     "npm": "8.14.0"
   }
 }

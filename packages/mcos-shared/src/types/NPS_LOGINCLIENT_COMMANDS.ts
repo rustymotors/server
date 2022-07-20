@@ -1,4 +1,4 @@
-import { NpsCommandMap } from './types.js';
+import type { NpsCommandMap } from './types.js';
 
 /**
  * Commands from the game client to the login server

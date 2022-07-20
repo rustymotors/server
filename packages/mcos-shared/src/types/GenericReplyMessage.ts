@@ -1,5 +1,5 @@
 import { MessageNode } from './MessageNode.js';
-import { IMessageNode } from './types.js';
+import type { IMessageNode } from './types.js';
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
@@ -28,12 +28,12 @@ export class GenericReplyMessage extends MessageNode implements IMessageNode {
    *
    * * MC_GENERIC_REPLY : Used with GenericReply structure for messages that return data
    */
-  msgNo; // 2 bytes
-  toFrom;
-  appId;
+  override msgNo; // 2 bytes
+  override toFrom;
+  override appId;
   msgReply;
   result;
-  data;
+  override data;
   data2;
   /**
    *
@@ -72,7 +72,7 @@ export class GenericReplyMessage extends MessageNode implements IMessageNode {
    * @param {Buffer} buffer
    * @return {void}
    */
-  deserialize(buffer: Buffer): void {
+  override deserialize(buffer: Buffer): void {
     try {
       this.msgNo = buffer.readInt16LE(0);
     } catch (error) {
@@ -97,7 +97,7 @@ export class GenericReplyMessage extends MessageNode implements IMessageNode {
    *
    * @return {Buffer}
    */
-  serialize(): Buffer {
+  override serialize(): Buffer {
     const packet = Buffer.alloc(16);
     packet.writeInt16LE(this.msgNo, 0);
     packet.writeInt16LE(this.msgReply, 2);
@@ -120,7 +120,7 @@ export class GenericReplyMessage extends MessageNode implements IMessageNode {
    * DumpPacket
    * @return {string}
    */
-  dumpPacket(): string {
+  override dumpPacket(): string {
     return `GenericReply',
         ${JSON.stringify({
       msgNo: this.msgNo,

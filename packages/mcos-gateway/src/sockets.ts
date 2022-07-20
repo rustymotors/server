@@ -14,20 +14,20 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { receiveLobbyData } from "mcos-lobby";
-import { receiveLoginData } from "mcos-login";
-import { receivePersonaData } from "mcos-persona";
-import { errorMessage, logAndThrow, TCPConnection, toHex } from "mcos-shared";
-import { logger } from "mcos-shared/logger";
+import type { Socket } from "net";
+import { receiveLobbyData } from "../../mcos-lobby/src/index.js";
+import { receiveLoginData } from "../../mcos-login/src/index.js";
+import { receivePersonaData } from "../../mcos-persona/src/index.js";
+import { errorMessage, logAndThrow, TCPConnection, toHex } from "../../mcos-shared/src/index.js";
+import { logger } from "../../mcos-shared/src/logger/index.js";
 import {
   BufferWithConnection,
   GServiceResponse,
   MessageNode,
   SocketWithConnectionInfo,
   TServiceResponse,
-} from "mcos-shared/types";
-import { receiveTransactionsData } from "mcos-transactions";
-import { Socket } from "net";
+} from "../../mcos-shared/src/types/index.js";
+import { receiveTransactionsData } from "../../mcos-transactions/src/index.js";
 import {
   processData,
   selectConnection,
@@ -53,7 +53,7 @@ async function onData(
 
   // Link the data and the connection together
   /** @type {import("mcos-shared/types").BufferWithConnection} */
-  const networkBuffer: import("mcos-shared/types").BufferWithConnection = {
+  const networkBuffer: import("../../mcos-shared/src/types/index.js").BufferWithConnection = {
     connectionId: connection.id,
     connection,
     data,
@@ -226,7 +226,7 @@ export function socketListener(socket: Socket): void {
 async function handleInboundGameData(
   localPort: number,
   networkBuffer: BufferWithConnection
-): Promise<import("mcos-shared/types").GServiceResponse> {
+): Promise<import("../../mcos-shared/src/types/index.js").GServiceResponse> {
   /** @type {import('mcos-shared/types').GServiceResponse} */
   let result: GServiceResponse = { err: null, response: undefined };
   let handledPackets = false;
@@ -268,7 +268,7 @@ async function handleInboundGameData(
 async function handleInboundTransactionData(
   localPort: number,
   networkBuffer: BufferWithConnection
-): Promise<import("mcos-shared/types").TServiceResponse> {
+): Promise<import("../../mcos-shared/src/types/index.js").TServiceResponse> {
   let result: TServiceResponse = { err: null, response: undefined };
   let handledPackets = false;
 
@@ -297,7 +297,7 @@ export async function processPacket(packet: {
   data: Buffer;
 }): Promise<{
   err: Error | null;
-  data: import("mcos-shared").TCPConnection | null;
+  data: import("../../mcos-shared/src/index.js").TCPConnection | null;
 }> {
   // Locate the conection manager
   try {

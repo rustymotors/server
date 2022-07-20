@@ -1,6 +1,6 @@
-import { Cipher, Decipher } from "node:crypto"
-import { Socket } from "node:net"
-import { ITSMessageBase } from '../structures/TMessageBase.js'
+import type { Cipher, Decipher } from 'node:crypto'
+import type { Socket } from 'node:net'
+import type { ITSMessageBase } from '../structures/TMessageBase.js'
 
 export interface LobbyCiphers {
   cipher?: Cipher
@@ -153,12 +153,12 @@ export interface TSMessageArrayWithConnection {
 
 export interface GServiceResponse {
   err: Error | null
-  response?: GSMessageArrayWithConnection
+  response?: GSMessageArrayWithConnection | undefined
 }
 
 export interface TServiceResponse {
   err: Error | null
-  response?: TSMessageArrayWithConnection
+  response?: TSMessageArrayWithConnection | undefined
 }
 
 /**

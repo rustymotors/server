@@ -34,9 +34,9 @@ class MCOSLogger {
   service = ''
   name: string
   constructor(options?: {service: string}) {
-    const logLevel = process.env.LOG_LEVEL
+    const logLevel = process.env['LOG_LEVEL']
     if (typeof logLevel !== "undefined" && typeof ELOGGING_LEVELS[logLevel] !== "undefined") {
-      this.systemLogLevel = ELOGGING_LEVELS[logLevel]
+      this.systemLogLevel = ELOGGING_LEVELS[logLevel] || 30
     }
     if (typeof options !== "undefined" && typeof options.service !== "undefined") {
       this.service = options.service
@@ -78,7 +78,7 @@ class MCOSLogger {
        * @param {ELOGGING_LEVELS} level
        * @param {string} message
        */
-      log (level: string, message: string): void { this.callLog(ELOGGING_LEVELS[level] | 30, message) }
+      log (level: string, message: string): void { this.callLog(ELOGGING_LEVELS[level] || 30, message) }
 
 }
 

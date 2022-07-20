@@ -1,6 +1,6 @@
 import { NPS_LOBBY_COMMANDS } from './NPS_LOBBY_COMMANDS.js';
 import { NPS_LOGINCLIENT_COMMANDS } from './NPS_LOGINCLIENT_COMMANDS.js';
-import { NpsCommandMap } from './types.js';
+import type { NpsCommandMap } from './types.js';
 
 /**
  * @export

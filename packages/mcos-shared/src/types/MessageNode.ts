@@ -1,4 +1,4 @@
-import { IMessageNode } from './index';
+import type { IMessageNode } from './index.js';
 
 /**
  * @class
