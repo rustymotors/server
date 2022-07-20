@@ -3,6 +3,8 @@
         "ms-azuretools.vscode-docker",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "ms-vscode.makefile-tools"
+        "ms-vscode.makefile-tools",
+        "usernamehw.errorlens",
+        "ritwickdey.LiveServer"
     ]
 }
