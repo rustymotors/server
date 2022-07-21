@@ -35,7 +35,7 @@ jobs:
           shasum -a 256 -c codecov-linux.SHA256SUM
           chmod +x codecov-linux
           ./codecov-linux -n ${{ matrix.node-version }} -F auth
-          ./codecov-linux -n ${{ matrix.node-version }}-F database
+          ./codecov-linux -n ${{ matrix.node-version }} -F database
           ./codecov-linux -n ${{ matrix.node-version }} -F gateway
           ./codecov-linux -n ${{ matrix.node-version }} -F lobby
           ./codecov-linux -n ${{ matrix.node-version }} -F login
