@@ -3,56 +3,60 @@ comment:
   behavior: "default"
 
 flags:
+  admin:
+    carryforward: false
+  everything-else:
+    carryforward: false
   auth:
-    paths: 
+    paths:
       - packages/mco-auth/**
     carryforward: true
   database:
-    paths: 
+    paths:
       - packages/mco-database/**
     carryforward: true
   gateway:
-    paths: 
+    paths:
       - packages/mco-gateway/**
     carryforward: true
   lobby:
-    paths: 
+    paths:
       - packages/mco-lobby/**
     carryforward: true
   login:
-    paths: 
+    paths:
       - packages/mco-login/**
     carryforward: true
   patch:
-    paths: 
+    paths:
       - packages/mco-patch/**
     carryforward: true
   persona:
-    paths: 
+    paths:
       - packages/mco-persona/**
     carryforward: true
   shard:
-    paths: 
+    paths:
       - packages/mco-shard/**
     carryforward: true
   shared-logger:
-    paths: 
+    paths:
       - packages/mco-shared/src/logger/**
     carryforward: true
   shared-structures:
-    paths: 
+    paths:
       - packages/mco-shared/src/structures**
     carryforward: true
   shared-types:
-    paths: 
+    paths:
       - packages/mco-shared/types/**
     carryforward: true
   shared:
-    paths: 
+    paths:
       - packages/mco-shared/**
     carryforward: true
   transactions:
-    paths: 
+    paths:
       - packages/mco-transactions/**
     carryforward: true
 
