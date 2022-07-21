@@ -34,19 +34,19 @@ jobs:
           gpg --verify codecov-linux.SHA256SUM.sig codecov-linux.SHA256SUM
           shasum -a 256 -c codecov-linux.SHA256SUM
           chmod +x codecov-linux
-          ./codecov-linux -n ${{ matrix.node-version }} -F auth
-          ./codecov-linux -n ${{ matrix.node-version }} -F database
-          ./codecov-linux -n ${{ matrix.node-version }} -F gateway
-          ./codecov-linux -n ${{ matrix.node-version }} -F lobby
-          ./codecov-linux -n ${{ matrix.node-version }} -F login
-          ./codecov-linux -n ${{ matrix.node-version }} -F patch
-          ./codecov-linux -n ${{ matrix.node-version }} -F persona
-          ./codecov-linux -n ${{ matrix.node-version }} -F shard
-          ./codecov-linux -n ${{ matrix.node-version }} -F shared-logger
-          ./codecov-linux -n ${{ matrix.node-version }} -F shared-structures
-          ./codecov-linux -n ${{ matrix.node-version }} -F shared-types
-          ./codecov-linux -n ${{ matrix.node-version }} -F shared
-          ./codecov-linux -n ${{ matrix.node-version }} -F transactions
+          ./codecov-linux -v -n ${{ matrix.node-version }} -F auth
+          ./codecov-linux -v -n ${{ matrix.node-version }} -F database
+          ./codecov-linux -v -n ${{ matrix.node-version }} -F gateway
+          ./codecov-linux -v -n ${{ matrix.node-version }} -F lobby
+          ./codecov-linux -v -n ${{ matrix.node-version }} -F login
+          ./codecov-linux -v -n ${{ matrix.node-version }} -F patch
+          ./codecov-linux -v -n ${{ matrix.node-version }} -F persona
+          ./codecov-linux -v -n ${{ matrix.node-version }} -F shard
+          ./codecov-linux -v -n ${{ matrix.node-version }} -F shared-logger
+          ./codecov-linux -v -n ${{ matrix.node-version }} -F shared-structures
+          ./codecov-linux -v -n ${{ matrix.node-version }} -F shared-types
+          ./codecov-linux -v -n ${{ matrix.node-version }} -F shared
+          ./codecov-linux -v -n ${{ matrix.node-version }} -F transactions
       - uses: actions/upload-artifact@v3
         with:
           name: coverage_${{ matrix.node-version }}
