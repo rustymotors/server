@@ -16,11 +16,9 @@
 
 import { EncryptionManager, errorMessage, TCPConnection } from '../../mcos-shared/src/index.js'
 import { logger } from '../../mcos-shared/src/logger/index.js'
-import { MessageNode, NPS_COMMANDS, SocketWithConnectionInfo } from '../../mcos-shared/src/types/index.js'
-import { getTransactionServer } from '../../mcos-transactions/src/index.js'
+import type { SocketWithConnectionInfo } from '../../mcos-shared/src/types/index.js'
 import { randomUUID } from 'node:crypto'
 import type { Socket } from 'node:net'
-import { NPSPacketManager } from './nps-packet-manager.js'
 
 const log = logger.child({ service: 'mcos:gateway:connections' })
 
@@ -276,19 +274,19 @@ export function findOrNewConnection (socket: Socket): { legacy: TCPConnection; m
   return newConnection
 }
 
-/**
-   * Get the name connected to the NPS opcode
-   * @param {number} opCode
-   * @return {string}
-   */
-function getNameFromOpCode (opCode: number): string {
-  const opCodeName = NPS_COMMANDS.find((code) => code.value === opCode)
-  if (opCodeName === undefined) {
-    throw new Error(`Unable to locate name for opCode ${opCode}`)
-  }
+// /**
+//    * Get the name connected to the NPS opcode
+//    * @param {number} opCode
+//    * @return {string}
+//    */
+// function getNameFromOpCode (opCode: number): string {
+//   const opCodeName = NPS_COMMANDS.find((code) => code.value === opCode)
+//   if (opCodeName === undefined) {
+//     throw new Error(`Unable to locate name for opCode ${opCode}`)
+//   }
 
-  return opCodeName.name
-}
+//   return opCodeName.name
+// }
 
 /**
  * Is this an MCOT bound packet?
@@ -301,109 +299,109 @@ export function isMCOT (inputBuffer: Buffer): boolean {
   return inputBuffer.toString('utf8', 2, 6) === 'TOMC'
 }
 
-/**
-   * Check incoming data and route it to the correct handler based on localPort
-   *
-   * @param {{connection: import('mcos-shared').TCPConnection, data: Buffer}} rawPacket
-   * @return {Promise<{err: Error | null, data: TCPConnection | null}>}
-   */
-export async function processData (rawPacket: { connection: import('../../mcos-shared/src/index.js').TCPConnection; data: Buffer }): Promise<{ err: Error | null; data: TCPConnection | null }> {
-  const npsPacketManager = new NPSPacketManager()
+// /**
+//    * Check incoming data and route it to the correct handler based on localPort
+//    *
+//    * @param {{connection: import('mcos-shared').TCPConnection, data: Buffer}} rawPacket
+//    * @return {Promise<{err: Error | null, data: TCPConnection | null}>}
+//    */
+// export async function processData (rawPacket: { connection: import('../../mcos-shared/src/index.js').TCPConnection; data: Buffer }): Promise<{ err: Error | null; data: TCPConnection | null }> {
+//   const npsPacketManager = new NPSPacketManager()
 
-  const { data } = rawPacket
-  const { remoteAddress, localPort } = rawPacket.connection
+//   const { data } = rawPacket
+//   const { remoteAddress, localPort } = rawPacket.connection
 
-  // Log the packet as debug
-  log.debug(
-      `logging raw packet,
-      ${JSON.stringify({
-        remoteAddress,
-        localPort,
-        data: data.toString('hex')
-      })}`
-  )
+//   // Log the packet as debug
+//   log.debug(
+//       `logging raw packet,
+//       ${JSON.stringify({
+//         remoteAddress,
+//         localPort,
+//         data: data.toString('hex')
+//       })}`
+//   )
 
-  let packetType = 'tcp'
+//   let packetType = 'tcp'
 
-  if (isMCOT(rawPacket.data)) {
-    packetType = 'tomc'
-  }
+//   if (isMCOT(rawPacket.data)) {
+//     packetType = 'tomc'
+//   }
 
-  log.debug(
-      `Identified packet type as ${packetType} on port ${rawPacket.connection.localPort}`
-  )
+//   log.debug(
+//       `Identified packet type as ${packetType} on port ${rawPacket.connection.localPort}`
+//   )
 
-  if (localPort === 8226) {
-    log.debug('Packet has requested the login server')
-  }
-  if (localPort === 8228) {
-    log.debug('Packet has requested the persona server')
-  }
-  if (localPort === 7003) {
-    log.debug('Packet has requested the lobby server')
-  }
-  if (localPort === 43300) {
-    log.debug('Packet has requested the transactions server')
-  }
+//   if (localPort === 8226) {
+//     log.debug('Packet has requested the login server')
+//   }
+//   if (localPort === 8228) {
+//     log.debug('Packet has requested the persona server')
+//   }
+//   if (localPort === 7003) {
+//     log.debug('Packet has requested the lobby server')
+//   }
+//   if (localPort === 43300) {
+//     log.debug('Packet has requested the transactions server')
+//   }
 
-  switch (localPort) {
-    case 8226:
-    case 8228:
-    case 7003: {
-      try {
-        const opCode = rawPacket.data.readInt16BE(0)
-        const msgName = getNameFromOpCode(rawPacket.data.readInt16BE(0))
-        log.debug(
-            `Recieved NPS packet,
-            ${JSON.stringify({
-              opCode,
-              msgName,
-              localPort
-            })}`
-        )
-      } catch (error) {
-        log.error(errorMessage(error))
-        return {
-          err: new Error(
-              `Error in the recieved packet: ${errorMessage(error)}`
-          ),
-          data: null
-        }
-      }
-      try {
-        return {
-          err: null,
-          data: await npsPacketManager.processNPSPacket(rawPacket)
-        }
-      } catch (error) {
-        log.error(errorMessage(error))
-        return {
-          err: new Error(
-              `There was an error processing the data: ${errorMessage(error)}`
-          ),
-          data: null
-        }
-      }
-    }
+//   switch (localPort) {
+//     case 8226:
+//     case 8228:
+//     case 7003: {
+//       try {
+//         const opCode = rawPacket.data.readInt16BE(0)
+//         const msgName = getNameFromOpCode(rawPacket.data.readInt16BE(0))
+//         log.debug(
+//             `Recieved NPS packet,
+//             ${JSON.stringify({
+//               opCode,
+//               msgName,
+//               localPort
+//             })}`
+//         )
+//       } catch (error) {
+//         log.error(errorMessage(error))
+//         return {
+//           err: new Error(
+//               `Error in the recieved packet: ${errorMessage(error)}`
+//           ),
+//           data: null
+//         }
+//       }
+//       try {
+//         return {
+//           err: null,
+//           data: await npsPacketManager.processNPSPacket(rawPacket)
+//         }
+//       } catch (error) {
+//         log.error(errorMessage(error))
+//         return {
+//           err: new Error(
+//               `There was an error processing the data: ${errorMessage(error)}`
+//           ),
+//           data: null
+//         }
+//       }
+//     }
 
-    case 43_300: {
-      const dataLength = rawPacket.data.byteLength
-      log.debug(`Recieved Raw packet of ${dataLength} bytes: ${rawPacket.data.toString('hex')}`)
-      const newNode = new MessageNode('received')
-      newNode.deserialize(rawPacket.data)
-      log.debug(`Recieved MCOTS packet of ${newNode.dataLength} bytes: ${newNode.toString()}`)
-      log.trace('[listen] In processData(pre-defaultHandler)')
+//     case 43_300: {
+//       const dataLength = rawPacket.data.byteLength
+//       log.debug(`Recieved Raw packet of ${dataLength} bytes: ${rawPacket.data.toString('hex')}`)
+//       const newNode = new MessageNode('received')
+//       newNode.deserialize(rawPacket.data)
+//       log.debug(`Recieved MCOTS packet of ${newNode.dataLength} bytes: ${newNode.toString()}`)
+//       log.trace('[listen] In processData(pre-defaultHandler)')
 
-      const response = await getTransactionServer().defaultHandler(rawPacket)
-      log.trace('[listen] In processData(post-defaultHandler)')
-      return response
-    }
+//       const response = await getTransactionServer().defaultHandler(rawPacket)
+//       log.trace('[listen] In processData(post-defaultHandler)')
+//       return response
+//     }
 
-    default:
-      log.debug(JSON.stringify(rawPacket))
+//     default:
+//       log.debug(JSON.stringify(rawPacket))
 
-      throw new Error(
-          `We received a packet on port ${localPort}. We don't what to do yet, going to throw so the message isn't lost.`
-      )
-  }
-}
+//       throw new Error(
+//           `We received a packet on port ${localPort}. We don't what to do yet, going to throw so the message isn't lost.`
+//       )
+//   }
+// }
