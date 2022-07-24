@@ -18,7 +18,7 @@ import type { Socket } from "net";
 import { receiveLobbyData } from "../../mcos-lobby/src/index.js";
 import { receiveLoginData } from "../../mcos-login/src/index.js";
 import { receivePersonaData } from "../../mcos-persona/src/index.js";
-import { errorMessage, logAndThrow, TCPConnection, toHex } from "../../mcos-shared/src/index.js";
+import { errorMessage, logAndThrow, toHex } from "../../mcos-shared/src/index.js";
 import { logger } from "../../mcos-shared/src/logger/index.js";
 import {
   BufferWithConnection,
@@ -29,7 +29,6 @@ import {
 } from "../../mcos-shared/src/types/index.js";
 import { receiveTransactionsData } from "../../mcos-transactions/src/index.js";
 import {
-  processData,
   selectConnection,
   updateConnection,
 } from "./connections.js";
@@ -287,28 +286,28 @@ async function handleInboundTransactionData(
   return result;
 }
 
-/**
- * Replays the unproccessed packet to the connection manager
- * @param {{connection: import("mcos-shared").TCPConnection, data: Buffer}} packet
- * @returns {Promise<{err: Error | null, data: import("mcos-shared").TCPConnection | null}>}
- */
-export async function processPacket(packet: {
-  connection: TCPConnection;
-  data: Buffer;
-}): Promise<{
-  err: Error | null;
-  data: import("../../mcos-shared/src/index.js").TCPConnection | null;
-}> {
-  // Locate the conection manager
-  try {
-    return await processData(packet);
-  } catch (error) {
-    log.error(errorMessage(error));
-    return {
-      err: new Error(
-        `There was an error processing the packet: ${errorMessage(error)}`
-      ),
-      data: null,
-    };
-  }
-}
+// /**
+//  * Replays the unproccessed packet to the connection manager
+//  * @param {{connection: import("mcos-shared").TCPConnection, data: Buffer}} packet
+//  * @returns {Promise<{err: Error | null, data: import("mcos-shared").TCPConnection | null}>}
+//  */
+// export async function processPacket(packet: {
+//   connection: TCPConnection;
+//   data: Buffer;
+// }): Promise<{
+//   err: Error | null;
+//   data: import("../../mcos-shared/src/index.js").TCPConnection | null;
+// }> {
+//   // Locate the conection manager
+//   try {
+//     return await processData(packet);
+//   } catch (error) {
+//     log.error(errorMessage(error));
+//     return {
+//       err: new Error(
+//         `There was an error processing the packet: ${errorMessage(error)}`
+//       ),
+//       data: null,
+//     };
+//   }
+// }
