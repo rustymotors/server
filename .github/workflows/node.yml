@@ -51,7 +51,6 @@ jobs:
           ./codecov-linux -v -n ${{ matrix.node-version }} -F shared-types
           ./codecov-linux -v -n ${{ matrix.node-version }} -F shared
           ./codecov-linux -v -n ${{ matrix.node-version }} -F transactions
-          ./codecov-linux -v -n ${{ matrix.node-version }} -F transactionsfull
       - uses: actions/upload-artifact@v3
         with:
           name: coverage_${{ matrix.node-version }}

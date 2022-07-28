@@ -9,57 +9,55 @@ flags:
     carryforward: false
   auth:
     paths:
-      - packages/mco-auth/**
+      - packages/mcos-auth/**
     carryforward: true
   database:
     paths:
-      - packages/mco-database/**
+      - packages/mcos-database/**
     carryforward: true
   gateway:
     paths:
-      - packages/mco-gateway/**
+      - packages/mcos-gateway/**
     carryforward: true
   lobby:
     paths:
-      - packages/mco-lobby/**
+      - packages/mcos-lobby/**
     carryforward: true
   login:
     paths:
-      - packages/mco-login/**
+      - packages/mcos-login/**
     carryforward: true
   patch:
     paths:
-      - packages/mco-patch/**
+      - packages/mcos-patch/**
     carryforward: true
   persona:
     paths:
-      - packages/mco-persona/**
+      - packages/mcos-persona/**
     carryforward: true
   shard:
     paths:
-      - packages/mco-shard/**
+      - packages/mcos-shard/**
     carryforward: true
   shared-logger:
     paths:
-      - packages/mco-shared/src/logger/**
+      - packages/mcos-shared/src/logger/**
     carryforward: true
   shared-structures:
     paths:
-      - packages/mco-shared/src/structures**
+      - packages/mcos-shared/src/structures**
     carryforward: true
   shared-types:
     paths:
-      - packages/mco-shared/types/**
+      - packages/mcos-shared/types/**
     carryforward: true
   shared:
     paths:
-      - packages/mco-shared/**
+      - packages/mcos-shared/**
     carryforward: true
   transactions:
     paths:
-      - packages/mco-transactions/**
+      - packages/mcos-transactions/**
     carryforward: true
-  transactionsfull:
-    paths:
-      - home/runner/work/mcos/mcos/packages/mcos-transactions/**
+
 
