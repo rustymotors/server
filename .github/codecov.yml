@@ -49,7 +49,7 @@ flags:
     carryforward: true
   shared-types:
     paths:
-      - packages/mcos-shared/types/**
+      - packages/mcos-shared/src/types/**
     carryforward: true
   shared:
     paths:
