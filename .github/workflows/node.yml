@@ -37,7 +37,7 @@ jobs:
           curl -Os https://uploader.codecov.io/latest/codecov-linux.SHA256SUM.sig
           gpg --verify codecov-linux.SHA256SUM.sig codecov-linux.SHA256SUM
           shasum -a 256 -c codecov-linux.SHA256SUM
-          chmod +x codecov-linux
+          chmod +x codecov-linux # All of these are the same file!
           ./codecov-linux -v -n ${{ matrix.node-version }} -F auth
           ./codecov-linux -v -n ${{ matrix.node-version }} -F database
           ./codecov-linux -v -n ${{ matrix.node-version }} -F gateway
