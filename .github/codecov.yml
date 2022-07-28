@@ -59,4 +59,7 @@ flags:
     paths:
       - packages/mco-transactions/**
     carryforward: true
+  transactionsfull:
+    paths:
+      - home/runner/work/mcos/mcos/packages/mcos-transactions/**
 
