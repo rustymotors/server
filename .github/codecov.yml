@@ -1,13 +1,63 @@
 comment:
-  layout: "files"
+  layout: "files,flags"
   behavior: "default"
 
 flags:
   admin:
-    paths:
-      - src/admin/**/*
     carryforward: false
   everything-else:
-    ignore:
-      - src/admin/**/*
     carryforward: false
+  auth:
+    paths:
+      - packages/mcos-auth/**
+    carryforward: true
+  database:
+    paths:
+      - packages/mcos-database/**
+    carryforward: true
+  gateway:
+    paths:
+      - packages/mcos-gateway/**
+    carryforward: true
+  lobby:
+    paths:
+      - packages/mcos-lobby/**
+    carryforward: true
+  login:
+    paths:
+      - packages/mcos-login/**
+    carryforward: true
+  patch:
+    paths:
+      - packages/mcos-patch/**
+    carryforward: true
+  persona:
+    paths:
+      - packages/mcos-persona/**
+    carryforward: true
+  shard:
+    paths:
+      - packages/mcos-shard/**
+    carryforward: true
+  shared-logger:
+    paths:
+      - packages/mcos-shared/src/logger/**
+    carryforward: true
+  shared-structures:
+    paths:
+      - packages/mcos-shared/src/structures**
+    carryforward: true
+  shared-types:
+    paths:
+      - packages/mcos-shared/src/types/**
+    carryforward: true
+  shared:
+    paths:
+      - packages/mcos-shared/**
+    carryforward: true
+  transactions:
+    paths:
+      - packages/mcos-transactions/**
+    carryforward: true
+
+
