@@ -1,4 +1,4 @@
-export interface ResponseJSON {
+export type ResponseJSON = {
   /** A valid HTTP status code */
   statusCode: number;
   responseContent: {
@@ -9,7 +9,7 @@ export interface ResponseJSON {
   };
 }
 
-export interface RequestJSON {
+export type RequestJSON = {
   /**
    * This is a valid command that there is a requestHandler registered for,
    */
@@ -20,7 +20,12 @@ export interface RequestJSON {
   requestContent: string;
 }
 
-export interface RequestHandler {
+export type RequestHandler = {
   requestCode: string;
   handlerFunction: (requestJSON: RequestJSON) => ResponseJSON;
+}
+
+export type SessionRecord = {
+  skey: string
+  sessionkey: string
 }

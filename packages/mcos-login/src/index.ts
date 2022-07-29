@@ -14,15 +14,28 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from '../../mcos-shared/src/logger/index.js'
+import { logger } from 'mcos-logger/src/index.js'
+import type { TCPConnection } from 'mcos-types/tcpConnection.js'
+import type { BufferWithConnection, GServiceResponse, UserRecordMini } from 'mcos-types/types.js'
 import { DatabaseManager } from '../../mcos-database/src/index.js'
-import { NPSUserStatus, premadeLogin } from '../../mcos-shared/src/types/index.js'
-import { errorMessage } from '../../mcos-shared/src/index.js'
 import { handleData } from './internal.js'
-import type { BufferWithConnection, GServiceResponse, UserRecordMini } from '../../mcos-shared/src/types/types.js'
-import type { TCPConnection } from '../../mcos-shared/src/index.js'
+import { NPSUserStatus } from './NPSUserStatus.js'
+import { premadeLogin } from './premadeLogin.js'
 
 const log = logger.child({ service: 'mcoserver:LoginServer' })
+
+/**
+ *
+ *
+ * @param {unknown} error
+ * @return {string}
+ */
+ export function errorMessage (error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return String(error)
+}
 
 /**
  * Manages the initial game connection setup and teardown.
@@ -60,8 +73,8 @@ export class LoginServer {
 
   /**
    *
-   * @param {{connection: import("mcos-shared").TCPConnection, data: Buffer}} rawPacket
-   * @return {Promise<import("mcos-shared").TCPConnection>}
+   * @param {{connection: TCPConnection, data: Buffer}} rawPacket
+   * @return {Promise<TCPConnection>}
    */
   async dataHandler (rawPacket: { connection: TCPConnection; data: Buffer }): Promise<TCPConnection> {
     let processed = true
@@ -120,11 +133,11 @@ export class LoginServer {
    *
    * @private
    * @param {string} contextId
-   * @return {import("mcos-shared/types").UserRecordMini}
+   * @return {UserRecordMini}
    */
   _npsGetCustomerIdByContextId (contextId: string): UserRecordMini {
     log.debug('>>> _npsGetCustomerIdByContextId')
-    /** @type {import("mcos-shared/types").UserRecordMini[]} */
+    /** @type {IUserRecordMini[]} */
     const users: UserRecordMini[] = [
       {
         contextId: '5213dee3a6bcdb133373b2d4f3b9962758',
@@ -168,7 +181,7 @@ export class LoginServer {
    * Process a UserLogin packet
    * Should return a {@link NPSMessage} object
    * @private
-   * @param {import("mcos-shared").TCPConnection} connection
+   * @param {TCPConnection} connection
    * @param {Buffer} data
    * @return {Promise<Buffer>}
    */
@@ -250,8 +263,8 @@ export class LoginServer {
  * Entry and exit point of the Login service
  *
  * @export
- * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
- * @return {Promise<import('mcos-shared/types').GServiceResponse>}
+ * @param {IBufferWithConnection} dataConnection
+ * @return {Promise<IGServiceResponse>}
  */
 export async function receiveLoginData (dataConnection: BufferWithConnection): Promise<GServiceResponse> {
   try {

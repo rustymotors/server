@@ -18,17 +18,18 @@ import { AdminServer } from './adminServer.js'
 import { AuthLogin } from '../../mcos-auth/src/index.js'
 import { PatchServer } from '../../mcos-patch/src/index.js'
 import { ShardServer } from '../../mcos-shard/src/index.js'
-import { logger } from '../../mcos-shared/src/logger/index.js'
+import { logger } from 'mcos-logger/src/index.js'
+import type { IncomingMessage, ServerResponse } from 'node:http'
 
 const log = logger.child({ service: 'mcos:gateway:web' })
 
 /**
  * Routes incomming HTTP requests
- * @param {import("node:http").IncomingMessage} req
- * @param {import("node:http").ServerResponse} res
- * @returns {import("node:http").ServerResponse}
+ * @param {IncomingMessage} req
+ * @param {ServerResponse} res
+ * @returns {ServerResponse}
  */
-export function httpListener (req: import("node:http").IncomingMessage, res: import("node:http").ServerResponse): import("node:http").ServerResponse {
+export function httpListener (req: IncomingMessage, res: ServerResponse): ServerResponse {
   if (req.url && req.url.startsWith('/AuthLogin')) {
     log.debug('ssl routing request to login web server')
     return AuthLogin.getInstance().handleRequest(req, res)

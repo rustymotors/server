@@ -18,22 +18,57 @@ import type { Socket } from "net";
 import { receiveLobbyData } from "../../mcos-lobby/src/index.js";
 import { receiveLoginData } from "../../mcos-login/src/index.js";
 import { receivePersonaData } from "../../mcos-persona/src/index.js";
-import { errorMessage, logAndThrow, toHex } from "../../mcos-shared/src/index.js";
-import { logger } from "../../mcos-shared/src/logger/index.js";
-import {
-  BufferWithConnection,
-  GServiceResponse,
-  MessageNode,
-  SocketWithConnectionInfo,
-  TServiceResponse,
-} from "../../mcos-shared/src/types/index.js";
+import { logger } from "mcos-logger/src/index.js";
 import { receiveTransactionsData } from "../../mcos-transactions/src/index.js";
 import {
   selectConnection,
   updateConnection,
 } from "./connections.js";
+import { MessageNode } from "./MessageNode.js";
+import type { BufferWithConnection, GServiceResponse, SocketWithConnectionInfo, TServiceResponse } from "mcos-types/types.js";
 
 const log = logger.child({ service: "mcos:gateway:sockets" });
+
+/**
+ * Convert to zero padded hex
+ *
+ * @export
+ * @param {Buffer} data
+ * @return {string}
+ */
+ export function toHex (data: Buffer): string {
+  /** @type {string[]} */
+  const bytes: string[] = []
+  data.forEach(b => {
+    bytes.push(b.toString(16).toUpperCase().padStart(2, '0'))
+  })
+  return bytes.join('')
+}
+
+/**
+ *
+ *
+ * @param {unknown} error
+ * @return {string}
+ */
+ export function errorMessage (error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return String(error)
+}
+
+/**
+ *  TODO: #1225 Refactor this out
+ * @param {string} service
+ * @param {string} errMessage
+ */
+ export function logAndThrow(service: string, errMessage: string): never {
+  log.service = service
+  log.error(errMessage)
+  throw new Error(errMessage)
+}
+
 
 // TODO: #1193 Remove commented out code
 
@@ -41,7 +76,7 @@ const log = logger.child({ service: "mcos:gateway:sockets" });
  * The onData handler
  * takes the data buffer and creates a {@link BufferWithConnection} object
  * @param {Buffer} data
- * @param {import('mcos-shared/types').SocketWithConnectionInfo} connection
+ * @param {SocketWithConnectionInfo} connection
  * @return {Promise<void>}
  */
 async function onData(
@@ -51,8 +86,8 @@ async function onData(
   log.debug(`data prior to proccessing: ${data.toString("hex")}`);
 
   // Link the data and the connection together
-  /** @type {import("mcos-shared/types").BufferWithConnection} */
-  const networkBuffer: import("../../mcos-shared/src/types/index.js").BufferWithConnection = {
+  /** @type {BufferWithConnection} */
+  const networkBuffer: BufferWithConnection = {
     connectionId: connection.id,
     connection,
     data,
@@ -177,7 +212,7 @@ async function onData(
 /**
  * Server listener method
  *
- * @param {import("node:net").Socket} socket
+ * @param {Socket} socket
  * @return {void}
  */
 export function socketListener(socket: Socket): void {
@@ -219,14 +254,14 @@ export function socketListener(socket: Socket): void {
  *
  *
  * @param {number} localPort
- * @param {import('mcos-shared/types').BufferWithConnection} networkBuffer
- * @return {Promise<import('mcos-shared/types').GServiceResponse>}
+ * @param {BufferWithConnection} networkBuffer
+ * @return {Promise<GServiceResponse>}
  */
 async function handleInboundGameData(
   localPort: number,
   networkBuffer: BufferWithConnection
-): Promise<import("../../mcos-shared/src/types/index.js").GServiceResponse> {
-  /** @type {import('mcos-shared/types').GServiceResponse} */
+): Promise<GServiceResponse> {
+  /** @type {GServiceResponse} */
   let result: GServiceResponse = { err: null, response: undefined };
   let handledPackets = false;
 
@@ -261,13 +296,13 @@ async function handleInboundGameData(
  *
  *
  * @param {number} localPort
- * @param {import('mcos-shared/types').BufferWithConnection} networkBuffer
- * @return {Promise<import('mcos-shared/types').TServiceResponse>}
+ * @param {BufferWithConnection} networkBuffer
+ * @return {Promise<TServiceResponse>}
  */
 async function handleInboundTransactionData(
   localPort: number,
   networkBuffer: BufferWithConnection
-): Promise<import("../../mcos-shared/src/types/index.js").TServiceResponse> {
+): Promise<TServiceResponse> {
   let result: TServiceResponse = { err: null, response: undefined };
   let handledPackets = false;
 
@@ -286,28 +321,3 @@ async function handleInboundTransactionData(
   return result;
 }
 
-// /**
-//  * Replays the unproccessed packet to the connection manager
-//  * @param {{connection: import("mcos-shared").TCPConnection, data: Buffer}} packet
-//  * @returns {Promise<{err: Error | null, data: import("mcos-shared").TCPConnection | null}>}
-//  */
-// export async function processPacket(packet: {
-//   connection: TCPConnection;
-//   data: Buffer;
-// }): Promise<{
-//   err: Error | null;
-//   data: import("../../mcos-shared/src/index.js").TCPConnection | null;
-// }> {
-//   // Locate the conection manager
-//   try {
-//     return await processData(packet);
-//   } catch (error) {
-//     log.error(errorMessage(error));
-//     return {
-//       err: new Error(
-//         `There was an error processing the packet: ${errorMessage(error)}`
-//       ),
-//       data: null,
-//     };
-//   }
-// }

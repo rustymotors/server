@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from '../../mcos-shared/src/logger/index.js'
+import { logger } from 'mcos-logger/src/index.js'
 import { readFileSync } from 'node:fs'
 import { ShardEntry } from './shard-entry.js'
-import { createServer } from 'node:https'
+import { createServer, Server } from 'node:https'
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
@@ -112,10 +112,10 @@ export class ShardServer {
    *
    *
    * @private
-   * @type {import("node:http").Server}
+   * @type {Server}
    * @memberof ShardServer
    */
-  _server: import("node:http").Server
+  private _server: Server
   private _possibleShards: string[]
 
   /**

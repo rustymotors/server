@@ -1,14 +1,15 @@
-import { cipherBufferDES, decipherBufferDES } from "mcos-shared/src/index.js"
-import { logger } from "mcos-shared/src/logger/index.js"
-import { BufferWithConnection, GSMessageArrayWithConnection, NPSMessage, SocketWithConnectionInfo } from "mcos-shared/src/types/index.js"
+import { logger } from "mcos-logger/src/index.js"
+import type { BufferWithConnection, GSMessageArrayWithConnection, SocketWithConnectionInfo } from "mcos-types/types.js"
+import { cipherBufferDES, decipherBufferDES } from "../encryption.js"
+import { NPSMessage } from "../NPSMessage.js"
 
 const log = logger.child({ service: 'mcos:lobby' })
 
 /**
    * Takes an plaintext command packet and return the encrypted bytes
    *
-   * @return {import('mcos-shared/types').GSMessageArrayWithConnection}
-   * @param {import('mcos-shared/types').SocketWithConnectionInfo} dataConnection
+   * @return {IGSMessageArrayWithConnection}
+   * @param {ISocketWithConnectionInfo} dataConnection
    * @param {Buffer} plaintextCommand
    */
  function encryptCmd (dataConnection: SocketWithConnectionInfo, plaintextCommand: Buffer): GSMessageArrayWithConnection {
@@ -30,8 +31,8 @@ const log = logger.child({ service: 'mcos:lobby' })
 /**
  * Takes an encrypted command packet and returns the decrypted bytes
  *
- * @return {import('mcos-shared/types').BufferWithConnection}
- * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
+ * @return {IBufferWithConnection}
+ * @param {IBufferWithConnection} dataConnection
  * @param {Buffer} encryptedCommand
  */
  function decryptCmd (dataConnection: BufferWithConnection, encryptedCommand: Buffer): BufferWithConnection {
@@ -50,8 +51,8 @@ const log = logger.child({ service: 'mcos:lobby' })
 /**
  *
  *
- * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
- * @return {import('mcos-shared/types').GSMessageArrayWithConnection}
+ * @param {IBufferWithConnection} dataConnection
+ * @return {IGSMessageArrayWithConnection}
  */
  function handleCommand (dataConnection: BufferWithConnection): GSMessageArrayWithConnection {
   const { data } = dataConnection
@@ -87,8 +88,8 @@ const log = logger.child({ service: 'mcos:lobby' })
 /**
  *
  *
- * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
- * @return {import('mcos-shared/types').GSMessageArrayWithConnection}
+ * @param {IBufferWithConnection} dataConnection
+ * @return {IGSMessageArrayWithConnection}
  */
  export async function handleEncryptedNPSCommand (dataConnection: BufferWithConnection): Promise<GSMessageArrayWithConnection> {
   // Decipher

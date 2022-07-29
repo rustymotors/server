@@ -14,20 +14,45 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from '../../mcos-shared/src/logger/index.js'
-import {
-  GenericReplyMessage,
-  GenericRequestMessage,
-  MessageNode,
-  StockCar,
-  StockCarInfoMessage
-  , TClientConnectMessage
-} from '../../mcos-shared/src/types/index.js'
+import { logger } from 'mcos-logger/src/index.js'
 import { DatabaseManager } from '../../mcos-database/src/index.js'
-import { errorMessage, toHex } from '../../mcos-shared/src/index.js'
-import type { TCPConnection } from '../../mcos-shared/src/index.js'
+import type { TCPConnection } from 'mcos-types/tcpConnection.js';
+import { GenericReplyMessage } from './GenericReplyMessage.js';
+import { GenericRequestMessage } from './GenericRequestMessage.js';
+import { MessageNode } from './MessageNode.js';
+import { StockCar } from './StockCar.js';
+import { StockCarInfoMessage } from './StockCarInfoMessage.js';
+import { TClientConnectMessage } from './TClientConnectMessage.js';
 
 const log = logger.child({ service: 'mcoserver:MCOTSServer' })
+
+/**
+ *
+ *
+ * @param {unknown} error
+ * @return {string}
+ */
+ export function errorMessage (error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return String(error)
+}
+
+/**
+ * Convert to zero padded hex
+ *
+ * @export
+ * @param {Buffer} data
+ * @return {string}
+ */
+ export function toHex (data: Buffer): string {
+  const bytes: string[] = []
+  data.forEach(b => {
+    bytes.push(b.toString(16).toUpperCase().padStart(2, '0'))
+  })
+  return bytes.join('')
+}
 
 /**
    *
@@ -60,7 +85,7 @@ function tryDecryptBuffer (message: MessageNode, newConnection: TCPConnection): 
    * @param {MessageNode} message
    * @param {TCPConnection} newConnection
    */
-function decryptBuffer (message: MessageNode, newConnection: TCPConnection) {
+function decryptBuffer (message: MessageNode, newConnection: TCPConnection): { err: Error; data: null; } | { err: null; data: Buffer; } {
   const encryptedBuffer = Buffer.from(message.data)
   log.debug(
       `Full packet before decrypting: ${encryptedBuffer.toString('hex')}`
@@ -306,7 +331,6 @@ function logout (connection: TCPConnection, node: MessageNode): { connection: TC
   rPacket.updateBuffer(pReply.serialize())
   rPacket.dumpPacket()
 
-  /** @type {MessageNode[]} */
   const nodes: MessageNode[] = []
 
   return { connection, packetList: nodes }

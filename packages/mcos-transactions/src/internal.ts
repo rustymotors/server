@@ -14,18 +14,48 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { decryptBuffer, errorMessage, selectEncryptors, toHex } from '../../mcos-shared/src/index.js'
-import { logger } from '../../mcos-shared/src/logger/index.js'
-import { BufferWithConnection, EncryptionSession, MessageNode, TServiceResponse, TSMessageArrayWithConnection } from '../../mcos-shared/src/types/index.js'
+import { logger } from 'mcos-logger/src/index.js'
+import type { BufferWithConnection, EncryptionSession, TServiceResponse, TSMessageArrayWithConnection } from 'mcos-types/types.js';
+import { decryptBuffer, selectEncryptors } from './encryption.js';
 import { messageHandlers } from './handlers.js'
+import { MessageNode } from './MessageNode.js';
 
 const log = logger.child({ service: 'mcos:transactions' })
 
 /**
+ *
+ *
+ * @param {unknown} error
+ * @return {string}
+ */
+ export function errorMessage (error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return String(error)
+}
+
+/**
+ * Convert to zero padded hex
+ *
+ * @export
+ * @param {Buffer} data
+ * @return {string}
+ */
+ export function toHex (data: Buffer): string {
+  /** @type {string[]} */
+  const bytes: string[] = []
+  data.forEach(b => {
+    bytes.push(b.toString(16).toUpperCase().padStart(2, '0'))
+  })
+  return bytes.join('')
+}
+
+/**
    *
    *
-   * @param {import('mcos-shared/types').MessageNode} message
-   * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
+   * @param {MessageNode} message
+   * @param {BufferWithConnection} dataConnection
    * @return {boolean}
    */
 function shouldMessageBeEncrypted (message: MessageNode, dataConnection: BufferWithConnection): boolean {
@@ -35,8 +65,8 @@ function shouldMessageBeEncrypted (message: MessageNode, dataConnection: BufferW
 /**
    *
    *
-   * @param {import('mcos-shared/types').MessageNode} message
-   * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
+   * @param {MessageNode} message
+   * @param {BufferWithConnection} dataConnection
    * @return {{err: Error | null, data: Buffer | null}}
    */
 function decryptTransactionBuffer (message: MessageNode, dataConnection: BufferWithConnection): { err: Error | null; data: Buffer | null } {
@@ -64,8 +94,8 @@ function decryptTransactionBuffer (message: MessageNode, dataConnection: BufferW
 /**
    *
    *
-   * @param {import('mcos-shared/types').MessageNode} message
-   * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
+   * @param {MessageNode} message
+   * @param {BufferWithConnection} dataConnection
    * @return {{err: Error | null, data: Buffer | null}}
    */
 function tryDecryptBuffer (message: MessageNode, dataConnection: BufferWithConnection): {err: Error | null, data: Buffer | null} {
@@ -182,8 +212,8 @@ async function messageReceived (message: MessageNode, dataConnection: BufferWith
 }
 
 /**
-   * @param {import("mcos-shared/types").BufferWithConnection} dataConnection
-   * @return {Promise<import('mcos-shared/types').TSMessageArrayWithConnection>}
+   * @param {BufferWithConnection} dataConnection
+   * @return {Promise<TSMessageArrayWithConnection>}
    */
 export async function handleData (dataConnection: BufferWithConnection): Promise<TSMessageArrayWithConnection> {
   const { connection, data } = dataConnection

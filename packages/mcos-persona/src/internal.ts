@@ -14,9 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from '../../mcos-shared/src/logger/index.js'
-import { BufferWithConnection, GSMessageArrayWithConnection, NPSMessage, NPSPersonaMapsMessage, PersonaRecord } from '../../mcos-shared/src/types/index.js'
-import { MessagePacket } from '../../mcos-shared/src/structures/index.js'
+import { logger } from 'mcos-logger/src/index.js'
+import type { BufferWithConnection, GSMessageArrayWithConnection, PersonaRecord } from 'mcos-types/types.js'
+import { MessagePacket } from './MessagePacket.js'
+import { NPSMessage } from './NPSMessage.js'
+import { NPSPersonaMapsMessage } from './NPSPersonaMapsMessage.js'
 
 const log = logger.child({ service: 'mcos:persona' })
 
@@ -37,9 +39,8 @@ export function generateNameBuffer (name: string, size: number, encoding: Buffer
 
 /**
  * Return a list of all personas
- * @returns {import("mcos-shared/types").PersonaRecord[]}
+ * @returns {PersonaRecord[]}
  */
-/** @type {import("mcos-shared/types").PersonaRecord[]} */
 export const personaRecords: PersonaRecord[] = [
   {
     customerId: 2868969472,
@@ -70,7 +71,7 @@ export const personaRecords: PersonaRecord[] = [
 /**
    *
    * @param {number} id
-   * @return {Promise<import("mcos-shared/types").PersonaRecord[]>}
+   * @return {Promise<import(PersonaRecord[]>}
    */
 export async function getPersonasByPersonaId (id: number): Promise<PersonaRecord[]> {
   const results = personaRecords.filter((persona) => {
@@ -201,7 +202,7 @@ async function logoutGameUser (data: Buffer): Promise<NPSMessage> {
 /**
    *
    * @param {number} customerId
-   * @return {Promise<import("mcos-shared/types").PersonaRecord[]>}
+   * @return {Promise<PersonaRecord[]>}
    */
 async function getPersonasByCustomerId (customerId: number): Promise<PersonaRecord[]> {
   const results = personaRecords.filter(
@@ -216,7 +217,7 @@ async function getPersonasByCustomerId (customerId: number): Promise<PersonaReco
    * TODO: Store in a database, instead of being hard-coded
    *
    * @param {number} customerId
-   * @return {Promise<import("mcos-shared/types").PersonaRecord[]>}
+   * @return {Promise<PersonaRecord[]>}
    */
 async function getPersonaMapsByCustomerId (customerId: number): Promise<PersonaRecord[]> {
   switch (customerId) {
@@ -285,7 +286,7 @@ async function getPersonaMaps (data: Buffer): Promise<NPSMessage> {
 
       const personaMapsPacket = MessagePacket.fromBuffer(responsePacket.serialize())
 
-      log.debug(`!!! outbound persona maps response packet: ${personaMapsPacket.buffer.toString("hex")}`)
+      log.debug(`!!! outbound persona maps response packet: ${personaMapsPacket.getBuffer().toString("hex")}`)
 
       return responsePacket
     } catch (error) {
@@ -402,8 +403,8 @@ async function validateLicencePlate (data: Buffer): Promise<NPSMessage> {
 /**
  *
  *
- * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
- * @return {Promise<import('mcos-shared/types').GSMessageArrayWithConnection>}
+ * @param {BufferWithConnection} dataConnection
+ * @return {Promise<GSMessageArrayWithConnection>}
  */
 export async function handleData (dataConnection: BufferWithConnection): Promise<GSMessageArrayWithConnection> {
   const { connection, data } = dataConnection
@@ -423,7 +424,7 @@ export async function handleData (dataConnection: BufferWithConnection): Promise
       const requestPacket = new NPSMessage('recieved').deserialize(data)
       // NPS_REGISTER_GAME_LOGIN = 0x503
       const responsePacket = await handleSelectGamePersona(requestPacket)
-      /** @type {import('mcos-shared/types').GSMessageArrayWithConnection} */
+      /** @type {GSMessageArrayWithConnection} */
       const response: GSMessageArrayWithConnection = {
         connection: dataConnection.connection,
         messages: [responsePacket]
@@ -434,7 +435,7 @@ export async function handleData (dataConnection: BufferWithConnection): Promise
     case '507': {
       // NPS_NEW_GAME_ACCOUNT == 0x507
       const responsePacket = await createNewGameAccount(data)
-      /** @type {import('mcos-shared/types').GSMessageArrayWithConnection} */
+      /** @type {GSMessageArrayWithConnection} */
       const response: GSMessageArrayWithConnection = {
         connection: dataConnection.connection,
         messages: [responsePacket]
@@ -445,7 +446,7 @@ export async function handleData (dataConnection: BufferWithConnection): Promise
     case '50f': {
       // NPS_REGISTER_GAME_LOGOUT = 0x50F
       const responsePacket = await logoutGameUser(data)
-      /** @type {import('mcos-shared/types').GSMessageArrayWithConnection} */
+      /** @type {GSMessageArrayWithConnection} */
       const response: GSMessageArrayWithConnection = {
         connection: dataConnection.connection,
         messages: [responsePacket]
@@ -456,7 +457,7 @@ export async function handleData (dataConnection: BufferWithConnection): Promise
     case '532': {
       // NPS_GET_PERSONA_MAPS = 0x532
       const responsePacket = await getPersonaMaps(data)
-      /** @type {import('mcos-shared/types').GSMessageArrayWithConnection} */
+      /** @type {GSMessageArrayWithConnection} */
       const response: GSMessageArrayWithConnection = {
         connection: dataConnection.connection,
         messages: [responsePacket]
@@ -467,7 +468,7 @@ export async function handleData (dataConnection: BufferWithConnection): Promise
     case '533': {
       // NPS_VALIDATE_PERSONA_NAME   = 0x533
       const responsePacket = await validatePersonaName(data)
-      /** @type {import('mcos-shared/types').GSMessageArrayWithConnection} */
+      /** @type {GSMessageArrayWithConnection} */
       const response: GSMessageArrayWithConnection = {
         connection: dataConnection.connection,
         messages: [responsePacket]
@@ -477,7 +478,7 @@ export async function handleData (dataConnection: BufferWithConnection): Promise
     case '534': {
       // NPS_CHECK_TOKEN   = 0x534
       const responsePacket = await validateLicencePlate(data)
-      /** @type {import('mcos-shared/types').GSMessageArrayWithConnection} */
+      /** @type {GSMessageArrayWithConnection} */
       const response: GSMessageArrayWithConnection = {
         connection: dataConnection.connection,
         messages: [responsePacket]
