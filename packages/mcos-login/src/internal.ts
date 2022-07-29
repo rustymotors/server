@@ -15,15 +15,28 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { DatabaseManager } from '../../mcos-database/src/index.js'
-import { errorMessage } from '../../mcos-shared/src/index.js'
-import { logger } from '../../mcos-shared/src/logger/index.js'
-import { NPSMessage, NPSUserStatus, premadeLogin } from '../../mcos-shared/src/types/index.js'
-import { GSMessageBase } from '../../mcos-shared/src/structures/index.js'
-import type { BufferWithConnection, GSMessageArrayWithConnection, UserRecordMini } from '../../mcos-shared/src/types/index.js'
+import { logger } from 'mcos-logger/src/index.js'
+import { GSMessageBase } from './GMessageBase.js'
+import { NPSUserStatus } from './NPSUserStatus.js'
+import { premadeLogin } from './premadeLogin.js'
+import { NPSMessage } from './NPSMessage.js'
+import type { BufferWithConnection, GSMessageArrayWithConnection, UserRecordMini } from 'mcos-types/types.js'
 
 const log = logger.child({ service: 'mcos:login' })
 
-/** @type {import("mcos-shared/types").UserRecordMini[]} */
+/**
+ *
+ *
+ * @param {unknown} error
+ * @return {string}
+ */
+ export function errorMessage (error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return String(error)
+}
+
 const userRecords: UserRecordMini[] = [
   {
     contextId: '5213dee3a6bcdb133373b2d4f3b9962758',
@@ -40,8 +53,8 @@ const userRecords: UserRecordMini[] = [
 /**
    * Process a UserLogin packet
    * @private
-   * @param {import("mcos-shared/types").BufferWithConnection} dataConnection
-   * @return {Promise<import('mcos-shared/types').GSMessageArrayWithConnection>}
+   * @param {IBufferWithConnection} dataConnection
+   * @return {Promise<IGSMessageArrayWithConnection>}
    */
 async function login (dataConnection: BufferWithConnection): Promise<GSMessageArrayWithConnection> {
   const { connectionId, data } = dataConnection
@@ -123,7 +136,7 @@ async function login (dataConnection: BufferWithConnection): Promise<GSMessageAr
      */
 
   // Update the data buffer
-  /** @type {import('mcos-shared/types').GSMessageArrayWithConnection} */
+  /** @type {IGSMessageArrayWithConnection} */
   const response: GSMessageArrayWithConnection = {
     connection: dataConnection.connection,
     messages: [newPacket, newPacket]
@@ -142,8 +155,8 @@ export const messageHandlers = [
 /**
  *
  *
- * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
- * @return {Promise<import('mcos-shared/types').GSMessageArrayWithConnection>}
+ * @param {IBufferWithConnection} dataConnection
+ * @return {Promise<IGSMessageArrayWithConnection>}
  */
 export async function handleData (dataConnection: BufferWithConnection): Promise<GSMessageArrayWithConnection> {
   const { connectionId, data } = dataConnection

@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from '../../mcos-shared/src/logger/index.js'
-import { createServer } from 'node:http'
+import { logger } from 'mcos-logger/src/index.js'
+import { createServer, IncomingMessage, ServerResponse } from 'node:http'
 
 const log = logger.child({ service: 'MCOServer:Patch' })
 
@@ -79,11 +79,11 @@ export class PatchServer {
 
   /**
    * Returns the hard-coded value that tells the client there are no updates or patches
-   * @param {import("node:http").IncomingMessage} request
-   * @param {import("node:http").ServerResponse} response
-   * @returns {import("node:http").ServerResponse}
+   * @param {IncomingMessage} request
+   * @param {ServerResponse} response
+   * @returns {ServerResponse}
    */
-  castanetResponse (request: import("node:http").IncomingMessage, response: import("node:http").ServerResponse): import("node:http").ServerResponse {
+  castanetResponse (request: IncomingMessage, response: ServerResponse): ServerResponse {
     log.debug(
       `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
     )
@@ -97,11 +97,11 @@ export class PatchServer {
 
   /**
    * Routes incomming HTTP requests
-   * @param {import("node:http").IncomingMessage} request
-   * @param {import("node:http").ServerResponse} response
-   * @returns {import("node:http").ServerResponse}
+   * @param {IncomingMessage} request
+   * @param {ServerResponse} response
+   * @returns {ServerResponse}
    */
-  handleRequest (request: import("node:http").IncomingMessage, response: import("node:http").ServerResponse): import("node:http").ServerResponse {
+  handleRequest (request: IncomingMessage, response: ServerResponse): ServerResponse {
     if (
       request.url === '/games/EA_Seattle/MotorCity/UpdateInfo' ||
       request.url === '/games/EA_Seattle/MotorCity/NPS' ||

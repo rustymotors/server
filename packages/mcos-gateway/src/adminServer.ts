@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from "../../mcos-shared/src/logger/index.js";
+import { logger } from "mcos-logger/src/index.js";
+import type { IncomingMessage, ServerResponse } from "node:http";
 import { getAllConnections } from "./index.js";
 
 const log = logger.child({ service: "mcos:gateway:admin" });
@@ -82,14 +83,14 @@ export class AdminServer {
   /**
    * Handle incomming http requests
    *
-   * @return {import("node:http").ServerResponse}
-   * @param {import("http").IncomingMessage} request
-   * @param {import("http").ServerResponse} response
+   * @return {ServerResponse}
+   * @param {IncomingMessage} request
+   * @param {ServerResponse} response
    */
   handleRequest(
-    request: import("http").IncomingMessage,
-    response: import("http").ServerResponse
-  ): import("node:http").ServerResponse {
+    request: IncomingMessage,
+    response: ServerResponse
+  ): ServerResponse {
     log.info(
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );

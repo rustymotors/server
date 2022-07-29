@@ -1,12 +1,30 @@
-import { selectOrCreateEncryptors, toHex } from 'mcos-shared/src/index.js'
-import { MessagePacket } from 'mcos-shared/src/structures/MessagePacket.js'
-import { BufferWithConnection, EncryptionSession, GSMessageArrayWithConnection, NPSMessage, NPSUserInfo } from 'mcos-shared/src/types/index.js'
-import { DatabaseManager } from '../../../mcos-database/src/index.js'
 import { getPersonasByPersonaId } from '../../../mcos-persona/src/index.js'
-import { logger } from '../../../mcos-shared/src/logger/index.js'
+import { logger } from 'mcos-logger/src/index.js'
+import { NPSUserInfo } from '../NPSUserInfo.js'
+import { NPSMessage } from '../NPSMessage.js'
+import { selectOrCreateEncryptors } from '../encryption.js'
+import type { BufferWithConnection, EncryptionSession, GSMessageArrayWithConnection } from 'mcos-types/types.js'
+import { MessagePacket } from '../MessagePacket.js'
+import { DatabaseManager } from '../../../mcos-database/src/index.js'
 
 
 const log = logger.child({ service: 'mcos:lobby' })
+
+/**
+ * Convert to zero padded hex
+ *
+ * @export
+ * @param {Buffer} data
+ * @return {string}
+ */
+ export function toHex (data: Buffer): string {
+  /** @type {string[]} */
+  const bytes: string[] = []
+  data.forEach(b => {
+    bytes.push(b.toString(16).toUpperCase().padStart(2, '0'))
+  })
+  return bytes.join('')
+}
 
 /**
    * @param {string} key
@@ -22,7 +40,7 @@ const log = logger.child({ service: 'mcos:lobby' })
    * Handle a request to connect to a game server packet
    *
    * @private
-   * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
+   * @param {IBufferWithConnection} dataConnection
    * @return {Promise<NPSMessage>}
    */
  export async function _npsRequestGameConnectServer (dataConnection: BufferWithConnection): Promise<GSMessageArrayWithConnection> {
@@ -39,7 +57,7 @@ const log = logger.child({ service: 'mcos:lobby' })
   // since the data is a buffer at this point, let's place it in a message structure
   const inboundMessage = MessagePacket.fromBuffer(dataConnection.data)
 
-  log.debug(`message buffer (${inboundMessage.buffer.toString('hex')})`)
+  log.debug(`message buffer (${inboundMessage.getBuffer().toString('hex')})`)
 
   // Return a _NPS_UserInfo structure
   const userInfo = new NPSUserInfo('recieved')
@@ -103,7 +121,7 @@ const log = logger.child({ service: 'mcos:lobby' })
 
   const loginResponsePacket = MessagePacket.fromBuffer(packetResult.serialize())
 
-  log.debug(`!!! outbound lobby login response packet: ${loginResponsePacket.buffer.toString("hex")}`)
+  log.debug(`!!! outbound lobby login response packet: ${loginResponsePacket.getBuffer().toString("hex")}`)
   return {
     connection: dataConnection.connection,
     messages: [packetResult],

@@ -1,5 +1,5 @@
-import type { BufferWithConnection, GSMessageArrayWithConnection } from "mcos-shared/src/types/index.js"
-import { NPSMessage } from "mcos-shared/src/types/NPSMessage.js"
+import type { BufferWithConnection, GSMessageArrayWithConnection } from "mcos-types/types.js"
+import { NPSMessage } from "../NPSMessage.js"
 
 /**
    * @private

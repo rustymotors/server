@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from '../../mcos-shared/src/logger/index.js'
+import { logger } from 'mcos-logger/src/index.js'
 import { readFileSync } from 'node:fs'
 import { ShardEntry } from './shard-entry.js'
 import { createServer } from 'node:https'

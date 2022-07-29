@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import pg from 'pg'
-import { logger } from '../../mcos-shared/src/logger/index.js'
+import { logger } from 'mcos-logger/src/index.js'
 import { Session } from './models/Session.js'
 import { Lobby } from './models/Lobby.js'
-import type { SessionRecord } from '../../mcos-shared/src/types/types.js'
-const { Client } = pg
+import type { SessionRecord } from './types.js'
+import pg from 'pg';
+const Client = pg.Client;
 
 const log = logger.child({ service: 'mcoserver:DatabaseMgr' })
 
@@ -104,7 +104,7 @@ export class DatabaseManager {
   /**
    * Locate customer session encryption key in the database
    * @param {number} customerId
-   * @returns {Promise<import("mcos-shared/types").SessionRecord>}
+   * @returns {SessionRecord>}
    */
   async fetchSessionKeyByCustomerId (customerId: number): Promise<SessionRecord> {
     await this.init()
@@ -126,7 +126,7 @@ export class DatabaseManager {
   /**
    * Locate customer session encryption key in the database
    * @param {number} connectionId
-   * @returns {Promise<import("mcos-shared/types").SessionRecord>}
+   * @returns {Promise<SessionRecord>}
    */
   async fetchSessionKeyByConnectionId (connectionId: number): Promise<SessionRecord> {
     await this.init()

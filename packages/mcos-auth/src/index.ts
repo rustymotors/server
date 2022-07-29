@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from '../../mcos-shared/src/logger/index.js'
+import { logger } from 'mcos-logger/src/index.js'
+import type { IncomingMessage, ServerResponse } from 'node:http'
+import type { Socket } from 'node:net'
 
 const log = logger.child({ service: 'MCOServer:Auth' })
 
@@ -62,11 +64,11 @@ export class AuthLogin {
   /**
    * Handle incoming http requests
    *
-   * @returns {import("node:http").ServerResponse}
-   * @param {import("node:http").IncomingMessage} request
-   * @param {import("node:http").ServerResponse} response
+   * @returns {ServerResponse}
+   * @param {IncomingMessage} request
+   * @param {ServerResponse} response
    */
-  handleRequest (request: import("node:http").IncomingMessage, response: import("node:http").ServerResponse): import("node:http").ServerResponse {
+  handleRequest (request: IncomingMessage, response: ServerResponse): ServerResponse {
     log.info(
       `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     )
@@ -81,9 +83,9 @@ export class AuthLogin {
   /**
    * @private
    * @returns {void}
-   * @param {import("net").Socket} socket
+   * @param {Socket} socket
    */
-  _socketEventHandler (socket: import("net").Socket): void {
+  _socketEventHandler (socket: Socket): void {
     socket.on('error', (error) => {
       throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`)
     })

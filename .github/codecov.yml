@@ -41,7 +41,11 @@ flags:
     carryforward: true
   shared-logger:
     paths:
-      - packages/mcos-shared/src/logger/**
+      - packages/mcos-logger/**
+    carryforward: false
+  logger:
+    paths:
+      - packages/mcos-logger/**
     carryforward: true
   shared-structures:
     paths:

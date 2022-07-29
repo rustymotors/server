@@ -15,25 +15,35 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { DatabaseManager } from "../../mcos-database/src/index.js";
-import {
-  selectOrCreateEncryptors,
-  toHex,
-} from "../../mcos-shared/src/index.js";
-import { logger } from "../../mcos-shared/src/logger/index.js";
-import {
-  GenericReplyMessage,
-  GenericRequestMessage,
-  MessageNode,
-  SocketWithConnectionInfo,
-  StockCar,
-  StockCarInfoMessage,
-  TClientConnectMessage,
-  TLobbyMessage,
-  TLoginMessage,
-  TSMessageArrayWithConnection,
-} from "../../mcos-shared/src/types/index.js";
+import { logger } from "mcos-logger/src/index.js";
+import { GenericReplyMessage } from "./GenericReplyMessage.js";
+import { MessageNode } from "./MessageNode.js";
+import { TClientConnectMessage } from "./TClientConnectMessage.js";
+import { selectOrCreateEncryptors } from "./encryption.js";
+import { TLoginMessage } from "./TLoginMessage.js";
+import { GenericRequestMessage } from "./GenericRequestMessage.js";
+import { TLobbyMessage } from "./TLobbyMessage.js";
+import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
+import { StockCar } from "./StockCar.js";
+import type { SocketWithConnectionInfo, TSMessageArrayWithConnection } from "mcos-types/types.js";
 
 const log = logger.child({ service: "mcos:transactions:handlers" });
+
+/**
+ * Convert to zero padded hex
+ *
+ * @export
+ * @param {Buffer} data
+ * @return {string}
+ */
+ export function toHex (data: Buffer): string {
+  /** @type {string[]} */
+  const bytes: string[] = []
+  data.forEach(b => {
+    bytes.push(b.toString(16).toUpperCase().padStart(2, '0'))
+  })
+  return bytes.join('')
+}
 
 /**
  *

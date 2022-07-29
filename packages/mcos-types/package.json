@@ -1,0 +1,22 @@
+{
+  "name": "mcos-types",
+  "version": "1.0.0",
+  "description": "",
+  "main": "types.js",
+  "devDependencies": {},
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drazisil/mcos.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/drazisil/mcos/issues"
+  },
+  "homepage": "https://github.com/drazisil/mcos#readme"
+}

@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from '../../mcos-shared/src/logger/index.js'
-import http from 'node:http'
-import { createServer } from 'node:net'
+import { logger } from 'mcos-logger/src/index.js'
+import * as http from 'node:http'
+import { createServer, Server, Socket } from 'node:net'
 import { socketListener } from './sockets.js'
 import { httpListener } from './web.js'
 export { getAllConnections } from './connections.js'
@@ -41,21 +41,21 @@ export class MCOServer {
   /**
    *
    * @private
-   * @type {import("node:net").Server[]}
+   * @type {Server[]}
    * @memberof MCOServer
    */
 
-  _listeningServers: import("node:net").Server[] = []
+  _listeningServers: Server[] = []
 
   /**
    * Handle incomming socket connections
    *
    * @private
-   * @param {import("node:net").Socket} incomingSocket
+   * @param {Socket} incomingSocket
    * @return {void}
    * @memberof MCOServer
    */
-  _listener (incomingSocket: import("node:net").Socket): void {
+  _listener (incomingSocket: Socket): void {
     log.debug(
       `[gate]Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
     )

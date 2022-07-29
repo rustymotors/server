@@ -14,12 +14,28 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { errorMessage, TCPConnection } from '../../mcos-shared/src/index.js'
-import { logger } from '../../mcos-shared/src/logger/index.js'
-import { BufferWithConnection, GServiceResponse, NPSMessage, NPSPersonaMapsMessage, PersonaRecord } from '../../mcos-shared/src/types/index.js'
+import { logger } from 'mcos-logger/src/index.js'
 import { handleData, personaRecords } from './internal.js'
+import type { Socket } from 'node:net'
+import { NPSMessage } from './NPSMessage.js'
+import type { BufferWithConnection, GServiceResponse, PersonaRecord } from 'mcos-types/types.js'
+import { NPSPersonaMapsMessage } from './NPSPersonaMapsMessage.js'
+import type { TCPConnection } from 'mcos-types/tcpConnection.js'
 
 const log = logger.child({ service: 'mcoserver:PersonaServer' })
+
+/**
+ *
+ *
+ * @param {unknown} error
+ * @return {string}
+ */
+ function errorMessage (error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return String(error)
+}
 
 /**
  * Selects a game persona and marks it as in use
@@ -118,8 +134,8 @@ export class PersonaServer {
     return Promise.resolve(rPacket)
   }
 
-  //  * TODO: Change the persona record to show logged out. This requires it to exist first, it is currently hard-coded
-  //  * TODO: Locate the connection and delete, or reset it.
+  //  TODO: #1227 Change the persona record to show logged out. This requires it to exist first, it is currently hard-coded
+  //  TODO: #1228 Locate the connection and delete, or reset it.
   /**
    * Log out a game persona
    *
@@ -263,12 +279,12 @@ export class PersonaServer {
   /**
    *
    *
-   * @param {import('node:net').Socket} socket
+   * @param {Socket} socket
    * @param {NPSMessage} packet
    * @return {void}
    * @memberof PersonaServer
    */
-  sendPacket (socket: import('node:net').Socket, packet: NPSMessage): void {
+  sendPacket (socket: Socket, packet: NPSMessage): void {
     try {
       // deepcode ignore WrongNumberOfArgs: False alert
       socket.write(packet.serialize())
@@ -284,7 +300,7 @@ export class PersonaServer {
   /**
    *
    * @param {number} customerId
-   * @return {Promise<import("mcos-shared/types").PersonaRecord[]>}
+   * @return {Promise<IPersonaRecord[]>}
    */
   async getPersonasByCustomerId (customerId: number): Promise<PersonaRecord[]> {
     const results = personaRecords.filter(
@@ -299,7 +315,7 @@ export class PersonaServer {
    * TODO: Store in a database, instead of being hard-coded
    *
    * @param {number} customerId
-   * @return {Promise<import("mcos-shared/types").PersonaRecord[]>}
+   * @return {Promise<PersonaRecord[]>}
    */
   async getPersonaMapsByCustomerId (customerId: number): Promise<PersonaRecord[]> {
     switch (customerId) {
@@ -380,8 +396,8 @@ export class PersonaServer {
   /**
    * Handle inbound packets for the persona server
    *
-   * @param {{connection: import("mcos-shared").TCPConnection, data: Buffer}} rawPacket
-   * @return {Promise<import("mcos-shared").TCPConnection>}
+   * @param {{connection: TCPConnection, data: Buffer}} rawPacket
+   * @return {Promise<TCPConnection>}
    * @memberof PersonaServer
    */
   async dataHandler (rawPacket: { connection: TCPConnection; data: Buffer }): Promise<TCPConnection> {
@@ -454,8 +470,8 @@ export class PersonaServer {
  * Entry and exit point for the persona service
  *
  * @export
- * @param {import('mcos-shared/types').BufferWithConnection} dataConnection
- * @return {Promise<import('mcos-shared/types').GServiceResponse>}
+ * @param {BufferWithConnection} dataConnection
+ * @return {Promise<GServiceResponse>}
  */
 export async function receivePersonaData (dataConnection: BufferWithConnection): Promise<GServiceResponse> {
   try {
