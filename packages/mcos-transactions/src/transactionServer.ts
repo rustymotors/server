@@ -85,7 +85,7 @@ function tryDecryptBuffer (message: MessageNode, newConnection: TCPConnection): 
    * @param {MessageNode} message
    * @param {TCPConnection} newConnection
    */
-function decryptBuffer (message: MessageNode, newConnection: TCPConnection) {
+function decryptBuffer (message: MessageNode, newConnection: TCPConnection): { err: Error; data: null; } | { err: null; data: Buffer; } {
   const encryptedBuffer = Buffer.from(message.data)
   log.debug(
       `Full packet before decrypting: ${encryptedBuffer.toString('hex')}`

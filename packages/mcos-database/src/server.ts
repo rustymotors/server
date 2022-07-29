@@ -8,7 +8,7 @@ const server = createServer(onRequest);
 
 const handlers: RequestHandler[] = [];
 
-function onRequest(request: IncomingMessage, response: ServerResponse) {
+function onRequest(request: IncomingMessage, response: ServerResponse): void {
   const { "content-type": contentType } = request.headers;
 
   if (contentType !== "application/jason") {
@@ -50,7 +50,7 @@ function handleRequest(request: IncomingMessage): ResponseJSON {
   }
   return returnJSON
 }
-function parseRequest(requestString: string) {
+function parseRequest(requestString: string): { requestCode: any; requestContent: any; } {
   try {
     const json = JSON.parse(requestString);
     const { requestCode, requestContent } = json;
