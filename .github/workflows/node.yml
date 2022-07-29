@@ -27,6 +27,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: npm test
+      - name: OWASP ZAP Full Scan
+        uses: zaproxy/action-full-scan@v0.4.0
       - name: Codecov
         env: # Or as an environment variable
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
