@@ -3,10 +3,6 @@ comment:
   behavior: "default"
 
 flags:
-  admin:
-    carryforward: false
-  everything-else:
-    carryforward: false
   auth:
     paths:
       - packages/mcos-auth/**
