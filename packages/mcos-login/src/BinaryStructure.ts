@@ -238,7 +238,7 @@ export class BinaryStructure {
     log.trace('Calling setValueNumber() in BinaryStructure..')
     const selectedField = this.get(fieldName)
     log.trace('Calling get() in BinaryStructure.. success')
-    let { type, order, value } = selectedField
+    const { type, order, value } = selectedField
     log.debug(`Setting a value of ${newValue} to the ${selectedField.name} field with type of ${type})`)
     try {
       if (type === 'boolean') {
