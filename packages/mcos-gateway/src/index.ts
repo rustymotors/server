@@ -103,7 +103,8 @@ export class MCOServer {
         throw err
       })
       newServer.listen(port, '0.0.0.0', 0, () => {
-        log.debug(`Listening on port ${port}`)
+        const listeningPort = String(port).length ? String(port).toLocaleLowerCase : "unknown"
+        log.debug(`Listening on port ${listeningPort}`)
         this._listeningServers.push(newServer)
       })
     }
