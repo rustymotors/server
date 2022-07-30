@@ -26,19 +26,6 @@ import { handleData } from "./internal.js";
 const log = logger.child({ service: "mcoserver:LoginServer" });
 
 /**
- *
- *
- * @param {unknown} error
- * @return {string}
- */
-export function errorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return String(error);
-}
-
-/**
  * Manages the initial game connection setup and teardown.
  * @module LoginServer
  */
@@ -139,7 +126,7 @@ export async function receiveLoginData(
     log.trace(`There are ${response.messages.length} messages`);
     return { err: null, response };
   } catch (error) {
-    const errMessage = `There was an error in the login service: ${errorMessage(
+    const errMessage = `There was an error in the login service: ${String(
       error
     )}`;
     return { err: new Error(errMessage), response: undefined };
