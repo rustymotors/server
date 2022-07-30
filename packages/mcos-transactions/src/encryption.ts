@@ -207,7 +207,7 @@ export function updateEncryptionSession (connectionId: string, updatedSession: E
    * @return {{session: EncryptionSession, data: Buffer}}
    */
 export function cipherBufferDES (encryptionSession: EncryptionSession, data: Buffer): { session: EncryptionSession; data: Buffer } {
-  if (encryptionSession.gsCipher) {
+  if (typeof encryptionSession.gsCipher !== "undefined") {
     const ciphered = encryptionSession.gsCipher.update(data)
     return {
       session: encryptionSession,
@@ -225,7 +225,7 @@ export function cipherBufferDES (encryptionSession: EncryptionSession, data: Buf
    * @return {{EncryptionSession, data: Buffer}}
    */
 export function decipherBufferDES (encryptionSession: EncryptionSession, data: Buffer): { session: EncryptionSession; data: Buffer } {
-  if (encryptionSession.gsDecipher) {
+  if (typeof encryptionSession.gsDecipher !== "undefined") {
     const deciphered = encryptionSession.gsDecipher.update(data)
     return {
       session: encryptionSession,
