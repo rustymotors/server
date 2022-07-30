@@ -31,9 +31,9 @@ export declare function selectOrCreateEncryptors(dataConnection: ISocketWithConn
 export declare function updateEncryptionSession(connectionId: string, updatedSession: IEncryptionSession): void;
 /**
    * CipherBufferDES
-   * @param {import('./types/index.js').EncryptionSession} encryptionSession
+   * @param {EncryptionSession} encryptionSession
    * @param {Buffer} data
-   * @return {{session: import('./types/index.js').EncryptionSession, data: Buffer}}
+   * @return {{session: EncryptionSession, data: Buffer}}
    */
 export declare function cipherBufferDES(encryptionSession: IEncryptionSession, data: Buffer): {
     session: IEncryptionSession;
@@ -41,9 +41,9 @@ export declare function cipherBufferDES(encryptionSession: IEncryptionSession, d
 };
 /**
    * Decrypt a command that is encrypted with DES
-   * @param {import('./types/index.js').EncryptionSession} encryptionSession
+   * @param {EncryptionSession} encryptionSession
    * @param {Buffer} data
-   * @return {{session: import('./types/index.js').EncryptionSession, data: Buffer}}
+   * @return {{session: EncryptionSession, data: Buffer}}
    */
 export declare function decipherBufferDES(encryptionSession: IEncryptionSession, data: Buffer): {
     session: IEncryptionSession;

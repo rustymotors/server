@@ -202,9 +202,9 @@ export function updateEncryptionSession (connectionId: string, updatedSession: E
 
 /**
    * CipherBufferDES
-   * @param {import('./types/index.js').EncryptionSession} encryptionSession
+   * @param {EncryptionSession} encryptionSession
    * @param {Buffer} data
-   * @return {{session: import('./types/index.js').EncryptionSession, data: Buffer}}
+   * @return {{session: EncryptionSession, data: Buffer}}
    */
 export function cipherBufferDES (encryptionSession: EncryptionSession, data: Buffer): { session: EncryptionSession; data: Buffer } {
   if (encryptionSession.gsCipher) {
@@ -220,9 +220,9 @@ export function cipherBufferDES (encryptionSession: EncryptionSession, data: Buf
 
 /**
    * Decrypt a command that is encrypted with DES
-   * @param {import('./types/index.js').EncryptionSession} encryptionSession
+   * @param {EncryptionSession} encryptionSession
    * @param {Buffer} data
-   * @return {{session: import('./types/index.js').EncryptionSession, data: Buffer}}
+   * @return {{EncryptionSession, data: Buffer}}
    */
 export function decipherBufferDES (encryptionSession: EncryptionSession, data: Buffer): { session: EncryptionSession; data: Buffer } {
   if (encryptionSession.gsDecipher) {
