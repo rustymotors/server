@@ -42,7 +42,8 @@ export function httpListener (req: IncomingMessage, res: ServerResponse): Server
       req.url.startsWith('/admin'))
   ) {
     log.debug('ssl routing request to admin web server')
-    return AdminServer.getAdminServer().handleRequest(req, res)
+    const response = AdminServer.getAdminServer().handleRequest(req)
+    return res.writeHead(response.code, response.headers).end(response.body)
   }
 
   if (

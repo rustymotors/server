@@ -15,10 +15,29 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { logger } from "mcos-logger/src/index.js";
-import type { IncomingMessage, ServerResponse } from "node:http";
+import type { SocketWithConnectionInfo } from "mcos-types";
+import type {
+  IncomingMessage,
+  OutgoingHttpHeader,
+  OutgoingHttpHeaders,
+} from "node:http";
 import { getAllConnections } from "./index.js";
 
 const log = logger.child({ service: "mcos:gateway:admin" });
+
+// https://careerkarma.com/blog/converting-circular-structure-to-json/
+const replacerFunc = () => {
+  const visited = new WeakSet();
+  return (_key: string, value: object) => {
+    if (typeof value === "object" && value !== null) {
+      if (visited.has(value)) {
+        return;
+      }
+      visited.add(value);
+    }
+    return value;
+  };
+};
 
 /**
  * Please use {@link AdminServer.getAdminServer()}
@@ -61,26 +80,6 @@ export class AdminServer {
    */
 
   /**
-   * @private
-   * @return {string}
-   */
-  _handleGetConnections(): string {
-    const connections = getAllConnections();
-    let responseText = "";
-
-    connections.forEach((connection, index) => {
-      const displayConnection = `
-      index: ${index} - ${connection.id}
-          remoteAddress: ${connection.socket.remoteAddress}:${connection.localPort}
-          inQueue:       ${connection.inQueue}
-      `;
-      responseText += displayConnection;
-    });
-
-    return responseText;
-  }
-
-  /**
    * Handle incomming http requests
    *
    * @return {ServerResponse}
@@ -89,8 +88,11 @@ export class AdminServer {
    */
   handleRequest(
     request: IncomingMessage,
-    response: ServerResponse
-  ): ServerResponse {
+  ): {
+    code: number;
+    headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined | undefined;
+    body: string;
+  } {
     log.info(
       `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
     );
@@ -102,24 +104,55 @@ export class AdminServer {
       })}`
     );
 
-    let responseString = "";
+    const connections = getAllConnections();
 
-    // TODO: #1209 Add /admin/connections/resetAllQueueState handler back
     switch (request.url) {
-      case "/admin/connections": {
-        response.setHeader("Content-Type", "text/plain");
-        response.statusCode = 200;
-        responseString = this._handleGetConnections();
-        break;
-      }
-      default: {
-        if (request.url && request.url.startsWith("/admin")) {
-          response.statusCode = 404;
-          responseString = "Jiggawatt!";
-        }
-        break;
-      }
+      case "/admin/connections/resetQueue":
+        // We only use the code here, the body is used for testing
+        const {code} = resetQueue(connections);
+        return { code, headers: {}, body: "ok"}
+
+      case "/admin/connections":
+        return listConnections(connections);
     }
-    return response.end(responseString);
+
+    if (request.url && request.url.startsWith("/admin")) {
+      return { code: 404, headers: {}, body: "Jiggawatt!" };
+    }
+
+    return { code: 404, headers: {}, body: "" };
   }
+}
+
+export function listConnections(connections: Array<SocketWithConnectionInfo>): {
+  code: number;
+  headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined | undefined;
+  body: string;
+} {
+  let responseString = "";
+  connections.forEach((connection, index) => {
+    const displayConnection = `
+    index: ${index} - ${connection.id}
+        remoteAddress: ${connection.socket.remoteAddress}:${connection.localPort}
+        inQueue:       ${connection.inQueue}
+    `;
+    responseString = responseString.concat(displayConnection);
+  });
+
+  return {
+    code: 200,
+    headers: { "Content-Type": "text/plain" },
+    body: responseString,
+  };
+}
+
+export function resetQueue(connections: Array<SocketWithConnectionInfo>): {
+  code: number;
+  headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined | undefined;
+  body: string;
+} {
+  connections.map((c) => {
+    c.inQueue = true;
+  });
+  return { code: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify(connections, replacerFunc()) };
 }
