@@ -65,7 +65,7 @@ export class AdminServer {
    * @memberof AdminServer
    */
   static getAdminServer(): AdminServer {
-    if (!AdminServer._instance) {
+    if (typeof AdminServer._instance === "undefined") {
       AdminServer._instance = new AdminServer();
     }
     return AdminServer._instance;
@@ -116,7 +116,7 @@ export class AdminServer {
         return listConnections(connections);
     }
 
-    if (request.url && request.url.startsWith("/admin")) {
+    if (typeof request.url !== "undefined" && request.url.startsWith("/admin")) {
       return { code: 404, headers: {}, body: "Jiggawatt!" };
     }
 
