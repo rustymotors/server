@@ -55,5 +55,15 @@
   "workspaces": [
     "packages/mcos-logger",
     "packages/mcos-types"
-  ]
+  ],
+  "c8": {
+    "all": true,
+    "reporter": ["text", "cobertura", "html"]
+  },
+  "eslintConfig": {
+    "extends": [
+        "plugin:jsdoc/recommended"
+    ],
+    "ignorePatterns":["**/*.ts", "**/*.json"]
+}
 }
