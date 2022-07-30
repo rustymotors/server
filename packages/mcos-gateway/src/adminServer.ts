@@ -151,8 +151,9 @@ export function resetQueue(connections: Array<SocketWithConnectionInfo>): {
   headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined | undefined;
   body: string;
 } {
-  connections.map((c) => {
+  const resetConnections = connections.map((c) => {
     c.inQueue = true;
+    return c
   });
-  return { code: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify(connections, replacerFunc()) };
+  return { code: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify(resetConnections, replacerFunc()) };
 }
