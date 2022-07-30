@@ -26,7 +26,7 @@ import { getAllConnections } from "./index.js";
 const log = logger.child({ service: "mcos:gateway:admin" });
 
 // https://careerkarma.com/blog/converting-circular-structure-to-json/
-const replacerFunc = () => {
+function replacerFunc(): ((this: any, key: string, value: any) => any) | undefined {
   const visited = new WeakSet();
   return (_key: string, value: object) => {
     if (typeof value === "object" && value !== null) {
