@@ -17,7 +17,7 @@
     "test": "c8 ts-node --esm node_modules/.bin/mocha packages/**/*.test.ts test",
     "prod": "make prod_node",
     "prod:stop": "docker-compose stop",
-    "start:dev": "node --trace-deprecation --abort-on-uncaught-exception -r ts-node/register --loader ts-node/esm --openssl-legacy-provider src/app.ts",
+    "start:dev": "node --trace-deprecation --abort-on-uncaught-exception -r ts-node/register --loader ts-node/esm --openssl-legacy-provider src/app.js",
     "start:docker": "npm run start:dev 2>&1 | tee -a log/mcos/trace.log"
   },
   "author": "Drazi Crendraven <drazisil@hey.com>",
