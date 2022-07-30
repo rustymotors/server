@@ -42,14 +42,11 @@ jobs:
           ./codecov-linux -v -n ${{ matrix.node-version }} -F database
           ./codecov-linux -v -n ${{ matrix.node-version }} -F gateway
           ./codecov-linux -v -n ${{ matrix.node-version }} -F lobby
+          ./codecov-linux -v -n ${{ matrix.node-version }} -F logger
           ./codecov-linux -v -n ${{ matrix.node-version }} -F login
           ./codecov-linux -v -n ${{ matrix.node-version }} -F patch
           ./codecov-linux -v -n ${{ matrix.node-version }} -F persona
           ./codecov-linux -v -n ${{ matrix.node-version }} -F shard
-          ./codecov-linux -v -n ${{ matrix.node-version }} -F shared-logger
-          ./codecov-linux -v -n ${{ matrix.node-version }} -F shared-structures
-          ./codecov-linux -v -n ${{ matrix.node-version }} -F shared-types
-          ./codecov-linux -v -n ${{ matrix.node-version }} -F shared
           ./codecov-linux -v -n ${{ matrix.node-version }} -F transactions
       - uses: actions/upload-artifact@v3
         with:
