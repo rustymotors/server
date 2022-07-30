@@ -66,7 +66,7 @@ export class LoginServer {
    * @memberof LoginServer
    */
   static getInstance(): LoginServer {
-    if (!LoginServer._instance) {
+    if (typeof LoginServer._instance === "undefined") {
       LoginServer._instance = new LoginServer();
     }
     return LoginServer._instance;
