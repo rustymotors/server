@@ -35,10 +35,6 @@ flags:
     paths:
       - packages/mcos-shard/**
     carryforward: true
-  shared-logger:
-    paths:
-      - packages/mcos-logger/**
-    carryforward: false
   logger:
     paths:
       - packages/mcos-logger/**
@@ -46,15 +42,15 @@ flags:
   shared-structures:
     paths:
       - packages/mcos-shared/src/structures**
-    carryforward: true
+    carryforward: false
   shared-types:
     paths:
       - packages/mcos-shared/src/types/**
-    carryforward: true
+    carryforward: false
   shared:
     paths:
       - packages/mcos-shared/**
-    carryforward: true
+    carryforward: false
   transactions:
     paths:
       - packages/mcos-transactions/**
