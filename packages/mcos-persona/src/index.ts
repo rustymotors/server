@@ -65,7 +65,7 @@ export async function handleSelectGamePersona(
   log.debug(
     `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
   );
-  return Promise.resolve(responsePacket);
+  return responsePacket;
 }
 
 /**
@@ -123,7 +123,7 @@ export class PersonaServer {
 
     rPacket.dumpPacket();
 
-    return Promise.resolve(rPacket);
+    return rPacket;
   }
 
   //  TODO: #1227 Change the persona record to show logged out. This requires it to exist first, it is currently hard-coded
@@ -166,7 +166,7 @@ export class PersonaServer {
     log.debug(
       `[npsLogoutGameUser] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
-    return Promise.resolve(responsePacket);
+    return responsePacket;
   }
 
   /**
@@ -213,7 +213,7 @@ export class PersonaServer {
     log.debug(
       `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
-    return Promise.resolve(responsePacket);
+    return responsePacket;
   }
 
   /**
@@ -265,7 +265,7 @@ export class PersonaServer {
     log.debug(
       `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
-    return Promise.resolve(responsePacket);
+    return responsePacket;
   }
 
   /**
@@ -295,10 +295,9 @@ export class PersonaServer {
    * @return {Promise<IPersonaRecord[]>}
    */
   async getPersonasByCustomerId(customerId: number): Promise<PersonaRecord[]> {
-    const results = personaRecords.filter(
+    return personaRecords.filter(
       (persona) => persona.customerId === customerId
     );
-    return Promise.resolve(results);
   }
 
   /**
@@ -317,7 +316,7 @@ export class PersonaServer {
       case 5_551_212:
         return await this.getPersonasByCustomerId(customerId);
       default:
-        return Promise.resolve([]);
+        return [];
     }
   }
 
@@ -405,9 +404,7 @@ export async function receivePersonaData(
       response: serviceResponse,
     };
   } catch (error) {
-    return Promise.reject(
-      new Error(`There was an error in the persona service: ${String(error)}`)
-    );
+    throw new Error(`There was an error in the persona service: ${String(error)}`)
   }
 }
 
