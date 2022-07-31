@@ -14,13 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from 'mcos-logger/src/index.js'
-import type { BufferWithConnection, TServiceResponse } from 'mcos-types/types.js'
-import { handleData } from './internal.js'
+import { logger } from "mcos-logger/src/index.js";
+import type {
+  BufferWithConnection,
+  TServiceResponse,
+} from "mcos-types/types.js";
+import { handleData } from "./internal.js";
 
-export { MCOTServer, getTransactionServer } from './transactionServer.js'
-
-const log = logger.child({ service: 'mcos:transactions' })
+const log = logger.child({ service: "mcos:transactions" });
 
 /**
  *
@@ -28,11 +29,11 @@ const log = logger.child({ service: 'mcos:transactions' })
  * @param {unknown} error
  * @return {string}
  */
- export function errorMessage (error: unknown): string {
+export function errorMessage(error: unknown): string {
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
-  return String(error)
+  return String(error);
 }
 
 /**
@@ -42,14 +43,18 @@ const log = logger.child({ service: 'mcos:transactions' })
  * @param {BufferWithConnection} dataConnection
  * @return {Promise<TServiceResponse>}
  */
-export async function receiveTransactionsData (dataConnection: BufferWithConnection): Promise<TServiceResponse> {
-  log.debug(`Entering receiveTransactionsData`)
+export async function receiveTransactionsData(
+  dataConnection: BufferWithConnection
+): Promise<TServiceResponse> {
+  log.debug(`Entering receiveTransactionsData`);
   try {
-    const result = await handleData(dataConnection)
-    log.debug('Exiting the transactions service')
-    return { err: null, response: result }
+    const result = await handleData(dataConnection);
+    log.debug("Exiting the transactions service");
+    return { err: null, response: result };
   } catch (error) {
-    const errMessage = `There was an error in the lobby service: ${errorMessage(error)}`
-    return { err: new Error(errMessage), response: undefined }
+    const errMessage = `There was an error in the lobby service: ${errorMessage(
+      error
+    )}`;
+    return { err: new Error(errMessage), response: undefined };
   }
 }
