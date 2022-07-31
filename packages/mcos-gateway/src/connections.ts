@@ -133,32 +133,27 @@ export function updateConnection(
  * Locate connection by remoteAddress and localPort in the connections array
  * @param {string} remoteAddress
  * @param {number} localPort
- * @return {{ modern: ISocketWithConnectionInfo} | null}
+ * @return {ISocketWithConnectionInfo | undefined}
  */
 function findConnectionByAddressAndPort(
   remoteAddress: string,
   localPort: number
-): { modern: SocketWithConnectionInfo } | null {
-  const record =
-    connectionList.find((c) => {
-      const match =
-        c.remoteAddress === remoteAddress && c.localPort === localPort;
-      return match;
-    }) || null;
-
-    return record === null ? null : { modern: record }
+): SocketWithConnectionInfo | undefined {
+  return connectionList.find((c) => {
+    return c.remoteAddress === remoteAddress && c.localPort === localPort;
+  });
 }
 
 /**
  * Creates a new connection object for the socket and adds to list
  * @param {string} connectionId
  * @param {Socket} socket
- * @returns {{ modern: SocketWithConnectionInfo}}
+ * @returns {SocketWithConnectionInfo}
  */
 function createNewConnection(
   connectionId: string,
   socket: Socket
-): { modern: SocketWithConnectionInfo } {
+): SocketWithConnectionInfo {
   const { localPort, remoteAddress } = socket;
 
   if (
@@ -182,7 +177,7 @@ function createNewConnection(
     inQueue: true,
     useEncryption: false,
   };
-  return { modern: newConnectionRecord };
+  return newConnectionRecord;
 }
 
 /**
@@ -202,11 +197,11 @@ function addConnection(
  * Return an existing connection, or a new one
  *
  * @param {Socket} socket
- * @return {{ modern: SocketWithConnectionInfo} | null}
+ * @return {SocketWithConnectionInfo}
  */
 export function findOrNewConnection(
   socket: Socket
-): { modern: SocketWithConnectionInfo } | null {
+): SocketWithConnectionInfo {
   const { localPort, remoteAddress } = socket;
 
   if (
@@ -222,13 +217,13 @@ export function findOrNewConnection(
     remoteAddress,
     localPort
   );
-  if (existingConnection !== null) {
+  if (typeof existingConnection !== "undefined") {
     log.info(
       `I have seen connections from ${socket.remoteAddress} on ${socket.localPort} before`
     );
 
     // Modern
-    existingConnection.modern.socket = socket;
+    existingConnection.socket = socket;
     log.debug("[M] Returning found connection after attaching socket");
     return existingConnection;
   }
@@ -239,9 +234,9 @@ export function findOrNewConnection(
   log.info(
     `I have not seen connections from ${socket.remoteAddress} on ${socket.localPort} before, adding it.`
   );
-  const updatedConnectionList = addConnection(newConnection.modern);
+  const updatedConnectionList = addConnection(newConnection);
   log.debug(
-    `Connection with id of ${newConnection.modern.id} has been added. The connection list now contains ${updatedConnectionList.length} connections.`
+    `Connection with id of ${newConnection.id} has been added. The connection list now contains ${updatedConnectionList.length} connections.`
   );
   return newConnection;
 }
