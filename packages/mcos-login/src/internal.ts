@@ -28,19 +28,6 @@ import type {
 
 const log = logger.child({ service: "mcos:login" });
 
-/**
- *
- *
- * @param {unknown} error
- * @return {string}
- */
-export function errorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return String(error);
-}
-
 const userRecords: UserRecordMini[] = [
   {
     contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
@@ -108,7 +95,7 @@ async function login(
       connectionId
     )
     .catch((/** @type {unknown} */ error: unknown) => {
-      log.error(`Unable to update session key 3: ${errorMessage(error)}`);
+      log.error(`Unable to update session key 3: ${String(error)}`);
       throw new Error("Error in userLogin");
     });
 

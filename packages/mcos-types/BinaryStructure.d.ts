@@ -8,13 +8,7 @@ import type { FIELD_TYPE, IBinaryStructure, IByteField } from "./types.js";
  * @return {string}
  */
 export declare function toHex(data: Buffer): string;
-/**
- *
- *
- * @param {unknown} error
- * @return {string}
- */
-export declare function errorMessage(error: unknown): string;
+
 /**
  * @class
  * @property {string} name

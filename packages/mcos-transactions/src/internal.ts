@@ -28,19 +28,6 @@ import { MessageNode } from "./MessageNode.js";
 const log = logger.child({ service: "mcos:transactions" });
 
 /**
- *
- *
- * @param {unknown} error
- * @return {string}
- */
-export function errorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return String(error);
-}
-
-/**
  * Convert to zero padded hex
  *
  * @export
@@ -123,7 +110,7 @@ function tryDecryptBuffer(
       err: new Error(
         `Decrypt() exception thrown! Disconnecting...conId:${
           dataConnection.connectionId
-        }: ${errorMessage(error)}`
+        }: ${String(error)}`
       ),
       data: null,
     };
@@ -222,7 +209,7 @@ async function messageReceived(
       const result = tryDecryptBuffer(message, dataConnection);
       if (result.err !== null || result.data === null) {
         return {
-          err: new Error(errorMessage(result.err)),
+          err: new Error(String(result.err)),
           response: undefined,
         };
       }

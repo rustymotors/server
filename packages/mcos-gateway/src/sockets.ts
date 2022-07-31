@@ -48,19 +48,6 @@ export function toHex(data: Buffer): string {
 }
 
 /**
- *
- *
- * @param {unknown} error
- * @return {string}
- */
-export function errorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return String(error);
-}
-
-/**
  *  TODO: #1225 Refactor this out
  * @param {string} service
  * @param {string} errMessage
@@ -147,9 +134,7 @@ async function onData(
 
   if (result.err !== null) {
     log.error(
-      `[socket]There was an error processing the packet: ${errorMessage(
-        result.err
-      )}`
+      `[socket]There was an error processing the packet: ${String(result.err)}`
     );
     process.exitCode = -1;
     return;
@@ -202,7 +187,7 @@ async function onData(
   try {
     updateConnection(outboundConnection.id, outboundConnection);
   } catch (error) {
-    const errMessage = `There was an error updating the connection: ${errorMessage(
+    const errMessage = `There was an error updating the connection: ${String(
       error
     )}`;
 
@@ -243,11 +228,11 @@ export function socketListener(socket: Socket): void {
     await onData(data, connectionRecord);
   });
   socket.on("error", (error) => {
-    const message = errorMessage(error);
+    const message = String(error);
     if (message.includes("ECONNRESET") === true) {
       return log.warn("Connection was reset");
     }
-    log.error(`Socket error: ${errorMessage(error)}`);
+    log.error(`Socket error: ${String(error)}`);
   });
 }
 

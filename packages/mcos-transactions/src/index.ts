@@ -24,19 +24,6 @@ import { handleData } from "./internal.js";
 const log = logger.child({ service: "mcos:transactions" });
 
 /**
- *
- *
- * @param {unknown} error
- * @return {string}
- */
-export function errorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return String(error);
-}
-
-/**
  * Entry and exit point for the lobby service
  *
  * @export
@@ -52,7 +39,7 @@ export async function receiveTransactionsData(
     log.debug("Exiting the transactions service");
     return { err: null, response: result };
   } catch (error) {
-    const errMessage = `There was an error in the lobby service: ${errorMessage(
+    const errMessage = `There was an error in the lobby service: ${String(
       error
     )}`;
     return { err: new Error(errMessage), response: undefined };
