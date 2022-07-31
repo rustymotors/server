@@ -118,7 +118,9 @@ describe("resetQueue()", function () {
     ];
 
     // act
-    const result: SocketWithConnectionInfo[] = JSON.parse(resetQueue(inputConnectionList).body);
+    const result: SocketWithConnectionInfo[] = JSON.parse(
+      resetQueue(inputConnectionList).body
+    );
 
     // assert
     expect(result[1]?.inQueue).to.equal(expectedConnectionList[1]?.inQueue);

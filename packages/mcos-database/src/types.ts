@@ -7,7 +7,7 @@ export type ResponseJSON = {
     /** Depending on the expected result, this field may be a string-ified JSON object */
     message: string;
   };
-}
+};
 
 export type RequestJSON = {
   /**
@@ -18,14 +18,14 @@ export type RequestJSON = {
    * This is most likely a string-ified JSON object.
    */
   requestContent: string;
-}
+};
 
 export type RequestHandler = {
   requestCode: string;
   handlerFunction: (requestJSON: RequestJSON) => ResponseJSON;
-}
+};
 
 export type SessionRecord = {
-  skey: string
-  sessionkey: string
-}
+  skey: string;
+  sessionkey: string;
+};

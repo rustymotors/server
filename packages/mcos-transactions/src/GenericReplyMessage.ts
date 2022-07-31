@@ -1,5 +1,3 @@
-
-
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
 // DWORD result; // specific to the message sent, often the reason for a failure
@@ -17,7 +15,6 @@
  */
 
 import { MessageNode } from "./MessageNode.js";
-
 
 export class GenericReplyMessage extends MessageNode implements MessageNode {
   /**
@@ -82,7 +79,7 @@ export class GenericReplyMessage extends MessageNode implements MessageNode {
       } else {
         throw new TypeError(
           `[GenericReplyMsg] Unable to read msgNo from ${buffer.toString(
-            'hex'
+            "hex"
           )}: ${String(error)}`
         ); // skipcq: JS-0378
       }
@@ -124,11 +121,11 @@ export class GenericReplyMessage extends MessageNode implements MessageNode {
   override dumpPacket(): string {
     return `GenericReply',
         ${JSON.stringify({
-      msgNo: this.msgNo,
-      msgReply: this.msgReply,
-      result: this.result.toString('hex'),
-      data: this.data.toString('hex'),
-      tdata2: this.data2.toString('hex')
-    })}`;
+          msgNo: this.msgNo,
+          msgReply: this.msgReply,
+          result: this.result.toString("hex"),
+          data: this.data.toString("hex"),
+          tdata2: this.data2.toString("hex"),
+        })}`;
   }
 }

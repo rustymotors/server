@@ -199,9 +199,7 @@ function addConnection(
  * @param {Socket} socket
  * @return {SocketWithConnectionInfo}
  */
-export function findOrNewConnection(
-  socket: Socket
-): SocketWithConnectionInfo {
+export function findOrNewConnection(socket: Socket): SocketWithConnectionInfo {
   const { localPort, remoteAddress } = socket;
 
   if (

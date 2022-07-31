@@ -16,8 +16,10 @@
 
 import { logger } from "mcos-logger/src/index.js";
 import { handleData } from "./internal.js";
-import { _generateSessionKeyBuffer } from "./handlers/requestConnectGameServer.js";
-import type { BufferWithConnection, GServiceResponse } from "mcos-types/types.js";
+import type {
+  BufferWithConnection,
+  GServiceResponse,
+} from "mcos-types/types.js";
 
 const log = logger.child({ service: "mcoserver:LobbyServer" });
 
@@ -33,7 +35,6 @@ export function errorMessage(error: unknown): string {
   }
   return String(error);
 }
-
 
 /**
  * Entry and exit point for the lobby service

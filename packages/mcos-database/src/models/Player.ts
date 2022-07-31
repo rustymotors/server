@@ -32,5 +32,5 @@ export class PlayerModel {
     Persona              varchar(30) NOT NULL,
     Address              varchar(128) NOT NULL,
     Residence            varchar(20) NOT NULL
-);`
+);`;
 }

@@ -102,7 +102,7 @@ export class PersonaServer {
    * @memberof PersonaServer
    */
   async createNewGameAccount(data: Buffer): Promise<NPSMessage> {
-    const requestPacket = new NPSMessage("recieved").deserialize(data);
+    const requestPacket = new NPSMessage("received").deserialize(data);
     log.debug(
       `NPSMsg request object from _npsNewGameAccount',
       ${JSON.stringify({
@@ -137,7 +137,7 @@ export class PersonaServer {
    */
   async logoutGameUser(data: Buffer): Promise<NPSMessage> {
     log.debug("[personaServer] Logging out persona...");
-    const requestPacket = new NPSMessage("recieved").deserialize(data);
+    const requestPacket = new NPSMessage("received").deserialize(data);
     log.debug(
       `NPSMsg request object from _npsLogoutGameUser',
       ${JSON.stringify({
@@ -178,7 +178,7 @@ export class PersonaServer {
    */
   async validateLicencePlate(data: Buffer): Promise<NPSMessage> {
     log.debug("_npsCheckToken...");
-    const requestPacket = new NPSMessage("recieved").deserialize(data);
+    const requestPacket = new NPSMessage("received").deserialize(data);
     log.debug(
       `NPSMsg request object from _npsCheckToken',
       ${JSON.stringify({
@@ -224,7 +224,7 @@ export class PersonaServer {
    */
   async validatePersonaName(data: Buffer): Promise<NPSMessage> {
     log.debug("_npsValidatePersonaName...");
-    const requestPacket = new NPSMessage("recieved").deserialize(data);
+    const requestPacket = new NPSMessage("received").deserialize(data);
 
     log.debug(
       `NPSMsg request object from _npsValidatePersonaName',
@@ -327,7 +327,7 @@ export class PersonaServer {
    */
   async getPersonaMaps(data: Buffer): Promise<NPSMessage> {
     log.debug("_npsGetPersonaMaps...");
-    const requestPacket = new NPSMessage("recieved").deserialize(data);
+    const requestPacket = new NPSMessage("received").deserialize(data);
 
     log.debug(
       `NPSMsg request object from _npsGetPersonaMaps',
@@ -404,7 +404,9 @@ export async function receivePersonaData(
       response: serviceResponse,
     };
   } catch (error) {
-    throw new Error(`There was an error in the persona service: ${String(error)}`)
+    throw new Error(
+      `There was an error in the persona service: ${String(error)}`
+    );
   }
 }
 

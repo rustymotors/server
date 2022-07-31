@@ -25,7 +25,10 @@ import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { TLobbyMessage } from "./TLobbyMessage.js";
 import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
 import { StockCar } from "./StockCar.js";
-import type { SocketWithConnectionInfo, TSMessageArrayWithConnection } from "mcos-types/types.js";
+import type {
+  SocketWithConnectionInfo,
+  TSMessageArrayWithConnection,
+} from "mcos-types/types.js";
 
 const log = logger.child({ service: "mcos:transactions:handlers" });
 
@@ -36,13 +39,13 @@ const log = logger.child({ service: "mcos:transactions:handlers" });
  * @param {Buffer} data
  * @return {string}
  */
- export function toHex (data: Buffer): string {
+export function toHex(data: Buffer): string {
   /** @type {string[]} */
-  const bytes: string[] = []
-  data.forEach(b => {
-    bytes.push(b.toString(16).toUpperCase().padStart(2, '0'))
-  })
-  return bytes.join('')
+  const bytes: string[] = [];
+  data.forEach((b) => {
+    bytes.push(b.toString(16).toUpperCase().padStart(2, "0"));
+  });
+  return bytes.join("");
 }
 
 /**

@@ -15,71 +15,93 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 const ELOGGING_LEVELS: Record<string, number> = {
-  'all': 0,
-  'trace': 10,
-  'debug': 20,
-  'info': 30,
-  'warn': 40,
-  'error': 50,
-  'fatal': 60,
-  'off': 100
-}
-
+  all: 0,
+  trace: 10,
+  debug: 20,
+  info: 30,
+  warn: 40,
+  error: 50,
+  fatal: 60,
+  off: 100,
+};
 
 /**
  * @class
  */
 class MCOSLogger {
-  systemLogLevel = 30
-  service = ''
-  name: string
-  constructor(options?: {service: string}) {
-    const logLevel = process.env['LOG_LEVEL']
-    if (typeof logLevel !== "undefined" && typeof ELOGGING_LEVELS[logLevel] !== "undefined") {
-      this.systemLogLevel = ELOGGING_LEVELS[logLevel] || 30
+  systemLogLevel = 30;
+  service = "";
+  name: string;
+  constructor(options?: { service: string }) {
+    const logLevel = process.env["LOG_LEVEL"];
+    if (
+      typeof logLevel !== "undefined" &&
+      typeof ELOGGING_LEVELS[logLevel] !== "undefined"
+    ) {
+      this.systemLogLevel = ELOGGING_LEVELS[logLevel] || 30;
     }
-    if (typeof options !== "undefined" && typeof options.service !== "undefined") {
-      this.service = options.service
+    if (
+      typeof options !== "undefined" &&
+      typeof options.service !== "undefined"
+    ) {
+      this.service = options.service;
     }
-    this.name = 'mcos'
+    this.name = "mcos";
   }
   /**
    *
    * @param {{service: string}} options
    * @returns
    */
-  static child(options: {service: string}): MCOSLogger {
-    return new MCOSLogger(options)
+  static child(options: { service: string }): MCOSLogger {
+    return new MCOSLogger(options);
   }
   /**
    *
    * @param {number} level
    * @param {string} message
    */
-  private callLog (level: number, message: string): void {
+  private callLog(level: number, message: string): void {
     if (this.systemLogLevel <= level) {
       // skipcq: JS-0002 - This is intentional and is the only time console is used
-      console.log(`{"level":${level}, "time":"${Date.now()}","pid":${process.pid}, "name":"${this.name}", ${this.service} "msg": "${message}"}`)
+      console.log(
+        `{"level":${level}, "time":"${Date.now()}","pid":${
+          process.pid
+        }, "name":"${this.name}", ${this.service} "msg": "${message}"}`
+      );
     }
   }
-      /** @param {string} message */
-      trace (message: string): void { this.callLog(10, message) }
-      /** @param {string} message */
-      debug (message: string): void { this.callLog(20, message) }
-      /** @param {string} message */
-      info (message: string): void { this.callLog(30, message) }
-      /** @param {string} message */
-      warn (message: string): void { this.callLog(40, message) }
-      /** @param {string} message */
-      error (message: string): void { this.callLog(50, message) }
-      /** @param {string} message */
-      fatal (message: string): void { this.callLog(60, message) }
-      /**
-       * @param {ELOGGING_LEVELS} level
-       * @param {string} message
-       */
-      log (level: string, message: string): void { this.callLog(ELOGGING_LEVELS[level] || 30, message) }
-
+  /** @param {string} message */
+  trace(message: string): void {
+    this.callLog(10, message);
+  }
+  /** @param {string} message */
+  debug(message: string): void {
+    this.callLog(20, message);
+  }
+  /** @param {string} message */
+  info(message: string): void {
+    this.callLog(30, message);
+  }
+  /** @param {string} message */
+  warn(message: string): void {
+    this.callLog(40, message);
+  }
+  /** @param {string} message */
+  error(message: string): void {
+    this.callLog(50, message);
+  }
+  /** @param {string} message */
+  fatal(message: string): void {
+    this.callLog(60, message);
+  }
+  /**
+   * @param {ELOGGING_LEVELS} level
+   * @param {string} message
+   */
+  log(level: string, message: string): void {
+    this.callLog(ELOGGING_LEVELS[level] || 30, message);
+  }
 }
 
-export { MCOSLogger as logger }
+export { MCOSLogger as logger };

@@ -1,5 +1,5 @@
-import type { PersonaRecord } from 'mcos-types/types.js';
-import { NPSMessage } from '../../mcos-lobby/src/NPSMessage.js';
+import type { PersonaRecord } from "mcos-types/types.js";
+import { NPSMessage } from "../../mcos-lobby/src/NPSMessage.js";
 
 /**
  *
@@ -21,9 +21,9 @@ export class NPSPersonaMapsMessage extends NPSMessage {
   personaCount;
   /**
    *
-   * @param {EMESSAGE_DIRECTION} direction
+   * @param {"sent" | "received"} direction
    */
-  constructor(direction: any) {
+  constructor(direction: "sent" | "received") {
     super(direction);
 
     /** @type {PersonaRecord[]} */
@@ -32,7 +32,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
     this.personaSize = 38;
     this.msgNo = 1543;
     this.personaCount = 0;
-    this.serviceName = 'mcoserver:NPSPersonaMapsMsg';
+    this.serviceName = "mcoserver:NPSPersonaMapsMsg";
   }
 
   /**
@@ -49,9 +49,8 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    *
    * @param {Buffer} buf
    * @return {number}
-   * @memberof! NPSPersonaMapsMsg
    */
-  deserializeInt8(buf: { readInt8: (arg0: number) => any; }): number {
+  deserializeInt8(buf: { readInt8: (arg0: number) => number }): number {
     return buf.readInt8(0);
   }
 
@@ -59,9 +58,8 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    *
    * @param {Buffer} buf
    * @return {number}
-   * @memberof! NPSPersonaMapsMsg
    */
-  deserializeInt32(buf: { readInt32BE: (arg0: number) => any; }): number {
+  deserializeInt32(buf: { readInt32BE: (arg0: number) => number }): number {
     return buf.readInt32BE(0);
   }
 
@@ -72,7 +70,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    * @memberof! NPSPersonaMapsMsg
    */
   deserializeString(buf: Buffer): string {
-    return buf.toString('utf8');
+    return buf.toString("utf8");
   }
 
   /**
@@ -136,8 +134,8 @@ export class NPSPersonaMapsMessage extends NPSMessage {
    * @return {string}
    */
   override dumpPacket(): string {
-    let message = '';
-    message = message.concat(this.dumpPacketHeader('NPSPersonaMapsMsg'));
+    let message = "";
+    message = message.concat(this.dumpPacketHeader("NPSPersonaMapsMsg"));
     message = message.concat(
       `personaCount:        ${this.personaCount.toString()}`
     );
@@ -145,21 +143,21 @@ export class NPSPersonaMapsMessage extends NPSMessage {
       message = message.concat(
         `
           maxPersonaCount:     ${this.deserializeInt8(
-          persona.maxPersonas
-        ).toString()}
+            persona.maxPersonas
+          ).toString()}
           id:                  ${this.deserializeInt32(persona.id).toString()}
           shardId:             ${this.deserializeInt32(
-          persona.shardId
-        ).toString()}
+            persona.shardId
+          ).toString()}
           name:                ${this.deserializeString(
-          persona.name
-        ).toString()}
+            persona.name
+          ).toString()}
           Packet as hex:       ${this.getPacketAsString()}`
       );
 
       // TODO: #1180 Migrate the persona maps response packet into a MessagePacket object
       message = message.concat(
-        '[/NPSPersonaMapsMsg]======================================'
+        "[/NPSPersonaMapsMsg]======================================"
       );
     }
     return message;

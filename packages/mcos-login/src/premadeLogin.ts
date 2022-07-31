@@ -263,6 +263,6 @@ export function premadeLogin(): Buffer {
     0x89,
     0x00,
     0x00,
-    0x00 // (0xa6 was old val)
+    0x00, // (0xa6 was old val)
   ]);
 }

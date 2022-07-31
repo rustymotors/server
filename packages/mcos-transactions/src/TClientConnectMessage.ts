@@ -14,11 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from 'mcos-logger/src/index.js'
-import { TSMessageBase } from './TMessageBase.js'
+import { logger } from "mcos-logger/src/index.js";
+import { TSMessageBase } from "./TMessageBase.js";
 
-
-const log = logger.child({ service: 'mcos:shared:types' })
+const log = logger.child({ service: "mcos:shared:types" });
 
 /**
  *
@@ -34,21 +33,57 @@ const log = logger.child({ service: 'mcos:shared:types' })
  */
 
 export class TClientConnectMessage extends TSMessageBase {
-  appId = 0
+  appId = 0;
 
   /**
- * Creates an instance of ClientConnectMessage.
- * @memberof ClientConnectMessage
- */
-  constructor () {
-    super()
-    log.trace('new TClientConnectMessage')
-    this._add({ name: 'msgNo', order: 'little', size: 2, type: 'u16', value: Buffer.alloc(2) })
-    this._add({ name: 'customerId', order: 'little', size: 4, type: 'u32', value: Buffer.alloc(4) })
-    this._add({ name: 'personaId', order: 'little', size: 4, type: 'u32', value: Buffer.alloc(4) })
-    this._add({ name: 'customerName', order: 'little', size: 13, type: 'char', value: Buffer.alloc(13) })
-    this._add({ name: 'personaName', order: 'little', size: 13, type: 'char', value: Buffer.alloc(13) })
-    this._add({ name: 'mcVersion', order: 'little', size: 4, type: 'u32', value: Buffer.alloc(4) })
+   * Creates an instance of ClientConnectMessage.
+   * @memberof ClientConnectMessage
+   */
+  constructor() {
+    super();
+    log.trace("new TClientConnectMessage");
+    this._add({
+      name: "msgNo",
+      order: "little",
+      size: 2,
+      type: "u16",
+      value: Buffer.alloc(2),
+    });
+    this._add({
+      name: "customerId",
+      order: "little",
+      size: 4,
+      type: "u32",
+      value: Buffer.alloc(4),
+    });
+    this._add({
+      name: "personaId",
+      order: "little",
+      size: 4,
+      type: "u32",
+      value: Buffer.alloc(4),
+    });
+    this._add({
+      name: "customerName",
+      order: "little",
+      size: 13,
+      type: "char",
+      value: Buffer.alloc(13),
+    });
+    this._add({
+      name: "personaName",
+      order: "little",
+      size: 13,
+      type: "char",
+      value: Buffer.alloc(13),
+    });
+    this._add({
+      name: "mcVersion",
+      order: "little",
+      size: 4,
+      type: "u32",
+      value: Buffer.alloc(4),
+    });
     // 40 bytes + 11 in super = 51 bytes
   }
 
@@ -56,17 +91,16 @@ export class TClientConnectMessage extends TSMessageBase {
    *
    * @return {number}
    */
-  getAppId (): number {
-    return this.appId
+  getAppId(): number {
+    return this.appId;
   }
 
   /**
    * DumpPacket
    * @return {string}
    */
-  dumpPacket (): string {
+  dumpPacket(): string {
     return `ClientConnectMsg',
-        ${JSON.stringify(this
-      ._fields)}`
+        ${JSON.stringify(this._fields)}`;
   }
 }

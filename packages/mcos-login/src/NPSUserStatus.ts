@@ -1,7 +1,7 @@
-import type { NPSMessageJSON } from 'mcos-types/types.js';
-import { privateDecrypt } from 'node:crypto';
-import { readFileSync, statSync } from 'node:fs';
-import { NPSMessage } from './NPSMessage.js';
+import type { NPSMessageJSON } from "mcos-types/types.js";
+import { privateDecrypt } from "node:crypto";
+import { readFileSync, statSync } from "node:fs";
+import { NPSMessage } from "./NPSMessage.js";
 
 /**
  *
@@ -35,8 +35,8 @@ export class NPSUserStatus extends NPSMessage {
    * @param {Buffer} packet
    */
   constructor(packet: Buffer) {
-    super('recieved');
-    this.sessionkey = '';
+    super("received");
+    this.sessionkey = "";
 
     // Save the NPS opCode
     this.opCode = packet.readInt16LE(0);
@@ -65,7 +65,7 @@ export class NPSUserStatus extends NPSMessage {
       }
 
       throw new Error(
-        '[npsUserStatus] Error loading private key, error unknown'
+        "[npsUserStatus] Error loading private key, error unknown"
       );
     }
 
@@ -82,20 +82,20 @@ export class NPSUserStatus extends NPSMessage {
    * @return {void}
    */
   extractSessionKeyFromPacket(packet: Buffer): void {
-    if (typeof process.env['PRIVATE_KEY_FILE'] === "undefined") {
-      throw new Error('Please set PRIVATE_KEY_FILE');
+    if (typeof process.env["PRIVATE_KEY_FILE"] === "undefined") {
+      throw new Error("Please set PRIVATE_KEY_FILE");
     }
     // Decrypt the sessionkey
     const privateKey = this.fetchPrivateKeyFromFile(
-      process.env['PRIVATE_KEY_FILE']
+      process.env["PRIVATE_KEY_FILE"]
     );
 
     const sessionkeyString = Buffer.from(
-      packet.slice(52, -10).toString('utf8'),
-      'hex'
+      packet.slice(52, -10).toString("utf8"),
+      "hex"
     );
     const decrypted = privateDecrypt(privateKey, sessionkeyString);
-    this.sessionkey = decrypted.slice(2, -4).toString('hex');
+    this.sessionkey = decrypted.slice(2, -4).toString("hex");
   }
 
   /**
@@ -108,12 +108,12 @@ export class NPSUserStatus extends NPSMessage {
       msgNo: this.msgNo,
       msgLength: this.msgLength,
       msgVersion: this.msgVersion,
-      content: this.content.toString('hex'),
+      content: this.content.toString("hex"),
       direction: this.direction,
       opCode: this.opCode,
       contextId: this.contextId,
       sessionkey: this.sessionkey,
-      rawBuffer: this.buffer.toString('hex')
+      rawBuffer: this.buffer.toString("hex"),
     };
   }
 
@@ -122,13 +122,13 @@ export class NPSUserStatus extends NPSMessage {
    * @return {string}
    */
   override dumpPacket(): string {
-    let message = this.dumpPacketHeader('NPSUserStatus');
+    let message = this.dumpPacketHeader("NPSUserStatus");
     message = message.concat(
       `NPSUserStatus,
         ${JSON.stringify({
-        contextId: this.contextId,
-        sessionkey: this.sessionkey
-      })}`
+          contextId: this.contextId,
+          sessionkey: this.sessionkey,
+        })}`
     );
     return message;
   }

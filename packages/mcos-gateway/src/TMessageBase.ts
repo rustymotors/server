@@ -14,12 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from 'mcos-logger/src/index.js'
-import { BinaryStructure } from './BinaryStructure.js'
+import { logger } from "mcos-logger/src/index.js";
+import { BinaryStructure } from "./BinaryStructure.js";
 
-const log = logger.child({ service: 'mcos:shared:structures' })
-
-
+const log = logger.child({ service: "mcos:shared:structures" });
 
 /**
  * @class
@@ -30,41 +28,41 @@ export class TSMessageBase extends BinaryStructure {
    * What byte order are the fields?
    * @type {'big' | 'little'}
    */
-  _byteOrder = 'big'
-  constructor () {
-    super()
-    log.trace('new TSMessageBase')
+  _byteOrder = "big";
+  constructor() {
+    super();
+    log.trace("new TSMessageBase");
     this._add({
-      name: 'dataLength',
-      order: 'little',
-      type: 'u16',
+      name: "dataLength",
+      order: "little",
+      type: "u16",
       size: 2,
-      value: Buffer.alloc(2)
-    })
+      value: Buffer.alloc(2),
+    });
 
     this._add({
-      name: 'mcoSig',
-      order: 'little',
-      type: 'char',
+      name: "mcoSig",
+      order: "little",
+      type: "char",
       size: 4,
-      value: Buffer.from([84, 79, 77, 67]) // TOMC
-    })
+      value: Buffer.from([84, 79, 77, 67]), // TOMC
+    });
 
     this._add({
-      name: 'seq',
-      order: 'little',
-      type: 'u16',
+      name: "seq",
+      order: "little",
+      type: "u16",
       size: 4,
-      value: Buffer.alloc(4)
-    })
+      value: Buffer.alloc(4),
+    });
 
     this._add({
-      name: 'flags',
-      order: 'little',
-      type: 'byte',
+      name: "flags",
+      order: "little",
+      type: "byte",
       size: 1,
-      value: Buffer.from([8])
-    })
+      value: Buffer.from([8]),
+    });
   }
   // 11 bytes total in this class
 }

@@ -1,6 +1,5 @@
-import type { NpsCommandMap } from 'mcos-types';
-import { NPS_LOGINCLIENT_COMMANDS } from './NPS_LOGINCLIENT_COMMANDS.js';
-
+import type { NpsCommandMap } from "mcos-types";
+import { NPS_LOGINCLIENT_COMMANDS } from "./NPS_LOGINCLIENT_COMMANDS.js";
 
 /**
  * @export
@@ -8,4 +7,6 @@ import { NPS_LOGINCLIENT_COMMANDS } from './NPS_LOGINCLIENT_COMMANDS.js';
  * @type {NpsCommandMap[]}
  */
 
-export const NPS_LOGIN_COMMANDS: NpsCommandMap[] = [...NPS_LOGINCLIENT_COMMANDS];
+export const NPS_LOGIN_COMMANDS: NpsCommandMap[] = [
+  ...NPS_LOGINCLIENT_COMMANDS,
+];

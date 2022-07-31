@@ -1,4 +1,3 @@
-
 /**
  * @class
  */
@@ -22,7 +21,7 @@ export class MessageNode implements MessageNode {
     this.flags = 0;
     this.data = Buffer.alloc(0);
     this.dataLength = 0;
-    this.mcoSig = 'NotAValue';
+    this.mcoSig = "NotAValue";
 
     this.toFrom = 0;
     this.appId = 0;
@@ -44,7 +43,7 @@ export class MessageNode implements MessageNode {
       this.msgNo = this.data.readInt16LE(0);
     } catch (err) {
       if (err instanceof Error) {
-        if (err.name.includes('RangeError') === true) {
+        if (err.name.includes("RangeError") === true) {
           // This is likeley not an MCOTS packet, ignore
           throw new Error(
             `[MessageNode] Not long enough to deserialize, only ${packet.length.toString()} bytes long`
@@ -52,7 +51,7 @@ export class MessageNode implements MessageNode {
         } else {
           throw new Error(
             `[MessageNode] Unable to read msgNo from ${packet.toString(
-              'hex'
+              "hex"
             )}: ${err.message}`
           );
         }
@@ -129,7 +128,7 @@ export class MessageNode implements MessageNode {
    * @return {boolean}
    */
   isMCOTS(): boolean {
-    return this.mcoSig === 'TOMC';
+    return this.mcoSig === "TOMC";
   }
 
   /**
@@ -137,7 +136,7 @@ export class MessageNode implements MessageNode {
    * @return {string}
    */
   dumpPacket(): string {
-    let packetContentsArray = this.serialize().toString('hex').match(/../g);
+    let packetContentsArray = this.serialize().toString("hex").match(/../g);
     if (packetContentsArray === null) {
       packetContentsArray = [];
     }
@@ -151,7 +150,7 @@ export class MessageNode implements MessageNode {
       flags: this.flags,
       toFrom: this.toFrom,
       appId: this.appId,
-      packetContents: packetContentsArray.join('')
+      packetContents: packetContentsArray.join(""),
     })}`;
   }
 
@@ -176,7 +175,7 @@ export class MessageNode implements MessageNode {
    * @param {Buffer} packet
    * @return {void}
    */
-  BaseMsgHeader(packet: { readInt16LE: (arg0: number) => number; }): void {
+  BaseMsgHeader(packet: { readInt16LE: (arg0: number) => number }): void {
     // WORD msgNo;
     this.msgNo = packet.readInt16LE(0);
   }

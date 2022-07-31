@@ -1,4 +1,4 @@
-import { NPSMessage } from './NPSMessage.js';
+import { NPSMessage } from "./NPSMessage.js";
 
 /**
  * @class
@@ -14,14 +14,14 @@ export class NPSUserInfo extends NPSMessage {
   userData;
   /**
    *
-   * @param {EMESSAGE_DIRECTION} direction
+   * @param {"sent" | "received"} direction
    */
-  constructor(direction: any) {
+  constructor(direction: "sent" | "received") {
     super(direction);
     this.userId = 0;
     this.userName = Buffer.from([0x00]); // 30 length
     this.userData = Buffer.from([0x00]); // 64 length
-    this.serviceName = 'mcoserver:NPSUserInfo';
+    this.serviceName = "mcoserver:NPSUserInfo";
   }
 
   /**
@@ -41,11 +41,11 @@ export class NPSUserInfo extends NPSMessage {
    * @return {string}
    */
   dumpInfo(): string {
-    let message = this.dumpPacketHeader('NPSUserInfo');
+    let message = this.dumpPacketHeader("NPSUserInfo");
     const { userId, userName, userData } = this;
     const userIdString = userId.toString();
-    const userNameString = userName.toString('utf8');
-    const userDataStringHex = userData.toString('hex');
+    const userNameString = userName.toString("utf8");
+    const userDataStringHex = userData.toString("hex");
     message = message.concat(
       `UserId:        ${userIdString}
          UserName:      ${userNameString}

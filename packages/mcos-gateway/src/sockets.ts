@@ -20,12 +20,14 @@ import { receiveLoginData } from "../../mcos-login/src/index.js";
 import { receivePersonaData } from "../../mcos-persona/src/index.js";
 import { logger } from "mcos-logger/src/index.js";
 import { receiveTransactionsData } from "../../mcos-transactions/src/index.js";
-import {
-  selectConnection,
-  updateConnection,
-} from "./connections.js";
+import { selectConnection, updateConnection } from "./connections.js";
 import { MessageNode } from "./MessageNode.js";
-import type { BufferWithConnection, GServiceResponse, SocketWithConnectionInfo, TServiceResponse } from "mcos-types/types.js";
+import type {
+  BufferWithConnection,
+  GServiceResponse,
+  SocketWithConnectionInfo,
+  TServiceResponse,
+} from "mcos-types/types.js";
 
 const log = logger.child({ service: "mcos:gateway:sockets" });
 
@@ -36,13 +38,13 @@ const log = logger.child({ service: "mcos:gateway:sockets" });
  * @param {Buffer} data
  * @return {string}
  */
- export function toHex (data: Buffer): string {
+export function toHex(data: Buffer): string {
   /** @type {string[]} */
-  const bytes: string[] = []
-  data.forEach(b => {
-    bytes.push(b.toString(16).toUpperCase().padStart(2, '0'))
-  })
-  return bytes.join('')
+  const bytes: string[] = [];
+  data.forEach((b) => {
+    bytes.push(b.toString(16).toUpperCase().padStart(2, "0"));
+  });
+  return bytes.join("");
 }
 
 /**
@@ -51,11 +53,11 @@ const log = logger.child({ service: "mcos:gateway:sockets" });
  * @param {unknown} error
  * @return {string}
  */
- export function errorMessage (error: unknown): string {
+export function errorMessage(error: unknown): string {
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
-  return String(error)
+  return String(error);
 }
 
 /**
@@ -63,12 +65,11 @@ const log = logger.child({ service: "mcos:gateway:sockets" });
  * @param {string} service
  * @param {string} errMessage
  */
- export function logAndThrow(service: string, errMessage: string): never {
-  log.service = service
-  log.error(errMessage)
-  throw new Error(errMessage)
+export function logAndThrow(service: string, errMessage: string): never {
+  log.service = service;
+  log.error(errMessage);
+  throw new Error(errMessage);
 }
-
 
 // TODO: #1193 Remove commented out code
 
@@ -320,4 +321,3 @@ async function handleInboundTransactionData(
   // TODO: #1170 Create compression method and compress packet if needed
   return result;
 }
-

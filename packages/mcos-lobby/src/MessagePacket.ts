@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
 export class MessagePacket {
-  private _buffer: Buffer = Buffer.alloc(0)
+  private _buffer: Buffer = Buffer.alloc(0);
 
   static fromBuffer(buffer: Buffer): MessagePacket {
-    const newMessage = new MessagePacket()
-    newMessage.setBuffer(buffer)
-    return newMessage
+    const newMessage = new MessagePacket();
+    newMessage.setBuffer(buffer);
+    return newMessage;
   }
 
   /**
@@ -29,10 +28,10 @@ export class MessagePacket {
    * @param buffer
    */
   public setBuffer(buffer: Buffer): void {
-    this._buffer = buffer
+    this._buffer = buffer;
   }
 
   public getBuffer(): Buffer {
-    return this._buffer
+    return this._buffer;
   }
 }

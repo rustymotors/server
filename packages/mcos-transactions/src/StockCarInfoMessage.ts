@@ -1,5 +1,5 @@
-import { MessageNode } from './MessageNode.js';
-import type { StockCar } from './StockCar.js';
+import { MessageNode } from "./MessageNode.js";
+import type { StockCar } from "./StockCar.js";
 
 /**
  * Object for providing information on stock cars
@@ -23,8 +23,6 @@ import type { StockCar } from './StockCar.js';
  * @property {number} moreToCome
  * @property {StockCar[]} StockCarList
  */
-
-
 
 export class StockCarInfoMessage extends MessageNode {
   override msgNo;
@@ -54,7 +52,7 @@ export class StockCarInfoMessage extends MessageNode {
    * @param {number} brand
    * @memberof StockCarInfoMsg
    */
-  constructor(starterCash: any, dealerId: any, brand: any) {
+  constructor(starterCash: number, dealerId: number, brand: number) {
     super("sent");
     this.msgNo = 141;
     this.starterCash = starterCash;
@@ -66,7 +64,7 @@ export class StockCarInfoMessage extends MessageNode {
     this.moreToCome = 0;
     /** @type {module:StockCar} */
     this.StockCarList = [];
-    this.serviceName = 'mcoserver:StockCarInfoMsg';
+    this.serviceName = "mcoserver:StockCarInfoMsg";
   }
 
   /**
@@ -74,7 +72,7 @@ export class StockCarInfoMessage extends MessageNode {
    * @param {StockCar} car
    * @return {void}
    */
-  addStockCar(car: any): void {
+  addStockCar(car: StockCar): void {
     this.StockCarList.push(car);
     this.noCars = this.StockCarList.length;
   }
@@ -96,7 +94,7 @@ export class StockCarInfoMessage extends MessageNode {
       for (let i = 0; i < this.StockCarList.length; i++) {
         const offset = 10 * i;
         const record = this.StockCarList[i];
-        if (typeof record !== 'undefined') {
+        if (typeof record !== "undefined") {
           record.serialize().copy(packet, 17 + offset);
         }
       }
@@ -117,7 +115,7 @@ export class StockCarInfoMessage extends MessageNode {
       brand: this.brand,
       noCars: this.noCars,
       moreToCome: this.moreToCome,
-      stockCarList: this.StockCarList.toString()
+      stockCarList: this.StockCarList.toString(),
     })}`;
   }
 }

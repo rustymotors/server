@@ -18,7 +18,10 @@ import { logger } from "mcos-logger/src/index.js";
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
 import { _npsHeartbeat } from "./handlers/heartbeat.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
-import type { BufferWithConnection, GSMessageArrayWithConnection } from "mcos-types/types.js";
+import type {
+  BufferWithConnection,
+  GSMessageArrayWithConnection,
+} from "mcos-types/types.js";
 
 const log = logger.child({ service: "mcos:lobby" });
 
@@ -40,14 +43,14 @@ export async function handleData(
     // _npsRequestGameConnectServer
     case "100": {
       const result = await _npsRequestGameConnectServer(dataConnection);
-      return result
+      return result;
     }
 
     // NpsHeartbeat
 
     case "217": {
       const result = await _npsHeartbeat(dataConnection);
-      return result
+      return result;
     }
 
     // NpsSendCommand

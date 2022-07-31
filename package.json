@@ -12,8 +12,8 @@
   ],
   "type": "module",
   "scripts": {
-    "check": "tsc --noEmit packages/**/index.ts",
-    "format": "prettier-eslint",
+    "build": "tsc",
+    "format": "prettier --write \"packages/**/*.ts\" \"src/**/*.ts\"",
     "test": "c8 ts-node --esm node_modules/.bin/mocha packages/**/*.test.ts test",
     "prod": "make prod_node",
     "prod:stop": "docker-compose stop",
@@ -34,16 +34,21 @@
     "mcos-login": "*",
     "mcos-shared": "*",
     "pg": "8.7.3",
+    "prettier": "^2.7.1",
+    "prettier-eslint-cli": "^6.0.1",
     "ts-node": "10.9.1"
   },
   "devDependencies": {
     "@types/chai": "4.3.1",
     "@types/mocha": "9.1.1",
     "@types/node": "18.0.6",
+    "@typescript-eslint/eslint-plugin": "^5.31.0",
+    "@typescript-eslint/parser": "^5.31.0",
     "c8": "7.12.0",
     "chai": "4.3.6",
     "eslint": "8.20.0",
     "mocha": "10.0.0",
+    "prettier-eslint": "^15.0.1",
     "source-map-support": "0.5.21",
     "standard": "17.0.0",
     "ts-mockito": "2.6.1"
@@ -58,12 +63,29 @@
   ],
   "c8": {
     "all": true,
-    "reporter": ["text", "cobertura", "html"]
+    "reporter": [
+      "text",
+      "cobertura",
+      "html"
+    ]
   },
   "eslintConfig": {
+    "env": {
+      "es2021": true,
+      "node": true
+    },
     "extends": [
-        "plugin:jsdoc/recommended"
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended"
     ],
-    "ignorePatterns":["**/*.ts", "**/*.json"]
-}
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "rules": {}
+  }
 }

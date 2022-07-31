@@ -14,43 +14,43 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import chai from 'chai'
-import { BinaryStructure } from '../src/BinaryStructure.js'
-import { describe, it } from 'mocha'
+import chai from "chai";
+import { BinaryStructure } from "../src/BinaryStructure.js";
+import { describe, it } from "mocha";
 
-chai.should()
+chai.should();
 
-describe('BinaryStructure', () => {
-  describe('.byteLength', () => {
-    it('should have a value of 0', () => {
-      // Arrange
-      const testStructure = new BinaryStructure()
-
-      // Assert
-      testStructure.getByteLength().should.equal(0)
-    })
-  })
-  describe('#serialize', () => {
-    it('should throw when passed a byteStream larger then the internal fields array', () => {
-      // Arrange
-      const inputStream = Buffer.from('This is a pretty decent size.')
-      const testStructure = new BinaryStructure();
-
-      // Assert
-      (() => {
-        return testStructure.deserialize(inputStream)
-      }).should.throw()
-    })
-  })
-  describe('#get', () => {
-    it('should throw when passed a name not found in the internal fields array', () => {
+describe("BinaryStructure", () => {
+  describe(".byteLength", () => {
+    it("should have a value of 0", () => {
       // Arrange
       const testStructure = new BinaryStructure();
 
       // Assert
+      testStructure.getByteLength().should.equal(0);
+    });
+  });
+  describe("#serialize", () => {
+    it("should throw when passed a byteStream larger then the internal fields array", () => {
+      // Arrange
+      const inputStream = Buffer.from("This is a pretty decent size.");
+      const testStructure = new BinaryStructure();
+
+      // Assert
       (() => {
-        return testStructure.get('someFiled')
-      }).should.throw()
-    })
-  })
-})
+        return testStructure.deserialize(inputStream);
+      }).should.throw();
+    });
+  });
+  describe("#get", () => {
+    it("should throw when passed a name not found in the internal fields array", () => {
+      // Arrange
+      const testStructure = new BinaryStructure();
+
+      // Assert
+      (() => {
+        return testStructure.get("someFiled");
+      }).should.throw();
+    });
+  });
+});

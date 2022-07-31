@@ -1,4 +1,3 @@
-
 /**
  * @class
  * @property {number} msgNo
@@ -6,12 +5,11 @@
  * @property {number} reserved
  * @property {Buffer} content
  * @property {number} msgLength
- * @property {EMESSAGE_DIRECTION} direction
+ * @property {"Sent" " Received"} direction
  * @property {string} serviceName
  */
 
 import type { NPSMessageJSON } from "mcos-types/types.js";
-
 
 export class NPSMessage {
   msgNo;
@@ -23,16 +21,16 @@ export class NPSMessage {
   serviceName;
   /**
    *
-   * @param {EMESSAGE_DIRECTION} direction - the direction of the message flow
+   * @param {"sent" | "received"} direction - the direction of the message flow
    */
-  constructor(direction: any) {
+  constructor(direction: "sent" | "received") {
     this.msgNo = 0;
     this.msgVersion = 0;
     this.reserved = 0;
     this.content = Buffer.from([0x01, 0x02, 0x03, 0x04]);
     this.msgLength = this.content.length + 12; // skipcq: JS-0377
     this.direction = direction;
-    this.serviceName = 'mcoserver:NPSMsg';
+    this.serviceName = "mcoserver:NPSMsg";
   }
 
   /**
@@ -58,7 +56,7 @@ export class NPSMessage {
    * @return {string}
    */
   getPacketAsString(): string {
-    return this.serialize().toString('hex');
+    return this.serialize().toString("hex");
   }
 
   /**
@@ -83,11 +81,9 @@ export class NPSMessage {
       return packet;
     } catch (error) {
       if (error instanceof Error) {
-        throw new TypeError(
-          `[NPSMsg] Error in serialize(): ${error.message}`
-        );
+        throw new TypeError(`[NPSMsg] Error in serialize(): ${error.message}`);
       }
-      throw new Error('[NPSMsg] Error in serialize(), error unknown');
+      throw new Error("[NPSMsg] Error in serialize(), error unknown");
     }
   }
 
@@ -97,7 +93,10 @@ export class NPSMessage {
    * @return {NPSMessage}
    * @memberof NPSMessage
    */
-  deserialize(packet: { readInt16BE: (arg0: number) => number; slice: (arg0: number) => Buffer; }): NPSMessage {
+  deserialize(packet: {
+    readInt16BE: (arg0: number) => number;
+    slice: (arg0: number) => Buffer;
+  }): NPSMessage {
     this.msgNo = packet.readInt16BE(0);
     this.msgLength = packet.readInt16BE(2);
     this.msgVersion = packet.readInt16BE(4);
@@ -113,11 +112,11 @@ export class NPSMessage {
   dumpPacketHeader(messageType: string): string {
     return `NPSMsg/${messageType},
           ${JSON.stringify({
-      direction: this.direction,
-      msgNo: this.msgNo.toString(16),
-      msgVersion: this.msgVersion,
-      msgLength: this.msgLength
-    })}`;
+            direction: this.direction,
+            msgNo: this.msgNo.toString(16),
+            msgVersion: this.msgVersion,
+            msgLength: this.msgLength,
+          })}`;
   }
 
   /**
@@ -128,13 +127,13 @@ export class NPSMessage {
   dumpPacket(): string {
     return `NPSMsg/NPSMsg,
           ${JSON.stringify({
-      direction: this.direction,
-      msgNo: this.msgNo.toString(16),
-      msgVersion: this.msgVersion,
-      msgLength: this.msgLength,
-      content: this.content.toString('hex'),
-      serialized: this.serialize().toString('hex')
-    })}`;
+            direction: this.direction,
+            msgNo: this.msgNo.toString(16),
+            msgVersion: this.msgVersion,
+            msgLength: this.msgLength,
+            content: this.content.toString("hex"),
+            serialized: this.serialize().toString("hex"),
+          })}`;
   }
 
   /**
@@ -144,14 +143,14 @@ export class NPSMessage {
   toJSON(): NPSMessageJSON {
     return {
       msgNo: this.msgNo,
-      contextId: '',
+      contextId: "",
       msgLength: this.msgLength,
       msgVersion: this.msgVersion,
-      content: this.content.toString('hex'),
+      content: this.content.toString("hex"),
       direction: this.direction,
-      rawBuffer: this.content.toString('hex'),
+      rawBuffer: this.content.toString("hex"),
       opCode: 0,
-      sessionkey: ''
+      sessionkey: "",
     };
   }
 }

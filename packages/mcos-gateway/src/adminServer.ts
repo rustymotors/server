@@ -26,7 +26,10 @@ import { getAllConnections } from "./index.js";
 const log = logger.child({ service: "mcos:gateway:admin" });
 
 // https://careerkarma.com/blog/converting-circular-structure-to-json/
-function replacerFunc(): ((this: any, key: string, value: any) => any) | undefined {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function replacerFunc():
+  | ((this: any, key: string, value: any) => any)
+  | undefined {
   const visited = new WeakSet();
   return (_key: string, value: object) => {
     if (typeof value === "object" && value !== null) {
@@ -37,7 +40,7 @@ function replacerFunc(): ((this: any, key: string, value: any) => any) | undefin
     }
     return value;
   };
-};
+}
 
 /**
  * Please use {@link AdminServer.getAdminServer()}
@@ -86,9 +89,7 @@ export class AdminServer {
    * @param {IncomingMessage} request
    * @param {ServerResponse} response
    */
-  handleRequest(
-    request: IncomingMessage,
-  ): {
+  handleRequest(request: IncomingMessage): {
     code: number;
     headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined | undefined;
     body: string;
@@ -107,16 +108,19 @@ export class AdminServer {
     const connections = getAllConnections();
 
     switch (request.url) {
-      case "/admin/connections/resetQueue":
+      case "/admin/connections/resetQueue": {
         // We only use the code here, the body is used for testing
-        const {code} = resetQueue(connections);
-        return { code, headers: {}, body: "ok"}
-
+        const { code } = resetQueue(connections);
+        return { code, headers: {}, body: "ok" };
+      }
       case "/admin/connections":
         return listConnections(connections);
     }
 
-    if (typeof request.url !== "undefined" && request.url.startsWith("/admin")) {
+    if (
+      typeof request.url !== "undefined" &&
+      request.url.startsWith("/admin")
+    ) {
       return { code: 404, headers: {}, body: "Jiggawatt!" };
     }
 
@@ -153,7 +157,11 @@ export function resetQueue(connections: Array<SocketWithConnectionInfo>): {
 } {
   const resetConnections = connections.map((c) => {
     c.inQueue = true;
-    return c
+    return c;
   });
-  return { code: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify(resetConnections, replacerFunc()) };
+  return {
+    code: 200,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(resetConnections, replacerFunc()),
+  };
 }

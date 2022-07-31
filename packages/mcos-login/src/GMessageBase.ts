@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from 'mcos-logger/src/index.js'
-import { BinaryStructure } from './BinaryStructure.js'
+import { logger } from "mcos-logger/src/index.js";
+import { BinaryStructure } from "./BinaryStructure.js";
 
-const log = logger.child({ service: 'mcos:shared:structures' })
+const log = logger.child({ service: "mcos:shared:structures" });
 
 /**
  * @class
@@ -28,51 +28,55 @@ export class GSMessageBase extends BinaryStructure {
    * What byte order are the fields?
    * @type {'big' | 'little'}
    */
-  _byteOrder: 'big' | 'little' = 'little'
+  _byteOrder: "big" | "little" = "little";
   constructor() {
-    super()
-    log.trace('new GSMessageBase')
+    super();
+    log.trace("new GSMessageBase");
     this._add({
-      name: 'msgId',
-      order: 'little',
-      type: 'u16',
+      name: "msgId",
+      order: "little",
+      type: "u16",
       size: 2,
-      value: Buffer.alloc(2)
-    })
+      value: Buffer.alloc(2),
+    });
 
     this._add({
-      name: 'totalMsgLen',
-      order: 'little',
-      type: 'u16',
+      name: "totalMsgLen",
+      order: "little",
+      type: "u16",
       size: 2,
-      value: Buffer.alloc(2) // TOMC
-    })
+      value: Buffer.alloc(2), // TOMC
+    });
 
     this._add({
-      name: 'msgVersion',
-      order: 'little',
-      type: 'u16',
+      name: "msgVersion",
+      order: "little",
+      type: "u16",
       size: 2,
-      value: Buffer.alloc(2) // TOMC
-    })
+      value: Buffer.alloc(2), // TOMC
+    });
     this._add({
-      name: 'reserved',
-      order: 'little',
-      type: 'u16',
+      name: "reserved",
+      order: "little",
+      type: "u16",
       size: 2,
-      value: Buffer.alloc(2) // TOMC
-    })
+      value: Buffer.alloc(2), // TOMC
+    });
     this._add({
-      name: 'checksum',
-      order: 'little',
-      type: 'u16',
+      name: "checksum",
+      order: "little",
+      type: "u16",
       size: 2,
-      value: Buffer.alloc(2) // TOMC
-    })
+      value: Buffer.alloc(2), // TOMC
+    });
   }
   // 10 bytes total in this class
 
   calulateChecksum(): void {
-    this.setValueNumber('checksum', (this.getValue('totalMsgLen') as number + (this.getValue('msgVersion') as number << 8)))
+    this.setValueNumber(
+      "checksum",
+      (this.getValue("totalMsgLen") as number) +
+        ((this.getValue("msgVersion") as number) << 8)
+    );
   }
 }

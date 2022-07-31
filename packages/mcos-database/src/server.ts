@@ -18,8 +18,8 @@ function onRequest(request: IncomingMessage, response: ServerResponse): void {
 
   const { statusCode, responseContent } = handleRequest(request);
 
-  response.statusCode = statusCode
-  response.end(responseContent)
+  response.statusCode = statusCode;
+  response.end(responseContent);
 }
 
 server.on("error", (err: Error) => {
@@ -42,22 +42,25 @@ function handleRequest(request: IncomingMessage): ResponseJSON {
 
   // If we located a matching handler, call it
   if (typeof requestHandler !== "undefined") {
-   const responseJSON = requestHandler.handlerFunction(requestJSON)
-   returnJSON = {
-    statusCode: responseJSON.statusCode,
-    responseContent: responseJSON.responseContent
-   }
+    const responseJSON = requestHandler.handlerFunction(requestJSON);
+    returnJSON = {
+      statusCode: responseJSON.statusCode,
+      responseContent: responseJSON.responseContent,
+    };
   }
-  return returnJSON
+  return returnJSON;
 }
-function parseRequest(requestString: string): { requestCode: any; requestContent: any; } {
+function parseRequest(requestString: string): {
+  requestCode: string;
+  requestContent: string;
+} {
   try {
     const json = JSON.parse(requestString);
     const { requestCode, requestContent } = json;
     const requestJSON = { requestCode, requestContent };
     return requestJSON;
   } catch (error) {
-    const errMessage =  String(error).toString()
+    const errMessage = String(error).toString();
     throw new Error(`Unknown error while pasing request: ${errMessage}`);
   }
 }

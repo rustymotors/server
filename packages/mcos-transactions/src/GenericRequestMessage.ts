@@ -1,4 +1,4 @@
-import { MessageNode } from './MessageNode.js';
+import { MessageNode } from "./MessageNode.js";
 
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // DWORD data;   // specific to the message sent (but usually 0)
@@ -13,8 +13,6 @@ import { MessageNode } from './MessageNode.js';
  * @property {string} serviceName
  */
 
-
-
 export class GenericRequestMessage extends MessageNode implements MessageNode {
   override msgNo;
   override data;
@@ -28,7 +26,7 @@ export class GenericRequestMessage extends MessageNode implements MessageNode {
     this.msgNo = 0;
     this.data = Buffer.alloc(4);
     this.data2 = Buffer.alloc(4);
-    this.serviceName = 'mcoserver:GenericRequestMsg';
+    this.serviceName = "mcoserver:GenericRequestMsg";
   }
 
   /**
@@ -45,7 +43,7 @@ export class GenericRequestMessage extends MessageNode implements MessageNode {
       } else {
         throw new TypeError(
           `[GenericRequestMsg] Unable to read msgNo from ${buffer.toString(
-            'hex'
+            "hex"
           )}: ${String(error)}` // skipcq: JS-0378
         );
       }
@@ -74,8 +72,8 @@ export class GenericRequestMessage extends MessageNode implements MessageNode {
   override dumpPacket(): string {
     return `GenericRequest ${JSON.stringify({
       msgNo: this.msgNo,
-      data: this.data.toString('hex'),
-      data2: this.data2.toString('hex')
+      data: this.data.toString("hex"),
+      data2: this.data2.toString("hex"),
     })}`;
   }
 }

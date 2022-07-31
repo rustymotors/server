@@ -14,15 +14,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { DatabaseManager } from '../../mcos-database/src/index.js'
-import { logger } from 'mcos-logger/src/index.js'
-import { GSMessageBase } from './GMessageBase.js'
-import { NPSUserStatus } from './NPSUserStatus.js'
-import { premadeLogin } from './premadeLogin.js'
-import { NPSMessage } from './NPSMessage.js'
-import type { BufferWithConnection, GSMessageArrayWithConnection, UserRecordMini } from 'mcos-types/types.js'
+import { DatabaseManager } from "../../mcos-database/src/index.js";
+import { logger } from "mcos-logger/src/index.js";
+import { GSMessageBase } from "./GMessageBase.js";
+import { NPSUserStatus } from "./NPSUserStatus.js";
+import { premadeLogin } from "./premadeLogin.js";
+import { NPSMessage } from "./NPSMessage.js";
+import type {
+  BufferWithConnection,
+  GSMessageArrayWithConnection,
+  UserRecordMini,
+} from "mcos-types/types.js";
 
-const log = logger.child({ service: 'mcos:login' })
+const log = logger.child({ service: "mcos:login" });
 
 /**
  *
@@ -30,127 +34,128 @@ const log = logger.child({ service: 'mcos:login' })
  * @param {unknown} error
  * @return {string}
  */
- export function errorMessage (error: unknown): string {
+export function errorMessage(error: unknown): string {
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
-  return String(error)
+  return String(error);
 }
 
 const userRecords: UserRecordMini[] = [
   {
-    contextId: '5213dee3a6bcdb133373b2d4f3b9962758',
+    contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
     customerId: 0xac_01_00_00,
-    userId: 0x00_00_00_02
+    userId: 0x00_00_00_02,
   },
   {
-    contextId: 'd316cd2dd6bf870893dfbaaf17f965884e',
+    contextId: "d316cd2dd6bf870893dfbaaf17f965884e",
     customerId: 0x00_54_b4_6c,
-    userId: 0x00_00_00_01
-  }
-]
+    userId: 0x00_00_00_01,
+  },
+];
 
 /**
-   * Process a UserLogin packet
-   * @private
-   * @param {IBufferWithConnection} dataConnection
-   * @return {Promise<IGSMessageArrayWithConnection>}
-   */
-async function login (dataConnection: BufferWithConnection): Promise<GSMessageArrayWithConnection> {
-  const { connectionId, data } = dataConnection
+ * Process a UserLogin packet
+ * @private
+ * @param {IBufferWithConnection} dataConnection
+ * @return {Promise<IGSMessageArrayWithConnection>}
+ */
+async function login(
+  dataConnection: BufferWithConnection
+): Promise<GSMessageArrayWithConnection> {
+  const { connectionId, data } = dataConnection;
 
-  log.info(
-      `Received login packet: ${connectionId}`
-  )
+  log.info(`Received login packet: ${connectionId}`);
 
-  const newGameMessage = new GSMessageBase()
-  newGameMessage.deserialize(data.slice(0, 10))
-  log.trace(`Raw game message: ${JSON.stringify(newGameMessage)}`)
+  const newGameMessage = new GSMessageBase();
+  newGameMessage.deserialize(data.slice(0, 10));
+  log.trace(`Raw game message: ${JSON.stringify(newGameMessage)}`);
 
-  const userStatus = new NPSUserStatus(data)
+  const userStatus = new NPSUserStatus(data);
 
-  userStatus.extractSessionKeyFromPacket(data)
+  userStatus.extractSessionKeyFromPacket(data);
 
-  const { contextId, sessionkey } = userStatus
+  const { contextId, sessionkey } = userStatus;
 
   log.debug(
-      `UserStatus object from _userLogin,
+    `UserStatus object from _userLogin,
       ${JSON.stringify({
-        userStatus: userStatus.toJSON()
+        userStatus: userStatus.toJSON(),
       })}`
-  )
-  userStatus.dumpPacket()
+  );
+  userStatus.dumpPacket();
 
   // Load the customer record by contextId
   // TODO: #1175 Move customer records from being hard-coded to database records
-  const userRecord = userRecords.find(r => {
-    return r.contextId === contextId
-  })
+  const userRecord = userRecords.find((r) => {
+    return r.contextId === contextId;
+  });
 
-  if (typeof userRecord === 'undefined') {
+  if (typeof userRecord === "undefined") {
     // We were not able to locate the user's record
-    const errMessage = `Unable to locate a user record for the context id: ${contextId}`
-    log.error(errMessage)
-    throw new Error('USER_NOT_FOUND')
+    const errMessage = `Unable to locate a user record for the context id: ${contextId}`;
+    log.error(errMessage);
+    throw new Error("USER_NOT_FOUND");
   }
 
   // Save sessionkey in database under customerId
-  log.debug('Preparing to update session key in db')
-  await DatabaseManager.getInstance().updateSessionKey(
-    userRecord.customerId,
-    sessionkey,
-    contextId,
-    connectionId
-  )
+  log.debug("Preparing to update session key in db");
+  await DatabaseManager.getInstance()
+    .updateSessionKey(
+      userRecord.customerId,
+      sessionkey,
+      contextId,
+      connectionId
+    )
     .catch((/** @type {unknown} */ error: unknown) => {
-      log.error(`Unable to update session key 3: ${errorMessage(error)}`)
-      throw new Error('Error in userLogin')
-    })
+      log.error(`Unable to update session key 3: ${errorMessage(error)}`);
+      throw new Error("Error in userLogin");
+    });
 
-  log.info('Session key updated')
+  log.info("Session key updated");
 
   // Create the packet content
   // TODO: #1176 Return the login connection response packet as a MessagePacket object
-  const packetContent = premadeLogin()
-  log.debug(`Using Premade Login: ${packetContent.toString('hex')}`)
+  const packetContent = premadeLogin();
+  log.debug(`Using Premade Login: ${packetContent.toString("hex")}`);
 
   // MsgId: 0x601
-  Buffer.from([0x06, 0x01]).copy(packetContent)
+  Buffer.from([0x06, 0x01]).copy(packetContent);
 
   // Packet length: 0x0100 = 256
-  Buffer.from([0x01, 0x00]).copy(packetContent, 2)
+  Buffer.from([0x01, 0x00]).copy(packetContent, 2);
 
   // Load the customer id
-  packetContent.writeInt32BE(userRecord.customerId, 12)
+  packetContent.writeInt32BE(userRecord.customerId, 12);
 
   // Don't use queue (+208, but I'm not sure if this includes the header or not)
-  Buffer.from([0x00]).copy(packetContent, 208)
+  Buffer.from([0x00]).copy(packetContent, 208);
 
-  const newPacket = new NPSMessage('sent')
-  newPacket.deserialize(packetContent)
+  const newPacket = new NPSMessage("sent");
+  newPacket.deserialize(packetContent);
 
   /**
-     * Return the packet twice for debug
-     * Debug sends the login request twice, so we need to reply twice
-     * Then send ok to login packet
-     */
+   * Return the packet twice for debug
+   * Debug sends the login request twice, so we need to reply twice
+   * Then send ok to login packet
+   */
 
   // Update the data buffer
   /** @type {IGSMessageArrayWithConnection} */
   const response: GSMessageArrayWithConnection = {
     connection: dataConnection.connection,
-    messages: [newPacket, newPacket]
-  }
-  log.debug('Leaving login')
-  return response
+    messages: [newPacket, newPacket],
+  };
+  log.debug("Leaving login");
+  return response;
 }
 
 export const messageHandlers = [
   {
-    id: '501',
-    handler: login
-  }
-]
+    id: "501",
+    handler: login,
+  },
+];
 
 /**
  *
@@ -158,30 +163,32 @@ export const messageHandlers = [
  * @param {IBufferWithConnection} dataConnection
  * @return {Promise<IGSMessageArrayWithConnection>}
  */
-export async function handleData (dataConnection: BufferWithConnection): Promise<GSMessageArrayWithConnection> {
-  const { connectionId, data } = dataConnection
+export async function handleData(
+  dataConnection: BufferWithConnection
+): Promise<GSMessageArrayWithConnection> {
+  const { connectionId, data } = dataConnection;
 
-  log.info(
-      `Received Login Server packet: ${connectionId}`
-  )
+  log.info(`Received Login Server packet: ${connectionId}`);
 
   // Check the request code
-  const requestCode = data.readUInt16BE(0).toString(16)
+  const requestCode = data.readUInt16BE(0).toString(16);
 
-  const supportedHandler = messageHandlers.find(h => {
-    return h.id === requestCode
-  })
+  const supportedHandler = messageHandlers.find((h) => {
+    return h.id === requestCode;
+  });
 
-  if (typeof supportedHandler === 'undefined') {
+  if (typeof supportedHandler === "undefined") {
     // We do not yet support this message code
-    log.error(`The login handler does not support a message code of ${requestCode}. Was the packet routed here in error?`)
-    log.error('Closing socket.')
-    dataConnection.connection.socket.end()
-    throw new TypeError('UNSUPPORTED_MESSAGECODE')
+    log.error(
+      `The login handler does not support a message code of ${requestCode}. Was the packet routed here in error?`
+    );
+    log.error("Closing socket.");
+    dataConnection.connection.socket.end();
+    throw new TypeError("UNSUPPORTED_MESSAGECODE");
   }
 
-  const result = await supportedHandler.handler(dataConnection)
-  log.trace(`Returning with ${result.messages.length} messages`)
-  log.debug('Leaving handleData')
-  return result
+  const result = await supportedHandler.handler(dataConnection);
+  log.trace(`Returning with ${result.messages.length} messages`);
+  log.debug("Leaving handleData");
+  return result;
 }

@@ -12,8 +12,6 @@
  * @property {0 | 1} bIsDealOfTheDay
  */
 
-
-
 export class StockCar {
   brandedPartId;
   retailPrice;
@@ -24,11 +22,15 @@ export class StockCar {
    * @param {number} retailPrice
    * @param {0|1} bIsDealOfTheDay
    */
-  constructor(brandedPartId: any, retailPrice: any, bIsDealOfTheDay: any) {
+  constructor(
+    brandedPartId: number,
+    retailPrice: number,
+    bIsDealOfTheDay: 0 | 1
+  ) {
     this.brandedPartId = brandedPartId;
     this.retailPrice = retailPrice;
     this.bIsDealOfTheDay = bIsDealOfTheDay;
-    this.serviceName = 'mcoserver:StockCar';
+    this.serviceName = "mcoserver:StockCar";
   }
 
   /**

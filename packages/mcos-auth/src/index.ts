@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from 'mcos-logger/src/index.js'
-import type { IncomingMessage, ServerResponse } from 'node:http'
-import type { Socket } from 'node:net'
+import { logger } from "mcos-logger/src/index.js";
+import type { IncomingMessage, ServerResponse } from "node:http";
+import type { Socket } from "node:net";
 
-const log = logger.child({ service: 'MCOServer:Auth' })
+const log = logger.child({ service: "MCOServer:Auth" });
 
 /**
  * Handles web-based user logins
@@ -34,7 +34,7 @@ export class AuthLogin {
    * @type {AuthLogin}
    * @memberof AuthLogin
    */
-  static _instance: AuthLogin
+  static _instance: AuthLogin;
 
   /**
    * Get the single instance of the class
@@ -43,11 +43,11 @@ export class AuthLogin {
    * @return {AuthLogin}
    * @memberof AuthLogin
    */
-  static getInstance (): AuthLogin {
+  static getInstance(): AuthLogin {
     if (!AuthLogin._instance) {
-      AuthLogin._instance = new AuthLogin()
+      AuthLogin._instance = new AuthLogin();
     }
-    return AuthLogin._instance
+    return AuthLogin._instance;
   }
 
   /**
@@ -56,8 +56,8 @@ export class AuthLogin {
    * @return {string}
    * @memberof! WebServer
    */
-  _handleGetTicket (): string {
-    return 'Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e'
+  _handleGetTicket(): string {
+    return "Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e";
   }
 
   // File deepcode ignore NoRateLimitingForExpensiveWebOperation: Not using express, unsure how to handle rate limiting on raw http
@@ -68,16 +68,19 @@ export class AuthLogin {
    * @param {IncomingMessage} request
    * @param {ServerResponse} response
    */
-  handleRequest (request: IncomingMessage, response: ServerResponse): ServerResponse {
+  handleRequest(
+    request: IncomingMessage,
+    response: ServerResponse
+  ): ServerResponse {
     log.info(
       `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
-    )
-    if (request.url && request.url.startsWith('/AuthLogin')) {
-      response.setHeader('Content-Type', 'text/plain')
-      return response.end(this._handleGetTicket())
+    );
+    if (request.url && request.url.startsWith("/AuthLogin")) {
+      response.setHeader("Content-Type", "text/plain");
+      return response.end(this._handleGetTicket());
     }
 
-    return response.end('Unknown request.')
+    return response.end("Unknown request.");
   }
 
   /**
@@ -85,9 +88,9 @@ export class AuthLogin {
    * @returns {void}
    * @param {Socket} socket
    */
-  _socketEventHandler (socket: Socket): void {
-    socket.on('error', (error) => {
-      throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`)
-    })
+  _socketEventHandler(socket: Socket): void {
+    socket.on("error", (error) => {
+      throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`);
+    });
   }
 }

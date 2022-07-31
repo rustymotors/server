@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import type { FIELD_TYPE, IBinaryStructure, IByteField } from './types.js';
+import type { FIELD_TYPE, IBinaryStructure, IByteField } from "./types.js";
 /**
  * Convert to zero padded hex
  *
@@ -25,88 +25,88 @@ export declare function errorMessage(error: unknown): string;
  * @property {Buffer} value
  */
 export declare class ByteField implements IByteField {
-    /** @type {string} */
-    name: string;
-    /** @type {'big' | 'little'} */
-    order: 'big' | 'little';
-    /** @type {number} */
-    offset: number;
-    /** @type {number} */
-    size: number;
-    /** @type {FIELD_TYPE} */
-    type: FIELD_TYPE;
-    /** @type {Buffer} */
-    value: Buffer;
-    /**
-     * Creates an instance of ByteField.
-     * @param {ByteField} newField
-     * @memberof ByteField
-     */
-    constructor(newField: ByteField);
+  /** @type {string} */
+  name: string;
+  /** @type {'big' | 'little'} */
+  order: "big" | "little";
+  /** @type {number} */
+  offset: number;
+  /** @type {number} */
+  size: number;
+  /** @type {FIELD_TYPE} */
+  type: FIELD_TYPE;
+  /** @type {Buffer} */
+  value: Buffer;
+  /**
+   * Creates an instance of ByteField.
+   * @param {ByteField} newField
+   * @memberof ByteField
+   */
+  constructor(newField: ByteField);
 }
 export declare class BinaryStructure implements IBinaryStructure {
-    /**
-     * Holds the next offset to be used when adding a field
-     * @protected
-     */
-    _byteOffset: number;
-    /**
-       * Total byteLength of all _fields
-       * @protected
-       */
-    _byteLength: number;
-    /**
-       * @protected
-       * @type {ByteField[]}
-       */
-    _fields: ByteField[];
-    constructor();
-    /**
-     * Add a {@link ByteField} object to the internal fields array
-     * @protected
-     * @param {{name: string, order: "big" | "little", size: number, type: FIELD_TYPE, value: Buffer }} field
-     * @memberof BinaryStructure
-     */
-    _add(field: {
-        name: string;
-        order: "big" | "little";
-        size: number;
-        type: FIELD_TYPE;
-        value: Buffer;
-    }): void;
-    /**
-       *
-       * Return the internal fields
-       * @return {Buffer}
-       * @memberof BinaryStructure
-       */
-    serialize(): Buffer;
-    /**
-     * Load the internal fields
-     * @param {Buffer} byteStream
-     * @memberof BinaryStructure
-     */
-    deserialize(byteStream: Buffer): void;
-    getByteLength(): number;
-    /**
-     * Return field by name
-     * @param {string} fieldName
-     * @return {ByteField}
-     * @memberof BinaryStructure
-     */
-    get(fieldName: string): ByteField;
-    /**
-     *
-     *
-     * @param {string} fieldName
-     * @memberof BinaryStructure
-     */
-    getValue(fieldName: string): string | number | boolean;
-    /**
-     *
-     * @param {string} fieldName
-     * @param {number} newValue
-     * @returns
-     */
-    setValueNumber(fieldName: string, newValue: number): void;
+  /**
+   * Holds the next offset to be used when adding a field
+   * @protected
+   */
+  _byteOffset: number;
+  /**
+   * Total byteLength of all _fields
+   * @protected
+   */
+  _byteLength: number;
+  /**
+   * @protected
+   * @type {ByteField[]}
+   */
+  _fields: ByteField[];
+  constructor();
+  /**
+   * Add a {@link ByteField} object to the internal fields array
+   * @protected
+   * @param {{name: string, order: "big" | "little", size: number, type: FIELD_TYPE, value: Buffer }} field
+   * @memberof BinaryStructure
+   */
+  _add(field: {
+    name: string;
+    order: "big" | "little";
+    size: number;
+    type: FIELD_TYPE;
+    value: Buffer;
+  }): void;
+  /**
+   *
+   * Return the internal fields
+   * @return {Buffer}
+   * @memberof BinaryStructure
+   */
+  serialize(): Buffer;
+  /**
+   * Load the internal fields
+   * @param {Buffer} byteStream
+   * @memberof BinaryStructure
+   */
+  deserialize(byteStream: Buffer): void;
+  getByteLength(): number;
+  /**
+   * Return field by name
+   * @param {string} fieldName
+   * @return {ByteField}
+   * @memberof BinaryStructure
+   */
+  get(fieldName: string): ByteField;
+  /**
+   *
+   *
+   * @param {string} fieldName
+   * @memberof BinaryStructure
+   */
+  getValue(fieldName: string): string | number | boolean;
+  /**
+   *
+   * @param {string} fieldName
+   * @param {number} newValue
+   * @returns
+   */
+  setValueNumber(fieldName: string, newValue: number): void;
 }

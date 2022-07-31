@@ -14,31 +14,38 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import chai from 'chai'
-import { TClientConnectMessage } from '../src/TClientConnectMessage.js'
-import { describe, it } from 'mocha'
-import type { ByteField } from 'mcos-types'
+import chai from "chai";
+import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
+import { describe, it } from "mocha";
+import type { ByteField } from "mcos-types";
 
-chai.should()
+chai.should();
 
-describe('TClientConnectMessage', () => {
-  describe('.byteLength', () => {
-    it('should have a value of 51', () => {
+describe("TClientConnectMessage", () => {
+  describe(".byteLength", () => {
+    it("should have a value of 51", () => {
       // Arrange
-      const testMessage = new TClientConnectMessage()
+      const testMessage = new TClientConnectMessage();
 
       // Assert
-      testMessage.getByteLength().should.equal(51)
-    })
-  })
-  describe('#get', () => {
-    it('should return a ByteField object when passed a valid field name', () => {
+      testMessage.getByteLength().should.equal(51);
+    });
+  });
+  describe("#get", () => {
+    it("should return a ByteField object when passed a valid field name", () => {
       // Arrange
-      const testMessage = new TClientConnectMessage()
-      const expectedField: ByteField = { name: 'customerId', size: 4, offset: 13, type: 'u32', value: Buffer.alloc(4), order: 'little' }
+      const testMessage = new TClientConnectMessage();
+      const expectedField: ByteField = {
+        name: "customerId",
+        size: 4,
+        offset: 13,
+        type: "u32",
+        value: Buffer.alloc(4),
+        order: "little",
+      };
 
       // Assert
-      testMessage.get('customerId').should.deep.equal(expectedField)
-    })
-  })
-})
+      testMessage.get("customerId").should.deep.equal(expectedField);
+    });
+  });
+});
