@@ -47,17 +47,6 @@ export function toHex(data: Buffer): string {
   return bytes.join("");
 }
 
-/**
- *  TODO: #1225 Refactor this out
- * @param {string} service
- * @param {string} errMessage
- */
-export function logAndThrow(service: string, errMessage: string): never {
-  log.service = service;
-  log.error(errMessage);
-  throw new Error(errMessage);
-}
-
 // TODO: #1193 Remove commented out code
 
 /**
@@ -169,7 +158,7 @@ async function onData(
           log.trace(
             `usingEncryption? ${outboundConnection.useEncryption}, packetLength: ${f.data.byteLength}/${f.dataLength}`
           );
-          logAndThrow(log.service, errMessage);
+          log.error(errMessage);
         } else {
           log.trace(`Message prior to encryption: ${toHex(f.serialize())}`);
           f.updateBuffer(
@@ -191,7 +180,7 @@ async function onData(
       error
     )}`;
 
-    logAndThrow(log.service, errMessage);
+    log.error(errMessage);
   }
 }
 
