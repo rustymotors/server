@@ -406,7 +406,7 @@ export async function receivePersonaData(
     };
   } catch (error) {
     return Promise.reject(
-      `There was an error in the persona service: ${String(error)}`
+      new Error(`There was an error in the persona service: ${String(error)}`)
     );
   }
 }
