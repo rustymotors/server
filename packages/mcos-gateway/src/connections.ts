@@ -88,7 +88,7 @@ export function selectConnection(socket: Socket): SocketWithConnectionInfo {
     id: newConnectionId,
     socket,
     remoteAddress: socket.remoteAddress || "",
-    localPort: socket.localPort || 0,
+    localPort: typeof socket.localPort !== "undefined" ? socket.localPort : 0,
     personaId: 0,
     lastMessageTimestamp: 0,
     inQueue: true,
@@ -142,13 +142,11 @@ function findConnectionByAddressAndPort(
   const record =
     connectionList.find((c) => {
       const match =
-        c.socket.remoteAddress === remoteAddress && c.localPort === localPort;
+        c.remoteAddress === remoteAddress && c.localPort === localPort;
       return match;
     }) || null;
-  if (!record) {
-    return null;
-  }
-  return { modern: record };
+
+    return record === null ? null : { modern: record }
 }
 
 /**
