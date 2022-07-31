@@ -18,8 +18,6 @@ import { logger } from 'mcos-logger/src/index.js'
 import type { SocketWithConnectionInfo } from 'mcos-types/types.js'
 import { randomUUID } from 'node:crypto'
 import type { Socket } from 'node:net'
-import { EncryptionManager } from './encryption-mgr.js'
-import { TCPConnection } from './tcpConnection.js'
 
 const log = logger.child({ service: 'mcos:gateway:connections' })
 
@@ -129,60 +127,12 @@ export function updateConnection (connectionId: string, updatedConnection: Socke
 }
 
 /**
-   * Update the internal connection record
-   *
-   * @param {string} address
-   * @param {number} port
-   * @param {TCPConnection} newConnection
-   * @return {*}  {TCPConnection[]} the updated connection
-   */
-export function updateConnectionByAddressAndPort (address: string, port: number, newConnection: TCPConnection): SocketWithConnectionInfo[] {
-  if (newConnection === undefined) {
-    throw new Error(
-      `Undefined connection: ${JSON.stringify({
-        remoteAddress: address,
-        localPort: port
-      })}`
-    )
-  }
-
-  try {
-    const index = connectionList.findIndex(
-      (c) =>
-        c.socket.remoteAddress === address && c.socket.localPort === port
-    )
-    connectionList.splice(index, 1)
-    const newConnectionRecord: SocketWithConnectionInfo = {
-      socket: newConnection.sock,
-      remoteAddress: address,
-      localPort: newConnection.sock.localPort || 0,
-      seq: 0,
-      id: newConnection.id,
-      personaId: newConnection.appId,
-      lastMessageTimestamp: newConnection.lastMsg,
-      inQueue: newConnection.inQueue,
-      useEncryption: newConnection.useEncryption
-    }
-    connectionList.push(newConnectionRecord)
-    return connectionList
-  } catch (error) {
-    process.exitCode = -1
-    throw new Error(
-      `Error updating connection, ${JSON.stringify({
-        error,
-        connections: connectionList
-      })}`
-    )
-  }
-}
-
-/**
    * Locate connection by remoteAddress and localPort in the connections array
    * @param {string} remoteAddress
    * @param {number} localPort
-   * @return {{ legacy: TCPConnection, modern: ISocketWithConnectionInfo} | null}
+   * @return {{ modern: ISocketWithConnectionInfo} | null}
    */
-function findConnectionByAddressAndPort (remoteAddress: string, localPort: number): { legacy: TCPConnection; modern: SocketWithConnectionInfo } | null {
+function findConnectionByAddressAndPort (remoteAddress: string, localPort: number): { modern: SocketWithConnectionInfo } | null {
   const record =
       connectionList.find((c) => {
         const match =
@@ -193,18 +143,16 @@ function findConnectionByAddressAndPort (remoteAddress: string, localPort: numbe
   if (!record) {
     return null
   }
-  const newConnection = new TCPConnection(record.id, record.socket)
-  return { legacy: newConnection, modern: record }
+  return { modern: record }
 }
 
 /**
    * Creates a new connection object for the socket and adds to list
    * @param {string} connectionId
    * @param {Socket} socket
-   * @returns {{ legacy: TCPConnection, modern: SocketWithConnectionInfo}}
+   * @returns {{ modern: SocketWithConnectionInfo}}
    */
-function createNewConnection (connectionId: string, socket: Socket): { legacy: TCPConnection; modern: SocketWithConnectionInfo } {
-  const newConnection = new TCPConnection(connectionId, socket)
+function createNewConnection (connectionId: string, socket: Socket): { modern: SocketWithConnectionInfo } {
 
   const { localPort, remoteAddress } = socket
 
@@ -226,8 +174,7 @@ function createNewConnection (connectionId: string, socket: Socket): { legacy: T
     inQueue: true,
     useEncryption: false
   }
-  newConnection.setEncryptionManager(new EncryptionManager())
-  return { legacy: newConnection, modern: newConnectionRecord }
+  return { modern: newConnectionRecord }
 }
 
 /**
@@ -245,9 +192,9 @@ function addConnection (connection: SocketWithConnectionInfo): SocketWithConnect
    * Return an existing connection, or a new one
    *
    * @param {Socket} socket
-   * @return {{ legacy: TCPConnection, modern: SocketWithConnectionInfo} | null}
+   * @return {{ modern: SocketWithConnectionInfo} | null}
    */
-export function findOrNewConnection (socket: Socket): { legacy: TCPConnection; modern: SocketWithConnectionInfo } | null {
+export function findOrNewConnection (socket: Socket): { modern: SocketWithConnectionInfo } | null {
   const { localPort, remoteAddress } = socket
 
   if (typeof localPort === 'undefined' || typeof remoteAddress === 'undefined') {
@@ -266,8 +213,8 @@ export function findOrNewConnection (socket: Socket): { legacy: TCPConnection; m
     )
 
     // Legacy
-    existingConnection.legacy.sock = socket
-    log.debug('[L] Returning found connection after attaching socket')
+    // existingConnection.legacy.sock = socket
+    // log.debug('[L] Returning found connection after attaching socket')
 
     // Modern
     existingConnection.modern.socket = socket

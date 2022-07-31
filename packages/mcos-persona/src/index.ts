@@ -20,7 +20,6 @@ import type { Socket } from 'node:net'
 import { NPSMessage } from './NPSMessage.js'
 import type { BufferWithConnection, GServiceResponse, PersonaRecord } from 'mcos-types/types.js'
 import { NPSPersonaMapsMessage } from './NPSPersonaMapsMessage.js'
-import type { TCPConnection } from 'mcos-types/tcpConnection.js'
 
 const log = logger.child({ service: 'mcoserver:PersonaServer' })
 
@@ -391,78 +390,6 @@ export class PersonaServer {
         throw new Error('Error serializing personaMapsMsg, error unknonw')
       }
     }
-  }
-
-  /**
-   * Handle inbound packets for the persona server
-   *
-   * @param {{connection: TCPConnection, data: Buffer}} rawPacket
-   * @return {Promise<TCPConnection>}
-   * @memberof PersonaServer
-   */
-  async dataHandler (rawPacket: { connection: TCPConnection; data: Buffer }): Promise<TCPConnection> {
-    const { connection, data } = rawPacket
-    const { sock, localPort, remoteAddress } = connection
-    const updatedConnection = connection
-    log.debug(
-      `Received Persona packet',
-      ${JSON.stringify({
-        localPort,
-        remoteAddress,
-        data: rawPacket.data.toString('hex')
-      })}`
-    )
-    const requestCode = data.readUInt16BE(0).toString(16)
-
-    switch (requestCode) {
-      case '503': {
-        const requestPacket = new NPSMessage('recieved').deserialize(data)
-        // NPS_REGISTER_GAME_LOGIN = 0x503
-        const responsePacket = await handleSelectGamePersona(requestPacket)
-        this.sendPacket(sock, responsePacket)
-        return updatedConnection
-      }
-
-      case '507': {
-        // NPS_NEW_GAME_ACCOUNT == 0x507
-        const responsePacket = await this.createNewGameAccount(data)
-        this.sendPacket(sock, responsePacket)
-        return updatedConnection
-      }
-
-      case '50f': {
-        // NPS_REGISTER_GAME_LOGOUT = 0x50F
-        const responsePacket = await this.logoutGameUser(data)
-        this.sendPacket(sock, responsePacket)
-        return updatedConnection
-      }
-
-      case '532': {
-        // NPS_GET_PERSONA_MAPS = 0x532
-        const responsePacket = await this.getPersonaMaps(data)
-        this.sendPacket(sock, responsePacket)
-        return updatedConnection
-      }
-
-      case '533': {
-        // NPS_VALIDATE_PERSONA_NAME   = 0x533
-        const responsePacket = await this.validatePersonaName(data)
-        this.sendPacket(sock, responsePacket)
-        return updatedConnection
-      }
-      case '534': {
-        // NPS_CHECK_TOKEN   = 0x534
-        const responsePacket = await this.validateLicencePlate(data)
-        this.sendPacket(sock, responsePacket)
-        return updatedConnection
-      }
-    }
-    throw new Error(
-      `[personaServer] Unknown code was received ${JSON.stringify({
-        requestCode,
-        localPort
-      })}`
-    )
   }
 }
 

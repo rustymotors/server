@@ -18,8 +18,6 @@ import { logger } from 'mcos-logger/src/index.js'
 import type { BufferWithConnection, TServiceResponse } from 'mcos-types/types.js'
 import { handleData } from './internal.js'
 
-export { MCOTServer, getTransactionServer } from './transactionServer.js'
-
 const log = logger.child({ service: 'mcos:transactions' })
 
 /**
