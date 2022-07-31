@@ -1,11 +1,5 @@
 /// <reference types="node" />
-/**
- *
- *
- * @param {unknown} error
- * @return {string}
- */
-export declare function errorMessage(error: unknown): string;
+
 /**
  *
  * @param {IBufferWithConnection} dataConnection

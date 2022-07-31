@@ -21,19 +21,6 @@ import type { Socket } from "node:net";
 
 const log = logger.child({ service: "mcos:gateway:connections" });
 
-/**
- *
- *
- * @param {unknown} error
- * @return {string}
- */
-export function errorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return String(error);
-}
-
 /** @type {SocketWithConnectionInfo[]} */
 const connectionList: SocketWithConnectionInfo[] = [];
 
@@ -125,7 +112,7 @@ export function updateConnection(
     connectionList.splice(index, 1);
     connectionList.push(updatedConnection);
   } catch (error) {
-    throw new Error(`Error updating connection, ${errorMessage(error)}`);
+    throw new Error(`Error updating connection, ${String(error)}`);
   }
 }
 

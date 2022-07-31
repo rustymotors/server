@@ -24,19 +24,6 @@ import type {
 const log = logger.child({ service: "mcoserver:LobbyServer" });
 
 /**
- *
- *
- * @param {unknown} error
- * @return {string}
- */
-export function errorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return String(error);
-}
-
-/**
  * Entry and exit point for the lobby service
  *
  * @export
@@ -49,7 +36,7 @@ export async function receiveLobbyData(
   try {
     return { err: null, response: await handleData(dataConnection) };
   } catch (error) {
-    const errMessage = `There was an error in the lobby service: ${errorMessage(
+    const errMessage = `There was an error in the lobby service: ${String(
       error
     )}`;
     log.error(errMessage);

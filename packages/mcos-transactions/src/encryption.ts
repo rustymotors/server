@@ -25,19 +25,6 @@ import type {
 
 const log = logger.child({ service: "mcos:shared:encryption" });
 
-/**
- *
- *
- * @param {unknown} error
- * @return {string}
- */
-export function errorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return String(error);
-}
-
 const encryptionSessions: EncryptionSession[] = [];
 
 function generateEncryptionPair(
@@ -222,7 +209,7 @@ export function updateEncryptionSession(
     encryptionSessions.push(updatedSession);
     log.debug(`Updated encryption session for id: ${connectionId}`);
   } catch (error) {
-    throw new Error(`Error updating connection, ${errorMessage(error)}`);
+    throw new Error(`Error updating connection, ${String(error)}`);
   }
 }
 

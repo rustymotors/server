@@ -36,19 +36,6 @@ export function toHex(data: Buffer): string {
 }
 
 /**
- *
- *
- * @param {unknown} error
- * @return {string}
- */
-export function errorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return String(error);
-}
-
-/**
  * @class
  * @property {string} name
  * @property {'big' | 'little'} order
@@ -237,7 +224,7 @@ export class BinaryStructure {
       return value.readUInt8();
     } catch (error) {
       log.trace("Calling get() in BinaryStructure.. fail!");
-      const errMessage = `Error in getValueX: ${errorMessage(
+      const errMessage = `Error in getValueX: ${String(
         error
       )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${
         value.byteLength
@@ -291,7 +278,7 @@ export class BinaryStructure {
       throw new Error(errMessage);
     } catch (error) {
       log.trace("Calling get() in BinaryStructure.. fail!");
-      const errMessage = `Error in newValueNumber: ${errorMessage(
+      const errMessage = `Error in newValueNumber: ${String(
         error
       )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${
         value.byteLength
