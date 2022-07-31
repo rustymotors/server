@@ -28,19 +28,6 @@ import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
 const log = logger.child({ service: "mcoserver:PersonaServer" });
 
 /**
- *
- *
- * @param {unknown} error
- * @return {string}
- */
-function errorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return String(error);
-}
-
-/**
  * Selects a game persona and marks it as in use
  * @param {NPSMessage} requestPacket
  * @returns {Promise<NPSMessage>}
@@ -328,9 +315,9 @@ export class PersonaServer {
     switch (customerId) {
       case 2_868_969_472:
       case 5_551_212:
-        return this.getPersonasByCustomerId(customerId);
+        return await this.getPersonasByCustomerId(customerId);
       default:
-        return [];
+        return Promise.resolve([]);
     }
   }
 
@@ -418,11 +405,9 @@ export async function receivePersonaData(
       response: serviceResponse,
     };
   } catch (error) {
-    const errMessage = `There was an error in the persona service: ${errorMessage(
-      error
-    )}`;
-    log.error(errMessage);
-    return { err: new Error(errMessage), response: undefined };
+    return Promise.reject(
+      `There was an error in the persona service: ${String(error)}`
+    );
   }
 }
 
