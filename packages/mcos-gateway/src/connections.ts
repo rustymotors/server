@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from 'mcos-logger/src/index.js'
-import type { SocketWithConnectionInfo } from 'mcos-types/types.js'
-import { randomUUID } from 'node:crypto'
-import type { Socket } from 'node:net'
+import { logger } from "mcos-logger/src/index.js";
+import type { SocketWithConnectionInfo } from "mcos-types/types.js";
+import { randomUUID } from "node:crypto";
+import type { Socket } from "node:net";
 
-const log = logger.child({ service: 'mcos:gateway:connections' })
+const log = logger.child({ service: "mcos:gateway:connections" });
 
 /**
  *
@@ -27,15 +27,15 @@ const log = logger.child({ service: 'mcos:gateway:connections' })
  * @param {unknown} error
  * @return {string}
  */
- export function errorMessage (error: unknown): string {
+export function errorMessage(error: unknown): string {
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
-  return String(error)
+  return String(error);
 }
 
 /** @type {SocketWithConnectionInfo[]} */
-const connectionList: SocketWithConnectionInfo[] = []
+const connectionList: SocketWithConnectionInfo[] = [];
 
 /**
  *
@@ -43,123 +43,133 @@ const connectionList: SocketWithConnectionInfo[] = []
  * @export
  * @return {SocketWithConnectionInfo[]}
  */
-export function getAllConnections (): SocketWithConnectionInfo[] {
-  return connectionList
+export function getAllConnections(): SocketWithConnectionInfo[] {
+  return connectionList;
 }
 
 /**
-   * Return an existing connection, or a new one
-   *
-   * @param {Socket} socket
-   * @return {SocketWithConnectionInfo}
-   */
-export function selectConnection (socket: Socket): SocketWithConnectionInfo {
+ * Return an existing connection, or a new one
+ *
+ * @param {Socket} socket
+ * @return {SocketWithConnectionInfo}
+ */
+export function selectConnection(socket: Socket): SocketWithConnectionInfo {
+  const { localPort, remoteAddress } = socket;
 
-  const { localPort, remoteAddress } = socket
-
-  if (typeof localPort === 'undefined' || typeof remoteAddress === 'undefined') {
-    const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`
-    log.error(errMessage)
-    throw new Error(errMessage)
+  if (
+    typeof localPort === "undefined" ||
+    typeof remoteAddress === "undefined"
+  ) {
+    const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`;
+    log.error(errMessage);
+    throw new Error(errMessage);
   }
 
-  const existingConnection = connectionList.find(c => {
-    return c.socket.remoteAddress === remoteAddress && c.localPort === localPort
-  })
+  const existingConnection = connectionList.find((c) => {
+    return (
+      c.socket.remoteAddress === remoteAddress && c.localPort === localPort
+    );
+  });
 
-  if (typeof existingConnection !== 'undefined') {
+  if (typeof existingConnection !== "undefined") {
     log.info(
-        `I have seen connections from ${socket.remoteAddress} on ${socket.localPort} before`
-    )
-    existingConnection.socket = socket
-    log.debug('Returning found connection after attaching socket')
-    return existingConnection
+      `I have seen connections from ${socket.remoteAddress} on ${socket.localPort} before`
+    );
+    existingConnection.socket = socket;
+    log.debug("Returning found connection after attaching socket");
+    return existingConnection;
   }
 
-  const newConnectionId = randomUUID()
-  log.debug(`Creating new connection with id ${newConnectionId}`)
+  const newConnectionId = randomUUID();
+  log.debug(`Creating new connection with id ${newConnectionId}`);
   /** @type {SocketWithConnectionInfo} */
   const newConnection: SocketWithConnectionInfo = {
     seq: 0,
     id: newConnectionId,
     socket,
-    remoteAddress: socket.remoteAddress || '',
+    remoteAddress: socket.remoteAddress || "",
     localPort: socket.localPort || 0,
     personaId: 0,
     lastMessageTimestamp: 0,
     inQueue: true,
-    useEncryption: false
-  }
+    useEncryption: false,
+  };
 
   log.info(
-      `I have not seen connections from ${socket.remoteAddress} on ${socket.localPort} before, adding it.`
-  )
+    `I have not seen connections from ${socket.remoteAddress} on ${socket.localPort} before, adding it.`
+  );
 
-  connectionList.push(newConnection)
+  connectionList.push(newConnection);
 
   log.debug(
-      `Connection with id of ${newConnection.id} has been added. The connection list now contains ${connectionList.length} connections.`
-  )
-  return newConnection
+    `Connection with id of ${newConnection.id} has been added. The connection list now contains ${connectionList.length} connections.`
+  );
+  return newConnection;
 }
 
 /**
-   * Update the internal connection record
-   *
-   * @param {string} connectionId
-   * @param {SocketWithConnectionInfo} updatedConnection
-   */
-export function updateConnection (connectionId: string, updatedConnection: SocketWithConnectionInfo): void {
-  log.trace(`Updating connection with id: ${connectionId}`)
+ * Update the internal connection record
+ *
+ * @param {string} connectionId
+ * @param {SocketWithConnectionInfo} updatedConnection
+ */
+export function updateConnection(
+  connectionId: string,
+  updatedConnection: SocketWithConnectionInfo
+): void {
+  log.trace(`Updating connection with id: ${connectionId}`);
   try {
-    const index = connectionList.findIndex(
-      c => {
-        return c.id === connectionId
-      }
-    )
-    connectionList.splice(index, 1)
-    connectionList.push(updatedConnection)
+    const index = connectionList.findIndex((c) => {
+      return c.id === connectionId;
+    });
+    connectionList.splice(index, 1);
+    connectionList.push(updatedConnection);
   } catch (error) {
-    throw new Error(
-          `Error updating connection, ${errorMessage(error)}`
-    )
+    throw new Error(`Error updating connection, ${errorMessage(error)}`);
   }
 }
 
 /**
-   * Locate connection by remoteAddress and localPort in the connections array
-   * @param {string} remoteAddress
-   * @param {number} localPort
-   * @return {{ modern: ISocketWithConnectionInfo} | null}
-   */
-function findConnectionByAddressAndPort (remoteAddress: string, localPort: number): { modern: SocketWithConnectionInfo } | null {
+ * Locate connection by remoteAddress and localPort in the connections array
+ * @param {string} remoteAddress
+ * @param {number} localPort
+ * @return {{ modern: ISocketWithConnectionInfo} | null}
+ */
+function findConnectionByAddressAndPort(
+  remoteAddress: string,
+  localPort: number
+): { modern: SocketWithConnectionInfo } | null {
   const record =
-      connectionList.find((c) => {
-        const match =
-        c.socket.remoteAddress === remoteAddress  &&
-        c.localPort === localPort
-        return match
-      }) || null
+    connectionList.find((c) => {
+      const match =
+        c.socket.remoteAddress === remoteAddress && c.localPort === localPort;
+      return match;
+    }) || null;
   if (!record) {
-    return null
+    return null;
   }
-  return { modern: record }
+  return { modern: record };
 }
 
 /**
-   * Creates a new connection object for the socket and adds to list
-   * @param {string} connectionId
-   * @param {Socket} socket
-   * @returns {{ modern: SocketWithConnectionInfo}}
-   */
-function createNewConnection (connectionId: string, socket: Socket): { modern: SocketWithConnectionInfo } {
+ * Creates a new connection object for the socket and adds to list
+ * @param {string} connectionId
+ * @param {Socket} socket
+ * @returns {{ modern: SocketWithConnectionInfo}}
+ */
+function createNewConnection(
+  connectionId: string,
+  socket: Socket
+): { modern: SocketWithConnectionInfo } {
+  const { localPort, remoteAddress } = socket;
 
-  const { localPort, remoteAddress } = socket
-
-  if (typeof localPort === 'undefined' || typeof remoteAddress === 'undefined') {
-    const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`
-    log.error(errMessage)
-    throw new Error(errMessage)
+  if (
+    typeof localPort === "undefined" ||
+    typeof remoteAddress === "undefined"
+  ) {
+    const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`;
+    log.error(errMessage);
+    throw new Error(errMessage);
   }
 
   /** @type {SocketWithConnectionInfo} */
@@ -172,82 +182,71 @@ function createNewConnection (connectionId: string, socket: Socket): { modern: S
     personaId: 0,
     lastMessageTimestamp: 0,
     inQueue: true,
-    useEncryption: false
-  }
-  return { modern: newConnectionRecord }
+    useEncryption: false,
+  };
+  return { modern: newConnectionRecord };
 }
 
 /**
-   * Add new connection to internal list
-   *
-   * @param {SocketWithConnectionInfo} connection
-   * @return {SocketWithConnectionInfo[]}
-   */
-function addConnection (connection: SocketWithConnectionInfo): SocketWithConnectionInfo[] {
-  connectionList.push(connection)
-  return connectionList
+ * Add new connection to internal list
+ *
+ * @param {SocketWithConnectionInfo} connection
+ * @return {SocketWithConnectionInfo[]}
+ */
+function addConnection(
+  connection: SocketWithConnectionInfo
+): SocketWithConnectionInfo[] {
+  connectionList.push(connection);
+  return connectionList;
 }
 
 /**
-   * Return an existing connection, or a new one
-   *
-   * @param {Socket} socket
-   * @return {{ modern: SocketWithConnectionInfo} | null}
-   */
-export function findOrNewConnection (socket: Socket): { modern: SocketWithConnectionInfo } | null {
-  const { localPort, remoteAddress } = socket
+ * Return an existing connection, or a new one
+ *
+ * @param {Socket} socket
+ * @return {{ modern: SocketWithConnectionInfo} | null}
+ */
+export function findOrNewConnection(
+  socket: Socket
+): { modern: SocketWithConnectionInfo } | null {
+  const { localPort, remoteAddress } = socket;
 
-  if (typeof localPort === 'undefined' || typeof remoteAddress === 'undefined') {
-    const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`
-    log.error(errMessage)
-    throw new Error(errMessage)
+  if (
+    typeof localPort === "undefined" ||
+    typeof remoteAddress === "undefined"
+  ) {
+    const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`;
+    log.error(errMessage);
+    throw new Error(errMessage);
   }
 
   const existingConnection = findConnectionByAddressAndPort(
     remoteAddress,
     localPort
-  )
-  if (existingConnection) {
+  );
+  if (existingConnection !== null) {
     log.info(
       `I have seen connections from ${socket.remoteAddress} on ${socket.localPort} before`
-    )
-
-    // Legacy
-    // existingConnection.legacy.sock = socket
-    // log.debug('[L] Returning found connection after attaching socket')
+    );
 
     // Modern
-    existingConnection.modern.socket = socket
-    log.debug('[M] Returning found connection after attaching socket')
-    return existingConnection
+    existingConnection.modern.socket = socket;
+    log.debug("[M] Returning found connection after attaching socket");
+    return existingConnection;
   }
 
-  const newConnectionId = randomUUID()
-  log.debug(`Creating new connection with id ${newConnectionId}`)
-  const newConnection = createNewConnection(newConnectionId, socket)
+  const newConnectionId = randomUUID();
+  log.debug(`Creating new connection with id ${newConnectionId}`);
+  const newConnection = createNewConnection(newConnectionId, socket);
   log.info(
     `I have not seen connections from ${socket.remoteAddress} on ${socket.localPort} before, adding it.`
-  )
-  const updatedConnectionList = addConnection(newConnection.modern)
+  );
+  const updatedConnectionList = addConnection(newConnection.modern);
   log.debug(
     `Connection with id of ${newConnection.modern.id} has been added. The connection list now contains ${updatedConnectionList.length} connections.`
-  )
-  return newConnection
+  );
+  return newConnection;
 }
-
-// /**
-//    * Get the name connected to the NPS opcode
-//    * @param {number} opCode
-//    * @return {string}
-//    */
-// function getNameFromOpCode (opCode: number): string {
-//   const opCodeName = NPS_COMMANDS.find((code) => code.value === opCode)
-//   if (opCodeName === undefined) {
-//     throw new Error(`Unable to locate name for opCode ${opCode}`)
-//   }
-
-//   return opCodeName.name
-// }
 
 /**
  * Is this an MCOT bound packet?
@@ -256,7 +255,6 @@ export function findOrNewConnection (socket: Socket): { modern: SocketWithConnec
  * @param {Buffer} inputBuffer
  * @return {boolean}
  */
-export function isMCOT (inputBuffer: Buffer): boolean {
-  return inputBuffer.toString('utf8', 2, 6) === 'TOMC'
+export function isMCOT(inputBuffer: Buffer): boolean {
+  return inputBuffer.toString("utf8", 2, 6) === "TOMC";
 }
-
