@@ -14,20 +14,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { startListeners } from "../packages/mcos-gateway/src/index.js";
 import { logger } from "../packages/mcos-logger/src/index.js";
-import { MCOServer } from "../packages/mcos-gateway/src/index.js";
 
 const log = logger.child({ service: "mcos" });
 
 try {
-  MCOServer.start();
-} catch (/** @type {unknown} */ err) {
-  log.error("Error in core server");
-  if (err instanceof Error) {
-    log.error(err.message);
-  } else {
-    throw err;
-  }
+  startListeners();
+} catch (err) {
+  log.error(`Error in core server: ${String(err)}`);
   log.error("Server exiting");
   process.exit(1);
 }

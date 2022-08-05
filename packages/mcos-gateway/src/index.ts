@@ -16,9 +16,10 @@
 
 import { logger } from "mcos-logger/src/index.js";
 import * as http from "node:http";
-import { createServer, Server, Socket } from "node:net";
-import { socketListener } from "./sockets.js";
-import { httpListener } from "./web.js";
+import { createServer as createSocketServer, Socket } from "node:net";
+import { selectConnection } from "./connections.js";
+import { dataHandler } from "./sockets.js";
+import { httpListener as httpHandler } from "./web.js";
 export { getAllConnections } from "./connections.js";
 export { AdminServer } from "./adminServer.js";
 
@@ -29,100 +30,62 @@ const listeningPortList = [
   9007, 9008, 9009, 9010, 9011, 9012, 9013, 9014, 43200, 43300, 43400, 53303,
 ];
 
-/**
- * A server
- *
- * Please use {@link MCOServer.start()}
- * @classdesc
- * @export
- * @class MCOServer
- */
-export class MCOServer {
-  /**
-   *
-   * @private
-   * @type {Server[]}
-   * @memberof MCOServer
-   */
+function socketListener(incomingSocket: Socket): void {
+  log.debug(
+    `[gate]Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
+  );
 
-  _listeningServers: Server[] = [];
-
-  /**
-   * Handle incomming socket connections
-   *
-   * @private
-   * @param {Socket} incomingSocket
-   * @return {void}
-   * @memberof MCOServer
-   */
-  _listener(incomingSocket: Socket): void {
-    log.debug(
-      `[gate]Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
-    );
-
-    // Is this an HTTP request?
-    if (incomingSocket.localPort === 80) {
-      log.debug("Web request");
-      const newServer = new http.Server(httpListener);
-      // Send the socket to the http server instance
-      newServer.emit("connection", incomingSocket);
-      return;
-    }
-
-    // This is a 'normal' TCP socket
-    socketListener(incomingSocket);
+  // Is this an HTTP request?
+  if (incomingSocket.localPort === 80) {
+    log.debug("Web request");
+    const newServer = new http.Server(httpHandler);
+    // Send the socket to the http server instance
+    newServer.emit("connection", incomingSocket);
+    return;
   }
 
-  /**
-   * Launch the server
-   *
-   * @static
-   * @return {void}
-   * @memberof MCOServer
-   */
-  static start(): void {
-    const server = new MCOServer();
-    server.run();
+  // This is a 'normal' TCP socket
+  TCPListener(incomingSocket);
+}
+
+function TCPListener(incomingSocket: Socket) {
+  // Get a connection record
+  const connectionRecord = selectConnection(incomingSocket);
+
+  const { localPort, remoteAddress } = incomingSocket;
+  log.info(`Client ${remoteAddress} connected to port ${localPort}`);
+
+  incomingSocket.on("end", () => {
+    log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
+  });
+  incomingSocket.on("data", async (data): Promise<void> => {
+    await dataHandler(data, connectionRecord);
+  });
+  incomingSocket.on("error", onSocketError);
+}
+
+function onSocketError(error: Error): void {
+  const message = String(error);
+  if (message.includes("ECONNRESET") === true) {
+    return log.warn("Connection was reset");
   }
+  log.error(`Socket error: ${String(error)}`);
+}
 
-  /**
-   * Start port listeners
-   *
-   * @return {void}
-   * @memberof MCOServer
-   */
-  run(): void {
-    log.info("Server starting");
+export function startListeners(): void {
+  log.info("Server starting");
 
-    for (let index = 0; index < listeningPortList.length; index++) {
-      const port = listeningPortList[index];
-      const newServer = createServer((s) => {
-        this._listener(s);
-      });
-      newServer.on("error", (err) => {
-        throw err;
-      });
-      newServer.listen(port, "0.0.0.0", 0, () => {
-        const listeningPort = String(port).length
-          ? String(port).toLocaleLowerCase
-          : "unknown";
-        log.debug(`Listening on port ${listeningPort}`);
-        this._listeningServers.push(newServer);
-      });
-    }
-  }
-
-  /**
-   * Close all listening ports and move server to stopped state
-   *
-   * @return {void}
-   * @memberof MCOServer
-   */
-  stop(): void {
-    this._listeningServers.forEach((server) => {
-      server.emit("close", this);
+  listeningPortList.forEach((port) => {
+    const newServer = createSocketServer((s) => {
+      socketListener(s);
     });
-    this._listeningServers = [];
-    log.info("Servers closed");
-  }
+    newServer.listen(port, "0.0.0.0", 0, () => {
+      return serverListener(port);
+    });
+  });
+}
+
+function serverListener(port: number) {
+  const listeningPort = String(port).length ? String(port) : "unknown";
+  log.debug(`Listening on port ${listeningPort}`);
 }

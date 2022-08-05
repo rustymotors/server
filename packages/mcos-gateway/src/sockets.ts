@@ -56,7 +56,7 @@ export function toHex(data: Buffer): string {
  * @param {SocketWithConnectionInfo} connection
  * @return {Promise<void>}
  */
-async function onData(
+export async function dataHandler(
   data: Buffer,
   connection: SocketWithConnectionInfo
 ): Promise<void> {
@@ -190,7 +190,7 @@ async function onData(
  * @param {Socket} socket
  * @return {void}
  */
-export function socketListener(socket: Socket): void {
+export function TCPHandler(socket: Socket): void {
   // Received a new connection
   // Turn it into a connection object
   const connectionRecord = selectConnection(socket);
@@ -214,7 +214,7 @@ export function socketListener(socket: Socket): void {
     log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
   });
   socket.on("data", async (data): Promise<void> => {
-    await onData(data, connectionRecord);
+    await dataHandler(data, connectionRecord);
   });
   socket.on("error", (error) => {
     const message = String(error);
