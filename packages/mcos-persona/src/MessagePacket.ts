@@ -17,6 +17,12 @@
 export class MessagePacket {
     private _buffer: Buffer = Buffer.alloc(0);
 
+    /**
+     * 
+     * @param {Buffer} buffer 
+     * @returns {MessagePacket} A new Message packet object created from 
+     *      the input buffer
+     */
     static fromBuffer(buffer: Buffer): MessagePacket {
         const newMessage = new MessagePacket();
         newMessage.setBuffer(buffer);

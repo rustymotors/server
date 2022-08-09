@@ -161,6 +161,10 @@ export class BinaryStructure {
         });
     }
 
+    /**
+     * @desc Returns how many bytes the structure needs to serialize
+     * @returns {number}
+     */
     public getByteLength(): number {
         return this._byteLength;
     }

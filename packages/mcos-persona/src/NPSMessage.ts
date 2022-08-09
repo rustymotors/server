@@ -11,6 +11,9 @@
 
 import type { NPSMessageJSON } from "mcos-types/types.js";
 
+/**
+ * @classdesc Base class for objects that cross the wire as packets
+ */
 export class NPSMessage {
     msgNo;
     msgVersion;

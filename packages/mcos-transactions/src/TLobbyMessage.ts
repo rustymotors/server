@@ -81,6 +81,9 @@ export class TLobbyMessage extends TSMessageBase {
     }
 }
 
+/**
+ * @classdesc This object contains information for a room on the server
+ */
 export class LobbyInfo extends BinaryStructure {
     constructor() {
         super();
