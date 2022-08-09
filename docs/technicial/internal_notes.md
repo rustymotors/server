@@ -1,6 +1,6 @@
 # Internal Notes
 
-This document will serve as a fenerate for the internal breakdown and intra-service flow of information between services
+This document will serve as a framework for the internal breakdown and intra-service flow of information between services
 
 ## Services
 
