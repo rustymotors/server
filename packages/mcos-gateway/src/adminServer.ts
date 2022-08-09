@@ -113,7 +113,7 @@ export class AdminServer {
 
         const connections = getAllConnections();
 
-        if (request.url.startsWith("/admin/connections/releaseQueue")) {
+        if (request.url.startsWith("/admin/connections/releaseQueue") === true) {
             const connectionId = new URL(
                 request.url,
                 `http://${request.headers.host}`
@@ -137,7 +137,7 @@ export class AdminServer {
             return listConnections(connections);
         }
 
-        if (request.url.startsWith("/admin")) {
+        if (request.url.startsWith("/admin") === true) {
             return { code: 404, headers: {}, body: "Jiggawatt!" };
         }
 
