@@ -19,13 +19,13 @@
  */
 class Byte {
     private byte_ = Buffer.alloc(1);
-    private maxSize_ = 255;
+    readonly maxSize_ = 255;
 
     private constructor(x: number) {
         this.checkSize(x);
     }
 
-    private checkSize(x: number) {
+    private checkSize(x: number): void {
         if (x < 0 || x > this.maxSize_) {
             throw new RangeError(
                 `value must be between 0 and ${this.maxSize_}`
@@ -55,13 +55,13 @@ class Byte {
  */
 class Word {
     private word_: Buffer = Buffer.from([0x00, 0x00]);
-    private maxSize_ = 65535;
+    readonly maxSize_ = 65535;
 
     private constructor(x: number) {
         this.checkSize(x);
     }
 
-    private checkSize(x: number) {
+    private checkSize(x: number): void {
         if (x < 0 || x > this.maxSize_) {
             throw new RangeError(
                 `value must be between 0 and ${this.maxSize_}`
@@ -93,13 +93,13 @@ class Word {
  */
 class DWord {
     private dword_: Buffer = Buffer.from([0x00, 0x00, 0x00, 0x00]);
-    private maxSize_ = 4294967295;
+    readonly maxSize_ = 4294967295;
 
     private constructor(x: number) {
         this.checkSize(x);
     }
 
-    private checkSize(x: number) {
+    private checkSize(x: number): void {
         if (x < 0 || x > this.maxSize_) {
             throw new RangeError(
                 `value must be between 0 and ${this.maxSize_}`
@@ -235,7 +235,7 @@ export abstract class SerializeBase {
         ]);
     }
 
-    protected serializeBlob_(buf: Buffer) {
+    protected serializeBlob_(buf: Buffer): void {
         this.serializedBuffer_ = Buffer.concat([this.serializedBuffer_, buf]);
     }
 

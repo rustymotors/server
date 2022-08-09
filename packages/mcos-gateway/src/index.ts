@@ -48,7 +48,7 @@ function socketListener(incomingSocket: Socket): void {
     TCPListener(incomingSocket);
 }
 
-function TCPListener(incomingSocket: Socket) {
+function TCPListener(incomingSocket: Socket): void {
     // Get a connection record
     const connectionRecord = selectConnection(incomingSocket);
 
@@ -85,7 +85,7 @@ export function startListeners(): void {
     });
 }
 
-function serverListener(port: number) {
+function serverListener(port: number): void {
     const listeningPort = String(port).length ? String(port) : "unknown";
     log.debug(`Listening on port ${listeningPort}`);
 }
