@@ -4,10 +4,10 @@ import { BinaryStructure } from "./BinaryStructure.js";
  * @extends {BinaryStructure}
  */
 export declare class TSMessageBase extends BinaryStructure {
-  /**
-   * What byte order are the fields?
-   * @type {'big' | 'little'}
-   */
-  _byteOrder: string;
-  constructor();
+    /**
+     * What byte order are the fields?
+     * @type {'big' | 'little'}
+     */
+    _byteOrder: string;
+    constructor();
 }

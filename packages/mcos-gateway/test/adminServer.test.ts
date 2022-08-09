@@ -24,105 +24,105 @@ import { Socket } from "net";
 chai.should();
 
 describe("AdminServer", () => {
-  describe(".getAdminServer", () => {
-    it("should return an instance of AdminServer", () => {
-      // Act
-      const newAdminInstance = AdminServer.getAdminServer();
+    describe(".getAdminServer", () => {
+        it("should return an instance of AdminServer", () => {
+            // Act
+            const newAdminInstance = AdminServer.getAdminServer();
 
-      // Assert
-      newAdminInstance.should.be.instanceOf(AdminServer);
-    });
-    it("should return the same instance of AdminServer on multiple calls", () => {
-      // Act
-      const admin1 = AdminServer.getAdminServer();
-      const admin2 = AdminServer.getAdminServer();
+            // Assert
+            newAdminInstance.should.be.instanceOf(AdminServer);
+        });
+        it("should return the same instance of AdminServer on multiple calls", () => {
+            // Act
+            const admin1 = AdminServer.getAdminServer();
+            const admin2 = AdminServer.getAdminServer();
 
-      // Assert
-      admin1.should.equal(admin2);
+            // Assert
+            admin1.should.equal(admin2);
+        });
     });
-  });
 });
 
 describe("resetQueue()", function () {
-  it("should reset the inQueue property to true for all connections", function () {
-    // arrange
-    const inputConnectionList: SocketWithConnectionInfo[] = [
-      {
-        socket: mock(Socket),
-        seq: 0,
-        id: "A",
-        remoteAddress: "0.0.0.0",
-        localPort: 0,
-        personaId: 0,
-        lastMessageTimestamp: 0,
-        inQueue: false,
-        useEncryption: false,
-      },
-      {
-        socket: mock(Socket),
-        seq: 0,
-        id: "A",
-        remoteAddress: "0.0.0.0",
-        localPort: 0,
-        personaId: 0,
-        lastMessageTimestamp: 0,
-        inQueue: false,
-        useEncryption: false,
-      },
-      {
-        socket: mock(Socket),
-        seq: 0,
-        id: "A",
-        remoteAddress: "0.0.0.0",
-        localPort: 0,
-        personaId: 0,
-        lastMessageTimestamp: 0,
-        inQueue: false,
-        useEncryption: false,
-      },
-    ];
-    const expectedConnectionList: SocketWithConnectionInfo[] = [
-      {
-        socket: mock(Socket),
-        seq: 0,
-        id: "A",
-        remoteAddress: "0.0.0.0",
-        localPort: 0,
-        personaId: 0,
-        lastMessageTimestamp: 0,
-        inQueue: true,
-        useEncryption: false,
-      },
-      {
-        socket: mock(Socket),
-        seq: 0,
-        id: "A",
-        remoteAddress: "0.0.0.0",
-        localPort: 0,
-        personaId: 0,
-        lastMessageTimestamp: 0,
-        inQueue: true,
-        useEncryption: false,
-      },
-      {
-        socket: mock(Socket),
-        seq: 0,
-        id: "A",
-        remoteAddress: "0.0.0.0",
-        localPort: 0,
-        personaId: 0,
-        lastMessageTimestamp: 0,
-        inQueue: true,
-        useEncryption: false,
-      },
-    ];
+    it("should reset the inQueue property to true for all connections", function () {
+        // arrange
+        const inputConnectionList: SocketWithConnectionInfo[] = [
+            {
+                socket: mock(Socket),
+                seq: 0,
+                id: "A",
+                remoteAddress: "0.0.0.0",
+                localPort: 0,
+                personaId: 0,
+                lastMessageTimestamp: 0,
+                inQueue: false,
+                useEncryption: false,
+            },
+            {
+                socket: mock(Socket),
+                seq: 0,
+                id: "A",
+                remoteAddress: "0.0.0.0",
+                localPort: 0,
+                personaId: 0,
+                lastMessageTimestamp: 0,
+                inQueue: false,
+                useEncryption: false,
+            },
+            {
+                socket: mock(Socket),
+                seq: 0,
+                id: "A",
+                remoteAddress: "0.0.0.0",
+                localPort: 0,
+                personaId: 0,
+                lastMessageTimestamp: 0,
+                inQueue: false,
+                useEncryption: false,
+            },
+        ];
+        const expectedConnectionList: SocketWithConnectionInfo[] = [
+            {
+                socket: mock(Socket),
+                seq: 0,
+                id: "A",
+                remoteAddress: "0.0.0.0",
+                localPort: 0,
+                personaId: 0,
+                lastMessageTimestamp: 0,
+                inQueue: true,
+                useEncryption: false,
+            },
+            {
+                socket: mock(Socket),
+                seq: 0,
+                id: "A",
+                remoteAddress: "0.0.0.0",
+                localPort: 0,
+                personaId: 0,
+                lastMessageTimestamp: 0,
+                inQueue: true,
+                useEncryption: false,
+            },
+            {
+                socket: mock(Socket),
+                seq: 0,
+                id: "A",
+                remoteAddress: "0.0.0.0",
+                localPort: 0,
+                personaId: 0,
+                lastMessageTimestamp: 0,
+                inQueue: true,
+                useEncryption: false,
+            },
+        ];
 
-    // act
-    const result: SocketWithConnectionInfo[] = JSON.parse(
-      resetQueue(inputConnectionList).body
-    );
+        // act
+        const result: SocketWithConnectionInfo[] = JSON.parse(
+            resetQueue(inputConnectionList).body
+        );
 
-    // assert
-    expect(result[1]?.inQueue).to.equal(expectedConnectionList[1]?.inQueue);
-  });
+        // assert
+        expect(result[1]?.inQueue).to.equal(expectedConnectionList[1]?.inQueue);
+    });
 });

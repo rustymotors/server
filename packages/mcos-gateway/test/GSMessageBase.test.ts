@@ -22,41 +22,41 @@ import type { ByteField } from "mcos-types/types.js";
 chai.should();
 
 describe("GSMessageBase", () => {
-  describe(".byteLength", () => {
-    it("should hvave a value of 2", () => {
-      // Arrange
-      const testMessage = new GSMessageBase();
+    describe(".byteLength", () => {
+        it("should hvave a value of 2", () => {
+            // Arrange
+            const testMessage = new GSMessageBase();
 
-      // Assert
-      testMessage.getByteLength().should.equal(10);
+            // Assert
+            testMessage.getByteLength().should.equal(10);
+        });
     });
-  });
-  describe("#deserialize", () => {
-    it("should handle an input stream without errors", () => {
-      // Arrange
-      const testMessage = new GSMessageBase();
+    describe("#deserialize", () => {
+        it("should handle an input stream without errors", () => {
+            // Arrange
+            const testMessage = new GSMessageBase();
 
-      // Assert
-      (() => {
-        return testMessage.deserialize(Buffer.from([1, 2, 3, 4]));
-      }).should.not.throw();
+            // Assert
+            (() => {
+                return testMessage.deserialize(Buffer.from([1, 2, 3, 4]));
+            }).should.not.throw();
+        });
     });
-  });
-  describe("#get", () => {
-    it("should return a ByteField object when passed a valid field name", () => {
-      // Arrange
-      const testMessage = new GSMessageBase();
-      const expectedField: ByteField = {
-        name: "msgId",
-        size: 2,
-        offset: 0,
-        type: "u16",
-        value: Buffer.alloc(2),
-        order: "little",
-      };
+    describe("#get", () => {
+        it("should return a ByteField object when passed a valid field name", () => {
+            // Arrange
+            const testMessage = new GSMessageBase();
+            const expectedField: ByteField = {
+                name: "msgId",
+                size: 2,
+                offset: 0,
+                type: "u16",
+                value: Buffer.alloc(2),
+                order: "little",
+            };
 
-      // Assert
-      testMessage.get("msgId").should.deep.equal(expectedField);
+            // Assert
+            testMessage.get("msgId").should.deep.equal(expectedField);
+        });
     });
-  });
 });

@@ -24,45 +24,45 @@ const log = logger.child({ service: "mcos:shared:structures" });
  * @extends {BinaryStructure}
  */
 export class TSMessageBase extends BinaryStructure {
-  /**
-   * What byte order are the fields?
-   * @type {'big' | 'little'}
-   */
-  _byteOrder = "big";
-  constructor() {
-    super();
-    log.trace("new TSMessageBase");
-    this._add({
-      name: "dataLength",
-      order: "little",
-      type: "u16",
-      size: 2,
-      value: Buffer.alloc(2),
-    });
+    /**
+     * What byte order are the fields?
+     * @type {'big' | 'little'}
+     */
+    _byteOrder = "big";
+    constructor() {
+        super();
+        log.trace("new TSMessageBase");
+        this._add({
+            name: "dataLength",
+            order: "little",
+            type: "u16",
+            size: 2,
+            value: Buffer.alloc(2),
+        });
 
-    this._add({
-      name: "mcoSig",
-      order: "little",
-      type: "char",
-      size: 4,
-      value: Buffer.from([84, 79, 77, 67]), // TOMC
-    });
+        this._add({
+            name: "mcoSig",
+            order: "little",
+            type: "char",
+            size: 4,
+            value: Buffer.from([84, 79, 77, 67]), // TOMC
+        });
 
-    this._add({
-      name: "seq",
-      order: "little",
-      type: "u16",
-      size: 4,
-      value: Buffer.alloc(4),
-    });
+        this._add({
+            name: "seq",
+            order: "little",
+            type: "u16",
+            size: 4,
+            value: Buffer.alloc(4),
+        });
 
-    this._add({
-      name: "flags",
-      order: "little",
-      type: "byte",
-      size: 1,
-      value: Buffer.from([8]),
-    });
-  }
-  // 11 bytes total in this class
+        this._add({
+            name: "flags",
+            order: "little",
+            type: "byte",
+            size: 1,
+            value: Buffer.from([8]),
+        });
+    }
+    // 11 bytes total in this class
 }

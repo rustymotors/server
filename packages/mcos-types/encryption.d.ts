@@ -6,7 +6,7 @@
  * @returns {IEncryptionSession}
  */
 export declare function selectEncryptors(
-  dataConnection: IBufferWithConnection
+    dataConnection: IBufferWithConnection
 ): IEncryptionSession;
 /**
  *
@@ -14,7 +14,7 @@ export declare function selectEncryptors(
  * @returns {IEncryptionSession}
  */
 export declare function selectEncryptorsForSocket(
-  dataConnection: ISocketWithConnectionInfo
+    dataConnection: ISocketWithConnectionInfo
 ): IEncryptionSession;
 /**
  *
@@ -23,15 +23,15 @@ export declare function selectEncryptorsForSocket(
  * @returns {IEncryptionSession}
  */
 export declare function selectOrCreateEncryptors(
-  dataConnection: ISocketWithConnectionInfo,
-  keys: ISessionRecord
+    dataConnection: ISocketWithConnectionInfo,
+    keys: ISessionRecord
 ): IEncryptionSession;
 /**
  * Update the internal connection record
  */
 export declare function updateEncryptionSession(
-  connectionId: string,
-  updatedSession: IEncryptionSession
+    connectionId: string,
+    updatedSession: IEncryptionSession
 ): void;
 /**
  * CipherBufferDES
@@ -40,11 +40,11 @@ export declare function updateEncryptionSession(
  * @return {{session: EncryptionSession, data: Buffer}}
  */
 export declare function cipherBufferDES(
-  encryptionSession: IEncryptionSession,
-  data: Buffer
+    encryptionSession: IEncryptionSession,
+    data: Buffer
 ): {
-  session: IEncryptionSession;
-  data: Buffer;
+    session: IEncryptionSession;
+    data: Buffer;
 };
 /**
  * Decrypt a command that is encrypted with DES
@@ -53,19 +53,19 @@ export declare function cipherBufferDES(
  * @return {{session: EncryptionSession, data: Buffer}}
  */
 export declare function decipherBufferDES(
-  encryptionSession: IEncryptionSession,
-  data: Buffer
+    encryptionSession: IEncryptionSession,
+    data: Buffer
 ): {
-  session: IEncryptionSession;
-  data: Buffer;
+    session: IEncryptionSession;
+    data: Buffer;
 };
 /**
  * Decrypt the buffer contents
  */
 export declare function decryptBuffer(
-  dataConnection: IBufferWithConnection,
-  buffer: Buffer
+    dataConnection: IBufferWithConnection,
+    buffer: Buffer
 ): {
-  session: IEncryptionSession;
-  data: Buffer;
+    session: IEncryptionSession;
+    data: Buffer;
 };

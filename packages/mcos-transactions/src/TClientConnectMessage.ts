@@ -33,74 +33,74 @@ const log = logger.child({ service: "mcos:shared:types" });
  */
 
 export class TClientConnectMessage extends TSMessageBase {
-  appId = 0;
+    appId = 0;
 
-  /**
-   * Creates an instance of ClientConnectMessage.
-   * @memberof ClientConnectMessage
-   */
-  constructor() {
-    super();
-    log.trace("new TClientConnectMessage");
-    this._add({
-      name: "msgNo",
-      order: "little",
-      size: 2,
-      type: "u16",
-      value: Buffer.alloc(2),
-    });
-    this._add({
-      name: "customerId",
-      order: "little",
-      size: 4,
-      type: "u32",
-      value: Buffer.alloc(4),
-    });
-    this._add({
-      name: "personaId",
-      order: "little",
-      size: 4,
-      type: "u32",
-      value: Buffer.alloc(4),
-    });
-    this._add({
-      name: "customerName",
-      order: "little",
-      size: 13,
-      type: "char",
-      value: Buffer.alloc(13),
-    });
-    this._add({
-      name: "personaName",
-      order: "little",
-      size: 13,
-      type: "char",
-      value: Buffer.alloc(13),
-    });
-    this._add({
-      name: "mcVersion",
-      order: "little",
-      size: 4,
-      type: "u32",
-      value: Buffer.alloc(4),
-    });
-    // 40 bytes + 11 in super = 51 bytes
-  }
+    /**
+     * Creates an instance of ClientConnectMessage.
+     * @memberof ClientConnectMessage
+     */
+    constructor() {
+        super();
+        log.trace("new TClientConnectMessage");
+        this._add({
+            name: "msgNo",
+            order: "little",
+            size: 2,
+            type: "u16",
+            value: Buffer.alloc(2),
+        });
+        this._add({
+            name: "customerId",
+            order: "little",
+            size: 4,
+            type: "u32",
+            value: Buffer.alloc(4),
+        });
+        this._add({
+            name: "personaId",
+            order: "little",
+            size: 4,
+            type: "u32",
+            value: Buffer.alloc(4),
+        });
+        this._add({
+            name: "customerName",
+            order: "little",
+            size: 13,
+            type: "char",
+            value: Buffer.alloc(13),
+        });
+        this._add({
+            name: "personaName",
+            order: "little",
+            size: 13,
+            type: "char",
+            value: Buffer.alloc(13),
+        });
+        this._add({
+            name: "mcVersion",
+            order: "little",
+            size: 4,
+            type: "u32",
+            value: Buffer.alloc(4),
+        });
+        // 40 bytes + 11 in super = 51 bytes
+    }
 
-  /**
-   *
-   * @return {number}
-   */
-  getAppId(): number {
-    return this.appId;
-  }
+    /**
+     *
+     * @return {number}
+     */
+    getAppId(): number {
+        return this.appId;
+    }
 
-  /**
-   * DumpPacket
-   * @return {string}
-   */
-  dumpPacket(): string {
-    return `ClientConnectMsg',
+    /**
+     * DumpPacket
+     * @return {string}
+     */
+    dumpPacket(): string {
+        return `ClientConnectMsg',
         ${JSON.stringify(this._fields)}`;
-  }
+    }
 }

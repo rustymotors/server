@@ -1,5 +1,5 @@
 export class Lobby {
-  static readonly schema = `CREATE TABLE IF NOT EXISTS "lobbies"
+    static readonly schema = `CREATE TABLE IF NOT EXISTS "lobbies"
     (
       "lobyID" integer NOT NULL,
       "raceTypeID" integer NOT NULL,

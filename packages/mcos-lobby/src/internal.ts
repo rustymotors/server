@@ -19,8 +19,8 @@ import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServe
 import { _npsHeartbeat } from "./handlers/heartbeat.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
 import type {
-  BufferWithConnection,
-  GSMessageArrayWithConnection,
+    BufferWithConnection,
+    GSMessageArrayWithConnection,
 } from "mcos-types/types.js";
 
 const log = logger.child({ service: "mcos:lobby" });
@@ -30,39 +30,41 @@ const log = logger.child({ service: "mcos:lobby" });
  * @return {Promise<IGSMessageArrayWithConnection>}
  */
 export async function handleData(
-  dataConnection: BufferWithConnection
+    dataConnection: BufferWithConnection
 ): Promise<GSMessageArrayWithConnection> {
-  const { localPort, remoteAddress } = dataConnection.connection.socket;
-  log.debug(
-    `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
-  );
-  const { data } = dataConnection;
-  const requestCode = data.readUInt16BE(0).toString(16);
+    const { localPort, remoteAddress } = dataConnection.connection.socket;
+    log.debug(
+        `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
+    );
+    const { data } = dataConnection;
+    const requestCode = data.readUInt16BE(0).toString(16);
 
-  switch (requestCode) {
-    // _npsRequestGameConnectServer
-    case "100": {
-      const result = await _npsRequestGameConnectServer(dataConnection);
-      return result;
+    switch (requestCode) {
+        // _npsRequestGameConnectServer
+        case "100": {
+            const result = await _npsRequestGameConnectServer(dataConnection);
+            return result;
+        }
+
+        // NpsHeartbeat
+
+        case "217": {
+            const result = await _npsHeartbeat(dataConnection);
+            return result;
+        }
+
+        // NpsSendCommand
+
+        case "1101": {
+            // This is an encrypted command
+
+            const result = handleEncryptedNPSCommand(dataConnection);
+            return result;
+        }
+
+        default:
+            throw new Error(
+                `Unknown code ${requestCode} was received on port 7003`
+            );
     }
-
-    // NpsHeartbeat
-
-    case "217": {
-      const result = await _npsHeartbeat(dataConnection);
-      return result;
-    }
-
-    // NpsSendCommand
-
-    case "1101": {
-      // This is an encrypted command
-
-      const result = handleEncryptedNPSCommand(dataConnection);
-      return result;
-    }
-
-    default:
-      throw new Error(`Unknown code ${requestCode} was received on port 7003`);
-  }
 }

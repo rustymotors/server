@@ -1,5 +1,5 @@
 export class PlayerModel {
-  static readonly schema = `CREATE TABLE Player (
+    static readonly schema = `CREATE TABLE Player (
     PlayerID             int NOT NULL,
     CustomerID           int NOT NULL,
     PlayerTypeID         int NOT NULL,

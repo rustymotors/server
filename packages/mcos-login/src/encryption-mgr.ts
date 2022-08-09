@@ -15,11 +15,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import {
-  createDecipheriv,
-  createCipheriv,
-  randomUUID,
-  Decipher,
-  Cipher,
+    createDecipheriv,
+    createCipheriv,
+    randomUUID,
+    Decipher,
+    Cipher,
 } from "node:crypto";
 
 /**
@@ -36,107 +36,107 @@ import {
  * @property {Cipher} out
  */
 export class EncryptionManager {
-  /**
-   *
-   *
-   * @type {string}
-   * @memberof EncryptionManager
-   */
-  id: string;
-  /**
-   *
-   *
-   * @type {Buffer}
-   * @memberof EncryptionManager
-   */
-  sessionkey: Buffer;
-  /**
-   *
-   *
-   * @type {iDecipher | undefined}
-   * @memberof EncryptionManager
-   */
-  in: Decipher | undefined;
-  /**
-   *
-   *
-   * @type {(Cipher | undefined)}
-   * @memberof EncryptionManager
-   */
-  out: Cipher | undefined;
+    /**
+     *
+     *
+     * @type {string}
+     * @memberof EncryptionManager
+     */
+    id: string;
+    /**
+     *
+     *
+     * @type {Buffer}
+     * @memberof EncryptionManager
+     */
+    sessionkey: Buffer;
+    /**
+     *
+     *
+     * @type {iDecipher | undefined}
+     * @memberof EncryptionManager
+     */
+    in: Decipher | undefined;
+    /**
+     *
+     *
+     * @type {(Cipher | undefined)}
+     * @memberof EncryptionManager
+     */
+    out: Cipher | undefined;
 
-  /**
-   * Creates an instance of EncryptionManager.
-   * @memberof EncryptionManager
-   */
-  constructor() {
-    this.id = randomUUID();
-    this.sessionkey = Buffer.alloc(0);
-    this.in = undefined;
-    this.out = undefined;
-  }
-
-  /**
-   * Set the internal sessionkey
-   *
-   * @param {Buffer} sessionkey
-   * @return {boolean}
-   */
-  setEncryptionKey(sessionkey: Buffer): boolean {
-    this.sessionkey = sessionkey;
-    // File deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
-    this.in = createDecipheriv("rc4", sessionkey, "");
-    this.out = createCipheriv("rc4", sessionkey, "");
-    return true;
-  }
-
-  /**
-   * Takes cyphertext and returns plaintext
-   *
-   * @param {Buffer} encryptedText
-   * @return {Buffer}
-   * @memberof EncryptionMgr
-   */
-  decrypt(encryptedText: Buffer): Buffer {
-    if (this.in === undefined) {
-      throw new Error("No decryption manager found!");
+    /**
+     * Creates an instance of EncryptionManager.
+     * @memberof EncryptionManager
+     */
+    constructor() {
+        this.id = randomUUID();
+        this.sessionkey = Buffer.alloc(0);
+        this.in = undefined;
+        this.out = undefined;
     }
 
-    return Buffer.from(this.in.update(encryptedText));
-  }
-
-  /**
-   * Encrypt plaintext and return the ciphertext
-   *
-   * @param {Buffer} plainText
-   * @return {Buffer}
-   * @memberof EncryptionMgr
-   */
-  encrypt(plainText: Buffer): Buffer {
-    if (this.out === undefined) {
-      throw new Error("No encryption manager found!");
+    /**
+     * Set the internal sessionkey
+     *
+     * @param {Buffer} sessionkey
+     * @return {boolean}
+     */
+    setEncryptionKey(sessionkey: Buffer): boolean {
+        this.sessionkey = sessionkey;
+        // File deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
+        this.in = createDecipheriv("rc4", sessionkey, "");
+        this.out = createCipheriv("rc4", sessionkey, "");
+        return true;
     }
 
-    return Buffer.from(
-      this.out.update(plainText.toString(), "binary", "hex"),
-      "hex"
-    );
-  }
+    /**
+     * Takes cyphertext and returns plaintext
+     *
+     * @param {Buffer} encryptedText
+     * @return {Buffer}
+     * @memberof EncryptionMgr
+     */
+    decrypt(encryptedText: Buffer): Buffer {
+        if (this.in === undefined) {
+            throw new Error("No decryption manager found!");
+        }
 
-  /**
-   *
-   * @return {string}
-   */
-  _getSessionKey(): string {
-    return this.sessionkey.toString("hex");
-  }
+        return Buffer.from(this.in.update(encryptedText));
+    }
 
-  /**
-   * GetId
-   *
-   * @return {string}
-   */
-  getId(): string {
-    return this.id;
-  }
+    /**
+     * Encrypt plaintext and return the ciphertext
+     *
+     * @param {Buffer} plainText
+     * @return {Buffer}
+     * @memberof EncryptionMgr
+     */
+    encrypt(plainText: Buffer): Buffer {
+        if (this.out === undefined) {
+            throw new Error("No encryption manager found!");
+        }
+
+        return Buffer.from(
+            this.out.update(plainText.toString(), "binary", "hex"),
+            "hex"
+        );
+    }
+
+    /**
+     *
+     * @return {string}
+     */
+    _getSessionKey(): string {
+        return this.sessionkey.toString("hex");
+    }
+
+    /**
+     * GetId
+     *
+     * @return {string}
+     */
+    getId(): string {
+        return this.id;
+    }
 }

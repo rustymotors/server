@@ -21,36 +21,36 @@ import { describe, it } from "mocha";
 chai.should();
 
 describe("BinaryStructure", () => {
-  describe(".byteLength", () => {
-    it("should have a value of 0", () => {
-      // Arrange
-      const testStructure = new BinaryStructure();
+    describe(".byteLength", () => {
+        it("should have a value of 0", () => {
+            // Arrange
+            const testStructure = new BinaryStructure();
 
-      // Assert
-      testStructure.getByteLength().should.equal(0);
+            // Assert
+            testStructure.getByteLength().should.equal(0);
+        });
     });
-  });
-  describe("#serialize", () => {
-    it("should throw when passed a byteStream larger then the internal fields array", () => {
-      // Arrange
-      const inputStream = Buffer.from("This is a pretty decent size.");
-      const testStructure = new BinaryStructure();
+    describe("#serialize", () => {
+        it("should throw when passed a byteStream larger then the internal fields array", () => {
+            // Arrange
+            const inputStream = Buffer.from("This is a pretty decent size.");
+            const testStructure = new BinaryStructure();
 
-      // Assert
-      (() => {
-        return testStructure.deserialize(inputStream);
-      }).should.throw();
+            // Assert
+            (() => {
+                return testStructure.deserialize(inputStream);
+            }).should.throw();
+        });
     });
-  });
-  describe("#get", () => {
-    it("should throw when passed a name not found in the internal fields array", () => {
-      // Arrange
-      const testStructure = new BinaryStructure();
+    describe("#get", () => {
+        it("should throw when passed a name not found in the internal fields array", () => {
+            // Arrange
+            const testStructure = new BinaryStructure();
 
-      // Assert
-      (() => {
-        return testStructure.get("someFiled");
-      }).should.throw();
+            // Assert
+            (() => {
+                return testStructure.get("someFiled");
+            }).should.throw();
+        });
     });
-  });
 });

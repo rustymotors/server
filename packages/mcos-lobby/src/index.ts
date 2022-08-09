@@ -17,8 +17,8 @@
 import { logger } from "mcos-logger/src/index.js";
 import { handleData } from "./internal.js";
 import type {
-  BufferWithConnection,
-  GServiceResponse,
+    BufferWithConnection,
+    GServiceResponse,
 } from "mcos-types/types.js";
 
 const log = logger.child({ service: "mcoserver:LobbyServer" });
@@ -31,15 +31,15 @@ const log = logger.child({ service: "mcoserver:LobbyServer" });
  * @return {Promise<GServiceResponse>}
  */
 export async function receiveLobbyData(
-  dataConnection: BufferWithConnection
+    dataConnection: BufferWithConnection
 ): Promise<GServiceResponse> {
-  try {
-    return { err: null, response: await handleData(dataConnection) };
-  } catch (error) {
-    const errMessage = `There was an error in the lobby service: ${String(
-      error
-    )}`;
-    log.error(errMessage);
-    return { err: new Error(errMessage), response: undefined };
-  }
+    try {
+        return { err: null, response: await handleData(dataConnection) };
+    } catch (error) {
+        const errMessage = `There was an error in the lobby service: ${String(
+            error
+        )}`;
+        log.error(errMessage);
+        return { err: new Error(errMessage), response: undefined };
+    }
 }

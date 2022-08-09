@@ -26,71 +26,71 @@ const log = logger.child({ service: "MCOServer:Auth" });
  * @classdesc
  */
 export class AuthLogin {
-  /**
-   *
-   *
-   * @private
-   * @static
-   * @type {AuthLogin}
-   * @memberof AuthLogin
-   */
-  static _instance: AuthLogin;
+    /**
+     *
+     *
+     * @private
+     * @static
+     * @type {AuthLogin}
+     * @memberof AuthLogin
+     */
+    static _instance: AuthLogin;
 
-  /**
-   * Get the single instance of the class
-   *
-   * @static
-   * @return {AuthLogin}
-   * @memberof AuthLogin
-   */
-  static getInstance(): AuthLogin {
-    if (!AuthLogin._instance) {
-      AuthLogin._instance = new AuthLogin();
-    }
-    return AuthLogin._instance;
-  }
-
-  /**
-   *
-   * @private
-   * @return {string}
-   * @memberof! WebServer
-   */
-  _handleGetTicket(): string {
-    return "Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e";
-  }
-
-  // File deepcode ignore NoRateLimitingForExpensiveWebOperation: Not using express, unsure how to handle rate limiting on raw http
-  /**
-   * Handle incoming http requests
-   *
-   * @returns {ServerResponse}
-   * @param {IncomingMessage} request
-   * @param {ServerResponse} response
-   */
-  handleRequest(
-    request: IncomingMessage,
-    response: ServerResponse
-  ): ServerResponse {
-    log.info(
-      `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
-    );
-    if (request.url && request.url.startsWith("/AuthLogin")) {
-      response.setHeader("Content-Type", "text/plain");
-      return response.end(this._handleGetTicket());
+    /**
+     * Get the single instance of the class
+     *
+     * @static
+     * @return {AuthLogin}
+     * @memberof AuthLogin
+     */
+    static getInstance(): AuthLogin {
+        if (!AuthLogin._instance) {
+            AuthLogin._instance = new AuthLogin();
+        }
+        return AuthLogin._instance;
     }
 
-    return response.end("Unknown request.");
-  }
+    /**
+     *
+     * @private
+     * @return {string}
+     * @memberof! WebServer
+     */
+    _handleGetTicket(): string {
+        return "Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e";
+    }
 
-  /**
-   * @private
-   * @returns {void}
-   * @param {Socket} socket
-   */
-  _socketEventHandler(socket: Socket): void {
-    socket.on("error", (error) => {
-      throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`);
-    });
-  }
+    // File deepcode ignore NoRateLimitingForExpensiveWebOperation: Not using express, unsure how to handle rate limiting on raw http
+    /**
+     * Handle incoming http requests
+     *
+     * @returns {ServerResponse}
+     * @param {IncomingMessage} request
+     * @param {ServerResponse} response
+     */
+    handleRequest(
+        request: IncomingMessage,
+        response: ServerResponse
+    ): ServerResponse {
+        log.info(
+            `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
+        );
+        if (request.url && request.url.startsWith("/AuthLogin")) {
+            response.setHeader("Content-Type", "text/plain");
+            return response.end(this._handleGetTicket());
+        }
+
+        return response.end("Unknown request.");
+    }
+
+    /**
+     * @private
+     * @returns {void}
+     * @param {Socket} socket
+     */
+    _socketEventHandler(socket: Socket): void {
+        socket.on("error", (error) => {
+            throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`);
+        });
+    }
 }

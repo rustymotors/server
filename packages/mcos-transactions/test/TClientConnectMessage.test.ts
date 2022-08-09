@@ -22,30 +22,30 @@ import type { ByteField } from "mcos-types";
 chai.should();
 
 describe("TClientConnectMessage", () => {
-  describe(".byteLength", () => {
-    it("should have a value of 51", () => {
-      // Arrange
-      const testMessage = new TClientConnectMessage();
+    describe(".byteLength", () => {
+        it("should have a value of 51", () => {
+            // Arrange
+            const testMessage = new TClientConnectMessage();
 
-      // Assert
-      testMessage.getByteLength().should.equal(51);
+            // Assert
+            testMessage.getByteLength().should.equal(51);
+        });
     });
-  });
-  describe("#get", () => {
-    it("should return a ByteField object when passed a valid field name", () => {
-      // Arrange
-      const testMessage = new TClientConnectMessage();
-      const expectedField: ByteField = {
-        name: "customerId",
-        size: 4,
-        offset: 13,
-        type: "u32",
-        value: Buffer.alloc(4),
-        order: "little",
-      };
+    describe("#get", () => {
+        it("should return a ByteField object when passed a valid field name", () => {
+            // Arrange
+            const testMessage = new TClientConnectMessage();
+            const expectedField: ByteField = {
+                name: "customerId",
+                size: 4,
+                offset: 13,
+                type: "u32",
+                value: Buffer.alloc(4),
+                order: "little",
+            };
 
-      // Assert
-      testMessage.get("customerId").should.deep.equal(expectedField);
+            // Assert
+            testMessage.get("customerId").should.deep.equal(expectedField);
+        });
     });
-  });
 });

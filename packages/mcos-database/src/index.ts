@@ -28,157 +28,163 @@ const log = logger.child({ service: "mcoserver:DatabaseMgr" });
  * @class
  */
 export class DatabaseManager {
-  localDB: pg.Client | undefined = undefined;
-  /**
-   *
-   *
-   * @private
-   * @static
-   * @type {DatabaseManager}
-   * @memberof DatabaseManager
-   */
-  static _instance: DatabaseManager;
-  connectionURI: string;
+    localDB: pg.Client | undefined = undefined;
+    /**
+     *
+     *
+     * @private
+     * @static
+     * @type {DatabaseManager}
+     * @memberof DatabaseManager
+     */
+    static _instance: DatabaseManager;
+    connectionURI: string;
 
-  /**
-   * Return the instance of the DatabaseManager class
-   * @returns {DatabaseManager}
-   */
-  static getInstance(): DatabaseManager {
-    if (!DatabaseManager._instance) {
-      DatabaseManager._instance = new DatabaseManager();
-    }
-    const self = DatabaseManager._instance;
-    return self;
-  }
-
-  /**
-   * Initialize database and set up schemas if needed
-   * @returns {Promise<void>}
-   */
-  async init(): Promise<void> {
-    if (typeof this.localDB === "undefined") {
-      log.debug("Initializing the database...");
-
-      try {
-        const self = DatabaseManager._instance;
-
-        const db = new Client({
-          connectionString: process.env["CONNECTION_URL"],
-        });
-
-        await db.connect();
-
-        self.localDB = db;
-
-        await db.query(Session.schema);
-
-        await db.query(Lobby.schema);
-        log.debug("Database initialized");
-      } catch (/** @type {unknown} */ err: unknown) {
-        if (err instanceof Error) {
-          const newError = new Error(
-            `There was an error setting up the database: ${err.message}`
-          );
-          log.error(newError.message);
-          throw newError;
+    /**
+     * Return the instance of the DatabaseManager class
+     * @returns {DatabaseManager}
+     */
+    static getInstance(): DatabaseManager {
+        if (!DatabaseManager._instance) {
+            DatabaseManager._instance = new DatabaseManager();
         }
-        throw err;
-      }
+        const self = DatabaseManager._instance;
+        return self;
     }
-  }
 
-  /**
-   * Creates an instance of DatabaseManager.
-   *
-   * Please use {@link DatabaseManager.getInstance()} instead
-   * @memberof DatabaseManager
-   */
-  constructor() {
-    if (!process.env["CONNECTION_URL"]) {
-      throw new Error("Please set CONNECTION_URL");
-    }
-    this.connectionURI = process.env["CONNECTION_URL"];
-  }
+    /**
+     * Initialize database and set up schemas if needed
+     * @returns {Promise<void>}
+     */
+    async init(): Promise<void> {
+        if (typeof this.localDB === "undefined") {
+            log.debug("Initializing the database...");
 
-  /**
-   * Locate customer session encryption key in the database
-   * @param {number} customerId
-   * @returns {SessionRecord>}
-   */
-  async fetchSessionKeyByCustomerId(
-    customerId: number
-  ): Promise<SessionRecord> {
-    await this.init();
-    if (typeof this.localDB === "undefined") {
-      log.warn("Database not ready in fetchSessionKeyByCustomerId()");
-      throw new Error("Error accessing database. Are you using the instance?");
-    }
-    const record = await this.localDB.query(
-      "SELECT sessionkey, skey FROM sessions WHERE customer_id = $1",
-      [customerId]
-    );
-    if (typeof record === "undefined") {
-      log.debug("Unable to locate session key");
-      throw new Error("Unable to fetch session key");
-    }
-    return record.rows[0];
-  }
+            try {
+                const self = DatabaseManager._instance;
 
-  /**
-   * Locate customer session encryption key in the database
-   * @param {number} connectionId
-   * @returns {Promise<SessionRecord>}
-   */
-  async fetchSessionKeyByConnectionId(
-    connectionId: number
-  ): Promise<SessionRecord> {
-    await this.init();
-    if (typeof this.localDB === "undefined") {
-      log.warn("Database not ready in fetchSessionKeyByConnectionId()");
-      throw new Error("Error accessing database. Are you using the instance?");
-    }
-    const record = await this.localDB.query(
-      "SELECT sessionkey, skey FROM sessions WHERE connection_id = $1",
-      [connectionId]
-    );
-    if (typeof record === "undefined") {
-      throw new Error("Unable to fetch session key");
-    }
-    return record.rows[0];
-  }
+                const db = new Client({
+                    connectionString: process.env["CONNECTION_URL"],
+                });
 
-  /**
-   * Create or overwrite a customer's session key record
-   * @param {number} customerId
-   * @param {string} sessionkey
-   * @param {string} contextId
-   * @param {string} connectionId
-   * @returns {Promise<number>}
-   */
-  async updateSessionKey(
-    customerId: number,
-    sessionkey: string,
-    contextId: string,
-    connectionId: string
-  ): Promise<number> {
-    await this.init();
-    const skey = sessionkey.slice(0, 16);
+                await db.connect();
 
-    if (typeof this.localDB === "undefined") {
-      log.warn("Database not ready in updateSessionKey()");
-      throw new Error("Error accessing database. Are you using the instance?");
+                self.localDB = db;
+
+                await db.query(Session.schema);
+
+                await db.query(Lobby.schema);
+                log.debug("Database initialized");
+            } catch (/** @type {unknown} */ err: unknown) {
+                if (err instanceof Error) {
+                    const newError = new Error(
+                        `There was an error setting up the database: ${err.message}`
+                    );
+                    log.error(newError.message);
+                    throw newError;
+                }
+                throw err;
+            }
+        }
     }
-    const record = await this.localDB.query(
-      `INSERT INTO sessions (customer_id, sessionkey, skey, context_id, connection_id)
+
+    /**
+     * Creates an instance of DatabaseManager.
+     *
+     * Please use {@link DatabaseManager.getInstance()} instead
+     * @memberof DatabaseManager
+     */
+    constructor() {
+        if (!process.env["CONNECTION_URL"]) {
+            throw new Error("Please set CONNECTION_URL");
+        }
+        this.connectionURI = process.env["CONNECTION_URL"];
+    }
+
+    /**
+     * Locate customer session encryption key in the database
+     * @param {number} customerId
+     * @returns {SessionRecord>}
+     */
+    async fetchSessionKeyByCustomerId(
+        customerId: number
+    ): Promise<SessionRecord> {
+        await this.init();
+        if (typeof this.localDB === "undefined") {
+            log.warn("Database not ready in fetchSessionKeyByCustomerId()");
+            throw new Error(
+                "Error accessing database. Are you using the instance?"
+            );
+        }
+        const record = await this.localDB.query(
+            "SELECT sessionkey, skey FROM sessions WHERE customer_id = $1",
+            [customerId]
+        );
+        if (typeof record === "undefined") {
+            log.debug("Unable to locate session key");
+            throw new Error("Unable to fetch session key");
+        }
+        return record.rows[0];
+    }
+
+    /**
+     * Locate customer session encryption key in the database
+     * @param {number} connectionId
+     * @returns {Promise<SessionRecord>}
+     */
+    async fetchSessionKeyByConnectionId(
+        connectionId: number
+    ): Promise<SessionRecord> {
+        await this.init();
+        if (typeof this.localDB === "undefined") {
+            log.warn("Database not ready in fetchSessionKeyByConnectionId()");
+            throw new Error(
+                "Error accessing database. Are you using the instance?"
+            );
+        }
+        const record = await this.localDB.query(
+            "SELECT sessionkey, skey FROM sessions WHERE connection_id = $1",
+            [connectionId]
+        );
+        if (typeof record === "undefined") {
+            throw new Error("Unable to fetch session key");
+        }
+        return record.rows[0];
+    }
+
+    /**
+     * Create or overwrite a customer's session key record
+     * @param {number} customerId
+     * @param {string} sessionkey
+     * @param {string} contextId
+     * @param {string} connectionId
+     * @returns {Promise<number>}
+     */
+    async updateSessionKey(
+        customerId: number,
+        sessionkey: string,
+        contextId: string,
+        connectionId: string
+    ): Promise<number> {
+        await this.init();
+        const skey = sessionkey.slice(0, 16);
+
+        if (typeof this.localDB === "undefined") {
+            log.warn("Database not ready in updateSessionKey()");
+            throw new Error(
+                "Error accessing database. Are you using the instance?"
+            );
+        }
+        const record = await this.localDB.query(
+            `INSERT INTO sessions (customer_id, sessionkey, skey, context_id, connection_id)
         VALUES ($1, $2, $3, $4, $5)
       ON CONFLICT (customer_id)
         DO UPDATE SET sessionkey = $2, skey = $3;`,
-      [customerId, sessionkey, skey, contextId, connectionId]
-    );
-    if (typeof record === "undefined") {
-      throw new Error("Unable to fetch session key");
+            [customerId, sessionkey, skey, contextId, connectionId]
+        );
+        if (typeof record === "undefined") {
+            throw new Error("Unable to fetch session key");
+        }
+        return 1;
     }
-    return 1;
-  }
 }

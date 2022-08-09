@@ -20,9 +20,9 @@ import { logger } from "../packages/mcos-logger/src/index.js";
 const log = logger.child({ service: "mcos" });
 
 try {
-  startListeners();
+    startListeners();
 } catch (err) {
-  log.error(`Error in core server: ${String(err)}`);
-  log.error("Server exiting");
-  process.exit(1);
+    log.error(`Error in core server: ${String(err)}`);
+    log.error("Server exiting");
+    process.exit(1);
 }

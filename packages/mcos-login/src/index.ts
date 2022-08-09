@@ -16,9 +16,9 @@
 
 import { logger } from "mcos-logger/src/index.js";
 import type {
-  BufferWithConnection,
-  GServiceResponse,
-  UserRecordMini,
+    BufferWithConnection,
+    GServiceResponse,
+    UserRecordMini,
 } from "mcos-types/types.js";
 import { DatabaseManager } from "../../mcos-database/src/index.js";
 import { handleData } from "./internal.js";
@@ -36,76 +36,76 @@ const log = logger.child({ service: "mcoserver:LoginServer" });
  * @property {DatabaseManager} databaseManager
  */
 export class LoginServer {
-  /**
-   *
-   *
-   * @static
-   * @type {LoginServer}
-   * @memberof LoginServer
-   */
-  static _instance: LoginServer;
-  databaseManager = DatabaseManager.getInstance();
-  /**
-   * Get the single instance of the login server
-   *
-   * @static
-   * @return {LoginServer}
-   * @memberof LoginServer
-   */
-  static getInstance(): LoginServer {
-    if (typeof LoginServer._instance === "undefined") {
-      LoginServer._instance = new LoginServer();
-    }
-    return LoginServer._instance;
-  }
-
-  /**
-   *
-   * @private
-   * @param {string} contextId
-   * @return {UserRecordMini}
-   */
-  _npsGetCustomerIdByContextId(contextId: string): UserRecordMini {
-    log.debug(">>> _npsGetCustomerIdByContextId");
-    /** @type {IUserRecordMini[]} */
-    const users: UserRecordMini[] = [
-      {
-        contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
-        customerId: 0xac_01_00_00,
-        userId: 0x00_00_00_02,
-      },
-      {
-        contextId: "d316cd2dd6bf870893dfbaaf17f965884e",
-        customerId: 0x00_54_b4_6c,
-        userId: 0x00_00_00_01,
-      },
-    ];
-    if (contextId.toString() === "") {
-      throw new Error(`Unknown contextId: ${contextId.toString()}`);
+    /**
+     *
+     *
+     * @static
+     * @type {LoginServer}
+     * @memberof LoginServer
+     */
+    static _instance: LoginServer;
+    databaseManager = DatabaseManager.getInstance();
+    /**
+     * Get the single instance of the login server
+     *
+     * @static
+     * @return {LoginServer}
+     * @memberof LoginServer
+     */
+    static getInstance(): LoginServer {
+        if (typeof LoginServer._instance === "undefined") {
+            LoginServer._instance = new LoginServer();
+        }
+        return LoginServer._instance;
     }
 
-    const userRecord = users.filter((user) => user.contextId === contextId);
-    if (typeof userRecord[0] === "undefined" || userRecord.length !== 1) {
-      log.debug(
-        `preparing to leave _npsGetCustomerIdByContextId after not finding record',
+    /**
+     *
+     * @private
+     * @param {string} contextId
+     * @return {UserRecordMini}
+     */
+    _npsGetCustomerIdByContextId(contextId: string): UserRecordMini {
+        log.debug(">>> _npsGetCustomerIdByContextId");
+        /** @type {IUserRecordMini[]} */
+        const users: UserRecordMini[] = [
+            {
+                contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
+                customerId: 0xac_01_00_00,
+                userId: 0x00_00_00_02,
+            },
+            {
+                contextId: "d316cd2dd6bf870893dfbaaf17f965884e",
+                customerId: 0x00_54_b4_6c,
+                userId: 0x00_00_00_01,
+            },
+        ];
+        if (contextId.toString() === "") {
+            throw new Error(`Unknown contextId: ${contextId.toString()}`);
+        }
+
+        const userRecord = users.filter((user) => user.contextId === contextId);
+        if (typeof userRecord[0] === "undefined" || userRecord.length !== 1) {
+            log.debug(
+                `preparing to leave _npsGetCustomerIdByContextId after not finding record',
         ${JSON.stringify({
-          contextId,
+            contextId,
         })}`
-      );
-      throw new Error(
-        `Unable to locate user record matching contextId ${contextId}`
-      );
-    }
+            );
+            throw new Error(
+                `Unable to locate user record matching contextId ${contextId}`
+            );
+        }
 
-    log.debug(
-      `preparing to leave _npsGetCustomerIdByContextId after finding record',
+        log.debug(
+            `preparing to leave _npsGetCustomerIdByContextId after finding record',
       ${JSON.stringify({
-        contextId,
-        userRecord,
+          contextId,
+          userRecord,
       })}`
-    );
-    return userRecord[0];
-  }
+        );
+        return userRecord[0];
+    }
 }
 
 /// ==============
@@ -119,16 +119,16 @@ export class LoginServer {
  * @return {Promise<IGServiceResponse>}
  */
 export async function receiveLoginData(
-  dataConnection: BufferWithConnection
+    dataConnection: BufferWithConnection
 ): Promise<GServiceResponse> {
-  try {
-    const response = await handleData(dataConnection);
-    log.trace(`There are ${response.messages.length} messages`);
-    return { err: null, response };
-  } catch (error) {
-    const errMessage = `There was an error in the login service: ${String(
-      error
-    )}`;
-    return { err: new Error(errMessage), response: undefined };
-  }
+    try {
+        const response = await handleData(dataConnection);
+        log.trace(`There are ${response.messages.length} messages`);
+        return { err: null, response };
+    } catch (error) {
+        const errMessage = `There was an error in the login service: ${String(
+            error
+        )}`;
+        return { err: new Error(errMessage), response: undefined };
+    }
 }

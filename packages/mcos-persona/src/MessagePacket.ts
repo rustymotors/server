@@ -15,23 +15,23 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 export class MessagePacket {
-  private _buffer: Buffer = Buffer.alloc(0);
+    private _buffer: Buffer = Buffer.alloc(0);
 
-  static fromBuffer(buffer: Buffer): MessagePacket {
-    const newMessage = new MessagePacket();
-    newMessage.setBuffer(buffer);
-    return newMessage;
-  }
+    static fromBuffer(buffer: Buffer): MessagePacket {
+        const newMessage = new MessagePacket();
+        newMessage.setBuffer(buffer);
+        return newMessage;
+    }
 
-  /**
-   * Will replace internal buffer without warning
-   * @param buffer
-   */
-  public setBuffer(buffer: Buffer): void {
-    this._buffer = buffer;
-  }
+    /**
+     * Will replace internal buffer without warning
+     * @param buffer
+     */
+    public setBuffer(buffer: Buffer): void {
+        this._buffer = buffer;
+    }
 
-  public getBuffer(): Buffer {
-    return this._buffer;
-  }
+    public getBuffer(): Buffer {
+        return this._buffer;
+    }
 }

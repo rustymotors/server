@@ -26,66 +26,66 @@ export { AdminServer } from "./adminServer.js";
 const log = logger.child({ service: "mcos:gateway" });
 
 const listeningPortList = [
-  80, 6660, 7003, 8228, 8226, 8227, 9000, 9001, 9002, 9003, 9004, 9005, 9006,
-  9007, 9008, 9009, 9010, 9011, 9012, 9013, 9014, 43200, 43300, 43400, 53303,
+    80, 6660, 7003, 8228, 8226, 8227, 9000, 9001, 9002, 9003, 9004, 9005, 9006,
+    9007, 9008, 9009, 9010, 9011, 9012, 9013, 9014, 43200, 43300, 43400, 53303,
 ];
 
 function socketListener(incomingSocket: Socket): void {
-  log.debug(
-    `[gate]Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
-  );
+    log.debug(
+        `[gate]Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
+    );
 
-  // Is this an HTTP request?
-  if (incomingSocket.localPort === 80) {
-    log.debug("Web request");
-    const newServer = new http.Server(httpHandler);
-    // Send the socket to the http server instance
-    newServer.emit("connection", incomingSocket);
-    return;
-  }
+    // Is this an HTTP request?
+    if (incomingSocket.localPort === 80) {
+        log.debug("Web request");
+        const newServer = new http.Server(httpHandler);
+        // Send the socket to the http server instance
+        newServer.emit("connection", incomingSocket);
+        return;
+    }
 
-  // This is a 'normal' TCP socket
-  TCPListener(incomingSocket);
+    // This is a 'normal' TCP socket
+    TCPListener(incomingSocket);
 }
 
 function TCPListener(incomingSocket: Socket) {
-  // Get a connection record
-  const connectionRecord = selectConnection(incomingSocket);
+    // Get a connection record
+    const connectionRecord = selectConnection(incomingSocket);
 
-  const { localPort, remoteAddress } = incomingSocket;
-  log.info(`Client ${remoteAddress} connected to port ${localPort}`);
+    const { localPort, remoteAddress } = incomingSocket;
+    log.info(`Client ${remoteAddress} connected to port ${localPort}`);
 
-  incomingSocket.on("end", () => {
-    log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
-  });
-  incomingSocket.on("data", async (data): Promise<void> => {
-    await dataHandler(data, connectionRecord);
-  });
-  incomingSocket.on("error", onSocketError);
+    incomingSocket.on("end", () => {
+        log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
+    });
+    incomingSocket.on("data", async (data): Promise<void> => {
+        await dataHandler(data, connectionRecord);
+    });
+    incomingSocket.on("error", onSocketError);
 }
 
 function onSocketError(error: Error): void {
-  const message = String(error);
-  if (message.includes("ECONNRESET") === true) {
-    return log.warn("Connection was reset");
-  }
-  log.error(`Socket error: ${String(error)}`);
+    const message = String(error);
+    if (message.includes("ECONNRESET") === true) {
+        return log.warn("Connection was reset");
+    }
+    log.error(`Socket error: ${String(error)}`);
 }
 
 export function startListeners(): void {
-  log.info("Server starting");
+    log.info("Server starting");
 
-  listeningPortList.forEach((port) => {
-    const newServer = createSocketServer((s) => {
-      socketListener(s);
+    listeningPortList.forEach((port) => {
+        const newServer = createSocketServer((s) => {
+            socketListener(s);
+        });
+        newServer.listen(port, "0.0.0.0", 0, () => {
+            return serverListener(port);
+        });
     });
-    newServer.listen(port, "0.0.0.0", 0, () => {
-      return serverListener(port);
-    });
-  });
 }
 
 function serverListener(port: number) {
-  const listeningPort = String(port).length ? String(port) : "unknown";
-  log.debug(`Listening on port ${listeningPort}`);
+    const listeningPort = String(port).length ? String(port) : "unknown";
+    log.debug(`Listening on port ${listeningPort}`);
 }

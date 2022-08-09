@@ -1,5 +1,5 @@
 export class Session {
-  static readonly schema = `CREATE TABLE IF NOT EXISTS "sessions"
+    static readonly schema = `CREATE TABLE IF NOT EXISTS "sessions"
   (
     customer_id integer,
     sessionkey text NOT NULL,

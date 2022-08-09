@@ -16,8 +16,8 @@
 
 import { logger } from "mcos-logger/src/index.js";
 import type {
-  BufferWithConnection,
-  TServiceResponse,
+    BufferWithConnection,
+    TServiceResponse,
 } from "mcos-types/types.js";
 import { handleData } from "./internal.js";
 
@@ -31,17 +31,17 @@ const log = logger.child({ service: "mcos:transactions" });
  * @return {Promise<TServiceResponse>}
  */
 export async function receiveTransactionsData(
-  dataConnection: BufferWithConnection
+    dataConnection: BufferWithConnection
 ): Promise<TServiceResponse> {
-  log.debug(`Entering receiveTransactionsData`);
-  try {
-    const result = await handleData(dataConnection);
-    log.debug("Exiting the transactions service");
-    return { err: null, response: result };
-  } catch (error) {
-    const errMessage = `There was an error in the lobby service: ${String(
-      error
-    )}`;
-    return { err: new Error(errMessage), response: undefined };
-  }
+    log.debug(`Entering receiveTransactionsData`);
+    try {
+        const result = await handleData(dataConnection);
+        log.debug("Exiting the transactions service");
+        return { err: null, response: result };
+    } catch (error) {
+        const errMessage = `There was an error in the lobby service: ${String(
+            error
+        )}`;
+        return { err: new Error(errMessage), response: undefined };
+    }
 }

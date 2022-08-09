@@ -20,11 +20,11 @@ import { createServer, IncomingMessage, ServerResponse } from "node:http";
 const log = logger.child({ service: "MCOServer:Patch" });
 
 export const CastanetResponse = {
-  body: Buffer.from("cafebeef00000000000003", "hex"),
-  header: {
-    type: "Content-Type",
-    value: "application/octet-stream",
-  },
+    body: Buffer.from("cafebeef00000000000003", "hex"),
+    header: {
+        type: "Content-Type",
+        value: "application/octet-stream",
+    },
 };
 
 /**
@@ -33,89 +33,94 @@ export const CastanetResponse = {
  * Please use {@link PatchServer.getInstance()} to access
  */
 export class PatchServer {
-  /**
-   * Starts the HTTP listener
-   */
-  start(): void {
-    const host = "0.0.0.0";
-    const port = 80;
+    /**
+     * Starts the HTTP listener
+     */
+    start(): void {
+        const host = "0.0.0.0";
+        const port = 80;
 
-    const server = createServer();
-    server.on("listening", () => {
-      const listeningAddress = server.address();
-      if (typeof listeningAddress !== "string" && listeningAddress !== null) {
-        log.info(`Server is listening on port ${listeningAddress.port}`);
-      }
-    });
-    server.on("request", this.handleRequest.bind(this));
+        const server = createServer();
+        server.on("listening", () => {
+            const listeningAddress = server.address();
+            if (
+                typeof listeningAddress !== "string" &&
+                listeningAddress !== null
+            ) {
+                log.info(
+                    `Server is listening on port ${listeningAddress.port}`
+                );
+            }
+        });
+        server.on("request", this.handleRequest.bind(this));
 
-    log.debug(`Attempting to bind to port ${port}`);
-    server.listen(port, host);
-  }
-
-  /**
-   *
-   *
-   * @static
-   * @private
-   * @type {PatchServer}
-   * @memberof PatchServer
-   */
-  static _instance: PatchServer;
-
-  /**
-   * Return the instance of the PatchServer class
-   *
-   * @static
-   * @return {PatchServer}
-   * @memberof PatchServer
-   */
-  static getInstance(): PatchServer {
-    if (!PatchServer._instance) {
-      PatchServer._instance = new PatchServer();
+        log.debug(`Attempting to bind to port ${port}`);
+        server.listen(port, host);
     }
-    return PatchServer._instance;
-  }
 
-  /**
-   * Returns the hard-coded value that tells the client there are no updates or patches
-   * @param {IncomingMessage} request
-   * @param {ServerResponse} response
-   * @returns {ServerResponse}
-   */
-  castanetResponse(
-    request: IncomingMessage,
-    response: ServerResponse
-  ): ServerResponse {
-    log.debug(
-      `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
-    );
+    /**
+     *
+     *
+     * @static
+     * @private
+     * @type {PatchServer}
+     * @memberof PatchServer
+     */
+    static _instance: PatchServer;
 
-    response.setHeader(
-      CastanetResponse.header.type,
-      CastanetResponse.header.value
-    );
-    return response.end(CastanetResponse.body);
-  }
-
-  /**
-   * Routes incomming HTTP requests
-   * @param {IncomingMessage} request
-   * @param {ServerResponse} response
-   * @returns {ServerResponse}
-   */
-  handleRequest(
-    request: IncomingMessage,
-    response: ServerResponse
-  ): ServerResponse {
-    if (
-      request.url === "/games/EA_Seattle/MotorCity/UpdateInfo" ||
-      request.url === "/games/EA_Seattle/MotorCity/NPS" ||
-      request.url === "/games/EA_Seattle/MotorCity/MCO"
-    ) {
-      return this.castanetResponse(request, response);
+    /**
+     * Return the instance of the PatchServer class
+     *
+     * @static
+     * @return {PatchServer}
+     * @memberof PatchServer
+     */
+    static getInstance(): PatchServer {
+        if (!PatchServer._instance) {
+            PatchServer._instance = new PatchServer();
+        }
+        return PatchServer._instance;
     }
-    response.statusCode = 404;
-    return response.end("");
-  }
+
+    /**
+     * Returns the hard-coded value that tells the client there are no updates or patches
+     * @param {IncomingMessage} request
+     * @param {ServerResponse} response
+     * @returns {ServerResponse}
+     */
+    castanetResponse(
+        request: IncomingMessage,
+        response: ServerResponse
+    ): ServerResponse {
+        log.debug(
+            `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
+        );
+
+        response.setHeader(
+            CastanetResponse.header.type,
+            CastanetResponse.header.value
+        );
+        return response.end(CastanetResponse.body);
+    }
+
+    /**
+     * Routes incomming HTTP requests
+     * @param {IncomingMessage} request
+     * @param {ServerResponse} response
+     * @returns {ServerResponse}
+     */
+    handleRequest(
+        request: IncomingMessage,
+        response: ServerResponse
+    ): ServerResponse {
+        if (
+            request.url === "/games/EA_Seattle/MotorCity/UpdateInfo" ||
+            request.url === "/games/EA_Seattle/MotorCity/NPS" ||
+            request.url === "/games/EA_Seattle/MotorCity/MCO"
+        ) {
+            return this.castanetResponse(request, response);
+        }
+        response.statusCode = 404;
+        return response.end("");
+    }
 }
