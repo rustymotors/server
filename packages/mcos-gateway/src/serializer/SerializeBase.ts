@@ -17,18 +17,18 @@
 /**
  * @classdesc Helper class for a single 8-bit number
  */
-export class Byte {
+class Byte {
     private byte_ = Buffer.alloc(1);
-    private _maxSize = 255;
+    private maxSize_ = 255;
 
     private constructor(x: number) {
         this.checkSize(x);
     }
 
     private checkSize(x: number) {
-        if (x < 0 || x > this._maxSize) {
+        if (x < 0 || x > this.maxSize_) {
             throw new RangeError(
-                `value must be between 0 and ${this._maxSize}`
+                `value must be between 0 and ${this.maxSize_}`
             );
         }
     }
@@ -53,34 +53,31 @@ export class Byte {
 /**
  * @classdesc Helper class for a single 16-bit number
  */
-export class Word {
-    private _word: Buffer = Buffer.from([0x00, 0x00]);
-    private _maxSize = 65535;
+class Word {
+    private word_: Buffer = Buffer.from([0x00, 0x00]);
+    private maxSize_ = 65535;
 
     private constructor(x: number) {
         this.checkSize(x);
     }
 
     private checkSize(x: number) {
-        if (x < 0 || x > this._maxSize) {
+        if (x < 0 || x > this.maxSize_) {
             throw new RangeError(
-                `value must be between 0 and ${this._maxSize}`
+                `value must be between 0 and ${this.maxSize_}`
             );
         }
     }
 
     static from(x: number): Word {
         const word = new Word(x);
-        console.log(x);
-        word._word[0] = x & 0xff;
-        word._word[1] = (x >>> 8) & 0xff;
-        console.log(`0: ${word._word[0]}`);
-        console.log(`1: ${word._word[1]}`);
+        word.word_[0] = x & 0xff;
+        word.word_[1] = (x >>> 8) & 0xff;
         return word;
     }
 
     asNumber(): number {
-        const n = ((this._word[1] as number) << 8) + (this._word[0] as number);
+        const n = ((this.word_[1] as number) << 8) + (this.word_[0] as number);
         return n;
     }
 
@@ -94,42 +91,37 @@ export class Word {
 /**
  * @classdesc Helper class for a single 32-bit number
  */
-export class DWord {
-    private _dword: Buffer = Buffer.from([0x00, 0x00, 0x00, 0x00]);
-    private _maxSize = 4294967295;
+class DWord {
+    private dword_: Buffer = Buffer.from([0x00, 0x00, 0x00, 0x00]);
+    private maxSize_ = 4294967295;
 
     private constructor(x: number) {
         this.checkSize(x);
     }
 
     private checkSize(x: number) {
-        if (x < 0 || x > this._maxSize) {
+        if (x < 0 || x > this.maxSize_) {
             throw new RangeError(
-                `value must be between 0 and ${this._maxSize}`
+                `value must be between 0 and ${this.maxSize_}`
             );
         }
     }
 
     static from(x: number): DWord {
         const dword = new DWord(x);
-        console.log(x);
-        dword._dword[0] = x & 0xffff;
-        dword._dword[1] = (x >>> 8) & 0xffff;
-        dword._dword[2] = (x >>> 16) & 0xffff;
-        dword._dword[3] = (x >>> 24) & 0xffff;
-        console.log(`0: ${dword._dword[0]}`);
-        console.log(`1: ${dword._dword[1]}`);
-        console.log(`2: ${dword._dword[2]}`);
-        console.log(`3: ${dword._dword[3]}`);
+        dword.dword_[0] = x & 0xffff;
+        dword.dword_[1] = (x >>> 8) & 0xffff;
+        dword.dword_[2] = (x >>> 16) & 0xffff;
+        dword.dword_[3] = (x >>> 24) & 0xffff;
         return dword;
     }
 
     asNumber(): number {
         const n =
-            ((this._dword[3] as number) << 24) +
-            ((this._dword[2] as number) << 16) +
-            ((this._dword[1] as number) << 8) +
-            (this._dword[0] as number);
+            ((this.dword_[3] as number) << 24) +
+            ((this.dword_[2] as number) << 16) +
+            ((this.dword_[1] as number) << 8) +
+            (this.dword_[0] as number);
         return n;
     }
 
@@ -246,10 +238,8 @@ export abstract class SerializeBase {
     protected serializeBlob_(buf: Buffer) {
         this.serializedBuffer_ = Buffer.concat([this.serializedBuffer_, buf]);
     }
+
+    static Byte = Byte;
+    static Word = Word;
+    static DWord = DWord;
 }
-
-const b = Word.from(9230);
-console.log(b.asNumber());
-
-const d = DWord.from(142893037);
-console.log(d.asNumber());
