@@ -145,7 +145,7 @@ export class AdminServer {
     }
 }
 
-export function listConnections(connections: Array<SocketWithConnectionInfo>): {
+export function listConnections(connections: SocketWithConnectionInfo[]): {
     code: number;
     headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined | undefined;
     body: string;
@@ -168,7 +168,7 @@ export function listConnections(connections: Array<SocketWithConnectionInfo>): {
 }
 
 export function releaseQueue(
-    connections: Array<SocketWithConnectionInfo>,
+    connections: SocketWithConnectionInfo[],
     connectionId: string
 ): {
     code: number;
@@ -194,7 +194,7 @@ export function releaseQueue(
     };
 }
 
-export function resetQueue(connections: Array<SocketWithConnectionInfo>): {
+export function resetQueue(connections: SocketWithConnectionInfo[]): {
     code: number;
     headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined | undefined;
     body: string;

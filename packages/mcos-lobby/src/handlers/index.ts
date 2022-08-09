@@ -14,7 +14,7 @@ export interface MessageHandler {
     ) => Promise<GSMessageArrayWithConnection>;
 }
 
-export const handlerMap: Array<MessageHandler> = [
+export const handlerMap: MessageHandler[] = [
     {
         opCode: 100,
         name: "Connect game server",
