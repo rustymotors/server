@@ -113,7 +113,9 @@ export class AdminServer {
 
         const connections = getAllConnections();
 
-        if (request.url.startsWith("/admin/connections/releaseQueue") === true) {
+        if (
+            request.url.startsWith("/admin/connections/releaseQueue") === true
+        ) {
             const connectionId = new URL(
                 request.url,
                 `http://${request.headers.host}`
@@ -145,6 +147,15 @@ export class AdminServer {
     }
 }
 
+/**
+ * Formay a list of connections for plaintext display
+ * @param {SocketWithConnectionInfo[]} connections 
+ * @return {{
+ *   code: number;
+ *   headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined | undefined;
+ *   body: string;
+ * }}
+ */
 export function listConnections(connections: SocketWithConnectionInfo[]): {
     code: number;
     headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined | undefined;
