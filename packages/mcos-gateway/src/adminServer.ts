@@ -149,7 +149,7 @@ export class AdminServer {
 
 /**
  * Formay a list of connections for plaintext display
- * @param {SocketWithConnectionInfo[]} connections 
+ * @param {SocketWithConnectionInfo[]} connections
  * @return {{
  *   code: number;
  *   headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined | undefined;
