@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { createCipheriv, createDecipheriv } from "node:crypto";
+import { Cipher, createCipheriv, createDecipheriv, Decipher } from "node:crypto";
 import { logger } from "mcos-logger/src/index.js";
 import type {
     BufferWithConnection,
@@ -58,13 +58,13 @@ function generateEncryptionPair(
     return newSession;
 }
 
-function createTSCipher(stringKey: Buffer) {
+function createTSCipher(stringKey: Buffer): {tsCipher: Cipher, tsDecipher: Decipher} {
     const tsCipher = createCipheriv("rc4", stringKey.subarray(0, 16), "");
     const tsDecipher = createDecipheriv("rc4", stringKey.subarray(0, 16), "");
     return { tsCipher, tsDecipher };
 }
 
-function createGSCipher(sKey: string) {
+function createGSCipher(sKey: string): {gsCipher: Cipher, gsDecipher: Decipher} {
     const desIV = Buffer.alloc(8);
 
     const gsCipher = createCipheriv("des-cbc", Buffer.from(sKey, "hex"), desIV);
