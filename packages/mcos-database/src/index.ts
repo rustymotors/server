@@ -41,9 +41,6 @@ export class DatabaseManager {
      * @returns {DatabaseManager}
      */
     static getInstance(): DatabaseManager {
-        if (!DatabaseManager._instance) {
-            DatabaseManager._instance = new DatabaseManager();
-        }
         const self = DatabaseManager._instance;
         return self;
     }

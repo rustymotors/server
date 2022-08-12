@@ -223,15 +223,11 @@ export function cipherBufferDES(
     encryptionSession: EncryptionSession,
     data: Buffer
 ): { session: EncryptionSession; data: Buffer } {
-    if (encryptionSession.gsCipher) {
-        const ciphered = encryptionSession.gsCipher.update(data);
-        return {
-            session: encryptionSession,
-            data: ciphered,
-        };
-    }
-
-    throw new Error("No DES cipher set on connection");
+    const ciphered = encryptionSession.gsCipher.update(data);
+    return {
+        session: encryptionSession,
+        data: ciphered,
+    };
 }
 
 /**
@@ -244,15 +240,11 @@ export function decipherBufferDES(
     encryptionSession: EncryptionSession,
     data: Buffer
 ): { session: EncryptionSession; data: Buffer } {
-    if (encryptionSession.gsDecipher) {
-        const deciphered = encryptionSession.gsDecipher.update(data);
-        return {
-            session: encryptionSession,
-            data: deciphered,
-        };
-    }
-
-    throw new Error("No DES decipher set on connection");
+    const deciphered = encryptionSession.gsDecipher.update(data);
+    return {
+        session: encryptionSession,
+        data: deciphered,
+    };
 }
 
 /**
