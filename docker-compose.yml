@@ -12,7 +12,7 @@ services:
   db:
     image: postgres:14.4
     ports:
-      - "5432"
+      - "5432:5432"
       # TODO: #1182 remove before prod https://github.com/drazisil/mco-server/issues/1008
     environment:
       POSTGRES_PASSWORD: "password"
