@@ -10,7 +10,7 @@ services:
       - node
 
   db:
-    image: postgres:14.4
+    image: postgres:14.5
     ports:
       - "5432"
       # TODO: #1182 remove before prod https://github.com/drazisil/mco-server/issues/1008
