@@ -14,7 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Cipher, createCipheriv, createDecipheriv, Decipher } from "node:crypto";
+import {
+    Cipher,
+    createCipheriv,
+    createDecipheriv,
+    Decipher,
+} from "node:crypto";
 import { logger } from "mcos-logger/src/index.js";
 import type {
     BufferWithConnection,
@@ -58,13 +63,19 @@ function generateEncryptionPair(
     return newSession;
 }
 
-function createTSCipher(stringKey: Buffer): {tsCipher: Cipher, tsDecipher: Decipher} {
+function createTSCipher(stringKey: Buffer): {
+    tsCipher: Cipher;
+    tsDecipher: Decipher;
+} {
     const tsCipher = createCipheriv("rc4", stringKey.subarray(0, 16), "");
     const tsDecipher = createDecipheriv("rc4", stringKey.subarray(0, 16), "");
     return { tsCipher, tsDecipher };
 }
 
-function createGSCipher(sKey: string): {gsCipher: Cipher, gsDecipher: Decipher} {
+function createGSCipher(sKey: string): {
+    gsCipher: Cipher;
+    gsDecipher: Decipher;
+} {
     const desIV = Buffer.alloc(8);
 
     const gsCipher = createCipheriv("des-cbc", Buffer.from(sKey, "hex"), desIV);
@@ -85,10 +96,10 @@ function createGSCipher(sKey: string): {gsCipher: Cipher, gsDecipher: Decipher} 
  * @param {ISessionRecord} keys
  * @returns {IEncryptionSession}
  */
-export async function selectOrCreateEncryptors(
+export function createEncryptors(
     dataConnection: SocketWithConnectionInfo,
     keys: Session
-): Promise<EncryptionSession> {
+): EncryptionSession {
     const { localPort, remoteAddress } = dataConnection;
 
     if (
@@ -157,7 +168,7 @@ export async function decryptBuffer(
             throw new Error(`Unable to fetch session key: ${String(error)})}`);
         });
 
-    const encryptionSession = await selectOrCreateEncryptors(
+    const encryptionSession = await createEncryptors(
         dataConnection.connection,
         keys
     );

@@ -2,7 +2,7 @@ import { getPersonasByPersonaId } from "../../../mcos-persona/src/index.js";
 import { logger } from "mcos-logger/src/index.js";
 import { NPSUserInfo } from "../NPSUserInfo.js";
 import { NPSMessage } from "../NPSMessage.js";
-import { selectOrCreateEncryptors } from "../encryption.js";
+import { createEncryptors } from "../encryption.js";
 import type {
     BufferWithConnection,
     EncryptionSession,
@@ -101,7 +101,7 @@ export async function _npsRequestGameConnectServer(
         throw new Error("Error fetching session keys!");
     }
 
-    const encryptionSession: EncryptionSession = await selectOrCreateEncryptors(
+    const encryptionSession: EncryptionSession = createEncryptors(
         dataConnection.connection,
         keys
     );
