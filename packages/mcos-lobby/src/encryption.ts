@@ -19,9 +19,9 @@ import { logger } from "mcos-logger/src/index.js";
 import type {
     BufferWithConnection,
     EncryptionSession,
-    SessionRecord,
     SocketWithConnectionInfo,
 } from "mcos-types/types.js";
+import type { Session } from "@prisma/client";
 
 const log = logger.child({ service: "mcos:shared:encryption" });
 
@@ -29,22 +29,22 @@ const encryptionSessions: EncryptionSession[] = [];
 
 function generateEncryptionPair(
     dataConnection: SocketWithConnectionInfo,
-    keys: SessionRecord
+    keys: Session
 ): EncryptionSession {
     // For use on Lobby packets
-    const { sessionkey, skey } = keys;
-    const stringKey = Buffer.from(sessionkey, "hex");
-    Buffer.from(stringKey.slice(0, 16));
+    const { sessionKey, sKey } = keys;
+    const stringKey = Buffer.from(sessionKey, "hex");
+    Buffer.from(stringKey.subarray(0, 16));
 
     // Deepcode ignore HardcodedSecret: This uses an empty IV
     const desIV = Buffer.alloc(8);
 
-    const gsCipher = createCipheriv("des-cbc", Buffer.from(skey, "hex"), desIV);
+    const gsCipher = createCipheriv("des-cbc", Buffer.from(sKey, "hex"), desIV);
     gsCipher.setAutoPadding(false);
 
     const gsDecipher = createDecipheriv(
         "des-cbc",
-        Buffer.from(skey, "hex"),
+        Buffer.from(sKey, "hex"),
         desIV
     );
     gsDecipher.setAutoPadding(false);
@@ -52,15 +52,15 @@ function generateEncryptionPair(
     // For use on messageNode packets
 
     // File deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
-    const tsCipher = createCipheriv("rc4", stringKey.slice(0, 16), "");
-    const tsDecipher = createDecipheriv("rc4", stringKey.slice(0, 16), "");
+    const tsCipher = createCipheriv("rc4", stringKey.subarray(0, 16), "");
+    const tsDecipher = createDecipheriv("rc4", stringKey.subarray(0, 16), "");
 
     const newSession: EncryptionSession = {
         connectionId: dataConnection.id,
         remoteAddress: dataConnection.remoteAddress,
         localPort: dataConnection.localPort,
-        sessionKey: keys.sessionkey,
-        shortKey: keys.skey,
+        sessionKey: keys.sessionKey,
+        shortKey: keys.sKey,
         gsCipher,
         gsDecipher,
         tsCipher,
@@ -156,7 +156,7 @@ export function selectEncryptorsForSocket(
  */
 export function selectOrCreateEncryptors(
     dataConnection: SocketWithConnectionInfo,
-    keys: SessionRecord
+    keys: Session
 ): EncryptionSession {
     const { localPort, remoteAddress } = dataConnection;
 

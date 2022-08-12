@@ -42,5 +42,6 @@ enable-node:
 	@sudo setcap cap_net_bind_service=+ep $(which node)
 
 docker-init:
-	mkdir -p log/mcos
+	@mkdir -p log/mcos
+	@npx prisma migrate deploy
 	@npm run start:docker -s

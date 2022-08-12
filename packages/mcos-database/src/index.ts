@@ -15,11 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { logger } from "mcos-logger/src/index.js";
-import { Session } from "./models/Session.js";
-import { Lobby } from "./models/Lobby.js";
-import type { SessionRecord } from "./types.js";
-import pg from "pg";
-const Client = pg.Client;
+import { Session, PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 const log = logger.child({ service: "mcoserver:DatabaseMgr" });
 
@@ -28,7 +25,7 @@ const log = logger.child({ service: "mcoserver:DatabaseMgr" });
  * @class
  */
 export class DatabaseManager {
-    localDB: pg.Client | undefined = undefined;
+    localDB: PrismaClient = prisma;
     /**
      *
      *
@@ -38,7 +35,6 @@ export class DatabaseManager {
      * @memberof DatabaseManager
      */
     static _instance: DatabaseManager;
-    connectionURI: string;
 
     /**
      * Return the instance of the DatabaseManager class
@@ -56,100 +52,42 @@ export class DatabaseManager {
      * Initialize database and set up schemas if needed
      * @returns {Promise<void>}
      */
-    async init(): Promise<void> {
-        if (typeof this.localDB === "undefined") {
-            log.debug("Initializing the database...");
-
-            try {
-                const self = DatabaseManager._instance;
-
-                const db = new Client({
-                    connectionString: process.env["CONNECTION_URL"],
-                });
-
-                await db.connect();
-
-                self.localDB = db;
-
-                await db.query(Session.schema);
-
-                await db.query(Lobby.schema);
-                log.debug("Database initialized");
-            } catch (/** @type {unknown} */ err: unknown) {
-                if (err instanceof Error) {
-                    const newError = new Error(
-                        `There was an error setting up the database: ${err.message}`
-                    );
-                    log.error(newError.message);
-                    throw newError;
-                }
-                throw err;
-            }
-        }
-    }
-
-    /**
-     * Creates an instance of DatabaseManager.
-     *
-     * Please use {@link DatabaseManager.getInstance()} instead
-     * @memberof DatabaseManager
-     */
-    constructor() {
-        if (!process.env["CONNECTION_URL"]) {
-            throw new Error("Please set CONNECTION_URL");
-        }
-        this.connectionURI = process.env["CONNECTION_URL"];
-    }
 
     /**
      * Locate customer session encryption key in the database
      * @param {number} customerId
-     * @returns {SessionRecord>}
+     * @returns {<Promise<Session>}
      */
-    async fetchSessionKeyByCustomerId(
-        customerId: number
-    ): Promise<SessionRecord> {
-        await this.init();
-        if (typeof this.localDB === "undefined") {
-            log.warn("Database not ready in fetchSessionKeyByCustomerId()");
-            throw new Error(
-                "Error accessing database. Are you using the instance?"
-            );
-        }
-        const record = await this.localDB.query(
-            "SELECT sessionkey, skey FROM sessions WHERE customer_id = $1",
-            [customerId]
-        );
-        if (typeof record === "undefined") {
+    async fetchSessionKeyByCustomerId(customerId: number): Promise<Session> {
+        const record = await this.localDB.session.findUnique({
+            where: {
+                customerId: customerId,
+            },
+        });
+        if (record === null) {
             log.debug("Unable to locate session key");
             throw new Error("Unable to fetch session key");
         }
-        return record.rows[0];
+        return record;
     }
 
     /**
      * Locate customer session encryption key in the database
-     * @param {number} connectionId
-     * @returns {Promise<SessionRecord>}
+     * @param {string} connectionId
+     * @returns {Promise<Session>}
      */
     async fetchSessionKeyByConnectionId(
-        connectionId: number
-    ): Promise<SessionRecord> {
-        await this.init();
-        if (typeof this.localDB === "undefined") {
-            log.warn("Database not ready in fetchSessionKeyByConnectionId()");
-            throw new Error(
-                "Error accessing database. Are you using the instance?"
-            );
-        }
-        const record = await this.localDB.query(
-            "SELECT sessionkey, skey FROM sessions WHERE connection_id = $1",
-            [connectionId]
-        );
-        if (typeof record === "undefined") {
+        connectionId: string
+    ): Promise<Session> {
+        const record = await this.localDB.session.findFirst({
+            where: {
+                connectionId: connectionId,
+            },
+        });
+        if (record === null) {
             throw new Error("Unable to fetch session key");
         }
-        return record.rows[0];
+        return record;
     }
 
     /**
@@ -165,26 +103,25 @@ export class DatabaseManager {
         sessionkey: string,
         contextId: string,
         connectionId: string
-    ): Promise<number> {
-        await this.init();
+    ): Promise<Session> {
         const skey = sessionkey.slice(0, 16);
 
-        if (typeof this.localDB === "undefined") {
-            log.warn("Database not ready in updateSessionKey()");
-            throw new Error(
-                "Error accessing database. Are you using the instance?"
-            );
-        }
-        const record = await this.localDB.query(
-            `INSERT INTO sessions (customer_id, sessionkey, skey, context_id, connection_id)
-        VALUES ($1, $2, $3, $4, $5)
-      ON CONFLICT (customer_id)
-        DO UPDATE SET sessionkey = $2, skey = $3;`,
-            [customerId, sessionkey, skey, contextId, connectionId]
-        );
-        if (typeof record === "undefined") {
-            throw new Error("Unable to fetch session key");
-        }
-        return 1;
+        const record = await this.localDB.session.upsert({
+            where: {
+                customerId: customerId,
+            },
+            update: {
+                sessionKey: sessionkey,
+                sKey: skey,
+            },
+            create: {
+                customerId: customerId,
+                sessionKey: sessionkey,
+                sKey: skey,
+                contextId: contextId,
+                connectionId: connectionId,
+            },
+        });
+        return record;
     }
 }

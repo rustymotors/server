@@ -41,7 +41,7 @@ services:
     environment:
       - DEBUG=mcos:*
       # TODO: #1182 remove before prod https://github.com/drazisil/mco-server/issues/1008
-      - CONNECTION_URL=postgresql://postgres:password@db:5432/mcos
+      - DATABASE_URL=postgresql://postgres:password@db:5432/mcos
       - EXTERNAL_HOST=10.10.5.20
       - PRIVATE_KEY_FILE=data/private_key.pem
       - PUBLIC_KEY_FILE=data/pub.key

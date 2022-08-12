@@ -118,7 +118,7 @@ export async function _npsRequestGameConnectServer(
     Buffer.from([0x00, 0x84, 0x5f, 0xed]).copy(packetContent);
 
     // SessionKeyStr (32)
-    _generateSessionKeyBuffer(keys.sessionkey).copy(packetContent, 4);
+    _generateSessionKeyBuffer(keys.sessionKey).copy(packetContent, 4);
 
     // SessionKeyLen - int
     packetContent.writeInt16BE(32, 66);
