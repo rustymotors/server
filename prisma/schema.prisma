@@ -7,9 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model Lobby {
-  lobyID                 Int @id(map: "pk_lobbby")
+  lobyID                 Int    @id(map: "pk_lobbby")
   raceTypeID             Int
   turfID                 Int
   riffName               String @db.Char(32)
@@ -89,14 +88,23 @@ model Lobby {
   teamtBackwards         Int    @db.SmallInt
   teamtNumLaps           Int    @db.SmallInt
   raceCashFactor         Float  @db.Real
-
-  @@ignore
 }
 
 model Session {
   customerId   Int    @id(map: "pk_session")
-  sessionKey    String
-  sKey          String
+  sessionKey   String
+  sKey         String
   contextId    String
   connectionId String
+}
+
+model Connection {
+  id            String  @id
+  remoteAddress String
+  localPort     Int     @db.SmallInt
+  sequence      Int     @default(0)
+  personaId     Int     @default(0)
+  lastTimeStamp Int     @default(0)
+  inQueue       Boolean @default(true)
+  useEncryption Boolean @default(false)
 }

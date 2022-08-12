@@ -87,17 +87,17 @@ async function login(
 
     // Save sessionkey in database under customerId
     log.debug("Preparing to update session key in db");
-    await DatabaseManager.getInstance()
-        .updateSessionKey(
+    try {
+        await DatabaseManager.getInstance().updateSessionKey(
             userRecord.customerId,
             sessionkey,
             contextId,
             connectionId
-        )
-        .catch((/** @type {unknown} */ error: unknown) => {
-            log.error(`Unable to update session key 3: ${String(error)}`);
-            throw new Error("Error in userLogin");
-        });
+        );
+    } catch (error) {
+        log.error(`Unable to update session key 3: ${String(error)}`);
+        throw new Error("Error in userLogin");
+    }
 
     log.info("Session key updated");
 

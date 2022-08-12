@@ -94,3 +94,17 @@ CREATE TABLE "Session" (
 
     CONSTRAINT "pk_session" PRIMARY KEY ("customerId")
 );
+
+-- CreateTable
+CREATE TABLE "Connection" (
+    "id" TEXT NOT NULL,
+    "remoteAddress" TEXT NOT NULL,
+    "localPort" SMALLINT NOT NULL,
+    "sequence" INTEGER NOT NULL DEFAULT 0,
+    "personaId" INTEGER NOT NULL DEFAULT 0,
+    "lastTimeStamp" INTEGER NOT NULL DEFAULT 0,
+    "inQueue" BOOLEAN NOT NULL DEFAULT true,
+    "useEncryption" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "Connection_pkey" PRIMARY KEY ("id")
+);

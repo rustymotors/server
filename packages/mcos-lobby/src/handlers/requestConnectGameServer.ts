@@ -101,7 +101,7 @@ export async function _npsRequestGameConnectServer(
         throw new Error("Error fetching session keys!");
     }
 
-    const encryptionSession: EncryptionSession = selectOrCreateEncryptors(
+    const encryptionSession: EncryptionSession = await selectOrCreateEncryptors(
         dataConnection.connection,
         keys
     );
