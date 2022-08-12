@@ -65,7 +65,7 @@ function generateEncryptionPair(
 
 /**
  * Generate a set of encryphers for the transactions service
- * @param {Buffer} stringKey 
+ * @param {Buffer} stringKey
  * @returns {{
  *   tsCipher: Cipher;
  *   tsDecipher: Decipher;
@@ -82,7 +82,7 @@ function createTSCipher(stringKey: Buffer): {
 
 /**
  * Generate a set of encryphers for the game service
- * @param {string} sKey 
+ * @param {string} sKey
  * @returns {{
  *   tsCipher: Cipher;
  *   tsDecipher: Decipher;
@@ -184,7 +184,7 @@ export async function decryptBuffer(
             throw new Error(`Unable to fetch session key: ${String(error)})}`);
         });
 
-    const encryptionSession = await createEncryptors(
+    const encryptionSession = createEncryptors(
         dataConnection.connection,
         keys
     );
