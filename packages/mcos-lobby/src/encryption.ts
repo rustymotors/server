@@ -63,6 +63,14 @@ function generateEncryptionPair(
     return newSession;
 }
 
+/**
+ * Generate a set of encryphers for the transactions service
+ * @param {Buffer} stringKey 
+ * @returns {{
+ *   tsCipher: Cipher;
+ *   tsDecipher: Decipher;
+ * }}
+ */
 function createTSCipher(stringKey: Buffer): {
     tsCipher: Cipher;
     tsDecipher: Decipher;
@@ -72,6 +80,14 @@ function createTSCipher(stringKey: Buffer): {
     return { tsCipher, tsDecipher };
 }
 
+/**
+ * Generate a set of encryphers for the game service
+ * @param {string} sKey 
+ * @returns {{
+ *   tsCipher: Cipher;
+ *   tsDecipher: Decipher;
+ * }}
+ */
 function createGSCipher(sKey: string): {
     gsCipher: Cipher;
     gsDecipher: Decipher;
