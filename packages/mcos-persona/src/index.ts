@@ -18,14 +18,18 @@ import { logger } from "mcos-logger/src/index.js";
 import { handleData, personaRecords } from "./internal.js";
 import type { Socket } from "node:net";
 import { NPSMessage } from "./NPSMessage.js";
-import type {
-    BufferWithConnection,
-    GServiceResponse,
+import {
+    InterServiceTransfer,
     PersonaRecord,
+    SERVICE_NAMES,
 } from "mcos-types/types.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
 
 const log = logger.child({ service: "mcoserver:PersonaServer" });
+
+const SELF = {
+    NAME: SERVICE_NAMES.PERSONA,
+};
 
 /**
  * Selects a game persona and marks it as in use

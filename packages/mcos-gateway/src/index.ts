@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { logger } from "mcos-logger/src/index.js";
+import { InterServiceTransfer, SERVICE_NAMES } from "mcos-shared";
 import * as http from "node:http";
 import { createServer as createSocketServer, Socket } from "node:net";
 import { selectConnection } from "./connections.js";
@@ -24,6 +25,10 @@ export { getAllConnections } from "./connections.js";
 export { AdminServer } from "./adminServer.js";
 
 const log = logger.child({ service: "mcos:gateway" });
+
+const SELF = {
+    NAME: SERVICE_NAMES.GATEWAY,
+};
 
 const listeningPortList = [
     80, 6660, 7003, 8228, 8226, 8227, 9000, 9001, 9002, 9003, 9004, 9005, 9006,

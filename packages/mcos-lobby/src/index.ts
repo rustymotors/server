@@ -20,8 +20,13 @@ import type {
     BufferWithConnection,
     GServiceResponse,
 } from "mcos-types/types.js";
+import { InterServiceTransfer, SERVICE_NAMES } from "mcos-types/types.js";
 
 const log = logger.child({ service: "mcoserver:LobbyServer" });
+
+const SELF = {
+    NAME: SERVICE_NAMES.LOBBY,
+};
 
 /**
  * Entry and exit point for the lobby service

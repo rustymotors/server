@@ -20,6 +20,10 @@ import type {
     TServiceResponse,
 } from "mcos-types/types.js";
 import { handleData } from "./internal.js";
+import { InterServiceTransfer, SERVICE_NAMES } from "mcos-types";
+const SELF = {
+    NAME: SERVICE_NAMES.TRANSACTION,
+};
 
 const log = logger.child({ service: "mcos:transactions" });
 

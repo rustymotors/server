@@ -16,14 +16,18 @@
 
 import { logger } from "mcos-logger/src/index.js";
 import type {
-    BufferWithConnection,
-    GServiceResponse,
+    InterServiceTransfer,
+    SERVICE_NAMES,
     UserRecordMini,
 } from "mcos-types/types.js";
 import { DatabaseManager } from "../../mcos-database/src/index.js";
 import { handleData } from "./internal.js";
 
 const log = logger.child({ service: "mcoserver:LoginServer" });
+
+const SELF = {
+    NAME: SERVICE_NAMES.LOGIN,
+};
 
 /**
  * Manages the initial game connection setup and teardown.
