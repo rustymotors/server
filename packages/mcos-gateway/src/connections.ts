@@ -15,120 +15,42 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { logger } from "mcos-logger/src/index.js";
-import type { SocketWithConnectionInfo } from "mcos-types/types.js";
+import type { ISocketRecord } from "mcos-types/types.js";
 import { randomUUID } from "node:crypto";
 import type { Socket } from "node:net";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 const log = logger.child({ service: "mcos:gateway:connections" });
 
-/** @type {SocketWithConnectionInfo[]} */
-const connectionList: SocketWithConnectionInfo[] = [];
+/** @type {ISocketRecord[]} */
+const socketRecords: ISocketRecord[] = [];
 
 /**
  *
- *
+ * Return all socket records
  * @export
- * @return {SocketWithConnectionInfo[]}
+ * @return {ISocketRecord[]}
  */
-export function getAllConnections(): SocketWithConnectionInfo[] {
-    return connectionList;
+export function fetchSocketRecords(): ISocketRecord[] {
+    return socketRecords;
 }
 
 /**
- * Return an existing connection, or a new one
- *
- * @param {Socket} socket
- * @return {SocketWithConnectionInfo}
- */
-export function selectConnection(socket: Socket): SocketWithConnectionInfo {
-    const { localPort, remoteAddress } = socket;
-
-    if (
-        typeof localPort === "undefined" ||
-        typeof remoteAddress === "undefined"
-    ) {
-        const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`;
-        log.error(errMessage);
-        throw new Error(errMessage);
-    }
-
-    const existingConnection = connectionList.find((c) => {
-        return (
-            c.socket.remoteAddress === remoteAddress &&
-            c.localPort === localPort
-        );
-    });
-
-    if (typeof existingConnection !== "undefined") {
-        log.info(
-            `I have seen connections from ${socket.remoteAddress} on ${socket.localPort} before`
-        );
-        existingConnection.socket = socket;
-        log.debug("Returning found connection after attaching socket");
-        return existingConnection;
-    }
-
-    const newConnectionId = randomUUID();
-    log.debug(`Creating new connection with id ${newConnectionId}`);
-    /** @type {SocketWithConnectionInfo} */
-    const newConnection: SocketWithConnectionInfo = {
-        seq: 0,
-        id: newConnectionId,
-        socket,
-        remoteAddress,
-        localPort,
-        personaId: 0,
-        lastMessageTimestamp: 0,
-        inQueue: true,
-        useEncryption: false,
-    };
-
-    log.info(
-        `I have not seen connections from ${socket.remoteAddress} on ${socket.localPort} before, adding it.`
-    );
-
-    connectionList.push(newConnection);
-
-    log.debug(
-        `Connection with id of ${newConnection.id} has been added. The connection list now contains ${connectionList.length} connections.`
-    );
-    return newConnection;
-}
-
-/**
- * Update the internal connection record
- *
- * @param {string} connectionId
- * @param {SocketWithConnectionInfo} updatedConnection
- */
-export function updateConnection(
-    connectionId: string,
-    updatedConnection: SocketWithConnectionInfo
-): void {
-    log.trace(`Updating connection with id: ${connectionId}`);
-    try {
-        const index = connectionList.findIndex((c) => {
-            return c.id === connectionId;
-        });
-        connectionList.splice(index, 1);
-        connectionList.push(updatedConnection);
-    } catch (error) {
-        throw new Error(`Error updating connection, ${String(error)}`);
-    }
-}
-
-/**
- * Locate connection by remoteAddress and localPort in the connections array
+ * Locate socket record by remoteAddress and localPort in the socket records list
  * @param {string} remoteAddress
  * @param {number} localPort
- * @return {ISocketWithConnectionInfo | undefined}
+ * @return {ISocketRecord | undefined}
  */
-function findConnectionByAddressAndPort(
+function findSocketRecordByAddressAndPort(
     remoteAddress: string,
     localPort: number
-): SocketWithConnectionInfo | undefined {
-    return connectionList.find((c) => {
-        return c.remoteAddress === remoteAddress && c.localPort === localPort;
+): ISocketRecord | undefined {
+    return socketRecords.find((c) => {
+        return (
+            c.socket.remoteAddress === remoteAddress &&
+            c.socket.localPort === localPort
+        );
     });
 }
 
@@ -136,12 +58,12 @@ function findConnectionByAddressAndPort(
  * Creates a new connection object for the socket and adds to list
  * @param {string} connectionId
  * @param {Socket} socket
- * @returns {SocketWithConnectionInfo}
+ * @returns {ISocketRecord}
  */
-function createNewConnection(
+export function createSocketRecord(
     connectionId: string,
     socket: Socket
-): SocketWithConnectionInfo {
+): ISocketRecord {
     const { localPort, remoteAddress } = socket;
 
     if (
@@ -153,62 +75,52 @@ function createNewConnection(
         throw new Error(errMessage);
     }
 
-    /** @type {SocketWithConnectionInfo} */
-    const newConnectionRecord: SocketWithConnectionInfo = {
+    /** @type {ISocketRecord} */
+    const newSocketRecord: ISocketRecord = {
         socket,
-        remoteAddress,
-        localPort,
-        seq: 0,
         id: connectionId,
-        personaId: 0,
-        lastMessageTimestamp: 0,
-        inQueue: true,
-        useEncryption: false,
     };
-    return newConnectionRecord;
+    return newSocketRecord;
 }
 
 /**
  * Add new connection to internal list
  *
- * @param {SocketWithConnectionInfo} connection
- * @return {SocketWithConnectionInfo[]}
+ * @param {ISocketRecord} connection
+ * @return {ISocketRecord[]} the updated list of records
  */
-function addConnection(
-    connection: SocketWithConnectionInfo
-): SocketWithConnectionInfo[] {
-    connectionList.push(connection);
-    return connectionList;
+function addSocketRecord(connection: ISocketRecord): ISocketRecord[] {
+    socketRecords.push(connection);
+    return socketRecords;
 }
 
 /**
  * Return an existing connection, or a new one
  *
  * @param {Socket} socket
- * @return {SocketWithConnectionInfo}
+ * @return {ISocketRecord}
  */
-export function findOrNewConnection(socket: Socket): SocketWithConnectionInfo {
+export async function findOrNewConnection(
+    socket: Socket
+): Promise<ISocketRecord> {
     const { localPort, remoteAddress } = socket;
 
-    if (
-        typeof localPort === "undefined" ||
-        typeof remoteAddress === "undefined"
-    ) {
-        const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`;
-        log.error(errMessage);
-        throw new Error(errMessage);
+    if (addressOrPortIsEmpty(localPort, remoteAddress) === false) {
+        throw new Error(
+            `Either localPort or remoteAddress is missing. Unusable socket.`
+        );
     }
 
-    const existingConnection = findConnectionByAddressAndPort(
-        remoteAddress,
-        localPort
+    const existingConnection = findSocketRecordByAddressAndPort(
+        remoteAddress as string,
+        localPort as number
     );
+
     if (typeof existingConnection !== "undefined") {
         log.info(
             `I have seen connections from ${socket.remoteAddress} on ${socket.localPort} before`
         );
 
-        // Modern
         existingConnection.socket = socket;
         log.debug("[M] Returning found connection after attaching socket");
         return existingConnection;
@@ -216,15 +128,57 @@ export function findOrNewConnection(socket: Socket): SocketWithConnectionInfo {
 
     const newConnectionId = randomUUID();
     log.debug(`Creating new connection with id ${newConnectionId}`);
-    const newConnection = createNewConnection(newConnectionId, socket);
+    const newSocketRecord = createSocketRecord(newConnectionId, socket);
     log.info(
         `I have not seen connections from ${socket.remoteAddress} on ${socket.localPort} before, adding it.`
     );
-    const updatedConnectionList = addConnection(newConnection);
+    const updatedSocketRecordsList = addSocketRecord(newSocketRecord);
+
+    // Let's make sure we have a connection record
+    await addNewConnection(newSocketRecord);
+
     log.debug(
-        `Connection with id of ${newConnection.id} has been added. The connection list now contains ${updatedConnectionList.length} connections.`
+        `Socket record with id of ${newSocketRecord.id} has been added. The connection list now contains ${updatedSocketRecordsList.length} connections.`
     );
-    return newConnection;
+    return newSocketRecord;
+}
+
+async function addNewConnection(socketRecord: ISocketRecord) {
+    await prisma.connection.upsert({
+        where: {
+            id: socketRecord.id,
+        },
+        create: {
+            id: socketRecord.id,
+            remoteAddress: socketRecord.socket.remoteAddress || "",
+            localPort: socketRecord.socket.localPort || 0,
+            sequence: 0,
+            personaId: 0,
+            lastTimeStamp: 0,
+            inQueue: true,
+            useEncryption: false,
+        },
+        update: {},
+    });
+}
+
+/**
+ * Check if either remoteAddress or localPort are undefined
+ * @param {number} localPort
+ * @param {string} remoteAddress
+ * @returns {boolean}
+ */
+function addressOrPortIsEmpty(
+    localPort: number | undefined,
+    remoteAddress: string | undefined
+): boolean {
+    if (
+        typeof localPort === "undefined" ||
+        typeof remoteAddress === "undefined"
+    ) {
+        return false;
+    }
+    return true;
 }
 
 /**

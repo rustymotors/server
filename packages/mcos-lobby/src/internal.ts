@@ -18,39 +18,42 @@ import { logger } from "mcos-logger/src/index.js";
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
 import { _npsHeartbeat } from "./handlers/heartbeat.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
-import type {
-    BufferWithConnection,
-    GSMessageArrayWithConnection,
-} from "mcos-types/types.js";
+import type { Connection } from "@prisma/client";
 
 const log = logger.child({ service: "mcos:lobby" });
 
 /**
- * @param {IBufferWithConnection} dataConnection
- * @return {Promise<IGSMessageArrayWithConnection>}
+ * @param {Connection} onnection
+ * @param {Buffer} data
+ * @return {Promise<Buffer>}
  */
 export async function handleData(
-    dataConnection: BufferWithConnection
-): Promise<GSMessageArrayWithConnection> {
-    const { localPort, remoteAddress } = dataConnection.connection.socket;
+    connection: Connection,
+    data: Buffer
+): Promise<Buffer> {
     log.debug(
-        `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
+        `Received Lobby packet: ${JSON.stringify({
+            localPort: connection.localPort,
+            remoteAddress: connection.remoteAddress,
+        })}`
     );
-    const { data } = dataConnection;
     const requestCode = data.readUInt16BE(0).toString(16);
 
     switch (requestCode) {
         // _npsRequestGameConnectServer
         case "100": {
-            const result = await _npsRequestGameConnectServer(dataConnection);
-            return result;
+            const responsePacket = await _npsRequestGameConnectServer(
+                connection,
+                data
+            );
+            return responsePacket.serialize();
         }
 
         // NpsHeartbeat
 
         case "217": {
-            const result = await _npsHeartbeat(dataConnection);
-            return result;
+            const responsePacket = await _npsHeartbeat(connection, data);
+            return responsePacket.serialize();
         }
 
         // NpsSendCommand
@@ -58,13 +61,16 @@ export async function handleData(
         case "1101": {
             // This is an encrypted command
 
-            const result = handleEncryptedNPSCommand(dataConnection);
-            return result;
+            const responsePacket = await handleEncryptedNPSCommand(
+                connection,
+                data
+            );
+            return responsePacket.serialize();
         }
 
         default:
-            throw new Error(
-                `Unknown code ${requestCode} was received on port 7003`
-            );
+            // No need to throw here
+            log.warn(`Unknown code ${requestCode} was received on port 7003`);
+            return Buffer.alloc(0);
     }
 }

@@ -21,18 +21,15 @@ import {
     Decipher,
 } from "node:crypto";
 import { logger } from "mcos-logger/src/index.js";
-import type {
-    BufferWithConnection,
-    EncryptionSession,
-    SocketWithConnectionInfo,
-} from "mcos-types/types.js";
+import type { EncryptionSession } from "mcos-types/types.js";
 import type { Session } from "@prisma/client";
-import { DatabaseManager } from "../../mcos-database/src/index.js";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 const log = logger.child({ service: "mcos:shared:encryption" });
 
 function generateEncryptionPair(
-    dataConnection: SocketWithConnectionInfo,
+    connectionId: string,
     keys: Session
 ): EncryptionSession {
     // For use on Lobby packets
@@ -49,11 +46,7 @@ function generateEncryptionPair(
     const { tsCipher, tsDecipher } = createTSCipher(stringKey);
 
     const newSession: EncryptionSession = {
-        connectionId: dataConnection.id,
-        remoteAddress: dataConnection.remoteAddress,
-        localPort: dataConnection.localPort,
-        sessionKey: keys.sessionKey,
-        shortKey: keys.sKey,
+        connectionId,
         gsCipher,
         gsDecipher,
         tsCipher,
@@ -108,29 +101,18 @@ function createGSCipher(sKey: string): {
 
 /**
  *
- * @param {ISocketWithConnectionInfo} dataConnection
+ * @param {ISocketWithConnectionInfo} connection
  * @param {ISessionRecord} keys
  * @returns {IEncryptionSession}
  */
 export function createEncryptors(
-    dataConnection: SocketWithConnectionInfo,
+    connectionId: string,
     keys: Session
 ): EncryptionSession {
-    const { localPort, remoteAddress } = dataConnection;
-
-    if (
-        typeof localPort === "undefined" ||
-        typeof remoteAddress === "undefined"
-    ) {
-        const errMessage = `[selectOrCreateEncryptors]Either localPort or remoteAddress is missing on socket. Can not continue.`;
-        log.error(errMessage);
-        throw new Error(errMessage);
-    }
-
-    const newSession = generateEncryptionPair(dataConnection, keys);
+    const newSession = generateEncryptionPair(connectionId, keys);
 
     log.debug(
-        `Generated new encryption session for connection id ${dataConnection.id}`
+        `Generated new encryption session for connection id ${connectionId}`
     );
 
     return newSession;
@@ -162,32 +144,29 @@ export function cipherBufferDES(
 export function decipherBufferDES(
     encryptionSession: EncryptionSession,
     data: Buffer
-): { session: EncryptionSession; data: Buffer } {
+): Buffer {
     const deciphered = encryptionSession.gsDecipher.update(data);
-    return {
-        session: encryptionSession,
-        data: deciphered,
-    };
+    return deciphered;
 }
 
 /**
  * Decrypt the buffer contents
  */
 export async function decryptBuffer(
-    dataConnection: BufferWithConnection,
+    connectionId: string,
     buffer: Buffer
 ): Promise<{ session: EncryptionSession; data: Buffer }> {
-    const keys = await DatabaseManager.getInstance()
-        .fetchSessionKeyByConnectionId(dataConnection.connectionId)
-        .catch((/** @type {unknown} */ error: unknown) => {
-            log.debug(`Unable to fetch session key: ${String(error)})}`);
-            throw new Error(`Unable to fetch session key: ${String(error)})}`);
-        });
+    const keys = await prisma.session.findFirst({
+        where: {
+            connectionId,
+        },
+    });
 
-    const encryptionSession = createEncryptors(
-        dataConnection.connection,
-        keys
-    );
+    if (keys === null) {
+        throw new Error("Error fetching session keys in decryptBuffer");
+    }
+
+    const encryptionSession = createEncryptors(connectionId, keys);
     const deciphered = encryptionSession.tsDecipher.update(buffer);
     return {
         session: encryptionSession,

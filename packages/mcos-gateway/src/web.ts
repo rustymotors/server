@@ -29,10 +29,10 @@ const log = logger.child({ service: "mcos:gateway:web" });
  * @param {ServerResponse} res
  * @returns {ServerResponse}
  */
-export function httpListener(
+export async function httpListener(
     req: IncomingMessage,
     res: ServerResponse
-): ServerResponse {
+): Promise<ServerResponse> {
     if (typeof req.url !== "undefined" && req.url.startsWith("/AuthLogin")) {
         log.debug("ssl routing request to login web server");
         return AuthLogin.getInstance().handleRequest(req, res);
@@ -45,7 +45,7 @@ export function httpListener(
             req.url.startsWith("/admin"))
     ) {
         log.debug("ssl routing request to admin web server");
-        const response = AdminServer.getAdminServer().handleRequest(req);
+        const response = await AdminServer.getAdminServer().handleRequest(req);
         return res
             .writeHead(response.code, response.headers)
             .end(response.body);

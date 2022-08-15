@@ -15,12 +15,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { logger } from "mcos-logger/src/index.js";
-import type {
-    BufferWithConnection,
-    TServiceResponse,
-} from "mcos-types/types.js";
 import { handleData } from "./internal.js";
+import { PrismaClient } from "@prisma/client";
 import { InterServiceTransfer, SERVICE_NAMES } from "mcos-types";
+const prisma = new PrismaClient();
+
 const SELF = {
     NAME: SERVICE_NAMES.TRANSACTION,
 };
@@ -31,21 +30,44 @@ const log = logger.child({ service: "mcos:transactions" });
  * Entry and exit point for the lobby service
  *
  * @export
- * @param {BufferWithConnection} dataConnection
- * @return {Promise<TServiceResponse>}
+ * @param {InterServiceTransfer} requestFromService
+ * @return {Promise<InterServiceTransfer>}
  */
 export async function receiveTransactionsData(
-    dataConnection: BufferWithConnection
-): Promise<TServiceResponse> {
+    requestFromService: InterServiceTransfer
+): Promise<InterServiceTransfer> {
     log.debug(`Entering receiveTransactionsData`);
     try {
-        const result = await handleData(dataConnection);
+        if (requestFromService.targetService !== SELF.NAME) {
+            throw new Error("Received a request not for this service!");
+        }
+
+        const { connectionId } = requestFromService;
+        const connectionRecord = await prisma.connection.findUnique({
+            where: {
+                id: connectionId,
+            },
+        });
+
+        if (connectionRecord === null) {
+            throw new Error(
+                `Unable to locate connection match id: ${connectionId}`
+            );
+        }
+
+        const responseData = await handleData(
+            connectionRecord,
+            requestFromService.data
+        );
         log.debug("Exiting the transactions service");
-        return { err: null, response: result };
+        return {
+            targetService: SERVICE_NAMES.GATEWAY,
+            connectionId,
+            data: responseData,
+        };
     } catch (error) {
-        const errMessage = `There was an error in the lobby service: ${String(
-            error
-        )}`;
-        return { err: new Error(errMessage), response: undefined };
+        throw new Error(
+            `There was an error in the transactions service: ${String(error)}`
+        );
     }
 }

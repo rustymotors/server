@@ -16,12 +16,10 @@
 
 import { logger } from "mcos-logger/src/index.js";
 import { handleData } from "./internal.js";
-import type {
-    BufferWithConnection,
-    GServiceResponse,
-} from "mcos-types/types.js";
-import { InterServiceTransfer, SERVICE_NAMES } from "mcos-types/types.js";
 
+import { InterServiceTransfer, SERVICE_NAMES } from "mcos-types/types.js";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 const log = logger.child({ service: "mcoserver:LobbyServer" });
 
 const SELF = {
@@ -32,19 +30,44 @@ const SELF = {
  * Entry and exit point for the lobby service
  *
  * @export
- * @param {BufferWithConnection} dataConnection
- * @return {Promise<GServiceResponse>}
+ * @param {InterServiceTransfer} requestFromService
+ * @return {Promise<InterServiceTransfer>}
  */
 export async function receiveLobbyData(
-    dataConnection: BufferWithConnection
-): Promise<GServiceResponse> {
+    requestFromService: InterServiceTransfer
+): Promise<InterServiceTransfer> {
+    log.debug("Entering Lobby server...");
+
+    if (requestFromService.targetService !== SELF.NAME) {
+        throw new Error("Attempted to handle a request not for this service");
+    }
+
+    const connectionRecord = await prisma.connection.findUnique({
+        where: {
+            id: requestFromService.connectionId,
+        },
+    });
+
+    if (connectionRecord === null) {
+        throw new Error(
+            `Unable to locate connection for id: ${requestFromService.connectionId}`
+        );
+    }
+
     try {
-        return { err: null, response: await handleData(dataConnection) };
+        const responseData = await handleData(
+            connectionRecord,
+            requestFromService.data as Buffer
+        );
+        log.debug("...Exiting Lobby server");
+        return {
+            targetService: SERVICE_NAMES.GATEWAY,
+            connectionId: requestFromService.connectionId,
+            data: responseData,
+        };
     } catch (error) {
-        const errMessage = `There was an error in the lobby service: ${String(
-            error
-        )}`;
-        log.error(errMessage);
-        return { err: new Error(errMessage), response: undefined };
+        throw new Error(
+            `There was an error in the lobby service: ${String(error)}`
+        );
     }
 }

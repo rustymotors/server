@@ -14,31 +14,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { PrismaClient } from "@prisma/client";
 import { logger } from "mcos-logger/src/index.js";
-import type { SocketWithConnectionInfo } from "mcos-types";
 import type {
     IncomingMessage,
     OutgoingHttpHeader,
     OutgoingHttpHeaders,
 } from "node:http";
-import { getAllConnections } from "./index.js";
+import { getAllConnections as fetchSocketRecords } from "./index.js";
+import { AdminServerResponse, routes } from "./routes/routeIndex.js";
+export const prisma = new PrismaClient();
 
-const log = logger.child({ service: "mcos:gateway:admin" });
-
-// https://careerkarma.com/blog/converting-circular-structure-to-json/
-function replacerFunc(): // eslint-disable-next-line @typescript-eslint/no-explicit-any
-((this: any, key: string, value: any) => any) | undefined {
-    const visited = new WeakSet();
-    return (_key: string, value: object) => {
-        if (typeof value === "object" && value !== null) {
-            if (visited.has(value)) {
-                return;
-            }
-            visited.add(value);
-        }
-        return value;
-    };
-}
+export const log = logger.child({ service: "mcos:gateway:admin" });
 
 /**
  * Please use {@link AdminServer.getAdminServer()}
@@ -83,11 +70,15 @@ export class AdminServer {
     /**
      * Handle incomming http requests
      *
-     * @return {ServerResponse}
      * @param {IncomingMessage} request
-     * @param {ServerResponse} response
+     * @return {Promise<{
+     *   code: number; headers: OutgoingHttpHeaders |
+     *       OutgoingHttpHeader[] |
+     *       undefined |
+     *       undefined; body: string;
+     * }>}
      */
-    handleRequest(request: IncomingMessage): {
+    async handleRequest(request: IncomingMessage): Promise<{
         code: number;
         headers:
             | OutgoingHttpHeaders
@@ -95,7 +86,7 @@ export class AdminServer {
             | undefined
             | undefined;
         body: string;
-    } {
+    }> {
         log.info(
             `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );
@@ -107,116 +98,58 @@ export class AdminServer {
       })}`
         );
 
-        if (typeof request.url === "undefined") {
-            return { code: 404, headers: {}, body: "" };
-        }
+        const socketRecords = fetchSocketRecords();
+        log.debug(`There are ${socketRecords.length} socket records`);
 
-        const connections = getAllConnections();
+        const requestUrl = parseUrl(request);
 
-        if (
-            request.url.startsWith("/admin/connections/releaseQueue") === true
-        ) {
-            const connectionId = new URL(
-                request.url,
-                `http://${request.headers.host}`
-            ).searchParams.get("id");
-            if (connectionId === null) {
-                return {
-                    code: 400,
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ message: "missing connection id" }),
-                };
+        // New style route handlers
+        for (const route of routes) {
+            if (route?.routeMatch(requestUrl) === true) {
+                return route.handler(socketRecords, requestUrl);
             }
-            return releaseQueue(connections, connectionId);
-        }
-        if (request.url === "/admin/connections/resetQueue") {
-            // We only use the code here, the body is used for testing
-            const { code } = resetQueue(connections);
-            return { code, headers: {}, body: "ok" };
-        }
-
-        if (request.url === "/admin/connections") {
-            return listConnections(connections);
-        }
-
-        if (request.url.startsWith("/admin") === true) {
-            return { code: 404, headers: {}, body: "Jiggawatt!" };
         }
 
         return { code: 404, headers: {}, body: "" };
     }
 }
 
+function parseUrl(request: IncomingMessage) {
+    return new URL(request.url || "", `http://${request.headers.host}`);
+}
+
 /**
- * Formay a list of connections for plaintext display
- * @param {SocketWithConnectionInfo[]} connections
+ * Fetch all session records
  * @return {{
  *   code: number;
  *   headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined | undefined;
  *   body: string;
  * }}
  */
-export function listConnections(connections: SocketWithConnectionInfo[]): {
-    code: number;
-    headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined | undefined;
-    body: string;
-} {
-    let responseString = "";
-    connections.forEach((connection, index) => {
-        const displayConnection = `
-    index: ${index} - ${connection.id}
-        remoteAddress: ${connection.socket.remoteAddress}:${connection.localPort}
-        inQueue:       ${connection.inQueue}
-    `;
-        responseString = responseString.concat(displayConnection);
-    });
+export async function listSessions(): Promise<AdminServerResponse> {
+    const connectionList = await prisma.session.findMany({});
 
-    return {
-        code: 200,
-        headers: { "Content-Type": "text/plain" },
-        body: responseString,
-    };
-}
-
-export function releaseQueue(
-    connections: SocketWithConnectionInfo[],
-    connectionId: string
-): {
-    code: number;
-    headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined | undefined;
-    body: string;
-} {
-    const connectionToRelease = connections.find((connection) => {
-        return connection.id === connectionId;
-    });
-    if (typeof connectionToRelease === "undefined") {
-        return {
-            code: 422,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: "connection not found" }),
-        };
-    }
-    connectionToRelease.inQueue = false;
-    connectionToRelease.socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
     return {
         code: 200,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: "ok" }),
+        body: JSON.stringify(connectionList),
     };
 }
 
-export function resetQueue(connections: SocketWithConnectionInfo[]): {
-    code: number;
-    headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined | undefined;
-    body: string;
-} {
-    const resetConnections = connections.map((c) => {
-        c.inQueue = true;
-        return c;
-    });
-    return {
-        code: 200,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(resetConnections, replacerFunc()),
-    };
+export async function updateConnectionInDatabase(connectionId: string) {
+    await prisma.connection
+        .update({
+            where: {
+                id: connectionId,
+            },
+            data: {
+                inQueue: false,
+            },
+        })
+        .catch((error) => {
+            log.error(`Error removing connection from queue: ${String(error)}`);
+        })
+        .finally(() => {
+            log.info(`Removed connection id (${connectionId}) from queue`);
+        });
 }

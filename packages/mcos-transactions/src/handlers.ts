@@ -14,21 +14,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { DatabaseManager } from "../../mcos-database/src/index.js";
 import { logger } from "mcos-logger/src/index.js";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { MessageNode } from "./MessageNode.js";
 import { TClientConnectMessage } from "./TClientConnectMessage.js";
-import { selectOrCreateEncryptors } from "./encryption.js";
 import { TLoginMessage } from "./TLoginMessage.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { TLobbyMessage } from "./TLobbyMessage.js";
 import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
 import { StockCar } from "./StockCar.js";
-import type {
-    SocketWithConnectionInfo,
-    TSMessageArrayWithConnection,
-} from "mcos-types/types.js";
+import type { Connection } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 const log = logger.child({ service: "mcos:transactions:handlers" });
 
@@ -51,14 +48,11 @@ export function toHex(data: Buffer): string {
 /**
  *
  * @private
- * @param {SocketWithConnectionInfo} connection
+ * @param {ISocketRecord} connection
  * @param {MessageNode} node
  * @return {TSMessageArrayWithConnection}
  */
-function _setOptions(
-    connection: SocketWithConnectionInfo,
-    node: MessageNode
-): TSMessageArrayWithConnection {
+function _setOptions(connection: Connection, node: MessageNode): MessageNode {
     const setOptionsMessage = node;
 
     setOptionsMessage.data = node.serialize();
@@ -76,21 +70,18 @@ function _setOptions(
     rPacket.updateBuffer(pReply.serialize());
     rPacket.dumpPacket();
 
-    return { connection, messages: [rPacket] };
+    return rPacket;
 }
 
 /**
  *
  *
- * @param {SocketWithConnectionInfo} conn
+ * @param {ISocketRecord} conn
  * @param {MessageNode} node
  * @return {TSMessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleSetOptions(
-    conn: SocketWithConnectionInfo,
-    node: MessageNode
-): TSMessageArrayWithConnection {
+function handleSetOptions(conn: Connection, node: MessageNode): MessageNode {
     const result = _setOptions(conn, node);
     return result;
 }
@@ -98,14 +89,14 @@ function handleSetOptions(
 /**
  *
  * @private
- * @param {SocketWithConnectionInfo} connection
+ * @param {ISocketRecord} connection
  * @param {MessageNode} node
  * @return {TSMessageArrayWithConnection}
  */
 function _trackingMessage(
-    connection: SocketWithConnectionInfo,
+    connection: Connection,
     node: MessageNode
-): TSMessageArrayWithConnection {
+): MessageNode {
     const trackingMessage = node;
 
     trackingMessage.data = node.serialize();
@@ -123,21 +114,21 @@ function _trackingMessage(
     rPacket.updateBuffer(pReply.serialize());
     rPacket.dumpPacket();
 
-    return { connection, messages: [rPacket] };
+    return rPacket;
 }
 
 /**
  *
  *
- * @param {SocketWithConnectionInfo} conn
+ * @param {ISocketRecord} conn
  * @param {MessageNode} node
  * @return {TSMessageArrayWithConnection}
  * @memberof MCOTServer
  */
 function handleTrackingMessage(
-    conn: SocketWithConnectionInfo,
+    conn: Connection,
     node: MessageNode
-): TSMessageArrayWithConnection {
+): MessageNode {
     const result = _trackingMessage(conn, node);
     return result;
 }
@@ -145,14 +136,14 @@ function handleTrackingMessage(
 /**
  *
  * @private
- * @param {SocketWithConnectionInfo} connection
+ * @param {ISocketRecord} connection
  * @param {MessageNode} node
  * @return {TSMessageArrayWithConnection}
  */
 function _updatePlayerPhysical(
-    connection: SocketWithConnectionInfo,
+    connection: Connection,
     node: MessageNode
-): TSMessageArrayWithConnection {
+): MessageNode {
     const updatePlayerPhysicalMessage = node;
 
     updatePlayerPhysicalMessage.data = node.serialize();
@@ -170,34 +161,34 @@ function _updatePlayerPhysical(
     rPacket.updateBuffer(pReply.serialize());
     rPacket.dumpPacket();
 
-    return { connection, messages: [rPacket] };
+    return rPacket;
 }
 
 /**
  *
  *
- * @param {SocketWithConnectionInfo} conn
+ * @param {ISocketRecord} conn
  * @param {MessageNode} node
  * @return {TSMessageArrayWithConnection}
  * @memberof MCOTServer
  */
 function handleUpdatePlayerPhysical(
-    conn: SocketWithConnectionInfo,
+    conn: Connection,
     node: MessageNode
-): TSMessageArrayWithConnection {
+): MessageNode {
     const result = _updatePlayerPhysical(conn, node);
     return result;
 }
 
 /**
- * @param {SocketWithConnectionInfo} connection
+ * @param {ISocketRecord} connection
  * @param {MessageNode} packet
  * @return {Promise<TSMessageArrayWithConnection>}
  */
 async function clientConnect(
-    connection: SocketWithConnectionInfo,
+    connection: Connection,
     packet: MessageNode
-): Promise<TSMessageArrayWithConnection> {
+): Promise<MessageNode> {
     /**
      * Let's turn it into a ClientConnectMsg
      */
@@ -216,24 +207,45 @@ async function clientConnect(
 
     log.debug(`[TCPManager] Looking up the session key for ${customerId}...`);
 
-    const result =
-        await DatabaseManager.getInstance().fetchSessionKeyByCustomerId(
-            customerId
+    const sessionRecord = await prisma.session.findFirst({
+        where: {
+            customerId,
+        },
+    });
+
+    if (sessionRecord === null) {
+        throw new Error(
+            `Unable to locate session record for id: ${connection.id}`
         );
+    }
+
     log.debug("[TCPManager] Session Key located!");
 
-    const connectionWithKey = connection;
+    // const connectionWithKey = connection;
 
     // const { sessionkey } = result
 
     // const stringKey = Buffer.from(sessionkey, 'hex')
 
-    selectOrCreateEncryptors(connection, result);
+    // selectOrCreateEncryptors(connection, sessionRecord);
 
     // connectionWithKey.setEncryptionKey(Buffer.from(stringKey.slice(0, 16)))
 
     // Update the connection's appId
-    connectionWithKey.personaId = newMessage.getAppId();
+    connection.personaId = newMessage.getAppId();
+
+    try {
+        await prisma.connection.update({
+            where: {
+                id: connection.id,
+            },
+            data: {
+                personaId: connection.personaId,
+            },
+        });
+    } catch (error) {
+        throw new Error("Error setting persona id on connection");
+    }
 
     const personaId = newMessage.getValue("personaId");
     if (typeof personaId !== "number") {
@@ -260,39 +272,33 @@ async function clientConnect(
     responsePacket.updateBuffer(genericReplyMessage.serialize());
     responsePacket.dumpPacket();
 
-    return { connection, messages: [responsePacket] };
+    return responsePacket;
 }
 
 /**
  *
  *
- * @param {SocketWithConnectionInfo} conn
+ * @param {ISocketRecord} conn
  * @param {MessageNode} node
  * @return {Promise<TSMessageArrayWithConnection>}
  * @memberof MCOTServer
  */
 async function handleClientConnect(
-    conn: SocketWithConnectionInfo,
+    conn: Connection,
     node: MessageNode
-): Promise<TSMessageArrayWithConnection> {
+): Promise<MessageNode> {
     const result = await clientConnect(conn, node);
-    return {
-        connection: result.connection,
-        messages: result.messages,
-    };
+    return result;
 }
 
 /**
  *
  * @private
- * @param {SocketWithConnectionInfo} connection
+ * @param {ISocketRecord} connection
  * @param {MessageNode} node
  * @return {TSMessageArrayWithConnection}>}
  */
-function _login(
-    connection: SocketWithConnectionInfo,
-    node: MessageNode
-): TSMessageArrayWithConnection {
+function _login(connection: Connection, node: MessageNode): MessageNode {
     // Read the inbound packet
     const loginMessage = new TLoginMessage();
     loginMessage.deserialize(node.rawPacket);
@@ -309,39 +315,33 @@ function _login(
     rPacket.updateBuffer(pReply.serialize());
     rPacket.dumpPacket();
 
-    return { connection, messages: [rPacket] };
+    return rPacket;
 }
 
 /**
  *
  *
- * @param {SocketWithConnectionInfo} conn
+ * @param {Connection} conn
  * @param {MessageNode} node
- * @return {TSMessageArrayWithConnection}
+ * @return {MessageNode}
  * @memberof MCOTServer
  */
-function handleLoginMessage(
-    conn: SocketWithConnectionInfo,
-    node: MessageNode
-): TSMessageArrayWithConnection {
+function handleLoginMessage(conn: Connection, node: MessageNode): MessageNode {
     const result = _login(conn, node);
-    return {
-        connection: result.connection,
-        messages: result.messages,
-    };
+    return result;
 }
 
 /**
  *
  * @private
- * @param {SocketWithConnectionInfo} connection
+ * @param {Connection} connection
  * @param {MessageNode} node
- * @return {TSMessageArrayWithConnection}
+ * @return {MessageNode | void}
  */
 function _logout(
-    connection: SocketWithConnectionInfo,
+    connection: Connection,
     node: MessageNode
-): TSMessageArrayWithConnection {
+): MessageNode | void {
     const logoutMessage = node;
 
     logoutMessage.data = node.serialize();
@@ -358,42 +358,31 @@ function _logout(
     rPacket.deserialize(node.serialize());
     rPacket.updateBuffer(pReply.serialize());
     rPacket.dumpPacket();
-
-    /** @type {MessageNode[]} */
-    const nodes: MessageNode[] = [];
-
-    return { connection, messages: nodes };
 }
 
 /**
  *
  *
- * @param {SocketWithConnectionInfo} conn
+ * @param {Connection} conn
  * @param {MessageNode} node
- * @return {TSMessageArrayWithConnection}
+ * @return {MessageNode | void}
  */
 function handleLogoutMessage(
-    conn: SocketWithConnectionInfo,
+    conn: Connection,
     node: MessageNode
-): TSMessageArrayWithConnection {
+): MessageNode | void {
     const result = _logout(conn, node);
-    return {
-        connection: result.connection,
-        messages: result.messages,
-    };
+    return result;
 }
 
 /**
  *
  * @private
- * @param {SocketWithConnectionInfo} connection
+ * @param {Connection} connection
  * @param {MessageNode} node
- * @return {TSMessageArrayWithConnection}
+ * @return {TLobbyMessage}
  */
-function _getLobbies(
-    connection: SocketWithConnectionInfo,
-    node: MessageNode
-): TSMessageArrayWithConnection {
+function _getLobbies(connection: Connection, node: MessageNode): TLobbyMessage {
     log.debug("In _getLobbies...");
 
     const lobbyRequest = new GenericRequestMessage();
@@ -439,40 +428,37 @@ function _getLobbies(
     lobbyResponse.setValueNumber("numberOfLobbies", 0);
     lobbyResponse.setValueNumber("moreMessages?", 0);
 
-    return { connection, messages: [lobbyResponse] };
+    return lobbyResponse;
 }
 
 /**
  *
  *
- * @param {SocketWithConnectionInfo} conn
+ * @param {Connection} conn
  * @param {MessageNode} node
- * @return {TSMessageArrayWithConnection}
+ * @return {TLobbyMessage}
  * @memberof MCOTServer
  */
 function handleGetLobbiesMessage(
-    conn: SocketWithConnectionInfo,
+    conn: Connection,
     node: MessageNode
-): TSMessageArrayWithConnection {
+): TLobbyMessage {
     const result = _getLobbies(conn, node);
     log.debug("Dumping Lobbies response packet...");
-    log.debug(result.messages.join().toString());
-    return {
-        connection: result.connection,
-        messages: result.messages,
-    };
+    log.debug(result.toString());
+    return result;
 }
 
 /**
  * Handles the getStockCarInfo message
- * @param {SocketWithConnectionInfo} connection
+ * @param {Connection} _connection
  * @param {MessageNode} packet
- * @returns {TSMessageArrayWithConnection}
+ * @returns {MessageNode}
  */
 function getStockCarInfo(
-    connection: SocketWithConnectionInfo,
+    _connection: Connection,
     packet: MessageNode
-): TSMessageArrayWithConnection {
+): MessageNode {
     const getStockCarInfoMessage = new GenericRequestMessage();
     getStockCarInfoMessage.deserialize(packet.data);
     getStockCarInfoMessage.dumpPacket();
@@ -496,25 +482,22 @@ function getStockCarInfo(
 
     responsePacket.dumpPacket();
 
-    return { connection, messages: [responsePacket] };
+    return responsePacket;
 }
 
 /**
  *
  *
- * @param {SocketWithConnectionInfo} conn
+ * @param {Connection} conn
  * @param {MessageNode} node
- * @return {TSMessageArrayWithConnection}
+ * @return {MessageNode}
  */
 function handleShockCarInfoMessage(
-    conn: SocketWithConnectionInfo,
+    conn: Connection,
     node: MessageNode
-): TSMessageArrayWithConnection {
+): MessageNode {
     const result = getStockCarInfo(conn, node);
-    return {
-        connection: result.connection,
-        messages: result.messages,
-    };
+    return result;
 }
 
 /**

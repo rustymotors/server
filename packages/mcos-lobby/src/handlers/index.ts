@@ -1,7 +1,5 @@
-import type {
-    BufferWithConnection,
-    GSMessageArrayWithConnection,
-} from "mcos-types/types.js";
+import type { Connection } from "@prisma/client";
+import type { NPSMessage } from "../NPSMessage.js";
 import { handleEncryptedNPSCommand } from "./encryptedCommand.js";
 import { _npsHeartbeat } from "./heartbeat.js";
 import { _npsRequestGameConnectServer } from "./requestConnectGameServer.js";
@@ -10,8 +8,9 @@ export interface MessageHandler {
     opCode: number;
     name: string;
     handlerFunction: (
-        arg0: BufferWithConnection
-    ) => Promise<GSMessageArrayWithConnection>;
+        connection: Connection,
+        data: Buffer
+    ) => Promise<NPSMessage>;
 }
 
 export const handlerMap: MessageHandler[] = [

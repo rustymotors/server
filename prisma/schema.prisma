@@ -90,8 +90,8 @@ model Lobby {
   raceCashFactor         Float  @db.Real
 }
 
-model Session {
-  customerId   Int    @id(map: "pk_session")
+model Session { 
+  customerId   Int @id(map: "pk_session")
   sessionKey   String
   sKey         String
   contextId    String
@@ -105,6 +105,7 @@ model Connection {
   sequence      Int     @default(0)
   personaId     Int     @default(0)
   lastTimeStamp Int     @default(0)
+  customerId    Int     @default(0)
   inQueue       Boolean @default(true)
   useEncryption Boolean @default(false)
 }

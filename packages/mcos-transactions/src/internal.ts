@@ -15,15 +15,13 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { logger } from "mcos-logger/src/index.js";
-import type {
-    BufferWithConnection,
-    EncryptionSession,
-    TServiceResponse,
-    TSMessageArrayWithConnection,
-} from "mcos-types/types.js";
-import { decryptBuffer, selectEncryptors } from "./encryption.js";
+import { decryptBuffer, generateEncryptionPair } from "./encryption.js";
 import { messageHandlers } from "./handlers.js";
 import { MessageNode } from "./MessageNode.js";
+import { Connection, PrismaClient } from "@prisma/client";
+import type { TLobbyMessage } from "./TLobbyMessage.js";
+import type { EncryptionSession } from "mcos-types";
+const prisma = new PrismaClient();
 
 const log = logger.child({ service: "mcos:transactions" });
 
@@ -51,24 +49,23 @@ export function toHex(data: Buffer): string {
  * @return {boolean}
  */
 function shouldMessageBeEncrypted(
-    message: MessageNode,
-    dataConnection: BufferWithConnection
+    connection: Connection,
+    message: MessageNode
 ): boolean {
-    return message.flags !== 80 && dataConnection.connection.useEncryption;
+    return message.flags !== 80 && connection.useEncryption === true;
 }
 
 /**
  *
- *
- * @param {MessageNode} message
- * @param {BufferWithConnection} dataConnection
- * @return {{err: Error | null, data: Buffer | null}}
+ * @param {Connection} connection
+ * @param {MessageNode} encryptedMessage
+ * @return {Buffer}
  */
-function decryptTransactionBuffer(
-    message: MessageNode,
-    dataConnection: BufferWithConnection
-): { err: Error | null; data: Buffer | null } {
-    const encryptedBuffer = Buffer.from(message.data);
+async function decryptTransactionBuffer(
+    connection: Connection,
+    encryptedMessage: MessageNode
+): Promise<MessageNode> {
+    const encryptedBuffer = Buffer.from(encryptedMessage.data);
     log.debug(
         `Full packet before decrypting: ${encryptedBuffer.toString("hex")}`
     );
@@ -77,46 +74,16 @@ function decryptTransactionBuffer(
         `Message buffer before decrypting: ${encryptedBuffer.toString("hex")}`
     );
 
-    const result = decryptBuffer(dataConnection, encryptedBuffer);
+    const decryptedData = await decryptBuffer(connection, encryptedBuffer);
     log.debug(
-        `Message buffer after decrypting: ${result.data.toString("hex")}`
+        `Message buffer after decrypting: ${decryptedData.toString("hex")}`
     );
 
-    if (result.data.readUInt16LE(0) <= 0) {
-        return {
-            err: new Error("Failure deciphering message, exiting."),
-            data: null,
-        };
+    if (decryptedData.readUInt16LE(0) <= 0) {
+        throw new Error("Failure deciphering message, exiting.");
     }
-    return { err: null, data: result.data };
-}
-
-/**
- *
- *
- * @param {MessageNode} message
- * @param {BufferWithConnection} dataConnection
- * @return {{err: Error | null, data: Buffer | null}}
- */
-function tryDecryptBuffer(
-    message: MessageNode,
-    dataConnection: BufferWithConnection
-): { err: Error | null; data: Buffer | null } {
-    try {
-        return {
-            err: null,
-            data: decryptTransactionBuffer(message, dataConnection).data,
-        };
-    } catch (error) {
-        return {
-            err: new Error(
-                `Decrypt() exception thrown! Disconnecting...conId:${
-                    dataConnection.connectionId
-                }: ${String(error)}`
-            ),
-            data: null,
-        };
-    }
+    encryptedMessage.updateBuffer(decryptedData);
+    return encryptedMessage;
 }
 
 /**
@@ -151,9 +118,9 @@ function _MSG_STRING(messageID: number): string {
  * Route or process MCOTS commands
  */
 async function processInput(
-    dataConnection: BufferWithConnection,
+    connection: Connection,
     node: MessageNode
-): Promise<TServiceResponse> {
+): Promise<MessageNode | TLobbyMessage | void> {
     const currentMessageNo = node.msgNo;
     const currentMessageString = _MSG_STRING(currentMessageNo);
 
@@ -167,32 +134,23 @@ async function processInput(
 
     if (typeof result !== "undefined") {
         try {
-            const responsePackets: TSMessageArrayWithConnection =
-                await result.handler(dataConnection.connection, node);
-            return {
-                err: null,
-                response: responsePackets,
-            };
+            const responsePackets = await result.handler(connection, node);
+            return responsePackets;
         } catch (error) {
-            return {
-                err: new Error(String(error)),
-                response: undefined,
-            };
+            throw new Error(`Error in processInput: ${String(error)}`);
         }
     }
 
-    node.setAppId(dataConnection.connection.personaId);
-    return {
-        err: new Error(`Message Number Not Handled: ${currentMessageNo} (${currentMessageString})
-        conID: ${node.toFrom}  PersonaID: ${node.appId}`),
-        response: undefined,
-    };
+    node.setAppId(connection.personaId);
+    throw new Error(
+        `Message Number Not Handled: ${currentMessageNo} (${currentMessageString})`
+    );
 }
 
 async function messageReceived(
-    message: MessageNode,
-    dataConnection: BufferWithConnection
-): Promise<TServiceResponse> {
+    connection: Connection,
+    message: MessageNode
+): Promise<MessageNode | TLobbyMessage | void> {
     // if (message.flags && 0x08) {
     //     selectEncryptors(dataConnection.)
     //   log.debug('Turning on encryption')
@@ -200,59 +158,48 @@ async function messageReceived(
     // }
 
     // If not a Heartbeat
-    if (shouldMessageBeEncrypted(message, dataConnection)) {
-        if (
-            typeof dataConnection.connection.encryptionSession === "undefined"
-        ) {
-            const errMessage = `Unabel to locate the encryptors on connection id ${dataConnection.connectionId}`;
+    if (shouldMessageBeEncrypted(connection, message)) {
+        // Get connection record
+        const sessionRecord = prisma.session.findFirst({
+            where: {
+                connectionId: connection.id,
+            },
+        });
+
+        if (sessionRecord === null) {
+            const errMessage = `Unabel to locate the encryptors on connection id ${connection.id}`;
             log.error(errMessage);
             throw new Error(errMessage);
         }
 
         if (message.flags - 8 >= 0) {
-            const result = tryDecryptBuffer(message, dataConnection);
-            if (result.err !== null || result.data === null) {
-                return {
-                    err: new Error(String(result.err)),
-                    response: undefined,
-                };
-            }
+            message = await decryptTransactionBuffer(connection, message);
+
             // Update the MessageNode with the deciphered buffer
-            message.updateBuffer(result.data);
         }
     }
 
     log.debug("Calling processInput()");
-    return processInput(dataConnection, message);
+    const responsePacket = await processInput(connection, message);
+    return responsePacket;
 }
 
 /**
- * @param {BufferWithConnection} dataConnection
- * @return {Promise<TSMessageArrayWithConnection>}
+ * @param {Connection} connection
+ * @param {Buffer} data
+ * @return {Promise<Buffer>}
  */
 export async function handleData(
-    dataConnection: BufferWithConnection
-): Promise<TSMessageArrayWithConnection> {
-    const { connection, data } = dataConnection;
-    const { remoteAddress, localPort } = connection.socket;
-
-    if (
-        typeof localPort === "undefined" ||
-        typeof remoteAddress === "undefined"
-    ) {
-        const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`;
-        log.error(errMessage);
-        throw new Error(errMessage);
-    }
-
+    connection: Connection,
+    data: Buffer
+): Promise<Buffer> {
     const messageNode = new MessageNode("received");
     messageNode.deserialize(data);
 
     log.debug(
         `[handle]Received TCP packet',
       ${JSON.stringify({
-          localPort,
-          remoteAddress,
+          id: connection.id,
           direction: messageNode.direction,
           data: data.toString("hex"),
       })}`
@@ -261,7 +208,22 @@ export async function handleData(
 
     if (messageNode.flags && 8 > 0) {
         // Message is encrypted, message number is not usable. yet.
-        const encrypters: EncryptionSession = selectEncryptors(dataConnection);
+        const sessionRecord = await prisma.session.findFirst({
+            where: {
+                connectionId: connection.id,
+            },
+        });
+
+        if (sessionRecord === null) {
+            throw new Error(
+                `Unable to locate session for id: ${connection.id}`
+            );
+        }
+
+        const encrypters: EncryptionSession = generateEncryptionPair(
+            connection,
+            sessionRecord
+        );
         messageNode.updateBuffer(
             encrypters.tsDecipher.update(messageNode.data)
         );
@@ -277,20 +239,12 @@ export async function handleData(
         );
     }
 
-    const processedPacket = await messageReceived(messageNode, dataConnection);
+    const processedPacket = await messageReceived(connection, messageNode);
     log.debug("Back in transacation server");
 
-    if (
-        processedPacket.err !== null ||
-        typeof processedPacket.response === "undefined"
-    ) {
-        const errMessage = `Error processing packet: ${processedPacket.err}`;
-        log.error(errMessage);
-        throw new Error(errMessage);
+    if (typeof processedPacket === "undefined") {
+        throw new Error("We really should not have a void here!");
     }
 
-    return {
-        connection: processedPacket.response.connection,
-        messages: processedPacket.response.messages,
-    };
+    return processedPacket.serialize();
 }

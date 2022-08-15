@@ -32,10 +32,6 @@ export declare type FIELD_TYPE =
 
 export declare type EncryptionSession = {
     connectionId: string;
-    remoteAddress: string;
-    localPort: number;
-    sessionKey: string;
-    shortKey: string;
     gsCipher: Cipher;
     gsDecipher: Decipher;
     tsCipher: Cipher;
@@ -44,21 +40,13 @@ export declare type EncryptionSession = {
 /**
  * Socket with connection properties
  */
-export declare type SocketWithConnectionInfo = {
+export declare type ISocketRecord = {
     socket: Socket;
-    seq: number;
     id: string;
-    remoteAddress: string;
-    localPort: number;
-    personaId: number;
-    lastMessageTimestamp: number;
-    inQueue: boolean;
-    useEncryption: boolean;
-    encryptionSession?: EncryptionSession;
 };
 export declare type BufferWithConnection = {
     connectionId: string;
-    connection: SocketWithConnectionInfo;
+    connection: ISocketRecord;
     data: Buffer;
     timestamp: number;
 };
@@ -90,7 +78,7 @@ export type TSMessageBase = BinaryStructure;
  * N+ messages, ready for sending, with related connection
  */
 export type TSMessageArrayWithConnection = {
-    connection: SocketWithConnectionInfo;
+    connectionId: string;
     messages: MessageNode[] | TSMessageBase[];
 };
 
@@ -100,7 +88,7 @@ export type TServiceResponse = {
 };
 
 export interface GSMessageArrayWithConnection {
-    connection: SocketWithConnectionInfo;
+    connectionId: string;
     messages: NPSMessage[];
 }
 

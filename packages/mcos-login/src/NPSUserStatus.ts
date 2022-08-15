@@ -42,7 +42,7 @@ export class NPSUserStatus extends NPSMessage {
         this.opCode = packet.readInt16LE(0);
 
         // Save the contextId
-        this.contextId = packet.slice(14, 48).toString();
+        this.contextId = packet.subarray(14, 48).toString();
 
         // Save the raw packet
         this.buffer = packet;
@@ -91,11 +91,11 @@ export class NPSUserStatus extends NPSMessage {
         );
 
         const sessionkeyString = Buffer.from(
-            packet.slice(52, -10).toString("utf8"),
+            packet.subarray(52, -10).toString("utf8"),
             "hex"
         );
         const decrypted = privateDecrypt(privateKey, sessionkeyString);
-        this.sessionkey = decrypted.slice(2, -4).toString("hex");
+        this.sessionkey = decrypted.subarray(2, -4).toString("hex");
     }
 
     /**

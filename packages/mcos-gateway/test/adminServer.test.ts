@@ -14,12 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import chai, { expect } from "chai";
-import { AdminServer, resetQueue } from "../src/adminServer.js";
+import chai from "chai";
+import { AdminServer } from "../src/adminServer.js";
 import { describe, it } from "mocha";
-import type { SocketWithConnectionInfo } from "mcos-types";
-import { mock } from "ts-mockito";
-import { Socket } from "net";
 
 chai.should();
 
@@ -40,89 +37,5 @@ describe("AdminServer", () => {
             // Assert
             admin1.should.equal(admin2);
         });
-    });
-});
-
-describe("resetQueue()", function () {
-    it("should reset the inQueue property to true for all connections", function () {
-        // arrange
-        const inputConnectionList: SocketWithConnectionInfo[] = [
-            {
-                socket: mock(Socket),
-                seq: 0,
-                id: "A",
-                remoteAddress: "0.0.0.0",
-                localPort: 0,
-                personaId: 0,
-                lastMessageTimestamp: 0,
-                inQueue: false,
-                useEncryption: false,
-            },
-            {
-                socket: mock(Socket),
-                seq: 0,
-                id: "A",
-                remoteAddress: "0.0.0.0",
-                localPort: 0,
-                personaId: 0,
-                lastMessageTimestamp: 0,
-                inQueue: false,
-                useEncryption: false,
-            },
-            {
-                socket: mock(Socket),
-                seq: 0,
-                id: "A",
-                remoteAddress: "0.0.0.0",
-                localPort: 0,
-                personaId: 0,
-                lastMessageTimestamp: 0,
-                inQueue: false,
-                useEncryption: false,
-            },
-        ];
-        const expectedConnectionList: SocketWithConnectionInfo[] = [
-            {
-                socket: mock(Socket),
-                seq: 0,
-                id: "A",
-                remoteAddress: "0.0.0.0",
-                localPort: 0,
-                personaId: 0,
-                lastMessageTimestamp: 0,
-                inQueue: true,
-                useEncryption: false,
-            },
-            {
-                socket: mock(Socket),
-                seq: 0,
-                id: "A",
-                remoteAddress: "0.0.0.0",
-                localPort: 0,
-                personaId: 0,
-                lastMessageTimestamp: 0,
-                inQueue: true,
-                useEncryption: false,
-            },
-            {
-                socket: mock(Socket),
-                seq: 0,
-                id: "A",
-                remoteAddress: "0.0.0.0",
-                localPort: 0,
-                personaId: 0,
-                lastMessageTimestamp: 0,
-                inQueue: true,
-                useEncryption: false,
-            },
-        ];
-
-        // act
-        const result: SocketWithConnectionInfo[] = JSON.parse(
-            resetQueue(inputConnectionList).body
-        );
-
-        // assert
-        expect(result[1]?.inQueue).to.equal(expectedConnectionList[1]?.inQueue);
     });
 });
