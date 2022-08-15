@@ -31,9 +31,15 @@ const listeningPortList = [
 ];
 
 function socketListener(incomingSocket: Socket): void {
-    log.debug(
-        `[gate]Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
-    );
+    log.raw({
+        level: "debug",
+        message: "Socket open",
+        otherKeys: {
+            remoteAddress: incomingSocket.remoteAddress,
+            localPort: String(incomingSocket.localPort),
+            function: "socketListener",
+        },
+    });
 
     // Is this an HTTP request?
     if (incomingSocket.localPort === 80) {

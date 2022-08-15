@@ -61,14 +61,23 @@ class MCOSLogger {
      * @param {number} level
      * @param {string} message
      */
-    private callLog(level: number, message: string): void {
+    private callLog(
+        level: number,
+        message: string,
+        additionalKeys?: Record<string, string | undefined>
+    ): void {
         if (this.systemLogLevel <= level) {
             // skipcq: JS-0002 - This is intentional and is the only time console is used
-            console.log(
-                `{"level":${level}, "time":"${Date.now()}","pid":${
-                    process.pid
-                }, "name":"${this.name}", ${this.service} "msg": "${message}"}`
-            );
+            const logLine = {
+                level: level,
+                time: Date.now(),
+                pid: process.pid,
+                name: this.name,
+                service: this.service,
+                message,
+                ...additionalKeys,
+            };
+            console.log(JSON.stringify(logLine));
         }
     }
     /** @param {string} message */
@@ -97,10 +106,17 @@ class MCOSLogger {
     }
     /**
      * @param {ELOGGING_LEVELS} level
-     * @param {string} message
      */
-    log(level: string, message: string): void {
-        this.callLog(ELOGGING_LEVELS[level] || 30, message);
+    raw({
+        level,
+        message,
+        otherKeys,
+    }: {
+        level: string;
+        message: string;
+        otherKeys?: Record<string, string | undefined>;
+    }): void {
+        this.callLog(ELOGGING_LEVELS[level] || 30, message, otherKeys);
     }
 }
 
