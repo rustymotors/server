@@ -52,7 +52,23 @@ export async function handleData(
                 connection,
                 data
             );
-            return responsePacket.serialize();
+            try {
+                return responsePacket.serialize();
+            } catch (error) {
+                log.raw({
+                    level: "error",
+                    message: "Error serializing packet",
+                    otherKeys: {
+                        function: "lobby.handleData",
+                        requestCode: String(requestCode),
+                        origionalError: String(error),
+                        connectionId: connection.id,
+                        rawData: responsePacket.content.toString("hex"),
+                        traceId,
+                    },
+                });
+                throw new Error(`Error serializing packet: ${String(error)}`);
+            }
         }
 
         // NpsHeartbeat
@@ -63,7 +79,23 @@ export async function handleData(
                 connection,
                 data
             );
-            return responsePacket.serialize();
+            try {
+                return responsePacket.serialize();
+            } catch (error) {
+                log.raw({
+                    level: "error",
+                    message: "Error serializing packet",
+                    otherKeys: {
+                        function: "lobby.handleData",
+                        requestCode: String(requestCode),
+                        origionalError: String(error),
+                        connectionId: connection.id,
+                        rawData: responsePacket.content.toString("hex"),
+                        traceId,
+                    },
+                });
+                throw new Error(`Error serializing packet: ${String(error)}`);
+            }
         }
 
         // NpsSendCommand
@@ -76,11 +108,37 @@ export async function handleData(
                 connection,
                 data
             );
-            return responsePacket.serialize();
+            try {
+                return responsePacket.serialize();
+            } catch (error) {
+                log.raw({
+                    level: "error",
+                    message: "Error serializing packet",
+                    otherKeys: {
+                        function: "lobby.handleData",
+                        requestCode: String(requestCode),
+                        origionalError: String(error),
+                        connectionId: connection.id,
+                        rawData: responsePacket.content.toString("hex"),
+                        traceId,
+                    },
+                });
+                throw new Error(`Error serializing packet: ${String(error)}`);
+            }
         }
 
         default:
             // No need to throw here
+            log.raw({
+                level: "warn",
+                message: "Unknown request code received",
+                otherKeys: {
+                    function: "lobby.handleData",
+                    requestCode: String(requestCode),
+                    connectionId: connection.id,
+                    traceId,
+                },
+            });
             log.warn(`Unknown code ${requestCode} was received on port 7003`);
             return Buffer.alloc(0);
     }
