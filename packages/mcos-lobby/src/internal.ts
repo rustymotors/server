@@ -23,26 +23,32 @@ import type { Connection } from "@prisma/client";
 const log = logger.child({ service: "mcos:lobby" });
 
 /**
- * @param {Connection} onnection
+ * @param {Connection} connection
  * @param {Buffer} data
  * @return {Promise<Buffer>}
  */
 export async function handleData(
+    traceId: string,
     connection: Connection,
     data: Buffer
 ): Promise<Buffer> {
-    log.debug(
-        `Received Lobby packet: ${JSON.stringify({
-            localPort: connection.localPort,
-            remoteAddress: connection.remoteAddress,
-        })}`
-    );
+    log.raw({
+        level: "debug",
+        message: "Received packet",
+        otherKeys: {
+            function: "lobby.handleData",
+            connectionId: connection.id,
+            rawData: data.toString("hex"),
+            traceId,
+        },
+    });
     const requestCode = data.readUInt16BE(0).toString(16);
 
     switch (requestCode) {
         // _npsRequestGameConnectServer
         case "100": {
             const responsePacket = await _npsRequestGameConnectServer(
+                traceId,
                 connection,
                 data
             );
@@ -52,7 +58,11 @@ export async function handleData(
         // NpsHeartbeat
 
         case "217": {
-            const responsePacket = await _npsHeartbeat(connection, data);
+            const responsePacket = await _npsHeartbeat(
+                traceId,
+                connection,
+                data
+            );
             return responsePacket.serialize();
         }
 
@@ -62,6 +72,7 @@ export async function handleData(
             // This is an encrypted command
 
             const responsePacket = await handleEncryptedNPSCommand(
+                traceId,
                 connection,
                 data
             );

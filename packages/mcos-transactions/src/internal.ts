@@ -62,9 +62,19 @@ function shouldMessageBeEncrypted(
  * @return {Buffer}
  */
 async function decryptTransactionBuffer(
+    traceId: string,
     connection: Connection,
     encryptedMessage: MessageNode
 ): Promise<MessageNode> {
+    log.raw({
+        level: "debug",
+        message: "Session lookup",
+        otherKeys: {
+            function: "transaction.decryptTransactionBuffer",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     const encryptedBuffer = Buffer.from(encryptedMessage.data);
     log.debug(
         `Full packet before decrypting: ${encryptedBuffer.toString("hex")}`
@@ -74,7 +84,11 @@ async function decryptTransactionBuffer(
         `Message buffer before decrypting: ${encryptedBuffer.toString("hex")}`
     );
 
-    const decryptedData = await decryptBuffer(connection, encryptedBuffer);
+    const decryptedData = await decryptBuffer(
+        traceId,
+        connection,
+        encryptedBuffer
+    );
     log.debug(
         `Message buffer after decrypting: ${decryptedData.toString("hex")}`
     );
@@ -118,11 +132,24 @@ function _MSG_STRING(messageID: number): string {
  * Route or process MCOTS commands
  */
 async function processInput(
+    traceId: string,
     connection: Connection,
     node: MessageNode
 ): Promise<MessageNode | TLobbyMessage | void> {
     const currentMessageNo = node.msgNo;
     const currentMessageString = _MSG_STRING(currentMessageNo);
+
+    log.raw({
+        level: "debug",
+        message: "Handling packet",
+        otherKeys: {
+            function: "transaction.processInput",
+            connectionId: connection.id,
+            traceId,
+            currentMessageNo: String(currentMessageNo),
+            currentMessageString,
+        },
+    });
 
     log.debug(
         `We are attempting to process a message with id ${currentMessageNo}(${currentMessageString})`
@@ -134,7 +161,21 @@ async function processInput(
 
     if (typeof result !== "undefined") {
         try {
-            const responsePackets = await result.handler(connection, node);
+            log.raw({
+                level: "debug",
+                message: "Calling handler",
+                otherKeys: {
+                    function: "transaction.processInput",
+                    connectionId: connection.id,
+                    traceId,
+                    currentMessageString,
+                },
+            });
+            const responsePackets = await result.handler(
+                traceId,
+                connection,
+                node
+            );
             return responsePackets;
         } catch (error) {
             throw new Error(`Error in processInput: ${String(error)}`);
@@ -148,6 +189,7 @@ async function processInput(
 }
 
 async function messageReceived(
+    traceId: string,
     connection: Connection,
     message: MessageNode
 ): Promise<MessageNode | TLobbyMessage | void> {
@@ -160,6 +202,16 @@ async function messageReceived(
     // If not a Heartbeat
     if (shouldMessageBeEncrypted(connection, message)) {
         // Get connection record
+        log.raw({
+            level: "debug",
+            message: "Session lookup",
+            otherKeys: {
+                function: "transaction.messageReceived",
+                connectionId: connection.id,
+                traceId,
+            },
+        });
+
         const sessionRecord = prisma.session.findFirst({
             where: {
                 connectionId: connection.id,
@@ -172,15 +224,29 @@ async function messageReceived(
             throw new Error(errMessage);
         }
 
+        log.raw({
+            level: "debug",
+            message: "Session found",
+            otherKeys: {
+                function: "transaction.messageReceived",
+                connectionId: connection.id,
+                traceId,
+            },
+        });
+
         if (message.flags - 8 >= 0) {
-            message = await decryptTransactionBuffer(connection, message);
+            message = await decryptTransactionBuffer(
+                traceId,
+                connection,
+                message
+            );
 
             // Update the MessageNode with the deciphered buffer
         }
     }
 
     log.debug("Calling processInput()");
-    const responsePacket = await processInput(connection, message);
+    const responsePacket = await processInput(traceId, connection, message);
     return responsePacket;
 }
 
@@ -190,24 +256,35 @@ async function messageReceived(
  * @return {Promise<Buffer>}
  */
 export async function handleData(
+    traceId: string,
     connection: Connection,
     data: Buffer
 ): Promise<Buffer> {
     const messageNode = new MessageNode("received");
     messageNode.deserialize(data);
-
-    log.debug(
-        `[handle]Received TCP packet',
-      ${JSON.stringify({
-          id: connection.id,
-          direction: messageNode.direction,
-          data: data.toString("hex"),
-      })}`
-    );
+    log.raw({
+        level: "debug",
+        message: "Received packet",
+        otherKeys: {
+            function: "transaction.handleData",
+            connectionId: connection.id,
+            traceId,
+            rawData: data.toString("hex"),
+        },
+    });
     messageNode.dumpPacket();
 
     if (messageNode.flags && 8 > 0) {
         // Message is encrypted, message number is not usable. yet.
+        log.raw({
+            level: "debug",
+            message: "Session lookup",
+            otherKeys: {
+                function: "transaction.handleData",
+                connectionId: connection.id,
+                traceId,
+            },
+        });
         const sessionRecord = await prisma.session.findFirst({
             where: {
                 connectionId: connection.id,
@@ -220,13 +297,37 @@ export async function handleData(
             );
         }
 
+        log.raw({
+            level: "debug",
+            message: "Session found",
+            otherKeys: {
+                function: "transaction.handleData",
+                connectionId: connection.id,
+                traceId,
+            },
+        });
+
         const encrypters: EncryptionSession = generateEncryptionPair(
+            traceId,
             connection,
             sessionRecord
         );
         messageNode.updateBuffer(
             encrypters.tsDecipher.update(messageNode.data)
         );
+
+        log.raw({
+            level: "debug",
+            message: "Packet decrypted",
+            otherKeys: {
+                function: "transaction.handleData",
+                connectionId: connection.id,
+                traceId,
+                msgId: String(messageNode.msgNo),
+                rawData: toHex(messageNode.rawPacket),
+            },
+        });
+
         log.debug(
             `Message number after attempting decryption: ${messageNode.msgNo}`
         );
@@ -234,12 +335,26 @@ export async function handleData(
             `Raw Packet after decryption: ${toHex(messageNode.rawPacket)}`
         );
     } else {
+        log.raw({
+            level: "debug",
+            message: "Packet does not appear to be encrypted",
+            otherKeys: {
+                function: "transaction.handleData",
+                connectionId: connection.id,
+                traceId,
+                msgId: String(messageNode.msgNo),
+            },
+        });
         log.debug(
             `Message with id of: ${messageNode.msgNo} does not appear to be encrypted`
         );
     }
 
-    const processedPacket = await messageReceived(connection, messageNode);
+    const processedPacket = await messageReceived(
+        traceId,
+        connection,
+        messageNode
+    );
     log.debug("Back in transacation server");
 
     if (typeof processedPacket === "undefined") {

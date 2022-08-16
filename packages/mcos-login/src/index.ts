@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { logger } from "mcos-logger/src/index.js";
-import {
+import type {
     InterServiceTransfer,
     SERVICE_NAMES,
     UserRecordMini,
@@ -26,8 +26,8 @@ const prisma = new PrismaClient();
 
 const log = logger.child({ service: "mcoserver:LoginServer" });
 
-const SELF = {
-    NAME: SERVICE_NAMES.LOGIN,
+const SELF: { NAME: SERVICE_NAMES } = {
+    NAME: "LOGIN",
 };
 
 /**
@@ -147,9 +147,10 @@ export async function receiveLoginData(
         const responseData = await handleData(connectionRecord, data);
         log.trace(`There are ${responseData.length} messages`);
         return {
-            targetService: SERVICE_NAMES.GATEWAY,
+            targetService: "GATEWAY",
             connectionId,
             data: responseData,
+            traceId: requestFromService.traceId,
         };
     } catch (error) {
         throw new Error(

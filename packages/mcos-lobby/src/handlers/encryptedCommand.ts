@@ -111,9 +111,19 @@ function handleCommand(_connection: Connection, data: Buffer): NPSMessage {
  * @return {NPSMessage}
  */
 export async function handleEncryptedNPSCommand(
+    traceId: string,
     connection: Connection,
     data: Buffer
 ): Promise<NPSMessage> {
+    log.raw({
+        level: "debug",
+        message: "Received encrypted command",
+        otherKeys: {
+            function: "handleEncryptedNPSCommand",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     // Decipher
     const decipheredBuffer = await decryptCmd(
         connection,

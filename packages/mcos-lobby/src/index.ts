@@ -17,13 +17,13 @@
 import { logger } from "mcos-logger/src/index.js";
 import { handleData } from "./internal.js";
 
-import { InterServiceTransfer, SERVICE_NAMES } from "mcos-types/types.js";
+import type { InterServiceTransfer, SERVICE_NAMES } from "mcos-types/types.js";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 const log = logger.child({ service: "mcoserver:LobbyServer" });
 
-const SELF = {
-    NAME: SERVICE_NAMES.LOBBY,
+const SELF: { NAME: SERVICE_NAMES } = {
+    NAME: "LOBBY",
 };
 
 /**
@@ -36,7 +36,15 @@ const SELF = {
 export async function receiveLobbyData(
     requestFromService: InterServiceTransfer
 ): Promise<InterServiceTransfer> {
-    log.debug("Entering Lobby server...");
+    log.raw({
+        level: "debug",
+        message: "Entering service",
+        otherKeys: {
+            function: "receiveLobbyData",
+            connectionId: requestFromService.connectionId,
+            traceId: requestFromService.traceId,
+        },
+    });
 
     if (requestFromService.targetService !== SELF.NAME) {
         throw new Error("Attempted to handle a request not for this service");
@@ -56,12 +64,22 @@ export async function receiveLobbyData(
 
     try {
         const responseData = await handleData(
+            requestFromService.traceId,
             connectionRecord,
             requestFromService.data as Buffer
         );
-        log.debug("...Exiting Lobby server");
+        log.raw({
+            level: "debug",
+            message: "Exiting service",
+            otherKeys: {
+                function: "receiveLobbyData",
+                connectionId: requestFromService.connectionId,
+                traceId: requestFromService.traceId,
+            },
+        });
         return {
-            targetService: SERVICE_NAMES.GATEWAY,
+            traceId: requestFromService.traceId,
+            targetService: "GATEWAY",
             connectionId: requestFromService.connectionId,
             data: responseData,
         };

@@ -44,9 +44,19 @@ export function _generateSessionKeyBuffer(key: string): Buffer {
  * @return {Promise<NPSMessage>}
  */
 export async function _npsRequestGameConnectServer(
+    traceId: string,
     connection: Connection,
     data: Buffer
 ): Promise<NPSMessage> {
+    log.raw({
+        level: "debug",
+        message: "_npsRequestGameConnectServer",
+        otherKeys: {
+            function: "_npsRequestGameConnectServer",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     log.trace(
         `[inner] Raw bytes in _npsRequestGameConnectServer: ${toHex(data)}`
     );
@@ -68,6 +78,16 @@ export async function _npsRequestGameConnectServer(
     const userInfo = new NPSUserInfo("received");
     userInfo.deserialize(data);
     log.debug(userInfo.dumpInfo());
+    log.raw({
+        level: "debug",
+        message: "Persona lookup",
+        otherKeys: {
+            function: "_npsRequestGameConnectServer",
+            connectionId: connection.id,
+            traceId,
+            userId: String(userInfo.userId),
+        },
+    });
 
     const personas = await getPersonasByPersonaId(userInfo.userId);
     if (typeof personas[0] === "undefined") {
@@ -77,6 +97,18 @@ export async function _npsRequestGameConnectServer(
     }
 
     const { id: personaId } = personas[0];
+
+    log.raw({
+        level: "debug",
+        message: "Personas found",
+        otherKeys: {
+            function: "_npsRequestGameConnectServer",
+            connectionId: connection.id,
+            traceId,
+            userId: String(userInfo.userId),
+            firstPersonaId: String(personaId.readInt32BE(0)),
+        },
+    });
 
     await prisma.connection
         .update({
@@ -97,6 +129,16 @@ export async function _npsRequestGameConnectServer(
         });
 
     // Set the encryption keys on the lobby connection
+    log.raw({
+        level: "debug",
+        message: "Session lookup",
+        otherKeys: {
+            function: "_npsRequestGameConnectServer",
+            connectionId: connection.id,
+            traceId,
+            customerId: String(connection.customerId),
+        },
+    });
     const keys = await prisma.session.findFirst({
         where: {
             customerId: connection.customerId,
@@ -108,7 +150,15 @@ export async function _npsRequestGameConnectServer(
             "Error fetching session keys in _npsRequestGameConnectServer"
         );
     }
-
+    log.raw({
+        level: "debug",
+        message: "Session found",
+        otherKeys: {
+            function: "_npsRequestGameConnectServer",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     const packetContent = Buffer.alloc(72);
 
     // This response is a NPS_UserStatus
@@ -139,5 +189,14 @@ export async function _npsRequestGameConnectServer(
             .getBuffer()
             .toString("hex")}`
     );
+    log.raw({
+        level: "debug",
+        message: "Exiting method",
+        otherKeys: {
+            function: "_npsRequestGameConnectServer",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     return packetResult;
 }

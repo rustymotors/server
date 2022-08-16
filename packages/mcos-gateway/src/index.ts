@@ -15,7 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { logger } from "mcos-logger/src/index.js";
-import { InterServiceTransfer, SERVICE_NAMES } from "mcos-shared";
+import type { InterServiceTransfer, SERVICE_NAMES } from "mcos-shared";
+import { randomUUID } from "node:crypto";
 import * as http from "node:http";
 import { createServer as createSocketServer, Socket } from "node:net";
 import { findOrNewConnection } from "./connections.js";
@@ -26,8 +27,8 @@ export { AdminServer } from "./adminServer.js";
 
 const log = logger.child({ service: "mcos:gateway" });
 
-const SELF = {
-    NAME: SERVICE_NAMES.GATEWAY,
+const SELF: { NAME: SERVICE_NAMES } = {
+    NAME: "GATEWAY",
 };
 
 const listeningPortList = [
@@ -70,7 +71,8 @@ async function TCPListener(incomingSocket: Socket): Promise<void> {
         log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
     });
     incomingSocket.on("data", async (data): Promise<void> => {
-        await dataHandler(socketRecord, data);
+        const traceId = randomUUID();
+        await dataHandler(socketRecord, traceId, data);
     });
     incomingSocket.on("error", onSocketError);
 }

@@ -4,18 +4,18 @@ import type { MessageNode } from "./MessageNode.js";
 import type { NPSMessage } from "./NPSMessage.js";
 
 export type InterServiceTransfer = {
+    traceId: string;
     targetService: SERVICE_NAMES;
     connectionId: string;
     data: Buffer;
 };
 
-export enum SERVICE_NAMES {
-    "GATEWAY",
-    "LOGIN",
-    "TRANSACTION",
-    "PERSONA",
-    "LOBBY",
-}
+export type SERVICE_NAMES =
+    | "GATEWAY"
+    | "LOGIN"
+    | "TRANSACTION"
+    | "PERSONA"
+    | "LOBBY";
 
 export declare type ECONNECTION_STATUS = "Active" | "Inactive";
 export declare type LobbyCiphers = {

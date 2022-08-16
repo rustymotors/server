@@ -8,6 +8,7 @@ export interface MessageHandler {
     opCode: number;
     name: string;
     handlerFunction: (
+        traceId: string,
         connection: Connection,
         data: Buffer
     ) => Promise<NPSMessage>;

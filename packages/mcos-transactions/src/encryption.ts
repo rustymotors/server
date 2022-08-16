@@ -28,11 +28,27 @@ const prisma = new PrismaClient();
 
 const log = logger.child({ service: "mcos:shared:encryption" });
 
+/**
+ * For use on Lobby packets
+ * @param {string} traceId
+ * @param { Connection} connection
+ * @param {Session} keys
+ * @returns {EncryptionSession}
+ */
 export function generateEncryptionPair(
+    traceId: string,
     connection: Connection,
     keys: Session
 ): EncryptionSession {
-    // For use on Lobby packets
+    log.raw({
+        level: "debug",
+        message: "Creating encryption methods from keys",
+        otherKeys: {
+            function: "transaction.generateEncryptionPair",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     const { sessionKey, sKey } = keys;
     const stringKey = Buffer.from(sessionKey, "hex");
     Buffer.from(stringKey.subarray(0, 16));
@@ -137,9 +153,19 @@ export function decipherBufferDES(
  * Decrypt the buffer contents
  */
 export async function decryptBuffer(
+    traceId: string,
     connection: Connection,
     encryptedData: Buffer
 ): Promise<Buffer> {
+    log.raw({
+        level: "debug",
+        message: "Session lookup",
+        otherKeys: {
+            function: "transaction.decryptBuffer",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     log.debug("Fetching session record for connection to decrypt buffer");
     const keys = await prisma.session.findFirst({
         where: {
@@ -151,7 +177,17 @@ export async function decryptBuffer(
         throw new Error("Unable to locate session record");
     }
 
-    const encryptionSession = generateEncryptionPair(connection, keys);
+    log.raw({
+        level: "debug",
+        message: "Session found",
+        otherKeys: {
+            function: "transaction.decryptBuffer",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
+
+    const encryptionSession = generateEncryptionPair(traceId, connection, keys);
     const deciphered = encryptionSession.tsDecipher.update(encryptedData);
     return deciphered;
 }

@@ -18,7 +18,7 @@ import { logger } from "mcos-logger/src/index.js";
 import { handleData, personaRecords } from "./internal.js";
 import type { Socket } from "node:net";
 import { NPSMessage } from "./NPSMessage.js";
-import {
+import type {
     InterServiceTransfer,
     PersonaRecord,
     SERVICE_NAMES,
@@ -29,8 +29,8 @@ const prisma = new PrismaClient();
 
 const log = logger.child({ service: "mcoserver:PersonaServer" });
 
-const SELF = {
-    NAME: SERVICE_NAMES.PERSONA,
+const SELF: { NAME: SERVICE_NAMES } = {
+    NAME: "PERSONA",
 };
 
 /**
@@ -436,9 +436,10 @@ export async function receivePersonaData(
             requestFromService.data
         );
         return {
-            targetService: SERVICE_NAMES.GATEWAY,
+            targetService: "GATEWAY",
             connectionId: requestFromService.connectionId,
             data: responseData,
+            traceId: requestFromService.traceId,
         };
     } catch (error) {
         throw new Error(

@@ -19,11 +19,7 @@ import { receiveLoginData } from "../../mcos-login/src/index.js";
 import { receivePersonaData } from "../../mcos-persona/src/index.js";
 import { logger } from "mcos-logger/src/index.js";
 import { receiveTransactionsData } from "../../mcos-transactions/src/index.js";
-import {
-    InterServiceTransfer,
-    ISocketRecord,
-    SERVICE_NAMES,
-} from "mcos-types/types.js";
+import type { InterServiceTransfer, ISocketRecord } from "mcos-types/types.js";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -56,6 +52,7 @@ export function toHex(data: Buffer): string {
  */
 export async function dataHandler(
     socketWithId: ISocketRecord,
+    traceId: string,
     data: Buffer
 ): Promise<void> {
     log.debug(`data prior to proccessing: ${data.toString("hex")}`);
@@ -88,12 +85,25 @@ export async function dataHandler(
     // There are 2 happy paths from this point
     // * GameService
     // * TransactionService
-
-    log.debug(`I have a packet on port ${localPort}`);
+    log.raw({
+        level: "debug",
+        message: "Packet received",
+        otherKeys: {
+            function: "gateway.dataHandler",
+            connectionId: socketWithId.id,
+            localPort: String(localPort),
+            traceId,
+        },
+    });
 
     // These are game services
 
-    result = await handleInboundGameData(localPort, socketWithId.id, data);
+    result = await handleInboundGameData(
+        traceId,
+        localPort,
+        socketWithId.id,
+        data
+    );
 
     if (typeof result === "undefined") {
         // Possibly a tranactions packet?
@@ -101,6 +111,7 @@ export async function dataHandler(
         // This is a transaction response.
 
         result = await handleInboundTransactionData(
+            traceId,
             localPort,
             socketWithId.id,
             data
@@ -142,12 +153,14 @@ export async function dataHandler(
  * @return {Promise<InterServiceTransfer | void>}
  */
 async function handleInboundGameData(
+    traceId: string,
     localPort: number,
     connectionId: string,
     data: Buffer
 ): Promise<InterServiceTransfer | void> {
     let result: InterServiceTransfer = {
-        targetService: SERVICE_NAMES.GATEWAY,
+        traceId,
+        targetService: "GATEWAY",
         connectionId,
         data,
     };
@@ -155,7 +168,8 @@ async function handleInboundGameData(
 
     if (localPort === 8226) {
         result = await receiveLoginData({
-            targetService: SERVICE_NAMES.LOGIN,
+            traceId,
+            targetService: "LOGIN",
             connectionId,
             data,
         });
@@ -165,7 +179,8 @@ async function handleInboundGameData(
 
     if (localPort === 8228) {
         result = await receivePersonaData({
-            targetService: SERVICE_NAMES.PERSONA,
+            traceId,
+            targetService: "PERSONA",
             connectionId,
             data,
         });
@@ -175,7 +190,8 @@ async function handleInboundGameData(
 
     if (localPort === 7003) {
         result = await receiveLobbyData({
-            targetService: SERVICE_NAMES.LOBBY,
+            traceId,
+            targetService: "LOBBY",
             connectionId,
             data,
         });
@@ -200,12 +216,14 @@ async function handleInboundGameData(
  * @return {Promise<InterServiceTransfer | void>}
  */
 async function handleInboundTransactionData(
+    traceId: string,
     localPort: number,
     connectionId: string,
     data: Buffer
 ): Promise<InterServiceTransfer | void> {
     let result: InterServiceTransfer = {
-        targetService: SERVICE_NAMES.GATEWAY,
+        traceId,
+        targetService: "GATEWAY",
         connectionId,
         data,
     };
@@ -213,7 +231,8 @@ async function handleInboundTransactionData(
 
     if (localPort === 43300) {
         result = await receiveTransactionsData({
-            targetService: SERVICE_NAMES.TRANSACTION,
+            traceId,
+            targetService: "TRANSACTION",
             connectionId,
             data,
         });

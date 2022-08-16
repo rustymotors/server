@@ -76,13 +76,26 @@ function _setOptions(connection: Connection, node: MessageNode): MessageNode {
 /**
  *
  *
- * @param {ISocketRecord} conn
+ * @param {ISocketRecord} connection
  * @param {MessageNode} node
  * @return {TSMessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleSetOptions(conn: Connection, node: MessageNode): MessageNode {
-    const result = _setOptions(conn, node);
+function handleSetOptions(
+    traceId: string,
+    connection: Connection,
+    node: MessageNode
+): MessageNode {
+    log.raw({
+        level: "debug",
+        message: "In handler",
+        otherKeys: {
+            function: "transaction.handleSetOptions",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
+    const result = _setOptions(connection, node);
     return result;
 }
 
@@ -94,9 +107,19 @@ function handleSetOptions(conn: Connection, node: MessageNode): MessageNode {
  * @return {TSMessageArrayWithConnection}
  */
 function _trackingMessage(
+    traceId: string,
     connection: Connection,
     node: MessageNode
 ): MessageNode {
+    log.raw({
+        level: "debug",
+        message: "In handler",
+        otherKeys: {
+            function: "transaction._trackingMessage",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     const trackingMessage = node;
 
     trackingMessage.data = node.serialize();
@@ -126,10 +149,11 @@ function _trackingMessage(
  * @memberof MCOTServer
  */
 function handleTrackingMessage(
+    traceId: string,
     conn: Connection,
     node: MessageNode
 ): MessageNode {
-    const result = _trackingMessage(conn, node);
+    const result = _trackingMessage(traceId, conn, node);
     return result;
 }
 
@@ -141,9 +165,19 @@ function handleTrackingMessage(
  * @return {TSMessageArrayWithConnection}
  */
 function _updatePlayerPhysical(
+    traceId: string,
     connection: Connection,
     node: MessageNode
 ): MessageNode {
+    log.raw({
+        level: "debug",
+        message: "In handler",
+        otherKeys: {
+            function: "transaction._updatePlayerPhysical",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     const updatePlayerPhysicalMessage = node;
 
     updatePlayerPhysicalMessage.data = node.serialize();
@@ -167,16 +201,17 @@ function _updatePlayerPhysical(
 /**
  *
  *
- * @param {ISocketRecord} conn
+ * @param {ISocketRecord} connection
  * @param {MessageNode} node
  * @return {TSMessageArrayWithConnection}
  * @memberof MCOTServer
  */
 function handleUpdatePlayerPhysical(
-    conn: Connection,
+    traceId: string,
+    connection: Connection,
     node: MessageNode
 ): MessageNode {
-    const result = _updatePlayerPhysical(conn, node);
+    const result = _updatePlayerPhysical(traceId, connection, node);
     return result;
 }
 
@@ -186,9 +221,19 @@ function handleUpdatePlayerPhysical(
  * @return {Promise<TSMessageArrayWithConnection>}
  */
 async function clientConnect(
+    traceId: string,
     connection: Connection,
     packet: MessageNode
 ): Promise<MessageNode> {
+    log.raw({
+        level: "debug",
+        message: "In handler",
+        otherKeys: {
+            function: "transaction.clientConnect",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     /**
      * Let's turn it into a ClientConnectMsg
      */
@@ -205,7 +250,16 @@ async function clientConnect(
         );
     }
 
-    log.debug(`[TCPManager] Looking up the session key for ${customerId}...`);
+    log.raw({
+        level: "debug",
+        message: "Session lookup",
+        otherKeys: {
+            function: "transaction.clientConnect",
+            connectionId: connection.id,
+            traceId,
+            customerId: String(customerId),
+        },
+    });
 
     const sessionRecord = await prisma.session.findFirst({
         where: {
@@ -219,20 +273,32 @@ async function clientConnect(
         );
     }
 
+    log.raw({
+        level: "debug",
+        message: "Session found",
+        otherKeys: {
+            function: "transaction.clientConnect",
+            connectionId: connection.id,
+            traceId,
+            customerId: String(customerId),
+        },
+    });
+
     log.debug("[TCPManager] Session Key located!");
-
-    // const connectionWithKey = connection;
-
-    // const { sessionkey } = result
-
-    // const stringKey = Buffer.from(sessionkey, 'hex')
-
-    // selectOrCreateEncryptors(connection, sessionRecord);
-
-    // connectionWithKey.setEncryptionKey(Buffer.from(stringKey.slice(0, 16)))
 
     // Update the connection's appId
     connection.personaId = newMessage.getAppId();
+
+    log.raw({
+        level: "debug",
+        message: "Connection update",
+        otherKeys: {
+            function: "transaction.clientConnect",
+            connectionId: connection.id,
+            traceId,
+            personaId: String(connection.personaId),
+        },
+    });
 
     try {
         await prisma.connection.update({
@@ -246,6 +312,17 @@ async function clientConnect(
     } catch (error) {
         throw new Error("Error setting persona id on connection");
     }
+
+    log.raw({
+        level: "debug",
+        message: "Connection update success",
+        otherKeys: {
+            function: "transaction.clientConnect",
+            connectionId: connection.id,
+            traceId,
+            personaId: String(connection.personaId),
+        },
+    });
 
     const personaId = newMessage.getValue("personaId");
     if (typeof personaId !== "number") {
@@ -278,16 +355,17 @@ async function clientConnect(
 /**
  *
  *
- * @param {ISocketRecord} conn
+ * @param {ISocketRecord} connection
  * @param {MessageNode} node
  * @return {Promise<TSMessageArrayWithConnection>}
  * @memberof MCOTServer
  */
 async function handleClientConnect(
-    conn: Connection,
+    traceId: string,
+    connection: Connection,
     node: MessageNode
 ): Promise<MessageNode> {
-    const result = await clientConnect(conn, node);
+    const result = await clientConnect(traceId, connection, node);
     return result;
 }
 
@@ -298,7 +376,20 @@ async function handleClientConnect(
  * @param {MessageNode} node
  * @return {TSMessageArrayWithConnection}>}
  */
-function _login(connection: Connection, node: MessageNode): MessageNode {
+function _login(
+    traceId: string,
+    connection: Connection,
+    node: MessageNode
+): MessageNode {
+    log.raw({
+        level: "debug",
+        message: "In handler",
+        otherKeys: {
+            function: "transaction._login",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     // Read the inbound packet
     const loginMessage = new TLoginMessage();
     loginMessage.deserialize(node.rawPacket);
@@ -321,13 +412,17 @@ function _login(connection: Connection, node: MessageNode): MessageNode {
 /**
  *
  *
- * @param {Connection} conn
+ * @param {Connection} connection
  * @param {MessageNode} node
  * @return {MessageNode}
  * @memberof MCOTServer
  */
-function handleLoginMessage(conn: Connection, node: MessageNode): MessageNode {
-    const result = _login(conn, node);
+function handleLoginMessage(
+    traceId: string,
+    connection: Connection,
+    node: MessageNode
+): MessageNode {
+    const result = _login(traceId, connection, node);
     return result;
 }
 
@@ -339,9 +434,19 @@ function handleLoginMessage(conn: Connection, node: MessageNode): MessageNode {
  * @return {MessageNode | void}
  */
 function _logout(
+    traceId: string,
     connection: Connection,
     node: MessageNode
 ): MessageNode | void {
+    log.raw({
+        level: "debug",
+        message: "In handler",
+        otherKeys: {
+            function: "transaction._logout",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     const logoutMessage = node;
 
     logoutMessage.data = node.serialize();
@@ -363,15 +468,16 @@ function _logout(
 /**
  *
  *
- * @param {Connection} conn
+ * @param {Connection} connection
  * @param {MessageNode} node
  * @return {MessageNode | void}
  */
 function handleLogoutMessage(
-    conn: Connection,
+    traceId: string,
+    connection: Connection,
     node: MessageNode
 ): MessageNode | void {
-    const result = _logout(conn, node);
+    const result = _logout(traceId, connection, node);
     return result;
 }
 
@@ -382,7 +488,20 @@ function handleLogoutMessage(
  * @param {MessageNode} node
  * @return {TLobbyMessage}
  */
-function _getLobbies(connection: Connection, node: MessageNode): TLobbyMessage {
+function _getLobbies(
+    traceId: string,
+    connection: Connection,
+    node: MessageNode
+): TLobbyMessage {
+    log.raw({
+        level: "debug",
+        message: "In handler",
+        otherKeys: {
+            function: "transaction._getLobbies",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     log.debug("In _getLobbies...");
 
     const lobbyRequest = new GenericRequestMessage();
@@ -434,16 +553,17 @@ function _getLobbies(connection: Connection, node: MessageNode): TLobbyMessage {
 /**
  *
  *
- * @param {Connection} conn
+ * @param {Connection} connection
  * @param {MessageNode} node
  * @return {TLobbyMessage}
  * @memberof MCOTServer
  */
 function handleGetLobbiesMessage(
-    conn: Connection,
+    traceId: string,
+    connection: Connection,
     node: MessageNode
 ): TLobbyMessage {
-    const result = _getLobbies(conn, node);
+    const result = _getLobbies(traceId, connection, node);
     log.debug("Dumping Lobbies response packet...");
     log.debug(result.toString());
     return result;
@@ -456,9 +576,19 @@ function handleGetLobbiesMessage(
  * @returns {MessageNode}
  */
 function getStockCarInfo(
-    _connection: Connection,
+    traceId: string,
+    connection: Connection,
     packet: MessageNode
 ): MessageNode {
+    log.raw({
+        level: "debug",
+        message: "In handler",
+        otherKeys: {
+            function: "transaction.getStockCarInfo",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     const getStockCarInfoMessage = new GenericRequestMessage();
     getStockCarInfoMessage.deserialize(packet.data);
     getStockCarInfoMessage.dumpPacket();
@@ -488,15 +618,16 @@ function getStockCarInfo(
 /**
  *
  *
- * @param {Connection} conn
+ * @param {Connection} connection
  * @param {MessageNode} node
  * @return {MessageNode}
  */
 function handleShockCarInfoMessage(
-    conn: Connection,
+    traceId: string,
+    connection: Connection,
     node: MessageNode
 ): MessageNode {
-    const result = getStockCarInfo(conn, node);
+    const result = getStockCarInfo(traceId, connection, node);
     return result;
 }
 

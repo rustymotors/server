@@ -1,5 +1,8 @@
 import type { Connection } from "@prisma/client";
+import { logger } from "mcos-logger";
 import { NPSMessage } from "../NPSMessage.js";
+
+const log = logger.child({ service: "mcos:lobby" });
 
 /**
  * @private
@@ -8,9 +11,19 @@ import { NPSMessage } from "../NPSMessage.js";
  * @return {NPSMessage}}
  */
 export async function _npsHeartbeat(
-    _connection: Connection,
+    traceId: string,
+    connection: Connection,
     _data: Buffer
 ): Promise<NPSMessage> {
+    log.raw({
+        level: "debug",
+        message: "Received heatbeat",
+        otherKeys: {
+            function: "_npsHeartbeat",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     const packetContent = Buffer.alloc(8);
     const packetResult = new NPSMessage("sent");
     packetResult.msgNo = 0x1_27;
