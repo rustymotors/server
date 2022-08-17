@@ -136,7 +136,7 @@ export async function listSessions(): Promise<AdminServerResponse> {
     };
 }
 
-export async function updateConnectionInDatabase(connectionId: string) {
+export async function updateConnectionInDatabase(connectionId: string): Promise<void> {
     await prisma.connection
         .update({
             where: {

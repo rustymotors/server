@@ -143,7 +143,7 @@ export async function findOrNewConnection(
     return newSocketRecord;
 }
 
-async function addNewConnection(socketRecord: ISocketRecord) {
+async function addNewConnection(socketRecord: ISocketRecord): Promise<void> {
     await prisma.connection.upsert({
         where: {
             id: socketRecord.id,
