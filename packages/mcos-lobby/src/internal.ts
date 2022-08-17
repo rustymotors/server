@@ -74,11 +74,11 @@ export async function handleData(
         // NpsHeartbeat
 
         case "217": {
-            const responsePacket = await _npsHeartbeat(
+            const responsePacket = await _npsHeartbeat({
                 traceId,
                 connection,
-                data
-            );
+                data,
+            });
             try {
                 return responsePacket.serialize();
             } catch (error) {

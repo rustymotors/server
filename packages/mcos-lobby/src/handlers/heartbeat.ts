@@ -10,11 +10,14 @@ const log = logger.child({ service: "mcos:lobby" });
  * @param {Buffer} data
  * @return {NPSMessage}}
  */
-export async function _npsHeartbeat(
-    traceId: string,
-    connection: Connection,
-    _data: Buffer
-): Promise<NPSMessage> {
+export async function _npsHeartbeat({
+    traceId,
+    connection,
+}: {
+    traceId: string;
+    connection: Connection;
+    data: Buffer;
+}): Promise<NPSMessage> {
     log.raw({
         level: "debug",
         message: "Received heatbeat",
