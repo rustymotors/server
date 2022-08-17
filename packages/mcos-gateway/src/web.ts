@@ -38,6 +38,11 @@ export async function httpListener(
         return AuthLogin.getInstance().handleRequest(req, res);
     }
 
+    // Healthcheck endpoint
+    if (req.url === "/health") {
+        return res.writeHead(200, {}).end("Healthy");
+    }
+
     if (
         req.url &&
         (req.url === "/admin/connections" ||
