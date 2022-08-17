@@ -105,7 +105,7 @@ export async function dataHandler(
         data
     );
 
-    if (typeof result === "undefined") {
+    if (result === null) {
         // Possibly a tranactions packet?
 
         // This is a transaction response.
