@@ -9,7 +9,7 @@ RUN ~/.volta/bin/volta install node@18
 
 COPY package*.json ./
 
-RUN ~/.volta/bin/volta run npm ci
+RUN ~/.volta/bin/volta run npm ci --ignore-scripts && npx prisma generate
 # If you are building your code for production
 # RUN npm ci --only=production
 

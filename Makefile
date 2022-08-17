@@ -26,6 +26,8 @@ test:
 	@cd packages/shard && npm test && cd ../..
 	@cd packages/transactions && npm test && cd ../..
 
+install:
+    npm ci --ignore-scripts && npx prisma generate
 
 start:
 	@LOG_LEVEL=silly npm run start:dev
