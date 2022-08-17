@@ -33,7 +33,10 @@ export async function httpListener(
     req: IncomingMessage,
     res: ServerResponse
 ): Promise<ServerResponse> {
-    if (typeof req.url !== "undefined" && req.url.startsWith("/AuthLogin") === true) {
+    if (
+        typeof req.url !== "undefined" &&
+        req.url.startsWith("/AuthLogin") === true
+    ) {
         log.debug("ssl routing request to login web server");
         return AuthLogin.getInstance().handleRequest(req, res);
     }
