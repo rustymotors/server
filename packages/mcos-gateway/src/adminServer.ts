@@ -146,7 +146,7 @@ export async function updateConnectionInDatabase(connectionId: string) {
                 inQueue: false,
             },
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
             log.error(`Error removing connection from queue: ${String(error)}`);
         })
         .finally(() => {
