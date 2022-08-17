@@ -73,11 +73,15 @@ async function decryptCmd(
 /**
  *
  *
- * @param {Connection} _connection
  * @param {Buffer} data
  * @return {NPSMessage}
  */
-function handleCommand(_connection: Connection, data: Buffer): NPSMessage {
+function handleCommand({
+    data,
+}: {
+    connection: Connection;
+    data: Buffer;
+}): NPSMessage {
     // Marshal the command into an NPS packet
     const incommingRequest = new NPSMessage("received");
     incommingRequest.deserialize(data);
@@ -130,7 +134,10 @@ export async function handleEncryptedNPSCommand(
         Buffer.from(data.subarray(4))
     );
 
-    const responsePacket = handleCommand(connection, decipheredBuffer);
+    const responsePacket = handleCommand({
+        connection,
+        data: decipheredBuffer,
+    });
 
     // Encipher
     const encryptedPacket = encryptCmd(connection, responsePacket.serialize());
