@@ -274,7 +274,7 @@ export async function handleData(
     });
     messageNode.dumpPacket();
 
-    if (messageNode.flags && 8 > 0) {
+    if ((messageNode.flags && 8) > 0) {
         // Message is encrypted, message number is not usable. yet.
         log.raw({
             level: "debug",
