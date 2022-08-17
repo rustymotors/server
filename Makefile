@@ -31,6 +31,7 @@ start:
 	@LOG_LEVEL=silly npm run start:dev
 
 prod_node:
+    npx prisma generate
 	tsc -b --verbose
 	docker-compose --file docker-compose.yml up -d --build
 	docker-compose logs -f --tail 1000

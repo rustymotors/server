@@ -30,14 +30,11 @@
   },
   "dependencies": {
     "@prisma/client": "^4.2.1",
-    "@types/pg": "8.6.5",
     "mcos-gateway": "*",
     "mcos-lobby": "*",
     "mcos-login": "*",
     "mcos-shared": "*",
-    "pg": "8.7.3",
     "prettier": "2.7.1",
-    "prettier-eslint-cli": "7.0.0",
     "ts-node": "10.9.1"
   },
   "devDependencies": {
@@ -51,6 +48,7 @@
     "eslint": "8.22.0",
     "mocha": "10.0.0",
     "prettier-eslint": "15.0.1",
+    "prettier-eslint-cli": "7.0.0",
     "prisma": "^4.2.1",
     "source-map-support": "0.5.21",
     "standard": "17.0.0",

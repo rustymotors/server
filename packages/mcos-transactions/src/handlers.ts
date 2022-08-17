@@ -23,8 +23,7 @@ import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { TLobbyMessage } from "./TLobbyMessage.js";
 import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
 import { StockCar } from "./StockCar.js";
-import type { Connection } from "@prisma/client";
-import { PrismaClient } from "@prisma/client";
+import { Connection, PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const log = logger.child({ service: "mcos:transactions:handlers" });
@@ -463,6 +462,8 @@ function _logout(
     rPacket.deserialize(node.serialize());
     rPacket.updateBuffer(pReply.serialize());
     rPacket.dumpPacket();
+
+    return rPacket
 }
 
 /**
