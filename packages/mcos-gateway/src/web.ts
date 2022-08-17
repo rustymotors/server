@@ -33,7 +33,7 @@ export async function httpListener(
     req: IncomingMessage,
     res: ServerResponse
 ): Promise<ServerResponse> {
-    if (typeof req.url !== "undefined" && req.url.startsWith("/AuthLogin")) {
+    if (typeof req.url !== "undefined" && req.url.startsWith("/AuthLogin") === true) {
         log.debug("ssl routing request to login web server");
         return AuthLogin.getInstance().handleRequest(req, res);
     }
@@ -45,10 +45,10 @@ export async function httpListener(
     }
 
     if (
-        req.url &&
+        typeof req.url !== "undefined" &&
         (req.url === "/admin/connections" ||
             req.url === "/admin/connections/resetAllQueueState" ||
-            req.url.startsWith("/admin"))
+            req.url.startsWith("/admin") === true)
     ) {
         log.debug("ssl routing request to admin web server");
         const response = await AdminServer.getAdminServer().handleRequest(req);
