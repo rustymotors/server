@@ -25,7 +25,7 @@ export async function listSocketRecords(): Promise<AdminServerResponse> {
             id: r.id,
             address: r.socket.remoteAddress,
             port: r.socket.localPort,
-            isOpen: !r.socket.closed,
+            isOpen: r.socket.closed === false,
             isWritable: r.socket.writable,
         });
     });
