@@ -79,7 +79,7 @@ export async function dataHandler(
         return;
     }
 
-    let result: InterServiceTransfer | void = undefined;
+    let result: InterServiceTransfer | null;
 
     // Route the data to the correct service
     // There are 2 happy paths from this point
@@ -118,7 +118,7 @@ export async function dataHandler(
         );
     }
 
-    if (typeof result === "undefined") {
+    if (result === null) {
         // This is probably an error, let's assume it's not. For now.
         // TODO: #1169 verify there are no happy paths where the services would return zero packets
         const message = "There were zero packets returned for processing";
@@ -157,8 +157,8 @@ async function handleInboundGameData(
     localPort: number,
     connectionId: string,
     data: Buffer
-): Promise<InterServiceTransfer | void> {
-    let result: InterServiceTransfer = {
+): Promise<InterServiceTransfer | null> {
+    let result: InterServiceTransfer | null = {
         traceId,
         targetService: "GATEWAY",
         connectionId,
@@ -201,7 +201,7 @@ async function handleInboundGameData(
 
     if (!handledPackets) {
         log.debug("The packet was not for a game service");
-        return undefined;
+        return null;
     }
 
     // TODO: #1170 Create compression method and compress packet if needed
@@ -220,7 +220,7 @@ async function handleInboundTransactionData(
     localPort: number,
     connectionId: string,
     data: Buffer
-): Promise<InterServiceTransfer | void> {
+): Promise<InterServiceTransfer | null> {
     let result: InterServiceTransfer = {
         traceId,
         targetService: "GATEWAY",
@@ -242,7 +242,7 @@ async function handleInboundTransactionData(
 
     if (!handledPackets) {
         log.debug("The packet was not for a transactions service");
-        return undefined;
+        return null;
     }
 
     // TODO: #1170 Create compression method and compress packet if needed

@@ -436,7 +436,7 @@ function _logout(
     traceId: string,
     connection: Connection,
     node: MessageNode
-): MessageNode | void {
+): MessageNode | never {
     log.raw({
         level: "debug",
         message: "In handler",
@@ -477,7 +477,7 @@ function handleLogoutMessage(
     traceId: string,
     connection: Connection,
     node: MessageNode
-): MessageNode | void {
+): MessageNode | never {
     const result = _logout(traceId, connection, node);
     return result;
 }

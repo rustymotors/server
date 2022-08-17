@@ -135,7 +135,7 @@ async function processInput(
     traceId: string,
     connection: Connection,
     node: MessageNode
-): Promise<MessageNode | TLobbyMessage | void> {
+): Promise<MessageNode | TLobbyMessage | null> {
     const currentMessageNo = node.msgNo;
     const currentMessageString = _MSG_STRING(currentMessageNo);
 
@@ -192,7 +192,7 @@ async function messageReceived(
     traceId: string,
     connection: Connection,
     message: MessageNode
-): Promise<MessageNode | TLobbyMessage | void> {
+): Promise<MessageNode | TLobbyMessage | null> {
     // if (message.flags && 0x08) {
     //     selectEncryptors(dataConnection.)
     //   log.debug('Turning on encryption')
@@ -357,8 +357,8 @@ export async function handleData(
     );
     log.debug("Back in transacation server");
 
-    if (typeof processedPacket === "undefined") {
-        throw new Error("We really should not have a void here!");
+    if (processedPacket === null) {
+        throw new Error("We really should not have a null here!");
     }
 
     return processedPacket.serialize();
