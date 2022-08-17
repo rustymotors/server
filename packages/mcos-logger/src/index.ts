@@ -67,7 +67,6 @@ class MCOSLogger {
         additionalKeys?: Record<string, string | undefined>
     ): void {
         if (this.systemLogLevel <= level) {
-            // skipcq: JS-0002 - This is intentional and is the only time console is used
             const logLine = {
                 level: level,
                 time: Date.now(),
@@ -77,6 +76,7 @@ class MCOSLogger {
                 message,
                 ...additionalKeys,
             };
+            // skipcq: JS-0002 - This is intentional and is the only time console is used
             console.log(JSON.stringify(logLine));
         }
     }
