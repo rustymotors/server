@@ -114,7 +114,7 @@ export class AdminServer {
     }
 }
 
-function parseUrl(request: IncomingMessage) {
+function parseUrl(request: IncomingMessage): URL {
     return new URL(request.url || "", `http://${request.headers.host}`);
 }
 
