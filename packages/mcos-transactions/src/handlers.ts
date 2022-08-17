@@ -463,7 +463,7 @@ function _logout(
     rPacket.updateBuffer(pReply.serialize());
     rPacket.dumpPacket();
 
-    return rPacket
+    return rPacket;
 }
 
 /**

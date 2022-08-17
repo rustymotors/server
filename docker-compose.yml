@@ -25,8 +25,8 @@ services:
       interval: 30s
       timeout: 60s
       retries: 5
-      start_period: 80s  
-  
+      start_period: 80s
+
   pgadmin:
     image: dpage/pgadmin4:6.12
     # TODO: #1182 remove these before prod https://github.com/drazisil/mco-server/issues/1008
@@ -80,7 +80,7 @@ services:
       interval: 30s
       timeout: 60s
       retries: 5
-      start_period: 80s  
+      start_period: 80s
 
 volumes:
   pgadmin:
