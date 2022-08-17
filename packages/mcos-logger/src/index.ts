@@ -38,7 +38,7 @@ class MCOSLogger {
             typeof logLevel !== "undefined" &&
             typeof ELOGGING_LEVELS[logLevel] !== "undefined"
         ) {
-            this.systemLogLevel = ELOGGING_LEVELS[logLevel] || 30;
+            this.systemLogLevel = ELOGGING_LEVELS[logLevel] ?? 30;
         }
         if (
             typeof options !== "undefined" &&
@@ -116,7 +116,7 @@ class MCOSLogger {
         message: string;
         otherKeys?: Record<string, string | undefined>;
     }): void {
-        this.callLog(ELOGGING_LEVELS[level] || 30, message, otherKeys);
+        this.callLog(ELOGGING_LEVELS[level] ?? 30, message, otherKeys);
     }
 }
 
