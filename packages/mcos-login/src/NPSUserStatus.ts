@@ -82,11 +82,13 @@ export class NPSUserStatus extends NPSMessage {
      * @return {void}
      */
     extractSessionKeyFromPacket(packet: Buffer): void {
+        // skipcq: JS-0303 - Not possible here
         if (typeof process.env["PRIVATE_KEY_FILE"] === "undefined") {
             throw new Error("Please set PRIVATE_KEY_FILE");
         }
         // Decrypt the sessionkey
         const privateKey = this.fetchPrivateKeyFromFile(
+            // skipcq: JS-0303 - Not possible here
             process.env["PRIVATE_KEY_FILE"]
         );
 

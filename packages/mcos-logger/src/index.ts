@@ -33,6 +33,7 @@ class MCOSLogger {
     service = "";
     name: string;
     constructor(options?: { service: string }) {
+        // skipcq: JS-0303 - Not possible here
         const logLevel = process.env["LOG_LEVEL"];
         if (
             typeof logLevel !== "undefined" &&
