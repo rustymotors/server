@@ -40,6 +40,7 @@ export async function httpListener(
 
     // Healthcheck endpoint
     if (req.url === "/health") {
+        log.debug("Health check");
         return res.writeHead(200, {}).end("Healthy");
     }
 
