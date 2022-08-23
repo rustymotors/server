@@ -34,9 +34,9 @@
     "mcos-lobby": "*",
     "mcos-login": "*",
     "mcos-shared": "*",
-    "pg": "8.7.3",
+    "pg": "8.8.0",
     "prettier": "2.7.1",
-    "prettier-eslint-cli": "7.0.0",
+    "prettier-eslint-cli": "7.0.1",
     "ts-node": "10.9.1"
   },
   "devDependencies": {
