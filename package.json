@@ -56,7 +56,7 @@
   },
   "volta": {
     "node": "18.6.0",
-    "npm": "8.18.0"
+    "npm": "8.19.0"
   },
   "workspaces": [
     "packages/mcos-logger",
