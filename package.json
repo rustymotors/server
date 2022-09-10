@@ -29,7 +29,7 @@
     "url": "git@github.com:drazisil/mcos.git"
   },
   "dependencies": {
-    "@prisma/client": "^4.2.1",
+    "@prisma/client": "4.2.1",
     "mcos-gateway": "*",
     "mcos-lobby": "*",
     "mcos-login": "*",
@@ -48,8 +48,8 @@
     "eslint": "8.23.0",
     "mocha": "10.0.0",
     "prettier-eslint": "15.0.1",
-    "prettier-eslint-cli": "7.0.0",
-    "prisma": "^4.2.1",
+    "prettier-eslint-cli": "7.1.0",
+    "prisma": "4.2.1",
     "source-map-support": "0.5.21",
     "standard": "17.0.0",
     "ts-mockito": "2.6.1"
