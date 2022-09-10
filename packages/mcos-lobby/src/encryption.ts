@@ -14,53 +14,39 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { createCipheriv, createDecipheriv } from "node:crypto";
+import {
+    Cipher,
+    createCipheriv,
+    createDecipheriv,
+    Decipher,
+} from "node:crypto";
 import { logger } from "mcos-logger/src/index.js";
-import type {
-    BufferWithConnection,
-    EncryptionSession,
-    SessionRecord,
-    SocketWithConnectionInfo,
-} from "mcos-types/types.js";
+import type { EncryptionSession } from "mcos-types/types.js";
+import type { Session } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 const log = logger.child({ service: "mcos:shared:encryption" });
 
-const encryptionSessions: EncryptionSession[] = [];
-
 function generateEncryptionPair(
-    dataConnection: SocketWithConnectionInfo,
-    keys: SessionRecord
+    connectionId: string,
+    keys: Session
 ): EncryptionSession {
     // For use on Lobby packets
-    const { sessionkey, skey } = keys;
-    const stringKey = Buffer.from(sessionkey, "hex");
-    Buffer.from(stringKey.slice(0, 16));
+    const { sessionKey, sKey } = keys;
+    const stringKey = Buffer.from(sessionKey, "hex");
+    Buffer.from(stringKey.subarray(0, 16));
 
     // Deepcode ignore HardcodedSecret: This uses an empty IV
-    const desIV = Buffer.alloc(8);
-
-    const gsCipher = createCipheriv("des-cbc", Buffer.from(skey, "hex"), desIV);
-    gsCipher.setAutoPadding(false);
-
-    const gsDecipher = createDecipheriv(
-        "des-cbc",
-        Buffer.from(skey, "hex"),
-        desIV
-    );
-    gsDecipher.setAutoPadding(false);
+    const { gsCipher, gsDecipher } = createGSCipher(sKey);
 
     // For use on messageNode packets
 
     // File deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
-    const tsCipher = createCipheriv("rc4", stringKey.slice(0, 16), "");
-    const tsDecipher = createDecipheriv("rc4", stringKey.slice(0, 16), "");
+    const { tsCipher, tsDecipher } = createTSCipher(stringKey);
 
     const newSession: EncryptionSession = {
-        connectionId: dataConnection.id,
-        remoteAddress: dataConnection.remoteAddress,
-        localPort: dataConnection.localPort,
-        sessionKey: keys.sessionkey,
-        shortKey: keys.skey,
+        connectionId,
         gsCipher,
         gsDecipher,
         tsCipher,
@@ -71,146 +57,65 @@ function generateEncryptionPair(
 }
 
 /**
- *
- * @param {IBufferWithConnection} dataConnection
- * @returns {IEncryptionSession}
+ * Generate a set of encryphers for the transactions service
+ * @param {Buffer} stringKey
+ * @returns {{
+ *   tsCipher: Cipher;
+ *   tsDecipher: Decipher;
+ * }}
  */
-export function selectEncryptors(
-    dataConnection: BufferWithConnection
-): EncryptionSession {
-    const { localPort, remoteAddress } = dataConnection.connection;
+function createTSCipher(stringKey: Buffer): {
+    tsCipher: Cipher;
+    tsDecipher: Decipher;
+} {
+    const tsCipher = createCipheriv("rc4", stringKey.subarray(0, 16), "");
+    const tsDecipher = createDecipheriv("rc4", stringKey.subarray(0, 16), "");
+    return { tsCipher, tsDecipher };
+}
 
-    if (
-        typeof localPort === "undefined" ||
-        typeof remoteAddress === "undefined"
-    ) {
-        const errMessage = `[selectEncryptors]Either localPort or remoteAddress is missing on socket. Can not continue.`;
-        log.error(errMessage);
-        throw new Error(errMessage);
-    }
-    const wantedId = `${remoteAddress}:${localPort}`;
+/**
+ * Generate a set of encryphers for the game service
+ * @param {string} sKey
+ * @returns {{
+ *   tsCipher: Cipher;
+ *   tsDecipher: Decipher;
+ * }}
+ */
+function createGSCipher(sKey: string): {
+    gsCipher: Cipher;
+    gsDecipher: Decipher;
+} {
+    const desIV = Buffer.alloc(8);
 
-    const existingEncryptor = encryptionSessions.find((e) => {
-        const thisId = `${e.remoteAddress}:${e.localPort}`;
-        log.trace(`[selectEncryptors] Checking ${thisId} === ${wantedId} ?`);
-        return thisId === wantedId;
-    });
+    const gsCipher = createCipheriv("des-cbc", Buffer.from(sKey, "hex"), desIV);
+    gsCipher.setAutoPadding(false);
 
-    if (typeof existingEncryptor !== "undefined") {
-        log.debug(
-            `Located existing encryption session for connection id ${dataConnection.connectionId}`
-        );
-        return existingEncryptor;
-    }
-
-    const errMessage = `Unable to select encryptors for connection id ${dataConnection.connectionId}`;
-    log.error(errMessage);
-    throw new Error(errMessage);
+    const gsDecipher = createDecipheriv(
+        "des-cbc",
+        Buffer.from(sKey, "hex"),
+        desIV
+    );
+    gsDecipher.setAutoPadding(false);
+    return { gsCipher, gsDecipher };
 }
 
 /**
  *
- * @param {ISocketWithConnectionInfo} dataConnection
- * @returns {IEncryptionSession}
- */
-export function selectEncryptorsForSocket(
-    dataConnection: SocketWithConnectionInfo
-): EncryptionSession {
-    const { localPort, remoteAddress } = dataConnection;
-
-    if (
-        typeof localPort === "undefined" ||
-        typeof remoteAddress === "undefined"
-    ) {
-        const errMessage = `[selectEncryptorsForSocket]Either localPort or remoteAddress is missing on socket. Can not continue.`;
-        log.error(errMessage);
-        throw new Error(errMessage);
-    }
-    const wantedId = `${remoteAddress}:${localPort}`;
-
-    const existingEncryptor = encryptionSessions.find((e) => {
-        const thisId = `${e.remoteAddress}:${e.localPort}`;
-        log.trace(
-            `[selectEncryptorsForSocket] Checking ${thisId} === ${wantedId} ?`
-        );
-        return thisId === wantedId;
-    });
-
-    if (typeof existingEncryptor !== "undefined") {
-        log.debug(
-            `Located existing encryption session for socket with connection id ${dataConnection.id}`
-        );
-        return existingEncryptor;
-    }
-
-    const errMessage = `Unable to select encryptors for socket with connection id ${dataConnection.id}`;
-    log.error(errMessage);
-    throw new Error(errMessage);
-}
-
-/**
- *
- * @param {ISocketWithConnectionInfo} dataConnection
+ * @param {ISocketWithConnectionInfo} connection
  * @param {ISessionRecord} keys
  * @returns {IEncryptionSession}
  */
-export function selectOrCreateEncryptors(
-    dataConnection: SocketWithConnectionInfo,
-    keys: SessionRecord
+export function createEncryptors(
+    connectionId: string,
+    keys: Session
 ): EncryptionSession {
-    const { localPort, remoteAddress } = dataConnection;
-
-    if (
-        typeof localPort === "undefined" ||
-        typeof remoteAddress === "undefined"
-    ) {
-        const errMessage = `[selectOrCreateEncryptors]Either localPort or remoteAddress is missing on socket. Can not continue.`;
-        log.error(errMessage);
-        throw new Error(errMessage);
-    }
-    const wantedId = `${remoteAddress}:${localPort}`;
-
-    const existingEncryptor = encryptionSessions.find((e) => {
-        const thisId = `${e.remoteAddress}:${e.localPort}`;
-        log.trace(`[selectEncryptors] Checking ${thisId} === ${wantedId} ?`);
-        return thisId === wantedId;
-    });
-
-    if (typeof existingEncryptor !== "undefined") {
-        log.debug(
-            `Located existing encryption session for connection id ${dataConnection.id}`
-        );
-        return existingEncryptor;
-    }
-
-    const newSession = generateEncryptionPair(dataConnection, keys);
+    const newSession = generateEncryptionPair(connectionId, keys);
 
     log.debug(
-        `Generated new encryption session for connection id ${dataConnection.id}`
+        `Generated new encryption session for connection id ${connectionId}`
     );
 
-    encryptionSessions.push(newSession);
-
     return newSession;
-}
-
-/**
- * Update the internal connection record
- */
-export function updateEncryptionSession(
-    connectionId: string,
-    updatedSession: EncryptionSession
-): void {
-    try {
-        const index = encryptionSessions.findIndex((e) => {
-            return e.connectionId === connectionId;
-        });
-        encryptionSessions.splice(index, 1);
-        encryptionSessions.push(updatedSession);
-        log.debug(`Updated encryption session for id: ${connectionId}`);
-    } catch (error) {
-        throw new Error(`Error updating connection, ${String(error)}`);
-    }
 }
 
 /**
@@ -223,15 +128,11 @@ export function cipherBufferDES(
     encryptionSession: EncryptionSession,
     data: Buffer
 ): { session: EncryptionSession; data: Buffer } {
-    if (encryptionSession.gsCipher) {
-        const ciphered = encryptionSession.gsCipher.update(data);
-        return {
-            session: encryptionSession,
-            data: ciphered,
-        };
-    }
-
-    throw new Error("No DES cipher set on connection");
+    const ciphered = encryptionSession.gsCipher.update(data);
+    return {
+        session: encryptionSession,
+        data: ciphered,
+    };
 }
 
 /**
@@ -243,26 +144,29 @@ export function cipherBufferDES(
 export function decipherBufferDES(
     encryptionSession: EncryptionSession,
     data: Buffer
-): { session: EncryptionSession; data: Buffer } {
-    if (encryptionSession.gsDecipher) {
-        const deciphered = encryptionSession.gsDecipher.update(data);
-        return {
-            session: encryptionSession,
-            data: deciphered,
-        };
-    }
-
-    throw new Error("No DES decipher set on connection");
+): Buffer {
+    const deciphered = encryptionSession.gsDecipher.update(data);
+    return deciphered;
 }
 
 /**
  * Decrypt the buffer contents
  */
-export function decryptBuffer(
-    dataConnection: BufferWithConnection,
+export async function decryptBuffer(
+    connectionId: string,
     buffer: Buffer
-): { session: EncryptionSession; data: Buffer } {
-    const encryptionSession = selectEncryptors(dataConnection);
+): Promise<{ session: EncryptionSession; data: Buffer }> {
+    const keys = await prisma.session.findFirst({
+        where: {
+            connectionId,
+        },
+    });
+
+    if (keys === null) {
+        throw new Error("Error fetching session keys in decryptBuffer");
+    }
+
+    const encryptionSession = createEncryptors(connectionId, keys);
     const deciphered = encryptionSession.tsDecipher.update(buffer);
     return {
         session: encryptionSession,

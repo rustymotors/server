@@ -32,8 +32,8 @@ export class NPSUserInfo extends NPSMessage {
      */
     override deserialize(rawData: Buffer): NPSUserInfo {
         this.userId = rawData.readInt32BE(4);
-        this.userName = rawData.slice(8, 38);
-        this.userData = rawData.slice(38);
+        this.userName = rawData.subarray(8, 38);
+        this.userData = rawData.subarray(38);
         return this;
     }
 

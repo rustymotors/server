@@ -14,12 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import type { Connection } from "@prisma/client";
 import { logger } from "mcos-logger/src/index.js";
-import type {
-    BufferWithConnection,
-    GSMessageArrayWithConnection,
-    PersonaRecord,
-} from "mcos-types/types.js";
+import type { PersonaRecord } from "mcos-types/types.js";
 import { MessagePacket } from "./MessagePacket.js";
 import { NPSMessage } from "./NPSMessage.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
@@ -427,19 +424,16 @@ async function validateLicencePlate(data: Buffer): Promise<NPSMessage> {
 /**
  *
  *
- * @param {BufferWithConnection} dataConnection
- * @return {Promise<GSMessageArrayWithConnection>}
+ * @param {Connection} _connection
+ * @return {Promise<Buffer>}
  */
 export async function handleData(
-    dataConnection: BufferWithConnection
-): Promise<GSMessageArrayWithConnection> {
-    const { connection, data } = dataConnection;
-    const { socket, localPort } = connection;
+    _connection: Connection,
+    data: Buffer
+): Promise<Buffer> {
     log.debug(
         `Received Persona packet',
     ${JSON.stringify({
-        localPort,
-        remoteAddress: socket.remoteAddress,
         data: data.toString("hex"),
     })}`
     );
@@ -450,72 +444,45 @@ export async function handleData(
             const requestPacket = new NPSMessage("received").deserialize(data);
             // NPS_REGISTER_GAME_LOGIN = 0x503
             const responsePacket = await handleSelectGamePersona(requestPacket);
-            /** @type {GSMessageArrayWithConnection} */
-            const response: GSMessageArrayWithConnection = {
-                connection: dataConnection.connection,
-                messages: [responsePacket],
-            };
-            return response;
+
+            return responsePacket.serialize();
         }
 
         case "507": {
             // NPS_NEW_GAME_ACCOUNT == 0x507
             const responsePacket = await createNewGameAccount(data);
-            /** @type {GSMessageArrayWithConnection} */
-            const response: GSMessageArrayWithConnection = {
-                connection: dataConnection.connection,
-                messages: [responsePacket],
-            };
-            return response;
+
+            return responsePacket.serialize();
         }
 
         case "50f": {
             // NPS_REGISTER_GAME_LOGOUT = 0x50F
             const responsePacket = await logoutGameUser(data);
-            /** @type {GSMessageArrayWithConnection} */
-            const response: GSMessageArrayWithConnection = {
-                connection: dataConnection.connection,
-                messages: [responsePacket],
-            };
-            return response;
+
+            return responsePacket.serialize();
         }
 
         case "532": {
             // NPS_GET_PERSONA_MAPS = 0x532
             const responsePacket = await getPersonaMaps(data);
-            /** @type {GSMessageArrayWithConnection} */
-            const response: GSMessageArrayWithConnection = {
-                connection: dataConnection.connection,
-                messages: [responsePacket],
-            };
-            return response;
+
+            return responsePacket.serialize();
         }
 
         case "533": {
             // NPS_VALIDATE_PERSONA_NAME   = 0x533
             const responsePacket = await validatePersonaName(data);
-            /** @type {GSMessageArrayWithConnection} */
-            const response: GSMessageArrayWithConnection = {
-                connection: dataConnection.connection,
-                messages: [responsePacket],
-            };
-            return response;
+
+            return responsePacket.serialize();
         }
         case "534": {
             // NPS_CHECK_TOKEN   = 0x534
             const responsePacket = await validateLicencePlate(data);
-            /** @type {GSMessageArrayWithConnection} */
-            const response: GSMessageArrayWithConnection = {
-                connection: dataConnection.connection,
-                messages: [responsePacket],
-            };
-            return response;
+
+            return responsePacket.serialize();
         }
     }
     throw new Error(
-        `[personaServer] Unknown code was received ${JSON.stringify({
-            requestCode,
-            localPort: socket.localPort,
-        })}`
+        `[personaServer] Unknown code was received [${requestCode}`
     );
 }

@@ -6,17 +6,27 @@ services:
       context: services/sslProxy
     ports:
       - "443:443"
+    restart: on-failure
     depends_on:
-      - node
+      node:
+        condition: service_healthy
 
   db:
     image: postgres:14.5
     ports:
-      - "5432"
+      - "5432:5432"
       # TODO: #1182 remove before prod https://github.com/drazisil/mco-server/issues/1008
     environment:
       POSTGRES_PASSWORD: "password"
       POSTGRES_DB: "mcos"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "db_prod"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+
   pgadmin:
     image: dpage/pgadmin4:6.13
     # TODO: #1182 remove these before prod https://github.com/drazisil/mco-server/issues/1008
@@ -33,7 +43,8 @@ services:
       - db
 
   node:
-    image: "node:18"
+    build:
+        context: .
     user: "node"
     working_dir: /home/node/app
     volumes:
@@ -41,7 +52,7 @@ services:
     environment:
       - DEBUG=mcos:*
       # TODO: #1182 remove before prod https://github.com/drazisil/mco-server/issues/1008
-      - CONNECTION_URL=postgresql://postgres:password@db:5432/mcos
+      - DATABASE_URL=postgresql://postgres:password@db:5432/mcos
       - EXTERNAL_HOST=10.10.5.20
       - PRIVATE_KEY_FILE=data/private_key.pem
       - PUBLIC_KEY_FILE=data/pub.key
@@ -60,9 +71,16 @@ services:
       - "43400:43400"
       - "53303:53303"
       - "9000-9014:9000-9014"
-    # restart: always
+    restart: on-failure
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
 
 volumes:
   pgadmin:

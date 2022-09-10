@@ -14,17 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { DatabaseManager } from "../../mcos-database/src/index.js";
 import { logger } from "mcos-logger/src/index.js";
 import { GSMessageBase } from "./GMessageBase.js";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { premadeLogin } from "./premadeLogin.js";
 import { NPSMessage } from "./NPSMessage.js";
-import type {
-    BufferWithConnection,
-    GSMessageArrayWithConnection,
-    UserRecordMini,
-} from "mcos-types/types.js";
+import type { UserRecordMini } from "mcos-types/types.js";
+import { Connection, PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 const log = logger.child({ service: "mcos:login" });
 
@@ -44,18 +41,15 @@ const userRecords: UserRecordMini[] = [
 /**
  * Process a UserLogin packet
  * @private
- * @param {IBufferWithConnection} dataConnection
- * @return {Promise<IGSMessageArrayWithConnection>}
+ * @param {Connection} connection
+ * @param {Buffer} data
+ * @return {Promise<Buffer>}
  */
-async function login(
-    dataConnection: BufferWithConnection
-): Promise<GSMessageArrayWithConnection> {
-    const { connectionId, data } = dataConnection;
-
-    log.info(`Received login packet: ${connectionId}`);
+async function login(connection: Connection, data: Buffer): Promise<Buffer> {
+    log.info(`Received login packet: ${connection.id}`);
 
     const newGameMessage = new GSMessageBase();
-    newGameMessage.deserialize(data.slice(0, 10));
+    newGameMessage.deserialize(data.subarray(0, 10));
     log.trace(`Raw game message: ${JSON.stringify(newGameMessage)}`);
 
     const userStatus = new NPSUserStatus(data);
@@ -87,17 +81,29 @@ async function login(
 
     // Save sessionkey in database under customerId
     log.debug("Preparing to update session key in db");
-    await DatabaseManager.getInstance()
-        .updateSessionKey(
-            userRecord.customerId,
-            sessionkey,
-            contextId,
-            connectionId
-        )
-        .catch((/** @type {unknown} */ error: unknown) => {
-            log.error(`Unable to update session key 3: ${String(error)}`);
-            throw new Error("Error in userLogin");
+    try {
+        const skey = sessionkey.slice(0, 16);
+        await prisma.session.upsert({
+            where: {
+                customerId: connection.customerId,
+            },
+            update: {
+                sessionKey: sessionkey,
+                sKey: skey,
+                contextId: contextId,
+            },
+            create: {
+                customerId: connection.customerId,
+                sessionKey: sessionkey,
+                sKey: skey,
+                contextId: contextId,
+                connectionId: connection.id,
+            },
         });
+    } catch (error) {
+        log.error(`Unable to update session key 3: ${String(error)}`);
+        throw new Error("Error in userLogin");
+    }
 
     log.info("Session key updated");
 
@@ -124,17 +130,11 @@ async function login(
     /**
      * Return the packet twice for debug
      * Debug sends the login request twice, so we need to reply twice
-     * Then send ok to login packet
      */
 
-    // Update the data buffer
-    /** @type {IGSMessageArrayWithConnection} */
-    const response: GSMessageArrayWithConnection = {
-        connection: dataConnection.connection,
-        messages: [newPacket, newPacket],
-    };
     log.debug("Leaving login");
-    return response;
+    // return Buffer.concat([newPacket.serialize(), newPacket.serialize()]);
+    return Buffer.concat([newPacket.serialize(), newPacket.serialize()]);
 }
 
 export const messageHandlers = [
@@ -146,16 +146,15 @@ export const messageHandlers = [
 
 /**
  *
- *
- * @param {IBufferWithConnection} dataConnection
- * @return {Promise<IGSMessageArrayWithConnection>}
+ * @param {Connection} connection
+ * @param {Buffer} data
+ * @return {Promise<Buffer>}
  */
 export async function handleData(
-    dataConnection: BufferWithConnection
-): Promise<GSMessageArrayWithConnection> {
-    const { connectionId, data } = dataConnection;
-
-    log.info(`Received Login Server packet: ${connectionId}`);
+    connection: Connection,
+    data: Buffer
+): Promise<Buffer> {
+    log.info(`Received Login Server packet: ${connection.id}`);
 
     // Check the request code
     const requestCode = data.readUInt16BE(0).toString(16);
@@ -166,16 +165,13 @@ export async function handleData(
 
     if (typeof supportedHandler === "undefined") {
         // We do not yet support this message code
-        log.error(
+        throw new Error(
             `The login handler does not support a message code of ${requestCode}. Was the packet routed here in error?`
         );
-        log.error("Closing socket.");
-        dataConnection.connection.socket.end();
-        throw new TypeError("UNSUPPORTED_MESSAGECODE");
     }
 
-    const result = await supportedHandler.handler(dataConnection);
-    log.trace(`Returning with ${result.messages.length} messages`);
+    const result = await supportedHandler.handler(connection, data);
+    log.trace(`Returning with ${result.length} messages`);
     log.debug("Leaving handleData");
     return result;
 }

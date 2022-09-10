@@ -14,7 +14,7 @@
   "scripts": {
     "build": "tsc",
     "format": "prettier --write \"packages/**/*.ts\" \"src/**/*.ts\"",
-    "test": "c8 ts-node --esm node_modules/.bin/mocha packages/**/*.test.ts test",
+    "test": "c8 ts-node --esm node_modules/.bin/mocha packages/**/*.test.ts",
     "build:test": "npm run format && npm run build && npm run test",
     "prod": "make prod_node",
     "prod:stop": "docker-compose stop",
@@ -29,14 +29,12 @@
     "url": "git@github.com:drazisil/mcos.git"
   },
   "dependencies": {
-    "@types/pg": "8.6.5",
+    "@prisma/client": "^4.2.1",
     "mcos-gateway": "*",
     "mcos-lobby": "*",
     "mcos-login": "*",
     "mcos-shared": "*",
-    "pg": "8.8.0",
     "prettier": "2.7.1",
-    "prettier-eslint-cli": "7.1.0",
     "ts-node": "10.9.1"
   },
   "devDependencies": {
@@ -50,6 +48,8 @@
     "eslint": "8.23.0",
     "mocha": "10.0.0",
     "prettier-eslint": "15.0.1",
+    "prettier-eslint-cli": "7.0.0",
+    "prisma": "^4.2.1",
     "source-map-support": "0.5.21",
     "standard": "17.0.0",
     "ts-mockito": "2.6.1"

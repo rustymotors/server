@@ -16,14 +16,19 @@
 
 import { logger } from "mcos-logger/src/index.js";
 import type {
-    BufferWithConnection,
-    GServiceResponse,
+    InterServiceTransfer,
+    SERVICE_NAMES,
     UserRecordMini,
 } from "mcos-types/types.js";
-import { DatabaseManager } from "../../mcos-database/src/index.js";
 import { handleData } from "./internal.js";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 const log = logger.child({ service: "mcoserver:LoginServer" });
+
+const SELF: { NAME: SERVICE_NAMES } = {
+    NAME: "LOGIN",
+};
 
 /**
  * Manages the initial game connection setup and teardown.
@@ -33,7 +38,6 @@ const log = logger.child({ service: "mcoserver:LoginServer" });
 /**
  * Please use {@link LoginServer.getInstance()}
  * @classdesc
- * @property {DatabaseManager} databaseManager
  */
 export class LoginServer {
     /**
@@ -44,7 +48,6 @@ export class LoginServer {
      * @memberof LoginServer
      */
     static _instance: LoginServer;
-    databaseManager = DatabaseManager.getInstance();
     /**
      * Get the single instance of the login server
      *
@@ -115,20 +118,43 @@ export class LoginServer {
  * Entry and exit point of the Login service
  *
  * @export
- * @param {IBufferWithConnection} dataConnection
- * @return {Promise<IGServiceResponse>}
+ * @param {InterServiceTransfer} requestFromService
+ * @return {Promise<InterServiceTransfer>}
  */
 export async function receiveLoginData(
-    dataConnection: BufferWithConnection
-): Promise<GServiceResponse> {
+    requestFromService: InterServiceTransfer
+): Promise<InterServiceTransfer> {
+    if (requestFromService.targetService !== SELF.NAME) {
+        throw new Error(`This request is not for the ${SELF.NAME} service!`);
+    }
+
+    const { connectionId, data } = requestFromService;
+
+    // Get the connection from the database
+    const connectionRecord = await prisma.connection.findUnique({
+        where: {
+            id: connectionId,
+        },
+    });
+
+    if (connectionRecord === null) {
+        throw new Error(
+            `Unable to locate connection matching ${connectionId} in the login service`
+        );
+    }
+
     try {
-        const response = await handleData(dataConnection);
-        log.trace(`There are ${response.messages.length} messages`);
-        return { err: null, response };
+        const responseData = await handleData(connectionRecord, data);
+        log.trace(`There are ${responseData.length} messages`);
+        return {
+            targetService: "GATEWAY",
+            connectionId,
+            data: responseData,
+            traceId: requestFromService.traceId,
+        };
     } catch (error) {
-        const errMessage = `There was an error in the login service: ${String(
-            error
-        )}`;
-        return { err: new Error(errMessage), response: undefined };
+        throw new Error(
+            `There was an error in the login service: ${String(error)}`
+        );
     }
 }

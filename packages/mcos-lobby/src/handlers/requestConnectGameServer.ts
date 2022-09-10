@@ -2,14 +2,10 @@ import { getPersonasByPersonaId } from "../../../mcos-persona/src/index.js";
 import { logger } from "mcos-logger/src/index.js";
 import { NPSUserInfo } from "../NPSUserInfo.js";
 import { NPSMessage } from "../NPSMessage.js";
-import { selectOrCreateEncryptors } from "../encryption.js";
-import type {
-    BufferWithConnection,
-    EncryptionSession,
-    GSMessageArrayWithConnection,
-} from "mcos-types/types.js";
 import { MessagePacket } from "../MessagePacket.js";
-import { DatabaseManager } from "../../../mcos-database/src/index.js";
+import type { Connection } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 const log = logger.child({ service: "mcos:lobby" });
 
@@ -43,71 +39,126 @@ export function _generateSessionKeyBuffer(key: string): Buffer {
  * Handle a request to connect to a game server packet
  *
  * @private
- * @param {IBufferWithConnection} dataConnection
+ * @param {Connection} connection
+ * @param {Buffer} data
  * @return {Promise<NPSMessage>}
  */
 export async function _npsRequestGameConnectServer(
-    dataConnection: BufferWithConnection
-): Promise<GSMessageArrayWithConnection> {
+    traceId: string,
+    connection: Connection,
+    data: Buffer
+): Promise<NPSMessage> {
+    log.raw({
+        level: "debug",
+        message: "_npsRequestGameConnectServer",
+        otherKeys: {
+            function: "_npsRequestGameConnectServer",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     log.trace(
-        `[inner] Raw bytes in _npsRequestGameConnectServer: ${toHex(
-            dataConnection.data
-        )}`
+        `[inner] Raw bytes in _npsRequestGameConnectServer: ${toHex(data)}`
     );
 
     log.debug(
         `_npsRequestGameConnectServer: ${JSON.stringify({
-            remoteAddress: dataConnection.connection.remoteAddress,
-            localPort: dataConnection.connection.localPort,
-            data: dataConnection.data.toString("hex"),
+            remoteAddress: connection.remoteAddress,
+            localPort: connection.localPort,
+            data: data.toString("hex"),
         })}`
     );
 
     // since the data is a buffer at this point, let's place it in a message structure
-    const inboundMessage = MessagePacket.fromBuffer(dataConnection.data);
+    const inboundMessage = MessagePacket.fromBuffer(data);
 
     log.debug(`message buffer (${inboundMessage.getBuffer().toString("hex")})`);
 
     // Return a _NPS_UserInfo structure
     const userInfo = new NPSUserInfo("received");
-    userInfo.deserialize(dataConnection.data);
-    userInfo.dumpInfo();
+    userInfo.deserialize(data);
+    log.debug(userInfo.dumpInfo());
+    log.raw({
+        level: "debug",
+        message: "Persona lookup",
+        otherKeys: {
+            function: "_npsRequestGameConnectServer",
+            connectionId: connection.id,
+            traceId,
+            userId: String(userInfo.userId),
+        },
+    });
 
     const personas = await getPersonasByPersonaId(userInfo.userId);
     if (typeof personas[0] === "undefined") {
-        throw new Error("No personas found.");
+        throw new Error(
+            `No personas found for userId: (${String(userInfo.userId)})`
+        );
     }
 
-    const { customerId } = personas[0];
+    const { id: personaId } = personas[0];
+
+    log.raw({
+        level: "debug",
+        message: "Personas found",
+        otherKeys: {
+            function: "_npsRequestGameConnectServer",
+            connectionId: connection.id,
+            traceId,
+            userId: String(userInfo.userId),
+            firstPersonaId: String(personaId.readInt32BE(0)),
+        },
+    });
+
+    await prisma.connection
+        .update({
+            where: {
+                id: connection.id,
+            },
+            data: {
+                personaId: personaId.readInt32BE(0),
+            },
+        })
+        .catch((error) => {
+            throw new Error(
+                `Error updating persona id on connection: ${String(error)}`
+            );
+        })
+        .finally(() => {
+            log.debug("Persona id updated");
+        });
 
     // Set the encryption keys on the lobby connection
-    const databaseManager = DatabaseManager.getInstance();
-    const keys = await databaseManager
-        .fetchSessionKeyByCustomerId(customerId)
-        .catch((/** @type {unknown} */ error: unknown) => {
-            if (error instanceof Error) {
-                log.debug(
-                    `Unable to fetch session key for customerId ${customerId.toString()}: ${
-                        error.message
-                    })}`
-                );
-            }
-            log.error(
-                `Unable to fetch session key for customerId ${customerId.toString()}: unknown error}`
-            );
-            return undefined;
-        });
-    if (keys === undefined) {
-        throw new Error("Error fetching session keys!");
+    log.raw({
+        level: "debug",
+        message: "Session lookup",
+        otherKeys: {
+            function: "_npsRequestGameConnectServer",
+            connectionId: connection.id,
+            traceId,
+            customerId: String(connection.customerId),
+        },
+    });
+    const keys = await prisma.session.findFirst({
+        where: {
+            customerId: connection.customerId,
+        },
+    });
+
+    if (keys === null) {
+        throw new Error(
+            "Error fetching session keys in _npsRequestGameConnectServer"
+        );
     }
-
-    const encryptionSession: EncryptionSession = selectOrCreateEncryptors(
-        dataConnection.connection,
-        keys
-    );
-
-    dataConnection.connection.encryptionSession = encryptionSession;
-
+    log.raw({
+        level: "debug",
+        message: "Session found",
+        otherKeys: {
+            function: "_npsRequestGameConnectServer",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     const packetContent = Buffer.alloc(72);
 
     // This response is a NPS_UserStatus
@@ -118,7 +169,7 @@ export async function _npsRequestGameConnectServer(
     Buffer.from([0x00, 0x84, 0x5f, 0xed]).copy(packetContent);
 
     // SessionKeyStr (32)
-    _generateSessionKeyBuffer(keys.sessionkey).copy(packetContent, 4);
+    _generateSessionKeyBuffer(keys.sessionKey).copy(packetContent, 4);
 
     // SessionKeyLen - int
     packetContent.writeInt16BE(32, 66);
@@ -138,8 +189,14 @@ export async function _npsRequestGameConnectServer(
             .getBuffer()
             .toString("hex")}`
     );
-    return {
-        connection: dataConnection.connection,
-        messages: [packetResult],
-    };
+    log.raw({
+        level: "debug",
+        message: "Exiting method",
+        otherKeys: {
+            function: "_npsRequestGameConnectServer",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
+    return packetResult;
 }

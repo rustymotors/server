@@ -14,20 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import type { Socket } from "net";
 import { receiveLobbyData } from "../../mcos-lobby/src/index.js";
 import { receiveLoginData } from "../../mcos-login/src/index.js";
 import { receivePersonaData } from "../../mcos-persona/src/index.js";
 import { logger } from "mcos-logger/src/index.js";
 import { receiveTransactionsData } from "../../mcos-transactions/src/index.js";
-import { selectConnection, updateConnection } from "./connections.js";
-import { MessageNode } from "./MessageNode.js";
-import type {
-    BufferWithConnection,
-    GServiceResponse,
-    SocketWithConnectionInfo,
-    TServiceResponse,
-} from "mcos-types/types.js";
+import type { InterServiceTransfer, ISocketRecord } from "mcos-types/types.js";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 const log = logger.child({ service: "mcos:gateway:sockets" });
 
@@ -53,85 +47,78 @@ export function toHex(data: Buffer): string {
  * The onData handler
  * takes the data buffer and creates a {@link BufferWithConnection} object
  * @param {Buffer} data
- * @param {SocketWithConnectionInfo} connection
+ * @param {ISocketRecord} socketWithId
  * @return {Promise<void>}
  */
 export async function dataHandler(
-    data: Buffer,
-    connection: SocketWithConnectionInfo
+    socketWithId: ISocketRecord,
+    traceId: string,
+    data: Buffer
 ): Promise<void> {
     log.debug(`data prior to proccessing: ${data.toString("hex")}`);
 
-    // Link the data and the connection together
-    /** @type {BufferWithConnection} */
-    const networkBuffer: BufferWithConnection = {
-        connectionId: connection.id,
-        connection,
-        data,
-        timestamp: Date.now(),
-    };
-
-    const { localPort, remoteAddress } = networkBuffer.connection.socket;
+    const { localPort, remoteAddress } = socketWithId.socket;
 
     if (typeof localPort === "undefined") {
         // Somehow we have recived a connection without a local post specified
         log.error(
-            `Error locating target port for socket, connection id: ${networkBuffer.connectionId}`
+            `Error locating target port for socket, connection id: ${socketWithId.id}`
         );
         log.error("Closing socket.");
-        networkBuffer.connection.socket.end();
+        socketWithId.socket.end();
         return;
     }
 
     if (typeof remoteAddress === "undefined") {
         // Somehow we have recived a connection without a local post specified
         log.error(
-            `Error locating remote address for socket, connection id: ${networkBuffer.connectionId}`
+            `Error locating remote address for socket, connection id: ${socketWithId.id}`
         );
         log.error("Closing socket.");
-        networkBuffer.connection.socket.end();
+        socketWithId.socket.end();
         return;
     }
 
-    // Move remote address and local port forward
-    networkBuffer.connection.remoteAddress = remoteAddress;
-    networkBuffer.connection.localPort = localPort;
-
-    let result: GServiceResponse | TServiceResponse = {
-        err: null,
-        response: undefined,
-    };
+    let result: InterServiceTransfer | null;
 
     // Route the data to the correct service
     // There are 2 happy paths from this point
     // * GameService
     // * TransactionService
-
-    log.debug(`I have a packet on port ${localPort}`);
+    log.raw({
+        level: "debug",
+        message: "Packet received",
+        otherKeys: {
+            function: "gateway.dataHandler",
+            connectionId: socketWithId.id,
+            localPort: String(localPort),
+            traceId,
+        },
+    });
 
     // These are game services
 
-    result = await handleInboundGameData(localPort, networkBuffer);
+    result = await handleInboundGameData(
+        traceId,
+        localPort,
+        socketWithId.id,
+        data
+    );
 
-    if (typeof result.response === "undefined") {
+    if (result === null) {
         // Possibly a tranactions packet?
 
         // This is a transaction response.
 
-        result = await handleInboundTransactionData(localPort, networkBuffer);
-    }
-
-    if (result.err !== null) {
-        log.error(
-            `[socket]There was an error processing the packet: ${String(
-                result.err
-            )}`
+        result = await handleInboundTransactionData(
+            traceId,
+            localPort,
+            socketWithId.id,
+            data
         );
-        process.exitCode = -1;
-        return;
     }
 
-    if (typeof result.response === "undefined") {
+    if (result === null) {
         // This is probably an error, let's assume it's not. For now.
         // TODO: #1169 verify there are no happy paths where the services would return zero packets
         const message = "There were zero packets returned for processing";
@@ -139,135 +126,82 @@ export async function dataHandler(
         return;
     }
 
-    const messages = result.response.messages;
+    const connectionRecord = await prisma.connection.findUnique({
+        where: {
+            id: socketWithId.id,
+        },
+    });
 
-    const outboundConnection = result.response.connection;
-
-    const packetCount = messages.length;
-    log.debug(`There are ${packetCount} messages ready for sending`);
-    if (messages.length >= 1) {
-        messages.forEach((f: { serialize: () => Buffer }) => {
-            if (
-                outboundConnection.useEncryption === true &&
-                f instanceof MessageNode
-            ) {
-                if (
-                    typeof outboundConnection.encryptionSession ===
-                        "undefined" ||
-                    typeof f.data === "undefined"
-                ) {
-                    const errMessage =
-                        "There was a fatal error attempting to encrypt the message!";
-                    log.trace(
-                        `usingEncryption? ${outboundConnection.useEncryption}, packetLength: ${f.data.byteLength}/${f.dataLength}`
-                    );
-                    log.error(errMessage);
-                } else {
-                    log.trace(
-                        `Message prior to encryption: ${toHex(f.serialize())}`
-                    );
-                    f.updateBuffer(
-                        outboundConnection.encryptionSession.tsCipher.update(
-                            f.data
-                        )
-                    );
-                }
-            }
-
-            log.trace(`Sending Message: ${toHex(f.serialize())}`);
-            outboundConnection.socket.write(f.serialize());
-        });
+    if (connectionRecord === null) {
+        throw new Error("Unable to locate connection!");
     }
 
-    // Update the connection
-    try {
-        updateConnection(outboundConnection.id, outboundConnection);
-    } catch (error) {
-        const errMessage = `There was an error updating the connection: ${String(
-            error
-        )}`;
-
-        log.error(errMessage);
-    }
-}
-
-/**
- * Server listener method
- *
- * @param {Socket} socket
- * @return {void}
- */
-export function TCPHandler(socket: Socket): void {
-    // Received a new connection
-    // Turn it into a connection object
-    const connectionRecord = selectConnection(socket);
-
-    const { localPort, remoteAddress } = socket;
-    log.info(`Client ${remoteAddress} connected to port ${localPort}`);
-    if (socket.localPort === 7003 && connectionRecord.inQueue === true) {
-        /**
-         * Debug seems hard-coded to use the connection queue
-         * Craft a packet that tells the client it's allowed to login
-         */
-
-        log.info("Sending OK to Login packet");
-        log.trace("[listen2] In tcpListener(pre-queue)");
-        socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
-        log.trace("[listen2] In tcpListener(post-queue)");
-        connectionRecord.inQueue = false;
+    if (connectionRecord.useEncryption === true) {
+        // We should check encryption here
     }
 
-    socket.on("end", () => {
-        log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
-    });
-    socket.on("data", async (data): Promise<void> => {
-        await dataHandler(data, connectionRecord);
-    });
-    socket.on("error", (error) => {
-        const message = String(error);
-        if (message.includes("ECONNRESET") === true) {
-            return log.warn("Connection was reset");
-        }
-        log.error(`Socket error: ${String(error)}`);
-    });
+    log.debug(`Sending Message: ${toHex(result.data)}`);
+    socketWithId.socket.write(result.data);
 }
 
 /**
  *
  *
  * @param {number} localPort
- * @param {BufferWithConnection} networkBuffer
- * @return {Promise<GServiceResponse>}
+ * @param {string} connectionId
+ * @param {Buffer} data
+ * @return {Promise<InterServiceTransfer | void>}
  */
 async function handleInboundGameData(
+    traceId: string,
     localPort: number,
-    networkBuffer: BufferWithConnection
-): Promise<GServiceResponse> {
-    /** @type {GServiceResponse} */
-    let result: GServiceResponse = { err: null, response: undefined };
+    connectionId: string,
+    data: Buffer
+): Promise<InterServiceTransfer | null> {
+    let result: InterServiceTransfer | null = {
+        traceId,
+        targetService: "GATEWAY",
+        connectionId,
+        data,
+    };
     let handledPackets = false;
 
     if (localPort === 8226) {
-        result = await receiveLoginData(networkBuffer);
+        result = await receiveLoginData({
+            traceId,
+            targetService: "LOGIN",
+            connectionId,
+            data,
+        });
         log.debug("Back in socket manager");
         handledPackets = true;
     }
 
     if (localPort === 8228) {
-        result = await receivePersonaData(networkBuffer);
+        result = await receivePersonaData({
+            traceId,
+            targetService: "PERSONA",
+            connectionId,
+            data,
+        });
         log.debug("Back in socket manager");
         handledPackets = true;
     }
 
     if (localPort === 7003) {
-        result = await receiveLobbyData(networkBuffer);
+        result = await receiveLobbyData({
+            traceId,
+            targetService: "LOBBY",
+            connectionId,
+            data,
+        });
         log.debug("Back in socket manager");
         handledPackets = true;
     }
 
     if (!handledPackets) {
         log.debug("The packet was not for a game service");
-        return result;
+        return null;
     }
 
     // TODO: #1170 Create compression method and compress packet if needed
@@ -276,27 +210,39 @@ async function handleInboundGameData(
 
 /**
  *
- *
  * @param {number} localPort
- * @param {BufferWithConnection} networkBuffer
- * @return {Promise<TServiceResponse>}
+ * @param {string} connectionId
+ * @param {Buffer} data
+ * @return {Promise<InterServiceTransfer | void>}
  */
 async function handleInboundTransactionData(
+    traceId: string,
     localPort: number,
-    networkBuffer: BufferWithConnection
-): Promise<TServiceResponse> {
-    let result: TServiceResponse = { err: null, response: undefined };
+    connectionId: string,
+    data: Buffer
+): Promise<InterServiceTransfer | null> {
+    let result: InterServiceTransfer = {
+        traceId,
+        targetService: "GATEWAY",
+        connectionId,
+        data,
+    };
     let handledPackets = false;
 
     if (localPort === 43300) {
-        result = await receiveTransactionsData(networkBuffer);
+        result = await receiveTransactionsData({
+            traceId,
+            targetService: "TRANSACTION",
+            connectionId,
+            data,
+        });
         log.debug("Back in socket manager");
         handledPackets = true;
     }
 
     if (!handledPackets) {
         log.debug("The packet was not for a transactions service");
-        return result;
+        return null;
     }
 
     // TODO: #1170 Create compression method and compress packet if needed

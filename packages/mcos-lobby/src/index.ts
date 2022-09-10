@@ -16,30 +16,76 @@
 
 import { logger } from "mcos-logger/src/index.js";
 import { handleData } from "./internal.js";
-import type {
-    BufferWithConnection,
-    GServiceResponse,
-} from "mcos-types/types.js";
 
+import type { InterServiceTransfer, SERVICE_NAMES } from "mcos-types/types.js";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 const log = logger.child({ service: "mcoserver:LobbyServer" });
+
+const SELF: { NAME: SERVICE_NAMES } = {
+    NAME: "LOBBY",
+};
 
 /**
  * Entry and exit point for the lobby service
  *
  * @export
- * @param {BufferWithConnection} dataConnection
- * @return {Promise<GServiceResponse>}
+ * @param {InterServiceTransfer} requestFromService
+ * @return {Promise<InterServiceTransfer>}
  */
 export async function receiveLobbyData(
-    dataConnection: BufferWithConnection
-): Promise<GServiceResponse> {
+    requestFromService: InterServiceTransfer
+): Promise<InterServiceTransfer> {
+    log.raw({
+        level: "debug",
+        message: "Entering service",
+        otherKeys: {
+            function: "receiveLobbyData",
+            connectionId: requestFromService.connectionId,
+            traceId: requestFromService.traceId,
+        },
+    });
+
+    if (requestFromService.targetService !== SELF.NAME) {
+        throw new Error("Attempted to handle a request not for this service");
+    }
+
+    const connectionRecord = await prisma.connection.findUnique({
+        where: {
+            id: requestFromService.connectionId,
+        },
+    });
+
+    if (connectionRecord === null) {
+        throw new Error(
+            `Unable to locate connection for id: ${requestFromService.connectionId}`
+        );
+    }
+
     try {
-        return { err: null, response: await handleData(dataConnection) };
+        const responseData = await handleData(
+            requestFromService.traceId,
+            connectionRecord,
+            requestFromService.data as Buffer
+        );
+        log.raw({
+            level: "debug",
+            message: "Exiting service",
+            otherKeys: {
+                function: "receiveLobbyData",
+                connectionId: requestFromService.connectionId,
+                traceId: requestFromService.traceId,
+            },
+        });
+        return {
+            traceId: requestFromService.traceId,
+            targetService: "GATEWAY",
+            connectionId: requestFromService.connectionId,
+            data: responseData,
+        };
     } catch (error) {
-        const errMessage = `There was an error in the lobby service: ${String(
-            error
-        )}`;
-        log.error(errMessage);
-        return { err: new Error(errMessage), response: undefined };
+        throw new Error(
+            `There was an error in the lobby service: ${String(error)}`
+        );
     }
 }

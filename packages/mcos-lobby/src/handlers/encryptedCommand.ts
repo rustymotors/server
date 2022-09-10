@@ -1,41 +1,42 @@
+import type { Connection } from "@prisma/client";
 import { logger } from "mcos-logger/src/index.js";
-import type {
-    BufferWithConnection,
-    GSMessageArrayWithConnection,
-    SocketWithConnectionInfo,
-} from "mcos-types/types.js";
-import { cipherBufferDES, decipherBufferDES } from "../encryption.js";
+import {
+    cipherBufferDES,
+    createEncryptors,
+    decipherBufferDES,
+} from "../encryption.js";
 import { NPSMessage } from "../NPSMessage.js";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 const log = logger.child({ service: "mcos:lobby" });
 
 /**
  * Takes an plaintext command packet and return the encrypted bytes
  *
- * @return {IGSMessageArrayWithConnection}
- * @param {ISocketWithConnectionInfo} dataConnection
+ * @param {Connection} connection
  * @param {Buffer} plaintextCommand
+ * @return {NPSMessage}
  */
-function encryptCmd(
-    dataConnection: SocketWithConnectionInfo,
+async function encryptCmd(
+    connection: Connection,
     plaintextCommand: Buffer
-): GSMessageArrayWithConnection {
-    if (typeof dataConnection.encryptionSession === "undefined") {
-        const errMessage = `Unable to locate encryption session for connection id ${dataConnection.id}`;
-        log.error(errMessage);
-        throw new Error(errMessage);
+): Promise<NPSMessage> {
+    const keys = await prisma.session.findUnique({
+        where: {
+            customerId: connection.customerId,
+        },
+    });
+
+    if (keys === null) {
+        throw new Error("Error fetching session keys in encryptCmd");
     }
 
-    const result = cipherBufferDES(
-        dataConnection.encryptionSession,
-        plaintextCommand
-    );
+    const encryptionSession = createEncryptors(connection.id, keys);
+
+    const result = cipherBufferDES(encryptionSession, plaintextCommand);
     log.debug(`[ciphered Cmd: ${result.data.toString("hex")}`);
-    dataConnection.encryptionSession = result.session;
-    return {
-        connection: dataConnection,
-        messages: [new NPSMessage("sent").deserialize(result.data)],
-    };
+    return new NPSMessage("sent").deserialize(result.data);
 }
 
 /**
@@ -45,36 +46,42 @@ function encryptCmd(
  * @param {IBufferWithConnection} dataConnection
  * @param {Buffer} encryptedCommand
  */
-function decryptCmd(
-    dataConnection: BufferWithConnection,
+async function decryptCmd(
+    connection: Connection,
     encryptedCommand: Buffer
-): BufferWithConnection {
-    if (typeof dataConnection.connection.encryptionSession === "undefined") {
-        const errMessage = `Unable to locate encryption session for connection id ${dataConnection.connectionId}`;
-        log.error(errMessage);
-        throw new Error(errMessage);
+): Promise<Buffer> {
+    const keys = await prisma.session.findUnique({
+        where: {
+            customerId: connection.customerId,
+        },
+    });
+
+    if (keys === null) {
+        throw new Error("Error fetching session keys in decryptCmd");
     }
-    const result = decipherBufferDES(
-        dataConnection.connection.encryptionSession,
+
+    const encryptionSession = createEncryptors(connection.id, keys);
+
+    const decryptedData = decipherBufferDES(
+        encryptionSession,
         encryptedCommand
     );
-    log.debug(`[Deciphered Cmd: ${result.data.toString("hex")}`);
-    dataConnection.connection.encryptionSession = result.session;
-    dataConnection.data = result.data;
-    return dataConnection;
+    log.debug(`[Deciphered Cmd: ${decryptedData.toString("hex")}`);
+    return decryptedData;
 }
 
 /**
  *
  *
- * @param {IBufferWithConnection} dataConnection
- * @return {IGSMessageArrayWithConnection}
+ * @param {Buffer} data
+ * @return {NPSMessage}
  */
-function handleCommand(
-    dataConnection: BufferWithConnection
-): GSMessageArrayWithConnection {
-    const { data } = dataConnection;
-
+function handleCommand({
+    data,
+}: {
+    connection: Connection;
+    data: Buffer;
+}): NPSMessage {
     // Marshal the command into an NPS packet
     const incommingRequest = new NPSMessage("received");
     incommingRequest.deserialize(data);
@@ -97,34 +104,43 @@ function handleCommand(
     packetResult.setContent(packetContent);
     packetResult.dumpPacket();
 
-    return {
-        connection: dataConnection.connection,
-        messages: [packetResult],
-    };
+    return packetResult;
 }
 
 /**
  *
  *
- * @param {IBufferWithConnection} dataConnection
- * @return {IGSMessageArrayWithConnection}
+ * @param {Connection} connection
+ * @param {Buffer} data
+ * @return {NPSMessage}
  */
 export async function handleEncryptedNPSCommand(
-    dataConnection: BufferWithConnection
-): Promise<GSMessageArrayWithConnection> {
+    traceId: string,
+    connection: Connection,
+    data: Buffer
+): Promise<NPSMessage> {
+    log.raw({
+        level: "debug",
+        message: "Received encrypted command",
+        otherKeys: {
+            function: "handleEncryptedNPSCommand",
+            connectionId: connection.id,
+            traceId,
+        },
+    });
     // Decipher
-    const { data } = dataConnection;
-    const decipheredConnection = decryptCmd(
-        dataConnection,
-        Buffer.from(data.slice(4))
+    const decipheredBuffer = await decryptCmd(
+        connection,
+        Buffer.from(data.subarray(4))
     );
 
-    const responseConnection = handleCommand(decipheredConnection);
-
-    // Encipher
-    responseConnection.messages.forEach((m) => {
-        encryptCmd(responseConnection.connection, m.serialize());
+    const responsePacket = handleCommand({
+        connection,
+        data: decipheredBuffer,
     });
 
-    return responseConnection;
+    // Encipher
+    const encryptedPacket = encryptCmd(connection, responsePacket.serialize());
+
+    return encryptedPacket;
 }

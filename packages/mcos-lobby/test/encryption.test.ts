@@ -13,29 +13,3 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-import chai from "chai";
-import { AdminServer } from "../src/adminServer.js";
-import { describe, it } from "mocha";
-
-chai.should();
-
-describe("AdminServer", () => {
-    describe(".getAdminServer", () => {
-        it("should return an instance of AdminServer", () => {
-            // Act
-            const newAdminInstance = AdminServer.getAdminServer();
-
-            // Assert
-            newAdminInstance.should.be.instanceOf(AdminServer);
-        });
-        it("should return the same instance of AdminServer on multiple calls", () => {
-            // Act
-            const admin1 = AdminServer.getAdminServer();
-            const admin2 = AdminServer.getAdminServer();
-
-            // Assert
-            admin1.should.equal(admin2);
-        });
-    });
-});

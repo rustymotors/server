@@ -33,12 +33,13 @@ class MCOSLogger {
     service = "";
     name: string;
     constructor(options?: { service: string }) {
+        // skipcq: JS-0303 - Not possible here
         const logLevel = process.env["LOG_LEVEL"];
         if (
             typeof logLevel !== "undefined" &&
             typeof ELOGGING_LEVELS[logLevel] !== "undefined"
         ) {
-            this.systemLogLevel = ELOGGING_LEVELS[logLevel] || 30;
+            this.systemLogLevel = ELOGGING_LEVELS[logLevel] ?? 30;
         }
         if (
             typeof options !== "undefined" &&
@@ -61,14 +62,23 @@ class MCOSLogger {
      * @param {number} level
      * @param {string} message
      */
-    private callLog(level: number, message: string): void {
+    private callLog(
+        level: number,
+        message: string,
+        additionalKeys?: Record<string, string | undefined>
+    ): void {
         if (this.systemLogLevel <= level) {
+            const logLine = {
+                level: level,
+                time: Date.now(),
+                pid: process.pid,
+                name: this.name,
+                service: this.service,
+                message,
+                ...additionalKeys,
+            };
             // skipcq: JS-0002 - This is intentional and is the only time console is used
-            console.log(
-                `{"level":${level}, "time":"${Date.now()}","pid":${
-                    process.pid
-                }, "name":"${this.name}", ${this.service} "msg": "${message}"}`
-            );
+            console.log(JSON.stringify(logLine));
         }
     }
     /** @param {string} message */
@@ -97,10 +107,17 @@ class MCOSLogger {
     }
     /**
      * @param {ELOGGING_LEVELS} level
-     * @param {string} message
      */
-    log(level: string, message: string): void {
-        this.callLog(ELOGGING_LEVELS[level] || 30, message);
+    raw({
+        level,
+        message,
+        otherKeys,
+    }: {
+        level: string;
+        message: string;
+        otherKeys?: Record<string, string | undefined>;
+    }): void {
+        this.callLog(ELOGGING_LEVELS[level] ?? 30, message, otherKeys);
     }
 }
 

@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Lobby {
+  lobyID                 Int    @id(map: "pk_lobbby")
+  raceTypeID             Int
+  turfID                 Int
+  riffName               String @db.Char(32)
+  eTerfName              String @db.Char(265)
+  clientArt              String @db.Char(11)
+  elementID              Int
+  terfLength             Int
+  startSlice             Int
+  endSlice               Int
+  dragStageLeft          Int
+  dragStageRight         Int
+  dragStagingSlice       Int
+  gridSpreadFactor       Float  @db.Real
+  linear                 Int    @db.SmallInt
+  numPlayersMin          Int    @db.SmallInt
+  numPlayersMax          Int    @db.SmallInt
+  numPlayersDefault      Int    @db.SmallInt
+  bnumPlayersEnable      Int    @db.SmallInt
+  numLapsMin             Int    @db.SmallInt
+  numLapsMax             Int    @db.SmallInt
+  numLapsDefault         Int    @db.SmallInt
+  bnumLapsEnabled        Int    @db.SmallInt
+  numRoundsMin           Int    @db.SmallInt
+  numRoundsMax           Int    @db.SmallInt
+  numRoundsDefault       Int    @db.SmallInt
+  bnumRoundsEnabled      Int    @db.SmallInt
+  bWeatherDefault        Int    @db.SmallInt
+  bWeatherEnabled        Int    @db.SmallInt
+  bNightDefault          Int    @db.SmallInt
+  bNightEnabled          Int    @db.SmallInt
+  bBackwardDefault       Int    @db.SmallInt
+  bBackwardEnabled       Int    @db.SmallInt
+  bTrafficDefault        Int    @db.SmallInt
+  bTrafficEnabled        Int    @db.SmallInt
+  bDamageDefault         Int    @db.SmallInt
+  bDamageEnabled         Int    @db.SmallInt
+  bAIDefault             Int    @db.SmallInt
+  bAIEnabled             Int    @db.SmallInt
+  topDog                 String @db.Char(13)
+  terfOwner              String @db.Char(33)
+  qualifingTime          Int
+  clubNumPlayers         Int
+  clubNumLaps            Int
+  clubNumRounds          Int
+  bClubNight             Int    @db.SmallInt
+  bClubWeather           Int    @db.SmallInt
+  bClubBackwards         Int    @db.SmallInt
+  topSeedsMP             Int
+  lobbyDifficulty        Int
+  ttPointForQualify      Int
+  ttCashForQualify       Int
+  ttPointBonusFasterIncs Int
+  ttCashBonusFasterIncs  Int
+  ttTimeIncrements       Int
+  victoryPoints1         Int
+  victoryCash1           Int
+  victoryPoints2         Int
+  victoryCash2           Int
+  victoryPoints3         Int
+  victoryCash3           Int
+  minLevel               Int    @db.SmallInt
+  minResetSlice          Int
+  maxResetSlice          Int
+  bnewbieFlag            Int    @db.SmallInt
+  bdriverHelmetFlag      Int    @db.SmallInt
+  clubNumPlayersMax      Int    @db.SmallInt
+  clubNumPlayersMin      Int    @db.SmallInt
+  clubNumPlayersDefault  Int    @db.SmallInt
+  numClubsMax            Int    @db.SmallInt
+  numClubsMin            Int    @db.SmallInt
+  racePointsFactor       Float  @db.Real
+  bodyClassMax           Int    @db.SmallInt
+  powerClassMax          Int    @db.SmallInt
+  clubLogoID             Int
+  teamtWeather           Int    @db.SmallInt
+  teamtNight             Int    @db.SmallInt
+  teamtBackwards         Int    @db.SmallInt
+  teamtNumLaps           Int    @db.SmallInt
+  raceCashFactor         Float  @db.Real
+}
+
+model Session { 
+  customerId   Int @id(map: "pk_session")
+  sessionKey   String
+  sKey         String
+  contextId    String
+  connectionId String
+}
+
+model Connection {
+  id            String  @id
+  remoteAddress String
+  localPort     Int     @db.SmallInt
+  sequence      Int     @default(0)
+  personaId     Int     @default(0)
+  lastTimeStamp Int     @default(0)
+  customerId    Int     @default(0)
+  inQueue       Boolean @default(true)
+  useEncryption Boolean @default(false)
+}

@@ -15,15 +15,21 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { logger } from "mcos-logger/src/index.js";
+import type { InterServiceTransfer, SERVICE_NAMES } from "mcos-shared";
+import { randomUUID } from "node:crypto";
 import * as http from "node:http";
 import { createServer as createSocketServer, Socket } from "node:net";
-import { selectConnection } from "./connections.js";
+import { findOrNewConnection } from "./connections.js";
 import { dataHandler } from "./sockets.js";
 import { httpListener as httpHandler } from "./web.js";
-export { getAllConnections } from "./connections.js";
+export { fetchSocketRecords as getAllConnections } from "./connections.js";
 export { AdminServer } from "./adminServer.js";
 
 const log = logger.child({ service: "mcos:gateway" });
+
+const SELF: { NAME: SERVICE_NAMES } = {
+    NAME: "GATEWAY",
+};
 
 const listeningPortList = [
     80, 6660, 7003, 8228, 8226, 8227, 9000, 9001, 9002, 9003, 9004, 9005, 9006,
@@ -31,9 +37,15 @@ const listeningPortList = [
 ];
 
 function socketListener(incomingSocket: Socket): void {
-    log.debug(
-        `[gate]Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
-    );
+    log.raw({
+        level: "debug",
+        message: "Socket open",
+        otherKeys: {
+            remoteAddress: incomingSocket.remoteAddress,
+            localPort: String(incomingSocket.localPort),
+            function: "socketListener",
+        },
+    });
 
     // Is this an HTTP request?
     if (incomingSocket.localPort === 80) {
@@ -48,9 +60,9 @@ function socketListener(incomingSocket: Socket): void {
     TCPListener(incomingSocket);
 }
 
-function TCPListener(incomingSocket: Socket): void {
+async function TCPListener(incomingSocket: Socket): Promise<void> {
     // Get a connection record
-    const connectionRecord = selectConnection(incomingSocket);
+    const socketRecord = await findOrNewConnection(incomingSocket);
 
     const { localPort, remoteAddress } = incomingSocket;
     log.info(`Client ${remoteAddress} connected to port ${localPort}`);
@@ -59,7 +71,8 @@ function TCPListener(incomingSocket: Socket): void {
         log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
     });
     incomingSocket.on("data", async (data): Promise<void> => {
-        await dataHandler(data, connectionRecord);
+        const traceId = randomUUID();
+        await dataHandler(socketRecord, traceId, data);
     });
     incomingSocket.on("error", onSocketError);
 }
@@ -88,4 +101,14 @@ export function startListeners(): void {
 function serverListener(port: number): void {
     const listeningPort = String(port).length ? String(port) : "unknown";
     log.debug(`Listening on port ${listeningPort}`);
+}
+
+export async function sendMessages(
+    requestFromService: InterServiceTransfer
+): Promise<void> {
+    if (requestFromService.targetService !== SELF.NAME) {
+        throw new Error(
+            `Attempting to send a request that is not for ${String(SELF.NAME)}`
+        );
+    }
 }

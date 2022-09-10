@@ -19,13 +19,19 @@ import { handleData, personaRecords } from "./internal.js";
 import type { Socket } from "node:net";
 import { NPSMessage } from "./NPSMessage.js";
 import type {
-    BufferWithConnection,
-    GServiceResponse,
+    InterServiceTransfer,
     PersonaRecord,
+    SERVICE_NAMES,
 } from "mcos-types/types.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 const log = logger.child({ service: "mcoserver:PersonaServer" });
+
+const SELF: { NAME: SERVICE_NAMES } = {
+    NAME: "PERSONA",
+};
 
 /**
  * Selects a game persona and marks it as in use
@@ -401,17 +407,39 @@ export class PersonaServer {
  * Entry and exit point for the persona service
  *
  * @export
- * @param {BufferWithConnection} dataConnection
- * @return {Promise<GServiceResponse>}
+ * @param {InterServiceTransfer} requestFromService
+ * @return {Promise<InterServiceTransfer>}
  */
 export async function receivePersonaData(
-    dataConnection: BufferWithConnection
-): Promise<GServiceResponse> {
+    requestFromService: InterServiceTransfer
+): Promise<InterServiceTransfer> {
+    if (requestFromService.targetService !== SELF.NAME) {
+        throw new Error("Attempted to handler a request not for this service");
+    }
+
+    // Get connection
+    const connectionRecord = await prisma.connection.findUnique({
+        where: {
+            id: requestFromService.connectionId,
+        },
+    });
+
+    if (connectionRecord === null) {
+        throw new Error(
+            `Unebale to locate connection record for id: ${requestFromService.connectionId}`
+        );
+    }
+
     try {
-        const serviceResponse = await handleData(dataConnection);
+        const responseData = await handleData(
+            connectionRecord,
+            requestFromService.data
+        );
         return {
-            err: null,
-            response: serviceResponse,
+            targetService: "GATEWAY",
+            connectionId: requestFromService.connectionId,
+            data: responseData,
+            traceId: requestFromService.traceId,
         };
     } catch (error) {
         throw new Error(

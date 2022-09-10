@@ -18,39 +18,84 @@ import { logger } from "mcos-logger/src/index.js";
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
 import { _npsHeartbeat } from "./handlers/heartbeat.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
-import type {
-    BufferWithConnection,
-    GSMessageArrayWithConnection,
-} from "mcos-types/types.js";
+import type { Connection } from "@prisma/client";
 
 const log = logger.child({ service: "mcos:lobby" });
 
 /**
- * @param {IBufferWithConnection} dataConnection
- * @return {Promise<IGSMessageArrayWithConnection>}
+ * @param {Connection} connection
+ * @param {Buffer} data
+ * @return {Promise<Buffer>}
  */
 export async function handleData(
-    dataConnection: BufferWithConnection
-): Promise<GSMessageArrayWithConnection> {
-    const { localPort, remoteAddress } = dataConnection.connection.socket;
-    log.debug(
-        `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
-    );
-    const { data } = dataConnection;
+    traceId: string,
+    connection: Connection,
+    data: Buffer
+): Promise<Buffer> {
+    log.raw({
+        level: "debug",
+        message: "Received packet",
+        otherKeys: {
+            function: "lobby.handleData",
+            connectionId: connection.id,
+            rawData: data.toString("hex"),
+            traceId,
+        },
+    });
     const requestCode = data.readUInt16BE(0).toString(16);
 
     switch (requestCode) {
         // _npsRequestGameConnectServer
         case "100": {
-            const result = await _npsRequestGameConnectServer(dataConnection);
-            return result;
+            const responsePacket = await _npsRequestGameConnectServer(
+                traceId,
+                connection,
+                data
+            );
+            try {
+                return responsePacket.serialize();
+            } catch (error) {
+                log.raw({
+                    level: "error",
+                    message: "Error serializing packet",
+                    otherKeys: {
+                        function: "lobby.handleData",
+                        requestCode: String(requestCode),
+                        origionalError: String(error),
+                        connectionId: connection.id,
+                        rawData: responsePacket.content.toString("hex"),
+                        traceId,
+                    },
+                });
+                throw new Error(`Error serializing packet: ${String(error)}`);
+            }
         }
 
         // NpsHeartbeat
 
         case "217": {
-            const result = await _npsHeartbeat(dataConnection);
-            return result;
+            const responsePacket = await _npsHeartbeat({
+                traceId,
+                connection,
+                data,
+            });
+            try {
+                return responsePacket.serialize();
+            } catch (error) {
+                log.raw({
+                    level: "error",
+                    message: "Error serializing packet",
+                    otherKeys: {
+                        function: "lobby.handleData",
+                        requestCode: String(requestCode),
+                        origionalError: String(error),
+                        connectionId: connection.id,
+                        rawData: responsePacket.content.toString("hex"),
+                        traceId,
+                    },
+                });
+                throw new Error(`Error serializing packet: ${String(error)}`);
+            }
         }
 
         // NpsSendCommand
@@ -58,13 +103,43 @@ export async function handleData(
         case "1101": {
             // This is an encrypted command
 
-            const result = handleEncryptedNPSCommand(dataConnection);
-            return result;
+            const responsePacket = await handleEncryptedNPSCommand(
+                traceId,
+                connection,
+                data
+            );
+            try {
+                return responsePacket.serialize();
+            } catch (error) {
+                log.raw({
+                    level: "error",
+                    message: "Error serializing packet",
+                    otherKeys: {
+                        function: "lobby.handleData",
+                        requestCode: String(requestCode),
+                        origionalError: String(error),
+                        connectionId: connection.id,
+                        rawData: responsePacket.content.toString("hex"),
+                        traceId,
+                    },
+                });
+                throw new Error(`Error serializing packet: ${String(error)}`);
+            }
         }
 
         default:
-            throw new Error(
-                `Unknown code ${requestCode} was received on port 7003`
-            );
+            // No need to throw here
+            log.raw({
+                level: "warn",
+                message: "Unknown request code received",
+                otherKeys: {
+                    function: "lobby.handleData",
+                    requestCode: String(requestCode),
+                    connectionId: connection.id,
+                    traceId,
+                },
+            });
+            log.warn(`Unknown code ${requestCode} was received on port 7003`);
+            return Buffer.alloc(0);
     }
 }

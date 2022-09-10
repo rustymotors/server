@@ -1,4 +1,4 @@
-FROM docker.elastic.co/beats/elastic-agent-complete:8.4.1
+FROM node:18.7.0@sha256:2eef0e2d04ac0aaa5d7cefbc24a137c42c925d9dffa5a2568cda7618a1378976
 
 WORKDIR /home/node/app
 
@@ -9,7 +9,7 @@ RUN ~/.volta/bin/volta install node@18
 
 COPY package*.json ./
 
-RUN ~/.volta/bin/volta run npm ci
+RUN ~/.volta/bin/volta run npm ci --ignore-scripts && npx prisma generate
 # If you are building your code for production
 # RUN npm ci --only=production
 

@@ -26,11 +26,14 @@ test:
 	@cd packages/shard && npm test && cd ../..
 	@cd packages/transactions && npm test && cd ../..
 
+install:
+	npm ci --ignore-scripts && npx prisma generate
 
 start:
 	@LOG_LEVEL=silly npm run start:dev
 
 prod_node:
+	npx prisma generate
 	tsc -b --verbose
 	docker-compose --file docker-compose.yml up -d --build
 	docker-compose logs -f --tail 1000
@@ -42,5 +45,6 @@ enable-node:
 	@sudo setcap cap_net_bind_service=+ep $(which node)
 
 docker-init:
-	mkdir -p log/mcos
+	@mkdir -p log/mcos
+	@npx prisma migrate deploy
 	@npm run start:docker -s
