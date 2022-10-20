@@ -33,7 +33,6 @@
     "mcos-gateway": "*",
     "mcos-lobby": "*",
     "mcos-login": "*",
-    "mcos-shared": "*",
     "pg": "8.7.3",
     "prettier": "2.7.1",
     "prettier-eslint-cli": "6.0.1",
