@@ -33,7 +33,7 @@ services:
       - db
 
   node:
-    image: "node:18"
+    image: "node:19"
     user: "node"
     working_dir: /home/node/app
     volumes:
