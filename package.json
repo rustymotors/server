@@ -33,7 +33,7 @@
     "mcos-gateway": "*",
     "mcos-lobby": "*",
     "mcos-login": "*",
-    "pg": "8.7.3",
+    "pg": "8.8.0",
     "prettier": "2.7.1",
     "prettier-eslint-cli": "6.0.1",
     "ts-node": "10.9.1"
@@ -42,12 +42,12 @@
     "@types/chai": "4.3.3",
     "@types/mocha": "9.1.1",
     "@types/node": "18.0.6",
-    "@typescript-eslint/eslint-plugin": "5.33.0",
-    "@typescript-eslint/parser": "5.33.0",
+    "@typescript-eslint/eslint-plugin": "5.40.1",
+    "@typescript-eslint/parser": "5.40.1",
     "c8": "7.12.0",
     "chai": "4.3.6",
-    "eslint": "8.21.0",
-    "mocha": "10.0.0",
+    "eslint": "8.26.0",
+    "mocha": "10.1.0",
     "prettier-eslint": "15.0.1",
     "source-map-support": "0.5.21",
     "standard": "17.0.0",
@@ -55,7 +55,7 @@
   },
   "volta": {
     "node": "18.6.0",
-    "npm": "8.16.0"
+    "npm": "8.19.2"
   },
   "workspaces": [
     "packages/mcos-logger",
