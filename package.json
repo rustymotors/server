@@ -54,7 +54,7 @@
     "ts-mockito": "2.6.1"
   },
   "volta": {
-    "node": "18.12.0",
+    "node": "18.12.1",
     "npm": "8.19.3"
   },
   "workspaces": [
