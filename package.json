@@ -39,13 +39,13 @@
     "ts-node": "10.9.1"
   },
   "devDependencies": {
-    "@types/chai": "4.3.3",
+    "@types/chai": "4.3.4",
     "@types/mocha": "9.1.1",
     "@types/node": "18.11.9",
-    "@typescript-eslint/eslint-plugin": "5.42.0",
-    "@typescript-eslint/parser": "5.42.0",
+    "@typescript-eslint/eslint-plugin": "5.42.1",
+    "@typescript-eslint/parser": "5.42.1",
     "c8": "7.12.0",
-    "chai": "4.3.6",
+    "chai": "4.3.7",
     "eslint": "8.27.0",
     "mocha": "10.1.0",
     "prettier-eslint": "15.0.1",
