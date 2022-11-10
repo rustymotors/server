@@ -28,7 +28,7 @@ jobs:
       - run: npm install
       - name: Test
         env: 
-          NODE_OPTIONS: ${{ secrets.CODECOV_TOKEN }}
+          NODE_OPTIONS: "--openssl-legacy-provider"
         run: npm test
       - name: Codecov
         env: # Or as an environment variable
