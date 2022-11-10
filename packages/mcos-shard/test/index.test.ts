@@ -40,8 +40,8 @@ describe("Shard service", () => {
     describe("handleGetRegistry", () => {
         it("should return file contents", () => {
             // arrange
-            process.env["EXTERNAL_HOST"] = "3.3.3.3";
-            const expectedText = '"AuthLoginServer"="3.3.3.3"'
+            process.env["EXTERNAL_HOST"] = "0.0.0.0";
+            const expectedText = '"AuthLoginServer"="0.0.0.0"'
 
             // act
             const result = handleGetRegistry();
