@@ -27,9 +27,9 @@ const log = logger.child({ service: "MCOServer:Shard" });
  * Read the TLS certificate file
  * @return {string}
  */
-function handleGetCert(): string {
+export function handleGetCert(): string {
     if (typeof process.env["CERTIFICATE_FILE"] === "undefined") {
-        throw new Error("Pleas set CERTIFICATE_FILE");
+        throw new Error("Please set CERTIFICATE_FILE");
     }
     return readFileSync(process.env["CERTIFICATE_FILE"]).toString();
 }
@@ -38,7 +38,7 @@ function handleGetCert(): string {
  * Generate Windows registry configuration file for clients
  * @return {string}
  */
-function handleGetRegistry(): string {
+export function handleGetRegistry(): string {
     if (typeof process.env["EXTERNAL_HOST"] === "undefined") {
         throw new Error("Please set EXTERNAL_HOST");
     }
@@ -79,7 +79,7 @@ function handleGetRegistry(): string {
  *  Read TLS public key file to string
  * @return {string}
  */
-function handleGetKey(): string {
+export function handleGetKey(): string {
     if (typeof process.env["PUBLIC_KEY_FILE"] === "undefined") {
         throw new Error("Please set PUBLIC_KEY_FILE");
     }
