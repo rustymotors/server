@@ -23,15 +23,22 @@ import { createServer, Server } from "node:https";
 // deepcode ignore HttpToHttps: This is intentional. See above note.
 const log = logger.child({ service: "MCOServer:Shard" });
 
+interface Envars extends NodeJS.ProcessEnv {
+    CERTIFICATE_FILE?: string;
+    EXTERNAL_HOST?: string;
+    PUBLIC_KEY_FILE?: string;
+}
+
 /**
  * Read the TLS certificate file
  * @return {string}
  */
 export function handleGetCert(): string {
-    if (typeof process.env["CERTIFICATE_FILE"] === "undefined") {
+    const { CERTIFICATE_FILE} = process.env as Envars
+    if (typeof CERTIFICATE_FILE === "undefined") {
         throw new Error("Please set CERTIFICATE_FILE");
     }
-    return readFileSync(process.env["CERTIFICATE_FILE"]).toString();
+    return readFileSync(CERTIFICATE_FILE).toString();
 }
 
 /**
@@ -39,10 +46,11 @@ export function handleGetCert(): string {
  * @return {string}
  */
 export function handleGetRegistry(): string {
-    if (typeof process.env["EXTERNAL_HOST"] === "undefined") {
+    const { EXTERNAL_HOST } = process.env as Envars
+    if (typeof EXTERNAL_HOST === "undefined") {
         throw new Error("Please set EXTERNAL_HOST");
     }
-    const externalHost = process.env["EXTERNAL_HOST"];
+    const externalHost = EXTERNAL_HOST;
     const patchHost = externalHost;
     const authHost = externalHost;
     const shardHost = externalHost;
@@ -80,10 +88,11 @@ export function handleGetRegistry(): string {
  * @return {string}
  */
 export function handleGetKey(): string {
-    if (typeof process.env["PUBLIC_KEY_FILE"] === "undefined") {
+    const { PUBLIC_KEY_FILE } = process.env as Envars
+    if (typeof PUBLIC_KEY_FILE === "undefined") {
         throw new Error("Please set PUBLIC_KEY_FILE");
     }
-    return readFileSync(process.env["PUBLIC_KEY_FILE"]).toString();
+    return readFileSync(PUBLIC_KEY_FILE).toString();
 }
 
 // TODO: #1201 Document the shard server endpoints
@@ -115,8 +124,8 @@ export class ShardServer {
      * @type {Server}
      * @memberof ShardServer
      */
-    private _server: Server;
-    private _possibleShards: string[];
+    readonly _server: Server;
+    readonly _possibleShards: string[];
 
     /**
      * Return the instance of the ShardServer class
@@ -156,10 +165,11 @@ export class ShardServer {
      * @memberof! PatchServer
      */
     _generateShardList(): string {
-        if (typeof process.env["EXTERNAL_HOST"] === "undefined") {
+        const {EXTERNAL_HOST } = process.env as Envars
+        if (typeof EXTERNAL_HOST === "undefined") {
             throw new Error("Please set EXTERNAL_HOST");
         }
-        const shardHost = process.env["EXTERNAL_HOST"];
+        const shardHost = EXTERNAL_HOST;
         const shardClockTower = new ShardEntry(
             "The Clocktower",
             "The Clocktower",
