@@ -95,7 +95,6 @@ export function handleGetKey(): string {
     return readFileSync(PUBLIC_KEY_FILE).toString();
 }
 
-// TODO: #1201 Document the shard server endpoints
 /**
  * Manages patch and update server connections
  * Also handles the shard list, and some utility endpoints
