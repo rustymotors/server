@@ -18,7 +18,7 @@ services:
       POSTGRES_PASSWORD: "password"
       POSTGRES_DB: "mcos"
   pgadmin:
-    image: dpage/pgadmin4:6.15
+    image: dpage/pgadmin4:6.16
     # TODO: #1182 remove these before prod https://github.com/drazisil/mco-server/issues/1008
     environment:
       PGADMIN_DEFAULT_EMAIL: "admin@pgadmin.com"
