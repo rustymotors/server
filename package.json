@@ -34,7 +34,7 @@
     "mcos-lobby": "*",
     "mcos-login": "*",
     "pg": "8.8.0",
-    "prettier": "2.8.0",
+    "prettier": "2.8.1",
     "prettier-eslint-cli": "6.0.1",
     "ts-node": "10.9.1"
   },
@@ -55,7 +55,7 @@
   },
   "volta": {
     "node": "18.12.1",
-    "npm": "9.1.3"
+    "npm": "9.2.0"
   },
   "workspaces": [
     "packages/mcos-logger",
