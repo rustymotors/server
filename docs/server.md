@@ -11,7 +11,7 @@ This assumes you know the basics of checking out a git repo. If you don't, pleas
 
 ### Configure server settings
 
-- Set the `EXTERNAL_HOST` enviroment variable to the external hostname or IP address of the machine the server is running on
+- Set the `EXTERNAL_HOST` enviroment variable in docker-compose.yaml to the external hostname or IP address of the machine the server is running on
 
 - Generate the SSL cert and keys using `make certs`
 
@@ -39,9 +39,7 @@ You will need to open the following ports:
 
 ### Running
 
-Enable Node to use port 80 and 443: `make enable-node`
-
-- `nmake prod_node`
+- `make prod_node`
 
 This will start the server cluster which involves the database, SSL gateway, and server(s)
 
