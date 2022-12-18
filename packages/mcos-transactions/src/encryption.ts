@@ -15,13 +15,13 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { createCipheriv, createDecipheriv } from "node:crypto";
-import { logger } from "mcos-logger/src/index.js";
+import { logger } from "../../mcos-logger/src/index.js";
 import type {
     BufferWithConnection,
     EncryptionSession,
     SessionRecord,
     SocketWithConnectionInfo,
-} from "mcos-types/types.js";
+} from "../../mcos-types/types.js";
 
 const log = logger.child({ service: "mcos:shared:encryption" });
 

@@ -1,5 +1,5 @@
 import { getPersonasByPersonaId } from "../../../mcos-persona/src/index.js";
-import { logger } from "mcos-logger/src/index.js";
+import { logger } from "../../../mcos-logger/src/index.js";
 import { NPSUserInfo } from "../NPSUserInfo.js";
 import { NPSMessage } from "../NPSMessage.js";
 import { selectOrCreateEncryptors } from "../encryption.js";
@@ -7,7 +7,7 @@ import type {
     BufferWithConnection,
     EncryptionSession,
     GSMessageArrayWithConnection,
-} from "mcos-types/types.js";
+} from "../../../mcos-types/types.js";
 import { MessagePacket } from "../MessagePacket.js";
 import { DatabaseManager } from "../../../mcos-database/src/index.js";
 

@@ -18,7 +18,7 @@ import type { Socket } from "net";
 import { receiveLobbyData } from "../../mcos-lobby/src/index.js";
 import { receiveLoginData } from "../../mcos-login/src/index.js";
 import { receivePersonaData } from "../../mcos-persona/src/index.js";
-import { logger } from "mcos-logger/src/index.js";
+import { logger } from "../../mcos-logger/src/index.js";
 import { receiveTransactionsData } from "../../mcos-transactions/src/index.js";
 import { selectConnection, updateConnection } from "./connections.js";
 import { MessageNode } from "./MessageNode.js";
@@ -27,7 +27,7 @@ import type {
     GServiceResponse,
     SocketWithConnectionInfo,
     TServiceResponse,
-} from "mcos-types/types.js";
+} from "../../mcos-types/types.js";
 
 const log = logger.child({ service: "mcos:gateway:sockets" });
 

@@ -9,7 +9,7 @@
  * @property {string} serviceName
  */
 
-import type { NPSMessageJSON } from "mcos-types/types.js";
+import type { NPSMessageJSON } from "../../mcos-types/types.js";
 
 export class NPSMessage {
     msgNo;

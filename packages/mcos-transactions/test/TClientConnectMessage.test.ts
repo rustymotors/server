@@ -17,7 +17,7 @@
 import chai from "chai";
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
 import { describe, it } from "mocha";
-import type { ByteField } from "mcos-types";
+import type { ByteField } from "../../mcos-types";
 
 chai.should();
 

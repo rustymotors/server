@@ -1,9 +1,9 @@
-import { logger } from "mcos-logger/src/index.js";
+import { logger } from "../../../mcos-logger/src/index.js";
 import type {
     BufferWithConnection,
     GSMessageArrayWithConnection,
     SocketWithConnectionInfo,
-} from "mcos-types/types.js";
+} from "../../../mcos-types/types.js";
 import { cipherBufferDES, decipherBufferDES } from "../encryption.js";
 import { NPSMessage } from "../NPSMessage.js";
 

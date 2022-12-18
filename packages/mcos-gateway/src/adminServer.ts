@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from "mcos-logger/src/index.js";
-import type { SocketWithConnectionInfo } from "mcos-types";
+import { logger } from "../../mcos-logger/src/index.js";
+import type { SocketWithConnectionInfo } from "../../mcos-types";
 import type {
     IncomingMessage,
     OutgoingHttpHeader,

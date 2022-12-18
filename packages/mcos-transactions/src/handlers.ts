@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { DatabaseManager } from "../../mcos-database/src/index.js";
-import { logger } from "mcos-logger/src/index.js";
+import { logger } from "../../mcos-logger/src/index.js";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { MessageNode } from "./MessageNode.js";
 import { TClientConnectMessage } from "./TClientConnectMessage.js";
@@ -28,7 +28,7 @@ import { StockCar } from "./StockCar.js";
 import type {
     SocketWithConnectionInfo,
     TSMessageArrayWithConnection,
-} from "mcos-types/types.js";
+} from "../../mcos-types/types.js";
 
 const log = logger.child({ service: "mcos:transactions:handlers" });
 

@@ -1,5 +1,5 @@
 import { createServer, IncomingMessage, ServerResponse } from "http";
-import { logger } from "mcos-logger/src/index.js";
+import { logger } from "../../mcos-logger/src/index.js";
 import type { RequestHandler, ResponseJSON } from "./types.js";
 
 const log = logger.child({ service: "mcoserver:DatabaseMgr" });

@@ -5,7 +5,7 @@
  * @type {NpsCommandMap[]}
  */
 
-import type { NpsCommandMap } from "mcos-types";
+import type { NpsCommandMap } from "../../mcos-types";
 
 export const NPS_LOBBYCLIENT_COMMANDS: NpsCommandMap[] = [
     { name: "NPS_LOGIN", value: 256, module: "Lobby" },

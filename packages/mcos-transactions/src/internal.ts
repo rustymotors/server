@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from "mcos-logger/src/index.js";
+import { logger } from "../../mcos-logger/src/index.js";
 import type {
     BufferWithConnection,
     EncryptionSession,
     TServiceResponse,
     TSMessageArrayWithConnection,
-} from "mcos-types/types.js";
+} from "../../mcos-types/types.js";
 import { decryptBuffer, selectEncryptors } from "./encryption.js";
 import { messageHandlers } from "./handlers.js";
 import { MessageNode } from "./MessageNode.js";

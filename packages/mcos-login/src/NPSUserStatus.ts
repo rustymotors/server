@@ -1,4 +1,4 @@
-import type { NPSMessageJSON } from "mcos-types/types.js";
+import type { NPSMessageJSON } from "../../mcos-types/types.js";
 import { privateDecrypt } from "node:crypto";
 import { readFileSync, statSync } from "node:fs";
 import { NPSMessage } from "./NPSMessage.js";

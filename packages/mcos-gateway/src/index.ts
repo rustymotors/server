@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from "mcos-logger/src/index.js";
+import { logger } from "../../mcos-logger/src/index.js";
 import * as http from "node:http";
 import { createServer as createSocketServer, Socket } from "node:net";
 import { selectConnection } from "./connections.js";

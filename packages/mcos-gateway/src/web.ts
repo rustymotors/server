@@ -18,7 +18,7 @@ import { AdminServer } from "./adminServer.js";
 import { AuthLogin } from "../../mcos-auth/src/index.js";
 import { PatchServer } from "../../mcos-patch/src/index.js";
 import { ShardServer } from "../../mcos-shard/src/index.js";
-import { logger } from "mcos-logger/src/index.js";
+import { logger } from "../../mcos-logger/src/index.js";
 import type { IncomingMessage, ServerResponse } from "node:http";
 
 const log = logger.child({ service: "mcos:gateway:web" });

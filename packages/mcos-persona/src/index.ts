@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from "mcos-logger/src/index.js";
+import { logger } from "../../mcos-logger/src/index.js";
 import { handleData, personaRecords } from "./internal.js";
 import type { Socket } from "node:net";
 import { NPSMessage } from "./NPSMessage.js";
@@ -22,7 +22,7 @@ import type {
     BufferWithConnection,
     GServiceResponse,
     PersonaRecord,
-} from "mcos-types/types.js";
+} from "../../mcos-types/types.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
 
 const log = logger.child({ service: "mcoserver:PersonaServer" });

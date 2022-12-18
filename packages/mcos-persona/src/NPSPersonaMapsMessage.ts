@@ -1,4 +1,4 @@
-import type { PersonaRecord } from "mcos-types/types.js";
+import type { PersonaRecord } from "../../mcos-types/types.js";
 import { NPSMessage } from "../../mcos-lobby/src/NPSMessage.js";
 
 /**

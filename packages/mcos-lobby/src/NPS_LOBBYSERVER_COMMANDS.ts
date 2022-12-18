@@ -5,7 +5,7 @@
  * @type {NpsCommandMap[]}
  */
 
-import type { NpsCommandMap } from "mcos-types";
+import type { NpsCommandMap } from "../../mcos-types";
 
 export const NPS_LOBBYSERVER_COMMANDS: NpsCommandMap[] = [
     { name: "NPS_FORCE_LOGOFF", value: 513, module: "Lobby" },

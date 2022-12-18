@@ -1,7 +1,7 @@
 import type {
     BufferWithConnection,
     GSMessageArrayWithConnection,
-} from "mcos-types/types.js";
+} from "../../../mcos-types/types.js";
 import { handleEncryptedNPSCommand } from "./encryptedCommand.js";
 import { _npsHeartbeat } from "./heartbeat.js";
 import { _npsRequestGameConnectServer } from "./requestConnectGameServer.js";
