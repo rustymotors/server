@@ -58,9 +58,6 @@
     "node": "18.12.1",
     "npm": "9.2.0"
   },
-  "workspaces": [
-    "packages/mcos-types"
-  ],
   "c8": {
     "all": true,
     "reporter": [
