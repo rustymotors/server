@@ -15,9 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import chai, { expect } from "chai";
-import { AdminServer, resetQueue } from "../src/adminServer.js";
+import { AdminServer, resetQueue, SocketWithConnectionInfo } from "../src/adminServer.js";
 import { describe, it } from "mocha";
-import type { SocketWithConnectionInfo } from "../../mcos-types";
 import { mock } from "ts-mockito";
 import { Socket } from "net";
 

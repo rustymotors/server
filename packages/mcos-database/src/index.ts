@@ -14,11 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from "../../mcos-logger/src/index.js";
 import { Session } from "./models/Session.js";
 import { Lobby } from "./models/Lobby.js";
 import type { SessionRecord } from "./types.js";
 import pg from "pg";
+import createLogger from 'pino'
+const logger = createLogger()
 const Client = pg.Client;
 
 const log = logger.child({ service: "mcoserver:DatabaseMgr" });

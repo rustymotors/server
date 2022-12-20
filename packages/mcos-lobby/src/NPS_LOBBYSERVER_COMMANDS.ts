@@ -1,12 +1,15 @@
+export type NpsCommandMap = {
+    name: string;
+    value: number;
+    module: "Lobby" | "Login";
+};
+
 /**
  * Commands from the game server to the game client
  * @export
  * @readonly
  * @type {NpsCommandMap[]}
  */
-
-import type { NpsCommandMap } from "../../mcos-types";
-
 export const NPS_LOBBYSERVER_COMMANDS: NpsCommandMap[] = [
     { name: "NPS_FORCE_LOGOFF", value: 513, module: "Lobby" },
     { name: "NPS_USER_LEFT", value: 514, module: "Lobby" },

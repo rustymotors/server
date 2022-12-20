@@ -14,10 +14,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from "../../mcos-logger/src/index.js";
-import type { FIELD_TYPE } from "../../mcos-types/types.js";
+import createLogger from 'pino'
+const logger = createLogger()
 
 const log = logger.child({ service: "mcos:shared:structures" });
+
+export declare type FIELD_TYPE =
+    | "boolean"
+    | "binary"
+    | "byte"
+    | "char"
+    | "u16"
+    | "u32";
 
 /**
  * Convert to zero padded hex

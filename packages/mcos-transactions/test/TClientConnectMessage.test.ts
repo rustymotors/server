@@ -17,7 +17,23 @@
 import chai from "chai";
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
 import { describe, it } from "mocha";
-import type { ByteField } from "../../mcos-types";
+
+export declare type FIELD_TYPE =
+    | "boolean"
+    | "binary"
+    | "byte"
+    | "char"
+    | "u16"
+    | "u32";
+
+export declare type ByteField = {
+    name: string;
+    order: "little" | "big";
+    offset: number;
+    size: number;
+    type: FIELD_TYPE;
+    value: Buffer;
+};
 
 chai.should();
 

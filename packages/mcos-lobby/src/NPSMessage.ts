@@ -14,6 +14,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+export declare type NPSMessageJSON = {
+    msgNo: number;
+    opCode: number | null;
+    msgLength: number;
+    msgVersion: number;
+    content: string;
+    contextId: string;
+    direction: "sent" | "received";
+    sessionkey: string | null;
+    rawBuffer: string;
+};
+
 /**
  * @class
  * @property {number} msgNo
@@ -24,9 +36,6 @@
  * @property {"sent" | "received"} direction
  * @property {string} serviceName
  */
-
-import type { NPSMessageJSON } from "../../mcos-types/types.js";
-
 export class NPSMessage {
     msgNo;
     msgVersion;

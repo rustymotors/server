@@ -1,3 +1,15 @@
+export declare type NPSMessageJSON = {
+    msgNo: number;
+    opCode: number | null;
+    msgLength: number;
+    msgVersion: number;
+    content: string;
+    contextId: string;
+    direction: "sent" | "received";
+    sessionkey: string | null;
+    rawBuffer: string;
+};
+
 /**
  * @class
  * @property {number} msgNo
@@ -9,7 +21,6 @@
  * @property {string} serviceName
  */
 
-import type { NPSMessageJSON } from "../../mcos-types/types.js";
 
 export class NPSMessage {
     msgNo;

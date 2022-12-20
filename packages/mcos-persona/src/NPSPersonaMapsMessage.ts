@@ -1,5 +1,15 @@
-import type { PersonaRecord } from "../../mcos-types/types.js";
-import { NPSMessage } from "../../mcos-lobby/src/NPSMessage.js";
+
+
+import { NPSMessage } from "./NPSMessage.js";
+
+export type PersonaRecord = {
+    customerId: number;
+    id: Buffer;
+    maxPersonas: Buffer;
+    name: Buffer;
+    personaCount: Buffer;
+    shardId: Buffer;
+};
 
 /**
  *
@@ -9,7 +19,6 @@ import { NPSMessage } from "../../mcos-lobby/src/NPSMessage.js";
  * @property {number} personaSize
  * @property {number} personaCount
  */
-
 export class NPSPersonaMapsMessage extends NPSMessage {
     /**
      *

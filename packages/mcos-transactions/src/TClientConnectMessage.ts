@@ -14,8 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from "../../mcos-logger/src/index.js";
 import { TSMessageBase } from "./TMessageBase.js";
+import createLogger from 'pino'
+const logger = createLogger()
 
 const log = logger.child({ service: "mcos:shared:types" });
 

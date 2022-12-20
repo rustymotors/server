@@ -1,7 +1,6 @@
-import type { NPSMessageJSON } from "../../mcos-types/types.js";
 import { privateDecrypt } from "node:crypto";
 import { readFileSync, statSync } from "node:fs";
-import { NPSMessage } from "./NPSMessage.js";
+import { NPSMessage, NPSMessageJSON } from "./NPSMessage.js";
 
 /**
  *
@@ -91,7 +90,7 @@ export class NPSUserStatus extends NPSMessage {
         );
 
         const sessionkeyString = Buffer.from(
-            packet.slice(52, -10).toString("utf8"),
+            packet.subarray(52, -10).toString("utf8"),
             "hex"
         );
         const decrypted = privateDecrypt(privateKey, sessionkeyString);

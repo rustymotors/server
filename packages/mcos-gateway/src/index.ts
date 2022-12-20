@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from "../../mcos-logger/src/index.js";
 import * as http from "node:http";
 import { createServer as createSocketServer, Socket } from "node:net";
 import { selectConnection } from "./connections.js";
@@ -22,6 +21,8 @@ import { dataHandler } from "./sockets.js";
 import { httpListener as httpHandler } from "./web.js";
 export { getAllConnections } from "./connections.js";
 export { AdminServer } from "./adminServer.js";
+import createLogger from 'pino'
+const logger = createLogger()
 
 const log = logger.child({ service: "mcos:gateway" });
 

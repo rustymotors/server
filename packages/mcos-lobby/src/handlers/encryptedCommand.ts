@@ -1,13 +1,43 @@
-import { logger } from "../../../mcos-logger/src/index.js";
-import type {
-    BufferWithConnection,
-    GSMessageArrayWithConnection,
-    SocketWithConnectionInfo,
-} from "../../../mcos-types/types.js";
 import { cipherBufferDES, decipherBufferDES } from "../encryption.js";
 import { NPSMessage } from "../NPSMessage.js";
+import createLogger from 'pino'
+import type { Cipher, Decipher } from "node:crypto";
+import type { Socket } from "node:net";
+const logger = createLogger()
 
 const log = logger.child({ service: "mcos:lobby" });
+
+export declare type EncryptionSession = {
+    connectionId: string;
+    remoteAddress: string;
+    localPort: number;
+    sessionKey: string;
+    shortKey: string;
+    gsCipher: Cipher;
+    gsDecipher: Decipher;
+    tsCipher: Cipher;
+    tsDecipher: Decipher;
+};
+/**
+ * Socket with connection properties
+ */
+export declare type SocketWithConnectionInfo = {
+    socket: Socket;
+    seq: number;
+    id: string;
+    remoteAddress: string;
+    localPort: number;
+    personaId: number;
+    lastMessageTimestamp: number;
+    inQueue: boolean;
+    useEncryption: boolean;
+    encryptionSession?: EncryptionSession;
+};
+
+export interface GSMessageArrayWithConnection {
+    connection: SocketWithConnectionInfo;
+    messages: NPSMessage[];
+}
 
 /**
  * Takes an plaintext command packet and return the encrypted bytes
@@ -37,6 +67,12 @@ function encryptCmd(
         messages: [new NPSMessage("sent").deserialize(result.data)],
     };
 }
+export declare type BufferWithConnection = {
+    connectionId: string;
+    connection: SocketWithConnectionInfo;
+    data: Buffer;
+    timestamp: number;
+};
 
 /**
  * Takes an encrypted command packet and returns the decrypted bytes

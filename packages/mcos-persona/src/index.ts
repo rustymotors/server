@@ -14,16 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from "../../mcos-logger/src/index.js";
 import { handleData, personaRecords } from "./internal.js";
 import type { Socket } from "node:net";
 import { NPSMessage } from "./NPSMessage.js";
-import type {
-    BufferWithConnection,
-    GServiceResponse,
-    PersonaRecord,
-} from "../../mcos-types/types.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
+import createLogger from 'pino'
+import type { Cipher, Decipher } from "node:crypto";
+const logger = createLogger()
 
 const log = logger.child({ service: "mcoserver:PersonaServer" });
 
@@ -67,6 +64,15 @@ export async function handleSelectGamePersona(
     );
     return responsePacket;
 }
+
+export type PersonaRecord = {
+    customerId: number;
+    id: Buffer;
+    maxPersonas: Buffer;
+    name: Buffer;
+    personaCount: Buffer;
+    shardId: Buffer;
+};
 
 /**
  * Please use {@link PersonaServer.getInstance()}
@@ -395,6 +401,49 @@ export class PersonaServer {
             }
         }
     }
+}
+
+export declare type EncryptionSession = {
+    connectionId: string;
+    remoteAddress: string;
+    localPort: number;
+    sessionKey: string;
+    shortKey: string;
+    gsCipher: Cipher;
+    gsDecipher: Decipher;
+    tsCipher: Cipher;
+    tsDecipher: Decipher;
+};
+/**
+ * Socket with connection properties
+ */
+export declare type SocketWithConnectionInfo = {
+    socket: Socket;
+    seq: number;
+    id: string;
+    remoteAddress: string;
+    localPort: number;
+    personaId: number;
+    lastMessageTimestamp: number;
+    inQueue: boolean;
+    useEncryption: boolean;
+    encryptionSession?: EncryptionSession;
+};
+export declare type BufferWithConnection = {
+    connectionId: string;
+    connection: SocketWithConnectionInfo;
+    data: Buffer;
+    timestamp: number;
+};
+
+export interface GSMessageArrayWithConnection {
+    connection: SocketWithConnectionInfo;
+    messages: NPSMessage[];
+}
+
+export interface GServiceResponse {
+    err: Error | null;
+    response?: GSMessageArrayWithConnection | undefined;
 }
 
 /**

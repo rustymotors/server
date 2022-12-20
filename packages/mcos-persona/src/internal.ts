@@ -14,15 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from "../../mcos-logger/src/index.js";
-import type {
-    BufferWithConnection,
-    GSMessageArrayWithConnection,
-    PersonaRecord,
-} from "../../mcos-types/types.js";
 import { MessagePacket } from "./MessagePacket.js";
 import { NPSMessage } from "./NPSMessage.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
+import createLogger from 'pino'
+import type { Cipher, Decipher } from "node:crypto";
+import type { Socket } from "node:net";
+const logger = createLogger()
 
 const log = logger.child({ service: "mcos:persona" });
 
@@ -44,6 +42,15 @@ export function generateNameBuffer(
     Buffer.from(name, encoding).copy(nameBuffer);
     return nameBuffer;
 }
+
+export type PersonaRecord = {
+    customerId: number;
+    id: Buffer;
+    maxPersonas: Buffer;
+    name: Buffer;
+    personaCount: Buffer;
+    shardId: Buffer;
+};
 
 /**
  * Return a list of all personas
@@ -422,6 +429,49 @@ async function validateLicencePlate(data: Buffer): Promise<NPSMessage> {
         `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return Promise.resolve(responsePacket);
+}
+
+export declare type EncryptionSession = {
+    connectionId: string;
+    remoteAddress: string;
+    localPort: number;
+    sessionKey: string;
+    shortKey: string;
+    gsCipher: Cipher;
+    gsDecipher: Decipher;
+    tsCipher: Cipher;
+    tsDecipher: Decipher;
+};
+/**
+ * Socket with connection properties
+ */
+export declare type SocketWithConnectionInfo = {
+    socket: Socket;
+    seq: number;
+    id: string;
+    remoteAddress: string;
+    localPort: number;
+    personaId: number;
+    lastMessageTimestamp: number;
+    inQueue: boolean;
+    useEncryption: boolean;
+    encryptionSession?: EncryptionSession;
+};
+export declare type BufferWithConnection = {
+    connectionId: string;
+    connection: SocketWithConnectionInfo;
+    data: Buffer;
+    timestamp: number;
+};
+
+export interface GSMessageArrayWithConnection {
+    connection: SocketWithConnectionInfo;
+    messages: NPSMessage[];
+}
+
+export interface GServiceResponse {
+    err: Error | null;
+    response?: GSMessageArrayWithConnection | undefined;
 }
 
 /**

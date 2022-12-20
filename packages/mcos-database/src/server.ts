@@ -1,6 +1,7 @@
 import { createServer, IncomingMessage, ServerResponse } from "http";
-import { logger } from "../../mcos-logger/src/index.js";
 import type { RequestHandler, ResponseJSON } from "./types.js";
+import createLogger from 'pino'
+const logger = createLogger()
 
 const log = logger.child({ service: "mcoserver:DatabaseMgr" });
 

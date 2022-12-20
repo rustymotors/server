@@ -15,7 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { startListeners } from "../packages/mcos-gateway/src/index.js";
-import { logger } from "../packages/mcos-logger/src/index.js";
+import createLogger from 'pino'
+const logger = createLogger()
 
 const log = logger.child({ service: "mcos" });
 

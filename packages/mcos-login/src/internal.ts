@@ -15,18 +15,22 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { DatabaseManager } from "../../mcos-database/src/index.js";
-import { logger } from "../../mcos-logger/src/index.js";
 import { GSMessageBase } from "./GMessageBase.js";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { premadeLogin } from "./premadeLogin.js";
 import { NPSMessage } from "./NPSMessage.js";
-import type {
-    BufferWithConnection,
-    GSMessageArrayWithConnection,
-    UserRecordMini,
-} from "../../mcos-types/types.js";
+import createLogger from 'pino'
+import type { Cipher, Decipher } from "node:crypto";
+import type { Socket } from "node:net";
+const logger = createLogger()
 
 const log = logger.child({ service: "mcos:login" });
+
+export declare type UserRecordMini = {
+    contextId: string;
+    customerId: number;
+    userId: number;
+};
 
 const userRecords: UserRecordMini[] = [
     {
@@ -40,6 +44,44 @@ const userRecords: UserRecordMini[] = [
         userId: 0x00_00_00_01,
     },
 ];
+
+export declare type EncryptionSession = {
+    connectionId: string;
+    remoteAddress: string;
+    localPort: number;
+    sessionKey: string;
+    shortKey: string;
+    gsCipher: Cipher;
+    gsDecipher: Decipher;
+    tsCipher: Cipher;
+    tsDecipher: Decipher;
+};
+/**
+ * Socket with connection properties
+ */
+export declare type SocketWithConnectionInfo = {
+    socket: Socket;
+    seq: number;
+    id: string;
+    remoteAddress: string;
+    localPort: number;
+    personaId: number;
+    lastMessageTimestamp: number;
+    inQueue: boolean;
+    useEncryption: boolean;
+    encryptionSession?: EncryptionSession;
+};
+export declare type BufferWithConnection = {
+    connectionId: string;
+    connection: SocketWithConnectionInfo;
+    data: Buffer;
+    timestamp: number;
+};
+
+export interface GSMessageArrayWithConnection {
+    connection: SocketWithConnectionInfo;
+    messages: NPSMessage[];
+}
 
 /**
  * Process a UserLogin packet

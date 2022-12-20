@@ -1,4 +1,3 @@
-import type { INPSMessage, INPSMessageJSON } from "./index.js";
 /**
  * @class
  * @property {number} msgNo

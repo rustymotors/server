@@ -18,16 +18,14 @@ import type { Socket } from "net";
 import { receiveLobbyData } from "../../mcos-lobby/src/index.js";
 import { receiveLoginData } from "../../mcos-login/src/index.js";
 import { receivePersonaData } from "../../mcos-persona/src/index.js";
-import { logger } from "../../mcos-logger/src/index.js";
 import { receiveTransactionsData } from "../../mcos-transactions/src/index.js";
 import { selectConnection, updateConnection } from "./connections.js";
 import { MessageNode } from "./MessageNode.js";
-import type {
-    BufferWithConnection,
-    GServiceResponse,
-    SocketWithConnectionInfo,
-    TServiceResponse,
-} from "../../mcos-types/types.js";
+import createLogger from 'pino'
+import type { Cipher, Decipher } from "node:crypto";
+import type { NPSMessage } from "./NPSMessage.js";
+import type { BinaryStructure } from "./BinaryStructure.js";
+const logger = createLogger()
 
 const log = logger.child({ service: "mcos:gateway:sockets" });
 
@@ -48,6 +46,66 @@ export function toHex(data: Buffer): string {
 }
 
 // TODO: #1193 Remove commented out code
+
+export declare type EncryptionSession = {
+    connectionId: string;
+    remoteAddress: string;
+    localPort: number;
+    sessionKey: string;
+    shortKey: string;
+    gsCipher: Cipher;
+    gsDecipher: Decipher;
+    tsCipher: Cipher;
+    tsDecipher: Decipher;
+};
+
+/**
+ * Socket with connection properties
+ */
+export declare type SocketWithConnectionInfo = {
+    socket: Socket;
+    seq: number;
+    id: string;
+    remoteAddress: string;
+    localPort: number;
+    personaId: number;
+    lastMessageTimestamp: number;
+    inQueue: boolean;
+    useEncryption: boolean;
+    encryptionSession?: EncryptionSession;
+};
+
+export declare type BufferWithConnection = {
+    connectionId: string;
+    connection: SocketWithConnectionInfo;
+    data: Buffer;
+    timestamp: number;
+};
+
+export interface GSMessageArrayWithConnection {
+    connection: SocketWithConnectionInfo;
+    messages: NPSMessage[];
+}
+
+export interface GServiceResponse {
+    err: Error | null;
+    response?: GSMessageArrayWithConnection | undefined;
+}
+
+export type TSMessageBase = BinaryStructure;
+
+/**
+ * N+ messages, ready for sending, with related connection
+ */
+export type TSMessageArrayWithConnection = {
+    connection: SocketWithConnectionInfo;
+    messages: MessageNode[] | TSMessageBase[];
+};
+
+export type TServiceResponse = {
+    err: Error | null;
+    response?: TSMessageArrayWithConnection | undefined;
+};
 
 /**
  * The onData handler

@@ -14,10 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from "../../mcos-logger/src/index.js";
 import { readFileSync } from "node:fs";
 import { ShardEntry } from "./shard-entry.js";
 import { createServer, Server } from "node:https";
+import createLogger from 'pino'
+const logger = createLogger()
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.

@@ -34,6 +34,7 @@
     "mcos-lobby": "*",
     "mcos-login": "*",
     "pg": "8.8.0",
+    "pino": "8.8.0",
     "prettier": "2.8.1",
     "prettier-eslint-cli": "6.0.1",
     "ts-node": "10.9.1"
@@ -58,7 +59,6 @@
     "npm": "9.2.0"
   },
   "workspaces": [
-    "packages/mcos-logger",
     "packages/mcos-types"
   ],
   "c8": {

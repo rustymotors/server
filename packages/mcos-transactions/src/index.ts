@@ -14,14 +14,64 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { logger } from "../../mcos-logger/src/index.js";
-import type {
-    BufferWithConnection,
-    TServiceResponse,
-} from "../../mcos-types/types.js";
 import { handleData } from "./internal.js";
+import createLogger from 'pino'
+import type { BinaryStructure } from "./BinaryStructure.js";
+import type { Cipher, Decipher } from "node:crypto";
+import type { Socket } from "node:net";
+import type { MessageNode } from "./MessageNode.js";
+const logger = createLogger()
 
 const log = logger.child({ service: "mcos:transactions" });
+
+export type TSMessageBase = BinaryStructure;
+
+export declare type EncryptionSession = {
+    connectionId: string;
+    remoteAddress: string;
+    localPort: number;
+    sessionKey: string;
+    shortKey: string;
+    gsCipher: Cipher;
+    gsDecipher: Decipher;
+    tsCipher: Cipher;
+    tsDecipher: Decipher;
+};
+/**
+ * Socket with connection properties
+ */
+export declare type SocketWithConnectionInfo = {
+    socket: Socket;
+    seq: number;
+    id: string;
+    remoteAddress: string;
+    localPort: number;
+    personaId: number;
+    lastMessageTimestamp: number;
+    inQueue: boolean;
+    useEncryption: boolean;
+    encryptionSession?: EncryptionSession;
+};
+
+/**
+ * N+ messages, ready for sending, with related connection
+ */
+export type TSMessageArrayWithConnection = {
+    connection: SocketWithConnectionInfo;
+    messages: MessageNode[] | TSMessageBase[];
+};
+
+export type TServiceResponse = {
+    err: Error | null;
+    response?: TSMessageArrayWithConnection | undefined;
+};
+
+export declare type BufferWithConnection = {
+    connectionId: string;
+    connection: SocketWithConnectionInfo;
+    data: Buffer;
+    timestamp: number;
+};
 
 /**
  * Entry and exit point for the lobby service

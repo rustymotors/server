@@ -15,7 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { DatabaseManager } from "../../mcos-database/src/index.js";
-import { logger } from "../../mcos-logger/src/index.js";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { MessageNode } from "./MessageNode.js";
 import { TClientConnectMessage } from "./TClientConnectMessage.js";
@@ -25,10 +24,11 @@ import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { TLobbyMessage } from "./TLobbyMessage.js";
 import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
 import { StockCar } from "./StockCar.js";
-import type {
-    SocketWithConnectionInfo,
-    TSMessageArrayWithConnection,
-} from "../../mcos-types/types.js";
+import createLogger from 'pino'
+import type { Cipher, Decipher } from "node:crypto";
+import type { Socket } from "node:net";
+import type { BinaryStructure } from "./BinaryStructure.js";
+const logger = createLogger()
 
 const log = logger.child({ service: "mcos:transactions:handlers" });
 
@@ -47,6 +47,43 @@ export function toHex(data: Buffer): string {
     });
     return bytes.join("");
 }
+
+export declare type EncryptionSession = {
+    connectionId: string;
+    remoteAddress: string;
+    localPort: number;
+    sessionKey: string;
+    shortKey: string;
+    gsCipher: Cipher;
+    gsDecipher: Decipher;
+    tsCipher: Cipher;
+    tsDecipher: Decipher;
+};
+/**
+ * Socket with connection properties
+ */
+export declare type SocketWithConnectionInfo = {
+    socket: Socket;
+    seq: number;
+    id: string;
+    remoteAddress: string;
+    localPort: number;
+    personaId: number;
+    lastMessageTimestamp: number;
+    inQueue: boolean;
+    useEncryption: boolean;
+    encryptionSession?: EncryptionSession;
+};
+
+export type TSMessageBase = BinaryStructure;
+
+/**
+ * N+ messages, ready for sending, with related connection
+ */
+export type TSMessageArrayWithConnection = {
+    connection: SocketWithConnectionInfo;
+    messages: MessageNode[] | TSMessageBase[];
+};
 
 /**
  *

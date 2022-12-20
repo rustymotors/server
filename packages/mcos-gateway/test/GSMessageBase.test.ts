@@ -17,7 +17,7 @@
 import chai from "chai";
 import { GSMessageBase } from "../src/GMessageBase.js";
 import { describe, it } from "mocha";
-import type { ByteField } from "../../mcos-types/types.js";
+import type { ByteField } from "../src/BinaryStructure.js";
 
 chai.should();
 

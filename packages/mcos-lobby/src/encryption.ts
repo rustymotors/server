@@ -14,18 +14,52 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { createCipheriv, createDecipheriv } from "node:crypto";
-import { logger } from "../../mcos-logger/src/index.js";
-import type {
-    BufferWithConnection,
-    EncryptionSession,
-    SessionRecord,
-    SocketWithConnectionInfo,
-} from "../../mcos-types/types.js";
+import { Cipher, createCipheriv, createDecipheriv, Decipher } from "node:crypto";
+import type { Socket } from "node:net";
+import createLogger from 'pino'
+const logger = createLogger()
 
 const log = logger.child({ service: "mcos:shared:encryption" });
 
+export declare type EncryptionSession = {
+    connectionId: string;
+    remoteAddress: string;
+    localPort: number;
+    sessionKey: string;
+    shortKey: string;
+    gsCipher: Cipher;
+    gsDecipher: Decipher;
+    tsCipher: Cipher;
+    tsDecipher: Decipher;
+};
+/**
+ * Socket with connection properties
+ */
+export declare type SocketWithConnectionInfo = {
+    socket: Socket;
+    seq: number;
+    id: string;
+    remoteAddress: string;
+    localPort: number;
+    personaId: number;
+    lastMessageTimestamp: number;
+    inQueue: boolean;
+    useEncryption: boolean;
+    encryptionSession?: EncryptionSession;
+};
+export declare type BufferWithConnection = {
+    connectionId: string;
+    connection: SocketWithConnectionInfo;
+    data: Buffer;
+    timestamp: number;
+};
+
 const encryptionSessions: EncryptionSession[] = [];
+
+export declare type SessionRecord = {
+    skey: string;
+    sessionkey: string;
+};
 
 function generateEncryptionPair(
     dataConnection: SocketWithConnectionInfo,
