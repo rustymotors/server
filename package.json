@@ -29,7 +29,7 @@
     "url": "git@github.com:drazisil/mcos.git"
   },
   "dependencies": {
-    "@types/pg": "8.6.5",
+    "@types/pg": "8.6.6",
     "mcos-gateway": "*",
     "mcos-lobby": "*",
     "mcos-login": "*",
