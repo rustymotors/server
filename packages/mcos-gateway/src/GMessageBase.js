@@ -16,12 +16,10 @@
 
 import { BinaryStructure } from './BinaryStructure.js';
 import createDebug from 'debug'
-import { createLogger } from 'bunyan'
 
 const appName = 'mcos:gateway:gmessage'
 
 const debug = createDebug(appName)
-const log = createLogger({ name: appName })
 
 /**
  * @class

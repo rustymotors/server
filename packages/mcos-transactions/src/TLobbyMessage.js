@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { createLogger } from 'bunyan'
 import { TSMessageBase } from '../../mcos-gateway/src/TMessageBase.js'
 import { BinaryStructure } from '../../mcos-gateway/src/BinaryStructure.js'
 import createDebug from 'debug'
@@ -22,7 +21,6 @@ import createDebug from 'debug'
 const appName = 'mcos:transaction:lobby'
 
 const debug = createDebug(appName)
-const log = createLogger({ name: appName })
 
 /**
  *
