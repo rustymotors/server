@@ -30,6 +30,8 @@
   },
   "dependencies": {
     "@types/pg": "8.6.5",
+    "bunyan": "1.8.15",
+    "debug": "4.3.4",
     "mcos-gateway": "*",
     "mcos-lobby": "*",
     "mcos-login": "*",
