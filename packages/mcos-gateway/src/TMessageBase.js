@@ -32,7 +32,7 @@ export class TSMessageBase extends BinaryStructure {
     _byteOrder = "big";
     constructor() {
         super();
-        log.trace("new TSMessageBase");
+        debug("new TSMessageBase");
         this._add({
             name: "dataLength",
             order: "little",

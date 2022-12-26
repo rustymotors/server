@@ -40,7 +40,7 @@ export async function receiveTransactionsData(
         debug("Exiting the transactions service");
         return { err: null, response: result };
     } catch (error) {
-        const errMessage = `There was an error in the lobby service: ${String(
+        const errMessage = `There was an error in the transaction service: ${String(
             error
         )}`;
         return { err: new Error(errMessage), response: undefined };

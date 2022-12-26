@@ -76,7 +76,6 @@ export class NPSPersonaMapsMessage extends NPSMessage {
 
     /**
      *
-     * @override
      * @return {Buffer}
      */
     serialize() {
@@ -130,39 +129,5 @@ export class NPSPersonaMapsMessage extends NPSMessage {
         // Build the packet
         return packetContent;
     }
-
-    /**
-     *
-     * @override
-     * @return {string}
-     */
-    dumpPacket() {
-        let message = "";
-        message = message.concat(this.dumpPacketHeader("NPSPersonaMapsMsg"));
-        message = message.concat(
-            `personaCount:        ${this.personaCount.toString()}`
-        );
-        for (const persona of this.personas) {
-            message = message.concat(
-                `
-          maxPersonaCount:     ${this.deserializeInt8(
-              persona.maxPersonas
-          ).toString()}
-          id:                  ${this.deserializeInt32(persona.id).toString()}
-          shardId:             ${this.deserializeInt32(
-              persona.shardId
-          ).toString()}
-          name:                ${this.deserializeString(
-              persona.name
-          ).toString()}
-          Packet as hex:       ${this.getPacketAsString()}`
-            );
-
-            // TODO: #1180 Migrate the persona maps response packet into a MessagePacket object
-            message = message.concat(
-                "[/NPSPersonaMapsMsg]======================================"
-            );
-        }
-        return message;
-    }
+   
 }

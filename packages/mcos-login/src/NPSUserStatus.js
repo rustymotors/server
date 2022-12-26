@@ -1,6 +1,11 @@
 import { privateDecrypt } from "node:crypto";
 import { readFileSync, statSync } from "node:fs";
 import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
+import createDebug from 'debug'
+
+const appName = 'mcos:login:userstatus'
+
+const debug = createDebug(appName)
 
 /**
  *
@@ -36,6 +41,7 @@ export class NPSUserStatus extends NPSMessage {
      */
     constructor(packet) {
         super("received");
+        debug('Constructing NPSUserStatus')
         this.sessionkey = "";
 
         // Save the NPS opCode
@@ -55,6 +61,7 @@ export class NPSUserStatus extends NPSMessage {
      * @return {string}
      */
     fetchPrivateKeyFromFile(privateKeyPath) {
+        debug('Fetching private key')
         try {
             statSync(privateKeyPath);
         } catch (error) {
@@ -82,6 +89,7 @@ export class NPSUserStatus extends NPSMessage {
      * @return {void}
      */
     extractSessionKeyFromPacket(packet) {
+        debug('Extracting key')
         if (typeof process.env["PRIVATE_KEY_FILE"] === "undefined") {
             throw new Error("Please set PRIVATE_KEY_FILE");
         }
@@ -95,15 +103,15 @@ export class NPSUserStatus extends NPSMessage {
             "hex"
         );
         const decrypted = privateDecrypt(privateKey, sessionkeyString);
-        this.sessionkey = decrypted.slice(2, -4).toString("hex");
+        this.sessionkey = decrypted.subarray(2, -4).toString("hex");
     }
 
     /**
      *
-     * @override
      * @return {import("../../mcos-gateway/src/NPSMessage.js").NPSMessageJSON}
      */
     toJSON() {
+        debug('Returning as JSON')
         return {
             msgNo: this.msgNo,
             msgLength: this.msgLength,
@@ -118,10 +126,10 @@ export class NPSUserStatus extends NPSMessage {
     }
 
     /**
-     * @override
      * @return {string}
      */
     dumpPacket() {
+        debug('Returning as string')
         let message = this.dumpPacketHeader("NPSUserStatus");
         message = message.concat(
             `NPSUserStatus,

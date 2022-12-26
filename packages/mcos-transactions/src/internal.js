@@ -276,7 +276,7 @@ export async function handleData(
         debug(
             `Message number after attempting decryption: ${messageNode.msgNo}`
         );
-        log.trace(
+        debug(
             `Raw Packet after decryption: ${toHex(messageNode.rawPacket)}`
         );
     } else {

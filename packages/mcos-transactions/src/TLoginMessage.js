@@ -43,7 +43,7 @@ export class TLoginMessage extends TSMessageBase {
      */
     constructor() {
         super();
-        log.trace("new TLoginMessage");
+        debug("new TLoginMessage");
         this._add({
             name: "msgNo",
             order: "little",

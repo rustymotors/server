@@ -105,7 +105,7 @@ export function selectEncryptors(
 
     const existingEncryptor = encryptionSessions.find((e) => {
         const thisId = `${e.remoteAddress}:${e.localPort}`;
-        log.trace(`[selectEncryptors] Checking ${thisId} === ${wantedId} ?`);
+        debug(`[selectEncryptors] Checking ${thisId} === ${wantedId} ?`);
         return thisId === wantedId;
     });
 
@@ -143,7 +143,7 @@ export function selectEncryptorsForSocket(
 
     const existingEncryptor = encryptionSessions.find((e) => {
         const thisId = `${e.remoteAddress}:${e.localPort}`;
-        log.trace(
+        debug(
             `[selectEncryptorsForSocket] Checking ${thisId} === ${wantedId} ?`
         );
         return thisId === wantedId;
@@ -185,7 +185,7 @@ export function selectOrCreateEncryptors(
 
     const existingEncryptor = encryptionSessions.find((e) => {
         const thisId = `${e.remoteAddress}:${e.localPort}`;
-        log.trace(`[selectEncryptors] Checking ${thisId} === ${wantedId} ?`);
+        debug(`[selectEncryptors] Checking ${thisId} === ${wantedId} ?`);
         return thisId === wantedId;
     });
 

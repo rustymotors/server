@@ -14,11 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import createLogger from 'pino'
 import { BinaryStructure } from './BinaryStructure.js';
-const logger = createLogger()
+import createDebug from 'debug'
+import { createLogger } from 'bunyan'
 
-const log = logger.child({ service: "mcos:shared:structures" });
+const appName = 'mcos:gateway:gmessage'
+
+const debug = createDebug(appName)
+const log = createLogger({ name: appName })
 
 /**
  * @class
@@ -27,7 +30,7 @@ const log = logger.child({ service: "mcos:shared:structures" });
 export class GSMessageBase extends BinaryStructure {
     constructor() {
         super();
-        log.trace("new GSMessageBase");
+        debug("new GSMessageBase");
         this._add({
             name: "msgId",
             order: "little",

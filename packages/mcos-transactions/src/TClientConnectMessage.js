@@ -16,9 +16,11 @@
 
 import { createLogger } from 'bunyan'
 import { TSMessageBase } from '../../mcos-gateway/src/TMessageBase.js'
+import createDebug from 'debug'
 
-const appName = 'mcos'
+const appName = 'mcos:transaction:connect'
 
+const debug = createDebug(appName)
 const log = createLogger({ name: appName })
 
 
@@ -44,7 +46,7 @@ export class TClientConnectMessage extends TSMessageBase {
      */
     constructor() {
         super();
-        log.trace("new TClientConnectMessage");
+        debug("new TClientConnectMessage");
         this._add({
             name: "msgNo",
             order: "little",

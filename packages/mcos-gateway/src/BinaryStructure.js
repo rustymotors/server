@@ -17,7 +17,7 @@
 import createDebug from 'debug'
 import { createLogger } from 'bunyan'
 
-const appName = 'mcos'
+const appName = 'mcos:gateway:binary'
 
 const debug = createDebug(appName)
 const log = createLogger({ name: appName })
@@ -104,7 +104,7 @@ export class BinaryStructure {
     _fields = [];
 
     constructor() {
-        log.trace("new BinaryStructure");
+        debug("new BinaryStructure");
     }
 
     /**
@@ -115,7 +115,7 @@ export class BinaryStructure {
      */
     _add(field) {
         const newField = { ...field, offset: this._byteOffset };
-        log.trace(`Adding ${JSON.stringify(newField)}`);
+        debug(`Adding ${JSON.stringify(newField)}`);
         this._fields.push(newField);
         this._byteLength = this._byteLength + field.size;
         this._byteOffset = this._byteOffset + field.size;
@@ -154,9 +154,9 @@ export class BinaryStructure {
         );
 
         this._fields.forEach((f) => {
-            log.trace(`Before: ${JSON.stringify(f)}`);
+            debug(`Before: ${JSON.stringify(f)}`);
             const indexes = { start: f.offset, end: f.offset + f.size };
-            log.trace(`Taking data: ${JSON.stringify(indexes)}`);
+            debug(`Taking data: ${JSON.stringify(indexes)}`);
             const value = byteStream.slice(indexes.start, indexes.end);
             debug(
                 `Setting ${f.name} with value of ${toHex(value)}, size ${
@@ -164,7 +164,7 @@ export class BinaryStructure {
                 }`
             );
             f.value = value;
-            log.trace(`After: ${JSON.stringify(f)}`);
+            debug(`After: ${JSON.stringify(f)}`);
             this._byteOffset = indexes.end;
         });
     }
@@ -201,9 +201,9 @@ export class BinaryStructure {
      * @memberof BinaryStructure
      */
     getValue(fieldName) {
-        log.trace("Calling get() in BinaryStructure..");
+        debug("Calling get() in BinaryStructure..");
         const selectedField = this.get(fieldName);
-        log.trace("Calling get() in BinaryStructure.. success");
+        debug("Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
         debug(
             `Getting a value of ${toHex(value)} from the ${
@@ -236,7 +236,7 @@ export class BinaryStructure {
             }
             return value.readUInt8();
         } catch (error) {
-            log.trace("Calling get() in BinaryStructure.. fail!");
+            debug("Calling get() in BinaryStructure.. fail!");
             const errMessage = `Error in getValueX: ${String(
                 error
             )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${
@@ -253,9 +253,9 @@ export class BinaryStructure {
      * @returns
      */
     setValueNumber(fieldName, newValue) {
-        log.trace("Calling setValueNumber() in BinaryStructure..");
+        debug("Calling setValueNumber() in BinaryStructure..");
         const selectedField = this.get(fieldName);
-        log.trace("Calling get() in BinaryStructure.. success");
+        debug("Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
         debug(
             `Setting a value of ${newValue} to the ${selectedField.name} field with type of ${type})`
@@ -290,7 +290,7 @@ export class BinaryStructure {
             log.error(errMessage);
             throw new Error(errMessage);
         } catch (error) {
-            log.trace("Calling get() in BinaryStructure.. fail!");
+            debug("Calling get() in BinaryStructure.. fail!");
             const errMessage = `Error in newValueNumber: ${String(
                 error
             )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${

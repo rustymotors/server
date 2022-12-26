@@ -50,7 +50,7 @@ export function _generateSessionKeyBuffer(key) {
 export async function _npsRequestGameConnectServer(
     dataConnection
 ) {
-    log.trace(
+    debug(
         `[inner] Raw bytes in _npsRequestGameConnectServer: ${toHex(
             dataConnection.data
         )}`

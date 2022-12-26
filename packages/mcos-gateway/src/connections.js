@@ -139,7 +139,7 @@ export function updateConnection(
     connectionId,
     updatedConnection
 ) {
-    log.trace(`Updating connection with id: ${connectionId}`);
+    debug(`Updating connection with id: ${connectionId}`);
     try {
         const index = connectionList.findIndex((c) => {
             return c.id === connectionId;

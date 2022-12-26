@@ -22,7 +22,7 @@ import createDebug from 'debug'
 import { createLogger } from 'bunyan'
 import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
 
-const appName = 'mcos'
+const appName = 'mcos:login:internal'
 
 const debug = createDebug(appName)
 const log = createLogger({ name: appName })
@@ -59,11 +59,15 @@ async function login(
 
     const newGameMessage = new GSMessageBase();
     newGameMessage.deserialize(data.subarray(0, 10));
-    log.trace(`Raw game message: ${JSON.stringify(newGameMessage)}`);
+    debug(`Raw game message: ${JSON.stringify(newGameMessage)}`);
 
+    debug('Requesting NPSUserStatus packet')
     const userStatus = new NPSUserStatus(data);
+    debug('NPSUserStatus packet creation success')
 
+    debug('Requesting Key extraction')
     userStatus.extractSessionKeyFromPacket(data);
+    debug('Key extraction success')
 
     const { contextId, sessionkey } = userStatus;
 
@@ -177,8 +181,13 @@ export async function handleData(
         throw new TypeError("UNSUPPORTED_MESSAGECODE");
     }
 
-    const result = await supportedHandler.handler(dataConnection);
-    log.trace(`Returning with ${result.messages.length} messages`);
+    try {
+        const result = await supportedHandler.handler(dataConnection);
+    debug(`Returning with ${result.messages.length} messages`);
     debug("Leaving handleData");
     return result;
+    } catch (error) {
+        log.error(error)
+        throw new Error(`Error handling data: ${String(error)}`)
+    }
 }

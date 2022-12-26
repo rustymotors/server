@@ -19,7 +19,7 @@ import { handleData } from "./internal.js";
 import createDebug from 'debug'
 import { createLogger } from 'bunyan'
 
-const appName = 'mcos'
+const appName = 'mcos:login'
 
 //#region Init
 const debug = createDebug(appName)
@@ -131,8 +131,10 @@ export async function receiveLoginData(
     dataConnection
 ) {
     try {
+        debug('Entering login module')
         const response = await handleData(dataConnection);
-        log.trace(`There are ${response.messages.length} messages`);
+        debug(`There are ${response.messages.length} messages`);
+        debug('Exiting login module')
         return { err: null, response };
     } catch (error) {
         const errMessage = `There was an error in the login service: ${String(

@@ -189,7 +189,7 @@ async function clientConnect(
     // Not currently using this - Maybe we are?
     const newMessage = new TClientConnectMessage();
 
-    log.trace(`Raw bytes in clientConnect: ${toHex(packet.rawPacket)}`);
+    debug(`Raw bytes in clientConnect: ${toHex(packet.rawPacket)}`);
     newMessage.deserialize(packet.rawPacket);
 
     const customerId = newMessage.getValue("customerId");
@@ -281,7 +281,7 @@ function _login(
     // Read the inbound packet
     const loginMessage = new TLoginMessage();
     loginMessage.deserialize(node.rawPacket);
-    log.trace(`Received LoginMessage: ${JSON.stringify(loginMessage)}`);
+    debug(`Received LoginMessage: ${JSON.stringify(loginMessage)}`);
 
     // Create new response packet
     const pReply = new GenericReplyMessage();
@@ -383,7 +383,7 @@ function _getLobbies(
 
     const lobbyRequest = new GenericRequestMessage();
     lobbyRequest.deserialize(node.rawPacket);
-    log.trace(
+    debug(
         `Received GenericRequestMessage: ${JSON.stringify(lobbyRequest)}`
     );
 

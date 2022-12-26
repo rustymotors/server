@@ -17,9 +17,11 @@
 import { createLogger } from 'bunyan'
 import { TSMessageBase } from '../../mcos-gateway/src/TMessageBase.js'
 import { BinaryStructure } from '../../mcos-gateway/src/BinaryStructure.js'
+import createDebug from 'debug'
 
-const appName = 'mcos'
+const appName = 'mcos:transaction:lobby'
 
+const debug = createDebug(appName)
 const log = createLogger({ name: appName })
 
 /**
@@ -41,7 +43,7 @@ export class TLobbyMessage extends TSMessageBase {
      */
     constructor() {
         super();
-        log.trace("new TLobbyMessage");
+        debug("new TLobbyMessage");
         this._add({
             name: "msgNo",
             order: "little",
@@ -86,7 +88,7 @@ export class TLobbyMessage extends TSMessageBase {
 export class LobbyInfo extends BinaryStructure {
     constructor() {
         super();
-        log.trace("new LobbyInfo");
+        debug("new LobbyInfo");
         this._add({
             name: "lobbyId",
             order: "little",
