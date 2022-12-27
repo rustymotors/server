@@ -26,7 +26,7 @@ import createDebug from 'debug'
 import { createLogger } from 'bunyan'
 import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
 import { toHex } from "../../mcos-gateway/src/sockets.js";
-import { selectOrCreateEncryptors } from "../../mcos-gateway/src/encryption.js";
+import { createEncrypters } from "../../mcos-gateway/src/encryption.js";
 
 const appName = 'mcos'
 
@@ -213,7 +213,7 @@ async function clientConnect(
 
     // const stringKey = Buffer.from(sessionkey, 'hex')
 
-    selectOrCreateEncryptors(connection, result);
+    createEncrypters(connection, result);
 
     // connectionWithKey.setEncryptionKey(Buffer.from(stringKey.slice(0, 16)))
 
@@ -441,6 +441,9 @@ function handleGetLobbiesMessage(
 ) {
     const result = _getLobbies(conn, node);
     debug("Dumping Lobbies response packet...");
+    result.messages.forEach(msg => {
+        debug(msg.toString())
+    })
     debug(result.messages.join().toString());
     return {
         connection: result.connection,

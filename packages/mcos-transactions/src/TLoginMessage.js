@@ -16,9 +16,11 @@
 
 import { createLogger } from 'bunyan'
 import { TSMessageBase } from '../../mcos-gateway/src/TMessageBase.js'
+import createDebug from 'debug'
 
-const appName = 'mcos'
+const appName = 'mcos:transaction:login'
 
+const debug = createDebug(appName)
 const log = createLogger({ name: appName })
 
 /**

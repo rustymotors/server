@@ -15,7 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import chai, { expect } from "chai";
-import { AdminServer, resetQueue, SocketWithConnectionInfo } from "../src/adminServer.js";
+import { AdminServer } from "../src/adminServer.js";
+import { resetQueue } from "../src/resetQueue.js";
 import { describe, it } from "mocha";
 import { mock } from "ts-mockito";
 import { Socket } from "net";
@@ -45,7 +46,8 @@ describe("AdminServer", () => {
 describe("resetQueue()", function () {
     it("should reset the inQueue property to true for all connections", function () {
         // arrange
-        const inputConnectionList: SocketWithConnectionInfo[] = [
+        /** @type {import("../src/connections.js").SocketWithConnectionInfo[]} */
+        const inputConnectionList = [
             {
                 socket: mock(Socket),
                 seq: 0,
@@ -80,7 +82,8 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
         ];
-        const expectedConnectionList: SocketWithConnectionInfo[] = [
+        /** @type {import("../src/connections.js").SocketWithConnectionInfo[]} */
+        const expectedConnectionList = [
             {
                 socket: mock(Socket),
                 seq: 0,
@@ -117,7 +120,8 @@ describe("resetQueue()", function () {
         ];
 
         // act
-        const result: SocketWithConnectionInfo[] = JSON.parse(
+        /** @type {import("../src/connections.js").SocketWithConnectionInfo[]} */
+        const result = JSON.parse(
             resetQueue(inputConnectionList).body
         );
 

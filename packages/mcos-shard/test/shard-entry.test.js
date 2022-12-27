@@ -1,3 +1,4 @@
+import { describe, it } from "mocha";
 import { expect } from "chai";
 import { ShardEntry } from "../src/shard-entry.js";
 

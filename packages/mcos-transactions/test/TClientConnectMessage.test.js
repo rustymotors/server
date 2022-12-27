@@ -18,23 +18,6 @@ import chai from "chai";
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
 import { describe, it } from "mocha";
 
-export declare type FIELD_TYPE =
-    | "boolean"
-    | "binary"
-    | "byte"
-    | "char"
-    | "u16"
-    | "u32";
-
-export declare type ByteField = {
-    name: string;
-    order: "little" | "big";
-    offset: number;
-    size: number;
-    type: FIELD_TYPE;
-    value: Buffer;
-};
-
 chai.should();
 
 describe("TClientConnectMessage", () => {
@@ -51,7 +34,8 @@ describe("TClientConnectMessage", () => {
         it("should return a ByteField object when passed a valid field name", () => {
             // Arrange
             const testMessage = new TClientConnectMessage();
-            const expectedField: ByteField = {
+            /** @type {import('../../mcos-gateway/src/BinaryStructure.js').ByteField} */
+            const expectedField = {
                 name: "customerId",
                 size: 4,
                 offset: 13,

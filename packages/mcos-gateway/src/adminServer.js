@@ -16,25 +16,16 @@
 
 import { getAllConnections } from "./index.js";
 import { createLogger } from 'bunyan'
+import { releaseQueue } from "./releaseQueue.js";
+import { listConnections } from "./listConnections.js";
+import { resetQueue } from "./resetQueue.js";
 
 const appName = 'mcos'
 
 const log = createLogger({ name: appName })
 
 
-// https://careerkarma.com/blog/converting-circular-structure-to-json/
-function replacerFunc() {
-    const visited = new WeakSet();
-    return (/** @type {string} */ _key, /** @type {object} */ value) => {
-        if (typeof value === "object" && value !== null) {
-            if (visited.has(value)) {
-                return;
-            }
-            visited.add(value);
-        }
-        return value;
-    };
-}
+
 
 /**
  * Please use {@link AdminServer.getAdminServer()}
@@ -139,83 +130,4 @@ export class AdminServer {
     }
 }
 
-/**
- * 
- * @param {import("./connections.js").SocketWithConnectionInfo[]} connections 
- * @returns {{
-    code: number;
-    headers: import("node:http").OutgoingHttpHeaders | import("node:http").OutgoingHttpHeader[] | undefined;
-    body: string;
-}}
- */
-export function listConnections(connections) {
-    let responseString = "";
-    connections.forEach((connection, index) => {
-        const displayConnection = `
-    index: ${index} - ${connection.id}
-        remoteAddress: ${connection.socket.remoteAddress}:${connection.localPort}
-        inQueue:       ${connection.inQueue}
-    `;
-        responseString = responseString.concat(displayConnection);
-    });
 
-    return {
-        code: 200,
-        headers: { "Content-Type": "text/plain" },
-        body: responseString,
-    };
-}
-
-/**
- * 
- * @param {import("./connections.js").SocketWithConnectionInfo[]} connections 
- * @param {string} connectionId 
- * @returns {{
-    code: number;
-    headers: import("node:http").OutgoingHttpHeaders | import("node:http").OutgoingHttpHeader[] | undefined | undefined;
-    body: string;
-}}
- */
-export function releaseQueue(
-    connections,
-    connectionId
-) {
-    const connectionToRelease = connections.find((connection) => {
-        return connection.id === connectionId;
-    });
-    if (typeof connectionToRelease === "undefined") {
-        return {
-            code: 422,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: "connection not found" }),
-        };
-    }
-    connectionToRelease.inQueue = false;
-    connectionToRelease.socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
-    return {
-        code: 200,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: "ok" }),
-    };
-}
-
-/**
- * 
- * @param {import("./connections.js").SocketWithConnectionInfo[]} connections 
- * @returns {{
-    code: number;
-    headers: import("node:http").OutgoingHttpHeaders | import("node:http").OutgoingHttpHeader[] | undefined;
-    body: string;
-}}
- */
-export function resetQueue(connections) {
-    const resetConnections = connections.map((c) => {
-        c.inQueue = true;
-        return c;
-    });
-    return {
-        code: 200,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(resetConnections, replacerFunc()),
-    };
-}

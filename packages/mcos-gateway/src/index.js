@@ -16,7 +16,7 @@
 
 import * as http from "node:http";
 import { createServer as createSocketServer } from "node:net";
-import { selectConnection } from "./connections.js";
+import { findOrNewConnection } from "./connections.js";
 import { dataHandler } from "./sockets.js";
 import { httpListener as httpHandler } from "./web.js";
 export { getAllConnections } from "./connections.js";
@@ -63,7 +63,7 @@ function socketListener(incomingSocket) {
  */
 function TCPListener(incomingSocket) {
     // Get a connection record
-    const connectionRecord = selectConnection(incomingSocket);
+    const connectionRecord = findOrNewConnection(incomingSocket);
 
     const { localPort, remoteAddress } = incomingSocket;
     log.info(`Client ${remoteAddress} connected to port ${localPort}`);

@@ -1,6 +1,6 @@
 import { getPersonasByPersonaId } from "../../../mcos-persona/src/index.js";
 import { NPSUserInfo } from "../NPSUserInfo.js";
-import { selectOrCreateEncryptors } from "../../../mcos-gateway/src/encryption.js";
+import { createEncrypters, selectEncryptors } from "../../../mcos-gateway/src/encryption.js";
 import { MessagePacket } from "../MessagePacket.js";
 import { DatabaseManager } from "../../../mcos-database/src/index.js";
 import createDebug from 'debug'
@@ -88,8 +88,7 @@ export async function _npsRequestGameConnectServer(
         .catch((/** @type {unknown} */ error) => {
             if (error instanceof Error) {
                 debug(
-                    `Unable to fetch session key for customerId ${customerId.toString()}: ${
-                        error.message
+                    `Unable to fetch session key for customerId ${customerId.toString()}: ${error.message
                     })}`
                 );
             }
@@ -102,10 +101,20 @@ export async function _npsRequestGameConnectServer(
         throw new Error("Error fetching session keys!");
     }
 
-    const encryptionSession = selectOrCreateEncryptors(
-        dataConnection.connection,
-        keys
-    );
+    let encryptionSession;
+
+    try {
+        encryptionSession = selectEncryptors(
+            dataConnection,
+        );
+
+    } catch (error) {
+        encryptionSession = createEncrypters(
+            dataConnection.connection,
+            keys
+        );
+
+    }
 
     dataConnection.connection.encryptionSession = encryptionSession;
 

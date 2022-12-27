@@ -15,42 +15,49 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import chai from "chai";
-import { BinaryStructure } from "../src/BinaryStructure.js";
+import { GSMessageBase } from "../src/GMessageBase.js";
 import { describe, it } from "mocha";
+import { ByteField } from "../src/BinaryStructure.js";
 
 chai.should();
 
-describe("BinaryStructure", () => {
+describe("GSMessageBase", () => {
     describe(".byteLength", () => {
-        it("should have a value of 0", () => {
+        it("should hvave a value of 2", () => {
             // Arrange
-            const testStructure = new BinaryStructure();
+            const testMessage = new GSMessageBase();
 
             // Assert
-            testStructure.getByteLength().should.equal(0);
+            testMessage.getByteLength().should.equal(10);
         });
     });
-    describe("#serialize", () => {
-        it("should throw when passed a byteStream larger then the internal fields array", () => {
+    describe("#deserialize", () => {
+        it("should handle an input stream without errors", () => {
             // Arrange
-            const inputStream = Buffer.from("This is a pretty decent size.");
-            const testStructure = new BinaryStructure();
+            const testMessage = new GSMessageBase();
 
             // Assert
             (() => {
-                return testStructure.deserialize(inputStream);
-            }).should.throw();
+                return testMessage.deserialize(Buffer.from([1, 2, 3, 4]));
+            }).should.not.throw();
         });
     });
     describe("#get", () => {
-        it("should throw when passed a name not found in the internal fields array", () => {
+        it("should return a ByteField object when passed a valid field name", () => {
             // Arrange
-            const testStructure = new BinaryStructure();
+            const testMessage = new GSMessageBase();
+            /** @type {ByteField} */
+            const expectedField = {
+                name: "msgId",
+                size: 2,
+                offset: 0,
+                type: "u16",
+                value: Buffer.alloc(2),
+                order: "little",
+            };
 
             // Assert
-            (() => {
-                return testStructure.get("someFiled");
-            }).should.throw();
+            testMessage.get("msgId").should.deep.equal(expectedField);
         });
     });
 });

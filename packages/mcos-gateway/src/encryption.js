@@ -121,45 +121,6 @@ export function selectEncryptors(
     throw new Error(errMessage);
 }
 
-/**
- *
- * @param {import("./connections.js").SocketWithConnectionInfo} dataConnection
- * @returns {import("./connections.js").EncryptionSession}
- */
-export function selectEncryptorsForSocket(
-    dataConnection
-) {
-    const { localPort, remoteAddress } = dataConnection;
-
-    if (
-        typeof localPort === "undefined" ||
-        typeof remoteAddress === "undefined"
-    ) {
-        const errMessage = `[selectEncryptorsForSocket]Either localPort or remoteAddress is missing on socket. Can not continue.`;
-        log.error(errMessage);
-        throw new Error(errMessage);
-    }
-    const wantedId = `${remoteAddress}:${localPort}`;
-
-    const existingEncryptor = encryptionSessions.find((e) => {
-        const thisId = `${e.remoteAddress}:${e.localPort}`;
-        debug(
-            `[selectEncryptorsForSocket] Checking ${thisId} === ${wantedId} ?`
-        );
-        return thisId === wantedId;
-    });
-
-    if (typeof existingEncryptor !== "undefined") {
-        debug(
-            `Located existing encryption session for socket with connection id ${dataConnection.id}`
-        );
-        return existingEncryptor;
-    }
-
-    const errMessage = `Unable to select encryptors for socket with connection id ${dataConnection.id}`;
-    log.error(errMessage);
-    throw new Error(errMessage);
-}
 
 /**
  *
@@ -167,7 +128,7 @@ export function selectEncryptorsForSocket(
  * @param {SessionRecord} keys
  * @returns {import("./connections.js").EncryptionSession}
  */
-export function selectOrCreateEncryptors(
+function selectOrCreateEncryptors(
     dataConnection,
     keys
 ) {
@@ -196,6 +157,18 @@ export function selectOrCreateEncryptors(
         return existingEncryptor;
     }
 
+    const newSession = createEncrypters(dataConnection, keys);
+
+    return newSession;
+}
+
+/**
+ * 
+ * @param {import("./connections.js").SocketWithConnectionInfo} dataConnection 
+ * @param {SessionRecord} keys 
+ * @returns {import("./connections.js").EncryptionSession}
+ */
+export function createEncrypters(dataConnection, keys) {
     const newSession = generateEncryptionPair(dataConnection, keys);
 
     debug(
@@ -203,7 +176,6 @@ export function selectOrCreateEncryptors(
     );
 
     encryptionSessions.push(newSession);
-
     return newSession;
 }
 

@@ -15,10 +15,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { BinaryStructure } from "./BinaryStructure.js";
-import createLogger from 'pino'
-const logger = createLogger()
+import createDebug from 'debug'
+import { createLogger } from 'bunyan'
 
-const log = logger.child({ service: "mcos:shared:structures" });
+
+const appName = 'mcos:gateway:tmessagebase'
+
+const debug = createDebug(appName)
+const log = createLogger({ name: appName })
 
 /**
  * @class

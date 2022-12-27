@@ -69,67 +69,6 @@ export function getAllConnections() {
 }
 
 /**
- * Return an existing connection, or a new one
- *
- * @param {import('node:net').Socket} socket
- * @return {SocketWithConnectionInfo}
- */
-export function selectConnection(socket) {
-    const { localPort, remoteAddress } = socket;
-
-    if (
-        typeof localPort === "undefined" ||
-        typeof remoteAddress === "undefined"
-    ) {
-        const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`;
-        log.error(errMessage);
-        throw new Error(errMessage);
-    }
-
-    const existingConnection = connectionList.find((c) => {
-        return (
-            c.socket.remoteAddress === remoteAddress &&
-            c.localPort === localPort
-        );
-    });
-
-    if (typeof existingConnection !== "undefined") {
-        log.info(
-            `I have seen connections from ${socket.remoteAddress} on ${socket.localPort} before`
-        );
-        existingConnection.socket = socket;
-        debug("Returning found connection after attaching socket");
-        return existingConnection;
-    }
-
-    const newConnectionId = randomUUID();
-    debug(`Creating new connection with id ${newConnectionId}`);
-    /** @type {SocketWithConnectionInfo} */
-    const newConnection = {
-        seq: 0,
-        id: newConnectionId,
-        socket,
-        remoteAddress,
-        localPort,
-        personaId: 0,
-        lastMessageTimestamp: 0,
-        inQueue: true,
-        useEncryption: false,
-    };
-
-    log.info(
-        `I have not seen connections from ${socket.remoteAddress} on ${socket.localPort} before, adding it.`
-    );
-
-    connectionList.push(newConnection);
-
-    debug(
-        `Connection with id of ${newConnection.id} has been added. The connection list now contains ${connectionList.length} connections.`
-    );
-    return newConnection;
-}
-
-/**
  * Update the internal connection record
  *
  * @param {string} connectionId

@@ -1,11 +1,6 @@
+import { describe, it } from "mocha";
 import { expect } from "chai";
 import { handleGetCert, handleGetKey, handleGetRegistry, ShardServer } from "../src/index.js";
-
-interface Envars extends NodeJS.ProcessEnv {
-    CERTIFICATE_FILE?: string;
-    EXTERNAL_HOST?: string;
-    PUBLIC_KEY_FILE?: string;
-}
 
 describe("Shard service", () => {
 
@@ -23,7 +18,7 @@ describe("Shard service", () => {
     describe("handleGetCert", () => {
         it("should return file contents", () => {
             // arrange
-            (process.env as Envars ).CERTIFICATE_FILE = "packages/mcos-shard/test/fixtures/testCert.txt";
+            (process.env ).CERTIFICATE_FILE = "packages/mcos-shard/test/fixtures/testCert.txt";
             const expectedText = 'Hello! I\'m an SSL cert. Honest.'
 
             // act
@@ -35,7 +30,7 @@ describe("Shard service", () => {
 
         it("should throw if env is not set", () => {
             // arrange
-            delete (process.env as Envars ).CERTIFICATE_FILE
+            delete (process.env ).CERTIFICATE_FILE
             const expectedText = 'Please set CERTIFICATE_FILE'
             
             // act
@@ -46,7 +41,7 @@ describe("Shard service", () => {
     describe("handleGetRegistry", () => {
         it("should return file contents", () => {
             // arrange
-            (process.env as Envars ).EXTERNAL_HOST = "0.0.0.0";
+            (process.env ).EXTERNAL_HOST = "0.0.0.0";
             const expectedText = '"AuthLoginServer"="0.0.0.0"'
 
             // act
@@ -58,7 +53,7 @@ describe("Shard service", () => {
 
         it("should throw if env is not set", () => {
             // arrange
-            delete (process.env as Envars ).EXTERNAL_HOST
+            delete (process.env ).EXTERNAL_HOST
             const expectedText = 'Please set EXTERNAL_HOST'
             
             // act
@@ -69,7 +64,7 @@ describe("Shard service", () => {
     describe("handleGetKey", () => {
         it("should return file contents", () => {
             // arrange
-            (process.env as Envars ).PUBLIC_KEY_FILE = "packages/mcos-shard/test/fixtures/testKey.txt";
+            (process.env ).PUBLIC_KEY_FILE = "packages/mcos-shard/test/fixtures/testKey.txt";
             const expectedText = 'I\'m a public key! Wheeeeeeeee'
 
             // act
@@ -81,7 +76,7 @@ describe("Shard service", () => {
 
         it("should throw if env is not set", () => {
             // arrange
-            delete (process.env as Envars ).PUBLIC_KEY_FILE
+            delete (process.env ).PUBLIC_KEY_FILE
             const expectedText = 'Please set PUBLIC_KEY_FILE'
             
             // act

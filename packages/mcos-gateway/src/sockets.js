@@ -18,7 +18,7 @@ import { receiveLobbyData } from "../../mcos-lobby/src/index.js";
 import { receiveLoginData } from "../../mcos-login/src/index.js";
 import { receivePersonaData } from "../../mcos-persona/src/index.js";
 import { receiveTransactionsData } from "../../mcos-transactions/src/index.js";
-import { selectConnection, updateConnection } from "./connections.js";
+import { findOrNewConnection, updateConnection } from "./connections.js";
 import { MessageNode } from "./MessageNode.js";
 import createDebug from 'debug'
 import { createLogger } from 'bunyan'
@@ -244,7 +244,7 @@ export async function dataHandler(
 export function TCPHandler(socket) {
     // Received a new connection
     // Turn it into a connection object
-    const connectionRecord = selectConnection(socket);
+    const connectionRecord = findOrNewConnection(socket);
 
     const { localPort, remoteAddress } = socket;
     log.info(`Client ${remoteAddress} connected to port ${localPort}`);

@@ -1,3 +1,4 @@
+import { describe, it } from "mocha";
 import { expect } from "chai";
 import { Lobby } from "../src/models/Lobby.js";
 
