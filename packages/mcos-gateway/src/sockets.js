@@ -141,10 +141,7 @@ export async function dataHandler(
     networkBuffer.connection.localPort = localPort;
 
     /** @type {GServiceResponse | TServiceResponse} */
-    let result = {
-        err: null,
-        response: undefined,
-    };
+    let result;
 
     // Route the data to the correct service
     // There are 2 happy paths from this point
