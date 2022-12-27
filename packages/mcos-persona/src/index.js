@@ -411,17 +411,13 @@ export class PersonaServer {
  *
  * @export
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").GServiceResponse>}
+ * @return {Promise<import("../../mcos-gateway/src/sockets.js").ServiceResponse>}
  */
 export async function receivePersonaData(
     dataConnection
 ) {
     try {
-        const serviceResponse = await handleData(dataConnection);
-        return {
-            err: null,
-            response: serviceResponse,
-        };
+        return await handleData(dataConnection);
     } catch (error) {
         throw new Error(
             `There was an error in the persona service: ${String(error)}`

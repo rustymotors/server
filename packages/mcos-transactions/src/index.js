@@ -22,27 +22,22 @@ const appName = 'mcos'
 const debug = createDebug(appName)
 
 
-/** @typedef {import('../../mcos-gateway/src/BinaryStructure.js').BinaryStructure} TSMessageBase */
-
 /**
  * Entry and exit point for the lobby service
  *
  * @export
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").TServiceResponse>}
+ * @return {Promise<import("../../mcos-gateway/src/sockets.js").ServiceResponse>}
  */
 export async function receiveTransactionsData(
     dataConnection
 ) {
     debug(`Entering receiveTransactionsData`);
     try {
-        const result = await handleData(dataConnection);
-        debug("Exiting the transactions service");
-        return { err: null, response: result };
+        return await handleData(dataConnection);
     } catch (error) {
-        const errMessage = `There was an error in the transaction service: ${String(
+        throw new Error(`There was an error in the transaction service: ${String(
             error
-        )}`;
-        return { err: new Error(errMessage), response: undefined };
+        )}`);
     }
 }

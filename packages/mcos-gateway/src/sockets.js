@@ -58,41 +58,24 @@ export function toHex(data) {
 
 /**
  * @global
- * @typedef {object} GSMessageArrayWithConnection
- * @property {import("./connections.js").SocketWithConnectionInfo} connection
- * @property {import('./NPSMessage.js').NPSMessage[]} messages
- */
-
-/**
- * @global
- * @typedef {object} GServiceResponse
- * @property {Error | null} err
- * @property { GSMessageArrayWithConnection} [response]
- */
-
-
-/**
- * @global
  * @typedef {import('./BinaryStructure.js').BinaryStructure} TSMessageBase
  */
 
 /**
  * N+ messages, ready for sending, with related connection
  * @global
- * @typedef {object} TSMessageArrayWithConnection
+ * @typedef {object} MessageArrayWithConnection
  * @property {import("./connections.js").SocketWithConnectionInfo} connection
- * @property {MessageNode[] | TSMessageBase[]} messages
+ * @property {import('./NPSMessage.js').NPSMessage[] | MessageNode[] | TSMessageBase[]} messages
  */
 
 /**
  * @global
- * @typedef {object} TServiceResponse
- * @property {Error | null} err
- * @property {TSMessageArrayWithConnection} [response]
+ * @typedef {MessageArrayWithConnection} ServiceResponse
  */
 
 /**
- * @type {Record<number, (arg0: BufferWithConnection) => Promise<GServiceResponse | TServiceResponse>>}
+ * @type {Record<number, (arg0: BufferWithConnection) => Promise<ServiceResponse>>}
  */
 const serviceRouters = {
     8226: receiveLoginData,
@@ -148,20 +131,12 @@ export async function dataHandler(
 
     if (typeof serviceRouters[localPort] !== "undefined") {
         try {
-            /** @type {GServiceResponse | TServiceResponse} */
+            /** @type {ServiceResponse} */
             const result = await serviceRouters[localPort](networkBuffer)
 
-            if (typeof result.response === "undefined") {
-                // This is probably an error, let's assume it's not. For now.
-                // TODO: #1169 verify there are no happy paths where the services would return zero packets
-                const message = "There were zero packets returned for processing";
-                log.info(message);
-                return;
-            }
+            const messages = result.messages;
 
-            const messages = result.response.messages;
-
-            const outboundConnection = result.response.connection;
+            const outboundConnection = result.connection;
 
             const packetCount = messages.length;
             debug(`There are ${packetCount} messages ready for sending`);

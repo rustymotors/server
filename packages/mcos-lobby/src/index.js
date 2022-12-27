@@ -28,18 +28,16 @@ const log = createLogger({ name: appName })
  *
  * @export
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").GServiceResponse>}
+ * @return {Promise<import("../../mcos-gateway/src/sockets.js").ServiceResponse>}
  */
 export async function receiveLobbyData(
     dataConnection
 ) {
     try {
-        return { err: null, response: await handleData(dataConnection) };
+        return await handleData(dataConnection);
     } catch (error) {
-        const errMessage = `There was an error in the lobby service: ${String(
+        throw new Error(`There was an error in the lobby service: ${String(
             error
-        )}`;
-        log.error(errMessage);
-        return { err: new Error(errMessage), response: undefined };
+        )}`);
     }
 }

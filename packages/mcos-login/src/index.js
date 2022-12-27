@@ -125,7 +125,7 @@ export class LoginServer {
  *
  * @export
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").GServiceResponse>}
+ * @return {Promise<import("../../mcos-gateway/src/sockets.js").ServiceResponse>}
  */
 export async function receiveLoginData(
     dataConnection
@@ -135,11 +135,10 @@ export async function receiveLoginData(
         const response = await handleData(dataConnection);
         debug(`There are ${response.messages.length} messages`);
         debug('Exiting login module')
-        return { err: null, response };
+        return response;
     } catch (error) {
-        const errMessage = `There was an error in the login service: ${String(
+        throw new Error(`There was an error in the login service: ${String(
             error
-        )}`;
-        return { err: new Error(errMessage), response: undefined };
+        )}`);
     }
 }
