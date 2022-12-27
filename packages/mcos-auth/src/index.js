@@ -14,14 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import createDebug from 'debug'
 import { createLogger } from 'bunyan'
-import { IncomingMessage, ServerResponse } from 'node:http'
-import { Socket } from 'node:net'
 
-const appName = 'mcos'
+const appName = 'mcos:auth'
 
-const debug = createDebug(appName)
 const log = createLogger({ name: appName })
 
 
@@ -69,9 +65,9 @@ export class AuthLogin {
     /**
      * Handle incoming http requests
      *
-     * @returns {ServerResponse}
-     * @param {IncomingMessage} request
-     * @param {ServerResponse} response
+     * @returns {import('node:http').ServerResponse}
+     * @param {import('node:http').IncomingMessage} request
+     * @param {import('node:http').ServerResponse} response
      */
     handleRequest(
         request,
@@ -90,7 +86,7 @@ export class AuthLogin {
 
     /**
      * @private
-     * @param {Socket} socket
+     * @param {import('node:net').Socket} socket
      */
     _socketEventHandler(socket) {
         socket.on("error", (error) => {
