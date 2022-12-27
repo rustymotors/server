@@ -17,7 +17,6 @@
 import chai from "chai";
 import { GSMessageBase } from "../src/GMessageBase.js";
 import { describe, it } from "mocha";
-import { ByteField } from "../src/BinaryStructure.js";
 
 chai.should();
 
@@ -46,7 +45,7 @@ describe("GSMessageBase", () => {
         it("should return a ByteField object when passed a valid field name", () => {
             // Arrange
             const testMessage = new GSMessageBase();
-            /** @type {ByteField} */
+            /** @type {import('../src/BinaryStructure.js').ByteField} */
             const expectedField = {
                 name: "msgId",
                 size: 2,
