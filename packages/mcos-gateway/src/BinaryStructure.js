@@ -159,8 +159,7 @@ export class BinaryStructure {
             debug(`Taking data: ${JSON.stringify(indexes)}`);
             const value = byteStream.slice(indexes.start, indexes.end);
             debug(
-                `Setting ${f.name} with value of ${toHex(value)}, size ${
-                    value.byteLength
+                `Setting ${f.name} with value of ${toHex(value)}, size ${value.byteLength
                 }`
             );
             f.value = value;
@@ -206,18 +205,13 @@ export class BinaryStructure {
         debug("Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
         debug(
-            `Getting a value of ${toHex(value)} from the ${
-                selectedField.name
-            } field with type of ${type} and size of (${value.byteLength},${
-                selectedField.size
+            `Getting a value of ${toHex(value)} from the ${selectedField.name
+            } field with type of ${type} and size of (${value.byteLength},${selectedField.size
             })`
         );
         try {
             if (type === "boolean") {
-                if (value.readInt8() === 0) {
-                    return false;
-                }
-                return true;
+                return (value.readInt8() === 0)
             }
             if (type === "char") {
                 return value.toString("utf8");
@@ -239,9 +233,8 @@ export class BinaryStructure {
             debug("Calling get() in BinaryStructure.. fail!");
             const errMessage = `Error in getValueX: ${String(
                 error
-            )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${
-                value.byteLength
-            }, ${value}`;
+            )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${value.byteLength
+                }, ${value}`;
             throw new Error(errMessage);
         }
     }
@@ -293,9 +286,8 @@ export class BinaryStructure {
             debug("Calling get() in BinaryStructure.. fail!");
             const errMessage = `Error in newValueNumber: ${String(
                 error
-            )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${
-                value.byteLength
-            }, ${newValue}`;
+            )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${value.byteLength
+                }, ${newValue}`;
             throw new Error(errMessage);
         }
     }
