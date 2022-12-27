@@ -91,6 +91,15 @@ export function toHex(data) {
  * @property {TSMessageArrayWithConnection} [response]
  */
 
+/**
+ * @type {Record<number, (arg0: BufferWithConnection) => Promise<GServiceResponse | TServiceResponse>>}
+ */
+const serviceRouters = {
+    8226: receiveLoginData,
+    8228: receivePersonaData,
+    7003: receiveLobbyData,
+    43300: receiveTransactionsData
+}
 
 /**
  * The onData handler
@@ -116,20 +125,10 @@ export async function dataHandler(
 
     const { localPort, remoteAddress } = networkBuffer.connection.socket;
 
-    if (typeof localPort === "undefined") {
+    if (typeof localPort === "undefined" || typeof remoteAddress === "undefined") {
         // Somehow we have recived a connection without a local post specified
         log.error(
-            `Error locating target port for socket, connection id: ${networkBuffer.connectionId}`
-        );
-        log.error("Closing socket.");
-        networkBuffer.connection.socket.end();
-        return;
-    }
-
-    if (typeof remoteAddress === "undefined") {
-        // Somehow we have recived a connection without a local post specified
-        log.error(
-            `Error locating remote address for socket, connection id: ${networkBuffer.connectionId}`
+            `Error locating remote address or target port for socket, connection id: ${networkBuffer.connectionId}`
         );
         log.error("Closing socket.");
         networkBuffer.connection.socket.end();
@@ -140,9 +139,6 @@ export async function dataHandler(
     networkBuffer.connection.remoteAddress = remoteAddress;
     networkBuffer.connection.localPort = localPort;
 
-    /** @type {GServiceResponse | TServiceResponse} */
-    let result;
-
     // Route the data to the correct service
     // There are 2 happy paths from this point
     // * GameService
@@ -150,86 +146,74 @@ export async function dataHandler(
 
     debug(`I have a packet on port ${localPort}`);
 
-    // These are game services
+    if (typeof serviceRouters[localPort] !== "undefined") {
+        try {
+            /** @type {GServiceResponse | TServiceResponse} */
+            const result = await serviceRouters[localPort](networkBuffer)
 
-    result = await handleInboundGameData(localPort, networkBuffer);
-
-    if (typeof result.response === "undefined") {
-        // Possibly a tranactions packet?
-
-        // This is a transaction response.
-
-        result = await handleInboundTransactionData(localPort, networkBuffer);
-    }
-
-    if (result.err !== null) {
-        log.error(
-            `[socket]There was an error processing the packet: ${String(
-                result.err
-            )}`
-        );
-        process.exitCode = -1;
-        return;
-    }
-
-    if (typeof result.response === "undefined") {
-        // This is probably an error, let's assume it's not. For now.
-        // TODO: #1169 verify there are no happy paths where the services would return zero packets
-        const message = "There were zero packets returned for processing";
-        log.info(message);
-        return;
-    }
-
-    const messages = result.response.messages;
-
-    const outboundConnection = result.response.connection;
-
-    const packetCount = messages.length;
-    debug(`There are ${packetCount} messages ready for sending`);
-    if (messages.length >= 1) {
-        messages.forEach((f) => {
-            if (
-                outboundConnection.useEncryption === true &&
-                f instanceof MessageNode
-            ) {
-                if (
-                    typeof outboundConnection.encryptionSession ===
-                        "undefined" ||
-                    typeof f.data === "undefined"
-                ) {
-                    const errMessage =
-                        "There was a fatal error attempting to encrypt the message!";
-                    debug(
-                        `usingEncryption? ${outboundConnection.useEncryption}, packetLength: ${f.data.byteLength}/${f.dataLength}`
-                    );
-                    log.error(errMessage);
-                } else {
-                    debug(
-                        `Message prior to encryption: ${toHex(f.serialize())}`
-                    );
-                    f.updateBuffer(
-                        outboundConnection.encryptionSession.tsCipher.update(
-                            f.data
-                        )
-                    );
-                }
+            if (typeof result.response === "undefined") {
+                // This is probably an error, let's assume it's not. For now.
+                // TODO: #1169 verify there are no happy paths where the services would return zero packets
+                const message = "There were zero packets returned for processing";
+                log.info(message);
+                return;
             }
 
-            debug(`Sending Message: ${toHex(f.serialize())}`);
-            outboundConnection.socket.write(f.serialize());
-        });
-    }
+            const messages = result.response.messages;
 
-    // Update the connection
-    try {
-        updateConnection(outboundConnection.id, outboundConnection);
-    } catch (error) {
-        const errMessage = `There was an error updating the connection: ${String(
-            error
-        )}`;
+            const outboundConnection = result.response.connection;
 
-        log.error(errMessage);
+            const packetCount = messages.length;
+            debug(`There are ${packetCount} messages ready for sending`);
+
+            sendMessages(messages, outboundConnection);
+
+            // Update the connection
+                updateConnection(outboundConnection.id, outboundConnection);
+        } catch (error) {
+            log.error(
+                `There was an error processing the packet: ${String(
+                    error
+                )}`
+            );
+            process.exitCode = -1;
+            return;
+        }
     }
+}
+
+/**
+ * 
+ * @param {import("./NPSMessage.js").NPSMessage[] | MessageNode[] | import("./BinaryStructure.js").BinaryStructure[]} messages 
+ * @param {import("./connections.js").SocketWithConnectionInfo} outboundConnection 
+ */
+function sendMessages(messages, outboundConnection) {
+    messages.forEach((f) => {
+        if (outboundConnection.useEncryption === true &&
+            f instanceof MessageNode) {
+            if (typeof outboundConnection.encryptionSession ===
+                "undefined" ||
+                typeof f.data === "undefined") {
+                const errMessage = "There was a fatal error attempting to encrypt the message!";
+                debug(
+                    `usingEncryption? ${outboundConnection.useEncryption}, packetLength: ${f.data.byteLength}/${f.dataLength}`
+                );
+                log.error(errMessage);
+            } else {
+                debug(
+                    `Message prior to encryption: ${toHex(f.serialize())}`
+                );
+                f.updateBuffer(
+                    outboundConnection.encryptionSession.tsCipher.update(
+                        f.data
+                    )
+                );
+            }
+        }
+
+        debug(`Sending Message: ${toHex(f.serialize())}`);
+        outboundConnection.socket.write(f.serialize());
+    });
 }
 
 /**
@@ -273,74 +257,3 @@ export function TCPHandler(socket) {
     });
 }
 
-/**
- *
- *
- * @param {number} localPort
- * @param {BufferWithConnection} networkBuffer
- * @return {Promise<GServiceResponse>}
- */
-async function handleInboundGameData(
-    localPort,
-    networkBuffer
-) {
-    /** @type {GServiceResponse} */
-    let result = { err: null, response: undefined };
-    let handledPackets = false;
-
-    if (localPort === 8226) {
-        result = await receiveLoginData(networkBuffer);
-        debug("Back in socket manager");
-        handledPackets = true;
-    }
-
-    if (localPort === 8228) {
-        result = await receivePersonaData(networkBuffer);
-        debug("Back in socket manager");
-        handledPackets = true;
-    }
-
-    if (localPort === 7003) {
-        result = await receiveLobbyData(networkBuffer);
-        debug("Back in socket manager");
-        handledPackets = true;
-    }
-
-    if (!handledPackets) {
-        debug("The packet was not for a game service");
-        return result;
-    }
-
-    // TODO: #1170 Create compression method and compress packet if needed
-    return result;
-}
-
-/**
- *
- *
- * @param {number} localPort
- * @param {BufferWithConnection} networkBuffer
- * @return {Promise<TServiceResponse>}
- */
-async function handleInboundTransactionData(
-    localPort,
-    networkBuffer
-) {
-    /** @type {TServiceResponse} */
-    let result = { err: null, response: undefined };
-    let handledPackets = false;
-
-    if (localPort === 43300) {
-        result = await receiveTransactionsData(networkBuffer);
-        debug("Back in socket manager");
-        handledPackets = true;
-    }
-
-    if (!handledPackets) {
-        debug("The packet was not for a transactions service");
-        return result;
-    }
-
-    // TODO: #1170 Create compression method and compress packet if needed
-    return result;
-}
