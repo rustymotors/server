@@ -122,45 +122,6 @@ export function selectEncryptors(
 }
 
 
-/**
- *
- * @param {import("./connections.js").SocketWithConnectionInfo} dataConnection
- * @param {SessionRecord} keys
- * @returns {import("./connections.js").EncryptionSession}
- */
-function selectOrCreateEncryptors(
-    dataConnection,
-    keys
-) {
-    const { localPort, remoteAddress } = dataConnection;
-
-    if (
-        typeof localPort === "undefined" ||
-        typeof remoteAddress === "undefined"
-    ) {
-        const errMessage = `[selectOrCreateEncryptors]Either localPort or remoteAddress is missing on socket. Can not continue.`;
-        log.error(errMessage);
-        throw new Error(errMessage);
-    }
-    const wantedId = `${remoteAddress}:${localPort}`;
-
-    const existingEncryptor = encryptionSessions.find((e) => {
-        const thisId = `${e.remoteAddress}:${e.localPort}`;
-        debug(`[selectEncryptors] Checking ${thisId} === ${wantedId} ?`);
-        return thisId === wantedId;
-    });
-
-    if (typeof existingEncryptor !== "undefined") {
-        debug(
-            `Located existing encryption session for connection id ${dataConnection.id}`
-        );
-        return existingEncryptor;
-    }
-
-    const newSession = createEncrypters(dataConnection, keys);
-
-    return newSession;
-}
 
 /**
  * 
