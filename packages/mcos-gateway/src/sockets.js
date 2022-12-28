@@ -45,8 +45,6 @@ export function toHex(data) {
     return bytes.join("");
 }
 
-// TODO: #1193 Remove commented out code
-
 /**
  * @global
  * @typedef {object} BufferWithConnection
