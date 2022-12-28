@@ -15,13 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { handleData } from "./internal.js";
-import { createLogger } from 'bunyan'
-
-const appName = 'mcos'
-
-const log = createLogger({ name: appName })
-
-
 
 /**
  * Entry and exit point for the lobby service
