@@ -45,7 +45,6 @@ jobs:
           ./codecov-linux -v -n ${{ matrix.node-version }} -F database
           ./codecov-linux -v -n ${{ matrix.node-version }} -F gateway
           ./codecov-linux -v -n ${{ matrix.node-version }} -F lobby
-          ./codecov-linux -v -n ${{ matrix.node-version }} -F logger
           ./codecov-linux -v -n ${{ matrix.node-version }} -F login
           ./codecov-linux -v -n ${{ matrix.node-version }} -F patch
           ./codecov-linux -v -n ${{ matrix.node-version }} -F persona

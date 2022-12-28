@@ -38,7 +38,7 @@ flags:
   logger:
     paths:
       - packages/mcos-logger/**
-    carryforward: true
+    carryforward: false
   shared-structures:
     paths:
       - packages/mcos-shared/src/structures**

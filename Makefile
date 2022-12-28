@@ -17,7 +17,7 @@ start:
 prod_node:
 	npx tsc -b --verbose
 	docker-compose --file docker-compose.yml up -d --build
-	docker-compose logs -f --tail 1000
+	docker-compose logs node -f --tail 1000
 
 down:
 	docker-compose down

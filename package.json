@@ -14,7 +14,7 @@
   "scripts": {
     "build": "tsc",
     "format": "prettier --write \"packages/**/*.ts\" \"src/**/*.ts\"",
-    "test": "c8 ts-node --esm node_modules/.bin/mocha packages/**/*.test.ts",
+    "test": "c8 mocha packages/**/*.test.js",
     "build:test": "npm run format && npm run build && npm run test",
     "prod": "make prod_node",
     "prod:stop": "docker-compose stop",
@@ -30,10 +30,13 @@
   },
   "dependencies": {
     "@types/pg": "8.6.6",
+    "bunyan": "1.8.15",
+    "debug": "4.3.4",
     "mcos-gateway": "*",
     "mcos-lobby": "*",
     "mcos-login": "*",
     "pg": "8.8.0",
+    "pino": "8.8.0",
     "prettier": "2.8.1",
     "prettier-eslint-cli": "6.0.1",
     "ts-node": "10.9.1"
@@ -57,10 +60,6 @@
     "node": "18.12.1",
     "npm": "9.2.0"
   },
-  "workspaces": [
-    "packages/mcos-logger",
-    "packages/mcos-types"
-  ],
   "c8": {
     "all": true,
     "reporter": [
