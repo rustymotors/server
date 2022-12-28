@@ -39,7 +39,7 @@ const log = createLogger({ name: appName })
  * @private
  * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").TSMessageArrayWithConnection}
+ * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
 function _setOptions(
     connection,
@@ -69,7 +69,7 @@ function _setOptions(
  *
  * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").TSMessageArrayWithConnection}
+ * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  * @memberof MCOTServer
  */
 function handleSetOptions(
@@ -85,7 +85,7 @@ function handleSetOptions(
  * @private
  * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").TSMessageArrayWithConnection}
+ * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
 function _trackingMessage(
     connection,
@@ -116,7 +116,7 @@ function _trackingMessage(
  *
  * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").TSMessageArrayWithConnection}
+ * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  * @memberof MCOTServer
  */
 function handleTrackingMessage(
@@ -132,7 +132,7 @@ function handleTrackingMessage(
  * @private
  * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").TSMessageArrayWithConnection}
+ * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
 function _updatePlayerPhysical(
     connection,
@@ -163,7 +163,7 @@ function _updatePlayerPhysical(
  *
  * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").TSMessageArrayWithConnection}
+ * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  * @memberof MCOTServer
  */
 function handleUpdatePlayerPhysical(
@@ -177,7 +177,7 @@ function handleUpdatePlayerPhysical(
 /**
  * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} connection
  * @param {MessageNode} packet
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").TSMessageArrayWithConnection>}
+ * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
  */
 async function clientConnect(
     connection,
@@ -253,7 +253,7 @@ async function clientConnect(
  *
  * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").TSMessageArrayWithConnection>}
+ * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
  * @memberof MCOTServer
  */
 async function handleClientConnect(
@@ -272,7 +272,7 @@ async function handleClientConnect(
  * @private
  * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").TSMessageArrayWithConnection}>}
+ * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}>}
  */
 function _login(
     connection,
@@ -302,7 +302,7 @@ function _login(
  *
  * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").TSMessageArrayWithConnection}
+ * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  * @memberof MCOTServer
  */
 function handleLoginMessage(
@@ -321,7 +321,7 @@ function handleLoginMessage(
  * @private
  * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").TSMessageArrayWithConnection}
+ * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
 function _logout(
     connection,
@@ -355,7 +355,7 @@ function _logout(
  *
  * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").TSMessageArrayWithConnection}
+ * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
 function handleLogoutMessage(
     conn,
@@ -373,7 +373,7 @@ function handleLogoutMessage(
  * @private
  * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").TSMessageArrayWithConnection}
+ * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
 function _getLobbies(
     connection,
@@ -432,7 +432,7 @@ function _getLobbies(
  *
  * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").TSMessageArrayWithConnection}
+ * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  * @memberof MCOTServer
  */
 function handleGetLobbiesMessage(
@@ -455,7 +455,7 @@ function handleGetLobbiesMessage(
  * Handles the getStockCarInfo message
  * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} connection
  * @param {MessageNode} packet
- * @returns {import("../../mcos-gateway/src/sockets.js").TSMessageArrayWithConnection}
+ * @returns {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
 function getStockCarInfo(
     connection,
@@ -492,7 +492,7 @@ function getStockCarInfo(
  *
  * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").TSMessageArrayWithConnection}
+ * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
 function handleShockCarInfoMessage(
     conn,

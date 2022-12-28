@@ -19,28 +19,13 @@ import { messageHandlers } from "./handlers.js";
 import createDebug from 'debug'
 import { createLogger } from 'bunyan'
 import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
+import { toHex } from "../../mcos-gateway/src/BinaryStructure.js";
 
 const appName = 'mcos'
 
 const debug = createDebug(appName)
 const log = createLogger({ name: appName })
 
-
-/**
- * Convert to zero padded hex
- *
- * @export
- * @param {Buffer} data
- * @return {string}
- */
-export function toHex(data) {
-    /** @type {string[]} */
-    const bytes = [];
-    data.forEach((b) => {
-        bytes.push(b.toString(16).toUpperCase().padStart(2, "0"));
-    });
-    return bytes.join("");
-}
 
 /**
  *
@@ -109,8 +94,7 @@ function tryDecryptBuffer(
     } catch (error) {
         return {
             err: new Error(
-                `Decrypt() exception thrown! Disconnecting...conId:${
-                    dataConnection.connectionId
+                `Decrypt() exception thrown! Disconnecting...conId:${dataConnection.connectionId
                 }: ${String(error)}`
             ),
             data: null,
@@ -150,7 +134,7 @@ function _MSG_STRING(messageID) {
  * Route or process MCOTS commands
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
  * @param {MessageNode} node
- * @returns {Promise<import("../../mcos-gateway/src/sockets.js").TServiceResponse>}
+ * @returns {Promise<import("../../mcos-gateway/src/sockets.js").ServiceResponse>}
  */
 async function processInput(
     dataConnection,
@@ -171,31 +155,22 @@ async function processInput(
         try {
             const responsePackets =
                 await result.handler(dataConnection.connection, node);
-            return {
-                err: null,
-                response: responsePackets,
-            };
+            return responsePackets
         } catch (error) {
-            return {
-                err: new Error(String(error)),
-                response: undefined,
-            };
+            throw new Error(`Error handling packet: ${String(error)}`)
         }
     }
 
     node.setAppId(dataConnection.connection.personaId);
-    return {
-        err: new Error(`Message Number Not Handled: ${currentMessageNo} (${currentMessageString})
-        conID: ${node.toFrom}  PersonaID: ${node.appId}`),
-        response: undefined,
-    };
+
+    throw new Error(`Message Number Not Handled: ${currentMessageNo} (${currentMessageString}`)
 }
 
 /**
  * 
  * @param {MessageNode} message 
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection 
- * @returns {Promise<import("../../mcos-gateway/src/sockets.js").TServiceResponse>}
+ * @returns {Promise<import("../../mcos-gateway/src/sockets.js").ServiceResponse>}
  */
 async function messageReceived(
     message,
@@ -220,10 +195,7 @@ async function messageReceived(
         if (message.flags - 8 >= 0) {
             const result = tryDecryptBuffer(message, dataConnection);
             if (result.err !== null || result.data === null) {
-                return {
-                    err: new Error(String(result.err)),
-                    response: undefined,
-                };
+                throw new Error(String(result.err))
             }
             // Update the MessageNode with the deciphered buffer
             message.updateBuffer(result.data);
@@ -236,7 +208,7 @@ async function messageReceived(
 
 /**
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").TSMessageArrayWithConnection>}
+ * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
  */
 export async function handleData(
     dataConnection
@@ -248,7 +220,7 @@ export async function handleData(
         typeof localPort === "undefined" ||
         typeof remoteAddress === "undefined"
     ) {
-        const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`;
+        const errMessage = `Either localPort or remoteAddress is missing on socket.Can not continue.`;
         log.error(errMessage);
         throw new Error(errMessage);
     }
@@ -259,11 +231,12 @@ export async function handleData(
     debug(
         `[handle]Received TCP packet',
       ${JSON.stringify({
-          localPort,
-          remoteAddress,
-          direction: messageNode.direction,
-          data: data.toString("hex"),
-      })}`
+            localPort,
+            remoteAddress,
+            direction: messageNode.direction,
+            data: data.toString("hex"),
+        })
+        } `
     );
     messageNode.dumpPacket();
 
@@ -274,10 +247,10 @@ export async function handleData(
             encrypters.tsDecipher.update(messageNode.data)
         );
         debug(
-            `Message number after attempting decryption: ${messageNode.msgNo}`
+            `Message number after attempting decryption: ${messageNode.msgNo} `
         );
         debug(
-            `Raw Packet after decryption: ${toHex(messageNode.rawPacket)}`
+            `Raw Packet after decryption: ${toHex(messageNode.rawPacket)} `
         );
     } else {
         debug(
@@ -285,20 +258,16 @@ export async function handleData(
         );
     }
 
-    const processedPacket = await messageReceived(messageNode, dataConnection);
-    debug("Back in transacation server");
-
-    if (
-        processedPacket.err !== null ||
-        typeof processedPacket.response === "undefined"
-    ) {
-        const errMessage = `Error processing packet: ${processedPacket.err}`;
-        log.error(errMessage);
-        throw new Error(errMessage);
+    try {
+        const processedPacket = await messageReceived(messageNode, dataConnection);
+        debug("Back in transacation server");
+        return {
+            connection: processedPacket.connection,
+            messages: processedPacket.messages,
+        };
+    } catch (error) {
+        throw new Error(`Error processing packet: ${String(error)} `);
     }
 
-    return {
-        connection: processedPacket.response.connection,
-        messages: processedPacket.response.messages,
-    };
+
 }
