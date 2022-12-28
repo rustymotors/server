@@ -1,18 +1,14 @@
-export type NpsCommandMap = {
-    name: string;
-    value: number;
-    module: "Lobby" | "Login";
-};
+
 
 /**
  * Commands from the game client to the login server
  * @export
  * @readonly
- * @type {NpsCommandMap[]}
+ * @type {import("../../mcos-lobby/src/NPS_LOBBY_COMMANDS.js").NpsCommandMap[]}
  */
 
 
-export const NPS_LOGINCLIENT_COMMANDS: NpsCommandMap[] = [
+export const NPS_LOGINCLIENT_COMMANDS = [
     { name: "NPS_USER_LOGIN", value: 1281, module: "Login" },
     { name: "NPS_GAME_LOGIN", value: 1282, module: "Login" },
     { name: "NPS_REGISTER_GAME_LOGIN", value: 1283, module: "Login" },

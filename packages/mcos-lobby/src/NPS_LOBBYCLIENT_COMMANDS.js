@@ -1,17 +1,13 @@
-export type NpsCommandMap = {
-    name: string;
-    value: number;
-    module: "Lobby" | "Login";
-};
+
 
 /**
  * Commands from the game client to the game server
  * @export
  * @readonly
- * @type {NpsCommandMap[]}
+ * @type {import("./NPS_LOBBY_COMMANDS.js").NpsCommandMap[]}
  */
 
-export const NPS_LOBBYCLIENT_COMMANDS: NpsCommandMap[] = [
+export const NPS_LOBBYCLIENT_COMMANDS = [
     { name: "NPS_LOGIN", value: 256, module: "Lobby" },
     { name: "NPS_GET_USER_LIST", value: 257, module: "Lobby" },
     { name: "NPS_GET_MY_USER_DATA", value: 258, module: "Lobby" },

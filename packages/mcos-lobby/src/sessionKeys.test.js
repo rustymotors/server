@@ -1,5 +1,6 @@
+import { describe, it } from "mocha";
 import { expect } from "chai";
-import { _generateSessionKeyBuffer } from "..//src/handlers/requestConnectGameServer.js";
+import { _generateSessionKeyBuffer } from "./handlers/requestConnectGameServer.js";
 
 describe("_generateSessionKeyBuffer", function () {
     it("should return a buffer", function () {

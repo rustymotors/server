@@ -1,18 +1,20 @@
 import { NPS_LOBBYCLIENT_COMMANDS } from "./NPS_LOBBYCLIENT_COMMANDS.js";
 import { NPS_LOBBYSERVER_COMMANDS } from "./NPS_LOBBYSERVER_COMMANDS.js";
 
-export type NpsCommandMap = {
-    name: string;
-    value: number;
-    module: "Lobby" | "Login";
-};
+/**
+ * @global
+ * @typedef {object} NpsCommandMap
+ * @property {string} name
+ * @property {number} value
+ * @property {"Lobby" | "Login"} module
+ */
 
 /**
  * @export
  * @readonly
  * @type {NpsCommandMap[]}
  */
-export const NPS_LOBBY_COMMANDS: NpsCommandMap[] = [
+export const NPS_LOBBY_COMMANDS = [
     ...NPS_LOBBYCLIENT_COMMANDS,
     ...NPS_LOBBYSERVER_COMMANDS,
 ];

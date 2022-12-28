@@ -1,3 +1,4 @@
+import { describe, it } from "mocha";
 import { expect } from "chai";
 import { Session } from "./Session.js";
 
