@@ -17,13 +17,10 @@
 import { DatabaseManager } from "../../mcos-database/src/index.js";
 import { handleData } from "./internal.js";
 import createDebug from 'debug'
-import { createLogger } from 'bunyan'
 
 const appName = 'mcos:login'
 
-//#region Init
 const debug = createDebug(appName)
-const log = createLogger({ name: appName })
 
 /**
  * Manages the initial game connection setup and teardown.
