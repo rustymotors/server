@@ -23,7 +23,6 @@ import { TLobbyMessage } from "./TLobbyMessage.js";
 import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
 import { StockCar } from "./StockCar.js";
 import createDebug from 'debug'
-import { createLogger } from 'bunyan'
 import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
 import { toHex } from "../../mcos-gateway/src/sockets.js";
 import { createEncrypters } from "../../mcos-gateway/src/encryption.js";
@@ -31,7 +30,6 @@ import { createEncrypters } from "../../mcos-gateway/src/encryption.js";
 const appName = 'mcos'
 
 const debug = createDebug(appName)
-const log = createLogger({ name: appName })
 
 
 /**
