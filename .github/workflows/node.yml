@@ -33,6 +33,7 @@ jobs:
       - name: Codecov
         env: # Or as an environment variable
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          GITHUB_WORKFLOW: "Hello test with spaces"
         run: |
           curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import
           curl -Os https://uploader.codecov.io/latest/codecov-linux
