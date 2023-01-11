@@ -13,7 +13,7 @@ const log = createLogger({ name: appName })
 /**
  * Takes an plaintext command packet and return the encrypted bytes
  *
- * @return {import("../../../mcos-gateway/src/sockets.js").GSMessageArrayWithConnection}
+ * @return {import("../../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  * @param {import("../../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} dataConnection
  * @param {Buffer} plaintextCommand
  */
@@ -69,7 +69,7 @@ function decryptCmd(
  *
  *
  * @param {import("../../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {import("../../../mcos-gateway/src/sockets.js").GSMessageArrayWithConnection}
+ * @return {import("../../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
 function handleCommand(
     dataConnection
@@ -108,7 +108,7 @@ function handleCommand(
  *
  *
  * @param {import("../../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../../mcos-gateway/src/sockets.js").GSMessageArrayWithConnection>}
+ * @return {Promise<import("../../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
  */
 export async function handleEncryptedNPSCommand(
     dataConnection

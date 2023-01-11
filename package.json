@@ -32,19 +32,19 @@
     "@types/pg": "8.6.6",
     "bunyan": "1.8.15",
     "debug": "4.3.4",
-    "mcos-gateway": "*",
-    "mcos-lobby": "*",
-    "mcos-login": "*",
     "pg": "8.8.0",
     "pino": "8.8.0",
     "prettier": "2.8.2",
     "prettier-eslint-cli": "6.0.1",
-    "ts-node": "10.9.1"
+    "ts-node": "10.9.1",
+    "typescript": "^4.9.4"
   },
   "devDependencies": {
+    "@types/bunyan": "^1.8.8",
     "@types/chai": "4.3.4",
+    "@types/debug": "^4.1.7",
     "@types/mocha": "9.1.1",
-    "@types/node": "18.11.18",
+    "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "5.48.1",
     "@typescript-eslint/parser": "5.48.1",
     "c8": "7.12.0",
@@ -86,5 +86,6 @@
       "@typescript-eslint"
     ],
     "rules": {}
-  }
+  },
+  "packageManager": "yarn@3.3.1"
 }

@@ -48,7 +48,7 @@ const userRecords = [
  * Process a UserLogin packet
  * @private
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").GSMessageArrayWithConnection>}
+ * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
  */
 async function login(
     dataConnection
@@ -135,7 +135,7 @@ async function login(
      */
 
     // Update the data buffer
-    /** @type {import("../../mcos-gateway/src/sockets.js").GSMessageArrayWithConnection} */
+    /** @type {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection} */
     const response = {
         connection: dataConnection.connection,
         messages: [newPacket, newPacket],
@@ -155,7 +155,7 @@ export const messageHandlers = [
  *
  *
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").GSMessageArrayWithConnection>}
+ * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
  */
 export async function handleData(
     dataConnection
