@@ -7,7 +7,7 @@ import { _npsRequestGameConnectServer } from "./requestConnectGameServer.js";
  * @typedef {object} MessageHandler
  * @property {number} opCode
  * @property {string} name
- * @property {(dataConnection: import("../../../mcos-gateway/src/sockets.js").BufferWithConnection) => Promise<import("../../../mcos-gateway/src/sockets.js").GSMessageArrayWithConnection>} handlerFunction
+ * @property {(dataConnection: import("../../../mcos-gateway/src/sockets.js").BufferWithConnection) => Promise<import("../../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>} handlerFunction
  */
 
 /** @type {MessageHandler[]} */

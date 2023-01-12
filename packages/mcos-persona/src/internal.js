@@ -427,7 +427,7 @@ async function validateLicencePlate(data) {
  *
  *
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").GSMessageArrayWithConnection>}
+ * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
  */
 export async function handleData(
     dataConnection
@@ -449,7 +449,7 @@ export async function handleData(
             const requestPacket = new NPSMessage("received").deserialize(data);
             // NPS_REGISTER_GAME_LOGIN = 0x503
             const responsePacket = await handleSelectGamePersona(requestPacket);
-            /** @type {import("../../mcos-gateway/src/sockets.js").GSMessageArrayWithConnection} */
+            /** @type {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection} */
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
@@ -460,7 +460,7 @@ export async function handleData(
         case "507": {
             // NPS_NEW_GAME_ACCOUNT == 0x507
             const responsePacket = await createNewGameAccount(data);
-            /** @type {import("../../mcos-gateway/src/sockets.js").GSMessageArrayWithConnection} */
+            /** @type {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection} */
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
@@ -471,7 +471,7 @@ export async function handleData(
         case "50f": {
             // NPS_REGISTER_GAME_LOGOUT = 0x50F
             const responsePacket = await logoutGameUser(data);
-            /** @type {import("../../mcos-gateway/src/sockets.js").GSMessageArrayWithConnection} */
+            /** @type {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection} */
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
@@ -482,7 +482,7 @@ export async function handleData(
         case "532": {
             // NPS_GET_PERSONA_MAPS = 0x532
             const responsePacket = await getPersonaMaps(data);
-            /** @type {import("../../mcos-gateway/src/sockets.js").GSMessageArrayWithConnection} */
+            /** @type {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection} */
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
@@ -493,7 +493,7 @@ export async function handleData(
         case "533": {
             // NPS_VALIDATE_PERSONA_NAME   = 0x533
             const responsePacket = await validatePersonaName(data);
-            /** @type {import("../../mcos-gateway/src/sockets.js").GSMessageArrayWithConnection} */
+            /** @type {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection} */
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
@@ -503,7 +503,7 @@ export async function handleData(
         case "534": {
             // NPS_CHECK_TOKEN   = 0x534
             const responsePacket = await validateLicencePlate(data);
-            /** @type {import("../../mcos-gateway/src/sockets.js").GSMessageArrayWithConnection} */
+            /** @type {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection} */
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],

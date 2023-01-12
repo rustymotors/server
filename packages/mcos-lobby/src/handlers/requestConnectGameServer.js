@@ -45,7 +45,7 @@ export function _generateSessionKeyBuffer(key) {
  *
  * @private
  * @param {import("../../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../../mcos-gateway/src/sockets.js").GSMessageArrayWithConnection>}
+ * @return {Promise<import("../../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
  */
 export async function _npsRequestGameConnectServer(
     dataConnection
@@ -101,22 +101,18 @@ export async function _npsRequestGameConnectServer(
         throw new Error("Error fetching session keys!");
     }
 
-    let encryptionSession;
-
     try {
-        encryptionSession = selectEncryptors(
+        dataConnection.connection.encryptionSession = selectEncryptors(
             dataConnection,
         );
 
     } catch (error) {
-        encryptionSession = createEncrypters(
+        dataConnection.connection.encryptionSession = createEncrypters(
             dataConnection.connection,
             keys
         );
 
     }
-
-    dataConnection.connection.encryptionSession = encryptionSession;
 
     const packetContent = Buffer.alloc(72);
 

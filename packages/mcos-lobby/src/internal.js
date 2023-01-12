@@ -27,7 +27,7 @@ const debug = createDebug(appName)
 
 /**
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").GSMessageArrayWithConnection>}
+ * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
  */
 export async function handleData(
     dataConnection
