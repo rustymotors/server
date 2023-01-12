@@ -15,12 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { BinaryStructure } from "./BinaryStructure.js";
-import createDebug from 'debug'
-
-
-const appName = 'mcos:gateway:tmessagebase'
-
-const debug = createDebug(appName)
+import log from '../../../log.js'
 
 /**
  * @class
@@ -34,7 +29,7 @@ export class TSMessageBase extends BinaryStructure {
     _byteOrder = "big";
     constructor() {
         super();
-        debug("new TSMessageBase");
+        log.info("new TSMessageBase");
         this._add({
             name: "dataLength",
             order: "little",

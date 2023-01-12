@@ -21,13 +21,11 @@ import { dataHandler } from "./sockets.js";
 import { httpListener as httpHandler } from "./web.js";
 export { getAllConnections } from "./connections.js";
 export { AdminServer } from "./adminServer.js";
-import createDebug from 'debug'
-import { createLogger } from 'bunyan'
+import { readFileSync } from "node:fs";
+import log from '../../../log.js'
+import { error } from "node:console";
 
 const appName = 'mcos'
-
-const debug = createDebug(appName)
-const log = createLogger({ name: appName })
 
 const listeningPortList = [
     3000, 6660, 7003, 8228, 8226, 8227, 9000, 9001, 9002, 9003, 9004, 9005, 9006,
@@ -40,16 +38,45 @@ const listeningPortList = [
  * @returns 
  */
 function socketListener(incomingSocket) {
-    debug(
+    log.info(
         `[gate]Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
     );
 
+    let exitCode = 0
+
+    /** @type {string} */
+let cert;
+
+try {
+  cert = readFileSync('./data/mcouniverse.crt', { encoding: "utf8" })
+} catch (error) {
+  log.error(`Unable to read certificate file: ${String(error)}`)
+  exitCode = -1
+  process.exit(exitCode)
+}
+
+/** @type {string} */
+let key;
+
+try {
+  key = readFileSync('./data/private_key.pem', { encoding: "utf8" })
+} catch (error) {
+  log.error(`Unable to read private file`)
+  exitCode = -1
+  process.exit(exitCode)
+
+}
+
+
     // Is this an HTTP request?
     if (incomingSocket.localPort === 3000) {
-        debug("Web request");
+        log.info("Web request");
         const newServer = new http.Server(httpHandler);
         // Send the socket to the http server instance
         newServer.emit("connection", incomingSocket);
+
+
+
         return;
     }
 
@@ -85,7 +112,7 @@ function TCPListener(incomingSocket) {
 function onSocketError(error) {
     const message = String(error);
     if (message.includes("ECONNRESET") === true) {
-        return log.warn("Connection was reset");
+        return log.info("Connection was reset");
     }
     log.error(`Socket error: ${String(error)}`);
 }
@@ -109,5 +136,5 @@ export function startListeners() {
  */
 function serverListener(port) {
     const listeningPort = String(port).length ? String(port) : "unknown";
-    debug(`Listening on port ${listeningPort}`);
+    log.info(`Listening on port ${listeningPort}`);
 }

@@ -20,14 +20,7 @@ import { receivePersonaData } from "../../mcos-persona/src/index.js";
 import { receiveTransactionsData } from "../../mcos-transactions/src/index.js";
 import { findOrNewConnection, updateConnection } from "./connections.js";
 import { MessageNode } from "./MessageNode.js";
-import createDebug from 'debug'
-import { createLogger } from 'bunyan'
-
-const appName = 'mcos:gateway:socket'
-
-//#region Init
-const debug = createDebug(appName)
-const log = createLogger({ name: appName })
+import log from '../../../log.js'
 
 /**
  * Convert to zero padded hex
@@ -93,7 +86,7 @@ export async function dataHandler(
     data,
     connection
 ) {
-    debug(`data prior to proccessing: ${data.toString("hex")}`);
+    log.info(`data prior to proccessing: ${data.toString("hex")}`);
 
     // Link the data and the connection together
     /** @type {BufferWithConnection} */
@@ -125,7 +118,7 @@ export async function dataHandler(
     // * GameService
     // * TransactionService
 
-    debug(`I have a packet on port ${localPort}`);
+    log.info(`I have a packet on port ${localPort}`);
 
     if (typeof serviceRouters[localPort] !== "undefined") {
         try {
@@ -137,7 +130,7 @@ export async function dataHandler(
             const outboundConnection = result.connection;
 
             const packetCount = messages.length;
-            debug(`There are ${packetCount} messages ready for sending`);
+            log.info(`There are ${packetCount} messages ready for sending`);
 
             sendMessages(messages, outboundConnection);
 
@@ -168,12 +161,12 @@ function sendMessages(messages, outboundConnection) {
                 "undefined" ||
                 typeof f.data === "undefined") {
                 const errMessage = "There was a fatal error attempting to encrypt the message!";
-                debug(
+                log.info(
                     `usingEncryption? ${outboundConnection.useEncryption}, packetLength: ${f.data.byteLength}/${f.dataLength}`
                 );
                 log.error(errMessage);
             } else {
-                debug(
+                log.info(
                     `Message prior to encryption: ${toHex(f.serialize())}`
                 );
                 f.updateBuffer(
@@ -184,7 +177,7 @@ function sendMessages(messages, outboundConnection) {
             }
         }
 
-        debug(`Sending Message: ${toHex(f.serialize())}`);
+        log.info(`Sending Message: ${toHex(f.serialize())}`);
         outboundConnection.socket.write(f.serialize());
     });
 }
@@ -209,9 +202,9 @@ export function TCPHandler(socket) {
          */
 
         log.info("Sending OK to Login packet");
-        debug("[listen2] In tcpListener(pre-queue)");
+        log.info("[listen2] In tcpListener(pre-queue)");
         socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
-        debug("[listen2] In tcpListener(post-queue)");
+        log.info("[listen2] In tcpListener(post-queue)");
         connectionRecord.inQueue = false;
     }
 
@@ -224,7 +217,7 @@ export function TCPHandler(socket) {
     socket.on("error", (error) => {
         const message = String(error);
         if (message.includes("ECONNRESET") === true) {
-            return log.warn("Connection was reset");
+            return log.info("Connection was reset");
         }
         log.error(`Socket error: ${String(error)}`);
     });

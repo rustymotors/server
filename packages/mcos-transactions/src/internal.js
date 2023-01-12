@@ -16,16 +16,9 @@
 
 import { decryptBuffer, selectEncryptors } from "../../mcos-gateway/src/encryption.js";
 import { messageHandlers } from "./handlers.js";
-import createDebug from 'debug'
-import { createLogger } from 'bunyan'
+import log from '../../../log.js'
 import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
 import { toHex } from "../../mcos-gateway/src/BinaryStructure.js";
-
-const appName = 'mcos'
-
-const debug = createDebug(appName)
-const log = createLogger({ name: appName })
-
 
 /**
  *
@@ -53,16 +46,16 @@ function decryptTransactionBuffer(
     dataConnection
 ) {
     const encryptedBuffer = Buffer.from(message.data);
-    debug(
+    log.info(
         `Full packet before decrypting: ${encryptedBuffer.toString("hex")}`
     );
 
-    debug(
+    log.info(
         `Message buffer before decrypting: ${encryptedBuffer.toString("hex")}`
     );
 
     const result = decryptBuffer(dataConnection, encryptedBuffer);
-    debug(
+    log.info(
         `Message buffer after decrypting: ${result.data.toString("hex")}`
     );
 
@@ -143,7 +136,7 @@ async function processInput(
     const currentMessageNo = node.msgNo;
     const currentMessageString = _MSG_STRING(currentMessageNo);
 
-    debug(
+    log.info(
         `We are attempting to process a message with id ${currentMessageNo}(${currentMessageString})`
     );
 
@@ -202,7 +195,7 @@ async function messageReceived(
         }
     }
 
-    debug("Calling processInput()");
+    log.info("Calling processInput()");
     return processInput(dataConnection, message);
 }
 
@@ -228,7 +221,7 @@ export async function handleData(
     const messageNode = new MessageNode("received");
     messageNode.deserialize(data);
 
-    debug(
+    log.info(
         `[handle]Received TCP packet',
       ${JSON.stringify({
             localPort,
@@ -246,21 +239,21 @@ export async function handleData(
         messageNode.updateBuffer(
             encrypters.tsDecipher.update(messageNode.data)
         );
-        debug(
+        log.info(
             `Message number after attempting decryption: ${messageNode.msgNo} `
         );
-        debug(
+        log.info(
             `Raw Packet after decryption: ${toHex(messageNode.rawPacket)} `
         );
     } else {
-        debug(
+        log.info(
             `Message with id of: ${messageNode.msgNo} does not appear to be encrypted`
         );
     }
 
     try {
         const processedPacket = await messageReceived(messageNode, dataConnection);
-        debug("Back in transacation server");
+        log.info("Back in transacation server");
         return {
             connection: processedPacket.connection,
             messages: processedPacket.messages,

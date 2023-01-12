@@ -15,16 +15,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { getAllConnections } from "./index.js";
-import { createLogger } from 'bunyan'
 import { releaseQueue } from "./releaseQueue.js";
 import { listConnections } from "./listConnections.js";
 import { resetQueue } from "./resetQueue.js";
-
-const appName = 'mcos'
-
-const log = createLogger({ name: appName })
-
-
+import log from '../../../log.js'
 
 
 /**

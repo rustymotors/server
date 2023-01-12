@@ -15,14 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { createServer } from "node:http";
-import createDebug from 'debug'
-import { createLogger } from 'bunyan'
-
-const appName = 'mcos'
-
-const debug = createDebug(appName)
-const log = createLogger({ name: appName })
-
+import log from '../../../log.js'
 
 export const CastanetResponse = {
     body: Buffer.from("cafebeef00000000000003", "hex"),
@@ -59,7 +52,7 @@ export class PatchServer {
         });
         server.on("request", this.handleRequest.bind(this));
 
-       debug(`Attempting to bind to port ${port}`);
+       log.info(`Attempting to bind to port ${port}`);
         server.listen(port, host);
     }
 
@@ -97,7 +90,7 @@ export class PatchServer {
         request,
         response
     ) {
-        debug(
+        log.info(
             `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
         );
 

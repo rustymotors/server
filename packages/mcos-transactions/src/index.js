@@ -15,12 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { handleData } from "./internal.js";
-import createDebug from 'debug'
-
-const appName = 'mcos'
-
-const debug = createDebug(appName)
-
+import log from '../../../log.js'
 
 /**
  * Entry and exit point for the lobby service
@@ -32,7 +27,7 @@ const debug = createDebug(appName)
 export async function receiveTransactionsData(
     dataConnection
 ) {
-    debug(`Entering receiveTransactionsData`);
+    log.info(`Entering receiveTransactionsData`);
     try {
         return await handleData(dataConnection);
     } catch (error) {

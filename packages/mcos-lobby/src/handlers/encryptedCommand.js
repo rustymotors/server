@@ -1,14 +1,6 @@
 import { cipherBufferDES, decipherBufferDES } from "../../../mcos-gateway/src/encryption.js";
-import createDebug from 'debug'
-import { createLogger } from 'bunyan'
 import { NPSMessage } from "../../../mcos-gateway/src/NPSMessage.js";
-
-const appName = 'mcos'
-
-const debug = createDebug(appName)
-const log = createLogger({ name: appName })
-
-
+import log from '../../../../log.js'
 
 /**
  * Takes an plaintext command packet and return the encrypted bytes
@@ -31,7 +23,7 @@ function encryptCmd(
         dataConnection.encryptionSession,
         plaintextCommand
     );
-    debug(`[ciphered Cmd: ${result.data.toString("hex")}`);
+    log.info(`[ciphered Cmd: ${result.data.toString("hex")}`);
     dataConnection.encryptionSession = result.session;
     return {
         connection: dataConnection,
@@ -59,7 +51,7 @@ function decryptCmd(
         dataConnection.connection.encryptionSession,
         encryptedCommand
     );
-    debug(`[Deciphered Cmd: ${result.data.toString("hex")}`);
+    log.info(`[Deciphered Cmd: ${result.data.toString("hex")}`);
     dataConnection.connection.encryptionSession = result.session;
     dataConnection.data = result.data;
     return dataConnection;
@@ -90,7 +82,7 @@ function handleCommand(
     packetContent.writeUInt16BE(0x01_01, 369);
     packetContent.writeUInt16BE(0x02_2c, 371);
 
-    debug("Sending a dummy response of 0x229 - NPS_MINI_USER_LIST");
+    log.info("Sending a dummy response of 0x229 - NPS_MINI_USER_LIST");
 
     // Build the packet
     const packetResult = new NPSMessage("sent");

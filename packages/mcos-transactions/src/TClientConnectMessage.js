@@ -15,12 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { TSMessageBase } from '../../mcos-gateway/src/TMessageBase.js'
-import createDebug from 'debug'
-
-const appName = 'mcos:transaction:connect'
-
-const debug = createDebug(appName)
-
+import log from '../../../log.js'
 
 /**
  *
@@ -44,7 +39,7 @@ export class TClientConnectMessage extends TSMessageBase {
      */
     constructor() {
         super();
-        debug("new TClientConnectMessage");
+        log.info("new TClientConnectMessage");
         this._add({
             name: "msgNo",
             order: "little",

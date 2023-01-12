@@ -18,13 +18,7 @@ import { AdminServer } from "./adminServer.js";
 import { AuthLogin } from "../../mcos-auth/src/index.js";
 import { PatchServer } from "../../mcos-patch/src/index.js";
 import { ShardServer } from "../../mcos-shard/src/index.js";
-import createDebug from 'debug'
-import { createLogger } from 'bunyan'
-
-const appName = 'mcos'
-
-const debug = createDebug(appName)
-const log = createLogger({ name: appName })
+import log from '../../../log.js'
 
 
 /**
@@ -38,7 +32,7 @@ export function httpListener(
     res
 ) {
     if (typeof req.url !== "undefined" && req.url.startsWith("/AuthLogin")) {
-        debug("ssl routing request to login web server");
+        log.info("ssl routing request to login web server");
         return AuthLogin.getInstance().handleRequest(req, res);
     }
 
@@ -48,7 +42,7 @@ export function httpListener(
             req.url === "/admin/connections/resetAllQueueState" ||
             req.url.startsWith("/admin"))
     ) {
-        debug("ssl routing request to admin web server");
+        log.info("ssl routing request to admin web server");
         const response = AdminServer.getAdminServer().handleRequest(req);
         return res
             .writeHead(response.code, response.headers)
@@ -60,7 +54,7 @@ export function httpListener(
         req.url === "/games/EA_Seattle/MotorCity/NPS" ||
         req.url === "/games/EA_Seattle/MotorCity/MCO"
     ) {
-        debug("http routing request to patch server");
+        log.info("http routing request to patch server");
         return PatchServer.getInstance().handleRequest(req, res);
     }
     if (
@@ -69,11 +63,11 @@ export function httpListener(
         req.url === "/registry" ||
         req.url === "/ShardList/"
     ) {
-        debug("http routing request to shard server");
+        log.info("http routing request to shard server");
         return ShardServer.getInstance().handleRequest(req, res);
     }
 
-    log.warn(
+    log.info(
         `Unexpected request for ${req.url} from ${req.socket.remoteAddress}, skipping.`
     );
     res.statusCode = 404;

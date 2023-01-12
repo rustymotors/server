@@ -14,12 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { createLogger } from 'bunyan'
-
-const appName = 'mcos:auth'
-
-const log = createLogger({ name: appName })
-
+import log from '../../../log.js'
 
 /**
  * Handles web-based user logins

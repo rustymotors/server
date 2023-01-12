@@ -3,14 +3,8 @@ import { NPSUserInfo } from "../NPSUserInfo.js";
 import { createEncrypters, selectEncryptors } from "../../../mcos-gateway/src/encryption.js";
 import { MessagePacket } from "../MessagePacket.js";
 import { DatabaseManager } from "../../../mcos-database/src/index.js";
-import createDebug from 'debug'
-import { createLogger } from 'bunyan'
 import { NPSMessage } from "../../../mcos-gateway/src/NPSMessage.js";
-
-const appName = 'mcos'
-
-const debug = createDebug(appName)
-const log = createLogger({ name: appName })
+import log from '../../../../log.js'
 
 
 /**
@@ -50,13 +44,13 @@ export function _generateSessionKeyBuffer(key) {
 export async function _npsRequestGameConnectServer(
     dataConnection
 ) {
-    debug(
+    log.info(
         `[inner] Raw bytes in _npsRequestGameConnectServer: ${toHex(
             dataConnection.data
         )}`
     );
 
-    debug(
+    log.info(
         `_npsRequestGameConnectServer: ${JSON.stringify({
             remoteAddress: dataConnection.connection.remoteAddress,
             localPort: dataConnection.connection.localPort,
@@ -67,7 +61,7 @@ export async function _npsRequestGameConnectServer(
     // since the data is a buffer at this point, let's place it in a message structure
     const inboundMessage = MessagePacket.fromBuffer(dataConnection.data);
 
-    debug(`message buffer (${inboundMessage.getBuffer().toString("hex")})`);
+    log.info(`message buffer (${inboundMessage.getBuffer().toString("hex")})`);
 
     // Return a _NPS_UserInfo structure
     const userInfo = new NPSUserInfo("received");
@@ -87,7 +81,7 @@ export async function _npsRequestGameConnectServer(
         .fetchSessionKeyByCustomerId(customerId)
         .catch((/** @type {unknown} */ error) => {
             if (error instanceof Error) {
-                debug(
+                log.info(
                     `Unable to fetch session key for customerId ${customerId.toString()}: ${error.message
                     })}`
                 );
@@ -139,7 +133,7 @@ export async function _npsRequestGameConnectServer(
         packetResult.serialize()
     );
 
-    debug(
+    log.info(
         `!!! outbound lobby login response packet: ${loginResponsePacket
             .getBuffer()
             .toString("hex")}`

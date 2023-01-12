@@ -15,14 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { randomUUID } from "node:crypto";
-import createDebug from 'debug'
-import { createLogger } from 'bunyan'
-
-const appName = 'mcos'
-
-//#region Init
-const debug = createDebug(appName)
-const log = createLogger({ name: appName })
+import log from '../../../log.js'
 
 /**
  * @global
@@ -78,7 +71,7 @@ export function updateConnection(
     connectionId,
     updatedConnection
 ) {
-    debug(`Updating connection with id: ${connectionId}`);
+    log.info(`Updating connection with id: ${connectionId}`);
     try {
         const index = connectionList.findIndex((c) => {
             return c.id === connectionId;
@@ -183,18 +176,18 @@ export function findOrNewConnection(socket) {
 
         // Modern
         existingConnection.socket = socket;
-        debug("[M] Returning found connection after attaching socket");
+        log.info("[M] Returning found connection after attaching socket");
         return existingConnection;
     }
 
     const newConnectionId = randomUUID();
-    debug(`Creating new connection with id ${newConnectionId}`);
+    log.info(`Creating new connection with id ${newConnectionId}`);
     const newConnection = createNewConnection(newConnectionId, socket);
     log.info(
         `I have not seen connections from ${socket.remoteAddress} on ${socket.localPort} before, adding it.`
     );
     const updatedConnectionList = addConnection(newConnection);
-    debug(
+    log.info(
         `Connection with id of ${newConnection.id} has been added. The connection list now contains ${updatedConnectionList.length} connections.`
     );
     return newConnection;
