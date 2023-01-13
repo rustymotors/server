@@ -15,11 +15,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { startListeners } from "./packages/mcos-gateway/src/index.js";
-import { createLogger } from 'bunyan'
+import log from "./log.js"
 
 const appName = 'mcos'
-
-const log = createLogger({ name: appName })
 
 try {
     startListeners();

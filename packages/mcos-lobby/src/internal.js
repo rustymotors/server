@@ -17,13 +17,7 @@
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
 import { _npsHeartbeat } from "./handlers/heartbeat.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
-import createDebug from 'debug'
-
-const appName = 'mcos'
-
-const debug = createDebug(appName)
-
-
+import log from '../../../log.js'
 
 /**
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
@@ -33,7 +27,7 @@ export async function handleData(
     dataConnection
 ) {
     const { localPort, remoteAddress } = dataConnection.connection.socket;
-    debug(
+    log.info(
         `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
     );
     const { data } = dataConnection;

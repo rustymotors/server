@@ -18,14 +18,8 @@ import { DatabaseManager } from "../../mcos-database/src/index.js";
 import { GSMessageBase } from "../../mcos-gateway/src/GMessageBase.js";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { premadeLogin } from "./premadeLogin.js";
-import createDebug from 'debug'
-import { createLogger } from 'bunyan'
 import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
-
-const appName = 'mcos:login:internal'
-
-const debug = createDebug(appName)
-const log = createLogger({ name: appName })
+import log from '../../../log.js'
 
 
 
@@ -59,19 +53,19 @@ async function login(
 
     const newGameMessage = new GSMessageBase();
     newGameMessage.deserialize(data.subarray(0, 10));
-    debug(`Raw game message: ${JSON.stringify(newGameMessage)}`);
+    log.info(`Raw game message: ${JSON.stringify(newGameMessage)}`);
 
-    debug('Requesting NPSUserStatus packet')
+    log.info('Requesting NPSUserStatus packet')
     const userStatus = new NPSUserStatus(data);
-    debug('NPSUserStatus packet creation success')
+    log.info('NPSUserStatus packet creation success')
 
-    debug('Requesting Key extraction')
+    log.info('Requesting Key extraction')
     userStatus.extractSessionKeyFromPacket(data);
-    debug('Key extraction success')
+    log.info('Key extraction success')
 
     const { contextId, sessionkey } = userStatus;
 
-    debug(
+    log.info(
         `UserStatus object from _userLogin,
       ${JSON.stringify({
           userStatus: userStatus.toJSON(),
@@ -93,7 +87,7 @@ async function login(
     }
 
     // Save sessionkey in database under customerId
-    debug("Preparing to update session key in db");
+    log.info("Preparing to update session key in db");
     await DatabaseManager.getInstance()
         .updateSessionKey(
             userRecord.customerId,
@@ -111,7 +105,7 @@ async function login(
     // Create the packet content
     // TODO: #1176 Return the login connection response packet as a MessagePacket object
     const packetContent = premadeLogin();
-    debug(`Using Premade Login: ${packetContent.toString("hex")}`);
+    log.info(`Using Premade Login: ${packetContent.toString("hex")}`);
 
     // MsgId: 0x601
     Buffer.from([0x06, 0x01]).copy(packetContent);
@@ -140,7 +134,7 @@ async function login(
         connection: dataConnection.connection,
         messages: [newPacket, newPacket],
     };
-    debug("Leaving login");
+    log.info("Leaving login");
     return response;
 }
 
@@ -183,11 +177,11 @@ export async function handleData(
 
     try {
         const result = await supportedHandler.handler(dataConnection);
-    debug(`Returning with ${result.messages.length} messages`);
-    debug("Leaving handleData");
+    log.info(`Returning with ${result.messages.length} messages`);
+    log.info("Leaving handleData");
     return result;
     } catch (error) {
-        log.error(error)
+        log.error(String(error))
         throw new Error(`Error handling data: ${String(error)}`)
     }
 }

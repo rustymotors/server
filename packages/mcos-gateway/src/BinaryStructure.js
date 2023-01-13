@@ -14,14 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import createDebug from 'debug'
-import { createLogger } from 'bunyan'
-
-const appName = 'mcos:gateway:binary'
-
-const debug = createDebug(appName)
-const log = createLogger({ name: appName })
-
+import log from '../../../log.js'
 
 /**
  * @global
@@ -104,7 +97,7 @@ export class BinaryStructure {
     _fields = [];
 
     constructor() {
-        debug("new BinaryStructure");
+        log.info("new BinaryStructure");
     }
 
     /**
@@ -115,7 +108,7 @@ export class BinaryStructure {
      */
     _add(field) {
         const newField = { ...field, offset: this._byteOffset };
-        debug(`Adding ${JSON.stringify(newField)}`);
+        log.info(`Adding ${JSON.stringify(newField)}`);
         this._fields.push(newField);
         this._byteLength = this._byteLength + field.size;
         this._byteOffset = this._byteOffset + field.size;
@@ -149,21 +142,21 @@ export class BinaryStructure {
             throw new Error(errMessage);
         }
 
-        debug(
+        log.info(
             `Attempting to deserialize ${byteStream.byteLength} bytes into ${this._fields.length} fields for a total of ${this._byteLength} bytes`
         );
 
         this._fields.forEach((f) => {
-            debug(`Before: ${JSON.stringify(f)}`);
+            log.info(`Before: ${JSON.stringify(f)}`);
             const indexes = { start: f.offset, end: f.offset + f.size };
-            debug(`Taking data: ${JSON.stringify(indexes)}`);
+            log.info(`Taking data: ${JSON.stringify(indexes)}`);
             const value = byteStream.slice(indexes.start, indexes.end);
-            debug(
+            log.info(
                 `Setting ${f.name} with value of ${toHex(value)}, size ${value.byteLength
                 }`
             );
             f.value = value;
-            debug(`After: ${JSON.stringify(f)}`);
+            log.info(`After: ${JSON.stringify(f)}`);
             this._byteOffset = indexes.end;
         });
     }
@@ -200,11 +193,11 @@ export class BinaryStructure {
      * @memberof BinaryStructure
      */
     getValue(fieldName) {
-        debug("Calling get() in BinaryStructure..");
+        log.info("Calling get() in BinaryStructure..");
         const selectedField = this.get(fieldName);
-        debug("Calling get() in BinaryStructure.. success");
+        log.info("Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
-        debug(
+        log.info(
             `Getting a value of ${toHex(value)} from the ${selectedField.name
             } field with type of ${type} and size of (${value.byteLength},${selectedField.size
             })`
@@ -230,7 +223,7 @@ export class BinaryStructure {
             }
             return value.readUInt8();
         } catch (error) {
-            debug("Calling get() in BinaryStructure.. fail!");
+            log.info("Calling get() in BinaryStructure.. fail!");
             const errMessage = `Error in getValueX: ${String(
                 error
             )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${value.byteLength
@@ -246,11 +239,11 @@ export class BinaryStructure {
      * @returns
      */
     setValueNumber(fieldName, newValue) {
-        debug("Calling setValueNumber() in BinaryStructure..");
+        log.info("Calling setValueNumber() in BinaryStructure..");
         const selectedField = this.get(fieldName);
-        debug("Calling get() in BinaryStructure.. success");
+        log.info("Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
-        debug(
+        log.info(
             `Setting a value of ${newValue} to the ${selectedField.name} field with type of ${type})`
         );
         try {
@@ -283,7 +276,7 @@ export class BinaryStructure {
             log.error(errMessage);
             throw new Error(errMessage);
         } catch (error) {
-            debug("Calling get() in BinaryStructure.. fail!");
+            log.info("Calling get() in BinaryStructure.. fail!");
             const errMessage = `Error in newValueNumber: ${String(
                 error
             )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${value.byteLength

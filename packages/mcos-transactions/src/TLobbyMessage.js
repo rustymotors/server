@@ -16,11 +16,7 @@
 
 import { TSMessageBase } from '../../mcos-gateway/src/TMessageBase.js'
 import { BinaryStructure } from '../../mcos-gateway/src/BinaryStructure.js'
-import createDebug from 'debug'
-
-const appName = 'mcos:transaction:lobby'
-
-const debug = createDebug(appName)
+import log from '../../../log.js'
 
 /**
  *
@@ -41,7 +37,7 @@ export class TLobbyMessage extends TSMessageBase {
      */
     constructor() {
         super();
-        debug("new TLobbyMessage");
+        log.info("new TLobbyMessage");
         this._add({
             name: "msgNo",
             order: "little",
@@ -86,7 +82,7 @@ export class TLobbyMessage extends TSMessageBase {
 export class LobbyInfo extends BinaryStructure {
     constructor() {
         super();
-        debug("new LobbyInfo");
+        log.info("new LobbyInfo");
         this._add({
             name: "lobbyId",
             order: "little",

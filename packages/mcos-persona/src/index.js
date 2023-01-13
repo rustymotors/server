@@ -16,13 +16,8 @@
 
 import { handleData, personaRecords } from "./internal.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
-import createDebug from 'debug'
+import log from '../../../log.js'
 import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
-
-const appName = 'mcos'
-
-const debug = createDebug(appName)
-
 
 /**
  * Selects a game persona and marks it as in use
@@ -32,8 +27,8 @@ const debug = createDebug(appName)
 export async function handleSelectGamePersona(
     requestPacket
 ) {
-    debug("_npsSelectGamePersona...");
-    debug(
+    log.info("_npsSelectGamePersona...");
+    log.info(
         `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
             NPSMsg: requestPacket.toJSON(),
         })}`
@@ -50,7 +45,7 @@ export async function handleSelectGamePersona(
     const responsePacket = new NPSMessage("sent");
     responsePacket.msgNo = 0x2_07;
     responsePacket.setContent(packetContent);
-    debug(
+    log.info(
         `NPSMsg response object from _npsSelectGamePersona',
     ${JSON.stringify({
         NPSMsg: responsePacket.toJSON(),
@@ -59,7 +54,7 @@ export async function handleSelectGamePersona(
 
     responsePacket.dumpPacket();
 
-    debug(
+    log.info(
         `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return responsePacket;
@@ -111,7 +106,7 @@ export class PersonaServer {
      */
     async createNewGameAccount(data) {
         const requestPacket = new NPSMessage("received").deserialize(data);
-        debug(
+        log.info(
             `NPSMsg request object from _npsNewGameAccount',
       ${JSON.stringify({
           NPSMsg: requestPacket.toJSON(),
@@ -122,7 +117,7 @@ export class PersonaServer {
 
         const rPacket = new NPSMessage("sent");
         rPacket.msgNo = 0x6_01;
-        debug(
+        log.info(
             `NPSMsg response object from _npsNewGameAccount',
       ${JSON.stringify({
           NPSMsg: rPacket.toJSON(),
@@ -144,9 +139,9 @@ export class PersonaServer {
      * @memberof PersonaServer
      */
     async logoutGameUser(data) {
-        debug("[personaServer] Logging out persona...");
+        log.info("[personaServer] Logging out persona...");
         const requestPacket = new NPSMessage("received").deserialize(data);
-        debug(
+        log.info(
             `NPSMsg request object from _npsLogoutGameUser',
       ${JSON.stringify({
           NPSMsg: requestPacket.toJSON(),
@@ -162,7 +157,7 @@ export class PersonaServer {
         const responsePacket = new NPSMessage("sent");
         responsePacket.msgNo = 0x6_12;
         responsePacket.setContent(packetContent);
-        debug(
+        log.info(
             `NPSMsg response object from _npsLogoutGameUser',
       ${JSON.stringify({
           NPSMsg: responsePacket.toJSON(),
@@ -171,7 +166,7 @@ export class PersonaServer {
 
         responsePacket.dumpPacket();
 
-        debug(
+        log.info(
             `[npsLogoutGameUser] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
         );
         return responsePacket;
@@ -185,9 +180,9 @@ export class PersonaServer {
      * @memberof PersonaServer
      */
     async validateLicencePlate(data) {
-        debug("_npsCheckToken...");
+        log.info("_npsCheckToken...");
         const requestPacket = new NPSMessage("received").deserialize(data);
-        debug(
+        log.info(
             `NPSMsg request object from _npsCheckToken',
       ${JSON.stringify({
           NPSMsg: requestPacket.toJSON(),
@@ -198,8 +193,8 @@ export class PersonaServer {
 
         const customerId = data.readInt32BE(12);
         const plateName = data.subarray(17).toString();
-        debug(`customerId: ${customerId}`); // skipcq: JS-0378
-        debug(`Plate name: ${plateName}`); // skipcq: JS-0378
+        log.info(`customerId: ${customerId}`); // skipcq: JS-0378
+        log.info(`Plate name: ${plateName}`); // skipcq: JS-0378
 
         // Create the packet content
 
@@ -210,7 +205,7 @@ export class PersonaServer {
         const responsePacket = new NPSMessage("sent");
         responsePacket.msgNo = 0x2_07;
         responsePacket.setContent(packetContent);
-        debug(
+        log.info(
             `NPSMsg response object from _npsCheckToken',
       ${JSON.stringify({
           NPSMsg: responsePacket.toJSON(),
@@ -218,7 +213,7 @@ export class PersonaServer {
         );
         responsePacket.dumpPacket();
 
-        debug(
+        log.info(
             `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
         );
         return responsePacket;
@@ -231,10 +226,10 @@ export class PersonaServer {
      * @return {Promise<NPSMessage>}
      */
     async validatePersonaName(data) {
-        debug("_npsValidatePersonaName...");
+        log.info("_npsValidatePersonaName...");
         const requestPacket = new NPSMessage("received").deserialize(data);
 
-        debug(
+        log.info(
             `NPSMsg request object from _npsValidatePersonaName',
       ${JSON.stringify({
           NPSMsg: requestPacket.toJSON(),
@@ -247,7 +242,7 @@ export class PersonaServer {
             .subarray(18, data.lastIndexOf(0x00))
             .toString();
         const serviceName = data.subarray(data.indexOf(0x0a) + 1).toString(); // skipcq: JS-0377
-        debug(
+        log.info(
             JSON.stringify({ customerId, requestedPersonaName, serviceName })
         );
 
@@ -262,7 +257,7 @@ export class PersonaServer {
         responsePacket.msgNo = 0x6_01;
         responsePacket.setContent(packetContent);
 
-        debug(
+        log.info(
             `NPSMsg response object from _npsValidatePersonaName',
       ${JSON.stringify({
           NPSMsg: responsePacket.toJSON(),
@@ -270,7 +265,7 @@ export class PersonaServer {
         );
         responsePacket.dumpPacket();
 
-        debug(
+        log.info(
             `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
         );
         return responsePacket;
@@ -336,16 +331,16 @@ export class PersonaServer {
      * @return {Promise<NPSMessage>}
      */
     async getPersonaMaps(data) {
-        debug("_npsGetPersonaMaps...");
+        log.info("_npsGetPersonaMaps...");
         const requestPacket = new NPSMessage("received").deserialize(data);
 
-        debug(
+        log.info(
             `NPSMsg request object from _npsGetPersonaMaps',
       ${JSON.stringify({
           NPSMsg: requestPacket.toJSON(),
       })}`
         );
-        debug(
+        log.info(
             `NPSMsg request object from _npsGetPersonaMaps',
       ${JSON.stringify({
           NPSMsg: requestPacket.toJSON(),
@@ -358,7 +353,7 @@ export class PersonaServer {
         const personas = await this.getPersonaMapsByCustomerId(
             customerId.readUInt32BE(0)
         );
-        debug(
+        log.info(
             `${personas.length} personas found for ${customerId.readUInt32BE(
                 0
             )}`
@@ -379,7 +374,7 @@ export class PersonaServer {
                 const responsePacket = new NPSMessage("sent");
                 responsePacket.msgNo = 0x6_07;
                 responsePacket.setContent(personaMapsMessage.serialize());
-                debug(
+                log.info(
                     `NPSMsg response object from _npsGetPersonaMaps: ${JSON.stringify(
                         {
                             NPSMsg: responsePacket.toJSON(),

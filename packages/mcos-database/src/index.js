@@ -14,17 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Session } from "./models/Session.js";
-import { Lobby } from "./models/Lobby.js";
-import pg from "pg";
-const Client = pg.Client;
-import createDebug from 'debug'
-import { createLogger } from 'bunyan'
-
-const appName = 'mcos'
-
-const debug = createDebug(appName)
-const log = createLogger({ name: appName })
+import log from '../../../log.js'
 
 
 /**
@@ -32,8 +22,12 @@ const log = createLogger({ name: appName })
  * @class
  */
 export class DatabaseManager {
-    /** @type {pg.Client | undefined} */
-    localDB = undefined;
+    /** @type {import("./models/Session.js").Session[]} */
+    sessions = []
+
+    /** @type {import('./models/Lobby.js').Lobby[]} */
+    lobbies = []
+
     /**
      *
      *
@@ -43,9 +37,7 @@ export class DatabaseManager {
      * @memberof DatabaseManager
      */
     static _instance;
-    /** @type {string} */
-    connectionURI;
-
+    
     /**
      * Return the instance of the DatabaseManager class
      * @returns {DatabaseManager}
@@ -59,51 +51,12 @@ export class DatabaseManager {
     }
 
     /**
-     * Initialize database and set up schemas if needed
-     */
-    async init() {
-        if (typeof this.localDB === "undefined") {
-            debug("Initializing the database...");
-
-            try {
-                const self = DatabaseManager._instance;
-
-                const db = new Client({
-                    connectionString: process.env["CONNECTION_URL"],
-                });
-
-                await db.connect();
-
-                self.localDB = db;
-
-                await db.query(Session.schema);
-
-                await db.query(Lobby.schema);
-                debug("Database initialized");
-            } catch (/** @type {unknown} */ err) {
-                if (err instanceof Error) {
-                    const newError = new Error(
-                        `There was an error setting up the database: ${err.message}`
-                    );
-                    log.error(newError.message);
-                    throw newError;
-                }
-                throw err;
-            }
-        }
-    }
-
-    /**
      * Creates an instance of DatabaseManager.
      *
      * Please use {@link DatabaseManager.getInstance()} instead
      * @memberof DatabaseManager
      */
     constructor() {
-        if (!process.env["CONNECTION_URL"]) {
-            throw new Error("Please set CONNECTION_URL");
-        }
-        this.connectionURI = process.env["CONNECTION_URL"];
     }
 
     /**
@@ -114,47 +67,32 @@ export class DatabaseManager {
     async fetchSessionKeyByCustomerId(
         customerId
     ) {
-        await this.init();
-        if (typeof this.localDB === "undefined") {
-            log.warn("Database not ready in fetchSessionKeyByCustomerId()");
-            throw new Error(
-                "Error accessing database. Are you using the instance?"
-            );
-        }
-        const record = await this.localDB.query(
-            "SELECT sessionkey, skey FROM sessions WHERE customer_id = $1",
-            [customerId]
-        );
+
+        const record = this.sessions.find(session => {
+            return session.customer_id === customerId
+        });
         if (typeof record === "undefined") {
-            debug("Unable to locate session key");
+            log.error("Unable to locate session key");
             throw new Error("Unable to fetch session key");
         }
-        return record.rows[0];
+        return record;
     }
 
     /**
      * Locate customer session encryption key in the database
-     * @param {number} connectionId
+     * @param {string} connectionId
      * @returns {Promise<import("../../mcos-gateway/src/encryption.js").SessionRecord>}
      */
     async fetchSessionKeyByConnectionId(
         connectionId
     ) {
-        await this.init();
-        if (typeof this.localDB === "undefined") {
-            log.warn("Database not ready in fetchSessionKeyByConnectionId()");
-            throw new Error(
-                "Error accessing database. Are you using the instance?"
-            );
-        }
-        const record = await this.localDB.query(
-            "SELECT sessionkey, skey FROM sessions WHERE connection_id = $1",
-            [connectionId]
-        );
+        const record = await this.sessions.find(session => {
+            return session.connection_id === connectionId
+        });
         if (typeof record === "undefined") {
             throw new Error("Unable to fetch session key");
         }
-        return record.rows[0];
+        return record;
     }
 
     /**
@@ -163,7 +101,7 @@ export class DatabaseManager {
      * @param {string} sessionkey
      * @param {string} contextId
      * @param {string} connectionId
-     * @returns {Promise<number>}
+     * @returns {Promise<void>}
      */
     async updateSessionKey(
         customerId,
@@ -171,25 +109,25 @@ export class DatabaseManager {
         contextId,
         connectionId
     ) {
-        await this.init();
         const skey = sessionkey.slice(0, 16);
 
-        if (typeof this.localDB === "undefined") {
-            log.warn("Database not ready in updateSessionKey()");
-            throw new Error(
-                "Error accessing database. Are you using the instance?"
-            );
+        /** @type {import("./models/Session.js").Session} */
+        const updatedSession = {
+            customer_id: customerId,
+            sessionkey,
+            skey,
+            context_id: contextId,
+            connection_id: connectionId
         }
-        const record = await this.localDB.query(
-            `INSERT INTO sessions (customer_id, sessionkey, skey, context_id, connection_id)
-        VALUES ($1, $2, $3, $4, $5)
-      ON CONFLICT (customer_id)
-        DO UPDATE SET sessionkey = $2, skey = $3;`,
-            [customerId, sessionkey, skey, contextId, connectionId]
-        );
+
+        const record = await this.sessions.findIndex(session => {
+            return session.customer_id === customerId
+        });
         if (typeof record === "undefined") {
             throw new Error("Unable to fetch session key");
         }
-        return 1;
+        this.sessions.splice(record, 1, updatedSession)
+
+        return;
     }
 }

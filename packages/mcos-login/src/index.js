@@ -16,11 +16,7 @@
 
 import { DatabaseManager } from "../../mcos-database/src/index.js";
 import { handleData } from "./internal.js";
-import createDebug from 'debug'
-
-const appName = 'mcos:login'
-
-const debug = createDebug(appName)
+import log from '../../../log.js'
 
 /**
  * Manages the initial game connection setup and teardown.
@@ -74,7 +70,7 @@ export class LoginServer {
      * @return {UserRecordMini}
      */
     _npsGetCustomerIdByContextId(contextId) {
-        debug(">>> _npsGetCustomerIdByContextId");
+        log.info(">>> _npsGetCustomerIdByContextId");
         /** @type {UserRecordMini[]} */
         const users = [
             {
@@ -94,7 +90,7 @@ export class LoginServer {
 
         const userRecord = users.filter((user) => user.contextId === contextId);
         if (typeof userRecord[0] === "undefined" || userRecord.length !== 1) {
-            debug(
+            log.info(
                 `preparing to leave _npsGetCustomerIdByContextId after not finding record',
         ${JSON.stringify({
             contextId,
@@ -105,7 +101,7 @@ export class LoginServer {
             );
         }
 
-        debug(
+        log.info(
             `preparing to leave _npsGetCustomerIdByContextId after finding record',
       ${JSON.stringify({
           contextId,
@@ -128,10 +124,10 @@ export async function receiveLoginData(
     dataConnection
 ) {
     try {
-        debug('Entering login module')
+        log.info('Entering login module')
         const response = await handleData(dataConnection);
-        debug(`There are ${response.messages.length} messages`);
-        debug('Exiting login module')
+        log.info(`There are ${response.messages.length} messages`);
+        log.info('Exiting login module')
         return response;
     } catch (error) {
         throw new Error(`There was an error in the login service: ${String(

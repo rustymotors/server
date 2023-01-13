@@ -15,14 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { createCipheriv, createDecipheriv } from "node:crypto";
-import createDebug from 'debug'
-import { createLogger } from 'bunyan'
-
-const appName = 'mcos'
-
-const debug = createDebug(appName)
-const log = createLogger({ name: appName })
-
+import log from '../../../log.js'
 
 /** @type {import("./connections.js").EncryptionSession[]} */
 const encryptionSessions = [];
@@ -105,12 +98,12 @@ export function selectEncryptors(
 
     const existingEncryptor = encryptionSessions.find((e) => {
         const thisId = `${e.remoteAddress}:${e.localPort}`;
-        debug(`[selectEncryptors] Checking ${thisId} === ${wantedId} ?`);
+        log.info(`[selectEncryptors] Checking ${thisId} === ${wantedId} ?`);
         return thisId === wantedId;
     });
 
     if (typeof existingEncryptor !== "undefined") {
-        debug(
+        log.info(
             `Located existing encryption session for connection id ${dataConnection.connectionId}`
         );
         return existingEncryptor;
@@ -132,7 +125,7 @@ export function selectEncryptors(
 export function createEncrypters(dataConnection, keys) {
     const newSession = generateEncryptionPair(dataConnection, keys);
 
-    debug(
+    log.info(
         `Generated new encryption session for connection id ${dataConnection.id}`
     );
 
@@ -155,7 +148,7 @@ export function updateEncryptionSession(
         });
         encryptionSessions.splice(index, 1);
         encryptionSessions.push(updatedSession);
-        debug(`Updated encryption session for id: ${connectionId}`);
+        log.info(`Updated encryption session for id: ${connectionId}`);
     } catch (error) {
         throw new Error(`Error updating connection, ${String(error)}`);
     }

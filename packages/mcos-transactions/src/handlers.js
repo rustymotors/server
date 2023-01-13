@@ -22,15 +22,10 @@ import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { TLobbyMessage } from "./TLobbyMessage.js";
 import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
 import { StockCar } from "./StockCar.js";
-import createDebug from 'debug'
 import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
 import { toHex } from "../../mcos-gateway/src/sockets.js";
 import { createEncrypters } from "../../mcos-gateway/src/encryption.js";
-
-const appName = 'mcos'
-
-const debug = createDebug(appName)
-
+import log from '../../../log.js'
 
 /**
  *
@@ -187,7 +182,7 @@ async function clientConnect(
     // Not currently using this - Maybe we are?
     const newMessage = new TClientConnectMessage();
 
-    debug(`Raw bytes in clientConnect: ${toHex(packet.rawPacket)}`);
+    log.info(`Raw bytes in clientConnect: ${toHex(packet.rawPacket)}`);
     newMessage.deserialize(packet.rawPacket);
 
     const customerId = newMessage.getValue("customerId");
@@ -197,13 +192,13 @@ async function clientConnect(
         );
     }
 
-    debug(`[TCPManager] Looking up the session key for ${customerId}...`);
+    log.info(`[TCPManager] Looking up the session key for ${customerId}...`);
 
     const result =
         await DatabaseManager.getInstance().fetchSessionKeyByCustomerId(
             customerId
         );
-    debug("[TCPManager] Session Key located!");
+    log.info("[TCPManager] Session Key located!");
 
     const connectionWithKey = connection;
 
@@ -232,7 +227,7 @@ async function clientConnect(
         );
     }
 
-    debug(`cust: ${customerId} ID: ${personaId} Name: ${personaName}`);
+    log.info(`cust: ${customerId} ID: ${personaId} Name: ${personaName}`);
 
     // Create new response packet
     const genericReplyMessage = new GenericReplyMessage();
@@ -279,7 +274,7 @@ function _login(
     // Read the inbound packet
     const loginMessage = new TLoginMessage();
     loginMessage.deserialize(node.rawPacket);
-    debug(`Received LoginMessage: ${JSON.stringify(loginMessage)}`);
+    log.info(`Received LoginMessage: ${JSON.stringify(loginMessage)}`);
 
     // Create new response packet
     const pReply = new GenericReplyMessage();
@@ -377,11 +372,11 @@ function _getLobbies(
     connection,
     node
 ) {
-    debug("In _getLobbies...");
+    log.info("In _getLobbies...");
 
     const lobbyRequest = new GenericRequestMessage();
     lobbyRequest.deserialize(node.rawPacket);
-    debug(
+    log.info(
         `Received GenericRequestMessage: ${JSON.stringify(lobbyRequest)}`
     );
 
@@ -391,8 +386,8 @@ function _getLobbies(
     lobbiesListMessage.appId = connection.personaId;
 
     // Dump the packet
-    debug("Dumping request...");
-    debug(JSON.stringify(lobbiesListMessage));
+    log.info("Dumping request...");
+    log.info(JSON.stringify(lobbiesListMessage));
 
     // Create new response packet
     // const lobbyMsg = new LobbyMsg()
@@ -412,8 +407,8 @@ function _getLobbies(
     rPacket.updateBuffer(pReply.serialize());
 
     // Dump the packet
-    debug("Dumping response...");
-    debug(JSON.stringify(rPacket));
+    log.info("Dumping response...");
+    log.info(JSON.stringify(rPacket));
 
     const lobbyResponse = new TLobbyMessage();
     lobbyResponse.setValueNumber("dataLength", 16);
@@ -438,11 +433,11 @@ function handleGetLobbiesMessage(
     node
 ) {
     const result = _getLobbies(conn, node);
-    debug("Dumping Lobbies response packet...");
+    log.info("Dumping Lobbies response packet...");
     result.messages.forEach(msg => {
-        debug(msg.toString())
+        log.info(msg.toString())
     })
-    debug(result.messages.join().toString());
+    log.info(result.messages.join().toString());
     return {
         connection: result.connection,
         messages: result.messages,

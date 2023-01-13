@@ -18,13 +18,7 @@ import { readFileSync } from "node:fs";
 import { ShardEntry } from "./shard-entry.js";
 import { createServer } from "node:https";
 import process from 'node:process'
-import createDebug from 'debug'
-import { createLogger } from 'bunyan'
-
-const appName = 'mcos'
-
-const debug = createDebug(appName)
-const log = createLogger({ name: appName })
+import log from '../../../log.js'
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
@@ -258,7 +252,7 @@ export class ShardServer {
         }
 
         if (request.url === "/ShardList/") {
-            debug(
+            log.info(
                 `Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
             );
 
@@ -275,19 +269,5 @@ export class ShardServer {
             `Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );
         return response;
-    }
-
-    /**
-     * Start the shard server listener
-     * @returns {import("node:http").Server}
-     */
-    start() {
-        const host = "0.0.0.0";
-        const port = 80;
-        debug(`Attempting to bind to port ${port}`);
-        return this._server.listen({ port, host }, () => {
-            debug(`port ${port} listening`);
-            log.info("Shard server is listening...");
-        });
     }
 }

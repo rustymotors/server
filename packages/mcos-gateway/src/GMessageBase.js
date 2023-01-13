@@ -15,11 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { BinaryStructure } from './BinaryStructure.js';
-import createDebug from 'debug'
-
-const appName = 'mcos:gateway:gmessage'
-
-const debug = createDebug(appName)
+import log from '../../../log.js'
 
 /**
  * @class
@@ -28,7 +24,7 @@ const debug = createDebug(appName)
 export class GSMessageBase extends BinaryStructure {
     constructor() {
         super();
-        debug("new GSMessageBase");
+        log.info("new GSMessageBase");
         this._add({
             name: "msgId",
             order: "little",

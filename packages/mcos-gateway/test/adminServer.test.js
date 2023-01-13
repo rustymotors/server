@@ -18,7 +18,6 @@ import chai, { expect } from "chai";
 import { AdminServer } from "../src/adminServer.js";
 import { resetQueue } from "../src/resetQueue.js";
 import { describe, it } from "mocha";
-import { mock } from "ts-mockito";
 import { Socket } from "net";
 
 chai.should();
@@ -49,7 +48,7 @@ describe("resetQueue()", function () {
         /** @type {import("../src/connections.js").SocketWithConnectionInfo[]} */
         const inputConnectionList = [
             {
-                socket: mock(Socket),
+                socket: new Socket,
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -60,7 +59,7 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
             {
-                socket: mock(Socket),
+                socket: new Socket,
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -71,7 +70,7 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
             {
-                socket: mock(Socket),
+                socket: new Socket,
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -85,7 +84,7 @@ describe("resetQueue()", function () {
         /** @type {import("../src/connections.js").SocketWithConnectionInfo[]} */
         const expectedConnectionList = [
             {
-                socket: mock(Socket),
+                socket: new Socket,
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -96,7 +95,7 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
             {
-                socket: mock(Socket),
+                socket: new Socket,
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -107,7 +106,7 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
             {
-                socket: mock(Socket),
+                socket: new Socket,
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
