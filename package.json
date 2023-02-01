@@ -70,5 +70,5 @@
     ],
     "rules": {}
   },
-  "packageManager": "yarn@3.4.0"
+  "packageManager": "yarn@3.4.1"
 }
