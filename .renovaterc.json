@@ -1,0 +1,7 @@
+{
+  "extends": ["config:base", ":disableDependencyDashboard"],
+  "statusCheckVerify": true,
+  "automerge": true,
+  "automergeType": "branch",
+  "rangeStrategy": "bump"
+}
