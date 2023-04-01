@@ -3,5 +3,6 @@
   "statusCheckVerify": true,
   "automerge": true,
   "automergeType": "branch",
-  "rangeStrategy": "bump"
+  "rangeStrategy": "bump",
+  "enabledManagers": ["npm"]
 }
