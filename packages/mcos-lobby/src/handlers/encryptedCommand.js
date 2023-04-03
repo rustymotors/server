@@ -1,6 +1,9 @@
-import { cipherBufferDES, decipherBufferDES } from "../../../mcos-gateway/src/encryption.js";
+import {
+    cipherBufferDES,
+    decipherBufferDES,
+} from "../../../mcos-gateway/src/encryption.js";
 import { NPSMessage } from "../../../mcos-gateway/src/NPSMessage.js";
-import log from '../../../../log.js'
+import log from "../../../../log.js";
 
 /**
  * Takes an plaintext command packet and return the encrypted bytes
@@ -9,10 +12,7 @@ import log from '../../../../log.js'
  * @param {import("../../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} dataConnection
  * @param {Buffer} plaintextCommand
  */
-function encryptCmd(
-    dataConnection,
-    plaintextCommand
-) {
+function encryptCmd(dataConnection, plaintextCommand) {
     if (typeof dataConnection.encryptionSession === "undefined") {
         const errMessage = `Unable to locate encryption session for connection id ${dataConnection.id}`;
         log.error(errMessage);
@@ -38,10 +38,7 @@ function encryptCmd(
  * @param {import("../../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
  * @param {Buffer} encryptedCommand
  */
-function decryptCmd(
-    dataConnection,
-    encryptedCommand
-) {
+function decryptCmd(dataConnection, encryptedCommand) {
     if (typeof dataConnection.connection.encryptionSession === "undefined") {
         const errMessage = `Unable to locate encryption session for connection id ${dataConnection.connectionId}`;
         log.error(errMessage);
@@ -63,9 +60,7 @@ function decryptCmd(
  * @param {import("../../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
  * @return {import("../../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
-function handleCommand(
-    dataConnection
-) {
+function handleCommand(dataConnection) {
     const { data } = dataConnection;
 
     // Marshal the command into an NPS packet
@@ -102,9 +97,7 @@ function handleCommand(
  * @param {import("../../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
  * @return {Promise<import("../../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
  */
-export async function handleEncryptedNPSCommand(
-    dataConnection
-) {
+export async function handleEncryptedNPSCommand(dataConnection) {
     // Decipher
     const { data } = dataConnection;
     const decipheredConnection = decryptCmd(

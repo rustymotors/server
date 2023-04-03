@@ -17,8 +17,8 @@
 import { readFileSync } from "node:fs";
 import { ShardEntry } from "./shard-entry.js";
 import { createServer } from "node:https";
-import process from 'node:process'
-import log from '../../../log.js'
+import process from "node:process";
+import log from "../../../log.js";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
@@ -28,7 +28,7 @@ import log from '../../../log.js'
  * @return {string}
  */
 export function handleGetCert() {
-    const { CERTIFICATE_FILE} = process.env
+    const { CERTIFICATE_FILE } = process.env;
     if (typeof CERTIFICATE_FILE === "undefined") {
         throw new Error("Please set CERTIFICATE_FILE");
     }
@@ -40,7 +40,7 @@ export function handleGetCert() {
  * @return {string}
  */
 export function handleGetRegistry() {
-    const { EXTERNAL_HOST } = process.env
+    const { EXTERNAL_HOST } = process.env;
     if (typeof EXTERNAL_HOST === "undefined") {
         throw new Error("Please set EXTERNAL_HOST");
     }
@@ -82,7 +82,7 @@ export function handleGetRegistry() {
  * @return {string}
  */
 export function handleGetKey() {
-    const { PUBLIC_KEY_FILE } = process.env
+    const { PUBLIC_KEY_FILE } = process.env;
     if (typeof PUBLIC_KEY_FILE === "undefined") {
         throw new Error("Please set PUBLIC_KEY_FILE");
     }
@@ -159,7 +159,7 @@ export class ShardServer {
      * @memberof! PatchServer
      */
     _generateShardList() {
-        const {EXTERNAL_HOST } = process.env
+        const { EXTERNAL_HOST } = process.env;
         if (typeof EXTERNAL_HOST === "undefined") {
             throw new Error("Please set EXTERNAL_HOST");
         }
@@ -218,10 +218,7 @@ export class ShardServer {
      * @param {import("http").ServerResponse} response
      */
     // deepcode ignore NoRateLimitingForExpensiveWebOperation: Very unlikely to be DDos'ed
-    handleRequest(
-        request,
-        response
-    ) {
+    handleRequest(request, response) {
         if (request.url === "/cert") {
             response.setHeader(
                 "Content-disposition",

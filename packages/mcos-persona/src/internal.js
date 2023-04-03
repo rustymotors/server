@@ -17,7 +17,7 @@
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
 import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
 import { MessagePacket } from "../../mcos-lobby/src/MessagePacket.js";
-import log from '../../../log.js'
+import log from "../../../log.js";
 
 const NAME_BUFFER_SIZE = 30;
 
@@ -28,11 +28,7 @@ const NAME_BUFFER_SIZE = 30;
  * @param {BufferEncoding} [encoding="utf8"]
  * @returns {Buffer}
  */
-export function generateNameBuffer(
-    name,
-    size,
-    encoding = "utf8"
-) {
+export function generateNameBuffer(name, size, encoding = "utf8") {
     const nameBuffer = Buffer.alloc(size);
     Buffer.from(name, encoding).copy(nameBuffer);
     return nameBuffer;
@@ -74,9 +70,7 @@ export const personaRecords = [
  * @param {number} id
  * @return {Promise<import("./index.js").PersonaRecord[]>}
  */
-export async function getPersonasByPersonaId(
-    id
-) {
+export async function getPersonasByPersonaId(id) {
     const results = personaRecords.filter((persona) => {
         const match = id === persona.id.readInt32BE(0);
         return match;
@@ -93,9 +87,7 @@ export async function getPersonasByPersonaId(
  * @param {NPSMessage} requestPacket
  * @returns {Promise<NPSMessage>}
  */
-export async function handleSelectGamePersona(
-    requestPacket
-) {
+export async function handleSelectGamePersona(requestPacket) {
     log.info("_npsSelectGamePersona...");
     log.info(
         `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
@@ -209,9 +201,7 @@ async function logoutGameUser(data) {
  * @param {number} customerId
  * @return {Promise<import("./index.js").PersonaRecord[]>}
  */
-async function getPersonasByCustomerId(
-    customerId
-) {
+async function getPersonasByCustomerId(customerId) {
     const results = personaRecords.filter(
         (persona) => persona.customerId === customerId
     );
@@ -226,9 +216,7 @@ async function getPersonasByCustomerId(
  * @param {number} customerId
  * @return {Promise<import("./index.js").PersonaRecord[]>}
  */
-async function getPersonaMapsByCustomerId(
-    customerId
-) {
+async function getPersonaMapsByCustomerId(customerId) {
     switch (customerId) {
         case 2_868_969_472:
         case 5_551_212:
@@ -341,9 +329,7 @@ async function validatePersonaName(data) {
         .subarray(18, data.lastIndexOf(0x00))
         .toString();
     const serviceName = data.slice(data.indexOf(0x0a) + 1).toString(); // skipcq: JS-0377
-    log.info(
-        JSON.stringify({ customerId, requestedPersonaName, serviceName })
-    );
+    log.info(JSON.stringify({ customerId, requestedPersonaName, serviceName }));
 
     // Create the packet content
     // TODO: #1178 Return the validate persona name response as a MessagePacket object
@@ -417,16 +403,13 @@ async function validateLicencePlate(data) {
     return Promise.resolve(responsePacket);
 }
 
-
 /**
  *
  *
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
  * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
  */
-export async function handleData(
-    dataConnection
-) {
+export async function handleData(dataConnection) {
     const { connection, data } = dataConnection;
     const { socket, localPort } = connection;
     log.info(

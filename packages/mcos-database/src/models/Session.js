@@ -7,4 +7,4 @@
  * @property {string} context_id
  * @property {string} connection_id
  */
-export default {}
+export default {};

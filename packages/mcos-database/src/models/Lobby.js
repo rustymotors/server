@@ -92,4 +92,4 @@
 //       "raceCashFactor" real NOT NULL
 //     );`;
 // }
-export default {}
+export default {};

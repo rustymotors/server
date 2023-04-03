@@ -23,14 +23,12 @@ import { handleData } from "./internal.js";
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
  * @return {Promise<import("../../mcos-gateway/src/sockets.js").ServiceResponse>}
  */
-export async function receiveLobbyData(
-    dataConnection
-) {
+export async function receiveLobbyData(dataConnection) {
     try {
         return await handleData(dataConnection);
     } catch (error) {
-        throw new Error(`There was an error in the lobby service: ${String(
-            error
-        )}`);
+        throw new Error(
+            `There was an error in the lobby service: ${String(error)}`
+        );
     }
 }

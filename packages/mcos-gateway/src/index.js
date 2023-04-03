@@ -22,51 +22,50 @@ import { httpListener as httpHandler } from "./web.js";
 export { getAllConnections } from "./connections.js";
 export { AdminServer } from "./adminServer.js";
 import { readFileSync } from "node:fs";
-import log from '../../../log.js'
+import log from "../../../log.js";
 import { error } from "node:console";
 
-const appName = 'mcos'
+const appName = "mcos";
 
 const listeningPortList = [
-    3000, 6660, 7003, 8228, 8226, 8227, 9000, 9001, 9002, 9003, 9004, 9005, 9006,
-    9007, 9008, 9009, 9010, 9011, 9012, 9013, 9014, 43200, 43300, 43400, 53303,
+    3000, 6660, 7003, 8228, 8226, 8227, 9000, 9001, 9002, 9003, 9004, 9005,
+    9006, 9007, 9008, 9009, 9010, 9011, 9012, 9013, 9014, 43200, 43300, 43400,
+    53303,
 ];
 
 /**
- * 
- * @param {import('node:net').Socket} incomingSocket 
- * @returns 
+ *
+ * @param {import('node:net').Socket} incomingSocket
+ * @returns
  */
 function socketListener(incomingSocket) {
     log.info(
         `[gate]Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
     );
 
-    let exitCode = 0
+    let exitCode = 0;
 
     /** @type {string} */
-let cert;
+    let cert;
 
-try {
-  cert = readFileSync('./data/mcouniverse.crt', { encoding: "utf8" })
-} catch (error) {
-  log.error(`Unable to read certificate file: ${String(error)}`)
-  exitCode = -1
-  process.exit(exitCode)
-}
+    try {
+        cert = readFileSync("./data/mcouniverse.crt", { encoding: "utf8" });
+    } catch (error) {
+        log.error(`Unable to read certificate file: ${String(error)}`);
+        exitCode = -1;
+        process.exit(exitCode);
+    }
 
-/** @type {string} */
-let key;
+    /** @type {string} */
+    let key;
 
-try {
-  key = readFileSync('./data/private_key.pem', { encoding: "utf8" })
-} catch (error) {
-  log.error(`Unable to read private file`)
-  exitCode = -1
-  process.exit(exitCode)
-
-}
-
+    try {
+        key = readFileSync("./data/private_key.pem", { encoding: "utf8" });
+    } catch (error) {
+        log.error(`Unable to read private file`);
+        exitCode = -1;
+        process.exit(exitCode);
+    }
 
     // Is this an HTTP request?
     if (incomingSocket.localPort === 3000) {
@@ -74,8 +73,6 @@ try {
         const newServer = new http.Server(httpHandler);
         // Send the socket to the http server instance
         newServer.emit("connection", incomingSocket);
-
-
 
         return;
     }
@@ -85,8 +82,8 @@ try {
 }
 
 /**
- * 
- * @param {import('node:net').Socket} incomingSocket 
+ *
+ * @param {import('node:net').Socket} incomingSocket
  */
 function TCPListener(incomingSocket) {
     // Get a connection record
@@ -105,9 +102,9 @@ function TCPListener(incomingSocket) {
 }
 
 /**
- * 
- * @param {any} error 
- * @returns 
+ *
+ * @param {any} error
+ * @returns
  */
 function onSocketError(error) {
     const message = String(error);
@@ -131,8 +128,8 @@ export function startListeners() {
 }
 
 /**
- * 
- * @param {number} port 
+ *
+ * @param {number} port
  */
 function serverListener(port) {
     const listeningPort = String(port).length ? String(port) : "unknown";

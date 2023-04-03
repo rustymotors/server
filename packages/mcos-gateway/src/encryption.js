@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { createCipheriv, createDecipheriv } from "node:crypto";
-import log from '../../../log.js'
+import log from "../../../log.js";
 
 /** @type {import("./connections.js").EncryptionSession[]} */
 const encryptionSessions = [];
@@ -32,10 +32,7 @@ const encryptionSessions = [];
  * @param {SessionRecord} keys
  * @returns {import("./connections.js").EncryptionSession}
  */
-function generateEncryptionPair(
-    dataConnection,
-    keys
-) {
+function generateEncryptionPair(dataConnection, keys) {
     // For use on Lobby packets
     const { sessionkey, skey } = keys;
     const stringKey = Buffer.from(sessionkey, "hex");
@@ -81,9 +78,7 @@ function generateEncryptionPair(
  * @param {import("./sockets.js").BufferWithConnection} dataConnection
  * @returns {import("./connections.js").EncryptionSession}
  */
-export function selectEncryptors(
-    dataConnection
-) {
+export function selectEncryptors(dataConnection) {
     const { localPort, remoteAddress } = dataConnection.connection;
 
     if (
@@ -114,12 +109,10 @@ export function selectEncryptors(
     throw new Error(errMessage);
 }
 
-
-
 /**
- * 
- * @param {import("./connections.js").SocketWithConnectionInfo} dataConnection 
- * @param {SessionRecord} keys 
+ *
+ * @param {import("./connections.js").SocketWithConnectionInfo} dataConnection
+ * @param {SessionRecord} keys
  * @returns {import("./connections.js").EncryptionSession}
  */
 export function createEncrypters(dataConnection, keys) {
@@ -138,10 +131,7 @@ export function createEncrypters(dataConnection, keys) {
  * @param {string} connectionId
  * @param {import("./connections.js").EncryptionSession} updatedSession
  */
-export function updateEncryptionSession(
-    connectionId,
-    updatedSession
-) {
+export function updateEncryptionSession(connectionId, updatedSession) {
     try {
         const index = encryptionSessions.findIndex((e) => {
             return e.connectionId === connectionId;
@@ -160,10 +150,7 @@ export function updateEncryptionSession(
  * @param {Buffer} data
  * @return {{session: import("./connections.js").EncryptionSession, data: Buffer}}
  */
-export function cipherBufferDES(
-    encryptionSession,
-    data
-) {
+export function cipherBufferDES(encryptionSession, data) {
     if (typeof encryptionSession.gsCipher !== "undefined") {
         const ciphered = encryptionSession.gsCipher.update(data);
         return {
@@ -181,10 +168,7 @@ export function cipherBufferDES(
  * @param {Buffer} data
  * @return {{session: import("./connections.js").EncryptionSession, data: Buffer}}
  */
-export function decipherBufferDES(
-    encryptionSession,
-    data
-) {
+export function decipherBufferDES(encryptionSession, data) {
     if (typeof encryptionSession.gsDecipher !== "undefined") {
         const deciphered = encryptionSession.gsDecipher.update(data);
         return {
@@ -202,10 +186,7 @@ export function decipherBufferDES(
  * @param {Buffer} buffer
  * @returns {{session: import("./connections.js").EncryptionSession, data: Buffer}}
  */
-export function decryptBuffer(
-    dataConnection,
-    buffer
-) {
+export function decryptBuffer(dataConnection, buffer) {
     const encryptionSession = selectEncryptors(dataConnection);
     const deciphered = encryptionSession.tsDecipher.update(buffer);
     return {

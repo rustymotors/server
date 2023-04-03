@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import log from '../../../log.js'
+import log from "../../../log.js";
 
 /**
  * Handles web-based user logins
@@ -64,10 +64,7 @@ export class AuthLogin {
      * @param {import('node:http').IncomingMessage} request
      * @param {import('node:http').ServerResponse} response
      */
-    handleRequest(
-        request,
-        response
-    ) {
+    handleRequest(request, response) {
         log.info(
             `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );

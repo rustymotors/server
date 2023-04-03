@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { handleData } from "./internal.js";
-import log from '../../../log.js'
+import log from "../../../log.js";
 
 /**
  * Entry and exit point for the lobby service
@@ -24,15 +24,13 @@ import log from '../../../log.js'
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
  * @return {Promise<import("../../mcos-gateway/src/sockets.js").ServiceResponse>}
  */
-export async function receiveTransactionsData(
-    dataConnection
-) {
+export async function receiveTransactionsData(dataConnection) {
     log.info(`Entering receiveTransactionsData`);
     try {
         return await handleData(dataConnection);
     } catch (error) {
-        throw new Error(`There was an error in the transaction service: ${String(
-            error
-        )}`);
+        throw new Error(
+            `There was an error in the transaction service: ${String(error)}`
+        );
     }
 }

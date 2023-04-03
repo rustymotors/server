@@ -1,11 +1,13 @@
 import { getPersonasByPersonaId } from "../../../mcos-persona/src/index.js";
 import { NPSUserInfo } from "../NPSUserInfo.js";
-import { createEncrypters, selectEncryptors } from "../../../mcos-gateway/src/encryption.js";
+import {
+    createEncrypters,
+    selectEncryptors,
+} from "../../../mcos-gateway/src/encryption.js";
 import { MessagePacket } from "../MessagePacket.js";
 import { DatabaseManager } from "../../../mcos-database/src/index.js";
 import { NPSMessage } from "../../../mcos-gateway/src/NPSMessage.js";
-import log from '../../../../log.js'
-
+import log from "../../../../log.js";
 
 /**
  * Convert to zero padded hex
@@ -33,7 +35,6 @@ export function _generateSessionKeyBuffer(key) {
     return nameBuffer;
 }
 
-
 /**
  * Handle a request to connect to a game server packet
  *
@@ -41,9 +42,7 @@ export function _generateSessionKeyBuffer(key) {
  * @param {import("../../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
  * @return {Promise<import("../../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
  */
-export async function _npsRequestGameConnectServer(
-    dataConnection
-) {
+export async function _npsRequestGameConnectServer(dataConnection) {
     log.info(
         `[inner] Raw bytes in _npsRequestGameConnectServer: ${toHex(
             dataConnection.data
@@ -82,7 +81,8 @@ export async function _npsRequestGameConnectServer(
         .catch((/** @type {unknown} */ error) => {
             if (error instanceof Error) {
                 log.info(
-                    `Unable to fetch session key for customerId ${customerId.toString()}: ${error.message
+                    `Unable to fetch session key for customerId ${customerId.toString()}: ${
+                        error.message
                     })}`
                 );
             }
@@ -96,16 +96,13 @@ export async function _npsRequestGameConnectServer(
     }
 
     try {
-        dataConnection.connection.encryptionSession = selectEncryptors(
-            dataConnection,
-        );
-
+        dataConnection.connection.encryptionSession =
+            selectEncryptors(dataConnection);
     } catch (error) {
         dataConnection.connection.encryptionSession = createEncrypters(
             dataConnection.connection,
             keys
         );
-
     }
 
     const packetContent = Buffer.alloc(72);

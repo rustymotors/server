@@ -18,8 +18,8 @@ export class MessagePacket {
     _buffer = Buffer.alloc(0);
 
     /**
-     * 
-     * @param {Buffer} buffer 
+     *
+     * @param {Buffer} buffer
      * @returns {MessagePacket}
      */
     static fromBuffer(buffer) {
@@ -37,7 +37,7 @@ export class MessagePacket {
     }
 
     /**
-     * 
+     *
      * @returns {Buffer}
      */
     getBuffer() {

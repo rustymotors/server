@@ -18,8 +18,7 @@ import { getAllConnections } from "./index.js";
 import { releaseQueue } from "./releaseQueue.js";
 import { listConnections } from "./listConnections.js";
 import { resetQueue } from "./resetQueue.js";
-import log from '../../../log.js'
-
+import log from "../../../log.js";
 
 /**
  * Please use {@link AdminServer.getAdminServer()}
@@ -123,5 +122,3 @@ export class AdminServer {
         return { code: 404, headers: {}, body: "" };
     }
 }
-
-

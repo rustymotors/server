@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import log from '../../../log.js'
+import log from "../../../log.js";
 
 /**
  * @global
@@ -152,7 +152,8 @@ export class BinaryStructure {
             log.info(`Taking data: ${JSON.stringify(indexes)}`);
             const value = byteStream.slice(indexes.start, indexes.end);
             log.info(
-                `Setting ${f.name} with value of ${toHex(value)}, size ${value.byteLength
+                `Setting ${f.name} with value of ${toHex(value)}, size ${
+                    value.byteLength
                 }`
             );
             f.value = value;
@@ -162,7 +163,7 @@ export class BinaryStructure {
     }
 
     /**
-     * 
+     *
      * @returns {number}
      */
     getByteLength() {
@@ -198,13 +199,15 @@ export class BinaryStructure {
         log.info("Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
         log.info(
-            `Getting a value of ${toHex(value)} from the ${selectedField.name
-            } field with type of ${type} and size of (${value.byteLength},${selectedField.size
+            `Getting a value of ${toHex(value)} from the ${
+                selectedField.name
+            } field with type of ${type} and size of (${value.byteLength},${
+                selectedField.size
             })`
         );
         try {
             if (type === "boolean") {
-                return (value.readInt8() === 0)
+                return value.readInt8() === 0;
             }
             if (type === "char") {
                 return value.toString("utf8");
@@ -226,8 +229,9 @@ export class BinaryStructure {
             log.info("Calling get() in BinaryStructure.. fail!");
             const errMessage = `Error in getValueX: ${String(
                 error
-            )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${value.byteLength
-                }, ${value}`;
+            )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${
+                value.byteLength
+            }, ${value}`;
             throw new Error(errMessage);
         }
     }
@@ -279,8 +283,9 @@ export class BinaryStructure {
             log.info("Calling get() in BinaryStructure.. fail!");
             const errMessage = `Error in newValueNumber: ${String(
                 error
-            )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${value.byteLength
-                }, ${newValue}`;
+            )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${
+                value.byteLength
+            }, ${newValue}`;
             throw new Error(errMessage);
         }
     }

@@ -19,9 +19,7 @@ import { GSMessageBase } from "../../mcos-gateway/src/GMessageBase.js";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { premadeLogin } from "./premadeLogin.js";
 import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
-import log from '../../../log.js'
-
-
+import log from "../../../log.js";
 
 /** @type {import("./index.js").UserRecordMini[]} */
 const userRecords = [
@@ -37,16 +35,13 @@ const userRecords = [
     },
 ];
 
-
 /**
  * Process a UserLogin packet
  * @private
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
  * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
  */
-async function login(
-    dataConnection
-) {
+async function login(dataConnection) {
     const { connectionId, data } = dataConnection;
 
     log.info(`Received login packet: ${connectionId}`);
@@ -55,13 +50,13 @@ async function login(
     newGameMessage.deserialize(data.subarray(0, 10));
     log.info(`Raw game message: ${JSON.stringify(newGameMessage)}`);
 
-    log.info('Requesting NPSUserStatus packet')
+    log.info("Requesting NPSUserStatus packet");
     const userStatus = new NPSUserStatus(data);
-    log.info('NPSUserStatus packet creation success')
+    log.info("NPSUserStatus packet creation success");
 
-    log.info('Requesting Key extraction')
+    log.info("Requesting Key extraction");
     userStatus.extractSessionKeyFromPacket(data);
-    log.info('Key extraction success')
+    log.info("Key extraction success");
 
     const { contextId, sessionkey } = userStatus;
 
@@ -151,9 +146,7 @@ export const messageHandlers = [
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
  * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
  */
-export async function handleData(
-    dataConnection
-) {
+export async function handleData(dataConnection) {
     const { connectionId, data } = dataConnection;
 
     log.info(`Received Login Server packet: ${connectionId}`);
@@ -177,11 +170,11 @@ export async function handleData(
 
     try {
         const result = await supportedHandler.handler(dataConnection);
-    log.info(`Returning with ${result.messages.length} messages`);
-    log.info("Leaving handleData");
-    return result;
+        log.info(`Returning with ${result.messages.length} messages`);
+        log.info("Leaving handleData");
+        return result;
     } catch (error) {
-        log.error(String(error))
-        throw new Error(`Error handling data: ${String(error)}`)
+        log.error(String(error));
+        throw new Error(`Error handling data: ${String(error)}`);
     }
 }

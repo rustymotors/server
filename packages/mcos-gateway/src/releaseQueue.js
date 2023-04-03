@@ -9,10 +9,7 @@
 }}
  */
 
-export function releaseQueue(
-    connections,
-    connectionId
-) {
+export function releaseQueue(connections, connectionId) {
     const connectionToRelease = connections.find((connection) => {
         return connection.id === connectionId;
     });

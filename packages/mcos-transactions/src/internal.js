@@ -14,9 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { decryptBuffer, selectEncryptors } from "../../mcos-gateway/src/encryption.js";
+import {
+    decryptBuffer,
+    selectEncryptors,
+} from "../../mcos-gateway/src/encryption.js";
 import { messageHandlers } from "./handlers.js";
-import log from '../../../log.js'
+import log from "../../../log.js";
 import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
 import { toHex } from "../../mcos-gateway/src/BinaryStructure.js";
 
@@ -27,10 +30,7 @@ import { toHex } from "../../mcos-gateway/src/BinaryStructure.js";
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
  * @return {boolean}
  */
-function shouldMessageBeEncrypted(
-    message,
-    dataConnection
-) {
+function shouldMessageBeEncrypted(message, dataConnection) {
     return message.flags !== 80 && dataConnection.connection.useEncryption;
 }
 
@@ -41,10 +41,7 @@ function shouldMessageBeEncrypted(
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
  * @return {{err: Error | null, data: Buffer | null}}
  */
-function decryptTransactionBuffer(
-    message,
-    dataConnection
-) {
+function decryptTransactionBuffer(message, dataConnection) {
     const encryptedBuffer = Buffer.from(message.data);
     log.info(
         `Full packet before decrypting: ${encryptedBuffer.toString("hex")}`
@@ -55,9 +52,7 @@ function decryptTransactionBuffer(
     );
 
     const result = decryptBuffer(dataConnection, encryptedBuffer);
-    log.info(
-        `Message buffer after decrypting: ${result.data.toString("hex")}`
-    );
+    log.info(`Message buffer after decrypting: ${result.data.toString("hex")}`);
 
     if (result.data.readUInt16LE(0) <= 0) {
         return {
@@ -75,10 +70,7 @@ function decryptTransactionBuffer(
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
  * @return {{err: Error | null, data: Buffer | null}}
  */
-function tryDecryptBuffer(
-    message,
-    dataConnection
-) {
+function tryDecryptBuffer(message, dataConnection) {
     try {
         return {
             err: null,
@@ -87,7 +79,8 @@ function tryDecryptBuffer(
     } catch (error) {
         return {
             err: new Error(
-                `Decrypt() exception thrown! Disconnecting...conId:${dataConnection.connectionId
+                `Decrypt() exception thrown! Disconnecting...conId:${
+                    dataConnection.connectionId
                 }: ${String(error)}`
             ),
             data: null,
@@ -129,10 +122,7 @@ function _MSG_STRING(messageID) {
  * @param {MessageNode} node
  * @returns {Promise<import("../../mcos-gateway/src/sockets.js").ServiceResponse>}
  */
-async function processInput(
-    dataConnection,
-    node
-) {
+async function processInput(dataConnection, node) {
     const currentMessageNo = node.msgNo;
     const currentMessageString = _MSG_STRING(currentMessageNo);
 
@@ -146,29 +136,30 @@ async function processInput(
 
     if (typeof result !== "undefined") {
         try {
-            const responsePackets =
-                await result.handler(dataConnection.connection, node);
-            return responsePackets
+            const responsePackets = await result.handler(
+                dataConnection.connection,
+                node
+            );
+            return responsePackets;
         } catch (error) {
-            throw new Error(`Error handling packet: ${String(error)}`)
+            throw new Error(`Error handling packet: ${String(error)}`);
         }
     }
 
     node.setAppId(dataConnection.connection.personaId);
 
-    throw new Error(`Message Number Not Handled: ${currentMessageNo} (${currentMessageString}`)
+    throw new Error(
+        `Message Number Not Handled: ${currentMessageNo} (${currentMessageString}`
+    );
 }
 
 /**
- * 
- * @param {MessageNode} message 
- * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection 
+ *
+ * @param {MessageNode} message
+ * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
  * @returns {Promise<import("../../mcos-gateway/src/sockets.js").ServiceResponse>}
  */
-async function messageReceived(
-    message,
-    dataConnection
-) {
+async function messageReceived(message, dataConnection) {
     // if (message.flags && 0x08) {
     //     selectEncryptors(dataConnection.)
     //   debug('Turning on encryption')
@@ -188,7 +179,7 @@ async function messageReceived(
         if (message.flags - 8 >= 0) {
             const result = tryDecryptBuffer(message, dataConnection);
             if (result.err !== null || result.data === null) {
-                throw new Error(String(result.err))
+                throw new Error(String(result.err));
             }
             // Update the MessageNode with the deciphered buffer
             message.updateBuffer(result.data);
@@ -203,9 +194,7 @@ async function messageReceived(
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
  * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
  */
-export async function handleData(
-    dataConnection
-) {
+export async function handleData(dataConnection) {
     const { connection, data } = dataConnection;
     const { remoteAddress, localPort } = connection.socket;
 
@@ -224,12 +213,11 @@ export async function handleData(
     log.info(
         `[handle]Received TCP packet',
       ${JSON.stringify({
-            localPort,
-            remoteAddress,
-            direction: messageNode.direction,
-            data: data.toString("hex"),
-        })
-        } `
+          localPort,
+          remoteAddress,
+          direction: messageNode.direction,
+          data: data.toString("hex"),
+      })} `
     );
     messageNode.dumpPacket();
 
@@ -252,7 +240,10 @@ export async function handleData(
     }
 
     try {
-        const processedPacket = await messageReceived(messageNode, dataConnection);
+        const processedPacket = await messageReceived(
+            messageNode,
+            dataConnection
+        );
         log.info("Back in transacation server");
         return {
             connection: processedPacket.connection,
@@ -261,6 +252,4 @@ export async function handleData(
     } catch (error) {
         throw new Error(`Error processing packet: ${String(error)} `);
     }
-
-
 }

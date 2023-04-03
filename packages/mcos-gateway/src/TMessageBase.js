@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { BinaryStructure } from "./BinaryStructure.js";
-import log from '../../../log.js'
+import log from "../../../log.js";
 
 /**
  * @class

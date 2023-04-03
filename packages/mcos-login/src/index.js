@@ -16,7 +16,7 @@
 
 import { DatabaseManager } from "../../mcos-database/src/index.js";
 import { handleData } from "./internal.js";
-import log from '../../../log.js'
+import log from "../../../log.js";
 
 /**
  * Manages the initial game connection setup and teardown.
@@ -30,7 +30,6 @@ import log from '../../../log.js'
  * @property {number} customerId
  * @property {number} userId
  */
-
 
 /**
  * Please use {@link LoginServer.getInstance()}
@@ -60,8 +59,6 @@ export class LoginServer {
         }
         return LoginServer._instance;
     }
-
-    
 
     /**
      *
@@ -112,7 +109,6 @@ export class LoginServer {
     }
 }
 
-
 /**
  * Entry and exit point of the Login service
  *
@@ -120,18 +116,16 @@ export class LoginServer {
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
  * @return {Promise<import("../../mcos-gateway/src/sockets.js").ServiceResponse>}
  */
-export async function receiveLoginData(
-    dataConnection
-) {
+export async function receiveLoginData(dataConnection) {
     try {
-        log.info('Entering login module')
+        log.info("Entering login module");
         const response = await handleData(dataConnection);
         log.info(`There are ${response.messages.length} messages`);
-        log.info('Exiting login module')
+        log.info("Exiting login module");
         return response;
     } catch (error) {
-        throw new Error(`There was an error in the login service: ${String(
-            error
-        )}`);
+        throw new Error(
+            `There was an error in the login service: ${String(error)}`
+        );
     }
 }

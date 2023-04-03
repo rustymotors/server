@@ -16,7 +16,7 @@
 
 import { handleData, personaRecords } from "./internal.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
-import log from '../../../log.js'
+import log from "../../../log.js";
 import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
 
 /**
@@ -24,9 +24,7 @@ import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
  * @param {NPSMessage} requestPacket
  * @returns {Promise<NPSMessage>}
  */
-export async function handleSelectGamePersona(
-    requestPacket
-) {
+export async function handleSelectGamePersona(requestPacket) {
     log.info("_npsSelectGamePersona...");
     log.info(
         `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
@@ -297,9 +295,7 @@ export class PersonaServer {
      * @param {number} customerId
      * @return {Promise<PersonaRecord[]>}
      */
-    async getPersonasByCustomerId(
-        customerId
-    ) {
+    async getPersonasByCustomerId(customerId) {
         return personaRecords.filter(
             (persona) => persona.customerId === customerId
         );
@@ -313,9 +309,7 @@ export class PersonaServer {
      * @param {number} customerId
      * @return {Promise<PersonaRecord[]>}
      */
-    async getPersonaMapsByCustomerId(
-        customerId
-    ) {
+    async getPersonaMapsByCustomerId(customerId) {
         switch (customerId) {
             case 2_868_969_472:
             case 5_551_212:
@@ -400,7 +394,6 @@ export class PersonaServer {
     }
 }
 
-
 /**
  * Entry and exit point for the persona service
  *
@@ -408,9 +401,7 @@ export class PersonaServer {
  * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
  * @return {Promise<import("../../mcos-gateway/src/sockets.js").ServiceResponse>}
  */
-export async function receivePersonaData(
-    dataConnection
-) {
+export async function receivePersonaData(dataConnection) {
     try {
         return await handleData(dataConnection);
     } catch (error) {

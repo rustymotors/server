@@ -1,4 +1,3 @@
-
 /**
  * Commands from the game server to the game client
  * @export

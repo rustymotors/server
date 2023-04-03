@@ -5,7 +5,7 @@ import { ShardEntry } from "../src/shard-entry.js";
 describe("ShardEntry#formatForShardList()", () => {
     it("should return a formatted list", () => {
         // arrange
-        const expectedText = "LoginServerIP=0.0.0.0"
+        const expectedText = "LoginServerIP=0.0.0.0";
         const entry = new ShardEntry(
             "TestEntry",
             "Not a real shard",
@@ -22,12 +22,12 @@ describe("ShardEntry#formatForShardList()", () => {
             0,
             "0.0.0.0",
             0
-        )
+        );
 
         // act
-        const result = entry.formatForShardList()
+        const result = entry.formatForShardList();
 
         // assert
-        expect(result).to.be.contain(expectedText)
-    })
-})
+        expect(result).to.be.contain(expectedText);
+    });
+});

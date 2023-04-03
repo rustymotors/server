@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { createServer } from "node:http";
-import log from '../../../log.js'
+import log from "../../../log.js";
 
 export const CastanetResponse = {
     body: Buffer.from("cafebeef00000000000003", "hex"),
@@ -52,7 +52,7 @@ export class PatchServer {
         });
         server.on("request", this.handleRequest.bind(this));
 
-       log.info(`Attempting to bind to port ${port}`);
+        log.info(`Attempting to bind to port ${port}`);
         server.listen(port, host);
     }
 
@@ -86,10 +86,7 @@ export class PatchServer {
      * @param {import('node:http').ServerResponse} response
      * @returns {import('node:http').ServerResponse}
      */
-    castanetResponse(
-        request,
-        response
-    ) {
+    castanetResponse(request, response) {
         log.info(
             `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
         );
@@ -107,10 +104,7 @@ export class PatchServer {
      * @param {import('node:http').ServerResponse} response
      * @returns {import('node:http').ServerResponse}
      */
-    handleRequest(
-        request,
-        response
-    ) {
+    handleRequest(request, response) {
         if (
             request.url === "/games/EA_Seattle/MotorCity/UpdateInfo" ||
             request.url === "/games/EA_Seattle/MotorCity/NPS" ||

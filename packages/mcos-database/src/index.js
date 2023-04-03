@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import log from '../../../log.js'
-
+import log from "../../../log.js";
 
 /**
  * This class abstracts database methods
@@ -23,10 +22,10 @@ import log from '../../../log.js'
  */
 export class DatabaseManager {
     /** @type {import("./models/Session.js").Session[]} */
-    sessions = []
+    sessions = [];
 
     /** @type {import('./models/Lobby.js').Lobby[]} */
-    lobbies = []
+    lobbies = [];
 
     /**
      *
@@ -37,7 +36,7 @@ export class DatabaseManager {
      * @memberof DatabaseManager
      */
     static _instance;
-    
+
     /**
      * Return the instance of the DatabaseManager class
      * @returns {DatabaseManager}
@@ -56,20 +55,16 @@ export class DatabaseManager {
      * Please use {@link DatabaseManager.getInstance()} instead
      * @memberof DatabaseManager
      */
-    constructor() {
-    }
+    constructor() {}
 
     /**
      * Locate customer session encryption key in the database
      * @param {number} customerId
      * @returns {Promise<import("../../mcos-gateway/src/encryption.js").SessionRecord>}
      */
-    async fetchSessionKeyByCustomerId(
-        customerId
-    ) {
-
-        const record = this.sessions.find(session => {
-            return session.customer_id === customerId
+    async fetchSessionKeyByCustomerId(customerId) {
+        const record = this.sessions.find((session) => {
+            return session.customer_id === customerId;
         });
         if (typeof record === "undefined") {
             log.error("Unable to locate session key");
@@ -83,11 +78,9 @@ export class DatabaseManager {
      * @param {string} connectionId
      * @returns {Promise<import("../../mcos-gateway/src/encryption.js").SessionRecord>}
      */
-    async fetchSessionKeyByConnectionId(
-        connectionId
-    ) {
-        const record = await this.sessions.find(session => {
-            return session.connection_id === connectionId
+    async fetchSessionKeyByConnectionId(connectionId) {
+        const record = await this.sessions.find((session) => {
+            return session.connection_id === connectionId;
         });
         if (typeof record === "undefined") {
             throw new Error("Unable to fetch session key");
@@ -103,12 +96,7 @@ export class DatabaseManager {
      * @param {string} connectionId
      * @returns {Promise<void>}
      */
-    async updateSessionKey(
-        customerId,
-        sessionkey,
-        contextId,
-        connectionId
-    ) {
+    async updateSessionKey(customerId, sessionkey, contextId, connectionId) {
         const skey = sessionkey.slice(0, 16);
 
         /** @type {import("./models/Session.js").Session} */
@@ -117,16 +105,16 @@ export class DatabaseManager {
             sessionkey,
             skey,
             context_id: contextId,
-            connection_id: connectionId
-        }
+            connection_id: connectionId,
+        };
 
-        const record = await this.sessions.findIndex(session => {
-            return session.customer_id === customerId
+        const record = await this.sessions.findIndex((session) => {
+            return session.customer_id === customerId;
         });
         if (typeof record === "undefined") {
             throw new Error("Unable to fetch session key");
         }
-        this.sessions.splice(record, 1, updatedSession)
+        this.sessions.splice(record, 1, updatedSession);
 
         return;
     }

@@ -1,7 +1,4 @@
-
-
-import { NPSMessage } from '../../mcos-gateway/src/NPSMessage.js'
-
+import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
 
 /**
  *
@@ -129,5 +126,4 @@ export class NPSPersonaMapsMessage extends NPSMessage {
         // Build the packet
         return packetContent;
     }
-   
 }

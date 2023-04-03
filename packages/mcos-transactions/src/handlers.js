@@ -25,7 +25,7 @@ import { StockCar } from "./StockCar.js";
 import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
 import { toHex } from "../../mcos-gateway/src/sockets.js";
 import { createEncrypters } from "../../mcos-gateway/src/encryption.js";
-import log from '../../../log.js'
+import log from "../../../log.js";
 
 /**
  *
@@ -34,10 +34,7 @@ import log from '../../../log.js'
  * @param {MessageNode} node
  * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
-function _setOptions(
-    connection,
-    node
-) {
+function _setOptions(connection, node) {
     const setOptionsMessage = node;
 
     setOptionsMessage.data = node.serialize();
@@ -65,10 +62,7 @@ function _setOptions(
  * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleSetOptions(
-    conn,
-    node
-) {
+function handleSetOptions(conn, node) {
     const result = _setOptions(conn, node);
     return result;
 }
@@ -80,10 +74,7 @@ function handleSetOptions(
  * @param {MessageNode} node
  * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
-function _trackingMessage(
-    connection,
-    node
-) {
+function _trackingMessage(connection, node) {
     const trackingMessage = node;
 
     trackingMessage.data = node.serialize();
@@ -112,10 +103,7 @@ function _trackingMessage(
  * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleTrackingMessage(
-    conn,
-    node
-) {
+function handleTrackingMessage(conn, node) {
     const result = _trackingMessage(conn, node);
     return result;
 }
@@ -127,10 +115,7 @@ function handleTrackingMessage(
  * @param {MessageNode} node
  * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
-function _updatePlayerPhysical(
-    connection,
-    node
-) {
+function _updatePlayerPhysical(connection, node) {
     const updatePlayerPhysicalMessage = node;
 
     updatePlayerPhysicalMessage.data = node.serialize();
@@ -159,10 +144,7 @@ function _updatePlayerPhysical(
  * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleUpdatePlayerPhysical(
-    conn,
-    node
-) {
+function handleUpdatePlayerPhysical(conn, node) {
     const result = _updatePlayerPhysical(conn, node);
     return result;
 }
@@ -172,10 +154,7 @@ function handleUpdatePlayerPhysical(
  * @param {MessageNode} packet
  * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
  */
-async function clientConnect(
-    connection,
-    packet
-) {
+async function clientConnect(connection, packet) {
     /**
      * Let's turn it into a ClientConnectMsg
      */
@@ -249,10 +228,7 @@ async function clientConnect(
  * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
  * @memberof MCOTServer
  */
-async function handleClientConnect(
-    conn,
-    node
-) {
+async function handleClientConnect(conn, node) {
     const result = await clientConnect(conn, node);
     return {
         connection: result.connection,
@@ -267,10 +243,7 @@ async function handleClientConnect(
  * @param {MessageNode} node
  * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}>}
  */
-function _login(
-    connection,
-    node
-) {
+function _login(connection, node) {
     // Read the inbound packet
     const loginMessage = new TLoginMessage();
     loginMessage.deserialize(node.rawPacket);
@@ -298,10 +271,7 @@ function _login(
  * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleLoginMessage(
-    conn,
-    node
-) {
+function handleLoginMessage(conn, node) {
     const result = _login(conn, node);
     return {
         connection: result.connection,
@@ -316,10 +286,7 @@ function handleLoginMessage(
  * @param {MessageNode} node
  * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
-function _logout(
-    connection,
-    node
-) {
+function _logout(connection, node) {
     const logoutMessage = node;
 
     logoutMessage.data = node.serialize();
@@ -350,10 +317,7 @@ function _logout(
  * @param {MessageNode} node
  * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
-function handleLogoutMessage(
-    conn,
-    node
-) {
+function handleLogoutMessage(conn, node) {
     const result = _logout(conn, node);
     return {
         connection: result.connection,
@@ -368,17 +332,12 @@ function handleLogoutMessage(
  * @param {MessageNode} node
  * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
-function _getLobbies(
-    connection,
-    node
-) {
+function _getLobbies(connection, node) {
     log.info("In _getLobbies...");
 
     const lobbyRequest = new GenericRequestMessage();
     lobbyRequest.deserialize(node.rawPacket);
-    log.info(
-        `Received GenericRequestMessage: ${JSON.stringify(lobbyRequest)}`
-    );
+    log.info(`Received GenericRequestMessage: ${JSON.stringify(lobbyRequest)}`);
 
     const lobbiesListMessage = node;
 
@@ -428,15 +387,12 @@ function _getLobbies(
  * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleGetLobbiesMessage(
-    conn,
-    node
-) {
+function handleGetLobbiesMessage(conn, node) {
     const result = _getLobbies(conn, node);
     log.info("Dumping Lobbies response packet...");
-    result.messages.forEach(msg => {
-        log.info(msg.toString())
-    })
+    result.messages.forEach((msg) => {
+        log.info(msg.toString());
+    });
     log.info(result.messages.join().toString());
     return {
         connection: result.connection,
@@ -450,10 +406,7 @@ function handleGetLobbiesMessage(
  * @param {MessageNode} packet
  * @returns {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
-function getStockCarInfo(
-    connection,
-    packet
-) {
+function getStockCarInfo(connection, packet) {
     const getStockCarInfoMessage = new GenericRequestMessage();
     getStockCarInfoMessage.deserialize(packet.data);
     getStockCarInfoMessage.dumpPacket();
@@ -487,10 +440,7 @@ function getStockCarInfo(
  * @param {MessageNode} node
  * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
  */
-function handleShockCarInfoMessage(
-    conn,
-    node
-) {
+function handleShockCarInfoMessage(conn, node) {
     const result = getStockCarInfo(conn, node);
     return {
         connection: result.connection,

@@ -20,7 +20,7 @@ import { receivePersonaData } from "../../mcos-persona/src/index.js";
 import { receiveTransactionsData } from "../../mcos-transactions/src/index.js";
 import { findOrNewConnection, updateConnection } from "./connections.js";
 import { MessageNode } from "./MessageNode.js";
-import log from '../../../log.js'
+import log from "../../../log.js";
 
 /**
  * Convert to zero padded hex
@@ -72,8 +72,8 @@ const serviceRouters = {
     8226: receiveLoginData,
     8228: receivePersonaData,
     7003: receiveLobbyData,
-    43300: receiveTransactionsData
-}
+    43300: receiveTransactionsData,
+};
 
 /**
  * The onData handler
@@ -82,10 +82,7 @@ const serviceRouters = {
  * @param {import("./connections.js").SocketWithConnectionInfo} connection
  * @return {Promise<void>}
  */
-export async function dataHandler(
-    data,
-    connection
-) {
+export async function dataHandler(data, connection) {
     log.info(`data prior to proccessing: ${data.toString("hex")}`);
 
     // Link the data and the connection together
@@ -99,7 +96,10 @@ export async function dataHandler(
 
     const { localPort, remoteAddress } = networkBuffer.connection.socket;
 
-    if (typeof localPort === "undefined" || typeof remoteAddress === "undefined") {
+    if (
+        typeof localPort === "undefined" ||
+        typeof remoteAddress === "undefined"
+    ) {
         // Somehow we have recived a connection without a local post specified
         log.error(
             `Error locating remote address or target port for socket, connection id: ${networkBuffer.connectionId}`
@@ -123,7 +123,7 @@ export async function dataHandler(
     if (typeof serviceRouters[localPort] !== "undefined") {
         try {
             /** @type {ServiceResponse} */
-            const result = await serviceRouters[localPort](networkBuffer)
+            const result = await serviceRouters[localPort](networkBuffer);
 
             const messages = result.messages;
 
@@ -135,12 +135,10 @@ export async function dataHandler(
             sendMessages(messages, outboundConnection);
 
             // Update the connection
-                updateConnection(outboundConnection.id, outboundConnection);
+            updateConnection(outboundConnection.id, outboundConnection);
         } catch (error) {
             log.error(
-                `There was an error processing the packet: ${String(
-                    error
-                )}`
+                `There was an error processing the packet: ${String(error)}`
             );
             process.exitCode = -1;
             return;
@@ -149,18 +147,22 @@ export async function dataHandler(
 }
 
 /**
- * 
- * @param {import("./NPSMessage.js").NPSMessage[] | MessageNode[] | import("./BinaryStructure.js").BinaryStructure[]} messages 
- * @param {import("./connections.js").SocketWithConnectionInfo} outboundConnection 
+ *
+ * @param {import("./NPSMessage.js").NPSMessage[] | MessageNode[] | import("./BinaryStructure.js").BinaryStructure[]} messages
+ * @param {import("./connections.js").SocketWithConnectionInfo} outboundConnection
  */
 function sendMessages(messages, outboundConnection) {
     messages.forEach((f) => {
-        if (outboundConnection.useEncryption === true &&
-            f instanceof MessageNode) {
-            if (typeof outboundConnection.encryptionSession ===
-                "undefined" ||
-                typeof f.data === "undefined") {
-                const errMessage = "There was a fatal error attempting to encrypt the message!";
+        if (
+            outboundConnection.useEncryption === true &&
+            f instanceof MessageNode
+        ) {
+            if (
+                typeof outboundConnection.encryptionSession === "undefined" ||
+                typeof f.data === "undefined"
+            ) {
+                const errMessage =
+                    "There was a fatal error attempting to encrypt the message!";
                 log.info(
                     `usingEncryption? ${outboundConnection.useEncryption}, packetLength: ${f.data.byteLength}/${f.dataLength}`
                 );
@@ -170,9 +172,7 @@ function sendMessages(messages, outboundConnection) {
                     `Message prior to encryption: ${toHex(f.serialize())}`
                 );
                 f.updateBuffer(
-                    outboundConnection.encryptionSession.tsCipher.update(
-                        f.data
-                    )
+                    outboundConnection.encryptionSession.tsCipher.update(f.data)
                 );
             }
         }
@@ -222,4 +222,3 @@ export function TCPHandler(socket) {
         log.error(`Socket error: ${String(error)}`);
     });
 }
-

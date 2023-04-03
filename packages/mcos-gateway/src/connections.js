@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { randomUUID } from "node:crypto";
-import log from '../../../log.js'
+import log from "../../../log.js";
 
 /**
  * @global
@@ -47,7 +47,6 @@ import log from '../../../log.js'
  * @property {EncryptionSession} [encryptionSession]
  */
 
-
 /** @type {SocketWithConnectionInfo[]} */
 const connectionList = [];
 
@@ -67,10 +66,7 @@ export function getAllConnections() {
  * @param {string} connectionId
  * @param {SocketWithConnectionInfo} updatedConnection
  */
-export function updateConnection(
-    connectionId,
-    updatedConnection
-) {
+export function updateConnection(connectionId, updatedConnection) {
     log.info(`Updating connection with id: ${connectionId}`);
     try {
         const index = connectionList.findIndex((c) => {
@@ -89,10 +85,7 @@ export function updateConnection(
  * @param {number} localPort
  * @return {SocketWithConnectionInfo | undefined}
  */
-function findConnectionByAddressAndPort(
-    remoteAddress,
-    localPort
-) {
+function findConnectionByAddressAndPort(remoteAddress, localPort) {
     return connectionList.find((c) => {
         return c.remoteAddress === remoteAddress && c.localPort === localPort;
     });
@@ -104,10 +97,7 @@ function findConnectionByAddressAndPort(
  * @param {import('node:net').Socket} socket
  * @returns {SocketWithConnectionInfo}
  */
-function createNewConnection(
-    connectionId,
-    socket
-) {
+function createNewConnection(connectionId, socket) {
     const { localPort, remoteAddress } = socket;
 
     if (
@@ -140,9 +130,7 @@ function createNewConnection(
  * @param {SocketWithConnectionInfo} connection
  * @return {SocketWithConnectionInfo[]}
  */
-function addConnection(
-    connection
-) {
+function addConnection(connection) {
     connectionList.push(connection);
     return connectionList;
 }

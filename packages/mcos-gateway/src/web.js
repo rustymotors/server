@@ -18,8 +18,7 @@ import { AdminServer } from "./adminServer.js";
 import { AuthLogin } from "../../mcos-auth/src/index.js";
 import { PatchServer } from "../../mcos-patch/src/index.js";
 import { ShardServer } from "../../mcos-shard/src/index.js";
-import log from '../../../log.js'
-
+import log from "../../../log.js";
 
 /**
  * Routes incomming HTTP requests
@@ -27,10 +26,7 @@ import log from '../../../log.js'
  * @param {import('node:http').ServerResponse} res
  * @returns {import('node:http').ServerResponse}
  */
-export function httpListener(
-    req,
-    res
-) {
+export function httpListener(req, res) {
     if (typeof req.url !== "undefined" && req.url.startsWith("/AuthLogin")) {
         log.info("ssl routing request to login web server");
         return AuthLogin.getInstance().handleRequest(req, res);

@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { BinaryStructure } from './BinaryStructure.js';
-import log from '../../../log.js'
+import { BinaryStructure } from "./BinaryStructure.js";
+import log from "../../../log.js";
 
 /**
  * @class
@@ -69,7 +69,8 @@ export class GSMessageBase extends BinaryStructure {
         this.setValueNumber(
             "checksum",
             (Number(this.getValue("totalMsgLen")) +
-                (Number(this.getValue("msgVersion"))) << 8)
+                Number(this.getValue("msgVersion"))) <<
+                8
         );
     }
 }
