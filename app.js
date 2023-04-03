@@ -15,9 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { startListeners } from "./packages/mcos-gateway/src/index.js";
-import log from "./log.js"
-
-const appName = 'mcos'
+import log from "./log.js";
 
 try {
     if (typeof process.env.EXTERNAL_HOST === "undefined") {
