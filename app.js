@@ -14,8 +14,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import * as Sentry from "@sentry/node";
 import { startListeners } from "./packages/mcos-gateway/src/index.js";
 import log from "./log.js";
+
+Sentry.init({
+    dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
+  
+    // We recommend adjusting this value in production, or using tracesSampler
+    // for finer control
+    tracesSampleRate: 1.0,
+  });
 
 try {
     if (typeof process.env.EXTERNAL_HOST === "undefined") {
@@ -26,6 +35,7 @@ try {
     }
     startListeners();
 } catch (err) {
+    Sentry.captureException(err);
     log.error(`Error in core server: ${String(err)}`);
     log.error("Server exiting");
     process.exit(1);
