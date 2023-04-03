@@ -35,6 +35,19 @@ const listeningPortList = [
 
 /**
  *
+ * @param {any} error
+ * @returns
+ */
+function onSocketError(error) {
+    const message = String(error);
+    if (message.includes("ECONNRESET") === true) {
+        return log.info("Connection was reset");
+    }
+    log.error(`Socket error: ${String(error)}`);
+}
+
+/**
+ *
  * @param {import('node:net').Socket} incomingSocket
  * @returns
  */
@@ -103,17 +116,19 @@ function TCPListener(incomingSocket) {
 
 /**
  *
- * @param {any} error
- * @returns
+ * @param {number} port
  */
-function onSocketError(error) {
-    const message = String(error);
-    if (message.includes("ECONNRESET") === true) {
-        return log.info("Connection was reset");
-    }
-    log.error(`Socket error: ${String(error)}`);
+function serverListener(port) {
+    const listeningPort = String(port).length ? String(port) : "unknown";
+    log.info(`Listening on port ${listeningPort}`);
 }
 
+/**
+ *
+ * Start listening on ports
+ * @author Drazi Crendraven
+ * @export
+ */
 export function startListeners() {
     log.info("Server starting");
 
@@ -125,13 +140,4 @@ export function startListeners() {
             return serverListener(port);
         });
     });
-}
-
-/**
- *
- * @param {number} port
- */
-function serverListener(port) {
-    const listeningPort = String(port).length ? String(port) : "unknown";
-    log.info(`Listening on port ${listeningPort}`);
 }

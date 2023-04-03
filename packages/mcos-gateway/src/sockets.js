@@ -76,6 +76,42 @@ const serviceRouters = {
 };
 
 /**
+ *
+ * @param {import("./NPSMessage.js").NPSMessage[] | MessageNode[] | import("./BinaryStructure.js").BinaryStructure[]} messages
+ * @param {import("./connections.js").SocketWithConnectionInfo} outboundConnection
+ */
+function sendMessages(messages, outboundConnection) {
+    messages.forEach((f) => {
+        if (
+            outboundConnection.useEncryption === true &&
+            f instanceof MessageNode
+        ) {
+            if (
+                typeof outboundConnection.encryptionSession === "undefined" ||
+                typeof f.data === "undefined"
+            ) {
+                const errMessage =
+                    "There was a fatal error attempting to encrypt the message!";
+                log.info(
+                    `usingEncryption? ${outboundConnection.useEncryption}, packetLength: ${f.data.byteLength}/${f.dataLength}`
+                );
+                log.error(errMessage);
+            } else {
+                log.info(
+                    `Message prior to encryption: ${toHex(f.serialize())}`
+                );
+                f.updateBuffer(
+                    outboundConnection.encryptionSession.tsCipher.update(f.data)
+                );
+            }
+        }
+
+        log.info(`Sending Message: ${toHex(f.serialize())}`);
+        outboundConnection.socket.write(f.serialize());
+    });
+}
+
+/**
  * The onData handler
  * takes the data buffer and creates a {@link BufferWithConnection} object
  * @param {Buffer} data
@@ -144,42 +180,6 @@ export async function dataHandler(data, connection) {
             return;
         }
     }
-}
-
-/**
- *
- * @param {import("./NPSMessage.js").NPSMessage[] | MessageNode[] | import("./BinaryStructure.js").BinaryStructure[]} messages
- * @param {import("./connections.js").SocketWithConnectionInfo} outboundConnection
- */
-function sendMessages(messages, outboundConnection) {
-    messages.forEach((f) => {
-        if (
-            outboundConnection.useEncryption === true &&
-            f instanceof MessageNode
-        ) {
-            if (
-                typeof outboundConnection.encryptionSession === "undefined" ||
-                typeof f.data === "undefined"
-            ) {
-                const errMessage =
-                    "There was a fatal error attempting to encrypt the message!";
-                log.info(
-                    `usingEncryption? ${outboundConnection.useEncryption}, packetLength: ${f.data.byteLength}/${f.dataLength}`
-                );
-                log.error(errMessage);
-            } else {
-                log.info(
-                    `Message prior to encryption: ${toHex(f.serialize())}`
-                );
-                f.updateBuffer(
-                    outboundConnection.encryptionSession.tsCipher.update(f.data)
-                );
-            }
-        }
-
-        log.info(`Sending Message: ${toHex(f.serialize())}`);
-        outboundConnection.socket.write(f.serialize());
-    });
 }
 
 /**
