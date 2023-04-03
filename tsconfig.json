@@ -11,9 +11,5 @@
         "strictFunctionTypes": true,
         "allowSyntheticDefaultImports": true
     },
-    "exclude": [
-        "node_modules",
-        "**/node_modules/*",
-        "coverage"
-    ]
+    "exclude": ["node_modules", "**/node_modules/*", "coverage"]
 }
