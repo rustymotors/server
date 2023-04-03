@@ -313,7 +313,7 @@ export class PersonaServer {
         switch (customerId) {
             case 2_868_969_472:
             case 5_551_212:
-                return await this.getPersonasByCustomerId(customerId);
+                return this.getPersonasByCustomerId(customerId);
             default:
                 return [];
         }
