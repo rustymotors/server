@@ -20,11 +20,10 @@ import log from "./log.js"
 const appName = 'mcos'
 
 try {
-    const {EXTERNAL_HOST } = process.env
-    if (typeof EXTERNAL_HOST === "undefined") {
+    if (typeof process.env.EXTERNAL_HOST === "undefined") {
         throw new Error("Please set EXTERNAL_HOST");
     }
-    if (typeof process.env["PRIVATE_KEY_FILE"] === "undefined") {
+    if (typeof process.env.PRIVATE_KEY_FILE === "undefined") {
         throw new Error("Please set PRIVATE_KEY_FILE");
     }
     startListeners();
