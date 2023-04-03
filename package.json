@@ -13,7 +13,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "format": "prettier --write \"packages/**/*.js\"",
+    "format": "prettier --write app.js \"packages/**/*.js\"",
     "test": "c8 mocha packages/**/*.test.js",
     "build:test": "npm run format && npm run build && npm run test",
     "prod": "make prod_node",
