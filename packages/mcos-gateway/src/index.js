@@ -49,6 +49,26 @@ function onSocketError(error) {
 /**
  *
  * @param {import('node:net').Socket} incomingSocket
+ */
+function TCPListener(incomingSocket) {
+    // Get a connection record
+    const connectionRecord = findOrNewConnection(incomingSocket);
+
+    const { localPort, remoteAddress } = incomingSocket;
+    log.info(`Client ${remoteAddress} connected to port ${localPort}`);
+
+    incomingSocket.on("end", () => {
+        log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
+    });
+    incomingSocket.on("data", async (data) => {
+        await dataHandler(data, connectionRecord);
+    });
+    incomingSocket.on("error", onSocketError);
+}
+
+/**
+ *
+ * @param {import('node:net').Socket} incomingSocket
  * @returns
  */
 function socketListener(incomingSocket) {
@@ -94,25 +114,6 @@ function socketListener(incomingSocket) {
     TCPListener(incomingSocket);
 }
 
-/**
- *
- * @param {import('node:net').Socket} incomingSocket
- */
-function TCPListener(incomingSocket) {
-    // Get a connection record
-    const connectionRecord = findOrNewConnection(incomingSocket);
-
-    const { localPort, remoteAddress } = incomingSocket;
-    log.info(`Client ${remoteAddress} connected to port ${localPort}`);
-
-    incomingSocket.on("end", () => {
-        log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
-    });
-    incomingSocket.on("data", async (data) => {
-        await dataHandler(data, connectionRecord);
-    });
-    incomingSocket.on("error", onSocketError);
-}
 
 /**
  *
