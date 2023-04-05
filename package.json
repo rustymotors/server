@@ -72,6 +72,6 @@
   },
   "packageManager": "yarn@3.5.0",
   "dependencies": {
-    "@sentry/node": "7.46.0"
+    "@sentry/node": "7.47.0"
   }
 }
