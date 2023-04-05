@@ -49,6 +49,9 @@
       "text",
       "cobertura",
       "html"
+    ],
+    "exclude": [
+        ".yarn"
     ]
   },
   "eslintConfig": {
