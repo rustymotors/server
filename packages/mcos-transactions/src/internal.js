@@ -14,9 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { decryptBuffer, selectEncryptors } from "../../mcos-gateway/src/encryption.js";
+import {
+    decryptBuffer,
+    selectEncryptors,
+} from "../../mcos-gateway/src/encryption.js";
 import { messageHandlers } from "./handlers.js";
-import log from '../../../log.js'
 import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
 import { toHex } from "../../mcos-gateway/src/BinaryStructure.js";
 
@@ -24,13 +26,10 @@ import { toHex } from "../../mcos-gateway/src/BinaryStructure.js";
  *
  *
  * @param {MessageNode} message
- * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TBufferWithConnection} dataConnection
  * @return {boolean}
  */
-function shouldMessageBeEncrypted(
-    message,
-    dataConnection
-) {
+function shouldMessageBeEncrypted(message, dataConnection) {
     return message.flags !== 80 && dataConnection.connection.useEncryption;
 }
 
@@ -38,13 +37,11 @@ function shouldMessageBeEncrypted(
  *
  *
  * @param {MessageNode} message
- * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerLogger} log
  * @return {{err: Error | null, data: Buffer | null}}
  */
-function decryptTransactionBuffer(
-    message,
-    dataConnection
-) {
+function decryptTransactionBuffer(message, dataConnection, log) {
     const encryptedBuffer = Buffer.from(message.data);
     log.info(
         `Full packet before decrypting: ${encryptedBuffer.toString("hex")}`
@@ -54,10 +51,8 @@ function decryptTransactionBuffer(
         `Message buffer before decrypting: ${encryptedBuffer.toString("hex")}`
     );
 
-    const result = decryptBuffer(dataConnection, encryptedBuffer);
-    log.info(
-        `Message buffer after decrypting: ${result.data.toString("hex")}`
-    );
+    const result = decryptBuffer(dataConnection, encryptedBuffer, log);
+    log.info(`Message buffer after decrypting: ${result.data.toString("hex")}`);
 
     if (result.data.readUInt16LE(0) <= 0) {
         return {
@@ -72,22 +67,21 @@ function decryptTransactionBuffer(
  *
  *
  * @param {MessageNode} message
- * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerLogger} log
  * @return {{err: Error | null, data: Buffer | null}}
  */
-function tryDecryptBuffer(
-    message,
-    dataConnection
-) {
+function tryDecryptBuffer(message, dataConnection, log) {
     try {
         return {
             err: null,
-            data: decryptTransactionBuffer(message, dataConnection).data,
+            data: decryptTransactionBuffer(message, dataConnection, log).data,
         };
     } catch (error) {
         return {
             err: new Error(
-                `Decrypt() exception thrown! Disconnecting...conId:${dataConnection.connectionId
+                `Decrypt() exception thrown! Disconnecting...conId:${
+                    dataConnection.connectionId
                 }: ${String(error)}`
             ),
             data: null,
@@ -125,14 +119,12 @@ function _MSG_STRING(messageID) {
 
 /**
  * Route or process MCOTS commands
- * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TBufferWithConnection} dataConnection
  * @param {MessageNode} node
- * @returns {Promise<import("../../mcos-gateway/src/sockets.js").ServiceResponse>}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @returns {Promise<import("mcos/shared").TServiceResponse>}
  */
-async function processInput(
-    dataConnection,
-    node
-) {
+async function processInput(dataConnection, node, log) {
     const currentMessageNo = node.msgNo;
     const currentMessageString = _MSG_STRING(currentMessageNo);
 
@@ -146,29 +138,32 @@ async function processInput(
 
     if (typeof result !== "undefined") {
         try {
-            const responsePackets =
-                await result.handler(dataConnection.connection, node);
-            return responsePackets
+            const responsePackets = await result.handler(
+                dataConnection.connection,
+                node,
+                log
+            );
+            return responsePackets;
         } catch (error) {
-            throw new Error(`Error handling packet: ${String(error)}`)
+            throw new Error(`Error handling packet: ${String(error)}`);
         }
     }
 
     node.setAppId(dataConnection.connection.personaId);
 
-    throw new Error(`Message Number Not Handled: ${currentMessageNo} (${currentMessageString}`)
+    throw new Error(
+        `Message Number Not Handled: ${currentMessageNo} (${currentMessageString}`
+    );
 }
 
 /**
- * 
- * @param {MessageNode} message 
- * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection 
- * @returns {Promise<import("../../mcos-gateway/src/sockets.js").ServiceResponse>}
+ *
+ * @param {MessageNode} message
+ * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerLogger} log
+ * @returns {Promise<import("mcos/shared").TServiceResponse>}
  */
-async function messageReceived(
-    message,
-    dataConnection
-) {
+async function messageReceived(message, dataConnection, log) {
     // if (message.flags && 0x08) {
     //     selectEncryptors(dataConnection.)
     //   debug('Turning on encryption')
@@ -180,15 +175,17 @@ async function messageReceived(
         if (
             typeof dataConnection.connection.encryptionSession === "undefined"
         ) {
-            const errMessage = `Unabel to locate the encryptors on connection id ${dataConnection.connectionId}`;
-            log.error(errMessage);
-            throw new Error(errMessage);
+            const err = new Error(
+                `Unabel to locate the encryptors on connection id ${dataConnection.connectionId}`
+            );
+            log.error(err);
+            throw err;
         }
 
         if (message.flags - 8 >= 0) {
-            const result = tryDecryptBuffer(message, dataConnection);
+            const result = tryDecryptBuffer(message, dataConnection, log);
             if (result.err !== null || result.data === null) {
-                throw new Error(String(result.err))
+                throw new Error(String(result.err));
             }
             // Update the MessageNode with the deciphered buffer
             message.updateBuffer(result.data);
@@ -196,16 +193,15 @@ async function messageReceived(
     }
 
     log.info("Calling processInput()");
-    return processInput(dataConnection, message);
+    return processInput(dataConnection, message, log);
 }
 
 /**
- * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
+ * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
  */
-export async function handleData(
-    dataConnection
-) {
+export async function handleData(dataConnection, log) {
     const { connection, data } = dataConnection;
     const { remoteAddress, localPort } = connection.socket;
 
@@ -213,9 +209,11 @@ export async function handleData(
         typeof localPort === "undefined" ||
         typeof remoteAddress === "undefined"
     ) {
-        const errMessage = `Either localPort or remoteAddress is missing on socket.Can not continue.`;
-        log.error(errMessage);
-        throw new Error(errMessage);
+        const err = new Error(
+            `Either localPort or remoteAddress is missing on socket.Can not continue.`
+        );
+        log.error(err);
+        throw err;
     }
 
     const messageNode = new MessageNode("received");
@@ -224,18 +222,17 @@ export async function handleData(
     log.info(
         `[handle]Received TCP packet',
       ${JSON.stringify({
-            localPort,
-            remoteAddress,
-            direction: messageNode.direction,
-            data: data.toString("hex"),
-        })
-        } `
+          localPort,
+          remoteAddress,
+          direction: messageNode.direction,
+          data: data.toString("hex"),
+      })} `
     );
     messageNode.dumpPacket();
 
     if (messageNode.flags && 8 > 0) {
         // Message is encrypted, message number is not usable. yet.
-        const encrypters = selectEncryptors(dataConnection);
+        const encrypters = selectEncryptors(dataConnection, log);
         messageNode.updateBuffer(
             encrypters.tsDecipher.update(messageNode.data)
         );
@@ -252,15 +249,18 @@ export async function handleData(
     }
 
     try {
-        const processedPacket = await messageReceived(messageNode, dataConnection);
+        const processedPacket = await messageReceived(
+            messageNode,
+            dataConnection,
+            log
+        );
         log.info("Back in transacation server");
         return {
             connection: processedPacket.connection,
             messages: processedPacket.messages,
+            log
         };
     } catch (error) {
         throw new Error(`Error processing packet: ${String(error)} `);
     }
-
-
 }

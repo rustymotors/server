@@ -1,6 +1,6 @@
 /**
  *
- * @param {import("./connections.js").SocketWithConnectionInfo[]} connections
+ * @param {import("mcos/shared").TSocketWithConnectionInfo[]} connections
  * @returns {{
     code: number;
     headers: import("node:http").OutgoingHttpHeaders | import("node:http").OutgoingHttpHeader[] | undefined;
@@ -17,13 +17,13 @@ export function listConnections(connections) {
         response.push({
             id: connection.id,
             remoteAddress: `${connection.socket.remoteAddress}:${connection.localPort}`,
-            inQueue: connection.inQueue
+            inQueue: connection.inQueue,
         });
     });
 
     return {
         code: 200,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(response)
+        body: JSON.stringify(response),
     };
 }

@@ -14,18 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import log from '../../../log.js'
-
-/**
- * @global
- * @typedef {"boolean"
-    | "binary"
-    | "byte"
-    | "char"
-    | "u16"
-    | "u32"} FIELD_TYPE
- */
-
 /**
  * Convert to zero padded hex
  *
@@ -60,7 +48,7 @@ export class ByteField {
     offset;
     /** @type {number} */
     size;
-    /** @type {FIELD_TYPE} */
+    /** @type {import("mcos/shared").FIELD_TYPE} */
     type;
     /** @type {Buffer} */
     value;
@@ -96,19 +84,29 @@ export class BinaryStructure {
      */
     _fields = [];
 
-    constructor() {
+    /** @type {import("mcos/shared").TServerLogger} */
+    #log;
+
+    /**
+     * Creates an instance of BinaryStructure.
+     * @author Drazi Crendraven
+     * @param {import("mcos/shared").TServerLogger} log
+     * @memberof BinaryStructure
+     */
+    constructor(log) {
+        this.#log = log;
         log.info("new BinaryStructure");
     }
 
     /**
      * Add a {@link ByteField} object to the internal fields array
      * @protected
-     * @param {{name: string, order: "big" | "little", size: number, type: FIELD_TYPE, value: Buffer }} field
+     * @param {{name: string, order: "big" | "little", size: number, type: import("mcos/shared").FIELD_TYPE, value: Buffer }} field
      * @memberof BinaryStructure
      */
     _add(field) {
         const newField = { ...field, offset: this._byteOffset };
-        log.info(`Adding ${JSON.stringify(newField)}`);
+        this.#log.info(`Adding ${JSON.stringify(newField)}`);
         this._fields.push(newField);
         this._byteLength = this._byteLength + field.size;
         this._byteOffset = this._byteOffset + field.size;
@@ -135,34 +133,37 @@ export class BinaryStructure {
      */
     deserialize(byteStream) {
         if (byteStream.byteLength > this._byteLength) {
-            const errMessage =
+            const err = new Error(
                 "There are not enough fields to hold the bytestream. " +
-                "Please slice() the input if you are using part.";
-            log.error(errMessage);
-            throw new Error(errMessage);
+                    "Please slice() the input if you are using part."
+            );
+
+            this.#log.error(err);
+            throw err;
         }
 
-        log.info(
+        this.#log.info(
             `Attempting to deserialize ${byteStream.byteLength} bytes into ${this._fields.length} fields for a total of ${this._byteLength} bytes`
         );
 
         this._fields.forEach((f) => {
-            log.info(`Before: ${JSON.stringify(f)}`);
+            this.#log.info(`Before: ${JSON.stringify(f)}`);
             const indexes = { start: f.offset, end: f.offset + f.size };
-            log.info(`Taking data: ${JSON.stringify(indexes)}`);
+            this.#log.info(`Taking data: ${JSON.stringify(indexes)}`);
             const value = byteStream.slice(indexes.start, indexes.end);
-            log.info(
-                `Setting ${f.name} with value of ${toHex(value)}, size ${value.byteLength
+            this.#log.info(
+                `Setting ${f.name} with value of ${toHex(value)}, size ${
+                    value.byteLength
                 }`
             );
             f.value = value;
-            log.info(`After: ${JSON.stringify(f)}`);
+            this.#log.info(`After: ${JSON.stringify(f)}`);
             this._byteOffset = indexes.end;
         });
     }
 
     /**
-     * 
+     *
      * @returns {number}
      */
     getByteLength() {
@@ -193,18 +194,20 @@ export class BinaryStructure {
      * @memberof BinaryStructure
      */
     getValue(fieldName) {
-        log.info("Calling get() in BinaryStructure..");
+        this.#log.info("Calling get() in BinaryStructure..");
         const selectedField = this.get(fieldName);
-        log.info("Calling get() in BinaryStructure.. success");
+        this.#log.info("Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
-        log.info(
-            `Getting a value of ${toHex(value)} from the ${selectedField.name
-            } field with type of ${type} and size of (${value.byteLength},${selectedField.size
+        this.#log.info(
+            `Getting a value of ${toHex(value)} from the ${
+                selectedField.name
+            } field with type of ${type} and size of (${value.byteLength},${
+                selectedField.size
             })`
         );
         try {
             if (type === "boolean") {
-                return (value.readInt8() === 0)
+                return value.readInt8() === 0;
             }
             if (type === "char") {
                 return value.toString("utf8");
@@ -223,12 +226,15 @@ export class BinaryStructure {
             }
             return value.readUInt8();
         } catch (error) {
-            log.info("Calling get() in BinaryStructure.. fail!");
-            const errMessage = `Error in getValueX: ${String(
-                error
-            )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${value.byteLength
-                }, ${value}`;
-            throw new Error(errMessage);
+            this.#log.info("Calling get() in BinaryStructure.. fail!");
+            const err = new Error(
+                `Error in getValueX: ${String(
+                    error
+                )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${
+                    value.byteLength
+                }, ${value}`
+            );
+            throw err;
         }
     }
 
@@ -239,11 +245,11 @@ export class BinaryStructure {
      * @returns
      */
     setValueNumber(fieldName, newValue) {
-        log.info("Calling setValueNumber() in BinaryStructure..");
+        this.#log.info("Calling setValueNumber() in BinaryStructure..");
         const selectedField = this.get(fieldName);
-        log.info("Calling get() in BinaryStructure.. success");
+        this.#log.info("Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
-        log.info(
+        this.#log.info(
             `Setting a value of ${newValue} to the ${selectedField.name} field with type of ${type})`
         );
         try {
@@ -252,9 +258,11 @@ export class BinaryStructure {
                     value.writeInt8(newValue);
                     return;
                 }
-                const errMessage = `Value must be 0 or 1 for a boolean type`;
-                log.error(errMessage);
-                throw new Error(errMessage);
+                const err = new Error(
+                    `Value must be 0 or 1 for a boolean type`
+                );
+                this.#log.error(err);
+                throw err;
             }
             if (type === "u16") {
                 if (order === "big") {
@@ -272,16 +280,21 @@ export class BinaryStructure {
                 value.writeUInt32LE(newValue);
                 return;
             }
-            const errMessage = `${selectedField.name} is not a number. It is type ${selectedField.type}`;
-            log.error(errMessage);
-            throw new Error(errMessage);
+            const err = new Error(
+                `${selectedField.name} is not a number. It is type ${selectedField.type}`
+            );
+            this.#log.error(err);
+            throw err;
         } catch (error) {
-            log.info("Calling get() in BinaryStructure.. fail!");
-            const errMessage = `Error in newValueNumber: ${String(
-                error
-            )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${value.byteLength
-                }, ${newValue}`;
-            throw new Error(errMessage);
+            this.#log.info("Calling get() in BinaryStructure.. fail!");
+            const err = new Error(
+                `Error in newValueNumber: ${String(
+                    error
+                )}: ${fieldName}, ${type}, ${order}, ${selectedField.size}, ${
+                    value.byteLength
+                }, ${newValue}`
+            );
+            throw err;
         }
     }
 }

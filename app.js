@@ -16,27 +16,35 @@
 
 import Sentry from "@sentry/node";
 import { startListeners } from "./packages/mcos-gateway/src/index.js";
-import log from "./log.js";
+import { setServerConfiguration, GetServerLogger } from "mcos/shared";
 
 Sentry.init({
     dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
-  
+
     // We recommend adjusting this value in production, or using tracesSampler
     // for finer control
     tracesSampleRate: 1.0,
-  });
+});
+
+const log = GetServerLogger()
 
 try {
     if (typeof process.env.EXTERNAL_HOST === "undefined") {
         throw new Error("Please set EXTERNAL_HOST");
     }
+    if (typeof process.env.CERTIFICATE_FILE === "undefined") {
+        throw new Error("Please set CERTIFICATE_FILE");
+    }
     if (typeof process.env.PRIVATE_KEY_FILE === "undefined") {
         throw new Error("Please set PRIVATE_KEY_FILE");
     }
-    startListeners();
+    if (typeof process.env.PUBLIC_KEY_FILE === "undefined") {
+        throw new Error("Please set PUBLIC_KEY_FILE");
+    }
+    const config = setServerConfiguration(process.env.EXTERNAL_HOST, process.env.CERTIFICATE_FILE, process.env.PRIVATE_KEY_FILE, process.env.PUBLIC_KEY_FILE)
+    startListeners(config, log);
 } catch (err) {
     Sentry.captureException(err);
-    log.error(`Error in core server: ${String(err)}`);
-    log.error("Server exiting");
+    log.error(new Error(`Error in core server: ${String(err)}`));
     process.exit(1);
 }

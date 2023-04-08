@@ -1,86 +1,103 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { handleGetCert, handleGetKey, handleGetRegistry, ShardServer } from "../src/index.js";
+import {
+    handleGetCert,
+    handleGetKey,
+    handleGetRegistry,
+    ShardServer,
+} from "../src/index.js";
 
 describe("Shard service", () => {
-
     it("should return an instance when getInstance() is called", () => {
         // arrange
-        const expectedClass = ShardServer
+        /** @type {import("mcos/shared").TServerConfiguration} */
+        const config = {
+            CERTIFICATE_FILE: "",
+            EXTERNAL_HOST: "",
+            PRIVATE_KEY_FILE: "",
+            PUBLIC_KEY_FILE: "",
+            LOG_LEVEL: "info",
+        };
+        /** @type {import("mcos/shared").TServerLogger} */
+        const log = {
+            info: () => { return },
+            error: () => { return },
+        };
+
+        const expectedClass = ShardServer;
 
         // act
-        const server = ShardServer.getInstance()
+        const server = ShardServer.getInstance(config, log);
 
         // assert
-        expect(server).to.be.instanceOf(expectedClass)
-    })
+        expect(server).to.be.instanceOf(expectedClass);
+    });
 
     describe("handleGetCert", () => {
         it("should return file contents", () => {
             // arrange
-            (process.env ).CERTIFICATE_FILE = "packages/mcos-shard/test/fixtures/testCert.txt";
-            const expectedText = 'Hello! I\'m an SSL cert. Honest.'
+            /** @type {import("mcos/shared").TServerConfiguration} */
+            const config = {
+                CERTIFICATE_FILE: "Hello! I'm an SSL cert. Honest.",
+                EXTERNAL_HOST: "",
+                PRIVATE_KEY_FILE: "",
+                PUBLIC_KEY_FILE: "",
+                LOG_LEVEL: "info",
+            };
+
+            const expectedText = "Hello! I'm an SSL cert. Honest.";
 
             // act
-            const result = handleGetCert();
+            const result = handleGetCert(config);
 
             // assert
-            expect(result).to.equal(expectedText)
-        })
+            expect(result).to.equal(expectedText);
+        });
 
-        it("should throw if env is not set", () => {
-            // arrange
-            delete (process.env ).CERTIFICATE_FILE
-            const expectedText = 'Please set CERTIFICATE_FILE'
-            
-            // act
-            expect(() => handleGetCert()).throws(expectedText)
-        })
-    })
+    });
 
     describe("handleGetRegistry", () => {
         it("should return file contents", () => {
             // arrange
-            (process.env ).EXTERNAL_HOST = "0.0.0.0";
-            const expectedText = '"AuthLoginServer"="0.0.0.0"'
+            /** @type {import("mcos/shared").TServerConfiguration} */
+            const config = {
+                CERTIFICATE_FILE: "",
+                EXTERNAL_HOST: "0.10.0.1",
+                PRIVATE_KEY_FILE: "",
+                PUBLIC_KEY_FILE: "",
+                LOG_LEVEL: "info",
+            };
+
+            const expectedText = '"AuthLoginServer"="0.10.0.1"';
 
             // act
-            const result = handleGetRegistry();
+            const result = handleGetRegistry(config);
 
             // assert
-            expect(result).to.contain(expectedText)
-        })
+            expect(result).to.contain(expectedText);
+        });
 
-        it("should throw if env is not set", () => {
-            // arrange
-            delete (process.env ).EXTERNAL_HOST
-            const expectedText = 'Please set EXTERNAL_HOST'
-            
-            // act
-            expect(() => handleGetRegistry()).throws(expectedText)
-        })
-    })
+    });
 
     describe("handleGetKey", () => {
         it("should return file contents", () => {
             // arrange
-            (process.env ).PUBLIC_KEY_FILE = "packages/mcos-shard/test/fixtures/testKey.txt";
-            const expectedText = 'I\'m a public key! Wheeeeeeeee'
+            /** @type {import("mcos/shared").TServerConfiguration} */
+            const config = {
+                CERTIFICATE_FILE: "",
+                EXTERNAL_HOST: "",
+                PRIVATE_KEY_FILE: "",
+                PUBLIC_KEY_FILE: "I'm a public key! Wheeeeeeeee",
+                LOG_LEVEL: "info",
+            };
+
+            const expectedText = "I'm a public key! Wheeeeeeeee";
 
             // act
-            const result = handleGetKey();
+            const result = handleGetKey(config);
 
             // assert
-            expect(result).to.equal(expectedText)
-        })
-
-        it("should throw if env is not set", () => {
-            // arrange
-            delete (process.env ).PUBLIC_KEY_FILE
-            const expectedText = 'Please set PUBLIC_KEY_FILE'
-            
-            // act
-            expect(() => handleGetKey()).throws(expectedText)
-        })
-    })
-})
+            expect(result).to.equal(expectedText);
+        });
+    });
+});

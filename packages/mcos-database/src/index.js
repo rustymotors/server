@@ -14,66 +14,68 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import log from '../../../log.js'
-
-
 /**
  * This class abstracts database methods
  * @class
  */
 export class DatabaseManager {
-    /** @type {import("./models/Session.js").Session[]} */
-    sessions = []
+    /** @type {import('mcos/shared').TSession[]} */
+    sessions = [];
 
     /** @type {import('./models/Lobby.js').Lobby[]} */
-    lobbies = []
+    lobbies = [];
 
     /**
      *
      *
      * @private
      * @static
-     * @type {DatabaseManager}
+     * @type {import("mcos/shared").IDatabaseManager}
      * @memberof DatabaseManager
      */
     static _instance;
-    
+
+    /** @type {import("mcos/shared").TServerLogger} */
+    #log;
+
+    /**
+     * Creates an instance of DatabaseManager.
+     *
+     * Please use {@link DatabaseManager.getInstance()} instead
+     * @param {import("mcos/shared").TServerLogger} log
+     * @memberof DatabaseManager
+     */
+    constructor(log) {
+        this.#log = log;
+    }
     /**
      * Return the instance of the DatabaseManager class
-     * @returns {DatabaseManager}
+     * @param {import("mcos/shared").TServerLogger} log
+     * @returns {import("mcos/shared").IDatabaseManager}
      */
-    static getInstance() {
+    static getInstance(log) {
         if (!DatabaseManager._instance) {
-            DatabaseManager._instance = new DatabaseManager();
+            DatabaseManager._instance = new DatabaseManager(log);
         }
         const self = DatabaseManager._instance;
         return self;
     }
 
     /**
-     * Creates an instance of DatabaseManager.
-     *
-     * Please use {@link DatabaseManager.getInstance()} instead
-     * @memberof DatabaseManager
-     */
-    constructor() {
-    }
-
-    /**
      * Locate customer session encryption key in the database
      * @param {number} customerId
-     * @returns {Promise<import("../../mcos-gateway/src/encryption.js").SessionRecord>}
+     * @returns {Promise<import("mcos/shared").TSessionRecord>}
      */
-    async fetchSessionKeyByCustomerId(
-        customerId
-    ) {
-
-        const record = this.sessions.find(session => {
-            return session.customer_id === customerId
+    async fetchSessionKeyByCustomerId(customerId) {
+        const record = this.sessions.find((session) => {
+            return session.customerId === customerId;
         });
         if (typeof record === "undefined") {
-            log.error("Unable to locate session key");
-            throw new Error("Unable to fetch session key");
+            const err = new Error(
+                "Error fetching session key by customer id: not found"
+            );
+            this.#log.error(err);
+            throw err;
         }
         return record;
     }
@@ -81,16 +83,18 @@ export class DatabaseManager {
     /**
      * Locate customer session encryption key in the database
      * @param {string} connectionId
-     * @returns {Promise<import("../../mcos-gateway/src/encryption.js").SessionRecord>}
+     * @returns {Promise<import('mcos/shared').TSessionRecord>}
      */
-    async fetchSessionKeyByConnectionId(
-        connectionId
-    ) {
-        const record = await this.sessions.find(session => {
-            return session.connection_id === connectionId
+    async fetchSessionKeyByConnectionId(connectionId) {
+        const record = await this.sessions.find((session) => {
+            return session.connectionId === connectionId;
         });
         if (typeof record === "undefined") {
-            throw new Error("Unable to fetch session key");
+            const err = new Error(
+                "Error fetching session key by customer id: not found"
+            );
+            this.#log.error(err);
+            throw err;
         }
         return record;
     }
@@ -98,35 +102,34 @@ export class DatabaseManager {
     /**
      * Create or overwrite a customer's session key record
      * @param {number} customerId
-     * @param {string} sessionkey
+     * @param {string} sessionKey
      * @param {string} contextId
      * @param {string} connectionId
      * @returns {Promise<void>}
      */
-    async updateSessionKey(
-        customerId,
-        sessionkey,
-        contextId,
-        connectionId
-    ) {
-        const skey = sessionkey.slice(0, 16);
+    async updateSessionKey(customerId, sessionKey, contextId, connectionId) {
+        const sKey = sessionKey.slice(0, 16);
 
-        /** @type {import("./models/Session.js").Session} */
+        /** @type {import('mcos/shared').TSession} */
         const updatedSession = {
-            customer_id: customerId,
-            sessionkey,
-            skey,
-            context_id: contextId,
-            connection_id: connectionId
-        }
+            customerId,
+            sessionKey,
+            sKey,
+            contextId,
+            connectionId,
+        };
 
-        const record = await this.sessions.findIndex(session => {
-            return session.customer_id === customerId
+        const record = await this.sessions.findIndex((session) => {
+            return session.customerId === customerId;
         });
         if (typeof record === "undefined") {
-            throw new Error("Unable to fetch session key");
+            const err = new Error(
+                "Error updating session key: existing key not found"
+            );
+            this.#log.error(err);
+            throw err;
         }
-        this.sessions.splice(record, 1, updatedSession)
+        this.sessions.splice(record, 1, updatedSession);
 
         return;
     }

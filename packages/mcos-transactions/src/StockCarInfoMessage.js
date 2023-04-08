@@ -1,4 +1,3 @@
-
 /**
  * Object for providing information on stock cars
  * @module StockCarInfoMsg

@@ -20,7 +20,6 @@ import { receivePersonaData } from "../../mcos-persona/src/index.js";
 import { receiveTransactionsData } from "../../mcos-transactions/src/index.js";
 import { findOrNewConnection, updateConnection } from "./connections.js";
 import { MessageNode } from "./MessageNode.js";
-import log from '../../../log.js'
 
 /**
  * Convert to zero padded hex
@@ -39,74 +38,83 @@ export function toHex(data) {
 }
 
 /**
- * @global
- * @typedef {object} BufferWithConnection
- * @property {string} connectionId
- * @property {import("./connections.js").SocketWithConnectionInfo} connection
- * @property {Buffer} data
- * @property {number} timestamp
- */
-
-/**
- * @global
- * @typedef {import('./BinaryStructure.js').BinaryStructure} TSMessageBase
- */
-
-/**
- * N+ messages, ready for sending, with related connection
- * @global
- * @typedef {object} MessageArrayWithConnection
- * @property {import("./connections.js").SocketWithConnectionInfo} connection
- * @property {import('./NPSMessage.js').NPSMessage[] | MessageNode[] | TSMessageBase[]} messages
- */
-
-/**
- * @global
- * @typedef {MessageArrayWithConnection} ServiceResponse
- */
-
-/**
- * @type {Record<number, (arg0: BufferWithConnection) => Promise<ServiceResponse>>}
+ * @type {Record<number, (arg0: import("mcos/shared").TBufferWithConnection, log: import("mcos/shared").TServerLogger) => Promise<import("mcos/shared").TServiceResponse>>}
  */
 const serviceRouters = {
     8226: receiveLoginData,
     8228: receivePersonaData,
     7003: receiveLobbyData,
-    43300: receiveTransactionsData
+    43300: receiveTransactionsData,
+};
+
+/**
+ *
+ * @param {import("mcos/shared").TNPSMessage[] | import("mcos/shared").TMessageNode[] | import("mcos/shared").TBinaryStructure[]} messages
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} outboundConnection
+ * @param {import("mcos/shared").TServerLogger} log
+ */
+function sendMessages(messages, outboundConnection, log) {
+    messages.forEach((f) => {
+        if (
+            outboundConnection.useEncryption === true &&
+            f instanceof MessageNode
+        ) {
+            if (
+                typeof outboundConnection.encryptionSession === "undefined" ||
+                typeof f.data === "undefined"
+            ) {
+                const err =
+                    "There was a fatal error attempting to encrypt the message!";
+                log.info(
+                    `usingEncryption? ${outboundConnection.useEncryption}, packetLength: ${f.data.byteLength}/${f.dataLength}`
+                );
+                throw err;
+            } else {
+                log.info(
+                    `Message prior to encryption: ${toHex(f.serialize())}`
+                );
+                f.updateBuffer(
+                    outboundConnection.encryptionSession.tsCipher.update(f.data)
+                );
+            }
+        }
+
+        log.info(`Sending Message: ${toHex(f.serialize())}`);
+        outboundConnection.socket.write(f.serialize());
+    });
 }
 
 /**
  * The onData handler
  * takes the data buffer and creates a {@link BufferWithConnection} object
  * @param {Buffer} data
- * @param {import("./connections.js").SocketWithConnectionInfo} connection
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
+ * @param {import("mcos/shared").TServerLogger} log
  * @return {Promise<void>}
  */
-export async function dataHandler(
-    data,
-    connection
-) {
+export async function dataHandler(data, connection, log) {
     log.info(`data prior to proccessing: ${data.toString("hex")}`);
 
     // Link the data and the connection together
-    /** @type {BufferWithConnection} */
+    /** @type {import("mcos/shared").TBufferWithConnection} */
     const networkBuffer = {
         connectionId: connection.id,
         connection,
         data,
-        timestamp: Date.now(),
+        timeStamp: Date.now(),
     };
 
     const { localPort, remoteAddress } = networkBuffer.connection.socket;
 
-    if (typeof localPort === "undefined" || typeof remoteAddress === "undefined") {
+    if (
+        typeof localPort === "undefined" ||
+        typeof remoteAddress === "undefined"
+    ) {
         // Somehow we have recived a connection without a local post specified
-        log.error(
+        networkBuffer.connection.socket.end();
+        throw new Error(
             `Error locating remote address or target port for socket, connection id: ${networkBuffer.connectionId}`
         );
-        log.error("Closing socket.");
-        networkBuffer.connection.socket.end();
-        return;
     }
 
     // Move remote address and local port forward
@@ -122,8 +130,8 @@ export async function dataHandler(
 
     if (typeof serviceRouters[localPort] !== "undefined") {
         try {
-            /** @type {ServiceResponse} */
-            const result = await serviceRouters[localPort](networkBuffer)
+            /** @type {import("mcos/shared").TServiceResponse} */
+            const result = await serviceRouters[localPort](networkBuffer, log);
 
             const messages = result.messages;
 
@@ -132,66 +140,30 @@ export async function dataHandler(
             const packetCount = messages.length;
             log.info(`There are ${packetCount} messages ready for sending`);
 
-            sendMessages(messages, outboundConnection);
+            sendMessages(messages, outboundConnection, log);
 
             // Update the connection
-                updateConnection(outboundConnection.id, outboundConnection);
+            updateConnection(outboundConnection.id, outboundConnection, log);
         } catch (error) {
-            log.error(
-                `There was an error processing the packet: ${String(
-                    error
-                )}`
-            );
             process.exitCode = -1;
-            return;
+            throw new Error(
+                `There was an error processing the packet: ${String(error)}`
+            );
         }
     }
-}
-
-/**
- * 
- * @param {import("./NPSMessage.js").NPSMessage[] | MessageNode[] | import("./BinaryStructure.js").BinaryStructure[]} messages 
- * @param {import("./connections.js").SocketWithConnectionInfo} outboundConnection 
- */
-function sendMessages(messages, outboundConnection) {
-    messages.forEach((f) => {
-        if (outboundConnection.useEncryption === true &&
-            f instanceof MessageNode) {
-            if (typeof outboundConnection.encryptionSession ===
-                "undefined" ||
-                typeof f.data === "undefined") {
-                const errMessage = "There was a fatal error attempting to encrypt the message!";
-                log.info(
-                    `usingEncryption? ${outboundConnection.useEncryption}, packetLength: ${f.data.byteLength}/${f.dataLength}`
-                );
-                log.error(errMessage);
-            } else {
-                log.info(
-                    `Message prior to encryption: ${toHex(f.serialize())}`
-                );
-                f.updateBuffer(
-                    outboundConnection.encryptionSession.tsCipher.update(
-                        f.data
-                    )
-                );
-            }
-        }
-
-        log.info(`Sending Message: ${toHex(f.serialize())}`);
-        outboundConnection.socket.write(f.serialize());
-    });
 }
 
 /**
  * Server listener method
  *
  * @param {import('node:net').Socket} socket
+ * @param {import("mcos/shared").TServerLogger} log
  * @return {void}
  */
-export function TCPHandler(socket) {
+export function TCPHandler(socket, log) {
     // Received a new connection
     // Turn it into a connection object
-    const connectionRecord = findOrNewConnection(socket);
+    const connectionRecord = findOrNewConnection(socket, log);
 
     const { localPort, remoteAddress } = socket;
     log.info(`Client ${remoteAddress} connected to port ${localPort}`);
@@ -212,14 +184,13 @@ export function TCPHandler(socket) {
         log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
     });
     socket.on("data", async (data) => {
-        await dataHandler(data, connectionRecord);
+        await dataHandler(data, connectionRecord, log);
     });
     socket.on("error", (error) => {
         const message = String(error);
         if (message.includes("ECONNRESET") === true) {
             return log.info("Connection was reset");
         }
-        log.error(`Socket error: ${String(error)}`);
+        throw new Error(`Socket error: ${String(error)}`);
     });
 }
-

@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { TSMessageBase } from '../../mcos-gateway/src/TMessageBase.js'
-import log from '../../../log.js'
+import { TSMessageBase } from "../../mcos-gateway/src/TMessageBase.js";
 
 /**
  *
@@ -35,10 +34,11 @@ export class TClientConnectMessage extends TSMessageBase {
 
     /**
      * Creates an instance of ClientConnectMessage.
+     * @param {import("mcos/shared").TServerLogger} log
      * @memberof ClientConnectMessage
      */
-    constructor() {
-        super();
+    constructor(log) {
+        super(log);
         log.info("new TClientConnectMessage");
         this._add({
             name: "msgNo",

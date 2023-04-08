@@ -1,21 +1,20 @@
-import { cipherBufferDES, decipherBufferDES } from "../../../mcos-gateway/src/encryption.js";
+import {
+    cipherBufferDES,
+    decipherBufferDES,
+} from "../../../mcos-gateway/src/encryption.js";
 import { NPSMessage } from "../../../mcos-gateway/src/NPSMessage.js";
-import log from '../../../../log.js'
 
 /**
  * Takes an plaintext command packet and return the encrypted bytes
  *
- * @return {import("../../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
- * @param {import("../../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} dataConnection
+ * @return {import("mcos/shared").TMessageArrayWithConnection}
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} dataConnection
+ * @param {import("mcos/shared").TServerLogger} log
  * @param {Buffer} plaintextCommand
  */
-function encryptCmd(
-    dataConnection,
-    plaintextCommand
-) {
+function encryptCmd(dataConnection, plaintextCommand, log) {
     if (typeof dataConnection.encryptionSession === "undefined") {
         const errMessage = `Unable to locate encryption session for connection id ${dataConnection.id}`;
-        log.error(errMessage);
         throw new Error(errMessage);
     }
 
@@ -28,23 +27,21 @@ function encryptCmd(
     return {
         connection: dataConnection,
         messages: [new NPSMessage("sent").deserialize(result.data)],
+        log
     };
 }
 
 /**
  * Takes an encrypted command packet and returns the decrypted bytes
  *
- * @return {import("../../../mcos-gateway/src/sockets.js").BufferWithConnection}
- * @param {import("../../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
+ * @return {import("mcos/shared").TBufferWithConnection}
+ * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerLogger} log
  * @param {Buffer} encryptedCommand
  */
-function decryptCmd(
-    dataConnection,
-    encryptedCommand
-) {
+function decryptCmd(dataConnection, encryptedCommand, log) {
     if (typeof dataConnection.connection.encryptionSession === "undefined") {
         const errMessage = `Unable to locate encryption session for connection id ${dataConnection.connectionId}`;
-        log.error(errMessage);
         throw new Error(errMessage);
     }
     const result = decipherBufferDES(
@@ -60,12 +57,11 @@ function decryptCmd(
 /**
  *
  *
- * @param {import("../../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {import("../../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
+ * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {import("mcos/shared").TMessageArrayWithConnection}
  */
-function handleCommand(
-    dataConnection
-) {
+function handleCommand(dataConnection, log) {
     const { data } = dataConnection;
 
     // Marshal the command into an NPS packet
@@ -93,30 +89,31 @@ function handleCommand(
     return {
         connection: dataConnection.connection,
         messages: [packetResult],
+        log
     };
 }
 
 /**
  *
  *
- * @param {import("../../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
+ * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
  */
-export async function handleEncryptedNPSCommand(
-    dataConnection
-) {
+export async function handleEncryptedNPSCommand(dataConnection, log) {
     // Decipher
     const { data } = dataConnection;
     const decipheredConnection = decryptCmd(
         dataConnection,
-        Buffer.from(data.subarray(4))
+        Buffer.from(data.subarray(4)),
+        log
     );
 
-    const responseConnection = handleCommand(decipheredConnection);
+    const responseConnection = handleCommand(decipheredConnection, log);
 
     // Encipher
     responseConnection.messages.forEach((m) => {
-        encryptCmd(responseConnection.connection, m.serialize());
+        encryptCmd(responseConnection.connection, m.serialize(), log);
     });
 
     return responseConnection;

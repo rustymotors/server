@@ -9,7 +9,10 @@
         "strict": true,
         "strictNullChecks": true,
         "strictFunctionTypes": true,
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "paths": {
+            "mcos/shared": ["./src/shared/index.js"]
+        }
     },
     "exclude": ["node_modules", "**/node_modules/*", "coverage"]
 }

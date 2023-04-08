@@ -1,12 +1,9 @@
-
-
 /**
  * Commands from the game client to the login server
  * @export
  * @readonly
  * @type {import("../../mcos-lobby/src/NPS_LOBBY_COMMANDS.js").NpsCommandMap[]}
  */
-
 
 export const NPS_LOGINCLIENT_COMMANDS = [
     { name: "NPS_USER_LOGIN", value: 1281, module: "Login" },

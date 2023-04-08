@@ -15,9 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { createCipheriv, createDecipheriv } from "node:crypto";
-import log from '../../../log.js'
 
-/** @type {import("./connections.js").EncryptionSession[]} */
+/** @type {import("mcos/shared").TEncryptionSession[]} */
 const encryptionSessions = [];
 
 /**
@@ -28,28 +27,25 @@ const encryptionSessions = [];
  */
 
 /**
- * @param {import("./connections.js").SocketWithConnectionInfo} dataConnection
- * @param {SessionRecord} keys
- * @returns {import("./connections.js").EncryptionSession}
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} dataConnection
+ * @param {import("mcos/shared").TSessionRecord} keys
+ * @returns {import("mcos/shared").TEncryptionSession}
  */
-function generateEncryptionPair(
-    dataConnection,
-    keys
-) {
+function generateEncryptionPair(dataConnection, keys) {
     // For use on Lobby packets
-    const { sessionkey, skey } = keys;
-    const stringKey = Buffer.from(sessionkey, "hex");
+    const { sessionKey, sKey } = keys;
+    const stringKey = Buffer.from(sessionKey, "hex");
     Buffer.from(stringKey.slice(0, 16));
 
     // Deepcode ignore HardcodedSecret: This uses an empty IV
     const desIV = Buffer.alloc(8);
 
-    const gsCipher = createCipheriv("des-cbc", Buffer.from(skey, "hex"), desIV);
+    const gsCipher = createCipheriv("des-cbc", Buffer.from(sKey, "hex"), desIV);
     gsCipher.setAutoPadding(false);
 
     const gsDecipher = createDecipheriv(
         "des-cbc",
-        Buffer.from(skey, "hex"),
+        Buffer.from(sKey, "hex"),
         desIV
     );
     gsDecipher.setAutoPadding(false);
@@ -57,16 +53,16 @@ function generateEncryptionPair(
     // For use on messageNode packets
 
     // File deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
-    const tsCipher = createCipheriv("rc4", stringKey.slice(0, 16), "");
-    const tsDecipher = createDecipheriv("rc4", stringKey.slice(0, 16), "");
+    const tsCipher = createCipheriv("rc4", stringKey.subarray(0, 16), "");
+    const tsDecipher = createDecipheriv("rc4", stringKey.subarray(0, 16), "");
 
-    /** @type {import("./connections.js").EncryptionSession} */
+    /** @type {import("mcos/shared").TEncryptionSession} */
     const newSession = {
         connectionId: dataConnection.id,
         remoteAddress: dataConnection.remoteAddress,
         localPort: dataConnection.localPort,
-        sessionKey: keys.sessionkey,
-        shortKey: keys.skey,
+        sessionKey: keys.sessionKey,
+        sKey: keys.sKey,
         gsCipher,
         gsDecipher,
         tsCipher,
@@ -78,21 +74,21 @@ function generateEncryptionPair(
 
 /**
  *
- * @param {import("./sockets.js").BufferWithConnection} dataConnection
- * @returns {import("./connections.js").EncryptionSession}
+ * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerLogger} log
+ * @returns {import("mcos/shared").TEncryptionSession}
  */
-export function selectEncryptors(
-    dataConnection
-) {
+export function selectEncryptors(dataConnection, log) {
     const { localPort, remoteAddress } = dataConnection.connection;
 
     if (
         typeof localPort === "undefined" ||
         typeof remoteAddress === "undefined"
     ) {
-        const errMessage = `[selectEncryptors]Either localPort or remoteAddress is missing on socket. Can not continue.`;
-        log.error(errMessage);
-        throw new Error(errMessage);
+        const err = new Error(
+            `[selectEncryptors]Either localPort or remoteAddress is missing on socket. Can not continue.`
+        );
+        throw err;
     }
     const wantedId = `${remoteAddress}:${localPort}`;
 
@@ -109,20 +105,20 @@ export function selectEncryptors(
         return existingEncryptor;
     }
 
-    const errMessage = `Unable to select encryptors for connection id ${dataConnection.connectionId}`;
-    log.error(errMessage);
-    throw new Error(errMessage);
+    const err = new Error(
+        `Unable to select encryptors for connection id ${dataConnection.connectionId}`
+    );
+    throw err;
 }
 
-
-
 /**
- * 
- * @param {import("./connections.js").SocketWithConnectionInfo} dataConnection 
- * @param {SessionRecord} keys 
- * @returns {import("./connections.js").EncryptionSession}
+ *
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} dataConnection
+ * @param {import("mcos/shared").TSessionRecord} keys
+ * @param {import("mcos/shared").TServerLogger} log
+ * @returns {import("mcos/shared").TEncryptionSession}
  */
-export function createEncrypters(dataConnection, keys) {
+export function createEncrypters(dataConnection, keys, log) {
     const newSession = generateEncryptionPair(dataConnection, keys);
 
     log.info(
@@ -136,12 +132,10 @@ export function createEncrypters(dataConnection, keys) {
 /**
  * Update the internal connection record
  * @param {string} connectionId
- * @param {import("./connections.js").EncryptionSession} updatedSession
+ * @param {import("mcos/shared").TEncryptionSession} updatedSession
+ * @param {import("mcos/shared").TServerLogger} log
  */
-export function updateEncryptionSession(
-    connectionId,
-    updatedSession
-) {
+export function updateEncryptionSession(connectionId, updatedSession, log) {
     try {
         const index = encryptionSessions.findIndex((e) => {
             return e.connectionId === connectionId;
@@ -156,14 +150,11 @@ export function updateEncryptionSession(
 
 /**
  * CipherBufferDES
- * @param {import("./connections.js").EncryptionSession} encryptionSession
+ * @param {import("mcos/shared").TEncryptionSession} encryptionSession
  * @param {Buffer} data
- * @return {{session: import("./connections.js").EncryptionSession, data: Buffer}}
+ * @return {{session: import("mcos/shared").TEncryptionSession, data: Buffer}}
  */
-export function cipherBufferDES(
-    encryptionSession,
-    data
-) {
+export function cipherBufferDES(encryptionSession, data) {
     if (typeof encryptionSession.gsCipher !== "undefined") {
         const ciphered = encryptionSession.gsCipher.update(data);
         return {
@@ -177,14 +168,11 @@ export function cipherBufferDES(
 
 /**
  * Decrypt a command that is encrypted with DES
- * @param {import("./connections.js").EncryptionSession} encryptionSession
+ * @param {import("mcos/shared").TEncryptionSession} encryptionSession
  * @param {Buffer} data
- * @return {{session: import("./connections.js").EncryptionSession, data: Buffer}}
+ * @return {{session: import("mcos/shared").TEncryptionSession, data: Buffer}}
  */
-export function decipherBufferDES(
-    encryptionSession,
-    data
-) {
+export function decipherBufferDES(encryptionSession, data) {
     if (typeof encryptionSession.gsDecipher !== "undefined") {
         const deciphered = encryptionSession.gsDecipher.update(data);
         return {
@@ -198,15 +186,13 @@ export function decipherBufferDES(
 
 /**
  * Decrypt the buffer contents
- * @param {import("./sockets.js").BufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TBufferWithConnection} dataConnection
  * @param {Buffer} buffer
- * @returns {{session: import("./connections.js").EncryptionSession, data: Buffer}}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @returns {{session: import("mcos/shared").TEncryptionSession, data: Buffer}}
  */
-export function decryptBuffer(
-    dataConnection,
-    buffer
-) {
-    const encryptionSession = selectEncryptors(dataConnection);
+export function decryptBuffer(dataConnection, buffer, log) {
+    const encryptionSession = selectEncryptors(dataConnection, log);
     const deciphered = encryptionSession.tsDecipher.update(buffer);
     return {
         session: encryptionSession,

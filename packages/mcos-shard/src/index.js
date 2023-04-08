@@ -14,37 +14,29 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { readFileSync } from "node:fs";
 import { ShardEntry } from "./shard-entry.js";
 import { createServer } from "node:https";
-import process from 'node:process'
-import log from '../../../log.js'
+import process from "node:process";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
 
 /**
  * Read the TLS certificate file
+ * @param {import("mcos/shared").TServerConfiguration} config
  * @return {string}
  */
-export function handleGetCert() {
-    const { CERTIFICATE_FILE} = process.env
-    if (typeof CERTIFICATE_FILE === "undefined") {
-        throw new Error("Please set CERTIFICATE_FILE");
-    }
-    return readFileSync(CERTIFICATE_FILE).toString();
+export function handleGetCert(config) {
+    return config.CERTIFICATE_FILE;
 }
 
 /**
  * Generate Windows registry configuration file for clients
+ * @param {import("mcos/shared").TServerConfiguration} config
  * @return {string}
  */
-export function handleGetRegistry() {
-    const { EXTERNAL_HOST } = process.env
-    if (typeof EXTERNAL_HOST === "undefined") {
-        throw new Error("Please set EXTERNAL_HOST");
-    }
-    const externalHost = EXTERNAL_HOST;
+export function handleGetRegistry(config) {
+    const externalHost = config.EXTERNAL_HOST;
     const patchHost = externalHost;
     const authHost = externalHost;
     const shardHost = externalHost;
@@ -79,14 +71,11 @@ export function handleGetRegistry() {
 
 /**
  *  Read TLS public key file to string
+ * @param {import("mcos/shared").TServerConfiguration} config
  * @return {string}
  */
-export function handleGetKey() {
-    const { PUBLIC_KEY_FILE } = process.env
-    if (typeof PUBLIC_KEY_FILE === "undefined") {
-        throw new Error("Please set PUBLIC_KEY_FILE");
-    }
-    return readFileSync(PUBLIC_KEY_FILE).toString();
+export function handleGetKey(config) {
+    return config.PUBLIC_KEY_FILE;
 }
 
 /**
@@ -121,13 +110,21 @@ export class ShardServer {
     /** @type {string[]} */
     _possibleShards = [];
 
+    /** @type {import("mcos/shared").TServerLogger} */
+    #log;
+
+    /** @type {import("mcos/shared").TServerConfiguration} */
+    #config;
+
     /**
      * Return the instance of the ShardServer class
+     * @param {import("mcos/shared").TServerConfiguration} config
+     * @param {import("mcos/shared").TServerLogger} log
      * @returns {ShardServer}
      */
-    static getInstance() {
+    static getInstance(config, log) {
         if (typeof ShardServer.instance === "undefined") {
-            ShardServer.instance = new ShardServer();
+            ShardServer.instance = new ShardServer(config, log);
         }
         return ShardServer.instance;
     }
@@ -136,17 +133,21 @@ export class ShardServer {
      * Creates an instance of ShardServer.
      *
      * Please use {@link ShardServer.getInstance()} instead
+     * @param {import("mcos/shared").TServerConfiguration} config
+     * @param {import("mcos/shared").TServerLogger} log
      * @memberof ShardServer
      */
-    constructor() {
+    constructor(config, log) {
+        this.#config = config;
+        this.#log = log;
         this._server = createServer(this.handleRequest.bind(this));
         /** @type {string[]} */
         this._possibleShards = [];
 
         this._server.on("error", (error) => {
             process.exitCode = -1;
-            log.error(`Server error: ${error.message}`);
-            log.info(`Server shutdown: ${process.exitCode}`);
+            this.#log.error(new Error(`Server error: ${error.message}`));
+            this.#log.info(`Server shutdown: ${process.exitCode}`);
             process.exit();
         });
     }
@@ -159,11 +160,7 @@ export class ShardServer {
      * @memberof! PatchServer
      */
     _generateShardList() {
-        const {EXTERNAL_HOST } = process.env
-        if (typeof EXTERNAL_HOST === "undefined") {
-            throw new Error("Please set EXTERNAL_HOST");
-        }
-        const shardHost = EXTERNAL_HOST;
+        const shardHost = this.#config.EXTERNAL_HOST;
         const shardClockTower = new ShardEntry(
             "The Clocktower",
             "The Clocktower",
@@ -218,16 +215,13 @@ export class ShardServer {
      * @param {import("http").ServerResponse} response
      */
     // deepcode ignore NoRateLimitingForExpensiveWebOperation: Very unlikely to be DDos'ed
-    handleRequest(
-        request,
-        response
-    ) {
+    handleRequest(request, response) {
         if (request.url === "/cert") {
             response.setHeader(
                 "Content-disposition",
                 "attachment; filename=cert.pem"
             );
-            return response.end(handleGetCert());
+            return response.end(handleGetCert(this.#config));
         }
 
         if (request.url === "/key") {
@@ -235,7 +229,7 @@ export class ShardServer {
                 "Content-disposition",
                 "attachment; filename=pub.key"
             );
-            return response.end(handleGetKey());
+            return response.end(handleGetKey(this.#config));
         }
 
         if (request.url === "/registry") {
@@ -243,7 +237,7 @@ export class ShardServer {
                 "Content-disposition",
                 "attachment; filename=mco.reg"
             );
-            return response.end(handleGetRegistry());
+            return response.end(handleGetRegistry(this.#config));
         }
 
         if (request.url === "/") {
@@ -252,7 +246,7 @@ export class ShardServer {
         }
 
         if (request.url === "/ShardList/") {
-            log.info(
+            this.#log.info(
                 `Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
             );
 
@@ -265,7 +259,7 @@ export class ShardServer {
         response.end("");
 
         // Unknown request, log it
-        log.info(
+        this.#log.info(
             `Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );
         return response;

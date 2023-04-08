@@ -42,31 +42,31 @@ export class NPSMessage {
      * @param {"sent" | "received"} direction - the direction of the message flow
      */
     constructor(direction) {
-        this.direction = direction
-        this.msgNo = 0
-        this.msgVersion = 0
-        this.reserved = 0
-        this.content = Buffer.alloc(0)
-        this.msgLength = 0
-        this.serviceName = "NPSMessage-SHELL"
+        this.direction = direction;
+        this.msgNo = 0;
+        this.msgVersion = 0;
+        this.reserved = 0;
+        this.content = Buffer.alloc(0);
+        this.msgLength = 0;
+        this.serviceName = "NPSMessage-SHELL";
     }
 
     /**
- *
- * @param {Buffer} buffer
- */
+     *
+     * @param {Buffer} buffer
+     */
     setContent(buffer) {
         this.content = buffer;
         this.msgLength = this.content.length + 12; // skipcq: JS-0377
     }
 
-        /**
+    /**
      *
      * @return {string}
      */
-        getPacketAsString() {
-            return this.serialize().toString("hex");
-        }
+    getPacketAsString() {
+        return this.serialize().toString("hex");
+    }
 
     /**
      *
@@ -98,13 +98,12 @@ export class NPSMessage {
         }
     }
 
-
     /**
- *
- * @param {Buffer} packet
- * @return {NPSMessage}
- * @memberof NPSMessage
- */
+     *
+     * @param {Buffer} packet
+     * @return {NPSMessage}
+     * @memberof NPSMessage
+     */
     deserialize(packet) {
         this.msgNo = packet.readInt16BE(0);
         this.msgLength = packet.readInt16BE(2);
@@ -114,41 +113,41 @@ export class NPSMessage {
     }
 
     /**
- *
- * @param {string} messageType
- * @return {string}
- */
+     *
+     * @param {string} messageType
+     * @return {string}
+     */
     dumpPacketHeader(messageType) {
         return `NPSMsg/${messageType},
               ${JSON.stringify({
-            direction: this.direction,
-            msgNo: this.msgNo.toString(16),
-            msgVersion: this.msgVersion,
-            msgLength: this.msgLength,
-        })}`;
+                  direction: this.direction,
+                  msgNo: this.msgNo.toString(16),
+                  msgVersion: this.msgVersion,
+                  msgLength: this.msgLength,
+              })}`;
     }
 
     /**
- * DumpPacket
- * @return {string}
- * @memberof NPSMsg
- */
+     * DumpPacket
+     * @return {string}
+     * @memberof NPSMsg
+     */
     dumpPacket() {
         return `NPSMsg/NPSMsg,
               ${JSON.stringify({
-            direction: this.direction,
-            msgNo: this.msgNo.toString(16),
-            msgVersion: this.msgVersion,
-            msgLength: this.msgLength,
-            content: this.content.toString("hex"),
-            serialized: this.serialize().toString("hex"),
-        })}`;
+                  direction: this.direction,
+                  msgNo: this.msgNo.toString(16),
+                  msgVersion: this.msgVersion,
+                  msgLength: this.msgLength,
+                  content: this.content.toString("hex"),
+                  serialized: this.serialize().toString("hex"),
+              })}`;
     }
 
     /**
- *
- * @return {NPSMessageJSON}
- */
+     *
+     * @return {NPSMessageJSON}
+     */
     toJSON() {
         return {
             msgNo: this.msgNo,

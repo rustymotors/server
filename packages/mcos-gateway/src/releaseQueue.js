@@ -1,6 +1,6 @@
 /**
  *
- * @param {import("./connections.js").SocketWithConnectionInfo[]} connections
+ * @param {import("mcos/shared").TSocketWithConnectionInfo[]} connections
  * @param {string} connectionId
  * @returns {{
     code: number;
@@ -9,10 +9,7 @@
 }}
  */
 
-export function releaseQueue(
-    connections,
-    connectionId
-) {
+export function releaseQueue(connections, connectionId) {
     const connectionToRelease = connections.find((connection) => {
         return connection.id === connectionId;
     });

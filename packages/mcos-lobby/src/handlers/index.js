@@ -2,15 +2,7 @@ import { handleEncryptedNPSCommand } from "./encryptedCommand.js";
 import { _npsHeartbeat } from "./heartbeat.js";
 import { _npsRequestGameConnectServer } from "./requestConnectGameServer.js";
 
-/**
- * @global
- * @typedef {object} MessageHandler
- * @property {number} opCode
- * @property {string} name
- * @property {(dataConnection: import("../../../mcos-gateway/src/sockets.js").BufferWithConnection) => Promise<import("../../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>} handlerFunction
- */
-
-/** @type {MessageHandler[]} */
+/** @type {import("mcos/shared").TMessageHandler[]} */
 export const handlerMap = [
     {
         opCode: 100,

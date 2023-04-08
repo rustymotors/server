@@ -20,17 +20,16 @@ import { handleData } from "./internal.js";
  * Entry and exit point for the lobby service
  *
  * @export
- * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").ServiceResponse>}
+ * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {Promise<import("mcos/shared").TServiceResponse>}
  */
-export async function receiveLobbyData(
-    dataConnection
-) {
+export async function receiveLobbyData(dataConnection, log) {
     try {
-        return await handleData(dataConnection);
+        return await handleData(dataConnection, log);
     } catch (error) {
-        throw new Error(`There was an error in the lobby service: ${String(
-            error
-        )}`);
+        throw new Error(
+            `There was an error in the lobby service: ${String(error)}`
+        );
     }
 }

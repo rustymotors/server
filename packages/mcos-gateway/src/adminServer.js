@@ -18,8 +18,6 @@ import { getAllConnections } from "./index.js";
 import { releaseQueue } from "./releaseQueue.js";
 import { listConnections } from "./listConnections.js";
 import { resetQueue } from "./resetQueue.js";
-import log from '../../../log.js'
-
 
 /**
  * Please use {@link AdminServer.getAdminServer()}
@@ -39,16 +37,30 @@ export class AdminServer {
      */
     static _instance;
 
+    /** @type {import("mcos/shared").TServerLogger} */
+    #log;
+
+    /**
+     * Please use getAdminServer() instead
+     * @author Drazi Crendraven
+     * @param {import("mcos/shared").TServerLogger} log
+     * @memberof AdminServer
+     */
+    constructor(log) {
+        this.#log = log;
+    }
+
     /**
      * Get the single instance of the class
      *
      * @static
+     * @param {import("mcos/shared").TServerLogger} log
      * @return {AdminServer}
      * @memberof AdminServer
      */
-    static getAdminServer() {
+    static getAdminServer(log) {
         if (typeof AdminServer._instance === "undefined") {
-            AdminServer._instance = new AdminServer();
+            AdminServer._instance = new AdminServer(log);
         }
         return AdminServer._instance;
     }
@@ -75,10 +87,10 @@ export class AdminServer {
     }}
      */
     handleRequest(request) {
-        log.info(
+        this.#log.info(
             `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );
-        log.info(
+        this.#log.info(
             `Request received,
       ${JSON.stringify({
           url: request.url,
@@ -123,5 +135,3 @@ export class AdminServer {
         return { code: 404, headers: {}, body: "" };
     }
 }
-
-

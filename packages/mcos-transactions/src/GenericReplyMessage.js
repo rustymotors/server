@@ -16,7 +16,6 @@
 
 import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
 
-
 export class GenericReplyMessage extends MessageNode {
     /**
      * One of

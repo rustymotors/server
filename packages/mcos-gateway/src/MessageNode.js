@@ -25,8 +25,8 @@ export class MessageNode {
     rawPacket;
 
     /**
-     * 
-     * @param {"sent" | "received"} direction 
+     *
+     * @param {"sent" | "received"} direction
      */
     constructor(direction) {
         this.direction = direction;
@@ -43,8 +43,8 @@ export class MessageNode {
     }
 
     /**
-     * 
-     * @param {Buffer} packet 
+     *
+     * @param {Buffer} packet
      */
     deserialize(packet) {
         try {

@@ -17,7 +17,6 @@
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
 import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
 import { MessagePacket } from "../../mcos-lobby/src/MessagePacket.js";
-import log from '../../../log.js'
 
 const NAME_BUFFER_SIZE = 30;
 
@@ -28,11 +27,7 @@ const NAME_BUFFER_SIZE = 30;
  * @param {BufferEncoding} [encoding="utf8"]
  * @returns {Buffer}
  */
-export function generateNameBuffer(
-    name,
-    size,
-    encoding = "utf8"
-) {
+export function generateNameBuffer(name, size, encoding = "utf8") {
     const nameBuffer = Buffer.alloc(size);
     Buffer.from(name, encoding).copy(nameBuffer);
     return nameBuffer;
@@ -74,9 +69,7 @@ export const personaRecords = [
  * @param {number} id
  * @return {Promise<import("./index.js").PersonaRecord[]>}
  */
-export async function getPersonasByPersonaId(
-    id
-) {
+export async function getPersonasByPersonaId(id) {
     const results = personaRecords.filter((persona) => {
         const match = id === persona.id.readInt32BE(0);
         return match;
@@ -91,11 +84,10 @@ export async function getPersonasByPersonaId(
 /**
  * Selects a game persona and marks it as in use
  * @param {NPSMessage} requestPacket
+ * @param {import("mcos/shared").TServerLogger} log
  * @returns {Promise<NPSMessage>}
  */
-export async function handleSelectGamePersona(
-    requestPacket
-) {
+export async function handleSelectGamePersona(requestPacket, log) {
     log.info("_npsSelectGamePersona...");
     log.info(
         `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
@@ -133,10 +125,11 @@ export async function handleSelectGamePersona(
  * Create a new game persona record
  *
  * @param {Buffer} data
+ * @param {import("mcos/shared").TServerLogger} log
  * @return {Promise<NPSMessage>}
  * @memberof PersonaServer
  */
-async function createNewGameAccount(data) {
+async function createNewGameAccount(data, log) {
     const requestPacket = new NPSMessage("received").deserialize(data);
     log.info(
         `NPSMsg request object from _npsNewGameAccount',
@@ -167,10 +160,11 @@ async function createNewGameAccount(data) {
  * Log out a game persona
  *
  * @param {Buffer} data
+ * @param {import("mcos/shared").TServerLogger} log
  * @return {Promise<NPSMessage>}
  * @memberof PersonaServer
  */
-async function logoutGameUser(data) {
+async function logoutGameUser(data, log) {
     log.info("[personaServer] Logging out persona...");
     const requestPacket = new NPSMessage("received").deserialize(data);
     log.info(
@@ -209,9 +203,7 @@ async function logoutGameUser(data) {
  * @param {number} customerId
  * @return {Promise<import("./index.js").PersonaRecord[]>}
  */
-async function getPersonasByCustomerId(
-    customerId
-) {
+async function getPersonasByCustomerId(customerId) {
     const results = personaRecords.filter(
         (persona) => persona.customerId === customerId
     );
@@ -226,9 +218,7 @@ async function getPersonasByCustomerId(
  * @param {number} customerId
  * @return {Promise<import("./index.js").PersonaRecord[]>}
  */
-async function getPersonaMapsByCustomerId(
-    customerId
-) {
+async function getPersonaMapsByCustomerId(customerId) {
     switch (customerId) {
         case 2_868_969_472:
         case 5_551_212:
@@ -241,9 +231,10 @@ async function getPersonaMapsByCustomerId(
 /**
  * Handle a get persona maps packet
  * @param {Buffer} data
+ * @param {import("mcos/shared").TServerLogger} log
  * @return {Promise<NPSMessage>}
  */
-async function getPersonaMaps(data) {
+async function getPersonaMaps(data, log) {
     log.info("_npsGetPersonaMaps...");
     const requestPacket = new NPSMessage("received").deserialize(data);
 
@@ -322,9 +313,10 @@ async function getPersonaMaps(data) {
  * Check if valid name for new user
  *
  * @param {Buffer} data
+ * @param {import("mcos/shared").TServerLogger} log
  * @return {Promise<NPSMessage>}
  */
-async function validatePersonaName(data) {
+async function validatePersonaName(data, log) {
     log.info("_npsValidatePersonaName...");
     const requestPacket = new NPSMessage("received").deserialize(data);
 
@@ -341,9 +333,7 @@ async function validatePersonaName(data) {
         .subarray(18, data.lastIndexOf(0x00))
         .toString();
     const serviceName = data.slice(data.indexOf(0x0a) + 1).toString(); // skipcq: JS-0377
-    log.info(
-        JSON.stringify({ customerId, requestedPersonaName, serviceName })
-    );
+    log.info(JSON.stringify({ customerId, requestedPersonaName, serviceName }));
 
     // Create the packet content
     // TODO: #1178 Return the validate persona name response as a MessagePacket object
@@ -374,10 +364,11 @@ async function validatePersonaName(data) {
  * Handle a check token packet
  *
  * @param {Buffer} data
+ * @param {import("mcos/shared").TServerLogger} log
  * @return {Promise<NPSMessage>}
  * @memberof PersonaServer
  */
-async function validateLicencePlate(data) {
+async function validateLicencePlate(data, log) {
     log.info("_npsCheckToken...");
     const requestPacket = new NPSMessage("received").deserialize(data);
     log.info(
@@ -417,16 +408,14 @@ async function validateLicencePlate(data) {
     return Promise.resolve(responsePacket);
 }
 
-
 /**
  *
  *
- * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
+ * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
  */
-export async function handleData(
-    dataConnection
-) {
+export async function handleData(dataConnection, log) {
     const { connection, data } = dataConnection;
     const { socket, localPort } = connection;
     log.info(
@@ -443,65 +432,74 @@ export async function handleData(
         case "503": {
             const requestPacket = new NPSMessage("received").deserialize(data);
             // NPS_REGISTER_GAME_LOGIN = 0x503
-            const responsePacket = await handleSelectGamePersona(requestPacket);
-            /** @type {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection} */
+            const responsePacket = await handleSelectGamePersona(
+                requestPacket,
+                log
+            );
+            /** @type {import("mcos/shared").TMessageArrayWithConnection} */
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
+                log
             };
             return response;
         }
 
         case "507": {
             // NPS_NEW_GAME_ACCOUNT == 0x507
-            const responsePacket = await createNewGameAccount(data);
-            /** @type {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection} */
+            const responsePacket = await createNewGameAccount(data, log);
+            /** @type {import("mcos/shared").TMessageArrayWithConnection} */
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
+                log
             };
             return response;
         }
 
         case "50f": {
             // NPS_REGISTER_GAME_LOGOUT = 0x50F
-            const responsePacket = await logoutGameUser(data);
-            /** @type {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection} */
+            const responsePacket = await logoutGameUser(data, log);
+            /** @type {import("mcos/shared").TMessageArrayWithConnection} */
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
+                log
             };
             return response;
         }
 
         case "532": {
             // NPS_GET_PERSONA_MAPS = 0x532
-            const responsePacket = await getPersonaMaps(data);
-            /** @type {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection} */
+            const responsePacket = await getPersonaMaps(data, log);
+            /** @type {import("mcos/shared").TMessageArrayWithConnection} */
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
+                log
             };
             return response;
         }
 
         case "533": {
             // NPS_VALIDATE_PERSONA_NAME   = 0x533
-            const responsePacket = await validatePersonaName(data);
-            /** @type {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection} */
+            const responsePacket = await validatePersonaName(data, log);
+            /** @type {import("mcos/shared").TMessageArrayWithConnection} */
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
+                log
             };
             return response;
         }
         case "534": {
             // NPS_CHECK_TOKEN   = 0x534
-            const responsePacket = await validateLicencePlate(data);
-            /** @type {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection} */
+            const responsePacket = await validateLicencePlate(data, log);
+            /** @type {import("mcos/shared").TMessageArrayWithConnection} */
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
+                log
             };
             return response;
         }

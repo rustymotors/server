@@ -25,16 +25,30 @@ chai.should();
 describe("AdminServer", () => {
     describe(".getAdminServer", () => {
         it("should return an instance of AdminServer", () => {
+            // Arrange
+            /**  @type {import("mcos/shared").TServerLogger} */
+            const log = {
+                info: () => { return },
+                error: () => { return }
+            }
+
             // Act
-            const newAdminInstance = AdminServer.getAdminServer();
+            const newAdminInstance = AdminServer.getAdminServer(log);
 
             // Assert
             newAdminInstance.should.be.instanceOf(AdminServer);
         });
         it("should return the same instance of AdminServer on multiple calls", () => {
+                        // Arrange
+            /**  @type {import("mcos/shared").TServerLogger} */
+            const log = {
+                info: () => { return },
+                error: () => { return }
+            }
+
             // Act
-            const admin1 = AdminServer.getAdminServer();
-            const admin2 = AdminServer.getAdminServer();
+            const admin1 = AdminServer.getAdminServer(log);
+            const admin2 = AdminServer.getAdminServer(log);
 
             // Assert
             admin1.should.equal(admin2);
@@ -44,11 +58,11 @@ describe("AdminServer", () => {
 
 describe("resetQueue()", function () {
     it("should reset the inQueue property to true for all connections", function () {
-        // arrange
-        /** @type {import("../src/connections.js").SocketWithConnectionInfo[]} */
+        // arrange        
+        /** @type {import("mcos/shared").TSocketWithConnectionInfo[]} */
         const inputConnectionList = [
             {
-                socket: new Socket,
+                socket: new Socket(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -59,7 +73,7 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
             {
-                socket: new Socket,
+                socket: new Socket(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -70,7 +84,7 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
             {
-                socket: new Socket,
+                socket: new Socket(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -81,10 +95,10 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
         ];
-        /** @type {import("../src/connections.js").SocketWithConnectionInfo[]} */
+        /** @type {import("mcos/shared").TSocketWithConnectionInfo[]} */
         const expectedConnectionList = [
             {
-                socket: new Socket,
+                socket: new Socket(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -95,7 +109,7 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
             {
-                socket: new Socket,
+                socket: new Socket(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -106,7 +120,7 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
             {
-                socket: new Socket,
+                socket: new Socket(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -119,10 +133,8 @@ describe("resetQueue()", function () {
         ];
 
         // act
-        /** @type {import("../src/connections.js").SocketWithConnectionInfo[]} */
-        const result = JSON.parse(
-            resetQueue(inputConnectionList).body
-        );
+        /** @type {import("mcos/shared").TSocketWithConnectionInfo[]} */
+        const result = JSON.parse(resetQueue(inputConnectionList).body);
 
         // assert
         expect(result[1]?.inQueue).to.equal(expectedConnectionList[1]?.inQueue);
