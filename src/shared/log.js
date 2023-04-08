@@ -36,7 +36,7 @@ export function GetServerLogger(logLevel = "info") {
          * @param {string} msg
          */
         info: (msg) => {
-            console.log(formatMsg("info", msg));
+            console.log(formatMsg("info", msg)); // skipcq: JS-0002
         },
         /**
          * @param {Error} err
