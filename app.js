@@ -16,8 +16,7 @@
 
 import Sentry from "@sentry/node";
 import { startListeners } from "./packages/mcos-gateway/src/index.js";
-import { setServerConfiguration } from "mcos/shared";
-import { GetServerLogger } from "mcos/shared";
+import { setServerConfiguration, GetServerLogger } from "mcos/shared";
 
 Sentry.init({
     dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
