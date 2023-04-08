@@ -22,8 +22,6 @@ import { httpListener as httpHandler } from "./web.js";
 export { getAllConnections } from "./connections.js";
 export { AdminServer } from "./adminServer.js";
 import { readFileSync } from "node:fs";
-import { getServerConfiguration } from "mcos/shared";
-import { GetServerLogger } from "mcos/shared";
 
 const listeningPortList = [
     3000, 6660, 7003, 8228, 8226, 8227, 9000, 9001, 9002, 9003, 9004, 9005,
