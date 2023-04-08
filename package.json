@@ -54,7 +54,8 @@
       "html"
     ],
     "exclude": [
-        ".yarn"
+        ".yarn",
+        "coverage"
     ]
   },
   "eslintConfig": {
