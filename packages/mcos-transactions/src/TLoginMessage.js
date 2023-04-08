@@ -15,7 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { TSMessageBase } from "../../mcos-gateway/src/TMessageBase.js";
-import log from "../../../log.js";
 /**
  *
  *
@@ -34,10 +33,11 @@ export class TLoginMessage extends TSMessageBase {
 
     /**
      * Creates an instance of TLoginMessage.
+     * @param {import("mcos/shared").TServerLogger} log
      * @memberof TLoginMessage
      */
-    constructor() {
-        super();
+    constructor(log) {
+        super(log);
         log.info("new TLoginMessage");
         this._add({
             name: "msgNo",

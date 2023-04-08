@@ -25,16 +25,16 @@ import { StockCar } from "./StockCar.js";
 import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
 import { toHex } from "../../mcos-gateway/src/sockets.js";
 import { createEncrypters } from "../../mcos-gateway/src/encryption.js";
-import log from "../../../log.js";
 
 /**
  *
  * @private
- * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} connection
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {import("mcos/shared").TMessageArrayWithConnection}
  */
-function _setOptions(connection, node) {
+function _setOptions(connection, node, log) {
     const setOptionsMessage = node;
 
     setOptionsMessage.data = node.serialize();
@@ -52,29 +52,31 @@ function _setOptions(connection, node) {
     rPacket.updateBuffer(pReply.serialize());
     rPacket.dumpPacket();
 
-    return { connection, messages: [rPacket] };
+    return { connection, messages: [rPacket], log };
 }
 
 /**
  *
- * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} conn
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {import("mcos/shared").TMessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleSetOptions(conn, node) {
-    const result = _setOptions(conn, node);
+function handleSetOptions(conn, node, log) {
+    const result = _setOptions(conn, node, log);
     return result;
 }
 
 /**
  *
  * @private
- * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} connection
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {import("mcos/shared").TMessageArrayWithConnection}
  */
-function _trackingMessage(connection, node) {
+function _trackingMessage(connection, node, log) {
     const trackingMessage = node;
 
     trackingMessage.data = node.serialize();
@@ -92,30 +94,32 @@ function _trackingMessage(connection, node) {
     rPacket.updateBuffer(pReply.serialize());
     rPacket.dumpPacket();
 
-    return { connection, messages: [rPacket] };
+    return { connection, messages: [rPacket], log };
 }
 
 /**
  *
  *
- * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} conn
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {import("mcos/shared").TMessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleTrackingMessage(conn, node) {
-    const result = _trackingMessage(conn, node);
+function handleTrackingMessage(conn, node, log) {
+    const result = _trackingMessage(conn, node, log);
     return result;
 }
 
 /**
  *
  * @private
- * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} connection
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {import("mcos/shared").TMessageArrayWithConnection}
  */
-function _updatePlayerPhysical(connection, node) {
+function _updatePlayerPhysical(connection, node, log) {
     const updatePlayerPhysicalMessage = node;
 
     updatePlayerPhysicalMessage.data = node.serialize();
@@ -133,33 +137,35 @@ function _updatePlayerPhysical(connection, node) {
     rPacket.updateBuffer(pReply.serialize());
     rPacket.dumpPacket();
 
-    return { connection, messages: [rPacket] };
+    return { connection, messages: [rPacket], log };
 }
 
 /**
  *
  *
- * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} conn
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {import("mcos/shared").TMessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleUpdatePlayerPhysical(conn, node) {
-    const result = _updatePlayerPhysical(conn, node);
+function handleUpdatePlayerPhysical(conn, node, log) {
+    const result = _updatePlayerPhysical(conn, node, log);
     return result;
 }
 
 /**
- * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} connection
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
  * @param {MessageNode} packet
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
  */
-async function clientConnect(connection, packet) {
+async function clientConnect(connection, packet, log) {
     /**
      * Let's turn it into a ClientConnectMsg
      */
     // Not currently using this - Maybe we are?
-    const newMessage = new TClientConnectMessage();
+    const newMessage = new TClientConnectMessage(log);
 
     log.info(`Raw bytes in clientConnect: ${toHex(packet.rawPacket)}`);
     newMessage.deserialize(packet.rawPacket);
@@ -173,10 +179,9 @@ async function clientConnect(connection, packet) {
 
     log.info(`[TCPManager] Looking up the session key for ${customerId}...`);
 
-    const result =
-        await DatabaseManager.getInstance().fetchSessionKeyByCustomerId(
-            customerId
-        );
+    const result = await DatabaseManager.getInstance(
+        log
+    ).fetchSessionKeyByCustomerId(customerId);
     log.info("[TCPManager] Session Key located!");
 
     const connectionWithKey = connection;
@@ -185,7 +190,7 @@ async function clientConnect(connection, packet) {
 
     // const stringKey = Buffer.from(sessionkey, 'hex')
 
-    createEncrypters(connection, result);
+    createEncrypters(connection, result, log);
 
     // connectionWithKey.setEncryptionKey(Buffer.from(stringKey.slice(0, 16)))
 
@@ -217,35 +222,38 @@ async function clientConnect(connection, packet) {
     responsePacket.updateBuffer(genericReplyMessage.serialize());
     responsePacket.dumpPacket();
 
-    return { connection, messages: [responsePacket] };
+    return { connection, messages: [responsePacket], log };
 }
 
 /**
  *
  *
- * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} conn
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
  * @memberof MCOTServer
  */
-async function handleClientConnect(conn, node) {
-    const result = await clientConnect(conn, node);
+async function handleClientConnect(conn, node, log) {
+    const result = await clientConnect(conn, node, log);
     return {
         connection: result.connection,
         messages: result.messages,
+        log
     };
 }
 
 /**
  *
  * @private
- * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} connection
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}>}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {import("mcos/shared").TMessageArrayWithConnection}>}
  */
-function _login(connection, node) {
+function _login(connection, node, log) {
     // Read the inbound packet
-    const loginMessage = new TLoginMessage();
+    const loginMessage = new TLoginMessage(log);
     loginMessage.deserialize(node.rawPacket);
     log.info(`Received LoginMessage: ${JSON.stringify(loginMessage)}`);
 
@@ -260,33 +268,36 @@ function _login(connection, node) {
     rPacket.updateBuffer(pReply.serialize());
     rPacket.dumpPacket();
 
-    return { connection, messages: [rPacket] };
+    return { connection, messages: [rPacket], log };
 }
 
 /**
  *
  *
- * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} conn
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {import("mcos/shared").TMessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleLoginMessage(conn, node) {
-    const result = _login(conn, node);
+function handleLoginMessage(conn, node, log) {
+    const result = _login(conn, node, log);
     return {
         connection: result.connection,
         messages: result.messages,
+        log
     };
 }
 
 /**
  *
  * @private
- * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} connection
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {import("mcos/shared").TMessageArrayWithConnection}
  */
-function _logout(connection, node) {
+function _logout(connection, node, log) {
     const logoutMessage = node;
 
     logoutMessage.data = node.serialize();
@@ -307,32 +318,35 @@ function _logout(connection, node) {
     /** @type {MessageNode[]} */
     const nodes = [];
 
-    return { connection, messages: nodes };
+    return { connection, messages: nodes, log };
 }
 
 /**
  *
  *
- * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} conn
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {import("mcos/shared").TMessageArrayWithConnection}
  */
-function handleLogoutMessage(conn, node) {
-    const result = _logout(conn, node);
+function handleLogoutMessage(conn, node, log) {
+    const result = _logout(conn, node, log);
     return {
         connection: result.connection,
         messages: result.messages,
+        log
     };
 }
 
 /**
  *
  * @private
- * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} connection
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {import("mcos/shared").TMessageArrayWithConnection}
  */
-function _getLobbies(connection, node) {
+function _getLobbies(connection, node, log) {
     log.info("In _getLobbies...");
 
     const lobbyRequest = new GenericRequestMessage();
@@ -369,26 +383,27 @@ function _getLobbies(connection, node) {
     log.info("Dumping response...");
     log.info(JSON.stringify(rPacket));
 
-    const lobbyResponse = new TLobbyMessage();
+    const lobbyResponse = new TLobbyMessage(log);
     lobbyResponse.setValueNumber("dataLength", 16);
     lobbyResponse.setValueNumber("seq", node.seq);
     lobbyResponse.setValueNumber("msgNo", 325);
     lobbyResponse.setValueNumber("numberOfLobbies", 0);
     lobbyResponse.setValueNumber("moreMessages?", 0);
 
-    return { connection, messages: [lobbyResponse] };
+    return { connection, messages: [lobbyResponse], log };
 }
 
 /**
  *
  *
- * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} conn
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {import("mcos/shared").TMessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleGetLobbiesMessage(conn, node) {
-    const result = _getLobbies(conn, node);
+function handleGetLobbiesMessage(conn, node, log) {
+    const result = _getLobbies(conn, node, log);
     log.info("Dumping Lobbies response packet...");
     result.messages.forEach((msg) => {
         log.info(msg.toString());
@@ -397,16 +412,18 @@ function handleGetLobbiesMessage(conn, node) {
     return {
         connection: result.connection,
         messages: result.messages,
+        log
     };
 }
 
 /**
  * Handles the getStockCarInfo message
- * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} connection
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
  * @param {MessageNode} packet
- * @returns {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @returns {import("mcos/shared").TMessageArrayWithConnection}
  */
-function getStockCarInfo(connection, packet) {
+function getStockCarInfo(connection, packet, log) {
     const getStockCarInfoMessage = new GenericRequestMessage();
     getStockCarInfoMessage.deserialize(packet.data);
     getStockCarInfoMessage.dumpPacket();
@@ -430,21 +447,23 @@ function getStockCarInfo(connection, packet) {
 
     responsePacket.dumpPacket();
 
-    return { connection, messages: [responsePacket] };
+    return { connection, messages: [responsePacket], log };
 }
 
 /**
  *
  *
- * @param {import("../../mcos-gateway/src/connections.js").SocketWithConnectionInfo} conn
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @return {import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {import("mcos/shared").TMessageArrayWithConnection}
  */
-function handleShockCarInfoMessage(conn, node) {
-    const result = getStockCarInfo(conn, node);
+function handleShockCarInfoMessage(conn, node, log) {
+    const result = getStockCarInfo(conn, node, log);
     return {
         connection: result.connection,
         messages: result.messages,
+        log
     };
 }
 

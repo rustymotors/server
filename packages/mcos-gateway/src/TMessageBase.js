@@ -15,7 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { BinaryStructure } from "./BinaryStructure.js";
-import log from "../../../log.js";
 
 /**
  * @class
@@ -27,8 +26,15 @@ export class TSMessageBase extends BinaryStructure {
      * @type {'big' | 'little'}
      */
     _byteOrder = "big";
-    constructor() {
-        super();
+
+    /**
+     * Creates an instance of TSMessageBase.
+     * @author Drazi Crendraven
+     * @param {import("mcos/shared").TServerLogger} log
+     * @memberof TSMessageBase
+     */
+    constructor(log) {
+        super(log);
         log.info("new TSMessageBase");
         this._add({
             name: "dataLength",

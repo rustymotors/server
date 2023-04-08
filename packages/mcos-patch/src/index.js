@@ -15,7 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { createServer } from "node:http";
-import log from "../../../log.js";
 
 export const CastanetResponse = {
     body: Buffer.from("cafebeef00000000000003", "hex"),
@@ -32,6 +31,39 @@ export const CastanetResponse = {
  */
 export class PatchServer {
     /**
+     * @type {PatchServer}
+     */
+    static _instance;
+
+    /** @type {import("mcos/shared").TServerLogger} */
+    #log;
+
+    /**
+     * Please use getInstance() instead
+     * @author Drazi Crendraven
+     * @param {*} log
+     * @memberof PatchServer
+     */
+    constructor(log) {
+        this.#log = log;
+    }
+
+    /**
+     * Return the instance of the PatchServer class
+     *
+     * @static
+     * @param {import("mcos/shared").TServerLogger} log
+     * @return {PatchServer}
+     * @memberof PatchServer
+     */
+    static getInstance(log) {
+        if (!PatchServer._instance) {
+            PatchServer._instance = new PatchServer(log);
+        }
+        return PatchServer._instance;
+    }
+
+    /**
      * Starts the HTTP listener
      */
     start() {
@@ -45,39 +77,15 @@ export class PatchServer {
                 typeof listeningAddress !== "string" &&
                 listeningAddress !== null
             ) {
-                log.info(
+                this.#log.info(
                     `Server is listening on port ${listeningAddress.port}`
                 );
             }
         });
         server.on("request", this.handleRequest.bind(this));
 
-        log.info(`Attempting to bind to port ${port}`);
+        this.#log.info(`Attempting to bind to port ${port}`);
         server.listen(port, host);
-    }
-
-    /**
-     *
-     *
-     * @static
-     * @private
-     * @type {PatchServer}
-     * @memberof PatchServer
-     */
-    static _instance;
-
-    /**
-     * Return the instance of the PatchServer class
-     *
-     * @static
-     * @return {PatchServer}
-     * @memberof PatchServer
-     */
-    static getInstance() {
-        if (!PatchServer._instance) {
-            PatchServer._instance = new PatchServer();
-        }
-        return PatchServer._instance;
     }
 
     /**
@@ -87,7 +95,7 @@ export class PatchServer {
      * @returns {import('node:http').ServerResponse}
      */
     castanetResponse(request, response) {
-        log.info(
+        this.#log.info(
             `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
         );
 

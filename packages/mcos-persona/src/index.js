@@ -16,15 +16,15 @@
 
 import { handleData, personaRecords } from "./internal.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
-import log from "../../../log.js";
 import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
 
 /**
  * Selects a game persona and marks it as in use
  * @param {NPSMessage} requestPacket
+ * @param {import("mcos/shared").TServerLogger} log
  * @returns {Promise<NPSMessage>}
  */
-export async function handleSelectGamePersona(requestPacket) {
+export async function handleSelectGamePersona(requestPacket, log) {
     log.info("_npsSelectGamePersona...");
     log.info(
         `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
@@ -84,13 +84,27 @@ export class PersonaServer {
      */
     static _instance;
 
+    /** @type {import("mcos/shared").TServerLogger} */
+    #log;
+
+    /**
+     * PLease use getInstance() instead
+     * @author Drazi Crendraven
+     * @param {import("mcos/shared").TServerLogger} log
+     * @memberof PersonaServer
+     */
+    constructor(log) {
+        this.#log = log;
+    }
+
     /**
      * Return the instance of the Persona Server class
+     * @param {import("mcos/shared").TServerLogger} log
      * @returns {PersonaServer}
      */
-    static getInstance() {
+    static getInstance(log) {
         if (typeof PersonaServer._instance === "undefined") {
-            PersonaServer._instance = new PersonaServer();
+            PersonaServer._instance = new PersonaServer(log);
         }
         return PersonaServer._instance;
     }
@@ -104,7 +118,7 @@ export class PersonaServer {
      */
     async createNewGameAccount(data) {
         const requestPacket = new NPSMessage("received").deserialize(data);
-        log.info(
+        this.#log.info(
             `NPSMsg request object from _npsNewGameAccount',
       ${JSON.stringify({
           NPSMsg: requestPacket.toJSON(),
@@ -115,7 +129,7 @@ export class PersonaServer {
 
         const rPacket = new NPSMessage("sent");
         rPacket.msgNo = 0x6_01;
-        log.info(
+        this.#log.info(
             `NPSMsg response object from _npsNewGameAccount',
       ${JSON.stringify({
           NPSMsg: rPacket.toJSON(),
@@ -137,9 +151,9 @@ export class PersonaServer {
      * @memberof PersonaServer
      */
     async logoutGameUser(data) {
-        log.info("[personaServer] Logging out persona...");
+        this.#log.info("[personaServer] Logging out persona...");
         const requestPacket = new NPSMessage("received").deserialize(data);
-        log.info(
+        this.#log.info(
             `NPSMsg request object from _npsLogoutGameUser',
       ${JSON.stringify({
           NPSMsg: requestPacket.toJSON(),
@@ -155,7 +169,7 @@ export class PersonaServer {
         const responsePacket = new NPSMessage("sent");
         responsePacket.msgNo = 0x6_12;
         responsePacket.setContent(packetContent);
-        log.info(
+        this.#log.info(
             `NPSMsg response object from _npsLogoutGameUser',
       ${JSON.stringify({
           NPSMsg: responsePacket.toJSON(),
@@ -164,7 +178,7 @@ export class PersonaServer {
 
         responsePacket.dumpPacket();
 
-        log.info(
+        this.#log.info(
             `[npsLogoutGameUser] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
         );
         return responsePacket;
@@ -178,9 +192,9 @@ export class PersonaServer {
      * @memberof PersonaServer
      */
     async validateLicencePlate(data) {
-        log.info("_npsCheckToken...");
+        this.#log.info("_npsCheckToken...");
         const requestPacket = new NPSMessage("received").deserialize(data);
-        log.info(
+        this.#log.info(
             `NPSMsg request object from _npsCheckToken',
       ${JSON.stringify({
           NPSMsg: requestPacket.toJSON(),
@@ -191,8 +205,8 @@ export class PersonaServer {
 
         const customerId = data.readInt32BE(12);
         const plateName = data.subarray(17).toString();
-        log.info(`customerId: ${customerId}`); // skipcq: JS-0378
-        log.info(`Plate name: ${plateName}`); // skipcq: JS-0378
+        this.#log.info(`customerId: ${customerId}`); // skipcq: JS-0378
+        this.#log.info(`Plate name: ${plateName}`); // skipcq: JS-0378
 
         // Create the packet content
 
@@ -203,7 +217,7 @@ export class PersonaServer {
         const responsePacket = new NPSMessage("sent");
         responsePacket.msgNo = 0x2_07;
         responsePacket.setContent(packetContent);
-        log.info(
+        this.#log.info(
             `NPSMsg response object from _npsCheckToken',
       ${JSON.stringify({
           NPSMsg: responsePacket.toJSON(),
@@ -211,7 +225,7 @@ export class PersonaServer {
         );
         responsePacket.dumpPacket();
 
-        log.info(
+        this.#log.info(
             `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
         );
         return responsePacket;
@@ -224,10 +238,10 @@ export class PersonaServer {
      * @return {Promise<NPSMessage>}
      */
     async validatePersonaName(data) {
-        log.info("_npsValidatePersonaName...");
+        this.#log.info("_npsValidatePersonaName...");
         const requestPacket = new NPSMessage("received").deserialize(data);
 
-        log.info(
+        this.#log.info(
             `NPSMsg request object from _npsValidatePersonaName',
       ${JSON.stringify({
           NPSMsg: requestPacket.toJSON(),
@@ -240,7 +254,7 @@ export class PersonaServer {
             .subarray(18, data.lastIndexOf(0x00))
             .toString();
         const serviceName = data.subarray(data.indexOf(0x0a) + 1).toString(); // skipcq: JS-0377
-        log.info(
+        this.#log.info(
             JSON.stringify({ customerId, requestedPersonaName, serviceName })
         );
 
@@ -255,7 +269,7 @@ export class PersonaServer {
         responsePacket.msgNo = 0x6_01;
         responsePacket.setContent(packetContent);
 
-        log.info(
+        this.#log.info(
             `NPSMsg response object from _npsValidatePersonaName',
       ${JSON.stringify({
           NPSMsg: responsePacket.toJSON(),
@@ -263,7 +277,7 @@ export class PersonaServer {
         );
         responsePacket.dumpPacket();
 
-        log.info(
+        this.#log.info(
             `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
         );
         return responsePacket;
@@ -325,16 +339,16 @@ export class PersonaServer {
      * @return {Promise<NPSMessage>}
      */
     async getPersonaMaps(data) {
-        log.info("_npsGetPersonaMaps...");
+        this.#log.info("_npsGetPersonaMaps...");
         const requestPacket = new NPSMessage("received").deserialize(data);
 
-        log.info(
+        this.#log.info(
             `NPSMsg request object from _npsGetPersonaMaps',
       ${JSON.stringify({
           NPSMsg: requestPacket.toJSON(),
       })}`
         );
-        log.info(
+        this.#log.info(
             `NPSMsg request object from _npsGetPersonaMaps',
       ${JSON.stringify({
           NPSMsg: requestPacket.toJSON(),
@@ -347,7 +361,7 @@ export class PersonaServer {
         const personas = await this.getPersonaMapsByCustomerId(
             customerId.readUInt32BE(0)
         );
-        log.info(
+        this.#log.info(
             `${personas.length} personas found for ${customerId.readUInt32BE(
                 0
             )}`
@@ -368,7 +382,7 @@ export class PersonaServer {
                 const responsePacket = new NPSMessage("sent");
                 responsePacket.msgNo = 0x6_07;
                 responsePacket.setContent(personaMapsMessage.serialize());
-                log.info(
+                this.#log.info(
                     `NPSMsg response object from _npsGetPersonaMaps: ${JSON.stringify(
                         {
                             NPSMsg: responsePacket.toJSON(),
@@ -398,12 +412,13 @@ export class PersonaServer {
  * Entry and exit point for the persona service
  *
  * @export
- * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").ServiceResponse>}
+ * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {Promise<import("mcos/shared").TServiceResponse>}
  */
-export async function receivePersonaData(dataConnection) {
+export async function receivePersonaData(dataConnection, log) {
     try {
-        return await handleData(dataConnection);
+        return await handleData(dataConnection, log);
     } catch (error) {
         throw new Error(
             `There was an error in the persona service: ${String(error)}`

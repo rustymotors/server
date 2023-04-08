@@ -10,6 +10,9 @@
     "CHANGELOG.md",
     "AUTHORS"
   ],
+  "exports": {
+    "./shared": ["./src/shared/index.js"]
+  },
   "type": "module",
   "scripts": {
     "build": "tsc",

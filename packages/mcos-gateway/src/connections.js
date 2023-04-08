@@ -15,46 +15,17 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { randomUUID } from "node:crypto";
-import log from "../../../log.js";
 
-/**
- * @global
- * @typedef {object} EncryptionSession
- * @property {string} connectionId
- * @property {string} remoteAddress
- * @property {number} localPort
- * @property {string} sessionKey
- * @property {string} shortKey
- * @property {import('node:crypto').Cipher} gsCipher
- * @property {import('node:crypto').Decipher} gsDecipher
- * @property {import('node:crypto').Cipher} tsCipher
- * @property {import('node:crypto').Decipher} tsDecipher
- */
 
-/**
- * Socket with connection properties
- * @global
- * @typedef {object} SocketWithConnectionInfo
- * @property {import('node:net').Socket} socket
- * @property {number} seq
- * @property {string} id
- * @property {string} remoteAddress
- * @property {number} localPort
- * @property {number} personaId
- * @property {number} lastMessageTimestamp
- * @property {boolean} inQueue
- * @property {boolean} useEncryption
- * @property {EncryptionSession} [encryptionSession]
- */
 
-/** @type {SocketWithConnectionInfo[]} */
+/** @type {import("mcos/shared").TSocketWithConnectionInfo[]} */
 const connectionList = [];
 
 /**
  *
  *
  * @export
- * @return {SocketWithConnectionInfo[]}
+ * @return {import("mcos/shared").TSocketWithConnectionInfo[]}
  */
 export function getAllConnections() {
     return connectionList;
@@ -64,9 +35,10 @@ export function getAllConnections() {
  * Update the internal connection record
  *
  * @param {string} connectionId
- * @param {SocketWithConnectionInfo} updatedConnection
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} updatedConnection
+ * @param {import("mcos/shared").TServerLogger} log
  */
-export function updateConnection(connectionId, updatedConnection) {
+export function updateConnection(connectionId, updatedConnection, log) {
     log.info(`Updating connection with id: ${connectionId}`);
     try {
         const index = connectionList.findIndex((c) => {
@@ -83,7 +55,7 @@ export function updateConnection(connectionId, updatedConnection) {
  * Locate connection by remoteAddress and localPort in the connections array
  * @param {string} remoteAddress
  * @param {number} localPort
- * @return {SocketWithConnectionInfo | undefined}
+ * @return {import("mcos/shared").TSocketWithConnectionInfo | undefined}
  */
 function findConnectionByAddressAndPort(remoteAddress, localPort) {
     return connectionList.find((c) => {
@@ -95,9 +67,10 @@ function findConnectionByAddressAndPort(remoteAddress, localPort) {
  * Creates a new connection object for the socket and adds to list
  * @param {string} connectionId
  * @param {import('node:net').Socket} socket
- * @returns {SocketWithConnectionInfo}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @returns {import("mcos/shared").TSocketWithConnectionInfo}
  */
-function createNewConnection(connectionId, socket) {
+function createNewConnection(connectionId, socket, log) {
     const { localPort, remoteAddress } = socket;
 
     if (
@@ -105,11 +78,10 @@ function createNewConnection(connectionId, socket) {
         typeof remoteAddress === "undefined"
     ) {
         const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`;
-        log.error(errMessage);
         throw new Error(errMessage);
     }
 
-    /** @type {SocketWithConnectionInfo} */
+    /** @type {import("mcos/shared").TSocketWithConnectionInfo} */
     const newConnectionRecord = {
         socket,
         remoteAddress,
@@ -127,8 +99,8 @@ function createNewConnection(connectionId, socket) {
 /**
  * Add new connection to internal list
  *
- * @param {SocketWithConnectionInfo} connection
- * @return {SocketWithConnectionInfo[]}
+ * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
+ * @return {import("mcos/shared").TSocketWithConnectionInfo[]}
  */
 function addConnection(connection) {
     connectionList.push(connection);
@@ -139,9 +111,10 @@ function addConnection(connection) {
  * Return an existing connection, or a new one
  *
  * @param {import('node:net').Socket} socket
- * @return {SocketWithConnectionInfo}
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {import("mcos/shared").TSocketWithConnectionInfo}
  */
-export function findOrNewConnection(socket) {
+export function findOrNewConnection(socket, log) {
     const { localPort, remoteAddress } = socket;
 
     if (
@@ -149,7 +122,6 @@ export function findOrNewConnection(socket) {
         typeof remoteAddress === "undefined"
     ) {
         const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`;
-        log.error(errMessage);
         throw new Error(errMessage);
     }
 
@@ -170,7 +142,7 @@ export function findOrNewConnection(socket) {
 
     const newConnectionId = randomUUID();
     log.info(`Creating new connection with id ${newConnectionId}`);
-    const newConnection = createNewConnection(newConnectionId, socket);
+    const newConnection = createNewConnection(newConnectionId, socket, log);
     log.info(
         `I have not seen connections from ${socket.remoteAddress} on ${socket.localPort} before, adding it.`
     );

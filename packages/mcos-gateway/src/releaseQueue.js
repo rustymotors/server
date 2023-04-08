@@ -1,6 +1,6 @@
 /**
  *
- * @param {import("./connections.js").SocketWithConnectionInfo[]} connections
+ * @param {import("mcos/shared").TSocketWithConnectionInfo[]} connections
  * @param {string} connectionId
  * @returns {{
     code: number;

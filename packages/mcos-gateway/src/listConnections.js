@@ -1,6 +1,6 @@
 /**
  *
- * @param {import("./connections.js").SocketWithConnectionInfo[]} connections
+ * @param {import("mcos/shared").TSocketWithConnectionInfo[]} connections
  * @returns {{
     code: number;
     headers: import("node:http").OutgoingHttpHeaders | import("node:http").OutgoingHttpHeader[] | undefined;

@@ -18,18 +18,19 @@ import { AdminServer } from "./adminServer.js";
 import { AuthLogin } from "../../mcos-auth/src/index.js";
 import { PatchServer } from "../../mcos-patch/src/index.js";
 import { ShardServer } from "../../mcos-shard/src/index.js";
-import log from "../../../log.js";
 
 /**
  * Routes incomming HTTP requests
  * @param {import('node:http').IncomingMessage} req
  * @param {import('node:http').ServerResponse} res
+ * @param {import("mcos/shared").TServerConfiguration} config
+ * @param {import("mcos/shared").TServerLogger} log
  * @returns {import('node:http').ServerResponse}
  */
-export function httpListener(req, res) {
+export function httpListener(req, res, config, log) {
     if (typeof req.url !== "undefined" && req.url.startsWith("/AuthLogin")) {
         log.info("ssl routing request to login web server");
-        return AuthLogin.getInstance().handleRequest(req, res);
+        return AuthLogin.getInstance(log).handleRequest(req, res);
     }
 
     if (
@@ -39,7 +40,7 @@ export function httpListener(req, res) {
             req.url.startsWith("/admin"))
     ) {
         log.info("ssl routing request to admin web server");
-        const response = AdminServer.getAdminServer().handleRequest(req);
+        const response = AdminServer.getAdminServer(log).handleRequest(req);
         return res
             .writeHead(response.code, response.headers)
             .end(response.body);
@@ -51,7 +52,7 @@ export function httpListener(req, res) {
         req.url === "/games/EA_Seattle/MotorCity/MCO"
     ) {
         log.info("http routing request to patch server");
-        return PatchServer.getInstance().handleRequest(req, res);
+        return PatchServer.getInstance(log).handleRequest(req, res);
     }
     if (
         req.url === "/cert" ||
@@ -60,7 +61,7 @@ export function httpListener(req, res) {
         req.url === "/ShardList/"
     ) {
         log.info("http routing request to shard server");
-        return ShardServer.getInstance().handleRequest(req, res);
+        return ShardServer.getInstance(config, log).handleRequest(req, res);
     }
 
     log.info(

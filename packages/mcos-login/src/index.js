@@ -16,7 +16,6 @@
 
 import { DatabaseManager } from "../../mcos-database/src/index.js";
 import { handleData } from "./internal.js";
-import log from "../../../log.js";
 
 /**
  * Manages the initial game connection setup and teardown.
@@ -45,17 +44,36 @@ export class LoginServer {
      * @memberof LoginServer
      */
     static _instance;
-    databaseManager = DatabaseManager.getInstance();
+
+    #databaseManager;
+
+    /** @type {import("mcos/shared").TServerLogger} */
+    #log;
+
+    /**
+     * Please use getInstance() instead
+     * @author Drazi Crendraven
+     * @param {import("mcos/shared").IDatabaseManager} database
+     * @param {import("mcos/shared").TServerLogger} log
+     * @memberof LoginServer
+     */
+    constructor(database, log) {
+        this.#databaseManager = database;
+        this.#log = log;
+    }
+
     /**
      * Get the single instance of the login server
      *
      * @static
+     * @param {import("mcos/shared").IDatabaseManager} database
+     * @param {import("mcos/shared").TServerLogger} log
      * @return {LoginServer}
      * @memberof LoginServer
      */
-    static getInstance() {
+    static getInstance(database, log) {
         if (typeof LoginServer._instance === "undefined") {
-            LoginServer._instance = new LoginServer();
+            LoginServer._instance = new LoginServer(database, log);
         }
         return LoginServer._instance;
     }
@@ -67,7 +85,7 @@ export class LoginServer {
      * @return {UserRecordMini}
      */
     _npsGetCustomerIdByContextId(contextId) {
-        log.info(">>> _npsGetCustomerIdByContextId");
+        this.#log.info(">>> _npsGetCustomerIdByContextId");
         /** @type {UserRecordMini[]} */
         const users = [
             {
@@ -87,7 +105,7 @@ export class LoginServer {
 
         const userRecord = users.filter((user) => user.contextId === contextId);
         if (typeof userRecord[0] === "undefined" || userRecord.length !== 1) {
-            log.info(
+            this.#log.info(
                 `preparing to leave _npsGetCustomerIdByContextId after not finding record',
         ${JSON.stringify({
             contextId,
@@ -98,7 +116,7 @@ export class LoginServer {
             );
         }
 
-        log.info(
+        this.#log.info(
             `preparing to leave _npsGetCustomerIdByContextId after finding record',
       ${JSON.stringify({
           contextId,
@@ -113,13 +131,14 @@ export class LoginServer {
  * Entry and exit point of the Login service
  *
  * @export
- * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").ServiceResponse>}
+ * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {Promise<import("mcos/shared").TServiceResponse>}
  */
-export async function receiveLoginData(dataConnection) {
+export async function receiveLoginData(dataConnection, log) {
     try {
         log.info("Entering login module");
-        const response = await handleData(dataConnection);
+        const response = await handleData(dataConnection, log);
         log.info(`There are ${response.messages.length} messages`);
         log.info("Exiting login module");
         return response;

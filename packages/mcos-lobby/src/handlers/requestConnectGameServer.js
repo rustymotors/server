@@ -7,7 +7,6 @@ import {
 import { MessagePacket } from "../MessagePacket.js";
 import { DatabaseManager } from "../../../mcos-database/src/index.js";
 import { NPSMessage } from "../../../mcos-gateway/src/NPSMessage.js";
-import log from "../../../../log.js";
 
 /**
  * Convert to zero padded hex
@@ -39,10 +38,11 @@ export function _generateSessionKeyBuffer(key) {
  * Handle a request to connect to a game server packet
  *
  * @private
- * @param {import("../../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
+ * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
  */
-export async function _npsRequestGameConnectServer(dataConnection) {
+export async function _npsRequestGameConnectServer(dataConnection, log) {
     log.info(
         `[inner] Raw bytes in _npsRequestGameConnectServer: ${toHex(
             dataConnection.data
@@ -75,7 +75,7 @@ export async function _npsRequestGameConnectServer(dataConnection) {
     const { customerId } = personas[0];
 
     // Set the encryption keys on the lobby connection
-    const databaseManager = DatabaseManager.getInstance();
+    const databaseManager = DatabaseManager.getInstance(log);
     const keys = await databaseManager
         .fetchSessionKeyByCustomerId(customerId)
         .catch((/** @type {unknown} */ error) => {
@@ -86,22 +86,26 @@ export async function _npsRequestGameConnectServer(dataConnection) {
                     })}`
                 );
             }
-            log.error(
+            const err = new Error(
                 `Unable to fetch session key for customerId ${customerId.toString()}: unknown error}`
             );
-            return undefined;
+
+            throw err;
         });
     if (keys === undefined) {
         throw new Error("Error fetching session keys!");
     }
 
     try {
-        dataConnection.connection.encryptionSession =
-            selectEncryptors(dataConnection);
+        dataConnection.connection.encryptionSession = selectEncryptors(
+            dataConnection,
+            log
+        );
     } catch (error) {
         dataConnection.connection.encryptionSession = createEncrypters(
             dataConnection.connection,
-            keys
+            keys,
+            log
         );
     }
 
@@ -115,7 +119,7 @@ export async function _npsRequestGameConnectServer(dataConnection) {
     Buffer.from([0x00, 0x84, 0x5f, 0xed]).copy(packetContent);
 
     // SessionKeyStr (32)
-    _generateSessionKeyBuffer(keys.sessionkey).copy(packetContent, 4);
+    _generateSessionKeyBuffer(keys.sessionKey).copy(packetContent, 4);
 
     // SessionKeyLen - int
     packetContent.writeInt16BE(32, 66);
@@ -138,5 +142,6 @@ export async function _npsRequestGameConnectServer(dataConnection) {
     return {
         connection: dataConnection.connection,
         messages: [packetResult],
+        log
     };
 }

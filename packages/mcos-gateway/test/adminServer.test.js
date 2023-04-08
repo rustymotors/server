@@ -25,16 +25,30 @@ chai.should();
 describe("AdminServer", () => {
     describe(".getAdminServer", () => {
         it("should return an instance of AdminServer", () => {
+            // Arrange
+            /**  @type {import("mcos/shared").TServerLogger} */
+            const log = {
+                info: () => {},
+                error: () => {}
+            }
+
             // Act
-            const newAdminInstance = AdminServer.getAdminServer();
+            const newAdminInstance = AdminServer.getAdminServer(log);
 
             // Assert
             newAdminInstance.should.be.instanceOf(AdminServer);
         });
         it("should return the same instance of AdminServer on multiple calls", () => {
+                        // Arrange
+            /**  @type {import("mcos/shared").TServerLogger} */
+            const log = {
+                info: () => {},
+                error: () => {}
+            }
+
             // Act
-            const admin1 = AdminServer.getAdminServer();
-            const admin2 = AdminServer.getAdminServer();
+            const admin1 = AdminServer.getAdminServer(log);
+            const admin2 = AdminServer.getAdminServer(log);
 
             // Assert
             admin1.should.equal(admin2);
@@ -44,8 +58,8 @@ describe("AdminServer", () => {
 
 describe("resetQueue()", function () {
     it("should reset the inQueue property to true for all connections", function () {
-        // arrange
-        /** @type {import("../src/connections.js").SocketWithConnectionInfo[]} */
+        // arrange        
+        /** @type {import("mcos/shared").TSocketWithConnectionInfo[]} */
         const inputConnectionList = [
             {
                 socket: new Socket(),
@@ -81,7 +95,7 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
         ];
-        /** @type {import("../src/connections.js").SocketWithConnectionInfo[]} */
+        /** @type {import("mcos/shared").TSocketWithConnectionInfo[]} */
         const expectedConnectionList = [
             {
                 socket: new Socket(),
@@ -119,7 +133,7 @@ describe("resetQueue()", function () {
         ];
 
         // act
-        /** @type {import("../src/connections.js").SocketWithConnectionInfo[]} */
+        /** @type {import("mcos/shared").TSocketWithConnectionInfo[]} */
         const result = JSON.parse(resetQueue(inputConnectionList).body);
 
         // assert

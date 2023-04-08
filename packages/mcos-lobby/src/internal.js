@@ -17,13 +17,13 @@
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
 import { _npsHeartbeat } from "./handlers/heartbeat.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
-import log from "../../../log.js";
 
 /**
- * @param {import("../../mcos-gateway/src/sockets.js").BufferWithConnection} dataConnection
- * @return {Promise<import("../../mcos-gateway/src/sockets.js").MessageArrayWithConnection>}
+ * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerLogger} log
+ * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
  */
-export async function handleData(dataConnection) {
+export async function handleData(dataConnection, log) {
     const { localPort, remoteAddress } = dataConnection.connection.socket;
     log.info(
         `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
@@ -34,14 +34,17 @@ export async function handleData(dataConnection) {
     switch (requestCode) {
         // _npsRequestGameConnectServer
         case "100": {
-            const result = await _npsRequestGameConnectServer(dataConnection);
+            const result = await _npsRequestGameConnectServer(
+                dataConnection,
+                log
+            );
             return result;
         }
 
         // NpsHeartbeat
 
         case "217": {
-            const result = await _npsHeartbeat(dataConnection);
+            const result = await _npsHeartbeat(dataConnection, log);
             return result;
         }
 
@@ -50,7 +53,7 @@ export async function handleData(dataConnection) {
         case "1101": {
             // This is an encrypted command
 
-            const result = handleEncryptedNPSCommand(dataConnection);
+            const result = handleEncryptedNPSCommand(dataConnection, log);
             return result;
         }
 

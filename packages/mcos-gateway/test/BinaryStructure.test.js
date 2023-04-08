@@ -24,7 +24,12 @@ describe("BinaryStructure", () => {
     describe(".byteLength", () => {
         it("should have a value of 0", () => {
             // Arrange
-            const testStructure = new BinaryStructure();
+            /**  @type {import("mcos/shared").TServerLogger} */
+            const log = {
+                info: () => {},
+                error: () => {},
+            };
+            const testStructure = new BinaryStructure(log);
 
             // Assert
             testStructure.getByteLength().should.equal(0);
@@ -33,8 +38,13 @@ describe("BinaryStructure", () => {
     describe("#serialize", () => {
         it("should throw when passed a byteStream larger then the internal fields array", () => {
             // Arrange
+            /**  @type {import("mcos/shared").TServerLogger} */
+            const log = {
+                info: () => {},
+                error: () => {},
+            };
             const inputStream = Buffer.from("This is a pretty decent size.");
-            const testStructure = new BinaryStructure();
+            const testStructure = new BinaryStructure(log);
 
             // Assert
             (() => {
@@ -45,7 +55,12 @@ describe("BinaryStructure", () => {
     describe("#get", () => {
         it("should throw when passed a name not found in the internal fields array", () => {
             // Arrange
-            const testStructure = new BinaryStructure();
+            /**  @type {import("mcos/shared").TServerLogger} */
+            const log = {
+                info: () => {},
+                error: () => {},
+            };
+            const testStructure = new BinaryStructure(log);
 
             // Assert
             (() => {

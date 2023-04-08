@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import log from "../../../log.js";
-
 /**
  * Handles web-based user logins
  * Please use {@link AuthLogin.getInstance()}
@@ -32,16 +30,28 @@ export class AuthLogin {
      */
     static _instance;
 
+    /** @type {import("mcos/shared").TServerLogger} */
+    #log;
+
+    /**
+     *
+     * @param {import("mcos/shared").TServerLogger} log
+     */
+    constructor(log) {
+        this.#log = log;
+    }
+
     /**
      * Get the single instance of the class
      *
      * @static
+     * @param {import("mcos/shared").TServerLogger} log
      * @return {AuthLogin}
      * @memberof AuthLogin
      */
-    static getInstance() {
+    static getInstance(log) {
         if (!AuthLogin._instance) {
-            AuthLogin._instance = new AuthLogin();
+            AuthLogin._instance = new AuthLogin(log);
         }
         return AuthLogin._instance;
     }
@@ -65,7 +75,7 @@ export class AuthLogin {
      * @param {import('node:http').ServerResponse} response
      */
     handleRequest(request, response) {
-        log.info(
+        this.#log.info(
             `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );
         if (request.url && request.url.startsWith("/AuthLogin")) {
