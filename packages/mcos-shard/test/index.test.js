@@ -20,8 +20,8 @@ describe("Shard service", () => {
         };
         /** @type {import("mcos/shared").TServerLogger} */
         const log = {
-            info: () => {},
-            error: () => {},
+            info: () => { return },
+            error: () => { return },
         };
 
         const expectedClass = ShardServer;
