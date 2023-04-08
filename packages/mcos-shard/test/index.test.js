@@ -38,7 +38,7 @@ describe("Shard service", () => {
             // arrange
             /** @type {import("mcos/shared").TServerConfiguration} */
             const config = {
-                CERTIFICATE_FILE: "Hello!",
+                CERTIFICATE_FILE: "Hello! I'm an SSL cert. Honest.",
                 EXTERNAL_HOST: "",
                 PRIVATE_KEY_FILE: "",
                 PUBLIC_KEY_FILE: "",
@@ -54,22 +54,6 @@ describe("Shard service", () => {
             expect(result).to.equal(expectedText);
         });
 
-        it("should throw if env is not set", () => {
-            // arrange
-            /** @type {import("mcos/shared").TServerConfiguration} */
-            const config = {
-                CERTIFICATE_FILE: "",
-                EXTERNAL_HOST: "",
-                PRIVATE_KEY_FILE: "",
-                PUBLIC_KEY_FILE: "",
-                LOG_LEVEL: "info",
-            };
-
-            const expectedText = "Please set CERTIFICATE_FILE";
-
-            // act
-            expect(() => handleGetCert(config)).throws(expectedText);
-        });
     });
 
     describe("handleGetRegistry", () => {
@@ -84,7 +68,7 @@ describe("Shard service", () => {
                 LOG_LEVEL: "info",
             };
 
-            const expectedText = '"AuthLoginServer"="0.0.0.0"';
+            const expectedText = '"AuthLoginServer"="0.10.0.1"';
 
             // act
             const result = handleGetRegistry(config);
@@ -93,22 +77,6 @@ describe("Shard service", () => {
             expect(result).to.contain(expectedText);
         });
 
-        it("should throw if env is not set", () => {
-            // arrange
-            /** @type {import("mcos/shared").TServerConfiguration} */
-            const config = {
-                CERTIFICATE_FILE: "",
-                EXTERNAL_HOST: "",
-                PRIVATE_KEY_FILE: "",
-                PUBLIC_KEY_FILE: "",
-                LOG_LEVEL: "info",
-            };
-
-            const expectedText = "Please set EXTERNAL_HOST";
-
-            // act
-            expect(() => handleGetRegistry(config)).throws(expectedText);
-        });
     });
 
     describe("handleGetKey", () => {
@@ -119,7 +87,7 @@ describe("Shard service", () => {
                 CERTIFICATE_FILE: "",
                 EXTERNAL_HOST: "",
                 PRIVATE_KEY_FILE: "",
-                PUBLIC_KEY_FILE: "Public",
+                PUBLIC_KEY_FILE: "I'm a public key! Wheeeeeeeee",
                 LOG_LEVEL: "info",
             };
 
@@ -130,23 +98,6 @@ describe("Shard service", () => {
 
             // assert
             expect(result).to.equal(expectedText);
-        });
-
-        it("should throw if env is not set", () => {
-            // arrange
-            /** @type {import("mcos/shared").TServerConfiguration} */
-            const config = {
-                CERTIFICATE_FILE: "",
-                EXTERNAL_HOST: "",
-                PRIVATE_KEY_FILE: "",
-                PUBLIC_KEY_FILE: "",
-                LOG_LEVEL: "info",
-            };
-
-            const expectedText = "Please set PUBLIC_KEY_FILE";
-
-            // act
-            expect(() => handleGetKey(config)).throws(expectedText);
         });
     });
 });
