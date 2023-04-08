@@ -28,8 +28,8 @@ describe("AdminServer", () => {
             // Arrange
             /**  @type {import("mcos/shared").TServerLogger} */
             const log = {
-                info: () => {},
-                error: () => {}
+                info: () => { return },
+                error: () => { return }
             }
 
             // Act
@@ -42,8 +42,8 @@ describe("AdminServer", () => {
                         // Arrange
             /**  @type {import("mcos/shared").TServerLogger} */
             const log = {
-                info: () => {},
-                error: () => {}
+                info: () => { return },
+                error: () => { return }
             }
 
             // Act

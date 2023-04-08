@@ -26,8 +26,8 @@ describe("GSMessageBase", () => {
             // Arrange
                         /**  @type {import("mcos/shared").TServerLogger} */
                         const log = {
-                            info: () => {},
-                            error: () => {}
+                            info: () => { return },
+                            error: () => { return }
                         }
             const testMessage = new GSMessageBase(log);
 
@@ -40,8 +40,8 @@ describe("GSMessageBase", () => {
             // Arrange
                         /**  @type {import("mcos/shared").TServerLogger} */
                         const log = {
-                            info: () => {},
-                            error: () => {}
+                            info: () => { return },
+                            error: () => { return }
                         }
             const testMessage = new GSMessageBase(log);
 
@@ -56,8 +56,8 @@ describe("GSMessageBase", () => {
             // Arrange
                         /**  @type {import("mcos/shared").TServerLogger} */
                         const log = {
-                            info: () => {},
-                            error: () => {}
+                            info: () => { return },
+                            error: () => { return }
                         }
             const testMessage = new GSMessageBase(log);
             /** @type {import('../src/BinaryStructure.js').ByteField} */

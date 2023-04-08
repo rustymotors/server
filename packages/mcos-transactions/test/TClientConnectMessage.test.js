@@ -26,8 +26,8 @@ describe("TClientConnectMessage", () => {
             // Arrange
             /** @type {import("mcos/shared").TServerLogger} */
             const log = {
-                info: () => {},
-                error: () => {},
+                info: () => { return },
+                error: () => { return },
             };
             const testMessage = new TClientConnectMessage(log);
 
@@ -40,8 +40,8 @@ describe("TClientConnectMessage", () => {
             // Arrange
             /** @type {import("mcos/shared").TServerLogger} */
             const log = {
-                info: () => {},
-                error: () => {},
+                info: () => { return },
+                error: () => { return },
             };
 
             const testMessage = new TClientConnectMessage(log);
