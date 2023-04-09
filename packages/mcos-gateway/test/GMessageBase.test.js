@@ -25,10 +25,7 @@ describe("GSMessageBase", () => {
         it("should hvave a value of 2", () => {
             // Arrange
                         /**  @type {import("mcos/shared").TServerLogger} */
-                        const log = {
-                            info: () => { return },
-                            error: () => { return }
-                        }
+                        const log = () => { return }
             const testMessage = new GSMessageBase(log);
 
             // Assert
@@ -39,10 +36,7 @@ describe("GSMessageBase", () => {
         it("should handle an input stream without errors", () => {
             // Arrange
                         /**  @type {import("mcos/shared").TServerLogger} */
-                        const log = {
-                            info: () => { return },
-                            error: () => { return }
-                        }
+                        const log = () => { return }
             const testMessage = new GSMessageBase(log);
 
             // Assert
@@ -55,10 +49,7 @@ describe("GSMessageBase", () => {
         it("should return a ByteField object when passed a valid field name", () => {
             // Arrange
                         /**  @type {import("mcos/shared").TServerLogger} */
-                        const log = {
-                            info: () => { return },
-                            error: () => { return }
-                        }
+                        const log = () => { return }
             const testMessage = new GSMessageBase(log);
             /** @type {import('../src/BinaryStructure.js').ByteField} */
             const expectedField = {

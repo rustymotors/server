@@ -21,7 +21,6 @@ import { BinaryStructure } from "./BinaryStructure.js";
  * @extends {BinaryStructure}
  */
 export class GSMessageBase extends BinaryStructure {
-    
     /**
      * Creates an instance of GSMessageBase.
      * @author Drazi Crendraven
@@ -30,7 +29,7 @@ export class GSMessageBase extends BinaryStructure {
      */
     constructor(log) {
         super(log);
-        log.info("new GSMessageBase");
+        log("debug", "new GSMessageBase");
         this._add({
             name: "msgId",
             order: "little",

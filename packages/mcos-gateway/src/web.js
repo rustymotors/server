@@ -29,7 +29,7 @@ import { ShardServer } from "../../mcos-shard/src/index.js";
  */
 export function httpListener(req, res, config, log) {
     if (typeof req.url !== "undefined" && req.url.startsWith("/AuthLogin")) {
-        log.info("ssl routing request to login web server");
+        log("debug", "ssl routing request to login web server");
         return AuthLogin.getInstance(log).handleRequest(req, res);
     }
 
@@ -39,7 +39,7 @@ export function httpListener(req, res, config, log) {
             req.url === "/admin/connections/resetAllQueueState" ||
             req.url.startsWith("/admin"))
     ) {
-        log.info("ssl routing request to admin web server");
+        log("debug", "ssl routing request to admin web server");
         const response = AdminServer.getAdminServer(log).handleRequest(req);
         return res
             .writeHead(response.code, response.headers)
@@ -51,7 +51,7 @@ export function httpListener(req, res, config, log) {
         req.url === "/games/EA_Seattle/MotorCity/NPS" ||
         req.url === "/games/EA_Seattle/MotorCity/MCO"
     ) {
-        log.info("http routing request to patch server");
+        log("debug", "http routing request to patch server");
         return PatchServer.getInstance(log).handleRequest(req, res);
     }
     if (
@@ -60,11 +60,12 @@ export function httpListener(req, res, config, log) {
         req.url === "/registry" ||
         req.url === "/ShardList/"
     ) {
-        log.info("http routing request to shard server");
+        log("debug", "http routing request to shard server");
         return ShardServer.getInstance(config, log).handleRequest(req, res);
     }
 
-    log.info(
+    log(
+        "debug",
         `Unexpected request for ${req.url} from ${req.socket.remoteAddress}, skipping.`
     );
     res.statusCode = 404;

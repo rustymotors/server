@@ -75,7 +75,7 @@ export class AuthLogin {
      * @param {import('node:http').ServerResponse} response
      */
     handleRequest(request, response) {
-        this.#log.info(
+        this.#log("debug", 
             `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );
         if (request.url && request.url.startsWith("/AuthLogin")) {

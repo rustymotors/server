@@ -39,7 +39,7 @@ export class TClientConnectMessage extends TSMessageBase {
      */
     constructor(log) {
         super(log);
-        log.info("new TClientConnectMessage");
+        log("debug", "new TClientConnectMessage");
         this._add({
             name: "msgNo",
             order: "little",

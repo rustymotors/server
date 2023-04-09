@@ -16,8 +16,6 @@
 
 import { randomUUID } from "node:crypto";
 
-
-
 /** @type {import("mcos/shared").TSocketWithConnectionInfo[]} */
 const connectionList = [];
 
@@ -39,7 +37,7 @@ export function getAllConnections() {
  * @param {import("mcos/shared").TServerLogger} log
  */
 export function updateConnection(connectionId, updatedConnection, log) {
-    log.info(`Updating connection with id: ${connectionId}`);
+    log("debug", `Updating connection with id: ${connectionId}`);
     try {
         const index = connectionList.findIndex((c) => {
             return c.id === connectionId;
@@ -130,24 +128,24 @@ export function findOrNewConnection(socket, log) {
         localPort
     );
     if (typeof existingConnection !== "undefined") {
-        log.info(
+        log("debug", 
             `I have seen connections from ${socket.remoteAddress} on ${socket.localPort} before`
         );
 
         // Modern
         existingConnection.socket = socket;
-        log.info("[M] Returning found connection after attaching socket");
+        log("debug", "[M] Returning found connection after attaching socket");
         return existingConnection;
     }
 
     const newConnectionId = randomUUID();
-    log.info(`Creating new connection with id ${newConnectionId}`);
+    log("debug", `Creating new connection with id ${newConnectionId}`);
     const newConnection = createNewConnection(newConnectionId, socket, log);
-    log.info(
+    log("debug", 
         `I have not seen connections from ${socket.remoteAddress} on ${socket.localPort} before, adding it.`
     );
     const updatedConnectionList = addConnection(newConnection);
-    log.info(
+    log("debug", 
         `Connection with id of ${newConnection.id} has been added. The connection list now contains ${updatedConnectionList.length} connections.`
     );
     return newConnection;

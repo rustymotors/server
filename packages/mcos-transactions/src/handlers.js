@@ -167,7 +167,10 @@ async function clientConnect(connection, packet, log) {
     // Not currently using this - Maybe we are?
     const newMessage = new TClientConnectMessage(log);
 
-    log.info(`Raw bytes in clientConnect: ${toHex(packet.rawPacket)}`);
+    log(
+        "debug",
+        `Raw bytes in clientConnect: ${toHex(packet.rawPacket)}`
+    );
     newMessage.deserialize(packet.rawPacket);
 
     const customerId = newMessage.getValue("customerId");
@@ -177,12 +180,15 @@ async function clientConnect(connection, packet, log) {
         );
     }
 
-    log.info(`[TCPManager] Looking up the session key for ${customerId}...`);
+    log(
+        "debug",
+        `[TCPManager] Looking up the session key for ${customerId}...`
+    );
 
     const result = await DatabaseManager.getInstance(
         log
     ).fetchSessionKeyByCustomerId(customerId);
-    log.info("[TCPManager] Session Key located!");
+    log("debug", "[TCPManager] Session Key located!");
 
     const connectionWithKey = connection;
 
@@ -211,7 +217,10 @@ async function clientConnect(connection, packet, log) {
         );
     }
 
-    log.info(`cust: ${customerId} ID: ${personaId} Name: ${personaName}`);
+    log(
+        "debug",
+        `cust: ${customerId} ID: ${personaId} Name: ${personaName}`
+    );
 
     // Create new response packet
     const genericReplyMessage = new GenericReplyMessage();
@@ -239,7 +248,7 @@ async function handleClientConnect(conn, node, log) {
     return {
         connection: result.connection,
         messages: result.messages,
-        log
+        log,
     };
 }
 
@@ -255,7 +264,10 @@ function _login(connection, node, log) {
     // Read the inbound packet
     const loginMessage = new TLoginMessage(log);
     loginMessage.deserialize(node.rawPacket);
-    log.info(`Received LoginMessage: ${JSON.stringify(loginMessage)}`);
+    log(
+        "debug",
+        `Received LoginMessage: ${JSON.stringify(loginMessage)}`
+    );
 
     // Create new response packet
     const pReply = new GenericReplyMessage();
@@ -285,7 +297,7 @@ function handleLoginMessage(conn, node, log) {
     return {
         connection: result.connection,
         messages: result.messages,
-        log
+        log,
     };
 }
 
@@ -334,7 +346,7 @@ function handleLogoutMessage(conn, node, log) {
     return {
         connection: result.connection,
         messages: result.messages,
-        log
+        log,
     };
 }
 
@@ -347,11 +359,14 @@ function handleLogoutMessage(conn, node, log) {
  * @return {import("mcos/shared").TMessageArrayWithConnection}
  */
 function _getLobbies(connection, node, log) {
-    log.info("In _getLobbies...");
+    log("debug", "In _getLobbies...");
 
     const lobbyRequest = new GenericRequestMessage();
     lobbyRequest.deserialize(node.rawPacket);
-    log.info(`Received GenericRequestMessage: ${JSON.stringify(lobbyRequest)}`);
+    log(
+        "debug",
+        `Received GenericRequestMessage: ${JSON.stringify(lobbyRequest)}`
+    );
 
     const lobbiesListMessage = node;
 
@@ -359,8 +374,8 @@ function _getLobbies(connection, node, log) {
     lobbiesListMessage.appId = connection.personaId;
 
     // Dump the packet
-    log.info("Dumping request...");
-    log.info(JSON.stringify(lobbiesListMessage));
+    log("debug", "Dumping request...");
+    log("debug", JSON.stringify(lobbiesListMessage));
 
     // Create new response packet
     // const lobbyMsg = new LobbyMsg()
@@ -380,8 +395,8 @@ function _getLobbies(connection, node, log) {
     rPacket.updateBuffer(pReply.serialize());
 
     // Dump the packet
-    log.info("Dumping response...");
-    log.info(JSON.stringify(rPacket));
+    log("debug", "Dumping response...");
+    log("debug", JSON.stringify(rPacket));
 
     const lobbyResponse = new TLobbyMessage(log);
     lobbyResponse.setValueNumber("dataLength", 16);
@@ -404,15 +419,15 @@ function _getLobbies(connection, node, log) {
  */
 function handleGetLobbiesMessage(conn, node, log) {
     const result = _getLobbies(conn, node, log);
-    log.info("Dumping Lobbies response packet...");
+    log("debug", "Dumping Lobbies response packet...");
     result.messages.forEach((msg) => {
-        log.info(msg.toString());
+        log("debug", msg.toString());
     });
-    log.info(result.messages.join().toString());
+    log("debug", result.messages.join().toString());
     return {
         connection: result.connection,
         messages: result.messages,
-        log
+        log,
     };
 }
 
@@ -463,7 +478,7 @@ function handleShockCarInfoMessage(conn, node, log) {
     return {
         connection: result.connection,
         messages: result.messages,
-        log
+        log,
     };
 }
 

@@ -25,7 +25,8 @@ import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
  */
 export async function handleData(dataConnection, log) {
     const { localPort, remoteAddress } = dataConnection.connection.socket;
-    log.info(
+    log(
+        "debug",
         `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
     );
     const { data } = dataConnection;

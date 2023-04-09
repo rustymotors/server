@@ -12,17 +12,16 @@ describe("Shard service", () => {
         // arrange
         /** @type {import("mcos/shared").TServerConfiguration} */
         const config = {
-            CERTIFICATE_FILE: "",
+            certificateFileContents: "",
             EXTERNAL_HOST: "",
-            PRIVATE_KEY_FILE: "",
-            PUBLIC_KEY_FILE: "",
+            privateKeyContents: "",
+            publicKeyContents: "",
             LOG_LEVEL: "info",
         };
         /** @type {import("mcos/shared").TServerLogger} */
-        const log = {
-            info: () => { return },
-            error: () => { return },
-        };
+        const log = () => {
+                return;
+            };
 
         const expectedClass = ShardServer;
 
@@ -38,10 +37,10 @@ describe("Shard service", () => {
             // arrange
             /** @type {import("mcos/shared").TServerConfiguration} */
             const config = {
-                CERTIFICATE_FILE: "Hello! I'm an SSL cert. Honest.",
+                certificateFileContents: "Hello! I'm an SSL cert. Honest.",
                 EXTERNAL_HOST: "",
-                PRIVATE_KEY_FILE: "",
-                PUBLIC_KEY_FILE: "",
+                privateKeyContents: "",
+                publicKeyContents: "",
                 LOG_LEVEL: "info",
             };
 
@@ -53,7 +52,6 @@ describe("Shard service", () => {
             // assert
             expect(result).to.equal(expectedText);
         });
-
     });
 
     describe("handleGetRegistry", () => {
@@ -61,10 +59,10 @@ describe("Shard service", () => {
             // arrange
             /** @type {import("mcos/shared").TServerConfiguration} */
             const config = {
-                CERTIFICATE_FILE: "",
+                certificateFileContents: "",
                 EXTERNAL_HOST: "0.10.0.1",
-                PRIVATE_KEY_FILE: "",
-                PUBLIC_KEY_FILE: "",
+                privateKeyContents: "",
+                publicKeyContents: "",
                 LOG_LEVEL: "info",
             };
 
@@ -76,7 +74,6 @@ describe("Shard service", () => {
             // assert
             expect(result).to.contain(expectedText);
         });
-
     });
 
     describe("handleGetKey", () => {
@@ -84,10 +81,10 @@ describe("Shard service", () => {
             // arrange
             /** @type {import("mcos/shared").TServerConfiguration} */
             const config = {
-                CERTIFICATE_FILE: "",
+                certificateFileContents: "",
                 EXTERNAL_HOST: "",
-                PRIVATE_KEY_FILE: "",
-                PUBLIC_KEY_FILE: "I'm a public key! Wheeeeeeeee",
+                privateKeyContents: "",
+                publicKeyContents: "I'm a public key! Wheeeeeeeee",
                 LOG_LEVEL: "info",
             };
 

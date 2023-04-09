@@ -77,14 +77,15 @@ export class PatchServer {
                 typeof listeningAddress !== "string" &&
                 listeningAddress !== null
             ) {
-                this.#log.info(
+                this.#log(
+                    "debug",
                     `Server is listening on port ${listeningAddress.port}`
                 );
             }
         });
         server.on("request", this.handleRequest.bind(this));
 
-        this.#log.info(`Attempting to bind to port ${port}`);
+        this.#log("debug", `Attempting to bind to port ${port}`);
         server.listen(port, host);
     }
 
@@ -95,7 +96,8 @@ export class PatchServer {
      * @returns {import('node:http').ServerResponse}
      */
     castanetResponse(request, response) {
-        this.#log.info(
+        this.#log(
+            "debug",
             `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
         );
 

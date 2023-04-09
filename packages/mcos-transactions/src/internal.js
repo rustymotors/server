@@ -43,16 +43,21 @@ function shouldMessageBeEncrypted(message, dataConnection) {
  */
 function decryptTransactionBuffer(message, dataConnection, log) {
     const encryptedBuffer = Buffer.from(message.data);
-    log.info(
+    log(
+        "debug",
         `Full packet before decrypting: ${encryptedBuffer.toString("hex")}`
     );
 
-    log.info(
+    log(
+        "debug",
         `Message buffer before decrypting: ${encryptedBuffer.toString("hex")}`
     );
 
     const result = decryptBuffer(dataConnection, encryptedBuffer, log);
-    log.info(`Message buffer after decrypting: ${result.data.toString("hex")}`);
+    log(
+        "debug",
+        `Message buffer after decrypting: ${result.data.toString("hex")}`
+    );
 
     if (result.data.readUInt16LE(0) <= 0) {
         return {
@@ -128,7 +133,8 @@ async function processInput(dataConnection, node, log) {
     const currentMessageNo = node.msgNo;
     const currentMessageString = _MSG_STRING(currentMessageNo);
 
-    log.info(
+    log(
+        "debug",
         `We are attempting to process a message with id ${currentMessageNo}(${currentMessageString})`
     );
 
@@ -178,7 +184,6 @@ async function messageReceived(message, dataConnection, log) {
             const err = new Error(
                 `Unabel to locate the encryptors on connection id ${dataConnection.connectionId}`
             );
-            log.error(err);
             throw err;
         }
 
@@ -192,7 +197,7 @@ async function messageReceived(message, dataConnection, log) {
         }
     }
 
-    log.info("Calling processInput()");
+    log("debug", "Calling processInput()");
     return processInput(dataConnection, message, log);
 }
 
@@ -212,14 +217,14 @@ export async function handleData(dataConnection, log) {
         const err = new Error(
             `Either localPort or remoteAddress is missing on socket.Can not continue.`
         );
-        log.error(err);
         throw err;
     }
 
     const messageNode = new MessageNode("received");
     messageNode.deserialize(data);
 
-    log.info(
+    log(
+        "debug",
         `[handle]Received TCP packet',
       ${JSON.stringify({
           localPort,
@@ -236,14 +241,17 @@ export async function handleData(dataConnection, log) {
         messageNode.updateBuffer(
             encrypters.tsDecipher.update(messageNode.data)
         );
-        log.info(
+        log(
+            "debug",
             `Message number after attempting decryption: ${messageNode.msgNo} `
         );
-        log.info(
+        log(
+            "debug",
             `Raw Packet after decryption: ${toHex(messageNode.rawPacket)} `
         );
     } else {
-        log.info(
+        log(
+            "debug",
             `Message with id of: ${messageNode.msgNo} does not appear to be encrypted`
         );
     }
@@ -254,11 +262,11 @@ export async function handleData(dataConnection, log) {
             dataConnection,
             log
         );
-        log.info("Back in transacation server");
+        log("debug", "Back in transacation server");
         return {
             connection: processedPacket.connection,
             messages: processedPacket.messages,
-            log
+            log,
         };
     } catch (error) {
         throw new Error(`Error processing packet: ${String(error)} `);

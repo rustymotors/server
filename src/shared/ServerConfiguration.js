@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { GetServerLogger } from "./log.js";
+
 /**
  * @module mcos/shared
  */
@@ -23,13 +26,40 @@ class ServerConfiguration {
         publicKeyFile,
         logLevel = "info"
     ) {
+        const log = GetServerLogger();
         this._serverConfig = {
             EXTERNAL_HOST: externalHost,
-            CERTIFICATE_FILE: certificateFile,
-            PRIVATE_KEY_FILE: privateKeyFile,
-            PUBLIC_KEY_FILE: publicKeyFile,
+            certificateFileContents: "",
+            privateKeyContents: "",
+            publicKeyContents: "",
             LOG_LEVEL: logLevel,
         };
+        try {
+            this._serverConfig.certificateFileContents = readFileSync(
+                certificateFile,
+                { encoding: "utf8" }
+            );
+        } catch (error) {
+            throw new Error(
+                `Unable to read certificate file: ${String(error)}`
+            );
+        }
+        try {
+            this._serverConfig.privateKeyContents = readFileSync(
+                privateKeyFile,
+                { encoding: "utf8" }
+            );
+        } catch (error) {
+            throw new Error(`Unable to read private file`);
+        }
+        try {
+            this._serverConfig.publicKeyContents = readFileSync(publicKeyFile, {
+                encoding: "utf8",
+            });
+        } catch (error) {
+            throw new Error(`Unable to read private file`);
+        }
+        log("info", "Server configuration initialized");
         ServerConfiguration._instance = this;
     }
 }
@@ -59,7 +89,7 @@ export function setServerConfiguration(
             logLevel
         );
     }
-    return ServerConfiguration._instance._serverConfig
+    return ServerConfiguration._instance._serverConfig;
 }
 
 /**

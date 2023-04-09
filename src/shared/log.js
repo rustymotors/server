@@ -2,15 +2,28 @@
  * @module mcos/shared
  */
 import { hostname } from "node:os";
-import Sentry from "@sentry/node";
 
-Sentry.init({
-    dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
+// Per syslog.conf(5)
+const levelMappings = {
+    debug: 7,
+    info: 6,
+    notice: 5,
+    warning: 4,
+    err: 3,
+    crit: 2,
+    alert: 1,
+    emerg: 0,
+};
 
-    // We recommend adjusting this value in production, or using tracesSampler
-    // for finer control
-    tracesSampleRate: 1.0,
-});
+/**
+ *
+ *
+ * @author Drazi Crendraven
+ * @param {import("mcos/shared").ELOG_LEVEL} level
+ */
+export const getLevelValue = (level) => {
+    return levelMappings[level];
+};
 
 /**
  *
@@ -21,29 +34,21 @@ Sentry.init({
  * @returns {import("mcos/shared").TServerLogger}
  */
 export function GetServerLogger(logLevel = "info") {
+    const defaultLevelValue = getLevelValue(logLevel);
+
     /**
-     * @param {'info' | 'error'} level
+     * @param {import("mcos/shared").ELOG_LEVEL} level
      * @param {string} msg
-     * @returns {string}
+     * @returns {void}
      */
-
-    const formatMsg = (level, msg) => {
-        return `{"level": "${level}", "hostname": "${hostname}", "message": ${msg}`;
-    };
-
-    return {
-        /**
-         * @param {string} msg
-         */
-        info: (msg) => {
-            console.log(formatMsg("info", msg)); // skipcq: JS-0002
-        },
-        /**
-         * @param {Error} err
-         */
-        error: (err) => {
-            Sentry.captureException(err);
-            console.error(formatMsg("error", err.message));
-        },
+    return (level, msg) => {
+        const levelValue = getLevelValue(level);
+        if (levelValue > defaultLevelValue) {
+            return;
+        }
+        console.log(
+            "debug",
+            `{"level": "${level}", "hostname": "${hostname}", "message": ${msg}`
+        );
     };
 }

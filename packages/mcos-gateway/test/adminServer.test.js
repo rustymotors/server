@@ -27,10 +27,7 @@ describe("AdminServer", () => {
         it("should return an instance of AdminServer", () => {
             // Arrange
             /**  @type {import("mcos/shared").TServerLogger} */
-            const log = {
-                info: () => { return },
-                error: () => { return }
-            }
+            const log = () => { return }
 
             // Act
             const newAdminInstance = AdminServer.getAdminServer(log);
@@ -41,10 +38,7 @@ describe("AdminServer", () => {
         it("should return the same instance of AdminServer on multiple calls", () => {
                         // Arrange
             /**  @type {import("mcos/shared").TServerLogger} */
-            const log = {
-                info: () => { return },
-                error: () => { return }
-            }
+            const log = () => { return }
 
             // Act
             const admin1 = AdminServer.getAdminServer(log);

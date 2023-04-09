@@ -25,7 +25,7 @@ import { handleData } from "./internal.js";
  * @return {Promise<import("mcos/shared").TServiceResponse>}
  */
 export async function receiveTransactionsData(dataConnection, log) {
-    log.info(`Entering receiveTransactionsData`);
+    log("debug", `Entering receiveTransactionsData`);
     try {
         return await handleData(dataConnection, log);
     } catch (error) {

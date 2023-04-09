@@ -38,9 +38,9 @@ const listeningPortList = [
 function onSocketError(error, log) {
     const message = String(error);
     if (message.includes("ECONNRESET") === true) {
-        return log.info("Connection was reset");
+        return log("debug", "Connection was reset");
     }
-    log.error(new Error(`Socket error: ${String(error)}`));
+    throw new Error(`Socket error: ${String(error)}`);
 }
 
 /**
@@ -53,10 +53,16 @@ function TCPListener(incomingSocket, log) {
     const connectionRecord = findOrNewConnection(incomingSocket, log);
 
     const { localPort, remoteAddress } = incomingSocket;
-    log.info(`Client ${remoteAddress} connected to port ${localPort}`);
+    log(
+        "debug",
+        `Client ${remoteAddress} connected to port ${localPort}`
+    );
 
     incomingSocket.on("end", () => {
-        log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
+        log(
+            "debug",
+            `Client ${remoteAddress} disconnected from port ${localPort}`
+        );
     });
     incomingSocket.on("data", async (data) => {
         await dataHandler(data, connectionRecord, log);
@@ -72,41 +78,16 @@ function TCPListener(incomingSocket, log) {
  * @returns
  */
 function socketListener(incomingSocket, config, log) {
-    log.info(
+    log(
+        "debug",
         `[gate]Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
     );
 
-    let exitCode = 0;
-
-    /** @type {string} */
-    let cert;
-
-    try {
-        cert = readFileSync("./data/mcouniverse.crt", { encoding: "utf8" });
-    } catch (error) {
-        log.error(
-            new Error(`Unable to read certificate file: ${String(error)}`)
-        );
-        exitCode = -1;
-        process.exit(exitCode);
-    }
-
-    /** @type {string} */
-    let key;
-
-    try {
-        key = readFileSync("./data/private_key.pem", { encoding: "utf8" });
-    } catch (error) {
-        log.error(new Error(`Unable to read private file`));
-        exitCode = -1;
-        process.exit(exitCode);
-    }
-
     // Is this an HTTP request?
     if (incomingSocket.localPort === 3000) {
-        log.info("Web request");
+        log("debug", "Web request");
         const newServer = new http.Server((req, res) => {
-            httpHandler(req, res, config, log)
+            httpHandler(req, res, config, log);
         });
         // Send the socket to the http server instance
         newServer.emit("connection", incomingSocket);
@@ -125,7 +106,7 @@ function socketListener(incomingSocket, config, log) {
  */
 function serverListener(port, log) {
     const listeningPort = String(port).length ? String(port) : "unknown";
-    log.info(`Listening on port ${listeningPort}`);
+    log("debug", `Listening on port ${listeningPort}`);
 }
 
 /**
@@ -136,7 +117,7 @@ function serverListener(port, log) {
  * @param {import("mcos/shared").TServerLogger} log
  */
 export function startListeners(config, log) {
-    log.info("Server starting");
+    log("info", "Server starting");
 
     listeningPortList.forEach((port) => {
         const newServer = createSocketServer((s) => {

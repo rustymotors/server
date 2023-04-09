@@ -88,8 +88,9 @@ export async function getPersonasByPersonaId(id) {
  * @returns {Promise<NPSMessage>}
  */
 export async function handleSelectGamePersona(requestPacket, log) {
-    log.info("_npsSelectGamePersona...");
-    log.info(
+    log("debug", "_npsSelectGamePersona...");
+    log(
+        "debug",
         `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
             NPSMsg: requestPacket.toJSON(),
         })}`
@@ -106,7 +107,8 @@ export async function handleSelectGamePersona(requestPacket, log) {
     const responsePacket = new NPSMessage("sent");
     responsePacket.msgNo = 0x2_07;
     responsePacket.setContent(packetContent);
-    log.info(
+    log(
+        "debug",
         `NPSMsg response object from _npsSelectGamePersona',
     ${JSON.stringify({
         NPSMsg: responsePacket.toJSON(),
@@ -115,7 +117,8 @@ export async function handleSelectGamePersona(requestPacket, log) {
 
     responsePacket.dumpPacket();
 
-    log.info(
+    log(
+        "debug",
         `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return Promise.resolve(responsePacket);
@@ -131,7 +134,8 @@ export async function handleSelectGamePersona(requestPacket, log) {
  */
 async function createNewGameAccount(data, log) {
     const requestPacket = new NPSMessage("received").deserialize(data);
-    log.info(
+    log(
+        "debug",
         `NPSMsg request object from _npsNewGameAccount',
       ${JSON.stringify({
           NPSMsg: requestPacket.toJSON(),
@@ -142,7 +146,8 @@ async function createNewGameAccount(data, log) {
 
     const rPacket = new NPSMessage("sent");
     rPacket.msgNo = 0x6_01;
-    log.info(
+    log(
+        "debug",
         `NPSMsg response object from _npsNewGameAccount',
       ${JSON.stringify({
           NPSMsg: rPacket.toJSON(),
@@ -165,9 +170,10 @@ async function createNewGameAccount(data, log) {
  * @memberof PersonaServer
  */
 async function logoutGameUser(data, log) {
-    log.info("[personaServer] Logging out persona...");
+    log("debug", "[personaServer] Logging out persona...");
     const requestPacket = new NPSMessage("received").deserialize(data);
-    log.info(
+    log(
+        "debug",
         `NPSMsg request object from _npsLogoutGameUser',
       ${JSON.stringify({
           NPSMsg: requestPacket.toJSON(),
@@ -183,7 +189,8 @@ async function logoutGameUser(data, log) {
     const responsePacket = new NPSMessage("sent");
     responsePacket.msgNo = 0x6_12;
     responsePacket.setContent(packetContent);
-    log.info(
+    log(
+        "debug",
         `NPSMsg response object from _npsLogoutGameUser',
       ${JSON.stringify({
           NPSMsg: responsePacket.toJSON(),
@@ -192,7 +199,8 @@ async function logoutGameUser(data, log) {
 
     responsePacket.dumpPacket();
 
-    log.info(
+    log(
+        "debug",
         `[npsLogoutGameUser] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return Promise.resolve(responsePacket);
@@ -235,16 +243,18 @@ async function getPersonaMapsByCustomerId(customerId) {
  * @return {Promise<NPSMessage>}
  */
 async function getPersonaMaps(data, log) {
-    log.info("_npsGetPersonaMaps...");
+    log("debug", "_npsGetPersonaMaps...");
     const requestPacket = new NPSMessage("received").deserialize(data);
 
-    log.info(
+    log(
+        "debug",
         `NPSMsg request object from _npsGetPersonaMaps',
       ${JSON.stringify({
           NPSMsg: requestPacket.toJSON(),
       })}`
     );
-    log.info(
+    log(
+        "debug",
         `NPSMsg request object from _npsGetPersonaMaps',
       ${JSON.stringify({
           NPSMsg: requestPacket.toJSON(),
@@ -257,7 +267,8 @@ async function getPersonaMaps(data, log) {
     const personas = await getPersonaMapsByCustomerId(
         customerId.readUInt32BE(0)
     );
-    log.info(
+    log(
+        "debug",
         `${personas.length} personas found for ${customerId.readUInt32BE(0)}`
     );
 
@@ -276,7 +287,8 @@ async function getPersonaMaps(data, log) {
             const responsePacket = new NPSMessage("sent");
             responsePacket.msgNo = 0x6_07;
             responsePacket.setContent(personaMapsMessage.serialize());
-            log.info(
+            log(
+                "debug",
                 `NPSMsg response object from _npsGetPersonaMaps: ${JSON.stringify(
                     {
                         NPSMsg: responsePacket.toJSON(),
@@ -290,7 +302,8 @@ async function getPersonaMaps(data, log) {
                 responsePacket.serialize()
             );
 
-            log.info(
+            log(
+                "debug",
                 `!!! outbound persona maps response packet: ${personaMapsPacket
                     .getBuffer()
                     .toString("hex")}`
@@ -317,10 +330,11 @@ async function getPersonaMaps(data, log) {
  * @return {Promise<NPSMessage>}
  */
 async function validatePersonaName(data, log) {
-    log.info("_npsValidatePersonaName...");
+    log("debug", "_npsValidatePersonaName...");
     const requestPacket = new NPSMessage("received").deserialize(data);
 
-    log.info(
+    log(
+        "debug",
         `NPSMsg request object from _npsValidatePersonaName',
     ${JSON.stringify({
         NPSMsg: requestPacket.toJSON(),
@@ -333,7 +347,10 @@ async function validatePersonaName(data, log) {
         .subarray(18, data.lastIndexOf(0x00))
         .toString();
     const serviceName = data.slice(data.indexOf(0x0a) + 1).toString(); // skipcq: JS-0377
-    log.info(JSON.stringify({ customerId, requestedPersonaName, serviceName }));
+    log(
+        "debug",
+        JSON.stringify({ customerId, requestedPersonaName, serviceName })
+    );
 
     // Create the packet content
     // TODO: #1178 Return the validate persona name response as a MessagePacket object
@@ -346,7 +363,8 @@ async function validatePersonaName(data, log) {
     responsePacket.msgNo = 0x6_01;
     responsePacket.setContent(packetContent);
 
-    log.info(
+    log(
+        "debug",
         `NPSMsg response object from _npsValidatePersonaName',
     ${JSON.stringify({
         NPSMsg: responsePacket.toJSON(),
@@ -354,7 +372,8 @@ async function validatePersonaName(data, log) {
     );
     responsePacket.dumpPacket();
 
-    log.info(
+    log(
+        "debug",
         `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return Promise.resolve(responsePacket);
@@ -369,9 +388,10 @@ async function validatePersonaName(data, log) {
  * @memberof PersonaServer
  */
 async function validateLicencePlate(data, log) {
-    log.info("_npsCheckToken...");
+    log("debug", "_npsCheckToken...");
     const requestPacket = new NPSMessage("received").deserialize(data);
-    log.info(
+    log(
+        "debug",
         `NPSMsg request object from _npsCheckToken',
       ${JSON.stringify({
           NPSMsg: requestPacket.toJSON(),
@@ -382,8 +402,8 @@ async function validateLicencePlate(data, log) {
 
     const customerId = data.readInt32BE(12);
     const plateName = data.subarray(17).toString();
-    log.info(`customerId: ${customerId}`); // skipcq: JS-0378
-    log.info(`Plate name: ${plateName}`); // skipcq: JS-0378
+    log("debug", `customerId: ${customerId}`); // skipcq: JS-0378
+    log("debug", `Plate name: ${plateName}`); // skipcq: JS-0378
 
     // Create the packet content
 
@@ -394,7 +414,8 @@ async function validateLicencePlate(data, log) {
     const responsePacket = new NPSMessage("sent");
     responsePacket.msgNo = 0x2_07;
     responsePacket.setContent(packetContent);
-    log.info(
+    log(
+        "debug",
         `NPSMsg response object from _npsCheckToken',
       ${JSON.stringify({
           NPSMsg: responsePacket.toJSON(),
@@ -402,7 +423,8 @@ async function validateLicencePlate(data, log) {
     );
     responsePacket.dumpPacket();
 
-    log.info(
+    log(
+        "debug",
         `[npsCheckToken] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return Promise.resolve(responsePacket);
@@ -418,7 +440,8 @@ async function validateLicencePlate(data, log) {
 export async function handleData(dataConnection, log) {
     const { connection, data } = dataConnection;
     const { socket, localPort } = connection;
-    log.info(
+    log(
+        "debug",
         `Received Persona packet',
     ${JSON.stringify({
         localPort,
@@ -440,7 +463,7 @@ export async function handleData(dataConnection, log) {
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
-                log
+                log,
             };
             return response;
         }
@@ -452,7 +475,7 @@ export async function handleData(dataConnection, log) {
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
-                log
+                log,
             };
             return response;
         }
@@ -464,7 +487,7 @@ export async function handleData(dataConnection, log) {
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
-                log
+                log,
             };
             return response;
         }
@@ -476,7 +499,7 @@ export async function handleData(dataConnection, log) {
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
-                log
+                log,
             };
             return response;
         }
@@ -488,7 +511,7 @@ export async function handleData(dataConnection, log) {
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
-                log
+                log,
             };
             return response;
         }
@@ -499,7 +522,7 @@ export async function handleData(dataConnection, log) {
             const response = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
-                log
+                log,
             };
             return response;
         }

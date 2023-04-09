@@ -44,23 +44,24 @@ const userRecords = [
 async function login(dataConnection, log) {
     const { connectionId, data } = dataConnection;
 
-    log.info(`Received login packet: ${connectionId}`);
+    log("debug", `Received login packet: ${connectionId}`);
 
     const newGameMessage = new GSMessageBase(log);
     newGameMessage.deserialize(data.subarray(0, 10));
-    log.info(`Raw game message: ${JSON.stringify(newGameMessage)}`);
+    log("debug", `Raw game message: ${JSON.stringify(newGameMessage)}`);
 
-    log.info("Requesting NPSUserStatus packet");
+    log("debug", "Requesting NPSUserStatus packet");
     const userStatus = new NPSUserStatus(data, log);
-    log.info("NPSUserStatus packet creation success");
+    log("debug", "NPSUserStatus packet creation success");
 
-    log.info("Requesting Key extraction");
+    log("debug", "Requesting Key extraction");
     userStatus.extractSessionKeyFromPacket(data);
-    log.info("Key extraction success");
+    log("debug", "Key extraction success");
 
     const { contextId, sessionkey } = userStatus;
 
-    log.info(
+    log(
+        "debug",
         `UserStatus object from _userLogin,
       ${JSON.stringify({
           userStatus: userStatus.toJSON(),
@@ -79,12 +80,11 @@ async function login(dataConnection, log) {
         const err = new Error(
             `Unable to locate a user record for the context id: ${contextId}`
         );
-        log.error(err);
         throw err;
     }
 
     // Save sessionkey in database under customerId
-    log.info("Preparing to update session key in db");
+    log("debug", "Preparing to update session key in db");
     await DatabaseManager.getInstance(log)
         .updateSessionKey(
             userRecord.customerId,
@@ -96,16 +96,15 @@ async function login(dataConnection, log) {
             const err = new Error(
                 `Unable to update session key in the database: ${String(error)}`
             );
-            log.error(err);
             throw err;
         });
 
-    log.info("Session key updated");
+    log("debug", "Session key updated");
 
     // Create the packet content
     // TODO: #1176 Return the login connection response packet as a MessagePacket object
     const packetContent = premadeLogin();
-    log.info(`Using Premade Login: ${packetContent.toString("hex")}`);
+    log("debug", `Using Premade Login: ${packetContent.toString("hex")}`);
 
     // MsgId: 0x601
     Buffer.from([0x06, 0x01]).copy(packetContent);
@@ -133,9 +132,9 @@ async function login(dataConnection, log) {
     const response = {
         connection: dataConnection.connection,
         messages: [newPacket, newPacket],
-        log
+        log,
     };
-    log.info("Leaving login");
+    log("debug", "Leaving login");
     return response;
 }
 
@@ -156,7 +155,7 @@ export const messageHandlers = [
 export async function handleData(dataConnection, log) {
     const { connectionId, data } = dataConnection;
 
-    log.info(`Received Login Server packet: ${connectionId}`);
+    log("debug", `Received Login Server packet: ${connectionId}`);
 
     // Check the request code
     const requestCode = data.readUInt16BE(0).toString(16);
@@ -170,15 +169,14 @@ export async function handleData(dataConnection, log) {
         const err = new Error(
             `The login handler does not support a message code of ${requestCode}. Was the packet routed here in error? Closing the socket`
         );
-        log.error(err);
         dataConnection.connection.socket.end();
         throw new TypeError(`UNSUPPORTED_MESSAGECODE: ${requestCode}`);
     }
 
     try {
         const result = await supportedHandler.handler(dataConnection, log);
-        log.info(`Returning with ${result.messages.length} messages`);
-        log.info("Leaving handleData");
+        log("debug", `Returning with ${result.messages.length} messages`);
+        log("debug", "Leaving handleData");
         return result;
     } catch (error) {
         throw new Error(`Error handling data: ${String(error)}`);

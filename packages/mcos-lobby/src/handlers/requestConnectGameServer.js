@@ -43,13 +43,15 @@ export function _generateSessionKeyBuffer(key) {
  * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
  */
 export async function _npsRequestGameConnectServer(dataConnection, log) {
-    log.info(
+    log(
+        "debug",
         `[inner] Raw bytes in _npsRequestGameConnectServer: ${toHex(
             dataConnection.data
         )}`
     );
 
-    log.info(
+    log(
+        "debug",
         `_npsRequestGameConnectServer: ${JSON.stringify({
             remoteAddress: dataConnection.connection.remoteAddress,
             localPort: dataConnection.connection.localPort,
@@ -60,7 +62,10 @@ export async function _npsRequestGameConnectServer(dataConnection, log) {
     // since the data is a buffer at this point, let's place it in a message structure
     const inboundMessage = MessagePacket.fromBuffer(dataConnection.data);
 
-    log.info(`message buffer (${inboundMessage.getBuffer().toString("hex")})`);
+    log(
+        "debug",
+        `message buffer (${inboundMessage.getBuffer().toString("hex")})`
+    );
 
     // Return a _NPS_UserInfo structure
     const userInfo = new NPSUserInfo("received");
@@ -80,7 +85,8 @@ export async function _npsRequestGameConnectServer(dataConnection, log) {
         .fetchSessionKeyByCustomerId(customerId)
         .catch((/** @type {unknown} */ error) => {
             if (error instanceof Error) {
-                log.info(
+                log(
+                    "debug",
                     `Unable to fetch session key for customerId ${customerId.toString()}: ${
                         error.message
                     })}`
@@ -134,7 +140,8 @@ export async function _npsRequestGameConnectServer(dataConnection, log) {
         packetResult.serialize()
     );
 
-    log.info(
+    log(
+        "debug",
         `!!! outbound lobby login response packet: ${loginResponsePacket
             .getBuffer()
             .toString("hex")}`
@@ -142,6 +149,6 @@ export async function _npsRequestGameConnectServer(dataConnection, log) {
     return {
         connection: dataConnection.connection,
         messages: [packetResult],
-        log
+        log,
     };
 }

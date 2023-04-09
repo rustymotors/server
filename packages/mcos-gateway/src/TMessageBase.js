@@ -35,7 +35,7 @@ export class TSMessageBase extends BinaryStructure {
      */
     constructor(log) {
         super(log);
-        log.info("new TSMessageBase");
+        log("debug", "new TSMessageBase");
         this._add({
             name: "dataLength",
             order: "little",

@@ -37,7 +37,7 @@ export class TLobbyMessage extends TSMessageBase {
      */
     constructor(log) {
         super(log);
-        log.info("new TLobbyMessage");
+        log("debug", "new TLobbyMessage");
         this._add({
             name: "msgNo",
             order: "little",
@@ -88,7 +88,7 @@ export class LobbyInfo extends BinaryStructure {
      */
     constructor(log) {
         super(log);
-        log.info("new LobbyInfo");
+        log("debug", "new LobbyInfo");
         this._add({
             name: "lobbyId",
             order: "little",

@@ -65,12 +65,14 @@ function sendMessages(messages, outboundConnection, log) {
             ) {
                 const err =
                     "There was a fatal error attempting to encrypt the message!";
-                log.info(
+                log(
+                    "debug",
                     `usingEncryption? ${outboundConnection.useEncryption}, packetLength: ${f.data.byteLength}/${f.dataLength}`
                 );
                 throw err;
             } else {
-                log.info(
+                log(
+                    "debug",
                     `Message prior to encryption: ${toHex(f.serialize())}`
                 );
                 f.updateBuffer(
@@ -79,7 +81,7 @@ function sendMessages(messages, outboundConnection, log) {
             }
         }
 
-        log.info(`Sending Message: ${toHex(f.serialize())}`);
+        log("debug", `Sending Message: ${toHex(f.serialize())}`);
         outboundConnection.socket.write(f.serialize());
     });
 }
@@ -93,7 +95,7 @@ function sendMessages(messages, outboundConnection, log) {
  * @return {Promise<void>}
  */
 export async function dataHandler(data, connection, log) {
-    log.info(`data prior to proccessing: ${data.toString("hex")}`);
+    log("debug", `data prior to proccessing: ${data.toString("hex")}`);
 
     // Link the data and the connection together
     /** @type {import("mcos/shared").TBufferWithConnection} */
@@ -126,7 +128,7 @@ export async function dataHandler(data, connection, log) {
     // * GameService
     // * TransactionService
 
-    log.info(`I have a packet on port ${localPort}`);
+    log("debug", `I have a packet on port ${localPort}`);
 
     if (typeof serviceRouters[localPort] !== "undefined") {
         try {
@@ -138,7 +140,7 @@ export async function dataHandler(data, connection, log) {
             const outboundConnection = result.connection;
 
             const packetCount = messages.length;
-            log.info(`There are ${packetCount} messages ready for sending`);
+            log("debug", `There are ${packetCount} messages ready for sending`);
 
             sendMessages(messages, outboundConnection, log);
 
@@ -166,22 +168,25 @@ export function TCPHandler(socket, log) {
     const connectionRecord = findOrNewConnection(socket, log);
 
     const { localPort, remoteAddress } = socket;
-    log.info(`Client ${remoteAddress} connected to port ${localPort}`);
+    log("debug", `Client ${remoteAddress} connected to port ${localPort}`);
     if (socket.localPort === 7003 && connectionRecord.inQueue === true) {
         /**
          * Debug seems hard-coded to use the connection queue
          * Craft a packet that tells the client it's allowed to login
          */
 
-        log.info("Sending OK to Login packet");
-        log.info("[listen2] In tcpListener(pre-queue)");
+        log("debug", "Sending OK to Login packet");
+        log("debug", "[listen2] In tcpListener(pre-queue)");
         socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
-        log.info("[listen2] In tcpListener(post-queue)");
+        log("debug", "[listen2] In tcpListener(post-queue)");
         connectionRecord.inQueue = false;
     }
 
     socket.on("end", () => {
-        log.info(`Client ${remoteAddress} disconnected from port ${localPort}`);
+        log(
+            "debug",
+            `Client ${remoteAddress} disconnected from port ${localPort}`
+        );
     });
     socket.on("data", async (data) => {
         await dataHandler(data, connectionRecord, log);
@@ -189,7 +194,7 @@ export function TCPHandler(socket, log) {
     socket.on("error", (error) => {
         const message = String(error);
         if (message.includes("ECONNRESET") === true) {
-            return log.info("Connection was reset");
+            return log("debug", "Connection was reset");
         }
         throw new Error(`Socket error: ${String(error)}`);
     });

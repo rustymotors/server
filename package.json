@@ -17,7 +17,7 @@
   "scripts": {
     "build": "tsc",
     "format": "prettier --write app.js \"packages/**/*.js\"",
-    "test": "c8 mocha packages/**/*.test.js",
+    "test": "c8 mocha {src,packages}/**/*.test.js",
     "build:test": "npm run format && npm run build && npm run test",
     "prod": "make prod_node",
     "prod:stop": "docker-compose stop",
@@ -51,11 +51,14 @@
     "reporter": [
       "text",
       "cobertura",
-      "html"
+      "html",
+      "lcov"
     ],
     "exclude": [
         ".yarn",
-        "coverage"
+        "coverage",
+        "**/*.test.js",
+        "**/*.d.ts"
     ]
   },
   "eslintConfig": {

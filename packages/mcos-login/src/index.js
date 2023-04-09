@@ -52,7 +52,7 @@ export class LoginServer {
     /**
      * Please use getInstance() instead
      * @author Drazi Crendraven
-     * @param {import("mcos/shared").IDatabaseManager} database
+     * @param {import("mcos/shared").TDatabaseManager} database
      * @param {import("mcos/shared").TServerLogger} log
      * @memberof LoginServer
      */
@@ -65,7 +65,7 @@ export class LoginServer {
      * Get the single instance of the login server
      *
      * @static
-     * @param {import("mcos/shared").IDatabaseManager} database
+     * @param {import("mcos/shared").TDatabaseManager} database
      * @param {import("mcos/shared").TServerLogger} log
      * @return {LoginServer}
      * @memberof LoginServer
@@ -84,7 +84,7 @@ export class LoginServer {
      * @return {UserRecordMini}
      */
     _npsGetCustomerIdByContextId(contextId) {
-        this.#log.info(">>> _npsGetCustomerIdByContextId");
+        this.#log("debug", ">>> _npsGetCustomerIdByContextId");
         /** @type {UserRecordMini[]} */
         const users = [
             {
@@ -104,7 +104,8 @@ export class LoginServer {
 
         const userRecord = users.filter((user) => user.contextId === contextId);
         if (typeof userRecord[0] === "undefined" || userRecord.length !== 1) {
-            this.#log.info(
+            this.#log(
+                "debug",
                 `preparing to leave _npsGetCustomerIdByContextId after not finding record',
         ${JSON.stringify({
             contextId,
@@ -115,7 +116,8 @@ export class LoginServer {
             );
         }
 
-        this.#log.info(
+        this.#log(
+            "debug",
             `preparing to leave _npsGetCustomerIdByContextId after finding record',
       ${JSON.stringify({
           contextId,
@@ -136,10 +138,10 @@ export class LoginServer {
  */
 export async function receiveLoginData(dataConnection, log) {
     try {
-        log.info("Entering login module");
+        log("debug", "Entering login module");
         const response = await handleData(dataConnection, log);
-        log.info(`There are ${response.messages.length} messages`);
-        log.info("Exiting login module");
+        log("debug", `There are ${response.messages.length} messages`);
+        log("debug", "Exiting login module");
         return response;
     } catch (error) {
         throw new Error(

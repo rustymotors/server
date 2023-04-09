@@ -30,7 +30,7 @@ export class DatabaseManager {
      *
      * @private
      * @static
-     * @type {import("mcos/shared").IDatabaseManager}
+     * @type {import("mcos/shared").TDatabaseManager}
      * @memberof DatabaseManager
      */
     static _instance;
@@ -51,7 +51,7 @@ export class DatabaseManager {
     /**
      * Return the instance of the DatabaseManager class
      * @param {import("mcos/shared").TServerLogger} log
-     * @returns {import("mcos/shared").IDatabaseManager}
+     * @returns {import("mcos/shared").TDatabaseManager}
      */
     static getInstance(log) {
         if (!DatabaseManager._instance) {
@@ -74,7 +74,6 @@ export class DatabaseManager {
             const err = new Error(
                 "Error fetching session key by customer id: not found"
             );
-            this.#log.error(err);
             throw err;
         }
         return record;
@@ -93,7 +92,6 @@ export class DatabaseManager {
             const err = new Error(
                 "Error fetching session key by customer id: not found"
             );
-            this.#log.error(err);
             throw err;
         }
         return record;
@@ -126,7 +124,6 @@ export class DatabaseManager {
             const err = new Error(
                 "Error updating session key: existing key not found"
             );
-            this.#log.error(err);
             throw err;
         }
         this.sessions.splice(record, 1, updatedSession);

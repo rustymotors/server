@@ -2,28 +2,24 @@ import { Cipher, Decipher } from "crypto";
 import { Socket } from "net";
 
 declare module "mcos/shared" {
-    export type ELOG_LEVEL = "error" | "info";
+    export type ELOG_LEVEL =
+        | "debug"
+        | "info"
+        | "notice"
+        | "warning"
+        | "err"
+        | "crit"
+        | "alert"
+        | "emerg";
     export type TServerConfiguration = {
         EXTERNAL_HOST: string;
-        CERTIFICATE_FILE: string;
-        PRIVATE_KEY_FILE: string;
-        PUBLIC_KEY_FILE: string;
+        certificateFileContents: string;
+        privateKeyContents: string;
+        publicKeyContents: string;
         LOG_LEVEL: ELOG_LEVEL;
     };
-    // export function setServerConfiguration(
-    //     externalHost: string,
-    //     certificateFile: string,
-    //     privateKeyFile: string,
-    //     publicKeyFile: string,
-    //     logLevel?: ELOG_LEVEL
-    // ): void;
-    // export function getServerConfiguration(): TServerConfiguration;
-    export type TServerLogger = {
-        info: (msg: string) => void;
-        error: (err: Error) => void;
-    };
-    // export function GetServerLogger(logLevel?: ELOG_LEVEL): TServerLogger;
-    export type IDatabaseManager = {
+    export type TServerLogger = (level: ELOG_LEVEL, msg: string) => void;
+    export type TDatabaseManager = {
         updateSessionKey: (
             customerId: number,
             sessionkey: string,
@@ -46,10 +42,10 @@ declare module "mcos/shared" {
         sKey: string;
     };
     export type TConnection = {
-        localPort: number
-        remoteAddress: string
+        localPort: number;
+        remoteAddress: string;
         socket: Socket;
-        encryptionSession: TEncryptionSession
+        encryptionSession: TEncryptionSession;
         useEncryption: boolean;
     };
     export type TBufferWithConnection = {
@@ -59,17 +55,17 @@ declare module "mcos/shared" {
         timeStamp: number;
     };
     export type TBinaryStructure = {
-        serialize: () => Buffer
-        deserialize: (inputBuffer: Buffer) => void
+        serialize: () => Buffer;
+        deserialize: (inputBuffer: Buffer) => void;
     };
     export type TSMessageBase = TBinaryStructure;
     export type TMessageNode = {
-        serialize: () => Buffer
-        deserialize: (inputBuffer: Buffer) => void
+        serialize: () => Buffer;
+        deserialize: (inputBuffer: Buffer) => void;
     };
     export type TNPSMessage = {
-        serialize: () => Buffer
-        deserialize: (inputBuffer: Buffer) => void
+        serialize: () => Buffer;
+        deserialize: (inputBuffer: Buffer) => void;
     };
     export type TMessageArrayWithConnection = {
         connection: TSocketWithConnectionInfo;
@@ -112,7 +108,7 @@ declare module "mcos/shared" {
         personaId: number;
         lastMessageTimestamp: number;
         inQueue: boolean;
-        encryptionSession?: TEncryptionSession
+        encryptionSession?: TEncryptionSession;
         useEncryption: boolean;
     };
 }

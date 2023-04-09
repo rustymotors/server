@@ -95,7 +95,7 @@ export class BinaryStructure {
      */
     constructor(log) {
         this.#log = log;
-        log.info("new BinaryStructure");
+        log("debug", "new BinaryStructure");
     }
 
     /**
@@ -106,7 +106,7 @@ export class BinaryStructure {
      */
     _add(field) {
         const newField = { ...field, offset: this._byteOffset };
-        this.#log.info(`Adding ${JSON.stringify(newField)}`);
+        this.#log("debug", `Adding ${JSON.stringify(newField)}`);
         this._fields.push(newField);
         this._byteLength = this._byteLength + field.size;
         this._byteOffset = this._byteOffset + field.size;
@@ -138,26 +138,25 @@ export class BinaryStructure {
                     "Please slice() the input if you are using part."
             );
 
-            this.#log.error(err);
             throw err;
         }
 
-        this.#log.info(
+        this.#log("debug", 
             `Attempting to deserialize ${byteStream.byteLength} bytes into ${this._fields.length} fields for a total of ${this._byteLength} bytes`
         );
 
         this._fields.forEach((f) => {
-            this.#log.info(`Before: ${JSON.stringify(f)}`);
+            this.#log("debug", `Before: ${JSON.stringify(f)}`);
             const indexes = { start: f.offset, end: f.offset + f.size };
-            this.#log.info(`Taking data: ${JSON.stringify(indexes)}`);
+            this.#log("debug", `Taking data: ${JSON.stringify(indexes)}`);
             const value = byteStream.slice(indexes.start, indexes.end);
-            this.#log.info(
+            this.#log("debug", 
                 `Setting ${f.name} with value of ${toHex(value)}, size ${
                     value.byteLength
                 }`
             );
             f.value = value;
-            this.#log.info(`After: ${JSON.stringify(f)}`);
+            this.#log("debug", `After: ${JSON.stringify(f)}`);
             this._byteOffset = indexes.end;
         });
     }
@@ -194,11 +193,11 @@ export class BinaryStructure {
      * @memberof BinaryStructure
      */
     getValue(fieldName) {
-        this.#log.info("Calling get() in BinaryStructure..");
+        this.#log("debug", "Calling get() in BinaryStructure..");
         const selectedField = this.get(fieldName);
-        this.#log.info("Calling get() in BinaryStructure.. success");
+        this.#log("debug", "Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
-        this.#log.info(
+        this.#log("debug", 
             `Getting a value of ${toHex(value)} from the ${
                 selectedField.name
             } field with type of ${type} and size of (${value.byteLength},${
@@ -226,7 +225,7 @@ export class BinaryStructure {
             }
             return value.readUInt8();
         } catch (error) {
-            this.#log.info("Calling get() in BinaryStructure.. fail!");
+            this.#log("debug", "Calling get() in BinaryStructure.. fail!");
             const err = new Error(
                 `Error in getValueX: ${String(
                     error
@@ -245,11 +244,11 @@ export class BinaryStructure {
      * @returns
      */
     setValueNumber(fieldName, newValue) {
-        this.#log.info("Calling setValueNumber() in BinaryStructure..");
+        this.#log("debug", "Calling setValueNumber() in BinaryStructure..");
         const selectedField = this.get(fieldName);
-        this.#log.info("Calling get() in BinaryStructure.. success");
+        this.#log("debug", "Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
-        this.#log.info(
+        this.#log("debug", 
             `Setting a value of ${newValue} to the ${selectedField.name} field with type of ${type})`
         );
         try {
@@ -261,7 +260,6 @@ export class BinaryStructure {
                 const err = new Error(
                     `Value must be 0 or 1 for a boolean type`
                 );
-                this.#log.error(err);
                 throw err;
             }
             if (type === "u16") {
@@ -283,10 +281,8 @@ export class BinaryStructure {
             const err = new Error(
                 `${selectedField.name} is not a number. It is type ${selectedField.type}`
             );
-            this.#log.error(err);
             throw err;
         } catch (error) {
-            this.#log.info("Calling get() in BinaryStructure.. fail!");
             const err = new Error(
                 `Error in newValueNumber: ${String(
                     error

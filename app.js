@@ -26,25 +26,34 @@ Sentry.init({
     tracesSampleRate: 1.0,
 });
 
-const log = GetServerLogger()
+const log = GetServerLogger();
 
 try {
     if (typeof process.env.EXTERNAL_HOST === "undefined") {
-        throw new Error("Please set EXTERNAL_HOST");
+        log("err", "Please set EXTERNAL_HOST");
+        process.exit(1)
     }
     if (typeof process.env.CERTIFICATE_FILE === "undefined") {
-        throw new Error("Please set CERTIFICATE_FILE");
+        log("err", "Please set CERTIFICATE_FILE");
+        process.exit(1)
     }
     if (typeof process.env.PRIVATE_KEY_FILE === "undefined") {
-        throw new Error("Please set PRIVATE_KEY_FILE");
+        log("err","Please set PRIVATE_KEY_FILE");
+        process.exit(1)
     }
     if (typeof process.env.PUBLIC_KEY_FILE === "undefined") {
-        throw new Error("Please set PUBLIC_KEY_FILE");
+        log("err", "Please set PUBLIC_KEY_FILE");
+        process.exit(1)
     }
-    const config = setServerConfiguration(process.env.EXTERNAL_HOST, process.env.CERTIFICATE_FILE, process.env.PRIVATE_KEY_FILE, process.env.PUBLIC_KEY_FILE)
+    const config = setServerConfiguration(
+        process.env.EXTERNAL_HOST,
+        process.env.CERTIFICATE_FILE,
+        process.env.PRIVATE_KEY_FILE,
+        process.env.PUBLIC_KEY_FILE
+    );
     startListeners(config, log);
 } catch (err) {
     Sentry.captureException(err);
-    log.error(new Error(`Error in core server: ${String(err)}`));
+    log("crit", `Error in core server: ${String(err)}`);
     process.exit(1);
 }

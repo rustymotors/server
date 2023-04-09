@@ -27,7 +27,7 @@ import process from "node:process";
  * @return {string}
  */
 export function handleGetCert(config) {
-    return config.CERTIFICATE_FILE;
+    return config.certificateFileContents;
 }
 
 /**
@@ -75,7 +75,7 @@ export function handleGetRegistry(config) {
  * @return {string}
  */
 export function handleGetKey(config) {
-    return config.PUBLIC_KEY_FILE;
+    return config.publicKeyContents;
 }
 
 /**
@@ -145,10 +145,7 @@ export class ShardServer {
         this._possibleShards = [];
 
         this._server.on("error", (error) => {
-            process.exitCode = -1;
-            this.#log.error(new Error(`Server error: ${error.message}`));
-            this.#log.info(`Server shutdown: ${process.exitCode}`);
-            process.exit();
+            throw new Error(`Server error: ${error.message}`);
         });
     }
 
@@ -246,7 +243,8 @@ export class ShardServer {
         }
 
         if (request.url === "/ShardList/") {
-            this.#log.info(
+            this.#log(
+                "debug",
                 `Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
             );
 
@@ -259,7 +257,8 @@ export class ShardServer {
         response.end("");
 
         // Unknown request, log it
-        this.#log.info(
+        this.#log(
+            "debug",
             `Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );
         return response;

@@ -42,7 +42,7 @@ export class NPSUserStatus extends NPSMessage {
     constructor(packet, log) {
         super("received");
         this.#log = log;
-        log.info("Constructing NPSUserStatus");
+        log("debug", "Constructing NPSUserStatus");
         this.sessionkey = "";
 
         // Save the NPS opCode
@@ -62,7 +62,7 @@ export class NPSUserStatus extends NPSMessage {
      * @return {string}
      */
     fetchPrivateKeyFromFile(privateKeyPath) {
-        this.#log.info("Fetching private key");
+        this.#log("debug", "Fetching private key");
         try {
             statSync(privateKeyPath);
         } catch (error) {
@@ -90,7 +90,7 @@ export class NPSUserStatus extends NPSMessage {
      * @return {void}
      */
     extractSessionKeyFromPacket(packet) {
-        this.#log.info("Extracting key");
+        this.#log("debug", "Extracting key");
         if (typeof process.env["PRIVATE_KEY_FILE"] === "undefined") {
             throw new Error("Please set PRIVATE_KEY_FILE");
         }
@@ -112,7 +112,7 @@ export class NPSUserStatus extends NPSMessage {
      * @return {import("../../mcos-gateway/src/NPSMessage.js").NPSMessageJSON}
      */
     toJSON() {
-        this.#log.info("Returning as JSON");
+        this.#log("debug", "Returning as JSON");
         return {
             msgNo: this.msgNo,
             msgLength: this.msgLength,
@@ -130,7 +130,7 @@ export class NPSUserStatus extends NPSMessage {
      * @return {string}
      */
     dumpPacket() {
-        this.#log.info("Returning as string");
+        this.#log("debug", "Returning as string");
         let message = this.dumpPacketHeader("NPSUserStatus");
         message = message.concat(
             `NPSUserStatus,

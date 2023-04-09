@@ -94,12 +94,12 @@ export function selectEncryptors(dataConnection, log) {
 
     const existingEncryptor = encryptionSessions.find((e) => {
         const thisId = `${e.remoteAddress}:${e.localPort}`;
-        log.info(`[selectEncryptors] Checking ${thisId} === ${wantedId} ?`);
+        log("debug", `[selectEncryptors] Checking ${thisId} === ${wantedId} ?`);
         return thisId === wantedId;
     });
 
     if (typeof existingEncryptor !== "undefined") {
-        log.info(
+        log("debug", 
             `Located existing encryption session for connection id ${dataConnection.connectionId}`
         );
         return existingEncryptor;
@@ -121,7 +121,7 @@ export function selectEncryptors(dataConnection, log) {
 export function createEncrypters(dataConnection, keys, log) {
     const newSession = generateEncryptionPair(dataConnection, keys);
 
-    log.info(
+    log("debug", 
         `Generated new encryption session for connection id ${dataConnection.id}`
     );
 
@@ -142,7 +142,7 @@ export function updateEncryptionSession(connectionId, updatedSession, log) {
         });
         encryptionSessions.splice(index, 1);
         encryptionSessions.push(updatedSession);
-        log.info(`Updated encryption session for id: ${connectionId}`);
+        log("debug", `Updated encryption session for id: ${connectionId}`);
     } catch (error) {
         throw new Error(`Error updating connection, ${String(error)}`);
     }

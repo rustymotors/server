@@ -22,12 +22,12 @@ function encryptCmd(dataConnection, plaintextCommand, log) {
         dataConnection.encryptionSession,
         plaintextCommand
     );
-    log.info(`[ciphered Cmd: ${result.data.toString("hex")}`);
+    log("debug", `[ciphered Cmd: ${result.data.toString("hex")}`);
     dataConnection.encryptionSession = result.session;
     return {
         connection: dataConnection,
         messages: [new NPSMessage("sent").deserialize(result.data)],
-        log
+        log,
     };
 }
 
@@ -48,7 +48,7 @@ function decryptCmd(dataConnection, encryptedCommand, log) {
         dataConnection.connection.encryptionSession,
         encryptedCommand
     );
-    log.info(`[Deciphered Cmd: ${result.data.toString("hex")}`);
+    log("debug", `[Deciphered Cmd: ${result.data.toString("hex")}`);
     dataConnection.connection.encryptionSession = result.session;
     dataConnection.data = result.data;
     return dataConnection;
@@ -78,7 +78,7 @@ function handleCommand(dataConnection, log) {
     packetContent.writeUInt16BE(0x01_01, 369);
     packetContent.writeUInt16BE(0x02_2c, 371);
 
-    log.info("Sending a dummy response of 0x229 - NPS_MINI_USER_LIST");
+    log("debug", "Sending a dummy response of 0x229 - NPS_MINI_USER_LIST");
 
     // Build the packet
     const packetResult = new NPSMessage("sent");
@@ -89,7 +89,7 @@ function handleCommand(dataConnection, log) {
     return {
         connection: dataConnection.connection,
         messages: [packetResult],
-        log
+        log,
     };
 }
 
