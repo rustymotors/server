@@ -25,6 +25,7 @@ import { StockCar } from "./StockCar.js";
 import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
 import { toHex } from "../../mcos-gateway/src/sockets.js";
 import { createEncrypters } from "../../mcos-gateway/src/encryption.js";
+import { Sentry } from "mcos/shared";
 
 /**
  *
@@ -167,17 +168,16 @@ async function clientConnect(connection, packet, log) {
     // Not currently using this - Maybe we are?
     const newMessage = new TClientConnectMessage(log);
 
-    log(
-        "debug",
-        `Raw bytes in clientConnect: ${toHex(packet.rawPacket)}`
-    );
+    log("debug", `Raw bytes in clientConnect: ${toHex(packet.rawPacket)}`);
     newMessage.deserialize(packet.rawPacket);
 
     const customerId = newMessage.getValue("customerId");
     if (typeof customerId !== "number") {
-        throw new TypeError(
+        const err = new TypeError(
             `customerId is wrong type. Expected 'number', got ${typeof customerId}`
         );
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
 
     log(
@@ -205,22 +205,23 @@ async function clientConnect(connection, packet, log) {
 
     const personaId = newMessage.getValue("personaId");
     if (typeof personaId !== "number") {
-        throw new TypeError(
+        const err = new TypeError(
             `personaId is wrong type. Expected 'number', got ${typeof customerId}`
         );
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
 
     const personaName = newMessage.getValue("personaName");
     if (typeof personaName !== "string") {
-        throw new TypeError(
+        const err = new TypeError(
             `personaName is wrong type. Expected 'string', got ${typeof customerId}`
         );
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
 
-    log(
-        "debug",
-        `cust: ${customerId} ID: ${personaId} Name: ${personaName}`
-    );
+    log("debug", `cust: ${customerId} ID: ${personaId} Name: ${personaName}`);
 
     // Create new response packet
     const genericReplyMessage = new GenericReplyMessage();
@@ -264,10 +265,7 @@ function _login(connection, node, log) {
     // Read the inbound packet
     const loginMessage = new TLoginMessage(log);
     loginMessage.deserialize(node.rawPacket);
-    log(
-        "debug",
-        `Received LoginMessage: ${JSON.stringify(loginMessage)}`
-    );
+    log("debug", `Received LoginMessage: ${JSON.stringify(loginMessage)}`);
 
     // Create new response packet
     const pReply = new GenericReplyMessage();

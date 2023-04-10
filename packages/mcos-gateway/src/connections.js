@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { Sentry } from "mcos/shared";
 import { randomUUID } from "node:crypto";
 
 /** @type {import("mcos/shared").TSocketWithConnectionInfo[]} */
@@ -45,7 +46,9 @@ export function updateConnection(connectionId, updatedConnection, log) {
         connectionList.splice(index, 1);
         connectionList.push(updatedConnection);
     } catch (error) {
-        throw new Error(`Error updating connection, ${String(error)}`);
+        const err = new Error(`Error updating connection, ${String(error)}`);
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
 }
 
@@ -75,8 +78,11 @@ function createNewConnection(connectionId, socket, log) {
         typeof localPort === "undefined" ||
         typeof remoteAddress === "undefined"
     ) {
-        const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`;
-        throw new Error(errMessage);
+        const err = new Error(
+            `Either localPort or remoteAddress is missing on socket. Can not continue.`
+        );
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
 
     /** @type {import("mcos/shared").TSocketWithConnectionInfo} */
@@ -119,8 +125,11 @@ export function findOrNewConnection(socket, log) {
         typeof localPort === "undefined" ||
         typeof remoteAddress === "undefined"
     ) {
-        const errMessage = `Either localPort or remoteAddress is missing on socket. Can not continue.`;
-        throw new Error(errMessage);
+        const err = new Error(
+            `Either localPort or remoteAddress is missing on socket. Can not continue.`
+        );
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
 
     const existingConnection = findConnectionByAddressAndPort(
@@ -128,7 +137,8 @@ export function findOrNewConnection(socket, log) {
         localPort
     );
     if (typeof existingConnection !== "undefined") {
-        log("debug", 
+        log(
+            "debug",
             `I have seen connections from ${socket.remoteAddress} on ${socket.localPort} before`
         );
 
@@ -141,11 +151,13 @@ export function findOrNewConnection(socket, log) {
     const newConnectionId = randomUUID();
     log("debug", `Creating new connection with id ${newConnectionId}`);
     const newConnection = createNewConnection(newConnectionId, socket, log);
-    log("debug", 
+    log(
+        "debug",
         `I have not seen connections from ${socket.remoteAddress} on ${socket.localPort} before, adding it.`
     );
     const updatedConnectionList = addConnection(newConnection);
-    log("debug", 
+    log(
+        "debug",
         `Connection with id of ${newConnection.id} has been added. The connection list now contains ${updatedConnectionList.length} connections.`
     );
     return newConnection;

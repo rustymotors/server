@@ -12,6 +12,8 @@
  * @property {string} rawBuffer
  */
 
+import { Sentry } from "mcos/shared";
+
 /**
  * @class NPSMessage
  * @property {number} msgNo
@@ -90,11 +92,17 @@ export class NPSMessage {
             return packet;
         } catch (error) {
             if (error instanceof Error) {
-                throw new TypeError(
+                const err = new TypeError(
                     `[NPSMsg] Error in serialize(): ${error.message}`
                 );
+                Sentry.addBreadcrumb({ level: "error", message: err.message });
+                throw err;
             }
-            throw new Error("[NPSMsg] Error in serialize(), error unknown");
+            const err = new Error(
+                "[NPSMsg] Error in serialize(), error unknown"
+            );
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
+            throw err;
         }
     }
 

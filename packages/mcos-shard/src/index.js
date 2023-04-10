@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { Sentry } from "mcos/shared";
 import { ShardEntry } from "./shard-entry.js";
 import { createServer } from "node:https";
 import process from "node:process";
@@ -145,7 +146,9 @@ export class ShardServer {
         this._possibleShards = [];
 
         this._server.on("error", (error) => {
-            throw new Error(`Server error: ${error.message}`);
+            const err = new Error(`Server error: ${error.message}`);
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
+            throw err;
         });
     }
 

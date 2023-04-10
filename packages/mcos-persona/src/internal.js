@@ -17,6 +17,7 @@
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
 import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
 import { MessagePacket } from "../../mcos-lobby/src/MessagePacket.js";
+import { Sentry } from "mcos/shared";
 
 const NAME_BUFFER_SIZE = 30;
 
@@ -75,7 +76,9 @@ export async function getPersonasByPersonaId(id) {
         return match;
     });
     if (results.length === 0) {
-        throw new Error(`Unable to locate a persona for id: ${id}`);
+        const err = new Error(`Unable to locate a persona for id: ${id}`);
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
 
     return Promise.resolve(results);
@@ -277,9 +280,11 @@ async function getPersonaMaps(data, log) {
     // this is a GLDP_PersonaList::GLDP_PersonaList
 
     if (personas.length === 0) {
-        throw new Error(
+        const err = new Error(
             `No personas found for customer Id: ${customerId.readUInt32BE(0)}`
         );
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     } else {
         try {
             personaMapsMessage.loadMaps(personas);
@@ -312,12 +317,18 @@ async function getPersonaMaps(data, log) {
             return responsePacket;
         } catch (error) {
             if (error instanceof Error) {
-                throw new TypeError(
+                const err = new TypeError(
                     `Error serializing personaMapsMsg: ${error.message}`
                 );
+                Sentry.addBreadcrumb({ level: "error", message: err.message });
+                throw err;
             }
 
-            throw new Error("Error serializing personaMapsMsg, error unknonw");
+            const err = new Error(
+                "Error serializing personaMapsMsg, error unknonw"
+            );
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
+            throw err;
         }
     }
 }
@@ -527,10 +538,12 @@ export async function handleData(dataConnection, log) {
             return response;
         }
     }
-    throw new Error(
+    const err = new Error(
         `[personaServer] Unknown code was received ${JSON.stringify({
             requestCode,
             localPort: socket.localPort,
         })}`
     );
+    Sentry.addBreadcrumb({ level: "error", message: err.message });
+    throw err;
 }

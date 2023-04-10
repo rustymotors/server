@@ -17,6 +17,7 @@
 import { handleData, personaRecords } from "./internal.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
 import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
+import { Sentry } from "mcos/shared";
 
 /**
  * Selects a game persona and marks it as in use
@@ -312,10 +313,16 @@ export class PersonaServer {
             socket.write(packet.serialize());
         } catch (error) {
             if (error instanceof Error) {
-                throw new TypeError(`Unable to send packet: ${error.message}`);
+                const err = new TypeError(
+                    `Unable to send packet: ${error.message}`
+                );
+                Sentry.addBreadcrumb({ level: "error", message: err.message });
+                throw err;
             }
 
-            throw new Error("Unable to send packet, error unknown");
+            const err = new Error("Unable to send packet, error unknown");
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
+            throw err;
         }
     }
 
@@ -388,11 +395,13 @@ export class PersonaServer {
         const personaMapsMessage = new NPSPersonaMapsMessage("sent");
 
         if (personas.length === 0) {
-            throw new Error(
+            const err = new Error(
                 `No personas found for customer Id: ${customerId.readUInt32BE(
                     0
                 )}`
             );
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
+            throw err;
         } else {
             try {
                 personaMapsMessage.loadMaps(personas);
@@ -414,14 +423,21 @@ export class PersonaServer {
                 return responsePacket;
             } catch (error) {
                 if (error instanceof Error) {
-                    throw new TypeError(
+                    const err = new TypeError(
                         `Error serializing personaMapsMsg: ${error.message}`
                     );
+                    Sentry.addBreadcrumb({
+                        level: "error",
+                        message: err.message,
+                    });
+                    throw err;
                 }
 
-                throw new Error(
+                const err = new Error(
                     "Error serializing personaMapsMsg, error unknonw"
                 );
+                Sentry.addBreadcrumb({ level: "error", message: err.message });
+                throw err;
             }
         }
     }
@@ -432,16 +448,19 @@ export class PersonaServer {
  *
  * @export
  * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerConfiguration} config
  * @param {import("mcos/shared").TServerLogger} log
  * @return {Promise<import("mcos/shared").TServiceResponse>}
  */
-export async function receivePersonaData(dataConnection, log) {
+export async function receivePersonaData(dataConnection, config, log) {
     try {
         return await handleData(dataConnection, log);
     } catch (error) {
-        throw new Error(
+        const err = new Error(
             `There was an error in the persona service: ${String(error)}`
         );
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
 }
 

@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { Sentry } from "mcos/shared";
 import { handleData } from "./internal.js";
 
 /**
@@ -21,15 +22,18 @@ import { handleData } from "./internal.js";
  *
  * @export
  * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerConfiguration} config
  * @param {import("mcos/shared").TServerLogger} log
  * @return {Promise<import("mcos/shared").TServiceResponse>}
  */
-export async function receiveLobbyData(dataConnection, log) {
+export async function receiveLobbyData(dataConnection, config, log) {
     try {
         return await handleData(dataConnection, log);
     } catch (error) {
-        throw new Error(
+        const err = new Error(
             `There was an error in the lobby service: ${String(error)}`
         );
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
 }

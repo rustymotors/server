@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { Sentry } from "mcos/shared";
 import { createCipheriv, createDecipheriv } from "node:crypto";
 
 /** @type {import("mcos/shared").TEncryptionSession[]} */
@@ -88,6 +89,7 @@ export function selectEncryptors(dataConnection, log) {
         const err = new Error(
             `[selectEncryptors]Either localPort or remoteAddress is missing on socket. Can not continue.`
         );
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
     const wantedId = `${remoteAddress}:${localPort}`;
@@ -99,7 +101,8 @@ export function selectEncryptors(dataConnection, log) {
     });
 
     if (typeof existingEncryptor !== "undefined") {
-        log("debug", 
+        log(
+            "debug",
             `Located existing encryption session for connection id ${dataConnection.connectionId}`
         );
         return existingEncryptor;
@@ -108,6 +111,7 @@ export function selectEncryptors(dataConnection, log) {
     const err = new Error(
         `Unable to select encryptors for connection id ${dataConnection.connectionId}`
     );
+    Sentry.addBreadcrumb({ level: "error", message: err.message });
     throw err;
 }
 
@@ -121,7 +125,8 @@ export function selectEncryptors(dataConnection, log) {
 export function createEncrypters(dataConnection, keys, log) {
     const newSession = generateEncryptionPair(dataConnection, keys);
 
-    log("debug", 
+    log(
+        "debug",
         `Generated new encryption session for connection id ${dataConnection.id}`
     );
 
@@ -144,7 +149,9 @@ export function updateEncryptionSession(connectionId, updatedSession, log) {
         encryptionSessions.push(updatedSession);
         log("debug", `Updated encryption session for id: ${connectionId}`);
     } catch (error) {
-        throw new Error(`Error updating connection, ${String(error)}`);
+        const err = new Error(`Error updating connection, ${String(error)}`);
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
 }
 
@@ -163,7 +170,9 @@ export function cipherBufferDES(encryptionSession, data) {
         };
     }
 
-    throw new Error("No DES cipher set on connection");
+    const err = new Error("No DES cipher set on connection");
+    Sentry.addBreadcrumb({ level: "error", message: err.message });
+    throw err;
 }
 
 /**
@@ -181,7 +190,9 @@ export function decipherBufferDES(encryptionSession, data) {
         };
     }
 
-    throw new Error("No DES decipher set on connection");
+    const err = new Error("No DES decipher set on connection");
+    Sentry.addBreadcrumb({ level: "error", message: err.message });
+    throw err;
 }
 
 /**

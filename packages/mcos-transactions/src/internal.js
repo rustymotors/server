@@ -21,6 +21,7 @@ import {
 import { messageHandlers } from "./handlers.js";
 import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
 import { toHex } from "../../mcos-gateway/src/BinaryStructure.js";
+import { Sentry } from "mcos/shared";
 
 /**
  *
@@ -151,15 +152,19 @@ async function processInput(dataConnection, node, log) {
             );
             return responsePackets;
         } catch (error) {
-            throw new Error(`Error handling packet: ${String(error)}`);
+            const err = new Error(`Error handling packet: ${String(error)}`);
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
+            throw err;
         }
     }
 
     node.setAppId(dataConnection.connection.personaId);
 
-    throw new Error(
+    const err = new Error(
         `Message Number Not Handled: ${currentMessageNo} (${currentMessageString}`
     );
+    Sentry.addBreadcrumb({ level: "error", message: err.message });
+    throw err;
 }
 
 /**
@@ -184,13 +189,16 @@ async function messageReceived(message, dataConnection, log) {
             const err = new Error(
                 `Unabel to locate the encryptors on connection id ${dataConnection.connectionId}`
             );
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
 
         if (message.flags - 8 >= 0) {
             const result = tryDecryptBuffer(message, dataConnection, log);
             if (result.err !== null || result.data === null) {
-                throw new Error(String(result.err));
+                const err = new Error(String(result.err));
+                Sentry.addBreadcrumb({ level: "error", message: err.message });
+                throw err;
             }
             // Update the MessageNode with the deciphered buffer
             message.updateBuffer(result.data);
@@ -269,6 +277,8 @@ export async function handleData(dataConnection, log) {
             log,
         };
     } catch (error) {
-        throw new Error(`Error processing packet: ${String(error)} `);
+        const err = new Error(`Error processing packet: ${String(error)} `);
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
 }

@@ -19,6 +19,7 @@ import { GSMessageBase } from "../../mcos-gateway/src/GMessageBase.js";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { premadeLogin } from "./premadeLogin.js";
 import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
+import { Sentry } from "mcos/shared";
 
 /** @type {import("./index.js").UserRecordMini[]} */
 const userRecords = [
@@ -38,10 +39,11 @@ const userRecords = [
  * Process a UserLogin packet
  * @private
  * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerConfiguration} config
  * @param {import("mcos/shared").TServerLogger} log
  * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
  */
-async function login(dataConnection, log) {
+async function login(dataConnection, config, log) {
     const { connectionId, data } = dataConnection;
 
     log("debug", `Received login packet: ${connectionId}`);
@@ -51,7 +53,7 @@ async function login(dataConnection, log) {
     log("debug", `Raw game message: ${JSON.stringify(newGameMessage)}`);
 
     log("debug", "Requesting NPSUserStatus packet");
-    const userStatus = new NPSUserStatus(data, log);
+    const userStatus = new NPSUserStatus(data, config, log);
     log("debug", "NPSUserStatus packet creation success");
 
     log("debug", "Requesting Key extraction");
@@ -80,6 +82,7 @@ async function login(dataConnection, log) {
         const err = new Error(
             `Unable to locate a user record for the context id: ${contextId}`
         );
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 
@@ -96,6 +99,7 @@ async function login(dataConnection, log) {
             const err = new Error(
                 `Unable to update session key in the database: ${String(error)}`
             );
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         });
 
@@ -149,10 +153,11 @@ export const messageHandlers = [
  *
  *
  * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerConfiguration} config
  * @param {import("mcos/shared").TServerLogger} log
  * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
  */
-export async function handleData(dataConnection, log) {
+export async function handleData(dataConnection, config, log) {
     const { connectionId, data } = dataConnection;
 
     log("debug", `Received Login Server packet: ${connectionId}`);
@@ -166,19 +171,24 @@ export async function handleData(dataConnection, log) {
 
     if (typeof supportedHandler === "undefined") {
         // We do not yet support this message code
-        const err = new Error(
+        let err = new Error(
             `The login handler does not support a message code of ${requestCode}. Was the packet routed here in error? Closing the socket`
         );
+        Sentry.addBreadcrumb({level: "error", message: err.message})
         dataConnection.connection.socket.end();
-        throw new TypeError(`UNSUPPORTED_MESSAGECODE: ${requestCode}`);
+        err = new TypeError(`UNSUPPORTED_MESSAGECODE: ${requestCode}`);
+        Sentry.addBreadcrumb({level: "error", message: err.message})
+        throw err;
     }
 
     try {
-        const result = await supportedHandler.handler(dataConnection, log);
+        const result = await supportedHandler.handler(dataConnection, config, log);
         log("debug", `Returning with ${result.messages.length} messages`);
         log("debug", "Leaving handleData");
         return result;
     } catch (error) {
-        throw new Error(`Error handling data: ${String(error)}`);
+        const err = new Error(`Error handling data: ${String(error)}`);
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
 }

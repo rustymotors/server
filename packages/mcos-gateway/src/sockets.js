@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { Sentry } from "mcos/shared";
 import { receiveLobbyData } from "../../mcos-lobby/src/index.js";
 import { receiveLoginData } from "../../mcos-login/src/index.js";
 import { receivePersonaData } from "../../mcos-persona/src/index.js";
@@ -38,7 +39,7 @@ export function toHex(data) {
 }
 
 /**
- * @type {Record<number, (arg0: import("mcos/shared").TBufferWithConnection, log: import("mcos/shared").TServerLogger) => Promise<import("mcos/shared").TServiceResponse>>}
+ * @type {Record<number, (arg0: import("mcos/shared").TBufferWithConnection, config: import("mcos/shared").TServerConfiguration, log: import("mcos/shared").TServerLogger) => Promise<import("mcos/shared").TServiceResponse>>}
  */
 const serviceRouters = {
     8226: receiveLoginData,
@@ -63,12 +64,14 @@ function sendMessages(messages, outboundConnection, log) {
                 typeof outboundConnection.encryptionSession === "undefined" ||
                 typeof f.data === "undefined"
             ) {
-                const err =
-                    "There was a fatal error attempting to encrypt the message!";
+                const err = new Error(
+                    "There was a fatal error attempting to encrypt the message!"
+                );
                 log(
                     "debug",
                     `usingEncryption? ${outboundConnection.useEncryption}, packetLength: ${f.data.byteLength}/${f.dataLength}`
                 );
+                Sentry.addBreadcrumb({ level: "error", message: err.message });
                 throw err;
             } else {
                 log(
@@ -91,10 +94,11 @@ function sendMessages(messages, outboundConnection, log) {
  * takes the data buffer and creates a {@link BufferWithConnection} object
  * @param {Buffer} data
  * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
+ * @param {import("mcos/shared").TServerConfiguration} config
  * @param {import("mcos/shared").TServerLogger} log
  * @return {Promise<void>}
  */
-export async function dataHandler(data, connection, log) {
+export async function dataHandler(data, connection, config, log) {
     log("debug", `data prior to proccessing: ${data.toString("hex")}`);
 
     // Link the data and the connection together
@@ -114,9 +118,11 @@ export async function dataHandler(data, connection, log) {
     ) {
         // Somehow we have recived a connection without a local post specified
         networkBuffer.connection.socket.end();
-        throw new Error(
+        const err = new Error(
             `Error locating remote address or target port for socket, connection id: ${networkBuffer.connectionId}`
         );
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
 
     // Move remote address and local port forward
@@ -133,7 +139,7 @@ export async function dataHandler(data, connection, log) {
     if (typeof serviceRouters[localPort] !== "undefined") {
         try {
             /** @type {import("mcos/shared").TServiceResponse} */
-            const result = await serviceRouters[localPort](networkBuffer, log);
+            const result = await serviceRouters[localPort](networkBuffer, config, log);
 
             const messages = result.messages;
 
@@ -148,9 +154,11 @@ export async function dataHandler(data, connection, log) {
             updateConnection(outboundConnection.id, outboundConnection, log);
         } catch (error) {
             process.exitCode = -1;
-            throw new Error(
+            const err = new Error(
                 `There was an error processing the packet: ${String(error)}`
             );
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
+            throw err;
         }
     }
 }
@@ -159,10 +167,11 @@ export async function dataHandler(data, connection, log) {
  * Server listener method
  *
  * @param {import('node:net').Socket} socket
+ * @param {import("mcos/shared").TServerConfiguration} config
  * @param {import("mcos/shared").TServerLogger} log
  * @return {void}
  */
-export function TCPHandler(socket, log) {
+export function TCPHandler(socket, config, log) {
     // Received a new connection
     // Turn it into a connection object
     const connectionRecord = findOrNewConnection(socket, log);
@@ -189,13 +198,15 @@ export function TCPHandler(socket, log) {
         );
     });
     socket.on("data", async (data) => {
-        await dataHandler(data, connectionRecord, log);
+        await dataHandler(data, connectionRecord, config, log);
     });
     socket.on("error", (error) => {
         const message = String(error);
         if (message.includes("ECONNRESET") === true) {
             return log("debug", "Connection was reset");
         }
-        throw new Error(`Socket error: ${String(error)}`);
+        const err = new Error(`Socket error: ${String(error)}`);
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     });
 }

@@ -21,7 +21,15 @@ import { dataHandler } from "./sockets.js";
 import { httpListener as httpHandler } from "./web.js";
 export { getAllConnections } from "./connections.js";
 export { AdminServer } from "./adminServer.js";
-import { readFileSync } from "node:fs";
+import Sentry from "@sentry/node"
+
+Sentry.init({
+    dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
+
+    // We recommend adjusting this value in production, or using tracesSampler
+    // for finer control
+    tracesSampleRate: 1.0,
+});
 
 const listeningPortList = [
     3000, 6660, 7003, 8228, 8226, 8227, 9000, 9001, 9002, 9003, 9004, 9005,
@@ -40,15 +48,17 @@ function onSocketError(error, log) {
     if (message.includes("ECONNRESET") === true) {
         return log("debug", "Connection was reset");
     }
+    Sentry.captureException(error)
     throw new Error(`Socket error: ${String(error)}`);
 }
 
 /**
  *
  * @param {import('node:net').Socket} incomingSocket
+ * @param {import("mcos/shared").TServerConfiguration} config
  * @param {import("mcos/shared").TServerLogger} log
  */
-function TCPListener(incomingSocket, log) {
+function TCPListener(incomingSocket, config, log) {
     // Get a connection record
     const connectionRecord = findOrNewConnection(incomingSocket, log);
 
@@ -64,10 +74,12 @@ function TCPListener(incomingSocket, log) {
             `Client ${remoteAddress} disconnected from port ${localPort}`
         );
     });
-    incomingSocket.on("data", async (data) => {
-        await dataHandler(data, connectionRecord, log);
+    incomingSocket.on("data", function incomingSocketDataHandler (data) {
+        dataHandler(data, connectionRecord, config, log);
     });
-    incomingSocket.on("error", onSocketError);
+    incomingSocket.on("error", (err) => {
+        onSocketError(err, log)
+    });
 }
 
 /**
@@ -96,7 +108,7 @@ function socketListener(incomingSocket, config, log) {
     }
 
     // This is a 'normal' TCP socket
-    TCPListener(incomingSocket, log);
+    TCPListener(incomingSocket, config, log);
 }
 
 /**

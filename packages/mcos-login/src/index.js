@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { Sentry } from "mcos/shared";
 import { handleData } from "./internal.js";
 
 /**
@@ -99,7 +100,9 @@ export class LoginServer {
             },
         ];
         if (contextId.toString() === "") {
-            throw new Error(`Unknown contextId: ${contextId.toString()}`);
+            const err = new Error(`Unknown contextId: ${contextId.toString()}`);
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
+            throw err;
         }
 
         const userRecord = users.filter((user) => user.contextId === contextId);
@@ -111,9 +114,11 @@ export class LoginServer {
             contextId,
         })}`
             );
-            throw new Error(
+            const err = new Error(
                 `Unable to locate user record matching contextId ${contextId}`
             );
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
+            throw err;
         }
 
         this.#log(
@@ -133,19 +138,22 @@ export class LoginServer {
  *
  * @export
  * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {import("mcos/shared").TServerConfiguration} config
  * @param {import("mcos/shared").TServerLogger} log
  * @return {Promise<import("mcos/shared").TServiceResponse>}
  */
-export async function receiveLoginData(dataConnection, log) {
+export async function receiveLoginData(dataConnection, config, log) {
     try {
         log("debug", "Entering login module");
-        const response = await handleData(dataConnection, log);
+        const response = await handleData(dataConnection, config, log);
         log("debug", `There are ${response.messages.length} messages`);
         log("debug", "Exiting login module");
         return response;
     } catch (error) {
-        throw new Error(
+        const err = new Error(
             `There was an error in the login service: ${String(error)}`
         );
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
 }

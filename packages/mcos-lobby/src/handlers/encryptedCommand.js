@@ -1,3 +1,4 @@
+import { Sentry } from "mcos/shared";
 import {
     cipherBufferDES,
     decipherBufferDES,
@@ -14,8 +15,11 @@ import { NPSMessage } from "../../../mcos-gateway/src/NPSMessage.js";
  */
 function encryptCmd(dataConnection, plaintextCommand, log) {
     if (typeof dataConnection.encryptionSession === "undefined") {
-        const errMessage = `Unable to locate encryption session for connection id ${dataConnection.id}`;
-        throw new Error(errMessage);
+        const err = new Error(
+            `Unable to locate encryption session for connection id ${dataConnection.id}`
+        );
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
 
     const result = cipherBufferDES(
@@ -41,8 +45,11 @@ function encryptCmd(dataConnection, plaintextCommand, log) {
  */
 function decryptCmd(dataConnection, encryptedCommand, log) {
     if (typeof dataConnection.connection.encryptionSession === "undefined") {
-        const errMessage = `Unable to locate encryption session for connection id ${dataConnection.connectionId}`;
-        throw new Error(errMessage);
+        const err = new Error(
+            `Unable to locate encryption session for connection id ${dataConnection.connectionId}`
+        );
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
     const result = decipherBufferDES(
         dataConnection.connection.encryptionSession,

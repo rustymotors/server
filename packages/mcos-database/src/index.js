@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { Sentry } from "mcos/shared";
+
 /**
  * This class abstracts database methods
  * @class
@@ -92,6 +94,7 @@ export class DatabaseManager {
             const err = new Error(
                 "Error fetching session key by customer id: not found"
             );
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
         return record;
@@ -124,6 +127,7 @@ export class DatabaseManager {
             const err = new Error(
                 "Error updating session key: existing key not found"
             );
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
         this.sessions.splice(record, 1, updatedSession);

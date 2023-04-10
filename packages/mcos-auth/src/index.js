@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { Sentry } from "mcos/shared";
+
 /**
  * Handles web-based user logins
  * Please use {@link AuthLogin.getInstance()}
@@ -75,7 +77,8 @@ export class AuthLogin {
      * @param {import('node:http').ServerResponse} response
      */
     handleRequest(request, response) {
-        this.#log("debug", 
+        this.#log(
+            "debug",
             `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );
         if (request.url && request.url.startsWith("/AuthLogin")) {
@@ -92,7 +95,11 @@ export class AuthLogin {
      */
     _socketEventHandler(socket) {
         socket.on("error", (error) => {
-            throw new Error(`[AuthLogin] SSL Socket Error: ${error.message}`);
+            const err = new Error(
+                `[AuthLogin] SSL Socket Error: ${error.message}`
+            );
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
+            throw err;
         });
     }
 }

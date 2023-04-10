@@ -14,6 +14,7 @@
  * @property {Buffer} data2
  */
 
+import { Sentry } from "mcos/shared";
 import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
 
 export class GenericReplyMessage extends MessageNode {
@@ -74,11 +75,13 @@ export class GenericReplyMessage extends MessageNode {
             if (error instanceof RangeError) {
                 // This is likeley not an MCOTS packet, ignore
             } else {
-                throw new TypeError(
+                const err = new TypeError(
                     `[GenericReplyMsg] Unable to read msgNo from ${buffer.toString(
                         "hex"
                     )}: ${String(error)}`
                 ); // skipcq: JS-0378
+                Sentry.addBreadcrumb({ level: "error", message: err.message });
+                throw err;
             }
         }
 

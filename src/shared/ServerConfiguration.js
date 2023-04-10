@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { GetServerLogger } from "./log.js";
+import { Sentry } from "mcos/shared";
 
 /**
  * @module mcos/shared
@@ -40,9 +41,11 @@ class ServerConfiguration {
                 { encoding: "utf8" }
             );
         } catch (error) {
-            throw new Error(
+            const err = new Error(
                 `Unable to read certificate file: ${String(error)}`
             );
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
+            throw err;
         }
         try {
             this._serverConfig.privateKeyContents = readFileSync(
@@ -50,14 +53,18 @@ class ServerConfiguration {
                 { encoding: "utf8" }
             );
         } catch (error) {
-            throw new Error(`Unable to read private file`);
+            const err = new Error(`Unable to read private file`);
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
+            throw err;
         }
         try {
             this._serverConfig.publicKeyContents = readFileSync(publicKeyFile, {
                 encoding: "utf8",
             });
         } catch (error) {
-            throw new Error(`Unable to read private file`);
+            const err = new Error(`Unable to read private file`);
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
+            throw err;
         }
         log("info", "Server configuration initialized");
         ServerConfiguration._instance = this;
@@ -98,9 +105,11 @@ export function setServerConfiguration(
  */
 export function getServerConfiguration() {
     if (typeof ServerConfiguration._instance === "undefined") {
-        throw new Error(
+        const err = new Error(
             `Configuration not set. Use setServerConfiguration(externalHost, certificateFile, privateKeyFile, publicKeyFile, logLevel?)`
         );
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
     return ServerConfiguration._instance._serverConfig;
 }

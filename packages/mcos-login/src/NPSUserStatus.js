@@ -1,6 +1,7 @@
 import { privateDecrypt } from "node:crypto";
 import { readFileSync, statSync } from "node:fs";
 import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
+import { Sentry } from "mcos/shared";
 
 /**
  *
@@ -34,13 +35,18 @@ export class NPSUserStatus extends NPSMessage {
     /** @type {import("mcos/shared").TServerLogger} */
     #log;
 
+    /** @type {import("mcos/shared").TServerConfiguration} */
+    #config
+
     /**
      *
      * @param {Buffer} packet
+     * @param {import("mcos/shared").TServerConfiguration} config
      * @param {import("mcos/shared").TServerLogger} log
      */
-    constructor(packet, log) {
+    constructor(packet, config, log) {
         super("received");
+        this.#config = config
         this.#log = log;
         log("debug", "Constructing NPSUserStatus");
         this.sessionkey = "";
@@ -56,31 +62,6 @@ export class NPSUserStatus extends NPSMessage {
     }
 
     /**
-     * Load the RSA private key
-     *
-     * @param {string} privateKeyPath
-     * @return {string}
-     */
-    fetchPrivateKeyFromFile(privateKeyPath) {
-        this.#log("debug", "Fetching private key");
-        try {
-            statSync(privateKeyPath);
-        } catch (error) {
-            if (error instanceof Error) {
-                throw new TypeError(
-                    `[npsUserStatus] Error loading private key: ${error.message.toString()}`
-                );
-            }
-
-            throw new Error(
-                "[npsUserStatus] Error loading private key, error unknown"
-            );
-        }
-
-        return readFileSync(privateKeyPath).toString();
-    }
-
-    /**
      * ExtractSessionKeyFromPacket
      *
      * Take 128 bytes
@@ -91,13 +72,8 @@ export class NPSUserStatus extends NPSMessage {
      */
     extractSessionKeyFromPacket(packet) {
         this.#log("debug", "Extracting key");
-        if (typeof process.env["PRIVATE_KEY_FILE"] === "undefined") {
-            throw new Error("Please set PRIVATE_KEY_FILE");
-        }
         // Decrypt the sessionkey
-        const privateKey = this.fetchPrivateKeyFromFile(
-            process.env["PRIVATE_KEY_FILE"]
-        );
+        const privateKey = this.#config.privateKeyContents
 
         const sessionkeyString = Buffer.from(
             packet.subarray(52, -10).toString("utf8"),

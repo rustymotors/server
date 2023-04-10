@@ -7,6 +7,7 @@ import {
 import { MessagePacket } from "../MessagePacket.js";
 import { DatabaseManager } from "../../../mcos-database/src/index.js";
 import { NPSMessage } from "../../../mcos-gateway/src/NPSMessage.js";
+import { Sentry } from "mcos/shared";
 
 /**
  * Convert to zero padded hex
@@ -74,7 +75,9 @@ export async function _npsRequestGameConnectServer(dataConnection, log) {
 
     const personas = await getPersonasByPersonaId(userInfo.userId);
     if (typeof personas[0] === "undefined") {
-        throw new Error("No personas found.");
+        const err = new Error("No personas found.");
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
 
     const { customerId } = personas[0];
@@ -95,11 +98,13 @@ export async function _npsRequestGameConnectServer(dataConnection, log) {
             const err = new Error(
                 `Unable to fetch session key for customerId ${customerId.toString()}: unknown error}`
             );
-
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         });
     if (keys === undefined) {
-        throw new Error("Error fetching session keys!");
+        const err = new Error("Error fetching session keys!");
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
     }
 
     try {
