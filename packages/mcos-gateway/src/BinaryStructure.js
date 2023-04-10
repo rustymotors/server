@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry } from "mcos/shared";
-
 /**
  * Convert to zero padded hex
  *
@@ -139,12 +137,11 @@ export class BinaryStructure {
                 "There are not enough fields to hold the bytestream. " +
                     "Please slice() the input if you are using part."
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
+
             throw err;
         }
 
-        this.#log(
-            "debug",
+        this.#log("debug", 
             `Attempting to deserialize ${byteStream.byteLength} bytes into ${this._fields.length} fields for a total of ${this._byteLength} bytes`
         );
 
@@ -153,8 +150,7 @@ export class BinaryStructure {
             const indexes = { start: f.offset, end: f.offset + f.size };
             this.#log("debug", `Taking data: ${JSON.stringify(indexes)}`);
             const value = byteStream.slice(indexes.start, indexes.end);
-            this.#log(
-                "debug",
+            this.#log("debug", 
                 `Setting ${f.name} with value of ${toHex(value)}, size ${
                     value.byteLength
                 }`
@@ -184,9 +180,7 @@ export class BinaryStructure {
             return f.name === fieldName;
         });
         if (typeof selectedField === "undefined") {
-            const err = new Error(`No field found with name: ${fieldName}`);
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
-            throw err;
+            throw new Error(`No field found with name: ${fieldName}`);
         }
         return selectedField;
     }
@@ -203,8 +197,7 @@ export class BinaryStructure {
         const selectedField = this.get(fieldName);
         this.#log("debug", "Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
-        this.#log(
-            "debug",
+        this.#log("debug", 
             `Getting a value of ${toHex(value)} from the ${
                 selectedField.name
             } field with type of ${type} and size of (${value.byteLength},${
@@ -240,7 +233,6 @@ export class BinaryStructure {
                     value.byteLength
                 }, ${value}`
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
     }
@@ -256,8 +248,7 @@ export class BinaryStructure {
         const selectedField = this.get(fieldName);
         this.#log("debug", "Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
-        this.#log(
-            "debug",
+        this.#log("debug", 
             `Setting a value of ${newValue} to the ${selectedField.name} field with type of ${type})`
         );
         try {
@@ -269,7 +260,6 @@ export class BinaryStructure {
                 const err = new Error(
                     `Value must be 0 or 1 for a boolean type`
                 );
-                Sentry.addBreadcrumb({ level: "error", message: err.message });
                 throw err;
             }
             if (type === "u16") {
@@ -291,7 +281,6 @@ export class BinaryStructure {
             const err = new Error(
                 `${selectedField.name} is not a number. It is type ${selectedField.type}`
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         } catch (error) {
             const err = new Error(
@@ -301,8 +290,18 @@ export class BinaryStructure {
                     value.byteLength
                 }, ${newValue}`
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
+    }
+
+    /**
+     *
+     *
+     * @author Drazi Crendraven
+     * @returns {string}  
+     * @memberof BinaryStructure
+     */
+    toString() {
+        return JSON.stringify(this._fields)
     }
 }
