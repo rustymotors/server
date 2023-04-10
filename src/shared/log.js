@@ -35,7 +35,6 @@ export const getLevelValue = (level) => {
  */
 export function GetServerLogger(logLevel = "info") {
     const defaultLevelValue = getLevelValue(logLevel);
-    console.log(defaultLevelValue)
 
     /**
      * @param {import("mcos/shared").ELOG_LEVEL} level
