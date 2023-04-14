@@ -15,8 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import chai, { expect } from "chai";
-import { AdminServer } from "../src/adminServer.js";
-import { resetQueue } from "../src/resetQueue.js";
+import { AdminServer } from "mcos/gateway";
+import { resetQueue } from "mcos/gateway";
 import { describe, it } from "mocha";
 import { Socket } from "net";
 

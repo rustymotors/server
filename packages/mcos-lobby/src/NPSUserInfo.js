@@ -1,4 +1,4 @@
-import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
+import { NPSMessage } from "mcos/gateway";
 
 /**
  * @class NPSUserInfo

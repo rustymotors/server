@@ -15,9 +15,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { AdminServer } from "./adminServer.js";
-import { AuthLogin } from "../../mcos-auth/src/index.js";
-import { PatchServer } from "../../mcos-patch/src/index.js";
-import { ShardServer } from "../../mcos-shard/src/index.js";
+import { AuthLogin } from "mcos/auth";
+import { PatchServer } from "mcos/patch";
+import { ShardServer } from "mcos/shard";
 
 /**
  * Routes incomming HTTP requests

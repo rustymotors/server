@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import chai from "chai";
-import { GSMessageBase } from "../src/GMessageBase.js";
+import { GSMessageBase } from "mcos/gateway";
 import { describe, it } from "mocha";
 
 chai.should();

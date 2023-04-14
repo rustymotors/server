@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import chai from "chai";
-import { BinaryStructure } from "../src/BinaryStructure.js";
+import { BinaryStructure } from "mcos/gateway";
 import { describe, it } from "mocha";
 
 chai.should();

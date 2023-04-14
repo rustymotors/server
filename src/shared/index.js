@@ -1,5 +1,6 @@
 /**
  * @module mcos/shared
+ * @exports {}
  */
 
 export {
