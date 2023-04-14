@@ -17,7 +17,6 @@
 import { Sentry } from "mcos/shared";
 import { ShardEntry } from "./shard-entry.js";
 import { createServer } from "node:https";
-import process from "node:process";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
