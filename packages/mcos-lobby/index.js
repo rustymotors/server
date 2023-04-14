@@ -1,1 +1,1 @@
-export { receiveLobbyData } from "./src/index.js"
+export { receiveLobbyData } from "./src/index.js";

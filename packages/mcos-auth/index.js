@@ -1,1 +1,1 @@
-export { AuthLogin } from "./src/index.js"
+export { AuthLogin } from "./src/index.js";

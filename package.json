@@ -11,11 +11,23 @@
     "AUTHORS"
   ],
   "exports": {
+    "./auth": [
+        "./packages/mcos-auth/index.js"
+      ],
+      "./gateway": [
+        "./packages/mcos-gateway/index.js"
+      ],
     "./login": [
         "./packages/mcos-login/index.js"
       ],
     "./lobby": [
         "./packages/mcos-lobby/index.js"
+      ],
+      "./patch": [
+        "./packages/mcos-patch/index.js"
+      ],
+      "./shard": [
+        "./packages/mcos-shard/index.js"
       ],
       "./persona": [
         "./packages/mcos-persona/index.js"

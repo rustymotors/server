@@ -1,1 +1,1 @@
-export { ShardServer } from "./src/index.js"
+export { ShardServer } from "./src/index.js";

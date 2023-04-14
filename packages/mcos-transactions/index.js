@@ -1,1 +1,1 @@
-export { receiveTransactionsData } from "./src/index.js"
+export { receiveTransactionsData } from "./src/index.js";

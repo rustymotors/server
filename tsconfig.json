@@ -11,9 +11,13 @@
         "strictFunctionTypes": true,
         "allowSyntheticDefaultImports": true,
         "paths": {
+            "mcos/auth": ["./packages/mcos-auth/index.js"],
+            "mcos/gateway": ["./packages/mcos-gateway/index.js"],
             "mcos/lobby": ["./packages/mcos-lobby/index.js"],
             "mcos/login": ["./packages/mcos-login/index.js"],
+            "mcos/patch": ["./packages/mcos-patch/index.js"],
             "mcos/persona": ["./packages/mcos-persona/index.js"],
+            "mcos/shard": ["./packages/mcos-shard/index.js"],
             "mcos/shared": ["./src/shared/index.js"],
             "mcos/structures": ["./src/structures/index.js"],
             "mcos/transactions": ["./packages/mcos-transactions/index.js"]

@@ -1,1 +1,1 @@
-export { PatchServer }  from "./src/index.js"
+export { PatchServer } from "./src/index.js";

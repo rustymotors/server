@@ -1,1 +1,1 @@
-export { receivePersonaData} from "./src/index.js"
+export { receivePersonaData } from "./src/index.js";
