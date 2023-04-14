@@ -11,8 +11,13 @@
         "strictFunctionTypes": true,
         "allowSyntheticDefaultImports": true,
         "paths": {
-            "mcos/shared": ["./src/shared/index.js"]
+            "mcos/lobby": ["./packages/mcos-lobby/index.js"],
+            "mcos/login": ["./packages/mcos-login/index.js"],
+            "mcos/persona": ["./packages/mcos-persona/index.js"],
+            "mcos/shared": ["./src/shared/index.js"],
+            "mcos/structures": ["./src/structures/index.js"],
+            "mcos/transactions": ["./packages/mcos-transactions/index.js"]
         }
     },
-    "exclude": ["node_modules", "**/node_modules/*", "coverage"]
+    "exclude": ["node_modules", "**/node_modules/*", "coverage", "out"]
 }

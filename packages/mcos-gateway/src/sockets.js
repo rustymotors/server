@@ -15,10 +15,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Sentry } from "mcos/shared";
-import { receiveLobbyData } from "../../mcos-lobby/src/index.js";
-import { receiveLoginData } from "../../mcos-login/src/index.js";
-import { receivePersonaData } from "../../mcos-persona/src/index.js";
-import { receiveTransactionsData } from "../../mcos-transactions/src/index.js";
+import { receiveLobbyData } from "mcos/lobby";
+import { receiveLoginData } from "mcos/login";
+import { receivePersonaData } from "mcos/persona";
+import { receiveTransactionsData } from "mcos/transactions";
 import { findOrNewConnection, updateConnection } from "./connections.js";
 import { MessageNode } from "./MessageNode.js";
 

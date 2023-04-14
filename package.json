@@ -11,7 +11,24 @@
     "AUTHORS"
   ],
   "exports": {
-    "./shared": ["./src/shared/index.js"]
+    "./login": [
+        "./packages/mcos-login/index.js"
+      ],
+    "./lobby": [
+        "./packages/mcos-lobby/index.js"
+      ],
+      "./persona": [
+        "./packages/mcos-persona/index.js"
+      ],
+    "./shared": [
+      "./src/shared/index.js"
+    ],
+    "./structures": [
+      "./src/structures/index.js"
+    ],
+    "./transactions": [
+        "./packages/mcos-transactions/index.js"
+      ]
   },
   "type": "module",
   "scripts": {
