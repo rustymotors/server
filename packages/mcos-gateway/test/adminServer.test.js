@@ -15,8 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import chai, { expect } from "chai";
-import { AdminServer } from "mcos/gateway";
-import { resetQueue } from "mcos/gateway";
+import { AdminServer, resetQueue } from "mcos/gateway";
 import { describe, it } from "mocha";
 import { Socket } from "net";
 
@@ -27,7 +26,9 @@ describe("AdminServer", () => {
         it("should return an instance of AdminServer", () => {
             // Arrange
             /**  @type {import("mcos/shared").TServerLogger} */
-            const log = () => { return }
+            const log = () => {
+                return;
+            };
 
             // Act
             const newAdminInstance = AdminServer.getAdminServer(log);
@@ -36,9 +37,11 @@ describe("AdminServer", () => {
             newAdminInstance.should.be.instanceOf(AdminServer);
         });
         it("should return the same instance of AdminServer on multiple calls", () => {
-                        // Arrange
+            // Arrange
             /**  @type {import("mcos/shared").TServerLogger} */
-            const log = () => { return }
+            const log = () => {
+                return;
+            };
 
             // Act
             const admin1 = AdminServer.getAdminServer(log);
@@ -52,7 +55,7 @@ describe("AdminServer", () => {
 
 describe("resetQueue()", function () {
     it("should reset the inQueue property to true for all connections", function () {
-        // arrange        
+        // arrange
         /** @type {import("mcos/shared").TSocketWithConnectionInfo[]} */
         const inputConnectionList = [
             {
