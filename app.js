@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry } from "mcos/shared";
-import { startListeners } from "./packages/mcos-gateway/src/index.js";
-import { setServerConfiguration, GetServerLogger } from "mcos/shared";
+import { startListeners } from "mcos/gateway";
+import { GetServerLogger, Sentry, setServerConfiguration } from "mcos/shared";
 
 const log = GetServerLogger();
 

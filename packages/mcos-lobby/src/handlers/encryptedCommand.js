@@ -1,9 +1,5 @@
+import { NPSMessage, cipherBufferDES, decipherBufferDES } from "mcos/gateway";
 import { Sentry } from "mcos/shared";
-import {
-    cipherBufferDES,
-    decipherBufferDES,
-} from "mcos/gateway";
-import { NPSMessage } from "mcos/gateway";
 
 /**
  * Takes an plaintext command packet and return the encrypted bytes
