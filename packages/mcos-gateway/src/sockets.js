@@ -139,7 +139,11 @@ export async function dataHandler(data, connection, config, log) {
     if (typeof serviceRouters[localPort] !== "undefined") {
         try {
             /** @type {import("mcos/shared").TServiceResponse} */
-            const result = await serviceRouters[localPort](networkBuffer, config, log);
+            const result = await serviceRouters[localPort](
+                networkBuffer,
+                config,
+                log
+            );
 
             const messages = result.messages;
 

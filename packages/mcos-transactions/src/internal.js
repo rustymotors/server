@@ -210,9 +210,10 @@ async function messageReceived(message, dataConnection, log) {
 }
 
 /**
- * @param {import("mcos/shared").TBufferWithConnection} dataConnection
- * @param {import("mcos/shared").TServerLogger} log
- * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
+ * @typedef {module:mcos/shared.TMessageArrayWithConnection} TMessageArrayWithConnection
+ * @param {module:shared.TBufferWithConnection} dataConnection
+ * @param {module:shared.TServerLogger} log
+ * @return {Promise<TMessageArrayWithConnection>}
  */
 export async function handleData(dataConnection, log) {
     const { connection, data } = dataConnection;

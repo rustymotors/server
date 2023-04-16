@@ -174,15 +174,19 @@ export async function handleData(dataConnection, config, log) {
         let err = new Error(
             `The login handler does not support a message code of ${requestCode}. Was the packet routed here in error? Closing the socket`
         );
-        Sentry.addBreadcrumb({level: "error", message: err.message})
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
         dataConnection.connection.socket.end();
         err = new TypeError(`UNSUPPORTED_MESSAGECODE: ${requestCode}`);
-        Sentry.addBreadcrumb({level: "error", message: err.message})
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 
     try {
-        const result = await supportedHandler.handler(dataConnection, config, log);
+        const result = await supportedHandler.handler(
+            dataConnection,
+            config,
+            log
+        );
         log("debug", `Returning with ${result.messages.length} messages`);
         log("debug", "Leaving handleData");
         return result;

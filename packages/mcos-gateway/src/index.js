@@ -21,7 +21,7 @@ import { dataHandler } from "./sockets.js";
 import { httpListener as httpHandler } from "./web.js";
 export { getAllConnections } from "./connections.js";
 export { AdminServer } from "./adminServer.js";
-import Sentry from "@sentry/node"
+import Sentry from "@sentry/node";
 
 Sentry.init({
     dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
@@ -48,7 +48,7 @@ function onSocketError(error, log) {
     if (message.includes("ECONNRESET") === true) {
         return log("debug", "Connection was reset");
     }
-    Sentry.captureException(error)
+    Sentry.captureException(error);
     throw new Error(`Socket error: ${String(error)}`);
 }
 
@@ -63,10 +63,7 @@ function TCPListener(incomingSocket, config, log) {
     const connectionRecord = findOrNewConnection(incomingSocket, log);
 
     const { localPort, remoteAddress } = incomingSocket;
-    log(
-        "debug",
-        `Client ${remoteAddress} connected to port ${localPort}`
-    );
+    log("debug", `Client ${remoteAddress} connected to port ${localPort}`);
 
     incomingSocket.on("end", () => {
         log(
@@ -74,11 +71,11 @@ function TCPListener(incomingSocket, config, log) {
             `Client ${remoteAddress} disconnected from port ${localPort}`
         );
     });
-    incomingSocket.on("data", function incomingSocketDataHandler (data) {
+    incomingSocket.on("data", function incomingSocketDataHandler(data) {
         dataHandler(data, connectionRecord, config, log);
     });
     incomingSocket.on("error", (err) => {
-        onSocketError(err, log)
+        onSocketError(err, log);
     });
 }
 

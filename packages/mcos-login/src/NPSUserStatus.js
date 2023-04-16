@@ -34,7 +34,7 @@ export class NPSUserStatus extends NPSMessage {
     #log;
 
     /** @type {import("mcos/shared").TServerConfiguration} */
-    #config
+    #config;
 
     /**
      *
@@ -44,7 +44,7 @@ export class NPSUserStatus extends NPSMessage {
      */
     constructor(packet, config, log) {
         super("received");
-        this.#config = config
+        this.#config = config;
         this.#log = log;
         log("debug", "Constructing NPSUserStatus");
         this.sessionkey = "";
@@ -71,7 +71,7 @@ export class NPSUserStatus extends NPSMessage {
     extractSessionKeyFromPacket(packet) {
         this.#log("debug", "Extracting key");
         // Decrypt the sessionkey
-        const privateKey = this.#config.privateKeyContents
+        const privateKey = this.#config.privateKeyContents;
 
         const sessionkeyString = Buffer.from(
             packet.subarray(52, -10).toString("utf8"),

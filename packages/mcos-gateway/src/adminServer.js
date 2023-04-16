@@ -87,10 +87,12 @@ export class AdminServer {
     }}
      */
     handleRequest(request) {
-        this.#log("debug", 
+        this.#log(
+            "debug",
             `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );
-        this.#log("debug", 
+        this.#log(
+            "debug",
             `Request received,
       ${JSON.stringify({
           url: request.url,

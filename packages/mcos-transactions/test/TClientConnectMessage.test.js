@@ -24,8 +24,10 @@ describe("TClientConnectMessage", () => {
     describe(".byteLength", () => {
         it("should have a value of 51", () => {
             // Arrange
-            /** @type {import("mcos/shared").TServerLogger} */
-            const log = () => { return };
+            /** @type module:shared.TServerLogger */
+            const log = () => {
+                return;
+            };
             const testMessage = new TClientConnectMessage(log);
 
             // Assert
@@ -35,11 +37,13 @@ describe("TClientConnectMessage", () => {
     describe("#get", () => {
         it("should return a ByteField object when passed a valid field name", () => {
             // Arrange
-            /** @type {import("mcos/shared").TServerLogger} */
-            const log = () => { return };
+            /** @type module:shared/TServerLogger */
+            const log = () => {
+                return;
+            };
 
             const testMessage = new TClientConnectMessage(log);
-            /** @type {import('../../mcos-gateway/src/BinaryStructure.js').ByteField} */
+            /** @type module:mcos/shared/ByteField */
             const expectedField = {
                 name: "customerId",
                 size: 4,

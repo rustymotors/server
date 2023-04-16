@@ -64,11 +64,11 @@ export async function handleData(dataConnection, log) {
                 `Unknown code ${requestCode} was received on port 7003`
             );
             Sentry.addBreadcrumb({ level: "error", message: err.message });
-            log("warning", err.message)
+            log("warning", err.message);
             return {
                 connection: dataConnection.connection,
                 messages: [],
-                log
-            }
+                log,
+            };
     }
 }

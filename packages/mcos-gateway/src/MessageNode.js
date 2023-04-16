@@ -79,14 +79,17 @@ export class MessageNode {
                             "hex"
                         )}: ${error.message}`
                     );
-                    Sentry.addBreadcrumb({level: "error", message: err.message})
+                    Sentry.addBreadcrumb({
+                        level: "error",
+                        message: err.message,
+                    });
                     throw err;
                 }
             }
             const err = new Error(
                 `Unknown error in deserialize: ${String(error)} `
             );
-            Sentry.addBreadcrumb({level: "error", message: err.message})
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw error;
         }
     }

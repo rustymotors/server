@@ -1,0 +1,23 @@
+
+
+{
+    "plugins": [],
+    "recurseDepth": 10,
+    "source": {
+        "include": ["src", "packages"],
+        "includePattern": ".js$",
+        "excludePattern": "(node_modules/|coverage/|jsdocs/)"
+    },
+    "templates": {
+        "cleverLinks": true,
+        "monospaceLinks": true
+    },
+    "opts": {
+        "template": "templates/default",
+        "encoding": "utf8",             
+        "destination": "./out/",        
+        "recurse": true,                
+        "tutorials": "tutorials"
+    }
+}
+

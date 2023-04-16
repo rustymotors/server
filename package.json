@@ -12,26 +12,26 @@
   ],
   "exports": {
     "./auth": [
-        "./packages/mcos-auth/index.js"
-      ],
-      "./gateway": [
-        "./packages/mcos-gateway/index.js"
-      ],
+      "./packages/mcos-auth/index.js"
+    ],
+    "./gateway": [
+      "./packages/mcos-gateway/index.js"
+    ],
     "./login": [
-        "./packages/mcos-login/index.js"
-      ],
+      "./packages/mcos-login/index.js"
+    ],
     "./lobby": [
-        "./packages/mcos-lobby/index.js"
-      ],
-      "./patch": [
-        "./packages/mcos-patch/index.js"
-      ],
-      "./shard": [
-        "./packages/mcos-shard/index.js"
-      ],
-      "./persona": [
-        "./packages/mcos-persona/index.js"
-      ],
+      "./packages/mcos-lobby/index.js"
+    ],
+    "./patch": [
+      "./packages/mcos-patch/index.js"
+    ],
+    "./shard": [
+      "./packages/mcos-shard/index.js"
+    ],
+    "./persona": [
+      "./packages/mcos-persona/index.js"
+    ],
     "./shared": [
       "./src/shared/index.js"
     ],
@@ -39,8 +39,8 @@
       "./src/structures/index.js"
     ],
     "./transactions": [
-        "./packages/mcos-transactions/index.js"
-      ]
+      "./packages/mcos-transactions/index.js"
+    ]
   },
   "type": "module",
   "scripts": {
@@ -49,6 +49,7 @@
     "test": "c8 mocha {src,packages}/**/*.test.js",
     "build:test": "npm run format && npm run build && npm run test",
     "prod": "make prod_node",
+    "jsdoc": "jsdoc -c jsdoc.json",
     "prod:stop": "docker-compose stop",
     "start:dev": "node --trace-deprecation --abort-on-uncaught-exception --openssl-legacy-provider app.js",
     "start:docker": "npm run start:dev 2>&1 | tee -a log/mcos/trace.log"
@@ -66,6 +67,7 @@
     "@types/node": "^18.15.11",
     "c8": "7.13.0",
     "chai": "4.3.7",
+    "jsdoc": "4.0.2",
     "mocha": "10.2.0",
     "prettier": "2.8.7",
     "prettier-eslint": "15.0.1",
@@ -84,10 +86,10 @@
       "lcov"
     ],
     "exclude": [
-        ".yarn",
-        "coverage",
-        "**/*.test.js",
-        "**/*.d.ts"
+      ".yarn",
+      "coverage",
+      "**/*.test.js",
+      "**/*.d.ts"
     ]
   },
   "eslintConfig": {
@@ -111,6 +113,11 @@
   },
   "packageManager": "yarn@3.5.0",
   "dependencies": {
-    "@sentry/node": "7.47.0"
+    "@sentry-internal/tracing": "^7.48.0",
+    "@sentry/core": "^7.48.0",
+    "@sentry/node": "7.47.0",
+    "@sentry/types": "^7.48.0",
+    "@sentry/utils": "^7.48.0",
+    "bun": "0.5.9"
   }
 }

@@ -15,6 +15,6 @@ export async function _npsHeartbeat(dataConnection, log) {
     return {
         connection: dataConnection.connection,
         messages: [packetResult],
-        log
+        log,
     };
 }

@@ -141,7 +141,8 @@ export class BinaryStructure {
             throw err;
         }
 
-        this.#log("debug", 
+        this.#log(
+            "debug",
             `Attempting to deserialize ${byteStream.byteLength} bytes into ${this._fields.length} fields for a total of ${this._byteLength} bytes`
         );
 
@@ -150,7 +151,8 @@ export class BinaryStructure {
             const indexes = { start: f.offset, end: f.offset + f.size };
             this.#log("debug", `Taking data: ${JSON.stringify(indexes)}`);
             const value = byteStream.slice(indexes.start, indexes.end);
-            this.#log("debug", 
+            this.#log(
+                "debug",
                 `Setting ${f.name} with value of ${toHex(value)}, size ${
                     value.byteLength
                 }`
@@ -197,7 +199,8 @@ export class BinaryStructure {
         const selectedField = this.get(fieldName);
         this.#log("debug", "Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
-        this.#log("debug", 
+        this.#log(
+            "debug",
             `Getting a value of ${toHex(value)} from the ${
                 selectedField.name
             } field with type of ${type} and size of (${value.byteLength},${
@@ -248,7 +251,8 @@ export class BinaryStructure {
         const selectedField = this.get(fieldName);
         this.#log("debug", "Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
-        this.#log("debug", 
+        this.#log(
+            "debug",
             `Setting a value of ${newValue} to the ${selectedField.name} field with type of ${type})`
         );
         try {
@@ -298,10 +302,10 @@ export class BinaryStructure {
      *
      *
      * @author Drazi Crendraven
-     * @returns {string}  
+     * @returns {string}
      * @memberof BinaryStructure
      */
     toString() {
-        return JSON.stringify(this._fields)
+        return JSON.stringify(this._fields);
     }
 }

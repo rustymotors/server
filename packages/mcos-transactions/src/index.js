@@ -14,6 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * @module transaction
+ * @exports TMessageArrayWithConnection
+ */
+
 import { Sentry } from "mcos/shared";
 import { handleData } from "./internal.js";
 
