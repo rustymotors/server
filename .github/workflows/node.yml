@@ -25,11 +25,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn install
+      - run: npm ci install
       - name: Test
         env:
           NODE_OPTIONS: "--openssl-legacy-provider"
-        run: yarn test
+        run: npm test
       - name: Codecov
         env: # Or as an environment variable
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
