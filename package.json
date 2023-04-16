@@ -111,13 +111,11 @@
     ],
     "rules": {}
   },
-  "packageManager": "yarn@3.5.0",
   "dependencies": {
     "@sentry-internal/tracing": "7.48.0",
     "@sentry/core": "7.48.0",
     "@sentry/node": "7.47.0",
     "@sentry/types": "7.48.0",
-    "@sentry/utils": "7.48.0",
-    "bun": "0.5.9"
+    "@sentry/utils": "7.48.0"
   }
 }
