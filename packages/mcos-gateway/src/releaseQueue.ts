@@ -1,15 +1,14 @@
 /**
  *
- * @param {import("mcos/shared").TSocketWithConnectionInfo[]} connections
+ * @param {TSocketWithConnectionInfo[]} connections
  * @param {string} connectionId
- * @returns {{
-    code: number;
-    headers: import("node:http").OutgoingHttpHeaders | import("node:http").OutgoingHttpHeader[] | undefined | undefined;
-    body: string;
-}}
+ * @returns {TJSONResponse}
  */
 
-export function releaseQueue(connections, connectionId) {
+import { TSocketWithConnectionInfo } from "mcos/shared";
+import { TJSONResponse } from "./adminServer";
+
+export function releaseQueue(connections: TSocketWithConnectionInfo[], connectionId: string): TJSONResponse {
     const connectionToRelease = connections.find((connection) => {
         return connection.id === connectionId;
     });

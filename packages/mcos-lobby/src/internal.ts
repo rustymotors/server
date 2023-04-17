@@ -17,14 +17,14 @@
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
 import { _npsHeartbeat } from "./handlers/heartbeat.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
-import { Sentry } from "mcos/shared";
+import { Sentry, TBufferWithConnection, TMessageArrayWithConnection, TServerLogger } from "mcos/shared";
 
 /**
  * @param {import("mcos/shared").TBufferWithConnection} dataConnection
  * @param {import("mcos/shared").TServerLogger} log
  * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
  */
-export async function handleData(dataConnection, log) {
+export async function handleData(dataConnection: TBufferWithConnection, log: TServerLogger): Promise<TMessageArrayWithConnection> {
     const { localPort, remoteAddress } = dataConnection.connection.socket;
     log(
         "debug",

@@ -18,7 +18,7 @@
             "mcos/patch": ["./packages/mcos-patch/index.js"],
             "mcos/persona": ["./packages/mcos-persona/index.js"],
             "mcos/shard": ["./packages/mcos-shard/index.js"],
-            "mcos/shared": ["./src/shared/index.js"],
+            "mcos/shared": ["./src/shared/index.ts"],
             "mcos/structures": ["./src/structures/index.js"],
             "mcos/transactions": ["./packages/mcos-transactions/index.js"]
         }

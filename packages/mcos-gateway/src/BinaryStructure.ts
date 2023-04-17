@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { FIELD_TYPE, TServerLogger } from "mcos/shared";
+
 /**
  * Convert to zero padded hex
  *
@@ -21,9 +23,9 @@
  * @param {Buffer} data
  * @return {string}
  */
-export function toHex(data) {
+export function toHex(data: Buffer): string {
     /** @type {string[]} */
-    const bytes = [];
+    const bytes: string[] = [];
     data.forEach((b) => {
         bytes.push(b.toString(16).toUpperCase().padStart(2, "0"));
     });
@@ -41,23 +43,23 @@ export function toHex(data) {
  */
 export class ByteField {
     /** @type {string} */
-    name;
+    name: string;
     /** @type {'big' | 'little'} */
-    order;
+    order: 'big' | 'little';
     /** @type {number} */
-    offset;
+    offset: number;
     /** @type {number} */
-    size;
-    /** @type {import("mcos/shared").FIELD_TYPE} */
-    type;
+    size: number;
+    /** @type {FIELD_TYPE} */
+    type: FIELD_TYPE;
     /** @type {Buffer} */
-    value;
+    value: Buffer;
     /**
      * Creates an instance of ByteField.
      * @param {ByteField} newField
      * @memberof ByteField
      */
-    constructor(newField) {
+    constructor(newField: ByteField) {
         this.name = newField.name;
         this.order = newField.order;
         this.offset = newField.offset;
@@ -82,18 +84,18 @@ export class BinaryStructure {
      * @protected
      * @type {ByteField[]}
      */
-    _fields = [];
+    _fields: ByteField[] = [];
 
-    /** @type {import("mcos/shared").TServerLogger} */
-    #log;
+    /** @type {TServerLogger} */
+    #log: TServerLogger;
 
     /**
      * Creates an instance of BinaryStructure.
      * @author Drazi Crendraven
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TServerLogger} log
      * @memberof BinaryStructure
      */
-    constructor(log) {
+    constructor(log: TServerLogger) {
         this.#log = log;
         log("debug", "new BinaryStructure");
     }
@@ -101,10 +103,10 @@ export class BinaryStructure {
     /**
      * Add a {@link ByteField} object to the internal fields array
      * @protected
-     * @param {{name: string, order: "big" | "little", size: number, type: import("mcos/shared").FIELD_TYPE, value: Buffer }} field
+     * @param {{name: string, order: "big" | "little", size: number, type: FIELD_TYPE, value: Buffer }} field
      * @memberof BinaryStructure
      */
-    _add(field) {
+    _add(field: { name: string; order: "big" | "little"; size: number; type: FIELD_TYPE; value: Buffer; }) {
         const newField = { ...field, offset: this._byteOffset };
         this.#log("debug", `Adding ${JSON.stringify(newField)}`);
         this._fields.push(newField);
@@ -118,7 +120,7 @@ export class BinaryStructure {
      * @return {Buffer}
      * @memberof BinaryStructure
      */
-    serialize() {
+    serialize(): Buffer {
         let responseBuffer = Buffer.alloc(0);
         this._fields.forEach((f) => {
             responseBuffer = Buffer.concat([responseBuffer, f.value]);
@@ -131,7 +133,7 @@ export class BinaryStructure {
      * @param {Buffer} byteStream
      * @memberof BinaryStructure
      */
-    deserialize(byteStream) {
+    deserialize(byteStream: Buffer) {
         if (byteStream.byteLength > this._byteLength) {
             const err = new Error(
                 "There are not enough fields to hold the bytestream. " +
@@ -167,7 +169,7 @@ export class BinaryStructure {
      *
      * @returns {number}
      */
-    getByteLength() {
+    getByteLength(): number {
         return this._byteLength;
     }
 
@@ -177,7 +179,7 @@ export class BinaryStructure {
      * @return {ByteField}
      * @memberof BinaryStructure
      */
-    get(fieldName) {
+    get(fieldName: string): ByteField {
         const selectedField = this._fields.find((f) => {
             return f.name === fieldName;
         });
@@ -194,7 +196,7 @@ export class BinaryStructure {
      * @returns {string | number | boolean}
      * @memberof BinaryStructure
      */
-    getValue(fieldName) {
+    getValue(fieldName: string): string | number | boolean {
         this.#log("debug", "Calling get() in BinaryStructure..");
         const selectedField = this.get(fieldName);
         this.#log("debug", "Calling get() in BinaryStructure.. success");
@@ -246,7 +248,7 @@ export class BinaryStructure {
      * @param {number} newValue
      * @returns
      */
-    setValueNumber(fieldName, newValue) {
+    setValueNumber(fieldName: string, newValue: number) {
         this.#log("debug", "Calling setValueNumber() in BinaryStructure..");
         const selectedField = this.get(fieldName);
         this.#log("debug", "Calling get() in BinaryStructure.. success");
@@ -305,7 +307,7 @@ export class BinaryStructure {
      * @returns {string}
      * @memberof BinaryStructure
      */
-    toString() {
+    toString(): string {
         return JSON.stringify(this._fields);
     }
 }

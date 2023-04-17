@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry } from "mcos/shared";
+import { Sentry, TBufferWithConnection, TEncryptionSession, TServerLogger, TSessionRecord, TSocketWithConnectionInfo } from "mcos/shared";
 import { createCipheriv, createDecipheriv } from "node:crypto";
 
-/** @type {import("mcos/shared").TEncryptionSession[]} */
-const encryptionSessions = [];
+/** @type {TEncryptionSession[]} */
+const encryptionSessions: TEncryptionSession[] = [];
 
 /**
  * @global
@@ -28,11 +28,11 @@ const encryptionSessions = [];
  */
 
 /**
- * @param {import("mcos/shared").TSocketWithConnectionInfo} dataConnection
- * @param {import("mcos/shared").TSessionRecord} keys
- * @returns {import("mcos/shared").TEncryptionSession}
+ * @param {TSocketWithConnectionInfo} dataConnection
+ * @param {TSessionRecord} keys
+ * @returns {TEncryptionSession}
  */
-function generateEncryptionPair(dataConnection, keys) {
+function generateEncryptionPair(dataConnection: TSocketWithConnectionInfo, keys: TSessionRecord): TEncryptionSession {
     // For use on Lobby packets
     const { sessionKey, sKey } = keys;
     const stringKey = Buffer.from(sessionKey, "hex");
@@ -57,8 +57,8 @@ function generateEncryptionPair(dataConnection, keys) {
     const tsCipher = createCipheriv("rc4", stringKey.subarray(0, 16), "");
     const tsDecipher = createDecipheriv("rc4", stringKey.subarray(0, 16), "");
 
-    /** @type {import("mcos/shared").TEncryptionSession} */
-    const newSession = {
+    /** @type {TEncryptionSession} */
+    const newSession: TEncryptionSession = {
         connectionId: dataConnection.id,
         remoteAddress: dataConnection.remoteAddress,
         localPort: dataConnection.localPort,
@@ -75,11 +75,11 @@ function generateEncryptionPair(dataConnection, keys) {
 
 /**
  *
- * @param {import("mcos/shared").TBufferWithConnection} dataConnection
- * @param {import("mcos/shared").TServerLogger} log
- * @returns {import("mcos/shared").TEncryptionSession}
+ * @param {TBufferWithConnection} dataConnection
+ * @param {TServerLogger} log
+ * @returns {TEncryptionSession}
  */
-export function selectEncryptors(dataConnection, log) {
+export function selectEncryptors(dataConnection: TBufferWithConnection, log: TServerLogger): TEncryptionSession {
     const { localPort, remoteAddress } = dataConnection.connection;
 
     if (
@@ -117,12 +117,12 @@ export function selectEncryptors(dataConnection, log) {
 
 /**
  *
- * @param {import("mcos/shared").TSocketWithConnectionInfo} dataConnection
- * @param {import("mcos/shared").TSessionRecord} keys
- * @param {import("mcos/shared").TServerLogger} log
- * @returns {import("mcos/shared").TEncryptionSession}
+ * @param {TSocketWithConnectionInfo} dataConnection
+ * @param {TSessionRecord} keys
+ * @param {TServerLogger} log
+ * @returns {TEncryptionSession}
  */
-export function createEncrypters(dataConnection, keys, log) {
+export function createEncrypters(dataConnection: TSocketWithConnectionInfo, keys: TSessionRecord, log: TServerLogger): TEncryptionSession {
     const newSession = generateEncryptionPair(dataConnection, keys);
 
     log(
@@ -137,10 +137,10 @@ export function createEncrypters(dataConnection, keys, log) {
 /**
  * Update the internal connection record
  * @param {string} connectionId
- * @param {import("mcos/shared").TEncryptionSession} updatedSession
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TEncryptionSession} updatedSession
+ * @param {TServerLogger} log
  */
-export function updateEncryptionSession(connectionId, updatedSession, log) {
+export function updateEncryptionSession(connectionId: string, updatedSession: TEncryptionSession, log: TServerLogger) {
     try {
         const index = encryptionSessions.findIndex((e) => {
             return e.connectionId === connectionId;
@@ -157,11 +157,11 @@ export function updateEncryptionSession(connectionId, updatedSession, log) {
 
 /**
  * CipherBufferDES
- * @param {import("mcos/shared").TEncryptionSession} encryptionSession
+ * @param {TEncryptionSession} encryptionSession
  * @param {Buffer} data
- * @return {{session: import("mcos/shared").TEncryptionSession, data: Buffer}}
+ * @return {{session: TEncryptionSession, data: Buffer}}
  */
-export function cipherBufferDES(encryptionSession, data) {
+export function cipherBufferDES(encryptionSession: TEncryptionSession, data: Buffer): { session: TEncryptionSession; data: Buffer; } {
     if (typeof encryptionSession.gsCipher !== "undefined") {
         const ciphered = encryptionSession.gsCipher.update(data);
         return {
@@ -177,11 +177,11 @@ export function cipherBufferDES(encryptionSession, data) {
 
 /**
  * Decrypt a command that is encrypted with DES
- * @param {import("mcos/shared").TEncryptionSession} encryptionSession
+ * @param {TEncryptionSession} encryptionSession
  * @param {Buffer} data
- * @return {{session: import("mcos/shared").TEncryptionSession, data: Buffer}}
+ * @return {{session: TEncryptionSession, data: Buffer}}
  */
-export function decipherBufferDES(encryptionSession, data) {
+export function decipherBufferDES(encryptionSession: TEncryptionSession, data: Buffer): { session: TEncryptionSession; data: Buffer; } {
     if (typeof encryptionSession.gsDecipher !== "undefined") {
         const deciphered = encryptionSession.gsDecipher.update(data);
         return {
@@ -197,12 +197,12 @@ export function decipherBufferDES(encryptionSession, data) {
 
 /**
  * Decrypt the buffer contents
- * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {TBufferWithConnection} dataConnection
  * @param {Buffer} buffer
- * @param {import("mcos/shared").TServerLogger} log
- * @returns {{session: import("mcos/shared").TEncryptionSession, data: Buffer}}
+ * @param {TServerLogger} log
+ * @returns {{session: TEncryptionSession, data: Buffer}}
  */
-export function decryptBuffer(dataConnection, buffer, log) {
+export function decryptBuffer(dataConnection: TBufferWithConnection, buffer: Buffer, log: TServerLogger): { session: TEncryptionSession; data: Buffer; } {
     const encryptionSession = selectEncryptors(dataConnection, log);
     const deciphered = encryptionSession.tsDecipher.update(buffer);
     return {

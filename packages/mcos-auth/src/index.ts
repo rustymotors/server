@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry } from "mcos/shared";
+import { Sentry, TServerLogger } from "mcos/shared";
 
 /**
  * Handles web-based user logins
@@ -30,16 +30,16 @@ export class AuthLogin {
      * @type {AuthLogin}
      * @memberof AuthLogin
      */
-    static _instance;
+    static _instance: AuthLogin;
 
-    /** @type {import("mcos/shared").TServerLogger} */
-    #log;
+    /** @type {TServerLogger} */
+    #log: TServerLogger;
 
     /**
      *
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TServerLogger} log
      */
-    constructor(log) {
+    constructor(log: TServerLogger) {
         this.#log = log;
     }
 
@@ -47,11 +47,11 @@ export class AuthLogin {
      * Get the single instance of the class
      *
      * @static
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TServerLogger} log
      * @return {AuthLogin}
      * @memberof AuthLogin
      */
-    static getInstance(log) {
+    static getInstance(log: TServerLogger): AuthLogin {
         if (!AuthLogin._instance) {
             AuthLogin._instance = new AuthLogin(log);
         }
@@ -64,7 +64,7 @@ export class AuthLogin {
      * @return {string}
      * @memberof! WebServer
      */
-    _handleGetTicket() {
+    _handleGetTicket(): string {
         return "Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e";
     }
 
@@ -76,7 +76,7 @@ export class AuthLogin {
      * @param {import('node:http').IncomingMessage} request
      * @param {import('node:http').ServerResponse} response
      */
-    handleRequest(request, response) {
+    handleRequest(request: import('node:http').IncomingMessage, response: import('node:http').ServerResponse): import('node:http').ServerResponse {
         this.#log(
             "debug",
             `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
@@ -93,7 +93,7 @@ export class AuthLogin {
      * @private
      * @param {import('node:net').Socket} socket
      */
-    _socketEventHandler(socket) {
+    _socketEventHandler(socket: import('node:net').Socket) {
         socket.on("error", (error) => {
             const err = new Error(
                 `[AuthLogin] SSL Socket Error: ${error.message}`

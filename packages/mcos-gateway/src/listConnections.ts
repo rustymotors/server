@@ -1,18 +1,27 @@
+export type TConnection = {
+    id: string;
+    remoteAddress: string;
+    inQueue: boolean;
+};
 /**
  *
- * @param {import("mcos/shared").TSocketWithConnectionInfo[]} connections
+ * @param {TSocketWithConnectionInfo[]} connections
  * @returns {{
     code: number;
-    headers: import("node:http").OutgoingHttpHeaders | import("node:http").OutgoingHttpHeader[] | undefined;
+    headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined;
     body: string;
 }}
  */
 
-export function listConnections(connections) {
+import { TSocketWithConnectionInfo } from "mcos/shared";
+import { TJSONResponse } from "./adminServer";
+
+export function listConnections(connections: TSocketWithConnectionInfo[]): TJSONResponse {
+
     /**
-     * @type {{ id: string; remoteAddress: string; inQueue: boolean; }[]}
+     * @type {}
      */
-    let response = [];
+    let response: TConnection[] = [];
     connections.forEach((connection) => {
         response.push({
             id: connection.id,

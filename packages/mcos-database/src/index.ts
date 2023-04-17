@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry } from "mcos/shared";
+import { Sentry, TDatabaseManager, TServerLogger, TSessionRecord } from "mcos/shared";
 
 /**
  * This class abstracts database methods
@@ -22,40 +22,40 @@ import { Sentry } from "mcos/shared";
  */
 export class DatabaseManager {
     /** @type {import('mcos/shared').TSession[]} */
-    sessions = [];
+    sessions: import('mcos/shared').TSession[] = [];
 
     /** @type {import('./models/Lobby.js').Lobby[]} */
-    lobbies = [];
+    lobbies: import('./models/Lobby.js').Lobby[] = [];
 
     /**
      *
      *
      * @private
      * @static
-     * @type {import("mcos/shared").TDatabaseManager}
+     * @type {TDatabaseManager}
      * @memberof DatabaseManager
      */
-    static _instance;
+    static _instance: TDatabaseManager;
 
-    /** @type {import("mcos/shared").TServerLogger} */
-    #log;
+    /** @type {TServerLogger} */
+    #log: TServerLogger;
 
     /**
      * Creates an instance of DatabaseManager.
      *
      * Please use {@link DatabaseManager.getInstance()} instead
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TServerLogger} log
      * @memberof DatabaseManager
      */
-    constructor(log) {
+    constructor(log: TServerLogger) {
         this.#log = log;
     }
     /**
      * Return the instance of the DatabaseManager class
-     * @param {import("mcos/shared").TServerLogger} log
-     * @returns {import("mcos/shared").TDatabaseManager}
+     * @param {TServerLogger} log
+     * @returns {TDatabaseManager}
      */
-    static getInstance(log) {
+    static getInstance(log: TServerLogger): TDatabaseManager {
         if (!DatabaseManager._instance) {
             DatabaseManager._instance = new DatabaseManager(log);
         }
@@ -66,9 +66,9 @@ export class DatabaseManager {
     /**
      * Locate customer session encryption key in the database
      * @param {number} customerId
-     * @returns {Promise<import("mcos/shared").TSessionRecord>}
+     * @returns {Promise<TSessionRecord>}
      */
-    async fetchSessionKeyByCustomerId(customerId) {
+    async fetchSessionKeyByCustomerId(customerId: number): Promise<TSessionRecord> {
         const record = this.sessions.find((session) => {
             return session.customerId === customerId;
         });
@@ -86,7 +86,7 @@ export class DatabaseManager {
      * @param {string} connectionId
      * @returns {Promise<import('mcos/shared').TSessionRecord>}
      */
-    async fetchSessionKeyByConnectionId(connectionId) {
+    async fetchSessionKeyByConnectionId(connectionId: string): Promise<TSessionRecord> {
         const record = await this.sessions.find((session) => {
             return session.connectionId === connectionId;
         });
@@ -108,11 +108,11 @@ export class DatabaseManager {
      * @param {string} connectionId
      * @returns {Promise<void>}
      */
-    async updateSessionKey(customerId, sessionKey, contextId, connectionId) {
+    async updateSessionKey(customerId: number, sessionKey: string, contextId: string, connectionId: string): Promise<void> {
         const sKey = sessionKey.slice(0, 16);
 
         /** @type {import('mcos/shared').TSession} */
-        const updatedSession = {
+        const updatedSession: import('mcos/shared').TSession = {
             customerId,
             sessionKey,
             sKey,

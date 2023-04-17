@@ -15,13 +15,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import * as http from "node:http";
-import { createServer as createSocketServer } from "node:net";
+import { Socket, createServer as createSocketServer } from "node:net";
 import { findOrNewConnection } from "./connections.js";
 import { dataHandler } from "./sockets.js";
 import { httpListener as httpHandler } from "./web.js";
 export { getAllConnections } from "./connections.js";
 export { AdminServer } from "./adminServer.js";
 import Sentry from "@sentry/node";
+import type { TServerConfiguration, TServerLogger } from "mcos/shared";
 
 Sentry.init({
     dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
@@ -40,10 +41,10 @@ const listeningPortList = [
 /**
  *
  * @param {any} error
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TServerLogger} log
  * @returns
  */
-function onSocketError(error, log) {
+function onSocketError(error: any, log: TServerLogger) {
     const message = String(error);
     if (message.includes("ECONNRESET") === true) {
         return log("debug", "Connection was reset");
@@ -55,10 +56,10 @@ function onSocketError(error, log) {
 /**
  *
  * @param {import('node:net').Socket} incomingSocket
- * @param {import("mcos/shared").TServerConfiguration} config
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TServerConfiguration} config
+ * @param {TServerLogger} log
  */
-function TCPListener(incomingSocket, config, log) {
+function TCPListener(incomingSocket: Socket, config: TServerConfiguration, log: TServerLogger) {
     // Get a connection record
     const connectionRecord = findOrNewConnection(incomingSocket, log);
 
@@ -82,11 +83,11 @@ function TCPListener(incomingSocket, config, log) {
 /**
  *
  * @param {import('node:net').Socket} incomingSocket
- * @param {import("mcos/shared").TServerConfiguration} config
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TServerConfiguration} config
+ * @param {TServerLogger} log
  * @returns
  */
-function socketListener(incomingSocket, config, log) {
+function socketListener(incomingSocket: Socket, config: TServerConfiguration, log: TServerLogger) {
     log(
         "debug",
         `[gate]Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
@@ -111,9 +112,9 @@ function socketListener(incomingSocket, config, log) {
 /**
  *
  * @param {number} port
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TServerLogger} log
  */
-function serverListener(port, log) {
+function serverListener(port: number, log: TServerLogger) {
     const listeningPort = String(port).length ? String(port) : "unknown";
     log("debug", `Listening on port ${listeningPort}`);
 }
@@ -122,10 +123,10 @@ function serverListener(port, log) {
  *
  * Start listening on ports
  * @author Drazi Crendraven
- * @param {import("mcos/shared").TServerConfiguration} config
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TServerConfiguration} config
+ * @param {TServerLogger} log
  */
-export function startListeners(config, log) {
+export function startListeners(config: TServerConfiguration, log: TServerLogger) {
     log("info", "Server starting");
 
     listeningPortList.forEach((port) => {

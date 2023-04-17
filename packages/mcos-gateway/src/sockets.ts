@@ -14,13 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry } from "mcos/shared";
+import { ELOG_LEVEL, Sentry, TBinaryStructure, TBufferWithConnection, TMessageNode, TServerConfiguration, TServerLogger, TServiceResponse, TSocketWithConnectionInfo } from "mcos/shared";
 import { receiveLobbyData } from "mcos/lobby";
 import { receiveLoginData } from "mcos/login";
 import { receivePersonaData } from "mcos/persona";
 import { receiveTransactionsData } from "mcos/transactions";
 import { findOrNewConnection, updateConnection } from "./connections.js";
 import { MessageNode } from "./MessageNode.js";
+import { interfaces } from "mocha";
+import { Socket } from "net";
+import { NPSMessage } from "./NPSMessage.js";
 
 /**
  * Convert to zero padded hex
@@ -29,19 +32,26 @@ import { MessageNode } from "./MessageNode.js";
  * @param {Buffer} data
  * @return {string}
  */
-export function toHex(data) {
+export function toHex(data: Buffer): string {
     /** @type {string[]} */
-    const bytes = [];
+    const bytes: string[] = [];
     data.forEach((b) => {
         bytes.push(b.toString(16).toUpperCase().padStart(2, "0"));
     });
     return bytes.join("");
 }
 
+export interface TServiceRouter {
+    (
+        connection: TBufferWithConnection, 
+        config: TServerConfiguration, 
+        log: TServerLogger): Promise<TServiceResponse>
+}
+
 /**
- * @type {Record<number, (arg0: import("mcos/shared").TBufferWithConnection, config: import("mcos/shared").TServerConfiguration, log: import("mcos/shared").TServerLogger) => Promise<import("mcos/shared").TServiceResponse>>}
+ * @type {TServiceRouter}
  */
-const serviceRouters = {
+const serviceRouters: Record<number, TServiceRouter> = {
     8226: receiveLoginData,
     8228: receivePersonaData,
     7003: receiveLobbyData,
@@ -50,11 +60,11 @@ const serviceRouters = {
 
 /**
  *
- * @param {import("mcos/shared").TNPSMessage[] | import("mcos/shared").TMessageNode[] | import("mcos/shared").TBinaryStructure[]} messages
- * @param {import("mcos/shared").TSocketWithConnectionInfo} outboundConnection
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TNPSMessage[] | TMessageNode[] | TBinaryStructure[]} messages
+ * @param {TSocketWithConnectionInfo} outboundConnection
+ * @param {TServerLogger} log
  */
-function sendMessages(messages, outboundConnection, log) {
+function sendMessages(messages: NPSMessage[] | TMessageNode[] | TBinaryStructure[], outboundConnection: TSocketWithConnectionInfo, log: TServerLogger) {
     messages.forEach((f) => {
         if (
             outboundConnection.useEncryption === true &&
@@ -93,17 +103,17 @@ function sendMessages(messages, outboundConnection, log) {
  * The onData handler
  * takes the data buffer and creates a {@link BufferWithConnection} object
  * @param {Buffer} data
- * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
- * @param {import("mcos/shared").TServerConfiguration} config
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TSocketWithConnectionInfo} connection
+ * @param {TServerConfiguration} config
+ * @param {TServerLogger} log
  * @return {Promise<void>}
  */
-export async function dataHandler(data, connection, config, log) {
+export async function dataHandler(data: Buffer, connection: TSocketWithConnectionInfo, config: TServerConfiguration, log: TServerLogger): Promise<void> {
     log("debug", `data prior to proccessing: ${data.toString("hex")}`);
 
     // Link the data and the connection together
-    /** @type {import("mcos/shared").TBufferWithConnection} */
-    const networkBuffer = {
+    /** @type {TBufferWithConnection} */
+    const networkBuffer: TBufferWithConnection = {
         connectionId: connection.id,
         connection,
         data,
@@ -138,7 +148,7 @@ export async function dataHandler(data, connection, config, log) {
 
     if (typeof serviceRouters[localPort] !== "undefined") {
         try {
-            /** @type {import("mcos/shared").TServiceResponse} */
+            /** @type {TServiceResponse} */
             const result = await serviceRouters[localPort](
                 networkBuffer,
                 config,
@@ -171,11 +181,11 @@ export async function dataHandler(data, connection, config, log) {
  * Server listener method
  *
  * @param {import('node:net').Socket} socket
- * @param {import("mcos/shared").TServerConfiguration} config
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TServerConfiguration} config
+ * @param {TServerLogger} log
  * @return {void}
  */
-export function TCPHandler(socket, config, log) {
+export function TCPHandler(socket: Socket, config: any, log: TServerLogger): void {
     // Received a new connection
     // Turn it into a connection object
     const connectionRecord = findOrNewConnection(socket, log);
@@ -201,10 +211,10 @@ export function TCPHandler(socket, config, log) {
             `Client ${remoteAddress} disconnected from port ${localPort}`
         );
     });
-    socket.on("data", async (data) => {
+    socket.on("data", async (data: any) => {
         await dataHandler(data, connectionRecord, config, log);
     });
-    socket.on("error", (error) => {
+    socket.on("error", (error: any) => {
         const message = String(error);
         if (message.includes("ECONNRESET") === true) {
             return log("debug", "Connection was reset");

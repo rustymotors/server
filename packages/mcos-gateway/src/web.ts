@@ -14,20 +14,22 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { IncomingMessage, ServerResponse } from "http";
 import { AdminServer } from "./adminServer.js";
 import { AuthLogin } from "mcos/auth";
 import { PatchServer } from "mcos/patch";
 import { ShardServer } from "mcos/shard";
+import { TServerConfiguration, TServerLogger } from "mcos/shared";
 
 /**
  * Routes incomming HTTP requests
- * @param {import('node:http').IncomingMessage} req
- * @param {import('node:http').ServerResponse} res
- * @param {import("mcos/shared").TServerConfiguration} config
- * @param {import("mcos/shared").TServerLogger} log
- * @returns {import('node:http').ServerResponse}
+ * @param {IncomingMessage} req
+ * @param {ServerResponse} res
+ * @param {TServerConfiguration} config
+ * @param {TServerLogger} log
+ * @returns {ServerResponse}
  */
-export function httpListener(req, res, config, log) {
+export function httpListener(req: IncomingMessage, res: ServerResponse<IncomingMessage>, config: TServerConfiguration, log: TServerLogger): ServerResponse {
     if (typeof req.url !== "undefined" && req.url.startsWith("/AuthLogin")) {
         log("debug", "ssl routing request to login web server");
         return AuthLogin.getInstance(log).handleRequest(req, res);

@@ -14,19 +14,20 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry } from "mcos/shared";
+import { Sentry, TServerLogger, TSocketWithConnectionInfo } from "mcos/shared";
 import { randomUUID } from "node:crypto";
+import { Socket } from "node:net";
 
-/** @type {import("mcos/shared").TSocketWithConnectionInfo[]} */
-const connectionList = [];
+/** @type {TSocketWithConnectionInfo[]} */
+const connectionList: TSocketWithConnectionInfo[] = [];
 
 /**
  *
  *
  * @export
- * @return {import("mcos/shared").TSocketWithConnectionInfo[]}
+ * @return {TSocketWithConnectionInfo[]}
  */
-export function getAllConnections() {
+export function getAllConnections(): TSocketWithConnectionInfo[] {
     return connectionList;
 }
 
@@ -34,10 +35,10 @@ export function getAllConnections() {
  * Update the internal connection record
  *
  * @param {string} connectionId
- * @param {import("mcos/shared").TSocketWithConnectionInfo} updatedConnection
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TSocketWithConnectionInfo} updatedConnection
+ * @param {TServerLogger} log
  */
-export function updateConnection(connectionId, updatedConnection, log) {
+export function updateConnection(connectionId: string, updatedConnection: TSocketWithConnectionInfo, log: TServerLogger) {
     log("debug", `Updating connection with id: ${connectionId}`);
     try {
         const index = connectionList.findIndex((c) => {
@@ -56,9 +57,9 @@ export function updateConnection(connectionId, updatedConnection, log) {
  * Locate connection by remoteAddress and localPort in the connections array
  * @param {string} remoteAddress
  * @param {number} localPort
- * @return {import("mcos/shared").TSocketWithConnectionInfo | undefined}
+ * @return {TSocketWithConnectionInfo | undefined}
  */
-function findConnectionByAddressAndPort(remoteAddress, localPort) {
+function findConnectionByAddressAndPort(remoteAddress: string, localPort: number): TSocketWithConnectionInfo | undefined {
     return connectionList.find((c) => {
         return c.remoteAddress === remoteAddress && c.localPort === localPort;
     });
@@ -67,11 +68,11 @@ function findConnectionByAddressAndPort(remoteAddress, localPort) {
 /**
  * Creates a new connection object for the socket and adds to list
  * @param {string} connectionId
- * @param {import('node:net').Socket} socket
- * @param {import("mcos/shared").TServerLogger} log
- * @returns {import("mcos/shared").TSocketWithConnectionInfo}
+ * @param {Socket} socket
+ * @param {TServerLogger} log
+ * @returns {TSocketWithConnectionInfo}
  */
-function createNewConnection(connectionId, socket, log) {
+function createNewConnection(connectionId: string, socket: Socket, log: TServerLogger): TSocketWithConnectionInfo {
     const { localPort, remoteAddress } = socket;
 
     if (
@@ -85,8 +86,8 @@ function createNewConnection(connectionId, socket, log) {
         throw err;
     }
 
-    /** @type {import("mcos/shared").TSocketWithConnectionInfo} */
-    const newConnectionRecord = {
+    /** @type {TSocketWithConnectionInfo} */
+    const newConnectionRecord: TSocketWithConnectionInfo = {
         socket,
         remoteAddress,
         localPort,
@@ -103,10 +104,10 @@ function createNewConnection(connectionId, socket, log) {
 /**
  * Add new connection to internal list
  *
- * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
- * @return {import("mcos/shared").TSocketWithConnectionInfo[]}
+ * @param {TSocketWithConnectionInfo} connection
+ * @return {TSocketWithConnectionInfo[]}
  */
-function addConnection(connection) {
+function addConnection(connection: TSocketWithConnectionInfo): TSocketWithConnectionInfo[] {
     connectionList.push(connection);
     return connectionList;
 }
@@ -114,11 +115,11 @@ function addConnection(connection) {
 /**
  * Return an existing connection, or a new one
  *
- * @param {import('node:net').Socket} socket
- * @param {import("mcos/shared").TServerLogger} log
- * @return {import("mcos/shared").TSocketWithConnectionInfo}
+ * @param {Socket} socket
+ * @param {TServerLogger} log
+ * @return {TSocketWithConnectionInfo}
  */
-export function findOrNewConnection(socket, log) {
+export function findOrNewConnection(socket: Socket, log: TServerLogger): TSocketWithConnectionInfo {
     const { localPort, remoteAddress } = socket;
 
     if (
@@ -170,6 +171,6 @@ export function findOrNewConnection(socket, log) {
  * @param {Buffer} inputBuffer
  * @return {boolean}
  */
-export function isMCOT(inputBuffer) {
+export function isMCOT(inputBuffer: Buffer): boolean {
     return inputBuffer.toString("utf8", 2, 6) === "TOMC";
 }

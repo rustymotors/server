@@ -18,6 +18,14 @@ import { getAllConnections } from "./index.js";
 import { releaseQueue } from "./releaseQueue.js";
 import { listConnections } from "./listConnections.js";
 import { resetQueue } from "./resetQueue.js";
+import { TServerLogger } from "mcos/shared";
+import { IncomingMessage, OutgoingHttpHeader, OutgoingHttpHeaders } from "node:http";
+
+export type TJSONResponse = {
+    code: number;
+    headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined;
+    body: string;
+};
 
 /**
  * Please use {@link AdminServer.getAdminServer()}
@@ -35,18 +43,18 @@ export class AdminServer {
      * @type {AdminServer}
      * @memberof AdminServer
      */
-    static _instance;
+    static _instance: AdminServer;
 
-    /** @type {import("mcos/shared").TServerLogger} */
-    #log;
+    /** @type {TServerLogger} */
+    #log: TServerLogger;
 
     /**
      * Please use getAdminServer() instead
      * @author Drazi Crendraven
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TServerLogger} log
      * @memberof AdminServer
      */
-    constructor(log) {
+    constructor(log: TServerLogger) {
         this.#log = log;
     }
 
@@ -54,11 +62,11 @@ export class AdminServer {
      * Get the single instance of the class
      *
      * @static
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TServerLogger} log
      * @return {AdminServer}
      * @memberof AdminServer
      */
-    static getAdminServer(log) {
+    static getAdminServer(log: TServerLogger): AdminServer {
         if (typeof AdminServer._instance === "undefined") {
             AdminServer._instance = new AdminServer(log);
         }
@@ -76,17 +84,10 @@ export class AdminServer {
     /**
      * Handle incomming http requests
      *
-     * @param {import('node:http').IncomingMessage} request
-     * @return {{
-        code: number;
-        headers:
-            | import("node:http").OutgoingHttpHeaders
-            | import("node:http").OutgoingHttpHeader[]
-            | undefined;
-        body: string;
-    }}
+     * @param {IncomingMessage} request
+     * @return {TJSONResponse}
      */
-    handleRequest(request) {
+    handleRequest(request: IncomingMessage): TJSONResponse {
         this.#log(
             "debug",
             `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
