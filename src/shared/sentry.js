@@ -1,4 +1,5 @@
 import Sentry from "@sentry/node";
+import { ProfilingIntegration } from "@sentry/profiling-node";
 
 
 class SentryInit {
@@ -23,6 +24,11 @@ function getSentry() {
             // We recommend adjusting this value in production, or using tracesSampler
             // for finer control
             tracesSampleRate: 1.0,
+            profilesSampleRate: 1.0, // Profiling sample rate is relative to tracesSampleRate
+            integrations: [
+              // Add profiling integration to list of integrations
+              new ProfilingIntegration(),
+            ],
         });
     }
     return SentryInit._instance
