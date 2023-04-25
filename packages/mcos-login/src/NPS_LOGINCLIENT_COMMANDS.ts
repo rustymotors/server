@@ -1,11 +1,13 @@
+import { TNPS_COMMAND_MAP } from "mcos/shared";
 /**
  * Commands from the game client to the login server
  * @export
  * @readonly
- * @type {import("../../mcos-lobby/src/NPS_LOBBY_COMMANDS.js").NpsCommandMap[]}
+ * @type {TNPS_COMMAND_MAP[]}
  */
 
-export const NPS_LOGINCLIENT_COMMANDS = [
+
+export const NPS_LOGINCLIENT_COMMANDS: TNPS_COMMAND_MAP[] = [
     { name: "NPS_USER_LOGIN", value: 1281, module: "Login" },
     { name: "NPS_GAME_LOGIN", value: 1282, module: "Login" },
     { name: "NPS_REGISTER_GAME_LOGIN", value: 1283, module: "Login" },

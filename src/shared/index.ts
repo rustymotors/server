@@ -116,6 +116,20 @@ encryptionSession?: TEncryptionSession;
 useEncryption: boolean;
 }
 
+/**
+ * @global
+ * @typedef {object} NpsCommandMap
+ * @property {string} name
+ * @property {number} value
+ * @property {"Lobby" | "Login"} module
+ */
+
+export type TNPS_COMMAND_MAP = {
+    name: string,
+    value: number,
+    module: "Lobby" | "Login"
+}
+
 export {
     setServerConfiguration,
     getServerConfiguration,

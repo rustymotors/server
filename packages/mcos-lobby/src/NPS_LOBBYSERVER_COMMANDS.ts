@@ -1,10 +1,12 @@
+import { TNPS_COMMAND_MAP } from "mcos/shared";
+
 /**
  * Commands from the game server to the game client
  * @export
  * @readonly
- * @type {import("./NPS_LOBBY_COMMANDS.js").NpsCommandMap[]}
+ * @type {TNPS_COMMAND_MAP[]}
  */
-export const NPS_LOBBYSERVER_COMMANDS = [
+export const NPS_LOBBYSERVER_COMMANDS: TNPS_COMMAND_MAP[] = [
     { name: "NPS_FORCE_LOGOFF", value: 513, module: "Lobby" },
     { name: "NPS_USER_LEFT", value: 514, module: "Lobby" },
     { name: "NPS_USER_JOINED", value: 515, module: "Lobby" },

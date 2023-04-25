@@ -26,7 +26,7 @@ import { handleData } from "./internal.js";
  * @param {import("mcos/shared").TServerLogger} log
  * @return {Promise<import("mcos/shared").TServiceResponse>}
  */
-export async function receiveLobbyData(dataConnection: TBufferWithConnection, config: TServerConfiguration, log: TServerLogger) {
+export async function receiveLobbyData(dataConnection: TBufferWithConnection, config: TServerConfiguration, log: TServerLogger): Promise<import("mcos/shared").TServiceResponse> {
     try {
         return await handleData(dataConnection, log);
     } catch (error) {
