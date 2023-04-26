@@ -121,7 +121,7 @@ function addConnection(connection: TSocketWithConnectionInfo): TSocketWithConnec
  */
 export function findOrNewConnection(socket: Socket, log: TServerLogger): TSocketWithConnectionInfo {
     
-    if (socket.closed === true) {
+    if (socket.destroyed === true) {
         // We don't really need a connection record at this point, since the socket is not usable
         log("debug", "We have been passed a closed socket")
 
@@ -142,8 +142,8 @@ export function findOrNewConnection(socket: Socket, log: TServerLogger): TSocket
     const { localPort, remoteAddress } = socket;
 
     Sentry.setTags({
-        remoteAddress,
-        localPort
+        "remoteAddress": remoteAddress  || "empty",
+        "localPort": localPort || "empty"
     })
    
     
