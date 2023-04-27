@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { createServer } from "node:http";
+import { TServerLogger } from "mcos/shared";
+import { IncomingMessage, ServerResponse, createServer } from "node:http";
 
 export const CastanetResponse = {
     body: Buffer.from("cafebeef00000000000003", "hex"),
@@ -33,10 +34,10 @@ export class PatchServer {
     /**
      * @type {PatchServer}
      */
-    static _instance;
+    static _instance: PatchServer;
 
-    /** @type {import("mcos/shared").TServerLogger} */
-    #log;
+    /** @type {TServerLogger} */
+    #log: TServerLogger;
 
     /**
      * Please use getInstance() instead
@@ -44,7 +45,7 @@ export class PatchServer {
      * @param {*} log
      * @memberof PatchServer
      */
-    constructor(log) {
+    constructor(log: any) {
         this.#log = log;
     }
 
@@ -52,11 +53,11 @@ export class PatchServer {
      * Return the instance of the PatchServer class
      *
      * @static
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TServerLogger} log
      * @return {PatchServer}
      * @memberof PatchServer
      */
-    static getInstance(log) {
+    static getInstance(log: TServerLogger): PatchServer {
         if (!PatchServer._instance) {
             PatchServer._instance = new PatchServer(log);
         }
@@ -91,11 +92,11 @@ export class PatchServer {
 
     /**
      * Returns the hard-coded value that tells the client there are no updates or patches
-     * @param {import('node:http').IncomingMessage} request
-     * @param {import('node:http').ServerResponse} response
-     * @returns {import('node:http').ServerResponse}
+     * @param {IncomingMessage} request
+     * @param {ServerResponse} response
+     * @returns {ServerResponse}
      */
-    castanetResponse(request, response) {
+    castanetResponse(request: IncomingMessage, response: ServerResponse): ServerResponse {
         this.#log(
             "debug",
             `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
@@ -110,11 +111,11 @@ export class PatchServer {
 
     /**
      * Routes incomming HTTP requests
-     * @param {import('node:http').IncomingMessage} request
-     * @param {import('node:http').ServerResponse} response
-     * @returns {import('node:http').ServerResponse}
+     * @param {IncomingMessage} request
+     * @param {ServerResponse} response
+     * @returns {ServerResponse}
      */
-    handleRequest(request, response) {
+    handleRequest(request: IncomingMessage, response: ServerResponse): ServerResponse {
         if (
             request.url === "/games/EA_Seattle/MotorCity/UpdateInfo" ||
             request.url === "/games/EA_Seattle/MotorCity/NPS" ||

@@ -20,9 +20,9 @@ import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
 import { Sentry, TBufferWithConnection, TMessageArrayWithConnection, TServerLogger } from "mcos/shared";
 
 /**
- * @param {import("mcos/shared").TBufferWithConnection} dataConnection
- * @param {import("mcos/shared").TServerLogger} log
- * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
+ * @param {TBufferWithConnection} dataConnection
+ * @param {TServerLogger} log
+ * @return {Promise<TMessageArrayWithConnection>}
  */
 export async function handleData(dataConnection: TBufferWithConnection, log: TServerLogger): Promise<TMessageArrayWithConnection> {
     const { localPort, remoteAddress } = dataConnection.connection.socket;

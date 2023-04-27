@@ -14,15 +14,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { NPSMessage } from "mcos/gateway";
 import { handleData, personaRecords } from "./internal.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
-import { Sentry, TNPSMessage, TPersonaRecord, TServerLogger } from "mcos/shared";
+import { NPSMessage, Sentry, TBufferWithConnection, TNPSMessage, TPersonaRecord, TServerConfiguration, TServerLogger, TServiceResponse } from "mcos/shared";
+import { Socket } from "node:net";
 
 /**
  * Selects a game persona and marks it as in use
  * @param {NPSMessage} requestPacket
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TServerLogger} log
  * @returns {Promise<NPSMessage>}
  */
 export async function handleSelectGamePersona(requestPacket: TNPSMessage, log: TServerLogger): Promise<TNPSMessage> {
@@ -77,25 +77,25 @@ export class PersonaServer {
      */
     static _instance: PersonaServer;
 
-    /** @type {import("mcos/shared").TServerLogger} */
-    #log: import("mcos/shared").TServerLogger;
+    /** @type {TServerLogger} */
+    #log: TServerLogger;
 
     /**
      * PLease use getInstance() instead
      * @author Drazi Crendraven
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TServerLogger} log
      * @memberof PersonaServer
      */
-    constructor(log: import("mcos/shared").TServerLogger) {
+    constructor(log: TServerLogger) {
         this.#log = log;
     }
 
     /**
      * Return the instance of the Persona Server class
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TServerLogger} log
      * @returns {PersonaServer}
      */
-    static getInstance(log: import("mcos/shared").TServerLogger): PersonaServer {
+    static getInstance(log: TServerLogger): PersonaServer {
         if (typeof PersonaServer._instance === "undefined") {
             PersonaServer._instance = new PersonaServer(log);
         }
@@ -291,12 +291,12 @@ export class PersonaServer {
     /**
      *
      *
-     * @param {import('node:net').Socket} socket
+     * @param {Socket} socket
      * @param {NPSMessage} packet
      * @return {void}
      * @memberof PersonaServer
      */
-    sendPacket(socket: import('node:net').Socket, packet: NPSMessage): void {
+    sendPacket(socket: Socket, packet: NPSMessage): void {
         try {
             // deepcode ignore WrongNumberOfArgs: False alert
             socket.write(packet.serialize());
@@ -436,12 +436,12 @@ export class PersonaServer {
  * Entry and exit point for the persona service
  *
  * @export
- * @param {import("mcos/shared").TBufferWithConnection} dataConnection
- * @param {import("mcos/shared").TServerConfiguration} config
- * @param {import("mcos/shared").TServerLogger} log
- * @return {Promise<import("mcos/shared").TServiceResponse>}
+ * @param {TBufferWithConnection} dataConnection
+ * @param {TServerConfiguration} config
+ * @param {TServerLogger} log
+ * @return {Promise<TServiceResponse>}
  */
-export async function receivePersonaData(dataConnection: import("mcos/shared").TBufferWithConnection, config: import("mcos/shared").TServerConfiguration, log: import("mcos/shared").TServerLogger): Promise<import("mcos/shared").TServiceResponse> {
+export async function receivePersonaData(dataConnection: TBufferWithConnection, config: TServerConfiguration, log: TServerLogger): Promise<TServiceResponse> {
     try {
         return await handleData(dataConnection, log);
     } catch (error) {

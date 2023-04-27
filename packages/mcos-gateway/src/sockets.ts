@@ -23,7 +23,7 @@ import { findOrNewConnection, updateConnection } from "./connections.js";
 import { MessageNode } from "./MessageNode.js";
 import { interfaces } from "mocha";
 import { Socket } from "net";
-import { NPSMessage } from "./NPSMessage.js";
+import { NPSMessage } from "../../../src/shared/NPSMessage.js";
 
 /**
  * Convert to zero padded hex

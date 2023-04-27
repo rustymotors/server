@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry } from "mcos/shared";
+import { Sentry, TBufferWithConnection, TDatabaseManager, TServerConfiguration, TServerLogger, TServiceResponse, TUserRecordMini } from "mcos/shared";
 import { handleData } from "./internal.js";
 
 /**
@@ -22,13 +22,7 @@ import { handleData } from "./internal.js";
  * @module LoginServer
  */
 
-/**
- * @global
- * @typedef {object} UserRecordMini
- * @property {string} contextId
- * @property {number} customerId
- * @property {number} userId
- */
+
 
 /**
  * Please use {@link LoginServer.getInstance()}
@@ -43,21 +37,21 @@ export class LoginServer {
      * @type {LoginServer}
      * @memberof LoginServer
      */
-    static _instance;
+    static _instance: LoginServer;
 
     #databaseManager;
 
-    /** @type {import("mcos/shared").TServerLogger} */
-    #log;
+    /** @type {TServerLogger} */
+    #log: TServerLogger;
 
     /**
      * Please use getInstance() instead
      * @author Drazi Crendraven
-     * @param {import("mcos/shared").TDatabaseManager} database
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TDatabaseManager} database
+     * @param {TServerLogger} log
      * @memberof LoginServer
      */
-    constructor(database, log) {
+    constructor(database: TDatabaseManager, log: TServerLogger) {
         this.#databaseManager = database;
         this.#log = log;
     }
@@ -66,12 +60,12 @@ export class LoginServer {
      * Get the single instance of the login server
      *
      * @static
-     * @param {import("mcos/shared").TDatabaseManager} database
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TDatabaseManager} database
+     * @param {TServerLogger} log
      * @return {LoginServer}
      * @memberof LoginServer
      */
-    static getInstance(database, log) {
+    static getInstance(database: TDatabaseManager, log: TServerLogger): LoginServer {
         if (typeof LoginServer._instance === "undefined") {
             LoginServer._instance = new LoginServer(database, log);
         }
@@ -84,10 +78,10 @@ export class LoginServer {
      * @param {string} contextId
      * @return {UserRecordMini}
      */
-    _npsGetCustomerIdByContextId(contextId) {
+    _npsGetCustomerIdByContextId(contextId: string): TUserRecordMini {
         this.#log("debug", ">>> _npsGetCustomerIdByContextId");
         /** @type {UserRecordMini[]} */
-        const users = [
+        const users: TUserRecordMini[] = [
             {
                 contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
                 customerId: 0xac_01_00_00,
@@ -137,12 +131,12 @@ export class LoginServer {
  * Entry and exit point of the Login service
  *
  * @export
- * @param {import("mcos/shared").TBufferWithConnection} dataConnection
- * @param {import("mcos/shared").TServerConfiguration} config
- * @param {import("mcos/shared").TServerLogger} log
- * @return {Promise<import("mcos/shared").TServiceResponse>}
+ * @param {TBufferWithConnection} dataConnection
+ * @param {TServerConfiguration} config
+ * @param {TServerLogger} log
+ * @return {Promise<TServiceResponse>}
  */
-export async function receiveLoginData(dataConnection, config, log) {
+export async function receiveLoginData(dataConnection: TBufferWithConnection, config: TServerConfiguration, log: TServerLogger): Promise<TServiceResponse> {
     try {
         log("debug", "Entering login module");
         const response = await handleData(dataConnection, config, log);

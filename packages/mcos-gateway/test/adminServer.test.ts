@@ -16,6 +16,7 @@
 
 import chai, { expect } from "chai";
 import { AdminServer, resetQueue } from "mcos/gateway";
+import { TServerLogger, TSocketWithConnectionInfo } from "mcos/shared";
 import { describe, it } from "mocha";
 import { Socket } from "net";
 
@@ -25,8 +26,8 @@ describe("AdminServer", () => {
     describe(".getAdminServer", () => {
         it("should return an instance of AdminServer", () => {
             // Arrange
-            /**  @type {import("mcos/shared").TServerLogger} */
-            const log = () => {
+            /**  @type {TServerLogger} */
+            const log: TServerLogger = () => {
                 return;
             };
 
@@ -38,8 +39,8 @@ describe("AdminServer", () => {
         });
         it("should return the same instance of AdminServer on multiple calls", () => {
             // Arrange
-            /**  @type {import("mcos/shared").TServerLogger} */
-            const log = () => {
+            /**  @type {TServerLogger} */
+            const log: TServerLogger = () => {
                 return;
             };
 
@@ -56,8 +57,8 @@ describe("AdminServer", () => {
 describe("resetQueue()", function () {
     it("should reset the inQueue property to true for all connections", function () {
         // arrange
-        /** @type {import("mcos/shared").TSocketWithConnectionInfo[]} */
-        const inputConnectionList = [
+        /** @type {TSocketWithConnectionInfo[]} */
+        const inputConnectionList: TSocketWithConnectionInfo[] = [
             {
                 socket: new Socket(),
                 seq: 0,
@@ -92,8 +93,8 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
         ];
-        /** @type {import("mcos/shared").TSocketWithConnectionInfo[]} */
-        const expectedConnectionList = [
+        /** @type {TSocketWithConnectionInfo[]} */
+        const expectedConnectionList: TSocketWithConnectionInfo[] = [
             {
                 socket: new Socket(),
                 seq: 0,
@@ -130,8 +131,8 @@ describe("resetQueue()", function () {
         ];
 
         // act
-        /** @type {import("mcos/shared").TSocketWithConnectionInfo[]} */
-        const result = JSON.parse(resetQueue(inputConnectionList).body);
+        /** @type {TSocketWithConnectionInfo[]} */
+        const result: TSocketWithConnectionInfo[] = JSON.parse(resetQueue(inputConnectionList).body);
 
         // assert
         expect(result[1]?.inQueue).to.equal(expectedConnectionList[1]?.inQueue);

@@ -31,7 +31,7 @@ export class TSMessageBase extends BinaryStructure {
     /**
      * Creates an instance of TSMessageBase.
      * @author Drazi Crendraven
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TServerLogger} log
      * @memberof TSMessageBase
      */
     constructor(log: TServerLogger) {

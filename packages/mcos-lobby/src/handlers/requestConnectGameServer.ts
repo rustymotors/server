@@ -1,9 +1,9 @@
+import { NPSMessage, Sentry, TBufferWithConnection, TMessageArrayWithConnection, TServerLogger } from "mcos/shared";
+import { createEncrypters, selectEncryptors } from "mcos/gateway";
 import { NPSUserInfo } from "../NPSUserInfo.js";
 import { MessagePacket } from "../MessagePacket.js";
-import { Sentry, TBufferWithConnection, TMessageArrayWithConnection, TServerLogger } from "mcos/shared";
 import { getPersonasByPersonaId } from "mcos/persona";
 import { DatabaseManager } from "mcos/database";
-import { NPSMessage, createEncrypters, selectEncryptors } from "mcos/gateway";
 
 /**
  * Convert to zero padded hex

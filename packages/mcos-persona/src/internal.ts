@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
-import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
+import { NPSMessage } from "../../../src/shared/NPSMessage.js";
 import { MessagePacket } from "../../mcos-lobby/src/MessagePacket.js";
 import { Sentry, TBufferWithConnection, TMessageArrayWithConnection, TPersonaRecord, TServerLogger } from "mcos/shared";
 

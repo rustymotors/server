@@ -17,10 +17,10 @@ export function replacerFunc() {
 
 /**
  *
- * @param {import("mcos/shared").TSocketWithConnectionInfo[]} connections
+ * @param {TSocketWithConnectionInfo[]} connections
  * @returns {{
     code: number;
-    headers: import("node:http").OutgoingHttpHeaders | import("node:http").OutgoingHttpHeader[] | undefined;
+    headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined;
     body: string;
 }}
  */

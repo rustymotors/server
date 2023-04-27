@@ -130,6 +130,7 @@ export {
     setServerConfiguration,
     getServerConfiguration,
 } from "./ServerConfiguration.js";
+export { NPSMessage } from "./NPSMessage.js"
 export { GetServerLogger } from "./log.js";
 export { Sentry } from "./sentry.js";
 
@@ -152,4 +153,10 @@ export type TPersonaRecord = {
     name: Buffer,
     personaCount: Buffer,
     shardId: Buffer
+}
+
+export type TUserRecordMini = {
+    contextId: string,
+    customerId: number,
+    userId: number
 }

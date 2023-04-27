@@ -16,6 +16,7 @@
 
 import chai from "chai";
 import { GSMessageBase } from "mcos/gateway";
+import { TServerLogger } from "mcos/shared";
 import { describe, it } from "mocha";
 
 chai.should();
@@ -24,8 +25,8 @@ describe("GSMessageBase", () => {
     describe(".byteLength", () => {
         it("should hvave a value of 2", () => {
             // Arrange
-            /**  @type {import("mcos/shared").TServerLogger} */
-            const log = () => {
+            /**  @type {TServerLogger} */
+            const log: TServerLogger = () => {
                 return;
             };
             const testMessage = new GSMessageBase(log);
@@ -37,8 +38,8 @@ describe("GSMessageBase", () => {
     describe("#deserialize", () => {
         it("should handle an input stream without errors", () => {
             // Arrange
-            /**  @type {import("mcos/shared").TServerLogger} */
-            const log = () => {
+            /**  @type {TServerLogger} */
+            const log: TServerLogger = () => {
                 return;
             };
             const testMessage = new GSMessageBase(log);
@@ -52,13 +53,13 @@ describe("GSMessageBase", () => {
     describe("#get", () => {
         it("should return a ByteField object when passed a valid field name", () => {
             // Arrange
-            /**  @type {import("mcos/shared").TServerLogger} */
-            const log = () => {
+            /**  @type {TServerLogger} */
+            const log: TServerLogger = () => {
                 return;
             };
             const testMessage = new GSMessageBase(log);
             /** @type {import('../src/BinaryStructure.js').ByteField} */
-            const expectedField = {
+            const expectedField: import('../src/BinaryStructure.js').ByteField = {
                 name: "msgId",
                 size: 2,
                 offset: 0,

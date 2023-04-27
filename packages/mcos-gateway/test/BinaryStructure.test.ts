@@ -16,6 +16,7 @@
 
 import chai from "chai";
 import { BinaryStructure } from "mcos/gateway";
+import { TServerLogger } from "mcos/shared";
 import { describe, it } from "mocha";
 
 chai.should();
@@ -24,8 +25,8 @@ describe("BinaryStructure", () => {
     describe(".byteLength", () => {
         it("should have a value of 0", () => {
             // Arrange
-            /**  @type {import("mcos/shared").TServerLogger} */
-            const log = () => {
+            /**  @type {TServerLogger} */
+            const log: TServerLogger = () => {
                 return;
             };
             const testStructure = new BinaryStructure(log);
@@ -37,8 +38,8 @@ describe("BinaryStructure", () => {
     describe("#serialize", () => {
         it("should throw when passed a byteStream larger then the internal fields array", () => {
             // Arrange
-            /**  @type {import("mcos/shared").TServerLogger} */
-            const log = () => {
+            /**  @type {TServerLogger} */
+            const log: TServerLogger = () => {
                 return;
             };
             const inputStream = Buffer.from("This is a pretty decent size.");
@@ -53,8 +54,8 @@ describe("BinaryStructure", () => {
     describe("#get", () => {
         it("should throw when passed a name not found in the internal fields array", () => {
             // Arrange
-            /**  @type {import("mcos/shared").TServerLogger} */
-            const log = () => {};
+            /**  @type {TServerLogger} */
+            const log: TServerLogger = () => {};
             const testStructure = new BinaryStructure(log);
 
             // Assert

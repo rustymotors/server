@@ -12,7 +12,7 @@
         "paths": {
             "mcos/auth": ["./packages/mcos-auth/index.js"],
             "mcos/database": ["./packages/mcos-database/index.js"],
-            "mcos/gateway": ["./packages/mcos-gateway/index.ts"],
+            "mcos/gateway": ["./packages/mcos-gateway/index.js"],
             "mcos/lobby": ["./packages/mcos-lobby/index.js"],
             "mcos/login": ["./packages/mcos-login/index.js"],
             "mcos/patch": ["./packages/mcos-patch/index.js"],

@@ -1,4 +1,4 @@
-import { NPSMessage } from "mcos/gateway";
+import { NPSMessage } from "mcos/shared";
 
 /**
  * @class NPSUserInfo

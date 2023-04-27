@@ -1,5 +1,4 @@
-import { NPSMessage } from "mcos/gateway";
-import { TBufferWithConnection, TMessageArrayWithConnection, TServerLogger } from "mcos/shared";
+import { NPSMessage, TBufferWithConnection, TMessageArrayWithConnection, TServerLogger } from "mcos/shared";
 
 /**
  * @private

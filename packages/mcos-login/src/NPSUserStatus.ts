@@ -1,6 +1,5 @@
 import { privateDecrypt } from "node:crypto";
-import { NPSMessage } from "mcos/gateway";
-import { TNPSMessageJSON } from "mcos/shared";
+import { NPSMessage, TNPSMessageJSON, TServerConfiguration, TServerLogger } from "mcos/shared";
 
 /**
  *
@@ -31,19 +30,19 @@ export class NPSUserStatus extends NPSMessage {
     contextId;
     buffer;
 
-    /** @type {import("mcos/shared").TServerLogger} */
-    #log: import("mcos/shared").TServerLogger;
+    /** @type {TServerLogger} */
+    #log: TServerLogger;
 
-    /** @type {import("mcos/shared").TServerConfiguration} */
-    #config: import("mcos/shared").TServerConfiguration;
+    /** @type {TServerConfiguration} */
+    #config: TServerConfiguration;
 
     /**
      *
      * @param {Buffer} packet
-     * @param {import("mcos/shared").TServerConfiguration} config
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TServerConfiguration} config
+     * @param {TServerLogger} log
      */
-    constructor(packet: Buffer, config: import("mcos/shared").TServerConfiguration, log: import("mcos/shared").TServerLogger) {
+    constructor(packet: Buffer, config: TServerConfiguration, log: TServerLogger) {
         super("received");
         this.#config = config;
         this.#log = log;
@@ -84,7 +83,7 @@ export class NPSUserStatus extends NPSMessage {
 
     /**
      *
-     * @return {import("../../mcos-gateway/src/NPSMessage.js").NPSMessageJSON}
+     * @return {TNPSMessageJSON}
      */
     toJSON(): TNPSMessageJSON {
         this.#log("debug", "Returning as JSON");

@@ -14,15 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { DatabaseManager } from "../../mcos-database/src/index.js";
-import { GSMessageBase } from "../../mcos-gateway/src/GMessageBase.js";
+import { GSMessageBase, } from "mcos/gateway";
+import { NPSMessage, Sentry, TBufferWithConnection, TMessageArrayWithConnection, TServerConfiguration, TServerLogger, TUserRecordMini } from "mcos/shared";
+import { DatabaseManager } from "mcos/database";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { premadeLogin } from "./premadeLogin.js";
-import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
-import { Sentry } from "mcos/shared";
 
-/** @type {import("./index.js").UserRecordMini[]} */
-const userRecords: import("./index.js").UserRecordMini[] = [
+/** @type {TUserRecordMini[]} */
+const userRecords: TUserRecordMini[] = [
     {
         contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
         customerId: 0xac_01_00_00,
@@ -38,12 +37,12 @@ const userRecords: import("./index.js").UserRecordMini[] = [
 /**
  * Process a UserLogin packet
  * @private
- * @param {import("mcos/shared").TBufferWithConnection} dataConnection
- * @param {import("mcos/shared").TServerConfiguration} config
- * @param {import("mcos/shared").TServerLogger} log
- * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
+ * @param {TBufferWithConnection} dataConnection
+ * @param {TServerConfiguration} config
+ * @param {TServerLogger} log
+ * @return {Promise<TMessageArrayWithConnection>}
  */
-async function login(dataConnection: import("mcos/shared").TBufferWithConnection, config: import("mcos/shared").TServerConfiguration, log: import("mcos/shared").TServerLogger): Promise<import("mcos/shared").TMessageArrayWithConnection> {
+async function login(dataConnection: TBufferWithConnection, config: TServerConfiguration, log: TServerLogger): Promise<TMessageArrayWithConnection> {
     const { connectionId, data } = dataConnection;
 
     log("debug", `Received login packet: ${connectionId}`);
@@ -132,8 +131,8 @@ async function login(dataConnection: import("mcos/shared").TBufferWithConnection
      */
 
     // Update the data buffer
-    /** @type {import("mcos/shared").TMessageArrayWithConnection} */
-    const response: import("mcos/shared").TMessageArrayWithConnection = {
+    /** @type {TMessageArrayWithConnection} */
+    const response: TMessageArrayWithConnection = {
         connection: dataConnection.connection,
         messages: [newPacket, newPacket],
         log,
@@ -152,12 +151,12 @@ export const messageHandlers = [
 /**
  *
  *
- * @param {import("mcos/shared").TBufferWithConnection} dataConnection
- * @param {import("mcos/shared").TServerConfiguration} config
- * @param {import("mcos/shared").TServerLogger} log
- * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
+ * @param {TBufferWithConnection} dataConnection
+ * @param {TServerConfiguration} config
+ * @param {TServerLogger} log
+ * @return {Promise<TMessageArrayWithConnection>}
  */
-export async function handleData(dataConnection: import("mcos/shared").TBufferWithConnection, config: import("mcos/shared").TServerConfiguration, log: import("mcos/shared").TServerLogger): Promise<import("mcos/shared").TMessageArrayWithConnection> {
+export async function handleData(dataConnection: TBufferWithConnection, config: TServerConfiguration, log: TServerLogger): Promise<TMessageArrayWithConnection> {
     const { connectionId, data } = dataConnection;
 
     log("debug", `Received Login Server packet: ${connectionId}`);
