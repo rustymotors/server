@@ -123,7 +123,7 @@ export function findOrNewConnection(socket: Socket, log: TServerLogger): TSocket
     
     if (socket.destroyed === true) {
         // We don't really need a connection record at this point, since the socket is not usable
-        log("debug", "We have been passed a closed socket")
+        log("debug", "We have been passed a destroyed socket")
 
         // We do need to return one.
         return {

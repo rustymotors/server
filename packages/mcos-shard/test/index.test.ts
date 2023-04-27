@@ -6,12 +6,13 @@ import {
     handleGetRegistry,
     ShardServer,
 } from "../src/index.js";
+import { TServerConfiguration } from "mcos/shared";
 
 describe("Shard service", () => {
     it("should return an instance when getInstance() is called", () => {
         // arrange
         /** @type {import("mcos/shared").TServerConfiguration} */
-        const config = {
+        const config: TServerConfiguration = {
             certificateFileContents: "",
             EXTERNAL_HOST: "",
             privateKeyContents: "",
@@ -19,7 +20,7 @@ describe("Shard service", () => {
             LOG_LEVEL: "info",
         };
         /** @type {import("mcos/shared").TServerLogger} */
-        const log = () => {
+        const log: import("mcos/shared").TServerLogger = () => {
             return;
         };
 
@@ -36,7 +37,7 @@ describe("Shard service", () => {
         it("should return file contents", () => {
             // arrange
             /** @type {import("mcos/shared").TServerConfiguration} */
-            const config = {
+            const config: import("mcos/shared").TServerConfiguration = {
                 certificateFileContents: "Hello! I'm an SSL cert. Honest.",
                 EXTERNAL_HOST: "",
                 privateKeyContents: "",
@@ -58,7 +59,7 @@ describe("Shard service", () => {
         it("should return file contents", () => {
             // arrange
             /** @type {import("mcos/shared").TServerConfiguration} */
-            const config = {
+            const config: import("mcos/shared").TServerConfiguration = {
                 certificateFileContents: "",
                 EXTERNAL_HOST: "0.10.0.1",
                 privateKeyContents: "",
@@ -80,7 +81,7 @@ describe("Shard service", () => {
         it("should return file contents", () => {
             // arrange
             /** @type {import("mcos/shared").TServerConfiguration} */
-            const config = {
+            const config: import("mcos/shared").TServerConfiguration = {
                 certificateFileContents: "",
                 EXTERNAL_HOST: "",
                 privateKeyContents: "",

@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { NPSMessage } from "mcos/gateway";
 import { handleData, personaRecords } from "./internal.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
-import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
-import { Sentry } from "mcos/shared";
+import { Sentry, TNPSMessage, TPersonaRecord, TServerLogger } from "mcos/shared";
 
 /**
  * Selects a game persona and marks it as in use
@@ -25,7 +25,7 @@ import { Sentry } from "mcos/shared";
  * @param {import("mcos/shared").TServerLogger} log
  * @returns {Promise<NPSMessage>}
  */
-export async function handleSelectGamePersona(requestPacket, log) {
+export async function handleSelectGamePersona(requestPacket: TNPSMessage, log: TServerLogger): Promise<TNPSMessage> {
     log("debug", "_npsSelectGamePersona...");
     log(
         "debug",
@@ -63,17 +63,6 @@ export async function handleSelectGamePersona(requestPacket, log) {
 }
 
 /**
- * @global
- * @typedef {object} PersonaRecord
- * @property { Number} customerId
- * @property {Buffer} id
- * @property {Buffer} maxPersonas
- * @property {Buffer} name
- * @property {Buffer} personaCount
- * @property {Buffer} shardId
- */
-
-/**
  * Please use {@link PersonaServer.getInstance()}
  * @classdesc
  * @property {PersonaRecord[]} personaList
@@ -86,10 +75,10 @@ export class PersonaServer {
      * @type {PersonaServer}
      * @memberof PersonaServer
      */
-    static _instance;
+    static _instance: PersonaServer;
 
     /** @type {import("mcos/shared").TServerLogger} */
-    #log;
+    #log: import("mcos/shared").TServerLogger;
 
     /**
      * PLease use getInstance() instead
@@ -97,7 +86,7 @@ export class PersonaServer {
      * @param {import("mcos/shared").TServerLogger} log
      * @memberof PersonaServer
      */
-    constructor(log) {
+    constructor(log: import("mcos/shared").TServerLogger) {
         this.#log = log;
     }
 
@@ -106,7 +95,7 @@ export class PersonaServer {
      * @param {import("mcos/shared").TServerLogger} log
      * @returns {PersonaServer}
      */
-    static getInstance(log) {
+    static getInstance(log: import("mcos/shared").TServerLogger): PersonaServer {
         if (typeof PersonaServer._instance === "undefined") {
             PersonaServer._instance = new PersonaServer(log);
         }
@@ -120,7 +109,7 @@ export class PersonaServer {
      * @return {Promise<NPSMessage>}
      * @memberof PersonaServer
      */
-    async createNewGameAccount(data) {
+    async createNewGameAccount(data: Buffer): Promise<NPSMessage> {
         const requestPacket = new NPSMessage("received").deserialize(data);
         this.#log(
             "debug",
@@ -156,7 +145,7 @@ export class PersonaServer {
      * @return {Promise<NPSMessage>}
      * @memberof PersonaServer
      */
-    async logoutGameUser(data) {
+    async logoutGameUser(data: Buffer): Promise<NPSMessage> {
         this.#log("debug", "[personaServer] Logging out persona...");
         const requestPacket = new NPSMessage("received").deserialize(data);
         this.#log(
@@ -200,7 +189,7 @@ export class PersonaServer {
      * @return {Promise<NPSMessage>}
      * @memberof PersonaServer
      */
-    async validateLicencePlate(data) {
+    async validateLicencePlate(data: Buffer): Promise<NPSMessage> {
         this.#log("debug", "_npsCheckToken...");
         const requestPacket = new NPSMessage("received").deserialize(data);
         this.#log(
@@ -249,7 +238,7 @@ export class PersonaServer {
      * @param {Buffer} data
      * @return {Promise<NPSMessage>}
      */
-    async validatePersonaName(data) {
+    async validatePersonaName(data: Buffer): Promise<NPSMessage> {
         this.#log("debug", "_npsValidatePersonaName...");
         const requestPacket = new NPSMessage("received").deserialize(data);
 
@@ -307,7 +296,7 @@ export class PersonaServer {
      * @return {void}
      * @memberof PersonaServer
      */
-    sendPacket(socket, packet) {
+    sendPacket(socket: import('node:net').Socket, packet: NPSMessage): void {
         try {
             // deepcode ignore WrongNumberOfArgs: False alert
             socket.write(packet.serialize());
@@ -331,7 +320,7 @@ export class PersonaServer {
      * @param {number} customerId
      * @return {Promise<PersonaRecord[]>}
      */
-    async getPersonasByCustomerId(customerId) {
+    async getPersonasByCustomerId(customerId: number): Promise<TPersonaRecord[]> {
         return personaRecords.filter(
             (persona) => persona.customerId === customerId
         );
@@ -345,7 +334,7 @@ export class PersonaServer {
      * @param {number} customerId
      * @return {Promise<PersonaRecord[]>}
      */
-    async getPersonaMapsByCustomerId(customerId) {
+    async getPersonaMapsByCustomerId(customerId: number): Promise<TPersonaRecord[]> {
         switch (customerId) {
             case 2_868_969_472:
             case 5_551_212:
@@ -360,7 +349,7 @@ export class PersonaServer {
      * @param {Buffer} data
      * @return {Promise<NPSMessage>}
      */
-    async getPersonaMaps(data) {
+    async getPersonaMaps(data: Buffer): Promise<NPSMessage> {
         this.#log("debug", "_npsGetPersonaMaps...");
         const requestPacket = new NPSMessage("received").deserialize(data);
 
@@ -452,7 +441,7 @@ export class PersonaServer {
  * @param {import("mcos/shared").TServerLogger} log
  * @return {Promise<import("mcos/shared").TServiceResponse>}
  */
-export async function receivePersonaData(dataConnection, config, log) {
+export async function receivePersonaData(dataConnection: import("mcos/shared").TBufferWithConnection, config: import("mcos/shared").TServerConfiguration, log: import("mcos/shared").TServerLogger): Promise<import("mcos/shared").TServiceResponse> {
     try {
         return await handleData(dataConnection, log);
     } catch (error) {
@@ -464,4 +453,4 @@ export async function receivePersonaData(dataConnection, config, log) {
     }
 }
 
-export { getPersonasByPersonaId } from "./internal.js";
+

@@ -1,3 +1,4 @@
+import { TPersonaRecord } from "mcos/shared";
 import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
 
 /**
@@ -14,14 +15,14 @@ export class NPSPersonaMapsMessage extends NPSMessage {
      * @type {import('./index.js').PersonaRecord[]}
      * @memberof NPSPersonaMapsMessage
      */
-    personas = [];
+    personas: TPersonaRecord[] = [];
     personaSize;
     personaCount;
     /**
      *
      * @param {"sent" | "received"} direction
      */
-    constructor(direction) {
+    constructor(direction: "sent" | "received") {
         super(direction);
 
         /** @type {import('./index.js').PersonaRecord[]} */
@@ -35,10 +36,10 @@ export class NPSPersonaMapsMessage extends NPSMessage {
 
     /**
      *
-     * @param {import('./index.js').PersonaRecord[]} personas
+     * @param {PersonaRecord[]} personas
      * @return {void}
      */
-    loadMaps(personas) {
+    loadMaps(personas: TPersonaRecord[]): void {
         this.personaCount = personas.length;
         this.personas = personas;
     }
@@ -48,7 +49,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
      * @param {Buffer} buf
      * @return {number}
      */
-    deserializeInt8(buf) {
+    deserializeInt8(buf: Buffer): number {
         return buf.readInt8(0);
     }
 
@@ -57,7 +58,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
      * @param {Buffer} buf
      * @return {number}
      */
-    deserializeInt32(buf) {
+    deserializeInt32(buf: Buffer): number {
         return buf.readInt32BE(0);
     }
 
@@ -67,7 +68,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
      * @return {string}
      * @memberof! NPSPersonaMapsMsg
      */
-    deserializeString(buf) {
+    deserializeString(buf: Buffer): string {
         return buf.toString("utf8");
     }
 
@@ -75,7 +76,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
      *
      * @return {Buffer}
      */
-    serialize() {
+    serialize(): Buffer {
         let index = 0;
         // Create the packet content
         // const packetContent = Buffer.alloc(40);

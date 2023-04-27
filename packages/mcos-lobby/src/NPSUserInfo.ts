@@ -15,7 +15,7 @@ export class NPSUserInfo extends NPSMessage {
      *
      * @param {"sent" | "received"} direction
      */
-    constructor(direction) {
+    constructor(direction: "sent" | "received") {
         super(direction);
         this.userId = 0;
         this.userName = Buffer.from([0x00]); // 30 length
@@ -29,7 +29,7 @@ export class NPSUserInfo extends NPSMessage {
      * @param {Buffer} rawData
      * @return {NPSUserInfo}
      */
-    deserialize(rawData) {
+    deserialize(rawData: Buffer): NPSUserInfo {
         this.userId = rawData.readInt32BE(4);
         this.userName = rawData.slice(8, 38);
         this.userData = rawData.slice(38);
@@ -39,7 +39,7 @@ export class NPSUserInfo extends NPSMessage {
     /**
      * @return {string}
      */
-    dumpInfo() {
+    dumpInfo(): string {
         let message = this.dumpPacketHeader("NPSUserInfo");
         const { userId, userName, userData } = this;
         const userIdString = userId.toString();

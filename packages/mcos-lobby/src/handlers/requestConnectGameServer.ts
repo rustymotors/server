@@ -1,13 +1,9 @@
-import { getPersonasByPersonaId } from "../../../mcos-persona/src/index.js";
 import { NPSUserInfo } from "../NPSUserInfo.js";
-import {
-    createEncrypters,
-    selectEncryptors,
-} from "../../../mcos-gateway/src/encryption.js";
 import { MessagePacket } from "../MessagePacket.js";
-import { DatabaseManager } from "../../../mcos-database/src/index.js";
-import { NPSMessage } from "../../../mcos-gateway/src/NPSMessage.js";
-import { Sentry } from "mcos/shared";
+import { Sentry, TBufferWithConnection, TMessageArrayWithConnection, TServerLogger } from "mcos/shared";
+import { getPersonasByPersonaId } from "mcos/persona";
+import { DatabaseManager } from "mcos/database";
+import { NPSMessage, createEncrypters, selectEncryptors } from "mcos/gateway";
 
 /**
  * Convert to zero padded hex
@@ -16,9 +12,9 @@ import { Sentry } from "mcos/shared";
  * @param {Buffer} data
  * @return {string}
  */
-export function toHex(data) {
+export function toHex(data: Buffer): string {
     /** @type {string[]} */
-    const bytes = [];
+    const bytes: string[] = [];
     data.forEach((b) => {
         bytes.push(b.toString(16).toUpperCase().padStart(2, "0"));
     });
@@ -29,7 +25,7 @@ export function toHex(data) {
  * @param {string} key
  * @return {Buffer}
  */
-export function _generateSessionKeyBuffer(key) {
+export function _generateSessionKeyBuffer(key: string): Buffer {
     const nameBuffer = Buffer.alloc(64);
     Buffer.from(key, "utf8").copy(nameBuffer);
     return nameBuffer;
@@ -39,11 +35,11 @@ export function _generateSessionKeyBuffer(key) {
  * Handle a request to connect to a game server packet
  *
  * @private
- * @param {import("mcos/shared").TBufferWithConnection} dataConnection
- * @param {import("mcos/shared").TServerLogger} log
- * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
+ * @param {TBufferWithConnection} dataConnection
+ * @param {TServerLogger} log
+ * @return {Promise<iTMessageArrayWithConnection>}
  */
-export async function _npsRequestGameConnectServer(dataConnection, log) {
+export async function _npsRequestGameConnectServer(dataConnection: TBufferWithConnection, log: TServerLogger): Promise<TMessageArrayWithConnection> {
     log(
         "debug",
         `[inner] Raw bytes in _npsRequestGameConnectServer: ${toHex(
@@ -86,7 +82,7 @@ export async function _npsRequestGameConnectServer(dataConnection, log) {
     const databaseManager = DatabaseManager.getInstance(log);
     const keys = await databaseManager
         .fetchSessionKeyByCustomerId(customerId)
-        .catch((/** @type {unknown} */ error) => {
+        .catch((/** @type {unknown} */ error: unknown) => {
             if (error instanceof Error) {
                 log(
                     "debug",

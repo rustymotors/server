@@ -1,5 +1,6 @@
 import { privateDecrypt } from "node:crypto";
 import { NPSMessage } from "mcos/gateway";
+import { TNPSMessageJSON } from "mcos/shared";
 
 /**
  *
@@ -25,16 +26,16 @@ import { NPSMessage } from "mcos/gateway";
 
 export class NPSUserStatus extends NPSMessage {
     /** @type {string | null} */
-    sessionKey = null;
+    sessionKey: string | null = null;
     opCode;
     contextId;
     buffer;
 
     /** @type {import("mcos/shared").TServerLogger} */
-    #log;
+    #log: import("mcos/shared").TServerLogger;
 
     /** @type {import("mcos/shared").TServerConfiguration} */
-    #config;
+    #config: import("mcos/shared").TServerConfiguration;
 
     /**
      *
@@ -42,12 +43,12 @@ export class NPSUserStatus extends NPSMessage {
      * @param {import("mcos/shared").TServerConfiguration} config
      * @param {import("mcos/shared").TServerLogger} log
      */
-    constructor(packet, config, log) {
+    constructor(packet: Buffer, config: import("mcos/shared").TServerConfiguration, log: import("mcos/shared").TServerLogger) {
         super("received");
         this.#config = config;
         this.#log = log;
         log("debug", "Constructing NPSUserStatus");
-        this.sessionkey = "";
+        this.sessionKey = "";
 
         // Save the NPS opCode
         this.opCode = packet.readInt16LE(0);
@@ -68,7 +69,7 @@ export class NPSUserStatus extends NPSMessage {
      * @param {Buffer} packet
      * @return {void}
      */
-    extractSessionKeyFromPacket(packet) {
+    extractSessionKeyFromPacket(packet: Buffer): void {
         this.#log("debug", "Extracting key");
         // Decrypt the sessionkey
         const privateKey = this.#config.privateKeyContents;
@@ -78,14 +79,14 @@ export class NPSUserStatus extends NPSMessage {
             "hex"
         );
         const decrypted = privateDecrypt(privateKey, sessionkeyString);
-        this.sessionkey = decrypted.subarray(2, -4).toString("hex");
+        this.sessionKey = decrypted.subarray(2, -4).toString("hex");
     }
 
     /**
      *
      * @return {import("../../mcos-gateway/src/NPSMessage.js").NPSMessageJSON}
      */
-    toJSON() {
+    toJSON(): TNPSMessageJSON {
         this.#log("debug", "Returning as JSON");
         return {
             msgNo: this.msgNo,
@@ -103,14 +104,14 @@ export class NPSUserStatus extends NPSMessage {
     /**
      * @return {string}
      */
-    dumpPacket() {
+    dumpPacket(): string {
         this.#log("debug", "Returning as string");
         let message = this.dumpPacketHeader("NPSUserStatus");
         message = message.concat(
             `NPSUserStatus,
         ${JSON.stringify({
             contextId: this.contextId,
-            sessionkey: this.sessionkey,
+            sessionkey: this.sessionKey,
         })}`
         );
         return message;

@@ -26,7 +26,7 @@ import { createServer } from "node:https";
  * @param {import("mcos/shared").TServerConfiguration} config
  * @return {string}
  */
-export function handleGetCert(config) {
+export function handleGetCert(config: import("mcos/shared").TServerConfiguration): string {
     return config.certificateFileContents;
 }
 
@@ -35,7 +35,7 @@ export function handleGetCert(config) {
  * @param {import("mcos/shared").TServerConfiguration} config
  * @return {string}
  */
-export function handleGetRegistry(config) {
+export function handleGetRegistry(config: import("mcos/shared").TServerConfiguration): string {
     const externalHost = config.EXTERNAL_HOST;
     const patchHost = externalHost;
     const authHost = externalHost;
@@ -74,7 +74,7 @@ export function handleGetRegistry(config) {
  * @param {import("mcos/shared").TServerConfiguration} config
  * @return {string}
  */
-export function handleGetKey(config) {
+export function handleGetKey(config: import("mcos/shared").TServerConfiguration): string {
     return config.publicKeyContents;
 }
 
@@ -97,7 +97,7 @@ export class ShardServer {
      * @type {ShardServer}
      * @memberof ShardServer
      */
-    static instance;
+    static instance: ShardServer;
 
     /**
      *
@@ -106,15 +106,15 @@ export class ShardServer {
      * @type {import('node:http').Server}
      * @memberof ShardServer
      */
-    _server;
+    _server: import('node:http').Server;
     /** @type {string[]} */
-    _possibleShards = [];
+    _possibleShards: string[] = [];
 
     /** @type {import("mcos/shared").TServerLogger} */
-    #log;
+    #log: import("mcos/shared").TServerLogger;
 
     /** @type {import("mcos/shared").TServerConfiguration} */
-    #config;
+    #config: import("mcos/shared").TServerConfiguration;
 
     /**
      * Return the instance of the ShardServer class
@@ -122,7 +122,7 @@ export class ShardServer {
      * @param {import("mcos/shared").TServerLogger} log
      * @returns {ShardServer}
      */
-    static getInstance(config, log) {
+    static getInstance(config: import("mcos/shared").TServerConfiguration, log: import("mcos/shared").TServerLogger): ShardServer {
         if (typeof ShardServer.instance === "undefined") {
             ShardServer.instance = new ShardServer(config, log);
         }
@@ -137,7 +137,7 @@ export class ShardServer {
      * @param {import("mcos/shared").TServerLogger} log
      * @memberof ShardServer
      */
-    constructor(config, log) {
+    constructor(config: import("mcos/shared").TServerConfiguration, log: import("mcos/shared").TServerLogger) {
         this.#config = config;
         this.#log = log;
         this._server = createServer(this.handleRequest.bind(this));
@@ -158,7 +158,7 @@ export class ShardServer {
      * @return {string}
      * @memberof! PatchServer
      */
-    _generateShardList() {
+    _generateShardList(): string {
         const shardHost = this.#config.EXTERNAL_HOST;
         const shardClockTower = new ShardEntry(
             "The Clocktower",
@@ -201,7 +201,7 @@ export class ShardServer {
         this._possibleShards.push(shardTwinPinesMall.formatForShardList());
 
         /** @type {string[]} */
-        const activeShardList = [];
+        const activeShardList: string[] = [];
         activeShardList.push(shardClockTower.formatForShardList());
 
         return activeShardList.join("\n");
@@ -214,7 +214,7 @@ export class ShardServer {
      * @param {import("http").ServerResponse} response
      */
     // deepcode ignore NoRateLimitingForExpensiveWebOperation: Very unlikely to be DDos'ed
-    handleRequest(request, response) {
+    handleRequest(request: import("http").IncomingMessage, response: import("http").ServerResponse): import("node:http").ServerResponse {
         if (request.url === "/cert") {
             response.setHeader(
                 "Content-disposition",

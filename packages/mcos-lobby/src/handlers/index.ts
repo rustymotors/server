@@ -1,9 +1,9 @@
+import { TMessageHandler } from "mcos/shared";
 import { handleEncryptedNPSCommand } from "./encryptedCommand.js";
 import { _npsHeartbeat } from "./heartbeat.js";
 import { _npsRequestGameConnectServer } from "./requestConnectGameServer.js";
 
-/** @type {import("mcos/shared").TMessageHandler[]} */
-export const handlerMap = [
+export const handlerMap: TMessageHandler[] = [
     {
         opCode: 100,
         name: "Connect game server",

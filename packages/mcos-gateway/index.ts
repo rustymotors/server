@@ -8,3 +8,4 @@ export { GSMessageBase } from "./src/GMessageBase.js";
 export { NPSMessage } from "./src/NPSMessage.js";
 export { cipherBufferDES, decipherBufferDES } from "./src/encryption.js";
 export { startListeners } from "./src/index.js"
+export { selectEncryptors, createEncrypters} from "./src/encryption.js"

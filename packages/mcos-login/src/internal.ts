@@ -22,7 +22,7 @@ import { NPSMessage } from "../../mcos-gateway/src/NPSMessage.js";
 import { Sentry } from "mcos/shared";
 
 /** @type {import("./index.js").UserRecordMini[]} */
-const userRecords = [
+const userRecords: import("./index.js").UserRecordMini[] = [
     {
         contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
         customerId: 0xac_01_00_00,
@@ -43,7 +43,7 @@ const userRecords = [
  * @param {import("mcos/shared").TServerLogger} log
  * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
  */
-async function login(dataConnection, config, log) {
+async function login(dataConnection: import("mcos/shared").TBufferWithConnection, config: import("mcos/shared").TServerConfiguration, log: import("mcos/shared").TServerLogger): Promise<import("mcos/shared").TMessageArrayWithConnection> {
     const { connectionId, data } = dataConnection;
 
     log("debug", `Received login packet: ${connectionId}`);
@@ -60,7 +60,7 @@ async function login(dataConnection, config, log) {
     userStatus.extractSessionKeyFromPacket(data);
     log("debug", "Key extraction success");
 
-    const { contextId, sessionkey } = userStatus;
+    const { contextId, sessionKey } = userStatus;
 
     log(
         "debug",
@@ -91,11 +91,11 @@ async function login(dataConnection, config, log) {
     await DatabaseManager.getInstance(log)
         .updateSessionKey(
             userRecord.customerId,
-            sessionkey,
+            sessionKey ?? "",
             contextId,
             connectionId
         )
-        .catch((/** @type {unknown} */ error) => {
+        .catch((/** @type {unknown} */ error: unknown) => {
             const err = new Error(
                 `Unable to update session key in the database: ${String(error)}`
             );
@@ -133,7 +133,7 @@ async function login(dataConnection, config, log) {
 
     // Update the data buffer
     /** @type {import("mcos/shared").TMessageArrayWithConnection} */
-    const response = {
+    const response: import("mcos/shared").TMessageArrayWithConnection = {
         connection: dataConnection.connection,
         messages: [newPacket, newPacket],
         log,
@@ -157,7 +157,7 @@ export const messageHandlers = [
  * @param {import("mcos/shared").TServerLogger} log
  * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
  */
-export async function handleData(dataConnection, config, log) {
+export async function handleData(dataConnection: import("mcos/shared").TBufferWithConnection, config: import("mcos/shared").TServerConfiguration, log: import("mcos/shared").TServerLogger): Promise<import("mcos/shared").TMessageArrayWithConnection> {
     const { connectionId, data } = dataConnection;
 
     log("debug", `Received Login Server packet: ${connectionId}`);

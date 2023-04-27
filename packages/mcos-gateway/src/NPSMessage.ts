@@ -1,18 +1,4 @@
-/**
- * @global
- * @typedef {object} NPSMessageJSON
- * @property {number} msgNo
- * @property {number | null} opCode
- * @property { number} msgLength
- * @property {number} msgVersion
- * @property {string} content
- * @property {string} contextId
- * @property {"sent" | "received"} direction
- * @property {string | null} sessionKey
- * @property {string} rawBuffer
- */
-
-import { Sentry } from "mcos/shared";
+import { Sentry, TNPSMessageJSON } from "mcos/shared";
 
 /**
  * @class NPSMessage
@@ -26,24 +12,24 @@ import { Sentry } from "mcos/shared";
  */
 export class NPSMessage {
     /** @type {number} */
-    msgNo;
+    msgNo: number;
     /** @type {number} */
-    msgVersion;
+    msgVersion: number;
     /** @type {number} */
-    reserved;
+    reserved: number;
     /** @type {Buffer} */
-    content;
+    content: Buffer;
     /** @type {number} */
-    msgLength;
+    msgLength: number;
     /** @type {"sent" | "received"} */
-    direction;
+    direction: "sent" | "received";
     /** @type {string} */
-    serviceName;
+    serviceName: string;
     /**
      *
      * @param {"sent" | "received"} direction - the direction of the message flow
      */
-    constructor(direction) {
+    constructor(direction: "sent" | "received") {
         this.direction = direction;
         this.msgNo = 0;
         this.msgVersion = 0;
@@ -57,7 +43,7 @@ export class NPSMessage {
      *
      * @param {Buffer} buffer
      */
-    setContent(buffer) {
+    setContent(buffer: Buffer) {
         this.content = buffer;
         this.msgLength = this.content.length + 12; // skipcq: JS-0377
     }
@@ -66,7 +52,7 @@ export class NPSMessage {
      *
      * @return {string}
      */
-    getPacketAsString() {
+    getPacketAsString(): string {
         return this.serialize().toString("hex");
     }
 
@@ -74,7 +60,7 @@ export class NPSMessage {
      *
      * @return {Buffer}
      */
-    serialize() {
+    serialize(): Buffer {
         try {
             const packet = Buffer.alloc(this.msgLength);
             packet.writeInt16BE(this.msgNo, 0);
@@ -112,7 +98,7 @@ export class NPSMessage {
      * @return {NPSMessage}
      * @memberof NPSMessage
      */
-    deserialize(packet) {
+    deserialize(packet: Buffer): NPSMessage {
         this.msgNo = packet.readInt16BE(0);
         this.msgLength = packet.readInt16BE(2);
         this.msgVersion = packet.readInt16BE(4);
@@ -125,7 +111,7 @@ export class NPSMessage {
      * @param {string} messageType
      * @return {string}
      */
-    dumpPacketHeader(messageType) {
+    dumpPacketHeader(messageType: string): string {
         return `NPSMsg/${messageType},
               ${JSON.stringify({
                   direction: this.direction,
@@ -140,7 +126,7 @@ export class NPSMessage {
      * @return {string}
      * @memberof NPSMsg
      */
-    dumpPacket() {
+    dumpPacket(): string {
         return `NPSMsg/NPSMsg,
               ${JSON.stringify({
                   direction: this.direction,
@@ -156,7 +142,7 @@ export class NPSMessage {
      *
      * @return {NPSMessageJSON}
      */
-    toJSON() {
+    toJSON(): TNPSMessageJSON {
         return {
             msgNo: this.msgNo,
             contextId: "",
