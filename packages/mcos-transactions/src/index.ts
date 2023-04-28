@@ -19,19 +19,23 @@
  * @exports TMessageArrayWithConnection
  */
 
-import { Sentry } from "mcos/shared";
+import { Sentry, TBufferWithConnection, TServerConfiguration, TServerLogger, TServiceResponse } from "mcos/shared";
 import { handleData } from "./internal.js";
 
 /**
  * Entry and exit point for the lobby service
  *
  * @export
- * @param {import("mcos/shared").TBufferWithConnection} dataConnection
- * @param {import("mcos/shared").TServerConfiguration} config
- * @param {import("mcos/shared").TServerLogger} log
- * @return {Promise<import("mcos/shared").TServiceResponse>}
+ * @param {TBufferWithConnection} dataConnection
+ * @param {TServerConfiguration} config
+ * @param {TServerLogger} log
+ * @return {Promise<TServiceResponse>}
  */
-export async function receiveTransactionsData(dataConnection, config, log) {
+export async function receiveTransactionsData(
+    dataConnection: TBufferWithConnection,
+    config: TServerConfiguration,
+    log: TServerLogger
+): Promise<TServiceResponse> {
     log("debug", `Entering receiveTransactionsData`);
     try {
         return await handleData(dataConnection, log);

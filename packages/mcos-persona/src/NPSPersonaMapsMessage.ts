@@ -12,7 +12,7 @@ import { NPSMessage } from "../../../src/shared/NPSMessage.js";
 export class NPSPersonaMapsMessage extends NPSMessage {
     /**
      *
-     * @type {import('./index.js').PersonaRecord[]}
+     * @type {TPersonaRecord[]}
      * @memberof NPSPersonaMapsMessage
      */
     personas: TPersonaRecord[] = [];
@@ -25,7 +25,7 @@ export class NPSPersonaMapsMessage extends NPSMessage {
     constructor(direction: "sent" | "received") {
         super(direction);
 
-        /** @type {import('./index.js').PersonaRecord[]} */
+        /** @type {TPersonaRecord[]} */
         this.personas = [];
         // Public personaSize = 1296;
         this.personaSize = 38;

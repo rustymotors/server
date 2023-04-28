@@ -21,7 +21,8 @@
  * @property {StockCar[]} StockCarList
  */
 
-import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
+import { MessageNode } from "mcos/gateway";
+import { StockCar } from "./StockCar.js";
 
 export class StockCarInfoMessage extends MessageNode {
     msgNo;
@@ -32,17 +33,17 @@ export class StockCarInfoMessage extends MessageNode {
     moreToCome;
     /**
      *
-     * @type {import("./StockCar.js").StockCar[]}
+     * @type {StockCar[]}
      * @memberof StockCarInfoMessage
      */
-    StockCarList = [];
+    StockCarList: StockCar[] = [];
     /**
      *
      *
      * @type {string}
      * @memberof StockCarInfoMessage
      */
-    serviceName;
+    serviceName: string;
     /**
      * Creates an instance of StockCarInfoMsg.
      * @class
@@ -51,7 +52,7 @@ export class StockCarInfoMessage extends MessageNode {
      * @param {number} brand
      * @memberof StockCarInfoMsg
      */
-    constructor(starterCash, dealerId, brand) {
+    constructor(starterCash: number, dealerId: number, brand: number) {
         super("sent");
         this.msgNo = 141;
         this.starterCash = starterCash;
@@ -68,9 +69,9 @@ export class StockCarInfoMessage extends MessageNode {
 
     /**
      *
-     * @param {import('./StockCar.js').StockCar} car
+     * @param {StockCar} car
      */
-    addStockCar(car) {
+    addStockCar(car: StockCar) {
         this.StockCarList.push(car);
         this.noCars = this.StockCarList.length;
     }
@@ -79,7 +80,7 @@ export class StockCarInfoMessage extends MessageNode {
      *
      * @return {Buffer}
      */
-    serialize() {
+    serialize(): Buffer {
         // This does not count the StockCar array
         const packet = Buffer.alloc((17 + 9) * this.StockCarList.length);
         packet.writeInt16LE(this.msgNo, 0);
@@ -105,7 +106,7 @@ export class StockCarInfoMessage extends MessageNode {
      * DumpPacket
      * @return {string}
      */
-    dumpPacket() {
+    dumpPacket(): string {
         return `${JSON.stringify({
             msgNo: this.msgNo,
             starterCash: this.starterCash,

@@ -1,16 +1,16 @@
 import { readFileSync } from "node:fs";
 import { GetServerLogger } from "./log.js";
-import { Sentry } from "mcos/shared";
+import { ELOG_LEVEL, Sentry, TServerConfiguration } from "mcos/shared";
 
 /**
  * @module mcos/shared
  */
 class ServerConfiguration {
     /** @type {ServerConfiguration} */
-    static _instance;
+    static _instance: ServerConfiguration;
 
-    /** @type {import("mcos/shared").TServerConfiguration} */
-    _serverConfig;
+    /** @type {TServerConfiguration} */
+    _serverConfig: TServerConfiguration;
 
     /**
      *
@@ -18,14 +18,14 @@ class ServerConfiguration {
      * @param {string} certificateFile
      * @param {string} privateKeyFile
      * @param {string} publicKeyFile
-     * @param {import("mcos/shared").ELOG_LEVEL} [logLevel="INFO"]
+     * @param {ELOG_LEVEL} [logLevel="INFO"]
      */
     constructor(
-        externalHost,
-        certificateFile,
-        privateKeyFile,
-        publicKeyFile,
-        logLevel = "info"
+        externalHost: string,
+        certificateFile: string,
+        privateKeyFile: string,
+        publicKeyFile: string,
+        logLevel: ELOG_LEVEL = "info"
     ) {
         const log = GetServerLogger();
         this._serverConfig = {
@@ -77,16 +77,16 @@ class ServerConfiguration {
  * @param {string} certificateFile
  * @param {string} privateKeyFile
  * @param {string} publicKeyFile
- * @param {import("mcos/shared").ELOG_LEVEL} [logLevel="INFO"]
- * @returns {import("mcos/shared").TServerConfiguration}
+ * @param {ELOG_LEVEL} [logLevel="INFO"]
+ * @returns {TServerConfiguration}
  */
 export function setServerConfiguration(
-    externalHost,
-    certificateFile,
-    privateKeyFile,
-    publicKeyFile,
-    logLevel = "info"
-) {
+    externalHost: string,
+    certificateFile: string,
+    privateKeyFile: string,
+    publicKeyFile: string,
+    logLevel: ELOG_LEVEL = "info"
+): TServerConfiguration {
     if (typeof ServerConfiguration._instance === "undefined") {
         ServerConfiguration._instance = new ServerConfiguration(
             externalHost,
@@ -101,9 +101,9 @@ export function setServerConfiguration(
 
 /**
  *  Get the server configuration
- * @returns {import("mcos/shared").TServerConfiguration}
+ * @returns {TServerConfiguration}
  */
-export function getServerConfiguration() {
+export function getServerConfiguration(): TServerConfiguration {
     if (typeof ServerConfiguration._instance === "undefined") {
         const err = new Error(
             `Configuration not set. Use setServerConfiguration(externalHost, certificateFile, privateKeyFile, publicKeyFile, logLevel?)`

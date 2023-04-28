@@ -14,23 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { FIELD_TYPE, TServerLogger } from "mcos/shared";
-
-/**
- * Convert to zero padded hex
- *
- * @export
- * @param {Buffer} data
- * @return {string}
- */
-export function toHex(data: Buffer): string {
-    /** @type {string[]} */
-    const bytes: string[] = [];
-    data.forEach((b) => {
-        bytes.push(b.toString(16).toUpperCase().padStart(2, "0"));
-    });
-    return bytes.join("");
-}
+import { FIELD_TYPE, TServerLogger, toHex } from "mcos/shared";
 
 /**
  * @class

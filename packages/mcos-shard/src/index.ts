@@ -14,28 +14,29 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry } from "mcos/shared";
+import { Sentry, TServerConfiguration, TServerLogger } from "mcos/shared";
 import { ShardEntry } from "./shard-entry.js";
 import { createServer } from "node:https";
+import { IncomingMessage, Server, ServerResponse } from "node:http";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
 
 /**
  * Read the TLS certificate file
- * @param {import("mcos/shared").TServerConfiguration} config
+ * @param {TServerConfiguration} config
  * @return {string}
  */
-export function handleGetCert(config: import("mcos/shared").TServerConfiguration): string {
+export function handleGetCert(config: TServerConfiguration): string {
     return config.certificateFileContents;
 }
 
 /**
  * Generate Windows registry configuration file for clients
- * @param {import("mcos/shared").TServerConfiguration} config
+ * @param {TServerConfiguration} config
  * @return {string}
  */
-export function handleGetRegistry(config: import("mcos/shared").TServerConfiguration): string {
+export function handleGetRegistry(config: TServerConfiguration): string {
     const externalHost = config.EXTERNAL_HOST;
     const patchHost = externalHost;
     const authHost = externalHost;
@@ -71,10 +72,10 @@ export function handleGetRegistry(config: import("mcos/shared").TServerConfigura
 
 /**
  *  Read TLS public key file to string
- * @param {import("mcos/shared").TServerConfiguration} config
+ * @param {TServerConfiguration} config
  * @return {string}
  */
-export function handleGetKey(config: import("mcos/shared").TServerConfiguration): string {
+export function handleGetKey(config: TServerConfiguration): string {
     return config.publicKeyContents;
 }
 
@@ -103,26 +104,26 @@ export class ShardServer {
      *
      *
      * @private
-     * @type {import('node:http').Server}
+     * @type {Server}
      * @memberof ShardServer
      */
-    _server: import('node:http').Server;
+    _server: Server;
     /** @type {string[]} */
     _possibleShards: string[] = [];
 
-    /** @type {import("mcos/shared").TServerLogger} */
-    #log: import("mcos/shared").TServerLogger;
+    /** @type {TServerLogger} */
+    #log: TServerLogger;
 
-    /** @type {import("mcos/shared").TServerConfiguration} */
-    #config: import("mcos/shared").TServerConfiguration;
+    /** @type {TServerConfiguration} */
+    #config: TServerConfiguration;
 
     /**
      * Return the instance of the ShardServer class
-     * @param {import("mcos/shared").TServerConfiguration} config
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TServerConfiguration} config
+     * @param {TServerLogger} log
      * @returns {ShardServer}
      */
-    static getInstance(config: import("mcos/shared").TServerConfiguration, log: import("mcos/shared").TServerLogger): ShardServer {
+    static getInstance(config: TServerConfiguration, log: TServerLogger): ShardServer {
         if (typeof ShardServer.instance === "undefined") {
             ShardServer.instance = new ShardServer(config, log);
         }
@@ -133,11 +134,11 @@ export class ShardServer {
      * Creates an instance of ShardServer.
      *
      * Please use {@link ShardServer.getInstance()} instead
-     * @param {import("mcos/shared").TServerConfiguration} config
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TServerConfiguration} config
+     * @param {TServerLogger} log
      * @memberof ShardServer
      */
-    constructor(config: import("mcos/shared").TServerConfiguration, log: import("mcos/shared").TServerLogger) {
+    constructor(config: TServerConfiguration, log: TServerLogger) {
         this.#config = config;
         this.#log = log;
         this._server = createServer(this.handleRequest.bind(this));
@@ -209,12 +210,12 @@ export class ShardServer {
 
     /**
      * Handle incoming http requests
-     * @return {import("node:http").ServerResponse}
-     * @param {import("http").IncomingMessage} request
-     * @param {import("http").ServerResponse} response
+     * @return {ServerResponse}
+     * @param {IncomingMessage} request
+     * @param {ServerResponse} response
      */
     // deepcode ignore NoRateLimitingForExpensiveWebOperation: Very unlikely to be DDos'ed
-    handleRequest(request: import("http").IncomingMessage, response: import("http").ServerResponse): import("node:http").ServerResponse {
+    handleRequest(request: IncomingMessage, response: ServerResponse): ServerResponse {
         if (request.url === "/cert") {
             response.setHeader(
                 "Content-disposition",

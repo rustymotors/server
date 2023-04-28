@@ -68,7 +68,7 @@ export const personaRecords: TPersonaRecord[] = [
 /**
  *
  * @param {number} id
- * @return {Promise<import("./index.js").PersonaRecord[]>}
+ * @return {Promise<PersonaRecord[]>}
  */
 export async function getPersonasByPersonaId(id: number): Promise<TPersonaRecord[]> {
     const results = personaRecords.filter((persona) => {
@@ -87,10 +87,10 @@ export async function getPersonasByPersonaId(id: number): Promise<TPersonaRecord
 /**
  * Selects a game persona and marks it as in use
  * @param {NPSMessage} requestPacket
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TServerLogger} log
  * @returns {Promise<NPSMessage>}
  */
-export async function handleSelectGamePersona(requestPacket: NPSMessage, log: import("mcos/shared").TServerLogger): Promise<NPSMessage> {
+export async function handleSelectGamePersona(requestPacket: NPSMessage, log: TServerLogger): Promise<NPSMessage> {
     log("debug", "_npsSelectGamePersona...");
     log(
         "debug",
@@ -131,11 +131,11 @@ export async function handleSelectGamePersona(requestPacket: NPSMessage, log: im
  * Create a new game persona record
  *
  * @param {Buffer} data
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TServerLogger} log
  * @return {Promise<NPSMessage>}
  * @memberof PersonaServer
  */
-async function createNewGameAccount(data: Buffer, log: import("mcos/shared").TServerLogger): Promise<NPSMessage> {
+async function createNewGameAccount(data: Buffer, log: TServerLogger): Promise<NPSMessage> {
     const requestPacket = new NPSMessage("received").deserialize(data);
     log(
         "debug",
@@ -168,11 +168,11 @@ async function createNewGameAccount(data: Buffer, log: import("mcos/shared").TSe
  * Log out a game persona
  *
  * @param {Buffer} data
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TServerLogger} log
  * @return {Promise<NPSMessage>}
  * @memberof PersonaServer
  */
-async function logoutGameUser(data: Buffer, log: import("mcos/shared").TServerLogger): Promise<NPSMessage> {
+async function logoutGameUser(data: Buffer, log: TServerLogger): Promise<NPSMessage> {
     log("debug", "[personaServer] Logging out persona...");
     const requestPacket = new NPSMessage("received").deserialize(data);
     log(
@@ -212,7 +212,7 @@ async function logoutGameUser(data: Buffer, log: import("mcos/shared").TServerLo
 /**
  *
  * @param {number} customerId
- * @return {Promise<import("./index.js").PersonaRecord[]>}
+ * @return {Promise<TPersonaRecord[]>}
  */
 async function getPersonasByCustomerId(customerId: number): Promise<TPersonaRecord[]> {
     const results = personaRecords.filter(
@@ -227,7 +227,7 @@ async function getPersonasByCustomerId(customerId: number): Promise<TPersonaReco
  * TODO: Store in a database, instead of being hard-coded
  *
  * @param {number} customerId
- * @return {Promise<import("./index.js").PersonaRecord[]>}
+ * @return {Promise<TPersonaRecord[]>}
  */
 async function getPersonaMapsByCustomerId(customerId: number): Promise<TPersonaRecord[]> {
     switch (customerId) {
@@ -242,10 +242,10 @@ async function getPersonaMapsByCustomerId(customerId: number): Promise<TPersonaR
 /**
  * Handle a get persona maps packet
  * @param {Buffer} data
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TServerLogger} log
  * @return {Promise<NPSMessage>}
  */
-async function getPersonaMaps(data: Buffer, log: import("mcos/shared").TServerLogger): Promise<NPSMessage> {
+async function getPersonaMaps(data: Buffer, log: TServerLogger): Promise<NPSMessage> {
     log("debug", "_npsGetPersonaMaps...");
     const requestPacket = new NPSMessage("received").deserialize(data);
 
@@ -337,10 +337,10 @@ async function getPersonaMaps(data: Buffer, log: import("mcos/shared").TServerLo
  * Check if valid name for new user
  *
  * @param {Buffer} data
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TServerLogger} log
  * @return {Promise<NPSMessage>}
  */
-async function validatePersonaName(data: Buffer, log: import("mcos/shared").TServerLogger): Promise<NPSMessage> {
+async function validatePersonaName(data: Buffer, log: TServerLogger): Promise<NPSMessage> {
     log("debug", "_npsValidatePersonaName...");
     const requestPacket = new NPSMessage("received").deserialize(data);
 
@@ -394,11 +394,11 @@ async function validatePersonaName(data: Buffer, log: import("mcos/shared").TSer
  * Handle a check token packet
  *
  * @param {Buffer} data
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TServerLogger} log
  * @return {Promise<NPSMessage>}
  * @memberof PersonaServer
  */
-async function validateLicencePlate(data: Buffer, log: import("mcos/shared").TServerLogger): Promise<NPSMessage> {
+async function validateLicencePlate(data: Buffer, log: TServerLogger): Promise<NPSMessage> {
     log("debug", "_npsCheckToken...");
     const requestPacket = new NPSMessage("received").deserialize(data);
     log(
@@ -444,9 +444,9 @@ async function validateLicencePlate(data: Buffer, log: import("mcos/shared").TSe
 /**
  *
  *
- * @param {import("mcos/shared").TBufferWithConnection} dataConnection
- * @param {import("mcos/shared").TServerLogger} log
- * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
+ * @param {TBufferWithConnection} dataConnection
+ * @param {TServerLogger} log
+ * @return {Promise<TMessageArrayWithConnection>}
  */
 export async function handleData(dataConnection: TBufferWithConnection, log: TServerLogger): Promise<TMessageArrayWithConnection> {
     const { connection, data } = dataConnection;
@@ -470,8 +470,8 @@ export async function handleData(dataConnection: TBufferWithConnection, log: TSe
                 requestPacket,
                 log
             );
-            /** @type {import("mcos/shared").TMessageArrayWithConnection} */
-            const response: import("mcos/shared").TMessageArrayWithConnection = {
+            /** @type {TMessageArrayWithConnection} */
+            const response: TMessageArrayWithConnection = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
                 log,
@@ -482,8 +482,8 @@ export async function handleData(dataConnection: TBufferWithConnection, log: TSe
         case "507": {
             // NPS_NEW_GAME_ACCOUNT == 0x507
             const responsePacket = await createNewGameAccount(data, log);
-            /** @type {import("mcos/shared").TMessageArrayWithConnection} */
-            const response: import("mcos/shared").TMessageArrayWithConnection = {
+            /** @type {TMessageArrayWithConnection} */
+            const response: TMessageArrayWithConnection = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
                 log,
@@ -494,8 +494,8 @@ export async function handleData(dataConnection: TBufferWithConnection, log: TSe
         case "50f": {
             // NPS_REGISTER_GAME_LOGOUT = 0x50F
             const responsePacket = await logoutGameUser(data, log);
-            /** @type {import("mcos/shared").TMessageArrayWithConnection} */
-            const response: import("mcos/shared").TMessageArrayWithConnection = {
+            /** @type {TMessageArrayWithConnection} */
+            const response: TMessageArrayWithConnection = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
                 log,
@@ -506,8 +506,8 @@ export async function handleData(dataConnection: TBufferWithConnection, log: TSe
         case "532": {
             // NPS_GET_PERSONA_MAPS = 0x532
             const responsePacket = await getPersonaMaps(data, log);
-            /** @type {import("mcos/shared").TMessageArrayWithConnection} */
-            const response: import("mcos/shared").TMessageArrayWithConnection = {
+            /** @type {TMessageArrayWithConnection} */
+            const response: TMessageArrayWithConnection = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
                 log,
@@ -518,8 +518,8 @@ export async function handleData(dataConnection: TBufferWithConnection, log: TSe
         case "533": {
             // NPS_VALIDATE_PERSONA_NAME   = 0x533
             const responsePacket = await validatePersonaName(data, log);
-            /** @type {import("mcos/shared").TMessageArrayWithConnection} */
-            const response: import("mcos/shared").TMessageArrayWithConnection = {
+            /** @type {TMessageArrayWithConnection} */
+            const response: TMessageArrayWithConnection = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
                 log,
@@ -529,8 +529,8 @@ export async function handleData(dataConnection: TBufferWithConnection, log: TSe
         case "534": {
             // NPS_CHECK_TOKEN   = 0x534
             const responsePacket = await validateLicencePlate(data, log);
-            /** @type {import("mcos/shared").TMessageArrayWithConnection} */
-            const response: import("mcos/shared").TMessageArrayWithConnection = {
+            /** @type {TMessageArrayWithConnection} */
+            const response: TMessageArrayWithConnection = {
                 connection: dataConnection.connection,
                 messages: [responsePacket],
                 log,

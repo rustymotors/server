@@ -18,6 +18,7 @@ import chai from "chai";
 import { GSMessageBase } from "mcos/gateway";
 import { TServerLogger } from "mcos/shared";
 import { describe, it } from "mocha";
+import { ByteField } from "../src/BinaryStructure";
 
 chai.should();
 
@@ -58,8 +59,8 @@ describe("GSMessageBase", () => {
                 return;
             };
             const testMessage = new GSMessageBase(log);
-            /** @type {import('../src/BinaryStructure.js').ByteField} */
-            const expectedField: import('../src/BinaryStructure.js').ByteField = {
+            /** @type {ByteField} */
+            const expectedField: ByteField = {
                 name: "msgId",
                 size: 2,
                 offset: 0,

@@ -16,6 +16,7 @@
 
 import { TSMessageBase } from "../../mcos-gateway/src/TMessageBase.js";
 import { BinaryStructure } from "../../mcos-gateway/src/BinaryStructure.js";
+import { TServerLogger } from "mcos/shared";
 
 /**
  *
@@ -32,10 +33,10 @@ import { BinaryStructure } from "../../mcos-gateway/src/BinaryStructure.js";
 export class TLobbyMessage extends TSMessageBase {
     /**
      * Creates an instance of TLobbyMessage.
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TServerLogger} log
      * @memberof TLobbyMessage
      */
-    constructor(log) {
+    constructor(log: TServerLogger) {
         super(log);
         log("debug", "new TLobbyMessage");
         this._add({
@@ -73,7 +74,7 @@ export class TLobbyMessage extends TSMessageBase {
      * DumpPacket
      * @return {string}
      */
-    dumpPacket() {
+    dumpPacket(): string {
         return `TLobbyMessage',
         ${JSON.stringify(this._fields)}`;
     }
@@ -83,10 +84,10 @@ export class LobbyInfo extends BinaryStructure {
     /**
      * Creates an instance of LobbyInfo.
      * @author Drazi Crendraven
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TServerLogger} log
      * @memberof LobbyInfo
      */
-    constructor(log) {
+    constructor(log: TServerLogger) {
         super(log);
         log("debug", "new LobbyInfo");
         this._add({

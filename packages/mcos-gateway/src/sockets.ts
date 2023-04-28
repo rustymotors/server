@@ -180,7 +180,7 @@ export async function dataHandler(data: Buffer, connection: TSocketWithConnectio
 /**
  * Server listener method
  *
- * @param {import('node:net').Socket} socket
+ * @param {Socket} socket
  * @param {TServerConfiguration} config
  * @param {TServerLogger} log
  * @return {void}

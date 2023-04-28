@@ -7,6 +7,13 @@
  * @property {string} riffName - 32
  * @property {string} eTerfName - 256
  */
+export type TLobby = {
+    lobbyId: number,
+    raceTypeId: number,
+    turfId: number,
+    riffName: string,
+    eTurfName: string
+}
 // export class Lobby {
 //     static schema = `CREATE TABLE IF NOT EXISTS "lobbies"
 //     (

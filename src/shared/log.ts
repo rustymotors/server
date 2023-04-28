@@ -1,6 +1,7 @@
 /**
  * @module mcos/shared
  */
+import { ELOG_LEVEL, TServerLogger } from "mcos/shared";
 import { hostname } from "node:os";
 
 // Per syslog.conf(5)
@@ -19,9 +20,9 @@ const levelMappings = {
  *
  *
  * @author Drazi Crendraven
- * @param {import("mcos/shared").ELOG_LEVEL} level
+ * @param {ELOG_LEVEL} level
  */
-export const getLevelValue = (level) => {
+export const getLevelValue = (level: ELOG_LEVEL) => {
     return levelMappings[level];
 };
 
@@ -30,18 +31,18 @@ export const getLevelValue = (level) => {
  *
  * @author Drazi Crendraven
  * @export
- * @param {import("mcos/shared").ELOG_LEVEL} [logLevel="info"]
- * @returns {import("mcos/shared").TServerLogger}
+ * @param {ELOG_LEVEL} [logLevel="info"]
+ * @returns {TServerLogger}
  */
-export function GetServerLogger(logLevel = "info") {
+export function GetServerLogger(logLevel: ELOG_LEVEL = "info"): TServerLogger {
     const defaultLevelValue = getLevelValue(logLevel);
 
     /**
-     * @param {import("mcos/shared").ELOG_LEVEL} level
+     * @param {ELOG_LEVEL} level
      * @param {string} msg
      * @returns {void}
      */
-    return (level, msg) => {
+    return (level: ELOG_LEVEL, msg: string): void => {
         const levelValue = getLevelValue(level);
         if (levelValue > defaultLevelValue) {
             return;

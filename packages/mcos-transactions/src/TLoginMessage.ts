@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { TServerLogger } from "mcos/shared";
 import { TSMessageBase } from "../../mcos-gateway/src/TMessageBase.js";
 /**
  *
@@ -33,10 +34,10 @@ export class TLoginMessage extends TSMessageBase {
 
     /**
      * Creates an instance of TLoginMessage.
-     * @param {import("mcos/shared").TServerLogger} log
+     * @param {TServerLogger} log
      * @memberof TLoginMessage
      */
-    constructor(log) {
+    constructor(log: TServerLogger) {
         super(log);
         log("debug", "new TLoginMessage");
         this._add({
@@ -102,7 +103,7 @@ export class TLoginMessage extends TSMessageBase {
      *
      * @return {number}
      */
-    getAppId() {
+    getAppId(): number {
         return this.appId;
     }
 
@@ -110,7 +111,7 @@ export class TLoginMessage extends TSMessageBase {
      * DumpPacket
      * @return {string}
      */
-    dumpPacket() {
+    dumpPacket(): string {
         return `TLoginMessage',
         ${JSON.stringify(this._fields)}`;
     }

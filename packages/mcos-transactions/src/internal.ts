@@ -14,23 +14,28 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import {
-    decryptBuffer,
-    selectEncryptors,
-} from "../../mcos-gateway/src/encryption.js";
+import { MessageNode, decryptBuffer, selectEncryptors } from "mcos/gateway";
 import { messageHandlers } from "./handlers.js";
-import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
-import { toHex } from "../../mcos-gateway/src/BinaryStructure.js";
-import { Sentry } from "mcos/shared";
+import {
+    Sentry,
+    TBufferWithConnection,
+    TMessageArrayWithConnection,
+    TServerLogger,
+    TServiceResponse,
+    toHex,
+} from "mcos/shared";
 
 /**
  *
  *
  * @param {MessageNode} message
- * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {TBufferWithConnection} dataConnection
  * @return {boolean}
  */
-function shouldMessageBeEncrypted(message, dataConnection) {
+function shouldMessageBeEncrypted(
+    message: MessageNode,
+    dataConnection: TBufferWithConnection
+): boolean {
     return message.flags !== 80 && dataConnection.connection.useEncryption;
 }
 
@@ -38,11 +43,15 @@ function shouldMessageBeEncrypted(message, dataConnection) {
  *
  *
  * @param {MessageNode} message
- * @param {import("mcos/shared").TBufferWithConnection} dataConnection
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TBufferWithConnection} dataConnection
+ * @param {TServerLogger} log
  * @return {{err: Error | null, data: Buffer | null}}
  */
-function decryptTransactionBuffer(message, dataConnection, log) {
+function decryptTransactionBuffer(
+    message: MessageNode,
+    dataConnection: TBufferWithConnection,
+    log: TServerLogger
+): { err: Error | null; data: Buffer | null } {
     const encryptedBuffer = Buffer.from(message.data);
     log(
         "debug",
@@ -73,11 +82,15 @@ function decryptTransactionBuffer(message, dataConnection, log) {
  *
  *
  * @param {MessageNode} message
- * @param {import("mcos/shared").TBufferWithConnection} dataConnection
- * @param {import("mcos/shared").TServerLogger} log
+ * @param {TBufferWithConnection} dataConnection
+ * @param {TServerLogger} log
  * @return {{err: Error | null, data: Buffer | null}}
  */
-function tryDecryptBuffer(message, dataConnection, log) {
+function tryDecryptBuffer(
+    message: MessageNode,
+    dataConnection: TBufferWithConnection,
+    log: TServerLogger
+): { err: Error | null; data: Buffer | null } {
     try {
         return {
             err: null,
@@ -101,7 +114,7 @@ function tryDecryptBuffer(message, dataConnection, log) {
  * @param {number} messageID
  * @return {string}
  */
-function _MSG_STRING(messageID) {
+function _MSG_STRING(messageID: number): string {
     const messageIds = [
         { id: 105, name: "MC_LOGIN" },
         { id: 106, name: "MC_LOGOUT" },
@@ -125,12 +138,16 @@ function _MSG_STRING(messageID) {
 
 /**
  * Route or process MCOTS commands
- * @param {import("mcos/shared").TBufferWithConnection} dataConnection
+ * @param {TBufferWithConnection} dataConnection
  * @param {MessageNode} node
- * @param {import("mcos/shared").TServerLogger} log
- * @returns {Promise<import("mcos/shared").TServiceResponse>}
+ * @param {TServerLogger} log
+ * @returns {Promise<TServiceResponse>}
  */
-async function processInput(dataConnection, node, log) {
+async function processInput(
+    dataConnection: TBufferWithConnection,
+    node: MessageNode,
+    log: TServerLogger
+): Promise<TServiceResponse> {
     const currentMessageNo = node.msgNo;
     const currentMessageString = _MSG_STRING(currentMessageNo);
 
@@ -170,11 +187,15 @@ async function processInput(dataConnection, node, log) {
 /**
  *
  * @param {MessageNode} message
- * @param {import("mcos/shared").TBufferWithConnection} dataConnection
- * @param {import("mcos/shared").TServerLogger} log
- * @returns {Promise<import("mcos/shared").TServiceResponse>}
+ * @param {TBufferWithConnection} dataConnection
+ * @param {TServerLogger} log
+ * @returns {Promise<TServiceResponse>}
  */
-async function messageReceived(message, dataConnection, log) {
+async function messageReceived(
+    message: MessageNode,
+    dataConnection: TBufferWithConnection,
+    log: TServerLogger
+): Promise<TServiceResponse> {
     // if (message.flags && 0x08) {
     //     selectEncryptors(dataConnection.)
     //   debug('Turning on encryption')
@@ -215,7 +236,10 @@ async function messageReceived(message, dataConnection, log) {
  * @param {module:shared.TServerLogger} log
  * @return {Promise<TMessageArrayWithConnection>}
  */
-export async function handleData(dataConnection, log) {
+export async function handleData(
+    dataConnection: TBufferWithConnection,
+    log: TServerLogger
+): Promise<TMessageArrayWithConnection> {
     const { connection, data } = dataConnection;
     const { remoteAddress, localPort } = connection.socket;
 

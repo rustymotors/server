@@ -6,12 +6,12 @@ import {
     handleGetRegistry,
     ShardServer,
 } from "../src/index.js";
-import { TServerConfiguration } from "mcos/shared";
+import { TServerConfiguration, TServerLogger } from "mcos/shared";
 
 describe("Shard service", () => {
     it("should return an instance when getInstance() is called", () => {
         // arrange
-        /** @type {import("mcos/shared").TServerConfiguration} */
+        /** @type {TServerConfiguration} */
         const config: TServerConfiguration = {
             certificateFileContents: "",
             EXTERNAL_HOST: "",
@@ -19,8 +19,8 @@ describe("Shard service", () => {
             publicKeyContents: "",
             LOG_LEVEL: "info",
         };
-        /** @type {import("mcos/shared").TServerLogger} */
-        const log: import("mcos/shared").TServerLogger = () => {
+        /** @type {TServerLogger} */
+        const log: TServerLogger = () => {
             return;
         };
 
@@ -36,8 +36,8 @@ describe("Shard service", () => {
     describe("handleGetCert", () => {
         it("should return file contents", () => {
             // arrange
-            /** @type {import("mcos/shared").TServerConfiguration} */
-            const config: import("mcos/shared").TServerConfiguration = {
+            /** @type {TServerConfiguration} */
+            const config: TServerConfiguration = {
                 certificateFileContents: "Hello! I'm an SSL cert. Honest.",
                 EXTERNAL_HOST: "",
                 privateKeyContents: "",
@@ -58,8 +58,8 @@ describe("Shard service", () => {
     describe("handleGetRegistry", () => {
         it("should return file contents", () => {
             // arrange
-            /** @type {import("mcos/shared").TServerConfiguration} */
-            const config: import("mcos/shared").TServerConfiguration = {
+            /** @type {TServerConfiguration} */
+            const config: TServerConfiguration = {
                 certificateFileContents: "",
                 EXTERNAL_HOST: "0.10.0.1",
                 privateKeyContents: "",
@@ -80,8 +80,8 @@ describe("Shard service", () => {
     describe("handleGetKey", () => {
         it("should return file contents", () => {
             // arrange
-            /** @type {import("mcos/shared").TServerConfiguration} */
-            const config: import("mcos/shared").TServerConfiguration = {
+            /** @type {TServerConfiguration} */
+            const config: TServerConfiguration = {
                 certificateFileContents: "",
                 EXTERNAL_HOST: "",
                 privateKeyContents: "",

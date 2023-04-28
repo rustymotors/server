@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { DatabaseManager } from "../../mcos-database/src/index.js";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { TClientConnectMessage } from "./TClientConnectMessage.js";
 import { TLoginMessage } from "./TLoginMessage.js";
@@ -22,20 +21,29 @@ import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { TLobbyMessage } from "./TLobbyMessage.js";
 import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
 import { StockCar } from "./StockCar.js";
-import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
-import { toHex } from "../../mcos-gateway/src/sockets.js";
-import { createEncrypters } from "../../mcos-gateway/src/encryption.js";
-import { Sentry } from "mcos/shared";
+import {
+    Sentry,
+    TMessageArrayWithConnection,
+    TServerLogger,
+    TSocketWithConnectionInfo,
+    toHex,
+} from "mcos/shared";
+import { MessageNode, createEncrypters } from "mcos/gateway";
+import { DatabaseManager } from "mcos/database";
 
 /**
  *
  * @private
- * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
+ * @param {TSocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @param {import("mcos/shared").TServerLogger} log
- * @return {import("mcos/shared").TMessageArrayWithConnection}
+ * @param {TServerLogger} log
+ * @return {TMessageArrayWithConnection}
  */
-function _setOptions(connection, node, log) {
+function _setOptions(
+    connection: TSocketWithConnectionInfo,
+    node: MessageNode,
+    log: TServerLogger
+): TMessageArrayWithConnection {
     const setOptionsMessage = node;
 
     setOptionsMessage.data = node.serialize();
@@ -58,13 +66,17 @@ function _setOptions(connection, node, log) {
 
 /**
  *
- * @param {import("mcos/shared").TSocketWithConnectionInfo} conn
+ * @param {TSocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @param {import("mcos/shared").TServerLogger} log
- * @return {import("mcos/shared").TMessageArrayWithConnection}
+ * @param {TServerLogger} log
+ * @return {TMessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleSetOptions(conn, node, log) {
+function handleSetOptions(
+    conn: TSocketWithConnectionInfo,
+    node: MessageNode,
+    log: TServerLogger
+): TMessageArrayWithConnection {
     const result = _setOptions(conn, node, log);
     return result;
 }
@@ -72,12 +84,16 @@ function handleSetOptions(conn, node, log) {
 /**
  *
  * @private
- * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
+ * @param {TSocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @param {import("mcos/shared").TServerLogger} log
- * @return {import("mcos/shared").TMessageArrayWithConnection}
+ * @param {TServerLogger} log
+ * @return {TMessageArrayWithConnection}
  */
-function _trackingMessage(connection, node, log) {
+function _trackingMessage(
+    connection: TSocketWithConnectionInfo,
+    node: MessageNode,
+    log: TServerLogger
+): TMessageArrayWithConnection {
     const trackingMessage = node;
 
     trackingMessage.data = node.serialize();
@@ -101,13 +117,17 @@ function _trackingMessage(connection, node, log) {
 /**
  *
  *
- * @param {import("mcos/shared").TSocketWithConnectionInfo} conn
+ * @param {TSocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @param {import("mcos/shared").TServerLogger} log
- * @return {import("mcos/shared").TMessageArrayWithConnection}
+ * @param {TServerLogger} log
+ * @return {TMessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleTrackingMessage(conn, node, log) {
+function handleTrackingMessage(
+    conn: TSocketWithConnectionInfo,
+    node: MessageNode,
+    log: TServerLogger
+): TMessageArrayWithConnection {
     const result = _trackingMessage(conn, node, log);
     return result;
 }
@@ -115,12 +135,16 @@ function handleTrackingMessage(conn, node, log) {
 /**
  *
  * @private
- * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
+ * @param {TSocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @param {import("mcos/shared").TServerLogger} log
- * @return {import("mcos/shared").TMessageArrayWithConnection}
+ * @param {TServerLogger} log
+ * @return {TMessageArrayWithConnection}
  */
-function _updatePlayerPhysical(connection, node, log) {
+function _updatePlayerPhysical(
+    connection: TSocketWithConnectionInfo,
+    node: MessageNode,
+    log: TServerLogger
+): TMessageArrayWithConnection {
     const updatePlayerPhysicalMessage = node;
 
     updatePlayerPhysicalMessage.data = node.serialize();
@@ -144,24 +168,32 @@ function _updatePlayerPhysical(connection, node, log) {
 /**
  *
  *
- * @param {import("mcos/shared").TSocketWithConnectionInfo} conn
+ * @param {TSocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @param {import("mcos/shared").TServerLogger} log
- * @return {import("mcos/shared").TMessageArrayWithConnection}
+ * @param {TServerLogger} log
+ * @return {TMessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleUpdatePlayerPhysical(conn, node, log) {
+function handleUpdatePlayerPhysical(
+    conn: TSocketWithConnectionInfo,
+    node: MessageNode,
+    log: TServerLogger
+): TMessageArrayWithConnection {
     const result = _updatePlayerPhysical(conn, node, log);
     return result;
 }
 
 /**
- * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
+ * @param {TSocketWithConnectionInfo} connection
  * @param {MessageNode} packet
- * @param {import("mcos/shared").TServerLogger} log
- * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
+ * @param {TServerLogger} log
+ * @return {Promise<TMessageArrayWithConnection>}
  */
-async function clientConnect(connection, packet, log) {
+async function clientConnect(
+    connection: TSocketWithConnectionInfo,
+    packet: MessageNode,
+    log: TServerLogger
+): Promise<TMessageArrayWithConnection> {
     /**
      * Let's turn it into a ClientConnectMsg
      */
@@ -238,13 +270,17 @@ async function clientConnect(connection, packet, log) {
 /**
  *
  *
- * @param {import("mcos/shared").TSocketWithConnectionInfo} conn
+ * @param {TSocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @param {import("mcos/shared").TServerLogger} log
- * @return {Promise<import("mcos/shared").TMessageArrayWithConnection>}
+ * @param {TServerLogger} log
+ * @return {Promise<TMessageArrayWithConnection>}
  * @memberof MCOTServer
  */
-async function handleClientConnect(conn, node, log) {
+async function handleClientConnect(
+    conn: TSocketWithConnectionInfo,
+    node: MessageNode,
+    log: TServerLogger
+): Promise<TMessageArrayWithConnection> {
     const result = await clientConnect(conn, node, log);
     return {
         connection: result.connection,
@@ -256,12 +292,16 @@ async function handleClientConnect(conn, node, log) {
 /**
  *
  * @private
- * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
+ * @param {TSocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @param {import("mcos/shared").TServerLogger} log
- * @return {import("mcos/shared").TMessageArrayWithConnection}>}
+ * @param {TServerLogger} log
+ * @return {TMessageArrayWithConnection}>}
  */
-function _login(connection, node, log) {
+function _login(
+    connection: TSocketWithConnectionInfo,
+    node: MessageNode,
+    log: TServerLogger
+): TMessageArrayWithConnection {
     // Read the inbound packet
     const loginMessage = new TLoginMessage(log);
     loginMessage.deserialize(node.rawPacket);
@@ -284,13 +324,17 @@ function _login(connection, node, log) {
 /**
  *
  *
- * @param {import("mcos/shared").TSocketWithConnectionInfo} conn
+ * @param {TSocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @param {import("mcos/shared").TServerLogger} log
- * @return {import("mcos/shared").TMessageArrayWithConnection}
+ * @param {TServerLogger} log
+ * @return {TMessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleLoginMessage(conn, node, log) {
+function handleLoginMessage(
+    conn: TSocketWithConnectionInfo,
+    node: MessageNode,
+    log: TServerLogger
+): TMessageArrayWithConnection {
     const result = _login(conn, node, log);
     return {
         connection: result.connection,
@@ -302,12 +346,16 @@ function handleLoginMessage(conn, node, log) {
 /**
  *
  * @private
- * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
+ * @param {TSocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @param {import("mcos/shared").TServerLogger} log
- * @return {import("mcos/shared").TMessageArrayWithConnection}
+ * @param {TServerLogger} log
+ * @return {TMessageArrayWithConnection}
  */
-function _logout(connection, node, log) {
+function _logout(
+    connection: TSocketWithConnectionInfo,
+    node: MessageNode,
+    log: TServerLogger
+): TMessageArrayWithConnection {
     const logoutMessage = node;
 
     logoutMessage.data = node.serialize();
@@ -326,7 +374,7 @@ function _logout(connection, node, log) {
     rPacket.dumpPacket();
 
     /** @type {MessageNode[]} */
-    const nodes = [];
+    const nodes: MessageNode[] = [];
 
     return { connection, messages: nodes, log };
 }
@@ -334,12 +382,16 @@ function _logout(connection, node, log) {
 /**
  *
  *
- * @param {import("mcos/shared").TSocketWithConnectionInfo} conn
+ * @param {TSocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @param {import("mcos/shared").TServerLogger} log
- * @return {import("mcos/shared").TMessageArrayWithConnection}
+ * @param {TServerLogger} log
+ * @return {TMessageArrayWithConnection}
  */
-function handleLogoutMessage(conn, node, log) {
+function handleLogoutMessage(
+    conn: TSocketWithConnectionInfo,
+    node: MessageNode,
+    log: TServerLogger
+): TMessageArrayWithConnection {
     const result = _logout(conn, node, log);
     return {
         connection: result.connection,
@@ -351,12 +403,16 @@ function handleLogoutMessage(conn, node, log) {
 /**
  *
  * @private
- * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
+ * @param {TSocketWithConnectionInfo} connection
  * @param {MessageNode} node
- * @param {import("mcos/shared").TServerLogger} log
- * @return {import("mcos/shared").TMessageArrayWithConnection}
+ * @param {TServerLogger} log
+ * @return {TMessageArrayWithConnection}
  */
-function _getLobbies(connection, node, log) {
+function _getLobbies(
+    connection: TSocketWithConnectionInfo,
+    node: MessageNode,
+    log: TServerLogger
+): TMessageArrayWithConnection {
     log("debug", "In _getLobbies...");
 
     const lobbyRequest = new GenericRequestMessage();
@@ -409,13 +465,17 @@ function _getLobbies(connection, node, log) {
 /**
  *
  *
- * @param {import("mcos/shared").TSocketWithConnectionInfo} conn
+ * @param {TSocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @param {import("mcos/shared").TServerLogger} log
- * @return {import("mcos/shared").TMessageArrayWithConnection}
+ * @param {TServerLogger} log
+ * @return {TMessageArrayWithConnection}
  * @memberof MCOTServer
  */
-function handleGetLobbiesMessage(conn, node, log) {
+function handleGetLobbiesMessage(
+    conn: TSocketWithConnectionInfo,
+    node: MessageNode,
+    log: TServerLogger
+): TMessageArrayWithConnection {
     const result = _getLobbies(conn, node, log);
     log("debug", "Dumping Lobbies response packet...");
     result.messages.forEach((msg) => {
@@ -431,12 +491,16 @@ function handleGetLobbiesMessage(conn, node, log) {
 
 /**
  * Handles the getStockCarInfo message
- * @param {import("mcos/shared").TSocketWithConnectionInfo} connection
+ * @param {TSocketWithConnectionInfo} connection
  * @param {MessageNode} packet
- * @param {import("mcos/shared").TServerLogger} log
- * @returns {import("mcos/shared").TMessageArrayWithConnection}
+ * @param {TServerLogger} log
+ * @returns {TMessageArrayWithConnection}
  */
-function getStockCarInfo(connection, packet, log) {
+function getStockCarInfo(
+    connection: TSocketWithConnectionInfo,
+    packet: MessageNode,
+    log: TServerLogger
+): TMessageArrayWithConnection {
     const getStockCarInfoMessage = new GenericRequestMessage();
     getStockCarInfoMessage.deserialize(packet.data);
     getStockCarInfoMessage.dumpPacket();
@@ -466,12 +530,16 @@ function getStockCarInfo(connection, packet, log) {
 /**
  *
  *
- * @param {import("mcos/shared").TSocketWithConnectionInfo} conn
+ * @param {TSocketWithConnectionInfo} conn
  * @param {MessageNode} node
- * @param {import("mcos/shared").TServerLogger} log
- * @return {import("mcos/shared").TMessageArrayWithConnection}
+ * @param {TServerLogger} log
+ * @return {TMessageArrayWithConnection}
  */
-function handleShockCarInfoMessage(conn, node, log) {
+function handleShockCarInfoMessage(
+    conn: TSocketWithConnectionInfo,
+    node: MessageNode,
+    log: TServerLogger
+): TMessageArrayWithConnection {
     const result = getStockCarInfo(conn, node, log);
     return {
         connection: result.connection,

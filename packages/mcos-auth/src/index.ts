@@ -15,6 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Sentry, TServerLogger } from "mcos/shared";
+import { IncomingMessage, ServerResponse } from "node:http";
+import { Socket } from "node:net";
 
 /**
  * Handles web-based user logins
@@ -72,11 +74,11 @@ export class AuthLogin {
     /**
      * Handle incoming http requests
      *
-     * @returns {import('node:http').ServerResponse}
-     * @param {import('node:http').IncomingMessage} request
-     * @param {import('node:http').ServerResponse} response
+     * @returns {ServerResponse}
+     * @param {IncomingMessage} request
+     * @param {ServerResponse} response
      */
-    handleRequest(request: import('node:http').IncomingMessage, response: import('node:http').ServerResponse): import('node:http').ServerResponse {
+    handleRequest(request: IncomingMessage, response: ServerResponse): ServerResponse {
         this.#log(
             "debug",
             `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
@@ -91,9 +93,9 @@ export class AuthLogin {
 
     /**
      * @private
-     * @param {import('node:net').Socket} socket
+     * @param {Socket} socket
      */
-    _socketEventHandler(socket: import('node:net').Socket) {
+    _socketEventHandler(socket: Socket) {
         socket.on("error", (error) => {
             const err = new Error(
                 `[AuthLogin] SSL Socket Error: ${error.message}`

@@ -55,7 +55,7 @@ function onSocketError(error: any, log: TServerLogger) {
 
 /**
  *
- * @param {import('node:net').Socket} incomingSocket
+ * @param {Socket} incomingSocket
  * @param {TServerConfiguration} config
  * @param {TServerLogger} log
  */
@@ -82,7 +82,7 @@ function TCPListener(incomingSocket: Socket, config: TServerConfiguration, log: 
 
 /**
  *
- * @param {import('node:net').Socket} incomingSocket
+ * @param {Socket} incomingSocket
  * @param {TServerConfiguration} config
  * @param {TServerLogger} log
  * @returns
