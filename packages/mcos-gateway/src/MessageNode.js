@@ -12,6 +12,8 @@
  * @property {Buffer} rawPacket
  */
 
+import { Sentry } from "mcos/shared";
+
 export class MessageNode {
     direction;
     msgNo;
@@ -59,22 +61,36 @@ export class MessageNode {
 
             // Set message number
             this.msgNo = this.data.readInt16LE(0);
-        } catch (err) {
-            if (err instanceof Error) {
-                if (err.name.includes("RangeError") === true) {
+        } catch (error) {
+            if (error instanceof Error) {
+                if (error.name.includes("RangeError") === true) {
                     // This is likeley not an MCOTS packet, ignore
-                    throw new Error(
+                    const err = new Error(
                         `[MessageNode] Not long enough to deserialize, only ${packet.length.toString()} bytes long`
                     );
+                    Sentry.addBreadcrumb({
+                        level: "error",
+                        message: err.message,
+                    });
+                    throw err;
                 } else {
-                    throw new Error(
+                    const err = new Error(
                         `[MessageNode] Unable to read msgNo from ${packet.toString(
                             "hex"
-                        )}: ${err.message}`
+                        )}: ${error.message}`
                     );
+                    Sentry.addBreadcrumb({
+                        level: "error",
+                        message: err.message,
+                    });
+                    throw err;
                 }
             }
-            throw new Error(`Unknown error in deserialize: ${String(err)} `);
+            const err = new Error(
+                `Unknown error in deserialize: ${String(error)} `
+            );
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
+            throw error;
         }
     }
 

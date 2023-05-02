@@ -1,6 +1,5 @@
 /**
- * Container objest for Stock cars
- * @module StockCar
+ * Container object for Stock cars
  */
 // DWORD   brandedPartID;
 // DWORD   retailPrice;

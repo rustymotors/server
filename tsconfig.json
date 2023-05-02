@@ -3,7 +3,6 @@
         "module": "ESNext",
         "moduleResolution": "Node",
         "target": "ES2020",
-        "allowJs": true,
         "noEmit": true,
         "checkJs": true,
         "strict": true,
@@ -11,8 +10,18 @@
         "strictFunctionTypes": true,
         "allowSyntheticDefaultImports": true,
         "paths": {
-            "mcos/shared": ["./src/shared/index.js"]
+            "mcos/auth": ["./packages/mcos-auth/index.js"],
+            "mcos/database": ["./packages/mcos-database/index.js"],
+            "mcos/gateway": ["./packages/mcos-gateway/index.js"],
+            "mcos/lobby": ["./packages/mcos-lobby/index.js"],
+            "mcos/login": ["./packages/mcos-login/index.js"],
+            "mcos/patch": ["./packages/mcos-patch/index.js"],
+            "mcos/persona": ["./packages/mcos-persona/index.ts"],
+            "mcos/shard": ["./packages/mcos-shard/index.ts"],
+            "mcos/shared": ["./src/shared/index.ts"],
+            "mcos/structures": ["./src/structures/index.js"],
+            "mcos/transactions": ["./packages/mcos-transactions/index.js"]
         }
     },
-    "exclude": ["node_modules", "**/node_modules/*", "coverage"]
+    "exclude": ["node_modules", "**/node_modules/*", "coverage", "out"]
 }

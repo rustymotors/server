@@ -1,83 +1,131 @@
 {
-  "name": "mcos",
-  "version": "3.2.0-beta1",
-  "description": "a server",
-  "engines": {
-    "node": "^14.13.1 || >=16.0.0"
-  },
-  "files": [
-    "README.md",
-    "CHANGELOG.md",
-    "AUTHORS"
-  ],
-  "exports": {
-    "./shared": ["./src/shared/index.js"]
-  },
-  "type": "module",
-  "scripts": {
-    "build": "tsc",
-    "format": "prettier --write app.js \"packages/**/*.js\"",
-    "test": "c8 mocha packages/**/*.test.js",
-    "build:test": "npm run format && npm run build && npm run test",
-    "prod": "make prod_node",
-    "prod:stop": "docker-compose stop",
-    "start:dev": "node --trace-deprecation --abort-on-uncaught-exception --openssl-legacy-provider app.js",
-    "start:docker": "npm run start:dev 2>&1 | tee -a log/mcos/trace.log"
-  },
-  "author": "Drazi Crendraven <drazisil@hey.com>",
-  "license": "AGPL-3.0",
-  "private": true,
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:drazisil/mcos.git"
-  },
-  "devDependencies": {
-    "@types/chai": "4.3.5",
-    "@types/mocha": "9.1.1",
-    "@types/node": "^18.16.3",
-    "c8": "7.13.0",
-    "chai": "4.3.7",
-    "mocha": "10.2.0",
-    "prettier": "2.8.8",
-    "prettier-eslint": "15.0.1",
-    "typescript": "5.0.4"
-  },
-  "volta": {
-    "node": "18.16.0",
-    "npm": "9.6.5"
-  },
-  "c8": {
-    "all": true,
-    "reporter": [
-      "text",
-      "cobertura",
-      "html"
-    ],
-    "exclude": [
-        ".yarn"
-    ]
-  },
-  "eslintConfig": {
-    "env": {
-      "es2021": true,
-      "node": true
+    "name": "mcos",
+    "version": "3.2.0-beta1",
+    "description": "a server",
+    "engines": {
+        "node": "^14.13.1 || >=16.0.0"
     },
-    "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended"
+    "files": [
+        "README.md",
+        "CHANGELOG.md",
+        "AUTHORS"
     ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "ecmaVersion": "latest",
-      "sourceType": "module"
+    "exports": {
+        "./auth": [
+            "./packages/mcos-auth/index.js"
+        ],
+        "./database": [
+            "./packages/mcos-database/index.js"
+        ],
+        "./gateway": [
+            "./packages/mcos-gateway/index.js"
+        ],
+        "./login": [
+            "./packages/mcos-login/index.js"
+        ],
+        "./lobby": [
+            "./packages/mcos-lobby/index.js"
+        ],
+        "./patch": [
+            "./packages/mcos-patch/index.js"
+        ],
+        "./shard": [
+            "./packages/mcos-shard/index.js"
+        ],
+        "./persona": [
+            "./packages/mcos-persona/index.js"
+        ],
+        "./shared": [
+            "./src/shared/index.js"
+        ],
+        "./structures": [
+            "./src/structures/index.js"
+        ],
+        "./transactions": [
+            "./packages/mcos-transactions/index.js"
+        ]
     },
-    "plugins": [
-      "@typescript-eslint"
-    ],
-    "rules": {}
-  },
-  "packageManager": "yarn@3.5.0",
-  "dependencies": {
-    "@sentry/node": "7.50.0"
-  }
+    "type": "module",
+    "scripts": {
+        "build": "tsc",
+        "format": "prettier --write app.js \"packages/**/*.{j,t}s\"",
+        "test": "c8 mocha {src,packages}/**/*.test.{j,t}s",
+        "build:test": "npm run format && npm run build && npm run test",
+        "prod": "make prod_node",
+        "jsdoc": "jsdoc -c jsdoc.json",
+        "prod:stop": "docker-compose stop",
+        "start:dev": "ts-node-esm app.ts",
+        "start:docker": "npm run start:dev 2>&1 | tee -a log/mcos/trace.log"
+    },
+    "author": "Drazi Crendraven <drazisil@hey.com>",
+    "license": "AGPL-3.0",
+    "private": true,
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:drazisil/mcos.git"
+    },
+    "devDependencies": {
+        "@types/chai": "4.3.5",
+        "@types/mocha": "9.1.1",
+        "@types/node": "^18.16.3",
+        "better-docs": "2.7.2",
+        "c8": "7.13.0",
+        "chai": "4.3.7",
+        "jsdoc": "4.0.2",
+        "jsdoc-plugin-typescript": "2.2.1",
+        "madge": "^6.0.0",
+        "mocha": "10.2.0",
+        "prettier": "2.8.8",
+        "prettier-eslint": "15.0.1",
+        "typedoc": "^0.24.6",
+        "typescript": "5.0.4"
+    },
+    "volta": {
+        "node": "18.16.0",
+        "npm": "9.6.5"
+    },
+    "c8": {
+        "all": true,
+        "reporter": [
+            "text",
+            "cobertura",
+            "html",
+            "lcov"
+        ],
+        "exclude": [
+            ".yarn",
+            "coverage",
+            "**/*.test.js",
+            "**/*.d.ts"
+        ]
+    },
+    "eslintConfig": {
+        "env": {
+            "es2021": true,
+            "node": true
+        },
+        "extends": [
+            "eslint:recommended",
+            "plugin:@typescript-eslint/recommended"
+        ],
+        "parser": "@typescript-eslint/parser",
+        "parserOptions": {
+            "ecmaVersion": "latest",
+            "sourceType": "module"
+        },
+        "plugins": [
+            "@typescript-eslint"
+        ],
+        "rules": {}
+    },
+    "dependencies": {
+        "@sentry-internal/tracing": "7.49.0",
+        "@sentry/core": "7.49.0",
+        "@sentry/node": "7.49.0",
+        "@sentry/profiling-node": "0.3.0",
+        "@sentry/types": "7.49.0",
+        "@sentry/utils": "7.49.0",
+        "rm": "^0.1.8",
+        "ts-node": "10.9.1"
+    }
 }

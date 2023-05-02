@@ -1,0 +1,31 @@
+
+
+{
+    "plugins": [
+        "node_modules/better-docs/typescript"
+    ],
+    "recurseDepth": 10,
+    "source": {
+        "include": ["src", "packages"],
+        "includePattern": ".ts$",
+        "excludePattern": "(node_modules/|coverage/|jsdocs/)"
+    },
+    "templates": {
+        "cleverLinks": true,
+        "monospaceLinks": true
+    },
+    "opts": {
+        "template": "node_modules/better-docs",
+        "encoding": "utf8",             
+        "destination": "./out/",        
+        "recurse": true,                
+        "tutorials": "tutorials"
+    },
+    "typescript": {
+        "moduleRoot": "src"
+      },
+      "tags": {
+        "allowUnknownTags": ["optional"]
+    }
+}
+
