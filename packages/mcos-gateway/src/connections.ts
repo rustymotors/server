@@ -98,6 +98,7 @@ function createNewConnection(connectionId: string, socket: Socket, log: TServerL
         inQueue: true,
         useEncryption: false,
     };
+    log("debug", `new connection created with id ${connectionId}`)
     return newConnectionRecord;
 }
 

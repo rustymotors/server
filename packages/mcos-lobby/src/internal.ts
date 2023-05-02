@@ -59,7 +59,7 @@ export async function handleData(dataConnection: TBufferWithConnection, log: TSe
             return result;
         }
 
-        default:
+        default: {
             const err = new Error(
                 `Unknown code ${requestCode} was received on port 7003`
             );
@@ -70,5 +70,6 @@ export async function handleData(dataConnection: TBufferWithConnection, log: TSe
                 messages: [],
                 log,
             };
+        }
     }
 }

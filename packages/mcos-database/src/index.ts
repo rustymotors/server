@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Sentry, TDatabaseManager, TServerLogger, TSession, TSessionRecord } from "mcos/shared";
-import Lobby, { TLobby } from "./models/Lobby.js";
+import { TLobby } from "./models/Lobby.js";
 
 /**
  * This class abstracts database methods

@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ELOG_LEVEL, Sentry, TBinaryStructure, TBufferWithConnection, TMessageNode, TServerConfiguration, TServerLogger, TServiceResponse, TSocketWithConnectionInfo } from "mcos/shared";
+import { Sentry, TBinaryStructure, TBufferWithConnection, TMessageNode, TServerConfiguration, TServerLogger, TServiceResponse, TSocketWithConnectionInfo } from "mcos/shared";
 import { receiveLobbyData } from "mcos/lobby";
 import { receiveLoginData } from "mcos/login";
 import { receivePersonaData } from "mcos/persona";
 import { receiveTransactionsData } from "mcos/transactions";
 import { findOrNewConnection, updateConnection } from "./connections.js";
 import { MessageNode } from "./MessageNode.js";
-import { interfaces } from "mocha";
 import { Socket } from "net";
 import { NPSMessage } from "../../../src/shared/NPSMessage.js";
 
@@ -211,10 +210,10 @@ export function TCPHandler(socket: Socket, config: any, log: TServerLogger): voi
             `Client ${remoteAddress} disconnected from port ${localPort}`
         );
     });
-    socket.on("data", async (data: any) => {
+    socket.on("data", async (data: Buffer) => {
         await dataHandler(data, connectionRecord, config, log);
     });
-    socket.on("error", (error: any) => {
+    socket.on("error", (error: Error) => {
         const message = String(error);
         if (message.includes("ECONNRESET") === true) {
             return log("debug", "Connection was reset");
