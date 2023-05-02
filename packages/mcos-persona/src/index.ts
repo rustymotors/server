@@ -78,7 +78,7 @@ export class PersonaServer {
     static _instance: PersonaServer;
 
     /** @type {TServerLogger} */
-    private _log: TServerLogger;
+    private readonly _log: TServerLogger;
 
     /**
      * PLease use getInstance() instead

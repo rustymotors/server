@@ -107,7 +107,7 @@ export class ShardServer {
      * @type {Server}
      * @memberof ShardServer
      */
-    private _server: Server;
+    private readonly _server: Server;
     /** 
      * @private
      * @type {string[]} */
@@ -117,13 +117,13 @@ export class ShardServer {
      * @private
      * @type {TServerLogger} 
      */
-    private _log: TServerLogger;
+    private readonly _log: TServerLogger;
 
     /** 
      * @private
      * @type {TServerConfiguration} 
      */
-    private _config: TServerConfiguration;
+    private readonly _config: TServerConfiguration;
 
     /**
      * Return the instance of the ShardServer class
@@ -150,8 +150,6 @@ export class ShardServer {
         this._config = config;
         this._log = log;
         this._server = createServer(this.handleRequest.bind(this));
-        /** @type {string[]} */
-        this._possibleShards = [];
 
         this._server.on("error", (error) => {
             const err = new Error(`Server error: ${error.message}`);

@@ -35,7 +35,7 @@ export class LoginServer {
     #databaseManager;
 
     /** @type {TServerLogger} */
-    private _log: TServerLogger;
+    private readonly _log: TServerLogger;
 
     /**
      * Please use getInstance() instead

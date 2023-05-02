@@ -184,7 +184,7 @@ export async function dataHandler(data: Buffer, connection: TSocketWithConnectio
  * @param {TServerLogger} log
  * @return {void}
  */
-export function TCPHandler(socket: Socket, config: any, log: TServerLogger): void {
+export function TCPHandler(socket: Socket, config: TServerConfiguration, log: TServerLogger): void {
     // Received a new connection
     // Turn it into a connection object
     const connectionRecord = findOrNewConnection(socket, log);

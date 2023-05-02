@@ -48,7 +48,7 @@ export class PatchServer {
      * @type {TServerLogger}
      * @memberof PatchServer
      */
-    private _log: TServerLogger;
+    private readonly _log: TServerLogger;
 
     /**
      * Creates an instance of PatchServer.
