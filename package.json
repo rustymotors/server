@@ -68,13 +68,16 @@
         "@types/chai": "4.3.4",
         "@types/mocha": "9.1.1",
         "@types/node": "^18.15.11",
+        "better-docs": "2.7.2",
         "c8": "7.13.0",
         "chai": "4.3.7",
         "jsdoc": "4.0.2",
+        "jsdoc-plugin-typescript": "2.2.1",
         "madge": "^6.0.0",
         "mocha": "10.2.0",
         "prettier": "2.8.7",
         "prettier-eslint": "15.0.1",
+        "typedoc": "^0.24.6",
         "typescript": "5.0.4"
     },
     "volta": {
@@ -122,6 +125,7 @@
         "@sentry/profiling-node": "0.3.0",
         "@sentry/types": "7.49.0",
         "@sentry/utils": "7.49.0",
+        "rm": "^0.1.8",
         "ts-node": "10.9.1"
     }
 }

@@ -27,26 +27,38 @@ export const CastanetResponse = {
 
 /**
  * The PatchServer class handles HTTP requests from the client for patching and upgrades
- * @class
- * Please use {@link PatchServer.getInstance()} to access
+ * Please use {@link PatchServer.getInstance} to access
+ * @export
+ * @class PatchServer
  */
 export class PatchServer {
     /**
+     *
+     *
+     * @static
      * @type {PatchServer}
-     */
-    static _instance: PatchServer;
-
-    /** @type {TServerLogger} */
-    #log: TServerLogger;
-
-    /**
-     * Please use getInstance() instead
-     * @author Drazi Crendraven
-     * @param {*} log
      * @memberof PatchServer
      */
-    constructor(log: any) {
-        this.#log = log;
+    public static _instance: PatchServer;
+
+    /**
+     *
+     *
+     * @private
+     * @type {TServerLogger}
+     * @memberof PatchServer
+     */
+    private _log: TServerLogger;
+
+    /**
+     * Creates an instance of PatchServer.
+     * Please use getInstance() instead
+     * @param {TServerLogger} log
+     * @this {PatchServer}
+     * @memberof PatchServer
+     */
+    constructor(log: TServerLogger) {
+        this._log = log;
     }
 
     /**
@@ -78,7 +90,7 @@ export class PatchServer {
                 typeof listeningAddress !== "string" &&
                 listeningAddress !== null
             ) {
-                this.#log(
+                this._log(
                     "debug",
                     `Server is listening on port ${listeningAddress.port}`
                 );
@@ -86,7 +98,7 @@ export class PatchServer {
         });
         server.on("request", this.handleRequest.bind(this));
 
-        this.#log("debug", `Attempting to bind to port ${port}`);
+        this._log("debug", `Attempting to bind to port ${port}`);
         server.listen(port, host);
     }
 
@@ -96,8 +108,11 @@ export class PatchServer {
      * @param {ServerResponse} response
      * @returns {ServerResponse}
      */
-    castanetResponse(request: IncomingMessage, response: ServerResponse): ServerResponse {
-        this.#log(
+    castanetResponse(
+        request: IncomingMessage,
+        response: ServerResponse
+    ): ServerResponse {
+        this._log(
             "debug",
             `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
         );
@@ -115,7 +130,10 @@ export class PatchServer {
      * @param {ServerResponse} response
      * @returns {ServerResponse}
      */
-    handleRequest(request: IncomingMessage, response: ServerResponse): ServerResponse {
+    handleRequest(
+        request: IncomingMessage,
+        response: ServerResponse
+    ): ServerResponse {
         if (
             request.url === "/games/EA_Seattle/MotorCity/UpdateInfo" ||
             request.url === "/games/EA_Seattle/MotorCity/NPS" ||

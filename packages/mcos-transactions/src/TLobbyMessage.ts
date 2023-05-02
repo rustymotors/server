@@ -14,9 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { TSMessageBase } from "../../mcos-gateway/src/TMessageBase.js";
-import { BinaryStructure } from "../../mcos-gateway/src/BinaryStructure.js";
-import { TServerLogger } from "mcos/shared";
+import { BinaryStructure, TSMessageBase, TServerLogger } from "mcos/shared";
 
 /**
  *
@@ -85,7 +83,6 @@ export class LobbyInfo extends BinaryStructure {
      * Creates an instance of LobbyInfo.
      * @author Drazi Crendraven
      * @param {TServerLogger} log
-     * @memberof LobbyInfo
      */
     constructor(log: TServerLogger) {
         super(log);

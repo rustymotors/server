@@ -9,8 +9,7 @@
  * @export
  * @class BaseStructure
  */
-export class BaseStructure  {
-    
+export class BaseStructure {
     /**
      *
      *
@@ -18,7 +17,7 @@ export class BaseStructure  {
      * @param {Buffer} inputBuffer
      * @memberof BaseStructure
      */
-    deserialize(inputBuffer)    {}
+    deserialize(inputBuffer) {}
 
     /**
      *
@@ -26,7 +25,7 @@ export class BaseStructure  {
      * @author Drazi Crendraven
      * @template T extends TBaseStructure
      * @this {T}
-     * @returns {T}  
+     * @returns {T}
      * @memberof BaseStructure
      */
     // serialize() {

@@ -41,7 +41,6 @@ export class ByteField {
     /**
      * Creates an instance of ByteField.
      * @param {ByteField} newField
-     * @memberof ByteField
      */
     constructor(newField: ByteField) {
         this.name = newField.name;
@@ -77,7 +76,6 @@ export class BinaryStructure {
      * Creates an instance of BinaryStructure.
      * @author Drazi Crendraven
      * @param {TServerLogger} log
-     * @memberof BinaryStructure
      */
     constructor(log: TServerLogger) {
         this.#log = log;
@@ -230,7 +228,7 @@ export class BinaryStructure {
      *
      * @param {string} fieldName
      * @param {number} newValue
-     * @returns
+     * @returns {void}
      */
     setValueNumber(fieldName: string, newValue: number) {
         this.#log("debug", "Calling setValueNumber() in BinaryStructure..");

@@ -1,6 +1,5 @@
 /**
  * Object for providing information on stock cars
- * @module StockCarInfoMsg
  */
 // WORD     msgNo;
 // DWORD    starterCash; // when called from the create persona screen,

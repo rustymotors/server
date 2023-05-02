@@ -19,9 +19,9 @@ export function replacerFunc() {
  *
  * @param {TSocketWithConnectionInfo[]} connections
  * @returns {{
-    code: number;
-    headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined;
-    body: string;
+    code: number,
+    headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined,
+    body: string
 }}
  */
 

@@ -155,6 +155,7 @@ export function findOrNewConnection(socket: Socket, log: TServerLogger): TSocket
             `Either localPort or remoteAddress is missing on socket. Can not continue.`
         );
         Sentry.addBreadcrumb({ level: "error", message: err.message });
+        log("debug", JSON.stringify(socket))
         throw err;
     }
 

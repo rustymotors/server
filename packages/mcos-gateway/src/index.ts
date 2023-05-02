@@ -42,12 +42,12 @@ const listeningPortList = [
  *
  * @param {any} error
  * @param {TServerLogger} log
- * @returns
+ * @returns {void}
  */
-function onSocketError(error: any, log: TServerLogger) {
+function onSocketError(sock: Socket, error: Error, log: TServerLogger): void {
     const message = String(error);
     if (message.includes("ECONNRESET") === true) {
-        return log("debug", "Connection was reset");
+        log("debug", "Connection was reset");
     }
     Sentry.captureException(error);
     throw new Error(`Socket error: ${String(error)}`);
@@ -76,7 +76,7 @@ function TCPListener(incomingSocket: Socket, config: TServerConfiguration, log: 
         dataHandler(data, connectionRecord, config, log);
     });
     incomingSocket.on("error", (err) => {
-        onSocketError(err, log);
+        onSocketError(incomingSocket, err, log);
     });
 }
 
@@ -85,9 +85,9 @@ function TCPListener(incomingSocket: Socket, config: TServerConfiguration, log: 
  * @param {Socket} incomingSocket
  * @param {TServerConfiguration} config
  * @param {TServerLogger} log
- * @returns
+ * @returns {void}
  */
-function socketListener(incomingSocket: Socket, config: TServerConfiguration, log: TServerLogger) {
+function socketListener(incomingSocket: Socket, config: TServerConfiguration, log: TServerLogger): void {
     log(
         "debug",
         `[gate]Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`

@@ -35,14 +35,14 @@ export class AuthLogin {
     static _instance: AuthLogin;
 
     /** @type {TServerLogger} */
-    #log: TServerLogger;
+    _log: TServerLogger;
 
     /**
      *
      * @param {TServerLogger} log
      */
     constructor(log: TServerLogger) {
-        this.#log = log;
+        this._log = log;
     }
 
     /**
@@ -79,7 +79,7 @@ export class AuthLogin {
      * @param {ServerResponse} response
      */
     handleRequest(request: IncomingMessage, response: ServerResponse): ServerResponse {
-        this.#log(
+        this._log(
             "debug",
             `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );

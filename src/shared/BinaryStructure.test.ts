@@ -15,62 +15,52 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import chai from "chai";
-import { GSMessageBase } from "mcos/gateway";
-import { TServerLogger } from "mcos/shared";
+import { BinaryStructure, TServerLogger } from "mcos/shared";
 import { describe, it } from "mocha";
-import { ByteField } from "../src/BinaryStructure";
 
 chai.should();
 
-describe("GSMessageBase", () => {
+describe("BinaryStructure", () => {
     describe(".byteLength", () => {
-        it("should hvave a value of 2", () => {
+        it("should have a value of 0", () => {
             // Arrange
             /**  @type {TServerLogger} */
             const log: TServerLogger = () => {
                 return;
             };
-            const testMessage = new GSMessageBase(log);
+            const testStructure = new BinaryStructure(log);
 
             // Assert
-            testMessage.getByteLength().should.equal(10);
+            testStructure.getByteLength().should.equal(0);
         });
     });
-    describe("#deserialize", () => {
-        it("should handle an input stream without errors", () => {
+    describe("#serialize", () => {
+        it("should throw when passed a byteStream larger then the internal fields array", () => {
             // Arrange
             /**  @type {TServerLogger} */
             const log: TServerLogger = () => {
                 return;
             };
-            const testMessage = new GSMessageBase(log);
+            const inputStream = Buffer.from("This is a pretty decent size.");
+            const testStructure = new BinaryStructure(log);
 
             // Assert
             (() => {
-                return testMessage.deserialize(Buffer.from([1, 2, 3, 4]));
-            }).should.not.throw();
+                return testStructure.deserialize(inputStream);
+            }).should.throw();
         });
     });
     describe("#get", () => {
-        it("should return a ByteField object when passed a valid field name", () => {
+        it("should throw when passed a name not found in the internal fields array", () => {
             // Arrange
             /**  @type {TServerLogger} */
-            const log: TServerLogger = () => {
-                return;
-            };
-            const testMessage = new GSMessageBase(log);
-            /** @type {ByteField} */
-            const expectedField: ByteField = {
-                name: "msgId",
-                size: 2,
-                offset: 0,
-                type: "u16",
-                value: Buffer.alloc(2),
-                order: "little",
-            };
+            const log: TServerLogger = () => {};
+            const testStructure = new BinaryStructure(log);
 
             // Assert
-            testMessage.get("msgId").should.deep.equal(expectedField);
+            (() => {
+                return testStructure.get("someFiled");
+            }).should.throw();
         });
     });
 });

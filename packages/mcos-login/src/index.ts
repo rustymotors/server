@@ -18,13 +18,6 @@ import { Sentry, TBufferWithConnection, TDatabaseManager, TServerConfiguration, 
 import { handleData } from "./internal.js";
 
 /**
- * Manages the initial game connection setup and teardown.
- * @module LoginServer
- */
-
-
-
-/**
  * Please use {@link LoginServer.getInstance()}
  * @classdesc
  * @property {DatabaseManager} databaseManager
@@ -42,7 +35,7 @@ export class LoginServer {
     #databaseManager;
 
     /** @type {TServerLogger} */
-    #log: TServerLogger;
+    private _log: TServerLogger;
 
     /**
      * Please use getInstance() instead
@@ -53,7 +46,7 @@ export class LoginServer {
      */
     constructor(database: TDatabaseManager, log: TServerLogger) {
         this.#databaseManager = database;
-        this.#log = log;
+        this._log = log;
     }
 
     /**
@@ -79,7 +72,7 @@ export class LoginServer {
      * @return {UserRecordMini}
      */
     _npsGetCustomerIdByContextId(contextId: string): TUserRecordMini {
-        this.#log("debug", ">>> _npsGetCustomerIdByContextId");
+        this._log("debug", ">>> _npsGetCustomerIdByContextId");
         /** @type {UserRecordMini[]} */
         const users: TUserRecordMini[] = [
             {
@@ -101,7 +94,7 @@ export class LoginServer {
 
         const userRecord = users.filter((user) => user.contextId === contextId);
         if (typeof userRecord[0] === "undefined" || userRecord.length !== 1) {
-            this.#log(
+            this._log(
                 "debug",
                 `preparing to leave _npsGetCustomerIdByContextId after not finding record',
         ${JSON.stringify({
@@ -115,7 +108,7 @@ export class LoginServer {
             throw err;
         }
 
-        this.#log(
+        this._log(
             "debug",
             `preparing to leave _npsGetCustomerIdByContextId after finding record',
       ${JSON.stringify({

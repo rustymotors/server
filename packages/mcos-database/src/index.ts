@@ -39,7 +39,7 @@ export class DatabaseManager {
     static _instance: TDatabaseManager;
 
     /** @type {TServerLogger} */
-    #log: TServerLogger;
+    _log: TServerLogger;
 
     /**
      * Creates an instance of DatabaseManager.
@@ -49,7 +49,7 @@ export class DatabaseManager {
      * @memberof DatabaseManager
      */
     constructor(log: TServerLogger) {
-        this.#log = log;
+        this._log = log;
     }
     /**
      * Return the instance of the DatabaseManager class
@@ -85,7 +85,7 @@ export class DatabaseManager {
     /**
      * Locate customer session encryption key in the database
      * @param {string} connectionId
-     * @returns {TSessionRecord>}
+     * @returns {Promise<TSessionRecord>}
      */
     async fetchSessionKeyByConnectionId(connectionId: string): Promise<TSessionRecord> {
         const record = this.sessions.find((session) => {

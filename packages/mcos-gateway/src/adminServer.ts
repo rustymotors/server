@@ -46,7 +46,7 @@ export class AdminServer {
     static _instance: AdminServer;
 
     /** @type {TServerLogger} */
-    #log: TServerLogger;
+    _log: TServerLogger;
 
     /**
      * Please use getAdminServer() instead
@@ -55,7 +55,7 @@ export class AdminServer {
      * @memberof AdminServer
      */
     constructor(log: TServerLogger) {
-        this.#log = log;
+        this._log = log;
     }
 
     /**
@@ -74,25 +74,17 @@ export class AdminServer {
     }
 
     /**
-     * Creates an instance of AdminServer.
-     *
-     * Please use {@link AdminServer.getInstance()} instead
-     * @internal
-     * @memberof AdminServer
-     */
-
-    /**
      * Handle incomming http requests
      *
      * @param {IncomingMessage} request
      * @return {TJSONResponse}
      */
     handleRequest(request: IncomingMessage): TJSONResponse {
-        this.#log(
+        this._log(
             "debug",
             `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );
-        this.#log(
+        this._log(
             "debug",
             `Request received,
       ${JSON.stringify({

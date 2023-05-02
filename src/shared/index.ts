@@ -1,10 +1,10 @@
 /**
  * @module mcos/shared
- * @exports {}
  */
 
 import { Cipher, Decipher } from "node:crypto";
 import { Socket } from "node:net";
+import { TSMessageBase } from "./TMessageBase.js";
 
 export type ELOG_LEVEL =
     | "debug"
@@ -58,11 +58,14 @@ export interface TBufferWithConnection {
     data: Buffer;
     timeStamp: number;
 }
+export { BinaryStructure, ByteField } from "./BinaryStructure.js";
+export { TSMessageBase } from "./TMessageBase.js";
+
 export interface TBinaryStructure {
     serialize: () => Buffer;
     deserialize: (inputBuffer: Buffer) => void;
 }
-export type TSMessageBase = TBinaryStructure;
+// export type TSMessageBase = TBinaryStructure;
 export type TMessageNode = {
     serialize: () => Buffer;
     deserialize: (inputBuffer: Buffer) => void;
@@ -71,7 +74,7 @@ export type TNPSMessage = {
     serialize: () => Buffer;
     deserialize: (inputBuffer: Buffer) => void;
     toJSON: () => TNPSMessageJSON;
-    dumpPacket: () => string
+    dumpPacket: () => string;
 };
 export interface TMessageArrayWithConnection {
     connection: TSocketWithConnectionInfo;
@@ -130,7 +133,7 @@ export {
     setServerConfiguration,
     getServerConfiguration,
 } from "./ServerConfiguration.js";
-export { NPSMessage } from "./NPSMessage.js"
+export { NPSMessage } from "./NPSMessage.js";
 export { GetServerLogger } from "./log.js";
 export { Sentry } from "./sentry.js";
 
@@ -147,19 +150,19 @@ export type TNPSMessageJSON = {
 };
 
 export type TPersonaRecord = {
-    customerId: number,
-    id: Buffer,
-    maxPersonas: Buffer,
-    name: Buffer,
-    personaCount: Buffer,
-    shardId: Buffer
-}
+    customerId: number;
+    id: Buffer;
+    maxPersonas: Buffer;
+    name: Buffer;
+    personaCount: Buffer;
+    shardId: Buffer;
+};
 
 export type TUserRecordMini = {
-    contextId: string,
-    customerId: number,
-    userId: number
-}
+    contextId: string;
+    customerId: number;
+    userId: number;
+};
 
 /**
  * Convert to zero padded hex
