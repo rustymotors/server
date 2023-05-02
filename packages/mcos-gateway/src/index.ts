@@ -73,7 +73,9 @@ function TCPListener(incomingSocket: Socket, config: TServerConfiguration, log: 
         );
     });
     incomingSocket.on("data", function incomingSocketDataHandler(data) {
-        dataHandler(data, connectionRecord, config, log);
+        dataHandler(data, connectionRecord, config, log).catch((reason: Error) => {
+            log("err", `There was an error in the data handler: ${reason.message}`)
+        });
     });
     incomingSocket.on("error", (err) => {
         onSocketError(incomingSocket, err, log);

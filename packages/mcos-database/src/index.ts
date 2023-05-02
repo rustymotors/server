@@ -121,7 +121,7 @@ export class DatabaseManager {
             connectionId,
         };
 
-        const record = await this.sessions.findIndex((session) => {
+        const record = this.sessions.findIndex((session) => {
             return session.customerId === customerId;
         });
         if (typeof record === "undefined") {
@@ -132,7 +132,5 @@ export class DatabaseManager {
             throw err;
         }
         this.sessions.splice(record, 1, updatedSession);
-
-        return;
     }
 }

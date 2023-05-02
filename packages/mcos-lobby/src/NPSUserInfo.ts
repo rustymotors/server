@@ -29,7 +29,7 @@ export class NPSUserInfo extends NPSMessage {
      * @param {Buffer} rawData
      * @return {NPSUserInfo}
      */
-    deserialize(rawData: Buffer): NPSUserInfo {
+    deserialize(rawData: Buffer): this {
         this.userId = rawData.readInt32BE(4);
         this.userName = rawData.slice(8, 38);
         this.userData = rawData.slice(38);

@@ -65,7 +65,6 @@ export interface TBinaryStructure {
     serialize: () => Buffer;
     deserialize: (inputBuffer: Buffer) => void;
 }
-// export type TSMessageBase = TBinaryStructure;
 export type TMessageNode = {
     serialize: () => Buffer;
     deserialize: (inputBuffer: Buffer) => void;

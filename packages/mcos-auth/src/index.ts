@@ -83,7 +83,7 @@ export class AuthLogin {
             "debug",
             `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );
-        if (request.url && request.url.startsWith("/AuthLogin")) {
+        if (request.url?.startsWith("/AuthLogin")) {
             response.setHeader("Content-Type", "text/plain");
             return response.end(this._handleGetTicket());
         }

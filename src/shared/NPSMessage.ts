@@ -98,7 +98,7 @@ export class NPSMessage {
      * @return {NPSMessage}
      * @memberof NPSMessage
      */
-    deserialize(packet: Buffer): NPSMessage {
+    deserialize(packet: Buffer): this {
         this.msgNo = packet.readInt16BE(0);
         this.msgLength = packet.readInt16BE(2);
         this.msgVersion = packet.readInt16BE(4);

@@ -26,7 +26,7 @@ describe("BinaryStructure", () => {
             // Arrange
             /**  @type {TServerLogger} */
             const log: TServerLogger = () => {
-                return;
+                // This is intentional
             };
             const testStructure = new BinaryStructure(log);
 
@@ -39,7 +39,7 @@ describe("BinaryStructure", () => {
             // Arrange
             /**  @type {TServerLogger} */
             const log: TServerLogger = () => {
-                return;
+                // This is intentional
             };
             const inputStream = Buffer.from("This is a pretty decent size.");
             const testStructure = new BinaryStructure(log);
@@ -54,7 +54,9 @@ describe("BinaryStructure", () => {
         it("should throw when passed a name not found in the internal fields array", () => {
             // Arrange
             /**  @type {TServerLogger} */
-            const log: TServerLogger = () => {};
+            const log: TServerLogger = () => {
+                // This is intentional
+            };
             const testStructure = new BinaryStructure(log);
 
             // Assert

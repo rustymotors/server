@@ -14,7 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry, TBinaryStructure, TBufferWithConnection, TMessageNode, TServerConfiguration, TServerLogger, TServiceResponse, TSocketWithConnectionInfo } from "mcos/shared";
+import {
+    Sentry,
+    TBinaryStructure,
+    TBufferWithConnection,
+    TMessageNode,
+    TServerConfiguration,
+    TServerLogger,
+    TServiceResponse,
+    TSocketWithConnectionInfo,
+} from "mcos/shared";
 import { receiveLobbyData } from "mcos/lobby";
 import { receiveLoginData } from "mcos/login";
 import { receivePersonaData } from "mcos/persona";
@@ -40,12 +49,11 @@ export function toHex(data: Buffer): string {
     return bytes.join("");
 }
 
-export interface TServiceRouter {
-    (
-        connection: TBufferWithConnection, 
-        config: TServerConfiguration, 
-        log: TServerLogger): Promise<TServiceResponse>
-}
+export type TServiceRouter = (
+    connection: TBufferWithConnection,
+    config: TServerConfiguration,
+    log: TServerLogger
+) => Promise<TServiceResponse>;
 
 /**
  * @type {TServiceRouter}
@@ -63,7 +71,11 @@ const serviceRouters: Record<number, TServiceRouter> = {
  * @param {TSocketWithConnectionInfo} outboundConnection
  * @param {TServerLogger} log
  */
-function sendMessages(messages: NPSMessage[] | TMessageNode[] | TBinaryStructure[], outboundConnection: TSocketWithConnectionInfo, log: TServerLogger) {
+function sendMessages(
+    messages: NPSMessage[] | TMessageNode[] | TBinaryStructure[],
+    outboundConnection: TSocketWithConnectionInfo,
+    log: TServerLogger
+) {
     messages.forEach((f) => {
         if (
             outboundConnection.useEncryption === true &&
@@ -107,7 +119,12 @@ function sendMessages(messages: NPSMessage[] | TMessageNode[] | TBinaryStructure
  * @param {TServerLogger} log
  * @return {Promise<void>}
  */
-export async function dataHandler(data: Buffer, connection: TSocketWithConnectionInfo, config: TServerConfiguration, log: TServerLogger): Promise<void> {
+export async function dataHandler(
+    data: Buffer,
+    connection: TSocketWithConnectionInfo,
+    config: TServerConfiguration,
+    log: TServerLogger
+): Promise<void> {
     log("debug", `data prior to proccessing: ${data.toString("hex")}`);
 
     // Link the data and the connection together
@@ -184,7 +201,11 @@ export async function dataHandler(data: Buffer, connection: TSocketWithConnectio
  * @param {TServerLogger} log
  * @return {void}
  */
-export function TCPHandler(socket: Socket, config: TServerConfiguration, log: TServerLogger): void {
+export function TCPHandler(
+    socket: Socket,
+    config: TServerConfiguration,
+    log: TServerLogger
+): void {
     // Received a new connection
     // Turn it into a connection object
     const connectionRecord = findOrNewConnection(socket, log);

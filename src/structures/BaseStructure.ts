@@ -9,7 +9,7 @@
  * @export
  * @class BaseStructure
  */
-export class BaseStructure {
+export abstract class BaseStructure {
     /**
      *
      *
@@ -17,7 +17,9 @@ export class BaseStructure {
      * @param {Buffer} inputBuffer
      * @memberof BaseStructure
      */
-    deserialize(inputBuffer) {}
+    deserialize(inputBuffer: Buffer) {
+        // This is intentional
+    }
 
     /**
      *
