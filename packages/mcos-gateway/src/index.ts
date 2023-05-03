@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import * as http from "node:http";
 import { Socket, createServer as createSocketServer } from "node:net";
 import { findOrNewConnection } from "./connections.js";
 import { dataHandler } from "./sockets.js";
@@ -23,6 +22,7 @@ export { getAllConnections } from "./connections.js";
 export { AdminServer } from "./adminServer.js";
 import Sentry from "@sentry/node";
 import type { TServerConfiguration, TServerLogger } from "mcos/shared";
+import { Server } from "node:http";
 
 Sentry.init({
     dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
@@ -46,8 +46,9 @@ const listeningPortList = [
  */
 function onSocketError(sock: Socket, error: Error, log: TServerLogger): void {
     const message = String(error);
-    if (message.includes("ECONNRESET") === true) {
+    if (message.includes("ECONNRESET")) {
         log("debug", "Connection was reset");
+        return;
     }
     Sentry.captureException(error);
     throw new Error(`Socket error: ${String(error)}`);
@@ -59,7 +60,11 @@ function onSocketError(sock: Socket, error: Error, log: TServerLogger): void {
  * @param {TServerConfiguration} config
  * @param {TServerLogger} log
  */
-function TCPListener(incomingSocket: Socket, config: TServerConfiguration, log: TServerLogger) {
+function TCPListener(
+    incomingSocket: Socket,
+    config: TServerConfiguration,
+    log: TServerLogger
+) {
     // Get a connection record
     const connectionRecord = findOrNewConnection(incomingSocket, log);
 
@@ -72,11 +77,14 @@ function TCPListener(incomingSocket: Socket, config: TServerConfiguration, log: 
             `Client ${remoteAddress} disconnected from port ${localPort}`
         );
     });
-    incomingSocket.on("data", function incomingSocketDataHandler(data) {
-        dataHandler(data, connectionRecord, config, log).catch((reason: Error) => {
-            log("err", `There was an error in the data handler: ${reason.message}`)
+    incomingSocket.on("data", (data) => {
+            dataHandler(data, connectionRecord, config, log).catch(
+                (reason: Error) => log(
+                    "err",
+                    `There was an error in the data handler: ${reason.message}`
+                )
+            );
         });
-    });
     incomingSocket.on("error", (err) => {
         onSocketError(incomingSocket, err, log);
     });
@@ -89,7 +97,11 @@ function TCPListener(incomingSocket: Socket, config: TServerConfiguration, log: 
  * @param {TServerLogger} log
  * @returns {void}
  */
-function socketListener(incomingSocket: Socket, config: TServerConfiguration, log: TServerLogger): void {
+function socketListener(
+    incomingSocket: Socket,
+    config: TServerConfiguration,
+    log: TServerLogger
+): void {
     log(
         "debug",
         `[gate]Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
@@ -98,7 +110,7 @@ function socketListener(incomingSocket: Socket, config: TServerConfiguration, lo
     // Is this an HTTP request?
     if (incomingSocket.localPort === 3000) {
         log("debug", "Web request");
-        const newServer = new http.Server((req, res) => {
+        const newServer = new Server((req, res) => {
             httpHandler(req, res, config, log);
         });
         // Send the socket to the http server instance
@@ -128,7 +140,10 @@ function serverListener(port: number, log: TServerLogger) {
  * @param {TServerConfiguration} config
  * @param {TServerLogger} log
  */
-export function startListeners(config: TServerConfiguration, log: TServerLogger) {
+export function startListeners(
+    config: TServerConfiguration,
+    log: TServerLogger
+) {
     log("info", "Server starting");
 
     listeningPortList.forEach((port) => {
