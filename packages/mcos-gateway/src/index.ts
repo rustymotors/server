@@ -79,12 +79,11 @@ function TCPListener(
     });
     incomingSocket.on("data", function incomingSocketDataHandler(data) {
         dataHandler(data, connectionRecord, config, log).catch(
-            (reason: Error) => {
+            (reason: Error) =>
                 log(
                     "err",
                     `There was an error in the data handler: ${reason.message}`
-                );
-            }
+                )
         );
     });
     incomingSocket.on("error", (err) => {
