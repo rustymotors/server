@@ -48,6 +48,7 @@ function onSocketError(sock: Socket, error: Error, log: TServerLogger): void {
     const message = String(error);
     if (message.includes("ECONNRESET") === true) {
         log("debug", "Connection was reset");
+        return;
     }
     Sentry.captureException(error);
     throw new Error(`Socket error: ${String(error)}`);
@@ -59,7 +60,11 @@ function onSocketError(sock: Socket, error: Error, log: TServerLogger): void {
  * @param {TServerConfiguration} config
  * @param {TServerLogger} log
  */
-function TCPListener(incomingSocket: Socket, config: TServerConfiguration, log: TServerLogger) {
+function TCPListener(
+    incomingSocket: Socket,
+    config: TServerConfiguration,
+    log: TServerLogger
+) {
     // Get a connection record
     const connectionRecord = findOrNewConnection(incomingSocket, log);
 
@@ -73,9 +78,14 @@ function TCPListener(incomingSocket: Socket, config: TServerConfiguration, log: 
         );
     });
     incomingSocket.on("data", function incomingSocketDataHandler(data) {
-        dataHandler(data, connectionRecord, config, log).catch((reason: Error) => {
-            log("err", `There was an error in the data handler: ${reason.message}`)
-        });
+        dataHandler(data, connectionRecord, config, log).catch(
+            (reason: Error) => {
+                log(
+                    "err",
+                    `There was an error in the data handler: ${reason.message}`
+                );
+            }
+        );
     });
     incomingSocket.on("error", (err) => {
         onSocketError(incomingSocket, err, log);
@@ -89,7 +99,11 @@ function TCPListener(incomingSocket: Socket, config: TServerConfiguration, log: 
  * @param {TServerLogger} log
  * @returns {void}
  */
-function socketListener(incomingSocket: Socket, config: TServerConfiguration, log: TServerLogger): void {
+function socketListener(
+    incomingSocket: Socket,
+    config: TServerConfiguration,
+    log: TServerLogger
+): void {
     log(
         "debug",
         `[gate]Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
@@ -128,7 +142,10 @@ function serverListener(port: number, log: TServerLogger) {
  * @param {TServerConfiguration} config
  * @param {TServerLogger} log
  */
-export function startListeners(config: TServerConfiguration, log: TServerLogger) {
+export function startListeners(
+    config: TServerConfiguration,
+    log: TServerLogger
+) {
     log("info", "Server starting");
 
     listeningPortList.forEach((port) => {
