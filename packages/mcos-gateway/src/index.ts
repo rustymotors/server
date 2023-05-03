@@ -46,7 +46,7 @@ const listeningPortList = [
  */
 function onSocketError(sock: Socket, error: Error, log: TServerLogger): void {
     const message = String(error);
-    if (message.includes("ECONNRESET") === true) {
+    if (message.includes("ECONNRESET")) {
         log("debug", "Connection was reset");
         return;
     }
