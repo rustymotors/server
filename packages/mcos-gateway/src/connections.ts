@@ -122,24 +122,6 @@ function addConnection(connection: TSocketWithConnectionInfo): TSocketWithConnec
  */
 export function findOrNewConnection(socket: Socket, log: TServerLogger): TSocketWithConnectionInfo {
     
-    if (socket.destroyed === true) {
-        // We don't really need a connection record at this point, since the socket is not usable
-        log("debug", "We have been passed a destroyed socket")
-
-        // We do need to return one.
-        return {
-            socket, 
-            seq: -1,
-            id: "EINVALID_CONNECTION",
-            remoteAddress: "",
-            localPort: -1,
-            personaId: -1,
-            lastMessageTimestamp: -1,
-            inQueue: true, useEncryption: false
-        }
-        
-    }
-    
     const { localPort, remoteAddress } = socket;
 
     Sentry.setTags({
@@ -156,7 +138,7 @@ export function findOrNewConnection(socket: Socket, log: TServerLogger): TSocket
             `Either localPort or remoteAddress is missing on socket. Can not continue.`
         );
         Sentry.addBreadcrumb({ level: "error", message: err.message });
-        log("debug", JSON.stringify(socket))
+        log("err", err.message)
         throw err;
     }
 
