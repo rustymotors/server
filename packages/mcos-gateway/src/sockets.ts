@@ -208,32 +208,40 @@ export function TCPHandler(
 ): void {
     // Received a new connection
     // Turn it into a connection object
-    const connectionRecord = findOrNewConnection(socket, log);
-
-    const { localPort, remoteAddress } = socket;
-    log("debug", `Client ${remoteAddress} connected to port ${localPort}`);
-    if (socket.localPort === 7003 && connectionRecord.inQueue === true) {
-        /**
-         * Debug seems hard-coded to use the connection queue
-         * Craft a packet that tells the client it's allowed to login
-         */
-
-        log("debug", "Sending OK to Login packet");
-        log("debug", "[listen2] In tcpListener(pre-queue)");
-        socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
-        log("debug", "[listen2] In tcpListener(post-queue)");
-        connectionRecord.inQueue = false;
-    }
-
-    socket.on("end", () => {
-        log(
-            "debug",
-            `Client ${remoteAddress} disconnected from port ${localPort}`
-        );
-    });
-    socket.on("data", async (data: Buffer) => {
-        await dataHandler(data, connectionRecord, config, log);
-    });
+    try {
+        const connectionRecord = findOrNewConnection(socket, log);
+        
+        const { localPort, remoteAddress } = socket;
+        log("debug", `Client ${remoteAddress} connected to port ${localPort}`);
+        if (socket.localPort === 7003 && connectionRecord.inQueue === true) {
+            /**
+             * Debug seems hard-coded to use the connection queue
+             * Craft a packet that tells the client it's allowed to login
+            */
+           
+           log("debug", "Sending OK to Login packet");
+           log("debug", "[listen2] In tcpListener(pre-queue)");
+           socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
+           log("debug", "[listen2] In tcpListener(post-queue)");
+           connectionRecord.inQueue = false;
+        }
+        
+        socket.on("end", () => {
+            log(
+                "debug",
+                `Client ${remoteAddress} disconnected from port ${localPort}`
+                );
+            });
+            socket.on("data", async (data: Buffer) => {
+                await dataHandler(data, connectionRecord, config, log);
+            });
+        } catch (error) {
+            // The socket was unable to be handled
+            const err = new Error(`Socket handler error: ${String(error)}`);
+            log("warning", err.message)
+            Sentry.addBreadcrumb({ level: "error", message: err.message });
+            Sentry.captureException(error)
+        }
     socket.on("error", (error: Error) => {
         const message = String(error);
         if (message.includes("ECONNRESET") === true) {
