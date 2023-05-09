@@ -119,12 +119,12 @@
         "rules": {}
     },
     "dependencies": {
-        "@sentry-internal/tracing": "7.51.0",
-        "@sentry/core": "7.51.0",
-        "@sentry/node": "7.51.0",
+        "@sentry-internal/tracing": "7.51.2",
+        "@sentry/core": "7.51.2",
+        "@sentry/node": "7.51.2",
         "@sentry/profiling-node": "0.3.0",
-        "@sentry/types": "7.51.0",
-        "@sentry/utils": "7.51.0",
+        "@sentry/types": "7.51.2",
+        "@sentry/utils": "7.51.2",
         "rm": "^0.1.8",
         "ts-node": "10.9.1"
     }
