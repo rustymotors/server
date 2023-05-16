@@ -52,9 +52,8 @@
         "test": "c8 mocha {src,packages}/**/*.test.{j,t}s",
         "build:test": "npm run format && npm run build && npm run test",
         "prod": "make prod_node",
-        "jsdoc": "jsdoc -c jsdoc.json",
         "prod:stop": "docker-compose stop",
-        "start:dev": "ts-node-esm app.ts",
+        "start:dev": "node --loader ts-node/esm --openssl-legacy-provider app.ts",
         "start:docker": "npm run start:dev 2>&1 | tee -a log/mcos/trace.log"
     },
     "author": "Drazi Crendraven <drazisil@hey.com>",
@@ -68,21 +67,13 @@
         "@types/chai": "4.3.5",
         "@types/mocha": "9.1.1",
         "@types/node": "^18.16.8",
-        "better-docs": "2.7.2",
         "c8": "7.13.0",
         "chai": "4.3.7",
-        "jsdoc": "4.0.2",
-        "jsdoc-plugin-typescript": "2.2.1",
         "madge": "^6.0.0",
         "mocha": "10.2.0",
         "prettier": "2.8.8",
         "prettier-eslint": "15.0.1",
-        "typedoc": "^0.24.7",
         "typescript": "5.0.4"
-    },
-    "volta": {
-        "node": "18.16.0",
-        "npm": "9.6.6"
     },
     "c8": {
         "all": true,
