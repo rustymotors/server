@@ -39,22 +39,6 @@ jobs:
           codecovcli create-report
           codecovcli do-upload
 
-          curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import
-          curl -Os https://uploader.codecov.io/latest/codecov-linux
-          curl -Os https://uploader.codecov.io/latest/codecov-linux.SHA256SUM
-          curl -Os https://uploader.codecov.io/latest/codecov-linux.SHA256SUM.sig
-          gpg --verify codecov-linux.SHA256SUM.sig codecov-linux.SHA256SUM
-          shasum -a 256 -c codecov-linux.SHA256SUM
-          chmod +x codecov-linux # All of these are the same file!
-          ./codecov-linux -v -n ${{ matrix.node-version }} -F auth
-          ./codecov-linux -v -n ${{ matrix.node-version }} -F database
-          ./codecov-linux -v -n ${{ matrix.node-version }} -F gateway
-          ./codecov-linux -v -n ${{ matrix.node-version }} -F lobby
-          ./codecov-linux -v -n ${{ matrix.node-version }} -F login
-          ./codecov-linux -v -n ${{ matrix.node-version }} -F patch
-          ./codecov-linux -v -n ${{ matrix.node-version }} -F persona
-          ./codecov-linux -v -n ${{ matrix.node-version }} -F shard
-          ./codecov-linux -v -n ${{ matrix.node-version }} -F transactions
       - uses: actions/upload-artifact@v3
         with:
           name: coverage_${{ matrix.node-version }}
