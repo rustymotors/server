@@ -34,7 +34,7 @@ jobs:
         env: # Or as an environment variable
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
-          pip install codecovcli
+          pip install -u codecovcli
           codecovcli create-commit
           codecovcli create-report
           codecovcli do-upload
