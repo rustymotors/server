@@ -34,6 +34,11 @@ jobs:
         env: # Or as an environment variable
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
+          pip install codecovcli
+          codecovcli create-commit
+          codecovcli create-report
+          codecovcli do-upload
+
           curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import
           curl -Os https://uploader.codecov.io/latest/codecov-linux
           curl -Os https://uploader.codecov.io/latest/codecov-linux.SHA256SUM
