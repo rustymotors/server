@@ -37,8 +37,16 @@ jobs:
           pip install --user codecov-cli
           codecovcli create-commit
           codecovcli create-report
-          codecovcli do-upload
-
+          codecovcli do-upload -F auth
+          codecovcli do-upload -F database
+          codecovcli do-upload -F gateway
+          codecovcli do-upload -F lobby
+          codecovcli do-upload -F login
+          codecovcli do-upload -F patch
+          codecovcli do-upload -F persona
+          codecovcli do-upload -F shard
+          codecovcli do-upload -F transactions
+                    
       - uses: actions/upload-artifact@v3
         with:
           name: coverage_${{ matrix.node-version }}
