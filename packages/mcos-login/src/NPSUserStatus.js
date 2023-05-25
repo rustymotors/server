@@ -33,11 +33,15 @@ export class NPSUserStatus extends NPSMessage {
     contextId;
     buffer;
 
-    /** @type {TServerLogger} */
-    #log;
+    /** 
+     * @private
+     * @type {TServerLogger} */
+    _log;
 
-    /** @type {TServerConfiguration} */
-    #config;
+    /** 
+     * @private
+     * @type {TServerConfiguration} */
+    _config;
 
     /**
      *
@@ -47,8 +51,8 @@ export class NPSUserStatus extends NPSMessage {
      */
     constructor(packet, config, log) {
         super("received");
-        this.#config = config;
-        this.#log = log;
+        this._config = config;
+        this._log = log;
         log("debug", "Constructing NPSUserStatus");
         this.sessionKey = "";
 
@@ -72,9 +76,9 @@ export class NPSUserStatus extends NPSMessage {
      * @return {void}
      */
     extractSessionKeyFromPacket(packet) {
-        this.#log("debug", "Extracting key");
+        this._log("debug", "Extracting key");
         // Decrypt the sessionkey
-        const privateKey = this.#config.privateKeyContents;
+        const privateKey = this._config.privateKeyContents;
 
         const sessionkeyString = Buffer.from(
             packet.subarray(52, -10).toString("utf8"),
@@ -89,7 +93,7 @@ export class NPSUserStatus extends NPSMessage {
      * @return {TNPSMessageJSON}
      */
     toJSON() {
-        this.#log("debug", "Returning as JSON");
+        this._log("debug", "Returning as JSON");
         return {
             msgNo: this.msgNo,
             msgLength: this.msgLength,
@@ -107,7 +111,7 @@ export class NPSUserStatus extends NPSMessage {
      * @return {string}
      */
     dumpPacket() {
-        this.#log("debug", "Returning as string");
+        this._log("debug", "Returning as string");
         let message = this.dumpPacketHeader("NPSUserStatus");
         message = message.concat(
             `NPSUserStatus,

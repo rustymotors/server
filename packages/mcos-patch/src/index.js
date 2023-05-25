@@ -43,12 +43,10 @@ export class PatchServer {
     static _instance;
 
     /**
-     *
-     *
+     * @private
      * @type {TServerLogger}
-     * @memberof PatchServer
      */
-    #log;
+    _log;
 
     /**
      * Creates an instance of PatchServer.
@@ -58,7 +56,7 @@ export class PatchServer {
      * @memberof PatchServer
      */
     constructor(log) {
-        this.#log = log;
+        this._log = log;
     }
 
     /**
@@ -90,7 +88,7 @@ export class PatchServer {
                 typeof listeningAddress !== "string" &&
                 listeningAddress !== null
             ) {
-                this.#log(
+                this._log(
                     "debug",
                     `Server is listening on port ${listeningAddress.port}`
                 );
@@ -98,7 +96,7 @@ export class PatchServer {
         });
         server.on("request", this.handleRequest.bind(this));
 
-        this.#log("debug", `Attempting to bind to port ${port}`);
+        this._log("debug", `Attempting to bind to port ${port}`);
         server.listen(port, host);
     }
 
@@ -109,7 +107,7 @@ export class PatchServer {
      * @returns {ServerResponse}
      */
     castanetResponse(request, response) {
-        this.#log(
+        this._log(
             "debug",
             `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
         );

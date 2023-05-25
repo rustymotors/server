@@ -38,7 +38,9 @@ export class AuthLogin {
      */
     static _instance;
 
-    /** @type {TServerLogger} */
+    /** 
+     * @private
+     * @type {TServerLogger} */
     _log;
 
     /**

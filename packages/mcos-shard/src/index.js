@@ -109,14 +109,16 @@ export class ShardServer {
     #possibleShards = [];
 
     /**
+     * @private
      * @type {TServerLogger}
      */
-    #log;
+    _log;
 
     /**
+     * @private
      * @type {TServerConfiguration}
      */
-    #config;
+    _config;
 
     /**
      * Return the instance of the ShardServer class
@@ -140,8 +142,8 @@ export class ShardServer {
      * @memberof ShardServer
      */
     constructor(config, log) {
-        this.#config = config;
-        this.#log = log;
+        this._config = config;
+        this._log = log;
         this.#server = createServer(this.handleRequest.bind(this));
 
         this.#server.on("error", (error) => {
@@ -159,7 +161,7 @@ export class ShardServer {
      * @memberof! PatchServer
      */
     _generateShardList() {
-        const shardHost = this.#config.EXTERNAL_HOST;
+        const shardHost = this._config.EXTERNAL_HOST;
         const shardClockTower = new ShardEntry(
             "The Clocktower",
             "The Clocktower",
@@ -220,7 +222,7 @@ export class ShardServer {
                 "Content-disposition",
                 "attachment; filename=cert.pem"
             );
-            return response.end(handleGetCert(this.#config));
+            return response.end(handleGetCert(this._config));
         }
 
         if (request.url === "/key") {
@@ -228,7 +230,7 @@ export class ShardServer {
                 "Content-disposition",
                 "attachment; filename=pub.key"
             );
-            return response.end(handleGetKey(this.#config));
+            return response.end(handleGetKey(this._config));
         }
 
         if (request.url === "/registry") {
@@ -236,7 +238,7 @@ export class ShardServer {
                 "Content-disposition",
                 "attachment; filename=mco.reg"
             );
-            return response.end(handleGetRegistry(this.#config));
+            return response.end(handleGetRegistry(this._config));
         }
 
         if (request.url === "/") {
@@ -245,7 +247,7 @@ export class ShardServer {
         }
 
         if (request.url === "/ShardList/") {
-            this.#log(
+            this._log(
                 "debug",
                 `Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
             );
@@ -259,7 +261,7 @@ export class ShardServer {
         response.end("");
 
         // Unknown request, log it
-        this.#log(
+        this._log(
             "debug",
             `Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );

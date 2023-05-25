@@ -40,8 +40,10 @@ export class DatabaseManager {
      */
     static _instance;
 
-    /** @type {TServerLogger} */
-    #log;
+    /** 
+     * @private
+     * @type {TServerLogger} */
+    _log;
 
     /**
      * Creates an instance of DatabaseManager.
@@ -51,7 +53,7 @@ export class DatabaseManager {
      * @memberof DatabaseManager
      */
     constructor(log) {
-        this.#log = log;
+        this._log = log;
     }
     /**
      * Return the instance of the DatabaseManager class

@@ -74,8 +74,10 @@ export class BinaryStructure {
      */
     _fields = [];
 
-    /** @type {TServerLogger} */
-    #log;
+    /** 
+     * @private
+     * @type {TServerLogger} */
+    _log;
 
     /**
      * Creates an instance of BinaryStructure.
@@ -83,7 +85,7 @@ export class BinaryStructure {
      * @param {TServerLogger} log
      */
     constructor(log) {
-        this.#log = log;
+        this._log = log;
         log("debug", "new BinaryStructure");
     }
 
@@ -95,7 +97,7 @@ export class BinaryStructure {
      */
     _add(field) {
         const newField = { ...field, offset: this._byteOffset };
-        this.#log("debug", `Adding ${JSON.stringify(newField)}`);
+        this._log("debug", `Adding ${JSON.stringify(newField)}`);
         this._fields.push(newField);
         this._byteLength = this._byteLength + field.size;
         this._byteOffset = this._byteOffset + field.size;
@@ -130,24 +132,24 @@ export class BinaryStructure {
             throw err;
         }
 
-        this.#log(
+        this._log(
             "debug",
             `Attempting to deserialize ${byteStream.byteLength} bytes into ${this._fields.length} fields for a total of ${this._byteLength} bytes`
         );
 
         this._fields.forEach((f) => {
-            this.#log("debug", `Before: ${JSON.stringify(f)}`);
+            this._log("debug", `Before: ${JSON.stringify(f)}`);
             const indexes = { start: f.offset, end: f.offset + f.size };
-            this.#log("debug", `Taking data: ${JSON.stringify(indexes)}`);
+            this._log("debug", `Taking data: ${JSON.stringify(indexes)}`);
             const value = byteStream.slice(indexes.start, indexes.end);
-            this.#log(
+            this._log(
                 "debug",
                 `Setting ${f.name} with value of ${toHex(value)}, size ${
                     value.byteLength
                 }`
             );
             f.value = value;
-            this.#log("debug", `After: ${JSON.stringify(f)}`);
+            this._log("debug", `After: ${JSON.stringify(f)}`);
             this._byteOffset = indexes.end;
         });
     }
@@ -184,11 +186,11 @@ export class BinaryStructure {
      * @memberof BinaryStructure
      */
     getValue(fieldName) {
-        this.#log("debug", "Calling get() in BinaryStructure..");
+        this._log("debug", "Calling get() in BinaryStructure..");
         const selectedField = this.get(fieldName);
-        this.#log("debug", "Calling get() in BinaryStructure.. success");
+        this._log("debug", "Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
-        this.#log(
+        this._log(
             "debug",
             `Getting a value of ${toHex(value)} from the ${
                 selectedField.name
@@ -217,7 +219,7 @@ export class BinaryStructure {
             }
             return value.readUInt8();
         } catch (error) {
-            this.#log("debug", "Calling get() in BinaryStructure.. fail!");
+            this._log("debug", "Calling get() in BinaryStructure.. fail!");
             const err = new Error(
                 `Error in getValueX: ${String(
                     error
@@ -236,11 +238,11 @@ export class BinaryStructure {
      * @returns {void}
      */
     setValueNumber(fieldName, newValue) {
-        this.#log("debug", "Calling setValueNumber() in BinaryStructure..");
+        this._log("debug", "Calling setValueNumber() in BinaryStructure..");
         const selectedField = this.get(fieldName);
-        this.#log("debug", "Calling get() in BinaryStructure.. success");
+        this._log("debug", "Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
-        this.#log(
+        this._log(
             "debug",
             `Setting a value of ${newValue} to the ${selectedField.name} field with type of ${type})`
         );

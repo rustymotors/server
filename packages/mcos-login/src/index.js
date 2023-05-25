@@ -37,8 +37,10 @@ export class LoginServer {
 
     #databaseManager;
 
-    /** @type {TServerLogger} */
-    #log;
+    /** 
+     * @private
+     * @type {TServerLogger} */
+    _log;
 
     /**
      * Please use getInstance() instead
@@ -49,7 +51,7 @@ export class LoginServer {
      */
     constructor(database, log) {
         this.#databaseManager = database;
-        this.#log = log;
+        this._log = log;
     }
 
     /**
@@ -75,7 +77,7 @@ export class LoginServer {
      * @return {TUserRecordMini}
      */
     _npsGetCustomerIdByContextId(contextId) {
-        this.#log("debug", ">>> _npsGetCustomerIdByContextId");
+        this._log("debug", ">>> _npsGetCustomerIdByContextId");
         /** @type {TUserRecordMini[]} */
         if (contextId.toString() === "") {
             const err = new Error(`Unknown contextId: ${contextId.toString()}`);
@@ -85,7 +87,7 @@ export class LoginServer {
 
         const userRecord = userRecords.filter((user) => user.contextId === contextId);
         if (typeof userRecord[0] === "undefined" || userRecord.length !== 1) {
-            this.#log(
+            this._log(
                 "debug",
                 `preparing to leave _npsGetCustomerIdByContextId after not finding record',
         ${JSON.stringify({
@@ -99,7 +101,7 @@ export class LoginServer {
             throw err;
         }
 
-        this.#log(
+        this._log(
             "debug",
             `preparing to leave _npsGetCustomerIdByContextId after finding record',
       ${JSON.stringify({

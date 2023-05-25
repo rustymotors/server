@@ -39,8 +39,10 @@ export class AdminServer {
      */
     static _instance;
 
-    /** @type {TServerLogger} */
-    #log;
+    /** 
+     * @private
+     * @type {TServerLogger} */
+    _log;
 
     /**
      * Please use getAdminServer() instead
@@ -49,7 +51,7 @@ export class AdminServer {
      * @memberof AdminServer
      */
     constructor(log) {
-        this.#log = log;
+        this._log = log;
     }
 
     /**
@@ -74,11 +76,11 @@ export class AdminServer {
      * @return {TJSONResponse}
      */
     handleRequest(request) {
-        this.#log(
+        this._log(
             "debug",
             `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );
-        this.#log(
+        this._log(
             "debug",
             `Request received,
       ${JSON.stringify({
