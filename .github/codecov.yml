@@ -8,50 +8,38 @@ flags:
   auth:
     paths:
       - packages/mcos-auth/**
-    carryforward: true
+    carryforward: false
   database:
     paths:
       - packages/mcos-database/**
-    carryforward: true
+    carryforward: false
   gateway:
     paths:
       - packages/mcos-gateway/**
-    carryforward: true
+    carryforward: false
   lobby:
     paths:
       - packages/mcos-lobby/**
-    carryforward: true
+    carryforward: false
   login:
     paths:
       - packages/mcos-login/**
-    carryforward: true
+    carryforward: false
   patch:
     paths:
       - packages/mcos-patch/**
-    carryforward: true
+    carryforward: false
   persona:
     paths:
       - packages/mcos-persona/**
-    carryforward: true
+    carryforward: false
   shard:
     paths:
       - packages/mcos-shard/**
-    carryforward: true
-  logger:
-    paths:
-      - packages/mcos-logger/**
-    carryforward: false
-  shared-structures:
-    paths:
-      - packages/mcos-shared/src/structures**
-    carryforward: false
-  shared-types:
-    paths:
-      - packages/mcos-shared/src/types/**
     carryforward: false
   shared:
     paths:
-      - packages/mcos-shared/**
+      - src/shared/**
     carryforward: false
   transactions:
     paths:
