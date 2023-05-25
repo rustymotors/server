@@ -1,5 +1,10 @@
+import { Sentry } from "mcos/shared";
+
 /**
- * @class MessageNode
+ * @module mcos-gateway
+ */
+
+/**
  * @property {"sent" | "received"} direction
  * @property {number} msgNo
  * @property {number} seq
@@ -11,8 +16,6 @@
  * @property {number} appId
  * @property {Buffer} rawPacket
  */
-
-import { Sentry } from "mcos/shared";
 
 export class MessageNode {
     direction;

@@ -15,7 +15,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * @class
+ * @module mcos-shared
+ */
+
+/**
  * @property {string} name
  * @property {string} description
  * @property {number} id

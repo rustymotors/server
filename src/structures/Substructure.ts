@@ -1,7 +1,10 @@
 import { BaseStructure } from "./BaseStructure";
 
 /**
- * @class
+ * @module mcos-structures
+ */
+
+/**
  * @extends module:BaseStructure
  */
 export class Substructure extends BaseStructure {

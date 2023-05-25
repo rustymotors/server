@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { equal } from "node:assert/strict";
-import { getLevelValue } from "./log.js";
+import { getLevelValue } from "./logger.js";
 
 
 describe("Logger", () => {

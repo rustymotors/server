@@ -1,18 +1,21 @@
+import { Sentry } from "mcos/shared";
+import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
+
+/**
+ * @module mcos-transactions
+ */
+
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // DWORD data;   // specific to the message sent (but usually 0)
 // DWORD data2;
 /**
  *
  *
- * @class
  * @property {number} msgNo
  * @property {Buffer} data
  * @property {Buffer} data2
  * @property {string} serviceName
  */
-
-import { Sentry } from "mcos/shared";
-import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
 
 export class GenericRequestMessage extends MessageNode {
     msgNo;

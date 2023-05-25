@@ -1,13 +1,11 @@
 /**
- * @module mcos/structures
+ * @module mcos-structures
  * @requires module:Structure.TBaseStructure
 
 /**
  *
  *
  * @author Drazi Crendraven
- * @export
- * @class BaseStructure
  */
 export abstract class BaseStructure {
     /**

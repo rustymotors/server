@@ -1,10 +1,13 @@
+/**
+ * @module mcos-transactions
+ */
+
 // WORD  msgNo;    // typically MC_SUCCESS or MC_FAILURE
 // WORD  msgReply; // message # being replied to (ex: MC_PURCHASE_STOCK_CAR)
 // DWORD result; // specific to the message sent, often the reason for a failure
 // DWORD data;   // specific to the message sent (but usually 0)
 // DWORD data2;
 /**
- * @class
  * @property {number} msgNo
  * @property {number} toFrom
  * @property {number} appId

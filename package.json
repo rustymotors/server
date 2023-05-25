@@ -53,7 +53,7 @@
         "build:test": "npm run format && npm run build && npm run test",
         "prod": "make prod_node",
         "prod:stop": "docker-compose stop",
-        "start:dev": "node --loader ts-node/esm --openssl-legacy-provider app.ts",
+        "start:dev": "node --openssl-legacy-provider app.js",
         "start:docker": "npm run start:dev 2>&1 | tee -a log/mcos/trace.log"
     },
     "author": "Drazi Crendraven <drazisil@hey.com>",
@@ -96,17 +96,12 @@
             "node": true
         },
         "extends": [
-            "eslint:recommended",
-            "plugin:@typescript-eslint/recommended"
+            "eslint:recommended"
         ],
-        "parser": "@typescript-eslint/parser",
         "parserOptions": {
             "ecmaVersion": "latest",
             "sourceType": "module"
         },
-        "plugins": [
-            "@typescript-eslint"
-        ],
         "rules": {}
     },
     "dependencies": {

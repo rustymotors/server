@@ -5,7 +5,6 @@
 // DWORD   retailPrice;
 // WORD    bIsDealOfTheDay;
 /**
- * @class
  * @property {number} brandedPartId
  * @property {number} retailPrice
  * @property {0 | 1} bIsDealOfTheDay
