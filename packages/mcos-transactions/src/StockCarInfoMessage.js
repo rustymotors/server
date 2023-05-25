@@ -24,7 +24,6 @@
  */
 
 import { MessageNode } from "../../mcos-gateway/index.js";
-import { StockCar } from "./StockCar.js";
 
 export class StockCarInfoMessage extends MessageNode {
     msgNo;

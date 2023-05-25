@@ -18,7 +18,6 @@ import { getAllConnections } from "./connections.js";
 import { releaseQueue } from "./releaseQueue.js";
 import { listConnections } from "./listConnections.js";
 import { resetQueue } from "./resetQueue.js";
-import { IncomingMessage } from "node:http";
 
 /**
  * @module mcos-gateway

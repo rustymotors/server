@@ -14,10 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry } from "mcos/shared";
+import { Sentry } from "../../../src/shared/index.js";
 import { ShardEntry } from "./shard-entry.js";
 import { createServer } from "node:https";
-import { IncomingMessage, Server, ServerResponse } from "node:http";
 
 /**
  * @module mcos-shard

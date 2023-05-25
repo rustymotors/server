@@ -14,11 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { IncomingMessage, ServerResponse } from "http";
+import { AuthLogin } from "../../mcos-auth/index.js";
+import { PatchServer } from "../../mcos-patch/index.js";
+import { ShardServer } from "../../mcos-shard/index.js";
 import { AdminServer } from "./adminServer.js";
-import { AuthLogin } from "mcos/auth";
-import { PatchServer } from "mcos/patch";
-import { ShardServer } from "mcos/shard";
 
 /**
  * @module mcos-gateway

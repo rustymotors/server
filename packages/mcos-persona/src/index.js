@@ -14,11 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { NPSMessage } from "mcos/shared";
+import { NPSMessage } from "../../../src/shared/index.js";
 import { handleData, personaRecords } from "./internal.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
-import { Sentry } from "mcos/shared";
-import { Socket } from "node:net";
 
 /**
  * @module mcos-persona
