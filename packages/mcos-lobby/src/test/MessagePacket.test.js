@@ -1,6 +1,7 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import { MessagePacket } from "../MessagePacket.js";
+import { MessagePacket } from "../index.js";
+
 
 describe("MessagePacket class", function () {
     it("should return an instance of MessagePacket when the status method fromBuffer() is called", function () {

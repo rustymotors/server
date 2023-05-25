@@ -15,10 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import chai from "chai";
-import { GSMessageBase } from "mcos/gateway";
-import { TServerLogger } from "mcos/shared";
 import { describe, it } from "mocha";
-import { ByteField } from "./BinaryStructure.js";
+import { GSMessageBase } from "../../packages/mcos-gateway/index.js";
 
 chai.should();
 
@@ -27,7 +25,7 @@ describe("GSMessageBase", () => {
         it("should hvave a value of 2", () => {
             // Arrange
             /**  @type {TServerLogger} */
-            const log: TServerLogger = () => {
+            const log = () => {
                 return;
             };
             const testMessage = new GSMessageBase(log);
@@ -40,7 +38,7 @@ describe("GSMessageBase", () => {
         it("should handle an input stream without errors", () => {
             // Arrange
             /**  @type {TServerLogger} */
-            const log: TServerLogger = () => {
+            const log = () => {
                 return;
             };
             const testMessage = new GSMessageBase(log);
@@ -55,12 +53,12 @@ describe("GSMessageBase", () => {
         it("should return a ByteField object when passed a valid field name", () => {
             // Arrange
             /**  @type {TServerLogger} */
-            const log: TServerLogger = () => {
+            const log = () => {
                 return;
             };
             const testMessage = new GSMessageBase(log);
             /** @type {ByteField} */
-            const expectedField: ByteField = {
+            const expectedField = {
                 name: "msgId",
                 size: 2,
                 offset: 0,

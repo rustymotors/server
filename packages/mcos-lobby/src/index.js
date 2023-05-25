@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { handleData } from "./internal.js";
+export { MessagePacket } from "./MessagePacket.js"
 
 /**
  * @module mcos-lobby

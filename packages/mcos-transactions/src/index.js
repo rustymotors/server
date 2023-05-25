@@ -16,6 +16,7 @@
 
 import { Sentry } from "mcos/shared";
 import { handleData } from "./internal.js";
+export { TClientConnectMessage } from "./TClientConnectMessage.js";
 
 /**
  * @module mcos-transactions

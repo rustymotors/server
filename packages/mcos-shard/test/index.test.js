@@ -6,13 +6,12 @@ import {
     handleGetRegistry,
     ShardServer,
 } from "../src/index.js";
-import { TServerConfiguration, TServerLogger } from "mcos/shared";
 
 describe("Shard service", () => {
     it("should return an instance when getInstance() is called", () => {
         // arrange
         /** @type {TServerConfiguration} */
-        const config: TServerConfiguration = {
+        const config = {
             certificateFileContents: "",
             EXTERNAL_HOST: "",
             privateKeyContents: "",
@@ -20,7 +19,7 @@ describe("Shard service", () => {
             LOG_LEVEL: "info",
         };
         /** @type {TServerLogger} */
-        const log: TServerLogger = () => {
+        const log = () => {
             return;
         };
 
@@ -37,7 +36,7 @@ describe("Shard service", () => {
         it("should return file contents", () => {
             // arrange
             /** @type {TServerConfiguration} */
-            const config: TServerConfiguration = {
+            const config = {
                 certificateFileContents: "Hello! I'm an SSL cert. Honest.",
                 EXTERNAL_HOST: "",
                 privateKeyContents: "",
@@ -59,7 +58,7 @@ describe("Shard service", () => {
         it("should return file contents", () => {
             // arrange
             /** @type {TServerConfiguration} */
-            const config: TServerConfiguration = {
+            const config = {
                 certificateFileContents: "",
                 EXTERNAL_HOST: "0.10.0.1",
                 privateKeyContents: "",
@@ -81,7 +80,7 @@ describe("Shard service", () => {
         it("should return file contents", () => {
             // arrange
             /** @type {TServerConfiguration} */
-            const config: TServerConfiguration = {
+            const config = {
                 certificateFileContents: "",
                 EXTERNAL_HOST: "",
                 privateKeyContents: "",

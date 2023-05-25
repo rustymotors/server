@@ -15,10 +15,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import chai, { expect } from "chai";
-import { AdminServer, resetQueue } from "mcos/gateway";
-import { TServerLogger, TSocketWithConnectionInfo } from "mcos/shared";
 import { describe, it } from "mocha";
 import { Socket } from "net";
+import { AdminServer } from "../src/index.js";
+import { resetQueue } from "../index.js";
 
 chai.should();
 
@@ -27,7 +27,7 @@ describe("AdminServer", () => {
         it("should return an instance of AdminServer", () => {
             // Arrange
             /**  @type {TServerLogger} */
-            const log: TServerLogger = () => {
+            const log = () => {
                 return;
             };
 
@@ -40,7 +40,7 @@ describe("AdminServer", () => {
         it("should return the same instance of AdminServer on multiple calls", () => {
             // Arrange
             /**  @type {TServerLogger} */
-            const log: TServerLogger = () => {
+            const log = () => {
                 return;
             };
 
@@ -58,7 +58,7 @@ describe("resetQueue()", function () {
     it("should reset the inQueue property to true for all connections", function () {
         // arrange
         /** @type {TSocketWithConnectionInfo[]} */
-        const inputConnectionList: TSocketWithConnectionInfo[] = [
+        const inputConnectionList = [
             {
                 socket: new Socket(),
                 seq: 0,
@@ -94,7 +94,7 @@ describe("resetQueue()", function () {
             },
         ];
         /** @type {TSocketWithConnectionInfo[]} */
-        const expectedConnectionList: TSocketWithConnectionInfo[] = [
+        const expectedConnectionList = [
             {
                 socket: new Socket(),
                 seq: 0,
@@ -132,7 +132,7 @@ describe("resetQueue()", function () {
 
         // act
         /** @type {TSocketWithConnectionInfo[]} */
-        const result: TSocketWithConnectionInfo[] = JSON.parse(
+        const result = JSON.parse(
             resetQueue(inputConnectionList).body
         );
 
