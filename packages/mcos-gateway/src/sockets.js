@@ -14,15 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry } from "mcos/shared";
-import { receiveLobbyData } from "mcos/lobby";
-import { receiveLoginData } from "mcos/login";
-import { receivePersonaData } from "mcos/persona";
-import { receiveTransactionsData } from "mcos/transactions";
 import { findOrNewConnection, updateConnection } from "./connections.js";
 import { MessageNode } from "./MessageNode.js";
-import { Socket } from "net";
-import { toHex } from "../../../src/shared/index.js";
+import { Sentry, toHex } from "../../../src/shared/index.js";
+import { receiveLoginData } from "../../mcos-login/index.js";
+import { receivePersonaData } from "../../mcos-persona/index.js";
+import { receiveLobbyData } from "../../mcos-lobby/index.js";
+import { receiveTransactionsData } from "../../mcos-transactions/index.js";
 
 /**
  * @module mcos-gateway
