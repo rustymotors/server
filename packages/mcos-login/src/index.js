@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Sentry } from "mcos/shared";
-import { handleData } from "./internal.js";
+import { handleData, userRecords } from "./internal.js";
 
 /**
  * @module mcos-login
@@ -77,25 +77,13 @@ export class LoginServer {
     _npsGetCustomerIdByContextId(contextId) {
         this.#log("debug", ">>> _npsGetCustomerIdByContextId");
         /** @type {TUserRecordMini[]} */
-        const users = [
-            {
-                contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
-                customerId: 0xac_01_00_00,
-                userId: 0x00_00_00_02,
-            },
-            {
-                contextId: "d316cd2dd6bf870893dfbaaf17f965884e",
-                customerId: 0x00_54_b4_6c,
-                userId: 0x00_00_00_01,
-            },
-        ];
         if (contextId.toString() === "") {
             const err = new Error(`Unknown contextId: ${contextId.toString()}`);
             Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
 
-        const userRecord = users.filter((user) => user.contextId === contextId);
+        const userRecord = userRecords.filter((user) => user.contextId === contextId);
         if (typeof userRecord[0] === "undefined" || userRecord.length !== 1) {
             this.#log(
                 "debug",

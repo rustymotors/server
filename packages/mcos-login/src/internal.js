@@ -27,7 +27,7 @@ import { premadeLogin } from "./premadeLogin.js";
 /**
  * @type {TUserRecordMini[]}
  * */
-const userRecords = [
+export const userRecords = [
     {
         contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
         customerId: 0xac_01_00_00,
