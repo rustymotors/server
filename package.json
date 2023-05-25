@@ -48,6 +48,7 @@
     "type": "module",
     "scripts": {
         "build": "tsc",
+        "docs": "jsdoc app.js packages/**/*.js src/**/*.js",
         "format": "prettier --write app.js \"packages/**/*.{j,t}s\"",
         "test": "c8 mocha {src,packages}/**/*.test.{j,t}s",
         "build:test": "npm run format && npm run build && npm run test",
@@ -69,6 +70,7 @@
         "@types/node": "^18.16.13",
         "c8": "7.13.0",
         "chai": "4.3.7",
+        "jsdoc": "^4.0.2",
         "madge": "^6.0.0",
         "mocha": "10.2.0",
         "prettier": "2.8.8",
