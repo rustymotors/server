@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { NPSMessage } from "../../../src/shared/index.js";
+import { NPSMessage, Sentry } from "../../../src/shared/index.js";
 import { handleData, personaRecords } from "./internal.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
 
