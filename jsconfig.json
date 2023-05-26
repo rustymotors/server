@@ -1,13 +1,11 @@
 {
     "compilerOptions": {
-        "module": "ESNext",
+        "module": "ES2022", 
         "moduleResolution": "Node",
-        "target": "ES2020",
-        "jsx": "react",
+        "target": "ES2022",
         "checkJs": true,
-        "strictNullChecks": true,
-        "strictFunctionTypes": true,
-        "strict": true,
+        "strict": true,        
     },
     "exclude": ["node_modules", "**/node_modules/*"]
 }
+

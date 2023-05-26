@@ -49,6 +49,7 @@
     "scripts": {
         "build": "tsc",
         "docs": "jsdoc app.js packages/**/*.js src/**/*.js",
+        "lint": "jshint app.js packages/**/*.js src/**/*.js",
         "format": "prettier --write app.js \"packages/**/*.{j,t}s\"",
         "test": "c8 mocha {src,packages}/**/*.test.{j,t}s",
         "build:test": "npm run format && npm run build && npm run test",
@@ -94,17 +95,21 @@
     },
     "eslintConfig": {
         "env": {
-            "es2021": true,
+            "es2022": true,
             "node": true
         },
         "extends": [
             "eslint:recommended"
         ],
         "parserOptions": {
-            "ecmaVersion": "latest",
             "sourceType": "module"
         },
-        "rules": {}
+        "rules": {},
+        "ignorePatterns": [
+            "node_modules",
+            "coverage",
+            "out"
+        ]
     },
     "dependencies": {
         "@sentry-internal/tracing": "7.52.1",
