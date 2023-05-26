@@ -25,11 +25,6 @@ import { BinaryStructure } from "./BinaryStructure.js";
  * @extends {BinaryStructure}
  */
 export class TSMessageBase extends BinaryStructure {
-    /**
-     * What byte order are the fields?
-     * @type {'big' | 'little'}
-     */
-    _byteOrder = "big";
 
     /**
      * Creates an instance of TSMessageBase.
@@ -39,6 +34,12 @@ export class TSMessageBase extends BinaryStructure {
      */
     constructor(log) {
         super(log);
+        /**
+         * What byte order are the fields?
+         * @type {'big' | 'little'}
+         */
+        this._byteOrder = "big";
+
         log("debug", "new TSMessageBase");
         this._add({
             name: "dataLength",

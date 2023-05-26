@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { IncomingMessage, ServerResponse } from "node:http";
-import { Socket } from "node:net";
 import { Sentry } from "../../../src/shared/index.js";
 
 /**

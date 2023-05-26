@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Socket, createServer as createSocketServer } from "node:net";
+import { createServer as createSocketServer } from "node:net";
 import { findOrNewConnection } from "./connections.js";
 import { dataHandler } from "./sockets.js";
 import { httpListener as httpHandler } from "./web.js";

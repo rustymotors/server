@@ -7,7 +7,8 @@ import { ProfilingIntegration } from "@sentry/profiling-node";
 
 class SentryInit {
     
-    static initCompleted = false
+    /** @type {boolean} */
+    static initCompleted = false;
   
 }
 
@@ -33,7 +34,7 @@ function Sentry() {
         });
      SentryInit.initCompleted = true
     }
-};
+}
 
 Sentry();
 

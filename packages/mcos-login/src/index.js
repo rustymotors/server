@@ -23,19 +23,22 @@ import { handleData, userRecords } from "./internal.js";
 
 /**
  * Please use {@link LoginServer.getInstance()}
- * @property {DatabaseManager} databaseManager
+ * @property {LoginServer} _instance
+ * @property {TDatabaseManager} _databaseManager
+ * @property {TServerLogger} _log
  */
 export class LoginServer {
     /**
-     *
-     *
-     * @static
      * @type {LoginServer}
      * @memberof LoginServer
      */
     static _instance;
 
-    #databaseManager;
+    /**
+     * @private
+     * @type {TDatabaseManager}
+     */
+    _databaseManager;
 
     /** 
      * @private
@@ -47,10 +50,9 @@ export class LoginServer {
      * @author Drazi Crendraven
      * @param {TDatabaseManager} database
      * @param {TServerLogger} log
-     * @memberof LoginServer
      */
     constructor(database, log) {
-        this.#databaseManager = database;
+        this._databaseManager = database;
         this._log = log;
     }
 
