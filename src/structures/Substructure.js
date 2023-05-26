@@ -5,7 +5,7 @@ import { BaseStructure } from "./BaseStructure";
  */
 
 /**
- * @extends module:BaseStructure
+ * @extends BaseStructure
  */
 export class Substructure extends BaseStructure {
     // This is intentional
