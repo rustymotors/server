@@ -2,6 +2,8 @@
  * @module mcos-transactions
  */
 
+import { MessageNode } from "../../../src/shared/index.js";
+
 /**
  * Object for providing information on stock cars
  */
@@ -23,7 +25,6 @@
  * @property {StockCar[]} StockCarList
  */
 
-import { MessageNode } from "../../mcos-gateway/index.js";
 
 export class StockCarInfoMessage extends MessageNode {
     msgNo;

@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { findOrNewConnection, updateConnection } from "./connections.js";
-import { MessageNode } from "./MessageNode.js";
+import { MessageNode } from "../../../src/shared/index.js";
 import { Sentry, toHex } from "../../../src/shared/index.js";
 import { receiveLoginData } from "../../mcos-login/index.js";
 import { receivePersonaData } from "../../mcos-persona/index.js";

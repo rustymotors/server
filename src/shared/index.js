@@ -4,6 +4,7 @@ export { NPSMessage } from "./NPSMessage.js";
 export { TSMessageBase } from "./TMessageBase.js";
 export { getServerLogger } from "./logger.js";
 export { setServerConfiguration } from "./ServerConfiguration.js";
+export { MessageNode } from "./MessageNode.js";
 /**
  * @module mcos-shared
  * @description Shared types and functions

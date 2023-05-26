@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { MessageNode, decryptBuffer, selectEncryptors } from "mcos/gateway";
+import { decryptBuffer, selectEncryptors } from "../../mcos-gateway/index.js";
 import { messageHandlers } from "./handlers.js";
-import { Sentry, toHex } from "mcos/shared";
+import { MessageNode, Sentry, toHex } from "../../../src/shared/index.js";
 
 /**
  * @module mcos-transactions

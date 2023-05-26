@@ -17,8 +17,7 @@
  * @property {Buffer} data2
  */
 
-import { Sentry } from "mcos/shared";
-import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
+import { MessageNode, Sentry } from "../../../src/shared/index.js";
 
 export class GenericReplyMessage extends MessageNode {
     /**

@@ -14,16 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { MessageNode, Sentry, toHex } from "../../../src/shared/index.js";
+import { DatabaseManager } from "../../mcos-database/index.js";
+import { createEncrypters } from "../../mcos-gateway/index.js";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
-import { TClientConnectMessage } from "./TClientConnectMessage.js";
-import { TLoginMessage } from "./TLoginMessage.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
-import { TLobbyMessage } from "./TLobbyMessage.js";
-import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
 import { StockCar } from "./StockCar.js";
-import { Sentry, toHex } from "mcos/shared";
-import { MessageNode, createEncrypters } from "mcos/gateway";
-import { DatabaseManager } from "mcos/database";
+import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
+import { TClientConnectMessage } from "./TClientConnectMessage.js";
+import { TLobbyMessage } from "./TLobbyMessage.js";
+import { TLoginMessage } from "./TLoginMessage.js";
 
 /**
  * @module mcos-transactions

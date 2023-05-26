@@ -1,7 +1,7 @@
-import { Sentry } from "mcos/shared";
+import { Sentry } from "./sentry.js";
 
 /**
- * @module mcos-gateway
+ * @module mcos-shared
  */
 
 /**
