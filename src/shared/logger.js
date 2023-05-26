@@ -68,6 +68,6 @@ export function getServerLogger(logLevel = "info") {
         console.log(
             "debug",
             `{"level": "${level}", "hostname": "${hostname}", "message": ${msg}`
-        );
+        ); // skipcq: JS-0002 This is the only place console is used.
     };
 }
