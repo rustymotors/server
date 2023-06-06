@@ -21,8 +21,10 @@ import { httpListener as httpHandler } from "./web.js";
 export { getAllConnections } from "./connections.js";
 export { AdminServer } from "./adminServer.js";
 import Sentry from "@sentry/node";
-import type { TServerConfiguration, TServerLogger } from "mcos/shared";
+import { TServerConfiguration, TServerLogger, toHex } from "mcos/shared";
 import { Server } from "node:http";
+import { MessageHeader, MessageNode as NewNode } from "../../../MessageNode.js";
+import { TCPHeader } from "../../../TCPHeader.js";
 
 Sentry.init({
     dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
@@ -79,6 +81,30 @@ function TCPListener(
         );
     });
     incomingSocket.on("data", (data) => {
+        // Received data from the client
+        // Pass it to the data handler
+        log("debug", `Received data: ${toHex(data)}`);
+        const msgHeader = new MessageHeader();
+        msgHeader.deserialize(data);
+
+        const signature = msgHeader.findField("signature").value;
+        log("debug", `Message Header: ${signature}`)
+        if ( signature !== "TOMC" ) {
+            log("debug", "Recieved TCP message")    
+            const msgHeader = new TCPHeader();
+            msgHeader.deserialize(data);
+            log("debug", `Message Header: ${msgHeader.toString()}`);
+        } else {
+            log("debug", "Recieved MCOTS message")
+            const msgNode = new NewNode(data);
+            msgNode.deserialize(data);
+            if (!msgNode.header) {
+                log("debug", "No header found")
+                return;
+            }
+            log("debug", `Message Header: ${msgNode.header.toString()}`);
+        }
+
         dataHandler(data, connectionRecord, config, log).catch(
             (reason: Error) =>
                 log(
