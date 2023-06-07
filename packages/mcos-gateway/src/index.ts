@@ -23,7 +23,8 @@ export { AdminServer } from "./adminServer.js";
 import Sentry from "@sentry/node";
 import { TServerConfiguration, TServerLogger, toHex } from "mcos/shared";
 import { Server } from "node:http";
-import { MessageHeader, MessageNode as NewNode } from "../../../MessageNode.js";
+import { Message } from "../../../Message.js";
+import { MessageHeader } from "../../../MessageHeader.js";
 import { TCPHeader } from "../../../TCPHeader.js";
 
 Sentry.init({
@@ -84,24 +85,17 @@ function TCPListener(
         // Received data from the client
         // Pass it to the data handler
         log("debug", `Received data: ${toHex(data)}`);
-        const msgHeader = new MessageHeader();
-        msgHeader.deserialize(data);
+        const msgHeader = MessageHeader.deserialize(data);
 
-        const signature = msgHeader.findField("signature").value;
-        log("debug", `Message Header: ${signature}`)
+        const signature = msgHeader.signature;
         if ( signature !== "TOMC" ) {
             log("debug", "Recieved TCP message")    
-            const msgHeader = new TCPHeader();
-            msgHeader.deserialize(data);
+            const msgHeader = TCPHeader.deserialize(data);
             log("debug", `Message Header: ${msgHeader.toString()}`);
         } else {
             log("debug", "Recieved MCOTS message")
-            const msgNode = new NewNode(data);
-            msgNode.deserialize(data);
-            if (!msgNode.header) {
-                log("debug", "No header found")
-                return;
-            }
+            const msgNode = Message.deserialize(data);
+
             log("debug", `Message Header: ${msgNode.header.toString()}`);
         }
 

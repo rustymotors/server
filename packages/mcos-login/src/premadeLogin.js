@@ -10,8 +10,10 @@ export function premadeLogin() {
         // Live Packet
         0x06,
         0x02,
+        
         0x01,
         0x01,
+        
         0x21,
         0xf9,
         0x17,

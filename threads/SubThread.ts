@@ -2,12 +2,15 @@ import EventEmitter from "node:events";
 
 
 export class SubThread extends EventEmitter {
+    name: string;
+    loopInterval: number;
+    timer: NodeJS.Timer | null = null;
     /**
      *
      * @param {string} name
      * @param {number} [loopInterval=100]
      */
-    constructor(name, loopInterval = 100) {
+    constructor(name: string, loopInterval = 100) {
         super();
         this.name = name;
         this.loopInterval = loopInterval;
@@ -26,7 +29,10 @@ export class SubThread extends EventEmitter {
     
     shutdown() {        
         console.log(`${this.name} SubThread() shutting down.`);
-        clearInterval(this.timer);
+        if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
+        }
         this.emit("shutdownComplete");
     }   
 }
