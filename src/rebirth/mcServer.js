@@ -1,8 +1,8 @@
 import { parseArgs } from "node:util";
 import { tpsInitializer } from "./mcCommon.js";
 import { loggerStartup } from "./Logger.js";
-import { ReadInput } from "./threads/ReadInput.js";
-import { SocketMgrCompletion } from "./threads/SocketMgrCompletion.js";
+import { ReadInput } from "./src/rebirth/threads/ReadInput.js";
+import { SocketMgrCompletion } from "./src/rebirth/threads/SocketMgrCompletion.js";
 
 export const MC_LOBBY_PORT = 7003;
 export const MC_LOGIN_PORT = 8226;

@@ -1,10 +1,10 @@
-
 export interface ISerializedObject {
     serialize(): Buffer;
     serializeSize(): number;
 }
 
 export class SerializerBase {
+    // Little Endian (LE) methods for serialization and deserialization.
 
     /**
      * Serialize a string.
@@ -104,6 +104,102 @@ export class SerializerBase {
     }
 
     /**
+     * Deserialize a char array.
+     * @param {Buffer} buf
+     * @returns {Array<number>}
+     */
+    static _deserializeCharArray(buf: Buffer): Array<number> {
+        const len = buf.readUInt16LE();
+        const arr = [];
+        for (let i = 0; i < len; i++) {
+            arr.push(buf.readUInt8());
+        }
+        return arr;
+    }
+
+    // ===
+    // Big Endian (BE) methods for serialization and deserialization.
+    // ===
+
+    /**
+     *
+     * @param {Buffer} buf
+     * @returns {number}
+     */
+    static deserializeWordBE(buf: Buffer): number {
+        return buf.readUInt16BE(0);
+    }
+
+    static deserializeDoubleBE(buf: Buffer): number {
+        return buf.readDoubleBE(0);
+    }
+
+    static deserializeFloatBE(buf: Buffer): number {
+        return buf.readFloatBE(0);
+    }
+
+    static serializeWordBE(int16: number): Buffer {
+        const buf = Buffer.alloc(2);
+        buf.writeUInt16BE(int16);
+        return buf;
+    }
+
+    static serializeDoubleBE(double: number): Buffer {
+        const buf = Buffer.alloc(8);
+        buf.writeDoubleBE(double);
+        return buf;
+    }
+
+    static serializeFloatBE(float: number): Buffer {
+        const buf = Buffer.alloc(4);
+        buf.writeFloatBE(float);
+        return buf;
+    }
+
+    static serializeStringBE(str: string): Buffer {
+        const len = str.length;
+        const buf = Buffer.alloc(2 + len);
+        buf.writeUInt16BE(len);
+        buf.write(str, 2);
+        return buf;
+    }
+
+    // ===
+    // Common methods for serialization and deserialization.
+    // ===
+
+    /**
+     * Serialize a string.
+     * @param {string} str
+     * @returns {Buffer}
+     */
+    toString(): string {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * Deserialize a string.
+     * @param {Buffer} buf
+     * @returns {Array<number>}
+     */
+    static _deserializeString(buf: Buffer): Array<number> {
+        return SerializerBase._deserializeCharArray(buf);
+    }
+
+    /**
+     * Convert a char array to a string.
+     * @param {Array<number>} charArray
+     * @returns {string}
+     */
+    static _charArrayToString(charArray: Array<number>): string {
+        let str = "";
+        for (const char of charArray) {
+            str += String.fromCharCode(char);
+        }
+        return str;
+    }
+
+    /**
      * Deserialize a boolean.
      * @param {Buffer} buf
      * @returns {boolean}
@@ -121,41 +217,5 @@ export class SerializerBase {
     static _deserializeByte(buf: Buffer): number {
         const byte = buf.readUInt8();
         return byte;
-    }
-
-    /**
-     * Deserialize a string.
-     * @param {Buffer} buf
-     * @returns {Array<number>}
-     */
-    static _deserializeString(buf: Buffer): Array<number> {
-        return SerializerBase._deserializeCharArray(buf);
-    }
-
-    /**
-     * Deserialize a char array.
-     * @param {Buffer} buf
-     * @returns {Array<number>}
-     */
-    static _deserializeCharArray(buf: Buffer): Array<number> {
-        const len = buf.readUInt16LE();
-        const arr = [];
-        for (let i = 0; i < len; i++) {
-            arr.push(buf.readUInt8());
-        }
-        return arr;
-    }
-
-    /**
-     * Convert a char array to a string.
-     * @param {Array<number>} charArray
-     * @returns {string}
-     */
-    static _charArrayToString(charArray: Array<number>): string {
-        let str = "";
-        for (const char of charArray) {
-            str += String.fromCharCode(char);
-        }
-        return str;
     }
 }

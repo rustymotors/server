@@ -1,7 +1,7 @@
 import { SubThread } from "./SubThread.js";
 import { createServer } from "node:net";
-import { INITIAL_CONNECTIONS, MC_DB_CLIENT_PORT, MC_LOBBY_PORT, MC_LOGIN_PORT, MC_PERSONA_PORT } from "../mcServer.js";
-import { Connection } from "../Connection.js";
+import { INITIAL_CONNECTIONS, MC_DB_CLIENT_PORT, MC_LOBBY_PORT, MC_LOGIN_PORT, MC_PERSONA_PORT } from "../../../mcServer.js";
+import { Connection } from "../../../Connection.js";
 
 
 export class SocketMgrCompletion extends SubThread {

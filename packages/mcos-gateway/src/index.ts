@@ -23,9 +23,9 @@ export { AdminServer } from "./adminServer.js";
 import Sentry from "@sentry/node";
 import { TServerConfiguration, TServerLogger, toHex } from "mcos/shared";
 import { Server } from "node:http";
-import { Message } from "../../../Message.js";
-import { MessageHeader } from "../../../MessageHeader.js";
-import { TCPHeader } from "../../../TCPHeader.js";
+import { Message } from "../../../src/rebirth/Message.js";
+import { MessageHeader } from "../../../src/rebirth/MessageHeader.js";
+import { TCPHeader } from "../../../src/rebirth/TCPHeader.js";
 
 Sentry.init({
     dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
@@ -96,7 +96,7 @@ function TCPListener(
             log("debug", "Recieved MCOTS message")
             const msgNode = Message.deserialize(data);
 
-            log("debug", `Message Header: ${msgNode.header.toString()}`);
+            log("debug", `Message Node: ${msgNode.toString()}`);
         }
 
         dataHandler(data, connectionRecord, config, log).catch(
