@@ -71,8 +71,8 @@ export class Message extends SerializerBase implements ISerializedObject {
         const node = new Message();
         node._header = MessageHeader.deserialize(buf.subarray(0, 6));
         node.sequence = SerializerBase._deserializeWord(buf.subarray(6, 8));
-        node.flags = SerializerBase._deserializeByte(buf.subarray(8, 9));
-        node.buffer = buf.subarray(9);
+        node.flags = SerializerBase._deserializeByte(buf.subarray(10, 11));
+        node.buffer = buf.subarray(11);
         return node;
     }
 

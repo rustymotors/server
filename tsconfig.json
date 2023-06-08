@@ -8,6 +8,8 @@
         "strict": true,
         "strictNullChecks": true,
         "strictFunctionTypes": true,
+        // "inlineSourceMap": true,
+        // "inlineSources": true,
         "allowSyntheticDefaultImports": true,
         "paths": {
             "mcos/auth": ["./packages/mcos-auth/index.js"],

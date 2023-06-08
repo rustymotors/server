@@ -25,19 +25,29 @@ debug {"level": "debug", "hostname": "strawberry", "message": Sending a dummy re
 
 debug {"level": "debug", "hostname": "strawberry", "message": Sending Message: 0229018300000000000001830000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002190101022C0000
 
-debug {"level": "debug", "hostname": "strawberry", "message": Message Header: MessageHeader: length=49, signature=TOMC
+debug {"level": "debug", "hostname": "strawberry", "message": Message Node: Message: header=MessageHeader: length=49, signature=TOMC, sequence=1, flags=0, buffer=b6016cb45400ed5f84000000000000000000000000000044722042726f776e000000000071170000"}
+
 debug {"level": "debug", "hostname": "strawberry", "message": data prior to proccessing: 3100544f4d430100000000b6016cb45400ed5f84000000000000000000000000000044722042726f776e000000000071170000
 
-debug {"level": "debug", "hostname": "strawberry", "message": Sending Message: 1A00544F4D4301000000006500B60100000000000000000000000000
+debug {"level": "debug", "hostname": "strawberry", "message": Message prior to encryption: 1A00544F4D4301000000006500B60100000000000000000000000000
 
-debug {"level": "debug", "hostname": "strawberry", "message": Message Header: MessageHeader: length=48, signature=TOMC
-debug {"level": "debug", "hostname": "strawberry", "message": data prior to proccessing: 3000544f4d43030000000899de00cfb0fe3a203c9514f131ea0bf63d3c69d0fe66e41676bce9b1f5f19c9807dc84a94e37a4
+debug {"level": "debug", "hostname": "strawberry", "message": Sending Message: 1A00544F4D430100000000768BAE895361E427E78E4DE923252B7D00
 
-debug {"level": "debug", "hostname": "strawberry", "message": Raw Packet after decryption: 3000544F4D43030000000899DE00CFB0FE3A203C9514F131EA0BF63D3C69D0FE66E41676BCE9B1F5F19C9807DC84A94E37A4 
+debug {"level": "debug", "hostname": "strawberry", "message": Message Node: Message: header=MessageHeader: length=48, signature=TOMC, sequence=3, flags=8, buffer=7a8b743c07610978638e4de923252b7d6faa1141b5a49371990221cee63ffdd16f1858fedcece2"}
 
-debug {"level": "debug", "hostname": "strawberry", "message": Message Header: MessageHeader: length=19, signature=TOMC
+debug {"level": "debug", "hostname": "strawberry", "message": data prior to proccessing: 3000544f4d4303000000087a8b743c07610978638e4de923252b7d6faa1141b5a49371990221cee63ffdd16f1858fedcece2
 
-debug {"level": "debug", "hostname": "strawberry", "message": Raw Packet after decryption: 1300544F4D4305000000088542BD02C23907BFDCF3 
+debug {"level": "debug", "hostname": "strawberry", "message": Message buffer after decrypting: 69006cb45400ed5f840000000000000000000000000044722042726f776e000000000071170000
+
+debug {"level": "debug", "hostname": "strawberry", "message": Message prior to encryption: 1A00544F4D430300000008D500690000000000000000000000000000
+
+debug {"level": "debug", "hostname": "strawberry", "message": Sending Message: 1A00544F4D430300000008BAAA7841B5A4D703B94053A19151FDD100
+
+debug {"level": "debug", "hostname": "strawberry", "message": Message Node: Message: header=MessageHeader: length=19, signature=TOMC, sequence=5, flags=8, buffer=f235f1c2bd511aeeacaa"}
+
+debug {"level": "debug", "hostname": "strawberry", "message": data prior to proccessing: 1300544f4d430500000008f235f1c2bd511aeeacaa
+
+debug {"level": "debug", "hostname": "strawberry", "message": Message buffer after decrypting: 44010000000000000000
 
 debug {"level": "debug", "hostname": "strawberry", "message": Sending Message: 1000544F4D430500000008450100000000
 

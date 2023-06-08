@@ -64,7 +64,7 @@ function onSocketError(sock: Socket, error: Error, log: TServerLogger): void {
  * @param {TServerConfiguration} config
  * @param {TServerLogger} log
  */
-function TCPListener(
+export function TCPListener(
     incomingSocket: Socket,
     config: TServerConfiguration,
     log: TServerLogger

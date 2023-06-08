@@ -196,11 +196,6 @@ async function messageReceived(
     dataConnection: TBufferWithConnection,
     log: TServerLogger
 ): Promise<TServiceResponse> {
-    // if (message.flags && 0x08) {
-    //     selectEncryptors(dataConnection.)
-    //   debug('Turning on encryption')
-    //   newConnection.useEncryption = true
-    // }
 
     // If not a Heartbeat
     if (shouldMessageBeEncrypted(message, dataConnection)) {
@@ -267,27 +262,6 @@ export async function handleData(
       })} `
     );
     messageNode.dumpPacket();
-
-    if (messageNode.flags && 8 > 0) {
-        // Message is encrypted, message number is not usable. yet.
-        const encrypters = selectEncryptors(dataConnection, log);
-        messageNode.updateBuffer(
-            encrypters.tsDecipher.update(messageNode.data)
-        );
-        log(
-            "debug",
-            `Message number after attempting decryption: ${messageNode.msgNo} `
-        );
-        log(
-            "debug",
-            `Raw Packet after decryption: ${toHex(messageNode.rawPacket)} `
-        );
-    } else {
-        log(
-            "debug",
-            `Message with id of: ${messageNode.msgNo} does not appear to be encrypted`
-        );
-    }
 
     try {
         const processedPacket = await messageReceived(

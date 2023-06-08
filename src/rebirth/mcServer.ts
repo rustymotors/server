@@ -1,8 +1,9 @@
 import { parseArgs } from "node:util";
 import { tpsInitializer } from "./mcCommon.js";
 import { loggerStartup } from "./Logger.js";
-import { ReadInput } from "./src/rebirth/threads/ReadInput.js";
-import { SocketMgrCompletion } from "./src/rebirth/threads/SocketMgrCompletion.js";
+import { ReadInput } from "./threads/ReadInput.js";
+import { SocketMgrCompletion } from "./threads/SocketMgrCompletion.js";
+import { SubThread } from "./threads/SubThread.js";
 
 export const MC_LOBBY_PORT = 7003;
 export const MC_LOGIN_PORT = 8226;
@@ -16,7 +17,7 @@ export const INITIAL_CONNECTIONS = 20;
 /**
  * @type Array<SubThread>}
 */
-let activeSubThreads = [];
+let activeSubThreads: Array<SubThread> = [];
 
 let disableLogins = false;
 let mcDoShutdown = false;
@@ -24,13 +25,14 @@ let mcStatus = "Starting";
 
 function mainShutdown() {
     console.log("Main thread finished.");
+    console.log(`Active subthreads: ${activeSubThreads.length}`);
 }
 
 /**
  * 
  * @param {SubThread} subThread 
 */
-export function onSubThreadShutdown(subThread) {
+export function onSubThreadShutdown(subThread: SubThread) {
     activeSubThreads = activeSubThreads.filter((activeThread) => {
         return activeThread !== subThread;
     });

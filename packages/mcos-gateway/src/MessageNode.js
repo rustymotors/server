@@ -57,7 +57,7 @@ export class MessageNode {
             this.flags = packet.readInt8(10);
 
             // Data starts at offset 11
-            this.data = packet.slice(11);
+            this.data = packet.subarray(11);
 
             // Set message number
             this.msgNo = this.data.readInt16LE(0);

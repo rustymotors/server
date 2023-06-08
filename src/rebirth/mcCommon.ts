@@ -8,11 +8,12 @@ export const MC_GET_OWNED_PARTS = 174;
 
 
 export class TpsEntry {
+    _mMsgNo: number;
+    _mT: Date;
+    _mCount: number;
+    _mIndex: number;
+    _mCounts: Array<number> = [];
     constructor() {
-        /** 
-         * @private
-         * @type {number} 
-         */
         this._mMsgNo = 0x00;
         this._mT = new Date();
         this._mCount = 0
