@@ -28,9 +28,8 @@ import { receiveLobbyData } from "mcos/lobby";
 import { receiveLoginData } from "mcos/login";
 import { receivePersonaData } from "mcos/persona";
 import { receiveTransactionsData } from "mcos/transactions";
-import { findOrNewConnection, updateConnection } from "./connections.js";
+import { updateConnection } from "./connections.js";
 import { MessageNode } from "./MessageNode.js";
-import { Socket } from "net";
 import { NPSMessage } from "../../../src/shared/NPSMessage.js";
 
 /**
@@ -194,63 +193,3 @@ export async function dataHandler(
     }
 }
 
-/**
- * Server listener method
- *
- * @param {Socket} socket
- * @param {TServerConfiguration} config
- * @param {TServerLogger} log
- * @return {void}
- */
-export function TCPHandler(
-    socket: Socket,
-    config: TServerConfiguration,
-    log: TServerLogger
-): void {
-    // Received a new connection
-    // Turn it into a connection object
-    try {
-        const connectionRecord = findOrNewConnection(socket, log);
-        
-        const { localPort, remoteAddress } = socket;
-        log("debug", `Client ${remoteAddress} connected to port ${localPort}`);
-        if (socket.localPort === 7003 && connectionRecord.inQueue === true) {
-            /**
-             * Debug seems hard-coded to use the connection queue
-             * Craft a packet that tells the client it's allowed to login
-            */
-           
-           log("debug", "Sending OK to Login packet");
-           log("debug", "[listen2] In tcpListener(pre-queue)");
-           socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
-           log("debug", "[listen2] In tcpListener(post-queue)");
-           connectionRecord.inQueue = false;
-        }
-        
-        socket.on("end", () => {
-            log(
-                "debug",
-                `Client ${remoteAddress} disconnected from port ${localPort}`
-                );
-            });
-            socket.on("data", async (data: Buffer) => {
-                await dataHandler(data, connectionRecord, config, log);
-            });
-        } catch (error) {
-            Sentry.captureException(error);
-            // The socket was unable to be handled
-            const err = new Error(`Socket handler error: ${String(error)}`);
-            log("warning", err.message)
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
-            Sentry.captureException(error)
-        }
-    socket.on("error", (error: Error) => {
-        const message = String(error);
-        if (message.includes("ECONNRESET") === true) {
-            return log("debug", "Connection was reset");
-        }
-        const err = new Error(`Socket error: ${String(error)}`);
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
-        throw err;
-    });
-}
