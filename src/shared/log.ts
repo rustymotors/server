@@ -1,7 +1,7 @@
 /**
  * @module mcos/shared
  */
-import { ELOG_LEVEL, TServerLogger } from "mcos/shared";
+import type { ELOG_LEVEL, TServerLogger } from "mcos/shared";
 import { hostname } from "node:os";
 
 // Per syslog.conf(5)

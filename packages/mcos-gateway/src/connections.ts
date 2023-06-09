@@ -47,6 +47,7 @@ export function updateConnection(connectionId: string, updatedConnection: TSocke
         connectionList.splice(index, 1);
         connectionList.push(updatedConnection);
     } catch (error) {
+        Sentry.captureException(error);
         const err = new Error(`Error updating connection, ${String(error)}`);
         Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;

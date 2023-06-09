@@ -182,6 +182,7 @@ export async function dataHandler(
             // Update the connection
             updateConnection(outboundConnection.id, outboundConnection, log);
         } catch (error) {
+            Sentry.captureException(error);
             process.exitCode = -1;
             const err = new Error(
                 `There was an error processing the packet: ${String(error)}`

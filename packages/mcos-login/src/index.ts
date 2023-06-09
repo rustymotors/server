@@ -137,6 +137,7 @@ export async function receiveLoginData(dataConnection: TBufferWithConnection, co
         log("debug", "Exiting login module");
         return response;
     } catch (error) {
+        Sentry.captureException(error);
         const err = new Error(
             `There was an error in the login service: ${String(error)}`
         );

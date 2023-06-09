@@ -30,6 +30,7 @@ export async function receiveLobbyData(dataConnection: TBufferWithConnection, co
     try {
         return await handleData(dataConnection, log);
     } catch (error) {
+        Sentry.captureException(error);
         const err = new Error(
             `There was an error in the lobby service: ${String(error)}`
         );

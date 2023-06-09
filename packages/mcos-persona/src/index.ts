@@ -301,6 +301,7 @@ export class PersonaServer {
             // deepcode ignore WrongNumberOfArgs: False alert
             socket.write(packet.serialize());
         } catch (error) {
+            Sentry.captureException(error);
             if (error instanceof Error) {
                 const err = new TypeError(
                     `Unable to send packet: ${error.message}`
@@ -411,6 +412,7 @@ export class PersonaServer {
 
                 return responsePacket;
             } catch (error) {
+                Sentry.captureException(error);
                 if (error instanceof Error) {
                     const err = new TypeError(
                         `Error serializing personaMapsMsg: ${error.message}`
@@ -445,6 +447,7 @@ export async function receivePersonaData(dataConnection: TBufferWithConnection, 
     try {
         return await handleData(dataConnection, log);
     } catch (error) {
+        Sentry.captureException(error);
         const err = new Error(
             `There was an error in the persona service: ${String(error)}`
         );

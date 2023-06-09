@@ -41,6 +41,7 @@ class ServerConfiguration {
                 { encoding: "utf8" }
             );
         } catch (error) {
+            Sentry.captureException(error);
             const err = new Error(
                 `Unable to read certificate file: ${String(error)}`
             );
@@ -53,6 +54,7 @@ class ServerConfiguration {
                 { encoding: "utf8" }
             );
         } catch (error) {
+            Sentry.captureException(error);
             const err = new Error(`Unable to read private file`);
             Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
@@ -62,6 +64,7 @@ class ServerConfiguration {
                 encoding: "utf8",
             });
         } catch (error) {
+            Sentry.captureException(error);
             const err = new Error(`Unable to read private file`);
             Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
