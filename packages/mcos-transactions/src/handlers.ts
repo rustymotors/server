@@ -26,8 +26,8 @@ import {
     TMessageArrayWithConnection,
     TServerLogger,
     TSocketWithConnectionInfo,
-    toHex,
 } from "mcos/shared";
+import { toHex } from "mcos/shared";
 import { MessageNode, createEncrypters } from "mcos/gateway";
 import { DatabaseManager } from "mcos/database";
 

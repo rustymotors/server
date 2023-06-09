@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Sentry } from "./sentry.js";
-import { toHex } from "./index.js"
+import { toHex } from "./utils.js";
 import type { TServerLogger, FIELD_TYPE } from "./index.js";
 
 

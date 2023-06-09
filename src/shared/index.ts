@@ -5,6 +5,7 @@
 import { Cipher, Decipher } from "node:crypto";
 import { Socket } from "node:net";
 import { TSMessageBase } from "./TMessageBase.js";
+export { toHex } from "./utils.js";
 
 export type ELOG_LEVEL =
     | "debug"
@@ -163,18 +164,3 @@ export type TUserRecordMini = {
     userId: number;
 };
 
-/**
- * Convert to zero padded hex
- *
- * @export
- * @param {Buffer} data
- * @return {string}
- */
-export function toHex(data: Buffer): string {
-    /** @type {string[]} */
-    const bytes: string[] = [];
-    data.forEach((b) => {
-        bytes.push(b.toString(16).toUpperCase().padStart(2, "0"));
-    });
-    return bytes.join("");
-}

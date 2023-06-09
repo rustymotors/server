@@ -22,8 +22,8 @@ import {
     TMessageArrayWithConnection,
     TServerLogger,
     TServiceResponse,
-    toHex,
 } from "mcos/shared";
+import { toHex } from "mcos/shared";
 
 /**
  *
