@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry, toHex } from "mcos/shared";
-import type { FIELD_TYPE, TServerLogger } from "mcos/shared";
+import { Sentry } from "./sentry.js";
+import { toHex } from "./index.js"
+import type { TServerLogger, FIELD_TYPE } from "./index.js";
+
 
 /**
  * @class
@@ -135,7 +137,7 @@ export class BinaryStructure {
             this.#log("debug", `Before: ${JSON.stringify(f)}`);
             const indexes = { start: f.offset, end: f.offset + f.size };
             this.#log("debug", `Taking data: ${JSON.stringify(indexes)}`);
-            const value = byteStream.slice(indexes.start, indexes.end);
+            const value = byteStream.subarray(indexes.start, indexes.end);
             this.#log(
                 "debug",
                 `Setting ${f.name} with value of ${toHex(value)}, size ${
