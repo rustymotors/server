@@ -1,4 +1,5 @@
-import { Sentry, TNPSMessageJSON } from "mcos/shared";
+import { Sentry  } from "./sentry.js";
+import type {TNPSMessageJSON} from "./index.js";
 
 /**
  * @class NPSMessage
@@ -103,7 +104,7 @@ export class NPSMessage {
         this.msgNo = packet.readInt16BE(0);
         this.msgLength = packet.readInt16BE(2);
         this.msgVersion = packet.readInt16BE(4);
-        this.content = packet.slice(12);
+        this.content = packet.subarray(12);
         return this;
     }
 
