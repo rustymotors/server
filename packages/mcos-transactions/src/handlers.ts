@@ -224,13 +224,9 @@ async function clientConnect(
 
     const connectionWithKey = connection;
 
-    // const { sessionkey } = result
+    const newEncrypters = createEncrypters(connection, result, log);
 
-    // const stringKey = Buffer.from(sessionkey, 'hex')
-
-    createEncrypters(connection, result, log);
-
-    // connectionWithKey.setEncryptionKey(Buffer.from(stringKey.slice(0, 16)))
+    connectionWithKey.encryptionSession = newEncrypters;
 
     // Update the connection's appId
     connectionWithKey.personaId = newMessage.getAppId();
@@ -263,6 +259,8 @@ async function clientConnect(
     responsePacket.deserialize(packet.serialize());
     responsePacket.updateBuffer(genericReplyMessage.serialize());
     responsePacket.dumpPacket();
+
+    connection.useEncryption = true;
 
     return { connection, messages: [responsePacket], log };
 }

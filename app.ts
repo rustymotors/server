@@ -45,7 +45,9 @@ try {
         "debug"
         );
     const appLog = GetServerLogger(config.LOG_LEVEL);
+    
     startListeners(config, appLog);
+
 } catch (err) {
     Sentry.captureException(err);
     log("crit", `Error in core server: ${String(err)}`);

@@ -21,8 +21,11 @@ import { httpListener as httpHandler } from "./web.js";
 export { getAllConnections } from "./connections.js";
 export { AdminServer } from "./adminServer.js";
 import Sentry from "@sentry/node";
-import type { TServerConfiguration, TServerLogger } from "mcos/shared";
+import { TServerConfiguration, TServerLogger, toHex } from "mcos/shared";
 import { Server } from "node:http";
+import { Message } from "../../../src/rebirth/Message.js";
+import { MessageHeader } from "../../../src/rebirth/MessageHeader.js";
+import { TCPHeader } from "../../../src/rebirth/TCPHeader.js";
 
 Sentry.init({
     dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
@@ -61,7 +64,7 @@ function onSocketError(sock: Socket, error: Error, log: TServerLogger): void {
  * @param {TServerConfiguration} config
  * @param {TServerLogger} log
  */
-function TCPListener(
+export function TCPListener(
     incomingSocket: Socket,
     config: TServerConfiguration,
     log: TServerLogger
@@ -79,6 +82,23 @@ function TCPListener(
         );
     });
     incomingSocket.on("data", (data) => {
+        // Received data from the client
+        // Pass it to the data handler
+        log("debug", `Received data: ${toHex(data)}`);
+        const msgHeader = MessageHeader.deserialize(data);
+
+        const signature = msgHeader.signature;
+        if ( signature !== "TOMC" ) {
+            log("debug", "Recieved TCP message")    
+            const msgHeader = TCPHeader.deserialize(data);
+            log("debug", `Message Header: ${msgHeader.toString()}`);
+        } else {
+            log("debug", "Recieved MCOTS message")
+            const msgNode = Message.deserialize(data);
+
+            log("debug", `Message Node: ${msgNode.toString()}`);
+        }
+
         dataHandler(data, connectionRecord, config, log).catch(
             (reason: Error) =>
                 log(

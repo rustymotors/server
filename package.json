@@ -1,6 +1,6 @@
 {
     "name": "mcos",
-    "version": "3.2.0-beta1",
+    "version": "0.1.0-alpha",
     "description": "a server",
     "engines": {
         "node": "^14.13.1 || >=16.0.0"
