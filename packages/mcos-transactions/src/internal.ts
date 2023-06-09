@@ -97,6 +97,7 @@ function tryDecryptBuffer(
             data: decryptTransactionBuffer(message, dataConnection, log).data,
         };
     } catch (error) {
+        Sentry.captureException(error);
         return {
             err: new Error(
                 `Decrypt() exception thrown! Disconnecting...conId:${
@@ -169,6 +170,7 @@ async function processInput(
             );
             return responsePackets;
         } catch (error) {
+            Sentry.captureException(error);
             const err = new Error(`Error handling packet: ${String(error)}`);
             Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
@@ -302,6 +304,7 @@ export async function handleData(
             log,
         };
     } catch (error) {
+        Sentry.captureException(error);
         const err = new Error(`Error processing packet: ${String(error)} `);
         Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;

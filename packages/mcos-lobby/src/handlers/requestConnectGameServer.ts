@@ -83,6 +83,7 @@ export async function _npsRequestGameConnectServer(dataConnection: TBufferWithCo
     const keys = await databaseManager
         .fetchSessionKeyByCustomerId(customerId)
         .catch((/** @type {unknown} */ error: unknown) => {
+            Sentry.captureException(error);
             if (error instanceof Error) {
                 log(
                     "debug",
@@ -109,6 +110,7 @@ export async function _npsRequestGameConnectServer(dataConnection: TBufferWithCo
             log
         );
     } catch (error) {
+        Sentry.captureException(error);
         dataConnection.connection.encryptionSession = createEncrypters(
             dataConnection.connection,
             keys,

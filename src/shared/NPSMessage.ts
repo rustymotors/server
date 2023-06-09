@@ -77,6 +77,7 @@ export class NPSMessage {
 
             return packet;
         } catch (error) {
+            Sentry.captureException(error);
             if (error instanceof Error) {
                 const err = new TypeError(
                     `[NPSMsg] Error in serialize(): ${error.message}`

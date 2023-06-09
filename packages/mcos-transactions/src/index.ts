@@ -35,6 +35,7 @@ export async function receiveTransactionsData(
     try {
         return await handleData(dataConnection, log);
     } catch (error) {
+        Sentry.captureException(error);
         const err = new Error(
             `There was an error in the transaction service: ${String(error)}`
         );

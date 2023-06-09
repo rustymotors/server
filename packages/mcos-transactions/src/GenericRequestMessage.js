@@ -38,6 +38,7 @@ export class GenericRequestMessage extends MessageNode {
         try {
             this.msgNo = buffer.readInt16LE(0);
         } catch (error) {
+            Sentry.captureException(error);
             if (error instanceof RangeError) {
                 // This is likeley not an MCOTS packet, ignore
             } else {

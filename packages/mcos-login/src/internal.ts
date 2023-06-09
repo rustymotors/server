@@ -95,6 +95,7 @@ async function login(dataConnection: TBufferWithConnection, config: TServerConfi
             connectionId
         )
         .catch((/** @type {unknown} */ error: unknown) => {
+            Sentry.captureException(error);
             const err = new Error(
                 `Unable to update session key in the database: ${String(error)}`
             );
@@ -190,6 +191,7 @@ export async function handleData(dataConnection: TBufferWithConnection, config: 
         log("debug", "Leaving handleData");
         return result;
     } catch (error) {
+        Sentry.captureException(error);
         const err = new Error(`Error handling data: ${String(error)}`);
         Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;

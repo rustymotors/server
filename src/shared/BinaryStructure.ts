@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { FIELD_TYPE, TServerLogger, toHex } from "mcos/shared";
+import { FIELD_TYPE, Sentry, TServerLogger, toHex } from "mcos/shared";
 
 /**
  * @class
@@ -212,6 +212,7 @@ export class BinaryStructure {
             }
             return value.readUInt8();
         } catch (error) {
+            Sentry.captureException(error);
             this.#log("debug", "Calling get() in BinaryStructure.. fail!");
             const err = new Error(
                 `Error in getValueX: ${String(
@@ -271,6 +272,7 @@ export class BinaryStructure {
             );
             throw err;
         } catch (error) {
+            Sentry.captureException(error);
             const err = new Error(
                 `Error in newValueNumber: ${String(
                     error

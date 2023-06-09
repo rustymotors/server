@@ -149,6 +149,7 @@ export function updateEncryptionSession(connectionId: string, updatedSession: TE
         encryptionSessions.push(updatedSession);
         log("debug", `Updated encryption session for id: ${connectionId}`);
     } catch (error) {
+        Sentry.captureException(error);
         const err = new Error(`Error updating connection, ${String(error)}`);
         Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;

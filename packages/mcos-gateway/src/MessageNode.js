@@ -62,6 +62,7 @@ export class MessageNode {
             // Set message number
             this.msgNo = this.data.readInt16LE(0);
         } catch (error) {
+            Sentry.captureException(error);
             if (error instanceof Error) {
                 if (error.name.includes("RangeError") === true) {
                     // This is likeley not an MCOTS packet, ignore

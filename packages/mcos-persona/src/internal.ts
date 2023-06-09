@@ -316,6 +316,7 @@ async function getPersonaMaps(data: Buffer, log: TServerLogger): Promise<NPSMess
 
             return responsePacket;
         } catch (error) {
+            Sentry.captureException(error);
             if (error instanceof Error) {
                 const err = new TypeError(
                     `Error serializing personaMapsMsg: ${error.message}`
