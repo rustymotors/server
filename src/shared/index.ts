@@ -103,6 +103,7 @@ export interface TEncryptionSession {
     tsDecipher: Decipher;
 }
 export interface TSocketWithConnectionInfo {
+    connectionId: string;
     socket: Socket;
     seq: number;
     id: string;

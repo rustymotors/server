@@ -1,3 +1,5 @@
+import { ServerError } from "./ServerError.js";
+
 export interface ISerializedObject {
     serialize(): Buffer;
     serializeSize(): number;
@@ -217,5 +219,15 @@ export class SerializerBase {
     static _deserializeByte(buf: Buffer): number {
         const byte = buf.readUInt8();
         return byte;
+    }
+
+    // ===
+    // Utility methods.
+    // ===
+
+    static verifyConnectionId(object: ISerializedObject): void {
+        if (!object.hasOwnProperty("connectionId")) {
+            throw new ServerError("Object does not have a connectionId property");
+        }
     }
 }

@@ -60,6 +60,7 @@ describe("resetQueue()", function () {
         /** @type {TSocketWithConnectionInfo[]} */
         const inputConnectionList: TSocketWithConnectionInfo[] = [
             {
+                connectionId: "A",
                 socket: new Socket(),
                 seq: 0,
                 id: "A",
@@ -71,6 +72,7 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
             {
+                connectionId: "B",
                 socket: new Socket(),
                 seq: 0,
                 id: "A",
@@ -82,6 +84,7 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
             {
+                connectionId: "C",
                 socket: new Socket(),
                 seq: 0,
                 id: "A",
@@ -96,6 +99,7 @@ describe("resetQueue()", function () {
         /** @type {TSocketWithConnectionInfo[]} */
         const expectedConnectionList: TSocketWithConnectionInfo[] = [
             {
+                connectionId: "A",
                 socket: new Socket(),
                 seq: 0,
                 id: "A",
@@ -107,6 +111,7 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
             {
+                connectionId: "B",
                 socket: new Socket(),
                 seq: 0,
                 id: "A",
@@ -118,6 +123,7 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
             {
+                connectionId: "C",
                 socket: new Socket(),
                 seq: 0,
                 id: "A",

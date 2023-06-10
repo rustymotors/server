@@ -3,6 +3,7 @@ import { MessageHeader } from "./MessageHeader.js";
 import { ISerializedObject, SerializerBase } from "./SerializerBase.js";
 
 export class Message extends SerializerBase implements ISerializedObject {
+    connectionId: string | null = null;
     toFrom: number;
     appID: number;
     _header: null | MessageHeader;
@@ -47,6 +48,7 @@ export class Message extends SerializerBase implements ISerializedObject {
         return node;
     }
     serialize(): Buffer {
+        SerializerBase.verifyConnectionId(this);
         let buf = Buffer.alloc(0);
         if (!this._header) {
             throw new Error("Message.serialize: header is null");
@@ -77,6 +79,7 @@ export class Message extends SerializerBase implements ISerializedObject {
     }
 
     toString(): string {
+        SerializerBase.verifyConnectionId(this);
         return `Message: header=${this.header}, sequence=${this.sequence}, flags=${this.flags}, buffer=${this.buffer.toString("hex")}"}`;
     }
 }

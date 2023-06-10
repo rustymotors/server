@@ -2,6 +2,7 @@ import { SerializerBase } from "./SerializerBase.js";
 import { TCPHeader } from "./TCPHeader.js";
 
 export class TCPMessage extends SerializerBase {
+    connectionId: string | null = null;
     toFrom: number;
     appId: number;
     _header: TCPHeader | null = null;
@@ -31,6 +32,7 @@ export class TCPMessage extends SerializerBase {
 
     constructor() {
         super();
+        this.connectionId = null;
         this.toFrom = 0;
         this.appId = 0;
         this.header = new TCPHeader();
@@ -38,6 +40,7 @@ export class TCPMessage extends SerializerBase {
     }
 
     serialize(): Buffer {
+        SerializerBase.verifyConnectionId(this);
         let buf = Buffer.alloc(0);
         buf = Buffer.concat([buf, this.header.serialize()]);
         buf = Buffer.concat([buf, this.buffer]);
@@ -45,10 +48,12 @@ export class TCPMessage extends SerializerBase {
     }
 
     serializeSize(): number {
+        SerializerBase.verifyConnectionId(this);
         return this.header.serializeSize() + this.buffer.length;
     }
 
     toString(): string {
+        SerializerBase.verifyConnectionId(this);
         return `TCPMessage: toFrom=${this.toFrom}, appId=${
             this.appId
         }, length=${this.buffer.length}, msgid=${
