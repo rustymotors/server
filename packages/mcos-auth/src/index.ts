@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry, TServerLogger } from "mcos/shared";
+import { ISocket, Sentry, TServerLogger } from "mcos/shared";
 import { IncomingMessage, ServerResponse } from "node:http";
-import { Socket } from "node:net";
 
 /**
  * Handles web-based user logins
@@ -95,7 +94,7 @@ export class AuthLogin {
      * @private
      * @param {Socket} socket
      */
-    _socketEventHandler(socket: Socket) {
+    _socketEventHandler(socket: ISocket) {
         socket.on("error", (error) => {
             const err = new Error(
                 `[AuthLogin] SSL Socket Error: ${error.message}`

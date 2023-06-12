@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Socket, createServer as createSocketServer } from "node:net";
+import { createServer as createSocketServer } from "node:net";
 import { findOrNewConnection, getConnectionManager } from "./ConnectionManager.js";
 import { dataHandler } from "./sockets.js";
 import { httpListener as httpHandler } from "./web.js";
 export { getAllConnections } from "./ConnectionManager.js";
 export { AdminServer } from "./adminServer.js";
 import Sentry from "@sentry/node";
-import { TServerConfiguration, TServerLogger, toHex } from "mcos/shared";
+import { ISocket, TServerConfiguration, TServerLogger, toHex } from "mcos/shared";
 import { Server } from "node:http";
 import { Message } from "../../../src/rebirth/Message.js";
 import { MessageHeader } from "../../../src/rebirth/MessageHeader.js";
@@ -49,7 +49,7 @@ const listeningPortList = [
  * @param {TServerLogger} log
  * @returns {void}
  */
-function onSocketError(sock: Socket, error: Error, log: TServerLogger): void {
+function onSocketError(sock: ISocket, error: Error, log: TServerLogger): void {
     const message = String(error);
     if (message.includes("ECONNRESET")) {
         log("debug", "Connection was reset");
@@ -66,7 +66,7 @@ function onSocketError(sock: Socket, error: Error, log: TServerLogger): void {
  * @param {TServerLogger} log
  */
 export function TCPListener(
-    incomingSocket: Socket,
+    incomingSocket: ISocket,
     config: TServerConfiguration,
     log: TServerLogger
 ) {
@@ -149,7 +149,7 @@ export function TCPListener(
  * @returns {void}
  */
 function socketListener(
-    incomingSocket: Socket,
+    incomingSocket: ISocket,
     config: TServerConfiguration,
     log: TServerLogger
 ): void {

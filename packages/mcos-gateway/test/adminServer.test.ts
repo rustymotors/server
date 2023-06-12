@@ -16,9 +16,8 @@
 
 import chai, { expect } from "chai";
 import { AdminServer, resetQueue } from "mcos/gateway";
-import { TServerLogger, TSocketWithConnectionInfo } from "mcos/shared";
+import { ISocketTestFactory, TServerLogger, TSocketWithConnectionInfo } from "mcos/shared";
 import { describe, it } from "mocha";
-import { Socket } from "net";
 
 chai.should();
 
@@ -61,7 +60,7 @@ describe("resetQueue()", function () {
         const inputConnectionList: TSocketWithConnectionInfo[] = [
             {
                 connectionId: "A",
-                socket: new Socket(),
+                socket: ISocketTestFactory(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -73,7 +72,7 @@ describe("resetQueue()", function () {
             },
             {
                 connectionId: "B",
-                socket: new Socket(),
+                socket: ISocketTestFactory(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -85,7 +84,7 @@ describe("resetQueue()", function () {
             },
             {
                 connectionId: "C",
-                socket: new Socket(),
+                socket: ISocketTestFactory(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -100,7 +99,7 @@ describe("resetQueue()", function () {
         const expectedConnectionList: TSocketWithConnectionInfo[] = [
             {
                 connectionId: "A",
-                socket: new Socket(),
+                socket: ISocketTestFactory(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -112,7 +111,7 @@ describe("resetQueue()", function () {
             },
             {
                 connectionId: "B",
-                socket: new Socket(),
+                socket: ISocketTestFactory(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -124,7 +123,7 @@ describe("resetQueue()", function () {
             },
             {
                 connectionId: "C",
-                socket: new Socket(),
+                socket: ISocketTestFactory(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",

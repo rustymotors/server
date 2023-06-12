@@ -3,7 +3,6 @@
  */
 
 import { Cipher, Decipher } from "node:crypto";
-import { Socket } from "node:net";
 import { TSMessageBase } from "./TMessageBase.js";
 export { toHex } from "./utils.js";
 
@@ -49,7 +48,7 @@ export interface TSessionRecord {
 export interface TConnection {
     localPort: number;
     remoteAddress: string;
-    socket: Socket;
+    socket: ISocket;
     encryptionSession: TEncryptionSession;
     useEncryption: boolean;
 }
@@ -102,9 +101,18 @@ export interface TEncryptionSession {
     tsCipher: Cipher;
     tsDecipher: Decipher;
 }
+
+export interface ISocket {
+    write: (data: Buffer) => boolean;
+    on: (event: string, callback: (...args: any[]) => void) => void;
+    end: () => void;
+    remoteAddress?: string;
+    localPort?: number;    
+}    
+
 export interface TSocketWithConnectionInfo {
     connectionId: string;
-    socket: Socket;
+    socket: ISocket;
     seq: number;
     id: string;
     remoteAddress: string;
@@ -165,3 +173,12 @@ export type TUserRecordMini = {
     userId: number;
 };
 
+export function ISocketTestFactory(): ISocket {
+    return {
+        write: () => true,
+        on: () => {},
+        end: () => {},
+        remoteAddress: "",
+        localPort: 0,
+    };
+}

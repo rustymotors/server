@@ -2,7 +2,6 @@ import { parseArgs } from "node:util";
 import { tpsInitializer } from "./mcCommon.js";
 import { loggerStartup } from "./Logger.js";
 import { ReadInput } from "./threads/ReadInput.js";
-import { SocketMgrCompletion } from "./threads/SocketMgrCompletion.js";
 import { SubThread } from "./threads/SubThread.js";
 
 export const MC_LOBBY_PORT = 7003;
@@ -67,17 +66,10 @@ function main() {
         if (key.toString("utf8") === "x") {
             console.log("Shutting down...");
             mcDoShutdown = true;
-            serverThread.emit("shutdown");
             readInputThread.emit("shutdown");
         }
     });
     
-    const serverThread = new SocketMgrCompletion();
-    serverThread.on("shutdownComplete", () => {
-        onSubThreadShutdown(serverThread);
-    });
-    activeSubThreads.push(serverThread);
-
     const readInputThread = new ReadInput();
     readInputThread.on("shutdownComplete", () => {
         onSubThreadShutdown(readInputThread);

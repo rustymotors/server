@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry, TServerLogger, TSocketWithConnectionInfo } from "mcos/shared";
+import { ISocket, Sentry, TServerLogger, TSocketWithConnectionInfo } from "mcos/shared";
 import { randomUUID } from "node:crypto";
-import { Socket } from "node:net";
 import { Connection } from "../../../src/rebirth/Connection.js";
 import { ServerError } from "../../../src/rebirth/ServerError.js";
 
@@ -84,7 +83,7 @@ function findConnectionByAddressAndPort(
  */
 function createNewConnection(
     connectionId: string,
-    socket: Socket,
+    socket: ISocket,
     log: TServerLogger
 ): TSocketWithConnectionInfo {
     const { localPort, remoteAddress } = socket;
@@ -128,7 +127,7 @@ function createNewConnection(
  * @return {TSocketWithConnectionInfo}
  */
 export function findOrNewConnection(
-    socket: Socket,
+    socket: ISocket,
     log: TServerLogger
 ): TSocketWithConnectionInfo {
     const { localPort, remoteAddress } = socket;
@@ -222,7 +221,7 @@ export class ConnectionManager {
      * @param {Socket} socket
      * @return {Connection}
      */
-    findConnectionBySocket(socket: Socket): Connection {
+    findConnectionBySocket(socket: ISocket): Connection {
         const connection = this.connections.find((c) => {
             return c.socket === socket;
         });
@@ -267,7 +266,7 @@ export class ConnectionManager {
      * @param {Socket} socket
      * @return {void}
      */
-    removeConnectionBySocket(socket: Socket): void {
+    removeConnectionBySocket(socket: ISocket): void {
         const index = this.connections.findIndex((c) => {
             return c.socket === socket;
         });
@@ -370,7 +369,7 @@ export class ConnectionManager {
      * @return {Connection}
      * @throws {ServerError} if socket is missing localPort or remoteAddress
      */
-    newConnectionFromSocket(socket: Socket): Connection {
+    newConnectionFromSocket(socket: ISocket): Connection {
         const existingConnection = this.findConnectionBySocket(socket);
         if (typeof existingConnection !== "undefined") {
             return existingConnection;
@@ -408,7 +407,7 @@ export class ConnectionManager {
      * @return {void}
      * @throws {ServerError} if connection is not found
      */
-    updateConnectionSocket(connectionId: string, socket: Socket): void {
+    updateConnectionSocket(connectionId: string, socket: ISocket): void {
         const connection = this.findConnectionByID(connectionId);
         connection.socket = socket;
     }

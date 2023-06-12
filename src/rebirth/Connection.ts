@@ -1,5 +1,5 @@
+import { ISocket } from "mcos/shared";
 import { randomUUID } from "node:crypto";
-import { Socket } from "node:net";
 
 export class Connection {
     /**
@@ -24,7 +24,7 @@ export class Connection {
     id: string;
     appID: number;
     status: number;
-    socket: Socket | null = null;
+    socket: ISocket | null = null;
     port: number;
     useEncryption: boolean;
     encryprion: null;
