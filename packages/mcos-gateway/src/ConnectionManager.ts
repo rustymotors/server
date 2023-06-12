@@ -20,7 +20,7 @@ import { Connection } from "../../../src/rebirth/Connection.js";
 import { ServerError } from "../../../src/rebirth/ServerError.js";
 
 /** @type {TSocketWithConnectionInfo[]} */
-const connectionList: TSocketWithConnectionInfo[] = [];
+export const connectionList: TSocketWithConnectionInfo[] = [];
 
 /**
  *

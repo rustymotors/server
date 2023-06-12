@@ -86,8 +86,9 @@
         "exclude": [
             ".yarn",
             "coverage",
-            "**/*.test.js",
-            "**/*.d.ts"
+            "**/*.test.{j,t}s",
+            "**/*.d.ts",
+            "out"
         ]
     },
     "eslintConfig": {
