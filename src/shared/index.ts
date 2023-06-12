@@ -182,3 +182,8 @@ export function ISocketTestFactory(): ISocket {
         localPort: 0,
     };
 }
+
+export interface IError {
+    code: number;
+    message: string;
+}

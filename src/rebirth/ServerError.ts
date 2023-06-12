@@ -1,3 +1,5 @@
+import { IError } from "mcos/shared";
+
 /**
  * ServerError
  * @description
@@ -6,7 +8,9 @@
  * @class ServerError
  * @extends {Error}
  */
-export class ServerError extends Error {
+export class ServerError extends Error implements IError {
+    code: number = 500;
+
     constructor(message: string) {
         super(message);
         this.name = "ServerError";

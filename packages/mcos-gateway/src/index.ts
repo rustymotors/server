@@ -21,12 +21,13 @@ import { httpListener as httpHandler } from "./web.js";
 export { getAllConnections } from "./ConnectionManager.js";
 export { AdminServer } from "./adminServer.js";
 import Sentry from "@sentry/node";
-import { ISocket, TServerConfiguration, TServerLogger, toHex } from "mcos/shared";
+import { IError, ISocket, TServerConfiguration, TServerLogger, toHex } from "mcos/shared";
 import { Server } from "node:http";
 import { Message } from "../../../src/rebirth/Message.js";
 import { MessageHeader } from "../../../src/rebirth/MessageHeader.js";
 import { TCPHeader } from "../../../src/rebirth/TCPHeader.js";
 import { TCPMessage } from "../../../src/rebirth/TCPMessage.js";
+import { ServerError } from "../../../src/rebirth/ServerError.js";
 
 Sentry.init({
     dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
@@ -49,14 +50,14 @@ const listeningPortList = [
  * @param {TServerLogger} log
  * @returns {void}
  */
-function onSocketError(sock: ISocket, error: Error, log: TServerLogger): void {
+export function onSocketError(sock: ISocket, error: IError, log: TServerLogger): void {
     const message = String(error);
     if (message.includes("ECONNRESET")) {
         log("debug", "Connection was reset");
         return;
     }
     Sentry.captureException(error);
-    throw new Error(`Socket error: ${String(error)}`);
+    throw new ServerError(`Socket error: ${String(error)}`);
 }
 
 /**
