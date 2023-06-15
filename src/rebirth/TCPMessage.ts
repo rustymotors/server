@@ -1,3 +1,4 @@
+import { ITCPHeader, ITCPMessage } from "mcos/shared";
 import { SerializerBase } from "./SerializerBase.js";
 import { TCPHeader } from "./TCPHeader.js";
 
@@ -5,10 +6,10 @@ export class TCPMessage extends SerializerBase {
     connectionId: string | null = null;
     toFrom: number;
     appId: number;
-    _header: TCPHeader | null = null;
+    _header: ITCPHeader | null = null;
     buffer: Buffer;
 
-    get header(): TCPHeader {
+    get header(): ITCPHeader {
         if (!this._header) {
             throw new Error("TCPMessage.Header: header is null");
         }
@@ -23,9 +24,9 @@ export class TCPMessage extends SerializerBase {
      *
      * @param {Buffer} buf
      */
-    static deserialize(buf: Buffer): TCPMessage {
+    static deserialize(buf: Buffer): ITCPMessage {
         const message = new TCPMessage();
-        message._header = TCPHeader.deserialize(buf.subarray(0, 10));
+        message.header = TCPHeader.deserialize(buf.subarray(0, 10));
         message.buffer = buf.subarray(10);
         return message;
     }

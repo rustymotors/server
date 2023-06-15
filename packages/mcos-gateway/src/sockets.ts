@@ -15,6 +15,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import {
+    IConnection,
+    IMessage,
+    ITCPMessage,
     Sentry,
     TBinaryStructure,
     TBufferWithConnection,
@@ -126,8 +129,8 @@ export async function dataHandler(
     connectionRecord: TSocketWithConnectionInfo,
     config: TServerConfiguration,
     log: TServerLogger,
-    connection: Connection,
-    message: Message | TCPMessage
+    connection: IConnection,
+    message: IMessage | ITCPMessage
 ): Promise<void> {
     log("debug", `data prior to proccessing: ${data.toString("hex")}`);
 

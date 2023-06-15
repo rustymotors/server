@@ -1,3 +1,4 @@
+import { IMessageHeader } from "mcos/shared";
 import { ISerializedObject, SerializerBase } from "./SerializerBase.js";
 
 export class MessageHeader extends SerializerBase implements ISerializedObject {
@@ -31,16 +32,16 @@ export class MessageHeader extends SerializerBase implements ISerializedObject {
      * @param {Buffer} buf
      * @returns {MessageHeader}
      */ 
-    public static deserialize(buf: Buffer): MessageHeader {
-        const header = new MessageHeader();
-        header._length = SerializerBase._deserializeWord(buf.subarray(0, 2));
+    public static deserialize(buf: Buffer): IMessageHeader {
+        const header: IMessageHeader = new MessageHeader();
+        header.length = SerializerBase._deserializeWord(buf.subarray(0, 2));
         const length = 4;
         let signature = "";
         for (let i = 0; i < length; i++) {
             signature += String.fromCharCode(buf.readUInt8(i+2));
         }
 
-        header._signature = signature;
+        header.signature = signature;
         return header;
     }
 

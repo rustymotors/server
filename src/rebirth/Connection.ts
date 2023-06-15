@@ -27,7 +27,7 @@ export class Connection {
     socket: ISocket | null = null;
     port: number;
     useEncryption: boolean;
-    encryprion: null;
+    encryption: null;
     ip: string | null = null;
     inQueue: boolean;
 
@@ -38,7 +38,7 @@ export class Connection {
         this.socket = null;
         this.port = 0;
         this.useEncryption = false;
-        this.encryprion = null;
+        this.encryption = null;
         this.ip = null;
         this.inQueue = false;
     }

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ISocket, Sentry, TServerLogger, TSocketWithConnectionInfo } from "mcos/shared";
+import { IConnection, IConnectionFactory, ISocket, Sentry, TServerLogger, TSocketWithConnectionInfo } from "mcos/shared";
 import { randomUUID } from "node:crypto";
 import { Connection } from "../../../src/rebirth/Connection.js";
 import { ServerError } from "../../../src/rebirth/ServerError.js";
@@ -188,7 +188,7 @@ export function findOrNewConnection(
  * Class to manage connections
  */
 export class ConnectionManager {
-    connections: Connection[] = [];
+    connections: IConnection[] = [];
     static instance: ConnectionManager;
 
     constructor() {
@@ -204,7 +204,7 @@ export class ConnectionManager {
      * @return {Connection}
      * @throws {ServerError} if connection is not found
      */
-    findConnectionByID(connectionId: string): Connection {
+    findConnectionByID(connectionId: string): IConnection {
         const connection = this.connections.find((c) => {
             return c.id === connectionId;
         });
@@ -221,7 +221,7 @@ export class ConnectionManager {
      * @param {Socket} socket
      * @return {Connection}
      */
-    findConnectionBySocket(socket: ISocket): Connection {
+    findConnectionBySocket(socket: ISocket): IConnection {
         const connection = this.connections.find((c) => {
             return c.socket === socket;
         });
@@ -238,7 +238,7 @@ export class ConnectionManager {
      * @param {Connection} connection
      * @return {void}
      */
-    addConnection(connection: Connection): void {
+    addConnection(connection: IConnection): void {
         const existingConnection = this.findConnectionByID(connection.id);
         if (typeof existingConnection !== "undefined") {
             return;
@@ -291,9 +291,9 @@ export class ConnectionManager {
 
     /**
      * Get all connections
-     * @return {Connection[]}
+     * @return {IConnection[]}
      */
-    getAllConnections(): Connection[] {
+    getAllConnections(): IConnection[] {
         return this.connections;
     }
 
@@ -302,7 +302,7 @@ export class ConnectionManager {
      * @param {Connection[]} connections
      * @return {string}
      */
-    formatConnectionsAsHTML(connections: Connection[]): string {
+    formatConnectionsAsHTML(connections: IConnection[]): string {
         let html = "";
         html += "<table>";
         html += "<tr>";
@@ -369,13 +369,13 @@ export class ConnectionManager {
      * @return {Connection}
      * @throws {ServerError} if socket is missing localPort or remoteAddress
      */
-    newConnectionFromSocket(socket: ISocket): Connection {
+    newConnectionFromSocket(socket: ISocket): IConnection {
         const existingConnection = this.findConnectionBySocket(socket);
         if (typeof existingConnection !== "undefined") {
             return existingConnection;
         }
 
-        const connection = new Connection();
+        const connection = IConnectionFactory();
         connection.socket = socket;
         if (typeof socket.localPort === "undefined") {
             throw new ServerError(`Socket has no localPort`);
