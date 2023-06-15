@@ -63,7 +63,7 @@ const listeningPortList = [
  * @param {TServerLogger} log
  * @returns {void}
  */
-export function onSocketError(
+function defaultOnSocketError(
     sock: ISocket,
     error: IError,
     log: TServerLogger
@@ -77,7 +77,7 @@ export function onSocketError(
     throw new ServerError(`Socket error: ${String(error)}`);
 }
 
-export function onSocketData(
+function defaultOnSocketData(
     sock: ISocket,
     data: Buffer,
     log: TServerLogger,
@@ -129,17 +129,39 @@ export function onSocketData(
             )
     );
 }
+
+function defaultOnSocketEnd(
+    sock: ISocket,
+    log: TServerLogger,
+    connectionRecord: TSocketWithConnectionInfo
+): void {
+    log("debug", "Socket ended");
+    // Remove the connection from the connection manager
+    getConnectionManager().removeConnection(connectionRecord.connectionId);
+}
+
 /**
  * Handle incoming TCP connections
  * @param {Socket} incomingSocket
  * @param {TServerConfiguration} config
  * @param {TServerLogger} log
  */
-export function TCPListener(
-    incomingSocket: ISocket,
-    config: TServerConfiguration,
-    log: TServerLogger
-) {
+export function TCPListener({
+    incomingSocket,
+    config,
+    log,
+    onSocketData = defaultOnSocketData,
+    onSocketError = defaultOnSocketError,
+    onSocketEnd = defaultOnSocketEnd,
+}: {
+    incomingSocket: ISocket;
+    config: TServerConfiguration;
+    log: TServerLogger;
+    onSocketData?: Function,
+    onSocketError?: Function,
+    onSocketEnd?: Function
+
+}): void {
     // Get the local port and remote address
     const { localPort, remoteAddress } = incomingSocket;
 
@@ -154,10 +176,8 @@ export function TCPListener(
 
     // Set up event handlers
     incomingSocket.on("end", () => {
-        log(
-            "debug",
-            `Client ${remoteAddress} disconnected from port ${localPort}`
-        );
+        onSocketEnd(incomingSocket, log, connectionRecord);
+
     });
     incomingSocket.on("data", (data) => {
         onSocketData(
@@ -207,7 +227,7 @@ function socketListener(
 
     // This is a 'normal' TCP socket.
     // Pass it to the TCP listener
-    TCPListener(incomingSocket, config, log);
+    TCPListener({incomingSocket, config, log});
 }
 
 /**
