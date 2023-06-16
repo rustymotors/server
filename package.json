@@ -113,7 +113,7 @@
         "@sentry-internal/tracing": "7.55.2",
         "@sentry/core": "7.55.2",
         "@sentry/node": "7.55.2",
-        "@sentry/profiling-node": "1.0.3",
+        "@sentry/profiling-node": "1.0.6",
         "@sentry/types": "7.55.2",
         "@sentry/utils": "7.55.2",
         "rm": "^0.1.8",
