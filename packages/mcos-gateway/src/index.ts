@@ -16,7 +16,9 @@
 
 import { createServer as createSocketServer } from "node:net";
 import {
-    findOrNewConnection,
+    addConnection,
+    createNewConnection,
+    findConnectionByAddressAndPort,
     getConnectionManager,
 } from "./ConnectionManager.js";
 import { dataHandler } from "./sockets.js";
@@ -41,6 +43,7 @@ import { MessageHeader } from "../../../src/rebirth/MessageHeader.js";
 import { TCPHeader } from "../../../src/rebirth/TCPHeader.js";
 import { TCPMessage } from "../../../src/rebirth/TCPMessage.js";
 import { ServerError } from "../../../src/rebirth/ServerError.js";
+import { randomUUID } from "node:crypto";
 
 Sentry.init({
     dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
@@ -167,10 +170,24 @@ export function TCPListener({
 
     validateAddressAndPort(localPort, remoteAddress);
 
-    // Get a connection record for this socket. If one doesn't exist, create it
-    const connectionRecord = findOrNewConnection(incomingSocket, log);
-    const connection =
-        getConnectionManager().findConnectionBySocket(incomingSocket);
+    // Look for an existing connection
+    let connectionRecord: TSocketWithConnectionInfo | undefined;
+    let connection: IConnection | undefined;
+    const newConnectionId = randomUUID();
+    connectionRecord = findConnectionByAddressAndPort(String(incomingSocket.remoteAddress), incomingSocket.localPort || 0);
+    if (connectionRecord) {
+        log("debug", `Found existing connection ${connectionRecord.id}`);
+        connectionRecord.socket = incomingSocket;
+    } else {
+        log("debug", "No existing connection found");
+        connectionRecord = createNewConnection(newConnectionId, incomingSocket, log);
+        addConnection(connectionRecord, log);
+    }
+    connection = getConnectionManager().findConnectionBySocket(incomingSocket);
+    if (!connection) {
+        connection = getConnectionManager().newConnectionFromSocket(incomingSocket);
+        getConnectionManager().addConnection(connection);
+    }
 
     log("debug", `Client ${remoteAddress} connected to port ${localPort}`);
 

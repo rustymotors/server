@@ -66,7 +66,7 @@
     "devDependencies": {
         "@types/chai": "4.3.5",
         "@types/mocha": "10.0.1",
-        "@types/node": "^18.16.18",
+        "@types/node": "^20.3.1",
         "@types/sinon": "10.0.15",
         "@types/sinon-chai": "3.2.9",
         "c8": "8.0.0",
@@ -115,13 +115,8 @@
         "rules": {}
     },
     "dependencies": {
-        "@sentry-internal/tracing": "7.54.0",
-        "@sentry/core": "7.54.0",
-        "@sentry/node": "7.54.0",
-        "@sentry/profiling-node": "1.0.3",
-        "@sentry/types": "7.54.0",
-        "@sentry/utils": "7.54.0",
-        "rm": "^0.1.8",
+        "@sentry/node": "7.55",
+        "@sentry/profiling-node": "^1.0.6",
         "ts-node": "10.9.1"
     }
 }

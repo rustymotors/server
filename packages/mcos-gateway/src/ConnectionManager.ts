@@ -14,7 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { IConnection, IConnectionFactory, ISocket, Sentry, TServerLogger, TSocketWithConnectionInfo } from "mcos/shared";
+import {
+    IConnection,
+    IConnectionFactory,
+    ISocket,
+    Sentry,
+    TServerLogger,
+    TSocketWithConnectionInfo,
+} from "mcos/shared";
 import { randomUUID } from "node:crypto";
 import { Connection } from "../../../src/rebirth/Connection.js";
 import { ServerError } from "../../../src/rebirth/ServerError.js";
@@ -43,20 +50,17 @@ export function updateConnection(
     connectionId: string,
     updatedConnection: TSocketWithConnectionInfo,
     log: TServerLogger
-) {
+): void {
     log("debug", `Updating connection with id: ${connectionId}`);
-    try {
-        const index = connectionList.findIndex((c) => {
-            return c.id === connectionId;
-        });
-        connectionList.splice(index, 1);
-        connectionList.push(updatedConnection);
-    } catch (error) {
-        Sentry.captureException(error);
-        const err = new Error(`Error updating connection, ${String(error)}`);
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
+    const index = connectionList.findIndex((c) => c.id === connectionId);
+    if (index === -1) {
+        const err = new ServerError(
+            `Connection not found with id ${connectionId}`
+        );
+        Sentry.captureException(err);
         throw err;
     }
+    connectionList.splice(index, 1, updatedConnection);
 }
 
 /**
@@ -65,7 +69,7 @@ export function updateConnection(
  * @param {number} localPort
  * @return {TSocketWithConnectionInfo | undefined}
  */
-function findConnectionByAddressAndPort(
+export function findConnectionByAddressAndPort(
     remoteAddress: string,
     localPort: number
 ): TSocketWithConnectionInfo | undefined {
@@ -81,7 +85,7 @@ function findConnectionByAddressAndPort(
  * @param {TServerLogger} log
  * @returns {TSocketWithConnectionInfo}
  */
-function createNewConnection(
+export function createNewConnection(
     connectionId: string,
     socket: ISocket,
     log: TServerLogger
@@ -119,69 +123,11 @@ function createNewConnection(
     return newConnectionRecord;
 }
 
-/**
- * Return an existing connection, or a new one
- *
- * @param {Socket} socket
- * @param {TServerLogger} log
- * @return {TSocketWithConnectionInfo}
- */
-export function findOrNewConnection(
-    socket: ISocket,
+export function addConnection(
+    connection: TSocketWithConnectionInfo,
     log: TServerLogger
-): TSocketWithConnectionInfo {
-    const { localPort, remoteAddress } = socket;
-
-    Sentry.setTags({
-        remoteAddress: remoteAddress || "empty",
-        localPort: localPort || "empty",
-    });
-
-    if (
-        typeof localPort === "undefined" ||
-        typeof remoteAddress === "undefined"
-    ) {
-        const err = new Error(
-            `Either localPort or remoteAddress is missing on socket. Can not continue.`
-        );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
-        log("err", err.message);
-        throw err;
-    }
-
-    const existingConnection = findConnectionByAddressAndPort(
-        remoteAddress,
-        localPort
-    );
-    if (typeof existingConnection !== "undefined") {
-        log(
-            "debug",
-            `I have seen connections from ${remoteAddress} on ${localPort} before`
-        );
-
-        // Attach the socket to the existing connection
-        existingConnection.socket = socket;
-        log("debug", "[M] Returning found connection after attaching socket");
-        return existingConnection;
-    }
-
-    // Get a new connection id
-    const newConnectionId = randomUUID();
-    log("debug", `Creating new connection with id ${newConnectionId}`);
-
-    // Create a new connection
-    const newConnection = createNewConnection(newConnectionId, socket, log);
-    log(
-        "debug",
-        `I have not seen connections from ${socket.remoteAddress} on ${socket.localPort} before, adding it.`
-    );
-    // Add the new connection to the list
-    connectionList.push(newConnection);
-    log(
-        "debug",
-        `Connection with id of ${newConnection.id} has been added. The connection list now contains ${connectionList.length} connections.`
-    );
-    return newConnection;
+): void {
+    connectionList.push(connection);
 }
 
 /**
@@ -204,33 +150,21 @@ export class ConnectionManager {
      * @return {Connection}
      * @throws {ServerError} if connection is not found
      */
-    findConnectionByID(connectionId: string): IConnection {
-        const connection = this.connections.find((c) => {
+    findConnectionByID(connectionId: string): IConnection | undefined {
+        return this.connections.find((c) => {
             return c.id === connectionId;
         });
-        if (typeof connection === "undefined") {
-            throw new ServerError(
-                `Could not find connection with id ${connectionId}`
-            );
-        }
-        return connection;
     }
 
     /**
-     * Find a connection by socket. If not found, create a new one
+     * Find a connection by socket. Returns undefined if not found
      * @param {Socket} socket
-     * @return {Connection}
+     * @return {Connection | undefined}
      */
-    findConnectionBySocket(socket: ISocket): IConnection {
-        const connection = this.connections.find((c) => {
+    findConnectionBySocket(socket: ISocket): IConnection | undefined {
+        return this.connections.find((c) => {
             return c.socket === socket;
         });
-        if (typeof connection === "undefined") {
-            const newConnection = this.newConnectionFromSocket(socket);
-            this.addConnection(newConnection);
-            return newConnection;
-        }
-        return connection;
     }
 
     /**
@@ -370,19 +304,24 @@ export class ConnectionManager {
      * @throws {ServerError} if socket is missing localPort or remoteAddress
      */
     newConnectionFromSocket(socket: ISocket): IConnection {
-        const existingConnection = this.findConnectionBySocket(socket);
-        if (typeof existingConnection !== "undefined") {
-            return existingConnection;
-        }
-
         const connection = IConnectionFactory();
         connection.socket = socket;
-        if (typeof socket.localPort === "undefined") {
-            throw new ServerError(`Socket has no localPort`);
-        }
-        connection.port = socket.localPort;
-        if (typeof socket.remoteAddress === "undefined") {
-            throw new ServerError(`Socket has no remoteAddress`);
+        if (
+            typeof socket.localPort === "undefined" ||
+            typeof socket.remoteAddress === "undefined"
+        ) {
+            const errorMesssage = "".concat(
+                "Socket is missing localPort or remoteAddress",
+                " ",
+                "localPort:",
+                " ",
+                String(socket.localPort),
+                " ",
+                "remoteAddress:",
+                " ",
+                String(socket.remoteAddress)
+            );
+            throw new ServerError(errorMesssage);
         }
         connection.ip = socket.remoteAddress;
         return connection;
@@ -397,6 +336,9 @@ export class ConnectionManager {
      */
     updateConnectionStatus(connectionId: string, status: number): void {
         const connection = this.findConnectionByID(connectionId);
+        if (typeof connection === "undefined") {
+            throw new ServerError(`Connection not found`);
+        }
         connection.status = status;
     }
 
@@ -409,6 +351,9 @@ export class ConnectionManager {
      */
     updateConnectionSocket(connectionId: string, socket: ISocket): void {
         const connection = this.findConnectionByID(connectionId);
+        if (typeof connection === "undefined") {
+            throw new ServerError(`Connection not found`);
+        }
         connection.socket = socket;
     }
 }

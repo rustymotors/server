@@ -15,7 +15,7 @@ export class Message extends SerializerBase implements ISerializedObject {
         return this._header;
     }
     set header(value: IMessageHeader | null) {
-        this.header = value;
+        this._header = value;
     }
     sequence: number;
     flags: number;
