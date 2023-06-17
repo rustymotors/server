@@ -110,7 +110,6 @@ export async function _npsRequestGameConnectServer(dataConnection: TBufferWithCo
             log
         );
     } catch (error) {
-        Sentry.captureException(error);
         dataConnection.connection.encryptionSession = createEncrypters(
             dataConnection.connection,
             keys,
