@@ -319,3 +319,17 @@ export interface IError {
     code: number;
     message: string;
 }
+
+export function TServerConfigurationFactory(): TServerConfiguration {
+    return {
+        EXTERNAL_HOST: "",
+        certificateFileContents: "",
+        privateKeyContents: "",
+        publicKeyContents: "",
+        LOG_LEVEL: "debug",
+    };
+}
+
+export function TServerLoggerFactory(): TServerLogger {
+    return (level: ELOG_LEVEL, msg: string) => {};
+}

@@ -9,9 +9,6 @@
 import { GetServerLogger, getServerConfiguration } from "mcos/shared";
 import type { TServerConfiguration, TServerLogger } from "mcos/shared";
 
-const defaultConfig: TServerConfiguration = getServerConfiguration();
-const defaultLog: TServerLogger = GetServerLogger();
-
 /**
  * @description A buffer with a connection id
  * @export
@@ -58,11 +55,11 @@ export class Router {
     private _config: TServerConfiguration;
     private _log: TServerLogger;
     private portRouters: Array<IPortRouter> = [];
-    static instance: Router;
+    static instance: Router | undefined;
 
     constructor({
-        config = defaultConfig,
-        log = defaultLog,
+        config = getServerConfiguration(),
+        log = GetServerLogger(),
     }: { config?: TServerConfiguration; log?: TServerLogger } = {}) {
         this._config = config;
         this._log = log;
