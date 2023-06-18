@@ -1,7 +1,7 @@
 import { Router } from './index.js';
 import { describe } from 'mocha';
 import { expect } from 'chai';
-import { TServerConfiguration, TServerConfigurationFactory, TServerLogger, TServerLoggerFactory } from 'mcos/shared';
+import { TServerConfigurationFactory, TServerLoggerFactory } from 'mcos/shared';
 
 const fakeConfig = TServerConfigurationFactory();
 const fakeLog = TServerLoggerFactory();
