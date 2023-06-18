@@ -64,7 +64,8 @@ export class Router {
         this._config = config;
         this._log = log;
         if (Router.instance) {
-            return Router.instance;
+            // Return the existing instance
+            return Router.instance; // skipcq: JS-0109
         }
         Router.instance = this;
     }
