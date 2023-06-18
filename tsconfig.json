@@ -12,6 +12,7 @@
         // "inlineSources": true,
         "allowSyntheticDefaultImports": true,
         "paths": {
+            "mcos/router": ["./src/router/index.js"],
             "mcos/auth": ["./packages/mcos-auth/index.js"],
             "mcos/database": ["./packages/mcos-database/index.js"],
             "mcos/gateway": ["./packages/mcos-gateway/index.js"],
