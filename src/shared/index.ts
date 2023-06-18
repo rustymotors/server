@@ -119,7 +119,7 @@ export interface TSocketWithConnectionInfo {
     useEncryption: boolean;
 }
 
-interface NpsCommandMap {
+export interface NpsCommandMap {
     name: string;
     value: number;
     module: "Lobby" | "Login";
