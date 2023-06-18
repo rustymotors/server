@@ -331,5 +331,7 @@ export function TServerConfigurationFactory(): TServerConfiguration {
 }
 
 export function TServerLoggerFactory(): TServerLogger {
-    return (level: ELOG_LEVEL, msg: string) => {};
+    return (_level: ELOG_LEVEL, _msg: string) => {
+        // do nothing
+    };
 }
