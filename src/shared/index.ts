@@ -168,10 +168,10 @@ export type TUserRecordMini = {
 };
 
 export interface ISocket {
-    listeners(arg0: string): any;
-    emit: (event: string, ...args: any[]) => void;
+    listeners(arg0: string): unknown;
+    emit: (event: string, ...args: unknown[]) => void;
     write: (data: Buffer) => boolean;
-    on: (event: string, callback: (...args: any[]) => void) => void;
+    on: (event: string, callback: (...args: unknown[]) => void) => void;
     end: () => void;
     remoteAddress?: string;
     localPort?: number;
