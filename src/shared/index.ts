@@ -5,7 +5,6 @@
 import { Cipher, Decipher } from "node:crypto";
 import { TSMessageBase } from "./TMessageBase.js";
 import EventEmitter from "node:events";
-import { Socket } from "node:dgram";
 export { toHex } from "./utils.js";
 
 export type ELOG_LEVEL =
