@@ -15,6 +15,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import {
+    IConnection,
+    IMessage,
+    ITCPMessage,
     Sentry,
     TBinaryStructure,
     TBufferWithConnection,
@@ -28,9 +31,12 @@ import { receiveLobbyData } from "mcos/lobby";
 import { receiveLoginData } from "mcos/login";
 import { receivePersonaData } from "mcos/persona";
 import { receiveTransactionsData } from "mcos/transactions";
-import { updateConnection } from "./connections.js";
+import { updateConnection } from "./ConnectionManager.js";
 import { MessageNode } from "./MessageNode.js";
 import { NPSMessage } from "../../../src/shared/NPSMessage.js";
+import { Connection } from "../../../src/rebirth/Connection.js";
+import { Message } from "../../../src/rebirth/Message.js";
+import { TCPMessage } from "../../../src/rebirth/TCPMessage.js";
 
 /**
  * Convert to zero padded hex
@@ -113,24 +119,26 @@ function sendMessages(
  * The onData handler
  * takes the data buffer and creates a {@link BufferWithConnection} object
  * @param {Buffer} data
- * @param {TSocketWithConnectionInfo} connection
+ * @param {TSocketWithConnectionInfo} connectionRecord
  * @param {TServerConfiguration} config
  * @param {TServerLogger} log
  * @return {Promise<void>}
  */
 export async function dataHandler(
     data: Buffer,
-    connection: TSocketWithConnectionInfo,
+    connectionRecord: TSocketWithConnectionInfo,
     config: TServerConfiguration,
-    log: TServerLogger
+    log: TServerLogger,
+    connection: IConnection,
+    message: IMessage | ITCPMessage
 ): Promise<void> {
     log("debug", `data prior to proccessing: ${data.toString("hex")}`);
 
     // Link the data and the connection together
     /** @type {TBufferWithConnection} */
     const networkBuffer: TBufferWithConnection = {
-        connectionId: connection.id,
-        connection,
+        connectionId: connectionRecord.id,
+        connection: connectionRecord,
         data,
         timeStamp: Date.now(),
     };
@@ -164,7 +172,7 @@ export async function dataHandler(
     if (typeof serviceRouters[localPort] !== "undefined") {
         try {
             /** @type {TServiceResponse} */
-            const result = await serviceRouters[localPort](
+            const result: TServiceResponse = await serviceRouters[localPort](
                 networkBuffer,
                 config,
                 log

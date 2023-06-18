@@ -1,13 +1,15 @@
+import { ITCPHeader, ITCPMessage } from "mcos/shared";
 import { SerializerBase } from "./SerializerBase.js";
 import { TCPHeader } from "./TCPHeader.js";
 
 export class TCPMessage extends SerializerBase {
+    connectionId: string | null = null;
     toFrom: number;
     appId: number;
-    _header: TCPHeader | null = null;
+    _header: ITCPHeader | null = null;
     buffer: Buffer;
 
-    get header(): TCPHeader {
+    get header(): ITCPHeader {
         if (!this._header) {
             throw new Error("TCPMessage.Header: header is null");
         }
@@ -22,15 +24,16 @@ export class TCPMessage extends SerializerBase {
      *
      * @param {Buffer} buf
      */
-    static deserialize(buf: Buffer): TCPMessage {
+    static deserialize(buf: Buffer): ITCPMessage {
         const message = new TCPMessage();
-        message._header = TCPHeader.deserialize(buf.subarray(0, 10));
+        message.header = TCPHeader.deserialize(buf.subarray(0, 10));
         message.buffer = buf.subarray(10);
         return message;
     }
 
     constructor() {
         super();
+        this.connectionId = null;
         this.toFrom = 0;
         this.appId = 0;
         this.header = new TCPHeader();
@@ -38,6 +41,7 @@ export class TCPMessage extends SerializerBase {
     }
 
     serialize(): Buffer {
+        SerializerBase.verifyConnectionId(this);
         let buf = Buffer.alloc(0);
         buf = Buffer.concat([buf, this.header.serialize()]);
         buf = Buffer.concat([buf, this.buffer]);
@@ -45,10 +49,12 @@ export class TCPMessage extends SerializerBase {
     }
 
     serializeSize(): number {
+        SerializerBase.verifyConnectionId(this);
         return this.header.serializeSize() + this.buffer.length;
     }
 
     toString(): string {
+        SerializerBase.verifyConnectionId(this);
         return `TCPMessage: toFrom=${this.toFrom}, appId=${
             this.appId
         }, length=${this.buffer.length}, msgid=${

@@ -14,18 +14,36 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Socket, createServer as createSocketServer } from "node:net";
-import { findOrNewConnection } from "./connections.js";
+import { createServer as createSocketServer } from "node:net";
+import {
+    addConnection,
+    createNewConnection,
+    findConnectionByAddressAndPort,
+    getConnectionManager,
+} from "./ConnectionManager.js";
 import { dataHandler } from "./sockets.js";
 import { httpListener as httpHandler } from "./web.js";
-export { getAllConnections } from "./connections.js";
+export { getAllConnections } from "./ConnectionManager.js";
 export { AdminServer } from "./adminServer.js";
 import Sentry from "@sentry/node";
-import { TServerConfiguration, TServerLogger, toHex } from "mcos/shared";
+import {
+    IConnection,
+    IError,
+    IMessage,
+    ISocket,
+    ITCPMessage,
+    TServerConfiguration,
+    TServerLogger,
+    TSocketWithConnectionInfo,
+    toHex,
+} from "mcos/shared";
 import { Server } from "node:http";
 import { Message } from "../../../src/rebirth/Message.js";
 import { MessageHeader } from "../../../src/rebirth/MessageHeader.js";
 import { TCPHeader } from "../../../src/rebirth/TCPHeader.js";
+import { TCPMessage } from "../../../src/rebirth/TCPMessage.js";
+import { ServerError } from "../../../src/rebirth/ServerError.js";
+import { randomUUID } from "node:crypto";
 
 Sentry.init({
     dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
@@ -48,63 +66,144 @@ const listeningPortList = [
  * @param {TServerLogger} log
  * @returns {void}
  */
-function onSocketError(sock: Socket, error: Error, log: TServerLogger): void {
+function defaultOnSocketError(
+    sock: ISocket,
+    error: IError,
+    log: TServerLogger
+): void {
     const message = String(error);
     if (message.includes("ECONNRESET")) {
         log("debug", "Connection was reset");
         return;
     }
     Sentry.captureException(error);
-    throw new Error(`Socket error: ${String(error)}`);
+    throw new ServerError(`Socket error: ${String(error)}`);
+}
+
+function defaultOnSocketData(
+    sock: ISocket,
+    data: Buffer,
+    log: TServerLogger,
+    config: TServerConfiguration,
+    connection: IConnection,
+    connectionRecord: TSocketWithConnectionInfo
+): void {
+    // Received data from the client
+    // Pass it to the data handler
+    log("debug", `Received data: ${toHex(data)}`);
+    const msgHeader = MessageHeader.deserialize(data);
+
+    let message: IMessage | ITCPMessage;
+
+    // Get the signature from the message header
+    const signature = msgHeader.signature;
+
+    // Check the signature. If it's not TOMC, then this is a TCP message
+    if (signature !== "TOMC") {
+        log("debug", "Recieved TCP message");
+        const msgHeader = TCPHeader.deserialize(data);
+        log("debug", `Message Header: ${msgHeader.toString()}`);
+
+        // Deserialize the message into a TCPMessage object
+        message = TCPMessage.deserialize(data);
+    } else {
+        // This is an MCOTS message
+        log("debug", "Recieved MCOTS message");
+
+        // Deserialize the message into a Message object
+        message = Message.deserialize(data);
+    }
+
+    log("debug", `Message Node: ${message.toString()}`);
+
+    if (connection.appID !== 0 && message instanceof Message) {
+        message.appID = connection.appID;
+    }
+
+    // Set the connection ID on the message
+    message.connectionId = connection.id;
+
+    // Pass the data to the data handler along with the connection record
+    dataHandler(data, connectionRecord, config, log, connection, message).catch(
+        (reason: Error) =>
+            log(
+                "err",
+                `There was an error in the data handler: ${reason.message}`
+            )
+    );
+}
+
+function defaultOnSocketEnd(
+    sock: ISocket,
+    log: TServerLogger,
+    connectionRecord: TSocketWithConnectionInfo
+): void {
+    log("debug", "Socket ended");
+    // Remove the connection from the connection manager
+    getConnectionManager().removeConnection(connectionRecord.connectionId);
 }
 
 /**
- *
+ * Handle incoming TCP connections
  * @param {Socket} incomingSocket
  * @param {TServerConfiguration} config
  * @param {TServerLogger} log
  */
-export function TCPListener(
-    incomingSocket: Socket,
-    config: TServerConfiguration,
-    log: TServerLogger
-) {
-    // Get a connection record
-    const connectionRecord = findOrNewConnection(incomingSocket, log);
+export function TCPListener({
+    incomingSocket,
+    config,
+    log,
+    onSocketData = defaultOnSocketData,
+    onSocketError = defaultOnSocketError,
+    onSocketEnd = defaultOnSocketEnd,
+}: {
+    incomingSocket: ISocket;
+    config: TServerConfiguration;
+    log: TServerLogger;
+    onSocketData?: Function,
+    onSocketError?: Function,
+    onSocketEnd?: Function
 
+}): void {
+    // Get the local port and remote address
     const { localPort, remoteAddress } = incomingSocket;
+
+    validateAddressAndPort(localPort, remoteAddress);
+
+    // Look for an existing connection
+    let connectionRecord: TSocketWithConnectionInfo | undefined;
+    let connection: IConnection | undefined;
+    const newConnectionId = randomUUID();
+    connectionRecord = findConnectionByAddressAndPort(String(incomingSocket.remoteAddress), incomingSocket.localPort || 0);
+    if (connectionRecord) {
+        log("debug", `Found existing connection ${connectionRecord.id}`);
+        connectionRecord.socket = incomingSocket;
+    } else {
+        log("debug", "No existing connection found");
+        connectionRecord = createNewConnection(newConnectionId, incomingSocket, log);
+        addConnection(connectionRecord, log);
+    }
+    connection = getConnectionManager().findConnectionBySocket(incomingSocket);
+    if (!connection) {
+        connection = getConnectionManager().newConnectionFromSocket(incomingSocket);
+        getConnectionManager().addConnection(connection);
+    }
+
     log("debug", `Client ${remoteAddress} connected to port ${localPort}`);
 
+    // Set up event handlers
     incomingSocket.on("end", () => {
-        log(
-            "debug",
-            `Client ${remoteAddress} disconnected from port ${localPort}`
-        );
+        onSocketEnd(incomingSocket, log, connectionRecord);
+
     });
     incomingSocket.on("data", (data) => {
-        // Received data from the client
-        // Pass it to the data handler
-        log("debug", `Received data: ${toHex(data)}`);
-        const msgHeader = MessageHeader.deserialize(data);
-
-        const signature = msgHeader.signature;
-        if ( signature !== "TOMC" ) {
-            log("debug", "Recieved TCP message")    
-            const msgHeader = TCPHeader.deserialize(data);
-            log("debug", `Message Header: ${msgHeader.toString()}`);
-        } else {
-            log("debug", "Recieved MCOTS message")
-            const msgNode = Message.deserialize(data);
-
-            log("debug", `Message Node: ${msgNode.toString()}`);
-        }
-
-        dataHandler(data, connectionRecord, config, log).catch(
-            (reason: Error) =>
-                log(
-                    "err",
-                    `There was an error in the data handler: ${reason.message}`
-                )
+        onSocketData(
+            incomingSocket,
+            data,
+            log,
+            config,
+            connection,
+            connectionRecord
         );
     });
     incomingSocket.on("error", (err) => {
@@ -114,13 +213,14 @@ export function TCPListener(
 
 /**
  *
+ * Listen for incoming connections on a socket
  * @param {Socket} incomingSocket
  * @param {TServerConfiguration} config
  * @param {TServerLogger} log
  * @returns {void}
  */
 function socketListener(
-    incomingSocket: Socket,
+    incomingSocket: ISocket,
     config: TServerConfiguration,
     log: TServerLogger
 ): void {
@@ -129,20 +229,22 @@ function socketListener(
         `[gate]Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
     );
 
-    // Is this an HTTP request?
+    // Is this an HTTP request? If so, handle it differently
     if (incomingSocket.localPort === 3000) {
         log("debug", "Web request");
+        // This is an HTTP request
         const newServer = new Server((req, res) => {
             httpHandler(req, res, config, log);
         });
         // Send the socket to the http server instance
         newServer.emit("connection", incomingSocket);
 
-        return;
+        return; // Don't do anything else
     }
 
-    // This is a 'normal' TCP socket
-    TCPListener(incomingSocket, config, log);
+    // This is a 'normal' TCP socket.
+    // Pass it to the TCP listener
+    TCPListener({incomingSocket, config, log});
 }
 
 /**
@@ -166,14 +268,24 @@ export function startListeners(
     config: TServerConfiguration,
     log: TServerLogger
 ) {
+    const ALLOWED_BACKLOG_COUNT = 0;
     log("info", "Server starting");
 
     listeningPortList.forEach((port) => {
         const newServer = createSocketServer((s) => {
             socketListener(s, config, log);
         });
-        newServer.listen(port, "0.0.0.0", 0, () => {
+
+        newServer.listen(port, "0.0.0.0", ALLOWED_BACKLOG_COUNT, () => {
             return serverListener(port, log);
         });
     });
+}
+function validateAddressAndPort(
+    localPort: number | undefined,
+    remoteAddress: string | undefined
+) {
+    if (localPort === undefined || remoteAddress === undefined) {
+        throw new Error("localPort or remoteAddress is undefined");
+    }
 }

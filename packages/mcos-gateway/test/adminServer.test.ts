@@ -16,9 +16,8 @@
 
 import chai, { expect } from "chai";
 import { AdminServer, resetQueue } from "mcos/gateway";
-import { TServerLogger, TSocketWithConnectionInfo } from "mcos/shared";
+import { ISocketTestFactory, TServerLogger, TSocketWithConnectionInfo } from "mcos/shared";
 import { describe, it } from "mocha";
-import { Socket } from "net";
 
 chai.should();
 
@@ -60,7 +59,8 @@ describe("resetQueue()", function () {
         /** @type {TSocketWithConnectionInfo[]} */
         const inputConnectionList: TSocketWithConnectionInfo[] = [
             {
-                socket: new Socket(),
+                connectionId: "A",
+                socket: ISocketTestFactory(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -71,7 +71,8 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
             {
-                socket: new Socket(),
+                connectionId: "B",
+                socket: ISocketTestFactory(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -82,7 +83,8 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
             {
-                socket: new Socket(),
+                connectionId: "C",
+                socket: ISocketTestFactory(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -96,7 +98,8 @@ describe("resetQueue()", function () {
         /** @type {TSocketWithConnectionInfo[]} */
         const expectedConnectionList: TSocketWithConnectionInfo[] = [
             {
-                socket: new Socket(),
+                connectionId: "A",
+                socket: ISocketTestFactory(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -107,7 +110,8 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
             {
-                socket: new Socket(),
+                connectionId: "B",
+                socket: ISocketTestFactory(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",
@@ -118,7 +122,8 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
             {
-                socket: new Socket(),
+                connectionId: "C",
+                socket: ISocketTestFactory(),
                 seq: 0,
                 id: "A",
                 remoteAddress: "0.0.0.0",

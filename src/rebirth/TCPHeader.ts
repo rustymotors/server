@@ -1,3 +1,4 @@
+import { ITCPHeader } from "mcos/shared";
 import { ISerializedObject, SerializerBase } from "./SerializerBase.js";
 
 export class TCPHeader extends SerializerBase implements ISerializedObject {
@@ -20,8 +21,12 @@ export class TCPHeader extends SerializerBase implements ISerializedObject {
      *
      * @param {Buffer} buf
      */
-    static deserialize(buf: Buffer): TCPHeader {
-        const header = new TCPHeader();
+    static deserialize(buf: Buffer): ITCPHeader {
+        if (buf.length < 10) {
+            throw new Error("TCPHeader.deserialize: buf.length < 10");
+        }
+            
+        const header: ITCPHeader = new TCPHeader();
         header.msgid = SerializerBase.deserializeWordBE(buf.subarray(0, 2));
         header.msglen = SerializerBase.deserializeWordBE(buf.subarray(2, 4));
         header.version = SerializerBase.deserializeWordBE(buf.subarray(4, 6));

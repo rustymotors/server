@@ -3,8 +3,9 @@
  */
 
 import { Cipher, Decipher } from "node:crypto";
-import { Socket } from "node:net";
 import { TSMessageBase } from "./TMessageBase.js";
+import EventEmitter from "node:events";
+import { Socket } from "node:dgram";
 export { toHex } from "./utils.js";
 
 export type ELOG_LEVEL =
@@ -49,7 +50,7 @@ export interface TSessionRecord {
 export interface TConnection {
     localPort: number;
     remoteAddress: string;
-    socket: Socket;
+    socket: ISocket;
     encryptionSession: TEncryptionSession;
     useEncryption: boolean;
 }
@@ -102,8 +103,12 @@ export interface TEncryptionSession {
     tsCipher: Cipher;
     tsDecipher: Decipher;
 }
+
+  
+
 export interface TSocketWithConnectionInfo {
-    socket: Socket;
+    connectionId: string;
+    socket: ISocket;
     seq: number;
     id: string;
     remoteAddress: string;
@@ -115,13 +120,11 @@ export interface TSocketWithConnectionInfo {
     useEncryption: boolean;
 }
 
-/**
- * @global
- * @typedef {object} NpsCommandMap
- * @property {string} name
- * @property {number} value
- * @property {"Lobby" | "Login"} module
- */
+interface NpsCommandMap {
+    name: string;
+    value: number;
+    module: "Lobby" | "Login";
+}
 
 export type TNPS_COMMAND_MAP = {
     name: string;
@@ -164,3 +167,155 @@ export type TUserRecordMini = {
     userId: number;
 };
 
+export interface ISocket {
+    listeners(arg0: string): any;
+    emit: (event: string, ...args: any[]) => void;
+    write: (data: Buffer) => boolean;
+    on: (event: string, callback: (...args: any[]) => void) => void;
+    end: () => void;
+    remoteAddress?: string;
+    localPort?: number;
+}  
+
+export function ISocketTestFactory(): ISocket {
+    const ee = new EventEmitter();
+    const et = new EventTarget();
+    const newISocket = {
+        write: () => true,
+        end: () => {},
+        remoteAddress: "",
+        localPort: 0,
+        ...ee,
+        ...et
+    };
+    Object.setPrototypeOf(newISocket, Object.getPrototypeOf(ee));
+    return newISocket;
+}
+
+export interface IMessageHeader {
+    length: number;
+    signature: string;
+
+    serialize: () => Buffer;
+}
+
+export function IMessageHeaderFactory(): IMessageHeader {
+    return {
+        length: 0,
+        signature: "",
+
+        serialize: () => Buffer.from([]),
+    };
+}
+
+export interface IConnection {
+    status: number;
+    appID: number;
+    id: string;
+    socket: ISocket;
+    remoteAddress: string;
+    localPort: number;
+    seq: number;
+    personaId: number;
+    lastMessageTimestamp: number;
+    inQueue: boolean;
+    encryptionSession?: TEncryptionSession;
+    useEncryption: boolean;
+    port: number;
+    encryption: null;
+    ip: string | null;
+}
+
+export function IConnectionFactory(): IConnection {
+    return {
+        appID: 0,
+        id: "",
+        socket: ISocketTestFactory(),
+        remoteAddress: "",
+        localPort: 0,
+        seq: 0,
+        personaId: 0,
+        lastMessageTimestamp: 0,    
+        inQueue: false,
+        useEncryption: false,
+        status: 0,
+        port: 0,
+        encryption: null,
+        ip: null,
+    };
+}
+
+export interface IMessage {
+    toFrom: number;
+    connectionId: string | null;
+    appID: number;
+    sequence: number;
+    flags: number;
+    buffer: Buffer;
+    header: IMessageHeader | null;
+
+    serialize: () => Buffer;
+    toString: () => string;
+}
+
+export function IMessageFactory(): IMessage {
+    return {
+        toFrom: 0,
+        connectionId: "",
+        appID: 0,
+        sequence: 0,
+        flags: 0,
+        buffer: Buffer.from([]),
+        header: null,
+        
+        serialize: () => Buffer.from([]),
+        toString: () => "",
+    };
+}
+
+export interface ITCPHeader {
+    msgid: number;
+    msglen: number;
+    version: number;
+    reserved: number;
+    checksum: number;
+
+    serialize: () => Buffer;
+    serializeSize: () => number;
+}
+
+export function ITCPHeaderFactory(): ITCPHeader {
+    return {
+        msgid: 0,
+        msglen: 0,
+        version: 0,
+        reserved: 0,
+        checksum: 0,
+
+        serialize: () => Buffer.from([]),
+        serializeSize: () => 0,
+    };
+}
+
+export interface ITCPMessage {
+    connectionId: string | null;
+    toFrom: number;
+    appId: number;
+    header: ITCPHeader | null;
+    buffer: Buffer;
+}
+
+export function ITCPMessageFactory(): ITCPMessage {
+    return {
+        connectionId: null,
+        toFrom: 0,
+        appId: 0,
+        header: null,
+        buffer: Buffer.from([]),
+    };
+}
+
+export interface IError {
+    code: number;
+    message: string;
+}

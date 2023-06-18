@@ -1,4 +1,5 @@
-import { Socket } from "node:net";
+import { ISocket } from "mcos/shared";
+import { randomUUID } from "node:crypto";
 
 export class Connection {
     /**
@@ -20,24 +21,26 @@ export class Connection {
      * @memberof Connection
      */
     static SOFT_KILL = 3;
-    id: number;
+    id: string;
     appID: number;
     status: number;
-    socket: Socket | null = null;
+    socket: ISocket | null = null;
     port: number;
     useEncryption: boolean;
-    encryprion: null;
-    ip: string;
+    encryption: null;
+    ip: string | null = null;
+    inQueue: boolean;
 
     constructor() {
-        this.id = 0;
+        this.id = randomUUID();
         this.appID = 0;
         this.status = Connection.INACTIVE;
         this.socket = null;
         this.port = 0;
         this.useEncryption = false;
-        this.encryprion = null;
-        this.ip = "";
+        this.encryption = null;
+        this.ip = null;
+        this.inQueue = false;
     }
 
 }

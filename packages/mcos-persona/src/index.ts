@@ -16,8 +16,7 @@
 
 import { handleData, personaRecords } from "./internal.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
-import { NPSMessage, Sentry, TBufferWithConnection, TNPSMessage, TPersonaRecord, TServerConfiguration, TServerLogger, TServiceResponse } from "mcos/shared";
-import { Socket } from "node:net";
+import { ISocket, NPSMessage, Sentry, TBufferWithConnection, TNPSMessage, TPersonaRecord, TServerConfiguration, TServerLogger, TServiceResponse } from "mcos/shared";
 
 /**
  * Selects a game persona and marks it as in use
@@ -296,7 +295,7 @@ export class PersonaServer {
      * @return {void}
      * @memberof PersonaServer
      */
-    sendPacket(socket: Socket, packet: NPSMessage): void {
+    sendPacket(socket: ISocket, packet: NPSMessage): void {
         try {
             // deepcode ignore WrongNumberOfArgs: False alert
             socket.write(packet.serialize());

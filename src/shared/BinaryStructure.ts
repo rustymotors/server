@@ -82,7 +82,7 @@ export class BinaryStructure {
      */
     constructor(log: TServerLogger) {
         this.#log = log;
-        log("debug", "new BinaryStructure");
+        // log("debug", "new BinaryStructure");
     }
 
     /**
@@ -93,7 +93,7 @@ export class BinaryStructure {
      */
     _add(field: { name: string; order: "big" | "little"; size: number; type: FIELD_TYPE; value: Buffer; }) {
         const newField = { ...field, offset: this._byteOffset };
-        this.#log("debug", `Adding ${JSON.stringify(newField)}`);
+        // this.#log("debug", `Adding ${JSON.stringify(newField)}`);
         this._fields.push(newField);
         this._byteLength = this._byteLength + field.size;
         this._byteOffset = this._byteOffset + field.size;
@@ -134,18 +134,18 @@ export class BinaryStructure {
         );
 
         this._fields.forEach((f) => {
-            this.#log("debug", `Before: ${JSON.stringify(f)}`);
+            // this.#log("debug", `Before: ${JSON.stringify(f)}`);
             const indexes = { start: f.offset, end: f.offset + f.size };
-            this.#log("debug", `Taking data: ${JSON.stringify(indexes)}`);
+            // this.#log("debug", `Taking data: ${JSON.stringify(indexes)}`);
             const value = byteStream.subarray(indexes.start, indexes.end);
-            this.#log(
-                "debug",
-                `Setting ${f.name} with value of ${toHex(value)}, size ${
-                    value.byteLength
-                }`
-            );
+            // this.#log(
+            //     "debug",
+            //     `Setting ${f.name} with value of ${toHex(value)}, size ${
+            //         value.byteLength
+            //     }`
+            // );
             f.value = value;
-            this.#log("debug", `After: ${JSON.stringify(f)}`);
+            // this.#log("debug", `After: ${JSON.stringify(f)}`);
             this._byteOffset = indexes.end;
         });
     }
@@ -182,18 +182,18 @@ export class BinaryStructure {
      * @memberof BinaryStructure
      */
     getValue(fieldName: string): string | number | boolean {
-        this.#log("debug", "Calling get() in BinaryStructure..");
+        // this.#log("debug", "Calling get() in BinaryStructure..");
         const selectedField = this.get(fieldName);
-        this.#log("debug", "Calling get() in BinaryStructure.. success");
+        // this.#log("debug", "Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
-        this.#log(
-            "debug",
-            `Getting a value of ${toHex(value)} from the ${
-                selectedField.name
-            } field with type of ${type} and size of (${value.byteLength},${
-                selectedField.size
-            })`
-        );
+        // this.#log(
+        //     "debug",
+        //     `Getting a value of ${toHex(value)} from the ${
+        //         selectedField.name
+        //     } field with type of ${type} and size of (${value.byteLength},${
+        //         selectedField.size
+        //     })`
+        // );
         try {
             if (type === "boolean") {
                 return value.readInt8() === 0;
@@ -235,14 +235,14 @@ export class BinaryStructure {
      * @returns {void}
      */
     setValueNumber(fieldName: string, newValue: number) {
-        this.#log("debug", "Calling setValueNumber() in BinaryStructure..");
+        // this.#log("debug", "Calling setValueNumber() in BinaryStructure..");
         const selectedField = this.get(fieldName);
-        this.#log("debug", "Calling get() in BinaryStructure.. success");
+        // this.#log("debug", "Calling get() in BinaryStructure.. success");
         const { type, order, value } = selectedField;
-        this.#log(
-            "debug",
-            `Setting a value of ${newValue} to the ${selectedField.name} field with type of ${type})`
-        );
+        // this.#log(
+        //     "debug",
+        //     `Setting a value of ${newValue} to the ${selectedField.name} field with type of ${type})`
+        // );
         try {
             if (type === "boolean") {
                 if (newValue === 1 || newValue === 0) {
