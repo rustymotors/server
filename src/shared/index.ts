@@ -5,7 +5,6 @@
 import { Cipher, Decipher } from "node:crypto";
 import { TSMessageBase } from "./TMessageBase.js";
 import EventEmitter from "node:events";
-import { Socket } from "node:dgram";
 export { toHex } from "./utils.js";
 
 export type ELOG_LEVEL =
@@ -120,7 +119,7 @@ export interface TSocketWithConnectionInfo {
     useEncryption: boolean;
 }
 
-interface NpsCommandMap {
+export interface NpsCommandMap {
     name: string;
     value: number;
     module: "Lobby" | "Login";
@@ -168,10 +167,10 @@ export type TUserRecordMini = {
 };
 
 export interface ISocket {
-    listeners(arg0: string): any;
-    emit: (event: string, ...args: any[]) => void;
+    listeners(arg0: string): unknown;
+    emit: (event: string, ...args: unknown[]) => void;
     write: (data: Buffer) => boolean;
-    on: (event: string, callback: (...args: any[]) => void) => void;
+    on: (event: string, callback: (...args: unknown[]) => void) => void;
     end: () => void;
     remoteAddress?: string;
     localPort?: number;
@@ -318,4 +317,20 @@ export function ITCPMessageFactory(): ITCPMessage {
 export interface IError {
     code: number;
     message: string;
+}
+
+export function TServerConfigurationFactory(): TServerConfiguration {
+    return {
+        EXTERNAL_HOST: "",
+        certificateFileContents: "",
+        privateKeyContents: "",
+        publicKeyContents: "",
+        LOG_LEVEL: "debug",
+    };
+}
+
+export function TServerLoggerFactory(): TServerLogger {
+    return (_level: ELOG_LEVEL, _msg: string) => {
+        // do nothing
+    };
 }

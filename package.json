@@ -1,6 +1,6 @@
 {
     "name": "mcos",
-    "version": "0.1.0-alpha",
+    "version": "1.0.0",
     "description": "a server",
     "engines": {
         "node": "^14.13.1 || >=16.0.0"
@@ -11,6 +11,9 @@
         "AUTHORS"
     ],
     "exports": {
+        "./router": [
+            "./src/router/index.js"
+        ],
         "./auth": [
             "./packages/mcos-auth/index.js"
         ],

@@ -14,8 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ISocket, Sentry, TServerLogger } from "mcos/shared";
+import { ISocket, TServerLogger } from "mcos/shared";
 import { IncomingMessage, ServerResponse } from "node:http";
+import { ServerError } from "../../../src/rebirth/ServerError.js";
 
 /**
  * Handles web-based user logins
@@ -96,10 +97,8 @@ export class AuthLogin {
      */
     _socketEventHandler(socket: ISocket) {
         socket.on("error", (error) => {
-            const err = new Error(
-                `[AuthLogin] SSL Socket Error: ${error.message}`
-            );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
+            const err = ServerError.fromError(error as Error)
+            err.message = `[AuthLogin] Socket Error: ${err.message}`;
             throw err;
         });
     }
