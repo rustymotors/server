@@ -26,5 +26,5 @@
             "mcos/transactions": ["./packages/mcos-transactions/index.js"]
         }
     },
-    "exclude": ["node_modules", "**/node_modules/*", "coverage", "out"]
+    "exclude": ["node_modules", "**/node_modules/*", "coverage", "docs"]
 }
