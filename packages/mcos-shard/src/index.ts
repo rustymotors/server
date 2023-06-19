@@ -108,20 +108,20 @@ export class ShardServer {
      * @memberof ShardServer
      */
     private readonly _server: Server;
-    /** 
+    /**
      * @private
      * @type {string[]} */
     private _possibleShards: string[] = [];
 
-    /** 
+    /**
      * @private
-     * @type {TServerLogger} 
+     * @type {TServerLogger}
      */
     private readonly _log: TServerLogger;
 
-    /** 
+    /**
      * @private
-     * @type {TServerConfiguration} 
+     * @type {TServerConfiguration}
      */
     private readonly _config: TServerConfiguration;
 
@@ -131,7 +131,10 @@ export class ShardServer {
      * @param {TServerLogger} log
      * @returns {ShardServer}
      */
-    static getInstance(config: TServerConfiguration, log: TServerLogger): ShardServer {
+    static getInstance(
+        config: TServerConfiguration,
+        log: TServerLogger
+    ): ShardServer {
         if (typeof ShardServer.instance === "undefined") {
             ShardServer.instance = new ShardServer(config, log);
         }
@@ -221,7 +224,10 @@ export class ShardServer {
      * @param {ServerResponse} response
      */
     // deepcode ignore NoRateLimitingForExpensiveWebOperation: Very unlikely to be DDos'ed
-    handleRequest(request: IncomingMessage, response: ServerResponse): ServerResponse {
+    handleRequest(
+        request: IncomingMessage,
+        response: ServerResponse
+    ): ServerResponse {
         if (request.url === "/cert") {
             response.setHeader(
                 "Content-disposition",

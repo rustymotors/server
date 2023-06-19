@@ -11,7 +11,7 @@ import {
     TSocketWithConnectionInfo,
 } from "mcos/shared";
 import { ServerError } from "../../../src/rebirth/ServerError.js";
-import { TCPListener, } from "../src/index.js";
+import { TCPListener } from "../src/index.js";
 import { ConnectionManager } from "../src/ConnectionManager.js";
 import { MessageHeader } from "../../../src/rebirth/MessageHeader.js";
 
@@ -41,7 +41,11 @@ describe("TCPListener", () => {
         new ConnectionManager().connections.push(fakeConnection);
 
         // Act
-        const result = TCPListener({incomingSocket: fakeSocket, config: fakeConfig, log: fakeLog});
+        const result = TCPListener({
+            incomingSocket: fakeSocket,
+            config: fakeConfig,
+            log: fakeLog,
+        });
 
         // Assert
         expect(eventSpy).to.have.been.calledThrice;
@@ -202,11 +206,13 @@ describe("TCPListener", () => {
             onSocketData: fakeOnData,
         });
 
-        
-        fakeSocket.emit("data", Buffer.from([
+        fakeSocket.emit(
+            "data",
+            Buffer.from([
                 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100,
                 0x100,
-            ]));
+            ])
+        );
 
         // Assert
         expect(fakeOnData).to.have.been.called;

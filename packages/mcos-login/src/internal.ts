@@ -14,8 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { GSMessageBase, } from "mcos/gateway";
-import { NPSMessage, Sentry, TBufferWithConnection, TMessageArrayWithConnection, TServerConfiguration, TServerLogger, TUserRecordMini } from "mcos/shared";
+import { GSMessageBase } from "mcos/gateway";
+import {
+    NPSMessage,
+    Sentry,
+    TBufferWithConnection,
+    TMessageArrayWithConnection,
+    TServerConfiguration,
+    TServerLogger,
+    TUserRecordMini,
+} from "mcos/shared";
 import { DatabaseManager } from "mcos/database";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { premadeLogin } from "./premadeLogin.js";
@@ -42,7 +50,11 @@ const userRecords: TUserRecordMini[] = [
  * @param {TServerLogger} log
  * @return {Promise<TMessageArrayWithConnection>}
  */
-async function login(dataConnection: TBufferWithConnection, config: TServerConfiguration, log: TServerLogger): Promise<TMessageArrayWithConnection> {
+async function login(
+    dataConnection: TBufferWithConnection,
+    config: TServerConfiguration,
+    log: TServerLogger
+): Promise<TMessageArrayWithConnection> {
     const { connectionId, data } = dataConnection;
 
     log("debug", `Received login packet: ${connectionId}`);
@@ -157,7 +169,11 @@ export const messageHandlers = [
  * @param {TServerLogger} log
  * @return {Promise<TMessageArrayWithConnection>}
  */
-export async function handleData(dataConnection: TBufferWithConnection, config: TServerConfiguration, log: TServerLogger): Promise<TMessageArrayWithConnection> {
+export async function handleData(
+    dataConnection: TBufferWithConnection,
+    config: TServerConfiguration,
+    log: TServerLogger
+): Promise<TMessageArrayWithConnection> {
     const { connectionId, data } = dataConnection;
 
     log("debug", `Received Login Server packet: ${connectionId}`);

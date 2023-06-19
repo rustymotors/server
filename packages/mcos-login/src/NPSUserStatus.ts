@@ -1,5 +1,10 @@
 import { privateDecrypt } from "node:crypto";
-import { NPSMessage, TNPSMessageJSON, TServerConfiguration, TServerLogger } from "mcos/shared";
+import {
+    NPSMessage,
+    TNPSMessageJSON,
+    TServerConfiguration,
+    TServerLogger,
+} from "mcos/shared";
 
 /**
  *
@@ -42,7 +47,11 @@ export class NPSUserStatus extends NPSMessage {
      * @param {TServerConfiguration} config
      * @param {TServerLogger} log
      */
-    constructor(packet: Buffer, config: TServerConfiguration, log: TServerLogger) {
+    constructor(
+        packet: Buffer,
+        config: TServerConfiguration,
+        log: TServerLogger
+    ) {
         super("received");
         this._config = config;
         this._log = log;

@@ -14,7 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry, TDatabaseManager, TServerLogger, TSession, TSessionRecord } from "mcos/shared";
+import {
+    Sentry,
+    TDatabaseManager,
+    TServerLogger,
+    TSession,
+    TSessionRecord,
+} from "mcos/shared";
 import { TLobby } from "./models/Lobby.js";
 
 /**
@@ -69,7 +75,9 @@ export class DatabaseManager {
      * @param {number} customerId
      * @returns {Promise<TSessionRecord>}
      */
-    async fetchSessionKeyByCustomerId(customerId: number): Promise<TSessionRecord> {
+    async fetchSessionKeyByCustomerId(
+        customerId: number
+    ): Promise<TSessionRecord> {
         const record = this.sessions.find((session) => {
             return session.customerId === customerId;
         });
@@ -87,7 +95,9 @@ export class DatabaseManager {
      * @param {string} connectionId
      * @returns {Promise<TSessionRecord>}
      */
-    async fetchSessionKeyByConnectionId(connectionId: string): Promise<TSessionRecord> {
+    async fetchSessionKeyByConnectionId(
+        connectionId: string
+    ): Promise<TSessionRecord> {
         const record = this.sessions.find((session) => {
             return session.connectionId === connectionId;
         });
@@ -109,7 +119,12 @@ export class DatabaseManager {
      * @param {string} connectionId
      * @returns {Promise<void>}
      */
-    async updateSessionKey(customerId: number, sessionKey: string, contextId: string, connectionId: string): Promise<void> {
+    async updateSessionKey(
+        customerId: number,
+        sessionKey: string,
+        contextId: string,
+        connectionId: string
+    ): Promise<void> {
         const sKey = sessionKey.slice(0, 16);
 
         /** @type {TSession} */

@@ -103,8 +103,6 @@ export interface TEncryptionSession {
     tsDecipher: Decipher;
 }
 
-  
-
 export interface TSocketWithConnectionInfo {
     connectionId: string;
     socket: ISocket;
@@ -174,7 +172,7 @@ export interface ISocket {
     end: () => void;
     remoteAddress?: string;
     localPort?: number;
-}  
+}
 
 export function ISocketTestFactory(): ISocket {
     const ee = new EventEmitter();
@@ -185,7 +183,7 @@ export function ISocketTestFactory(): ISocket {
         remoteAddress: "",
         localPort: 0,
         ...ee,
-        ...et
+        ...et,
     };
     Object.setPrototypeOf(newISocket, Object.getPrototypeOf(ee));
     return newISocket;
@@ -234,7 +232,7 @@ export function IConnectionFactory(): IConnection {
         localPort: 0,
         seq: 0,
         personaId: 0,
-        lastMessageTimestamp: 0,    
+        lastMessageTimestamp: 0,
         inQueue: false,
         useEncryption: false,
         status: 0,
@@ -266,7 +264,7 @@ export function IMessageFactory(): IMessage {
         flags: 0,
         buffer: Buffer.from([]),
         header: null,
-        
+
         serialize: () => Buffer.from([]),
         toString: () => "",
     };

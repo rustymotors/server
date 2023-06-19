@@ -14,7 +14,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry, TBufferWithConnection, TDatabaseManager, TServerConfiguration, TServerLogger, TServiceResponse, TUserRecordMini } from "mcos/shared";
+import {
+    Sentry,
+    TBufferWithConnection,
+    TDatabaseManager,
+    TServerConfiguration,
+    TServerLogger,
+    TServiceResponse,
+    TUserRecordMini,
+} from "mcos/shared";
 import { handleData } from "./internal.js";
 
 /**
@@ -58,7 +66,10 @@ export class LoginServer {
      * @return {LoginServer}
      * @memberof LoginServer
      */
-    static getInstance(database: TDatabaseManager, log: TServerLogger): LoginServer {
+    static getInstance(
+        database: TDatabaseManager,
+        log: TServerLogger
+    ): LoginServer {
         if (typeof LoginServer._instance === "undefined") {
             LoginServer._instance = new LoginServer(database, log);
         }
@@ -129,7 +140,11 @@ export class LoginServer {
  * @param {TServerLogger} log
  * @return {Promise<TServiceResponse>}
  */
-export async function receiveLoginData(dataConnection: TBufferWithConnection, config: TServerConfiguration, log: TServerLogger): Promise<TServiceResponse> {
+export async function receiveLoginData(
+    dataConnection: TBufferWithConnection,
+    config: TServerConfiguration,
+    log: TServerLogger
+): Promise<TServiceResponse> {
     try {
         log("debug", "Entering login module");
         const response = await handleData(dataConnection, config, log);

@@ -42,5 +42,4 @@ export class Connection {
         this.ip = null;
         this.inQueue = false;
     }
-
 }

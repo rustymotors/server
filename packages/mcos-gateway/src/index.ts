@@ -160,10 +160,9 @@ export function TCPListener({
     incomingSocket: ISocket;
     config: TServerConfiguration;
     log: TServerLogger;
-    onSocketData?: Function,
-    onSocketError?: Function,
-    onSocketEnd?: Function
-
+    onSocketData?: Function;
+    onSocketError?: Function;
+    onSocketEnd?: Function;
 }): void {
     // Get the local port and remote address
     const { localPort, remoteAddress } = incomingSocket;
@@ -174,18 +173,26 @@ export function TCPListener({
     let connectionRecord: TSocketWithConnectionInfo | undefined;
     let connection: IConnection | undefined;
     const newConnectionId = randomUUID();
-    connectionRecord = findConnectionByAddressAndPort(String(incomingSocket.remoteAddress), incomingSocket.localPort || 0);
+    connectionRecord = findConnectionByAddressAndPort(
+        String(incomingSocket.remoteAddress),
+        incomingSocket.localPort || 0
+    );
     if (connectionRecord) {
         log("debug", `Found existing connection ${connectionRecord.id}`);
         connectionRecord.socket = incomingSocket;
     } else {
         log("debug", "No existing connection found");
-        connectionRecord = createNewConnection(newConnectionId, incomingSocket, log);
+        connectionRecord = createNewConnection(
+            newConnectionId,
+            incomingSocket,
+            log
+        );
         addConnection(connectionRecord, log);
     }
     connection = getConnectionManager().findConnectionBySocket(incomingSocket);
     if (!connection) {
-        connection = getConnectionManager().newConnectionFromSocket(incomingSocket);
+        connection =
+            getConnectionManager().newConnectionFromSocket(incomingSocket);
         getConnectionManager().addConnection(connection);
     }
 
@@ -194,7 +201,6 @@ export function TCPListener({
     // Set up event handlers
     incomingSocket.on("end", () => {
         onSocketEnd(incomingSocket, log, connectionRecord);
-
     });
     incomingSocket.on("data", (data) => {
         onSocketData(
@@ -244,7 +250,7 @@ function socketListener(
 
     // This is a 'normal' TCP socket.
     // Pass it to the TCP listener
-    TCPListener({incomingSocket, config, log});
+    TCPListener({ incomingSocket, config, log });
 }
 
 /**

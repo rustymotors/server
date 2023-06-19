@@ -7,7 +7,6 @@ import { TNPS_COMMAND_MAP } from "mcos/shared";
  * @type {TNPS_COMMAND_MAP[]}
  */
 
-
 export const NPS_LOBBYCLIENT_COMMANDS: TNPS_COMMAND_MAP[] = [
     { name: "NPS_LOGIN", value: 256, module: "Lobby" },
     { name: "NPS_GET_USER_LIST", value: 257, module: "Lobby" },

@@ -1,5 +1,12 @@
 import { cipherBufferDES, decipherBufferDES } from "mcos/gateway";
-import { NPSMessage, Sentry, TBufferWithConnection, TMessageArrayWithConnection, TServerLogger, TSocketWithConnectionInfo } from "mcos/shared";
+import {
+    NPSMessage,
+    Sentry,
+    TBufferWithConnection,
+    TMessageArrayWithConnection,
+    TServerLogger,
+    TSocketWithConnectionInfo,
+} from "mcos/shared";
 
 /**
  * Takes an plaintext command packet and return the encrypted bytes
@@ -9,7 +16,11 @@ import { NPSMessage, Sentry, TBufferWithConnection, TMessageArrayWithConnection,
  * @param {TServerLogger} log
  * @param {Buffer} plaintextCommand
  */
-function encryptCmd(dataConnection: TSocketWithConnectionInfo, plaintextCommand: Buffer, log: TServerLogger): TMessageArrayWithConnection {
+function encryptCmd(
+    dataConnection: TSocketWithConnectionInfo,
+    plaintextCommand: Buffer,
+    log: TServerLogger
+): TMessageArrayWithConnection {
     if (typeof dataConnection.encryptionSession === "undefined") {
         const err = new Error(
             `Unable to locate encryption session for connection id ${dataConnection.id}`
@@ -39,7 +50,11 @@ function encryptCmd(dataConnection: TSocketWithConnectionInfo, plaintextCommand:
  * @param {TServerLogger} log
  * @param {Buffer} encryptedCommand
  */
-function decryptCmd(dataConnection: TBufferWithConnection, encryptedCommand: Buffer, log: TServerLogger): TBufferWithConnection {
+function decryptCmd(
+    dataConnection: TBufferWithConnection,
+    encryptedCommand: Buffer,
+    log: TServerLogger
+): TBufferWithConnection {
     if (typeof dataConnection.connection.encryptionSession === "undefined") {
         const err = new Error(
             `Unable to locate encryption session for connection id ${dataConnection.connectionId}`
@@ -64,7 +79,10 @@ function decryptCmd(dataConnection: TBufferWithConnection, encryptedCommand: Buf
  * @param {TServerLogger} log
  * @return TMessageArrayWithConnection}
  */
-function handleCommand(dataConnection: TBufferWithConnection, log: TServerLogger): TMessageArrayWithConnection {
+function handleCommand(
+    dataConnection: TBufferWithConnection,
+    log: TServerLogger
+): TMessageArrayWithConnection {
     const { data } = dataConnection;
 
     // Marshal the command into an NPS packet
@@ -103,7 +121,10 @@ function handleCommand(dataConnection: TBufferWithConnection, log: TServerLogger
  * @param {TServerLogger} log
  * @return {Promise<TMessageArrayWithConnection>}
  */
-export async function handleEncryptedNPSCommand(dataConnection: TBufferWithConnection, log: TServerLogger): Promise<TMessageArrayWithConnection> {
+export async function handleEncryptedNPSCommand(
+    dataConnection: TBufferWithConnection,
+    log: TServerLogger
+): Promise<TMessageArrayWithConnection> {
     // Decipher
     const { data } = dataConnection;
     const decipheredConnection = decryptCmd(

@@ -29,7 +29,12 @@ import { TServerConfiguration, TServerLogger } from "mcos/shared";
  * @param {TServerLogger} log
  * @returns {ServerResponse}
  */
-export function httpListener(req: IncomingMessage, res: ServerResponse<IncomingMessage>, config: TServerConfiguration, log: TServerLogger): ServerResponse {
+export function httpListener(
+    req: IncomingMessage,
+    res: ServerResponse<IncomingMessage>,
+    config: TServerConfiguration,
+    log: TServerLogger
+): ServerResponse {
     if (typeof req.url !== "undefined" && req.url.startsWith("/AuthLogin")) {
         log("debug", "ssl routing request to login web server");
         return AuthLogin.getInstance(log).handleRequest(req, res);
