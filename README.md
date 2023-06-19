@@ -14,15 +14,15 @@ I'm writing this from scratch. While I'm proud of what I've done, I'm hitting th
 
 https://github.com/drazisil/mcos/contribute
 
-There's a brief explanation of the thought process here [link](https://github.com/drazisil/mcos/issues/164), and the [docs directory](./docs/) also contains some notes.
+There's a brief explanation of the thought process here [link](https://github.com/drazisil/mcos/issues/164), and the [docs directory](./docs2/) also contains some notes.
 
 ## Server Setup
 
-- See [server docs](./docs/server.md)
+- See [server docs](./docs2/server.md)
 
 ## Client Setup
 
-- See [client docs](./docs/client.md)
+- See [client docs](./docs2/client.md)
 
 ## Started
 
