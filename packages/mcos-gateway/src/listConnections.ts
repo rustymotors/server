@@ -16,8 +16,9 @@ export type TConnection = {
 import { TSocketWithConnectionInfo } from "mcos/shared";
 import { TJSONResponse } from "./adminServer";
 
-export function listConnections(connections: TSocketWithConnectionInfo[]): TJSONResponse {
-
+export function listConnections(
+    connections: TSocketWithConnectionInfo[]
+): TJSONResponse {
     /**
      * @type {}
      */

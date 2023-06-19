@@ -17,7 +17,13 @@
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
 import { NPSMessage } from "../../../src/shared/NPSMessage.js";
 import { MessagePacket } from "../../mcos-lobby/src/MessagePacket.js";
-import { Sentry, TBufferWithConnection, TMessageArrayWithConnection, TPersonaRecord, TServerLogger } from "mcos/shared";
+import {
+    Sentry,
+    TBufferWithConnection,
+    TMessageArrayWithConnection,
+    TPersonaRecord,
+    TServerLogger,
+} from "mcos/shared";
 
 const NAME_BUFFER_SIZE = 30;
 
@@ -28,7 +34,11 @@ const NAME_BUFFER_SIZE = 30;
  * @param {BufferEncoding} [encoding="utf8"]
  * @returns {Buffer}
  */
-export function generateNameBuffer(name: string, size: number, encoding: BufferEncoding = "utf8"): Buffer {
+export function generateNameBuffer(
+    name: string,
+    size: number,
+    encoding: BufferEncoding = "utf8"
+): Buffer {
     const nameBuffer = Buffer.alloc(size);
     Buffer.from(name, encoding).copy(nameBuffer);
     return nameBuffer;
@@ -70,7 +80,9 @@ export const personaRecords: TPersonaRecord[] = [
  * @param {number} id
  * @return {Promise<PersonaRecord[]>}
  */
-export async function getPersonasByPersonaId(id: number): Promise<TPersonaRecord[]> {
+export async function getPersonasByPersonaId(
+    id: number
+): Promise<TPersonaRecord[]> {
     const results = personaRecords.filter((persona) => {
         const match = id === persona.id.readInt32BE(0);
         return match;
@@ -90,7 +102,10 @@ export async function getPersonasByPersonaId(id: number): Promise<TPersonaRecord
  * @param {TServerLogger} log
  * @returns {Promise<NPSMessage>}
  */
-export async function handleSelectGamePersona(requestPacket: NPSMessage, log: TServerLogger): Promise<NPSMessage> {
+export async function handleSelectGamePersona(
+    requestPacket: NPSMessage,
+    log: TServerLogger
+): Promise<NPSMessage> {
     log("debug", "_npsSelectGamePersona...");
     log(
         "debug",
@@ -135,7 +150,10 @@ export async function handleSelectGamePersona(requestPacket: NPSMessage, log: TS
  * @return {Promise<NPSMessage>}
  * @memberof PersonaServer
  */
-async function createNewGameAccount(data: Buffer, log: TServerLogger): Promise<NPSMessage> {
+async function createNewGameAccount(
+    data: Buffer,
+    log: TServerLogger
+): Promise<NPSMessage> {
     const requestPacket = new NPSMessage("received").deserialize(data);
     log(
         "debug",
@@ -172,7 +190,10 @@ async function createNewGameAccount(data: Buffer, log: TServerLogger): Promise<N
  * @return {Promise<NPSMessage>}
  * @memberof PersonaServer
  */
-async function logoutGameUser(data: Buffer, log: TServerLogger): Promise<NPSMessage> {
+async function logoutGameUser(
+    data: Buffer,
+    log: TServerLogger
+): Promise<NPSMessage> {
     log("debug", "[personaServer] Logging out persona...");
     const requestPacket = new NPSMessage("received").deserialize(data);
     log(
@@ -214,7 +235,9 @@ async function logoutGameUser(data: Buffer, log: TServerLogger): Promise<NPSMess
  * @param {number} customerId
  * @return {Promise<TPersonaRecord[]>}
  */
-async function getPersonasByCustomerId(customerId: number): Promise<TPersonaRecord[]> {
+async function getPersonasByCustomerId(
+    customerId: number
+): Promise<TPersonaRecord[]> {
     const results = personaRecords.filter(
         (persona) => persona.customerId === customerId
     );
@@ -229,7 +252,9 @@ async function getPersonasByCustomerId(customerId: number): Promise<TPersonaReco
  * @param {number} customerId
  * @return {Promise<TPersonaRecord[]>}
  */
-async function getPersonaMapsByCustomerId(customerId: number): Promise<TPersonaRecord[]> {
+async function getPersonaMapsByCustomerId(
+    customerId: number
+): Promise<TPersonaRecord[]> {
     switch (customerId) {
         case 2_868_969_472:
         case 5_551_212:
@@ -245,7 +270,10 @@ async function getPersonaMapsByCustomerId(customerId: number): Promise<TPersonaR
  * @param {TServerLogger} log
  * @return {Promise<NPSMessage>}
  */
-async function getPersonaMaps(data: Buffer, log: TServerLogger): Promise<NPSMessage> {
+async function getPersonaMaps(
+    data: Buffer,
+    log: TServerLogger
+): Promise<NPSMessage> {
     log("debug", "_npsGetPersonaMaps...");
     const requestPacket = new NPSMessage("received").deserialize(data);
 
@@ -341,7 +369,10 @@ async function getPersonaMaps(data: Buffer, log: TServerLogger): Promise<NPSMess
  * @param {TServerLogger} log
  * @return {Promise<NPSMessage>}
  */
-async function validatePersonaName(data: Buffer, log: TServerLogger): Promise<NPSMessage> {
+async function validatePersonaName(
+    data: Buffer,
+    log: TServerLogger
+): Promise<NPSMessage> {
     log("debug", "_npsValidatePersonaName...");
     const requestPacket = new NPSMessage("received").deserialize(data);
 
@@ -399,7 +430,10 @@ async function validatePersonaName(data: Buffer, log: TServerLogger): Promise<NP
  * @return {Promise<NPSMessage>}
  * @memberof PersonaServer
  */
-async function validateLicencePlate(data: Buffer, log: TServerLogger): Promise<NPSMessage> {
+async function validateLicencePlate(
+    data: Buffer,
+    log: TServerLogger
+): Promise<NPSMessage> {
     log("debug", "_npsCheckToken...");
     const requestPacket = new NPSMessage("received").deserialize(data);
     log(
@@ -449,7 +483,10 @@ async function validateLicencePlate(data: Buffer, log: TServerLogger): Promise<N
  * @param {TServerLogger} log
  * @return {Promise<TMessageArrayWithConnection>}
  */
-export async function handleData(dataConnection: TBufferWithConnection, log: TServerLogger): Promise<TMessageArrayWithConnection> {
+export async function handleData(
+    dataConnection: TBufferWithConnection,
+    log: TServerLogger
+): Promise<TMessageArrayWithConnection> {
     const { connection, data } = dataConnection;
     const { socket, localPort } = connection;
     log(

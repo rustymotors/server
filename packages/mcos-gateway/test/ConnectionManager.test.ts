@@ -122,6 +122,6 @@ describe("ConnectionManager", () => {
                 expect(list.length).to.be.equal(1);
                 expect(list[0].id).to.be.equal(updatedTestConnection.id);
             });
-        });    
+        });
     });
 });

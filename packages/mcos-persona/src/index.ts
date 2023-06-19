@@ -16,7 +16,17 @@
 
 import { handleData, personaRecords } from "./internal.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
-import { ISocket, NPSMessage, Sentry, TBufferWithConnection, TNPSMessage, TPersonaRecord, TServerConfiguration, TServerLogger, TServiceResponse } from "mcos/shared";
+import {
+    ISocket,
+    NPSMessage,
+    Sentry,
+    TBufferWithConnection,
+    TNPSMessage,
+    TPersonaRecord,
+    TServerConfiguration,
+    TServerLogger,
+    TServiceResponse,
+} from "mcos/shared";
 
 /**
  * Selects a game persona and marks it as in use
@@ -24,7 +34,10 @@ import { ISocket, NPSMessage, Sentry, TBufferWithConnection, TNPSMessage, TPerso
  * @param {TServerLogger} log
  * @returns {Promise<NPSMessage>}
  */
-export async function handleSelectGamePersona(requestPacket: TNPSMessage, log: TServerLogger): Promise<TNPSMessage> {
+export async function handleSelectGamePersona(
+    requestPacket: TNPSMessage,
+    log: TServerLogger
+): Promise<TNPSMessage> {
     log("debug", "_npsSelectGamePersona...");
     log(
         "debug",
@@ -320,7 +333,9 @@ export class PersonaServer {
      * @param {number} customerId
      * @return {Promise<PersonaRecord[]>}
      */
-    async getPersonasByCustomerId(customerId: number): Promise<TPersonaRecord[]> {
+    async getPersonasByCustomerId(
+        customerId: number
+    ): Promise<TPersonaRecord[]> {
         return personaRecords.filter(
             (persona) => persona.customerId === customerId
         );
@@ -334,7 +349,9 @@ export class PersonaServer {
      * @param {number} customerId
      * @return {Promise<PersonaRecord[]>}
      */
-    async getPersonaMapsByCustomerId(customerId: number): Promise<TPersonaRecord[]> {
+    async getPersonaMapsByCustomerId(
+        customerId: number
+    ): Promise<TPersonaRecord[]> {
         switch (customerId) {
             case 2_868_969_472:
             case 5_551_212:
@@ -442,7 +459,11 @@ export class PersonaServer {
  * @param {TServerLogger} log
  * @return {Promise<TServiceResponse>}
  */
-export async function receivePersonaData(dataConnection: TBufferWithConnection, config: TServerConfiguration, log: TServerLogger): Promise<TServiceResponse> {
+export async function receivePersonaData(
+    dataConnection: TBufferWithConnection,
+    config: TServerConfiguration,
+    log: TServerLogger
+): Promise<TServiceResponse> {
     try {
         return await handleData(dataConnection, log);
     } catch (error) {
@@ -454,5 +475,3 @@ export async function receivePersonaData(dataConnection: TBufferWithConnection, 
         throw err;
     }
 }
-
-

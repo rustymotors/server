@@ -198,7 +198,6 @@ async function messageReceived(
     dataConnection: TBufferWithConnection,
     log: TServerLogger
 ): Promise<TServiceResponse> {
-
     // If not a Heartbeat
     if (shouldMessageBeEncrypted(message, dataConnection)) {
         if (

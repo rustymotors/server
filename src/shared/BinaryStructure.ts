@@ -18,7 +18,6 @@ import { Sentry } from "./sentry.js";
 import { toHex } from "./utils.js";
 import type { TServerLogger, FIELD_TYPE } from "./index.js";
 
-
 /**
  * @class
  * @property {string} name
@@ -32,7 +31,7 @@ export class ByteField {
     /** @type {string} */
     name: string;
     /** @type {'big' | 'little'} */
-    order: 'big' | 'little';
+    order: "big" | "little";
     /** @type {number} */
     offset: number;
     /** @type {number} */
@@ -91,7 +90,13 @@ export class BinaryStructure {
      * @param {{name: string, order: "big" | "little", size: number, type: FIELD_TYPE, value: Buffer }} field
      * @memberof BinaryStructure
      */
-    _add(field: { name: string; order: "big" | "little"; size: number; type: FIELD_TYPE; value: Buffer; }) {
+    _add(field: {
+        name: string;
+        order: "big" | "little";
+        size: number;
+        type: FIELD_TYPE;
+        value: Buffer;
+    }) {
         const newField = { ...field, offset: this._byteOffset };
         // this.#log("debug", `Adding ${JSON.stringify(newField)}`);
         this._fields.push(newField);

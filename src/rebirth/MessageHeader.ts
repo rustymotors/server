@@ -31,14 +31,14 @@ export class MessageHeader extends SerializerBase implements ISerializedObject {
      * Deserialize a buffer into a MessageNode.
      * @param {Buffer} buf
      * @returns {MessageHeader}
-     */ 
+     */
     public static deserialize(buf: Buffer): IMessageHeader {
         const header: IMessageHeader = new MessageHeader();
         header.length = SerializerBase._deserializeWord(buf.subarray(0, 2));
         const length = 4;
         let signature = "";
         for (let i = 0; i < length; i++) {
-            signature += String.fromCharCode(buf.readUInt8(i+2));
+            signature += String.fromCharCode(buf.readUInt8(i + 2));
         }
 
         header.signature = signature;

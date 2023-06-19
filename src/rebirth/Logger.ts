@@ -1,6 +1,5 @@
-export class Logger {
-}
+export class Logger {}
 
 export function loggerStartup() {
-    return new Logger()
+    return new Logger();
 }

@@ -84,6 +84,8 @@ export class Message extends SerializerBase implements ISerializedObject {
 
     toString(): string {
         SerializerBase.verifyConnectionId(this);
-        return `Message: header=${this.header}, sequence=${this.sequence}, flags=${this.flags}, buffer=${this.buffer.toString("hex")}"}`;
+        return `Message: header=${this.header}, sequence=${
+            this.sequence
+        }, flags=${this.flags}, buffer=${this.buffer.toString("hex")}"}`;
     }
 }

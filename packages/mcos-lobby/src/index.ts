@@ -14,7 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry, TBufferWithConnection, TServerConfiguration, TServerLogger, TServiceResponse } from "mcos/shared";
+import {
+    Sentry,
+    TBufferWithConnection,
+    TServerConfiguration,
+    TServerLogger,
+    TServiceResponse,
+} from "mcos/shared";
 import { handleData } from "./internal.js";
 
 /**
@@ -26,7 +32,11 @@ import { handleData } from "./internal.js";
  * @param {TServerLogger} log
  * @return {Promise<TServiceResponse>}
  */
-export async function receiveLobbyData(dataConnection: TBufferWithConnection, config: TServerConfiguration, log: TServerLogger): Promise<TServiceResponse> {
+export async function receiveLobbyData(
+    dataConnection: TBufferWithConnection,
+    config: TServerConfiguration,
+    log: TServerLogger
+): Promise<TServiceResponse> {
     try {
         return await handleData(dataConnection, log);
     } catch (error) {

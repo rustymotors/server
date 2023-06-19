@@ -51,7 +51,7 @@
     "type": "module",
     "scripts": {
         "build": "tsc",
-        "format": "prettier --write app.js \"packages/**/*.{j,t}s\"",
+        "format": "prettier --write app.ts \"packages/**/*.{j,t}s\" \"src/**/*.{j,t}s\"",
         "test": "c8 mocha {src,packages}/**/*.test.{j,t}s",
         "build:test": "npm run format && npm run build && npm run test",
         "prod": "make prod_node",

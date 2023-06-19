@@ -78,7 +78,10 @@ export class AuthLogin {
      * @param {IncomingMessage} request
      * @param {ServerResponse} response
      */
-    handleRequest(request: IncomingMessage, response: ServerResponse): ServerResponse {
+    handleRequest(
+        request: IncomingMessage,
+        response: ServerResponse
+    ): ServerResponse {
         this._log(
             "debug",
             `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
@@ -97,7 +100,7 @@ export class AuthLogin {
      */
     _socketEventHandler(socket: ISocket) {
         socket.on("error", (error) => {
-            const err = ServerError.fromError(error as Error)
+            const err = ServerError.fromError(error as Error);
             err.message = `[AuthLogin] Socket Error: ${err.message}`;
             throw err;
         });

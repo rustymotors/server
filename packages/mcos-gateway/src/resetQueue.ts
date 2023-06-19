@@ -4,7 +4,10 @@ import { TJSONResponse } from "./adminServer";
 // https://careerkarma.com/blog/converting-circular-structure-to-json/
 export function replacerFunc() {
     const visited = new WeakSet();
-    return (/** @type {string} */ _key: string, /** @type {object} */ value: unknown) => {
+    return (
+        /** @type {string} */ _key: string,
+        /** @type {object} */ value: unknown
+    ) => {
         if (typeof value === "object" && value !== null) {
             if (visited.has(value)) {
                 return;
@@ -25,7 +28,9 @@ export function replacerFunc() {
 }}
  */
 
-export function resetQueue(connections: TSocketWithConnectionInfo[]): TJSONResponse {
+export function resetQueue(
+    connections: TSocketWithConnectionInfo[]
+): TJSONResponse {
     const resetConnections = connections.map((c) => {
         c.inQueue = true;
         return c;

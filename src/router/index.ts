@@ -123,9 +123,7 @@ export class Router {
      */
     addPortRouter(portRouter: IPortRouter): 0 | 1 {
         if (
-            this.portRouters.find(
-                (router) => router.port === portRouter.port
-            )
+            this.portRouters.find((router) => router.port === portRouter.port)
         ) {
             return 1;
         } else {

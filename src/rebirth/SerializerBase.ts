@@ -227,7 +227,9 @@ export class SerializerBase {
 
     static verifyConnectionId(object: ISerializedObject): void {
         if (!object.hasOwnProperty("connectionId")) {
-            throw new ServerError("Object does not have a connectionId property");
+            throw new ServerError(
+                "Object does not have a connectionId property"
+            );
         }
     }
 }

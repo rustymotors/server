@@ -19,23 +19,22 @@ import { GetServerLogger, Sentry, setServerConfiguration } from "mcos/shared";
 
 const log = GetServerLogger();
 
-
 try {
     if (typeof process.env.EXTERNAL_HOST === "undefined") {
         console.error("Please set EXTERNAL_HOST");
-        process.exit(1)
+        process.exit(1);
     }
     if (typeof process.env.CERTIFICATE_FILE === "undefined") {
         console.error("Please set CERTIFICATE_FILE");
-        process.exit(1)
+        process.exit(1);
     }
     if (typeof process.env.PRIVATE_KEY_FILE === "undefined") {
         console.error("Please set PRIVATE_KEY_FILE");
-        process.exit(1)
+        process.exit(1);
     }
     if (typeof process.env.PUBLIC_KEY_FILE === "undefined") {
         console.error("Please set PUBLIC_KEY_FILE");
-        process.exit(1)
+        process.exit(1);
     }
     const config = setServerConfiguration(
         process.env.EXTERNAL_HOST,
@@ -43,11 +42,10 @@ try {
         process.env.PRIVATE_KEY_FILE,
         process.env.PUBLIC_KEY_FILE,
         "debug"
-        );
+    );
     const appLog = GetServerLogger(config.LOG_LEVEL);
-    
-    startListeners(config, appLog);
 
+    startListeners(config, appLog);
 } catch (err) {
     Sentry.captureException(err);
     log("crit", `Error in core server: ${String(err)}`);

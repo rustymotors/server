@@ -1,4 +1,10 @@
-import { NPSMessage, Sentry, TBufferWithConnection, TMessageArrayWithConnection, TServerLogger } from "mcos/shared";
+import {
+    NPSMessage,
+    Sentry,
+    TBufferWithConnection,
+    TMessageArrayWithConnection,
+    TServerLogger,
+} from "mcos/shared";
 import { createEncrypters, selectEncryptors } from "mcos/gateway";
 import { NPSUserInfo } from "../NPSUserInfo.js";
 import { MessagePacket } from "../MessagePacket.js";
@@ -39,7 +45,10 @@ export function _generateSessionKeyBuffer(key: string): Buffer {
  * @param {TServerLogger} log
  * @return {Promise<iTMessageArrayWithConnection>}
  */
-export async function _npsRequestGameConnectServer(dataConnection: TBufferWithConnection, log: TServerLogger): Promise<TMessageArrayWithConnection> {
+export async function _npsRequestGameConnectServer(
+    dataConnection: TBufferWithConnection,
+    log: TServerLogger
+): Promise<TMessageArrayWithConnection> {
     log(
         "debug",
         `[inner] Raw bytes in _npsRequestGameConnectServer: ${toHex(

@@ -8,7 +8,10 @@
 import { TSocketWithConnectionInfo } from "mcos/shared";
 import { TJSONResponse } from "./adminServer";
 
-export function releaseQueue(connections: TSocketWithConnectionInfo[], connectionId: string): TJSONResponse {
+export function releaseQueue(
+    connections: TSocketWithConnectionInfo[],
+    connectionId: string
+): TJSONResponse {
     const connectionToRelease = connections.find((connection) => {
         return connection.id === connectionId;
     });
