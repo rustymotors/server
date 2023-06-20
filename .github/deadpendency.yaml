@@ -1,3 +1,0 @@
-ignore-failures:
-    javascript:
-      - ts-mockito
