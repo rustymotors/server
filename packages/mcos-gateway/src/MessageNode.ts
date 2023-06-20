@@ -30,7 +30,7 @@ export class MessageNode {
      *
      * @param {"sent" | "received"} direction
      */
-    constructor(direction) {
+    constructor(direction: "sent" | "received") {
         this.direction = direction;
         this.msgNo = 0;
         this.seq = 999;
@@ -48,7 +48,7 @@ export class MessageNode {
      *
      * @param {Buffer} packet
      */
-    deserialize(packet) {
+    deserialize(packet: Buffer) {
         try {
             this.rawPacket = packet;
             this.dataLength = packet.readInt16LE(0);
@@ -99,7 +99,7 @@ export class MessageNode {
      *
      * @return {Buffer}
      */
-    serialize() {
+    serialize(): Buffer {
         const packet = Buffer.alloc(this.dataLength + 2); // skipcq: JS-0377
         packet.writeInt16LE(this.dataLength, 0);
         packet.write(this.mcoSig, 2);
@@ -113,7 +113,7 @@ export class MessageNode {
      *
      * @param {number} appId
      */
-    setAppId(appId) {
+    setAppId(appId: number) {
         this.appId = appId;
     }
 
@@ -121,7 +121,7 @@ export class MessageNode {
      *
      * @param {number} newMessageNo
      */
-    setMsgNo(newMessageNo) {
+    setMsgNo(newMessageNo: number) {
         this.msgNo = newMessageNo;
         this.data.writeInt16LE(this.msgNo, 0);
     }
@@ -130,7 +130,7 @@ export class MessageNode {
      *
      * @param {number} newSeq
      */
-    setSeq(newSeq) {
+    setSeq(newSeq: number) {
         this.seq = newSeq;
     }
 
@@ -138,7 +138,7 @@ export class MessageNode {
      *
      * @param {Buffer} packet
      */
-    setMsgHeader(packet) {
+    setMsgHeader(packet: Buffer) {
         const header = Buffer.alloc(6);
         packet.copy(header, 0, 0, 6);
     }
@@ -147,7 +147,7 @@ export class MessageNode {
      *
      * @param {Buffer} buffer
      */
-    updateBuffer(buffer) {
+    updateBuffer(buffer: Buffer) {
         this.data = Buffer.from(buffer);
         this.dataLength = buffer.length + 10; // skipcq: JS-0377
         this.msgNo = this.data.readInt16LE(0);
@@ -157,7 +157,7 @@ export class MessageNode {
      *
      * @return {boolean}
      */
-    isMCOTS() {
+    isMCOTS(): boolean {
         return this.mcoSig === "TOMC";
     }
 
@@ -165,7 +165,7 @@ export class MessageNode {
      *
      * @return {string}
      */
-    dumpPacket() {
+    dumpPacket(): string {
         let packetContentsArray = this.serialize().toString("hex").match(/../g);
 
         return `Message ${JSON.stringify({
@@ -185,7 +185,7 @@ export class MessageNode {
      * Returns a formatted representation of the packet as a string
      * @returns {string}
      */
-    toString() {
+    toString(): string {
         return this.dumpPacket();
     }
 
@@ -193,7 +193,7 @@ export class MessageNode {
      *
      * @return {number}
      */
-    getLength() {
+    getLength(): number {
         return this.dataLength;
     }
 
@@ -201,7 +201,7 @@ export class MessageNode {
      *
      * @param {Buffer} packet
      */
-    BaseMsgHeader(packet) {
+    BaseMsgHeader(packet: Buffer) {
         // WORD msgNo;
         this.msgNo = packet.readInt16LE(0);
     }

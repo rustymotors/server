@@ -21,7 +21,11 @@ export class StockCar {
      * @param {number} retailPrice
      * @param {0|1} bIsDealOfTheDay
      */
-    constructor(brandedPartId, retailPrice, bIsDealOfTheDay) {
+    constructor(
+        brandedPartId: number,
+        retailPrice: number,
+        bIsDealOfTheDay: 0 | 1
+    ) {
         this.brandedPartId = brandedPartId;
         this.retailPrice = retailPrice;
         this.bIsDealOfTheDay = bIsDealOfTheDay;

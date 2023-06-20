@@ -9,8 +9,6 @@
 import SentrySDK from "@sentry/node";
 import { ProfilingIntegration } from "@sentry/profiling-node";
 
-
-
 class SentryInit {
     static initCompleted = false;
 }
