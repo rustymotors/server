@@ -166,7 +166,7 @@ export class MessageNode {
      * @return {string}
      */
     dumpPacket(): string {
-        let packetContentsArray = this.serialize().toString("hex").match(/../g);
+        const packetContentsArray = this.serialize().toString("hex").match(/../g);
 
         return `Message ${JSON.stringify({
             dataLength: this.dataLength,
