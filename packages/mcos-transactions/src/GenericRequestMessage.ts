@@ -34,7 +34,7 @@ export class GenericRequestMessage extends MessageNode {
      *
      * @param {Buffer} buffer
      */
-    deserialize(buffer) {
+    deserialize(buffer: Buffer) {
         try {
             this.msgNo = buffer.readInt16LE(0);
         } catch (error) {
@@ -60,7 +60,7 @@ export class GenericRequestMessage extends MessageNode {
      *
      * @return {Buffer}
      */
-    serialize() {
+    serialize(): Buffer {
         const packet = Buffer.alloc(16);
         packet.writeInt16LE(this.msgNo, 0);
         this.data.copy(packet, 2);
@@ -72,7 +72,7 @@ export class GenericRequestMessage extends MessageNode {
      * DumpPacket
      * @return {string}
      */
-    dumpPacket() {
+    dumpPacket(): string {
         return `GenericRequest ${JSON.stringify({
             msgNo: this.msgNo,
             data: this.data.toString("hex"),

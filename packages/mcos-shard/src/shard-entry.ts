@@ -67,21 +67,21 @@ export class ShardEntry {
      * @param {number} diagnosticServerPort
      */
     constructor(
-        name,
-        description,
-        id,
-        loginServerIp,
-        loginServerPort,
-        lobbyServerIp,
-        lobbyServerPort,
-        mcotsServerIp,
-        statusId,
-        statusReason,
-        serverGroupName,
-        population,
-        maxPersonasPerUser,
-        diagnosticServerHost,
-        diagnosticServerPort
+        name: string,
+        description: string,
+        id: number,
+        loginServerIp: string,
+        loginServerPort: number,
+        lobbyServerIp: string,
+        lobbyServerPort: number,
+        mcotsServerIp: string,
+        statusId: number,
+        statusReason: string,
+        serverGroupName: string,
+        population: number,
+        maxPersonasPerUser: number,
+        diagnosticServerHost: string,
+        diagnosticServerPort: number
     ) {
         this.name = name;
         this.description = description;

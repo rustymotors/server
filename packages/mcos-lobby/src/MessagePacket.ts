@@ -22,7 +22,7 @@ export class MessagePacket {
      * @param {Buffer} buffer
      * @returns {MessagePacket}
      */
-    static fromBuffer(buffer) {
+    static fromBuffer(buffer: Buffer): MessagePacket {
         const newMessage = new MessagePacket();
         newMessage.setBuffer(buffer);
         return newMessage;
@@ -32,7 +32,7 @@ export class MessagePacket {
      * Will replace internal buffer without warning
      * @param {Buffer} buffer
      */
-    setBuffer(buffer) {
+    setBuffer(buffer: Buffer) {
         this._buffer = buffer;
     }
 
@@ -40,7 +40,7 @@ export class MessagePacket {
      *
      * @returns {Buffer}
      */
-    getBuffer() {
+    getBuffer(): Buffer {
         return this._buffer;
     }
 }

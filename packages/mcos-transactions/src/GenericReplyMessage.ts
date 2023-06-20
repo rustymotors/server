@@ -52,7 +52,7 @@ export class GenericReplyMessage extends MessageNode {
      * Setter data
      * @param {Buffer} value
      */
-    setData(value) {
+    setData(value: Buffer) {
         this.data = value;
     }
 
@@ -60,7 +60,7 @@ export class GenericReplyMessage extends MessageNode {
      * Setter data2
      * @param {Buffer} value
      */
-    setData2(value) {
+    setData2(value: Buffer) {
         this.data2 = value;
     }
 
@@ -68,7 +68,7 @@ export class GenericReplyMessage extends MessageNode {
      *
      * @param {Buffer} buffer
      */
-    deserialize(buffer) {
+    deserialize(buffer: Buffer) {
         try {
             this.msgNo = buffer.readInt16LE(0);
         } catch (error) {
@@ -96,7 +96,7 @@ export class GenericReplyMessage extends MessageNode {
      *
      * @return {Buffer}
      */
-    serialize() {
+    serialize(): Buffer {
         const packet = Buffer.alloc(16);
         packet.writeInt16LE(this.msgNo, 0);
         packet.writeInt16LE(this.msgReply, 2);
@@ -110,7 +110,7 @@ export class GenericReplyMessage extends MessageNode {
      *
      * @param {Buffer} buffer
      */
-    setResult(buffer) {
+    setResult(buffer: Buffer) {
         this.result = buffer;
     }
 
@@ -118,7 +118,7 @@ export class GenericReplyMessage extends MessageNode {
      * DumpPacket
      * @return {string}
      */
-    dumpPacket() {
+    dumpPacket(): string {
         return `GenericReply',
         ${JSON.stringify({
             msgNo: this.msgNo,
