@@ -118,7 +118,7 @@
         "rules": {}
     },
     "dependencies": {
-        "@sentry/node": "7.55",
+        "@sentry/node": "7.56",
         "@sentry/profiling-node": "^1.0.6",
         "ts-node": "10.9.1",
         "typedoc": "^0.24.8"
