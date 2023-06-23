@@ -34,7 +34,7 @@ export const getLevelValue = (level: ELOG_LEVEL) => {
  * @param {ELOG_LEVEL} [logLevel="info"]
  * @returns {TServerLogger}
  */
-export function GetServerLogger(logLevel: ELOG_LEVEL = "info"): TServerLogger {
+export function getServerLogger(logLevel: ELOG_LEVEL = "info"): TServerLogger {
     const defaultLevelValue = getLevelValue(logLevel);
 
     /**

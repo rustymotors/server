@@ -134,7 +134,7 @@ export {
     getServerConfiguration,
 } from "./ServerConfiguration.js";
 export { NPSMessage } from "./NPSMessage.js";
-export { GetServerLogger } from "./log.js";
+export { getServerLogger as GetServerLogger } from "./log.js";
 export { Sentry } from "./sentry.js";
 
 export type TNPSMessageJSON = {

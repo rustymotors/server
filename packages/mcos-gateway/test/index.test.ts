@@ -11,13 +11,17 @@ import {
     TSocketWithConnectionInfo,
 } from "mcos/shared";
 import { ServerError } from "../../../src/rebirth/ServerError.js";
-import { TCPListener } from "../src/index.js";
+import {
+    rawConnectionHandler,
+    socketEndHandler,
+    socketErrorHandler,
+} from "../src/index.js";
 import { ConnectionManager } from "../src/ConnectionManager.js";
 import { MessageHeader } from "../../../src/rebirth/MessageHeader.js";
 
 chai.use(sinonChai);
 
-describe("TCPListener", () => {
+describe("rawConnectionListener", () => {
     afterEach(() => {
         sinon.restore();
     });
@@ -41,7 +45,7 @@ describe("TCPListener", () => {
         new ConnectionManager().connections.push(fakeConnection);
 
         // Act
-        const result = TCPListener({
+        const result = rawConnectionHandler({
             incomingSocket: fakeSocket,
             config: fakeConfig,
             log: fakeLog,
@@ -76,7 +80,7 @@ describe("TCPListener", () => {
 
         // Assert
         expect(() =>
-            TCPListener({
+            rawConnectionHandler({
                 incomingSocket: fakeSocket,
                 config: fakeConfig,
                 log: fakeLog,
@@ -106,7 +110,7 @@ describe("TCPListener", () => {
 
         // Assert
         expect(() =>
-            TCPListener({
+            rawConnectionHandler({
                 incomingSocket: fakeSocket,
                 config: fakeConfig,
                 log: fakeLog,
@@ -138,7 +142,7 @@ describe("TCPListener", () => {
         ConnectionManagerStub.connections.push(fakeConnection);
 
         // Act
-        TCPListener({
+        rawConnectionHandler({
             incomingSocket: fakeSocket,
             config: fakeConfig,
             log: fakeLog,
@@ -199,7 +203,7 @@ describe("TCPListener", () => {
         ConnectionManagerStub.connections.push(connection);
 
         // Act
-        const listener = TCPListener({
+        const listener = rawConnectionHandler({
             incomingSocket: fakeSocket,
             config: fakeConfig,
             log: fakeLog,
@@ -216,5 +220,33 @@ describe("TCPListener", () => {
 
         // Assert
         expect(fakeOnData).to.have.been.called;
+    });
+});
+
+describe("socketErrorHandler", () => {
+    it("should throw when called", () => {
+        expect(() =>
+            socketErrorHandler({
+                error: {
+                    message: "test",
+                    code: -1,
+                },
+                sock: ISocketTestFactory(),
+                log: (level, msg) => {},
+            })
+        ).to.throw("test");
+    });
+
+    it("should log when called with ECONNRESET", () => {
+        const logSpy = sinon.spy();
+        socketErrorHandler({
+            error: {
+                message: "ECONNRESET",
+                code: -1,
+            },
+            sock: ISocketTestFactory(),
+            log: logSpy,
+        });
+        expect(logSpy).to.have.been.called;
     });
 });
