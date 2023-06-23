@@ -9,32 +9,39 @@ export function premadeLogin() {
     return Buffer.from([
         // Live Packet
         0x06,
-        0x02,
+        0x01, // MsgId: 0x601 = NPS_USER_VALID = 1537
 
-        0x01,
-        0x01,
+        0x00,
+        0x3a, // Packet Length: 0x003a = 58
 
         0x21,
         0xf9,
         0x17,
-        0xf2,
+        0xf2, // CustomerId: 0x21f917f2 = 568000498
+
         0x28,
         0x85,
         0xd1,
-        0x47,
-        0xab,
-        0x01,
-        0x00,
+        0x47, // PersonaId: 0x2885d147 = 676000007
+
+        0xab, // IsCacheHit: 0xab = 171
+
+        0x01, // Ban: 0x01 = 1
+
+        0x00, // Gag: 0x00 = 0
+
         0x00,
         0xec,
         0xf7,
-        0xba,
+        0xba, // SessionKey: 0x00ecf7ba = 155000186
+
         0x7f,
         0x45,
         0x62,
         0x53,
         0x62,
         0xfe,
+
         0x53,
         0x7b,
         0x03,

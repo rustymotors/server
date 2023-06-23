@@ -122,8 +122,21 @@ async function login(
     const packetContent = premadeLogin();
     log("debug", `Using Premade Login: ${packetContent.toString("hex")}`);
 
-    // MsgId: 0x601
+    // MsgId: 0x601 = NPS_USER_VALID = 1537
     Buffer.from([0x06, 0x01]).copy(packetContent);
+
+    // GLDB_User_Status
+    // packet structure
+    // msgId: 0x0601 = NPS_USER_VALID = 1537 = 2 bytes
+    // packetLength: 0x0100 = 256 = 2 bytes
+    // customerId: 0x00000000 = 4 bytes
+    // personaId: 0x00000000 = 4 bytes
+    // isCacheHit: 0x00 = 1 byte
+    // ban: 0x00 = 1 byte
+    // gag: 0x00 = 1 byte
+    // sessionKey: 0x00000000000 = 12 bytes
+    // pack size in bytes: 26
+    //
 
     // Packet length: 0x0100 = 256
     Buffer.from([0x01, 0x00]).copy(packetContent, 2);

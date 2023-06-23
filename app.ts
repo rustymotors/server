@@ -14,8 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { startListeners } from "mcos/gateway";
+import { GatewayServer } from "mcos/gateway";
 import { GetServerLogger, Sentry, setServerConfiguration } from "mcos/shared";
+
+Sentry.init({
+    dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
+
+    // We recommend adjusting this value in production, or using tracesSampler
+    // for finer control
+    tracesSampleRate: 1.0,
+});
 
 const log = GetServerLogger();
 
@@ -45,7 +53,20 @@ try {
     );
     const appLog = GetServerLogger(config.LOG_LEVEL);
 
-    startListeners(config, appLog);
+    const listeningPortList = [
+        3000, 6660, 7003, 8228, 8226, 8227,
+        /// 9000, 9001, 9002, 9003, 9004, 9005, 9006, 9007, 9008, 9009, 9010, 9011, 9012, 9013, 9014,
+        43200,
+        43300, 43400, 53303,
+    ];
+
+    const gatewayServer = new GatewayServer({
+        config,
+        log: appLog,
+        listeningPortList,
+    });
+
+    gatewayServer.start();
 } catch (err) {
     Sentry.captureException(err);
     log("crit", `Error in core server: ${String(err)}`);

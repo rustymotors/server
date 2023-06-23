@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { GetServerLogger } from "./log.js";
+import { getServerLogger } from "./log.js";
 import { ELOG_LEVEL, Sentry, TServerConfiguration } from "mcos/shared";
 
 /**
@@ -27,7 +27,7 @@ class ServerConfiguration {
         publicKeyFile: string,
         logLevel: ELOG_LEVEL = "info"
     ) {
-        const log = GetServerLogger();
+        const log = getServerLogger();
         this._serverConfig = {
             EXTERNAL_HOST: externalHost,
             certificateFileContents: "",
