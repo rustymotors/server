@@ -22,7 +22,7 @@ import { MessageHeader } from "../../../src/rebirth/MessageHeader.js";
 chai.use(sinonChai);
 
 describe("rawConnectionListener", () => {
-    afterEach(() => {
+    beforeEach(() => {
         sinon.restore();
     });
 
@@ -224,6 +224,10 @@ describe("rawConnectionListener", () => {
 });
 
 describe("socketErrorHandler", () => {
+    beforeEach(() => {
+        sinon.restore();
+    });
+
     it("should throw when called", () => {
         expect(() =>
             socketErrorHandler({
@@ -248,5 +252,109 @@ describe("socketErrorHandler", () => {
             log: logSpy,
         });
         expect(logSpy).to.have.been.called;
+    });
+});
+
+describe("socketEndHandler", () => {
+    beforeEach(() => {
+        sinon.restore();
+    });
+
+    it("should log when called", () => {
+        const fakeConnection = IConnectionFactory();
+        fakeConnection.id = "1234";
+        const fakeConnectionRecord: TSocketWithConnectionInfo = {
+            id: "1234",
+            localPort: 0,
+            remoteAddress: "",
+            socket: ISocketTestFactory(),
+            encryptionSession: undefined,
+            useEncryption: false,
+            connectionId: "",
+            seq: 0,
+            personaId: 0,
+            lastMessageTimestamp: 0,
+            inQueue: false,
+        };
+
+        const ConnectionManagerSpy = sinon.spy(ConnectionManager.prototype);
+        ConnectionManagerSpy.connections = [];
+        ConnectionManagerSpy.addConnection(fakeConnection);
+        const logSpy = sinon.spy();
+
+        expect(ConnectionManagerSpy.connections.length).to.equal(1);
+
+        socketEndHandler({
+            log: logSpy,
+            connectionRecord: fakeConnectionRecord,
+        });
+
+        expect(logSpy).to.have.been.called;
+
+        expect(ConnectionManagerSpy.getAllConnections()[0].id).to.equal("1244");
+
+        expect(ConnectionManagerSpy.removeConnection).to.have.been.calledOnce;
+
+        expect(ConnectionManagerSpy.connections.length).to.equal(0);
+    });
+});
+
+describe("socketDataHandler", () => {
+    beforeEach(() => {
+        sinon.restore();
+    });
+
+    it("should call it's processData function", () => {
+        // Arrange
+        const fakeSocket: ISocket = ISocketTestFactory();
+        const fakeLog: TServerLogger = (level, msg) => {};
+        const fakeConfig: TServerConfiguration = {
+            EXTERNAL_HOST: "localhost",
+            certificateFileContents: "",
+            privateKeyContents: "",
+            publicKeyContents: "",
+            LOG_LEVEL: "debug",
+        };
+        const fakeConnection = IConnectionFactory();
+        fakeConnection.socket = fakeSocket;
+
+        const fakeConnectionRecord: TSocketWithConnectionInfo = {
+            id: "1234",
+            localPort: 0,
+            remoteAddress: "",
+            socket: fakeSocket,
+            encryptionSession: undefined,
+            useEncryption: false,
+            connectionId: "",
+            seq: 0,
+            personaId: 0,
+            lastMessageTimestamp: 0,
+            inQueue: false,
+        };
+
+        const logSpy = sinon.spy(fakeLog);
+        const ConnectionManagerStub = sinon.stub(ConnectionManager.prototype);
+        ConnectionManagerStub.connections = [];
+        const fakeO = sinon.stub();
+
+        ConnectionManagerStub.connections.push(fakeConnection);
+
+        // Act
+        const listener = rawConnectionHandler({
+            incomingSocket: fakeSocket,
+            config: fakeConfig,
+            log: fakeLog,
+            onSocketData: fakeO,
+        });
+
+        fakeSocket.emit(
+            "data",
+            Buffer.from([
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0xaa, 0x00, 0x00,
+            ])
+        );
+
+        // Assert
+        expect(fakeO).to.have.been.called;
     });
 });

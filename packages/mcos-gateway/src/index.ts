@@ -142,11 +142,20 @@ export function socketDataHandler({
     );
 }
 
-export function socketEndHandler(
-    sock: ISocket,
-    log: TServerLogger,
-    connectionRecord: TSocketWithConnectionInfo
-): void {
+/**
+ * Handle the end of a socket connection
+ * @param {object} options
+ * @param {TServerLogger} options.log
+ * @param {TSocketWithConnectionInfo} options.connectionRecord
+ * @returns {void}
+ */
+export function socketEndHandler({
+    log,
+    connectionRecord,
+}: {
+    log: TServerLogger;
+    connectionRecord: TSocketWithConnectionInfo;
+}): void {
     log("debug", "Socket ended");
     // Remove the connection from the connection manager
     getConnectionManager().removeConnection(connectionRecord.connectionId);
