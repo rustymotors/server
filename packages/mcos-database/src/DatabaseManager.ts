@@ -1,52 +1,31 @@
 import { Sentry } from "mcos/shared";
-import { TLobby } from "./models/Lobby.js";
 import {
     TSession,
     TDatabaseManager,
     TServerLogger,
     TSessionRecord,
+    TLobby,
 } from "mcos/shared/interfaces";
 
 /**
  * This class abstracts database methods
- * @see {@link getDatabaseServer()} for the database server
- * @class
+ * @see {@link getDatabaseServer()} to get a singleton instance
  */
 
 export class DatabaseManager {
-    /** @type {TSession[]} */
     sessions: TSession[] = [];
 
-    /** @type {TLobby[]} */
     lobbies: TLobby[] = [];
 
-    /**
-     *
-     *
-     * @private
-     * @static
-     * @type {TDatabaseManager}
-     * @memberof DatabaseManager
-     */
     static _instance: TDatabaseManager;
 
-    /** @type {TServerLogger} */
     _log: TServerLogger;
 
-    /**
-     * Creates an instance of DatabaseManager.
-     *
-     * Please use {@link DatabaseManager.getInstance()} instead
-     * @param {TServerLogger} log
-     * @memberof DatabaseManager
-     */
     constructor(log: TServerLogger) {
         this._log = log;
     }
     /**
-     * Return the instance of the DatabaseManager class
-     * @param {TServerLogger} log
-     * @returns {TDatabaseManager}
+     * Return the singleton instance of the DatabaseManager class
      */
     static getInstance(log: TServerLogger): TDatabaseManager {
         if (!DatabaseManager._instance) {
@@ -58,8 +37,6 @@ export class DatabaseManager {
 
     /**
      * Locate customer session encryption key in the database
-     * @param {number} customerId
-     * @returns {Promise<TSessionRecord>}
      */
     async fetchSessionKeyByCustomerId(
         customerId: number
@@ -78,8 +55,6 @@ export class DatabaseManager {
 
     /**
      * Locate customer session encryption key in the database
-     * @param {string} connectionId
-     * @returns {Promise<TSessionRecord>}
      */
     async fetchSessionKeyByConnectionId(
         connectionId: string
@@ -99,11 +74,6 @@ export class DatabaseManager {
 
     /**
      * Create or overwrite a customer's session key record
-     * @param {number} customerId
-     * @param {string} sessionKey
-     * @param {string} contextId
-     * @param {string} connectionId
-     * @returns {Promise<void>}
      */
     async updateSessionKey(
         customerId: number,
@@ -113,7 +83,6 @@ export class DatabaseManager {
     ): Promise<void> {
         const sKey = sessionKey.slice(0, 16);
 
-        /** @type {TSession} */
         const updatedSession: TSession = {
             customerId,
             sessionKey,
@@ -129,16 +98,13 @@ export class DatabaseManager {
             const err = new Error(
                 "Error updating session key: existing key not found"
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
         this.sessions.splice(record, 1, updatedSession);
     }
 }
 /**
- * Return the instance of the DatabaseManager class
- * @param {TServerLogger} log
- * @returns {TDatabaseManager}
+ * Return the singleton instance of the DatabaseManager class
  */
 
 export function getDatabaseServer(log: TServerLogger): TDatabaseManager {

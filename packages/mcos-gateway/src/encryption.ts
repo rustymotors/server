@@ -21,10 +21,10 @@ import {
     TSessionRecord,
     TBufferWithConnection,
     TServerLogger,
+    IConnection,
 } from "mcos/shared/interfaces";
 import { createCipheriv, createDecipheriv } from "node:crypto";
 
-/** @type {TEncryptionSession[]} */
 const encryptionSessions: TEncryptionSession[] = [];
 
 /**
@@ -35,9 +35,8 @@ const encryptionSessions: TEncryptionSession[] = [];
  */
 
 /**
- * @param {TSocketWithConnectionInfo} dataConnection
- * @param {TSessionRecord} keys
- * @returns {TEncryptionSession}
+ *
+ * @deprecated use {@link EncryptionManager.generateEncryptionPair()} instead
  */
 function generateEncryptionPair(
     dataConnection: TSocketWithConnectionInfo,
@@ -85,9 +84,7 @@ function generateEncryptionPair(
 
 /**
  *
- * @param {TBufferWithConnection} dataConnection
- * @param {TServerLogger} log
- * @returns {TEncryptionSession}
+ * @deprecated use {@link EncryptionManager.selectEncryptors()} instead
  */
 export function selectEncryptors(
     dataConnection: TBufferWithConnection,
@@ -130,10 +127,7 @@ export function selectEncryptors(
 
 /**
  *
- * @param {TSocketWithConnectionInfo} dataConnection
- * @param {TSessionRecord} keys
- * @param {TServerLogger} log
- * @returns {TEncryptionSession}
+ * @deprecated use {@link EncryptionManager.createEncrypters()} instead
  */
 export function createEncrypters(
     dataConnection: TSocketWithConnectionInfo,
@@ -153,9 +147,7 @@ export function createEncrypters(
 
 /**
  * Update the internal connection record
- * @param {string} connectionId
- * @param {TEncryptionSession} updatedSession
- * @param {TServerLogger} log
+ * @deprecated use {@link EncryptionManager.generateEncryptionPair()} instead
  */
 export function updateEncryptionSession(
     connectionId: string,
@@ -179,9 +171,7 @@ export function updateEncryptionSession(
 
 /**
  * CipherBufferDES
- * @param {TEncryptionSession} encryptionSession
- * @param {Buffer} data
- * @return {{session: TEncryptionSession, data: Buffer}}
+ * @deprecated use {@link EncryptionSession.encryptBufferDES()} instead
  */
 export function cipherBufferDES(
     encryptionSession: TEncryptionSession,
@@ -202,9 +192,7 @@ export function cipherBufferDES(
 
 /**
  * Decrypt a command that is encrypted with DES
- * @param {TEncryptionSession} encryptionSession
- * @param {Buffer} data
- * @return {{session: TEncryptionSession, data: Buffer}}
+ * @deprecated use {@link EncryptionSession.decryptBufferDES()} instead
  */
 export function decipherBufferDES(
     encryptionSession: TEncryptionSession,
@@ -225,10 +213,7 @@ export function decipherBufferDES(
 
 /**
  * Decrypt the buffer contents
- * @param {TBufferWithConnection} dataConnection
- * @param {Buffer} buffer
- * @param {TServerLogger} log
- * @returns {{session: TEncryptionSession, data: Buffer}}
+ * @deprecated use {@link EncryptionSession.decryptBuffer()} instead
  */
 export function decryptBuffer(
     dataConnection: TBufferWithConnection,
@@ -241,4 +226,133 @@ export function decryptBuffer(
         session: encryptionSession,
         data: deciphered,
     };
+}
+
+export class EncryptionSession implements TEncryptionSession {
+    connectionId: string;
+    remoteAddress: string;
+    localPort: number;
+    sessionKey: string;
+    sKey: string;
+    gsCipher: ReturnType<typeof createCipheriv>;
+    gsDecipher: ReturnType<typeof createDecipheriv>;
+    tsCipher: ReturnType<typeof createCipheriv>;
+    tsDecipher: ReturnType<typeof createDecipheriv>;
+
+    constructor(
+        connectionId: string,
+        remoteAddress: string,
+        localPort: number,
+        sessionKey: string,
+        sKey: string,
+        gsCipher: ReturnType<typeof createCipheriv>,
+        gsDecipher: ReturnType<typeof createDecipheriv>,
+        tsCipher: ReturnType<typeof createCipheriv>,
+        tsDecipher: ReturnType<typeof createDecipheriv>
+    ) {
+        this.connectionId = connectionId;
+        this.remoteAddress = remoteAddress;
+        this.localPort = localPort;
+        this.sessionKey = sessionKey;
+        this.sKey = sKey;
+        this.gsCipher = gsCipher;
+        this.gsDecipher = gsDecipher;
+        this.tsCipher = tsCipher;
+        this.tsDecipher = tsDecipher;
+    }
+
+    decryptBuffer(buffer: Buffer): Buffer {
+        const deciphered = this.tsDecipher.update(buffer);
+        return deciphered;
+    }
+
+    encryptBuffer(buffer: Buffer): Buffer {
+        const ciphered = this.tsCipher.update(buffer);
+        return ciphered;
+    }
+
+    decryptBufferDES(buffer: Buffer): Buffer {
+        const deciphered = this.gsDecipher.update(buffer);
+        return deciphered;
+    }
+
+    encryptBufferDES(buffer: Buffer): Buffer {
+        const ciphered = this.gsCipher.update(buffer);
+        return ciphered;
+    }
+}
+
+export class EncryptionManager {
+    private encryptionSessions: TEncryptionSession[] = [];
+
+    generateEncryptionPair(
+        connection: IConnection,
+        keys: TSessionRecord
+    ): TEncryptionSession {
+        // For use on Lobby packets
+        const { sessionKey, sKey } = keys;
+        const stringKey = Buffer.from(sessionKey, "hex");
+        Buffer.from(stringKey.subarray(0, 16));
+
+        // Deepcode ignore HardcodedSecret: This uses an empty IV
+        const desIV = Buffer.alloc(8);
+
+        const gsCipher = createCipheriv(
+            "des-cbc",
+            Buffer.from(sKey, "hex"),
+            desIV
+        );
+        gsCipher.setAutoPadding(false);
+
+        const gsDecipher = createDecipheriv(
+            "des-cbc",
+            Buffer.from(sKey, "hex"),
+            desIV
+        );
+        gsDecipher.setAutoPadding(false);
+
+        // For use on messageNode packets
+
+        // File deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
+        const tsCipher = createCipheriv("rc4", stringKey.subarray(0, 16), "");
+        const tsDecipher = createDecipheriv(
+            "rc4",
+            stringKey.subarray(0, 16),
+            ""
+        );
+
+        const newSession: TEncryptionSession = new EncryptionSession(
+            connection.id,
+            connection.remoteAddress,
+            connection.port,
+            keys.sessionKey,
+            keys.sKey,
+            gsCipher,
+            gsDecipher,
+            tsCipher,
+            tsDecipher
+        );
+
+        return newSession;
+    }
+
+    selectEncryptors(connection: IConnection): TEncryptionSession | undefined {
+        const wantedId = `${connection.remoteAddress}:${connection.port}`;
+
+        const existingEncryptor = this.encryptionSessions.find((e) => {
+            const thisId = `${e.remoteAddress}:${e.localPort}`;
+            return thisId === wantedId;
+        });
+
+        return existingEncryptor;
+    }
+
+    createEncrypters(
+        connection: IConnection,
+        keys: TSessionRecord
+    ): TEncryptionSession {
+        const newSession = this.generateEncryptionPair(connection, keys);
+        this.encryptionSessions.push(newSession);
+        return newSession;
+    }
 }

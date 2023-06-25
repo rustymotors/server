@@ -18,18 +18,16 @@ import { Sentry, Connection, ServerError } from "mcos/shared";
 import {
     IConnection,
     ISocket,
+    TEncryptionSession,
     TServerLogger,
     TSocketWithConnectionInfo,
 } from "mcos/shared/interfaces";
 
-/** @type {TSocketWithConnectionInfo[]} */
 export const connectionList: TSocketWithConnectionInfo[] = [];
 
 /**
- *
- *
- * @export
- * @return {TSocketWithConnectionInfo[]}
+ * Find a connection by id
+ * @deprecated use {@link ConnectionManager.getAllConnections()} instead
  */
 export function getAllConnections(): TSocketWithConnectionInfo[] {
     return connectionList;
@@ -38,9 +36,10 @@ export function getAllConnections(): TSocketWithConnectionInfo[] {
 /**
  * Update the internal connection record
  *
- * @param {string} connectionId
- * @param {TSocketWithConnectionInfo} updatedConnection
- * @param {TServerLogger} log
+ * @deprecated use one of the methods in {@link ConnectionManager} instead
+ * @see {@link ConnectionManager.updateConnectionEncryption()} to update encryption session
+ * @see {@link ConnectionManager.updateConnectionSocket()} to update socket
+ * @see {@link ConnectionManager.updateConnectionStatus()} to update status
  */
 export function updateConnection(
     connectionId: string,
@@ -61,9 +60,7 @@ export function updateConnection(
 
 /**
  * Locate connection by remoteAddress and localPort in the connections array
- * @param {string} remoteAddress
- * @param {number} localPort
- * @return {TSocketWithConnectionInfo | undefined}
+ * @deprecated use {@link ConnectionManager.findConnectionByAddressAndPort()} instead
  */
 export function findConnectionByAddressAndPort(
     remoteAddress: string,
@@ -76,10 +73,7 @@ export function findConnectionByAddressAndPort(
 
 /**
  * Creates a new connection object for the socket and adds to list
- * @param {string} connectionId
- * @param {Socket} socket
- * @param {TServerLogger} log
- * @returns {TSocketWithConnectionInfo}
+ * @deprecated use {@link ConnectionManager.newConnectionFromSocket()} instead
  */
 export function createNewConnection(
     connectionId: string,
@@ -102,7 +96,6 @@ export function createNewConnection(
         throw err;
     }
 
-    /** @type {TSocketWithConnectionInfo} */
     const newConnectionRecord: TSocketWithConnectionInfo = {
         connectionId: connectionId,
         socket,
@@ -119,6 +112,10 @@ export function createNewConnection(
     return newConnectionRecord;
 }
 
+/**
+ * Add a connection to the list
+ * @deprecated use {@link ConnectionManager.addConnection()} instead
+ */
 export function addConnection(
     connection: TSocketWithConnectionInfo,
     log: TServerLogger
@@ -160,6 +157,17 @@ export class ConnectionManager {
     findConnectionBySocket(socket: ISocket): IConnection | undefined {
         return this.connections.find((c) => {
             return c.socket === socket;
+        });
+    }
+
+    findConnectionByAddressAndPort(
+        remoteAddress: string,
+        localPort: number
+    ): IConnection | undefined {
+        return this.connections.find((c) => {
+            return (
+                c.ip === remoteAddress && c.port === localPort && c.status !== 0
+            );
         });
     }
 
@@ -351,6 +359,19 @@ export class ConnectionManager {
             throw new ServerError(`Connection not found`);
         }
         connection.socket = socket;
+    }
+
+    updateConnectionEncryption(
+        connectionId: string,
+        encryptionSession: TEncryptionSession,
+        useEncryption: boolean
+    ): void {
+        const connection = this.findConnectionByID(connectionId);
+        if (typeof connection === "undefined") {
+            throw new ServerError(`Connection not found`);
+        }
+        connection.encryptionSession = encryptionSession;
+        connection.useEncryption = useEncryption;
     }
 }
 

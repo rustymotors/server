@@ -22,32 +22,18 @@ import { IncomingMessage } from "node:http";
 import { TJSONResponse, TServerLogger } from "mcos/shared/interfaces";
 
 /**
- * Please use {@link getAdminServer()}
+ * The admin server.
+ * Please use {@link getAdminServer()} to get the single instance of this class.
  * @classdesc
  * @property {config} config
  * @property {IMCServer} mcServer
  * @property {Server} httpServer
  */
 export class AdminServer {
-    /**
-     *
-     *
-     * @private
-     * @static
-     * @type {AdminServer}
-     * @memberof AdminServer
-     */
     static _instance: AdminServer;
 
-    /** @type {TServerLogger} */
     _log: TServerLogger;
 
-    /**
-     * Please use getAdminServer() instead
-     * @author Drazi Crendraven
-     * @param {TServerLogger} log
-     * @memberof AdminServer
-     */
     constructor(log: TServerLogger) {
         this._log = log;
     }
@@ -55,10 +41,6 @@ export class AdminServer {
     /**
      * Get the single instance of the class
      *
-     * @static
-     * @param {TServerLogger} log
-     * @return {AdminServer}
-     * @memberof AdminServer
      */
     static getInstance(log: TServerLogger): AdminServer {
         if (typeof AdminServer._instance === "undefined") {
@@ -70,8 +52,6 @@ export class AdminServer {
     /**
      * Handle incomming http requests
      *
-     * @param {IncomingMessage} request
-     * @return {TJSONResponse}
      */
     handleRequest(request: IncomingMessage): TJSONResponse {
         this._log(
@@ -126,9 +106,7 @@ export class AdminServer {
 }
 
 /**
- * Get the single instance of the class
- * @param {TServerLogger} log
- * @return {AdminServer}
+ * Get the single instance of the AdminServer class
  */
 export function getAdminServer(log: TServerLogger): AdminServer {
     return AdminServer.getInstance(log);

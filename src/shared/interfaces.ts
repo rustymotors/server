@@ -1,6 +1,11 @@
 import { Cipher, Decipher } from "node:crypto";
 import { TransactionMessageBase } from "./TMessageBase.js";
-import { OutgoingHttpHeader, OutgoingHttpHeaders } from "node:http";
+import {
+    IncomingMessage,
+    OutgoingHttpHeader,
+    OutgoingHttpHeaders,
+    ServerResponse,
+} from "node:http";
 
 export interface ITCPHeader {
     msgid: number;
@@ -237,4 +242,93 @@ export type TJSONResponse = {
     code: number;
     headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined;
     body: string;
+};
+
+export type TTCPConnectionHandler = ({
+    incomingSocket,
+    config,
+    log,
+}: {
+    incomingSocket: ISocket;
+    config: TServerConfiguration;
+    log: TServerLogger;
+}) => void;
+
+export type THTTPConnectionHandler = (
+    req: IncomingMessage,
+    res: ServerResponse,
+    config: TServerConfiguration,
+    log: TServerLogger
+) => void;
+
+export type TSocketErrorHandler = ({
+    sock,
+    error,
+    log,
+}: {
+    sock: ISocket;
+    error: IError;
+    log: TServerLogger;
+}) => void;
+
+export type TSocketEndHandler = ({
+    sock,
+    log,
+    connectionRecord,
+}: {
+    sock: ISocket;
+    log: TServerLogger;
+    connectionRecord: TSocketWithConnectionInfo;
+}) => void;
+
+export type TSocketDataHandler = ({
+    socket,
+    processMessage,
+    data,
+    logger,
+    config,
+    connection,
+    connectionRecord,
+}: {
+    socket: ISocket;
+    processMessage?: TMessageProcessor;
+    data: Buffer;
+    logger: TServerLogger;
+    config: TServerConfiguration;
+    connection: IConnection;
+    connectionRecord: TSocketWithConnectionInfo;
+}) => void;
+
+export type TMessageProcessor = ({
+    data,
+    connectionRecord,
+    config,
+    logger,
+    connection,
+    message,
+}: {
+    data: Buffer;
+    connectionRecord: TSocketWithConnectionInfo;
+    config: TServerConfiguration;
+    logger: TServerLogger;
+    connection: IConnection;
+    message: IMessage | ITCPMessage;
+}) => Promise<void>;
+
+export type TConnectionHandler = ({
+    incomingSocket,
+    config,
+    log,
+}: {
+    incomingSocket: ISocket;
+    config: TServerConfiguration;
+    log: TServerLogger;
+}) => void;
+
+export type TLobby = {
+    lobbyId: number;
+    raceTypeId: number;
+    turfId: number;
+    riffName: string;
+    eTurfName: string;
 };

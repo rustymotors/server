@@ -15,6 +15,33 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import {
+    GetServerLogger,
+    Message,
+    MessageHeader,
+    ServerError,
+    TCPHeader,
+    TCPMessage,
+    toHex,
+} from "mcos/shared";
+import {
+    IConnection,
+    IError,
+    IMessage,
+    ISocket,
+    ITCPMessage,
+    THTTPConnectionHandler,
+    TMessageProcessor,
+    TServerConfiguration,
+    TServerLogger,
+    TSocketDataHandler,
+    TSocketEndHandler,
+    TSocketErrorHandler,
+    TSocketWithConnectionInfo,
+    TTCPConnectionHandler,
+} from "mcos/shared/interfaces";
+import { randomUUID } from "node:crypto";
+import { Server as httpServer } from "node:http";
+import {
     addConnection,
     createNewConnection,
     findConnectionByAddressAndPort,
@@ -22,33 +49,8 @@ import {
 } from "./ConnectionManager.js";
 import { dataHandler } from "./sockets.js";
 import { httpListener as httpHandler } from "./web.js";
-export { getAllConnections } from "./ConnectionManager.js";
 export { getAdminServer } from "./AdminServer.js";
-import {
-    toHex,
-    GetServerLogger,
-    Message,
-    ServerError,
-    MessageHeader,
-    TCPHeader,
-    TCPMessage,
-} from "mcos/shared";
-import {
-    IncomingMessage,
-    ServerResponse,
-    Server as httpServer,
-} from "node:http";
-import { randomUUID } from "node:crypto";
-import {
-    ISocket,
-    IError,
-    TServerLogger,
-    TSocketWithConnectionInfo,
-    TServerConfiguration,
-    IConnection,
-    IMessage,
-    ITCPMessage,
-} from "mcos/shared/interfaces";
+export { getAllConnections } from "./ConnectionManager.js";
 
 export const defaultLog = GetServerLogger();
 
@@ -75,22 +77,6 @@ export function socketErrorHandler({
     }
     throw new ServerError(`Socket error: ${error.message}`);
 }
-
-type TMessageProcessor = ({
-    data,
-    connectionRecord,
-    config,
-    logger,
-    connection,
-    message,
-}: {
-    data: Buffer;
-    connectionRecord: TSocketWithConnectionInfo;
-    config: TServerConfiguration;
-    logger: TServerLogger;
-    connection: IConnection;
-    message: IMessage | ITCPMessage;
-}) => Promise<void>;
 
 export function socketDataHandler({
     socket,
@@ -175,44 +161,6 @@ export function socketEndHandler({
     getConnectionManager().removeConnection(connectionRecord.id);
 }
 
-type TSocketErrorHandler = ({
-    sock,
-    error,
-    log,
-}: {
-    sock: ISocket;
-    error: IError;
-    log: TServerLogger;
-}) => void;
-
-type TSocketEndHandler = ({
-    sock,
-    log,
-    connectionRecord,
-}: {
-    sock: ISocket;
-    log: TServerLogger;
-    connectionRecord: TSocketWithConnectionInfo;
-}) => void;
-
-type TSocketDataHandler = ({
-    socket,
-    processMessage,
-    data,
-    logger,
-    config,
-    connection,
-    connectionRecord,
-}: {
-    socket: ISocket;
-    processMessage?: TMessageProcessor;
-    data: Buffer;
-    logger: TServerLogger;
-    config: TServerConfiguration;
-    connection: IConnection;
-    connectionRecord: TSocketWithConnectionInfo;
-}) => void;
-
 /**
  * Handle incoming TCP connections
  *
@@ -293,23 +241,6 @@ export function rawConnectionHandler({
     });
 }
 
-export type TTCPConnectionHandler = ({
-    incomingSocket,
-    config,
-    log,
-}: {
-    incomingSocket: ISocket;
-    config: TServerConfiguration;
-    log: TServerLogger;
-}) => void;
-
-type THTTPConnectionHandler = (
-    req: IncomingMessage,
-    res: ServerResponse,
-    config: TServerConfiguration,
-    log: TServerLogger
-) => void;
-
 /**
  *
  * Listen for incoming connections on a socket
@@ -359,13 +290,3 @@ export function validateAddressAndPort(
         throw new Error("localPort or remoteAddress is undefined");
     }
 }
-
-export type TConnectionHandler = ({
-    incomingSocket,
-    config,
-    log,
-}: {
-    incomingSocket: ISocket;
-    config: TServerConfiguration;
-    log: TServerLogger;
-}) => void;
