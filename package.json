@@ -98,7 +98,9 @@
             "coverage",
             "**/*.test.{j,t}s",
             "**/*.d.ts",
-            "out"
+            "out",
+            "docs",
+            "docs2"
         ]
     },
     "eslintConfig": {

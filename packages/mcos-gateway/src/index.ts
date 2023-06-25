@@ -108,11 +108,13 @@ export function socketDataHandler({
     // Check the signature. If it's not TOMC, then this is a TCP message
     if (signature !== "TOMC") {
         logger("debug", "Recieved TCP message");
-        const msgHeader = TCPHeader.deserialize(data);
+        const header = new TCPHeader();
+        const msgHeader = header.deserialize(data);
         logger("debug", `Message Header: ${msgHeader.toString()}`);
 
         // Deserialize the message into a TCPMessage object
-        message = TCPMessage.deserialize(data);
+        const tcpMessage = new TCPMessage();
+        message = tcpMessage.deserialize(data);
     } else {
         // This is an MCOTS message
         logger("debug", "Recieved MCOTS message");

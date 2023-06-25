@@ -1,7 +1,16 @@
 import { ServerError } from "./ServerError.js";
 import { ISerializedObject } from "./interfaces.js";
 
-export class SerializerBase {
+export class SerializerBase implements ISerializedObject {
+    deserialize(inputBuffer: Buffer): SerializerBase {
+        throw new Error("Method not implemented.");
+    }
+    serialize(): Buffer {
+        throw new Error("Method not implemented.");
+    }
+    serializeSize(): number {
+        throw new Error("Method not implemented.");
+    }
     // Little Endian (LE) methods for serialization and deserialization.
 
     /**

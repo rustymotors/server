@@ -2,7 +2,7 @@ import { ITCPHeader, ITCPMessage } from "./interfaces.js";
 import { SerializerBase } from "./SerializerBase.js";
 import { TCPHeader } from "./TCPHeader.js";
 
-export class TCPMessage extends SerializerBase {
+export class TCPMessage extends SerializerBase implements ITCPMessage {
     connectionId: string | null = null;
     toFrom: number;
     appId: number;
@@ -24,9 +24,10 @@ export class TCPMessage extends SerializerBase {
      *
      * @param {Buffer} buf
      */
-    static deserialize(buf: Buffer): ITCPMessage {
+    deserialize(buf: Buffer): ITCPMessage {
         const message = new TCPMessage();
-        message.header = TCPHeader.deserialize(buf.subarray(0, 10));
+        const header = new TCPHeader();
+        message.header = header.deserialize(buf.subarray(0, 10));
         message.buffer = buf.subarray(10);
         return message;
     }

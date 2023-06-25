@@ -105,6 +105,8 @@ export function ITCPHeaderFactory(): ITCPHeader {
 
         serialize: () => Buffer.from([]),
         serializeSize: () => 0,
+
+        deserialize: () => ITCPHeaderFactory(),
     };
 }
 
@@ -115,6 +117,11 @@ export function ITCPMessageFactory(): ITCPMessage {
         appId: 0,
         header: null,
         buffer: Buffer.from([]),
+
+        serialize: () => Buffer.from([]),
+        serializeSize: () => 0,
+
+        deserialize: () => ITCPMessageFactory(),
     };
 }
 
