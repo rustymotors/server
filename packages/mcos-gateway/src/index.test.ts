@@ -34,7 +34,9 @@ describe("rawConnectionListener", () => {
     it("should set event listeners", () => {
         // Arrange
         const fakeSocket: ISocket = ISocketTestFactory();
-        const fakeLog: TServerLogger = (level, msg) => {};
+        const fakeLog: TServerLogger = (level, msg) => {
+            // Do nothing
+        };
         const fakeConfig: TServerConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
@@ -69,7 +71,9 @@ describe("rawConnectionListener", () => {
 
         const fakeSocket: ISocket = ISocketTestFactory();
         fakeSocket.localPort = undefined;
-        const fakeLog: TServerLogger = (level, msg) => {};
+        const fakeLog: TServerLogger = (level, msg) => {
+            // Do nothing
+        };
         const fakeConfig: TServerConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
@@ -100,7 +104,9 @@ describe("rawConnectionListener", () => {
 
         const fakeSocket: ISocket = ISocketTestFactory();
         fakeSocket.remoteAddress = undefined;
-        const fakeLog: TServerLogger = (level, msg) => {};
+        const fakeLog: TServerLogger = (level, msg) => {
+            // Do nothing
+        };
         const fakeConfig: TServerConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
@@ -130,7 +136,9 @@ describe("rawConnectionListener", () => {
         // Arrange
 
         const fakeSocket: ISocket = ISocketTestFactory();
-        const fakeLog: TServerLogger = (level, msg) => {};
+        const fakeLog: TServerLogger = (level, msg) => {
+            // Do nothing
+        };
         const fakeConfig: TServerConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
@@ -171,7 +179,9 @@ describe("rawConnectionListener", () => {
         // Arrange
 
         const fakeSocket: ISocket = ISocketTestFactory();
-        const fakeLog: TServerLogger = (level, msg) => {};
+        const fakeLog: TServerLogger = (level, msg) => {
+            // Do nothing
+        };
         const fakeConfig: TServerConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
@@ -246,7 +256,9 @@ describe("socketErrorHandler", () => {
                     code: -1,
                 },
                 sock: ISocketTestFactory(),
-                log: (level: ELOG_LEVEL, msg: string) => {},
+                log: (level: ELOG_LEVEL, msg: string) => {
+                    // Do nothing
+                },
             })
         ).to.throw("test");
     });
