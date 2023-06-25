@@ -1,12 +1,11 @@
 import { Cipher, Decipher } from "node:crypto";
-import { TransactionMessageBase } from "./TMessageBase.js";
 import {
     IncomingMessage,
     OutgoingHttpHeader,
     OutgoingHttpHeaders,
     ServerResponse,
 } from "node:http";
-import { SerializerBase } from "./SerializerBase.js";
+import { TransactionMessageBase } from "./TMessageBase.js";
 
 export interface ITCPHeader extends ISerializedObject {
     msgid: number;

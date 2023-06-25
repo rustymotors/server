@@ -1,4 +1,4 @@
-import { ISerializedObject, ITCPHeader } from "./interfaces.js";
+import { ITCPHeader } from "./interfaces.js";
 import { SerializerBase } from "./SerializerBase.js";
 
 export class TCPHeader extends SerializerBase implements ITCPHeader {
