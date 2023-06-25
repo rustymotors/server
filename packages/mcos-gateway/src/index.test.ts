@@ -4,20 +4,25 @@ import chai, { expect } from "chai";
 import { describe, it } from "mocha";
 import {
     IConnectionFactory,
-    ISocket,
     ISocketTestFactory,
-    TServerConfiguration,
-    TServerLogger,
-    TSocketWithConnectionInfo,
+    MessageHeader,
 } from "mcos/shared";
-import { ServerError } from "../../../src/rebirth/ServerError.js";
 import {
     rawConnectionHandler,
     socketEndHandler,
     socketErrorHandler,
-} from "../src/index.js";
-import { ConnectionManager } from "../src/ConnectionManager.js";
-import { MessageHeader } from "../../../src/rebirth/MessageHeader.js";
+} from "./index.js";
+import {
+    ConnectionManager,
+    getConnectionManager,
+} from "./ConnectionManager.js";
+import {
+    ISocket,
+    TServerLogger,
+    TServerConfiguration,
+    TSocketWithConnectionInfo,
+    ELOG_LEVEL,
+} from "mcos/shared/interfaces";
 
 chai.use(sinonChai);
 
@@ -38,6 +43,7 @@ describe("rawConnectionListener", () => {
             LOG_LEVEL: "debug",
         };
         const fakeConnection = IConnectionFactory();
+        fakeConnection.id = "abc";
         fakeConnection.socket = fakeSocket;
 
         const eventSpy = sinon.spy(fakeSocket, "on");
@@ -72,6 +78,7 @@ describe("rawConnectionListener", () => {
             LOG_LEVEL: "debug",
         };
         const fakeConnection = IConnectionFactory();
+        fakeConnection.id = "def";
         fakeConnection.socket = fakeSocket;
 
         new ConnectionManager().connections.push(fakeConnection);
@@ -102,6 +109,7 @@ describe("rawConnectionListener", () => {
             LOG_LEVEL: "debug",
         };
         const fakeConnection = IConnectionFactory();
+        fakeConnection.id = "ghi";
         fakeConnection.socket = fakeSocket;
 
         new ConnectionManager().connections.push(fakeConnection);
@@ -131,6 +139,7 @@ describe("rawConnectionListener", () => {
             LOG_LEVEL: "debug",
         };
         const fakeConnection = IConnectionFactory();
+        fakeConnection.id = "jkl";
         fakeConnection.socket = fakeSocket;
 
         const eventSpy = sinon.spy(fakeSocket, "on");
@@ -171,6 +180,7 @@ describe("rawConnectionListener", () => {
             LOG_LEVEL: "debug",
         };
         const connection = IConnectionFactory();
+        connection.id = "nope";
         connection.socket = fakeSocket;
 
         const fakeConnectionRecord: TSocketWithConnectionInfo = {
@@ -236,7 +246,7 @@ describe("socketErrorHandler", () => {
                     code: -1,
                 },
                 sock: ISocketTestFactory(),
-                log: (level, msg) => {},
+                log: (level: ELOG_LEVEL, msg: string) => {},
             })
         ).to.throw("test");
     });
@@ -263,6 +273,7 @@ describe("socketEndHandler", () => {
     it("should log when called", () => {
         const fakeConnection = IConnectionFactory();
         fakeConnection.id = "1234";
+
         const fakeConnectionRecord: TSocketWithConnectionInfo = {
             id: "1234",
             localPort: 0,
@@ -277,8 +288,11 @@ describe("socketEndHandler", () => {
             inQueue: false,
         };
 
-        const ConnectionManagerSpy = sinon.spy(ConnectionManager.prototype);
+        const ConnectionManagerSpy = sinon.spy(getConnectionManager());
         ConnectionManagerSpy.connections = [];
+
+        expect(ConnectionManagerSpy.connections.length).to.equal(0);
+
         ConnectionManagerSpy.addConnection(fakeConnection);
         const logSpy = sinon.spy();
 
@@ -291,11 +305,11 @@ describe("socketEndHandler", () => {
 
         expect(logSpy).to.have.been.called;
 
-        expect(ConnectionManagerSpy.getAllConnections()[0].id).to.equal("1244");
+        expect(ConnectionManagerSpy.removeConnection).to.have.been.calledWith(
+            "1234"
+        );
 
-        expect(ConnectionManagerSpy.removeConnection).to.have.been.calledOnce;
-
-        expect(ConnectionManagerSpy.connections.length).to.equal(0);
+        expect(ConnectionManagerSpy.getAllConnections().length).to.equal(0);
     });
 });
 

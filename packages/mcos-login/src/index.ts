@@ -14,16 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import {
-    Sentry,
-    TBufferWithConnection,
-    TDatabaseManager,
-    TServerConfiguration,
-    TServerLogger,
-    TServiceResponse,
-    TUserRecordMini,
-} from "mcos/shared";
+import { Sentry } from "mcos/shared";
 import { handleData } from "./internal.js";
+import {
+    TServerLogger,
+    TDatabaseManager,
+    TUserRecordMini,
+    TBufferWithConnection,
+    TServerConfiguration,
+    TServiceResponse,
+} from "mcos/shared/interfaces";
 
 /**
  * Please use {@link LoginServer.getInstance()}

@@ -1,4 +1,4 @@
-import { TNPS_COMMAND_MAP } from "mcos/shared";
+import { TNPS_COMMAND_MAP } from "mcos/shared/interfaces";
 import { NPS_LOGINCLIENT_COMMANDS } from "./NPS_LOGINCLIENT_COMMANDS.js";
 
 /**

@@ -1,16 +1,15 @@
-import chai, { expect } from "chai";
+import { expect } from "chai";
 import { describe, it } from "mocha";
 import {
     connectionList,
     getAllConnections,
     updateConnection,
-} from "../src/ConnectionManager.js";
-import { Connection } from "../../../src/rebirth/Connection.js";
+} from "./ConnectionManager.js";
+import { ISocketTestFactory } from "mcos/shared";
 import {
-    ISocketTestFactory,
-    TServerLogger,
     TSocketWithConnectionInfo,
-} from "mcos/shared";
+    TServerLogger,
+} from "mcos/shared/interfaces";
 
 describe("ConnectionManager", () => {
     describe("Legacy Functions", () => {

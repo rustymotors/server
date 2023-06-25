@@ -1,7 +1,7 @@
-import { ISocket } from "mcos/shared";
 import { randomUUID } from "node:crypto";
+import { IConnection, ISocket } from "./interfaces.js";
 
-export class Connection {
+export class Connection implements IConnection {
     /**
      * @memberof Connection
      */
@@ -25,6 +25,10 @@ export class Connection {
     appID: number;
     status: number;
     socket: ISocket | null = null;
+    remoteAddress: string;
+    seq: number;
+    personaId: number;
+    lastMessageTimestamp: number;
     port: number;
     useEncryption: boolean;
     encryption: null;
@@ -41,5 +45,9 @@ export class Connection {
         this.encryption = null;
         this.ip = null;
         this.inQueue = false;
+        this.remoteAddress = "";
+        this.seq = 0;
+        this.personaId = 0;
+        this.lastMessageTimestamp = 0;
     }
 }

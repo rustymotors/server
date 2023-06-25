@@ -1,4 +1,4 @@
-import { ITCPHeader, ITCPMessage } from "mcos/shared";
+import { ITCPHeader, ITCPMessage } from "./interfaces.js";
 import { SerializerBase } from "./SerializerBase.js";
 import { TCPHeader } from "./TCPHeader.js";
 

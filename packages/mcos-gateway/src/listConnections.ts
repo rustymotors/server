@@ -1,8 +1,8 @@
-export type TConnection = {
-    id: string;
-    remoteAddress: string;
-    inQueue: boolean;
-};
+import {
+    TConnection,
+    TJSONResponse,
+    TSocketWithConnectionInfo,
+} from "mcos/shared/interfaces";
 /**
  *
  * @param {TSocketWithConnectionInfo[]} connections
@@ -13,16 +13,13 @@ export type TConnection = {
 }}
  */
 
-import { TSocketWithConnectionInfo } from "mcos/shared";
-import { TJSONResponse } from "./adminServer";
-
 export function listConnections(
     connections: TSocketWithConnectionInfo[]
 ): TJSONResponse {
     /**
      * @type {}
      */
-    let response: TConnection[] = [];
+    let response: Partial<TConnection>[] = [];
     connections.forEach((connection) => {
         response.push({
             id: connection.id,

@@ -17,12 +17,12 @@
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
 import { _npsHeartbeat } from "./handlers/heartbeat.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
+import { Sentry } from "mcos/shared";
 import {
-    Sentry,
     TBufferWithConnection,
-    TMessageArrayWithConnection,
     TServerLogger,
-} from "mcos/shared";
+    TMessageArrayWithConnection,
+} from "mcos/shared/interfaces";
 
 /**
  * @param {TBufferWithConnection} dataConnection

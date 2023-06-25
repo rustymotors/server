@@ -1,10 +1,10 @@
 import { privateDecrypt } from "node:crypto";
+import { NPSMessage } from "mcos/shared";
 import {
-    NPSMessage,
-    TNPSMessageJSON,
-    TServerConfiguration,
     TServerLogger,
-} from "mcos/shared";
+    TServerConfiguration,
+    TNPSMessageJSON,
+} from "mcos/shared/interfaces";
 
 /**
  *

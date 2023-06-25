@@ -1,4 +1,4 @@
-import { TMessageHandler } from "mcos/shared";
+import { TMessageHandler } from "mcos/shared/interfaces";
 import { handleEncryptedNPSCommand } from "./encryptedCommand.js";
 import { _npsHeartbeat } from "./heartbeat.js";
 import { _npsRequestGameConnectServer } from "./requestConnectGameServer.js";

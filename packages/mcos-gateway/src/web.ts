@@ -15,11 +15,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { IncomingMessage, ServerResponse } from "http";
-import { AdminServer } from "./adminServer.js";
-import { AuthLogin } from "mcos/auth";
-import { PatchServer } from "mcos/patch";
-import { ShardServer } from "mcos/shard";
-import { TServerConfiguration, TServerLogger } from "mcos/shared";
+import { getAdminServer } from "./AdminServer.js";
+import { getPatchServer } from "mcos/patch";
+import { getShardServer } from "mcos/shard";
+import { TServerConfiguration, TServerLogger } from "mcos/shared/interfaces";
+import { getAuthServer } from "../../mcos-auth/src/AuthServer.js";
 
 /**
  * Routes incomming HTTP requests
@@ -37,7 +37,7 @@ export function httpListener(
 ): ServerResponse {
     if (typeof req.url !== "undefined" && req.url.startsWith("/AuthLogin")) {
         log("debug", "ssl routing request to login web server");
-        return AuthLogin.getInstance(log).handleRequest(req, res);
+        return getAuthServer(log).handleRequest(req, res);
     }
 
     if (
@@ -47,7 +47,7 @@ export function httpListener(
             req.url.startsWith("/admin"))
     ) {
         log("debug", "ssl routing request to admin web server");
-        const response = AdminServer.getAdminServer(log).handleRequest(req);
+        const response = getAdminServer(log).handleRequest(req);
         return res
             .writeHead(response.code, response.headers)
             .end(response.body);
@@ -59,7 +59,7 @@ export function httpListener(
         req.url === "/games/EA_Seattle/MotorCity/MCO"
     ) {
         log("debug", "http routing request to patch server");
-        return PatchServer.getInstance(log).handleRequest(req, res);
+        return getPatchServer(log).handleRequest(req, res);
     }
     if (
         req.url === "/cert" ||
@@ -68,7 +68,7 @@ export function httpListener(
         req.url === "/ShardList/"
     ) {
         log("debug", "http routing request to shard server");
-        return ShardServer.getInstance(config, log).handleRequest(req, res);
+        return getShardServer(config, log).handleRequest(req, res);
     }
 
     log(

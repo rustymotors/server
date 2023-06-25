@@ -12,7 +12,7 @@
  * @property {Buffer} rawPacket
  */
 
-import { Sentry } from "mcos/shared";
+import { Sentry } from "./sentry.js";
 
 export class MessageNode {
     direction;

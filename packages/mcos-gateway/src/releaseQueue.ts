@@ -5,8 +5,10 @@
  * @returns {TJSONResponse}
  */
 
-import { TSocketWithConnectionInfo } from "mcos/shared";
-import { TJSONResponse } from "./adminServer";
+import {
+    TJSONResponse,
+    TSocketWithConnectionInfo,
+} from "mcos/shared/interfaces";
 
 export function releaseQueue(
     connections: TSocketWithConnectionInfo[],

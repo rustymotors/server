@@ -15,10 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import {
-    createServer as createSocketServer,
-    Server as tcpServer,
-} from "node:net";
-import {
     addConnection,
     createNewConnection,
     findConnectionByAddressAndPort,
@@ -27,28 +23,34 @@ import {
 import { dataHandler } from "./sockets.js";
 import { httpListener as httpHandler } from "./web.js";
 export { getAllConnections } from "./ConnectionManager.js";
-export { AdminServer } from "./adminServer.js";
+export { getAdminServer } from "./AdminServer.js";
 import {
-    IConnection,
-    IError,
-    IMessage,
-    ISocket,
-    ITCPMessage,
-    TServerConfiguration,
-    TServerLogger,
-    TSocketWithConnectionInfo,
     toHex,
     GetServerLogger,
+    Message,
+    ServerError,
+    MessageHeader,
+    TCPHeader,
+    TCPMessage,
 } from "mcos/shared";
-import { Server as httpServer } from "node:http";
-import { Message } from "../../../src/rebirth/Message.js";
-import { MessageHeader } from "../../../src/rebirth/MessageHeader.js";
-import { TCPHeader } from "../../../src/rebirth/TCPHeader.js";
-import { TCPMessage } from "../../../src/rebirth/TCPMessage.js";
-import { ServerError } from "../../../src/rebirth/ServerError.js";
+import {
+    IncomingMessage,
+    ServerResponse,
+    Server as httpServer,
+} from "node:http";
 import { randomUUID } from "node:crypto";
+import {
+    ISocket,
+    IError,
+    TServerLogger,
+    TSocketWithConnectionInfo,
+    TServerConfiguration,
+    IConnection,
+    IMessage,
+    ITCPMessage,
+} from "mcos/shared/interfaces";
 
-const defaultLog = GetServerLogger();
+export const defaultLog = GetServerLogger();
 
 /**
  *
@@ -74,9 +76,25 @@ export function socketErrorHandler({
     throw new ServerError(`Socket error: ${error.message}`);
 }
 
+type TMessageProcessor = ({
+    data,
+    connectionRecord,
+    config,
+    logger,
+    connection,
+    message,
+}: {
+    data: Buffer;
+    connectionRecord: TSocketWithConnectionInfo;
+    config: TServerConfiguration;
+    logger: TServerLogger;
+    connection: IConnection;
+    message: IMessage | ITCPMessage;
+}) => Promise<void>;
+
 export function socketDataHandler({
     socket,
-    processData = dataHandler,
+    processMessage = dataHandler,
     data,
     logger,
     config,
@@ -84,7 +102,7 @@ export function socketDataHandler({
     connectionRecord,
 }: {
     socket: ISocket;
-    processData: Function;
+    processMessage?: TMessageProcessor;
     data: Buffer;
     logger: TServerLogger;
     config: TServerConfiguration;
@@ -127,14 +145,14 @@ export function socketDataHandler({
     message.connectionId = connection.id;
 
     // Pass the data to the data handler along with the connection record
-    processData(
+    processMessage({
         data,
         connectionRecord,
         config,
         logger,
         connection,
-        message
-    ).catch((reason: Error) =>
+        message,
+    }).catch((reason: Error) =>
         logger(
             "err",
             `There was an error in the data handler: ${reason.message}`
@@ -144,10 +162,6 @@ export function socketDataHandler({
 
 /**
  * Handle the end of a socket connection
- * @param {object} options
- * @param {TServerLogger} options.log
- * @param {TSocketWithConnectionInfo} options.connectionRecord
- * @returns {void}
  */
 export function socketEndHandler({
     log,
@@ -158,19 +172,50 @@ export function socketEndHandler({
 }): void {
     log("debug", "Socket ended");
     // Remove the connection from the connection manager
-    getConnectionManager().removeConnection(connectionRecord.connectionId);
+    getConnectionManager().removeConnection(connectionRecord.id);
 }
+
+type TSocketErrorHandler = ({
+    sock,
+    error,
+    log,
+}: {
+    sock: ISocket;
+    error: IError;
+    log: TServerLogger;
+}) => void;
+
+type TSocketEndHandler = ({
+    sock,
+    log,
+    connectionRecord,
+}: {
+    sock: ISocket;
+    log: TServerLogger;
+    connectionRecord: TSocketWithConnectionInfo;
+}) => void;
+
+type TSocketDataHandler = ({
+    socket,
+    processMessage,
+    data,
+    logger,
+    config,
+    connection,
+    connectionRecord,
+}: {
+    socket: ISocket;
+    processMessage?: TMessageProcessor;
+    data: Buffer;
+    logger: TServerLogger;
+    config: TServerConfiguration;
+    connection: IConnection;
+    connectionRecord: TSocketWithConnectionInfo;
+}) => void;
 
 /**
  * Handle incoming TCP connections
  *
- * @param {object} options
- * @param {Socket} options.incomingSocket
- * @param {TServerConfiguration} options.config
- * @param {TServerLogger} options.log
- * @param {Function} options.onSocketData
- * @param {Function} options.onSocketError
- * @param {Function} options.onSocketEnd
  */
 export function rawConnectionHandler({
     incomingSocket,
@@ -183,9 +228,9 @@ export function rawConnectionHandler({
     incomingSocket: ISocket;
     config: TServerConfiguration;
     log: TServerLogger;
-    onSocketData?: Function;
-    onSocketError?: Function;
-    onSocketEnd?: Function;
+    onSocketData?: TSocketDataHandler;
+    onSocketError?: TSocketErrorHandler;
+    onSocketEnd?: TSocketEndHandler;
 }): void {
     // Get the local port and remote address
     const { localPort, remoteAddress } = incomingSocket;
@@ -223,44 +268,62 @@ export function rawConnectionHandler({
 
     // Set up event handlers
     incomingSocket.on("end", () => {
-        onSocketEnd(incomingSocket, log, connectionRecord);
+        onSocketEnd({
+            sock: incomingSocket,
+            log,
+            connectionRecord: connectionRecord as TSocketWithConnectionInfo,
+        });
     });
     incomingSocket.on("data", (data) => {
-        onSocketData(
-            incomingSocket,
-            data,
-            log,
+        onSocketData({
+            socket: incomingSocket,
+            data: data as Buffer,
+            logger: log,
             config,
-            connection,
-            connectionRecord
-        );
+            connection: connection as IConnection,
+            connectionRecord: connectionRecord as TSocketWithConnectionInfo,
+        });
     });
     incomingSocket.on("error", (err) => {
-        onSocketError({ sock: incomingSocket, error: err as Error, log });
+        onSocketError({
+            sock: incomingSocket,
+            error: ServerError.fromUnknown(err),
+            log,
+        });
     });
 }
+
+export type TTCPConnectionHandler = ({
+    incomingSocket,
+    config,
+    log,
+}: {
+    incomingSocket: ISocket;
+    config: TServerConfiguration;
+    log: TServerLogger;
+}) => void;
+
+type THTTPConnectionHandler = (
+    req: IncomingMessage,
+    res: ServerResponse,
+    config: TServerConfiguration,
+    log: TServerLogger
+) => void;
 
 /**
  *
  * Listen for incoming connections on a socket
  *
- * @param {object} options
- * @param {Function} options.onConnection
- * @param {Function} options.onHTTPConnection
- * @param {Socket} options.incomingSocket
- * @param {TServerConfiguration} options.config
- * @param {TServerLogger} options.log
- * @returns {void}
  */
 export function socketConnectionHandler({
-    onConnection = rawConnectionHandler,
+    onTCPConnection = rawConnectionHandler,
     onHTTPConnection = httpHandler,
     incomingSocket,
     config,
     log,
 }: {
-    onConnection?: Function;
-    onHTTPConnection?: Function;
+    onTCPConnection?: TTCPConnectionHandler;
+    onHTTPConnection?: THTTPConnectionHandler;
     incomingSocket: ISocket;
     config: TServerConfiguration;
     log: TServerLogger;
@@ -285,7 +348,7 @@ export function socketConnectionHandler({
 
     // This is a 'normal' TCP socket.
     // Pass it to the TCP listener
-    onConnection({ incomingSocket, config, log });
+    onTCPConnection({ incomingSocket, config, log });
 }
 
 export function validateAddressAndPort(
@@ -297,83 +360,12 @@ export function validateAddressAndPort(
     }
 }
 
-// TODO: Add a way to stop the server
-/**
- * Gateway server
- *
- * @param {object} options
- * @param {TServerConfiguration} options.config
- * @param {TServerLogger} options.log
- * @param {number} options.backlogAllowedCount
- * @param {Function} options.serverListener
- * @param {number[]} options.listeningPortList
- * @returns {GatewayServer}
- */
-export class GatewayServer {
-    private readonly config: TServerConfiguration;
-    private readonly log: TServerLogger;
-    private readonly backlogAllowedCount: number;
-    private readonly listeningPortList: number[];
-    private readonly servers: tcpServer[];
-    private readonly socketListener: Function;
-    // Singleton instance of GatewayServer
-    static _instance: GatewayServer;
-
-    constructor({
-        config = undefined,
-        log = defaultLog,
-        backlogAllowedCount = 0,
-        listeningPortList = [],
-        onSocketConnection = socketConnectionHandler,
-    }: {
-        config?: TServerConfiguration;
-        log?: TServerLogger;
-        backlogAllowedCount?: number;
-        serverListener?: Function;
-        listeningPortList?: number[];
-        onSocketConnection?: Function;
-    }) {
-        if (config === undefined) {
-            throw new Error("config is undefined");
-        }
-
-        this.config = config;
-        this.log = log;
-        this.backlogAllowedCount = backlogAllowedCount;
-        this.listeningPortList = listeningPortList;
-        this.servers = [];
-        this.socketListener = onSocketConnection;
-
-        // If the singleton instance already exists, return it
-        if (GatewayServer._instance) {
-            return GatewayServer._instance;
-        }
-
-        // Set the singleton instance
-        GatewayServer._instance = this;
-    }
-
-    public start() {
-        this.log("info", "Server starting");
-
-        if (this.listeningPortList.length === 0) {
-            throw new Error("No listening ports specified");
-        }
-
-        this.listeningPortList.forEach((port) => {
-            const server = createSocketServer((s) => {
-                this.socketListener({
-                    incomingSocket: s,
-                    config: this.config,
-                    log: this.log,
-                });
-            });
-
-            server.listen(port, "0.0.0.0", this.backlogAllowedCount, () => {
-                this.log("debug", `Listening on port ${port}`);
-            });
-
-            this.servers.push(server);
-        });
-    }
-}
+export type TConnectionHandler = ({
+    incomingSocket,
+    config,
+    log,
+}: {
+    incomingSocket: ISocket;
+    config: TServerConfiguration;
+    log: TServerLogger;
+}) => void;

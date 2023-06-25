@@ -1,4 +1,4 @@
-export { ShardServer } from "./src/index.js";
+export { ShardServer, getShardServer } from "./src/ShardServer.js";
 /**
  * @module mcos/shard
  */

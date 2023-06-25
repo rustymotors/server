@@ -18,21 +18,11 @@ import { getAllConnections } from "./ConnectionManager.js";
 import { releaseQueue } from "./releaseQueue.js";
 import { listConnections } from "./listConnections.js";
 import { resetQueue } from "./resetQueue.js";
-import { TServerLogger } from "mcos/shared";
-import {
-    IncomingMessage,
-    OutgoingHttpHeader,
-    OutgoingHttpHeaders,
-} from "node:http";
-
-export type TJSONResponse = {
-    code: number;
-    headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined;
-    body: string;
-};
+import { IncomingMessage } from "node:http";
+import { TJSONResponse, TServerLogger } from "mcos/shared/interfaces";
 
 /**
- * Please use {@link AdminServer.getAdminServer()}
+ * Please use {@link getAdminServer()}
  * @classdesc
  * @property {config} config
  * @property {IMCServer} mcServer
@@ -70,7 +60,7 @@ export class AdminServer {
      * @return {AdminServer}
      * @memberof AdminServer
      */
-    static getAdminServer(log: TServerLogger): AdminServer {
+    static getInstance(log: TServerLogger): AdminServer {
         if (typeof AdminServer._instance === "undefined") {
             AdminServer._instance = new AdminServer(log);
         }
@@ -133,4 +123,13 @@ export class AdminServer {
 
         return { code: 404, headers: {}, body: "" };
     }
+}
+
+/**
+ * Get the single instance of the class
+ * @param {TServerLogger} log
+ * @return {AdminServer}
+ */
+export function getAdminServer(log: TServerLogger): AdminServer {
+    return AdminServer.getInstance(log);
 }

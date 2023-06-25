@@ -1,5 +1,5 @@
-import { TPersonaRecord } from "mcos/shared";
-import { NPSMessage } from "../../../src/shared/NPSMessage.js";
+import { NPSMessage } from "mcos/shared";
+import { TPersonaRecord } from "mcos/shared/interfaces";
 
 /**
  *

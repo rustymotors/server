@@ -11,8 +11,7 @@
  * @property {string} serviceName
  */
 
-import { Sentry } from "mcos/shared";
-import { MessageNode } from "../../mcos-gateway/src/MessageNode.js";
+import { MessageNode, Sentry } from "mcos/shared";
 
 export class GenericRequestMessage extends MessageNode {
     msgNo;

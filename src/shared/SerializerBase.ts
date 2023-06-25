@@ -1,9 +1,5 @@
 import { ServerError } from "./ServerError.js";
-
-export interface ISerializedObject {
-    serialize(): Buffer;
-    serializeSize(): number;
-}
+import { ISerializedObject } from "./interfaces.js";
 
 export class SerializerBase {
     // Little Endian (LE) methods for serialization and deserialization.

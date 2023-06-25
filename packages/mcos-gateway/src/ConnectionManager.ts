@@ -14,17 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { Sentry, Connection, ServerError } from "mcos/shared";
 import {
     IConnection,
-    IConnectionFactory,
     ISocket,
-    Sentry,
     TServerLogger,
     TSocketWithConnectionInfo,
-} from "mcos/shared";
-import { randomUUID } from "node:crypto";
-import { Connection } from "../../../src/rebirth/Connection.js";
-import { ServerError } from "../../../src/rebirth/ServerError.js";
+} from "mcos/shared/interfaces";
 
 /** @type {TSocketWithConnectionInfo[]} */
 export const connectionList: TSocketWithConnectionInfo[] = [];
@@ -137,11 +133,11 @@ export class ConnectionManager {
     connections: IConnection[] = [];
     static instance: ConnectionManager;
 
-    constructor() {
-        if (ConnectionManager.instance) {
-            return ConnectionManager.instance;
+    static getInstance(): ConnectionManager {
+        if (!ConnectionManager.instance) {
+            ConnectionManager.instance = new ConnectionManager();
         }
-        ConnectionManager.instance = this;
+        return ConnectionManager.instance;
     }
 
     /**
@@ -186,7 +182,7 @@ export class ConnectionManager {
      * @return {void}
      */
     removeConnection(connectionId: string): void {
-        const index = this.connections.findIndex((c) => {
+        const index = this.connections.findIndex((c, idx) => {
             return c.id === connectionId;
         });
         if (index === -1) {
@@ -304,7 +300,7 @@ export class ConnectionManager {
      * @throws {ServerError} if socket is missing localPort or remoteAddress
      */
     newConnectionFromSocket(socket: ISocket): IConnection {
-        const connection = IConnectionFactory();
+        const connection = new Connection();
         connection.socket = socket;
         if (
             typeof socket.localPort === "undefined" ||
@@ -365,5 +361,5 @@ export class ConnectionManager {
  * @memberof ConnectionManager
  */
 export function getConnectionManager(): ConnectionManager {
-    return new ConnectionManager();
+    return ConnectionManager.getInstance();
 }

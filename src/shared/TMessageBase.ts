@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { TServerLogger } from "mcos/shared";
-import { BinaryStructure } from "./BinaryStructure.js";
+import { BinaryStructureBase } from "./BinaryStructure.js";
+import { TServerLogger } from "./interfaces.js";
 
 /**
  * @class
- * @extends {BinaryStructure}
+ * @extends {BinaryStructureBase}
  */
-export class TSMessageBase extends BinaryStructure {
+export class TransactionMessageBase extends BinaryStructureBase {
     /**
      * What byte order are the fields?
      * @type {'big' | 'little'}

@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { FIELD_TYPE, TServerLogger } from "./interfaces.js";
 import { Sentry } from "./sentry.js";
-import { toHex } from "./utils.js";
-import type { TServerLogger, FIELD_TYPE } from "./index.js";
 
 /**
  * @class
@@ -54,7 +53,7 @@ export class ByteField {
     }
 }
 
-export class BinaryStructure {
+export class BinaryStructureBase {
     /**
      * Holds the next offset to be used when adding a field
      * @protected

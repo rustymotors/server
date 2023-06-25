@@ -1,4 +1,4 @@
-import { IError } from "mcos/shared";
+import { IError } from "./interfaces.js";
 
 /**
  * ServerError

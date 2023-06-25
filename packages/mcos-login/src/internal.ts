@@ -15,18 +15,17 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { GSMessageBase } from "mcos/gateway";
-import {
-    NPSMessage,
-    Sentry,
-    TBufferWithConnection,
-    TMessageArrayWithConnection,
-    TServerConfiguration,
-    TServerLogger,
-    TUserRecordMini,
-} from "mcos/shared";
+import { NPSMessage, Sentry } from "mcos/shared";
 import { DatabaseManager } from "mcos/database";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { premadeLogin } from "./premadeLogin.js";
+import {
+    TUserRecordMini,
+    TBufferWithConnection,
+    TServerConfiguration,
+    TServerLogger,
+    TMessageArrayWithConnection,
+} from "mcos/shared/interfaces";
 
 /** @type {TUserRecordMini[]} */
 const userRecords: TUserRecordMini[] = [

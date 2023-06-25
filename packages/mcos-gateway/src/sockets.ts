@@ -14,11 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { receiveLobbyData } from "mcos/lobby";
+import { receiveLoginData } from "mcos/login";
+import { receivePersonaData } from "mcos/persona";
+import { NPSMessage, Sentry } from "mcos/shared";
 import {
     IConnection,
     IMessage,
     ITCPMessage,
-    Sentry,
     TBinaryStructure,
     TBufferWithConnection,
     TMessageNode,
@@ -26,17 +29,10 @@ import {
     TServerLogger,
     TServiceResponse,
     TSocketWithConnectionInfo,
-} from "mcos/shared";
-import { receiveLobbyData } from "mcos/lobby";
-import { receiveLoginData } from "mcos/login";
-import { receivePersonaData } from "mcos/persona";
+} from "mcos/shared/interfaces";
 import { receiveTransactionsData } from "mcos/transactions";
 import { updateConnection } from "./ConnectionManager.js";
-import { MessageNode } from "./MessageNode.js";
-import { NPSMessage } from "../../../src/shared/NPSMessage.js";
-import { Connection } from "../../../src/rebirth/Connection.js";
-import { Message } from "../../../src/rebirth/Message.js";
-import { TCPMessage } from "../../../src/rebirth/TCPMessage.js";
+import { MessageNode } from "../../../src/shared/MessageNode.js";
 
 /**
  * Convert to zero padded hex
@@ -124,14 +120,21 @@ function sendMessages(
  * @param {TServerLogger} log
  * @return {Promise<void>}
  */
-export async function dataHandler(
-    data: Buffer,
-    connectionRecord: TSocketWithConnectionInfo,
-    config: TServerConfiguration,
-    log: TServerLogger,
-    connection: IConnection,
-    message: IMessage | ITCPMessage
-): Promise<void> {
+export async function dataHandler({
+    data,
+    connectionRecord,
+    config,
+    logger: log,
+    connection,
+    message,
+}: {
+    data: Buffer;
+    connectionRecord: TSocketWithConnectionInfo;
+    config: TServerConfiguration;
+    logger: TServerLogger;
+    connection: IConnection;
+    message: IMessage | ITCPMessage;
+}): Promise<void> {
     log("debug", `data prior to proccessing: ${data.toString("hex")}`);
 
     // Link the data and the connection together

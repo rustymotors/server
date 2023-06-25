@@ -1,9 +1,9 @@
+import { NPSMessage } from "mcos/shared";
 import {
-    NPSMessage,
     TBufferWithConnection,
-    TMessageArrayWithConnection,
     TServerLogger,
-} from "mcos/shared";
+    TMessageArrayWithConnection,
+} from "mcos/shared/interfaces";
 
 /**
  * @private

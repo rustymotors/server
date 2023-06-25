@@ -7,7 +7,10 @@
  */
 
 import { GetServerLogger, getServerConfiguration } from "mcos/shared";
-import type { TServerConfiguration, TServerLogger } from "mcos/shared";
+import type {
+    TServerConfiguration,
+    TServerLogger,
+} from "mcos/shared/interfaces";
 
 /**
  * @description A buffer with a connection id
