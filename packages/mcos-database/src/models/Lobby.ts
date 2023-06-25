@@ -1,19 +1,3 @@
-/**
- * @global
- * @typedef {object} Lobby
- * @property {number} lobyID
- * @property {number} raceTypeID
- * @property {number} turfID
- * @property {string} riffName - 32
- * @property {string} eTerfName - 256
- */
-export type TLobby = {
-    lobbyId: number;
-    raceTypeId: number;
-    turfId: number;
-    riffName: string;
-    eTurfName: string;
-};
 export class LobbyModel {
     static schema = `CREATE TABLE IF NOT EXISTS "lobbies"
     (

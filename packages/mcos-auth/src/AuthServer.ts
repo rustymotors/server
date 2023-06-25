@@ -4,28 +4,15 @@ import { IncomingMessage, ServerResponse } from "node:http";
 
 /**
  * Handles web-based user logins
- * Please use {@link getAuthServer()}
+ * Please use {@link getAuthServer()} to get a singleton instance
  * @classdesc
  */
 
 export class AuthServer {
-    /**
-     *
-     *
-     * @private
-     * @static
-     * @type {AuthServer}
-     * @memberof AuthLogin
-     */
     static _instance: AuthServer;
 
-    /** @type {TServerLogger} */
     _log: TServerLogger;
 
-    /**
-     *
-     * @param {TServerLogger} log
-     */
     constructor(log: TServerLogger) {
         this._log = log;
     }
@@ -33,10 +20,6 @@ export class AuthServer {
     /**
      * Get the single instance of the class
      *
-     * @static
-     * @param {TServerLogger} log
-     * @return {AuthServer}
-     * @memberof AuthLogin
      */
     static getInstance(log: TServerLogger): AuthServer {
         if (!AuthServer._instance) {
@@ -45,12 +28,6 @@ export class AuthServer {
         return AuthServer._instance;
     }
 
-    /**
-     *
-     * @private
-     * @return {string}
-     * @memberof! WebServer
-     */
     _handleGetTicket(): string {
         return "Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e";
     }
@@ -59,9 +36,6 @@ export class AuthServer {
     /**
      * Handle incoming http requests
      *
-     * @returns {ServerResponse}
-     * @param {IncomingMessage} request
-     * @param {ServerResponse} response
      */
     handleRequest(
         request: IncomingMessage,
@@ -93,8 +67,6 @@ export class AuthServer {
 }
 /**
  * Get the single instance of the AuthServer class
- * @param {TServerLogger} log
- * @return {AuthServer}
  */
 
 export function getAuthServer(log: TServerLogger): AuthServer {

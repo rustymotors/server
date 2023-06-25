@@ -29,7 +29,6 @@ describe("AdminServer", () => {
     describe(".getAdminServer", () => {
         it("should return an instance of AdminServer", () => {
             // Arrange
-            /**  @type {TServerLogger} */
             const log: TServerLogger = () => {
                 return;
             };
@@ -42,7 +41,6 @@ describe("AdminServer", () => {
         });
         it("should return the same instance of AdminServer on multiple calls", () => {
             // Arrange
-            /**  @type {TServerLogger} */
             const log: TServerLogger = () => {
                 return;
             };
@@ -60,7 +58,6 @@ describe("AdminServer", () => {
 describe("resetQueue()", function () {
     it("should reset the inQueue property to true for all connections", function () {
         // arrange
-        /** @type {TSocketWithConnectionInfo[]} */
         const inputConnectionList: TSocketWithConnectionInfo[] = [
             {
                 connectionId: "A",
@@ -99,7 +96,6 @@ describe("resetQueue()", function () {
                 useEncryption: false,
             },
         ];
-        /** @type {TSocketWithConnectionInfo[]} */
         const expectedConnectionList: TSocketWithConnectionInfo[] = [
             {
                 connectionId: "A",
@@ -140,7 +136,6 @@ describe("resetQueue()", function () {
         ];
 
         // act
-        /** @type {TSocketWithConnectionInfo[]} */
         const result: TSocketWithConnectionInfo[] = JSON.parse(
             resetQueue(inputConnectionList).body
         );

@@ -2,13 +2,13 @@ import {
     createServer as createSocketServer,
     Server as tcpServer,
 } from "node:net";
-import { TServerConfiguration, TServerLogger } from "mcos/shared/interfaces";
 import {
-    TTCPConnectionHandler,
-    defaultLog,
-    socketConnectionHandler,
     TConnectionHandler,
-} from "./index.js";
+    TServerConfiguration,
+    TServerLogger,
+    TTCPConnectionHandler,
+} from "mcos/shared/interfaces";
+import { defaultLog, socketConnectionHandler } from "./index.js";
 
 // TODO: Add a way to stop the server
 /**
