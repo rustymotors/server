@@ -1,12 +1,8 @@
 import { describe, it } from "mocha";
 import { expect } from "chai";
-import {
-    handleGetCert,
-    handleGetKey,
-    handleGetRegistry,
-    ShardServer,
-} from "../src/index.js";
-import { TServerConfiguration, TServerLogger } from "mcos/shared";
+import { handleGetCert, handleGetKey, handleGetRegistry } from "./index.js";
+import { ShardServer } from "./ShardServer.js";
+import { TServerConfiguration, TServerLogger } from "mcos/shared/interfaces";
 
 describe("Shard service", () => {
     it("should return an instance when getInstance() is called", () => {

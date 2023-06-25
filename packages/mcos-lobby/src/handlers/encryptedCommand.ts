@@ -1,12 +1,11 @@
 import { cipherBufferDES, decipherBufferDES } from "mcos/gateway";
+import { NPSMessage, Sentry } from "mcos/shared";
 import {
-    NPSMessage,
-    Sentry,
-    TBufferWithConnection,
-    TMessageArrayWithConnection,
-    TServerLogger,
     TSocketWithConnectionInfo,
-} from "mcos/shared";
+    TServerLogger,
+    TMessageArrayWithConnection,
+    TBufferWithConnection,
+} from "mcos/shared/interfaces";
 
 /**
  * Takes an plaintext command packet and return the encrypted bytes

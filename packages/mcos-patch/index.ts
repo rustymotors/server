@@ -1,4 +1,4 @@
 /**
  * @module mcos/patch
  */
-export { PatchServer } from "./src/index.js";
+export { PatchServer, getPatchServer } from "./src/PatchServer.js";

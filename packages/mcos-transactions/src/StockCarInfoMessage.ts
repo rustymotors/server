@@ -20,7 +20,7 @@
  * @property {StockCar[]} StockCarList
  */
 
-import { MessageNode } from "mcos/gateway";
+import { MessageNode } from "mcos/shared";
 import { StockCar } from "./StockCar.js";
 
 export class StockCarInfoMessage extends MessageNode {

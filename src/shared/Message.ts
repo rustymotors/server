@@ -1,7 +1,6 @@
-import { get } from "http";
 import { MessageHeader } from "./MessageHeader.js";
-import { ISerializedObject, SerializerBase } from "./SerializerBase.js";
-import { IMessage, IMessageHeader } from "mcos/shared";
+import { SerializerBase } from "./SerializerBase.js";
+import { IMessage, IMessageHeader, ISerializedObject } from "./interfaces.js";
 
 export class Message extends SerializerBase implements ISerializedObject {
     connectionId: string | null = null;

@@ -14,16 +14,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { MessagePacket } from "mcos/lobby";
+import { NPSMessage, Sentry } from "mcos/shared";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
-import { NPSMessage } from "../../../src/shared/NPSMessage.js";
-import { MessagePacket } from "../../mcos-lobby/src/MessagePacket.js";
 import {
-    Sentry,
+    TServerLogger,
     TBufferWithConnection,
     TMessageArrayWithConnection,
     TPersonaRecord,
-    TServerLogger,
-} from "mcos/shared";
+} from "mcos/shared/interfaces";
 
 const NAME_BUFFER_SIZE = 30;
 

@@ -1,4 +1,4 @@
 /**
  * @module mcos/auth
  */
-export { AuthLogin } from "./src/index.js";
+export { AuthServer } from "./src/AuthServer.js";

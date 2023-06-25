@@ -15,8 +15,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import chai from "chai";
-import { BinaryStructure, TServerLogger } from "mcos/shared";
 import { describe, it } from "mocha";
+import { TServerLogger } from "./interfaces.js";
+import { BinaryStructureBase } from "./BinaryStructure.js";
 
 chai.should();
 
@@ -28,7 +29,7 @@ describe("BinaryStructure", () => {
             const log: TServerLogger = () => {
                 // This is intentional
             };
-            const testStructure = new BinaryStructure(log);
+            const testStructure = new BinaryStructureBase(log);
 
             // Assert
             testStructure.getByteLength().should.equal(0);
@@ -42,7 +43,7 @@ describe("BinaryStructure", () => {
                 // This is intentional
             };
             const inputStream = Buffer.from("This is a pretty decent size.");
-            const testStructure = new BinaryStructure(log);
+            const testStructure = new BinaryStructureBase(log);
 
             // Assert
             (() => {
@@ -57,7 +58,7 @@ describe("BinaryStructure", () => {
             const log: TServerLogger = () => {
                 // This is intentional
             };
-            const testStructure = new BinaryStructure(log);
+            const testStructure = new BinaryStructureBase(log);
 
             // Assert
             (() => {

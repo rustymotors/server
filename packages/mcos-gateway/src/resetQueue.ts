@@ -1,5 +1,7 @@
-import { TSocketWithConnectionInfo } from "mcos/shared";
-import { TJSONResponse } from "./adminServer";
+import {
+    TSocketWithConnectionInfo,
+    TJSONResponse,
+} from "mcos/shared/interfaces";
 
 // https://careerkarma.com/blog/converting-circular-structure-to-json/
 export function replacerFunc() {

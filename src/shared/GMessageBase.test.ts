@@ -16,7 +16,7 @@
 
 import chai from "chai";
 import { GSMessageBase } from "mcos/gateway";
-import { TServerLogger } from "mcos/shared";
+import { TServerLogger } from "mcos/shared/interfaces";
 import { describe, it } from "mocha";
 import { ByteField } from "./BinaryStructure.js";
 

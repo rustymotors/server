@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { getServerLogger } from "./log.js";
-import { ELOG_LEVEL, Sentry, TServerConfiguration } from "mcos/shared";
+import { Sentry } from "mcos/shared";
+import { ELOG_LEVEL, TServerConfiguration } from "./interfaces.js";
 
 /**
  * @module mcos/shared

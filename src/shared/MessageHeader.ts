@@ -1,5 +1,5 @@
-import { IMessageHeader } from "mcos/shared";
-import { ISerializedObject, SerializerBase } from "./SerializerBase.js";
+import { SerializerBase } from "./SerializerBase.js";
+import { IMessageHeader, ISerializedObject } from "./interfaces.js";
 
 export class MessageHeader extends SerializerBase implements ISerializedObject {
     private _length: number = 0;

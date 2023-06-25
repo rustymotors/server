@@ -14,22 +14,21 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { GenericReplyMessage } from "./GenericReplyMessage.js";
-import { TClientConnectMessage } from "./TClientConnectMessage.js";
-import { TLoginMessage } from "./TLoginMessage.js";
-import { GenericRequestMessage } from "./GenericRequestMessage.js";
-import { TLobbyMessage } from "./TLobbyMessage.js";
-import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
-import { StockCar } from "./StockCar.js";
+import { DatabaseManager } from "mcos/database";
+import { createEncrypters } from "mcos/gateway";
+import { MessageNode, Sentry, toHex } from "mcos/shared";
 import {
-    Sentry,
     TMessageArrayWithConnection,
     TServerLogger,
     TSocketWithConnectionInfo,
-} from "mcos/shared";
-import { toHex } from "mcos/shared";
-import { MessageNode, createEncrypters } from "mcos/gateway";
-import { DatabaseManager } from "mcos/database";
+} from "mcos/shared/interfaces";
+import { GenericReplyMessage } from "./GenericReplyMessage.js";
+import { GenericRequestMessage } from "./GenericRequestMessage.js";
+import { StockCar } from "./StockCar.js";
+import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
+import { TClientConnectMessage } from "./TClientConnectMessage.js";
+import { TLobbyMessage } from "./TLobbyMessage.js";
+import { TLoginMessage } from "./TLoginMessage.js";
 
 /**
  *

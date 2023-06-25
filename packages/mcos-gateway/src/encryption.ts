@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { Sentry } from "mcos/shared";
 import {
-    Sentry,
-    TBufferWithConnection,
     TEncryptionSession,
-    TServerLogger,
-    TSessionRecord,
     TSocketWithConnectionInfo,
-} from "mcos/shared";
+    TSessionRecord,
+    TBufferWithConnection,
+    TServerLogger,
+} from "mcos/shared/interfaces";
 import { createCipheriv, createDecipheriv } from "node:crypto";
 
 /** @type {TEncryptionSession[]} */

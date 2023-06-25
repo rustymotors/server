@@ -15,12 +15,12 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import chai, { expect } from "chai";
-import { AdminServer, resetQueue } from "mcos/gateway";
+import { AdminServer, getAdminServer, resetQueue } from "mcos/gateway";
+import { ISocketTestFactory } from "mcos/shared";
 import {
-    ISocketTestFactory,
     TServerLogger,
     TSocketWithConnectionInfo,
-} from "mcos/shared";
+} from "mcos/shared/interfaces";
 import { describe, it } from "mocha";
 
 chai.should();
@@ -35,7 +35,7 @@ describe("AdminServer", () => {
             };
 
             // Act
-            const newAdminInstance = AdminServer.getAdminServer(log);
+            const newAdminInstance = getAdminServer(log);
 
             // Assert
             newAdminInstance.should.be.instanceOf(AdminServer);
@@ -48,8 +48,8 @@ describe("AdminServer", () => {
             };
 
             // Act
-            const admin1 = AdminServer.getAdminServer(log);
-            const admin2 = AdminServer.getAdminServer(log);
+            const admin1 = getAdminServer(log);
+            const admin2 = getAdminServer(log);
 
             // Assert
             admin1.should.equal(admin2);

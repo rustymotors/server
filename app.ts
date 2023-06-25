@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { GatewayServer } from "mcos/gateway";
+import { getGatewayServer } from "mcos/gateway";
 import { GetServerLogger, Sentry, setServerConfiguration } from "mcos/shared";
 
 Sentry.init({
@@ -60,7 +60,7 @@ try {
         43300, 43400, 53303,
     ];
 
-    const gatewayServer = new GatewayServer({
+    const gatewayServer = getGatewayServer({
         config,
         log: appLog,
         listeningPortList,

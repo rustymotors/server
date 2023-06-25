@@ -1,8 +1,8 @@
 /**
  * @module mcos/shared
  */
-import type { ELOG_LEVEL, TServerLogger } from "mcos/shared";
 import { hostname } from "node:os";
+import { ELOG_LEVEL, TServerLogger } from "./interfaces.js";
 
 // Per syslog.conf(5)
 const levelMappings = {

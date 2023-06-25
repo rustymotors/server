@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import chai from "chai";
-import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
+import { TClientConnectMessage } from "./TClientConnectMessage.js";
 import { describe, it } from "mocha";
 
 chai.should();

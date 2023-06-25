@@ -1,5 +1,5 @@
+import { TNPSMessageJSON } from "./interfaces.js";
 import { Sentry } from "./sentry.js";
-import type { TNPSMessageJSON } from "./index.js";
 
 /**
  * @class NPSMessage

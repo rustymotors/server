@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { GatewayServer } from "./index.js";
+import { GatewayServer } from "./GatewayServer.js";
 
 describe("GatewayServer", () => {
     it("should throw an error if no config is provided", () => {

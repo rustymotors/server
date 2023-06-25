@@ -1,5 +1,5 @@
-import { ITCPHeader } from "mcos/shared";
-import { ISerializedObject, SerializerBase } from "./SerializerBase.js";
+import { ISerializedObject, ITCPHeader } from "./interfaces.js";
+import { SerializerBase } from "./SerializerBase.js";
 
 export class TCPHeader extends SerializerBase implements ISerializedObject {
     msgid: number;
