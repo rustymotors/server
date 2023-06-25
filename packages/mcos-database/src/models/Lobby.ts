@@ -1,4 +1,16 @@
-export class LobbyModel {
+import { ISerializedObject } from "mcos/shared/interfaces";
+import { SerializerBase } from "mcos/shared";
+
+export class LobbyModel extends SerializerBase implements ISerializedObject {
+    deserialize(inputBuffer: Buffer): LobbyModel {
+        throw new Error("Method not implemented.");
+    }
+    serialize(): Buffer {
+        throw new Error("Method not implemented.");
+    }
+    serializeSize(): number {
+        throw new Error("Method not implemented.");
+    }
     static schema = `CREATE TABLE IF NOT EXISTS "lobbies"
     (
       "lobyID" integer NOT NULL,
@@ -83,4 +95,3 @@ export class LobbyModel {
       "raceCashFactor" real NOT NULL
     );`;
 }
-export default {};

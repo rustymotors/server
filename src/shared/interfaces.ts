@@ -6,24 +6,26 @@ import {
     OutgoingHttpHeaders,
     ServerResponse,
 } from "node:http";
+import { SerializerBase } from "./SerializerBase.js";
 
-export interface ITCPHeader {
+export interface ITCPHeader extends ISerializedObject {
     msgid: number;
     msglen: number;
     version: number;
     reserved: number;
     checksum: number;
 
-    serialize: () => Buffer;
-    serializeSize: () => number;
+    deserialize: (buf: Buffer) => ITCPHeader;
 }
 
-export interface ITCPMessage {
+export interface ITCPMessage extends ISerializedObject {
     connectionId: string | null;
     toFrom: number;
     appId: number;
     header: ITCPHeader | null;
     buffer: Buffer;
+
+    deserialize: (buf: Buffer) => ITCPMessage;
 }
 
 export interface ISerializedObject {

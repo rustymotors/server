@@ -1,7 +1,7 @@
 import { ISerializedObject, ITCPHeader } from "./interfaces.js";
 import { SerializerBase } from "./SerializerBase.js";
 
-export class TCPHeader extends SerializerBase implements ISerializedObject {
+export class TCPHeader extends SerializerBase implements ITCPHeader {
     msgid: number;
     msglen: number;
     version: number;
@@ -21,7 +21,7 @@ export class TCPHeader extends SerializerBase implements ISerializedObject {
      *
      * @param {Buffer} buf
      */
-    static deserialize(buf: Buffer): ITCPHeader {
+    deserialize(buf: Buffer): ITCPHeader {
         if (buf.length < 10) {
             throw new Error("TCPHeader.deserialize: buf.length < 10");
         }

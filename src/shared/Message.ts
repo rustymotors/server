@@ -50,7 +50,7 @@ export class Message extends SerializerBase implements ISerializedObject {
         node.buffer = sourceNode.buffer;
         return node;
     }
-    serialize(): Buffer {
+    override serialize(): Buffer {
         SerializerBase.verifyConnectionId(this);
         let buf = Buffer.alloc(0);
         if (!this._header) {
