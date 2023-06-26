@@ -17,7 +17,6 @@ class SentryInit {
  *
  *
  * @author Drazi Crendraven
- * @returns {Sentry}
  */
 function Sentry() {
     if (!SentryInit.initCompleted) {
