@@ -47,7 +47,8 @@ export function getServerLogger(logLevel: ELOG_LEVEL = "info"): TServerLogger {
         if (levelValue > defaultLevelValue) {
             return;
         }
-        console.log( // skipcq: JS-0002 This is a logging function and uses console.log intentionally
+        console.log(
+            // skipcq: JS-0002 This is a logging function and uses console.log intentionally
             "debug",
             `{"level": "${level}", "hostname": "${hostname}", "message": ${msg}`
         );
