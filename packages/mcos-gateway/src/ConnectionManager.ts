@@ -116,9 +116,7 @@ export function createNewConnection(
  * Add a connection to the list
  * @deprecated use {@link ConnectionManager.addConnection()} instead
  */
-export function addConnection(
-    connection: TSocketWithConnectionInfo,
-): void {
+export function addConnection(connection: TSocketWithConnectionInfo): void {
     connectionList.push(connection);
 }
 
