@@ -243,7 +243,7 @@ export async function handleData(
         typeof remoteAddress === "undefined"
     ) {
         const err = new Error(
-            `Either localPort or remoteAddress is missing on socket.Can not continue.`
+            "Either localPort or remoteAddress is missing on socket.Can not continue."
         );
         throw err;
     }

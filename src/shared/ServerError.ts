@@ -9,7 +9,7 @@ import { IError } from "./interfaces.js";
  * @extends {Error}
  */
 export class ServerError extends Error implements IError {
-    code: number = 500;
+    code = 500;
 
     constructor(message: string) {
         super(message);

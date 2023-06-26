@@ -90,7 +90,7 @@ export function createNewConnection(
         typeof remoteAddress === "undefined"
     ) {
         const err = new Error(
-            `Either localPort or remoteAddress is missing on socket. Can not continue.`
+            "Either localPort or remoteAddress is missing on socket. Can not continue."
         );
         Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
@@ -338,7 +338,7 @@ export class ConnectionManager {
     updateConnectionStatus(connectionId: string, status: number): void {
         const connection = this.findConnectionByID(connectionId);
         if (typeof connection === "undefined") {
-            throw new ServerError(`Connection not found`);
+            throw new ServerError("Connection not found");
         }
         connection.status = status;
     }
@@ -353,7 +353,7 @@ export class ConnectionManager {
     updateConnectionSocket(connectionId: string, socket: ISocket): void {
         const connection = this.findConnectionByID(connectionId);
         if (typeof connection === "undefined") {
-            throw new ServerError(`Connection not found`);
+            throw new ServerError("Connection not found");
         }
         connection.socket = socket;
     }
@@ -365,7 +365,7 @@ export class ConnectionManager {
     ): void {
         const connection = this.findConnectionByID(connectionId);
         if (typeof connection === "undefined") {
-            throw new ServerError(`Connection not found`);
+            throw new ServerError("Connection not found");
         }
         connection.encryptionSession = encryptionSession;
         connection.useEncryption = useEncryption;

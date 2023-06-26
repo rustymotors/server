@@ -254,7 +254,7 @@ export class BinaryStructureBase {
                     return;
                 }
                 const err = new Error(
-                    `Value must be 0 or 1 for a boolean type`
+                    "Value must be 0 or 1 for a boolean type"
                 );
                 throw err;
             }

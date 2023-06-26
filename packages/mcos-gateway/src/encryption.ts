@@ -97,7 +97,7 @@ export function selectEncryptors(
         typeof remoteAddress === "undefined"
     ) {
         const err = new Error(
-            `[selectEncryptors]Either localPort or remoteAddress is missing on socket. Can not continue.`
+            "[selectEncryptors]Either localPort or remoteAddress is missing on socket. Can not continue."
         );
         Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;

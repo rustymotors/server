@@ -56,7 +56,7 @@ class ServerConfiguration {
             );
         } catch (error) {
             Sentry.captureException(error);
-            const err = new Error(`Unable to read private file`);
+            const err = new Error("Unable to read private file");
             Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
@@ -66,7 +66,7 @@ class ServerConfiguration {
             });
         } catch (error) {
             Sentry.captureException(error);
-            const err = new Error(`Unable to read private file`);
+            const err = new Error("Unable to read private file");
             Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
@@ -110,7 +110,7 @@ export function setServerConfiguration(
 export function getServerConfiguration(): TServerConfiguration {
     if (typeof ServerConfiguration._instance === "undefined") {
         const err = new Error(
-            `Configuration not set. Use setServerConfiguration(externalHost, certificateFile, privateKeyFile, publicKeyFile, logLevel?)`
+            "Configuration not set. Use setServerConfiguration(externalHost, certificateFile, privateKeyFile, publicKeyFile, logLevel?)"
         );
         Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
