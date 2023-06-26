@@ -71,6 +71,13 @@ export function socketErrorHandler({
     error: IError;
     log: TServerLogger;
 }): void {
+    // Check if the socket is still writable
+    if (!sock.writable) {
+        // Close the socket
+        sock.destroy();
+    }
+
+    // Handle socket errors
     if (error.message.includes("ECONNRESET")) {
         log("debug", "Connection was reset");
         return;
@@ -79,7 +86,6 @@ export function socketErrorHandler({
 }
 
 export function socketDataHandler({
-    socket,
     processMessage = dataHandler,
     data,
     logger,
@@ -87,7 +93,6 @@ export function socketDataHandler({
     connection,
     connectionRecord,
 }: {
-    socket: ISocket;
     processMessage?: TMessageProcessor;
     data: Buffer;
     logger: TServerLogger;

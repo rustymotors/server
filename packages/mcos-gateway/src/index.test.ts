@@ -34,9 +34,7 @@ describe("rawConnectionListener", () => {
     it("should set event listeners", () => {
         // Arrange
         const fakeSocket: ISocket = ISocketTestFactory();
-        const fakeLog: TServerLogger = (level, msg) => {
-            // Do nothing
-        };
+        const fakeLog: TServerLogger = sinon.stub();
         const fakeConfig: TServerConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
@@ -53,7 +51,7 @@ describe("rawConnectionListener", () => {
         new ConnectionManager().connections.push(fakeConnection);
 
         // Act
-        const result = rawConnectionHandler({
+        rawConnectionHandler({
             incomingSocket: fakeSocket,
             config: fakeConfig,
             log: fakeLog,
@@ -71,9 +69,7 @@ describe("rawConnectionListener", () => {
 
         const fakeSocket: ISocket = ISocketTestFactory();
         fakeSocket.localPort = undefined;
-        const fakeLog: TServerLogger = (level, msg) => {
-            // Do nothing
-        };
+        const fakeLog: TServerLogger = sinon.stub();
         const fakeConfig: TServerConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
@@ -104,9 +100,7 @@ describe("rawConnectionListener", () => {
 
         const fakeSocket: ISocket = ISocketTestFactory();
         fakeSocket.remoteAddress = undefined;
-        const fakeLog: TServerLogger = (level, msg) => {
-            // Do nothing
-        };
+        const fakeLog: TServerLogger = sinon.stub();
         const fakeConfig: TServerConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
@@ -136,9 +130,7 @@ describe("rawConnectionListener", () => {
         // Arrange
 
         const fakeSocket: ISocket = ISocketTestFactory();
-        const fakeLog: TServerLogger = (level, msg) => {
-            // Do nothing
-        };
+        const fakeLog: TServerLogger = sinon.stub();
         const fakeConfig: TServerConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
@@ -152,7 +144,6 @@ describe("rawConnectionListener", () => {
 
         const eventSpy = sinon.spy(fakeSocket, "on");
         const fakeOnEnd = sinon.stub();
-        const logSpy = sinon.spy(fakeLog);
         const ConnectionManagerStub = sinon.stub(ConnectionManager.prototype);
         ConnectionManagerStub.connections = [];
 
@@ -179,9 +170,7 @@ describe("rawConnectionListener", () => {
         // Arrange
 
         const fakeSocket: ISocket = ISocketTestFactory();
-        const fakeLog: TServerLogger = (level, msg) => {
-            // Do nothing
-        };
+        const fakeLog: TServerLogger = sinon.stub();
         const fakeConfig: TServerConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
@@ -193,21 +182,6 @@ describe("rawConnectionListener", () => {
         connection.id = "nope";
         connection.socket = fakeSocket;
 
-        const fakeConnectionRecord: TSocketWithConnectionInfo = {
-            id: "1234",
-            localPort: 0,
-            remoteAddress: "",
-            socket: fakeSocket,
-            encryptionSession: undefined,
-            useEncryption: false,
-            connectionId: "",
-            seq: 0,
-            personaId: 0,
-            lastMessageTimestamp: 0,
-            inQueue: false,
-        };
-
-        const logSpy = sinon.spy(fakeLog);
         const ConnectionManagerStub = sinon.stub(ConnectionManager.prototype);
         sinon.stub(MessageHeader, "deserialize").returns({
             length: 0,
@@ -223,7 +197,7 @@ describe("rawConnectionListener", () => {
         ConnectionManagerStub.connections.push(connection);
 
         // Act
-        const listener = rawConnectionHandler({
+        rawConnectionHandler({
             incomingSocket: fakeSocket,
             config: fakeConfig,
             log: fakeLog,
@@ -256,9 +230,7 @@ describe("socketErrorHandler", () => {
                     code: -1,
                 },
                 sock: ISocketTestFactory(),
-                log: (level: ELOG_LEVEL, msg: string) => {
-                    // Do nothing
-                },
+                log: sinon.stub(),
             })
         ).to.throw("test");
     });
@@ -274,6 +246,44 @@ describe("socketErrorHandler", () => {
             log: logSpy,
         });
         expect(logSpy).to.have.been.called;
+    });
+
+    it("should attempt to destroy the socket if no longer writable", () => {
+        const fakeSocket: ISocket = ISocketTestFactory();
+        const fakeLog: TServerLogger = sinon.stub();
+        const fakeConfig: TServerConfiguration = {
+            EXTERNAL_HOST: "localhost",
+            certificateFileContents: "",
+            privateKeyContents: "",
+            publicKeyContents: "",
+            LOG_LEVEL: "debug",
+        };
+        const fakeConnection = IConnectionFactory();
+        fakeConnection.id = "1234";
+        fakeConnection.socket = fakeSocket;
+        fakeConnection.socket.writable = false;
+
+        const ConnectionManagerStub = sinon.stub(ConnectionManager.prototype);
+        ConnectionManagerStub.connections = [];
+
+        ConnectionManagerStub.connections.push(fakeConnection);
+
+        const spyOnErrorEvent = sinon.spy(fakeSocket, "destroy");
+
+        // Act
+        rawConnectionHandler({
+            incomingSocket: fakeSocket,
+            config: fakeConfig,
+            log: fakeLog,
+        });
+
+        fakeSocket.emit("error", {
+            message: "ECONNRESET",
+            code: -1,
+        });
+
+        // Assert
+        expect(spyOnErrorEvent).to.have.been.called;
     });
 });
 
@@ -333,7 +343,7 @@ describe("socketDataHandler", () => {
     it("should call it's processData function", () => {
         // Arrange
         const fakeSocket: ISocket = ISocketTestFactory();
-        const fakeLog: TServerLogger = (level, msg) => {};
+        const fakeLog: TServerLogger = sinon.stub();
         const fakeConfig: TServerConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
@@ -344,33 +354,18 @@ describe("socketDataHandler", () => {
         const fakeConnection = IConnectionFactory();
         fakeConnection.socket = fakeSocket;
 
-        const fakeConnectionRecord: TSocketWithConnectionInfo = {
-            id: "1234",
-            localPort: 0,
-            remoteAddress: "",
-            socket: fakeSocket,
-            encryptionSession: undefined,
-            useEncryption: false,
-            connectionId: "",
-            seq: 0,
-            personaId: 0,
-            lastMessageTimestamp: 0,
-            inQueue: false,
-        };
-
-        const logSpy = sinon.spy(fakeLog);
         const ConnectionManagerStub = sinon.stub(ConnectionManager.prototype);
         ConnectionManagerStub.connections = [];
-        const fakeO = sinon.stub();
+        const fakeOnSocketData = sinon.stub();
 
         ConnectionManagerStub.connections.push(fakeConnection);
 
         // Act
-        const listener = rawConnectionHandler({
+        rawConnectionHandler({
             incomingSocket: fakeSocket,
             config: fakeConfig,
             log: fakeLog,
-            onSocketData: fakeO,
+            onSocketData: fakeOnSocketData,
         });
 
         fakeSocket.emit(
@@ -381,6 +376,6 @@ describe("socketDataHandler", () => {
         );
 
         // Assert
-        expect(fakeO).to.have.been.called;
+        expect(fakeOnSocketData).to.have.been.called;
     });
 });

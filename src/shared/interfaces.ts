@@ -58,6 +58,8 @@ export interface ISocket {
     write: (data: Buffer) => boolean;
     on: (event: string, callback: (...args: unknown[]) => void) => void;
     end: () => void;
+    destroy: () => void;
+    writable: boolean;
     remoteAddress?: string;
     localPort?: number;
 }

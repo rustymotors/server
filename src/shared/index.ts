@@ -44,6 +44,8 @@ export function ISocketTestFactory(): ISocket {
     const newISocket = {
         write: () => true,
         end: () => {},
+        destroy: () => {},
+        writable: true,
         remoteAddress: "",
         localPort: 0,
         ...ee,
