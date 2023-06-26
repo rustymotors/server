@@ -37,7 +37,7 @@ export async function receiveTransactionsData(
     config: TServerConfiguration,
     log: TServerLogger
 ): Promise<TServiceResponse> {
-    log("debug", `Entering receiveTransactionsData`);
+    log("debug", "Entering receiveTransactionsData");
     try {
         return await handleData(dataConnection, log);
     } catch (error) {

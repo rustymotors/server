@@ -2,14 +2,14 @@ import { SerializerBase } from "./SerializerBase.js";
 import { IMessageHeader, ISerializedObject } from "./interfaces.js";
 
 export class MessageHeader extends SerializerBase implements ISerializedObject {
-    private _length: number = 0;
+    private _length = 0;
     public get length(): number {
         return this._length;
     }
     public set length(value: number) {
         this._length = value;
     }
-    private _signature: string = "";
+    private _signature = "";
     public get signature(): string {
         return this._signature;
     }
