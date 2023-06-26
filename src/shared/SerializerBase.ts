@@ -231,7 +231,7 @@ export class SerializerBase implements ISerializedObject {
     // ===
 
     static verifyConnectionId(object: ISerializedObject): void {
-        if (!Object.prototype.hasOwnProperty.call(object, 'connectionId')) {
+        if (!Object.prototype.hasOwnProperty.call(object, "connectionId")) {
             throw new ServerError(
                 "Object does not have a connectionId property"
             );
