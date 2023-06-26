@@ -57,6 +57,7 @@
         "format": "prettier --write app.ts \"packages/**/*.ts\" \"src/**/*.ts\"",
         "test": "c8 mocha {src,packages}/**/*.test.ts",
         "build:test": "npm run format && npm run build && npm run test",
+        "docs": "npx typedoc",
         "prod": "make prod_node",
         "prod:stop": "docker-compose stop",
         "start:dev": "node --loader ts-node/esm --openssl-legacy-provider app.ts",
