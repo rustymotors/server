@@ -2,7 +2,7 @@ import { ISerializedObject } from "mcos/shared/interfaces";
 import { SerializerBase } from "mcos/shared";
 
 export class LobbyModel extends SerializerBase implements ISerializedObject {
-    deserialize(inputBuffer: Buffer): LobbyModel {
+    deserialize(_inputBuffer: Buffer): LobbyModel {
         throw new Error("Method not implemented.");
     }
     serialize(): Buffer {
