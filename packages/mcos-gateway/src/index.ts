@@ -214,7 +214,7 @@ export function rawConnectionHandler({
             incomingSocket,
             log
         );
-        addConnection(connectionRecord, log);
+        addConnection(connectionRecord);
     }
     connection = getConnectionManager().findConnectionBySocket(incomingSocket);
     if (!connection) {
@@ -292,5 +292,3 @@ export function socketConnectionHandler({
     // Pass it to the TCP listener
     onTCPConnection({ incomingSocket, config, log });
 }
-
-
