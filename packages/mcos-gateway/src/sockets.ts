@@ -114,11 +114,6 @@ function sendMessages(
 /**
  * The onData handler
  * takes the data buffer and creates a {@link BufferWithConnection} object
- * @param {Buffer} data
- * @param {TSocketWithConnectionInfo} connectionRecord
- * @param {TServerConfiguration} config
- * @param {TServerLogger} log
- * @return {Promise<void>}
  */
 export async function dataHandler({
     data,
