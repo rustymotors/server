@@ -118,7 +118,6 @@ export function createNewConnection(
  */
 export function addConnection(
     connection: TSocketWithConnectionInfo,
-    log: TServerLogger
 ): void {
     connectionList.push(connection);
 }
@@ -190,7 +189,7 @@ export class ConnectionManager {
      * @return {void}
      */
     removeConnection(connectionId: string): void {
-        const index = this.connections.findIndex((c, idx) => {
+        const index = this.connections.findIndex((c) => {
             return c.id === connectionId;
         });
         if (index === -1) {
