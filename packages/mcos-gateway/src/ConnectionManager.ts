@@ -97,7 +97,7 @@ export function createNewConnection(
     }
 
     const newConnectionRecord: TSocketWithConnectionInfo = {
-        connectionId: connectionId,
+        connectionId,
         socket,
         remoteAddress,
         localPort,
