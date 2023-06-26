@@ -163,6 +163,15 @@ export function socketEndHandler({
     getConnectionManager().removeConnection(connectionRecord.id);
 }
 
+export function validateAddressAndPort(
+    localPort: number | undefined,
+    remoteAddress: string | undefined
+) {
+    if (localPort === undefined || remoteAddress === undefined) {
+        throw new Error("localPort or remoteAddress is undefined");
+    }
+}
+
 /**
  * Handle incoming TCP connections
  *
@@ -284,11 +293,4 @@ export function socketConnectionHandler({
     onTCPConnection({ incomingSocket, config, log });
 }
 
-export function validateAddressAndPort(
-    localPort: number | undefined,
-    remoteAddress: string | undefined
-) {
-    if (localPort === undefined || remoteAddress === undefined) {
-        throw new Error("localPort or remoteAddress is undefined");
-    }
-}
+
