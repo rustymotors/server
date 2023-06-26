@@ -21,7 +21,6 @@ import {
     TServerLogger,
     TServerConfiguration,
     TSocketWithConnectionInfo,
-    ELOG_LEVEL,
 } from "mcos/shared/interfaces";
 
 chai.use(sinonChai);
