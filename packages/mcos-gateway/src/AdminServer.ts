@@ -19,7 +19,11 @@ import { releaseQueue } from "./releaseQueue.js";
 import { listConnections } from "./listConnections.js";
 import { resetQueue } from "./resetQueue.js";
 import { IncomingMessage } from "node:http";
-import { TJSONResponse, TServerLogger } from "mcos/shared/interfaces";
+import {
+    IAdminServer,
+    TJSONResponse,
+    TServerLogger,
+} from "mcos/shared/interfaces";
 
 /**
  * The admin server.
@@ -29,7 +33,7 @@ import { TJSONResponse, TServerLogger } from "mcos/shared/interfaces";
  * @property {IMCServer} mcServer
  * @property {Server} httpServer
  */
-export class AdminServer {
+export class AdminServer implements IAdminServer {
     static _instance: AdminServer;
 
     _log: TServerLogger;

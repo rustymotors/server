@@ -23,7 +23,6 @@
             "mcos/shard": ["./packages/mcos-shard/index.ts"],
             "mcos/shared": ["./src/shared/index.ts"],
             "mcos/shared/interfaces": ["./src/shared/interfaces.ts"],
-            "mcos/structures": ["./src/structures/index.js"],
             "mcos/transactions": ["./packages/mcos-transactions/index.js"]
         }
     },

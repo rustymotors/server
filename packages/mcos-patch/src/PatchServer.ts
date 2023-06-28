@@ -1,4 +1,4 @@
-import { TServerLogger } from "mcos/shared/interfaces";
+import { IPatchServer, TServerLogger } from "mcos/shared/interfaces";
 import { IncomingMessage, ServerResponse, createServer } from "node:http";
 import { CastanetResponse } from "./index.js";
 
@@ -9,7 +9,7 @@ import { CastanetResponse } from "./index.js";
  * @class PatchServer
  */
 
-export class PatchServer {
+export class PatchServer implements IPatchServer {
     /**
      *
      *
@@ -52,32 +52,6 @@ export class PatchServer {
             PatchServer._instance = new PatchServer(log);
         }
         return PatchServer._instance;
-    }
-
-    /**
-     * Starts the HTTP listener
-     */
-    start() {
-        const host = "0.0.0.0";
-        const port = 80;
-
-        const server = createServer();
-        server.on("listening", () => {
-            const listeningAddress = server.address();
-            if (
-                typeof listeningAddress !== "string" &&
-                listeningAddress !== null
-            ) {
-                this._log(
-                    "debug",
-                    `Server is listening on port ${listeningAddress.port}`
-                );
-            }
-        });
-        server.on("request", this.handleRequest.bind(this));
-
-        this._log("debug", `Attempting to bind to port ${port}`);
-        server.listen(port, host);
     }
 
     /**

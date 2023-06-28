@@ -18,7 +18,7 @@ import { Sentry } from "mcos/shared";
 import { handleData } from "./internal.js";
 import {
     TServerLogger,
-    TDatabaseManager,
+    IDatabaseManager,
     TUserRecordMini,
     TBufferWithConnection,
     TServerConfiguration,
@@ -52,7 +52,7 @@ export class LoginServer {
      * @param {TServerLogger} log
      * @memberof LoginServer
      */
-    constructor(database: TDatabaseManager, log: TServerLogger) {
+    constructor(database: IDatabaseManager, log: TServerLogger) {
         this.#databaseManager = database;
         this._log = log;
     }
@@ -67,7 +67,7 @@ export class LoginServer {
      * @memberof LoginServer
      */
     static getInstance(
-        database: TDatabaseManager,
+        database: IDatabaseManager,
         log: TServerLogger
     ): LoginServer {
         if (typeof LoginServer._instance === "undefined") {

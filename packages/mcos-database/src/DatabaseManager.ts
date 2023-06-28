@@ -1,7 +1,7 @@
 import { Sentry } from "mcos/shared";
 import {
     TSession,
-    TDatabaseManager,
+    IDatabaseManager,
     TServerLogger,
     TSessionRecord,
     TLobby,
@@ -12,12 +12,12 @@ import {
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
 
-export class DatabaseManager {
+export class DatabaseManager implements IDatabaseManager {
     sessions: TSession[] = [];
 
     lobbies: TLobby[] = [];
 
-    static _instance: TDatabaseManager;
+    static _instance: IDatabaseManager;
 
     _log: TServerLogger;
 
@@ -27,7 +27,7 @@ export class DatabaseManager {
     /**
      * Return the singleton instance of the DatabaseManager class
      */
-    static getInstance(log: TServerLogger): TDatabaseManager {
+    static getInstance(log: TServerLogger): IDatabaseManager {
         if (!DatabaseManager._instance) {
             DatabaseManager._instance = new DatabaseManager(log);
         }
@@ -107,6 +107,6 @@ export class DatabaseManager {
  * Return the singleton instance of the DatabaseManager class
  */
 
-export function getDatabaseServer(log: TServerLogger): TDatabaseManager {
+export function getDatabaseServer(log: TServerLogger): IDatabaseManager {
     return DatabaseManager.getInstance(log);
 }

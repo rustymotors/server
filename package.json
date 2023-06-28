@@ -44,9 +44,6 @@
         "./shared/interfaces": [
             "./src/shared/interfaces/index.js"
         ],
-        "./structures": [
-            "./src/structures/index.js"
-        ],
         "./transactions": [
             "./packages/mcos-transactions/index.js"
         ]

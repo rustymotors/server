@@ -2,7 +2,10 @@ import { MessageHeader } from "./MessageHeader.js";
 import { SerializerBase } from "./SerializerBase.js";
 import { IMessage, IMessageHeader, ISerializedObject } from "./interfaces.js";
 
-export class Message extends SerializerBase implements ISerializedObject {
+export class Message
+    extends SerializerBase
+    implements ISerializedObject, IMessage
+{
     connectionId: string | null = null;
     toFrom: number;
     appID: number;

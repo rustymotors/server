@@ -3,6 +3,7 @@ import {
     Server as tcpServer,
 } from "node:net";
 import {
+    IGatewayServer,
     TConnectionHandler,
     TServerConfiguration,
     TServerLogger,
@@ -18,7 +19,7 @@ import { SubThread } from "../../../src/rebirth/threads/SubThread.js";
  *
  */
 
-export class GatewayServer {
+export class GatewayServer implements IGatewayServer {
     private readonly config: TServerConfiguration;
     private readonly log: TServerLogger;
     private readonly backlogAllowedCount: number;
@@ -28,8 +29,8 @@ export class GatewayServer {
     private serversRunning: boolean = false;
     // Singleton instance of GatewayServer
     static _instance: GatewayServer;
-    readThread: ReadInput | undefined;
-    activeSubThreads: Array<SubThread> = [];
+    private readThread: ReadInput | undefined;
+    private activeSubThreads: Array<SubThread> = [];
 
     constructor({
         config = undefined,
@@ -156,7 +157,6 @@ export class GatewayServer {
         this.log("info", "GatewayServer started");
         this.log("info", "Press x to shutdown");
 
-
         // Listen for the x key to be pressed
         process.stdin.on("data", (key) => {
             if (key.toString("utf8") === "x") {
@@ -188,7 +188,7 @@ export class GatewayServer {
     /**
      * Stop the GatewayServer instance
      */
-    stop() {
+    public stop() {
         this.log("info", "Server stopping");
 
         const thisServer = this;
