@@ -17,6 +17,7 @@
 import { Sentry, Connection, ServerError } from "mcos/shared";
 import {
     IConnection,
+    IConnectionManager,
     ISocket,
     TEncryptionSession,
     TServerLogger,
@@ -123,7 +124,7 @@ export function addConnection(connection: TSocketWithConnectionInfo): void {
 /**
  * Class to manage connections
  */
-export class ConnectionManager {
+export class ConnectionManager implements IConnectionManager {
     connections: IConnection[] = [];
     static instance: ConnectionManager;
 

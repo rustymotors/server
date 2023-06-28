@@ -124,7 +124,7 @@ export interface TServerConfiguration {
     LOG_LEVEL: ELOG_LEVEL;
 }
 export type TServerLogger = (level: ELOG_LEVEL, msg: string) => void;
-export interface TDatabaseManager {
+export interface IDatabaseManager {
     updateSessionKey: (
         customerId: number,
         sessionkey: string,
@@ -335,3 +335,117 @@ export type TLobby = {
     riffName: string;
     eTurfName: string;
 };
+
+export interface IPersonaServer {
+    /**
+     * Create a new game persona record
+     */
+    createNewGameAccount(data: Buffer): Promise<TNPSMessage>;
+
+    /**
+     * Log out a game persona
+     */
+    logoutGameUser(data: Buffer): Promise<TNPSMessage>;
+
+    /**
+     * Handle a check token packet
+     */
+    validateLicencePlate(data: Buffer): Promise<TNPSMessage>;
+
+    /**
+     * Handle a get persona maps packet
+     */
+    validatePersonaName(data: Buffer): Promise<TNPSMessage>;
+
+    /**
+     * Handle a get persona maps packet
+     */
+    getPersonaMaps(data: Buffer): Promise<TNPSMessage>;
+
+    /**
+     * Lookup all personas owned by the customer id
+     */
+    getPersonasByCustomerId(customerId: number): Promise<TPersonaRecord[]>;
+}
+
+export interface IAuthServer {
+    handleRequest(
+        request: IncomingMessage,
+        response: ServerResponse
+    ): ServerResponse;
+}
+
+export interface IConnectionManager {
+    connections: IConnection[];
+    findConnectionByID(connectionId: string): IConnection | undefined;
+    findConnectionBySocket(socket: ISocket): IConnection | undefined;
+    findConnectionByAddressAndPort(
+        remoteAddress: string,
+        localPort: number
+    ): IConnection | undefined;
+    addConnection(connection: IConnection): void;
+    removeConnection(connectionId: string): void;
+    removeConnectionBySocket(socket: ISocket): void;
+    removeConnectionsByAppID(appID: number): void;
+    getAllConnections(): IConnection[];
+    formatConnectionsAsHTML(connections: IConnection[]): string;
+    formatConnectionsAsJSON(connections: IConnection[]): string;
+    getQueue(): IConnection[];
+    newConnectionFromSocket(socket: ISocket): IConnection;
+    updateConnectionStatus(connectionId: string, status: number): void;
+    updateConnectionSocket(connectionId: string, socket: ISocket): void;
+    updateConnectionEncryption(
+        connectionId: string,
+        encryptionSession: TEncryptionSession,
+        useEncryption: boolean
+    ): void;
+}
+
+export interface IPatchServer {
+    handleRequest(
+        request: IncomingMessage,
+        response: ServerResponse
+    ): ServerResponse;
+
+    castanetResponse(
+        request: IncomingMessage,
+        response: ServerResponse
+    ): ServerResponse;
+}
+
+export interface ISubThread {
+    name: string;
+    loopInterval: number;
+    timer: NodeJS.Timer | null;
+
+    init: () => void;
+    run: () => void;
+    shutdown: () => void;
+}
+
+export interface IGatewayServer {
+    start(): void;
+    stop(): void;
+
+    mainShutdown(): void;
+    onSubThreadShutdown(subThread: ISubThread): void;
+    serverCloseHandler(self: IGatewayServer): void;
+}
+
+export interface IAdminServer {
+    handleRequest(request: IncomingMessage): TJSONResponse;
+}
+
+export interface IEncryptionManager {
+    generateEncryptionPair(
+        connection: IConnection,
+        keys: TSessionRecord
+    ): TEncryptionSession;
+
+    selectEncryptors(connection: IConnection): TEncryptionSession | undefined;
+
+    createEncrypters(
+        connection: IConnection,
+        keys: TSessionRecord
+    ): TEncryptionSession;
+}

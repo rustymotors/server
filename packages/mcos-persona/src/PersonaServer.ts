@@ -1,4 +1,9 @@
-import { TServerLogger, ISocket, TPersonaRecord } from "mcos/shared/interfaces";
+import {
+    TServerLogger,
+    ISocket,
+    TPersonaRecord,
+    IPersonaServer,
+} from "mcos/shared/interfaces";
 import { personaRecords } from "./internal.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
 import { NPSMessage, Sentry } from "mcos/shared";
@@ -9,7 +14,7 @@ import { NPSMessage, Sentry } from "mcos/shared";
  * @property {PersonaRecord[]} personaList
  */
 
-export class PersonaServer {
+export class PersonaServer implements IPersonaServer {
     /**
      *
      *
@@ -229,34 +234,9 @@ export class PersonaServer {
     }
 
     /**
+     * Lookup all personas owned by the customer id
      *
-     *
-     * @param {Socket} socket
-     * @param {NPSMessage} packet
-     * @return {void}
-     * @memberof PersonaServer
-     */
-    sendPacket(socket: ISocket, packet: NPSMessage): void {
-        try {
-            // deepcode ignore WrongNumberOfArgs: False alert
-            socket.write(packet.serialize());
-        } catch (error) {
-            Sentry.captureException(error);
-            if (error instanceof Error) {
-                const err = new TypeError(
-                    `Unable to send packet: ${error.message}`
-                );
-                Sentry.addBreadcrumb({ level: "error", message: err.message });
-                throw err;
-            }
-
-            const err = new Error("Unable to send packet, error unknown");
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
-            throw err;
-        }
-    }
-
-    /**
+     * TODO: Store in a database, instead of being hard-coded
      *
      * @param {number} customerId
      * @return {Promise<PersonaRecord[]>}
@@ -267,26 +247,6 @@ export class PersonaServer {
         return personaRecords.filter(
             (persona) => persona.customerId === customerId
         );
-    }
-
-    /**
-     * Lookup all personas owned by the customer id
-     *
-     * TODO: Store in a database, instead of being hard-coded
-     *
-     * @param {number} customerId
-     * @return {Promise<PersonaRecord[]>}
-     */
-    async getPersonaMapsByCustomerId(
-        customerId: number
-    ): Promise<TPersonaRecord[]> {
-        switch (customerId) {
-            case 2868969472:
-            case 5551212:
-                return this.getPersonasByCustomerId(customerId);
-            default:
-                return [];
-        }
     }
 
     /**
@@ -316,7 +276,7 @@ export class PersonaServer {
 
         const customerId = Buffer.alloc(4);
         data.copy(customerId, 0, 12);
-        const personas = await this.getPersonaMapsByCustomerId(
+        const personas = await this.getPersonasByCustomerId(
             customerId.readUInt32BE(0)
         );
         this._log(

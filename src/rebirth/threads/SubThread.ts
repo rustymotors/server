@@ -1,6 +1,7 @@
+import { ISubThread } from "mcos/shared/interfaces";
 import EventEmitter from "node:events";
 
-export class SubThread extends EventEmitter {
+export class SubThread extends EventEmitter implements ISubThread {
     name: string;
     loopInterval: number;
     timer: NodeJS.Timer | null = null;

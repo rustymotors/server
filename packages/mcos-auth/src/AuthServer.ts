@@ -1,5 +1,5 @@
 import { ServerError } from "mcos/shared";
-import { ISocket, TServerLogger } from "mcos/shared/interfaces";
+import { IAuthServer, ISocket, TServerLogger } from "mcos/shared/interfaces";
 import { IncomingMessage, ServerResponse } from "node:http";
 
 /**
@@ -8,7 +8,7 @@ import { IncomingMessage, ServerResponse } from "node:http";
  * @classdesc
  */
 
-export class AuthServer {
+export class AuthServer implements IAuthServer {
     static _instance: AuthServer;
 
     _log: TServerLogger;
@@ -28,7 +28,7 @@ export class AuthServer {
         return AuthServer._instance;
     }
 
-    _handleGetTicket(): string {
+    private _handleGetTicket(): string {
         return "Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e";
     }
 
@@ -51,18 +51,6 @@ export class AuthServer {
         }
 
         return response.end("Unknown request.");
-    }
-
-    /**
-     * @private
-     * @param {Socket} socket
-     */
-    _socketEventHandler(socket: ISocket) {
-        socket.on("error", (error) => {
-            const err = ServerError.fromError(error as Error);
-            err.message = `[AuthLogin] Socket Error: ${err.message}`;
-            throw err;
-        });
     }
 }
 /**

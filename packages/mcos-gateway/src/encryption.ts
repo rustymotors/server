@@ -22,6 +22,7 @@ import {
     TBufferWithConnection,
     TServerLogger,
     IConnection,
+    IEncryptionManager,
 } from "mcos/shared/interfaces";
 import { createCipheriv, createDecipheriv } from "node:crypto";
 
@@ -282,7 +283,7 @@ export class EncryptionSession implements TEncryptionSession {
     }
 }
 
-export class EncryptionManager {
+export class EncryptionManager implements IEncryptionManager {
     private encryptionSessions: TEncryptionSession[] = [];
 
     generateEncryptionPair(
