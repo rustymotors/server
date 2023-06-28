@@ -89,7 +89,6 @@ export interface IConnection {
     encryptionSession?: TEncryptionSession;
     useEncryption: boolean;
     port: number;
-    encryption: null;
     ip: string | null;
 }
 
@@ -143,7 +142,9 @@ export interface TSession {
     contextId: string;
 }
 export interface TSessionRecord {
+    // 64 bytes
     sessionKey: string;
+    // 16 bytes
     sKey: string;
 }
 export interface TConnection {

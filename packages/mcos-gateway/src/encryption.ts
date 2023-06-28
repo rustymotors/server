@@ -39,7 +39,7 @@ const encryptionSessions: TEncryptionSession[] = [];
  *
  * @deprecated use {@link EncryptionManager.generateEncryptionPair()} instead
  */
-function generateEncryptionPair(
+export function generateEncryptionPair(
     dataConnection: TSocketWithConnectionInfo,
     keys: TSessionRecord
 ): TEncryptionSession {

@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { IConnection, ISocket } from "./interfaces.js";
+import { IConnection, ISocket, TEncryptionSession } from "./interfaces.js";
 
 export class Connection implements IConnection {
     /**
@@ -31,7 +31,7 @@ export class Connection implements IConnection {
     lastMessageTimestamp: number;
     port: number;
     useEncryption: boolean;
-    encryption: null;
+    encryptionSession?: TEncryptionSession;
     ip: string | null = null;
     inQueue: boolean;
 
@@ -42,7 +42,6 @@ export class Connection implements IConnection {
         this.socket = null;
         this.port = 0;
         this.useEncryption = false;
-        this.encryption = null;
         this.ip = null;
         this.inQueue = false;
         this.remoteAddress = "";
