@@ -77,7 +77,7 @@ export function IConnectionFactory(): IConnection {
         useEncryption: false,
         status: 0,
         port: 0,
-        encryption: null,
+        encryptionSession: undefined,
         ip: null,
     };
 }
