@@ -13,7 +13,7 @@ import {
 export async function _npsHeartbeat(
     args: TServiceRouterArgs
 ): Promise<TServiceResponse> {
-    const { legacyConnection: dataConnection, connection, log } = args;
+    const { legacyConnection: dataConnection, log } = args;
     const packetContent = Buffer.alloc(8);
     const packetResult = new NPSMessage("sent");
     packetResult.msgNo = 0x1_27;

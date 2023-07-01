@@ -1,4 +1,4 @@
-import { IAuthServer, ISocket, TServerLogger } from "mcos/shared/interfaces";
+import { IAuthServer, TServerLogger } from "mcos/shared/interfaces";
 import { IncomingMessage, ServerResponse } from "node:http";
 
 /**
