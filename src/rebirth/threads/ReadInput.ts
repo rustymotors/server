@@ -15,7 +15,7 @@ export class ReadInput extends SubThread implements ISubThread {
         parentThread?: IGatewayServer;
         log: TServerLogger;
     }) {
-        super("ReadInput", 100, log);
+        super("ReadInput", log, 100);
         if (parentThread === undefined) {
             throw new ServerError(
                 "parentThread is undefined when creating ReadInput"

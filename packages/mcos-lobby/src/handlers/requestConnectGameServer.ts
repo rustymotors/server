@@ -4,10 +4,7 @@ import { NPSUserInfo } from "../NPSUserInfo.js";
 import { MessagePacket } from "../MessagePacket.js";
 import { getPersonasByPersonaId } from "mcos/persona";
 import { DatabaseManager } from "mcos/database";
-import {
-    TServiceRouterArgs,
-    TServiceResponse,
-} from "mcos/shared/interfaces";
+import { TServiceRouterArgs, TServiceResponse } from "mcos/shared/interfaces";
 
 /**
  * Convert to zero padded hex
