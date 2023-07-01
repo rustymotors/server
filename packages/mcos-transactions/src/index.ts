@@ -16,10 +16,7 @@
 
 import { Sentry } from "mcos/shared";
 import { handleData } from "./internal.js";
-import {
-    TServiceResponse,
-    TServiceRouterArgs,
-} from "mcos/shared/interfaces";
+import { TServiceResponse, TServiceRouterArgs } from "mcos/shared/interfaces";
 
 /**
  * Entry and exit point for the lobby service

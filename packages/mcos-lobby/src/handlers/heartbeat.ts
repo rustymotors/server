@@ -1,8 +1,5 @@
 import { NPSMessage } from "mcos/shared";
-import {
-    TServiceRouterArgs,
-    TServiceResponse,
-} from "mcos/shared/interfaces";
+import { TServiceRouterArgs, TServiceResponse } from "mcos/shared/interfaces";
 
 /**
  * @private

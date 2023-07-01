@@ -12,7 +12,6 @@ import {
 } from "mcos/shared/interfaces";
 import { defaultLog, socketConnectionHandler } from "./index.js";
 import { ReadInput } from "../../../src/rebirth/threads/ReadInput.js";
-import { SubThread } from "../../../src/rebirth/threads/SubThread.js";
 import { Sentry } from "mcos/shared";
 
 /**
@@ -30,7 +29,7 @@ export class GatewayServer implements IGatewayServer, ISubThread {
     private readonly socketconnection: TTCPConnectionHandler;
     private serversRunning: boolean = false;
     private readThread: ReadInput | undefined;
-    private activeSubThreads: Array<SubThread> = [];
+    private activeSubThreads: Array<ISubThread> = [];
     parentThread: IGatewayServer | undefined;
     private status: "stopped" | "running" | "stopping" | "restarting" =
         "stopped";
@@ -88,7 +87,7 @@ export class GatewayServer implements IGatewayServer, ISubThread {
     }
     addSubThread(subThread: ISubThread): void {
         // Add the subthread to the list of active subthreads
-        this.activeSubThreads.push(subThread as SubThread);
+        this.activeSubThreads.push(subThread);
     }
     removeSubThread(subThread: ISubThread): void {
         // Remove the subthread from the list of active subthreads

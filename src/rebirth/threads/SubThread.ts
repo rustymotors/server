@@ -12,7 +12,7 @@ export class SubThread extends EventEmitter implements ISubThread {
     parentThread: IGatewayServer | undefined;
     log: TServerLogger;
 
-    constructor(name: string, loopInterval: number = 100, log: TServerLogger) {
+    constructor(name: string, log: TServerLogger, loopInterval: number = 100) {
         super();
         this.name = name;
         this.log = log;
