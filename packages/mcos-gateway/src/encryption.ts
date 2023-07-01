@@ -87,10 +87,15 @@ export function generateEncryptionPair(
  *
  * @deprecated use {@link EncryptionManager.selectEncryptors()} instead
  */
-export function selectEncryptors(
-    dataConnection: TBufferWithConnection,
-    log: TServerLogger
-): TEncryptionSession {
+export function selectEncryptors({
+    dataConnection,
+    connection,
+    log,
+}: {
+    dataConnection: TBufferWithConnection; // Legacy type
+    connection?: IConnection;
+    log: TServerLogger;
+}): TEncryptionSession {
     const { localPort, remoteAddress } = dataConnection.connection;
 
     if (
@@ -105,11 +110,30 @@ export function selectEncryptors(
     }
     const wantedId = `${remoteAddress}:${localPort}`;
 
+    if (typeof connection !== "undefined") {
+        const existingEncryptionSession =
+            getEncryptionManager().selectEncryptors(connection);
+
+        log(
+            "debug",
+            `[selectEncryptors] Found existing encryption session: ${JSON.stringify(
+                existingEncryptionSession
+            )}`
+        );
+    }
+
     const existingEncryptor = encryptionSessions.find((e) => {
         const thisId = `${e.remoteAddress}:${e.localPort}`;
         log("debug", `[selectEncryptors] Checking ${thisId} === ${wantedId} ?`);
         return thisId === wantedId;
     });
+
+    log(
+        "debug",
+        `[selectEncryptors] Found existing encryptor: ${JSON.stringify(
+            existingEncryptor
+        )}`
+    );
 
     if (typeof existingEncryptor !== "undefined") {
         log(
@@ -217,11 +241,13 @@ export function decipherBufferDES(
  * @deprecated use {@link EncryptionSession.decryptBuffer()} instead
  */
 export function decryptBuffer(
-    dataConnection: TBufferWithConnection,
+    dataConnection: TBufferWithConnection, // Legacy type
+    connection: IConnection,
     buffer: Buffer,
     log: TServerLogger
 ): { session: TEncryptionSession; data: Buffer } {
-    const encryptionSession = selectEncryptors(dataConnection, log);
+    
+    const encryptionSession = selectEncryptors({dataConnection, connection, log});
     const deciphered = encryptionSession.tsDecipher.update(buffer);
     return {
         session: encryptionSession,
@@ -285,6 +311,7 @@ export class EncryptionSession implements TEncryptionSession {
 
 export class EncryptionManager implements IEncryptionManager {
     private encryptionSessions: TEncryptionSession[] = [];
+    static _instance: EncryptionManager;
 
     generateEncryptionPair(
         connection: IConnection,
@@ -356,4 +383,14 @@ export class EncryptionManager implements IEncryptionManager {
         this.encryptionSessions.push(newSession);
         return newSession;
     }
+}
+
+/**
+ * Get the singletons instance of the encryption manager
+ */
+export function getEncryptionManager(): EncryptionManager {
+    if (typeof EncryptionManager._instance === "undefined") {
+        EncryptionManager._instance = new EncryptionManager();
+    }
+    return EncryptionManager._instance;
 }

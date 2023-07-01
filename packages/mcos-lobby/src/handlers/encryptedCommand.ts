@@ -5,6 +5,8 @@ import {
     TServerLogger,
     TMessageArrayWithConnection,
     TBufferWithConnection,
+    TServiceResponse,
+    TServiceRouterArgs,
 } from "mcos/shared/interfaces";
 
 /**
@@ -121,10 +123,10 @@ function handleCommand(
  * @return {Promise<TMessageArrayWithConnection>}
  */
 export async function handleEncryptedNPSCommand(
-    dataConnection: TBufferWithConnection,
-    log: TServerLogger
-): Promise<TMessageArrayWithConnection> {
+    args: TServiceRouterArgs
+): Promise<TServiceResponse> {
     // Decipher
+    const { legacyConnection: dataConnection, config, log } = args;
     const { data } = dataConnection;
     const decipheredConnection = decryptCmd(
         dataConnection,

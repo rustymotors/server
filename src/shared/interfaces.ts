@@ -193,7 +193,11 @@ export interface TMessageArrayWithConnection {
     messages: TransactionMessageBase[] | TMessageNode[] | TNPSMessage[];
     log: TServerLogger;
 }
-export type TServiceResponse = TMessageArrayWithConnection;
+export type TServiceResponse = {
+    connection: TSocketWithConnectionInfo;
+    messages: TransactionMessageBase[] | TMessageNode[] | TNPSMessage[];
+    log: TServerLogger;
+};
 
 export interface TBinaryStructure {
     serialize: () => Buffer;
@@ -204,10 +208,7 @@ export type FIELD_TYPE = "boolean" | "byte" | "binary" | "char" | "u16" | "u32";
 export interface TMessageHandler {
     opCode: number;
     name: string;
-    handlerFunction: (
-        dataConnection: TBufferWithConnection,
-        log: TServerLogger
-    ) => Promise<TMessageArrayWithConnection>;
+    handlerFunction: (args: TServiceRouterArgs) => Promise<TServiceResponse>;
 }
 
 export interface NpsCommandMap {
@@ -418,6 +419,8 @@ export interface ISubThread {
     name: string;
     loopInterval: number;
     timer: NodeJS.Timer | null;
+    parentThread: IGatewayServer | undefined;
+    log: TServerLogger;
 
     init: () => void;
     run: () => void;
@@ -427,9 +430,11 @@ export interface ISubThread {
 export interface IGatewayServer {
     start(): void;
     stop(): void;
+    restart(): void;
+    exit(): void;
 
     mainShutdown(): void;
-    onSubThreadShutdown(subThread: ISubThread): void;
+    onSubThreadShutdown(threadName: string): void;
     serverCloseHandler(self: IGatewayServer): void;
 }
 
@@ -450,3 +455,14 @@ export interface IEncryptionManager {
         keys: TSessionRecord
     ): TEncryptionSession;
 }
+
+export type TServiceRouterArgs = {
+    legacyConnection: TBufferWithConnection;
+    connection?: IConnection;
+    config: TServerConfiguration;
+    log: TServerLogger;
+};
+
+export type TServiceRouter = (
+    args: TServiceRouterArgs
+) => Promise<TServiceResponse>;

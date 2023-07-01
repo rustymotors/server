@@ -25,6 +25,7 @@ import {
     TServerConfiguration,
     TServerLogger,
     TMessageArrayWithConnection,
+    TServiceRouterArgs,
 } from "mcos/shared/interfaces";
 
 /** @type {TUserRecordMini[]} */
@@ -182,10 +183,9 @@ export const messageHandlers = [
  * @return {Promise<TMessageArrayWithConnection>}
  */
 export async function handleData(
-    dataConnection: TBufferWithConnection,
-    config: TServerConfiguration,
-    log: TServerLogger
+    args: TServiceRouterArgs
 ): Promise<TMessageArrayWithConnection> {
+    const { legacyConnection: dataConnection, config, log } = args;
     const { connectionId, data } = dataConnection;
 
     log("debug", `Received Login Server packet: ${connectionId}`);

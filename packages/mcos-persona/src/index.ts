@@ -15,11 +15,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import {
-    TBufferWithConnection,
     TNPSMessage,
-    TServerConfiguration,
     TServerLogger,
     TServiceResponse,
+    TServiceRouter,
+    TServiceRouterArgs,
 } from "mcos/shared/interfaces";
 import { handleData } from "./internal.js";
 import { NPSMessage, Sentry } from "mcos/shared";
@@ -73,19 +73,13 @@ export async function handleSelectGamePersona(
 /**
  * Entry and exit point for the persona service
  *
- * @export
- * @param {TBufferWithConnection} dataConnection
- * @param {TServerConfiguration} config
- * @param {TServerLogger} log
- * @return {Promise<TServiceResponse>}
  */
 export async function receivePersonaData(
-    dataConnection: TBufferWithConnection,
-    config: TServerConfiguration,
-    log: TServerLogger
+    args: TServiceRouterArgs
 ): Promise<TServiceResponse> {
     try {
-        return await handleData(dataConnection, log);
+        const { legacyConnection, connection, config, log } = args;
+        return await handleData({ legacyConnection, connection, config, log });
     } catch (error) {
         Sentry.captureException(error);
         const err = new Error(

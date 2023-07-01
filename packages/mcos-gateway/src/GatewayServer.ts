@@ -4,6 +4,7 @@ import {
 } from "node:net";
 import {
     IGatewayServer,
+    ISubThread,
     TConnectionHandler,
     TServerConfiguration,
     TServerLogger,
@@ -12,6 +13,7 @@ import {
 import { defaultLog, socketConnectionHandler } from "./index.js";
 import { ReadInput } from "../../../src/rebirth/threads/ReadInput.js";
 import { SubThread } from "../../../src/rebirth/threads/SubThread.js";
+import { Sentry } from "mcos/shared";
 
 /**
  * Gateway server
@@ -19,18 +21,26 @@ import { SubThread } from "../../../src/rebirth/threads/SubThread.js";
  *
  */
 
-export class GatewayServer implements IGatewayServer {
+export class GatewayServer implements IGatewayServer, ISubThread {
     private readonly config: TServerConfiguration;
-    private readonly log: TServerLogger;
+    log: TServerLogger;
     private readonly backlogAllowedCount: number;
     private readonly listeningPortList: number[];
     private readonly servers: tcpServer[];
     private readonly socketconnection: TTCPConnectionHandler;
     private serversRunning: boolean = false;
-    // Singleton instance of GatewayServer
-    static _instance: GatewayServer;
     private readThread: ReadInput | undefined;
     private activeSubThreads: Array<SubThread> = [];
+    parentThread: IGatewayServer | undefined;   
+    private status: "stopped" | "running" | "stopping" | "restarting" =
+        "stopped";
+    private sentryTransaction: Sentry.Transaction | undefined;
+
+    name: string = "GatewayServer";
+    loopInterval: number = 0;
+    timer: NodeJS.Timer | null = null;
+    // Singleton instance of GatewayServer
+    static _instance: GatewayServer;
 
     constructor({
         config = undefined,
@@ -56,6 +66,114 @@ export class GatewayServer implements IGatewayServer {
         this.listeningPortList = listeningPortList;
         this.servers = [];
         this.socketconnection = onSocketConnection;
+    }
+    mainShutdown(): void {
+        throw new Error("Method not implemented.");
+    }
+    restart(): void {
+        // Stop the GatewayServer
+        this.stop();
+
+        console.log("=== Restarting... ===");
+
+        // Start the GatewayServer
+        this.start();
+    }
+    exit(): void {
+        // Stop the GatewayServer
+        this.stop();
+
+        // Exit the process
+        process.exit(0);
+    }
+    addSubThread(subThread: ISubThread): void {
+        // Add the subthread to the list of active subthreads
+        this.activeSubThreads.push(subThread as SubThread);
+    }
+    removeSubThread(subThread: ISubThread): void {
+        // Remove the subthread from the list of active subthreads
+        this.activeSubThreads = this.activeSubThreads.filter((activeThread) => {
+            return activeThread.name !== subThread.name;
+        });
+
+        // If the subthread is the ReadInput thread, then stop the GatewayServer
+        if (subThread.name === "ReadInput") {
+            this.stop();
+        }
+    }
+    getSubThreads(): ISubThread[] {
+        // Return the list of active subthreads
+        return this.activeSubThreads;
+    }
+    getSubThreadCount(): number {
+        // Return the number of active subthreads
+        return this.activeSubThreads.length;
+    }
+    stop(): void {
+        // Mark the GatewayServer as stopping
+        this.log("debug", "Marking GatewayServer as stopping");
+        this.status = "stopping";
+
+        // Stop the servers
+        this.servers.forEach((server) => {
+            server.close();
+        });
+
+        // Stop the read thread
+        if (this.readThread !== undefined) {
+            this.readThread.stop();
+        }
+
+        // Stop the timer
+        if (this.timer !== null) {
+            clearInterval(this.timer);
+        }
+
+        // Stop the Sentry transaction
+        if (this.sentryTransaction !== undefined) {
+            this.sentryTransaction.finish();
+        }
+
+        // Mark the GatewayServer as stopped
+        this.log("debug", "Marking GatewayServer as stopped");
+        this.status = "stopped";
+
+        // Mark the list of servers as not running
+        this.log("debug", "Marking the list of servers as not running");
+        this.serversRunning = false;
+
+        // Mark the list of active subthreads as empty
+        this.log("debug", "Marking the list of active subthreads as empty");
+        this.activeSubThreads = [];
+    }
+
+    init(): void {
+        // Create the read thread
+        this.readThread = new ReadInput({ parentThread: this, log: this.log });
+        this.readThread.on("shutdownComplete", () => {
+            this.log(
+                "debug",
+                "Shutdown complete for ReadInput in GatewayServer"
+            );
+            this.status = "stopped";
+            if (this.readThread !== undefined) {
+                this.onSubThreadShutdown("ReadInput");
+            }
+        });
+        this.readThread.on("restartComplete", () => {
+            this.log(
+                "debug",
+                "Restart complete for ReadInput in GatewayServer"
+            );
+            this.status = "restarting";
+            this.log("info", "Restarting...");
+            if (this.readThread !== undefined) {
+                this.onSubThreadShutdown("ReadInput");
+            }
+        });
+    }
+    run(): void {
+        // Intentionally left blank
     }
 
     static getInstance({
@@ -84,50 +202,71 @@ export class GatewayServer implements IGatewayServer {
         return GatewayServer._instance;
     }
 
-    /**
-     * Callback for when the main thread is shutting down
-     */
-    mainShutdown() {
-        console.log("Main thread finished.");
-        console.log(`Active subthreads: ${this.activeSubThreads.length}`);
+    shutdown() {
+        this.log("debug", "Shutdown complete for GatewayServer");
+        this.status = "stopped";
+        this.log("info", "Server stopped");
+
+        // Stop the Sentry transaction
+        if (this.sentryTransaction !== undefined) {
+            this.sentryTransaction.finish();
+        }
+
+        // Mark the list of servers as not running
+        this.log("debug", "Marking the list of servers as not running");
+        this.serversRunning = false;
+
+        // Mark the list of active subthreads as empty
+        this.log("debug", "Marking the list of active subthreads as empty");
+        this.activeSubThreads = [];
+
+        process.exit(0);
     }
+    
 
     /**
      * Callback for when a subthread is shutting down
      */
-    onSubThreadShutdown(subThread: SubThread) {
-        // Remove the subthread from the list of active subthreads
-        this.activeSubThreads = this.activeSubThreads.filter((activeThread) => {
-            return activeThread !== subThread;
+    onSubThreadShutdown(threadName: string) {
+        this.log("debug", `onSubThreadShutdown(${threadName})`);
+        this.activeSubThreads = this.activeSubThreads.filter((thread) => {
+            return thread.name !== threadName;
         });
 
-        if (this.activeSubThreads.length === 0) {
-            this.mainShutdown();
+        if (
+            (this.status === "stopping" || this.status === "restarting") &&
+            this.activeSubThreads.length === 0
+        ) {
+            this.shutdown();
         }
     }
 
     /**
      * Callback for when a server is closed
      */
-    serverCloseHandler(self: GatewayServer) {
-        // Check if there are any servers running
-        if (self.servers.length === 0) {
-            self.log("info", "All servers stopped");
-            self.serversRunning = false;
-            // Call the main shutdown handler
-            return this.mainShutdown();
+    serverCloseHandler() {
+        console.log("=== serverCloseHandler() ===");
+        this.log("debug", `Status: ${this.status}`);
+        this.log("debug", "Server closed");
+        this.serversRunning = false;
+        if (
+            (this.status === "stopping" || this.status === "restarting") &&
+            this.activeSubThreads.length === 0
+        ) {
+            this.shutdown();
         }
-        // Log the number of servers still running
-        self.log(
-            "debug",
-            `There are still ${this.servers.length} servers running`
-        );
+        console.log("=== End of serverCloseHandler() ===");
     }
 
     /**
      * Start the GatewayServer instance
      */
     public start() {
+        this.sentryTransaction = Sentry.startTransaction({
+            name: "GatewayServer",
+            op: "GatewayServer",
+        });
+        this.log("debug", "Starting GatewayServer in start()");
         this.log("info", "Server starting");
 
         // Check if there are any listening ports specified
@@ -136,7 +275,14 @@ export class GatewayServer implements IGatewayServer {
         }
 
         // Mark the GatewayServer as running
+        this.log("debug", "Marking the list of servers as running")
         this.serversRunning = true;
+        this.log("debug", "Marking GatewayServer as running");
+        this.status = "running";
+
+        // Initialize the GatewayServer
+        this.init();
+
         this.listeningPortList.forEach((port) => {
             const server = createSocketServer((s) => {
                 this.socketconnection({
@@ -153,60 +299,9 @@ export class GatewayServer implements IGatewayServer {
             // Add the server to the list of servers
             this.servers.push(server);
         });
-
-        this.log("info", "GatewayServer started");
-        this.log("info", "Press x to shutdown");
-
-        // Listen for the x key to be pressed
-        process.stdin.on("data", (key) => {
-            if (key.toString("utf8") === "x") {
-                // Log that the server is shutting down
-                console.log("Shutting down...");
-
-                // Set the shutdown flag
-                this.serversRunning = false;
-
-                // Stop the server
-                this.stop();
-
-                // Shutdown the read thread
-                if (this.readThread !== undefined) {
-                    this.readThread.emit("shutdown");
-                }
-            }
-        });
-
-        // Create the read thread
-        this.readThread = new ReadInput();
-        this.readThread.on("shutdownComplete", () => {
-            if (this.readThread !== undefined) {
-                this.onSubThreadShutdown(this.readThread);
-            }
-        });
     }
 
-    /**
-     * Stop the GatewayServer instance
-     */
-    public stop() {
-        this.log("info", "Server stopping");
-
-        const thisServer = this;
-
-        // Get the number of servers
-        const serverCount = this.servers.length;
-
-        // Loop through the servers and close them
-        for (let i = 0; i < serverCount; i++) {
-            this.servers[0].close();
-
-            // Remove the server from the list
-            thisServer.servers.splice(0, 1);
-
-            // Call the server close handler
-            thisServer.serverCloseHandler(thisServer);
-        }
-    }
+    
 }
 
 /**

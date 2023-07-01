@@ -3,6 +3,8 @@ import {
     TBufferWithConnection,
     TServerLogger,
     TMessageArrayWithConnection,
+    TServiceRouterArgs,
+    TServiceResponse,
 } from "mcos/shared/interfaces";
 
 /**
@@ -12,9 +14,9 @@ import {
  * @return {Promise<TMessageArrayWithConnection>}}
  */
 export async function _npsHeartbeat(
-    dataConnection: TBufferWithConnection,
-    log: TServerLogger
-): Promise<TMessageArrayWithConnection> {
+    args: TServiceRouterArgs
+): Promise<TServiceResponse> {
+    const { legacyConnection: dataConnection, connection, log } = args;
     const packetContent = Buffer.alloc(8);
     const packetResult = new NPSMessage("sent");
     packetResult.msgNo = 0x1_27;
