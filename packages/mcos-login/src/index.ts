@@ -20,9 +20,9 @@ import {
     TServerLogger,
     IDatabaseManager,
     TUserRecordMini,
-    TBufferWithConnection,
-    TServerConfiguration,
     TServiceResponse,
+    TServiceRouter,
+    TServiceRouterArgs,
 } from "mcos/shared/interfaces";
 
 /**
@@ -141,13 +141,17 @@ export class LoginServer {
  * @return {Promise<TServiceResponse>}
  */
 export async function receiveLoginData(
-    dataConnection: TBufferWithConnection,
-    config: TServerConfiguration,
-    log: TServerLogger
+    args: TServiceRouterArgs
 ): Promise<TServiceResponse> {
     try {
+        const { legacyConnection, connection, config, log } = args;
         log("debug", "Entering login module");
-        const response = await handleData(dataConnection, config, log);
+        const response = await handleData({
+            legacyConnection,
+            connection,
+            config,
+            log,
+        });
         log("debug", `There are ${response.messages.length} messages`);
         log("debug", "Exiting login module");
         return response;

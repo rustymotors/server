@@ -17,10 +17,12 @@
 import { Sentry } from "mcos/shared";
 import { handleData } from "./internal.js";
 import {
+    IConnection,
     TBufferWithConnection,
     TServerConfiguration,
     TServerLogger,
     TServiceResponse,
+    TServiceRouterArgs,
 } from "mcos/shared/interfaces";
 
 /**
@@ -33,13 +35,17 @@ import {
  * @return {Promise<TServiceResponse>}
  */
 export async function receiveTransactionsData(
-    dataConnection: TBufferWithConnection,
-    config: TServerConfiguration,
-    log: TServerLogger
+    args: TServiceRouterArgs
 ): Promise<TServiceResponse> {
+    const { legacyConnection: dataConnection, config, log, connection } = args;
     log("debug", "Entering receiveTransactionsData");
     try {
-        return await handleData(dataConnection, log);
+        return await handleData({
+            legacyConnection: dataConnection,
+            connection,
+            config,
+            log,
+        });
     } catch (error) {
         Sentry.captureException(error);
         const err = new Error(

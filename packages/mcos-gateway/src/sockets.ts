@@ -28,6 +28,7 @@ import {
     TServerConfiguration,
     TServerLogger,
     TServiceResponse,
+    TServiceRouter,
     TSocketWithConnectionInfo,
 } from "mcos/shared/interfaces";
 import { receiveTransactionsData } from "mcos/transactions";
@@ -49,12 +50,6 @@ export function toHex(data: Buffer): string {
     });
     return bytes.join("");
 }
-
-export type TServiceRouter = (
-    connection: TBufferWithConnection,
-    config: TServerConfiguration,
-    log: TServerLogger
-) => Promise<TServiceResponse>;
 
 /**
  * @type {TServiceRouter}
@@ -170,11 +165,12 @@ export async function dataHandler({
     if (typeof serviceRouters[localPort] !== "undefined") {
         try {
             /** @type {TServiceResponse} */
-            const result: TServiceResponse = await serviceRouters[localPort](
-                networkBuffer,
+            const result: TServiceResponse = await serviceRouters[localPort]({
+                legacyConnection: networkBuffer,
+                connection,
                 config,
-                log
-            );
+                log,
+            });
 
             const messages = result.messages;
 

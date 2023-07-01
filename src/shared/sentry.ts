@@ -26,6 +26,7 @@ function Sentry(): void {
             // Add profiling integration to list of integrations
             new ProfilingIntegration(),
         ],
+        debug: true,
     });
 }
 

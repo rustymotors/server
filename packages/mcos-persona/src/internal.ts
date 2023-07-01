@@ -22,6 +22,7 @@ import {
     TBufferWithConnection,
     TMessageArrayWithConnection,
     TPersonaRecord,
+    TServiceRouterArgs,
 } from "mcos/shared/interfaces";
 
 const NAME_BUFFER_SIZE = 30;
@@ -483,11 +484,11 @@ async function validateLicencePlate(
  * @return {Promise<TMessageArrayWithConnection>}
  */
 export async function handleData(
-    dataConnection: TBufferWithConnection,
-    log: TServerLogger
+    args: TServiceRouterArgs
 ): Promise<TMessageArrayWithConnection> {
-    const { connection, data } = dataConnection;
-    const { socket, localPort } = connection;
+    const { log, legacyConnection: dataConnection } = args;
+    const { data } = dataConnection;
+    const { socket, localPort } = dataConnection.connection;
     log(
         "debug",
         `Received Persona packet',

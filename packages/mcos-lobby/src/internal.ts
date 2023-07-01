@@ -18,21 +18,14 @@ import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServe
 import { _npsHeartbeat } from "./handlers/heartbeat.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
 import { Sentry } from "mcos/shared";
-import {
-    TBufferWithConnection,
-    TServerLogger,
-    TMessageArrayWithConnection,
-} from "mcos/shared/interfaces";
+import { TServiceRouterArgs, TServiceResponse } from "mcos/shared/interfaces";
 
 /**
- * @param {TBufferWithConnection} dataConnection
- * @param {TServerLogger} log
- * @return {Promise<TMessageArrayWithConnection>}
  */
 export async function handleData(
-    dataConnection: TBufferWithConnection,
-    log: TServerLogger
-): Promise<TMessageArrayWithConnection> {
+    args: TServiceRouterArgs
+): Promise<TServiceResponse> {
+    const { legacyConnection: dataConnection, log, config, connection } = args;
     const { localPort, remoteAddress } = dataConnection.connection.socket;
     log(
         "debug",
@@ -44,17 +37,23 @@ export async function handleData(
     switch (requestCode) {
         // _npsRequestGameConnectServer
         case "100": {
-            const result = await _npsRequestGameConnectServer(
-                dataConnection,
-                log
-            );
+            const result = await _npsRequestGameConnectServer({
+                legacyConnection: dataConnection,
+                connection,
+                config,
+                log,
+            });
             return result;
         }
 
         // NpsHeartbeat
 
         case "217": {
-            const result = await _npsHeartbeat(dataConnection, log);
+            const result = await _npsHeartbeat({
+                legacyConnection: dataConnection,
+                config,
+                log,
+            });
             return result;
         }
 
@@ -63,7 +62,11 @@ export async function handleData(
         case "1101": {
             // This is an encrypted command
 
-            const result = handleEncryptedNPSCommand(dataConnection, log);
+            const result = handleEncryptedNPSCommand({
+                legacyConnection: dataConnection,
+                config,
+                log,
+            });
             return result;
         }
 

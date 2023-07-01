@@ -1,34 +1,31 @@
-import { ISubThread } from "mcos/shared/interfaces";
+import { IGatewayServer, ISubThread, TServerLogger } from "mcos/shared/interfaces";
 import EventEmitter from "node:events";
 
 export class SubThread extends EventEmitter implements ISubThread {
     name: string;
     loopInterval: number;
     timer: NodeJS.Timer | null = null;
-    /**
-     *
-     * @param {string} name
-     * @param {number} [loopInterval=100]
-     */
-    constructor(name: string, loopInterval = 100) {
+    parentThread: IGatewayServer | undefined;
+    log: TServerLogger;
+
+    constructor(name: string, loopInterval: number = 100, log: TServerLogger) {
         super();
         this.name = name;
+        this.log = log;
         this.loopInterval = loopInterval;
         this.init();
     }
 
     init() {
-        console.log(`${this.name} SubThread() initialized.`);
-        this.on("shutdown", this.shutdown.bind(this));
+        this.emit("initialized");
         this.timer = setInterval(this.run.bind(this), this.loopInterval);
     }
 
     run() {
-        // console.log(`${this.name} SubThread() running.`);
+        // Intentionally left blank
     }
 
     shutdown() {
-        console.log(`${this.name} SubThread() shutting down.`);
         if (this.timer) {
             clearInterval(this.timer);
             this.timer = null;

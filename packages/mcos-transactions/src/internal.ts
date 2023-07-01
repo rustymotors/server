@@ -15,14 +15,16 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { decryptBuffer } from "mcos/gateway";
-import { MessageNode, Sentry } from "mcos/shared";
+import { MessageNode, Sentry, ServerError } from "mcos/shared";
 import {
+    IConnection,
     TBufferWithConnection,
-    TMessageArrayWithConnection,
     TServerLogger,
     TServiceResponse,
+    TServiceRouterArgs,
 } from "mcos/shared/interfaces";
 import { messageHandlers } from "./handlers.js";
+import { Server } from "http";
 
 /**
  *
@@ -48,7 +50,8 @@ function shouldMessageBeEncrypted(
  */
 function decryptTransactionBuffer(
     message: MessageNode,
-    dataConnection: TBufferWithConnection,
+    dataConnection: TBufferWithConnection, // Legacy
+    connection: IConnection,
     log: TServerLogger
 ): { err: Error | null; data: Buffer | null } {
     const encryptedBuffer = Buffer.from(message.data);
@@ -62,7 +65,12 @@ function decryptTransactionBuffer(
         `Message buffer before decrypting: ${encryptedBuffer.toString("hex")}`
     );
 
-    const result = decryptBuffer(dataConnection, encryptedBuffer, log);
+    const result = decryptBuffer(
+        dataConnection,
+        connection,
+        encryptedBuffer,
+        log
+    );
     log(
         "debug",
         `Message buffer after decrypting: ${result.data.toString("hex")}`
@@ -87,13 +95,19 @@ function decryptTransactionBuffer(
  */
 function tryDecryptBuffer(
     message: MessageNode,
-    dataConnection: TBufferWithConnection,
+    dataConnection: TBufferWithConnection, // Legacy
+    connection: IConnection,
     log: TServerLogger
 ): { err: Error | null; data: Buffer | null } {
     try {
         return {
             err: null,
-            data: decryptTransactionBuffer(message, dataConnection, log).data,
+            data: decryptTransactionBuffer(
+                message,
+                dataConnection,
+                connection,
+                log
+            ).data,
         };
     } catch (error) {
         Sentry.captureException(error);
@@ -194,7 +208,8 @@ async function processInput(
  */
 async function messageReceived(
     message: MessageNode,
-    dataConnection: TBufferWithConnection,
+    dataConnection: TBufferWithConnection, // Legacy
+    connection: IConnection,
     log: TServerLogger
 ): Promise<TServiceResponse> {
     // If not a Heartbeat
@@ -210,7 +225,12 @@ async function messageReceived(
         }
 
         if (message.flags - 8 >= 0) {
-            const result = tryDecryptBuffer(message, dataConnection, log);
+            const result = tryDecryptBuffer(
+                message,
+                dataConnection,
+                connection,
+                log
+            );
             if (result.err !== null || result.data === null) {
                 const err = new Error(String(result.err));
                 Sentry.addBreadcrumb({ level: "error", message: err.message });
@@ -225,18 +245,12 @@ async function messageReceived(
     return processInput(dataConnection, message, log);
 }
 
-/**
- * @typedef {module:mcos/shared.TMessageArrayWithConnection} TMessageArrayWithConnection
- * @param {module:shared.TBufferWithConnection} dataConnection
- * @param {module:shared.TServerLogger} log
- * @return {Promise<TMessageArrayWithConnection>}
- */
 export async function handleData(
-    dataConnection: TBufferWithConnection,
-    log: TServerLogger
-): Promise<TMessageArrayWithConnection> {
-    const { connection, data } = dataConnection;
-    const { remoteAddress, localPort } = connection.socket;
+    args: TServiceRouterArgs
+): Promise<TServiceResponse> {
+    const { legacyConnection: dataConnection, connection, log } = args;
+    const { connection: legacyConnection, data } = dataConnection;
+    const { remoteAddress, localPort } = legacyConnection.socket;
 
     if (
         typeof localPort === "undefined" ||
@@ -263,10 +277,19 @@ export async function handleData(
     );
     messageNode.dumpPacket();
 
+    if (typeof connection === "undefined") {
+        const err = new ServerError(
+            `Unable to locate connection for socket ${remoteAddress}:${localPort}`
+        );
+        Sentry.addBreadcrumb({ level: "error", message: err.message });
+        throw err;
+    }
+
     try {
         const processedPacket = await messageReceived(
             messageNode,
             dataConnection,
+            connection,
             log
         );
         log("debug", "Back in transacation server");

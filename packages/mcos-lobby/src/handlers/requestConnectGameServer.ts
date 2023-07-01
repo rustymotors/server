@@ -1,4 +1,4 @@
-import { NPSMessage, Sentry } from "mcos/shared";
+import { NPSMessage, Sentry, ServerError } from "mcos/shared";
 import { createEncrypters, selectEncryptors } from "mcos/gateway";
 import { NPSUserInfo } from "../NPSUserInfo.js";
 import { MessagePacket } from "../MessagePacket.js";
@@ -8,6 +8,8 @@ import {
     TBufferWithConnection,
     TServerLogger,
     TMessageArrayWithConnection,
+    TServiceRouterArgs,
+    TServiceResponse,
 } from "mcos/shared/interfaces";
 
 /**
@@ -45,9 +47,9 @@ export function _generateSessionKeyBuffer(key: string): Buffer {
  * @return {Promise<iTMessageArrayWithConnection>}
  */
 export async function _npsRequestGameConnectServer(
-    dataConnection: TBufferWithConnection,
-    log: TServerLogger
-): Promise<TMessageArrayWithConnection> {
+    args: TServiceRouterArgs
+): Promise<TServiceResponse> {
+    const { legacyConnection: dataConnection, connection, log } = args;
     log(
         "debug",
         `[inner] Raw bytes in _npsRequestGameConnectServer: ${toHex(
@@ -113,10 +115,11 @@ export async function _npsRequestGameConnectServer(
     }
 
     try {
-        dataConnection.connection.encryptionSession = selectEncryptors(
+        dataConnection.connection.encryptionSession = selectEncryptors({
             dataConnection,
+            connection,
             log
-        );
+    });
     } catch (error) {
         dataConnection.connection.encryptionSession = createEncrypters(
             dataConnection.connection,

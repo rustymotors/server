@@ -21,6 +21,7 @@ import {
     TServerConfiguration,
     TServerLogger,
     TServiceResponse,
+    TServiceRouterArgs,
 } from "mcos/shared/interfaces";
 
 /**
@@ -33,12 +34,15 @@ import {
  * @return {Promise<TServiceResponse>}
  */
 export async function receiveLobbyData(
-    dataConnection: TBufferWithConnection,
-    config: TServerConfiguration,
-    log: TServerLogger
+    args: TServiceRouterArgs
 ): Promise<TServiceResponse> {
     try {
-        return await handleData(dataConnection, log);
+        const { legacyConnection: dataConnection, config, log } = args;
+        return await handleData({
+            legacyConnection: dataConnection,
+            config,
+            log,
+        });
     } catch (error) {
         Sentry.captureException(error);
         const err = new Error(
