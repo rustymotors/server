@@ -24,7 +24,6 @@ import {
     TServiceRouterArgs,
 } from "mcos/shared/interfaces";
 import { messageHandlers } from "./handlers.js";
-import { Server } from "http";
 
 /**
  *

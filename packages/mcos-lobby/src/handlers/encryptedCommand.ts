@@ -126,7 +126,7 @@ export async function handleEncryptedNPSCommand(
     args: TServiceRouterArgs
 ): Promise<TServiceResponse> {
     // Decipher
-    const { legacyConnection: dataConnection, config, log } = args;
+    const { legacyConnection: dataConnection, log } = args;
     const { data } = dataConnection;
     const decipheredConnection = decryptCmd(
         dataConnection,

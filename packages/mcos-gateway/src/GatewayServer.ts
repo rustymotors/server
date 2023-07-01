@@ -31,7 +31,7 @@ export class GatewayServer implements IGatewayServer, ISubThread {
     private serversRunning: boolean = false;
     private readThread: ReadInput | undefined;
     private activeSubThreads: Array<SubThread> = [];
-    parentThread: IGatewayServer | undefined;   
+    parentThread: IGatewayServer | undefined;
     private status: "stopped" | "running" | "stopping" | "restarting" =
         "stopped";
     private sentryTransaction: Sentry.Transaction | undefined;
@@ -222,7 +222,6 @@ export class GatewayServer implements IGatewayServer, ISubThread {
 
         process.exit(0);
     }
-    
 
     /**
      * Callback for when a subthread is shutting down
@@ -275,7 +274,7 @@ export class GatewayServer implements IGatewayServer, ISubThread {
         }
 
         // Mark the GatewayServer as running
-        this.log("debug", "Marking the list of servers as running")
+        this.log("debug", "Marking the list of servers as running");
         this.serversRunning = true;
         this.log("debug", "Marking GatewayServer as running");
         this.status = "running";
@@ -300,8 +299,6 @@ export class GatewayServer implements IGatewayServer, ISubThread {
             this.servers.push(server);
         });
     }
-
-    
 }
 
 /**

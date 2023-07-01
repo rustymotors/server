@@ -1,6 +1,5 @@
 import {
     TServerLogger,
-    ISocket,
     TPersonaRecord,
     IPersonaServer,
 } from "mcos/shared/interfaces";

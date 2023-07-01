@@ -18,7 +18,6 @@ import {
     TNPSMessage,
     TServerLogger,
     TServiceResponse,
-    TServiceRouter,
     TServiceRouterArgs,
 } from "mcos/shared/interfaces";
 import { handleData } from "./internal.js";

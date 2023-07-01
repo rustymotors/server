@@ -1,13 +1,10 @@
-import { NPSMessage, Sentry, ServerError } from "mcos/shared";
+import { NPSMessage, Sentry } from "mcos/shared";
 import { createEncrypters, selectEncryptors } from "mcos/gateway";
 import { NPSUserInfo } from "../NPSUserInfo.js";
 import { MessagePacket } from "../MessagePacket.js";
 import { getPersonasByPersonaId } from "mcos/persona";
 import { DatabaseManager } from "mcos/database";
 import {
-    TBufferWithConnection,
-    TServerLogger,
-    TMessageArrayWithConnection,
     TServiceRouterArgs,
     TServiceResponse,
 } from "mcos/shared/interfaces";
@@ -118,8 +115,8 @@ export async function _npsRequestGameConnectServer(
         dataConnection.connection.encryptionSession = selectEncryptors({
             dataConnection,
             connection,
-            log
-    });
+            log,
+        });
     } catch (error) {
         dataConnection.connection.encryptionSession = createEncrypters(
             dataConnection.connection,

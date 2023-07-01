@@ -1,4 +1,8 @@
-import { IGatewayServer, ISubThread, TServerLogger } from "mcos/shared/interfaces";
+import {
+    IGatewayServer,
+    ISubThread,
+    TServerLogger,
+} from "mcos/shared/interfaces";
 import EventEmitter from "node:events";
 
 export class SubThread extends EventEmitter implements ISubThread {

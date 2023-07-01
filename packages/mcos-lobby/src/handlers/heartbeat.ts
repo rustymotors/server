@@ -1,8 +1,5 @@
 import { NPSMessage } from "mcos/shared";
 import {
-    TBufferWithConnection,
-    TServerLogger,
-    TMessageArrayWithConnection,
     TServiceRouterArgs,
     TServiceResponse,
 } from "mcos/shared/interfaces";
