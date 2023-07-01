@@ -17,10 +17,6 @@
 import { Sentry } from "mcos/shared";
 import { handleData } from "./internal.js";
 import {
-    IConnection,
-    TBufferWithConnection,
-    TServerConfiguration,
-    TServerLogger,
     TServiceResponse,
     TServiceRouterArgs,
 } from "mcos/shared/interfaces";

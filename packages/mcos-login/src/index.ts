@@ -21,7 +21,6 @@ import {
     IDatabaseManager,
     TUserRecordMini,
     TServiceResponse,
-    TServiceRouter,
     TServiceRouterArgs,
 } from "mcos/shared/interfaces";
 

@@ -1,4 +1,3 @@
-import { ServerError } from "mcos/shared";
 import { IAuthServer, ISocket, TServerLogger } from "mcos/shared/interfaces";
 import { IncomingMessage, ServerResponse } from "node:http";
 
@@ -15,17 +14,6 @@ export class AuthServer implements IAuthServer {
 
     constructor(log: TServerLogger) {
         this._log = log;
-    }
-
-    /**
-     * Get the single instance of the class
-     *
-     */
-    static getInstance(log: TServerLogger): AuthServer {
-        if (!AuthServer._instance) {
-            AuthServer._instance = new AuthServer(log);
-        }
-        return AuthServer._instance;
     }
 
     private _handleGetTicket(): string {
@@ -58,5 +46,8 @@ export class AuthServer implements IAuthServer {
  */
 
 export function getAuthServer(log: TServerLogger): AuthServer {
-    return AuthServer.getInstance(log);
+    if (!AuthServer._instance) {
+        AuthServer._instance = new AuthServer(log);
+    }
+    return AuthServer._instance;
 }

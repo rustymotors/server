@@ -11,7 +11,6 @@ import {
     IConnectionFactory,
     ISocketTestFactory,
 } from "mcos/shared";
-import { getConnectionManager } from "./ConnectionManager.js";
 
 describe("EncryptionManager (legacy)", () => {
     it("given the same keys, should always return same EncryptionSession", () => {

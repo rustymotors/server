@@ -246,8 +246,11 @@ export function decryptBuffer(
     buffer: Buffer,
     log: TServerLogger
 ): { session: TEncryptionSession; data: Buffer } {
-    
-    const encryptionSession = selectEncryptors({dataConnection, connection, log});
+    const encryptionSession = selectEncryptors({
+        dataConnection,
+        connection,
+        log,
+    });
     const deciphered = encryptionSession.tsDecipher.update(buffer);
     return {
         session: encryptionSession,
