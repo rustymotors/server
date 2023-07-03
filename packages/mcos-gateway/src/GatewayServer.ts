@@ -11,8 +11,8 @@ import {
     TTCPConnectionHandler,
 } from "mcos/shared/interfaces";
 import { defaultLog, socketConnectionHandler } from "./index.js";
-import { Sentry, ServerError } from "mcos/shared";
 import { ConsoleThread } from "../../cli/ConsoleThread.js";
+import { Sentry, ServerError } from "mcos/shared";
 import { getConnectionManager } from "./ConnectionManager.js";
 
 /**
@@ -146,6 +146,14 @@ export class GatewayServer implements IGatewayServer, ISubThread {
         // Mark the list of active subthreads as empty
         this.log("debug", "Marking the list of active subthreads as empty");
         this.activeSubThreads = [];
+
+        // Empty the connection list
+        this.log("debug", "Emptying the connection list");
+        getConnectionManager().emptyConnectionList();
+
+        // Empty the legacy connection list
+        this.log("debug", "Emptying the legacy connection list");
+        getConnectionManager().emptyLegacyConnectionList();
     }
 
     handleReadThreadEvent(event: string): void {

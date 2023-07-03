@@ -121,10 +121,17 @@ export function addConnection(connection: TSocketWithConnectionInfo): void {
     connectionList.push(connection);
 }
 
+export function emptyConnectionList(): void {
+    connectionList.splice(0, connectionList.length);
+}
+
 /**
  * Class to manage connections
  */
 export class ConnectionManager implements IConnectionManager {
+    emptyLegacyConnectionList() {
+        emptyConnectionList();
+    }
     connections: IConnection[] = [];
     static instance: ConnectionManager;
 
@@ -184,7 +191,9 @@ export class ConnectionManager implements IConnectionManager {
      * @return {void}
      */
     addConnection(connection: IConnection): void {
-        const existingConnection = this.findConnectionByID(connection.id);
+        const existingConnection = this.connections.find((c) => {
+            return c.id === connection.id;
+        });
         if (typeof existingConnection !== "undefined") {
             return;
         }
@@ -373,7 +382,9 @@ export class ConnectionManager implements IConnectionManager {
         encryptionSession: TEncryptionSession,
         useEncryption: boolean
     ): void {
-        const connection = this.findConnectionByID(connectionId);
+        const connection = this.connections.find((c) => {
+            return c.id === connectionId;
+        });
         if (typeof connection === "undefined") {
             throw new ServerError("Connection not found");
         }
