@@ -49,10 +49,11 @@ import {
 } from "./ConnectionManager.js";
 import { dataHandler } from "./sockets.js";
 import { httpListener as httpHandler } from "./web.js";
+import { getConfiguration } from "../../../src/shared/ServerConfiguration.js";
 export { getAdminServer } from "./AdminServer.js";
 export { getAllConnections } from "./ConnectionManager.js";
 
-export const defaultLog = GetServerLogger();
+export const defaultLog = GetServerLogger("info");
 
 /**
  *

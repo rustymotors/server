@@ -21,7 +21,7 @@ import { TConfiguration } from "mcos/shared/interfaces";
 
 /**
  * Read the TLS certificate file
- * @param {TServerConfiguration} config
+ * @param {TConfiguration} config
  * @return {string}
  */
 export function handleGetCert(config: TConfiguration): string {
@@ -30,7 +30,7 @@ export function handleGetCert(config: TConfiguration): string {
 
 /**
  * Generate Windows registry configuration file for clients
- * @param {TServerConfiguration} config
+ * @param {TConfiguration} config
  * @return {string}
  */
 export function handleGetRegistry(config: TConfiguration): string {
@@ -69,7 +69,7 @@ export function handleGetRegistry(config: TConfiguration): string {
 
 /**
  *  Read TLS public key file to string
- * @param {TServerConfiguration} config
+ * @param {TConfiguration} config
  * @return {string}
  */
 export function handleGetKey(config: TConfiguration): string {
