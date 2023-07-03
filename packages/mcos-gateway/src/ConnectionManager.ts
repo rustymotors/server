@@ -128,13 +128,6 @@ export class ConnectionManager implements IConnectionManager {
     connections: IConnection[] = [];
     static instance: ConnectionManager;
 
-    static getInstance(): ConnectionManager {
-        if (!ConnectionManager.instance) {
-            ConnectionManager.instance = new ConnectionManager();
-        }
-        return ConnectionManager.instance;
-    }
-
     /**
      * Find a connection by id
      * @param {string} connectionId
@@ -167,6 +160,22 @@ export class ConnectionManager implements IConnectionManager {
                 c.ip === remoteAddress && c.port === localPort && c.status !== 0
             );
         });
+    }
+
+    /**
+     * Find all connections with a given remoteAddress
+     */
+    findConnectionsByAddress(remoteAddress: string): IConnection[] {
+        const connections: IConnection[] = [];
+        for (const connection of this.connections) {
+            if (connection.ip === remoteAddress) {
+                connections.push(connection);
+            }
+        }
+        return connections;
+    }
+    emptyConnectionList() {
+        this.connections = [];
     }
 
     /**
@@ -380,5 +389,8 @@ export class ConnectionManager implements IConnectionManager {
  * @memberof ConnectionManager
  */
 export function getConnectionManager(): ConnectionManager {
-    return ConnectionManager.getInstance();
+    if (typeof ConnectionManager.instance === "undefined") {
+        ConnectionManager.instance = new ConnectionManager();
+    }
+    return ConnectionManager.instance;
 }
