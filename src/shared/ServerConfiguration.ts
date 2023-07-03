@@ -1,33 +1,33 @@
 import { readFileSync } from "node:fs";
 import { getServerLogger } from "./log.js";
 import { Sentry } from "./sentry.js";
-import { ELOG_LEVEL, TServerConfiguration } from "./interfaces.js";
+import {
+    ELOG_LEVEL,
+    TConfiguration,
+    IServerConfiguration,
+} from "./interfaces.js";
 
 /**
  * @module mcos/shared
  */
-class ServerConfiguration {
-    /** @type {ServerConfiguration} */
+class ServerConfiguration implements IServerConfiguration {
     static _instance: ServerConfiguration;
 
-    /** @type {TServerConfiguration} */
-    _serverConfig: TServerConfiguration;
+    _serverConfig: TConfiguration;
 
-    /**
-     *
-     * @param {string} externalHost
-     * @param {string} certificateFile
-     * @param {string} privateKeyFile
-     * @param {string} publicKeyFile
-     * @param {ELOG_LEVEL} [logLevel="INFO"]
-     */
-    constructor(
-        externalHost: string,
-        certificateFile: string,
-        privateKeyFile: string,
-        publicKeyFile: string,
-        logLevel: ELOG_LEVEL = "info"
-    ) {
+    constructor({
+        externalHost,
+        certificateFile,
+        privateKeyFile,
+        publicKeyFile,
+        logLevel = "info",
+    }: {
+        externalHost: string;
+        certificateFile: string;
+        privateKeyFile: string;
+        publicKeyFile: string;
+        logLevel: ELOG_LEVEL;
+    }) {
         const log = getServerLogger();
         this._serverConfig = {
             EXTERNAL_HOST: externalHost,
@@ -36,6 +36,7 @@ class ServerConfiguration {
             publicKeyContents: "",
             LOG_LEVEL: logLevel,
         };
+        this.setLogLevel(logLevel);
         try {
             this._serverConfig.certificateFileContents = readFileSync(
                 certificateFile,
@@ -73,6 +74,18 @@ class ServerConfiguration {
         log("info", "Server configuration initialized");
         ServerConfiguration._instance = this;
     }
+    getConfig(): TConfiguration {
+        return this._serverConfig;
+    }
+
+    setLogLevel(logLevel: ELOG_LEVEL) {
+        console.log("Setting log level to", logLevel);
+        this._serverConfig.LOG_LEVEL = logLevel;
+    }
+
+    getLogLevel(): ELOG_LEVEL {
+        return this._serverConfig.LOG_LEVEL;
+    }
 }
 
 /**
@@ -82,32 +95,35 @@ class ServerConfiguration {
  * @param {string} privateKeyFile
  * @param {string} publicKeyFile
  * @param {ELOG_LEVEL} [logLevel="INFO"]
- * @returns {TServerConfiguration}
+ * @returns {TConfiguration}
  */
-export function setServerConfiguration(
-    externalHost: string,
-    certificateFile: string,
-    privateKeyFile: string,
-    publicKeyFile: string,
-    logLevel: ELOG_LEVEL = "info"
-): TServerConfiguration {
+
+export function setConfiguration({
+    externalHost = "localhost",
+    certificateFile = "",
+    privateKeyFile = "",
+    publicKeyFile = "",
+    logLevel = "info",
+}: {
+    externalHost: string;
+    certificateFile: string;
+    privateKeyFile: string;
+    publicKeyFile: string;
+    logLevel: ELOG_LEVEL;
+}): TConfiguration {
     if (typeof ServerConfiguration._instance === "undefined") {
-        ServerConfiguration._instance = new ServerConfiguration(
+        ServerConfiguration._instance = new ServerConfiguration({
             externalHost,
             certificateFile,
             privateKeyFile,
             publicKeyFile,
-            logLevel
-        );
+            logLevel,
+        });
     }
     return ServerConfiguration._instance._serverConfig;
 }
 
-/**
- *  Get the server configuration
- * @returns {TServerConfiguration}
- */
-export function getServerConfiguration(): TServerConfiguration {
+export function getServerConfiguration(): IServerConfiguration {
     if (typeof ServerConfiguration._instance === "undefined") {
         const err = new Error(
             "Configuration not set. Use setServerConfiguration(externalHost, certificateFile, privateKeyFile, publicKeyFile, logLevel?)"
@@ -115,5 +131,12 @@ export function getServerConfiguration(): TServerConfiguration {
         Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
-    return ServerConfiguration._instance._serverConfig;
+    return ServerConfiguration._instance;
+}
+/**
+ *  Get the server configuration
+ * @returns {TConfiguration}
+ */
+export function getConfiguration(): TConfiguration {
+    return getServerConfiguration().getConfig();
 }

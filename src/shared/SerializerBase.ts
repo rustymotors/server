@@ -1,4 +1,4 @@
-import { ServerError } from "./ServerError.js";
+import { ServerError } from "./errors/ServerError.js";
 import { ISerializedObject } from "./interfaces.js";
 
 export class SerializerBase implements ISerializedObject {

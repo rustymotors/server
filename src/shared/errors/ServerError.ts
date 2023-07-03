@@ -1,4 +1,4 @@
-import { IError } from "./interfaces.js";
+import { IError } from "../interfaces.js";
 
 /**
  * ServerError

@@ -6,6 +6,7 @@ import {
     ServerResponse,
 } from "node:http";
 import { TransactionMessageBase } from "./TMessageBase.js";
+import { type } from "node:os";
 
 export interface ITCPHeader extends ISerializedObject {
     msgid: number;
@@ -115,13 +116,19 @@ export type ELOG_LEVEL =
     | "crit"
     | "alert"
     | "emerg";
-export interface TServerConfiguration {
+export interface TConfiguration {
     EXTERNAL_HOST: string;
     certificateFileContents: string;
     privateKeyContents: string;
     publicKeyContents: string;
     LOG_LEVEL: ELOG_LEVEL;
 }
+export interface IServerConfiguration {
+    getConfig: () => TConfiguration;
+    getLogLevel: () => ELOG_LEVEL;
+    setLogLevel: (level: ELOG_LEVEL) => void;
+}
+
 export type TServerLogger = (level: ELOG_LEVEL, msg: string) => void;
 export interface IDatabaseManager {
     updateSessionKey: (
@@ -255,14 +262,14 @@ export type TTCPConnectionHandler = ({
     log,
 }: {
     incomingSocket: ISocket;
-    config: TServerConfiguration;
+    config: TConfiguration;
     log: TServerLogger;
 }) => void;
 
 export type THTTPConnectionHandler = (
     req: IncomingMessage,
     res: ServerResponse,
-    config: TServerConfiguration,
+    config: TConfiguration,
     log: TServerLogger
 ) => void;
 
@@ -299,7 +306,7 @@ export type TSocketDataHandler = ({
     processMessage?: TMessageProcessor;
     data: Buffer;
     logger: TServerLogger;
-    config: TServerConfiguration;
+    config: TConfiguration;
     connection: IConnection;
     connectionRecord: TSocketWithConnectionInfo;
 }) => void;
@@ -314,7 +321,7 @@ export type TMessageProcessor = ({
 }: {
     data: Buffer;
     connectionRecord: TSocketWithConnectionInfo;
-    config: TServerConfiguration;
+    config: TConfiguration;
     logger: TServerLogger;
     connection: IConnection;
     message: IMessage | ITCPMessage;
@@ -326,7 +333,7 @@ export type TConnectionHandler = ({
     log,
 }: {
     incomingSocket: ISocket;
-    config: TServerConfiguration;
+    config: TConfiguration;
     log: TServerLogger;
 }) => void;
 
@@ -428,6 +435,7 @@ export interface ISubThread {
 }
 
 export interface IGatewayServer {
+    help(): void;
     start(): void;
     stop(): void;
     restart(): void;
@@ -459,10 +467,18 @@ export interface IEncryptionManager {
 export type TServiceRouterArgs = {
     legacyConnection: TBufferWithConnection;
     connection?: IConnection;
-    config: TServerConfiguration;
+    config: TConfiguration;
     log: TServerLogger;
 };
 
 export type TServiceRouter = (
     args: TServiceRouterArgs
 ) => Promise<TServiceResponse>;
+
+export interface IKeypressEvent {
+    sequence: string;
+    name: string;
+    ctrl: boolean;
+    meta: boolean;
+    shift: boolean;
+}
