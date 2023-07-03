@@ -16,22 +16,11 @@
 
 import { Sentry } from "mcos/shared";
 import { handleData } from "./internal.js";
-import {
-    TBufferWithConnection,
-    TServerConfiguration,
-    TServerLogger,
-    TServiceResponse,
-    TServiceRouterArgs,
-} from "mcos/shared/interfaces";
+import { TServiceResponse, TServiceRouterArgs } from "mcos/shared/interfaces";
 
 /**
  * Entry and exit point for the lobby service
  *
- * @export
- * @param {TBufferWithConnection} dataConnection
- * @param {TServerConfiguration} config
- * @param {TServerLogger} log
- * @return {Promise<TServiceResponse>}
  */
 export async function receiveLobbyData(
     args: TServiceRouterArgs

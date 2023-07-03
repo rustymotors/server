@@ -6,13 +6,13 @@ import {
     IGatewayServer,
     ISubThread,
     TConnectionHandler,
-    TServerConfiguration,
+    TConfiguration,
     TServerLogger,
     TTCPConnectionHandler,
 } from "mcos/shared/interfaces";
 import { defaultLog, socketConnectionHandler } from "./index.js";
-import { ReadInput } from "../../../src/rebirth/threads/ReadInput.js";
 import { Sentry } from "mcos/shared";
+import { ConsoleThread } from "../../cli/ConsoleThread.js";
 
 /**
  * Gateway server
@@ -21,14 +21,14 @@ import { Sentry } from "mcos/shared";
  */
 
 export class GatewayServer implements IGatewayServer, ISubThread {
-    private readonly config: TServerConfiguration;
+    private readonly config: TConfiguration;
     log: TServerLogger;
     private readonly backlogAllowedCount: number;
     private readonly listeningPortList: number[];
     private readonly servers: tcpServer[];
     private readonly socketconnection: TTCPConnectionHandler;
     private serversRunning: boolean = false;
-    private readThread: ReadInput | undefined;
+    private readThread: ConsoleThread | undefined;
     private activeSubThreads: Array<ISubThread> = [];
     parentThread: IGatewayServer | undefined;
     private status: "stopped" | "running" | "stopping" | "restarting" =
@@ -48,7 +48,7 @@ export class GatewayServer implements IGatewayServer, ISubThread {
         listeningPortList = [],
         onSocketConnection = socketConnectionHandler,
     }: {
-        config?: TServerConfiguration;
+        config?: TConfiguration;
         log?: TServerLogger;
         backlogAllowedCount?: number;
         serverListener?: TConnectionHandler;
@@ -65,6 +65,9 @@ export class GatewayServer implements IGatewayServer, ISubThread {
         this.listeningPortList = listeningPortList;
         this.servers = [];
         this.socketconnection = onSocketConnection;
+    }
+    help(): void {
+        throw new Error("Method not implemented.");
     }
     mainShutdown(): void {
         throw new Error("Method not implemented.");
@@ -148,7 +151,10 @@ export class GatewayServer implements IGatewayServer, ISubThread {
 
     init(): void {
         // Create the read thread
-        this.readThread = new ReadInput({ parentThread: this, log: this.log });
+        this.readThread = new ConsoleThread({
+            parentThread: this,
+            log: this.log,
+        });
         this.readThread.on("shutdownComplete", () => {
             this.log(
                 "debug",
@@ -182,7 +188,7 @@ export class GatewayServer implements IGatewayServer, ISubThread {
         listeningPortList = [],
         onSocketConnection = socketConnectionHandler,
     }: {
-        config?: TServerConfiguration;
+        config?: TConfiguration;
         log?: TServerLogger;
         backlogAllowedCount?: number;
         serverListener?: TConnectionHandler;
@@ -310,7 +316,7 @@ export function getGatewayServer({
     listeningPortList = [],
     onSocketConnection = socketConnectionHandler,
 }: {
-    config?: TServerConfiguration;
+    config?: TConfiguration;
     log?: TServerLogger;
     backlogAllowedCount?: number;
     serverListener?: TConnectionHandler;

@@ -31,7 +31,7 @@ import {
     ITCPMessage,
     THTTPConnectionHandler,
     TMessageProcessor,
-    TServerConfiguration,
+    TConfiguration,
     TServerLogger,
     TSocketDataHandler,
     TSocketEndHandler,
@@ -96,7 +96,7 @@ export function socketDataHandler({
     processMessage?: TMessageProcessor;
     data: Buffer;
     logger: TServerLogger;
-    config: TServerConfiguration;
+    config: TConfiguration;
     connection: IConnection;
     connectionRecord: TSocketWithConnectionInfo;
 }): void {
@@ -190,7 +190,7 @@ export function rawConnectionHandler({
     onSocketEnd = socketEndHandler,
 }: {
     incomingSocket: ISocket;
-    config: TServerConfiguration;
+    config: TConfiguration;
     log: TServerLogger;
     onSocketData?: TSocketDataHandler;
     onSocketError?: TSocketErrorHandler;
@@ -272,7 +272,7 @@ export function socketConnectionHandler({
     onTCPConnection?: TTCPConnectionHandler;
     onHTTPConnection?: THTTPConnectionHandler;
     incomingSocket: ISocket;
-    config: TServerConfiguration;
+    config: TConfiguration;
     log: TServerLogger;
 }): void {
     log(

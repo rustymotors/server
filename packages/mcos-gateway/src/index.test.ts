@@ -19,7 +19,7 @@ import {
 import {
     ISocket,
     TServerLogger,
-    TServerConfiguration,
+    TConfiguration,
     TSocketWithConnectionInfo,
 } from "mcos/shared/interfaces";
 
@@ -34,7 +34,7 @@ describe("rawConnectionListener", () => {
         // Arrange
         const fakeSocket: ISocket = ISocketTestFactory();
         const fakeLog: TServerLogger = sinon.stub();
-        const fakeConfig: TServerConfiguration = {
+        const fakeConfig: TConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
             privateKeyContents: "",
@@ -69,7 +69,7 @@ describe("rawConnectionListener", () => {
         const fakeSocket: ISocket = ISocketTestFactory();
         fakeSocket.localPort = undefined;
         const fakeLog: TServerLogger = sinon.stub();
-        const fakeConfig: TServerConfiguration = {
+        const fakeConfig: TConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
             privateKeyContents: "",
@@ -100,7 +100,7 @@ describe("rawConnectionListener", () => {
         const fakeSocket: ISocket = ISocketTestFactory();
         fakeSocket.remoteAddress = undefined;
         const fakeLog: TServerLogger = sinon.stub();
-        const fakeConfig: TServerConfiguration = {
+        const fakeConfig: TConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
             privateKeyContents: "",
@@ -130,7 +130,7 @@ describe("rawConnectionListener", () => {
 
         const fakeSocket: ISocket = ISocketTestFactory();
         const fakeLog: TServerLogger = sinon.stub();
-        const fakeConfig: TServerConfiguration = {
+        const fakeConfig: TConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
             privateKeyContents: "",
@@ -170,7 +170,7 @@ describe("rawConnectionListener", () => {
 
         const fakeSocket: ISocket = ISocketTestFactory();
         const fakeLog: TServerLogger = sinon.stub();
-        const fakeConfig: TServerConfiguration = {
+        const fakeConfig: TConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
             privateKeyContents: "",
@@ -250,7 +250,7 @@ describe("socketErrorHandler", () => {
     it("should attempt to destroy the socket if no longer writable", () => {
         const fakeSocket: ISocket = ISocketTestFactory();
         const fakeLog: TServerLogger = sinon.stub();
-        const fakeConfig: TServerConfiguration = {
+        const fakeConfig: TConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
             privateKeyContents: "",
@@ -343,7 +343,7 @@ describe("socketDataHandler", () => {
         // Arrange
         const fakeSocket: ISocket = ISocketTestFactory();
         const fakeLog: TServerLogger = sinon.stub();
-        const fakeConfig: TServerConfiguration = {
+        const fakeConfig: TConfiguration = {
             EXTERNAL_HOST: "localhost",
             certificateFileContents: "",
             privateKeyContents: "",

@@ -22,7 +22,7 @@ import { premadeLogin } from "./premadeLogin.js";
 import {
     TUserRecordMini,
     TBufferWithConnection,
-    TServerConfiguration,
+    TConfiguration,
     TServerLogger,
     TMessageArrayWithConnection,
     TServiceRouterArgs,
@@ -52,7 +52,7 @@ const userRecords: TUserRecordMini[] = [
  */
 async function login(
     dataConnection: TBufferWithConnection,
-    config: TServerConfiguration,
+    config: TConfiguration,
     log: TServerLogger
 ): Promise<TMessageArrayWithConnection> {
     const { connectionId, data } = dataConnection;

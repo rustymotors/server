@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { getGatewayServer } from "mcos/gateway";
-import { GetServerLogger, Sentry, setServerConfiguration } from "mcos/shared";
+import { GetServerLogger, Sentry, setConfiguration } from "mcos/shared";
 
 Sentry.init({
     dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
@@ -44,13 +44,13 @@ try {
         console.error("Please set PUBLIC_KEY_FILE");
         process.exit(1);
     }
-    const config = setServerConfiguration(
-        process.env.EXTERNAL_HOST,
-        process.env.CERTIFICATE_FILE,
-        process.env.PRIVATE_KEY_FILE,
-        process.env.PUBLIC_KEY_FILE,
-        "debug"
-    );
+    const config = setConfiguration({
+        externalHost: process.env.EXTERNAL_HOST,
+        certificateFile: process.env.CERTIFICATE_FILE,
+        privateKeyFile: process.env.PRIVATE_KEY_FILE,
+        publicKeyFile: process.env.PUBLIC_KEY_FILE,
+        logLevel: "debug",
+    });
     const appLog = GetServerLogger(config.LOG_LEVEL);
 
     const listeningPortList = [

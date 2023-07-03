@@ -25,7 +25,7 @@ import {
     TBinaryStructure,
     TBufferWithConnection,
     TMessageNode,
-    TServerConfiguration,
+    TConfiguration,
     TServerLogger,
     TServiceResponse,
     TServiceRouter,
@@ -120,7 +120,7 @@ export async function dataHandler({
 }: {
     data: Buffer;
     connectionRecord: TSocketWithConnectionInfo;
-    config: TServerConfiguration;
+    config: TConfiguration;
     logger: TServerLogger;
     connection: IConnection;
     message: IMessage | ITCPMessage;
