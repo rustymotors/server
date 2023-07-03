@@ -6,11 +6,12 @@
  * @since 1.0.0
  */
 
-import { GetServerLogger, getServerConfiguration } from "mcos/shared";
-import type {
-    TServerConfiguration,
-    TServerLogger,
-} from "mcos/shared/interfaces";
+import {
+    GetServerLogger,
+    getConfiguration,
+    getServerConfiguration,
+} from "mcos/shared";
+import type { TConfiguration, TServerLogger } from "mcos/shared/interfaces";
 
 /**
  * @description A buffer with a connection id
@@ -55,15 +56,15 @@ export interface IPortRouter {
 }
 
 export class Router {
-    private _config: TServerConfiguration;
+    private _config: TConfiguration;
     private _log: TServerLogger;
     private portRouters: Array<IPortRouter> = [];
     static instance: Router | undefined;
 
     constructor({
-        config = getServerConfiguration(),
-        log = GetServerLogger(),
-    }: { config?: TServerConfiguration; log?: TServerLogger } = {}) {
+        config = getConfiguration(),
+        log = GetServerLogger(getConfiguration().LOG_LEVEL),
+    }: { config?: TConfiguration; log?: TServerLogger } = {}) {
         this._config = config;
         this._log = log;
         if (Router.instance) {

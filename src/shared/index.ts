@@ -11,7 +11,7 @@ import {
     ISocket,
     ITCPHeader,
     ITCPMessage,
-    TServerConfiguration,
+    TConfiguration,
     TServerLogger,
 } from "./interfaces.js";
 export { toHex } from "./utils.js";
@@ -23,13 +23,15 @@ export {
 export { TransactionMessageBase as TSMessageBase } from "./TMessageBase.js";
 
 export {
-    setServerConfiguration,
+    setConfiguration,
+    getConfiguration,
     getServerConfiguration,
 } from "./ServerConfiguration.js";
 export { NPSMessage } from "./NPSMessage.js";
 export { getServerLogger as GetServerLogger } from "./log.js";
 export { Sentry } from "./sentry.js";
-export { ServerError } from "./ServerError.js";
+export { ServerError } from "./errors/ServerError.js";
+export { SubThread } from "./SubThread.js";
 export { Connection } from "./Connection.js";
 export { Message } from "./Message.js";
 export { MessageHeader } from "./MessageHeader.js";
@@ -127,7 +129,7 @@ export function ITCPMessageFactory(): ITCPMessage {
     };
 }
 
-export function TServerConfigurationFactory(): TServerConfiguration {
+export function TServerConfigurationFactory(): TConfiguration {
     return {
         EXTERNAL_HOST: "",
         certificateFileContents: "",
