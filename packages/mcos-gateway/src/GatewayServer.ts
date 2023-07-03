@@ -146,11 +146,6 @@ export class GatewayServer implements IGatewayServer, ISubThread {
         // Mark the list of active subthreads as empty
         this.log("debug", "Marking the list of active subthreads as empty");
         this.activeSubThreads = [];
-
-        // Empty the connection list
-        this.log("debug", "Emptying the connection list");
-        getConnectionManager().emptyConnectionList();
-
     }
 
     handleReadThreadEvent(event: string): void {
