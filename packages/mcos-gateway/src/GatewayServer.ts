@@ -11,8 +11,9 @@ import {
     TTCPConnectionHandler,
 } from "mcos/shared/interfaces";
 import { defaultLog, socketConnectionHandler } from "./index.js";
-import { Sentry } from "mcos/shared";
+import { Sentry, ServerError } from "mcos/shared";
 import { ConsoleThread } from "../../cli/ConsoleThread.js";
+import { getConnectionManager } from "./ConnectionManager.js";
 
 /**
  * Gateway server
@@ -34,6 +35,7 @@ export class GatewayServer implements IGatewayServer, ISubThread {
     private status: "stopped" | "running" | "stopping" | "restarting" =
         "stopped";
     private sentryTransaction: Sentry.Transaction | undefined;
+    consoleEvents = ["userExit", "userRestart", "userHelp"];
 
     name: string = "GatewayServer";
     loopInterval: number = 0;
@@ -65,9 +67,6 @@ export class GatewayServer implements IGatewayServer, ISubThread {
         this.listeningPortList = listeningPortList;
         this.servers = [];
         this.socketconnection = onSocketConnection;
-    }
-    help(): void {
-        throw new Error("Method not implemented.");
     }
     mainShutdown(): void {
         throw new Error("Method not implemented.");
@@ -147,6 +146,23 @@ export class GatewayServer implements IGatewayServer, ISubThread {
         // Mark the list of active subthreads as empty
         this.log("debug", "Marking the list of active subthreads as empty");
         this.activeSubThreads = [];
+
+        // Empty the connection list
+        this.log("debug", "Emptying the connection list");
+        getConnectionManager().emptyConnectionList();
+
+    }
+
+    handleReadThreadEvent(event: string): void {
+        if (event === "userExit") {
+            this.exit();
+        }
+        if (event === "userRestart") {
+            this.restart();
+        }
+        if (event === "userHelp") {
+            this.help();
+        }
     }
 
     init(): void {
@@ -155,27 +171,24 @@ export class GatewayServer implements IGatewayServer, ISubThread {
             parentThread: this,
             log: this.log,
         });
-        this.readThread.on("shutdownComplete", () => {
-            this.log(
-                "debug",
-                "Shutdown complete for ReadInput in GatewayServer"
-            );
-            this.status = "stopped";
-            if (this.readThread !== undefined) {
-                this.onSubThreadShutdown("ReadInput");
-            }
+
+        // Register the read thread events
+        if (this.readThread === undefined) {
+            throw new ServerError("readThread is undefined");
+        }
+        this.consoleEvents.forEach((event) => {
+            this.readThread?.on(event, () => {
+                this.handleReadThreadEvent(event);
+            });
         });
-        this.readThread.on("restartComplete", () => {
-            this.log(
-                "debug",
-                "Restart complete for ReadInput in GatewayServer"
-            );
-            this.status = "restarting";
-            this.log("info", "Restarting...");
-            if (this.readThread !== undefined) {
-                this.onSubThreadShutdown("ReadInput");
-            }
-        });
+    }
+
+    help() {
+        console.log("=== Help ===");
+        console.log("x: Exit");
+        console.log("r: Restart");
+        console.log("?: Help");
+        console.log("============");
     }
     run(): void {
         // Intentionally left blank

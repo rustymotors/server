@@ -47,13 +47,13 @@ export class ShardServer {
 
     /**
      * @private
-     * @type {TServerConfiguration}
+     * @type {TConfiguration}
      */
     private readonly _config: TConfiguration;
 
     /**
      * Return the instance of the ShardServer class
-     * @param {TServerConfiguration} config
+     * @param {TConfiguration} config
      * @param {TServerLogger} log
      * @returns {ShardServer}
      */
@@ -71,7 +71,7 @@ export class ShardServer {
      * Creates an instance of ShardServer.
      *
      * Please use {@link ShardServer.getInstance()} instead
-     * @param {TServerConfiguration} config
+     * @param {TConfiguration} config
      * @param {TServerLogger} log
      * @memberof ShardServer
      */
@@ -207,7 +207,7 @@ export class ShardServer {
 }
 /**
  * Get the shard server instance
- * @param {TServerConfiguration} config
+ * @param {TConfiguration} config
  * @param {TServerLogger} log
  * @returns {ShardServer}
  */

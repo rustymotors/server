@@ -46,7 +46,7 @@ const userRecords: TUserRecordMini[] = [
  * Process a UserLogin packet
  * @private
  * @param {TBufferWithConnection} dataConnection
- * @param {TServerConfiguration} config
+ * @param {TConfiguration} config
  * @param {TServerLogger} log
  * @return {Promise<TMessageArrayWithConnection>}
  */
@@ -178,7 +178,7 @@ export const messageHandlers = [
  *
  *
  * @param {TBufferWithConnection} dataConnection
- * @param {TServerConfiguration} config
+ * @param {TConfiguration} config
  * @param {TServerLogger} log
  * @return {Promise<TMessageArrayWithConnection>}
  */
