@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { TServerConfiguration } from "mcos/shared/interfaces";
+import { TConfiguration } from "mcos/shared/interfaces";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
@@ -24,7 +24,7 @@ import { TServerConfiguration } from "mcos/shared/interfaces";
  * @param {TServerConfiguration} config
  * @return {string}
  */
-export function handleGetCert(config: TServerConfiguration): string {
+export function handleGetCert(config: TConfiguration): string {
     return config.certificateFileContents;
 }
 
@@ -33,7 +33,7 @@ export function handleGetCert(config: TServerConfiguration): string {
  * @param {TServerConfiguration} config
  * @return {string}
  */
-export function handleGetRegistry(config: TServerConfiguration): string {
+export function handleGetRegistry(config: TConfiguration): string {
     const externalHost = config.EXTERNAL_HOST;
     const patchHost = externalHost;
     const authHost = externalHost;
@@ -72,6 +72,6 @@ export function handleGetRegistry(config: TServerConfiguration): string {
  * @param {TServerConfiguration} config
  * @return {string}
  */
-export function handleGetKey(config: TServerConfiguration): string {
+export function handleGetKey(config: TConfiguration): string {
     return config.publicKeyContents;
 }

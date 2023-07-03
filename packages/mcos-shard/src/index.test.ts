@@ -2,13 +2,12 @@ import { describe, it } from "mocha";
 import { expect } from "chai";
 import { handleGetCert, handleGetKey, handleGetRegistry } from "./index.js";
 import { ShardServer } from "./ShardServer.js";
-import { TServerConfiguration, TServerLogger } from "mcos/shared/interfaces";
+import { TConfiguration, TServerLogger } from "mcos/shared/interfaces";
 
 describe("Shard service", () => {
     it("should return an instance when getInstance() is called", () => {
         // arrange
-        /** @type {TServerConfiguration} */
-        const config: TServerConfiguration = {
+        const config: TConfiguration = {
             certificateFileContents: "",
             EXTERNAL_HOST: "",
             privateKeyContents: "",
@@ -32,8 +31,7 @@ describe("Shard service", () => {
     describe("handleGetCert", () => {
         it("should return file contents", () => {
             // arrange
-            /** @type {TServerConfiguration} */
-            const config: TServerConfiguration = {
+            const config: TConfiguration = {
                 certificateFileContents: "Hello! I'm an SSL cert. Honest.",
                 EXTERNAL_HOST: "",
                 privateKeyContents: "",
@@ -54,8 +52,7 @@ describe("Shard service", () => {
     describe("handleGetRegistry", () => {
         it("should return file contents", () => {
             // arrange
-            /** @type {TServerConfiguration} */
-            const config: TServerConfiguration = {
+            const config: TConfiguration = {
                 certificateFileContents: "",
                 EXTERNAL_HOST: "0.10.0.1",
                 privateKeyContents: "",
@@ -76,8 +73,7 @@ describe("Shard service", () => {
     describe("handleGetKey", () => {
         it("should return file contents", () => {
             // arrange
-            /** @type {TServerConfiguration} */
-            const config: TServerConfiguration = {
+            const config: TConfiguration = {
                 certificateFileContents: "",
                 EXTERNAL_HOST: "",
                 privateKeyContents: "",

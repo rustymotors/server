@@ -18,21 +18,16 @@ import { IncomingMessage, ServerResponse } from "http";
 import { getAdminServer } from "./AdminServer.js";
 import { getPatchServer } from "mcos/patch";
 import { getShardServer } from "mcos/shard";
-import { TServerConfiguration, TServerLogger } from "mcos/shared/interfaces";
+import { TConfiguration, TServerLogger } from "mcos/shared/interfaces";
 import { getAuthServer } from "../../mcos-auth/src/AuthServer.js";
 
 /**
  * Routes incomming HTTP requests
- * @param {IncomingMessage} req
- * @param {ServerResponse} res
- * @param {TServerConfiguration} config
- * @param {TServerLogger} log
- * @returns {ServerResponse}
  */
 export function httpListener(
     req: IncomingMessage,
     res: ServerResponse<IncomingMessage>,
-    config: TServerConfiguration,
+    config: TConfiguration,
     log: TServerLogger
 ): ServerResponse {
     if (typeof req.url !== "undefined" && req.url.startsWith("/AuthLogin")) {

@@ -2,7 +2,7 @@ import { Sentry } from "mcos/shared";
 import { ShardEntry } from "./shard-entry.js";
 import { createServer } from "node:https";
 import { IncomingMessage, Server, ServerResponse } from "node:http";
-import { TServerConfiguration, TServerLogger } from "mcos/shared/interfaces";
+import { TConfiguration, TServerLogger } from "mcos/shared/interfaces";
 import { handleGetCert, handleGetKey, handleGetRegistry } from "./index.js";
 
 /**
@@ -49,7 +49,7 @@ export class ShardServer {
      * @private
      * @type {TServerConfiguration}
      */
-    private readonly _config: TServerConfiguration;
+    private readonly _config: TConfiguration;
 
     /**
      * Return the instance of the ShardServer class
@@ -58,7 +58,7 @@ export class ShardServer {
      * @returns {ShardServer}
      */
     static getInstance(
-        config: TServerConfiguration,
+        config: TConfiguration,
         log: TServerLogger
     ): ShardServer {
         if (typeof ShardServer.instance === "undefined") {
@@ -75,7 +75,7 @@ export class ShardServer {
      * @param {TServerLogger} log
      * @memberof ShardServer
      */
-    constructor(config: TServerConfiguration, log: TServerLogger) {
+    constructor(config: TConfiguration, log: TServerLogger) {
         this._config = config;
         this._log = log;
         this._server = createServer(this.handleRequest.bind(this));
@@ -213,7 +213,7 @@ export class ShardServer {
  */
 
 export function getShardServer(
-    config: TServerConfiguration,
+    config: TConfiguration,
     log: TServerLogger
 ): ShardServer {
     return ShardServer.getInstance(config, log);
