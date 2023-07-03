@@ -54,7 +54,6 @@
         "format": "prettier --write app.ts \"packages/**/*.ts\" \"src/**/*.ts\"",
         "test": "c8 node --loader ts-node/esm --openssl-legacy-provider ./node_modules/.bin/_mocha {src,packages}/**/*.test.ts",
         "build:test": "npm run format && npm run build && npm run test",
-        "docs": "npx typedoc",
         "prod": "make prod_node",
         "prod:stop": "docker-compose stop",
         "start:dev": "node --loader ts-node/esm --openssl-legacy-provider app.ts",
@@ -123,7 +122,6 @@
     "dependencies": {
         "@sentry/node": "7.57",
         "@sentry/profiling-node": "^1.0.7",
-        "ts-node": "10.9.1",
-        "typedoc": "^0.24.8"
+        "ts-node": "10.9.1"
     }
 }
