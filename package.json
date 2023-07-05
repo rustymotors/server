@@ -121,7 +121,7 @@
     },
     "dependencies": {
         "@sentry/node": "7.57",
-        "@sentry/profiling-node": "^1.0.7",
+        "@sentry/profiling-node": "^1.0.8",
         "ts-node": "10.9.1"
     }
 }
