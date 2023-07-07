@@ -129,15 +129,16 @@ function tryDecryptBuffer(
  */
 function _MSG_STRING(messageID: number): string {
     const messageIds = [
-        { id: 105, name: "MC_LOGIN" },
-        { id: 106, name: "MC_LOGOUT" },
-        { id: 109, name: "MC_SET_OPTIONS" },
-        { id: 141, name: "MC_STOCK_CAR_INFO" },
-        { id: 213, name: "MC_LOGIN_COMPLETE" },
-        { id: 266, name: "MC_UPDATE_PLAYER_PHYSICAL" },
-        { id: 324, name: "MC_GET_LOBBIES" },
-        { id: 325, name: "MC_LOBBIES" },
-        { id: 438, name: "MC_CLIENT_CONNECT_MSG" },
+        { id: 105, name: "MC_LOGIN" },  // 0x69
+        { id: 106, name: "MC_LOGOUT" }, // 0x6a
+        { id: 109, name: "MC_SET_OPTIONS" }, // 0x6d
+        { id: 141, name: "MC_STOCK_CAR_INFO" }, // 0x8d
+        { id: 213, name: "MC_LOGIN_COMPLETE" }, // 0xd5
+        { id: 266, name: "MC_UPDATE_PLAYER_PHYSICAL" }, // 0x10a
+        { id: 324, name: "MC_GET_LOBBIES" }, // 0x144
+        { id: 325, name: "MC_LOBBIES" }, // 0x145
+        { id: 391, name: "MC_CLUB_GET_INVITATIONS" }, // 0x187
+        { id: 438, name: "MC_CLIENT_CONNECT_MSG" }, // 0x1b6
         { id: 440, name: "MC_TRACKING_MSG" },
     ];
     const result = messageIds.find((id) => id.id === messageID);
