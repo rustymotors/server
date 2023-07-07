@@ -10,7 +10,9 @@
 // "lpb" is a _NPS_UserInfo (long, pointer, byte ) (size 108)
 // "lp" ia _NPS_MiniUserInfo (long, pointer) (size 40)
 // "l" is a _NPS_UserId_List (long) (size 4)
+
 // "llpppb" is a _NPS_LoginInfo, size _NPS_UserInfo + 147 (size 255)
+
 // "ll" is a _NPS_ClientCount (long, long) (size 8)
 // "lplllllsssssspscssllbl" is a _NPS_CommData
 //      (long, pointer, long, long, long, long, long, short, short, short, short, short, short, pointer, short, char, short, short, long, byte, long)
@@ -21,8 +23,22 @@
 // "ppp" is a _NPS_GameServersInfo (pointer. pointer, pointer) (size 207)
 // "ll" is a _NPS_GameGerversListheader
 // "pllpssssbsslc" is a _NPS_RiffInfo
-//      (long, pointer, long, pointer, short, short, short, short, byte, short, short, long, char)
-//      (size 341)
+//      (pointer, long, long, pointer, short, short, short, short, byte, short, short, long, char)
+//      (size 72)
+// char RiffName[32];
+// long Protocol
+// long CommID
+// char Password[17];
+// short ChannelType
+// short ConnectedUsers
+// short OpenChannels
+// short UserIsConnected
+// byte ChannelData[256]
+// short NumberOfReadyUsers
+// short MaxReadyUsers
+// long PrivateUserId
+// char GameServerIsRunning
+
 // "pls" is a _NPS_MiniRiffInfo (long, pointer, short) (size 42)
 // "ll" is a _NPS_RiffListHeader
 // "ll" is a _NPS_BootUserFromChannel (long, long) (size 8)
