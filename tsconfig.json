@@ -2,8 +2,11 @@
     "compilerOptions": {
         "module": "ESNext",
         "moduleResolution": "Node",
+        "outDir": "dest",
         "target": "ES2020",
-        "noEmit": true,
+        // "noEmit": true,
+        "declaration": true,
+        "declarationDir": "types",
         "allowJs": false,
         "strict": true,
         "strictNullChecks": true,
@@ -26,5 +29,13 @@
             "mcos/transactions": ["./packages/mcos-transactions/index.js"]
         }
     },
-    "exclude": ["node_modules", "**/node_modules/*", "coverage", "docs"]
+    "exclude": [
+        "node_modules",
+        "**/node_modules/*",
+        "coverage",
+        "docs",
+        "dest",
+        "types",
+        "**/*.test.ts"
+    ]
 }
