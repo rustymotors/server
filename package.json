@@ -12,39 +12,52 @@
     ],
     "exports": {
         "./router": [
+            "./dest/src/router.js",
             "./src/router/index.js"
         ],
         "./auth": [
+            "./dest/packages/mcos-auth/index.js",
             "./packages/mcos-auth/index.js"
+
         ],
         "./database": [
+            "./dest/packages/mcos-database/index.js",
             "./packages/mcos-database/index.js"
         ],
         "./gateway": [
+            "./dest/packages/mcos-gateway/index.js",
             "./packages/mcos-gateway/index.js"
         ],
         "./login": [
+            "./dest/packages/mcos-login/index.js",
             "./packages/mcos-login/index.js"
         ],
         "./lobby": [
+            "./dest/packages/mcos-lobby/index.js",
             "./packages/mcos-lobby/index.js"
         ],
         "./patch": [
+            "./dest/packages/mcos-patch/index.js",
             "./packages/mcos-patch/index.js"
         ],
         "./shard": [
+            "./dest/packages/mcos-shard/index.js",
             "./packages/mcos-shard/index.js"
         ],
         "./persona": [
+            "./dest/packages/mcos-persona/index.js",
             "./packages/mcos-persona/index.js"
         ],
         "./shared": [
+            "./dest/src/shared/index.js",
             "./src/shared/index.js"
         ],
         "./shared/interfaces": [
+            "./dest/src/shared/interfaces/index.js",
             "./src/shared/interfaces/index.js"
         ],
         "./transactions": [
+            "./dest/packages/mcos-transactions/index.js",
             "./packages/mcos-transactions/index.js"
         ]
     },
