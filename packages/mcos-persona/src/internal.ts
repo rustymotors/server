@@ -58,7 +58,7 @@ export const personaRecords: TPersonaRecord[] = [
         shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
     },
     {
-        customerId: 5551212,
+        customerId: 5551212, // 0x54 0xB4 0x6C
         id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
         maxPersonas: Buffer.from([0x02]),
         name: generateNameBuffer("Dr Brown", NAME_BUFFER_SIZE),
