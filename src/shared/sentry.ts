@@ -7,7 +7,7 @@
  */
 
 import SentrySDK from "@sentry/node";
-import { ProfilingIntegration } from "@sentry/profiling-node";
+// import { ProfilingIntegration } from "@sentry/profiling-node";
 
 /**
  *
@@ -24,8 +24,9 @@ function Sentry(): void {
         profilesSampleRate: 1.0, // Profiling sample rate is relative to tracesSampleRate
         integrations: [
             // Add profiling integration to list of integrations
-            new ProfilingIntegration(),
+            // new ProfilingIntegration(),
         ],
+        "debug": true
     });
 }
 
