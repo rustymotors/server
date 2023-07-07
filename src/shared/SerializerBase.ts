@@ -9,7 +9,7 @@ export class SerializerBase implements ISerializedObject {
         throw new Error("Method not implemented.");
     }
     serializeSize(): number {
-        throw new Error("Method not implemented.");
+        return 4
     }
     // Little Endian (LE) methods for serialization and deserialization.
 
