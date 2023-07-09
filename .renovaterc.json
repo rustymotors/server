@@ -1,5 +1,5 @@
 {
-  "extends": ["config:base", ":disableDependencyDashboard"],
+  "extends": ["config:base"],
   "statusCheckVerify": true,
   "automerge": true,
   "automergeType": "branch",
