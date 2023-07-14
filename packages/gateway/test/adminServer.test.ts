@@ -17,7 +17,7 @@
 import { AdminServer, getAdminServer, resetQueue } from "@mcos/gateway";
 import { ISocketTestFactory } from "@mcos/shared";
 import { Logger, SocketWithConnectionInfo } from "@mcos/interfaces";
-import { describe, it } from "node:test";
+import { describe, it, expect } from "vitest";
 import assert from "node:assert";
 
 describe("AdminServer", () => {
@@ -32,7 +32,7 @@ describe("AdminServer", () => {
             const newAdminInstance = getAdminServer(log);
 
             // Assert
-            newAdminInstance.should.be.instanceOf(AdminServer);
+            expect(newAdminInstance).toBeInstanceOf(AdminServer);
         });
         it("should return the same instance of AdminServer on multiple calls", () => {
             // Arrange
@@ -45,7 +45,7 @@ describe("AdminServer", () => {
             const admin2 = getAdminServer(log);
 
             // Assert
-            admin1.should.equal(admin2);
+            expect(admin1).toEqual(admin2);
         });
     });
 });

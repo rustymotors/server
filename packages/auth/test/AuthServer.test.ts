@@ -1,6 +1,6 @@
 import { AuthServer, getAuthServer } from "@mcos/auth";
 import assert from "node:assert";
-import { describe, it } from "node:test";
+import { describe, it, expect } from "vitest";
 
 describe("AuthServer", () => {
     it("AuthServer should be a function", () => {

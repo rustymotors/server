@@ -1,4 +1,4 @@
-import { describe, it } from "node:test";
+import { describe, it, expect } from "vitest";
 import { GatewayServer } from "@mcos/gateway";
 import assert from "node:assert";
 

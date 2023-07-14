@@ -1,4 +1,4 @@
-import { describe, it } from "node:test";
+import { describe, it, expect } from "vitest";
 import { expect } from "chai";
 import { handleGetCert, handleGetKey, handleGetRegistry } from "./index.js";
 import { ShardServer } from "./ShardServer.js";

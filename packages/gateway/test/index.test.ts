@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { describe, it, mock } from "node:test";
+import { describe, it } from "vitest";
 
 import {
     ConnectionManager,
@@ -15,6 +15,7 @@ import {
     SocketWithConnectionInfo,
 } from "@mcos/interfaces";
 import { IConnectionFactory, ISocketTestFactory } from "@mcos/shared";
+import { mock } from "node:test";
 
 describe("rawConnectionListener", () => {
     it("should set event listeners", () => {

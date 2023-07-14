@@ -1,4 +1,4 @@
-import { describe, it } from "node:test";
+import { describe, it, expect } from "vitest";
 import { expect } from "chai";
 import { _generateSessionKeyBuffer } from "./handlers/requestConnectGameServer.js";
 

@@ -1,4 +1,4 @@
-import { beforeEach, describe, it } from "node:test";
+import { beforeEach, describe, it, expect } from "vitest";
 import {
     connectionList,
     getAllConnections,
@@ -7,6 +7,7 @@ import {
 import { ISocketTestFactory } from "@mcos/shared";
 import { SocketWithConnectionInfo, Logger } from "@mcos/interfaces";
 import assert from "node:assert";
+import { expectTypeOf } from "vitest";
 
 describe("ConnectionManager", () => {
     describe("Legacy Functions", () => {
@@ -61,7 +62,7 @@ describe("ConnectionManager", () => {
                 const list = getAllConnections();
                 // assert
 
-                assert.equal(typeof list, "array")
+                expectTypeOf(list).toEqualTypeOf<SocketWithConnectionInfo[]>();
                 assert.strictEqual(list.length, 3);
             });
         });
@@ -114,7 +115,7 @@ describe("ConnectionManager", () => {
                 const list = getAllConnections();
 
                 // assert
-                assert.equal(typeof list, "array")
+                expectTypeOf(list).toEqualTypeOf<SocketWithConnectionInfo[]>();
                 assert.strictEqual(list.length, 1);
                 assert.strictEqual(list[0].id, updatedTestConnection.id);
             });

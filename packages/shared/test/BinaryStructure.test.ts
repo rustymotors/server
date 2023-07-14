@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import chai from "chai";
-import { describe, it } from "node:test";
+import { describe, it, expect } from "vitest";
 import { Logger } from "@mcos/interfaces";
 import { BinaryStructure } from "@mcos/shared";
 

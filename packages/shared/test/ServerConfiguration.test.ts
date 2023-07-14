@@ -2,8 +2,7 @@ import {
     getServerConfiguration,
     setConfiguration,
 } from "@mcos/shared";
-import { describe, it, beforeEach } from "node:test";
-import { expect } from "chai";
+import { describe, it, beforeEach, expect } from "vitest";
 import path from "path";
 
 describe("ServerConfiguration", () => {

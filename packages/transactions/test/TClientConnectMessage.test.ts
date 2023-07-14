@@ -16,7 +16,7 @@
 
 import chai from "chai";
 import { TClientConnectMessage } from "@mcos/transactions";
-import { describe, it } from "node:test";
+import { describe, it, expect } from "vitest";
 
 chai.should();
 

@@ -17,7 +17,7 @@
 import chai from "chai";
 import { GSMessageBase } from "@mcos/gateway";
 import { Logger } from "@mcos/interfaces";
-import { describe, it } from "node:test";
+import { describe, it, expect } from "vitest";
 import { ByteField } from "@mcos/shared";
 
 chai.should();
