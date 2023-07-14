@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getGatewayServer } from "mcos/gateway";
-import { GetServerLogger, Sentry, setConfiguration } from "mcos/shared";
+import { getGatewayServer } from "./packages/gateway";
+import { GetServerLogger, Sentry, setConfiguration } from "@mcos/shared";
 
 const log = GetServerLogger();
 
