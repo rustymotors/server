@@ -114,7 +114,7 @@ export function socketDataHandler({
     if (signature !== "TOMC") {
         logger("debug", "Recieved TCP message");
         const header = new MessageHeader();
-        const msgHeader = header.deserialize(data);
+        const msgHeader = MessageHeader.deserialize(data);
         logger("debug", `Message Header: ${msgHeader.toString()}`);
 
         // Deserialize the message into a TCPMessage object
