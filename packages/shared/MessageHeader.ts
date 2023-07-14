@@ -20,6 +20,7 @@ export class MessageHeader extends SerializerBase implements SerializedObject {
     constructor() {
         super();
     }
+
     serialize(): Buffer {
         throw new Error("Method not implemented.");
     }

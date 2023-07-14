@@ -19,7 +19,6 @@ import { NPSMessage, Sentry } from "@mcos/shared";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
 import {
     Logger,
-    TBufferWithConnection,
     MessageArrayWithConnectionInfo,
     PersonaRecord,
     ServiceArgs,

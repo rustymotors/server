@@ -15,7 +15,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { BinaryStructure, TSMessageBase } from "@mcos/shared";
-import { GameMessage, JSONResponseOfGameMessage, Logger } from "@mcos/interfaces";
+import {
+    GameMessage,
+    JSONResponseOfGameMessage,
+    Logger,
+} from "@mcos/interfaces";
 
 /**
  *
@@ -80,7 +84,7 @@ export class TLobbyMessage extends TSMessageBase implements GameMessage {
 
     toJSON(): JSONResponseOfGameMessage {
         throw new Error("Method not implemented.");
-    };
+    }
 }
 
 export class LobbyInfo extends BinaryStructure {
