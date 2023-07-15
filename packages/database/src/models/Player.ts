@@ -1,4 +1,13 @@
-export class PlayerModel {
+import { SerializedObject } from "@mcos/interfaces";
+
+export class PlayerModel implements SerializedObject {
+    serialize(): Buffer {
+        throw new Error("Method not implemented.");
+    }
+    serializeSize(): number {
+        throw new Error("Method not implemented.");
+    }
+    
     static schema = `CREATE TABLE Player (
     PlayerID             int NOT NULL,
     CustomerID           int NOT NULL,
