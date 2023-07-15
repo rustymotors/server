@@ -14,13 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import chai from "chai";
 import { GSMessageBase } from "@mcos/gateway";
 import { Logger } from "@mcos/interfaces";
 import { describe, it, expect } from "vitest";
 import { ByteField } from "@mcos/shared";
-
-chai.should();
+import { mock } from "node:test";
 
 describe("GSMessageBase", () => {
     describe(".byteLength", () => {
@@ -33,22 +31,20 @@ describe("GSMessageBase", () => {
             const testMessage = new GSMessageBase(log);
 
             // Assert
-            testMessage.getByteLength().should.equal(10);
+            expect(testMessage.getByteLength()).toBe(10);
         });
     });
     describe("#deserialize", () => {
         it("should handle an input stream without errors", () => {
             // Arrange
             /**  @type {Logger} */
-            const log: Logger = () => {
-                return;
-            };
+            const log: Logger = mock.fn();
             const testMessage = new GSMessageBase(log);
 
             // Assert
-            (() => {
+            expect(() => {
                 return testMessage.deserialize(Buffer.from([1, 2, 3, 4]));
-            }).should.not.throw();
+            }).not.toThrow();
         });
     });
     describe("#get", () => {
@@ -70,7 +66,7 @@ describe("GSMessageBase", () => {
             };
 
             // Assert
-            testMessage.get("msgId").should.deep.equal(expectedField);
+            expect(testMessage.get("msgId")).toEqual(expectedField);
         });
     });
 });

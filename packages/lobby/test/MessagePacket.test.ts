@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { MessagePacket } from "./MessagePacket.js";
+import { MessagePacket } from "@mcos/lobby";
 import assert from "node:assert";
 
 describe("MessagePacket class", function () {

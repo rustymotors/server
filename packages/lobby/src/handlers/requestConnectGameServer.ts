@@ -5,6 +5,7 @@ import { MessagePacket } from "../MessagePacket.js";
 import { getPersonasByPersonaId } from "@mcos/persona";
 import { DatabaseManager } from "@mcos/database";
 import { ServiceArgs, ServiceResponse } from "@mcos/interfaces";
+import { _generateSessionKeyBuffer } from "../sessionKeys.js";
 
 /**
  * Convert to zero padded hex
@@ -20,16 +21,6 @@ export function toHex(data: Buffer): string {
         bytes.push(b.toString(16).toUpperCase().padStart(2, "0"));
     });
     return bytes.join("");
-}
-
-/**
- * @param {string} key
- * @return {Buffer}
- */
-export function _generateSessionKeyBuffer(key: string): Buffer {
-    const nameBuffer = Buffer.alloc(64);
-    Buffer.from(key, "utf8").copy(nameBuffer);
-    return nameBuffer;
 }
 
 /**

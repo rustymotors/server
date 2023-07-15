@@ -14,24 +14,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import chai from "chai";
 import { TClientConnectMessage } from "@mcos/transactions";
 import { describe, it, expect } from "vitest";
-
-chai.should();
+import { mock } from "node:test"
 
 describe("TClientConnectMessage", () => {
     describe(".byteLength", () => {
         it("should have a value of 51", () => {
             // Arrange
-            /** @type module:shared.TServerLogger */
-            const log = () => {
-                return;
-            };
+            const log = mock.fn()
             const testMessage = new TClientConnectMessage(log);
 
             // Assert
-            testMessage.getByteLength().should.equal(51);
+            expect(testMessage.getByteLength()).toBe(51);
         });
     });
     describe("#get", () => {
@@ -54,7 +49,7 @@ describe("TClientConnectMessage", () => {
             };
 
             // Assert
-            testMessage.get("customerId").should.deep.equal(expectedField);
+            expect(testMessage.get("customerId")).toEqual(expectedField);
         });
     });
 });
