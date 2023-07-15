@@ -29,13 +29,6 @@ import { createCipheriv, createDecipheriv } from "node:crypto";
 const encryptionSessions: EncryptionSession[] = [];
 
 /**
- * @global
- * @typedef {object} SessionRecord
- * @property {string} skey
- * @property {string} sessionkey
- */
-
-/**
  *
  * @deprecated use {@link EncryptionManager.generateEncryptionPair()} instead
  */
