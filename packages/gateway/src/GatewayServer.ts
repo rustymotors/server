@@ -28,7 +28,7 @@ export class Gateway implements GatewayServer, SubprocessThread {
     private readonly listeningPortList: number[];
     private readonly servers: tcpServer[];
     private readonly socketconnection: NetworkConnectionHandler;
-    private serversRunning: boolean = false;
+    private serversRunning = false;
     private readThread: ConsoleThread | undefined;
     private activeSubThreads: Array<SubprocessThread> = [];
     parentThread: GatewayServer | undefined;
@@ -37,8 +37,8 @@ export class Gateway implements GatewayServer, SubprocessThread {
     private sentryTransaction: Sentry.Transaction | undefined;
     consoleEvents = ["userExit", "userRestart", "userHelp"];
 
-    name: string = "GatewayServer";
-    loopInterval: number = 0;
+    name = "GatewayServer";
+    loopInterval = 0;
     timer: NodeJS.Timer | null = null;
     // Singleton instance of GatewayServer
     static _instance: GatewayServer;
