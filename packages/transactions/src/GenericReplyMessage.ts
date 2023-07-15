@@ -15,7 +15,7 @@
  */
 
 import { ClientMessage } from "@mcos/interfaces";
-import { Message, MessageNode, Sentry } from "@mcos/shared";
+import { Message } from "@mcos/shared";
 
 export class GenericReplyMessage extends Message implements ClientMessage {
     /**

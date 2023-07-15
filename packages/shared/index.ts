@@ -23,7 +23,7 @@ export {
     getServerConfiguration,
 } from "./ServerConfiguration.js";
 export { NPSMessage } from "./NPSMessage.js";
-export { getServerLogger as GetServerLogger } from "./log.js";
+export { getServerLogger as GetServerLogger, getLevelValue } from "./log.js";
 export { Sentry } from "./sentry.js";
 export { ServerError } from "./errors/ServerError.js";
 export { SubThread } from "./SubThread.js";

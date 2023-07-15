@@ -240,6 +240,7 @@ export class ConnectionManager implements IConnectionManager {
         for (let i = 0; i < this.connections.length; i++) {
             if (this.connections[i].appID === appID) {
                 this.connections.splice(i, 1);
+                break;
             }
         }
     }

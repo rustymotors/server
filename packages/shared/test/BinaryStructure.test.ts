@@ -14,12 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import chai from "chai";
 import { describe, it, expect } from "vitest";
 import { Logger } from "@mcos/interfaces";
 import { BinaryStructure } from "@mcos/shared";
-
-chai.should();
 
 describe("BinaryStructure", () => {
     describe(".byteLength", () => {
@@ -32,7 +29,7 @@ describe("BinaryStructure", () => {
             const testStructure = new BinaryStructure(log);
 
             // Assert
-            testStructure.getByteLength().should.equal(0);
+            expect(testStructure.getByteLength()).toBe(0);
         });
     });
     describe("#serialize", () => {
@@ -46,9 +43,9 @@ describe("BinaryStructure", () => {
             const testStructure = new BinaryStructure(log);
 
             // Assert
-            (() => {
+            expect(() => {
                 return testStructure.deserialize(inputStream);
-            }).should.throw();
+            }).toThrow();
         });
     });
     describe("#get", () => {
@@ -61,9 +58,9 @@ describe("BinaryStructure", () => {
             const testStructure = new BinaryStructure(log);
 
             // Assert
-            (() => {
+            expect(() => {
                 return testStructure.get("someFiled");
-            }).should.throw();
+            }).toThrow();
         });
     });
 });

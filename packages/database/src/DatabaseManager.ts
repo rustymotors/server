@@ -3,7 +3,6 @@ import {
     ConnectionRecord,
     DatabaseManager,
     Logger,
-    EncryptionSession,
     RaceLobbyRecord,
 } from "@mcos/interfaces";
 

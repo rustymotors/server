@@ -1,6 +1,5 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expectTypeOf, expect } from "vitest";
 import { MessagePacket } from "@mcos/lobby";
-import assert from "node:assert";
 
 describe("MessagePacket class", function () {
     it("should return an instance of MessagePacket when the status method fromBuffer() is called", function () {
@@ -11,7 +10,7 @@ describe("MessagePacket class", function () {
         const newMessagePacket = MessagePacket.fromBuffer(inputBuffer);
 
         // assert
-        assert.equal(newMessagePacket instanceof MessagePacket, true);
+        expectTypeOf(newMessagePacket).toEqualTypeOf<MessagePacket>();
     });
 
     it("should return it's internal buffer when the buffer property is accessed", function () {
@@ -24,6 +23,6 @@ describe("MessagePacket class", function () {
         const buffer = newMessagePacket.getBuffer();
 
         // assert
-        assert.deepStrictEqual(buffer, expectedBuffer);
+        expect(buffer).toEqual(expectedBuffer);
     });
 });
