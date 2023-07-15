@@ -28,7 +28,7 @@ import {
 import { receiveLobbyData } from "@mcos/lobby";
 import { receiveLoginData } from "@mcos/login";
 import { receivePersonaData } from "@mcos/persona";
-import { MessageNode, NPSMessage, Sentry } from "@mcos/shared";
+import { MessageNode, Sentry } from "@mcos/shared";
 import { receiveTransactionsData } from "@mcos/transactions";
 import { updateConnection } from "./ConnectionManager.js";
 

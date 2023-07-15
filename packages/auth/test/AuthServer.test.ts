@@ -1,15 +1,11 @@
 import { AuthServer, getAuthServer } from "@mcos/auth";
-import assert from "node:assert";
-import { describe, it, expect } from "vitest";
-
-describe("AuthServer", () => {
-    it("AuthServer should be a function", () => {
-        assert.strictEqual(typeof AuthServer, "function");
-    });
-});
+import { describe, it, expectTypeOf } from "vitest";
+import { mock } from "node:test";
 
 describe("getAuthServer", () => {
-    it("getAuthServer should be a function", () => {
-        assert.strictEqual(typeof getAuthServer, "function");
+    it("should return an instance of AuthServer", () => {
+        const log = mock.fn();
+        const authServer = getAuthServer(log);
+        expectTypeOf(authServer).toEqualTypeOf<AuthServer>();
     });
 });
