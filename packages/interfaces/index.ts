@@ -5,7 +5,6 @@ import {
     OutgoingHttpHeaders,
     ServerResponse,
 } from "node:http";
-import { type } from "node:os";
 import { MessageNode } from "@mcos/shared";
 
 export interface GameMessageHeader extends SerializedObject {
