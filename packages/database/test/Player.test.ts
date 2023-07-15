@@ -1,5 +1,4 @@
 import { describe, it, expect } from "vitest";
-import { expect } from "chai";
 import { PlayerModel } from "@mcos/database";
 
 describe("Player model", function () {

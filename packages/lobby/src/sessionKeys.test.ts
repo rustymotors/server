@@ -1,5 +1,4 @@
 import { describe, it, expect } from "vitest";
-import { expect } from "chai";
 import { _generateSessionKeyBuffer } from "./handlers/requestConnectGameServer.js";
 
 describe("_generateSessionKeyBuffer", function () {
