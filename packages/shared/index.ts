@@ -4,15 +4,11 @@
 
 import EventEmitter from "node:events";
 import {
-    ELOG_LEVEL,
     ClientConnection,
     ClientMessage,
     ClientMessageHeader,
     NetworkSocket,
-    GameMessageHeader,
-    GameMessage,
     ServerConfiguration,
-    Logger,
 } from "@mcos/interfaces";
 export { toHex } from "./utils.js";
 
@@ -42,8 +38,12 @@ export function ISocketTestFactory(): NetworkSocket {
     const et = new EventTarget();
     const newISocket = {
         write: () => true,
-        end: () => {},
-        destroy: () => {},
+        end: () => {
+            // do nothing
+        },
+        destroy: () => {
+            // do nothing
+        },
         writable: true,
         remoteAddress: "",
         localPort: 0,
@@ -132,11 +132,5 @@ export function TServerConfigurationFactory(): ServerConfiguration {
         privateKeyContents: "",
         publicKeyContents: "",
         LOG_LEVEL: "debug",
-    };
-}
-
-export function TServerLoggerFactory(): Logger {
-    return (_level: ELOG_LEVEL, _msg: string) => {
-        // do nothing
     };
 }

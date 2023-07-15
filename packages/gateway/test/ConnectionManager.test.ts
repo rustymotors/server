@@ -1,4 +1,4 @@
-import { beforeEach, describe, it, expect } from "vitest";
+import { beforeEach, describe, it } from "vitest";
 import {
     connectionList,
     getAllConnections,
@@ -8,6 +8,7 @@ import { ISocketTestFactory } from "@mcos/shared";
 import { SocketWithConnectionInfo, Logger } from "@mcos/interfaces";
 import assert from "node:assert";
 import { expectTypeOf } from "vitest";
+import { mock } from "node:test";
 
 describe("ConnectionManager", () => {
     describe("Legacy Functions", () => {
@@ -101,7 +102,7 @@ describe("ConnectionManager", () => {
                     lastMessageTimestamp: 0,
                 };
 
-                const fakeLogger: Logger = () => {};
+                const fakeLogger: Logger = mock.fn();
 
                 // act
                 connectionList.push(newTestConnection);

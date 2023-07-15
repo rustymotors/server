@@ -23,7 +23,6 @@ import {
 } from "@mcos/shared";
 import {
     GameMessage,
-    TConnection,
     BuiltinError,
     NetworkSocket,
     ClientMessage,
@@ -35,7 +34,6 @@ import {
     TSocketErrorHandler,
     SocketWithConnectionInfo,
     ServerConfiguration,
-    ConnectionRecord,
     ClientConnection,
     WebConnectionHandler,
 } from "@mcos/interfaces";
@@ -113,7 +111,6 @@ export function socketDataHandler({
     // Check the signature. If it's not TOMC, then this is a TCP message
     if (signature !== "TOMC") {
         logger("debug", "Recieved TCP message");
-        const header = new MessageHeader();
         const msgHeader = MessageHeader.deserialize(data);
         logger("debug", `Message Header: ${msgHeader.toString()}`);
 

@@ -1,11 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, it } from "vitest";
 import assert from "node:assert";
 
 import { EncryptionManager, generateEncryptionPair } from "@mcos/gateway";
 import {
-    TConnection,
     SessionKeys,
-    EncryptionSession,
     SocketWithConnectionInfo,
     ClientConnection,
 } from "@mcos/interfaces";
@@ -104,7 +102,7 @@ describe("EncryptionManager", () => {
         };
 
         // act
-        let session1 = manager1.generateEncryptionPair(
+        const session1 = manager1.generateEncryptionPair(
             testConnection1,
             testKeys,
         );
