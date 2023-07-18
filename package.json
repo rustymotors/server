@@ -120,7 +120,7 @@
         "rules": {}
     },
     "dependencies": {
-        "@sentry/node": "7.58",
+        "@sentry/node": "7.59",
         "@sentry/profiling-node": "^1.1.2",
         "ts-node": "10.9.1"
     }
