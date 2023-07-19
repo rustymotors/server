@@ -44,6 +44,7 @@ jobs:
           codecovcli do-upload -F patch
           codecovcli do-upload -F persona
           codecovcli do-upload -F shard
+          codecovcli do-upload -F interfaces
           codecovcli do-upload -F transactions
                     
       - uses: actions/upload-artifact@v3
