@@ -34,18 +34,18 @@ jobs:
         run: |
           pip install --user pytest
           pip install --user codecov-cli
-          codecovcli create-commit --verbose --fail-on-error 
-          codecovcli create-report --verbose --fail-on-error 
-          codecovcli do-upload --verbose --fail-on-error -F auth
-          codecovcli do-upload --verbose --fail-on-error -F database
-          codecovcli do-upload --verbose --fail-on-error -F gateway
-          codecovcli do-upload --verbose --fail-on-error -F lobby
-          codecovcli do-upload --verbose --fail-on-error -F login
-          codecovcli do-upload --verbose --fail-on-error -F patch
-          codecovcli do-upload --verbose --fail-on-error -F persona
-          codecovcli do-upload --verbose --fail-on-error -F shard
-          codecovcli do-upload --verbose --fail-on-error -F interfaces
-          codecovcli do-upload --verbose --fail-on-error -F transactions
+          codecovcli --verbose create-commit --verbose --fail-on-error 
+          codecovcli --verbose create-report --verbose --fail-on-error 
+          codecovcli --verbose do-upload --fail-on-error -F auth
+          codecovcli --verbose do-upload --fail-on-error -F database
+          codecovcli --verbose do-upload --fail-on-error -F gateway
+          codecovcli --verbose do-upload --fail-on-error -F lobby
+          codecovcli --verbose do-upload --fail-on-error -F login
+          codecovcli --verbose do-upload --fail-on-error -F patch
+          codecovcli --verbose do-upload --fail-on-error -F persona
+          codecovcli --verbose do-upload --fail-on-error -F shard
+          codecovcli --verbose do-upload --fail-on-error -F interfaces
+          codecovcli --verbose do-upload --fail-on-error -F transactions
                     
       - uses: actions/upload-artifact@v3
         with:
