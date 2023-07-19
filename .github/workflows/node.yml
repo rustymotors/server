@@ -34,8 +34,8 @@ jobs:
         run: |
           pip install --user pytest
           pip install --user codecov-cli
-          codecovcli --verbose create-commit --verbose --fail-on-error 
-          codecovcli --verbose create-report --verbose --fail-on-error 
+          codecovcli --verbose create-commit --fail-on-error 
+          codecovcli --verbose create-report --fail-on-error 
           codecovcli --verbose do-upload --fail-on-error -F auth
           codecovcli --verbose do-upload --fail-on-error -F database
           codecovcli --verbose do-upload --fail-on-error -F gateway
