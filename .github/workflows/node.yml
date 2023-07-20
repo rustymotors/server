@@ -27,25 +27,25 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm ci install
       - name: Test
-        env:
-          NODE_OPTIONS: "--openssl-legacy-provider"
         run: npm test
       - name: Codecov
         env: # Or as an environment variable
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
+          pip install --user pytest
           pip install --user codecov-cli
-          codecovcli create-commit
-          codecovcli create-report
-          codecovcli do-upload -F auth
-          codecovcli do-upload -F database
-          codecovcli do-upload -F gateway
-          codecovcli do-upload -F lobby
-          codecovcli do-upload -F login
-          codecovcli do-upload -F patch
-          codecovcli do-upload -F persona
-          codecovcli do-upload -F shard
-          codecovcli do-upload -F transactions
+          codecovcli --verbose create-commit --fail-on-error 
+          codecovcli --verbose create-report --fail-on-error 
+          codecovcli --verbose do-upload --fail-on-error -F auth
+          codecovcli --verbose do-upload --fail-on-error -F database
+          codecovcli --verbose do-upload --fail-on-error -F gateway
+          codecovcli --verbose do-upload --fail-on-error -F lobby
+          codecovcli --verbose do-upload --fail-on-error -F login
+          codecovcli --verbose do-upload --fail-on-error -F patch
+          codecovcli --verbose do-upload --fail-on-error -F persona
+          codecovcli --verbose do-upload --fail-on-error -F shard
+          codecovcli --verbose do-upload --fail-on-error -F interfaces
+          codecovcli --verbose do-upload --fail-on-error -F transactions
                     
       - uses: actions/upload-artifact@v3
         with:

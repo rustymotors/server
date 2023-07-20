@@ -1,31 +1,31 @@
-import { ServerError, SubThread } from "mcos/shared";
+import { ServerError, SubThread } from "@mcos/shared";
 import {
-    IGatewayServer,
-    IKeypressEvent,
-    ISubThread,
-    TServerLogger,
-} from "mcos/shared/interfaces";
+    GatewayServer,
+    KeypressEvent,
+    SubprocessThread,
+    Logger,
+} from "@mcos/interfaces";
 import { emitKeypressEvents } from "readline";
 
-export class ConsoleThread extends SubThread implements ISubThread {
-    parentThread: IGatewayServer | undefined;
+export class ConsoleThread extends SubThread implements SubprocessThread {
+    parentThread: GatewayServer | undefined;
     constructor({
         parentThread,
         log,
     }: {
-        parentThread?: IGatewayServer;
-        log: TServerLogger;
+        parentThread?: GatewayServer;
+        log: Logger;
     }) {
         super("ReadInput", log, 100);
         if (parentThread === undefined) {
             throw new ServerError(
-                "parentThread is undefined when creating ReadInput"
+                "parentThread is undefined when creating ReadInput",
             );
         }
         this.parentThread = parentThread;
     }
 
-    handleKeypressEvent(key: IKeypressEvent) {
+    handleKeypressEvent(key: KeypressEvent) {
         const keyString = key.sequence;
 
         if (keyString === "x") {

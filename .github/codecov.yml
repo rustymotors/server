@@ -1,57 +1,50 @@
 codecov:
     require_ci_to_pass: false
-comment:
-  layout: "files,flags"
-  behavior: "default"
 
 flags:
   auth:
     paths:
-      - packages/mcos-auth/**
+      - packages/auth/**
     carryforward: true
   database:
     paths:
-      - packages/mcos-database/**
+      - packages/database/**
     carryforward: true
   gateway:
     paths:
-      - packages/mcos-gateway/**
+      - packages/gateway/**
     carryforward: true
   lobby:
     paths:
-      - packages/mcos-lobby/**
+      - packages/lobby/**
     carryforward: true
   login:
     paths:
-      - packages/mcos-login/**
+      - packages/login/**
     carryforward: true
   patch:
     paths:
-      - packages/mcos-patch/**
+      - packages/patch/**
     carryforward: true
   persona:
     paths:
-      - packages/mcos-persona/**
+      - packages/persona/**
     carryforward: true
   shard:
     paths:
-      - packages/mcos-shard/**
+      - packages/shard/**
     carryforward: true
-  logger:
-    paths:
-      - packages/mcos-logger/**
-    carryforward: false
-  shared-types:
-    paths:
-      - packages/mcos-shared/src/types/**
-    carryforward: false
   shared:
     paths:
-      - packages/mcos-shared/**
-    carryforward: false
+      - packages/shared/**
+    carryforward: true
   transactions:
     paths:
-      - packages/mcos-transactions/**
+      - packages/transactions/**
+    carryforward: true
+  interfaces:
+    paths:
+      - packages/interfaces/**
     carryforward: true
 
 
