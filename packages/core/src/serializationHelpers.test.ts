@@ -261,7 +261,6 @@ describe("serializationHelpers", () => {
         it("should throw an error if the size is bigger than the buffer length - 2", () => {
             // Arrange
             const input = Buffer.from([0, 5, 116, 101, 115, 116]);
-            const expected = "test";
 
             // Act
             const actual = () => deserializeString(input);
