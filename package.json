@@ -57,7 +57,7 @@
     "devDependencies": {
         "@types/chai": "4.3.5",
         "@types/mocha": "10.0.1",
-        "@types/node": "^20.4.2",
+        "@types/node": "^20.4.4",
         "@types/sinon": "10.0.15",
         "@types/sinon-chai": "3.2.9",
         "@vitest/coverage-v8": "^0.33.0",
