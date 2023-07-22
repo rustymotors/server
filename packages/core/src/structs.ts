@@ -34,7 +34,7 @@ export class Header implements Serialized {
     }
 
     serialize() {
-        let buf = Buffer.alloc(12);
+        const buf = Buffer.alloc(12);
 
         buf.writeUInt16LE(this.messageCode, 0);
         buf.writeUInt16LE(this.messageLength, 2);
