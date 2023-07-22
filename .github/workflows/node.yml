@@ -46,6 +46,7 @@ jobs:
           codecovcli --verbose do-upload --fail-on-error --flag shard --name shard-${{ matrix.node-version }}
           codecovcli --verbose do-upload --fail-on-error --flag interfaces --name interfaces-${{ matrix.node-version }}
           codecovcli --verbose do-upload --fail-on-error --flag transactions --name transactions-${{ matrix.node-version }}
+          codecovcli --verbose do-upload --fail-on-error --flag core --name core-${{ matrix.node-version }}
                     
       - uses: actions/upload-artifact@v3
         with:

@@ -46,5 +46,9 @@ flags:
     paths:
       - packages/interfaces/**
     carryforward: true
+  core:
+    paths:
+      - packages/core/**
+    carryforward: true    
 
 
