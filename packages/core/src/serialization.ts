@@ -26,13 +26,6 @@ export class Header implements Serialized {
         return 12;
     }
 
-    clear() {
-        this.messageChecksum = 0; // 2 bytes
-        this.messageCode = 0; // 2 bytes
-        this.messageLength = 0;
-        this.messageVersion = 0; // 2 bytes
-    }
-
     serialize() {
         const buf = Buffer.alloc(12);
 
