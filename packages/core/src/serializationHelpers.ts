@@ -78,7 +78,7 @@ export function deserializeString(buf: Buffer) {
     if (size > buf.length - 2) {
         throw new Error("Size is bigger than the buffer length - 2");
     }
-    const str = buf.toString("utf8", 2);
+    const str = buf.subarray(2, size +2).toString("utf8");
 
     return str;
 }
