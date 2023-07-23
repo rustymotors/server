@@ -54,7 +54,7 @@ export class Header implements Serialized {
 }
 
 export class SerializedBase implements Serialized {
-    protected header: Header | null = null;
+    header: Header | null = null;
 
     deserialize(buf: Buffer) {
         throw new Error("This method must be implemented by child classes");
@@ -105,25 +105,21 @@ export class UserAction extends SerializedBase implements Serialized {}
 
 export class LoginRequestReply extends SerializedBase implements Serialized {
     sessionKey = ""; // 128 chars string
+    header: Header = new Header();
 
-    setContext(context: string) {
-        this.sessionKey = context;
-    }
-
-    _doSerialize() {
-        if (this.header === null) {
-            throw new Error("Header is null");
-        }
+    serialize() {
         let buf = this.header.serialize();
         buf = Buffer.concat([buf, serializeString(this.sessionKey)]);
 
         return buf;
     }
 
-    _serializeSizeOf() {
-        if (this.header === null) {
-            throw new Error("Header is null");
-        }
+    deserialize(buf: Buffer) {
+        this.header.deserialize(buf);
+        this.sessionKey = deserializeString(buf.subarray(12));
+    }
+
+    sizeOf() {
         let size = this.header.sizeOf();
         size += sizeOfString(this.sessionKey);
 
@@ -146,14 +142,11 @@ export class AddPersona extends SerializedBase implements Serialized {}
 export class Login extends LoginRequestReply implements Serialized {
     v2P82 = false;
     encryptedSessionKey = ""; // encrypted session key
-    readonly GAME_CODE = "2176"; // 40 chars string
+    readonly GAME_CODE =  "2176"; // 40 chars string
     v2P187 = false;
 
     serialize() {
-        if (this.header === null) {
-            throw new Error("Header is null");
-        }
-        let buf = this.header.serialize();
+        let buf = super.serialize();
         buf = Buffer.concat([
             buf,
             serializeBool(this.v2P82),
@@ -165,12 +158,8 @@ export class Login extends LoginRequestReply implements Serialized {
         return buf;
     }
 
-    serializeSizeOf() {
-        if (this.header === null) {
-            throw new Error("Header is null");
-        }
-
-        let size = this.header.sizeOf();
+    sizeOf() {
+        let size = super.sizeOf();
         size += sizeOfBool();
         size += sizeOfString(this.encryptedSessionKey);
         size += sizeOfString(this.GAME_CODE);
@@ -180,14 +169,14 @@ export class Login extends LoginRequestReply implements Serialized {
     }
 
     deserialize(buf: Buffer) {
-        if (this.header === null) {
-            this.header = new Header();
-        }
-        this.header.deserialize(buf);
-        this.v2P82 = deserializeBool(buf.subarray(12, 13));
-        this.encryptedSessionKey = deserializeString(buf.subarray(13, 15));
-        this.v2P187 = deserializeBool(buf.subarray(55, 56));
-
-        return buf;
+        super.deserialize(buf);
+        let cursor = super.sizeOf();
+        this.v2P82 = deserializeBool(buf.subarray(cursor));
+        cursor += sizeOfBool();
+        this.encryptedSessionKey = deserializeString(buf.subarray(cursor));
+        cursor += sizeOfString(this.encryptedSessionKey);
+        cursor += sizeOfString(this.GAME_CODE);
+        this.v2P187 = deserializeBool(buf.subarray(cursor));
+        cursor += sizeOfBool();
     }
 }
