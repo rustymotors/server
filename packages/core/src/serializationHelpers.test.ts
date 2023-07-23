@@ -36,6 +36,18 @@ describe("serializationHelpers", () => {
             // Assert
             expect(actual).toEqual(expected);
         });
+
+        it("should serialize a boolean value", () => {
+            // Arrange
+            const input = false;
+            const expected = Buffer.from([0]);
+
+            // Act
+            const actual = serializeBool(input);
+
+            // Assert
+            expect(actual).toEqual(expected);
+        })
     });
 
     describe("deserializeBool()", () => {
@@ -50,6 +62,18 @@ describe("serializationHelpers", () => {
             // Assert
             expect(actual).toEqual(expected);
         });
+
+        it("should deserialize a boolean value", () => {
+            // Arrange
+            const input = Buffer.from([0]);
+            const expected = false;
+
+            // Act
+            const actual = deserializeBool(input);
+
+            // Assert
+            expect(actual).toEqual(expected);
+        })
     });
 
     describe("sizeOfBool()", () => {
