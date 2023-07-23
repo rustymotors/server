@@ -18,8 +18,8 @@ import {
     sizeOfDWord,
     sizeOfFloat,
     sizeOfString,
-
-    
+    clamp16,
+    clamp32,
 } from "./serializationHelpers.js"
 
 describe("serializationHelpers", () => {
@@ -309,4 +309,32 @@ describe("serializationHelpers", () => {
         });
     })
         
+})
+
+describe("clamp16()", () => {
+    it("should clamp a value between 0 and 65535", () => {
+        // Arrange
+        const input = 65536;
+        const expected = 65535;
+
+        // Act
+        const actual = clamp16(input);
+
+        // Assert
+        expect(actual).toEqual(expected);
+    });
+})
+
+describe("clamp32()", () => {
+    it("should clamp a value between 0 and 4294967295", () => {
+        // Arrange
+        const input = 4294967296;
+        const expected = 4294967295;
+
+        // Act
+        const actual = clamp32(input);
+
+        // Assert
+        expect(actual).toEqual(expected);
+    });
 })

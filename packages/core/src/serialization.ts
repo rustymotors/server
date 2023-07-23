@@ -2,11 +2,15 @@ import {
     deserializeDWord,
     deserializeWord,
     serializeString,
+    serializeDWord,
     sizeOfString,
     serializeBool,
     sizeOfBool,
     deserializeBool,
     deserializeString,
+    clamp16,
+    clamp32,
+    serializeWord,
 } from "./serializationHelpers.js";
 
 export interface Serialized {
@@ -16,30 +20,75 @@ export interface Serialized {
 }
 
 export class Header implements Serialized {
-    messageCode = 0; // 2 bytes
-    messageLength = 0; // 2 bytes
-    messageVersion = 0; // 2 bytes
+    protected messageCodeInternal = 0; // 2 bytes
+    protected messageInternalLength = 0; // 2 bytes
+    protected messageVersionInternal = 0; // 2 bytes
     readonly reserved = 0; // 2 bytes
-    messageChecksum = 0; // 4 bytes
+    protected messageChecksumInternal = 0; // 4 bytes
+
+    constructor(values: { messageCode?: number; messageLength?: number; messageVersion?: number; messageChecksum?: number } = {}) {
+        this.messageCode =  values.messageCode ?? 0;
+        this.messageLength = values.messageLength ?? 0;
+        this.messageVersion = values.messageVersion ?? 0;
+        this.messageChecksum = values.messageChecksum ?? 0;
+    }
+
+    get messageCode() {
+        return this.messageCodeInternal;
+    }
+
+    set messageCode(value: number) {
+        this.messageCodeInternal = clamp16(value);
+    }
+
+    get messageLength() {
+        return this.messageInternalLength;
+    }
+
+    set messageLength(value: number) {
+        this.messageInternalLength = clamp16(value);
+    }
+
+    get messageVersion() {
+        return this.messageVersionInternal;
+    }
+
+    set messageVersion(value: number) {
+        this.messageVersionInternal = clamp16(value);
+    }
+
+    get messageChecksum() {
+        return this.messageChecksumInternal;
+    }
+
+    set messageChecksum(value: number) {
+        this.messageChecksumInternal = clamp32(value);
+    }
 
     sizeOf() {
         return 12;
     }
 
     serialize() {
-        const buf = Buffer.alloc(12);
+        const buf = Buffer.concat([
+            serializeWord(this.messageCode),
+            serializeWord(this.messageLength),
+            serializeWord(this.messageVersion),
+            serializeWord(this.reserved),
+            serializeDWord(this.messageChecksum),
+        ])
 
-        buf.writeUInt16LE(this.messageCode, 0);
-        buf.writeUInt16LE(this.messageLength, 2);
-        buf.writeUInt16LE(this.messageVersion, 4);
-        buf.writeUInt16LE(this.reserved, 6);
-        buf.writeUInt32LE(this.messageChecksum, 8);
+        buf.writeUInt16BE(this.messageCode, 0);
+        buf.writeUInt16BE(this.messageLength, 2);
+        buf.writeUInt16BE(this.messageVersion, 4);
+        buf.writeUInt16BE(this.reserved, 6);
+        buf.writeUInt32BE(this.messageChecksum, 8);
 
         return buf;
     }
 
     deserialize(buf: Buffer) {
-        this.messageCode = deserializeDWord(buf);
+        this.messageCode = deserializeWord(buf);
         this.messageCode = deserializeWord(buf.subarray(2, 4));
         this.messageVersion = deserializeWord(buf.subarray(4, 6));
         this.messageChecksum = deserializeDWord(buf.subarray(8, 12));
@@ -98,7 +147,13 @@ export class UserAction extends SerializedBase implements Serialized {}
 
 export class LoginRequestReply extends SerializedBase implements Serialized {
     sessionKey = ""; // 128 chars string
-    header: Header = new Header();
+    header: Header;
+
+    constructor(values: { header?: Header, sessionKey?: string } = {}) {        
+        super();
+        this.header = values.header ?? new Header();
+        this.sessionKey = values.sessionKey ?? "";
+    }
 
     serialize() {
         let buf = this.header.serialize();
@@ -135,8 +190,23 @@ export class AddPersona extends SerializedBase implements Serialized {}
 export class Login extends LoginRequestReply implements Serialized {
     v2P82 = false;
     encryptedSessionKey = ""; // encrypted session key
-    readonly GAME_CODE =  "2176"; // 40 chars string
+    readonly GAME_CODE = "2176"; // 40 chars string
     v2P187 = false;
+
+    constructor(
+        values: {
+            header?: Header;
+            v2P82?: boolean;
+            sessionKey?: string;
+            encryptedSessionKey?: string;
+            v2P187?: boolean;
+        } = {},
+    ) {
+        super(values);
+        this.v2P82 = values.v2P82 ?? false;
+        this.encryptedSessionKey = values.encryptedSessionKey ?? ""; // encrypted session key
+        this.v2P187 = values.v2P187 ?? false;
+    }
 
     serialize() {
         let buf = super.serialize();
