@@ -39,9 +39,101 @@ describe("serialization", () => {
 
     describe.skip("GetPersonaMapListRequest", () => {});
 
-    describe.skip("Header", () => {});
+    describe("Header", () => {
+        it("should allow passing in values to constructor", () => {
+            const values = {
+                messageCode: 12279,
+                messageLength: 0,
+                messageVersion: 0,
+                messageChecksum: 5,
+            };
+
+            const header = new Header(values);
+            expect(header.messageCode).toEqual(values.messageCode);
+            expect(header.messageLength).toEqual(values.messageLength);
+            expect(header.messageVersion).toEqual(values.messageVersion);
+            expect(header.messageChecksum).toEqual(values.messageChecksum);
+        });
+
+        it("should have a default constructor", () => {
+            const header = new Header();
+            expect(header.messageCode).toEqual(0);
+            expect(header.messageLength).toEqual(0);
+            expect(header.messageVersion).toEqual(0);
+            expect(header.messageChecksum).toEqual(0);
+        });
+
+        it("should serialize", () => {
+            const header = new Header();
+            header.messageCode = 1281;
+            header.messageLength = 318;
+            header.messageVersion = 257;
+            header.messageChecksum = 318;
+
+            const expected = Buffer.from([
+                0x05, 0x01,
+
+                0x01, 0x3e,
+
+                0x01, 0x01,
+
+                0x00, 0x00,
+
+                0x00, 0x00, 0x01, 0x3e,
+            ]);
+
+            const buf = header.serialize();
+            expect(buf).toEqual(expected);
+        });
+    });
 
     describe("Login", () => {
+        it("should allow optional constructior of header", () => {
+            const header = new Header();
+
+            const login = new Login({ header });
+            expect(login.header).toBeInstanceOf(Header);
+        });
+
+        it("should allow optional constructior of sessionKey", () => {
+            const values = {
+                sessionKey: "sessionKey",
+            };
+
+            const login = new Login(values);
+            expect(login.sessionKey).toEqual(values.sessionKey);
+        });
+
+        it("should allow optional constructior of encryptedSessionKey", () => {
+            const values = {
+                encryptedSessionKey: "encryptionKey",
+            };
+            const login = new Login(values);
+            expect(login.encryptedSessionKey).toEqual(
+                values.encryptedSessionKey,
+            );
+        });
+
+        it("should have a default constructor", () => {
+            const login = new Login();
+            expect(login.encryptedSessionKey).toEqual("");
+        });
+
+        it("should have a default GAME_CODE", () => {
+            const login = new Login();
+            expect(login.GAME_CODE).toEqual("2176");
+        });
+
+        it("should have a default v2P82", () => {
+            const login = new Login();
+            expect(login.v2P82).toEqual(false);
+        });
+
+        it("should have a default v2P187", () => {
+            const login = new Login();
+            expect(login.v2P187).toEqual(false);
+        });
+
         it("should serialize", () => {
             const login = new Login();
             login.header = new Header();

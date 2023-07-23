@@ -1,3 +1,11 @@
+export function clamp16(value: number) {
+    return Math.max(0, Math.min(65535, value));
+}
+
+export function clamp32(value: number) {
+    return Math.max(0, Math.min(4294967295, value));
+}
+
 export function serializeBool(bool: boolean) {
     const buf = Buffer.alloc(1);
 
