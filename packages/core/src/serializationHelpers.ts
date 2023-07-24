@@ -13,7 +13,7 @@ export function serializeBool(bool: boolean) {
 
     return buf;
 }
-    
+
 export function serializeByte(byte: number) {
     const buf = Buffer.alloc(1);
 
@@ -48,7 +48,7 @@ export function serializeFloat(f: number) {
 
 /**
  * Serializes a string to a buffer. The buffer will be prefixed with the length of the string.
- */ 
+ */
 export function serializeString(str: string) {
     const buf = Buffer.alloc(str.length + 2);
 
@@ -86,7 +86,7 @@ export function deserializeString(buf: Buffer) {
     if (size > buf.length - 2) {
         throw new Error("Size is bigger than the buffer length - 2");
     }
-    const str = buf.subarray(2, size +2).toString("utf8");
+    const str = buf.subarray(2, size + 2).toString("utf8");
 
     return str;
 }
