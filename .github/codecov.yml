@@ -54,9 +54,9 @@ flags:
 
 component_management:
   individual_components:
-    component_id: components_team1
-    name: Team 1
-    paths:
-      - packages/core/**
-      - packages/gateway/**
-      - packages/shared/**
+    - component_id: components_team1
+      name: Team 1
+      paths:
+        - packages/core/**
+        - packages/gateway/**
+        - packages/shared/**
