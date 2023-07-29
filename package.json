@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "a server",
     "engines": {
-        "node": ">=20.0.0"
+        "node": ">=v20.5.0"
     },
     "files": [
         "README.md",
