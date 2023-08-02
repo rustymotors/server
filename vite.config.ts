@@ -4,7 +4,7 @@ export default defineConfig({
     test: {
         coverage: {
             all: true,
-            reporter: ["cobertura", "html", "text"]
+            reporter: ["cobertura", "html", "text", "lcov"]
         },
     },
 });

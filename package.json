@@ -40,7 +40,7 @@
     "scripts": {
         "build": "tsc",
         "format": "prettier --write app.ts \"packages/**/*.ts\" \"src/**/*.ts\"",
-        "test": "node --openssl-legacy-provider node_modules/.bin/vitest run --coverage",
+        "test": "node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage packages",
         "build:test": "npm run format && npm run build && npm run test",
         "prod": "make prod_node",
         "prod:stop": "docker-compose stop",
@@ -60,11 +60,11 @@
         "@types/node": "^20.4.5",
         "@types/sinon": "10.0.15",
         "@types/sinon-chai": "3.2.9",
-        "@vitest/coverage-v8": "^0.33.0",
+        "@vitest/coverage-v8": "^0.34.1",
         "prettier": "3.0.0",
         "prettier-eslint": "15.0.1",
         "typescript": "5.1.6",
-        "vitest": "^0.33.0"
+        "vitest": "^0.34.1"
     },
     "c8": {
         "all": true,
