@@ -33,8 +33,3 @@ Mar 6, 2016
 - See the [changelog](./CHANGELOG.md).
 
 - [TODO Issues](https://github.com/drazisil/mcos/labels/todo%20%3Aspiral_notepad%3A)
-
----
-Visualization of the codebase
-
-![Visualization of the codebase](./diagram.svg)
