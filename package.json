@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "a server",
     "engines": {
-        "node": ">=v20.5.0"
+        "node": ">=v20.5.1"
     },
     "files": [
         "README.md",
@@ -57,11 +57,11 @@
     "devDependencies": {
         "@types/chai": "4.3.5",
         "@types/mocha": "10.0.1",
-        "@types/node": "^20.4.5",
-        "@types/sinon": "10.0.15",
+        "@types/node": "^20.4.10",
+        "@types/sinon": "10.0.16",
         "@types/sinon-chai": "3.2.9",
         "@vitest/coverage-v8": "^0.34.1",
-        "prettier": "3.0.0",
+        "prettier": "3.0.1",
         "prettier-eslint": "15.0.1",
         "typescript": "5.1.6",
         "vitest": "^0.34.1"
@@ -116,7 +116,7 @@
         "@mcos/shard": "^1.0.0",
         "@mcos/shared": "^1.0.0",
         "@mcos/transactions": "^1.0.0",
-        "@sentry/node": "7.61",
+        "@sentry/node": "7.63",
         "@sentry/profiling-node": "^1.1.2",
         "moment": "^2.29.4",
         "ts-node": "10.9.1"

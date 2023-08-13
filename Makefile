@@ -1,5 +1,5 @@
 all:
-	@echo "Please select a valid target"
+	@npm install
 
 certs:
 	@openssl req -x509 -extensions v3_req -config data/mcouniverse.cnf -newkey rsa:1024 -nodes -keyout ./data/private_key.pem -out ./data/mcouniverse.pem -days 365
@@ -18,6 +18,9 @@ prod_node:
 	npx tsc -b --verbose
 	docker-compose --file docker-compose.yml up -d --build
 
+up:
+	docker-compose up -d --build
+
 down:
 	docker-compose down
 
@@ -27,3 +30,8 @@ enable-node:
 docker-init:
 	mkdir -p log/mcos
 	@npm run start:docker -s
+
+
+clean:
+	@rm -rf node_modules
+	@rm -rf dist
