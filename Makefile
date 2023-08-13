@@ -9,7 +9,7 @@ certs:
 
 test:
 	@clear
-	@NODE_OPTIONS="--openssl-legacy-provider" npm test
+	@npm test
 
 start:
 	@LOG_LEVEL=silly npm run start:dev
