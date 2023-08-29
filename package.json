@@ -2,8 +2,22 @@
     "name": "mcos",
     "version": "1.0.0",
     "description": "a server",
-    "engines": {
-        "node": ">=v20.5.1"
+    "author": "Drazi Crendraven <drazisil@hey.com>",
+    "license": "AGPL-3.0",
+    "private": true,
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:drazisil/mcos.git"
+    },
+    "scripts": {
+        "pretest": "eslint --ignore-path .gitignore .",
+        "build": "tsc",
+"test": "node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage packages",
+        "build:test": "npm run format && npm run build && npm run test",
+        "prod": "make prod_node",
+        "prod:stop": "docker-compose stop",
+        "start:dev": "node --loader ts-node/esm --openssl-legacy-provider app.ts",
+        "start:docker": "npm run start:dev 2>&1 | tee -a log/mcos/trace.log"
     },
     "files": [
         "README.md",
@@ -36,33 +50,38 @@
             "./packages/mcos-transactions/index.js"
         ]
     },
-    "type": "module",
-    "scripts": {
-        "build": "tsc",
-        "format": "prettier --write app.ts \"packages/**/*.ts\" \"src/**/*.ts\"",
-        "test": "node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage packages",
-        "build:test": "npm run format && npm run build && npm run test",
-        "prod": "make prod_node",
-        "prod:stop": "docker-compose stop",
-        "start:dev": "node --loader ts-node/esm --openssl-legacy-provider app.ts",
-        "start:docker": "npm run start:dev 2>&1 | tee -a log/mcos/trace.log"
-    },
-    "author": "Drazi Crendraven <drazisil@hey.com>",
-    "license": "AGPL-3.0",
-    "private": true,
-    "repository": {
-        "type": "git",
-        "url": "git@github.com:drazisil/mcos.git"
+    "types": "./lib/index.d.ts",
+    "dependencies": {
+        "@mcos/auth": "^1.0.0",
+        "@mcos/cli": "^1.0.0",
+        "@mcos/database": "^1.0.0",
+        "@mcos/gateway": "^1.0.0",
+        "@mcos/interfaces": "^1.0.0",
+        "@mcos/lobby": "^1.0.0",
+        "@mcos/login": "^1.0.0",
+        "@mcos/patch": "^1.0.0",
+        "@mcos/persona": "^1.0.0",
+        "@mcos/shard": "^1.0.0",
+        "@mcos/shared": "^1.0.0",
+        "@mcos/transactions": "^1.0.0",
+        "@sentry/node": "7.63",
+        "@sentry/profiling-node": "^1.1.2",
+        "moment": "^2.29.4",
+        "ts-node": "10.9.1"
     },
     "devDependencies": {
         "@types/chai": "4.3.5",
         "@types/node": "^20.4.10",
         "@types/sinon": "10.0.16",
         "@types/sinon-chai": "3.2.9",
+        "@typescript-eslint/eslint-plugin": "^6.5.0",
+        "@typescript-eslint/parser": "^6.5.0",
         "@vitest/coverage-v8": "^0.34.1",
+        "eslint": "^8.48.0",
+        "eslint-config-prettier": "^9.0.0",
         "prettier": "3.0.1",
         "prettier-eslint": "15.0.1",
-        "typescript": "5.1.6",
+        "typescript": "^5.1.6",
         "vitest": "^0.34.1"
     },
     "c8": {
@@ -83,48 +102,9 @@
             "docs2"
         ]
     },
-    "eslintConfig": {
-        "env": {
-            "es2021": true,
-            "node": true
-        },
-        "extends": [
-            "eslint:recommended",
-            "plugin:@typescript-eslint/recommended"
-        ],
-        "parser": "@typescript-eslint/parser",
-        "parserOptions": {
-            "ecmaVersion": "latest",
-            "sourceType": "module"
-        },
-        "plugins": [
-            "@typescript-eslint"
-        ],
-        "rules": {}
-    },
-    "dependencies": {
-        "@mcos/auth": "^1.0.0",
-        "@mcos/cli": "^1.0.0",
-        "@mcos/database": "^1.0.0",
-        "@mcos/gateway": "^1.0.0",
-        "@mcos/interfaces": "^1.0.0",
-        "@mcos/lobby": "^1.0.0",
-        "@mcos/login": "^1.0.0",
-        "@mcos/patch": "^1.0.0",
-        "@mcos/persona": "^1.0.0",
-        "@mcos/shard": "^1.0.0",
-        "@mcos/shared": "^1.0.0",
-        "@mcos/transactions": "^1.0.0",
-        "@sentry/node": "7.63",
-        "@sentry/profiling-node": "^1.1.2",
-        "moment": "^2.29.4",
-        "ts-node": "10.9.1"
-    },
     "workspaces": {
         "packages": [
             "packages/*"
         ]
-    },
-    "packageManager": "npm@9.8.1",
-    "engineStrict": true
+    }
 }
