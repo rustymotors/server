@@ -12,54 +12,6 @@ function serializeBool(bool: boolean) {
     return buf;
 }
     
-function serializeByte(byte: number) {
-    const buf = Buffer.alloc(1);
-
-    buf.writeUInt8(byte);
-
-    return buf;
-}
-
-function serializeWord(word: number) {
-    const buf = Buffer.alloc(2);
-
-    buf.writeUInt16LE(word);
-
-    return buf;
-}
-
-function serializeDWord(dword: number) {
-    const buf = Buffer.alloc(4);
-
-    buf.writeUInt32LE(dword);
-
-    return buf;
-}
-
-function serializeQWord(quadWord: number) {
-    const buf = Buffer.alloc(8);
-
-    buf.writeUInt32LE(quadWord);
-
-    return buf;
-}
-
-function serializeFloat(f: number) {
-    const buf = Buffer.alloc(4);
-
-    buf.writeFloatLE(f);
-
-    return buf;
-}
-
-function serializeDouble(double: number) {
-    const buf = Buffer.alloc(8);
-
-    buf.writeDoubleLE(double);
-
-    return buf;
-}
-
 /**
  * Serializes a string to a buffer. The buffer will be prefixed with the length of the string.
  */ 
@@ -76,28 +28,12 @@ function deserializeBool(buff: Buffer) {
     return buff.readUInt8() === 1;
 }
 
-function deserializeByte(buff: Buffer) {
-    return buff.readUInt8();
-}
-
 function deserializeWord(buff: Buffer) {
     return buff.readUInt16LE();
 }
 
 function deserializeDWord(buff: Buffer) {
     return buff.readUInt32LE();
-}
-
-function deserializeQWord(buff: Buffer) {
-    return buff.readUInt32LE();
-}
-
-function deserializeFloat(buff: Buffer) {
-    return buff.readFloatLE();
-}
-
-function deserializeDouble(buff: Buffer) {
-    return buff.readDoubleLE();
 }
 
 /**
@@ -115,30 +51,6 @@ function deserializeString(buf: Buffer) {
 
 function sizeOfBool() {
     return 1;
-}
-
-function sizeOfByte() {
-    return 1;
-}
-
-function sizeOfWord() {
-    return 2;
-}
-
-function sizeOfDWord() {
-    return 4;
-}
-
-function sizeOfQWord() {
-    return 8;
-}
-
-function sizeOfFloat() {
-    return 4;
-}
-
-function sizeOfDouble() {
-    return 8;
 }
 
 function sizeOfString(string: string) {
@@ -166,7 +78,7 @@ export class Header implements Serialized {
 
 
     serialize() {
-        let buf = Buffer.alloc(12);
+        const buf = Buffer.alloc(12);
 
         buf.writeUInt16LE(this.messageCode, 0);
         buf.writeUInt16LE(this.messageLength, 2);
@@ -188,7 +100,8 @@ export class Header implements Serialized {
 export class SerializedBase implements Serialized {
     protected header: Header | null = null;
 
-    deserialize(buf: Buffer) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    deserialize(_buff: Buffer): Buffer {
         throw new Error("This method must be implemented by child classes");
     }
     serialize(): Buffer {
@@ -218,7 +131,8 @@ export class UserStatus extends SerializedBase implements Serialized {
         throw new Error("Not yet implemented");
     }
 
-    deserialize(buf: Buffer): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    deserialize(_buff: Buffer): Buffer {
         throw new Error("Not yet implemented");
     }
 }

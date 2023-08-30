@@ -30,7 +30,7 @@ export class Gateway implements GatewayServer, SubprocessThread {
     private readonly socketconnection: NetworkConnectionHandler;
     private serversRunning = false;
     private readThread: ConsoleThread | undefined;
-    private activeSubThreads: Array<SubprocessThread> = [];
+    private activeSubThreads: SubprocessThread[] = [];
     parentThread: GatewayServer | undefined;
     private status: "stopped" | "running" | "stopping" | "restarting" =
         "stopped";

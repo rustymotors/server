@@ -8,7 +8,7 @@ export class SubThread extends EventEmitter implements SubprocessThread {
     parentThread: GatewayServer | undefined;
     log: Logger;
 
-    constructor(name: string, log: Logger, loopInterval: number = 100) {
+    constructor(name: string, log: Logger, loopInterval = 100) {
         super();
         this.name = name;
         this.log = log;

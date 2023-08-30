@@ -115,7 +115,6 @@ export async function dataHandler({
     config,
     logger: log,
     connection,
-    message,
 }: {
     data: Buffer;
     connectionRecord: SocketWithConnectionInfo;

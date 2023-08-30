@@ -138,7 +138,7 @@ export interface ConnectionRecord {
     sKey: string;
     contextId: string;
 }
-export type SessionKeys = {
+export interface SessionKeys {
     // 64 bytes
     sessionKey: string;
     // 16 bytes
@@ -161,12 +161,12 @@ export interface TBufferWithConnection {
     timeStamp: number;
 }
 
-export type TransactionMessage = {
+export interface TransactionMessage {
     serialize: () => Buffer;
     deserialize: (inputBuffer: Buffer) => void;
-};
+}
 
-export type JSONResponseOfGameMessage = {
+export interface JSONResponseOfGameMessage {
     msgNo: number;
     opCode: number | null;
     msgLength: number;
@@ -176,25 +176,25 @@ export type JSONResponseOfGameMessage = {
     direction: "sent" | "received";
     sessionKey: string | null;
     rawBuffer: string;
-};
+}
 
-export type GameMessage = {
+export interface GameMessage {
     serialize: () => Buffer;
     deserialize: (inputBuffer: Buffer) => void;
     toJSON: () => JSONResponseOfGameMessage;
     dumpPacket: () => string;
-};
+}
 
 export interface MessageArrayWithConnectionInfo {
     connection: SocketWithConnectionInfo;
     messages: ClientMessage[] | GameMessage[] | MessageNode[];
     log: Logger;
 }
-export type ServiceResponse = {
+export interface ServiceResponse {
     connection: SocketWithConnectionInfo;
     messages: ClientMessage[] | GameMessage[] | MessageNode[];
     log: Logger;
-};
+}
 
 export interface BinaryStructure {
     serialize: () => Buffer;
@@ -208,37 +208,37 @@ export interface GameMessageHandler {
     handlerFunction: (args: ServiceArgs) => Promise<ServiceResponse>;
 }
 
-export type GameMessageOpCode = {
+export interface GameMessageOpCode {
     name: string;
     value: number;
     module: "Lobby" | "Login";
-};
+}
 
 export interface BuiltinError {
     code: number;
     message: string;
 }
 
-export type PersonaRecord = {
+export interface PersonaRecord {
     customerId: number;
     id: Buffer;
     maxPersonas: Buffer;
     name: Buffer;
     personaCount: Buffer;
     shardId: Buffer;
-};
+}
 
-export type UserRecordMini = {
+export interface UserRecordMini {
     contextId: string;
     customerId: number;
     userId: number;
-};
+}
 
-export type WebJSONResponse = {
+export interface WebJSONResponse {
     code: number;
     headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined;
     body: string;
-};
+}
 
 export type NetworkConnectionHandler = ({
     incomingSocket,
@@ -321,13 +321,13 @@ export type ConnectionHandler = ({
     log: Logger;
 }) => void;
 
-export type RaceLobbyRecord = {
+export interface RaceLobbyRecord {
     lobbyId: number;
     raceTypeId: number;
     turfId: number;
     riffName: string;
     eTurfName: string;
-};
+}
 
 export interface IPersonaServer {
     /**
@@ -450,12 +450,12 @@ export interface IEncryptionManager {
     ): EncryptionSession;
 }
 
-export type ServiceArgs = {
+export interface ServiceArgs {
     legacyConnection: TBufferWithConnection;
     connection?: ClientConnection;
     config: ServerConfiguration;
     log: Logger;
-};
+}
 
 export type Service = (args: ServiceArgs) => Promise<ServiceResponse>;
 

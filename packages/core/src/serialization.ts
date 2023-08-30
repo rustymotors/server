@@ -120,7 +120,8 @@ export class UserStatus implements Serialized {
         throw new Error("Not yet implemented");
     }
 
-    deserialize(buf: Buffer): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    deserialize(_buf: Buffer): void {
         throw new Error("Not yet implemented");
     }
 }
@@ -129,7 +130,8 @@ export class GetPersonaMapListRequest implements Serialized {
     serialize(): Buffer {
         throw new Error("Method not implemented.");
     }
-    deserialize(buf: Buffer): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    deserialize(_buf: Buffer): void {
         throw new Error("Method not implemented.");
     }
     sizeOf(): number {
@@ -141,7 +143,8 @@ export class SerializedList implements Serialized {
     serialize(): Buffer {
         throw new Error("Method not implemented.");
     }
-    deserialize(buf: Buffer): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    deserialize(_buf: Buffer): void {
         throw new Error("Method not implemented.");
     }
     sizeOf(): number {
@@ -153,7 +156,8 @@ export class Persona implements Serialized {
     serialize(): Buffer {
         throw new Error("Method not implemented.");
     }
-    deserialize(buf: Buffer): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    deserialize(_buf: Buffer): void {
         throw new Error("Method not implemented.");
     }
     sizeOf(): number {
@@ -165,7 +169,8 @@ export class SessionKey implements Serialized {
     serialize(): Buffer {
         throw new Error("Method not implemented.");
     }
-    deserialize(buf: Buffer): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    deserialize(_buf: Buffer): void {
         throw new Error("Method not implemented.");
     }
     sizeOf(): number {
@@ -177,7 +182,8 @@ export class UserAction implements Serialized {
     serialize(): Buffer {
         throw new Error("Method not implemented.");
     }
-    deserialize(buf: Buffer): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    deserialize(_buf: Buffer): void {
         throw new Error("Method not implemented.");
     }
     sizeOf(): number {
@@ -219,7 +225,8 @@ export class GameLogin implements Serialized {
     serialize(): Buffer {
         throw new Error("Method not implemented.");
     }
-    deserialize(buf: Buffer): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    deserialize(_buf: Buffer): void {
         throw new Error("Method not implemented.");
     }
     sizeOf(): number {
@@ -231,7 +238,8 @@ export class GameLoginReply implements Serialized {
     serialize(): Buffer {
         throw new Error("Method not implemented.");
     }
-    deserialize(buf: Buffer): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    deserialize(_buf: Buffer): void {
         throw new Error("Method not implemented.");
     }
     sizeOf(): number {
@@ -243,7 +251,8 @@ export class GetPersonaInfoRequest implements Serialized {
     serialize(): Buffer {
         throw new Error("Method not implemented.");
     }
-    deserialize(buf: Buffer): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    deserialize(_buf: Buffer): void {
         throw new Error("Method not implemented.");
     }
     sizeOf(): number {
@@ -255,7 +264,8 @@ export class UserStatusRequest implements Serialized {
     serialize(): Buffer {
         throw new Error("Method not implemented.");
     }
-    deserialize(buf: Buffer): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    deserialize(_buf: Buffer): void {
         throw new Error("Method not implemented.");
     }
     sizeOf(): number {
@@ -267,7 +277,8 @@ export class AddPersona implements Serialized {
     serialize(): Buffer {
         throw new Error("Method not implemented.");
     }
-    deserialize(buf: Buffer): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    deserialize(_buf: Buffer): void {
         throw new Error("Method not implemented.");
     }
     sizeOf(): number {
