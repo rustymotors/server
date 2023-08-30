@@ -65,12 +65,12 @@ export class Packet {
         return this.header.msgId.readInt16BE();
     }
 
-    get version(): number {
-        return this.header.msgVersion.readInt16BE();
-    }
-
     set id(id: number) {
         this.header.msgId.writeInt16BE(id);
+    }
+
+    get version(): number {
+        return this.header.msgVersion.readInt16BE();
     }
 
     set version(version: number) {

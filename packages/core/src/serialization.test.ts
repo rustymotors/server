@@ -1,31 +1,30 @@
 import { describe, it, expect } from "vitest";
 import {
-    AddPersona,
-    GameLogin,
-    GameLoginReply,
-    GetPersonaInfoRequest,
-    GetPersonaMapListRequest,
     Header,
     Login,
-    LoginRequestReply,
-    Persona,
-    SerializedList,
-    SessionKey,
-    UserAction,
-    UserStatusRequest,
 } from "./serialization.js";
 import { deserializeString } from "./serializationHelpers.js";
 
 describe("serialization", () => {
-    describe.skip("AddPersona", () => {});
+    describe.skip("AddPersona", () => {
+        // intentionally skipped
+    });
 
-    describe.skip("GameLogin", () => {});
+    describe.skip("GameLogin", () => {
+        // intentionally skipped
+    });
 
-    describe.skip("GameLoginReply", () => {});
+    describe.skip("GameLoginReply", () => {
+        // intentionally skipped
+    });
 
-    describe.skip("GetPersonaInfoRequest", () => {});
+    describe.skip("GetPersonaInfoRequest", () => {
+        // intentionally skipped
+    });
 
-    describe.skip("GetPersonaMapListRequest", () => {});
+    describe.skip("GetPersonaMapListRequest", () => {
+        // intentionally skipped
+    });
 
     describe("Header", () => {
         it("should allow passing in values to constructor", () => {
@@ -256,13 +255,23 @@ describe("serialization", () => {
         });
     });
 
-    describe.skip("Persona", () => {});
+    describe.skip("Persona", () => {
+        // intentionally skipped
+    });
 
-    describe.skip("SerializedList", () => {});
+    describe.skip("SerializedList", () => {
+        // intentionally skipped
+    });
 
-    describe.skip("SessionKey", () => {});
+    describe.skip("SessionKey", () => {
+        // intentionally skipped
+    });
 
-    describe.skip("UserAction", () => {});
+    describe.skip("UserAction", () => {
+        // intentionally skipped
+    });
 
-    describe.skip("UserStatusRequest", () => {});
+    describe.skip("UserStatusRequest", () => {
+        // intentionally skipped
+    });
 });

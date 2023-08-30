@@ -11,7 +11,7 @@ export class TpsEntry {
     _mT: Date;
     _mCount: number;
     _mIndex: number;
-    _mCounts: Array<number> = [];
+    _mCounts: number[] = [];
     constructor() {
         this._mMsgNo = 0x00;
         this._mT = new Date();

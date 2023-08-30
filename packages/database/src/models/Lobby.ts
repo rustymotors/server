@@ -2,6 +2,7 @@ import { SerializedObject } from "@mcos/interfaces";
 import { SerializerBase } from "@mcos/shared";
 
 export class LobbyModel extends SerializerBase implements SerializedObject {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     deserialize(_inputBuffer: Buffer): LobbyModel {
         throw new Error("Method not implemented.");
     }

@@ -19,7 +19,7 @@ export function listConnections(
     /**
      * @type {}
      */
-    let response: Partial<TConnection>[] = [];
+    const response: Partial<TConnection>[] = [];
     connections.forEach((connection) => {
         response.push({
             connectionId: connection.id,

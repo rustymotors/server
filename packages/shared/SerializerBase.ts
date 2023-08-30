@@ -2,7 +2,8 @@ import { ServerError } from "./errors/ServerError.js";
 import { SerializedObject } from "@mcos/interfaces";
 
 export class SerializerBase implements SerializedObject {
-    deserialize(inputBuffer: Buffer): SerializerBase {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    deserialize(_inputBuffer: Buffer): SerializerBase {
         throw new Error("Method not implemented.");
     }
     serialize(): Buffer {
@@ -115,7 +116,7 @@ export class SerializerBase implements SerializedObject {
      * @param {Buffer} buf
      * @returns {Array<number>}
      */
-    static _deserializeCharArray(buf: Buffer): Array<number> {
+    static _deserializeCharArray(buf: Buffer): number[] {
         const len = buf.readUInt16LE();
         const arr = [];
         for (let i = 0; i < len; i++) {
@@ -189,7 +190,7 @@ export class SerializerBase implements SerializedObject {
      * @param {Buffer} buf
      * @returns {Array<number>}
      */
-    static _deserializeString(buf: Buffer): Array<number> {
+    static _deserializeString(buf: Buffer): number[] {
         return SerializerBase._deserializeCharArray(buf);
     }
 
@@ -198,7 +199,7 @@ export class SerializerBase implements SerializedObject {
      * @param {Array<number>} charArray
      * @returns {string}
      */
-    static _charArrayToString(charArray: Array<number>): string {
+    static _charArrayToString(charArray: number[]): string {
         let str = "";
         for (const char of charArray) {
             str += String.fromCharCode(char);
