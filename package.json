@@ -10,9 +10,10 @@
         "url": "git@github.com:drazisil/mcos.git"
     },
     "scripts": {
+        "prepare": "husky install",
         "pretest": "eslint --ignore-path .gitignore .",
         "build": "tsc",
-"test": "node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage packages",
+        "test": "node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage packages",
         "build:test": "npm run format && npm run build && npm run test",
         "prod": "make prod_node",
         "prod:stop": "docker-compose stop",
@@ -79,6 +80,8 @@
         "@vitest/coverage-v8": "^0.34.1",
         "eslint": "^8.48.0",
         "eslint-config-prettier": "^9.0.0",
+        "husky": "^8.0.3",
+        "lint-staged": "^14.0.1",
         "prettier": "3.0.1",
         "prettier-eslint": "15.0.1",
         "typescript": "^5.1.6",
@@ -106,5 +109,13 @@
         "packages": [
             "packages/*"
         ]
+    },
+    "lint-staged": {
+        "**/*.js": "eslint"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
     }
 }
