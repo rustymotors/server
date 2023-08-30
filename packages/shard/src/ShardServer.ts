@@ -1,9 +1,9 @@
-import { Sentry } from "@mcos/shared";
 import { ShardEntry } from "./shard-entry.js";
 import { createServer } from "node:https";
 import { IncomingMessage, Server, ServerResponse } from "node:http";
-import { ServerConfiguration, Logger } from "@mcos/interfaces";
 import { handleGetCert, handleGetKey, handleGetRegistry } from "./index.js";
+import { Logger, ServerConfiguration } from "../../interfaces/index.js";
+import { Sentry } from "../../shared/sentry.js";
 
 /**
  * Manages patch and update server connections

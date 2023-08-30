@@ -5,7 +5,7 @@ import {
     OutgoingHttpHeaders,
     ServerResponse,
 } from "node:http";
-import { MessageNode } from "@mcos/shared";
+import { MessageNode } from "../shared/MessageNode.js";
 
 export interface GameMessageHeader extends SerializedObject {
     msgid: number;
@@ -409,7 +409,7 @@ export interface GamePatchingServer {
 export interface SubprocessThread {
     name: string;
     loopInterval: number;
-    timer: NodeJS.Timer | null;
+    timer: NodeJS.Timeout | null;
     parentThread: GatewayServer | undefined;
     log: Logger;
 

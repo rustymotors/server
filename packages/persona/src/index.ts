@@ -14,14 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import {
-    GameMessage,
-    Logger,
-    ServiceResponse,
-    ServiceArgs,
-} from "@mcos/interfaces";
+import { GameMessage, Logger, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
+import { NPSMessage } from "../../shared/NPSMessage.js";
+import { Sentry } from "../../shared/sentry.js";
 import { handleData } from "./internal.js";
-import { NPSMessage, Sentry } from "@mcos/shared";
 
 /**
  * Selects a game persona and marks it as in use

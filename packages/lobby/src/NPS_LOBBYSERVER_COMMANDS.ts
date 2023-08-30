@@ -1,4 +1,4 @@
-import { GameMessageOpCode } from "@mcos/interfaces";
+import { GameMessageOpCode } from "../../interfaces/index.js";
 
 /**
  * Commands from the game server to the game client

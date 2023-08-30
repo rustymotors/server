@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { GSMessageBase } from "@mcos/gateway";
-import { Logger } from "@mcos/interfaces";
 import { describe, it, expect } from "vitest";
-import { ByteField } from "@mcos/shared";
 import { mock } from "node:test";
+import { Logger } from "../../interfaces/index.js";
+import { ByteField } from "../../shared/BinaryStructure.js";
+import { GSMessageBase } from "../src/GMessageBase.js";
 
 describe("GSMessageBase", () => {
     describe(".byteLength", () => {

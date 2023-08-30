@@ -14,8 +14,9 @@
  * @property {Buffer} data2
  */
 
-import { ClientMessage } from "@mcos/interfaces";
-import { Message } from "@mcos/shared";
+import { ClientMessage } from "../../interfaces/index.js";
+import { Message } from "../../shared/index.js";
+
 
 export class GenericReplyMessage extends Message implements ClientMessage {
     /**

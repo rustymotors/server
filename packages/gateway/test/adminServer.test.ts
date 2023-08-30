@@ -14,11 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { AdminServer, getAdminServer, resetQueue } from "@mcos/gateway";
-import { ISocketTestFactory } from "@mcos/shared";
-import { Logger, SocketWithConnectionInfo } from "@mcos/interfaces";
 import { describe, it, expect } from "vitest";
 import assert from "node:assert";
+import { Logger, SocketWithConnectionInfo } from "../../interfaces/index.js";
+import { ISocketTestFactory } from "../../shared/index.js";
+import { getAdminServer, AdminServer } from "../src/AdminServer.js";
+import { resetQueue } from "../src/resetQueue.js";
 
 describe("AdminServer", () => {
     describe(".getAdminServer", () => {

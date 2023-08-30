@@ -14,16 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { MessagePacket } from "@mcos/lobby";
-import { NPSMessage, Sentry } from "@mcos/shared";
+import { PersonaRecord, GameMessage, Logger, ServiceArgs, MessageArrayWithConnectionInfo } from "../../interfaces/index.js";
+import { MessagePacket } from "../../lobby/index.js";
+import { NPSMessage } from "../../shared/NPSMessage.js";
+import { Sentry } from "../../shared/sentry.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
-import {
-    Logger,
-    MessageArrayWithConnectionInfo,
-    PersonaRecord,
-    ServiceArgs,
-    GameMessage,
-} from "@mcos/interfaces";
 
 const NAME_BUFFER_SIZE = 30;
 

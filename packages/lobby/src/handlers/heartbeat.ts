@@ -1,5 +1,5 @@
-import { NPSMessage } from "@mcos/shared";
-import { ServiceArgs, ServiceResponse } from "@mcos/interfaces";
+import { ServiceArgs, ServiceResponse } from "../../../interfaces/index.js";
+import { NPSMessage } from "../../../shared/NPSMessage.js";
 
 /**
  * @private

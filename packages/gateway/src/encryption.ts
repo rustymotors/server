@@ -14,17 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry } from "@mcos/shared";
-import {
-    SocketWithConnectionInfo,
-    SessionKeys,
-    TBufferWithConnection,
-    Logger,
-    ClientConnection,
-    EncryptionSession,
-    IEncryptionManager,
-} from "@mcos/interfaces";
 import { createCipheriv, createDecipheriv } from "node:crypto";
+import { EncryptionSession, SocketWithConnectionInfo, SessionKeys, TBufferWithConnection, ClientConnection, Logger, IEncryptionManager } from "../../interfaces/index.js";
+import { Sentry } from "../../shared/sentry.js";
 
 const encryptionSessions: EncryptionSession[] = [];
 

@@ -1,13 +1,7 @@
-import { cipherBufferDES, decipherBufferDES } from "@mcos/gateway";
-import { NPSMessage, Sentry } from "@mcos/shared";
-import {
-    SocketWithConnectionInfo,
-    Logger,
-    MessageArrayWithConnectionInfo,
-    TBufferWithConnection,
-    ServiceResponse,
-    ServiceArgs,
-} from "@mcos/interfaces";
+import { cipherBufferDES, decipherBufferDES } from "../../../gateway/index.js";
+import { SocketWithConnectionInfo, Logger, MessageArrayWithConnectionInfo, TBufferWithConnection, ServiceArgs, ServiceResponse } from "../../../interfaces/index.js";
+import { NPSMessage } from "../../../shared/NPSMessage.js";
+import { Sentry } from "../../../shared/sentry.js";
 
 /**
  * Takes an plaintext command packet and return the encrypted bytes

@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { TClientConnectMessage } from "@mcos/transactions";
 import { describe, it, expect } from "vitest";
 import { mock } from "node:test"
+import { TClientConnectMessage } from "../index.js";
 
 describe("TClientConnectMessage", () => {
     describe(".byteLength", () => {

@@ -1,7 +1,4 @@
-import {
-    SocketWithConnectionInfo,
-    WebJSONResponse,
-} from "@mcos/interfaces";
+import { SocketWithConnectionInfo, WebJSONResponse } from "../../interfaces/index.js";
 
 // https://careerkarma.com/blog/converting-circular-structure-to-json/
 export function replacerFunc() {

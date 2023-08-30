@@ -1,9 +1,6 @@
-import {
-    getServerConfiguration,
-    setConfiguration,
-} from "@mcos/shared";
 import { describe, it, beforeEach, expect } from "vitest";
 import path from "path";
+import { setConfiguration, getServerConfiguration } from "../ServerConfiguration.js";
 
 describe("ServerConfiguration", () => {
     beforeEach(() => {

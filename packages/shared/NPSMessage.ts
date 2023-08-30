@@ -1,4 +1,4 @@
-import { JSONResponseOfGameMessage } from "@mcos/interfaces";
+import { JSONResponseOfGameMessage } from "../interfaces/index.js";
 import { Sentry } from "./sentry.js";
 
 /**

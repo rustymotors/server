@@ -20,7 +20,7 @@
  * @property {StockCar[]} StockCarList
  */
 
-import { MessageNode } from "@mcos/shared";
+import { MessageNode } from "../../shared/index.js";
 import { StockCar } from "./StockCar.js";
 
 export class StockCarInfoMessage extends MessageNode {

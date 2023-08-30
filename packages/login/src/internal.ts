@@ -14,19 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { GSMessageBase } from "@mcos/gateway";
-import { NPSMessage, Sentry } from "@mcos/shared";
-import { DatabaseManager } from "@mcos/database";
+import { DatabaseManager } from "../../database/index.js";
+import { GSMessageBase } from "../../gateway/index.js";
+import { UserRecordMini, TBufferWithConnection, ServerConfiguration, Logger, MessageArrayWithConnectionInfo, ServiceArgs } from "../../interfaces/index.js";
+import { NPSMessage } from "../../shared/NPSMessage.js";
+import { Sentry } from "../../shared/sentry.js";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { premadeLogin } from "./premadeLogin.js";
-import {
-    UserRecordMini,
-    TBufferWithConnection,
-    ServerConfiguration,
-    Logger,
-    MessageArrayWithConnectionInfo,
-    ServiceArgs,
-} from "@mcos/interfaces";
 
 /** @type {UserRecordMini[]} */
 const userRecords: UserRecordMini[] = [

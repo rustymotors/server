@@ -1,5 +1,5 @@
+import { SerializedObject } from "../interfaces/index.js";
 import { ServerError } from "./errors/ServerError.js";
-import { SerializedObject } from "@mcos/interfaces";
 
 export class SerializerBase implements SerializedObject {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

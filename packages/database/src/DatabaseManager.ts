@@ -1,15 +1,12 @@
-import { Sentry } from "@mcos/shared";
-import {
-    ConnectionRecord,
-    DatabaseManager,
-    Logger,
-    RaceLobbyRecord,
-} from "@mcos/interfaces";
 
 /**
  * This class abstracts database methods
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
+
+import { ConnectionRecord, RaceLobbyRecord, Logger } from "../../interfaces/index.js";
+import { Sentry } from "../../shared/sentry.js";
+import { DatabaseManager } from "../index.js";
 
 export class Database implements DatabaseManager {
     private sessions: ConnectionRecord[] = [];

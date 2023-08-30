@@ -16,10 +16,10 @@
 
 import { IncomingMessage, ServerResponse } from "http";
 import { getAdminServer } from "./AdminServer.js";
-import { getPatchServer } from "@mcos/patch";
-import { getShardServer } from "@mcos/shard";
-import { ServerConfiguration, Logger } from "@mcos/interfaces";
-import { getAuthServer } from "@mcos/auth";
+import { Logger, ServerConfiguration } from "../../interfaces/index.js";
+import { getAuthServer } from "../../auth/index.js";
+import { getPatchServer } from "../../patch/index.js";
+import { getShardServer } from "../../shard/index.js";
 
 /**
  * Routes incomming HTTP requests

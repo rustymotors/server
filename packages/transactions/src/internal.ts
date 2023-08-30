@@ -14,15 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { decryptBuffer } from "@mcos/gateway";
-import { MessageNode, Sentry, ServerError } from "@mcos/shared";
-import {
-    ClientConnection,
-    TBufferWithConnection,
-    Logger,
-    ServiceResponse,
-    ServiceArgs,
-} from "@mcos/interfaces";
+import { decryptBuffer } from "../../gateway/index.js";
+import { TBufferWithConnection, ClientConnection, Logger, ServiceResponse, ServiceArgs } from "../../interfaces/index.js";
+import { MessageNode } from "../../shared/MessageNode.js";
+import { ServerError } from "../../shared/index.js";
+import { Sentry } from "../../shared/sentry.js";
 import { messageHandlers } from "./handlers.js";
 
 /**

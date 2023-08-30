@@ -14,12 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { BinaryStructure, TSMessageBase } from "@mcos/shared";
-import {
-    GameMessage,
-    JSONResponseOfGameMessage,
-    Logger,
-} from "@mcos/interfaces";
+import { GameMessage, Logger, JSONResponseOfGameMessage } from "../../interfaces/index.js";
+import { TSMessageBase, BinaryStructure } from "../../shared/index.js";
+
 
 /**
  *

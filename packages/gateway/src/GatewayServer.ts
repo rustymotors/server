@@ -2,18 +2,13 @@ import {
     createServer as createSocketServer,
     Server as tcpServer,
 } from "node:net";
-import {
-    GatewayServer,
-    SubprocessThread,
-    ConnectionHandler,
-    ServerConfiguration,
-    Logger,
-    NetworkConnectionHandler,
-} from "@mcos/interfaces";
 import { defaultLog, socketConnectionHandler } from "./index.js";
-import { ConsoleThread } from "@mcos/cli";
-import { Sentry, ServerError } from "@mcos/shared";
 import { getConnectionManager } from "./ConnectionManager.js";
+import { ConsoleThread } from "../../cli/ConsoleThread.js";
+import { SubprocessThread, ServerConfiguration, Logger, NetworkConnectionHandler, ConnectionHandler } from "../../interfaces/index.js";
+import { ServerError } from "../../shared/index.js";
+import { Sentry } from "../../shared/sentry.js";
+import { GatewayServer } from "../index.js";
 
 /**
  * Gateway server
@@ -39,7 +34,7 @@ export class Gateway implements GatewayServer, SubprocessThread {
 
     name = "GatewayServer";
     loopInterval = 0;
-    timer: NodeJS.Timer | null = null;
+    timer: NodeJS.Timeout | null = null;
     // Singleton instance of GatewayServer
     static _instance: GatewayServer;
 

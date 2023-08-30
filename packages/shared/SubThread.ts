@@ -1,10 +1,10 @@
-import { GatewayServer, SubprocessThread, Logger } from "@mcos/interfaces";
 import EventEmitter from "node:events";
+import { SubprocessThread, GatewayServer, Logger } from "../interfaces/index.js";
 
 export class SubThread extends EventEmitter implements SubprocessThread {
     name: string;
     loopInterval: number;
-    timer: NodeJS.Timer | null = null;
+    timer: NodeJS.Timeout | null = null;
     parentThread: GatewayServer | undefined;
     log: Logger;
 

@@ -1,4 +1,4 @@
-import { GameMessageHandler } from "@mcos/interfaces";
+import { GameMessageHandler } from "../../../interfaces/index.js";
 import { handleEncryptedNPSCommand } from "./encryptedCommand.js";
 import { _npsHeartbeat } from "./heartbeat.js";
 import { _npsRequestGameConnectServer } from "./requestConnectGameServer.js";

@@ -1,11 +1,7 @@
-import { ServerError, SubThread } from "@mcos/shared";
-import {
-    GatewayServer,
-    KeypressEvent,
-    SubprocessThread,
-    Logger,
-} from "@mcos/interfaces";
 import { emitKeypressEvents } from "readline";
+import { SubprocessThread, GatewayServer, Logger, KeypressEvent } from "../interfaces/index.js";
+import { SubThread } from "../shared/SubThread.js";
+import { ServerError } from "../shared/index.js";
 
 export class ConsoleThread extends SubThread implements SubprocessThread {
     parentThread: GatewayServer | undefined;

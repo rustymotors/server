@@ -17,8 +17,8 @@
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
 import { _npsHeartbeat } from "./handlers/heartbeat.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
-import { Sentry } from "@mcos/shared";
-import { ServiceArgs, ServiceResponse } from "@mcos/interfaces";
+import { ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
+import { Sentry } from "../../shared/sentry.js";
 
 /**
  */

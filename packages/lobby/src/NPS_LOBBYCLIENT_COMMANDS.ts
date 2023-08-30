@@ -5,7 +5,8 @@
  * @type {TNPS_COMMAND_MAP[]}
  */
 
-import { GameMessageOpCode } from "@mcos/interfaces";
+import { GameMessageOpCode } from "../../interfaces/index.js";
+
 
 export const NPS_LOBBYCLIENT_COMMANDS: GameMessageOpCode[] = [
     { name: "NPS_LOGIN", value: 256, module: "Lobby" },

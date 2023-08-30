@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { _generateSessionKeyBuffer } from "@mcos/lobby";
+import { _generateSessionKeyBuffer } from "../index.js";
 
 describe("_generateSessionKeyBuffer", function () {
     it("should return a buffer", function () {

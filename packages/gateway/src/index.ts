@@ -14,29 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import {
-    GetServerLogger,
-    Message,
-    MessageHeader,
-    ServerError,
-    toHex,
-} from "@mcos/shared";
-import {
-    GameMessage,
-    BuiltinError,
-    NetworkSocket,
-    ClientMessage,
-    ConnectionHandler,
-    MessageProcessor,
-    Logger,
-    SocketOnDataHandler,
-    TSocketEndHandler,
-    TSocketErrorHandler,
-    SocketWithConnectionInfo,
-    ServerConfiguration,
-    ClientConnection,
-    WebConnectionHandler,
-} from "@mcos/interfaces";
 import { randomUUID } from "node:crypto";
 import { Server as httpServer } from "node:http";
 import {
@@ -45,8 +22,12 @@ import {
     findConnectionByAddressAndPort,
     getConnectionManager,
 } from "./ConnectionManager.js";
-import { dataHandler } from "./sockets.js";
+import { dataHandler, toHex } from "./sockets.js";
 import { httpListener as httpHandler } from "./web.js";
+import { NetworkSocket, BuiltinError, Logger, MessageProcessor, ServerConfiguration, ClientConnection, SocketWithConnectionInfo, ClientMessage, GameMessage, SocketOnDataHandler, TSocketErrorHandler, TSocketEndHandler, ConnectionHandler, WebConnectionHandler } from "../../interfaces/index.js";
+import { Message } from "../../shared/Message.js";
+import { MessageHeader } from "../../shared/MessageHeader.js";
+import { GetServerLogger, ServerError } from "../../shared/index.js";
 export { getAdminServer } from "./AdminServer.js";
 export { getAllConnections } from "./ConnectionManager.js";
 

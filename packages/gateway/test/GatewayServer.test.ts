@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { GatewayServer } from "@mcos/gateway";
+import { GatewayServer } from "../index.js";
 
 describe("GatewayServer", () => {
     it("should throw an error if no config is provided", () => {

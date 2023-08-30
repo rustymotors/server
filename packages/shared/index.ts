@@ -3,13 +3,7 @@
  */
 
 import EventEmitter from "node:events";
-import {
-    ClientConnection,
-    ClientMessage,
-    ClientMessageHeader,
-    NetworkSocket,
-    ServerConfiguration,
-} from "@mcos/interfaces";
+import { NetworkSocket, ClientMessageHeader, ClientConnection, ClientMessage, ServerConfiguration } from "../interfaces/index.js";
 export { toHex } from "./utils.js";
 
 export {

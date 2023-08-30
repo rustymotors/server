@@ -14,22 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import {
-    ClientConnection,
-    ClientMessage,
-    GameMessage,
-    TBufferWithConnection,
-    ServerConfiguration,
-    Logger,
-    ServiceResponse,
-    Service,
-    SocketWithConnectionInfo,
-} from "@mcos/interfaces";
-import { receiveLobbyData } from "@mcos/lobby";
-import { receiveLoginData } from "@mcos/login";
-import { receivePersonaData } from "@mcos/persona";
-import { MessageNode, Sentry } from "@mcos/shared";
-import { receiveTransactionsData } from "@mcos/transactions";
+import { GameMessage, ClientMessage, SocketWithConnectionInfo, Logger, ServerConfiguration, ClientConnection, TBufferWithConnection, ServiceResponse, Service } from "../../interfaces/index.js";
+import { receiveLobbyData } from "../../lobby/index.js";
+import { receiveLoginData } from "../../login/index.js";
+import { receivePersonaData } from "../../persona/index.js";
+import { MessageNode } from "../../shared/MessageNode.js";
+import { Sentry } from "../../shared/sentry.js";
+import { receiveTransactionsData } from "../../transactions/index.js";
 import { updateConnection } from "./ConnectionManager.js";
 
 /**

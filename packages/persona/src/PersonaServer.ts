@@ -1,11 +1,8 @@
-import {
-    Logger,
-    PersonaRecord,
-    IPersonaServer,
-} from "@mcos/interfaces";
+import { IPersonaServer, Logger, PersonaRecord } from "../../interfaces/index.js";
+import { NPSMessage } from "../../shared/NPSMessage.js";
+import { Sentry } from "../../shared/sentry.js";
 import { personaRecords } from "./internal.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
-import { NPSMessage, Sentry } from "@mcos/shared";
 
 /**
  * Please use {@link PersonaServer.getInstance()}

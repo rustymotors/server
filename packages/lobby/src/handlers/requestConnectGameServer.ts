@@ -1,11 +1,12 @@
-import { NPSMessage, Sentry } from "@mcos/shared";
-import { createEncrypters, selectEncryptors } from "@mcos/gateway";
 import { NPSUserInfo } from "../NPSUserInfo.js";
 import { MessagePacket } from "../MessagePacket.js";
-import { getPersonasByPersonaId } from "@mcos/persona";
-import { DatabaseManager } from "@mcos/database";
-import { ServiceArgs, ServiceResponse } from "@mcos/interfaces";
 import { _generateSessionKeyBuffer } from "../sessionKeys.js";
+import { DatabaseManager } from "../../../database/index.js";
+import { selectEncryptors, createEncrypters } from "../../../gateway/index.js";
+import { ServiceArgs, ServiceResponse } from "../../../interfaces/index.js";
+import { getPersonasByPersonaId } from "../../../persona/index.js";
+import { NPSMessage } from "../../../shared/NPSMessage.js";
+import { Sentry } from "../../../shared/sentry.js";
 
 /**
  * Convert to zero padded hex

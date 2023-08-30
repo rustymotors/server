@@ -14,14 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { DatabaseManager } from "@mcos/database";
-import { createEncrypters } from "@mcos/gateway";
-import { MessageNode, Sentry, toHex } from "@mcos/shared";
-import {
-    MessageArrayWithConnectionInfo,
-    Logger,
-    SocketWithConnectionInfo,
-} from "@mcos/interfaces";
+import { DatabaseManager } from "../../database/index.js";
+import { createEncrypters } from "../../gateway/index.js";
+import { SocketWithConnectionInfo, Logger, MessageArrayWithConnectionInfo } from "../../interfaces/index.js";
+import { MessageNode } from "../../shared/MessageNode.js";
+import { Sentry } from "../../shared/sentry.js";
+import { toHex } from "../../shared/utils.js";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { StockCar } from "./StockCar.js";

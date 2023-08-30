@@ -14,15 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry } from "@mcos/shared";
+import { Logger, DatabaseManager, UserRecordMini, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
+import { Sentry } from "../../shared/sentry.js";
 import { handleData } from "./internal.js";
-import {
-    Logger,
-    DatabaseManager,
-    UserRecordMini,
-    ServiceResponse,
-    ServiceArgs,
-} from "@mcos/interfaces";
 
 /**
  * Please use {@link LoginServer.getInstance()}
@@ -39,7 +33,7 @@ export class LoginServer {
      */
     static _instance: LoginServer;
 
-    #databaseManager;
+    private databaseManager;
 
     /** @type {TServerLogger} */
     private readonly _log: Logger;
@@ -52,7 +46,7 @@ export class LoginServer {
      * @memberof LoginServer
      */
     constructor(database: DatabaseManager, log: Logger) {
-        this.#databaseManager = database;
+        this.databaseManager = database;
         this._log = log;
     }
 
