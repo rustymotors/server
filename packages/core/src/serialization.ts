@@ -4,9 +4,6 @@ import {
     serializeString,
     serializeDWord,
     sizeOfString,
-    serializeBool,
-    sizeOfBool,
-    deserializeBool,
     deserializeString,
     clamp16,
     clamp32,
@@ -286,59 +283,3 @@ export class AddPersona implements Serialized {
     }
 }
 
-export class Login extends LoginRequestReply implements Serialized {
-    banned = false;
-    encryptedSessionKey = ""; // encrypted session key
-    readonly GAME_CODE = "2176"; // 40 chars string
-    gagged = false;
-
-    constructor(
-        values: {
-            header?: Header;
-            banned?: boolean;
-            gagged?: boolean;
-            contextId?: string;
-            encryptedSessionKey?: string;
-        } = {},
-    ) {
-        super(values);
-        this.banned = values.banned ?? false;
-        this.gagged = values.gagged ?? false;
-        this.encryptedSessionKey = values.encryptedSessionKey ?? ""; // encrypted session key
-    }
-
-    serialize() {
-        let buf = super.serialize();
-        buf = Buffer.concat([
-            buf,
-            serializeBool(this.banned),
-            serializeBool(this.gagged),
-            serializeString(this.encryptedSessionKey),
-            serializeString(this.GAME_CODE),
-        ]);
-
-        return buf;
-    }
-
-    sizeOf() {
-        let size = super.sizeOf();
-        size += sizeOfBool();
-        size += sizeOfBool();
-        size += sizeOfString(this.encryptedSessionKey);
-        size += sizeOfString(this.GAME_CODE);
-
-        return size;
-    }
-
-    deserialize(buf: Buffer) {
-        super.deserialize(buf);
-        let cursor = super.sizeOf();
-        this.banned = deserializeBool(buf.subarray(cursor));
-        cursor += sizeOfBool();
-        this.gagged = deserializeBool(buf.subarray(cursor));
-        cursor += sizeOfBool();
-        this.encryptedSessionKey = deserializeString(buf.subarray(cursor));
-        cursor += sizeOfString(this.encryptedSessionKey);
-        cursor += sizeOfString(this.GAME_CODE);
-    }
-}
