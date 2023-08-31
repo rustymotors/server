@@ -16,7 +16,7 @@
 
 import { describe, it, expect } from "vitest";
 import { mock } from "node:test"
-import { TClientConnectMessage } from "../index.js";
+import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
 
 describe("TClientConnectMessage", () => {
     describe(".byteLength", () => {

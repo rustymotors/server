@@ -15,10 +15,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { DatabaseManager } from "../../database/index.js";
-import { GSMessageBase } from "../../gateway/index.js";
+import { GSMessageBase } from "../../gateway/src/GMessageBase.js";
 import { UserRecordMini, TBufferWithConnection, ServerConfiguration, Logger, MessageArrayWithConnectionInfo, ServiceArgs } from "../../interfaces/index.js";
 import { NPSMessage } from "../../shared/NPSMessage.js";
-import { Sentry } from "../../shared/sentry.js";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { premadeLogin } from "./premadeLogin.js";
 
@@ -87,7 +86,6 @@ async function login(
         const err = new Error(
             `Unable to locate a user record for the context id: ${contextId}`,
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 
@@ -100,14 +98,12 @@ async function login(
             contextId,
             connectionId,
         )
-        .catch((/** @type {unknown} */ error: unknown) => {
-            Sentry.captureException(error);
+        .catch((error: unknown) => {
             const err = new Error(
                 `Unable to update session key in the database: ${String(
                     error,
                 )}`,
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         });
 
@@ -198,10 +194,8 @@ export async function handleData(
         let err = new Error(
             `The login handler does not support a message code of ${requestCode}. Was the packet routed here in error? Closing the socket`,
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         dataConnection.connection.socket.end();
         err = new TypeError(`UNSUPPORTED_MESSAGECODE: ${requestCode}`);
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 
@@ -215,9 +209,7 @@ export async function handleData(
         log("debug", "Leaving handleData");
         return result;
     } catch (error) {
-        Sentry.captureException(error);
         const err = new Error(`Error handling data: ${String(error)}`);
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 }

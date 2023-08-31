@@ -15,7 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
-import { Sentry } from "../../shared/sentry.js";
 import { handleData } from "./internal.js";
 
 /**
@@ -40,11 +39,9 @@ export async function receiveTransactionsData(
             log,
         });
     } catch (error) {
-        Sentry.captureException(error);
         const err = new Error(
             `There was an error in the transaction service: ${String(error)}`
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 }

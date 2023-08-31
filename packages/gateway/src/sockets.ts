@@ -19,8 +19,7 @@ import { receiveLobbyData } from "../../lobby/index.js";
 import { receiveLoginData } from "../../login/index.js";
 import { receivePersonaData } from "../../persona/index.js";
 import { MessageNode } from "../../shared/MessageNode.js";
-import { Sentry } from "../../shared/sentry.js";
-import { receiveTransactionsData } from "../../transactions/index.js";
+import { receiveTransactionsData } from "../../transactions/src/index.js";
 import { updateConnection } from "./ConnectionManager.js";
 
 /**
@@ -76,7 +75,6 @@ function sendMessages(
                     "debug",
                     `usingEncryption? ${outboundConnection.useEncryption}, packetLength: ${f.data.byteLength}/${f.dataLength}`,
                 );
-                Sentry.addBreadcrumb({ level: "error", message: err.message });
                 throw err;
             } else {
                 log(
@@ -136,7 +134,6 @@ export async function dataHandler({
         const err = new Error(
             `Error locating remote address or target port for socket, connection id: ${networkBuffer.connectionId}`,
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 
@@ -173,12 +170,9 @@ export async function dataHandler({
             // Update the connection
             updateConnection(outboundConnection.id, outboundConnection, log);
         } catch (error) {
-            Sentry.captureException(error);
-            process.exitCode = -1;
             const err = new Error(
                 `There was an error processing the packet: ${String(error)}`,
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
     }

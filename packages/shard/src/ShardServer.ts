@@ -3,7 +3,6 @@ import { createServer } from "node:https";
 import { IncomingMessage, Server, ServerResponse } from "node:http";
 import { handleGetCert, handleGetKey, handleGetRegistry } from "./index.js";
 import { Logger, ServerConfiguration } from "../../interfaces/index.js";
-import { Sentry } from "../../shared/sentry.js";
 
 /**
  * Manages patch and update server connections
@@ -82,7 +81,6 @@ export class ShardServer {
 
         this._server.on("error", (error) => {
             const err = new Error(`Server error: ${error.message}`);
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         });
     }

@@ -15,7 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { FIELD_TYPE, Logger } from "../interfaces/index.js";
-import { Sentry } from "./sentry.js";
 
 /**
  * @class
@@ -219,7 +218,6 @@ export class BinaryStructureBase {
             }
             return value.readUInt8();
         } catch (error) {
-            Sentry.captureException(error);
             this.log("debug", "Calling get() in BinaryStructure.. fail!");
             const err = new Error(
                 `Error in getValueX: ${String(
@@ -279,7 +277,6 @@ export class BinaryStructureBase {
             );
             throw err;
         } catch (error) {
-            Sentry.captureException(error);
             const err = new Error(
                 `Error in newValueNumber: ${String(
                     error,

@@ -16,7 +16,6 @@
 
 import { GameMessage, Logger, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
 import { NPSMessage } from "../../shared/NPSMessage.js";
-import { Sentry } from "../../shared/sentry.js";
 import { handleData } from "./internal.js";
 
 /**
@@ -76,11 +75,9 @@ export async function receivePersonaData(
         const { legacyConnection, connection, config, log } = args;
         return await handleData({ legacyConnection, connection, config, log });
     } catch (error) {
-        Sentry.captureException(error);
         const err = new Error(
             `There was an error in the persona service: ${String(error)}`
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 }

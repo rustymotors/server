@@ -11,14 +11,15 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "pretest": "eslint --ignore-path .gitignore .",
-    "build": "tsc && npm run sentry:sourcemaps",
+    "pretest": "eslint .",
+    "build:dev": "tsc -b --clean && tsc -b --verbose",
+    "build": "tsc -b --clean && tsc -b && npm run sentry:sourcemaps",
     "test": "node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage packages",
     "build:test": "npm run format && npm run build && npm run test",
     "prod": "make prod_node",
     "prod:stop": "docker-compose stop",
     "release": "standard-version --sign",
-    "start:dev": "node --loader ts-node/esm --openssl-legacy-provider app.ts",
+    "start:dev": "node --openssl-legacy-provider dist/app.js",
     "start:docker": "npm run start:dev 2>&1 | tee -a log/mcos/trace.log",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org drazisilcom --project mcos ./dist && sentry-cli sourcemaps upload --org drazisilcom --project mcos ./dist"
   },
@@ -27,6 +28,7 @@
     "CHANGELOG.md",
     "AUTHORS"
   ],
+  "type": "module",
   "types": "./lib/index.d.ts",
   "dependencies": {
     "@sentry/node": "7.63",
@@ -36,6 +38,7 @@
   },
   "devDependencies": {
     "@sentry/cli": "^2.20.5",
+    "@tsconfig/node-lts": "^18.12.5",
     "@types/chai": "4.3.5",
     "@types/node": "^20.4.10",
     "@types/sinon": "10.0.16",
@@ -51,6 +54,7 @@
     "prettier-eslint": "15.0.1",
     "standard-version": "^9.5.0",
     "typescript": "^5.1.6",
+    "typescript-eslint-language-service": "^5.0.5",
     "vitest": "^0.34.1"
   },
   "c8": {

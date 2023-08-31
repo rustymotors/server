@@ -12,7 +12,6 @@
  */
 
 import { MessageNode } from "../../shared/MessageNode.js";
-import { Sentry } from "../../shared/sentry.js";
 
 
 export class GenericRequestMessage extends MessageNode {
@@ -39,7 +38,6 @@ export class GenericRequestMessage extends MessageNode {
         try {
             this.msgNo = buffer.readInt16LE(0);
         } catch (error) {
-            Sentry.captureException(error);
             if (error instanceof RangeError) {
                 // This is likeley not an MCOTS packet, ignore
             } else {
@@ -48,13 +46,12 @@ export class GenericRequestMessage extends MessageNode {
                         "hex"
                     )}: ${String(error)}` // skipcq: JS-0378
                 );
-                Sentry.addBreadcrumb({ level: "error", message: err.message });
                 throw err;
             }
         }
 
-        this.data = buffer.slice(2, 6);
-        this.data2 = buffer.slice(6);
+        this.data = buffer.subarray(2, 6);
+        this.data2 = buffer.subarray(6);
     }
 
     /**

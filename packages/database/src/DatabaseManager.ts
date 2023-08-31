@@ -5,7 +5,6 @@
  */
 
 import { ConnectionRecord, RaceLobbyRecord, Logger } from "../../interfaces/index.js";
-import { Sentry } from "../../shared/sentry.js";
 import { DatabaseManager } from "../index.js";
 
 export class Database implements DatabaseManager {
@@ -62,7 +61,6 @@ export class Database implements DatabaseManager {
             const err = new Error(
                 "Error fetching session key by customer id: not found",
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
         return record;

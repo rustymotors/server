@@ -18,7 +18,6 @@ import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServe
 import { _npsHeartbeat } from "./handlers/heartbeat.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
 import { ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
-import { Sentry } from "../../shared/sentry.js";
 
 /**
  */
@@ -74,7 +73,6 @@ export async function handleData(
             const err = new Error(
                 `Unknown code ${requestCode} was received on port 7003`
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             log("warning", err.message);
             return {
                 connection: dataConnection.connection,

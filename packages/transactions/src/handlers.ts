@@ -15,10 +15,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { DatabaseManager } from "../../database/index.js";
-import { createEncrypters } from "../../gateway/index.js";
+import { createEncrypters } from "../../gateway/src/encryption.js";
 import { SocketWithConnectionInfo, Logger, MessageArrayWithConnectionInfo } from "../../interfaces/index.js";
 import { MessageNode } from "../../shared/MessageNode.js";
-import { Sentry } from "../../shared/sentry.js";
 import { toHex } from "../../shared/utils.js";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
@@ -184,7 +183,6 @@ async function clientConnect(
         const err = new TypeError(
             `customerId is wrong type. Expected 'number', got ${typeof customerId}`,
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 
@@ -212,7 +210,6 @@ async function clientConnect(
         const err = new TypeError(
             `personaId is wrong type. Expected 'number', got ${typeof customerId}`,
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 
@@ -221,7 +218,6 @@ async function clientConnect(
         const err = new TypeError(
             `personaName is wrong type. Expected 'string', got ${typeof customerId}`,
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 

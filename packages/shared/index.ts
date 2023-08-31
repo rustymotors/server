@@ -18,7 +18,6 @@ export {
 } from "./ServerConfiguration.js";
 export { NPSMessage } from "./NPSMessage.js";
 export { getServerLogger as GetServerLogger, getLevelValue } from "./log.js";
-export { Sentry } from "./sentry.js";
 export { ServerError } from "./errors/ServerError.js";
 export { SubThread } from "./SubThread.js";
 export { Connection } from "./Connection.js";
