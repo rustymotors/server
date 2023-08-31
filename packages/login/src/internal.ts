@@ -191,11 +191,8 @@ export async function handleData(
 
     if (typeof supportedHandler === "undefined") {
         // We do not yet support this message code
-        let err = new Error(
-            `The login handler does not support a message code of ${requestCode}. Was the packet routed here in error? Closing the socket`,
-        );
         dataConnection.connection.socket.end();
-        err = new TypeError(`UNSUPPORTED_MESSAGECODE: ${requestCode}`);
+        const err = new TypeError(`UNSUPPORTED_MESSAGECODE: ${requestCode}`);
         throw err;
     }
 
