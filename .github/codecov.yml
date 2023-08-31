@@ -60,3 +60,9 @@ component_management:
         - packages/core/**
         - packages/gateway/**
         - packages/shared/**
+
+coverage:
+  status:
+    project:
+      default:
+        removed_code_behavior: adjust_base
