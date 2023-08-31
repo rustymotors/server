@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { FIELD_TYPE, Logger } from "@mcos/interfaces";
-import { Sentry } from "./sentry.js";
+import { FIELD_TYPE, Logger } from "../interfaces/index.js";
 
 /**
  * @class
@@ -71,7 +70,7 @@ export class BinaryStructureBase {
     _fields: ByteField[] = [];
 
     /** @type {Logger} */
-    #log: Logger;
+    private log: Logger;
 
     /**
      * Creates an instance of BinaryStructure.
@@ -79,7 +78,7 @@ export class BinaryStructureBase {
      * @param {Logger} log
      */
     constructor(log: Logger) {
-        this.#log = log;
+        this.log = log;
         // log("debug", "new BinaryStructure");
     }
 
@@ -132,7 +131,7 @@ export class BinaryStructureBase {
             throw err;
         }
 
-        this.#log(
+        this.log(
             "debug",
             `Attempting to deserialize ${byteStream.byteLength} bytes into ${this._fields.length} fields for a total of ${this._byteLength} bytes`,
         );
@@ -219,8 +218,7 @@ export class BinaryStructureBase {
             }
             return value.readUInt8();
         } catch (error) {
-            Sentry.captureException(error);
-            this.#log("debug", "Calling get() in BinaryStructure.. fail!");
+            this.log("debug", "Calling get() in BinaryStructure.. fail!");
             const err = new Error(
                 `Error in getValueX: ${String(
                     error,
@@ -279,7 +277,6 @@ export class BinaryStructureBase {
             );
             throw err;
         } catch (error) {
-            Sentry.captureException(error);
             const err = new Error(
                 `Error in newValueNumber: ${String(
                     error,

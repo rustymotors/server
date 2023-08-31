@@ -1,4 +1,4 @@
-import { BuiltinError } from "@mcos/interfaces";
+import { BuiltinError } from "../../interfaces/index.js";
 
 /**
  * ServerError

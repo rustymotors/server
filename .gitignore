@@ -11,9 +11,11 @@ built
 *.sqlite
 junit.xml
 .dccache
-out/*
 *.db
 node_modules/
 .DS_Store
 
 dist
+# Sentry Auth Token
+.sentryclirc
+*.map

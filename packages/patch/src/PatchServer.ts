@@ -1,6 +1,6 @@
-import { GamePatchingServer, Logger } from "@mcos/interfaces";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { CastanetResponse } from "./index.js";
+import { GamePatchingServer, Logger } from "../../interfaces/index.js";
 
 /**
  * The PatchServer class handles HTTP requests from the client for patching and upgrades

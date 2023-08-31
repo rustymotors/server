@@ -2,7 +2,7 @@
  * @module mcos/shared
  */
 import { hostname } from "node:os";
-import { ELOG_LEVEL, Logger } from "@mcos/interfaces";
+import { ELOG_LEVEL, Logger } from "../interfaces/index.js";
 
 // Per syslog.conf(5)
 const levelMappings = {

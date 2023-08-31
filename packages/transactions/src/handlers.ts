@@ -14,14 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { DatabaseManager } from "@mcos/database";
-import { createEncrypters } from "@mcos/gateway";
-import { MessageNode, Sentry, toHex } from "@mcos/shared";
-import {
-    MessageArrayWithConnectionInfo,
-    Logger,
-    SocketWithConnectionInfo,
-} from "@mcos/interfaces";
+import { DatabaseManager } from "../../database/index.js";
+import { createEncrypters } from "../../gateway/src/encryption.js";
+import { SocketWithConnectionInfo, Logger, MessageArrayWithConnectionInfo } from "../../interfaces/index.js";
+import { MessageNode } from "../../shared/MessageNode.js";
+import { toHex } from "../../shared/utils.js";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { StockCar } from "./StockCar.js";
@@ -186,7 +183,6 @@ async function clientConnect(
         const err = new TypeError(
             `customerId is wrong type. Expected 'number', got ${typeof customerId}`,
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 
@@ -214,7 +210,6 @@ async function clientConnect(
         const err = new TypeError(
             `personaId is wrong type. Expected 'number', got ${typeof customerId}`,
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 
@@ -223,7 +218,6 @@ async function clientConnect(
         const err = new TypeError(
             `personaName is wrong type. Expected 'string', got ${typeof customerId}`,
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 

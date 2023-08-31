@@ -19,11 +19,7 @@ import { releaseQueue } from "./releaseQueue.js";
 import { listConnections } from "./listConnections.js";
 import { resetQueue } from "./resetQueue.js";
 import { IncomingMessage } from "node:http";
-import {
-    AdminWebServer,
-    WebJSONResponse,
-    Logger,
-} from "@mcos/interfaces";
+import { AdminWebServer, Logger, WebJSONResponse } from "../../interfaces/index.js";
 
 /**
  * The admin server.

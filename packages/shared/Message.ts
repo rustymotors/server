@@ -1,11 +1,7 @@
+import { SerializedObject, ClientMessage, ClientMessageHeader } from "../interfaces/index.js";
 import { MessageHeader } from "./MessageHeader.js";
 import { MessageNode } from "./MessageNode.js";
 import { SerializerBase } from "./SerializerBase.js";
-import {
-    ClientMessage,
-    ClientMessageHeader,
-    SerializedObject,
-} from "@mcos/interfaces";
 
 export class Message
     extends SerializerBase

@@ -1,4 +1,4 @@
-import { SerializedObject } from "@mcos/interfaces";
+import { SerializedObject } from "../../../interfaces/index.js";
 
 export class PlayerModel implements SerializedObject {
     serialize(): Buffer {

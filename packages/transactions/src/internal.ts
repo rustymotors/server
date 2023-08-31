@@ -14,15 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { decryptBuffer } from "@mcos/gateway";
-import { MessageNode, Sentry, ServerError } from "@mcos/shared";
-import {
-    ClientConnection,
-    TBufferWithConnection,
-    Logger,
-    ServiceResponse,
-    ServiceArgs,
-} from "@mcos/interfaces";
+import { decryptBuffer } from "../../gateway/src/encryption.js";
+import { TBufferWithConnection, ClientConnection, Logger, ServiceResponse, ServiceArgs } from "../../interfaces/index.js";
+import { MessageNode } from "../../shared/MessageNode.js";
+import { ServerError } from "../../shared/index.js";
 import { messageHandlers } from "./handlers.js";
 
 /**
@@ -109,7 +104,6 @@ function tryDecryptBuffer(
             ).data,
         };
     } catch (error) {
-        Sentry.captureException(error);
         return {
             err: new Error(
                 `Decrypt() exception thrown! Disconnecting...conId:${
@@ -183,9 +177,7 @@ async function processInput(
             );
             return responsePackets;
         } catch (error) {
-            Sentry.captureException(error);
             const err = new Error(`Error handling packet: ${String(error)}`);
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
     }
@@ -195,7 +187,6 @@ async function processInput(
     const err = new Error(
         `Message Number Not Handled: ${currentMessageNo} (${currentMessageString}`,
     );
-    Sentry.addBreadcrumb({ level: "error", message: err.message });
     throw err;
 }
 
@@ -220,7 +211,6 @@ async function messageReceived(
             const err = new Error(
                 `Unabel to locate the encryptors on connection id ${dataConnection.connectionId}`,
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
 
@@ -233,7 +223,6 @@ async function messageReceived(
             );
             if (result.err !== null || result.data === null) {
                 const err = new Error(String(result.err));
-                Sentry.addBreadcrumb({ level: "error", message: err.message });
                 throw err;
             }
             // Update the MessageNode with the deciphered buffer
@@ -279,7 +268,6 @@ export async function handleData(args: ServiceArgs): Promise<ServiceResponse> {
         const err = new ServerError(
             `Unable to locate connection for socket ${remoteAddress}:${localPort}`,
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 
@@ -297,9 +285,7 @@ export async function handleData(args: ServiceArgs): Promise<ServiceResponse> {
             log,
         };
     } catch (error) {
-        Sentry.captureException(error);
         const err = new Error(`Error processing packet: ${String(error)} `);
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 }

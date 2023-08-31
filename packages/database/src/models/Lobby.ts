@@ -1,5 +1,5 @@
-import { SerializedObject } from "@mcos/interfaces";
-import { SerializerBase } from "@mcos/shared";
+import { SerializedObject } from "../../../interfaces/index.js";
+import { SerializerBase } from "../../../shared/SerializerBase.js";
 
 export class LobbyModel extends SerializerBase implements SerializedObject {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

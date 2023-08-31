@@ -1,17 +1,10 @@
 import { describe, it } from "vitest";
 import assert from "node:assert";
+import { SocketWithConnectionInfo, SessionKeys, ClientConnection } from "../../interfaces/index.js";
+import { Connection } from "../../shared/Connection.js";
+import { ISocketTestFactory, IConnectionFactory } from "../../shared/index.js";
+import { generateEncryptionPair, EncryptionManager } from "../src/encryption.js";
 
-import { EncryptionManager, generateEncryptionPair } from "@mcos/gateway";
-import {
-    SessionKeys,
-    SocketWithConnectionInfo,
-    ClientConnection,
-} from "@mcos/interfaces";
-import {
-    Connection,
-    IConnectionFactory,
-    ISocketTestFactory,
-} from "@mcos/shared";
 
 describe("EncryptionManager (legacy)", () => {
     it("given the same keys, should always return same EncryptionSession", () => {

@@ -14,16 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { MessagePacket } from "@mcos/lobby";
-import { NPSMessage, Sentry } from "@mcos/shared";
+import { PersonaRecord, GameMessage, Logger, ServiceArgs, MessageArrayWithConnectionInfo } from "../../interfaces/index.js";
+import { MessagePacket } from "../../lobby/index.js";
+import { NPSMessage } from "../../shared/NPSMessage.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
-import {
-    Logger,
-    MessageArrayWithConnectionInfo,
-    PersonaRecord,
-    ServiceArgs,
-    GameMessage,
-} from "@mcos/interfaces";
 
 const NAME_BUFFER_SIZE = 30;
 
@@ -89,7 +83,6 @@ export async function getPersonasByPersonaId(
     });
     if (results.length === 0) {
         const err = new Error(`Unable to locate a persona for id: ${id}`);
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 
@@ -311,7 +304,6 @@ async function getPersonaMaps(
         const err = new Error(
             `No personas found for customer Id: ${customerId.readUInt32BE(0)}`,
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     } else {
         try {
@@ -344,19 +336,16 @@ async function getPersonaMaps(
 
             return responsePacket;
         } catch (error) {
-            Sentry.captureException(error);
             if (error instanceof Error) {
                 const err = new TypeError(
                     `Error serializing personaMapsMsg: ${error.message}`,
                 );
-                Sentry.addBreadcrumb({ level: "error", message: err.message });
                 throw err;
             }
 
             const err = new Error(
                 "Error serializing personaMapsMsg, error unknonw",
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
     }
@@ -576,6 +565,5 @@ export async function handleData(
             localPort: socket.localPort,
         })}`,
     );
-    Sentry.addBreadcrumb({ level: "error", message: err.message });
     throw err;
 }

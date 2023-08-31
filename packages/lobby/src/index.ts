@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry } from "@mcos/shared";
+import { ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
 import { handleData } from "./internal.js";
-import { ServiceResponse, ServiceArgs } from "@mcos/interfaces";
 
 /**
  * Entry and exit point for the lobby service
@@ -33,11 +32,9 @@ export async function receiveLobbyData(
             log,
         });
     } catch (error) {
-        Sentry.captureException(error);
         const err = new Error(
             `There was an error in the lobby service: ${String(error)}`
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 }

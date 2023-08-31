@@ -1,13 +1,6 @@
-import { cipherBufferDES, decipherBufferDES } from "@mcos/gateway";
-import { NPSMessage, Sentry } from "@mcos/shared";
-import {
-    SocketWithConnectionInfo,
-    Logger,
-    MessageArrayWithConnectionInfo,
-    TBufferWithConnection,
-    ServiceResponse,
-    ServiceArgs,
-} from "@mcos/interfaces";
+import { cipherBufferDES, decipherBufferDES } from "../../../gateway/src/encryption.js";
+import { SocketWithConnectionInfo, Logger, MessageArrayWithConnectionInfo, TBufferWithConnection, ServiceArgs, ServiceResponse } from "../../../interfaces/index.js";
+import { NPSMessage } from "../../../shared/NPSMessage.js";
 
 /**
  * Takes an plaintext command packet and return the encrypted bytes
@@ -26,7 +19,6 @@ function encryptCmd(
         const err = new Error(
             `Unable to locate encryption session for connection id ${dataConnection.id}`,
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 
@@ -60,7 +52,6 @@ function decryptCmd(
         const err = new Error(
             `Unable to locate encryption session for connection id ${dataConnection.connectionId}`,
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
     const result = decipherBufferDES(

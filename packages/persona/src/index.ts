@@ -14,14 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import {
-    GameMessage,
-    Logger,
-    ServiceResponse,
-    ServiceArgs,
-} from "@mcos/interfaces";
+import { GameMessage, Logger, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
+import { NPSMessage } from "../../shared/NPSMessage.js";
 import { handleData } from "./internal.js";
-import { NPSMessage, Sentry } from "@mcos/shared";
 
 /**
  * Selects a game persona and marks it as in use
@@ -80,11 +75,9 @@ export async function receivePersonaData(
         const { legacyConnection, connection, config, log } = args;
         return await handleData({ legacyConnection, connection, config, log });
     } catch (error) {
-        Sentry.captureException(error);
         const err = new Error(
             `There was an error in the persona service: ${String(error)}`
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 }

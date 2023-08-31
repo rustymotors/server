@@ -1,5 +1,4 @@
-import { JSONResponseOfGameMessage } from "@mcos/interfaces";
-import { Sentry } from "./sentry.js";
+import { JSONResponseOfGameMessage } from "../interfaces/index.js";
 
 /**
  * @class NPSMessage
@@ -78,18 +77,15 @@ export class NPSMessage {
 
             return packet;
         } catch (error) {
-            Sentry.captureException(error);
             if (error instanceof Error) {
                 const err = new TypeError(
                     `[NPSMsg] Error in serialize(): ${error.message}`,
                 );
-                Sentry.addBreadcrumb({ level: "error", message: err.message });
                 throw err;
             }
             const err = new Error(
                 "[NPSMsg] Error in serialize(), error unknown",
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
     }

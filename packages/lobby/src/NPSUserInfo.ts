@@ -1,4 +1,4 @@
-import { NPSMessage } from "@mcos/shared";
+import { NPSMessage } from "../../shared/index.js";
 
 /**
  * @class NPSUserInfo

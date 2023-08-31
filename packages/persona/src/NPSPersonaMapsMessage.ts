@@ -1,5 +1,5 @@
-import { NPSMessage } from "@mcos/shared";
-import { PersonaRecord } from "@mcos/interfaces";
+import { PersonaRecord } from "../../interfaces/index.js";
+import { NPSMessage } from "../../shared/index.js";
 
 /**
  *

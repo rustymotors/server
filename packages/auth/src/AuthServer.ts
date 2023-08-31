@@ -1,5 +1,5 @@
-import { AuthenticationServer, Logger } from "@mcos/interfaces";
 import { IncomingMessage, ServerResponse } from "node:http";
+import { AuthenticationServer, Logger } from "../../interfaces/index.js";
 
 /**
  * Handles web-based user logins

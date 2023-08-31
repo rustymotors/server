@@ -2,18 +2,11 @@ import {
     createServer as createSocketServer,
     Server as tcpServer,
 } from "node:net";
-import {
-    GatewayServer,
-    SubprocessThread,
-    ConnectionHandler,
-    ServerConfiguration,
-    Logger,
-    NetworkConnectionHandler,
-} from "@mcos/interfaces";
 import { defaultLog, socketConnectionHandler } from "./index.js";
-import { ConsoleThread } from "@mcos/cli";
-import { Sentry, ServerError } from "@mcos/shared";
 import { getConnectionManager } from "./ConnectionManager.js";
+import { ConsoleThread } from "../../cli/ConsoleThread.js";
+import { SubprocessThread, ServerConfiguration, Logger, NetworkConnectionHandler, ConnectionHandler, GatewayServer } from "../../interfaces/index.js";
+import { ServerError } from "../../shared/index.js";
 
 /**
  * Gateway server
@@ -34,12 +27,11 @@ export class Gateway implements GatewayServer, SubprocessThread {
     parentThread: GatewayServer | undefined;
     private status: "stopped" | "running" | "stopping" | "restarting" =
         "stopped";
-    private sentryTransaction: Sentry.Transaction | undefined;
     consoleEvents = ["userExit", "userRestart", "userHelp"];
 
     name = "GatewayServer";
     loopInterval = 0;
-    timer: NodeJS.Timer | null = null;
+    timer: NodeJS.Timeout | null = null;
     // Singleton instance of GatewayServer
     static _instance: GatewayServer;
 
@@ -128,11 +120,6 @@ export class Gateway implements GatewayServer, SubprocessThread {
         // Stop the timer
         if (this.timer !== null) {
             clearInterval(this.timer);
-        }
-
-        // Stop the Sentry transaction
-        if (this.sentryTransaction !== undefined) {
-            this.sentryTransaction.finish();
         }
 
         // Mark the GatewayServer as stopped
@@ -228,10 +215,6 @@ export class Gateway implements GatewayServer, SubprocessThread {
         this.status = "stopped";
         this.log("info", "Server stopped");
 
-        // Stop the Sentry transaction
-        if (this.sentryTransaction !== undefined) {
-            this.sentryTransaction.finish();
-        }
 
         // Mark the list of servers as not running
         this.log("debug", "Marking the list of servers as not running");
@@ -282,10 +265,6 @@ export class Gateway implements GatewayServer, SubprocessThread {
      * Start the GatewayServer instance
      */
     public start() {
-        this.sentryTransaction = Sentry.startTransaction({
-            name: "GatewayServer",
-            op: "GatewayServer",
-        });
         this.log("debug", "Starting GatewayServer in start()");
         this.log("info", "Server starting");
 

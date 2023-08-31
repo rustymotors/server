@@ -1,4 +1,4 @@
-import { GameMessageOpCode } from "@mcos/interfaces";
+import { GameMessageOpCode } from "../../interfaces/index.js";
 import { NPS_LOGINCLIENT_COMMANDS } from "./NPS_LOGINCLIENT_COMMANDS.js";
 
 /**

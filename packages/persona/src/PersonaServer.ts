@@ -1,11 +1,7 @@
-import {
-    Logger,
-    PersonaRecord,
-    IPersonaServer,
-} from "@mcos/interfaces";
+import { IPersonaServer, Logger, PersonaRecord } from "../../interfaces/index.js";
+import { NPSMessage } from "../../shared/NPSMessage.js";
 import { personaRecords } from "./internal.js";
 import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
-import { NPSMessage, Sentry } from "@mcos/shared";
 
 /**
  * Please use {@link PersonaServer.getInstance()}
@@ -293,7 +289,6 @@ export class PersonaServer implements IPersonaServer {
                     0
                 )}`
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         } else {
             try {
@@ -315,22 +310,16 @@ export class PersonaServer implements IPersonaServer {
 
                 return responsePacket;
             } catch (error) {
-                Sentry.captureException(error);
                 if (error instanceof Error) {
                     const err = new TypeError(
                         `Error serializing personaMapsMsg: ${error.message}`
                     );
-                    Sentry.addBreadcrumb({
-                        level: "error",
-                        message: err.message,
-                    });
                     throw err;
                 }
 
                 const err = new Error(
                     "Error serializing personaMapsMsg, error unknonw"
                 );
-                Sentry.addBreadcrumb({ level: "error", message: err.message });
                 throw err;
             }
         }

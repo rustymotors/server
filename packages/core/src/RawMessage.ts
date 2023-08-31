@@ -1,5 +1,5 @@
-import { SerializerBase } from "@mcos/shared";
-import { SerializedObject } from "@mcos/interfaces";
+import { SerializedObject } from "../../interfaces/index.js";
+import { SerializerBase } from "../../shared/SerializerBase.js";
 
 export class RawMessage extends SerializerBase implements SerializedObject {
     public id = 0;

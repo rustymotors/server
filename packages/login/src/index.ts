@@ -14,15 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry } from "@mcos/shared";
+import { Logger, DatabaseManager, UserRecordMini, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
 import { handleData } from "./internal.js";
-import {
-    Logger,
-    DatabaseManager,
-    UserRecordMini,
-    ServiceResponse,
-    ServiceArgs,
-} from "@mcos/interfaces";
 
 /**
  * Please use {@link LoginServer.getInstance()}
@@ -39,7 +32,7 @@ export class LoginServer {
      */
     static _instance: LoginServer;
 
-    #databaseManager;
+    private databaseManager;
 
     /** @type {TServerLogger} */
     private readonly _log: Logger;
@@ -52,7 +45,7 @@ export class LoginServer {
      * @memberof LoginServer
      */
     constructor(database: DatabaseManager, log: Logger) {
-        this.#databaseManager = database;
+        this.databaseManager = database;
         this._log = log;
     }
 
@@ -98,7 +91,6 @@ export class LoginServer {
         ];
         if (contextId.toString() === "") {
             const err = new Error(`Unknown contextId: ${contextId.toString()}`);
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
 
@@ -114,7 +106,6 @@ export class LoginServer {
             const err = new Error(
                 `Unable to locate user record matching contextId ${contextId}`
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
 
@@ -155,11 +146,9 @@ export async function receiveLoginData(
         log("debug", "Exiting login module");
         return response;
     } catch (error) {
-        Sentry.captureException(error);
         const err = new Error(
             `There was an error in the login service: ${String(error)}`
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 }

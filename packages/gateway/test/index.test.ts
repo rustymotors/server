@@ -1,21 +1,11 @@
 import assert from "node:assert";
 import { describe, it } from "vitest";
 
-import {
-    ConnectionManager,
-    getConnectionManager,
-    rawConnectionHandler,
-    socketEndHandler,
-    socketErrorHandler,
-} from "@mcos/gateway";
-import {
-    Logger,
-    NetworkSocket,
-    ServerConfiguration,
-    SocketWithConnectionInfo,
-} from "@mcos/interfaces";
-import { IConnectionFactory, ISocketTestFactory } from "@mcos/shared";
 import { mock } from "node:test";
+import { NetworkSocket, Logger, ServerConfiguration, SocketWithConnectionInfo } from "../../interfaces/index.js";
+import { ISocketTestFactory, IConnectionFactory } from "../../shared/index.js";
+import { ConnectionManager, getConnectionManager } from "../src/ConnectionManager.js";
+import { rawConnectionHandler, socketErrorHandler, socketEndHandler } from "../src/index.js";
 
 describe("rawConnectionListener", () => {
     it("should set event listeners", () => {

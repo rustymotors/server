@@ -1,15 +1,11 @@
-import { Sentry } from "@mcos/shared";
-import {
-    ConnectionRecord,
-    DatabaseManager,
-    Logger,
-    RaceLobbyRecord,
-} from "@mcos/interfaces";
 
 /**
  * This class abstracts database methods
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
+
+import { ConnectionRecord, RaceLobbyRecord, Logger } from "../../interfaces/index.js";
+import { DatabaseManager } from "../index.js";
 
 export class Database implements DatabaseManager {
     private sessions: ConnectionRecord[] = [];
@@ -65,7 +61,6 @@ export class Database implements DatabaseManager {
             const err = new Error(
                 "Error fetching session key by customer id: not found",
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
         return record;

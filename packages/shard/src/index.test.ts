@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { handleGetCert, handleGetKey, handleGetRegistry } from "./index.js";
 import { ShardServer } from "./ShardServer.js";
-import { ServerConfiguration, Logger } from "@mcos/interfaces";
+import { ServerConfiguration, Logger } from "../../interfaces/index.js";
 
 describe("Shard service", () => {
     it("should return an instance when getInstance() is called", () => {

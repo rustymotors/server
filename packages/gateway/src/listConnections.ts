@@ -1,8 +1,3 @@
-import {
-    TConnection,
-    WebJSONResponse,
-    SocketWithConnectionInfo,
-} from "@mcos/interfaces";
 /**
  *
  * @param {TSocketWithConnectionInfo[]} connections
@@ -12,6 +7,8 @@ import {
     body: string;
 }}
  */
+
+import { SocketWithConnectionInfo, WebJSONResponse, TConnection } from "../../interfaces/index.js";
 
 export function listConnections(
     connections: SocketWithConnectionInfo[]

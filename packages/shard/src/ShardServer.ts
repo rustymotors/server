@@ -1,9 +1,8 @@
-import { Sentry } from "@mcos/shared";
 import { ShardEntry } from "./shard-entry.js";
 import { createServer } from "node:https";
 import { IncomingMessage, Server, ServerResponse } from "node:http";
-import { ServerConfiguration, Logger } from "@mcos/interfaces";
 import { handleGetCert, handleGetKey, handleGetRegistry } from "./index.js";
+import { Logger, ServerConfiguration } from "../../interfaces/index.js";
 
 /**
  * Manages patch and update server connections
@@ -82,7 +81,6 @@ export class ShardServer {
 
         this._server.on("error", (error) => {
             const err = new Error(`Server error: ${error.message}`);
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         });
     }

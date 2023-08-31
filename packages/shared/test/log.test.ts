@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getLevelValue } from "@mcos/shared";
+import { getLevelValue } from "../index.js";
 
 describe("Logger#getLevelValue()", () => {
     it("should return the numaric value of an error level name", () => {

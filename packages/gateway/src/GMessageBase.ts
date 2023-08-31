@@ -14,8 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { BinaryStructure } from "@mcos/shared";
-import { Logger } from "@mcos/interfaces";
+import { Logger } from "../../interfaces/index.js";
+import { BinaryStructure } from "../../shared/index.js";
+
 
 /**
  * @class

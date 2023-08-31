@@ -12,7 +12,6 @@
  * @property {Buffer} rawPacket
  */
 
-import { Sentry } from "./sentry.js";
 
 export class MessageNode  {
     direction;
@@ -62,17 +61,12 @@ export class MessageNode  {
             // Set message number
             this.msgNo = this.data.readInt16LE(0);
         } catch (error) {
-            Sentry.captureException(error);
             if (error instanceof Error) {
                 if (error.name.includes("RangeError") === true) {
                     // This is likeley not an MCOTS packet, ignore
                     const err = new Error(
                         `[MessageNode] Not long enough to deserialize, only ${packet.length.toString()} bytes long`
                     );
-                    Sentry.addBreadcrumb({
-                        level: "error",
-                        message: err.message,
-                    });
                     throw err;
                 } else {
                     const err = new Error(
@@ -80,18 +74,13 @@ export class MessageNode  {
                             "hex"
                         )}: ${error.message}`
                     );
-                    Sentry.addBreadcrumb({
-                        level: "error",
-                        message: err.message,
-                    });
                     throw err;
                 }
             }
             const err = new Error(
                 `Unknown error in deserialize: ${String(error)} `
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
-            throw error;
+            throw err;
         }
     }
 

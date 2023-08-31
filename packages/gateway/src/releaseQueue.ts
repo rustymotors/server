@@ -5,10 +5,8 @@
  * @returns {TJSONResponse}
  */
 
-import {
-    WebJSONResponse,
-    SocketWithConnectionInfo,
-} from "@mcos/interfaces";
+import { SocketWithConnectionInfo, WebJSONResponse } from "../../interfaces/index.js";
+
 
 export function releaseQueue(
     connections: SocketWithConnectionInfo[],

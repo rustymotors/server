@@ -15,8 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { describe, it, expect } from "vitest";
-import { Logger } from "@mcos/interfaces";
-import { BinaryStructure } from "@mcos/shared";
+import { Logger } from "../../interfaces/index.js";
+import { BinaryStructure } from "../index.js";
 
 describe("BinaryStructure", () => {
     describe(".byteLength", () => {

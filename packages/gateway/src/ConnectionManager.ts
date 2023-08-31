@@ -14,15 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry, Connection, ServerError } from "@mcos/shared";
-import {
-    IConnectionManager,
-    NetworkSocket,
-    EncryptionSession,
-    Logger,
-    SocketWithConnectionInfo,
-    ClientConnection,
-} from "@mcos/interfaces";
+import { SocketWithConnectionInfo, Logger, NetworkSocket, IConnectionManager, ClientConnection, EncryptionSession } from "../../interfaces/index.js";
+import { Connection } from "../../shared/Connection.js";
+import { ServerError } from "../../shared/index.js";
+
 
 /** @deprecated use {@link ConnectionManager} instead */
 export const connectionList: SocketWithConnectionInfo[] = [];
@@ -54,7 +49,6 @@ export function updateConnection(
         const err = new ServerError(
             `Connection not found with id ${connectionId}`
         );
-        Sentry.captureException(err);
         throw err;
     }
     connectionList.splice(index, 1, updatedConnection);
@@ -94,7 +88,6 @@ export function createNewConnection(
         const err = new Error(
             "Either localPort or remoteAddress is missing on socket. Can not continue."
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 

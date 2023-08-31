@@ -1,5 +1,5 @@
 import { describe, it, expectTypeOf, expect } from "vitest";
-import { MessagePacket } from "@mcos/lobby";
+import { MessagePacket } from "../index.js";
 
 describe("MessagePacket class", function () {
     it("should return an instance of MessagePacket when the status method fromBuffer() is called", function () {
@@ -10,7 +10,7 @@ describe("MessagePacket class", function () {
         const newMessagePacket = MessagePacket.fromBuffer(inputBuffer);
 
         // assert
-        expectTypeOf(newMessagePacket).toEqualTypeOf<MessagePacket>();
+        expectTypeOf(newMessagePacket).toEqualTypeOf<MessagePacket>;
     });
 
     it("should return it's internal buffer when the buffer property is accessed", function () {

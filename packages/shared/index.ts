@@ -3,13 +3,7 @@
  */
 
 import EventEmitter from "node:events";
-import {
-    ClientConnection,
-    ClientMessage,
-    ClientMessageHeader,
-    NetworkSocket,
-    ServerConfiguration,
-} from "@mcos/interfaces";
+import { NetworkSocket, ClientMessageHeader, ClientConnection, ClientMessage, ServerConfiguration } from "../interfaces/index.js";
 export { toHex } from "./utils.js";
 
 export {
@@ -24,7 +18,6 @@ export {
 } from "./ServerConfiguration.js";
 export { NPSMessage } from "./NPSMessage.js";
 export { getServerLogger as GetServerLogger, getLevelValue } from "./log.js";
-export { Sentry } from "./sentry.js";
 export { ServerError } from "./errors/ServerError.js";
 export { SubThread } from "./SubThread.js";
 export { Connection } from "./Connection.js";

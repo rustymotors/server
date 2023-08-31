@@ -14,12 +14,28 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getGatewayServer } from "@mcos/gateway";
-import { GetServerLogger, Sentry, setConfiguration } from "@mcos/shared";
+import { getGatewayServer } from "./packages/gateway/src/GatewayServer.js";
+import { GetServerLogger, setConfiguration } from "./packages/shared/index.js";
 
 const log = GetServerLogger();
 
+import Sentry from "@sentry/node";
+
 try {
+    Sentry.init({
+        dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
+
+        // We recommend adjusting this value in production, or using tracesSampler
+        // for finer control
+        tracesSampleRate: 1.0,
+        profilesSampleRate: 1.0, // Profiling sample rate is relative to tracesSampleRate
+        integrations: [
+            // Add profiling integration to list of integrations
+            // new ProfilingIntegration(),
+        ],
+        // "debug": true
+    });
+
     if (typeof process.env.EXTERNAL_HOST === "undefined") {
         console.error("Please set EXTERNAL_HOST");
         process.exit(1);

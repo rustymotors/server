@@ -1,6 +1,6 @@
-import { AuthServer, getAuthServer } from "@mcos/auth";
 import { describe, it, expectTypeOf } from "vitest";
 import { mock } from "node:test";
+import { AuthServer, getAuthServer } from "../index.js";
 
 describe("getAuthServer", () => {
     it("should return an instance of AuthServer", () => {

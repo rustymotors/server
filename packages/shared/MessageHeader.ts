@@ -1,5 +1,5 @@
+import { ClientMessageHeader, SerializedObject } from "../interfaces/index.js";
 import { SerializerBase } from "./SerializerBase.js";
-import { ClientMessageHeader, SerializedObject } from "@mcos/interfaces";
 
 export class MessageHeader extends SerializerBase implements SerializedObject {
     private _length = 0;

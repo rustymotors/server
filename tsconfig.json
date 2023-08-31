@@ -1,36 +1,23 @@
 {
+    "extends": "@tsconfig/node-lts/tsconfig.json",
     "compilerOptions": {
-        "module": "ESNext",
-        "moduleResolution": "Node",
-        // "outDir": "dist",
-        "target": "ES2020",
-        "noEmit": true,
-        "declaration": true,
-        "declarationDir": "types",
-        "allowJs": false,
+        "isolatedModules": true,
+        "esModuleInterop": true,
         "strict": true,
-        "strictNullChecks": true,
-        "strictFunctionTypes": true,
-        // "inlineSourceMap": true,
-        // "inlineSources": true,
-        "allowSyntheticDefaultImports": true,
-        "paths": {
-            "@mcos/auth": ["./packages/mcos-auth/index.js"],
-            "@mcos/database": ["./packages/mcos-database/index.js"],
-            "@mcos/lobby": ["./packages/mcos-lobby/index.js"],
-            "@mcos/login": ["./packages/mcos-login/index.js"],
-            "@mcos/patch": ["./packages/mcos-patch/index.ts"],
-            "@mcos/persona": ["./packages/mcos-persona/index.ts"],
-            "@mcos/shard": ["./packages/mcos-shard/index.ts"],
-            "@mcos/transactions": ["./packages/mcos-transactions/index.js"]
-        }
+        "declaration": true,
+        "declarationDir": "./types",
+        "declarationMap": true,
+        "sourceMap": true,
+        "inlineSources": true,
+        "sourceRoot": "/",
+        "outDir": "dist",
+        "plugins": [
+            {
+              "name": "typescript-eslint-language-service"
+            }
+          ]
     },
-    "exclude": [
-        "node_modules",
-        "**/node_modules/*",
-        "coverage",
-        "docs",
-        "dist",
-        "types"
+    "files": [
+        "./app.ts"
     ]
 }

@@ -1,11 +1,11 @@
-import { NPSMessage, Sentry } from "@mcos/shared";
-import { createEncrypters, selectEncryptors } from "@mcos/gateway";
 import { NPSUserInfo } from "../NPSUserInfo.js";
 import { MessagePacket } from "../MessagePacket.js";
-import { getPersonasByPersonaId } from "@mcos/persona";
-import { DatabaseManager } from "@mcos/database";
-import { ServiceArgs, ServiceResponse } from "@mcos/interfaces";
 import { _generateSessionKeyBuffer } from "../sessionKeys.js";
+import { DatabaseManager } from "../../../database/index.js";
+import { ServiceArgs, ServiceResponse } from "../../../interfaces/index.js";
+import { getPersonasByPersonaId } from "../../../persona/index.js";
+import { NPSMessage } from "../../../shared/NPSMessage.js";
+import { selectEncryptors, createEncrypters } from "../../../gateway/src/encryption.js";
 
 /**
  * Convert to zero padded hex
@@ -67,7 +67,6 @@ export async function _npsRequestGameConnectServer(
     const personas = await getPersonasByPersonaId(userInfo.userId);
     if (typeof personas[0] === "undefined") {
         const err = new Error("No personas found.");
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 
@@ -78,7 +77,6 @@ export async function _npsRequestGameConnectServer(
     const keys = await databaseManager
         .fetchSessionKeyByCustomerId(customerId)
         .catch((/** @type {unknown} */ error: unknown) => {
-            Sentry.captureException(error);
             if (error instanceof Error) {
                 log(
                     "debug",
@@ -90,12 +88,10 @@ export async function _npsRequestGameConnectServer(
             const err = new Error(
                 `Unable to fetch session key for customerId ${customerId.toString()}: unknown error}`,
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         });
     if (keys === undefined) {
         const err = new Error("Error fetching session keys!");
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 

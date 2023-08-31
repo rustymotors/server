@@ -14,17 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Sentry } from "@mcos/shared";
-import {
-    SocketWithConnectionInfo,
-    SessionKeys,
-    TBufferWithConnection,
-    Logger,
-    ClientConnection,
-    EncryptionSession,
-    IEncryptionManager,
-} from "@mcos/interfaces";
 import { createCipheriv, createDecipheriv } from "node:crypto";
+import { EncryptionSession, SocketWithConnectionInfo, SessionKeys, TBufferWithConnection, ClientConnection, Logger, IEncryptionManager } from "../../interfaces/index.js";
 
 const encryptionSessions: EncryptionSession[] = [];
 
@@ -98,7 +89,6 @@ export function selectEncryptors({
         const err = new Error(
             "[selectEncryptors]Either localPort or remoteAddress is missing on socket. Can not continue."
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
     const wantedId = `${remoteAddress}:${localPort}`;
@@ -139,7 +129,6 @@ export function selectEncryptors({
     const err = new Error(
         `Unable to select encryptors for connection id ${dataConnection.connectionId}`
     );
-    Sentry.addBreadcrumb({ level: "error", message: err.message });
     throw err;
 }
 
@@ -180,9 +169,7 @@ export function updateEncryptionSession(
         encryptionSessions.push(updatedSession);
         log("debug", `Updated encryption session for id: ${connectionId}`);
     } catch (error) {
-        Sentry.captureException(error);
         const err = new Error(`Error updating connection, ${String(error)}`);
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
 }
@@ -204,7 +191,6 @@ export function cipherBufferDES(
     }
 
     const err = new Error("No DES cipher set on connection");
-    Sentry.addBreadcrumb({ level: "error", message: err.message });
     throw err;
 }
 
@@ -225,7 +211,6 @@ export function decipherBufferDES(
     }
 
     const err = new Error("No DES decipher set on connection");
-    Sentry.addBreadcrumb({ level: "error", message: err.message });
     throw err;
 }
 

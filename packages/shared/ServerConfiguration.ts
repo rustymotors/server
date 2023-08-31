@@ -1,11 +1,6 @@
 import { readFileSync } from "node:fs";
 import { getServerLogger } from "./log.js";
-import { Sentry } from "./sentry.js";
-import {
-    ELOG_LEVEL,
-    ServerConfiguration,
-    ConfigurationServer,
-} from "@mcos/interfaces";
+import { ConfigurationServer, ServerConfiguration, ELOG_LEVEL } from "../interfaces/index.js";
 
 /**
  * @module mcos/shared
@@ -43,11 +38,9 @@ class Configuration implements ConfigurationServer {
                 { encoding: "utf8" },
             );
         } catch (error) {
-            Sentry.captureException(error);
             const err = new Error(
                 `Unable to read certificate file: ${String(error)}`,
             );
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
         try {
@@ -56,9 +49,7 @@ class Configuration implements ConfigurationServer {
                 { encoding: "utf8" },
             );
         } catch (error) {
-            Sentry.captureException(error);
             const err = new Error("Unable to read private file");
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
         try {
@@ -66,9 +57,7 @@ class Configuration implements ConfigurationServer {
                 encoding: "utf8",
             });
         } catch (error) {
-            Sentry.captureException(error);
             const err = new Error("Unable to read private file");
-            Sentry.addBreadcrumb({ level: "error", message: err.message });
             throw err;
         }
         log("info", "Server configuration initialized");
@@ -89,7 +78,7 @@ class Configuration implements ConfigurationServer {
 }
 
 /**
- * Configue and return a new MSOCServerConfiguration object
+ * Configue and return a new ServerConfiguration object
  * @param {string} externalHost
  * @param {string} certificateFile
  * @param {string} privateKeyFile
@@ -128,7 +117,6 @@ export function getServerConfiguration(): ConfigurationServer {
         const err = new Error(
             "Configuration not set. Use setServerConfiguration(externalHost, certificateFile, privateKeyFile, publicKeyFile, logLevel?)",
         );
-        Sentry.addBreadcrumb({ level: "error", message: err.message });
         throw err;
     }
     return Configuration.instance;

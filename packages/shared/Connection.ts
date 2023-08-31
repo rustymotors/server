@@ -1,9 +1,5 @@
 import { randomUUID } from "node:crypto";
-import {
-    ClientConnection,
-    NetworkSocket,
-    EncryptionSession,
-} from "@mcos/interfaces";
+import { ClientConnection, NetworkSocket, EncryptionSession } from "../interfaces/index.js";
 
 export class Connection implements ClientConnection {
     /**

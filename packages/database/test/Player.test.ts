@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { PlayerModel } from "@mcos/database";
+import { PlayerModel } from "../index.js";
 
 describe("Player model", function () {
     it("should have a schema property", function () {
