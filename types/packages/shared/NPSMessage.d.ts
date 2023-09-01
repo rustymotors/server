@@ -1,4 +1,4 @@
-/// <reference types="node" resolution-mode="require"/>
+/// <reference types="node" />
 import { JSONResponseOfGameMessage } from "../interfaces/index.js";
 /**
  * @class NPSMessage

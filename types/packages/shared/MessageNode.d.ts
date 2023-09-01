@@ -11,7 +11,7 @@
  * @property {number} appId
  * @property {Buffer} rawPacket
  */
-/// <reference types="node" resolution-mode="require"/>
+/// <reference types="node" />
 export declare class MessageNode {
     direction: "sent" | "received";
     msgNo: number;

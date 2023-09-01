@@ -1,5 +1,5 @@
-/// <reference types="node" resolution-mode="require"/>
-/// <reference types="node" resolution-mode="require"/>
+/// <reference types="node" />
+/// <reference types="node" />
 import EventEmitter from "node:events";
 import { SubprocessThread, GatewayServer, Logger } from "../interfaces/index.js";
 export declare class SubThread extends EventEmitter implements SubprocessThread {

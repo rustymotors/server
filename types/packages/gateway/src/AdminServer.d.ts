@@ -1,4 +1,4 @@
-/// <reference types="node" resolution-mode="require"/>
+/// <reference types="node" />
 import { IncomingMessage } from "node:http";
 import { AdminWebServer, Logger, WebJSONResponse } from "../../interfaces/index.js";
 /**

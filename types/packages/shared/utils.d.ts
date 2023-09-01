@@ -5,6 +5,6 @@
  * @param {Buffer} data
  * @return {string}
  */
-/// <reference types="node" resolution-mode="require"/>
+/// <reference types="node" />
 export declare function toHex(data: Buffer): string;
 //# sourceMappingURL=utils.d.ts.map

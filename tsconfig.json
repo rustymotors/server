@@ -1,23 +1,6 @@
 {
-    "extends": "@tsconfig/node-lts/tsconfig.json",
-    "compilerOptions": {
-        "isolatedModules": true,
-        "esModuleInterop": true,
-        "strict": true,
-        "declaration": true,
-        "declarationDir": "./types",
-        "declarationMap": true,
-        "sourceMap": true,
-        "inlineSources": true,
-        "sourceRoot": "/",
-        "outDir": "dist",
-        "plugins": [
-            {
-              "name": "typescript-eslint-language-service"
-            }
-          ]
-    },
+    "extends": "./tsconfig.base.json",
     "files": [
-        "./app.ts"
+        "./server.ts"
     ]
 }

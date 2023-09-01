@@ -1,4 +1,4 @@
-/// <reference types="node" resolution-mode="require"/>
+/// <reference types="node" />
 import { PersonaRecord, GameMessage, Logger, ServiceArgs, MessageArrayWithConnectionInfo } from "../../interfaces/index.js";
 /**
  * Return string as buffer

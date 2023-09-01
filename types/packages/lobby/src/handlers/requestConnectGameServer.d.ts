@@ -1,4 +1,4 @@
-/// <reference types="node" resolution-mode="require"/>
+/// <reference types="node" />
 import { ServiceArgs, ServiceResponse } from "../../../interfaces/index.js";
 /**
  * Convert to zero padded hex

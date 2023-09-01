@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "isolatedModules": true,
+        "esModuleInterop": true,
+        "strict": true,
+        "declaration": true,
+        "declarationDir": "./types",
+        "declarationMap": true,
+        "sourceMap": true,
+        "inlineSources": true,
+        "sourceRoot": "/",
+        "outDir": "dist",
+        "moduleResolution": "Node",
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "target": "ES6",
+        "plugins": [
+            {
+              "name": "typescript-eslint-language-service"
+            }
+          ]
+    },
+    "files": []
+}

@@ -73,7 +73,7 @@ export async function _npsRequestGameConnectServer(
     const { customerId } = personas[0];
 
     // Set the encryption keys on the lobby connection
-    const databaseManager = DatabaseManager.getInstance(log);
+    const databaseManager = DatabaseManager.getInstance();
     const keys = await databaseManager
         .fetchSessionKeyByCustomerId(customerId)
         .catch((/** @type {unknown} */ error: unknown) => {

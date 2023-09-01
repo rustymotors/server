@@ -91,7 +91,7 @@ async function login(
 
     // Save sessionkey in database under customerId
     log("debug", "Preparing to update session key in db");
-    await DatabaseManager.getInstance(log)
+    await DatabaseManager.getInstance()
         .updateSessionKey(
             userRecord.customerId,
             sessionKey ?? "",

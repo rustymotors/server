@@ -8,7 +8,7 @@
  * @property {Buffer} data
  * @property {Buffer} data2
  */
-/// <reference types="node" resolution-mode="require"/>
+/// <reference types="node" />
 import { ClientMessage } from "../../interfaces/index.js";
 import { Message } from "../../shared/index.js";
 export declare class GenericReplyMessage extends Message implements ClientMessage {

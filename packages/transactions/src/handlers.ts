@@ -191,9 +191,7 @@ async function clientConnect(
         `[TCPManager] Looking up the session key for ${customerId}...`,
     );
 
-    const result = await DatabaseManager.getInstance(
-        log,
-    ).fetchSessionKeyByCustomerId(customerId);
+    const result = await DatabaseManager.getInstance().fetchSessionKeyByCustomerId(customerId);
     log("debug", "[TCPManager] Session Key located!");
 
     const connectionWithKey = connection;

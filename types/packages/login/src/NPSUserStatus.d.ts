@@ -1,4 +1,4 @@
-/// <reference types="node" resolution-mode="require"/>
+/// <reference types="node" />
 import { Logger, ServerConfiguration, JSONResponseOfGameMessage } from "../../interfaces/index.js";
 import { NPSMessage } from "../../shared/NPSMessage.js";
 /**

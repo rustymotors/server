@@ -3,6 +3,6 @@
  *
  * @return {Buffer}
  */
-/// <reference types="node" resolution-mode="require"/>
+/// <reference types="node" />
 export declare function premadeLogin(): Buffer;
 //# sourceMappingURL=premadeLogin.d.ts.map

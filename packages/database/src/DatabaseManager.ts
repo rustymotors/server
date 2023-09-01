@@ -4,27 +4,20 @@
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
 
-import { ConnectionRecord, RaceLobbyRecord, Logger } from "../../interfaces/index.js";
+import { ConnectionRecord } from "../../interfaces/index.js";
 import { DatabaseManager } from "../index.js";
+import { Connection } from "../../shared/database.js";
 
 export class Database implements DatabaseManager {
-    private sessions: ConnectionRecord[] = [];
-
-    private lobbies: RaceLobbyRecord[] = [];
 
     static instance: DatabaseManager;
 
-    private log: Logger;
-
-    constructor(log: Logger) {
-        this.log = log;
-    }
     /**
      * Return the singleton instance of the DatabaseManager class
      */
-    static getInstance(log: Logger): DatabaseManager {
+    static getInstance(): DatabaseManager {
         if (!Database.instance) {
-            Database.instance = new Database(log);
+            Database.instance = new Database();
         }
         const self = Database.instance;
         return self;
@@ -36,16 +29,18 @@ export class Database implements DatabaseManager {
     async fetchSessionKeyByCustomerId(
         customerId: number,
     ): Promise<ConnectionRecord> {
-        const record = this.sessions.find((session) => {
-            return session.customerId === customerId;
-        });
-        if (typeof record === "undefined") {
+        await Connection.sync();
+        const record = await Connection.findOne(
+            { where: { customerId } },
+        );
+
+        if (record === null) {
             const err = new Error(
                 "Error fetching session key by customer id: not found",
             );
             throw err;
         }
-        return record;
+        return JSON.parse(JSON.stringify(record));
     }
 
     /**
@@ -54,16 +49,18 @@ export class Database implements DatabaseManager {
     async fetchSessionKeyByConnectionId(
         connectionId: string,
     ): Promise<ConnectionRecord> {
-        const record = this.sessions.find((session) => {
-            return session.connectionId === connectionId;
-        });
-        if (typeof record === "undefined") {
+        await Connection.sync();
+        const record = await Connection.findOne(
+            { where: { connectionId } },
+        );
+        
+        if (record === null) {
             const err = new Error(
                 "Error fetching session key by customer id: not found",
             );
             throw err;
         }
-        return record;
+        return JSON.parse(JSON.stringify(record));
     }
 
     /**
@@ -76,31 +73,21 @@ export class Database implements DatabaseManager {
         connectionId: string,
     ): Promise<void> {
         const sKey = sessionKey.slice(0, 16);
-
-        const updatedSession: ConnectionRecord = {
+        await Connection.sync();
+        Connection.upsert({
             customerId,
+            connectionId,
             sessionKey,
             sKey,
-            contextId,
-            connectionId,
-        };
-
-        const record = this.sessions.findIndex((session) => {
-            return session.customerId === customerId;
+            contextId
         });
-        if (typeof record === "undefined") {
-            const err = new Error(
-                "Error updating session key: existing key not found",
-            );
-            throw err;
-        }
-        this.sessions.splice(record, 1, updatedSession);
+
     }
 }
 /**
  * Return the singleton instance of the DatabaseManager class
  */
 
-export function getDatabaseServer(log: Logger): DatabaseManager {
-    return Database.getInstance(log);
+export function getDatabaseServer(): DatabaseManager {
+    return Database.getInstance();
 }
