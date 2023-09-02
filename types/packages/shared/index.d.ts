@@ -7,7 +7,7 @@ export { BinaryStructureBase as BinaryStructure, ByteField, } from "./BinaryStru
 export { TransactionMessageBase as TSMessageBase } from "./TMessageBase.js";
 export { setConfiguration, getServerConfiguration, } from "./ServerConfiguration.js";
 export { NPSMessage } from "./NPSMessage.js";
-export { getServerLogger, getLevelValue } from "./log.js";
+export { getServerLogger as GetServerLogger, getLevelValue } from "./log.js";
 export { ServerError } from "./errors/ServerError.js";
 export { SubThread } from "./SubThread.js";
 export { Connection } from "./Connection.js";

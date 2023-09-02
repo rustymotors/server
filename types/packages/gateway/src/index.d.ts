@@ -1,4 +1,4 @@
-/// <reference types="node" />
+/// <reference types="node" resolution-mode="require"/>
 import { NetworkSocket, BuiltinError, Logger, MessageProcessor, ServerConfiguration, ClientConnection, SocketWithConnectionInfo, SocketOnDataHandler, TSocketErrorHandler, TSocketEndHandler, ConnectionHandler, WebConnectionHandler } from "../../interfaces/index.js";
 export { getAdminServer } from "./AdminServer.js";
 export { getAllConnections } from "./ConnectionManager.js";

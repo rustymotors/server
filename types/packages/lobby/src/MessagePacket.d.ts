@@ -1,4 +1,4 @@
-/// <reference types="node" />
+/// <reference types="node" resolution-mode="require"/>
 export declare class MessagePacket {
     _buffer: Buffer;
     /**

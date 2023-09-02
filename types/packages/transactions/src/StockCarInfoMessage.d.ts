@@ -11,7 +11,7 @@
  * @property {number} moreToCome
  * @property {StockCar[]} StockCarList
  */
-/// <reference types="node" />
+/// <reference types="node" resolution-mode="require"/>
 import { MessageNode } from "../../shared/index.js";
 import { StockCar } from "./StockCar.js";
 export declare class StockCarInfoMessage extends MessageNode {

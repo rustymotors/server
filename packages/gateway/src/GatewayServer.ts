@@ -21,6 +21,7 @@ export class Gateway implements GatewayServer, SubprocessThread {
     private readonly listeningPortList: number[];
     private readonly servers: tcpServer[];
     private readonly socketconnection: NetworkConnectionHandler;
+    private serversRunning = false;
     private readThread: ConsoleThread | undefined;
     private activeSubThreads: SubprocessThread[] = [];
     parentThread: GatewayServer | undefined;
@@ -33,7 +34,6 @@ export class Gateway implements GatewayServer, SubprocessThread {
     timer: NodeJS.Timeout | null = null;
     // Singleton instance of GatewayServer
     static _instance: GatewayServer;
-    serversRunning: boolean;
 
     constructor({
         config = undefined,
@@ -57,7 +57,6 @@ export class Gateway implements GatewayServer, SubprocessThread {
         this.log = log;
         this.backlogAllowedCount = backlogAllowedCount;
         this.listeningPortList = listeningPortList;
-        this.serversRunning = false;
         this.servers = [];
         this.socketconnection = onSocketConnection;
     }

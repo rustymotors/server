@@ -27,11 +27,11 @@ import { httpListener as httpHandler } from "./web.js";
 import { NetworkSocket, BuiltinError, Logger, MessageProcessor, ServerConfiguration, ClientConnection, SocketWithConnectionInfo, ClientMessage, GameMessage, SocketOnDataHandler, TSocketErrorHandler, TSocketEndHandler, ConnectionHandler, WebConnectionHandler } from "../../interfaces/index.js";
 import { Message } from "../../shared/Message.js";
 import { MessageHeader } from "../../shared/MessageHeader.js";
-import { getServerLogger, ServerError } from "../../shared/index.js";
+import { GetServerLogger, ServerError } from "../../shared/index.js";
 export { getAdminServer } from "./AdminServer.js";
 export { getAllConnections } from "./ConnectionManager.js";
 
-export const defaultLog = getServerLogger("info");
+export const defaultLog = GetServerLogger("info");
 
 /**
  *

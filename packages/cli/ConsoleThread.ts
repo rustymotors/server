@@ -48,7 +48,7 @@ export class ConsoleThread extends SubThread implements SubprocessThread {
         this.log("info", "Press x to quit");
 
         process.stdin.resume();
-        process.stdin.on("keypress", (_str, key) => {
+        process.stdin.on("keypress", (str, key) => {
             if (key !== undefined) {
                 this.handleKeypressEvent(key);
             }

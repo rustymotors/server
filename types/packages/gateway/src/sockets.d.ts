@@ -1,4 +1,4 @@
-/// <reference types="node" />
+/// <reference types="node" resolution-mode="require"/>
 import { GameMessage, ClientMessage, SocketWithConnectionInfo, Logger, ServerConfiguration, ClientConnection } from "../../interfaces/index.js";
 /**
  * Convert to zero padded hex

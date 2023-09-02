@@ -7,7 +7,7 @@
  * @property {number} retailPrice
  * @property {0 | 1} bIsDealOfTheDay
  */
-/// <reference types="node" />
+/// <reference types="node" resolution-mode="require"/>
 export declare class StockCar {
     brandedPartId: number;
     retailPrice: number;

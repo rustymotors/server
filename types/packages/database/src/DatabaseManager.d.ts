@@ -2,14 +2,18 @@
  * This class abstracts database methods
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
-import { ConnectionRecord } from "../../interfaces/index.js";
+import { ConnectionRecord, Logger } from "../../interfaces/index.js";
 import { DatabaseManager } from "../index.js";
 export declare class Database implements DatabaseManager {
+    private sessions;
+    private lobbies;
     static instance: DatabaseManager;
+    private log;
+    constructor(log: Logger);
     /**
      * Return the singleton instance of the DatabaseManager class
      */
-    static getInstance(): DatabaseManager;
+    static getInstance(log: Logger): DatabaseManager;
     /**
      * Locate customer session encryption key in the database
      */
@@ -26,5 +30,5 @@ export declare class Database implements DatabaseManager {
 /**
  * Return the singleton instance of the DatabaseManager class
  */
-export declare function getDatabaseServer(): DatabaseManager;
+export declare function getDatabaseServer(log: Logger): DatabaseManager;
 //# sourceMappingURL=DatabaseManager.d.ts.map

@@ -1,4 +1,4 @@
-/// <reference types="node" />
+/// <reference types="node" resolution-mode="require"/>
 export declare const CastanetResponse: {
     body: Buffer;
     header: {

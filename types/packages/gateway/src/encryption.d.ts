@@ -1,5 +1,5 @@
-/// <reference types="node" />
-/// <reference types="node" />
+/// <reference types="node" resolution-mode="require"/>
+/// <reference types="node" resolution-mode="require"/>
 import { createCipheriv, createDecipheriv } from "node:crypto";
 import { EncryptionSession, SocketWithConnectionInfo, SessionKeys, TBufferWithConnection, ClientConnection, Logger, IEncryptionManager } from "../../interfaces/index.js";
 /**

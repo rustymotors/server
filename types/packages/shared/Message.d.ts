@@ -1,4 +1,4 @@
-/// <reference types="node" />
+/// <reference types="node" resolution-mode="require"/>
 import { SerializedObject, ClientMessage, ClientMessageHeader } from "../interfaces/index.js";
 import { MessageNode } from "./MessageNode.js";
 import { SerializerBase } from "./SerializerBase.js";

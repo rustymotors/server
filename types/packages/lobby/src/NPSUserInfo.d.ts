@@ -1,4 +1,4 @@
-/// <reference types="node" />
+/// <reference types="node" resolution-mode="require"/>
 import { NPSMessage } from "../../shared/index.js";
 /**
  * @class NPSUserInfo

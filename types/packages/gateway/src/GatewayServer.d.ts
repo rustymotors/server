@@ -1,4 +1,4 @@
-/// <reference types="node" />
+/// <reference types="node" resolution-mode="require"/>
 import { SubprocessThread, ServerConfiguration, Logger, ConnectionHandler, GatewayServer } from "../../interfaces/index.js";
 /**
  * Gateway server
@@ -12,6 +12,7 @@ export declare class Gateway implements GatewayServer, SubprocessThread {
     private readonly listeningPortList;
     private readonly servers;
     private readonly socketconnection;
+    private serversRunning;
     private readThread;
     private activeSubThreads;
     parentThread: GatewayServer | undefined;
@@ -21,7 +22,6 @@ export declare class Gateway implements GatewayServer, SubprocessThread {
     loopInterval: number;
     timer: NodeJS.Timeout | null;
     static _instance: GatewayServer;
-    serversRunning: boolean;
     constructor({ config, log, backlogAllowedCount, listeningPortList, onSocketConnection, }: {
         config?: ServerConfiguration;
         log?: Logger;

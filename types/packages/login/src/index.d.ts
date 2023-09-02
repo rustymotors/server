@@ -1,4 +1,4 @@
-import { Logger, UserRecordMini, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
+import { Logger, DatabaseManager, UserRecordMini, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
 /**
  * Please use {@link LoginServer.getInstance()}
  * @classdesc
@@ -13,6 +13,7 @@ export declare class LoginServer {
      * @memberof LoginServer
      */
     static _instance: LoginServer;
+    private databaseManager;
     /** @type {TServerLogger} */
     private readonly _log;
     /**
@@ -22,7 +23,7 @@ export declare class LoginServer {
      * @param {TServerLogger} log
      * @memberof LoginServer
      */
-    constructor(log: Logger);
+    constructor(database: DatabaseManager, log: Logger);
     /**
      * Get the single instance of the login server
      *
@@ -32,7 +33,7 @@ export declare class LoginServer {
      * @return {LoginServer}
      * @memberof LoginServer
      */
-    static getInstance(log: Logger): LoginServer;
+    static getInstance(database: DatabaseManager, log: Logger): LoginServer;
     /**
      *
      * @private

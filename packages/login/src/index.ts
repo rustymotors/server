@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Logger, UserRecordMini, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
+import { Logger, DatabaseManager, UserRecordMini, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
 import { handleData } from "./internal.js";
 
 /**
@@ -32,6 +32,8 @@ export class LoginServer {
      */
     static _instance: LoginServer;
 
+    private databaseManager;
+
     /** @type {TServerLogger} */
     private readonly _log: Logger;
 
@@ -42,7 +44,8 @@ export class LoginServer {
      * @param {TServerLogger} log
      * @memberof LoginServer
      */
-    constructor(log: Logger) {
+    constructor(database: DatabaseManager, log: Logger) {
+        this.databaseManager = database;
         this._log = log;
     }
 
@@ -56,10 +59,11 @@ export class LoginServer {
      * @memberof LoginServer
      */
     static getInstance(
+        database: DatabaseManager,
         log: Logger
     ): LoginServer {
         if (typeof LoginServer._instance === "undefined") {
-            LoginServer._instance = new LoginServer(log);
+            LoginServer._instance = new LoginServer(database, log);
         }
         return LoginServer._instance;
     }

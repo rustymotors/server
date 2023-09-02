@@ -1,4 +1,4 @@
-/// <reference types="node" />
+/// <reference types="node" resolution-mode="require"/>
 import { IncomingMessage, ServerResponse } from "http";
 import { Logger, ServerConfiguration } from "../../interfaces/index.js";
 /**

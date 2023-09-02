@@ -7,7 +7,7 @@
  * @property {Buffer} data2
  * @property {string} serviceName
  */
-/// <reference types="node" />
+/// <reference types="node" resolution-mode="require"/>
 import { MessageNode } from "../../shared/MessageNode.js";
 export declare class GenericRequestMessage extends MessageNode {
     msgNo: number;
