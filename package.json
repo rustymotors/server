@@ -50,7 +50,7 @@
     "eslint-config-prettier": "^9.0.0",
     "husky": "^8.0.3",
     "lint-staged": "^14.0.1",
-    "prettier": "3.0.1",
+    "prettier": "3.0.3",
     "prettier-eslint": "15.0.1",
     "standard-version": "^9.5.0",
     "typescript": "^5.2.2",
