@@ -32,7 +32,7 @@
   "types": "./lib/index.d.ts",
   "dependencies": {
     "@sentry/node": "7.66",
-    "@sentry/profiling-node": "^1.1.2",
+    "@sentry/profiling-node": "^1.2.0",
     "moment": "^2.29.4",
     "ts-node": "10.9.1"
   },
