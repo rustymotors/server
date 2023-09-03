@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Logger } from "../interfaces/index.js";
+import { Logger } from "pino";
 import { BinaryStructureBase } from "./BinaryStructure.js";
 
 /**
@@ -36,7 +36,7 @@ export class TransactionMessageBase extends BinaryStructureBase {
      */
     constructor(log: Logger) {
         super(log);
-        log("debug", "new TSMessageBase");
+        log.debug("new TSMessageBase");
         this._add({
             name: "dataLength",
             order: "little",

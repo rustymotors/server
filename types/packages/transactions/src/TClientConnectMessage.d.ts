@@ -1,5 +1,5 @@
-import { Logger } from "../../interfaces/index.js";
-import { TSMessageBase } from "../../shared/index.js";
+import { Logger } from "pino";
+import { TransactionMessageBase } from "../../shared/TMessageBase.js";
 /**
  *
  *
@@ -13,7 +13,7 @@ import { TSMessageBase } from "../../shared/index.js";
  * @property {string} personaName
  * @property {Buffer} mcVersion
  */
-export declare class TClientConnectMessage extends TSMessageBase {
+export declare class TClientConnectMessage extends TransactionMessageBase {
     appId: number;
     /**
      * Creates an instance of ClientConnectMessage.

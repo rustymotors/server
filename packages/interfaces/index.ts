@@ -6,6 +6,8 @@ import {
     ServerResponse,
 } from "node:http";
 import { MessageNode } from "../shared/MessageNode.js";
+import { Logger } from "pino";
+import { Configuration } from "../shared/Configuration.js";
 
 export interface GameMessageHeader extends SerializedObject {
     msgid: number;
@@ -98,30 +100,7 @@ export interface SocketWithConnectionInfo {
     useEncryption: boolean;
 }
 
-export type ELOG_LEVEL =
-    | "debug"
-    | "info"
-    | "notice"
-    | "warning"
-    | "err"
-    | "crit"
-    | "alert"
-    | "emerg";
-export interface ServerConfiguration {
-    EXTERNAL_HOST: string;
-    certificateFileContents: string;
-    privateKeyContents: string;
-    publicKeyContents: string;
-    LOG_LEVEL: ELOG_LEVEL;
-}
-export interface ConfigurationServer {
-    serverConfig: ServerConfiguration;
-    getConfig: () => ServerConfiguration;
-    getLogLevel: () => ELOG_LEVEL;
-    setLogLevel: (level: ELOG_LEVEL) => void;
-}
 
-export type Logger = (level: ELOG_LEVEL, msg: string) => void;
 export interface DatabaseManager {
     updateSessionKey: (
         customerId: number,
@@ -246,14 +225,14 @@ export type NetworkConnectionHandler = ({
     log,
 }: {
     incomingSocket: NetworkSocket;
-    config: ServerConfiguration;
+    config: Configuration;
     log: Logger;
 }) => void;
 
 export type WebConnectionHandler = (
     req: IncomingMessage,
     res: ServerResponse,
-    config: ServerConfiguration,
+    config: Configuration,
     log: Logger,
 ) => void;
 
@@ -281,7 +260,7 @@ export type SocketOnDataHandler = ({
     socket,
     processMessage,
     data,
-    logger,
+    log,
     config,
     connection,
     connectionRecord,
@@ -289,8 +268,8 @@ export type SocketOnDataHandler = ({
     socket: NetworkSocket;
     processMessage?: MessageProcessor;
     data: Buffer;
-    logger: Logger;
-    config: ServerConfiguration;
+    log: Logger;
+    config: Configuration;
     connection: ClientConnection;
     connectionRecord: SocketWithConnectionInfo;
 }) => void;
@@ -299,14 +278,14 @@ export type MessageProcessor = ({
     data,
     connectionRecord,
     config,
-    logger,
+    log,
     connection,
     message,
 }: {
     data: Buffer;
     connectionRecord: SocketWithConnectionInfo;
-    config: ServerConfiguration;
-    logger: Logger;
+    config: Configuration;
+    log: Logger;
     connection: ClientConnection;
     message: ClientMessage | ClientMessage;
 }) => Promise<void>;
@@ -317,7 +296,7 @@ export type ConnectionHandler = ({
     log,
 }: {
     incomingSocket: NetworkSocket;
-    config: ServerConfiguration;
+    config: Configuration;
     log: Logger;
 }) => void;
 
@@ -453,7 +432,7 @@ export interface IEncryptionManager {
 export interface ServiceArgs {
     legacyConnection: TBufferWithConnection;
     connection?: ClientConnection;
-    config: ServerConfiguration;
+    config: Configuration;
     log: Logger;
 }
 

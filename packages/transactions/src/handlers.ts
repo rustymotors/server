@@ -14,9 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { Logger } from "pino";
 import { DatabaseManager } from "../../database/index.js";
 import { createEncrypters } from "../../gateway/src/encryption.js";
-import { SocketWithConnectionInfo, Logger, MessageArrayWithConnectionInfo } from "../../interfaces/index.js";
+import { SocketWithConnectionInfo, MessageArrayWithConnectionInfo } from "../../interfaces/index.js";
 import { MessageNode } from "../../shared/MessageNode.js";
 import { toHex } from "../../shared/utils.js";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
@@ -175,7 +176,7 @@ async function clientConnect(
     // Not currently using this - Maybe we are?
     const newMessage = new TClientConnectMessage(log);
 
-    log("debug", `Raw bytes in clientConnect: ${toHex(packet.rawPacket)}`);
+    log.debug(`Raw bytes in clientConnect: ${toHex(packet.rawPacket)}`);
     newMessage.deserialize(packet.rawPacket);
 
     const customerId = newMessage.getValue("customerId");
@@ -186,15 +187,14 @@ async function clientConnect(
         throw err;
     }
 
-    log(
-        "debug",
+    log.debug(
         `[TCPManager] Looking up the session key for ${customerId}...`,
     );
 
     const result = await DatabaseManager.getInstance(
         log,
     ).fetchSessionKeyByCustomerId(customerId);
-    log("debug", "[TCPManager] Session Key located!");
+    log.debug("[TCPManager] Session Key located!");
 
     const connectionWithKey = connection;
 
@@ -221,7 +221,7 @@ async function clientConnect(
         throw err;
     }
 
-    log("debug", `cust: ${customerId} ID: ${personaId} Name: ${personaName}`);
+    log.debug(`cust: ${customerId} ID: ${personaId} Name: ${personaName}`);
 
     // Create new response packet
     const genericReplyMessage = new GenericReplyMessage();
@@ -275,7 +275,7 @@ function _login(
     // Read the inbound packet
     const loginMessage = new TLoginMessage(log);
     loginMessage.deserialize(node.rawPacket);
-    log("debug", `Received LoginMessage: ${JSON.stringify(loginMessage)}`);
+    log.debug(`Received LoginMessage: ${JSON.stringify(loginMessage)}`);
 
     // Create new response packet
     const pReply = new GenericReplyMessage();
@@ -383,12 +383,11 @@ function _getLobbies(
     node: MessageNode,
     log: Logger,
 ): MessageArrayWithConnectionInfo {
-    log("debug", "In _getLobbies...");
+    log.debug("In _getLobbies...");
 
     const lobbyRequest = new GenericRequestMessage();
     lobbyRequest.deserialize(node.rawPacket);
-    log(
-        "debug",
+    log.debug(
         `Received GenericRequestMessage: ${JSON.stringify(lobbyRequest)}`,
     );
 
@@ -398,8 +397,8 @@ function _getLobbies(
     lobbiesListMessage.appId = connection.personaId;
 
     // Dump the packet
-    log("debug", "Dumping request...");
-    log("debug", JSON.stringify(lobbiesListMessage));
+    log.debug("Dumping request...");
+    log.debug(JSON.stringify(lobbiesListMessage));
 
     // Create new response packet
     // const lobbyMsg = new LobbyMsg()
@@ -419,8 +418,8 @@ function _getLobbies(
     rPacket.updateBuffer(pReply.serialize());
 
     // Dump the packet
-    log("debug", "Dumping response...");
-    log("debug", JSON.stringify(rPacket));
+    log.debug("Dumping response...");
+    log.debug(JSON.stringify(rPacket));
 
     const lobbyResponse = new TLobbyMessage(log);
     lobbyResponse.setValueNumber("dataLength", 16);
@@ -447,11 +446,11 @@ function handleGetLobbiesMessage(
     log: Logger,
 ): MessageArrayWithConnectionInfo {
     const result = _getLobbies(conn, node, log);
-    log("debug", "Dumping Lobbies response packet...");
+    log.debug("Dumping Lobbies response packet...");
     result.messages.forEach((msg) => {
-        log("debug", msg.toString());
+        log.debug(msg.toString());
     });
-    log("debug", result.messages.join().toString());
+    log.debug(result.messages.join().toString());
     return {
         connection: result.connection,
         messages: result.messages,

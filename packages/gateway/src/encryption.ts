@@ -15,7 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { createCipheriv, createDecipheriv, getCiphers } from "node:crypto";
-import { EncryptionSession, SocketWithConnectionInfo, SessionKeys, TBufferWithConnection, ClientConnection, Logger, IEncryptionManager } from "../../interfaces/index.js";
+import { EncryptionSession, SocketWithConnectionInfo, SessionKeys, TBufferWithConnection, ClientConnection, IEncryptionManager } from "../../interfaces/index.js";
+import { Logger } from "pino";
 
 const encryptionSessions: EncryptionSession[] = [];
 
@@ -31,7 +32,7 @@ export function generateEncryptionPair(
     // For use on Lobby packets
     const { sessionKey, sKey } = keys;
     const stringKey = Buffer.from(sessionKey, "hex");
-    Buffer.from(stringKey.slice(0, 16));
+    Buffer.from(stringKey.subarray(0, 16));
 
     // Deepcode ignore HardcodedSecret: This uses an empty IV
     const desIV = Buffer.alloc(8);
@@ -99,8 +100,7 @@ export function selectEncryptors({
         const existingEncryptionSession =
             getEncryptionManager().selectEncryptors(connection);
 
-        log(
-            "debug",
+            log.debug(
             `[selectEncryptors] Found existing encryption session: ${JSON.stringify(
                 existingEncryptionSession
             )}`
@@ -109,20 +109,18 @@ export function selectEncryptors({
 
     const existingEncryptor = encryptionSessions.find((e) => {
         const thisId = `${e.remoteAddress}:${e.localPort}`;
-        log("debug", `[selectEncryptors] Checking ${thisId} === ${wantedId} ?`);
+        log.debug(`[selectEncryptors] Checking ${thisId} === ${wantedId} ?`);
         return thisId === wantedId;
     });
 
-    log(
-        "debug",
+    log.debug(
         `[selectEncryptors] Found existing encryptor: ${JSON.stringify(
             existingEncryptor
         )}`
     );
 
     if (typeof existingEncryptor !== "undefined") {
-        log(
-            "debug",
+        log.debug(
             `Located existing encryption session for connection id ${dataConnection.connectionId}`
         );
         return existingEncryptor;
@@ -131,6 +129,7 @@ export function selectEncryptors({
     const err = new Error(
         `Unable to select encryptors for connection id ${dataConnection.connectionId}`
     );
+    log.fatal(err);
     throw err;
 }
 
@@ -146,8 +145,7 @@ export function createEncrypters(
     verifyLegacyCipherSupport();
     const newSession = generateEncryptionPair(dataConnection, keys);
 
-    log(
-        "debug",
+    log.debug(
         `Generated new encryption session for connection id ${dataConnection.id}`
     );
 
@@ -171,9 +169,10 @@ export function updateEncryptionSession(
         });
         encryptionSessions.splice(index, 1);
         encryptionSessions.push(updatedSession);
-        log("debug", `Updated encryption session for id: ${connectionId}`);
+        log.debug(`Updated encryption session for id: ${connectionId}`);
     } catch (error) {
         const err = new Error(`Error updating connection, ${String(error)}`);
+        log.fatal(err);
         throw err;
     }
 }

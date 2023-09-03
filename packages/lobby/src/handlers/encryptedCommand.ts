@@ -1,5 +1,6 @@
+import { Logger } from "pino";
 import { cipherBufferDES, decipherBufferDES } from "../../../gateway/src/encryption.js";
-import { SocketWithConnectionInfo, Logger, MessageArrayWithConnectionInfo, TBufferWithConnection, ServiceArgs, ServiceResponse } from "../../../interfaces/index.js";
+import { SocketWithConnectionInfo, MessageArrayWithConnectionInfo, TBufferWithConnection, ServiceArgs, ServiceResponse } from "../../../interfaces/index.js";
 import { NPSMessage } from "../../../shared/NPSMessage.js";
 
 /**
@@ -26,7 +27,7 @@ function encryptCmd(
         dataConnection.encryptionSession,
         plaintextCommand,
     );
-    log("debug", `[ciphered Cmd: ${result.data.toString("hex")}`);
+    log.debug(`[ciphered Cmd: ${result.data.toString("hex")}`);
     dataConnection.encryptionSession = result.session;
     return {
         connection: dataConnection,
@@ -58,7 +59,7 @@ function decryptCmd(
         dataConnection.connection.encryptionSession,
         encryptedCommand,
     );
-    log("debug", `[Deciphered Cmd: ${result.data.toString("hex")}`);
+    log.debug(`[Deciphered Cmd: ${result.data.toString("hex")}`);
     dataConnection.connection.encryptionSession = result.session;
     dataConnection.data = result.data;
     return dataConnection;
@@ -91,7 +92,7 @@ function handleCommand(
     packetContent.writeUInt16BE(0x01_01, 369);
     packetContent.writeUInt16BE(0x02_2c, 371);
 
-    log("debug", "Sending a dummy response of 0x229 - NPS_MINI_USER_LIST");
+    log.debug("Sending a dummy response of 0x229 - NPS_MINI_USER_LIST");
 
     // Build the packet
     const packetResult = new NPSMessage("sent");

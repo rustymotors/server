@@ -26,8 +26,7 @@ export async function handleData(
 ): Promise<ServiceResponse> {
     const { legacyConnection: dataConnection, log, config, connection } = args;
     const { localPort, remoteAddress } = dataConnection.connection.socket;
-    log(
-        "debug",
+    log.debug(
         `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
     );
     const { data } = dataConnection;
@@ -73,7 +72,7 @@ export async function handleData(
             const err = new Error(
                 `Unknown code ${requestCode} was received on port 7003`
             );
-            log("warning", err.message);
+            log.warn(err.message);
             return {
                 connection: dataConnection.connection,
                 messages: [],

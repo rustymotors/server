@@ -1,5 +1,6 @@
 import EventEmitter from "node:events";
-import { SubprocessThread, GatewayServer, Logger } from "../interfaces/index.js";
+import { SubprocessThread, GatewayServer } from "../interfaces/index.js";
+import { Logger } from "pino";
 
 export class SubThread extends EventEmitter implements SubprocessThread {
     name: string;

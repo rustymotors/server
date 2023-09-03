@@ -35,15 +35,13 @@ export async function _npsRequestGameConnectServer(
     args: ServiceArgs,
 ): Promise<ServiceResponse> {
     const { legacyConnection: dataConnection, connection, log } = args;
-    log(
-        "debug",
+    log.debug(
         `[inner] Raw bytes in _npsRequestGameConnectServer: ${toHex(
             dataConnection.data,
         )}`,
     );
 
-    log(
-        "debug",
+    log.debug(
         `_npsRequestGameConnectServer: ${JSON.stringify({
             remoteAddress: dataConnection.connection.remoteAddress,
             localPort: dataConnection.connection.localPort,
@@ -54,8 +52,7 @@ export async function _npsRequestGameConnectServer(
     // since the data is a buffer at this point, let's place it in a message structure
     const inboundMessage = MessagePacket.fromBuffer(dataConnection.data);
 
-    log(
-        "debug",
+    log.debug(
         `message buffer (${inboundMessage.getBuffer().toString("hex")})`,
     );
 
@@ -78,8 +75,7 @@ export async function _npsRequestGameConnectServer(
         .fetchSessionKeyByCustomerId(customerId)
         .catch((/** @type {unknown} */ error: unknown) => {
             if (error instanceof Error) {
-                log(
-                    "debug",
+                log.fatal(
                     `Unable to fetch session key for customerId ${customerId.toString()}: ${
                         error.message
                     })}`,
@@ -134,8 +130,7 @@ export async function _npsRequestGameConnectServer(
         packetResult.serialize(),
     );
 
-    log(
-        "debug",
+    log.debug(
         `!!! outbound lobby login response packet: ${loginResponsePacket
             .getBuffer()
             .toString("hex")}`,

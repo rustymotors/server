@@ -1,5 +1,7 @@
-import { GameMessage, Logger, JSONResponseOfGameMessage } from "../../interfaces/index.js";
-import { TSMessageBase, BinaryStructure } from "../../shared/index.js";
+import { Logger } from "pino";
+import { GameMessage, JSONResponseOfGameMessage } from "../../interfaces/index.js";
+import { TransactionMessageBase } from "../../shared/TMessageBase.js";
+import { BinaryStructureBase } from "../../shared/BinaryStructure.js";
 /**
  *
  *
@@ -12,7 +14,7 @@ import { TSMessageBase, BinaryStructure } from "../../shared/index.js";
  * @property {string} personaName
  * @property {Buffer} mcVersion
  */
-export declare class TLobbyMessage extends TSMessageBase implements GameMessage {
+export declare class TLobbyMessage extends TransactionMessageBase implements GameMessage {
     /**
      * Creates an instance of TLobbyMessage.
      * @param {Logger} log
@@ -26,7 +28,7 @@ export declare class TLobbyMessage extends TSMessageBase implements GameMessage 
     dumpPacket(): string;
     toJSON(): JSONResponseOfGameMessage;
 }
-export declare class LobbyInfo extends BinaryStructure {
+export declare class LobbyInfo extends BinaryStructureBase {
     /**
      * Creates an instance of LobbyInfo.
      * @author Drazi Crendraven

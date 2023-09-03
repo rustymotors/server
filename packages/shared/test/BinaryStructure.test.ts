@@ -15,18 +15,17 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { describe, it, expect } from "vitest";
-import { Logger } from "../../interfaces/index.js";
-import { BinaryStructure } from "../index.js";
+import { BinaryStructureBase } from "../BinaryStructure.js";
+import { mock } from "node:test";
+import { Logger, pino } from "pino";
 
 describe("BinaryStructure", () => {
     describe(".byteLength", () => {
         it("should have a value of 0", () => {
             // Arrange
             /**  @type {Logger} */
-            const log: Logger = () => {
-                // This is intentional
-            };
-            const testStructure = new BinaryStructure(log);
+            const log: Logger = mock.fn(pino)();
+            const testStructure = new BinaryStructureBase(log);
 
             // Assert
             expect(testStructure.getByteLength()).toBe(0);
@@ -36,11 +35,9 @@ describe("BinaryStructure", () => {
         it("should throw when passed a byteStream larger then the internal fields array", () => {
             // Arrange
             /**  @type {Logger} */
-            const log: Logger = () => {
-                // This is intentional
-            };
+            const log: Logger = mock.fn(pino)();
             const inputStream = Buffer.from("This is a pretty decent size.");
-            const testStructure = new BinaryStructure(log);
+            const testStructure = new BinaryStructureBase(log);
 
             // Assert
             expect(() => {
@@ -52,10 +49,8 @@ describe("BinaryStructure", () => {
         it("should throw when passed a name not found in the internal fields array", () => {
             // Arrange
             /**  @type {Logger} */
-            const log: Logger = () => {
-                // This is intentional
-            };
-            const testStructure = new BinaryStructure(log);
+            const log: Logger = mock.fn(pino)();
+            const testStructure = new BinaryStructureBase(log);
 
             // Assert
             expect(() => {

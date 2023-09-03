@@ -17,12 +17,13 @@
 import { describe, it, expect } from "vitest";
 import { mock } from "node:test"
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
+import pino from "pino";
 
 describe("TClientConnectMessage", () => {
     describe(".byteLength", () => {
         it("should have a value of 51", () => {
             // Arrange
-            const log = mock.fn()
+            const log = mock.fn(pino)();
             const testMessage = new TClientConnectMessage(log);
 
             // Assert
@@ -32,10 +33,7 @@ describe("TClientConnectMessage", () => {
     describe("#get", () => {
         it("should return a ByteField object when passed a valid field name", () => {
             // Arrange
-            /** @type module:shared/TServerLogger */
-            const log = () => {
-                return;
-            };
+            const log = mock.fn(pino)();
 
             const testMessage = new TClientConnectMessage(log);
             /** @type module:mcos/shared/ByteField */

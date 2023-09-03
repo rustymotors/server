@@ -4,7 +4,8 @@
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
 
-import { ConnectionRecord, RaceLobbyRecord, Logger } from "../../interfaces/index.js";
+import { Logger } from "pino";
+import { ConnectionRecord, RaceLobbyRecord, } from "../../interfaces/index.js";
 import { DatabaseManager } from "../index.js";
 
 export class Database implements DatabaseManager {

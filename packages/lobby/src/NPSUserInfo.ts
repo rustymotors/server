@@ -1,4 +1,4 @@
-import { NPSMessage } from "../../shared/index.js";
+import { NPSMessage } from "../../shared/NPSMessage.js";
 
 /**
  * @class NPSUserInfo

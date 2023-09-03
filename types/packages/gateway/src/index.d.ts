@@ -1,8 +1,9 @@
 /// <reference types="node" resolution-mode="require"/>
-import { NetworkSocket, BuiltinError, Logger, MessageProcessor, ServerConfiguration, ClientConnection, SocketWithConnectionInfo, SocketOnDataHandler, TSocketErrorHandler, TSocketEndHandler, ConnectionHandler, WebConnectionHandler } from "../../interfaces/index.js";
+import { NetworkSocket, BuiltinError, MessageProcessor, ClientConnection, SocketWithConnectionInfo, SocketOnDataHandler, TSocketErrorHandler, TSocketEndHandler, ConnectionHandler, WebConnectionHandler } from "../../interfaces/index.js";
+import { Logger } from "pino";
+import { Configuration } from "../../shared/Configuration.js";
 export { getAdminServer } from "./AdminServer.js";
 export { getAllConnections } from "./ConnectionManager.js";
-export declare const defaultLog: Logger;
 /**
  *
  * @param {object} options
@@ -16,11 +17,11 @@ export declare function socketErrorHandler({ sock, error, log, }: {
     error: BuiltinError;
     log: Logger;
 }): void;
-export declare function socketDataHandler({ processMessage, data, logger, config, connection, connectionRecord, }: {
+export declare function socketDataHandler({ processMessage, data, log, config, connection, connectionRecord, }: {
     processMessage?: MessageProcessor;
     data: Buffer;
-    logger: Logger;
-    config: ServerConfiguration;
+    log: Logger;
+    config: Configuration;
     connection: ClientConnection;
     connectionRecord: SocketWithConnectionInfo;
 }): void;
@@ -38,7 +39,7 @@ export declare function validateAddressAndPort(localPort: number | undefined, re
  */
 export declare function rawConnectionHandler({ incomingSocket, config, log, onSocketData, onSocketError, onSocketEnd, }: {
     incomingSocket: NetworkSocket;
-    config: ServerConfiguration;
+    config: Configuration;
     log: Logger;
     onSocketData?: SocketOnDataHandler;
     onSocketError?: TSocketErrorHandler;
@@ -53,7 +54,7 @@ export declare function socketConnectionHandler({ onTCPConnection, onHTTPConnect
     onTCPConnection?: ConnectionHandler;
     onHTTPConnection?: WebConnectionHandler;
     incomingSocket: NetworkSocket;
-    config: ServerConfiguration;
+    config: Configuration;
     log: Logger;
 }): void;
 //# sourceMappingURL=index.d.ts.map

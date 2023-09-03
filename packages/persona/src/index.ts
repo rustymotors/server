@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { GameMessage, Logger, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
+import { Logger } from "pino";
+import { GameMessage, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
 import { NPSMessage } from "../../shared/NPSMessage.js";
 import { handleData } from "./internal.js";
 
@@ -28,9 +29,8 @@ export async function handleSelectGamePersona(
     requestPacket: GameMessage,
     log: Logger
 ): Promise<GameMessage> {
-    log("debug", "_npsSelectGamePersona...");
-    log(
-        "debug",
+    log.debug("_npsSelectGamePersona...");
+    log.debug(
         `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
             NPSMsg: requestPacket.toJSON(),
         })}`
@@ -47,8 +47,7 @@ export async function handleSelectGamePersona(
     const responsePacket = new NPSMessage("sent");
     responsePacket.msgNo = 0x2_07;
     responsePacket.setContent(packetContent);
-    log(
-        "debug",
+    log.debug(
         `NPSMsg response object from _npsSelectGamePersona',
     ${JSON.stringify({
         NPSMsg: responsePacket.toJSON(),
@@ -57,8 +56,7 @@ export async function handleSelectGamePersona(
 
     responsePacket.dumpPacket();
 
-    log(
-        "debug",
+    log.debug(
         `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.getPacketAsString()}`
     );
     return responsePacket;

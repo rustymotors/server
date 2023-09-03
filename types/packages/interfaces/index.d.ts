@@ -5,6 +5,8 @@
 import { Cipher, Decipher } from "node:crypto";
 import { IncomingMessage, OutgoingHttpHeader, OutgoingHttpHeaders, ServerResponse } from "node:http";
 import { MessageNode } from "../shared/MessageNode.js";
+import { Logger } from "pino";
+import { Configuration } from "../shared/Configuration.js";
 export interface GameMessageHeader extends SerializedObject {
     msgid: number;
     msglen: number;
@@ -85,21 +87,6 @@ export interface SocketWithConnectionInfo {
     encryptionSession?: EncryptionSession;
     useEncryption: boolean;
 }
-export type ELOG_LEVEL = "debug" | "info" | "notice" | "warning" | "err" | "crit" | "alert" | "emerg";
-export interface ServerConfiguration {
-    EXTERNAL_HOST: string;
-    certificateFileContents: string;
-    privateKeyContents: string;
-    publicKeyContents: string;
-    LOG_LEVEL: ELOG_LEVEL;
-}
-export interface ConfigurationServer {
-    serverConfig: ServerConfiguration;
-    getConfig: () => ServerConfiguration;
-    getLogLevel: () => ELOG_LEVEL;
-    setLogLevel: (level: ELOG_LEVEL) => void;
-}
-export type Logger = (level: ELOG_LEVEL, msg: string) => void;
 export interface DatabaseManager {
     updateSessionKey: (customerId: number, sessionkey: string, contextId: string, connectionId: string) => Promise<void>;
     fetchSessionKeyByCustomerId: (customerId: number) => Promise<SessionKeys>;
@@ -200,10 +187,10 @@ export interface WebJSONResponse {
 }
 export type NetworkConnectionHandler = ({ incomingSocket, config, log, }: {
     incomingSocket: NetworkSocket;
-    config: ServerConfiguration;
+    config: Configuration;
     log: Logger;
 }) => void;
-export type WebConnectionHandler = (req: IncomingMessage, res: ServerResponse, config: ServerConfiguration, log: Logger) => void;
+export type WebConnectionHandler = (req: IncomingMessage, res: ServerResponse, config: Configuration, log: Logger) => void;
 export type TSocketErrorHandler = ({ sock, error, log, }: {
     sock: NetworkSocket;
     error: BuiltinError;
@@ -214,26 +201,26 @@ export type TSocketEndHandler = ({ sock, log, connectionRecord, }: {
     log: Logger;
     connectionRecord: SocketWithConnectionInfo;
 }) => void;
-export type SocketOnDataHandler = ({ socket, processMessage, data, logger, config, connection, connectionRecord, }: {
+export type SocketOnDataHandler = ({ socket, processMessage, data, log, config, connection, connectionRecord, }: {
     socket: NetworkSocket;
     processMessage?: MessageProcessor;
     data: Buffer;
-    logger: Logger;
-    config: ServerConfiguration;
+    log: Logger;
+    config: Configuration;
     connection: ClientConnection;
     connectionRecord: SocketWithConnectionInfo;
 }) => void;
-export type MessageProcessor = ({ data, connectionRecord, config, logger, connection, message, }: {
+export type MessageProcessor = ({ data, connectionRecord, config, log, connection, message, }: {
     data: Buffer;
     connectionRecord: SocketWithConnectionInfo;
-    config: ServerConfiguration;
-    logger: Logger;
+    config: Configuration;
+    log: Logger;
     connection: ClientConnection;
     message: ClientMessage | ClientMessage;
 }) => Promise<void>;
 export type ConnectionHandler = ({ incomingSocket, config, log, }: {
     incomingSocket: NetworkSocket;
-    config: ServerConfiguration;
+    config: Configuration;
     log: Logger;
 }) => void;
 export interface RaceLobbyRecord {
@@ -325,7 +312,7 @@ export interface IEncryptionManager {
 export interface ServiceArgs {
     legacyConnection: TBufferWithConnection;
     connection?: ClientConnection;
-    config: ServerConfiguration;
+    config: Configuration;
     log: Logger;
 }
 export type Service = (args: ServiceArgs) => Promise<ServiceResponse>;

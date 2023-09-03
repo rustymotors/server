@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Logger } from "../../interfaces/index.js";
-import { TSMessageBase } from "../../shared/index.js";
+import { Logger } from "pino";
+import { TransactionMessageBase } from "../../shared/TMessageBase.js";
 
 /**
  *
@@ -30,7 +30,7 @@ import { TSMessageBase } from "../../shared/index.js";
  * @property {Buffer} mcVersion
  */
 
-export class TLoginMessage extends TSMessageBase {
+export class TLoginMessage extends TransactionMessageBase {
     appId = 0;
 
     /**
@@ -40,7 +40,7 @@ export class TLoginMessage extends TSMessageBase {
      */
     constructor(log: Logger) {
         super(log);
-        log("debug", "new TLoginMessage");
+        log.debug("new TLoginMessage");
         this._add({
             name: "msgNo",
             order: "little",

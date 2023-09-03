@@ -1,6 +1,7 @@
 /// <reference types="node" resolution-mode="require"/>
 import { IncomingMessage, ServerResponse } from "node:http";
-import { Logger, ServerConfiguration } from "../../interfaces/index.js";
+import { Logger } from "pino";
+import { Configuration } from "../../shared/Configuration.js";
 /**
  * Manages patch and update server connections
  * Also handles the shard list, and some utility endpoints
@@ -36,7 +37,7 @@ export declare class ShardServer {
      * @private
      * @type {TServerLogger}
      */
-    private readonly _log;
+    private readonly log;
     /**
      * @private
      * @type {TConfiguration}
@@ -48,7 +49,7 @@ export declare class ShardServer {
      * @param {TServerLogger} log
      * @returns {ShardServer}
      */
-    static getInstance(config: ServerConfiguration, log: Logger): ShardServer;
+    static getInstance(config: Configuration, log: Logger): ShardServer;
     /**
      * Creates an instance of ShardServer.
      *
@@ -57,7 +58,7 @@ export declare class ShardServer {
      * @param {TServerLogger} log
      * @memberof ShardServer
      */
-    constructor(config: ServerConfiguration, log: Logger);
+    constructor(config: Configuration, log: Logger);
     /**
      * Generate a shard list web document
      *
@@ -80,5 +81,5 @@ export declare class ShardServer {
  * @param {TServerLogger} log
  * @returns {ShardServer}
  */
-export declare function getShardServer(config: ServerConfiguration, log: Logger): ShardServer;
+export declare function getShardServer(config: Configuration, log: Logger): ShardServer;
 //# sourceMappingURL=ShardServer.d.ts.map

@@ -15,7 +15,7 @@
  */
 
 import { ClientMessage } from "../../interfaces/index.js";
-import { Message } from "../../shared/index.js";
+import { Message } from "../../shared/Message.js";
 
 
 export class GenericReplyMessage extends Message implements ClientMessage {

@@ -1,5 +1,5 @@
 import { PersonaRecord } from "../../interfaces/index.js";
-import { NPSMessage } from "../../shared/index.js";
+import { NPSMessage } from "../../shared/NPSMessage.js";
 
 /**
  *

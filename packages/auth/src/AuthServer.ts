@@ -1,5 +1,6 @@
 import { IncomingMessage, ServerResponse } from "node:http";
-import { AuthenticationServer, Logger } from "../../interfaces/index.js";
+import { AuthenticationServer } from "../../interfaces/index.js";
+import { Logger } from "pino";
 
 /**
  * Handles web-based user logins
@@ -9,10 +10,10 @@ import { AuthenticationServer, Logger } from "../../interfaces/index.js";
 export class AuthServer implements AuthenticationServer {
     static _instance: AuthServer;
 
-    _log: Logger;
+    log: Logger;
 
     constructor(log: Logger) {
-        this._log = log;
+        this.log = log;
     }
 
     private _handleGetTicket(): string {
@@ -28,8 +29,7 @@ export class AuthServer implements AuthenticationServer {
         request: IncomingMessage,
         response: ServerResponse
     ): ServerResponse {
-        this._log(
-            "debug",
+        this.log.debug(
             `[Web] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );
         if (request.url?.startsWith("/AuthLogin")) {

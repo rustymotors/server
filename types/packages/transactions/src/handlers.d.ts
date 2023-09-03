@@ -1,4 +1,5 @@
-import { SocketWithConnectionInfo, Logger, MessageArrayWithConnectionInfo } from "../../interfaces/index.js";
+import { Logger } from "pino";
+import { SocketWithConnectionInfo, MessageArrayWithConnectionInfo } from "../../interfaces/index.js";
 import { MessageNode } from "../../shared/MessageNode.js";
 declare function handleSetOptions(conn: SocketWithConnectionInfo, node: MessageNode, log: Logger): MessageArrayWithConnectionInfo;
 /**

@@ -1,4 +1,5 @@
-import { SocketWithConnectionInfo, Logger, NetworkSocket, IConnectionManager, ClientConnection, EncryptionSession } from "../../interfaces/index.js";
+import { Logger } from "pino";
+import { SocketWithConnectionInfo, NetworkSocket, IConnectionManager, ClientConnection, EncryptionSession } from "../../interfaces/index.js";
 import { Connection } from "../../shared/Connection.js";
 /** @deprecated use {@link ConnectionManager} instead */
 export declare const connectionList: SocketWithConnectionInfo[];

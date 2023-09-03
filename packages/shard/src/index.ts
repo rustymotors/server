@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerConfiguration } from "../../interfaces/index.js";
+import { readFileSync } from "fs";
+import { Configuration } from "../../shared/Configuration.js";
+
 
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
@@ -25,8 +27,13 @@ import { ServerConfiguration } from "../../interfaces/index.js";
  * @param {TConfiguration} config
  * @return {string}
  */
-export function handleGetCert(config: ServerConfiguration): string {
-    return config.certificateFileContents;
+export function handleGetCert(config: Configuration): string {
+    try {
+        const cert = readFileSync(config.certificateFile, "utf8");
+        return cert;
+    } catch (err) {
+        throw new Error(`Error reading certificate file: ${String(err)}`);
+    }
 }
 
 /**
@@ -34,8 +41,8 @@ export function handleGetCert(config: ServerConfiguration): string {
  * @param {TConfiguration} config
  * @return {string}
  */
-export function handleGetRegistry(config: ServerConfiguration): string {
-    const externalHost = config.EXTERNAL_HOST;
+export function handleGetRegistry(config: Configuration): string {
+    const externalHost = config.host;
     const patchHost = externalHost;
     const authHost = externalHost;
     const shardHost = externalHost;
@@ -73,6 +80,12 @@ export function handleGetRegistry(config: ServerConfiguration): string {
  * @param {TConfiguration} config
  * @return {string}
  */
-export function handleGetKey(config: ServerConfiguration): string {
-    return config.publicKeyContents;
+export function handleGetKey(config: Configuration): string {
+    try {
+        const key = readFileSync(config.publicKeyFile, "utf8");
+        return key;
+    }
+    catch (err) {
+        throw new Error(`Error reading public key file: ${String(err)}`);
+    }    
 }

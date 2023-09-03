@@ -2,7 +2,8 @@ import { ShardEntry } from "./shard-entry.js";
 import { createServer } from "node:https";
 import { IncomingMessage, Server, ServerResponse } from "node:http";
 import { handleGetCert, handleGetKey, handleGetRegistry } from "./index.js";
-import { Logger, ServerConfiguration } from "../../interfaces/index.js";
+import { Logger } from "pino";
+import { Configuration } from "../../shared/Configuration.js";
 
 /**
  * Manages patch and update server connections
@@ -42,13 +43,13 @@ export class ShardServer {
      * @private
      * @type {TServerLogger}
      */
-    private readonly _log: Logger;
+    private readonly log: Logger;
 
     /**
      * @private
      * @type {TConfiguration}
      */
-    private readonly _config: ServerConfiguration;
+    private readonly _config: Configuration;
 
     /**
      * Return the instance of the ShardServer class
@@ -57,7 +58,7 @@ export class ShardServer {
      * @returns {ShardServer}
      */
     static getInstance(
-        config: ServerConfiguration,
+        config: Configuration,
         log: Logger
     ): ShardServer {
         if (typeof ShardServer.instance === "undefined") {
@@ -74,9 +75,9 @@ export class ShardServer {
      * @param {TServerLogger} log
      * @memberof ShardServer
      */
-    constructor(config: ServerConfiguration, log: Logger) {
+    constructor(config: Configuration, log: Logger) {
         this._config = config;
-        this._log = log;
+        this.log = log;
         this._server = createServer(this.handleRequest.bind(this));
 
         this._server.on("error", (error) => {
@@ -93,7 +94,7 @@ export class ShardServer {
      * @memberof! PatchServer
      */
     _generateShardList(): string {
-        const shardHost = this._config.EXTERNAL_HOST;
+        const shardHost = this._config.host;
         const shardClockTower = new ShardEntry(
             "The Clocktower",
             "The Clocktower",
@@ -182,8 +183,7 @@ export class ShardServer {
         }
 
         if (request.url === "/ShardList/") {
-            this._log(
-                "debug",
+            this.log.debug(
                 `Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
             );
 
@@ -196,8 +196,7 @@ export class ShardServer {
         response.end("");
 
         // Unknown request, log it
-        this._log(
-            "debug",
+        this.log.debug(
             `Unknown Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );
         return response;
@@ -211,7 +210,7 @@ export class ShardServer {
  */
 
 export function getShardServer(
-    config: ServerConfiguration,
+    config: Configuration,
     log: Logger
 ): ShardServer {
     return ShardServer.getInstance(config, log);

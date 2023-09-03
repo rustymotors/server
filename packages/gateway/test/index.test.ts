@@ -1,23 +1,58 @@
 import assert from "node:assert";
-import { describe, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { mock } from "node:test";
-import { NetworkSocket, Logger, ServerConfiguration, SocketWithConnectionInfo } from "../../interfaces/index.js";
+import {
+    NetworkSocket,
+    SocketWithConnectionInfo,
+} from "../../interfaces/index.js";
 import { ISocketTestFactory, IConnectionFactory } from "../../shared/index.js";
-import { ConnectionManager, getConnectionManager } from "../src/ConnectionManager.js";
-import { rawConnectionHandler, socketErrorHandler, socketEndHandler } from "../src/index.js";
+import {
+    ConnectionManager,
+    getConnectionManager,
+} from "../src/ConnectionManager.js";
+import {
+    rawConnectionHandler,
+    socketErrorHandler,
+    socketEndHandler,
+} from "../src/index.js";
+import { Configuration } from "../../shared/Configuration.js";
+import pino from "pino";
+
+beforeAll(() => {
+    vi.mock("pino", () => {
+        return {
+            default: vi.fn().mockImplementation(() => {
+                return {
+                    debug: vi.fn(),
+                    info: vi.fn(),
+                    warn: vi.fn(),
+                    error: vi.fn(),
+                };
+            }),
+            pino: vi.fn().mockImplementation(() => {
+                return {
+                    debug: vi.fn(),
+                    info: vi.fn(),
+                    warn: vi.fn(),
+                    error: vi.fn(),
+                };
+            }),
+        };
+    });
+});
 
 describe("rawConnectionListener", () => {
     it("should set event listeners", () => {
         // Arrange
         const fakeSocket: NetworkSocket = ISocketTestFactory();
-        const fakeLog: Logger = mock.fn();
-        const fakeConfig: ServerConfiguration = {
-            EXTERNAL_HOST: "localhost",
-            certificateFileContents: "",
-            privateKeyContents: "",
-            publicKeyContents: "",
-            LOG_LEVEL: "debug",
+
+        const fakeConfig: Configuration = {
+            host: "",
+            certificateFile: "",
+            privateKeyFile: "",
+            publicKeyFile: "",
+            logLevel: "info",
         };
         const fakeConnection = IConnectionFactory();
         fakeConnection.id = "abc";
@@ -33,7 +68,7 @@ describe("rawConnectionListener", () => {
         rawConnectionHandler({
             incomingSocket: fakeSocket,
             config: fakeConfig,
-            log: fakeLog,
+            log: pino(),
         });
 
         // Assert
@@ -49,13 +84,12 @@ describe("rawConnectionListener", () => {
 
         const fakeSocket: NetworkSocket = ISocketTestFactory();
         fakeSocket.localPort = undefined;
-        const fakeLog: Logger = mock.fn();
-        const fakeConfig: ServerConfiguration = {
-            EXTERNAL_HOST: "localhost",
-            certificateFileContents: "",
-            privateKeyContents: "",
-            publicKeyContents: "",
-            LOG_LEVEL: "debug",
+        const fakeConfig: Configuration = {
+            host: "",
+            certificateFile: "",
+            privateKeyFile: "",
+            publicKeyFile: "",
+            logLevel: "info",
         };
         const fakeConnection = IConnectionFactory();
         fakeConnection.id = "def";
@@ -73,7 +107,7 @@ describe("rawConnectionListener", () => {
                 rawConnectionHandler({
                     incomingSocket: fakeSocket,
                     config: fakeConfig,
-                    log: fakeLog,
+                    log: pino(),
                 }),
             /localPort or remoteAddress is undefined/,
         );
@@ -84,13 +118,12 @@ describe("rawConnectionListener", () => {
 
         const fakeSocket: NetworkSocket = ISocketTestFactory();
         fakeSocket.remoteAddress = undefined;
-        const fakeLog: Logger = mock.fn();
-        const fakeConfig: ServerConfiguration = {
-            EXTERNAL_HOST: "localhost",
-            certificateFileContents: "",
-            privateKeyContents: "",
-            publicKeyContents: "",
-            LOG_LEVEL: "debug",
+        const fakeConfig: Configuration = {
+            host: "",
+            certificateFile: "",
+            privateKeyFile: "",
+            publicKeyFile: "",
+            logLevel: "info",
         };
         const fakeConnection = IConnectionFactory();
         fakeConnection.id = "ghi";
@@ -108,7 +141,7 @@ describe("rawConnectionListener", () => {
                 rawConnectionHandler({
                     incomingSocket: fakeSocket,
                     config: fakeConfig,
-                    log: fakeLog,
+                    log: pino(),
                 }),
             /localPort or remoteAddress is undefined/,
         );
@@ -118,13 +151,12 @@ describe("rawConnectionListener", () => {
         // Arrange
 
         const fakeSocket: NetworkSocket = ISocketTestFactory();
-        const fakeLog: Logger = mock.fn();
-        const fakeConfig: ServerConfiguration = {
-            EXTERNAL_HOST: "localhost",
-            certificateFileContents: "",
-            privateKeyContents: "",
-            publicKeyContents: "",
-            LOG_LEVEL: "debug",
+        const fakeConfig: Configuration = {
+            host: "",
+            certificateFile: "",
+            privateKeyFile: "",
+            publicKeyFile: "",
+            logLevel: "info",
         };
         const fakeConnection = IConnectionFactory();
         fakeConnection.id = "jkl";
@@ -141,14 +173,14 @@ describe("rawConnectionListener", () => {
         rawConnectionHandler({
             incomingSocket: fakeSocket,
             config: fakeConfig,
-            log: fakeLog,
+            log: pino(),
             onSocketEnd: fakeOnEnd,
         });
         fakeSocket.emit("end");
 
         // Assert
         assert(eventSpy.mock.calls.length === 3);
-        // element 0 is the event that was emitted 
+        // element 0 is the event that was emitted
         assert.deepEqual(eventSpy.mock.calls[0].arguments[0], "end");
         assert.deepEqual(eventSpy.mock.calls[1].arguments[0], "data");
         assert.deepEqual(eventSpy.mock.calls[2].arguments[0], "error");
@@ -159,13 +191,12 @@ describe("rawConnectionListener", () => {
         // Arrange
 
         const fakeSocket: NetworkSocket = ISocketTestFactory();
-        const fakeLog: Logger = mock.fn();
-        const fakeConfig: ServerConfiguration = {
-            EXTERNAL_HOST: "localhost",
-            certificateFileContents: "",
-            privateKeyContents: "",
-            publicKeyContents: "",
-            LOG_LEVEL: "debug",
+        const fakeConfig: Configuration = {
+            host: "",
+            certificateFile: "",
+            privateKeyFile: "",
+            publicKeyFile: "",
+            logLevel: "info",
         };
         const connection = IConnectionFactory();
         connection.id = "nope";
@@ -183,7 +214,7 @@ describe("rawConnectionListener", () => {
         rawConnectionHandler({
             incomingSocket: fakeSocket,
             config: fakeConfig,
-            log: fakeLog,
+            log: pino(),
             onSocketData: fakeOnData,
         });
 
@@ -210,34 +241,35 @@ describe("socketErrorHandler", () => {
                         code: -1,
                     },
                     sock: ISocketTestFactory(),
-                    log: mock.fn(),
+                    log: pino(),
                 }),
             "test",
         );
     });
 
     it("should log when called with ECONNRESET", () => {
-        const logSpy = mock.fn();
+        const log = pino()
+        const logSpy = vi.spyOn(log, "debug");
         socketErrorHandler({
             error: {
                 message: "ECONNRESET",
                 code: -1,
             },
             sock: ISocketTestFactory(),
-            log: logSpy,
+            log,
         });
-        assert(logSpy.mock.calls.length === 1);
+        expect(logSpy).toBeCalled();
+        expect(logSpy).toBeCalledWith("Connection was reset");
     });
 
     it("should attempt to destroy the socket if no longer writable", () => {
         const fakeSocket: NetworkSocket = ISocketTestFactory();
-        const fakeLog: Logger = mock.fn();
-        const fakeConfig: ServerConfiguration = {
-            EXTERNAL_HOST: "localhost",
-            certificateFileContents: "",
-            privateKeyContents: "",
-            publicKeyContents: "",
-            LOG_LEVEL: "debug",
+        const fakeConfig: Configuration = {
+            host: "",
+            certificateFile: "",
+            privateKeyFile: "",
+            publicKeyFile: "",
+            logLevel: "info",
         };
         const fakeConnection = IConnectionFactory();
         fakeConnection.id = "1234";
@@ -256,7 +288,7 @@ describe("socketErrorHandler", () => {
             incomingSocket: fakeSocket,
             config: fakeConfig,
             onSocketError: spyOnErrorEvent,
-            log: fakeLog,
+            log: pino(),
         });
 
         fakeSocket.emit("error", {
@@ -291,12 +323,11 @@ describe("socketEndHandler", () => {
         const connectionManager = getConnectionManager();
         connectionManager.connections = [];
 
-        assert(connectionManager.connections.length === 0);
+        expect(connectionManager.connections.length).toBe(0);
 
         connectionManager.addConnection(fakeConnection);
-        const logSpy = mock.fn();
 
-        assert.equal(connectionManager.connections.length, 1);
+        expect(connectionManager.connections.length).toBe(1);
 
         const removeConnectionSpy = mock.method(
             connectionManager,
@@ -304,11 +335,9 @@ describe("socketEndHandler", () => {
         );
 
         socketEndHandler({
-            log: logSpy,
+            log: pino(),
             connectionRecord: fakeConnectionRecord,
         });
-
-        assert.equal(logSpy.mock.calls.length, 1);
 
         assert.equal(removeConnectionSpy.mock.calls[0].arguments, "1234");
 
@@ -320,13 +349,13 @@ describe("socketDataHandler", () => {
     it("should call it's processData function", () => {
         // Arrange
         const fakeSocket: NetworkSocket = ISocketTestFactory();
-        const fakeLog: Logger = mock.fn();
-        const fakeConfig: ServerConfiguration = {
-            EXTERNAL_HOST: "localhost",
-            certificateFileContents: "",
-            privateKeyContents: "",
-            publicKeyContents: "",
-            LOG_LEVEL: "debug",
+
+        const fakeConfig: Configuration = {
+            host: "",
+            certificateFile: "",
+            privateKeyFile: "",
+            publicKeyFile: "",
+            logLevel: "info",
         };
         const fakeConnection = IConnectionFactory();
         fakeConnection.socket = fakeSocket;
@@ -341,7 +370,7 @@ describe("socketDataHandler", () => {
         rawConnectionHandler({
             incomingSocket: fakeSocket,
             config: fakeConfig,
-            log: fakeLog,
+            log: pino(),
             onSocketData: fakeOnSocketData,
         });
 

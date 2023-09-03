@@ -1,7 +1,8 @@
 /// <reference types="node" resolution-mode="require"/>
 /// <reference types="node" resolution-mode="require"/>
 import { createCipheriv, createDecipheriv } from "node:crypto";
-import { EncryptionSession, SocketWithConnectionInfo, SessionKeys, TBufferWithConnection, ClientConnection, Logger, IEncryptionManager } from "../../interfaces/index.js";
+import { EncryptionSession, SocketWithConnectionInfo, SessionKeys, TBufferWithConnection, ClientConnection, IEncryptionManager } from "../../interfaces/index.js";
+import { Logger } from "pino";
 /**
  *
  * @deprecated use {@link EncryptionManager.generateEncryptionPair()} instead
@@ -78,4 +79,5 @@ export declare class EncryptionManager implements IEncryptionManager {
  * Get the singletons instance of the encryption manager
  */
 export declare function getEncryptionManager(): EncryptionManager;
+export declare function verifyLegacyCipherSupport(): void;
 //# sourceMappingURL=encryption.d.ts.map

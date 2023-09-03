@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { FIELD_TYPE, Logger } from "../interfaces/index.js";
+import { Logger } from "pino";
+import { FIELD_TYPE } from "../interfaces/index.js";
 
 /**
  * @class
@@ -131,8 +132,7 @@ export class BinaryStructureBase {
             throw err;
         }
 
-        this.log(
-            "debug",
+        this.log.debug(
             `Attempting to deserialize ${byteStream.byteLength} bytes into ${this._fields.length} fields for a total of ${this._byteLength} bytes`,
         );
 
@@ -218,7 +218,7 @@ export class BinaryStructureBase {
             }
             return value.readUInt8();
         } catch (error) {
-            this.log("debug", "Calling get() in BinaryStructure.. fail!");
+            this.log.debug("Calling get() in BinaryStructure.. fail!");
             const err = new Error(
                 `Error in getValueX: ${String(
                     error,

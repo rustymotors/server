@@ -12,14 +12,14 @@
   "scripts": {
     "prepare": "husky install",
     "pretest": "eslint .",
-    "build:dev": "tsc -b --clean && tsc -b --verbose",
-    "build": "tsc -b --clean && tsc -b && npm run sentry:sourcemaps",
+    "build:dev": "rimraf dist types && tsc -b --verbose",
+    "build": "rimraf dist types && tsc -b && npm run sentry:sourcemaps",
     "test": "node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage packages",
     "build:test": "npm run format && npm run build && npm run test",
     "prod": "make prod_node",
     "prod:stop": "docker-compose stop",
     "release": "standard-version --sign",
-    "start:dev": "node --openssl-legacy-provider server/app.js",
+    "start:dev": "node --openssl-legacy-provider dist/server.js",
     "start:docker": "npm run start:dev 2>&1 | tee -a log/mcos/trace.log",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org drazisilcom --project mcos ./dist && sentry-cli sourcemaps upload --org drazisilcom --project mcos ./dist"
   },
@@ -34,6 +34,7 @@
     "@sentry/node": "7.66",
     "@sentry/profiling-node": "^1.1.2",
     "moment": "^2.29.4",
+    "pino": "^8.15.0",
     "ts-node": "10.9.1"
   },
   "devDependencies": {
@@ -52,6 +53,7 @@
     "lint-staged": "^14.0.1",
     "prettier": "3.0.3",
     "prettier-eslint": "15.0.1",
+    "rimraf": "^5.0.1",
     "standard-version": "^9.5.0",
     "typescript": "^5.2.2",
     "typescript-eslint-language-service": "^5.0.5",

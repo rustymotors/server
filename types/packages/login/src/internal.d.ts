@@ -1,4 +1,6 @@
-import { TBufferWithConnection, ServerConfiguration, Logger, MessageArrayWithConnectionInfo, ServiceArgs } from "../../interfaces/index.js";
+import { Logger } from "pino";
+import { TBufferWithConnection, MessageArrayWithConnectionInfo, ServiceArgs } from "../../interfaces/index.js";
+import { Configuration } from "../../shared/Configuration.js";
 /**
  * Process a UserLogin packet
  * @private
@@ -7,7 +9,7 @@ import { TBufferWithConnection, ServerConfiguration, Logger, MessageArrayWithCon
  * @param {Logger} log
  * @return {Promise<MessageArrayWithConnectionInfo>}
  */
-declare function login(dataConnection: TBufferWithConnection, config: ServerConfiguration, log: Logger): Promise<MessageArrayWithConnectionInfo>;
+declare function login(dataConnection: TBufferWithConnection, config: Configuration, log: Logger): Promise<MessageArrayWithConnectionInfo>;
 export declare const messageHandlers: {
     id: string;
     handler: typeof login;

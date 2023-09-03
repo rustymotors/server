@@ -1,26 +1,46 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeAll } from "vitest";
 import { handleGetCert, handleGetKey, handleGetRegistry } from "./index.js";
 import { ShardServer } from "./ShardServer.js";
-import { ServerConfiguration, Logger } from "../../interfaces/index.js";
+import pino from "pino";
+import { Configuration } from "../../shared/Configuration.js";
 
 describe("Shard service", () => {
+
+    beforeAll(() => {
+        vi.mock("fs", () => {
+            return {
+                readFileSync: vi.fn().mockImplementation((path: string) => {
+                    if (path.includes("fakeCert.pem")) {
+                        return "Hello! I'm an SSL cert. Honest.";
+                    }
+                    if (path.includes("fakePub.key")) {
+                        return "I'm a public key! Wheeeeeeeee";
+                    }
+                    throw new Error("Unknown file");
+                }),
+            };
+        });
+    });
+
     it("should return an instance when getInstance() is called", () => {
         // arrange
-        const config: ServerConfiguration = {
-            certificateFileContents: "",
-            EXTERNAL_HOST: "",
-            privateKeyContents: "",
-            publicKeyContents: "",
-            LOG_LEVEL: "info",
+        const config: Configuration = {
+            host: "",
+            certificateFile: "",
+            privateKeyFile: "",
+            publicKeyFile: "",
+            logLevel: "info",
         };
-        const log: Logger = () => {
-            return;
-        };
+        vi.mock("pino", () => {
+            return {
+                default: vi.fn(),
+            };
+        });
 
         const expectedClass = ShardServer;
 
         // act
-        const server = ShardServer.getInstance(config, log);
+        const server = ShardServer.getInstance(config, pino());
 
         // assert
         expect(server).to.be.instanceOf(expectedClass);
@@ -29,12 +49,12 @@ describe("Shard service", () => {
     describe("handleGetCert", () => {
         it("should return file contents", () => {
             // arrange
-            const config: ServerConfiguration = {
-                certificateFileContents: "Hello! I'm an SSL cert. Honest.",
-                EXTERNAL_HOST: "",
-                privateKeyContents: "",
-                publicKeyContents: "",
-                LOG_LEVEL: "info",
+            const config: Configuration = {
+                host: "",
+                certificateFile: "fakeCert.pem",
+                privateKeyFile: "",
+                publicKeyFile: "",
+                logLevel: "info",
             };
 
             const expectedText = "Hello! I'm an SSL cert. Honest.";
@@ -44,18 +64,19 @@ describe("Shard service", () => {
 
             // assert
             expect(result).to.equal(expectedText);
+            vi.doUnmock("fs");
         });
     });
 
     describe("handleGetRegistry", () => {
         it("should return file contents", () => {
             // arrange
-            const config: ServerConfiguration = {
-                certificateFileContents: "",
-                EXTERNAL_HOST: "0.10.0.1",
-                privateKeyContents: "",
-                publicKeyContents: "",
-                LOG_LEVEL: "info",
+            const config: Configuration = {
+                host: "0.10.0.1",
+                certificateFile: "",
+                privateKeyFile: "",
+                publicKeyFile: "",
+                logLevel: "info",
             };
 
             const expectedText = '"AuthLoginServer"="0.10.0.1"';
@@ -71,12 +92,12 @@ describe("Shard service", () => {
     describe("handleGetKey", () => {
         it("should return file contents", () => {
             // arrange
-            const config: ServerConfiguration = {
-                certificateFileContents: "",
-                EXTERNAL_HOST: "",
-                privateKeyContents: "",
-                publicKeyContents: "I'm a public key! Wheeeeeeeee",
-                LOG_LEVEL: "info",
+            const config: Configuration = {
+                host: "",
+                certificateFile: "",
+                privateKeyFile: "",
+                publicKeyFile: "fakePub.key",
+                logLevel: "info",
             };
 
             const expectedText = "I'm a public key! Wheeeeeeeee";
@@ -86,6 +107,7 @@ describe("Shard service", () => {
 
             // assert
             expect(result).to.equal(expectedText);
+            vi.doUnmock("fs");
         });
     });
 });

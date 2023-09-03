@@ -1,7 +1,8 @@
 /// <reference types="node" resolution-mode="require"/>
 /// <reference types="node" resolution-mode="require"/>
 import EventEmitter from "node:events";
-import { SubprocessThread, GatewayServer, Logger } from "../interfaces/index.js";
+import { SubprocessThread, GatewayServer } from "../interfaces/index.js";
+import { Logger } from "pino";
 export declare class SubThread extends EventEmitter implements SubprocessThread {
     name: string;
     loopInterval: number;

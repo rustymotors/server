@@ -1,6 +1,7 @@
 /// <reference types="node" resolution-mode="require"/>
 import { IncomingMessage } from "node:http";
-import { AdminWebServer, Logger, WebJSONResponse } from "../../interfaces/index.js";
+import { AdminWebServer, WebJSONResponse } from "../../interfaces/index.js";
+import { Logger } from "pino";
 /**
  * The admin server.
  * Please use {@link getAdminServer()} to get the single instance of this class.
@@ -11,7 +12,7 @@ import { AdminWebServer, Logger, WebJSONResponse } from "../../interfaces/index.
  */
 export declare class AdminServer implements AdminWebServer {
     static _instance: AdminServer;
-    _log: Logger;
+    log: Logger;
     constructor(log: Logger);
     /**
      * Get the single instance of the class

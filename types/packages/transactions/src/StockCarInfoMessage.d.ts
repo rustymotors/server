@@ -12,7 +12,7 @@
  * @property {StockCar[]} StockCarList
  */
 /// <reference types="node" resolution-mode="require"/>
-import { MessageNode } from "../../shared/index.js";
+import { MessageNode } from "../../shared/MessageNode.js";
 import { StockCar } from "./StockCar.js";
 export declare class StockCarInfoMessage extends MessageNode {
     msgNo: number;

@@ -3,28 +3,13 @@
  */
 
 import EventEmitter from "node:events";
-import { NetworkSocket, ClientMessageHeader, ClientConnection, ClientMessage, ServerConfiguration } from "../interfaces/index.js";
-export { toHex } from "./utils.js";
-
-export {
-    BinaryStructureBase as BinaryStructure,
-    ByteField,
-} from "./BinaryStructure.js";
-export { TransactionMessageBase as TSMessageBase } from "./TMessageBase.js";
-
-export {
-    setConfiguration,
-    getServerConfiguration,
-} from "./ServerConfiguration.js";
-export { NPSMessage } from "./NPSMessage.js";
-export { getServerLogger as GetServerLogger, getLevelValue } from "./log.js";
-export { ServerError } from "./errors/ServerError.js";
-export { SubThread } from "./SubThread.js";
-export { Connection } from "./Connection.js";
-export { Message } from "./Message.js";
-export { MessageHeader } from "./MessageHeader.js";
-export { SerializerBase } from "./SerializerBase.js";
-export { MessageNode } from "./MessageNode.js";
+import {
+    NetworkSocket,
+    ClientMessageHeader,
+    ClientConnection,
+    ClientMessage,
+} from "../interfaces/index.js";
+import { Configuration } from "./Configuration.js";
 
 export function ISocketTestFactory(): NetworkSocket {
     const ee = new EventEmitter();
@@ -87,7 +72,7 @@ export function IMessageFactory(): ClientMessage {
 
         serialize: () => Buffer.from([]),
         toString: () => "",
-        serializeSize: () => 0,        
+        serializeSize: () => 0,
         deserialize: () => IMessageFactory(),
     };
 }
@@ -97,7 +82,6 @@ export function ITCPHeaderFactory(): ClientMessageHeader {
         length: 0,
         signature: "",
         serialize: () => Buffer.from([]),
-
     };
 }
 
@@ -118,12 +102,12 @@ export function ITCPMessageFactory(): ClientMessage {
     };
 }
 
-export function TServerConfigurationFactory(): ServerConfiguration {
+export function TServerConfigurationFactory(): Configuration {
     return {
-        EXTERNAL_HOST: "",
-        certificateFileContents: "",
-        privateKeyContents: "",
-        publicKeyContents: "",
-        LOG_LEVEL: "debug",
+        host: "",
+        certificateFile: "",
+        privateKeyFile: "",
+        publicKeyFile: "",
+        logLevel: "",
     };
 }

@@ -14,10 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { Logger } from "pino";
 import { decryptBuffer } from "../../gateway/src/encryption.js";
-import { TBufferWithConnection, ClientConnection, Logger, ServiceResponse, ServiceArgs } from "../../interfaces/index.js";
+import { TBufferWithConnection, ClientConnection, ServiceResponse, ServiceArgs } from "../../interfaces/index.js";
 import { MessageNode } from "../../shared/MessageNode.js";
-import { ServerError } from "../../shared/index.js";
+import { ServerError } from "../../shared/errors/ServerError.js";
 import { messageHandlers } from "./handlers.js";
 
 /**
@@ -49,13 +50,11 @@ function decryptTransactionBuffer(
     log: Logger,
 ): { err: Error | null; data: Buffer | null } {
     const encryptedBuffer = Buffer.from(message.data);
-    log(
-        "debug",
+    log.debug(
         `Full packet before decrypting: ${encryptedBuffer.toString("hex")}`,
     );
 
-    log(
-        "debug",
+    log.debug(
         `Message buffer before decrypting: ${encryptedBuffer.toString("hex")}`,
     );
 
@@ -65,8 +64,7 @@ function decryptTransactionBuffer(
         encryptedBuffer,
         log,
     );
-    log(
-        "debug",
+    log.debug(
         `Message buffer after decrypting: ${result.data.toString("hex")}`,
     );
 
@@ -159,8 +157,7 @@ async function processInput(
     const currentMessageNo = node.msgNo;
     const currentMessageString = _MSG_STRING(currentMessageNo);
 
-    log(
-        "debug",
+    log.debug(
         `We are attempting to process a message with id ${currentMessageNo}(${currentMessageString})`,
     );
 
@@ -230,7 +227,7 @@ async function messageReceived(
         }
     }
 
-    log("debug", "Calling processInput()");
+    log.debug("Calling processInput()");
     return processInput(dataConnection, message, log);
 }
 
@@ -252,8 +249,7 @@ export async function handleData(args: ServiceArgs): Promise<ServiceResponse> {
     const messageNode = new MessageNode("received");
     messageNode.deserialize(data);
 
-    log(
-        "debug",
+    log.debug(
         `[handle]Received TCP packet',
       ${JSON.stringify({
           localPort,
@@ -278,7 +274,7 @@ export async function handleData(args: ServiceArgs): Promise<ServiceResponse> {
             connection,
             log,
         );
-        log("debug", "Back in transacation server");
+        log.debug("Back in transacation server");
         return {
             connection: processedPacket.connection,
             messages: processedPacket.messages,

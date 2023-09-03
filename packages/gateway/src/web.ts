@@ -16,10 +16,11 @@
 
 import { IncomingMessage, ServerResponse } from "http";
 import { getAdminServer } from "./AdminServer.js";
-import { Logger, ServerConfiguration } from "../../interfaces/index.js";
 import { getAuthServer } from "../../auth/index.js";
 import { getPatchServer } from "../../patch/index.js";
 import { getShardServer } from "../../shard/index.js";
+import { Logger } from "pino";
+import { Configuration } from "../../shared/Configuration.js";
 
 /**
  * Routes incomming HTTP requests
@@ -27,11 +28,11 @@ import { getShardServer } from "../../shard/index.js";
 export function httpListener(
     req: IncomingMessage,
     res: ServerResponse<IncomingMessage>,
-    config: ServerConfiguration,
+    config: Configuration,
     log: Logger
 ): ServerResponse {
     if (typeof req.url !== "undefined" && req.url.startsWith("/AuthLogin")) {
-        log("debug", "ssl routing request to login web server");
+        log.debug("ssl routing request to login web server");
         return getAuthServer(log).handleRequest(req, res);
     }
 
@@ -41,7 +42,7 @@ export function httpListener(
             req.url === "/admin/connections/resetAllQueueState" ||
             req.url.startsWith("/admin"))
     ) {
-        log("debug", "ssl routing request to admin web server");
+        log.debug("ssl routing request to admin web server");
         const response = getAdminServer(log).handleRequest(req);
         return res
             .writeHead(response.code, response.headers)
@@ -53,7 +54,7 @@ export function httpListener(
         req.url === "/games/EA_Seattle/MotorCity/NPS" ||
         req.url === "/games/EA_Seattle/MotorCity/MCO"
     ) {
-        log("debug", "http routing request to patch server");
+        log.debug("http routing request to patch server");
         return getPatchServer(log).handleRequest(req, res);
     }
     if (
@@ -62,12 +63,11 @@ export function httpListener(
         req.url === "/registry" ||
         req.url === "/ShardList/"
     ) {
-        log("debug", "http routing request to shard server");
+        log.debug("http routing request to shard server");
         return getShardServer(config, log).handleRequest(req, res);
     }
 
-    log(
-        "debug",
+    log.debug(
         `Unexpected request for ${req.url} from ${req.socket.remoteAddress}, skipping.`
     );
     res.statusCode = 404;

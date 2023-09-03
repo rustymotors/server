@@ -11,8 +11,11 @@ test:
 	@clear
 	@npm test
 
+build:
+	@npm run build:dev
+
 start:
-	@LOG_LEVEL=silly npm run start:dev
+	@EXTERNAL_HOST=10.10.5.20 PRIVATE_KEY_FILE=data/private_key.pem CERTIFICATE_FILE=data/mcouniverse.crt PUBLIC_KEY_FILE=data/pub.key LOG_LEVEL=debug npm run start:dev
 
 prod_node:
 	npx tsc -b --verbose

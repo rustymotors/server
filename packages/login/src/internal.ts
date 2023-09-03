@@ -14,9 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { Logger } from "pino";
 import { DatabaseManager } from "../../database/index.js";
 import { GSMessageBase } from "../../gateway/src/GMessageBase.js";
-import { UserRecordMini, TBufferWithConnection, ServerConfiguration, Logger, MessageArrayWithConnectionInfo, ServiceArgs } from "../../interfaces/index.js";
+import { UserRecordMini, TBufferWithConnection,  MessageArrayWithConnectionInfo, ServiceArgs } from "../../interfaces/index.js";
+import { Configuration } from "../../shared/Configuration.js";
 import { NPSMessage } from "../../shared/NPSMessage.js";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { premadeLogin } from "./premadeLogin.js";
@@ -45,29 +47,28 @@ const userRecords: UserRecordMini[] = [
  */
 async function login(
     dataConnection: TBufferWithConnection,
-    config: ServerConfiguration,
+    config: Configuration,
     log: Logger,
 ): Promise<MessageArrayWithConnectionInfo> {
     const { connectionId, data } = dataConnection;
 
-    log("debug", `Received login packet: ${connectionId}`);
+    log.debug(`Received login packet: ${connectionId}`);
 
     const newGameMessage = new GSMessageBase(log);
     newGameMessage.deserialize(data.subarray(0, 10));
-    log("debug", `Raw game message: ${JSON.stringify(newGameMessage)}`);
+    log.debug(`Raw game message: ${JSON.stringify(newGameMessage)}`);
 
-    log("debug", "Requesting NPSUserStatus packet");
+    log.debug("Requesting NPSUserStatus packet");
     const userStatus = new NPSUserStatus(data, config, log);
-    log("debug", "NPSUserStatus packet creation success");
+    log.debug("NPSUserStatus packet creation success");
 
-    log("debug", "Requesting Key extraction");
+    log.debug("Requesting Key extraction");
     userStatus.extractSessionKeyFromPacket(data);
-    log("debug", "Key extraction success");
+    log.debug("Key extraction success");
 
     const { contextId, sessionKey } = userStatus;
 
-    log(
-        "debug",
+    log.debug(
         `UserStatus object from _userLogin,
       ${JSON.stringify({
           userStatus: userStatus.toJSON(),
@@ -90,7 +91,7 @@ async function login(
     }
 
     // Save sessionkey in database under customerId
-    log("debug", "Preparing to update session key in db");
+    log.debug("Preparing to update session key in db");
     await DatabaseManager.getInstance(log)
         .updateSessionKey(
             userRecord.customerId,
@@ -107,12 +108,12 @@ async function login(
             throw err;
         });
 
-    log("debug", "Session key updated");
+        log.debug("Session key updated");
 
     // Create the packet content
     // TODO: #1176 Return the login connection response packet as a MessagePacket object
     const packetContent = premadeLogin();
-    log("debug", `Using Premade Login: ${packetContent.toString("hex")}`);
+    log.debug(`Using Premade Login: ${packetContent.toString("hex")}`);
 
     // MsgId: 0x601 = NPS_USER_VALID = 1537
     Buffer.from([0x06, 0x01]).copy(packetContent);
@@ -155,7 +156,7 @@ async function login(
         messages: [newPacket, newPacket],
         log,
     };
-    log("debug", "Leaving login");
+    log.debug("Leaving login");
     return response;
 }
 
@@ -180,7 +181,7 @@ export async function handleData(
     const { legacyConnection: dataConnection, config, log } = args;
     const { connectionId, data } = dataConnection;
 
-    log("debug", `Received Login Server packet: ${connectionId}`);
+    log.debug(`Received Login Server packet: ${connectionId}`);
 
     // Check the request code
     const requestCode = data.readUInt16BE(0).toString(16);
@@ -202,8 +203,8 @@ export async function handleData(
             config,
             log,
         );
-        log("debug", `Returning with ${result.messages.length} messages`);
-        log("debug", "Leaving handleData");
+        log.debug(`Returning with ${result.messages.length} messages`);
+        log.debug("Leaving handleData");
         return result;
     } catch (error) {
         const err = new Error(`Error handling data: ${String(error)}`);

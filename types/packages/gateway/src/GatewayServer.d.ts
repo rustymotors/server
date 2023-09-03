@@ -1,5 +1,7 @@
 /// <reference types="node" resolution-mode="require"/>
-import { SubprocessThread, ServerConfiguration, Logger, ConnectionHandler, GatewayServer } from "../../interfaces/index.js";
+import { SubprocessThread, ConnectionHandler, GatewayServer } from "../../interfaces/index.js";
+import { Logger } from "pino";
+import { Configuration } from "../../shared/Configuration.js";
 /**
  * Gateway server
  * @see {@link getGatewayServer()} to get a singleton instance
@@ -23,7 +25,7 @@ export declare class Gateway implements GatewayServer, SubprocessThread {
     timer: NodeJS.Timeout | null;
     static _instance: GatewayServer;
     constructor({ config, log, backlogAllowedCount, listeningPortList, onSocketConnection, }: {
-        config?: ServerConfiguration;
+        config?: Configuration;
         log?: Logger;
         backlogAllowedCount?: number;
         serverListener?: ConnectionHandler;
@@ -43,7 +45,7 @@ export declare class Gateway implements GatewayServer, SubprocessThread {
     help(): void;
     run(): void;
     static getInstance({ config, log, backlogAllowedCount, listeningPortList, onSocketConnection, }: {
-        config?: ServerConfiguration;
+        config?: Configuration;
         log?: Logger;
         backlogAllowedCount?: number;
         serverListener?: ConnectionHandler;
@@ -68,7 +70,7 @@ export declare class Gateway implements GatewayServer, SubprocessThread {
  * Get a singleton instance of GatewayServer
  */
 export declare function getGatewayServer({ config, log, backlogAllowedCount, listeningPortList, onSocketConnection, }: {
-    config?: ServerConfiguration;
+    config?: Configuration;
     log?: Logger;
     backlogAllowedCount?: number;
     serverListener?: ConnectionHandler;

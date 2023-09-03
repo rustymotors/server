@@ -1,6 +1,9 @@
 import { privateDecrypt } from "node:crypto";
-import { Logger, ServerConfiguration, JSONResponseOfGameMessage } from "../../interfaces/index.js";
+import { JSONResponseOfGameMessage } from "../../interfaces/index.js";
 import { NPSMessage } from "../../shared/NPSMessage.js";
+import { Logger } from "pino";
+import { Configuration } from "../../shared/Configuration.js";
+import { readFileSync } from "node:fs";
 
 /**
  *
@@ -31,15 +34,15 @@ export class NPSUserStatus extends NPSMessage {
     contextId;
     buffer;
 
-    _log: Logger;
+    log: Logger;
 
-    _config: ServerConfiguration;
+    _config: Configuration;
 
-    constructor(packet: Buffer, config: ServerConfiguration, log: Logger) {
+    constructor(packet: Buffer, config: Configuration, log: Logger) {
         super("received");
         this._config = config;
-        this._log = log;
-        log("debug", "Constructing NPSUserStatus");
+        this.log = log;
+        log.debug("Constructing NPSUserStatus");
         this.sessionKey = "";
 
         // Save the NPS opCode
@@ -62,16 +65,22 @@ export class NPSUserStatus extends NPSMessage {
      * @return {void}
      */
     extractSessionKeyFromPacket(packet: Buffer): void {
-        this._log("debug", "Extracting key");
+        this.log.debug("Extracting key");
         // Decrypt the sessionkey
-        const privateKey = this._config.privateKeyContents;
+        try {
+            const privatekeyContents = readFileSync(
+                this._config.privateKeyFile,
+            );
 
         const sessionkeyString = Buffer.from(
             packet.subarray(52, -10).toString("utf8"),
             "hex",
         );
-        const decrypted = privateDecrypt(privateKey, sessionkeyString);
+        const decrypted = privateDecrypt(privatekeyContents, sessionkeyString);
         this.sessionKey = decrypted.subarray(2, -4).toString("hex");
+        } catch (error) {
+            throw new Error(`Unable to extract session key: ${String(error)}`);
+        }
     }
 
     /**
@@ -79,7 +88,7 @@ export class NPSUserStatus extends NPSMessage {
      * @return {JSONResponseOfGameMessage}
      */
     toJSON(): JSONResponseOfGameMessage {
-        this._log("debug", "Returning as JSON");
+        this.log.debug("Returning as JSON");
         return {
             msgNo: this.msgNo,
             msgLength: this.msgLength,
@@ -97,7 +106,7 @@ export class NPSUserStatus extends NPSMessage {
      * @return {string}
      */
     dumpPacket(): string {
-        this._log("debug", "Returning as string");
+        this.log.debug("Returning as string");
         let message = this.dumpPacketHeader("NPSUserStatus");
         message = message.concat(
             `NPSUserStatus,

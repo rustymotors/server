@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { GameMessage, Logger, JSONResponseOfGameMessage } from "../../interfaces/index.js";
-import { TSMessageBase, BinaryStructure } from "../../shared/index.js";
+import { Logger } from "pino";
+import { GameMessage, JSONResponseOfGameMessage } from "../../interfaces/index.js";
+import { TransactionMessageBase } from "../../shared/TMessageBase.js";
+import { BinaryStructureBase } from "../../shared/BinaryStructure.js";
 
 
 /**
@@ -30,7 +32,7 @@ import { TSMessageBase, BinaryStructure } from "../../shared/index.js";
  * @property {string} personaName
  * @property {Buffer} mcVersion
  */
-export class TLobbyMessage extends TSMessageBase implements GameMessage {
+export class TLobbyMessage extends TransactionMessageBase implements GameMessage {
     /**
      * Creates an instance of TLobbyMessage.
      * @param {Logger} log
@@ -38,7 +40,7 @@ export class TLobbyMessage extends TSMessageBase implements GameMessage {
      */
     constructor(log: Logger) {
         super(log);
-        log("debug", "new TLobbyMessage");
+        log.debug("new TLobbyMessage");
         this._add({
             name: "msgNo",
             order: "little",
@@ -84,7 +86,7 @@ export class TLobbyMessage extends TSMessageBase implements GameMessage {
     }
 }
 
-export class LobbyInfo extends BinaryStructure {
+export class LobbyInfo extends BinaryStructureBase {
     /**
      * Creates an instance of LobbyInfo.
      * @author Drazi Crendraven
@@ -92,7 +94,7 @@ export class LobbyInfo extends BinaryStructure {
      */
     constructor(log: Logger) {
         super(log);
-        log("debug", "new LobbyInfo");
+        log.debug("new LobbyInfo");
         this._add({
             name: "lobbyId",
             order: "little",

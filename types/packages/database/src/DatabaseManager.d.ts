@@ -2,7 +2,8 @@
  * This class abstracts database methods
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
-import { ConnectionRecord, Logger } from "../../interfaces/index.js";
+import { Logger } from "pino";
+import { ConnectionRecord } from "../../interfaces/index.js";
 import { DatabaseManager } from "../index.js";
 export declare class Database implements DatabaseManager {
     private sessions;

@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Logger, DatabaseManager, UserRecordMini, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
+import { Logger } from "pino";
+import { DatabaseManager, UserRecordMini, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
 import { handleData } from "./internal.js";
 
 /**
@@ -35,7 +36,7 @@ export class LoginServer {
     private databaseManager;
 
     /** @type {TServerLogger} */
-    private readonly _log: Logger;
+    private readonly log: Logger;
 
     /**
      * Please use getInstance() instead
@@ -46,7 +47,7 @@ export class LoginServer {
      */
     constructor(database: DatabaseManager, log: Logger) {
         this.databaseManager = database;
-        this._log = log;
+        this.log = log;
     }
 
     /**
@@ -75,7 +76,7 @@ export class LoginServer {
      * @return {UserRecordMini}
      */
     _npsGetCustomerIdByContextId(contextId: string): UserRecordMini {
-        this._log("debug", ">>> _npsGetCustomerIdByContextId");
+        this.log.debug(">>> _npsGetCustomerIdByContextId");
         /** @type {UserRecordMini[]} */
         const users: UserRecordMini[] = [
             {
@@ -96,8 +97,7 @@ export class LoginServer {
 
         const userRecord = users.filter((user) => user.contextId === contextId);
         if (typeof userRecord[0] === "undefined" || userRecord.length !== 1) {
-            this._log(
-                "debug",
+            this.log.debug(
                 `preparing to leave _npsGetCustomerIdByContextId after not finding record',
         ${JSON.stringify({
             contextId,
@@ -109,8 +109,7 @@ export class LoginServer {
             throw err;
         }
 
-        this._log(
-            "debug",
+        this.log.debug(
             `preparing to leave _npsGetCustomerIdByContextId after finding record',
       ${JSON.stringify({
           contextId,
@@ -135,15 +134,15 @@ export async function receiveLoginData(
 ): Promise<ServiceResponse> {
     try {
         const { legacyConnection, connection, config, log } = args;
-        log("debug", "Entering login module");
+        log.debug("Entering login module");
         const response = await handleData({
             legacyConnection,
             connection,
             config,
             log,
         });
-        log("debug", `There are ${response.messages.length} messages`);
-        log("debug", "Exiting login module");
+        log.debug(`There are ${response.messages.length} messages`);
+        log.debug("Exiting login module");
         return response;
     } catch (error) {
         const err = new Error(

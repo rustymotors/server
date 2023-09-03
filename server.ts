@@ -15,26 +15,32 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { getGatewayServer } from "./packages/gateway/src/GatewayServer.js";
-import { GetServerLogger, setConfiguration } from "./packages/shared/index.js";
-
-const log = GetServerLogger();
-
+import { verifyLegacyCipherSupport } from "./packages/gateway/src/encryption.js";
 import Sentry from "@sentry/node";
+import { getServerLogger } from "./packages/shared/log.js";
+import { getServerConfiguration } from "./packages/shared/Configuration.js";
+
+const coreLogger = getServerLogger({
+    module: "core",
+});
 
 try {
-    Sentry.init({
-        dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
+    verifyLegacyCipherSupport();
+} catch (err) {
+    coreLogger.fatal(`Error in core server: ${String(err)}`);
+    process.exit(1);
+}
 
-        // We recommend adjusting this value in production, or using tracesSampler
-        // for finer control
-        tracesSampleRate: 1.0,
-        profilesSampleRate: 1.0, // Profiling sample rate is relative to tracesSampleRate
-        integrations: [
-            // Add profiling integration to list of integrations
-            // new ProfilingIntegration(),
-        ],
-        // "debug": true
-    });
+Sentry.init({
+    dsn: "https://9cefd6a6a3b940328fcefe45766023f2@o1413557.ingest.sentry.io/4504406901915648",
+
+    // We recommend adjusting this value in production, or using tracesSampler
+    // for finer control
+    tracesSampleRate: 1.0,
+    profilesSampleRate: 1.0, // Profiling sample rate is relative to tracesSampleRate
+});
+
+try {
 
     if (typeof process.env.EXTERNAL_HOST === "undefined") {
         console.error("Please set EXTERNAL_HOST");
@@ -52,14 +58,18 @@ try {
         console.error("Please set PUBLIC_KEY_FILE");
         process.exit(1);
     }
-    const config = setConfiguration({
-        externalHost: process.env.EXTERNAL_HOST,
+    const config = getServerConfiguration({
+        host: process.env.EXTERNAL_HOST,
         certificateFile: process.env.CERTIFICATE_FILE,
         privateKeyFile: process.env.PRIVATE_KEY_FILE,
         publicKeyFile: process.env.PUBLIC_KEY_FILE,
-        logLevel: "debug",
+        logLevel: process.env.LOG_LEVEL,        
     });
-    const appLog = GetServerLogger(config.LOG_LEVEL);
+    
+    const appLog = getServerLogger({
+        level: config.logLevel,
+        module: "app",
+    });
 
     const listeningPortList = [
         3000, 6660, 7003, 8228, 8226, 8227,
@@ -77,6 +87,6 @@ try {
     gatewayServer.start();
 } catch (err) {
     Sentry.captureException(err);
-    log("crit", `Error in core server: ${String(err)}`);
+    coreLogger.fatal(`Error in core server: ${String(err)}`);
     process.exit(1);
 }

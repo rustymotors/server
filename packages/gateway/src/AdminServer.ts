@@ -19,7 +19,8 @@ import { releaseQueue } from "./releaseQueue.js";
 import { listConnections } from "./listConnections.js";
 import { resetQueue } from "./resetQueue.js";
 import { IncomingMessage } from "node:http";
-import { AdminWebServer, Logger, WebJSONResponse } from "../../interfaces/index.js";
+import { AdminWebServer, WebJSONResponse } from "../../interfaces/index.js";
+import { Logger } from "pino";
 
 /**
  * The admin server.
@@ -32,10 +33,10 @@ import { AdminWebServer, Logger, WebJSONResponse } from "../../interfaces/index.
 export class AdminServer implements AdminWebServer {
     static _instance: AdminServer;
 
-    _log: Logger;
+    log: Logger;
 
     constructor(log: Logger) {
-        this._log = log;
+        this.log = log;
     }
 
     /**
@@ -54,12 +55,10 @@ export class AdminServer implements AdminWebServer {
      *
      */
     handleRequest(request: IncomingMessage): WebJSONResponse {
-        this._log(
-            "debug",
+        this.log.debug(
             `[Admin] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}`
         );
-        this._log(
-            "debug",
+        this.log.debug(
             `Request received,
       ${JSON.stringify({
           url: request.url,

@@ -1,56 +1,62 @@
-/**
- * @module mcos/shared
- */
-import { hostname } from "node:os";
-import { ELOG_LEVEL, Logger } from "../interfaces/index.js";
+import createLogger, { LoggerOptions, Logger } from "pino";
 
-// Per syslog.conf(5)
-const levelMappings = {
-    debug: 7,
-    info: 6,
-    notice: 5,
-    warning: 4,
-    err: 3,
-    crit: 2,
-    alert: 1,
-    emerg: 0,
-};
+declare module "pino" {
+    interface LoggerOptions {
+        module?: string;
+    }
+}
 
-/**
- *
- *
- * @author Drazi Crendraven
- * @param {ELOG_LEVEL} level
- */
-export const getLevelValue = (level: ELOG_LEVEL) => {
-    return levelMappings[level];
-};
+export class ServerLogger {
+    readonly logger: Logger;
+    static instance: ServerLogger;
 
-/**
- *
- *
- * @author Drazi Crendraven
- * @export
- * @param {ELOG_LEVEL} [logLevel="info"]
- * @returns {Logger}
- */
-export function getServerLogger(logLevel: ELOG_LEVEL = "info"): Logger {
-    const defaultLevelValue = getLevelValue(logLevel);
+    constructor(options: LoggerOptions) {
+        this.logger = createLogger.pino(options);
+        this.logger.level = options.level ?? "info";
+    }
 
-    /**
-     * @param {ELOG_LEVEL} level
-     * @param {string} msg
-     * @returns {void}
-     */
-    return (level: ELOG_LEVEL, msg: string): void => {
-        const levelValue = getLevelValue(level);
-        if (levelValue > defaultLevelValue) {
-            return;
-        }
-        console.log(
-            // skipcq: JS-0002 This is a logging function and uses console.log intentionally
-            "debug",
-            `{"level": "${level}", "hostname": "${hostname}", "message": ${msg}`,
-        );
-    };
+    public fatal(message: string): void {
+        this.logger.fatal(message);
+    }
+
+    public error(message: string): void {
+        this.logger.error(message);
+    }
+
+    public warn(message: string): void {
+        this.logger.warn(message);
+    }
+
+    public info(message: string): void {
+        this.logger.info(message);
+    }
+
+    public debug(message: string): void {
+        this.logger.debug(message);
+    }
+
+    public trace(message: string): void {
+        this.logger.trace(message);
+    }
+
+    public child(options: LoggerOptions): Logger {
+        const child = this.logger.child(options);
+        return child;
+    }
+}
+
+export function getServerLogger(options: LoggerOptions): Logger {
+    const logLevel = options.level ?? "info";
+    const moduleName = options.module  ?? "core";
+    if (typeof ServerLogger.instance === "undefined") {
+        ServerLogger.instance = new ServerLogger({
+            name: "mcos",
+            level: logLevel, // This isn't used by the logger, but it's used by the constructor
+            module: moduleName,
+        });
+    }
+
+    const child = ServerLogger.instance.child(options);
+    child.level = logLevel;
+    return child;
 }

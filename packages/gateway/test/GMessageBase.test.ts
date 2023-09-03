@@ -14,21 +14,39 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { describe, it, expect } from "vitest";
-import { mock } from "node:test";
-import { Logger } from "../../interfaces/index.js";
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import { ByteField } from "../../shared/BinaryStructure.js";
 import { GSMessageBase } from "../src/GMessageBase.js";
+import { pino } from "pino";
+
+beforeAll(() => {
+    vi.mock("pino", () => {
+        return {
+            default: vi.fn().mockImplementation(() => {
+                return {
+                    debug: vi.fn(),
+                    info: vi.fn(),
+                    warn: vi.fn(),
+                    error: vi.fn(),
+                };
+            }),
+            pino: vi.fn().mockImplementation(() => {
+                return {
+                    debug: vi.fn(),
+                    info: vi.fn(),
+                    warn: vi.fn(),
+                    error: vi.fn(),
+                };
+            }),
+        };
+    });
+});
 
 describe("GSMessageBase", () => {
     describe(".byteLength", () => {
         it("should hvave a value of 2", () => {
             // Arrange
-            /**  @type {Logger} */
-            const log: Logger = () => {
-                return;
-            };
-            const testMessage = new GSMessageBase(log);
+            const testMessage = new GSMessageBase(pino());
 
             // Assert
             expect(testMessage.getByteLength()).toBe(10);
@@ -37,9 +55,7 @@ describe("GSMessageBase", () => {
     describe("#deserialize", () => {
         it("should handle an input stream without errors", () => {
             // Arrange
-            /**  @type {Logger} */
-            const log: Logger = mock.fn();
-            const testMessage = new GSMessageBase(log);
+            const testMessage = new GSMessageBase(pino());
 
             // Assert
             expect(() => {
@@ -50,11 +66,7 @@ describe("GSMessageBase", () => {
     describe("#get", () => {
         it("should return a ByteField object when passed a valid field name", () => {
             // Arrange
-            /**  @type {Logger} */
-            const log: Logger = () => {
-                return;
-            };
-            const testMessage = new GSMessageBase(log);
+            const testMessage = new GSMessageBase(pino());
             /** @type {ByteField} */
             const expectedField: ByteField = {
                 name: "msgId",

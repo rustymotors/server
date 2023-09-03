@@ -1,6 +1,7 @@
 import { IncomingMessage, ServerResponse } from "node:http";
 import { CastanetResponse } from "./index.js";
-import { GamePatchingServer, Logger } from "../../interfaces/index.js";
+import { GamePatchingServer } from "../../interfaces/index.js";
+import { Logger } from "pino";
 
 /**
  * The PatchServer class handles HTTP requests from the client for patching and upgrades
@@ -26,7 +27,7 @@ export class PatchServer implements GamePatchingServer {
      * @type {TServerLogger}
      * @memberof PatchServer
      */
-    private readonly _log: Logger;
+    private readonly log: Logger;
 
     /**
      * Creates an instance of PatchServer.
@@ -36,7 +37,7 @@ export class PatchServer implements GamePatchingServer {
      * @memberof PatchServer
      */
     constructor(log: Logger) {
-        this._log = log;
+        this.log = log;
     }
 
     /**
@@ -64,8 +65,7 @@ export class PatchServer implements GamePatchingServer {
         request: IncomingMessage,
         response: ServerResponse
     ): ServerResponse {
-        this._log(
-            "debug",
+        this.log.debug(
             `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
         );
 

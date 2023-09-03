@@ -1,4 +1,5 @@
-import { GameMessage, Logger, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
+import { Logger } from "pino";
+import { GameMessage, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
 /**
  * Selects a game persona and marks it as in use
  * @param {NPSMessage} requestPacket

@@ -24,14 +24,15 @@ import {
 } from "./ConnectionManager.js";
 import { dataHandler, toHex } from "./sockets.js";
 import { httpListener as httpHandler } from "./web.js";
-import { NetworkSocket, BuiltinError, Logger, MessageProcessor, ServerConfiguration, ClientConnection, SocketWithConnectionInfo, ClientMessage, GameMessage, SocketOnDataHandler, TSocketErrorHandler, TSocketEndHandler, ConnectionHandler, WebConnectionHandler } from "../../interfaces/index.js";
+import { NetworkSocket, BuiltinError, MessageProcessor, ClientConnection, SocketWithConnectionInfo, ClientMessage, GameMessage, SocketOnDataHandler, TSocketErrorHandler, TSocketEndHandler, ConnectionHandler, WebConnectionHandler } from "../../interfaces/index.js";
 import { Message } from "../../shared/Message.js";
 import { MessageHeader } from "../../shared/MessageHeader.js";
-import { GetServerLogger, ServerError } from "../../shared/index.js";
+import { Logger } from "pino";
+import { ServerError } from "../../shared/errors/ServerError.js";
+import { Configuration } from "../../shared/Configuration.js";
 export { getAdminServer } from "./AdminServer.js";
 export { getAllConnections } from "./ConnectionManager.js";
 
-export const defaultLog = GetServerLogger("info");
 
 /**
  *
@@ -58,7 +59,7 @@ export function socketErrorHandler({
 
     // Handle socket errors
     if (error.message.includes("ECONNRESET")) {
-        log("debug", "Connection was reset");
+        log.debug("Connection was reset");
         return;
     }
     throw new ServerError(`Socket error: ${error.message}`);
@@ -67,21 +68,21 @@ export function socketErrorHandler({
 export function socketDataHandler({
     processMessage = dataHandler,
     data,
-    logger,
+    log,
     config,
     connection,
     connectionRecord,
 }: {
     processMessage?: MessageProcessor;
     data: Buffer;
-    logger: Logger;
-    config: ServerConfiguration;
+    log: Logger;
+    config: Configuration;
     connection: ClientConnection;
     connectionRecord: SocketWithConnectionInfo;
 }): void {
     // Received data from the client
     // Pass it to the data handler
-    logger("debug", `Received data: ${toHex(data)}`);
+    log.debug(`Received data: ${toHex(data)}`);
     const msgHeader = MessageHeader.deserialize(data);
 
     let message: Message | ClientMessage | GameMessage;
@@ -91,21 +92,21 @@ export function socketDataHandler({
 
     // Check the signature. If it's not TOMC, then this is a TCP message
     if (signature !== "TOMC") {
-        logger("debug", "Recieved TCP message");
+        log.debug("Recieved TCP message");
         const msgHeader = MessageHeader.deserialize(data);
-        logger("debug", `Message Header: ${msgHeader.toString()}`);
+        log.debug(`Message Header: ${msgHeader.toString()}`);
 
         // Deserialize the message into a TCPMessage object
         message = Message.deserialize(data);
     } else {
         // This is an MCOTS message
-        logger("debug", "Recieved MCOTS message");
+        log.debug("Recieved MCOTS message");
 
         // Deserialize the message into a Message object
         message = Message.deserialize(data);
     }
 
-    logger("debug", `Message Node: ${message.toString()}`);
+    log.debug(`Message Node: ${message.toString()}`);
 
     // Set the connection ID on the message
     message.connectionId = connection.id;
@@ -115,13 +116,11 @@ export function socketDataHandler({
         data,
         connectionRecord,
         config,
-        logger,
+        log,
         connection,
         message,
     }).catch((reason: Error) =>
-        logger(
-            "err",
-            `There was an error in the data handler: ${reason.message}`
+    log.fatal(`There was an error in the data handler: ${reason.message}`
         )
     );
 }
@@ -136,7 +135,7 @@ export function socketEndHandler({
     log: Logger;
     connectionRecord: SocketWithConnectionInfo;
 }): void {
-    log("debug", "Socket ended");
+    log.debug("Socket ended");
     // Remove the connection from the connection manager
     getConnectionManager().removeConnection(connectionRecord.id);
 }
@@ -163,7 +162,7 @@ export function rawConnectionHandler({
     onSocketEnd = socketEndHandler,
 }: {
     incomingSocket: NetworkSocket;
-    config: ServerConfiguration;
+    config: Configuration;
     log: Logger;
     onSocketData?: SocketOnDataHandler;
     onSocketError?: TSocketErrorHandler;
@@ -183,10 +182,10 @@ export function rawConnectionHandler({
         incomingSocket.localPort || 0
     );
     if (connectionRecord) {
-        log("debug", `Found existing connection ${connectionRecord.id}`);
+        log.debug(`Found existing connection ${connectionRecord.id}`);
         connectionRecord.socket = incomingSocket;
     } else {
-        log("debug", "No existing connection found");
+        log.debug("No existing connection found");
         connectionRecord = createNewConnection(
             newConnectionId,
             incomingSocket,
@@ -201,7 +200,7 @@ export function rawConnectionHandler({
         getConnectionManager().addConnection(connection);
     }
 
-    log("debug", `Client ${remoteAddress} connected to port ${localPort}`);
+    log.debug(`Client ${remoteAddress} connected to port ${localPort}`);
 
     // Set up event handlers
     incomingSocket.on("end", () => {
@@ -215,7 +214,7 @@ export function rawConnectionHandler({
         onSocketData({
             socket: incomingSocket,
             data: data as Buffer,
-            logger: log,
+            log,
             config,
             connection: connection as ClientConnection,
             connectionRecord: connectionRecord as SocketWithConnectionInfo,
@@ -245,17 +244,16 @@ export function socketConnectionHandler({
     onTCPConnection?: ConnectionHandler;
     onHTTPConnection?: WebConnectionHandler;
     incomingSocket: NetworkSocket;
-    config: ServerConfiguration;
+    config: Configuration;
     log: Logger;
 }): void {
-    log(
-        "debug",
+    log.debug(
         `[gate]Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
     );
 
     // Is this an HTTP request? If so, handle it differently
     if (incomingSocket.localPort === 3000) {
-        log("debug", "Web request");
+        log.debug("Web request");
         // This is an HTTP request
         const newServer = new httpServer((req, res) => {
             onHTTPConnection(req, res, config, log);

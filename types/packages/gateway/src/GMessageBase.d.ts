@@ -1,10 +1,10 @@
-import { Logger } from "../../interfaces/index.js";
-import { BinaryStructure } from "../../shared/index.js";
+import { Logger } from "pino";
+import { BinaryStructureBase } from "../../shared/BinaryStructure.js";
 /**
  * @class
  * @extends {BinaryStructure}
  */
-export declare class GSMessageBase extends BinaryStructure {
+export declare class GSMessageBase extends BinaryStructureBase {
     /**
      * Creates an instance of GSMessageBase.
      * @author Drazi Crendraven

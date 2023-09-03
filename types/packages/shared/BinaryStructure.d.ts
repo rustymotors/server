@@ -1,5 +1,6 @@
 /// <reference types="node" resolution-mode="require"/>
-import { FIELD_TYPE, Logger } from "../interfaces/index.js";
+import { Logger } from "pino";
+import { FIELD_TYPE } from "../interfaces/index.js";
 /**
  * @class
  * @property {string} name

@@ -14,13 +14,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { GameMessage, ClientMessage, SocketWithConnectionInfo, Logger, ServerConfiguration, ClientConnection, TBufferWithConnection, ServiceResponse, Service } from "../../interfaces/index.js";
+import { Logger } from "pino";
+import { GameMessage, ClientMessage, SocketWithConnectionInfo, ClientConnection, TBufferWithConnection, ServiceResponse, Service } from "../../interfaces/index.js";
 import { receiveLobbyData } from "../../lobby/index.js";
 import { receiveLoginData } from "../../login/index.js";
 import { receivePersonaData } from "../../persona/index.js";
 import { MessageNode } from "../../shared/MessageNode.js";
 import { receiveTransactionsData } from "../../transactions/src/index.js";
 import { updateConnection } from "./ConnectionManager.js";
+import { Configuration } from "../../shared/Configuration.js";
 
 /**
  * Convert to zero padded hex
@@ -71,14 +73,12 @@ function sendMessages(
                 const err = new Error(
                     "There was a fatal error attempting to encrypt the message!",
                 );
-                log(
-                    "debug",
+                log.debug(
                     `usingEncryption? ${outboundConnection.useEncryption}, packetLength: ${f.data.byteLength}/${f.dataLength}`,
                 );
                 throw err;
             } else {
-                log(
-                    "debug",
+                log.debug(
                     `Message prior to encryption: ${toHex(f.serialize())}`,
                 );
                 f.updateBuffer(
@@ -89,7 +89,7 @@ function sendMessages(
             }
         }
 
-        log("debug", `Sending Message: ${toHex(f.serialize())}`);
+        log.debug(`Sending Message: ${toHex(f.serialize())}`);
         outboundConnection.socket.write(f.serialize());
     });
 }
@@ -102,17 +102,17 @@ export async function dataHandler({
     data,
     connectionRecord,
     config,
-    logger: log,
+    log: log,
     connection,
 }: {
     data: Buffer;
     connectionRecord: SocketWithConnectionInfo;
-    config: ServerConfiguration;
-    logger: Logger;
+    config: Configuration;
+    log: Logger;
     connection: ClientConnection;
     message: ClientMessage | GameMessage;
 }): Promise<void> {
-    log("debug", `data prior to proccessing: ${data.toString("hex")}`);
+    log.debug(`data prior to proccessing: ${data.toString("hex")}`);
 
     // Link the data and the connection together
     /** @type {TBufferWithConnection} */
@@ -146,7 +146,7 @@ export async function dataHandler({
     // * GameService
     // * TransactionService
 
-    log("debug", `I have a packet on port ${localPort}`);
+    log.debug(`I have a packet on port ${localPort}`);
 
     if (typeof serviceRouters[localPort] !== "undefined") {
         try {
@@ -163,7 +163,7 @@ export async function dataHandler({
             const outboundConnection = result.connection;
 
             const packetCount = messages.length;
-            log("debug", `There are ${packetCount} messages ready for sending`);
+            log.debug(`There are ${packetCount} messages ready for sending`);
 
             sendMessages(messages, outboundConnection, log);
 

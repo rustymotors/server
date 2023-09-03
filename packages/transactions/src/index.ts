@@ -30,7 +30,7 @@ export async function receiveTransactionsData(
     args: ServiceArgs
 ): Promise<ServiceResponse> {
     const { legacyConnection: dataConnection, config, log, connection } = args;
-    log("debug", "Entering receiveTransactionsData");
+    log.debug("Entering receiveTransactionsData");
     try {
         return await handleData({
             legacyConnection: dataConnection,

@@ -14,9 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { SocketWithConnectionInfo, Logger, NetworkSocket, IConnectionManager, ClientConnection, EncryptionSession } from "../../interfaces/index.js";
+import { Logger } from "pino";
+import { SocketWithConnectionInfo, NetworkSocket, IConnectionManager, ClientConnection, EncryptionSession } from "../../interfaces/index.js";
 import { Connection } from "../../shared/Connection.js";
-import { ServerError } from "../../shared/index.js";
+import { ServerError } from "../../shared/errors/ServerError.js";
 
 
 /** @deprecated use {@link ConnectionManager} instead */
@@ -43,7 +44,7 @@ export function updateConnection(
     updatedConnection: SocketWithConnectionInfo,
     log: Logger
 ): void {
-    log("debug", `Updating connection with id: ${connectionId}`);
+    log.debug(`Updating connection with id: ${connectionId}`);
     const index = connectionList.findIndex((c) => c.id === connectionId);
     if (index === -1) {
         const err = new ServerError(
@@ -103,7 +104,7 @@ export function createNewConnection(
         inQueue: true,
         useEncryption: false,
     };
-    log("debug", `new connection created with id ${connectionId}`);
+    log.debug(`new connection created with id ${connectionId}`);
     return newConnectionRecord;
 }
 

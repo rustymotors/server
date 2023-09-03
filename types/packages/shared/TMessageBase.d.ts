@@ -1,4 +1,4 @@
-import { Logger } from "../interfaces/index.js";
+import { Logger } from "pino";
 import { BinaryStructureBase } from "./BinaryStructure.js";
 /**
  * @class

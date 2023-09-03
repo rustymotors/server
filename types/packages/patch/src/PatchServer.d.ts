@@ -1,6 +1,7 @@
 /// <reference types="node" resolution-mode="require"/>
 import { IncomingMessage, ServerResponse } from "node:http";
-import { GamePatchingServer, Logger } from "../../interfaces/index.js";
+import { GamePatchingServer } from "../../interfaces/index.js";
+import { Logger } from "pino";
 /**
  * The PatchServer class handles HTTP requests from the client for patching and upgrades
  * Please use {@link getPatchServer()} to access
@@ -23,7 +24,7 @@ export declare class PatchServer implements GamePatchingServer {
      * @type {TServerLogger}
      * @memberof PatchServer
      */
-    private readonly _log;
+    private readonly log;
     /**
      * Creates an instance of PatchServer.
      * Please use getInstance() instead

@@ -1,10 +1,33 @@
-import { beforeEach, describe, it } from "vitest";
+import { beforeAll, beforeEach, describe, it, vi } from "vitest";
 import assert from "node:assert";
 import { expectTypeOf } from "vitest";
-import { mock } from "node:test";
-import { Logger, SocketWithConnectionInfo } from "../../interfaces/index.js";
+import { SocketWithConnectionInfo } from "../../interfaces/index.js";
 import { ISocketTestFactory } from "../../shared/index.js";
 import { connectionList, getAllConnections, updateConnection } from "../src/ConnectionManager.js";
+import { pino } from "pino";
+
+beforeAll(() => {
+    vi.mock("pino", () => {
+        return {
+            default: vi.fn().mockImplementation(() => {
+                return {
+                    debug: vi.fn(),
+                    info: vi.fn(),
+                    warn: vi.fn(),
+                    error: vi.fn(),
+                };
+            }),
+            pino: vi.fn().mockImplementation(() => {
+                return {
+                    debug: vi.fn(),
+                    info: vi.fn(),
+                    warn: vi.fn(),
+                    error: vi.fn(),
+                };
+            }),
+        };
+    });
+});
 
 describe("ConnectionManager", () => {
     describe("Legacy Functions", () => {
@@ -98,15 +121,13 @@ describe("ConnectionManager", () => {
                     lastMessageTimestamp: 0,
                 };
 
-                const fakeLogger: Logger = mock.fn();
-
                 // act
                 connectionList.push(newTestConnection);
 
                 updateConnection(
                     newTestConnection.id,
                     updatedTestConnection,
-                    fakeLogger,
+                    pino(),
                 );
 
                 const list = getAllConnections();

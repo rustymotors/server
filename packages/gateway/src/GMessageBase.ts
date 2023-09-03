@@ -14,15 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Logger } from "../../interfaces/index.js";
-import { BinaryStructure } from "../../shared/index.js";
+import { Logger } from "pino";
+import { BinaryStructureBase } from "../../shared/BinaryStructure.js";
+
 
 
 /**
  * @class
  * @extends {BinaryStructure}
  */
-export class GSMessageBase extends BinaryStructure {
+export class GSMessageBase extends BinaryStructureBase {
     /**
      * Creates an instance of GSMessageBase.
      * @author Drazi Crendraven
@@ -31,7 +32,7 @@ export class GSMessageBase extends BinaryStructure {
      */
     constructor(log: Logger) {
         super(log);
-        log("debug", "new GSMessageBase");
+        log.debug("new GSMessageBase");
         this._add({
             name: "msgId",
             order: "little",

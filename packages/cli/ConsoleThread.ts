@@ -1,7 +1,8 @@
 import { emitKeypressEvents } from "readline";
-import { SubprocessThread, GatewayServer, Logger, KeypressEvent } from "../interfaces/index.js";
+import { SubprocessThread, GatewayServer, KeypressEvent } from "../interfaces/index.js";
 import { SubThread } from "../shared/SubThread.js";
-import { ServerError } from "../shared/index.js";
+import { Logger } from "pino";
+import { ServerError } from "../shared/errors/ServerError.js";
 
 export class ConsoleThread extends SubThread implements SubprocessThread {
     parentThread: GatewayServer | undefined;
@@ -44,8 +45,8 @@ export class ConsoleThread extends SubThread implements SubprocessThread {
             process.stdin.setRawMode(true);
         }
 
-        this.log("info", "GatewayServer started");
-        this.log("info", "Press x to quit");
+        this.log.info("GatewayServer started");
+        this.log.info("Press x to quit");
 
         process.stdin.resume();
         process.stdin.on("keypress", (str, key) => {

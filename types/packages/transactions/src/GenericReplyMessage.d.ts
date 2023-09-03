@@ -10,7 +10,7 @@
  */
 /// <reference types="node" resolution-mode="require"/>
 import { ClientMessage } from "../../interfaces/index.js";
-import { Message } from "../../shared/index.js";
+import { Message } from "../../shared/Message.js";
 export declare class GenericReplyMessage extends Message implements ClientMessage {
     /**
      * One of

@@ -2,11 +2,14 @@ import {
     createServer as createSocketServer,
     Server as tcpServer,
 } from "node:net";
-import { defaultLog, socketConnectionHandler } from "./index.js";
+import { socketConnectionHandler } from "./index.js";
 import { getConnectionManager } from "./ConnectionManager.js";
 import { ConsoleThread } from "../../cli/ConsoleThread.js";
-import { SubprocessThread, ServerConfiguration, Logger, NetworkConnectionHandler, ConnectionHandler, GatewayServer } from "../../interfaces/index.js";
-import { ServerError } from "../../shared/index.js";
+import { SubprocessThread, NetworkConnectionHandler, ConnectionHandler, GatewayServer } from "../../interfaces/index.js";
+import { Logger } from "pino";
+import { Configuration } from "../../shared/Configuration.js";
+import { ServerError } from "../../shared/errors/ServerError.js";
+import { getServerLogger } from "../../shared/log.js";
 
 /**
  * Gateway server
@@ -15,7 +18,7 @@ import { ServerError } from "../../shared/index.js";
  */
 
 export class Gateway implements GatewayServer, SubprocessThread {
-    private readonly config: ServerConfiguration;
+    private readonly config: Configuration;
     log: Logger;
     private readonly backlogAllowedCount: number;
     private readonly listeningPortList: number[];
@@ -37,12 +40,14 @@ export class Gateway implements GatewayServer, SubprocessThread {
 
     constructor({
         config = undefined,
-        log = defaultLog,
+        log = getServerLogger({
+            module: "GatewayServer",
+        }),
         backlogAllowedCount = 0,
         listeningPortList = [],
         onSocketConnection = socketConnectionHandler,
     }: {
-        config?: ServerConfiguration;
+        config?: Configuration;
         log?: Logger;
         backlogAllowedCount?: number;
         serverListener?: ConnectionHandler;
@@ -104,7 +109,7 @@ export class Gateway implements GatewayServer, SubprocessThread {
     }
     stop(): void {
         // Mark the GatewayServer as stopping
-        this.log("debug", "Marking GatewayServer as stopping");
+        this.log.debug("Marking GatewayServer as stopping");
         this.status = "stopping";
 
         // Stop the servers
@@ -123,23 +128,23 @@ export class Gateway implements GatewayServer, SubprocessThread {
         }
 
         // Mark the GatewayServer as stopped
-        this.log("debug", "Marking GatewayServer as stopped");
+        this.log.debug("Marking GatewayServer as stopped");
         this.status = "stopped";
 
         // Mark the list of servers as not running
-        this.log("debug", "Marking the list of servers as not running");
+        this.log.debug("Marking the list of servers as not running");
         this.serversRunning = false;
 
         // Mark the list of active subthreads as empty
-        this.log("debug", "Marking the list of active subthreads as empty");
+        this.log.debug("Marking the list of active subthreads as empty");
         this.activeSubThreads = [];
 
         // Empty the connection list
-        this.log("debug", "Emptying the connection list");
+        this.log.debug("Emptying the connection list");
         getConnectionManager().emptyConnectionList();
 
         // Empty the legacy connection list
-        this.log("debug", "Emptying the legacy connection list");
+        this.log.debug("Emptying the legacy connection list");
         getConnectionManager().emptyLegacyConnectionList();
     }
 
@@ -186,12 +191,14 @@ export class Gateway implements GatewayServer, SubprocessThread {
 
     static getInstance({
         config = undefined,
-        log = defaultLog,
+        log = getServerLogger({
+            module: "GatewayServer",
+        }),
         backlogAllowedCount = 0,
         listeningPortList = [],
         onSocketConnection = socketConnectionHandler,
     }: {
-        config?: ServerConfiguration;
+        config?: Configuration;
         log?: Logger;
         backlogAllowedCount?: number;
         serverListener?: ConnectionHandler;
@@ -211,17 +218,17 @@ export class Gateway implements GatewayServer, SubprocessThread {
     }
 
     shutdown() {
-        this.log("debug", "Shutdown complete for GatewayServer");
+        this.log.debug("Shutdown complete for GatewayServer");
         this.status = "stopped";
-        this.log("info", "Server stopped");
+        this.log.info("Server stopped");
 
 
         // Mark the list of servers as not running
-        this.log("debug", "Marking the list of servers as not running");
+        this.log.debug("Marking the list of servers as not running");
         this.serversRunning = false;
 
         // Mark the list of active subthreads as empty
-        this.log("debug", "Marking the list of active subthreads as empty");
+        this.log.debug("Marking the list of active subthreads as empty");
         this.activeSubThreads = [];
 
         process.exit(0);
@@ -231,7 +238,7 @@ export class Gateway implements GatewayServer, SubprocessThread {
      * Callback for when a subthread is shutting down
      */
     onSubThreadShutdown(threadName: string) {
-        this.log("debug", `onSubThreadShutdown(${threadName})`);
+        this.log.debug(`onSubThreadShutdown(${threadName})`);
         this.activeSubThreads = this.activeSubThreads.filter((thread) => {
             return thread.name !== threadName;
         });
@@ -249,8 +256,8 @@ export class Gateway implements GatewayServer, SubprocessThread {
      */
     serverCloseHandler() {
         console.log("=== serverCloseHandler() ===");
-        this.log("debug", `Status: ${this.status}`);
-        this.log("debug", "Server closed");
+        this.log.debug(`Status: ${this.status}`);
+        this.log.debug("Server closed");
         this.serversRunning = false;
         if (
             (this.status === "stopping" || this.status === "restarting") &&
@@ -265,8 +272,8 @@ export class Gateway implements GatewayServer, SubprocessThread {
      * Start the GatewayServer instance
      */
     public start() {
-        this.log("debug", "Starting GatewayServer in start()");
-        this.log("info", "Server starting");
+        this.log.debug("Starting GatewayServer in start()");
+        this.log.info("Server starting");
 
         // Check if there are any listening ports specified
         if (this.listeningPortList.length === 0) {
@@ -274,9 +281,9 @@ export class Gateway implements GatewayServer, SubprocessThread {
         }
 
         // Mark the GatewayServer as running
-        this.log("debug", "Marking the list of servers as running");
+        this.log.debug("Marking the list of servers as running");
         this.serversRunning = true;
-        this.log("debug", "Marking GatewayServer as running");
+        this.log.debug("Marking GatewayServer as running");
         this.status = "running";
 
         // Initialize the GatewayServer
@@ -292,7 +299,7 @@ export class Gateway implements GatewayServer, SubprocessThread {
             });
 
             server.listen(port, "0.0.0.0", this.backlogAllowedCount, () => {
-                this.log("debug", `Listening on port ${port}`);
+                this.log.debug(`Listening on port ${port}`);
             });
 
             // Add the server to the list of servers
@@ -306,12 +313,14 @@ export class Gateway implements GatewayServer, SubprocessThread {
  */
 export function getGatewayServer({
     config = undefined,
-    log = defaultLog,
+    log = getServerLogger({
+        module: "GatewayServer",
+    }),
     backlogAllowedCount = 0,
     listeningPortList = [],
     onSocketConnection = socketConnectionHandler,
 }: {
-    config?: ServerConfiguration;
+    config?: Configuration;
     log?: Logger;
     backlogAllowedCount?: number;
     serverListener?: ConnectionHandler;

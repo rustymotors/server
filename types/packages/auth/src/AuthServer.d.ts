@@ -1,13 +1,14 @@
 /// <reference types="node" resolution-mode="require"/>
 import { IncomingMessage, ServerResponse } from "node:http";
-import { AuthenticationServer, Logger } from "../../interfaces/index.js";
+import { AuthenticationServer } from "../../interfaces/index.js";
+import { Logger } from "pino";
 /**
  * Handles web-based user logins
  * Please use {@link getAuthServer()} to get a singleton instance
  */
 export declare class AuthServer implements AuthenticationServer {
     static _instance: AuthServer;
-    _log: Logger;
+    log: Logger;
     constructor(log: Logger);
     private _handleGetTicket;
     /**

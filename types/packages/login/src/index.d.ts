@@ -1,4 +1,5 @@
-import { Logger, DatabaseManager, UserRecordMini, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
+import { Logger } from "pino";
+import { DatabaseManager, UserRecordMini, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
 /**
  * Please use {@link LoginServer.getInstance()}
  * @classdesc
@@ -15,7 +16,7 @@ export declare class LoginServer {
     static _instance: LoginServer;
     private databaseManager;
     /** @type {TServerLogger} */
-    private readonly _log;
+    private readonly log;
     /**
      * Please use getInstance() instead
      * @author Drazi Crendraven

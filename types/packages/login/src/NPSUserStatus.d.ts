@@ -1,6 +1,8 @@
 /// <reference types="node" resolution-mode="require"/>
-import { Logger, ServerConfiguration, JSONResponseOfGameMessage } from "../../interfaces/index.js";
+import { JSONResponseOfGameMessage } from "../../interfaces/index.js";
 import { NPSMessage } from "../../shared/NPSMessage.js";
+import { Logger } from "pino";
+import { Configuration } from "../../shared/Configuration.js";
 /**
  *
  *
@@ -28,9 +30,9 @@ export declare class NPSUserStatus extends NPSMessage {
     opCode: number;
     contextId: string;
     buffer: Buffer;
-    _log: Logger;
-    _config: ServerConfiguration;
-    constructor(packet: Buffer, config: ServerConfiguration, log: Logger);
+    log: Logger;
+    _config: Configuration;
+    constructor(packet: Buffer, config: Configuration, log: Logger);
     /**
      * ExtractSessionKeyFromPacket
      *
