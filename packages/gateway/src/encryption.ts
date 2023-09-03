@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { createCipheriv, createDecipheriv } from "node:crypto";
+import { createCipheriv, createDecipheriv, getCiphers } from "node:crypto";
 import { EncryptionSession, SocketWithConnectionInfo, SessionKeys, TBufferWithConnection, ClientConnection, Logger, IEncryptionManager } from "../../interfaces/index.js";
 
 const encryptionSessions: EncryptionSession[] = [];
@@ -27,6 +27,7 @@ export function generateEncryptionPair(
     dataConnection: SocketWithConnectionInfo,
     keys: SessionKeys
 ): EncryptionSession {
+    verifyLegacyCipherSupport();
     // For use on Lobby packets
     const { sessionKey, sKey } = keys;
     const stringKey = Buffer.from(sessionKey, "hex");
@@ -80,6 +81,7 @@ export function selectEncryptors({
     connection?: ClientConnection;
     log: Logger;
 }): EncryptionSession {
+    verifyLegacyCipherSupport();
     const { localPort, remoteAddress } = dataConnection.connection;
 
     if (
@@ -141,6 +143,7 @@ export function createEncrypters(
     keys: SessionKeys,
     log: Logger
 ): EncryptionSession {
+    verifyLegacyCipherSupport();
     const newSession = generateEncryptionPair(dataConnection, keys);
 
     log(
@@ -161,6 +164,7 @@ export function updateEncryptionSession(
     updatedSession: EncryptionSession,
     log: Logger
 ) {
+    verifyLegacyCipherSupport();
     try {
         const index = encryptionSessions.findIndex((e) => {
             return e.connectionId === connectionId;
@@ -182,6 +186,7 @@ export function cipherBufferDES(
     encryptionSession: EncryptionSession,
     data: Buffer
 ): { session: EncryptionSession; data: Buffer } {
+    verifyLegacyCipherSupport();
     if (typeof encryptionSession.gsCipher !== "undefined") {
         const ciphered = encryptionSession.gsCipher.update(data);
         return {
@@ -202,7 +207,8 @@ export function decipherBufferDES(
     encryptionSession: EncryptionSession,
     data: Buffer
 ): { session: EncryptionSession; data: Buffer } {
-    if (typeof encryptionSession.gsDecipher !== "undefined") {
+    verifyLegacyCipherSupport();
+if (typeof encryptionSession.gsDecipher !== "undefined") {
         const deciphered = encryptionSession.gsDecipher.update(data);
         return {
             session: encryptionSession,
@@ -224,6 +230,7 @@ export function decryptBuffer(
     buffer: Buffer,
     log: Logger
 ): { session: EncryptionSession; data: Buffer } {
+    verifyLegacyCipherSupport();
     const encryptionSession = selectEncryptors({
         dataConnection,
         connection,
@@ -258,6 +265,7 @@ export class EncryptionRecord implements EncryptionSession {
         tsCipher: ReturnType<typeof createCipheriv>,
         tsDecipher: ReturnType<typeof createDecipheriv>
     ) {
+        verifyLegacyCipherSupport();
         this.connectionId = connectionId;
         this.remoteAddress = remoteAddress;
         this.localPort = localPort;
@@ -298,6 +306,8 @@ export class EncryptionManager implements IEncryptionManager {
         connection: ClientConnection,
         keys: SessionKeys
     ): EncryptionSession {
+        verifyLegacyCipherSupport();
+
         // For use on Lobby packets
         const { sessionKey, sKey } = keys;
         const stringKey = Buffer.from(sessionKey, "hex");
@@ -346,6 +356,7 @@ export class EncryptionManager implements IEncryptionManager {
     }
 
     selectEncryptors(connection: ClientConnection): EncryptionSession | undefined {
+        verifyLegacyCipherSupport();
         const wantedId = `${connection.remoteAddress}:${connection.port}`;
 
         const existingEncryptor = this.encryptionSessions.find((e) => {
@@ -360,6 +371,7 @@ export class EncryptionManager implements IEncryptionManager {
         connection: ClientConnection,
         keys: SessionKeys
     ): EncryptionSession {
+        verifyLegacyCipherSupport();
         const newSession = this.generateEncryptionPair(connection, keys);
         this.encryptionSessions.push(newSession);
         return newSession;
@@ -375,3 +387,15 @@ export function getEncryptionManager(): EncryptionManager {
     }
     return EncryptionManager._instance;
 }
+
+export function verifyLegacyCipherSupport() {
+    const cipherList = getCiphers();
+    if (!cipherList.includes("des-cbc")) {
+        const err = new Error("DES-CBC cipher not available");
+        throw err;
+    }
+    if (!cipherList.includes("rc4")) {
+        const err = new Error("RC4 cipher not available");
+        throw err;
+    }
+}   
