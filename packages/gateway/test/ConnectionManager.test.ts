@@ -1,32 +1,18 @@
-import { beforeAll, beforeEach, describe, it, vi } from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, it } from "vitest";
 import assert from "node:assert";
 import { expectTypeOf } from "vitest";
 import { SocketWithConnectionInfo } from "../../interfaces/index.js";
 import { ISocketTestFactory } from "../../shared/index.js";
 import { connectionList, getAllConnections, updateConnection } from "../src/ConnectionManager.js";
 import { pino } from "pino";
+import { mockPino, unmockPino } from "../../../test/factoryMocks.js";
 
 beforeAll(() => {
-    vi.mock("pino", () => {
-        return {
-            default: vi.fn().mockImplementation(() => {
-                return {
-                    debug: vi.fn(),
-                    info: vi.fn(),
-                    warn: vi.fn(),
-                    error: vi.fn(),
-                };
-            }),
-            pino: vi.fn().mockImplementation(() => {
-                return {
-                    debug: vi.fn(),
-                    info: vi.fn(),
-                    warn: vi.fn(),
-                    error: vi.fn(),
-                };
-            }),
-        };
-    });
+    mockPino();
+});
+
+afterAll(() => {
+    unmockPino();
 });
 
 describe("ConnectionManager", () => {

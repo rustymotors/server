@@ -14,32 +14,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { describe, it, expect, beforeAll, vi } from "vitest";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { ByteField } from "../../shared/BinaryStructure.js";
 import { GSMessageBase } from "../src/GMessageBase.js";
 import { pino } from "pino";
+import { mockPino, unmockPino } from "../../../test/factoryMocks.js";
 
 beforeAll(() => {
-    vi.mock("pino", () => {
-        return {
-            default: vi.fn().mockImplementation(() => {
-                return {
-                    debug: vi.fn(),
-                    info: vi.fn(),
-                    warn: vi.fn(),
-                    error: vi.fn(),
-                };
-            }),
-            pino: vi.fn().mockImplementation(() => {
-                return {
-                    debug: vi.fn(),
-                    info: vi.fn(),
-                    warn: vi.fn(),
-                    error: vi.fn(),
-                };
-            }),
-        };
-    });
+   mockPino();
+});
+
+afterAll(() => {
+    unmockPino();
 });
 
 describe("GSMessageBase", () => {
