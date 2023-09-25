@@ -1,5 +1,5 @@
 import { describe, it, expectTypeOf, expect } from "vitest";
-import { MessagePacket } from "../index.js";
+import { MessagePacket } from "../src/MessagePacket.js";
 
 describe("MessagePacket class", function () {
     it("should return an instance of MessagePacket when the status method fromBuffer() is called", function () {

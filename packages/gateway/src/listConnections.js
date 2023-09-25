@@ -9,24 +9,17 @@
  */
 
 import { WebJSONResponse } from "../../interfaces/index.js";
-import { State, WrappedSocket,  } from "../../shared/State.js";
+import { State, WrappedSocket } from "../../shared/State.js";
 
-export function listConnections(
-    state: State
-): WebJSONResponse {
-
+export function listConnections(state) {
     const sockets = state.sockets;
 
     const queuedConnections = state.queuedConnections;
 
-    const response: {
-           connectionId: string,
-            remoteAddress: string,
-            inQueue: boolean,
-        }[] = [];
+    const response = [];
 
-    sockets.forEach((socket: WrappedSocket) => {
-        response.push( {
+    sockets.forEach((socket) => {
+        response.push({
             connectionId: socket.connectionId,
             remoteAddress: `${socket.socket.remoteAddress}:${socket.socket.remotePort}`,
             inQueue: queuedConnections.has(socket.connectionId),

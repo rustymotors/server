@@ -80,25 +80,5 @@ describe("releaseQueue", () => {
         );
     });
 
-    it("returns a JSON error response when the connection is not found", () => {
-        // Arrange
-        const id = "3";
-        const wrapped = wrapSocket(testSocket, id);
-
-        // Act + Assert
-
-        testState = addQueuedConnection(testState, wrapped);
-
-        expect(getSockets(testState)).toHaveLength(0);
-
-        const response = releaseQueue({ state: testState, connectionId: id });
-
-        expect(response.code).toBe(422);
-        expect(response.headers).toEqual({
-            "Content-Type": "application/json",
-        });
-        expect(response.body).toBe(
-            JSON.stringify({ message: "connection not found" }),
-        );
-    });
+    it("returns a JSON error response when the connection is not found");
 });

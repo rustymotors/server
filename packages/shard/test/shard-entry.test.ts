@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ShardEntry } from "./shard-entry.js";
+import { ShardEntry } from "../src/shard-entry.js";
 
 describe("ShardEntry#formatForShardList()", () => {
     it("should return a formatted list", () => {
