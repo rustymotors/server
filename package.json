@@ -12,6 +12,7 @@
   "scripts": {
     "prepare": "husky install",
     "pretest": "eslint .",
+    "test:only": "node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage packages",
     "test": "node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage packages",
     "prod": "make prod_node",
     "prod:stop": "docker-compose stop",
