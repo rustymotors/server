@@ -1,72 +1,104 @@
-import { ISocketTestFactory } from "../../shared/index.js";
 import { releaseQueue } from "../src/releaseQueue.js";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
+import {
+    State,
+    addQueuedConnection,
+    addSocket,
+    createInitialState,
+    getQueuedConnections,
+    getSockets,
+    wrapSocket,
+} from "../../shared/State.js";
+import { Socket } from "node:net";
+
+let testSave: (state: State ) => void;
+let testState: State;
+let testSocket: Socket;
 
 describe("releaseQueue", () => {
-    it("returns a JSON success response when connections exist", () => {
-        const connections = [
-            {
-                connectionId: "1",
-                seq: 0,
-                id: "1",
-                remoteAddress: "",
-                socket: ISocketTestFactory(),
-                localPort: 1,
-                inQueue: false,
-                personaId: 0,
-                lastMessageTimestamp: 0,
-                useEncryption: false,
-            },
-            {
-                connectionId: "2",
-                seq: 0,
-                id: "2",
-                socket: ISocketTestFactory(),
-                remoteAddress: "",
-                localPort: 2,
-                inQueue: true,
-                personaId: 0,
-                lastMessageTimestamp: 0,
-                useEncryption: false,
-            },
-        ];
-        const response = releaseQueue(connections, "1");
-        expect(response.code).toBe(200);
-        expect(response.headers).toEqual({ "Content-Type": "application/json" });
-        expect(response.body).toBe(JSON.stringify({ message: "ok" }));
+    beforeAll(() => {
+        testSave = ( state: State ) => {
+            testState = state;
+        };
+        testState = createInitialState({
+            saveFunction: testSave,
+        });
+        testSocket = new Socket();
+        testSocket.write = vi.fn().mockImplementation(() => {
+            // Do nothing
+        });
     });
 
-    it("returns a JSON error response when connections do not exist", () => {
-        const connections = [
-            {
-                connectionId: "1",
-                seq: 0,
-                id: "1",
-                remoteAddress: "",
-                socket: ISocketTestFactory(),
-                localPort: 1,
-                inQueue: false,
-                personaId: 0,
-                lastMessageTimestamp: 0,
-                useEncryption: false,
-            },
-            {
-                connectionId: "2",
-                seq: 0,
-                id: "2",
-                socket: ISocketTestFactory(),
-                remoteAddress: "",
-                localPort: 2,
-                inQueue: true,
-                personaId: 0,
-                lastMessageTimestamp: 0,
-                useEncryption: false,
-            },
-        ];
-        const response = releaseQueue(connections, "3");
+    beforeEach(() => {
+        testState = createInitialState({
+            saveFunction: testSave,
+        });
+    });
+
+    it("returns a JSON success response when connections exist", () => {
+        // Arrange
+        const id = "1";
+        const wrapped = wrapSocket(testSocket, id);
+
+        // Act + Assert
+
+        testState = addSocket(testState, wrapped);
+
+        testState = addQueuedConnection(testState, wrapped);
+
+        expect(getQueuedConnections(testState)).toHaveLength(1);
+
+        const response = releaseQueue({ state: testState, connectionId: id });
+
+        expect(response.code).toBe(200);
+        expect(response.headers).toEqual({
+            "Content-Type": "application/json",
+        });
+        expect(response.body).toBe(
+            JSON.stringify({ message: "connection removed from queue" }),
+        );
+
+        expect(getQueuedConnections(testState)).toHaveLength(0);
+    });
+
+    it("returns a JSON error response when the connection is not queued", () => {
+        // Arrange
+        const id = "2";
+
+        // Act + Assert
+
+        expect(getQueuedConnections(testState)).toHaveLength(0);
+
+        const response = releaseQueue({ state: testState, connectionId: id });
+
         expect(response.code).toBe(422);
-        expect(response.headers).toEqual({ "Content-Type": "application/json" });
-        expect(response.body).toBe(JSON.stringify({ message: "connection not found" }));
-    }
-    );
+        expect(response.headers).toEqual({
+            "Content-Type": "application/json",
+        });
+        expect(response.body).toBe(
+            JSON.stringify({ message: "connection not queued" }),
+        );
+    });
+
+    it("returns a JSON error response when the connection is not found", () => {
+        // Arrange
+        const id = "3";
+        const wrapped = wrapSocket(testSocket, id);
+
+        // Act + Assert
+
+        testState = addQueuedConnection(testState, wrapped);
+
+        expect(getSockets(testState)).toHaveLength(0);
+
+        const response = releaseQueue({ state: testState, connectionId: id });
+
+        expect(response.code).toBe(422);
+        expect(response.headers).toEqual({
+            "Content-Type": "application/json",
+        });
+        expect(response.body).toBe(
+            JSON.stringify({ message: "connection not found" }),
+        );
+    });
 });

@@ -19,3 +19,4 @@ dist
 # Sentry Auth Token
 .sentryclirc
 *.map
+out/*

@@ -1,0 +1,13 @@
+{
+    "extends": "@tsconfig/node20/tsconfig.json",
+    "compilerOptions": {
+        "strict": true,
+        "module": "NodeNext",
+        "noEmit": true,
+        "allowJs": true,
+        "checkJs": true,
+        "noErrorTruncation": true,
+    },
+    "exclude": ["node_modules", "**/node_modules/*"],
+    "include": ["src/**/*", "packages/**/*", "test/**/*", "server.js"]
+}

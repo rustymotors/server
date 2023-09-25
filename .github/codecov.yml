@@ -5,7 +5,7 @@ flags:
   auth:
     paths:
       - packages/auth/**
-    carryforward: true
+    carryforward: false
   database:
     paths:
       - packages/database/**

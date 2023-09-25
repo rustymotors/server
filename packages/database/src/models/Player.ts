@@ -7,7 +7,7 @@ export class PlayerModel implements SerializedObject {
     serializeSize(): number {
         throw new Error("Method not implemented.");
     }
-    
+
     static schema = `CREATE TABLE Player (
     PlayerID             int NOT NULL,
     CustomerID           int NOT NULL,
