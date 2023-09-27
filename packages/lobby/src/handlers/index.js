@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { RawMessage } from "packages/shared/RawMessage.js";
+import { RawMessage } from "../../../shared/messageFactory.js";
 import { handleEncryptedNPSCommand } from "./encryptedCommand.js";
 import { _npsHeartbeat } from "./heartbeat.js";
 import { _npsRequestGameConnectServer } from "./requestConnectGameServer.js";

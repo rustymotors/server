@@ -25,8 +25,9 @@ import {
     wrapSocket,
 } from "../../shared/State.js";
 import { getServerLogger } from "../../shared/log.js";
-import { RawMessage } from "../../shared/RawMessage.js";
+
 import { getGatewayServer } from "./GatewayServer.js";
+import { RawMessage } from "../../shared/messageFactory.js";
 
 /**
  * @typedef {object} OnDataHandlerArgs
@@ -141,7 +142,9 @@ export function onSocketConnection({
         log.trace(`Incoming data: ${incomingDataAsBuffer.toString("hex")}`);
 
         // Deserialize the raw message
-        const rawMessage = new RawMessage().deserialize(incomingDataAsBuffer);
+        const rawMessage = new RawMessage()._doDeserialize(
+            incomingDataAsBuffer,
+        );
 
         // Log the raw message
         log.trace(`Raw message: ${rawMessage.toString()}`);

@@ -1,11 +1,21 @@
-import { _generateSessionKeyBuffer } from "../sessionKeys.js";
-import { NPSMessage } from "../../../shared/NPSMessage.js";
 import { getServerLogger } from "../../../shared/log.js";
-import { MessagePacket } from "../MessagePacket.js";
 import { getPersonasByPersonaId } from "../../../persona/src/internal.js";
 import { getDatabaseServer } from "../../../database/src/DatabaseManager.js";
 import { LoginInfoMessage } from "../LoginInfoMessage.js";
-import { RawMessage } from "../../../shared/RawMessage.js";
+
+import { ServerError } from "../../../shared/errors/ServerError.js";
+import { UserInfoMessage } from "../UserInfoMessage.js";
+import {
+    createCommandEncryptionPair,
+    createDataEncryptionPair,
+} from "../../../gateway/src/encryption.js";
+import {
+    McosEncryption,
+    addEncryption,
+    fetchStateFromDatabase,
+    getEncryption,
+} from "../../../shared/State.js";
+import { RawMessage } from "../../../shared/messageFactory.js";
 
 /**
  * Convert to zero padded hex
@@ -46,9 +56,9 @@ export async function _npsRequestGameConnectServer({
     // by the data payload.
 
     const inboundMessage = new LoginInfoMessage();
-    inboundMessage.deserialize(message.raw);
+    inboundMessage.deserialize(message.data);
 
-    log.debug(`LoginInfoMessage: ${inboundMessage.asJson()}`);
+    log.debug(`LoginInfoMessage: ${inboundMessage.toString()}`);
 
     const personas = await getPersonasByPersonaId(inboundMessage._userId);
     if (typeof personas[0] === "undefined") {
@@ -58,52 +68,63 @@ export async function _npsRequestGameConnectServer({
 
     const { customerId } = personas[0];
 
-    // Set the encryption keys on the lobby connection
-    const databaseManager = getDatabaseServer({ log });
-    const keys = await databaseManager
-        .fetchSessionKeyByCustomerId(customerId)
-        .catch((/** @type {unknown} */ error) => {
-            throw new Error(
-                `Unable to fetch session key for customerId ${customerId.toString()}: ${String(
-                    error,
-                )}`,
+    const state = fetchStateFromDatabase();
+
+    const existingEncryption = getEncryption(state, connectionId);
+
+    if (!existingEncryption) {
+        // Set the encryption keys on the lobby connection
+        const databaseManager = getDatabaseServer({ log });
+        const keys = await databaseManager
+            .fetchSessionKeyByCustomerId(customerId)
+            .catch((/** @type {unknown} */ error) => {
+                throw new Error(
+                    `Unable to fetch session key for customerId ${customerId.toString()}: ${String(
+                        error,
+                    )}`,
+                );
+            });
+        if (keys === undefined) {
+            throw new ServerError("Error fetching session keys!");
+        }
+
+        // We have the session keys, set them on the connection
+        try {
+            const newCommandEncryptionPair = createCommandEncryptionPair(
+                keys.sessionKey,
             );
-        });
-    if (keys === undefined) {
-        throw new Error("Error fetching session keys!");
+
+            const newDataEncryptionPair = createDataEncryptionPair(
+                keys.sessionKey,
+            );
+
+            const newEncryption = new McosEncryption({
+                connectionId,
+                commandEncryptionPair: newCommandEncryptionPair,
+                dataEncryptionPair: newDataEncryptionPair,
+            });
+
+            addEncryption(state, newEncryption).save();
+        } catch (error) {
+            throw new ServerError(`Error creating encryption: ${error}`);
+        }
     }
 
-    const packetContent = Buffer.alloc(72);
+    // We have a session, we are good to go!
+    // Send the response packet
 
-    // This response is a NPS_UserStatus
+    const responsePacket = new UserInfoMessage();
+    responsePacket.fromLoginInfoMessage(inboundMessage);
 
-    // Ban and Gag
+    responsePacket._header.id = 0x120;
 
-    // NPS_USERID - User ID - persona id - long
-    Buffer.from([0x00, 0x84, 0x5f, 0xed]).copy(packetContent);
-
-    // SessionKeyStr (32)
-    _generateSessionKeyBuffer(keys.sessionKey).copy(packetContent, 4);
-
-    // SessionKeyLen - int
-    packetContent.writeInt16BE(32, 66);
-
-    // Build the packet
-    const packetResult = new NPSMessage();
-    packetResult.msgNo = 0x120;
-    packetResult.setContent(packetContent);
-
-    const loginResponsePacket = MessagePacket.fromBuffer(
-        packetResult.serialize(),
-    );
-
+    // log the packet
     log.debug(
-        `!!! outbound lobby login response packet: ${loginResponsePacket
-            .getBuffer()
-            .toString("hex")}`,
+        `!!! outbound lobby login response packet: ${responsePacket.toString()}`,
     );
 
-    const outboundMessage = RawMessage.fromNPSMessage(packetResult);
+    const outboundMessage = new RawMessage();
+    outboundMessage._doDeserialize(responsePacket.serialize());
 
     return {
         connectionId,

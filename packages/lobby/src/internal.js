@@ -15,13 +15,12 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
-import { _npsHeartbeat } from "./handlers/heartbeat.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
 import { getServerLogger } from "../../shared/log.js";
-// eslint-disable-next-line no-unused-vars
-import { RawMessage } from "../../shared/RawMessage.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { getServerConfiguration } from "../../shared/Configuration.js";
+// eslint-disable-next-line no-unused-vars
+import { NPSMessage, RawMessage } from "../../shared/messageFactory.js";
 
 /**
  * Array of supported message handlers
@@ -44,6 +43,11 @@ export const messageHandlers = [
         name: "User login",
         handler: _npsRequestGameConnectServer,
     },
+    {
+        opCode: 4353, // 0x1101
+        name: "Encrypted command",
+        handler: handleEncryptedNPSCommand,
+    },
 ];
 
 /**
@@ -65,6 +69,10 @@ export async function receiveLobbyData({
     }),
 }) {
     log.level = getServerConfiguration({}).logLevel ?? "info";
+
+    const inboundMessage = new NPSMessage();
+    inboundMessage._doDeserialize(message.data);
+
     const { data } = message;
     log.debug(
         `Received Lobby packet',
@@ -74,12 +82,14 @@ export async function receiveLobbyData({
     );
 
     const supportedHandler = messageHandlers.find((h) => {
-        return h.opCode === message._header.id;
+        return h.opCode === inboundMessage._header.id;
     });
 
     if (typeof supportedHandler === "undefined") {
         // We do not yet support this message code
-        throw new ServerError(`UNSUPPORTED_MESSAGECODE: ${message._header.id}`);
+        throw new ServerError(
+            `UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
+        );
     }
 
     try {

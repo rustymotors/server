@@ -23,10 +23,7 @@ import {
     getEncryption,
     updateEncryption,
 } from "../../shared/State.js";
-
-/**
- * @typedef {import("../../shared/RawMessage.js").RawMessage} RawMessage
- */
+import { RawMessage } from "../../shared/messageFactory.js";
 
 /**
  *
@@ -114,7 +111,7 @@ async function processInput({
  * @param {string} args.connectionId
  * @param {RawMessage} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "transactionServer" })]
- * @returns {Promise<import("../../interfaces/index.js").ServiceResponse>}
+ * @returns {Promise<import("../../shared/State.js").ServiceResponse>}
  */
 export async function receiveTransactionsData({
     connectionId,

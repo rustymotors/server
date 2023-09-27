@@ -1,4 +1,3 @@
-import { NPSMessage } from "../../../shared/NPSMessage.js";
 import { getServerLogger } from "../../../shared/log.js";
 import {
     fetchStateFromDatabase,
@@ -6,19 +5,36 @@ import {
     updateEncryption,
 } from "../../../shared/State.js";
 import { ServerError } from "../../../shared/errors/ServerError.js";
+import { LegacyMessage, RawMessage } from "../../../shared/messageFactory.js";
 // eslint-disable-next-line no-unused-vars
-import { RawMessage } from "../../../shared/RawMessage.js";
+
+/**
+ * Array of supported command handlers
+ *
+ * @type {{
+ *  opCode: number,
+ * name: string,
+ * handler: (args: {
+ * connectionId: string,
+ * message: RawMessage,
+ * log: import("pino").Logger,
+ * }) => Promise<{
+ * connectionId: string,
+ * messages: RawMessage[],
+ * }>}[]}
+ */
+export const messageHandlers = [];
 
 /**
  * Takes an plaintext command packet and return the encrypted bytes
  *
  * @param {object} args
  * @param {string} args.connectionId
- * @param {NPSMessage} args.message
+ * @param {LegacyMessage} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
  * @returns {Promise<{
  * connectionId: string,
- * message: NPSMessage,
+ * message: LegacyMessage,
  * }>}
  */
 async function encryptCmd({
@@ -57,11 +73,11 @@ async function encryptCmd({
  *
  * @param {object} args
  * @param {string} args.connectionId
- * @param {RawMessage} args.message
+ * @param {LegacyMessage} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
  * @returns {Promise<{
  *  connectionId: string,
- * message: RawMessage,
+ * message: LegacyMessage,
  * }>}
  */
 async function decryptCmd({
@@ -100,11 +116,11 @@ async function decryptCmd({
  *
  * @param {object} args
  * @param {string} args.connectionId
- * @param {RawMessage} args.message
+ * @param {LegacyMessage} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
  * @return {Promise<{
  * connectionId: string,
- * message: NPSMessage,
+ * message: LegacyMessage,
  * }>}}
  */
 async function handleCommand({
@@ -114,11 +130,11 @@ async function handleCommand({
         module: "Lobby",
     }),
 }) {
-    // Marshal the command into an NPS packet
-    const incommingRequest = new NPSMessage();
-    incommingRequest.deserialize(message.serialize());
+    const incommingRequest = message;
 
     log.debug(`Received command: ${incommingRequest.toString()}`);
+
+    // What is the command?
 
     // Create the packet content
     const packetContent = Buffer.alloc(375);
@@ -131,9 +147,9 @@ async function handleCommand({
     log.debug("Sending a dummy response of 0x229 - NPS_MINI_USER_LIST");
 
     // Build the packet
-    const packetResult = new NPSMessage();
-    packetResult.msgNo = 0x229;
-    packetResult.setContent(packetContent);
+    const packetResult = new LegacyMessage();
+    packetResult._header.id = 0x229;
+    packetResult.data = packetContent;
 
     log.debug(`Sending response: ${packetResult.toString()}`);
 
@@ -163,10 +179,13 @@ export async function handleEncryptedNPSCommand({
         module: "Lobby",
     }),
 }) {
+    const inboundMessage = new LegacyMessage();
+    inboundMessage._doDeserialize(message.data);
+
     // Decipher
     const decipheredMessage = decryptCmd({
         connectionId,
-        message,
+        message: inboundMessage,
         log,
     });
 
@@ -183,9 +202,8 @@ export async function handleEncryptedNPSCommand({
         log,
     });
 
-    const outboundMessage = RawMessage.fromNPSMessage(
-        (await encryptedResponse).message,
-    );
+    const outboundMessage = new RawMessage();
+    outboundMessage.data = (await encryptedResponse).message._doSerialize();
 
     return {
         connectionId,

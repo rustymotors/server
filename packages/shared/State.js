@@ -6,11 +6,11 @@
  */
 
 // eslint-disable-next-line no-unused-vars
-import { RawMessage } from "./RawMessage.js";
+import { RawMessage } from "./messageFactory.js";
 
 /**
  * @external RawMessage
- * @see {@link "packages/shared/RawMessage.js"}
+ * @see {@link "packages/shared/messageFactory.js.RawMessage"}
  */
 
 /**

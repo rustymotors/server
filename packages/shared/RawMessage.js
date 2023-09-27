@@ -1,6 +1,4 @@
 // eslint-disable-next-line no-unused-vars
-import { NPSMessage } from "./NPSMessage.js";
-import { RawMessageHeader } from "./RawMessageHeader.js";
 
 export class BaseMessage {
     constructor() {
@@ -12,7 +10,7 @@ export class BaseMessage {
      * @returns {BaseMessage}
      */
     _doDeserialize(buffer) {
-        console.log(`BaseMessage _doDeserialize: ${buffer.toString("hex")}`);
+        this._data = buffer;
         return this;
     }
 
@@ -20,7 +18,6 @@ export class BaseMessage {
      * @returns {Buffer}
      */
     _doSerialize() {
-        console.log(`BaseMessage _doSerialize: ${this._data.toString("hex")}`);
         return this._data;
     }
 

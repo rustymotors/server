@@ -1,7 +1,5 @@
-// eslint-disable-next-line no-unused-vars
-import { RawMessage } from "../../../shared/RawMessage.js";
-import { NPSMessage } from "../../../shared/NPSMessage.js";
 import { getServerLogger } from "../../../shared/log.js";
+import { NPSMessage, RawMessage } from "../../../shared/messageFactory.js";
 
 /**
  * @param {object} args
@@ -23,8 +21,8 @@ export async function _npsHeartbeat({
 }) {
     const packetContent = Buffer.alloc(8);
     const packetResult = new NPSMessage();
-    packetResult.msgNo = 0x127;
-    packetResult.setContent(packetContent);
+    packetResult._header.id = 0x127;
+    packetResult.data = packetContent;
 
     log.debug("Dumping packet...");
     log.debug(packetResult.toString());

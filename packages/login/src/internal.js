@@ -16,13 +16,12 @@
 
 import { getServerConfiguration } from "../../shared/Configuration.js";
 // eslint-disable-next-line no-unused-vars
-import { NPSMessage } from "../../shared/NPSMessage.js";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { getServerLogger } from "../../shared/log.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
 import { premadeLogin } from "./premadeLogin.js";
-import { RawMessage } from "../../shared/RawMessage.js";
+import { NPSMessage, RawMessage } from "../../shared/messageFactory.js";
 
 /** @type {import("../../interfaces/index.js").UserRecordMini[]} */
 const userRecords = [
@@ -149,7 +148,8 @@ async function login({
      * Then send ok to login packet
      */
 
-    const outboundMessage = RawMessage.fromBuffer(packetContent);
+    const outboundMessage = new RawMessage();
+    outboundMessage._doDeserialize(packetContent);
 
     // Update the data buffer
     const response = {
@@ -206,13 +206,19 @@ export async function handleLoginData({
     log.level = getServerConfiguration({}).logLevel ?? "info";
     log.debug(`Received Login Server packet: ${connectionId}`);
 
+    // The packet needs to be an NPSMessage
+    const inboundMessage = new NPSMessage();
+    inboundMessage._doDeserialize(message.serialize());
+
     const supportedHandler = messageHandlers.find((h) => {
-        return h.opCode === message._header.id;
+        return h.opCode === inboundMessage._header.id;
     });
 
     if (typeof supportedHandler === "undefined") {
         // We do not yet support this message code
-        throw new ServerError(`UNSUPPORTED_MESSAGECODE: ${message._header.id}`);
+        throw new ServerError(
+            `UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
+        );
     }
 
     try {

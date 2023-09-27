@@ -1,7 +1,8 @@
 import { privateDecrypt } from "node:crypto";
 import { readFileSync } from "node:fs";
-import { RawMessage } from "../../shared/RawMessage.js";
+
 import { ServerError } from "../../shared/errors/ServerError.js";
+import { LegacyMessage } from "../../shared/messageFactory.js";
 
 /**
  * @typedef {import("../../shared/Configuration.js").Configuration} Configuration
@@ -28,7 +29,7 @@ import { ServerError } from "../../shared/errors/ServerError.js";
  * @property {Buffer} buffer
  */
 
-export class NPSUserStatus extends RawMessage {
+export class NPSUserStatus extends LegacyMessage {
     /**
      *
      * @param {Buffer} packet
@@ -40,7 +41,7 @@ export class NPSUserStatus extends RawMessage {
         this._config = config;
         this.log = log;
         log.debug("Constructing NPSUserStatus");
-        this._header.deserialize(packet);
+        this._header._doDeserialize(packet);
         this.sessionKey = "";
 
         // Save the NPS opCode

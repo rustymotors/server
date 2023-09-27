@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { NPSMessage } from "../../shared/NPSMessage.js";
+import { NPSMessage } from "../../shared/messageFactory.js";
 
 /**
  * Selects a game persona and marks it as in use
@@ -36,8 +36,8 @@ export async function handleSelectGamePersona(requestPacket, log) {
     // Response Code
     // 207 = success
     const responsePacket = new NPSMessage();
-    responsePacket.msgNo = 0x207;
-    responsePacket.setContent(packetContent);
+    responsePacket._header.id = 0x207;
+    responsePacket.data = packetContent;
 
     log.debug(
         `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.toString()}`,

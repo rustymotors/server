@@ -20,6 +20,7 @@ class AbstractSerializable {
                 "Abstract class 'AbstractSerializable' cannot be instantiated directly.",
             );
         }
+        this.data = Buffer.alloc(0);
     }
 
     _doSerialize() {
@@ -45,7 +46,6 @@ const SerializableMixin = (Base) =>
     class extends Base {
         constructor() {
             super();
-            this._data = Buffer.alloc(0);
         }
 
         serialize() {
@@ -73,7 +73,10 @@ export function deserializeString(buffer) {
         const string = stringBuffer.toString("utf8").trim();
         return string;
     } catch (error) {
-        throw ServerError.fromUnknown(error);
+        throw ServerError.fromUnknown(
+            error,
+            `Error deserializing string from buffer ${buffer.toString("hex")}`,
+        );
     }
 }
 
@@ -101,7 +104,7 @@ class legacyHeader extends SerializableMixin(AbstractSerializable) {
         super();
         this._size = 4;
         this.id = 0; // 2 bytes
-        this.length = 0; // 2 bytes
+        this.length = this._size; // 2 bytes
     }
 
     /**
@@ -129,6 +132,13 @@ class legacyHeader extends SerializableMixin(AbstractSerializable) {
         buffer.writeInt16BE(this.length, 2);
         return buffer;
     }
+
+    toString() {
+        return `LegacyHeader: ${JSON.stringify({
+            id: this.id,
+            length: this.length,
+        })}`;
+    }
 }
 
 /**
@@ -141,12 +151,12 @@ class legacyHeader extends SerializableMixin(AbstractSerializable) {
  *
  * @mixin {SerializableMixin}
  */
-class npsHeader extends SerializableMixin(AbstractSerializable) {
+export class NPSHeader extends SerializableMixin(AbstractSerializable) {
     constructor() {
         super();
         this._size = 12;
         this.id = 0; // 2 bytes
-        this.length = 0; // 2 bytes
+        this.length = this._size; // 2 bytes
         this.version = 257; // 2 bytes (0x0101)
         this.reserved = 0; // 2 bytes
         this.checksum = 0; // 4 bytes
@@ -154,7 +164,7 @@ class npsHeader extends SerializableMixin(AbstractSerializable) {
 
     /**
      * @param {Buffer} buffer
-     * @returns {npsHeader}
+     * @returns {NPSHeader}
      * @throws {Error} If the buffer is too short
      * @throws {Error} If the buffer is malformed
      */
@@ -183,6 +193,20 @@ class npsHeader extends SerializableMixin(AbstractSerializable) {
         buffer.writeInt32BE(this.checksum, 8);
         return buffer;
     }
+
+    static size() {
+        return 12;
+    }
+
+    toString() {
+        return `NPSHeader: ${JSON.stringify({
+            id: this.id,
+            length: this.length,
+            version: this.version,
+            reserved: this.reserved,
+            checksum: this.checksum,
+        })}`;
+    }
 }
 
 /**
@@ -198,7 +222,7 @@ export class serverHeader extends SerializableMixin(AbstractSerializable) {
     constructor() {
         super();
         this._size = 11;
-        this.length = 0; // 2 bytes
+        this.length = this._size; // 2 bytes
         this.mcoSig = 0; // 4 bytes
         this.sequence = 0; // 4 bytes
         this.flags = 0; // 1 byte
@@ -236,6 +260,15 @@ export class serverHeader extends SerializableMixin(AbstractSerializable) {
         buffer.writeInt8(this.flags, 10);
         return buffer;
     }
+
+    toString() {
+        return `ServerHeader: ${JSON.stringify({
+            length: this.length,
+            mcoSig: this.mcoSig,
+            sequence: this.sequence,
+            flags: this.flags,
+        })}`;
+    }
 }
 
 /**
@@ -259,17 +292,31 @@ export class LegacyMessage extends SerializableMixin(AbstractSerializable) {
         buffer.copy(this.data, 0, this._header._size);
         return this;
     }
+
+    _doSerialize() {
+        const buffer = Buffer.alloc(this._header.length);
+        this._header._doSerialize().copy(buffer);
+        this.data.copy(buffer, this._header._size);
+        return buffer;
+    }
+
+    toString() {
+        return `LegacyMessage: ${JSON.stringify({
+            header: this._header.toString(),
+            data: this.data.toString("hex"),
+        })}`;
+    }
 }
 
 /**
- * A NPS message is a message that matches version 1.1 of the nps protocol. It has a 12 byte header. @see {@link npsHeader}
+ * A NPS message is a message that matches version 1.1 of the nps protocol. It has a 12 byte header. @see {@link NPSHeader}
  *
  * @mixin {SerializableMixin}
  */
 export class NPSMessage extends SerializableMixin(AbstractSerializable) {
     constructor() {
         super();
-        this._header = new npsHeader();
+        this._header = new NPSHeader();
     }
 
     /**
@@ -281,6 +328,20 @@ export class NPSMessage extends SerializableMixin(AbstractSerializable) {
         this.data = Buffer.alloc(this._header.length - this._header._size);
         buffer.copy(this.data, 0, this._header._size);
         return this;
+    }
+
+    serialize() {
+        const buffer = Buffer.alloc(this._header.length);
+        this._header._doSerialize().copy(buffer);
+        this.data.copy(buffer, this._header._size);
+        return buffer;
+    }
+
+    toString() {
+        return `NPSMessage: ${JSON.stringify({
+            header: this._header.toString(),
+            data: this.data.toString("hex"),
+        })}`;
     }
 }
 
@@ -305,6 +366,20 @@ export class ServerMessage extends SerializableMixin(AbstractSerializable) {
         buffer.copy(this.data, 0, this._header._size);
         return this;
     }
+
+    serialize() {
+        const buffer = Buffer.alloc(this._header.length);
+        this._header._doSerialize().copy(buffer);
+        this.data.copy(buffer, this._header._size);
+        return buffer;
+    }
+
+    toString() {
+        return `ServerMessage: ${JSON.stringify({
+            header: this._header.toString(),
+            data: this.data.toString("hex"),
+        })}`;
+    }
 }
 
 /**
@@ -316,8 +391,6 @@ export class ServerMessage extends SerializableMixin(AbstractSerializable) {
 export class RawMessage extends SerializableMixin(AbstractSerializable) {
     constructor() {
         super();
-        this.data = Buffer.alloc(0);
-        this.raw = Buffer.alloc(0);
     }
 
     /**
@@ -328,5 +401,13 @@ export class RawMessage extends SerializableMixin(AbstractSerializable) {
         this.data = Buffer.alloc(buffer.length);
         buffer.copy(this.data);
         return this;
+    }
+
+    serialize() {
+        return this.data;
+    }
+
+    toString() {
+        return `RawMessage: ${JSON.stringify(this.data.toString("hex"))}`;
     }
 }

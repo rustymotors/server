@@ -3,8 +3,6 @@ import { Socket } from "node:net";
 import { ServerError } from "../shared/errors/ServerError.js";
 import { Cipher, Decipher } from "node:crypto";
 import { IncomingMessage, ServerResponse } from "node:http";
-import { Gateway } from "packages/gateway/src/GatewayServer.js";
-import { RawMessage } from "packages/shared/RawMessage.js";
 
 /**
  * @module interfaces

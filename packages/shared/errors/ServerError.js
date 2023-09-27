@@ -21,9 +21,7 @@ export class ServerError extends Error {
     constructor(message) {
         super(message);
         this.code = 500;
-        this.log = getServerLogger({ level: "error" });
         this.name = "ServerError";
-        this.log.error(this);
     }
 
     /**
@@ -63,6 +61,7 @@ export class ServerError extends Error {
         const newError = new ServerError(String(message));
         newError.name = name;
         newError.stack = stack;
+        getServerLogger({ level: "error" }).error(json, message);
         return newError;
     }
 
@@ -72,6 +71,7 @@ export class ServerError extends Error {
      * @returns {ServerError}
      */
     static fromString(jsonString) {
+        getServerLogger({ level: "error" }).error(jsonString);
         return ServerError.fromJSON(JSON.parse(jsonString));
     }
 
@@ -84,21 +84,24 @@ export class ServerError extends Error {
         const newError = new ServerError(error.message);
         newError.name = error.name;
         newError.stack = error.stack;
+        getServerLogger({ level: "error" }).error(error, error.message);
         return newError;
     }
 
     /**
      * @static
      * @param {unknown} error
+     * @param {string} message
      * @returns {ServerError}
      */
-    static fromUnknown(error) {
+    static fromUnknown(error, message) {
         if (error instanceof Error) {
             return ServerError.fromError(error);
         }
         if (typeof error === "string") {
             return ServerError.fromString(error);
         }
+        getServerLogger({ level: "error" }).error(error, message);
         return new ServerError(`Unknown error: ${String(error)}`);
     }
 }

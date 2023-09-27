@@ -1,16 +1,12 @@
+import { State } from "../../shared/State.js";
+
 /**
  *
- * @param {TSocketWithConnectionInfo[]} connections
- * @returns {{
-    code: number;
-    headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined;
-    body: string;
-}}
+ *
+ * @export
+ * @param {State} state
+ * @return {import("../../interfaces/index.js").WebJSONResponse}
  */
-
-import { WebJSONResponse } from "../../interfaces/index.js";
-import { State, WrappedSocket } from "../../shared/State.js";
-
 export function listConnections(state) {
     const sockets = state.sockets;
 

@@ -1,7 +1,6 @@
 import { ServerError } from "../../shared/errors/ServerError.js";
-import { RawMessage } from "../../shared/RawMessage.js";
-import { RawMessageHeader } from "../../shared/RawMessageHeader.js";
 import { serializeString } from "../../core/src/serializationHelpers.js";
+import { NPSHeader, NPSMessage } from "../../shared/messageFactory.js";
 
 /**
  *
@@ -151,25 +150,25 @@ export class PersonaRecord {
     toJSON() {
         return {
             customerId: this.customerId,
-            personaName: this.personaName,
-            serverDataId: this.serverDataId,
-            createDate: this.createDate,
-            lastLogin: this.lastLogin,
-            numberOfGames: this.numberOfGames,
             personaId: this.personaId,
-            isOnline: this.isOnline,
-            purchaseTimestamp: this.purchaseTimestamp,
-            gameSerialNumber: this.gameSerialNumber,
-            timeOnline: this.timeOnline,
-            timeInGame: this.timeInGame,
-            extraData: this.extraData,
-            personaData: this.personaData,
-            pictureData: this.pictureData,
-            dnd: this.dnd,
-            startedPlayingTimestamp: this.startedPlayingTimestamp,
-            hashedKey: this.hashedKey,
-            personaLevel: this.personaLevel,
+            personaName: this.personaName,
             shardId: this.shardId,
+            serverDataId: this.serverDataId,
+            // createDate: this.createDate,
+            // lastLogin: this.lastLogin,
+            // numberOfGames: this.numberOfGames,
+            // isOnline: this.isOnline,
+            // purchaseTimestamp: this.purchaseTimestamp,
+            // gameSerialNumber: this.gameSerialNumber,
+            // timeOnline: this.timeOnline,
+            // timeInGame: this.timeInGame,
+            // extraData: this.extraData,
+            // personaData: this.personaData,
+            // pictureData: this.pictureData,
+            // dnd: this.dnd,
+            // startedPlayingTimestamp: this.startedPlayingTimestamp,
+            // hashedKey: this.hashedKey,
+            // personaLevel: this.personaLevel,
         };
     }
 
@@ -237,11 +236,15 @@ export class PersonaList {
         return this._personaRecords.length;
     }
 
+    size() {
+        return PersonaRecord.size() * this._personaRecords.length;
+    }
+
     toString() {
-        return "PersonaList";
+        return `PersonaList: ${JSON.stringify(this._personaRecords)}`;
     }
 }
-export class PersonaMapsMessage extends RawMessage {
+export class PersonaMapsMessage extends NPSMessage {
     constructor() {
         super();
         /** @type {PersonaList | undefined} */
@@ -253,30 +256,51 @@ export class PersonaMapsMessage extends RawMessage {
      * @returns {PersonaMapsMessage}
      */
     deserialize(buffer) {
-        this._header.deserialize(buffer);
-        this.resizeBuffer(this._header.length);
-        this.data = buffer.subarray(RawMessageHeader.size());
-        this.raw = buffer;
-        return this;
+        try {
+            this._header._doDeserialize(buffer);
+            this.data = buffer.subarray(NPSHeader.size());
+            this.raw = buffer;
+            return this;
+        } catch (error) {
+            throw ServerError.fromUnknown(
+                error,
+                "Error deserializing PersonaMapsMessage",
+            );
+        }
     }
 
     /**
      * @returns {Buffer}
      */
     serialize() {
-        const buffer = Buffer.alloc(this._header.length);
-        this._header.serialize().copy(buffer);
-        if (!this._personaRecords) {
-            throw new Error("PersonaRecords is undefined");
+        try {
+            if (!this._personaRecords) {
+                throw new Error("PersonaRecords is undefined");
+            }
+            this._header.length =
+                NPSHeader.size() + 2 + this._personaRecords.size();
+            const buffer = Buffer.alloc(this._header.length);
+            this._header._doSerialize().copy(buffer);
+            if (!this._personaRecords) {
+                throw new Error("PersonaRecords is undefined");
+            }
+            // Write the persona count. This is known to be correct at offset 12
+            buffer.writeUInt16BE(this._personaRecords.personaCount(), 12);
+            // This is a serialized PersonaList
+            this.data.copy(buffer, NPSHeader.size() + 2);
+            return buffer;
+        } catch (error) {
+            throw ServerError.fromUnknown(
+                error,
+                "Error serializing PersonaMapsMessage",
+            );
         }
-        // Write the persona count. This is known to be correct at offset 12
-        buffer.writeUInt16BE(this._personaRecords.personaCount(), 12);
-        // This is a serialized PersonaList
-        this.data.copy(buffer, RawMessageHeader.size() + 2);
-        return buffer;
     }
 
     toString() {
-        return "PersonaMapsMessage";
+        return `PersonaMapsMessage: ${JSON.stringify({
+            header: this._header,
+            personaRecords: this._personaRecords,
+        })}`;
     }
 }

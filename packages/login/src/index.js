@@ -16,11 +16,9 @@
 
 import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
 import { getServerLogger } from "../../shared/log.js";
+// eslint-disable-next-line no-unused-vars
+import { NPSMessage } from "../../shared/messageFactory.js";
 import { handleLoginData } from "./internal.js";
-
-/**
- * @typedef {import("../../shared/RawMessage.js").RawMessage} RawMessage
- */
 
 /**
  * Please use {@link LoginServer.getInstance()}
@@ -121,10 +119,10 @@ LoginServer._instance = undefined;
  * @export
  * @param {object} args
  * @param {string} args.connectionId
- * @param {RawMessage} args.message
+ * @param {NPSMessage} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
  *
- * @return {Promise<import("../../interfaces/index.js").ServiceResponse>}
+ * @return {Promise<import("../../shared/State.js").ServiceResponse>}
  */
 export async function receiveLoginData({
     connectionId,

@@ -14,20 +14,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { NPSMessage } from "../../shared/NPSMessage.js";
 import { getServerLogger } from "../../shared/log.js";
-import { MessagePacket } from "../../lobby/src/MessagePacket.js";
-import { NPSPersonaMapsMessage } from "./NPSPersonaMapsMessage.js";
 import { Buffer } from "node:buffer";
 import { ServerError } from "../../shared/errors/ServerError.js";
-import { RawMessage } from "../../shared/RawMessage.js";
-import { RawMessageHeader } from "../../shared/RawMessageHeader.js";
+
 import {
     PersonaList,
     PersonaMapsMessage,
     PersonaRecord,
 } from "./PersonaMapsMessage.js";
 import { getServerConfiguration } from "../../shared/Configuration.js";
+import { LegacyMessage, RawMessage } from "../../shared/messageFactory.js";
 
 const NAME_BUFFER_SIZE = 30;
 
@@ -39,7 +36,7 @@ const NAME_BUFFER_SIZE = 30;
  * name: string,
  * handler: (args: {
  * connectionId: string,
- * message: RawMessage,
+ * message: LegacyMessage,
  * log: import("pino").Logger,
  * }) => Promise<{
  * connectionId: string,
@@ -123,7 +120,7 @@ export async function getPersonasByPersonaId(id) {
  * Selects a game persona and marks it as in use
  * @param {object} args
  * @param {string} args.connectionId
- * @param {RawMessage} args.message
+ * @param {LegacyMessage} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
@@ -140,8 +137,9 @@ export async function handleSelectGamePersona({
     log.debug("_npsSelectGamePersona...");
     const requestPacket = message;
     log.debug(
-        `NPSMsg request object from _npsSelectGamePersona: ${JSON.stringify({
-            NPSMsg: requestPacket.toString(),
+        `LegacyMsg request object from _npsSelectGamePersona',
+        ${JSON.stringify({
+            LegacyMsg: requestPacket.toString(),
         })}`,
     );
 
@@ -151,17 +149,18 @@ export async function handleSelectGamePersona({
     // Build the packet
     // Response Code
     // 207 = success
-    const responsePacket = new NPSMessage();
-    responsePacket.msgNo = 0x207;
-    responsePacket.setContent(packetContent);
+    const responsePacket = new LegacyMessage();
+    responsePacket._header.id = 0x207;
+    responsePacket.data = packetContent;
     log.debug(
-        `NPSMsg response object from _npsSelectGamePersona',
-    ${JSON.stringify({
-        NPSMsg: responsePacket.toString(),
-    })}`,
+        `LegacyMsg response object from _npsSelectGamePersona',
+        ${JSON.stringify({
+            LegacyMsg: responsePacket.toString(),
+        })}`,
     );
 
-    const outboundMessage = RawMessage.fromNPSMessage(responsePacket);
+    const outboundMessage = new RawMessage();
+    outboundMessage.data = responsePacket._doSerialize();
 
     return {
         connectionId,
@@ -173,7 +172,7 @@ export async function handleSelectGamePersona({
  * Handle game logout
  * @param {object} args
  * @param {string} args.connectionId
- * @param {RawMessage} args.message
+ * @param {LegacyMessage} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
@@ -196,12 +195,9 @@ export async function handleGameLogout({
       })}`,
     );
 
-    // Create the packet content
-    const packetContent = Buffer.alloc(257);
-
     // Build the packet
-    const responsePacket = new NPSMessage();
-    responsePacket.msgNo = 0x207;
+    const responsePacket = new LegacyMessage();
+    responsePacket._header.id = 0x207;
     log.debug(
         `NPSMsg response object from _npsLogoutGameUser',
       ${JSON.stringify({
@@ -209,77 +205,13 @@ export async function handleGameLogout({
       })}`,
     );
 
-    const outboundMessage = RawMessage.fromNPSMessage(responsePacket);
+    const outboundMessage = new RawMessage();
+    outboundMessage._doDeserialize(responsePacket._doSerialize());
 
     return {
         connectionId,
         messages: [outboundMessage],
     };
-}
-
-/**
- * Create a new game persona record
- *
- * @param {Buffer} data
- * @param {import("pino").Logger} log
- * @return {Promise<NPSMessage>}
- * @memberof PersonaServer
- */
-async function createNewGameAccount(data, log) {
-    const requestPacket = new NPSMessage().deserialize(data);
-    log.debug(
-        `NPSMsg request object from _npsNewGameAccount',
-      ${JSON.stringify({
-          NPSMsg: requestPacket.toString(),
-      })}`,
-    );
-
-    const rPacket = new NPSMessage();
-    rPacket.msgNo = 0x601;
-    log.debug(
-        `NPSMsg response object from _npsNewGameAccount',
-      ${JSON.stringify({
-          NPSMsg: rPacket.toString(),
-      })}`,
-    );
-
-    return rPacket;
-}
-
-//  * TODO: Change the persona record to show logged out. This requires it to exist first, it is currently hard-coded
-//  * TODO: Locate the connection and delete, or reset it.
-/**
- * Log out a game persona
- *
- * @param {Buffer} data
- * @param {import("pino").Logger} log
- * @return {Promise<NPSMessage>}
- * @memberof PersonaServer
- */
-async function logoutGameUser(data, log) {
-    log.debug("[personaServer] Logging out persona...");
-    const requestPacket = new NPSMessage().deserialize(data);
-    log.debug(
-        `NPSMsg request object from _npsLogoutGameUser',
-      ${JSON.stringify({
-          NPSMsg: requestPacket.toString(),
-      })}`,
-    );
-
-    // Create the packet content
-    const packetContent = Buffer.alloc(257);
-
-    // Build the packet
-    const responsePacket = new NPSMessage();
-    responsePacket.msgNo = 0x612;
-    responsePacket.setContent(packetContent);
-    log.debug(
-        `NPSMsg response object from _npsLogoutGameUser',
-      ${JSON.stringify({
-          NPSMsg: responsePacket.toString(),
-      })}`,
-    );
-    return responsePacket;
 }
 
 /**
@@ -316,7 +248,7 @@ async function getPersonaMapsByCustomerId(customerId) {
  * Handle a get persona maps packet
  * @param {object} args
  * @param {string} args.connectionId
- * @param {RawMessage} args.message
+ * @param {LegacyMessage} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
@@ -329,23 +261,19 @@ async function getPersonaMaps({
     log = getServerLogger({ module: "PersonaServer" }),
 }) {
     log.debug("_npsGetPersonaMaps...");
-    const data = message.raw;
-    const requestPacket = new NPSMessage().deserialize(data);
 
+    const requestPacket = message;
     log.debug(
         `NPSMsg request object from _npsGetPersonaMaps',
       ${JSON.stringify({
           NPSMsg: requestPacket.toString(),
       })}`,
     );
-    const customerId = Buffer.alloc(4);
-    data.copy(customerId, 0, 12);
-    const personas = await getPersonaMapsByCustomerId(
-        customerId.readUInt32BE(0),
-    );
-    log.debug(
-        `${personas.length} personas found for ${customerId.readUInt32BE(0)}`,
-    );
+
+    const customerId = requestPacket.data.readUInt32BE(8);
+
+    const personas = await getPersonaMapsByCustomerId(customerId);
+    log.debug(`${personas.length} personas found for ${customerId}`);
 
     const personaMapsMessage = new PersonaMapsMessage();
 
@@ -353,7 +281,7 @@ async function getPersonaMaps({
 
     if (personas.length === 0) {
         const err = new Error(
-            `No personas found for customer Id: ${customerId.readUInt32BE(0)}`,
+            `No personas found for customer Id: ${customerId}`,
         );
         throw err;
     } else {
@@ -363,9 +291,7 @@ async function getPersonaMaps({
 
             if (personas.length > 1) {
                 log.warn(
-                    `More than one persona found for customer Id: ${customerId.readUInt32BE(
-                        0,
-                    )}`,
+                    `More than one persona found for customer Id: ${customerId}`,
                 );
             }
 
@@ -390,9 +316,6 @@ async function getPersonaMaps({
             personaMapsMessage._header.id = 0x607;
             personaMapsMessage._personaRecords = personaList;
             personaMapsMessage.data = personaList.serialize();
-            personaMapsMessage._header.length =
-                personaMapsMessage.data.length + RawMessageHeader.size();
-
             log.debug(
                 `PersonaMapsMessage object from _npsGetPersonaMaps',
             ${JSON.stringify({
@@ -400,9 +323,12 @@ async function getPersonaMaps({
             })}`,
             );
 
+            const outboundMessage = new RawMessage();
+            outboundMessage._doDeserialize(personaMapsMessage.serialize());
+
             return {
                 connectionId,
-                messages: [personaMapsMessage],
+                messages: [outboundMessage],
             };
         } catch (error) {
             if (error instanceof Error) {
@@ -412,99 +338,12 @@ async function getPersonaMaps({
                 throw err;
             }
 
-            const err = new Error(
+            const err = new ServerError(
                 "Error serializing personaMapsMsg, error unknonw",
             );
             throw err;
         }
     }
-}
-
-/**
- * Check if valid name for new user
- *
- * @param {Buffer} data
- * @param {import("pino").Logger} log
- * @return {Promise<NPSMessage>}
- */
-async function validatePersonaName(data, log) {
-    log.debug("_npsValidatePersonaName...");
-    const requestPacket = new NPSMessage().deserialize(data);
-
-    log.debug(
-        `NPSMsg request object from _npsValidatePersonaName',
-    ${JSON.stringify({
-        NPSMsg: requestPacket.toString(),
-    })}`,
-    );
-
-    const customerId = data.readInt32BE(12);
-    const requestedPersonaName = data
-        .subarray(18, data.lastIndexOf(0x00))
-        .toString();
-    const serviceName = data.subarray(data.indexOf(0x0a) + 1).toString(); // skipcq: JS-0377
-    log.debug(
-        JSON.stringify({ customerId, requestedPersonaName, serviceName }),
-    );
-
-    // Create the packet content
-    // TODO: #1178 Return the validate persona name response as a MessagePacket object
-
-    const packetContent = Buffer.alloc(256);
-
-    // Build the packet
-    // NPS_USER_VALID     validation succeeded
-    const responsePacket = new NPSMessage();
-    responsePacket.msgNo = 0x601;
-    responsePacket.setContent(packetContent);
-
-    log.debug(
-        `[npsValidatePersonaName] responsePacket's data prior to sending: ${responsePacket.toString()}`,
-    );
-    return responsePacket;
-}
-
-/**
- * Handle a check token packet
- *
- * @param {Buffer} data
- * @param {import("pino").Logger} log
- * @return {Promise<NPSMessage>}
- * @memberof PersonaServer
- */
-async function validateLicencePlate(data, log) {
-    log.debug("_npsCheckToken...");
-    const requestPacket = new NPSMessage().deserialize(data);
-    log.debug(
-        `NPSMsg request object from _npsCheckToken',
-      ${JSON.stringify({
-          NPSMsg: requestPacket.toString(),
-      })}`,
-    );
-
-    const customerId = data.readInt32BE(12);
-    const plateName = data.subarray(17).toString();
-    log.debug(`customerId: ${customerId}`); // skipcq: JS-0378
-    log.debug(`Plate name: ${plateName}`); // skipcq: JS-0378
-
-    // Create the packet content
-
-    const packetContent = Buffer.alloc(256);
-
-    // Build the packet
-    // NPS_ACK = 207
-    const responsePacket = new NPSMessage();
-    responsePacket.msgNo = 0x207;
-    responsePacket.setContent(packetContent);
-
-    log.debug(
-        `NPSMsg response object from _npsCheckToken',
-        ${JSON.stringify({
-            NPSMsg: responsePacket.toString(),
-        })}`,
-    );
-
-    return responsePacket;
 }
 
 /**
@@ -536,25 +375,34 @@ export async function receivePersonaData({
     })}`,
     );
 
+    // The packet needs to be an NPSMessage
+    const inboundMessage = new LegacyMessage();
+    inboundMessage._doDeserialize(message.data);
+
     const supportedHandler = messageHandlers.find((h) => {
-        return h.opCode === message._header.id;
+        return h.opCode === inboundMessage._header.id;
     });
 
     if (typeof supportedHandler === "undefined") {
         // We do not yet support this message code
-        throw new ServerError(`UNSUPPORTED_MESSAGECODE: ${message._header.id}`);
+        throw new ServerError(
+            `UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
+        );
     }
 
     try {
         const result = await supportedHandler.handler({
             connectionId,
-            message,
+            message: inboundMessage,
             log,
         });
         log.debug(`Returning with ${result.messages.length} messages`);
         log.debug("Leaving receivePersonaDatadleData");
         return result;
     } catch (error) {
-        throw new Error(`Error handling persona data: ${String(error)}`);
+        throw ServerError.fromUnknown(
+            error,
+            `Error handling persona data: ${String(error)}`,
+        );
     }
 }
