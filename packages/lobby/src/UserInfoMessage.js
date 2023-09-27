@@ -7,6 +7,33 @@ import {
 // eslint-disable-next-line no-unused-vars
 import { LoginInfoMessage } from "./LoginInfoMessage.js";
 
+export class UserInfo {
+    constructor() {
+        this._userId = 0; // 4 bytes
+        this._userName = ""; // 4 bytes + string + 1 byte
+        this._userData = Buffer.alloc(64); // 64 bytes
+    }
+
+    serialize() {
+        const buffer = Buffer.alloc(this.size());
+        let offset = 0;
+        buffer.writeInt32BE(this._userId, offset);
+        offset += 4;
+        serializeString(this._userName).copy(buffer, offset);
+        offset += 4 + this._userName.length + 1;
+        this._userData.copy(buffer, offset);
+        offset += 64;
+        return buffer;
+    }
+
+    size() {
+        let size = 4; // userId
+        size += 4 + this._userName.length + 1;
+        size += this._userData.length;
+        return size;
+    }
+}
+
 export class UserInfoMessage extends LegacyMessage {
     constructor() {
         super();
