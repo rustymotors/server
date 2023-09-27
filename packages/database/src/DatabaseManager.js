@@ -11,27 +11,6 @@ import { getServerLogger } from "../../shared/log.js";
 
 export class Database {
     /**
-     * @private
-     * @type {import("../../interfaces/index.js").ConnectionRecord[]}
-     */
-    _sessions = [];
-    /**
-     * @private
-     * @type {import("../../interfaces/index.js").RaceLobbyRecord[]}
-     */
-    _lobbies = [];
-    /**
-     * @type {Database}
-     */
-    static instance;
-
-    /**
-     * @private
-     * @type {import("pino").Logger}
-     */
-    _log;
-
-    /**
      * Creates an instance of Database.
      *
      * @param {import("pino").Logger} [log=getServerLogger({ module: "database" })]
@@ -42,6 +21,16 @@ export class Database {
         }),
     ) {
         this._log = log;
+        /**
+         * @private
+         * @type {import("../../interfaces/index.js").ConnectionRecord[]}
+         */
+        this._sessions = [];
+        /**
+         * @private
+         * @type {import("../../interfaces/index.js").RaceLobbyRecord[]}
+         */
+        this._lobbies = [];
     }
 
     /**
@@ -133,6 +122,8 @@ export class Database {
         this._sessions.splice(record, 1, updatedSession);
     }
 }
+
+Database.instance = undefined;
 /**
  * Return the singleton instance of the DatabaseManager class
  *
@@ -148,5 +139,8 @@ export function getDatabaseServer(
         }),
     },
 ) {
+    if (!Database.instance) {
+        Database.instance = new Database(option.log);
+    }
     return Database.getInstance(option.log);
 }

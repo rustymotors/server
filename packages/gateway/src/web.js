@@ -72,36 +72,4 @@ export function addWebRoutes(webServer) {
     webServer.get("/registry", (_request, reply) => {
         return reply.send("Hello, world!");
     });
-
-    webServer.get("/admin", (_request, reply) => {
-        return reply.send("Hello, world!");
-    });
-    webServer.get("/admin/connections", (_request, reply) => {
-        return reply.send("Hello, world!");
-    });
-    webServer.get(
-        "/admin/connections/resetAllQueueState",
-        (_request, reply) => {
-            return reply.send("Hello, world!");
-        },
-    );
-    webServer.get("/admin/connections/:connectionId", (_request, reply) => {
-        return reply.send("Hello, world!");
-    });
-
-    webServer.get(
-        "/admin/connections/releaseQueue/:connectionId",
-        (request, reply) => {
-            const query = Object(request.query);
-
-            const { connectionId } = query;
-            // Send a packet to the client to tell them they're no longer in the queue
-            // packet format: 02 30 00 00
-            // 0x02 0x30 = _Q_POSITION
-            // 0x00 = position in queue
-            // 0x00 = count of players in queue
-            // connection.socket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
-            return reply.send("Hello, world!");
-        },
-    );
 }

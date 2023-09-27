@@ -23,6 +23,7 @@ import {
     getEncryption,
     updateEncryption,
 } from "../../shared/State.js";
+// eslint-disable-next-line no-unused-vars
 import { RawMessage } from "../../shared/messageFactory.js";
 
 /**

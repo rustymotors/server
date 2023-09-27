@@ -1,5 +1,6 @@
 import { emitKeypressEvents } from "node:readline";
 import { SubThread } from "../shared/SubThread.js";
+// eslint-disable-next-line no-unused-vars
 import { Gateway } from "../gateway/src/GatewayServer.js";
 import { ServerError } from "../shared/errors/ServerError.js";
 
@@ -14,8 +15,6 @@ import { ServerError } from "../shared/errors/ServerError.js";
  * @property {GatewayServer} parentThread The parent thread
  */
 export class ConsoleThread extends SubThread {
-    parentThread;
-
     /**
      * @param {object} options
      * @param {Gateway} options.parentThread The parent thread
