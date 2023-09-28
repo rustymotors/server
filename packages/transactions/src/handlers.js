@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { MessageNode } from "../../shared/MessageNode.js";
-import { GenericReplyMessage } from "./GenericReplyMessage.js";
+import { GenericReply, GenericReplyMessage } from "./GenericReplyMessage.js";
 import { TClientConnectMessage } from "./TClientConnectMessage.js";
 import { LobbyMessage } from "./LobbyMessage.js";
 import { TLoginMessage } from "./TLoginMessage.js";
@@ -34,6 +33,8 @@ import {
     createCommandEncryptionPair,
     createDataEncryptionPair,
 } from "../../gateway/src/encryption.js";
+// eslint-disable-next-line no-unused-vars
+import { RawMessage, ServerMessage } from "../../shared/messageFactory.js";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -44,9 +45,10 @@ async function trackingPing({ connectionId, packet, log }) {
     const pReply = new GenericReplyMessage();
     pReply.msgNo = 101;
     pReply.msgReply = 440;
-    const rPacket = new MessageNode();
+    const rPacket = new ServerMessage();
+    rPacket._header.sequence = packet._header.sequence + 1;
+    rPacket._header.flags = 8;
 
-    rPacket.deserialize(packet.serialize());
     rPacket.data = pReply.serialize();
 
     log.debug(`TrackingPing: ${rPacket.toString()}`);
@@ -62,12 +64,11 @@ async function clientConnect({ connectionId, packet, log }) {
     /**
      * Let's turn it into a ClientConnectMsg
      */
-    // Not currently using this - Maybe we are?
-    const newMessage = new TClientConnectMessage(log);
-
-    log.debug(`Received ClientConnectMsg: ${packet.toString()}`);
+    const newMessage = new TClientConnectMessage();
 
     newMessage.deserialize(packet.serialize());
+
+    log.debug(`ClientConnectMsg: ${newMessage.toString()}`);
 
     const customerId = newMessage._customerId;
     if (typeof customerId !== "number") {
@@ -113,7 +114,7 @@ async function clientConnect({ connectionId, packet, log }) {
             dataEncryptionPair: newDataEncryptionPair,
         });
 
-        addEncryption(state, newEncryption);
+        addEncryption(state, newEncryption).save();
     } catch (error) {
         throw new ServerError(`Error creating encryption: ${error}`);
     }
@@ -125,14 +126,16 @@ async function clientConnect({ connectionId, packet, log }) {
     log.debug(`cust: ${customerId} ID: ${personaId} Name: ${personaName}`);
 
     // Create new response packet
-    const genericReplyMessage = new GenericReplyMessage();
-    genericReplyMessage.msgNo = 101;
-    genericReplyMessage.msgReply = 438;
-    const responsePacket = new MessageNode();
-    responsePacket.deserialize(packet.serialize());
-    responsePacket.data = genericReplyMessage.serialize();
+    const pReply = new GenericReply();
+    pReply.msgNo = 101;
+    pReply.msgReply = newMessage._msgNo;
 
-    log.debug(`ClientConnectMsg: ${responsePacket.toString()}`);
+    const responsePacket = new ServerMessage();
+    responsePacket.updateBuffer(pReply.serialize());
+    responsePacket._header.sequence = packet._header.sequence + 1;
+    responsePacket._header.flags = 8;
+
+    log.debug(`Response: ${responsePacket.serialize().toString("hex")}`);
 
     return { connectionId, messages: [responsePacket] };
 }
@@ -151,9 +154,9 @@ async function login({ connectionId, packet, log }) {
     const pReply = new GenericReplyMessage();
     pReply.msgNo = 213;
     pReply.msgReply = 105;
-    const rPacket = new MessageNode();
-
-    rPacket.deserialize(packet.serialize());
+    const rPacket = new ServerMessage();
+    rPacket._header.sequence = packet._header.sequence + 1;
+    rPacket._header.flags = 8;
     rPacket.data = pReply.serialize();
 
     log.debug(`Login: ${rPacket.toString()}`);
@@ -170,9 +173,9 @@ async function logout({ connectionId, packet, log }) {
     const pReply = new GenericReplyMessage();
     pReply.msgNo = 101;
     pReply.msgReply = 106;
-    const rPacket = new MessageNode();
-
-    rPacket.deserialize(packet.serialize());
+    const rPacket = new ServerMessage();
+    rPacket._header.sequence = packet._header.sequence + 1;
+    rPacket._header.flags = 8;
     rPacket.data = pReply.serialize();
 
     log.debug(`Logout: ${rPacket.toString()}`);
@@ -190,13 +193,9 @@ async function _getLobbies({ connectionId, packet, log }) {
     log.debug(`Received Message: ${packet.toString()}`);
 
     // Create new response packet
-
-    const seq = packet.seq + 1;
-
-    const responsePacket = new MessageNode();
-    responsePacket._seq = seq;
-    responsePacket._flags = 0;
-    responsePacket.header.mcoSig = "MCOT";
+    const responsePacket = new ServerMessage();
+    responsePacket._header.sequence = packet._header.sequence + 1;
+    responsePacket._header.flags = 8;
 
     const lobbyResponse = new LobbyMessage(log);
     lobbyResponse._msgNo = 325;
@@ -204,8 +203,6 @@ async function _getLobbies({ connectionId, packet, log }) {
     lobbyResponse._shouldExpectMoreMessages = false;
 
     responsePacket.data = lobbyResponse.serialize();
-
-    responsePacket.header.length = responsePacket.size;
 
     return { connectionId, messages: [responsePacket] };
 }
@@ -248,9 +245,9 @@ async function getStockCarInfo({ connectionId, packet, log }) {
 
     log.debug(`Sending Message: ${stockCarInfoMessage.toString()}`);
 
-    const responsePacket = new MessageNode();
-
-    responsePacket.deserialize(packet.serialize());
+    const responsePacket = new ServerMessage();
+    responsePacket._header.sequence = packet._header.sequence + 1;
+    responsePacket._header.flags = 8;
 
     responsePacket.data = stockCarInfoMessage.serialize();
 
@@ -263,14 +260,14 @@ async function getStockCarInfo({ connectionId, packet, log }) {
 /**
  * @typedef {object} MessageHandlerArgs
  * @property {string} connectionId
- * @property {MessageNode} packet
+ * @property {ServerMessage} packet
  * @property {import("pino").Logger} log
  */
 
 /**
  * @typedef {{
  *      connectionId: string,
- *      messages: MessageNode[]
+ *      messages: ServerMessage[]
  * }} MessageHandlerResult
  */
 

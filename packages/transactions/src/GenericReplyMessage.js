@@ -14,9 +14,44 @@
  * @property {Buffer} data2
  */
 
-import { MessageNode } from "../../shared/MessageNode.js";
+import { RawMessage } from "../../shared/messageFactory.js";
 
-export class GenericReplyMessage extends MessageNode {
+export class GenericReply extends RawMessage {
+    constructor() {
+        super();
+        this.msgNo = 0; // 2 bytes (ethier MC_SUCCESS (0x101) or MC_FAILURE(0x102))
+        this.msgReply = 0; // 2 bytes (message # being replied to (ex: MC_PURCHASE_STOCK_CAR))
+        this.result = Buffer.alloc(4); // 4 bytes (specific to the message sent, often the reason for a failure)
+        this.data = Buffer.alloc(4); // 4 bytes (specific to the message sent (but usually 0))
+        this.data2 = Buffer.alloc(4); // 4 bytes (specific to the message sent (but usually 0))
+    }
+
+    serialize() {
+        this.rawBuffer = Buffer.alloc(16);
+        this.rawBuffer.writeInt16LE(this.msgNo, 0);
+        this.rawBuffer.writeInt16LE(this.msgReply, 2);
+        this.result.copy(this.rawBuffer, 4);
+        this.data.copy(this.rawBuffer, 8);
+        this.data2.copy(this.rawBuffer, 12);
+        return this.rawBuffer;
+    }
+
+    asJSON() {
+        return {
+            msgNo: this.msgNo,
+            msgReply: this.msgReply,
+            result: this.result.toString("hex"),
+            data: this.data.toString("hex"),
+            data2: this.data2.toString("hex"),
+        };
+    }
+
+    toString() {
+        return JSON.stringify(this.asJSON());
+    }
+}
+
+export class GenericReplyMessage extends RawMessage {
     /**
      * One of
      *

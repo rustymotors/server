@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { MessageNode } from "../../shared/MessageNode.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { messageHandlers } from "./handlers.js";
 import { getServerLogger } from "../../shared/log.js";
@@ -24,16 +23,17 @@ import {
     updateEncryption,
 } from "../../shared/State.js";
 // eslint-disable-next-line no-unused-vars
-import { RawMessage } from "../../shared/messageFactory.js";
+import { RawMessage, ServerMessage } from "../../shared/messageFactory.js";
+import { getServerConfiguration } from "../../shared/Configuration.js";
 
 /**
  *
  *
- * @param {MessageNode} message
+ * @param {ServerMessage} message
  * @return {boolean}
  */
 function isMessageEncrypted(message) {
-    return message.flags - 8 >= 0;
+    return message._header.flags - 8 >= 0;
 }
 
 /**
@@ -77,7 +77,7 @@ async function processInput({
         module: "transactionServer",
     }),
 }) {
-    const currentMessageNo = packet.msgNo;
+    const currentMessageNo = packet._msgNo;
     const currentMessageString = _MSG_STRING(currentMessageNo);
 
     log.debug(
@@ -102,7 +102,7 @@ async function processInput({
         }
     }
 
-    throw new Error(
+    throw new ServerError(
         `Message Number Not Handled: ${currentMessageNo} (${currentMessageString}`,
     );
 }
@@ -112,7 +112,7 @@ async function processInput({
  * @param {string} args.connectionId
  * @param {RawMessage} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "transactionServer" })]
- * @returns {Promise<import("../../shared/State.js").ServiceResponse>}
+ * @returns {Promise<import("./handlers.js").MessageHandlerResult>}
  */
 export async function receiveTransactionsData({
     connectionId,
@@ -121,12 +121,20 @@ export async function receiveTransactionsData({
         module: "transactionServer",
     }),
 }) {
+    log.level = getServerConfiguration({}).logLevel ?? "info";
+
     log.debug(`Received Transaction Server packet: ${connectionId}`);
 
-    const packet = MessageNode.fromRawMessage(message);
+    // Going to use ServerMessage in this module
+
+    const inboundMessage = new ServerMessage();
+    inboundMessage._doDeserialize(message.data);
+    log.debug(
+        `Received Transaction Server packet: ${inboundMessage.toString()}`,
+    );
 
     // Is the message encrypted?
-    if (isMessageEncrypted(packet)) {
+    if (isMessageEncrypted(inboundMessage)) {
         // Get the encryyption settings for this connection
         const state = fetchStateFromDatabase();
 
@@ -140,13 +148,13 @@ export async function receiveTransactionsData({
 
         try {
             const decryptedMessage = encryptionSettings.dataEncryption.decrypt(
-                packet.data,
+                inboundMessage.data,
             );
             updateEncryption(state, encryptionSettings).save();
 
             // Assuming the message was decrypted successfully, update the MessageNode
-            packet.data = decryptedMessage;
-            packet.flags -= 8;
+            inboundMessage.data = decryptedMessage;
+            inboundMessage._header.flags -= 8;
         } catch (error) {
             throw new ServerError(
                 `Unable to decrypt message: ${String(error)}`,
@@ -155,9 +163,65 @@ export async function receiveTransactionsData({
     }
 
     log.debug("Calling processInput()");
-    return processInput({
+    const response = await processInput({
         connectionId,
-        packet,
+        packet: inboundMessage,
         log,
     });
+
+    // Loop through the outbound messages and encrypt them
+    const outboundMessages = [];
+
+    response.messages.forEach((outboundMessage) => {
+        log.debug(`Outbound message: ${outboundMessage.toString()}`);
+
+        if (isMessageEncrypted(outboundMessage)) {
+            const state = fetchStateFromDatabase();
+
+            const encryptionSettings = getEncryption(state, connectionId);
+
+            if (typeof encryptionSettings === "undefined") {
+                throw new ServerError(
+                    `Unable to locate encryption settings for connection ${connectionId}`,
+                );
+            }
+
+            try {
+                const encryptedMessage =
+                    encryptionSettings.dataEncryption.encrypt(
+                        outboundMessage.data,
+                    );
+                updateEncryption(state, encryptionSettings).save();
+
+                log.debug(
+                    `Encrypted message: ${encryptedMessage.toString("hex")}`,
+                );
+
+                outboundMessage.data = encryptedMessage;
+
+                log.debug(`Encrypted message: ${outboundMessage.toString()}`);
+
+                const outboundRawMessage = new RawMessage();
+                outboundRawMessage.data = outboundMessage.serialize();
+                log.debug(
+                    `Encrypted message: ${outboundRawMessage.toString()}`,
+                );
+                outboundMessages.push(outboundRawMessage);
+            } catch (error) {
+                throw new ServerError(
+                    `Unable to encrypt message: ${String(error)}`,
+                );
+            }
+        } else {
+            const outboundRawMessage = new RawMessage();
+            outboundRawMessage.data = outboundMessage.serialize();
+            log.debug(`Outbound message: ${outboundRawMessage.toString()}`);
+            outboundMessages.push(outboundRawMessage);
+        }
+    });
+
+    return {
+        connectionId,
+        messages: outboundMessages,
+    };
 }

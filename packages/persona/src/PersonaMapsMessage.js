@@ -172,6 +172,10 @@ export class PersonaRecord {
         };
     }
 
+    asJSON() {
+        return this.toJSON();
+    }
+
     toString() {
         return `PersonaRecord: ${JSON.stringify(this.toJSON())}`;
     }
@@ -240,6 +244,12 @@ export class PersonaList {
         return PersonaRecord.size() * this._personaRecords.length;
     }
 
+    asJSON() {
+        return {
+            personaRecords: this._personaRecords,
+        };
+    }
+
     toString() {
         return `PersonaList: ${JSON.stringify(this._personaRecords)}`;
     }
@@ -295,6 +305,13 @@ export class PersonaMapsMessage extends NPSMessage {
                 "Error serializing PersonaMapsMessage",
             );
         }
+    }
+
+    asJSON() {
+        return {
+            header: this._header,
+            personaRecords: this._personaRecords,
+        };
     }
 
     toString() {

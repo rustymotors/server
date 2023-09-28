@@ -14,16 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { MessageNode } from "../../shared/MessageNode.js";
+import { ServerMessage } from "../../shared/messageFactory.js";
 
-export class TClientConnectMessage extends MessageNode {
-    /**
-     * Creates an instance of ClientConnectMessage.
-     * @param {import("../../shared/log.js").Logger} log
-     */
-    constructor(log) {
+export class TClientConnectMessage extends ServerMessage {
+    constructor() {
         super();
-        log.debug("new TClientConnectMessage");
         this._msgNo = 0; // 8 bytes
         this._customerId = 0; // 4 bytes
         this._personaId = 0; // 4 bytes
@@ -32,28 +27,22 @@ export class TClientConnectMessage extends MessageNode {
         this._mcVersion = ""; // 4 bytes
     }
 
-    /**
-     * @override
-     */
-    get size() {
+    size() {
         return 51;
     }
 
     /**
-     * @override
      * @param {Buffer} buffer
      */
     deserialize(buffer) {
         let offset = 0;
-        this.header.length = buffer.readUInt16BE(offset);
+        this._header._doDeserialize(buffer);
+        offset += this._header._size;
+        this._msgNo = buffer.readUInt16LE(offset);
         offset += 2;
-        this.header.mcoSig = buffer.readUInt32BE(offset).toString(16);
+        this._customerId = buffer.readUInt32LE(offset);
         offset += 4;
-        this._msgNo = buffer.readUInt32BE(offset);
-        offset += 4;
-        this._customerId = buffer.readUInt32BE(offset);
-        offset += 4;
-        this._personaId = buffer.readUInt32BE(offset);
+        this._personaId = buffer.readUInt32LE(offset);
         offset += 4;
         this._customerName = buffer.toString("utf8", offset, offset + 13);
         offset += 13;
@@ -67,17 +56,15 @@ export class TClientConnectMessage extends MessageNode {
      * @override
      */
     serialize() {
-        const buffer = Buffer.alloc(this.size);
+        const buffer = Buffer.alloc(this.size());
         let offset = 0;
-        buffer.writeUInt16BE(this.header.length, offset);
+        buffer.copy(this._header._doSerialize(), offset);
+        offset += this._header._size;
+        buffer.writeUInt16LE(this._msgNo, offset);
         offset += 2;
-        buffer.write(this.header.mcoSig, offset, 4, "utf8");
+        buffer.writeUInt32LE(this._customerId, offset);
         offset += 4;
-        buffer.writeUInt32BE(this._msgNo, offset);
-        offset += 4;
-        buffer.writeUInt32BE(this._customerId, offset);
-        offset += 4;
-        buffer.writeUInt32BE(this._personaId, offset);
+        buffer.writeUInt32LE(this._personaId, offset);
         offset += 4;
         buffer.write(this._customerName, offset, 13, "utf8");
         offset += 13;
@@ -92,6 +79,17 @@ export class TClientConnectMessage extends MessageNode {
      * @override
      */
     toString() {
-        return `TClientConnectMessage: ${this._msgNo} ${this._customerId} ${this._personaId} ${this._customerName} ${this._personaName} ${this._mcVersion}`;
+        return `TClientConnectMessage: ${JSON.stringify({
+            length: this._header.length,
+            mcoSig: this._header.mcoSig,
+            seq: this._header.sequence,
+            flags: this._header.flags,
+            msgNo: this._msgNo,
+            customerId: this._customerId,
+            personaId: this._personaId,
+            customerName: this._customerName,
+            personaName: this._personaName,
+            mcVersion: this._mcVersion,
+        })}`;
     }
 }

@@ -215,15 +215,13 @@ export class NPSHeader extends SerializableMixin(AbstractSerializable) {
  * - 4 bytes - mcoSig
  * - 4 bytes - sequence
  * - 1 byte - flags
- *
- *
  */
 export class serverHeader extends SerializableMixin(AbstractSerializable) {
     constructor() {
         super();
         this._size = 11;
         this.length = this._size; // 2 bytes
-        this.mcoSig = 0; // 4 bytes
+        this.mcoSig = "TOMC"; // 4 bytes
         this.sequence = 0; // 4 bytes
         this.flags = 0; // 1 byte
     }
@@ -242,10 +240,10 @@ export class serverHeader extends SerializableMixin(AbstractSerializable) {
         }
 
         try {
-            this.length = buffer.readInt16BE(0);
-            this.mcoSig = buffer.readInt32BE(2);
-            this.sequence = buffer.readInt32BE(6);
-            this.flags = buffer.readInt8(10);
+            this.length = buffer.readInt16LE(0);
+            this.mcoSig = buffer.toString("utf8", 2, 6);
+            this.sequence = buffer.readInt32LE(6);
+            this.flags = buffer.readInt8(8);
         } catch (error) {
             throw new Error(`Error deserializing buffer: ${String(error)}`);
         }
@@ -254,9 +252,9 @@ export class serverHeader extends SerializableMixin(AbstractSerializable) {
 
     _doSerialize() {
         const buffer = Buffer.alloc(this._size);
-        buffer.writeInt16BE(this.length, 0);
-        buffer.writeInt32BE(this.mcoSig, 2);
-        buffer.writeInt32BE(this.sequence, 6);
+        buffer.writeInt16LE(this.length, 0);
+        buffer.write(this.mcoSig, 2, 6, "utf8");
+        buffer.writeInt32LE(this.sequence, 6);
         buffer.writeInt8(this.flags, 10);
         return buffer;
     }
@@ -298,6 +296,13 @@ export class LegacyMessage extends SerializableMixin(AbstractSerializable) {
         this._header._doSerialize().copy(buffer);
         this.data.copy(buffer, this._header._size);
         return buffer;
+    }
+
+    asJSON() {
+        return {
+            header: this._header,
+            data: this.data,
+        };
     }
 
     toString() {
@@ -354,6 +359,7 @@ export class ServerMessage extends SerializableMixin(AbstractSerializable) {
     constructor() {
         super();
         this._header = new serverHeader();
+        this._msgNo = 0; // 2 bytes
     }
 
     /**
@@ -364,6 +370,9 @@ export class ServerMessage extends SerializableMixin(AbstractSerializable) {
         this._header._doDeserialize(buffer);
         this.data = Buffer.alloc(this._header.length - this._header._size);
         buffer.copy(this.data, 0, this._header._size);
+        if (this.data.length > 2) {
+            this._msgNo = this.data.readInt16LE(0);
+        }
         return this;
     }
 
@@ -372,6 +381,15 @@ export class ServerMessage extends SerializableMixin(AbstractSerializable) {
         this._header._doSerialize().copy(buffer);
         this.data.copy(buffer, this._header._size);
         return buffer;
+    }
+
+    /**
+     * @param {Buffer} buffer
+     */
+    updateBuffer(buffer) {
+        this.data = Buffer.alloc(buffer.length);
+        buffer.copy(this.data);
+        this._header.length = this.data.length + 7; // 9 = 11 - 2 for the initial length
     }
 
     toString() {

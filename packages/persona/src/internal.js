@@ -139,7 +139,7 @@ export async function handleSelectGamePersona({
     log.debug(
         `LegacyMsg request object from _npsSelectGamePersona',
         ${JSON.stringify({
-            LegacyMsg: requestPacket.toString(),
+            LegacyMsg: requestPacket.asJSON(),
         })}`,
     );
 
@@ -154,9 +154,7 @@ export async function handleSelectGamePersona({
     responsePacket.data = packetContent;
     log.debug(
         `LegacyMsg response object from _npsSelectGamePersona',
-        ${JSON.stringify({
-            LegacyMsg: responsePacket.toString(),
-        })}`,
+        ${responsePacket.asJSON()}`,
     );
 
     const outboundMessage = new RawMessage();
@@ -265,9 +263,9 @@ async function getPersonaMaps({
     const requestPacket = message;
     log.debug(
         `NPSMsg request object from _npsGetPersonaMaps',
-      ${JSON.stringify({
-          NPSMsg: requestPacket.toString(),
-      })}`,
+        ${JSON.stringify({
+            NPSMsg: requestPacket.asJSON(),
+        })}`,
     );
 
     const customerId = requestPacket.data.readUInt32BE(8);
@@ -319,7 +317,7 @@ async function getPersonaMaps({
             log.debug(
                 `PersonaMapsMessage object from _npsGetPersonaMaps',
             ${JSON.stringify({
-                personaMapsMessage: personaMapsMessage.toString(),
+                personaMapsMessage: personaMapsMessage.asJSON(),
             })}`,
             );
 

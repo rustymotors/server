@@ -133,7 +133,7 @@ async function handleCommand({
 }) {
     const incommingRequest = message;
 
-    log.debug(`Received command: ${incommingRequest.toString()}`);
+    log.debug(`Received command: ${incommingRequest.asJSON()}`);
 
     // What is the command?
     const command = incommingRequest.data.readUInt16BE(0);
@@ -223,8 +223,8 @@ const channels = [
 
 const userRecordSize = 100;
 const user1 = new UserInfo();
-user1.id = 1;
-user1.name = "User 1";
+user1._userId = 1;
+user1._userName = "User 1";
 
 const users = [user1];
 
@@ -242,7 +242,7 @@ function handleSendMiniRiffList({
     }),
 }) {
     log.debug("Handling NPS_SEND_MINI_RIFF_LIST");
-    log.debug(`Received command: ${message.toString()}`);
+    log.debug(`Received command: ${message.asJSON()}`);
 
     const resultSize = 4 + channelRecordSize * channels.length;
 
@@ -268,7 +268,7 @@ function handleSendMiniRiffList({
         packetResult._header.length = resultSize;
         packetResult.data = packetContent;
 
-        log.debug(`Sending response: ${packetResult.toString()}`);
+        log.debug(`Sending response: ${packetResult.asJSON()}`);
 
         return {
             connectionId,
@@ -296,7 +296,7 @@ function handleGetMiniUserList({
     }),
 }) {
     log.debug("Handling NPS_GET_MINI_USER_LIST");
-    log.debug(`Received command: ${message.toString()}`);
+    log.debug(`Received command: ${message.asJSON()}`);
 
     const resultSize = 4 + userRecordSize * users.length;
 
@@ -321,7 +321,7 @@ function handleGetMiniUserList({
         packetResult._header.length = resultSize;
         packetResult.data = packetContent;
 
-        log.debug(`Sending response: ${packetResult.toString()}`);
+        log.debug(`Sending response: ${packetResult.asJSON()}`);
 
         return {
             connectionId,
