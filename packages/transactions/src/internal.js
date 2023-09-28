@@ -150,21 +150,24 @@ export async function receiveTransactionsData({
             );
         }
 
+        // log the old buffer
+        log.debug(`Encrypted buffer: ${inboundMessage.data.toString("hex")}`);
+
         try {
             const decryptedMessage = encryptionSettings.dataEncryption.decrypt(
                 inboundMessage.data,
             );
             updateEncryption(state, encryptionSettings).save();
 
-            // Assuming the message was decrypted successfully, update the MessageNode
+            // Verify the length of the message
+            verifyLength(inboundMessage.data, decryptedMessage);
+
+            // Assuming the message was decrypted successfully, update the buffer
+            log.debug(`Decrypted buffer: ${decryptedMessage.toString("hex")}`);
+
             inboundMessage.updateBuffer(decryptedMessage);
             inboundMessage._header.flags -= 8;
-
-            log.debug(
-                `Decrypted message: ${inboundMessage
-                    .serialize()
-                    .toString("hex")}`,
-            );
+            inboundMessage.updateMsgNo();
 
             log.debug(`Decrypted message: ${inboundMessage.toString()}`);
         } catch (error) {
@@ -199,6 +202,11 @@ export async function receiveTransactionsData({
                 );
             }
 
+            // log the old buffer
+            log.debug(
+                `Outbound buffer: ${outboundMessage.data.toString("hex")}`,
+            );
+
             try {
                 const encryptedMessage =
                     encryptionSettings.dataEncryption.encrypt(
@@ -206,16 +214,21 @@ export async function receiveTransactionsData({
                     );
                 updateEncryption(state, encryptionSettings).save();
 
+                // Verify the length of the message
+                verifyLength(outboundMessage.data, encryptedMessage);
+
+                // Assuming the message was decrypted successfully, update the buffer
+
                 log.debug(
-                    `Encrypted message: ${encryptedMessage.toString("hex")}`,
+                    `Encrypted buffer: ${encryptedMessage.toString("hex")}`,
                 );
 
-                outboundMessage.data = encryptedMessage;
+                outboundMessage.updateBuffer(encryptedMessage);
 
                 log.debug(`Encrypted message: ${outboundMessage.toString()}`);
 
                 const outboundRawMessage = new RawMessage();
-                outboundRawMessage.data = outboundMessage.serialize();
+                outboundRawMessage.setBuffer(outboundMessage.serialize());
                 log.debug(
                     `Encrypted message: ${outboundRawMessage.toString()}`,
                 );
@@ -227,7 +240,7 @@ export async function receiveTransactionsData({
             }
         } else {
             const outboundRawMessage = new RawMessage();
-            outboundRawMessage.data = outboundMessage.serialize();
+            outboundRawMessage.setBuffer(outboundMessage.serialize());
             log.debug(`Outbound message: ${outboundRawMessage.toString()}`);
             outboundMessages.push(outboundRawMessage);
         }
@@ -237,4 +250,16 @@ export async function receiveTransactionsData({
         connectionId,
         messages: outboundMessages,
     };
+}
+
+/**
+ * @param {Buffer} buffer
+ * @param {Buffer} buffer2
+ */
+export function verifyLength(buffer, buffer2) {
+    if (buffer.length !== buffer2.length) {
+        throw new ServerError(
+            `Length mismatch: ${buffer.length} !== ${buffer2.length}`,
+        );
+    }
 }

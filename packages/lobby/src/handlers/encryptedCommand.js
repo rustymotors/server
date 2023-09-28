@@ -61,7 +61,7 @@ async function encryptCmd({
 
     log.debug(`[ciphered Cmd: ${result.toString("hex")}`);
 
-    message.data = result;
+    message.setBuffer(result);
 
     return {
         connectionId,
@@ -104,7 +104,7 @@ async function decryptCmd({
 
     log.debug(`[Deciphered Cmd: ${result.toString("hex")}`);
 
-    message.data = result;
+    message.setBuffer(result);
 
     return {
         connectionId,
@@ -203,7 +203,7 @@ export async function handleEncryptedNPSCommand({
     });
 
     const outboundMessage = new RawMessage();
-    outboundMessage.data = (await encryptedResponse).message._doSerialize();
+    outboundMessage.setBuffer((await encryptedResponse).message._doSerialize());
 
     return {
         connectionId,
@@ -266,7 +266,7 @@ function handleSendMiniRiffList({
         const packetResult = new LegacyMessage();
         packetResult._header.id = 0x1101;
         packetResult._header.length = resultSize;
-        packetResult.data = packetContent;
+        packetResult.setBuffer(packetContent);
 
         log.debug(`Sending response: ${packetResult.asJSON()}`);
 
@@ -277,7 +277,7 @@ function handleSendMiniRiffList({
     } catch (error) {
         throw ServerError.fromUnknown(
             error,
-            `Error handling NPS_SEND_MINI_RIFF_LIST: ${error.message}`,
+            "Error handling NPS_SEND_MINI_RIFF_LIST",
         );
     }
 }
@@ -319,7 +319,7 @@ function handleGetMiniUserList({
         const packetResult = new LegacyMessage();
         packetResult._header.id = 0x1101;
         packetResult._header.length = resultSize;
-        packetResult.data = packetContent;
+        packetResult.setBuffer(packetContent);
 
         log.debug(`Sending response: ${packetResult.asJSON()}`);
 
@@ -330,7 +330,7 @@ function handleGetMiniUserList({
     } catch (error) {
         throw ServerError.fromUnknown(
             error,
-            `Error handling NPS_MINI_USER_LIST: ${error.message}`,
+            "Error handling NPS_MINI_USER_LIST",
         );
     }
 }

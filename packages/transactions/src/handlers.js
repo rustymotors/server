@@ -49,7 +49,7 @@ async function trackingPing({ connectionId, packet, log }) {
     rPacket._header.sequence = packet._header.sequence + 1;
     rPacket._header.flags = 8;
 
-    rPacket.data = pReply.serialize();
+    rPacket.setBuffer(pReply.serialize());
 
     log.debug(`TrackingPing: ${rPacket.toString()}`);
 
@@ -145,7 +145,7 @@ async function clientConnect({ connectionId, packet, log }) {
  */
 async function login({ connectionId, packet, log }) {
     // Read the inbound packet
-    const loginMessage = new TLoginMessage(log);
+    const loginMessage = new TLoginMessage();
     loginMessage.deserialize(packet.serialize());
     log.debug(`Received LoginMessage: ${loginMessage.toString()}`);
 
@@ -153,14 +153,14 @@ async function login({ connectionId, packet, log }) {
     const pReply = new GenericReplyMessage();
     pReply.msgNo = 213;
     pReply.msgReply = 105;
-    const rPacket = new ServerMessage();
-    rPacket._header.sequence = packet._header.sequence + 1;
-    rPacket._header.flags = 8;
-    rPacket.data = pReply.serialize();
+    const responsePacket = new ServerMessage();
+    responsePacket._header.sequence = packet._header.sequence;
+    responsePacket._header.flags = 8;
+    responsePacket.updateBuffer(pReply.serialize());
 
-    log.debug(`Login: ${rPacket.toString()}`);
+    log.debug(`Response: ${responsePacket.toString()}`);
 
-    return { connectionId, messages: [rPacket] };
+    return { connectionId, messages: [responsePacket] };
 }
 
 /**
@@ -175,7 +175,7 @@ async function logout({ connectionId, packet, log }) {
     const rPacket = new ServerMessage();
     rPacket._header.sequence = packet._header.sequence + 1;
     rPacket._header.flags = 8;
-    rPacket.data = pReply.serialize();
+    rPacket.setBuffer(pReply.serialize());
 
     log.debug(`Logout: ${rPacket.toString()}`);
 
@@ -201,7 +201,7 @@ async function _getLobbies({ connectionId, packet, log }) {
     lobbyResponse._lobbyCount = 0;
     lobbyResponse._shouldExpectMoreMessages = false;
 
-    responsePacket.data = lobbyResponse.serialize();
+    responsePacket.setBuffer(lobbyResponse.serialize());
 
     return { connectionId, messages: [responsePacket] };
 }
@@ -248,7 +248,7 @@ async function getStockCarInfo({ connectionId, packet, log }) {
     responsePacket._header.sequence = packet._header.sequence + 1;
     responsePacket._header.flags = 8;
 
-    responsePacket.data = stockCarInfoMessage.serialize();
+    responsePacket.setBuffer(stockCarInfoMessage.serialize());
 
     log.debug("Dumping response...");
     log.debug(responsePacket.toString());

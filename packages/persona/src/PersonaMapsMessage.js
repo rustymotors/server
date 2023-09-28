@@ -268,7 +268,7 @@ export class PersonaMapsMessage extends NPSMessage {
     deserialize(buffer) {
         try {
             this._header._doDeserialize(buffer);
-            this.data = buffer.subarray(NPSHeader.size());
+            this.setBuffer(buffer.subarray(NPSHeader.size()));
             this.raw = buffer;
             return this;
         } catch (error) {

@@ -22,7 +22,7 @@ export async function _npsHeartbeat({
     const packetContent = Buffer.alloc(8);
     const packetResult = new NPSMessage();
     packetResult._header.id = 0x127;
-    packetResult.data = packetContent;
+    packetResult.#_data = packetContent;
 
     log.debug("Dumping packet...");
     log.debug(packetResult.toString());

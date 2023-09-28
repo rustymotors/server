@@ -22,7 +22,7 @@ export class GenericReply extends RawMessage {
         this.msgNo = 0; // 2 bytes (ethier MC_SUCCESS (0x101) or MC_FAILURE(0x102))
         this.msgReply = 0; // 2 bytes (message # being replied to (ex: MC_PURCHASE_STOCK_CAR))
         this.result = Buffer.alloc(4); // 4 bytes (specific to the message sent, often the reason for a failure)
-        this.data = Buffer.alloc(4); // 4 bytes (specific to the message sent (but usually 0))
+        this.setBuffer(Buffer.alloc(4)); // 4 bytes (specific to the message sent (but usually 0))
         this.data2 = Buffer.alloc(4); // 4 bytes (specific to the message sent (but usually 0))
     }
 
@@ -68,7 +68,7 @@ export class GenericReplyMessage extends RawMessage {
         this.appId = 0; // 2 bytes
         this.msgReply = 0; // 2 bytes
         this.result = Buffer.alloc(4); // 4 bytes
-        this.data = Buffer.alloc(4); // 4 bytes
+        this.setBuffer(Buffer.alloc(4)); // 4 bytes
         this.data2 = Buffer.alloc(4); // 4 bytes
         this.rawBuffer = Buffer.alloc(0);
     }
@@ -78,7 +78,7 @@ export class GenericReplyMessage extends RawMessage {
      * @param {Buffer} value
      */
     setData(value) {
-        this.data = value;
+        this.setBuffer(value);
     }
 
     /**
@@ -114,7 +114,7 @@ export class GenericReplyMessage extends RawMessage {
 
         node.msgReply = buffer.readInt16LE(2);
         node.result = buffer.subarray(4, 8);
-        node.data = buffer.subarray(8, 12);
+        node.setBuffer(buffer.subarray(8, 12));
         node.data2 = buffer.subarray(12);
         return node;
     }

@@ -20,7 +20,8 @@ class AbstractSerializable {
                 "Abstract class 'AbstractSerializable' cannot be instantiated directly.",
             );
         }
-        this.data = Buffer.alloc(0);
+        /** @private */
+        this.internalBuffer = Buffer.alloc(0);
     }
 
     _doSerialize() {
@@ -34,6 +35,18 @@ class AbstractSerializable {
     // eslint-disable-next-line no-unused-vars
     _doDeserialize(_buffer) {
         throw new Error("Method '_doDeserialize()' must be implemented.");
+    }
+
+    get data() {
+        return this.internalBuffer;
+    }
+
+    /**
+     * @param {Buffer} buffer
+     */
+    setBuffer(buffer) {
+        this.internalBuffer = Buffer.alloc(buffer.length);
+        this.internalBuffer = buffer;
     }
 }
 
@@ -286,8 +299,7 @@ export class LegacyMessage extends SerializableMixin(AbstractSerializable) {
      */
     _doDeserialize(buffer) {
         this._header._doDeserialize(buffer);
-        this.data = Buffer.alloc(this._header.length - this._header._size);
-        buffer.copy(this.data, 0, this._header._size);
+        this.setBuffer(buffer.subarray(this._header._size));
         return this;
     }
 
@@ -301,7 +313,7 @@ export class LegacyMessage extends SerializableMixin(AbstractSerializable) {
     asJSON() {
         return {
             header: this._header,
-            data: this.data,
+            data: this.data.toString("hex"),
         };
     }
 
@@ -330,8 +342,7 @@ export class NPSMessage extends SerializableMixin(AbstractSerializable) {
      */
     _doDeserialize(buffer) {
         this._header._doDeserialize(buffer);
-        this.data = Buffer.alloc(this._header.length - this._header._size);
-        buffer.copy(this.data, 0, this._header._size);
+        this.setBuffer(buffer.subarray(this._header._size));
         return this;
     }
 
@@ -368,8 +379,7 @@ export class ServerMessage extends SerializableMixin(AbstractSerializable) {
      */
     _doDeserialize(buffer) {
         this._header._doDeserialize(buffer);
-        this.data = Buffer.alloc(buffer.length);
-        buffer.copy(this.data, 0, this._header._size);
+        this.setBuffer(buffer.subarray(this._header._size));
         if (this.data.length > 2) {
             this._msgNo = this.data.readInt16LE(0);
         }
@@ -387,10 +397,11 @@ export class ServerMessage extends SerializableMixin(AbstractSerializable) {
      * @param {Buffer} buffer
      */
     updateBuffer(buffer) {
-        this.data = Buffer.alloc(buffer.length);
-        buffer.copy(this.data);
+        this.setBuffer(buffer);
+    }
+
+    updateMsgNo() {
         this._msgNo = this.data.readInt16LE(0);
-        this._header.length = buffer.length + 9; // 9 = 11 - 2 for the initial length
     }
 
     toString() {
@@ -417,8 +428,7 @@ export class RawMessage extends SerializableMixin(AbstractSerializable) {
      * @returns {RawMessage}
      */
     _doDeserialize(buffer) {
-        this.data = Buffer.alloc(buffer.length);
-        buffer.copy(this.data);
+        this.setBuffer(buffer);
         return this;
     }
 

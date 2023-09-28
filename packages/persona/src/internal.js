@@ -151,14 +151,14 @@ export async function handleSelectGamePersona({
     // 207 = success
     const responsePacket = new LegacyMessage();
     responsePacket._header.id = 0x207;
-    responsePacket.data = packetContent;
+    responsePacket.setBuffer(packetContent);
     log.debug(
         `LegacyMsg response object from _npsSelectGamePersona',
         ${responsePacket.asJSON()}`,
     );
 
     const outboundMessage = new RawMessage();
-    outboundMessage.data = responsePacket._doSerialize();
+    outboundMessage.setBuffer(responsePacket._doSerialize());
 
     return {
         connectionId,
@@ -313,7 +313,7 @@ async function getPersonaMaps({
 
             personaMapsMessage._header.id = 0x607;
             personaMapsMessage._personaRecords = personaList;
-            personaMapsMessage.data = personaList.serialize();
+            personaMapsMessage.setBuffer(personaList.serialize());
             log.debug(
                 `PersonaMapsMessage object from _npsGetPersonaMaps',
             ${JSON.stringify({
