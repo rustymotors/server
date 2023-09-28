@@ -112,7 +112,10 @@ async function processInput({
  * @param {string} args.connectionId
  * @param {RawMessage} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "transactionServer" })]
- * @returns {Promise<import("./handlers.js").MessageHandlerResult>}
+ * @returns {Promise<{
+ *     connectionId: string,
+ *    messages: RawMessage[]
+ * }>}
  */
 export async function receiveTransactionsData({
     connectionId,
@@ -170,6 +173,7 @@ export async function receiveTransactionsData({
     });
 
     // Loop through the outbound messages and encrypt them
+    /** @type {RawMessage[]} */
     const outboundMessages = [];
 
     response.messages.forEach((outboundMessage) => {

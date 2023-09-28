@@ -132,8 +132,7 @@ async function clientConnect({ connectionId, packet, log }) {
 
     const responsePacket = new ServerMessage();
     responsePacket.updateBuffer(pReply.serialize());
-    responsePacket._header.sequence = packet._header.sequence + 1;
-    responsePacket._header.flags = 8;
+    responsePacket._header.sequence = packet._header.sequence;
 
     log.debug(`Response: ${responsePacket.serialize().toString("hex")}`);
 

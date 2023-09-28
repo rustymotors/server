@@ -243,7 +243,7 @@ export class serverHeader extends SerializableMixin(AbstractSerializable) {
             this.length = buffer.readInt16LE(0);
             this.mcoSig = buffer.toString("utf8", 2, 6);
             this.sequence = buffer.readInt32LE(6);
-            this.flags = buffer.readInt8(8);
+            this.flags = buffer.readInt8(10);
         } catch (error) {
             throw new Error(`Error deserializing buffer: ${String(error)}`);
         }
@@ -368,7 +368,7 @@ export class ServerMessage extends SerializableMixin(AbstractSerializable) {
      */
     _doDeserialize(buffer) {
         this._header._doDeserialize(buffer);
-        this.data = Buffer.alloc(this._header.length - this._header._size);
+        this.data = Buffer.alloc(buffer.length);
         buffer.copy(this.data, 0, this._header._size);
         if (this.data.length > 2) {
             this._msgNo = this.data.readInt16LE(0);
@@ -377,7 +377,7 @@ export class ServerMessage extends SerializableMixin(AbstractSerializable) {
     }
 
     serialize() {
-        const buffer = Buffer.alloc(this._header.length);
+        const buffer = Buffer.alloc(this._header.length + 2);
         this._header._doSerialize().copy(buffer);
         this.data.copy(buffer, this._header._size);
         return buffer;
@@ -389,7 +389,7 @@ export class ServerMessage extends SerializableMixin(AbstractSerializable) {
     updateBuffer(buffer) {
         this.data = Buffer.alloc(buffer.length);
         buffer.copy(this.data);
-        this._header.length = this.data.length + 7; // 9 = 11 - 2 for the initial length
+        this._header.length = this.data.length + 10; // 9 = 11 - 2 for the initial length
     }
 
     toString() {
