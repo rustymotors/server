@@ -389,7 +389,8 @@ export class ServerMessage extends SerializableMixin(AbstractSerializable) {
     updateBuffer(buffer) {
         this.data = Buffer.alloc(buffer.length);
         buffer.copy(this.data);
-        this._header.length = this.data.length + 10; // 9 = 11 - 2 for the initial length
+        this._msgNo = this.data.readInt16LE(0);
+        this._header.length = buffer.length + 9; // 9 = 11 - 2 for the initial length
     }
 
     toString() {

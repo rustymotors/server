@@ -138,6 +138,7 @@ export async function receiveTransactionsData({
 
     // Is the message encrypted?
     if (isMessageEncrypted(inboundMessage)) {
+        log.debug("Message is encrypted");
         // Get the encryyption settings for this connection
         const state = fetchStateFromDatabase();
 
@@ -156,8 +157,16 @@ export async function receiveTransactionsData({
             updateEncryption(state, encryptionSettings).save();
 
             // Assuming the message was decrypted successfully, update the MessageNode
-            inboundMessage.data = decryptedMessage;
+            inboundMessage.updateBuffer(decryptedMessage);
             inboundMessage._header.flags -= 8;
+
+            log.debug(
+                `Decrypted message: ${inboundMessage
+                    .serialize()
+                    .toString("hex")}`,
+            );
+
+            log.debug(`Decrypted message: ${inboundMessage.toString()}`);
         } catch (error) {
             throw new ServerError(
                 `Unable to decrypt message: ${String(error)}`,
