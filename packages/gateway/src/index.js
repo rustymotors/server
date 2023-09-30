@@ -27,7 +27,7 @@ import {
 import { getServerLogger } from "../../shared/log.js";
 
 import { getGatewayServer } from "./GatewayServer.js";
-import { RawMessage } from "../../shared/messageFactory.js";
+import { SerializedBuffer } from "../../shared/messageFactory.js";
 
 /**
  * @typedef {object} OnDataHandlerArgs
@@ -142,7 +142,7 @@ export function onSocketConnection({
         log.trace(`Incoming data: ${incomingDataAsBuffer.toString("hex")}`);
 
         // Deserialize the raw message
-        const rawMessage = new RawMessage()._doDeserialize(
+        const rawMessage = new SerializedBuffer()._doDeserialize(
             incomingDataAsBuffer,
         );
 

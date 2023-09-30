@@ -24,7 +24,10 @@ import {
     PersonaRecord,
 } from "./PersonaMapsMessage.js";
 import { getServerConfiguration } from "../../shared/Configuration.js";
-import { LegacyMessage, RawMessage } from "../../shared/messageFactory.js";
+import {
+    LegacyMessage,
+    SerializedBuffer,
+} from "../../shared/messageFactory.js";
 
 const NAME_BUFFER_SIZE = 30;
 
@@ -40,7 +43,7 @@ const NAME_BUFFER_SIZE = 30;
  * log: import("pino").Logger,
  * }) => Promise<{
  * connectionId: string,
- * messages: RawMessage[],
+ * messages: SerializedBuffer[],
  * }>}[]}
  */
 export const messageHandlers = [
@@ -124,7 +127,7 @@ export async function getPersonasByPersonaId(id) {
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: RawMessage[],
+ * messages: SerializedBuffer[],
  * }>}
  */
 export async function handleSelectGamePersona({
@@ -157,7 +160,7 @@ export async function handleSelectGamePersona({
         ${responsePacket.asJSON()}`,
     );
 
-    const outboundMessage = new RawMessage();
+    const outboundMessage = new SerializedBuffer();
     outboundMessage.setBuffer(responsePacket._doSerialize());
 
     return {
@@ -174,7 +177,7 @@ export async function handleSelectGamePersona({
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: RawMessage[],
+ * messages: SerializedBuffer[],
  * }>}
  */
 export async function handleGameLogout({
@@ -203,7 +206,7 @@ export async function handleGameLogout({
       })}`,
     );
 
-    const outboundMessage = new RawMessage();
+    const outboundMessage = new SerializedBuffer();
     outboundMessage._doDeserialize(responsePacket._doSerialize());
 
     return {
@@ -250,7 +253,7 @@ async function getPersonaMapsByCustomerId(customerId) {
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: RawMessage[],
+ * messages: SerializedBuffer[],
  * }>}
  */
 async function getPersonaMaps({
@@ -321,7 +324,7 @@ async function getPersonaMaps({
             })}`,
             );
 
-            const outboundMessage = new RawMessage();
+            const outboundMessage = new SerializedBuffer();
             outboundMessage._doDeserialize(personaMapsMessage.serialize());
 
             return {
@@ -349,11 +352,11 @@ async function getPersonaMaps({
  *
  * @param {object} args
  * @param {string} args.connectionId
- * @param {RawMessage} args.message
+ * @param {SerializedBuffer} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "PersonaServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: RawMessage[],
+ * messages: SerializedBuffer[],
  * }>}
  * @throws {Error} Unknown code was received
  */

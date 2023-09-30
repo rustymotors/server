@@ -6,7 +6,7 @@
  */
 
 // eslint-disable-next-line no-unused-vars
-import { RawMessage } from "./messageFactory.js";
+import { SerializedBuffer } from "./messageFactory.js";
 
 /**
  * @external RawMessage
@@ -172,7 +172,7 @@ export function wrapSocket(socket, connectionId) {
 /**
  * @typedef {object} ServiceResponse
  * @property {string} connectionId
- * @property {RawMessage[] } messages
+ * @property {SerializedBuffer[] } messages
  */
 
 /**

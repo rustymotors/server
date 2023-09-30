@@ -21,7 +21,7 @@ import { getServerLogger } from "../../shared/log.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
 import { premadeLogin } from "./premadeLogin.js";
-import { NPSMessage, RawMessage } from "../../shared/messageFactory.js";
+import { NPSMessage, SerializedBuffer } from "../../shared/messageFactory.js";
 
 /** @type {import("../../interfaces/index.js").UserRecordMini[]} */
 const userRecords = [
@@ -42,11 +42,11 @@ const userRecords = [
  * @private
  * @param {object} args
  * @param {string} args.connectionId
- * @param {RawMessage} args.message
+ * @param {SerializedBuffer} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: RawMessage[],
+ * messages: SerializedBuffer[],
  * }>}
  */
 async function login({
@@ -148,7 +148,7 @@ async function login({
      * Then send ok to login packet
      */
 
-    const outboundMessage = new RawMessage();
+    const outboundMessage = new SerializedBuffer();
     outboundMessage._doDeserialize(packetContent);
 
     // Update the data buffer
@@ -168,11 +168,11 @@ async function login({
  * name: string,
  * handler: (args: {
  * connectionId: string,
- * message: RawMessage,
+ * message: SerializedBuffer,
  * log: import("pino").Logger,
  * }) => Promise<{
  * connectionId: string,
- * messages: RawMessage[],
+ * messages: SerializedBuffer[],
  * }>}[]}
  */
 export const messageHandlers = [
@@ -189,11 +189,11 @@ export const messageHandlers = [
  * @export
  * @param {object} args
  * @param {string} args.connectionId
- * @param {RawMessage} args.message
+ * @param {SerializedBuffer} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: RawMessage[],
+ * messages: SerializedBuffer[],
  * }>}
  */
 export async function handleLoginData({

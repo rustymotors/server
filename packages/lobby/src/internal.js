@@ -20,7 +20,7 @@ import { getServerLogger } from "../../shared/log.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { getServerConfiguration } from "../../shared/Configuration.js";
 // eslint-disable-next-line no-unused-vars
-import { NPSMessage, RawMessage } from "../../shared/messageFactory.js";
+import { NPSMessage, SerializedBuffer } from "../../shared/messageFactory.js";
 
 /**
  * Array of supported message handlers
@@ -30,11 +30,11 @@ import { NPSMessage, RawMessage } from "../../shared/messageFactory.js";
  * name: string,
  * handler: (args: {
  * connectionId: string,
- * message: RawMessage,
+ * message: SerializedBuffer,
  * log: import("pino").Logger,
  * }) => Promise<{
  * connectionId: string,
- * messages: RawMessage[],
+ * messages: SerializedBuffer[],
  * }>}[]}
  */
 export const messageHandlers = [
@@ -53,11 +53,11 @@ export const messageHandlers = [
 /**
  * @param {object} args
  * @param {string} args.connectionId
- * @param {RawMessage} args.message
+ * @param {SerializedBuffer} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "PersonaServer" })]
  * @returns {Promise<{
  *  connectionId: string,
- * messages: RawMessage[],
+ * messages: SerializedBuffer[],
  * }>}
  * @throws {Error} Unknown code was received
  */

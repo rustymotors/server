@@ -14,9 +14,9 @@
  * @property {Buffer} data2
  */
 
-import { RawMessage } from "../../shared/messageFactory.js";
+import { SerializedBuffer } from "../../shared/messageFactory.js";
 
-export class GenericReply extends RawMessage {
+export class GenericReply extends SerializedBuffer {
     constructor() {
         super();
         this.msgNo = 0; // 2 bytes (ethier MC_SUCCESS (0x101) or MC_FAILURE(0x102))
@@ -51,7 +51,7 @@ export class GenericReply extends RawMessage {
     }
 }
 
-export class GenericReplyMessage extends RawMessage {
+export class GenericReplyMessage extends SerializedBuffer {
     /**
      * One of
      *
@@ -124,10 +124,14 @@ export class GenericReplyMessage extends RawMessage {
      * @return {Buffer}
      */
     serialize() {
-        const packet = Buffer.alloc(16);
-        packet.writeInt16LE(this.msgNo, 0);
-        packet.writeInt16LE(this.msgReply, 2);
-        this.result.copy(packet, 4);
+        const packet = Buffer.alloc(114); // 16 bytes
+        let offset = 0;
+        packet.writeInt16LE(this.msgNo, offset);
+        offset += 2;
+        // packet.writeInt16LE(this.msgReply, offset);
+        // offset += 2;
+        this.result.copy(packet, offset);
+        offset += 4;
         this.data.copy(packet, 8);
         this.data2.copy(packet, 12);
         return packet;

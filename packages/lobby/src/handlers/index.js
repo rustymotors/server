@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { RawMessage } from "../../../shared/messageFactory.js";
+import { SerializedBuffer } from "../../../shared/messageFactory.js";
 import { handleEncryptedNPSCommand } from "./encryptedCommand.js";
 import { _npsHeartbeat } from "./heartbeat.js";
 import { _npsRequestGameConnectServer } from "./requestConnectGameServer.js";
@@ -7,14 +7,14 @@ import { _npsRequestGameConnectServer } from "./requestConnectGameServer.js";
 /**
  * @typedef {object} ServiceArgs
  * @property {string} connectionId
- * @property {RawMessage} message
+ * @property {SerializedBuffer} message
  * @property {import("pino").Logger} log
  */
 
 /**
  * @typedef {object} ServiceResponse
  * @property {string} connectionId
- * @property {RawMessage[] } messages
+ * @property {SerializedBuffer[] } messages
  */
 
 /**

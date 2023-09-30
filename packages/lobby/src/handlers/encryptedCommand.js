@@ -5,7 +5,10 @@ import {
     updateEncryption,
 } from "../../../shared/State.js";
 import { ServerError } from "../../../shared/errors/ServerError.js";
-import { LegacyMessage, RawMessage } from "../../../shared/messageFactory.js";
+import {
+    LegacyMessage,
+    SerializedBuffer,
+} from "../../../shared/messageFactory.js";
 import { UserInfo } from "../UserInfoMessage.js";
 // eslint-disable-next-line no-unused-vars
 
@@ -17,11 +20,11 @@ import { UserInfo } from "../UserInfoMessage.js";
  * name: string,
  * handler: (args: {
  * connectionId: string,
- * message: RawMessage,
+ * message: SerializedBuffer,
  * log: import("pino").Logger,
  * }) => Promise<{
  * connectionId: string,
- * messages: RawMessage[],
+ * messages: SerializedBuffer[],
  * }>}[]}
  */
 export const messageHandlers = [];
@@ -164,11 +167,11 @@ async function handleCommand({
  *
  * @param {object} args
  * @param {string} args.connectionId
- * @param {RawMessage} args.message
+ * @param {SerializedBuffer} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
   * @returns {Promise<{
 *  connectionId: string,
-* messages: RawMessage[],
+* messages: SerializedBuffer[],
 * }>}
 
  */
@@ -202,7 +205,7 @@ export async function handleEncryptedNPSCommand({
         log,
     });
 
-    const outboundMessage = new RawMessage();
+    const outboundMessage = new SerializedBuffer();
     outboundMessage.setBuffer((await encryptedResponse).message._doSerialize());
 
     return {

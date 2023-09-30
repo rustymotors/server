@@ -15,7 +15,7 @@ import {
     fetchStateFromDatabase,
     getEncryption,
 } from "../../../shared/State.js";
-import { RawMessage } from "../../../shared/messageFactory.js";
+import { SerializedBuffer } from "../../../shared/messageFactory.js";
 
 /**
  * Convert to zero padded hex
@@ -40,7 +40,7 @@ export function toHex(data) {
  * @param {import("../../../interfaces/index.js").ServiceArgs} args
  * @returns {Promise<{
  *  connectionId: string,
- * messages: RawMessage[],
+ * messages: SerializedBuffer[],
  * }>}
  */
 export async function _npsRequestGameConnectServer({
@@ -123,7 +123,7 @@ export async function _npsRequestGameConnectServer({
         `!!! outbound lobby login response packet: ${responsePacket.toString()}`,
     );
 
-    const outboundMessage = new RawMessage();
+    const outboundMessage = new SerializedBuffer();
     outboundMessage._doDeserialize(responsePacket.serialize());
 
     return {

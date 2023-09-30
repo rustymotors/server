@@ -14,15 +14,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { RawMessage, ServerMessage } from "../../shared/messageFactory.js";
+import {
+    SerializedBuffer,
+    ServerMessage,
+} from "../../shared/messageFactory.js";
 
-export class ListEntry extends RawMessage {
+export class ListEntry extends SerializedBuffer {
     constructor() {
         super();
     }
 }
 
-export class LoginCompleteMessage extends RawMessage {
+export class LoginCompleteMessage extends SerializedBuffer {
     constructor() {
         super();
         this._msgNo = 0; // 2 bytes

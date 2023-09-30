@@ -1,14 +1,17 @@
 import { getServerLogger } from "../../../shared/log.js";
-import { NPSMessage, RawMessage } from "../../../shared/messageFactory.js";
+import {
+    NPSMessage,
+    SerializedBuffer,
+} from "../../../shared/messageFactory.js";
 
 /**
  * @param {object} args
  * @param {string} args.connectionId
- * @param {RawMessage} args.message
+ * @param {SerializedBuffer} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
  * @returns {Promise<{
  *  connectionId: string
- * messages: RawMessage[],
+ * messages: SerializedBuffer[],
  * }>}
  */
 export async function _npsHeartbeat({
@@ -27,7 +30,7 @@ export async function _npsHeartbeat({
     log.debug("Dumping packet...");
     log.debug(packetResult.toString());
 
-    const outboundMessage = RawMessage.fromNPSMessage(packetResult);
+    const outboundMessage = SerializedBuffer.fromNPSMessage(packetResult);
 
     return {
         connectionId,

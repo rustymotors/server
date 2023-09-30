@@ -16,7 +16,7 @@
 
 import { GenericReply, GenericReplyMessage } from "./GenericReplyMessage.js";
 import { TClientConnectMessage } from "./TClientConnectMessage.js";
-import { LobbyMessage } from "./LobbyMessage.js";
+import { LobbyInfo, LobbyMessage } from "./LobbyMessage.js";
 import { TLoginMessage } from "./TLoginMessage.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
@@ -33,8 +33,9 @@ import {
     createCommandEncryptionPair,
     createDataEncryptionPair,
 } from "../../gateway/src/encryption.js";
-// eslint-disable-next-line no-unused-vars
-import { RawMessage, ServerMessage } from "../../shared/messageFactory.js";
+import { ServerMessage } from "../../shared/messageFactory.js";
+import { ArcadeCarInfo, ArcadeCarMessage } from "./ArcadeCarMessage.js";
+import { GameUrl, GameUrlsMessage } from "./GameUrlsMessage.js";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -131,7 +132,7 @@ async function clientConnect({ connectionId, packet, log }) {
     pReply.msgReply = newMessage._msgNo;
 
     const responsePacket = new ServerMessage();
-    responsePacket.updateBuffer(pReply.serialize());
+    responsePacket.setBuffer(pReply.serialize());
     responsePacket._header.sequence = packet._header.sequence;
 
     log.debug(`Response: ${responsePacket.serialize().toString("hex")}`);
@@ -156,7 +157,7 @@ async function login({ connectionId, packet, log }) {
     const responsePacket = new ServerMessage();
     responsePacket._header.sequence = packet._header.sequence;
     responsePacket._header.flags = 8;
-    responsePacket.updateBuffer(pReply.serialize());
+    responsePacket.setBuffer(pReply.serialize());
 
     log.debug(`Response: ${responsePacket.toString()}`);
 
@@ -193,13 +194,25 @@ async function _getLobbies({ connectionId, packet, log }) {
 
     // Create new response packet
     const responsePacket = new ServerMessage();
-    responsePacket._header.sequence = packet._header.sequence + 1;
+    responsePacket._header.sequence = packet._header.sequence;
     responsePacket._header.flags = 8;
 
-    const lobbyResponse = new LobbyMessage(log);
+    const lobbyResponse = new LobbyMessage();
     lobbyResponse._msgNo = 325;
-    lobbyResponse._lobbyCount = 0;
     lobbyResponse._shouldExpectMoreMessages = false;
+
+    const lobby = new LobbyInfo();
+    lobby._lobbyId = 1;
+    lobby._lobbyName = "Lobby 1";
+    lobby._topDog = "Drazi Crendraven";
+
+    log.debug(`Logging LobbyInfo: ${lobby.serialize().toString("hex")}`);
+
+    lobbyResponse.addLobby(lobby);
+
+    log.debug(
+        `Logging LobbyMessage: ${lobbyResponse.serialize().toString("hex")}`,
+    );
 
     responsePacket.setBuffer(lobbyResponse.serialize());
 
@@ -250,8 +263,59 @@ async function getStockCarInfo({ connectionId, packet, log }) {
 
     responsePacket.setBuffer(stockCarInfoMessage.serialize());
 
-    log.debug("Dumping response...");
-    log.debug(responsePacket.toString());
+    return { connectionId, messages: [responsePacket] };
+}
+
+/**
+ * @param {MessageHandlerArgs} args
+ * @return {Promise<MessageHandlerResult>}
+ */
+async function getArcadeCarInfo({ connectionId, packet, log }) {
+    const getArcadeCarInfoMessage = new GenericRequestMessage();
+    getArcadeCarInfoMessage.deserialize(packet.data);
+
+    log.debug(`Received Message: ${getArcadeCarInfoMessage.toString()}`);
+
+    const arcadeCarInfoMessage = new ArcadeCarMessage();
+    arcadeCarInfoMessage._msgNo = 322;
+
+    const car1 = new ArcadeCarInfo();
+    car1._brandedPartId = 113; // Bel-air
+    car1._lobbyId = 0;
+    arcadeCarInfoMessage.addCar(car1);
+
+    const responsePacket = new ServerMessage();
+    responsePacket._header.sequence = packet._header.sequence;
+    responsePacket._header.flags = 8;
+
+    responsePacket.setBuffer(arcadeCarInfoMessage.serialize());
+
+    return { connectionId, messages: [responsePacket] };
+}
+
+/**
+ * @param {MessageHandlerArgs} args
+ * @return {Promise<MessageHandlerResult>}
+ */
+async function _getGameUrls({ connectionId, packet, log }) {
+    const getGameUrlsMessage = new GenericRequestMessage();
+    getGameUrlsMessage.deserialize(packet.data);
+
+    log.debug(`Received Message: ${getGameUrlsMessage.toString()}`);
+
+    const gameUrlsMessage = new GameUrlsMessage();
+    gameUrlsMessage._msgNo = 364;
+
+    const url1 = new GameUrl();
+    url1._urlId = 1;
+    url1.urlRef = "http://localhost:8080";
+    gameUrlsMessage.addURL(url1);
+
+    const responsePacket = new ServerMessage();
+    responsePacket._header.sequence = packet._header.sequence;
+    responsePacket._header.flags = 8;
+
+    responsePacket.setBuffer(gameUrlsMessage.serialize());
 
     return { connectionId, messages: [responsePacket] };
 }
@@ -302,5 +366,13 @@ export const messageHandlers = [
     {
         name: "MC_STOCK_CAR_INFO",
         handler: getStockCarInfo,
+    },
+    {
+        name: "MC_GET_ARCADE_CARS",
+        handler: getArcadeCarInfo,
+    },
+    {
+        name: "MC_GET_GAME_URLS",
+        handler: _getGameUrls,
     },
 ];

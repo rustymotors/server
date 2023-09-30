@@ -23,7 +23,10 @@ import {
     updateEncryption,
 } from "../../shared/State.js";
 // eslint-disable-next-line no-unused-vars
-import { RawMessage, ServerMessage } from "../../shared/messageFactory.js";
+import {
+    SerializedBuffer,
+    ServerMessage,
+} from "../../shared/messageFactory.js";
 import { getServerConfiguration } from "../../shared/Configuration.js";
 
 /**
@@ -49,7 +52,9 @@ function _MSG_STRING(messageID) {
         { id: 109, name: "MC_SET_OPTIONS" }, // 0x6d
         { id: 141, name: "MC_STOCK_CAR_INFO" }, // 0x8d
         { id: 213, name: "MC_LOGIN_COMPLETE" }, // 0xd5
+        { id: 363, name: "MC_GET_GAME_URLS" }, // 0x16b"}
         { id: 266, name: "MC_UPDATE_PLAYER_PHYSICAL" }, // 0x10a
+        { id: 322, name: "MC_GET_ARCADE_CARS" }, // 0x142"}
         { id: 324, name: "MC_GET_LOBBIES" }, // 0x144
         { id: 325, name: "MC_LOBBIES" }, // 0x145
         { id: 391, name: "MC_CLUB_GET_INVITATIONS" }, // 0x187
@@ -110,11 +115,11 @@ async function processInput({
 /**
  * @param {object} args
  * @param {string} args.connectionId
- * @param {RawMessage} args.message
+ * @param {SerializedBuffer} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "transactionServer" })]
  * @returns {Promise<{
  *     connectionId: string,
- *    messages: RawMessage[]
+ *    messages: SerializedBuffer[]
  * }>}
  */
 export async function receiveTransactionsData({
@@ -165,7 +170,7 @@ export async function receiveTransactionsData({
             // Assuming the message was decrypted successfully, update the buffer
             log.debug(`Decrypted buffer: ${decryptedMessage.toString("hex")}`);
 
-            inboundMessage.updateBuffer(decryptedMessage);
+            inboundMessage.setBuffer(decryptedMessage);
             inboundMessage._header.flags -= 8;
             inboundMessage.updateMsgNo();
 
@@ -185,7 +190,7 @@ export async function receiveTransactionsData({
     });
 
     // Loop through the outbound messages and encrypt them
-    /** @type {RawMessage[]} */
+    /** @type {SerializedBuffer[]} */
     const outboundMessages = [];
 
     response.messages.forEach((outboundMessage) => {
@@ -223,11 +228,11 @@ export async function receiveTransactionsData({
                     `Encrypted buffer: ${encryptedMessage.toString("hex")}`,
                 );
 
-                outboundMessage.updateBuffer(encryptedMessage);
+                outboundMessage.setBuffer(encryptedMessage);
 
                 log.debug(`Encrypted message: ${outboundMessage.toString()}`);
 
-                const outboundRawMessage = new RawMessage();
+                const outboundRawMessage = new SerializedBuffer();
                 outboundRawMessage.setBuffer(outboundMessage.serialize());
                 log.debug(
                     `Encrypted message: ${outboundRawMessage.toString()}`,
@@ -239,7 +244,7 @@ export async function receiveTransactionsData({
                 );
             }
         } else {
-            const outboundRawMessage = new RawMessage();
+            const outboundRawMessage = new SerializedBuffer();
             outboundRawMessage.setBuffer(outboundMessage.serialize());
             log.debug(`Outbound message: ${outboundRawMessage.toString()}`);
             outboundMessages.push(outboundRawMessage);

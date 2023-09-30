@@ -14,25 +14,23 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { SerializedBuffer } from "../../shared/messageFactory.js";
+
 /**
  * A message listing the lobbies
  * This is the body of a MessageNode
  */
-export class LobbyMessage {
-    /**
-     * Creates an instance of TLobbyMessage.
-     * @param {import("pino").Logger} log
-     */
-    constructor(log) {
-        log.debug("new TLobbyMessage");
+export class LobbyMessage extends SerializedBuffer {
+    constructor() {
+        super();
         this._msgNo = 0; // 2 bytes
-        this._lobbyCount = 0; // 2 bytes
+        this._lobbyCount = 0; // 1 bytes
         this._shouldExpectMoreMessages = false; // 1 byte
         /** @type {LobbyInfo[]} */
         this._lobbyList = []; // 563 bytes each
     }
 
-    get size() {
+    size() {
         return 5 + this._lobbyList.length * 563;
     }
 
@@ -46,19 +44,21 @@ export class LobbyMessage {
     }
 
     serialize() {
-        const buf = Buffer.alloc(this.size);
-        let offset = 0;
-        buf.writeUInt16BE(this._msgNo, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._lobbyCount, offset);
-        offset += 2;
-        buf.writeUInt8(this._shouldExpectMoreMessages ? 1 : 0, offset);
-        offset += 1;
+        const neededSize = 5 + this._lobbyList.length * 563;
+        const buffer = Buffer.alloc(neededSize);
+        let offset = 0; // offset is 0
+        buffer.writeUInt16LE(this._msgNo, offset);
+        offset += 2; // offset is 2
+        buffer.writeUInt16LE(this._lobbyCount, offset);
+        offset += 2; // offset is 4
+        buffer.writeUInt8(this._shouldExpectMoreMessages ? 1 : 0, offset);
+        offset += 1; // offset is 5
         for (const lobby of this._lobbyList) {
-            buf.set(lobby.serialize(), offset);
-            offset += lobby.size;
+            lobby.serialize().copy(buffer, offset);
+            offset += lobby.size();
         }
-        return buf;
+        // offset is now 4 + this._lobbyList.length * 563
+        return buffer;
     }
 
     toString() {
@@ -66,13 +66,9 @@ export class LobbyMessage {
     }
 }
 
-export class LobbyInfo {
-    /**
-     * Creates an instance of LobbyInfo.
-     * @param {import("pino").Logger} log
-     */
-    constructor(log) {
-        log.debug("new LobbyInfo");
+export class LobbyInfo extends SerializedBuffer {
+    constructor() {
+        super();
         this._lobbyId = 0; // 4 bytes
         this._raceTypeId = 0; // 4 bytes
         this._terfId = 0; // 4 bytes
@@ -163,7 +159,7 @@ export class LobbyInfo {
      * @returns {boolean}
      */
     deserializeBool(data) {
-        return data.readUInt16BE() === 1;
+        return data.readUInt16LE() === 1;
     }
 
     /**
@@ -174,11 +170,11 @@ export class LobbyInfo {
      */
     serializeBool(value) {
         const buf = Buffer.alloc(2);
-        buf.writeUInt16BE(value ? 1 : 0);
+        buf.writeUInt16LE(value ? 1 : 0);
         return buf;
     }
 
-    get size() {
+    size() {
         return 563;
     }
 
@@ -188,17 +184,17 @@ export class LobbyInfo {
      * @param {Buffer} data
      */
     deserialize(data) {
-        if (data.length !== this.size) {
+        if (data.length !== this.size()) {
             throw new Error(
                 `Data length ${data.length} does not expected length ${this.size}`,
             );
         }
         let offset = 0;
-        this._lobbyId = data.readUInt32BE(offset);
+        this._lobbyId = data.readUInt32LE(offset);
         offset += 4;
-        this._raceTypeId = data.readUInt32BE(offset);
+        this._raceTypeId = data.readUInt32LE(offset);
         offset += 4;
-        this._terfId = data.readUInt32BE(offset);
+        this._terfId = data.readUInt32LE(offset);
         offset += 4;
         this._lobbyName = data.toString("utf8", offset, offset + 32);
         offset += 32;
@@ -206,61 +202,61 @@ export class LobbyInfo {
         offset += 256;
         this._clientArt = data.toString("utf8", offset, offset + 11);
         offset += 11;
-        this._elementId = data.readUInt32BE(offset);
+        this._elementId = data.readUInt32LE(offset);
         offset += 4;
-        this._turfLengthId = data.readUInt32BE(offset);
+        this._turfLengthId = data.readUInt32LE(offset);
         offset += 4;
-        this._startSlice = data.readUInt32BE(offset);
+        this._startSlice = data.readUInt32LE(offset);
         offset += 4;
-        this._endSlice = data.readUInt32BE(offset);
+        this._endSlice = data.readUInt32LE(offset);
         offset += 4;
-        this._dragStageLeft = data.readUInt32BE(offset);
+        this._dragStageLeft = data.readUInt32LE(offset);
         offset += 4;
-        this._dragStageRight = data.readUInt32BE(offset);
+        this._dragStageRight = data.readUInt32LE(offset);
         offset += 4;
-        this._dragStagingSlice = data.readUInt32BE(offset);
+        this._dragStagingSlice = data.readUInt32LE(offset);
         offset += 4;
-        this._gridSpreadFactor = data.readUInt32BE(offset);
+        this._gridSpreadFactor = data.readUInt32LE(offset);
         offset += 4;
-        this._linear = data.readUInt16BE(offset);
+        this._linear = data.readUInt16LE(offset);
         offset += 2;
-        this._minNumberPlayers = data.readUInt16BE(offset);
+        this._minNumberPlayers = data.readUInt16LE(offset);
         offset += 2;
-        this._maxNumberPlayers = data.readUInt16BE(offset);
+        this._maxNumberPlayers = data.readUInt16LE(offset);
         offset += 2;
-        this._defaultNumberPlayers = data.readUInt16BE(offset);
+        this._defaultNumberPlayers = data.readUInt16LE(offset);
         offset += 2;
         this._numberOfPlayersEnabled = this.deserializeBool(
             data.subarray(offset, offset + 2),
         );
         offset += 2;
-        this._minLaps = data.readUInt16BE(offset);
+        this._minLaps = data.readUInt16LE(offset);
         offset += 2;
-        this._maxLaps = data.readUInt16BE(offset);
+        this._maxLaps = data.readUInt16LE(offset);
         offset += 2;
-        this._defaultNumberOfLaps = data.readUInt16BE(offset);
+        this._defaultNumberOfLaps = data.readUInt16LE(offset);
         offset += 2;
         this._numberOfLapsEnabled = this.deserializeBool(
             data.subarray(offset, offset + 2),
         );
         offset += 2;
-        this._minNumberRounds = data.readUInt16BE(offset);
+        this._minNumberRounds = data.readUInt16LE(offset);
         offset += 2;
-        this._maxNumberRounds = data.readUInt16BE(offset);
+        this._maxNumberRounds = data.readUInt16LE(offset);
         offset += 2;
-        this._defaultNumberRounds = data.readUInt16BE(offset);
+        this._defaultNumberRounds = data.readUInt16LE(offset);
         offset += 2;
         this._numberOfRoundsEnabled = this.deserializeBool(
             data.subarray(offset, offset + 2),
         );
         offset += 2;
-        this._defaultWeather = data.readUInt16BE(offset);
+        this._defaultWeather = data.readUInt16LE(offset);
         offset += 2;
         this._weatherEnabled = this.deserializeBool(
             data.subarray(offset, offset + 2),
         );
         offset += 2;
-        this._defaultNight = data.readUInt16BE(offset);
+        this._defaultNight = data.readUInt16LE(offset);
         offset += 2;
         this._nightEnabled = this.deserializeBool(
             data.subarray(offset, offset + 2),
@@ -294,77 +290,77 @@ export class LobbyInfo {
         offset += 13;
         this._turfOwner = data.toString("utf8", offset, offset + 33);
         offset += 33;
-        this._qualifyingTime = data.readUInt32BE(offset);
+        this._qualifyingTime = data.readUInt32LE(offset);
         offset += 4;
-        this._numberOfClubPlayers = data.readUInt32BE(offset);
+        this._numberOfClubPlayers = data.readUInt32LE(offset);
         offset += 4;
-        this._numberofClubLaps = data.readUInt32BE(offset);
+        this._numberofClubLaps = data.readUInt32LE(offset);
         offset += 4;
-        this._numberOfClubRounds = data.readUInt32BE(offset);
+        this._numberOfClubRounds = data.readUInt32LE(offset);
         offset += 4;
-        this._clubNight = data.readUInt16BE(offset);
+        this._clubNight = data.readUInt16LE(offset);
         offset += 2;
-        this._clubWeather = data.readUInt16BE(offset);
+        this._clubWeather = data.readUInt16LE(offset);
         offset += 2;
-        this._clubBackwards = data.readUInt16BE(offset);
+        this._clubBackwards = data.readUInt16LE(offset);
         offset += 2;
-        this._bestLapTime = data.readUInt32BE(offset);
+        this._bestLapTime = data.readUInt32LE(offset);
         offset += 4;
-        this._lobbyDifficulty = data.readUInt32BE(offset);
+        this._lobbyDifficulty = data.readUInt32LE(offset);
         offset += 4;
-        this._timetrialPointsToQualify = data.readUInt32BE(offset);
+        this._timetrialPointsToQualify = data.readUInt32LE(offset);
         offset += 4;
-        this._timetrialCashToQualify = data.readUInt32BE(offset);
+        this._timetrialCashToQualify = data.readUInt32LE(offset);
         offset += 4;
-        this._timetrialPointsBonusIncrements = data.readUInt32BE(offset);
+        this._timetrialPointsBonusIncrements = data.readUInt32LE(offset);
         offset += 4;
-        this._timetrialCashBonusIncrements = data.readUInt32BE(offset);
+        this._timetrialCashBonusIncrements = data.readUInt32LE(offset);
         offset += 4;
-        this._timetrialTimeIncrements = data.readUInt32BE(offset);
+        this._timetrialTimeIncrements = data.readUInt32LE(offset);
         offset += 4;
-        this._timetrial1stPlaceVictoryPoints = data.readUInt32BE(offset);
+        this._timetrial1stPlaceVictoryPoints = data.readUInt32LE(offset);
         offset += 4;
-        this._timetrial1stPlaceVictoryCash = data.readUInt32BE(offset);
+        this._timetrial1stPlaceVictoryCash = data.readUInt32LE(offset);
         offset += 4;
-        this._timetrial2ndPlaceVictoryPoints = data.readUInt32BE(offset);
+        this._timetrial2ndPlaceVictoryPoints = data.readUInt32LE(offset);
         offset += 4;
-        this._timetrial2ndPlaceVictoryCash = data.readUInt32BE(offset);
+        this._timetrial2ndPlaceVictoryCash = data.readUInt32LE(offset);
         offset += 4;
-        this._timetrial3rdPlaceVictoryPoints = data.readUInt32BE(offset);
+        this._timetrial3rdPlaceVictoryPoints = data.readUInt32LE(offset);
         offset += 4;
-        this._timetrial3rdPlaceVictoryCash = data.readUInt32BE(offset);
+        this._timetrial3rdPlaceVictoryCash = data.readUInt32LE(offset);
         offset += 4;
-        this._minLevel = data.readUInt16BE(offset);
+        this._minLevel = data.readUInt16LE(offset);
         offset += 2;
-        this._minResetSlice = data.readUInt32BE(offset);
+        this._minResetSlice = data.readUInt32LE(offset);
         offset += 4;
-        this._maxResetSlice = data.readUInt32BE(offset);
+        this._maxResetSlice = data.readUInt32LE(offset);
         offset += 4;
-        this._newbieFlag = data.readUInt16BE(offset);
+        this._newbieFlag = data.readUInt16LE(offset);
         offset += 2;
-        this._driverHelmetFlag = data.readUInt16BE(offset);
+        this._driverHelmetFlag = data.readUInt16LE(offset);
         offset += 2;
-        this._clubMaxNumberPlayers = data.readUInt16BE(offset);
+        this._clubMaxNumberPlayers = data.readUInt16LE(offset);
         offset += 2;
-        this._clubMinNumberPlayers = data.readUInt16BE(offset);
+        this._clubMinNumberPlayers = data.readUInt16LE(offset);
         offset += 2;
-        this._clubNumberPlayersDefault = data.readUInt16BE(offset);
+        this._clubNumberPlayersDefault = data.readUInt16LE(offset);
         offset += 2;
-        this._minNumberOfClubs = data.readUInt16BE(offset);
+        this._minNumberOfClubs = data.readUInt16LE(offset);
         offset += 2;
-        this._maxNumberOfClubs = data.readUInt16BE(offset);
+        this._maxNumberOfClubs = data.readUInt16LE(offset);
         offset += 2;
-        this._racePointsFactor = data.readUInt32BE(offset);
+        this._racePointsFactor = data.readUInt32LE(offset);
         offset += 4;
-        this._maxBodyClass = data.readUInt16BE(offset);
+        this._maxBodyClass = data.readUInt16LE(offset);
         offset += 2;
-        this._maxPowerClass = data.readUInt16BE(offset);
+        this._maxPowerClass = data.readUInt16LE(offset);
         offset += 2;
-        this._partsPrizeMax = data.readUInt16BE(offset);
+        this._partsPrizeMax = data.readUInt16LE(offset);
         offset += 2;
-        this._partsPrizeWon = data.readUInt16BE(offset);
+        this._partsPrizeWon = data.readUInt16LE(offset);
         offset += 2;
-        this._clubLogoId = data.readUInt32BE(offset);
+        this._clubLogoId = data.readUInt32LE(offset);
         offset += 4;
         this._teamTrialsWeatherFlag = this.deserializeBool(
             data.subarray(offset, offset + 2),
@@ -378,181 +374,181 @@ export class LobbyInfo {
             data.subarray(offset, offset + 2),
         );
         offset += 2;
-        this._teamTrialsNumberLaps = data.readUInt16BE(offset);
+        this._teamTrialsNumberLaps = data.readUInt16LE(offset);
         offset += 2;
-        this._teamTrialsBaseTimeUnderPar = data.readUInt16BE(offset);
+        this._teamTrialsBaseTimeUnderPar = data.readUInt16LE(offset);
         offset += 2;
-        this._raceCashFactor = data.readUInt32BE(offset);
+        this._raceCashFactor = data.readUInt32LE(offset);
         offset += 4; // 563 total bytes
 
         return this;
     }
 
     serialize() {
-        const buf = Buffer.alloc(this.size);
-        let offset = 0;
-        buf.writeUInt32BE(this._lobbyId, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._raceTypeId, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._terfId, offset);
-        offset += 4;
+        const buf = Buffer.alloc(this.size());
+        let offset = 0; // offset is 0
+        buf.writeUInt32LE(this._lobbyId, offset);
+        offset += 4; // offset is 4
+        buf.writeUInt32LE(this._raceTypeId, offset);
+        offset += 4; // offset is 8
+        buf.writeUInt32LE(this._terfId, offset);
+        offset += 4; // offset is 12
         buf.write(this._lobbyName, offset, 32);
-        offset += 32;
+        offset += 32; // offset is 44
         buf.write(this._turfName, offset, 256);
-        offset += 256;
+        offset += 256; // offset is 300
         buf.write(this._clientArt, offset, 11);
-        offset += 11;
-        buf.writeUInt32BE(this._elementId, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._turfLengthId, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._startSlice, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._endSlice, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._dragStageLeft, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._dragStageRight, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._dragStagingSlice, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._gridSpreadFactor, offset);
-        offset += 4;
-        buf.writeUInt16BE(this._linear, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._minNumberPlayers, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._maxNumberPlayers, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._defaultNumberPlayers, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._numberOfPlayersEnabled ? 1 : 0, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._minLaps, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._maxLaps, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._defaultNumberOfLaps, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._numberOfLapsEnabled ? 1 : 0, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._minNumberRounds, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._maxNumberRounds, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._defaultNumberRounds, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._numberOfRoundsEnabled ? 1 : 0, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._defaultWeather, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._weatherEnabled ? 1 : 0, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._defaultNight, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._nightEnabled ? 1 : 0, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._defaultBackwards ? 1 : 0, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._backwardsEnabled ? 1 : 0, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._defaultTraffic ? 1 : 0, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._trafficEnabled ? 1 : 0, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._defaultDriverAI ? 1 : 0, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._driverAIEnabled ? 1 : 0, offset);
-        offset += 2;
+        offset += 11; // offset is 311
+        buf.writeUInt32LE(this._elementId, offset);
+        offset += 4; // offset is 315
+        buf.writeUInt32LE(this._turfLengthId, offset);
+        offset += 4; // offset is 319
+        buf.writeUInt32LE(this._startSlice, offset);
+        offset += 4; // offset is 323
+        buf.writeUInt32LE(this._endSlice, offset);
+        offset += 4; // offset is 327
+        buf.writeUInt32LE(this._dragStageLeft, offset);
+        offset += 4; // offset is 331
+        buf.writeUInt32LE(this._dragStageRight, offset);
+        offset += 4; // offset is 335
+        buf.writeUInt32LE(this._dragStagingSlice, offset);
+        offset += 4; // offset is 339
+        buf.writeUInt32LE(this._gridSpreadFactor, offset);
+        offset += 4; // offset is 343
+        buf.writeUInt16LE(this._linear, offset);
+        offset += 2; // offset is 345
+        buf.writeUInt16LE(this._minNumberPlayers, offset);
+        offset += 2; // offset is 347
+        buf.writeUInt16LE(this._maxNumberPlayers, offset);
+        offset += 2; // offset is 349
+        buf.writeUInt16LE(this._defaultNumberPlayers, offset);
+        offset += 2; // offset is 351
+        buf.writeUInt16LE(this._numberOfPlayersEnabled ? 1 : 0, offset);
+        offset += 2; // offset is 353
+        buf.writeUInt16LE(this._minLaps, offset);
+        offset += 2; // offset is 355
+        buf.writeUInt16LE(this._maxLaps, offset);
+        offset += 2; // offset is 357
+        buf.writeUInt16LE(this._defaultNumberOfLaps, offset);
+        offset += 2; // offset is 359
+        buf.writeUInt16LE(this._numberOfLapsEnabled ? 1 : 0, offset);
+        offset += 2; // offset is 361
+        buf.writeUInt16LE(this._minNumberRounds, offset);
+        offset += 2; // offset is 363
+        buf.writeUInt16LE(this._maxNumberRounds, offset);
+        offset += 2; // offset is 365
+        buf.writeUInt16LE(this._defaultNumberRounds, offset);
+        offset += 2; // offset is 367
+        buf.writeUInt16LE(this._numberOfRoundsEnabled ? 1 : 0, offset);
+        offset += 2; // offset is 369
+        buf.writeUInt16LE(this._defaultWeather, offset);
+        offset += 2; // offset is 371
+        buf.writeUInt16LE(this._weatherEnabled ? 1 : 0, offset);
+        offset += 2; // offset is 373
+        buf.writeUInt16LE(this._defaultNight, offset);
+        offset += 2; // offset is 375
+        buf.writeUInt16LE(this._nightEnabled ? 1 : 0, offset);
+        offset += 2; // offset is 377
+        buf.writeUInt16LE(this._defaultBackwards ? 1 : 0, offset);
+        offset += 2; // offset is 379
+        buf.writeUInt16LE(this._backwardsEnabled ? 1 : 0, offset);
+        offset += 2; // offset is 381
+        buf.writeUInt16LE(this._defaultTraffic ? 1 : 0, offset);
+        offset += 2; // offset is 383
+        buf.writeUInt16LE(this._trafficEnabled ? 1 : 0, offset);
+        offset += 2; // offset is 385
+        buf.writeUInt16LE(this._defaultDriverAI ? 1 : 0, offset);
+        offset += 2; // offset is 387
+        buf.writeUInt16LE(this._driverAIEnabled ? 1 : 0, offset);
+        offset += 2; // offset is 389
         buf.write(this._topDog, offset, 13);
-        offset += 13;
+        offset += 13; // offset is 402
         buf.write(this._turfOwner, offset, 33);
-        offset += 33;
-        buf.writeUInt32BE(this._qualifyingTime, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._numberOfClubPlayers, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._numberofClubLaps, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._numberOfClubRounds, offset);
-        offset += 4;
-        buf.writeUInt16BE(this._clubNight, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._clubWeather, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._clubBackwards, offset);
-        offset += 2;
-        buf.writeUInt32BE(this._bestLapTime, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._lobbyDifficulty, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._timetrialPointsToQualify, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._timetrialCashToQualify, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._timetrialPointsBonusIncrements, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._timetrialCashBonusIncrements, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._timetrialTimeIncrements, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._timetrial1stPlaceVictoryPoints, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._timetrial1stPlaceVictoryCash, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._timetrial2ndPlaceVictoryPoints, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._timetrial2ndPlaceVictoryCash, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._timetrial3rdPlaceVictoryPoints, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._timetrial3rdPlaceVictoryCash, offset);
-        offset += 4;
-        buf.writeUInt16BE(this._minLevel, offset);
-        offset += 2;
-        buf.writeUInt32BE(this._minResetSlice, offset);
-        offset += 4;
-        buf.writeUInt32BE(this._maxResetSlice, offset);
-        offset += 4;
-        buf.writeUInt16BE(this._newbieFlag, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._driverHelmetFlag, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._clubMaxNumberPlayers, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._clubMinNumberPlayers, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._clubNumberPlayersDefault, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._minNumberOfClubs, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._maxNumberOfClubs, offset);
-        offset += 2;
-        buf.writeUInt32BE(this._racePointsFactor, offset);
-        offset += 4;
-        buf.writeUInt16BE(this._maxBodyClass, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._maxPowerClass, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._partsPrizeMax, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._partsPrizeWon, offset);
-        offset += 2;
-        buf.writeUInt32BE(this._clubLogoId, offset);
-        offset += 4;
-        buf.writeUInt16BE(this._teamTrialsWeatherFlag ? 1 : 0, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._teamTrialsNightFlag ? 1 : 0, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._teamTrialsBackwardsFlag ? 1 : 0, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._teamTrialsNumberLaps, offset);
-        offset += 2;
-        buf.writeUInt16BE(this._teamTrialsBaseTimeUnderPar, offset);
-        offset += 2;
-        buf.writeUInt32BE(this._raceCashFactor, offset);
-        offset += 4; // 563 total bytes
+        offset += 33; // offset is 435
+        buf.writeUInt32LE(this._qualifyingTime, offset);
+        offset += 4; // offset is 439
+        buf.writeUInt32LE(this._numberOfClubPlayers, offset);
+        offset += 4; // offset is 443
+        buf.writeUInt32LE(this._numberofClubLaps, offset);
+        offset += 4; // offset is 447
+        buf.writeUInt32LE(this._numberOfClubRounds, offset);
+        offset += 4; // offset is 451
+        buf.writeUInt16LE(this._clubNight, offset);
+        offset += 2; // offset is 453
+        buf.writeUInt16LE(this._clubWeather, offset);
+        offset += 2; // offset is 455
+        buf.writeUInt16LE(this._clubBackwards, offset);
+        offset += 2; // offset is 457
+        buf.writeUInt32LE(this._bestLapTime, offset);
+        offset += 4; // offset is 461
+        buf.writeUInt32LE(this._lobbyDifficulty, offset);
+        offset += 4; // offset is 465
+        buf.writeUInt32LE(this._timetrialPointsToQualify, offset);
+        offset += 4; // offset is 469
+        buf.writeUInt32LE(this._timetrialCashToQualify, offset);
+        offset += 4; // offset is 473
+        buf.writeUInt32LE(this._timetrialPointsBonusIncrements, offset);
+        offset += 4; // offset is 477
+        buf.writeUInt32LE(this._timetrialCashBonusIncrements, offset);
+        offset += 4; // offset is 481
+        buf.writeUInt32LE(this._timetrialTimeIncrements, offset);
+        offset += 4; // offset is 485
+        buf.writeUInt32LE(this._timetrial1stPlaceVictoryPoints, offset);
+        offset += 4; // offset is 489
+        buf.writeUInt32LE(this._timetrial1stPlaceVictoryCash, offset);
+        offset += 4; // offset is 493
+        buf.writeUInt32LE(this._timetrial2ndPlaceVictoryPoints, offset);
+        offset += 4; // offset is 497
+        buf.writeUInt32LE(this._timetrial2ndPlaceVictoryCash, offset);
+        offset += 4; // offset is 501
+        buf.writeUInt32LE(this._timetrial3rdPlaceVictoryPoints, offset);
+        offset += 4; // offset is 505
+        buf.writeUInt32LE(this._timetrial3rdPlaceVictoryCash, offset);
+        offset += 4; // offset is 509
+        buf.writeUInt16LE(this._minLevel, offset);
+        offset += 2; // offset is 511
+        buf.writeUInt32LE(this._minResetSlice, offset);
+        offset += 4; // offset is 515
+        buf.writeUInt32LE(this._maxResetSlice, offset);
+        offset += 4; // offset is 519
+        buf.writeUInt16LE(this._newbieFlag, offset);
+        offset += 2; // offset is 521
+        buf.writeUInt16LE(this._driverHelmetFlag, offset);
+        offset += 2; // offset is 523
+        buf.writeUInt16LE(this._clubMaxNumberPlayers, offset);
+        offset += 2; // offset is 525
+        buf.writeUInt16LE(this._clubMinNumberPlayers, offset);
+        offset += 2; // offset is 527
+        buf.writeUInt16LE(this._clubNumberPlayersDefault, offset);
+        offset += 2; // offset is 529
+        buf.writeUInt16LE(this._minNumberOfClubs, offset);
+        offset += 2; // offset is 531
+        buf.writeUInt16LE(this._maxNumberOfClubs, offset);
+        offset += 2; // offset is 533
+        buf.writeUInt32LE(this._racePointsFactor, offset);
+        offset += 4; // offset is 537
+        buf.writeUInt16LE(this._maxBodyClass, offset);
+        offset += 2; // offset is 539
+        buf.writeUInt16LE(this._maxPowerClass, offset);
+        offset += 2; // offset is 541
+        buf.writeUInt16LE(this._partsPrizeMax, offset);
+        offset += 2; // offset is 543
+        buf.writeUInt16LE(this._partsPrizeWon, offset);
+        offset += 2; // offset is 545
+        buf.writeUInt32LE(this._clubLogoId, offset);
+        offset += 4; // offset is 549
+        buf.writeUInt16LE(this._teamTrialsWeatherFlag ? 1 : 0, offset);
+        offset += 2; // offset is 551
+        buf.writeUInt16LE(this._teamTrialsNightFlag ? 1 : 0, offset);
+        offset += 2; // offset is 553
+        buf.writeUInt16LE(this._teamTrialsBackwardsFlag ? 1 : 0, offset);
+        offset += 2; // offset is 555
+        buf.writeUInt16LE(this._teamTrialsNumberLaps, offset);
+        offset += 2; // offset is 557
+        buf.writeUInt16LE(this._teamTrialsBaseTimeUnderPar, offset);
+        offset += 2; // offset is 559
+        buf.writeUInt32LE(this._raceCashFactor, offset);
+        offset += 4; // offset is 563
 
         return buf;
     }
