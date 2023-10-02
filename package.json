@@ -31,7 +31,7 @@
   "type": "module",
   "types": "./lib/index.d.ts",
   "dependencies": {
-    "@sentry/node": "7.72",
+    "@sentry/node": "7.73",
     "@sentry/profiling-node": "^1.2.1",
     "moment": "^2.29.4",
     "ts-node": "10.9.1"
