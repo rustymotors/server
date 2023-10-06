@@ -2,10 +2,6 @@ codecov:
     require_ci_to_pass: false
 
 flags:
-    auth:
-        paths:
-            - packages/auth/**
-        carryforward: false
     database:
         paths:
             - packages/database/**
