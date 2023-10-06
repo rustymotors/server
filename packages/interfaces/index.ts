@@ -224,26 +224,6 @@ interface WebJSONResponse {
     body: { connectionId: string; remoteAddress: string; inQueue: boolean }[];
 }
 
-/**
- * @interface
- * @param {object} args
- * @param {Socket} args.incomingSocket
- * @param {Configuration} args.config
- * @param {Logger} args.log
- * @returns {void}
- */
-export function NetworkConnectionHandler({
-    incomingSocket,
-    config,
-    log,
-}: {
-    incomingSocket: Socket;
-    config: Configuration;
-    log: Logger;
-}): void {
-    throw new ServerError("Not implemented");
-}
-
 type WebConnectionHandler = (
     req: IncomingMessage,
     res: ServerResponse,

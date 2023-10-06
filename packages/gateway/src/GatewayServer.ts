@@ -26,14 +26,6 @@ import { type } from "node:os";
  * @module gateway
  */
 
-/**
- * @typedef {object} GatewayOptions
- * @property {module:shared/Configuration.Configuration} [config]
- * @property {module:shared/log.ServerLogger} [log]
- * @property {number} [backlogAllowedCount]
- * @property {number[]} [listeningPortList]
- * @property {module:interfaces.NetworkConnectionHandler} [socketConnectionHandler]
- */
 type GatewayOptions = {
     config?: import("/home/drazisil/mcos/packages/shared/Configuration.js").Configuration;
     log?: Logger;

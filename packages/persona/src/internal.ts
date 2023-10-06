@@ -15,7 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { getServerLogger } from "../../shared/log.js";
-import { Buffer } from "node:buffer";
 import { ServerError } from "../../shared/errors/ServerError.js";
 
 import {
@@ -77,10 +76,6 @@ export const messageHandlers: {
 
 /**
  * Return string as buffer
- * @param {string} name
- * @param {number} size
- * @param {BufferEncoding} [encoding="utf8"]
- * @returns {Buffer}
  */
 export function generateNameBuffer(
     name: string,
