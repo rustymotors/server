@@ -1,7 +1,7 @@
-import { SerializedObject } from "../../../interfaces/index.js";
+import { SerializedBuffer } from "../../../shared/messageFactory.js";
 
-export class PlayerModel implements SerializedObject {
-    serialize(): Buffer {
+export class PlayerModel extends SerializedBuffer {
+    override serialize(): Buffer {
         throw new Error("Method not implemented.");
     }
     serializeSize(): number {

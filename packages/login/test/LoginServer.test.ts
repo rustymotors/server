@@ -8,7 +8,10 @@ describe('LoginServer', () => {
     describe('constructor', () => {
         it('should create a new instance', () => {
             mockPino()
-            const loginServer = new LoginServer(mockDatabaseManager(), getServerLogger({}))
+            const loginServer = new LoginServer({
+                database: mockDatabaseManager(),
+                log: getServerLogger({})
+            })
             expect(loginServer).toBeDefined()
             unmockPino()
         })

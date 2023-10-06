@@ -28,6 +28,9 @@ import { Configuration } from "../../shared/Configuration.js";
  * @return {string}
  */
 export function handleGetCert(config: Configuration): string {
+    if (config.certificateFile === undefined) {
+        throw new Error("Certificate file not defined");
+    }
     try {
         const cert = readFileSync(config.certificateFile, "utf8");
         return cert;
@@ -81,6 +84,9 @@ export function handleGetRegistry(config: Configuration): string {
  * @return {string}
  */
 export function handleGetKey(config: Configuration): string {
+    if (config.publicKeyFile === undefined) {
+        throw new Error("Public key file not defined");
+    }
     try {
         const key = readFileSync(config.publicKeyFile, "utf8");
         return key;

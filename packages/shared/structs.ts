@@ -123,16 +123,16 @@ export class UserStatus extends SerializedBase implements Serialized {
     v2P341 = 0; // unknown, 4 bytes
     v2P1368 = 0; // Metrics Id (not used) 64 bytes
 
-    sizeOf(): number {
+    override sizeOf(): number {
         throw new Error("Not yet implemented");
     }
 
-    serialize(): Buffer {
+    override serialize(): Buffer {
         throw new Error("Not yet implemented");
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    deserialize(_buff: Buffer): Buffer {
+    override deserialize(_buff: Buffer): Buffer {
         throw new Error("Not yet implemented");
     }
 }
@@ -199,7 +199,7 @@ export class Login extends LoginRequestReply implements Serialized {
     readonly GAME_CODE = "2176"; // 40 chars string
     v2P187 = false;
 
-    serialize() {
+    override serialize() {
         if (this.header === null) {
             throw new Error("Header is null");
         }
@@ -229,7 +229,7 @@ export class Login extends LoginRequestReply implements Serialized {
         return size;
     }
 
-    deserialize(buf: Buffer) {
+    override deserialize(buf: Buffer) {
         if (this.header === null) {
             this.header = new Header();
         }
