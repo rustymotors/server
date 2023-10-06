@@ -10,9 +10,6 @@ import { ServerError } from "../shared/errors/ServerError.js";
 
 /**
  * Console thread
- * @impliments {SubprocessThread}
- *
- * @property {GatewayServer} parentThread The parent thread
  */
 export class ConsoleThread extends SubThread {
     parentThread: Gateway;

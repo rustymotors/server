@@ -77,13 +77,9 @@ export const messageHandlers: {
 /**
  * Return string as buffer
  */
-export function generateNameBuffer(
-    name: string,
-    size: number,
-    encoding: BufferEncoding = "utf8",
-): Buffer {
+export function generateNameBuffer(name: string, size: number): Buffer {
     const nameBuffer = Buffer.alloc(size);
-    Buffer.from(name, encoding).copy(nameBuffer);
+    Buffer.from(name, "utf8").copy(nameBuffer);
     return nameBuffer;
 }
 

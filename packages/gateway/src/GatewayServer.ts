@@ -21,6 +21,7 @@ import { receiveTransactionsData } from "../../transactions/src/internal.js";
 import FastifySensible from "@fastify/sensible";
 import { Logger } from "pino";
 import { type } from "node:os";
+import { SubprocessThread } from "../../interfaces/index.js";
 
 /**
  * @module gateway
@@ -42,10 +43,9 @@ type GatewayOptions = {
 
 /**
  * Gateway server
- * @impliments {SubprocessThread}
  * @see {@link getGatewayServer()} to get a singleton instance
  */
-export class Gateway {
+export class Gateway implements SubprocessThread {
     config: Configuration;
     log: Logger;
     timer: NodeJS.Timeout | null;

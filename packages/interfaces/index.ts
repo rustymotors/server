@@ -5,7 +5,6 @@ import { IncomingMessage, ServerResponse } from "node:http";
 import { SerializedBuffer } from "../shared/messageFactory.js";
 import { Gateway } from "../gateway/src/GatewayServer.js";
 import { Configuration } from "../shared/Configuration.js";
-import { Logger } from "pino";
 
 /**
  * @module interfaces
@@ -30,39 +29,6 @@ export const SerializedObject = {
         throw new ServerError("Not implemented");
     },
 };
-
-type GameMessageHeader = object;
-/**
- * @extends {SerializedObject}
- * @property {number} msgid
- * @property {number} msglen
- * @property {number} version
- * @property {number} reserved
- * @property {number} checksum
- * @property {function(Buffer): GameMessageHeader} deserialize
- */
-
-interface ClientMessageHeader {
-    length: number;
-    signature: string;
-    serialize: () => Buffer;
-}
-
-type ClientMessage = object;
-/**
- * @extends {SerializedObject}
- * @property {number} toFrom
- * @property {string} connectionId
- * @property {number} appId
- * @property {number} sequence
- * @property {number} flags
- * @property {Buffer} rawBuffer
- * @property {number} opCode
- * @property {ClientMessageHeader} header
- * @property {function(): Buffer} serialize
- * @property {function(): string} toString
- * @property {function(Buffer): void} deserialize
- */
 
 interface EncryptionSession {
     connectionId: string;
@@ -142,16 +108,6 @@ interface TConnection {
     inQueue: boolean;
 }
 
-interface TBufferWithConnection {
-    connectionId: string;
-    connection: SocketWithConnectionInfo;
-    data: Buffer;
-    timeStamp: number;
-}
-interface TransactionMessage {
-    serialize: () => Buffer;
-    deserialize: (arg0: Buffer) => void;
-}
 interface JSONResponseOfGameMessage {
     msgNo: number;
     opCode: number | null;
@@ -169,24 +125,6 @@ interface GameMessage {
     deserialize: (arg0: Buffer) => void;
     toJSON: () => JSONResponseOfGameMessage;
     dumpPacket: () => string;
-}
-
-interface BinaryStructure {
-    serialize: () => Buffer;
-    deserialize: (arg0: Buffer) => void;
-}
-
-type FIELD_TYPE = "boolean" | "byte" | "binary" | "char" | "u16" | "u32";
-
-/**
- * @exports
- */
-interface GameMessageHandler {
-    opCode: number;
-    name: string;
-    handler: (
-        arg0: ServiceArgs,
-    ) => Promise<import("../shared/State.js").ServiceResponse>;
 }
 
 export interface GameMessageOpCode {
@@ -242,64 +180,7 @@ export interface RaceLobbyRecord {
     eTurfName: string;
 }
 
-interface TPersonaSetver {
-    createNewGameAccount: (arg0: Buffer) => Promise<GameMessage>;
-    logoutGameUser: (arg0: Buffer) => Promise<GameMessage>;
-    validateLicencePlate: (arg0: Buffer) => Promise<GameMessage>;
-    validatePersonaName: (arg0: Buffer) => Promise<GameMessage>;
-    getPersonaMaps: (arg0: Buffer) => Promise<GameMessage>;
-    getPersonasByCustomerId: (arg0: number) => Promise<PersonaRecord[]>;
-}
-
-interface AuthenticationServer {
-    handleRequest: (
-        arg0: IncomingMessage,
-        arg1: ServerResponse,
-    ) => ServerResponse;
-}
-
-interface IConnectionManager {
-    connections: ClientConnection[];
-    findConnectionByID: (arg0: string) => ClientConnection | undefined;
-    findConnectionBySocket: (arg0: Socket) => ClientConnection | undefined;
-    findConnectionByAddressAndPort: (
-        arg0: string,
-        arg1: number,
-    ) => ClientConnection | undefined;
-    addConnection: (arg0: ClientConnection) => void;
-    removeConnection: (arg0: string) => void;
-    removeConnectionBySocket: (arg0: Socket) => void;
-    removeConnectionsByAppID: (arg0: number) => void;
-    getAllConnections: () => ClientConnection[];
-    formatConnectionsAsHTML: (arg0: ClientConnection[]) => string;
-    formatConnectionsAsJSON: (arg0: ClientConnection[]) => string;
-    getQueue: () => ClientConnection[];
-    newConnectionFromSocket: (arg0: Socket) => ClientConnection;
-    updateConnectionStatus: (arg0: string, arg1: number) => void;
-    updateConnectionSocket: (arg0: string, arg1: Socket) => void;
-    updateConnectionEncryption: (
-        arg0: string,
-        arg1: EncryptionSession,
-        arg2: boolean,
-    ) => void;
-}
-
-interface GamePatchingServer {
-    handleRequest: (
-        arg0: IncomingMessage,
-        arg1: ServerResponse,
-    ) => ServerResponse;
-    castanetResponse: (
-        arg0: IncomingMessage,
-        arg1: ServerResponse,
-    ) => ServerResponse;
-}
-
-/**
- * @exports
- * @interface
- */
-interface SubprocessThread {
+export interface SubprocessThread {
     name: string;
     loopInterval: number;
     timer: NodeJS.Timeout | null;
@@ -308,57 +189,6 @@ interface SubprocessThread {
     init: () => void;
     run: () => void;
     shutdown: () => void;
-}
-
-/**
- * @interface GatewayServer
- * @extends {SubprocessThread}
- */
-
-/**
- * @function
- * @name GatewayServer#help
- * @returns {void}
- */
-
-/**
- * @function
- * @name GatewayServer#start
- * @returns {void}
- */
-
-/**
- * @function
- * @name GatewayServer#stop
- * @returns {void}
- */
-
-/**
- * @function
- * @name GatewayServer#restart
- * @returns {void}
- */
-
-/**
- * @function
- * @name GatewayServer#exit
- * @returns {void}
- */
-
-interface AdminWebServer {
-    handleRequest: (arg0: IncomingMessage) => WebJSONResponse;
-}
-
-interface IEncryptionManager {
-    generateEncryptionPair: (
-        arg0: ClientConnection,
-        arg1: SessionKeys,
-    ) => EncryptionSession;
-    selectEncryptors: (arg0: ClientConnection) => EncryptionSession | undefined;
-    createEncrypters: (
-        arg0: ClientConnection,
-        arg1: SessionKeys,
-    ) => EncryptionSession;
 }
 
 export interface ServiceArgs {
