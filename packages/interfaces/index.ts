@@ -180,8 +180,6 @@ export interface RaceLobbyRecord {
     eTurfName: string;
 }
 
-
-
 export interface ServiceArgs {
     connectionId: string;
     message: SerializedBuffer;
