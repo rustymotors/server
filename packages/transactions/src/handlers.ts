@@ -389,22 +389,14 @@ export interface MessageHandlerArgs {
     log: import("pino").Logger;
 }
 
-export type MessageHandlerResult = {
+export interface MessageHandlerResult {
     connectionId: string;
     messages: ServerMessage[];
-};
+}
 
-export type MessageHandlerFunction = (
-    arg: MessageHandlerArgs,
-) => Promise<MessageHandlerResult>;
-
-/**
- * @readonly
- * @type {{name: string, handler: MessageHandlerFunction}[]}
- */
 export const messageHandlers: {
     name: string;
-    handler: MessageHandlerFunction;
+    handler: (args: MessageHandlerArgs) => Promise<MessageHandlerResult>;
 }[] = [
     {
         name: "MC_TRACKING_MSG",

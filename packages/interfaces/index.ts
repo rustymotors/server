@@ -3,7 +3,6 @@ import { ServerError } from "../shared/errors/ServerError.js";
 import { Cipher, Decipher } from "node:crypto";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { SerializedBuffer } from "../shared/messageFactory.js";
-import { Gateway } from "../gateway/src/GatewayServer.js";
 import { Configuration } from "../shared/Configuration.js";
 
 /**
