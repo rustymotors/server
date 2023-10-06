@@ -57,7 +57,6 @@ export class TClientConnectMessage extends ServerMessage {
         offset += 4; // 51 bytes
     }
 
-
     override serialize() {
         const buffer = Buffer.alloc(this.size());
         let offset = 0;

@@ -1,53 +1,53 @@
 name: Node.js CI
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
 
 env:
-  MCO_LOG_LEVEL: warn
+    MCO_LOG_LEVEL: warn
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+    build:
+        runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
+        strategy:
+            matrix:
+                node-version: [18.x, 20.x]
 
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm ci install
-      - name: Test
-        run: npm run test:only
-      - name: Codecov
-        env: # Or as an environment variable
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: |
-          pip install --user pytest
-          pip install --user codecov-cli
-          codecovcli --verbose create-commit --fail-on-error 
-          codecovcli --verbose create-report --fail-on-error 
-          codecovcli --verbose do-upload --fail-on-error --flag database --name database-${{ matrix.node-version }}
-          codecovcli --verbose do-upload --fail-on-error --flag gateway --name gateway-${{ matrix.node-version }}
-          codecovcli --verbose do-upload --fail-on-error --flag lobby --name lobby-${{ matrix.node-version }}
-          codecovcli --verbose do-upload --fail-on-error --flag login --name login-${{ matrix.node-version }}
-          codecovcli --verbose do-upload --fail-on-error --flag patch --name patch-${{ matrix.node-version }}
-          codecovcli --verbose do-upload --fail-on-error --flag persona --name persona-${{ matrix.node-version }}
-          codecovcli --verbose do-upload --fail-on-error --flag shard --name shard-${{ matrix.node-version }}
-          codecovcli --verbose do-upload --fail-on-error --flag interfaces --name interfaces-${{ matrix.node-version }}
-          codecovcli --verbose do-upload --fail-on-error --flag transactions --name transactions-${{ matrix.node-version }}
-          codecovcli --verbose do-upload --fail-on-error --flag core --name core-${{ matrix.node-version }}
-                    
-      - uses: actions/upload-artifact@v3
-        with:
-          name: coverage_${{ matrix.node-version }}
-          path: coverage
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - run: npm ci install
+            - name: Test
+              run: npm run test:only
+            - name: Codecov
+              env: # Or as an environment variable
+                  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+              run: |
+                  pip install --user pytest
+                  pip install --user codecov-cli
+                  codecovcli --verbose create-commit --fail-on-error 
+                  codecovcli --verbose create-report --fail-on-error 
+                  codecovcli --verbose do-upload --fail-on-error --flag database --name database-${{ matrix.node-version }}
+                  codecovcli --verbose do-upload --fail-on-error --flag gateway --name gateway-${{ matrix.node-version }}
+                  codecovcli --verbose do-upload --fail-on-error --flag lobby --name lobby-${{ matrix.node-version }}
+                  codecovcli --verbose do-upload --fail-on-error --flag login --name login-${{ matrix.node-version }}
+                  codecovcli --verbose do-upload --fail-on-error --flag patch --name patch-${{ matrix.node-version }}
+                  codecovcli --verbose do-upload --fail-on-error --flag persona --name persona-${{ matrix.node-version }}
+                  codecovcli --verbose do-upload --fail-on-error --flag shard --name shard-${{ matrix.node-version }}
+                  codecovcli --verbose do-upload --fail-on-error --flag interfaces --name interfaces-${{ matrix.node-version }}
+                  codecovcli --verbose do-upload --fail-on-error --flag transactions --name transactions-${{ matrix.node-version }}
+                  codecovcli --verbose do-upload --fail-on-error --flag core --name core-${{ matrix.node-version }}
+
+            - uses: actions/upload-artifact@v3
+              with:
+                  name: coverage_${{ matrix.node-version }}
+                  path: coverage

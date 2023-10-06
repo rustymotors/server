@@ -1,5 +1,5 @@
 import { LobbyMessage } from "../src/LobbyMessage.js";
-import  { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 describe("LobbyMessage", () => {
     describe(".size()", () => {

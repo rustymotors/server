@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from "node:http";
 import { getServerLogger } from "../../shared/log.js";
- import { Buffer } from "node:buffer";
+import { Buffer } from "node:buffer";
 
 const CastanetResponse = {
     body: Buffer.from("cafebeef00000000000003", "hex"),
@@ -66,7 +66,10 @@ export class PatchServer {
      * @param {ServerResponse} response
      * @returns {ServerResponse}
      */
-    castanetResponse(request: IncomingMessage, response: ServerResponse): ServerResponse {
+    castanetResponse(
+        request: IncomingMessage,
+        response: ServerResponse,
+    ): ServerResponse {
         this._log.debug(
             `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
         );
@@ -84,7 +87,10 @@ export class PatchServer {
      * @param {ServerResponse} response
      * @returns {ServerResponse}
      */
-    handleRequest(request: IncomingMessage, response: ServerResponse): ServerResponse {
+    handleRequest(
+        request: IncomingMessage,
+        response: ServerResponse,
+    ): ServerResponse {
         if (
             request.url === "/games/EA_Seattle/MotorCity/UpdateInfo" ||
             request.url === "/games/EA_Seattle/MotorCity/NPS" ||

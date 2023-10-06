@@ -82,7 +82,9 @@ async function processInput({
     log = getServerLogger({
         module: "transactionServer",
     }),
-}: import("./handlers.js").MessageHandlerArgs): Promise<import("./handlers.js").MessageHandlerResult> {
+}: import("./handlers.js").MessageHandlerArgs): Promise<
+    import("./handlers.js").MessageHandlerResult
+> {
     const currentMessageNo = packet._msgNo;
     const currentMessageString = _MSG_STRING(currentMessageNo);
 
@@ -129,7 +131,11 @@ export async function receiveTransactionsData({
     log = getServerLogger({
         module: "transactionServer",
     }),
-}: { connectionId: string; message: SerializedBuffer; log?: import("pino").Logger; }): Promise<{
+}: {
+    connectionId: string;
+    message: SerializedBuffer;
+    log?: import("pino").Logger;
+}): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
 }> {

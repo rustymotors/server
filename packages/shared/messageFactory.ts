@@ -10,8 +10,6 @@
 
 import { ServerError } from "./errors/ServerError.js";
 
-
-
 /**
  * @abstract
  * @property {Buffer} data
@@ -67,7 +65,9 @@ class AbstractSerializable {
  * @param {typeof AbstractSerializable} Base
  * @returns {typeof AbstractSerializable}
  */
-const SerializableMixin = (Base: typeof AbstractSerializable): typeof AbstractSerializable =>
+const SerializableMixin = (
+    Base: typeof AbstractSerializable,
+): typeof AbstractSerializable =>
     class extends Base {
         constructor() {
             super();
@@ -111,7 +111,11 @@ export function deserializeString(buffer: Buffer): string {
  * @param {number} offset
  * @returns {number}
  */
-export function serializeString(string: string, targetBuffer: Buffer, offset: number): number {
+export function serializeString(
+    string: string,
+    targetBuffer: Buffer,
+    offset: number,
+): number {
     const buffer = Buffer.alloc(4 + string.length + 1);
     buffer.writeInt32BE(string.length + 1, 0);
     const stringToWrite = string + "\0";

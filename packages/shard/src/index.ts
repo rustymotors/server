@@ -17,8 +17,6 @@
 import { readFileSync } from "fs";
 import { Configuration } from "../../shared/Configuration.js";
 
-
-
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.
 
@@ -90,8 +88,7 @@ export function handleGetKey(config: Configuration): string {
     try {
         const key = readFileSync(config.publicKeyFile, "utf8");
         return key;
-    }
-    catch (err) {
+    } catch (err) {
         throw new Error(`Error reading public key file: ${String(err)}`);
-    }    
+    }
 }

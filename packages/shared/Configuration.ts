@@ -30,7 +30,14 @@ export class Configuration {
         publicKeyFile = "certificates/publickey.pem",
         logLevel = "info",
         logger = getServerLogger({}),
-    }: { host?: string; certificateFile?: string; privateKeyFile?: string; publicKeyFile?: string; logLevel?: string; logger?: Logger; }) {
+    }: {
+        host?: string;
+        certificateFile?: string;
+        privateKeyFile?: string;
+        publicKeyFile?: string;
+        logLevel?: string;
+        logger?: Logger;
+    }) {
         try {
             this.certificateFile = certificateFile;
 
@@ -47,7 +54,6 @@ export class Configuration {
         }
     }
 }
-
 
 /**
  * Get a singleton instance of Configuration
@@ -68,7 +74,14 @@ export function getServerConfiguration({
     publicKeyFile,
     logLevel,
     logger,
-}: { host?: string; certificateFile?: string; privateKeyFile?: string; publicKeyFile?: string; logLevel?: string; logger?: Logger; }): Configuration {
+}: {
+    host?: string;
+    certificateFile?: string;
+    privateKeyFile?: string;
+    publicKeyFile?: string;
+    logLevel?: string;
+    logger?: Logger;
+}): Configuration {
     if (typeof Configuration.instance === "undefined") {
         Configuration.instance = new Configuration({
             host,

@@ -30,7 +30,7 @@ export class ServerError extends Error {
      *
      * @returns {{name: string, message: string, stack: string}}
      */
-    toJSON(): { name: string; message: string; stack: string; } {
+    toJSON(): { name: string; message: string; stack: string } {
         return {
             name: this.name,
             message: this.message,
@@ -58,10 +58,10 @@ export class ServerError extends Error {
      * @returns {ServerError}
      */
     static fromJSON(json: {
-            name: string;
-            message: string;
-            stack: string;
-        }): ServerError {
+        name: string;
+        message: string;
+        stack: string;
+    }): ServerError {
         const { name, message, stack } = json;
         const newError = new ServerError(String(message));
         newError.name = name;

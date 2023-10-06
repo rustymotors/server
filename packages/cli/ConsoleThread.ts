@@ -21,7 +21,13 @@ export class ConsoleThread extends SubThread {
      * @param {Gateway} options.parentThread The parent thread
      * @param {import("pino").Logger} options.log The logger
      */
-    constructor({ parentThread, log }: { parentThread: Gateway; log: import("pino").Logger; }) {
+    constructor({
+        parentThread,
+        log,
+    }: {
+        parentThread: Gateway;
+        log: import("pino").Logger;
+    }) {
         super("ReadInput", log, 100);
         if (parentThread === undefined) {
             throw new ServerError(

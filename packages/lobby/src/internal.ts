@@ -82,7 +82,11 @@ export async function receiveLobbyData({
     log = getServerLogger({
         module: "Lobby",
     }),
-}: { connectionId: string; message: SerializedBuffer; log?: import("pino").Logger; }): Promise<{
+}: {
+    connectionId: string;
+    message: SerializedBuffer;
+    log?: import("pino").Logger;
+}): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
 }> {

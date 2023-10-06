@@ -26,7 +26,7 @@ export class MessageNode {
      * @param {module:shared/RawMessage} rawMessage
      * @return {MessageNode}
      */
-    static fromRawMessage(rawMessage: SerializedBuffer ): MessageNode {
+    static fromRawMessage(rawMessage: SerializedBuffer): MessageNode {
         const messageNode = new MessageNode();
         messageNode.deserialize(rawMessage.serialize());
 

@@ -20,7 +20,11 @@ export class StockCar {
      * @param {number} retailPrice
      * @param {boolean} bIsDealOfTheDay
      */
-    constructor(brandedPartId: number, retailPrice: number, bIsDealOfTheDay: boolean) {
+    constructor(
+        brandedPartId: number,
+        retailPrice: number,
+        bIsDealOfTheDay: boolean,
+    ) {
         this.brandedPartId = brandedPartId; // 4 bytes
         this.retailPrice = retailPrice; // 4 bytes
         this.bIsDealOfTheDay = bIsDealOfTheDay; // 2 bytes

@@ -20,7 +20,7 @@ let testSocket2: Socket;
 
 describe("Encryption", () => {
     beforeAll(() => {
-        testSave = (state?: State ) => {
+        testSave = (state?: State) => {
             if (typeof state === "undefined") {
                 throw new Error("State not defined");
             }

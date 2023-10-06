@@ -4,42 +4,41 @@ This assumes you know the basics of checking out a git repo. If you don't, pleas
 
 ## Requirements
 
-- Linux
-  \*\* If you want to try running on Windows it may work, but I'm not going to support it
-- NodeJS
-- [Docker](https://docs.docker.com/compose/install/) (A way to see the logs of the node pod would be very helpful if you need to file a bug report)
+-   Linux
+    \*\* If you want to try running on Windows it may work, but I'm not going to support it
+-   NodeJS
+-   [Docker](https://docs.docker.com/compose/install/) (A way to see the logs of the node pod would be very helpful if you need to file a bug report)
 
 ### Configure server settings
 
-- Set the `EXTERNAL_HOST` enviroment variable in docker-compose.yaml to the external hostname or IP address of the machine the server is running on
+-   Set the `EXTERNAL_HOST` enviroment variable in docker-compose.yaml to the external hostname or IP address of the machine the server is running on
 
-- Generate the SSL cert and keys using `make certs`
+-   Generate the SSL cert and keys using `make certs`
 
 ## Installing
 
-- `npm install`
+-   `npm install`
 
 ### Ports
 
 You will need to open the following ports:
 
-- 80
-- 443
-- 6660
-- 7003
-- 8226
-- 8227
-- 8228
-- 43200
-- 43300
-- 43400
-- 53303
-- 9000 - 9014 (not yet used, I think they are for UDP client racing
-
+-   80
+-   443
+-   6660
+-   7003
+-   8226
+-   8227
+-   8228
+-   43200
+-   43300
+-   43400
+-   53303
+-   9000 - 9014 (not yet used, I think they are for UDP client racing
 
 ### Running
 
-- `make prod_node`
+-   `make prod_node`
 
 This will start the server cluster which involves the database, SSL gateway, and server(s)
 

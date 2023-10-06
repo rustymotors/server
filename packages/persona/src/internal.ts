@@ -82,7 +82,11 @@ export const messageHandlers: {
  * @param {BufferEncoding} [encoding="utf8"]
  * @returns {Buffer}
  */
-export function generateNameBuffer(name: string, size: number, encoding: BufferEncoding = "utf8"): Buffer {
+export function generateNameBuffer(
+    name: string,
+    size: number,
+    encoding: BufferEncoding = "utf8",
+): Buffer {
     const nameBuffer = Buffer.alloc(size);
     Buffer.from(name, encoding).copy(nameBuffer);
     return nameBuffer;
@@ -93,31 +97,34 @@ export function generateNameBuffer(name: string, size: number, encoding: BufferE
  * NOTE: Currently we only support one persona per customer
  * @type {import("../../interfaces/index.js").PersonaRecord[]}
  */
-export const personaRecords: import("../../interfaces/index.js").PersonaRecord[] = [
-    {
-        customerId: 2868969472,
-        id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
-        maxPersonas: Buffer.from([0x01]),
-        name: generateNameBuffer("Doc Joe", NAME_BUFFER_SIZE),
-        personaCount: Buffer.from([0x00, 0x01]),
-        shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
-    },
-    {
-        customerId: 5551212, // 0x54 0xB4 0x6C
-        id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
-        maxPersonas: Buffer.from([0x02]),
-        name: generateNameBuffer("Dr Brown", NAME_BUFFER_SIZE),
-        personaCount: Buffer.from([0x00, 0x01]),
-        shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
-    },
-];
+export const personaRecords: import("../../interfaces/index.js").PersonaRecord[] =
+    [
+        {
+            customerId: 2868969472,
+            id: Buffer.from([0x00, 0x00, 0x00, 0x01]),
+            maxPersonas: Buffer.from([0x01]),
+            name: generateNameBuffer("Doc Joe", NAME_BUFFER_SIZE),
+            personaCount: Buffer.from([0x00, 0x01]),
+            shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
+        },
+        {
+            customerId: 5551212, // 0x54 0xB4 0x6C
+            id: Buffer.from([0x00, 0x84, 0x5f, 0xed]),
+            maxPersonas: Buffer.from([0x02]),
+            name: generateNameBuffer("Dr Brown", NAME_BUFFER_SIZE),
+            personaCount: Buffer.from([0x00, 0x01]),
+            shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
+        },
+    ];
 
 /**
  *
  * @param {number} id
  * @return {Promise<import("../../interfaces/index.js").PersonaRecord[]>}
  */
-export async function getPersonasByPersonaId(id: number): Promise<import("../../interfaces/index.js").PersonaRecord[]> {
+export async function getPersonasByPersonaId(
+    id: number,
+): Promise<import("../../interfaces/index.js").PersonaRecord[]> {
     const results = personaRecords.filter((persona) => {
         const match = id === persona.id.readInt32BE(0);
         return match;
@@ -147,7 +154,11 @@ export async function handleSelectGamePersona({
     log = getServerLogger({
         module: "PersonaServer",
     }),
-}: { connectionId: string; message: LegacyMessage; log?: import("pino").Logger; }): Promise<{
+}: {
+    connectionId: string;
+    message: LegacyMessage;
+    log?: import("pino").Logger;
+}): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
 }> {
@@ -200,7 +211,11 @@ export async function handleGameLogout({
     log = getServerLogger({
         module: "PersonaServer",
     }),
-}: { connectionId: string; message: LegacyMessage; log?: import("pino").Logger; }): Promise<{
+}: {
+    connectionId: string;
+    message: LegacyMessage;
+    log?: import("pino").Logger;
+}): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
 }> {
@@ -237,7 +252,9 @@ export async function handleGameLogout({
  * @param {number} customerId
 //  * @return {Promise<import("../../interfaces/index.js").PersonaRecord[]>}
  */
-async function getPersonasByCustomerId(customerId: number): Promise<import("../../interfaces/index.js").PersonaRecord[]> {
+async function getPersonasByCustomerId(
+    customerId: number,
+): Promise<import("../../interfaces/index.js").PersonaRecord[]> {
     const results = personaRecords.filter(
         (persona) => persona.customerId === customerId,
     );
@@ -252,7 +269,9 @@ async function getPersonasByCustomerId(customerId: number): Promise<import("../.
  * @param {number} customerId
  * @return {Promise<import("../../interfaces/index.js").PersonaRecord[]>}
  */
-async function getPersonaMapsByCustomerId(customerId: number): Promise<import("../../interfaces/index.js").PersonaRecord[]> {
+async function getPersonaMapsByCustomerId(
+    customerId: number,
+): Promise<import("../../interfaces/index.js").PersonaRecord[]> {
     switch (customerId) {
         case 2868969472:
         case 5551212:
@@ -277,7 +296,11 @@ async function getPersonaMaps({
     connectionId,
     message,
     log = getServerLogger({ module: "PersonaServer" }),
-}: { connectionId: string; message: LegacyMessage; log?: import("pino").Logger; }): Promise<{
+}: {
+    connectionId: string;
+    message: LegacyMessage;
+    log?: import("pino").Logger;
+}): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
 }> {
@@ -387,7 +410,11 @@ export async function receivePersonaData({
     log = getServerLogger({
         module: "PersonaServer",
     }),
-}: { connectionId: string; message: SerializedBuffer; log?: import("pino").Logger; }): Promise<{
+}: {
+    connectionId: string;
+    message: SerializedBuffer;
+    log?: import("pino").Logger;
+}): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
 }> {

@@ -18,11 +18,11 @@ There's a brief explanation of the thought process here [link](https://github.co
 
 ## Server Setup
 
-- See [server docs](./docs/server.md)
+-   See [server docs](./docs/server.md)
 
 ## Client Setup
 
-- See [client docs](./docs/client.md)
+-   See [client docs](./docs/client.md)
 
 ## Started
 
@@ -30,6 +30,6 @@ Mar 6, 2016
 
 ## Current Status
 
-- See the [changelog](./CHANGELOG.md).
+-   See the [changelog](./CHANGELOG.md).
 
-- [TODO Issues](https://github.com/drazisil/mcos/labels/todo%20%3Aspiral_notepad%3A)
+-   [TODO Issues](https://github.com/drazisil/mcos/labels/todo%20%3Aspiral_notepad%3A)

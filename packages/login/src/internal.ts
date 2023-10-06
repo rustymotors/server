@@ -54,7 +54,11 @@ async function login({
     log = getServerLogger({
         module: "LoginServer",
     }),
-}: { connectionId: string; message: SerializedBuffer; log?: import("pino").Logger; }): Promise<{
+}: {
+    connectionId: string;
+    message: SerializedBuffer;
+    log?: import("pino").Logger;
+}): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
 }> {
@@ -214,7 +218,11 @@ export async function handleLoginData({
     log = getServerLogger({
         module: "handleLoginData",
     }),
-}: { connectionId: string; message: SerializedBuffer; log?: import("pino").Logger; }): Promise<{
+}: {
+    connectionId: string;
+    message: SerializedBuffer;
+    log?: import("pino").Logger;
+}): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
 }> {

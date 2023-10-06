@@ -18,10 +18,9 @@ If it does not match either of the above checks, it is silently discarded.
 
 #### Sends
 
-* `{targetService: string, incomingData: Buffer, connectionId: string}`
+-   `{targetService: string, incomingData: Buffer, connectionId: string}`
 
 #### Receives
 
-* `{eventType: string, connectionId: string} `
-* `{outboundData: Buffer | Buffer[]}`
-
+-   `{eventType: string, connectionId: string} `
+-   `{outboundData: Buffer | Buffer[]}`

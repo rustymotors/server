@@ -61,7 +61,11 @@ export function socketErrorHandler({
     log = getServerLogger({
         module: "socketErrorHandler",
     }),
-}: { connectionId: string; error: NodeJS.ErrnoException; log?: Logger; }) {
+}: {
+    connectionId: string;
+    error: NodeJS.ErrnoException;
+    log?: Logger;
+}) {
     // Handle socket errors
     if (error.code == "ECONNRESET") {
         log.debug(`Connection ${connectionId} reset`);
@@ -84,7 +88,10 @@ export function socketEndHandler({
     log = getServerLogger({
         module: "socketEndHandler",
     }),
-}: { connectionId: string; log?: import("pino").Logger; }) {
+}: {
+    connectionId: string;
+    log?: import("pino").Logger;
+}) {
     log.debug(`Connection ${connectionId} ended`);
 
     // Remove the socket from the global state
@@ -104,7 +111,10 @@ export function onSocketConnection({
     log = getServerLogger({
         module: "onDataHandler",
     }),
-}: { incomingSocket: Socket; log?: import("pino").Logger; }) {
+}: {
+    incomingSocket: Socket;
+    log?: import("pino").Logger;
+}) {
     // Get the local port and remote address
     const { localPort, remoteAddress } = incomingSocket;
 
@@ -135,56 +145,61 @@ export function onSocketConnection({
     }
 
     // Add the data handler to the socket
-    incomingSocket.on("data", (/** @type {Buffer} */ incomingDataAsBuffer: Buffer) => {
-        log.trace(`Incoming data: ${incomingDataAsBuffer.toString("hex")}`);
+    incomingSocket.on(
+        "data",
+        (/** @type {Buffer} */ incomingDataAsBuffer: Buffer) => {
+            log.trace(`Incoming data: ${incomingDataAsBuffer.toString("hex")}`);
 
-        // Deserialize the raw message
-        const rawMessage = new SerializedBuffer()._doDeserialize(
-            incomingDataAsBuffer,
-        );
+            // Deserialize the raw message
+            const rawMessage = new SerializedBuffer()._doDeserialize(
+                incomingDataAsBuffer,
+            );
 
-        // Log the raw message
-        log.trace(`Raw message: ${rawMessage.toString()}`);
+            // Log the raw message
+            log.trace(`Raw message: ${rawMessage.toString()}`);
 
-        log.debug("Calling onData handler");
+            log.debug("Calling onData handler");
 
-        portOnDataHandler({
-            connectionId: newConnectionId,
-            message: rawMessage,
-        })
-            .then(
-                (
-                    /** @type {import("../../shared/State.js").ServiceResponse} */ response: import("../../shared/State.js").ServiceResponse,
-                ) => {
-                    log.debug("onData handler returned");
-                    const { messages } = response;
+            portOnDataHandler({
+                connectionId: newConnectionId,
+                message: rawMessage,
+            })
+                .then(
+                    (
+                        /** @type {import("../../shared/State.js").ServiceResponse} */ response: import("../../shared/State.js").ServiceResponse,
+                    ) => {
+                        log.debug("onData handler returned");
+                        const { messages } = response;
 
-                    // Log the messages
-                    log.trace(`Messages: ${messages.map((m) => m.toString())}`);
+                        // Log the messages
+                        log.trace(
+                            `Messages: ${messages.map((m) => m.toString())}`,
+                        );
 
-                    // Serialize the messages
-                    const serializedMessages = messages.map((m) =>
-                        m.serialize(),
-                    );
+                        // Serialize the messages
+                        const serializedMessages = messages.map((m) =>
+                            m.serialize(),
+                        );
 
-                    try {
-                        // Send the messages
-                        serializedMessages.forEach((m) => {
-                            incomingSocket.write(m);
-                            log.trace(`Sent data: ${m.toString("hex")}`);
-                        });
-                    } catch (error) {
-                        log.error(`Error sending data: ${String(error)}`);
-                    }
-                },
-            )
-            .catch((/** @type {Error} */ error: Error) => {
-                log.error(`Error handling data: ${String(error)}`);
+                        try {
+                            // Send the messages
+                            serializedMessages.forEach((m) => {
+                                incomingSocket.write(m);
+                                log.trace(`Sent data: ${m.toString("hex")}`);
+                            });
+                        } catch (error) {
+                            log.error(`Error sending data: ${String(error)}`);
+                        }
+                    },
+                )
+                .catch((/** @type {Error} */ error: Error) => {
+                    log.error(`Error handling data: ${String(error)}`);
 
-                // Call server shutdown
-                getGatewayServer({}).shutdown();
-            });
-    });
+                    // Call server shutdown
+                    getGatewayServer({}).shutdown();
+                });
+        },
+    );
 
     log.debug(`Client ${remoteAddress} connected to port ${localPort}`);
 

@@ -61,7 +61,11 @@ async function encryptCmd({
     log = getServerLogger({
         module: "Lobby",
     }),
-}: { connectionId: string; message: LegacyMessage | MessageBuffer; log?: import("pino").Logger; }): Promise<{
+}: {
+    connectionId: string;
+    message: LegacyMessage | MessageBuffer;
+    log?: import("pino").Logger;
+}): Promise<{
     connectionId: string;
     message: LegacyMessage | MessageBuffer;
 }> {
@@ -107,7 +111,11 @@ async function decryptCmd({
     log = getServerLogger({
         module: "Lobby",
     }),
-}: { connectionId: string; message: LegacyMessage; log?: import("pino").Logger; }): Promise<{
+}: {
+    connectionId: string;
+    message: LegacyMessage;
+    log?: import("pino").Logger;
+}): Promise<{
     connectionId: string;
     message: LegacyMessage;
 }> {
@@ -153,7 +161,11 @@ async function handleCommand({
     log = getServerLogger({
         module: "Lobby",
     }),
-}: { connectionId: string; message: LegacyMessage; log?: import("pino").Logger; }): Promise<{
+}: {
+    connectionId: string;
+    message: LegacyMessage;
+    log?: import("pino").Logger;
+}): Promise<{
     connectionId: string;
     message: MessageBuffer | LegacyMessage;
 }> {
@@ -207,7 +219,11 @@ export async function handleEncryptedNPSCommand({
     log = getServerLogger({
         module: "Lobby",
     }),
-}: { connectionId: string; message: SerializedBuffer; log?: import("pino").Logger; }): Promise<{
+}: {
+    connectionId: string;
+    message: SerializedBuffer;
+    log?: import("pino").Logger;
+}): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
 }> {
@@ -274,7 +290,11 @@ function handleSendMiniRiffList({
     log = getServerLogger({
         module: "Lobby",
     }),
-}: { connectionId: string; message: LegacyMessage; log?: import("pino").Logger; }) {
+}: {
+    connectionId: string;
+    message: LegacyMessage;
+    log?: import("pino").Logger;
+}) {
     log.level = getServerConfiguration({}).logLevel ?? "info";
 
     log.debug("Handling NPS_SEND_MINI_RIFF_LIST");
@@ -338,7 +358,11 @@ function handleGetMiniUserList({
     log = getServerLogger({
         module: "Lobby",
     }),
-}: { connectionId: string; message: LegacyMessage; log?: import("pino").Logger; }) {
+}: {
+    connectionId: string;
+    message: LegacyMessage;
+    log?: import("pino").Logger;
+}) {
     log.level = getServerConfiguration({}).logLevel ?? "info";
 
     log.debug("Handling NPS_GET_MINI_USER_LIST");

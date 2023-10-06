@@ -1,11 +1,11 @@
 import { vi } from "vitest";
-import { DatabaseManager, } from "../packages/interfaces/index.js";
+import { DatabaseManager } from "../packages/interfaces/index.js";
 
 export function mockDatabaseManager(): DatabaseManager {
     return {
         updateSessionKey: vi.fn(),
         fetchSessionKeyByCustomerId: vi.fn(),
-    }
+    };
 }
 
 export function mockPino() {
@@ -34,5 +34,3 @@ export function mockPino() {
 export function unmockPino() {
     vi.unmock("pino");
 }
-
-

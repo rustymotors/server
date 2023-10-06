@@ -232,7 +232,15 @@ interface WebJSONResponse {
  * @param {Logger} args.log
  * @returns {void}
  */
-export function NetworkConnectionHandler({ incomingSocket, config, log }: { incomingSocket: Socket; config: Configuration; log: Logger; }): void {
+export function NetworkConnectionHandler({
+    incomingSocket,
+    config,
+    log,
+}: {
+    incomingSocket: Socket;
+    config: Configuration;
+    log: Logger;
+}): void {
     throw new ServerError("Not implemented");
 }
 

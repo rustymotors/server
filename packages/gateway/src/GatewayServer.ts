@@ -1,6 +1,9 @@
 import { Socket, createServer as createSocketServer } from "node:net";
 import { onSocketConnection } from "./index.js";
-import { Configuration, getServerConfiguration } from "../../shared/Configuration.js";
+import {
+    Configuration,
+    getServerConfiguration,
+} from "../../shared/Configuration.js";
 import { getServerLogger } from "../../shared/log.js";
 import fastify from "fastify";
 import {
@@ -36,7 +39,13 @@ type GatewayOptions = {
     log?: Logger;
     backlogAllowedCount?: number;
     listeningPortList?: number[];
-    socketConnectionHandler?: ({ incomingSocket, log, }: { incomingSocket: Socket; log?: Logger; }) => void;
+    socketConnectionHandler?: ({
+        incomingSocket,
+        log,
+    }: {
+        incomingSocket: Socket;
+        log?: Logger;
+    }) => void;
 };
 
 /**
@@ -54,7 +63,13 @@ export class Gateway {
     backlogAllowedCount: number;
     listeningPortList: number[];
     servers: import("node:net").Server[];
-    socketconnection: ({ incomingSocket, log, }: { incomingSocket: Socket; log?: Logger; }) => void;
+    socketconnection: ({
+        incomingSocket,
+        log,
+    }: {
+        incomingSocket: Socket;
+        log?: Logger;
+    }) => void;
     static _instance: Gateway | undefined;
     webServer: import("fastify").FastifyInstance | undefined;
     readThread: ConsoleThread | undefined;
@@ -319,12 +334,18 @@ export function getGatewayServer({
     backlogAllowedCount = 0,
     listeningPortList: listeningPortList = [],
     socketConnectionHandler = onSocketConnection,
-}:{
+}: {
     config?: Configuration;
     log?: Logger;
     backlogAllowedCount?: number;
     listeningPortList?: number[];
-    socketConnectionHandler?: ({ incomingSocket, log, }: { incomingSocket: Socket; log?: Logger; }) => void;
+    socketConnectionHandler?: ({
+        incomingSocket,
+        log,
+    }: {
+        incomingSocket: Socket;
+        log?: Logger;
+    }) => void;
 }): Gateway {
     return Gateway.getInstance({
         config,

@@ -252,7 +252,7 @@ export class SerializerBase {
      * @param {module:interfaces.SerializedObject} object
      * @throws {ServerError} if the object does not have a connectionId property
      */
-    static verifyConnectionId(object: Object ) {
+    static verifyConnectionId(object: Object) {
         if (!Object.prototype.hasOwnProperty.call(object, "connectionId")) {
             throw new ServerError(
                 "Object does not have a connectionId property",
