@@ -15,20 +15,16 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { describe, it, expect } from "vitest";
-import { mock } from "node:test"
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
-import pino from "pino";
 
 describe("TClientConnectMessage", () => {
     describe(".byteLength", () => {
         it("should have a value of 51", () => {
             // Arrange
-            const log = mock.fn(pino)();
-            const testMessage = new TClientConnectMessage(log);
+            const testMessage = new TClientConnectMessage();
 
             // Assert
-            expect(testMessage.size).toBe(51);
+            expect(testMessage.size()).toBe(51);
         });
     });
-
 });

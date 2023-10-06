@@ -85,8 +85,8 @@ export class GameUrl extends SerializedBuffer {
         let offset = 0; // offset is 0
         buffer.writeUInt32LE(this._urlId, offset);
         offset += 4; // offset is 4
-        serializeString(this.urlRef).copy(buffer, offset);
-        offset += 4 + this.urlRef.length; // offset is 4 + this.urlRef.length
+        offset = serializeString(this.urlRef, buffer, offset);
+
         return buffer;
     }
 

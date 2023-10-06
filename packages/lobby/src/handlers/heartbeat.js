@@ -25,12 +25,13 @@ export async function _npsHeartbeat({
     const packetContent = Buffer.alloc(8);
     const packetResult = new NPSMessage();
     packetResult._header.id = 0x127;
-    packetResult.#_data = packetContent;
+    packetResult.setBuffer(packetContent);
 
     log.debug("Dumping packet...");
     log.debug(packetResult.toString());
 
-    const outboundMessage = SerializedBuffer.fromNPSMessage(packetResult);
+    const outboundMessage = new SerializedBuffer();
+    outboundMessage._doDeserialize(packetResult.serialize());
 
     return {
         connectionId,

@@ -17,7 +17,7 @@
     "prod": "make prod_node",
     "prod:stop": "docker-compose stop",
     "release": "standard-version --sign",
-    "start:dev": "node --openssl-legacy-provider server.js",
+    "start:dev": "tsx --openssl-legacy-provider server.js",
     "start:docker": "npm run start:dev 2>&1 | tee -a log/mcos/trace.log"
   },
   "files": [
@@ -29,10 +29,10 @@
   "dependencies": {
     "@adminjs/sequelize": "^4.0.0",
     "@fastify/sensible": "^5.2.0",
-    "adminjs": "^7.2.1",
-    "fastify": "^4.22.2",
     "@sentry/node": "7.70",
     "@sentry/profiling-node": "^1.2.1",
+    "adminjs": "^7.2.1",
+    "fastify": "^4.22.2",
     "moment": "^2.29.4",
     "pino": "^8.15.0",
     "sequelize": "^6.32.1",
@@ -60,6 +60,7 @@
     "prettier-eslint": "15.0.1",
     "rimraf": "^5.0.1",
     "standard-version": "^9.5.0",
+    "tsx": "3.13.0",
     "typescript": "^5.2.2",
     "typescript-eslint-language-service": "^5.0.5",
     "vitest": "^0.34.5"

@@ -7,9 +7,12 @@ import {
 import { ServerError } from "../../../shared/errors/ServerError.js";
 import {
     LegacyMessage,
+    MessageBuffer,
     SerializedBuffer,
+    serializeString,
 } from "../../../shared/messageFactory.js";
 import { UserInfo } from "../UserInfoMessage.js";
+import { getServerConfiguration } from "../../../shared/Configuration.js";
 // eslint-disable-next-line no-unused-vars
 
 /**
@@ -34,11 +37,11 @@ export const messageHandlers = [];
  *
  * @param {object} args
  * @param {string} args.connectionId
- * @param {LegacyMessage} args.message
+ * @param {LegacyMessage | MessageBuffer} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
  * @returns {Promise<{
  * connectionId: string,
- * message: LegacyMessage,
+ * message: LegacyMessage | MessageBuffer,
  * }>}
  */
 async function encryptCmd({
@@ -124,7 +127,7 @@ async function decryptCmd({
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
  * @return {Promise<{
  * connectionId: string,
- * message: LegacyMessage,
+ * message: MessageBuffer | LegacyMessage,
  * }>}}
  */
 async function handleCommand({
@@ -134,9 +137,12 @@ async function handleCommand({
         module: "Lobby",
     }),
 }) {
+    log.level = getServerConfiguration({}).logLevel ?? "info";
     const incommingRequest = message;
 
-    log.debug(`Received command: ${incommingRequest.asJSON()}`);
+    log.debug(
+        `Received command: ${incommingRequest._doSerialize().toString("hex")}`,
+    );
 
     // What is the command?
     const command = incommingRequest.data.readUInt16BE(0);
@@ -182,6 +188,8 @@ export async function handleEncryptedNPSCommand({
         module: "Lobby",
     }),
 }) {
+    log.level = getServerConfiguration({}).logLevel ?? "info";
+
     const inboundMessage = new LegacyMessage();
     inboundMessage._doDeserialize(message.data);
 
@@ -206,7 +214,7 @@ export async function handleEncryptedNPSCommand({
     });
 
     const outboundMessage = new SerializedBuffer();
-    outboundMessage.setBuffer((await encryptedResponse).message._doSerialize());
+    outboundMessage.setBuffer((await encryptedResponse).message.serialize());
 
     return {
         connectionId,
@@ -214,7 +222,7 @@ export async function handleEncryptedNPSCommand({
     };
 }
 
-const channelRecordSize = 40;
+const channelRecordSize = 42;
 
 const channels = [
     {
@@ -224,12 +232,12 @@ const channels = [
     },
 ];
 
-const userRecordSize = 100;
+// const userRecordSize = 100;
 const user1 = new UserInfo();
 user1._userId = 1;
 user1._userName = "User 1";
 
-const users = [user1];
+// const users = [user1];
 
 /**
  * @param {object} args
@@ -244,25 +252,33 @@ function handleSendMiniRiffList({
         module: "Lobby",
     }),
 }) {
+    log.level = getServerConfiguration({}).logLevel ?? "info";
+
     log.debug("Handling NPS_SEND_MINI_RIFF_LIST");
-    log.debug(`Received command: ${message.asJSON()}`);
+    log.debug(`Received command: ${message._doSerialize().toString("hex")}`);
 
     const resultSize = 4 + channelRecordSize * channels.length;
 
-    const packetContent = Buffer.alloc(resultSize);
+    const packetContent = Buffer.alloc(resultSize + 6);
 
     try {
         // Add the response code
-        packetContent.writeUInt16BE(0x060e, 0);
+        packetContent.writeUInt16BE(0x404, 0);
+        let offset = 2;
+        packetContent.writeUInt16BE(resultSize, offset);
+        offset += 2;
 
-        let offset = 4;
+        packetContent.writeUInt16BE(channels.length, offset);
+        offset += 2;
 
         // loop through the channels
         for (const channel of channels) {
-            packetContent.writeUInt16BE(channel.id, offset + 32);
-            packetContent.writeUInt16BE(channel.population, offset + 36);
+            offset += serializeString(channel.name, packetContent, offset);
 
-            offset += channelRecordSize;
+            packetContent.writeUInt16BE(channel.id, offset);
+            offset += 2;
+            packetContent.writeUInt16BE(channel.population, offset);
+            offset += 2;
         }
 
         // Build the packet
@@ -271,7 +287,9 @@ function handleSendMiniRiffList({
         packetResult._header.length = resultSize;
         packetResult.setBuffer(packetContent);
 
-        log.debug(`Sending response: ${packetResult.asJSON()}`);
+        log.debug(
+            `Sending response: ${packetResult.serialize().toString("hex")}`,
+        );
 
         return {
             connectionId,
@@ -298,37 +316,40 @@ function handleGetMiniUserList({
         module: "Lobby",
     }),
 }) {
+    log.level = getServerConfiguration({}).logLevel ?? "info";
+
     log.debug("Handling NPS_GET_MINI_USER_LIST");
-    log.debug(`Received command: ${message.asJSON()}`);
+    log.debug(`Received command: ${message._doSerialize().toString("hex")}`);
 
-    const resultSize = 4 + userRecordSize * users.length;
-
-    const packetContent = Buffer.alloc(resultSize);
+    const packetContent = Buffer.alloc(12);
 
     try {
         // Add the response code
         packetContent.writeUInt16BE(0x0229, 0);
 
-        let offset = 4;
+        let offset = 2; // offset is 2
 
-        // loop through the users
-        for (const user of users) {
-            packetContent.copy(user.serialize(), offset);
+        packetContent.writeUInt16BE(12, offset);
+        offset += 2; // offset is 4
 
-            offset += userRecordSize;
-        }
+        packetContent.writeUInt32BE(17, offset);
+        offset += 4; // offset is 8
+
+        packetContent.writeUInt32BE(1, offset);
 
         // Build the packet
-        const packetResult = new LegacyMessage();
-        packetResult._header.id = 0x1101;
-        packetResult._header.length = resultSize;
-        packetResult.setBuffer(packetContent);
+        const gameMessage = MessageBuffer.createGameMessage(
+            0x1101,
+            packetContent,
+        );
 
-        log.debug(`Sending response: ${packetResult.asJSON()}`);
+        log.debug(
+            `Sending response: ${gameMessage.serialize().toString("hex")}`,
+        );
 
         return {
             connectionId,
-            message: packetResult,
+            message: gameMessage,
         };
     } catch (error) {
         throw ServerError.fromUnknown(

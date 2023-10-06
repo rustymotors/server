@@ -37,7 +37,7 @@ export async function handleSelectGamePersona(requestPacket, log) {
     // 207 = success
     const responsePacket = new NPSMessage();
     responsePacket._header.id = 0x207;
-    responsePacket.#_data = packetContent;
+    responsePacket.setBuffer(packetContent);
 
     log.debug(
         `[npsSelectGamePersona] responsePacket's data prior to sending: ${responsePacket.toString()}`,

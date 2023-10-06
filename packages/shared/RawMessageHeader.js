@@ -1,3 +1,5 @@
+import { ServerError } from "./errors/ServerError.js";
+
 export class RawMessageHeader {
     constructor() {
         this.id = 0; // 2 bytes
@@ -15,7 +17,7 @@ export class RawMessageHeader {
      */
     deserialize(buffer) {
         if (buffer.length < 4) {
-            throw new Error(
+            throw new ServerError(
                 `Buffer length ${buffer.length} is too short to deserialize`,
             );
         }

@@ -36,6 +36,7 @@ import {
 import { ServerMessage } from "../../shared/messageFactory.js";
 import { ArcadeCarInfo, ArcadeCarMessage } from "./ArcadeCarMessage.js";
 import { GameUrl, GameUrlsMessage } from "./GameUrlsMessage.js";
+import { TunablesMessage } from "./TunablesMessage.js";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -277,7 +278,7 @@ async function getArcadeCarInfo({ connectionId, packet, log }) {
     log.debug(`Received Message: ${getArcadeCarInfoMessage.toString()}`);
 
     const arcadeCarInfoMessage = new ArcadeCarMessage();
-    arcadeCarInfoMessage._msgNo = 322;
+    arcadeCarInfoMessage._msgNo = 323;
 
     const car1 = new ArcadeCarInfo();
     car1._brandedPartId = 113; // Bel-air
@@ -316,6 +317,28 @@ async function _getGameUrls({ connectionId, packet, log }) {
     responsePacket._header.flags = 8;
 
     responsePacket.setBuffer(gameUrlsMessage.serialize());
+
+    return { connectionId, messages: [responsePacket] };
+}
+
+/**
+ * @param {MessageHandlerArgs} args
+ * @return {Promise<MessageHandlerResult>}
+ */
+async function _getTunables({ connectionId, packet, log }) {
+    const getTunablesMessage = new GenericRequestMessage();
+    getTunablesMessage.deserialize(packet.data);
+
+    log.debug(`Received Message: ${getTunablesMessage.toString()}`);
+
+    const tunablesMessage = new TunablesMessage();
+    tunablesMessage._msgNo = 390;
+
+    const responsePacket = new ServerMessage();
+    responsePacket._header.sequence = packet._header.sequence;
+    responsePacket._header.flags = 8;
+
+    responsePacket.setBuffer(tunablesMessage.serialize());
 
     return { connectionId, messages: [responsePacket] };
 }
@@ -374,5 +397,9 @@ export const messageHandlers = [
     {
         name: "MC_GET_GAME_URLS",
         handler: _getGameUrls,
+    },
+    {
+        name: "MC_GET_MCO_TUNABLES",
+        handler: _getTunables,
     },
 ];

@@ -19,8 +19,12 @@ import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
 import { getServerLogger } from "../../shared/log.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { getServerConfiguration } from "../../shared/Configuration.js";
-// eslint-disable-next-line no-unused-vars
-import { NPSMessage, SerializedBuffer } from "../../shared/messageFactory.js";
+import {
+    LegacyMessage,
+    NPSMessage,
+    // eslint-disable-next-line no-unused-vars
+    SerializedBuffer,
+} from "../../shared/messageFactory.js";
 
 /**
  * Array of supported message handlers
@@ -70,7 +74,24 @@ export async function receiveLobbyData({
 }) {
     log.level = getServerConfiguration({}).logLevel ?? "info";
 
-    const inboundMessage = new NPSMessage();
+    /** @type {LegacyMessage | NPSMessage} */
+    let inboundMessage;
+
+    // Check data length
+    const dataLength = message.data.length;
+
+    if (dataLength < 4) {
+        throw new ServerError(
+            `Data length ${dataLength} is too short to deserialize`,
+        );
+    }
+
+    if (dataLength > 12) {
+        inboundMessage = new NPSMessage();
+    } else {
+        inboundMessage = new LegacyMessage();
+    }
+
     inboundMessage._doDeserialize(message.data);
 
     const { data } = message;
@@ -102,6 +123,6 @@ export async function receiveLobbyData({
         log.debug("Leaving receiveLobbyData");
         return result;
     } catch (error) {
-        throw new Error(`Error handling lobby data: ${String(error)}`);
+        throw new ServerError(`Error handling lobby data: ${String(error)}`);
     }
 }

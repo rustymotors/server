@@ -8,11 +8,11 @@ import {
 export class LoginInfoMessage extends LegacyMessage {
     constructor() {
         super();
-        this._userId = 0;
+        this._userId = 0; // 4 bytes
         this._userName = "";
         this._userData = Buffer.alloc(64);
-        this._customerId = 0;
-        this._flags = 0;
+        this._customerId = 0; // 4 bytes
+        this._flags = 0; // 4 bytes
         this._dllVersion = "";
         this._hostname = "";
         this._idAddress = "";
@@ -64,19 +64,19 @@ export class LoginInfoMessage extends LegacyMessage {
             let offset = this._header._size;
             buffer.writeInt32BE(this._userId, offset);
             offset += 4;
-            serializeString(this._userName).copy(buffer, offset);
-            offset += 4 + this._userName.length + 1;
+            offset = serializeString(this._userName, buffer, offset);
+
             this._userData.copy(buffer, offset);
             offset += 64;
             buffer.writeInt32BE(this._customerId, offset);
             offset += 4;
             buffer.writeInt32BE(this._flags, offset);
             offset += 4;
-            serializeString(this._dllVersion).copy(buffer, offset);
-            offset += 4 + this._dllVersion.length + 1;
-            serializeString(this._hostname).copy(buffer, offset);
-            offset += 4 + this._hostname.length + 1;
-            serializeString(this._idAddress).copy(buffer, offset);
+            offset = serializeString(this._dllVersion, buffer, offset);
+
+            offset = serializeString(this._hostname, buffer, offset);
+
+            offset = serializeString(this._idAddress, buffer, offset);
             offset += 4 + this._idAddress.length + 1;
             this._hashKey.copy(buffer, offset);
             offset += 16;

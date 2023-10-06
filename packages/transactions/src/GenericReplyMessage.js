@@ -47,7 +47,7 @@ export class GenericReply extends SerializedBuffer {
     }
 
     toString() {
-        return JSON.stringify(this.asJSON());
+        return this.serialize().toString("hex");
     }
 }
 

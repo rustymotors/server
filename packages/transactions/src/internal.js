@@ -57,6 +57,7 @@ function _MSG_STRING(messageID) {
         { id: 322, name: "MC_GET_ARCADE_CARS" }, // 0x142"}
         { id: 324, name: "MC_GET_LOBBIES" }, // 0x144
         { id: 325, name: "MC_LOBBIES" }, // 0x145
+        { id: 389, name: "MC_GET_MCO_TUNABLES" }, // 0x185"}
         { id: 391, name: "MC_CLUB_GET_INVITATIONS" }, // 0x187
         { id: 438, name: "MC_CLIENT_CONNECT_MSG" }, // 0x1b6
         { id: 440, name: "MC_TRACKING_MSG" },

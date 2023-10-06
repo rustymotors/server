@@ -124,6 +124,6 @@ export class TLoginMessage extends ServerMessage {
     }
 
     toString() {
-        return JSON.stringify(this.asJSON());
+        return `TLoginMessage: msgNo=${this._msgNo} customerId=${this._customerId} personaId=${this._personaId} lotOwnerId=${this._lotOwnerId} brandedPartId=${this._brandedPartId} skinId=${this._skinId} personaName=${this._personaName} mcVersion=${this._mcVersion}`;
     }
 }

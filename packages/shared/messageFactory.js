@@ -104,14 +104,18 @@ export function deserializeString(buffer) {
 
 /**
  * @param {string} string
- * @returns {Buffer}
+ * @param {Buffer} targetBuffer
+ * @param {number} offset
+ * @returns {number}
  */
-export function serializeString(string) {
+export function serializeString(string, targetBuffer, offset) {
     const buffer = Buffer.alloc(4 + string.length + 1);
     buffer.writeInt32BE(string.length + 1, 0);
     const stringToWrite = string + "\0";
     buffer.write(stringToWrite, 4, stringToWrite.length, "utf8");
-    return buffer;
+    buffer.copy(targetBuffer, offset);
+    offset += buffer.length;
+    return offset;
 }
 
 /**
@@ -134,7 +138,7 @@ class legacyHeader extends SerializableMixin(AbstractSerializable) {
      */
     _doDeserialize(buffer) {
         if (buffer.length < 4) {
-            throw new Error(
+            throw new ServerError(
                 `Buffer length ${buffer.length} is too short to deserialize`,
             );
         }
@@ -143,7 +147,9 @@ class legacyHeader extends SerializableMixin(AbstractSerializable) {
             this.id = buffer.readInt16BE(0);
             this.length = buffer.readInt16BE(2);
         } catch (error) {
-            throw new Error(`Error deserializing buffer: ${String(error)}`);
+            throw new ServerError(
+                `Error deserializing buffer: ${String(error)}`,
+            );
         }
         return this;
     }
@@ -196,7 +202,7 @@ export class NPSHeader extends SerializableMixin(AbstractSerializable) {
      */
     _doDeserialize(buffer) {
         if (buffer.length < this._size) {
-            throw new Error(
+            throw new ServerError(
                 `Buffer length ${buffer.length} is too short to deserialize`,
             );
         }
@@ -268,7 +274,7 @@ export class serverHeader extends SerializableMixin(AbstractSerializable) {
      */
     _doDeserialize(buffer) {
         if (buffer.length < this._size) {
-            throw new Error(
+            throw new ServerError(
                 `Buffer length ${buffer.length} is too short to deserialize`,
             );
         }
@@ -327,21 +333,33 @@ export class LegacyMessage extends SerializableMixin(AbstractSerializable) {
     _doSerialize() {
         const buffer = Buffer.alloc(this._header.length);
         this._header._doSerialize().copy(buffer);
-        this.data.copy(buffer, this._header._size);
+        super.data.copy(buffer, this._header._size);
         return buffer;
+    }
+
+    serialize() {
+        return this._doSerialize();
+    }
+
+    /**
+     * @param {Buffer} buffer
+     */
+    setBuffer(buffer) {
+        super.setBuffer(buffer);
+        this._header.length = buffer.length + 4;
     }
 
     asJSON() {
         return {
             header: this._header,
-            data: this.data.toString("hex"),
+            data: super.data.toString("hex"),
         };
     }
 
     toString() {
         return `LegacyMessage: ${JSON.stringify({
             header: this._header.toString(),
-            data: this.data.toString("hex"),
+            data: super.data.toString("hex"),
         })}`;
     }
 }
@@ -376,58 +394,6 @@ export class NPSMessage extends SerializableMixin(AbstractSerializable) {
 
     toString() {
         return `NPSMessage: ${JSON.stringify({
-            header: this._header.toString(),
-            data: this.data.toString("hex"),
-        })}`;
-    }
-}
-
-/**
- * A server message is a message that is passed between the server and the client. It has an 11 byte header. @see {@link serverHeader}
- *
- * @mixin {SerializableMixin}
- */
-export class ServerMessage extends SerializableMixin(AbstractSerializable) {
-    constructor() {
-        super();
-        this._header = new serverHeader();
-        this._msgNo = 0; // 2 bytes
-    }
-
-    /**
-     * @param {Buffer} buffer
-     * @returns {ServerMessage}
-     */
-    _doDeserialize(buffer) {
-        this._header._doDeserialize(buffer);
-        this.setBuffer(buffer.subarray(this._header._size));
-        if (this.data.length > 2) {
-            this._msgNo = this.data.readInt16LE(0);
-        }
-        return this;
-    }
-
-    serialize() {
-        const buffer = Buffer.alloc(this._header.length + 2);
-        this._header._doSerialize().copy(buffer);
-        this.data.copy(buffer, this._header._size);
-        return buffer;
-    }
-
-    /**
-     * @param {Buffer} buffer
-     */
-    setBuffer(buffer) {
-        super.setBuffer(buffer);
-        this._header.length = buffer.length + this._header._size - 2;
-    }
-
-    updateMsgNo() {
-        this._msgNo = this.data.readInt16LE(0);
-    }
-
-    toString() {
-        return `ServerMessage: ${JSON.stringify({
             header: this._header.toString(),
             data: this.data.toString("hex"),
         })}`;
@@ -519,5 +485,250 @@ export class ListMessage extends SerializedBuffer {
 
     toString() {
         return `ListMessage: msgNo=${this._msgNo} listCount=${this._listCount} shouldExpectMoreMessages=${this._shouldExpectMoreMessages} list=${this._list}`;
+    }
+}
+
+export class MessageHeader extends SerializedBuffer {
+    constructor() {
+        super();
+        this._size = 4;
+        this._messageId = 0; // 4 bytes
+        this._messageLength = 0; // 4 bytes
+    }
+
+    get messageId() {
+        return this._messageId;
+    }
+
+    get messageLength() {
+        return this._messageLength;
+    }
+
+    serializeSizeOf() {
+        return this._size;
+    }
+
+    size() {
+        return this._size;
+    }
+
+    get id() {
+        return this._messageId;
+    }
+
+    get length() {
+        return this._messageLength;
+    }
+
+    /**
+     * @param {Buffer} buffer
+     * @returns {MessageHeader}
+     */
+    deserialize(buffer) {
+        this._messageId = buffer.readInt16BE(0);
+        this._messageLength = buffer.readInt16BE(2);
+        return this;
+    }
+
+    serialize() {
+        const buffer = Buffer.alloc(4);
+        buffer.writeInt16BE(this._messageId, 0);
+        buffer.writeInt16BE(this._messageLength, 2);
+        return buffer;
+    }
+
+    /**
+     * @param {Buffer} buffer
+     * @returns {MessageHeader}
+     */
+    _doDeserialize(buffer) {
+        return this.deserialize(buffer);
+    }
+
+    _doSerialize() {
+        return this.serialize();
+    }
+
+    toString() {
+        return `MessageHeader: ${JSON.stringify({
+            messageId: this._messageId,
+            messageLength: this._messageLength,
+        })}`;
+    }
+}
+
+export class MessageBuffer extends SerializedBuffer {
+    constructor() {
+        super();
+        this._header = new MessageHeader();
+        this._buffer = Buffer.alloc(4);
+    }
+
+    /**
+     * @param {number} id - The ID of the message
+     * @param {Buffer} buffer - The buffer to deserialize
+     * @returns {MessageBuffer}
+     */
+    static createGameMessage(id, buffer) {
+        const message = new MessageBuffer();
+        message._header._messageId = id;
+        message.buffer = buffer;
+        return message;
+    }
+
+    get messageId() {
+        return this._header.messageId;
+    }
+
+    get messageLength() {
+        return this._header.messageLength;
+    }
+
+    get data() {
+        return this._buffer;
+    }
+
+    set data(buffer) {
+        this.buffer = buffer;
+    }
+
+    /**
+     * @param {Buffer} buffer
+     */
+    set buffer(buffer) {
+        // const log = getServerLogger({ module: "MessageBuffer" });
+        // log.level = getServerConfiguration({}).logLevel ?? "info";
+
+        this._buffer = Buffer.alloc(buffer.length);
+        this._buffer = buffer;
+        this._header._messageLength = 4 + buffer.length;
+        // log.debug(`Message length: ${this._header._messageLength}`);
+        // log.debug(`Buffer length: ${this._buffer.length}`);
+        // Pad the buffer to a multiple of 8 bytes
+        // let extraBytes = 0;
+        // const x = (this._buffer.length + 4) % 8;
+        // extraBytes = 8 - x;
+        // log.debug(`Extra bytes: ${extraBytes}`);
+        // if (extraBytes !== 0) {
+        //     this._buffer = Buffer.concat([
+        //         this._buffer,
+        //         Buffer.alloc(extraBytes),
+        //     ]);
+        //     log.debug(`Buffer length: ${this._buffer.length}`);
+        this._header._messageLength = this._buffer.length + 4;
+        // log.debug(`Message length: ${this._header._messageLength}`);
+        // }
+    }
+
+    /** @param {Buffer} buffer */
+    setBuffer(buffer) {
+        return (this.buffer = buffer);
+    }
+
+    get buffer() {
+        return this._buffer;
+    }
+
+    serializeSizeOf() {
+        return 4 + this._buffer.length;
+    }
+
+    /**
+     * @param {Buffer} buffer
+     * @returns {MessageBuffer}
+     */
+    deserialize(buffer) {
+        this._header.deserialize(buffer.subarray(0, 8));
+        if (buffer.length < 4 + this._header.messageLength) {
+            throw new ServerError(
+                `Buffer length ${buffer.length} is too short to deserialize`,
+            );
+        }
+        this.buffer = buffer.subarray(4);
+        return this;
+    }
+
+    serialize() {
+        const buffer = Buffer.alloc(4 + this._buffer.length);
+        if (this.buffer.length < 0) {
+            throw new ServerError(
+                `Buffer length ${this.buffer.length} is too short to serialize`,
+            );
+        }
+        if (this.messageId <= 0) {
+            throw new ServerError(
+                `Message ID ${this.messageId} is invalid to serialize`,
+            );
+        }
+        this._header.serialize().copy(buffer);
+        this._buffer.copy(buffer, 4);
+        return buffer;
+    }
+
+    toString() {
+        return `MessageBuffer: ${JSON.stringify({
+            header: this._header.toString(),
+            bufferLength: this._buffer.length,
+            buffer: this._buffer.toString("hex"),
+        })}`;
+    }
+
+    asJSON() {
+        return {
+            header: this._header,
+            buffer: this._buffer.toString("hex"),
+        };
+    }
+}
+
+/**
+ * A server message is a message that is passed between the server and the client. It has an 11 byte header. @see {@link serverHeader}
+ *
+ * @mixin {SerializableMixin}
+ */
+export class ServerMessage extends SerializedBuffer {
+    constructor() {
+        super();
+        this._header = new serverHeader();
+        this._msgNo = 0; // 2 bytes
+    }
+
+    /**
+     * @param {Buffer} buffer
+     * @returns {ServerMessage}
+     */
+    _doDeserialize(buffer) {
+        this._header._doDeserialize(buffer);
+        this.setBuffer(buffer.subarray(this._header._size));
+        if (this.data.length > 2) {
+            this._msgNo = this.data.readInt16LE(0);
+        }
+        return this;
+    }
+
+    serialize() {
+        const buffer = Buffer.alloc(this._header.length + 2);
+        this._header._doSerialize().copy(buffer);
+        this.data.copy(buffer, this._header._size);
+        return buffer;
+    }
+
+    /**
+     * @param {Buffer} buffer
+     */
+    setBuffer(buffer) {
+        super.setBuffer(buffer);
+        this._header.length = buffer.length + this._header._size - 2;
+    }
+
+    updateMsgNo() {
+        this._msgNo = this.data.readInt16LE(0);
+    }
+
+    toString() {
+        return `ServerMessage: ${JSON.stringify({
+            header: this._header.toString(),
+            data: this.data.toString("hex"),
+        })}`;
     }
 }

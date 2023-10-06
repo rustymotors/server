@@ -140,10 +140,9 @@ export async function handleSelectGamePersona({
     log.debug("_npsSelectGamePersona...");
     const requestPacket = message;
     log.debug(
-        `LegacyMsg request object from _npsSelectGamePersona',
-        ${JSON.stringify({
-            LegacyMsg: requestPacket.asJSON(),
-        })}`,
+        `LegacyMsg request object from _npsSelectGamePersona ${requestPacket
+            ._doSerialize()
+            .toString("hex")}`,
     );
 
     // Create the packet content
@@ -156,8 +155,9 @@ export async function handleSelectGamePersona({
     responsePacket._header.id = 0x207;
     responsePacket.setBuffer(packetContent);
     log.debug(
-        `LegacyMsg response object from _npsSelectGamePersona',
-        ${responsePacket.asJSON()}`,
+        `LegacyMsg response object from _npsSelectGamePersona ${responsePacket
+            ._doSerialize()
+            .toString("hex")} `,
     );
 
     const outboundMessage = new SerializedBuffer();
@@ -265,10 +265,9 @@ async function getPersonaMaps({
 
     const requestPacket = message;
     log.debug(
-        `NPSMsg request object from _npsGetPersonaMaps',
-        ${JSON.stringify({
-            NPSMsg: requestPacket.asJSON(),
-        })}`,
+        `NPSMsg request object from _npsGetPersonaMaps ${requestPacket
+            ._doSerialize()
+            .toString("hex")} `,
     );
 
     const customerId = requestPacket.data.readUInt32BE(8);
@@ -320,7 +319,9 @@ async function getPersonaMaps({
             log.debug(
                 `PersonaMapsMessage object from _npsGetPersonaMaps',
             ${JSON.stringify({
-                personaMapsMessage: personaMapsMessage.asJSON(),
+                personaMapsMessage: personaMapsMessage
+                    .serialize()
+                    .toString("hex"),
             })}`,
             );
 

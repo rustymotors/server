@@ -19,8 +19,8 @@ export class UserInfo {
         let offset = 0;
         buffer.writeInt32BE(this._userId, offset);
         offset += 4;
-        serializeString(this._userName).copy(buffer, offset);
-        offset += 4 + this._userName.length + 1;
+        offset = serializeString(this._userName, buffer, offset);
+
         this._userData.copy(buffer, offset);
         offset += 64;
         return buffer;
@@ -76,8 +76,8 @@ export class UserInfoMessage extends LegacyMessage {
             let offset = this._header._size;
             buffer.writeInt32BE(this._userId, offset);
             offset += 4;
-            serializeString(this._userName).copy(buffer, offset);
-            offset += 4 + this._userName.length + 1;
+            offset = serializeString(this._userName, buffer, offset);
+
             this._userData.copy(buffer, offset);
             offset += 64;
 
