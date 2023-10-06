@@ -39,7 +39,10 @@ export class LoginServer {
         log = getServerLogger({
             module: "LoginServer",
         }),
-    }: { database: import("../../interfaces/index.js").DatabaseManager; log?: import("pino").Logger; }) {
+    }: {
+        database: import("../../interfaces/index.js").DatabaseManager;
+        log?: import("pino").Logger;
+    }) {
         this.databaseManager = database;
         this._log = log;
         LoginServer._instance = this;
@@ -53,7 +56,10 @@ export class LoginServer {
      * @param {import("pino").Logger} log
      * @return {LoginServer}
      */
-    static getInstance(database: import("../../interfaces/index.js").DatabaseManager, log: import("pino").Logger): LoginServer {
+    static getInstance(
+        database: import("../../interfaces/index.js").DatabaseManager,
+        log: import("pino").Logger,
+    ): LoginServer {
         if (typeof LoginServer._instance === "undefined") {
             LoginServer._instance = new LoginServer({
                 database,
@@ -68,7 +74,9 @@ export class LoginServer {
      * @param {string} contextId
      * @return {import("../../interfaces/index.js").UserRecordMini}
      */
-    _npsGetCustomerIdByContextId(contextId: string): import("../../interfaces/index.js").UserRecordMini {
+    _npsGetCustomerIdByContextId(
+        contextId: string,
+    ): import("../../interfaces/index.js").UserRecordMini {
         this._log.debug(">>> _npsGetCustomerIdByContextId");
         /** @type {import("../../interfaces/index.js").UserRecordMini[]} */
         const users: import("../../interfaces/index.js").UserRecordMini[] = [
@@ -133,7 +141,11 @@ export async function receiveLoginData({
     log = getServerLogger({
         module: "LoginServer",
     }),
-}: { connectionId: string; message: NPSMessage; log?: import("pino").Logger; }): Promise<import("../../shared/State.js").ServiceResponse> {
+}: {
+    connectionId: string;
+    message: NPSMessage;
+    log?: import("pino").Logger;
+}): Promise<import("../../shared/State.js").ServiceResponse> {
     try {
         log.debug("Entering login module");
         const response = await handleLoginData({

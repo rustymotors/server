@@ -33,7 +33,7 @@ import { Logger } from "pino";
 
 export class NPSUserStatus extends LegacyMessage {
     _config: Configuration;
-    log: Logger
+    log: Logger;
     sessionKey: string;
     opCode: number;
     contextId: string;
@@ -44,7 +44,11 @@ export class NPSUserStatus extends LegacyMessage {
      * @param {Configuration} config
      * @param {import("pino").Logger} log
      */
-    constructor(packet: Buffer, config: Configuration, log: import("pino").Logger) {
+    constructor(
+        packet: Buffer,
+        config: Configuration,
+        log: import("pino").Logger,
+    ) {
         super();
         this._config = config;
         this.log = log;
