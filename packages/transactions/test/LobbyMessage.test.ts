@@ -11,6 +11,20 @@ describe("LobbyMessage", () => {
             expect(testMessage.size()).toBe(5);
         });
     });
+
+    describe(".serialize()", () => {
+        it("should return a buffer of the correct size", () => {
+            // Arrange
+            const testMessage = new LobbyMessage();
+
+            // Act
+            const result = testMessage.serialize();
+
+            // Assert
+            expect(result).toBeInstanceOf(Buffer);
+            expect(result.length).toBe(5);
+        });
+    });
 });
 
 describe("LobbyInfo", () => {
