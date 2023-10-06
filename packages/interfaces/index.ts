@@ -180,16 +180,7 @@ export interface RaceLobbyRecord {
     eTurfName: string;
 }
 
-export interface SubprocessThread {
-    name: string;
-    loopInterval: number;
-    timer: NodeJS.Timeout | null;
-    parentThread: Gateway | undefined;
-    log: import("pino").Logger;
-    init: () => void;
-    run: () => void;
-    shutdown: () => void;
-}
+
 
 export interface ServiceArgs {
     connectionId: string;

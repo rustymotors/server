@@ -37,7 +37,6 @@ import { ServerMessage } from "../../shared/messageFactory.js";
 import { ArcadeCarInfo, ArcadeCarMessage } from "./ArcadeCarMessage.js";
 import { GameUrl, GameUrlsMessage } from "./GameUrlsMessage.js";
 import { TunablesMessage } from "./TunablesMessage.js";
-import { type } from "os";
 
 /**
  * @param {MessageHandlerArgs} args
