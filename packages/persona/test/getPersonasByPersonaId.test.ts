@@ -1,7 +1,6 @@
 import { PersonaRecord } from "../../interfaces/index.js";
 import { getPersonasByPersonaId } from "../src/getPersonasByPersonaId.js";
 import { describe, it, expect } from "vitest";
-import { personaRecords } from "../src/internal.js";
 
 describe("getPersonasByPersonaId", () => {
     it("returns a persona", async () => {

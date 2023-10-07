@@ -1,7 +1,6 @@
 import { GenericReply } from "./GenericReplyMessage.js";
 import { TClientConnectMessage } from "./TClientConnectMessage.js";
 import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
 import {
     McosEncryption,
     addEncryption,

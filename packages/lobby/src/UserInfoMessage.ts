@@ -25,7 +25,6 @@ export class UserInfo {
         offset = serializeString(this._userName, buffer, offset);
 
         this._userData.copy(buffer, offset);
-        offset += 64;
         return buffer;
     }
 
@@ -61,7 +60,6 @@ export class UserInfoMessage extends LegacyMessage {
             this._userName = deserializeString(buffer.subarray(offset));
             offset += 4 + this._userName.length + 1;
             buffer.copy(this._userData, 0, offset, offset + 64);
-            offset += 64;
 
             return this;
         } catch (error) {

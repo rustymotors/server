@@ -89,7 +89,7 @@ export class ArcadeCarInfo extends SerializedBuffer {
         buffer.writeUInt32LE(this._brandedPartId, offset);
         offset += 4; // offset is 4
         buffer.writeUInt32LE(this._lobbyId, offset);
-        offset += 4; // offset is 8
+        // offset is 8
         return buffer;
     }
 

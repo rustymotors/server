@@ -98,7 +98,6 @@ export class PersonaRecord {
         this.personaLevel = buffer.readUInt16BE(offset); // 2
         offset += 2;
         this.shardId = buffer.readUInt32BE(offset); // 2
-        offset += 4;
         // Offset 1285
         return this;
     }

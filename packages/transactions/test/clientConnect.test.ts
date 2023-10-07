@@ -1,9 +1,7 @@
-import { P } from "vitest/dist/reporters-5f784f42.js";
-import { State, addEncryption, getEncryption } from "../../shared/State.js";
+import { State } from "../../shared/State.js";
 import { getServerLogger } from "../../shared/log.js";
-import { ServerMessage } from "../../shared/messageFactory.js";
 import { clientConnect } from "../src/clientConnect.js";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";

@@ -1,4 +1,3 @@
-import { O } from "vitest/dist/reporters-5f784f42.js";
 import { ServerError } from "./errors/ServerError.js";
 
 export class SerializerBase {

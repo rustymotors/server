@@ -100,7 +100,7 @@ export class TLoginMessage extends ServerMessage {
         this._personaName = buffer.toString("utf8", offset, offset + 13);
         offset += 13;
         this._mcVersion = buffer.toString("utf8", offset, offset + 4);
-        offset += 4; // 40 bytes
+        // 40 bytes
     }
 
     override serialize() {

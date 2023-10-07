@@ -140,7 +140,7 @@ export class TunablesMessage extends SerializedBuffer {
         buffer.writeUInt32LE(this._classifiedAdMaxSize, offset);
         offset += 4; // offset is 114
         buffer.writeUInt32LE(this._classifiedAdMaxCountPerPlayer, offset);
-        offset += 4; // offset is 118
+        // offset is 118
 
         return buffer;
     }
