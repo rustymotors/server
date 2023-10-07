@@ -183,10 +183,12 @@ export interface MessageHandlerResult {
     messages: ServerMessage[];
 }
 
-export const messageHandlers: {
+export interface MessageHandler {
     name: string;
     handler: (args: MessageHandlerArgs) => Promise<MessageHandlerResult>;
-}[] = [
+}
+
+export const messageHandlers: MessageHandler[] = [
     {
         name: "MC_TRACKING_MSG",
         handler: trackingPing,
