@@ -123,7 +123,7 @@ export class TLoginMessage extends ServerMessage {
         buffer.write(this._personaName, offset, 13, "utf8");
         offset += 13;
         buffer.write(this._mcVersion, offset, 4, "utf8");
-        offset += 4; // 40 bytes
+        // 40 bytes
         return buffer;
     }
 

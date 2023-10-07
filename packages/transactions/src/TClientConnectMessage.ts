@@ -54,7 +54,7 @@ export class TClientConnectMessage extends ServerMessage {
         this._personaName = buffer.toString("utf8", offset, offset + 13);
         offset += 13;
         this._mcVersion = buffer.toString("utf8", offset, offset + 4);
-        offset += 4; // 51 bytes
+        // 51 bytes
     }
 
     override serialize() {

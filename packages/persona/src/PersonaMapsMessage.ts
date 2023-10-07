@@ -121,7 +121,8 @@ export class PersonaRecord {
             // We don't know what goes here yet
             offset += 4; // offset = 18
             serializeString(this.personaName).copy(buffer, offset); // 34 - Known to be correct
-            offset += 34; // offset = 52
+            // offset = 52
+            
             // buffer.writeUInt32BE(this.serverDataId, offset); // 4
             // offset += 4; // offset = 56
             // buffer.writeUInt32BE(this.createDate, offset); // 4
@@ -313,9 +314,7 @@ export class PersonaMapsMessage extends NPSMessage {
                 NPSHeader.size() + 2 + this._personaRecords.size();
             const buffer = Buffer.alloc(this._header.length);
             this._header._doSerialize().copy(buffer);
-            if (!this._personaRecords) {
-                throw new Error("PersonaRecords is undefined");
-            }
+
             // Write the persona count. This is known to be correct at offset 12
             buffer.writeUInt16BE(this._personaRecords.personaCount(), 12);
             // This is a serialized PersonaList

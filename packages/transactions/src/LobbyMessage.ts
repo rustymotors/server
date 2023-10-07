@@ -467,7 +467,7 @@ export class LobbyInfo extends SerializedBuffer {
         this._teamTrialsBaseTimeUnderPar = data.readUInt16LE(offset);
         offset += 2;
         this._raceCashFactor = data.readUInt32LE(offset);
-        offset += 4; // 563 total bytes
+        // 563 total bytes
 
         return this;
     }
@@ -636,7 +636,7 @@ export class LobbyInfo extends SerializedBuffer {
         buf.writeUInt16LE(this._teamTrialsBaseTimeUnderPar, offset);
         offset += 2; // offset is 559
         buf.writeUInt32LE(this._raceCashFactor, offset);
-        offset += 4; // offset is 563
+        // offset is 563
 
         return buf;
     }

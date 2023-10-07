@@ -1,8 +1,7 @@
-import { P } from "vitest/dist/reporters-5f784f42.js";
 import { getServerLogger } from "../../shared/log.js";
 import { ServerMessage } from "../../shared/messageFactory.js";
 import { login } from "../src/login.js";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { mockPino } from "../../../test/factoryMocks.js";
 
 describe("login", () => {

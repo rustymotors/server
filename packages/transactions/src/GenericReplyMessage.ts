@@ -144,8 +144,10 @@ export class GenericReplyMessage extends SerializedBuffer {
         // offset += 2;
         this.result.copy(packet, offset);
         offset += 4;
-        this.data.copy(packet, 8);
-        this.data2.copy(packet, 12);
+        this.data.copy(packet, offset);
+        offset += 4;
+        this.data2.copy(packet, offset);
+        // offset is now 16
         return packet;
     }
 

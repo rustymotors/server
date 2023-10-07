@@ -83,7 +83,6 @@ export class UserInfoMessage extends LegacyMessage {
             offset = serializeString(this._userName, buffer, offset);
 
             this._userData.copy(buffer, offset);
-            offset += 64;
 
             return buffer;
         } catch (error) {
