@@ -5,6 +5,7 @@
 
 import { getServerLogger } from "../../shared/log.js";
 import { ConnectionRecord, RaceLobbyRecord } from "../../interfaces/index.js";
+import { ServerError } from "../../shared/errors/ServerError.js";
 
 /**
  * @module Database
@@ -64,8 +65,8 @@ export class Database {
             return session.customerId === customerId;
         });
         if (typeof record === "undefined") {
-            const err = new Error(
-                "Error fetching session key by customer id: not found",
+            const err = new ServerError(
+                `Session key not found for customer ${customerId}`,
             );
             throw err;
         }
@@ -86,8 +87,8 @@ export class Database {
             return session.connectionId === connectionId;
         });
         if (typeof record === "undefined") {
-            const err = new Error(
-                "Error fetching session key by customer id: not found",
+            const err = new ServerError(
+                `Session key not found for connection ${connectionId}`,
             );
             throw err;
         }

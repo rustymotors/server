@@ -14,117 +14,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { GenericReply, GenericReplyMessage } from "./GenericReplyMessage.js";
-import { TClientConnectMessage } from "./TClientConnectMessage.js";
+import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { LobbyInfo, LobbyMessage } from "./LobbyMessage.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
 import { StockCar } from "./StockCar.js";
-import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
-import {
-    McosEncryption,
-    addEncryption,
-    fetchStateFromDatabase,
-    getEncryption,
-} from "../../shared/State.js";
-import {
-    createCommandEncryptionPair,
-    createDataEncryptionPair,
-} from "../../gateway/src/encryption.js";
 import { ServerMessage } from "../../shared/messageFactory.js";
 import { ArcadeCarInfo, ArcadeCarMessage } from "./ArcadeCarMessage.js";
 import { GameUrl, GameUrlsMessage } from "./GameUrlsMessage.js";
 import { TunablesMessage } from "./TunablesMessage.js";
 import { login } from "./login.js";
 import { trackingPing } from "./trackingPing.js";
-
-/**
- * @param {MessageHandlerArgs} args
- * @return {Promise<MessageHandlerResult>}
- */
-async function clientConnect({
-    connectionId,
-    packet,
-    log,
-}: MessageHandlerArgs): Promise<MessageHandlerResult> {
-    /**
-     * Let's turn it into a ClientConnectMsg
-     */
-    const newMessage = new TClientConnectMessage();
-
-    newMessage.deserialize(packet.serialize());
-
-    log.debug(`ClientConnectMsg: ${newMessage.toString()}`);
-
-    const customerId = newMessage._customerId;
-    if (typeof customerId !== "number") {
-        throw new TypeError(
-            `customerId is wrong type. Expected 'number', got ${typeof customerId}`,
-        );
-    }
-
-    const state = fetchStateFromDatabase();
-
-    const existingEncryption = getEncryption(state, connectionId);
-
-    if (existingEncryption) {
-        log.debug("Encryption already exists for this connection");
-        return { connectionId, messages: [] };
-    }
-
-    let result;
-
-    try {
-        log.debug(`Looking up the session key for ${customerId}...`);
-
-        result = await getDatabaseServer({
-            log,
-        }).fetchSessionKeyByCustomerId(customerId);
-        log.debug("[TCPManager] Session Key located!");
-    } catch (error) {
-        throw new ServerError(`Error fetching session key: ${error}`);
-    }
-
-    try {
-        const newCommandEncryptionPair = createCommandEncryptionPair(
-            result.sessionKey,
-        );
-
-        const newDataEncryptionPair = createDataEncryptionPair(
-            result.sessionKey,
-        );
-
-        const newEncryption = new McosEncryption({
-            connectionId,
-            commandEncryptionPair: newCommandEncryptionPair,
-            dataEncryptionPair: newDataEncryptionPair,
-        });
-
-        addEncryption(state, newEncryption).save();
-    } catch (error) {
-        throw new ServerError(`Error creating encryption: ${error}`);
-    }
-
-    const personaId = newMessage._personaId;
-
-    const personaName = newMessage._personaName;
-
-    log.debug(`cust: ${customerId} ID: ${personaId} Name: ${personaName}`);
-
-    // Create new response packet
-    const pReply = new GenericReply();
-    pReply.msgNo = 101;
-    pReply.msgReply = newMessage._msgNo;
-
-    const responsePacket = new ServerMessage();
-    responsePacket.setBuffer(pReply.serialize());
-    responsePacket._header.sequence = packet._header.sequence;
-
-    log.debug(`Response: ${responsePacket.serialize().toString("hex")}`);
-
-    return { connectionId, messages: [responsePacket] };
-}
+import { clientConnect } from "./clientConnect.js";
 
 /**
  * @param {MessageHandlerArgs} args
