@@ -9,10 +9,10 @@ import {
     LegacyMessage,
     MessageBuffer,
     SerializedBuffer,
-    serializeString,
 } from "../../../shared/messageFactory.js";
 import { UserInfo } from "../UserInfoMessage.js";
 import { getServerConfiguration } from "../../../shared/Configuration.js";
+import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
 // eslint-disable-next-line no-unused-vars
 
 /**
@@ -261,9 +261,9 @@ export async function handleEncryptedNPSCommand({
     };
 }
 
-const channelRecordSize = 42;
+export const channelRecordSize = 42;
 
-const channels = [
+export const channels = [
     {
         id: 0,
         name: "Channel 1",
@@ -275,76 +275,6 @@ const channels = [
 const user1 = new UserInfo();
 user1._userId = 1;
 user1._userName = "User 1";
-
-// const users = [user1];
-
-/**
- * @param {object} args
- * @param {string} args.connectionId
- * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
- */
-function handleSendMiniRiffList({
-    connectionId,
-    message,
-    log = getServerLogger({
-        module: "Lobby",
-    }),
-}: {
-    connectionId: string;
-    message: LegacyMessage;
-    log?: import("pino").Logger;
-}) {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
-
-    log.debug("Handling NPS_SEND_MINI_RIFF_LIST");
-    log.debug(`Received command: ${message._doSerialize().toString("hex")}`);
-
-    const resultSize = 4 + channelRecordSize * channels.length;
-
-    const packetContent = Buffer.alloc(resultSize + 6);
-
-    try {
-        // Add the response code
-        packetContent.writeUInt16BE(0x404, 0);
-        let offset = 2;
-        packetContent.writeUInt16BE(resultSize, offset);
-        offset += 2;
-
-        packetContent.writeUInt16BE(channels.length, offset);
-        offset += 2;
-
-        // loop through the channels
-        for (const channel of channels) {
-            offset += serializeString(channel.name, packetContent, offset);
-
-            packetContent.writeUInt16BE(channel.id, offset);
-            offset += 2;
-            packetContent.writeUInt16BE(channel.population, offset);
-            offset += 2;
-        }
-
-        // Build the packet
-        const packetResult = new LegacyMessage();
-        packetResult._header.id = 0x1101;
-        packetResult._header.length = resultSize;
-        packetResult.setBuffer(packetContent);
-
-        log.debug(
-            `Sending response: ${packetResult.serialize().toString("hex")}`,
-        );
-
-        return {
-            connectionId,
-            message: packetResult,
-        };
-    } catch (error) {
-        throw ServerError.fromUnknown(
-            error,
-            "Error handling NPS_SEND_MINI_RIFF_LIST",
-        );
-    }
-}
 
 /**
  * @param {object} args
