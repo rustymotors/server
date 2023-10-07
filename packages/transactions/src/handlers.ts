@@ -37,30 +37,7 @@ import { ArcadeCarInfo, ArcadeCarMessage } from "./ArcadeCarMessage.js";
 import { GameUrl, GameUrlsMessage } from "./GameUrlsMessage.js";
 import { TunablesMessage } from "./TunablesMessage.js";
 import { login } from "./login.js";
-
-/**
- * @param {MessageHandlerArgs} args
- * @return {Promise<MessageHandlerResult>}
- */
-async function trackingPing({
-    connectionId,
-    packet,
-    log,
-}: MessageHandlerArgs): Promise<MessageHandlerResult> {
-    // Create new response packet
-    const pReply = new GenericReplyMessage();
-    pReply.msgNo = 101;
-    pReply.msgReply = 440;
-    const rPacket = new ServerMessage();
-    rPacket._header.sequence = packet._header.sequence + 1;
-    rPacket._header.flags = 8;
-
-    rPacket.setBuffer(pReply.serialize());
-
-    log.debug(`TrackingPing: ${rPacket.toString()}`);
-
-    return { connectionId, messages: [rPacket] };
-}
+import { trackingPing } from "./trackingPing.js";
 
 /**
  * @param {MessageHandlerArgs} args
