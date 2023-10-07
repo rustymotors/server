@@ -15,70 +15,132 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
-import { _npsHeartbeat } from "./handlers/heartbeat.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
-import { ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
+import { getServerLogger } from "../../shared/log.js";
+import { ServerError } from "../../shared/errors/ServerError.js";
+import { getServerConfiguration } from "../../shared/Configuration.js";
+import {
+    LegacyMessage,
+    NPSMessage,
+    // eslint-disable-next-line no-unused-vars
+    SerializedBuffer,
+} from "../../shared/messageFactory.js";
 
 /**
+ * Array of supported message handlers
+ *
+ * @type {{
+ *  opCode: number,
+ * name: string,
+ * handler: (args: {
+ * connectionId: string,
+ * message: SerializedBuffer,
+ * log: import("pino").Logger,
+ * }) => Promise<{
+ * connectionId: string,
+ * messages: SerializedBuffer[],
+ * }>}[]}
  */
-export async function handleData(
-    args: ServiceArgs
-): Promise<ServiceResponse> {
-    const { legacyConnection: dataConnection, log, config, connection } = args;
-    const { localPort, remoteAddress } = dataConnection.connection.socket;
-    log(
-        "debug",
-        `Received Lobby packet: ${JSON.stringify({ localPort, remoteAddress })}`
+export const messageHandlers: {
+    opCode: number;
+    name: string;
+    handler: (args: {
+        connectionId: string;
+        message: SerializedBuffer;
+        log: import("pino").Logger;
+    }) => Promise<{
+        connectionId: string;
+        messages: SerializedBuffer[];
+    }>;
+}[] = [
+    {
+        opCode: 256, // 0x100
+        name: "User login",
+        handler: _npsRequestGameConnectServer,
+    },
+    {
+        opCode: 4353, // 0x1101
+        name: "Encrypted command",
+        handler: handleEncryptedNPSCommand,
+    },
+];
+
+/**
+ * @param {object} args
+ * @param {string} args.connectionId
+ * @param {SerializedBuffer} args.message
+ * @param {import("pino").Logger} [args.log=getServerLogger({ module: "PersonaServer" })]
+ * @returns {Promise<{
+ *  connectionId: string,
+ * messages: SerializedBuffer[],
+ * }>}
+ * @throws {Error} Unknown code was received
+ */
+export async function receiveLobbyData({
+    connectionId,
+    message,
+    log = getServerLogger({
+        module: "Lobby",
+    }),
+}: {
+    connectionId: string;
+    message: SerializedBuffer;
+    log?: import("pino").Logger;
+}): Promise<{
+    connectionId: string;
+    messages: SerializedBuffer[];
+}> {
+    log.level = getServerConfiguration({}).logLevel ?? "info";
+
+    /** @type {LegacyMessage | NPSMessage} */
+    let inboundMessage: LegacyMessage | NPSMessage;
+
+    // Check data length
+    const dataLength = message.data.length;
+
+    if (dataLength < 4) {
+        throw new ServerError(
+            `Data length ${dataLength} is too short to deserialize`,
+        );
+    }
+
+    if (dataLength > 12) {
+        inboundMessage = new NPSMessage();
+    } else {
+        inboundMessage = new LegacyMessage();
+    }
+
+    inboundMessage._doDeserialize(message.data);
+
+    const { data } = message;
+    log.debug(
+        `Received Lobby packet',
+    ${JSON.stringify({
+        data: data.toString("hex"),
+    })}`,
     );
-    const { data } = dataConnection;
-    const requestCode = data.readUInt16BE(0).toString(16);
 
-    switch (requestCode) {
-        // _npsRequestGameConnectServer
-        case "100": {
-            const result = await _npsRequestGameConnectServer({
-                legacyConnection: dataConnection,
-                connection,
-                config,
-                log,
-            });
-            return result;
-        }
+    const supportedHandler = messageHandlers.find((h) => {
+        return h.opCode === inboundMessage._header.id;
+    });
 
-        // NpsHeartbeat
+    if (typeof supportedHandler === "undefined") {
+        // We do not yet support this message code
+        throw new ServerError(
+            `UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
+        );
+    }
 
-        case "217": {
-            const result = await _npsHeartbeat({
-                legacyConnection: dataConnection,
-                config,
-                log,
-            });
-            return result;
-        }
-
-        // NpsSendCommand
-
-        case "1101": {
-            // This is an encrypted command
-
-            const result = handleEncryptedNPSCommand({
-                legacyConnection: dataConnection,
-                config,
-                log,
-            });
-            return result;
-        }
-
-        default: {
-            const err = new Error(
-                `Unknown code ${requestCode} was received on port 7003`
-            );
-            log("warning", err.message);
-            return {
-                connection: dataConnection.connection,
-                messages: [],
-                log,
-            };
-        }
+    try {
+        const result = await supportedHandler.handler({
+            connectionId,
+            message,
+            log,
+        });
+        log.debug(`Returning with ${result.messages.length} messages`);
+        log.debug("Leaving receiveLobbyData");
+        return result;
+    } catch (error) {
+        throw new ServerError(`Error handling lobby data: ${String(error)}`);
     }
 }

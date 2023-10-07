@@ -1,21 +1,15 @@
-import { SerializedObject } from "../interfaces/index.js";
 import { ServerError } from "./errors/ServerError.js";
 
-export class SerializerBase implements SerializedObject {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    deserialize(_inputBuffer: Buffer): SerializerBase {
-        throw new Error("Method not implemented.");
-    }
-    serialize(): Buffer {
-        throw new Error("Method not implemented.");
-    }
-    serializeSize(): number {
+export class SerializerBase {
+    serializeSize() {
         return 4;
     }
     // Little Endian (LE) methods for serialization and deserialization.
 
     /**
      * Serialize a string.
+     * @param {string} str
+     * @returns {Buffer}
      */
     static _serializeString(str: string): Buffer {
         const len = str.length;
@@ -114,7 +108,7 @@ export class SerializerBase implements SerializedObject {
     /**
      * Deserialize a char array.
      * @param {Buffer} buf
-     * @returns {Array<number>}
+     * @returns {number[]}
      */
     static _deserializeCharArray(buf: Buffer): number[] {
         const len = buf.readUInt16LE();
@@ -138,32 +132,62 @@ export class SerializerBase implements SerializedObject {
         return buf.readUInt16BE(0);
     }
 
+    /**
+     * Deserialize a "double" long 4-byte integer.
+     * @param {Buffer} buf
+     * @returns {number}
+     */
     static deserializeDoubleBE(buf: Buffer): number {
         return buf.readDoubleBE(0);
     }
 
+    /**
+     * Deserialize a "float" 4-byte floating point number.
+     * @param {Buffer} buf
+     * @returns {number}
+     */
     static deserializeFloatBE(buf: Buffer): number {
         return buf.readFloatBE(0);
     }
 
+    /**
+     * Serialize a "word" short 2-byte integer.
+     * @param {number} int16
+     * @returns {Buffer}
+     */
     static serializeWordBE(int16: number): Buffer {
         const buf = Buffer.alloc(2);
         buf.writeUInt16BE(int16);
         return buf;
     }
 
+    /**
+     * Serialize a "double" long 4-byte integer.
+     * @param {number} double
+     * @returns {Buffer}
+     */
     static serializeDoubleBE(double: number): Buffer {
         const buf = Buffer.alloc(8);
         buf.writeDoubleBE(double);
         return buf;
     }
 
+    /**
+     * Serialize a "float" 4-byte floating point number.
+     * @param {number} float
+     * @returns {Buffer}
+     */
     static serializeFloatBE(float: number): Buffer {
         const buf = Buffer.alloc(4);
         buf.writeFloatBE(float);
         return buf;
     }
 
+    /**
+     * Serialize a string.
+     * @param {string} str
+     * @returns {Buffer}
+     */
     static serializeStringBE(str: string): Buffer {
         const len = str.length;
         const buf = Buffer.alloc(2 + len);
@@ -177,26 +201,17 @@ export class SerializerBase implements SerializedObject {
     // ===
 
     /**
-     * Serialize a string.
-     * @param {string} str
-     * @returns {Buffer}
-     */
-    toString(): string {
-        throw new Error("Method not implemented.");
-    }
-
-    /**
      * Deserialize a string.
      * @param {Buffer} buf
      * @returns {Array<number>}
      */
-    static _deserializeString(buf: Buffer): number[] {
+    static _deserializeString(buf: Buffer): Array<number> {
         return SerializerBase._deserializeCharArray(buf);
     }
 
     /**
      * Convert a char array to a string.
-     * @param {Array<number>} charArray
+     * @param {number[]} charArray
      * @returns {string}
      */
     static _charArrayToString(charArray: number[]): string {
@@ -231,7 +246,12 @@ export class SerializerBase implements SerializedObject {
     // Utility methods.
     // ===
 
-    static verifyConnectionId(object: SerializedObject): void {
+    /**
+     * Verify that an object has a connectionId property.
+     * @param {module:interfaces.SerializedObject} object
+     * @throws {ServerError} if the object does not have a connectionId property
+     */
+    static verifyConnectionId(object: Object) {
         if (!Object.prototype.hasOwnProperty.call(object, "connectionId")) {
             throw new ServerError(
                 "Object does not have a connectionId property",

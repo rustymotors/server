@@ -11,11 +11,13 @@ test:
 	@clear
 	@npm test
 
+build:
+	@npm run build:dev
+
 start:
-	@LOG_LEVEL=silly npm run start:dev
+	@EXTERNAL_HOST=10.10.5.20 PRIVATE_KEY_FILE=data/private_key.pem CERTIFICATE_FILE=data/mcouniverse.crt PUBLIC_KEY_FILE=data/pub.key LOG_LEVEL=trace npm run start:dev
 
 prod_node:
-	npx tsc -b --verbose
 	docker-compose --file docker-compose.yml up -d --build
 
 up:
@@ -35,3 +37,5 @@ docker-init:
 clean:
 	@rm -rf node_modules
 	@rm -rf dist
+
+.PHONY: all certs test build start prod_node up down enable-node docker-init clean

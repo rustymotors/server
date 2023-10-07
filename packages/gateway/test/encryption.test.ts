@@ -1,156 +1,162 @@
-import { describe, it } from "vitest";
-import assert from "node:assert";
-import { SocketWithConnectionInfo, SessionKeys, ClientConnection } from "../../interfaces/index.js";
-import { Connection } from "../../shared/Connection.js";
-import { ISocketTestFactory, IConnectionFactory } from "../../shared/index.js";
-import { generateEncryptionPair, EncryptionManager } from "../src/encryption.js";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+    createCommandEncryptionPair,
+    createDataEncryptionPair,
+} from "../src/encryption.js";
+import { Socket } from "node:net";
+import {
+    McosEncryption,
+    State,
+    addEncryption,
+    createInitialState,
+    getEncryption,
+} from "../../shared/State.js";
+import { randomUUID } from "node:crypto";
+import { mockPino } from "../../../test/factoryMocks.js";
 
+let testSave: (state: State) => void;
+let testState: State;
+let testSocket1: Socket;
+let testSocket2: Socket;
 
-describe("EncryptionManager (legacy)", () => {
-    it("given the same keys, should always return same EncryptionSession", () => {
-        // arrange
-        const testSocket1: SocketWithConnectionInfo = {
-            socket: ISocketTestFactory(),
-            connectionId: "test1",
-            remoteAddress: "",
-            seq: 0,
-            id: "test1",
-            localPort: 0,
-            personaId: 0,
-            lastMessageTimestamp: 0,
-            inQueue: false,
-            useEncryption: false,
+describe("Encryption", () => {
+    beforeAll(() => {
+        mockPino();
+        testSave = (state?: State) => {
+            if (typeof state === "undefined") {
+                throw new Error("State not defined");
+            }
+            testState = state;
         };
-
-        const testSocket2: SocketWithConnectionInfo = {
-            socket: ISocketTestFactory(),
-            connectionId: "test2",
-            remoteAddress: "",
-            seq: 0,
-            id: "test2",
-            localPort: 0,
-            personaId: 0,
-            lastMessageTimestamp: 0,
-            inQueue: false,
-            useEncryption: false,
-        };
-
-        // These are keys from a real session, but the values are not important
-        const testKeys: SessionKeys = {
-            sessionKey:
-                "254a7a0703a3a2c4df687a3969d3577bb8350efc3950c1c22f76415227ac5f21",
-            sKey: "254a7a0703a3a2c4",
-        };
-
-        // act
-        const session1 = generateEncryptionPair(testSocket1, testKeys);
-        const session2 = generateEncryptionPair(testSocket2, testKeys);
-
-        // assert
-        assert.deepStrictEqual(session1.sessionKey, session2.sessionKey);
-    });
-});
-
-describe("EncryptionManager", () => {
-    it("given the same keys, should always return same EncryptionSession", () => {
-        // arrange
-        const manager1 = new EncryptionManager();
-        const manager2 = new EncryptionManager();
-
-        const testConnection1: ClientConnection = {
-            socket: ISocketTestFactory(),
-            status: Connection.INACTIVE,
-            appID: 0,
-            id: "test1",
-            remoteAddress: "",
-            seq: 0,
-            personaId: 0,
-            lastMessageTimestamp: 0,
-            inQueue: false,
-            useEncryption: false,
-            port: 0,
-            ip: null,
-        };
-
-        const testConnection2: ClientConnection = {
-            socket: ISocketTestFactory(),
-            status: Connection.INACTIVE,
-            appID: 0,
-            id: "test2",
-            remoteAddress: "",
-            seq: 0,
-            personaId: 0,
-            lastMessageTimestamp: 0,
-            inQueue: false,
-            useEncryption: false,
-            port: 0,
-            ip: null,
-        };
-
-        // These are keys from a real session, but the values are not important
-        const testKeys: SessionKeys = {
-            sessionKey:
-                "254a7a0703a3a2c4df687a3969d3577bb8350efc3950c1c22f76415227ac5f21",
-            sKey: "254a7a0703a3a2c4",
-        };
-
-        // act
-        const session1 = manager1.generateEncryptionPair(
-            testConnection1,
-            testKeys,
-        );
-        const session2 = manager2.generateEncryptionPair(
-            testConnection2,
-            testKeys,
-        );
-
-        // assert
-        assert.deepStrictEqual(session1.sessionKey, session2.sessionKey);
+        testState = createInitialState({
+            saveFunction: testSave,
+        });
+        testSocket1 = new Socket();
+        testSocket1.write = vi.fn().mockImplementation(() => {
+            // Do nothing
+        });
+        testSocket2 = new Socket();
+        testSocket2.write = vi.fn().mockImplementation(() => {
+            // Do nothing
+        });
     });
 
-    it("should be able to encrypt and decrypt a message", () => {
-        // arrange
-        const manager = new EncryptionManager();
+    beforeEach(() => {
+        testState = createInitialState({
+            saveFunction: testSave,
+        });
+    });
 
-        const testConnection1: ClientConnection = IConnectionFactory();
-        const testConnection2: ClientConnection = IConnectionFactory();
+    it("should be able to encrypt and decrypt a command message", () => {
+        // Arrange
 
-        const message1 = Buffer.from("test message");
-        const message2 = Buffer.from("test message 2");
+        const connectionId1 = randomUUID();
+        const connectionId2 = randomUUID();
 
-        // These are keys from a real session, but the values are not important
-        const testKeys: SessionKeys = {
-            sessionKey:
-                "254a7a0703a3a2c4df687a3969d3577bb8350efc3950c1c22f76415227ac5f21",
-            sKey: "254a7a0703a3a2c4",
-        };
+        const key =
+            "254a7a0703a3a2c4df687a3969d3577bb8350efc3950c1c22f76415227ac5f21";
 
-        testConnection1.encryptionSession = manager.generateEncryptionPair(
-            testConnection1,
-            testKeys,
-        );
+        const commandEncryptionPair = createCommandEncryptionPair(key);
 
-        testConnection2.encryptionSession = manager.generateEncryptionPair(
-            testConnection2,
-            testKeys,
-        );
+        const dataEncryptionPair = createDataEncryptionPair(key);
 
-        // act
+        const encryption1 = new McosEncryption({
+            connectionId: connectionId1,
+            commandEncryptionPair,
+            dataEncryptionPair,
+        });
+
+        const encryption2 = new McosEncryption({
+            connectionId: connectionId2,
+            commandEncryptionPair,
+            dataEncryptionPair,
+        });
+
+        // Act + Assert
+
+        const message = Buffer.from("test message1234");
+
+        let state = testState;
+
+        state = addEncryption(state, encryption1);
+        state = addEncryption(state, encryption2);
+
+        const connectionEncryption1 = getEncryption(state, connectionId1);
+
+        expect(connectionEncryption1).toBeDefined();
+
         const encryptedMessage =
-            testConnection1.encryptionSession.tsCipher.update(message1);
+            connectionEncryption1?.commandEncryption.encrypt(message);
+
+        expect(encryptedMessage).toBeDefined();
+
+        const connectionEncryption2 = getEncryption(state, connectionId2);
+
+        expect(connectionEncryption2).toBeDefined();
+
         const decryptedMessage =
-            testConnection2.encryptionSession.tsCipher.update(encryptedMessage);
-
-        const encryptedMessage2 =
-            testConnection2.encryptionSession.tsCipher.update(message2);
-
-        const decryptedMessage2 =
-            testConnection1.encryptionSession.tsCipher.update(
-                encryptedMessage2,
+            connectionEncryption2?.commandEncryption.decrypt(
+                encryptedMessage as Buffer,
             );
 
-        // assert
-        assert.deepStrictEqual(decryptedMessage, message1);
-        assert.deepStrictEqual(decryptedMessage2, message2);
+        expect(decryptedMessage).toBeDefined();
+
+        expect(decryptedMessage).toEqual(message);
+    });
+
+    it("should be able to encrypt and decrypt a command message", () => {
+        // Arrange
+
+        const connectionId1 = randomUUID();
+        const connectionId2 = randomUUID();
+
+        const key =
+            "254a7a0703a3a2c4df687a3969d3577bb8350efc3950c1c22f76415227ac5f21";
+
+        const commandEncryptionPair = createCommandEncryptionPair(key);
+
+        const dataEncryptionPair = createDataEncryptionPair(key);
+
+        const encryption1 = new McosEncryption({
+            connectionId: connectionId1,
+            commandEncryptionPair,
+            dataEncryptionPair,
+        });
+
+        const encryption2 = new McosEncryption({
+            connectionId: connectionId2,
+            commandEncryptionPair,
+            dataEncryptionPair,
+        });
+
+        // Act + Assert
+
+        const message = Buffer.from("test message1234");
+
+        let state = testState;
+
+        state = addEncryption(state, encryption1);
+        state = addEncryption(state, encryption2);
+
+        const connectionEncryption1 = getEncryption(state, connectionId1);
+
+        expect(connectionEncryption1).toBeDefined();
+
+        const encryptedMessage =
+            connectionEncryption1?.dataEncryption.encrypt(message);
+
+        expect(encryptedMessage).toBeDefined();
+
+        const connectionEncryption2 = getEncryption(state, connectionId2);
+
+        expect(connectionEncryption2).toBeDefined();
+
+        const decryptedMessage = connectionEncryption2?.dataEncryption.decrypt(
+            encryptedMessage as Buffer,
+        );
+
+        expect(decryptedMessage).toBeDefined();
+
+        expect(decryptedMessage).toEqual(message);
     });
 });

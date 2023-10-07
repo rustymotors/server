@@ -14,60 +14,69 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { DatabaseManager } from "../../database/index.js";
-import { GSMessageBase } from "../../gateway/src/GMessageBase.js";
-import { UserRecordMini, TBufferWithConnection, ServerConfiguration, Logger, MessageArrayWithConnectionInfo, ServiceArgs } from "../../interfaces/index.js";
-import { NPSMessage } from "../../shared/NPSMessage.js";
+import { getServerConfiguration } from "../../shared/Configuration.js";
 import { NPSUserStatus } from "./NPSUserStatus.js";
+import { getServerLogger } from "../../shared/log.js";
+import { ServerError } from "../../shared/errors/ServerError.js";
+import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
 import { premadeLogin } from "./premadeLogin.js";
+import { NPSMessage, SerializedBuffer } from "../../shared/messageFactory.js";
 
-/** @type {UserRecordMini[]} */
-const userRecords: UserRecordMini[] = [
+/** @type {import("../../interfaces/index.js").UserRecordMini[]} */
+const userRecords: import("../../interfaces/index.js").UserRecordMini[] = [
     {
         contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
-        customerId: 0xac_01_00_00,
-        userId: 0x00_00_00_02,
+        customerId: 0xac010000,
+        userId: 0x00000002,
     },
     {
         contextId: "d316cd2dd6bf870893dfbaaf17f965884e",
-        customerId: 0x00_54_b4_6c,
-        userId: 0x00_00_00_01,
+        customerId: 0x0054b46c,
+        userId: 0x00000001,
     },
 ];
 
 /**
  * Process a UserLogin packet
  * @private
- * @param {TBufferWithConnection} dataConnection
- * @param {ServerConfiguration} config
- * @param {Logger} log
- * @return {Promise<MessageArrayWithConnectionInfo>}
+ * @param {object} args
+ * @param {string} args.connectionId
+ * @param {SerializedBuffer} args.message
+ * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @returns {Promise<{
+ *  connectionId: string,
+ * messages: SerializedBuffer[],
+ * }>}
  */
-async function login(
-    dataConnection: TBufferWithConnection,
-    config: ServerConfiguration,
-    log: Logger,
-): Promise<MessageArrayWithConnectionInfo> {
-    const { connectionId, data } = dataConnection;
+async function login({
+    connectionId,
+    message,
+    log = getServerLogger({
+        module: "LoginServer",
+    }),
+}: {
+    connectionId: string;
+    message: SerializedBuffer;
+    log?: import("pino").Logger;
+}): Promise<{
+    connectionId: string;
+    messages: SerializedBuffer[];
+}> {
+    const data = message.serialize();
 
-    log("debug", `Received login packet: ${connectionId}`);
+    log.debug(`Received login packet: ${connectionId}`);
 
-    const newGameMessage = new GSMessageBase(log);
-    newGameMessage.deserialize(data.subarray(0, 10));
-    log("debug", `Raw game message: ${JSON.stringify(newGameMessage)}`);
+    log.debug("Requesting NPSUserStatus packet");
+    const userStatus = new NPSUserStatus(data, getServerConfiguration({}), log);
+    log.debug("NPSUserStatus packet creation success");
 
-    log("debug", "Requesting NPSUserStatus packet");
-    const userStatus = new NPSUserStatus(data, config, log);
-    log("debug", "NPSUserStatus packet creation success");
-
-    log("debug", "Requesting Key extraction");
+    log.debug("Requesting Key extraction");
     userStatus.extractSessionKeyFromPacket(data);
-    log("debug", "Key extraction success");
+    log.debug("Key extraction success");
 
     const { contextId, sessionKey } = userStatus;
 
-    log(
-        "debug",
+    log.debug(
         `UserStatus object from _userLogin,
       ${JSON.stringify({
           userStatus: userStatus.toJSON(),
@@ -90,15 +99,15 @@ async function login(
     }
 
     // Save sessionkey in database under customerId
-    log("debug", "Preparing to update session key in db");
-    await DatabaseManager.getInstance(log)
+    log.debug("Preparing to update session key in db");
+    await getDatabaseServer()
         .updateSessionKey(
             userRecord.customerId,
             sessionKey ?? "",
             contextId,
             connectionId,
         )
-        .catch((error: unknown) => {
+        .catch((error) => {
             const err = new Error(
                 `Unable to update session key in the database: ${String(
                     error,
@@ -107,12 +116,11 @@ async function login(
             throw err;
         });
 
-    log("debug", "Session key updated");
+    log.debug("Session key updated");
 
     // Create the packet content
-    // TODO: #1176 Return the login connection response packet as a MessagePacket object
     const packetContent = premadeLogin();
-    log("debug", `Using Premade Login: ${packetContent.toString("hex")}`);
+    log.debug(`Using Premade Login: ${packetContent.toString("hex")}`);
 
     // MsgId: 0x601 = NPS_USER_VALID = 1537
     Buffer.from([0x06, 0x01]).copy(packetContent);
@@ -139,74 +147,113 @@ async function login(
     // Don't use queue (+208, but I'm not sure if this includes the header or not)
     Buffer.from([0x00]).copy(packetContent, 208);
 
-    const newPacket = new NPSMessage("sent");
-    newPacket.deserialize(packetContent);
-
     /**
      * Return the packet twice for debug
      * Debug sends the login request twice, so we need to reply twice
      * Then send ok to login packet
      */
 
+    const outboundMessage = new SerializedBuffer();
+    outboundMessage._doDeserialize(packetContent);
+
     // Update the data buffer
-    /** @type {MessageArrayWithConnectionInfo} */
-    const response: MessageArrayWithConnectionInfo = {
-        connection: dataConnection.connection,
-        messages: [newPacket, newPacket],
-        log,
+    const response = {
+        connectionId,
+        messages: [outboundMessage, outboundMessage],
     };
-    log("debug", "Leaving login");
+    log.debug("Leaving login");
     return response;
 }
 
-export const messageHandlers = [
+/**
+ * Array of supported message handlers
+ *
+ * @type {{
+ *  opCode: number,
+ * name: string,
+ * handler: (args: {
+ * connectionId: string,
+ * message: SerializedBuffer,
+ * log: import("pino").Logger,
+ * }) => Promise<{
+ * connectionId: string,
+ * messages: SerializedBuffer[],
+ * }>}[]}
+ */
+export const messageHandlers: {
+    opCode: number;
+    name: string;
+    handler: (args: {
+        connectionId: string;
+        message: SerializedBuffer;
+        log: import("pino").Logger;
+    }) => Promise<{
+        connectionId: string;
+        messages: SerializedBuffer[];
+    }>;
+}[] = [
     {
-        id: "501",
+        opCode: 1281, // 0x0501
+        name: "UserLogin",
         handler: login,
     },
 ];
 
 /**
+ * Entry and exit point of the Login service
  *
- *
- * @param {TBufferWithConnection} dataConnection
- * @param {ServerConfiguration} config
- * @param {Logger} log
- * @return {Promise<MessageArrayWithConnectionInfo>}
+ * @export
+ * @param {object} args
+ * @param {string} args.connectionId
+ * @param {SerializedBuffer} args.message
+ * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @returns {Promise<{
+ *  connectionId: string,
+ * messages: SerializedBuffer[],
+ * }>}
  */
-export async function handleData(
-    args: ServiceArgs,
-): Promise<MessageArrayWithConnectionInfo> {
-    const { legacyConnection: dataConnection, config, log } = args;
-    const { connectionId, data } = dataConnection;
+export async function handleLoginData({
+    connectionId,
+    message,
+    log = getServerLogger({
+        module: "handleLoginData",
+    }),
+}: {
+    connectionId: string;
+    message: SerializedBuffer;
+    log?: import("pino").Logger;
+}): Promise<{
+    connectionId: string;
+    messages: SerializedBuffer[];
+}> {
+    log.level = getServerConfiguration({}).logLevel ?? "info";
+    log.debug(`Received Login Server packet: ${connectionId}`);
 
-    log("debug", `Received Login Server packet: ${connectionId}`);
-
-    // Check the request code
-    const requestCode = data.readUInt16BE(0).toString(16);
+    // The packet needs to be an NPSMessage
+    const inboundMessage = new NPSMessage();
+    inboundMessage._doDeserialize(message.serialize());
 
     const supportedHandler = messageHandlers.find((h) => {
-        return h.id === requestCode;
+        return h.opCode === inboundMessage._header.id;
     });
 
     if (typeof supportedHandler === "undefined") {
         // We do not yet support this message code
-        dataConnection.connection.socket.end();
-        const err = new TypeError(`UNSUPPORTED_MESSAGECODE: ${requestCode}`);
-        throw err;
+        throw new ServerError(
+            `UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
+        );
     }
 
     try {
-        const result = await supportedHandler.handler(
-            dataConnection,
-            config,
+        const result = await supportedHandler.handler({
+            connectionId,
+            message,
             log,
-        );
-        log("debug", `Returning with ${result.messages.length} messages`);
-        log("debug", "Leaving handleData");
+        });
+        log.debug(`Returning with ${result.messages.length} messages`);
+        log.debug("Leaving handleLoginData");
         return result;
     } catch (error) {
-        const err = new Error(`Error handling data: ${String(error)}`);
-        throw err;
+        throw new Error(`Error handling login data: ${String(error)}`);
     }
 }

@@ -13,28 +13,23 @@
 
 import { MessageNode } from "../../shared/MessageNode.js";
 
-
 export class GenericRequestMessage extends MessageNode {
-    msgNo;
-    data;
-    data2;
-    serviceName;
+    data2: Buffer;
     /**
      *
      */
     constructor() {
-        super("received");
-        this.msgNo = 0;
-        this.data = Buffer.alloc(4);
-        this.data2 = Buffer.alloc(4);
-        this.serviceName = "mcoserver:GenericRequestMsg";
+        super();
+        this.msgNo = 0; // 2 bytes
+        this.data = Buffer.alloc(4); // 4 bytes
+        this.data2 = Buffer.alloc(4); // 4 bytes
     }
 
     /**
-     *
+     * @override
      * @param {Buffer} buffer
      */
-    deserialize(buffer: Buffer) {
+    override deserialize(buffer: Buffer) {
         try {
             this.msgNo = buffer.readInt16LE(0);
         } catch (error) {
@@ -43,8 +38,8 @@ export class GenericRequestMessage extends MessageNode {
             } else {
                 const err = new TypeError(
                     `[GenericRequestMsg] Unable to read msgNo from ${buffer.toString(
-                        "hex"
-                    )}: ${String(error)}` // skipcq: JS-0378
+                        "hex",
+                    )}: ${String(error)}`, // skipcq: JS-0378
                 );
                 throw err;
             }
@@ -55,10 +50,10 @@ export class GenericRequestMessage extends MessageNode {
     }
 
     /**
-     *
+     * @override
      * @return {Buffer}
      */
-    serialize(): Buffer {
+    override serialize(): Buffer {
         const packet = Buffer.alloc(16);
         packet.writeInt16LE(this.msgNo, 0);
         this.data.copy(packet, 2);
@@ -67,10 +62,9 @@ export class GenericRequestMessage extends MessageNode {
     }
 
     /**
-     * DumpPacket
-     * @return {string}
+     * @override
      */
-    dumpPacket(): string {
+    override toString() {
         return `GenericRequest ${JSON.stringify({
             msgNo: this.msgNo,
             data: this.data.toString("hex"),

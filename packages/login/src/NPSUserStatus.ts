@@ -1,6 +1,14 @@
 import { privateDecrypt } from "node:crypto";
-import { Logger, ServerConfiguration, JSONResponseOfGameMessage } from "../../interfaces/index.js";
-import { NPSMessage } from "../../shared/NPSMessage.js";
+import { readFileSync } from "node:fs";
+
+import { ServerError } from "../../shared/errors/ServerError.js";
+import { LegacyMessage } from "../../shared/messageFactory.js";
+import { Configuration } from "../../shared/Configuration.js";
+import { Logger } from "pino";
+
+/**
+ * @typedef {import("../../shared/Configuration.js").Configuration} Configuration
+ */
 
 /**
  *
@@ -18,32 +26,38 @@ import { NPSMessage } from "../../shared/NPSMessage.js";
 /**
  *
  * @class NPSUserStatus
- * @extends {NPSMessage}
  * @property {string} sessionKey
  * @property {string} opCode
  * @property {Buffer} buffer
  */
 
-export class NPSUserStatus extends NPSMessage {
-    /** @type {string | null} */
-    sessionKey: string | null = null;
-    opCode;
-    contextId;
-    buffer;
-
-    _log: Logger;
-
-    _config: ServerConfiguration;
-
-    constructor(packet: Buffer, config: ServerConfiguration, log: Logger) {
-        super("received");
+export class NPSUserStatus extends LegacyMessage {
+    _config: Configuration;
+    log: Logger;
+    sessionKey: string;
+    opCode: number;
+    contextId: string;
+    buffer: Buffer;
+    /**
+     *
+     * @param {Buffer} packet
+     * @param {Configuration} config
+     * @param {import("pino").Logger} log
+     */
+    constructor(
+        packet: Buffer,
+        config: Configuration,
+        log: import("pino").Logger,
+    ) {
+        super();
         this._config = config;
-        this._log = log;
-        log("debug", "Constructing NPSUserStatus");
+        this.log = log;
+        log.debug("Constructing NPSUserStatus");
+        this._header._doDeserialize(packet);
         this.sessionKey = "";
 
         // Save the NPS opCode
-        this.opCode = packet.readInt16LE(0);
+        this.opCode = packet.readInt16BE(0);
 
         // Save the contextId
         this.contextId = packet.subarray(14, 48).toString();
@@ -58,35 +72,48 @@ export class NPSUserStatus extends NPSMessage {
      * Take 128 bytes
      * They are the utf-8 of the hex bytes that are the key
      *
-     * @param {Buffer} packet
+     * @param {Buffer} rawPacket
      * @return {void}
      */
-    extractSessionKeyFromPacket(packet: Buffer): void {
-        this._log("debug", "Extracting key");
-        // Decrypt the sessionkey
-        const privateKey = this._config.privateKeyContents;
+    extractSessionKeyFromPacket(rawPacket: Buffer): void {
+        this.log.debug("Extracting key");
 
-        const sessionkeyString = Buffer.from(
-            packet.subarray(52, -10).toString("utf8"),
-            "hex",
-        );
-        const decrypted = privateDecrypt(privateKey, sessionkeyString);
-        this.sessionKey = decrypted.subarray(2, -4).toString("hex");
+        // Extract the session key which is 128 acsii characters (256 bytes)
+        const sessionKeyAsAscii = rawPacket.subarray(52, 308).toString("utf8");
+        this.log.trace(`Session key: ${sessionKeyAsAscii}`);
+
+        // length of the session key should be 128 bytes
+        const sessionkeyString = Buffer.from(sessionKeyAsAscii, "hex");
+        // Decrypt the sessionkey
+        try {
+            if (!this._config.privateKeyFile) {
+                throw new ServerError("No private key file specified");
+            }
+            const privatekeyContents = readFileSync(
+                this._config.privateKeyFile,
+            );
+
+            const decrypted = privateDecrypt(
+                {
+                    key: privatekeyContents,
+                },
+                sessionkeyString,
+            ); // length of decrypted should be 128 bytes
+            this.sessionKey = decrypted.subarray(2, -4).toString("hex"); // length of session key should be 12 bytes
+        } catch (error) {
+            this.log.trace(`Session key: ${sessionkeyString.toString("utf8")}`); // 128 bytes
+            this.log.trace(`decrypted: ${this.sessionKey}`); // 12 bytes
+            this.log.error(`Error decrypting session key: ${String(error)}`);
+            throw new Error(`Unable to extract session key: ${String(error)}`);
+        }
     }
 
-    /**
-     *
-     * @return {JSONResponseOfGameMessage}
-     */
-    toJSON(): JSONResponseOfGameMessage {
-        this._log("debug", "Returning as JSON");
+    toJSON() {
+        this.log.debug("Returning as JSON");
         return {
-            msgNo: this.msgNo,
-            msgLength: this.msgLength,
-            msgVersion: this.msgVersion,
-            content: this.content.toString("hex"),
-            direction: this.direction,
-            opCode: this.opCode,
+            msgNo: this._header.id,
+            msgLength: this._header.length,
+            content: this.data.toString("hex"),
             contextId: this.contextId,
             sessionKey: this.sessionKey,
             rawBuffer: this.buffer.toString("hex"),
@@ -97,8 +124,8 @@ export class NPSUserStatus extends NPSMessage {
      * @return {string}
      */
     dumpPacket(): string {
-        this._log("debug", "Returning as string");
-        let message = this.dumpPacketHeader("NPSUserStatus");
+        this.log.debug("Returning as string");
+        let message = this._header.toString();
         message = message.concat(
             `NPSUserStatus,
         ${JSON.stringify({

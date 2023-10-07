@@ -20,29 +20,17 @@
  * @property {StockCar[]} StockCarList
  */
 
-import { MessageNode } from "../../shared/index.js";
-import { StockCar } from "./StockCar.js";
+import { MessageNode } from "../../shared/MessageNode.js";
+
+type StockCar = import("./StockCar.js").StockCar;
 
 export class StockCarInfoMessage extends MessageNode {
-    msgNo;
-    starterCash;
-    dealerId;
-    brand;
-    noCars;
-    moreToCome;
-    /**
-     *
-     * @type {StockCar[]}
-     * @memberof StockCarInfoMessage
-     */
-    StockCarList: StockCar[] = [];
-    /**
-     *
-     *
-     * @type {string}
-     * @memberof StockCarInfoMessage
-     */
-    serviceName: string;
+    starterCash: number;
+    dealerId: number;
+    brand: number;
+    noCars: number;
+    moreToCome: boolean;
+    StockCarList: StockCar[];
     /**
      * Creates an instance of StockCarInfoMsg.
      * @class
@@ -52,18 +40,16 @@ export class StockCarInfoMessage extends MessageNode {
      * @memberof StockCarInfoMsg
      */
     constructor(starterCash: number, dealerId: number, brand: number) {
-        super("sent");
+        super();
         this.msgNo = 141;
         this.starterCash = starterCash;
         this.dealerId = dealerId;
         this.brand = brand;
         /** Number of cars */
-        this.noCars = 1;
-        /** @type {0|1} */
-        this.moreToCome = 0;
-        /** @type {module:StockCar} */
+        this.noCars = 0;
+        this.moreToCome = false;
+        /** @type {StockCar[]} */
         this.StockCarList = [];
-        this.serviceName = "mcoserver:StockCarInfoMsg";
     }
 
     /**
@@ -76,10 +62,10 @@ export class StockCarInfoMessage extends MessageNode {
     }
 
     /**
-     *
+     * @override
      * @return {Buffer}
      */
-    serialize(): Buffer {
+    override serialize(): Buffer {
         // This does not count the StockCar array
         const packet = Buffer.alloc((17 + 9) * this.StockCarList.length);
         packet.writeInt16LE(this.msgNo, 0);
@@ -87,7 +73,7 @@ export class StockCarInfoMessage extends MessageNode {
         packet.writeInt32LE(this.dealerId, 6);
         packet.writeInt32LE(this.brand, 10);
         packet.writeInt16LE(this.noCars, 14);
-        packet.writeInt8(this.moreToCome, 16);
+        packet.writeInt8(this.moreToCome ? 1 : 0, 16);
         if (this.StockCarList.length > 0) {
             for (let i = 0; i < this.StockCarList.length; i++) {
                 const offset = 10 * i;
@@ -102,10 +88,9 @@ export class StockCarInfoMessage extends MessageNode {
     }
 
     /**
-     * DumpPacket
-     * @return {string}
+     * @override
      */
-    dumpPacket(): string {
+    override toString() {
         return `${JSON.stringify({
             msgNo: this.msgNo,
             starterCash: this.starterCash,

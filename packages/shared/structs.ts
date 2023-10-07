@@ -11,10 +11,10 @@ function serializeBool(bool: boolean) {
 
     return buf;
 }
-    
+
 /**
  * Serializes a string to a buffer. The buffer will be prefixed with the length of the string.
- */ 
+ */
 function serializeString(str: string) {
     const buf = Buffer.alloc(str.length + 2);
 
@@ -57,7 +57,6 @@ function sizeOfString(string: string) {
     return string.length + 2;
 }
 
-
 export class Header implements Serialized {
     messageCode = 0; // 2 bytes
     messageLength = 0; // 2 bytes
@@ -76,7 +75,6 @@ export class Header implements Serialized {
         this.messageVersion = 0; // 2 bytes
     }
 
-
     serialize() {
         const buf = Buffer.alloc(12);
 
@@ -93,7 +91,7 @@ export class Header implements Serialized {
         this.messageCode = deserializeDWord(buf);
         this.messageCode = deserializeWord(buf.subarray(2, 4));
         this.messageVersion = deserializeWord(buf.subarray(4, 6));
-        this.messageChecksum =  deserializeDWord(buf.subarray(8, 12));
+        this.messageChecksum = deserializeDWord(buf.subarray(8, 12));
     }
 }
 
@@ -123,16 +121,16 @@ export class UserStatus extends SerializedBase implements Serialized {
     v2P341 = 0; // unknown, 4 bytes
     v2P1368 = 0; // Metrics Id (not used) 64 bytes
 
-    sizeOf(): number {
+    override sizeOf(): number {
         throw new Error("Not yet implemented");
     }
 
-    serialize(): Buffer {
+    override serialize(): Buffer {
         throw new Error("Not yet implemented");
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    deserialize(_buff: Buffer): Buffer {
+    override deserialize(_buff: Buffer): Buffer {
         throw new Error("Not yet implemented");
     }
 }
@@ -145,11 +143,9 @@ export class SerializedList extends SerializedBase implements Serialized {}
 
 export class Persona extends SerializedBase implements Serialized {}
 
-export class SessionKey extends SerializedBase implements Serialized {
-}
+export class SessionKey extends SerializedBase implements Serialized {}
 
-export class UserAction extends SerializedBase implements Serialized {
-}
+export class UserAction extends SerializedBase implements Serialized {}
 
 export class LoginRequestReply extends SerializedBase implements Serialized {
     sessionKey = ""; // 128 chars string
@@ -187,9 +183,7 @@ export class GetPersonaInfoRequest
     extends SerializedBase
     implements Serialized {}
 
-export class UserStatusRequest
-    extends SerializedBase
-    implements Serialized {}
+export class UserStatusRequest extends SerializedBase implements Serialized {}
 
 export class AddPersona extends SerializedBase implements Serialized {}
 
@@ -199,7 +193,7 @@ export class Login extends LoginRequestReply implements Serialized {
     readonly GAME_CODE = "2176"; // 40 chars string
     v2P187 = false;
 
-    serialize() {
+    override serialize() {
         if (this.header === null) {
             throw new Error("Header is null");
         }
@@ -229,7 +223,7 @@ export class Login extends LoginRequestReply implements Serialized {
         return size;
     }
 
-    deserialize(buf: Buffer) {
+    override deserialize(buf: Buffer) {
         if (this.header === null) {
             this.header = new Header();
         }

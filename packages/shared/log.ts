@@ -1,56 +1,104 @@
-/**
- * @module mcos/shared
- */
-import { hostname } from "node:os";
-import { ELOG_LEVEL, Logger } from "../interfaces/index.js";
+import { Logger, LoggerOptions, pino } from "pino";
 
-// Per syslog.conf(5)
-const levelMappings = {
-    debug: 7,
-    info: 6,
-    notice: 5,
-    warning: 4,
-    err: 3,
-    crit: 2,
-    alert: 1,
-    emerg: 0,
+type ServerLoggerOptions = {
+    level?: string;
+    module?: string;
+    name?: string;
 };
 
 /**
- *
- *
- * @author Drazi Crendraven
- * @param {ELOG_LEVEL} level
+ * @static
+ * @property {ServerLogger} instance
  */
-export const getLevelValue = (level: ELOG_LEVEL) => {
-    return levelMappings[level];
-};
-
-/**
- *
- *
- * @author Drazi Crendraven
- * @export
- * @param {ELOG_LEVEL} [logLevel="info"]
- * @returns {Logger}
- */
-export function getServerLogger(logLevel: ELOG_LEVEL = "info"): Logger {
-    const defaultLevelValue = getLevelValue(logLevel);
+export class ServerLogger {
+    logger: any;
+    static instance: ServerLogger | undefined;
+    /**
+     * Creates an instance of ServerLogger.
+     * @param {ServerLoggerOptions} options
+     */
+    constructor(options: ServerLoggerOptions) {
+        this.logger = pino(options);
+        this.logger.level = options.level ?? "info";
+        ServerLogger.instance = this;
+    }
 
     /**
-     * @param {ELOG_LEVEL} level
-     * @param {string} msg
-     * @returns {void}
+     * @param {string} message
      */
-    return (level: ELOG_LEVEL, msg: string): void => {
-        const levelValue = getLevelValue(level);
-        if (levelValue > defaultLevelValue) {
-            return;
-        }
-        console.log(
-            // skipcq: JS-0002 This is a logging function and uses console.log intentionally
-            "debug",
-            `{"level": "${level}", "hostname": "${hostname}", "message": ${msg}`,
-        );
-    };
+    fatal(message: string) {
+        this.logger.fatal(message);
+    }
+
+    /**
+     * @param {string} message
+     */
+    error(message: string) {
+        this.logger.error(message);
+    }
+
+    /**
+     * @param {string} message
+     */
+    warn(message: string) {
+        this.logger.warn(message);
+    }
+
+    /**
+     * @param {string} message
+     */
+    info(message: string) {
+        this.logger.info(message);
+    }
+
+    /**
+     * @param {string} message
+     */
+    debug(message: string) {
+        this.logger.debug(message);
+    }
+
+    /**
+     * @param {string} message
+     */
+    trace(message: string) {
+        this.logger.trace(message);
+    }
+
+    /**
+     * @global
+     * @external pino
+     * @see {@link https://www.npmjs.com/package/pino}
+     */
+
+    /**
+     * @param {module:pino.LoggerOptions} options
+     * @returns {module:pino.Logger}
+     */
+    child(options: LoggerOptions): Logger {
+        const child = this.logger.child(options);
+        return child;
+    }
+}
+
+/**
+ * Get a logger instance
+ *
+ * @param {ServerLoggerOptions} options
+ * @return {module:pino.Logger}
+ */
+export function getServerLogger(options: ServerLoggerOptions): Logger {
+    const logLevel = options.level ?? "info";
+    const moduleName = options.module ?? "core";
+    if (typeof ServerLogger.instance === "undefined") {
+        ServerLogger.instance = new ServerLogger({
+            name: "mcos",
+            level: logLevel, // This isn't used by the logger, but it's used by the constructor
+            module: moduleName,
+        });
+    }
+
+    const child = ServerLogger.instance.child(options);
+    child.level = logLevel;
+    return child;
 }

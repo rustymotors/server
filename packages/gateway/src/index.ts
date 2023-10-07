@@ -15,258 +15,196 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { randomUUID } from "node:crypto";
-import { Server as httpServer } from "node:http";
+import { ServerError } from "../../shared/errors/ServerError.js";
 import {
-    addConnection,
-    createNewConnection,
-    findConnectionByAddressAndPort,
-    getConnectionManager,
-} from "./ConnectionManager.js";
-import { dataHandler, toHex } from "./sockets.js";
-import { httpListener as httpHandler } from "./web.js";
-import { NetworkSocket, BuiltinError, Logger, MessageProcessor, ServerConfiguration, ClientConnection, SocketWithConnectionInfo, ClientMessage, GameMessage, SocketOnDataHandler, TSocketErrorHandler, TSocketEndHandler, ConnectionHandler, WebConnectionHandler } from "../../interfaces/index.js";
-import { Message } from "../../shared/Message.js";
-import { MessageHeader } from "../../shared/MessageHeader.js";
-import { GetServerLogger, ServerError } from "../../shared/index.js";
-export { getAdminServer } from "./AdminServer.js";
-export { getAllConnections } from "./ConnectionManager.js";
+    OnDataHandler,
+    addSocket,
+    fetchStateFromDatabase,
+    getOnDataHandler,
+    removeSocket,
+    wrapSocket,
+} from "../../shared/State.js";
+import { getServerLogger } from "../../shared/log.js";
 
-export const defaultLog = GetServerLogger("info");
+import { getGatewayServer } from "./GatewayServer.js";
+import { SerializedBuffer } from "../../shared/messageFactory.js";
+import { Socket } from "node:net";
+import { Logger } from "pino";
 
 /**
- *
- * @param {object} options
- * @param {ISocket} options.sock
- * @param {IError} options.error
- * @param {TServerLogger} options.log
- * @returns {void}
+ * @typedef {object} OnDataHandlerArgs
+ * @property {object} args
+ * @property {string} args.connectionId The connection id of the socket that
+ *                                  received the data.
+ * @property {module:packages/shared/RawMessage} args.message The data that was received.
+ * @property {module:shared/log.ServerLogger} [args.log=getServerLogger({ module: "gateway" })] The logger to use.
+ *                                                                    response
+ *                                                                to the
+ *                                                           data.
+ */
+
+/**
+ * @typedef {function} OnDataHandler
+ * @param {OnDataHandlerArgs} args The arguments for the handler.
+ * @returns {ServiceResponse} The
+ *                                                                     response
+ *                                                                  to the
+ *                                                            data.
+ */
+
+/**
+ * Handle socket errors
  */
 export function socketErrorHandler({
-    sock,
+    connectionId,
     error,
-    log,
+    log = getServerLogger({
+        module: "socketErrorHandler",
+    }),
 }: {
-    sock: NetworkSocket;
-    error: BuiltinError;
-    log: Logger;
-}): void {
-    // Check if the socket is still writable
-    if (!sock.writable) {
-        // Close the socket
-        sock.destroy();
-    }
-
+    connectionId: string;
+    error: NodeJS.ErrnoException;
+    log?: Logger;
+}) {
     // Handle socket errors
-    if (error.message.includes("ECONNRESET")) {
-        log("debug", "Connection was reset");
+    if (error.code == "ECONNRESET") {
+        log.debug(`Connection ${connectionId} reset`);
         return;
     }
-    throw new ServerError(`Socket error: ${error.message}`);
-}
-
-export function socketDataHandler({
-    processMessage = dataHandler,
-    data,
-    logger,
-    config,
-    connection,
-    connectionRecord,
-}: {
-    processMessage?: MessageProcessor;
-    data: Buffer;
-    logger: Logger;
-    config: ServerConfiguration;
-    connection: ClientConnection;
-    connectionRecord: SocketWithConnectionInfo;
-}): void {
-    // Received data from the client
-    // Pass it to the data handler
-    logger("debug", `Received data: ${toHex(data)}`);
-    const msgHeader = MessageHeader.deserialize(data);
-
-    let message: Message | ClientMessage | GameMessage;
-
-    // Get the signature from the message header
-    const signature = msgHeader.signature;
-
-    // Check the signature. If it's not TOMC, then this is a TCP message
-    if (signature !== "TOMC") {
-        logger("debug", "Recieved TCP message");
-        const msgHeader = MessageHeader.deserialize(data);
-        logger("debug", `Message Header: ${msgHeader.toString()}`);
-
-        // Deserialize the message into a TCPMessage object
-        message = Message.deserialize(data);
-    } else {
-        // This is an MCOTS message
-        logger("debug", "Recieved MCOTS message");
-
-        // Deserialize the message into a Message object
-        message = Message.deserialize(data);
-    }
-
-    logger("debug", `Message Node: ${message.toString()}`);
-
-    // Set the connection ID on the message
-    message.connectionId = connection.id;
-
-    // Pass the data to the data handler along with the connection record
-    processMessage({
-        data,
-        connectionRecord,
-        config,
-        logger,
-        connection,
-        message,
-    }).catch((reason: Error) =>
-        logger(
-            "err",
-            `There was an error in the data handler: ${reason.message}`
-        )
+    throw new ServerError(
+        `Socket error: ${error.message} on connection ${connectionId}`,
     );
 }
 
 /**
  * Handle the end of a socket connection
+ *
+ * @param {object} options
+ * @param {string} options.connectionId The connection ID
+ * @param {import("pino").Logger} [options.log=getServerLogger({ module: "socketEndHandler" })] The logger to use
  */
 export function socketEndHandler({
-    log,
-    connectionRecord,
+    connectionId,
+    log = getServerLogger({
+        module: "socketEndHandler",
+    }),
 }: {
-    log: Logger;
-    connectionRecord: SocketWithConnectionInfo;
-}): void {
-    log("debug", "Socket ended");
-    // Remove the connection from the connection manager
-    getConnectionManager().removeConnection(connectionRecord.id);
-}
+    connectionId: string;
+    log?: import("pino").Logger;
+}) {
+    log.debug(`Connection ${connectionId} ended`);
 
-export function validateAddressAndPort(
-    localPort: number | undefined,
-    remoteAddress: string | undefined
-) {
-    if (localPort === undefined || remoteAddress === undefined) {
-        throw new Error("localPort or remoteAddress is undefined");
-    }
+    // Remove the socket from the global state
+    removeSocket(fetchStateFromDatabase(), connectionId).save();
 }
 
 /**
  * Handle incoming TCP connections
  *
+ * @param {object} options
+ * @param {module:net.Socket} options.incomingSocket The incoming socket
+ * @param {import("pino").Logger} [options.log=getServerLogger({ module: "onDataHandler" })] The logger to use
+ *
  */
-export function rawConnectionHandler({
+export function onSocketConnection({
     incomingSocket,
-    config,
-    log,
-    onSocketData = socketDataHandler,
-    onSocketError = socketErrorHandler,
-    onSocketEnd = socketEndHandler,
+    log = getServerLogger({
+        module: "onDataHandler",
+    }),
 }: {
-    incomingSocket: NetworkSocket;
-    config: ServerConfiguration;
-    log: Logger;
-    onSocketData?: SocketOnDataHandler;
-    onSocketError?: TSocketErrorHandler;
-    onSocketEnd?: TSocketEndHandler;
-}): void {
+    incomingSocket: Socket;
+    log?: import("pino").Logger;
+}) {
     // Get the local port and remote address
     const { localPort, remoteAddress } = incomingSocket;
 
-    validateAddressAndPort(localPort, remoteAddress);
+    if (localPort === undefined || remoteAddress === undefined) {
+        throw new Error("localPort or remoteAddress is undefined");
+    }
 
-    // Look for an existing connection
-    let connectionRecord: SocketWithConnectionInfo | undefined;
-    let connection: ClientConnection | undefined;
+    // This is a new connection so generate a new connection ID
     const newConnectionId = randomUUID();
-    connectionRecord = findConnectionByAddressAndPort(
-        String(incomingSocket.remoteAddress),
-        incomingSocket.localPort || 0
-    );
-    if (connectionRecord) {
-        log("debug", `Found existing connection ${connectionRecord.id}`);
-        connectionRecord.socket = incomingSocket;
-    } else {
-        log("debug", "No existing connection found");
-        connectionRecord = createNewConnection(
-            newConnectionId,
-            incomingSocket,
-            log
-        );
-        addConnection(connectionRecord);
-    }
-    connection = getConnectionManager().findConnectionBySocket(incomingSocket);
-    if (!connection) {
-        connection =
-            getConnectionManager().newConnectionFromSocket(incomingSocket);
-        getConnectionManager().addConnection(connection);
-    }
 
-    log("debug", `Client ${remoteAddress} connected to port ${localPort}`);
+    // Wrap the socket and add it to the global state
+    const wrappedSocket = wrapSocket(incomingSocket, newConnectionId);
 
-    // Set up event handlers
-    incomingSocket.on("end", () => {
-        onSocketEnd({
-            sock: incomingSocket,
-            log,
-            connectionRecord: connectionRecord as SocketWithConnectionInfo,
-        });
-    });
-    incomingSocket.on("data", (data) => {
-        onSocketData({
-            socket: incomingSocket,
-            data: data as Buffer,
-            logger: log,
-            config,
-            connection: connection as ClientConnection,
-            connectionRecord: connectionRecord as SocketWithConnectionInfo,
-        });
-    });
-    incomingSocket.on("error", (err) => {
-        onSocketError({
-            sock: incomingSocket,
-            error: ServerError.fromUnknown(err),
-            log,
-        });
-    });
-}
+    // Add the socket to the global state
+    addSocket(fetchStateFromDatabase(), wrappedSocket).save();
 
-/**
- *
- * Listen for incoming connections on a socket
- *
- */
-export function socketConnectionHandler({
-    onTCPConnection = rawConnectionHandler,
-    onHTTPConnection = httpHandler,
-    incomingSocket,
-    config,
-    log,
-}: {
-    onTCPConnection?: ConnectionHandler;
-    onHTTPConnection?: WebConnectionHandler;
-    incomingSocket: NetworkSocket;
-    config: ServerConfiguration;
-    log: Logger;
-}): void {
-    log(
-        "debug",
-        `[gate]Connection from ${incomingSocket.remoteAddress} on port ${incomingSocket.localPort}`
+    // This is a new TCP socket, so it's probably not using HTTP
+    // Let's look for a port onData handler
+    /** @type {OnDataHandler | undefined} */
+    const portOnDataHandler: OnDataHandler | undefined = getOnDataHandler(
+        fetchStateFromDatabase(),
+        localPort,
     );
 
-    // Is this an HTTP request? If so, handle it differently
-    if (incomingSocket.localPort === 3000) {
-        log("debug", "Web request");
-        // This is an HTTP request
-        const newServer = new httpServer((req, res) => {
-            onHTTPConnection(req, res, config, log);
-        });
-        // Send the socket to the http server instance
-        newServer.emit("connection", incomingSocket);
-
-        return; // Don't do anything else
+    // Throw an error if there is no onData handler
+    if (!portOnDataHandler) {
+        throw new Error(`No onData handler for port ${localPort}`);
     }
 
-    // This is a 'normal' TCP socket.
-    // Pass it to the TCP listener
-    onTCPConnection({ incomingSocket, config, log });
+    // Add the data handler to the socket
+    incomingSocket.on(
+        "data",
+        (/** @type {Buffer} */ incomingDataAsBuffer: Buffer) => {
+            log.trace(`Incoming data: ${incomingDataAsBuffer.toString("hex")}`);
+
+            // Deserialize the raw message
+            const rawMessage = new SerializedBuffer()._doDeserialize(
+                incomingDataAsBuffer,
+            );
+
+            // Log the raw message
+            log.trace(`Raw message: ${rawMessage.toString()}`);
+
+            log.debug("Calling onData handler");
+
+            portOnDataHandler({
+                connectionId: newConnectionId,
+                message: rawMessage,
+            })
+                .then(
+                    (
+                        /** @type {import("../../shared/State.js").ServiceResponse} */ response: import("../../shared/State.js").ServiceResponse,
+                    ) => {
+                        log.debug("onData handler returned");
+                        const { messages } = response;
+
+                        // Log the messages
+                        log.trace(
+                            `Messages: ${messages.map((m) => m.toString())}`,
+                        );
+
+                        // Serialize the messages
+                        const serializedMessages = messages.map((m) =>
+                            m.serialize(),
+                        );
+
+                        try {
+                            // Send the messages
+                            serializedMessages.forEach((m) => {
+                                incomingSocket.write(m);
+                                log.trace(`Sent data: ${m.toString("hex")}`);
+                            });
+                        } catch (error) {
+                            log.error(`Error sending data: ${String(error)}`);
+                        }
+                    },
+                )
+                .catch((/** @type {Error} */ error: Error) => {
+                    log.error(`Error handling data: ${String(error)}`);
+
+                    // Call server shutdown
+                    getGatewayServer({}).shutdown();
+                });
+        },
+    );
+
+    log.debug(`Client ${remoteAddress} connected to port ${localPort}`);
+
+    if (localPort === 7003) {
+        // Sent ok to login packet
+        incomingSocket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
+    }
 }

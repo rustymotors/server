@@ -1,12 +1,11 @@
-import { SerializedObject } from "../../../interfaces/index.js";
-import { SerializerBase } from "../../../shared/SerializerBase.js";
+import { SerializedBuffer } from "../../../shared/messageFactory.js";
 
-export class LobbyModel extends SerializerBase implements SerializedObject {
+export class LobbyModel extends SerializedBuffer {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     deserialize(_inputBuffer: Buffer): LobbyModel {
         throw new Error("Method not implemented.");
     }
-    serialize(): Buffer {
+    override serialize(): Buffer {
         throw new Error("Method not implemented.");
     }
     serializeSize(): number {

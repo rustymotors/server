@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest"
+import { describe, it, expect } from "vitest";
 import {
     serializeBool,
     serializeByte,
@@ -11,7 +11,7 @@ import {
     deserializeWord,
     deserializeDWord,
     deserializeFloat,
-    deserializeString,    
+    deserializeString,
     sizeOfBool,
     sizeOfByte,
     sizeOfWord,
@@ -20,10 +20,9 @@ import {
     sizeOfString,
     clamp16,
     clamp32,
-} from "./serializationHelpers.js"
+} from "./serializationHelpers.js";
 
 describe("serializationHelpers", () => {
-
     describe("serializeBool()", () => {
         it("should serialize a boolean value", () => {
             // Arrange
@@ -47,7 +46,7 @@ describe("serializationHelpers", () => {
 
             // Assert
             expect(actual).toEqual(expected);
-        })
+        });
     });
 
     describe("deserializeBool()", () => {
@@ -73,7 +72,7 @@ describe("serializationHelpers", () => {
 
             // Assert
             expect(actual).toEqual(expected);
-        })
+        });
     });
 
     describe("sizeOfBool()", () => {
@@ -184,7 +183,7 @@ describe("serializationHelpers", () => {
             expect(actual).toEqual(expected);
         });
     });
-    
+
     describe("deserializeDWord()", () => {
         it("should deserialize a dword value", () => {
             // Arrange
@@ -212,7 +211,6 @@ describe("serializationHelpers", () => {
         });
     });
 
-
     describe("serializeFloat()", () => {
         it("should serialize a float value", () => {
             // Arrange
@@ -230,7 +228,7 @@ describe("serializationHelpers", () => {
     describe("deserializeFloat()", () => {
         it("should deserialize a float value", () => {
             // Arrange
-            const input = Buffer.from([63,128, 0, 0]);
+            const input = Buffer.from([63, 128, 0, 0]);
             const expected = 1;
 
             // Act
@@ -254,7 +252,6 @@ describe("serializationHelpers", () => {
         });
     });
 
-
     describe("serializeString()", () => {
         it("should serialize a string value", () => {
             // Arrange
@@ -267,7 +264,7 @@ describe("serializationHelpers", () => {
             // Assert
             expect(actual).toEqual(expected);
         });
-    })
+    });
 
     describe("deserializeString()", () => {
         it("should deserialize a string value", () => {
@@ -290,10 +287,11 @@ describe("serializationHelpers", () => {
             const actual = () => deserializeString(input);
 
             // Assert
-            expect(actual).toThrowError("Size is bigger than the buffer length - 2");
-        }
-        );
-    })
+            expect(actual).toThrowError(
+                "Size is bigger than the buffer length - 2",
+            );
+        });
+    });
 
     describe("sizeOfString()", () => {
         it("should return the size of a string value", () => {
@@ -307,9 +305,8 @@ describe("serializationHelpers", () => {
             // Assert
             expect(actual).toEqual(expected);
         });
-    })
-        
-})
+    });
+});
 
 describe("clamp16()", () => {
     it("should clamp a value between 0 and 65535", () => {
@@ -323,7 +320,7 @@ describe("clamp16()", () => {
         // Assert
         expect(actual).toEqual(expected);
     });
-})
+});
 
 describe("clamp32()", () => {
     it("should clamp a value between 0 and 4294967295", () => {
@@ -337,4 +334,4 @@ describe("clamp32()", () => {
         // Assert
         expect(actual).toEqual(expected);
     });
-})
+});

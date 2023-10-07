@@ -14,62 +14,62 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { IncomingMessage, ServerResponse } from "http";
-import { getAdminServer } from "./AdminServer.js";
-import { Logger, ServerConfiguration } from "../../interfaces/index.js";
-import { getAuthServer } from "../../auth/index.js";
-import { getPatchServer } from "../../patch/index.js";
-import { getShardServer } from "../../shard/index.js";
+import { ServerError } from "../../shared/errors/ServerError.js";
+import { getPatchServer } from "../../patch/src/PatchServer.js";
+import { generateShardList } from "../../shard/src/ShardServer.js";
+import { getServerConfiguration } from "../../shared/Configuration.js";
 
 /**
- * Routes incomming HTTP requests
+ * Add web routes to the web server
+ *
+ * @param {import("fastify").FastifyInstance} webServer The web server
  */
-export function httpListener(
-    req: IncomingMessage,
-    res: ServerResponse<IncomingMessage>,
-    config: ServerConfiguration,
-    log: Logger
-): ServerResponse {
-    if (typeof req.url !== "undefined" && req.url.startsWith("/AuthLogin")) {
-        log("debug", "ssl routing request to login web server");
-        return getAuthServer(log).handleRequest(req, res);
-    }
+export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
+    webServer.get("/", async (_request, reply) => {
+        return reply.send("Hello, world!");
+    });
 
-    if (
-        req.url &&
-        (req.url === "/admin/connections" ||
-            req.url === "/admin/connections/resetAllQueueState" ||
-            req.url.startsWith("/admin"))
-    ) {
-        log("debug", "ssl routing request to admin web server");
-        const response = getAdminServer(log).handleRequest(req);
-        return res
-            .writeHead(response.code, response.headers)
-            .end(response.body);
-    }
-
-    if (
-        req.url === "/games/EA_Seattle/MotorCity/UpdateInfo" ||
-        req.url === "/games/EA_Seattle/MotorCity/NPS" ||
-        req.url === "/games/EA_Seattle/MotorCity/MCO"
-    ) {
-        log("debug", "http routing request to patch server");
-        return getPatchServer(log).handleRequest(req, res);
-    }
-    if (
-        req.url === "/cert" ||
-        req.url === "/key" ||
-        req.url === "/registry" ||
-        req.url === "/ShardList/"
-    ) {
-        log("debug", "http routing request to shard server");
-        return getShardServer(config, log).handleRequest(req, res);
-    }
-
-    log(
-        "debug",
-        `Unexpected request for ${req.url} from ${req.socket.remoteAddress}, skipping.`
+    webServer.get(
+        "/games/EA_Seattle/MotorCity/UpdateInfo",
+        (_request, reply) => {
+            const response = getPatchServer().castanetResponse;
+            return reply.send(response);
+        },
     );
-    res.statusCode = 404;
-    return res.end("Not found");
+
+    webServer.get("/games/EA_Seattle/MotorCity/NPS", (_request, reply) => {
+        const response = getPatchServer().castanetResponse;
+        return reply.send(response);
+    });
+
+    webServer.get("/games/EA_Seattle/MotorCity/MCO", (_request, reply) => {
+        const response = getPatchServer().castanetResponse;
+        return reply.send(response);
+    });
+
+    webServer.get("/AuthLogin", (_request, reply) => {
+        return reply.send(
+            "Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e",
+        );
+    });
+
+    webServer.get("/ShardList/", (_request, reply) => {
+        const config = getServerConfiguration({});
+        if (typeof config.host === "undefined") {
+            throw new ServerError("No host defined in config");
+        }
+        return reply.send(generateShardList(config.host));
+    });
+
+    webServer.get("/cert", (_request, reply) => {
+        return reply.send("Hello, world!");
+    });
+
+    webServer.get("/key", (_request, reply) => {
+        return reply.send("Hello, world!");
+    });
+
+    webServer.get("/registry", (_request, reply) => {
+        return reply.send("Hello, world!");
+    });
 }

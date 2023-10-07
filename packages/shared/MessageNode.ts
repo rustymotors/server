@@ -1,46 +1,44 @@
-/**
- * @class MessageNode
- * @property {"sent" | "received"} direction
- * @property {number} msgNo
- * @property {number} seq
- * @property {number} flags
- * @property {Buffer} data
- * @property {number} dataLength
- * @property {string} mcoSig
- * @property {number} toFrom
- * @property {number} appId
- * @property {Buffer} rawPacket
- */
+import { ServerError } from "./errors/ServerError.js";
+import { SerializedBuffer } from "./messageFactory.js";
 
-
-export class MessageNode  {
-    direction;
-    msgNo;
-    seq;
-    flags;
-    data;
-    dataLength;
-    mcoSig;
-    toFrom;
-    appId;
-    rawPacket;
+export class MessageNode {
+    header: {
+        length: number; // 2 bytes
+        mcoSig: string;
+    };
+    seq: number;
+    flags: number;
+    data: Buffer;
+    msgNo: number;
+    constructor() {
+        this.header = {
+            length: 0, // 2 bytes
+            mcoSig: "", // 4 bytes
+        };
+        this.seq = 999; // 2 bytes
+        this.flags = 0; // 1 byte
+        this.data = Buffer.alloc(0);
+        this.msgNo = 999; // 2 bytes
+    }
 
     /**
-     *
-     * @param {"sent" | "received"} direction
+     * @static
+     * @param {module:shared/RawMessage} rawMessage
+     * @return {MessageNode}
      */
-    constructor(direction: "sent" | "received") {
-        this.direction = direction;
-        this.msgNo = 0;
-        this.seq = 999;
-        this.flags = 0;
-        this.data = Buffer.alloc(0);
-        this.dataLength = 0;
-        this.mcoSig = "NotAValue";
+    static fromRawMessage(rawMessage: SerializedBuffer): MessageNode {
+        const messageNode = new MessageNode();
+        messageNode.deserialize(rawMessage.serialize());
 
-        this.toFrom = 0;
-        this.appId = 0;
-        this.rawPacket = Buffer.alloc(0);
+        if (messageNode.data.length > 2) {
+            messageNode.msgNo = messageNode.data.readInt16LE(0);
+        }
+
+        return messageNode;
+    }
+
+    get size() {
+        return this.data.length + 9;
     }
 
     /**
@@ -48,39 +46,23 @@ export class MessageNode  {
      * @param {Buffer} packet
      */
     deserialize(packet: Buffer) {
-        try {
-            this.rawPacket = packet;
-            this.dataLength = packet.readInt16LE(0);
-            this.mcoSig = packet.subarray(2, 6).toString();
-            this.seq = packet.readInt16LE(6);
-            this.flags = packet.readInt8(10);
-
-            // Data starts at offset 11
-            this.data = packet.subarray(11);
-
-            // Set message number
-            this.msgNo = this.data.readInt16LE(0);
-        } catch (error) {
-            if (error instanceof Error) {
-                if (error.name.includes("RangeError") === true) {
-                    // This is likeley not an MCOTS packet, ignore
-                    const err = new Error(
-                        `[MessageNode] Not long enough to deserialize, only ${packet.length.toString()} bytes long`
-                    );
-                    throw err;
-                } else {
-                    const err = new Error(
-                        `[MessageNode] Unable to read msgNo from ${packet.toString(
-                            "hex"
-                        )}: ${error.message}`
-                    );
-                    throw err;
-                }
-            }
-            const err = new Error(
-                `Unknown error in deserialize: ${String(error)} `
+        const length = packet.readInt16LE(0);
+        if (length !== packet.length) {
+            throw new Error(
+                `[MessageNode] Length of packet ${length.toString()} does not match length of buffer ${packet.length.toString()}`,
             );
-            throw err;
+        }
+        this.header.length = length;
+        let offset = 2;
+        this.header.mcoSig = packet.subarray(offset, offset + 4).toString();
+        offset += 4;
+        this.seq = packet.readInt16LE(offset);
+        offset += 2;
+        this.flags = packet.readInt8(offset);
+        offset += 1; // offset = 9
+        this.data = packet.subarray(offset, offset + length - 9);
+        if (this.data.length > 2) {
+            this.msgNo = this.data.readInt16LE(0);
         }
     }
 
@@ -89,111 +71,30 @@ export class MessageNode  {
      * @return {Buffer}
      */
     serialize(): Buffer {
-        const packet = Buffer.alloc(this.dataLength + 2); // skipcq: JS-0377
-        packet.writeInt16LE(this.dataLength, 0);
-        packet.write(this.mcoSig, 2);
-        packet.writeInt16LE(this.seq, 6);
-        packet.writeInt8(this.flags, 10);
-        this.data.copy(packet, 11);
+        const packet = Buffer.alloc(this.header.length);
+        let offset = 0;
+        packet.writeInt16LE(this.header.length, offset);
+        offset += 2;
+        packet.write(this.header.mcoSig, offset, 4);
+        offset += 4;
+        packet.writeInt16LE(this.seq, offset);
+        offset += 2;
+        packet.writeInt8(this.flags, offset);
+        offset += 1;
+        if (typeof this.data === "undefined") {
+            throw new ServerError("MessageNode data is undefined");
+        }
+        this.data.copy(packet, offset);
         return packet;
     }
 
-    /**
-     *
-     * @param {number} appId
-     */
-    setAppId(appId: number) {
-        this.appId = appId;
-    }
-
-    /**
-     *
-     * @param {number} newMessageNo
-     */
-    setMsgNo(newMessageNo: number) {
-        this.msgNo = newMessageNo;
-        this.data.writeInt16LE(this.msgNo, 0);
-    }
-
-    /**
-     *
-     * @param {number} newSeq
-     */
-    setSeq(newSeq: number) {
-        this.seq = newSeq;
-    }
-
-    /**
-     *
-     * @param {Buffer} packet
-     */
-    setMsgHeader(packet: Buffer) {
-        const header = Buffer.alloc(6);
-        packet.copy(header, 0, 0, 6);
-    }
-
-    /**
-     *
-     * @param {Buffer} buffer
-     */
-    updateBuffer(buffer: Buffer) {
-        this.data = Buffer.from(buffer);
-        this.dataLength = buffer.length + 10; // skipcq: JS-0377
-        this.msgNo = this.data.readInt16LE(0);
-    }
-
-    /**
-     *
-     * @return {boolean}
-     */
-    isMCOTS(): boolean {
-        return this.mcoSig === "TOMC";
-    }
-
-    /**
-     *
-     * @return {string}
-     */
-    dumpPacket(): string {
-        const packetContentsArray = this.serialize()
-            .toString("hex")
-            .match(/../g);
-
-        return `Message ${JSON.stringify({
-            dataLength: this.dataLength,
-            isMCOTS: this.isMCOTS(),
-            msgNo: this.msgNo,
-            direction: this.direction,
+    toString() {
+        return `MessageNode: ${JSON.stringify({
+            header: this.header,
             seq: this.seq,
             flags: this.flags,
-            toFrom: this.toFrom,
-            appId: this.appId,
-            packetContents: (packetContentsArray ?? []).join(""),
+            data: this.data.toString("hex"),
+            msgNo: this.msgNo,
         })}`;
-    }
-
-    /**
-     * Returns a formatted representation of the packet as a string
-     * @returns {string}
-     */
-    toString(): string {
-        return this.dumpPacket();
-    }
-
-    /**
-     *
-     * @return {number}
-     */
-    getLength(): number {
-        return this.dataLength;
-    }
-
-    /**
-     *
-     * @param {Buffer} packet
-     */
-    BaseMsgHeader(packet: Buffer) {
-        // WORD msgNo;
-        this.msgNo = packet.readInt16LE(0);
     }
 }

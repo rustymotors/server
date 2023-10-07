@@ -1,5 +1,5 @@
 {
-  "git.enableCommitSigning": true,
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "standard.autoFixOnSave": true
+    "git.enableCommitSigning": true,
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "js/ts.implicitProjectConfig.checkJs": true
 }

@@ -1,12 +1,27 @@
-export function clamp16(value: number) {
+/**
+ * Clamp a value between 0 and 255
+ * @param {number} value
+ * @returns {number}
+ */
+export function clamp16(value: number): number {
     return Math.max(0, Math.min(65535, value));
 }
 
-export function clamp32(value: number) {
+/**
+ * Clamp a value between 0 and 65535
+ * @param {number} value
+ * @returns {number}
+ */
+export function clamp32(value: number): number {
     return Math.max(0, Math.min(4294967295, value));
 }
 
-export function serializeBool(bool: boolean) {
+/**
+ * Serializes a boolean to a buffer.
+ * @param {boolean} bool
+ * @returns {Buffer}
+ */
+export function serializeBool(bool: boolean): Buffer {
     const buf = Buffer.alloc(1);
 
     buf.writeUInt8(bool ? 1 : 0);
@@ -14,7 +29,12 @@ export function serializeBool(bool: boolean) {
     return buf;
 }
 
-export function serializeByte(byte: number) {
+/**
+ * Serializes a byte to a buffer.
+ * @param {number} byte
+ * @returns {Buffer}
+ */
+export function serializeByte(byte: number): Buffer {
     const buf = Buffer.alloc(1);
 
     buf.writeUInt8(byte);
@@ -22,7 +42,12 @@ export function serializeByte(byte: number) {
     return buf;
 }
 
-export function serializeWord(word: number) {
+/**
+ * Serializes a word to a buffer.
+ * @param {number} word
+ * @returns {Buffer}
+ */
+export function serializeWord(word: number): Buffer {
     const buf = Buffer.alloc(2);
 
     buf.writeUInt16BE(word);
@@ -30,7 +55,12 @@ export function serializeWord(word: number) {
     return buf;
 }
 
-export function serializeDWord(dword: number) {
+/**
+ * Serializes a dword to a buffer.
+ * @param {number} dword
+ * @returns {Buffer}
+ */
+export function serializeDWord(dword: number): Buffer {
     const buf = Buffer.alloc(4);
 
     buf.writeUInt32BE(dword);
@@ -38,7 +68,12 @@ export function serializeDWord(dword: number) {
     return buf;
 }
 
-export function serializeFloat(f: number) {
+/**
+ * Serializes a float to a buffer.
+ * @param {number} f
+ * @returns {Buffer}
+ */
+export function serializeFloat(f: number): Buffer {
     const buf = Buffer.alloc(4);
 
     buf.writeFloatBE(f);
@@ -48,8 +83,10 @@ export function serializeFloat(f: number) {
 
 /**
  * Serializes a string to a buffer. The buffer will be prefixed with the length of the string.
+ * @param {string} str
+ * @returns {Buffer}
  */
-export function serializeString(str: string) {
+export function serializeString(str: string): Buffer {
     const buf = Buffer.alloc(str.length + 2);
 
     buf.writeUInt16BE(str.length);
@@ -58,30 +95,57 @@ export function serializeString(str: string) {
     return buf;
 }
 
-export function deserializeBool(buff: Buffer) {
+/**
+ * Deserializes a boolean from a buffer.
+ * @param {Buffer} buff
+ * @returns {boolean}
+ */
+export function deserializeBool(buff: Buffer): boolean {
     return buff.readUInt8() === 1;
 }
 
-export function deserializeByte(buff: Buffer) {
+/**
+ * Deserializes a byte from a buffer.
+ * @param {Buffer} buff
+ * @returns {number}
+ */
+export function deserializeByte(buff: Buffer): number {
     return buff.readUInt8();
 }
 
-export function deserializeWord(buff: Buffer) {
+/**
+ * Deserializes a word from a buffer.
+ * @param {Buffer} buff
+ * @returns {number}
+ */
+export function deserializeWord(buff: Buffer): number {
     return buff.readUInt16BE();
 }
 
-export function deserializeDWord(buff: Buffer) {
+/**
+ * Deserializes a dword from a buffer.
+ * @param {Buffer} buff
+ * @returns {number}
+ */
+export function deserializeDWord(buff: Buffer): number {
     return buff.readUInt32BE();
 }
 
-export function deserializeFloat(buff: Buffer) {
+/**
+ * Deserializes a float from a buffer.
+ * @param {Buffer} buff
+ * @returns {number}
+ */
+export function deserializeFloat(buff: Buffer): number {
     return buff.readFloatBE();
 }
 
 /**
  * Deserializes a string from a buffer. The buffer is expected to be prefixed with the length of the string.
+ * @param {Buffer} buf
+ * @returns {string}
  */
-export function deserializeString(buf: Buffer) {
+export function deserializeString(buf: Buffer): string {
     const size = buf.readUInt16BE();
     if (size > buf.length - 2) {
         throw new Error("Size is bigger than the buffer length - 2");
@@ -111,6 +175,11 @@ export function sizeOfFloat() {
     return 4;
 }
 
-export function sizeOfString(string: string) {
+/**
+ * Returns the size of a string, including the length prefix.
+ * @param {string} string
+ * @returns {number}
+ */
+export function sizeOfString(string: string): number {
     return string.length + 2;
 }

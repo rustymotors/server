@@ -14,105 +14,29 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { decryptBuffer } from "../../gateway/src/encryption.js";
-import { TBufferWithConnection, ClientConnection, Logger, ServiceResponse, ServiceArgs } from "../../interfaces/index.js";
-import { MessageNode } from "../../shared/MessageNode.js";
-import { ServerError } from "../../shared/index.js";
+import { ServerError } from "../../shared/errors/ServerError.js";
 import { messageHandlers } from "./handlers.js";
+import { getServerLogger } from "../../shared/log.js";
+import {
+    fetchStateFromDatabase,
+    getEncryption,
+    updateEncryption,
+} from "../../shared/State.js";
+// eslint-disable-next-line no-unused-vars
+import {
+    SerializedBuffer,
+    ServerMessage,
+} from "../../shared/messageFactory.js";
+import { getServerConfiguration } from "../../shared/Configuration.js";
 
 /**
  *
  *
- * @param {MessageNode} message
- * @param {TBufferWithConnection} dataConnection
+ * @param {ServerMessage} message
  * @return {boolean}
  */
-function shouldMessageBeEncrypted(
-    message: MessageNode,
-    dataConnection: TBufferWithConnection,
-): boolean {
-    return message.flags !== 80 && dataConnection.connection.useEncryption;
-}
-
-/**
- *
- *
- * @param {MessageNode} message
- * @param {TBufferWithConnection} dataConnection
- * @param {Logger} log
- * @return {{err: Error | null, data: Buffer | null}}
- */
-function decryptTransactionBuffer(
-    message: MessageNode,
-    dataConnection: TBufferWithConnection, // Legacy
-    connection: ClientConnection,
-    log: Logger,
-): { err: Error | null; data: Buffer | null } {
-    const encryptedBuffer = Buffer.from(message.data);
-    log(
-        "debug",
-        `Full packet before decrypting: ${encryptedBuffer.toString("hex")}`,
-    );
-
-    log(
-        "debug",
-        `Message buffer before decrypting: ${encryptedBuffer.toString("hex")}`,
-    );
-
-    const result = decryptBuffer(
-        dataConnection,
-        connection,
-        encryptedBuffer,
-        log,
-    );
-    log(
-        "debug",
-        `Message buffer after decrypting: ${result.data.toString("hex")}`,
-    );
-
-    if (result.data.readUInt16LE(0) <= 0) {
-        return {
-            err: new Error("Failure deciphering message, exiting."),
-            data: null,
-        };
-    }
-    return { err: null, data: result.data };
-}
-
-/**
- *
- *
- * @param {MessageNode} message
- * @param {TBufferWithConnection} dataConnection
- * @param {Logger} log
- * @return {{err: Error | null, data: Buffer | null}}
- */
-function tryDecryptBuffer(
-    message: MessageNode,
-    dataConnection: TBufferWithConnection, // Legacy
-    connection: ClientConnection,
-    log: Logger,
-): { err: Error | null; data: Buffer | null } {
-    try {
-        return {
-            err: null,
-            data: decryptTransactionBuffer(
-                message,
-                dataConnection,
-                connection,
-                log,
-            ).data,
-        };
-    } catch (error) {
-        return {
-            err: new Error(
-                `Decrypt() exception thrown! Disconnecting...conId:${
-                    dataConnection.connectionId
-                }: ${String(error)}`,
-            ),
-            data: null,
-        };
-    }
+function isMessageEncrypted(message: ServerMessage): boolean {
+    return message._header.flags - 8 >= 0;
 }
 
 /**
@@ -128,9 +52,12 @@ function _MSG_STRING(messageID: number): string {
         { id: 109, name: "MC_SET_OPTIONS" }, // 0x6d
         { id: 141, name: "MC_STOCK_CAR_INFO" }, // 0x8d
         { id: 213, name: "MC_LOGIN_COMPLETE" }, // 0xd5
+        { id: 363, name: "MC_GET_GAME_URLS" }, // 0x16b"}
         { id: 266, name: "MC_UPDATE_PLAYER_PHYSICAL" }, // 0x10a
+        { id: 322, name: "MC_GET_ARCADE_CARS" }, // 0x142"}
         { id: 324, name: "MC_GET_LOBBIES" }, // 0x144
         { id: 325, name: "MC_LOBBIES" }, // 0x145
+        { id: 389, name: "MC_GET_MCO_TUNABLES" }, // 0x185"}
         { id: 391, name: "MC_CLUB_GET_INVITATIONS" }, // 0x187
         { id: 438, name: "MC_CLIENT_CONNECT_MSG" }, // 0x1b6
         { id: 440, name: "MC_TRACKING_MSG" },
@@ -146,21 +73,22 @@ function _MSG_STRING(messageID: number): string {
 
 /**
  * Route or process MCOTS commands
- * @param {TBufferWithConnection} dataConnection
- * @param {MessageNode} node
- * @param {Logger} log
- * @returns {Promise<ServiceResponse>}
+ * @param {import("./handlers.js").MessageHandlerArgs} args
+ * @returns {Promise<import("./handlers.js").MessageHandlerResult>}
  */
-async function processInput(
-    dataConnection: TBufferWithConnection,
-    node: MessageNode,
-    log: Logger,
-): Promise<ServiceResponse> {
-    const currentMessageNo = node.msgNo;
+async function processInput({
+    connectionId,
+    packet,
+    log = getServerLogger({
+        module: "transactionServer",
+    }),
+}: import("./handlers.js").MessageHandlerArgs): Promise<
+    import("./handlers.js").MessageHandlerResult
+> {
+    const currentMessageNo = packet._msgNo;
     const currentMessageString = _MSG_STRING(currentMessageNo);
 
-    log(
-        "debug",
+    log.debug(
         `We are attempting to process a message with id ${currentMessageNo}(${currentMessageString})`,
     );
 
@@ -170,11 +98,11 @@ async function processInput(
 
     if (typeof result !== "undefined") {
         try {
-            const responsePackets = await result.handler(
-                dataConnection.connection,
-                node,
+            const responsePackets = await result.handler({
+                connectionId,
+                packet,
                 log,
-            );
+            });
             return responsePackets;
         } catch (error) {
             const err = new Error(`Error handling packet: ${String(error)}`);
@@ -182,110 +110,171 @@ async function processInput(
         }
     }
 
-    node.setAppId(dataConnection.connection.personaId);
-
-    const err = new Error(
+    throw new ServerError(
         `Message Number Not Handled: ${currentMessageNo} (${currentMessageString}`,
     );
-    throw err;
 }
 
 /**
- *
- * @param {MessageNode} message
- * @param {TBufferWithConnection} dataConnection
- * @param {Logger} log
- * @returns {Promise<ServiceResponse>}
+ * @param {object} args
+ * @param {string} args.connectionId
+ * @param {SerializedBuffer} args.message
+ * @param {import("pino").Logger} [args.log=getServerLogger({ module: "transactionServer" })]
+ * @returns {Promise<{
+ *     connectionId: string,
+ *    messages: SerializedBuffer[]
+ * }>}
  */
-async function messageReceived(
-    message: MessageNode,
-    dataConnection: TBufferWithConnection, // Legacy
-    connection: ClientConnection,
-    log: Logger,
-): Promise<ServiceResponse> {
-    // If not a Heartbeat
-    if (shouldMessageBeEncrypted(message, dataConnection)) {
-        if (
-            typeof dataConnection.connection.encryptionSession === "undefined"
-        ) {
-            const err = new Error(
-                `Unabel to locate the encryptors on connection id ${dataConnection.connectionId}`,
+export async function receiveTransactionsData({
+    connectionId,
+    message,
+    log = getServerLogger({
+        module: "transactionServer",
+    }),
+}: {
+    connectionId: string;
+    message: SerializedBuffer;
+    log?: import("pino").Logger;
+}): Promise<{
+    connectionId: string;
+    messages: SerializedBuffer[];
+}> {
+    log.level = getServerConfiguration({}).logLevel ?? "info";
+
+    log.debug(`Received Transaction Server packet: ${connectionId}`);
+
+    // Going to use ServerMessage in this module
+
+    const inboundMessage = new ServerMessage();
+    inboundMessage._doDeserialize(message.data);
+    log.debug(
+        `Received Transaction Server packet: ${inboundMessage.toString()}`,
+    );
+
+    // Is the message encrypted?
+    if (isMessageEncrypted(inboundMessage)) {
+        log.debug("Message is encrypted");
+        // Get the encryyption settings for this connection
+        const state = fetchStateFromDatabase();
+
+        const encryptionSettings = getEncryption(state, connectionId);
+
+        if (typeof encryptionSettings === "undefined") {
+            throw new ServerError(
+                `Unable to locate encryption settings for connection ${connectionId}`,
             );
-            throw err;
         }
 
-        if (message.flags - 8 >= 0) {
-            const result = tryDecryptBuffer(
-                message,
-                dataConnection,
-                connection,
-                log,
+        // log the old buffer
+        log.debug(`Encrypted buffer: ${inboundMessage.data.toString("hex")}`);
+
+        try {
+            const decryptedMessage = encryptionSettings.dataEncryption.decrypt(
+                inboundMessage.data,
             );
-            if (result.err !== null || result.data === null) {
-                const err = new Error(String(result.err));
-                throw err;
-            }
-            // Update the MessageNode with the deciphered buffer
-            message.updateBuffer(result.data);
+            updateEncryption(state, encryptionSettings).save();
+
+            // Verify the length of the message
+            verifyLength(inboundMessage.data, decryptedMessage);
+
+            // Assuming the message was decrypted successfully, update the buffer
+            log.debug(`Decrypted buffer: ${decryptedMessage.toString("hex")}`);
+
+            inboundMessage.setBuffer(decryptedMessage);
+            inboundMessage._header.flags -= 8;
+            inboundMessage.updateMsgNo();
+
+            log.debug(`Decrypted message: ${inboundMessage.toString()}`);
+        } catch (error) {
+            throw new ServerError(
+                `Unable to decrypt message: ${String(error)}`,
+            );
         }
     }
 
-    log("debug", "Calling processInput()");
-    return processInput(dataConnection, message, log);
+    log.debug("Calling processInput()");
+    const response = await processInput({
+        connectionId,
+        packet: inboundMessage,
+        log,
+    });
+
+    // Loop through the outbound messages and encrypt them
+    /** @type {SerializedBuffer[]} */
+    const outboundMessages: SerializedBuffer[] = [];
+
+    response.messages.forEach((outboundMessage) => {
+        log.debug(`Outbound message: ${outboundMessage.toString()}`);
+
+        if (isMessageEncrypted(outboundMessage)) {
+            const state = fetchStateFromDatabase();
+
+            const encryptionSettings = getEncryption(state, connectionId);
+
+            if (typeof encryptionSettings === "undefined") {
+                throw new ServerError(
+                    `Unable to locate encryption settings for connection ${connectionId}`,
+                );
+            }
+
+            // log the old buffer
+            log.debug(
+                `Outbound buffer: ${outboundMessage.data.toString("hex")}`,
+            );
+
+            try {
+                const encryptedMessage =
+                    encryptionSettings.dataEncryption.encrypt(
+                        outboundMessage.data,
+                    );
+                updateEncryption(state, encryptionSettings).save();
+
+                // Verify the length of the message
+                verifyLength(outboundMessage.data, encryptedMessage);
+
+                // Assuming the message was decrypted successfully, update the buffer
+
+                log.debug(
+                    `Encrypted buffer: ${encryptedMessage.toString("hex")}`,
+                );
+
+                outboundMessage.setBuffer(encryptedMessage);
+
+                log.debug(`Encrypted message: ${outboundMessage.toString()}`);
+
+                const outboundRawMessage = new SerializedBuffer();
+                outboundRawMessage.setBuffer(outboundMessage.serialize());
+                log.debug(
+                    `Encrypted message: ${outboundRawMessage.toString()}`,
+                );
+                outboundMessages.push(outboundRawMessage);
+            } catch (error) {
+                throw new ServerError(
+                    `Unable to encrypt message: ${String(error)}`,
+                );
+            }
+        } else {
+            const outboundRawMessage = new SerializedBuffer();
+            outboundRawMessage.setBuffer(outboundMessage.serialize());
+            log.debug(`Outbound message: ${outboundRawMessage.toString()}`);
+            outboundMessages.push(outboundRawMessage);
+        }
+    });
+
+    return {
+        connectionId,
+        messages: outboundMessages,
+    };
 }
 
-export async function handleData(args: ServiceArgs): Promise<ServiceResponse> {
-    const { legacyConnection: dataConnection, connection, log } = args;
-    const { connection: legacyConnection, data } = dataConnection;
-    const { remoteAddress, localPort } = legacyConnection.socket;
-
-    if (
-        typeof localPort === "undefined" ||
-        typeof remoteAddress === "undefined"
-    ) {
-        const err = new Error(
-            "Either localPort or remoteAddress is missing on socket.Can not continue.",
+/**
+ * @param {Buffer} buffer
+ * @param {Buffer} buffer2
+ */
+export function verifyLength(buffer: Buffer, buffer2: Buffer) {
+    if (buffer.length !== buffer2.length) {
+        throw new ServerError(
+            `Length mismatch: ${buffer.length} !== ${buffer2.length}`,
         );
-        throw err;
-    }
-
-    const messageNode = new MessageNode("received");
-    messageNode.deserialize(data);
-
-    log(
-        "debug",
-        `[handle]Received TCP packet',
-      ${JSON.stringify({
-          localPort,
-          remoteAddress,
-          direction: messageNode.direction,
-          data: data.toString("hex"),
-      })} `,
-    );
-    messageNode.dumpPacket();
-
-    if (typeof connection === "undefined") {
-        const err = new ServerError(
-            `Unable to locate connection for socket ${remoteAddress}:${localPort}`,
-        );
-        throw err;
-    }
-
-    try {
-        const processedPacket = await messageReceived(
-            messageNode,
-            dataConnection,
-            connection,
-            log,
-        );
-        log("debug", "Back in transacation server");
-        return {
-            connection: processedPacket.connection,
-            messages: processedPacket.messages,
-            log,
-        };
-    } catch (error) {
-        const err = new Error(`Error processing packet: ${String(error)} `);
-        throw err;
     }
 }

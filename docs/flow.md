@@ -50,4 +50,3 @@ debug {"level": "debug", "hostname": "strawberry", "message": data prior to proc
 debug {"level": "debug", "hostname": "strawberry", "message": Message buffer after decrypting: 44010000000000000000
 
 debug {"level": "debug", "hostname": "strawberry", "message": Sending Message: 1000544F4D430500000008450100000000
-

@@ -15,41 +15,16 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { describe, it, expect } from "vitest";
-import { mock } from "node:test"
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
 
 describe("TClientConnectMessage", () => {
     describe(".byteLength", () => {
         it("should have a value of 51", () => {
             // Arrange
-            const log = mock.fn()
-            const testMessage = new TClientConnectMessage(log);
+            const testMessage = new TClientConnectMessage();
 
             // Assert
-            expect(testMessage.getByteLength()).toBe(51);
-        });
-    });
-    describe("#get", () => {
-        it("should return a ByteField object when passed a valid field name", () => {
-            // Arrange
-            /** @type module:shared/TServerLogger */
-            const log = () => {
-                return;
-            };
-
-            const testMessage = new TClientConnectMessage(log);
-            /** @type module:mcos/shared/ByteField */
-            const expectedField = {
-                name: "customerId",
-                size: 4,
-                offset: 13,
-                type: "u32",
-                value: Buffer.alloc(4),
-                order: "little",
-            };
-
-            // Assert
-            expect(testMessage.get("customerId")).toEqual(expectedField);
+            expect(testMessage.size()).toBe(51);
         });
     });
 });

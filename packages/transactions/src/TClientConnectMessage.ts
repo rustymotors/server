@@ -14,92 +14,84 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Logger } from "../../interfaces/index.js";
-import { TSMessageBase } from "../../shared/index.js";
+import { ServerMessage } from "../../shared/messageFactory.js";
 
+export class TClientConnectMessage extends ServerMessage {
+    _customerId: number;
+    _personaId: number;
+    _customerName: string;
+    _personaName: string;
+    _mcVersion: string;
+    constructor() {
+        super();
+        this._msgNo = 0; // 8 bytes
+        this._customerId = 0; // 4 bytes
+        this._personaId = 0; // 4 bytes
+        this._customerName = ""; // 13 bytes
+        this._personaName = ""; // 13 bytes
+        this._mcVersion = ""; // 4 bytes
+    }
 
-/**
- *
- *
- * @class TClientConnectMessage
- * @extends {TSMessageBase}
- * @property {number} msgNo
- * @property {number} personaId
- * @property {number} appId
- * @property {number} customerId
- * @property {string} custName
- * @property {string} personaName
- * @property {Buffer} mcVersion
- */
-export class TClientConnectMessage extends TSMessageBase {
-    appId = 0;
-
-    /**
-     * Creates an instance of ClientConnectMessage.
-     * @param {Logger} log
-     */
-    constructor(log: Logger) {
-        super(log);
-        log("debug", "new TClientConnectMessage");
-        this._add({
-            name: "msgNo",
-            order: "little",
-            size: 2,
-            type: "u16",
-            value: Buffer.alloc(2),
-        });
-        this._add({
-            name: "customerId",
-            order: "little",
-            size: 4,
-            type: "u32",
-            value: Buffer.alloc(4),
-        });
-        this._add({
-            name: "personaId",
-            order: "little",
-            size: 4,
-            type: "u32",
-            value: Buffer.alloc(4),
-        });
-        this._add({
-            name: "customerName",
-            order: "little",
-            size: 13,
-            type: "char",
-            value: Buffer.alloc(13),
-        });
-        this._add({
-            name: "personaName",
-            order: "little",
-            size: 13,
-            type: "char",
-            value: Buffer.alloc(13),
-        });
-        this._add({
-            name: "mcVersion",
-            order: "little",
-            size: 4,
-            type: "u32",
-            value: Buffer.alloc(4),
-        });
-        // 40 bytes + 11 in super = 51 bytes
+    override size() {
+        return 51;
     }
 
     /**
-     *
-     * @return {number}
+     * @param {Buffer} buffer
      */
-    getAppId(): number {
-        return this.appId;
+    deserialize(buffer: Buffer) {
+        let offset = 0;
+        this._header._doDeserialize(buffer);
+        offset += this._header._size;
+        this._msgNo = buffer.readUInt16LE(offset);
+        offset += 2;
+        this._customerId = buffer.readUInt32LE(offset);
+        offset += 4;
+        this._personaId = buffer.readUInt32LE(offset);
+        offset += 4;
+        this._customerName = buffer.toString("utf8", offset, offset + 13);
+        offset += 13;
+        this._personaName = buffer.toString("utf8", offset, offset + 13);
+        offset += 13;
+        this._mcVersion = buffer.toString("utf8", offset, offset + 4);
+        // 51 bytes
+    }
+
+    override serialize() {
+        const buffer = Buffer.alloc(this.size());
+        let offset = 0;
+        buffer.copy(this._header._doSerialize(), offset);
+        offset += this._header._size;
+        buffer.writeUInt16LE(this._msgNo, offset);
+        offset += 2;
+        buffer.writeUInt32LE(this._customerId, offset);
+        offset += 4;
+        buffer.writeUInt32LE(this._personaId, offset);
+        offset += 4;
+        buffer.write(this._customerName, offset, 13, "utf8");
+        offset += 13;
+        buffer.write(this._personaName, offset, 13, "utf8");
+        offset += 13;
+        buffer.write(this._mcVersion, offset, 4, "utf8");
+        // 51 bytes
+        return buffer;
     }
 
     /**
-     * DumpPacket
-     * @return {string}
+     * @override
      */
-    dumpPacket(): string {
-        return `ClientConnectMsg',
-        ${JSON.stringify(this._fields)}`;
+    override toString() {
+        return `TClientConnectMessage: ${JSON.stringify({
+            length: this._header.length,
+            mcoSig: this._header.mcoSig,
+            seq: this._header.sequence,
+            flags: this._header.flags,
+            msgNo: this._msgNo,
+            customerId: this._customerId,
+            personaId: this._personaId,
+            customerName: this._customerName,
+            personaName: this._personaName,
+            mcVersion: this._mcVersion,
+        })}`;
     }
 }

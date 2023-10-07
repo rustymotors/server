@@ -12,43 +12,40 @@
  */
 
 export class StockCar {
-    brandedPartId;
-    retailPrice;
-    bIsDealOfTheDay;
-    serviceName;
+    brandedPartId: number;
+    retailPrice: number;
+    bIsDealOfTheDay: boolean;
     /**
      * @param {number} brandedPartId
      * @param {number} retailPrice
-     * @param {0|1} bIsDealOfTheDay
+     * @param {boolean} bIsDealOfTheDay
      */
     constructor(
         brandedPartId: number,
         retailPrice: number,
-        bIsDealOfTheDay: 0 | 1
+        bIsDealOfTheDay: boolean,
     ) {
-        this.brandedPartId = brandedPartId;
-        this.retailPrice = retailPrice;
-        this.bIsDealOfTheDay = bIsDealOfTheDay;
-        this.serviceName = "mcoserver:StockCar";
+        this.brandedPartId = brandedPartId; // 4 bytes
+        this.retailPrice = retailPrice; // 4 bytes
+        this.bIsDealOfTheDay = bIsDealOfTheDay; // 2 bytes
     }
 
     /**
      *
      * @return {Buffer}
      */
-    serialize() {
+    serialize(): Buffer {
         const packet = Buffer.alloc(10);
         packet.writeInt32LE(this.brandedPartId, 0);
         packet.writeInt32LE(this.retailPrice, 4);
-        packet.writeInt16LE(this.bIsDealOfTheDay, 8);
+        packet.writeInt16LE(this.bIsDealOfTheDay ? 1 : 0, 8);
         return packet;
     }
 
     /**
-     * DumpPacket
      * @return {string}
      */
-    dumpPacket() {
+    toString(): string {
         return `
         [StockCar]======================================
         brandedPartId:     ${this.brandedPartId}

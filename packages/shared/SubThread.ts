@@ -1,14 +1,26 @@
-import EventEmitter from "node:events";
-import { SubprocessThread, GatewayServer, Logger } from "../interfaces/index.js";
+/**
+ * @module SubThread
+ */
 
-export class SubThread extends EventEmitter implements SubprocessThread {
-    name: string;
+import { EventEmitter } from "node:events";
+import { getServerLogger } from "./log.js";
+import { Logger } from "pino";
+
+export class SubThread extends EventEmitter {
+    name: any;
+    log: any;
     loopInterval: number;
-    timer: NodeJS.Timeout | null = null;
-    parentThread: GatewayServer | undefined;
-    log: Logger;
-
-    constructor(name: string, log: Logger, loopInterval = 100) {
+    timer: any;
+    /**
+     * @param {string} name
+     * @param {module:shared/log.ServerLogger} log
+     * @param {number} [loopInterval=100]
+     */
+    constructor(
+        name: string,
+        log: Logger = getServerLogger({ module: "SubThread" }),
+        loopInterval: number = 100,
+    ) {
         super();
         this.name = name;
         this.log = log;
@@ -18,6 +30,7 @@ export class SubThread extends EventEmitter implements SubprocessThread {
 
     init() {
         this.emit("initialized");
+        // @ts-ignore
         this.timer = setInterval(this.run.bind(this), this.loopInterval);
     }
 
@@ -28,7 +41,6 @@ export class SubThread extends EventEmitter implements SubprocessThread {
     shutdown() {
         if (this.timer) {
             clearInterval(this.timer);
-            this.timer = null;
         }
         this.emit("shutdownComplete");
     }

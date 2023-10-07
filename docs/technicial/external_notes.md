@@ -50,7 +50,7 @@ After the inital login by the Client with a Customer Id and a Persona, the Sessi
 
 This TCP service was also know as the database to Users. It held and managed all global Origional Server information, such as number and state of Shards, Users, races, events, auctions, etc.
 
-After a inital login request with a Customer Id, User name, and Persona id and name, all following packets were encrypted using the full Session Key, which was fetched from the Login server's database. It in import to note that the Session Key was only provided one  in the entire Client session, and shared within the Original Server for all future connections.
+After a inital login request with a Customer Id, User name, and Persona id and name, all following packets were encrypted using the full Session Key, which was fetched from the Login server's database. It in import to note that the Session Key was only provided one in the entire Client session, and shared within the Original Server for all future connections.
 
 ## Packet types
 
@@ -68,10 +68,10 @@ The Tranaction Packet was used to communicate with the MCOTS service.
 
 The follow ports on either on either the Origional Server or Server need to be opens for connections from the Client:
 
-* Login (defaults to 8226) - passed to the Client as part of a Shard entry
-* Persona (8228) - static, unpublished, and unable to be changed
-* Lobby (defaults to 7003) - passed to the Client as part of a Shard entry
-* MCOTS (43300) - static, unpublished, and unable to be changed
+-   Login (defaults to 8226) - passed to the Client as part of a Shard entry
+-   Persona (8228) - static, unpublished, and unable to be changed
+-   Lobby (defaults to 7003) - passed to the Client as part of a Shard entry
+-   MCOTS (43300) - static, unpublished, and unable to be changed
 
 It can be noted there are fixed and flexible ports listed.
 
@@ -81,7 +81,7 @@ This section refers to the mcos codebase, as defined above.
 
 I think that I want two servers.
 
-* SSL - Patch, Auth, Shard
-* TCP - Login, Persona, Lobby, new MCOTS (Transacation)
+-   SSL - Patch, Auth, Shard
+-   TCP - Login, Persona, Lobby, new MCOTS (Transacation)
 
 Limiting the Client's connection points for each protocol will simplify the socket-based part of the connection, which will be the hardest to test.

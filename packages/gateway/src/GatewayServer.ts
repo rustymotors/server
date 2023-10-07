@@ -1,110 +1,185 @@
+import { Socket, createServer as createSocketServer } from "node:net";
+import { onSocketConnection } from "./index.js";
 import {
-    createServer as createSocketServer,
-    Server as tcpServer,
-} from "node:net";
-import { defaultLog, socketConnectionHandler } from "./index.js";
-import { getConnectionManager } from "./ConnectionManager.js";
+    Configuration,
+    getServerConfiguration,
+} from "../../shared/Configuration.js";
+import { getServerLogger } from "../../shared/log.js";
+import fastify from "fastify";
+import {
+    addOnDataHandler,
+    createInitialState,
+    fetchStateFromDatabase,
+} from "../../shared/State.js";
 import { ConsoleThread } from "../../cli/ConsoleThread.js";
-import { SubprocessThread, ServerConfiguration, Logger, NetworkConnectionHandler, ConnectionHandler, GatewayServer } from "../../interfaces/index.js";
-import { ServerError } from "../../shared/index.js";
+import { addWebRoutes } from "./web.js";
+import { ServerError } from "../../shared/errors/ServerError.js";
+import { receiveLoginData } from "../../login/src/index.js";
+import { receivePersonaData } from "../../persona/src/internal.js";
+import { receiveLobbyData } from "../../lobby/src/internal.js";
+import { receiveTransactionsData } from "../../transactions/src/internal.js";
+import FastifySensible from "@fastify/sensible";
+import { Logger } from "pino";
+
+/**
+ * @module gateway
+ */
+
+type GatewayOptions = {
+    config?: import("/home/drazisil/mcos/packages/shared/Configuration.js").Configuration;
+    log?: Logger;
+    backlogAllowedCount?: number;
+    listeningPortList?: number[];
+    socketConnectionHandler?: ({
+        incomingSocket,
+        log,
+    }: {
+        incomingSocket: Socket;
+        log?: Logger;
+    }) => void;
+};
 
 /**
  * Gateway server
  * @see {@link getGatewayServer()} to get a singleton instance
- *
  */
-
-export class Gateway implements GatewayServer, SubprocessThread {
-    private readonly config: ServerConfiguration;
+export class Gateway {
+    config: Configuration;
     log: Logger;
-    private readonly backlogAllowedCount: number;
-    private readonly listeningPortList: number[];
-    private readonly servers: tcpServer[];
-    private readonly socketconnection: NetworkConnectionHandler;
-    private serversRunning = false;
-    private readThread: ConsoleThread | undefined;
-    private activeSubThreads: SubprocessThread[] = [];
-    parentThread: GatewayServer | undefined;
-    private status: "stopped" | "running" | "stopping" | "restarting" =
-        "stopped";
-    consoleEvents = ["userExit", "userRestart", "userHelp"];
-
-    name = "GatewayServer";
-    loopInterval = 0;
-    timer: NodeJS.Timeout | null = null;
-    // Singleton instance of GatewayServer
-    static _instance: GatewayServer;
-
+    timer: NodeJS.Timeout | null;
+    loopInterval: number;
+    status: string;
+    consoleEvents: string[];
+    backlogAllowedCount: number;
+    listeningPortList: number[];
+    servers: import("node:net").Server[];
+    socketconnection: ({
+        incomingSocket,
+        log,
+    }: {
+        incomingSocket: Socket;
+        log?: Logger;
+    }) => void;
+    static _instance: Gateway | undefined;
+    webServer: import("fastify").FastifyInstance | undefined;
+    readThread: ConsoleThread | undefined;
+    /**
+     * Creates an instance of GatewayServer.
+     * @param {GatewayOptions} options
+     */
     constructor({
-        config = undefined,
-        log = defaultLog,
+        config = getServerConfiguration({}),
+        log = getServerLogger({
+            module: "GatewayServer",
+        }),
         backlogAllowedCount = 0,
         listeningPortList = [],
-        onSocketConnection = socketConnectionHandler,
-    }: {
-        config?: ServerConfiguration;
-        log?: Logger;
-        backlogAllowedCount?: number;
-        serverListener?: ConnectionHandler;
-        listeningPortList?: number[];
-        onSocketConnection?: ConnectionHandler;
-    }) {
-        if (config === undefined) {
-            throw new Error("config is undefined");
-        }
+        socketConnectionHandler = onSocketConnection,
+    }: GatewayOptions) {
+        log.debug("Creating GatewayServer instance");
 
         this.config = config;
         this.log = log;
+        /** @type {NodeJS.Timeout | null} */
+        this.timer = null;
+        this.loopInterval = 0;
+        /** @type {"stopped" | "running" | "stopping" | "restarting"} */
+        this.status = "stopped";
+        this.consoleEvents = ["userExit", "userRestart", "userHelp"];
         this.backlogAllowedCount = backlogAllowedCount;
         this.listeningPortList = listeningPortList;
+        /** @type {import("node:net").Server[]} */
         this.servers = [];
-        this.socketconnection = onSocketConnection;
+        this.socketconnection = socketConnectionHandler;
+
+        Gateway._instance = this;
     }
-    mainShutdown(): void {
-        throw new Error("Method not implemented.");
+
+    /**
+     * @return {import("fastify").FastifyInstance}
+     */
+    getWebServer(): import("fastify").FastifyInstance {
+        if (this.webServer === undefined) {
+            throw new ServerError("webServer is undefined");
+        }
+        return this.webServer;
     }
-    restart(): void {
+
+    start() {
+        this.log.debug("Starting GatewayServer in start()");
+        this.log.info("Server starting");
+
+        // Check if there are any listening ports specified
+        if (this.listeningPortList.length === 0) {
+            throw new Error("No listening ports specified");
+        }
+
+        // Mark the GatewayServer as running
+        this.log.debug("Marking GatewayServer as running");
+        this.status = "running";
+
+        // Initialize the GatewayServer
+        this.init();
+
+        this.listeningPortList.forEach((port) => {
+            const server = createSocketServer((s) => {
+                this.socketconnection({
+                    incomingSocket: s,
+                    log: this.log,
+                });
+            });
+
+            server.listen(port, "0.0.0.0", this.backlogAllowedCount, () => {
+                this.log.debug(`Listening on port ${port}`);
+            });
+
+            // Add the server to the list of servers
+            this.servers.push(server);
+        });
+
+        if (this.webServer === undefined) {
+            throw new ServerError("webServer is undefined");
+        }
+
+        // Start the web server
+        addWebRoutes(this.webServer);
+
+        this.webServer.listen(
+            {
+                host: "0.0.0.0",
+                port: 3000,
+            },
+            (err, address) => {
+                if (err) {
+                    this.log.error(err);
+                    process.exit(1);
+                }
+                this.log.info(`Server listening at ${address}`);
+            },
+        );
+    }
+
+    async restart() {
         // Stop the GatewayServer
-        this.stop();
+        await this.stop();
 
         console.log("=== Restarting... ===");
 
         // Start the GatewayServer
         this.start();
     }
-    exit(): void {
+
+    async exit() {
         // Stop the GatewayServer
-        this.stop();
+        await this.stop();
 
         // Exit the process
         process.exit(0);
     }
-    addSubThread(subThread: SubprocessThread): void {
-        // Add the subthread to the list of active subthreads
-        this.activeSubThreads.push(subThread);
-    }
-    removeSubThread(subThread: SubprocessThread): void {
-        // Remove the subthread from the list of active subthreads
-        this.activeSubThreads = this.activeSubThreads.filter((activeThread) => {
-            return activeThread.name !== subThread.name;
-        });
 
-        // If the subthread is the ReadInput thread, then stop the GatewayServer
-        if (subThread.name === "ReadInput") {
-            this.stop();
-        }
-    }
-    getSubThreads(): SubprocessThread[] {
-        // Return the list of active subthreads
-        return this.activeSubThreads;
-    }
-    getSubThreadCount(): number {
-        // Return the number of active subthreads
-        return this.activeSubThreads.length;
-    }
-    stop(): void {
+    async stop() {
         // Mark the GatewayServer as stopping
-        this.log("debug", "Marking GatewayServer as stopping");
+        this.log.debug("Marking GatewayServer as stopping");
         this.status = "stopping";
 
         // Stop the servers
@@ -117,33 +192,29 @@ export class Gateway implements GatewayServer, SubprocessThread {
             this.readThread.stop();
         }
 
+        if (this.webServer === undefined) {
+            throw new ServerError("webServer is undefined");
+        }
+        await this.webServer.close();
+
         // Stop the timer
         if (this.timer !== null) {
             clearInterval(this.timer);
         }
 
         // Mark the GatewayServer as stopped
-        this.log("debug", "Marking GatewayServer as stopped");
+        this.log.debug("Marking GatewayServer as stopped");
         this.status = "stopped";
 
-        // Mark the list of servers as not running
-        this.log("debug", "Marking the list of servers as not running");
-        this.serversRunning = false;
-
-        // Mark the list of active subthreads as empty
-        this.log("debug", "Marking the list of active subthreads as empty");
-        this.activeSubThreads = [];
-
-        // Empty the connection list
-        this.log("debug", "Emptying the connection list");
-        getConnectionManager().emptyConnectionList();
-
-        // Empty the legacy connection list
-        this.log("debug", "Emptying the legacy connection list");
-        getConnectionManager().emptyLegacyConnectionList();
+        // Reset the global state
+        this.log.debug("Resetting the global state");
+        createInitialState({}).save();
     }
 
-    handleReadThreadEvent(event: string): void {
+    /**
+     * @param {string} event
+     */
+    handleReadThreadEvent(event: string) {
         if (event === "userExit") {
             this.exit();
         }
@@ -155,7 +226,7 @@ export class Gateway implements GatewayServer, SubprocessThread {
         }
     }
 
-    init(): void {
+    init() {
         // Create the read thread
         this.readThread = new ConsoleThread({
             parentThread: this,
@@ -171,6 +242,22 @@ export class Gateway implements GatewayServer, SubprocessThread {
                 this.handleReadThreadEvent(event);
             });
         });
+
+        this.webServer = fastify({
+            logger: true,
+        });
+        this.webServer.register(FastifySensible);
+
+        let state = fetchStateFromDatabase();
+
+        state = addOnDataHandler(state, 8226, receiveLoginData);
+        state = addOnDataHandler(state, 8228, receivePersonaData);
+        state = addOnDataHandler(state, 7003, receiveLobbyData);
+        state = addOnDataHandler(state, 43300, receiveTransactionsData);
+
+        state.save();
+
+        this.log.debug("GatewayServer initialized");
     }
 
     help() {
@@ -180,149 +267,81 @@ export class Gateway implements GatewayServer, SubprocessThread {
         console.log("?: Help");
         console.log("============");
     }
-    run(): void {
+    run() {
         // Intentionally left blank
     }
 
+    /**
+     *
+     * @param {GatewayOptions} options
+     * @returns {Gateway}
+     * @memberof Gateway
+     */
     static getInstance({
         config = undefined,
-        log = defaultLog,
+        log = getServerLogger({
+            module: "GatewayServer",
+        }),
         backlogAllowedCount = 0,
         listeningPortList = [],
-        onSocketConnection = socketConnectionHandler,
-    }: {
-        config?: ServerConfiguration;
-        log?: Logger;
-        backlogAllowedCount?: number;
-        serverListener?: ConnectionHandler;
-        listeningPortList?: number[];
-        onSocketConnection?: ConnectionHandler;
-    }): GatewayServer {
+        socketConnectionHandler = onSocketConnection,
+    }: GatewayOptions): Gateway {
         if (Gateway._instance === undefined) {
             Gateway._instance = new Gateway({
                 config,
                 log,
                 backlogAllowedCount,
                 listeningPortList,
-                onSocketConnection,
+                socketConnectionHandler,
             });
         }
         return Gateway._instance;
     }
 
     shutdown() {
-        this.log("debug", "Shutdown complete for GatewayServer");
+        this.log.debug("Shutdown complete for GatewayServer");
         this.status = "stopped";
-        this.log("info", "Server stopped");
-
-
-        // Mark the list of servers as not running
-        this.log("debug", "Marking the list of servers as not running");
-        this.serversRunning = false;
-
-        // Mark the list of active subthreads as empty
-        this.log("debug", "Marking the list of active subthreads as empty");
-        this.activeSubThreads = [];
+        this.log.info("Server stopped");
 
         process.exit(0);
     }
-
-    /**
-     * Callback for when a subthread is shutting down
-     */
-    onSubThreadShutdown(threadName: string) {
-        this.log("debug", `onSubThreadShutdown(${threadName})`);
-        this.activeSubThreads = this.activeSubThreads.filter((thread) => {
-            return thread.name !== threadName;
-        });
-
-        if (
-            (this.status === "stopping" || this.status === "restarting") &&
-            this.activeSubThreads.length === 0
-        ) {
-            this.shutdown();
-        }
-    }
-
-    /**
-     * Callback for when a server is closed
-     */
-    serverCloseHandler() {
-        console.log("=== serverCloseHandler() ===");
-        this.log("debug", `Status: ${this.status}`);
-        this.log("debug", "Server closed");
-        this.serversRunning = false;
-        if (
-            (this.status === "stopping" || this.status === "restarting") &&
-            this.activeSubThreads.length === 0
-        ) {
-            this.shutdown();
-        }
-        console.log("=== End of serverCloseHandler() ===");
-    }
-
-    /**
-     * Start the GatewayServer instance
-     */
-    public start() {
-        this.log("debug", "Starting GatewayServer in start()");
-        this.log("info", "Server starting");
-
-        // Check if there are any listening ports specified
-        if (this.listeningPortList.length === 0) {
-            throw new Error("No listening ports specified");
-        }
-
-        // Mark the GatewayServer as running
-        this.log("debug", "Marking the list of servers as running");
-        this.serversRunning = true;
-        this.log("debug", "Marking GatewayServer as running");
-        this.status = "running";
-
-        // Initialize the GatewayServer
-        this.init();
-
-        this.listeningPortList.forEach((port) => {
-            const server = createSocketServer((s) => {
-                this.socketconnection({
-                    incomingSocket: s,
-                    config: this.config,
-                    log: this.log,
-                });
-            });
-
-            server.listen(port, "0.0.0.0", this.backlogAllowedCount, () => {
-                this.log("debug", `Listening on port ${port}`);
-            });
-
-            // Add the server to the list of servers
-            this.servers.push(server);
-        });
-    }
 }
+
+/** @type {Gateway | undefined} */
+Gateway._instance = undefined;
 
 /**
  * Get a singleton instance of GatewayServer
+ *
+ * @param {GatewayOptions} options
+ * @returns {Gateway}
  */
 export function getGatewayServer({
-    config = undefined,
-    log = defaultLog,
+    config,
+    log = getServerLogger({
+        module: "GatewayServer",
+    }),
     backlogAllowedCount = 0,
-    listeningPortList = [],
-    onSocketConnection = socketConnectionHandler,
+    listeningPortList: listeningPortList = [],
+    socketConnectionHandler = onSocketConnection,
 }: {
-    config?: ServerConfiguration;
+    config?: Configuration;
     log?: Logger;
     backlogAllowedCount?: number;
-    serverListener?: ConnectionHandler;
     listeningPortList?: number[];
-    onSocketConnection?: ConnectionHandler;
-}): GatewayServer {
+    socketConnectionHandler?: ({
+        incomingSocket,
+        log,
+    }: {
+        incomingSocket: Socket;
+        log?: Logger;
+    }) => void;
+}): Gateway {
     return Gateway.getInstance({
         config,
         log,
         backlogAllowedCount,
         listeningPortList,
-        onSocketConnection,
+        socketConnectionHandler,
     });
 }

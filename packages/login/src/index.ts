@@ -14,79 +14,81 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Logger, DatabaseManager, UserRecordMini, ServiceArgs, ServiceResponse } from "../../interfaces/index.js";
-import { handleData } from "./internal.js";
+import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
+import { DatabaseManager } from "../../interfaces/index.js";
+import { getServerLogger } from "../../shared/log.js";
+import { NPSMessage } from "../../shared/messageFactory.js";
+import { handleLoginData } from "./internal.js";
 
 /**
  * Please use {@link LoginServer.getInstance()}
- * @classdesc
- * @property {DatabaseManager} databaseManager
  */
 export class LoginServer {
+    databaseManager: DatabaseManager;
+    _log: any;
+    static _instance: LoginServer | undefined;
     /**
-     *
-     *
-     * @static
-     * @type {LoginServer}
+     * Please use {@see LoginServer.getInstance} instead
+     * @param {object} options
+     * @param {import("../../interfaces/index.js").DatabaseManager} options.database
+     * @param {import("pino").Logger} [options.log=getServerLogger({ module: "LoginServer" })]
      * @memberof LoginServer
      */
-    static _instance: LoginServer;
-
-    private databaseManager;
-
-    /** @type {TServerLogger} */
-    private readonly _log: Logger;
-
-    /**
-     * Please use getInstance() instead
-     * @author Drazi Crendraven
-     * @param {TDatabaseManager} database
-     * @param {TServerLogger} log
-     * @memberof LoginServer
-     */
-    constructor(database: DatabaseManager, log: Logger) {
+    constructor({
+        database = getDatabaseServer(),
+        log = getServerLogger({
+            module: "LoginServer",
+        }),
+    }: {
+        database: import("../../interfaces/index.js").DatabaseManager;
+        log?: import("pino").Logger;
+    }) {
         this.databaseManager = database;
         this._log = log;
+        LoginServer._instance = this;
     }
 
     /**
      * Get the single instance of the login server
      *
      * @static
-     * @param {TDatabaseManager} database
-     * @param {TServerLogger} log
+     * @param {import("../../interfaces/index.js").DatabaseManager} database
+     * @param {import("pino").Logger} log
      * @return {LoginServer}
-     * @memberof LoginServer
      */
     static getInstance(
-        database: DatabaseManager,
-        log: Logger
+        database: import("../../interfaces/index.js").DatabaseManager,
+        log: import("pino").Logger,
     ): LoginServer {
         if (typeof LoginServer._instance === "undefined") {
-            LoginServer._instance = new LoginServer(database, log);
+            LoginServer._instance = new LoginServer({
+                database,
+                log,
+            });
         }
         return LoginServer._instance;
     }
 
     /**
      *
-     * @private
      * @param {string} contextId
-     * @return {UserRecordMini}
+     * @return {import("../../interfaces/index.js").UserRecordMini}
      */
-    _npsGetCustomerIdByContextId(contextId: string): UserRecordMini {
-        this._log("debug", ">>> _npsGetCustomerIdByContextId");
-        /** @type {UserRecordMini[]} */
-        const users: UserRecordMini[] = [
+    _npsGetCustomerIdByContextId(
+        contextId: string,
+    ): import("../../interfaces/index.js").UserRecordMini {
+        this._log.debug(">>> _npsGetCustomerIdByContextId");
+        /** @type {import("../../interfaces/index.js").UserRecordMini[]} */
+        const users: import("../../interfaces/index.js").UserRecordMini[] = [
             {
                 contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
-                customerId: 0xac_01_00_00,
-                userId: 0x00_00_00_02,
+                customerId: 0xac010000,
+                userId: 0x00000002,
             },
             {
                 contextId: "d316cd2dd6bf870893dfbaaf17f965884e",
-                customerId: 0x00_54_b4_6c,
-                userId: 0x00_00_00_01,
+                customerId: 0x0054b46c,
+                userId: 0x00000001,
             },
         ];
         if (contextId.toString() === "") {
@@ -96,58 +98,67 @@ export class LoginServer {
 
         const userRecord = users.filter((user) => user.contextId === contextId);
         if (typeof userRecord[0] === "undefined" || userRecord.length !== 1) {
-            this._log(
-                "debug",
+            this._log.debug(
                 `preparing to leave _npsGetCustomerIdByContextId after not finding record',
         ${JSON.stringify({
             contextId,
-        })}`
+        })}`,
             );
             const err = new Error(
-                `Unable to locate user record matching contextId ${contextId}`
+                `Unable to locate user record matching contextId ${contextId}`,
             );
             throw err;
         }
 
-        this._log(
-            "debug",
+        this._log.debug(
             `preparing to leave _npsGetCustomerIdByContextId after finding record',
       ${JSON.stringify({
           contextId,
           userRecord,
-      })}`
+      })}`,
         );
         return userRecord[0];
     }
 }
 
+/** @type {LoginServer | undefined} */
+LoginServer._instance = undefined;
+
 /**
  * Entry and exit point of the Login service
  *
  * @export
- * @param {TBufferWithConnection} dataConnection
- * @param {TServerConfiguration} config
- * @param {TServerLogger} log
- * @return {Promise<TServiceResponse>}
+ * @param {object} args
+ * @param {string} args.connectionId
+ * @param {NPSMessage} args.message
+ * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
+ *
+ * @return {Promise<import("../../shared/State.js").ServiceResponse>}
  */
-export async function receiveLoginData(
-    args: ServiceArgs
-): Promise<ServiceResponse> {
+export async function receiveLoginData({
+    connectionId,
+    message,
+    log = getServerLogger({
+        module: "LoginServer",
+    }),
+}: {
+    connectionId: string;
+    message: NPSMessage;
+    log?: import("pino").Logger;
+}): Promise<import("../../shared/State.js").ServiceResponse> {
     try {
-        const { legacyConnection, connection, config, log } = args;
-        log("debug", "Entering login module");
-        const response = await handleData({
-            legacyConnection,
-            connection,
-            config,
+        log.debug("Entering login module");
+        const response = await handleLoginData({
+            connectionId,
+            message,
             log,
         });
-        log("debug", `There are ${response.messages.length} messages`);
-        log("debug", "Exiting login module");
+        log.debug(`There are ${response.messages.length} messages`);
+        log.debug("Exiting login module");
         return response;
     } catch (error) {
         const err = new Error(
-            `There was an error in the login service: ${String(error)}`
+            `There was an error in the login service: ${String(error)}`,
         );
         throw err;
     }

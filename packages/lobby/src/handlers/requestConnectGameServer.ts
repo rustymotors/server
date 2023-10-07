@@ -1,11 +1,21 @@
-import { NPSUserInfo } from "../NPSUserInfo.js";
-import { MessagePacket } from "../MessagePacket.js";
-import { _generateSessionKeyBuffer } from "../sessionKeys.js";
-import { DatabaseManager } from "../../../database/index.js";
-import { ServiceArgs, ServiceResponse } from "../../../interfaces/index.js";
-import { getPersonasByPersonaId } from "../../../persona/index.js";
-import { NPSMessage } from "../../../shared/NPSMessage.js";
-import { selectEncryptors, createEncrypters } from "../../../gateway/src/encryption.js";
+import { getServerLogger } from "../../../shared/log.js";
+import { getPersonasByPersonaId } from "../../../persona/src/getPersonasByPersonaId.js";
+import { getDatabaseServer } from "../../../database/src/DatabaseManager.js";
+import { LoginInfoMessage } from "../LoginInfoMessage.js";
+
+import { ServerError } from "../../../shared/errors/ServerError.js";
+import { UserInfoMessage } from "../UserInfoMessage.js";
+import {
+    createCommandEncryptionPair,
+    createDataEncryptionPair,
+} from "../../../gateway/src/encryption.js";
+import {
+    McosEncryption,
+    addEncryption,
+    fetchStateFromDatabase,
+    getEncryption,
+} from "../../../shared/State.js";
+import { SerializedBuffer } from "../../../shared/messageFactory.js";
 
 /**
  * Convert to zero padded hex
@@ -17,7 +27,7 @@ import { selectEncryptors, createEncrypters } from "../../../gateway/src/encrypt
 export function toHex(data: Buffer): string {
     /** @type {string[]} */
     const bytes: string[] = [];
-    data.forEach((b) => {
+    data.forEach((b: number) => {
         bytes.push(b.toString(16).toUpperCase().padStart(2, "0"));
     });
     return bytes.join("");
@@ -27,44 +37,35 @@ export function toHex(data: Buffer): string {
  * Handle a request to connect to a game server packet
  *
  * @private
- * @param {TBufferWithConnection} dataConnection
- * @param {TServerLogger} log
- * @return {Promise<iTMessageArrayWithConnection>}
+ * @param {import("../../../interfaces/index.js").ServiceArgs} args
+ * @returns {Promise<{
+ *  connectionId: string,
+ * messages: SerializedBuffer[],
+ * }>}
  */
-export async function _npsRequestGameConnectServer(
-    args: ServiceArgs,
-): Promise<ServiceResponse> {
-    const { legacyConnection: dataConnection, connection, log } = args;
-    log(
-        "debug",
-        `[inner] Raw bytes in _npsRequestGameConnectServer: ${toHex(
-            dataConnection.data,
-        )}`,
-    );
+export async function _npsRequestGameConnectServer({
+    connectionId,
+    message,
+    log = getServerLogger({
+        module: "LoginServer",
+    }),
+}: import("../../../interfaces/index.js").ServiceArgs): Promise<{
+    connectionId: string;
+    messages: SerializedBuffer[];
+}> {
+    // This is a NPS_LoginInfo packet
+    // As a legacy packet, it used the old NPSMessage format
+    // of a 4 byte header, followed by a 4 byte length, followed
+    // by the data payload.
 
-    log(
-        "debug",
-        `_npsRequestGameConnectServer: ${JSON.stringify({
-            remoteAddress: dataConnection.connection.remoteAddress,
-            localPort: dataConnection.connection.localPort,
-            data: dataConnection.data.toString("hex"),
-        })}`,
-    );
+    const inboundMessage = new LoginInfoMessage();
+    inboundMessage.deserialize(message.data);
 
-    // since the data is a buffer at this point, let's place it in a message structure
-    const inboundMessage = MessagePacket.fromBuffer(dataConnection.data);
+    log.debug(`LoginInfoMessage: ${inboundMessage.toString()}`);
 
-    log(
-        "debug",
-        `message buffer (${inboundMessage.getBuffer().toString("hex")})`,
-    );
-
-    // Return a _NPS_UserInfo structure
-    const userInfo = new NPSUserInfo("received");
-    userInfo.deserialize(dataConnection.data);
-    userInfo.dumpInfo();
-
-    const personas = await getPersonasByPersonaId(userInfo.userId);
+    const personas = await getPersonasByPersonaId({
+        id: inboundMessage._userId,
+    });
     if (typeof personas[0] === "undefined") {
         const err = new Error("No personas found.");
         throw err;
@@ -72,77 +73,66 @@ export async function _npsRequestGameConnectServer(
 
     const { customerId } = personas[0];
 
-    // Set the encryption keys on the lobby connection
-    const databaseManager = DatabaseManager.getInstance(log);
-    const keys = await databaseManager
-        .fetchSessionKeyByCustomerId(customerId)
-        .catch((/** @type {unknown} */ error: unknown) => {
-            if (error instanceof Error) {
-                log(
-                    "debug",
-                    `Unable to fetch session key for customerId ${customerId.toString()}: ${
-                        error.message
-                    })}`,
+    const state = fetchStateFromDatabase();
+
+    const existingEncryption = getEncryption(state, connectionId);
+
+    if (!existingEncryption) {
+        // Set the encryption keys on the lobby connection
+        const databaseManager = getDatabaseServer({ log });
+        const keys = await databaseManager
+            .fetchSessionKeyByCustomerId(customerId)
+            .catch((/** @type {unknown} */ error: unknown) => {
+                throw new Error(
+                    `Unable to fetch session key for customerId ${customerId.toString()}: ${String(
+                        error,
+                    )}`,
                 );
-            }
-            const err = new Error(
-                `Unable to fetch session key for customerId ${customerId.toString()}: unknown error}`,
+            });
+        if (keys === undefined) {
+            throw new ServerError("Error fetching session keys!");
+        }
+
+        // We have the session keys, set them on the connection
+        try {
+            const newCommandEncryptionPair = createCommandEncryptionPair(
+                keys.sessionKey,
             );
-            throw err;
-        });
-    if (keys === undefined) {
-        const err = new Error("Error fetching session keys!");
-        throw err;
+
+            const newDataEncryptionPair = createDataEncryptionPair(
+                keys.sessionKey,
+            );
+
+            const newEncryption = new McosEncryption({
+                connectionId,
+                commandEncryptionPair: newCommandEncryptionPair,
+                dataEncryptionPair: newDataEncryptionPair,
+            });
+
+            addEncryption(state, newEncryption).save();
+        } catch (error) {
+            throw new ServerError(`Error creating encryption: ${error}`);
+        }
     }
 
-    try {
-        dataConnection.connection.encryptionSession = selectEncryptors({
-            dataConnection,
-            connection,
-            log,
-        });
-    } catch (error) {
-        dataConnection.connection.encryptionSession = createEncrypters(
-            dataConnection.connection,
-            keys,
-            log,
-        );
-    }
+    // We have a session, we are good to go!
+    // Send the response packet
 
-    const packetContent = Buffer.alloc(72);
+    const responsePacket = new UserInfoMessage();
+    responsePacket.fromLoginInfoMessage(inboundMessage);
 
-    // This response is a NPS_UserStatus
+    responsePacket._header.id = 0x120;
 
-    // Ban and Gag
-
-    // NPS_USERID - User ID - persona id - long
-    Buffer.from([0x00, 0x84, 0x5f, 0xed]).copy(packetContent);
-
-    // SessionKeyStr (32)
-    _generateSessionKeyBuffer(keys.sessionKey).copy(packetContent, 4);
-
-    // SessionKeyLen - int
-    packetContent.writeInt16BE(32, 66);
-
-    // Build the packet
-    const packetResult = new NPSMessage("sent");
-    packetResult.msgNo = 0x1_20;
-    packetResult.setContent(packetContent);
-    packetResult.dumpPacket();
-
-    const loginResponsePacket = MessagePacket.fromBuffer(
-        packetResult.serialize(),
+    // log the packet
+    log.debug(
+        `!!! outbound lobby login response packet: ${responsePacket.toString()}`,
     );
 
-    log(
-        "debug",
-        `!!! outbound lobby login response packet: ${loginResponsePacket
-            .getBuffer()
-            .toString("hex")}`,
-    );
+    const outboundMessage = new SerializedBuffer();
+    outboundMessage._doDeserialize(responsePacket.serialize());
+
     return {
-        connection: dataConnection.connection,
-        messages: [packetResult],
-        log,
+        connectionId,
+        messages: [outboundMessage],
     };
 }

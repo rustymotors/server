@@ -2,67 +2,62 @@ codecov:
     require_ci_to_pass: false
 
 flags:
-  auth:
-    paths:
-      - packages/auth/**
-    carryforward: true
-  database:
-    paths:
-      - packages/database/**
-    carryforward: true
-  gateway:
-    paths:
-      - packages/gateway/**
-    carryforward: true
-  lobby:
-    paths:
-      - packages/lobby/**
-    carryforward: true
-  login:
-    paths:
-      - packages/login/**
-    carryforward: true
-  patch:
-    paths:
-      - packages/patch/**
-    carryforward: true
-  persona:
-    paths:
-      - packages/persona/**
-    carryforward: true
-  shard:
-    paths:
-      - packages/shard/**
-    carryforward: true
-  shared:
-    paths:
-      - packages/shared/**
-    carryforward: true
-  transactions:
-    paths:
-      - packages/transactions/**
-    carryforward: true
-  interfaces:
-    paths:
-      - packages/interfaces/**
-    carryforward: true
-  core:
-    paths:
-      - packages/core/**
-    carryforward: true
-
+    database:
+        paths:
+            - packages/database/**
+        carryforward: true
+    gateway:
+        paths:
+            - packages/gateway/**
+        carryforward: true
+    lobby:
+        paths:
+            - packages/lobby/**
+        carryforward: true
+    login:
+        paths:
+            - packages/login/**
+        carryforward: true
+    patch:
+        paths:
+            - packages/patch/**
+        carryforward: true
+    persona:
+        paths:
+            - packages/persona/**
+        carryforward: true
+    shard:
+        paths:
+            - packages/shard/**
+        carryforward: true
+    shared:
+        paths:
+            - packages/shared/**
+        carryforward: true
+    transactions:
+        paths:
+            - packages/transactions/**
+        carryforward: true
+    interfaces:
+        paths:
+            - packages/interfaces/**
+        carryforward: true
+    core:
+        paths:
+            - packages/core/**
+        carryforward: true
 
 component_management:
-  individual_components:
-    - component_id: components_team1
-      name: Team 1
-      paths:
-        - packages/core/**
-        - packages/gateway/**
-        - packages/shared/**
+    individual_components:
+        - component_id: components_team1
+          name: Team 1
+          paths:
+              - packages/core/**
+              - packages/gateway/**
+              - packages/shared/**
 
 coverage:
-  status:
-    project:
-      default:
-        removed_code_behavior: adjust_base
+    status:
+        project:
+            default:
+                removed_code_behavior: adjust_base

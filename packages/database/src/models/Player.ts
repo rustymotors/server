@@ -1,13 +1,13 @@
-import { SerializedObject } from "../../../interfaces/index.js";
+import { SerializedBuffer } from "../../../shared/messageFactory.js";
 
-export class PlayerModel implements SerializedObject {
-    serialize(): Buffer {
+export class PlayerModel extends SerializedBuffer {
+    override serialize(): Buffer {
         throw new Error("Method not implemented.");
     }
     serializeSize(): number {
         throw new Error("Method not implemented.");
     }
-    
+
     static schema = `CREATE TABLE Player (
     PlayerID             int NOT NULL,
     CustomerID           int NOT NULL,

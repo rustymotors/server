@@ -14,40 +14,22 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-/**
- * @class
- * @property {string} name
- * @property {string} description
- * @property {number} id
- * @property {string} loginServerIp
- * @property {number} loginServerPort
- * @property {string} lobbyServerIp
- * @property {number} lobbyServerPort
- * @property {string} mcotsServerIp
- * @property {number} statusId
- * @property {string} statusReason
- * @property {string} serverGroupName
- * @property {number} population
- * @property {number} maxPersonasPerUser
- * @property {string} diagnosticServerHost
- * @property {number} diagnosticServerPort
- */
 export class ShardEntry {
-    name;
-    description;
-    id;
-    loginServerIp;
-    loginServerPort;
-    lobbyServerIp;
-    lobbyServerPort;
-    mcotsServerIp;
-    statusId;
-    statusReason;
-    serverGroupName;
-    population;
-    maxPersonasPerUser;
-    diagnosticServerHost;
-    diagnosticServerPort;
+    name: string;
+    description: string;
+    id: number;
+    loginServerIp: string;
+    loginServerPort: number;
+    lobbyServerIp: string;
+    lobbyServerPort: number;
+    mcotsServerIp: string;
+    statusId: number;
+    statusReason: string;
+    serverGroupName: string;
+    population: number;
+    maxPersonasPerUser: number;
+    diagnosticServerHost: string;
+    diagnosticServerPort: number;
     /**
      *
      * @param {string} name
@@ -81,7 +63,7 @@ export class ShardEntry {
         population: number,
         maxPersonasPerUser: number,
         diagnosticServerHost: string,
-        diagnosticServerPort: number
+        diagnosticServerPort: number,
     ) {
         this.name = name;
         this.description = description;
@@ -105,7 +87,7 @@ export class ShardEntry {
      *
      * @return {string}
      */
-    formatForShardList() {
+    formatForShardList(): string {
         return `[${this.name}]
       Description=${this.description}
       ShardId=${this.id}

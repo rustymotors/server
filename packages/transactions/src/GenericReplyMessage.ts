@@ -14,11 +14,56 @@
  * @property {Buffer} data2
  */
 
-import { ClientMessage } from "../../interfaces/index.js";
-import { Message } from "../../shared/index.js";
+import { SerializedBuffer } from "../../shared/messageFactory.js";
 
+export class GenericReply extends SerializedBuffer {
+    msgNo: number;
+    msgReply: number;
+    result: Buffer;
+    data2: Buffer;
+    rawBuffer!: Buffer;
+    constructor() {
+        super();
+        this.msgNo = 0; // 2 bytes (ethier MC_SUCCESS (0x101) or MC_FAILURE(0x102))
+        this.msgReply = 0; // 2 bytes (message # being replied to (ex: MC_PURCHASE_STOCK_CAR))
+        this.result = Buffer.alloc(4); // 4 bytes (specific to the message sent, often the reason for a failure)
+        this.setBuffer(Buffer.alloc(4)); // 4 bytes (specific to the message sent (but usually 0))
+        this.data2 = Buffer.alloc(4); // 4 bytes (specific to the message sent (but usually 0))
+    }
 
-export class GenericReplyMessage extends Message implements ClientMessage {
+    override serialize() {
+        this.rawBuffer = Buffer.alloc(16);
+        this.rawBuffer.writeInt16LE(this.msgNo, 0);
+        this.rawBuffer.writeInt16LE(this.msgReply, 2);
+        this.result.copy(this.rawBuffer, 4);
+        this.data.copy(this.rawBuffer, 8);
+        this.data2.copy(this.rawBuffer, 12);
+        return this.rawBuffer;
+    }
+
+    asJSON() {
+        return {
+            msgNo: this.msgNo,
+            msgReply: this.msgReply,
+            result: this.result.toString("hex"),
+            data: this.data.toString("hex"),
+            data2: this.data2.toString("hex"),
+        };
+    }
+
+    override toString() {
+        return this.serialize().toString("hex");
+    }
+}
+
+export class GenericReplyMessage extends SerializedBuffer {
+    msgNo: number;
+    toFrom: number;
+    appId: number;
+    msgReply: number;
+    result: Buffer;
+    data2: Buffer;
+    rawBuffer: Buffer;
     /**
      * One of
      *
@@ -28,24 +73,15 @@ export class GenericReplyMessage extends Message implements ClientMessage {
      *
      * * MC_GENERIC_REPLY : Used with GenericReply structure for messages that return data
      */
-    msgNo; // 2 bytes
-    toFrom;
-    appId;
-    msgReply;
-    result;
-    data;
-    data2;
-    rawBuffer: Buffer;
-
     constructor() {
         super();
-        this.msgNo = 0;
-        this.toFrom = 0;
-        this.appId = 0;
-        this.msgReply = 0;
-        this.result = Buffer.alloc(4);
-        this.data = Buffer.alloc(4);
-        this.data2 = Buffer.alloc(4);
+        this.msgNo = 0; // 2 bytes
+        this.toFrom = 0; // 2 bytes
+        this.appId = 0; // 2 bytes
+        this.msgReply = 0; // 2 bytes
+        this.result = Buffer.alloc(4); // 4 bytes
+        this.setBuffer(Buffer.alloc(4)); // 4 bytes
+        this.data2 = Buffer.alloc(4); // 4 bytes
         this.rawBuffer = Buffer.alloc(0);
     }
 
@@ -54,7 +90,7 @@ export class GenericReplyMessage extends Message implements ClientMessage {
      * @param {Buffer} value
      */
     setData(value: Buffer) {
-        this.data = value;
+        this.setBuffer(value);
     }
 
     /**
@@ -68,6 +104,7 @@ export class GenericReplyMessage extends Message implements ClientMessage {
     /**
      *
      * @param {Buffer} buffer
+     * @return {GenericReplyMessage}
      */
     static deserialize(buffer: Buffer): GenericReplyMessage {
         const node = new GenericReplyMessage();
@@ -80,8 +117,8 @@ export class GenericReplyMessage extends Message implements ClientMessage {
             } else {
                 const err = new TypeError(
                     `[GenericReplyMsg] Unable to read msgNo from ${buffer.toString(
-                        "hex"
-                    )}: ${String(error)}`
+                        "hex",
+                    )}: ${String(error)}`,
                 ); // skipcq: JS-0378
                 throw err;
             }
@@ -89,22 +126,28 @@ export class GenericReplyMessage extends Message implements ClientMessage {
 
         node.msgReply = buffer.readInt16LE(2);
         node.result = buffer.subarray(4, 8);
-        node.data = buffer.subarray(8, 12);
+        node.setBuffer(buffer.subarray(8, 12));
         node.data2 = buffer.subarray(12);
         return node;
     }
 
     /**
-     *
+     * @override
      * @return {Buffer}
      */
-    serialize(): Buffer {
-        const packet = Buffer.alloc(16);
-        packet.writeInt16LE(this.msgNo, 0);
-        packet.writeInt16LE(this.msgReply, 2);
-        this.result.copy(packet, 4);
-        this.data.copy(packet, 8);
-        this.data2.copy(packet, 12);
+    override serialize(): Buffer {
+        const packet = Buffer.alloc(114); // 16 bytes
+        let offset = 0;
+        packet.writeInt16LE(this.msgNo, offset);
+        offset += 2;
+        // packet.writeInt16LE(this.msgReply, offset);
+        // offset += 2;
+        this.result.copy(packet, offset);
+        offset += 4;
+        this.data.copy(packet, offset);
+        offset += 4;
+        this.data2.copy(packet, offset);
+        // offset is now 16
         return packet;
     }
 

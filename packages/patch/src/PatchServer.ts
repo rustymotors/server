@@ -1,6 +1,14 @@
 import { IncomingMessage, ServerResponse } from "node:http";
-import { CastanetResponse } from "./index.js";
-import { GamePatchingServer, Logger } from "../../interfaces/index.js";
+import { getServerLogger } from "../../shared/log.js";
+import { Buffer } from "node:buffer";
+
+const CastanetResponse = {
+    body: Buffer.from("cafebeef00000000000003", "hex"),
+    header: {
+        type: "Content-Type",
+        value: "application/octet-stream",
+    },
+};
 
 /**
  * The PatchServer class handles HTTP requests from the client for patching and upgrades
@@ -9,7 +17,7 @@ import { GamePatchingServer, Logger } from "../../interfaces/index.js";
  * @class PatchServer
  */
 
-export class PatchServer implements GamePatchingServer {
+export class PatchServer {
     /**
      *
      *
@@ -17,25 +25,23 @@ export class PatchServer implements GamePatchingServer {
      * @type {PatchServer}
      * @memberof PatchServer
      */
-    public static _instance: GamePatchingServer;
+    static _instance: PatchServer;
 
     /**
      *
      *
      * @private
-     * @type {TServerLogger}
-     * @memberof PatchServer
+     * @type {import("pino").Logger}
      */
-    private readonly _log: Logger;
+    _log: import("pino").Logger;
 
     /**
      * Creates an instance of PatchServer.
      * Please use getInstance() instead
-     * @param {TServerLogger} log
-     * @this {PatchServer}
+     * @param {import("pino").Logger} log
      * @memberof PatchServer
      */
-    constructor(log: Logger) {
+    constructor(log: import("pino").Logger) {
         this._log = log;
     }
 
@@ -43,11 +49,11 @@ export class PatchServer implements GamePatchingServer {
      * Return the instance of the PatchServer class
      *
      * @static
-     * @param {TServerLogger} log
+     * @param {import("pino").Logger} log
      * @return {PatchServer}
      * @memberof PatchServer
      */
-    static getInstance(log: Logger): GamePatchingServer {
+    static getInstance(log: import("pino").Logger): PatchServer {
         if (!PatchServer._instance) {
             PatchServer._instance = new PatchServer(log);
         }
@@ -62,16 +68,15 @@ export class PatchServer implements GamePatchingServer {
      */
     castanetResponse(
         request: IncomingMessage,
-        response: ServerResponse
+        response: ServerResponse,
     ): ServerResponse {
-        this._log(
-            "debug",
-            `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
+        this._log.debug(
+            `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`,
         );
 
         response.setHeader(
             CastanetResponse.header.type,
-            CastanetResponse.header.value
+            CastanetResponse.header.value,
         );
         return response.end(CastanetResponse.body);
     }
@@ -84,7 +89,7 @@ export class PatchServer implements GamePatchingServer {
      */
     handleRequest(
         request: IncomingMessage,
-        response: ServerResponse
+        response: ServerResponse,
     ): ServerResponse {
         if (
             request.url === "/games/EA_Seattle/MotorCity/UpdateInfo" ||
@@ -99,10 +104,9 @@ export class PatchServer implements GamePatchingServer {
 }
 /**
  * Return the instance of the PatchServer class
- * @param {TServerLogger} log
  * @returns {PatchServer}
  */
 
-export function getPatchServer(log: Logger): GamePatchingServer {
-    return PatchServer.getInstance(log);
+export function getPatchServer(): PatchServer {
+    return PatchServer.getInstance(getServerLogger({ module: "PatchServer" }));
 }
