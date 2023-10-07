@@ -27,6 +27,7 @@ import {
     LegacyMessage,
     SerializedBuffer,
 } from "../../shared/messageFactory.js";
+import { Logger } from "pino";
 
 const NAME_BUFFER_SIZE = 30;
 
@@ -51,7 +52,7 @@ export const messageHandlers: {
     handler: (args: {
         connectionId: string;
         message: LegacyMessage;
-        log: import("pino").Logger;
+        log: Logger;
     }) => Promise<{
         connectionId: string;
         messages: SerializedBuffer[];
@@ -107,26 +108,6 @@ export const personaRecords: import("../../interfaces/index.js").PersonaRecord[]
             shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
         },
     ];
-
-/**
- *
- * @param {number} id
- * @return {Promise<import("../../interfaces/index.js").PersonaRecord[]>}
- */
-export async function getPersonasByPersonaId(
-    id: number,
-): Promise<import("../../interfaces/index.js").PersonaRecord[]> {
-    const results = personaRecords.filter((persona) => {
-        const match = id === persona.id.readInt32BE(0);
-        return match;
-    });
-    if (results.length === 0) {
-        const err = new Error(`Unable to locate a persona for id: ${id}`);
-        throw err;
-    }
-
-    return results;
-}
 
 /**
  * Selects a game persona and marks it as in use

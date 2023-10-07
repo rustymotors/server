@@ -1,5 +1,5 @@
 import { getServerLogger } from "../../../shared/log.js";
-import { getPersonasByPersonaId } from "../../../persona/src/internal.js";
+import { getPersonasByPersonaId } from "../../../persona/src/getPersonasByPersonaId.js";
 import { getDatabaseServer } from "../../../database/src/DatabaseManager.js";
 import { LoginInfoMessage } from "../LoginInfoMessage.js";
 
@@ -63,7 +63,9 @@ export async function _npsRequestGameConnectServer({
 
     log.debug(`LoginInfoMessage: ${inboundMessage.toString()}`);
 
-    const personas = await getPersonasByPersonaId(inboundMessage._userId);
+    const personas = await getPersonasByPersonaId({
+        id: inboundMessage._userId,
+    });
     if (typeof personas[0] === "undefined") {
         const err = new Error("No personas found.");
         throw err;
