@@ -12,7 +12,7 @@ describe("login", () => {
         const incomingMessage = new ServerMessage();
         const imcommingBuffer = Buffer.from(JSON.stringify(incomingMessage));
         incomingMessage.setBuffer(imcommingBuffer);
-        mockPino;
+        mockPino();
         const log = getServerLogger({});
 
         // act
