@@ -82,6 +82,7 @@ export class NPSUserStatus extends LegacyMessage {
         const sessionKeyAsAscii = rawPacket.subarray(52, 308).toString("utf8");
         this.log.trace(`Session key: ${sessionKeyAsAscii}`);
 
+        // length of the session key should be 128 bytes
         const sessionkeyString = Buffer.from(sessionKeyAsAscii, "hex");
         // Decrypt the sessionkey
         try {
@@ -97,11 +98,11 @@ export class NPSUserStatus extends LegacyMessage {
                     key: privatekeyContents,
                 },
                 sessionkeyString,
-            );
-            this.sessionKey = decrypted.subarray(2, -4).toString("hex");
+            ); // length of decrypted should be 128 bytes
+            this.sessionKey = decrypted.subarray(2, -4).toString("hex"); // length of session key should be 12 bytes
         } catch (error) {
-            this.log.trace(`Session key: ${sessionkeyString.toString("utf8")}`);
-            this.log.trace(`decrypted: ${this.sessionKey}`);
+            this.log.trace(`Session key: ${sessionkeyString.toString("utf8")}`); // 128 bytes
+            this.log.trace(`decrypted: ${this.sessionKey}`); // 12 bytes
             this.log.error(`Error decrypting session key: ${String(error)}`);
             throw new Error(`Unable to extract session key: ${String(error)}`);
         }
