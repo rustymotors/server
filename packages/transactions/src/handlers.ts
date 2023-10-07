@@ -17,7 +17,6 @@
 import { GenericReply, GenericReplyMessage } from "./GenericReplyMessage.js";
 import { TClientConnectMessage } from "./TClientConnectMessage.js";
 import { LobbyInfo, LobbyMessage } from "./LobbyMessage.js";
-import { TLoginMessage } from "./TLoginMessage.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
 import { StockCar } from "./StockCar.js";
@@ -37,6 +36,7 @@ import { ServerMessage } from "../../shared/messageFactory.js";
 import { ArcadeCarInfo, ArcadeCarMessage } from "./ArcadeCarMessage.js";
 import { GameUrl, GameUrlsMessage } from "./GameUrlsMessage.js";
 import { TunablesMessage } from "./TunablesMessage.js";
+import { login } from "./login.js";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -145,34 +145,6 @@ async function clientConnect({
     responsePacket._header.sequence = packet._header.sequence;
 
     log.debug(`Response: ${responsePacket.serialize().toString("hex")}`);
-
-    return { connectionId, messages: [responsePacket] };
-}
-
-/**
- * @param {MessageHandlerArgs} args
- * @return {Promise<MessageHandlerResult>}
- */
-async function login({
-    connectionId,
-    packet,
-    log,
-}: MessageHandlerArgs): Promise<MessageHandlerResult> {
-    // Read the inbound packet
-    const loginMessage = new TLoginMessage();
-    loginMessage.deserialize(packet.serialize());
-    log.debug(`Received LoginMessage: ${loginMessage.toString()}`);
-
-    // Create new response packet
-    const pReply = new GenericReplyMessage();
-    pReply.msgNo = 213;
-    pReply.msgReply = 105;
-    const responsePacket = new ServerMessage();
-    responsePacket._header.sequence = packet._header.sequence;
-    responsePacket._header.flags = 8;
-    responsePacket.setBuffer(pReply.serialize());
-
-    log.debug(`Response: ${responsePacket.toString()}`);
 
     return { connectionId, messages: [responsePacket] };
 }
