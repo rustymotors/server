@@ -49,7 +49,7 @@ export function generateShardList(shardHost: string) {
 
     /** @type {string[]} */
     const activeShardList: string[] = [];
-    activeShardList.push(shardClockTower.formatForShardList());
+    activeShardList.push(_possibleShards[0]);
 
     return activeShardList.join("\n");
 }
