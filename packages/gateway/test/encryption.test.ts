@@ -101,8 +101,6 @@ describe("Encryption", () => {
 
         expect(decryptedMessage).toBeDefined();
 
-        console.log(decryptedMessage?.toString());
-
         expect(decryptedMessage).toEqual(message);
     });
 
@@ -158,8 +156,6 @@ describe("Encryption", () => {
         );
 
         expect(decryptedMessage).toBeDefined();
-
-        console.log(decryptedMessage?.toString());
 
         expect(decryptedMessage).toEqual(message);
     });
