@@ -3,20 +3,16 @@ import { getServerLogger } from "../../shared/log.js";
 import { ServerMessage } from "../../shared/messageFactory.js";
 import { login } from "../src/login.js";
 import { describe, it, expect, vi } from "vitest";
+import { mockPino } from "../../../test/factoryMocks.js";
 
 describe("login", () => {
     it("returns a message", async () => {
         // arrange
         const connectionId = "test";
         const incomingMessage = new ServerMessage();
-        const imcomingBuffer = Buffer.from(JSON.stringify(incomingMessage));
-        incomingMessage.setBuffer(imcomingBuffer);
-        vi.mock("pino", async () => {
-            const actual = await vi.importActual("pino");
-            return {
-                ...(actual as P),
-            };
-        });
+        const imcommingBuffer = Buffer.from(JSON.stringify(incomingMessage));
+        incomingMessage.setBuffer(imcommingBuffer);
+        mockPino;
         const log = getServerLogger({});
 
         // act

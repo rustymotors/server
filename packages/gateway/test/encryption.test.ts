@@ -12,6 +12,7 @@ import {
     getEncryption,
 } from "../../shared/State.js";
 import { randomUUID } from "node:crypto";
+import { mockPino } from "../../../test/factoryMocks.js";
 
 let testSave: (state: State) => void;
 let testState: State;
@@ -20,6 +21,7 @@ let testSocket2: Socket;
 
 describe("Encryption", () => {
     beforeAll(() => {
+        mockPino();
         testSave = (state?: State) => {
             if (typeof state === "undefined") {
                 throw new Error("State not defined");
