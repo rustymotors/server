@@ -219,6 +219,7 @@ export class GameMessageHeader extends legacyHeader {
 
     constructor(gameMessageId: number) {
         super();
+        this._size = 8;
         this.id = 0x1101; // 2 bytes
         this._gameMessageId = gameMessageId; // 2 bytes
         this._gameMessageLength = 0; // 2 bytes
@@ -230,10 +231,10 @@ export class GameMessageHeader extends legacyHeader {
 
     serialize() {
         const buffer = Buffer.alloc(8);
-        buffer.writeInt16BE(this._gameMessageId, 0);
-        buffer.writeInt16BE(this._gameMessageLength, 2);
-        buffer.writeInt16BE(this.id, 4);
-        buffer.writeInt16BE(this.length, 6);
+        buffer.writeInt16BE(this.id, 0);
+        buffer.writeInt16BE(this.length, 2);
+        buffer.writeInt16BE(this._gameMessageId, 4);
+        buffer.writeInt16BE(this._gameMessageLength, 6);
         return buffer;
     }
 }
@@ -517,43 +518,29 @@ export class SerializedBuffer extends SerializableMixin(AbstractSerializable) {
 
 export class GameMessage extends SerializedBuffer {
     _header: GameMessageHeader;
-    _countOfRecords: number; // 4 bytes
-    _recordSize: number;
     _recordData: Buffer;
     constructor(gameMessageId: number) {
         super();
         this._header = new GameMessageHeader(gameMessageId);
-        this._countOfRecords = 0; // 4 bytes
-        this._recordSize = 0;
-        this._recordData = Buffer.alloc(this.recordDataSize);
+        this._recordData = Buffer.alloc(0);
     }
 
-    get recordDataSize() {
-        return this._recordSize * this._countOfRecords;
-    }
-
-    setRecordData(buffer: Buffer, recordCount: number, recordSize: number) {
-        if (buffer.length !== recordCount * recordSize) {
-            throw new ServerError(
-                `Buffer length ${buffer.length} is not equal to recordCount ${recordCount} * recordSize ${recordSize}`,
-            );
-        }
-        this._countOfRecords = recordCount;
-        this._recordSize = recordSize;
-        this._recordData = Buffer.alloc(this.recordDataSize);
+    setRecordData(buffer: Buffer) {
+        this._recordData = Buffer.alloc(buffer.length);
         buffer.copy(this._recordData);
     }
 
     override serialize() {
-        this._header._gameMessageLength = 8 + this.recordDataSize; // gameMessageLength + countOfRecords + recordData
-        this._header.length = this._header._gameMessageLength + 4; // header + gameMessageLength
-        const buffer = Buffer.alloc(this._header._size + this.recordDataSize);
+        this._header._gameMessageLength = 4 + this._recordData.length;
+        this._header.length = this._header._gameMessageLength + 4; 
+        const buffer = Buffer.alloc(this._header.length)    ;
         let offset = 0; // offset is 0
         this._header.serialize().copy(buffer);
-        offset += this._header._size; // offset is 4
+        offset += this._header.size(); // offset is 8
 
-        buffer.writeInt32BE(this._countOfRecords, 4);
-        this._recordData.copy(buffer, 8);
+
+
+        this._recordData.copy(buffer, offset);
         return buffer;
     }
 

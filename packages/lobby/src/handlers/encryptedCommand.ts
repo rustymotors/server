@@ -6,9 +6,11 @@ import {
 } from "../../../shared/State.js";
 import { ServerError } from "../../../shared/errors/ServerError.js";
 import {
+    GameMessage,
     LegacyMessage,
     MessageBuffer,
     SerializedBuffer,
+    serializeString,
 } from "../../../shared/messageFactory.js";
 import { UserInfo } from "../UserInfoMessage.js";
 import { getServerConfiguration } from "../../../shared/Configuration.js";
@@ -298,35 +300,49 @@ function handleGetMiniUserList({
     log.debug("Handling NPS_GET_MINI_USER_LIST");
     log.debug(`Received command: ${message._doSerialize().toString("hex")}`);
 
-    const packetContent = Buffer.alloc(12);
+    const responseMessage = new GameMessage(0x229);
 
+    // const packetSize = 8 + 4 + 4 +4;
+    const packetSize = 108;
+
+    const numChannels = 1;
+
+    const packetContent = Buffer.alloc(packetSize);
+
+    let offset = 0;
     try {
-        // Add the response code
-        packetContent.writeUInt16BE(0x0229, 0);
-
-        let offset = 2; // offset is 2
-
-        packetContent.writeUInt16BE(12, offset);
-        offset += 2; // offset is 4
-
-        packetContent.writeUInt32BE(17, offset);
+        packetContent.writeUInt32BE(17, offset); // commId
         offset += 4; // offset is 8
 
+        packetContent.writeUInt32BE(1, offset); // numUsers
+        // offset += 4; // offset is 12
+
+        // Add count of users
         packetContent.writeUInt32BE(1, offset);
+        offset += 4; // offset is 16
+
+        packetContent.writeUInt32BE(user1._userId, offset);
+        offset += 4; // offset is 40
+
+        offset = serializeString(user1._userName, packetContent, offset);
+        // offset += 64; // offset is 104
 
         // Build the packet
         const gameMessage = MessageBuffer.createGameMessage(
             0x1101,
             packetContent,
         );
+        const gameMessageBuffer = gameMessage.serialize();
+        const legacyMessage = new LegacyMessage();
+        legacyMessage._doDeserialize(gameMessageBuffer);
 
         log.debug(
-            `Sending response: ${gameMessage.serialize().toString("hex")}`,
+            `Sending response: ${legacyMessage.serialize().toString("hex")}`,
         );
 
         return {
             connectionId,
-            message: gameMessage,
+            message: legacyMessage,
         };
     } catch (error) {
         throw ServerError.fromUnknown(

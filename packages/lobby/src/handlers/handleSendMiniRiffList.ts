@@ -46,7 +46,7 @@ export function handleSendMiniRiffList({
 
         // loop through the channels
         for (const channel of channels) {
-            offset += serializeString(channel.name, packetContent, offset);
+            offset = serializeString(channel.name, packetContent, offset);
 
             packetContent.writeUInt32BE(channel.id, offset);
             offset += 4;
