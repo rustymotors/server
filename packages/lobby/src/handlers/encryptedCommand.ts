@@ -261,13 +261,13 @@ export async function handleEncryptedNPSCommand({
     };
 }
 
-export const channelRecordSize = 42;
+export const channelRecordSize = 40;
 
 export const channels = [
     {
         id: 0,
         name: "Channel 1",
-        population: 0,
+        population: 1,
     },
 ];
 

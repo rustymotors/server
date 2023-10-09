@@ -32,24 +32,24 @@ export function handleSendMiniRiffList({
 
     const resultSize = 4 + channelRecordSize * channels.length;
 
-    const packetContent = Buffer.alloc(resultSize + 6);
+    const packetContent = Buffer.alloc(resultSize - 4);
 
     try {
         // Add the response code
         packetContent.writeUInt16BE(1028, 0);
-        let offset = 2;
-        packetContent.writeUInt16BE(resultSize, offset);
-        offset += 2;
+        let offset = 2; // offset is 2
+        packetContent.writeUInt16BE(resultSize - 4, offset);
+        offset += 2; // offset is 4
 
-        packetContent.writeUInt16BE(channels.length, offset);
-        offset += 2;
+        packetContent.writeUInt32BE(channels.length, offset);
+        offset += 4; // offset is 8
 
         // loop through the channels
         for (const channel of channels) {
             offset += serializeString(channel.name, packetContent, offset);
 
-            packetContent.writeUInt16BE(channel.id, offset);
-            offset += 2;
+            packetContent.writeUInt32BE(channel.id, offset);
+            offset += 4;
             packetContent.writeUInt16BE(channel.population, offset);
             offset += 2;
         }

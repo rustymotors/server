@@ -106,6 +106,7 @@ export function deserializeString(buffer: Buffer): string {
 }
 
 /**
+ * Serializes a string with length prefix
  * @param {string} string
  * @param {Buffer} targetBuffer
  * @param {number} offset
