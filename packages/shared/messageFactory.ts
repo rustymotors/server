@@ -538,8 +538,6 @@ export class GameMessage extends SerializedBuffer {
         this._header.serialize().copy(buffer);
         offset += this._header.size(); // offset is 8
 
-
-
         this._recordData.copy(buffer, offset);
         return buffer;
     }
