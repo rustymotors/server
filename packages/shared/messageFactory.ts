@@ -127,6 +127,28 @@ export function serializeString(
 }
 
 /**
+ * Serializes a raw string without length prefix
+ * @param {string} string
+ * @param {Buffer} targetBuffer
+ * @param {number} offset
+ * @param {number} length
+ * @returns {number}
+ */
+export function serializeStringRaw(
+    string: string,
+    targetBuffer: Buffer,
+    offset: number,
+    length: number,
+): number {
+    const buffer = Buffer.alloc(length);
+    const stringToWrite = string + "\0";
+    buffer.write(stringToWrite, offset, string.length, "utf8");
+    buffer.copy(targetBuffer, offset);
+    offset += stringToWrite.length;
+    return offset;
+}
+
+/**
  * A legacy header is a 4 byte header with the following fields:
  * - 2 bytes - id
  * - 2 bytes - length
@@ -181,6 +203,38 @@ class legacyHeader extends SerializableMixin(AbstractSerializable) {
 
     static override get Size() {
         return 4;
+    }
+}
+
+/**
+ * A game message header is a 8 byte header with the following fields:
+ * - 2 bytes - id
+ * - 2 bytes - length
+ * - 2 bytes - gameMessageId
+ * - 2 bytes - gameMessageLength
+*/
+export class GameMessageHeader extends legacyHeader {
+    _gameMessageId: number; // 2 bytes
+    _gameMessageLength: number; // 2 bytes
+
+    constructor(gameMessageId: number) {
+        super();
+        this.id = 0x1101; // 2 bytes
+        this._gameMessageId = gameMessageId; // 2 bytes
+        this._gameMessageLength = 0; // 2 bytes
+    }
+
+    size() {
+        return 8;
+    }
+
+    serialize() {
+        const buffer = Buffer.alloc(8);
+        buffer.writeInt16BE(this._gameMessageId, 0);
+        buffer.writeInt16BE(this._gameMessageLength, 2);
+        buffer.writeInt16BE(this.id, 4);
+        buffer.writeInt16BE(this.length, 6);
+        return buffer;
     }
 }
 
@@ -458,6 +512,53 @@ export class SerializedBuffer extends SerializableMixin(AbstractSerializable) {
 
     size() {
         return this.data.length;
+    }
+}
+
+export class GameMessage extends SerializedBuffer {
+    _header: GameMessageHeader;
+    _countOfRecords: number; // 4 bytes
+    _recordSize: number;
+    _recordData: Buffer;
+    constructor(gameMessageId: number) {
+        super();
+        this._header = new GameMessageHeader(gameMessageId);
+        this._countOfRecords = 0; // 4 bytes
+        this._recordSize = 0;
+        this._recordData = Buffer.alloc(this.recordDataSize);
+    }
+
+    get recordDataSize() {
+        return this._recordSize * this._countOfRecords;
+    }
+
+    setRecordData(buffer: Buffer, recordCount: number, recordSize: number) {
+        if (buffer.length !== recordCount * recordSize) {
+            throw new ServerError(
+                `Buffer length ${buffer.length} is not equal to recordCount ${recordCount} * recordSize ${recordSize}`,
+            );
+        }
+        this._countOfRecords = recordCount;
+        this._recordSize = recordSize;
+        this._recordData = Buffer.alloc(this.recordDataSize);
+        buffer.copy(this._recordData);
+    }
+
+    override serialize() {
+        this._header._gameMessageLength = 8 + this.recordDataSize; // gameMessageLength + countOfRecords + recordData
+        this._header.length = this._header._gameMessageLength + 4; // header + gameMessageLength
+        const buffer = Buffer.alloc(this._header._size + this.recordDataSize);
+        let offset = 0; // offset is 0
+        this._header.serialize().copy(buffer);
+        offset += this._header._size; // offset is 4
+
+        buffer.writeInt32BE(this._countOfRecords, 4);
+        this._recordData.copy(buffer, 8);
+        return buffer;
+    }
+
+    override toString() {
+        return `GameMessage: ${this.serialize().toString("hex")})}`;
     }
 }
 
