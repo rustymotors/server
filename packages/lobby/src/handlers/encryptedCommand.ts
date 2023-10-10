@@ -6,6 +6,7 @@ import {
 } from "../../../shared/State.js";
 import { ServerError } from "../../../shared/errors/ServerError.js";
 import {
+    GameMessage,
     LegacyMessage,
     MessageBuffer,
     SerializedBuffer,
@@ -299,19 +300,15 @@ function handleGetMiniUserList({
     log.debug("Handling NPS_GET_MINI_USER_LIST");
     log.debug(`Received command: ${message._doSerialize().toString("hex")}`);
 
-    const packetSize = 50
-    
-    const packetContent = Buffer.alloc(packetSize);
+    const outgoingGameMessage = new GameMessage(0x229);
 
+    const resultSize = (channelRecordSize * channels.length) - 12;
+
+    const packetContent = Buffer.alloc(resultSize);
+
+    let offset = 0;
     try {
         // Add the response code
-        packetContent.writeUInt16BE(0x0229, 0);
-
-        let offset = 2; // offset is 2
-
-        packetContent.writeUInt16BE(packetSize, offset);
-        offset += 2; // offset is 4
-
         packetContent.writeUInt32BE(17, offset);
         offset += 4; // offset is 8
 
@@ -329,19 +326,21 @@ function handleGetMiniUserList({
         // write the persona name
         offset = serializeString(user1._userName, packetContent, offset);
 
+        outgoingGameMessage.setRecordData(packetContent);
+
         // Build the packet
-        const gameMessage = MessageBuffer.createGameMessage(
-            0x1101,
-            packetContent,
-        );
+        const packetResult = new LegacyMessage();
+        packetResult._doDeserialize(outgoingGameMessage.serialize());
 
         log.debug(
-            `Sending response: ${gameMessage.serialize().toString("hex")}`,
+            `Sending response: ${packetResult.serialize().toString("hex")}`,
         );
+
+
 
         return {
             connectionId,
-            message: gameMessage,
+            message: packetResult,
         };
     } catch (error) {
         throw ServerError.fromUnknown(
