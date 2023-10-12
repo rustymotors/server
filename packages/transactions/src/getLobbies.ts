@@ -1,6 +1,7 @@
 import { LobbyInfo, LobbyMessage } from "./LobbyMessage.js";
 import { ServerMessage } from "../../shared/messageFactory.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import { EntryFeePurseMessage, PurseEntry } from "./EntryFeePurseMessage.js";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -17,9 +18,9 @@ async function _getLobbies({
     log.debug(`Received Message: ${packet.toString()}`);
 
     // Create new response packet
-    const responsePacket = new ServerMessage();
-    responsePacket._header.sequence = packet._header.sequence;
-    responsePacket._header.flags = 8;
+    const lobbiesResponsePacket = new ServerMessage();
+    lobbiesResponsePacket._header.sequence = packet._header.sequence;
+    lobbiesResponsePacket._header.flags = 8;
 
     const lobbyResponse = new LobbyMessage();
     lobbyResponse._msgNo = 325;
@@ -38,9 +39,31 @@ async function _getLobbies({
         `Logging LobbyMessage: ${lobbyResponse.serialize().toString("hex")}`,
     );
 
-    responsePacket.setBuffer(lobbyResponse.serialize());
+    lobbiesResponsePacket.setBuffer(lobbyResponse.serialize());
 
-    return { connectionId, messages: [responsePacket] };
+    // Handle purse entries
+    const purseEntry = new PurseEntry();
+    purseEntry._entryFee = 100;
+    purseEntry._purse = 1000;
+
+    const perseEntryResponse = new EntryFeePurseMessage();
+    perseEntryResponse._msgNo = 408;
+    perseEntryResponse._shouldExpectMoreMessages = false;
+    perseEntryResponse.addEntry(purseEntry);
+
+    log.debug(
+        `Logging EntryFeePurseMessage: ${perseEntryResponse.serialize().toString(
+            "hex",
+        )}`,
+    );
+
+    const perseEntriesResponsePacket = new ServerMessage();
+    perseEntriesResponsePacket._header.sequence = packet._header.sequence;
+    perseEntriesResponsePacket._header.flags = 8;
+
+    perseEntriesResponsePacket.setBuffer(perseEntryResponse.serialize());
+
+    return { connectionId, messages: [lobbiesResponsePacket, perseEntriesResponsePacket] };
 }
 /**
  * @param {MessageHandlerArgs} args

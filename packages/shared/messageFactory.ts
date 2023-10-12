@@ -140,10 +140,8 @@ export function serializeStringRaw(
     offset: number,
     length: number,
 ): number {
-    const buffer = Buffer.alloc(length);
-    const stringToWrite = string + "\0";
-    buffer.write(stringToWrite, offset, string.length, "utf8");
-    buffer.copy(targetBuffer, offset);
+    const stringToWrite = string
+    targetBuffer.write(stringToWrite, offset, string.length, "utf8");
     offset += stringToWrite.length;
     return offset;
 }
@@ -212,7 +210,7 @@ class legacyHeader extends SerializableMixin(AbstractSerializable) {
  * - 2 bytes - length
  * - 2 bytes - gameMessageId
  * - 2 bytes - gameMessageLength
-*/
+ */
 export class GameMessageHeader extends legacyHeader {
     _gameMessageId: number; // 2 bytes
     _gameMessageLength: number; // 2 bytes
@@ -532,8 +530,8 @@ export class GameMessage extends SerializedBuffer {
 
     override serialize() {
         this._header._gameMessageLength = 4 + this._recordData.length;
-        this._header.length = this._header._gameMessageLength + 4; 
-        const buffer = Buffer.alloc(this._header.length)    ;
+        this._header.length = this._header._gameMessageLength + 4;
+        const buffer = Buffer.alloc(this._header.length);
         let offset = 0; // offset is 0
         this._header.serialize().copy(buffer);
         offset += this._header.size(); // offset is 8

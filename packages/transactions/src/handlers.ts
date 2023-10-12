@@ -26,6 +26,9 @@ import { login } from "./login.js";
 import { trackingPing } from "./trackingPing.js";
 import { clientConnect } from "./clientConnect.js";
 import { getLobbies } from "./getLobbies.js";
+import { _getOwnedVehicles } from "./_getOwnedVehicles.js";
+import { PlayerInfoMessage } from "./PlayerInfoMessage.js";
+import { ServerError } from "../../shared/errors/ServerError.js";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -225,4 +228,40 @@ export const messageHandlers: MessageHandler[] = [
         name: "MC_GET_MCO_TUNABLES",
         handler: _getTunables,
     },
+    {
+        name: "MC_GET_OWNED_VEHICLES",
+        handler: _getOwnedVehicles,
+    },
+    {
+        name: "MC_GET_PLAYER_INFO",
+        handler: _getPlayerInfo,
+    },
 ];
+
+export async function _getPlayerInfo(
+    args: MessageHandlerArgs,
+): Promise<MessageHandlerResult> {
+    const getPlayerInfoMessage = new GenericRequestMessage();
+    getPlayerInfoMessage.deserialize(args.packet.data);
+
+    args.log.debug(`Received Message: ${getPlayerInfoMessage.toString()}`);
+
+    const playerId = getPlayerInfoMessage.data.readUInt32LE(0);
+    try {
+        const playerInfoMessage = new PlayerInfoMessage();
+        playerInfoMessage._msgNo = 108;
+        playerInfoMessage._playerId = playerId;
+        playerInfoMessage._playerName = "Drazi Crendraven";
+        playerInfoMessage._currentLevel = 1;
+
+        const responsePacket = new ServerMessage();
+        responsePacket._header.sequence = args.packet._header.sequence;
+        responsePacket._header.flags = 8;
+
+        responsePacket.setBuffer(playerInfoMessage.serialize());
+
+        return { connectionId: args.connectionId, messages: [responsePacket] };
+    } catch (error) {
+        throw ServerError.fromUnknown(error, "Error in _getPlayerInfo");
+    }
+}
