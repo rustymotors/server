@@ -18,20 +18,20 @@ There's a brief explanation of the thought process here [link](https://github.co
 
 ## Server Setup
 
-- See [server docs](./docs/server.md)
+-   See [server docs](./docs/server.md)
 
 ## Client Setup
 
-- See [client docs](./docs/client.md)
+-   See [client docs](./docs/client.md)
 
 ## Timeline
 
-- March 6, 2016     - Started
+-   March 6, 2016 - Started
 
-- October 12, 2023  - Connected to lobby
+-   October 12, 2023 - Connected to lobby
 
 ![img The first non-hacked image of the MCO lobby since it was shutdown](images/2012-10-12_lobby.png)
 
 ## Current Status
 
-- [TODO Issues](https://github.com/drazisil/mcos/labels/todo%20%3Aspiral_notepad%3A)
+-   [TODO Issues](https://github.com/drazisil/mcos/labels/todo%20%3Aspiral_notepad%3A)

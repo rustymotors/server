@@ -52,9 +52,9 @@ async function _getLobbies({
     perseEntryResponse.addEntry(purseEntry);
 
     log.debug(
-        `Logging EntryFeePurseMessage: ${perseEntryResponse.serialize().toString(
-            "hex",
-        )}`,
+        `Logging EntryFeePurseMessage: ${perseEntryResponse
+            .serialize()
+            .toString("hex")}`,
     );
 
     const perseEntriesResponsePacket = new ServerMessage();
@@ -63,7 +63,10 @@ async function _getLobbies({
 
     perseEntriesResponsePacket.setBuffer(perseEntryResponse.serialize());
 
-    return { connectionId, messages: [lobbiesResponsePacket, perseEntriesResponsePacket] };
+    return {
+        connectionId,
+        messages: [lobbiesResponsePacket, perseEntriesResponsePacket],
+    };
 }
 /**
  * @param {MessageHandlerArgs} args

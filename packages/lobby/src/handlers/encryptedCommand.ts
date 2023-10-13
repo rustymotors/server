@@ -302,7 +302,7 @@ function handleGetMiniUserList({
 
     const outgoingGameMessage = new GameMessage(0x229);
 
-    const resultSize = (channelRecordSize * channels.length) - 12;
+    const resultSize = channelRecordSize * channels.length - 12;
 
     const packetContent = Buffer.alloc(resultSize);
 
@@ -335,8 +335,6 @@ function handleGetMiniUserList({
         log.debug(
             `Sending response: ${packetResult.serialize().toString("hex")}`,
         );
-
-
 
         return {
             connectionId,

@@ -88,7 +88,7 @@ export class LoginInfoMessage extends LegacyMessage {
             offset = serializeString(this._idAddress, buffer, offset);
             offset += 4 + this._idAddress.length + 1;
             this._hashKey.copy(buffer, offset);
-            
+
             return buffer;
         } catch (error) {
             throw ServerError.fromUnknown(

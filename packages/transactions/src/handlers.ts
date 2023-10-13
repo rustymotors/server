@@ -30,7 +30,10 @@ import { _getOwnedVehicles } from "./_getOwnedVehicles.js";
 import { _getPlayerInfo } from "./_getPlayerInfo.js";
 import { _getPlayerPhysical } from "./_getPlayerPhysical.js";
 import { PartsAssemblyMessage } from "./PartsAssemblyMessage.js";
-import { fetchStateFromDatabase, findSessionByConnectionId } from "../../shared/State.js";
+import {
+    fetchStateFromDatabase,
+    findSessionByConnectionId,
+} from "../../shared/State.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
 
 /**
@@ -246,8 +249,7 @@ export const messageHandlers: MessageHandler[] = [
     {
         name: "MC_GET_OWNED_PARTS",
         handler: _getOwnedParts,
-    }
-
+    },
 ];
 
 export async function _getOwnedParts({

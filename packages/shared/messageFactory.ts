@@ -140,7 +140,7 @@ export function serializeStringRaw(
     offset: number,
     length: number,
 ): number {
-    const stringToWrite = string
+    const stringToWrite = string;
     targetBuffer.write(stringToWrite, offset, string.length, "utf8");
     offset += stringToWrite.length;
     return offset;

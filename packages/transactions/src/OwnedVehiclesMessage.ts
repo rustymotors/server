@@ -62,7 +62,7 @@ export class OwnedVehiclesMessage extends SerializedBuffer {
             offset += vehicleBuffer.length;
         }
 
-        return buffer;        
+        return buffer;
     }
 
     override toString() {
@@ -80,7 +80,7 @@ export class OwnedVehicle extends SerializedBuffer {
     }
 
     override size() {
-        return 8
+        return 8;
     }
 
     override serialize() {

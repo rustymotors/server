@@ -4,9 +4,8 @@ import { PlayerInfoMessage } from "./PlayerInfoMessage.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
-
 export async function _getPlayerInfo(
-    args: MessageHandlerArgs
+    args: MessageHandlerArgs,
 ): Promise<MessageHandlerResult> {
     const getPlayerInfoMessage = new GenericRequestMessage();
     getPlayerInfoMessage.deserialize(args.packet.data);

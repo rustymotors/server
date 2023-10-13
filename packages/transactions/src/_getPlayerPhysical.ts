@@ -3,9 +3,10 @@ import { ServerMessage } from "../../shared/messageFactory.js";
 import { PlayerPhysicalMessage } from "./PlayerPhysicalMessage.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
-
 export async function _getPlayerPhysical({
-    connectionId, packet, log,
+    connectionId,
+    packet,
+    log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
     const getPlayerPhysicalMessage = new GenericRequestMessage();
     getPlayerPhysicalMessage.deserialize(packet.data);

@@ -76,6 +76,6 @@ export class Part extends SerializedBuffer {
     }
 
     override toString() {
-        return `Part: partId=${this._partId} parentPartId=${this._parentPartId} brandedPartId=${this._brandedPartId} repairPrice=${this._repairPrice} junkPrice=${this._junkPrice} wear=${this._wear} attachmentPoint=${this._attachmentPoint} damage=${this._damage} retailPrice=${this._retailPrice} maxWear=${this._maxWear}`;    
+        return `Part: partId=${this._partId} parentPartId=${this._parentPartId} brandedPartId=${this._brandedPartId} repairPrice=${this._repairPrice} junkPrice=${this._junkPrice} wear=${this._wear} attachmentPoint=${this._attachmentPoint} damage=${this._damage} retailPrice=${this._retailPrice} maxWear=${this._maxWear}`;
     }
 }

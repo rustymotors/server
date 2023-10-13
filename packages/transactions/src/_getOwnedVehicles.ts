@@ -8,14 +8,16 @@ const vehicleList = [
         personId: 1,
         vehicleId: 1,
         brandedPartId: 113,
-    }
+    },
 ];
 
 export function getVehiclesForPerson(personId: number) {
     return vehicleList.filter((vehicle) => vehicle.personId === personId);
 }
 
-export async function _getOwnedVehicles(args: MessageHandlerArgs): Promise<MessageHandlerResult> {
+export async function _getOwnedVehicles(
+    args: MessageHandlerArgs,
+): Promise<MessageHandlerResult> {
     const getOwnedVehiclesMessage = new GenericRequestMessage();
     getOwnedVehiclesMessage.deserialize(args.packet.data);
 

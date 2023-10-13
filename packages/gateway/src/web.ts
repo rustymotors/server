@@ -18,7 +18,11 @@ import { ServerError } from "../../shared/errors/ServerError.js";
 import { getPatchServer } from "../../patch/src/PatchServer.js";
 import { generateShardList } from "../../shard/src/ShardServer.js";
 import { getServerConfiguration } from "../../shared/Configuration.js";
-import { handleGetCert, handleGetKey, handleGetRegistry } from "../../shard/src/index.js";
+import {
+    handleGetCert,
+    handleGetKey,
+    handleGetRegistry,
+} from "../../shard/src/index.js";
 
 /**
  * Add web routes to the web server

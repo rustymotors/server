@@ -33,7 +33,7 @@ export function handleSendMiniRiffList({
 
     const outgoingGameMessage = new GameMessage(1028);
 
-    const resultSize = (channelRecordSize * channels.length) - 12;
+    const resultSize = channelRecordSize * channels.length - 12;
 
     const packetContent = Buffer.alloc(resultSize);
 
