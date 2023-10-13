@@ -56,6 +56,8 @@ function _MSG_STRING(messageID: number): string {
         { id: 172, name: "MC_GET_OWNED_VEHICLES" }, // 0xac"}
         { id: 173, name: "MC_OWNED_VEHICLES_LIST" }, // 0xad"}
         { id: 213, name: "MC_LOGIN_COMPLETE" }, // 0xd5
+        { id: 264, name: "MC_GET_PLAYER_PHYSICAL" }, // 0x108
+        { id: 265, name: "MC_PLAYER_PHYSICAL_INFO" }, // 0x109
         { id: 363, name: "MC_GET_GAME_URLS" }, // 0x16b"}
         { id: 266, name: "MC_UPDATE_PLAYER_PHYSICAL" }, // 0x10a
         { id: 322, name: "MC_GET_ARCADE_CARS" }, // 0x142"}

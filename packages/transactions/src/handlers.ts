@@ -27,8 +27,8 @@ import { trackingPing } from "./trackingPing.js";
 import { clientConnect } from "./clientConnect.js";
 import { getLobbies } from "./getLobbies.js";
 import { _getOwnedVehicles } from "./_getOwnedVehicles.js";
-import { PlayerInfoMessage } from "./PlayerInfoMessage.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { _getPlayerInfo } from "./_getPlayerInfo.js";
+import { PlayerPhysicalMessage } from "./PlayerPhysicalMessage.js";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -236,32 +236,33 @@ export const messageHandlers: MessageHandler[] = [
         name: "MC_GET_PLAYER_INFO",
         handler: _getPlayerInfo,
     },
+    {
+        name: "MC_GET_PLAYER_PHYSICAL",
+        handler: _getPlayerPhysical,
+    }
 ];
 
-export async function _getPlayerInfo(
-    args: MessageHandlerArgs,
-): Promise<MessageHandlerResult> {
-    const getPlayerInfoMessage = new GenericRequestMessage();
-    getPlayerInfoMessage.deserialize(args.packet.data);
+export async function _getPlayerPhysical({
+    connectionId,
+    packet,
+    log,
+}: MessageHandlerArgs): Promise<MessageHandlerResult> {
+    const getPlayerPhysicalMessage = new GenericRequestMessage();
+    getPlayerPhysicalMessage.deserialize(packet.data);
 
-    args.log.debug(`Received Message: ${getPlayerInfoMessage.toString()}`);
+    log.debug(`Received Message: ${getPlayerPhysicalMessage.toString()}`);
 
-    const playerId = getPlayerInfoMessage.data.readUInt32LE(0);
-    try {
-        const playerInfoMessage = new PlayerInfoMessage();
-        playerInfoMessage._msgNo = 108;
-        playerInfoMessage._playerId = playerId;
-        playerInfoMessage._playerName = "Drazi Crendraven";
-        playerInfoMessage._currentLevel = 1;
+    const playerId = getPlayerPhysicalMessage.data.readUInt32LE(0);
 
-        const responsePacket = new ServerMessage();
-        responsePacket._header.sequence = args.packet._header.sequence;
-        responsePacket._header.flags = 8;
+    const playerPhysicalMessage = new PlayerPhysicalMessage();
+    playerPhysicalMessage._msgNo = 265;
+    playerPhysicalMessage._playerId = playerId;
 
-        responsePacket.setBuffer(playerInfoMessage.serialize());
+    const responsePacket = new ServerMessage();
+    responsePacket._header.sequence = packet._header.sequence;
+    responsePacket._header.flags = 8;
 
-        return { connectionId: args.connectionId, messages: [responsePacket] };
-    } catch (error) {
-        throw ServerError.fromUnknown(error, "Error in _getPlayerInfo");
-    }
+    responsePacket.setBuffer(playerPhysicalMessage.serialize());
+
+    return { connectionId, messages: [responsePacket] };
 }
