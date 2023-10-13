@@ -2,7 +2,7 @@ import { IncomingMessage, ServerResponse } from "node:http";
 import { getServerLogger } from "../../shared/log.js";
 import { Buffer } from "node:buffer";
 
-const CastanetResponse = {
+export const CastanetResponse = {
     body: Buffer.from("cafebeef00000000000003", "hex"),
     header: {
         type: "Content-Type",

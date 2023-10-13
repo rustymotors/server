@@ -6,9 +6,11 @@ import {
 } from "../../../shared/State.js";
 import { ServerError } from "../../../shared/errors/ServerError.js";
 import {
+    GameMessage,
     LegacyMessage,
     MessageBuffer,
     SerializedBuffer,
+    serializeString,
 } from "../../../shared/messageFactory.js";
 import { UserInfo } from "../UserInfoMessage.js";
 import { getServerConfiguration } from "../../../shared/Configuration.js";
@@ -261,13 +263,13 @@ export async function handleEncryptedNPSCommand({
     };
 }
 
-export const channelRecordSize = 42;
+export const channelRecordSize = 40;
 
 export const channels = [
     {
         id: 0,
         name: "Channel 1",
-        population: 0,
+        population: 1,
     },
 ];
 
@@ -298,35 +300,45 @@ function handleGetMiniUserList({
     log.debug("Handling NPS_GET_MINI_USER_LIST");
     log.debug(`Received command: ${message._doSerialize().toString("hex")}`);
 
-    const packetContent = Buffer.alloc(12);
+    const outgoingGameMessage = new GameMessage(0x229);
 
+    const resultSize = channelRecordSize * channels.length - 12;
+
+    const packetContent = Buffer.alloc(resultSize);
+
+    let offset = 0;
     try {
         // Add the response code
-        packetContent.writeUInt16BE(0x0229, 0);
-
-        let offset = 2; // offset is 2
-
-        packetContent.writeUInt16BE(12, offset);
-        offset += 2; // offset is 4
-
         packetContent.writeUInt32BE(17, offset);
         offset += 4; // offset is 8
 
         packetContent.writeUInt32BE(1, offset);
+        offset += 4; // offset is 12
+
+        // Write the count of users
+        packetContent.writeUInt32BE(1, offset);
+        offset += 4; // offset is 16
+
+        // write the persona id
+        packetContent.writeUInt32BE(user1._userId, offset);
+        offset += 4; // offset is 20
+
+        // write the persona name
+        serializeString(user1._userName, packetContent, offset);
+
+        outgoingGameMessage.setRecordData(packetContent);
 
         // Build the packet
-        const gameMessage = MessageBuffer.createGameMessage(
-            0x1101,
-            packetContent,
-        );
+        const packetResult = new LegacyMessage();
+        packetResult._doDeserialize(outgoingGameMessage.serialize());
 
         log.debug(
-            `Sending response: ${gameMessage.serialize().toString("hex")}`,
+            `Sending response: ${packetResult.serialize().toString("hex")}`,
         );
 
         return {
             connectionId,
-            message: gameMessage,
+            message: packetResult,
         };
     } catch (error) {
         throw ServerError.fromUnknown(

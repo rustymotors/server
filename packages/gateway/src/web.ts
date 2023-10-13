@@ -18,6 +18,11 @@ import { ServerError } from "../../shared/errors/ServerError.js";
 import { getPatchServer } from "../../patch/src/PatchServer.js";
 import { generateShardList } from "../../shard/src/ShardServer.js";
 import { getServerConfiguration } from "../../shared/Configuration.js";
+import {
+    handleGetCert,
+    handleGetKey,
+    handleGetRegistry,
+} from "../../shard/src/index.js";
 
 /**
  * Add web routes to the web server
@@ -62,14 +67,26 @@ export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
     });
 
     webServer.get("/cert", (_request, reply) => {
-        return reply.send("Hello, world!");
+        const config = getServerConfiguration({});
+        if (typeof config.host === "undefined") {
+            throw new ServerError("No host defined in config");
+        }
+        return reply.send(handleGetCert(config));
     });
 
     webServer.get("/key", (_request, reply) => {
-        return reply.send("Hello, world!");
+        const config = getServerConfiguration({});
+        if (typeof config.host === "undefined") {
+            throw new ServerError("No host defined in config");
+        }
+        return reply.send(handleGetKey(config));
     });
 
     webServer.get("/registry", (_request, reply) => {
-        return reply.send("Hello, world!");
+        const config = getServerConfiguration({});
+        if (typeof config.host === "undefined") {
+            throw new ServerError("No host defined in config");
+        }
+        return reply.send(handleGetRegistry(config));
     });
 }

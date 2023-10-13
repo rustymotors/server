@@ -122,7 +122,7 @@ export class PersonaRecord {
             offset += 4; // offset = 18
             serializeString(this.personaName).copy(buffer, offset); // 34 - Known to be correct
             // offset = 52
-            
+
             // buffer.writeUInt32BE(this.serverDataId, offset); // 4
             // offset += 4; // offset = 56
             // buffer.writeUInt32BE(this.createDate, offset); // 4

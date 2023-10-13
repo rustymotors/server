@@ -106,6 +106,7 @@ export function deserializeString(buffer: Buffer): string {
 }
 
 /**
+ * Serializes a string with length prefix
  * @param {string} string
  * @param {Buffer} targetBuffer
  * @param {number} offset
@@ -122,6 +123,26 @@ export function serializeString(
     buffer.write(stringToWrite, 4, stringToWrite.length, "utf8");
     buffer.copy(targetBuffer, offset);
     offset += buffer.length;
+    return offset;
+}
+
+/**
+ * Serializes a raw string without length prefix
+ * @param {string} string
+ * @param {Buffer} targetBuffer
+ * @param {number} offset
+ * @param {number} length
+ * @returns {number}
+ */
+export function serializeStringRaw(
+    string: string,
+    targetBuffer: Buffer,
+    offset: number,
+    length: number,
+): number {
+    const stringToWrite = string;
+    targetBuffer.write(stringToWrite, offset, string.length, "utf8");
+    offset += stringToWrite.length;
     return offset;
 }
 
@@ -180,6 +201,39 @@ class legacyHeader extends SerializableMixin(AbstractSerializable) {
 
     static override get Size() {
         return 4;
+    }
+}
+
+/**
+ * A game message header is a 8 byte header with the following fields:
+ * - 2 bytes - id
+ * - 2 bytes - length
+ * - 2 bytes - gameMessageId
+ * - 2 bytes - gameMessageLength
+ */
+export class GameMessageHeader extends legacyHeader {
+    _gameMessageId: number; // 2 bytes
+    _gameMessageLength: number; // 2 bytes
+
+    constructor(gameMessageId: number) {
+        super();
+        this._size = 8;
+        this.id = 0x1101; // 2 bytes
+        this._gameMessageId = gameMessageId; // 2 bytes
+        this._gameMessageLength = 0; // 2 bytes
+    }
+
+    size() {
+        return 8;
+    }
+
+    serialize() {
+        const buffer = Buffer.alloc(8);
+        buffer.writeInt16BE(this.id, 0);
+        buffer.writeInt16BE(this.length, 2);
+        buffer.writeInt16BE(this._gameMessageId, 4);
+        buffer.writeInt16BE(this._gameMessageLength, 6);
+        return buffer;
     }
 }
 
@@ -457,6 +511,37 @@ export class SerializedBuffer extends SerializableMixin(AbstractSerializable) {
 
     size() {
         return this.data.length;
+    }
+}
+
+export class GameMessage extends SerializedBuffer {
+    _header: GameMessageHeader;
+    _recordData: Buffer;
+    constructor(gameMessageId: number) {
+        super();
+        this._header = new GameMessageHeader(gameMessageId);
+        this._recordData = Buffer.alloc(0);
+    }
+
+    setRecordData(buffer: Buffer) {
+        this._recordData = Buffer.alloc(buffer.length);
+        buffer.copy(this._recordData);
+    }
+
+    override serialize() {
+        this._header._gameMessageLength = 4 + this._recordData.length;
+        this._header.length = this._header._gameMessageLength + 4;
+        const buffer = Buffer.alloc(this._header.length);
+        let offset = 0; // offset is 0
+        this._header.serialize().copy(buffer);
+        offset += this._header.size(); // offset is 8
+
+        this._recordData.copy(buffer, offset);
+        return buffer;
+    }
+
+    override toString() {
+        return `GameMessage: ${this.serialize().toString("hex")})}`;
     }
 }
 

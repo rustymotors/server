@@ -3,7 +3,9 @@ import { TClientConnectMessage } from "./TClientConnectMessage.js";
 import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
 import {
     McosEncryption,
+    McosSession,
     addEncryption,
+    addSession,
     fetchStateFromDatabase,
     getEncryption,
 } from "../../shared/State.js";
@@ -69,7 +71,14 @@ export async function clientConnect({
         dataEncryptionPair: newDataEncryptionPair,
     });
 
-    addEncryption(state, newEncryption).save();
+    const updatedState = addEncryption(state, newEncryption);
+
+    const session = new McosSession({
+        connectionId,
+        gameId: newMessage._personaId,
+    });
+
+    addSession(updatedState, session).save();
 
     const personaId = newMessage._personaId;
 

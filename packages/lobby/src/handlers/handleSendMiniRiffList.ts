@@ -1,6 +1,7 @@
 import { getServerLogger } from "../../../shared/log.js";
 import { ServerError } from "../../../shared/errors/ServerError.js";
 import {
+    GameMessage,
     LegacyMessage,
     serializeString,
 } from "../../../shared/messageFactory.js";
@@ -30,35 +31,32 @@ export function handleSendMiniRiffList({
     log.debug("Handling NPS_SEND_MINI_RIFF_LIST");
     log.debug(`Received command: ${message._doSerialize().toString("hex")}`);
 
-    const resultSize = 4 + channelRecordSize * channels.length;
+    const outgoingGameMessage = new GameMessage(1028);
 
-    const packetContent = Buffer.alloc(resultSize + 6);
+    const resultSize = channelRecordSize * channels.length - 12;
 
+    const packetContent = Buffer.alloc(resultSize);
+
+    let offset = 0;
     try {
-        // Add the response code
-        packetContent.writeUInt16BE(1028, 0);
-        let offset = 2;
-        packetContent.writeUInt16BE(resultSize, offset);
-        offset += 2;
-
-        packetContent.writeUInt16BE(channels.length, offset);
-        offset += 2;
+        packetContent.writeUInt32BE(channels.length, offset);
+        offset += 4; // offset is 8
 
         // loop through the channels
         for (const channel of channels) {
-            offset += serializeString(channel.name, packetContent, offset);
+            offset = serializeString(channel.name, packetContent, offset);
 
-            packetContent.writeUInt16BE(channel.id, offset);
-            offset += 2;
+            packetContent.writeUInt32BE(channel.id, offset);
+            offset += 4;
             packetContent.writeUInt16BE(channel.population, offset);
             offset += 2;
         }
 
+        outgoingGameMessage.setRecordData(packetContent);
+
         // Build the packet
         const packetResult = new LegacyMessage();
-        packetResult._header.id = 4353;
-        packetResult._header.length = resultSize;
-        packetResult.setBuffer(packetContent);
+        packetResult._doDeserialize(outgoingGameMessage.serialize());
 
         log.debug(
             `Sending response: ${packetResult.serialize().toString("hex")}`,

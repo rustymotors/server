@@ -26,6 +26,15 @@ import { login } from "./login.js";
 import { trackingPing } from "./trackingPing.js";
 import { clientConnect } from "./clientConnect.js";
 import { getLobbies } from "./getLobbies.js";
+import { _getOwnedVehicles } from "./_getOwnedVehicles.js";
+import { _getPlayerInfo } from "./_getPlayerInfo.js";
+import { _getPlayerPhysical } from "./_getPlayerPhysical.js";
+import { PartsAssemblyMessage } from "./PartsAssemblyMessage.js";
+import {
+    fetchStateFromDatabase,
+    findSessionByConnectionId,
+} from "../../shared/State.js";
+import { ServerError } from "../../shared/errors/ServerError.js";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -225,4 +234,50 @@ export const messageHandlers: MessageHandler[] = [
         name: "MC_GET_MCO_TUNABLES",
         handler: _getTunables,
     },
+    {
+        name: "MC_GET_OWNED_VEHICLES",
+        handler: _getOwnedVehicles,
+    },
+    {
+        name: "MC_GET_PLAYER_INFO",
+        handler: _getPlayerInfo,
+    },
+    {
+        name: "MC_GET_PLAYER_PHYSICAL",
+        handler: _getPlayerPhysical,
+    },
+    {
+        name: "MC_GET_OWNED_PARTS",
+        handler: _getOwnedParts,
+    },
 ];
+
+export async function _getOwnedParts({
+    connectionId,
+    packet,
+    log,
+}: MessageHandlerArgs): Promise<MessageHandlerResult> {
+    const getOwnedPartsMessage = new GenericRequestMessage();
+    getOwnedPartsMessage.deserialize(packet.data);
+
+    log.debug(`Received Message: ${getOwnedPartsMessage.toString()}`);
+
+    const state = fetchStateFromDatabase();
+
+    const session = findSessionByConnectionId(state, connectionId);
+
+    if (!session) {
+        throw new ServerError("Session not found");
+    }
+
+    const ownedPartsMessage = new PartsAssemblyMessage(session.gameId);
+    ownedPartsMessage._msgNo = 175;
+
+    const responsePacket = new ServerMessage();
+    responsePacket._header.sequence = packet._header.sequence;
+    responsePacket._header.flags = 8;
+
+    responsePacket.setBuffer(ownedPartsMessage.serialize());
+
+    return { connectionId, messages: [responsePacket] };
+}

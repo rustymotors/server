@@ -124,36 +124,24 @@ export class McosEncryption {
  */
 export class McosSession {
     connectionId: string;
-    username: string;
-    gameId: string;
-    encryption: McosEncryption;
+    gameId: number;
     /**
      * Create a new session.
      *
      * @param {object} args
      * @param {string} args.connectionId A unique identifier for this session.
-     * @param {string} args.username The username of the user who owns this
+     * @param {number} args.username The username of the user who owns this
      *                              session.
-     * @param {string} args.gameId The id of the game profile that this session
-     *                            is for.
-     * @param {McosEncryption} args.encryption The encryption settings for this
-     *                                        session.
      */
     constructor({
         connectionId,
-        username,
         gameId,
-        encryption,
     }: {
         connectionId: string;
-        username: string;
-        gameId: string;
-        encryption: McosEncryption;
+        gameId: number;
     }) {
         this.connectionId = connectionId;
-        this.username = username;
         this.gameId = gameId;
-        this.encryption = encryption;
     }
 }
 
@@ -584,6 +572,13 @@ export function removeSession(state: State, connectionId: string): State {
         ...state,
         sessions,
     };
+}
+
+export function findSessionByConnectionId(
+    state: State,
+    connectionId: string,
+): McosSession | undefined {
+    return state.sessions[connectionId];
 }
 
 /**

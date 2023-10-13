@@ -49,9 +49,16 @@ function _MSG_STRING(messageID: number): string {
     const messageIds = [
         { id: 105, name: "MC_LOGIN" }, // 0x69
         { id: 106, name: "MC_LOGOUT" }, // 0x6a
+        { id: 108, name: "MC_GET_PLAYER_INFO" }, // 0x6c
         { id: 109, name: "MC_SET_OPTIONS" }, // 0x6d
+        { id: 122, name: "MC_PLAYER_INFO" }, // 0x7a"}
         { id: 141, name: "MC_STOCK_CAR_INFO" }, // 0x8d
+        { id: 172, name: "MC_GET_OWNED_VEHICLES" }, // 0xac"}
+        { id: 173, name: "MC_OWNED_VEHICLES_LIST" }, // 0xad"}
+        { id: 174, name: "MC_GET_OWNED_PARTS" }, // 0xae"}
         { id: 213, name: "MC_LOGIN_COMPLETE" }, // 0xd5
+        { id: 264, name: "MC_GET_PLAYER_PHYSICAL" }, // 0x108
+        { id: 265, name: "MC_PLAYER_PHYSICAL_INFO" }, // 0x109
         { id: 363, name: "MC_GET_GAME_URLS" }, // 0x16b"}
         { id: 266, name: "MC_UPDATE_PLAYER_PHYSICAL" }, // 0x10a
         { id: 322, name: "MC_GET_ARCADE_CARS" }, // 0x142"}
