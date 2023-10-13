@@ -55,6 +55,7 @@ function _MSG_STRING(messageID: number): string {
         { id: 141, name: "MC_STOCK_CAR_INFO" }, // 0x8d
         { id: 172, name: "MC_GET_OWNED_VEHICLES" }, // 0xac"}
         { id: 173, name: "MC_OWNED_VEHICLES_LIST" }, // 0xad"}
+        { id: 174, name: "MC_GET_OWNED_PARTS" }, // 0xae"}
         { id: 213, name: "MC_LOGIN_COMPLETE" }, // 0xd5
         { id: 264, name: "MC_GET_PLAYER_PHYSICAL" }, // 0x108
         { id: 265, name: "MC_PLAYER_PHYSICAL_INFO" }, // 0x109

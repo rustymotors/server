@@ -28,7 +28,10 @@ import { clientConnect } from "./clientConnect.js";
 import { getLobbies } from "./getLobbies.js";
 import { _getOwnedVehicles } from "./_getOwnedVehicles.js";
 import { _getPlayerInfo } from "./_getPlayerInfo.js";
-import { PlayerPhysicalMessage } from "./PlayerPhysicalMessage.js";
+import { _getPlayerPhysical } from "./_getPlayerPhysical.js";
+import { PartsAssemblyMessage } from "./PartsAssemblyMessage.js";
+import { fetchStateFromDatabase, findSessionByConnectionId } from "../../shared/State.js";
+import { ServerError } from "../../shared/errors/ServerError.js";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -239,30 +242,40 @@ export const messageHandlers: MessageHandler[] = [
     {
         name: "MC_GET_PLAYER_PHYSICAL",
         handler: _getPlayerPhysical,
+    },
+    {
+        name: "MC_GET_OWNED_PARTS",
+        handler: _getOwnedParts,
     }
+
 ];
 
-export async function _getPlayerPhysical({
+export async function _getOwnedParts({
     connectionId,
     packet,
     log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
-    const getPlayerPhysicalMessage = new GenericRequestMessage();
-    getPlayerPhysicalMessage.deserialize(packet.data);
+    const getOwnedPartsMessage = new GenericRequestMessage();
+    getOwnedPartsMessage.deserialize(packet.data);
 
-    log.debug(`Received Message: ${getPlayerPhysicalMessage.toString()}`);
+    log.debug(`Received Message: ${getOwnedPartsMessage.toString()}`);
 
-    const playerId = getPlayerPhysicalMessage.data.readUInt32LE(0);
+    const state = fetchStateFromDatabase();
 
-    const playerPhysicalMessage = new PlayerPhysicalMessage();
-    playerPhysicalMessage._msgNo = 265;
-    playerPhysicalMessage._playerId = playerId;
+    const session = findSessionByConnectionId(state, connectionId);
+
+    if (!session) {
+        throw new ServerError("Session not found");
+    }
+
+    const ownedPartsMessage = new PartsAssemblyMessage(session.gameId);
+    ownedPartsMessage._msgNo = 175;
 
     const responsePacket = new ServerMessage();
     responsePacket._header.sequence = packet._header.sequence;
     responsePacket._header.flags = 8;
 
-    responsePacket.setBuffer(playerPhysicalMessage.serialize());
+    responsePacket.setBuffer(ownedPartsMessage.serialize());
 
     return { connectionId, messages: [responsePacket] };
 }
