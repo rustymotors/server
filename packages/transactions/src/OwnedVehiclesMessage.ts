@@ -14,10 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import {
-    SerializedBuffer,
-    serializeString,
-} from "../../shared/messageFactory.js";
+import { SerializedBuffer } from "../../shared/messageFactory.js";
 
 /**
  * A message listing the player's owned vehicles

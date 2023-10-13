@@ -16,7 +16,6 @@
 
 import {
     SerializedBuffer,
-    serializeString,
     serializeStringRaw,
 } from "../../shared/messageFactory.js";
 import { Timestamp } from "../../shared/TimeStamp.js";

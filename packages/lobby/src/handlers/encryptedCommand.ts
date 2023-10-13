@@ -324,7 +324,7 @@ function handleGetMiniUserList({
         offset += 4; // offset is 20
 
         // write the persona name
-        offset = serializeString(user1._userName, packetContent, offset);
+        serializeString(user1._userName, packetContent, offset);
 
         outgoingGameMessage.setRecordData(packetContent);
 
