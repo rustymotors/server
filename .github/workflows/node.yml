@@ -43,7 +43,6 @@ jobs:
                   codecovcli --verbose do-upload --fail-on-error --flag patch --name patch-${{ matrix.node-version }}
                   codecovcli --verbose do-upload --fail-on-error --flag persona --name persona-${{ matrix.node-version }}
                   codecovcli --verbose do-upload --fail-on-error --flag shard --name shard-${{ matrix.node-version }}
-                  codecovcli --verbose do-upload --fail-on-error --flag interfaces --name interfaces-${{ matrix.node-version }}
                   codecovcli --verbose do-upload --fail-on-error --flag transactions --name transactions-${{ matrix.node-version }}
                   codecovcli --verbose do-upload --fail-on-error --flag core --name core-${{ matrix.node-version }}
 

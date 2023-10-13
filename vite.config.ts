@@ -5,7 +5,12 @@ export default defineConfig({
         coverage: {
             enabled: true,
             all: true,
-            exclude: ["src/**/*.spec.ts", "src/**/*.test.ts", "bin/**/*.ts"],
+            exclude: [
+                "src/**/*.spec.ts",
+                "src/**/*.test.ts",
+                "bin/**/*.ts",
+                "interfaces",
+            ],
             reporter: ["lcov", "text", "cobertura"],
         },
     },
