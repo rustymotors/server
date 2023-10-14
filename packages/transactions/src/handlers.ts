@@ -14,14 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { GenericReplyMessage } from "./GenericReplyMessage.js";
-import { GenericRequestMessage } from "./GenericRequestMessage.js";
-import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
-import { StockCar } from "./StockCar.js";
 import { ServerMessage } from "../../shared/messageFactory.js";
-import { ArcadeCarInfo, ArcadeCarMessage } from "./ArcadeCarMessage.js";
-import { GameUrl, GameUrlsMessage } from "./GameUrlsMessage.js";
-import { TunablesMessage } from "./TunablesMessage.js";
 import { login } from "./login.js";
 import { trackingPing } from "./trackingPing.js";
 import { clientConnect } from "./clientConnect.js";
@@ -29,157 +22,13 @@ import { getLobbies } from "./getLobbies.js";
 import { _getOwnedVehicles } from "./_getOwnedVehicles.js";
 import { _getPlayerInfo } from "./_getPlayerInfo.js";
 import { _getPlayerPhysical } from "./_getPlayerPhysical.js";
-import { PartsAssemblyMessage } from "./PartsAssemblyMessage.js";
-import {
-    fetchStateFromDatabase,
-    findSessionByConnectionId,
-} from "../../shared/State.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
-
-/**
- * @param {MessageHandlerArgs} args
- * @return {Promise<MessageHandlerResult>}
- */
-async function logout({
-    connectionId,
-    packet,
-    log,
-}: MessageHandlerArgs): Promise<MessageHandlerResult> {
-    // Create new response packet
-    const pReply = new GenericReplyMessage();
-    pReply.msgNo = 101;
-    pReply.msgReply = 106;
-    const rPacket = new ServerMessage();
-    rPacket._header.sequence = packet._header.sequence + 1;
-    rPacket._header.flags = 8;
-    rPacket.setBuffer(pReply.serialize());
-
-    log.debug(`Logout: ${rPacket.toString()}`);
-
-    return { connectionId, messages: [rPacket] };
-}
-
-/**
- * @param {MessageHandlerArgs} args
- * @return {Promise<MessageHandlerResult>}
- */
-async function getStockCarInfo({
-    connectionId,
-    packet,
-    log,
-}: MessageHandlerArgs): Promise<MessageHandlerResult> {
-    const getStockCarInfoMessage = new GenericRequestMessage();
-    getStockCarInfoMessage.deserialize(packet.data);
-
-    log.debug(`Received Message: ${getStockCarInfoMessage.toString()}`);
-
-    const stockCarInfoMessage = new StockCarInfoMessage(200, 0, 105);
-    stockCarInfoMessage.starterCash = 200;
-    stockCarInfoMessage.dealerId = 8;
-    stockCarInfoMessage.brand = 105;
-
-    stockCarInfoMessage.addStockCar(new StockCar(113, 20, false)); // Bel-air
-    stockCarInfoMessage.addStockCar(new StockCar(104, 15, true)); // Fairlane - Deal of the day
-    stockCarInfoMessage.addStockCar(new StockCar(402, 20, false)); // Century
-
-    log.debug(`Sending Message: ${stockCarInfoMessage.toString()}`);
-
-    const responsePacket = new ServerMessage();
-    responsePacket._header.sequence = packet._header.sequence + 1;
-    responsePacket._header.flags = 8;
-
-    responsePacket.setBuffer(stockCarInfoMessage.serialize());
-
-    return { connectionId, messages: [responsePacket] };
-}
-
-/**
- * @param {MessageHandlerArgs} args
- * @return {Promise<MessageHandlerResult>}
- */
-async function getArcadeCarInfo({
-    connectionId,
-    packet,
-    log,
-}: MessageHandlerArgs): Promise<MessageHandlerResult> {
-    const getArcadeCarInfoMessage = new GenericRequestMessage();
-    getArcadeCarInfoMessage.deserialize(packet.data);
-
-    log.debug(`Received Message: ${getArcadeCarInfoMessage.toString()}`);
-
-    const arcadeCarInfoMessage = new ArcadeCarMessage();
-    arcadeCarInfoMessage._msgNo = 323;
-
-    const car1 = new ArcadeCarInfo();
-    car1._brandedPartId = 113; // Bel-air
-    car1._lobbyId = 0;
-    arcadeCarInfoMessage.addCar(car1);
-
-    const responsePacket = new ServerMessage();
-    responsePacket._header.sequence = packet._header.sequence;
-    responsePacket._header.flags = 8;
-
-    responsePacket.setBuffer(arcadeCarInfoMessage.serialize());
-
-    return { connectionId, messages: [responsePacket] };
-}
-
-/**
- * @param {MessageHandlerArgs} args
- * @return {Promise<MessageHandlerResult>}
- */
-async function _getGameUrls({
-    connectionId,
-    packet,
-    log,
-}: MessageHandlerArgs): Promise<MessageHandlerResult> {
-    const getGameUrlsMessage = new GenericRequestMessage();
-    getGameUrlsMessage.deserialize(packet.data);
-
-    log.debug(`Received Message: ${getGameUrlsMessage.toString()}`);
-
-    const gameUrlsMessage = new GameUrlsMessage();
-    gameUrlsMessage._msgNo = 364;
-
-    const url1 = new GameUrl();
-    url1._urlId = 1;
-    url1.urlRef = "http://localhost:8080";
-    gameUrlsMessage.addURL(url1);
-
-    const responsePacket = new ServerMessage();
-    responsePacket._header.sequence = packet._header.sequence;
-    responsePacket._header.flags = 8;
-
-    responsePacket.setBuffer(gameUrlsMessage.serialize());
-
-    return { connectionId, messages: [responsePacket] };
-}
-
-/**
- * @param {MessageHandlerArgs} args
- * @return {Promise<MessageHandlerResult>}
- */
-async function _getTunables({
-    connectionId,
-    packet,
-    log,
-}: MessageHandlerArgs): Promise<MessageHandlerResult> {
-    const getTunablesMessage = new GenericRequestMessage();
-    getTunablesMessage.deserialize(packet.data);
-
-    log.debug(`Received Message: ${getTunablesMessage.toString()}`);
-
-    const tunablesMessage = new TunablesMessage();
-    tunablesMessage._msgNo = 390;
-
-    const responsePacket = new ServerMessage();
-    responsePacket._header.sequence = packet._header.sequence;
-    responsePacket._header.flags = 8;
-
-    responsePacket.setBuffer(tunablesMessage.serialize());
-
-    return { connectionId, messages: [responsePacket] };
-}
+import { _getOwnedParts } from "./_getOwnedParts.js";
+import { _getPlayerRaceHistory } from "./_getPlayerRaceHistory.js";
+import { _getTunables } from "./_getTunables.js";
+import { _getGameUrls } from "./_getGameUrls.js";
+import { _getArcadeCarInfo } from "./_getArcadeCarInfo.js";
+import { _getStockCarInfo } from "./_getStockCarInfo.js";
+import { _logout } from "./_logout.js";
 
 export interface MessageHandlerArgs {
     connectionId: string;
@@ -212,7 +61,7 @@ export const messageHandlers: MessageHandler[] = [
     },
     {
         name: "MC_LOGOUT",
-        handler: logout,
+        handler: _logout,
     },
     {
         name: "MC_GET_LOBBIES",
@@ -220,11 +69,11 @@ export const messageHandlers: MessageHandler[] = [
     },
     {
         name: "MC_STOCK_CAR_INFO",
-        handler: getStockCarInfo,
+        handler: _getStockCarInfo,
     },
     {
         name: "MC_GET_ARCADE_CARS",
-        handler: getArcadeCarInfo,
+        handler: _getArcadeCarInfo,
     },
     {
         name: "MC_GET_GAME_URLS",
@@ -250,34 +99,8 @@ export const messageHandlers: MessageHandler[] = [
         name: "MC_GET_OWNED_PARTS",
         handler: _getOwnedParts,
     },
+    {
+        name: "MC_GET_PLAYER_RACING_HISTORY",
+        handler: _getPlayerRaceHistory,
+    },
 ];
-
-export async function _getOwnedParts({
-    connectionId,
-    packet,
-    log,
-}: MessageHandlerArgs): Promise<MessageHandlerResult> {
-    const getOwnedPartsMessage = new GenericRequestMessage();
-    getOwnedPartsMessage.deserialize(packet.data);
-
-    log.debug(`Received Message: ${getOwnedPartsMessage.toString()}`);
-
-    const state = fetchStateFromDatabase();
-
-    const session = findSessionByConnectionId(state, connectionId);
-
-    if (!session) {
-        throw new ServerError("Session not found");
-    }
-
-    const ownedPartsMessage = new PartsAssemblyMessage(session.gameId);
-    ownedPartsMessage._msgNo = 175;
-
-    const responsePacket = new ServerMessage();
-    responsePacket._header.sequence = packet._header.sequence;
-    responsePacket._header.flags = 8;
-
-    responsePacket.setBuffer(ownedPartsMessage.serialize());
-
-    return { connectionId, messages: [responsePacket] };
-}

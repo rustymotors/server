@@ -11,10 +11,10 @@ import {
     MessageBuffer,
     SerializedBuffer,
 } from "../../../shared/messageFactory.js";
-import { UserInfo } from "../UserInfoMessage.js";
 import { getServerConfiguration } from "../../../shared/Configuration.js";
 import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
 import { handleGetMiniUserList } from "./handleGetMiniUserList.js";
+import { _setMyUserData } from "./_setMyUserData.js";
 // eslint-disable-next-line no-unused-vars
 
 /**
@@ -297,50 +297,3 @@ export const channels = [
         population: 1,
     },
 ];
-
-export async function _setMyUserData({
-    connectionId,
-    message,
-    log = getServerLogger({
-        module: "Lobby",
-    }),
-}: {
-    connectionId: string;
-    message: LegacyMessage;
-    log?: import("pino").Logger;
-}) {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
-
-    try {
-        log.debug("Handling NPS_SET_MY_USER_DATA");
-        log.debug(`Received command: ${message.serialize().toString("hex")}`);
-
-        const incomingMessage = new UserInfo();
-        incomingMessage.deserialize(message.serialize());
-
-        log.debug(`User ID: ${incomingMessage._userId}`);
-
-        // TODO: Here we should update the user's data in the database
-
-        // Then we should send a response of the user's data
-
-        // Build the packet
-        const packetResult = new LegacyMessage();
-        packetResult._header.id = 0x204;
-        packetResult.deserialize(incomingMessage.serialize());
-
-        log.debug(
-            `Sending response: ${packetResult.serialize().toString("hex")}`,
-        );
-
-        return {
-            connectionId,
-            message: packetResult,
-        };
-    } catch (error) {
-        throw ServerError.fromUnknown(
-            error,
-            "Error handling NPS_SET_MY_USER_DATA",
-        );
-    }
-}
