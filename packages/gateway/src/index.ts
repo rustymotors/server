@@ -144,6 +144,10 @@ export function onSocketConnection({
         throw new Error(`No onData handler for port ${localPort}`);
     }
 
+    incomingSocket.on("error", (error) =>
+        socketErrorHandler({ connectionId: newConnectionId, error }),
+    );
+
     // Add the data handler to the socket
     incomingSocket.on(
         "data",
