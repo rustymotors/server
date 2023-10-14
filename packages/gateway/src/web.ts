@@ -15,7 +15,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { ServerError } from "../../shared/errors/ServerError.js";
-import { getPatchServer } from "../../patch/src/PatchServer.js";
+import {
+    CastanetResponse,
+    getPatchServer,
+} from "../../patch/src/PatchServer.js";
 import { generateShardList } from "../../shard/src/ShardServer.js";
 import { getServerConfiguration } from "../../shared/Configuration.js";
 import {
@@ -30,26 +33,39 @@ import {
  * @param {import("fastify").FastifyInstance} webServer The web server
  */
 export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
+    webServer.addContentTypeParser("*", function (request, payload, done) {
+        var data = "";
+        payload.on("data", (chunk) => {
+            data += chunk;
+        });
+        payload.on("end", () => {
+            done(null, data);
+        });
+    });
+
     webServer.get("/", async (_request, reply) => {
         return reply.send("Hello, world!");
     });
 
-    webServer.get(
+    webServer.post(
         "/games/EA_Seattle/MotorCity/UpdateInfo",
         (_request, reply) => {
-            const response = getPatchServer().castanetResponse;
-            return reply.send(response);
+            const response = CastanetResponse;
+            reply.header(response.header.type, response.header.value);
+            return reply.send(response.body);
         },
     );
 
-    webServer.get("/games/EA_Seattle/MotorCity/NPS", (_request, reply) => {
-        const response = getPatchServer().castanetResponse;
-        return reply.send(response);
+    webServer.post("/games/EA_Seattle/MotorCity/NPS", (_request, reply) => {
+        const response = CastanetResponse;
+        reply.header(response.header.type, response.header.value);
+        return reply.send(response.body);
     });
 
-    webServer.get("/games/EA_Seattle/MotorCity/MCO", (_request, reply) => {
-        const response = getPatchServer().castanetResponse;
-        return reply.send(response);
+    webServer.post("/games/EA_Seattle/MotorCity/MCO", (_request, reply) => {
+        const response = CastanetResponse;
+        reply.header(response.header.type, response.header.value);
+        return reply.send(response.body);
     });
 
     webServer.get("/AuthLogin", (_request, reply) => {

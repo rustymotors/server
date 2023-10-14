@@ -17,6 +17,16 @@ export class UserInfo {
         this._userData = Buffer.alloc(64); // 64 bytes
     }
 
+    deserialize(buffer: Buffer) {
+        let offset = 0;
+        this._userId = buffer.readInt32BE(offset);
+        offset += 4;
+        this._userName = deserializeString(buffer.subarray(offset));
+        offset += 4 + this._userName.length;
+        buffer.copy(this._userData, 0, offset, offset + 64);
+        return this;
+    }
+
     serialize() {
         const buffer = Buffer.alloc(this.size());
         let offset = 0;
@@ -51,7 +61,7 @@ export class UserInfoMessage extends LegacyMessage {
      * @param {Buffer} buffer
      * @returns {UserInfoMessage}
      */
-    deserialize(buffer: Buffer): UserInfoMessage {
+    override deserialize(buffer: Buffer): UserInfoMessage {
         try {
             this._header._doDeserialize(buffer);
             let offset = this._header._size;

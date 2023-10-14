@@ -15,7 +15,7 @@ build:
 	@npm run build:dev
 
 start:
-	@EXTERNAL_HOST=10.10.5.20 PRIVATE_KEY_FILE=data/private_key.pem CERTIFICATE_FILE=data/mcouniverse.crt PUBLIC_KEY_FILE=data/pub.key LOG_LEVEL=trace npm run start:dev
+	@EXTERNAL_HOST=mcouniverse.com PRIVATE_KEY_FILE=data/private_key.pem CERTIFICATE_FILE=data/mcouniverse.crt PUBLIC_KEY_FILE=data/pub.key LOG_LEVEL=trace npm run start:dev
 
 prod_node:
 	docker-compose --file docker-compose.yml up -d --build

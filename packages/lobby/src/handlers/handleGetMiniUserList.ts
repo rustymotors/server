@@ -5,17 +5,22 @@ import {
     LegacyMessage,
     serializeString,
 } from "../../../shared/messageFactory.js";
+import { UserInfo } from "../UserInfoMessage.js";
 import { getServerConfiguration } from "../../../shared/Configuration.js";
 import { channelRecordSize, channels } from "./encryptedCommand.js";
 
-// const users = [user1];
+// const userRecordSize = 100;
+const user1 = new UserInfo();
+user1._userId = 1;
+user1._userName = "User 1";
 /**
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
  */
-export async function handleSendMiniRiffList({
+
+export async function handleGetMiniUserList({
     connectionId,
     message,
     log = getServerLogger({
@@ -28,10 +33,10 @@ export async function handleSendMiniRiffList({
 }) {
     log.level = getServerConfiguration({}).logLevel ?? "info";
 
-    log.debug("Handling NPS_SEND_MINI_RIFF_LIST");
+    log.debug("Handling NPS_GET_MINI_USER_LIST");
     log.debug(`Received command: ${message._doSerialize().toString("hex")}`);
 
-    const outgoingGameMessage = new GameMessage(1028);
+    const outgoingGameMessage = new GameMessage(553);
 
     const resultSize = channelRecordSize * channels.length - 12;
 
@@ -39,18 +44,23 @@ export async function handleSendMiniRiffList({
 
     let offset = 0;
     try {
-        packetContent.writeUInt32BE(channels.length, offset);
+        // Add the response code
+        packetContent.writeUInt32BE(17, offset);
         offset += 4; // offset is 8
 
-        // loop through the channels
-        for (const channel of channels) {
-            offset = serializeString(channel.name, packetContent, offset);
+        packetContent.writeUInt32BE(1, offset);
+        offset += 4; // offset is 12
 
-            packetContent.writeUInt32BE(channel.id, offset);
-            offset += 4;
-            packetContent.writeUInt16BE(channel.population, offset);
-            offset += 2;
-        }
+        // Write the count of users
+        packetContent.writeUInt32BE(1, offset);
+        offset += 4; // offset is 16
+
+        // write the persona id
+        packetContent.writeUInt32BE(user1._userId, offset);
+        offset += 4; // offset is 20
+
+        // write the persona name
+        serializeString(user1._userName, packetContent, offset);
 
         outgoingGameMessage.setRecordData(packetContent);
 
@@ -69,7 +79,7 @@ export async function handleSendMiniRiffList({
     } catch (error) {
         throw ServerError.fromUnknown(
             error,
-            "Error handling NPS_SEND_MINI_RIFF_LIST",
+            "Error handling NPS_MINI_USER_LIST",
         );
     }
 }

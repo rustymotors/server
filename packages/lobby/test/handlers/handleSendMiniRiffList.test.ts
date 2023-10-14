@@ -3,11 +3,11 @@ import { handleSendMiniRiffList } from "../../src/handlers/handleSendMiniRiffLis
 import { describe, it, expect } from "vitest";
 
 describe("handleSendMiniRiffList", () => {
-    it("should return a buffer", () => {
+    it("should return a buffer", async () => {
         // arrange
         const incomingMessage = new LegacyMessage();
 
-        const result = handleSendMiniRiffList({
+        const result = await handleSendMiniRiffList({
             connectionId: "test",
             message: incomingMessage,
         });

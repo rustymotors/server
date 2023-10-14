@@ -227,6 +227,26 @@ export class GameMessageHeader extends legacyHeader {
         return 8;
     }
 
+    deserialize(buffer: Buffer) {
+        if (buffer.length < 8) {
+            throw new ServerError(
+                `Buffer length ${buffer.length} is too short to deserialize`,
+            );
+        }
+
+        try {
+            this.id = buffer.readInt16BE(0);
+            this.length = buffer.readInt16BE(2);
+            this._gameMessageId = buffer.readInt16BE(4);
+            this._gameMessageLength = buffer.readInt16BE(6);
+        } catch (error) {
+            throw new ServerError(
+                `Error deserializing buffer: ${String(error)}`,
+            );
+        }
+        return this;
+    }
+
     serialize() {
         const buffer = Buffer.alloc(8);
         buffer.writeInt16BE(this.id, 0);
@@ -249,11 +269,11 @@ export class GameMessageHeader extends legacyHeader {
  */
 export class NPSHeader extends SerializableMixin(AbstractSerializable) {
     _size: number;
-    id: number;
-    length: any;
-    version: number;
-    reserved: number;
-    checksum: number;
+    id: number; // 2 bytes
+    length: number; // 2 bytes
+    version: number; // 2 bytes
+    reserved: number; // 2 bytes
+    checksum: number; // 4 bytes
     constructor() {
         super();
         this._size = 12;
@@ -406,6 +426,10 @@ export class LegacyMessage extends SerializableMixin(AbstractSerializable) {
         return this;
     }
 
+    deserialize(buffer: Buffer) {
+        return this._doDeserialize(buffer);
+    }
+
     override _doSerialize() {
         const buffer = Buffer.alloc(this._header.length);
         this._header._doSerialize().copy(buffer);
@@ -526,6 +550,40 @@ export class GameMessage extends SerializedBuffer {
     setRecordData(buffer: Buffer) {
         this._recordData = Buffer.alloc(buffer.length);
         buffer.copy(this._recordData);
+    }
+
+    /** @deprecated - Use setRecordData instead */
+    override setBuffer(buffer: Buffer) {
+        this._recordData = Buffer.alloc(buffer.length);
+        buffer.copy(this._recordData);
+    }
+
+    /** @deprecated - Use deserialize instead */
+    override _doDeserialize(buffer: Buffer): SerializedBuffer {
+        this._header._doDeserialize(buffer);
+        this._recordData = Buffer.alloc(this._header._gameMessageLength - 4);
+        buffer.copy(this._recordData, 0, 8);
+        return this;
+    }
+
+    deserialize(buffer: Buffer) {
+        this._header._doDeserialize(buffer);
+        this._recordData = Buffer.alloc(this._header.length - 4);
+        buffer.copy(this._recordData, 0, 8);
+        return this;
+    }
+
+    /** @deprecated - Use serialize instead */
+    override _doSerialize(): void {
+        this._header._gameMessageLength = 4 + this._recordData.length;
+        this._header.length = this._header._gameMessageLength + 4;
+        const buffer = Buffer.alloc(this._header.length);
+        let offset = 0; // offset is 0
+        this._header.serialize().copy(buffer);
+        offset += this._header.size(); // offset is 8
+
+        this._recordData.copy(buffer, offset);
+        this.setBuffer(buffer);
     }
 
     override serialize() {

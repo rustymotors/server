@@ -2,8 +2,14 @@ import { IncomingMessage, ServerResponse } from "node:http";
 import { getServerLogger } from "../../shared/log.js";
 import { Buffer } from "node:buffer";
 
+const debug_reseponse = Buffer.from([
+    0xca, 0xfe, 0xbe, 0xef, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
+]);
+
 export const CastanetResponse = {
-    body: Buffer.from("cafebeef00000000000003", "hex"),
+    body: Buffer.from([
+        0xca, 0xfe, 0xbe, 0xef, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
+    ]),
     header: {
         type: "Content-Type",
         value: "application/octet-stream",

@@ -28,6 +28,10 @@ import {
     SerializedBuffer,
 } from "../../shared/messageFactory.js";
 import { Logger } from "pino";
+import { BuddyInfoRecord } from "./BuddyInfoMessage.js";
+import { _selectGamePersona } from "./_selectGamePersona.js";
+import { _gameLogout } from "./_gameLogout.js";
+import { _getFirstBuddy } from "./_getFirstBuddy.js";
 
 const NAME_BUFFER_SIZE = 30;
 
@@ -61,17 +65,22 @@ export const messageHandlers: {
     {
         opCode: 1283, // 0x503
         name: "Game login",
-        handler: handleSelectGamePersona,
+        handler: _selectGamePersona,
     },
     {
         opCode: 1295, // 0x50F
         name: "Game logout",
-        handler: handleGameLogout,
+        handler: _gameLogout,
     },
     {
         opCode: 1330, // 0x532
         name: "Get persona maps",
         handler: getPersonaMaps,
+    },
+    {
+        opCode: 1291, // 0x50B
+        name: "Get first buddy",
+        handler: _getFirstBuddy,
     },
 ];
 
@@ -108,116 +117,6 @@ export const personaRecords: import("../../interfaces/index.js").PersonaRecord[]
             shardId: Buffer.from([0x00, 0x00, 0x00, 0x2c]),
         },
     ];
-
-/**
- * Selects a game persona and marks it as in use
- * @param {object} args
- * @param {string} args.connectionId
- * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
- * @returns {Promise<{
- *  connectionId: string,
- * messages: SerializedBuffer[],
- * }>}
- */
-export async function handleSelectGamePersona({
-    connectionId,
-    message,
-    log = getServerLogger({
-        module: "PersonaServer",
-    }),
-}: {
-    connectionId: string;
-    message: LegacyMessage;
-    log?: import("pino").Logger;
-}): Promise<{
-    connectionId: string;
-    messages: SerializedBuffer[];
-}> {
-    log.debug("_npsSelectGamePersona...");
-    const requestPacket = message;
-    log.debug(
-        `LegacyMsg request object from _npsSelectGamePersona ${requestPacket
-            ._doSerialize()
-            .toString("hex")}`,
-    );
-
-    // Create the packet content
-    const packetContent = Buffer.alloc(251);
-
-    // Build the packet
-    // Response Code
-    // 207 = success
-    const responsePacket = new LegacyMessage();
-    responsePacket._header.id = 0x207;
-    responsePacket.setBuffer(packetContent);
-    log.debug(
-        `LegacyMsg response object from _npsSelectGamePersona ${responsePacket
-            ._doSerialize()
-            .toString("hex")} `,
-    );
-
-    const outboundMessage = new SerializedBuffer();
-    outboundMessage.setBuffer(responsePacket._doSerialize());
-
-    return {
-        connectionId,
-        messages: [outboundMessage],
-    };
-}
-
-/**
- * Handle game logout
- * @param {object} args
- * @param {string} args.connectionId
- * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
- * @returns {Promise<{
- *  connectionId: string,
- * messages: SerializedBuffer[],
- * }>}
- */
-export async function handleGameLogout({
-    connectionId,
-    message,
-    log = getServerLogger({
-        module: "PersonaServer",
-    }),
-}: {
-    connectionId: string;
-    message: LegacyMessage;
-    log?: import("pino").Logger;
-}): Promise<{
-    connectionId: string;
-    messages: SerializedBuffer[];
-}> {
-    log.debug("_npsLogoutGameUser...");
-    const requestPacket = message;
-    log.debug(
-        `NPSMsg request object from _npsLogoutGameUser',
-      ${JSON.stringify({
-          NPSMsg: requestPacket.toString(),
-      })}`,
-    );
-
-    // Build the packet
-    const responsePacket = new LegacyMessage();
-    responsePacket._header.id = 0x207;
-    log.debug(
-        `NPSMsg response object from _npsLogoutGameUser',
-      ${JSON.stringify({
-          NPSMsg: responsePacket.toString(),
-      })}`,
-    );
-
-    const outboundMessage = new SerializedBuffer();
-    outboundMessage._doDeserialize(responsePacket._doSerialize());
-
-    return {
-        connectionId,
-        messages: [outboundMessage],
-    };
-}
 
 /**
  *
@@ -430,3 +329,30 @@ export async function receivePersonaData({
         );
     }
 }
+
+export const buddies: BuddyInfoRecord[] = [
+    {
+        buddyId: 2,
+        buddyName: "Einstein",
+        gameName: "Good Woof",
+        isBuddy: true,
+        isOnline: true,
+        dnd: false,
+        dnb: false,
+        noEntry: false,
+        muteWhispers: false,
+        muteChat: false,
+    },
+    {
+        buddyId: 3,
+        buddyName: "Marty",
+        gameName: "That kid",
+        isBuddy: true,
+        isOnline: true,
+        dnd: false,
+        dnb: false,
+        noEntry: false,
+        muteWhispers: false,
+        muteChat: false,
+    },
+];

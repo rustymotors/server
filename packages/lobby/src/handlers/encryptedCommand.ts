@@ -10,11 +10,11 @@ import {
     LegacyMessage,
     MessageBuffer,
     SerializedBuffer,
-    serializeString,
 } from "../../../shared/messageFactory.js";
 import { UserInfo } from "../UserInfoMessage.js";
 import { getServerConfiguration } from "../../../shared/Configuration.js";
 import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
+import { handleGetMiniUserList } from "./handleGetMiniUserList.js";
 // eslint-disable-next-line no-unused-vars
 
 /**
@@ -145,6 +145,37 @@ async function decryptCmd({
     };
 }
 
+export type NpsCommandHandler = {
+    opCode: number;
+    name: string;
+    handler: (args: {
+        connectionId: string;
+        message: LegacyMessage;
+        log: import("pino").Logger;
+    }) => Promise<{
+        connectionId: string;
+        message: LegacyMessage;
+    }>;
+};
+
+const npsCommandHandlers: NpsCommandHandler[] = [
+    {
+        opCode: 0x128,
+        name: "NPS_GET_MINI_USER_LIST",
+        handler: handleGetMiniUserList,
+    },
+    {
+        opCode: 0x30c,
+        name: "NPS_SEND_MINI_RIFF_LIST",
+        handler: handleSendMiniRiffList,
+    },
+    {
+        opCode: 0x103,
+        name: "NPS_SET_MY_USER_DATA",
+        handler: _setMyUserData,
+    },
+];
+
 /**
  *
  *
@@ -183,23 +214,17 @@ async function handleCommand({
 
     log.debug(`Command: ${command}`);
 
-    switch (command) {
-        case 0x128: // 296 - NPS_GET_MINI_USER_LIST
-            log.debug("NPS_GET_MINI_USER_LIST");
-            return handleGetMiniUserList({
-                connectionId,
-                message,
-                log,
-            });
-        case 0x30c: // 780 - NPS_SEND_MINI_RIFF_LIST
-            return handleSendMiniRiffList({
-                connectionId,
-                message,
-                log,
-            });
-        default:
-            throw new ServerError(`Unknown command: ${command}`);
+    const handler = npsCommandHandlers.find((h) => h.opCode === command);
+
+    if (typeof handler === "undefined") {
+        throw new ServerError(`Unknown command: ${command}`);
     }
+
+    return handler.handler({
+        connectionId,
+        message,
+        log,
+    });
 }
 
 /**
@@ -273,18 +298,7 @@ export const channels = [
     },
 ];
 
-// const userRecordSize = 100;
-const user1 = new UserInfo();
-user1._userId = 1;
-user1._userName = "User 1";
-
-/**
- * @param {object} args
- * @param {string} args.connectionId
- * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
- */
-function handleGetMiniUserList({
+export async function _setMyUserData({
     connectionId,
     message,
     log = getServerLogger({
@@ -297,40 +311,23 @@ function handleGetMiniUserList({
 }) {
     log.level = getServerConfiguration({}).logLevel ?? "info";
 
-    log.debug("Handling NPS_GET_MINI_USER_LIST");
-    log.debug(`Received command: ${message._doSerialize().toString("hex")}`);
-
-    const outgoingGameMessage = new GameMessage(0x229);
-
-    const resultSize = channelRecordSize * channels.length - 12;
-
-    const packetContent = Buffer.alloc(resultSize);
-
-    let offset = 0;
     try {
-        // Add the response code
-        packetContent.writeUInt32BE(17, offset);
-        offset += 4; // offset is 8
+        log.debug("Handling NPS_SET_MY_USER_DATA");
+        log.debug(`Received command: ${message.serialize().toString("hex")}`);
 
-        packetContent.writeUInt32BE(1, offset);
-        offset += 4; // offset is 12
+        const incomingMessage = new UserInfo();
+        incomingMessage.deserialize(message.serialize());
 
-        // Write the count of users
-        packetContent.writeUInt32BE(1, offset);
-        offset += 4; // offset is 16
+        log.debug(`User ID: ${incomingMessage._userId}`);
 
-        // write the persona id
-        packetContent.writeUInt32BE(user1._userId, offset);
-        offset += 4; // offset is 20
+        // TODO: Here we should update the user's data in the database
 
-        // write the persona name
-        serializeString(user1._userName, packetContent, offset);
-
-        outgoingGameMessage.setRecordData(packetContent);
+        // Then we should send a response of the user's data
 
         // Build the packet
         const packetResult = new LegacyMessage();
-        packetResult._doDeserialize(outgoingGameMessage.serialize());
+        packetResult._header.id = 0x204;
+        packetResult.deserialize(incomingMessage.serialize());
 
         log.debug(
             `Sending response: ${packetResult.serialize().toString("hex")}`,
@@ -343,7 +340,7 @@ function handleGetMiniUserList({
     } catch (error) {
         throw ServerError.fromUnknown(
             error,
-            "Error handling NPS_MINI_USER_LIST",
+            "Error handling NPS_SET_MY_USER_DATA",
         );
     }
 }
