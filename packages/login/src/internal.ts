@@ -26,7 +26,7 @@ import { NPSMessage, SerializedBuffer } from "../../shared/messageFactory.js";
 const userRecords: import("../../interfaces/index.js").UserRecordMini[] = [
     {
         contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
-        customerId: 0xac010000,
+        customerId: 0x0012808b,
         userId: 0x00000002,
     },
     {

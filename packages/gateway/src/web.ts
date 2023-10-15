@@ -68,7 +68,32 @@ export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
         return reply.send(response.body);
     });
 
-    webServer.get("/AuthLogin", (_request, reply) => {
+    interface IQuerystring {
+        username: string;
+        password: string;
+      }
+      
+      interface IHeaders {
+
+      }
+      
+      interface IReply {
+
+      }
+
+    webServer.get<{
+        Querystring: IQuerystring,
+        Headers: IHeaders,
+        Reply: IReply
+      }>("/AuthLogin", async (request, reply) => {
+        const username = request.query.username;
+
+        if (username === "new") {
+            return reply.send(
+                "Valid=TRUE\nTicket=5213dee3a6bcdb133373b2d4f3b9962758",
+            );
+        }
+
         return reply.send(
             "Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e",
         );

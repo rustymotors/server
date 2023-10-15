@@ -144,7 +144,6 @@ async function getPersonaMapsByCustomerId(
     customerId: number,
 ): Promise<import("../../interfaces/index.js").PersonaRecord[]> {
     switch (customerId) {
-        case 2868969472:
         case 5551212:
             return getPersonasByCustomerId(customerId);
         default:
@@ -193,72 +192,65 @@ async function getPersonaMaps({
 
     // this is a GLDP_PersonaList::GLDP_PersonaList
 
-    if (personas.length === 0) {
-        const err = new Error(
-            `No personas found for customer Id: ${customerId}`,
-        );
-        throw err;
-    } else {
-        try {
-            /** @type {PersonaList} */
-            let personaList: PersonaList = new PersonaList();
+    try {
+        /** @type {PersonaList} */
+        let personaList: PersonaList = new PersonaList();
 
-            if (personas.length > 1) {
-                log.warn(
-                    `More than one persona found for customer Id: ${customerId}`,
-                );
-            }
+        if (personas.length > 1) {
+            log.warn(
+                `More than one persona found for customer Id: ${customerId}`,
+            );
+        }
 
-            personas.forEach((persona) => {
-                const personaRecord = new PersonaRecord();
+        personas.forEach((persona) => {
+            const personaRecord = new PersonaRecord();
 
-                personaRecord.customerId = persona.customerId;
-                personaRecord.personaId = persona.id.readUInt32BE(0);
-                personaRecord.personaName = persona.name.toString("utf8");
-                personaRecord.shardId = persona.shardId.readUInt32BE(0);
-                personaRecord.numberOfGames = personas.length;
+            personaRecord.customerId = persona.customerId;
+            personaRecord.personaId = persona.id.readUInt32BE(0);
+            personaRecord.personaName = persona.name.toString("utf8");
+            personaRecord.shardId = persona.shardId.readUInt32BE(0);
+            personaRecord.numberOfGames = personas.length;
 
-                personaList.addPersonaRecord(personaRecord);
+            personaList.addPersonaRecord(personaRecord);
 
-                log.debug(
-                    `Persona record: ${JSON.stringify({
-                        personaRecord: personaRecord.toJSON(),
-                    })}`,
-                );
-            });
-
-            personaMapsMessage._header.id = 0x607;
-            personaMapsMessage._personaRecords = personaList;
-            personaMapsMessage.setBuffer(personaList.serialize());
             log.debug(
-                `PersonaMapsMessage object from _npsGetPersonaMaps',
+                `Persona record: ${JSON.stringify({
+                    personaRecord: personaRecord.toJSON(),
+                })}`,
+            );
+        });
+
+        personaMapsMessage._header.id = 0x607;
+        personaMapsMessage._personaRecords = personaList;
+        personaMapsMessage.setBuffer(personaList.serialize());
+        log.debug(
+            `PersonaMapsMessage object from _npsGetPersonaMaps',
             ${JSON.stringify({
                 personaMapsMessage: personaMapsMessage
                     .serialize()
                     .toString("hex"),
             })}`,
-            );
+        );
 
-            const outboundMessage = new SerializedBuffer();
-            outboundMessage._doDeserialize(personaMapsMessage.serialize());
+        const outboundMessage = new SerializedBuffer();
+        outboundMessage._doDeserialize(personaMapsMessage.serialize());
 
-            return {
-                connectionId,
-                messages: [outboundMessage],
-            };
-        } catch (error) {
-            if (error instanceof Error) {
-                const err = new ServerError(
-                    `Error serializing personaMapsMsg: ${error.message}`,
-                );
-                throw err;
-            }
-
+        return {
+            connectionId,
+            messages: [outboundMessage],
+        };
+    } catch (error) {
+        if (error instanceof Error) {
             const err = new ServerError(
-                "Error serializing personaMapsMsg, error unknonw",
+                `Error serializing personaMapsMsg: ${error.message}`,
             );
             throw err;
         }
+
+        const err = new ServerError(
+            "Error serializing personaMapsMsg, error unknonw",
+        );
+        throw err;
     }
 }
 

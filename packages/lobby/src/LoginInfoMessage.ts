@@ -32,7 +32,7 @@ export class LoginInfoMessage extends LegacyMessage {
      * @param {Buffer} buffer
      * @returns {LoginInfoMessage}
      */
-    deserialize(buffer: Buffer): LoginInfoMessage {
+    override deserialize(buffer: Buffer): LoginInfoMessage {
         try {
             this._header._doDeserialize(buffer);
             let offset = this._header._size;
