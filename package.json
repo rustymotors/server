@@ -32,7 +32,7 @@
         "@sentry/node": "7.74",
         "@sentry/profiling-node": "^1.2.1",
         "adminjs": "^7.2.2",
-        "fastify": "^4.22.2",
+        "fastify": "^4.24.2",
         "moment": "^2.29.4",
         "pino": "^8.15.0",
         "sequelize": "^6.32.1",
