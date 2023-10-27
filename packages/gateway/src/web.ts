@@ -71,21 +71,17 @@ export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
     interface IQuerystring {
         username: string;
         password: string;
-      }
-      
-      interface IHeaders {
+    }
 
-      }
-      
-      interface IReply {
+    interface IHeaders {}
 
-      }
+    interface IReply {}
 
     webServer.get<{
-        Querystring: IQuerystring,
-        Headers: IHeaders,
-        Reply: IReply
-      }>("/AuthLogin", async (request, reply) => {
+        Querystring: IQuerystring;
+        Headers: IHeaders;
+        Reply: IReply;
+    }>("/AuthLogin", async (request, reply) => {
         const username = request.query.username;
 
         if (username === "new") {

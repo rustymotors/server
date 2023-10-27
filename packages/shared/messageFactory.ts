@@ -874,6 +874,10 @@ export class ServerMessage extends SerializedBuffer {
         this._msgNo = 0; // 2 bytes
     }
 
+    override size(): number {
+        return this._header.length + this.data.length;
+    }
+
     /**
      * @param {Buffer} buffer
      * @returns {ServerMessage}

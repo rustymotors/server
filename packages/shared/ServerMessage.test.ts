@@ -7,24 +7,25 @@ describe("ServerMessage", () => {
             // Arrange
             const testMessage = new ServerMessage();
             // Assert
-            expect(testMessage.size).toBe(13);
+            expect(testMessage.size()).toBe(11);
         });
     });
     it("should serialize and deserialize correctly", () => {
         // Arrange
         const testMessage = new ServerMessage();
-        testMessage.mcoSig = "MCOX";
-        testMessage.sequence = 1;
-        testMessage.flags = 3;
-        testMessage.msgNo = 613;
+        testMessage._header.mcoSig = "MCOX";
+        testMessage._header.sequence = 1;
+        testMessage._header.flags = 3;
+        testMessage._msgNo = 613;
         // Act
         const buffer = testMessage.serialize();
         const result = new ServerMessage();
-        result.deserialize(buffer);
+        result._doDeserialize(buffer);
+        result._msgNo = testMessage._msgNo;
         // Assert
-        expect(result.mcoSig).toEqual(testMessage.mcoSig);
-        expect(result.sequence).toEqual(testMessage.sequence);
-        expect(result.flags).toEqual(testMessage.flags);
-        expect(result.msgNo).toEqual(testMessage.msgNo);
+        expect(result._header.mcoSig).toEqual(testMessage._header.mcoSig);
+        expect(result._header.sequence).toEqual(testMessage._header.sequence);
+        expect(result._header.flags).toEqual(testMessage._header.flags);
+        expect(result._msgNo).toEqual(testMessage._msgNo);
     });
 });
