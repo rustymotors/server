@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, test, vi } from "vitest";
 import {
     createCommandEncryptionPair,
     createDataEncryptionPair,
@@ -158,5 +158,29 @@ describe("Encryption", () => {
         expect(decryptedMessage).toBeDefined();
 
         expect(decryptedMessage).toEqual(message);
+    });
+
+    test("data should throw when the key is too short", () => {
+        // Arrange
+
+        const key = "22c4df";
+
+        // Act + Assert
+
+        expect(() => {
+            createDataEncryptionPair(key);
+        }).toThrow("Key too short");
+    });
+
+    test("command should throw when the key is too short", () => {
+        // Arrange
+
+        const key = "25";
+
+        // Act + Assert
+
+        expect(() => {
+            createCommandEncryptionPair(key);
+        }).toThrow("Key too short");
     });
 });
