@@ -11,8 +11,8 @@ export function premadeLogin() {
         0x06,
         0x01, // MsgId: 0x601 = NPS_USER_VALID = 1537
 
-        0x00,
-        0x3a, // Packet Length: 0x003a = 58
+        0x01,
+        0x00, // Packet Length: 0x003a = 58
 
         0x21,
         0xf9,

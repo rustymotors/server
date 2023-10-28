@@ -21,6 +21,8 @@ import { ServerError } from "../../shared/errors/ServerError.js";
 import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
 import { premadeLogin } from "./premadeLogin.js";
 import { NPSMessage, SerializedBuffer } from "../../shared/messageFactory.js";
+import { RawMessage } from "../../shared/src/RawMessage.js";
+import { NetworkMessage } from "../../shared/src/NetworkMessage.js";
 
 /** @type {import("../../interfaces/index.js").UserRecordMini[]} */
 const userRecords: import("../../interfaces/index.js").UserRecordMini[] = [
@@ -118,12 +120,38 @@ async function login({
 
     log.debug("Session key updated");
 
+    const outboundMessage = new NetworkMessage(0x601);
+
+    const dataBuffer = Buffer.alloc(26);
+    let offset = 0;
+    dataBuffer.writeInt32BE(userRecord.customerId, offset);
+    offset += 4;
+    dataBuffer.writeInt32BE(userRecord.userId, offset);
+    offset += 4;
+    dataBuffer.writeInt8(0, offset); // isCacheHit
+    offset += 1;
+    dataBuffer.writeInt8(0, offset); // ban
+    offset += 1;
+    dataBuffer.writeInt8(0, offset); // gag
+    offset += 1;
+    dataBuffer.write(sessionKey ?? "", offset, 12, "ascii");
+    offset += 12;
+
+    // Calculate the padding needed to make the packet a multiple of 8
+    const padding = 8 - (offset % 8) + 1;
+
+    // Create the padding buffer
+    const paddingBuffer = Buffer.alloc(padding);
+
+    // Concatenate the data buffer and the padding buffer
+    const packetContent = Buffer.concat([dataBuffer, paddingBuffer]);
+
     // Create the packet content
-    const packetContent = premadeLogin();
-    log.debug(`Using Premade Login: ${packetContent.toString("hex")}`);
+    // const packetContent = premadeLogin();
+    // log.debug(`Using Premade Login: ${packetContent.toString("hex")}`);
 
     // MsgId: 0x601 = NPS_USER_VALID = 1537
-    Buffer.from([0x06, 0x01]).copy(packetContent);
+    // Buffer.from([0x06, 0x01]).copy(packetContent);
 
     // GLDB_User_Status
     // packet structure
@@ -139,13 +167,13 @@ async function login({
     //
 
     // Packet length: 0x0100 = 256
-    Buffer.from([0x01, 0x00]).copy(packetContent, 2);
+    // Buffer.from([0x01, 0x00]).copy(packetContent, 2);
 
     // Load the customer id
-    packetContent.writeInt32BE(userRecord.customerId, 12);
+    // packetContent.writeInt32BE(userRecord.customerId, 12);
 
     // Don't use queue (+208, but I'm not sure if this includes the header or not)
-    Buffer.from([0x00]).copy(packetContent, 208);
+    // Buffer.from([0x00]).copy(packetContent, 208);
 
     /**
      * Return the packet twice for debug
@@ -153,13 +181,25 @@ async function login({
      * Then send ok to login packet
      */
 
-    const outboundMessage = new SerializedBuffer();
-    outboundMessage._doDeserialize(packetContent);
+    // const outboundMessage = new SerializedBuffer();
+
+    // Set the packet content in the outbound message
+    outboundMessage.data = packetContent;
+
+    log.debug("Returning login response");
+    log.debug(`Outbound message: ${outboundMessage.asHex()}`);
+
+    const outboundMessage2 = new SerializedBuffer();
+    outboundMessage2._doDeserialize(outboundMessage.serialize());
+
+    log.debug(
+        `Outbound message 2: ${outboundMessage2.serialize().toString("hex")}`,
+    );
 
     // Update the data buffer
     const response = {
         connectionId,
-        messages: [outboundMessage, outboundMessage],
+        messages: [outboundMessage2, outboundMessage2],
     };
     log.debug("Leaving login");
     return response;
