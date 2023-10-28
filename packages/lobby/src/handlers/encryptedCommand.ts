@@ -6,7 +6,6 @@ import {
 } from "../../../shared/State.js";
 import { ServerError } from "../../../shared/errors/ServerError.js";
 import {
-    GameMessage,
     LegacyMessage,
     MessageBuffer,
     SerializedBuffer,

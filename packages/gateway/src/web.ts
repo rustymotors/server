@@ -15,10 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { ServerError } from "../../shared/errors/ServerError.js";
-import {
-    CastanetResponse,
-    getPatchServer,
-} from "../../patch/src/PatchServer.js";
+import { CastanetResponse } from "../../patch/src/PatchServer.js";
 import { generateShardList } from "../../shard/src/ShardServer.js";
 import { getServerConfiguration } from "../../shared/Configuration.js";
 import {
