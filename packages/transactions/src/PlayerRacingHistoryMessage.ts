@@ -120,7 +120,7 @@ export class RacingHistoryRecordEntry extends SerializedBuffer {
         buffer.writeInt32BE(this.numberOfChampionshipsWon, offset);
         offset += 4;
         buffer.writeInt32BE(this.cashWon, offset);
-        offset += 4;
+        // total: 8 * 4 = 32 bytes
 
         return buffer;
     }
@@ -142,7 +142,7 @@ export class RacingHistoryRecordEntry extends SerializedBuffer {
         this.numberOfChampionshipsWon = buffer.readInt32BE(offset);
         offset += 4;
         this.cashWon = buffer.readInt32BE(offset);
-        offset += 4;
+        // total: 8 * 4 = 32 bytes
 
         return this;
     }
