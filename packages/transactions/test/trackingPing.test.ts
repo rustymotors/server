@@ -5,7 +5,7 @@ import { trackingPing } from "../src/trackingPing.js";
 import { describe, test, expect, vi } from "vitest";
 
 describe("trackingPing", () => {
-    test("returns a GenericReplyMessage with a opcode of 101", async () => {
+    test("does not return a message", async () => {
         // arrange
         const inboundMessage = new ServerMessage();
         vi.mock("pino", async () => {
@@ -22,7 +22,6 @@ describe("trackingPing", () => {
             packet: inboundMessage,
             log,
         });
-        expect(messages.length).toBe(1);
-        expect(messages[0].serialize()[11]).toBe(101);
+        expect(messages.length).toBe(0);
     });
 });
