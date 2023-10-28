@@ -30,7 +30,7 @@ export async function _getStockCarInfo({
     log.debug(`Sending Message: ${stockCarInfoMessage.toString()}`);
 
     const responsePacket = new ServerMessage();
-    responsePacket._header.sequence = packet._header.sequence + 1;
+    responsePacket._header.sequence = packet._header.sequence;
     responsePacket._header.flags = 8;
 
     responsePacket.setBuffer(stockCarInfoMessage.serialize());
