@@ -16,12 +16,12 @@ export async function trackingPing({
     pReply.msgNo = 101;
     pReply.msgReply = 440;
     const rPacket = new ServerMessage();
-    rPacket._header.sequence = packet._header.sequence + 1;
+    rPacket._header.sequence = packet._header.sequence;
     rPacket._header.flags = 8;
 
     rPacket.setBuffer(pReply.serialize());
 
     log.debug(`TrackingPing: ${rPacket.toString()}`);
 
-    return { connectionId, messages: [rPacket] };
+    return { connectionId, messages: [] };
 }
