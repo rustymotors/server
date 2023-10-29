@@ -28,7 +28,6 @@ import {
     SerializedBuffer,
 } from "../../shared/messageFactory.js";
 import { Logger } from "pino";
-import { BuddyInfoRecord } from "./BuddyInfoMessage.js";
 import { _selectGamePersona } from "./_selectGamePersona.js";
 import { _gameLogout } from "./_gameLogout.js";
 import { _getFirstBuddy } from "./_getFirstBuddy.js";
@@ -321,30 +320,3 @@ export async function receivePersonaData({
         );
     }
 }
-
-export const buddies: BuddyInfoRecord[] = [
-    {
-        buddyId: 2,
-        buddyName: "Einstein",
-        gameName: "Good Woof",
-        isBuddy: true,
-        isOnline: true,
-        dnd: false,
-        dnb: false,
-        noEntry: false,
-        muteWhispers: false,
-        muteChat: false,
-    },
-    {
-        buddyId: 3,
-        buddyName: "Marty",
-        gameName: "That kid",
-        isBuddy: true,
-        isOnline: true,
-        dnd: false,
-        dnb: false,
-        noEntry: false,
-        muteWhispers: false,
-        muteChat: false,
-    },
-];

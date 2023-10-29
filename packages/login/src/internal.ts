@@ -138,13 +138,13 @@ async function login({
     offset += 12;
 
     // Calculate the padding needed to make the packet a multiple of 8
-    const padding = 8 - (offset % 8) + 1;
+    // const padding = 8 - (offset % 8) + 1;
 
     // Create the padding buffer
-    const paddingBuffer = Buffer.alloc(padding);
+    // const paddingBuffer = Buffer.alloc(padding);
 
     // Concatenate the data buffer and the padding buffer
-    const packetContent = Buffer.concat([dataBuffer, paddingBuffer]);
+    const packetContent = dataBuffer;
 
     // Create the packet content
     // const packetContent = premadeLogin();

@@ -9,6 +9,10 @@ export interface Serializable {
     asHex(): string;
 }
 
+/**
+ * Base class for all serialized objects
+ * Just a wrapper around a buffer
+ */
 export class BaseSerialized implements Serializable {
     protected _data: Buffer;
 

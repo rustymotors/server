@@ -1,9 +1,10 @@
 import {
     LegacyMessage,
-    NPSMessage,
-    SerializedBuffer,
     serializeStringRaw,
 } from "../../shared/messageFactory.js";
+import { BaseSerialized } from "../../shared/src/BaseSerialized.js";
+import { NetworkMessage } from "../../shared/src/NetworkMessage.js";
+import { RawMessage } from "../../shared/src/RawMessage.js";
 
 /**
  * BuddyInfoMessage
@@ -17,164 +18,124 @@ import {
  * buddy list itself. It has a response code of 1544 (0x608).
  */
 
-export class BuddyInfoMessage extends SerializedBuffer {
+export class BuddyInfoMessage extends RawMessage {
     _buddyCount: number; // 2 bytes
+    _buddyList: BuddyList[] = [];
+    _longOne = 0x00000000; // 4 bytes
+    _longTwo = 0x00000000; // 4 bytes
     constructor() {
-        super();
+        super(0x614);
         this._buddyCount = 0;
     }
 
-    override size(): number {
-        return super.size();
+    override get length(): number {
+        return super.length + 2 + this._buddyCount * 115;
     }
 
     override serialize(): Buffer {
-        const buffer = Buffer.alloc(this.size());
-
-        return buffer;
-    }
-}
-
-export class BuddyListCount extends NPSMessage {
-    _buddyCount: number; // 2 bytes
-    _buddies: BuddyInfo[];
-    constructor() {
-        super();
-        this._header.id = 0x614;
-        this._buddyCount = 0;
-        this._buddies = [];
-    }
-
-    override size(): number {
-        return this._header._size + 2 + this._buddies.length * 115;
-    }
-
-    addBuddy(buddy: BuddyInfo) {
-        this._buddies.push(buddy);
-        this._buddyCount = this._buddies.length;
-        this._header.length = this.size();
-    }
-
-    override serialize(): Buffer {
-        const buffer = Buffer.alloc(this.size());
+        const buffer = Buffer.alloc(this.length);
         let offset = 0;
-        this._header._doSerialize().copy(buffer, offset);
-        offset += this._header._size;
+        super.serialize().copy(buffer, offset);
+        offset += super.length;
         buffer.writeUInt16BE(this._buddyCount, offset);
         offset += 2;
-        for (let i = 0; i < this._buddies.length; i++) {
-            this._buddies[i].serialize().copy(buffer, offset);
-            offset += this._buddies[i].size();
+        for (const buddy of this._buddyList) {
+            buddy.serialize().copy(buffer, offset);
+            offset += buddy.length;
         }
-
         return buffer;
+    }
+
+    add(buddy: BuddyList): void {
+        this._buddyList.push(buddy);
+        this._buddyCount++;
     }
 }
 
-export type BuddyInfoRecord = {
-    buddyId: number; // 4 bytes
-    isBuddy: boolean; // 1 byte
-    isOnline: boolean; // 1 byte
-    dnd: boolean; // 1 byte
-    dnb: boolean; // 1 byte
-    noEntry: boolean; // 1 byte
-    muteWhispers: boolean; // 1 byte
-    muteChat: boolean; // 1 byte
-    gameName: string; // 64 bytes
-    buddyName: string; // 32 bytes
-};
-
-export class BuddyInfo extends LegacyMessage {
-    _buddyMap: BuddyMap;
-    _isBuddy: boolean; // 1 byte
-    _isOnline: boolean; // 1 byte
-    _dnd: boolean; // 1 byte
-    _dnb: boolean; // 1 byte
-    _noEntry: boolean; // 1 byte
-    _muteWhispers: boolean; // 1 byte
-    _muteChat: boolean; // 1 byte
-    _gameName: string; // 64 bytes
-    _buddyName: string; // 32 bytes
-
+export class BuddyCount extends NetworkMessage {
+    _buddyCount: number; // 2 bytes
     constructor() {
-        super();
-        this._header.id = 0x608;
-        this._buddyMap = new BuddyMap();
-        this._isBuddy = false;
-        this._isOnline = false;
-        this._dnd = false;
-        this._dnb = false;
-        this._noEntry = false;
-        this._muteWhispers = false;
-        this._muteChat = false;
-        this._gameName = "";
-        this._buddyName = "";
+        super(0x614);
+        this._buddyCount = 0;
     }
 
-    static fromRecord(record: BuddyInfoRecord): BuddyInfo {
-        const buddyInfo = new BuddyInfo();
-        buddyInfo._buddyMap._buddyId = record.buddyId;
-        buddyInfo._isBuddy = record.isBuddy;
-        buddyInfo._isOnline = record.isOnline;
-        buddyInfo._dnd = record.dnd;
-        buddyInfo._dnb = record.dnb;
-        buddyInfo._noEntry = record.noEntry;
-        buddyInfo._muteWhispers = record.muteWhispers;
-        buddyInfo._muteChat = record.muteChat;
-        buddyInfo._gameName = record.gameName;
-        buddyInfo._buddyName = record.buddyName;
-        return buddyInfo;
-    }
-
-    size(): number {
-        return 115 + this._buddyMap.size() + this._header._size;
+    override get length(): number {
+        return super.length + 2;
     }
 
     override serialize(): Buffer {
-        const buffer = Buffer.alloc(this.size());
+        const buffer = Buffer.alloc(this.length);
         let offset = 0;
-        this._header._doSerialize().copy(buffer, offset);
-        offset += this._header._size;
-        this._buddyMap.serialize().copy(buffer, offset);
-        offset += 8;
-        offset = serializeStringRaw(this._buddyName, buffer, offset, 32);
-        offset = serializeStringRaw(this._gameName, buffer, offset, 64);
-        buffer.writeUInt8(this._isBuddy ? 1 : 0, offset);
-        offset += 1;
-        buffer.writeUInt8(this._isOnline ? 1 : 0, offset);
-        offset += 1;
-        buffer.writeUInt8(this._dnd ? 1 : 0, offset);
-        offset += 1;
-        buffer.writeUInt8(this._dnb ? 1 : 0, offset);
-        offset += 1;
-        buffer.writeUInt8(this._noEntry ? 1 : 0, offset);
-        offset += 1;
-        buffer.writeUInt8(this._muteWhispers ? 1 : 0, offset);
-        offset += 1;
-        buffer.writeUInt8(this._muteChat ? 1 : 0, offset);
-
+        buffer.writeUInt16BE(this.messageId, offset);
+        offset += 2;
+        buffer.writeUInt16BE(this.length, offset);
+        offset += 2;
+        buffer.writeUInt16BE(this.version, offset);
+        offset += 2;
+        buffer.writeUInt16BE(this.reserved, offset);
+        offset += 2;
+        buffer.writeUInt32BE(this.length, offset);
+        offset += 4;
+        buffer.writeUInt16BE(this._buddyCount, offset);
+        offset += 2;
         return buffer;
+    }
+
+    set buddyCount(count: number) {
+        this._buddyCount = count;
     }
 }
 
-export class BuddyMap extends SerializedBuffer {
-    _a2 = 0; // 4 bytes - No clue what this is, appears to always be 0
-    _buddyId = 0; // 4 bytes
+export class BuddyList extends RawMessage {
+    // These are BuddyMap fields
+    // These are BuddyInfo fields
+    buddyName = ""; // 33 bytes - 32 + null terminator
+    gameName = ""; // 65 bytes - 64 + null terminator
+    isBuddy = false; // 1 byte
+    isOnline = false; // 1 byte
+    dnd = false; // 1 byte
+    dnb = false; // 1 byte
+    noEntry = false; // 1 byte
+    muteWhispers = false; // 1 byte
+    muteChat = false; // 1 byte
 
     constructor() {
-        super();
+        super(0x608);
     }
 
-    override size(): number {
-        return 8;
+    override get length(): number {
+        return 115;
     }
 
     override serialize(): Buffer {
-        const buffer = Buffer.alloc(this.size());
-
-        buffer.writeUInt32BE(this._a2, 0);
-        buffer.writeUInt32BE(this._buddyId, 4);
+        const buffer = Buffer.alloc(this.length);
+        let offset = 0;
+        super.serialize().copy(buffer, offset);
+        offset += super.length;
+        buffer.writeUInt16BE(this.messageId, offset);
+        offset += 2;
+        offset = serializeStringRaw(this.buddyName, buffer, offset, 33);
+        offset = serializeStringRaw(this.gameName, buffer, offset, 65);
+        buffer.writeUInt8(this.isBuddy ? 1 : 0, offset);
+        offset += 1;
+        buffer.writeUInt8(this.isOnline ? 1 : 0, offset);
+        offset += 1;
+        buffer.writeUInt8(this.dnd ? 1 : 0, offset);
+        offset += 1;
+        buffer.writeUInt8(this.dnb ? 1 : 0, offset);
+        offset += 1;
+        buffer.writeUInt8(this.noEntry ? 1 : 0, offset);
+        offset += 1;
+        buffer.writeUInt8(this.muteWhispers ? 1 : 0, offset);
+        offset += 1;
+        buffer.writeUInt8(this.muteChat ? 1 : 0, offset);
 
         return buffer;
     }
+
+    override toString(): string {
+        return this.serialize().toString("hex");
+    }
 }
+
+class Buddy extends BaseSerialized {}

@@ -12,8 +12,8 @@ import { SerializedBuffer } from "./SerializedBuffer.js";
  */
 export class NetworkMessage extends SerializedBuffer {
     private _messageId: number;
-    private _version: number = 0x101;
-    private _reserved: number = 0x0000;
+    version: number = 0x101;
+    reserved: number = 0x0000;
     private _checksum: number = 0x00000000;
     constructor(messageId: number, data?: Buffer) {
         super(data);
@@ -23,8 +23,8 @@ export class NetworkMessage extends SerializedBuffer {
         const buffer = Buffer.alloc(12 + this._data.length);
         buffer.writeUInt16BE(this._messageId, 0);
         buffer.writeUInt16BE(this._data.length + 12, 2);
-        buffer.writeUInt16BE(this._version, 4);
-        buffer.writeUInt16BE(this._reserved, 6);
+        buffer.writeUInt16BE(this.version, 4);
+        buffer.writeUInt16BE(this.reserved, 6);
         buffer.writeUInt32BE(this._data.length + 12, 8);
         this._data.copy(buffer, 12);
         return buffer;
@@ -43,8 +43,8 @@ export class NetworkMessage extends SerializedBuffer {
         }
         this._messageId = buffer.readUInt16BE(0);
         // Skip the length, we already know it
-        this._version = buffer.readUInt16BE(4);
-        this._reserved = buffer.readUInt16BE(6);
+        this.version = buffer.readUInt16BE(4);
+        this.reserved = buffer.readUInt16BE(6);
         this._checksum = buffer.readUInt32BE(8);
         this._data = buffer.subarray(4, 4 + length);
         return this;

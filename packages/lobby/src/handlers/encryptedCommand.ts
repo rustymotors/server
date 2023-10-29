@@ -295,4 +295,9 @@ export const channels = [
         name: "Channel 1",
         population: 1,
     },
+    {
+        id: 191,
+        name: "MCCHAT",
+        population: 0,
+    },
 ];
