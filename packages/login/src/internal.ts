@@ -94,7 +94,7 @@ async function login({
 
     if (typeof userRecord === "undefined") {
         // We were not able to locate the user's record
-        const err = new Error(
+        const err = new ServerError(
             `Unable to locate a user record for the context id: ${contextId}`,
         );
         throw err;
@@ -110,7 +110,7 @@ async function login({
             connectionId,
         )
         .catch((error) => {
-            const err = new Error(
+            const err = new ServerError(
                 `Unable to update session key in the database: ${String(
                     error,
                 )}`,
@@ -294,6 +294,6 @@ export async function handleLoginData({
         log.debug("Leaving handleLoginData");
         return result;
     } catch (error) {
-        throw new Error(`Error handling login data: ${String(error)}`);
+        throw new ServerError(`Error handling login data: ${String(error)}`);
     }
 }

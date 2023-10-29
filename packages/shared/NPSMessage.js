@@ -2,6 +2,8 @@
  * @module shared/NPSMessage
  */
 
+import { ServerError } from "./errors/ServerError.js";
+
 /**
  * @class NPSMessage
  */
@@ -45,12 +47,12 @@ export class NPSMessage {
             return packet;
         } catch (error) {
             if (error instanceof Error) {
-                const err = new TypeError(
+                const err = new ServerError(
                     `[NPSMsg] Error in serialize(): ${error.message}`,
                 );
                 throw err;
             }
-            const err = new Error(
+            const err = new ServerError(
                 "[NPSMsg] Error in serialize(), error unknown",
             );
             throw err;

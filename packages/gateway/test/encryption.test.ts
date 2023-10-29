@@ -13,6 +13,7 @@ import {
 } from "../../shared/State.js";
 import { randomUUID } from "node:crypto";
 import { mockPino } from "../../../test/factoryMocks.js";
+import { ServerError } from "../../shared/errors/ServerError.js";
 
 let testSave: (state: State) => void;
 let testState: State;
@@ -24,7 +25,7 @@ describe("Encryption", () => {
         mockPino();
         testSave = (state?: State) => {
             if (typeof state === "undefined") {
-                throw new Error("State not defined");
+                throw new ServerError("State not defined");
             }
             testState = state;
         };

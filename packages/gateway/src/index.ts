@@ -119,7 +119,7 @@ export function onSocketConnection({
     const { localPort, remoteAddress } = incomingSocket;
 
     if (localPort === undefined || remoteAddress === undefined) {
-        throw new Error("localPort or remoteAddress is undefined");
+        throw new ServerError("localPort or remoteAddress is undefined");
     }
 
     // This is a new connection so generate a new connection ID
@@ -141,7 +141,7 @@ export function onSocketConnection({
 
     // Throw an error if there is no onData handler
     if (!portOnDataHandler) {
-        throw new Error(`No onData handler for port ${localPort}`);
+        throw new ServerError(`No onData handler for port ${localPort}`);
     }
 
     incomingSocket.on("error", (error) =>

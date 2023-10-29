@@ -126,7 +126,7 @@ export class Database {
             return session.customerId === customerId;
         });
         if (typeof record === "undefined") {
-            const err = new Error(
+            const err = new ServerError(
                 "Error updating session key: existing key not found",
             );
             throw err;

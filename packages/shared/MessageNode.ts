@@ -48,7 +48,7 @@ export class MessageNode {
     deserialize(packet: Buffer) {
         const length = packet.readInt16LE(0);
         if (length !== packet.length) {
-            throw new Error(
+            throw new ServerError(
                 `[MessageNode] Length of packet ${length.toString()} does not match length of buffer ${packet.length.toString()}`,
             );
         }

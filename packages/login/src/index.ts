@@ -16,6 +16,7 @@
 
 import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
 import { DatabaseManager } from "../../interfaces/index.js";
+import { ServerError } from "../../shared/errors/ServerError.js";
 import { getServerLogger } from "../../shared/log.js";
 import { NPSMessage } from "../../shared/messageFactory.js";
 import { handleLoginData } from "./internal.js";
@@ -92,7 +93,9 @@ export class LoginServer {
             },
         ];
         if (contextId.toString() === "") {
-            const err = new Error(`Unknown contextId: ${contextId.toString()}`);
+            const err = new ServerError(
+                `Unknown contextId: ${contextId.toString()}`,
+            );
             throw err;
         }
 
@@ -104,7 +107,7 @@ export class LoginServer {
             contextId,
         })}`,
             );
-            const err = new Error(
+            const err = new ServerError(
                 `Unable to locate user record matching contextId ${contextId}`,
             );
             throw err;
@@ -157,7 +160,7 @@ export async function receiveLoginData({
         log.debug("Exiting login module");
         return response;
     } catch (error) {
-        const err = new Error(
+        const err = new ServerError(
             `There was an error in the login service: ${String(error)}`,
         );
         throw err;
