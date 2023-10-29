@@ -1,7 +1,7 @@
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
 import { StockCar } from "./StockCar.js";
-import { ServerMessage } from "../../shared/messageFactory.js";
+import { OldServerMessage } from "../../shared/messageFactory.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
 /**
@@ -29,7 +29,7 @@ export async function _getStockCarInfo({
 
     log.debug(`Sending Message: ${stockCarInfoMessage.toString()}`);
 
-    const responsePacket = new ServerMessage();
+    const responsePacket = new OldServerMessage();
     responsePacket._header.sequence = packet._header.sequence;
     responsePacket._header.flags = 8;
 

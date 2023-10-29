@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerMessage } from "../../shared/messageFactory.js";
+import { OldServerMessage } from "../../shared/messageFactory.js";
 import { login } from "./login.js";
 import { trackingPing } from "./trackingPing.js";
 import { clientConnect } from "./clientConnect.js";
@@ -29,16 +29,17 @@ import { _getGameUrls } from "./_getGameUrls.js";
 import { _getArcadeCarInfo } from "./_getArcadeCarInfo.js";
 import { _getStockCarInfo } from "./_getStockCarInfo.js";
 import { _logout } from "./_logout.js";
+import { ServerMessage } from "../../shared/src/ServerMessage.js";
 
 export interface MessageHandlerArgs {
     connectionId: string;
-    packet: ServerMessage;
+    packet: OldServerMessage;
     log: import("pino").Logger;
 }
 
 export interface MessageHandlerResult {
     connectionId: string;
-    messages: ServerMessage[];
+    messages: OldServerMessage[] | ServerMessage[];
 }
 
 export interface MessageHandler {

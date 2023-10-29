@@ -1,6 +1,6 @@
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { TLoginMessage } from "./TLoginMessage.js";
-import { ServerMessage } from "../../shared/messageFactory.js";
+import { OldServerMessage } from "../../shared/messageFactory.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
 /**
@@ -21,7 +21,7 @@ export async function login({
     const pReply = new GenericReplyMessage();
     pReply.msgNo = 213;
     pReply.msgReply = 105;
-    const responsePacket = new ServerMessage();
+    const responsePacket = new OldServerMessage();
     responsePacket._header.sequence = packet._header.sequence;
     responsePacket._header.flags = 8;
     responsePacket.setBuffer(pReply.serialize());

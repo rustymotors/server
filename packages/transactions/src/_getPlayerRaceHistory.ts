@@ -1,5 +1,5 @@
+import { ServerMessage } from "../../shared/src/ServerMessage.js";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
-import { ServerMessage } from "../../shared/messageFactory.js";
 import {
     PlayerRacingHistoryMessage,
     RacingHistoryRecordEntry,
@@ -51,8 +51,13 @@ export async function _getPlayerRaceHistory({
 
     log.debug(`Received Message: ${getPlayerRaceHistoryMessage.toString()}`);
 
-    const outgoingMessage = new PlayerRacingHistoryMessage();
-    outgoingMessage._msgId = 362;
+    const playerId = getPlayerRaceHistoryMessage.data.readInt32LE(0);
+
+    log.debug(`Player ID: ${playerId}`);
+
+    const playerRacingHistoryMessage = new PlayerRacingHistoryMessage();
+    playerRacingHistoryMessage._msgId = 362;
+    playerRacingHistoryMessage._userId = playerId;
 
     for (const record of racingHistoryRecords) {
         const recordEntry = new RacingHistoryRecordEntry();
@@ -65,14 +70,16 @@ export async function _getPlayerRaceHistory({
         recordEntry.numberOfChampionshipsWon = record.numberOfChampionshipsWon;
         recordEntry.cashWon = record.cashWon;
 
-        outgoingMessage.addRecord(recordEntry);
+        playerRacingHistoryMessage.addRecord(recordEntry);
     }
 
-    const responsePacket = new ServerMessage();
-    responsePacket._header.sequence = packet._header.sequence;
-    responsePacket._header.flags = 8;
+    const responsePacket = new ServerMessage(
+        packet._header.sequence,
+        8,
+        playerRacingHistoryMessage.serialize(),
+    );
 
-    responsePacket.setBuffer(outgoingMessage.serialize());
+    log.debug(`Sending Message: ${playerRacingHistoryMessage.toString()}`);
 
     return { connectionId, messages: [responsePacket] };
 }

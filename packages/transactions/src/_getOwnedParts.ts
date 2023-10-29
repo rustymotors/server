@@ -1,5 +1,5 @@
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
-import { ServerMessage } from "../../shared/messageFactory.js";
+import { OldServerMessage } from "../../shared/messageFactory.js";
 import { PartsAssemblyMessage } from "./PartsAssemblyMessage.js";
 import {
     fetchStateFromDatabase,
@@ -29,7 +29,7 @@ export async function _getOwnedParts({
     const ownedPartsMessage = new PartsAssemblyMessage(session.gameId);
     ownedPartsMessage._msgNo = 175;
 
-    const responsePacket = new ServerMessage();
+    const responsePacket = new OldServerMessage();
     responsePacket._header.sequence = packet._header.sequence;
     responsePacket._header.flags = 8;
 

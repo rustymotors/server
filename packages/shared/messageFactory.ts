@@ -28,7 +28,7 @@ class AbstractSerializable {
     }
 
     _doSerialize() {
-        throw new Error("Method '_doSerialize()' must be implemented.");
+        throw new ServerError("Method '_doSerialize()' must be implemented.");
     }
 
     /**
@@ -37,7 +37,7 @@ class AbstractSerializable {
      */
     // eslint-disable-next-line no-unused-vars
     _doDeserialize(_buffer: Buffer): AbstractSerializable {
-        throw new Error("Method '_doDeserialize()' must be implemented.");
+        throw new ServerError("Method '_doDeserialize()' must be implemented.");
     }
 
     get data() {
@@ -56,7 +56,7 @@ class AbstractSerializable {
      * @returns {number}
      */
     static get Size(): number {
-        throw new Error("Method 'Size' must be implemented.");
+        throw new ServerError("Method 'Size' must be implemented.");
     }
 }
 
@@ -301,7 +301,9 @@ export class NPSHeader extends SerializableMixin(AbstractSerializable) {
             this.id = buffer.readInt16BE(0);
             this.length = buffer.readInt16BE(2);
         } catch (error) {
-            throw new Error(`Error deserializing buffer: ${String(error)}`);
+            throw new ServerError(
+                `Error deserializing buffer: ${String(error)}`,
+            );
         }
         return this;
     }
@@ -380,7 +382,9 @@ export class serverHeader extends SerializableMixin(AbstractSerializable) {
             this.sequence = buffer.readInt32LE(6);
             this.flags = buffer.readInt8(10);
         } catch (error) {
-            throw new Error(`Error deserializing buffer: ${String(error)}`);
+            throw new ServerError(
+                `Error deserializing buffer: ${String(error)}`,
+            );
         }
         return this;
     }
@@ -530,7 +534,7 @@ export class SerializedBuffer extends SerializableMixin(AbstractSerializable) {
     }
 
     override toString() {
-        return `SerializedBuffer: ${this.data.toString("hex")}`;
+        return `SerializedBuffer: ${this.serialize().toString("hex")}`;
     }
 
     size() {
@@ -865,7 +869,7 @@ export class MessageBuffer extends SerializedBuffer {
  *
  * @mixin {SerializableMixin}
  */
-export class ServerMessage extends SerializedBuffer {
+export class OldServerMessage extends SerializedBuffer {
     _header: serverHeader;
     _msgNo: number;
     constructor() {
@@ -880,9 +884,9 @@ export class ServerMessage extends SerializedBuffer {
 
     /**
      * @param {Buffer} buffer
-     * @returns {ServerMessage}
+     * @returns {OldServerMessage}
      */
-    override _doDeserialize(buffer: Buffer): ServerMessage {
+    override _doDeserialize(buffer: Buffer): OldServerMessage {
         this._header._doDeserialize(buffer);
         this.setBuffer(buffer.subarray(this._header._size));
         if (this.data.length > 2) {

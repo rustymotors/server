@@ -22,9 +22,9 @@ import { getServerConfiguration } from "../../shared/Configuration.js";
 import {
     LegacyMessage,
     NPSMessage,
-    // eslint-disable-next-line no-unused-vars
     SerializedBuffer,
 } from "../../shared/messageFactory.js";
+import { handleTrackingPing } from "./handlers/handleTrackingPing.js";
 
 /**
  * Array of supported message handlers
@@ -62,6 +62,11 @@ export const messageHandlers: {
         opCode: 4353, // 0x1101
         name: "Encrypted command",
         handler: handleEncryptedNPSCommand,
+    },
+    {
+        opCode: 535, // 0x0217
+        name: "Tracking ping",
+        handler: handleTrackingPing,
     },
 ];
 

@@ -16,7 +16,7 @@
 
 import {
     SerializedBuffer,
-    ServerMessage,
+    OldServerMessage,
 } from "../../shared/messageFactory.js";
 
 export class ListEntry extends SerializedBuffer {
@@ -56,7 +56,7 @@ export class LoginCompleteMessage extends SerializedBuffer {
     }
 }
 
-export class TLoginMessage extends ServerMessage {
+export class TLoginMessage extends OldServerMessage {
     _size: number;
     _customerId: number;
     _personaId: number;

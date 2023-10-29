@@ -25,9 +25,10 @@ import {
 // eslint-disable-next-line no-unused-vars
 import {
     SerializedBuffer,
-    ServerMessage,
+    OldServerMessage,
 } from "../../shared/messageFactory.js";
 import { getServerConfiguration } from "../../shared/Configuration.js";
+import { ServerMessage } from "../../shared/src/ServerMessage.js";
 
 /**
  *
@@ -35,7 +36,9 @@ import { getServerConfiguration } from "../../shared/Configuration.js";
  * @param {ServerMessage} message
  * @return {boolean}
  */
-function isMessageEncrypted(message: ServerMessage): boolean {
+function isMessageEncrypted(
+    message: OldServerMessage | ServerMessage,
+): boolean {
     return message._header.flags - 8 >= 0;
 }
 
@@ -114,7 +117,9 @@ async function processInput({
             });
             return responsePackets;
         } catch (error) {
-            const err = new Error(`Error handling packet: ${String(error)}`);
+            const err = new ServerError(
+                `Error handling packet: ${String(error)}`,
+            );
             throw err;
         }
     }
@@ -154,7 +159,7 @@ export async function receiveTransactionsData({
 
     // Going to use ServerMessage in this module
 
-    const inboundMessage = new ServerMessage();
+    const inboundMessage = new OldServerMessage();
     inboundMessage._doDeserialize(message.data);
     log.debug(
         `Received Transaction Server packet: ${inboundMessage.toString()}`,
@@ -209,7 +214,6 @@ export async function receiveTransactionsData({
     });
 
     // Loop through the outbound messages and encrypt them
-    /** @type {SerializedBuffer[]} */
     const outboundMessages: SerializedBuffer[] = [];
 
     response.messages.forEach((outboundMessage) => {
