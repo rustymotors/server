@@ -30,7 +30,7 @@
         "@adminjs/sequelize": "^4.0.0",
         "@fastify/sensible": "^5.5.0",
         "@sentry/node": "7.77",
-        "@sentry/profiling-node": "^1.2.1",
+        "@sentry/profiling-node": "^1.2.6",
         "adminjs": "^7.3.0",
         "fastify": "^4.24.3",
         "moment": "^2.29.4",
