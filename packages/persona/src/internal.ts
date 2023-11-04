@@ -31,6 +31,7 @@ import { Logger } from "pino";
 import { _selectGamePersona } from "./_selectGamePersona.js";
 import { _gameLogout } from "./_gameLogout.js";
 import { _getFirstBuddy } from "./_getFirstBuddy.js";
+import { validatePersonaName } from "./handlers/validatePersonaName.js";
 
 const NAME_BUFFER_SIZE = 30;
 
@@ -75,6 +76,11 @@ export const messageHandlers: {
         opCode: 1330, // 0x532
         name: "Get persona maps",
         handler: getPersonaMaps,
+    },
+    {
+        opCode: 1331, // 0x533
+        name: "Validate persona name",
+        handler: validatePersonaName,
     },
     {
         opCode: 1291, // 0x50B
