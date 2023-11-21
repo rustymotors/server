@@ -141,7 +141,8 @@ export function onSocketConnection({
 
     // Throw an error if there is no onData handler
     if (!portOnDataHandler) {
-        throw new ServerError(`No onData handler for port ${localPort}`);
+        log.warn(`No onData handler for port ${localPort}`);
+        return;
     }
 
     incomingSocket.on("error", (error) =>
