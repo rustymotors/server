@@ -27,7 +27,7 @@
     ],
     "type": "module",
     "dependencies": {
-        "@adminjs/sequelize": "^4.0.0",
+        "@adminjs/sequelize": "^4.1.1",
         "@fastify/sensible": "^5.5.0",
         "@sentry/node": "7.85",
         "@sentry/profiling-node": "^1.2.6",
