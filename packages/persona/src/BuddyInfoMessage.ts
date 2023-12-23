@@ -1,5 +1,4 @@
 import { serializeStringRaw } from "../../shared/messageFactory.js";
-import { BaseSerialized } from "../../shared/src/BaseSerialized.js";
 import { NetworkMessage } from "../../shared/src/NetworkMessage.js";
 import { RawMessage } from "../../shared/src/RawMessage.js";
 
