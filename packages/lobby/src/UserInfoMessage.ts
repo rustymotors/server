@@ -61,7 +61,7 @@ export class UserInfoMessage extends LegacyMessage {
      * @param {Buffer} buffer
      * @returns {UserInfoMessage}
      */
-    override deserialize(buffer: Buffer): UserInfoMessage {
+    override deserialize(buffer: Buffer): this {
         try {
             this._header._doDeserialize(buffer);
             let offset = this._header._size;
