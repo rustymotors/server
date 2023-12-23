@@ -1,5 +1,5 @@
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
-import { ServerMessage } from "../../shared/messageFactory.js";
+import { OldServerMessage } from "../../shared/messageFactory.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
 /**
@@ -15,13 +15,13 @@ export async function trackingPing({
     const pReply = new GenericReplyMessage();
     pReply.msgNo = 101;
     pReply.msgReply = 440;
-    const rPacket = new ServerMessage();
-    rPacket._header.sequence = packet._header.sequence + 1;
+    const rPacket = new OldServerMessage();
+    rPacket._header.sequence = packet._header.sequence;
     rPacket._header.flags = 8;
 
     rPacket.setBuffer(pReply.serialize());
 
     log.debug(`TrackingPing: ${rPacket.toString()}`);
 
-    return { connectionId, messages: [rPacket] };
+    return { connectionId, messages: [] };
 }

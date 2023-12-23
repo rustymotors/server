@@ -236,7 +236,7 @@ export class PersonaList {
         try {
             let offset = 0;
             if (!this._personaRecords) {
-                throw new Error("PersonaRecords is undefined");
+                throw new ServerError("PersonaRecords is undefined");
             }
             for (const personaRecord of this._personaRecords) {
                 personaRecord.serialize().copy(buffer, offset);
@@ -308,7 +308,7 @@ export class PersonaMapsMessage extends NPSMessage {
     override serialize(): Buffer {
         try {
             if (!this._personaRecords) {
-                throw new Error("PersonaRecords is undefined");
+                throw new ServerError("PersonaRecords is undefined");
             }
             this._header.length =
                 NPSHeader.size() + 2 + this._personaRecords.size();

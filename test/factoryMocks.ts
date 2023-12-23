@@ -1,5 +1,6 @@
-import { vi } from "vitest";
+import { expect, it, vi } from "vitest";
 import { DatabaseManager } from "../packages/interfaces/index.js";
+import { verifyLegacyCipherSupport } from "../packages/gateway/src/encryption.js";
 
 export function mockDatabaseManager(): DatabaseManager {
     return {
@@ -34,3 +35,7 @@ export function mockPino() {
 export function unmockPino() {
     vi.unmock("pino");
 }
+
+it("should have crypto", () => {
+    expect(() => verifyLegacyCipherSupport()).not.toThrow();
+});

@@ -104,7 +104,9 @@ export class NPSUserStatus extends LegacyMessage {
             this.log.trace(`Session key: ${sessionkeyString.toString("utf8")}`); // 128 bytes
             this.log.trace(`decrypted: ${this.sessionKey}`); // 12 bytes
             this.log.error(`Error decrypting session key: ${String(error)}`);
-            throw new Error(`Unable to extract session key: ${String(error)}`);
+            throw new ServerError(
+                `Unable to extract session key: ${String(error)}`,
+            );
         }
     }
 

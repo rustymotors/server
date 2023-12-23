@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { ServerError } from "../../shared/errors/ServerError.js";
-import { getPatchServer } from "../../patch/src/PatchServer.js";
+import { CastanetResponse } from "../../patch/src/PatchServer.js";
 import { generateShardList } from "../../shard/src/ShardServer.js";
 import { getServerConfiguration } from "../../shared/Configuration.js";
 import {
@@ -30,29 +30,63 @@ import {
  * @param {import("fastify").FastifyInstance} webServer The web server
  */
 export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
+    webServer.addContentTypeParser("*", function (request, payload, done) {
+        let data = "";
+        payload.on("data", (chunk) => {
+            data += chunk;
+        });
+        payload.on("end", () => {
+            done(null, data);
+        });
+    });
+
     webServer.get("/", async (_request, reply) => {
         return reply.send("Hello, world!");
     });
 
-    webServer.get(
+    webServer.post(
         "/games/EA_Seattle/MotorCity/UpdateInfo",
         (_request, reply) => {
-            const response = getPatchServer().castanetResponse;
-            return reply.send(response);
+            const response = CastanetResponse;
+            reply.header(response.header.type, response.header.value);
+            return reply.send(response.body);
         },
     );
 
-    webServer.get("/games/EA_Seattle/MotorCity/NPS", (_request, reply) => {
-        const response = getPatchServer().castanetResponse;
-        return reply.send(response);
+    webServer.post("/games/EA_Seattle/MotorCity/NPS", (_request, reply) => {
+        const response = CastanetResponse;
+        reply.header(response.header.type, response.header.value);
+        return reply.send(response.body);
     });
 
-    webServer.get("/games/EA_Seattle/MotorCity/MCO", (_request, reply) => {
-        const response = getPatchServer().castanetResponse;
-        return reply.send(response);
+    webServer.post("/games/EA_Seattle/MotorCity/MCO", (_request, reply) => {
+        const response = CastanetResponse;
+        reply.header(response.header.type, response.header.value);
+        return reply.send(response.body);
     });
 
-    webServer.get("/AuthLogin", (_request, reply) => {
+    interface IQuerystring {
+        username: string;
+        password: string;
+    }
+
+    interface IHeaders {}
+
+    interface IReply {}
+
+    webServer.get<{
+        Querystring: IQuerystring;
+        Headers: IHeaders;
+        Reply: IReply;
+    }>("/AuthLogin", async (request, reply) => {
+        const username = request.query.username;
+
+        if (username === "new") {
+            return reply.send(
+                "Valid=TRUE\nTicket=5213dee3a6bcdb133373b2d4f3b9962758",
+            );
+        }
+
         return reply.send(
             "Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e",
         );

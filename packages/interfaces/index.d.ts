@@ -4,10 +4,19 @@ import { Cipher, Decipher } from "node:crypto";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { SerializedBuffer } from "../shared/messageFactory.js";
 import { Configuration } from "../shared/Configuration.js";
+import pino from "pino";
 
 /**
  * @module interfaces
  */
+
+export as namespace interfaces;
+
+export namespace external {
+    export namespace pino {
+        export type Logger = pino.Logger;
+    }
+}
 
 export const name = "interfaces";
 
@@ -19,7 +28,6 @@ interface SerializedObject {
     serialize: () => Buffer;
     serializeSize: () => number;
 }
-
 export const SerializedObject = {
     serialize() {
         throw new ServerError("Not implemented");
@@ -196,3 +204,5 @@ export interface KeypressEvent {
     meta: boolean;
     shift: boolean;
 }
+
+export as namespace interfaces;

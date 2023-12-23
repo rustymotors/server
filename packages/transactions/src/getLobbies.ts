@@ -1,5 +1,5 @@
 import { LobbyInfo, LobbyMessage } from "./LobbyMessage.js";
-import { ServerMessage } from "../../shared/messageFactory.js";
+import { OldServerMessage } from "../../shared/messageFactory.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 import { EntryFeePurseMessage, PurseEntry } from "./EntryFeePurseMessage.js";
 
@@ -18,7 +18,7 @@ async function _getLobbies({
     log.debug(`Received Message: ${packet.toString()}`);
 
     // Create new response packet
-    const lobbiesResponsePacket = new ServerMessage();
+    const lobbiesResponsePacket = new OldServerMessage();
     lobbiesResponsePacket._header.sequence = packet._header.sequence;
     lobbiesResponsePacket._header.flags = 8;
 
@@ -57,7 +57,7 @@ async function _getLobbies({
             .toString("hex")}`,
     );
 
-    const perseEntriesResponsePacket = new ServerMessage();
+    const perseEntriesResponsePacket = new OldServerMessage();
     perseEntriesResponsePacket._header.sequence = packet._header.sequence;
     perseEntriesResponsePacket._header.flags = 8;
 

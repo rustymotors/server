@@ -28,6 +28,10 @@ import {
     SerializedBuffer,
 } from "../../shared/messageFactory.js";
 import { Logger } from "pino";
+import { _selectGamePersona } from "./_selectGamePersona.js";
+import { _gameLogout } from "./_gameLogout.js";
+import { _getFirstBuddy } from "./_getFirstBuddy.js";
+import { validatePersonaName } from "./handlers/validatePersonaName.js";
 
 const NAME_BUFFER_SIZE = 30;
 
@@ -61,17 +65,27 @@ export const messageHandlers: {
     {
         opCode: 1283, // 0x503
         name: "Game login",
-        handler: handleSelectGamePersona,
+        handler: _selectGamePersona,
     },
     {
         opCode: 1295, // 0x50F
         name: "Game logout",
-        handler: handleGameLogout,
+        handler: _gameLogout,
     },
     {
         opCode: 1330, // 0x532
         name: "Get persona maps",
         handler: getPersonaMaps,
+    },
+    {
+        opCode: 1331, // 0x533
+        name: "Validate persona name",
+        handler: validatePersonaName,
+    },
+    {
+        opCode: 1291, // 0x50B
+        name: "Get first buddy",
+        handler: _getFirstBuddy,
     },
 ];
 
@@ -110,116 +124,6 @@ export const personaRecords: import("../../interfaces/index.js").PersonaRecord[]
     ];
 
 /**
- * Selects a game persona and marks it as in use
- * @param {object} args
- * @param {string} args.connectionId
- * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
- * @returns {Promise<{
- *  connectionId: string,
- * messages: SerializedBuffer[],
- * }>}
- */
-export async function handleSelectGamePersona({
-    connectionId,
-    message,
-    log = getServerLogger({
-        module: "PersonaServer",
-    }),
-}: {
-    connectionId: string;
-    message: LegacyMessage;
-    log?: import("pino").Logger;
-}): Promise<{
-    connectionId: string;
-    messages: SerializedBuffer[];
-}> {
-    log.debug("_npsSelectGamePersona...");
-    const requestPacket = message;
-    log.debug(
-        `LegacyMsg request object from _npsSelectGamePersona ${requestPacket
-            ._doSerialize()
-            .toString("hex")}`,
-    );
-
-    // Create the packet content
-    const packetContent = Buffer.alloc(251);
-
-    // Build the packet
-    // Response Code
-    // 207 = success
-    const responsePacket = new LegacyMessage();
-    responsePacket._header.id = 0x207;
-    responsePacket.setBuffer(packetContent);
-    log.debug(
-        `LegacyMsg response object from _npsSelectGamePersona ${responsePacket
-            ._doSerialize()
-            .toString("hex")} `,
-    );
-
-    const outboundMessage = new SerializedBuffer();
-    outboundMessage.setBuffer(responsePacket._doSerialize());
-
-    return {
-        connectionId,
-        messages: [outboundMessage],
-    };
-}
-
-/**
- * Handle game logout
- * @param {object} args
- * @param {string} args.connectionId
- * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
- * @returns {Promise<{
- *  connectionId: string,
- * messages: SerializedBuffer[],
- * }>}
- */
-export async function handleGameLogout({
-    connectionId,
-    message,
-    log = getServerLogger({
-        module: "PersonaServer",
-    }),
-}: {
-    connectionId: string;
-    message: LegacyMessage;
-    log?: import("pino").Logger;
-}): Promise<{
-    connectionId: string;
-    messages: SerializedBuffer[];
-}> {
-    log.debug("_npsLogoutGameUser...");
-    const requestPacket = message;
-    log.debug(
-        `NPSMsg request object from _npsLogoutGameUser',
-      ${JSON.stringify({
-          NPSMsg: requestPacket.toString(),
-      })}`,
-    );
-
-    // Build the packet
-    const responsePacket = new LegacyMessage();
-    responsePacket._header.id = 0x207;
-    log.debug(
-        `NPSMsg response object from _npsLogoutGameUser',
-      ${JSON.stringify({
-          NPSMsg: responsePacket.toString(),
-      })}`,
-    );
-
-    const outboundMessage = new SerializedBuffer();
-    outboundMessage._doDeserialize(responsePacket._doSerialize());
-
-    return {
-        connectionId,
-        messages: [outboundMessage],
-    };
-}
-
-/**
  *
  * @param {number} customerId
 //  * @return {Promise<import("../../interfaces/index.js").PersonaRecord[]>}
@@ -245,7 +149,6 @@ async function getPersonaMapsByCustomerId(
     customerId: number,
 ): Promise<import("../../interfaces/index.js").PersonaRecord[]> {
     switch (customerId) {
-        case 2868969472:
         case 5551212:
             return getPersonasByCustomerId(customerId);
         default:
@@ -294,72 +197,65 @@ async function getPersonaMaps({
 
     // this is a GLDP_PersonaList::GLDP_PersonaList
 
-    if (personas.length === 0) {
-        const err = new Error(
-            `No personas found for customer Id: ${customerId}`,
-        );
-        throw err;
-    } else {
-        try {
-            /** @type {PersonaList} */
-            let personaList: PersonaList = new PersonaList();
+    try {
+        /** @type {PersonaList} */
+        let personaList: PersonaList = new PersonaList();
 
-            if (personas.length > 1) {
-                log.warn(
-                    `More than one persona found for customer Id: ${customerId}`,
-                );
-            }
+        if (personas.length > 1) {
+            log.warn(
+                `More than one persona found for customer Id: ${customerId}`,
+            );
+        }
 
-            personas.forEach((persona) => {
-                const personaRecord = new PersonaRecord();
+        personas.forEach((persona) => {
+            const personaRecord = new PersonaRecord();
 
-                personaRecord.customerId = persona.customerId;
-                personaRecord.personaId = persona.id.readUInt32BE(0);
-                personaRecord.personaName = persona.name.toString("utf8");
-                personaRecord.shardId = persona.shardId.readUInt32BE(0);
-                personaRecord.numberOfGames = personas.length;
+            personaRecord.customerId = persona.customerId;
+            personaRecord.personaId = persona.id.readUInt32BE(0);
+            personaRecord.personaName = persona.name.toString("utf8");
+            personaRecord.shardId = persona.shardId.readUInt32BE(0);
+            personaRecord.numberOfGames = personas.length;
 
-                personaList.addPersonaRecord(personaRecord);
+            personaList.addPersonaRecord(personaRecord);
 
-                log.debug(
-                    `Persona record: ${JSON.stringify({
-                        personaRecord: personaRecord.toJSON(),
-                    })}`,
-                );
-            });
-
-            personaMapsMessage._header.id = 0x607;
-            personaMapsMessage._personaRecords = personaList;
-            personaMapsMessage.setBuffer(personaList.serialize());
             log.debug(
-                `PersonaMapsMessage object from _npsGetPersonaMaps',
+                `Persona record: ${JSON.stringify({
+                    personaRecord: personaRecord.toJSON(),
+                })}`,
+            );
+        });
+
+        personaMapsMessage._header.id = 0x607;
+        personaMapsMessage._personaRecords = personaList;
+        personaMapsMessage.setBuffer(personaList.serialize());
+        log.debug(
+            `PersonaMapsMessage object from _npsGetPersonaMaps',
             ${JSON.stringify({
                 personaMapsMessage: personaMapsMessage
                     .serialize()
                     .toString("hex"),
             })}`,
-            );
+        );
 
-            const outboundMessage = new SerializedBuffer();
-            outboundMessage._doDeserialize(personaMapsMessage.serialize());
+        const outboundMessage = new SerializedBuffer();
+        outboundMessage._doDeserialize(personaMapsMessage.serialize());
 
-            return {
-                connectionId,
-                messages: [outboundMessage],
-            };
-        } catch (error) {
-            if (error instanceof Error) {
-                const err = new ServerError(
-                    `Error serializing personaMapsMsg: ${error.message}`,
-                );
-                throw err;
-            }
-
+        return {
+            connectionId,
+            messages: [outboundMessage],
+        };
+    } catch (error) {
+        if (error instanceof Error) {
             const err = new ServerError(
-                "Error serializing personaMapsMsg, error unknonw",
+                `Error serializing personaMapsMsg: ${error.message}`,
             );
             throw err;
         }
+
+        const err = new ServerError(
+            "Error serializing personaMapsMsg, error unknonw",
+        );
+        throw err;
     }
 }
 

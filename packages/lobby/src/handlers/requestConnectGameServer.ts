@@ -67,7 +67,7 @@ export async function _npsRequestGameConnectServer({
         id: inboundMessage._userId,
     });
     if (typeof personas[0] === "undefined") {
-        const err = new Error("No personas found.");
+        const err = new ServerError("No personas found.");
         throw err;
     }
 
@@ -83,7 +83,7 @@ export async function _npsRequestGameConnectServer({
         const keys = await databaseManager
             .fetchSessionKeyByCustomerId(customerId)
             .catch((/** @type {unknown} */ error: unknown) => {
-                throw new Error(
+                throw new ServerError(
                     `Unable to fetch session key for customerId ${customerId.toString()}: ${String(
                         error,
                     )}`,

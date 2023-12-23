@@ -13,7 +13,7 @@ import {
     createCommandEncryptionPair,
     createDataEncryptionPair,
 } from "../../gateway/src/encryption.js";
-import { ServerMessage } from "../../shared/messageFactory.js";
+import { OldServerMessage } from "../../shared/messageFactory.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
 /**
@@ -91,7 +91,7 @@ export async function clientConnect({
     pReply.msgNo = 101;
     pReply.msgReply = newMessage._msgNo;
 
-    const responsePacket = new ServerMessage();
+    const responsePacket = new OldServerMessage();
     responsePacket.setBuffer(pReply.serialize());
     responsePacket._header.sequence = packet._header.sequence;
 

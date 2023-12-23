@@ -76,7 +76,7 @@ export class MiniRiffInfo extends SerializedBuffer {
             const buffer = Buffer.alloc(this.size());
             let offset = 0;
             if (this._riffName.length > 32) {
-                throw new Error("Riff name is too long");
+                throw new ServerError("Riff name is too long");
             }
             offset = serializeString(this._riffName, buffer, offset);
 

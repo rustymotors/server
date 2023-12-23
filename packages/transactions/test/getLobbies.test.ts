@@ -1,6 +1,6 @@
 import { mockPino } from "../../../test/factoryMocks.js";
 import { getServerLogger } from "../../shared/log.js";
-import { ServerMessage } from "../../shared/messageFactory.js";
+import { OldServerMessage } from "../../shared/messageFactory.js";
 import { getLobbies } from "../src/getLobbies.js";
 import { describe, expect, it } from "vitest";
 
@@ -8,7 +8,7 @@ describe("getLobbies", () => {
     it("should return a promise", async () => {
         // arrange
         const connectionId = "1";
-        const packet = new ServerMessage();
+        const packet = new OldServerMessage();
         mockPino();
         const log = getServerLogger({});
 

@@ -1,5 +1,5 @@
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
-import { ServerMessage } from "../../shared/messageFactory.js";
+import { OldServerMessage } from "../../shared/messageFactory.js";
 import { OwnedVehicle, OwnedVehiclesMessage } from "./OwnedVehiclesMessage.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
@@ -38,7 +38,7 @@ export async function _getOwnedVehicles(
 
     ownedVehiclesMessage._msgNo = 173;
 
-    const responsePacket = new ServerMessage();
+    const responsePacket = new OldServerMessage();
     responsePacket._header.sequence = args.packet._header.sequence;
     responsePacket._header.flags = 8;
 

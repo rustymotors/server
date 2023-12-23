@@ -15,7 +15,7 @@ import { channelRecordSize, channels } from "./encryptedCommand.js";
  * @param {LegacyMessage} args.message
  * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
  */
-export function handleSendMiniRiffList({
+export async function handleSendMiniRiffList({
     connectionId,
     message,
     log = getServerLogger({

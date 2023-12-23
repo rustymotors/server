@@ -19,14 +19,14 @@ import { NPSUserStatus } from "./NPSUserStatus.js";
 import { getServerLogger } from "../../shared/log.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
-import { premadeLogin } from "./premadeLogin.js";
 import { NPSMessage, SerializedBuffer } from "../../shared/messageFactory.js";
+import { NetworkMessage } from "../../shared/src/NetworkMessage.js";
 
 /** @type {import("../../interfaces/index.js").UserRecordMini[]} */
 const userRecords: import("../../interfaces/index.js").UserRecordMini[] = [
     {
         contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
-        customerId: 0xac010000,
+        customerId: 0x0012808b,
         userId: 0x00000002,
     },
     {
@@ -92,7 +92,7 @@ async function login({
 
     if (typeof userRecord === "undefined") {
         // We were not able to locate the user's record
-        const err = new Error(
+        const err = new ServerError(
             `Unable to locate a user record for the context id: ${contextId}`,
         );
         throw err;
@@ -108,7 +108,7 @@ async function login({
             connectionId,
         )
         .catch((error) => {
-            const err = new Error(
+            const err = new ServerError(
                 `Unable to update session key in the database: ${String(
                     error,
                 )}`,
@@ -118,48 +118,41 @@ async function login({
 
     log.debug("Session key updated");
 
-    // Create the packet content
-    const packetContent = premadeLogin();
-    log.debug(`Using Premade Login: ${packetContent.toString("hex")}`);
+    const outboundMessage = new NetworkMessage(0x601);
 
-    // MsgId: 0x601 = NPS_USER_VALID = 1537
-    Buffer.from([0x06, 0x01]).copy(packetContent);
+    const dataBuffer = Buffer.alloc(26);
+    let offset = 0;
+    dataBuffer.writeInt32BE(userRecord.customerId, offset);
+    offset += 4;
+    dataBuffer.writeInt32BE(userRecord.userId, offset);
+    offset += 4;
+    dataBuffer.writeInt8(0, offset); // isCacheHit
+    offset += 1;
+    dataBuffer.writeInt8(0, offset); // ban
+    offset += 1;
+    dataBuffer.writeInt8(0, offset); // gag
+    offset += 1;
+    dataBuffer.write(sessionKey ?? "", offset, 12, "ascii");
 
-    // GLDB_User_Status
-    // packet structure
-    // msgId: 0x0601 = NPS_USER_VALID = 1537 = 2 bytes
-    // packetLength: 0x0100 = 256 = 2 bytes
-    // customerId: 0x00000000 = 4 bytes
-    // personaId: 0x00000000 = 4 bytes
-    // isCacheHit: 0x00 = 1 byte
-    // ban: 0x00 = 1 byte
-    // gag: 0x00 = 1 byte
-    // sessionKey: 0x00000000000 = 12 bytes
-    // pack size in bytes: 26
-    //
+    const packetContent = dataBuffer;
 
-    // Packet length: 0x0100 = 256
-    Buffer.from([0x01, 0x00]).copy(packetContent, 2);
+    // Set the packet content in the outbound message
+    outboundMessage.data = packetContent;
 
-    // Load the customer id
-    packetContent.writeInt32BE(userRecord.customerId, 12);
+    log.debug("Returning login response");
+    log.debug(`Outbound message: ${outboundMessage.asHex()}`);
 
-    // Don't use queue (+208, but I'm not sure if this includes the header or not)
-    Buffer.from([0x00]).copy(packetContent, 208);
+    const outboundMessage2 = new SerializedBuffer();
+    outboundMessage2._doDeserialize(outboundMessage.serialize());
 
-    /**
-     * Return the packet twice for debug
-     * Debug sends the login request twice, so we need to reply twice
-     * Then send ok to login packet
-     */
-
-    const outboundMessage = new SerializedBuffer();
-    outboundMessage._doDeserialize(packetContent);
+    log.debug(
+        `Outbound message 2: ${outboundMessage2.serialize().toString("hex")}`,
+    );
 
     // Update the data buffer
     const response = {
         connectionId,
-        messages: [outboundMessage, outboundMessage],
+        messages: [outboundMessage2, outboundMessage2],
     };
     log.debug("Leaving login");
     return response;
@@ -254,6 +247,6 @@ export async function handleLoginData({
         log.debug("Leaving handleLoginData");
         return result;
     } catch (error) {
-        throw new Error(`Error handling login data: ${String(error)}`);
+        throw new ServerError(`Error handling login data: ${String(error)}`);
     }
 }

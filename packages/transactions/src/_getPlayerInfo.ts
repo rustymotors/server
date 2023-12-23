@@ -1,5 +1,5 @@
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
-import { ServerMessage } from "../../shared/messageFactory.js";
+import { OldServerMessage } from "../../shared/messageFactory.js";
 import { PlayerInfoMessage } from "./PlayerInfoMessage.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
@@ -20,7 +20,7 @@ export async function _getPlayerInfo(
         playerInfoMessage._playerName = "Drazi Crendraven";
         playerInfoMessage._currentLevel = 1;
 
-        const responsePacket = new ServerMessage();
+        const responsePacket = new OldServerMessage();
         responsePacket._header.sequence = args.packet._header.sequence;
         responsePacket._header.flags = 8;
 

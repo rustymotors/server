@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, test, vi } from "vitest";
 import {
     createCommandEncryptionPair,
     createDataEncryptionPair,
@@ -13,6 +13,7 @@ import {
 } from "../../shared/State.js";
 import { randomUUID } from "node:crypto";
 import { mockPino } from "../../../test/factoryMocks.js";
+import { ServerError } from "../../shared/errors/ServerError.js";
 
 let testSave: (state: State) => void;
 let testState: State;
@@ -24,7 +25,7 @@ describe("Encryption", () => {
         mockPino();
         testSave = (state?: State) => {
             if (typeof state === "undefined") {
-                throw new Error("State not defined");
+                throw new ServerError("State not defined");
             }
             testState = state;
         };
@@ -158,5 +159,29 @@ describe("Encryption", () => {
         expect(decryptedMessage).toBeDefined();
 
         expect(decryptedMessage).toEqual(message);
+    });
+
+    test("data should throw when the key is too short", () => {
+        // Arrange
+
+        const key = "22c4df";
+
+        // Act + Assert
+
+        expect(() => {
+            createDataEncryptionPair(key);
+        }).toThrow("Key too short");
+    });
+
+    test("command should throw when the key is too short", () => {
+        // Arrange
+
+        const key = "25";
+
+        // Act + Assert
+
+        expect(() => {
+            createCommandEncryptionPair(key);
+        }).toThrow("Key too short");
     });
 });

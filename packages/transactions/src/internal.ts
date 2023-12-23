@@ -25,9 +25,10 @@ import {
 // eslint-disable-next-line no-unused-vars
 import {
     SerializedBuffer,
-    ServerMessage,
+    OldServerMessage,
 } from "../../shared/messageFactory.js";
 import { getServerConfiguration } from "../../shared/Configuration.js";
+import { ServerMessage } from "../../shared/src/ServerMessage.js";
 
 /**
  *
@@ -35,7 +36,9 @@ import { getServerConfiguration } from "../../shared/Configuration.js";
  * @param {ServerMessage} message
  * @return {boolean}
  */
-function isMessageEncrypted(message: ServerMessage): boolean {
+function isMessageEncrypted(
+    message: OldServerMessage | ServerMessage,
+): boolean {
     return message._header.flags - 8 >= 0;
 }
 
@@ -64,6 +67,8 @@ function _MSG_STRING(messageID: number): string {
         { id: 322, name: "MC_GET_ARCADE_CARS" }, // 0x142"}
         { id: 324, name: "MC_GET_LOBBIES" }, // 0x144
         { id: 325, name: "MC_LOBBIES" }, // 0x145
+        { id: 361, name: "MC_GET_PLAYER_RACING_HISTORY" }, // 0x169"}
+        { id: 362, name: "MC_PLAYER_RACING_HISTORY" }, // 0x16a"}
         { id: 389, name: "MC_GET_MCO_TUNABLES" }, // 0x185"}
         { id: 391, name: "MC_CLUB_GET_INVITATIONS" }, // 0x187
         { id: 438, name: "MC_CLIENT_CONNECT_MSG" }, // 0x1b6
@@ -112,7 +117,9 @@ async function processInput({
             });
             return responsePackets;
         } catch (error) {
-            const err = new Error(`Error handling packet: ${String(error)}`);
+            const err = new ServerError(
+                `Error handling packet: ${String(error)}`,
+            );
             throw err;
         }
     }
@@ -152,7 +159,7 @@ export async function receiveTransactionsData({
 
     // Going to use ServerMessage in this module
 
-    const inboundMessage = new ServerMessage();
+    const inboundMessage = new OldServerMessage();
     inboundMessage._doDeserialize(message.data);
     log.debug(
         `Received Transaction Server packet: ${inboundMessage.toString()}`,
@@ -207,7 +214,6 @@ export async function receiveTransactionsData({
     });
 
     // Loop through the outbound messages and encrypt them
-    /** @type {SerializedBuffer[]} */
     const outboundMessages: SerializedBuffer[] = [];
 
     response.messages.forEach((outboundMessage) => {

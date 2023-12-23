@@ -28,7 +28,7 @@ class AbstractSerializable {
     }
 
     _doSerialize() {
-        throw new Error("Method '_doSerialize()' must be implemented.");
+        throw new ServerError("Method '_doSerialize()' must be implemented.");
     }
 
     /**
@@ -37,7 +37,7 @@ class AbstractSerializable {
      */
     // eslint-disable-next-line no-unused-vars
     _doDeserialize(_buffer: Buffer): AbstractSerializable {
-        throw new Error("Method '_doDeserialize()' must be implemented.");
+        throw new ServerError("Method '_doDeserialize()' must be implemented.");
     }
 
     get data() {
@@ -56,7 +56,7 @@ class AbstractSerializable {
      * @returns {number}
      */
     static get Size(): number {
-        throw new Error("Method 'Size' must be implemented.");
+        throw new ServerError("Method 'Size' must be implemented.");
     }
 }
 
@@ -227,6 +227,26 @@ export class GameMessageHeader extends legacyHeader {
         return 8;
     }
 
+    deserialize(buffer: Buffer) {
+        if (buffer.length < 8) {
+            throw new ServerError(
+                `Buffer length ${buffer.length} is too short to deserialize`,
+            );
+        }
+
+        try {
+            this.id = buffer.readInt16BE(0);
+            this.length = buffer.readInt16BE(2);
+            this._gameMessageId = buffer.readInt16BE(4);
+            this._gameMessageLength = buffer.readInt16BE(6);
+        } catch (error) {
+            throw new ServerError(
+                `Error deserializing buffer: ${String(error)}`,
+            );
+        }
+        return this;
+    }
+
     serialize() {
         const buffer = Buffer.alloc(8);
         buffer.writeInt16BE(this.id, 0);
@@ -249,11 +269,11 @@ export class GameMessageHeader extends legacyHeader {
  */
 export class NPSHeader extends SerializableMixin(AbstractSerializable) {
     _size: number;
-    id: number;
-    length: any;
-    version: number;
-    reserved: number;
-    checksum: number;
+    id: number; // 2 bytes
+    length: number; // 2 bytes
+    version: number; // 2 bytes
+    reserved: number; // 2 bytes
+    checksum: number; // 4 bytes
     constructor() {
         super();
         this._size = 12;
@@ -281,7 +301,9 @@ export class NPSHeader extends SerializableMixin(AbstractSerializable) {
             this.id = buffer.readInt16BE(0);
             this.length = buffer.readInt16BE(2);
         } catch (error) {
-            throw new Error(`Error deserializing buffer: ${String(error)}`);
+            throw new ServerError(
+                `Error deserializing buffer: ${String(error)}`,
+            );
         }
         return this;
     }
@@ -360,7 +382,9 @@ export class serverHeader extends SerializableMixin(AbstractSerializable) {
             this.sequence = buffer.readInt32LE(6);
             this.flags = buffer.readInt8(10);
         } catch (error) {
-            throw new Error(`Error deserializing buffer: ${String(error)}`);
+            throw new ServerError(
+                `Error deserializing buffer: ${String(error)}`,
+            );
         }
         return this;
     }
@@ -404,6 +428,10 @@ export class LegacyMessage extends SerializableMixin(AbstractSerializable) {
         this._header._doDeserialize(buffer);
         this.setBuffer(buffer.subarray(this._header._size));
         return this;
+    }
+
+    deserialize(buffer: Buffer) {
+        return this._doDeserialize(buffer);
     }
 
     override _doSerialize() {
@@ -506,7 +534,7 @@ export class SerializedBuffer extends SerializableMixin(AbstractSerializable) {
     }
 
     override toString() {
-        return `SerializedBuffer: ${this.data.toString("hex")}`;
+        return `SerializedBuffer: ${this.serialize().toString("hex")}`;
     }
 
     size() {
@@ -526,6 +554,40 @@ export class GameMessage extends SerializedBuffer {
     setRecordData(buffer: Buffer) {
         this._recordData = Buffer.alloc(buffer.length);
         buffer.copy(this._recordData);
+    }
+
+    /** @deprecated - Use setRecordData instead */
+    override setBuffer(buffer: Buffer) {
+        this._recordData = Buffer.alloc(buffer.length);
+        buffer.copy(this._recordData);
+    }
+
+    /** @deprecated - Use deserialize instead */
+    override _doDeserialize(buffer: Buffer): SerializedBuffer {
+        this._header._doDeserialize(buffer);
+        this._recordData = Buffer.alloc(this._header._gameMessageLength - 4);
+        buffer.copy(this._recordData, 0, 8);
+        return this;
+    }
+
+    deserialize(buffer: Buffer) {
+        this._header._doDeserialize(buffer);
+        this._recordData = Buffer.alloc(this._header.length - 4);
+        buffer.copy(this._recordData, 0, 8);
+        return this;
+    }
+
+    /** @deprecated - Use serialize instead */
+    override _doSerialize(): void {
+        this._header._gameMessageLength = 4 + this._recordData.length;
+        this._header.length = this._header._gameMessageLength + 4;
+        const buffer = Buffer.alloc(this._header.length);
+        let offset = 0; // offset is 0
+        this._header.serialize().copy(buffer);
+        offset += this._header.size(); // offset is 8
+
+        this._recordData.copy(buffer, offset);
+        this.setBuffer(buffer);
     }
 
     override serialize() {
@@ -807,7 +869,7 @@ export class MessageBuffer extends SerializedBuffer {
  *
  * @mixin {SerializableMixin}
  */
-export class ServerMessage extends SerializedBuffer {
+export class OldServerMessage extends SerializedBuffer {
     _header: serverHeader;
     _msgNo: number;
     constructor() {
@@ -816,11 +878,15 @@ export class ServerMessage extends SerializedBuffer {
         this._msgNo = 0; // 2 bytes
     }
 
+    override size(): number {
+        return this._header.length + this.data.length;
+    }
+
     /**
      * @param {Buffer} buffer
-     * @returns {ServerMessage}
+     * @returns {OldServerMessage}
      */
-    override _doDeserialize(buffer: Buffer): ServerMessage {
+    override _doDeserialize(buffer: Buffer): OldServerMessage {
         this._header._doDeserialize(buffer);
         this.setBuffer(buffer.subarray(this._header._size));
         if (this.data.length > 2) {

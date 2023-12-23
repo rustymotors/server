@@ -26,7 +26,9 @@ export class RawMessageHeader {
             this.id = buffer.readInt16BE(0);
             this.length = buffer.readInt16BE(2);
         } catch (error) {
-            throw new Error(`Error deserializing buffer: ${String(error)}`);
+            throw new ServerError(
+                `Error deserializing buffer: ${String(error)}`,
+            );
         }
         return this;
     }

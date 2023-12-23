@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerMessage } from "../../shared/messageFactory.js";
+import { OldServerMessage } from "../../shared/messageFactory.js";
 
-export class TClientConnectMessage extends ServerMessage {
+export class TClientConnectMessage extends OldServerMessage {
     _customerId: number;
     _personaId: number;
     _customerName: string;
