@@ -19,9 +19,7 @@ import { NPSUserStatus } from "./NPSUserStatus.js";
 import { getServerLogger } from "../../shared/log.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
 import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
-import { premadeLogin } from "./premadeLogin.js";
 import { NPSMessage, SerializedBuffer } from "../../shared/messageFactory.js";
-import { RawMessage } from "../../shared/src/RawMessage.js";
 import { NetworkMessage } from "../../shared/src/NetworkMessage.js";
 
 /** @type {import("../../interfaces/index.js").UserRecordMini[]} */
