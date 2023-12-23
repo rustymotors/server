@@ -74,7 +74,6 @@ export class BuddyCount extends NetworkMessage {
         buffer.writeUInt32BE(this.length, offset);
         offset += 4;
         buffer.writeUInt16BE(this._buddyCount, offset);
-        offset += 2;
         return buffer;
     }
 
