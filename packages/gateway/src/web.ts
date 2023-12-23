@@ -31,7 +31,7 @@ import {
  */
 export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
     webServer.addContentTypeParser("*", function (request, payload, done) {
-        var data = "";
+        let data = "";
         payload.on("data", (chunk) => {
             data += chunk;
         });
