@@ -133,53 +133,8 @@ async function login({
     dataBuffer.writeInt8(0, offset); // gag
     offset += 1;
     dataBuffer.write(sessionKey ?? "", offset, 12, "ascii");
-    offset += 12;
 
-    // Calculate the padding needed to make the packet a multiple of 8
-    // const padding = 8 - (offset % 8) + 1;
-
-    // Create the padding buffer
-    // const paddingBuffer = Buffer.alloc(padding);
-
-    // Concatenate the data buffer and the padding buffer
     const packetContent = dataBuffer;
-
-    // Create the packet content
-    // const packetContent = premadeLogin();
-    // log.debug(`Using Premade Login: ${packetContent.toString("hex")}`);
-
-    // MsgId: 0x601 = NPS_USER_VALID = 1537
-    // Buffer.from([0x06, 0x01]).copy(packetContent);
-
-    // GLDB_User_Status
-    // packet structure
-    // msgId: 0x0601 = NPS_USER_VALID = 1537 = 2 bytes
-    // packetLength: 0x0100 = 256 = 2 bytes
-    // customerId: 0x00000000 = 4 bytes
-    // personaId: 0x00000000 = 4 bytes
-    // isCacheHit: 0x00 = 1 byte
-    // ban: 0x00 = 1 byte
-    // gag: 0x00 = 1 byte
-    // sessionKey: 0x00000000000 = 12 bytes
-    // pack size in bytes: 26
-    //
-
-    // Packet length: 0x0100 = 256
-    // Buffer.from([0x01, 0x00]).copy(packetContent, 2);
-
-    // Load the customer id
-    // packetContent.writeInt32BE(userRecord.customerId, 12);
-
-    // Don't use queue (+208, but I'm not sure if this includes the header or not)
-    // Buffer.from([0x00]).copy(packetContent, 208);
-
-    /**
-     * Return the packet twice for debug
-     * Debug sends the login request twice, so we need to reply twice
-     * Then send ok to login packet
-     */
-
-    // const outboundMessage = new SerializedBuffer();
 
     // Set the packet content in the outbound message
     outboundMessage.data = packetContent;
