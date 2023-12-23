@@ -4,7 +4,6 @@
  */
 
 import { getServerLogger } from "../../shared/log.js";
-import { ConnectionRecord, RaceLobbyRecord } from "../../interfaces/index.js";
 import { ServerError } from "../../shared/errors/ServerError.js";
 
 /**
@@ -21,17 +20,17 @@ export class Database {
     }
     static instance: Database | undefined;
     private _log: import("pino").Logger;
-    private _sessions: ConnectionRecord[];
-    private _lobbies: RaceLobbyRecord[][];
+    private _sessions: interfaces.ConnectionRecord[];
+    private _lobbies: interfaces.RaceLobbyRecord[][];
     private _users: Map<number, Buffer>;
 
     /**
      * Creates an instance of Database.
      *
-     * @param {import("pino").Logger} [log=getServerLogger({ module: "database" })]
+     * @param {interfaces.external.pino.Logger} [log=getServerLogger({ module: "database" })]
      */
     constructor(
-        log: import("pino").Logger = getServerLogger({
+        log: interfaces.external.pino.Logger = getServerLogger({
             module: "database",
         }),
     ) {
@@ -39,7 +38,7 @@ export class Database {
         this._sessions = [];
         /**
          * @private
-         * @type {import("../../interfaces/index.js").RaceLobbyRecord[]}
+         * @type {interfaces.RaceLobbyRecord[]}
          */
         this._lobbies = [];
         this._users = new Map();
@@ -69,7 +68,7 @@ export class Database {
      */
     async fetchSessionKeyByCustomerId(
         customerId: number,
-    ): Promise<import("../../interfaces/index.js").ConnectionRecord> {
+    ): Promise<interfaces.ConnectionRecord> {
         const record = this._sessions.find((session) => {
             return session.customerId === customerId;
         });
@@ -86,12 +85,12 @@ export class Database {
      * Locate customer session encryption key in the database
      *
      * @param {string} connectionId
-     * @returns {Promise<import("../../interfaces/index.js").ConnectionRecord>}
+     * @returns {Promise<interfaces.ConnectionRecord>}
      * @throws {Error} If the session key is not found
      */
     async fetchSessionKeyByConnectionId(
         connectionId: string,
-    ): Promise<import("../../interfaces/index.js").ConnectionRecord> {
+    ): Promise<interfaces.ConnectionRecord> {
         const record = this._sessions.find((session) => {
             return session.connectionId === connectionId;
         });
