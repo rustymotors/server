@@ -40,7 +40,7 @@
         "ts-node": "10.9.2"
     },
     "devDependencies": {
-        "@sentry/cli": "^2.23.0",
+        "@sentry/cli": "^2.23.1",
         "@tsconfig/node-lts": "^20.1.0",
         "@tsconfig/node20": "^20.1.2",
         "@types/chai": "4.3.11",
