@@ -9,7 +9,6 @@ import { UserInfo } from "../UserInfoMessage.js";
 import { getServerConfiguration } from "../../../shared/Configuration.js";
 import { channelRecordSize, channels } from "./encryptedCommand.js";
 
-// const userRecordSize = 100;
 const user1 = new UserInfo();
 user1._userId = 1;
 user1._userName = "User 1";
