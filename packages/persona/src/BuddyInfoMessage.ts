@@ -134,5 +134,3 @@ export class BuddyList extends RawMessage {
         return this.serialize().toString("hex");
     }
 }
-
-class Buddy extends BaseSerialized {}
