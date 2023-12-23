@@ -3,6 +3,7 @@ import { ServerError } from "../../../shared/errors/ServerError.js";
 import { LegacyMessage } from "../../../shared/messageFactory.js";
 import { UserInfo } from "../UserInfoMessage.js";
 import { getServerConfiguration } from "../../../shared/Configuration.js";
+import { getDatabaseServer } from "../../../database/src/DatabaseManager.js";
 
 export async function _setMyUserData({
     connectionId,
@@ -26,8 +27,15 @@ export async function _setMyUserData({
 
         log.debug(`User ID: ${incomingMessage._userId}`);
 
-        // TODO: Here we should update the user's data in the database
-        // Then we should send a response of the user's data
+        // Get the database instance
+        const db = getDatabaseServer();
+
+        // Update the user's data
+        db.updateUser({
+            userId: incomingMessage._userId,
+            userData: incomingMessage._userData,
+        });
+
         // Build the packet
         const packetResult = new LegacyMessage();
         packetResult._header.id = 516;

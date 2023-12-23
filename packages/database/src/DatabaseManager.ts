@@ -12,10 +12,18 @@ import { ServerError } from "../../shared/errors/ServerError.js";
  */
 
 export class Database {
+    updateUser(user: { userId: number; userData: Buffer }) {
+        try {
+            this._users.set(user.userId, user.userData);
+        } catch (error) {
+            this._log.error(error);
+        }
+    }
     static instance: Database | undefined;
     private _log: import("pino").Logger;
     private _sessions: ConnectionRecord[];
     private _lobbies: RaceLobbyRecord[][];
+    private _users: Map<number, Buffer>;
 
     /**
      * Creates an instance of Database.
@@ -34,6 +42,7 @@ export class Database {
          * @type {import("../../interfaces/index.js").RaceLobbyRecord[]}
          */
         this._lobbies = [];
+        this._users = new Map();
     }
 
     /**
