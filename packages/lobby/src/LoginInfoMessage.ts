@@ -1,4 +1,3 @@
-import { ServerError } from "../../shared/errors/ServerError.js";
 import {
     LegacyMessage,
     deserializeString,
@@ -56,10 +55,7 @@ export class LoginInfoMessage extends LegacyMessage {
 
             return this;
         } catch (error) {
-            throw ServerError.fromUnknown(
-                error,
-                "Error deserializing LoginInfoMessage",
-            );
+            throw Error(`Error deserializing LoginInfoMessage: ${error}`);
         }
     }
 
@@ -91,10 +87,7 @@ export class LoginInfoMessage extends LegacyMessage {
 
             return buffer;
         } catch (error) {
-            throw ServerError.fromUnknown(
-                error,
-                "Error serializing LoginInfoMessage",
-            );
+            throw Error(`Error serializing LoginInfoMessage: ${error}`);
         }
     }
 

@@ -16,8 +16,7 @@
 
 import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
 import { DatabaseManager } from "../../interfaces/index.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
-import { getServerLogger } from "../../shared/log.js";
+import { ServerLogger, getServerLogger } from "../../shared/log.js";
 import { NPSMessage } from "../../shared/messageFactory.js";
 import { handleLoginData } from "./internal.js";
 
@@ -32,7 +31,7 @@ export class LoginServer {
      * Please use {@see LoginServer.getInstance} instead
      * @param {object} options
      * @param {import("../../interfaces/index.js").DatabaseManager} options.database
-     * @param {import("pino").Logger} [options.log=getServerLogger({ module: "LoginServer" })]
+     * @param {ServerLogger} [options.log=getServerLogger({ module: "LoginServer" })]
      * @memberof LoginServer
      */
     constructor({
@@ -42,7 +41,7 @@ export class LoginServer {
         }),
     }: {
         database: import("../../interfaces/index.js").DatabaseManager;
-        log?: import("pino").Logger;
+        log?: ServerLogger;
     }) {
         this.databaseManager = database;
         this._log = log;
@@ -54,12 +53,12 @@ export class LoginServer {
      *
      * @static
      * @param {import("../../interfaces/index.js").DatabaseManager} database
-     * @param {import("pino").Logger} log
+     * @param {ServerLogger} log
      * @return {LoginServer}
      */
     static getInstance(
         database: import("../../interfaces/index.js").DatabaseManager,
-        log: import("pino").Logger,
+        log: ServerLogger,
     ): LoginServer {
         if (typeof LoginServer._instance === "undefined") {
             LoginServer._instance = new LoginServer({
@@ -93,9 +92,7 @@ export class LoginServer {
             },
         ];
         if (contextId.toString() === "") {
-            const err = new ServerError(
-                `Unknown contextId: ${contextId.toString()}`,
-            );
+            const err = new Error(`Unknown contextId: ${contextId.toString()}`);
             throw err;
         }
 
@@ -107,7 +104,7 @@ export class LoginServer {
             contextId,
         })}`,
             );
-            const err = new ServerError(
+            const err = new Error(
                 `Unable to locate user record matching contextId ${contextId}`,
             );
             throw err;
@@ -134,7 +131,7 @@ LoginServer._instance = undefined;
  * @param {object} args
  * @param {string} args.connectionId
  * @param {NPSMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @param {ServerLogger} [args.log=getServerLogger({ module: "LoginServer" })]
  *
  * @return {Promise<import("../../shared/State.js").ServiceResponse>}
  */
@@ -147,7 +144,7 @@ export async function receiveLoginData({
 }: {
     connectionId: string;
     message: NPSMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<import("../../shared/State.js").ServiceResponse> {
     try {
         log.debug("Entering login module");
@@ -160,7 +157,7 @@ export async function receiveLoginData({
         log.debug("Exiting login module");
         return response;
     } catch (error) {
-        const err = new ServerError(
+        const err = new Error(
             `There was an error in the login service: ${String(error)}`,
         );
         throw err;

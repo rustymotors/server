@@ -16,8 +16,7 @@
 
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
-import { getServerLogger } from "../../shared/log.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { ServerLogger, getServerLogger } from "../../shared/log.js";
 import { getServerConfiguration } from "../../shared/Configuration.js";
 import {
     LegacyMessage,
@@ -35,7 +34,7 @@ import { handleTrackingPing } from "./handlers/handleTrackingPing.js";
  * handler: (args: {
  * connectionId: string,
  * message: SerializedBuffer,
- * log: import("pino").Logger,
+ * log: ServerLogger,
  * }) => Promise<{
  * connectionId: string,
  * messages: SerializedBuffer[],
@@ -47,7 +46,7 @@ export const messageHandlers: {
     handler: (args: {
         connectionId: string;
         message: SerializedBuffer;
-        log: import("pino").Logger;
+        log: ServerLogger;
     }) => Promise<{
         connectionId: string;
         messages: SerializedBuffer[];
@@ -74,7 +73,7 @@ export const messageHandlers: {
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBuffer} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "PersonaServer" })]
+ * @param {ServerLogger} [args.log=getServerLogger({ module: "PersonaServer" })]
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBuffer[],
@@ -90,13 +89,11 @@ export async function receiveLobbyData({
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
 }> {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
-
     /** @type {LegacyMessage | NPSMessage} */
     let inboundMessage: LegacyMessage | NPSMessage;
 
@@ -104,7 +101,7 @@ export async function receiveLobbyData({
     const dataLength = message.data.length;
 
     if (dataLength < 4) {
-        throw new ServerError(
+        throw new Error(
             `Data length ${dataLength} is too short to deserialize`,
         );
     }
@@ -131,7 +128,7 @@ export async function receiveLobbyData({
 
     if (typeof supportedHandler === "undefined") {
         // We do not yet support this message code
-        throw new ServerError(
+        throw new Error(
             `UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
         );
     }
@@ -146,6 +143,6 @@ export async function receiveLobbyData({
         log.debug("Leaving receiveLobbyData");
         return result;
     } catch (error) {
-        throw new ServerError(`Error handling lobby data: ${String(error)}`);
+        throw new Error(`Error handling lobby data: ${String(error)}`);
     }
 }

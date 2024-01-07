@@ -16,8 +16,7 @@
 
 import { getServerConfiguration } from "../../shared/Configuration.js";
 import { NPSUserStatus } from "./NPSUserStatus.js";
-import { getServerLogger } from "../../shared/log.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { ServerLogger, getServerLogger } from "../../shared/log.js";
 import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
 import { NPSMessage, SerializedBuffer } from "../../shared/messageFactory.js";
 import { NetworkMessage } from "../../shared/src/NetworkMessage.js";
@@ -42,7 +41,7 @@ const userRecords: import("../../interfaces/index.js").UserRecordMini[] = [
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBuffer} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @param {ServerLogger} [args.log=getServerLogger({ module: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBuffer[],
@@ -57,7 +56,7 @@ async function login({
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
@@ -92,7 +91,7 @@ async function login({
 
     if (typeof userRecord === "undefined") {
         // We were not able to locate the user's record
-        const err = new ServerError(
+        const err = new Error(
             `Unable to locate a user record for the context id: ${contextId}`,
         );
         throw err;
@@ -108,7 +107,7 @@ async function login({
             connectionId,
         )
         .catch((error) => {
-            const err = new ServerError(
+            const err = new Error(
                 `Unable to update session key in the database: ${String(
                     error,
                 )}`,
@@ -167,7 +166,7 @@ async function login({
  * handler: (args: {
  * connectionId: string,
  * message: SerializedBuffer,
- * log: import("pino").Logger,
+ * log: ServerLogger,
  * }) => Promise<{
  * connectionId: string,
  * messages: SerializedBuffer[],
@@ -179,7 +178,7 @@ export const messageHandlers: {
     handler: (args: {
         connectionId: string;
         message: SerializedBuffer;
-        log: import("pino").Logger;
+        log: ServerLogger;
     }) => Promise<{
         connectionId: string;
         messages: SerializedBuffer[];
@@ -199,7 +198,7 @@ export const messageHandlers: {
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBuffer} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @param {ServerLogger} [args.log=getServerLogger({ module: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBuffer[],
@@ -214,12 +213,11 @@ export async function handleLoginData({
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
 }> {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
     log.debug(`Received Login Server packet: ${connectionId}`);
 
     // The packet needs to be an NPSMessage
@@ -232,7 +230,7 @@ export async function handleLoginData({
 
     if (typeof supportedHandler === "undefined") {
         // We do not yet support this message code
-        throw new ServerError(
+        throw new Error(
             `UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
         );
     }
@@ -247,6 +245,6 @@ export async function handleLoginData({
         log.debug("Leaving handleLoginData");
         return result;
     } catch (error) {
-        throw new ServerError(`Error handling login data: ${String(error)}`);
+        throw new Error(`Error handling login data: ${String(error)}`);
     }
 }

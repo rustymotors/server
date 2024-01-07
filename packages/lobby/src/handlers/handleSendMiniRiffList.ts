@@ -1,5 +1,4 @@
-import { getServerLogger } from "../../../shared/log.js";
-import { ServerError } from "../../../shared/errors/ServerError.js";
+import { ServerLogger, getServerLogger } from "../../../shared/log.js";
 import {
     GameMessage,
     LegacyMessage,
@@ -13,7 +12,7 @@ import { channelRecordSize, channels } from "./encryptedCommand.js";
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {ServerLogger} [args.log=getServerLogger({ module: "Lobby" })]
  */
 export async function handleSendMiniRiffList({
     connectionId,
@@ -24,10 +23,8 @@ export async function handleSendMiniRiffList({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }) {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
-
     log.debug("Handling NPS_SEND_MINI_RIFF_LIST");
     log.debug(`Received command: ${message._doSerialize().toString("hex")}`);
 
@@ -67,9 +64,6 @@ export async function handleSendMiniRiffList({
             message: packetResult,
         };
     } catch (error) {
-        throw ServerError.fromUnknown(
-            error,
-            "Error handling NPS_SEND_MINI_RIFF_LIST",
-        );
+        throw Error(`Error handling NPS_SEND_MINI_RIFF_LIST: ${String(error)}`);
     }
 }

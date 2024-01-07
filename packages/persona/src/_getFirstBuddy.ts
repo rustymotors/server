@@ -1,4 +1,4 @@
-import { getServerLogger } from "../../shared/log.js";
+import { ServerLogger, getServerLogger } from "../../shared/log.js";
 import {
     LegacyMessage,
     NPSMessage,
@@ -15,7 +15,7 @@ export async function _getFirstBuddy({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

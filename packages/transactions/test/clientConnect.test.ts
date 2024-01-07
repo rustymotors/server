@@ -2,10 +2,9 @@ import { State } from "../../shared/State.js";
 import { getServerLogger } from "../../shared/log.js";
 import { clientConnect } from "../src/clientConnect.js";
 import { describe, it, expect } from "vitest";
-import { ServerError } from "../../shared/errors/ServerError.js";
+
 import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
-import { mockPino } from "../../../test/factoryMocks.js";
 
 describe("clientConnect", () => {
     it("throws when connection is not found", async () => {
@@ -18,7 +17,6 @@ describe("clientConnect", () => {
         const incomingMessage = new TClientConnectMessage();
         incomingMessage._customerId = customerId;
 
-        mockPino();
         const log = getServerLogger({});
         const state: State = {
             encryptions: {},
@@ -46,7 +44,7 @@ describe("clientConnect", () => {
         } catch (error) {
             // assert
             expect(error).toEqual(
-                new ServerError(
+                new Error(
                     `Encryption not found for connection ${connectionId}`,
                 ),
             );

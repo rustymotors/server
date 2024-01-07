@@ -1,5 +1,4 @@
-import { getServerLogger } from "../../../shared/log.js";
-import { ServerError } from "../../../shared/errors/ServerError.js";
+import { ServerLogger, getServerLogger } from "../../../shared/log.js";
 import { LegacyMessage } from "../../../shared/messageFactory.js";
 import { UserInfo } from "../UserInfoMessage.js";
 import { getServerConfiguration } from "../../../shared/Configuration.js";
@@ -14,10 +13,8 @@ export async function _setMyUserData({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }) {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
-
     try {
         log.debug("Handling NPS_SET_MY_USER_DATA");
         log.debug(`Received command: ${message.serialize().toString("hex")}`);
@@ -50,9 +47,6 @@ export async function _setMyUserData({
             message: packetResult,
         };
     } catch (error) {
-        throw ServerError.fromUnknown(
-            error,
-            "Error handling NPS_SET_MY_USER_DATA",
-        );
+        throw Error(`Error handling NPS_SET_MY_USER_DATA: ${String(error)}`);
     }
 }

@@ -1,4 +1,4 @@
-import { getServerLogger } from "../../../shared/log.js";
+import { ServerLogger, getServerLogger } from "../../../shared/log.js";
 import {
     LegacyMessage,
     SerializedBuffer,
@@ -18,7 +18,7 @@ export async function validatePersonaName({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

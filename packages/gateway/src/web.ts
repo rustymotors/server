@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerError } from "../../shared/errors/ServerError.js";
 import { CastanetResponse } from "../../patch/src/PatchServer.js";
 import { generateShardList } from "../../shard/src/ShardServer.js";
 import { getServerConfiguration } from "../../shared/Configuration.js";
@@ -95,7 +94,7 @@ export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
     webServer.get("/ShardList/", (_request, reply) => {
         const config = getServerConfiguration({});
         if (typeof config.host === "undefined") {
-            throw new ServerError("No host defined in config");
+            throw new Error("No host defined in config");
         }
         return reply.send(generateShardList(config.host));
     });
@@ -103,7 +102,7 @@ export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
     webServer.get("/cert", (_request, reply) => {
         const config = getServerConfiguration({});
         if (typeof config.host === "undefined") {
-            throw new ServerError("No host defined in config");
+            throw new Error("No host defined in config");
         }
         return reply.send(handleGetCert(config));
     });
@@ -111,7 +110,7 @@ export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
     webServer.get("/key", (_request, reply) => {
         const config = getServerConfiguration({});
         if (typeof config.host === "undefined") {
-            throw new ServerError("No host defined in config");
+            throw new Error("No host defined in config");
         }
         return reply.send(handleGetKey(config));
     });
@@ -119,7 +118,7 @@ export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
     webServer.get("/registry", (_request, reply) => {
         const config = getServerConfiguration({});
         if (typeof config.host === "undefined") {
-            throw new ServerError("No host defined in config");
+            throw new Error("No host defined in config");
         }
         return reply.send(handleGetRegistry(config));
     });

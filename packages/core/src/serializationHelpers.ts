@@ -1,5 +1,3 @@
-import { ServerError } from "../../shared/errors/ServerError.js";
-
 /**
  * Clamp a value between 0 and 255
  * @param {number} value
@@ -150,7 +148,7 @@ export function deserializeFloat(buff: Buffer): number {
 export function deserializeString(buf: Buffer): string {
     const size = buf.readUInt16BE();
     if (size > buf.length - 2) {
-        throw new ServerError("Size is bigger than the buffer length - 2");
+        throw new Error("Size is bigger than the buffer length - 2");
     }
     const str = buf.subarray(2, size + 2).toString("utf8");
 

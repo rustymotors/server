@@ -1,7 +1,6 @@
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { OldServerMessage } from "../../shared/messageFactory.js";
 import { PlayerInfoMessage } from "./PlayerInfoMessage.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
 export async function _getPlayerInfo(
@@ -28,6 +27,6 @@ export async function _getPlayerInfo(
 
         return { connectionId: args.connectionId, messages: [responsePacket] };
     } catch (error) {
-        throw ServerError.fromUnknown(error, "Error in _getPlayerInfo");
+        throw Error(`Error in _getPlayerInfo: ${String(error)}`);
     }
 }

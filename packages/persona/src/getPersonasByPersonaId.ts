@@ -1,5 +1,4 @@
 import { PersonaRecord } from "../../interfaces/index.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
 import { personaRecords } from "./internal.js";
 
 /**
@@ -20,7 +19,7 @@ export async function getPersonasByPersonaId({
         return match;
     });
     if (results.length === 0) {
-        const err = new ServerError(`Unable to locate a persona for id: ${id}`);
+        const err = new Error(`Unable to locate a persona for id: ${id}`);
         throw err;
     }
 

@@ -1,5 +1,4 @@
-import { Logger } from "pino";
-import { getServerLogger } from "./log.js";
+import { ServerLogger, getServerLogger } from "./log.js";
 
 /**
  * @module shared/Configuration
@@ -21,7 +20,7 @@ export class Configuration {
      * @param {string} [args.privateKeyFile="certificates/privatekey.pem"]
      * @param {string} [args.publicKeyFile="certificates/publickey.pem"]
      * @param {string} [args.logLevel="info"]
-     * @param {module:pino.Logger} [args.logger=getServerLogger({})]
+     * @param {ServerLogger} [args.logger=getServerLogger({})]
      */
     constructor({
         host = "localhost",
@@ -36,7 +35,7 @@ export class Configuration {
         privateKeyFile?: string;
         publicKeyFile?: string;
         logLevel?: string;
-        logger?: Logger;
+        logger?: ServerLogger;
     }) {
         try {
             this.certificateFile = certificateFile;
@@ -64,7 +63,7 @@ export class Configuration {
  * @param {string} [param0.privateKeyFile="certificates/privatekey.pem"]
  * @param {string} [param0.publicKeyFile="certificates/publickey.pem"]
  * @param {string} [param0.logLevel="info"]
- * @param {module:pino.Logger} [param0.logger=getServerLogger({})]
+ * @param {ServerLogger} [param0.logger=getServerLogger({})]
  * @returns {Configuration}
  */
 export function getServerConfiguration({
@@ -80,7 +79,7 @@ export function getServerConfiguration({
     privateKeyFile?: string;
     publicKeyFile?: string;
     logLevel?: string;
-    logger?: Logger;
+    logger?: ServerLogger;
 }): Configuration {
     if (typeof Configuration.instance === "undefined") {
         Configuration.instance = new Configuration({

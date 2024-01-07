@@ -15,7 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { randomUUID } from "node:crypto";
-import { ServerError } from "../../shared/errors/ServerError.js";
 import {
     OnDataHandler,
     addSocket,
@@ -24,12 +23,12 @@ import {
     removeSocket,
     wrapSocket,
 } from "../../shared/State.js";
-import { getServerLogger } from "../../shared/log.js";
+import { ServerLogger, getServerLogger } from "../../shared/log.js";
 
 import { getGatewayServer } from "./GatewayServer.js";
 import { SerializedBuffer } from "../../shared/messageFactory.js";
 import { Socket } from "node:net";
-import { Logger } from "pino";
+
 import {
     MessageProcessorError,
     PortMapError,
@@ -72,14 +71,14 @@ export function socketErrorHandler({
 }: {
     connectionId: string;
     error: NodeJS.ErrnoException;
-    log?: Logger;
+    log?: ServerLogger;
 }) {
     // Handle socket errors
     if (error.code == "ECONNRESET") {
         log.debug(`Connection ${connectionId} reset`);
         return;
     }
-    throw new ServerError(
+    throw new Error(
         `Socket error: ${error.message} on connection ${connectionId}`,
     );
 }
@@ -89,7 +88,7 @@ export function socketErrorHandler({
  *
  * @param {object} options
  * @param {string} options.connectionId The connection ID
- * @param {import("pino").Logger} [options.log=getServerLogger({ module: "socketEndHandler" })] The logger to use
+ * @param {ServerLogger} [options.log=getServerLogger({ module: "socketEndHandler" })] The logger to use
  */
 export function socketEndHandler({
     connectionId,
@@ -98,7 +97,7 @@ export function socketEndHandler({
     }),
 }: {
     connectionId: string;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }) {
     log.debug(`Connection ${connectionId} ended`);
 
@@ -111,7 +110,7 @@ export function socketEndHandler({
  *
  * @param {object} options
  * @param {module:net.Socket} options.incomingSocket The incoming socket
- * @param {import("pino").Logger} [options.log=getServerLogger({ module: "onDataHandler" })] The logger to use
+ * @param {ServerLogger} [options.log=getServerLogger({ module: "onDataHandler" })] The logger to use
  *
  */
 export function onSocketConnection({
@@ -121,13 +120,13 @@ export function onSocketConnection({
     }),
 }: {
     incomingSocket: Socket;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }) {
     // Get the local port and remote address
     const { localPort, remoteAddress } = incomingSocket;
 
     if (localPort === undefined || remoteAddress === undefined) {
-        throw new ServerError("localPort or remoteAddress is undefined");
+        throw new Error("localPort or remoteAddress is undefined");
     }
 
     // This is a new connection so generate a new connection ID
@@ -172,7 +171,6 @@ export function onSocketConnection({
             } catch (error) {
                 if (error instanceof PortMapError) {
                     log.error(`Error getting message type: ${error}`);
-                    
                 } else {
                     throw error;
                 }

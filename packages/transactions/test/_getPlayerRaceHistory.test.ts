@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { _getPlayerRaceHistory } from "../src/_getPlayerRaceHistory.js";
 import { OldServerMessage } from "../../shared/messageFactory.js";
-import { mockPino } from "../../../test/factoryMocks.js";
 import { getServerLogger } from "../../shared/log.js";
 
 describe("_getPlayerRaceHistory", () => {
@@ -12,7 +11,6 @@ describe("_getPlayerRaceHistory", () => {
             0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00,
             0x00, 0x01,
         ]);
-        mockPino();
         const result = await _getPlayerRaceHistory({
             connectionId: "0",
             packet: incomingMessage,

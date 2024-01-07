@@ -9,33 +9,6 @@ export function mockDatabaseManager(): DatabaseManager {
     };
 }
 
-export function mockPino() {
-    vi.mock("pino", () => {
-        return {
-            default: vi.fn().mockImplementation(() => {
-                return {
-                    debug: vi.fn(),
-                    info: vi.fn(),
-                    warn: vi.fn(),
-                    error: vi.fn(),
-                };
-            }),
-            pino: vi.fn().mockImplementation(() => {
-                return {
-                    debug: vi.fn(),
-                    info: vi.fn(),
-                    warn: vi.fn(),
-                    error: vi.fn(),
-                };
-            }),
-        };
-    });
-}
-
-export function unmockPino() {
-    vi.unmock("pino");
-}
-
 it("should have crypto", () => {
     expect(() => verifyLegacyCipherSupport()).not.toThrow();
 });

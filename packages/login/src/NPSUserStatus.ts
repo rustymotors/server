@@ -1,10 +1,9 @@
 import { privateDecrypt } from "node:crypto";
 import { readFileSync } from "node:fs";
 
-import { ServerError } from "../../shared/errors/ServerError.js";
 import { LegacyMessage } from "../../shared/messageFactory.js";
 import { Configuration } from "../../shared/Configuration.js";
-import { Logger } from "pino";
+import { ServerLogger } from "../../shared/log.js";
 
 /**
  * @typedef {import("../../shared/Configuration.js").Configuration} Configuration
@@ -33,7 +32,7 @@ import { Logger } from "pino";
 
 export class NPSUserStatus extends LegacyMessage {
     _config: Configuration;
-    log: Logger;
+    log: ServerLogger;
     sessionKey: string;
     opCode: number;
     contextId: string;
@@ -42,13 +41,9 @@ export class NPSUserStatus extends LegacyMessage {
      *
      * @param {Buffer} packet
      * @param {Configuration} config
-     * @param {import("pino").Logger} log
+     * @param {ServerLogger} log
      */
-    constructor(
-        packet: Buffer,
-        config: Configuration,
-        log: import("pino").Logger,
-    ) {
+    constructor(packet: Buffer, config: Configuration, log: ServerLogger) {
         super();
         this._config = config;
         this.log = log;
@@ -87,7 +82,7 @@ export class NPSUserStatus extends LegacyMessage {
         // Decrypt the sessionkey
         try {
             if (!this._config.privateKeyFile) {
-                throw new ServerError("No private key file specified");
+                throw new Error("No private key file specified");
             }
             const privatekeyContents = readFileSync(
                 this._config.privateKeyFile,
@@ -104,9 +99,7 @@ export class NPSUserStatus extends LegacyMessage {
             this.log.trace(`Session key: ${sessionkeyString.toString("utf8")}`); // 128 bytes
             this.log.trace(`decrypted: ${this.sessionKey}`); // 12 bytes
             this.log.error(`Error decrypting session key: ${String(error)}`);
-            throw new ServerError(
-                `Unable to extract session key: ${String(error)}`,
-            );
+            throw new Error(`Unable to extract session key: ${String(error)}`);
         }
     }
 

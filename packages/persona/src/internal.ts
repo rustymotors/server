@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getServerLogger } from "../../shared/log.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { ServerLogger, getServerLogger } from "../../shared/log.js";
 
 import {
     PersonaList,
@@ -27,7 +26,6 @@ import {
     LegacyMessage,
     SerializedBuffer,
 } from "../../shared/messageFactory.js";
-import { Logger } from "pino";
 import { _selectGamePersona } from "./_selectGamePersona.js";
 import { _gameLogout } from "./_gameLogout.js";
 import { _getFirstBuddy } from "./_getFirstBuddy.js";
@@ -44,7 +42,7 @@ const NAME_BUFFER_SIZE = 30;
  * handler: (args: {
  * connectionId: string,
  * message: LegacyMessage,
- * log: import("pino").Logger,
+ * log: ServerLogger,
  * }) => Promise<{
  * connectionId: string,
  * messages: SerializedBuffer[],
@@ -56,7 +54,7 @@ export const messageHandlers: {
     handler: (args: {
         connectionId: string;
         message: LegacyMessage;
-        log: Logger;
+        log: ServerLogger;
     }) => Promise<{
         connectionId: string;
         messages: SerializedBuffer[];
@@ -161,7 +159,7 @@ async function getPersonaMapsByCustomerId(
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @param {ServerLogger} [args.log=getServerLogger({ module: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBuffer[],
@@ -174,7 +172,7 @@ async function getPersonaMaps({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
@@ -246,13 +244,13 @@ async function getPersonaMaps({
         };
     } catch (error) {
         if (error instanceof Error) {
-            const err = new ServerError(
+            const err = new Error(
                 `Error serializing personaMapsMsg: ${error.message}`,
             );
             throw err;
         }
 
-        const err = new ServerError(
+        const err = new Error(
             "Error serializing personaMapsMsg, error unknonw",
         );
         throw err;
@@ -265,7 +263,7 @@ async function getPersonaMaps({
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBuffer} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "PersonaServer" })]
+ * @param {ServerLogger} [args.log=getServerLogger({ module: "PersonaServer" })]
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBuffer[],
@@ -281,12 +279,11 @@ export async function receivePersonaData({
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
 }> {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
     const { data } = message;
     log.debug(
         `Received Persona packet',
@@ -305,7 +302,7 @@ export async function receivePersonaData({
 
     if (typeof supportedHandler === "undefined") {
         // We do not yet support this message code
-        throw new ServerError(
+        throw new Error(
             `UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
         );
     }
@@ -320,9 +317,6 @@ export async function receivePersonaData({
         log.debug("Leaving receivePersonaDatadleData");
         return result;
     } catch (error) {
-        throw ServerError.fromUnknown(
-            error,
-            `Error handling persona data: ${String(error)}`,
-        );
+        throw Error(`Error handling persona data: ${String(error)}`);
     }
 }

@@ -1,5 +1,5 @@
 import { getServerConfiguration } from "../../../shared/Configuration.js";
-import { getServerLogger } from "../../../shared/log.js";
+import { ServerLogger, getServerLogger } from "../../../shared/log.js";
 import { SerializedBuffer } from "../../../shared/messageFactory.js";
 
 export async function handleTrackingPing({
@@ -11,13 +11,11 @@ export async function handleTrackingPing({
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
 }> {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
-
     log.debug("Handling NPS_TRACKING_PING");
     log.debug(`Received command: ${message.toString()}`);
 

@@ -8,7 +8,7 @@ import { _npsRequestGameConnectServer } from "./requestConnectGameServer.js";
  * @typedef {object} ServiceArgs
  * @property {string} connectionId
  * @property {SerializedBuffer} message
- * @property {import("pino").Logger} log
+ * @property {ServerLogger} log
  */
 
 /**

@@ -1,10 +1,9 @@
-import { getServerLogger } from "../../../shared/log.js";
+import { ServerLogger, getServerLogger } from "../../../shared/log.js";
 import {
     fetchStateFromDatabase,
     getEncryption,
     updateEncryption,
 } from "../../../shared/State.js";
-import { ServerError } from "../../../shared/errors/ServerError.js";
 import {
     LegacyMessage,
     MessageBuffer,
@@ -25,7 +24,7 @@ import { _setMyUserData } from "./_setMyUserData.js";
  * handler: (args: {
  * connectionId: string,
  * message: SerializedBuffer,
- * log: import("pino").Logger,
+ * log: ServerLogger,
  * }) => Promise<{
  * connectionId: string,
  * messages: SerializedBuffer[],
@@ -37,7 +36,7 @@ export const messageHandlers: {
     handler: (args: {
         connectionId: string;
         message: SerializedBuffer;
-        log: import("pino").Logger;
+        log: ServerLogger;
     }) => Promise<{
         connectionId: string;
         messages: SerializedBuffer[];
@@ -50,7 +49,7 @@ export const messageHandlers: {
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage | MessageBuffer} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {ServerLogger} [args.log=getServerLogger({ module: "Lobby" })]
  * @returns {Promise<{
  * connectionId: string,
  * message: LegacyMessage | MessageBuffer,
@@ -65,7 +64,7 @@ async function encryptCmd({
 }: {
     connectionId: string;
     message: LegacyMessage | MessageBuffer;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     message: LegacyMessage | MessageBuffer;
@@ -75,7 +74,7 @@ async function encryptCmd({
     const encryption = getEncryption(state, connectionId);
 
     if (typeof encryption === "undefined") {
-        throw new ServerError(
+        throw new Error(
             `Unable to locate encryption session for connection id ${connectionId}`,
         );
     }
@@ -100,7 +99,7 @@ async function encryptCmd({
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {ServerLogger} [args.log=getServerLogger({ module: "Lobby" })]
  * @returns {Promise<{
  *  connectionId: string,
  * message: LegacyMessage,
@@ -115,7 +114,7 @@ async function decryptCmd({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     message: LegacyMessage;
@@ -125,7 +124,7 @@ async function decryptCmd({
     const encryption = getEncryption(state, connectionId);
 
     if (typeof encryption === "undefined") {
-        throw new ServerError(
+        throw new Error(
             `Unable to locate encryption session for connection id ${connectionId}`,
         );
     }
@@ -150,7 +149,7 @@ export type NpsCommandHandler = {
     handler: (args: {
         connectionId: string;
         message: LegacyMessage;
-        log: import("pino").Logger;
+        log: ServerLogger;
     }) => Promise<{
         connectionId: string;
         message: LegacyMessage;
@@ -181,7 +180,7 @@ const npsCommandHandlers: NpsCommandHandler[] = [
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {ServerLogger} [args.log=getServerLogger({ module: "Lobby" })]
  * @return {Promise<{
  * connectionId: string,
  * message: MessageBuffer | LegacyMessage,
@@ -196,12 +195,11 @@ async function handleCommand({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     message: MessageBuffer | LegacyMessage;
 }> {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
     const incommingRequest = message;
 
     log.debug(
@@ -216,7 +214,7 @@ async function handleCommand({
     const handler = npsCommandHandlers.find((h) => h.opCode === command);
 
     if (typeof handler === "undefined") {
-        throw new ServerError(`Unknown command: ${command}`);
+        throw new Error(`Unknown command: ${command}`);
     }
 
     return handler.handler({
@@ -232,7 +230,7 @@ async function handleCommand({
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBuffer} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {ServerLogger} [args.log=getServerLogger({ module: "Lobby" })]
   * @returns {Promise<{
 *  connectionId: string,
 * messages: SerializedBuffer[],
@@ -248,13 +246,11 @@ export async function handleEncryptedNPSCommand({
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
 }> {
-    log.level = getServerConfiguration({}).logLevel ?? "info";
-
     const inboundMessage = new LegacyMessage();
     inboundMessage._doDeserialize(message.data);
 

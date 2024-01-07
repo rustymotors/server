@@ -4,7 +4,7 @@ import {
     Configuration,
     getServerConfiguration,
 } from "../../shared/Configuration.js";
-import { getServerLogger } from "../../shared/log.js";
+import { ServerLogger, getServerLogger } from "../../shared/log.js";
 import fastify from "fastify";
 import {
     addOnDataHandler,
@@ -13,21 +13,25 @@ import {
 } from "../../shared/State.js";
 import { ConsoleThread } from "../../cli/ConsoleThread.js";
 import { addWebRoutes } from "./web.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+
 import { receiveLoginData } from "../../login/src/index.js";
 import { receivePersonaData } from "../../persona/src/internal.js";
 import { receiveLobbyData } from "../../lobby/src/internal.js";
 import { receiveTransactionsData } from "../../transactions/src/internal.js";
 import FastifySensible from "@fastify/sensible";
-import { Logger } from "pino";
+
+import {
+    populatePortToMessageTypes,
+    portToMessageTypes,
+} from "../../../lib/nps/index.js";
 
 /**
  * @module gateway
  */
 
 type GatewayOptions = {
-    config?: import("/home/drazisil/mcos/packages/shared/Configuration.js").Configuration;
-    log?: Logger;
+    config?: Configuration;
+    log?: ServerLogger;
     backlogAllowedCount?: number;
     listeningPortList?: number[];
     socketConnectionHandler?: ({
@@ -35,7 +39,7 @@ type GatewayOptions = {
         log,
     }: {
         incomingSocket: Socket;
-        log?: Logger;
+        log?: ServerLogger;
     }) => void;
 };
 
@@ -45,7 +49,7 @@ type GatewayOptions = {
  */
 export class Gateway {
     config: Configuration;
-    log: Logger;
+    log: ServerLogger;
     timer: NodeJS.Timeout | null;
     loopInterval: number;
     status: string;
@@ -58,7 +62,7 @@ export class Gateway {
         log,
     }: {
         incomingSocket: Socket;
-        log?: Logger;
+        log?: ServerLogger;
     }) => void;
     static _instance: Gateway | undefined;
     webServer: import("fastify").FastifyInstance | undefined;
@@ -100,7 +104,7 @@ export class Gateway {
      */
     getWebServer(): import("fastify").FastifyInstance {
         if (this.webServer === undefined) {
-            throw new ServerError("webServer is undefined");
+            throw new Error("webServer is undefined");
         }
         return this.webServer;
     }
@@ -138,7 +142,7 @@ export class Gateway {
         });
 
         if (this.webServer === undefined) {
-            throw new ServerError("webServer is undefined");
+            throw new Error("webServer is undefined");
         }
 
         // Start the web server
@@ -151,7 +155,7 @@ export class Gateway {
             },
             (err, address) => {
                 if (err) {
-                    this.log.error(err);
+                    this.log.error(String(err));
                     process.exit(1);
                 }
                 this.log.info(`Server listening at ${address}`);
@@ -193,7 +197,7 @@ export class Gateway {
         }
 
         if (this.webServer === undefined) {
-            throw new ServerError("webServer is undefined");
+            throw new Error("webServer is undefined");
         }
         await this.webServer.close();
 
@@ -235,7 +239,7 @@ export class Gateway {
 
         // Register the read thread events
         if (this.readThread === undefined) {
-            throw new ServerError("readThread is undefined");
+            throw new Error("readThread is undefined");
         }
         this.consoleEvents.forEach((event) => {
             this.readThread?.on(event, () => {
@@ -254,6 +258,8 @@ export class Gateway {
         state = addOnDataHandler(state, 8228, receivePersonaData);
         state = addOnDataHandler(state, 7003, receiveLobbyData);
         state = addOnDataHandler(state, 43300, receiveTransactionsData);
+
+        populatePortToMessageTypes(portToMessageTypes);
 
         state.save();
 
@@ -326,7 +332,7 @@ export function getGatewayServer({
     socketConnectionHandler = onSocketConnection,
 }: {
     config?: Configuration;
-    log?: Logger;
+    log?: ServerLogger;
     backlogAllowedCount?: number;
     listeningPortList?: number[];
     socketConnectionHandler?: ({
@@ -334,7 +340,7 @@ export function getGatewayServer({
         log,
     }: {
         incomingSocket: Socket;
-        log?: Logger;
+        log?: ServerLogger;
     }) => void;
 }): Gateway {
     return Gateway.getInstance({

@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from "node:http";
-import { getServerLogger } from "../../shared/log.js";
+import { ServerLogger, getServerLogger } from "../../shared/log.js";
 import { Buffer } from "node:buffer";
 
 const debug_reseponse = Buffer.from([
@@ -37,17 +37,17 @@ export class PatchServer {
      *
      *
      * @private
-     * @type {import("pino").Logger}
+     * @type {ServerLogger}
      */
-    _log: import("pino").Logger;
+    _log: ServerLogger;
 
     /**
      * Creates an instance of PatchServer.
      * Please use getInstance() instead
-     * @param {import("pino").Logger} log
+     * @param {ServerLogger} log
      * @memberof PatchServer
      */
-    constructor(log: import("pino").Logger) {
+    constructor(log: ServerLogger) {
         this._log = log;
     }
 
@@ -55,11 +55,11 @@ export class PatchServer {
      * Return the instance of the PatchServer class
      *
      * @static
-     * @param {import("pino").Logger} log
+     * @param {ServerLogger} log
      * @return {PatchServer}
      * @memberof PatchServer
      */
-    static getInstance(log: import("pino").Logger): PatchServer {
+    static getInstance(log: ServerLogger): PatchServer {
         if (!PatchServer._instance) {
             PatchServer._instance = new PatchServer(log);
         }

@@ -30,11 +30,12 @@ import { _getArcadeCarInfo } from "./_getArcadeCarInfo.js";
 import { _getStockCarInfo } from "./_getStockCarInfo.js";
 import { _logout } from "./_logout.js";
 import { ServerMessage } from "../../shared/src/ServerMessage.js";
+import { ServerLogger } from "../../shared/log.js";
 
 export interface MessageHandlerArgs {
     connectionId: string;
     packet: OldServerMessage;
-    log: import("pino").Logger;
+    log: ServerLogger;
 }
 
 export interface MessageHandlerResult {

@@ -1,4 +1,4 @@
-import { getServerLogger } from "../../shared/log.js";
+import { ServerLogger, getServerLogger } from "../../shared/log.js";
 import {
     LegacyMessage,
     SerializedBuffer,
@@ -9,7 +9,7 @@ import {
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @param {ServerLogger} [args.log=getServerLogger({ module: "LoginServer" })]
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBuffer[],
@@ -25,7 +25,7 @@ export async function _gameLogout({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: import("pino").Logger;
+    log?: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

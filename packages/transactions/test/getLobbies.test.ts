@@ -1,4 +1,3 @@
-import { mockPino } from "../../../test/factoryMocks.js";
 import { getServerLogger } from "../../shared/log.js";
 import { OldServerMessage } from "../../shared/messageFactory.js";
 import { getLobbies } from "../src/getLobbies.js";
@@ -9,7 +8,6 @@ describe("getLobbies", () => {
         // arrange
         const connectionId = "1";
         const packet = new OldServerMessage();
-        mockPino();
         const log = getServerLogger({});
 
         // act

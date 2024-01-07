@@ -16,7 +16,6 @@
 
 import { createCipheriv, createDecipheriv, getCiphers } from "node:crypto";
 import { McosEncryptionPair } from "../../shared/State.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
 
 /**
  * This function creates a new encryption pair for use with the game server
@@ -26,7 +25,7 @@ import { ServerError } from "../../shared/errors/ServerError.js";
  */
 export function createCommandEncryptionPair(key: string): McosEncryptionPair {
     if (key.length < 16) {
-        const err = new ServerError("Key too short");
+        const err = new Error("Key too short");
         throw err;
     }
 
@@ -57,7 +56,7 @@ export function createCommandEncryptionPair(key: string): McosEncryptionPair {
  */
 export function createDataEncryptionPair(key: string): McosEncryptionPair {
     if (key.length < 16) {
-        const err = new ServerError("Key too short");
+        const err = new Error("Key too short");
         throw err;
     }
 
@@ -79,11 +78,11 @@ export function createDataEncryptionPair(key: string): McosEncryptionPair {
 export function verifyLegacyCipherSupport() {
     const cipherList = getCiphers();
     if (!cipherList.includes("des-cbc")) {
-        const err = new ServerError("DES-CBC cipher not available");
+        const err = new Error("DES-CBC cipher not available");
         throw err;
     }
     if (!cipherList.includes("rc4")) {
-        const err = new ServerError("RC4 cipher not available");
+        const err = new Error("RC4 cipher not available");
         throw err;
     }
 }

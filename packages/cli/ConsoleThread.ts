@@ -2,7 +2,8 @@ import { emitKeypressEvents } from "node:readline";
 import { SubThread } from "../shared/SubThread.js";
 // eslint-disable-next-line no-unused-vars
 import { Gateway } from "../gateway/src/GatewayServer.js";
-import { ServerError } from "../shared/errors/ServerError.js";
+
+import { ServerLogger } from "../shared/log.js";
 
 /**
  * @module ConsoleThread
@@ -16,18 +17,18 @@ export class ConsoleThread extends SubThread {
     /**
      * @param {object} options
      * @param {Gateway} options.parentThread The parent thread
-     * @param {import("pino").Logger} options.log The logger
+     * @param {ServerLogger} options.log The logger
      */
     constructor({
         parentThread,
         log,
     }: {
         parentThread: Gateway;
-        log: import("pino").Logger;
+        log: ServerLogger;
     }) {
         super("ReadInput", log, 100);
         if (parentThread === undefined) {
-            throw new ServerError(
+            throw new Error(
                 "parentThread is undefined when creating ReadInput",
             );
         }

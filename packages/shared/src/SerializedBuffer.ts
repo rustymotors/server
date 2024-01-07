@@ -1,5 +1,4 @@
 import { BaseSerialized } from "./BaseSerialized.js";
-import { ServerError } from "../errors/ServerError.js";
 
 /**
  * A serialized buffer, prefixed with its 2-byte length.
@@ -15,14 +14,14 @@ export class SerializedBuffer extends BaseSerialized {
             this._data.copy(buffer, 2);
             return buffer;
         } catch (error) {
-            throw ServerError.fromUnknown(error, "Unable to serialize buffer");
+            throw new Error(`Unable to serialize buffer: ${error}`);
         }
     }
     override deserialize(buffer: Buffer) {
         try {
             const length = buffer.readUInt16BE(0);
             if (buffer.length < 2 + length) {
-                throw new ServerError(
+                throw new Error(
                     `Expected buffer of length ${2 + length}, got ${
                         buffer.length
                     }`,
@@ -31,10 +30,7 @@ export class SerializedBuffer extends BaseSerialized {
             this._data = buffer.subarray(2, 2 + length);
             return this;
         } catch (error) {
-            throw ServerError.fromUnknown(
-                error,
-                "Unable to deserialize buffer",
-            );
+            throw Error(`Unable to deserialize buffer: ${error}`);
         }
     }
 }

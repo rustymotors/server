@@ -1,4 +1,4 @@
-import { Logger, LoggerOptions, pino } from "pino";
+import { Console } from "node:console";
 
 type ServerLoggerOptions = {
     level?: string;
@@ -18,8 +18,7 @@ export class ServerLogger {
      * @param {ServerLoggerOptions} options
      */
     constructor(options: ServerLoggerOptions) {
-        this.logger = pino(options);
-        this.logger.level = options.level ?? "info";
+        this.logger = console;
         ServerLogger.instance = this;
     }
 
@@ -64,30 +63,15 @@ export class ServerLogger {
     trace(message: string) {
         this.logger.trace(message);
     }
-
-    /**
-     * @global
-     * @external pino
-     * @see {@link https://www.npmjs.com/package/pino}
-     */
-
-    /**
-     * @param {module:pino.LoggerOptions} options
-     * @returns {module:pino.Logger}
-     */
-    child(options: LoggerOptions): Logger {
-        const child = this.logger.child(options);
-        return child;
-    }
 }
 
 /**
  * Get a logger instance
  *
  * @param {ServerLoggerOptions} options
- * @return {module:pino.Logger}
+ * @return {ServerLogger}
  */
-export function getServerLogger(options: ServerLoggerOptions): Logger {
+export function getServerLogger(options: ServerLoggerOptions): ServerLogger {
     const logLevel = options.level ?? "info";
     const moduleName = options.module ?? "core";
     if (typeof ServerLogger.instance === "undefined") {
@@ -98,7 +82,6 @@ export function getServerLogger(options: ServerLoggerOptions): Logger {
         });
     }
 
-    const child = ServerLogger.instance.child(options);
-    child.level = logLevel;
+    const child = ServerLogger.instance;
     return child;
 }

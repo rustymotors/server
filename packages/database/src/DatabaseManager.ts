@@ -3,8 +3,7 @@
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
 
-import { getServerLogger } from "../../shared/log.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
+import { ServerLogger, getServerLogger } from "../../shared/log.js";
 
 /**
  * @module Database
@@ -15,11 +14,11 @@ export class Database {
         try {
             this._users.set(user.userId, user.userData);
         } catch (error) {
-            this._log.error(error);
+            this._log.error(String(error));
         }
     }
     static instance: Database | undefined;
-    private _log: import("pino").Logger;
+    private _log: ServerLogger;
     private _sessions: interfaces.ConnectionRecord[];
     private _lobbies: interfaces.RaceLobbyRecord[][];
     private _users: Map<number, Buffer>;
@@ -27,10 +26,10 @@ export class Database {
     /**
      * Creates an instance of Database.
      *
-     * @param {interfaces.external.pino.Logger} [log=getServerLogger({ module: "database" })]
+     * @param {ServerLogger} [log=getServerLogger({ module: "database" })]
      */
     constructor(
-        log: interfaces.external.pino.Logger = getServerLogger({
+        log: ServerLogger = getServerLogger({
             module: "database",
         }),
     ) {
@@ -48,10 +47,10 @@ export class Database {
      * Return the singleton instance of the DatabaseManager class
      *
      * @static
-     * @param {import("pino").Logger} log
+     * @param {ServerLogger} log
      * @returns {Database}
      */
-    static getInstance(log: import("pino").Logger): Database {
+    static getInstance(log: ServerLogger): Database {
         if (!Database.instance) {
             Database.instance = new Database(log);
         }
@@ -73,7 +72,7 @@ export class Database {
             return session.customerId === customerId;
         });
         if (typeof record === "undefined") {
-            const err = new ServerError(
+            const err = new Error(
                 `Session key not found for customer ${customerId}`,
             );
             throw err;
@@ -95,7 +94,7 @@ export class Database {
             return session.connectionId === connectionId;
         });
         if (typeof record === "undefined") {
-            const err = new ServerError(
+            const err = new Error(
                 `Session key not found for connection ${connectionId}`,
             );
             throw err;
@@ -134,7 +133,7 @@ export class Database {
             return session.customerId === customerId;
         });
         if (typeof record === "undefined") {
-            const err = new ServerError(
+            const err = new Error(
                 "Error updating session key: existing key not found",
             );
             throw err;
@@ -147,7 +146,7 @@ export class Database {
  * Return the singleton instance of the DatabaseManager class
  *
  * @param {object} options
- * @param {import("pino").Logger} options.log=getServerLogger({ module: "database" })
+ * @param {ServerLogger} options.log=getServerLogger({ module: "database" })
  * @returns {Database}
  */
 

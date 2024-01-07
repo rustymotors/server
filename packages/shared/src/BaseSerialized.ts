@@ -1,5 +1,3 @@
-import { ServerError } from "../errors/ServerError.js";
-
 export interface Serializable {
     data: Buffer;
     serialize(): Buffer;
@@ -29,11 +27,11 @@ export class BaseSerialized implements Serializable {
     }
 
     serialize(): Buffer {
-        throw new ServerError("Not implemented");
+        throw new Error("Not implemented");
     }
 
     deserialize(buffer: Buffer): Serializable {
-        throw new ServerError("Not implemented");
+        throw new Error("Not implemented");
     }
 
     get length(): number {

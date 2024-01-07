@@ -8,8 +8,6 @@
  * - RawMessage
  */
 
-import { ServerError } from "./errors/ServerError.js";
-
 /**
  * @abstract
  * @property {Buffer} data
@@ -28,7 +26,7 @@ class AbstractSerializable {
     }
 
     _doSerialize() {
-        throw new ServerError("Method '_doSerialize()' must be implemented.");
+        throw new Error("Method '_doSerialize()' must be implemented.");
     }
 
     /**
@@ -37,7 +35,7 @@ class AbstractSerializable {
      */
     // eslint-disable-next-line no-unused-vars
     _doDeserialize(_buffer: Buffer): AbstractSerializable {
-        throw new ServerError("Method '_doDeserialize()' must be implemented.");
+        throw new Error("Method '_doDeserialize()' must be implemented.");
     }
 
     get data() {
@@ -56,7 +54,7 @@ class AbstractSerializable {
      * @returns {number}
      */
     static get Size(): number {
-        throw new ServerError("Method 'Size' must be implemented.");
+        throw new Error("Method 'Size' must be implemented.");
     }
 }
 
@@ -98,8 +96,7 @@ export function deserializeString(buffer: Buffer): string {
         const string = stringBuffer.toString("utf8").trim();
         return string;
     } catch (error) {
-        throw ServerError.fromUnknown(
-            error,
+        throw Error(
             `Error deserializing string from buffer ${buffer.toString("hex")}`,
         );
     }
@@ -169,7 +166,7 @@ class legacyHeader extends SerializableMixin(AbstractSerializable) {
      */
     override _doDeserialize(buffer: Buffer) {
         if (buffer.length < 4) {
-            throw new ServerError(
+            throw new Error(
                 `Buffer length ${buffer.length} is too short to deserialize`,
             );
         }
@@ -178,9 +175,7 @@ class legacyHeader extends SerializableMixin(AbstractSerializable) {
             this.id = buffer.readInt16BE(0);
             this.length = buffer.readInt16BE(2);
         } catch (error) {
-            throw new ServerError(
-                `Error deserializing buffer: ${String(error)}`,
-            );
+            throw new Error(`Error deserializing buffer: ${String(error)}`);
         }
         return this;
     }
@@ -229,7 +224,7 @@ export class GameMessageHeader extends legacyHeader {
 
     deserialize(buffer: Buffer) {
         if (buffer.length < 8) {
-            throw new ServerError(
+            throw new Error(
                 `Buffer length ${buffer.length} is too short to deserialize`,
             );
         }
@@ -240,9 +235,7 @@ export class GameMessageHeader extends legacyHeader {
             this._gameMessageId = buffer.readInt16BE(4);
             this._gameMessageLength = buffer.readInt16BE(6);
         } catch (error) {
-            throw new ServerError(
-                `Error deserializing buffer: ${String(error)}`,
-            );
+            throw new Error(`Error deserializing buffer: ${String(error)}`);
         }
         return this;
     }
@@ -292,7 +285,7 @@ export class NPSHeader extends SerializableMixin(AbstractSerializable) {
      */
     override _doDeserialize(buffer: Buffer): NPSHeader {
         if (buffer.length < this._size) {
-            throw new ServerError(
+            throw new Error(
                 `Buffer length ${buffer.length} is too short to deserialize`,
             );
         }
@@ -301,9 +294,7 @@ export class NPSHeader extends SerializableMixin(AbstractSerializable) {
             this.id = buffer.readInt16BE(0);
             this.length = buffer.readInt16BE(2);
         } catch (error) {
-            throw new ServerError(
-                `Error deserializing buffer: ${String(error)}`,
-            );
+            throw new Error(`Error deserializing buffer: ${String(error)}`);
         }
         return this;
     }
@@ -371,7 +362,7 @@ export class serverHeader extends SerializableMixin(AbstractSerializable) {
      */
     override _doDeserialize(buffer: Buffer): serverHeader {
         if (buffer.length < this._size) {
-            throw new ServerError(
+            throw new Error(
                 `Buffer length ${buffer.length} is too short to deserialize`,
             );
         }
@@ -382,9 +373,7 @@ export class serverHeader extends SerializableMixin(AbstractSerializable) {
             this.sequence = buffer.readInt32LE(6);
             this.flags = buffer.readInt8(10);
         } catch (error) {
-            throw new ServerError(
-                `Error deserializing buffer: ${String(error)}`,
-            );
+            throw new Error(`Error deserializing buffer: ${String(error)}`);
         }
         return this;
     }
@@ -823,7 +812,7 @@ export class MessageBuffer extends SerializedBuffer {
     deserialize(buffer: Buffer): MessageBuffer {
         this._header.deserialize(buffer.subarray(0, 8));
         if (buffer.length < 4 + this._header.messageLength) {
-            throw new ServerError(
+            throw new Error(
                 `Buffer length ${buffer.length} is too short to deserialize`,
             );
         }
@@ -834,12 +823,12 @@ export class MessageBuffer extends SerializedBuffer {
     override serialize() {
         const buffer = Buffer.alloc(4 + this._buffer.length);
         if (this.buffer.length < 0) {
-            throw new ServerError(
+            throw new Error(
                 `Buffer length ${this.buffer.length} is too short to serialize`,
             );
         }
         if (this.messageId <= 0) {
-            throw new ServerError(
+            throw new Error(
                 `Message ID ${this.messageId} is invalid to serialize`,
             );
         }

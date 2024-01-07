@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerError } from "../../shared/errors/ServerError.js";
 import { SerializedBuffer } from "../../shared/messageFactory.js";
 
 /**
@@ -271,7 +270,7 @@ export class LobbyInfo extends SerializedBuffer {
      */
     deserialize(data: Buffer) {
         if (data.length !== this.size()) {
-            throw new ServerError(
+            throw new Error(
                 `LobbyInfo.deserialize() expected ${this.size()} bytes but got ${
                     data.length
                 } bytes`,

@@ -19,7 +19,7 @@ import { NPSMessage } from "../../shared/messageFactory.js";
 /**
  * Selects a game persona and marks it as in use
  * @param {NPSMessage} requestPacket
- * @param {import("pino").Logger} log
+ * @param {ServerLogger} log
  * @returns {Promise<NPSMessage>}
  */
 export async function handleSelectGamePersona(requestPacket, log) {

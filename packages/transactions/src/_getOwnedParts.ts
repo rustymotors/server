@@ -5,7 +5,6 @@ import {
     fetchStateFromDatabase,
     findSessionByConnectionId,
 } from "../../shared/State.js";
-import { ServerError } from "../../shared/errors/ServerError.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
 export async function _getOwnedParts({
@@ -23,7 +22,7 @@ export async function _getOwnedParts({
     const session = findSessionByConnectionId(state, connectionId);
 
     if (!session) {
-        throw new ServerError("Session not found");
+        throw new Error("Session not found");
     }
 
     const ownedPartsMessage = new PartsAssemblyMessage(session.gameId);

@@ -3,7 +3,6 @@ import { getPersonasByPersonaId } from "../../../persona/src/getPersonasByPerson
 import { getDatabaseServer } from "../../../database/src/DatabaseManager.js";
 import { LoginInfoMessage } from "../LoginInfoMessage.js";
 
-import { ServerError } from "../../../shared/errors/ServerError.js";
 import { UserInfoMessage } from "../UserInfoMessage.js";
 import {
     createCommandEncryptionPair,
@@ -67,7 +66,7 @@ export async function _npsRequestGameConnectServer({
         id: inboundMessage._userId,
     });
     if (typeof personas[0] === "undefined") {
-        const err = new ServerError("No personas found.");
+        const err = new Error("No personas found.");
         throw err;
     }
 
@@ -83,14 +82,14 @@ export async function _npsRequestGameConnectServer({
         const keys = await databaseManager
             .fetchSessionKeyByCustomerId(customerId)
             .catch((/** @type {unknown} */ error: unknown) => {
-                throw new ServerError(
+                throw new Error(
                     `Unable to fetch session key for customerId ${customerId.toString()}: ${String(
                         error,
                     )}`,
                 );
             });
         if (keys === undefined) {
-            throw new ServerError("Error fetching session keys!");
+            throw new Error("Error fetching session keys!");
         }
 
         // We have the session keys, set them on the connection
@@ -111,7 +110,7 @@ export async function _npsRequestGameConnectServer({
 
             addEncryption(state, newEncryption).save();
         } catch (error) {
-            throw new ServerError(`Error creating encryption: ${error}`);
+            throw new Error(`Error creating encryption: ${error}`);
         }
     }
 

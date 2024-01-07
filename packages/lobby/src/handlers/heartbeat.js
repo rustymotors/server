@@ -8,7 +8,7 @@ import {
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBuffer} args.message
- * @param {import("pino").Logger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {ServerLogger} [args.log=getServerLogger({ module: "Lobby" })]
  * @returns {Promise<{
  *  connectionId: string
  * messages: SerializedBuffer[],
