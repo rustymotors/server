@@ -111,7 +111,7 @@ export class Gateway {
 
         // Check if there are any listening ports specified
         if (this.listeningPortList.length === 0) {
-            throw new ServerError("No listening ports specified");
+            this.log.error("No listening ports specified. Skipping.");
         }
 
         // Mark the GatewayServer as running

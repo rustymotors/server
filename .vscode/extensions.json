@@ -4,7 +4,6 @@
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "ms-vscode.makefile-tools",
-        "usernamehw.errorlens",
-        "ritwickdey.LiveServer"
+        "usernamehw.errorlens"
     ]
 }

@@ -30,6 +30,14 @@ import { getGatewayServer } from "./GatewayServer.js";
 import { SerializedBuffer } from "../../shared/messageFactory.js";
 import { Socket } from "node:net";
 import { Logger } from "pino";
+import {
+    MessageProcessorError,
+    PortMapError,
+    getMessageProcessor,
+    getPortMessageType,
+} from "../../../lib/nps/index.js";
+import { BareMessage } from "../../../lib/nps/BareMessage.js";
+import { guessMessageType } from "../../../lib/nps/guessMessageType.js";
 
 /**
  * @typedef {object} OnDataHandlerArgs
@@ -123,10 +131,10 @@ export function onSocketConnection({
     }
 
     // This is a new connection so generate a new connection ID
-    const newConnectionId = randomUUID();
+    const connectionId = randomUUID();
 
     // Wrap the socket and add it to the global state
-    const wrappedSocket = wrapSocket(incomingSocket, newConnectionId);
+    const wrappedSocket = wrapSocket(incomingSocket, connectionId);
 
     // Add the socket to the global state
     addSocket(fetchStateFromDatabase(), wrappedSocket).save();
@@ -146,7 +154,7 @@ export function onSocketConnection({
     }
 
     incomingSocket.on("error", (error) =>
-        socketErrorHandler({ connectionId: newConnectionId, error }),
+        socketErrorHandler({ connectionId: connectionId, error }),
     );
 
     // Add the data handler to the socket
@@ -154,6 +162,33 @@ export function onSocketConnection({
         "data",
         (/** @type {Buffer} */ incomingDataAsBuffer: Buffer) => {
             log.trace(`Incoming data: ${incomingDataAsBuffer.toString("hex")}`);
+
+            // === New code ===
+
+            // Get message type from the port
+            let messageType = "Unknown";
+            try {
+                const messageType = getPortMessageType(localPort);
+            } catch (error) {
+                if (error instanceof PortMapError) {
+                    log.error(`Error getting message type: ${error}`);
+                    
+                } else {
+                    throw error;
+                }
+            }
+
+            if (messageType !== "Unknown") {
+                // Call the message handler
+                if (messageType === "Game") {
+                    handleGameMessage(connectionId, incomingDataAsBuffer);
+                }
+                if (messageType === "Server") {
+                    handleServerMessage(connectionId, incomingDataAsBuffer);
+                }
+            }
+
+            // === End new code ===
 
             // Deserialize the raw message
             const rawMessage = new SerializedBuffer()._doDeserialize(
@@ -166,7 +201,7 @@ export function onSocketConnection({
             log.debug("Calling onData handler");
 
             portOnDataHandler({
-                connectionId: newConnectionId,
+                connectionId: connectionId,
                 message: rawMessage,
             })
                 .then(
@@ -212,4 +247,20 @@ export function onSocketConnection({
         // Sent ok to login packet
         incomingSocket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
     }
+}
+
+export function handleGameMessage(
+    connectionId: string,
+    bytes: Buffer,
+    log = getServerLogger({ module: "handleGameMessage" }),
+) {
+    log.debug(`Handling game message: ${bytes.toString("hex")}`);
+}
+
+export function handleServerMessage(
+    connectionId: string,
+    bytes: Buffer,
+    log = getServerLogger({ module: "handleServerMessage" }),
+) {
+    log.debug(`Handling server message: ${bytes.toString("hex")}`);
 }
