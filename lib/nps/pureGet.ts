@@ -5,6 +5,11 @@ export function getWord(bytes: Buffer, offset: number, isLE: boolean): number {
     return isLE ? bytes.readUInt16LE(offset) : bytes.readUInt16BE(offset);
 }
 
+export function getDWord(bytes: Buffer, offset: number, isLE: boolean): number {
+    // Get the dword at the offset
+    return isLE ? bytes.readUInt32LE(offset) : bytes.readUInt32BE(offset);
+}
+
 /**
  * Get the first n bytes of a buffer.
  * If the buffer is shorter than n bytes, return the whole buffer

@@ -11,7 +11,7 @@ type ServerLoggerOptions = {
  * @property {ServerLogger} instance
  */
 export class ServerLogger {
-    logger: any;
+    logger: Console;
     static instance: ServerLogger | undefined;
     /**
      * Creates an instance of ServerLogger.
@@ -26,7 +26,7 @@ export class ServerLogger {
      * @param {string} message
      */
     fatal(message: string) {
-        this.logger.fatal(message);
+        this.logger.error(message);
     }
 
     /**
@@ -40,28 +40,28 @@ export class ServerLogger {
      * @param {string} message
      */
     warn(message: string) {
-        this.logger.warn(message);
+        this.logger.error(message);
     }
 
     /**
      * @param {string} message
      */
     info(message: string) {
-        this.logger.info(message);
+        this.logger.log(message);
     }
 
     /**
      * @param {string} message
      */
     debug(message: string) {
-        this.logger.debug(message);
+        this.logger.log(message);
     }
 
     /**
      * @param {string} message
      */
     trace(message: string) {
-        this.logger.trace(message);
+        this.logger.log(message);
     }
 }
 

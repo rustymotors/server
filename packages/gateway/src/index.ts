@@ -36,7 +36,8 @@ import {
     getPortMessageType,
 } from "../../../lib/nps/index.js";
 import { BareMessage } from "../../../lib/nps/BareMessage.js";
-import { guessMessageType } from "../../../lib/nps/guessMessageType.js";
+import { ServerMessage } from "../../../lib/nps/ServerMessage.js";
+import { getWord } from "../../../lib/nps/pureGet.js";
 
 /**
  * @typedef {object} OnDataHandlerArgs
@@ -167,7 +168,8 @@ export function onSocketConnection({
             // Get message type from the port
             let messageType = "Unknown";
             try {
-                const messageType = getPortMessageType(localPort);
+                messageType = getPortMessageType(localPort);
+                log.debug(`Message type: ${messageType}`);
             } catch (error) {
                 if (error instanceof PortMapError) {
                     log.error(`Error getting message type: ${error}`);
@@ -192,9 +194,6 @@ export function onSocketConnection({
             const rawMessage = new SerializedBuffer()._doDeserialize(
                 incomingDataAsBuffer,
             );
-
-            // Log the raw message
-            log.trace(`Raw message: ${rawMessage.toString()}`);
 
             log.debug("Calling onData handler");
 
@@ -252,7 +251,21 @@ export function handleGameMessage(
     bytes: Buffer,
     log = getServerLogger({ module: "handleGameMessage" }),
 ) {
-    log.debug(`Handling game message: ${bytes.toString("hex")}`);
+    log.debug(`Handling game message...`);
+
+    // If this is a Game message, it will "probably" be a BareMessage
+    // Try to parse it as a BareMessage
+    try {
+        const messageLength = getWord(bytes, 2, false);
+        const message = BareMessage.fromBytes(bytes, messageLength);
+        log.debug(`Message: ${message.toString()}`);
+    } catch (error) {
+        if (error instanceof MessageProcessorError) {
+            log.error(`Error processing message: ${error}`);
+        } else {
+            throw error;
+        }
+    }
 }
 
 export function handleServerMessage(
@@ -260,5 +273,19 @@ export function handleServerMessage(
     bytes: Buffer,
     log = getServerLogger({ module: "handleServerMessage" }),
 ) {
-    log.debug(`Handling server message: ${bytes.toString("hex")}`);
+    log.debug(`Handling server message...`);
+
+    // If this is a Server message, it will "probably" be a ServerMessage
+    // Try to parse it as a ServerMessage
+    try {
+        const messageLength = getWord(bytes, 0, true);
+        const message = ServerMessage.fromBytes(bytes, messageLength);
+        log.debug(`Message: ${message.toString()}`);
+    } catch (error) {
+        if (error instanceof MessageProcessorError) {
+            log.error(`Error processing message: ${error}`);
+        } else {
+            throw error;
+        }
+    }
 }
