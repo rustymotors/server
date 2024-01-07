@@ -82,6 +82,14 @@ export class BareMessage {
         return this.header.messageLength;
     }
 
+    getData(): Buffer {
+        return this.message.subarray(this.header.size, this.messageLength);
+    }
+
+    getDataAsHex(): string {
+        return getAsHex(this.getData());
+    }
+
     toBytes(): Buffer {
         const remainingBytes = this.messageLength - this.header.size || 0;
         return Buffer.concat([

@@ -23,21 +23,22 @@ import {
     removeSocket,
     wrapSocket,
 } from "../../shared/State.js";
+
 import { ServerLogger, getServerLogger } from "../../shared/log.js";
 
+import { Socket } from "node:net";
 import { getGatewayServer } from "./GatewayServer.js";
 import { SerializedBuffer } from "../../shared/messageFactory.js";
-import { Socket } from "node:net";
 
 import {
     MessageProcessorError,
     PortMapError,
-    getMessageProcessor,
+    getGameMessageProcessor,
     getPortMessageType,
+    BareMessage,
+    ServerMessage,
+    getWord,
 } from "../../../lib/nps/index.js";
-import { BareMessage } from "../../../lib/nps/BareMessage.js";
-import { ServerMessage } from "../../../lib/nps/ServerMessage.js";
-import { getWord } from "../../../lib/nps/pureGet.js";
 
 /**
  * @typedef {object} OnDataHandlerArgs
@@ -161,8 +162,6 @@ export function onSocketConnection({
     incomingSocket.on(
         "data",
         (/** @type {Buffer} */ incomingDataAsBuffer: Buffer) => {
-            log.trace(`Incoming data: ${incomingDataAsBuffer.toString("hex")}`);
-
             // === New code ===
 
             // Get message type from the port
@@ -246,6 +245,30 @@ export function onSocketConnection({
     }
 }
 
+export function processGameMessage(
+    connectionId: string,
+    message: BareMessage,
+    log = getServerLogger({ module: "processGameMessage" }),
+) {
+    log.debug(`Processing game message...`);
+
+    // Get the message ID
+    const { messageId } = message;
+
+    try {
+        // Get the message processor
+        const messageProcessor = getGameMessageProcessor(messageId);
+
+        // Call the message processor
+        messageProcessor(connectionId, message);
+    } catch (error) {
+        throw new MessageProcessorError(
+            messageId,
+            `No message processor found`,
+        );
+    }
+}
+
 export function handleGameMessage(
     connectionId: string,
     bytes: Buffer,
@@ -259,6 +282,9 @@ export function handleGameMessage(
         const messageLength = getWord(bytes, 2, false);
         const message = BareMessage.fromBytes(bytes, messageLength);
         log.debug(`Message: ${message.toString()}`);
+
+        // Process the message
+        processGameMessage(connectionId, message);
     } catch (error) {
         if (error instanceof MessageProcessorError) {
             log.error(`Error processing message: ${error}`);

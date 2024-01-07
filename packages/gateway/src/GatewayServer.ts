@@ -22,8 +22,10 @@ import FastifySensible from "@fastify/sensible";
 
 import {
     populatePortToMessageTypes,
+    populateGameMessageProcessors,
     portToMessageTypes,
-} from "../../../lib/nps/index.js";
+    gameMessageProcessors,
+} from "../../../lib/nps/messageProcessors/index.js";
 
 /**
  * @module gateway
@@ -133,9 +135,7 @@ export class Gateway {
                 });
             });
 
-            server.listen(port, "0.0.0.0", this.backlogAllowedCount, () => {
-                this.log.debug(`Listening on port ${port}`);
-            });
+            server.listen(port, "0.0.0.0", this.backlogAllowedCount);
 
             // Add the server to the list of servers
             this.servers.push(server);
@@ -260,6 +260,7 @@ export class Gateway {
         state = addOnDataHandler(state, 43300, receiveTransactionsData);
 
         populatePortToMessageTypes(portToMessageTypes);
+        populateGameMessageProcessors(gameMessageProcessors);
 
         state.save();
 
