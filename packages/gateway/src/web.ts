@@ -22,6 +22,8 @@ import {
     handleGetKey,
     handleGetRegistry,
 } from "../../shard/src/index.js";
+import { checkPassword, getUser } from "../../../lib/nps/gameUsers.js";
+import { generateToken } from "../../../lib/nps/token.js";
 
 /**
  * Add web routes to the web server
@@ -79,16 +81,27 @@ export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
         Reply: IReply;
     }>("/AuthLogin", async (request, reply) => {
         const username = request.query.username;
+        const password = request.query.password;
 
-        if (username === "new") {
+        // Check for the username
+        const user = getUser(username);
+
+        // If the user doesn't exist, return an error
+        if (typeof user === "undefined") {
             return reply.send(
-                "Valid=TRUE\nTicket=5213dee3a6bcdb133373b2d4f3b9962758",
+                "reasoncode=INV-200\nreasontext=Opps~\nreasonurl=https://www.winehq.com",
             );
         }
 
-        return reply.send(
-            "Valid=TRUE\nTicket=d316cd2dd6bf870893dfbaaf17f965884e",
-        );
+        // Check the password
+        if (!checkPassword(user, password)) {
+            return reply.send("Valid=FALSE\nReason=Invalid password");
+        }
+
+        // Generate a token
+        const token = generateToken(user.customerId);
+
+        return reply.send(`Valid=TRUE\nTicket=${token}`);
     });
 
     webServer.get("/ShardList/", (_request, reply) => {

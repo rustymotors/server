@@ -1,3 +1,4 @@
+import { Message } from "./BareMessage.js";
 import { lessThan } from "./pureCompare.js";
 import { getNBytes, getDWord, getAsHex, getWord } from "./pureGet.js";
 import { put16, put32 } from "./purePut.js";
@@ -70,12 +71,16 @@ export class ServerHeader {
         this.headerBytes.set(signatureBytes, 2);
     }
 
-    toHexString(): string {
+    toHex(): string {
         return getAsHex(this.headerBytes);
+    }
+
+    getSize(): number {
+        return 11;
     }
 }
 
-export class ServerMessage {
+export class ServerMessage implements Message {
     private header: ServerHeader;
     private message: Buffer;
 
@@ -128,9 +133,9 @@ export class ServerMessage {
     toBytes(): Buffer {
         if (!this.verifyHeader()) {
             throw new Error(
-                `Header does not match message: ${this.header.toHexString()} vs ${getAsHex(
-                    this.message.subarray(0, 11),
-                )}`,
+                `Header does not match message: ${getAsHex(
+                    this.header.toBytes(),
+                )} != ${getAsHex(this.message.subarray(0, 11))}`,
             );
         }
         return this.message;
@@ -142,7 +147,15 @@ export class ServerMessage {
         )} }`;
     }
 
+    toHex(): string {
+        return getAsHex(this.message);
+    }
+
     getHeader(): ServerHeader {
         return this.header;
+    }
+
+    getSize(): number {
+        return this.message.length;
     }
 }

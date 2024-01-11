@@ -1,6 +1,13 @@
 import { BareMessage } from "../BareMessage.js";
 import fs from "node:fs";
 import crypto from "node:crypto";
+import { getToken } from "../token.js";
+import { createNewUserSession, setUserSession } from "../userSessions.js";
+import { SocketCallback } from "./index.js";
+import { MessageContainer } from "../MessageContainer.js";
+import { SessionKey } from "../SessionKey.js";
+import { getLenString } from "../pureGet.js";
+import { UserAction, UserStatus } from "../UserStatus.js";
 
 export function loadPrivateKey(path: string): string {
     const privateKey = fs.readFileSync(path);
@@ -20,54 +27,15 @@ export function decryptSessionKey(
     return sessionKeyStructure.toString("hex");
 }
 
-export class SessionKey {
-    private key: Buffer;
-    private timestamp: number;
-
-    constructor(key: Buffer, timestamp: number) {
-        this.key = key;
-        this.timestamp = timestamp;
-    }
-
-    static fromBytes(bytes: Buffer): SessionKey {
-        const keyLength = bytes.readUInt16BE(0);
-
-        // Set the data offset
-        let dataOffset = 2 + keyLength;
-
-        const key = bytes.subarray(2, dataOffset);
-
-        // Get the timestamp
-        const timestamp = bytes.readUInt32BE(dataOffset);
-
-        return new SessionKey(key, timestamp);
-    }
-
-    getKey(): string {
-        return this.key.toString("hex");
-    }
-
-    toString(): string {
-        return `Key: ${this.key.toString("hex")}, Timestamp: ${this.timestamp}`;
-    }
-}
-
 export function unpackUserLoginMessage(message: BareMessage): {
     sessionKey: string;
     gameId: string;
     contextToken: string;
 } {
     // Get the context token
-    const contextTokenLength = message.getData().readUInt16BE(0);
+    const ticket = getLenString(message.getData(), 0, false);
 
-    // Set the data offset
-    let dataOffset = 2 + contextTokenLength;
-
-    // Get the context token
-    const contextToken = message
-        .getData()
-        .subarray(2, dataOffset)
-        .toString("utf8");
+    let dataOffset = ticket.length + 2;
 
     //  The next data structure is a container with an empty id, a length, and a data structure
 
@@ -113,13 +81,14 @@ export function unpackUserLoginMessage(message: BareMessage): {
     return {
         sessionKey: sessionKeyStructure.getKey(),
         gameId,
-        contextToken,
+        contextToken: ticket,
     };
 }
 
 export function processUserLogin(
     connectionId: string,
     message: BareMessage,
+    socketCallback: SocketCallback,
 ): void {
     console.log("User login");
 
@@ -133,6 +102,71 @@ export function processUserLogin(
 
         // Log the context token
         console.log(`Context token: ${contextToken}`);
+
+        // Look up the customer id
+        const user = getToken(contextToken);
+
+        // If the user is not found, return an error
+        if (user === undefined) {
+            console.error("User not found");
+
+            // Create a new message - Not found
+            const response = new MessageContainer(0x602, 0x0004);
+
+            // Send the message - twice
+            socketCallback([response.toBytes()]);
+            socketCallback([response.toBytes()]);
+
+            return;
+        }
+
+        // Log the user
+        console.log(`User: ${user.customerId}`);
+
+        // Create a new user session
+        const userSession = createNewUserSession({
+            customerId: user.customerId,
+            token: contextToken,
+            connectionId,
+            port: 0,
+            ipAddress: "",
+            activeProfileId: 0,
+            nextSequenceNumber: 0,
+            sessionKey,
+        });
+
+        // Save the user session
+        setUserSession(userSession);
+
+        // Create a new message - Login ACK
+        const loginACK = new MessageContainer(0x601, 0x0004);
+
+        // Send the ack
+        socketCallback([loginACK.toBytes()]);
+
+        // Create a new UserStatus message
+        const userStatus = UserStatus.new();
+        userStatus.setCustomerId(user.customerId);
+        userStatus.setPersonaId(0);
+        userStatus.setBan(new UserAction("ban"));
+        userStatus.setGag(new UserAction("gag"));
+        userStatus.setSessionKey(SessionKey.fromKeyString(sessionKey));
+
+        // Create a new message - UserStatus
+        const userStatusMessage = BareMessage.new(0x601);
+
+        // Log the message
+        console.log(userStatusMessage.toHex());
+
+        userStatusMessage.setData(userStatus.toBytes());
+
+        // Log the message
+        console.log(userStatusMessage.toHex());
+
+        // Send the message
+        socketCallback([userStatusMessage.toBytes()]);
+
+        return;
     } catch (e) {
         console.error(e);
     }

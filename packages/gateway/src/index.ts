@@ -39,6 +39,7 @@ import {
     ServerMessage,
     getWord,
 } from "../../../lib/nps/index.js";
+import { SocketCallback } from "../../../lib/nps/messageProcessors/index.js";
 
 /**
  * @typedef {object} OnDataHandlerArgs
@@ -159,83 +160,86 @@ export function onSocketConnection({
     );
 
     // Add the data handler to the socket
-    incomingSocket.on(
-        "data",
-        (/** @type {Buffer} */ incomingDataAsBuffer: Buffer) => {
-            // === New code ===
+    incomingSocket.on("data", (incomingDataAsBuffer: Buffer) => {
+        // === New code ===
 
-            // Get message type from the port
-            let messageType = "Unknown";
-            try {
-                messageType = getPortMessageType(localPort);
-                log.debug(`Message type: ${messageType}`);
-            } catch (error) {
-                if (error instanceof PortMapError) {
-                    log.error(`Error getting message type: ${error}`);
-                } else {
-                    throw error;
-                }
+        // Get message type from the port
+        let messageType = "Unknown";
+        try {
+            messageType = getPortMessageType(localPort);
+            log.debug(`Message type: ${messageType}`);
+        } catch (error) {
+            if (error instanceof PortMapError) {
+                log.error(`Error getting message type: ${error}`);
+            } else {
+                throw error;
             }
+        }
 
-            if (messageType !== "Unknown") {
-                // Call the message handler
-                if (messageType === "Game") {
-                    handleGameMessage(connectionId, incomingDataAsBuffer);
-                }
-                if (messageType === "Server") {
-                    handleServerMessage(connectionId, incomingDataAsBuffer);
-                }
+        if (messageType !== "Unknown") {
+            const socketCallback = (messages: Buffer[]) => {
+                sendToSocket(messages, incomingSocket, log);
+            };
+
+            // Call the message handler
+            if (messageType === "Game") {
+                handleGameMessage(
+                    connectionId,
+                    incomingDataAsBuffer,
+                    log,
+                    socketCallback,
+                );
             }
+            if (messageType === "Server") {
+                handleServerMessage(
+                    connectionId,
+                    incomingDataAsBuffer,
+                    log,
+                    socketCallback,
+                );
+            }
+        }
 
-            // === End new code ===
+        // === End new code ===
 
-            // Deserialize the raw message
-            const rawMessage = new SerializedBuffer()._doDeserialize(
-                incomingDataAsBuffer,
-            );
+        // // Deserialize the raw message
+        // const rawMessage = new SerializedBuffer()._doDeserialize(
+        //     incomingDataAsBuffer,
+        // );
 
-            log.debug("Calling onData handler");
+        // log.debug("Calling onData handler");
 
-            portOnDataHandler({
-                connectionId: connectionId,
-                message: rawMessage,
-            })
-                .then(
-                    (
-                        /** @type {import("../../shared/State.js").ServiceResponse} */ response: import("../../shared/State.js").ServiceResponse,
-                    ) => {
-                        log.debug("onData handler returned");
-                        const { messages } = response;
+        // portOnDataHandler({
+        //     connectionId: connectionId,
+        //     message: rawMessage,
+        // })
+        //     .then(
+        //         (
+        //             /** @type {import("../../shared/State.js").ServiceResponse} */ response: import("../../shared/State.js").ServiceResponse,
+        //         ) => {
+        //             log.debug("onData handler returned");
+        //             const { messages } = response;
 
-                        // Log the messages
-                        log.trace(
-                            `Messages: ${messages.map((m) => m.toString())}`,
-                        );
+        //             // Log the messages
+        //             log.trace(
+        //                 `Messages: ${messages.map((m) => m.toString())}`,
+        //             );
 
-                        // Serialize the messages
-                        const serializedMessages = messages.map((m) =>
-                            m.serialize(),
-                        );
+        //             // Serialize the messages
+        //             const serializedMessages = messages.map((m) =>
+        //                 m.serialize(),
+        //             );
 
-                        try {
-                            // Send the messages
-                            serializedMessages.forEach((m) => {
-                                incomingSocket.write(m);
-                                log.trace(`Sent data: ${m.toString("hex")}`);
-                            });
-                        } catch (error) {
-                            log.error(`Error sending data: ${String(error)}`);
-                        }
-                    },
-                )
-                .catch((/** @type {Error} */ error: Error) => {
-                    log.error(`Error handling data: ${String(error)}`);
+        //             sendToSocket(serializedMessages, incomingSocket, log);
+        //         },
+        //     )
+        //     .catch((/** @type {Error} */ error: Error) => {
+        //         log.error(`Error handling data: ${String(error)}`);
 
-                    // Call server shutdown
-                    getGatewayServer({}).shutdown();
-                });
-        },
-    );
+        //         // Call server shutdown
+        //         getGatewayServer({}).shutdown();
+        //     });
+    });
 
     log.debug(`Client ${remoteAddress} connected to port ${localPort}`);
 
@@ -245,22 +249,38 @@ export function onSocketConnection({
     }
 }
 
+function sendToSocket(
+    serializedMessages: Buffer[],
+    incomingSocket: Socket,
+    log: ServerLogger,
+) {
+    try {
+        serializedMessages.forEach((m) => {
+            incomingSocket.write(m);
+            log.trace(`Sent data: ${m.toString("hex")}`);
+        });
+    } catch (error) {
+        log.error(`Error sending data: ${String(error)}`);
+    }
+}
+
 export function processGameMessage(
     connectionId: string,
     message: BareMessage,
     log = getServerLogger({ module: "processGameMessage" }),
+    socketCallback: SocketCallback,
 ) {
     log.debug(`Processing game message...`);
 
     // Get the message ID
-    const { messageId } = message;
+    const messageId = message.getMessageId();
 
     try {
         // Get the message processor
         const messageProcessor = getGameMessageProcessor(messageId);
 
         // Call the message processor
-        messageProcessor(connectionId, message);
+        messageProcessor(connectionId, message, socketCallback);
     } catch (error) {
         throw new MessageProcessorError(
             messageId,
@@ -273,6 +293,7 @@ export function handleGameMessage(
     connectionId: string,
     bytes: Buffer,
     log = getServerLogger({ module: "handleGameMessage" }),
+    socketCallback: SocketCallback,
 ) {
     log.debug(`Handling game message...`);
 
@@ -284,7 +305,7 @@ export function handleGameMessage(
         log.debug(`Message: ${message.toString()}`);
 
         // Process the message
-        processGameMessage(connectionId, message);
+        processGameMessage(connectionId, message, log, socketCallback);
     } catch (error) {
         if (error instanceof MessageProcessorError) {
             log.error(`Error processing message: ${error}`);
@@ -298,6 +319,7 @@ export function handleServerMessage(
     connectionId: string,
     bytes: Buffer,
     log = getServerLogger({ module: "handleServerMessage" }),
+    socketCallback: SocketCallback,
 ) {
     log.debug(`Handling server message...`);
 

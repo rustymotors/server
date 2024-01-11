@@ -1,7 +1,14 @@
 import { BareMessage } from "../BareMessage.js";
 import { processUserLogin } from "./processUserLogin.js";
+import { processGetProfileMaps } from "./processGetProfileMaps.js";
 
-type MessageProcessor = (connectionId: string, message: BareMessage) => void;
+export type SocketCallback = (messages: Buffer[]) => void;
+
+export type MessageProcessor = (
+    connectionId: string,
+    message: BareMessage,
+    socketCallback: SocketCallback,
+) => void;
 
 export class MessageProcessorError extends Error {
     constructor(id: number, message: string) {
@@ -15,6 +22,7 @@ export function populateGameMessageProcessors(
     processors: Map<number, MessageProcessor>,
 ): void {
     processors.set(0x501, processUserLogin);
+    processors.set(0x532, processGetProfileMaps);
 }
 
 export function getGameMessageProcessor(messageId: number): MessageProcessor {

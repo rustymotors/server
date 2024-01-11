@@ -26,6 +26,7 @@ import {
     portToMessageTypes,
     gameMessageProcessors,
 } from "../../../lib/nps/messageProcessors/index.js";
+import { gameUsers, populateGameUsers } from "../../../lib/nps/gameUsers.js";
 
 /**
  * @module gateway
@@ -258,6 +259,8 @@ export class Gateway {
         state = addOnDataHandler(state, 8228, receivePersonaData);
         state = addOnDataHandler(state, 7003, receiveLobbyData);
         state = addOnDataHandler(state, 43300, receiveTransactionsData);
+
+        populateGameUsers(gameUsers);
 
         populatePortToMessageTypes(portToMessageTypes);
         populateGameMessageProcessors(gameMessageProcessors);

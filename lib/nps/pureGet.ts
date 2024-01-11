@@ -28,3 +28,15 @@ export function getAsHex(bytes: Buffer): string {
         ? bytes.toString("hex")
         : bytes.toString("hex") + "0";
 }
+
+export function getLenString(
+    bytes: Buffer,
+    offset: number,
+    isLE: boolean,
+): string {
+    // Get the length of the string
+    const strLen = getWord(bytes, offset, isLE);
+
+    // Get the string
+    return bytes.subarray(offset + 2, offset + 2 + strLen).toString("utf8");
+}

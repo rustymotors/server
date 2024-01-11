@@ -2,7 +2,16 @@ import { lessThan } from "./pureCompare.js";
 import { getAsHex, getNBytes, getWord } from "./pureGet.js";
 import { put16, put16BE, put32BE } from "./purePut.js";
 
-export class Header {
+export interface Message {
+    toBytes(): Buffer;
+    toString(): string;
+    toHex(): string;
+    setData(data: Buffer): void;
+    getData(): Buffer;
+    getSize(): number;
+}
+
+export class Header implements Message {
     private headerBytes: Buffer;
 
     constructor(id: number, length: number, version: number) {
@@ -22,68 +31,127 @@ export class Header {
             );
         }
 
-        const id = getWord(bytes, 0, false);
-        const length = getWord(bytes, 2, false);
-        const version = getWord(bytes, 4, false);
-        return new Header(id, length, version);
+        const header = new Header(0, 0, 0);
+        header.parse(bytes);
+        return header;
     }
 
-    get messageId(): number {
+    parse(bytes: Buffer) {
+        if (bytes.length < 12) {
+            throw new Error(
+                `Header length ${bytes.length} is too short to parse`,
+            );
+        }
+
+        const headerBytes = Buffer.alloc(12);
+        put16BE(headerBytes, 0, getWord(bytes, 0, false));
+        put16BE(headerBytes, 2, getWord(bytes, 2, false));
+        put16BE(headerBytes, 4, getWord(bytes, 4, false));
+        put16BE(headerBytes, 6, getWord(bytes, 6, false));
+        put32BE(headerBytes, 8, getWord(bytes, 8, false));
+        this.headerBytes = headerBytes;
+    }
+
+    getMessageId(): number {
         return getWord(this.headerBytes, 0, false);
     }
 
-    get messageLength(): number {
+    setMessageId(id: number) {
+        put16BE(this.headerBytes, 0, id);
+    }
+
+    getMessageLength(): number {
         return getWord(this.headerBytes, 2, false);
     }
 
+    setMessageLength(length: number) {
+        put16BE(this.headerBytes, 2, length);
+        put32BE(this.headerBytes, 8, length);
+    }
+
     toBytes(): Buffer {
+        if (this.headerBytes.length < 12) {
+            throw new Error(
+                `Header length ${this.headerBytes.length} is too short`,
+            );
+        }
         return this.headerBytes;
     }
 
     toString(): string {
-        return [`ID: ${this.messageId}`, `Length: ${this.messageLength}`].join(
-            ", ",
-        );
+        return [
+            `ID: ${this.getMessageId()}`,
+            `Length: ${this.getMessageLength()}`,
+        ].join(", ");
     }
 
     toHex(): string {
         return getAsHex(this.headerBytes);
     }
 
-    get size(): number {
-        return this.headerBytes.length;
+    getSize(): number {
+        return 12;
+    }
+
+    setData(data: Buffer): void {
+        throw new Error("setData not implemented");
+    }
+
+    getData(): Buffer {
+        throw new Error("getData not implemented");
     }
 }
 
-export class BareMessage {
-    protected header: Header;
-    protected message: Buffer;
+export class BareMessage implements Message {
+    private header = new Header(0, 0, 0);
+    private message: Buffer;
 
-    constructor(bytes: Buffer, messageLength: number, id: number) {
+    constructor(bytes: Buffer, messageLength: number) {
         if (lessThan(bytes.length, messageLength)) {
             throw new Error(
                 `Message length ${messageLength} is longer than buffer length ${bytes.length}`,
             );
         }
 
-        this.header = Header.fromBytes(getNBytes(bytes, 12));
-        this.message = getNBytes(bytes, messageLength);
+        this.header.parse(bytes);
+        this.message = bytes.subarray(12, messageLength);
+        console.log(this.toString());
+    }
+
+    static new(id: number): BareMessage {
+        const message = new BareMessage(Buffer.alloc(12), 12);
+        message.setMessageId(id);
+        console.log(`New message: ${message.toString()}`);
+        return message;
     }
 
     static fromBytes(bytes: Buffer, length: number): BareMessage {
-        return new BareMessage(bytes, length, 0);
+        return new BareMessage(bytes, length);
     }
 
-    get messageId(): number {
-        return this.header.messageId;
+    getMessageId(): number {
+        return this.header.getMessageId();
     }
 
-    get messageLength(): number {
-        return this.header.messageLength;
+    setMessageId(id: number) {
+        this.header.setMessageId(id);
+    }
+
+    getMessageLength(): number {
+        return this.header.getMessageLength();
+    }
+
+    setMessageLength(length: number) {
+        this.header.setMessageLength(length);
     }
 
     getData(): Buffer {
-        return this.message.subarray(this.header.size, this.messageLength);
+        return this.message;
+    }
+
+    setData(data: Buffer) {
+        this.message = data;
+        this.setMessageLength(this.header.getSize() + data.length);
     }
 
     getDataAsHex(): string {
@@ -91,22 +159,23 @@ export class BareMessage {
     }
 
     toBytes(): Buffer {
-        const remainingBytes = this.messageLength - this.header.size || 0;
-        return Buffer.concat([
-            this.header.toBytes(),
-            getNBytes(this.message, remainingBytes),
-        ]);
+        const buf = Buffer.alloc(this.header.getMessageLength());
+        return Buffer.concat([this.header.toBytes(), this.message]);
     }
 
     toString(): string {
         return [
-            `ID: ${this.messageId}`,
-            `Length: ${this.messageLength}`,
-            `Message: ${getAsHex(this.message)}`,
+            `ID: ${this.header.getMessageId()}`,
+            `Length: ${this.header.getMessageLength()}`,
+            `Data: ${this.getDataAsHex()}`,
         ].join(", ");
     }
 
     toHex(): string {
         return getAsHex(this.toBytes());
+    }
+
+    getSize(): number {
+        return this.header.getMessageLength();
     }
 }

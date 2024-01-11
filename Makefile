@@ -9,6 +9,7 @@ certs:
 
 test:
 	@clear
+	@npx tsc
 	@npm test
 
 build:

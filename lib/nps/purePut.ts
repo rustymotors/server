@@ -43,3 +43,25 @@ export function put32BE(bytes: Buffer, offset: number, word: number): Buffer {
 export function put32LE(bytes: Buffer, offset: number, word: number): Buffer {
     return put32(bytes, offset, word, true);
 }
+
+export function putLenString(
+    bytes: Buffer,
+    offset: number,
+    str: string,
+    isLE: boolean,
+): Buffer {
+    // Get the length of the string
+    const strLen = str.length;
+
+    // Put the length of the string
+    if (isLE) {
+        bytes.writeUInt16LE(strLen, offset);
+    } else {
+        bytes.writeUInt16BE(strLen, offset);
+    }
+
+    // Put the string
+    bytes.write(str, offset + 2, strLen, "utf8");
+
+    return bytes;
+}
