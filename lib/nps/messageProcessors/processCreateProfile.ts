@@ -8,7 +8,6 @@ export function processCreateProfile(
     message: BareMessage,
     socketCallback: SocketCallback,
 ): void {
-
     const requestBytes = message.toBytes();
 
     const request = BareMessageV0.fromBytes(requestBytes, requestBytes.length);

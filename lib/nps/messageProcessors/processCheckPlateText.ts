@@ -8,7 +8,6 @@ export function processCheckPlateText(
     message: BareMessage,
     socketCallback: SocketCallback,
 ): void {
-
     const requestBytes = message.toBytes();
 
     const request = BareMessageV0.fromBytes(requestBytes, requestBytes.length);
@@ -17,7 +16,9 @@ export function processCheckPlateText(
 
     const requestedPlateText = getLenString(request.getData(), 4, false);
 
-    console.log(`Requested plate text: ${requestedPlateText} for plate type ${plateType}`);
+    console.log(
+        `Requested plate text: ${requestedPlateText} for plate type ${plateType}`,
+    );
 
     const response = BareMessageV0.new(0x207);
     response.setMessageLength(4);

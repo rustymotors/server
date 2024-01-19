@@ -8,7 +8,6 @@ export function processCheckProfileName(
     message: BareMessage,
     socketCallback: SocketCallback,
 ): void {
-
     const requestBytes = message.toBytes();
 
     const request = BareMessageV0.fromBytes(requestBytes, requestBytes.length);
@@ -17,7 +16,9 @@ export function processCheckProfileName(
 
     const requestedPersonaName = getLenString(request.getData(), 12, false);
 
-    console.log(`Requested persona name: ${requestedPersonaName} for customer ${customerId}`);
+    console.log(
+        `Requested persona name: ${requestedPersonaName} for customer ${customerId}`,
+    );
 
     const response = BareMessageV0.new(0x601);
     response.setMessageLength(4);
