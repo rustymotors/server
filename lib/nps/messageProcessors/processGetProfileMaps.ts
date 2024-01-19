@@ -1,8 +1,8 @@
-import { BareMessage } from "../BareMessage.js";
+import { BareMessage, BareMessageV0 } from "../BareMessage.js";
 import { getDWord, getAsHex } from "../pureGet.js";
 import { SocketCallback } from "../messageProcessors/index.js";
 import { getGameProfilesForCustomerId } from "../gameProfiles.js";
-import { NPSList } from "../NPSList.js";
+import { NPSList, ProfileList } from "../NPSList.js";
 
 export function processGetProfileMaps(
     connectionId: string,
@@ -17,5 +17,16 @@ export function processGetProfileMaps(
     const profiles = getGameProfilesForCustomerId(customerId);
 
     // Create a new NPSList of profiles
-    const list = new NPSList();
+    const list = new ProfileList();
+
+    // Add each profile to the list
+
+    // Send the list back to the client
+    const outMessage = BareMessage.new(0x607);
+    outMessage.setData(list.toBytes());
+
+    // Log the message
+    console.log(`GetProfileMaps: ${outMessage.toString()}`);
+
+    socketCallback([outMessage.toBytes()]);
 }

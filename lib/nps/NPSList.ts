@@ -25,14 +25,16 @@ export class NPSList implements Message {
 }
 
 export class ProfileList extends NPSList implements Message {
-    maxProfiles = 0;
+    maxProfiles = 0; // 1 byte
 
     getMaxProfiles(): number {
         return this.maxProfiles;
     }
 
     override toBytes(): Buffer {
-        throw new Error("Method not implemented.");
+        const buffer = Buffer.alloc(this.getSize());
+        buffer.writeUInt16BE(this.maxProfiles, 0);
+        return buffer;
     }
     override toString(): string {
         throw new Error("Method not implemented.");
@@ -48,6 +50,6 @@ export class ProfileList extends NPSList implements Message {
     }
 
     override getSize(): number {
-        return 0;
+        return super.getSize() + 2;
     }
 }

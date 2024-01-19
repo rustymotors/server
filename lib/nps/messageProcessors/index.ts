@@ -1,6 +1,7 @@
 import { BareMessage } from "../BareMessage.js";
 import { processUserLogin } from "./processUserLogin.js";
 import { processGetProfileMaps } from "./processGetProfileMaps.js";
+import { processCheckProfileName } from "./processCheckProfileName.js";
 
 export type SocketCallback = (messages: Buffer[]) => void;
 
@@ -23,6 +24,7 @@ export function populateGameMessageProcessors(
 ): void {
     processors.set(0x501, processUserLogin);
     processors.set(0x532, processGetProfileMaps);
+    processors.set(0x533, processCheckProfileName);
 }
 
 export function getGameMessageProcessor(messageId: number): MessageProcessor {
