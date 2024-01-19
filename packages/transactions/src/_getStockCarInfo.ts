@@ -31,7 +31,7 @@ export async function _getStockCarInfo({
 
     const responsePacket = new OldServerMessage();
     responsePacket._header.sequence = packet._header.sequence;
-    responsePacket._header.flags = 8;
+    // responsePacket._header.flags = 8;
 
     responsePacket.setBuffer(stockCarInfoMessage.serialize());
 

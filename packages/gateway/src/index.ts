@@ -161,7 +161,6 @@ export function onSocketConnection({
 
     // Add the data handler to the socket
     incomingSocket.on("data", (incomingDataAsBuffer: Buffer) => {
-        // === New code ===
 
         // Get message type from the port
         let messageType = "Unknown";
@@ -189,64 +188,58 @@ export function onSocketConnection({
                     log,
                     socketCallback,
                 );
+                return;
             }
-            if (messageType === "Server") {
-                handleServerMessage(
-                    connectionId,
-                    incomingDataAsBuffer,
-                    log,
-                    socketCallback,
-                );
-            }
+           
         }
 
-        // === End new code ===
+        // Normal handlers can handle the server message
 
-        // // Deserialize the raw message
-        // const rawMessage = new SerializedBuffer()._doDeserialize(
-        //     incomingDataAsBuffer,
-        // );
+    // Deserialize the raw message
+    const rawMessage = new SerializedBuffer()._doDeserialize(
+        incomingDataAsBuffer,
+    );
 
-        // log.debug("Calling onData handler");
+    log.debug("Calling onData handler");
 
-        // portOnDataHandler({
-        //     connectionId: connectionId,
-        //     message: rawMessage,
-        // })
-        //     .then(
-        //         (
-        //             /** @type {import("../../shared/State.js").ServiceResponse} */ response: import("../../shared/State.js").ServiceResponse,
-        //         ) => {
-        //             log.debug("onData handler returned");
-        //             const { messages } = response;
+    portOnDataHandler({
+        connectionId: connectionId,
+        message: rawMessage,
+    })
+        .then(
+            (
+                /** @type {import("../../shared/State.js").ServiceResponse} */ response: import("../../shared/State.js").ServiceResponse,
+            ) => {
+                log.debug("onData handler returned");
+                const { messages } = response;
 
-        //             // Log the messages
-        //             log.trace(
-        //                 `Messages: ${messages.map((m) => m.toString())}`,
-        //             );
+                // Log the messages
+                log.trace(
+                    `Messages: ${messages.map((m) => m.toString())}`,
+                );
 
-        //             // Serialize the messages
-        //             const serializedMessages = messages.map((m) =>
-        //                 m.serialize(),
-        //             );
+                // Serialize the messages
+                const serializedMessages = messages.map((m) =>
+                    m.serialize(),
+                );
 
-        //             sendToSocket(serializedMessages, incomingSocket, log);
-        //         },
-        //     )
-        //     .catch((/** @type {Error} */ error: Error) => {
-        //         log.error(`Error handling data: ${String(error)}`);
+                sendToSocket(serializedMessages, incomingSocket, log);
+            },
+        )
+        .catch((/** @type {Error} */ error: Error) => {
+            log.error(`Error handling data: ${String(error)}`);
 
-        //         // Call server shutdown
-        //         getGatewayServer({}).shutdown();
-        //     });
-    });
+            // Call server shutdown
+            getGatewayServer({}).shutdown();
+        });
+});
 
-    log.debug(`Client ${remoteAddress} connected to port ${localPort}`);
+log.debug(`Client ${remoteAddress} connected to port ${localPort}`);
 
-    if (localPort === 7003) {
-        // Sent ok to login packet
-        incomingSocket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
-    }
+// if (localPort === 7003) {
+//     // Sent ok to login packet
+//         incomingSocket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
+//     }
 }
 
 function sendToSocket(
