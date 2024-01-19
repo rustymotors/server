@@ -26,7 +26,10 @@ import {
     portToMessageTypes,
     gameMessageProcessors,
 } from "../../../lib/nps/messageProcessors/index.js";
-import { gameUsers, populateGameUsers } from "../../../lib/nps/gameUsers.js";
+import {
+    gameUsers,
+    populateGameUsers,
+} from "../../../lib/nps/services/account.js";
 
 /**
  * @module gateway

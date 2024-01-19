@@ -22,8 +22,8 @@ import {
     handleGetKey,
     handleGetRegistry,
 } from "../../shard/src/index.js";
-import { checkPassword, getUser } from "../../../lib/nps/gameUsers.js";
-import { generateToken } from "../../../lib/nps/token.js";
+import { checkPassword, getUser } from "../../../lib/nps/services/account.js";
+import { generateToken } from "../../../lib/nps/services/token.js";
 
 /**
  * Add web routes to the web server

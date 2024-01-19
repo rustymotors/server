@@ -1,5 +1,5 @@
-import { Message } from "./BareMessage.js";
-import { getAsHex } from "./pureGet.js";
+import { Message } from "../types.js";
+import { getAsHex } from "../utils/pureGet.js";
 
 export class SessionKey implements Message {
     private key: Buffer;

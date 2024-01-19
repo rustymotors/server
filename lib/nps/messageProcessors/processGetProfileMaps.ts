@@ -1,8 +1,10 @@
-import { BareMessage, BareMessageV0 } from "../BareMessage.js";
-import { getDWord, getAsHex } from "../pureGet.js";
+import { BareMessage } from "../messageStructs/BareMessage.js";
+import { BareMessageV0 } from "../messageStructs/BareMessageV0.js";
+import { getDWord, getAsHex } from "../utils/pureGet.js";
 import { SocketCallback } from "../messageProcessors/index.js";
-import { getGameProfilesForCustomerId } from "../gameProfiles.js";
-import { NPSList, ProfileList } from "../NPSList.js";
+import { getGameProfilesForCustomerId } from "../services/profile.js";
+import { NPSList } from "../messageStructs/NPSList.js";
+import { ProfileList } from "../messageStructs/ProfileList.js";
 
 export function processGetProfileMaps(
     connectionId: string,

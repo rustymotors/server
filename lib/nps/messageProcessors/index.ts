@@ -1,4 +1,4 @@
-import { BareMessage } from "../BareMessage.js";
+import { BareMessage } from "../messageStructs/BareMessage.js";
 import { processUserLogin } from "./processUserLogin.js";
 import { processGetProfileMaps } from "./processGetProfileMaps.js";
 import { processCheckProfileName } from "./processCheckProfileName.js";

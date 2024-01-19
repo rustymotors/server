@@ -8,15 +8,15 @@ export {
     populatePortToMessageTypes,
     getPortMessageType,
 } from "./messageProcessors/index.js";
-export { BareMessage } from "./BareMessage.js";
-export { ServerMessage } from "./ServerMessage.js";
-export { getWord } from "./pureGet.js";
+export { BareMessage } from "./messageStructs/BareMessage.js";
+export { ServerMessage } from "./messageStructs/ServerMessage.js";
+export { getWord } from "./utils/pureGet.js";
 export { processUserLogin } from "./messageProcessors/processUserLogin.js";
 export {
     gameUsers,
     populateGameUsers,
     getUser,
     checkPassword,
-} from "./gameUsers.js";
-export { generateToken } from "./token.js";
-export { createNewUserSession, setUserSession } from "./userSessions.js";
+} from "./services/account.js";
+export { generateToken } from "./services/token.js";
+export { createNewUserSession, setUserSession } from "./services/session.js";

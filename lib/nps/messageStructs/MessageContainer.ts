@@ -1,6 +1,6 @@
 import { get } from "http";
-import { getAsHex, getNBytes } from "./pureGet.js";
-import { Message } from "./BareMessage.js";
+import { getAsHex, getNBytes } from "../utils/pureGet.js";
+import { Message } from "../types.js";
 
 export class MessageContainer implements Message {
     private id: number;

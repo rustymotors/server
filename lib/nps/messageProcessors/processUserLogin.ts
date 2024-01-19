@@ -1,13 +1,14 @@
-import { BareMessage } from "../BareMessage.js";
+import { BareMessage } from "../messageStructs/BareMessage.js";
 import fs from "node:fs";
 import crypto from "node:crypto";
-import { getToken } from "../token.js";
-import { createNewUserSession, setUserSession } from "../userSessions.js";
+import { getToken } from "../services/token.js";
+import { createNewUserSession, setUserSession } from "../services/session.js";
 import { SocketCallback } from "./index.js";
-import { MessageContainer } from "../MessageContainer.js";
-import { SessionKey } from "../SessionKey.js";
-import { getLenString } from "../pureGet.js";
-import { UserAction, UserStatus } from "../UserStatus.js";
+import { MessageContainer } from "../messageStructs/MessageContainer.js";
+import { SessionKey } from "../messageStructs/SessionKey.js";
+import { getLenString } from "../utils/pureGet.js";
+import { UserStatus } from "../messageStructs/UserStatus.js";
+import { UserAction } from "../messageStructs/UserAction.js";
 
 export function loadPrivateKey(path: string): string {
     const privateKey = fs.readFileSync(path);

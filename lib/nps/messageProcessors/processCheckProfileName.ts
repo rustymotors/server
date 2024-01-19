@@ -1,7 +1,8 @@
 import { get } from "http";
-import { BareMessage, BareMessageV0 } from "../BareMessage.js";
+import { BareMessage } from "../messageStructs/BareMessage.js";
+import { BareMessageV0 } from "../messageStructs/BareMessageV0.js";
 import { SocketCallback } from "./index.js";
-import { getLenString, getNBytes } from "../pureGet.js";
+import { getLenString, getNBytes } from "../utils/pureGet.js";
 
 export function processCheckProfileName(
     connectionId: string,
