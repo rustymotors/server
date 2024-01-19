@@ -31,7 +31,7 @@
         "@fastify/sensible": "^5.5.0",
         "@sentry/node": "7.93",
         "@sentry/profiling-node": "^1.3.5",
-        "adminjs": "^7.5.2",
+        "adminjs": "^7.5.6",
         "fastify": "^4.25.2",
         "moment": "^2.30.1",
         "pino": "^8.17.2",
