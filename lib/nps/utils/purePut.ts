@@ -13,6 +13,12 @@ export function put16(
     return bytes;
 }
 
+export function put8(bytes: Buffer, offset: number, byte: number): Buffer {
+    // Put the byte at the offset
+    bytes.writeUInt8(byte, offset);
+    return bytes;
+}
+
 export function put16BE(bytes: Buffer, offset: number, word: number): Buffer {
     return put16(bytes, offset, word, false);
 }

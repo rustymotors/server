@@ -40,3 +40,20 @@ export function getLenString(
     // Get the string
     return bytes.subarray(offset + 2, offset + 2 + strLen).toString("utf8");
 }
+
+export function getLenBlob(
+    bytes: Buffer,
+    offset: number,
+    isLE: boolean,
+): Buffer {
+    // Get the length of the blob
+    const blobLen = getDWord(bytes, offset, isLE);
+
+    // Get the blob
+    return bytes.subarray(offset + 2, offset + 2 + blobLen);
+}
+
+export function getShortBool(bytes: Buffer, offset: number): boolean {
+    // Get a 2 byte boolean
+    return bytes.readUInt16LE(offset) === 1;    
+}
