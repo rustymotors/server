@@ -1,5 +1,5 @@
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
-import { TLoginMessage } from "./TLoginMessage.js";
+import { LoginCompleteMessage, TLoginMessage } from "./TLoginMessage.js";
 import { OldServerMessage } from "../../shared/messageFactory.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
 
@@ -18,15 +18,17 @@ export async function login({
     log.debug(`Received LoginMessage: ${loginMessage.toString()}`);
 
     // Create new response packet
-    const pReply = new GenericReplyMessage();
-    pReply.msgNo = 213;
-    pReply.msgReply = 105;
+    const pReply = new LoginCompleteMessage();
+    pReply._msgNo = 213;
+    pReply._firstTime = true;
+
+    // Log the message
+    log.debug(pReply.toString());
+
     const responsePacket = new OldServerMessage();
     responsePacket._header.sequence = packet._header.sequence;
     responsePacket._header.flags = 8;
     responsePacket.setBuffer(pReply.serialize());
-
-    log.debug(`Response: ${responsePacket.toString()}`);
 
     return { connectionId, messages: [responsePacket] };
 }

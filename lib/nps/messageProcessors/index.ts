@@ -4,6 +4,7 @@ import { processGetProfileMaps } from "./processGetProfileMaps.js";
 import { processCheckProfileName } from "./processCheckProfileName.js";
 import { processCheckPlateText } from "./processCheckPlateText.js";
 import { processCreateProfile } from "./processCreateProfile.js";
+import { processDeleteProfile } from "./processDeleteProfile.js";
 
 export type SocketCallback = (messages: Buffer[]) => void;
 
@@ -26,6 +27,7 @@ export function populateGameMessageProcessors(
 ): void {
     processors.set(0x501, processUserLogin);
     processors.set(0x507, processCreateProfile);
+    processors.set(0x512, processDeleteProfile);
     processors.set(0x532, processGetProfileMaps);
     processors.set(0x533, processCheckProfileName);
     processors.set(0x534, processCheckPlateText);

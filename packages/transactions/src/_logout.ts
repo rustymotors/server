@@ -15,7 +15,7 @@ export async function _logout(
     response.msgReply = 106;
 
     const responsePacket = new OldServerMessage();
-    responsePacket._header.sequence = args.packet._header.sequence + 1;
+    responsePacket._header.sequence = args.packet._header.sequence;
     responsePacket._header.flags = 8;
 
     responsePacket.setBuffer(response.serialize());

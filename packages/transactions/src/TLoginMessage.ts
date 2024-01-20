@@ -54,6 +54,61 @@ export class LoginCompleteMessage extends SerializedBuffer {
         this._shardAverageCarsOwned = 0; // 4 bytes
         this._shardAverageLevel = 0; // 4 bytes
     }
+
+    override serialize(): Buffer {
+        const buffer = Buffer.alloc(this.size());
+        let offset = 0;
+        buffer.writeUInt16LE(this._msgNo, offset);
+        offset += 2;
+        buffer.writeUInt32LE(this._serverTime, offset);
+        offset += 4;
+        buffer.writeUInt8(this._firstTime ? 1 : 0, offset);
+        offset += 1;
+        buffer.writeUInt8(this._paycheckWaiting ? 1 : 0, offset);
+        offset += 1;
+        buffer.writeUInt8(this._clubInvitesWaiting ? 1 : 0, offset);
+        offset += 1;
+        buffer.writeUInt8(this.tallyInProgress ? 1 : 0, offset);
+        offset += 1;
+        buffer.writeUInt16LE(this._secondsUntilShutdown, offset);
+        offset += 2;
+
+        buffer.writeUInt32LE(this._shardGNP, offset);
+        offset += 4;
+        buffer.writeUInt32LE(this._shardCarsSold, offset);
+        offset += 4;
+        buffer.writeUInt32LE(this._shardAverageSalaries, offset);
+        offset += 4;
+        buffer.writeUInt32LE(this._shardAverageCarsOwned, offset);
+        offset += 4;
+        buffer.writeUInt32LE(this._shardAverageLevel, offset);
+        offset += 4;
+
+        return buffer;    
+    
+        
+    }
+
+    override size() {
+        return 34;
+    }
+
+    override toString() {
+        return `LoginCompleteMessage:
+        MsgNo: ${this._msgNo}
+        ServerTime: ${this._serverTime}
+        FirstTime: ${this._firstTime}
+        PaycheckWaiting: ${this._paycheckWaiting}
+        ClubInvitesWaiting: ${this._clubInvitesWaiting}
+        TallyInProgress: ${this.tallyInProgress}
+        SecondsUntilShutdown: ${this._secondsUntilShutdown}
+        ShardGNP: ${this._shardGNP}
+        ShardCarsSold: ${this._shardCarsSold}
+        ShardAverageSalaries: ${this._shardAverageSalaries}
+        ShardAverageCarsOwned: ${this._shardAverageCarsOwned}
+        ShardAverageLevel: ${this._shardAverageLevel}
+        `;
+    }
 }
 
 export class TLoginMessage extends OldServerMessage {
@@ -141,6 +196,15 @@ export class TLoginMessage extends OldServerMessage {
     }
 
     override toString() {
-        return `TLoginMessage: msgNo=${this._msgNo} customerId=${this._customerId} personaId=${this._personaId} lotOwnerId=${this._lotOwnerId} brandedPartId=${this._brandedPartId} skinId=${this._skinId} personaName=${this._personaName} mcVersion=${this._mcVersion}`;
+        return `TLoginMessage:
+        MsgNo: ${this._msgNo}
+        CustomerId: ${this._customerId}
+        PersonaId: ${this._personaId}
+        LotOwnerId: ${this._lotOwnerId}
+        BrandedPartId: ${this._brandedPartId}
+        SkinId: ${this._skinId}
+        PersonaName: ${this._personaName}
+        MCVersion: ${this._mcVersion}
+        `;
     }
 }
