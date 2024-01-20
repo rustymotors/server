@@ -206,6 +206,17 @@ export async function receiveTransactionsData({
         log,
     });
 
+    // Check if we got a request to close the connection. This is a special case where the flag is set to -1
+    if (response.messages[0]._header.flags === -1) {
+        log.debug("Closing connection");
+        const closeConnection = new SerializedBuffer();
+        closeConnection.setBuffer(Buffer.from([-1]));
+        return {
+            connectionId,
+            messages: [closeConnection],
+        };
+    }
+
     // Loop through the outbound messages and encrypt them
     const outboundMessages: SerializedBuffer[] = [];
 

@@ -211,6 +211,13 @@ export function onSocketConnection({
                     log.debug("onData handler returned");
                     const { messages } = response;
 
+                    // Checkif this is a system message to close the connection
+                    if (messages.length === 1 && messages[0].internalBuffer.readInt8(0) === -1) {
+                        log.debug(`Closing connection ${connectionId}`);
+                        incomingSocket.end();
+                        return;
+                    }
+                    
                     // Log the messages
                     log.trace(`Messages: ${messages.map((m) => m.toString())}`);
 

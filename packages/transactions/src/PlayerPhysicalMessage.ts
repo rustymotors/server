@@ -44,6 +44,23 @@ export class PlayerPhysicalMessage extends SerializedBuffer {
         return buffer;
     }
 
+    deserialize(buffer: Buffer) {
+        let offset = 0;
+        this._msgNo = buffer.readUInt16LE(offset);
+        offset += 2;
+        this._playerId = buffer.readUInt32LE(offset);
+        offset += 4;
+        this._bodytype = buffer.readUInt32LE(offset);
+        offset += 4;
+        this._hairColor = buffer.readUInt32LE(offset);
+        offset += 4;
+        this._skinColor = buffer.readUInt32LE(offset);
+        offset += 4;
+        this._shirtColor = buffer.readUInt32LE(offset);
+        offset += 4;
+        this._pantsColor = buffer.readUInt32LE(offset);
+    }
+
     override toString() {
         return `PlayerPhysicalMessage: msgNo=${this._msgNo} playerId=${this._playerId} bodytype=${this._bodytype} hairColor=${this._hairColor} skinColor=${this._skinColor} shirtColor=${this._shirtColor} pantsColor=${this._pantsColor}`;
     }

@@ -498,6 +498,9 @@ export class NPSMessage extends SerializableMixin(AbstractSerializable) {
     }
 }
 
+
+
+
 /**
  * A raw message is a message that is not parsed into a specific type.
  * It has no header, and is just a serialized buffer.
@@ -853,12 +856,23 @@ export class MessageBuffer extends SerializedBuffer {
     }
 }
 
+export interface ServerMessageType {
+    _header: serverHeader;
+    _msgNo: number;
+    size(): number;
+    _doDeserialize(buffer: Buffer): ServerMessageType;
+    serialize(): Buffer;
+    setBuffer(buffer: Buffer): void;
+    updateMsgNo(): void;
+    toString(): string;
+}
+
 /**
  * A server message is a message that is passed between the server and the client. It has an 11 byte header. @see {@link serverHeader}
  *
  * @mixin {SerializableMixin}
  */
-export class OldServerMessage extends SerializedBuffer {
+export class OldServerMessage extends SerializedBuffer implements ServerMessageType {
     _header: serverHeader;
     _msgNo: number;
     constructor() {

@@ -31,6 +31,8 @@ import { _getStockCarInfo } from "./_getStockCarInfo.js";
 import { _logout } from "./_logout.js";
 import { ServerMessage } from "../../shared/src/ServerMessage.js";
 import { ServerLogger } from "../../shared/log.js";
+import { _setOptions } from "./_setOptions.js";
+import { _updatePlayerPhysical } from "./_updatePlayerPhysical.js";
 
 export interface MessageHandlerArgs {
     connectionId: string;
@@ -105,4 +107,12 @@ export const messageHandlers: MessageHandler[] = [
         name: "MC_GET_PLAYER_RACING_HISTORY",
         handler: _getPlayerRaceHistory,
     },
+    {
+        name: "MC_SET_OPTIONS",
+        handler: _setOptions,
+    },
+    {
+        name: "MC_UPDATE_PLAYER_PHYSICAL",
+        handler: _updatePlayerPhysical,
+    }
 ];

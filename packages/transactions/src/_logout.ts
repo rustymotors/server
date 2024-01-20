@@ -6,21 +6,20 @@ import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
  * @param {MessageHandlerArgs} args
  * @return {Promise<MessageHandlerResult>}
  */
-export async function _logout({
-    connectionId,
-    packet,
-    log,
-}: MessageHandlerArgs): Promise<MessageHandlerResult> {
+export async function _logout(
+    args: MessageHandlerArgs,
+): Promise<MessageHandlerResult> {
     // Create new response packet
     const pReply = new GenericReplyMessage();
-    pReply.msgNo = 101;
-    pReply.msgReply = 106;
-    const rPacket = new OldServerMessage();
-    rPacket._header.sequence = packet._header.sequence + 1;
-    rPacket._header.flags = 8;
-    rPacket.setBuffer(pReply.serialize());
+    pReply.msgNo = 278;
 
-    log.debug(`Logout: ${rPacket.toString()}`);
+    const responsePacket = new OldServerMessage();
+    responsePacket._header.sequence = args.packet._header.sequence;
+    responsePacket._header.flags = -1;
 
-    return { connectionId, messages: [rPacket] };
+    // Log the message
+    args.log.debug(`LogoutMessage: ${pReply.toString()}`);
+
+    return { connectionId: args.connectionId, messages: [responsePacket] };
+
 }

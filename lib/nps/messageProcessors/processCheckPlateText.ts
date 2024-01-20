@@ -11,7 +11,7 @@ export function processCheckPlateText(
 ): void {
     const requestBytes = message.toBytes();
 
-    const request = BareMessageV0.fromBytes(requestBytes, requestBytes.length);
+    const request = BareMessage.fromBytes(requestBytes, requestBytes.length);
 
     const plateType = request.getData().readUInt32BE(0);
 

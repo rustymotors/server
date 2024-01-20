@@ -19,14 +19,14 @@ import { SerializedBuffer } from "../../shared/messageFactory.js";
 export class GenericReply extends SerializedBuffer {
     msgNo: number;
     msgReply: number;
-    result: Buffer;
+    result: number;
     data2: Buffer;
     rawBuffer!: Buffer;
     constructor() {
         super();
         this.msgNo = 0; // 2 bytes (ethier MC_SUCCESS (0x101) or MC_FAILURE(0x102))
         this.msgReply = 0; // 2 bytes (message # being replied to (ex: MC_PURCHASE_STOCK_CAR))
-        this.result = Buffer.alloc(4); // 4 bytes (specific to the message sent, often the reason for a failure)
+        this.result = 0; // 4 bytes (specific to the message sent, often the reason for a failure)
         this.setBuffer(Buffer.alloc(4)); // 4 bytes (specific to the message sent (but usually 0))
         this.data2 = Buffer.alloc(4); // 4 bytes (specific to the message sent (but usually 0))
     }
@@ -35,7 +35,7 @@ export class GenericReply extends SerializedBuffer {
         this.rawBuffer = Buffer.alloc(16);
         this.rawBuffer.writeInt16LE(this.msgNo, 0);
         this.rawBuffer.writeInt16LE(this.msgReply, 2);
-        this.result.copy(this.rawBuffer, 4);
+        this.rawBuffer.writeInt16LE(this.result, 4);
         this.data.copy(this.rawBuffer, 8);
         this.data2.copy(this.rawBuffer, 12);
         return this.rawBuffer;
@@ -45,7 +45,7 @@ export class GenericReply extends SerializedBuffer {
         return {
             msgNo: this.msgNo,
             msgReply: this.msgReply,
-            result: this.result.toString("hex"),
+            result: this.result,
             data: this.data.toString("hex"),
             data2: this.data2.toString("hex"),
         };
@@ -140,8 +140,8 @@ export class GenericReplyMessage extends SerializedBuffer {
         let offset = 0;
         packet.writeInt16LE(this.msgNo, offset);
         offset += 2;
-        // packet.writeInt16LE(this.msgReply, offset);
-        // offset += 2;
+        packet.writeInt16LE(this.msgReply, offset);
+        offset += 2;
         this.result.copy(packet, offset);
         offset += 4;
         this.data.copy(packet, offset);
@@ -168,7 +168,7 @@ export class GenericReplyMessage extends SerializedBuffer {
         ${JSON.stringify({
             msgNo: this.msgNo,
             msgReply: this.msgReply,
-            result: this.result.toString("hex"),
+            result: this.result,
             data: this.data.toString("hex"),
             tdata2: this.data2.toString("hex"),
         })}`;

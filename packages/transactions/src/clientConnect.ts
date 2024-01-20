@@ -58,7 +58,17 @@ export async function clientConnect({
    const userSession = getUserSessionByCustomerId(customerId);
 
     if (typeof userSession === "undefined") {
-         throw new Error(`No user session found for ${customerId}`);   
+        log.warn(`No user session found for ${customerId}`); 
+        const errMessage = new GenericReply();
+        errMessage.msgNo = 136
+        errMessage.msgReply = packet._msgNo;
+        errMessage.result = 309;
+
+        const errPacket = new OldServerMessage();
+        errPacket.setBuffer(errMessage.serialize());
+        errPacket._header.sequence = packet._header.sequence;
+
+        return { connectionId, messages: [errPacket] };
     }
 
     const newCommandEncryptionPair = createCommandEncryptionPair(
