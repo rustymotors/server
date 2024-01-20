@@ -10,15 +10,15 @@ export async function _logout(
     args: MessageHandlerArgs,
 ): Promise<MessageHandlerResult> {
     // Create new response packet
-    const pReply = new GenericReplyMessage();
-    pReply.msgNo = 278;
+    const response = new GenericReplyMessage();
+    response.msgNo = 101;
+    response.msgReply = 106;
 
     const responsePacket = new OldServerMessage();
-    responsePacket._header.sequence = args.packet._header.sequence;
-    responsePacket._header.flags = -1;
+    responsePacket._header.sequence = args.packet._header.sequence + 1;
+    responsePacket._header.flags = 8;
 
-    // Log the message
-    args.log.debug(`LogoutMessage: ${pReply.toString()}`);
+    responsePacket.setBuffer(response.serialize());
 
     return { connectionId: args.connectionId, messages: [responsePacket] };
 

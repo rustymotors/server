@@ -207,7 +207,7 @@ export async function receiveTransactionsData({
     });
 
     // Check if we got a request to close the connection. This is a special case where the flag is set to -1
-    if (response.messages[0]._header.flags === -1) {
+    if (response.messages[0] && response.messages[0]._header.flags === -1) {
         log.debug("Closing connection");
         const closeConnection = new SerializedBuffer();
         closeConnection.setBuffer(Buffer.from([-1]));

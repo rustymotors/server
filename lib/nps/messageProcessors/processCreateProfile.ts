@@ -3,7 +3,7 @@ import { BareMessage } from "../messageStructs/BareMessage.js";
 import { BareMessageV0 } from "../messageStructs/BareMessageV0.js";
 import { SocketCallback } from "./index.js";
 import { getLenString, getNBytes } from "../utils/pureGet.js";
-import { CreateProfileMessage } from "../messageStructs/CreateProfileMessage.js";
+import { GameProfile } from "../messageStructs/GameProfile.js";
 
 
 export function processCreateProfile(
@@ -18,13 +18,13 @@ export function processCreateProfile(
     // Log the request
     console.log(`Bare message request: ${request.toHex()}`);
 
-    const createProfileMessage = CreateProfileMessage.fromBytes(
+    const createProfileMessage = GameProfile.fromBytes(
         request.getData(),
         request.getSize(),
     );
 
     // Log the request
-    console.log(`Create profile request: ${createProfileMessage.toString()}`);
+    console.log(createProfileMessage.toString());
 
     // TODO: Create the profile
 

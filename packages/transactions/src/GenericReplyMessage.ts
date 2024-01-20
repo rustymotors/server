@@ -58,12 +58,10 @@ export class GenericReply extends SerializedBuffer {
 
 export class GenericReplyMessage extends SerializedBuffer {
     msgNo: number;
-    toFrom: number;
-    appId: number;
     msgReply: number;
-    result: Buffer;
-    data2: Buffer;
-    rawBuffer: Buffer;
+    result: number;
+    data1: number;
+    data2: number;
     /**
      * One of
      *
@@ -76,28 +74,22 @@ export class GenericReplyMessage extends SerializedBuffer {
     constructor() {
         super();
         this.msgNo = 0; // 2 bytes
-        this.toFrom = 0; // 2 bytes
-        this.appId = 0; // 2 bytes
         this.msgReply = 0; // 2 bytes
-        this.result = Buffer.alloc(4); // 4 bytes
-        this.setBuffer(Buffer.alloc(4)); // 4 bytes
-        this.data2 = Buffer.alloc(4); // 4 bytes
-        this.rawBuffer = Buffer.alloc(0);
+        this.result = 0; // 4 bytes
+        this.data1 = 0; // 4 bytes
+        this.data2 = 0; // 4 bytes
     }
 
-    /**
-     * Setter data
-     * @param {Buffer} value
-     */
-    setData(value: Buffer) {
-        this.setBuffer(value);
+    setResult(buffer: number) {
+        this.result = buffer;
     }
 
-    /**
-     * Setter data2
-     * @param {Buffer} value
-     */
-    setData2(value: Buffer) {
+
+    setData1(value: number) {
+        this.data1 = value;
+    }
+
+    setData2(value: number) {
         this.data2 = value;
     }
 
@@ -108,7 +100,7 @@ export class GenericReplyMessage extends SerializedBuffer {
      */
     static deserialize(buffer: Buffer): GenericReplyMessage {
         const node = new GenericReplyMessage();
-        node.rawBuffer = buffer;
+        
         try {
             node.msgNo = buffer.readInt16LE(0);
         } catch (error) {
@@ -125,9 +117,9 @@ export class GenericReplyMessage extends SerializedBuffer {
         }
 
         node.msgReply = buffer.readInt16LE(2);
-        node.result = buffer.subarray(4, 8);
-        node.setBuffer(buffer.subarray(8, 12));
-        node.data2 = buffer.subarray(12);
+        node.result = buffer.readInt32LE(4);
+        node.data1 = buffer.readInt32LE(8);
+        node.data2 = buffer.readInt32LE(12);
         return node;
     }
 
@@ -136,29 +128,22 @@ export class GenericReplyMessage extends SerializedBuffer {
      * @return {Buffer}
      */
     override serialize(): Buffer {
-        const packet = Buffer.alloc(114); // 16 bytes
+        const packet = Buffer.alloc(this.size());
         let offset = 0;
         packet.writeInt16LE(this.msgNo, offset);
         offset += 2;
         packet.writeInt16LE(this.msgReply, offset);
         offset += 2;
-        this.result.copy(packet, offset);
+        packet.writeInt16LE(this.result, offset);
         offset += 4;
-        this.data.copy(packet, offset);
+        packet.writeInt16LE(this.data1, offset);
         offset += 4;
-        this.data2.copy(packet, offset);
+        packet.writeInt16LE(this.data2, offset);
         // offset is now 16
         return packet;
     }
 
-    /**
-     *
-     * @param {Buffer} buffer
-     */
-    setResult(buffer: Buffer) {
-        this.result = buffer;
-    }
-
+    
     /**
      * DumpPacket
      * @return {string}
@@ -169,8 +154,22 @@ export class GenericReplyMessage extends SerializedBuffer {
             msgNo: this.msgNo,
             msgReply: this.msgReply,
             result: this.result,
-            data: this.data.toString("hex"),
-            tdata2: this.data2.toString("hex"),
+            data: this.data1,
+            tdata2: this.data2,
         })}`;
+    }
+
+    override toString(): string {
+        return `GenericReply: 
+        MsgNo: ${this.msgNo}
+        MsgReply: ${this.msgReply}
+        Result: ${this.result}
+        Data: ${this.data1}
+        Data2: ${this.data2}
+        `
+    }
+
+    override size(): number {
+        return 16;        
     }
 }

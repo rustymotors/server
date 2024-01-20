@@ -71,3 +71,35 @@ export function putLenString(
 
     return bytes;
 }
+
+export function putLenBlob(
+    bytes: Buffer,
+    offset: number,
+    blob: Buffer,
+    isLE: boolean,
+): Buffer {
+    // Get the length of the blob
+    const blobLen = blob.length;
+
+    // Put the length of the blob
+    if (isLE) {
+        bytes.writeUInt32LE(blobLen, offset);
+    } else {
+        bytes.writeUInt32BE(blobLen, offset);
+    }
+
+    // Put the blob
+    blob.copy(bytes, offset + 4);
+
+    return bytes;
+}
+
+export function putShortBool(
+    bytes: Buffer,
+    offset: number,
+    bool: boolean,
+): Buffer {
+    // Put a 2 byte boolean
+    bytes.writeUInt16LE(bool ? 1 : 0, offset);
+    return bytes;
+}
