@@ -15,6 +15,7 @@ import {
 } from "../../gateway/src/encryption.js";
 import { OldServerMessage } from "../../shared/messageFactory.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import { getUserSessionByCustomerId } from "../../../lib/nps/services/session.js";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -54,16 +55,17 @@ export async function clientConnect({
 
     log.debug(`Looking up the session key for ${customerId}...`);
 
-    result = await getDatabaseServer({
-        log,
-    }).fetchSessionKeyByCustomerId(customerId);
-    log.debug(`Session key found for ${customerId}`);
+   const userSession = getUserSessionByCustomerId(customerId);
+
+    if (typeof userSession === "undefined") {
+         throw new Error(`No user session found for ${customerId}`);   
+    }
 
     const newCommandEncryptionPair = createCommandEncryptionPair(
-        result.sessionKey,
+        userSession.sessionKey,
     );
 
-    const newDataEncryptionPair = createDataEncryptionPair(result.sessionKey);
+    const newDataEncryptionPair = createDataEncryptionPair(userSession.sessionKey);
 
     const newEncryption = new McosEncryption({
         connectionId,

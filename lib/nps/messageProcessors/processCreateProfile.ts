@@ -25,4 +25,15 @@ export function processCreateProfile(
 
     // Log the request
     console.log(`Create profile request: ${createProfileMessage.toString()}`);
+
+    // TODO: Create the profile
+
+    // TODO: Send the response
+    const response = BareMessage.new(0x601);
+    response.setData(request.getData());
+
+    // Log the response
+    console.log(`Bare message response: ${response.toHex()}`);
+
+    socketCallback([response.toBytes()]);
 }
