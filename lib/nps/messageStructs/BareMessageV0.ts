@@ -22,7 +22,6 @@ export class BareMessageV0 implements Message {
     static new(id: number): BareMessageV0 {
         const message = new BareMessageV0(Buffer.alloc(4), 4);
         message.setMessageId(id);
-        console.log(`New message: ${message.toString()}`);
         return message;
     }
 
@@ -65,11 +64,10 @@ export class BareMessageV0 implements Message {
     }
 
     toString(): string {
-        return [
-            `ID: ${this.header.getMessageId()}`,
-            `Length: ${this.header.getMessageLength()}`,
-            `Data: ${this.getDataAsHex()}`,
-        ].join(", ");
+        return `BareMessageV0:
+        header: ${this.header.toString()}
+        message: ${this.getDataAsHex()}
+        `;        
     }
 
     toHex(): string {

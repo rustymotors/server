@@ -4,29 +4,29 @@ import { getAsHex, getLenBlob, getLenString, getShortBool } from "../utils/pureG
 
 export class GameProfile implements Message {
 
-    private customerID: number; // 4 bytes
-    private profileName: string; // 32 bytes - max length
-    private serverId: number; // 4 bytes
-    private createStamp: number; // 4 bytes
-    private lastLoginStamp: number; // 4 bytes
-    private numberGames: number; // 4 bytes
-    private profileId: number; // 4 bytes
-    private isOnline: boolean; // 2 bytes
-    private gamePurchaseStamp: number; // 4 bytes
-    private gameSerialNumber: string; // 32 bytes - max length
-    private timeOnline: number; // 4 bytes
-    private timeInGame: number; // 4 bytes
-    private gameBlob: Buffer;  // 512 bytes - max length
-    private personalBlob: Buffer; // 256 bytes - max length
-    private pictureBlob: Buffer; // 1 byte
-    private dnd: boolean; // 2 bytes
-    private gameStartStamp: number; // 4 bytes
-    private currentKey: string; // 400 bytes - max length
-    private profileLevel: number; // 2 bytes
-    private shardId: number; // 4 bytes
+    customerId: number; // 4 bytes
+    profileName: string; // 32 bytes - max length
+    serverId: number; // 4 bytes
+    createStamp: number; // 4 bytes
+    lastLoginStamp: number; // 4 bytes
+    numberGames: number; // 4 bytes
+    profileId: number; // 4 bytes
+    isOnline: boolean; // 2 bytes
+    gamePurchaseStamp: number; // 4 bytes
+    gameSerialNumber: string; // 32 bytes - max length
+    timeOnline: number; // 4 bytes
+    timeInGame: number; // 4 bytes
+    gameBlob: Buffer;  // 512 bytes - max length
+    personalBlob: Buffer; // 256 bytes - max length
+    pictureBlob: Buffer; // 1 byte
+    dnd: boolean; // 2 bytes
+    gameStartStamp: number; // 4 bytes
+    currentKey: string; // 400 bytes - max length
+    profileLevel: number; // 2 bytes
+    shardId: number; // 4 bytes
 
     constructor() {
-        this.customerID = 0;
+        this.customerId = 0;
         this.profileName = "";
         this.serverId = 0;
         this.createStamp = 0;
@@ -55,7 +55,7 @@ export class GameProfile implements Message {
     static fromBytes(data: Buffer, size: number): GameProfile {
         const message = new GameProfile();
         let offset = 0;
-        message.customerID = data.readUInt32BE(offset);
+        message.customerId = data.readUInt32BE(offset);
         offset += 4;
         message.profileName = getLenString(data, offset, false);
         offset += message.profileName.length + 2;
@@ -101,51 +101,54 @@ export class GameProfile implements Message {
     toBytes(): Buffer {
         const buffer = Buffer.alloc(this.getSize());
         let offset = 0;
-        buffer.writeUInt32BE(this.customerID, offset);
-        offset += 4;
-        putLenString(buffer, offset, this.profileName, false);
-        offset += this.profileName.length + 2;
-        buffer.writeUInt32BE(this.serverId, offset);
-        offset += 4;
-        buffer.writeUInt32BE(this.createStamp, offset);
-        offset += 4;
-        buffer.writeUInt32BE(this.lastLoginStamp, offset);
-        offset += 4;
-        buffer.writeUInt32BE(this.numberGames, offset);
-        offset += 4;
+        buffer.writeUInt32BE(this.customerId, offset);
+        offset += 4; // offset  is now 4
+        buffer.writeUInt16BE(3341, offset);
+        offset += 2; // offset is now 6
         buffer.writeUInt32BE(this.profileId, offset);
-        offset += 4;
-        putShortBool(buffer, offset, this.isOnline);
-        offset += 2;
-        buffer.writeUInt32BE(this.gamePurchaseStamp, offset);
-        offset += 4;
-        putLenString(buffer, offset, this.gameSerialNumber, false);
-        offset += this.gameSerialNumber.length + 2;
-        buffer.writeUInt32BE(this.timeOnline, offset);
-        offset += 4;
-        buffer.writeUInt32BE(this.timeInGame, offset);
-        offset += 4;
-        putLenBlob(buffer, offset, this.gameBlob, false);
-        offset += this.gameBlob.length + 4;
-        putLenBlob(buffer, offset, this.personalBlob, false);
-        offset += this.personalBlob.length + 4;
-        buffer.writeUInt8(this.pictureBlob.readUInt8(0), offset);
-        offset += 1;
-        putShortBool(buffer, offset, this.dnd);
-        offset += 2;
-        buffer.writeUInt32BE(this.gameStartStamp, offset);
-        offset += 4;
-        putLenString(buffer, offset, this.currentKey, false);
-        offset += this.currentKey.length + 2;
-        buffer.writeUInt16BE(this.profileLevel, offset);
-        offset += 2;
+        offset += 4; // offset is now 10
         buffer.writeUInt32BE(this.shardId, offset);
-        offset += 4;
+        offset += 4; // offset is now 14
+        offset += 4; // unknown, offset is now 18
+        putLenString(buffer, offset, this.profileName, false);
+        
+        // buffer.writeUInt32BE(this.serverId, offset);
+        // offset += this.profileName.length + 2;
+        // buffer.writeUInt32BE(this.createStamp, offset);
+        // offset += 4;
+        // buffer.writeUInt32BE(this.lastLoginStamp, offset);
+        // offset += 4;
+        // buffer.writeUInt32BE(this.numberGames, offset);
+        // offset += 4;
+        // putShortBool(buffer, offset, this.isOnline);
+        // offset += 2;
+        // buffer.writeUInt32BE(this.gamePurchaseStamp, offset);
+        // offset += 4;
+        // putLenString(buffer, offset, this.gameSerialNumber, false);
+        // offset += this.gameSerialNumber.length + 2;
+        // buffer.writeUInt32BE(this.timeOnline, offset);
+        // offset += 4;
+        // buffer.writeUInt32BE(this.timeInGame, offset);
+        // offset += 4;
+        // putLenBlob(buffer, offset, this.gameBlob, false);
+        // offset += this.gameBlob.length + 2;
+        // putLenBlob(buffer, offset, this.personalBlob, false);
+        // offset += this.personalBlob.length + 2;
+        // this.pictureBlob.copy(buffer, offset, 0, 1);
+        // offset += 1;
+        // putShortBool(buffer, offset, this.dnd);
+        // offset += 2;
+        // buffer.writeUInt32BE(this.gameStartStamp, offset);
+        // offset += 4;
+        // putLenString(buffer, offset, this.currentKey, false);
+        // offset += this.currentKey.length + 2;
+        // buffer.writeUInt16BE(this.profileLevel, offset);
+        // offset += 2;
         return buffer;
     }
     toString(): string {
         return `GameProfile: 
-        customerID: ${this.customerID}
+        customerID: ${this.customerId}
         profileName: ${this.profileName}
         serverId: ${this.serverId}
         createStamp: ${this.createStamp}
@@ -177,13 +180,6 @@ export class GameProfile implements Message {
         throw new Error("Method not implemented.");
     }
     getSize(): number {
-        return 4 + 
-        this.profileName.length + 2 +
-        4 + 4 + 4 + 4 + 4 + 2 + 4 + 32 + 4 + 4 + 
-        this.gameBlob.length + 2 +
-        this.personalBlob.length + 2 +
-        1 + 2 + 4 + 
-        this.currentKey.length + 2 + 
-        2 + 4;
+        return 52;
     }
 }

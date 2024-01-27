@@ -134,6 +134,7 @@ export function processUserLogin(
             activeProfileId: 0,
             nextSequenceNumber: 0,
             sessionKey,
+            clientVersion: "unknown",
         });
 
         // Save the user session

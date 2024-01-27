@@ -12,6 +12,11 @@ export function populateGameUsers(users: Map<string, User>): void {
         password: "admin",
         customerId: 1,
     });
+    users.set("molly", {
+        username: "molly",
+        password: "molly",
+        customerId: 2,
+    });
 }
 
 export function getUser(username: string): User | undefined {

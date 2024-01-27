@@ -286,6 +286,9 @@ export function handleGameMessage(
 ) {
     log.debug(`Handling game message...`);
 
+    // Log raw bytes
+    log.trace(`Raw bytes: ${bytes.toString("hex")}`);
+
     // If this is a Game message, it will "probably" be a BareMessage
     // Try to parse it as a BareMessage
     try {

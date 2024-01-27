@@ -27,38 +27,38 @@ export class PlayerPhysicalMessage extends SerializedBuffer {
     override serialize() {
         const buffer = Buffer.alloc(this.size());
         let offset = 0;
-        buffer.writeUInt16LE(this._msgNo, offset);
+        buffer.writeUInt16BE(this._msgNo, offset);
         offset += 2;
-        buffer.writeUInt32LE(this._playerId, offset);
+        buffer.writeUInt32BE(this._playerId, offset);
         offset += 4;
-        buffer.writeUInt32LE(this._bodytype, offset);
+        buffer.writeUInt32BE(this._bodytype, offset);
         offset += 4;
-        buffer.writeUInt32LE(this._hairColor, offset);
+        buffer.writeUInt32BE(this._hairColor, offset);
         offset += 4;
-        buffer.writeUInt32LE(this._skinColor, offset);
+        buffer.writeUInt32BE(this._skinColor, offset);
         offset += 4;
-        buffer.writeUInt32LE(this._shirtColor, offset);
+        buffer.writeUInt32BE(this._shirtColor, offset);
         offset += 4;
-        buffer.writeUInt32LE(this._pantsColor, offset);
+        buffer.writeUInt32BE(this._pantsColor, offset);
 
         return buffer;
     }
 
     deserialize(buffer: Buffer) {
         let offset = 0;
-        this._msgNo = buffer.readUInt16LE(offset);
+        this._msgNo = buffer.readUInt16BE(offset);
         offset += 2;
-        this._playerId = buffer.readUInt32LE(offset);
+        this._playerId = buffer.readUInt32BE(offset);
         offset += 4;
-        this._bodytype = buffer.readUInt32LE(offset);
+        this._bodytype = buffer.readUInt32BE(offset);
         offset += 4;
-        this._hairColor = buffer.readUInt32LE(offset);
+        this._hairColor = buffer.readUInt32BE(offset);
         offset += 4;
-        this._skinColor = buffer.readUInt32LE(offset);
+        this._skinColor = buffer.readUInt32BE(offset);
         offset += 4;
-        this._shirtColor = buffer.readUInt32LE(offset);
+        this._shirtColor = buffer.readUInt32BE(offset);
         offset += 4;
-        this._pantsColor = buffer.readUInt32LE(offset);
+        this._pantsColor = buffer.readUInt32BE(offset);
     }
 
     override toString() {

@@ -1,3 +1,5 @@
+export type ClientVersion = "debug" | "release" | "unknown"
+
 export type UserSession = {
     customerId: number;
     token: string;
@@ -7,6 +9,7 @@ export type UserSession = {
     activeProfileId: number;
     nextSequenceNumber: number;
     sessionKey: string;
+    clientVersion: ClientVersion;
 };
 
 export const userSessions = new Map<string, UserSession>([]);
@@ -73,6 +76,7 @@ export function createNewUserSession({
     activeProfileId,
     nextSequenceNumber,
     sessionKey,
+    clientVersion,
 }: UserSession): UserSession {
     const userSession = {
         customerId,
@@ -83,6 +87,7 @@ export function createNewUserSession({
         activeProfileId,
         nextSequenceNumber,
         sessionKey,
+        clientVersion,
     };
     setUserSession(userSession);
     return userSession;

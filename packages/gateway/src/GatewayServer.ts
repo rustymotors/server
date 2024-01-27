@@ -30,6 +30,7 @@ import {
     gameUsers,
     populateGameUsers,
 } from "../../../lib/nps/services/account.js";
+import { gameProfiles, populateGameProfiles } from "../../../lib/nps/services/profile.js";
 
 /**
  * @module gateway
@@ -264,6 +265,7 @@ export class Gateway {
         state = addOnDataHandler(state, 43300, receiveTransactionsData);
 
         populateGameUsers(gameUsers);
+        populateGameProfiles(gameProfiles);
 
         populatePortToMessageTypes(portToMessageTypes);
         populateGameMessageProcessors(gameMessageProcessors);
