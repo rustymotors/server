@@ -1,6 +1,5 @@
-import { get } from "http";
-import { BareMessage } from "../messageStructs/BareMessage.js";
-import { BareMessageV0 } from "../messageStructs/BareMessageV0.js";
+import { ISerializable, IMessageHeader, IMessage } from "../types.js";
+import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SocketCallback } from "./index.js";
 import { getLenString, getNBytes } from "../utils/pureGet.js";
 import { GameProfile } from "../messageStructs/GameProfile.js";
@@ -8,32 +7,31 @@ import { GameProfile } from "../messageStructs/GameProfile.js";
 
 export function processCreateProfile(
     connectionId: string,
-    message: BareMessage,
+    message: GameMessage,
     socketCallback: SocketCallback,
 ): void {
-    const requestBytes = message.toBytes();
-    
-    const request = message;
 
     // Log the request
-    console.log(`Bare message request: ${request.toHex()}`);
+    console.log(`ProcessCreateProfile request: ${message.toString()}`);
 
     const createProfileMessage = GameProfile.fromBytes(
-        request.getData(),
-        request.getSize(),
+        message.getDataAsBuffer(),
+        message.getData().getByteSize(),
     );
 
     // Log the request
-    console.log(createProfileMessage.toString());
+    console.log(`ProcessCreateProfile request: ${createProfileMessage.toString()}`);
 
     // TODO: Create the profile
 
     // TODO: Send the response
-    const response = BareMessage.new(0x601);
-    response.setData(request.getData());
+    const response = new GameMessage(257);
+    response.header.setId(0x601);
+    
+    response.setData(message.getData());
 
     // Log the response
-    console.log(`Bare message response: ${response.toHex()}`);
+    console.log(`ProcessCreateProfile response: ${response.toString()}`);
 
-    socketCallback([response.toBytes()]);
+    socketCallback([response.serialize()]);
 }

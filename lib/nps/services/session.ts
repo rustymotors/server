@@ -1,4 +1,54 @@
+import { Cipher, Decipher, createCipheriv } from "node:crypto";
+
 export type ClientVersion = "debug" | "release" | "unknown"
+
+export type EncryptionSession = {
+    connectionId: string;
+    customerId: number;
+    sessionKey: string;
+    gameCipher: Cipher;
+    gameDecipher: Decipher;
+}
+
+export const encryptionSessions = new Map<string, EncryptionSession>([]);
+
+export function setEncryptionSession(encryptionSession: EncryptionSession): void {
+    encryptionSessions.set(encryptionSession.connectionId, encryptionSession);
+}
+
+export function getEncryptionSession(connectionId: string): EncryptionSession | undefined {
+    if (encryptionSessions.has(connectionId)) {
+        return encryptionSessions.get(connectionId);
+    }
+    return undefined;
+}
+
+export function deleteEncryptionSession(connectionId: string): void {
+    encryptionSessions.delete(connectionId);
+}
+
+export function newEncryptionSession({
+    connectionId,
+    customerId,
+    sessionKey,
+}: {
+    connectionId: string;
+    customerId: number;
+    sessionKey: string;
+}): EncryptionSession {
+    const gameCipher = createCipheriv("des-cbc", Buffer.from(sessionKey, "hex"), Buffer.alloc(8));
+    const gameDecipher = createCipheriv("des-cbc", Buffer.from(sessionKey, "hex"), Buffer.alloc(8));
+
+    const encryptionSession = {
+        connectionId,
+        customerId,
+        sessionKey,
+        gameCipher,
+        gameDecipher,
+    };
+    setEncryptionSession(encryptionSession);
+    return encryptionSession;
+}
 
 export type UserSession = {
     customerId: number;
@@ -38,6 +88,17 @@ export function getUserSessionByConnectionId(
 ): UserSession | undefined {
     for (const userSession of userSessions.values()) {
         if (userSession.connectionId === connectionId) {
+            return userSession;
+        }
+    }
+    return undefined;
+}
+
+export function getUserSessionByProfileId(
+    profileId: number,
+): UserSession | undefined {
+    for (const userSession of userSessions.values()) {
+        if (userSession.activeProfileId === profileId) {
             return userSession;
         }
     }

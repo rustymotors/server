@@ -1,8 +1,8 @@
-import { Message } from "../types.js";
+import { ISerializable, IMessageHeader, IMessage } from "../types.js";
 import { SessionKey } from "./SessionKey.js";
 import { UserAction } from "./UserAction.js";
 
-export class UserStatus implements Message {
+export class UserStatus implements ISerializable {
     private customerId: number;
     private personaId: number;
     private isCacheHit: boolean;
@@ -24,6 +24,15 @@ export class UserStatus implements Message {
         this.ban = ban;
         this.gag = gag;
         this.sessionKey = sessionKey;
+    }
+    serialize(): Buffer {
+        return this.toBytes();
+    }
+    deserialize(data: Buffer): void {
+        throw new Error("Method not implemented.");
+    }
+    getByteSize(): number {
+        return this.getSize();
     }
 
     static new(): UserStatus {
@@ -127,21 +136,20 @@ export class UserStatus implements Message {
     }
 
     toString(): string {
-        return `Customer ID: ${this.customerId}, Persona ID: ${
-            this.personaId
-        }, Is Cache Hit: ${
-            this.isCacheHit
-        }, Ban: ${this.ban.toString()}, Gag: ${this.gag.toString()}, Session Key: ${this.sessionKey.toString()}`;
+        return `UserStatus:
+        Customer ID: ${this.customerId}
+        Persona ID: ${this.personaId}
+        Is Cache Hit: ${this.isCacheHit}
+        Ban: ${this.ban.toString()}
+        Gag: ${this.gag.toString()}
+        Session Key: ${this.sessionKey.toString()}`;
     }
 
     toHex(): string {
         return this.toBytes().toString("hex");
     }
 
-    getData(): Buffer {
-        return this.toBytes();
-    }
-
+   
     setData(data: Buffer) {
         throw new Error("Method not implemented.");
     }

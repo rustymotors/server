@@ -1,7 +1,7 @@
-import { Message } from "../types.js";
+import { ISerializable, IMessageHeader, IMessage } from "../types.js";
 import { getAsHex } from "../utils/pureGet.js";
 
-export class UserAction implements Message {
+export class UserAction implements ISerializable {
     private name: string;
     private data: Buffer = Buffer.alloc(0);
 
@@ -10,6 +10,15 @@ export class UserAction implements Message {
         if (bytes) {
             this.data = bytes;
         }
+    }
+    serialize(): Buffer {
+        throw new Error("Method not implemented.");
+    }
+    deserialize(data: Buffer): void {
+        throw new Error("Method not implemented.");
+    }
+    getByteSize(): number {
+        throw new Error("Method not implemented.");
     }
     setData(data: Buffer): void {
         throw new Error("Method not implemented.");

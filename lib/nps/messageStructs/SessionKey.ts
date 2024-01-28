@@ -1,13 +1,22 @@
-import { Message } from "../types.js";
+import { ISerializable, IMessageHeader, IMessage } from "../types.js";
 import { getAsHex } from "../utils/pureGet.js";
 
-export class SessionKey implements Message {
+export class SessionKey implements ISerializable {
     private key: Buffer;
     private timestamp: number;
 
     constructor(key: Buffer, timestamp: number) {
         this.key = key;
         this.timestamp = timestamp;
+    }
+    serialize(): Buffer {
+        throw new Error("Method not implemented.");
+    }
+    deserialize(data: Buffer): void {
+        throw new Error("Method not implemented.");
+    }
+    getByteSize(): number {
+        throw new Error("Method not implemented.");
     }
 
     static fromBytes(bytes: Buffer): SessionKey {
@@ -35,7 +44,7 @@ export class SessionKey implements Message {
     }
 
     toString(): string {
-        return `Key: ${this.key.toString("hex")}, Timestamp: ${this.timestamp}`;
+        return `SessionKey(key=${this.getKey()}, timestamp=${this.timestamp})`;
     }
 
     toHex(): string {

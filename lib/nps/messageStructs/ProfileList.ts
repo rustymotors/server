@@ -1,8 +1,17 @@
-import { Message } from "../types.js";
+import { ISerializable, IMessageHeader, IMessage } from "../types.js";
 import { GameProfile } from "./GameProfile.js";
 import { NPSList } from "./NPSList.js";
 
-export class ProfileList extends NPSList implements Message {
+export class ProfileList extends NPSList implements ISerializable {
+    override serialize(): Buffer {
+        return this.toBytes();
+    }
+    override deserialize(data: Buffer): void {
+        throw new Error("Method not implemented.");
+    }
+    override getByteSize(): number {
+        return this.getSize();
+    }
     maxProfiles = 0; // 1 byte
     private profiles: GameProfile[] = [];
 
@@ -28,7 +37,7 @@ export class ProfileList extends NPSList implements Message {
         return buffer;
     }
     override toString(): string {
-        throw new Error("Method not implemented.");
+        return `ProfileList(maxProfiles=${this.maxProfiles}, profiles=${this.profiles})`;
     }
     override toHex(): string {
         throw new Error("Method not implemented.");

@@ -8,8 +8,7 @@ export {
     populatePortToMessageTypes,
     getPortMessageType,
 } from "./messageProcessors/index.js";
-export { BareMessage } from "./messageStructs/BareMessage.js";
-export { ServerMessage } from "./messageStructs/ServerMessage.js";
+export { GameMessage } from "./messageStructs/GameMessage.js";
 export { getWord } from "./utils/pureGet.js";
 export { processUserLogin } from "./messageProcessors/processUserLogin.js";
 export {

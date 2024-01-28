@@ -1,8 +1,8 @@
-import { Message } from "../types.js";
+import { ISerializable, IMessageHeader, IMessage } from "../types.js";
 import { putLenBlob, putLenString, putShortBool } from "../utils/purePut.js";
 import { getAsHex, getLenBlob, getLenString, getShortBool } from "../utils/pureGet.js";
 
-export class GameProfile implements Message {
+export class GameProfile implements ISerializable {
 
     customerId: number; // 4 bytes
     profileName: string; // 32 bytes - max length
@@ -46,6 +46,15 @@ export class GameProfile implements Message {
         this.currentKey = "";
         this.profileLevel = 0;
         this.shardId = 0;
+    }
+    serialize(): Buffer {
+        throw new Error("Method not implemented.");
+    }
+    deserialize(data: Buffer): void {
+        throw new Error("Method not implemented.");
+    }
+    getByteSize(): number {
+        throw new Error("Method not implemented.");
     }
 
     static new(): GameProfile {

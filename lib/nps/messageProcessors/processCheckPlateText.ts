@@ -1,13 +1,12 @@
-import { get } from "http";
-import { BareMessage } from "../messageStructs/BareMessage.js";
-import { BareMessageV0 } from "../messageStructs/BareMessageV0.js";
+import { ISerializable, IMessageHeader, IMessage } from "../types.js";
+import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SocketCallback } from "./index.js";
 import { getLenString, getNBytes } from "../utils/pureGet.js";
 import { getUserSessionByConnectionId, setUserSession } from "../services/session.js";
 
 export function processCheckPlateText(
     connectionId: string,
-    message: BareMessage,
+    message: GameMessage,
     socketCallback: SocketCallback,
 ): void {
     // This message is only called by debug, so let's sey the clinet version to debug
@@ -20,22 +19,18 @@ export function processCheckPlateText(
         setUserSession(session);
     }
 
-    const requestBytes = message.toBytes();
+    const plateType = message.getDataAsBuffer().readUInt32BE(0);
 
-    const request = BareMessage.fromBytes(requestBytes, requestBytes.length);
-
-    const plateType = request.getData().readUInt32BE(0);
-
-    const requestedPlateText = getLenString(request.getData(), 4, false);
+    const requestedPlateText = getLenString(message.getDataAsBuffer(), 4, false);
 
     console.log(
         `Requested plate text: ${requestedPlateText} for plate type ${plateType}`,
     );
 
-    const response = BareMessageV0.new(0x207);
-    response.setMessageLength(4);
+    const response = new GameMessage(0);
+    response.header.setId(0x207);
 
-    const responseBytes = response.toBytes();
+    const responseBytes = response.serialize();
 
     socketCallback([responseBytes]);
 }

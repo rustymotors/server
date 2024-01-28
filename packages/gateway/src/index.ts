@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { randomUUID } from "node:crypto";
+import * as Sentry from "@sentry/node";
 import {
     OnDataHandler,
     addSocket,
@@ -35,11 +36,11 @@ import {
     PortMapError,
     getGameMessageProcessor,
     getPortMessageType,
-    BareMessage,
-    ServerMessage,
+    GameMessage,
     getWord,
 } from "../../../lib/nps/index.js";
 import { SocketCallback } from "../../../lib/nps/messageProcessors/index.js";
+import { getAsHex } from "../../../lib/nps/utils/pureGet.js";
 
 /**
  * @typedef {object} OnDataHandlerArgs
@@ -232,10 +233,11 @@ export function onSocketConnection({
 
     log.debug(`Client ${remoteAddress} connected to port ${localPort}`);
 
-    // if (localPort === 7003) {
-    //     // Sent ok to login packet
-    //         incomingSocket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
-    //     }
+    if (localPort === 7003) {
+            console.log('Sending ok to login packet');
+
+            incomingSocket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
+        }
 }
 
 function sendToSocket(
@@ -243,10 +245,12 @@ function sendToSocket(
     incomingSocket: Socket,
     log: ServerLogger,
 ) {
+    log.debug(`Sending {${serializedMessages.length}} messages to socket`);
     try {
         serializedMessages.forEach((m) => {
             incomingSocket.write(m);
-            log.trace(`Sent data: ${m.toString("hex")}`);
+            log.trace(`Sent ${m.length} bytes to socket: ${m.toString("hex")}`);
+            log.trace('===========================================');
         });
     } catch (error) {
         log.error(`Error sending data: ${String(error)}`);
@@ -255,14 +259,14 @@ function sendToSocket(
 
 export function processGameMessage(
     connectionId: string,
-    message: BareMessage,
+    message: GameMessage,
     log = getServerLogger({ module: "processGameMessage" }),
     socketCallback: SocketCallback,
 ) {
     log.debug(`Processing game message...`);
 
     // Get the message ID
-    const messageId = message.getMessageId();
+    const messageId = message.header.getId();
 
     try {
         // Get the message processor
@@ -273,7 +277,7 @@ export function processGameMessage(
     } catch (error) {
         throw new MessageProcessorError(
             messageId,
-            `No message processor found`,
+            `Error processing message: ${error}`,
         );
     }
 }
@@ -289,15 +293,25 @@ export function handleGameMessage(
     // Log raw bytes
     log.trace(`Raw bytes: ${bytes.toString("hex")}`);
 
-    // If this is a Game message, it will "probably" be a BareMessage
-    // Try to parse it as a BareMessage
+    // Try to identify the message version
+    const version = GameMessage.identifyVersion(bytes);
+
+    // Log the version
+    log.debug(`Message version: ${version}`);
+
+    // Try to parse it
     try {
-        const messageLength = getWord(bytes, 2, false);
-        const message = BareMessage.fromBytes(bytes, messageLength);
-        log.debug(`Message: ${message.toString()}`);
+        // Create a new message
+        const message = new GameMessage(version);
+        message.deserialize(bytes);
+        
 
         // Process the message
+        const t = Sentry.startTransaction({
+            name: `Process message ${message.header.getId()}`,
+        });
         processGameMessage(connectionId, message, log, socketCallback);
+        t.finish();
     } catch (error) {
         if (error instanceof MessageProcessorError) {
             log.error(`Error processing message: ${error}`);
@@ -317,15 +331,7 @@ export function handleServerMessage(
 
     // If this is a Server message, it will "probably" be a ServerMessage
     // Try to parse it as a ServerMessage
-    try {
-        const messageLength = getWord(bytes, 0, true);
-        const message = ServerMessage.fromBytes(bytes, messageLength);
-        log.debug(`Message: ${message.toString()}`);
-    } catch (error) {
-        if (error instanceof MessageProcessorError) {
-            log.error(`Error processing message: ${error}`);
-        } else {
-            throw error;
-        }
-    }
+
+    // TODO: Handle message
+
 }

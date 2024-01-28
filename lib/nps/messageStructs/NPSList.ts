@@ -1,7 +1,16 @@
-import { Message } from "../types.js";
+import { ISerializable, IMessageHeader, IMessage } from "../types.js";
 
-export class NPSList implements Message {
-    private list: Message[] = [];
+export class NPSList implements ISerializable {
+    serialize(): Buffer {
+        throw new Error("Method not implemented.");
+    }
+    deserialize(data: Buffer): void {
+        throw new Error("Method not implemented.");
+    }
+    getByteSize(): number {
+        throw new Error("Method not implemented.");
+    }
+    private list: IMessage[] = [];
 
     toBytes(): Buffer {
         throw new Error("Method not implemented.");

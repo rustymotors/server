@@ -1,12 +1,13 @@
-import { BareMessage } from "../messageStructs/BareMessage.js";
+import { ISerializable, IMessageHeader, IMessage } from "../types.js";
+import { GameMessage } from "../messageStructs/GameMessage.js";
 import fs from "node:fs";
 import crypto from "node:crypto";
+import * as Sentry from "@sentry/node";
 import { getToken } from "../services/token.js";
 import { createNewUserSession, setUserSession } from "../services/session.js";
 import { SocketCallback } from "./index.js";
-import { MessageContainer } from "../messageStructs/MessageContainer.js";
 import { SessionKey } from "../messageStructs/SessionKey.js";
-import { getLenString } from "../utils/pureGet.js";
+import { getAsHex, getLenString } from "../utils/pureGet.js";
 import { UserStatus } from "../messageStructs/UserStatus.js";
 import { UserAction } from "../messageStructs/UserAction.js";
 
@@ -28,13 +29,17 @@ export function decryptSessionKey(
     return sessionKeyStructure.toString("hex");
 }
 
-export function unpackUserLoginMessage(message: BareMessage): {
+export function unpackUserLoginMessage(message: ISerializable): {
     sessionKey: string;
     gameId: string;
     contextToken: string;
 } {
+    console.log(
+        `Unpacking user login message: ${getAsHex(message.serialize())}`,
+    );
+
     // Get the context token
-    const ticket = getLenString(message.getData(), 0, false);
+    const ticket = getLenString(message.serialize(), 0, false);
 
     let dataOffset = ticket.length + 2;
 
@@ -44,11 +49,11 @@ export function unpackUserLoginMessage(message: BareMessage): {
     dataOffset += 2;
 
     // Get the next data length
-    const nextDataLength = message.getData().readUInt16BE(dataOffset);
+    const nextDataLength = message.serialize().readUInt16BE(dataOffset);
 
     // This value is the encrypted session key hex, stored as a string
     const encryptedSessionKey = message
-        .getData()
+        .serialize()
         .subarray(dataOffset + 2, dataOffset + 2 + nextDataLength)
         .toString("utf8");
 
@@ -67,11 +72,11 @@ export function unpackUserLoginMessage(message: BareMessage): {
     dataOffset += 2 + nextDataLength;
 
     // Get the next data length
-    const nextDataLength2 = message.getData().readUInt16BE(dataOffset);
+    const nextDataLength2 = message.serialize().readUInt16BE(dataOffset);
 
     // This value is the game id (used by server to identify the game)
     const gameId = message
-        .getData()
+        .serialize()
         .subarray(dataOffset + 2, dataOffset + 2 + nextDataLength2)
         .toString("utf8");
 
@@ -88,88 +93,111 @@ export function unpackUserLoginMessage(message: BareMessage): {
 
 export function processUserLogin(
     connectionId: string,
-    message: BareMessage,
+    message: GameMessage,
     socketCallback: SocketCallback,
 ): void {
-    console.log("User login");
+    Sentry.startSpan(
+        {
+            name: "processUserLogin",
+            op: "processUserLogin",
+        },
+        (span) => {
+            // Log the message
+            console.log(`User login request: ${message.toString()}`);
 
-    // Log the message
-    console.log(message.getDataAsHex());
+            // Unpack the message
+            try {
+                const { sessionKey, gameId, contextToken } =
+                    unpackUserLoginMessage(message.getData());
 
-    // Unpack the message
-    try {
-        const { sessionKey, gameId, contextToken } =
-            unpackUserLoginMessage(message);
+                // Log the context token
+                console.log(`Context token: ${contextToken}`);
 
-        // Log the context token
-        console.log(`Context token: ${contextToken}`);
+                // Look up the customer id
+                const user = getToken(contextToken);
 
-        // Look up the customer id
-        const user = getToken(contextToken);
+                // If the user is not found, return an error
+                if (user === undefined) {
+                    console.error("User not found");
 
-        // If the user is not found, return an error
-        if (user === undefined) {
-            console.error("User not found");
+                    // Create a new message - Not found
+                    const response = new GameMessage(0);
+                    response.header.setId(0x602);
 
-            // Create a new message - Not found
-            const response = new MessageContainer(0x602, 0x0004);
+                    // Send the message - twice
+                    Sentry.startSpan(
+                        {
+                            name: "socketCallback",
+                            op: "socketCallback",
+                        },
+                        (span) => {
+                            socketCallback([response.serialize()]);
+                        },
+                    );
+                    Sentry.startSpan(
+                        {
+                            name: "socketCallback",
+                            op: "socketCallback",
+                        },
+                        (span) => {
+                            socketCallback([response.serialize()]);
+                        },
+                    );
 
-            // Send the message - twice
-            socketCallback([response.toBytes()]);
-            socketCallback([response.toBytes()]);
+                    return;
+                }
 
-            return;
-        }
+                // Log the user
+                console.log(`User: ${user.customerId}`);
 
-        // Log the user
-        console.log(`User: ${user.customerId}`);
+                // Create a new user session
+                const userSession = createNewUserSession({
+                    customerId: user.customerId,
+                    token: contextToken,
+                    connectionId,
+                    port: 0,
+                    ipAddress: "",
+                    activeProfileId: 0,
+                    nextSequenceNumber: 0,
+                    sessionKey,
+                    clientVersion: "unknown",
+                });
 
-        // Create a new user session
-        const userSession = createNewUserSession({
-            customerId: user.customerId,
-            token: contextToken,
-            connectionId,
-            port: 0,
-            ipAddress: "",
-            activeProfileId: 0,
-            nextSequenceNumber: 0,
-            sessionKey,
-            clientVersion: "unknown",
-        });
+                // Save the user session
+                setUserSession(userSession);
 
-        // Save the user session
-        setUserSession(userSession);
+                // Create a new message - Login ACK
+                const loginACK = new GameMessage(0);
+                loginACK.header.setId(0x601);
 
-        // Create a new message - Login ACK
-        const loginACK = new MessageContainer(0x601, 0x0004);
+                // Send the ack
+                socketCallback([loginACK.serialize()]);
 
-        // Send the ack
-        socketCallback([loginACK.toBytes()]);
+                // Create a new UserStatus message
+                const userStatus = UserStatus.new();
+                userStatus.setCustomerId(user.customerId);
+                userStatus.setPersonaId(0);
+                userStatus.setBan(new UserAction("ban"));
+                userStatus.setGag(new UserAction("gag"));
+                userStatus.setSessionKey(SessionKey.fromKeyString(sessionKey));
 
-        // Create a new UserStatus message
-        const userStatus = UserStatus.new();
-        userStatus.setCustomerId(user.customerId);
-        userStatus.setPersonaId(0);
-        userStatus.setBan(new UserAction("ban"));
-        userStatus.setGag(new UserAction("gag"));
-        userStatus.setSessionKey(SessionKey.fromKeyString(sessionKey));
+                // Create a new message - UserStatus
+                const userStatusMessage = new GameMessage(257);
+                userStatusMessage.header.setId(0x601);
 
-        // Create a new message - UserStatus
-        const userStatusMessage = BareMessage.new(0x601);
+                userStatusMessage.setData(userStatus);
 
-        // Log the message
-        console.log(userStatusMessage.toHex());
+                // Log the message
+                console.log(`UserStatus: ${userStatusMessage.toString()}`);
 
-        userStatusMessage.setData(userStatus.toBytes());
+                // Send the message
+                socketCallback([userStatusMessage.serialize()]);
+                socketCallback([userStatusMessage.serialize()]);
 
-        // Log the message
-        console.log(userStatusMessage.toHex());
-
-        // Send the message
-        socketCallback([userStatusMessage.toBytes()]);
-
-        return;
-    } catch (e) {
-        console.error(e);
-    }
+                return;
+            } catch (e) {
+                console.error(e);
+            }
+        },
+    );
 }

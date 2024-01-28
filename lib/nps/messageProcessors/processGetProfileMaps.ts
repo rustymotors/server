@@ -1,5 +1,5 @@
-import { BareMessage } from "../messageStructs/BareMessage.js";
-import { BareMessageV0 } from "../messageStructs/BareMessageV0.js";
+import { ISerializable, IMessageHeader, IMessage } from "../types.js";
+import { GameMessage } from "../messageStructs/GameMessage.js";
 import { getDWord, getAsHex } from "../utils/pureGet.js";
 import { SocketCallback } from "../messageProcessors/index.js";
 import { getGameProfilesForCustomerId } from "../services/profile.js";
@@ -8,10 +8,17 @@ import { ProfileList } from "../messageStructs/ProfileList.js";
 
 export function processGetProfileMaps(
     connectionId: string,
-    message: BareMessage,
+    message: GameMessage,
     socketCallback: SocketCallback,
 ): void {
-    const customerId = getDWord(message.getData(), 0, false);
+    // This message is a version 257, but it's version is set to 0
+    // This is a bug in the client, so we need to generate a new message
+    // with the correct version
+    const requestMessage = GameMessage.fromGameMessage(257, message);
+
+    console.log(`GetProfileMaps (257): ${requestMessage.toString()}`);
+
+    const customerId = getDWord(requestMessage.getDataAsBuffer(), 0, false);
 
     console.log(`GetProfileMaps: ${customerId}`);
 
@@ -25,7 +32,7 @@ export function processGetProfileMaps(
     if (profiles) {
         for (const profile of profiles) {
             // Log the profile
-            console.log(profile.toString());
+            console.log(`GetProfileMaps: ${profile.toString()}`);
 
             list.addProfile(profile);
         }
@@ -33,21 +40,21 @@ export function processGetProfileMaps(
 
     // Send the list back to the client
 try {
-        const outMessage = BareMessage.new(0x607);
+        const outMessage = new GameMessage(257);
+        outMessage.header.setId(0x607);
+        
     
-        // Set the message data
-        const messageData = list.toBytes();
         // Log the message data
-        console.log(`GetProfileMaps: ${getAsHex(messageData)}`);
+        console.log(`GetProfileMaps: ${getAsHex(outMessage.serialize())}`);
     
-        outMessage.setData(messageData);
+        outMessage.setData(list);
     
         // Log the message
         console.log(`GetProfileMaps: ${outMessage.toString()}`);
     
         console.log('===========================================');
     
-        socketCallback([outMessage.toBytes()]);
+        socketCallback([outMessage.serialize()]);
 } catch (error) {
     console.log(error);
 }

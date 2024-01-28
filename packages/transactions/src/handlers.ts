@@ -33,6 +33,7 @@ import { ServerMessage } from "../../shared/src/ServerMessage.js";
 import { ServerLogger } from "../../shared/log.js";
 import { _setOptions } from "./_setOptions.js";
 import { _updatePlayerPhysical } from "./_updatePlayerPhysical.js";
+import { _getCompleteVehicleInfo } from "./messageHandlers/_getCompleteVehicleInfo.js";
 
 export interface MessageHandlerArgs {
     connectionId: string;
@@ -114,5 +115,9 @@ export const messageHandlers: MessageHandler[] = [
     {
         name: "MC_UPDATE_PLAYER_PHYSICAL",
         handler: _updatePlayerPhysical,
+    },
+    {
+        name: "MC_GET_COMPLETE_VEHICLE_INFO",
+        handler: _getCompleteVehicleInfo,
     }
 ];

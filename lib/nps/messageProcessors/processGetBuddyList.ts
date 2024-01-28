@@ -6,14 +6,14 @@ import { getGameProfilesForCustomerId } from "../services/profile.js";
 import { NPSList } from "../messageStructs/NPSList.js";
 import { ProfileList } from "../messageStructs/ProfileList.js";
 
-export function processGetProfileInfo(
+export function processGetBuddyList(
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
 ): void {
-    const customerId = getDWord(message.serialize(), 0, false);
+    const customerId = getDWord(message.getDataAsBuffer(), 0, false);
 
-    console.log(`GetProfileInfo: ${customerId}`);
+    console.log(`GetBuddyList: ${customerId}`);
 
     // Look up the profiles for the customer ID
     const profiles = getGameProfilesForCustomerId(customerId);
@@ -25,28 +25,30 @@ export function processGetProfileInfo(
 
     // Add each profile to the list
     if (profiles) {
-        outMessage.header.setId(0x607);
+        outMessage.header.setId(0x607); // Found
         for (const profile of profiles) {
             // Log the profile
-            console.log(`GetProfileInfo: ${profile.toString()}`); // TODO: Remove this line
+            console.log(`GetBuddyList: ${profile.toString()}`); // TODO: Remove this line
 
             list.addProfile(profile);
         }
     }
     else {
-        outMessage.header.setId(0x602);
+        outMessage.header.setId(0x602); // Not found
     }
 
     // Send the list back to the client
 try {
     
+        // Set the message data
+        const messageData = list;
         // Log the message data
-        console.log(`GetProfileInfo: ${getAsHex(list.serialize())}`);
+        console.log(`GetBuddyList response: ${getAsHex(messageData.serialize())}`);
     
-        outMessage.setData(list);
+        outMessage.setData(messageData);
     
         // Log the message
-        console.log(`GetProfileInfo: ${outMessage.toString()}`);
+        console.log(`GetBuddyList: ${outMessage.toString()}`);
     
         console.log('===========================================');
     

@@ -1,10 +1,10 @@
-import { BareMessage } from "../messageStructs/BareMessage.js";
 import fs from "node:fs";
 import crypto from "node:crypto";
 import { getToken } from "../services/token.js";
 import { createNewUserSession, setUserSession } from "../services/session.js";
 import { SocketCallback } from "./index.js";
-import { MessageContainer } from "../messageStructs/MessageContainer.js";
+import { ISerializable, IMessageHeader, IMessage } from "../types.js";
+import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SessionKey } from "../messageStructs/SessionKey.js";
 import { getLenString } from "../utils/pureGet.js";
 import { UserStatus } from "../messageStructs/UserStatus.js";
@@ -28,13 +28,13 @@ export function decryptSessionKey(
     return sessionKeyStructure.toString("hex");
 }
 
-export function unpackUserLoginMessage(message: BareMessage): {
+export function unpackUserLoginMessage(message: GameMessage): {
     sessionKey: string;
     gameId: string;
     contextToken: string;
 } {
     // Get the context token
-    const ticket = getLenString(message.getData(), 0, false);
+    const ticket = getLenString(message.getDataAsBuffer(), 0, false);
 
     let dataOffset = ticket.length + 2;
 
@@ -44,11 +44,11 @@ export function unpackUserLoginMessage(message: BareMessage): {
     dataOffset += 2;
 
     // Get the next data length
-    const nextDataLength = message.getData().readUInt16BE(dataOffset);
+    const nextDataLength = message.getDataAsBuffer().readUInt16BE(dataOffset);
 
     // This value is the encrypted session key hex, stored as a string
     const encryptedSessionKey = message
-        .getData()
+        .getDataAsBuffer()
         .subarray(dataOffset + 2, dataOffset + 2 + nextDataLength)
         .toString("utf8");
 
@@ -67,11 +67,11 @@ export function unpackUserLoginMessage(message: BareMessage): {
     dataOffset += 2 + nextDataLength;
 
     // Get the next data length
-    const nextDataLength2 = message.getData().readUInt16BE(dataOffset);
+    const nextDataLength2 = message.getDataAsBuffer().readUInt16BE(dataOffset);
 
     // This value is the game id (used by server to identify the game)
     const gameId = message
-        .getData()
+        .getDataAsBuffer()
         .subarray(dataOffset + 2, dataOffset + 2 + nextDataLength2)
         .toString("utf8");
 
@@ -88,19 +88,20 @@ export function unpackUserLoginMessage(message: BareMessage): {
 
 export function processDeleteProfile(
     connectionId: string,
-    message: BareMessage,
+    message: GameMessage,
     socketCallback: SocketCallback,
 ): void {
-    console.log("Delete profile");
 
     // Log the message
-    console.log(message.getDataAsHex());
+    console.log(`Delete profile request: ${message.toString()}`);
 
     // TODO: Delete the profile
 
     // Create a new message - Login ACK
-    const loginACK = new MessageContainer(0x60c, 0x0004);
+    const loginACK = new GameMessage(0);
+    loginACK.header.setId(0x60c);
+    
 
     // Send the ack
-    socketCallback([loginACK.toBytes()]);
+    socketCallback([loginACK.serialize()]);
 }
