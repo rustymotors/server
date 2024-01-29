@@ -7,11 +7,11 @@ import {
     setUserSession,
 } from "../services/session.js";
 
-export function processPing(
+export async function processPing(
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
-): void {
+): Promise<void> {
     console.log(`Ping: ${message.toString()}`);
 
     const response = new GameMessage(0);

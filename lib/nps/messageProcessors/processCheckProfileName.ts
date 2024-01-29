@@ -3,11 +3,11 @@ import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SocketCallback } from "./index.js";
 import { getLenString, getNBytes } from "../utils/pureGet.js";
 
-export function processCheckProfileName(
+export async function processCheckProfileName(
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
-): void {
+): Promise<void> {
     const customerId = message.serialize().readUInt32BE(8);
 
     const requestedPersonaName = getLenString(message.serialize(), 12, false);

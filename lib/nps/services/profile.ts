@@ -2,7 +2,9 @@ import { GameProfile } from "../messageStructs/GameProfile.js";
 
 export const gameProfiles: GameProfile[] = [];
 
-export function populateGameProfiles(profiles: GameProfile[]): void {
+export async function populateGameProfiles(
+    profiles: GameProfile[],
+): Promise<void> {
     const profile1 = GameProfile.new();
     profile1.customerId = 2;
     profile1.profileName = "molly";
@@ -27,9 +29,9 @@ export function populateGameProfiles(profiles: GameProfile[]): void {
     profiles.push(profile1);
 }
 
-export function getGameProfilesForCustomerId(
+export async function getGameProfilesForCustomerId(
     customerId: number,
-): GameProfile[] | undefined {
+): Promise<GameProfile[]> {
     const profiles: GameProfile[] = [];
     for (const profile of gameProfiles.values()) {
         if (profile.customerId === customerId) {
@@ -39,7 +41,7 @@ export function getGameProfilesForCustomerId(
     return profiles;
 }
 
-export function gameProfileExists(profileName: string): boolean {
+export async function gameProfileExists(profileName: string): Promise<boolean> {
     for (const profile of gameProfiles.values()) {
         if (profile.profileName === profileName) {
             return true;
@@ -48,11 +50,11 @@ export function gameProfileExists(profileName: string): boolean {
     return false;
 }
 
-export function addGameProfile(profile: GameProfile): void {
+export async function addGameProfile(profile: GameProfile): Promise<void> {
     gameProfiles.push(profile);
 }
 
-export function deleteGameProfile(profileId: number): void {
+export async function deleteGameProfile(profileId: number): Promise<void> {
     for (const [index, profile] of gameProfiles.entries()) {
         if (profile.profileId === profileId) {
             gameProfiles.splice(index, 1);
@@ -61,7 +63,7 @@ export function deleteGameProfile(profileId: number): void {
     }
 }
 
-export function createGameProfile(): GameProfile {
+export async function createGameProfile(): Promise<GameProfile> {
     const profile = GameProfile.new();
 
     addGameProfile(profile);

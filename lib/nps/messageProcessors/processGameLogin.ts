@@ -8,11 +8,11 @@ import {
     setUserSession,
 } from "../services/session.js";
 
-export function processGameLogin(
+export async function processGameLogin(
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
-): void {
+): Promise<void> {
     const customerId = getDWord(message.getDataAsBuffer(), 0, false);
 
     const personaId = getDWord(message.getDataAsBuffer(), 4, false);
@@ -25,7 +25,7 @@ export function processGameLogin(
     console.log(`Shard ID: ${shardId}`);
 
     // This message is only called by debug, so let's sey the clinet version to debug
-    const session = getUserSessionByCustomerId(customerId);
+    const session = await getUserSessionByCustomerId(customerId);
 
     if (!session) {
         throw new Error(`Session not found for customer ID ${customerId}`);

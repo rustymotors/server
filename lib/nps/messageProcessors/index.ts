@@ -18,7 +18,7 @@ export type MessageProcessor = (
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
-) => void;
+) => Promise<void>;
 
 export class MessageProcessorError extends Error {
     constructor(id: number, message: string) {

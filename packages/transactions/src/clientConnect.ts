@@ -55,7 +55,7 @@ export async function clientConnect({
 
     log.debug(`Looking up the session key for ${customerId}...`);
 
-    const userSession = getUserSessionByCustomerId(customerId);
+    const userSession = await getUserSessionByCustomerId(customerId);
 
     if (typeof userSession === "undefined") {
         log.warn(`No user session found for ${customerId}`);

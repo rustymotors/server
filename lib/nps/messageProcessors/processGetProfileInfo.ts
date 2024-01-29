@@ -6,17 +6,17 @@ import { getGameProfilesForCustomerId } from "../services/profile.js";
 import { NPSList } from "../messageStructs/NPSList.js";
 import { ProfileList } from "../messageStructs/ProfileList.js";
 
-export function processGetProfileInfo(
+export async function processGetProfileInfo(
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
-): void {
+): Promise<void> {
     const customerId = getDWord(message.serialize(), 0, false);
 
     console.log(`GetProfileInfo: ${customerId}`);
 
     // Look up the profiles for the customer ID
-    const profiles = getGameProfilesForCustomerId(customerId);
+    const profiles = await getGameProfilesForCustomerId(customerId);
 
     // Create a new NPSList of profiles
     const list = new ProfileList();

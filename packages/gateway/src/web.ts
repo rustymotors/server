@@ -27,9 +27,9 @@ import { generateToken } from "../../../lib/nps/services/token.js";
 import AdminJSFastify from "@adminjs/fastify";
 import FastifySession from "@fastify/session";
 import AdminJS from "adminjs";
-import * as AdminJSSequelize from '@adminjs/sequelize'
+import * as AdminJSSequelize from "@adminjs/sequelize";
 import { sequelize } from "../../database/src/services/database.js";
-import { Account } from "../../database/src/models/Account.entity.js";
+import { GameUser } from "../../database/src/models/GameUser.entity.js";
 
 /**
  * Add web routes to the web server
@@ -61,9 +61,10 @@ export async function addWebRoutes(
 
     const admin = new AdminJS({
         rootPath: "/admin",
-        resources: [Account],
+        databases: [sequelize],
+        resources: [GameUser],
         branding: {
-            companyName: "Rusty Motors",            
+            companyName: "Rusty Motors",
         },
     });
 
@@ -139,10 +140,10 @@ export async function addWebRoutes(
         const password = request.query.password;
 
         // Check for the username
-        const user = getUser(username);
+        const user = await getUser(username);
 
         // If the user doesn't exist, return an error
-        if (typeof user === "undefined") {
+        if (user === null) {
             return reply.send(
                 "reasoncode=INV-200\nreasontext=Opps~\nreasonurl=https://www.winehq.com",
             );

@@ -91,17 +91,17 @@ export function unpackUserLoginMessage(message: ISerializable): {
     };
 }
 
-export function processUserLogin(
+export async function processUserLogin(
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
-): void {
+): Promise<void> {
     Sentry.startSpan(
         {
             name: "processUserLogin",
             op: "processUserLogin",
         },
-        (span) => {
+        async (span) => {
             // Log the message
             console.log(`User login request: ${message.toString()}`);
 
@@ -151,7 +151,7 @@ export function processUserLogin(
                 console.log(`User: ${user.customerId}`);
 
                 // Create a new user session
-                const userSession = createNewUserSession({
+                const userSession = await createNewUserSession({
                     customerId: user.customerId,
                     token: contextToken,
                     connectionId,

@@ -6,11 +6,11 @@ import { getGameProfilesForCustomerId } from "../services/profile.js";
 import { NPSList } from "../messageStructs/NPSList.js";
 import { ProfileList } from "../messageStructs/ProfileList.js";
 
-export function processGetProfileMaps(
+export async function processGetProfileMaps(
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
-): void {
+): Promise<void> {
     // This message is a version 257, but it's version is set to 0
     // This is a bug in the client, so we need to generate a new message
     // with the correct version
@@ -23,7 +23,7 @@ export function processGetProfileMaps(
     console.log(`GetProfileMaps: ${customerId}`);
 
     // Look up the profiles for the customer ID
-    const profiles = getGameProfilesForCustomerId(customerId);
+    const profiles = await getGameProfilesForCustomerId(customerId);
 
     // Create a new NPSList of profiles
     const list = new ProfileList();

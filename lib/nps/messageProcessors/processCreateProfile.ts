@@ -4,11 +4,11 @@ import { SocketCallback } from "./index.js";
 import { getLenString, getNBytes } from "../utils/pureGet.js";
 import { GameProfile } from "../messageStructs/GameProfile.js";
 
-export function processCreateProfile(
+export async function processCreateProfile(
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
-): void {
+): Promise<void> {
     // Log the request
     console.log(`ProcessCreateProfile request: ${message.toString()}`);
 

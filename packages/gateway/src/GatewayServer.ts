@@ -26,10 +26,7 @@ import {
     portToMessageTypes,
     gameMessageProcessors,
 } from "../../../lib/nps/messageProcessors/index.js";
-import {
-    gameUsers,
-    populateGameUsers,
-} from "../../../lib/nps/services/account.js";
+import { populateGameUsers } from "../../../lib/nps/services/account.js";
 import {
     gameProfiles,
     populateGameProfiles,
@@ -238,7 +235,7 @@ export class Gateway {
         }
     }
 
-    init() {
+    async init() {
         // Create the read thread
         this.readThread = new ConsoleThread({
             parentThread: this,
@@ -267,8 +264,8 @@ export class Gateway {
         state = addOnDataHandler(state, 7003, receiveLobbyData);
         state = addOnDataHandler(state, 43300, receiveTransactionsData);
 
-        populateGameUsers(gameUsers);
-        populateGameProfiles(gameProfiles);
+        await populateGameUsers();
+        await populateGameProfiles(gameProfiles);
 
         populatePortToMessageTypes(portToMessageTypes);
         populateGameMessageProcessors(gameMessageProcessors);

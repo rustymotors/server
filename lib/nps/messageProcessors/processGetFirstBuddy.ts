@@ -9,11 +9,11 @@ import { getGameProfilesForCustomerId } from "../services/profile.js";
 import { NPSList } from "../messageStructs/NPSList.js";
 import { ProfileList } from "../messageStructs/ProfileList.js";
 
-export function processFirstBuddy(
+export async function processFirstBuddy(
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
-): void {
+): Promise<void> {
     const profileId = getDWord(message.getDataAsBuffer(), 0, false);
 
     console.log(`GetFirstBuddy profile: ${profileId}`);

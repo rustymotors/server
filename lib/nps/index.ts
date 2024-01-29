@@ -12,7 +12,6 @@ export { GameMessage } from "./messageStructs/GameMessage.js";
 export { getWord } from "./utils/pureGet.js";
 export { processUserLogin } from "./messageProcessors/processUserLogin.js";
 export {
-    gameUsers,
     populateGameUsers,
     getUser,
     checkPassword,

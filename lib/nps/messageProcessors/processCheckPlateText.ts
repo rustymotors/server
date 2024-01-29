@@ -7,13 +7,13 @@ import {
     setUserSession,
 } from "../services/session.js";
 
-export function processCheckPlateText(
+export async function processCheckPlateText(
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
-): void {
+): Promise<void> {
     // This message is only called by debug, so let's sey the clinet version to debug
-    const session = getUserSessionByConnectionId(connectionId);
+    const session = await getUserSessionByConnectionId(connectionId);
 
     if (session) {
         console.log(

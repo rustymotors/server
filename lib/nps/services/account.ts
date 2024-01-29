@@ -1,55 +1,73 @@
+import { sequelize } from "../../../packages/database/src/services/database.js";
+import { GameUser } from "../../../packages/database/src/models/GameUser.entity.js";
+
 export type User = {
     username: string;
     password: string;
     customerId: number;
 };
 
-export const gameUsers = new Map<string, User>([]);
+export async function populateGameUsers(): Promise<void> {
+    await GameUser.sync();
 
-export function populateGameUsers(users: Map<string, User>): void {
-    users.set("admin", {
+    // Create the default admin user
+    await GameUser.create({
         username: "admin",
         password: "admin",
         customerId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
     });
-    users.set("molly", {
+
+    // Create the default molly user
+    await GameUser.create({
         username: "molly",
         password: "molly",
         customerId: 2,
+        createdAt: new Date(),
+        updatedAt: new Date(),
     });
 }
 
-export function getUser(username: string): User | undefined {
-    if (gameUsers.has(username)) {
-        return gameUsers.get(username);
-    }
-    return undefined;
+export async function getUser(username: string): Promise<GameUser | null> {
+    return await GameUser.findOne({
+        where: {
+            username: username,
+        },
+    });
 }
 
-export function userExists(username: string): boolean {
-    return gameUsers.has(username);
+export async function addUser(user: User): Promise<void> {
+    await GameUser.create({
+        username: user.username,
+        password: user.password,
+        customerId: user.customerId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    });
 }
 
-export function addUser(user: User): void {
-    gameUsers.set(user.username, user);
+export async function deleteUser(username: string): Promise<void> {
+    await GameUser.destroy({
+        where: {
+            username: username,
+        },
+    });
 }
 
-export function deleteUser(username: string): void {
-    gameUsers.delete(username);
-}
-
-export function deleteAllUsers(): void {
-    gameUsers.clear();
-}
-
-export function getCustomerId(username: string): number | undefined {
-    const user = getUser(username);
+export async function getCustomerId(
+    username: string,
+): Promise<number | undefined> {
+    const user = await getUser(username);
     if (typeof user === "undefined") {
         return undefined;
     }
-    return user.customerId;
+    return user ? user.customerId : undefined;
 }
 
-export function checkPassword(user: User, password: string): boolean {
+export async function checkPassword(
+    user: User,
+    password: string,
+): Promise<boolean> {
     return user.password === password;
 }

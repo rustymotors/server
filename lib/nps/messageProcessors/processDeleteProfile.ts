@@ -86,11 +86,11 @@ export function unpackUserLoginMessage(message: GameMessage): {
     };
 }
 
-export function processDeleteProfile(
+export async function processDeleteProfile(
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
-): void {
+): Promise<void> {
     // Log the message
     console.log(`Delete profile request: ${message.toString()}`);
 

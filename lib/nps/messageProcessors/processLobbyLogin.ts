@@ -10,16 +10,16 @@ import {
 } from "../services/session.js";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 
-export function processLobbyLogin(
+export async function processLobbyLogin(
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
-): void {
+): Promise<void> {
     // This message is a BareMessageV0
 
     const profileId = getDWord(message.getDataAsBuffer(), 0, false);
 
-    const session = getUserSessionByProfileId(profileId);
+    const session = await getUserSessionByProfileId(profileId);
 
     // Dump all sessions
     console.dir(userSessions);

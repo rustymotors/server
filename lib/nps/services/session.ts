@@ -12,26 +12,28 @@ export type EncryptionSession = {
 
 export const encryptionSessions = new Map<string, EncryptionSession>([]);
 
-export function setEncryptionSession(
+export async function setEncryptionSession(
     encryptionSession: EncryptionSession,
-): void {
+): Promise<void> {
     encryptionSessions.set(encryptionSession.connectionId, encryptionSession);
 }
 
-export function getEncryptionSession(
+export async function getEncryptionSession(
     connectionId: string,
-): EncryptionSession | undefined {
+): Promise<EncryptionSession | undefined> {
     if (encryptionSessions.has(connectionId)) {
         return encryptionSessions.get(connectionId);
     }
     return undefined;
 }
 
-export function deleteEncryptionSession(connectionId: string): void {
+export async function deleteEncryptionSession(
+    connectionId: string,
+): Promise<void> {
     encryptionSessions.delete(connectionId);
 }
 
-export function newEncryptionSession({
+export async function newEncryptionSession({
     connectionId,
     customerId,
     sessionKey,
@@ -39,7 +41,7 @@ export function newEncryptionSession({
     connectionId: string;
     customerId: number;
     sessionKey: string;
-}): EncryptionSession {
+}): Promise<EncryptionSession> {
     const gameCipher = createCipheriv(
         "des-cbc",
         Buffer.from(sessionKey, "hex"),
@@ -76,28 +78,26 @@ export type UserSession = {
 
 export const userSessions = new Map<string, UserSession>([]);
 
-export function setUserSession(userSession: UserSession): void {
+export async function setUserSession(userSession: UserSession): Promise<void> {
     userSessions.set(userSession.token, userSession);
 }
 
-export function getUserSession(token: string): UserSession | undefined {
+export async function getUserSession(
+    token: string,
+): Promise<UserSession | undefined> {
     if (userSessions.has(token)) {
         return userSessions.get(token);
     }
     return undefined;
 }
 
-export function deleteUserSession(token: string): void {
+export async function deleteUserSession(token: string): Promise<void> {
     userSessions.delete(token);
 }
 
-export function deleteAllUserSessions(): void {
-    userSessions.clear();
-}
-
-export function getUserSessionByConnectionId(
+export async function getUserSessionByConnectionId(
     connectionId: string,
-): UserSession | undefined {
+): Promise<UserSession | undefined> {
     for (const userSession of userSessions.values()) {
         if (userSession.connectionId === connectionId) {
             return userSession;
@@ -106,9 +106,9 @@ export function getUserSessionByConnectionId(
     return undefined;
 }
 
-export function getUserSessionByProfileId(
+export async function getUserSessionByProfileId(
     profileId: number,
-): UserSession | undefined {
+): Promise<UserSession | undefined> {
     for (const userSession of userSessions.values()) {
         if (userSession.activeProfileId === profileId) {
             return userSession;
@@ -117,9 +117,9 @@ export function getUserSessionByProfileId(
     return undefined;
 }
 
-export function getUserSessionByCustomerId(
+export async function getUserSessionByCustomerId(
     customerId: number,
-): UserSession | undefined {
+): Promise<UserSession | undefined> {
     for (const userSession of userSessions.values()) {
         if (userSession.customerId === customerId) {
             return userSession;
@@ -128,10 +128,10 @@ export function getUserSessionByCustomerId(
     return undefined;
 }
 
-export function getUserSessionByIPAndPort(
+export async function getUserSessionByIPAndPort(
     ipAddress: string,
     port: number,
-): UserSession | undefined {
+): Promise<UserSession | undefined> {
     for (const userSession of userSessions.values()) {
         if (userSession.ipAddress === ipAddress && userSession.port === port) {
             return userSession;
@@ -140,7 +140,7 @@ export function getUserSessionByIPAndPort(
     return undefined;
 }
 
-export function createNewUserSession({
+export async function createNewUserSession({
     customerId,
     token,
     connectionId,
@@ -150,7 +150,7 @@ export function createNewUserSession({
     nextSequenceNumber,
     sessionKey,
     clientVersion,
-}: UserSession): UserSession {
+}: UserSession): Promise<UserSession> {
     const userSession = {
         customerId,
         token,

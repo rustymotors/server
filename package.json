@@ -26,7 +26,6 @@
         "AUTHORS"
     ],
     "type": "module",
-    
     "dependencies": {
         "@adminjs/fastify": "^4.1.1",
         "@adminjs/sequelize": "^4.1.1",

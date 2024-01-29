@@ -11,15 +11,15 @@ import {
     setUserSession,
 } from "../services/session.js";
 
-export function processEncryptedGameCommand(
+export async function processEncryptedGameCommand(
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
-): void {
+): Promise<void> {
     console.log(`Attempting to decrypt message: ${message.toString()}`);
 
     // Get the session
-    const session = getUserSessionByConnectionId(connectionId);
+    const session = await getUserSessionByConnectionId(connectionId);
 
     // If the session doesn't exist, return
     if (!session) {
@@ -28,13 +28,13 @@ export function processEncryptedGameCommand(
 
     // Get the encryption session
     let encryptionSession: EncryptionSession | undefined =
-        getEncryptionSession(connectionId);
+        await getEncryptionSession(connectionId);
 
     // If the encryption session doesn't exist, attempt to create it
     if (typeof encryptionSession === "undefined") {
         try {
             // Create the encryption session
-            const newSession = newEncryptionSession({
+            const newSession = await newEncryptionSession({
                 connectionId,
                 customerId: session.customerId,
                 sessionKey: session.sessionKey.substring(0, 16),
