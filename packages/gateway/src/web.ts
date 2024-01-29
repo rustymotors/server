@@ -24,13 +24,68 @@ import {
 } from "../../shard/src/index.js";
 import { checkPassword, getUser } from "../../../lib/nps/services/account.js";
 import { generateToken } from "../../../lib/nps/services/token.js";
+import AdminJSFastify from "@adminjs/fastify";
+import FastifySession from "@fastify/session";
+import AdminJS from "adminjs";
+import * as AdminJSSequelize from '@adminjs/sequelize'
+import { sequelize } from "../../database/src/services/database.js";
+import { Account } from "../../database/src/models/Account.entity.js";
 
 /**
  * Add web routes to the web server
  *
  * @param {import("fastify").FastifyInstance} webServer The web server
  */
-export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
+export async function addWebRoutes(
+    webServer: import("fastify").FastifyInstance,
+) {
+    const DEFAULT_ADMIN = {
+        email: "admin@rusty-motors.com",
+        password: "password",
+    };
+
+    const authenticate = async (email: string, password: string) => {
+        if (
+            email === DEFAULT_ADMIN.email &&
+            password === DEFAULT_ADMIN.password
+        ) {
+            return DEFAULT_ADMIN;
+        }
+        return null;
+    };
+
+    AdminJS.registerAdapter({
+        Database: AdminJSSequelize.Database,
+        Resource: AdminJSSequelize.Resource,
+    });
+
+    const admin = new AdminJS({
+        rootPath: "/admin",
+        resources: [Account],
+        branding: {
+            companyName: "Rusty Motors",            
+        },
+    });
+
+    const cookieSecret = "4NFXD64KwbMsA2OqQkhFjFJ9NmGlmffx";
+
+    await AdminJSFastify.buildAuthenticatedRouter(
+        admin,
+        {
+            authenticate,
+            cookiePassword: cookieSecret,
+            cookieName: "adminjs",
+        },
+        webServer,
+        {
+            saveUninitialized: true,
+            secret: cookieSecret,
+            cookie: {
+                maxAge: 24 * 60 * 60 * 1000,
+            },
+        },
+    );
+
     webServer.addContentTypeParser("*", function (request, payload, done) {
         let data = "";
         payload.on("data", (chunk) => {

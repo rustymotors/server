@@ -1,24 +1,27 @@
-import { OldServerMessage, serverHeader } from "../../../shared/messageFactory.js";
+import {
+    OldServerMessage,
+    serverHeader,
+} from "../../../shared/messageFactory.js";
 
 export class CarNumberSet {
-    private cars: string[] = []
+    private cars: string[] = [];
     private carMax = 5;
-    
+
     constructor(maxCars: number) {
-        this.carMax = maxCars;        
+        this.carMax = maxCars;
     }
 
     private isUniqueValue(value: string): boolean {
         return !this.cars.includes(value);
     }
 
-
     public getCarNumber(car: number): string {
         if (car > this.carMax) {
-            throw new Error(`Car number ${car} is greater than max ${this.carMax}`);
+            throw new Error(
+                `Car number ${car} is greater than max ${this.carMax}`,
+            );
         }
         return this.cars[car] || "";
-
     }
 
     public setCarNumber(carNumber: number, car: string) {
@@ -26,7 +29,9 @@ export class CarNumberSet {
             throw new Error(`Car number ${car} is not unique`);
         }
         if (carNumber > this.carMax) {
-            throw new Error(`Car number ${car} is greater than max ${this.carMax}`);
+            throw new Error(
+                `Car number ${car} is greater than max ${this.carMax}`,
+            );
         }
         this.cars[carNumber] = car;
     }
@@ -43,7 +48,7 @@ export class CarNumberSet {
         const buffer = Buffer.alloc(this.size());
         let offset = 0;
         for (let i = 0; i < this.carMax; i++) {
-            buffer.write(this.cars[i], offset)
+            buffer.write(this.cars[i], offset);
             offset = i * 3;
         }
         return buffer;
@@ -64,9 +69,7 @@ export class CarNumberSet {
         return `CarNumberSet: 
             ${carStrings.join(", ")}`;
     }
-        
 }
-
 
 export class PlayerOptionsMessage extends OldServerMessage {
     private plateType: number; // 2 bytes
@@ -81,7 +84,6 @@ export class PlayerOptionsMessage extends OldServerMessage {
         this.plateText = "";
         this.carInfoSettings = 0;
         this.carNumbers = new CarNumberSet(6);
-        
     }
 
     override size() {
@@ -100,8 +102,9 @@ export class PlayerOptionsMessage extends OldServerMessage {
         offset += 8;
         this.carInfoSettings = buffer.readUInt32LE(offset);
         offset += 4;
-        this.carNumbers.fromBytes(buffer.subarray(offset, offset + this.carNumbers.size()));
-        
+        this.carNumbers.fromBytes(
+            buffer.subarray(offset, offset + this.carNumbers.size()),
+        );
     }
 
     public override toString(): string {

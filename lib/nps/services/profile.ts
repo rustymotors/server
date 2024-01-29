@@ -1,11 +1,8 @@
 import { GameProfile } from "../messageStructs/GameProfile.js";
 
-
 export const gameProfiles: GameProfile[] = [];
 
-export function populateGameProfiles(
-    profiles: GameProfile[],
-): void {
+export function populateGameProfiles(profiles: GameProfile[]): void {
     const profile1 = GameProfile.new();
     profile1.customerId = 2;
     profile1.profileName = "molly";
@@ -64,11 +61,9 @@ export function deleteGameProfile(profileId: number): void {
     }
 }
 
-export function createGameProfile(
-
-): GameProfile {
+export function createGameProfile(): GameProfile {
     const profile = GameProfile.new();
-    
+
     addGameProfile(profile);
     return profile;
 }

@@ -8,7 +8,6 @@ export function processCheckProfileName(
     message: GameMessage,
     socketCallback: SocketCallback,
 ): void {
-
     const customerId = message.serialize().readUInt32BE(8);
 
     const requestedPersonaName = getLenString(message.serialize(), 12, false);

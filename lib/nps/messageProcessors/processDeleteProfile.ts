@@ -91,7 +91,6 @@ export function processDeleteProfile(
     message: GameMessage,
     socketCallback: SocketCallback,
 ): void {
-
     // Log the message
     console.log(`Delete profile request: ${message.toString()}`);
 
@@ -100,7 +99,6 @@ export function processDeleteProfile(
     // Create a new message - Login ACK
     const loginACK = new GameMessage(0);
     loginACK.header.setId(0x60c);
-    
 
     // Send the ack
     socketCallback([loginACK.serialize()]);

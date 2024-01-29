@@ -29,7 +29,7 @@ try {
     verifyLegacyCipherSupport();
 } catch (err) {
     coreLogger.fatal(`Error in core server: ${String(err)}`);
-    exit(1);
+    throw err;
 }
 
 Sentry.init({
@@ -83,9 +83,9 @@ try {
         listeningPortList,
     });
 
-    gatewayServer.start();
+    await gatewayServer.start();
 } catch (err) {
     Sentry.captureException(err);
     coreLogger.fatal(`Error in core server: ${String(err)}`);
-    process.exit(1);
+    throw err;
 }

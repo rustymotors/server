@@ -2,7 +2,10 @@ import { ISerializable, IMessageHeader, IMessage } from "../types.js";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SocketCallback } from "./index.js";
 import { getLenString, getNBytes } from "../utils/pureGet.js";
-import { getUserSessionByConnectionId, setUserSession } from "../services/session.js";
+import {
+    getUserSessionByConnectionId,
+    setUserSession,
+} from "../services/session.js";
 
 export function processCheckPlateText(
     connectionId: string,
@@ -13,7 +16,9 @@ export function processCheckPlateText(
     const session = getUserSessionByConnectionId(connectionId);
 
     if (session) {
-        console.log(`Setting client version to debug for ${session.customerId}`);
+        console.log(
+            `Setting client version to debug for ${session.customerId}`,
+        );
 
         session.clientVersion = "debug";
         setUserSession(session);
@@ -21,7 +26,11 @@ export function processCheckPlateText(
 
     const plateType = message.getDataAsBuffer().readUInt32BE(0);
 
-    const requestedPlateText = getLenString(message.getDataAsBuffer(), 4, false);
+    const requestedPlateText = getLenString(
+        message.getDataAsBuffer(),
+        4,
+        false,
+    );
 
     console.log(
         `Requested plate text: ${requestedPlateText} for plate type ${plateType}`,

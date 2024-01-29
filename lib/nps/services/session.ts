@@ -1,6 +1,6 @@
 import { Cipher, Decipher, createCipheriv } from "node:crypto";
 
-export type ClientVersion = "debug" | "release" | "unknown"
+export type ClientVersion = "debug" | "release" | "unknown";
 
 export type EncryptionSession = {
     connectionId: string;
@@ -8,15 +8,19 @@ export type EncryptionSession = {
     sessionKey: string;
     gameCipher: Cipher;
     gameDecipher: Decipher;
-}
+};
 
 export const encryptionSessions = new Map<string, EncryptionSession>([]);
 
-export function setEncryptionSession(encryptionSession: EncryptionSession): void {
+export function setEncryptionSession(
+    encryptionSession: EncryptionSession,
+): void {
     encryptionSessions.set(encryptionSession.connectionId, encryptionSession);
 }
 
-export function getEncryptionSession(connectionId: string): EncryptionSession | undefined {
+export function getEncryptionSession(
+    connectionId: string,
+): EncryptionSession | undefined {
     if (encryptionSessions.has(connectionId)) {
         return encryptionSessions.get(connectionId);
     }
@@ -36,8 +40,16 @@ export function newEncryptionSession({
     customerId: number;
     sessionKey: string;
 }): EncryptionSession {
-    const gameCipher = createCipheriv("des-cbc", Buffer.from(sessionKey, "hex"), Buffer.alloc(8));
-    const gameDecipher = createCipheriv("des-cbc", Buffer.from(sessionKey, "hex"), Buffer.alloc(8));
+    const gameCipher = createCipheriv(
+        "des-cbc",
+        Buffer.from(sessionKey, "hex"),
+        Buffer.alloc(8),
+    );
+    const gameDecipher = createCipheriv(
+        "des-cbc",
+        Buffer.from(sessionKey, "hex"),
+        Buffer.alloc(8),
+    );
 
     const encryptionSession = {
         connectionId,

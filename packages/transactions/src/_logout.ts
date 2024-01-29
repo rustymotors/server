@@ -21,5 +21,4 @@ export async function _logout(
     responsePacket.setBuffer(response.serialize());
 
     return { connectionId: args.connectionId, messages: [responsePacket] };
-
 }

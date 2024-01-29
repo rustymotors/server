@@ -2,6 +2,8 @@ import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { LoginCompleteMessage, TLoginMessage } from "./TLoginMessage.js";
 import { OldServerMessage } from "../../shared/messageFactory.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import { VehicleModel } from "./models/VehicleModel.js";
+import { createVehicle } from "./services/car.js";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -16,6 +18,13 @@ export async function login({
     const loginMessage = new TLoginMessage();
     loginMessage.deserialize(packet.serialize());
     log.debug(`Received LoginMessage: ${loginMessage.toString()}`);
+
+    // Is this a new login?
+    if (loginMessage._brandedPartId !== 0) {
+        const vehicle = createVehicle();
+
+        // TODO: Save the vehicle to the database
+    }
 
     // Create new response packet
     const pReply = new LoginCompleteMessage();

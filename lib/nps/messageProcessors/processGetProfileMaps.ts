@@ -39,23 +39,22 @@ export function processGetProfileMaps(
     }
 
     // Send the list back to the client
-try {
+    try {
         const outMessage = new GameMessage(257);
         outMessage.header.setId(0x607);
-        
-    
+
         // Log the message data
         console.log(`GetProfileMaps: ${getAsHex(outMessage.serialize())}`);
-    
+
         outMessage.setData(list);
-    
+
         // Log the message
         console.log(`GetProfileMaps: ${outMessage.toString()}`);
-    
-        console.log('===========================================');
-    
+
+        console.log("===========================================");
+
         socketCallback([outMessage.serialize()]);
-} catch (error) {
-    console.log(error);
-}
+    } catch (error) {
+        console.log(error);
+    }
 }

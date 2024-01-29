@@ -30,7 +30,10 @@ import {
     gameUsers,
     populateGameUsers,
 } from "../../../lib/nps/services/account.js";
-import { gameProfiles, populateGameProfiles } from "../../../lib/nps/services/profile.js";
+import {
+    gameProfiles,
+    populateGameProfiles,
+} from "../../../lib/nps/services/profile.js";
 
 /**
  * @module gateway
@@ -116,7 +119,7 @@ export class Gateway {
         return this.webServer;
     }
 
-    start() {
+    async start() {
         this.log.debug("Starting GatewayServer in start()");
         this.log.info("Server starting");
 
@@ -151,7 +154,7 @@ export class Gateway {
         }
 
         // Start the web server
-        addWebRoutes(this.webServer);
+        await addWebRoutes(this.webServer);
 
         this.webServer.listen(
             {
@@ -175,7 +178,7 @@ export class Gateway {
         console.log("=== Restarting... ===");
 
         // Start the GatewayServer
-        this.start();
+        await this.start();
     }
 
     async exit() {

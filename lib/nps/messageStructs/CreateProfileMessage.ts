@@ -1,6 +1,11 @@
-import { Message } from '../types.js';
-import { getAsHex, getLenBlob, getLenString, getShortBool } from '../utils/pureGet.js';
-import { put8, putLenString } from '../utils/purePut.js';
+import { Message } from "../types.js";
+import {
+    getAsHex,
+    getLenBlob,
+    getLenString,
+    getShortBool,
+} from "../utils/pureGet.js";
+import { put8, putLenString } from "../utils/purePut.js";
 
 export class CreateProfileMessage implements Message {
     private customerID: number;
@@ -24,10 +29,9 @@ export class CreateProfileMessage implements Message {
     private profileLevel: number;
     private shardId: number;
 
-
     constructor() {
         this.customerID = 0;
-        this.profileName = '';
+        this.profileName = "";
         this.serverId = 0;
         this.createStamp = 0;
         this.lastLoginStamp = 0;
@@ -35,7 +39,7 @@ export class CreateProfileMessage implements Message {
         this.profileId = 0;
         this.isOnline = false;
         this.gamePurchaseStamp = 0;
-        this.gameSerialNumber = '';
+        this.gameSerialNumber = "";
         this.timeOnline = 0;
         this.timeInGame = 0;
         this.gameBlob = Buffer.alloc(0);
@@ -43,11 +47,11 @@ export class CreateProfileMessage implements Message {
         this.pictureBlob = Buffer.alloc(0);
         this.dnd = false;
         this.gameStartStamp = 0;
-        this.currentKey = '';
+        this.currentKey = "";
         this.profileLevel = 0;
         this.shardId = 0;
     }
-    
+
     static new(): CreateProfileMessage {
         return new CreateProfileMessage();
     }
@@ -95,7 +99,7 @@ export class CreateProfileMessage implements Message {
         offset += 2;
         message.shardId = data.readUInt32BE(offset);
 
-        return message;        
+        return message;
     }
 
     toBytes(): Buffer {
@@ -164,16 +168,16 @@ export class CreateProfileMessage implements Message {
         Game Start Stamp: ${this.gameStartStamp}
         Current Key: ${this.currentKey} (length: ${this.currentKey.length})
         Profile Level: ${this.profileLevel}
-        Shard ID: ${this.shardId}`
+        Shard ID: ${this.shardId}`;
     }
     toHex(): string {
         return getAsHex(this.toBytes());
     }
     setData(data: Buffer): void {
-        throw new Error('Method not implemented.');
+        throw new Error("Method not implemented.");
     }
     getData(): Buffer {
-        throw new Error('Method not implemented.');
+        throw new Error("Method not implemented.");
     }
     getSize(): number {
         return this.toBytes().length;

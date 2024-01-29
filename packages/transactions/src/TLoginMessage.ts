@@ -84,9 +84,7 @@ export class LoginCompleteMessage extends SerializedBuffer {
         buffer.writeUInt32LE(this._shardAverageLevel, offset);
         offset += 4;
 
-        return buffer;    
-    
-        
+        return buffer;
     }
 
     override size() {

@@ -50,6 +50,7 @@ export class Configuration {
             Configuration.instance = this;
         } catch (error) {
             logger.fatal(`Error in core server: ${String(error)}`);
+            throw error;
         }
     }
 }

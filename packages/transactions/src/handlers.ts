@@ -119,5 +119,5 @@ export const messageHandlers: MessageHandler[] = [
     {
         name: "MC_GET_COMPLETE_VEHICLE_INFO",
         handler: _getCompleteVehicleInfo,
-    }
+    },
 ];

@@ -149,7 +149,6 @@ export class UserStatus implements ISerializable {
         return this.toBytes().toString("hex");
     }
 
-   
     setData(data: Buffer) {
         throw new Error("Method not implemented.");
     }

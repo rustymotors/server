@@ -16,11 +16,10 @@ export async function _getCompleteVehicleInfo({
 
     log.debug(`Received Message: ${getCompleteVehicleInfoMessage.toString()}`);
 
-    const vehicleId = getCompleteVehicleInfoMessage.data.readInt32BE();
-    const delta = getCompleteVehicleInfoMessage.data2.readInt32BE();
+    const vehicleId = getCompleteVehicleInfoMessage.data.readInt32LE();
+    const delta = getCompleteVehicleInfoMessage.data2.readInt32LE();
 
     log.debug(`Requesting vehicleId: ${vehicleId} delta: ${delta}`);
-
 
     const responsePacket = new OldServerMessage();
     responsePacket._header.sequence = packet._header.sequence;

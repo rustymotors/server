@@ -9,7 +9,6 @@ import { GenericReplyMessage } from "./GenericReplyMessage.js";
 export async function _setOptions(
     args: MessageHandlerArgs,
 ): Promise<MessageHandlerResult> {
-
     const playerOptionsMessage = new PlayerOptionsMessage();
     playerOptionsMessage.deserialize(args.packet.serialize());
 

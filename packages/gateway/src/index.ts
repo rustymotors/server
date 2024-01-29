@@ -211,7 +211,7 @@ export function onSocketConnection({
                 ) => {
                     log.debug("onData handler returned");
                     const { messages } = response;
-                   
+
                     // Log the messages
                     log.trace(`Messages: ${messages.map((m) => m.toString())}`);
 
@@ -234,10 +234,10 @@ export function onSocketConnection({
     log.debug(`Client ${remoteAddress} connected to port ${localPort}`);
 
     if (localPort === 7003) {
-            console.log('Sending ok to login packet');
+        console.log("Sending ok to login packet");
 
-            incomingSocket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
-        }
+        incomingSocket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
+    }
 }
 
 function sendToSocket(
@@ -250,7 +250,7 @@ function sendToSocket(
         serializedMessages.forEach((m) => {
             incomingSocket.write(m);
             log.trace(`Sent ${m.length} bytes to socket: ${m.toString("hex")}`);
-            log.trace('===========================================');
+            log.trace("===========================================");
         });
     } catch (error) {
         log.error(`Error sending data: ${String(error)}`);
@@ -304,7 +304,6 @@ export function handleGameMessage(
         // Create a new message
         const message = new GameMessage(version);
         message.deserialize(bytes);
-        
 
         // Process the message
         const t = Sentry.startTransaction({
@@ -333,5 +332,4 @@ export function handleServerMessage(
     // Try to parse it as a ServerMessage
 
     // TODO: Handle message
-
 }

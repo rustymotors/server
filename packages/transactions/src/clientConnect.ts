@@ -55,12 +55,12 @@ export async function clientConnect({
 
     log.debug(`Looking up the session key for ${customerId}...`);
 
-   const userSession = getUserSessionByCustomerId(customerId);
+    const userSession = getUserSessionByCustomerId(customerId);
 
     if (typeof userSession === "undefined") {
-        log.warn(`No user session found for ${customerId}`); 
+        log.warn(`No user session found for ${customerId}`);
         const errMessage = new GenericReply();
-        errMessage.msgNo = 136
+        errMessage.msgNo = 136;
         errMessage.msgReply = packet._msgNo;
         errMessage.result = 309;
 
@@ -75,7 +75,9 @@ export async function clientConnect({
         userSession.sessionKey,
     );
 
-    const newDataEncryptionPair = createDataEncryptionPair(userSession.sessionKey);
+    const newDataEncryptionPair = createDataEncryptionPair(
+        userSession.sessionKey,
+    );
 
     const newEncryption = new McosEncryption({
         connectionId,

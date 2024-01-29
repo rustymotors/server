@@ -10,12 +10,13 @@ import { PlayerPhysicalMessage } from "./PlayerPhysicalMessage.js";
 export async function _updatePlayerPhysical(
     args: MessageHandlerArgs,
 ): Promise<MessageHandlerResult> {
-
     const updatePlayerPhysicalMessage = new PlayerPhysicalMessage();
     updatePlayerPhysicalMessage.deserialize(args.packet.serialize());
 
     // Log the message
-    args.log.debug(`UpdatePlayerPhysicalMessage: ${updatePlayerPhysicalMessage.toString()}`);
+    args.log.debug(
+        `UpdatePlayerPhysicalMessage: ${updatePlayerPhysicalMessage.toString()}`,
+    );
 
     // TODO: Save the options
 

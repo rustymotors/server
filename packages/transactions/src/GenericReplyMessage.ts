@@ -84,7 +84,6 @@ export class GenericReplyMessage extends SerializedBuffer {
         this.result = buffer;
     }
 
-
     setData1(value: number) {
         this.data1 = value;
     }
@@ -100,7 +99,7 @@ export class GenericReplyMessage extends SerializedBuffer {
      */
     static deserialize(buffer: Buffer): GenericReplyMessage {
         const node = new GenericReplyMessage();
-        
+
         try {
             node.msgNo = buffer.readInt16LE(0);
         } catch (error) {
@@ -143,7 +142,6 @@ export class GenericReplyMessage extends SerializedBuffer {
         return packet;
     }
 
-    
     /**
      * DumpPacket
      * @return {string}
@@ -166,10 +164,10 @@ export class GenericReplyMessage extends SerializedBuffer {
         Result: ${this.result}
         Data: ${this.data1}
         Data2: ${this.data2}
-        `
+        `;
     }
 
     override size(): number {
-        return 16;        
+        return 16;
     }
 }

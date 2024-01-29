@@ -4,13 +4,11 @@ import { SocketCallback } from "./index.js";
 import { getLenString, getNBytes } from "../utils/pureGet.js";
 import { GameProfile } from "../messageStructs/GameProfile.js";
 
-
 export function processCreateProfile(
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
 ): void {
-
     // Log the request
     console.log(`ProcessCreateProfile request: ${message.toString()}`);
 
@@ -20,14 +18,16 @@ export function processCreateProfile(
     );
 
     // Log the request
-    console.log(`ProcessCreateProfile request: ${createProfileMessage.toString()}`);
+    console.log(
+        `ProcessCreateProfile request: ${createProfileMessage.toString()}`,
+    );
 
     // TODO: Create the profile
 
     // TODO: Send the response
     const response = new GameMessage(257);
     response.header.setId(0x601);
-    
+
     response.setData(message.getData());
 
     // Log the response

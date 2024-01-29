@@ -1,4 +1,3 @@
-
 export interface ISerializable {
     serialize(): Buffer;
     deserialize(data: Buffer): void;
@@ -6,7 +5,7 @@ export interface ISerializable {
     toString(): string;
 }
 
-export interface IMessageHeader extends ISerializable{
+export interface IMessageHeader extends ISerializable {
     getVersion(): number;
     getId(): number;
     getLength(): number;
@@ -14,10 +13,9 @@ export interface IMessageHeader extends ISerializable{
     setVersion(version: number): void;
     setId(id: number): void;
     setLength(length: number): void;
-    
 }
 
-export interface IMessage extends ISerializable{
+export interface IMessage extends ISerializable {
     header: IMessageHeader;
     getData(): ISerializable;
     getDataAsBuffer(): Buffer;

@@ -26,7 +26,7 @@ export class ProfileList extends NPSList implements ISerializable {
 
     override toBytes(): Buffer {
         const buffer = Buffer.alloc(this.getSize());
-        let offset = 0
+        let offset = 0;
         buffer.writeUInt16BE(this.maxProfiles, offset);
         offset += 2;
         for (const profile of this.profiles) {

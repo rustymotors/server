@@ -1,5 +1,5 @@
 import { OldServerMessage } from "../../../shared/messageFactory.js";
-import { Part } from "../models/Part.js";
+import { PartModel } from "../models/PartModel.js";
 
 export class Vehicle {
     private vehicleId = 0; // 4 bytes
@@ -11,13 +11,11 @@ export class Vehicle {
     private damage = 0; // 1 byte / max 2000
 }
 
-
-
 export class CarInfoMessage extends OldServerMessage {
     private playerId = 0;
     private vehicle: Vehicle = new Vehicle();
     private noOfParts = 0;
-    private parts: Part[] = [];
+    private parts: PartModel[] = [];
 
     constructor() {
         super();
@@ -33,7 +31,6 @@ export class CarInfoMessage extends OldServerMessage {
         offset += this._header._size;
         this._msgNo = buffer.readUInt16LE(offset);
         offset += 2;
-        
     }
 
     public override toString(): string {

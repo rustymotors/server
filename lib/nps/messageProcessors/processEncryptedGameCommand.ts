@@ -2,15 +2,20 @@ import { ISerializable, IMessageHeader, IMessage } from "../types.js";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SocketCallback } from "./index.js";
 import { getAsHex, getLenString } from "../utils/pureGet.js";
-import { EncryptionSession, getEncryptionSession, getUserSessionByConnectionId, newEncryptionSession, setEncryptionSession, setUserSession } from "../services/session.js";
+import {
+    EncryptionSession,
+    getEncryptionSession,
+    getUserSessionByConnectionId,
+    newEncryptionSession,
+    setEncryptionSession,
+    setUserSession,
+} from "../services/session.js";
 
 export function processEncryptedGameCommand(
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
 ): void {
-
-
     console.log(`Attempting to decrypt message: ${message.toString()}`);
 
     // Get the session
@@ -23,7 +28,7 @@ export function processEncryptedGameCommand(
 
     // Get the encryption session
     let encryptionSession: EncryptionSession | undefined =
-     getEncryptionSession(connectionId);
+        getEncryptionSession(connectionId);
 
     // If the encryption session doesn't exist, attempt to create it
     if (typeof encryptionSession === "undefined") {
@@ -36,12 +41,12 @@ export function processEncryptedGameCommand(
             });
             setEncryptionSession(newSession);
             encryptionSession = newSession;
-            } catch (error) {
-                console.log(error);
-            }
+        } catch (error) {
+            console.log(error);
+        }
 
-            // Log the encryption session
-            console.log(`Created encryption session for ${session.customerId}`)    
+        // Log the encryption session
+        console.log(`Created encryption session for ${session.customerId}`);
     }
 
     // Attempt to decrypt the message
@@ -50,7 +55,7 @@ export function processEncryptedGameCommand(
         // @ts-ignore - We know this is defined
         const decryptedbytes = encryptionSession.gameDecipher.update(
             message.getDataAsBuffer(),
-        )
+        );
 
         // Log the decrypted bytes
         console.log(`Decrypted bytes: ${getAsHex(decryptedbytes)}`);
@@ -61,11 +66,9 @@ export function processEncryptedGameCommand(
 
         // Log the message
         console.log(`EncryptedGameCommand: ${decryptedMessage.toString()}`);
-
     } catch (error) {
         console.log(error);
     }
-
 
     const response = new GameMessage(0);
     response.header.setId(0x207);

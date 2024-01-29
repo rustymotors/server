@@ -20,3 +20,4 @@ dist
 .sentryclirc
 *.map
 out/*
+.adminjs/

@@ -55,5 +55,5 @@ export function getLenBlob(
 
 export function getShortBool(bytes: Buffer, offset: number): boolean {
     // Get a 2 byte boolean
-    return bytes.readUInt16LE(offset) === 1;    
+    return bytes.readUInt16LE(offset) === 1;
 }

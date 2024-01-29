@@ -20,7 +20,7 @@ export function processGetProfileInfo(
 
     // Create a new NPSList of profiles
     const list = new ProfileList();
-    
+
     const outMessage = new GameMessage(0);
 
     // Add each profile to the list
@@ -32,26 +32,24 @@ export function processGetProfileInfo(
 
             list.addProfile(profile);
         }
-    }
-    else {
+    } else {
         outMessage.header.setId(0x602);
     }
 
     // Send the list back to the client
-try {
-    
+    try {
         // Log the message data
         console.log(`GetProfileInfo: ${getAsHex(list.serialize())}`);
-    
+
         outMessage.setData(list);
-    
+
         // Log the message
         console.log(`GetProfileInfo: ${outMessage.toString()}`);
-    
-        console.log('===========================================');
-    
+
+        console.log("===========================================");
+
         socketCallback([outMessage.serialize()]);
-} catch (error) {
-    console.log(error);
-}
+    } catch (error) {
+        console.log(error);
+    }
 }

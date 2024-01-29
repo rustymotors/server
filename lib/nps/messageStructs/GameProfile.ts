@@ -1,9 +1,13 @@
 import { ISerializable, IMessageHeader, IMessage } from "../types.js";
 import { putLenBlob, putLenString, putShortBool } from "../utils/purePut.js";
-import { getAsHex, getLenBlob, getLenString, getShortBool } from "../utils/pureGet.js";
+import {
+    getAsHex,
+    getLenBlob,
+    getLenString,
+    getShortBool,
+} from "../utils/pureGet.js";
 
 export class GameProfile implements ISerializable {
-
     customerId: number; // 4 bytes
     profileName: string; // 32 bytes - max length
     serverId: number; // 4 bytes
@@ -16,7 +20,7 @@ export class GameProfile implements ISerializable {
     gameSerialNumber: string; // 32 bytes - max length
     timeOnline: number; // 4 bytes
     timeInGame: number; // 4 bytes
-    gameBlob: Buffer;  // 512 bytes - max length
+    gameBlob: Buffer; // 512 bytes - max length
     personalBlob: Buffer; // 256 bytes - max length
     pictureBlob: Buffer; // 1 byte
     dnd: boolean; // 2 bytes
@@ -104,7 +108,7 @@ export class GameProfile implements ISerializable {
         offset += 2;
         message.shardId = data.readUInt32BE(offset);
 
-        return message;   
+        return message;
     }
 
     toBytes(): Buffer {
@@ -120,7 +124,7 @@ export class GameProfile implements ISerializable {
         offset += 4; // offset is now 14
         offset += 4; // unknown, offset is now 18
         putLenString(buffer, offset, this.profileName, false);
-        
+
         // buffer.writeUInt32BE(this.serverId, offset);
         // offset += this.profileName.length + 2;
         // buffer.writeUInt32BE(this.createStamp, offset);
@@ -177,7 +181,7 @@ export class GameProfile implements ISerializable {
         currentKey: ${this.currentKey}
         profileLevel: ${this.profileLevel}
         shardId: ${this.shardId}
-        `
+        `;
     }
     toHex(): string {
         return getAsHex(this.toBytes());
