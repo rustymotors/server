@@ -12,5 +12,5 @@
         "strict": true,
         "skipLibCheck": true
     },
-    "include": ["src", "test", "packages", "server.ts"]
+    "include": ["src", "test", "packages", "thebeast/server.ts"]
 }

@@ -10,7 +10,6 @@
         "url": "git@github.com:drazisil/mcos.git"
     },
     "scripts": {
-        "prepare": "husky install",
         "pretest": "eslint --fix . && prettier --write .",
         "test:only": "node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage packages lib",
         "test": "node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage packages lib",
@@ -59,12 +58,9 @@
         "eslint": "^8.56.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-prettier": "5.1.2",
-        "husky": "^8.0.3",
         "jsdoc": "^4.0.2",
-        "lint-staged": "^15.2.0",
         "prettier": "3.1.1",
         "prettier-eslint": "16.2.0",
-        "rimraf": "^5.0.5",
         "standard-version": "^9.5.0",
         "tsx": "4.7.0",
         "typescript": "^5.3.3",

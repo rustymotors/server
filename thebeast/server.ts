@@ -15,10 +15,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import Sentry from "@sentry/node";
-import { getServerLogger } from "./packages/shared/log.js";
-import { verifyLegacyCipherSupport } from "./packages/gateway/src/encryption.js";
-import { getServerConfiguration } from "./packages/shared/Configuration.js";
-import { getGatewayServer } from "./packages/gateway/src/GatewayServer.js";
+import { getServerLogger } from "../packages/shared/log.js";
+import { verifyLegacyCipherSupport } from "../packages/gateway/src/encryption.js";
+import { getServerConfiguration } from "../packages/shared/Configuration.js";
+import { getGatewayServer } from "../packages/gateway/src/GatewayServer.js";
 import { exit } from "node:process";
 
 const coreLogger = getServerLogger({
