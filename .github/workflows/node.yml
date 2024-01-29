@@ -2,9 +2,7 @@ name: The Beast
 
 on:
     push:
-        branches: [main]
     pull_request:
-        branches: [main]
 
 env:
     MCO_LOG_LEVEL: warn
