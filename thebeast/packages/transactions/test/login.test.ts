@@ -1,3 +1,4 @@
+import { populateVehicles } from "../../../lib/nps/services/vehicle.js";
 import { getServerLogger } from "../../shared/log.js";
 import { OldServerMessage } from "../../shared/messageFactory.js";
 import { login } from "../src/login.js";
@@ -11,6 +12,7 @@ describe("login", () => {
         const imcommingBuffer = Buffer.from(JSON.stringify(incomingMessage));
         incomingMessage.setBuffer(imcommingBuffer);
         const log = getServerLogger({});
+        await populateVehicles();
 
         // act
         const result = await login({
