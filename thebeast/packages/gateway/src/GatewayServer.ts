@@ -252,8 +252,22 @@ export class Gateway {
             });
         });
 
+        const envToLogger: Record<string, any> = {
+            development: {
+              transport: {
+                target: 'pino-pretty',
+                options: {
+                  translateTime: 'HH:MM:ss Z',
+                  ignore: 'pid,hostname',
+                },
+              },
+            },
+            production: true,
+            test: false,
+          }
+
         this.webServer = fastify({
-            logger: true,
+            logger: envToLogger[this.config.logLevel] ?? false,
         });
         this.webServer.register(FastifySensible);
 
