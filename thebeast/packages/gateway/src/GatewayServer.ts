@@ -31,6 +31,7 @@ import {
     gameProfiles,
     populateGameProfiles,
 } from "../../../lib/nps/services/profile.js";
+import { populateVehicles } from "../../../lib/nps/services/vehicle.js";
 
 /**
  * @module gateway
@@ -281,6 +282,7 @@ export class Gateway {
         try {
             await populateGameUsers();
             await populateGameProfiles(gameProfiles);
+            await populateVehicles();
         } catch (error) {
             this.log.error("Error populating game users and profiles");
             throw error;

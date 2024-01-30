@@ -1,3 +1,5 @@
+🍉
+
 # mcos
 
 This is a game server, being written from scratch, for a very old and long dead game. The owners of said game have shown no interest in bringing it back, but even so all names of their IP have been avoided to prevent issues.

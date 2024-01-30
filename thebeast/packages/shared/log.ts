@@ -36,28 +36,28 @@ export class ServerLogger {
      * @param {string} message
      */
     fatal(message: string) {
-            this.logger.error(message);
+        this.logger.error(message);
     }
 
     /**
      * @param {string} message
      */
     error(message: string) {
-            this.logger.error(message);
+        this.logger.error(message);
     }
 
     /**
      * @param {string} message
      */
     warn(message: string) {
-            this.logger.error(message);
+        this.logger.error(message);
     }
 
     /**
      * @param {string} message
      */
     info(message: string) {
-            this.logger.log(message);
+        this.logger.log(message);
     }
 
     /**

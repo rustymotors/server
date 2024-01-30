@@ -23,15 +23,14 @@ export async function login({
     // Is this a new login?
     if (loginMessage._brandedPartId !== 0) {
         // Create a new vehicle
-        const vehicle = await Vehicle.upsert({            
+        const vehicle = await Vehicle.upsert({
             skinId: loginMessage._skinId,
             flags: 0,
             delta: 0,
             carClass: 3,
             damageLength: 0,
-            damage: 0
+            damage: 0,
         });
-
     }
 
     // Create new response packet
