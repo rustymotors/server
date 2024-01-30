@@ -1,36 +1,43 @@
-import { OldServerMessage } from "../../../shared/messageFactory.js";
-import { PartModel } from "../models/PartModel.js";
+import { Part } from "../../../database/src/models/Part.entity.js";
+import { Vehicle } from "../../../database/src/models/Vehicle.entity.js";
+import { SerializedBuffer } from "../../../shared/messageFactory.js";
 
-export class Vehicle {
-    private vehicleId = 0; // 4 bytes
-    private skinId = 0; // 4 bytes
-    private flags = 0; // 4 bytes
-    private delta = 0; // 4 bytes
-    private carClass = 0; // 1 byte
-    private damageLength = 0; // 2 bytes
-    private damage = 0; // 1 byte / max 2000
-}
-
-export class CarInfoMessage extends OldServerMessage {
-    private playerId = 0;
-    private vehicle: Vehicle = new Vehicle();
-    private noOfParts = 0;
-    private parts: PartModel[] = [];
+export class CarInfoMessage extends SerializedBuffer {
+    msgNo: number; // 2 bytes
+    playerId: number; // 4 bytes
+    private vehicle: Vehicle;
+    noOfParts: number; // 2
+    private parts: Part[];
 
     constructor() {
         super();
+        this.msgNo = 0;
+        this.playerId = 0;
+        this.vehicle = new Vehicle();
+        this.noOfParts = 0;
+        this.parts = [];
     }
 
     override size() {
-        return 10;
+        return 8 + this.vehicle.size() + 2 + this.parts.length * 24;
     }
 
-    public toBytes(buffer: Buffer) {
+    override serialize(): Buffer {
+        const buffer = Buffer.alloc(this.size());
         let offset = 0;
-        this._header._doDeserialize(buffer);
-        offset += this._header._size;
-        this._msgNo = buffer.readUInt16LE(offset);
+        buffer.writeUInt16LE(this.msgNo, offset);
         offset += 2;
+        buffer.writeUInt32LE(this.playerId, offset);
+        offset += 4;
+        this.vehicle.serialize().copy(buffer, offset);
+        offset += this.vehicle.size();
+        buffer.writeUInt16LE(this.noOfParts, offset);
+        offset += 2;
+        for (const part of this.parts) {
+            part.serialize().copy(buffer, offset);
+            offset += part.size();
+        }
+        return buffer;
     }
 
     public override toString(): string {

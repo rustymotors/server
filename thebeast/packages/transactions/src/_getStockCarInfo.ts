@@ -25,7 +25,7 @@ export async function _getStockCarInfo({
 
     stockCarInfoMessage.addStockCar(new StockCar(113, 20, false)); // Bel-air
     stockCarInfoMessage.addStockCar(new StockCar(104, 15, true)); // Fairlane - Deal of the day
-    stockCarInfoMessage.addStockCar(new StockCar(402, 20, false)); // Century
+    stockCarInfoMessage.addStockCar(new StockCar(109, 20, false)); // Century
 
     log.debug(`Sending Message: ${stockCarInfoMessage.toString()}`);
 

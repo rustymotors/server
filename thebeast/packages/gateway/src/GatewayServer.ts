@@ -254,17 +254,17 @@ export class Gateway {
 
         const envToLogger: Record<string, any> = {
             development: {
-              transport: {
-                target: 'pino-pretty',
-                options: {
-                  translateTime: 'HH:MM:ss Z',
-                  ignore: 'pid,hostname',
+                transport: {
+                    target: "pino-pretty",
+                    options: {
+                        translateTime: "HH:MM:ss Z",
+                        ignore: "pid,hostname",
+                    },
                 },
-              },
             },
             production: true,
             test: false,
-          }
+        };
 
         this.webServer = fastify({
             logger: envToLogger[this.config.logLevel] ?? false,
@@ -278,13 +278,13 @@ export class Gateway {
         state = addOnDataHandler(state, 7003, receiveLobbyData);
         state = addOnDataHandler(state, 43300, receiveTransactionsData);
 
-try {
+        try {
             await populateGameUsers();
             await populateGameProfiles(gameProfiles);
-} catch (error) {
-    this.log.error("Error populating game users and profiles");
-    throw error;
-}
+        } catch (error) {
+            this.log.error("Error populating game users and profiles");
+            throw error;
+        }
 
         populatePortToMessageTypes(portToMessageTypes);
         populateGameMessageProcessors(gameMessageProcessors);

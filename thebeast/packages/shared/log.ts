@@ -1,13 +1,18 @@
 import { Console } from "node:console";
 
-type ServerLoggerLevels = "fatal" | "error" | "warn" | "info" | "debug" | "trace";
+type ServerLoggerLevels =
+    | "fatal"
+    | "error"
+    | "warn"
+    | "info"
+    | "debug"
+    | "trace";
 
 type ServerLoggerOptions = {
     level?: ServerLoggerLevels;
     module?: string;
     name?: string;
 };
-
 
 /**
  * @static
@@ -31,36 +36,28 @@ export class ServerLogger {
      * @param {string} message
      */
     fatal(message: string) {
-        if (this.level === "fatal") {
             this.logger.error(message);
-        }
     }
 
     /**
      * @param {string} message
      */
     error(message: string) {
-        if (this.level === "error") {
             this.logger.error(message);
-        }        
     }
 
     /**
      * @param {string} message
      */
     warn(message: string) {
-        if (this.level === "warn") {
             this.logger.error(message);
-        }
     }
 
     /**
      * @param {string} message
      */
     info(message: string) {
-        if (this.level === "info") {
             this.logger.log(message);
-        }        
     }
 
     /**

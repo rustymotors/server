@@ -225,9 +225,10 @@ export function onSocketConnection({
             )
             .catch((/** @type {Error} */ error: Error) => {
                 log.error(`Error handling data: ${String(error)}`);
+                throw error;
 
                 // Call server shutdown
-                getGatewayServer({}).shutdown();
+                // getGatewayServer({}).shutdown();
             });
     });
 
