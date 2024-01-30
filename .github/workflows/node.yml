@@ -18,7 +18,7 @@ jobs:
                 node-version: [18.x, 20.x, 21.x]
 
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
               with:
                   fetch-depth: 0
             - name: Use Node.js ${{ matrix.node-version }}
@@ -46,7 +46,7 @@ jobs:
                   codecovcli --verbose do-upload --fail-on-error --flag transactions --name transactions-${{ matrix.node-version }}
                   codecovcli --verbose do-upload --fail-on-error --flag core --name core-${{ matrix.node-version }}
 
-            - uses: actions/upload-artifact@v3
+            - uses: actions/upload-artifact@v4
               with:
                   name: coverage_${{ matrix.node-version }}
                   path: coverage
