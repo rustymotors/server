@@ -7,47 +7,47 @@ comment:
 flags:
     database:
         paths:
-            - packages/database/**
+            - thebeast/packages/database/**
         carryforward: true
     gateway:
         paths:
-            - packages/gateway/**
+            - thebeast/packages/gateway/**
         carryforward: true
     lobby:
         paths:
-            - packages/lobby/**
+            - thebeast/packages/lobby/**
         carryforward: true
     login:
         paths:
-            - packages/login/**
+            - thebeast/packages/login/**
         carryforward: true
     patch:
         paths:
-            - packages/patch/**
+            - thebeast/packages/patch/**
         carryforward: true
     persona:
         paths:
-            - packages/persona/**
+            - thebeast/packages/persona/**
         carryforward: true
     shard:
         paths:
-            - packages/shard/**
+            - thebeast/packages/shard/**
         carryforward: true
     shared:
         paths:
-            - packages/shared/**
+            - thebeast/packages/shared/**
         carryforward: true
     transactions:
         paths:
-            - packages/transactions/**
+            - thebeast/packages/transactions/**
         carryforward: true
     interfaces:
         paths:
-            - packages/interfaces/**
+            - thebeast/packages/interfaces/**
         carryforward: false
     core:
         paths:
-            - packages/core/**
+            - thebeast/packages/core/**
         carryforward: true
 
 component_management:
@@ -55,9 +55,9 @@ component_management:
         - component_id: components_team1
           name: Team 1
           paths:
-              - packages/core/**
-              - packages/gateway/**
-              - packages/shared/**
+              - thebeast/packages/core/**
+              - thebeast/packages/gateway/**
+              - thebeast/packages/shared/**
 
 coverage:
     status:
