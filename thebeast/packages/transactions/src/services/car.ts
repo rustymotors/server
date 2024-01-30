@@ -24,5 +24,3 @@ export function clearVehicles(): void {
 export function getVehicleCount(): number {
     return vehicles.size;
 }
-
-export function populateVehicles(): void {}
