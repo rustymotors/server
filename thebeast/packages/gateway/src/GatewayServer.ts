@@ -278,8 +278,13 @@ export class Gateway {
         state = addOnDataHandler(state, 7003, receiveLobbyData);
         state = addOnDataHandler(state, 43300, receiveTransactionsData);
 
-        await populateGameUsers();
-        await populateGameProfiles(gameProfiles);
+try {
+            await populateGameUsers();
+            await populateGameProfiles(gameProfiles);
+} catch (error) {
+    this.log.error("Error populating game users and profiles");
+    throw error;
+}
 
         populatePortToMessageTypes(portToMessageTypes);
         populateGameMessageProcessors(gameMessageProcessors);
