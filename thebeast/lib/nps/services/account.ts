@@ -11,7 +11,7 @@ export async function populateGameUsers(): Promise<void> {
     await GameUser.sync();
 
     // Create the default admin user
-    await GameUser.create({
+    await GameUser.upsert({
         username: "admin",
         password: "admin",
         customerId: 1,
@@ -20,7 +20,7 @@ export async function populateGameUsers(): Promise<void> {
     });
 
     // Create the default molly user
-    await GameUser.create({
+    await GameUser.upsert({
         username: "molly",
         password: "molly",
         customerId: 2,
@@ -38,7 +38,7 @@ export async function getUser(username: string): Promise<GameUser | null> {
 }
 
 export async function addUser(user: User): Promise<void> {
-    await GameUser.create({
+    await GameUser.upsert({
         username: user.username,
         password: user.password,
         customerId: user.customerId,
