@@ -25,7 +25,6 @@ jobs:
                   node-version: ${{ matrix.node-version }}
             - name: Enable Corepack and set version to stable
               run: |
-                  npm install -g corepack
                   corepack enable
                   corepack set-version stable
             - name: Install and test thebeast workspace
