@@ -26,7 +26,7 @@ jobs:
             - name: Enable Corepack and set version to stable
               run: |
                   corepack enable
-                  yarn set-version stable
+                  yarn set version stable
             - name: Install and test thebeast workspace
               run: |
                   yarn workspace @rusty-motors/thebeast install
