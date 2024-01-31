@@ -29,9 +29,9 @@ jobs:
                   corepack enable
                   corepack set-version stable
             - name: Install and test thebeast workspace
-                run: |
-                    yarn workspace @rusty-motors/thebeast install
-                    yarn workspace @rusty-motors/thebeast test
+              run: |
+                  yarn workspace @rusty-motors/thebeast install
+                  yarn workspace @rusty-motors/thebeast test
               run: 
             - name: Codecov
               env: 
