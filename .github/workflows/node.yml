@@ -23,11 +23,18 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: ${{ matrix.node-version }}
-            - name: Install, CI, Test
-              run: npm install-ci-test
-              working-directory: ./thebeast
+            - name: Enable Corepack and set version to stable
+              run: |
+                  npm install -g corepack
+                  corepack enable
+                  corepack set-version stable
+            - name: Install and test thebeast workspace
+                run: |
+                    yarn workspace @rusty-motors/thebeast install
+                    yarn workspace @rusty-motors/thebeast test
+              run: 
             - name: Codecov
-              env: # Or as an environment variable
+              env: 
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
               run: |
                   pip install --user pytest

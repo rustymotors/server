@@ -15,5 +15,6 @@
   },
   "workspaces": [
     "thebeast"
-  ]
+  ],
+  "packageManager": "yarn@4.1.0"
 }

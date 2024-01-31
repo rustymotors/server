@@ -1,5 +1,13 @@
 coverage
-node_modules
 *.sqlite
 *.log
 .env
+
+# yarn
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

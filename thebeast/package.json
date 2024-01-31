@@ -11,8 +11,7 @@
     },
     "scripts": {
         "pretest": "eslint --fix . && prettier --write .",
-        "test:only": "node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage packages lib",
-        "test": "node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage packages lib",
+        "test": "node --openssl-legacy-provider $(yarn bin vitest) run --coverage packages lib",
         "prod": "make prod_node",
         "prod:stop": "docker-compose stop",
         "release": "standard-version --sign",
@@ -56,7 +55,6 @@
         "jsdoc": "^4.0.2",
         "prettier": "3.1.1",
         "prettier-eslint": "16.2.0",
-        "standard-version": "^9.5.0",
         "tsx": "4.7.0",
         "typescript": "^5.3.3",
         "typescript-eslint-language-service": "^5.0.5",
