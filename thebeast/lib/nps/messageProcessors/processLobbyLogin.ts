@@ -9,6 +9,7 @@ import {
     userSessions,
 } from "../services/session.js";
 import { GameMessage } from "../messageStructs/GameMessage.js";
+import { UserInfo } from "../messageStructs/UserInfo.js";
 
 export async function processLobbyLogin(
     connectionId: string,
@@ -18,6 +19,8 @@ export async function processLobbyLogin(
     // This message is a BareMessageV0
 
     const profileId = getDWord(message.getDataAsBuffer(), 0, false);
+
+    const profileName = getLenString(message.getDataAsBuffer(), 4, false);
 
     const session = await getUserSessionByProfileId(profileId);
 
@@ -40,10 +43,18 @@ export async function processLobbyLogin(
 
     console.log(`LobbyLogin: ${message.toString()}`);
 
-    const response = new GameMessage(0);
-    response.header.setId(0x120);
+    const response = new UserInfo(profileId, profileName);
 
-    const responseBytes = response.serialize();
+    console.log(`Sending response: ${response.toString()}`);
+
+    const responseMessage = new GameMessage(0);
+    responseMessage.header.setId(0x120);
+
+    responseMessage.setData(response);
+
+    console.log(`Response message: ${responseMessage.toString()}`);
+
+    const responseBytes = responseMessage.serialize();
 
     socketCallback([responseBytes]);
 }
