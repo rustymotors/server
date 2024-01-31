@@ -32,7 +32,6 @@ jobs:
               run: |
                   yarn workspace @rusty-motors/thebeast install
                   yarn workspace @rusty-motors/thebeast test
-              run: 
             - name: Codecov
               env: 
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
