@@ -4361,6 +4361,8 @@ __metadata:
 "rusty-motors@workspace:.":
   version: 0.0.0-use.local
   resolution: "rusty-motors@workspace:."
+  dependencies:
+    typescript: "npm:^5.3.3"
   languageName: unknown
   linkType: soft
 
