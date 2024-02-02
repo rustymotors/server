@@ -34,6 +34,7 @@ jobs:
               run: |
                   pip install --user pytest
                   pip install --user codecov-cli
+                  unset GITHUB_ACTIONS
                   codecovcli --verbose create-commit --fail-on-error 
                   codecovcli --verbose create-report --fail-on-error 
                   codecovcli --verbose do-upload --fail-on-error --flag database --name database-${{ matrix.node-version }}
