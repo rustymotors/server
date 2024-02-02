@@ -35,7 +35,7 @@ jobs:
                   pip install --user pytest
                   pip install --user codecov-cli
                   unset GITHUB_ACTIONS
-                  set REAL_SHA = $(git show --no-patch --format=%P)
+                  export REAL_SHA=$(git show --no-patch --format=%P)
                   codecovcli --verbose create-commit --fail-on-error  --sha $REAL_SHA
                   codecovcli --verbose create-report --fail-on-error  --sha $REAL_SHA
                   codecovcli --verbose do-upload --fail-on-error --flag database --name database-${{ matrix.node-version }} --sha $REAL_SHA
