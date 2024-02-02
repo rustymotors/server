@@ -36,17 +36,17 @@ jobs:
                   pip install --user codecov-cli
                   unset GITHUB_ACTIONS
                   export REAL_SHA=$(git show --no-patch --format=%P)
-                  codecovcli --verbose create-commit --fail-on-error --sha ${{REAL_SHA}}
-                  codecovcli --verbose create-report --fail-on-error --sha ${{REAL_SHA}}
-                  codecovcli --verbose do-upload --fail-on-error --flag database --name database-${{ matrix.node-version }} --sha ${{REAL_SHA}}
-                  codecovcli --verbose do-upload --fail-on-error --flag gateway --name gateway-${{ matrix.node-version }} --sha ${{REAL_SHA}}
-                  codecovcli --verbose do-upload --fail-on-error --flag lobby --name lobby-${{ matrix.node-version }} --sha ${{REAL_SHA}}
-                  codecovcli --verbose do-upload --fail-on-error --flag login --name login-${{ matrix.node-version }} --sha ${{REAL_SHA}}
-                  codecovcli --verbose do-upload --fail-on-error --flag patch --name patch-${{ matrix.node-version }} --sha ${{REAL_SHA}}
-                  codecovcli --verbose do-upload --fail-on-error --flag persona --name persona-${{ matrix.node-version }} --$sha {{REAL_SHA}}
-                  codecovcli --verbose do-upload --fail-on-error --flag shard --name shard-${{ matrix.node-version }} --sha ${{REAL_SHA}}
-                  codecovcli --verbose do-upload --fail-on-error --flag transactions --name transactions-${{ matrix.node-version }} --sha ${{REAL_SHA}}
-                  codecovcli --verbose do-upload --fail-on-error --flag core --name core-${{ matrix.node-version }} --sha ${{REAL_SHA}}
+                  codecovcli --verbose create-commit --fail-on-error --sha=$REAL_SHA
+                  codecovcli --verbose create-report --fail-on-error --sha=$REAL_SHA
+                  codecovcli --verbose do-upload --fail-on-error --flag database --name database-${{ matrix.node-version }} --sha=$REAL_SHA
+                  codecovcli --verbose do-upload --fail-on-error --flag gateway --name gateway-${{ matrix.node-version }} --sha=$REAL_SHA
+                  codecovcli --verbose do-upload --fail-on-error --flag lobby --name lobby-${{ matrix.node-version }} --sha=$REAL_SHA
+                  codecovcli --verbose do-upload --fail-on-error --flag login --name login-${{ matrix.node-version }} --sha=$REAL_SHA
+                  codecovcli --verbose do-upload --fail-on-error --flag patch --name patch-${{ matrix.node-version }} --sha=$REAL_SHA
+                  codecovcli --verbose do-upload --fail-on-error --flag persona --name persona-${{ matrix.node-version }} --sha=$REAL_SHA
+                  codecovcli --verbose do-upload --fail-on-error --flag shard --name shard-${{ matrix.node-version }} --sha=$REAL_SHA
+                  codecovcli --verbose do-upload --fail-on-error --flag transactions --name transactions-${{ matrix.node-version }} --sha=$REAL_SHA
+                  codecovcli --verbose do-upload --fail-on-error --flag core --name core-${{ matrix.node-version }} --sha=$REAL_SHA
 
             - uses: actions/upload-artifact@v4
               with:
