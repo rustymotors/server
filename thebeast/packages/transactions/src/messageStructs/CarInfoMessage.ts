@@ -19,25 +19,33 @@ export class CarInfoMessage extends SerializedBuffer {
     }
 
     override size() {
-        return 8 + this.vehicle.size() + 2 + this.parts.length * 24;
+        return 2 
+        + 4 
+        + this.vehicle.size() 
+        + 2 
+        + this.parts.length * Part.serializedSize();
     }
 
     override serialize(): Buffer {
-        const buffer = Buffer.alloc(this.size());
-        let offset = 0;
-        buffer.writeUInt16LE(this.msgNo, offset);
-        offset += 2;
-        buffer.writeUInt32LE(this.playerId, offset);
-        offset += 4;
-        this.vehicle.serialize().copy(buffer, offset);
-        offset += this.vehicle.size();
-        buffer.writeUInt16LE(this.noOfParts, offset);
-        offset += 2;
-        for (const part of this.parts) {
-            part.serialize().copy(buffer, offset);
-            offset += part.size();
+        try {
+            const buffer = Buffer.alloc(this.size());
+            let offset = 0;
+            buffer.writeUInt16LE(this.msgNo, offset);
+            offset += 2;
+            buffer.writeUInt32LE(this.playerId, offset);
+            offset += 4;
+            this.vehicle.serialize().copy(buffer, offset);
+            offset += this.vehicle.size();
+            buffer.writeUInt16LE(this.noOfParts, offset);
+            offset += 2;
+            for (const part of this.parts) {
+                part.serialize().copy(buffer, offset);
+                offset += part.size();
+            }
+            return buffer;
+        } catch (error) {
+            throw new Error(`Error in CarInfoMessage.serialize: ${error}`);
         }
-        return buffer;
     }
 
     public override toString(): string {
@@ -46,5 +54,13 @@ export class CarInfoMessage extends SerializedBuffer {
         vehicle: ${this.vehicle}
         noOfParts: ${this.noOfParts}
         parts: ${this.parts}`;
+    }
+
+    setVehicle(vehicle: Vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    setParts(parts: Part[]) {
+        this.parts = parts;
     }
 }

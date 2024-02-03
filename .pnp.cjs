@@ -832,6 +832,7 @@ const RAW_RUNTIME_STATE =
           ["fastify", "npm:4.26.0"],\
           ["jsdoc", "npm:4.0.2"],\
           ["moment", "npm:2.30.1"],\
+          ["pino", "npm:8.18.0"],\
           ["pino-pretty", "npm:10.3.1"],\
           ["prettier", "npm:3.1.1"],\
           ["prettier-eslint", "npm:16.2.0"],\
@@ -4576,6 +4577,24 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "../.yarn/berry/cache/pino-npm-8.17.2-64a1bee46e-10c0.zip/node_modules/pino/",\
         "packageDependencies": [\
           ["pino", "npm:8.17.2"],\
+          ["atomic-sleep", "npm:1.0.0"],\
+          ["fast-redact", "npm:3.3.0"],\
+          ["on-exit-leak-free", "npm:2.1.2"],\
+          ["pino-abstract-transport", "npm:1.1.0"],\
+          ["pino-std-serializers", "npm:6.2.2"],\
+          ["process-warning", "npm:3.0.0"],\
+          ["quick-format-unescaped", "npm:4.0.4"],\
+          ["real-require", "npm:0.2.0"],\
+          ["safe-stable-stringify", "npm:2.4.3"],\
+          ["sonic-boom", "npm:3.8.0"],\
+          ["thread-stream", "npm:2.4.1"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:8.18.0", {\
+        "packageLocation": "../.yarn/berry/cache/pino-npm-8.18.0-01b0f4a056-10c0.zip/node_modules/pino/",\
+        "packageDependencies": [\
+          ["pino", "npm:8.18.0"],\
           ["atomic-sleep", "npm:1.0.0"],\
           ["fast-redact", "npm:3.3.0"],\
           ["on-exit-leak-free", "npm:2.1.2"],\

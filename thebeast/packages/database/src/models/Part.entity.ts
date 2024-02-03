@@ -14,7 +14,7 @@ interface IPart {
     damage: number; // 1 byte
 }
 
-export type PartCreationAttributes = [];
+export type PartCreationAttributes = Optional<IPart, "partId">;
 
 export class Part extends Model<IPart, PartCreationAttributes> {
     declare partId: number;
@@ -28,19 +28,19 @@ export class Part extends Model<IPart, PartCreationAttributes> {
     declare damage: number;
 
     serialize(): Buffer {
-        const buffer = Buffer.alloc(24);
+        const buffer = Buffer.alloc(this.size());
         let offset = 0;
-        buffer.writeUInt32LE(this.partId, offset);
+        buffer.writeUInt32BE(this.partId, offset);
         offset += 4;
-        buffer.writeUInt32LE(this.parentPartId, offset);
+        buffer.writeUInt32BE(this.parentPartId, offset);
         offset += 4;
-        buffer.writeUInt32LE(this.brandedPartId, offset);
+        buffer.writeUInt32BE(this.brandedPartId, offset);
         offset += 4;
-        buffer.writeUInt32LE(this.repairPrice, offset);
+        buffer.writeUInt32BE(this.repairPrice, offset);
         offset += 4;
-        buffer.writeUInt32LE(this.junkPrice, offset);
+        buffer.writeUInt32BE(this.junkPrice, offset);
         offset += 4;
-        buffer.writeUInt32LE(this.wear, offset);
+        buffer.writeUInt32BE(this.wear, offset);
         offset += 4;
         buffer.writeUInt8(this.attachmentPoint, offset);
         offset += 1;
@@ -48,8 +48,12 @@ export class Part extends Model<IPart, PartCreationAttributes> {
         return buffer;
     }
 
+    static serializedSize(): number {
+        return 26;
+    }
+    
     size(): number {
-        return 24;
+        return 26;
     }
 }
 
@@ -62,7 +66,7 @@ Part.init(
         },
         parentPartId: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true
         },
         brandedPartId: {
             type: DataTypes.INTEGER,

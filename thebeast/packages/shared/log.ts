@@ -1,4 +1,4 @@
-import { Console } from "node:console";
+import * as P from "pino"
 
 type ServerLoggerLevels =
     | "fatal"
@@ -20,14 +20,25 @@ type ServerLoggerOptions = {
  */
 export class ServerLogger {
     level: string;
-    logger: Console;
-    static instance: ServerLogger | undefined;
+    logger: P.Logger;
+    static instance: ServerLogger;
     /**
      * Creates an instance of ServerLogger.
      * @param {ServerLoggerOptions} options
      */
     constructor(options: ServerLoggerOptions) {
-        this.logger = console;
+        this.logger = P.pino({
+            name: options.name,
+            level: options.level,
+            transport: {
+                target: "pino-pretty",
+                options: {
+                    colorize: true,
+                    ignore: "pid,hostname",
+                },
+            },
+
+        });
         ServerLogger.instance = this;
         this.level = options.level ?? "info";
     }
@@ -57,21 +68,21 @@ export class ServerLogger {
      * @param {string} message
      */
     info(message: string) {
-        this.logger.log(message);
+        this.logger.info(message);
     }
 
     /**
      * @param {string} message
      */
     debug(message: string) {
-        this.logger.log(message);
+        this.logger.debug(message);
     }
 
     /**
      * @param {string} message
      */
     trace(message: string) {
-        this.logger.log(message);
+        this.logger.trace(message);
     }
 }
 
@@ -86,7 +97,6 @@ export function getServerLogger(options: ServerLoggerOptions): ServerLogger {
     const moduleName = options.module ?? "core";
     if (typeof ServerLogger.instance === "undefined") {
         ServerLogger.instance = new ServerLogger({
-            name: "mcos",
             level: logLevel, // This isn't used by the logger, but it's used by the constructor
             module: moduleName,
         });

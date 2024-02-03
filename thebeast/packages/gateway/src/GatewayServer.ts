@@ -32,6 +32,7 @@ import {
     populateGameProfiles,
 } from "../../../lib/nps/services/profile.js";
 import { populateVehicles } from "../../../lib/nps/services/vehicle.js";
+import { populateParts } from "../../../lib/nps/services/part.js";
 
 /**
  * @module gateway
@@ -253,22 +254,9 @@ export class Gateway {
             });
         });
 
-        const envToLogger: Record<string, any> = {
-            development: {
-                transport: {
-                    target: "pino-pretty",
-                    options: {
-                        translateTime: "HH:MM:ss Z",
-                        ignore: "pid,hostname",
-                    },
-                },
-            },
-            production: true,
-            test: false,
-        };
 
         this.webServer = fastify({
-            logger: envToLogger[this.config.logLevel] ?? false,
+            logger: false,
         });
         this.webServer.register(FastifySensible);
 
@@ -282,6 +270,7 @@ export class Gateway {
         try {
             await populateGameUsers();
             await populateGameProfiles(gameProfiles);
+            await populateParts();
             await populateVehicles();
         } catch (error) {
             this.log.error("Error populating game users and profiles");

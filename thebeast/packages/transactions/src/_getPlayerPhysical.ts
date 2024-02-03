@@ -13,7 +13,7 @@ export async function _getPlayerPhysical({
 
     log.debug(`Received Message: ${getPlayerPhysicalMessage.toString()}`);
 
-    const playerId = getPlayerPhysicalMessage.data.readUInt32LE(0);
+    const playerId = getPlayerPhysicalMessage.data.readUInt32BE(0);
 
     const playerPhysicalMessage = new PlayerPhysicalMessage();
     playerPhysicalMessage._msgNo = 265;
