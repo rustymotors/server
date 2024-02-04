@@ -5,6 +5,7 @@ import { SocketCallback } from "../messageProcessors/index.js";
 import { getGameProfilesForCustomerId } from "../services/profile.js";
 import { NPSList } from "../messageStructs/NPSList.js";
 import { ProfileList } from "../messageStructs/ProfileList.js";
+import { log } from "../../../packages/shared/log.js";
 
 export async function processGetProfileMaps(
     connectionId: string,
@@ -16,11 +17,11 @@ export async function processGetProfileMaps(
     // with the correct version
     const requestMessage = GameMessage.fromGameMessage(257, message);
 
-    console.log(`GetProfileMaps (257): ${requestMessage.toString()}`);
+    log.info(`GetProfileMaps (257): ${requestMessage.toString()}`);
 
     const customerId = getDWord(requestMessage.getDataAsBuffer(), 0, false);
 
-    console.log(`GetProfileMaps: ${customerId}`);
+    log.info(`GetProfileMaps: ${customerId}`);
 
     // Look up the profiles for the customer ID
     const profiles = await getGameProfilesForCustomerId(customerId);
@@ -32,7 +33,7 @@ export async function processGetProfileMaps(
     if (profiles) {
         for (const profile of profiles) {
             // Log the profile
-            console.log(`GetProfileMaps: ${profile.toString()}`);
+            log.info(`GetProfileMaps: ${profile.toString()}`);
 
             list.addProfile(profile);
         }
@@ -44,17 +45,18 @@ export async function processGetProfileMaps(
         outMessage.header.setId(0x607);
 
         // Log the message data
-        console.log(`GetProfileMaps: ${getAsHex(outMessage.serialize())}`);
+        log.info(`GetProfileMaps: ${getAsHex(outMessage.serialize())}`);
 
         outMessage.setData(list);
 
         // Log the message
-        console.log(`GetProfileMaps: ${outMessage.toString()}`);
+        log.info(`GetProfileMaps: ${outMessage.toString()}`);
 
-        console.log("===========================================");
+        log.info("===========================================");
 
         socketCallback([outMessage.serialize()]);
     } catch (error) {
-        console.log(error);
+        log.info(error as string);
+        throw new Error("Error sending profile info");
     }
 }

@@ -74,7 +74,6 @@ export class Player extends Model<IPlayer, PlayerCreationAttributes> {
     declare residence: string;
 }
 
-
 Player.init(
     {
         playerId: {
@@ -181,5 +180,4 @@ Player.init(
         tableName: "players",
         modelName: "player",
     },
-
 );

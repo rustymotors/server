@@ -8,6 +8,7 @@ import { SocketCallback } from "./index.js";
 import { getGameProfilesForCustomerId } from "../services/profile.js";
 import { NPSList } from "../messageStructs/NPSList.js";
 import { ProfileList } from "../messageStructs/ProfileList.js";
+import { log } from "../../../packages/shared/log.js";
 
 export async function processFirstBuddy(
     connectionId: string,
@@ -16,7 +17,7 @@ export async function processFirstBuddy(
 ): Promise<void> {
     const profileId = getDWord(message.getDataAsBuffer(), 0, false);
 
-    console.log(`GetFirstBuddy profile: ${profileId}`);
+    log.info(`GetFirstBuddy profile: ${profileId}`);
 
     // Look up the profiles for the customer ID
     const profiles = getGameProfilesForCustomerId(profileId);
@@ -29,9 +30,9 @@ export async function processFirstBuddy(
     outMessage.setData(new SerializableData(4));
 
     // Log the message
-    console.log(`GetFirstBuddy: ${outMessage.toString()}`);
+    log.info(`GetFirstBuddy: ${outMessage.toString()}`);
 
-    console.log("===========================================");
+    log.info("===========================================");
 
     socketCallback([outMessage.serialize()]);
 }

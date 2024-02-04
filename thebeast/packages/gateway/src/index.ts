@@ -235,7 +235,7 @@ export function onSocketConnection({
     log.debug(`Client ${remoteAddress} connected to port ${localPort}`);
 
     if (localPort === 7003) {
-        console.log("Sending ok to login packet");
+        log.info("Sending ok to login packet");
 
         incomingSocket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
     }

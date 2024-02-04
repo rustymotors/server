@@ -1,4 +1,4 @@
-import * as P from "pino"
+import * as P from "pino";
 
 type ServerLoggerLevels =
     | "fatal"
@@ -27,18 +27,27 @@ export class ServerLogger {
      * @param {ServerLoggerOptions} options
      */
     constructor(options: ServerLoggerOptions) {
-        this.logger = P.pino({
-            name: options.name,
-            level: options.level,
-            transport: {
-                target: "pino-pretty",
-                options: {
-                    colorize: true,
-                    ignore: "pid,hostname",
+        this.logger = P.pino(
+            {
+                name: options.name,
+                level: options.level,
+                transport: {
+                    targets: [
+                        {
+                            target: "pino-pretty",
+                            options: {
+                                colorize: true,
+                                ignore: "pid,hostname",
+                            },
+                        },
+                    ],
                 },
             },
-
-        });
+            P.destination({
+                dest: "server.log",
+                sync: true,
+            }),
+        );
         ServerLogger.instance = this;
         this.level = options.level ?? "info";
     }
@@ -105,3 +114,5 @@ export function getServerLogger(options: ServerLoggerOptions): ServerLogger {
     const child = ServerLogger.instance;
     return child;
 }
+
+export const log = getServerLogger({ level: "info", module: "shared" });

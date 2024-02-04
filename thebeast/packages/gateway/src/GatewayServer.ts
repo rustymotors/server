@@ -174,7 +174,7 @@ export class Gateway {
         // Stop the GatewayServer
         await this.stop();
 
-        console.log("=== Restarting... ===");
+        this.log.info("=== Restarting... ===");
 
         // Start the GatewayServer
         await this.start();
@@ -254,7 +254,6 @@ export class Gateway {
             });
         });
 
-
         this.webServer = fastify({
             logger: false,
         });
@@ -286,11 +285,11 @@ export class Gateway {
     }
 
     help() {
-        console.log("=== Help ===");
-        console.log("x: Exit");
-        console.log("r: Restart");
-        console.log("?: Help");
-        console.log("============");
+        this.log.info("=== Help ===");
+        this.log.info("x: Exit");
+        this.log.info("r: Restart");
+        this.log.info("?: Help");
+        this.log.info("============");
     }
     run() {
         // Intentionally left blank

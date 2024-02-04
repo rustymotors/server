@@ -51,7 +51,7 @@ export class Part extends Model<IPart, PartCreationAttributes> {
     static serializedSize(): number {
         return 26;
     }
-    
+
     size(): number {
         return 26;
     }
@@ -66,7 +66,7 @@ Part.init(
         },
         parentPartId: {
             type: DataTypes.INTEGER,
-            allowNull: true
+            allowNull: true,
         },
         brandedPartId: {
             type: DataTypes.INTEGER,

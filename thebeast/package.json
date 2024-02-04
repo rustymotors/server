@@ -10,8 +10,7 @@
         "url": "git@github.com:drazisil/mcos.git"
     },
     "scripts": {
-        "pretest": "eslint --fix . && prettier --write .",
-        "test": "node --openssl-legacy-provider $(yarn bin vitest) run --coverage packages lib",
+        "test": "yarn tsc && eslint --fix . && prettier --write . && node --openssl-legacy-provider $(yarn bin vitest) run --coverage packages lib",
         "prod": "make prod_node",
         "prod:stop": "docker-compose stop",
         "release": "standard-version --sign",

@@ -6,6 +6,7 @@ import { GenericReplyMessage } from "../GenericReplyMessage.js";
 import { CarInfoMessage } from "../messageStructs/CarInfoMessage.js";
 import { Vehicle } from "../../../database/src/models/Vehicle.entity.js";
 import { Part } from "../../../database/src/models/Part.entity.js";
+import { getAllPartsforCar } from "../../../database/src/functions/getAllPartsforCar.js";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -36,20 +37,14 @@ export async function _getCompleteVehicleInfo({
 
         const partId = 109;
 
-        const parts = await Part.findOne({ where: { partId } });
-
-        if (!parts) {
-            log.error(`Part not found for partId: ${partId}`);
-            throw new Error(`Part not found for partId: ${partId}`);
-        }
+        const parts = await getAllPartsforCar(partId);
 
         const response = new CarInfoMessage();
         response.msgNo = 123; // Success
         response.playerId = 1;
         response.setVehicle(vehicle);
         response.noOfParts = 1;
-        response.setParts([parts]);
-
+        response.setParts(parts);
 
         const responsePacket = new OldServerMessage();
         responsePacket._header.sequence = packet._header.sequence;

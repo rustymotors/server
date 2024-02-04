@@ -19,11 +19,13 @@ export class CarInfoMessage extends SerializedBuffer {
     }
 
     override size() {
-        return 2 
-        + 4 
-        + this.vehicle.size() 
-        + 2 
-        + this.parts.length * Part.serializedSize();
+        return (
+            2 +
+            4 +
+            this.vehicle.size() +
+            2 +
+            this.parts.length * Part.serializedSize()
+        );
     }
 
     override serialize(): Buffer {

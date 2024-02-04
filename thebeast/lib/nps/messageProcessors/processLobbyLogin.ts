@@ -10,6 +10,7 @@ import {
 } from "../services/session.js";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { UserInfo } from "../messageStructs/UserInfo.js";
+import { log } from "../../../packages/shared/log.js";
 
 export async function processLobbyLogin(
     connectionId: string,
@@ -41,18 +42,18 @@ export async function processLobbyLogin(
     // Set the new session
     setUserSession(newSession);
 
-    console.log(`LobbyLogin: ${message.toString()}`);
+    log.info(`LobbyLogin: ${message.toString()}`);
 
     const response = new UserInfo(profileId, profileName);
 
-    console.log(`Sending response: ${response.toString()}`);
+    log.info(`Sending response: ${response.toString()}`);
 
     const responseMessage = new GameMessage(0);
     responseMessage.header.setId(0x120);
 
     responseMessage.setData(response);
 
-    console.log(`Response message: ${responseMessage.toString()}`);
+    log.info(`Response message: ${responseMessage.toString()}`);
 
     const responseBytes = responseMessage.serialize();
 

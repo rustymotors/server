@@ -7,13 +7,15 @@ export class UserInfo implements ISerializable {
 
     constructor(id: number, name: string) {
         if (name.length > 31) {
-            throw new Error(`Profile name too long: ${name}, max length is 31, got ${name.length}`);
+            throw new Error(
+                `Profile name too long: ${name}, max length is 31, got ${name.length}`,
+            );
         }
         this.profileId = id;
         this.profileName = name;
         this.userData = Buffer.alloc(64);
     }
-    
+
     serialize(): Buffer {
         const buffer = Buffer.alloc(this.getByteSize());
         let offset = 0;
@@ -21,7 +23,12 @@ export class UserInfo implements ISerializable {
         offset += 4;
         buffer.writeUInt16BE(this.profileName.length, offset);
         offset += 2;
-        buffer.write(`${this.profileName}\0`, offset, this.profileName.length + 1, "utf8");
+        buffer.write(
+            `${this.profileName}\0`,
+            offset,
+            this.profileName.length + 1,
+            "utf8",
+        );
         offset += this.profileName.length + 1;
         this.userData.copy(buffer, offset);
         return buffer;

@@ -10,6 +10,7 @@ import { SessionKey } from "../messageStructs/SessionKey.js";
 import { getAsHex, getLenString } from "../utils/pureGet.js";
 import { UserStatus } from "../messageStructs/UserStatus.js";
 import { UserAction } from "../messageStructs/UserAction.js";
+import { log } from "../../../packages/shared/log.js";
 
 export function loadPrivateKey(path: string): string {
     const privateKey = fs.readFileSync(path);
@@ -34,9 +35,7 @@ export function unpackUserLoginMessage(message: ISerializable): {
     gameId: string;
     contextToken: string;
 } {
-    console.log(
-        `Unpacking user login message: ${getAsHex(message.serialize())}`,
-    );
+    log.info(`Unpacking user login message: ${getAsHex(message.serialize())}`);
 
     // Get the context token
     const ticket = getLenString(message.serialize(), 0, false);
@@ -103,7 +102,7 @@ export async function processUserLogin(
         },
         async (span) => {
             // Log the message
-            console.log(`User login request: ${message.toString()}`);
+            log.info(`User login request: ${message.toString()}`);
 
             // Unpack the message
             try {
@@ -111,7 +110,7 @@ export async function processUserLogin(
                     unpackUserLoginMessage(message.getData());
 
                 // Log the context token
-                console.log(`Context token: ${contextToken}`);
+                log.info(`Context token: ${contextToken}`);
 
                 // Look up the customer id
                 const user = getToken(contextToken);
@@ -148,7 +147,7 @@ export async function processUserLogin(
                 }
 
                 // Log the user
-                console.log(`User: ${user.customerId}`);
+                log.info(`User: ${user.customerId}`);
 
                 // Create a new user session
                 const userSession = await createNewUserSession({
@@ -188,7 +187,7 @@ export async function processUserLogin(
                 userStatusMessage.setData(userStatus);
 
                 // Log the message
-                console.log(`UserStatus: ${userStatusMessage.toString()}`);
+                log.info(`UserStatus: ${userStatusMessage.toString()}`);
 
                 // Send the message
                 socketCallback([userStatusMessage.serialize()]);

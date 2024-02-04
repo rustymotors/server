@@ -12,6 +12,6 @@ export async function populateParts(): Promise<void> {
         junkPrice: 50,
         wear: 0,
         attachmentPoint: 0,
-        damage:0 // 1 byte
+        damage: 0, // 1 byte
     });
 }

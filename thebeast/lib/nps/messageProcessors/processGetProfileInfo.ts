@@ -5,6 +5,7 @@ import { SocketCallback } from "../messageProcessors/index.js";
 import { getGameProfilesForCustomerId } from "../services/profile.js";
 import { NPSList } from "../messageStructs/NPSList.js";
 import { ProfileList } from "../messageStructs/ProfileList.js";
+import { log } from "../../../packages/shared/log.js";
 
 export async function processGetProfileInfo(
     connectionId: string,
@@ -13,7 +14,7 @@ export async function processGetProfileInfo(
 ): Promise<void> {
     const customerId = getDWord(message.serialize(), 0, false);
 
-    console.log(`GetProfileInfo: ${customerId}`);
+    log.info(`GetProfileInfo: ${customerId}`);
 
     // Look up the profiles for the customer ID
     const profiles = await getGameProfilesForCustomerId(customerId);
@@ -28,7 +29,7 @@ export async function processGetProfileInfo(
         outMessage.header.setId(0x607);
         for (const profile of profiles) {
             // Log the profile
-            console.log(`GetProfileInfo: ${profile.toString()}`); // TODO: Remove this line
+            log.info(`GetProfileInfo: ${profile.toString()}`); // TODO: Remove this line
 
             list.addProfile(profile);
         }
@@ -39,17 +40,18 @@ export async function processGetProfileInfo(
     // Send the list back to the client
     try {
         // Log the message data
-        console.log(`GetProfileInfo: ${getAsHex(list.serialize())}`);
+        log.info(`GetProfileInfo: ${getAsHex(list.serialize())}`);
 
         outMessage.setData(list);
 
         // Log the message
-        console.log(`GetProfileInfo: ${outMessage.toString()}`);
+        log.info(`GetProfileInfo: ${outMessage.toString()}`);
 
-        console.log("===========================================");
+        log.info("===========================================");
 
         socketCallback([outMessage.serialize()]);
     } catch (error) {
-        console.log(error);
+        log.info(error as string);
+        throw new Error("Error sending profile info");
     }
 }

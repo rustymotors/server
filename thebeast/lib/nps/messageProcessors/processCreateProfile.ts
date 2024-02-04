@@ -3,6 +3,7 @@ import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SocketCallback } from "./index.js";
 import { getLenString, getNBytes } from "../utils/pureGet.js";
 import { GameProfile } from "../messageStructs/GameProfile.js";
+import { log } from "../../../packages/shared/log.js";
 
 export async function processCreateProfile(
     connectionId: string,
@@ -10,7 +11,7 @@ export async function processCreateProfile(
     socketCallback: SocketCallback,
 ): Promise<void> {
     // Log the request
-    console.log(`ProcessCreateProfile request: ${message.toString()}`);
+    log.info(`ProcessCreateProfile request: ${message.toString()}`);
 
     const createProfileMessage = GameProfile.fromBytes(
         message.getDataAsBuffer(),
@@ -18,7 +19,7 @@ export async function processCreateProfile(
     );
 
     // Log the request
-    console.log(
+    log.info(
         `ProcessCreateProfile request: ${createProfileMessage.toString()}`,
     );
 
@@ -31,7 +32,7 @@ export async function processCreateProfile(
     response.setData(message.getData());
 
     // Log the response
-    console.log(`ProcessCreateProfile response: ${response.toString()}`);
+    log.info(`ProcessCreateProfile response: ${response.toString()}`);
 
     socketCallback([response.serialize()]);
 }

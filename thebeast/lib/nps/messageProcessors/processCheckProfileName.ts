@@ -2,6 +2,7 @@ import { ISerializable, IMessageHeader, IMessage } from "../types.js";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SocketCallback } from "./index.js";
 import { getLenString, getNBytes } from "../utils/pureGet.js";
+import { log } from "../../../packages/shared/log.js";
 
 export async function processCheckProfileName(
     connectionId: string,
@@ -12,7 +13,7 @@ export async function processCheckProfileName(
 
     const requestedPersonaName = getLenString(message.serialize(), 12, false);
 
-    console.log(
+    log.info(
         `Requested persona name: ${requestedPersonaName} for customer ${customerId}`,
     );
 

@@ -6,13 +6,14 @@ import {
     getUserSessionByConnectionId,
     setUserSession,
 } from "../services/session.js";
+import { log } from "../../../packages/shared/log.js";
 
 export async function processPing(
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
-    console.log(`Ping: ${message.toString()}`);
+    log.info(`Ping: ${message.toString()}`);
 
     const response = new GameMessage(0);
     response.header.setId(0x207);

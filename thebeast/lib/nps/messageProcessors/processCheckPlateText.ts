@@ -6,6 +6,7 @@ import {
     getUserSessionByConnectionId,
     setUserSession,
 } from "../services/session.js";
+import { log } from "../../../packages/shared/log.js";
 
 export async function processCheckPlateText(
     connectionId: string,
@@ -16,9 +17,7 @@ export async function processCheckPlateText(
     const session = await getUserSessionByConnectionId(connectionId);
 
     if (session) {
-        console.log(
-            `Setting client version to debug for ${session.customerId}`,
-        );
+        log.info(`Setting client version to debug for ${session.customerId}`);
 
         session.clientVersion = "debug";
         setUserSession(session);
@@ -32,7 +31,7 @@ export async function processCheckPlateText(
         false,
     );
 
-    console.log(
+    log.info(
         `Requested plate text: ${requestedPlateText} for plate type ${plateType}`,
     );
 

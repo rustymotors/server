@@ -10,13 +10,14 @@ import {
     setEncryptionSession,
     setUserSession,
 } from "../services/session.js";
+import { log } from "../../../packages/shared/log.js";
 
 export async function processEncryptedGameCommand(
     connectionId: string,
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
-    console.log(`Attempting to decrypt message: ${message.toString()}`);
+    log.info(`Attempting to decrypt message: ${message.toString()}`);
 
     // Get the session
     const session = await getUserSessionByConnectionId(connectionId);
@@ -42,11 +43,12 @@ export async function processEncryptedGameCommand(
             setEncryptionSession(newSession);
             encryptionSession = newSession;
         } catch (error) {
-            console.log(error);
+            log.info(error as string);
+            throw new Error("Error creating encryption session");
         }
 
         // Log the encryption session
-        console.log(`Created encryption session for ${session.customerId}`);
+        log.info(`Created encryption session for ${session.customerId}`);
     }
 
     // Attempt to decrypt the message
@@ -58,16 +60,17 @@ export async function processEncryptedGameCommand(
         );
 
         // Log the decrypted bytes
-        console.log(`Decrypted bytes: ${getAsHex(decryptedbytes)}`);
+        log.info(`Decrypted bytes: ${getAsHex(decryptedbytes)}`);
 
         // Set the decrypted bytes as a new message
         const decryptedMessage = new GameMessage(0);
         decryptedMessage.deserialize(decryptedbytes);
 
         // Log the message
-        console.log(`EncryptedGameCommand: ${decryptedMessage.toString()}`);
+        log.info(`EncryptedGameCommand: ${decryptedMessage.toString()}`);
     } catch (error) {
-        console.log(error);
+        log.info(error as string);
+        throw new Error("Error decrypting message");
     }
 
     const response = new GameMessage(0);

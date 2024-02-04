@@ -9,6 +9,7 @@ import { SessionKey } from "../messageStructs/SessionKey.js";
 import { getLenString } from "../utils/pureGet.js";
 import { UserStatus } from "../messageStructs/UserStatus.js";
 import { UserAction } from "../messageStructs/UserAction.js";
+import { log } from "../../../packages/shared/log.js";
 
 export function loadPrivateKey(path: string): string {
     const privateKey = fs.readFileSync(path);
@@ -92,7 +93,7 @@ export async function processDeleteProfile(
     socketCallback: SocketCallback,
 ): Promise<void> {
     // Log the message
-    console.log(`Delete profile request: ${message.toString()}`);
+    log.info(`Delete profile request: ${message.toString()}`);
 
     // TODO: Delete the profile
 
