@@ -37,7 +37,6 @@ import {
     getGameMessageProcessor,
     getPortMessageType,
     GameMessage,
-    getWord,
 } from "../../../lib/nps/index.js";
 import { SocketCallback } from "../../../lib/nps/messageProcessors/index.js";
 import { getAsHex } from "../../../lib/nps/utils/pureGet.js";
@@ -48,7 +47,7 @@ import { getAsHex } from "../../../lib/nps/utils/pureGet.js";
  * @property {string} args.connectionId The connection id of the socket that
  *                                  received the data.
  * @property {module:packages/shared/RawMessage} args.message The data that was received.
- * @property {module:shared/log.ServerLogger} [args.log=getServerLogger({ module: "gateway" })] The logger to use.
+ * @property {module:shared/log.ServerLogger} args.log
  *                                                                    response
  *                                                                to the
  *                                                           data.
@@ -69,13 +68,11 @@ import { getAsHex } from "../../../lib/nps/utils/pureGet.js";
 export function socketErrorHandler({
     connectionId,
     error,
-    log = getServerLogger({
-        module: "socketErrorHandler",
-    }),
+    log,
 }: {
     connectionId: string;
     error: NodeJS.ErrnoException;
-    log?: ServerLogger;
+    log: ServerLogger;
 }) {
     // Handle socket errors
     if (error.code == "ECONNRESET") {
@@ -92,16 +89,14 @@ export function socketErrorHandler({
  *
  * @param {object} options
  * @param {string} options.connectionId The connection ID
- * @param {ServerLogger} [options.log=getServerLogger({ module: "socketEndHandler" })] The logger to use
+ * @param {ServerLogger} options.log The logger to use
  */
 export function socketEndHandler({
     connectionId,
-    log = getServerLogger({
-        module: "socketEndHandler",
-    }),
+    log,
 }: {
     connectionId: string;
-    log?: ServerLogger;
+    log: ServerLogger;
 }) {
     log.debug(`Connection ${connectionId} ended`);
 
@@ -114,17 +109,15 @@ export function socketEndHandler({
  *
  * @param {object} options
  * @param {module:net.Socket} options.incomingSocket The incoming socket
- * @param {ServerLogger} [options.log=getServerLogger({ module: "onDataHandler" })] The logger to use
+ * @param {ServerLogger} options.log The logger to use
  *
  */
 export function onSocketConnection({
     incomingSocket,
-    log = getServerLogger({
-        module: "onDataHandler",
-    }),
+    log,
 }: {
     incomingSocket: Socket;
-    log?: ServerLogger;
+    log: ServerLogger;
 }) {
     // Get the local port and remote address
     const { localPort, remoteAddress } = incomingSocket;
@@ -157,7 +150,7 @@ export function onSocketConnection({
     }
 
     incomingSocket.on("error", (error) =>
-        socketErrorHandler({ connectionId: connectionId, error }),
+        socketErrorHandler({ connectionId: connectionId, error, log }),
     );
 
     // Add the data handler to the socket
@@ -204,6 +197,7 @@ export function onSocketConnection({
         portOnDataHandler({
             connectionId: connectionId,
             message: rawMessage,
+            log,
         })
             .then(
                 (
@@ -261,7 +255,7 @@ function sendToSocket(
 export function processGameMessage(
     connectionId: string,
     message: GameMessage,
-    log = getServerLogger({ module: "processGameMessage" }),
+    log: ServerLogger,
     socketCallback: SocketCallback,
 ) {
     log.debug(`Processing game message...`);
@@ -286,7 +280,7 @@ export function processGameMessage(
 export function handleGameMessage(
     connectionId: string,
     bytes: Buffer,
-    log = getServerLogger({ module: "handleGameMessage" }),
+    log: ServerLogger,
     socketCallback: SocketCallback,
 ) {
     log.debug(`Handling game message...`);
@@ -324,7 +318,7 @@ export function handleGameMessage(
 export function handleServerMessage(
     connectionId: string,
     bytes: Buffer,
-    log = getServerLogger({ module: "handleServerMessage" }),
+    log: ServerLogger,
     socketCallback: SocketCallback,
 ) {
     log.debug(`Handling server message...`);

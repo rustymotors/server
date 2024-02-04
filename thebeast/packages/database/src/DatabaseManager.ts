@@ -26,13 +26,9 @@ export class Database {
     /**
      * Creates an instance of Database.
      *
-     * @param {ServerLogger} [log=getServerLogger({ module: "database" })]
+     * @param {ServerLogger} log
      */
-    constructor(
-        log: ServerLogger = getServerLogger({
-            module: "database",
-        }),
-    ) {
+    constructor(log: ServerLogger) {
         this._log = log;
         this._sessions = [];
         /**
@@ -145,20 +141,13 @@ export class Database {
 /**
  * Return the singleton instance of the DatabaseManager class
  *
- * @param {object} options
- * @param {ServerLogger} options.log=getServerLogger({ module: "database" })
+ * @param {ServerLogger} log
  * @returns {Database}
  */
 
-export function getDatabaseServer(
-    option = {
-        log: getServerLogger({
-            module: "database",
-        }),
-    },
-): Database {
+export function getDatabaseServer(log: ServerLogger): Database {
     if (!Database.instance) {
-        Database.instance = new Database(option.log);
+        Database.instance = new Database(log);
     }
-    return Database.getInstance(option.log);
+    return Database.getInstance(log);
 }

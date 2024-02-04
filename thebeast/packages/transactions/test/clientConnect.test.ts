@@ -17,7 +17,9 @@ describe("clientConnect", () => {
         const incomingMessage = new TClientConnectMessage();
         incomingMessage._customerId = customerId;
 
-        const log = getServerLogger({});
+        const log = getServerLogger({
+            level: "silent",
+        });
         const state: State = {
             encryptions: {},
             sessions: {},
@@ -27,7 +29,7 @@ describe("clientConnect", () => {
             onDataHandlers: {},
             save() {},
         };
-        getDatabaseServer().updateSessionKey(
+        getDatabaseServer(log).updateSessionKey(
             customerId,
             sessionKey,
             contextId,

@@ -9,13 +9,11 @@ import { BuddyCount, BuddyInfoMessage, BuddyList } from "./BuddyInfoMessage.js";
 export async function _getFirstBuddy({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "PersonaServer",
-    }),
+    log,
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: ServerLogger;
+    log: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

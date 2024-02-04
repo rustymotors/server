@@ -8,7 +8,9 @@ describe("LoginServer", () => {
         it("should create a new instance", () => {
             const loginServer = new LoginServer({
                 database: mockDatabaseManager(),
-                log: getServerLogger({}),
+                log: getServerLogger({
+                    level: "silent",
+                }),
             });
             expect(loginServer).toBeDefined();
         });

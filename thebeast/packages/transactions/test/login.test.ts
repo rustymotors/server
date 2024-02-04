@@ -11,7 +11,9 @@ describe("login", () => {
         const incomingMessage = new OldServerMessage();
         const imcommingBuffer = Buffer.from(JSON.stringify(incomingMessage));
         incomingMessage.setBuffer(imcommingBuffer);
-        const log = getServerLogger({});
+        const log = getServerLogger({
+            level: "silent",
+        });
         await populateVehicles();
 
         // act

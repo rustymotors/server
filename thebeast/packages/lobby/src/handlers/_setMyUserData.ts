@@ -7,13 +7,11 @@ import { getDatabaseServer } from "../../../database/src/DatabaseManager.js";
 export async function _setMyUserData({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "Lobby",
-    }),
+    log,
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: ServerLogger;
+    log: ServerLogger;
 }) {
     try {
         log.debug("Handling NPS_SET_MY_USER_DATA");
@@ -25,7 +23,7 @@ export async function _setMyUserData({
         log.debug(`User ID: ${incomingMessage._userId}`);
 
         // Get the database instance
-        const db = getDatabaseServer();
+        const db = getDatabaseServer(log);
 
         // Update the user's data
         db.updateUser({

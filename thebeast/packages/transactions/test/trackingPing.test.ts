@@ -8,7 +8,9 @@ describe("trackingPing", () => {
         // arrange
         const inboundMessage = new OldServerMessage();
 
-        const log = getServerLogger({});
+        const log = getServerLogger({
+            level: "silent",
+        });
 
         // act
         const { messages } = await trackingPing({

@@ -12,18 +12,16 @@ import { channelRecordSize, channels } from "./encryptedCommand.js";
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {ServerLogger} args.log
  */
 export async function handleSendMiniRiffList({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "Lobby",
-    }),
+    log,
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: ServerLogger;
+    log: ServerLogger;
 }) {
     log.debug("Handling NPS_SEND_MINI_RIFF_LIST");
     log.debug(`Received command: ${message._doSerialize().toString("hex")}`);

@@ -9,7 +9,7 @@ import {
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @param {ServerLogger} args.log
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBuffer[],
@@ -19,13 +19,11 @@ import {
 export async function _selectGamePersona({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "PersonaServer",
-    }),
+    log,
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: ServerLogger;
+    log: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

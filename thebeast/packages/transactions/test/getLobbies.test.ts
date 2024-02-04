@@ -8,7 +8,9 @@ describe("getLobbies", () => {
         // arrange
         const connectionId = "1";
         const packet = new OldServerMessage();
-        const log = getServerLogger({});
+        const log = getServerLogger({
+            level: "silent",
+        });
 
         // act
         const result = await getLobbies({

@@ -45,9 +45,7 @@ export function toHex(data: Buffer): string {
 export async function _npsRequestGameConnectServer({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "LoginServer",
-    }),
+    log,
 }: import("../../../interfaces/index.js").ServiceArgs): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
@@ -78,7 +76,7 @@ export async function _npsRequestGameConnectServer({
 
     if (!existingEncryption) {
         // Set the encryption keys on the lobby connection
-        const databaseManager = getDatabaseServer({ log });
+        const databaseManager = getDatabaseServer(log);
         const keys = await databaseManager
             .fetchSessionKeyByCustomerId(customerId)
             .catch((/** @type {unknown} */ error: unknown) => {

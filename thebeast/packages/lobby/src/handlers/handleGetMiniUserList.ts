@@ -15,19 +15,17 @@ user1._userName = "User 1";
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {ServerLogger} args.log
  */
 
 export async function handleGetMiniUserList({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "Lobby",
-    }),
+    log,
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: ServerLogger;
+    log: ServerLogger;
 }) {
     log.debug("Handling NPS_GET_MINI_USER_LIST");
     log.debug(`Received command: ${message._doSerialize().toString("hex")}`);

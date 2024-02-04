@@ -41,7 +41,7 @@ const userRecords: import("../../interfaces/index.js").UserRecordMini[] = [
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBuffer} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @param {ServerLogger} args.log
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBuffer[],
@@ -50,13 +50,11 @@ const userRecords: import("../../interfaces/index.js").UserRecordMini[] = [
 async function login({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "LoginServer",
-    }),
+    log,
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log?: ServerLogger;
+    log: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
@@ -99,7 +97,7 @@ async function login({
 
     // Save sessionkey in database under customerId
     log.debug("Preparing to update session key in db");
-    await getDatabaseServer()
+    await getDatabaseServer(log)
         .updateSessionKey(
             userRecord.customerId,
             sessionKey ?? "",
@@ -198,7 +196,7 @@ export const messageHandlers: {
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBuffer} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @param {ServerLogger} args.log
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBuffer[],
@@ -207,13 +205,11 @@ export const messageHandlers: {
 export async function handleLoginData({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "handleLoginData",
-    }),
+    log,
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log?: ServerLogger;
+    log: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

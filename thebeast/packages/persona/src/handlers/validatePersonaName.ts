@@ -12,13 +12,11 @@ import { RawMessage } from "../../../shared/src/RawMessage.js";
 export async function validatePersonaName({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "PersonaServer",
-    }),
+    log,
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: ServerLogger;
+    log: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

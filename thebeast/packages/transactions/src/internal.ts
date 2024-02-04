@@ -91,9 +91,7 @@ function _MSG_STRING(messageID: number): string {
 async function processInput({
     connectionId,
     packet,
-    log = getServerLogger({
-        module: "transactionServer",
-    }),
+    log,
 }: import("./handlers.js").MessageHandlerArgs): Promise<
     import("./handlers.js").MessageHandlerResult
 > {
@@ -131,7 +129,7 @@ async function processInput({
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBuffer} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ module: "transactionServer" })]
+ * @param {ServerLogger} args.log
  * @returns {Promise<{
  *     connectionId: string,
  *    messages: SerializedBuffer[]
@@ -140,13 +138,11 @@ async function processInput({
 export async function receiveTransactionsData({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "transactionServer",
-    }),
+    log,
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log?: ServerLogger;
+    log: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

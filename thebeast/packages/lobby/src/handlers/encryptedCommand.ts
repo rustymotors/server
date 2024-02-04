@@ -49,7 +49,7 @@ export const messageHandlers: {
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage | MessageBuffer} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {ServerLogger} args.log
  * @returns {Promise<{
  * connectionId: string,
  * message: LegacyMessage | MessageBuffer,
@@ -58,13 +58,11 @@ export const messageHandlers: {
 async function encryptCmd({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "Lobby",
-    }),
+    log,
 }: {
     connectionId: string;
     message: LegacyMessage | MessageBuffer;
-    log?: ServerLogger;
+    log: ServerLogger;
 }): Promise<{
     connectionId: string;
     message: LegacyMessage | MessageBuffer;
@@ -99,7 +97,7 @@ async function encryptCmd({
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {ServerLogger} args.log
  * @returns {Promise<{
  *  connectionId: string,
  * message: LegacyMessage,
@@ -108,13 +106,11 @@ async function encryptCmd({
 async function decryptCmd({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "Lobby",
-    }),
+    log,
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: ServerLogger;
+    log: ServerLogger;
 }): Promise<{
     connectionId: string;
     message: LegacyMessage;
@@ -180,7 +176,7 @@ const npsCommandHandlers: NpsCommandHandler[] = [
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {ServerLogger} args.log
  * @return {Promise<{
  * connectionId: string,
  * message: MessageBuffer | LegacyMessage,
@@ -189,13 +185,11 @@ const npsCommandHandlers: NpsCommandHandler[] = [
 async function handleCommand({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "Lobby",
-    }),
+    log,
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: ServerLogger;
+    log: ServerLogger;
 }): Promise<{
     connectionId: string;
     message: MessageBuffer | LegacyMessage;
@@ -230,7 +224,7 @@ async function handleCommand({
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBuffer} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ module: "Lobby" })]
+ * @param {ServerLogger} args.log
   * @returns {Promise<{
 *  connectionId: string,
 * messages: SerializedBuffer[],
@@ -240,13 +234,11 @@ async function handleCommand({
 export async function handleEncryptedNPSCommand({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "Lobby",
-    }),
+    log,
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log?: ServerLogger;
+    log: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

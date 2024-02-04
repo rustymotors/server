@@ -1,16 +1,19 @@
 import * as P from "pino";
+import { getServerConfiguration } from "./Configuration.js";
 
-type ServerLoggerLevels =
+const DEFAULT_LOG_LEVEL = "trace";
+
+export type ServerLoggerLevels =
     | "fatal"
     | "error"
     | "warn"
     | "info"
     | "debug"
-    | "trace";
+    | "trace"
+    | "silent";
 
 type ServerLoggerOptions = {
-    level?: ServerLoggerLevels;
-    module?: string;
+    level: ServerLoggerLevels;
     name?: string;
 };
 
@@ -19,37 +22,40 @@ type ServerLoggerOptions = {
  * @property {ServerLogger} instance
  */
 export class ServerLogger {
-    level: string;
     logger: P.Logger;
     static instance: ServerLogger;
     /**
      * Creates an instance of ServerLogger.
      * @param {ServerLoggerOptions} options
      */
-    constructor(options: ServerLoggerOptions) {
-        this.logger = P.pino(
-            {
-                name: options.name,
-                level: options.level,
-                transport: {
-                    targets: [
-                        {
-                            target: "pino-pretty",
-                            options: {
-                                colorize: true,
-                                ignore: "pid,hostname",
-                            },
+    constructor(options?: ServerLoggerOptions) {
+        const name = options?.name || "server";
+        const level = DEFAULT_LOG_LEVEL;
+        this.logger = P.pino({
+            name,
+            level,
+            transport: {
+                targets: [
+                    {
+                        target: "pino-pretty",
+                        options: {
+                            colorize: true,
+                            ignore: "pid,hostname",
                         },
-                    ],
-                },
+                        level: "trace",
+                    },
+                    {
+                        target: "pino/file",
+                        options: {
+                            destination: "server.log",
+                            append: false,
+                        },
+                        level: "trace",
+                    },
+                ],
             },
-            P.destination({
-                dest: "server.log",
-                sync: true,
-            }),
-        );
+        });
         ServerLogger.instance = this;
-        this.level = options.level ?? "info";
     }
 
     /**
@@ -101,18 +107,13 @@ export class ServerLogger {
  * @param {ServerLoggerOptions} options
  * @return {ServerLogger}
  */
-export function getServerLogger(options: ServerLoggerOptions): ServerLogger {
-    const logLevel = options.level ?? "info";
-    const moduleName = options.module ?? "core";
+export function getServerLogger(options?: ServerLoggerOptions): ServerLogger {
     if (typeof ServerLogger.instance === "undefined") {
-        ServerLogger.instance = new ServerLogger({
-            level: logLevel, // This isn't used by the logger, but it's used by the constructor
-            module: moduleName,
-        });
+        ServerLogger.instance = new ServerLogger(options);
     }
 
     const child = ServerLogger.instance;
     return child;
 }
 
-export const log = getServerLogger({ level: "info", module: "shared" });
+export const log = getServerLogger();

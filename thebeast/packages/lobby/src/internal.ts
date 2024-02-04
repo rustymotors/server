@@ -73,7 +73,7 @@ export const messageHandlers: {
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBuffer} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ module: "PersonaServer" })]
+ * @param {ServerLogger} args.log
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBuffer[],
@@ -83,13 +83,11 @@ export const messageHandlers: {
 export async function receiveLobbyData({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "Lobby",
-    }),
+    log,
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log?: ServerLogger;
+    log: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

@@ -5,13 +5,11 @@ import { SerializedBuffer } from "../../../shared/messageFactory.js";
 export async function handleTrackingPing({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "Lobby",
-    }),
+    log,
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log?: ServerLogger;
+    log: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

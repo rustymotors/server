@@ -113,6 +113,6 @@ export class PatchServer {
  * @returns {PatchServer}
  */
 
-export function getPatchServer(): PatchServer {
-    return PatchServer.getInstance(getServerLogger({ module: "PatchServer" }));
+export function getPatchServer(log: ServerLogger): PatchServer {
+    return PatchServer.getInstance(log);
 }

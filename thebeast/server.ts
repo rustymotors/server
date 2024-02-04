@@ -15,14 +15,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import Sentry from "@sentry/node";
-import { getServerLogger } from "./packages/shared/log.js";
+import { ServerLoggerLevels, getServerLogger } from "./packages/shared/log.js";
 import { verifyLegacyCipherSupport } from "./packages/gateway/src/encryption.js";
 import { getServerConfiguration } from "./packages/shared/Configuration.js";
 import { getGatewayServer } from "./packages/gateway/src/GatewayServer.js";
 import { exit } from "node:process";
 
 const coreLogger = getServerLogger({
-    module: "core",
+    level: "info",
 });
 
 try {
@@ -63,13 +63,9 @@ try {
         certificateFile: process.env["CERTIFICATE_FILE"],
         privateKeyFile: process.env["PRIVATE_KEY_FILE"],
         publicKeyFile: process.env["PUBLIC_KEY_FILE"],
-        logLevel: process.env["LOG_LEVEL"],
     });
 
-    const appLog = getServerLogger({
-        level: config.logLevel,
-        module: "app",
-    });
+    const appLog = getServerLogger();
 
     const listeningPortList: number[] = [
         6660, 7003, 8228, 8226, 8227, 9000, 9001, 9002, 9003, 9004, 9005, 9006,

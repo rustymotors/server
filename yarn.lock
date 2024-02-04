@@ -961,6 +961,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:^20.11.16":
+  version: 20.11.16
+  resolution: "@types/node@npm:20.11.16"
+  dependencies:
+    undici-types: "npm:~5.26.4"
+  checksum: 10c0/4886b90278e9c877a84efd3edd4667cd990e032d77268d2a798b99ebc1901ea336fa7dfbe9eaf4ad6ad1da9ce2ec31baf300038a3905838692362eb19904ebde
+  languageName: node
+  linkType: hard
+
 "@types/semver@npm:^7.5.0":
   version: 7.5.6
   resolution: "@types/semver@npm:7.5.6"
@@ -4384,6 +4393,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "rusty-motors@workspace:."
   dependencies:
+    "@types/node": "npm:^20.11.16"
     prettier: "npm:3.2.4"
     typescript: "npm:^5.3.3"
   languageName: unknown

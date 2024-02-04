@@ -182,7 +182,7 @@ interface OnDataHandlerArgs {
     args: {
         connectionId: string;
         message: SerializedBuffer;
-        log?: ServerLogger;
+        log: ServerLogger;
     };
 }
 /**

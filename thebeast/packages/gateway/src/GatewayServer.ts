@@ -40,7 +40,7 @@ import { populateParts } from "../../../lib/nps/services/part.js";
 
 type GatewayOptions = {
     config?: Configuration;
-    log?: ServerLogger;
+    log: ServerLogger;
     backlogAllowedCount?: number;
     listeningPortList?: number[];
     socketConnectionHandler?: ({
@@ -48,7 +48,7 @@ type GatewayOptions = {
         log,
     }: {
         incomingSocket: Socket;
-        log?: ServerLogger;
+        log: ServerLogger;
     }) => void;
 };
 
@@ -71,7 +71,7 @@ export class Gateway {
         log,
     }: {
         incomingSocket: Socket;
-        log?: ServerLogger;
+        log: ServerLogger;
     }) => void;
     static _instance: Gateway | undefined;
     webServer: import("fastify").FastifyInstance | undefined;
@@ -82,9 +82,7 @@ export class Gateway {
      */
     constructor({
         config = getServerConfiguration({}),
-        log = getServerLogger({
-            module: "GatewayServer",
-        }),
+        log,
         backlogAllowedCount = 0,
         listeningPortList = [],
         socketConnectionHandler = onSocketConnection,
@@ -303,9 +301,7 @@ export class Gateway {
      */
     static getInstance({
         config = undefined,
-        log = getServerLogger({
-            module: "GatewayServer",
-        }),
+        log,
         backlogAllowedCount = 0,
         listeningPortList = [],
         socketConnectionHandler = onSocketConnection,
@@ -342,15 +338,13 @@ Gateway._instance = undefined;
  */
 export function getGatewayServer({
     config,
-    log = getServerLogger({
-        module: "GatewayServer",
-    }),
+    log,
     backlogAllowedCount = 0,
     listeningPortList: listeningPortList = [],
     socketConnectionHandler = onSocketConnection,
 }: {
     config?: Configuration;
-    log?: ServerLogger;
+    log: ServerLogger;
     backlogAllowedCount?: number;
     listeningPortList?: number[];
     socketConnectionHandler?: ({
@@ -358,7 +352,7 @@ export function getGatewayServer({
         log,
     }: {
         incomingSocket: Socket;
-        log?: ServerLogger;
+        log: ServerLogger;
     }) => void;
 }): Gateway {
     return Gateway.getInstance({

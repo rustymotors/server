@@ -14,7 +14,9 @@ describe("_getPlayerRaceHistory", () => {
         const result = await _getPlayerRaceHistory({
             connectionId: "0",
             packet: incomingMessage,
-            log: getServerLogger({}),
+            log: getServerLogger({
+                level: "silent",
+            }),
         });
 
         expect(result).toBeDefined();

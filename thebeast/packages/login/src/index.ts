@@ -31,17 +31,15 @@ export class LoginServer {
      * Please use {@see LoginServer.getInstance} instead
      * @param {object} options
      * @param {import("../../interfaces/index.js").DatabaseManager} options.database
-     * @param {ServerLogger} [options.log=getServerLogger({ module: "LoginServer" })]
+     * @param {ServerLogger} options.log
      * @memberof LoginServer
      */
     constructor({
-        database = getDatabaseServer(),
-        log = getServerLogger({
-            module: "LoginServer",
-        }),
+        log,
+        database = getDatabaseServer(log),
     }: {
         database: import("../../interfaces/index.js").DatabaseManager;
-        log?: ServerLogger;
+        log: ServerLogger;
     }) {
         this.databaseManager = database;
         this._log = log;
@@ -131,20 +129,18 @@ LoginServer._instance = undefined;
  * @param {object} args
  * @param {string} args.connectionId
  * @param {NPSMessage} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @param {ServerLogger} args.log
  *
  * @return {Promise<import("../../shared/State.js").ServiceResponse>}
  */
 export async function receiveLoginData({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "LoginServer",
-    }),
+    log,
 }: {
     connectionId: string;
     message: NPSMessage;
-    log?: ServerLogger;
+    log: ServerLogger;
 }): Promise<import("../../shared/State.js").ServiceResponse> {
     try {
         log.debug("Entering login module");

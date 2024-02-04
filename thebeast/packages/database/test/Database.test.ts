@@ -5,7 +5,9 @@ import { describe, it, expect, vi } from "vitest";
 describe("Database", () => {
     it("returns the same instance", () => {
         // arrange
-        const log = getServerLogger({});
+        const log = getServerLogger({
+            level: "silent",
+        });
         // act
         const instance1 = Database.getInstance(log);
         const instance2 = Database.getInstance(log);
@@ -17,7 +19,9 @@ describe("Database", () => {
         it("throws when session key is not found", async () => {
             // arrange
 
-            const log = getServerLogger({});
+            const log = getServerLogger({
+                level: "silent",
+            });
             const instance = Database.getInstance(log);
             const customerId = 1234;
             // act
@@ -38,7 +42,9 @@ describe("Database", () => {
         it("throws when session key is not found", async () => {
             // arrange
 
-            const log = getServerLogger({});
+            const log = getServerLogger({
+                level: "silent",
+            });
             const instance = Database.getInstance(log);
             const connectionId = "1234";
             // act
@@ -59,7 +65,9 @@ describe("Database", () => {
         it("returns successfully when passed a valid user record", async () => {
             // arrange
 
-            const log = getServerLogger({});
+            const log = getServerLogger({
+                level: "silent",
+            });
             const instance = Database.getInstance(log);
             const userRecord = {
                 contextId: "1234",

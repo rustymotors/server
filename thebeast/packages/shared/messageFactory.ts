@@ -768,28 +768,10 @@ export class MessageBuffer extends SerializedBuffer {
      * @param {Buffer} buffer
      */
     set buffer(buffer: Buffer) {
-        // const log = getServerLogger({ module: "MessageBuffer" });
-        // log.level = getServerConfiguration({}).logLevel ?? "info";
-
         this._buffer = Buffer.alloc(buffer.length);
         this._buffer = buffer;
         this._header._messageLength = 4 + buffer.length;
-        // log.debug(`Message length: ${this._header._messageLength}`);
-        // log.debug(`Buffer length: ${this._buffer.length}`);
-        // Pad the buffer to a multiple of 8 bytes
-        // let extraBytes = 0;
-        // const x = (this._buffer.length + 4) % 8;
-        // extraBytes = 8 - x;
-        // log.debug(`Extra bytes: ${extraBytes}`);
-        // if (extraBytes !== 0) {
-        //     this._buffer = Buffer.concat([
-        //         this._buffer,
-        //         Buffer.alloc(extraBytes),
-        //     ]);
-        //     log.debug(`Buffer length: ${this._buffer.length}`);
         this._header._messageLength = this._buffer.length + 4;
-        // log.debug(`Message length: ${this._header._messageLength}`);
-        // }
     }
 
     /** @param {Buffer} buffer */

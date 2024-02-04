@@ -159,7 +159,7 @@ async function getPersonaMapsByCustomerId(
  * @param {object} args
  * @param {string} args.connectionId
  * @param {LegacyMessage} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ module: "LoginServer" })]
+ * @param {ServerLogger} args.log
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBuffer[],
@@ -168,11 +168,11 @@ async function getPersonaMapsByCustomerId(
 async function getPersonaMaps({
     connectionId,
     message,
-    log = getServerLogger({ module: "PersonaServer" }),
+    log,
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log?: ServerLogger;
+    log: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
@@ -263,7 +263,7 @@ async function getPersonaMaps({
  * @param {object} args
  * @param {string} args.connectionId
  * @param {SerializedBuffer} args.message
- * @param {ServerLogger} [args.log=getServerLogger({ module: "PersonaServer" })]
+ * @param {ServerLogger} args.log
  * @returns {Promise<{
  *  connectionId: string,
  * messages: SerializedBuffer[],
@@ -273,13 +273,11 @@ async function getPersonaMaps({
 export async function receivePersonaData({
     connectionId,
     message,
-    log = getServerLogger({
-        module: "PersonaServer",
-    }),
+    log,
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log?: ServerLogger;
+    log: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
