@@ -29,7 +29,7 @@
     "dependencies": {
         "@adminjs/sequelize": "^4.1.1",
         "@fastify/sensible": "^5.5.0",
-        "@sentry/node": "7.99",
+        "@sentry/node": "7.100",
         "@sentry/profiling-node": "^1.3.5",
         "adminjs": "^7.5.9",
         "fastify": "^4.26.0",
