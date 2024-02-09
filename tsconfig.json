@@ -13,5 +13,5 @@
         "skipLibCheck": true,
         "noEmit": true,
     },
-    "include": ["src", "test", "packages", "thebeast", "lib"]
+    "include": ["src", "test", "packages", "thebeast", "lib", "vite.config.ts"]
 }

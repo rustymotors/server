@@ -12,3 +12,4 @@ coverage
 !.yarn/sdks
 !.yarn/versions
 dist
+*junit.xml

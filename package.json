@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "This is a game server, being written from scratch, for a very old and long dead game. The owners of said game have shown no interest in bringing it back, but even so all names of their IP have been avoided to prevent issues.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "clear && yarn workspace @rusty-motors/thebeast start",
     "test": "clear && yarn workspace @rusty-motors/thebeast test"
@@ -21,6 +22,7 @@
   "devDependencies": {
     "@types/node": "^20.11.16",
     "prettier": "3.2.4",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.2"
   }
 }

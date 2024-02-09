@@ -4396,6 +4396,7 @@ __metadata:
     "@types/node": "npm:^20.11.16"
     prettier: "npm:3.2.4"
     typescript: "npm:^5.3.3"
+    vitest: "npm:^1.2.2"
   languageName: unknown
   linkType: soft
 
@@ -5283,7 +5284,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest@npm:^1.1.1":
+"vitest@npm:^1.1.1, vitest@npm:^1.2.2":
   version: 1.2.2
   resolution: "vitest@npm:1.2.2"
   dependencies:
