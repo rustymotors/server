@@ -4,7 +4,7 @@ import { sequelize } from "../services/database.js";
 
 interface IPart {
     partId: number; // 4 bytes
-    parentPartId: number; // 4 bytes
+    parentPartId: number | null; // 4 bytes
     brandedPartId: number; // 4 bytes
     name: string; // Not serialized
     repairPrice: number; // 4 bytes
@@ -29,27 +29,15 @@ export class Part extends Model<IPart, PartCreationAttributes> {
 
     serialize(): Buffer {
         const buffer = Buffer.alloc(this.size());
-        let offset = 0;
-        buffer.writeUInt32BE(this.partId, offset);
-        offset += 4;
-        buffer.writeUInt32BE(this.parentPartId, offset);
-        offset += 4;
-        buffer.writeUInt32BE(this.brandedPartId, offset);
-        offset += 4;
-        buffer.writeUInt32BE(this.repairPrice, offset);
-        offset += 4;
-        buffer.writeUInt32BE(this.junkPrice, offset);
-        offset += 4;
-        buffer.writeUInt32BE(this.wear, offset);
-        offset += 4;
-        buffer.writeUInt8(this.attachmentPoint, offset);
-        offset += 1;
-        buffer.writeUInt8(this.damage, offset);
+        buffer.writeInt32LE(this.partId, 0);
+        buffer.writeInt32LE(this.parentPartId, 4);
+        buffer.writeInt32LE(this.brandedPartId, 8);
+        buffer.writeInt32LE(this.repairPrice, 12);
+        buffer.writeInt32LE(this.junkPrice, 16);
+        buffer.writeInt32LE(this.wear, 20);
+        buffer.writeInt8(this.attachmentPoint, 24);
+        buffer.writeInt8(this.damage, 25);
         return buffer;
-    }
-
-    static serializedSize(): number {
-        return 26;
     }
 
     size(): number {
@@ -67,10 +55,18 @@ Part.init(
         parentPartId: {
             type: DataTypes.INTEGER,
             allowNull: true,
+            references: {
+                model: "Part",
+                key: "partId",
+            },
         },
         brandedPartId: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            references: {
+                model: "BrandedPart",
+                key: "brandedPartId",
+            },
         },
         name: {
             type: DataTypes.STRING,
@@ -91,6 +87,10 @@ Part.init(
         attachmentPoint: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            references: {
+                model: "AttachmentPoint",
+                key: "attachmentPointId",
+            },
         },
         damage: {
             type: DataTypes.INTEGER,
@@ -99,7 +99,7 @@ Part.init(
     },
     {
         sequelize,
-        tableName: "parts",
-        modelName: "part",
+        tableName: "Part",
+        modelName: "Part",
     },
 );

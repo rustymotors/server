@@ -4,7 +4,7 @@ import {
     Configuration,
     getServerConfiguration,
 } from "../../shared/Configuration.js";
-import { ServerLogger, getServerLogger } from "../../shared/log.js";
+import { ServerLogger, getServerLogger, log } from "../../shared/log.js";
 import fastify from "fastify";
 import {
     addOnDataHandler,
@@ -33,6 +33,12 @@ import {
 } from "../../../lib/nps/services/profile.js";
 import { populateVehicles } from "../../../lib/nps/services/vehicle.js";
 import { populateParts } from "../../../lib/nps/services/part.js";
+import { populateVehicleOwners } from "../../../lib/nps/services/vehicleOwner.js";
+import {
+    populateStockVehicles,
+    populateStockVehiclesAttribs,
+} from "../../../lib/nps/stockVehicle.js";
+import { populateBrandedParts } from "../../../lib/nps/brandedPart.js";
 
 /**
  * @module gateway
@@ -265,12 +271,16 @@ export class Gateway {
         state = addOnDataHandler(state, 43300, receiveTransactionsData);
 
         try {
+            log.debug("Populating game data");
+            await populateParts();
+            await populateStockVehiclesAttribs();
+            await populateStockVehicles();
+            await populateVehicles();
+            await populateVehicleOwners();
             await populateGameUsers();
             await populateGameProfiles(gameProfiles);
-            await populateParts();
-            await populateVehicles();
         } catch (error) {
-            this.log.error("Error populating game users and profiles");
+            this.log.error(`Error in populating game data: ${error}`);
             throw error;
         }
 

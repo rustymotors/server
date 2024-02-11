@@ -19,7 +19,7 @@ interface IPlayer {
     timesLoggedIn: number; // smallint
     numUnreadMessages: number; // smallint
     bankBalance: number; // int
-    numberOfCars: number; // smallint
+    numberOfCarsOwned: number; // smallint
     isLoggedOn: boolean; // tinyint
     driverStyle: number; // tinyint
     lpCode: number; // smallint
@@ -126,7 +126,7 @@ Player.init(
         bankBalance: {
             type: DataTypes.INTEGER,
         },
-        numberOfCars: {
+        numberOfCarsOwned: {
             type: DataTypes.SMALLINT,
         },
         isLoggedOn: {

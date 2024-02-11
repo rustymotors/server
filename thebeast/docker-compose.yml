@@ -9,60 +9,17 @@ services:
             - "80:80"
         extra_hosts:
             - "host.docker.internal:host-gateway"
-#   db:
-#     image: postgres:14.6
-#     ports:
-#       - "5432:5432"
-#       # TODO: #1182 remove before prod https://github.com/drazisil/mco-server/issues/1008
-#     environment:
-#       POSTGRES_PASSWORD: "password"
-#       POSTGRES_DB: "mcos"
-#   pgadmin:
-#     image: dpage/pgadmin4:6.18
-#     # TODO: #1182 remove these before prod https://github.com/drazisil/mco-server/issues/1008
-#     environment:
-#       PGADMIN_DEFAULT_EMAIL: "admin@pgadmin.com"
-#       PGADMIN_DEFAULT_PASSWORD: "password"
-#       PGADMIN_LISTEN_PORT: "80"
-#       POSTGRES_DB: "mcos"
-#     ports:
-#       - "15432:80"
-#     volumes:
-#       - pgadmin:/var/lib/pgadmin
-#     depends_on:
-#       - db
+    db:
+        image: mysql
+        # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#upgrade-caching-sha2-password
+        # (this is just an example, not intended to be a production configuration)
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: example
 
-# node:
-#   image: "node:19"
-#   user: "node"
-#   working_dir: /home/node/app
-#   volumes:
-#     - ./:/home/node/app
-#   environment:
-#     - DEBUG=mcos:*
-#     # TODO: #1182 remove before prod https://github.com/drazisil/mco-server/issues/1008
-#     - CONNECTION_URL=postgresql://postgres:password@db:5432/mcos
-#     - EXTERNAL_HOST=10.10.5.20
-#     - PRIVATE_KEY_FILE=data/private_key.pem
-#     - PUBLIC_KEY_FILE=data/pub.key
-#     - CERTIFICATE_FILE=data/mcouniverse.crt
-#     - LOG_LEVEL=debug
-#   command: "make docker-init"
-#   ports:
-#     - "80:80"
-#     - "6660:6660"
-#     - "8228:8228"
-#     - "8226:8226"
-#     - "7003:7003"
-#     - "8227:8227"
-#     - "43200:43200"
-#     - "43300:43300"
-#     - "43400:43400"
-#     - "53303:53303"
-#     - "9000-9014:9000-9014"
-#   # restart: always
-#   depends_on:
-#     - db
-
-# volumes:
-#   pgadmin:
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+            - 8080:8080

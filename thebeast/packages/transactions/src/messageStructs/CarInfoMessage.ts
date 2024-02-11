@@ -24,7 +24,7 @@ export class CarInfoMessage extends SerializedBuffer {
             4 +
             this.vehicle.size() +
             2 +
-            this.parts.length * Part.serializedSize()
+            this.parts.length * (this.parts[0].size() ?? 0)
         );
     }
 

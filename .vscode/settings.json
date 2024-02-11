@@ -7,5 +7,6 @@
   },
   "typescript.tsdk": ".yarn/sdks/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "prettier.prettierPath": ".yarn/sdks/prettier/index.cjs"
+  "prettier.prettierPath": ".yarn/sdks/prettier/index.cjs",
+  "C_Cpp.errorSquiggles": "enabled"
 }
