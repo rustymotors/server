@@ -29,8 +29,8 @@
     "dependencies": {
         "@adminjs/sequelize": "^4.1.1",
         "@fastify/sensible": "^5.5.0",
-        "@sentry/node": "7.100",
-        "@sentry/profiling-node": "^7.100.1",
+        "@sentry/node": "7.101",
+        "@sentry/profiling-node": "^7.101.1",
         "adminjs": "^7.5.10",
         "fastify": "^4.26.1",
         "moment": "^2.30.1",
