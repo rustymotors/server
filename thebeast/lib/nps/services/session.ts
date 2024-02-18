@@ -1,4 +1,4 @@
-import { Cipher, Decipher, createCipheriv } from "node:crypto";
+import { Cipher, Decipher, createCipheriv, createDecipheriv } from "node:crypto";
 
 export type ClientVersion = "debug" | "release" | "unknown";
 
@@ -47,12 +47,13 @@ export async function newEncryptionSession({
         Buffer.from(sessionKey, "hex"),
         Buffer.alloc(8),
     );
-    const gameDecipher = createCipheriv(
+    gameCipher.setAutoPadding(false);
+    const gameDecipher = createDecipheriv(
         "des-cbc",
         Buffer.from(sessionKey, "hex"),
         Buffer.alloc(8),
     );
-
+    gameDecipher.setAutoPadding(false);
     const encryptionSession = {
         connectionId,
         customerId,
