@@ -31,14 +31,6 @@ import {
     gameProfiles,
     populateGameProfiles,
 } from "../../../lib/nps/services/profile.js";
-import { populateVehicles } from "../../../lib/nps/services/vehicle.js";
-import { populateParts } from "../../../lib/nps/services/part.js";
-import { populateVehicleOwners } from "../../../lib/nps/services/vehicleOwner.js";
-import {
-    populateStockVehicles,
-    populateStockVehiclesAttribs,
-} from "../../../lib/nps/stockVehicle.js";
-import { populateBrandedParts } from "../../../lib/nps/brandedPart.js";
 
 /**
  * @module gateway
@@ -272,11 +264,11 @@ export class Gateway {
 
         try {
             log.debug("Populating game data");
-            await populateParts();
-            await populateStockVehiclesAttribs();
-            await populateStockVehicles();
-            await populateVehicles();
-            await populateVehicleOwners();
+            // await populateParts();
+            // await populateStockVehiclesAttribs();
+            // await populateStockVehicles();
+            // await populateVehicles();
+            // await populateVehicleOwners();
             await populateGameUsers();
             await populateGameProfiles(gameProfiles);
         } catch (error) {

@@ -13,3 +13,4 @@ coverage
 !.yarn/versions
 dist
 *junit.xml
+rm.session.sql

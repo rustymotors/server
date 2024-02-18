@@ -20,9 +20,13 @@
   ],
   "packageManager": "yarn@4.1.0",
   "devDependencies": {
+    "@slonik/migrator": "^0.12.0",
     "@types/node": "^20.11.16",
     "prettier": "3.2.4",
     "typescript": "^5.3.3",
     "vitest": "^1.2.2"
+  },
+  "dependencies": {
+    "slonik": "29"
   }
 }

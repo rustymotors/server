@@ -71,6 +71,10 @@ export class CarNumberSet {
     }
 }
 
+enum PlateType {
+    PLATE_USA_NEWYORK = 32,
+}
+
 export class PlayerOptionsMessage extends OldServerMessage {
     private plateType: number; // 2 bytes
     private plateText: string; // 8 bytes

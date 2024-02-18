@@ -7,7 +7,7 @@ const vehicleList = [
     {
         personId: 1,
         vehicleId: 1,
-        brandedPartId: 130,
+        brandedPartId: 113,
     },
 ];
 

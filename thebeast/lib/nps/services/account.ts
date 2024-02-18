@@ -1,17 +1,16 @@
-import { sequelize } from "../../../packages/database/src/services/database.js";
-import { GameUser } from "../../../packages/database/src/models/GameUser.entity.js";
-
 export type User = {
     username: string;
     password: string;
     customerId: number;
+    createdAt: Date;
+    updatedAt: Date;
 };
 
-export async function populateGameUsers(): Promise<void> {
-    await GameUser.sync();
+const users: User[] = [];
 
+export async function populateGameUsers(): Promise<void> {
     // Create the default admin user
-    await GameUser.upsert({
+    users.push({
         username: "admin",
         password: "admin",
         customerId: 1,
@@ -20,7 +19,7 @@ export async function populateGameUsers(): Promise<void> {
     });
 
     // Create the default molly user
-    await GameUser.upsert({
+    users.push({
         username: "molly",
         password: "molly",
         customerId: 2,
@@ -29,16 +28,12 @@ export async function populateGameUsers(): Promise<void> {
     });
 }
 
-export async function getUser(username: string): Promise<GameUser | null> {
-    return await GameUser.findOne({
-        where: {
-            username: username,
-        },
-    });
+export async function getUser(username: string): Promise<User | undefined> {
+    return users.find((user) => user.username === username);
 }
 
 export async function addUser(user: User): Promise<void> {
-    await GameUser.upsert({
+    users.push({
         username: user.username,
         password: user.password,
         customerId: user.customerId,
@@ -48,11 +43,8 @@ export async function addUser(user: User): Promise<void> {
 }
 
 export async function deleteUser(username: string): Promise<void> {
-    await GameUser.destroy({
-        where: {
-            username: username,
-        },
-    });
+    const index = users.findIndex((user) => user.username === username);
+    users.splice(index, 1);
 }
 
 export async function getCustomerId(

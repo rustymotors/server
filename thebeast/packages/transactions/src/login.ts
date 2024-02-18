@@ -1,10 +1,12 @@
-import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { LoginCompleteMessage, TLoginMessage } from "./TLoginMessage.js";
 import { OldServerMessage } from "../../shared/messageFactory.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
-import { VehicleModel } from "./models/VehicleModel.js";
-import { createVehicle } from "./services/car.js";
-import { Vehicle } from "../../database/src/models/Vehicle.entity.js";
+import { createNewCar } from "../../database/src/services/admin.js";
+import {
+    buildVehiclePartTree,
+    saveVehicle,
+    saveVehiclePartTree,
+} from "../../database/src/models/VehiclePartTree.js";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -22,8 +24,35 @@ export async function login({
 
     // Is this a new login?
     if (loginMessage._brandedPartId !== 0) {
-        // TODO: Create a new car
-        log.warn("TODO: Create a new car");
+        try {
+            const personaId = loginMessage._personaId;
+            const lotOwnerId = loginMessage._lotOwnerId;
+            const brandedPartId = loginMessage._brandedPartId;
+            const skinId = loginMessage._skinId;
+
+            log.debug(
+                `Creating new car for persona ${personaId} with brandedPartId ${brandedPartId} and skinId ${skinId} from lotOwnerId ${lotOwnerId}...`,
+            );
+
+            // Create new car
+            const newCarPartTree = await buildVehiclePartTree({
+                brandedPartId,
+                skinId,
+                ownerID: 1, // personaId,
+                isStock: true,
+            });
+            await saveVehicle(newCarPartTree);
+            await saveVehiclePartTree(newCarPartTree);
+
+            const newCarOwnerId = newCarPartTree.vehicleId;
+
+            log.debug(
+                `Created new car with id ${newCarOwnerId} for persona ${personaId}`,
+            );
+        } catch (error) {
+            log.error(`Error creating new car: ${error}`);
+            throw error;
+        }
     }
 
     // Create new response packet

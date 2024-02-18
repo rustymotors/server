@@ -89,7 +89,7 @@ export async function addWebRoutes(
         const user = await getUser(username);
 
         // If the user doesn't exist, return an error
-        if (user === null) {
+        if (typeof user === "undefined") {
             return reply.send(
                 "reasoncode=INV-200\nreasontext=Opps~\nreasonurl=https://www.winehq.com",
             );

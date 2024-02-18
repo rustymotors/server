@@ -1,19 +1,22 @@
-import { Part } from "../../../database/src/models/Part.entity.js";
-import { Vehicle } from "../../../database/src/models/Vehicle.entity.js";
+import { Vehicle } from "../../../../lib/nps/services/types.js";
 import { SerializedBuffer } from "../../../shared/messageFactory.js";
+import {
+    PartStruct,
+    VehicleStruct,
+} from "../messageHandlers/_getCompleteVehicleInfo.js";
 
 export class CarInfoMessage extends SerializedBuffer {
     msgNo: number; // 2 bytes
     playerId: number; // 4 bytes
-    private vehicle: Vehicle;
+    private vehicle: VehicleStruct;
     noOfParts: number; // 2
-    private parts: Part[];
+    private parts: PartStruct[];
 
     constructor() {
         super();
         this.msgNo = 0;
         this.playerId = 0;
-        this.vehicle = new Vehicle();
+        this.vehicle = new VehicleStruct();
         this.noOfParts = 0;
         this.parts = [];
     }
@@ -58,11 +61,11 @@ export class CarInfoMessage extends SerializedBuffer {
         parts: ${this.parts}`;
     }
 
-    setVehicle(vehicle: Vehicle) {
+    setVehicle(vehicle: VehicleStruct) {
         this.vehicle = vehicle;
     }
 
-    setParts(parts: Part[]) {
+    setParts(parts: PartStruct[]) {
         this.parts = parts;
     }
 }
