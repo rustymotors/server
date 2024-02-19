@@ -1,4 +1,9 @@
-import { Cipher, Decipher, createCipheriv, createDecipheriv } from "node:crypto";
+import {
+    Cipher,
+    Decipher,
+    createCipheriv,
+    createDecipheriv,
+} from "node:crypto";
 
 export type ClientVersion = "debug" | "release" | "unknown";
 

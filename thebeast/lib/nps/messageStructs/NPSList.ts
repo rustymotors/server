@@ -1,4 +1,4 @@
-import { ISerializable, IMessageHeader, IMessage } from "../types.js";
+import { ISerializable, IMessage } from "../types.js";
 
 export class NPSList implements ISerializable {
     serialize(): Buffer {

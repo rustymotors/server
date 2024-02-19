@@ -228,7 +228,6 @@ export async function saveVehiclePartTree(
 
         // Save the vehicle part tree in the cache
         setVehiclePartTree(vehiclePartTree.vehicleId, vehiclePartTree);
-
     } catch (error) {
         log.error(`Error saving vehicle part tree: ${error}`);
         throw error;
@@ -307,8 +306,9 @@ export async function buildVehiclePartTreeFromDB(
     log.debug(`level1PartsIds: ${level1PartsIds}`);
 
     for (const part of level1Parts) {
-
-        log.debug(`Adding part: ${JSON.stringify(part)} to vehicle part tree level 1`);
+        log.debug(
+            `Adding part: ${JSON.stringify(part)} to vehicle part tree level 1`,
+        );
 
         const newPart: TPart = {
             partId: part.partid,
@@ -365,7 +365,6 @@ export async function buildVehiclePartTreeFromDB(
 
     return vehiclePartTree;
 }
-    
 
 export async function buildVehiclePartTree({
     brandedPartId,

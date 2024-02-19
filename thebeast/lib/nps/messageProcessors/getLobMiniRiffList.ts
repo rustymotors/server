@@ -1,0 +1,23 @@
+import { log } from "../../../packages/shared/log.js";
+import { GameMessage } from "../messageStructs/GameMessage.js";
+import { MiniRiffInfo, MiniRiffList } from "../messageStructs/MiniRiffList.js";
+import { getAsHex } from "../utils/pureGet.js";
+
+// Command id: 0x30c
+export async function getLobMiniRiffList(
+    commandId: number,
+    data: Buffer,
+): Promise<Buffer> {
+    log.info(`Processing getLobMiniRiffList command: ${getAsHex(data)}`);
+
+    const riffList = new MiniRiffList();
+
+    riffList.addRiff(new MiniRiffInfo("Channel 0", 0, 1));
+    riffList.addRiff(new MiniRiffInfo("MCCHAT", 191, 1));
+
+        const responseMessage = new GameMessage(0);
+        responseMessage.header.setId(0x404);
+        responseMessage.setData(riffList);
+
+    return responseMessage.serialize();
+}

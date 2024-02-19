@@ -1,5 +1,8 @@
 import { ISerializable, IMessageHeader, IMessage } from "../types.js";
-import { GameMessage } from "../messageStructs/GameMessage.js";
+import {
+    GameMessage,
+    SerializableData,
+} from "../messageStructs/GameMessage.js";
 import { SocketCallback } from "./index.js";
 import { getAsHex, getLenString } from "../utils/pureGet.js";
 import {
@@ -11,6 +14,7 @@ import {
     setUserSession,
 } from "../services/session.js";
 import { log } from "../../../packages/shared/log.js";
+import { lobbyCommandMap } from "./lobbyCommands.js";
 
 export async function processEncryptedGameCommand(
     connectionId: string,
@@ -52,31 +56,53 @@ export async function processEncryptedGameCommand(
     }
 
     // Attempt to decrypt the message
-    try {
-        // Decrypt the message
-        // @ts-ignore - We know this is defined
-        const decryptedbytes = encryptionSession.gameDecipher.update(
-            message.getDataAsBuffer(),
+    const decryptedbytes = encryptionSession.gameDecipher.update(
+        message.getDataAsBuffer(),
+    );
+
+    // Log the decrypted bytes
+    log.info(`Decrypted bytes: ${getAsHex(decryptedbytes)}`);
+
+    // Set the decrypted bytes as a new message
+    const decryptedMessage = new GameMessage(0);
+    decryptedMessage.deserialize(decryptedbytes);
+
+    // Log the decrypted message id
+    log.info(`Decrypted message ID: ${decryptedMessage.header.getId()}`);
+
+    // Do we have a valid message processor?
+    const processor = lobbyCommandMap.get(decryptedMessage.header.getId());
+
+    if (typeof processor === "undefined") {
+        log.error(
+            `No processor found for message ID: ${decryptedMessage.header.getId()}`,
         );
-
-        // Log the decrypted bytes
-        log.info(`Decrypted bytes: ${getAsHex(decryptedbytes)}`);
-
-        // Set the decrypted bytes as a new message
-        const decryptedMessage = new GameMessage(0);
-        decryptedMessage.deserialize(decryptedbytes);
-
-        // Log the message
-        log.info(`EncryptedGameCommand: ${decryptedMessage.toString()}`);
-    } catch (error) {
-        log.info(error as string);
-        throw new Error("Error decrypting message");
+        throw new Error(
+            `No processor found for message ID: ${decryptedMessage.header.getId()}`,
+        );
     }
 
-    const response = new GameMessage(0);
-    response.header.setId(0x207);
+    // Process the message
+    const response = await processor(
+        decryptedMessage.header.getId(),
+        decryptedMessage.getDataAsBuffer(),
+    );
 
-    const responseBytes = response.serialize();
+    // Log the response
+    log.info(`Response: ${response.length} bytes, ${getAsHex(response)}`);
+
+    // Encrypt the response
+    const encryptedResponse = encryptionSession.gameCipher.update(response);
+
+    const responsePacket = new GameMessage(0);
+    responsePacket.header.setId(0x1101);
+
+    const responseData = new SerializableData(encryptedResponse.length);
+    responseData.deserialize(encryptedResponse);
+
+    responsePacket.setData(responseData);
+
+    const responseBytes = responsePacket.serialize();
 
     socketCallback([responseBytes]);
 }

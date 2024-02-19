@@ -12,7 +12,10 @@ import {
 } from "../../../database/src/services/database.js";
 import { getVehiclePartTree } from "../../../database/src/cache.js";
 import { TPart } from "../../../database/src/models/Part.js";
-import { buildVehiclePartTree, buildVehiclePartTreeFromDB } from "../../../database/src/models/VehiclePartTree.js";
+import {
+    buildVehiclePartTree,
+    buildVehiclePartTreeFromDB,
+} from "../../../database/src/models/VehiclePartTree.js";
 
 const DAMAGE_SIZE = 2000;
 
@@ -56,7 +59,7 @@ export class VehicleStruct {
         CarClass: ${this.CarClass}
         Damage: ${this.Damage.toString("hex")}
         `;
-    };        
+    }
 }
 
 export class PartStruct {
@@ -218,15 +221,21 @@ export async function _getCompleteVehicleInfo({
         let vehicleFromCache = await getVehiclePartTree(vehicleId);
 
         if (typeof vehicleFromCache === "undefined") {
-            log.debug(`Vehicle with id ${vehicleId} not found in cache, fetching from DB`);
+            log.debug(
+                `Vehicle with id ${vehicleId} not found in cache, fetching from DB`,
+            );
             vehicleFromCache = await buildVehiclePartTreeFromDB(vehicleId);
         }
 
         if (typeof vehicleFromCache === "undefined") {
-            throw new Error(`Vehicle with id ${vehicleId} not found and not in DB`);
+            throw new Error(
+                `Vehicle with id ${vehicleId} not found and not in DB`,
+            );
         }
 
-        log.debug(`Vehicle part tree successfully fetched: ${vehicleFromCache}`);
+        log.debug(
+            `Vehicle part tree successfully fetched: ${vehicleFromCache}`,
+        );
 
         carInfo.msgNo = 123;
         carInfo.playerId = 1;
@@ -237,7 +246,8 @@ export async function _getCompleteVehicleInfo({
         vehicleStruct.Flags = vehicleFromCache.flags;
         vehicleStruct.Delta = 0;
         vehicleStruct.CarClass = vehicleFromCache.class;
-        const damageInfo = vehicleFromCache.damageInfo ?? Buffer.alloc(DAMAGE_SIZE);
+        const damageInfo =
+            vehicleFromCache.damageInfo ?? Buffer.alloc(DAMAGE_SIZE);
         vehicleStruct.Damage = damageInfo;
 
         log.debug(`VehicleStruct: ${vehicleStruct}`);
@@ -251,7 +261,7 @@ export async function _getCompleteVehicleInfo({
         );
 
         carInfo.noOfParts = tmpParts.length;
-        
+
         for (const part of tmpParts) {
             const partStruct = new PartStruct();
             partStruct.partId = part.partId;
