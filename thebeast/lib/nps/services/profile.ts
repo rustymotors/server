@@ -12,7 +12,7 @@ export async function populateGameProfiles(
     profile1.createStamp = 0;
     profile1.lastLoginStamp = 0;
     profile1.numberGames = 0;
-    profile1.profileId = 1;
+    profile1.profileId = 1000;
     profile1.isOnline = false;
     profile1.gamePurchaseStamp = 0;
     profile1.gameSerialNumber = "";

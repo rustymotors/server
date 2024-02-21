@@ -12,8 +12,7 @@ export async function getLobMiniUserList(
 
     const miniUserList = new MiniUserList(0);
 
-    miniUserList.addChannelUser(new MiniUserInfo(0, "TestUser1"));
-    miniUserList.addChannelUser(new MiniUserInfo(1, "TestUser2"));
+    miniUserList.addChannelUser(new MiniUserInfo(1000, "Molly"));
 
     const responseMessage = new GameMessage(0);
     responseMessage.header.setId(0x229);

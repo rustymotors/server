@@ -27,7 +27,7 @@ export class MiniUserInfo implements ISerializable {
         throw new Error("Method not implemented.");
     }
     getByteSize(): number {
-        return 4 + 2 + this.userName.length;
+        return 4 + 4 + this.userName.length + 1;
     }
     toString(): string {
         return `MiniUserInfo(userId=${this.userId}, userName=${this.userName})`;

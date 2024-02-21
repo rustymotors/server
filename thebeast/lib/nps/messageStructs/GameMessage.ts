@@ -102,7 +102,7 @@ export class SerializableData implements ISerializable {
     }
 
     deserialize(data: Buffer): void {
-        if (data.length > data.length) {
+        if (data.length > this.data.length) {
             throw new Error(
                 `Data is too long. Expected at most ${this.data.length} bytes, got ${data.length} bytes`,
             );

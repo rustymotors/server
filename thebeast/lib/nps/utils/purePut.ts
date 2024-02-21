@@ -57,17 +57,17 @@ export function putLenString(
     isLE: boolean,
 ): Buffer {
     // Get the length of the string
-    const strLen = str.length;
+    const strLen = str.length + 1;
 
     // Put the length of the string
     if (isLE) {
-        bytes.writeUInt16LE(strLen, offset);
+        bytes.writeUInt32LE(strLen, offset);
     } else {
-        bytes.writeUInt16BE(strLen, offset);
+        bytes.writeUInt32BE(strLen, offset);
     }
 
     // Put the string
-    bytes.write(str, offset + 2, strLen, "utf8");
+    bytes.write(str.concat("\0"), offset + 4, strLen, "utf8");
 
     return bytes;
 }

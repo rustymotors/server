@@ -122,7 +122,7 @@ export class GameProfile implements ISerializable {
         offset += 4; // offset is now 10
         buffer.writeUInt32BE(this.shardId, offset);
         offset += 4; // offset is now 14
-        offset += 4; // unknown, offset is now 18
+        offset += 2; // offset is now 16
         putLenString(buffer, offset, this.profileName, false);
 
         // buffer.writeUInt32BE(this.serverId, offset);

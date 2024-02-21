@@ -12,12 +12,22 @@ export async function getLobMiniRiffList(
 
     const riffList = new MiniRiffList();
 
-    riffList.addRiff(new MiniRiffInfo("Channel 0", 0, 1));
-    riffList.addRiff(new MiniRiffInfo("MCCHAT", 191, 1));
+    riffList.addRiff(new MiniRiffInfo("CTRL", 0, 1));
+    riffList.addRiff(new MiniRiffInfo("MC141", 141, 0));
+    riffList.addRiff(new MiniRiffInfo("MCCHAT", 191, 0));
 
-        const responseMessage = new GameMessage(0);
-        responseMessage.header.setId(0x404);
-        responseMessage.setData(riffList);
+    log.info(`getLobMiniRiffList: ${riffList.toString()}`);
+
+    const responseMessage = new GameMessage(0);
+    responseMessage.header.setId(0x404);
+    responseMessage.setData(riffList);
+
+    log.info(
+        'Dumping responseMessage: ');
+
+    log.info(
+        `responseMessage: ${responseMessage.serialize().length} bytes - ${getAsHex(responseMessage.serialize())}`,
+    );
 
     return responseMessage.serialize();
 }
