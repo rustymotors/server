@@ -8,6 +8,8 @@
  * - RawMessage
  */
 
+import { ServerMessageType } from "./types.js";
+
 /**
  * @abstract
  * @property {Buffer} data
@@ -833,17 +835,6 @@ export class MessageBuffer extends SerializedBuffer {
             buffer: this._buffer.toString("hex"),
         };
     }
-}
-
-export interface ServerMessageType {
-    _header: serverHeader;
-    _msgNo: number;
-    size(): number;
-    _doDeserialize(buffer: Buffer): ServerMessageType;
-    serialize(): Buffer;
-    setBuffer(buffer: Buffer): void;
-    updateMsgNo(): void;
-    toString(): string;
 }
 
 /**
