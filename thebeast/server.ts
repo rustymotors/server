@@ -40,9 +40,7 @@ Sentry.init({
     // for finer control
     tracesSampleRate: 1.0,
     profilesSampleRate: 1.0, // Profiling sample rate is relative to tracesSampleRate
-    integrations: [
-        new ProfilingIntegration(),
-      ],
+    integrations: [new ProfilingIntegration()],
 });
 
 try {

@@ -22,11 +22,12 @@ export async function getLobMiniRiffList(
     responseMessage.header.setId(0x404);
     responseMessage.setData(riffList);
 
-    log.info(
-        'Dumping responseMessage: ');
+    log.info("Dumping responseMessage: ");
 
     log.info(
-        `responseMessage: ${responseMessage.serialize().length} bytes - ${getAsHex(responseMessage.serialize())}`,
+        `responseMessage: ${
+            responseMessage.serialize().length
+        } bytes - ${getAsHex(responseMessage.serialize())}`,
     );
 
     return responseMessage.serialize();
