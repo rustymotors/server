@@ -1,0 +1,32 @@
+version: "3.1"
+
+services:
+    nginx:
+        build:
+            context: services/sslProxy
+        ports:
+            - "443:443"
+            - "80:80"
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+    db:
+        image: postgres:latest
+        restart: always
+        environment:
+            POSTGRES_DB: rm
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: password
+        ports:
+            - "5432:5432"
+        volumes:
+            - db-data:/var/lib/postgresql/data
+
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+            - 8080:8080
+
+volumes:
+    db-data:
+        driver: local

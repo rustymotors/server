@@ -1,0 +1,87 @@
+{
+    "name": "@rusty-motors/thebeast",
+    "version": "1.0.0",
+    "description": "a server",
+    "author": "Drazi Crendraven <drazisil@hey.com>",
+    "license": "AGPL-3.0",
+    "private": true,
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:drazisil/mcos.git"
+    },
+    "scripts": {
+        "test": "yarn tsc && eslint --fix . && prettier --write . && node --openssl-legacy-provider $(yarn bin vitest) run --coverage packages lib",
+        "prod": "make prod_node",
+        "prod:stop": "docker-compose stop",
+        "release": "standard-version --sign",
+        "start": "tsx --openssl-legacy-provider --env-file=.env server.ts",
+        "start:docker": "npm run start:dev 2>&1 | tee -a log/mcos/trace.log"
+    },
+    "files": [
+        "README.md",
+        "CHANGELOG.md",
+        "AUTHORS"
+    ],
+    "type": "module",
+    "dependencies": {
+        "@fastify/sensible": "^5.5.0",
+        "@sentry/node": "7.92",
+        "@sentry/profiling-node": "^1.3.2",
+        "@types/connect": "^3.4.38",
+        "fastify": "^4.25.2",
+        "moment": "^2.30.1",
+        "pino": "^8.18.0",
+        "pino-pretty": "^10.3.1",
+        "short-unique-id": "^5.0.3",
+        "slonik": "^37.2.0",
+        "sqlite3": "^5.1.7",
+        "ts-node": "10.9.2",
+        "tslib": "^2.6.2"
+    },
+    "devDependencies": {
+        "@sentry/cli": "^2.23.2",
+        "@tsconfig/node-lts": "^20.1.1",
+        "@tsconfig/node20": "^20.1.2",
+        "@types/chai": "4.3.11",
+        "@types/node": "^20.10.6",
+        "@types/sinon": "17.0.2",
+        "@types/sinon-chai": "3.2.12",
+        "@typescript-eslint/eslint-plugin": "^6.17.0",
+        "@typescript-eslint/parser": "^6.17.0",
+        "@vitest/coverage-v8": "^1.1.1",
+        "eslint": "^8.56.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-prettier": "5.1.2",
+        "jsdoc": "^4.0.2",
+        "prettier": "3.1.1",
+        "prettier-eslint": "16.2.0",
+        "tsx": "4.7.0",
+        "typescript": "^5.3.3",
+        "typescript-eslint-language-service": "^5.0.5",
+        "vitest": "^1.1.1",
+        "zod": "^3.22.4"
+    },
+    "c8": {
+        "all": true,
+        "reporter": [
+            "text",
+            "cobertura",
+            "html",
+            "lcov"
+        ],
+        "exclude": [
+            "coverage",
+            "**/*.test.m{j,t}s",
+            "docs",
+            "docs2"
+        ]
+    },
+    "lint-staged": {
+        "**/*.js": "eslint"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    }
+}

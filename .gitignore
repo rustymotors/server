@@ -1,22 +1,16 @@
-*.env
-*.tsbuildinfo
-logs
 coverage
-*.log
-.nyc_output
-
-test-reports
-junit
-built
 *.sqlite
-junit.xml
-.dccache
-*.db
-node_modules/
-.DS_Store
+*.log
+.env
 
+# yarn
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 dist
-# Sentry Auth Token
-.sentryclirc
-*.map
-out/*
+*junit.xml
+rm.session.sql

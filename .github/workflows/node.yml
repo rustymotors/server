@@ -1,10 +1,8 @@
-name: Node.js CI
+name: The Beast
 
 on:
     push:
-        branches: [main]
     pull_request:
-        branches: [main]
 
 env:
     MCO_LOG_LEVEL: warn
@@ -25,17 +23,23 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: ${{ matrix.node-version }}
-            - run: npm ci install
-            - name: Test
-              run: npm run test:only
+            - name: Enable Corepack and set version to stable
+              run: |
+                  corepack enable
+                  yarn set version stable
+            - name: Install and test thebeast workspace
+              run: |
+                  yarn workspace @rusty-motors/thebeast install
+                  yarn workspace @rusty-motors/thebeast test
             - name: Codecov
-              env: # Or as an environment variable
+              env: 
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
               run: |
                   pip install --user pytest
                   pip install --user codecov-cli
                   codecovcli --verbose create-commit --fail-on-error 
                   codecovcli --verbose create-report --fail-on-error 
+                  codecovcli do-upload --report-type test_results --file thebeast/mcos.junit.xml
                   codecovcli --verbose do-upload --fail-on-error --flag database --name database-${{ matrix.node-version }}
                   codecovcli --verbose do-upload --fail-on-error --flag gateway --name gateway-${{ matrix.node-version }}
                   codecovcli --verbose do-upload --fail-on-error --flag lobby --name lobby-${{ matrix.node-version }}

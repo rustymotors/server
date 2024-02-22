@@ -13,5 +13,7 @@ export default defineConfig({
             ],
             reporter: ["lcov", "text", "cobertura"],
         },
+        reporters: ["junit"],
+        outputFile: "mcos.junit.xml"
     },
 });

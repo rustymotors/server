@@ -1,5 +1,24 @@
 {
-    "git.enableCommitSigning": true,
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "js/ts.implicitProjectConfig.checkJs": true
+  "git.enableCommitSigning": true,
+  "js/ts.implicitProjectConfig.checkJs": true,
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/.pnp.*": true
+  },
+  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "prettier.prettierPath": ".yarn/sdks/prettier/index.cjs",
+  "C_Cpp.errorSquiggles": "enabled",
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "rm",
+      "database": "rm",
+      "username": "user",
+      "password": "password"
+    }
+  ]
 }

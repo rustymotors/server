@@ -1,0 +1,6 @@
+CREATE TABLE SVA_ModeRestriction (
+	SVA_ModeRestriction INTEGER DEFAULT 0 NOT NULL,
+	Description VARCHAR(100),
+	CONSTRAINT SYS_PK_12180 PRIMARY KEY (SVA_ModeRestriction)
+);
+CREATE UNIQUE INDEX SYS_IDX_SYS_PK_12180_12181 ON SVA_ModeRestriction (SVA_ModeRestriction);
