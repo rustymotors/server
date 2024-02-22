@@ -32,6 +32,7 @@ jobs:
                   yarn workspace @rusty-motors/thebeast install
                   yarn test
             - name: Codecov
+              if: ${{ always() }}
               env: 
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
               run: |
