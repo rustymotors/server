@@ -4,7 +4,7 @@ import { putLenString } from "../utils/purePut.js";
 import { GameMessage } from "./GameMessage.js";
 import { NPSList } from "./NPSList.js";
 
-const channelRecordSize = 40
+const channelRecordSize = 40;
 
 export class MiniRiffInfo implements ISerializable {
     riffName: string; // 32 bytes - max length
@@ -29,17 +29,16 @@ export class MiniRiffInfo implements ISerializable {
         buffer.writeUInt32BE(this.riffId, offset);
         offset += 4;
         buffer.writeUInt16BE(this.population, offset);
-        log.debug(`MiniRiffInfo: ${this.toString()} - ${buffer.toString("hex")}`);
+        log.debug(
+            `MiniRiffInfo: ${this.toString()} - ${buffer.toString("hex")}`,
+        );
         return buffer;
     }
     deserialize(data: Buffer): void {
         throw new Error("Method not implemented.");
     }
     getByteSize(): number {
-        return 4
-        + this.riffName.length + 1
-        + 4 
-        + 2;
+        return 4 + this.riffName.length + 1 + 4 + 2;
     }
     toString(): string {
         return `MiniRiffInfo(riffName=${this.riffName}, riffId=${this.riffId}, population=${this.population})`;
@@ -76,8 +75,10 @@ export class MiniRiffList extends NPSList implements ISerializable {
             riffBuffer.copy(buffer, offset);
             offset += riff.getByteSize();
         }
-        
-        log.debug(`MiniRiffList: ${this.toString()} - ${buffer.toString("hex")}`);
+
+        log.debug(
+            `MiniRiffList: ${this.toString()} - ${buffer.toString("hex")}`,
+        );
         return buffer;
     }
     override toString(): string {
@@ -88,11 +89,10 @@ export class MiniRiffList extends NPSList implements ISerializable {
     }
 
     override getSize(): number {
-        let size = 4
+        let size = 4;
         for (const riff of this.riffs) {
             size += riff.getByteSize();
         }
         return size;
-
     }
 }
