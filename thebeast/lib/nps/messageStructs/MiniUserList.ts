@@ -46,7 +46,6 @@ export class MiniUserList implements ISerializable {
         this.channelUsers.push(user);
     }
 
-
     serialize(): Buffer {
         const buffer = Buffer.alloc(this.getByteSize());
         let offset = 0;
@@ -65,7 +64,10 @@ export class MiniUserList implements ISerializable {
         throw new Error("Method not implemented.");
     }
     getByteSize(): number {
-        return 16 + this.channelUsers.reduce((acc, user) => acc + user.getByteSize(), 0);
+        return (
+            16 +
+            this.channelUsers.reduce((acc, user) => acc + user.getByteSize(), 0)
+        );
     }
     toString(): string {
         return `MiniUserList(channelId=${this.channelId}, channelUsers=${this.channelUsers})`;
