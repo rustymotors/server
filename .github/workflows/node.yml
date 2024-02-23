@@ -26,7 +26,7 @@ jobs:
 
             - name: Install and test
               run: |
-                  npm install-ci-text
+                  npm install-ci-test
             - name: Codecov
               env:
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
