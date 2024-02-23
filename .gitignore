@@ -9,3 +9,4 @@ rm.session.sql
 node_modules
 migrate.js
 *.tar
+packages/**/*.js
