@@ -28,6 +28,7 @@ jobs:
               run: |
                   npm install-ci-test
             - name: Codecov
+              if: ${{ always() }}
               env:
                   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
               run: |
