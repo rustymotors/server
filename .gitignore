@@ -8,3 +8,4 @@ dist
 rm.session.sql
 node_modules
 migrate.js
+*.tar
