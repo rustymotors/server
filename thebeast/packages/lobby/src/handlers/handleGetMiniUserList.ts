@@ -71,6 +71,7 @@ export async function handleGetMiniUserList({
             message: packetResult,
         };
     } catch (error) {
+        log.error(`Error handling NPS_MINI_USER_LIST: ${String(error)}`);
         throw Error(`Error handling NPS_MINI_USER_LIST: ${String(error)}`);
     }
 }

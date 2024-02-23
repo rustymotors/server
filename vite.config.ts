@@ -13,7 +13,7 @@ export default defineConfig({
             ],
             reporter: ["lcov", "text", "cobertura"],
         },
-        reporters: ["junit"],
-        outputFile: "mcos.junit.xml"
+        reporters: ["junit", "default", "hanging-process"],
+        outputFile: "mcos.junit.xml",
     },
 });

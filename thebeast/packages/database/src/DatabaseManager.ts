@@ -3,7 +3,7 @@
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
 
-import { ServerLogger, getServerLogger } from "../../shared/log.js";
+import { ServerLogger, getServerLogger, log } from "../../shared/log.js";
 
 /**
  * @module Database
@@ -71,6 +71,7 @@ export class Database {
             const err = new Error(
                 `Session key not found for customer ${customerId}`,
             );
+            log.error(`Session key not found for customer ${customerId}`);
             throw err;
         }
         return record;
@@ -93,6 +94,7 @@ export class Database {
             const err = new Error(
                 `Session key not found for connection ${connectionId}`,
             );
+            log.error(`Session key not found for connection ${connectionId}`);
             throw err;
         }
         return record;
@@ -131,6 +133,9 @@ export class Database {
         if (typeof record === "undefined") {
             const err = new Error(
                 "Error updating session key: existing key not found",
+            );
+            log.error(
+                `Error updating session key: existing key not found for ${customerId}`,
             );
             throw err;
         }

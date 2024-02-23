@@ -13,6 +13,7 @@ export class MiniRiffInfo implements ISerializable {
 
     constructor(riffName: string, riffId: number, population: number) {
         if (riffName.length > 32) {
+            log.error(`Riff name too long: ${riffName}`);
             throw new Error(`Riff name too long: ${riffName}`);
         }
 

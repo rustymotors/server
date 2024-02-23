@@ -28,6 +28,7 @@ export async function processEncryptedGameCommand(
 
     // If the session doesn't exist, return
     if (!session) {
+        log.error(`Session not found for connection ID ${connectionId}`);
         throw new Error(`Session not found for connection ID ${connectionId}`);
     }
 
@@ -47,7 +48,7 @@ export async function processEncryptedGameCommand(
             setEncryptionSession(newSession);
             encryptionSession = newSession;
         } catch (error) {
-            log.info(error as string);
+            log.error(`Error creating encryption session: ${error}`);
             throw new Error("Error creating encryption session");
         }
 

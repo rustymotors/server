@@ -221,6 +221,7 @@ export async function saveVehiclePartTree(
                 partTree.level1.parts.find((p) => p.partId === partId) ||
                 partTree.level2.parts.find((p) => p.partId === partId);
             if (!part) {
+                log.error(`Part with partId ${partId} not found`);
                 throw new Error(`Part with partId ${partId} not found`);
             }
             await savePart(part);
@@ -244,6 +245,7 @@ export async function buildVehiclePartTreeFromDB(
     `);
 
     if (!vehicle) {
+        log.error(`Vehicle with id ${vehicleId} does not exist`);
         throw new Error(`Vehicle with id ${vehicleId} does not exist`);
     }
 
@@ -280,6 +282,7 @@ export async function buildVehiclePartTreeFromDB(
     `);
 
     if (!part) {
+        log.error(`Part with id ${vehicleId} does not exist`);
         throw new Error(`Part with id ${vehicleId} does not exist`);
     }
 
@@ -293,6 +296,7 @@ export async function buildVehiclePartTreeFromDB(
     `);
 
     if (level1Parts.length === 0) {
+        log.error(`Vehicle with id ${vehicleId} has no parts`);
         throw new Error(`Vehicle with id ${vehicleId} has no parts`);
     }
 
@@ -333,6 +337,7 @@ export async function buildVehiclePartTreeFromDB(
     `);
 
     if (level2Parts.length === 0) {
+        log.error(`Vehicle with id ${vehicleId} has no level 2 parts`);
         throw new Error(`Vehicle with id ${vehicleId} has no level 2 parts`);
     }
 
@@ -380,6 +385,7 @@ export async function buildVehiclePartTree({
     isStock: boolean;
 }): Promise<VehiclePartTreeType> {
     if (ownedLotId === undefined && ownerID === undefined) {
+        log.error(`ownedLotId or ownerID is required`);
         throw new Error("ownedLotId or ownerID is required");
     }
 
@@ -390,6 +396,7 @@ export async function buildVehiclePartTree({
     `);
 
     if (!skinFlags) {
+        log.error(`Skin with id ${skinId} does not exist`);
         throw new Error(`Skin with id ${skinId} does not exist`);
     }
 
@@ -406,6 +413,9 @@ export async function buildVehiclePartTree({
     `);
 
     if (vehicleAssembly.length === 0) {
+        log.error(
+            `Vehicle assembly with branded part id ${brandedPartId} does not exist`,
+        );
         throw new Error(
             `Vehicle assembly with branded part id ${brandedPartId}`,
         );
@@ -461,7 +471,6 @@ export async function buildVehiclePartTree({
             log.error(
                 `parentPartId is undefined for part with parentabstractparttypeid ${part.parentabstractparttypeid}`,
             );
-            console.dir(partNumbersMap);
             throw new Error(
                 `parentPartId is undefined for part with parentabstractparttypeid ${part.parentabstractparttypeid}`,
             );
@@ -493,6 +502,7 @@ export async function buildVehiclePartTree({
         } else if (partDepth === 2) {
             vehiclePartTree.partTree.level2.parts.push(newPart);
         } else {
+            log.error(`Part depth ${partDepth} is not supported`);
             throw new Error(`Part depth ${partDepth} is not supported`);
         }
     }

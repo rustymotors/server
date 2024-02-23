@@ -29,6 +29,7 @@ export async function processGameLogin(
     const session = await getUserSessionByCustomerId(customerId);
 
     if (!session) {
+        log.error(`Session not found for customer ID ${customerId}`);
         throw new Error(`Session not found for customer ID ${customerId}`);
     }
 

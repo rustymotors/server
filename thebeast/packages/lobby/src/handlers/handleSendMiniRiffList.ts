@@ -62,6 +62,7 @@ export async function handleSendMiniRiffList({
             message: packetResult,
         };
     } catch (error) {
+        log.error(`Error handling NPS_SEND_MINI_RIFF_LIST: ${String(error)}`);
         throw Error(`Error handling NPS_SEND_MINI_RIFF_LIST: ${String(error)}`);
     }
 }

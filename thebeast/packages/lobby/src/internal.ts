@@ -99,6 +99,7 @@ export async function receiveLobbyData({
     const dataLength = message.data.length;
 
     if (dataLength < 4) {
+        log.error(`Data length ${dataLength} is too short to deserialize`);
         throw new Error(
             `Data length ${dataLength} is too short to deserialize`,
         );
@@ -126,6 +127,7 @@ export async function receiveLobbyData({
 
     if (typeof supportedHandler === "undefined") {
         // We do not yet support this message code
+        log.error(`UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`);
         throw new Error(
             `UNSUPPORTED_MESSAGECODE: ${inboundMessage._header.id}`,
         );
@@ -141,6 +143,7 @@ export async function receiveLobbyData({
         log.debug("Leaving receiveLobbyData");
         return result;
     } catch (error) {
+        log.error(`Error handling lobby data: ${String(error)}`);
         throw new Error(`Error handling lobby data: ${String(error)}`);
     }
 }
