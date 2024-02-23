@@ -7,3 +7,4 @@ dist
 *junit.xml
 rm.session.sql
 node_modules
+migrate.js
