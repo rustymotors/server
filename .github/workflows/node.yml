@@ -43,7 +43,9 @@ jobs:
             - name: Connect to PostgreSQL
                 # Runs a script that creates a PostgreSQL table, populates
                 # the table with data, and then retrieves the data.
-              run: npx tsx migrate.ts up
+              run: |
+                npm install --ignore-scripts=true && \
+                npx tsx migrate.ts up
                 # Environment variables used by the `client.js` script to create a new PostgreSQL table.
               env:
                 # The hostname used to communicate with the PostgreSQL service container
