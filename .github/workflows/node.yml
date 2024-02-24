@@ -15,8 +15,6 @@ env:
 jobs:
      container-job:
         runs-on: ubuntu-latest
-        container:
-            image: node:21
 
         services:
             postgres:
