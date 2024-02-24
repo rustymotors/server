@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "clear && npm --workspace thebeast start",
-    "test": "clear && npm --workspace thebeast test"
+    "start": "npm --workspace thebeast start",
+    "test": "npm --workspace thebeast test"
   },
   "author": "Molly Crendraven <drazi@duck.com>",
   "license": "AGPL-3.0",
