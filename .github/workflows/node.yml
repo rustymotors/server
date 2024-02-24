@@ -6,10 +6,28 @@ on:
 
 env:
     MCO_LOG_LEVEL: warn
+    EXTERNAL_HOST: mcouniverse.com 
+    PRIVATE_KEY_FILE: thebeast/data/private_key.pem 
+    CERTIFICATE_FILE: thebeast/data/mcouniverse.crt 
+    PUBLIC_KEY_FILE: thebeast/data/pub.key 
+    NODE_ENV: production
 
 jobs:
-    build:
+     container-job:
         runs-on: ubuntu-latest
+        container:
+            image: node:21
+
+        services:
+            postgres:
+                image: postgres:latest
+                env:
+                    POSTGRES_USER: user
+                    POSTGRES_PASSWORD: password
+                    POSTGRES_DB: rm
+                ports:
+                    - 5432:5432
+                options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
         strategy:
             matrix:
@@ -24,6 +42,16 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
 
+            - name: Connect to PostgreSQL
+                # Runs a script that creates a PostgreSQL table, populates
+                # the table with data, and then retrieves the data.
+                run: npm tsc migrate.ts up
+                # Environment variables used by the `client.js` script to create a new PostgreSQL table.
+                env:
+                # The hostname used to communicate with the PostgreSQL service container
+                POSTGRES_HOST: postgres
+                # The default PostgreSQL port
+                POSTGRES_PORT: 5432
             - name: Install and test
               run: |
                   npm install-ci-test
