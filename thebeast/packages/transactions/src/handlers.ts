@@ -34,11 +34,12 @@ import { ServerLogger } from "../../shared/log.js";
 import { _setOptions } from "./_setOptions.js";
 import { _updatePlayerPhysical } from "./_updatePlayerPhysical.js";
 import { _getCompleteVehicleInfo } from "./messageHandlers/_getCompleteVehicleInfo.js";
+import { ServerMessageType, TServerLogger } from "../../shared/types.js";
 
 export interface MessageHandlerArgs {
     connectionId: string;
-    packet: OldServerMessage;
-    log: ServerLogger;
+    packet: ServerMessageType;
+    log: TServerLogger;
 }
 
 export interface MessageHandlerResult {

@@ -30,6 +30,14 @@ export class GenericRequestMessage extends MessageNode {
      * @param {Buffer} buffer
      */
     override deserialize(buffer: Buffer) {
+        if (buffer.length < 10) {
+            throw new Error(
+                `[GenericRequestMsg] Unable to deserialize buffer: ${buffer.toString(
+                    "hex",
+                )}`,
+            );
+        }
+
         try {
             this.msgNo = buffer.readInt16LE(0);
         } catch (error) {

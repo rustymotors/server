@@ -72,6 +72,9 @@ async function encryptCmd({
     const encryption = getEncryption(state, connectionId);
 
     if (typeof encryption === "undefined") {
+        log.error(
+            `Unable to locate encryption session for connection id ${connectionId}`,
+        );
         throw new Error(
             `Unable to locate encryption session for connection id ${connectionId}`,
         );
@@ -120,6 +123,9 @@ async function decryptCmd({
     const encryption = getEncryption(state, connectionId);
 
     if (typeof encryption === "undefined") {
+        log.error(
+            `Unable to locate encryption session for connection id ${connectionId}`,
+        );
         throw new Error(
             `Unable to locate encryption session for connection id ${connectionId}`,
         );
@@ -208,6 +214,7 @@ async function handleCommand({
     const handler = npsCommandHandlers.find((h) => h.opCode === command);
 
     if (typeof handler === "undefined") {
+        log.error(`Unknown command: ${command}`);
         throw new Error(`Unknown command: ${command}`);
     }
 

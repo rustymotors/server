@@ -3,15 +3,11 @@ coverage
 *.log
 .env
 
-# yarn
-.yarn/*
-!.yarn/cache
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
 dist
 *junit.xml
 rm.session.sql
 node_modules
+node_modules
+migrate.js
+*.tar
+packages/**/*.js

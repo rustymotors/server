@@ -1,4 +1,5 @@
 import { log } from "../../../shared/log.js";
+import * as Sentry from "@sentry/node";
 import { setVehiclePartTree } from "../cache.js";
 import { DBPart } from "../services/admin.js";
 import { createSqlTag, slonik, z } from "../services/database.js";
@@ -112,14 +113,38 @@ const sql = createSqlTag({
 });
 
 async function getNextPartId(): Promise<number> {
-    const { nextval } = await slonik.one(sql.typeAlias("nextPartId")`
-        SELECT nextval('part_partid_seq')
-    `);
-    return Number(nextval);
+    const result  = await Sentry.startSpan({
+        name: "Get next part id",
+        op: "db.query",
+        description: "SELECT nextval('part_partid_seq')",
+        attributes: {
+            sql: "SELECT nextval('part_partid_seq')",
+            db: "postgres",
+        },
+
+    
+    }, async (span) => {
+        const { nextval } = await slonik.one(sql.typeAlias("nextPartId")`
+            SELECT nextval('part_partid_seq')
+        `);
+        return Number(nextval);
+    });
+    return result;
 }
 
 export async function savePart(part: TPart): Promise<void> {
-    await slonik.query(sql.typeAlias("dbPart")`
+    await Sentry.startSpan({
+        name: "Save part",
+        op: "db.query",
+        description: "INSERT INTO part (partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+        attributes: {
+            sql: "INSERT INTO part (partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+            db: "postgres",
+        },
+
+    
+    }, async (span) => {
+    return slonik.query(sql.typeAlias("dbPart")`
         INSERT INTO part (
             partid,
             parentpartid,
@@ -144,6 +169,7 @@ export async function savePart(part: TPart): Promise<void> {
             ${part.scrapValue}
         )
     `);
+        });
 }
 
 export async function saveVehicle(
@@ -177,7 +203,18 @@ export async function saveVehicle(
 
         log.debug(`Saving vehicle: ${JSON.stringify(newVehicle)}`);
 
-        await slonik.query(sql.typeAlias("vehicle")`
+        await Sentry.startSpan({
+            name: "Save vehicle",
+            op: "db.query",
+            description: "INSERT INTO vehicle (vehicleid, skinid, flags, class, infosetting, damageinfo) VALUES ($1, $2, $3, $4, $5, $6)",
+            attributes: {
+                sql: "INSERT INTO vehicle (vehicleid, skinid, flags, class, infosetting, damageinfo) VALUES ($1, $2, $3, $4, $5, $6)",
+                db: "postgres",
+            },
+    
+        
+        }, async (span) => {
+        return slonik.query(sql.typeAlias("vehicle")`
             INSERT INTO vehicle (
                 vehicleid,
                 skinid,
@@ -194,6 +231,7 @@ export async function saveVehicle(
                 ${newVehicle.damageInfo}
             )
         `);
+            });
     } catch (error) {
         log.error(`Error saving vehicle: ${error}`);
         throw error;
@@ -221,6 +259,7 @@ export async function saveVehiclePartTree(
                 partTree.level1.parts.find((p) => p.partId === partId) ||
                 partTree.level2.parts.find((p) => p.partId === partId);
             if (!part) {
+                log.error(`Part with partId ${partId} not found`);
                 throw new Error(`Part with partId ${partId} not found`);
             }
             await savePart(part);
@@ -237,13 +276,24 @@ export async function saveVehiclePartTree(
 export async function buildVehiclePartTreeFromDB(
     vehicleId: number,
 ): Promise<VehiclePartTreeType> {
-    const vehicle = await slonik.one(sql.typeAlias("vehicle")`
+    const vehicle  = await Sentry.startSpan({
+        name: "Get vehicle",
+        op: "db.query",
+        description: "SELECT vehicleid, skinid, flags, class, infosetting, damageinfo FROM vehicle WHERE vehicleid = $1",
+        attributes: {
+            sql: "SELECT vehicleid, skinid, flags, class, infosetting, damageinfo FROM vehicle WHERE vehicleid = $1",
+            db: "postgres",
+        },
+    }, async (span) => {
+    return slonik.one(sql.typeAlias("vehicle")`
         SELECT vehicleid, skinid, flags, class, infosetting, damageinfo
         FROM vehicle
         WHERE vehicleid = ${vehicleId}
     `);
+    });
 
     if (!vehicle) {
+        log.error(`Vehicle with id ${vehicleId} does not exist`);
         throw new Error(`Vehicle with id ${vehicleId} does not exist`);
     }
 
@@ -273,26 +323,52 @@ export async function buildVehiclePartTreeFromDB(
     };
 
     // Get first part
-    const part = await slonik.one(sql.typeAlias("part")`
+    const part  = await Sentry.startSpan({
+        name: "Get part",
+        op: "db.query",
+        description: "SELECT partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue FROM part WHERE partid = $1",
+        attributes: {
+            sql: "SELECT partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue FROM part WHERE partid = $1",
+            db: "postgres",
+        },
+
+    
+    }, async (span) => {
+    return slonik.one(sql.typeAlias("part")`
         SELECT partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue
         FROM part
         WHERE partid = ${vehicleId}
     `);
+    });
 
     if (!part) {
+        log.error(`Part with id ${vehicleId} does not exist`);
         throw new Error(`Part with id ${vehicleId} does not exist`);
     }
 
     vehiclePartTree.brandedPartId = part.brandedpartid;
     vehiclePartTree.ownerID = part.ownerid;
 
-    const level1Parts = await slonik.many(sql.typeAlias("part")`
+    const level1Parts  = await Sentry.startSpan({
+        name: "Get level 1 parts",
+        op: "db.query",
+        description: "SELECT partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue FROM part WHERE parentpartid = $1",
+        attributes: {
+            sql: "SELECT partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue FROM part WHERE parentpartid = $1",
+            db: "postgres",
+        },
+
+    
+    }, async (span) => {
+    return slonik.many(sql.typeAlias("part")`
         SELECT partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue
         FROM part
         WHERE parentpartid = ${vehicleId}
     `);
+    });
 
     if (level1Parts.length === 0) {
+        log.error(`Vehicle with id ${vehicleId} has no parts`);
         throw new Error(`Vehicle with id ${vehicleId} has no parts`);
     }
 
@@ -326,13 +402,26 @@ export async function buildVehiclePartTreeFromDB(
         vehiclePartTree.partTree.level1.parts.push(newPart);
     }
 
-    const level2Parts = await slonik.many(sql.typeAlias("part")`
+    const level2Parts  = await Sentry.startSpan({
+        name: "Get level 2 parts",
+        op: "db.query",
+        description: "SELECT partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue FROM part WHERE parentpartid IN ($1)",
+        attributes: {
+            sql: "SELECT partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue FROM part WHERE parentpartid IN ($1)",
+            db: "postgres",
+        },
+
+    
+    }, async (span) => {
+    return slonik.many(sql.typeAlias("part")`
         SELECT partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue
         FROM part
         WHERE parentpartid IN (${sql.join(level1PartsIds, sql.fragment`, `)})
     `);
+    });
 
     if (level2Parts.length === 0) {
+        log.error(`Vehicle with id ${vehicleId} has no level 2 parts`);
         throw new Error(`Vehicle with id ${vehicleId} has no level 2 parts`);
     }
 
@@ -380,23 +469,48 @@ export async function buildVehiclePartTree({
     isStock: boolean;
 }): Promise<VehiclePartTreeType> {
     if (ownedLotId === undefined && ownerID === undefined) {
+        log.error(`ownedLotId or ownerID is required`);
         throw new Error("ownedLotId or ownerID is required");
     }
 
-    const skinFlags = await slonik.one(sql.typeAlias("ptSkin")`
+    const skinFlags  = await Sentry.startSpan({
+        name: "Get skin flags",
+        op: "db.query",
+        description: "SELECT defaultflag FROM ptskin WHERE skinid = $1",
+        attributes: {
+            sql: "SELECT defaultflag FROM ptskin WHERE skinid = $1",
+            db: "postgres",
+        },
+
+    
+    }, async (span) => {
+    return slonik.one(sql.typeAlias("ptSkin")`
         SELECT defaultflag
         FROM ptskin
         WHERE skinid = ${skinId}
     `);
+    });
 
     if (!skinFlags) {
+        log.error(`Skin with id ${skinId} does not exist`);
         throw new Error(`Skin with id ${skinId} does not exist`);
     }
 
     let vehicleId = undefined;
 
     // Get the vehicle assembly from the database
-    const vehicleAssembly = await slonik.many(sql.typeAlias("detailedPart")`
+    const vehicleAssembly  = await Sentry.startSpan({
+        name: "Get vehicle assembly",
+        op: "db.query",
+        description: "SELECT bp.brandedpartid, bp.parttypeid, a.attachmentpointid, pt.abstractparttypeid, apt.parentabstractparttypeid FROM stockassembly a INNER JOIN brandedpart bp ON a.childbrandedpartid = bp.brandedpartid inner join parttype pt on pt.parttypeid = bp.parttypeid inner join abstractparttype apt on apt.abstractparttypeid = pt.abstractparttypeid WHERE a.parentbrandedpartid = $1",
+        attributes: {
+            sql: "SELECT bp.brandedpartid, bp.parttypeid, a.attachmentpointid, pt.abstractparttypeid, apt.parentabstractparttypeid FROM stockassembly a INNER JOIN brandedpart bp ON a.childbrandedpartid = bp.brandedpartid inner join parttype pt on pt.parttypeid = bp.parttypeid inner join abstractparttype apt on apt.abstractparttypeid = pt.abstractparttypeid WHERE a.parentbrandedpartid = $1",
+            db: "postgres",
+        },
+
+    
+    }, async (span) => {
+    return slonik.many(sql.typeAlias("detailedPart")`
         SELECT bp.brandedpartid, bp.parttypeid, a.attachmentpointid, pt.abstractparttypeid, apt.parentabstractparttypeid
         FROM stockassembly a
         INNER JOIN brandedpart bp ON a.childbrandedpartid = bp.brandedpartid
@@ -404,8 +518,12 @@ export async function buildVehiclePartTree({
         inner join abstractparttype apt on apt.abstractparttypeid = pt.abstractparttypeid
         WHERE a.parentbrandedpartid = ${brandedPartId}
     `);
+    });
 
     if (vehicleAssembly.length === 0) {
+        log.error(
+            `Vehicle assembly with branded part id ${brandedPartId} does not exist`,
+        );
         throw new Error(
             `Vehicle assembly with branded part id ${brandedPartId}`,
         );
@@ -461,7 +579,6 @@ export async function buildVehiclePartTree({
             log.error(
                 `parentPartId is undefined for part with parentabstractparttypeid ${part.parentabstractparttypeid}`,
             );
-            console.dir(partNumbersMap);
             throw new Error(
                 `parentPartId is undefined for part with parentabstractparttypeid ${part.parentabstractparttypeid}`,
             );
@@ -493,6 +610,7 @@ export async function buildVehiclePartTree({
         } else if (partDepth === 2) {
             vehiclePartTree.partTree.level2.parts.push(newPart);
         } else {
+            log.error(`Part depth ${partDepth} is not supported`);
             throw new Error(`Part depth ${partDepth} is not supported`);
         }
     }

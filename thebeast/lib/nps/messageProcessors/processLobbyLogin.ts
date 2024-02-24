@@ -30,6 +30,7 @@ export async function processLobbyLogin(
 
     // If the session doesn't exist, return
     if (!session) {
+        log.error(`Session not found for profile ID ${profileId}`);
         throw new Error(`Session not found for profile ID ${profileId}`);
     }
 

@@ -6,6 +6,7 @@ import {
     getLenString,
     getShortBool,
 } from "../utils/pureGet.js";
+import { log } from "../../../packages/shared/log.js";
 
 export class GameProfile implements ISerializable {
     customerId: number; // 4 bytes

@@ -64,6 +64,7 @@ export async function _npsRequestGameConnectServer({
         id: inboundMessage._userId,
     });
     if (typeof personas[0] === "undefined") {
+        log.error(`No personas found for userId ${inboundMessage._userId}`);
         const err = new Error("No personas found.");
         throw err;
     }
@@ -80,6 +81,11 @@ export async function _npsRequestGameConnectServer({
         const keys = await databaseManager
             .fetchSessionKeyByCustomerId(customerId)
             .catch((/** @type {unknown} */ error: unknown) => {
+                log.error(
+                    `Unable to fetch session key for customerId ${customerId.toString()}: ${String(
+                        error,
+                    )}`,
+                );
                 throw new Error(
                     `Unable to fetch session key for customerId ${customerId.toString()}: ${String(
                         error,
@@ -87,6 +93,9 @@ export async function _npsRequestGameConnectServer({
                 );
             });
         if (keys === undefined) {
+            log.error(
+                `Error fetching session keys for customerId ${customerId}`,
+            );
             throw new Error("Error fetching session keys!");
         }
 
@@ -108,6 +117,7 @@ export async function _npsRequestGameConnectServer({
 
             addEncryption(state, newEncryption).save();
         } catch (error) {
+            log.error(`Error creating encryption: ${error}`);
             throw new Error(`Error creating encryption: ${error}`);
         }
     }

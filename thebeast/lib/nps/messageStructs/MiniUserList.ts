@@ -1,5 +1,6 @@
 import { ISerializable } from "../types.js";
 import { putLenString } from "../utils/purePut.js";
+import { log } from "../../../packages/shared/log.js";
 
 export class MiniUserInfo implements ISerializable {
     userId: number; // 4 bytes
@@ -7,6 +8,7 @@ export class MiniUserInfo implements ISerializable {
 
     constructor(userId: number, userName: string) {
         if (userName.length > 32) {
+            log.error(`User name too long: ${userName}`);
             throw new Error(`User name too long: ${userName}`);
         }
 
