@@ -10,7 +10,6 @@ env:
     PRIVATE_KEY_FILE: thebeast/data/private_key.pem 
     CERTIFICATE_FILE: thebeast/data/mcouniverse.crt 
     PUBLIC_KEY_FILE: thebeast/data/pub.key 
-    NODE_ENV: production
 
 jobs:
      container-job:
@@ -40,7 +39,7 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
 
-            - name: Connect to PostgreSQL
+            - name: Run PostgreSQL migrations
                 # Runs a script that creates a PostgreSQL table, populates
                 # the table with data, and then retrieves the data.
               run: |
@@ -52,7 +51,6 @@ jobs:
                 POSTGRES_HOST: postgres
                 # The default PostgreSQL port
                 POSTGRES_PORT: 5432
-                NODE_ENV: development
             - name: Install and test
               run: |
                   npm install-ci-test
