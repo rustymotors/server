@@ -1,4 +1,3 @@
-import { e } from "vitest/dist/reporters-1evA5lom.js";
 import { ISerializable } from "../types.js";
 import { putLenString } from "../utils/purePut.js";
 
