@@ -1,5 +1,6 @@
 import { DatabaseTransactionConnection } from "slonik";
 import { slonik, createSqlTag, z } from "./database.js";
+import { log } from "../../../shared/log.js";
 
 async function playerExists(playerId: number): Promise<boolean> {
     return await slonik.exists(sql.typeAlias("id")`
@@ -69,6 +70,7 @@ async function getAbstractPartTypeIDForBrandedPartID(
         WHERE bp.brandedpartid = ${brandedPartId}
     `);
     if (!abstractPartTypeId) {
+        log.error(`branded part with id ${brandedPartId} does not exist`);
         throw new Error(`branded part with id ${brandedPartId} does not exist`);
     }
     return abstractPartTypeId.abstractparttypeid;
@@ -93,10 +95,12 @@ export async function createNewCar(
     newCarOwnerId: number,
 ): Promise<number> {
     if (!playerExists(newCarOwnerId)) {
+        log.error("player does not exist");
         throw new Error("player does not exist");
     }
 
     if (!skinExists(skinId)) {
+        log.error("skin does not exist");
         throw new Error("skin does not exist");
     }
 
@@ -107,6 +111,7 @@ export async function createNewCar(
     console.dir(abstractPartTypeId);
 
     if (!isAbstractPartTypeAVehicle(abstractPartTypeId)) {
+        log.error(`branded part with id ${brandedPartId} is not a vehicle`);
         throw new Error(
             `branded part with id ${brandedPartId} is not a vehicle`,
         );
@@ -145,6 +150,7 @@ export async function createNewCar(
             // First insert the new car into the vehicle table
 
             if (tmpParts.length === 0) {
+                log.error(`No parts found for the vehicle ${brandedPartId}`);
                 throw new Error("No parts found for the vehicle");
             }
 
@@ -153,6 +159,7 @@ export async function createNewCar(
 
             // Make sure the first part's branded part id is not null
             if (tmpParts[0].brandedPartId === null) {
+                log.error("The first part's branded part id is null");
                 throw new Error("The first part's branded part id is null");
             }
 
@@ -220,11 +227,13 @@ export async function createNewCar(
         });
 
         if (vehicleId === null) {
+            log.error("vehicleId is null");
             throw new Error("vehicleId is null");
         }
 
         return vehicleId;
     } catch (error) {
+        log.error("Error creating new car: " + error);
         throw new Error("Error creating new car: " + error);
     }
 }
@@ -241,7 +250,7 @@ async function addPart(
                     VALUES (${currentPartId}, ${parentPartId}, ${partEntry.brandedPartId}, 0, 0, ${partEntry.AttachmentPointId}, ${newCarOwenrId}, null, 0, 0)
                 `);
     } catch (error) {
-        console.error("Error adding part: " + error);
+        log.error("Error adding part: " + error);
         throw new Error("Error adding part: " + error);
     }
 }
@@ -281,7 +290,7 @@ async function getPart(
             scrapValue: part.scrapvalue,
         };
     } catch (error) {
-        console.error("Error adding part: " + error);
+        log.error("Error getting part: " + error);
         throw new Error("Error adding part: " + error);
     }
 }

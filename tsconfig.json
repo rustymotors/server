@@ -11,7 +11,15 @@
         "forceConsistentCasingInFileNames": true,
         "strict": true,
         "skipLibCheck": true,
-        "noEmit": true,
     },
-    "include": ["src", "test", "packages", "thebeast", "lib", "vite.config.ts"]
+    "include": [
+        "src",
+        "test",
+        "packages",
+        "thebeast",
+        "lib",
+        "vite.config.ts",
+        "server.ts",
+        "migrate.ts",
+    ],
 }

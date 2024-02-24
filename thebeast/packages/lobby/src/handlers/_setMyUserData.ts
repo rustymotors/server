@@ -45,6 +45,7 @@ export async function _setMyUserData({
             message: packetResult,
         };
     } catch (error) {
+        log.error(`Error handling NPS_SET_MY_USER_DATA: ${String(error)}`);
         throw Error(`Error handling NPS_SET_MY_USER_DATA: ${String(error)}`);
     }
 }

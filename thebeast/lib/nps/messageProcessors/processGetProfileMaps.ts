@@ -56,7 +56,7 @@ export async function processGetProfileMaps(
 
         socketCallback([outMessage.serialize()]);
     } catch (error) {
-        log.info(error as string);
+        log.error(`Error sending profile info: ${error}`);
         throw new Error("Error sending profile info");
     }
 }

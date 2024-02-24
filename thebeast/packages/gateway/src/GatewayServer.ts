@@ -109,6 +109,7 @@ export class Gateway {
      */
     getWebServer(): import("fastify").FastifyInstance {
         if (this.webServer === undefined) {
+            log.error("webServer is undefined");
             throw new Error("webServer is undefined");
         }
         return this.webServer;
@@ -145,6 +146,7 @@ export class Gateway {
         });
 
         if (this.webServer === undefined) {
+            log.error("webServer is undefined");
             throw new Error("webServer is undefined");
         }
 
@@ -200,6 +202,7 @@ export class Gateway {
         }
 
         if (this.webServer === undefined) {
+            log.error("webServer is undefined");
             throw new Error("webServer is undefined");
         }
         await this.webServer.close();
@@ -242,6 +245,7 @@ export class Gateway {
 
         // Register the read thread events
         if (this.readThread === undefined) {
+            log.error("readThread is undefined");
             throw new Error("readThread is undefined");
         }
         this.consoleEvents.forEach((event) => {

@@ -17,18 +17,10 @@ export const name = "interfaces";
  * @exports
  * @interface
  */
-interface SerializedObject {
+export interface SerializedObject {
     serialize: () => Buffer;
     serializeSize: () => number;
 }
-export const SerializedObject = {
-    serialize() {
-        throw new ServerError("Not implemented");
-    },
-    serializeSize() {
-        throw new ServerError("Not implemented");
-    },
-};
 
 interface EncryptionSession {
     connectionId: string;

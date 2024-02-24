@@ -79,6 +79,7 @@ export function socketErrorHandler({
         log.debug(`Connection ${connectionId} reset`);
         return;
     }
+    log.error(`Socket error: ${error.message} on connection ${connectionId}`);
     throw new Error(
         `Socket error: ${error.message} on connection ${connectionId}`,
     );
@@ -123,6 +124,7 @@ export function onSocketConnection({
     const { localPort, remoteAddress } = incomingSocket;
 
     if (localPort === undefined || remoteAddress === undefined) {
+        log.error("localPort or remoteAddress is undefined");
         throw new Error("localPort or remoteAddress is undefined");
     }
 
@@ -161,11 +163,8 @@ export function onSocketConnection({
             messageType = getPortMessageType(localPort);
             log.debug(`Message type: ${messageType}`);
         } catch (error) {
-            if (error instanceof PortMapError) {
-                log.error(`Error getting message type: ${error}`);
-            } else {
-                throw error;
-            }
+            log.error(`Error getting message type: ${error}`);
+            throw error;
         }
 
         if (messageType !== "Unknown") {
@@ -270,6 +269,7 @@ export function processGameMessage(
         // Call the message processor
         messageProcessor(connectionId, message, socketCallback);
     } catch (error) {
+        log.error(`Error processing message: ${error}`);
         throw new MessageProcessorError(
             messageId,
             `Error processing message: ${error}`,
@@ -307,9 +307,8 @@ export function handleGameMessage(
         processGameMessage(connectionId, message, log, socketCallback);
         t.finish();
     } catch (error) {
-        if (error instanceof MessageProcessorError) {
-            log.error(`Error processing message: ${error}`);
-        } else {
+        log.error(`Error processing message: ${error}`);
+        if (error! instanceof MessageProcessorError) {
             throw error;
         }
     }

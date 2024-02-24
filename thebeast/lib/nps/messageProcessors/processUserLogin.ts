@@ -11,6 +11,7 @@ import { getAsHex, getLenString } from "../utils/pureGet.js";
 import { UserStatus } from "../messageStructs/UserStatus.js";
 import { UserAction } from "../messageStructs/UserAction.js";
 import { log } from "../../../packages/shared/log.js";
+import { getServerConfiguration } from "../../../packages/shared/Configuration.js";
 
 export function loadPrivateKey(path: string): string {
     const privateKey = fs.readFileSync(path);
@@ -57,7 +58,7 @@ export function unpackUserLoginMessage(message: ISerializable): {
         .toString("utf8");
 
     // Load the private key
-    const privateKey = loadPrivateKey("./data/private_key.pem");
+    const privateKey = loadPrivateKey(getServerConfiguration({}).privateKeyFile);
 
     // Decrypt the session key
     const sessionKey = decryptSessionKey(encryptedSessionKey, privateKey);
