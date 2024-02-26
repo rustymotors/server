@@ -1,6 +1,6 @@
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
 import { OldServerMessage } from "../../shared/messageFactory.js";
-import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 
 /**
  * @param {MessageHandlerArgs} args

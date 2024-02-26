@@ -58,7 +58,9 @@ export function unpackUserLoginMessage(message: ISerializable): {
         .toString("utf8");
 
     // Load the private key
-    const privateKey = loadPrivateKey(getServerConfiguration({}).privateKeyFile);
+    const privateKey = loadPrivateKey(
+        getServerConfiguration({}).privateKeyFile,
+    );
 
     // Decrypt the session key
     const sessionKey = decryptSessionKey(encryptedSessionKey, privateKey);

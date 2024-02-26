@@ -66,23 +66,24 @@ export async function getBrand(brandName: string): Promise<TBrand | undefined> {
         return brandCache.get(brandName);
     }
 
-    return await Sentry.startSpan({
-        name: "Get next part id",
-        op: "db.query",
-        description: "SELECT nextval('part_partid_seq')",
-        attributes: {
-            sql: "SELECT nextval('part_partid_seq')",
-            db: "postgres",
+    return await Sentry.startSpan(
+        {
+            name: "Get next part id",
+            op: "db.query",
+            description: "SELECT nextval('part_partid_seq')",
+            attributes: {
+                sql: "SELECT nextval('part_partid_seq')",
+                db: "postgres",
+            },
         },
-
-    
-    }, async (span) => {
-    const brand = await slonik.one(sql.typeAlias("brand")`
+        async (span) => {
+            const brand = await slonik.one(sql.typeAlias("brand")`
         SELECT brandid, brand, isstock FROM brand WHERE brandname = ${brandName}
     `);
-    brandCache.set(brandName, brand);
-    return brand;
-    });
+            brandCache.set(brandName, brand);
+            return brand;
+        },
+    );
 }
 
 const vehiclePartTreeCache = new Map<number, VehiclePartTreeType>();

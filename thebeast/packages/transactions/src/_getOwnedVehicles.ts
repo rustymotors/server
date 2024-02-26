@@ -1,12 +1,12 @@
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { OldServerMessage } from "../../shared/messageFactory.js";
 import { OwnedVehicle, OwnedVehiclesMessage } from "./OwnedVehiclesMessage.js";
-import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 
 const vehicleList = [
     {
-        personId: 1,
-        vehicleId: 1,
+        personId: 1000,
+        vehicleId: 2,
         brandedPartId: 113,
     },
 ];

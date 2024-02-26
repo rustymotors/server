@@ -2,7 +2,7 @@ import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
 import { StockCar } from "./StockCar.js";
 import { OldServerMessage } from "../../shared/messageFactory.js";
-import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 
 /**
  * @param {MessageHandlerArgs} args

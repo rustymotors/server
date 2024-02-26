@@ -1,18 +1,13 @@
 import { GenericRequestMessage } from "../GenericRequestMessage.js";
 
 import { OldServerMessage } from "../../../shared/messageFactory.js";
-import { MessageHandlerArgs, MessageHandlerResult } from "../handlers.js";
+import { MessageHandlerArgs, MessageHandlerResult } from "../../types.js";
 import { CarInfoMessage } from "../messageStructs/CarInfoMessage.js";
 import { log } from "../../../shared/log.js";
-import {
-    createSqlTag,
-    z,
-} from "../../../database/src/services/database.js";
+import { createSqlTag, z } from "../../../database/src/services/database.js";
 import { getVehiclePartTree } from "../../../database/src/cache.js";
 import { TPart } from "../../../database/src/models/Part.js";
-import {
-    buildVehiclePartTreeFromDB,
-} from "../../../database/src/models/VehiclePartTree.js";
+import { buildVehiclePartTreeFromDB } from "../../../database/src/models/VehiclePartTree.js";
 
 const DAMAGE_SIZE = 2000;
 

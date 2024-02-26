@@ -5,7 +5,7 @@ import {
     fetchStateFromDatabase,
     findSessionByConnectionId,
 } from "../../shared/State.js";
-import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 
 export async function _getOwnedParts({
     connectionId,

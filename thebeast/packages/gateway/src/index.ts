@@ -193,6 +193,8 @@ export function onSocketConnection({
 
         log.debug("Calling onData handler");
 
+        log.trace(`Raw message: ${getAsHex(incomingDataAsBuffer)}`);
+
         portOnDataHandler({
             connectionId: connectionId,
             message: rawMessage,
@@ -219,9 +221,6 @@ export function onSocketConnection({
             .catch((/** @type {Error} */ error: Error) => {
                 log.error(`Error handling data: ${String(error)}`);
                 throw error;
-
-                // Call server shutdown
-                // getGatewayServer({}).shutdown();
             });
     });
 
@@ -301,13 +300,11 @@ export function handleGameMessage(
         message.deserialize(bytes);
 
         // Process the message
-        const t = Sentry.startTransaction({
-            name: `Process message ${message.header.getId()}`,
-        });
         processGameMessage(connectionId, message, log, socketCallback);
-        t.finish();
     } catch (error) {
-        log.error(`Error processing message: ${error}`);
+        log.fatal(`Error processing message: ${error}`);
+        getGatewayServer({log}).stop();
+
         if (error! instanceof MessageProcessorError) {
             throw error;
         }

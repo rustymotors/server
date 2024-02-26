@@ -1,7 +1,7 @@
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { OldServerMessage } from "../../shared/messageFactory.js";
 import { OwnedVehicle, OwnedVehiclesMessage } from "./OwnedVehiclesMessage.js";
-import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 import { PlayerInfoMessage } from "./PlayerInfoMessage.js";
 import { PlayerOptionsMessage } from "./messageStructs/PlayerOptionsMessage.js";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
