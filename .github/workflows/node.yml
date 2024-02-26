@@ -27,19 +27,6 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: ${{ matrix.node-version }}
-
-            - name: Run PostgreSQL migrations
-                # Runs a script that creates a PostgreSQL table, populates
-                # the table with data, and then retrieves the data.
-              run: |
-                npm install
-                npx tsx migrate.ts up
-                # Environment variables used by the `client.js` script to create a new PostgreSQL table.
-              env:
-                # The hostname used to communicate with the PostgreSQL service container
-                POSTGRES_HOST: postgres
-                # The default PostgreSQL port
-                POSTGRES_PORT: 5432
             - name: Install and test
               run: |
                   npm install-ci-test
