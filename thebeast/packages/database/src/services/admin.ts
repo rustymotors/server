@@ -1,5 +1,5 @@
 import { DatabaseTransactionConnection } from "slonik";
-import { slonik, createSqlTag, z } from "./database.js";
+import { slonik, sql } from "./database.js";
 import { log } from "../../../shared/log.js";
 import * as Sentry from "@sentry/node";
 
@@ -40,50 +40,6 @@ async function skinExists(skinId: number): Promise<boolean> {
         },
     );
 }
-
-const sql = createSqlTag({
-    typeAliases: {
-        id: z.number(),
-        brandedPart: z.object({
-            partid: z.number() || z.null(),
-            parentpartid: z.number() || z.null(),
-            brandedpartid: z.number() || z.null(),
-            attachmentpointid: z.number() || z.null(),
-        }),
-        part: z.object({
-            partid: z.number(),
-            parentpartid: z.number(),
-            brandedpartid: z.number(),
-            percentdamage: z.number(),
-            itemwear: z.number(),
-            attachmentpointid: z.number(),
-            partname: z.string() || z.null(),
-            ownerid: z.number(),
-        }),
-        abstractPartType: z.object({
-            abstractparttypeid: z.number(),
-        }),
-        ptSkin: z.object({
-            skinid: z.number(),
-            defaultflag: z.number(),
-        }),
-        nextPartId: z.object({
-            nextval: z.bigint(),
-        }),
-        dbPart: z.object({
-            partid: z.number(),
-            parentpartid: z.number(),
-            brandedpartid: z.number(),
-            percentdamage: z.number(),
-            itemwear: z.number(),
-            attachmentpointid: z.number(),
-            ownerid: z.number(),
-            partname: z.string() || z.null(),
-            repaircost: z.number(),
-            scrapvalue: z.number(),
-        }),
-    },
-});
 
 async function getAbstractPartTypeIDForBrandedPartID(
     brandedPartId: number,
