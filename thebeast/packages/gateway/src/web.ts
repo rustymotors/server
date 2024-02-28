@@ -97,7 +97,7 @@ export async function addWebRoutes(
         }
 
         // Check the password
-        if (await checkPassword(user, password) === false) {
+        if ((await checkPassword(user, password)) === false) {
             return reply.send("Valid=FALSE\nReason=Invalid password");
         }
 

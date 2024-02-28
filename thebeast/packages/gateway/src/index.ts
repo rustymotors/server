@@ -303,7 +303,7 @@ export function handleGameMessage(
         processGameMessage(connectionId, message, log, socketCallback);
     } catch (error) {
         log.fatal(`Error processing message: ${error}`);
-        getGatewayServer({log}).stop();
+        getGatewayServer({ log }).stop();
 
         if (error! instanceof MessageProcessorError) {
             throw error;

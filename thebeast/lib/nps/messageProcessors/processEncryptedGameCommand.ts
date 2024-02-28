@@ -79,7 +79,7 @@ export async function processEncryptedGameCommand(
         log.fatal(
             `No processor found for message ID: ${decryptedMessage.header.getId()}`,
         );
-        return getGatewayServer({log}).stop();
+        return getGatewayServer({ log }).stop();
     }
 
     // Process the message
