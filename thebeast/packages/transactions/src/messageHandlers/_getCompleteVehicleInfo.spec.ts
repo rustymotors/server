@@ -11,6 +11,14 @@ describe("_getCompleteVehicleInfo", () => {
         const connectionId = "testConnectionId";
         const packet = mockServerMessageType();
         const log = mockLogger();
+        vi.mock("slonik", async (importOriginal) => {
+            const mod = await importOriginal<typeof import("slonik")>();
+            return {
+                ...mod,
+                // replace some exports
+                createPool: vi.fn(),
+            };
+        });
         const expected = {
             vehicleId: 1,
             skinId: 1,

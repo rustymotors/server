@@ -1,8 +1,7 @@
 import { log } from "../../../shared/log.js";
 import * as Sentry from "@sentry/node";
 import { setVehiclePartTree } from "../cache.js";
-import { DBPart } from "../services/admin.js";
-import { createSqlTag, slonik, z } from "../services/database.js";
+import { sql, slonik } from "../services/database.js";
 import { TPart } from "./Part.js";
 
 const level1PartTypes = [1001, 2001, 4001, 5001, 6001, 15001, 36001, 37001];
@@ -50,67 +49,6 @@ export type VehiclePartTreeType = {
         };
     };
 };
-
-const sql = createSqlTag({
-    typeAliases: {
-        id: z.number(),
-        brandedPart: z.object({
-            partid: z.number() || z.null(),
-            parentpartid: z.number() || z.null(),
-            brandedpartid: z.number() || z.null(),
-            attachmentpointid: z.number() || z.null(),
-        }),
-        part: z.object({
-            partid: z.number(),
-            parentpartid: z.number(),
-            brandedpartid: z.number(),
-            percentdamage: z.number(),
-            itemwear: z.number(),
-            attachmentpointid: z.number(),
-            partname: z.string() || z.null(),
-            ownerid: z.number(),
-            repaircost: z.number(),
-            scrapvalue: z.number(),
-        }),
-        abstractPartType: z.object({
-            abstractparttypeid: z.number(),
-        }),
-        ptSkin: z.object({
-            skinid: z.number(),
-            defaultflag: z.number(),
-        }),
-        nextPartId: z.object({
-            nextval: z.bigint(),
-        }),
-        dbPart: z.object({
-            partid: z.number(),
-            parentpartid: z.number(),
-            brandedpartid: z.number(),
-            percentdamage: z.number(),
-            itemwear: z.number(),
-            attachmentpointid: z.number(),
-            ownerid: z.number(),
-            partname: z.string() || z.null(),
-            repaircost: z.number(),
-            scrapvalue: z.number(),
-        }),
-        detailedPart: z.object({
-            brandedpartid: z.number(),
-            parttypeid: z.number(),
-            abstractparttypeid: z.number(),
-            parentabstractparttypeid: z.number(),
-            attachmentpointid: z.number(),
-        }),
-        vehicle: z.object({
-            vehicleid: z.number(),
-            skinid: z.number(),
-            flags: z.number(),
-            class: z.number(),
-            infosetting: z.number(),
-            damageinfo: z.instanceof(Buffer) || z.null(),
-        }),
-    },
-});
 
 async function getNextPartId(): Promise<number> {
     const result = await Sentry.startSpan(
@@ -373,6 +311,7 @@ export async function buildVehiclePartTreeFromDB(
         },
         async (span) => {
             return slonik.many(sql.typeAlias("part")`
+            return slonik.many(sql.typeAlias("dbPart")`
         SELECT partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue
         FROM part
         WHERE parentpartid = ${vehicleId}
@@ -427,7 +366,7 @@ export async function buildVehiclePartTreeFromDB(
             },
         },
         async (span) => {
-            return slonik.many(sql.typeAlias("part")`
+            return slonik.many(sql.typeAlias("dbPart")`
         SELECT partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue
         FROM part
         WHERE parentpartid IN (${sql.join(level1PartsIds, sql.fragment`, `)})

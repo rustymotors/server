@@ -4,7 +4,6 @@ import { OldServerMessage } from "../../../shared/messageFactory.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "../../types.js";
 import { CarInfoMessage } from "../messageStructs/CarInfoMessage.js";
 import { log } from "../../../shared/log.js";
-import { createSqlTag, z } from "../../../database/src/services/database.js";
 import { getVehiclePartTree } from "../../../database/src/cache.js";
 import { TPart } from "../../../database/src/models/Part.js";
 import { buildVehiclePartTreeFromDB } from "../../../database/src/models/VehiclePartTree.js";
@@ -142,38 +141,6 @@ class CarInfoStruct {
         return `msgNo: ${this.msgNo} playerId: ${this.playerId} vehicle: ${this.vehicle} noOfParts: ${this.noOfParts} parts: ${this.parts}`;
     }
 }
-
-const sql = createSqlTag({
-    typeAliases: {
-        vehicle: z.object({
-            VehicleID: z.number(),
-            SkinID: z.number(),
-            Flags: z.number(),
-            Class: z.number(),
-            DamageInfo: z.string(),
-        }),
-        vehicleWithOwner: z.object({
-            vehicleid: z.number(),
-            skinid: z.number(),
-            flags: z.number(),
-            class: z.number(),
-            damageinfo: z.string(),
-            ownerid: z.number(),
-        }),
-        dbPart: z.object({
-            partid: z.number(),
-            parentpartid: z.number(),
-            brandedpartid: z.number(),
-            percentdamage: z.number(),
-            itemwear: z.number(),
-            attachmentpointid: z.number(),
-            ownerid: z.number(),
-            partname: z.string() || z.null(),
-            repaircost: z.number(),
-            scrapvalue: z.number(),
-        }),
-    },
-});
 
 export type DBPart = {
     partId: number;
