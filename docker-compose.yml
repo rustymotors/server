@@ -12,7 +12,6 @@ services:
             - "host.docker.internal:host-gateway"
     db:
         image: postgres:latest
-        read_only: true
         restart: always
         environment:
             POSTGRES_DB: rm
@@ -27,7 +26,6 @@ services:
 
     adminer:
         image: adminer
-        read_only: true
         restart: always
         ports:
             - 8080:8080
