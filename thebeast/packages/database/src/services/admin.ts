@@ -90,12 +90,12 @@ export async function createNewCar(
     skinId: number,
     newCarOwnerId: number,
 ): Promise<number> {
-    if (await playerExists(newCarOwnerId) === false) {
+    if ((await playerExists(newCarOwnerId)) === false) {
         log.error("player does not exist");
         throw new Error("player does not exist");
     }
 
-    if (await skinExists(skinId) === false) {
+    if ((await skinExists(skinId)) === false) {
         log.error("skin does not exist");
         throw new Error("skin does not exist");
     }
@@ -106,7 +106,7 @@ export async function createNewCar(
     console.log("abstractPartTypeId");
     console.dir(abstractPartTypeId);
 
-    if (await isAbstractPartTypeAVehicle(abstractPartTypeId) === false) {
+    if ((await isAbstractPartTypeAVehicle(abstractPartTypeId)) === false) {
         log.error(`branded part with id ${brandedPartId} is not a vehicle`);
         throw new Error(
             `branded part with id ${brandedPartId} is not a vehicle`,
