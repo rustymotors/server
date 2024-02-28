@@ -1,6 +1,9 @@
 codecov:
     require_ci_to_pass: false
 
+ai_pr_review:
+  enabled: true
+
 comment:
     show_carryforward_flags: true
 
@@ -58,9 +61,3 @@ component_management:
               - thebeast/packages/core/**
               - thebeast/packages/gateway/**
               - thebeast/packages/shared/**
-
-coverage:
-    status:
-        project:
-            default:
-                removed_code_behavior: adjust_base
