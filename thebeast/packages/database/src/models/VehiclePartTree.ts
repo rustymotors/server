@@ -310,7 +310,6 @@ export async function buildVehiclePartTreeFromDB(
             },
         },
         async (span) => {
-            return slonik.many(sql.typeAlias("part")`
             return slonik.many(sql.typeAlias("dbPart")`
         SELECT partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue
         FROM part
