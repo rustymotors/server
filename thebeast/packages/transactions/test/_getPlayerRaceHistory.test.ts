@@ -21,4 +21,22 @@ describe("_getPlayerRaceHistory", () => {
 
         expect(result).toBeDefined();
     });
+
+    it("should return a PlayerRacingHistoryMessage with a length of 3", async () => {
+        const incomingMessage = new OldServerMessage();
+        incomingMessage.internalBuffer = Buffer.from([
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00,
+            0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00,
+            0x00, 0x01,
+        ]);
+        const result = await _getPlayerRaceHistory({
+            connectionId: "0",
+            packet: incomingMessage,
+            log: getServerLogger({
+                level: "silent",
+            }),
+        });
+
+        expect(result.messages.length).toBe(3);
+    });
 });
