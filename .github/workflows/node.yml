@@ -29,7 +29,8 @@ jobs:
                   node-version: ${{ matrix.node-version }}
             - name: Install and test
               run: |
-                  npm install-ci-test
+                  corepack enable pnpm
+                  pnpm test --filter thebeast
             - name: Codecov
               if: ${{ always() }}
               env:

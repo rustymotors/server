@@ -76,10 +76,9 @@ export async function processEncryptedGameCommand(
     const processor = lobbyCommandMap.get(decryptedMessage.header.getId());
 
     if (typeof processor === "undefined") {
-        log.fatal(
-            `No processor found for message ID: ${decryptedMessage.header.getId()}`,
-        );
-        return getGatewayServer({ log }).stop();
+        const err = `No processor found for message ID: ${decryptedMessage.header.getId()}`;
+        log.fatal(err);
+        throw Error(err);
     }
 
     // Process the message

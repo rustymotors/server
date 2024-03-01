@@ -302,12 +302,9 @@ export function handleGameMessage(
         // Process the message
         processGameMessage(connectionId, message, log, socketCallback);
     } catch (error) {
-        log.fatal(`Error processing message: ${error}`);
-        getGatewayServer({ log }).stop();
-
-        if (error! instanceof MessageProcessorError) {
-            throw error;
-        }
+        const err = `Error processing game message: ${error}`;
+        log.fatal(err);
+        throw Error(err);
     }
 }
 
