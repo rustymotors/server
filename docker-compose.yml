@@ -3,7 +3,7 @@ version: "3.1"
 services:
     nginx:
         build:
-            context: thebeast/services/sslProxy
+            context: services/sslProxy
         ports:
             - "443:443"
             - "80:80"
@@ -30,7 +30,7 @@ services:
         ports:
             - 8080:8080
         security_opt:
-            - no-new-privileges:true            
+            - no-new-privileges:true
 
 volumes:
     db-data:
