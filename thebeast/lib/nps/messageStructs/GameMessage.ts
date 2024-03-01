@@ -180,7 +180,7 @@ export class GameMessage implements IMessage {
         // Update the message data to the required size
         this.data = new SerializableData(this.header.getLength());
 
-        this.data.deserialize(messageData);
+        this.data.deserialize(messageData.subarray(0, this.header.getLength()));
     }
 
     toString(): string {

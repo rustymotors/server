@@ -1,5 +1,5 @@
 {
-    "name": "@rusty-motors/thebeast",
+    "name": "thebeast",
     "version": "1.0.0",
     "description": "a server",
     "author": "Drazi Crendraven <drazisil@hey.com>",
@@ -10,7 +10,7 @@
         "url": "git@github.com:drazisil/mcos.git"
     },
     "scripts": {
-        "test": "tsc && eslint --fix . && prettier --write . && node --openssl-legacy-provider ../node_modules/.bin/vitest run --coverage packages lib",
+        "test": "tsc && eslint --fix . && prettier --write . && node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage packages lib",
         "prod": "make prod_node",
         "prod:stop": "docker-compose stop",
         "release": "standard-version --sign",

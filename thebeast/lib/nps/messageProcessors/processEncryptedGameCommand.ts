@@ -15,6 +15,7 @@ import {
 } from "../services/session.js";
 import { log } from "../../../packages/shared/log.js";
 import { lobbyCommandMap } from "./lobbyCommands.js";
+import { getGatewayServer } from "../../../packages/gateway/src/GatewayServer.js";
 
 export async function processEncryptedGameCommand(
     connectionId: string,
@@ -75,12 +76,9 @@ export async function processEncryptedGameCommand(
     const processor = lobbyCommandMap.get(decryptedMessage.header.getId());
 
     if (typeof processor === "undefined") {
-        log.error(
-            `No processor found for message ID: ${decryptedMessage.header.getId()}`,
-        );
-        throw new Error(
-            `No processor found for message ID: ${decryptedMessage.header.getId()}`,
-        );
+        const err = `No processor found for message ID: ${decryptedMessage.header.getId()}`;
+        log.fatal(err);
+        throw Error(err);
     }
 
     // Process the message

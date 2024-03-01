@@ -1,0 +1,1357 @@
+{
+  "version": "6.0",
+  "nxVersion": "18.0.6",
+  "deps": {
+    "slonik": "29",
+    "@slonik/migrator": "^0.12.0",
+    "@types/node": "^20.11.16",
+    "nx": "^18.0.6",
+    "prettier": "3.2.4",
+    "typescript": "^5.3.3",
+    "vitest": "^1.3.1"
+  },
+  "pathMappings": {},
+  "nxJsonPlugins": [],
+  "fileMap": {
+    "projectFileMap": {
+      "@rusty-motors/thebeast": [
+        {
+          "file": "thebeast/.dockerignore",
+          "hash": "5025141916944003883"
+        },
+        {
+          "file": "thebeast/.gitignore",
+          "hash": "9266369700550161410"
+        },
+        {
+          "file": "thebeast/Makefile",
+          "hash": "10938361408484256462"
+        },
+        {
+          "file": "thebeast/README.md",
+          "hash": "9375829152669321394"
+        },
+        {
+          "file": "thebeast/data/mcouniverse.cnf",
+          "hash": "123910987430207258"
+        },
+        {
+          "file": "thebeast/data/mcouniverse.crt",
+          "hash": "1191634416628667447"
+        },
+        {
+          "file": "thebeast/data/private_key.pem",
+          "hash": "9606433185746498366"
+        },
+        {
+          "file": "thebeast/data/pub.key",
+          "hash": "17902127655719005979"
+        },
+        {
+          "file": "thebeast/docs/client.md",
+          "hash": "15727718581905962847"
+        },
+        {
+          "file": "thebeast/docs/flow.md",
+          "hash": "7787831704472350830"
+        },
+        {
+          "file": "thebeast/docs/reference/export.psql",
+          "hash": "17578199974330833246"
+        },
+        {
+          "file": "thebeast/docs/reference/pkware/Makefile",
+          "hash": "15053509190642345172"
+        },
+        {
+          "file": "thebeast/docs/reference/pkware/PKWare.vcxproj",
+          "hash": "9435899160320819569"
+        },
+        {
+          "file": "thebeast/docs/reference/pkware/PKWare.vcxproj.filters",
+          "hash": "13468170418349436350"
+        },
+        {
+          "file": "thebeast/docs/reference/pkware/Pkware.dsp",
+          "hash": "1391784609212882792"
+        },
+        {
+          "file": "thebeast/docs/reference/pkware/Readme.md",
+          "hash": "4425732291975278011"
+        },
+        {
+          "file": "thebeast/docs/reference/pkware/explode.cpp",
+          "hash": "18395085193875004087"
+        },
+        {
+          "file": "thebeast/docs/reference/pkware/implode.cpp",
+          "hash": "7393854153648314614"
+        },
+        {
+          "file": "thebeast/docs/reference/pkware/pkware.h",
+          "hash": "13921447420677982317"
+        },
+        {
+          "file": "thebeast/docs/server.md",
+          "hash": "9579366762840847861"
+        },
+        {
+          "file": "thebeast/docs/technicial/README.md",
+          "hash": "6957920249184620849"
+        },
+        {
+          "file": "thebeast/docs/technicial/external_notes.md",
+          "hash": "10610467416209624836"
+        },
+        {
+          "file": "thebeast/docs/technicial/internal_notes.md",
+          "hash": "5300025178613305298"
+        },
+        {
+          "file": "thebeast/images/2012-10-12_lobby.png",
+          "hash": "1802333483553751171"
+        },
+        {
+          "file": "thebeast/jsconfig-old.json",
+          "hash": "5852609677706475110"
+        },
+        {
+          "file": "thebeast/lib/index.d.ts",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "thebeast/lib/nps/index.ts",
+          "hash": "7090739820004070559"
+        },
+        {
+          "file": "thebeast/lib/nps/messageProcessors/getLobMiniRiffList.ts",
+          "hash": "1310426978404068664"
+        },
+        {
+          "file": "thebeast/lib/nps/messageProcessors/getLobMiniUserList.ts",
+          "hash": "6532897472486871971"
+        },
+        {
+          "file": "thebeast/lib/nps/messageProcessors/index.ts",
+          "hash": "3428272607749081350"
+        },
+        {
+          "file": "thebeast/lib/nps/messageProcessors/lobbyCommands.ts",
+          "hash": "3067400189448550173"
+        },
+        {
+          "file": "thebeast/lib/nps/messageProcessors/processCheckPlateText.ts",
+          "hash": "7116424182069654272"
+        },
+        {
+          "file": "thebeast/lib/nps/messageProcessors/processCheckProfileName.ts",
+          "hash": "15692350762709805299"
+        },
+        {
+          "file": "thebeast/lib/nps/messageProcessors/processCreateProfile.ts",
+          "hash": "17296605385109366503"
+        },
+        {
+          "file": "thebeast/lib/nps/messageProcessors/processDeleteProfile.ts",
+          "hash": "8037003224882727444"
+        },
+        {
+          "file": "thebeast/lib/nps/messageProcessors/processEncryptedGameCommand.ts",
+          "hash": "9864198487345188731"
+        },
+        {
+          "file": "thebeast/lib/nps/messageProcessors/processGameLogin.ts",
+          "hash": "6848078763900836763"
+        },
+        {
+          "file": "thebeast/lib/nps/messageProcessors/processGetFirstBuddy.ts",
+          "hash": "4317773952728428954"
+        },
+        {
+          "file": "thebeast/lib/nps/messageProcessors/processGetProfileInfo.ts",
+          "hash": "234931470321227098"
+        },
+        {
+          "file": "thebeast/lib/nps/messageProcessors/processGetProfileMaps.ts",
+          "hash": "10958544461981205728"
+        },
+        {
+          "file": "thebeast/lib/nps/messageProcessors/processLobbyLogin.ts",
+          "hash": "17296351929681794078"
+        },
+        {
+          "file": "thebeast/lib/nps/messageProcessors/processPing.ts",
+          "hash": "16270620732051920981"
+        },
+        {
+          "file": "thebeast/lib/nps/messageProcessors/processUserLogin.ts",
+          "hash": "15428579812719676698"
+        },
+        {
+          "file": "thebeast/lib/nps/messageStructs/GameMessage.ts",
+          "hash": "8854967129983057049"
+        },
+        {
+          "file": "thebeast/lib/nps/messageStructs/GameProfile.ts",
+          "hash": "4848812249109328340"
+        },
+        {
+          "file": "thebeast/lib/nps/messageStructs/MiniRiffList.ts",
+          "hash": "7155327144186990565"
+        },
+        {
+          "file": "thebeast/lib/nps/messageStructs/MiniUserList.ts",
+          "hash": "17462825181538069545"
+        },
+        {
+          "file": "thebeast/lib/nps/messageStructs/NPSList.ts",
+          "hash": "10119158781387584114"
+        },
+        {
+          "file": "thebeast/lib/nps/messageStructs/ProfileList.ts",
+          "hash": "2527086496158874335"
+        },
+        {
+          "file": "thebeast/lib/nps/messageStructs/SessionKey.ts",
+          "hash": "12762795724411796498"
+        },
+        {
+          "file": "thebeast/lib/nps/messageStructs/UserAction.ts",
+          "hash": "579526865209158192"
+        },
+        {
+          "file": "thebeast/lib/nps/messageStructs/UserInfo.ts",
+          "hash": "15823399554624038370"
+        },
+        {
+          "file": "thebeast/lib/nps/messageStructs/UserStatus.ts",
+          "hash": "8429116003312465571"
+        },
+        {
+          "file": "thebeast/lib/nps/services/account.ts",
+          "hash": "15589634688779153194"
+        },
+        {
+          "file": "thebeast/lib/nps/services/profile.ts",
+          "hash": "8641993167559947549"
+        },
+        {
+          "file": "thebeast/lib/nps/services/session.ts",
+          "hash": "2818149994021605356"
+        },
+        {
+          "file": "thebeast/lib/nps/services/token.ts",
+          "hash": "7368387690796821995"
+        },
+        {
+          "file": "thebeast/lib/nps/services/types.ts",
+          "hash": "9731723030948033474"
+        },
+        {
+          "file": "thebeast/lib/nps/types.ts",
+          "hash": "14870268956472440757"
+        },
+        {
+          "file": "thebeast/lib/nps/utils/pureCompare.ts",
+          "hash": "4258843400502292304"
+        },
+        {
+          "file": "thebeast/lib/nps/utils/pureGet.ts",
+          "hash": "265682811551639654"
+        },
+        {
+          "file": "thebeast/lib/nps/utils/purePut.ts",
+          "hash": "9440717771529078848"
+        },
+        {
+          "file": "thebeast/misc/mco-installer.ps1",
+          "hash": "13519895526939924726"
+        },
+        {
+          "file": "thebeast/misc/port-forward.ps1",
+          "hash": "2665506854599928164"
+        },
+        {
+          "file": "thebeast/package.json",
+          "hash": "14226416099307832357",
+          "deps": [
+            "npm:slonik",
+            "npm:tslib",
+            "npm:@types/node",
+            "npm:prettier",
+            "npm:typescript",
+            "npm:vitest"
+          ]
+        },
+        {
+          "file": "thebeast/packages/cli/ConsoleThread.ts",
+          "hash": "1311000703834661758"
+        },
+        {
+          "file": "thebeast/packages/core/src/serializationHelpers.test.ts",
+          "hash": "7375367383862286700"
+        },
+        {
+          "file": "thebeast/packages/core/src/serializationHelpers.ts",
+          "hash": "17013848800848265656"
+        },
+        {
+          "file": "thebeast/packages/database/src/DatabaseManager.ts",
+          "hash": "18219385929952374378"
+        },
+        {
+          "file": "thebeast/packages/database/src/cache.ts",
+          "hash": "7882225308057049204"
+        },
+        {
+          "file": "thebeast/packages/database/src/models/AttachmentPoint.ts",
+          "hash": "1243933141818742110"
+        },
+        {
+          "file": "thebeast/packages/database/src/models/Brand.ts",
+          "hash": "16061208263295757044"
+        },
+        {
+          "file": "thebeast/packages/database/src/models/BrandedPart.ts",
+          "hash": "5031921834567439497"
+        },
+        {
+          "file": "thebeast/packages/database/src/models/Model.ts",
+          "hash": "9581311691702946170"
+        },
+        {
+          "file": "thebeast/packages/database/src/models/Part.ts",
+          "hash": "3565147951075335222"
+        },
+        {
+          "file": "thebeast/packages/database/src/models/VehiclePartTree.ts",
+          "hash": "3694860194416975564"
+        },
+        {
+          "file": "thebeast/packages/database/src/services/admin.ts",
+          "hash": "12837464768298197841"
+        },
+        {
+          "file": "thebeast/packages/database/src/services/database.ts",
+          "hash": "1491364016199264618"
+        },
+        {
+          "file": "thebeast/packages/database/test/Database.test.ts",
+          "hash": "9913456368706932491"
+        },
+        {
+          "file": "thebeast/packages/gateway/src/GatewayServer.ts",
+          "hash": "7460506973012740089"
+        },
+        {
+          "file": "thebeast/packages/gateway/src/encryption.ts",
+          "hash": "17732081301264374343"
+        },
+        {
+          "file": "thebeast/packages/gateway/src/index.ts",
+          "hash": "7316187040594714944"
+        },
+        {
+          "file": "thebeast/packages/gateway/src/web.ts",
+          "hash": "10732081061832552206"
+        },
+        {
+          "file": "thebeast/packages/gateway/test/encryption.test.ts",
+          "hash": "16713107242591571234"
+        },
+        {
+          "file": "thebeast/packages/interfaces/index.d.ts",
+          "hash": "7048195495022320009"
+        },
+        {
+          "file": "thebeast/packages/lobby/src/LoginInfoMessage.ts",
+          "hash": "1491492989245281008"
+        },
+        {
+          "file": "thebeast/packages/lobby/src/MiniRiffMessage.js",
+          "hash": "11241013786033480948"
+        },
+        {
+          "file": "thebeast/packages/lobby/src/NPS_LOBBYCLIENT_COMMANDS.ts",
+          "hash": "6432882401389896262"
+        },
+        {
+          "file": "thebeast/packages/lobby/src/NPS_LOBBYSERVER_COMMANDS.ts",
+          "hash": "13604791001102711879"
+        },
+        {
+          "file": "thebeast/packages/lobby/src/NPS_LOBBY_COMMANDS.ts",
+          "hash": "2585815956597800195"
+        },
+        {
+          "file": "thebeast/packages/lobby/src/UserInfoMessage.ts",
+          "hash": "1972085798168679604"
+        },
+        {
+          "file": "thebeast/packages/lobby/src/handlers/_setMyUserData.ts",
+          "hash": "6051840652316367579"
+        },
+        {
+          "file": "thebeast/packages/lobby/src/handlers/encryptedCommand.ts",
+          "hash": "6814520795311795350"
+        },
+        {
+          "file": "thebeast/packages/lobby/src/handlers/handleGetMiniUserList.ts",
+          "hash": "13618102840919040981"
+        },
+        {
+          "file": "thebeast/packages/lobby/src/handlers/handleSendMiniRiffList.ts",
+          "hash": "6445464099010382093"
+        },
+        {
+          "file": "thebeast/packages/lobby/src/handlers/handleTrackingPing.ts",
+          "hash": "13045732364422345782"
+        },
+        {
+          "file": "thebeast/packages/lobby/src/handlers/requestConnectGameServer.ts",
+          "hash": "10345121769205254033"
+        },
+        {
+          "file": "thebeast/packages/lobby/src/internal.ts",
+          "hash": "924094160136413689"
+        },
+        {
+          "file": "thebeast/packages/lobby/test/handlers/handleSendMiniRiffList.test.ts",
+          "hash": "7238017438243772608"
+        },
+        {
+          "file": "thebeast/packages/login/src/NPSUserStatus.ts",
+          "hash": "16875952085468026799"
+        },
+        {
+          "file": "thebeast/packages/login/src/NPS_LOGINCLIENT_COMMANDS.ts",
+          "hash": "11705039232477007955"
+        },
+        {
+          "file": "thebeast/packages/login/src/NPS_LOGIN_COMMANDS.ts",
+          "hash": "8159177475144579801"
+        },
+        {
+          "file": "thebeast/packages/login/src/index.ts",
+          "hash": "3352871230665761711"
+        },
+        {
+          "file": "thebeast/packages/login/src/internal.ts",
+          "hash": "17051275314422802076"
+        },
+        {
+          "file": "thebeast/packages/login/src/premadeLogin.ts",
+          "hash": "12751300569295352555"
+        },
+        {
+          "file": "thebeast/packages/login/test/LoginServer.test.ts",
+          "hash": "10565123972491562420"
+        },
+        {
+          "file": "thebeast/packages/patch/src/PatchServer.ts",
+          "hash": "5601406865432369959"
+        },
+        {
+          "file": "thebeast/packages/patch/test/PatchServer.test.ts",
+          "hash": "9472484405971191658"
+        },
+        {
+          "file": "thebeast/packages/persona/src/BuddyInfoMessage.ts",
+          "hash": "957965795279503517"
+        },
+        {
+          "file": "thebeast/packages/persona/src/PersonaMapsMessage.ts",
+          "hash": "341757047635540261"
+        },
+        {
+          "file": "thebeast/packages/persona/src/_gameLogout.ts",
+          "hash": "4413858239163244230"
+        },
+        {
+          "file": "thebeast/packages/persona/src/_getFirstBuddy.ts",
+          "hash": "1089323837474634693"
+        },
+        {
+          "file": "thebeast/packages/persona/src/_selectGamePersona.ts",
+          "hash": "12129028808475062084"
+        },
+        {
+          "file": "thebeast/packages/persona/src/getPersonasByPersonaId.ts",
+          "hash": "2932645466827174550"
+        },
+        {
+          "file": "thebeast/packages/persona/src/handlers/validatePersonaName.ts",
+          "hash": "9671635701221334083"
+        },
+        {
+          "file": "thebeast/packages/persona/src/index.js",
+          "hash": "6701314932231100316"
+        },
+        {
+          "file": "thebeast/packages/persona/src/internal.ts",
+          "hash": "829028668449652946"
+        },
+        {
+          "file": "thebeast/packages/persona/test/getPersonasByPersonaId.test.ts",
+          "hash": "9820907297118538269"
+        },
+        {
+          "file": "thebeast/packages/shard/README.md",
+          "hash": "1531493455043303254"
+        },
+        {
+          "file": "thebeast/packages/shard/src/ShardServer.ts",
+          "hash": "15261759438768374095"
+        },
+        {
+          "file": "thebeast/packages/shard/src/index.ts",
+          "hash": "13010640451471941546"
+        },
+        {
+          "file": "thebeast/packages/shard/src/shard-entry.ts",
+          "hash": "9955457668046224603"
+        },
+        {
+          "file": "thebeast/packages/shard/test/fixtures/testCert.txt",
+          "hash": "3488382365066730147"
+        },
+        {
+          "file": "thebeast/packages/shard/test/fixtures/testKey.txt",
+          "hash": "5139740649930613032"
+        },
+        {
+          "file": "thebeast/packages/shard/test/shard-entry.test.ts",
+          "hash": "15349928708796752740"
+        },
+        {
+          "file": "thebeast/packages/shared/Configuration.ts",
+          "hash": "8829321556485713934"
+        },
+        {
+          "file": "thebeast/packages/shared/MessageNode.ts",
+          "hash": "17276693369473084998"
+        },
+        {
+          "file": "thebeast/packages/shared/NPSMessage.js",
+          "hash": "13501682524628691279"
+        },
+        {
+          "file": "thebeast/packages/shared/RawMessageHeader.js",
+          "hash": "10963865330507911628"
+        },
+        {
+          "file": "thebeast/packages/shared/ServerMessage.test.ts",
+          "hash": "16102656974041962895"
+        },
+        {
+          "file": "thebeast/packages/shared/State.ts",
+          "hash": "16413030918793381960"
+        },
+        {
+          "file": "thebeast/packages/shared/SubThread.ts",
+          "hash": "9558083630241453712"
+        },
+        {
+          "file": "thebeast/packages/shared/TimeStamp.ts",
+          "hash": "9737425688522386934"
+        },
+        {
+          "file": "thebeast/packages/shared/log.ts",
+          "hash": "12230422625076241246"
+        },
+        {
+          "file": "thebeast/packages/shared/messageFactory.ts",
+          "hash": "12362226477158476067"
+        },
+        {
+          "file": "thebeast/packages/shared/src/BaseSerialized.ts",
+          "hash": "3200216018340432971"
+        },
+        {
+          "file": "thebeast/packages/shared/src/NetworkMessage.ts",
+          "hash": "7839562508523166106"
+        },
+        {
+          "file": "thebeast/packages/shared/src/RawMessage.ts",
+          "hash": "16255637630635910786"
+        },
+        {
+          "file": "thebeast/packages/shared/src/SerializedBuffer.ts",
+          "hash": "15948472476286257355"
+        },
+        {
+          "file": "thebeast/packages/shared/src/ServerMessage.ts",
+          "hash": "6574435112867849842"
+        },
+        {
+          "file": "thebeast/packages/shared/structs.ts",
+          "hash": "6770231010390025052"
+        },
+        {
+          "file": "thebeast/packages/shared/test/BaseSerialized.test.ts",
+          "hash": "15299131819114596119"
+        },
+        {
+          "file": "thebeast/packages/shared/test/RawMessage.test.ts",
+          "hash": "8286693699258480867"
+        },
+        {
+          "file": "thebeast/packages/shared/test/SerializedBuffer.test.ts",
+          "hash": "3081602657626059918"
+        },
+        {
+          "file": "thebeast/packages/shared/types.ts",
+          "hash": "535928383286824709"
+        },
+        {
+          "file": "thebeast/packages/shared/utils.js",
+          "hash": "8783924261469526704"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/ArcadeCarMessage.ts",
+          "hash": "1773582845790193606"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/EntryFeePurseMessage.ts",
+          "hash": "12865710013307806250"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/GameUrlsMessage.ts",
+          "hash": "999393481421749419"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/GenericReplyMessage.ts",
+          "hash": "17393665821760014902"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/GenericRequestMessage.ts",
+          "hash": "1476539291742873525"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/LobbyMessage.ts",
+          "hash": "9275279296147412981"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/OwnedVehiclesMessage.ts",
+          "hash": "12611322433130965831"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/PartsAssemblyMessage.ts",
+          "hash": "9337882765741192461"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/PlayerInfoMessage.ts",
+          "hash": "17457203427256605541"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/PlayerPhysicalMessage.ts",
+          "hash": "17233708314723268553"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/PlayerRacingHistoryMessage.ts",
+          "hash": "3411298515975253648"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/StockCar.ts",
+          "hash": "9033181026794782742"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/StockCarInfoMessage.ts",
+          "hash": "12716928424449940315"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/TClientConnectMessage.ts",
+          "hash": "1029994440417875391"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/TLoginMessage.ts",
+          "hash": "1547853334393280436"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/TunablesMessage.ts",
+          "hash": "7572081379958230220"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/_getArcadeCarInfo.ts",
+          "hash": "9147233676983020197"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/_getGameUrls.ts",
+          "hash": "13806199189865848133"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/_getOwnedParts.ts",
+          "hash": "6120034434128383360"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/_getOwnedVehicles.ts",
+          "hash": "8014122057707114339"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/_getPlayerInfo.ts",
+          "hash": "2049330447129420507"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/_getPlayerPhysical.ts",
+          "hash": "4665813287151303980"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/_getPlayerRaceHistory.ts",
+          "hash": "15468679873388136350"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/_getStockCarInfo.ts",
+          "hash": "7330412046291037513"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/_getTunables.ts",
+          "hash": "14577701050798876356"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/_logout.ts",
+          "hash": "9326370515488996681"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/_setOptions.ts",
+          "hash": "17891130601292919415"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/_updatePlayerPhysical.ts",
+          "hash": "3621658960673827879"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/clientConnect.ts",
+          "hash": "4753781919323379200"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/getLobbies.ts",
+          "hash": "1635802012173364044"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/internal.ts",
+          "hash": "18056856701207797701"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/login.ts",
+          "hash": "13916657415816829357"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/messageHandlers.ts",
+          "hash": "17675335383936088077"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/messageHandlers/_getCompleteVehicleInfo.spec.ts",
+          "hash": "11719113978455546525"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/messageHandlers/_getCompleteVehicleInfo.ts",
+          "hash": "1110763732248536929"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/messageHandlers/_updateCachedVehicle.ts",
+          "hash": "7008175338125684800"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/messageStructs/CarInfoMessage.ts",
+          "hash": "11588892827801367784"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/messageStructs/PlayerOptionsMessage.ts",
+          "hash": "6042678730710153460"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/models/PartModel.ts",
+          "hash": "279048933881245059"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/models/VehicleModel.ts",
+          "hash": "10410711501338596885"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/models/index.ts",
+          "hash": "6744656081485672062"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/services/car.ts",
+          "hash": "5354739902865390909"
+        },
+        {
+          "file": "thebeast/packages/transactions/src/trackingPing.ts",
+          "hash": "5801261250436147890"
+        },
+        {
+          "file": "thebeast/packages/transactions/test/LobbyMessage.test.ts",
+          "hash": "17151793148726225817"
+        },
+        {
+          "file": "thebeast/packages/transactions/test/OwnedVehiclesMessage.test.ts",
+          "hash": "9910063872974964539"
+        },
+        {
+          "file": "thebeast/packages/transactions/test/PartsAssemblyMessage.test.ts",
+          "hash": "5589125118605356726"
+        },
+        {
+          "file": "thebeast/packages/transactions/test/PlayerInfoMessage.test.ts",
+          "hash": "13084190344885027414"
+        },
+        {
+          "file": "thebeast/packages/transactions/test/PlayerRacingHistoryMessage.test.ts",
+          "hash": "17745193897863435478"
+        },
+        {
+          "file": "thebeast/packages/transactions/test/TClientConnectMessage.test.ts",
+          "hash": "17512883184623947196"
+        },
+        {
+          "file": "thebeast/packages/transactions/test/_getPlayerRaceHistory.test.ts",
+          "hash": "10264681368827451529"
+        },
+        {
+          "file": "thebeast/packages/transactions/test/clientConnect.test.ts",
+          "hash": "11146258957640552144"
+        },
+        {
+          "file": "thebeast/packages/transactions/test/getLobbies.test.ts",
+          "hash": "7414349835896295947"
+        },
+        {
+          "file": "thebeast/packages/transactions/test/trackingPing.test.ts",
+          "hash": "4783477714246278233"
+        },
+        {
+          "file": "thebeast/packages/transactions/types.ts",
+          "hash": "1206433166808545647"
+        },
+        {
+          "file": "thebeast/prettierrc",
+          "hash": "10593956658062165815"
+        },
+        {
+          "file": "thebeast/server.ts",
+          "hash": "3370460044543449901"
+        },
+        {
+          "file": "thebeast/services/sslProxy/Dockerfile",
+          "hash": "10918860478215206535"
+        },
+        {
+          "file": "thebeast/services/sslProxy/cert1.pem",
+          "hash": "6627038978586248096"
+        },
+        {
+          "file": "thebeast/services/sslProxy/chain1.pem",
+          "hash": "12404381617006411899"
+        },
+        {
+          "file": "thebeast/services/sslProxy/fullchain1.pem",
+          "hash": "2141058919244833389"
+        },
+        {
+          "file": "thebeast/services/sslProxy/mcouniverse.pem",
+          "hash": "17468020595415841035"
+        },
+        {
+          "file": "thebeast/services/sslProxy/nginx.conf",
+          "hash": "10189008900899018902"
+        },
+        {
+          "file": "thebeast/services/sslProxy/private_key.pem",
+          "hash": "14828305855260596309"
+        },
+        {
+          "file": "thebeast/services/sslProxy/privkey1.pem",
+          "hash": "896251991278574722"
+        },
+        {
+          "file": "thebeast/test/factoryMocks.ts",
+          "hash": "14506167869364755911"
+        }
+      ],
+      "shared-packets": [
+        {
+          "file": "packages/shared-packets/.gitignore",
+          "hash": "2110945332964774953"
+        },
+        {
+          "file": "packages/shared-packets/index.ts",
+          "hash": "14112979670253156991"
+        },
+        {
+          "file": "packages/shared-packets/nx",
+          "hash": "17165975525224888679"
+        },
+        {
+          "file": "packages/shared-packets/nx.bat",
+          "hash": "16828809655253213278"
+        },
+        {
+          "file": "packages/shared-packets/nx.json",
+          "hash": "1702674655394002529"
+        },
+        {
+          "file": "packages/shared-packets/package.json",
+          "hash": "5616656973328790161"
+        },
+        {
+          "file": "packages/shared-packets/src/BasePacket.ts",
+          "hash": "3372102292134029617"
+        },
+        {
+          "file": "packages/shared-packets/src/GameMessage.ts",
+          "hash": "5403072432092632987"
+        },
+        {
+          "file": "packages/shared-packets/src/ServerMessage.ts",
+          "hash": "10109509774501235701"
+        },
+        {
+          "file": "packages/shared-packets/src/interfaces.ts",
+          "hash": "14223115322489433218"
+        },
+        {
+          "file": "packages/shared-packets/tsconfig.json",
+          "hash": "12244550166806554632"
+        }
+      ]
+    },
+    "nonProjectFiles": [
+      {
+        "file": ".editorconfig",
+        "hash": "3513138753717310681"
+      },
+      {
+        "file": ".eslintignore",
+        "hash": "12850352444786700516"
+      },
+      {
+        "file": ".eslintrc.json",
+        "hash": "7384546438645336841"
+      },
+      {
+        "file": ".gitattributes",
+        "hash": "831515780835031949"
+      },
+      {
+        "file": ".github/CODEOWNERS",
+        "hash": "4055606894390288348"
+      },
+      {
+        "file": ".github/ISSUE_TEMPLATE/bug_report.md",
+        "hash": "115617464785463818"
+      },
+      {
+        "file": ".github/ISSUE_TEMPLATE/custom.md",
+        "hash": "5858363058901041211"
+      },
+      {
+        "file": ".github/ISSUE_TEMPLATE/feature_request.md",
+        "hash": "8357138721755086969"
+      },
+      {
+        "file": ".github/codecov.yml",
+        "hash": "11950616182529543795"
+      },
+      {
+        "file": ".github/stale.yml",
+        "hash": "4152159448353798214"
+      },
+      {
+        "file": ".github/workflows/codeql-analysis.yml",
+        "hash": "1830329638506090042"
+      },
+      {
+        "file": ".github/workflows/main.yml",
+        "hash": "9445417414588131479"
+      },
+      {
+        "file": ".github/workflows/node.yml",
+        "hash": "10434255733421760826"
+      },
+      {
+        "file": ".github/workflows/semgrep.yml",
+        "hash": "5733547883025944860"
+      },
+      {
+        "file": ".gitignore",
+        "hash": "6056045085944084065"
+      },
+      {
+        "file": ".nvmrc",
+        "hash": "3150325407466604411"
+      },
+      {
+        "file": ".renovaterc.json",
+        "hash": "1033688734383078772"
+      },
+      {
+        "file": ".yarnrc.yml",
+        "hash": "9773565372686775399"
+      },
+      {
+        "file": "AUTHORS",
+        "hash": "9088802071802449084"
+      },
+      {
+        "file": "CHANGELOG.md",
+        "hash": "8150256992360586195"
+      },
+      {
+        "file": "CODE_OF_CONDUCT.md",
+        "hash": "4459666008725275939"
+      },
+      {
+        "file": "LICENSE",
+        "hash": "3436599895438545929"
+      },
+      {
+        "file": "README.md",
+        "hash": "16855486448012672152"
+      },
+      {
+        "file": "data/mcouniverse.cnf",
+        "hash": "123910987430207258"
+      },
+      {
+        "file": "data/mcouniverse.crt",
+        "hash": "1191634416628667447"
+      },
+      {
+        "file": "data/private_key.pem",
+        "hash": "9606433185746498366"
+      },
+      {
+        "file": "data/pub.key",
+        "hash": "17902127655719005979"
+      },
+      {
+        "file": "docker-compose.yml",
+        "hash": "15381317242857966620"
+      },
+      {
+        "file": "ecosystem.config.js",
+        "hash": "16070110576719583910"
+      },
+      {
+        "file": "migrate.ts",
+        "hash": "8808382917902489449"
+      },
+      {
+        "file": "migrations/2024.02.11T13.01.48.attachmentPoint.sql",
+        "hash": "10542879087385480155"
+      },
+      {
+        "file": "migrations/2024.02.11T13.19.25.brand.sql",
+        "hash": "7166282554027007473"
+      },
+      {
+        "file": "migrations/2024.02.11T13.23.01.model.sql",
+        "hash": "16284802501309331487"
+      },
+      {
+        "file": "migrations/2024.02.11T13.33.31.abstractPartType.sql",
+        "hash": "2058007122663114655"
+      },
+      {
+        "file": "migrations/2024.02.11T13.38.39.partGrade.sql",
+        "hash": "5013091838467829893"
+      },
+      {
+        "file": "migrations/2024.02.11T13.39.20.partType.sql",
+        "hash": "8379931834343123851"
+      },
+      {
+        "file": "migrations/2024.02.11T13.40.36.brandedPart.sql",
+        "hash": "2022566303004781061"
+      },
+      {
+        "file": "migrations/2024.02.11T13.41.55.part.sql",
+        "hash": "3845495707411982302"
+      },
+      {
+        "file": "migrations/2024.02.11T13.45.10.driverClass.sql",
+        "hash": "13682220716441275837"
+      },
+      {
+        "file": "migrations/2024.02.11T13.46.16.playerType.sql",
+        "hash": "12353712311522592461"
+      },
+      {
+        "file": "migrations/2024.02.11T14.07.43.player.sql",
+        "hash": "875886506133949981"
+      },
+      {
+        "file": "migrations/2024.02.11T14.22.15.skinType.sql",
+        "hash": "2682348850531002443"
+      },
+      {
+        "file": "migrations/2024.02.11T14.23.13.ptSkin.sql",
+        "hash": "11237916534585402054"
+      },
+      {
+        "file": "migrations/2024.02.11T14.24.06.vehicle.sql",
+        "hash": "10104535563766569225"
+      },
+      {
+        "file": "migrations/2024.02.11T23.16.45.initialAttachmentPoint.sql",
+        "hash": "12410409890279792396"
+      },
+      {
+        "file": "migrations/2024.02.11T23.20.55.initialBrand.sql",
+        "hash": "11960951545379619417"
+      },
+      {
+        "file": "migrations/2024.02.11T23.26.25.initialModel.sql",
+        "hash": "5783613339187009087"
+      },
+      {
+        "file": "migrations/2024.02.11T23.27.19.initialAbstractPartType.sql",
+        "hash": "18053132905130228586"
+      },
+      {
+        "file": "migrations/2024.02.11T23.27.55.initialAbstractPartGrade.sql",
+        "hash": "13015642188112396064"
+      },
+      {
+        "file": "migrations/2024.02.11T23.28.36.initialAbstractPartType.sql",
+        "hash": "7268695905091225267"
+      },
+      {
+        "file": "migrations/2024.02.11T23.29.19.initialBrandedPart.sql",
+        "hash": "9267672829227694399"
+      },
+      {
+        "file": "migrations/2024.02.11T23.30.06.initialPart.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/2024.02.11T23.30.44.initialDriverClass.sql",
+        "hash": "10095515633216763662"
+      },
+      {
+        "file": "migrations/2024.02.11T23.32.01.initialPlayerType.sql",
+        "hash": "15552921051283242617"
+      },
+      {
+        "file": "migrations/2024.02.11T23.32.44.initialPlayer.sql",
+        "hash": "9392877988850498534"
+      },
+      {
+        "file": "migrations/2024.02.13T03.00.46.createSVACarClass.sql",
+        "hash": "17768528275421623634"
+      },
+      {
+        "file": "migrations/2024.02.13T03.02.19.createSVAModeRestriction.sql",
+        "hash": "11575593377309025851"
+      },
+      {
+        "file": "migrations/2024.02.13T03.02.49.createStockVehicleAtrributes.sql",
+        "hash": "16018889396571730258"
+      },
+      {
+        "file": "migrations/2024.02.13T03.18.24.initialSVACarClass.sql",
+        "hash": "1119126884295576370"
+      },
+      {
+        "file": "migrations/2024.02.13T03.19.03.initialSVAModeRestriction.sql",
+        "hash": "12497613429321718440"
+      },
+      {
+        "file": "migrations/2024.02.13T03.19.49.initialStockVehicleAttributes.sql",
+        "hash": "11055287955635829612"
+      },
+      {
+        "file": "migrations/2024.02.13T23.56.02.createStockAssembly.sql",
+        "hash": "15535898055453969128"
+      },
+      {
+        "file": "migrations/2024.02.13T23.58.02.initialStockAssembly.sql",
+        "hash": "17939624101867247628"
+      },
+      {
+        "file": "migrations/2024.02.15T00.21.44.initialSkinType.sql",
+        "hash": "5583146586029229843"
+      },
+      {
+        "file": "migrations/2024.02.15T00.22.20.initialPTSkin.sql",
+        "hash": "4794038191543769023"
+      },
+      {
+        "file": "migrations/2024.02.16T13.06.41.createNextPartNumberSeq.sql",
+        "hash": "1032763780903964996"
+      },
+      {
+        "file": "migrations/down/2024.02.11T13.01.48.attachmentPoint.sql",
+        "hash": "873667697973178439"
+      },
+      {
+        "file": "migrations/down/2024.02.11T13.19.25.brand.sql",
+        "hash": "10593386839204003560"
+      },
+      {
+        "file": "migrations/down/2024.02.11T13.23.01.model.sql",
+        "hash": "5028242859244426798"
+      },
+      {
+        "file": "migrations/down/2024.02.11T13.33.31.abstractPartType.sql",
+        "hash": "16959658196206863462"
+      },
+      {
+        "file": "migrations/down/2024.02.11T13.38.39.partGrade.sql",
+        "hash": "577024430197782665"
+      },
+      {
+        "file": "migrations/down/2024.02.11T13.39.20.partType.sql",
+        "hash": "13393313781605263691"
+      },
+      {
+        "file": "migrations/down/2024.02.11T13.40.36.brandedPart.sql",
+        "hash": "15678787078187872458"
+      },
+      {
+        "file": "migrations/down/2024.02.11T13.41.55.part.sql",
+        "hash": "10118447456617452799"
+      },
+      {
+        "file": "migrations/down/2024.02.11T13.45.10.driverClass.sql",
+        "hash": "9782802780447855367"
+      },
+      {
+        "file": "migrations/down/2024.02.11T13.46.16.playerType.sql",
+        "hash": "13483038754554998827"
+      },
+      {
+        "file": "migrations/down/2024.02.11T14.07.43.player.sql",
+        "hash": "594397948219204133"
+      },
+      {
+        "file": "migrations/down/2024.02.11T14.22.15.skinType.sql",
+        "hash": "11909935763772094128"
+      },
+      {
+        "file": "migrations/down/2024.02.11T14.23.13.ptSkin.sql",
+        "hash": "2914371168788705190"
+      },
+      {
+        "file": "migrations/down/2024.02.11T14.24.06.vehicle.sql",
+        "hash": "7270406692193771051"
+      },
+      {
+        "file": "migrations/down/2024.02.11T23.16.45.initialAttachmentPoint.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/down/2024.02.11T23.20.55.initialBrand.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/down/2024.02.11T23.26.25.initialModel.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/down/2024.02.11T23.27.19.initialAbstractPartType.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/down/2024.02.11T23.27.55.initialAbstractPartGrade.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/down/2024.02.11T23.28.36.initialAbstractPartType.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/down/2024.02.11T23.29.19.initialBrandedPart.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/down/2024.02.11T23.30.06.initialPart.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/down/2024.02.11T23.30.44.initialDriverClass.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/down/2024.02.11T23.32.01.initialPlayerType.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/down/2024.02.11T23.32.44.initialPlayer.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/down/2024.02.13T03.00.46.createSVACarClass.sql",
+        "hash": "3141029809313864148"
+      },
+      {
+        "file": "migrations/down/2024.02.13T03.01.15.createStockVehicleAtrributes.sql",
+        "hash": "10189741708410336130"
+      },
+      {
+        "file": "migrations/down/2024.02.13T03.02.19.createSVAModeRestriction.sql",
+        "hash": "1345895125854916203"
+      },
+      {
+        "file": "migrations/down/2024.02.13T03.02.49.createStockVehicleAtrributes.sql",
+        "hash": "11194051327329992476"
+      },
+      {
+        "file": "migrations/down/2024.02.13T03.18.24.initialSVACarClass.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/down/2024.02.13T03.19.03.initialSVAModeRestriction.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/down/2024.02.13T03.19.49.initialStockVehicleAttributes.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/down/2024.02.13T23.56.02.createStockAssembly.sql",
+        "hash": "12531526038098023791"
+      },
+      {
+        "file": "migrations/down/2024.02.13T23.58.02.initialStockAssembly.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/down/2024.02.15T00.21.44.initialSkinType.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/down/2024.02.15T00.22.20.initialPTSkin.sql",
+        "hash": "4092638369037952978"
+      },
+      {
+        "file": "migrations/down/2024.02.16T13.06.41.createNextPartNumberSeq.sql",
+        "hash": "13328527806503765938"
+      },
+      {
+        "file": "package-lock.json",
+        "hash": "14705700139180693936"
+      },
+      {
+        "file": "package.json",
+        "hash": "745516997042910599"
+      },
+      {
+        "file": "pnpm-lock.yaml",
+        "hash": "9424596112271544027"
+      },
+      {
+        "file": "pnpm-workspace.yaml",
+        "hash": "7577147420081313510"
+      },
+      {
+        "file": "tsconfig.json",
+        "hash": "4450702441445365045"
+      },
+      {
+        "file": "vite.config.ts",
+        "hash": "45197661840963346"
+      }
+    ]
+  }
+}

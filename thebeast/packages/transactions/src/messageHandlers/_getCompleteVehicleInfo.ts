@@ -1,7 +1,7 @@
 import { GenericRequestMessage } from "../GenericRequestMessage.js";
 
 import { OldServerMessage } from "../../../shared/messageFactory.js";
-import { MessageHandlerArgs, MessageHandlerResult } from "../handlers.js";
+import { MessageHandlerArgs, MessageHandlerResult } from "../../types.js";
 import { CarInfoMessage } from "../messageStructs/CarInfoMessage.js";
 import { log } from "../../../shared/log.js";
 import { getVehiclePartTree } from "../../../database/src/cache.js";

@@ -21,12 +21,16 @@ services:
             - "5432:5432"
         volumes:
             - db-data:/var/lib/postgresql/data
+        security_opt:
+            - no-new-privileges:true
 
     adminer:
         image: adminer
         restart: always
         ports:
             - 8080:8080
+        security_opt:
+            - no-new-privileges:true            
 
 volumes:
     db-data:

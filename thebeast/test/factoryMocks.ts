@@ -10,7 +10,7 @@ export function mockDatabaseManager(): DatabaseManager {
 }
 
 /** @type TServerLogger */
-export function mockLogger() {
+export function mockLogger(): any {
     return {
         info: vi.fn(),
         error: vi.fn(),
@@ -22,7 +22,7 @@ export function mockLogger() {
 }
 
 /** @type ServerMessageType */
-export function mockServerMessageType() {
+export function mockServerMessageType(): any {
     return {
         _header: {
             _size: 0,

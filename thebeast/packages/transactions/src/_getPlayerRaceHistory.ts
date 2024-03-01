@@ -4,7 +4,7 @@ import {
     PlayerRacingHistoryMessage,
     RacingHistoryRecordEntry,
 } from "./PlayerRacingHistoryMessage.js";
-import { MessageHandlerArgs, MessageHandlerResult } from "./handlers.js";
+import { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 
 export enum RaceType {
     RACES_TESTDRIVE = 14,
