@@ -7,7 +7,7 @@ import { ISerializable, IMessage } from "./interfaces.js";
 export class ServerMessageHeader extends Serializable implements ISerializable {
     // All fields are little-endian
     private length: number = 0; // 2 bytes
-    private signature: string = ''; // 4 bytes
+    private signature: string = ""; // 4 bytes
     private sequence: number = 0; // 4 bytes
     private flags: number = 0; // 1
 
@@ -38,7 +38,7 @@ export class ServerMessageHeader extends Serializable implements ISerializable {
         this.length = data.readUInt16LE(0);
         this.signature = data.toString("utf8", 2, 6);
         this.sequence = data.readUInt32LE(6);
-        this.flags = data.readUInt8(10);        
+        this.flags = data.readUInt8(10);
 
         return this;
     }
@@ -49,7 +49,7 @@ export class ServerMessageHeader extends Serializable implements ISerializable {
 
     isPayloadEncrypted(): boolean {
         // Does the flags bitmask contain have 0x08 set?
-        return (this.flags >= 0x08);
+        return this.flags >= 0x08;
     }
 
     togglePayloadEncryption(): ServerMessageHeader {
@@ -58,11 +58,14 @@ export class ServerMessageHeader extends Serializable implements ISerializable {
     }
 }
 
-export class ServerMessagePayload extends Serializable implements ISerializable {
+export class ServerMessagePayload
+    extends Serializable
+    implements ISerializable
+{
     private messageId: number = 0; // 2 bytes
 
     override getByteSize(): number {
-        return 2 + this._data.length;    
+        return 2 + this._data.length;
     }
 
     override serialize(): Buffer {
@@ -90,13 +93,11 @@ export class ServerMessagePayload extends Serializable implements ISerializable 
         this.messageId = messageId;
         return this;
     }
-        
 }
-
 
 export class ServerMessage extends Serializable implements IMessage {
     header: ServerMessageHeader;
-    data: ServerMessagePayload
+    data: ServerMessagePayload;
 
     constructor(messageId: number) {
         super();

@@ -2,7 +2,7 @@ import { ISerializable } from "./interfaces.js";
 
 export class Serializable implements ISerializable {
     protected _data: Buffer = Buffer.alloc(0);
-    
+
     protected _asHex(bytes: Buffer): string {
         return bytes.length % 2 === 0
             ? bytes.toString("hex")
@@ -12,13 +12,10 @@ export class Serializable implements ISerializable {
     protected _assertEnoughData(data: Buffer, expected: number) {
         if (data.length < expected) {
             throw new Error(
-                `Data is too short. Expected at least ${expected} bytes, got ${
-                    data.length
-                } bytes`,
+                `Data is too short. Expected at least ${expected} bytes, got ${data.length} bytes`,
             );
         }
     }
-
 
     serialize(): Buffer {
         return this._data;
