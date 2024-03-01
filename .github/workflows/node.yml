@@ -30,6 +30,7 @@ jobs:
             - name: Install and test
               run: |
                   corepack enable pnpm
+                  pnpm install
                   pnpm test --filter thebeast
             - name: Codecov
               if: ${{ always() }}
