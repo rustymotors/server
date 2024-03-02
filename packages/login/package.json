@@ -1,5 +1,5 @@
 {
-    "name": "login",
+    "name": "@rustymotors/login",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",

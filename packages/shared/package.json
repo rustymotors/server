@@ -1,5 +1,5 @@
 {
-    "name": "shared",
+    "name": "@rustymotors/shared",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
@@ -11,6 +11,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "pino": "^8.18.0"
+        "pino": "^8.18.0",
+        "pino-pretty": "^10.3.1"
     }
 }

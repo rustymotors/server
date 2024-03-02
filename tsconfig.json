@@ -22,5 +22,6 @@
         "server.ts",
         "migrate.ts",
         "test",
+        "apps/main/server.ts",
     ],
 }
