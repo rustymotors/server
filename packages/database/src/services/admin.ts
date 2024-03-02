@@ -1,5 +1,5 @@
 import { DatabaseTransactionConnection } from "slonik";
-import { slonik, sql } from "./database.js";
+import { getSlonik } from "./database.js";
 import { log } from "../../../shared/log.js";
 import * as Sentry from "@sentry/node";
 
@@ -15,6 +15,7 @@ async function playerExists(playerId: number): Promise<boolean> {
             },
         },
         async (span) => {
+            const { slonik, sql } = await getSlonik();
             return slonik.exists(sql.typeAlias("id")`
         SELECT 1 FROM player WHERE playerid = ${playerId}
     `);
@@ -34,6 +35,7 @@ async function skinExists(skinId: number): Promise<boolean> {
             },
         },
         async (span) => {
+            const { slonik, sql } = await getSlonik();
             return slonik.exists(sql.typeAlias("id")`
         SELECT 1 FROM ptskin WHERE skinid = ${skinId}
     `);
@@ -56,6 +58,7 @@ async function getAbstractPartTypeIDForBrandedPartID(
             },
         },
         async (span) => {
+            const { slonik, sql } = await getSlonik();
             return slonik.one(sql.typeAlias("abstractPartType")`
         SELECT pt.abstractparttypeid 
         FROM brandedpart bp
@@ -135,6 +138,7 @@ export async function createNewCar(
             },
         },
         async (span) => {
+            const { slonik, sql } = await getSlonik();
             return slonik.many(sql.typeAlias("brandedPart")`
         SELECT b.brandedpartid, a.attachmentpointid
         From StockAssembly a
@@ -166,6 +170,7 @@ export async function createNewCar(
                 },
             },
             async (span) => {
+                const { slonik, sql } = await getSlonik();
                 slonik.transaction(async (connection) => {
                     // First insert the new car into the vehicle table
 
@@ -271,6 +276,7 @@ async function addPart(
     newCarOwenrId: number,
 ) {
     try {
+        const { slonik, sql } = await getSlonik();
         await connection.query(sql.typeAlias("part")`
                     INSERT INTO part (partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue)
                     VALUES (${currentPartId}, ${parentPartId}, ${partEntry.brandedPartId}, 0, 0, ${partEntry.AttachmentPointId}, ${newCarOwenrId}, null, 0, 0)
@@ -299,6 +305,7 @@ async function getPart(
     requestedPartId: number,
 ): Promise<DBPart> {
     try {
+        const { slonik, sql } = await getSlonik();
         const part = await connection.one(sql.typeAlias("dbPart")`
                     SELECT FROM part (partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue)
                     WHERE partid = ${requestedPartId}
@@ -333,6 +340,7 @@ async function getNextSq(seqName: string) {
             },
         },
         async (span) => {
+            const { slonik, sql } = await getSlonik();
             return Number(
                 (
                     await slonik.one(sql.typeAlias("nextPartId")`

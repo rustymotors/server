@@ -1,6 +1,6 @@
 import { TBrand } from "./models/Brand.js";
 import { VehiclePartTreeType } from "./models/VehiclePartTree.js";
-import { slonik, sql } from "./services/database.js";
+import { getSlonik } from "./services/database.js";
 import * as Sentry from "@sentry/node";
 
 const brandCache = new Map<string, TBrand>();
@@ -21,6 +21,8 @@ export async function getBrand(brandName: string): Promise<TBrand | undefined> {
             },
         },
         async (span) => {
+            const { slonik, sql } = await getSlonik();
+
             const brand = await slonik.one(sql.typeAlias("brand")`
         SELECT brandid, brand, isstock FROM brand WHERE brandname = ${brandName}
     `);

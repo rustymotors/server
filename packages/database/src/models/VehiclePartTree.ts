@@ -1,7 +1,7 @@
 import { log } from "../../../shared/log.js";
 import * as Sentry from "@sentry/node";
 import { setVehiclePartTree } from "../cache.js";
-import { sql, slonik } from "../services/database.js";
+import { getSlonik } from "../services/database.js";
 import { TPart } from "./Part.js";
 
 const level1PartTypes = [1001, 2001, 4001, 5001, 6001, 15001, 36001, 37001];
@@ -62,6 +62,7 @@ async function getNextPartId(): Promise<number> {
             },
         },
         async (span) => {
+            const { slonik, sql } = await getSlonik();
             const { nextval } = await slonik.one(sql.typeAlias("nextPartId")`
             SELECT nextval('part_partid_seq')
         `);
@@ -84,6 +85,7 @@ export async function savePart(part: TPart): Promise<void> {
             },
         },
         async (span) => {
+            const { slonik, sql } = await getSlonik();
             return slonik.query(sql.typeAlias("dbPart")`
         INSERT INTO part (
             partid,
@@ -156,6 +158,7 @@ export async function saveVehicle(
                 },
             },
             async (span) => {
+                const { slonik, sql } = await getSlonik();
                 return slonik.query(sql.typeAlias("vehicle")`
             INSERT INTO vehicle (
                 vehicleid,
@@ -231,6 +234,7 @@ export async function buildVehiclePartTreeFromDB(
             },
         },
         async (span) => {
+            const { slonik, sql } = await getSlonik();
             return slonik.one(sql.typeAlias("vehicle")`
         SELECT vehicleid, skinid, flags, class, infosetting, damageinfo
         FROM vehicle
@@ -282,6 +286,7 @@ export async function buildVehiclePartTreeFromDB(
             },
         },
         async (span) => {
+            const { slonik, sql } = await getSlonik();
             return slonik.one(sql.typeAlias("part")`
         SELECT partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue
         FROM part
@@ -310,6 +315,7 @@ export async function buildVehiclePartTreeFromDB(
             },
         },
         async (span) => {
+            const { slonik, sql } = await getSlonik();
             return slonik.many(sql.typeAlias("dbPart")`
         SELECT partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue
         FROM part
@@ -365,6 +371,7 @@ export async function buildVehiclePartTreeFromDB(
             },
         },
         async (span) => {
+            const { slonik, sql } = await getSlonik();
             return slonik.many(sql.typeAlias("dbPart")`
         SELECT partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue
         FROM part
@@ -437,6 +444,7 @@ export async function buildVehiclePartTree({
             },
         },
         async (span) => {
+            const { slonik, sql } = await getSlonik();
             return slonik.one(sql.typeAlias("ptSkin")`
         SELECT defaultflag
         FROM ptskin
@@ -465,6 +473,7 @@ export async function buildVehiclePartTree({
             },
         },
         async (span) => {
+            const { slonik, sql } = await getSlonik();
             return slonik.many(sql.typeAlias("detailedPart")`
         SELECT bp.brandedpartid, bp.parttypeid, a.attachmentpointid, pt.abstractparttypeid, apt.parentabstractparttypeid
         FROM stockassembly a

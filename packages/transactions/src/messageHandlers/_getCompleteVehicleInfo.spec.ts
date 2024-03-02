@@ -6,19 +6,12 @@ import {
 } from "../../../../test/factoryMocks.js";
 
 describe("_getCompleteVehicleInfo", () => {
-    it("shou;d throw when passed message is too small", async () => {
+    it("should throw when passed message is too small", async () => {
         // Setup
         const connectionId = "testConnectionId";
         const packet = mockServerMessageType();
         const log = mockLogger();
-        vi.mock("slonik", async (importOriginal) => {
-            const mod = await importOriginal<typeof import("slonik")>();
-            return {
-                ...mod,
-                // replace some exports
-                createPool: vi.fn(),
-            };
-        });
+
         const expected = {
             vehicleId: 1,
             skinId: 1,
