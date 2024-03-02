@@ -31,7 +31,6 @@
         "@rustymotors/shared": "workspace:^",
         "@sentry/node": "^7.102.0",
         "@sentry/profiling-node": "^7.104.0",
-        "sentry": "^0.1.2",
         "slonik": "29",
         "tsx": "^4.7.1"
     },
