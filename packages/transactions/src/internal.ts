@@ -15,19 +15,15 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { messageHandlers } from "./messageHandlers.js";
-import { ServerLogger, getServerLogger } from "../../shared/log.js";
+import { ServerLogger, getServerLogger } from "@rustymotors/shared";
 import {
     fetchStateFromDatabase,
     getEncryption,
     updateEncryption,
-} from "../../shared/State.js";
+} from "@rustymotors/shared";
 // eslint-disable-next-line no-unused-vars
-import {
-    SerializedBuffer,
-    OldServerMessage,
-} from "../../shared/messageFactory.js";
-import { getServerConfiguration } from "../../shared/Configuration.js";
-import { ServerMessage } from "../../shared/src/ServerMessage.js";
+import { SerializedBuffer, OldServerMessage } from "@rustymotors/shared";
+import { ServerMessage } from "@rustymotors/shared";
 
 /**
  *

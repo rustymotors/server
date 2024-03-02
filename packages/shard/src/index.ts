@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { readFileSync } from "fs";
-import { Configuration } from "../../shared/Configuration.js";
+import { readFileSync } from "node:fs";
+import { Configuration } from "@rustymotors/shared";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.

@@ -1,16 +1,16 @@
-import { ISerializable, IMessageHeader, IMessage } from "../types.js";
 import { SocketCallback } from "./index.js";
 import { getDWord, getLenString, getNBytes } from "../utils/pureGet.js";
 import {
-    getUserSessionByConnectionId,
-    getUserSessionByCustomerId,
     getUserSessionByProfileId,
     setUserSession,
     userSessions,
 } from "../services/session.js";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { UserInfo } from "../messageStructs/UserInfo.js";
-import { log } from "../../shared/log.js";
+
+import { getServerLogger } from "@rustymotors/shared";
+
+const log = getServerLogger();
 
 export async function processLobbyLogin(
     connectionId: string,

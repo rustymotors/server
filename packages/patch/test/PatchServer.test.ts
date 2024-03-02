@@ -1,4 +1,4 @@
-import { getServerLogger } from "../../shared/log.js";
+import { getServerLogger } from "@rustymotors/shared";
 import { PatchServer, CastanetResponse } from "../src/PatchServer.js";
 import { describe, it, expect, vi } from "vitest";
 

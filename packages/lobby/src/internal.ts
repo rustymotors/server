@@ -16,13 +16,12 @@
 
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
-import { ServerLogger, getServerLogger } from "../../shared/log.js";
-import { getServerConfiguration } from "../../shared/Configuration.js";
+import { ServerLogger, getServerLogger } from "@rustymotors/shared";
 import {
     LegacyMessage,
     NPSMessage,
     SerializedBuffer,
-} from "../../shared/messageFactory.js";
+} from "@rustymotors/shared";
 import { handleTrackingPing } from "./handlers/handleTrackingPing.js";
 
 /**

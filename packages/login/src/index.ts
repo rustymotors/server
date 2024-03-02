@@ -16,8 +16,12 @@
 
 import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
 import { DatabaseManager } from "../../interfaces/index.js";
-import { ServerLogger, getServerLogger } from "../../shared/log.js";
-import { NPSMessage } from "../../shared/messageFactory.js";
+import {
+    ServerLogger,
+    ServiceResponse,
+    getServerLogger,
+} from "@rustymotors/shared";
+import { NPSMessage } from "@rustymotors/shared";
 import { handleLoginData } from "./internal.js";
 
 /**
@@ -131,7 +135,7 @@ LoginServer._instance = undefined;
  * @param {NPSMessage} args.message
  * @param {ServerLogger} args.log
  *
- * @return {Promise<import("../../shared/State.js").ServiceResponse>}
+ * @return {Promise<ServiceResponse>}
  */
 export async function receiveLoginData({
     connectionId,
@@ -141,7 +145,7 @@ export async function receiveLoginData({
     connectionId: string;
     message: NPSMessage;
     log: ServerLogger;
-}): Promise<import("../../shared/State.js").ServiceResponse> {
+}): Promise<ServiceResponse> {
     try {
         log.debug("Entering login module");
         const response = await handleLoginData({

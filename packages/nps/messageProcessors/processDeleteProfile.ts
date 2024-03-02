@@ -1,15 +1,13 @@
 import fs from "node:fs";
 import crypto from "node:crypto";
-import { getToken } from "../services/token.js";
-import { createNewUserSession, setUserSession } from "../services/session.js";
 import { SocketCallback } from "./index.js";
-import { ISerializable, IMessageHeader, IMessage } from "../types.js";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SessionKey } from "../messageStructs/SessionKey.js";
 import { getLenString } from "../utils/pureGet.js";
-import { UserStatus } from "../messageStructs/UserStatus.js";
-import { UserAction } from "../messageStructs/UserAction.js";
-import { log } from "../../shared/log.js";
+
+import { getServerLogger } from "@rustymotors/shared";
+
+const log = getServerLogger();
 
 export function loadPrivateKey(path: string): string {
     const privateKey = fs.readFileSync(path);

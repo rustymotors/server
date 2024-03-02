@@ -1,6 +1,6 @@
-import { serializeStringRaw } from "../../shared/messageFactory.js";
-import { NetworkMessage } from "../../shared/src/NetworkMessage.js";
-import { RawMessage } from "../../shared/src/RawMessage.js";
+import { serializeStringRaw } from "@rustymotors/shared";
+import { NetworkMessage } from "@rustymotors/shared";
+import { RawMessage } from "@rustymotors/shared";
 
 /**
  * BuddyInfoMessage

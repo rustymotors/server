@@ -1,7 +1,4 @@
-import {
-    OldServerMessage,
-    serverHeader,
-} from "../../../shared/messageFactory.js";
+import { OldServerMessage } from "@rustymotors/shared";
 
 export class CarNumberSet {
     private cars: string[] = [];

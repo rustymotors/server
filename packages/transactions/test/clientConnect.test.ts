@@ -1,5 +1,5 @@
-import { State } from "../../shared/State.js";
-import { getServerLogger } from "../../shared/log.js";
+import { State } from "@rustymotors/shared";
+import { getServerLogger } from "@rustymotors/shared";
 import { clientConnect } from "../src/clientConnect.js";
 import { describe, it, expect } from "vitest";
 

@@ -14,11 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import {
-    SerializedBuffer,
-    serializeStringRaw,
-} from "../../shared/messageFactory.js";
-import { Timestamp } from "../../shared/TimeStamp.js";
+import { SerializedBuffer, serializeStringRaw } from "@rustymotors/shared";
+import { Timestamp } from "@rustymotors/shared";
 
 /**
  * A message listing the player's owned vehicles

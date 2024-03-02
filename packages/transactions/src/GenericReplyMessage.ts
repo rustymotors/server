@@ -14,7 +14,7 @@
  * @property {Buffer} data2
  */
 
-import { SerializedBuffer } from "../../shared/messageFactory.js";
+import { SerializedBuffer } from "@rustymotors/shared";
 
 export class GenericReply extends SerializedBuffer {
     msgNo: number;

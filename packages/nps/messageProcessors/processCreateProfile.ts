@@ -1,9 +1,10 @@
-import { ISerializable, IMessageHeader, IMessage } from "../types.js";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SocketCallback } from "./index.js";
-import { getLenString, getNBytes } from "../utils/pureGet.js";
 import { GameProfile } from "../messageStructs/GameProfile.js";
-import { log } from "../../shared/log.js";
+
+import { getServerLogger } from "@rustymotors/shared";
+
+const log = getServerLogger();
 
 export async function processCreateProfile(
     connectionId: string,

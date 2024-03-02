@@ -1,4 +1,4 @@
-import { SerializedBuffer } from "../../shared/messageFactory.js";
+import { SerializedBuffer } from "@rustymotors/shared";
 
 export class PlayerRacingHistoryMessage extends SerializedBuffer {
     _msgId: number; // 2 bytes

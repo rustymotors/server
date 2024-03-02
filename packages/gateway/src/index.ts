@@ -22,12 +22,12 @@ import {
     getOnDataHandler,
     removeSocket,
     wrapSocket,
-} from "../../shared/State.js";
+} from "@rustymotors/shared";
 
-import { ServerLogger } from "../../shared/log.js";
+import { ServerLogger } from "@rustymotors/shared";
 
 import { Socket } from "node:net";
-import { SerializedBuffer } from "../../shared/messageFactory.js";
+import { SerializedBuffer } from "@rustymotors/shared";
 
 import {
     MessageProcessorError,
@@ -37,6 +37,7 @@ import {
 } from "../../nps/index.js";
 import { SocketCallback } from "../../nps/messageProcessors/index.js";
 import { getAsHex } from "../../nps/utils/pureGet.js";
+import { ServiceResponse } from "@rustymotors/shared";
 
 /**
  * @typedef {object} OnDataHandlerArgs
@@ -197,24 +198,18 @@ export function onSocketConnection({
             message: rawMessage,
             log,
         })
-            .then(
-                (
-                    /** @type {import("../../shared/State.js").ServiceResponse} */ response: import("../../shared/State.js").ServiceResponse,
-                ) => {
-                    log.debug("onData handler returned");
-                    const { messages } = response;
+            .then((response: ServiceResponse) => {
+                log.debug("onData handler returned");
+                const { messages } = response;
 
-                    // Log the messages
-                    log.trace(`Messages: ${messages.map((m) => m.toString())}`);
+                // Log the messages
+                log.trace(`Messages: ${messages.map((m) => m.toString())}`);
 
-                    // Serialize the messages
-                    const serializedMessages = messages.map((m) =>
-                        m.serialize(),
-                    );
+                // Serialize the messages
+                const serializedMessages = messages.map((m) => m.serialize());
 
-                    sendToSocket(serializedMessages, incomingSocket, log);
-                },
-            )
+                sendToSocket(serializedMessages, incomingSocket, log);
+            })
             .catch((/** @type {Error} */ error: Error) => {
                 log.error(`Error handling data: ${String(error)}`);
                 throw error;

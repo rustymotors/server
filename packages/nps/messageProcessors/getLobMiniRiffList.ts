@@ -1,7 +1,9 @@
-import { log } from "../../shared/log.js";
+import { getServerLogger } from "@rustymotors/shared";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { MiniRiffInfo, MiniRiffList } from "../messageStructs/MiniRiffList.js";
 import { getAsHex } from "../utils/pureGet.js";
+
+const log = getServerLogger();
 
 // Command id: 0x30c
 export async function getLobMiniRiffList(

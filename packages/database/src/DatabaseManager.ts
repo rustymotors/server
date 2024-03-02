@@ -3,11 +3,13 @@
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
 
-import { ServerLogger, getServerLogger, log } from "../../shared/log.js";
+import { ServerLogger, getServerLogger } from "@rustymotors/shared";
 
 /**
  * @module Database
  */
+
+const log = getServerLogger();
 
 export class Database {
     updateUser(user: { userId: number; userData: Buffer }) {

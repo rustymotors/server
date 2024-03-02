@@ -1,4 +1,4 @@
-import { ServerMessage } from "../../shared/src/ServerMessage.js";
+import { ServerMessage } from "@rustymotors/shared";
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import {
     PlayerRacingHistoryMessage,

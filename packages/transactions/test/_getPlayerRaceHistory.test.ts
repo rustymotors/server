@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { _getPlayerRaceHistory } from "../src/_getPlayerRaceHistory.js";
-import { OldServerMessage } from "../../shared/messageFactory.js";
-import { getServerLogger } from "../../shared/log.js";
+import { OldServerMessage } from "@rustymotors/shared";
+import { getServerLogger } from "@rustymotors/shared";
 
 describe("_getPlayerRaceHistory", () => {
     it("should return a PlayerRacingHistoryMessage", async () => {

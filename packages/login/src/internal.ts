@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getServerConfiguration } from "../../shared/Configuration.js";
+import { getServerConfiguration } from "@rustymotors/shared";
 import { NPSUserStatus } from "./NPSUserStatus.js";
-import { ServerLogger, getServerLogger } from "../../shared/log.js";
+import { ServerLogger, getServerLogger } from "@rustymotors/shared";
 import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
-import { NPSMessage, SerializedBuffer } from "../../shared/messageFactory.js";
-import { NetworkMessage } from "../../shared/src/NetworkMessage.js";
+import { NPSMessage, SerializedBuffer } from "@rustymotors/shared";
+import { NetworkMessage } from "@rustymotors/shared";
 
 /** @type {import("../../interfaces/index.js").UserRecordMini[]} */
 const userRecords: import("../../interfaces/index.js").UserRecordMini[] = [

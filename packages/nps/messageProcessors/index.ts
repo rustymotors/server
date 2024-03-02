@@ -11,7 +11,6 @@ import { processFirstBuddy } from "./processGetFirstBuddy.js";
 import { processEncryptedGameCommand } from "./processEncryptedGameCommand.js";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { processPing } from "./processPing.js";
-import { log } from "../../shared/log.js";
 
 export type SocketCallback = (messages: Buffer[]) => void;
 
@@ -51,7 +50,6 @@ export function getGameMessageProcessor(messageId: number): MessageProcessor {
         // @ts-ignore - we know this will be defined since we checked above
         return gameMessageProcessors.get(messageId);
     }
-    log.error(`No message processor found for message id ${messageId}`);
     throw new MessageProcessorError(messageId, "No message processor found");
 }
 
@@ -82,6 +80,5 @@ export function getPortMessageType(port: number): string {
         // @ts-ignore - we know this will be defined since we checked above
         return portToMessageTypes.get(port);
     }
-    log.error(`No message type found for port ${port}`);
     throw new PortMapError(port, "No message type found");
 }

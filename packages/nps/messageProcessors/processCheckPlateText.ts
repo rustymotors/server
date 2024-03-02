@@ -1,4 +1,3 @@
-import { ISerializable, IMessageHeader, IMessage } from "../types.js";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SocketCallback } from "./index.js";
 import { getLenString, getNBytes } from "../utils/pureGet.js";
@@ -6,7 +5,9 @@ import {
     getUserSessionByConnectionId,
     setUserSession,
 } from "../services/session.js";
-import { log } from "../../shared/log.js";
+import { getServerLogger } from "@rustymotors/shared";
+
+const log = getServerLogger();
 
 export async function processCheckPlateText(
     connectionId: string,

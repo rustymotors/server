@@ -1,4 +1,3 @@
-import { ISerializable, IMessageHeader, IMessage } from "../types.js";
 import {
     GameMessage,
     SerializableData,
@@ -6,9 +5,11 @@ import {
 import { getDWord, getAsHex } from "../utils/pureGet.js";
 import { SocketCallback } from "./index.js";
 import { getGameProfilesForCustomerId } from "../services/profile.js";
-import { NPSList } from "../messageStructs/NPSList.js";
 import { ProfileList } from "../messageStructs/ProfileList.js";
-import { log } from "../../shared/log.js";
+
+import { getServerLogger } from "@rustymotors/shared";
+
+const log = getServerLogger();
 
 export async function processFirstBuddy(
     connectionId: string,

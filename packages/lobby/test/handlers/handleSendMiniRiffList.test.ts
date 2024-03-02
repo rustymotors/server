@@ -1,7 +1,7 @@
-import { LegacyMessage } from "../../../shared/messageFactory.js";
+import { LegacyMessage } from "@rustymotors/shared";
 import { handleSendMiniRiffList } from "../../src/handlers/handleSendMiniRiffList.js";
 import { describe, it, expect } from "vitest";
-import { getServerLogger } from "../../../shared/log.js";
+import { getServerLogger } from "@rustymotors/shared";
 
 describe("handleSendMiniRiffList", () => {
     it("should return a buffer", async () => {

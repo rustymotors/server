@@ -1,12 +1,12 @@
 import { privateDecrypt } from "node:crypto";
 import { readFileSync } from "node:fs";
 
-import { LegacyMessage } from "../../shared/messageFactory.js";
-import { Configuration } from "../../shared/Configuration.js";
-import { ServerLogger } from "../../shared/log.js";
+import { LegacyMessage } from "@rustymotors/shared";
+import { Configuration } from "@rustymotors/shared";
+import { ServerLogger } from "@rustymotors/shared";
 
 /**
- * @typedef {import("../../shared/Configuration.js").Configuration} Configuration
+ * @typedef {Configuration} Configuration
  */
 
 /**

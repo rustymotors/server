@@ -1,16 +1,13 @@
 import { Socket, createServer as createSocketServer } from "node:net";
 import { onSocketConnection } from "./index.js";
-import {
-    Configuration,
-    getServerConfiguration,
-} from "../../shared/Configuration.js";
-import { ServerLogger, getServerLogger, log } from "../../shared/log.js";
+import { Configuration, getServerConfiguration } from "@rustymotors/shared";
+import { ServerLogger, getServerLogger } from "@rustymotors/shared";
 import fastify from "fastify";
 import {
     addOnDataHandler,
     createInitialState,
     fetchStateFromDatabase,
-} from "../../shared/State.js";
+} from "@rustymotors/shared";
 import { ConsoleThread } from "../../cli/ConsoleThread.js";
 import { addWebRoutes } from "./web.js";
 
@@ -109,7 +106,6 @@ export class Gateway {
      */
     getWebServer(): import("fastify").FastifyInstance {
         if (this.webServer === undefined) {
-            log.error("webServer is undefined");
             throw new Error("webServer is undefined");
         }
         return this.webServer;
@@ -146,7 +142,6 @@ export class Gateway {
         });
 
         if (this.webServer === undefined) {
-            log.error("webServer is undefined");
             throw new Error("webServer is undefined");
         }
 
@@ -202,7 +197,6 @@ export class Gateway {
         }
 
         if (this.webServer === undefined) {
-            log.error("webServer is undefined");
             throw new Error("webServer is undefined");
         }
         await this.webServer.close();
@@ -245,7 +239,6 @@ export class Gateway {
 
         // Register the read thread events
         if (this.readThread === undefined) {
-            log.error("readThread is undefined");
             throw new Error("readThread is undefined");
         }
         this.consoleEvents.forEach((event) => {
@@ -267,12 +260,6 @@ export class Gateway {
         state = addOnDataHandler(state, 43300, receiveTransactionsData);
 
         try {
-            log.debug("Populating game data");
-            // await populateParts();
-            // await populateStockVehiclesAttribs();
-            // await populateStockVehicles();
-            // await populateVehicles();
-            // await populateVehicleOwners();
             await populateGameUsers();
             await populateGameProfiles(gameProfiles);
         } catch (error) {

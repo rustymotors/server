@@ -1,4 +1,3 @@
-import { log } from "../../shared/log.js";
 import { ISerializable } from "../types.js";
 
 export class UserInfo implements ISerializable {
@@ -8,7 +7,6 @@ export class UserInfo implements ISerializable {
 
     constructor(id: number, name: string) {
         if (name.length > 31) {
-            log.error(`Profile name too long: ${name}`);
             throw new Error(
                 `Profile name too long: ${name}, max length is 31, got ${name.length}`,
             );

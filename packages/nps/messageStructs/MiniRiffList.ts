@@ -1,8 +1,11 @@
-import { log } from "../../shared/log.js";
 import { IMessage, IMessageHeader, ISerializable } from "../types.js";
 import { putLenString } from "../utils/purePut.js";
 import { GameMessage } from "./GameMessage.js";
 import { NPSList } from "./NPSList.js";
+
+import { getServerLogger } from "@rustymotors/shared";
+
+const log = getServerLogger();
 
 const channelRecordSize = 40;
 
@@ -13,7 +16,6 @@ export class MiniRiffInfo implements ISerializable {
 
     constructor(riffName: string, riffId: number, population: number) {
         if (riffName.length > 32) {
-            log.error(`Riff name too long: ${riffName}`);
             throw new Error(`Riff name too long: ${riffName}`);
         }
 

@@ -2,8 +2,7 @@ import {
     LegacyMessage,
     deserializeString,
     serializeString,
-} from "../../shared/messageFactory.js";
-// eslint-disable-next-line no-unused-vars
+} from "@rustymotors/shared";
 import { LoginInfoMessage } from "./LoginInfoMessage.js";
 
 export class UserInfo {

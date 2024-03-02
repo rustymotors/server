@@ -1,12 +1,15 @@
 import { GenericRequestMessage } from "../GenericRequestMessage.js";
 
-import { OldServerMessage } from "../../../shared/messageFactory.js";
+import { OldServerMessage } from "@rustymotors/shared";
 import { MessageHandlerArgs, MessageHandlerResult } from "../../types.js";
 import { CarInfoMessage } from "../messageStructs/CarInfoMessage.js";
-import { log } from "../../../shared/log.js";
 import { getVehiclePartTree } from "../../../database/src/cache.js";
 import { TPart } from "../../../database/src/models/Part.js";
 import { buildVehiclePartTreeFromDB } from "../../../database/src/models/VehiclePartTree.js";
+
+import { getServerLogger } from "@rustymotors/shared";
+
+const log = getServerLogger();
 
 const DAMAGE_SIZE = 2000;
 
@@ -32,8 +35,7 @@ export class VehicleStruct {
             }
             return buffer;
         } catch (error) {
-            log.error(`Error in VehicleStruct.serialize: ${error}`);
-            throw error;
+            throw Error(`Error in VehicleStruct.serialize: ${error}`);
         }
     }
 

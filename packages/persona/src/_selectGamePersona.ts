@@ -1,8 +1,5 @@
-import { ServerLogger, getServerLogger } from "../../shared/log.js";
-import {
-    LegacyMessage,
-    SerializedBuffer,
-} from "../../shared/messageFactory.js";
+import { ServerLogger, getServerLogger } from "@rustymotors/shared";
+import { LegacyMessage, SerializedBuffer } from "@rustymotors/shared";
 
 /**
  * Selects a game persona and marks it as in use

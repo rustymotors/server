@@ -10,8 +10,9 @@ import { SessionKey } from "../messageStructs/SessionKey.js";
 import { getAsHex, getLenString } from "../utils/pureGet.js";
 import { UserStatus } from "../messageStructs/UserStatus.js";
 import { UserAction } from "../messageStructs/UserAction.js";
-import { log } from "../../shared/log.js";
-import { getServerConfiguration } from "../../shared/Configuration.js";
+import { getServerConfiguration, getServerLogger } from "@rustymotors/shared";
+
+const log = getServerLogger();
 
 export function loadPrivateKey(path: string): string {
     const privateKey = fs.readFileSync(path);

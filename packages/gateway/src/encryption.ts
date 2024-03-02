@@ -15,8 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { createCipheriv, createDecipheriv, getCiphers } from "node:crypto";
-import { McosEncryptionPair } from "../../shared/State.js";
-import { log } from "../../shared/log.js";
+import { McosEncryptionPair } from "@rustymotors/shared";
 
 /**
  * This function creates a new encryption pair for use with the game server
@@ -26,9 +25,7 @@ import { log } from "../../shared/log.js";
  */
 export function createCommandEncryptionPair(key: string): McosEncryptionPair {
     if (key.length < 16) {
-        const err = new Error("Key too short");
-        log.error(`Key too short: ${key}`);
-        throw err;
+        throw Error(`Key too short: ${key}`);
     }
 
     const sKey = key.slice(0, 16);
@@ -58,9 +55,7 @@ export function createCommandEncryptionPair(key: string): McosEncryptionPair {
  */
 export function createDataEncryptionPair(key: string): McosEncryptionPair {
     if (key.length < 16) {
-        const err = new Error("Key too short");
-        log.error(`Key too short: ${key}`);
-        throw err;
+        throw Error(`Key too short: ${key}`);
     }
 
     const stringKey = Buffer.from(key, "hex");
@@ -81,13 +76,9 @@ export function createDataEncryptionPair(key: string): McosEncryptionPair {
 export function verifyLegacyCipherSupport() {
     const cipherList = getCiphers();
     if (!cipherList.includes("des-cbc")) {
-        const err = new Error("DES-CBC cipher not available");
-        log.error("DES-CBC cipher not available");
-        throw err;
+        throw Error("DES-CBC cipher not available");
     }
     if (!cipherList.includes("rc4")) {
-        const err = new Error("RC4 cipher not available");
-        log.error("RC4 cipher not available");
-        throw err;
+        throw Error("RC4 cipher not available");
     }
 }

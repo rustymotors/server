@@ -11,7 +11,7 @@
  * @property {string} serviceName
  */
 
-import { MessageNode } from "../../shared/MessageNode.js";
+import { MessageNode } from "@rustymotors/shared";
 
 export class GenericRequestMessage extends MessageNode {
     data2: Buffer;

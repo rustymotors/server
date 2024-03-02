@@ -11,8 +11,11 @@ import {
     newEncryptionSession,
     setEncryptionSession,
 } from "../services/session.js";
-import { log } from "../../shared/log.js";
 import { lobbyCommandMap } from "./lobbyCommands.js";
+
+import { getServerLogger } from "@rustymotors/shared";
+
+const log = getServerLogger();
 
 export async function processEncryptedGameCommand(
     connectionId: string,

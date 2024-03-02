@@ -1,5 +1,5 @@
 import { Vehicle } from "../../../nps/services/types.js";
-import { SerializedBuffer } from "../../../shared/messageFactory.js";
+import { SerializedBuffer } from "@rustymotors/shared";
 import {
     PartStruct,
     VehicleStruct,

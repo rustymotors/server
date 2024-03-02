@@ -1,7 +1,9 @@
-import { log } from "../../shared/log.js";
+import { getServerLogger } from "@rustymotors/shared";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { MiniUserInfo, MiniUserList } from "../messageStructs/MiniUserList.js";
 import { getAsHex } from "../utils/pureGet.js";
+
+const log = getServerLogger();
 
 // Command id: 0x128
 export async function getLobMiniUserList(

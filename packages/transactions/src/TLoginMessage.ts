@@ -14,10 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import {
-    SerializedBuffer,
-    OldServerMessage,
-} from "../../shared/messageFactory.js";
+import { SerializedBuffer, OldServerMessage } from "@rustymotors/shared";
 
 export class ListEntry extends SerializedBuffer {
     constructor() {

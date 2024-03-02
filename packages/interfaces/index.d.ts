@@ -1,9 +1,9 @@
 import { Socket } from "node:net";
-import { ServerError } from "../shared/errors/ServerError.js";
+import { ServerError } from "@rustymotors/shared";
 import { Cipher, Decipher } from "node:crypto";
 import { IncomingMessage, ServerResponse } from "node:http";
-import { SerializedBuffer } from "../shared/messageFactory.ts";
-import { Configuration } from "../shared/Configuration.ts";
+import { SerializedBuffer } from "@rustymotors/shared";
+import { Configuration } from "@rustymotors/shared";
 
 /**
  * @module interfaces
@@ -178,9 +178,7 @@ export interface ServiceArgs {
     log: ServerLogger;
 }
 
-type Service = (
-    args: ServiceArgs,
-) => Promise<import("../shared/State.ts").ServiceResponse>;
+type Service = (args: ServiceArgs) => Promise<ServiceResponse>;
 
 export interface KeypressEvent {
     sequence: string;

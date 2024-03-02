@@ -1,9 +1,9 @@
-import { ServerLogger, getServerLogger } from "../../shared/log.js";
+import { ServerLogger, getServerLogger } from "@rustymotors/shared";
 import {
     LegacyMessage,
     NPSMessage,
     SerializedBuffer,
-} from "../../shared/messageFactory.js";
+} from "@rustymotors/shared";
 import { BuddyCount, BuddyInfoMessage, BuddyList } from "./BuddyInfoMessage.js";
 
 export async function _getFirstBuddy({

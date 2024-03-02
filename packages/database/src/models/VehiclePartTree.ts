@@ -1,4 +1,4 @@
-import { log } from "../../../shared/log.js";
+import { getServerLogger } from "@rustymotors/shared";
 import * as Sentry from "@sentry/node";
 import { setVehiclePartTree } from "../cache.js";
 import { getSlonik } from "../services/database.js";
@@ -7,6 +7,8 @@ import { TPart } from "./Part.js";
 const level1PartTypes = [1001, 2001, 4001, 5001, 6001, 15001, 36001, 37001];
 
 const partNumbersMap = new Map<number, number>();
+
+const log = getServerLogger();
 
 export function getPartDepth(partId: number): number {
     if (level1PartTypes.includes(partId)) {

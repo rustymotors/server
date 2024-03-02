@@ -1,5 +1,5 @@
-import { getServerLogger } from "../../shared/log.js";
-import { OldServerMessage } from "../../shared/messageFactory.js";
+import { getServerLogger } from "@rustymotors/shared";
+import { OldServerMessage } from "@rustymotors/shared";
 import { getLobbies } from "../src/getLobbies.js";
 import { describe, expect, it } from "vitest";
 

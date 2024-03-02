@@ -1,4 +1,3 @@
-import { log } from "../../shared/log.js";
 import { ISerializable, IMessageHeader, IMessage } from "../types.js";
 
 export class MessageHeader implements IMessageHeader {
@@ -8,7 +7,6 @@ export class MessageHeader implements IMessageHeader {
 
     constructor(version: 0 | 257, id: number, length: number) {
         if (version !== 0 && version !== 257) {
-            log.error(`Invalid version ${version}`);
             throw new Error(`Invalid version ${version}`);
         }
         this.version = version;
@@ -33,8 +31,7 @@ export class MessageHeader implements IMessageHeader {
     }
     setVersion(version: 0 | 257): void {
         if (version !== 0 && version !== 257) {
-            log.error(`Invalid version ${version}`);
-            throw new Error("Invalid version");
+            throw new Error(`Invalid version ${version}`);
         }
         this.version = version;
     }
@@ -83,10 +80,9 @@ export class MessageHeader implements IMessageHeader {
 
     deserialize(data: Buffer): void {
         if (data.length < 4) {
-            log.error(
+            throw new Error(
                 `Data is too short. Expected at least 4 bytes, got ${data.length} bytes`,
             );
-            throw new Error("Data is too short");
         }
 
         if (this.version === 0) {
@@ -109,9 +105,6 @@ export class SerializableData implements ISerializable {
 
     deserialize(data: Buffer): void {
         if (data.length > this.data.length) {
-            log.error(
-                `Data is too long. Expected at most ${this.data.length} bytes, got ${data.length} bytes`,
-            );
             throw new Error(
                 `Data is too long. Expected at most ${this.data.length} bytes, got ${data.length} bytes`,
             );
@@ -163,11 +156,6 @@ export class GameMessage implements IMessage {
     }
     deserialize(data: Buffer): void {
         if (data.length < this.header.getDataOffset()) {
-            log.error(
-                `Data is too short. Expected at least ${this.header.getDataOffset()} bytes, got ${
-                    data.length
-                } bytes`,
-            );
             throw new Error(
                 `Data is too short. Expected at least ${this.header.getDataOffset()} bytes, got ${
                     data.length
