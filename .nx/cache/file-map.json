@@ -120,147 +120,147 @@
                     "hash": "3244421341483603138"
                 },
                 {
-                    "file": "thebeast/lib/nps/index.ts",
+                    "file": "thebeast/index.ts",
                     "hash": "7090739820004070559"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageProcessors/getLobMiniRiffList.ts",
+                    "file": "thebeast/messageProcessors/getLobMiniRiffList.ts",
                     "hash": "1310426978404068664"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageProcessors/getLobMiniUserList.ts",
+                    "file": "thebeast/messageProcessors/getLobMiniUserList.ts",
                     "hash": "6532897472486871971"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageProcessors/index.ts",
+                    "file": "thebeast/messageProcessors/index.ts",
                     "hash": "3428272607749081350"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageProcessors/lobbyCommands.ts",
+                    "file": "thebeast/messageProcessors/lobbyCommands.ts",
                     "hash": "3067400189448550173"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageProcessors/processCheckPlateText.ts",
+                    "file": "thebeast/messageProcessors/processCheckPlateText.ts",
                     "hash": "7116424182069654272"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageProcessors/processCheckProfileName.ts",
+                    "file": "thebeast/messageProcessors/processCheckProfileName.ts",
                     "hash": "15692350762709805299"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageProcessors/processCreateProfile.ts",
+                    "file": "thebeast/messageProcessors/processCreateProfile.ts",
                     "hash": "17296605385109366503"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageProcessors/processDeleteProfile.ts",
+                    "file": "thebeast/messageProcessors/processDeleteProfile.ts",
                     "hash": "8037003224882727444"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageProcessors/processEncryptedGameCommand.ts",
+                    "file": "thebeast/messageProcessors/processEncryptedGameCommand.ts",
                     "hash": "9864198487345188731"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageProcessors/processGameLogin.ts",
+                    "file": "thebeast/messageProcessors/processGameLogin.ts",
                     "hash": "6848078763900836763"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageProcessors/processGetFirstBuddy.ts",
+                    "file": "thebeast/messageProcessors/processGetFirstBuddy.ts",
                     "hash": "4317773952728428954"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageProcessors/processGetProfileInfo.ts",
+                    "file": "thebeast/messageProcessors/processGetProfileInfo.ts",
                     "hash": "234931470321227098"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageProcessors/processGetProfileMaps.ts",
+                    "file": "thebeast/messageProcessors/processGetProfileMaps.ts",
                     "hash": "10958544461981205728"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageProcessors/processLobbyLogin.ts",
+                    "file": "thebeast/messageProcessors/processLobbyLogin.ts",
                     "hash": "17296351929681794078"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageProcessors/processPing.ts",
+                    "file": "thebeast/messageProcessors/processPing.ts",
                     "hash": "16270620732051920981"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageProcessors/processUserLogin.ts",
+                    "file": "thebeast/messageProcessors/processUserLogin.ts",
                     "hash": "15428579812719676698"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageStructs/GameMessage.ts",
+                    "file": "thebeast/messageStructs/GameMessage.ts",
                     "hash": "8854967129983057049"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageStructs/GameProfile.ts",
+                    "file": "thebeast/messageStructs/GameProfile.ts",
                     "hash": "4848812249109328340"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageStructs/MiniRiffList.ts",
+                    "file": "thebeast/messageStructs/MiniRiffList.ts",
                     "hash": "7155327144186990565"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageStructs/MiniUserList.ts",
+                    "file": "thebeast/messageStructs/MiniUserList.ts",
                     "hash": "17462825181538069545"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageStructs/NPSList.ts",
+                    "file": "thebeast/messageStructs/NPSList.ts",
                     "hash": "10119158781387584114"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageStructs/ProfileList.ts",
+                    "file": "thebeast/messageStructs/ProfileList.ts",
                     "hash": "2527086496158874335"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageStructs/SessionKey.ts",
+                    "file": "thebeast/messageStructs/SessionKey.ts",
                     "hash": "12762795724411796498"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageStructs/UserAction.ts",
+                    "file": "thebeast/messageStructs/UserAction.ts",
                     "hash": "579526865209158192"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageStructs/UserInfo.ts",
+                    "file": "thebeast/messageStructs/UserInfo.ts",
                     "hash": "15823399554624038370"
                 },
                 {
-                    "file": "thebeast/lib/nps/messageStructs/UserStatus.ts",
+                    "file": "thebeast/messageStructs/UserStatus.ts",
                     "hash": "8429116003312465571"
                 },
                 {
-                    "file": "thebeast/lib/nps/services/account.ts",
+                    "file": "thebeast/services/account.ts",
                     "hash": "15589634688779153194"
                 },
                 {
-                    "file": "thebeast/lib/nps/services/profile.ts",
+                    "file": "thebeast/services/profile.ts",
                     "hash": "8641993167559947549"
                 },
                 {
-                    "file": "thebeast/lib/nps/services/session.ts",
+                    "file": "thebeast/services/session.ts",
                     "hash": "2818149994021605356"
                 },
                 {
-                    "file": "thebeast/lib/nps/services/token.ts",
+                    "file": "thebeast/services/token.ts",
                     "hash": "7368387690796821995"
                 },
                 {
-                    "file": "thebeast/lib/nps/services/types.ts",
+                    "file": "thebeast/services/types.ts",
                     "hash": "9731723030948033474"
                 },
                 {
-                    "file": "thebeast/lib/nps/types.ts",
+                    "file": "thebeast/types.ts",
                     "hash": "14870268956472440757"
                 },
                 {
-                    "file": "thebeast/lib/nps/utils/pureCompare.ts",
+                    "file": "thebeast/utils/pureCompare.ts",
                     "hash": "4258843400502292304"
                 },
                 {
-                    "file": "thebeast/lib/nps/utils/pureGet.ts",
+                    "file": "thebeast/utils/pureGet.ts",
                     "hash": "265682811551639654"
                 },
                 {
-                    "file": "thebeast/lib/nps/utils/purePut.ts",
+                    "file": "thebeast/utils/purePut.ts",
                     "hash": "9440717771529078848"
                 },
                 {

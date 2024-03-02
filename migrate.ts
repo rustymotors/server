@@ -1,5 +1,5 @@
 import { SlonikMigrator } from "@slonik/migrator";
-import { slonik } from "./thebeast/packages/database/src/services/database.js";
+import { slonik } from "./packages/database/src/services/database.js";
 
 const migrator = new SlonikMigrator({
     migrationsPath: "migrations",
