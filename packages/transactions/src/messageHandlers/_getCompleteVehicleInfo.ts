@@ -3,9 +3,8 @@ import { GenericRequestMessage } from "../GenericRequestMessage.js";
 import { OldServerMessage } from "@rustymotors/shared";
 import { MessageHandlerArgs, MessageHandlerResult } from "../../types.js";
 import { CarInfoMessage } from "../messageStructs/CarInfoMessage.js";
-import { getVehiclePartTree } from "../../../database/src/cache.js";
-import { TPart } from "../../../database/src/models/Part.js";
-import { buildVehiclePartTreeFromDB } from "../../../database/src/models/VehiclePartTree.js";
+import { getVehiclePartTree } from "@rustymotors/database";
+import { TPart, buildVehiclePartTreeFromDB } from "@rustymotors/database";
 
 import { getServerLogger } from "@rustymotors/shared";
 

@@ -3,7 +3,7 @@ import { getServerLogger } from "@rustymotors/shared";
 import { clientConnect } from "../src/clientConnect.js";
 import { describe, it, expect } from "vitest";
 
-import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
+import { getDatabaseServer } from "@rustymotors/database";
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
 
 describe("clientConnect", () => {

@@ -1,7 +1,7 @@
 import { ServerLogger } from "@rustymotors/shared";
 import { LegacyMessage } from "@rustymotors/shared";
 import { UserInfo } from "../UserInfoMessage.js";
-import { getDatabaseServer } from "../../../database/src/DatabaseManager.js";
+import { getDatabaseServer } from "@rustymotors/database";
 
 export async function _setMyUserData({
     connectionId,

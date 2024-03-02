@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
+import { getDatabaseServer } from "@rustymotors/database";
 import { DatabaseManager } from "../../interfaces/index.js";
 import {
     ServerLogger,

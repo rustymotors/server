@@ -7,6 +7,9 @@ settings:
 importers:
     .:
         dependencies:
+            "@rustymotors/database":
+                specifier: workspace:^
+                version: link:packages/database
             "@rustymotors/shared":
                 specifier: workspace:^
                 version: link:packages/shared
@@ -95,7 +98,11 @@ importers:
 
     packages/interfaces: {}
 
-    packages/lobby: {}
+    packages/lobby:
+        dependencies:
+            "@rustymotors/database":
+                specifier: workspace:^
+                version: link:../database
 
     packages/login: {}
 

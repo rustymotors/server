@@ -1,5 +1,5 @@
 import { getPersonasByPersonaId } from "../../../persona/src/getPersonasByPersonaId.js";
-import { getDatabaseServer } from "../../../database/src/DatabaseManager.js";
+import { getDatabaseServer } from "@rustymotors/database";
 import { LoginInfoMessage } from "../LoginInfoMessage.js";
 
 import { UserInfoMessage } from "../UserInfoMessage.js";

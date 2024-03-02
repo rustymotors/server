@@ -17,7 +17,7 @@
 import { getServerConfiguration } from "@rustymotors/shared";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { ServerLogger, getServerLogger } from "@rustymotors/shared";
-import { getDatabaseServer } from "../../database/src/DatabaseManager.js";
+import { getDatabaseServer } from "@rustymotors/database";
 import { NPSMessage, SerializedBuffer } from "@rustymotors/shared";
 import { NetworkMessage } from "@rustymotors/shared";
 

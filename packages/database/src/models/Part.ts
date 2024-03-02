@@ -1,5 +1,3 @@
-import { TAttachmentPoint } from "./AttachmentPoint.js";
-
 export type TPart = {
     partId: number;
     parentPartId: number | null;
