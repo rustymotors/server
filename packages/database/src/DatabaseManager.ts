@@ -55,7 +55,6 @@ export async function fetchSessionKeyByCustomerId(
  * @param {string} contextId
  * @param {string} connectionId
  * @returns {Promise<void>}
- * @throws {Error} If the session key is not found
  */
 export async function updateSessionKey(
     customerId: number,
@@ -75,14 +74,7 @@ export async function updateSessionKey(
     const record = _sessions.findIndex((session) => {
         return session.customerId === customerId;
     });
-    if (record === -1) {
-        const err = new Error(
-            "Error updating session key: existing key not found",
-        );
-        throw Error(
-            `Error updating session key: existing key not found for ${customerId}`,
-        );
-    }
+
     _sessions.splice(record, 1, updatedSession);
 }
 
