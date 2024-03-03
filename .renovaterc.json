@@ -1,18 +1,10 @@
 {
-  "extends": ["config:best-practices"],
+  "extends": ["config:best-practices", ":automergeStableNonMajor"],
   "packageRules": [
     {
       "excludePackageNames": [
         "nginx", // This is the last release to support SSL 3 (not TLS). This is required to serve as a proxy to the SChannel that Windows XP uses.
       ]
     },
-    {
-      "automerge": true,
-      "matchCurrentVersion": ">= 1.0.0",
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ]
-    }
   ]
 }
