@@ -20,23 +20,7 @@ describe("clientConnect", () => {
         const log = getServerLogger({
             level: "silent",
         });
-        const state: State = {
-            encryptions: {},
-            sessions: {},
-            filePaths: {},
-            sockets: {},
-            queuedConnections: {},
-            onDataHandlers: {},
-            save() {},
-        };
-        await updateSessionKey(
-            customerId,
-            sessionKey,
-            contextId,
-            connectionId,
-        ).catch((error) => {
-            throw new Error(`Error updating session key: ${error}`);
-        });
+        await updateSessionKey(customerId, sessionKey, contextId, connectionId);
 
         // act
         try {
