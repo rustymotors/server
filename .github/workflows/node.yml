@@ -6,18 +6,18 @@ on:
 
 env:
     MCO_LOG_LEVEL: warn
-    EXTERNAL_HOST: mcouniverse.com 
-    PRIVATE_KEY_FILE: thebeast/data/private_key.pem 
-    CERTIFICATE_FILE: thebeast/data/mcouniverse.crt 
-    PUBLIC_KEY_FILE: thebeast/data/pub.key 
+    EXTERNAL_HOST: mcouniverse.com
+    PRIVATE_KEY_FILE: thebeast/data/private_key.pem
+    CERTIFICATE_FILE: thebeast/data/mcouniverse.crt
+    PUBLIC_KEY_FILE: thebeast/data/pub.key
 
 jobs:
-     build-test:
+    build-test:
         runs-on: ubuntu-latest
 
         strategy:
             matrix:
-                node-version: [18.x, 20.x, 21.x]
+                node-version: [20.x, 21.x]
 
         steps:
             - uses: actions/checkout@v4
@@ -31,7 +31,7 @@ jobs:
               run: |
                   corepack enable pnpm
                   pnpm install
-                  pnpm test --filter thebeast
+                  pnpm test
             - name: Codecov
               if: ${{ always() }}
               env:

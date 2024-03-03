@@ -1,21 +1,21 @@
 {
-  "run": {
-    "command": "nx build shared-packets",
-    "startTime": "2024-03-01T02:15:27.341Z",
-    "endTime": "2024-03-01T02:15:28.753Z",
-    "inner": false
-  },
-  "tasks": [
-    {
-      "taskId": "shared-packets:build",
-      "target": "build",
-      "projectName": "shared-packets",
-      "hash": "6406529228893083755",
-      "startTime": "2024-03-01T02:15:27.344Z",
-      "endTime": "2024-03-01T02:15:28.752Z",
-      "params": "",
-      "cacheStatus": "cache-miss",
-      "status": 0
-    }
-  ]
+    "run": {
+        "command": "nx build shared-packets",
+        "startTime": "2024-03-01T02:15:27.341Z",
+        "endTime": "2024-03-01T02:15:28.753Z",
+        "inner": false
+    },
+    "tasks": [
+        {
+            "taskId": "shared-packets:build",
+            "target": "build",
+            "projectName": "shared-packets",
+            "hash": "6406529228893083755",
+            "startTime": "2024-03-01T02:15:27.344Z",
+            "endTime": "2024-03-01T02:15:28.752Z",
+            "params": "",
+            "cacheStatus": "cache-miss",
+            "status": 0
+        }
+    ]
 }

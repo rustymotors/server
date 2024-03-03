@@ -1,0 +1,22 @@
+{
+    "name": "@rustymotors/shared",
+    "version": "1.0.0",
+    "description": "",
+    "exports": {
+        ".": {
+            "import": "./index.ts",
+            "require": "./index.ts"
+        }
+    },
+    "type": "module",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "pino": "^8.18.0",
+        "pino-pretty": "^10.3.1"
+    }
+}

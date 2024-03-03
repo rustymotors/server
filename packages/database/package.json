@@ -1,0 +1,23 @@
+{
+    "name": "@rustymotors/database",
+    "version": "1.0.0",
+    "description": "",
+    "exports": {
+        ".": {
+            "import": "./index.ts",
+            "require": "./index.ts"
+        }
+    },
+    "type": "module",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@sentry/node": "^7.102.0",
+        "slonik": "^37.2.0",
+        "zod": "^3.22.4"
+    }
+}

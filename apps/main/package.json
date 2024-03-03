@@ -1,0 +1,16 @@
+{
+    "name": "@rustymotors/server",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "start": "tsx --openssl-legacy-provider --env-file=../../.env server.ts"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@rustymotors/shared": "workspace:^"
+    }
+}
