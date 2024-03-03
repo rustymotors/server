@@ -19,7 +19,10 @@ const _users: Map<number, Buffer> = new Map();
  
 * @throws {Error} If the user record is not found
  */
-export async function updateUser(user: { userId: number; userData: Buffer }): Promise<void> {
+export async function updateUser(user: {
+    userId: number;
+    userData: Buffer;
+}): Promise<void> {
     try {
         _users.set(user.userId, user.userData);
     } catch (error) {
@@ -97,7 +100,6 @@ export async function fetchSessionKeyByConnectionId(
         return session.connectionId === connectionId;
     });
     if (typeof record === "undefined") {
-
         throw Error(`Session key not found for connection ${connectionId}`);
     }
     return record;
