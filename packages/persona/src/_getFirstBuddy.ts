@@ -1,19 +1,19 @@
-import { ServerLogger, getServerLogger } from "@rustymotors/shared";
 import {
+    getServerLogger,
     LegacyMessage,
     NPSMessage,
     SerializedBuffer,
 } from "@rustymotors/shared";
 import { BuddyCount, BuddyInfoMessage, BuddyList } from "./BuddyInfoMessage.js";
 
+const log = getServerLogger();
+
 export async function _getFirstBuddy({
     connectionId,
     message,
-    log,
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
