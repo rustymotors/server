@@ -16,16 +16,16 @@
         "url": "git@github.com:drazisil/mcos.git"
     },
     "devDependencies": {
-        "@slonik/migrator": "^0.12.0",
-        "@types/node": "^20.11.16",
-        "@vitest/coverage-v8": "^1.1.1",
-        "eslint": "^8.57.0",
-        "eslint-config-prettier": "^9.1.0",
-        "eslint-plugin-prettier": "^5.1.3",
-        "nx": "^18.0.6",
+        "@slonik/migrator": "0.12.0",
+        "@types/node": "20.11.24",
+        "@vitest/coverage-v8": "1.3.1",
+        "eslint": "8.57.0",
+        "eslint-config-prettier": "9.1.0",
+        "eslint-plugin-prettier": "5.1.3",
+        "nx": "18.0.6",
         "prettier": "3.2.4",
-        "typescript": "^5.3.3",
-        "vitest": "^1.3.1"
+        "typescript": "5.3.3",
+        "vitest": "1.3.1"
     },
     "dependencies": {
         "@rustymotors/database": "workspace:^",
