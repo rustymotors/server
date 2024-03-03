@@ -1,5 +1,6 @@
-import { ServerLogger, getServerLogger } from "@rustymotors/shared";
-import { LegacyMessage, SerializedBuffer } from "@rustymotors/shared";
+import { getServerLogger, LegacyMessage, SerializedBuffer } from "@rustymotors/shared";
+
+const log = getServerLogger();
 
 /**
  * Handle game logout
@@ -16,11 +17,9 @@ import { LegacyMessage, SerializedBuffer } from "@rustymotors/shared";
 export async function _gameLogout({
     connectionId,
     message,
-    log,
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log: ServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
