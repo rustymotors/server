@@ -14,8 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerLogger, ServiceResponse } from "@rustymotors/shared";
-import { NPSMessage } from "@rustymotors/shared";
+import { ServerLogger, ServiceResponse, NPSMessage } from "@rustymotors/shared";
 import { handleLoginData } from "./internal.js";
 
 /**

@@ -1,9 +1,11 @@
 import { privateDecrypt } from "node:crypto";
 import { readFileSync } from "node:fs";
 
-import { LegacyMessage } from "@rustymotors/shared";
-import { Configuration } from "@rustymotors/shared";
-import { ServerLogger } from "@rustymotors/shared";
+import {
+    LegacyMessage,
+    Configuration,
+    ServerLogger,
+} from "@rustymotors/shared";
 
 /**
  * @typedef {Configuration} Configuration

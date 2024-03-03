@@ -1,12 +1,10 @@
 import { Socket, createServer as createSocketServer } from "node:net";
 import { onSocketConnection } from "./index.js";
+import fastify from "fastify";
 import {
     Configuration,
     getServerConfiguration,
     ServerLogger,
-} from "@rustymotors/shared";
-import fastify from "fastify";
-import {
     addOnDataHandler,
     createInitialState,
     fetchStateFromDatabase,

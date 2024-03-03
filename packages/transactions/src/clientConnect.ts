@@ -7,12 +7,12 @@ import {
     addSession,
     fetchStateFromDatabase,
     getEncryption,
+    OldServerMessage,
 } from "@rustymotors/shared";
 import {
     createCommandEncryptionPair,
     createDataEncryptionPair,
 } from "../../gateway/src/encryption.js";
-import { OldServerMessage } from "@rustymotors/shared";
 import { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 import { getUserSessionByCustomerId } from "../../nps/services/session.js";
 

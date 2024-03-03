@@ -16,13 +16,16 @@
 
 import { getServerConfiguration } from "@rustymotors/shared";
 import { NPSUserStatus } from "./NPSUserStatus.js";
-import { ServerLogger, getServerLogger } from "@rustymotors/shared";
 import { updateSessionKey } from "@rustymotors/database";
-import { NPSMessage, SerializedBuffer } from "@rustymotors/shared";
-import { NetworkMessage } from "@rustymotors/shared";
+import {
+    ServerLogger,
+    NPSMessage,
+    SerializedBuffer,
+    NetworkMessage,
+} from "@rustymotors/shared";
+import { UserRecordMini } from "../../interfaces/index.js";
 
-/** @type {import("../../interfaces/index.js").UserRecordMini[]} */
-const userRecords: import("../../interfaces/index.js").UserRecordMini[] = [
+const userRecords: UserRecordMini[] = [
     {
         contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
         customerId: 0x0012808b,

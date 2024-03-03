@@ -14,14 +14,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerLogger, getServerLogger } from "@rustymotors/shared";
+import {
+    ServerLogger,
+    LegacyMessage,
+    SerializedBuffer,
+} from "@rustymotors/shared";
 
 import {
     PersonaList,
     PersonaMapsMessage,
     PersonaRecord,
 } from "./PersonaMapsMessage.js";
-import { LegacyMessage, SerializedBuffer } from "@rustymotors/shared";
 import { _selectGamePersona } from "./_selectGamePersona.js";
 import { _gameLogout } from "./_gameLogout.js";
 import { _getFirstBuddy } from "./_getFirstBuddy.js";
