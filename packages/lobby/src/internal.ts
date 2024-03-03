@@ -16,8 +16,8 @@
 
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
-import { ServerLogger, getServerLogger } from "@rustymotors/shared";
 import {
+    ServerLogger,
     LegacyMessage,
     NPSMessage,
     SerializedBuffer,

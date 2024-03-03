@@ -1,10 +1,8 @@
-import { ServerLogger, getServerLogger } from "@rustymotors/shared";
 import {
+    ServerLogger,
     fetchStateFromDatabase,
     getEncryption,
     updateEncryption,
-} from "@rustymotors/shared";
-import {
     LegacyMessage,
     MessageBuffer,
     SerializedBuffer,

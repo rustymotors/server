@@ -12,8 +12,8 @@ import {
     addEncryption,
     fetchStateFromDatabase,
     getEncryption,
+    SerializedBuffer,
 } from "@rustymotors/shared";
-import { SerializedBuffer } from "@rustymotors/shared";
 
 /**
  * Convert to zero padded hex

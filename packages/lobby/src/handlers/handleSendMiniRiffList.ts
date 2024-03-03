@@ -1,5 +1,5 @@
-import { ServerLogger, getServerLogger } from "@rustymotors/shared";
 import {
+    ServerLogger,
     GameMessage,
     LegacyMessage,
     serializeString,

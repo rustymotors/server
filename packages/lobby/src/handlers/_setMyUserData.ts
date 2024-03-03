@@ -1,5 +1,4 @@
-import { ServerLogger } from "@rustymotors/shared";
-import { LegacyMessage } from "@rustymotors/shared";
+import { ServerLogger, LegacyMessage } from "@rustymotors/shared";
 import { UserInfo } from "../UserInfoMessage.js";
 import { updateUser } from "@rustymotors/database";
 

@@ -1,11 +1,10 @@
-import { ServerLogger, getServerLogger } from "@rustymotors/shared";
 import {
+    ServerLogger,
     GameMessage,
     LegacyMessage,
     serializeString,
 } from "@rustymotors/shared";
 import { UserInfo } from "../UserInfoMessage.js";
-import { getServerConfiguration } from "@rustymotors/shared";
 import { channelRecordSize, channels } from "./encryptedCommand.js";
 
 const user1 = new UserInfo();
