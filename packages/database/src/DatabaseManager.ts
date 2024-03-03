@@ -39,9 +39,6 @@ export async function fetchSessionKeyByCustomerId(
         return session.customerId === customerId;
     });
     if (typeof record === "undefined") {
-        const err = new Error(
-            `Session key not found for customer ${customerId}`,
-        );
         throw Error(`Session key not found for customer ${customerId}`);
     }
     return record;
