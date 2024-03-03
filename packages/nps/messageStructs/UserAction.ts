@@ -1,4 +1,4 @@
-import { ISerializable, IMessageHeader, IMessage } from "../types.js";
+import { ISerializable } from "../types.js";
 import { getAsHex } from "../utils/pureGet.js";
 
 export class UserAction implements ISerializable {
@@ -28,8 +28,6 @@ export class UserAction implements ISerializable {
     }
 
     static fromBytes(name: string, bytes: Buffer): UserAction {
-        const dara = bytes.toString("utf8");
-
         return new UserAction(name, bytes);
     }
 
