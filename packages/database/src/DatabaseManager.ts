@@ -3,72 +3,18 @@
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
 
-import { ServerLogger, getServerLogger } from "@rustymotors/shared";
 import { ConnectionRecord } from "../../interfaces/index.js";
+
+const _sessions: ConnectionRecord[] = [];
+const _users: Map<number, Buffer> = new Map();
 
 /**
  * @module Database
  */
 
-const log = getServerLogger();
-
-class Database {
-    static instance: Database | undefined;
-    private _log: ServerLogger;
-    _sessions: interfaces.ConnectionRecord[];
-    private _lobbies: interfaces.RaceLobbyRecord[][];
-    _users: Map<number, Buffer>;
-
-    /**
-     * Creates an instance of Database.
-     *
-     * @param {ServerLogger} log
-     */
-    constructor(log: ServerLogger) {
-        this._log = log;
-        this._sessions = [];
-        /**
-         * @private
-         * @type {interfaces.RaceLobbyRecord[]}
-         */
-        this._lobbies = [];
-        this._users = new Map();
-    }
-
-    /**
-     * Return the singleton instance of the DatabaseManager class
-     *
-     * @static
-     * @param {ServerLogger} log
-     * @returns {Database}
-     */
-    static getInstance(log: ServerLogger): Database {
-        if (!Database.instance) {
-            Database.instance = new Database(log);
-        }
-        const self = Database.instance;
-        return self;
-    }
-}
-
-/**
- * Return the singleton instance of the DatabaseManager class
- *
- * @param {ServerLogger} log
- * @returns {Database}
- */
-
-export function getDatabaseServer(log: ServerLogger): Database {
-    if (!Database.instance) {
-        Database.instance = new Database(log);
-    }
-    return Database.getInstance(log);
-}
-
 export async function updateUser(user: { userId: number; userData: Buffer }) {
-    const db = getDatabaseServer(log);
     try {
-        db._users.set(user.userId, user.userData);
+        _users.set(user.userId, user.userData);
     } catch (error) {
         throw Error(`Error updating user: ${String(error)}`);
     }
@@ -84,16 +30,14 @@ export async function updateUser(user: { userId: number; userData: Buffer }) {
 export async function fetchSessionKeyByCustomerId(
     customerId: number,
 ): Promise<interfaces.ConnectionRecord> {
-    const db = getDatabaseServer(log);
-    const record = db._sessions.find((session) => {
+    const record = _sessions.find((session) => {
         return session.customerId === customerId;
     });
     if (typeof record === "undefined") {
         const err = new Error(
             `Session key not found for customer ${customerId}`,
         );
-        log.error(`Session key not found for customer ${customerId}`);
-        throw err;
+        throw Error(`Session key not found for customer ${customerId}`);
     }
     return record;
 }
@@ -123,20 +67,18 @@ export async function updateSessionKey(
         contextId,
         connectionId,
     };
-    const db = getDatabaseServer(log);
-    const record = db._sessions.findIndex((session) => {
+    const record = _sessions.findIndex((session) => {
         return session.customerId === customerId;
     });
     if (typeof record === "undefined") {
         const err = new Error(
             "Error updating session key: existing key not found",
         );
-        log.error(
+        throw Error(
             `Error updating session key: existing key not found for ${customerId}`,
         );
-        throw err;
     }
-    db._sessions.splice(record, 1, updatedSession);
+    _sessions.splice(record, 1, updatedSession);
 }
 
 /**
@@ -149,16 +91,14 @@ export async function updateSessionKey(
 export async function fetchSessionKeyByConnectionId(
     connectionId: string,
 ): Promise<interfaces.ConnectionRecord> {
-    const db = getDatabaseServer(log);
-    const record = db._sessions.find((session) => {
+    const record = _sessions.find((session) => {
         return session.connectionId === connectionId;
     });
     if (typeof record === "undefined") {
         const err = new Error(
             `Session key not found for connection ${connectionId}`,
         );
-        log.error(`Session key not found for connection ${connectionId}`);
-        throw err;
+        throw Error(`Session key not found for connection ${connectionId}`);
     }
     return record;
 }
