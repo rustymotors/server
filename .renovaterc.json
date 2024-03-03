@@ -5,6 +5,6 @@
       "excludePackageNames": [
         "nginx", // https://archive.org/details/nginx_1.9.8.tar is the last release to support SSL 3 (not TLS). This is required to serve as a proxy to the [SChannel](https://web.archive.org/web/20230402130420/https://learn.microsoft.com/en-us/windows/win32/com/schannel) that Windows XP uses.
       ]
-    },
+    }
   ]
 }
