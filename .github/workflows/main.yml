@@ -1,6 +1,7 @@
 name: Sentry Release
 
 on:
+    workflow_dispatch:
     push:
         branches:
             - main
@@ -13,9 +14,11 @@ jobs:
               with:
                   fetch-depth: 0
 
-            - name: Install and test
+            - name: Enable Corepack
               run: |
                   corepack enable pnpm
+            - name: Install and test using pnpm
+              run: |
                   pnpm install
                   pnpm test
 
