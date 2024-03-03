@@ -1,6 +1,7 @@
 name: Sentry Release
 
 on:
+    workflow_dispatch:
     push:
         branches:
             - main
@@ -13,9 +14,13 @@ jobs:
               with:
                   fetch-depth: 0
 
-            - name: Install and Build
+            - name: Enable Corepack
               run: |
-                  npm install
+                  corepack enable pnpm
+            - name: Install and test using pnpm
+              run: |
+                  pnpm install
+                  pnpm test
 
             - name: Create Sentry release
               uses: getsentry/action-release@v1
