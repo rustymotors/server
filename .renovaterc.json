@@ -3,7 +3,7 @@
   "packageRules": [
     {
       "excludePackageNames": [
-        "nginx",
+        "nginx", // This is the last release to support SSL 3 (not TLS). This is required to serve as a proxy to the SChannel that Windows XP uses.
       ]
     },
     {
