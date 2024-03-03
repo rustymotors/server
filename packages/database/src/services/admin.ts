@@ -1,6 +1,5 @@
 import { DatabaseTransactionConnection } from "slonik";
 import { getSlonik } from "./database.js";
-import {} from "@rustymotors/shared";
 import * as Sentry from "@sentry/node";
 
 async function playerExists(playerId: number): Promise<boolean> {
@@ -14,7 +13,7 @@ async function playerExists(playerId: number): Promise<boolean> {
                 db: "postgres",
             },
         },
-        async (span) => {
+        async () => {
             const { slonik, sql } = await getSlonik();
             return slonik.exists(sql.typeAlias("id")`
         SELECT 1 FROM player WHERE playerid = ${playerId}
@@ -34,7 +33,7 @@ async function skinExists(skinId: number): Promise<boolean> {
                 db: "postgres",
             },
         },
-        async (span) => {
+        async () => {
             const { slonik, sql } = await getSlonik();
             return slonik.exists(sql.typeAlias("id")`
         SELECT 1 FROM ptskin WHERE skinid = ${skinId}
@@ -57,7 +56,7 @@ async function getAbstractPartTypeIDForBrandedPartID(
                 db: "postgres",
             },
         },
-        async (span) => {
+        async () => {
             const { slonik, sql } = await getSlonik();
             return slonik.one(sql.typeAlias("abstractPartType")`
         SELECT pt.abstractparttypeid 
@@ -131,7 +130,7 @@ export async function createNewCar(
                 db: "postgres",
             },
         },
-        async (span) => {
+        async () => {
             const { slonik, sql } = await getSlonik();
             return slonik.many(sql.typeAlias("brandedPart")`
         SELECT b.brandedpartid, a.attachmentpointid
@@ -163,7 +162,7 @@ export async function createNewCar(
                     db: "postgres",
                 },
             },
-            async (span) => {
+            async () => {
                 const { slonik, sql } = await getSlonik();
                 slonik.transaction(async (connection) => {
                     // First insert the new car into the vehicle table
@@ -264,7 +263,7 @@ async function addPart(
     newCarOwenrId: number,
 ) {
     try {
-        const { slonik, sql } = await getSlonik();
+        const { sql } = await getSlonik();
         await connection.query(sql.typeAlias("part")`
                     INSERT INTO part (partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue)
                     VALUES (${currentPartId}, ${parentPartId}, ${partEntry.brandedPartId}, 0, 0, ${partEntry.AttachmentPointId}, ${newCarOwenrId}, null, 0, 0)
@@ -287,33 +286,6 @@ export type DBPart = {
     scrapValue: number;
 };
 
-async function getPart(
-    connection: DatabaseTransactionConnection,
-    requestedPartId: number,
-): Promise<DBPart> {
-    try {
-        const { slonik, sql } = await getSlonik();
-        const part = await connection.one(sql.typeAlias("dbPart")`
-                    SELECT FROM part (partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue)
-                    WHERE partid = ${requestedPartId}
-                `);
-        return {
-            partId: part.partid,
-            parentPartId: part.parentpartid,
-            brandedPartId: part.brandedpartid,
-            percentDamage: part.percentdamage,
-            itemWear: part.itemwear,
-            attachmentPointId: part.attachmentpointid,
-            ownerId: part.ownerid,
-            partName: part.partname,
-            repairCost: part.repaircost,
-            scrapValue: part.scrapvalue,
-        };
-    } catch (error) {
-        throw Error("Error adding part: " + error);
-    }
-}
-
 async function getNextSq(seqName: string) {
     return await Sentry.startSpan(
         {
@@ -325,7 +297,7 @@ async function getNextSq(seqName: string) {
                 db: "postgres",
             },
         },
-        async (span) => {
+        async () => {
             const { slonik, sql } = await getSlonik();
             return Number(
                 (
