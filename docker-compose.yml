@@ -11,7 +11,7 @@ services:
         extra_hosts:
             - "host.docker.internal:host-gateway"
     db:
-        image: postgres:latest
+        image: postgres:latest@sha256:f58300ac8d393b2e3b09d36ea12d7d24ee9440440e421472a300e929ddb63460
         restart: always
         environment:
             POSTGRES_DB: rm
@@ -25,7 +25,7 @@ services:
             - no-new-privileges:true
 
     adminer:
-        image: adminer
+        image: adminer@sha256:c9592a99120164a7a4cc75ec76b3632fa3520a4de2d801bbb93c3753fe34e048
         restart: always
         ports:
             - 8080:8080
