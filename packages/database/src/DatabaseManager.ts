@@ -5,14 +5,21 @@
 
 import { ConnectionRecord } from "../../interfaces/index.js";
 
+// This is a fake database table that holds sessions of currently logged in users
 const _sessions: ConnectionRecord[] = [];
+// This is a fake database table that holds user data
 const _users: Map<number, Buffer> = new Map();
 
 /**
  * @module Database
  */
 
-export async function updateUser(user: { userId: number; userData: Buffer }) {
+/**
+ * Update a user record in the database
+ 
+* @throws {Error} If the user record is not found
+ */
+export async function updateUser(user: { userId: number; userData: Buffer }): Promise<void> {
     try {
         _users.set(user.userId, user.userData);
     } catch (error) {
@@ -23,13 +30,11 @@ export async function updateUser(user: { userId: number; userData: Buffer }) {
 /**
  * Locate customer session encryption key in the database
  *
- * @param {number} customerId
- * @returns {Promise<import("../../interfaces/index.js").ConnectionRecord>}
  * @throws {Error} If the session key is not found
  */
 export async function fetchSessionKeyByCustomerId(
     customerId: number,
-): Promise<interfaces.ConnectionRecord> {
+): Promise<ConnectionRecord> {
     const record = _sessions.find((session) => {
         return session.customerId === customerId;
     });
