@@ -1,6 +1,7 @@
 import { handleSendMiniRiffList } from "../../src/handlers/handleSendMiniRiffList.js";
 import { describe, it, expect } from "vitest";
-import { LegacyMessage, getServerLogger } from "@rustymotors/shared";
+import { LegacyMessage } from "@rustymotors/shared";
+import { mockLogger } from "../../../../test/factoryMocks.js";
 
 describe("handleSendMiniRiffList", () => {
     it("should return a buffer", async () => {
@@ -10,9 +11,7 @@ describe("handleSendMiniRiffList", () => {
         const result = await handleSendMiniRiffList({
             connectionId: "test",
             message: incomingMessage,
-            log: getServerLogger({
-                level: "silent",
-            }),
+            log: mockLogger(),
         });
 
         expect(result.message).toBeInstanceOf(LegacyMessage);

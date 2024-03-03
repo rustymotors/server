@@ -1,10 +1,9 @@
-import { State } from "@rustymotors/shared";
-import { getServerLogger } from "@rustymotors/shared";
 import { clientConnect } from "../src/clientConnect.js";
 import { describe, it, expect } from "vitest";
 
 import { updateSessionKey } from "@rustymotors/database";
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
+import { mockLogger } from "../../../test/factoryMocks.js";
 
 describe("clientConnect", () => {
     it("throws when connection is not found", async () => {
@@ -17,9 +16,7 @@ describe("clientConnect", () => {
         const incomingMessage = new TClientConnectMessage();
         incomingMessage._customerId = customerId;
 
-        const log = getServerLogger({
-            level: "silent",
-        });
+        const log = mockLogger();
         await updateSessionKey(customerId, sessionKey, contextId, connectionId);
 
         // act

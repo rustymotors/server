@@ -1,15 +1,14 @@
-import { getServerLogger, OldServerMessage } from "@rustymotors/shared";
+import { OldServerMessage } from "@rustymotors/shared";
 import { getLobbies } from "../src/getLobbies.js";
 import { describe, expect, it } from "vitest";
+import { mockLogger } from "../../../test/factoryMocks.js";
 
 describe("getLobbies", () => {
     it("should return a promise", async () => {
         // arrange
         const connectionId = "1";
         const packet = new OldServerMessage();
-        const log = getServerLogger({
-            level: "silent",
-        });
+        const log = mockLogger();
 
         // act
         const result = await getLobbies({

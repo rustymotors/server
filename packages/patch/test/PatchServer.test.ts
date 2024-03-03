@@ -1,13 +1,11 @@
-import { getServerLogger } from "@rustymotors/shared";
 import { PatchServer, CastanetResponse } from "../src/PatchServer.js";
 import { describe, it, expect, vi } from "vitest";
+import { mockLogger } from "../../../test/factoryMocks.js";
 
 describe("PatchServer", () => {
     it("should return the hard-coded value that tells the client there are no updates or patches", () => {
         // Arrange
-        const log = getServerLogger({
-            level: "silent",
-        });
+        const log = mockLogger();
         const patchServer = PatchServer.getInstance(log);
         const request = {
             socket: {

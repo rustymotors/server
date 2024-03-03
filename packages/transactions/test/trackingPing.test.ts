@@ -1,15 +1,14 @@
-import { getServerLogger, OldServerMessage } from "@rustymotors/shared";
+import { OldServerMessage } from "@rustymotors/shared";
 import { trackingPing } from "../src/trackingPing.js";
-import { describe, test, expect, vi } from "vitest";
+import { describe, test, expect } from "vitest";
+import { mockLogger } from "../../../test/factoryMocks.js";
 
 describe("trackingPing", () => {
     test("does not return a message", async () => {
         // arrange
         const inboundMessage = new OldServerMessage();
 
-        const log = getServerLogger({
-            level: "silent",
-        });
+        const log = mockLogger();
 
         // act
         const { messages } = await trackingPing({
