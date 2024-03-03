@@ -13,9 +13,11 @@ jobs:
               with:
                   fetch-depth: 0
 
-            - name: Install and Build
+            - name: Install and test
               run: |
-                  npm install
+                  corepack enable pnpm
+                  pnpm install
+                  pnpm test
 
             - name: Create Sentry release
               uses: getsentry/action-release@v1
