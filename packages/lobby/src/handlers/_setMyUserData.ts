@@ -1,7 +1,7 @@
 import { ServerLogger } from "@rustymotors/shared";
 import { LegacyMessage } from "@rustymotors/shared";
 import { UserInfo } from "../UserInfoMessage.js";
-import { getDatabaseServer } from "@rustymotors/database";
+import { updateUser } from "@rustymotors/database";
 
 export async function _setMyUserData({
     connectionId,
@@ -21,13 +21,13 @@ export async function _setMyUserData({
 
         log.debug(`User ID: ${incomingMessage._userId}`);
 
-        // Get the database instance
-        const db = getDatabaseServer(log);
-
         // Update the user's data
-        db.updateUser({
+        await updateUser({
             userId: incomingMessage._userId,
             userData: incomingMessage._userData,
+        }).catch((error) => {
+            log.error(`Error updating user data: ${String(error)}`);
+            throw Error(`Error updating user data: ${String(error)}`);
         });
 
         // Build the packet

@@ -1,28 +1,21 @@
 import { mockLogger } from "../../../test/factoryMocks.js";
-import { Database } from "../src/DatabaseManager.js";
 import { describe, it, expect, vi } from "vitest";
+import {
+    fetchSessionKeyByCustomerId,
+    fetchSessionKeyByConnectionId,
+    updateUser,
+} from "@rustymotors/database";
 
 describe("Database", () => {
-    it("returns the same instance", () => {
-        // arrange
-        const log = mockLogger();
-        // act
-        const instance1 = Database.getInstance(log);
-        const instance2 = Database.getInstance(log);
-        // assert
-        expect(instance1).toEqual(instance2);
-    });
-
     describe("fetchSessionKeyByCustomerId", () => {
         it("throws when session key is not found", async () => {
             // arrange
 
             const log = mockLogger();
-            const instance = Database.getInstance(log);
             const customerId = 1234;
             // act
             try {
-                await instance.fetchSessionKeyByCustomerId(customerId);
+                await fetchSessionKeyByCustomerId(customerId);
             } catch (error) {
                 // assert
                 expect(error).toEqual(
@@ -39,11 +32,10 @@ describe("Database", () => {
             // arrange
 
             const log = mockLogger();
-            const instance = Database.getInstance(log);
             const connectionId = "1234";
             // act
             try {
-                await instance.fetchSessionKeyByConnectionId(connectionId);
+                await fetchSessionKeyByConnectionId(connectionId);
             } catch (error) {
                 // assert
                 expect(error).toEqual(
@@ -60,7 +52,6 @@ describe("Database", () => {
             // arrange
 
             const log = mockLogger();
-            const instance = Database.getInstance(log);
             const userRecord = {
                 contextId: "1234",
                 customerId: 1234,
@@ -69,7 +60,7 @@ describe("Database", () => {
             };
             // act + assert
             expect(() => {
-                instance.updateUser(userRecord);
+                updateUser(userRecord);
             }).not.toThrow();
         });
     });

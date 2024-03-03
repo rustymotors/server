@@ -3,7 +3,7 @@ import { getServerLogger } from "@rustymotors/shared";
 import { clientConnect } from "../src/clientConnect.js";
 import { describe, it, expect } from "vitest";
 
-import { getDatabaseServer } from "@rustymotors/database";
+import { updateSessionKey } from "@rustymotors/database";
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
 
 describe("clientConnect", () => {
@@ -29,12 +29,14 @@ describe("clientConnect", () => {
             onDataHandlers: {},
             save() {},
         };
-        getDatabaseServer(log).updateSessionKey(
+        await updateSessionKey(
             customerId,
             sessionKey,
             contextId,
             connectionId,
-        );
+        ).catch((error) => {
+            throw new Error(`Error updating session key: ${error}`);
+        });
 
         // act
         try {

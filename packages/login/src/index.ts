@@ -14,13 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getDatabaseServer } from "@rustymotors/database";
-import { DatabaseManager } from "../../interfaces/index.js";
-import {
-    ServerLogger,
-    ServiceResponse,
-    getServerLogger,
-} from "@rustymotors/shared";
+import { ServerLogger, ServiceResponse } from "@rustymotors/shared";
 import { NPSMessage } from "@rustymotors/shared";
 import { handleLoginData } from "./internal.js";
 
@@ -28,24 +22,15 @@ import { handleLoginData } from "./internal.js";
  * Please use {@link LoginServer.getInstance()}
  */
 export class LoginServer {
-    databaseManager: DatabaseManager;
     _log: any;
     static _instance: LoginServer | undefined;
     /**
      * Please use {@see LoginServer.getInstance} instead
      * @param {object} options
-     * @param {import("../../interfaces/index.js").DatabaseManager} options.database
      * @param {ServerLogger} options.log
      * @memberof LoginServer
      */
-    constructor({
-        log,
-        database = getDatabaseServer(log),
-    }: {
-        database: import("../../interfaces/index.js").DatabaseManager;
-        log: ServerLogger;
-    }) {
-        this.databaseManager = database;
+    constructor({ log }: { log: ServerLogger }) {
         this._log = log;
         LoginServer._instance = this;
     }
@@ -54,17 +39,12 @@ export class LoginServer {
      * Get the single instance of the login server
      *
      * @static
-     * @param {import("../../interfaces/index.js").DatabaseManager} database
      * @param {ServerLogger} log
      * @return {LoginServer}
      */
-    static getInstance(
-        database: import("../../interfaces/index.js").DatabaseManager,
-        log: ServerLogger,
-    ): LoginServer {
+    static getInstance(log: ServerLogger): LoginServer {
         if (typeof LoginServer._instance === "undefined") {
             LoginServer._instance = new LoginServer({
-                database,
                 log,
             });
         }

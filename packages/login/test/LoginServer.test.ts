@@ -7,7 +7,6 @@ describe("LoginServer", () => {
     describe("constructor", () => {
         it("should create a new instance", () => {
             const loginServer = new LoginServer({
-                database: mockDatabaseManager(),
                 log: getServerLogger({
                     level: "silent",
                 }),

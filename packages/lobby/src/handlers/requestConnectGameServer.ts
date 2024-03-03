@@ -1,5 +1,5 @@
 import { getPersonasByPersonaId } from "../../../persona/src/getPersonasByPersonaId.js";
-import { getDatabaseServer } from "@rustymotors/database";
+import { fetchSessionKeyByCustomerId } from "@rustymotors/database";
 import { LoginInfoMessage } from "../LoginInfoMessage.js";
 
 import { UserInfoMessage } from "../UserInfoMessage.js";
@@ -76,10 +76,8 @@ export async function _npsRequestGameConnectServer({
 
     if (!existingEncryption) {
         // Set the encryption keys on the lobby connection
-        const databaseManager = getDatabaseServer(log);
-        const keys = await databaseManager
-            .fetchSessionKeyByCustomerId(customerId)
-            .catch((/** @type {unknown} */ error: unknown) => {
+        const keys = await fetchSessionKeyByCustomerId(customerId).catch(
+            (/** @type {unknown} */ error: unknown) => {
                 log.error(
                     `Unable to fetch session key for customerId ${customerId.toString()}: ${String(
                         error,
@@ -90,7 +88,8 @@ export async function _npsRequestGameConnectServer({
                         error,
                     )}`,
                 );
-            });
+            },
+        );
         if (keys === undefined) {
             log.error(
                 `Error fetching session keys for customerId ${customerId}`,

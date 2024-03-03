@@ -17,7 +17,7 @@
 import { getServerConfiguration } from "@rustymotors/shared";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { ServerLogger, getServerLogger } from "@rustymotors/shared";
-import { getDatabaseServer } from "@rustymotors/database";
+import { updateSessionKey } from "@rustymotors/database";
 import { NPSMessage, SerializedBuffer } from "@rustymotors/shared";
 import { NetworkMessage } from "@rustymotors/shared";
 
@@ -97,21 +97,17 @@ async function login({
 
     // Save sessionkey in database under customerId
     log.debug("Preparing to update session key in db");
-    await getDatabaseServer(log)
-        .updateSessionKey(
-            userRecord.customerId,
-            sessionKey ?? "",
-            contextId,
-            connectionId,
-        )
-        .catch((error) => {
-            const err = new Error(
-                `Unable to update session key in the database: ${String(
-                    error,
-                )}`,
-            );
-            throw err;
-        });
+    await updateSessionKey(
+        userRecord.customerId,
+        sessionKey ?? "",
+        contextId,
+        connectionId,
+    ).catch((error) => {
+        const err = new Error(
+            `Unable to update session key in the database: ${String(error)}`,
+        );
+        throw err;
+    });
 
     log.debug("Session key updated");
 
