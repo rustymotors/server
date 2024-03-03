@@ -1,5 +1,4 @@
-import { getServerLogger } from "@rustymotors/shared";
-import { OldServerMessage } from "@rustymotors/shared";
+import { getServerLogger, OldServerMessage } from "@rustymotors/shared";
 import { trackingPing } from "../src/trackingPing.js";
 import { describe, test, expect, vi } from "vitest";
 

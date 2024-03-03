@@ -14,9 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { OldServerMessage } from "@rustymotors/shared";
-import { ServerMessage } from "@rustymotors/shared";
-import { ServerMessageType, TServerLogger } from "@rustymotors/shared";
+import {
+    OldServerMessage,
+    ServerMessage,
+    ServerMessageType,
+    TServerLogger,
+} from "@rustymotors/shared";
 
 export interface MessageHandlerArgs {
     connectionId: string;
