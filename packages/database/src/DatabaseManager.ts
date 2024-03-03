@@ -72,7 +72,7 @@ export async function updateSessionKey(
     const record = _sessions.findIndex((session) => {
         return session.customerId === customerId;
     });
-    if (typeof record === "undefined") {
+    if (record === -1) {
         const err = new Error(
             "Error updating session key: existing key not found",
         );
