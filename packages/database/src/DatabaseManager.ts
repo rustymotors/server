@@ -97,9 +97,7 @@ export async function fetchSessionKeyByConnectionId(
         return session.connectionId === connectionId;
     });
     if (typeof record === "undefined") {
-        const err = new Error(
-            `Session key not found for connection ${connectionId}`,
-        );
+
         throw Error(`Session key not found for connection ${connectionId}`);
     }
     return record;
