@@ -36,6 +36,7 @@ import {
     GameMessage as OldGameMessage,
 } from "../../nps/index.js";
 import { SocketCallback } from "../../nps/messageProcessors/index.js";
+import { getAsHex } from "../../nps/utils/pureGet.js";
 import { ServiceResponse } from "@rustymotors/shared";
 import { GameMessage } from "@rustymotors/shared-packets";
 
