@@ -35,11 +35,11 @@ export class GameMessageHeader extends Serializable implements ISerializable {
     getLength(): number {
         return this.length;
     }
-    setVersion(version: 0 | 257): void {
-        if (version !== 0 && version !== 257) {
+    setVersion(version: 0 | 1): void {
+        if (version !== 0 && version !== 1) {
             throw new Error(`Invalid version: ${version}`);
         }
-        this.version = version;
+        this.version = version === 0 ? 0 : 257;
     }
     setId(id: number): void {
         this.id = id;
@@ -151,9 +151,7 @@ export class GameMessage extends Serializable implements IMessage {
     }
 
     override toString(): string {
-        return `Id: ${this.header.getId()} 
-        Length: ${this.header.getLength()} 
-        Data: ${this.data.toString()}`;
+        return `Id: ${this.header.getId()}, Length: ${this.header.getLength()}, Data: ${this.data.asHexString()}`;
     }
 
     static identifyVersion(data: Buffer): 0 | 257 {

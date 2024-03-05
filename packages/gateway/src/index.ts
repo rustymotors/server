@@ -33,11 +33,12 @@ import {
     MessageProcessorError,
     getGameMessageProcessor,
     getPortMessageType,
-    GameMessage,
+    GameMessage as OldGameMessage,
 } from "../../nps/index.js";
 import { SocketCallback } from "../../nps/messageProcessors/index.js";
 import { getAsHex } from "../../nps/utils/pureGet.js";
 import { ServiceResponse } from "@rustymotors/shared";
+import { GameMessage } from "@rustymotors/shared-packets";
 
 /**
  * @typedef {object} OnDataHandlerArgs
@@ -244,7 +245,7 @@ function sendToSocket(
 
 export function processGameMessage(
     connectionId: string,
-    message: GameMessage,
+    message: OldGameMessage,
     log: ServerLogger,
     socketCallback: SocketCallback,
 ) {
@@ -279,8 +280,15 @@ export function handleGameMessage(
     // Log raw bytes
     log.trace(`Raw bytes: ${bytes.toString("hex")}`);
 
+    const msgVersion = bytes.byteLength <= 12 ? 0 : 1;
+
+    // Load new game message    
+    const gameMessage = new GameMessage(msgVersion).deserialize(bytes);
+
+    log.debug(`Game message: ${gameMessage}`);
+
     // Try to identify the message version
-    const version = GameMessage.identifyVersion(bytes);
+    const version = OldGameMessage.identifyVersion(bytes);
 
     // Log the version
     log.debug(`Message version: ${version}`);
@@ -288,7 +296,7 @@ export function handleGameMessage(
     // Try to parse it
     try {
         // Create a new message
-        const message = new GameMessage(version);
+        const message = new OldGameMessage(version);
         message.deserialize(bytes);
 
         // Process the message

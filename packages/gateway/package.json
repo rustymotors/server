@@ -13,6 +13,7 @@
     "dependencies": {
         "@fastify/sensible": "^5.5.0",
         "@rustymotors/shared": "workspace:^",
+        "@rustymotors/shared-packets": "workspace:^",
         "@sentry/node": "^7.102.0",
         "fastify": "^4.25.2"
     }

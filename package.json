@@ -30,6 +30,7 @@
     "dependencies": {
         "@rustymotors/database": "workspace:^",
         "@rustymotors/shared": "workspace:^",
+        "@rustymotors/shared-packets": "workspace:^",
         "@sentry/node": "^7.102.0",
         "@sentry/profiling-node": "^7.104.0",
         "slonik": "29",
