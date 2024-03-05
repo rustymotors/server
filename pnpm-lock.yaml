@@ -14,6 +14,9 @@ importers:
       '@rustymotors/shared':
         specifier: workspace:^
         version: link:packages/shared
+      '@rustymotors/shared-packets':
+        specifier: workspace:^
+        version: link:packages/shared-packets
       '@sentry/node':
         specifier: ^7.102.0
         version: 7.105.0
@@ -90,6 +93,9 @@ importers:
       '@rustymotors/shared':
         specifier: workspace:^
         version: link:../shared
+      '@rustymotors/shared-packets':
+        specifier: workspace:^
+        version: link:../shared-packets
       '@sentry/node':
         specifier: ^7.102.0
         version: 7.105.0
