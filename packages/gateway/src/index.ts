@@ -36,7 +36,6 @@ import {
     GameMessage as OldGameMessage,
 } from "../../nps/index.js";
 import { SocketCallback } from "../../nps/messageProcessors/index.js";
-import { getAsHex } from "../../nps/utils/pureGet.js";
 import { ServiceResponse } from "@rustymotors/shared";
 import { GameMessage } from "@rustymotors/shared-packets";
 
@@ -280,6 +279,7 @@ export function handleGameMessage(
     // Log raw bytes
     log.trace(`Raw bytes: ${bytes.toString("hex")}`);
 
+    // Since a GameMessage v1 header is 12 byes long, a message smaller that that can only be v0
     const msgVersion = bytes.byteLength <= 12 ? 0 : 1;
 
     // Load new game message    
