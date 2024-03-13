@@ -12,3 +12,6 @@ build
 *.tar
 packages/**/*.js
 package-lock.json
+
+
+.nx/cache
