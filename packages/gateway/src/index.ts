@@ -283,7 +283,7 @@ export function handleGameMessage(
     // Since a GameMessage v1 header is 12 byes long, a message smaller that that can only be v0
     const msgVersion = bytes.byteLength <= 12 ? 0 : 1;
 
-    // Load new game message    
+    // Load new game message
     const gameMessage = new GameMessage(msgVersion).deserialize(bytes);
 
     log.debug(`Game message: ${gameMessage}`);
