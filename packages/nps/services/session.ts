@@ -114,7 +114,7 @@ export async function getUserSessionByProfileId(
         if (userSession.activeProfileId === profileId) {
             return userSession;
         }
-    };
+    }
     return undefined;
 }
 
@@ -125,7 +125,7 @@ export async function findActiveUserSessionByCustomerId(
         if (userSession.customerId === customerId) {
             return userSession;
         }
-    };
+    }
     return undefined;
 }
 
@@ -137,7 +137,7 @@ export async function getUserSessionByIPAndPort(
         if (userSession.ipAddress === ipAddress && userSession.port === port) {
             return userSession;
         }
-    };
+    }
     return undefined;
 }
 
