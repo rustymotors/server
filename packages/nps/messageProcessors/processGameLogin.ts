@@ -34,19 +34,15 @@ export async function processGameLogin(
         throw new Error(`Session not found for customer ID ${customerId}`);
     }
 
-    if (typeof session !== "undefined") {
-        log.info(`Setting client version to debug for ${session.customerId}`);
+    log.info(`Setting client version to debug for ${session.customerId}`);
 
-        session.clientVersion = "debug";
+    session.clientVersion = "debug";
 
-        log.info(
-            `Setting persona ID to ${personaId} for ${session.customerId}`,
-        );
+    log.info(`Setting persona ID to ${personaId} for ${session.customerId}`);
 
-        session.activeProfileId = personaId;
+    session.activeProfileId = personaId;
 
-        setUserSession(session);
-    }
+    setUserSession(session);
 
     log.info(`GameLogin: ${message.toString()}`);
 
