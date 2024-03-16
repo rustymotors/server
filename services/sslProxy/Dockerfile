@@ -1,5 +1,5 @@
 # Can be located at https://archive.org/details/nginx_1.9.8.tar if needed
-FROM nginx:1.9.8@sha256:5d3b56065cf133f8968a557bf49c639320b2fc4c57c635b5707978fb6b738e1f as base
+FROM nginx:1.25.4@sha256:6db391d1c0cfb30588ba0bf72ea999404f2764febf0f1f196acd5867ac7efa7e as base
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY mcouniverse.pem /etc/nginx/mcouniverse.pem
