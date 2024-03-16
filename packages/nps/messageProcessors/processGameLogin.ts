@@ -29,12 +29,12 @@ export async function processGameLogin(
     // This message is only called by debug, so let's sey the clinet version to debug
     const session = await findActiveUserSessionByCustomerId(customerId);
 
-    if (!session) {
+    if (typeof session === "undefined") {
         log.error(`Session not found for customer ID ${customerId}`);
         throw new Error(`Session not found for customer ID ${customerId}`);
     }
 
-    if (session) {
+    if (typeof session !== "undefined") {
         log.info(`Setting client version to debug for ${session.customerId}`);
 
         session.clientVersion = "debug";

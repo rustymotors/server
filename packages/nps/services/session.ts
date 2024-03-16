@@ -110,22 +110,22 @@ export async function getUserSessionByConnectionId(
 export async function getUserSessionByProfileId(
     profileId: number,
 ): Promise<UserSession | undefined> {
-    activeUserSessions.forEach((userSession) => {
+    for (const userSession of activeUserSessions.values()) {
         if (userSession.activeProfileId === profileId) {
             return userSession;
         }
-    });
+    };
     return undefined;
 }
 
 export async function findActiveUserSessionByCustomerId(
     customerId: number,
 ): Promise<UserSession | undefined> {
-    activeUserSessions.forEach((userSession) => {
+    for (const userSession of activeUserSessions.values()) {
         if (userSession.customerId === customerId) {
             return userSession;
         }
-    });
+    };
     return undefined;
 }
 
@@ -133,11 +133,11 @@ export async function getUserSessionByIPAndPort(
     ipAddress: string,
     port: number,
 ): Promise<UserSession | undefined> {
-    activeUserSessions.forEach((userSession) => {
+    for (const userSession of activeUserSessions.values()) {
         if (userSession.ipAddress === ipAddress && userSession.port === port) {
             return userSession;
         }
-    });
+    };
     return undefined;
 }
 
