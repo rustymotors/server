@@ -334,7 +334,7 @@ export function getGatewayServer({
     config,
     log,
     backlogAllowedCount = 0,
-    listeningPortList: listeningPortList = [],
+    listeningPortList = [],
     socketConnectionHandler = onSocketConnection,
 }: {
     config?: Configuration;
