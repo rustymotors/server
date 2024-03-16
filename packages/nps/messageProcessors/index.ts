@@ -47,7 +47,7 @@ export function populateGameMessageProcessors(
 
 export function getGameMessageProcessor(messageId: number): MessageProcessor {
     if (gameMessageProcessors.has(messageId)) {
-        // @ts-ignore - we know this will be defined since we checked above
+        // @ts-expect-error - we know this will be defined since we checked above
         return gameMessageProcessors.get(messageId);
     }
     throw new MessageProcessorError(messageId, "No message processor found");
@@ -77,7 +77,7 @@ export function populatePortToMessageTypes(portMap: Map<number, string>): void {
 
 export function getPortMessageType(port: number): string {
     if (portToMessageTypes.has(port)) {
-        // @ts-ignore - we know this will be defined since we checked above
+        // @ts-expect-error - we know this will be defined since we checked above
         return portToMessageTypes.get(port);
     }
     throw new PortMapError(port, "No message type found");
