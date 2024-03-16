@@ -1,5 +1,5 @@
-import fs from "node:fs";
-import crypto from "node:crypto";
+import { readFileSync } from "node:fs";
+import { privateDecrypt } from "node:crypto";
 import { SocketCallback } from "./index.js";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SessionKey } from "../messageStructs/SessionKey.js";
@@ -10,7 +10,7 @@ import { getServerLogger } from "@rustymotors/shared";
 const log = getServerLogger();
 
 export function loadPrivateKey(path: string): string {
-    const privateKey = fs.readFileSync(path);
+    const privateKey = readFileSync(path);
 
     return privateKey.toString("utf8");
 }
@@ -19,7 +19,7 @@ export function decryptSessionKey(
     encryptedSessionKey: string,
     privateKey: string,
 ): string {
-    const sessionKeyStructure = crypto.privateDecrypt(
+    const sessionKeyStructure = privateDecrypt(
         privateKey,
         Buffer.from(encryptedSessionKey, "hex"),
     );

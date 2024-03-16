@@ -428,7 +428,7 @@ export class LegacyMessage extends SerializableMixin(AbstractSerializable) {
     override _doSerialize() {
         const buffer = Buffer.alloc(this._header.length);
         this._header._doSerialize().copy(buffer);
-        super.data.copy(buffer, this._header._size);
+        this.data.copy(buffer, this._header._size);
         return buffer;
     }
 
@@ -447,14 +447,14 @@ export class LegacyMessage extends SerializableMixin(AbstractSerializable) {
     asJSON() {
         return {
             header: this._header,
-            data: super.data.toString("hex"),
+            data: this.data.toString("hex"),
         };
     }
 
     override toString() {
         return `LegacyMessage: ${JSON.stringify({
             header: this._header.toString(),
-            data: super.data.toString("hex"),
+            data: this.data.toString("hex"),
         })}`;
     }
 }

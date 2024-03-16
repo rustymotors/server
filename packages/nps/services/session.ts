@@ -82,55 +82,50 @@ export type UserSession = {
     clientVersion: ClientVersion;
 };
 
-export const userSessions = new Map<string, UserSession>([]);
+export const activeUserSessions = new Map<string, UserSession>([]);
 
 export async function setUserSession(userSession: UserSession): Promise<void> {
-    userSessions.set(userSession.token, userSession);
+    activeUserSessions.set(userSession.token, userSession);
 }
 
 export async function getUserSession(
     token: string,
 ): Promise<UserSession | undefined> {
-    if (userSessions.has(token)) {
-        return userSessions.get(token);
+    if (activeUserSessions.has(token)) {
+        return activeUserSessions.get(token);
     }
     return undefined;
 }
 
 export async function deleteUserSession(token: string): Promise<void> {
-    userSessions.delete(token);
+    activeUserSessions.delete(token);
 }
 
 export async function getUserSessionByConnectionId(
     connectionId: string,
 ): Promise<UserSession | undefined> {
-    for (const userSession of userSessions.values()) {
-        if (userSession.connectionId === connectionId) {
-            return userSession;
-        }
-    }
-    return undefined;
+    return activeUserSessions.get(connectionId);
 }
 
 export async function getUserSessionByProfileId(
     profileId: number,
 ): Promise<UserSession | undefined> {
-    for (const userSession of userSessions.values()) {
+    activeUserSessions.forEach((userSession) => {
         if (userSession.activeProfileId === profileId) {
             return userSession;
         }
-    }
+    });
     return undefined;
 }
 
-export async function getUserSessionByCustomerId(
+export async function findActiveUserSessionByCustomerId(
     customerId: number,
 ): Promise<UserSession | undefined> {
-    for (const userSession of userSessions.values()) {
+    activeUserSessions.forEach((userSession) => {
         if (userSession.customerId === customerId) {
             return userSession;
         }
-    }
+    });
     return undefined;
 }
 
@@ -138,11 +133,11 @@ export async function getUserSessionByIPAndPort(
     ipAddress: string,
     port: number,
 ): Promise<UserSession | undefined> {
-    for (const userSession of userSessions.values()) {
+    activeUserSessions.forEach((userSession) => {
         if (userSession.ipAddress === ipAddress && userSession.port === port) {
             return userSession;
         }
-    }
+    });
     return undefined;
 }
 
