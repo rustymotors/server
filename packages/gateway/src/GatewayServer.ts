@@ -4,7 +4,6 @@ import fastify from "fastify";
 import {
     Configuration,
     getServerConfiguration,
-    ServerLogger,
     addOnDataHandler,
     createInitialState,
     fetchStateFromDatabase,
