@@ -17,6 +17,7 @@
 import { randomUUID } from "node:crypto";
 import {
     OnDataHandler,
+    TServerLogger,
     addSocket,
     fetchStateFromDatabase,
     getOnDataHandler,
@@ -71,7 +72,7 @@ export function socketErrorHandler({
 }: {
     connectionId: string;
     error: NodeJS.ErrnoException;
-    log: ServerLogger;
+    log: TServerLogger;
 }) {
     // Handle socket errors
     if (error.code == "ECONNRESET") {
@@ -117,7 +118,7 @@ export function onSocketConnection({
     log,
 }: {
     incomingSocket: Socket;
-    log: ServerLogger;
+    log: TServerLogger;
 }) {
     // Get the local port and remote address
     const { localPort, remoteAddress } = incomingSocket;
@@ -229,7 +230,7 @@ export function onSocketConnection({
 function sendToSocket(
     serializedMessages: Buffer[],
     incomingSocket: Socket,
-    log: ServerLogger,
+    log: TServerLogger,
 ) {
     log.debug(`Sending {${serializedMessages.length}} messages to socket`);
     try {
@@ -246,7 +247,7 @@ function sendToSocket(
 export function processGameMessage(
     connectionId: string,
     message: OldGameMessage,
-    log: ServerLogger,
+    log: TServerLogger,
     socketCallback: SocketCallback,
 ) {
     log.debug(`Processing game message...`);
@@ -272,7 +273,7 @@ export function processGameMessage(
 export function handleGameMessage(
     connectionId: string,
     bytes: Buffer,
-    log: ServerLogger,
+    log: TServerLogger,
     socketCallback: SocketCallback,
 ) {
     log.debug(`Handling game message...`);

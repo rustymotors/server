@@ -4,10 +4,10 @@ import fastify from "fastify";
 import {
     Configuration,
     getServerConfiguration,
-    ServerLogger,
     addOnDataHandler,
     createInitialState,
     fetchStateFromDatabase,
+    TServerLogger,
 } from "@rustymotors/shared";
 import { ConsoleThread } from "../../cli/ConsoleThread.js";
 import { addWebRoutes } from "./web.js";
@@ -34,9 +34,9 @@ import {
  * @module gateway
  */
 
-type GatewayOptions = {
+export type TGatewayOptions = {
     config?: Configuration;
-    log: ServerLogger;
+    log: TServerLogger;
     backlogAllowedCount?: number;
     listeningPortList?: number[];
     socketConnectionHandler?: ({
@@ -44,7 +44,7 @@ type GatewayOptions = {
         log,
     }: {
         incomingSocket: Socket;
-        log: ServerLogger;
+        log: TServerLogger;
     }) => void;
 };
 
@@ -54,7 +54,7 @@ type GatewayOptions = {
  */
 export class Gateway {
     config: Configuration;
-    log: ServerLogger;
+    log: TServerLogger;
     timer: NodeJS.Timeout | null;
     loopInterval: number;
     status: string;
@@ -67,14 +67,14 @@ export class Gateway {
         log,
     }: {
         incomingSocket: Socket;
-        log: ServerLogger;
+        log: TServerLogger;
     }) => void;
     static _instance: Gateway | undefined;
     webServer: import("fastify").FastifyInstance | undefined;
     readThread: ConsoleThread | undefined;
     /**
      * Creates an instance of GatewayServer.
-     * @param {GatewayOptions} options
+     * @param {TGatewayOptions} options
      */
     constructor({
         config = getServerConfiguration({}),
@@ -82,7 +82,7 @@ export class Gateway {
         backlogAllowedCount = 0,
         listeningPortList = [],
         socketConnectionHandler = onSocketConnection,
-    }: GatewayOptions) {
+    }: TGatewayOptions) {
         log.debug("Creating GatewayServer instance");
 
         this.config = config;
@@ -94,12 +94,37 @@ export class Gateway {
         this.status = "stopped";
         this.consoleEvents = ["userExit", "userRestart", "userHelp"];
         this.backlogAllowedCount = backlogAllowedCount;
+
+        // Check if there are any listening ports specified
+        this.verifyPortListIsNotEmpty(listeningPortList);
+
         this.listeningPortList = listeningPortList;
         /** @type {import("node:net").Server[]} */
         this.servers = [];
         this.socketconnection = socketConnectionHandler;
 
         Gateway._instance = this;
+    }
+
+    /**
+     * Delete the GatewayServer instance
+     */
+    static deleteInstance() {
+        Gateway._instance = undefined;
+    }
+
+    /**
+     * Assert that the listeningPortList is not empty
+     * @param {number[]} listeningPortList
+     * @throws {Error} If the listeningPortList is empty
+     */
+    private verifyPortListIsNotEmpty(listeningPortList: number[]) {
+        if (listeningPortList.length === 0) {
+            this.log.error(
+                "No listening ports specified. Instance will not be created",
+            );
+            throw new Error("No listening ports specified");
+        }
     }
 
     /**
@@ -115,11 +140,6 @@ export class Gateway {
     async start() {
         this.log.debug("Starting GatewayServer in start()");
         this.log.info("Server starting");
-
-        // Check if there are any listening ports specified
-        if (this.listeningPortList.length === 0) {
-            this.log.error("No listening ports specified. Skipping.");
-        }
 
         // Mark the GatewayServer as running
         this.log.debug("Marking GatewayServer as running");
@@ -289,7 +309,7 @@ export class Gateway {
 
     /**
      *
-     * @param {GatewayOptions} options
+     * @param {TGatewayOptions} options
      * @returns {Gateway}
      * @memberof Gateway
      */
@@ -299,7 +319,7 @@ export class Gateway {
         backlogAllowedCount = 0,
         listeningPortList = [],
         socketConnectionHandler = onSocketConnection,
-    }: GatewayOptions): Gateway {
+    }: TGatewayOptions): Gateway {
         if (Gateway._instance === undefined) {
             Gateway._instance = new Gateway({
                 config,
@@ -327,18 +347,18 @@ Gateway._instance = undefined;
 /**
  * Get a singleton instance of GatewayServer
  *
- * @param {GatewayOptions} options
+ * @param {TGatewayOptions} options
  * @returns {Gateway}
  */
 export function getGatewayServer({
     config,
     log,
     backlogAllowedCount = 0,
-    listeningPortList: listeningPortList = [],
+    listeningPortList = [],
     socketConnectionHandler = onSocketConnection,
 }: {
     config?: Configuration;
-    log: ServerLogger;
+    log: TServerLogger;
     backlogAllowedCount?: number;
     listeningPortList?: number[];
     socketConnectionHandler?: ({
@@ -346,7 +366,7 @@ export function getGatewayServer({
         log,
     }: {
         incomingSocket: Socket;
-        log: ServerLogger;
+        log: TServerLogger;
     }) => void;
 }): Gateway {
     return Gateway.getInstance({
