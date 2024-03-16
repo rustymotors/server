@@ -1,6 +1,6 @@
 import { TServerLogger } from "@rustymotors/shared";
 import { Gateway, getGatewayServer } from "../src/GatewayServer.js";
-import type { GatewayOptions } from "../src/GatewayServer.js";
+import type { TGatewayOptions } from "../src/GatewayServer.js";
 import { describe, it, expect, vi } from "vitest";
 
 describe("getGatewayServer", () => {
@@ -15,7 +15,7 @@ describe("getGatewayServer", () => {
             trace: () => vi.fn(),
         };
 
-        const options: GatewayOptions = {
+        const options: TGatewayOptions = {
             log,
             listeningPortList: [1234, 5678],
         };
@@ -39,7 +39,7 @@ describe("getGatewayServer", () => {
             trace: () => vi.fn(),
         };
 
-        const options: GatewayOptions = {
+        const options: TGatewayOptions = {
             log,
             listeningPortList: [1234],
         };
@@ -63,7 +63,7 @@ describe("getGatewayServer", () => {
             trace: () => vi.fn(),
         };
 
-        const options: GatewayOptions = {
+        const options: TGatewayOptions = {
             log,
         };
         Gateway.deleteInstance();

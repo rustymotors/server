@@ -34,7 +34,7 @@ import {
  * @module gateway
  */
 
-export type GatewayOptions = {
+export type TGatewayOptions = {
     config?: Configuration;
     log: TServerLogger;
     backlogAllowedCount?: number;
@@ -74,7 +74,7 @@ export class Gateway {
     readThread: ConsoleThread | undefined;
     /**
      * Creates an instance of GatewayServer.
-     * @param {GatewayOptions} options
+     * @param {TGatewayOptions} options
      */
     constructor({
         config = getServerConfiguration({}),
@@ -82,7 +82,7 @@ export class Gateway {
         backlogAllowedCount = 0,
         listeningPortList = [],
         socketConnectionHandler = onSocketConnection,
-    }: GatewayOptions) {
+    }: TGatewayOptions) {
         log.debug("Creating GatewayServer instance");
 
         this.config = config;
@@ -301,7 +301,7 @@ export class Gateway {
 
     /**
      *
-     * @param {GatewayOptions} options
+     * @param {TGatewayOptions} options
      * @returns {Gateway}
      * @memberof Gateway
      */
@@ -311,7 +311,7 @@ export class Gateway {
         backlogAllowedCount = 0,
         listeningPortList = [],
         socketConnectionHandler = onSocketConnection,
-    }: GatewayOptions): Gateway {
+    }: TGatewayOptions): Gateway {
         if (Gateway._instance === undefined) {
             Gateway._instance = new Gateway({
                 config,
@@ -339,7 +339,7 @@ Gateway._instance = undefined;
 /**
  * Get a singleton instance of GatewayServer
  *
- * @param {GatewayOptions} options
+ * @param {TGatewayOptions} options
  * @returns {Gateway}
  */
 export function getGatewayServer({
