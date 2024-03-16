@@ -3,7 +3,7 @@ import { SubThread } from "@rustymotors/shared";
 // eslint-disable-next-line no-unused-vars
 import { Gateway } from "../gateway/src/GatewayServer.js";
 
-import type { ServerLogger } from "@rustymotors/shared";
+import type { TServerLogger } from "@rustymotors/shared";
 
 /**
  * @module ConsoleThread
@@ -24,7 +24,7 @@ export class ConsoleThread extends SubThread {
         log,
     }: {
         parentThread: Gateway;
-        log: ServerLogger;
+        log: TServerLogger;
     }) {
         super("ReadInput", log, 100);
         if (parentThread === undefined) {

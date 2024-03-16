@@ -8,6 +8,7 @@ import {
     addOnDataHandler,
     createInitialState,
     fetchStateFromDatabase,
+    TServerLogger,
 } from "@rustymotors/shared";
 import { ConsoleThread } from "../../cli/ConsoleThread.js";
 import { addWebRoutes } from "./web.js";
@@ -34,9 +35,9 @@ import {
  * @module gateway
  */
 
-type GatewayOptions = {
+export type GatewayOptions = {
     config?: Configuration;
-    log: ServerLogger;
+    log: TServerLogger;
     backlogAllowedCount?: number;
     listeningPortList?: number[];
     socketConnectionHandler?: ({
@@ -44,7 +45,7 @@ type GatewayOptions = {
         log,
     }: {
         incomingSocket: Socket;
-        log: ServerLogger;
+        log: TServerLogger;
     }) => void;
 };
 
@@ -54,7 +55,7 @@ type GatewayOptions = {
  */
 export class Gateway {
     config: Configuration;
-    log: ServerLogger;
+    log: TServerLogger;
     timer: NodeJS.Timeout | null;
     loopInterval: number;
     status: string;
@@ -67,7 +68,7 @@ export class Gateway {
         log,
     }: {
         incomingSocket: Socket;
-        log: ServerLogger;
+        log: TServerLogger;
     }) => void;
     static _instance: Gateway | undefined;
     webServer: import("fastify").FastifyInstance | undefined;
@@ -338,7 +339,7 @@ export function getGatewayServer({
     socketConnectionHandler = onSocketConnection,
 }: {
     config?: Configuration;
-    log: ServerLogger;
+    log: TServerLogger;
     backlogAllowedCount?: number;
     listeningPortList?: number[];
     socketConnectionHandler?: ({
@@ -346,7 +347,7 @@ export function getGatewayServer({
         log,
     }: {
         incomingSocket: Socket;
-        log: ServerLogger;
+        log: TServerLogger;
     }) => void;
 }): Gateway {
     return Gateway.getInstance({
