@@ -1,4 +1,3 @@
-import { g } from "vitest/dist/suite-a18diDsI.js";
 import { GameProfile } from "../messageStructs/GameProfile.js";
 
 export const gameProfiles: GameProfile[] = [];
