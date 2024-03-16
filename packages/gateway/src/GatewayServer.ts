@@ -106,10 +106,18 @@ export class Gateway {
         Gateway._instance = this;
     }
 
+    /**
+     * Delete the GatewayServer instance
+     */
     static deleteInstance() {
         Gateway._instance = undefined;
     }
 
+    /**
+     * Assert that the listeningPortList is not empty
+     * @param {number[]} listeningPortList
+     * @throws {Error} If the listeningPortList is empty
+     */
     private verifyPortListIsNotEmpty(listeningPortList: number[]) {
         if (listeningPortList.length === 0) {
             this.log.error(
