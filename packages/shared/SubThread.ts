@@ -21,7 +21,6 @@ export class SubThread extends EventEmitter {
 
     init() {
         this.emit("initialized");
-        // @ts-expect-error
         this.timer = setInterval(this.run.bind(this), this.loopInterval);
     }
 
