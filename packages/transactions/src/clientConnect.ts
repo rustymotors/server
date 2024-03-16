@@ -14,7 +14,7 @@ import {
     createDataEncryptionPair,
 } from "../../gateway/src/encryption.js";
 import { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
-import { getUserSessionByCustomerId } from "../../nps/services/session.js";
+import { findActiveUserSessionByCustomerId } from "../../nps/services/session.js";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -54,7 +54,7 @@ export async function clientConnect({
 
     log.debug(`Looking up the session key for ${customerId}...`);
 
-    const userSession = await getUserSessionByCustomerId(customerId);
+    const userSession = await findActiveUserSessionByCustomerId(customerId);
 
     if (typeof userSession === "undefined") {
         log.warn(`No user session found for ${customerId}`);

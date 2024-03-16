@@ -1,3 +1,4 @@
+import { g } from "vitest/dist/suite-a18diDsI.js";
 import { GameProfile } from "../messageStructs/GameProfile.js";
 
 export const gameProfiles: GameProfile[] = [];
@@ -33,20 +34,20 @@ export async function getGameProfilesForCustomerId(
     customerId: number,
 ): Promise<GameProfile[]> {
     const profiles: GameProfile[] = [];
-    for (const profile of gameProfiles.values()) {
+    gameProfiles.forEach((profile) => {
         if (profile.customerId === customerId) {
             profiles.push(profile);
         }
-    }
+    });
     return profiles;
 }
 
 export async function gameProfileExists(profileName: string): Promise<boolean> {
-    for (const profile of gameProfiles.values()) {
+    gameProfiles.forEach((profile) => {
         if (profile.profileName === profileName) {
             return true;
         }
-    }
+    });
     return false;
 }
 
@@ -55,12 +56,11 @@ export async function addGameProfile(profile: GameProfile): Promise<void> {
 }
 
 export async function deleteGameProfile(profileId: number): Promise<void> {
-    for (const [index, profile] of gameProfiles.entries()) {
+    gameProfiles.forEach((profile, index) => {
         if (profile.profileId === profileId) {
             gameProfiles.splice(index, 1);
-            return;
         }
-    }
+    });
 }
 
 export async function createGameProfile(): Promise<GameProfile> {

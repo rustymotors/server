@@ -2,7 +2,7 @@ import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SocketCallback } from "./index.js";
 import { getDWord, getLenString, getNBytes } from "../utils/pureGet.js";
 import {
-    getUserSessionByCustomerId,
+    findActiveUserSessionByCustomerId,
     setUserSession,
 } from "../services/session.js";
 
@@ -27,7 +27,7 @@ export async function processGameLogin(
     log.info(`Shard ID: ${shardId}`);
 
     // This message is only called by debug, so let's sey the clinet version to debug
-    const session = await getUserSessionByCustomerId(customerId);
+    const session = await findActiveUserSessionByCustomerId(customerId);
 
     if (!session) {
         log.error(`Session not found for customer ID ${customerId}`);
