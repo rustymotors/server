@@ -4,7 +4,6 @@ import type { TGatewayOptions } from "../src/GatewayServer.js";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 describe("getGatewayServer", () => {
-
     beforeEach(() => {
         Gateway.deleteInstance();
     });
