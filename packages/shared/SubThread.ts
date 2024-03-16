@@ -11,7 +11,7 @@ export class SubThread extends EventEmitter {
     loopInterval: number;
     timer: any;
 
-    constructor(name: string, log: TServerLogger, loopInterval: number = 100) {
+    constructor(name: string, log: TServerLogger, loopInterval = 100) {
         super();
         this.name = name;
         this.log = log;
