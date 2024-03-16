@@ -7,12 +7,12 @@ describe("getGatewayServer", () => {
     it("should be able to get a singleton instance", () => {
         // Arrange
         const log: TServerLogger = {
-            debug: () => {},
-            error: () => {},
-            info: () => {},
-            warn: () => {},
-            fatal: () => {},
-            trace: () => {},
+            debug: () => vi.fn(),
+            error: () => vi.fn(),
+            info: () => vi.fn(),
+            warn: () => vi.fn(),
+            fatal: () => vi.fn(),
+            trace: () => vi.fn(),
         };
 
         const options: GatewayOptions = {
