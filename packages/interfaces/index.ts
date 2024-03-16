@@ -177,8 +177,6 @@ export interface ServiceArgs {
     log: ServerLogger;
 }
 
-type Service = (args: ServiceArgs) => Promise<ServiceResponse>;
-
 export interface KeypressEvent {
     sequence: string;
     name: string;
