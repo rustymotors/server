@@ -1,9 +1,17 @@
 import { TServerLogger } from "@rustymotors/shared";
 import { Gateway, getGatewayServer } from "../src/GatewayServer.js";
 import type { TGatewayOptions } from "../src/GatewayServer.js";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 describe("getGatewayServer", () => {
+
+    beforeEach(() => {
+        Gateway.deleteInstance();
+    });
+
+    afterEach(() => {
+        Gateway.deleteInstance();
+    });
     it("should be able to get a singleton instance when called with multiple ports", () => {
         // Arrange
         const log: TServerLogger = {
