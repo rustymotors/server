@@ -5,7 +5,6 @@ import {
     SerializedBuffer,
     Configuration,
     ServerLogger,
-    ServiceResponse,
 } from "@rustymotors/shared";
 
 /**
@@ -176,8 +175,6 @@ export interface ServiceArgs {
     message: SerializedBuffer;
     log: ServerLogger;
 }
-
-type Service = (args: ServiceArgs) => Promise<ServiceResponse>;
 
 export interface KeypressEvent {
     sequence: string;
