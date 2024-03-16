@@ -202,7 +202,8 @@ export async function saveVehiclePartTree(
             partIds.add(part.partId);
         }
 
-        partIds.forEach(async (partId) => {
+        const savePromises: Promise<void>[] = [];
+        for (const partId of partIds) {
             const part =
                 partTree.level1.parts.find((p) => p.partId === partId) ||
                 partTree.level2.parts.find((p) => p.partId === partId);
@@ -210,8 +211,9 @@ export async function saveVehiclePartTree(
                 log.error(`Part with partId ${partId} not found`);
                 throw new Error(`Part with partId ${partId} not found`);
             }
-            await savePart(part);
-        });
+            savePromises.push(savePart(part));
+        }
+        await Promise.all(savePromises);
 
         // Save the vehicle part tree in the cache
         setVehiclePartTree(vehiclePartTree.vehicleId, vehiclePartTree);
