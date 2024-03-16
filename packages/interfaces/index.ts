@@ -5,7 +5,6 @@ import {
     SerializedBuffer,
     Configuration,
     ServerLogger,
-    ServiceResponse,
 } from "@rustymotors/shared";
 
 /**
