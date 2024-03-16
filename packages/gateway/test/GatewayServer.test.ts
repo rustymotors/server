@@ -1,5 +1,5 @@
 import { TServerLogger } from "@rustymotors/shared";
-import { getGatewayServer } from "../src/GatewayServer.js";
+import { Gateway, getGatewayServer } from "../src/GatewayServer.js";
 import type { GatewayOptions } from "../src/GatewayServer.js";
 import { describe, it, expect, vi } from "vitest";
 
@@ -50,5 +50,28 @@ describe("getGatewayServer", () => {
         // Assert
         expect(gateway).toBeDefined();
         expect(gateway).toBe(getGatewayServer(options));
+    });
+
+    it("should throw an error when called with no ports", () => {
+        // Arrange
+        const log: TServerLogger = {
+            debug: () => vi.fn(),
+            error: () => vi.fn(),
+            info: () => vi.fn(),
+            warn: () => vi.fn(),
+            fatal: () => vi.fn(),
+            trace: () => vi.fn(),
+        };
+
+        const options: GatewayOptions = {
+            log,
+        };
+        Gateway.deleteInstance();
+
+        // Act
+        const fn = () => getGatewayServer(options);
+
+        // Assert
+        expect(fn).toThrowError();
     });
 });

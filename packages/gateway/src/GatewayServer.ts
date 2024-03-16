@@ -94,12 +94,29 @@ export class Gateway {
         this.status = "stopped";
         this.consoleEvents = ["userExit", "userRestart", "userHelp"];
         this.backlogAllowedCount = backlogAllowedCount;
+
+        // Check if there are any listening ports specified
+        this.verifyPortListIsNotEmpty(listeningPortList);
+
         this.listeningPortList = listeningPortList;
         /** @type {import("node:net").Server[]} */
         this.servers = [];
         this.socketconnection = socketConnectionHandler;
 
         Gateway._instance = this;
+    }
+
+    static deleteInstance() {
+        Gateway._instance = undefined;
+    }
+
+    private verifyPortListIsNotEmpty(listeningPortList: number[]) {
+        if (listeningPortList.length === 0) {
+            this.log.error(
+                "No listening ports specified. Instance will not be created",
+            );
+            throw new Error("No listening ports specified");
+        }
     }
 
     /**
@@ -115,11 +132,6 @@ export class Gateway {
     async start() {
         this.log.debug("Starting GatewayServer in start()");
         this.log.info("Server starting");
-
-        // Check if there are any listening ports specified
-        if (this.listeningPortList.length === 0) {
-            this.log.error("No listening ports specified. Skipping.");
-        }
 
         // Mark the GatewayServer as running
         this.log.debug("Marking GatewayServer as running");
