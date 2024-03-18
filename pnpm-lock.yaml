@@ -32,10 +32,10 @@ importers:
     devDependencies:
       '@slonik/migrator':
         specifier: 0.12.0
-        version: 0.12.0(@types/node@20.11.28)(slonik@37.3.1)
+        version: 0.12.0(@types/node@20.11.29)(slonik@37.3.1)
       '@types/node':
-        specifier: 20.11.28
-        version: 20.11.28
+        specifier: 20.11.29
+        version: 20.11.29
       '@vitest/coverage-v8':
         specifier: 1.4.0
         version: 1.4.0(vitest@1.4.0)
@@ -56,7 +56,7 @@ importers:
         version: 5.4.2
       vitest:
         specifier: 1.4.0
-        version: 1.4.0(@types/node@20.11.28)
+        version: 1.4.0(@types/node@20.11.29)
 
   apps/main:
     dependencies:
@@ -638,7 +638,7 @@ packages:
     dev: true
     optional: true
 
-  /@rushstack/node-core-library@4.0.2(@types/node@20.11.28):
+  /@rushstack/node-core-library@4.0.2(@types/node@20.11.29):
     resolution: {integrity: sha512-hyES82QVpkfQMeBMteQUnrhASL/KHPhd7iJ8euduwNJG4mu2GSOKybf0rOEjOm1Wz7CwJEUm9y0yD7jg2C1bfg==}
     peerDependencies:
       '@types/node': '*'
@@ -646,7 +646,7 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@types/node': 20.11.28
+      '@types/node': 20.11.29
       fs-extra: 7.0.1
       import-lazy: 4.0.0
       jju: 1.4.0
@@ -655,7 +655,7 @@ packages:
       z-schema: 5.0.5
     dev: true
 
-  /@rushstack/terminal@0.10.0(@types/node@20.11.28):
+  /@rushstack/terminal@0.10.0(@types/node@20.11.29):
     resolution: {integrity: sha512-UbELbXnUdc7EKwfH2sb8ChqNgapUOdqcCIdQP4NGxBpTZV2sQyeekuK3zmfQSa/MN+/7b4kBogl2wq0vpkpYGw==}
     peerDependencies:
       '@types/node': '*'
@@ -663,15 +663,15 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@rushstack/node-core-library': 4.0.2(@types/node@20.11.28)
-      '@types/node': 20.11.28
+      '@rushstack/node-core-library': 4.0.2(@types/node@20.11.29)
+      '@types/node': 20.11.29
       supports-color: 8.1.1
     dev: true
 
-  /@rushstack/ts-command-line@4.19.0(@types/node@20.11.28):
+  /@rushstack/ts-command-line@4.19.0(@types/node@20.11.29):
     resolution: {integrity: sha512-0sIHWOFGLFb6tC1zk2R0aM79ic3CF0XGzVBvhf6ytMyjDwt03DVb1qe5/5NQ0FGcvB5YyQ2WVfGsnxG6SANvHA==}
     dependencies:
-      '@rushstack/terminal': 0.10.0(@types/node@20.11.28)
+      '@rushstack/terminal': 0.10.0(@types/node@20.11.29)
       '@types/argparse': 1.0.38
       argparse: 1.0.10
       string-argv: 0.3.2
@@ -732,14 +732,14 @@ packages:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
     dev: true
 
-  /@slonik/migrator@0.12.0(@types/node@20.11.28)(slonik@37.3.1):
+  /@slonik/migrator@0.12.0(@types/node@20.11.29)(slonik@37.3.1):
     resolution: {integrity: sha512-2kAXCO/iW9/VOYlfl8Jza4fQpi5Q8+JUyB38YFUxPiWNc+6o41GGND2aIpnyr6EPFNRXdg5x+Fu8+SMyMvMXpQ==}
     peerDependencies:
       slonik: 27 - 29
     dependencies:
-      '@rushstack/ts-command-line': 4.19.0(@types/node@20.11.28)
+      '@rushstack/ts-command-line': 4.19.0(@types/node@20.11.29)
       slonik: 37.3.1(zod@3.22.4)
-      umzug: 3.7.0(@types/node@20.11.28)
+      umzug: 3.7.0(@types/node@20.11.29)
     transitivePeerDependencies:
       - '@types/node'
     dev: true
@@ -756,15 +756,15 @@ packages:
     resolution: {integrity: sha512-2QF/t/auWm0lsy8XtKVPG19v3sSOQlJe/YHZgfjb/KBBHOGSV+J2q/S671rcq9uTBrLAXmZpqJiaQbMT+zNU1w==}
     dev: true
 
-  /@types/node@20.11.28:
-    resolution: {integrity: sha512-M/GPWVS2wLkSkNHVeLkrF2fD5Lx5UC4PxA0uZcKc6QqbIQUJyW1jVjueJYi1z8n0I5PxYrtpnPnWglE+y9A0KA==}
+  /@types/node@20.11.29:
+    resolution: {integrity: sha512-P99thMkD/1YkCvAtOd6/zGedKNA0p2fj4ZpjCzcNiSCBWgm3cNRTBfa/qjFnsKkkojxu4vVLtWpesnZ9+ap+gA==}
     dependencies:
       undici-types: 5.26.5
 
   /@types/pg@8.11.2:
     resolution: {integrity: sha512-G2Mjygf2jFMU/9hCaTYxJrwdObdcnuQde1gndooZSOHsNSaCehAuwc7EIuSA34Do8Jx2yZ19KtvW8P0j4EuUXw==}
     dependencies:
-      '@types/node': 20.11.28
+      '@types/node': 20.11.29
       pg-protocol: 1.6.0
       pg-types: 4.0.2
 
@@ -791,7 +791,7 @@ packages:
       strip-literal: 2.0.0
       test-exclude: 6.0.0
       v8-to-istanbul: 9.2.0
-      vitest: 1.4.0(@types/node@20.11.28)
+      vitest: 1.4.0(@types/node@20.11.29)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -2668,11 +2668,11 @@ packages:
     resolution: {integrity: sha512-Hhy+BhRBleFjpJ2vchUNN40qgkh0366FWJGqVLYBHev0vpHTrXSA0ryT+74UiW6KWsldNurQMKGqCm1M2zBciQ==}
     dev: true
 
-  /umzug@3.7.0(@types/node@20.11.28):
+  /umzug@3.7.0(@types/node@20.11.29):
     resolution: {integrity: sha512-r/L2Zlilgv3SKhmP2nkA9x2Xi1PKtu2K34/i/s7AYJ2mLjEO+IxETJAK7CKf6l3QOvoy5/ChykeX9qt6ykRz6Q==}
     engines: {node: '>=12'}
     dependencies:
-      '@rushstack/ts-command-line': 4.19.0(@types/node@20.11.28)
+      '@rushstack/ts-command-line': 4.19.0(@types/node@20.11.29)
       emittery: 0.13.1
       glob: 8.1.0
       pony-cause: 2.1.10
@@ -2713,7 +2713,7 @@ packages:
     engines: {node: '>= 0.8'}
     dev: false
 
-  /vite-node@1.4.0(@types/node@20.11.28):
+  /vite-node@1.4.0(@types/node@20.11.29):
     resolution: {integrity: sha512-VZDAseqjrHgNd4Kh8icYHWzTKSCZMhia7GyHfhtzLW33fZlG9SwsB6CEhgyVOWkJfJ2pFLrp/Gj1FSfAiqH9Lw==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
@@ -2722,7 +2722,7 @@ packages:
       debug: 4.3.4
       pathe: 1.1.2
       picocolors: 1.0.0
-      vite: 5.1.4(@types/node@20.11.28)
+      vite: 5.1.4(@types/node@20.11.29)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -2734,7 +2734,7 @@ packages:
       - terser
     dev: true
 
-  /vite@5.1.4(@types/node@20.11.28):
+  /vite@5.1.4(@types/node@20.11.29):
     resolution: {integrity: sha512-n+MPqzq+d9nMVTKyewqw6kSt+R3CkvF9QAKY8obiQn8g1fwTscKxyfaYnC632HtBXAQGc1Yjomphwn1dtwGAHg==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
@@ -2762,7 +2762,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 20.11.28
+      '@types/node': 20.11.29
       esbuild: 0.19.12
       postcss: 8.4.35
       rollup: 4.12.0
@@ -2770,7 +2770,7 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /vitest@1.4.0(@types/node@20.11.28):
+  /vitest@1.4.0(@types/node@20.11.29):
     resolution: {integrity: sha512-gujzn0g7fmwf83/WzrDTnncZt2UiXP41mHuFYFrdwaLRVQ6JYQEiME2IfEjU3vcFL3VKa75XhI3lFgn+hfVsQw==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
@@ -2795,7 +2795,7 @@ packages:
       jsdom:
         optional: true
     dependencies:
-      '@types/node': 20.11.28
+      '@types/node': 20.11.29
       '@vitest/expect': 1.4.0
       '@vitest/runner': 1.4.0
       '@vitest/snapshot': 1.4.0
@@ -2813,8 +2813,8 @@ packages:
       strip-literal: 2.0.0
       tinybench: 2.6.0
       tinypool: 0.8.2
-      vite: 5.1.4(@types/node@20.11.28)
-      vite-node: 1.4.0(@types/node@20.11.28)
+      vite: 5.1.4(@types/node@20.11.29)
+      vite-node: 1.4.0(@types/node@20.11.29)
       why-is-node-running: 2.2.2
     transitivePeerDependencies:
       - less
