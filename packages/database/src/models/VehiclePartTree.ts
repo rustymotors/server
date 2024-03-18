@@ -10,13 +10,6 @@ const partNumbersMap = new Map<number, number>();
 
 const log = getServerLogger();
 
-export function getPartDepth(partId: number): number {
-    if (level1PartTypes.includes(partId)) {
-        return 1;
-    }
-    return 2;
-}
-
 export type TVehicle = {
     vehicleId: number;
     skinId: number;
@@ -570,7 +563,9 @@ export async function buildVehiclePartTree({
             scrapValue: 0,
         };
 
-        const partDepth = getPartDepth(part.abstractparttypeid);
+        const partDepth = level1PartTypes.includes(part.abstractparttypeid)
+            ? 1
+            : 2;
 
         if (partDepth === 1) {
             vehiclePartTree.partTree.level1.parts.push(newPart);
