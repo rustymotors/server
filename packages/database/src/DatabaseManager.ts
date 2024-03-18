@@ -87,7 +87,7 @@ export async function updateSessionKey(
  */
 export async function fetchSessionKeyByConnectionId(
     connectionId: string,
-): Promise<ConnectionRecord> {
+): Promise<interfaces.ConnectionRecord> {
     const record = _sessions.find((session) => {
         return session.connectionId === connectionId;
     });

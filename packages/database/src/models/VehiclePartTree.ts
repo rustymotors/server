@@ -202,7 +202,7 @@ export async function saveVehiclePartTree(
             partIds.add(part.partId);
         }
 
-        partIds.forEach(async (partId) => {
+        for (const partId of partIds) {
             const part =
                 partTree.level1.parts.find((p) => p.partId === partId) ||
                 partTree.level2.parts.find((p) => p.partId === partId);
@@ -211,7 +211,7 @@ export async function saveVehiclePartTree(
                 throw new Error(`Part with partId ${partId} not found`);
             }
             await savePart(part);
-        });
+        }
 
         // Save the vehicle part tree in the cache
         setVehiclePartTree(vehiclePartTree.vehicleId, vehiclePartTree);
