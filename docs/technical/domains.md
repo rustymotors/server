@@ -64,7 +64,7 @@ Has the following service relationships:
 Has the following service relationships:
 
 * Socket Receive INBOUND (socketId, reportAddress, localPort)
-* Socket Recieve OUTBOUND (socketId, sessionId)
+* Socket Receive OUTBOUND (socketId, sessionId)
 * Socket Send INBOUND (sessionId)
 * Socket Send OUTBOUND (sessionId, socketId)
 
