@@ -63,7 +63,7 @@ Has the following service relationships:
 
 Has the following service relationships:
 
-* Socket Receive INBOUND (socketId, reportAddress, localPort)
+* Socket Receive INBOUND (socketId, remoteAddress, localPort)
 * Socket Receive OUTBOUND (socketId, sessionId)
 * Socket Send INBOUND (sessionId)
 * Socket Send OUTBOUND (sessionId, socketId)
