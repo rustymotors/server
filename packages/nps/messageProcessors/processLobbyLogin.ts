@@ -3,7 +3,7 @@ import { getDWord, getLenString, getNBytes } from "../utils/pureGet.js";
 import {
     getUserSessionByProfileId,
     setUserSession,
-    activeUserSessions,
+    userSessions,
 } from "../services/session.js";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { UserInfo } from "../messageStructs/UserInfo.js";
@@ -26,7 +26,7 @@ export async function processLobbyLogin(
     const session = await getUserSessionByProfileId(profileId);
 
     // Dump all sessions
-    console.dir(activeUserSessions);
+    console.dir(userSessions);
 
     // If the session doesn't exist, return
     if (!session) {

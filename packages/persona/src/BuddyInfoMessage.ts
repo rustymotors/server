@@ -27,14 +27,14 @@ export class BuddyInfoMessage extends RawMessage {
     }
 
     override get length(): number {
-        return this.length + 2 + this._buddyCount * 115;
+        return super.length + 2 + this._buddyCount * 115;
     }
 
     override serialize(): Buffer {
         const buffer = Buffer.alloc(this.length);
         let offset = 0;
         super.serialize().copy(buffer, offset);
-        offset += this.length;
+        offset += super.length;
         buffer.writeUInt16BE(this._buddyCount, offset);
         offset += 2;
         for (const buddy of this._buddyList) {
@@ -58,7 +58,7 @@ export class BuddyCount extends NetworkMessage {
     }
 
     override get length(): number {
-        return this.length + 2;
+        return super.length + 2;
     }
 
     override serialize(): Buffer {
@@ -107,8 +107,8 @@ export class BuddyList extends RawMessage {
     override serialize(): Buffer {
         const buffer = Buffer.alloc(this.length);
         let offset = 0;
-        this.serialize().copy(buffer, offset);
-        offset += this.length;
+        super.serialize().copy(buffer, offset);
+        offset += super.length;
         buffer.writeUInt16BE(this.messageId, offset);
         offset += 2;
         offset = serializeStringRaw(this.buddyName, buffer, offset, 33);

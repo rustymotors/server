@@ -12,5 +12,16 @@
         "strict": true,
         "skipLibCheck": true
     },
-    "include": ["app/**/*.ts", "packages/**/*.ts"]
+    "include": [
+        "src",
+        "test",
+        "packages",
+        "thebeast",
+        "lib",
+        "vite.config.ts",
+        "server.ts",
+        "migrate.ts",
+        "test",
+        "apps/main/server.ts"
+    ]
 }
