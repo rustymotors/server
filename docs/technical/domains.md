@@ -17,24 +17,24 @@
 
 ### Patch
 
-Does not need to talk to any other domains
+This is a stub service that serves a static response that does not depend on any other service. It's documented for completeness.
 
 ### Update
 
-Does not need to talk to any other domains
+This is a stub service that serves a static response that does not depend on any other service. It's documented for completeness.
 
 ### AuthLogin
 
-Connects to
+Has the following service relationships:
 
-* Account -> (username, password)
-* Account <- (isUserValid)
+* Account OUTBOUND (username, password)
+* Account INBOUND (isUserValid)
 
 ### Shard
 
-Connects to
+Has the following service relationships:
 
-* Lobby <- (shardList)
+* Lobby INBOUND (shardList)
 
 ## Network
 
@@ -45,48 +45,64 @@ Connects to
 
 ### Socket receive
 
-* Session Control -> (socketId, remoteAddress, localPort)
-* Session Control <- {socketId, SessionId}
-* Interservice Transfer -> (sessionId, dataBuffer)
+Has the following service relationships:
+
+* Session Control OUTBOUND (socketId, remoteAddress, localPort)
+* Session Control INBOUND {socketId, SessionId}
+* Interservice Transfer OUTBOUND (sessionId, dataBuffer)
 
 ### Socket Send
 
-* Interservice Transfer <- (sessionId, dataBuffer)
-* Session Control -> (sessionId)
-* Session Control <- (sessionId, socketId)
+Has the following service relationships:
+
+* Interservice Transfer INBOUND (sessionId, dataBuffer)
+* Session Control OUTBOUND (sessionId)
+* Session Control INBOUND (sessionId, socketId)
 
 ### Session Control
 
-* Socket Receive <- (socketId, reportAddress, localPort)
-* Socket Recieve -> (socketId, sessionId)
-* Socket Send <- (sessionId)
-* Socket Send -> (sessionId, socketId)
+Has the following service relationships:
+
+* Socket Receive INBOUND (socketId, reportAddress, localPort)
+* Socket Recieve OUTBOUND (socketId, sessionId)
+* Socket Send INBOUND (sessionId)
+* Socket Send OUTBOUND (sessionId, socketId)
 
 ### Interservice Transfer
 
-* Socket Receive <- (sessionId, dataBuffer)
-* Socket Send -> (sessionId, dataBuffer)
-* Login -> (sessionId, dataBuffer)
-* Login <- (sessionId, dataBuffer)
-* Persona -> (sessionId, dataBuffer)
-* Persona <- (sessionId, dataBuffer)
-* Lobby -> (sessionId, dataBuffer)
-* Lobby <- (sessionId, dataBuffer)
-* Database -> (sessionId, dataBuffer)
-* Database <- (sessionId, dataBuffer)
+Has the following service relationships:
+
+* Socket Receive INBOUND (sessionId, dataBuffer)
+* Socket Send OUTBOUND (sessionId, dataBuffer)
+* Login OUTBOUND (sessionId, dataBuffer)
+* Login INBOUND (sessionId, dataBuffer)
+* Persona OUTBOUND (sessionId, dataBuffer)
+* Persona INBOUND (sessionId, dataBuffer)
+* Lobby OUTBOUND (sessionId, dataBuffer)
+* Lobby INBOUND (sessionId, dataBuffer)
+* Database OUTBOUND (sessionId, dataBuffer)
+* Database INBOUND (sessionId, dataBuffer)
 
 ## Login
+
+Has the following service relationships:
 
 -- TODO --
 
 ## Persona
 
+Has the following service relationships:
+
 -- TODO --
 
 ## Lobby
 
+Has the following service relationships:
+
 -- TODO --
 
 ## Database
+
+Has the following service relationships:
 
 -- TODO --
