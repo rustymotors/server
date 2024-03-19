@@ -88,6 +88,12 @@ Has the following service relationships:
 * Database OUTBOUND (sessionId, dataBuffer)
 * Database INBOUND (sessionId, dataBuffer)
 
+## Account
+
+Has the following service relationships:
+
+-- TODO --
+
 ## Login
 
 Has the following service relationships:
