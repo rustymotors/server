@@ -1,0 +1,23 @@
+{
+    "name": "web",
+    "private": true,
+    "version": "1.0.0",
+    "description": "Rusty Motors Web Modules",
+    "exports": {
+        ".": {
+            "import": "./src/index.js",
+            "require": "./src/index.js"
+        }
+    },
+    "type": "module",
+    "scripts": {
+        "build": "npx tsc -b --verbose",
+        "format": "npx prettier . --write",
+        "lint": "npx eslint . --config .eslintrc.json --ext .js,.jsx,.ts,.tsx",
+        "prestart": "npm run build",
+        "test": "node --test --test-reporter spec --test-reporter-destination=stdout --test-reporter junit --test-reporter-destination=junit.xml --experimental-test-coverage  --test-reporter=lcov --test-reporter-destination=lcov.info"
+    },
+    "keywords": [],
+    "author": "Molly Crendraven",
+    "license": "AGPL-3.0"
+}
