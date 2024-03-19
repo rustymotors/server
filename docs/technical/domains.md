@@ -10,20 +10,15 @@
 
 ## Web
 
-* Patch
-* Update
-* AuthLogin
-* Shard
+The web service is an HTTP/HTTPS server that provides the following external endpoints:
 
-### Patch
-
-This is a stub service that serves a static response that does not depend on any other service. It's documented for completeness.
-
-### Update
-
-This is a stub service that serves a static response that does not depend on any other service. It's documented for completeness.
+* A binary response to the GET patch URL
+* A binary response to the GET update URL
+* A POST receive of a username and password using HTTPS which returns a Ticket code if valid, and an error if not
+* A response to the GET shardlist URL
 
 ### AuthLogin
+Accept a username and password via HTTPS and requestions from the Account service if the login is valid.
 
 Has the following service relationships:
 
@@ -31,12 +26,16 @@ Has the following service relationships:
 * Account INBOUND (isUserValid)
 
 ### Shard
+The shard service responds to a GET call and requests a list of online lobby servers (shards) from the Lobby service.
 
 Has the following service relationships:
 
+* Lobby OUTBOUND
 * Lobby INBOUND (shardList)
 
 ## Network
+
+The Network service handles all inbound and outbound non-HTTP TCP traffic between the server and clients. It has the following subdomains:
 
 * Socket Receive
 * Socket Send
@@ -44,6 +43,12 @@ Has the following service relationships:
 * Interservice Transfer
 
 ### Socket receive
+
+Receives inbound TCP traffic for the Login, Persona, Lobby, and Databse services. On initial connection from a client, the Socket Receive subdomain assigns the socket a socketId value, which it stores alongside the socket in an internal table. It then passes the socketId, along with the remoteAddress and localPort to the Session Control subdomain, which assigns the socketId a sessionId, and returns the pair.
+
+Incoming data received on the connection (dataBuffer) is then sent to the InterService Transfer subdomain, along with the sessionId, to be routed to the correct domain for processing.
+
+After the downstream domain finishes with the data, it returns any responses to the Socket Send subdomain via the Interservice Transfer subdomain to reverse the lookup flow and return to the client via the Socker Send subdomain.
 
 Has the following service relationships:
 
