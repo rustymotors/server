@@ -2,14 +2,18 @@ import { Socket } from "node:net";
 import { Cipher, Decipher } from "node:crypto";
 import { IncomingMessage, ServerResponse } from "node:http";
 import {
+    ServerError,
     SerializedBuffer,
     Configuration,
-    ServerLogger,
 } from "@rustymotors/shared";
 
 /**
  * @module interfaces
  */
+
+export as namespace interfaces;
+
+export const name = "interfaces";
 
 /**
  * @exports
@@ -183,3 +187,5 @@ export interface KeypressEvent {
     meta: boolean;
     shift: boolean;
 }
+
+export as namespace interfaces;
