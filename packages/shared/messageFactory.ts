@@ -8,7 +8,16 @@
  * - RawMessage
  */
 
-import { ServerMessageType } from "./types.js";
+/**
+ * @module shared/messageFactory
+ * @description Holds the base classes for the various message types.
+ * The message types are:
+ * - LegacyMessage
+ * - NPSMessage
+ * - ServerMessage
+ * - RawMessage
+ */
+import type { ServerMessageType } from "./types.js";
 
 /**
  * @abstract
@@ -627,7 +636,7 @@ export class ListMessage extends SerializedBuffer {
 
     override serialize() {
         let neededSize;
-        if (this._list.length === 0) {
+        if (typeof this._list[0] === "undefined") {
             neededSize = 5;
         } else {
             neededSize = 5 + this._list.length * this._list[0].size();
@@ -649,7 +658,14 @@ export class ListMessage extends SerializedBuffer {
     }
 
     override size() {
-        return 5 + this._list.length * this._list[0].size();
+        return 5 + this._list.length * this.getFirstItemSize();
+    }
+
+    getFirstItemSize() {
+        if (typeof this._list[0] === "undefined") {
+            return 0;
+        }
+        return this._list[0].size();
     }
 
     override toString() {

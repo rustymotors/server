@@ -1,11 +1,11 @@
 import { GenericRequestMessage } from "../GenericRequestMessage.js";
 
 import { OldServerMessage, getServerLogger } from "@rustymotors/shared";
-import { MessageHandlerArgs, MessageHandlerResult } from "../../types.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "../../types.js";
 import { CarInfoMessage } from "../messageStructs/CarInfoMessage.js";
 import {
     getVehiclePartTree,
-    TPart,
+    type TPart,
     buildVehiclePartTreeFromDB,
 } from "@rustymotors/database";
 
@@ -136,7 +136,16 @@ class CarInfoStruct {
     }
 
     size() {
-        return 10 + this.vehicle.size() + this.noOfParts * this.parts[0].size();
+        return (
+            10 + this.vehicle.size() + this.noOfParts * this.getFirstPartSize()
+        );
+    }
+
+    getFirstPartSize() {
+        if (typeof this.parts[0] === "undefined") {
+            return 0;
+        }
+        return this.parts[0].size();
     }
 
     toString() {

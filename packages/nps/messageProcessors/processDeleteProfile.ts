@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import crypto from "node:crypto";
-import { SocketCallback } from "./index.js";
+import type { SocketCallback } from "./index.js";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SessionKey } from "../messageStructs/SessionKey.js";
 import { getLenString } from "../utils/pureGet.js";

@@ -1,4 +1,4 @@
-import { PersonaRecord } from "../../interfaces/index.js";
+import type { PersonaRecord } from "../../interfaces/index.js";
 import { getPersonasByPersonaId } from "../src/getPersonasByPersonaId.js";
 import { describe, it, expect } from "vitest";
 
@@ -23,6 +23,9 @@ describe("getPersonasByPersonaId", () => {
 
         // assert
         expect(result).toBeInstanceOf(Array);
+        if (result[0] === undefined) {
+            throw new Error("Expected result[0] to be defined");
+        }
         expect(result[0].id.readInt32BE(0)).toBe(id);
     });
 });

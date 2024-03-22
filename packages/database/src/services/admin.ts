@@ -1,4 +1,4 @@
-import { DatabaseTransactionConnection } from "slonik";
+import type { DatabaseTransactionConnection } from "slonik";
 import { getSlonik } from "./database.js";
 import * as Sentry from "@sentry/node";
 
@@ -136,7 +136,7 @@ export async function createNewCar(
         SELECT b.brandedpartid, a.attachmentpointid
         From StockAssembly a
         inner join brandedpart b on a.childbrandedpartid = b.brandedpartid
-        where a.parentbrandedpartid = ${tmpParts[0].brandedPartId}
+        where a.parentbrandedpartid = ${tmpParts[0] ? tmpParts[0].brandedPartId : null}
     `);
         },
     );
@@ -175,6 +175,10 @@ export async function createNewCar(
 
                     let parentPartId = null;
                     let currentPartId = await getNextSq("part_partid_seq");
+
+                    if (typeof tmpParts[0] === "undefined") {
+                        throw Error("currentPartId is null");
+                    }
 
                     // Make sure the first part's branded part id is not null
                     if (tmpParts[0].brandedPartId === null) {
@@ -230,17 +234,21 @@ export async function createNewCar(
                         console.log("currentPartId");
                         console.dir(currentPartId);
 
+                        if (typeof tmpParts[i] === "undefined") {
+                            throw Error("currentPartId is null");
+                        }
                         await addPart(
                             connection,
                             currentPartId,
                             parentPartId,
-                            tmpParts[i],
+                            tmpParts[i] as partTableEntry,
                             newCarOwnerId,
                         );
 
                         // Update the partid of the part in the tmpParts array
-                        tmpParts[i].partId = currentPartId;
-                        tmpParts[i].parentPartId = parentPartId;
+                        (tmpParts[i] as partTableEntry).partId = currentPartId;
+                        (tmpParts[i] as partTableEntry).parentPartId =
+                            parentPartId;
                     }
                 });
             },

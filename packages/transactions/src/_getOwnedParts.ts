@@ -5,7 +5,7 @@ import {
     fetchStateFromDatabase,
     findSessionByConnectionId,
 } from "@rustymotors/shared";
-import { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 
 export async function _getOwnedParts({
     connectionId,

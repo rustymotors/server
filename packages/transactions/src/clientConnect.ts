@@ -13,7 +13,7 @@ import {
     createCommandEncryptionPair,
     createDataEncryptionPair,
 } from "../../gateway/src/encryption.js";
-import { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 import { getUserSessionByCustomerId } from "../../nps/services/session.js";
 
 /**

@@ -1,5 +1,5 @@
 import { Serializable } from "./BasePacket.js";
-import { ISerializable, IMessage } from "./interfaces.js";
+import type { ISerializable, IMessage } from "./interfaces.js";
 
 /**
  *

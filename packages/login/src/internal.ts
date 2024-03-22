@@ -23,7 +23,7 @@ import {
     SerializedBuffer,
     NetworkMessage,
 } from "@rustymotors/shared";
-import { UserRecordMini } from "../../interfaces/index.js";
+import type { UserRecordMini } from "../../interfaces/index.js";
 
 const userRecords: UserRecordMini[] = [
     {

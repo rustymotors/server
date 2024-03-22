@@ -1,6 +1,6 @@
 import { LobbyInfo, LobbyMessage } from "./LobbyMessage.js";
 import { OldServerMessage } from "@rustymotors/shared";
-import { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 import { EntryFeePurseMessage, PurseEntry } from "./EntryFeePurseMessage.js";
 
 /**

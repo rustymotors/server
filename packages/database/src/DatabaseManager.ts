@@ -3,7 +3,11 @@
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
 
-import { ConnectionRecord } from "../../interfaces/index.js";
+/**
+ * This class abstracts database methods
+ * @see {@link getDatabaseServer()} to get a singleton instance
+ */
+import type { ConnectionRecord } from "../../interfaces/index.js";
 
 // This is a fake database table that holds sessions of currently logged in users
 const _sessions: ConnectionRecord[] = [];

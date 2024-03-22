@@ -1,4 +1,4 @@
-import { ISerializable } from "./interfaces.js";
+import type { ISerializable } from "./interfaces.js";
 
 export class Serializable implements ISerializable {
     protected _data: Buffer = Buffer.alloc(0);

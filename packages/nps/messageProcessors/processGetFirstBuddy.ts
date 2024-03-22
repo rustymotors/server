@@ -3,7 +3,7 @@ import {
     SerializableData,
 } from "../messageStructs/GameMessage.js";
 import { getDWord, getAsHex } from "../utils/pureGet.js";
-import { SocketCallback } from "./index.js";
+import type { SocketCallback } from "./index.js";
 import { getGameProfilesForCustomerId } from "../services/profile.js";
 import { ProfileList } from "../messageStructs/ProfileList.js";
 

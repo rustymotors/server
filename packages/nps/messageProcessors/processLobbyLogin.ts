@@ -1,4 +1,4 @@
-import { SocketCallback } from "./index.js";
+import type { SocketCallback } from "./index.js";
 import { getDWord, getLenString, getNBytes } from "../utils/pureGet.js";
 import {
     getUserSessionByProfileId,

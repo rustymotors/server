@@ -2,7 +2,7 @@ import { getServerLogger } from "@rustymotors/shared";
 import * as Sentry from "@sentry/node";
 import { setVehiclePartTree } from "../cache.js";
 import { getSlonik } from "../services/database.js";
-import { TPart } from "./Part.js";
+import type { TPart } from "./Part.js";
 
 const level1PartTypes = [1001, 2001, 4001, 5001, 6001, 15001, 36001, 37001];
 

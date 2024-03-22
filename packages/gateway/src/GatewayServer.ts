@@ -7,7 +7,7 @@ import {
     addOnDataHandler,
     createInitialState,
     fetchStateFromDatabase,
-    TServerLogger,
+    type TServerLogger,
 } from "@rustymotors/shared";
 import { ConsoleThread } from "../../cli/ConsoleThread.js";
 import { addWebRoutes } from "./web.js";

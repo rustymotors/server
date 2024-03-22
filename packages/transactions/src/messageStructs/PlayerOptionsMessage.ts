@@ -45,7 +45,7 @@ export class CarNumberSet {
         const buffer = Buffer.alloc(this.size());
         let offset = 0;
         for (let i = 0; i < this.carMax; i++) {
-            buffer.write(this.cars[i], offset);
+            buffer.write(this.cars[i] ?? "", offset);
             offset = i * 3;
         }
         return buffer;

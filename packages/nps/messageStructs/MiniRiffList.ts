@@ -1,4 +1,4 @@
-import { ISerializable } from "../types.js";
+import type { ISerializable } from "../types.js";
 import { putLenString } from "../utils/purePut.js";
 import { NPSList } from "./NPSList.js";
 

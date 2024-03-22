@@ -1,46 +1,48 @@
 # Domains
 
-* Web
-* Network
-* Account
-* Login
-* Persona
-* Lobby
-* Database
+-   Web
+-   Network
+-   Account
+-   Login
+-   Persona
+-   Lobby
+-   Database
 
 ## Web
 
 The web service is an HTTP/HTTPS server that provides the following external endpoints:
 
-* A binary response to the GET patch URL
-* A binary response to the GET update URL
-* A POST receive of a username and password using HTTPS which returns a Ticket code if valid, and an error if not
-* A response to the GET shardlist URL
+-   A binary response to the GET patch URL
+-   A binary response to the GET update URL
+-   A POST receive of a username and password using HTTPS which returns a Ticket code if valid, and an error if not
+-   A response to the GET shardlist URL
 
 ### AuthLogin
+
 Accept a username and password via HTTPS and requestions from the Account service if the login is valid.
 
 Has the following service relationships:
 
-* Account OUTBOUND (username, password)
-* Account INBOUND (isUserValid)
+-   Account OUTBOUND (username, password)
+-   Account INBOUND (isUserValid)
 
 ### Shard
+
 The shard service responds to a GET call and requests a list of online lobby servers (shards) from the Lobby service.
 
 Has the following service relationships:
 
-* Lobby OUTBOUND
-* Lobby INBOUND (shardList)
+-   Lobby OUTBOUND
+-   Lobby INBOUND (shardList)
 
 ## Network
 
 The Network service handles all inbound and outbound non-HTTP TCP traffic between the server and clients. It has the following subdomains:
 
-* Socket Receive
-* Socket Send
-* Session Control
-* Interservice Transfer
+-   Socket Receive
+-   Socket Send
+-   Session Control
+-   Interservice Transfer
 
 ### Socket receive
 
@@ -52,41 +54,41 @@ After the downstream domain finishes with the data, it returns any responses to 
 
 Has the following service relationships:
 
-* Session Control OUTBOUND (socketId, remoteAddress, localPort)
-* Session Control INBOUND {socketId, SessionId}
-* Interservice Transfer OUTBOUND (sessionId, dataBuffer)
+-   Session Control OUTBOUND (socketId, remoteAddress, localPort)
+-   Session Control INBOUND {socketId, SessionId}
+-   Interservice Transfer OUTBOUND (sessionId, dataBuffer)
 
 ### Socket Send
 
 Has the following service relationships:
 
-* Interservice Transfer INBOUND (sessionId, dataBuffer)
-* Session Control OUTBOUND (sessionId)
-* Session Control INBOUND (sessionId, socketId)
+-   Interservice Transfer INBOUND (sessionId, dataBuffer)
+-   Session Control OUTBOUND (sessionId)
+-   Session Control INBOUND (sessionId, socketId)
 
 ### Session Control
 
 Has the following service relationships:
 
-* Socket Receive INBOUND (socketId, remoteAddress, localPort)
-* Socket Receive OUTBOUND (socketId, sessionId)
-* Socket Send INBOUND (sessionId)
-* Socket Send OUTBOUND (sessionId, socketId)
+-   Socket Receive INBOUND (socketId, remoteAddress, localPort)
+-   Socket Receive OUTBOUND (socketId, sessionId)
+-   Socket Send INBOUND (sessionId)
+-   Socket Send OUTBOUND (sessionId, socketId)
 
 ### Interservice Transfer
 
 Has the following service relationships:
 
-* Socket Receive INBOUND (sessionId, dataBuffer)
-* Socket Send OUTBOUND (sessionId, dataBuffer)
-* Login OUTBOUND (sessionId, dataBuffer)
-* Login INBOUND (sessionId, dataBuffer)
-* Persona OUTBOUND (sessionId, dataBuffer)
-* Persona INBOUND (sessionId, dataBuffer)
-* Lobby OUTBOUND (sessionId, dataBuffer)
-* Lobby INBOUND (sessionId, dataBuffer)
-* Database OUTBOUND (sessionId, dataBuffer)
-* Database INBOUND (sessionId, dataBuffer)
+-   Socket Receive INBOUND (sessionId, dataBuffer)
+-   Socket Send OUTBOUND (sessionId, dataBuffer)
+-   Login OUTBOUND (sessionId, dataBuffer)
+-   Login INBOUND (sessionId, dataBuffer)
+-   Persona OUTBOUND (sessionId, dataBuffer)
+-   Persona INBOUND (sessionId, dataBuffer)
+-   Lobby OUTBOUND (sessionId, dataBuffer)
+-   Lobby INBOUND (sessionId, dataBuffer)
+-   Database OUTBOUND (sessionId, dataBuffer)
+-   Database INBOUND (sessionId, dataBuffer)
 
 ## Account
 

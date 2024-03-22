@@ -1,6 +1,5 @@
-import { ISerializable, IMessageHeader, IMessage } from "../types.js";
 import { GameMessage } from "../messageStructs/GameMessage.js";
-import { SocketCallback } from "./index.js";
+import type { SocketCallback } from "./index.js";
 import { getLenString, getNBytes } from "../utils/pureGet.js";
 
 import { getServerLogger } from "@rustymotors/shared";

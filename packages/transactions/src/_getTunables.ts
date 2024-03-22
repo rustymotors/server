@@ -1,7 +1,7 @@
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { OldServerMessage } from "@rustymotors/shared";
 import { TunablesMessage } from "./TunablesMessage.js";
-import { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 
 /**
  * @param {MessageHandlerArgs} args

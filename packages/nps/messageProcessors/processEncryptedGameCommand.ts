@@ -2,10 +2,10 @@ import {
     GameMessage,
     SerializableData,
 } from "../messageStructs/GameMessage.js";
-import { SocketCallback } from "./index.js";
+import type { SocketCallback } from "./index.js";
 import { getAsHex } from "../utils/pureGet.js";
 import {
-    EncryptionSession,
+    type EncryptionSession,
     getEncryptionSession,
     getUserSessionByConnectionId,
     newEncryptionSession,

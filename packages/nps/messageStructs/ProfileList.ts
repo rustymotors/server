@@ -1,4 +1,4 @@
-import { ISerializable, IMessageHeader, IMessage } from "../types.js";
+import type { ISerializable } from "../types.js";
 import { GameProfile } from "./GameProfile.js";
 import { NPSList } from "./NPSList.js";
 

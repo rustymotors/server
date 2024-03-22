@@ -6,7 +6,7 @@ import {
 import { Socket } from "node:net";
 import {
     McosEncryption,
-    State,
+    type State,
     addEncryption,
     createInitialState,
     getEncryption,
