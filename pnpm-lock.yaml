@@ -25,14 +25,14 @@ importers:
         version: 7.108.0
       slonik:
         specifier: '37'
-        version: 37.3.1(zod@3.22.4)
+        version: 37.4.0(zod@3.22.4)
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
     devDependencies:
       '@slonik/migrator':
         specifier: 0.12.0
-        version: 0.12.0(@types/node@20.11.30)(slonik@37.3.1)
+        version: 0.12.0(@types/node@20.11.30)(slonik@37.4.0)
       '@types/node':
         specifier: 20.11.30
         version: 20.11.30
@@ -77,7 +77,7 @@ importers:
         version: 7.108.0
       slonik:
         specifier: ^37.2.0
-        version: 37.3.1(zod@3.22.4)
+        version: 37.4.0(zod@3.22.4)
       zod:
         specifier: ^3.22.4
         version: 3.22.4
@@ -732,13 +732,13 @@ packages:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
     dev: true
 
-  /@slonik/migrator@0.12.0(@types/node@20.11.30)(slonik@37.3.1):
+  /@slonik/migrator@0.12.0(@types/node@20.11.30)(slonik@37.4.0):
     resolution: {integrity: sha512-2kAXCO/iW9/VOYlfl8Jza4fQpi5Q8+JUyB38YFUxPiWNc+6o41GGND2aIpnyr6EPFNRXdg5x+Fu8+SMyMvMXpQ==}
     peerDependencies:
       slonik: 27 - 29
     dependencies:
       '@rushstack/ts-command-line': 4.19.0(@types/node@20.11.30)
-      slonik: 37.3.1(zod@3.22.4)
+      slonik: 37.4.0(zod@3.22.4)
       umzug: 3.7.0(@types/node@20.11.30)
     transitivePeerDependencies:
       - '@types/node'
@@ -761,8 +761,8 @@ packages:
     dependencies:
       undici-types: 5.26.5
 
-  /@types/pg@8.11.2:
-    resolution: {integrity: sha512-G2Mjygf2jFMU/9hCaTYxJrwdObdcnuQde1gndooZSOHsNSaCehAuwc7EIuSA34Do8Jx2yZ19KtvW8P0j4EuUXw==}
+  /@types/pg@8.11.4:
+    resolution: {integrity: sha512-yw3Bwbda6vO+NvI1Ue/YKOwtl31AYvvd/e73O3V4ZkNzuGpTDndLSyc0dQRB2xrQqDePd20pEGIfqSp/GH3pRw==}
     dependencies:
       '@types/node': 20.11.30
       pg-protocol: 1.6.0
@@ -2441,13 +2441,13 @@ packages:
     engines: {node: '>=14'}
     dev: true
 
-  /slonik@37.3.1(zod@3.22.4):
-    resolution: {integrity: sha512-vidC0OleHqIrFt5gGWgwy4CUhE+dSo71/661g2MyQFNpT/ZyiBZ1BscGK8gLlw4K8xYTo4SL+POBBLp+X5wYsg==}
+  /slonik@37.4.0(zod@3.22.4):
+    resolution: {integrity: sha512-W9GPnc4M5+JLvrl4aMx2qkpIQrHLo6vAmCc2UeTD5Szl2uBA2ChZo3njdygK1511wrlSSDnOySY+jlLNAfpIvA==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3
     dependencies:
-      '@types/pg': 8.11.2
+      '@types/pg': 8.11.4
       es6-error: 4.1.1
       get-stack-trace: 3.1.1
       iso8601-duration: 1.3.0
