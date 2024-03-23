@@ -45,23 +45,6 @@ const nativeNodeModulesPlugin = {
     },
 };
 
-/**
- * This plugin is used to send the metafile to the Codecov API
- */
-const esbuildBundleAnalysisPlugin = () => {
-    return {
-        name: "rm-codecov-bundle",
-        setup(build) {
-            console.log("Checking options for if metafile is set");
-            console.log(build.initialOptions.metafile);
-            if (!build.initialOptions.metafile) {
-                // Set the metafile option to true
-                build.initialOptions.metafile = true;
-            }
-        },
-    };
-};
-
 const foo = codecovUnpluginFactory({
     bundleAnalysisUploadPlugin: () => {
         return {
