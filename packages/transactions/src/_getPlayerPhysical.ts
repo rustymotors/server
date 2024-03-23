@@ -1,7 +1,7 @@
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
-import { OldServerMessage } from "@rustymotors/shared";
+import { OldServerMessage } from "../../shared";
 import { PlayerPhysicalMessage } from "./PlayerPhysicalMessage.js";
-import { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 
 export async function _getPlayerPhysical({
     connectionId,

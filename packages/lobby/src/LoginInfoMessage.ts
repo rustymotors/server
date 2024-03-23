@@ -2,7 +2,7 @@ import {
     LegacyMessage,
     deserializeString,
     serializeString,
-} from "@rustymotors/shared";
+} from "../../shared";
 
 export class LoginInfoMessage extends LegacyMessage {
     _userId: number;

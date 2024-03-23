@@ -1,4 +1,4 @@
-import { ISerializable, IMessageHeader, IMessage } from "../types.js";
+import type { ISerializable } from "../types.js";
 import { SessionKey } from "./SessionKey.js";
 import { UserAction } from "./UserAction.js";
 

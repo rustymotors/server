@@ -1,11 +1,7 @@
 import { Socket } from "node:net";
 import { Cipher, Decipher } from "node:crypto";
 import { IncomingMessage, ServerResponse } from "node:http";
-import {
-    ServerError,
-    SerializedBuffer,
-    Configuration,
-} from "@rustymotors/shared";
+import { ServerError, SerializedBuffer, Configuration } from "../../shared";
 
 /**
  * @module interfaces

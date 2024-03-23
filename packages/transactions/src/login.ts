@@ -1,12 +1,12 @@
 import { LoginCompleteMessage, TLoginMessage } from "./TLoginMessage.js";
-import { OldServerMessage } from "@rustymotors/shared";
-import { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
+import { OldServerMessage } from "../../shared";
+import type { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 import {
     buildVehiclePartTree,
     saveVehicle,
     saveVehiclePartTree,
-} from "@rustymotors/database";
-import { TServerLogger, ServerMessageType } from "@rustymotors/shared";
+} from "../../database";
+import type { TServerLogger, ServerMessageType } from "../../shared";
 
 /**
  * @param {MessageHandlerArgs} args

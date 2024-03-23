@@ -1,4 +1,4 @@
-import { GameMessageOpCode } from "../../interfaces/index.js";
+import type { GameMessageOpCode } from "../../interfaces/index.js";
 
 /**
  * Commands from the game server to the game client

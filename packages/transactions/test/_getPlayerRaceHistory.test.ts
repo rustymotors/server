@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { _getPlayerRaceHistory } from "../src/_getPlayerRaceHistory.js";
-import { OldServerMessage } from "@rustymotors/shared";
+import { OldServerMessage } from "../../shared";
 import { mockLogger } from "../../../test/factoryMocks.js";
 
 describe("_getPlayerRaceHistory", () => {

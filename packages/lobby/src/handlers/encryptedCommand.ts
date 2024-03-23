@@ -6,7 +6,7 @@ import {
     LegacyMessage,
     MessageBuffer,
     SerializedBuffer,
-} from "@rustymotors/shared";
+} from "../../../shared";
 import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
 import { handleGetMiniUserList } from "./handleGetMiniUserList.js";
 import { _setMyUserData } from "./_setMyUserData.js";

@@ -1,5 +1,4 @@
-import { Vehicle } from "../../../nps/services/types.js";
-import { SerializedBuffer } from "@rustymotors/shared";
+import { SerializedBuffer } from "../../../shared";
 import {
     PartStruct,
     VehicleStruct,
@@ -27,8 +26,15 @@ export class CarInfoMessage extends SerializedBuffer {
             4 +
             this.vehicle.size() +
             2 +
-            this.parts.length * (this.parts[0].size() ?? 0)
+            this.parts.length * this.getFirstPartSize()
         );
+    }
+
+    getFirstPartSize() {
+        if (typeof this.parts[0] === "undefined") {
+            return 0;
+        }
+        return this.parts[0].size();
     }
 
     override serialize(): Buffer {

@@ -23,7 +23,7 @@ import {
     SerializedBuffer,
     OldServerMessage,
     ServerMessage,
-} from "@rustymotors/shared";
+} from "../../shared";
 
 /**
  *

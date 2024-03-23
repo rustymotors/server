@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from "node:http";
-import { ServerLogger, getServerLogger } from "@rustymotors/shared";
+import { ServerLogger, getServerLogger } from "../../shared";
 import { Buffer } from "node:buffer";
 
 const debug_reseponse = Buffer.from([

@@ -1,4 +1,4 @@
-import { ISerializable, IMessageHeader, IMessage } from "../types.js";
+import type { ISerializable } from "../types.js";
 import { putLenBlob, putLenString, putShortBool } from "../utils/purePut.js";
 import {
     getAsHex,

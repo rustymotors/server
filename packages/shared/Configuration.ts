@@ -1,5 +1,3 @@
-import { ServerLogger, ServerLoggerLevels, getServerLogger } from "./log.js";
-
 /**
  * @module shared/Configuration
  * @exports Configuration

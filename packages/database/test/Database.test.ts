@@ -4,7 +4,7 @@ import {
     fetchSessionKeyByCustomerId,
     fetchSessionKeyByConnectionId,
     updateUser,
-} from "@rustymotors/database";
+} from "../../database";
 
 describe("Database", () => {
     describe("fetchSessionKeyByCustomerId", () => {

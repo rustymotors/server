@@ -16,7 +16,7 @@ import { _setOptions } from "./_setOptions.js";
 import { _updatePlayerPhysical } from "./_updatePlayerPhysical.js";
 import { _getCompleteVehicleInfo } from "./messageHandlers/_getCompleteVehicleInfo.js";
 import { _updateCachedVehicle } from "./messageHandlers/_updateCachedVehicle.js";
-import { MessageHandler } from "../types.js";
+import type { MessageHandler } from "../types.js";
 
 export const messageHandlers: Map<number, MessageHandler> = new Map([
     [105, { name: "MC_LOGIN", handler: login, direction: "in" }],

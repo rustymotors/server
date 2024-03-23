@@ -1,8 +1,4 @@
-import {
-    serializeStringRaw,
-    NetworkMessage,
-    RawMessage,
-} from "@rustymotors/shared";
+import { serializeStringRaw, NetworkMessage, RawMessage } from "../../shared";
 
 /**
  * BuddyInfoMessage

@@ -1,27 +1,18 @@
 {
     "compilerOptions": {
-        "incremental": true,
-        "target": "es2022",
-        "module": "NodeNext",
-        "noImplicitOverride": true,
-        "declaration": true,
-        "declarationMap": true,
-        "outDir": "./dist",
         "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true,
+        "target": "ES2022",
+        "verbatimModuleSyntax": true,
+        "resolveJsonModule": true,
+        "moduleDetection": "force",
         "strict": true,
-        "skipLibCheck": true
+        "noUncheckedIndexedAccess": true,
+        "moduleResolution": "Bundler",
+        "module": "ES2022",
+        "lib": ["ES2022"],
+        "declaration": true,
+        "emitDeclarationOnly": true
     },
-    "include": [
-        "src",
-        "test",
-        "packages",
-        "thebeast",
-        "lib",
-        "vite.config.ts",
-        "server.ts",
-        "migrate.ts",
-        "test",
-        "apps/main/server.ts"
-    ]
+    "include": ["apps/**/*", "packages/**/*"]
 }

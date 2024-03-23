@@ -2,10 +2,10 @@ import {
     GameMessage,
     SerializableData,
 } from "../messageStructs/GameMessage.js";
-import { SocketCallback } from "./index.js";
+import type { SocketCallback } from "./index.js";
 import { getAsHex } from "../utils/pureGet.js";
 import {
-    EncryptionSession,
+    type EncryptionSession,
     getEncryptionSession,
     getUserSessionByConnectionId,
     newEncryptionSession,
@@ -13,7 +13,7 @@ import {
 } from "../services/session.js";
 import { lobbyCommandMap } from "./lobbyCommands.js";
 
-import { getServerLogger } from "@rustymotors/shared";
+import { getServerLogger } from "../../shared";
 
 const log = getServerLogger();
 

@@ -1,5 +1,5 @@
-import { TBrand } from "./models/Brand.js";
-import { VehiclePartTreeType } from "./models/VehiclePartTree.js";
+import type { TBrand } from "./models/Brand.js";
+import type { VehiclePartTreeType } from "./models/VehiclePartTree.js";
 import { getSlonik } from "./services/database.js";
 import * as Sentry from "@sentry/node";
 

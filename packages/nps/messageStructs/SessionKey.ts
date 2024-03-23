@@ -1,4 +1,4 @@
-import { ISerializable, IMessageHeader, IMessage } from "../types.js";
+import type { ISerializable } from "../types.js";
 import { getAsHex } from "../utils/pureGet.js";
 
 export class SessionKey implements ISerializable {

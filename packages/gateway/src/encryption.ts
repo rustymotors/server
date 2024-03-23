@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { createCipheriv, createDecipheriv, getCiphers } from "node:crypto";
-import { McosEncryptionPair } from "@rustymotors/shared";
+import { McosEncryptionPair } from "../../shared";
 
 /**
  * This function creates a new encryption pair for use with the game server

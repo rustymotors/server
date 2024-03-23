@@ -1,4 +1,4 @@
-import { MessageHandlerArgs, MessageHandlerResult } from "../../types.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "../../types.js";
 
 /**
  * @param {MessageHandlerArgs} args

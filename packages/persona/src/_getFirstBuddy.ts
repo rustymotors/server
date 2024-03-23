@@ -3,7 +3,7 @@ import {
     LegacyMessage,
     NPSMessage,
     SerializedBuffer,
-} from "@rustymotors/shared";
+} from "../../shared";
 import { BuddyCount, BuddyInfoMessage, BuddyList } from "./BuddyInfoMessage.js";
 
 const log = getServerLogger();

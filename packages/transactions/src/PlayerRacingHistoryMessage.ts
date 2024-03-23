@@ -1,4 +1,5 @@
-import { SerializedBuffer } from "@rustymotors/shared";
+import { SerializedBuffer } from "../../shared";
+import type { RacingHistoryRecord } from "./_getPlayerRaceHistory";
 
 export class PlayerRacingHistoryMessage extends SerializedBuffer {
     _msgId: number; // 2 bytes
@@ -58,7 +59,13 @@ export class PlayerRacingHistoryMessage extends SerializedBuffer {
         buffer.writeInt8(this._expectMore ? 1 : 0, offset);
         offset += 1;
         for (let i = 0; i < this._numRaces; i++) {
-            this._raceHistoryRecords[i].serialize().copy(buffer, offset);
+            if (typeof this._raceHistoryRecords[i] === "undefined") {
+                break;
+            }
+
+            (this._raceHistoryRecords[i] as RacingHistoryRecordEntry)
+                .serialize()
+                .copy(buffer, offset);
             offset += 32;
         }
 
@@ -68,7 +75,11 @@ export class PlayerRacingHistoryMessage extends SerializedBuffer {
     asString(): string {
         let result = `PlayerRacingHistoryMessage: MsgId: ${this._msgId}, UserId: ${this._userId}, NumRaces: ${this._numRaces}, ExpectMore: ${this._expectMore}`;
         for (let i = 0; i < this._numRaces; i++) {
-            result += `\n${this._raceHistoryRecords[i].asString()}`;
+            if (typeof this._raceHistoryRecords[i] === "undefined") {
+                result += "\nNo more records";
+            }
+
+            result += `\n${(this._raceHistoryRecords[i] as RacingHistoryRecordEntry).asString()}`;
         }
 
         return result;

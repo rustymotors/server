@@ -16,19 +16,19 @@
 
 import { randomUUID } from "node:crypto";
 import {
-    OnDataHandler,
-    TServerLogger,
+    type OnDataHandler,
+    type TServerLogger,
     addSocket,
     fetchStateFromDatabase,
     getOnDataHandler,
     removeSocket,
     wrapSocket,
-} from "@rustymotors/shared";
+} from "../../shared";
 
-import { ServerLogger } from "@rustymotors/shared";
+import { ServerLogger } from "../../shared";
 
 import { Socket } from "node:net";
-import { SerializedBuffer } from "@rustymotors/shared";
+import { SerializedBuffer } from "../../shared";
 
 import {
     MessageProcessorError,
@@ -36,10 +36,10 @@ import {
     getPortMessageType,
     GameMessage as OldGameMessage,
 } from "../../nps/index.js";
-import { SocketCallback } from "../../nps/messageProcessors/index.js";
+import type { SocketCallback } from "../../nps/messageProcessors/index.js";
 import { getAsHex } from "../../nps/utils/pureGet.js";
-import { ServiceResponse } from "@rustymotors/shared";
-import { GameMessage } from "@rustymotors/shared-packets";
+import type { ServiceResponse } from "../../shared";
+import { GameMessage } from "../../shared-packets";
 
 /**
  * @typedef {object} OnDataHandlerArgs

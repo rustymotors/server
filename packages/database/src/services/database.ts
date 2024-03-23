@@ -1,4 +1,4 @@
-import { createPool, DatabasePool, createSqlTag } from "slonik";
+import { createPool, type DatabasePool, createSqlTag } from "slonik";
 import { z } from "zod";
 
 let slonik: DatabasePool;

@@ -2,7 +2,7 @@ import {
     LegacyMessage,
     deserializeString,
     serializeString,
-} from "@rustymotors/shared";
+} from "../../shared";
 import { LoginInfoMessage } from "./LoginInfoMessage.js";
 
 export class UserInfo {

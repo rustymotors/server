@@ -1,4 +1,4 @@
-import { SerializedBuffer } from "@rustymotors/shared";
+import { SerializedBuffer } from "../../shared";
 
 export class PartsAssemblyMessage extends SerializedBuffer {
     _msgNo: number;

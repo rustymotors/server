@@ -1,4 +1,4 @@
-import { DBModel } from "./index.js";
+import type { DBModel } from "./index.js";
 
 export class PartModel implements DBModel {
     private partId = 0; // 4 bytes

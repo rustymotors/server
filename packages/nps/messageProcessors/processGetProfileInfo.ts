@@ -1,10 +1,10 @@
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { getDWord, getAsHex } from "../utils/pureGet.js";
-import { SocketCallback } from "../messageProcessors/index.js";
+import type { SocketCallback } from "../messageProcessors/index.js";
 import { getGameProfilesForCustomerId } from "../services/profile.js";
 import { ProfileList } from "../messageStructs/ProfileList.js";
 
-import { getServerLogger } from "@rustymotors/shared";
+import { getServerLogger } from "../../shared";
 
 const log = getServerLogger();
 

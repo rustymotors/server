@@ -1,7 +1,8 @@
-import { OldServerMessage } from "@rustymotors/shared";
+import { OldServerMessage } from "../../shared";
 import { getLobbies } from "../src/getLobbies.js";
 import { describe, expect, it } from "vitest";
 import { mockLogger } from "../../../test/factoryMocks.js";
+import { assert } from "console";
 
 describe("getLobbies", () => {
     it("should return a promise", async () => {
@@ -16,6 +17,10 @@ describe("getLobbies", () => {
             packet,
             log,
         });
+
+        if (result.messages[0] === undefined) {
+            throw new Error("Expected messages to be defined");
+        }
 
         const resultMessage = result.messages[0].serialize().toString("hex");
 

@@ -1,4 +1,4 @@
-import { PersonaRecord } from "../../interfaces/index.js";
+import type { PersonaRecord } from "../../interfaces/index.js";
 import { personaRecords } from "./internal.js";
 
 /**

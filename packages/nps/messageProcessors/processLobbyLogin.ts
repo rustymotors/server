@@ -1,4 +1,4 @@
-import { SocketCallback } from "./index.js";
+import type { SocketCallback } from "./index.js";
 import { getDWord, getLenString, getNBytes } from "../utils/pureGet.js";
 import {
     getUserSessionByProfileId,
@@ -8,7 +8,7 @@ import {
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { UserInfo } from "../messageStructs/UserInfo.js";
 
-import { getServerLogger } from "@rustymotors/shared";
+import { getServerLogger } from "../../shared";
 
 const log = getServerLogger();
 

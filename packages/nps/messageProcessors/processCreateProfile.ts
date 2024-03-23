@@ -1,8 +1,8 @@
 import { GameMessage } from "../messageStructs/GameMessage.js";
-import { SocketCallback } from "./index.js";
+import type { SocketCallback } from "./index.js";
 import { GameProfile } from "../messageStructs/GameProfile.js";
 
-import { getServerLogger } from "@rustymotors/shared";
+import { getServerLogger } from "../../shared";
 
 const log = getServerLogger();
 

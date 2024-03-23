@@ -6,11 +6,11 @@ import {
 import { Socket } from "node:net";
 import {
     McosEncryption,
-    State,
+    type State,
     addEncryption,
     createInitialState,
     getEncryption,
-} from "@rustymotors/shared";
+} from "../../shared";
 import { randomUUID } from "node:crypto";
 
 let testSave: (state: State) => void;

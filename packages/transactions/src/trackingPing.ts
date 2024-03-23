@@ -1,6 +1,6 @@
 import { GenericReplyMessage } from "./GenericReplyMessage.js";
-import { OldServerMessage } from "@rustymotors/shared";
-import { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
+import { OldServerMessage } from "../../shared";
+import type { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 
 /**
  * @param {MessageHandlerArgs} args

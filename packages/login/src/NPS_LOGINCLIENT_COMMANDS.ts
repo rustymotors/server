@@ -5,7 +5,13 @@
  * @type {TNPS_COMMAND_MAP[]}
  */
 
-import { GameMessageOpCode } from "../../interfaces/index.js";
+/**
+ * Commands from the game client to the login server
+ * @export
+ * @readonly
+ * @type {TNPS_COMMAND_MAP[]}
+ */
+import type { GameMessageOpCode } from "../../interfaces/index.js";
 
 export const NPS_LOGINCLIENT_COMMANDS: GameMessageOpCode[] = [
     { name: "NPS_USER_LOGIN", value: 1281, module: "Login" },

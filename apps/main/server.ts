@@ -16,10 +16,7 @@
 
 import Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
-import {
-    ServerLoggerLevels,
-    getServerLogger,
-} from "../../packages/shared/log.js";
+import { getServerLogger } from "../../packages/shared/log.js";
 import { verifyLegacyCipherSupport } from "../../packages/gateway/src/encryption.js";
 import { getServerConfiguration } from "../../packages/shared/Configuration.js";
 import { getGatewayServer } from "../../packages/gateway/src/GatewayServer.js";
