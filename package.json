@@ -24,6 +24,7 @@
         "url": "git@github.com:drazisil/mcos.git"
     },
     "devDependencies": {
+        "@codecov/bundler-plugin-core": "0.0.1-beta.5",
         "@sentry/node": "^7.108.0",
         "@sentry/profiling-node": "^7.108.0",
         "@slonik/migrator": "0.12.0",

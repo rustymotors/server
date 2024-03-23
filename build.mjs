@@ -2,6 +2,7 @@ import { sentryEsbuildPlugin } from "@sentry/esbuild-plugin";
 import fs from "node:fs";
 import esbuild from "esbuild";
 import { createRequire } from "node:module";
+import { codecovUnpluginFactory } from "@codecov/bundler-plugin-core";
 
 const require = createRequire(import.meta.url);
 
@@ -44,6 +45,33 @@ const nativeNodeModulesPlugin = {
     },
 };
 
+/**
+ * This plugin is used to send the metafile to the Codecov API
+ */
+const esbuildBundleAnalysisPlugin = () => {
+    return {
+        name: "rm-codecov-bundle",
+        setup(build) {
+            console.log("Checking options for if metafile is set");
+            console.log(build.initialOptions.metafile);
+            if (!build.initialOptions.metafile) {
+                // Set the metafile option to true
+                build.initialOptions.metafile = true;
+            }
+        },
+    };
+};
+
+const foo = codecovUnpluginFactory({
+    bundleAnalysisUploadPlugin: () => {
+        return {
+            name: "foo",
+            pluginVersion: "1.0.0",
+            version: "1.0.0",
+        };
+    },
+});
+
 esbuild
     .build({
         sourcemap: "external", // Source map generation must be turned on
@@ -59,6 +87,11 @@ esbuild
         },
         plugins: [
             nativeNodeModulesPlugin,
+            foo.esbuild({
+                enableBundleAnalysis: true,
+                bundleName: "rusty-motors-server",
+                uploadToken: process.env.CODECOV_UPLOAD_BUNDLE_TOKEN,
+            }),
             // Put the Sentry esbuild plugin after all other plugins
             sentryEsbuildPlugin({
                 authToken: process.env.SENTRY_AUTH_TOKEN,
