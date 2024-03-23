@@ -33,6 +33,8 @@ jobs:
                   pnpm install
                   pnpm run build
                   pnpm test
+              env:
+                  CODECOV_UPLOAD_BUNDLE_TOKEN: ${{ secrets.CODECOV_UPLOAD_BUNDLE_TOKEN }}
             - name: Codecov
               if: ${{ always() }}
               env:
