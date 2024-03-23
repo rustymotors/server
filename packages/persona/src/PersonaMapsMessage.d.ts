@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { NPSHeader, NPSMessage } from "@rustymotors/shared";
+import { NPSHeader, NPSMessage } from "../../shared";
 /**
  *
  * This is type UserGameData

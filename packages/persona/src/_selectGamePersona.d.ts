@@ -1,5 +1,5 @@
-import { ServerLogger } from "@rustymotors/shared";
-import { LegacyMessage, SerializedBuffer } from "@rustymotors/shared";
+import { ServerLogger } from "../../shared";
+import { LegacyMessage, SerializedBuffer } from "../../shared";
 /**
  * Selects a game persona and marks it as in use
  * @param {object} args

@@ -34,7 +34,7 @@ import type {
     ServerMessage,
     ServerMessageType,
     TServerLogger,
-} from "@rustymotors/shared";
+} from "../../shared";
 
 export interface MessageHandlerArgs {
     connectionId: string;

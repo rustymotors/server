@@ -3,7 +3,7 @@ import {
     LegacyMessage,
     SerializedBuffer,
     RawMessage,
-} from "@rustymotors/shared";
+} from "../../../shared";
 
 /**
  * Check if a new persona name is valid

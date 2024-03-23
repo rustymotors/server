@@ -1,4 +1,4 @@
-import { SerializedBuffer } from "@rustymotors/shared";
+import { SerializedBuffer } from "../../../shared";
 import {
     PartStruct,
     VehicleStruct,

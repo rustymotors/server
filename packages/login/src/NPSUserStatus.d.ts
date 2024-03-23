@@ -1,9 +1,5 @@
 /// <reference types="node" />
-import {
-    LegacyMessage,
-    Configuration,
-    ServerLogger,
-} from "@rustymotors/shared";
+import { LegacyMessage, Configuration, ServerLogger } from "../../shared";
 /**
  * @typedef {Configuration} Configuration
  */

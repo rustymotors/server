@@ -1,9 +1,6 @@
 import { emitKeypressEvents } from "node:readline";
-import { SubThread } from "@rustymotors/shared";
-// eslint-disable-next-line no-unused-vars
+import { SubThread, type TServerLogger } from "../shared";
 import { Gateway } from "../gateway/src/GatewayServer.js";
-
-import type { TServerLogger } from "@rustymotors/shared";
 
 /**
  * @module ConsoleThread

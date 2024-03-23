@@ -1,4 +1,4 @@
-import { LegacyMessage, SerializedBuffer } from "@rustymotors/shared";
+import { LegacyMessage, SerializedBuffer } from "../../shared";
 export declare function _getFirstBuddy({
     connectionId,
     message,

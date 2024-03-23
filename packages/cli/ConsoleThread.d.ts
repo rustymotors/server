@@ -1,6 +1,6 @@
-import { SubThread } from "@rustymotors/shared";
+import { SubThread } from "../shared/index.js";
 import { Gateway } from "../gateway/src/GatewayServer.js";
-import type { TServerLogger } from "@rustymotors/shared";
+import type { TServerLogger } from "../shared/index.js";
 /**
  * @module ConsoleThread
  */

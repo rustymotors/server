@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { OldServerMessage } from "@rustymotors/shared";
+import { OldServerMessage } from "../../shared";
 export declare class CarNumberSet {
     private cars;
     private carMax;

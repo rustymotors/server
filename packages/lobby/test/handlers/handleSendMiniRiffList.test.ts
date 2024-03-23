@@ -1,6 +1,6 @@
 import { handleSendMiniRiffList } from "../../src/handlers/handleSendMiniRiffList.js";
 import { describe, it, expect } from "vitest";
-import { LegacyMessage } from "@rustymotors/shared";
+import { LegacyMessage } from "../../../shared";
 import { mockLogger } from "../../../../test/factoryMocks.js";
 
 describe("handleSendMiniRiffList", () => {

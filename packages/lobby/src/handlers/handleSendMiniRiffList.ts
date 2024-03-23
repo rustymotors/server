@@ -3,7 +3,7 @@ import {
     GameMessage,
     LegacyMessage,
     serializeString,
-} from "@rustymotors/shared";
+} from "../../../shared";
 import { channelRecordSize, channels } from "./encryptedCommand.js";
 
 // const users = [user1];

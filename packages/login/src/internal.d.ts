@@ -1,4 +1,4 @@
-import { ServerLogger, SerializedBuffer } from "@rustymotors/shared";
+import { ServerLogger, SerializedBuffer } from "../../shared";
 /**
  * Array of supported message handlers
  *

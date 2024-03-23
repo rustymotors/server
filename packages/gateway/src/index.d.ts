@@ -1,8 +1,8 @@
 /// <reference types="node" />
 /// <reference types="node" />
 /// <reference types="node" />
-import { type TServerLogger } from "@rustymotors/shared";
-import { ServerLogger } from "@rustymotors/shared";
+import { type TServerLogger } from "../../shared";
+import { ServerLogger } from "../../shared";
 import { Socket } from "node:net";
 import { GameMessage as OldGameMessage } from "../../nps/index.js";
 import type { SocketCallback } from "../../nps/messageProcessors/index.js";

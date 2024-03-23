@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { ServerLogger, SerializedBuffer } from "@rustymotors/shared";
+import { ServerLogger, SerializedBuffer } from "../../shared";
 /**
  * @param {object} args
  * @param {string} args.connectionId

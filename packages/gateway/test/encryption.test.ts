@@ -10,7 +10,7 @@ import {
     addEncryption,
     createInitialState,
     getEncryption,
-} from "@rustymotors/shared";
+} from "../../shared";
 import { randomUUID } from "node:crypto";
 
 let testSave: (state: State) => void;

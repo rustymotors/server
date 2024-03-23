@@ -8,7 +8,7 @@ import {
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { UserInfo } from "../messageStructs/UserInfo.js";
 
-import { getServerLogger } from "@rustymotors/shared";
+import { getServerLogger } from "../../shared";
 
 const log = getServerLogger();
 

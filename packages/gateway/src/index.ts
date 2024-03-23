@@ -23,12 +23,12 @@ import {
     getOnDataHandler,
     removeSocket,
     wrapSocket,
-} from "@rustymotors/shared";
+} from "../../shared";
 
-import { ServerLogger } from "@rustymotors/shared";
+import { ServerLogger } from "../../shared";
 
 import { Socket } from "node:net";
-import { SerializedBuffer } from "@rustymotors/shared";
+import { SerializedBuffer } from "../../shared";
 
 import {
     MessageProcessorError,
@@ -38,8 +38,8 @@ import {
 } from "../../nps/index.js";
 import type { SocketCallback } from "../../nps/messageProcessors/index.js";
 import { getAsHex } from "../../nps/utils/pureGet.js";
-import type { ServiceResponse } from "@rustymotors/shared";
-import { GameMessage } from "@rustymotors/shared-packets";
+import type { ServiceResponse } from "../../shared";
+import { GameMessage } from "../../shared-packets";
 
 /**
  * @typedef {object} OnDataHandlerArgs

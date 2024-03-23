@@ -4,15 +4,14 @@
     "description": "This is a game server, being written from scratch, for a very old and long dead game. The owners of said game have shown no interest in bringing it back, but even so all names of their IP have been avoided to prevent issues.",
     "type": "module",
     "exports": {
-        ".": "./dist/index.js",
-        "./build": "./esbuild.cjs"
+        ".": "./dist/index.js"
     },
     "scripts": {
         "lint": "tsc",
-        "build": "node build.cjs",
-        "start": "node dist/index.js",
+        "build": "node build.mjs",
+        "start": "node --openssl-legacy-provider --env-file=.env dist/server.js",
         "dev:rsc": "tsc --watch --preserveWatchOutput",
-        "dev:node": "node --watch dist/index.js",
+        "dev:node": "node --watch dist/apps/main/server.js",
         "dev:esbuild": "pnpm run build --watch",
         "dev": "run-p dev:*",
         "test": "eslint --fix . && prettier --write . && node --openssl-legacy-provider node_modules/vitest/vitest.mjs run --coverage packages thebeast"
@@ -25,6 +24,8 @@
         "url": "git@github.com:drazisil/mcos.git"
     },
     "devDependencies": {
+        "@sentry/node": "^7.108.0",
+        "@sentry/profiling-node": "^7.108.0",
         "@slonik/migrator": "0.12.0",
         "@types/node": "20.11.30",
         "@vitest/coverage-v8": "1.4.0",
@@ -38,14 +39,18 @@
         "vitest": "1.4.0"
     },
     "dependencies": {
+        "@fastify/sensible": "^5.5.0",
         "@rustymotors/database": "workspace:^",
         "@rustymotors/shared": "workspace:^",
         "@rustymotors/shared-packets": "workspace:^",
         "@sentry/esbuild-plugin": "^2.16.0",
-        "@sentry/node": "^7.102.0",
-        "@sentry/profiling-node": "^7.104.0",
+        "fastify": "^4.25.2",
+        "pino": "^8.18.0",
+        "pino-pretty": "^11.0.0",
+        "short-unique-id": "^5.0.3",
         "slonik": "37",
-        "tsx": "^4.7.1"
+        "tsx": "^4.7.1",
+        "zod": "^3.22.4"
     },
     "packageManager": "pnpm@8.15.5"
 }

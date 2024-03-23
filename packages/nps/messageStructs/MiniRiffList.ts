@@ -2,7 +2,7 @@ import type { ISerializable } from "../types.js";
 import { putLenString } from "../utils/purePut.js";
 import { NPSList } from "./NPSList.js";
 
-import { getServerLogger } from "@rustymotors/shared";
+import { getServerLogger } from "../../shared";
 
 const log = getServerLogger();
 

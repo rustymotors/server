@@ -1,4 +1,4 @@
-import { OldServerMessage } from "@rustymotors/shared";
+import { OldServerMessage } from "../../shared";
 import { trackingPing } from "../src/trackingPing.js";
 import { describe, test, expect } from "vitest";
 import { mockLogger } from "../../../test/factoryMocks.js";

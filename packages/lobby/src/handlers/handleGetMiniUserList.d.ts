@@ -1,4 +1,4 @@
-import { ServerLogger, LegacyMessage } from "@rustymotors/shared";
+import { ServerLogger, LegacyMessage } from "../../shared";
 /**
  * @param {object} args
  * @param {string} args.connectionId

@@ -1,8 +1,4 @@
-import {
-    ServerLogger,
-    LegacyMessage,
-    SerializedBuffer,
-} from "@rustymotors/shared";
+import { ServerLogger, LegacyMessage, SerializedBuffer } from "../../shared";
 /**
  * Array of supported command handlers
  *

@@ -1,6 +1,6 @@
-import { ServerLogger, LegacyMessage } from "@rustymotors/shared";
+import { ServerLogger, LegacyMessage } from "../../../shared";
 import { UserInfo } from "../UserInfoMessage.js";
-import { updateUser } from "@rustymotors/database";
+import { updateUser } from "../../../database";
 
 export async function _setMyUserData({
     connectionId,

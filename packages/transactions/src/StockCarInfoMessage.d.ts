@@ -12,7 +12,7 @@
  * @property {StockCar[]} StockCarList
  */
 /// <reference types="node" />
-import { MessageNode } from "@rustymotors/shared";
+import { MessageNode } from "../../shared";
 type StockCar = import("./StockCar.js").StockCar;
 export declare class StockCarInfoMessage extends MessageNode {
     starterCash: number;

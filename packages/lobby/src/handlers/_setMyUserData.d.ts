@@ -1,4 +1,4 @@
-import { ServerLogger, LegacyMessage } from "@rustymotors/shared";
+import { ServerLogger, LegacyMessage } from "../../shared";
 export declare function _setMyUserData({
     connectionId,
     message,

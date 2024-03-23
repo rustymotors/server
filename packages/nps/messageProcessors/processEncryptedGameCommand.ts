@@ -13,7 +13,7 @@ import {
 } from "../services/session.js";
 import { lobbyCommandMap } from "./lobbyCommands.js";
 
-import { getServerLogger } from "@rustymotors/shared";
+import { getServerLogger } from "../../shared";
 
 const log = getServerLogger();
 

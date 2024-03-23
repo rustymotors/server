@@ -1,4 +1,4 @@
-import { LegacyMessage, SerializedBuffer } from "@rustymotors/shared";
+import { LegacyMessage, SerializedBuffer } from "../../shared";
 /**
  * Handle game logout
  * @param {object} args

@@ -1,4 +1,4 @@
-import { OldServerMessage } from "@rustymotors/shared";
+import { OldServerMessage } from "../../shared";
 import type { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 import { PlayerOptionsMessage } from "./messageStructs/PlayerOptionsMessage.js";
 import { GenericReplyMessage } from "./GenericReplyMessage.js";

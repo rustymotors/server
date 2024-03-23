@@ -1,4 +1,4 @@
-import { getServerLogger } from "@rustymotors/shared";
+import { getServerLogger } from "../../../shared";
 import * as Sentry from "@sentry/node";
 import { setVehiclePartTree } from "../cache.js";
 import { getSlonik } from "../services/database.js";

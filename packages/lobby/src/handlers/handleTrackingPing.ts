@@ -1,4 +1,4 @@
-import { ServerLogger, SerializedBuffer } from "@rustymotors/shared";
+import { ServerLogger, SerializedBuffer } from "../../../shared";
 
 export async function handleTrackingPing({
     connectionId,

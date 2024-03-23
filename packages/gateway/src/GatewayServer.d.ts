@@ -1,7 +1,7 @@
 /// <reference types="node" />
 /// <reference types="node" />
 import { Socket } from "node:net";
-import { Configuration, type TServerLogger } from "@rustymotors/shared";
+import { Configuration, type TServerLogger } from "../../shared";
 import { ConsoleThread } from "../../cli/ConsoleThread.js";
 /**
  * @module gateway

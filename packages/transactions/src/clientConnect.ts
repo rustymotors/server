@@ -8,7 +8,7 @@ import {
     fetchStateFromDatabase,
     getEncryption,
     OldServerMessage,
-} from "@rustymotors/shared";
+} from "../../shared";
 import {
     createCommandEncryptionPair,
     createDataEncryptionPair,

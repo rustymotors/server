@@ -1,8 +1,4 @@
-import type {
-    ServerLogger,
-    ServiceResponse,
-    NPSMessage,
-} from "@rustymotors/shared";
+import type { ServerLogger, ServiceResponse, NPSMessage } from "../../shared";
 /**
  * Please use {@link LoginServer.getInstance()}
  */

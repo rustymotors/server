@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { LegacyMessage } from "@rustymotors/shared";
+import { LegacyMessage } from "../../shared";
 export declare class LoginInfoMessage extends LegacyMessage {
     _userId: number;
     _userName: string;

@@ -5,7 +5,7 @@ import {
     getUserSessionByConnectionId,
     setUserSession,
 } from "../services/session.js";
-import { getServerLogger } from "@rustymotors/shared";
+import { getServerLogger } from "../../shared";
 
 const log = getServerLogger();
 

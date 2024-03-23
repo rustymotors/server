@@ -9,7 +9,7 @@
  * @property {Buffer} data2
  */
 /// <reference types="node" />
-import { SerializedBuffer } from "@rustymotors/shared";
+import { SerializedBuffer } from "../../shared";
 export declare class GenericReply extends SerializedBuffer {
     msgNo: number;
     msgReply: number;

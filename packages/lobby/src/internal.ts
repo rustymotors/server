@@ -21,7 +21,7 @@ import {
     LegacyMessage,
     NPSMessage,
     SerializedBuffer,
-} from "@rustymotors/shared";
+} from "../../shared";
 import { handleTrackingPing } from "./handlers/handleTrackingPing.js";
 
 /**

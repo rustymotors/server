@@ -1,5 +1,5 @@
 import { getPersonasByPersonaId } from "../../../persona/src/getPersonasByPersonaId.js";
-import { fetchSessionKeyByCustomerId } from "@rustymotors/database";
+import { fetchSessionKeyByCustomerId } from "../../../database";
 import { LoginInfoMessage } from "../LoginInfoMessage.js";
 
 import { UserInfoMessage } from "../UserInfoMessage.js";
@@ -13,7 +13,7 @@ import {
     fetchStateFromDatabase,
     getEncryption,
     SerializedBuffer,
-} from "@rustymotors/shared";
+} from "../../../shared";
 
 /**
  * Convert to zero padded hex

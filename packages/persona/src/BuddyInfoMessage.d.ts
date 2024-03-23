@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { NetworkMessage, RawMessage } from "@rustymotors/shared";
+import { NetworkMessage, RawMessage } from "../../shared";
 /**
  * BuddyInfoMessage
  *

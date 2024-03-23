@@ -16,7 +16,7 @@
 
 import { CastanetResponse } from "../../patch/src/PatchServer.js";
 import { generateShardList } from "../../shard/src/ShardServer.js";
-import { getServerConfiguration } from "@rustymotors/shared";
+import { getServerConfiguration } from "../../shared";
 import {
     handleGetCert,
     handleGetKey,

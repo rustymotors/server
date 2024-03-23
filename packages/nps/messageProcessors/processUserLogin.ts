@@ -10,7 +10,7 @@ import { SessionKey } from "../messageStructs/SessionKey.js";
 import { getAsHex, getLenString } from "../utils/pureGet.js";
 import { UserStatus } from "../messageStructs/UserStatus.js";
 import { UserAction } from "../messageStructs/UserAction.js";
-import { getServerConfiguration, getServerLogger } from "@rustymotors/shared";
+import { getServerConfiguration, getServerLogger } from "../../shared";
 
 const log = getServerLogger();
 

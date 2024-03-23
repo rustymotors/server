@@ -8,7 +8,7 @@
  * @property {string} serviceName
  */
 /// <reference types="node" />
-import { MessageNode } from "@rustymotors/shared";
+import { MessageNode } from "../../shared";
 export declare class GenericRequestMessage extends MessageNode {
     data2: Buffer;
     /**

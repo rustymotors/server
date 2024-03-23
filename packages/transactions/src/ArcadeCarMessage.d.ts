@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { SerializedBuffer } from "@rustymotors/shared";
+import { SerializedBuffer } from "../../shared";
 /**
  * A message listing the lobbies
  * This is the body of a MessageNode

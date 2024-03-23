@@ -1,6 +1,6 @@
 /// <reference types="node" />
-import { SerializedBuffer } from "@rustymotors/shared";
-import { Timestamp } from "@rustymotors/shared";
+import { SerializedBuffer } from "../../shared";
+import { Timestamp } from "../../shared";
 /**
  * A message listing the player's owned vehicles
  * This is the body of a MessageNode

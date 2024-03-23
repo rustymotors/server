@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { readFileSync } from "node:fs";
-import { Configuration } from "@rustymotors/shared";
+import { Configuration } from "../../shared";
 
 // This section of the server can not be encrypted. This is an intentional choice for compatibility
 // deepcode ignore HttpToHttps: This is intentional. See above note.

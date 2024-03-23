@@ -1,8 +1,4 @@
-import {
-    getServerLogger,
-    LegacyMessage,
-    SerializedBuffer,
-} from "@rustymotors/shared";
+import { getServerLogger, LegacyMessage, SerializedBuffer } from "../../shared";
 
 const log = getServerLogger();
 

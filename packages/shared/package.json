@@ -4,8 +4,8 @@
     "description": "",
     "exports": {
         ".": {
-            "import": "./index.ts",
-            "require": "./index.ts"
+            "import": "./index.js",
+            "require": "./index.js"
         }
     },
     "type": "module",
