@@ -36,8 +36,8 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3
       slonik:
-        specifier: '37'
-        version: 37.6.0(zod@3.22.4)
+        specifier: '39'
+        version: 39.0.1(zod@3.22.4)
       tsx:
         specifier: ^4.7.1
         version: 4.7.1
@@ -53,7 +53,7 @@ importers:
         version: 7.108.0
       '@slonik/migrator':
         specifier: 0.12.0
-        version: 0.12.0(@types/node@20.11.30)(slonik@37.6.0)
+        version: 0.12.0(@types/node@20.11.30)(slonik@39.0.1)
       '@types/node':
         specifier: 20.11.30
         version: 20.11.30
@@ -103,8 +103,8 @@ importers:
         specifier: ^7.102.0
         version: 7.108.0
       slonik:
-        specifier: ^37.2.0
-        version: 37.6.0(zod@3.22.4)
+        specifier: ^39.0.0
+        version: 39.0.1(zod@3.22.4)
       zod:
         specifier: ^3.22.4
         version: 3.22.4
@@ -1245,13 +1245,13 @@ packages:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
     dev: true
 
-  /@slonik/migrator@0.12.0(@types/node@20.11.30)(slonik@37.6.0):
+  /@slonik/migrator@0.12.0(@types/node@20.11.30)(slonik@39.0.1):
     resolution: {integrity: sha512-2kAXCO/iW9/VOYlfl8Jza4fQpi5Q8+JUyB38YFUxPiWNc+6o41GGND2aIpnyr6EPFNRXdg5x+Fu8+SMyMvMXpQ==}
     peerDependencies:
       slonik: 27 - 29
     dependencies:
       '@rushstack/ts-command-line': 4.19.0(@types/node@20.11.30)
-      slonik: 37.6.0(zod@3.22.4)
+      slonik: 39.0.1(zod@3.22.4)
       umzug: 3.7.0(@types/node@20.11.30)
     transitivePeerDependencies:
       - '@types/node'
@@ -3298,8 +3298,8 @@ packages:
     engines: {node: '>=14'}
     dev: true
 
-  /slonik@37.6.0(zod@3.22.4):
-    resolution: {integrity: sha512-asSs2zdsmWoUWqQgJE0YKD1TJolcG0G1NomAj4kkRZiBMpAuLke6UL5mxvG5aDTX3tEtjasfSdJ4uXxSabFOpg==}
+  /slonik@39.0.1(zod@3.22.4):
+    resolution: {integrity: sha512-36LJnPJ9YL+gKEmwiYUXzGIvNsobkNiDr4VV9/Dx11DuPsKSCaXaoSsd9MX7IYHgDyoj3Fxe8iOURWnFGACETA==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3
@@ -3308,7 +3308,6 @@ packages:
       get-stack-trace: 3.1.1
       iso8601-duration: 1.3.0
       pg: 8.11.3
-      pg-protocol: 1.6.0
       pg-query-stream: 4.5.3(pg@8.11.3)
       pg-types: 4.0.2
       postgres-array: 3.0.2
@@ -3316,6 +3315,7 @@ packages:
       roarr: 7.21.1
       safe-stable-stringify: 2.4.3
       serialize-error: 8.1.0
+      strict-event-emitter-types: 2.0.0
       zod: 3.22.4
     transitivePeerDependencies:
       - pg-native
@@ -3357,6 +3357,9 @@ packages:
   /std-env@3.7.0:
     resolution: {integrity: sha512-JPbdCEQLj1w5GilpiHAx3qJvFndqybBysA3qUOnznweH4QbNYUsW/ea8QzSrnh0vNsezMMw5bcVool8lM0gwzg==}
     dev: true
+
+  /strict-event-emitter-types@2.0.0:
+    resolution: {integrity: sha512-Nk/brWYpD85WlOgzw5h173aci0Teyv8YdIAEtV+N88nDB0dLlazZyJMIsN6eo1/AR61l+p6CJTG1JIyFaoNEEA==}
 
   /string-argv@0.3.2:
     resolution: {integrity: sha512-aqD2Q0144Z+/RqG52NeHEkZauTAUWJO8c6yTftGJKO3Tja5tUgIfmIl6kExvhtxSDP7fXB6DvzkfMpCd/F3G+Q==}

@@ -17,7 +17,7 @@
     "license": "ISC",
     "dependencies": {
         "@sentry/node": "^7.102.0",
-        "slonik": "^37.2.0",
+        "slonik": "^39.0.0",
         "zod": "^3.22.4"
     }
 }
