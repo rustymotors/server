@@ -20,7 +20,7 @@ describe("web", () => {
         vi.mock("fs/promises", async (importOriginal) => {
             return {
                 ...(await importOriginal<typeof import("node:fs/promises")>()),
-                readFile: async (path: string, encoding: string) => {
+                readFile: async () => {
                     return "test";
                 },
             };
