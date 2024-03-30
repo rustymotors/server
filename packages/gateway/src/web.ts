@@ -43,7 +43,7 @@ export async function addWebRoutes(
         });
     });
 
-    webServer.get("/", async (_request, reply) => {
+    webServer.get("/", (_request, reply) => {
         return reply.send("Hello, world!");
     });
 
@@ -136,12 +136,12 @@ export async function addWebRoutes(
         reply.send(keyFile);
     });
 
-    webServer.get("/registry", async (_request, reply) => {
+    webServer.get("/registry", (_request, reply) => {
         const config = getServerConfiguration({});
         if (typeof config.host === "undefined") {
             throw new Error("No host defined in config");
         }
-        const regFile = await handleGetRegistry(config);
+        const regFile = handleGetRegistry(config);
         reply.header("Content-Type", "text/plain");
         reply.header("Content-Disposition", "attachment; filename=client.reg");
         reply.send(regFile);

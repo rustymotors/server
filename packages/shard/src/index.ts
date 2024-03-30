@@ -30,7 +30,7 @@ export async function handleGetCert(config: Configuration): Promise<string> {
         throw new Error("Certificate file not defined");
     }
     try {
-        return readFile(config.certificateFile, "utf8");
+        return await readFile(config.certificateFile, "utf8");
     } catch (err) {
         throw new Error(`Error reading certificate file: ${String(err)}`);
     }
@@ -41,9 +41,7 @@ export async function handleGetCert(config: Configuration): Promise<string> {
  * @param {TConfiguration} config
  * @return {string}
  */
-export async function handleGetRegistry(
-    config: Configuration,
-): Promise<string> {
+export function handleGetRegistry(config: Configuration): string {
     const externalHost = config.host;
     const patchHost = externalHost;
     const authHost = externalHost;
@@ -87,7 +85,7 @@ export async function handleGetKey(config: Configuration): Promise<string> {
         throw new Error("Public key file not defined");
     }
     try {
-        return readFile(config.publicKeyFile, "utf8");
+        return await readFile(config.publicKeyFile, "utf8");
     } catch (err) {
         throw new Error(`Error reading public key file: ${String(err)}`);
     }

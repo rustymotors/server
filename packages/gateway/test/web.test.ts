@@ -20,7 +20,7 @@ describe("web", () => {
         vi.mock("fs/promises", async (importOriginal) => {
             return {
                 ...(await importOriginal<typeof import("node:fs/promises")>()),
-                readFile: async () => {
+                readFile: () => {
                     return "test";
                 },
             };
@@ -30,9 +30,9 @@ describe("web", () => {
         expect(result).toBe("test");
     });
 
-    it("handleGetRegistry", async () => {
+    it("handleGetRegistry", () => {
         const config = mockConfig();
-        const result = await handleGetRegistry(config);
+        const result = handleGetRegistry(config);
         expect(result).toContain(`Windows Registry Editor Version 5.00`);
         expect(result).toContain(`"ShardUrlDev"="http://test/ShardList/"`);
     });
@@ -43,9 +43,9 @@ describe("web", () => {
         expect(result).toBe("test");
     });
 
-    it("generateShardList", async () => {
+    it("generateShardList", () => {
         const config = mockConfig();
-        const result = await generateShardList(config.host);
+        const result = generateShardList(config.host);
         expect(result).toContain("LoginServerIP=test");
     });
 });
