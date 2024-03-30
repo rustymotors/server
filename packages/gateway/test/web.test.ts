@@ -42,4 +42,10 @@ describe("web", () => {
         const result = await handleGetKey(config);
         expect(result).toBe("test");
     });
+
+    it("generateShardList", async () => {
+        const config = mockConfig();
+        const result = await generateShardList(config.host);
+        expect(result).toContain("LoginServerIP=test");
+    });
 });
