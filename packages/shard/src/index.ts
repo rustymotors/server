@@ -41,7 +41,9 @@ export async function handleGetCert(config: Configuration): Promise<string> {
  * @param {TConfiguration} config
  * @return {string}
  */
-export async function handleGetRegistry(config: Configuration): Promise<string> {
+export async function handleGetRegistry(
+    config: Configuration,
+): Promise<string> {
     const externalHost = config.host;
     const patchHost = externalHost;
     const authHost = externalHost;
