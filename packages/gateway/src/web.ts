@@ -30,9 +30,7 @@ import { generateToken } from "../../nps/services/token.js";
  *
  * @param {import("fastify").FastifyInstance} webServer The web server
  */
-export async function addWebRoutes(
-    webServer: import("fastify").FastifyInstance,
-) {
+export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
     webServer.addContentTypeParser("*", function (request, payload, done) {
         let data = "";
         payload.on("data", (chunk) => {
@@ -43,7 +41,7 @@ export async function addWebRoutes(
         });
     });
 
-    webServer.get("/", async (_request, reply) => {
+    webServer.get("/", (_request, reply) => {
         return reply.send("Hello, world!");
     });
 
@@ -114,20 +112,26 @@ export async function addWebRoutes(
         return reply.send(generateShardList(config.host));
     });
 
-    webServer.get("/cert", (_request, reply) => {
+    webServer.get("/cert", async (_request, reply) => {
         const config = getServerConfiguration({});
         if (typeof config.host === "undefined") {
             throw new Error("No host defined in config");
         }
-        return reply.send(handleGetCert(config));
+        const certFile = await handleGetCert(config);
+        reply.header("Content-Type", "text/plain");
+        reply.header("Content-Disposition", "attachment; filename=cert.crt");
+        reply.send(certFile);
     });
 
-    webServer.get("/key", (_request, reply) => {
+    webServer.get("/key", async (_request, reply) => {
         const config = getServerConfiguration({});
         if (typeof config.host === "undefined") {
             throw new Error("No host defined in config");
         }
-        return reply.send(handleGetKey(config));
+        const keyFile = await handleGetKey(config);
+        reply.header("Content-Type", "text/plain");
+        reply.header("Content-Disposition", "attachment; filename=pub.key");
+        reply.send(keyFile);
     });
 
     webServer.get("/registry", (_request, reply) => {
@@ -135,6 +139,9 @@ export async function addWebRoutes(
         if (typeof config.host === "undefined") {
             throw new Error("No host defined in config");
         }
-        return reply.send(handleGetRegistry(config));
+        const regFile = handleGetRegistry(config);
+        reply.header("Content-Type", "text/plain");
+        reply.header("Content-Disposition", "attachment; filename=client.reg");
+        reply.send(regFile);
     });
 }
