@@ -30,9 +30,7 @@ import { generateToken } from "../../nps/services/token.js";
  *
  * @param {import("fastify").FastifyInstance} webServer The web server
  */
-export async function addWebRoutes(
-    webServer: import("fastify").FastifyInstance,
-) {
+export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
     webServer.addContentTypeParser("*", function (request, payload, done) {
         let data = "";
         payload.on("data", (chunk) => {

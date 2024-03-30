@@ -167,7 +167,7 @@ export class Gateway {
         }
 
         // Start the web server
-        await addWebRoutes(this.webServer);
+        addWebRoutes(this.webServer);
 
         this.webServer.listen(
             {

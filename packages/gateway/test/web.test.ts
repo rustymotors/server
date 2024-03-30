@@ -33,8 +33,8 @@ describe("web", () => {
     it("handleGetRegistry", () => {
         const config = mockConfig();
         const result = handleGetRegistry(config);
-        expect(result).toContain(`Windows Registry Editor Version 5.00`);
-        expect(result).toContain(`"ShardUrlDev"="http://test/ShardList/"`);
+        expect(result).toContain('Windows Registry Editor Version 5.00');
+        expect(result).toContain('"ShardUrlDev"="http://test/ShardList/"');
     });
 
     it("handleGetKey", async () => {
