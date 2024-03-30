@@ -114,27 +114,36 @@ export async function addWebRoutes(
         return reply.send(generateShardList(config.host));
     });
 
-    webServer.get("/cert", (_request, reply) => {
+    webServer.get("/cert", async (_request, reply) => {
         const config = getServerConfiguration({});
         if (typeof config.host === "undefined") {
             throw new Error("No host defined in config");
         }
-        return reply.send(handleGetCert(config));
+        const certFile = await handleGetCert(config);
+        reply.header("Content-Type", "text/plain");
+        reply.header("Content-Disposition", "attachment; filename=cert.crt");
+        reply.send(certFile);
     });
 
-    webServer.get("/key", (_request, reply) => {
+    webServer.get("/key", async (_request, reply) => {
         const config = getServerConfiguration({});
         if (typeof config.host === "undefined") {
             throw new Error("No host defined in config");
         }
-        return reply.send(handleGetKey(config));
+        const keyFile = await handleGetKey(config);
+        reply.header("Content-Type", "text/plain");
+        reply.header("Content-Disposition", "attachment; filename=pub.key");
+        reply.send(keyFile);
     });
 
-    webServer.get("/registry", (_request, reply) => {
+    webServer.get("/registry", async (_request, reply) => {
         const config = getServerConfiguration({});
         if (typeof config.host === "undefined") {
             throw new Error("No host defined in config");
         }
-        return reply.send(handleGetRegistry(config));
+        const regFile = await handleGetRegistry(config);
+        reply.header("Content-Type", "text/plain");
+        reply.header("Content-Disposition", "attachment; filename=client.reg");
+        reply.send(regFile);
     });
 }
