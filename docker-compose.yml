@@ -11,7 +11,7 @@ services:
         extra_hosts:
             - "host.docker.internal:host-gateway"
     db:
-        image: postgres:latest
+        image: postgres:16.2
         restart: always
         environment:
             POSTGRES_DB: rm
@@ -25,7 +25,7 @@ services:
             - no-new-privileges:true
 
     adminer:
-        image: adminer
+        image: adminer:4.8.1
         restart: always
         ports:
             - 8080:8080
