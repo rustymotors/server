@@ -11,6 +11,7 @@ export default defineConfig({
                 "bin/**/*.ts",
                 "ecosystem.config.js",
                 "migrate.ts",
+                "packages/**/*.d.ts",
             ],
             reporter: ["lcov", "text", "cobertura"],
         },
