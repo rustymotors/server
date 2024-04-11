@@ -1,0 +1,22 @@
+{
+    "name": "rusty-shared",
+    "version": "1.0.0",
+    "description": "",
+    "exports": {
+        ".": {
+            "import": "./index.js",
+            "require": "./index.js"
+        }
+    },
+    "type": "module",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "pino": "^8.20.0",
+        "pino-pretty": "^11.0.0"
+    }
+}

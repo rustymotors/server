@@ -1,0 +1,24 @@
+{
+    "name": "rusty-packets",
+    "private": true,
+    "version": "1.0.0",
+    "description": "",
+    "type": "module",
+    "exports": {
+        ".": {
+            "import": "./index.js",
+            "require": "./index.js"
+        }
+    },
+    "scripts": {
+        "build": "rm -rf dist && tsc",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "rusty-packets": "workspace:^",
+        "typescript": "5.4.4"
+    }
+}

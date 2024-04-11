@@ -1,0 +1,23 @@
+{
+    "name": "database",
+    "version": "1.0.0",
+    "description": "",
+    "exports": {
+        ".": {
+            "import": "./index.js",
+            "require": "./index.js"
+        }
+    },
+    "type": "module",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@sentry/node": "^7.109.0",
+        "slonik": "^40.2.1",
+        "zod": "^3.22.4"
+    }
+}

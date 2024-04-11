@@ -10,47 +10,47 @@ comment:
 flags:
     database:
         paths:
-            - packages/database/**
+            - libs/database/**
         carryforward: true
     gateway:
         paths:
-            - packages/gateway/**
+            - libs/gateway/**
         carryforward: true
     lobby:
         paths:
-            - packages/lobby/**
+            - libs/lobby/**
         carryforward: true
     login:
         paths:
-            - packages/login/**
+            - libs/login/**
         carryforward: true
     patch:
         paths:
-            - packages/patch/**
+            - libs/patch/**
         carryforward: true
     persona:
         paths:
-            - packages/persona/**
+            - libs/persona/**
         carryforward: true
     shard:
         paths:
-            - packages/shard/**
+            - libs/shard/**
         carryforward: true
     shared:
         paths:
-            - packages/shared/**
+            - libs/shared/**
         carryforward: true
     transactions:
         paths:
-            - packages/transactions/**
+            - libs/transactions/**
         carryforward: true
     interfaces:
         paths:
-            - packages/interfaces/**
+            - libs/interfaces/**
         carryforward: false
     core:
         paths:
-            - packages/core/**
+            - libs/core/**
         carryforward: true
 
 component_management:
@@ -58,6 +58,6 @@ component_management:
         - component_id: components_team1
           name: Team 1
           paths:
-              - packages/core/**
-              - packages/gateway/**
-              - packages/shared/**
+              - libs/core/**
+              - libs/gateway/**
+              - libs/shared/**

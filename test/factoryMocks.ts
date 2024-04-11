@@ -1,6 +1,6 @@
 import { expect, it, vi } from "vitest";
-import type { DatabaseManager } from "../packages/interfaces/index.js";
-import { verifyLegacyCipherSupport } from "../packages/gateway/src/encryption.js";
+import type { DatabaseManager } from "../libs/interfaces/index.js";
+import { verifyLegacyCipherSupport } from "../libs/gateway/src/encryption.js";
 
 export function mockDatabaseManager(): DatabaseManager {
     return {

@@ -49,7 +49,7 @@ esbuild
         sourcemap: "external", // Source map generation must be turned on
         platform: "node",
         outdir: "dist",
-        entryPoints: ["apps/main/server.ts"],
+        entryPoints: ["apps/server/server.ts"],
         format: "esm",
         metafile: true,
         bundle: true,

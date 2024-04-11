@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "target": "ES2022",
+        "verbatimModuleSyntax": true,
+        "resolveJsonModule": true,
+        "moduleDetection": "force",
+        "strict": true,
+        "noUncheckedIndexedAccess": true,
+        "moduleResolution": "Bundler",
+        "module": "ES2022",
+        "lib": ["ES2022"],
+        "declaration": true
+    },
+    "include": ["apps/**/*", "libs/**/*"]
+}

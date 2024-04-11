@@ -10,7 +10,7 @@ node_modules
 dist
 build
 *.tar
-packages/**/*.js
+libs/**/*.js
 package-lock.json
 
 # Sentry Config File
@@ -19,3 +19,6 @@ package-lock.json
 # Sentry Config File
 .env.sentry-build-plugin
 meta.json
+
+
+.nx/cache

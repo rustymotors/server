@@ -1,0 +1,24 @@
+{
+    "name": "gateway",
+    "version": "1.0.0",
+    "description": "",
+    "exports": {
+        ".": {
+            "import": "./index.js",
+            "require": "./index.js"
+        }
+    },
+    "type": "module",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@fastify/sensible": "^5.5.0",
+        "@sentry/node": "^7.109.0",
+        "fastify": "^4.26.2",
+        "rusty-packets": "workspace:^"
+    }
+}

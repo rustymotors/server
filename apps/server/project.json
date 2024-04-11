@@ -1,0 +1,28 @@
+{
+    "name": "rusty-server",
+    "$schema": "../node_modules/nx/schemas/project-schema.json",
+    "projectType": "application",
+    "targets": {
+        "build": {
+            "executor": "@nx/esbuild:esbuild",
+            "outputs": ["{options.outputPath}"],
+            "defaultConfiguration": "production",
+            "options": {
+                "main": "apps/server/server.ts",
+                "outputPath": "dist/apps/server",
+                "outputFileName": "main.js",
+                "assets": [],
+                "platform": "node",
+                "tsConfig": "libs/types/tsconfig.json"
+            },
+            "configurations": {
+                "development": {
+                    "minify": false
+                },
+                "production": {
+                    "minify": true
+                }
+            }
+        }
+    }
+}

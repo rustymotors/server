@@ -1,5 +1,5 @@
 import { SlonikMigrator } from "@slonik/migrator";
-import { getSlonik } from "./packages/database/src/services/database.js";
+import { getSlonik } from "./libs/database/src/services/database.js";
 
 const migrator = new SlonikMigrator({
     migrationsPath: "migrations",
