@@ -7,7 +7,7 @@
         ".": "./dist/index.js"
     },
     "scripts": {
-        "lint": "tsc",
+        "lint": "tsc --noEmit -p tsconfig.base.json",
         "build": "node build.mjs",
         "start": "node --openssl-legacy-provider --env-file=.env dist/server.js",
         "dev:rsc": "tsc --watch --preserveWatchOutput",
@@ -24,6 +24,8 @@
         "url": "git@github.com:drazisil/mcos.git"
     },
     "devDependencies": {
+        "@eslint/eslintrc": "^2.1.1",
+        "@eslint/js": "~8.57.0",
         "@nx/esbuild": "18.2.3",
         "@nx/eslint": "18.2.3",
         "@nx/vite": "18.2.3",
@@ -44,13 +46,14 @@
         "prettier": "3.2.5",
         "rusty-types": "workspace:^",
         "typescript": "5.4.4",
+        "typescript-eslint": "^7.6.0",
         "vite": "~5.0.13",
         "vitest": "1.4.0"
     },
     "dependencies": {
         "@fastify/sensible": "^5.5.0",
-        "database": "workspace:^",
         "@sentry/esbuild-plugin": "^2.16.0",
+        "database": "workspace:^",
         "fastify": "^4.26.2",
         "pino": "^8.19.0",
         "pino-pretty": "^11.0.0",
@@ -63,7 +66,7 @@
     "packageManager": "pnpm@8.15.6",
     "nx": {
         "includedScripts": [
-          "start"
+            "start"
         ]
-      }
+    }
 }

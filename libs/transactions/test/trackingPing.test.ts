@@ -1,14 +1,20 @@
-import { OldServerMessage } from "../../shared";
+import { OldServerMessage, TServerLogger } from "../../shared";
 import { trackingPing } from "../src/trackingPing.js";
-import { describe, test, expect } from "vitest";
-import { mockLogger } from "../../../test/factoryMocks.js";
+import { describe, test, expect, vi } from "vitest";
 
 describe("trackingPing", () => {
     test("does not return a message", async () => {
         // arrange
         const inboundMessage = new OldServerMessage();
 
-        const log = mockLogger();
+        const log: TServerLogger = {
+            info: vi.fn(),
+            error: vi.fn(),
+            debug: vi.fn(),
+            warn: vi.fn(),
+            fatal: vi.fn(),
+            trace: vi.fn(),
+        };
 
         // act
         const { messages } = await trackingPing({

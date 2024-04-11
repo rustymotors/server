@@ -1,18 +1,25 @@
-import { mockLogger } from "../../../test/factoryMocks.js";
 import { describe, it, expect, vi } from "vitest";
 import {
     fetchSessionKeyByCustomerId,
     fetchSessionKeyByConnectionId,
     updateUser,
-} from "../../database";
+} from "database";
+import { TServerLogger } from "rusty-shared";
 
 describe("Database", () => {
     describe("fetchSessionKeyByCustomerId", () => {
         it("throws when session key is not found", async () => {
             // arrange
 
-            const log = mockLogger();
-            const customerId = 1234;
+            const log: TServerLogger = {
+                info: vi.fn(),
+                error: vi.fn(),
+                debug: vi.fn(),
+                warn: vi.fn(),
+                fatal: vi.fn(),
+                trace: vi.fn(),
+            };
+                const customerId = 1234;
             // act
             try {
                 await fetchSessionKeyByCustomerId(customerId);

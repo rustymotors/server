@@ -27,10 +27,14 @@ jobs:
               uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
               with:
                   node-version: ${{ matrix.node-version }}
-            - name: Install and test
+            - name: Install
               run: |
                   corepack enable pnpm
                   pnpm install -r
+            - name: Lint
+                run: |
+                  pnpm lint
+            - name: Build and Test
                   pnpm nx build rusty-server
                   pnpm nx test
               env:
