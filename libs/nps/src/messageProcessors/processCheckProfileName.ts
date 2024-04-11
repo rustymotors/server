@@ -2,7 +2,7 @@ import { GameMessage } from "../messageStructs/GameMessage.js";
 import type { SocketCallback } from "./index.js";
 import { getLenString, getNBytes } from "../utils/pureGet.js";
 
-import { getServerLogger } from "../../shared";
+import { getServerLogger } from "rusty-shared";
 
 const log = getServerLogger();
 

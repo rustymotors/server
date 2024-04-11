@@ -1,4 +1,6 @@
+import type { Cipher, Decipher } from "node:crypto";
 import { serverHeader } from "./messageFactory.js";
+import type { SerializedBuffer } from "./messageFactory.js";
 
 export interface ServerMessageType {
     _header: serverHeader;
@@ -20,3 +22,179 @@ export type TServerLogger = {
     debug: (message: string) => void;
     trace: (message: string) => void;
 };
+
+import type { IncomingMessage, ServerResponse } from "node:http";
+import type { Socket } from "node:net";
+import type { Configuration } from "./Configuration.js";
+
+export interface IGatewayServer {}
+
+export interface SerializedObject {
+    serialize: () => Buffer;
+    serializeSize: () => number;
+}
+
+interface EncryptionSession {
+    connectionId: string;
+    remoteAddress: string;
+    localPort: number;
+    sessionKey: string;
+    sKey: string;
+    gsCipher: Cipher;
+    gsDecipher: Decipher;
+    tsCipher: Cipher;
+    tsDecipher: Decipher;
+}
+
+interface ClientConnection {
+    status: number;
+    appID: number;
+    id: string;
+    socket: Socket;
+    remoteAddress: string;
+    seq: number;
+    personaId: number;
+    lastMessageTimestamp: number;
+    inQueue: boolean;
+    encryptionSession: EncryptionSession;
+    useEncryption: boolean;
+    port: number;
+    ip: string;
+}
+
+interface SocketWithConnectionInfo {
+    connectionId: string;
+    socket: Socket;
+    seq: number;
+    id: string;
+    remoteAddress: string;
+    localPort: number;
+    personaId: number;
+    lastMessageTimestamp: number;
+    inQueue: boolean;
+    encryptionSession: EncryptionSession;
+    useEncryption: boolean;
+}
+
+export interface DatabaseManager {
+    updateSessionKey: (
+        arg0: number,
+        arg1: string,
+        arg2: string,
+        arg3: string,
+    ) => Promise<void>;
+    fetchSessionKeyByCustomerId: (arg0: number) => Promise<SessionKeys>;
+}
+
+/**
+ * @exports
+ */
+export interface ConnectionRecord {
+    customerId: number;
+    connectionId: string;
+    sessionKey: string;
+    sKey: string;
+    contextId: string;
+}
+
+interface SessionKeys {
+    sessionKey: string;
+    sKey: string;
+}
+
+interface TConnection {
+    connectionId: string;
+    localPort: number;
+    remoteAddress: string;
+    socket: Socket;
+    encryptionSession: EncryptionSession;
+    useEncryption: boolean;
+    inQueue: boolean;
+}
+
+interface JSONResponseOfGameMessage {
+    msgNo: number;
+    opCode: number | null;
+    msgLength: number;
+    msgVersion: number;
+    content: string;
+    contextId: string;
+    direction: "sent" | "received";
+    sessionKey: string | null;
+    rawBuffer: string;
+}
+
+interface GameMessage {
+    serialize: () => Buffer;
+    deserialize: (arg0: Buffer) => void;
+    toJSON: () => JSONResponseOfGameMessage;
+    dumpPacket: () => string;
+}
+
+export interface GameMessageOpCode {
+    name: string;
+    value: number;
+    module: "Lobby" | "Login";
+}
+
+interface BuiltinError {
+    code: number;
+    message: string;
+}
+
+export interface PersonaRecord {
+    customerId: number;
+    id: Buffer;
+    maxPersonas: Buffer;
+    name: Buffer;
+    personaCount: Buffer;
+    shardId: Buffer;
+}
+
+export interface UserRecordMini {
+    contextId: string;
+    customerId: number;
+    userId: number;
+}
+
+interface WebJSONResponse {
+    code: number;
+    headers:
+        | import("http").OutgoingHttpHeaders
+        | import("http").OutgoingHttpHeader[]
+        | undefined;
+    body: { connectionId: string; remoteAddress: string; inQueue: boolean }[];
+}
+
+type WebConnectionHandler = (
+    req: IncomingMessage,
+    res: ServerResponse,
+    config: Configuration,
+    log: TServerLogger,
+) => void;
+
+/**
+ * @exports
+ */
+export interface RaceLobbyRecord {
+    lobbyId: number;
+    raceTypeId: number;
+    turfId: number;
+    riffName: string;
+    eTurfName: string;
+}
+
+export interface ServiceArgs {
+    connectionId: string;
+    message: SerializedBuffer;
+    log: TServerLogger;
+}
+
+export interface KeypressEvent {
+    sequence: string;
+    name: string;
+    ctrl: boolean;
+    meta: boolean;
+    shift: boolean;
+}
+

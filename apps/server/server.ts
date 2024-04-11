@@ -17,9 +17,9 @@
 import Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
 import { getServerLogger } from "rusty-shared";
-import { verifyLegacyCipherSupport } from "gateway";
+import { verifyLegacyCipherSupport } from "rusty-shared";
 import { getServerConfiguration } from "rusty-shared";
-import { getGatewayServer } from "gateway";
+import { getGatewayServer } from "rusty-gateway";
 
 const coreLogger = getServerLogger({
     level: "info",

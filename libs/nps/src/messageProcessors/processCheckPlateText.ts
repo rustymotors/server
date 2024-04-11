@@ -5,7 +5,7 @@ import {
     getUserSessionByConnectionId,
     setUserSession,
 } from "../services/session.js";
-import { getServerLogger } from "../../shared";
+import { getServerLogger } from "rusty-shared";
 
 const log = getServerLogger();
 

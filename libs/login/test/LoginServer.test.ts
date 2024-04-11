@@ -1,12 +1,20 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { LoginServer } from "../src/index.js";
-import { mockLogger } from "../../../test/factoryMocks.js";
+import type { TServerLogger } from "rusty-shared";
 
 describe("LoginServer", () => {
     describe("constructor", () => {
         it("should create a new instance", () => {
+            const log: TServerLogger = {
+                info: vi.fn(),
+                error: vi.fn(),
+                debug: vi.fn(),
+                warn: vi.fn(),
+                fatal: vi.fn(),
+                trace: vi.fn(),
+            };
             const loginServer = new LoginServer({
-                log: mockLogger(),
+                log,
             });
             expect(loginServer).toBeDefined();
         });

@@ -5,7 +5,7 @@ import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SessionKey } from "../messageStructs/SessionKey.js";
 import { getLenString } from "../utils/pureGet.js";
 
-import { getServerLogger } from "../../shared";
+import { getServerLogger } from "rusty-shared";
 
 const log = getServerLogger();
 

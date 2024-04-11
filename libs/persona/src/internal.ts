@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { ServerLogger, LegacyMessage, SerializedBuffer } from "../../shared";
+import { LegacyMessage, SerializedBuffer, type TServerLogger } from "rusty-shared";
 
 import {
     PersonaList,
@@ -49,7 +49,7 @@ export const messageHandlers: {
     handler: (args: {
         connectionId: string;
         message: LegacyMessage;
-        log: ServerLogger;
+        log: TServerLogger;
     }) => Promise<{
         connectionId: string;
         messages: SerializedBuffer[];
@@ -167,7 +167,7 @@ async function getPersonaMaps({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log: ServerLogger;
+    log: TServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
@@ -272,7 +272,7 @@ export async function receivePersonaData({
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log: ServerLogger;
+    log: TServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

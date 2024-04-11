@@ -1,5 +1,5 @@
 {
-    "name": "interfaces",
+    "name": "rusty-interfaces",
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "targets": {
         "build": {
@@ -7,7 +7,7 @@
             "outputs": ["{options.outputPath}"],
             "defaultConfiguration": "production",
             "options": {
-                "main": "libs/core/index.ts",
+                "main": "libs/interfaces/index.ts",
                 "outputPath": "dist/libs/interfaces",
                 "outputFileName": "main.js",
                 "assets": [],

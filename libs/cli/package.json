@@ -13,7 +13,6 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "rusty-shared": "workspace:^",
-        "rusty-types": "workspace:^"
+        "rusty-shared": "workspace:^"
     }
 }

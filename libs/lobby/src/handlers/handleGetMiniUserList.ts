@@ -1,5 +1,5 @@
 import {
-    ServerLogger,
+    type TServerLogger,
     GameMessage,
     LegacyMessage,
     serializeString,
@@ -24,7 +24,7 @@ export async function handleGetMiniUserList({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log: ServerLogger;
+    log: TServerLogger;
 }) {
     log.debug("Handling NPS_GET_MINI_USER_LIST");
     log.debug(`Received command: ${message._doSerialize().toString("hex")}`);

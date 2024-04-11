@@ -1,7 +1,7 @@
 import { privateDecrypt } from "node:crypto";
 import { readFileSync } from "node:fs";
 
-import { LegacyMessage, Configuration, ServerLogger } from "../../shared";
+import { LegacyMessage, Configuration, type TServerLogger } from "rusty-shared";
 
 /**
  * @typedef {Configuration} Configuration
@@ -30,7 +30,7 @@ import { LegacyMessage, Configuration, ServerLogger } from "../../shared";
 
 export class NPSUserStatus extends LegacyMessage {
     _config: Configuration;
-    log: ServerLogger;
+    log: TServerLogger;
     sessionKey: string;
     opCode: number;
     contextId: string;
@@ -41,7 +41,7 @@ export class NPSUserStatus extends LegacyMessage {
      * @param {Configuration} config
      * @param {ServerLogger} log
      */
-    constructor(packet: Buffer, config: Configuration, log: ServerLogger) {
+    constructor(packet: Buffer, config: Configuration, log: TServerLogger) {
         super();
         this._config = config;
         this.log = log;

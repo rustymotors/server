@@ -11,7 +11,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "database": "workspace:^",
+        "rusty-database": "workspace:^",
         "rusty-shared": "workspace:^"
     }
 }

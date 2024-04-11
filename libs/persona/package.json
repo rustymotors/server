@@ -1,5 +1,5 @@
 {
-    "name": "persona",
+    "name": "rusty-persona",
     "version": "1.0.0",
     "description": "",
     "exports": {
@@ -14,5 +14,9 @@
     },
     "keywords": [],
     "author": "",
-    "license": "ISC"
+    "license": "ISC",
+    "dependencies": {
+        "rusty-core": "workspace:^",
+        "rusty-shared": "workspace:^"
+    }
 }

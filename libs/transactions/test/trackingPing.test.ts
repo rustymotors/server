@@ -1,4 +1,4 @@
-import { OldServerMessage, TServerLogger } from "../../shared";
+import { OldServerMessage, type TServerLogger } from "rusty-shared";
 import { trackingPing } from "../src/trackingPing.js";
 import { describe, test, expect, vi } from "vitest";
 

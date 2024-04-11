@@ -1,4 +1,4 @@
-import { ServerLogger, LegacyMessage } from "../../../shared";
+import { type TServerLogger, LegacyMessage } from "../../../shared";
 import { UserInfo } from "../UserInfoMessage.js";
 import { updateUser } from "../../../database";
 
@@ -9,7 +9,7 @@ export async function _setMyUserData({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log: ServerLogger;
+    log: TServerLogger;
 }) {
     try {
         log.debug("Handling NPS_SET_MY_USER_DATA");

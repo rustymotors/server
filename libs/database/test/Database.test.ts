@@ -3,8 +3,8 @@ import {
     fetchSessionKeyByCustomerId,
     fetchSessionKeyByConnectionId,
     updateUser,
-} from "database";
-import { TServerLogger } from "rusty-shared";
+} from "rusty-database";
+import { type TServerLogger } from "rusty-shared";
 
 describe("Database", () => {
     describe("fetchSessionKeyByCustomerId", () => {
@@ -38,7 +38,14 @@ describe("Database", () => {
         it("throws when session key is not found", async () => {
             // arrange
 
-            const log = mockLogger();
+            const log: TServerLogger = {
+                info: vi.fn(),
+                error: vi.fn(),
+                debug: vi.fn(),
+                warn: vi.fn(),
+                fatal: vi.fn(),
+                trace: vi.fn(),
+            };
             const connectionId = "1234";
             // act
             try {
@@ -58,7 +65,14 @@ describe("Database", () => {
         it("returns successfully when passed a valid user record", async () => {
             // arrange
 
-            const log = mockLogger();
+            const log: TServerLogger = {
+                info: vi.fn(),
+                error: vi.fn(),
+                debug: vi.fn(),
+                warn: vi.fn(),
+                fatal: vi.fn(),
+                trace: vi.fn(),
+            };
             const userRecord = {
                 contextId: "1234",
                 customerId: 1234,

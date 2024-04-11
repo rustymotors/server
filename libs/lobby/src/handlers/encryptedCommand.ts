@@ -1,5 +1,5 @@
 import {
-    ServerLogger,
+    type TServerLogger,
     fetchStateFromDatabase,
     getEncryption,
     updateEncryption,
@@ -10,7 +10,6 @@ import {
 import { handleSendMiniRiffList } from "./handleSendMiniRiffList.js";
 import { handleGetMiniUserList } from "./handleGetMiniUserList.js";
 import { _setMyUserData } from "./_setMyUserData.js";
-// eslint-disable-next-line no-unused-vars
 
 /**
  * Array of supported command handlers
@@ -33,7 +32,7 @@ export const messageHandlers: {
     handler: (args: {
         connectionId: string;
         message: SerializedBuffer;
-        log: ServerLogger;
+        log: TServerLogger;
     }) => Promise<{
         connectionId: string;
         messages: SerializedBuffer[];
@@ -59,7 +58,7 @@ async function encryptCmd({
 }: {
     connectionId: string;
     message: LegacyMessage | MessageBuffer;
-    log: ServerLogger;
+    log: TServerLogger;
 }): Promise<{
     connectionId: string;
     message: LegacyMessage | MessageBuffer;
@@ -110,7 +109,7 @@ async function decryptCmd({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log: ServerLogger;
+    log: TServerLogger;
 }): Promise<{
     connectionId: string;
     message: LegacyMessage;
@@ -148,7 +147,7 @@ export type NpsCommandHandler = {
     handler: (args: {
         connectionId: string;
         message: LegacyMessage;
-        log: ServerLogger;
+        log: TServerLogger;
     }) => Promise<{
         connectionId: string;
         message: LegacyMessage;
@@ -192,7 +191,7 @@ async function handleCommand({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log: ServerLogger;
+    log: TServerLogger;
 }): Promise<{
     connectionId: string;
     message: MessageBuffer | LegacyMessage;
@@ -242,7 +241,7 @@ export async function handleEncryptedNPSCommand({
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log: ServerLogger;
+    log: TServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

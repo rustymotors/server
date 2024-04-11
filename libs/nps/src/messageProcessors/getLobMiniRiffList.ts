@@ -1,4 +1,4 @@
-import { getServerLogger } from "../../shared";
+import { getServerLogger } from "rusty-shared";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { MiniRiffInfo, MiniRiffList } from "../messageStructs/MiniRiffList.js";
 import { getAsHex } from "../utils/pureGet.js";

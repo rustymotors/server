@@ -1,5 +1,5 @@
 {
-    "name": "nps",
+    "name": "rusty-nps",
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "targets": {
         "build": {

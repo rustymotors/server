@@ -14,7 +14,7 @@ import {
     createDataEncryptionPair,
 } from "../../shared/src/encryption.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
-import { getUserSessionByCustomerId } from "../../nps/services/session.js";
+import { getUserSessionByCustomerId } from "rusty-nps";
 
 /**
  * @param {MessageHandlerArgs} args

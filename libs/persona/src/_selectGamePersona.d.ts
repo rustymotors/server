@@ -1,4 +1,4 @@
-import { ServerLogger } from "../../shared";
+import { TServerLogger } from "rusty-shared";
 import { LegacyMessage, SerializedBuffer } from "../../shared";
 /**
  * Selects a game persona and marks it as in use
@@ -18,7 +18,7 @@ export declare function _selectGamePersona({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log: ServerLogger;
+    log: TServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

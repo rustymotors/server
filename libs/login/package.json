@@ -1,5 +1,5 @@
 {
-    "name": "login",
+    "name": "rusty-login",
     "version": "1.0.0",
     "description": "",
     "exports": {
@@ -14,5 +14,8 @@
     },
     "keywords": [],
     "author": "",
-    "license": "ISC"
+    "license": "ISC",
+    "dependencies": {
+        "rusty-shared": "workspace:^"
+    }
 }

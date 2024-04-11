@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from "node:http";
-import { ServerLogger, getServerLogger } from "../../shared";
+import {  type TServerLogger } from "rusty-shared";
 import { Buffer } from "node:buffer";
 
 const debug_reseponse = Buffer.from([
@@ -39,7 +39,7 @@ export class PatchServer {
      * @private
      * @type {ServerLogger}
      */
-    _log: ServerLogger;
+    _log: TServerLogger;
 
     /**
      * Creates an instance of PatchServer.
@@ -47,7 +47,7 @@ export class PatchServer {
      * @param {ServerLogger} log
      * @memberof PatchServer
      */
-    constructor(log: ServerLogger) {
+    constructor(log: TServerLogger) {
         this._log = log;
     }
 
@@ -59,7 +59,7 @@ export class PatchServer {
      * @return {PatchServer}
      * @memberof PatchServer
      */
-    static getInstance(log: ServerLogger): PatchServer {
+    static getInstance(log: TServerLogger): PatchServer {
         if (!PatchServer._instance) {
             PatchServer._instance = new PatchServer(log);
         }
@@ -113,6 +113,6 @@ export class PatchServer {
  * @returns {PatchServer}
  */
 
-export function getPatchServer(log: ServerLogger): PatchServer {
+export function getPatchServer(log: TServerLogger): PatchServer {
     return PatchServer.getInstance(log);
 }

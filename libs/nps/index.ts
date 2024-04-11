@@ -7,14 +7,16 @@ export {
     portToMessageTypes,
     populatePortToMessageTypes,
     getPortMessageType,
-} from "./messageProcessors/index.js";
-export { GameMessage } from "./messageStructs/GameMessage.js";
-export { getWord } from "./utils/pureGet.js";
-export { processUserLogin } from "./messageProcessors/processUserLogin.js";
+    type SocketCallback
+} from "./src/messageProcessors/index.js";
+export { GameMessage } from "./src/messageStructs/GameMessage.js";
+export { getWord, getAsHex } from "./src/utils/pureGet.js";
+export { processUserLogin } from "./src/processUserLogin.js";
 export {
     populateGameUsers,
     getUser,
     checkPassword,
-} from "./services/account.js";
-export { generateToken } from "./services/token.js";
-export { createNewUserSession, setUserSession } from "./services/session.js";
+} from "./src/services/account.js";
+export { generateToken } from "./src/services/token.js";
+export { createNewUserSession, setUserSession, getUserSessionByCustomerId } from "./src/services/session.js";
+export { gameProfiles, getGameProfilesForCustomerId, populateGameProfiles } from "./src/services/profile.js";

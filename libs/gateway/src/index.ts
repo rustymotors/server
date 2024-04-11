@@ -23,23 +23,22 @@ import {
     getOnDataHandler,
     removeSocket,
     wrapSocket,
-} from "../../shared";
+} from "rusty-shared";
 
-import { ServerLogger } from "../../shared";
 
 import { Socket } from "node:net";
-import { SerializedBuffer } from "../../shared";
+import { SerializedBuffer } from "rusty-shared";
 
 import {
     MessageProcessorError,
     getGameMessageProcessor,
     getPortMessageType,
     GameMessage as OldGameMessage,
-} from "../../nps/index.js";
-import type { SocketCallback } from "../../nps/messageProcessors/index.js";
-import { getAsHex } from "../../nps/utils/pureGet.js";
-import type { ServiceResponse } from "../../shared";
-import { GameMessage } from "../../packets/index.js";
+} from "rusty-nps";
+import type { SocketCallback } from "rusty-nps";
+import { getAsHex } from "rusty-nps";
+import type { ServiceResponse } from "rusty-shared";
+import { GameMessage } from "rusty-packets";
 
 /**
  * @typedef {object} OnDataHandlerArgs
@@ -97,7 +96,7 @@ export function socketEndHandler({
     log,
 }: {
     connectionId: string;
-    log: ServerLogger;
+    log: TServerLogger;
 }) {
     log.debug(`Connection ${connectionId} ended`);
 
@@ -313,7 +312,7 @@ export function handleGameMessage(
 export function handleServerMessage(
     connectionId: string,
     bytes: Buffer,
-    log: ServerLogger,
+    log: TServerLogger,
     socketCallback: SocketCallback,
 ) {
     log.debug(`Handling server message...`);

@@ -7,7 +7,7 @@
  * This class abstracts database methods
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
-import type { ConnectionRecord } from "../../interfaces/index.js";
+import type { ConnectionRecord } from "rusty-shared";
 
 // This is a fake database table that holds sessions of currently logged in users
 const _sessions: ConnectionRecord[] = [];
@@ -91,7 +91,7 @@ export async function updateSessionKey(
  */
 export async function fetchSessionKeyByConnectionId(
     connectionId: string,
-): Promise<interfaces.ConnectionRecord> {
+): Promise<ConnectionRecord> {
     const record = _sessions.find((session) => {
         return session.connectionId === connectionId;
     });

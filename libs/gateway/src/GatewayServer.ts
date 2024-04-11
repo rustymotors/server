@@ -8,14 +8,14 @@ import {
     createInitialState,
     fetchStateFromDatabase,
     type TServerLogger,
-} from "../../shared";
-import { ConsoleThread } from "../../cli/src/ConsoleThread.js";
+} from "rusty-shared";
+import { ConsoleThread } from "rusty-cli";
 import { addWebRoutes } from "./web.js";
 
-import { receiveLoginData } from "../../login/src/index.js";
-import { receivePersonaData } from "../../persona/src/internal.js";
-import { receiveLobbyData } from "../../lobby/src/internal.js";
-import { receiveTransactionsData } from "../../transactions/src/internal.js";
+import { receiveLoginData } from "rusty-login";
+import { receivePersonaData } from "rusty-persona";
+import { receiveLobbyData } from "rusty-lobby";
+import { receiveTransactionsData } from "rusty-transactions";
 import FastifySensible from "@fastify/sensible";
 
 import {
@@ -23,12 +23,12 @@ import {
     populateGameMessageProcessors,
     portToMessageTypes,
     gameMessageProcessors,
-} from "../../nps/messageProcessors/index.js";
-import { populateGameUsers } from "../../nps/services/account.js";
+} from "rusty-nps";
+import { populateGameUsers } from "rusty-nps";
 import {
     gameProfiles,
     populateGameProfiles,
-} from "../../nps/services/profile.js";
+} from "rusty-nps";
 
 /**
  * @module gateway

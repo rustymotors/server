@@ -17,7 +17,7 @@
 import { _npsRequestGameConnectServer } from "./handlers/requestConnectGameServer.js";
 import { handleEncryptedNPSCommand } from "./handlers/encryptedCommand.js";
 import {
-    ServerLogger,
+    type TServerLogger,
     LegacyMessage,
     NPSMessage,
     SerializedBuffer,
@@ -45,7 +45,7 @@ export const messageHandlers: {
     handler: (args: {
         connectionId: string;
         message: SerializedBuffer;
-        log: ServerLogger;
+        log: TServerLogger;
     }) => Promise<{
         connectionId: string;
         messages: SerializedBuffer[];
@@ -86,7 +86,7 @@ export async function receiveLobbyData({
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log: ServerLogger;
+    log: TServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

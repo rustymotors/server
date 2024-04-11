@@ -1,5 +1,5 @@
 import {
-    ServerLogger,
+    type TServerLogger,
     GameMessage,
     LegacyMessage,
     serializeString,
@@ -20,7 +20,7 @@ export async function handleSendMiniRiffList({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log: ServerLogger;
+    log: TServerLogger;
 }) {
     log.debug("Handling NPS_SEND_MINI_RIFF_LIST");
     log.debug(`Received command: ${message._doSerialize().toString("hex")}`);

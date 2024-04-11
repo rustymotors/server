@@ -29,7 +29,7 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import type { ServerLogger, ServiceResponse, NPSMessage } from "../../shared";
+import type { ServiceResponse, NPSMessage, TServerLogger } from "rusty-shared";
 import { handleLoginData } from "./internal.js";
 
 /**
@@ -41,10 +41,10 @@ export class LoginServer {
     /**
      * Please use {@see LoginServer.getInstance} instead
      * @param {object} options
-     * @param {ServerLogger} options.log
+     * @param {TServerLogger} options.log
      * @memberof LoginServer
      */
-    constructor({ log }: { log: ServerLogger }) {
+    constructor({ log }: { log: TServerLogger }) {
         this._log = log;
         LoginServer._instance = this;
     }
@@ -56,7 +56,7 @@ export class LoginServer {
      * @param {ServerLogger} log
      * @return {LoginServer}
      */
-    static getInstance(log: ServerLogger): LoginServer {
+    static getInstance(log: TServerLogger): LoginServer {
         if (typeof LoginServer._instance === "undefined") {
             LoginServer._instance = new LoginServer({
                 log,
@@ -138,7 +138,7 @@ export async function receiveLoginData({
 }: {
     connectionId: string;
     message: NPSMessage;
-    log: ServerLogger;
+    log: TServerLogger;
 }): Promise<ServiceResponse> {
     try {
         log.debug("Entering login module");

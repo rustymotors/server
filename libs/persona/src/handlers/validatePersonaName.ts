@@ -1,8 +1,9 @@
 import {
-    ServerLogger,
+    
     LegacyMessage,
     SerializedBuffer,
     RawMessage,
+    type TServerLogger,
 } from "../../../shared";
 
 /**
@@ -16,7 +17,7 @@ export async function validatePersonaName({
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log: ServerLogger;
+    log: TServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

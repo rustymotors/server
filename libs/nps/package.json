@@ -1,5 +1,5 @@
 {
-    "name": "nps",
+    "name": "rusty-nps",
     "version": "1.0.0",
     "description": "",
     "exports": "./index.js",
@@ -12,6 +12,7 @@
     "license": "ISC",
     "dependencies": {
         "@sentry/node": "^7.109.0",
+        "rusty-shared": "workspace:^",
         "short-unique-id": "^5.0.3"
     }
 }

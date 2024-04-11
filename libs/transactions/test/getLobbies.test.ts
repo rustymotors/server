@@ -1,15 +1,21 @@
-import { OldServerMessage } from "../../shared";
+import { vi } from "vitest";
+import { OldServerMessage, type TServerLogger } from "rusty-shared";
 import { getLobbies } from "../src/getLobbies.js";
 import { describe, expect, it } from "vitest";
-import { mockLogger } from "../../../test/factoryMocks.js";
-import { assert } from "console";
 
 describe("getLobbies", () => {
     it("should return a promise", async () => {
         // arrange
         const connectionId = "1";
         const packet = new OldServerMessage();
-        const log = mockLogger();
+        const log: TServerLogger = {
+            info: vi.fn(),
+            error: vi.fn(),
+            debug: vi.fn(),
+            warn: vi.fn(),
+            fatal: vi.fn(),
+            trace: vi.fn(),
+        };
 
         // act
         const result = await getLobbies({

@@ -1,9 +1,10 @@
 import { clientConnect } from "../src/clientConnect.js";
 import { describe, it, expect } from "vitest";
 
-import { updateSessionKey } from "../../database";
+import { updateSessionKey } from "rusty-database";
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
-import { mockLogger } from "../../../test/factoryMocks.js";
+import { vi } from "vitest";
+import type { TServerLogger } from "rusty-shared";
 
 describe("clientConnect", () => {
     it("throws when connection is not found", async () => {
@@ -16,7 +17,14 @@ describe("clientConnect", () => {
         const incomingMessage = new TClientConnectMessage();
         incomingMessage._customerId = customerId;
 
-        const log = mockLogger();
+        const log: TServerLogger = {
+            info: vi.fn(),
+            error: vi.fn(),
+            debug: vi.fn(),
+            warn: vi.fn(),
+            fatal: vi.fn(),
+            trace: vi.fn(),
+        };
         await updateSessionKey(customerId, sessionKey, contextId, connectionId);
 
         // act

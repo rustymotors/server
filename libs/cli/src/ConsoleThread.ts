@@ -1,6 +1,5 @@
 import { emitKeypressEvents } from "node:readline";
-import { SubThread, type TServerLogger } from "rusty-shared";
-import type { IGatewayServer } from "rusty-types";
+import { SubThread, type IGatewayServer, type KeypressEvent, type TServerLogger } from "rusty-shared";
 
 /**
  * @module ConsoleThread
@@ -32,8 +31,8 @@ export class ConsoleThread extends SubThread {
         this.parentThread = parentThread;
     }
 
-    /** @param {import("../interfaces/index.js").KeypressEvent} key */
-    handleKeypressEvent(key: import("../../interfaces/index.js").KeypressEvent) {
+    /** @param {KeypressEvent} key */
+    handleKeypressEvent(key: KeypressEvent) {
         const keyString = key.sequence;
 
         if (keyString === "x") {

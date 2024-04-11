@@ -1,5 +1,5 @@
-import { serializeString } from "../../core/src/serializationHelpers.js";
-import { NPSHeader, NPSMessage } from "../../shared";
+import { serializeString } from "rusty-core";
+import { NPSHeader, NPSMessage } from "rusty-shared";
 
 /**
  *

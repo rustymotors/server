@@ -7,7 +7,7 @@ import type { SocketCallback } from "./index.js";
 import { getGameProfilesForCustomerId } from "../services/profile.js";
 import { ProfileList } from "../messageStructs/ProfileList.js";
 
-import { getServerLogger } from "../../shared";
+import { getServerLogger } from "rusty-shared";
 
 const log = getServerLogger();
 

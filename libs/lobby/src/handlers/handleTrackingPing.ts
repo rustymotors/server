@@ -1,4 +1,4 @@
-import { ServerLogger, SerializedBuffer } from "../../../shared";
+import { type TServerLogger, SerializedBuffer } from "../../../shared";
 
 export async function handleTrackingPing({
     connectionId,
@@ -7,7 +7,7 @@ export async function handleTrackingPing({
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log: ServerLogger;
+    log: TServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

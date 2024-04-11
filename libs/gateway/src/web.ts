@@ -14,16 +14,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { CastanetResponse } from "../../patch/src/PatchServer.js";
-import { generateShardList } from "../../shard/src/ShardServer.js";
-import { getServerConfiguration } from "../../shared";
+import { CastanetResponse } from "rusty-patch";
+import { getServerConfiguration } from "rusty-shared";
 import {
     handleGetCert,
     handleGetKey,
     handleGetRegistry,
-} from "../../shard/src/index.js";
-import { checkPassword, getUser } from "../../nps/services/account.js";
-import { generateToken } from "../../nps/services/token.js";
+    generateShardList,
+} from "rusty-shard";
+import { generateToken, checkPassword, getUser } from "rusty-nps";
 
 /**
  * Add web routes to the web server

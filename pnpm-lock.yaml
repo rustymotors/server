@@ -14,9 +14,6 @@ importers:
       '@sentry/esbuild-plugin':
         specifier: ^2.16.0
         version: 2.16.1
-      database:
-        specifier: workspace:^
-        version: link:libs/database
       fastify:
         specifier: ^4.26.2
         version: 4.26.2
@@ -26,6 +23,12 @@ importers:
       pino-pretty:
         specifier: ^11.0.0
         version: 11.0.0
+      rusty-database:
+        specifier: workspace:^
+        version: link:libs/database
+      rusty-gateway:
+        specifier: workspace:^
+        version: link:libs/gateway
       rusty-packets:
         specifier: workspace:^
         version: link:libs/packets
@@ -90,9 +93,6 @@ importers:
       eslint-plugin-prettier:
         specifier: 5.1.3
         version: 5.1.3(eslint-config-prettier@9.1.0)(eslint@8.57.0)(prettier@3.2.5)
-      gateway:
-        specifier: workspace:^
-        version: link:libs/gateway
       npm-run-all2:
         specifier: 6.1.2
         version: 6.1.2
@@ -102,9 +102,6 @@ importers:
       prettier:
         specifier: 3.2.5
         version: 3.2.5
-      rusty-types:
-        specifier: workspace:^
-        version: link:libs/types
       typescript:
         specifier: 5.4.4
         version: 5.4.4
@@ -120,7 +117,7 @@ importers:
 
   apps/server:
     dependencies:
-      gateway:
+      rusty-gateway:
         specifier: workspace:^
         version: link:../../libs/gateway
       rusty-shared:
@@ -132,9 +129,6 @@ importers:
       rusty-shared:
         specifier: workspace:^
         version: link:../shared
-      rusty-types:
-        specifier: workspace:^
-        version: link:../types
 
   libs/core: {}
 
@@ -164,28 +158,62 @@ importers:
       fastify:
         specifier: ^4.26.2
         version: 4.26.2
+      rusty-cli:
+        specifier: workspace:^
+        version: link:../cli
+      rusty-lobby:
+        specifier: workspace:^
+        version: link:../lobby
+      rusty-login:
+        specifier: workspace:^
+        version: link:../login
+      rusty-nps:
+        specifier: workspace:^
+        version: link:../nps
       rusty-packets:
         specifier: workspace:^
         version: link:../packets
+      rusty-patch:
+        specifier: workspace:^
+        version: link:../patch
+      rusty-persona:
+        specifier: workspace:^
+        version: link:../persona
+      rusty-shard:
+        specifier: workspace:^
+        version: link:../shard
+      rusty-shared:
+        specifier: workspace:^
+        version: link:../shared
+      rusty-transactions:
+        specifier: workspace:^
+        version: link:../transactions
 
   libs/interfaces: {}
 
   libs/lobby:
     dependencies:
-      database:
+      rusty-database:
         specifier: workspace:^
         version: link:../database
       rusty-shared:
         specifier: workspace:^
         version: link:../shared
 
-  libs/login: {}
+  libs/login:
+    dependencies:
+      rusty-shared:
+        specifier: workspace:^
+        version: link:../shared
 
   libs/nps:
     dependencies:
       '@sentry/node':
         specifier: ^7.109.0
         version: 7.109.0
+      rusty-shared:
+        specifier: workspace:^
+        version: link:../shared
       short-unique-id:
         specifier: ^5.0.3
         version: 5.0.3
@@ -196,9 +224,20 @@ importers:
         specifier: 5.4.4
         version: 5.4.4
 
-  libs/patch: {}
+  libs/patch:
+    dependencies:
+      rusty-shared:
+        specifier: workspace:^
+        version: link:../shared
 
-  libs/persona: {}
+  libs/persona:
+    dependencies:
+      rusty-core:
+        specifier: workspace:^
+        version: link:../core
+      rusty-shared:
+        specifier: workspace:^
+        version: link:../shared
 
   libs/shard: {}
 
@@ -211,13 +250,17 @@ importers:
         specifier: ^11.0.0
         version: 11.0.0
 
-  libs/transactions: {}
-
-  libs/types:
-    devDependencies:
-      nx:
-        specifier: 18.2.3
-        version: 18.2.3
+  libs/transactions:
+    dependencies:
+      rusty-database:
+        specifier: workspace:^
+        version: link:../database
+      rusty-nps:
+        specifier: workspace:^
+        version: link:../nps
+      rusty-shared:
+        specifier: workspace:^
+        version: link:../shared
 
 packages:
 
