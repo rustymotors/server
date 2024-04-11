@@ -180,9 +180,6 @@ importers:
 
   libs/packets:
     dependencies:
-      rusty-packets:
-        specifier: workspace:^
-        version: 'link:'
       typescript:
         specifier: 5.4.4
         version: 5.4.4

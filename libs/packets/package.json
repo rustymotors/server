@@ -18,7 +18,6 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "rusty-packets": "workspace:^",
         "typescript": "5.4.4"
     }
 }

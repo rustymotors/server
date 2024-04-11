@@ -48,11 +48,8 @@
         "vitest": "1.4.0"
     },
     "dependencies": {
-        "@fastify/sensible": "^5.5.1",
+        "@fastify/sensible": "^5.5.0",
         "database": "workspace:^",
-        "@rustymotors/database": "workspace:^",
-        "@rustymotors/shared": "workspace:^",
-        "@rustymotors/shared-packets": "workspace:^",
         "@sentry/esbuild-plugin": "^2.16.0",
         "fastify": "^4.26.2",
         "pino": "^8.19.0",
