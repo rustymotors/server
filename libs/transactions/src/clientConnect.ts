@@ -8,11 +8,11 @@ import {
     fetchStateFromDatabase,
     getEncryption,
     OldServerMessage,
-} from "../../shared";
+} from "rusty-shared";
 import {
     createCommandEncryptionPair,
     createDataEncryptionPair,
-} from "../../shared/src/encryption.js";
+} from "rusty-shared";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 import { getUserSessionByCustomerId } from "rusty-nps";
 

@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import type { MessageHandlerArgs, MessageHandlerResult } from "../../types.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "rusty-types.js";
 export declare class VehicleStruct {
     VehicleID: number;
     SkinID: number;

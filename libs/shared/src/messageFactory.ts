@@ -437,7 +437,7 @@ export class LegacyMessage extends SerializableMixin(AbstractSerializable) {
     override _doSerialize() {
         const buffer = Buffer.alloc(this._header.length);
         this._header._doSerialize().copy(buffer);
-        super.data.copy(buffer, this._header._size);
+        this.data.copy(buffer, this._header._size);
         return buffer;
     }
 
@@ -449,21 +449,21 @@ export class LegacyMessage extends SerializableMixin(AbstractSerializable) {
      * @param {Buffer} buffer
      */
     override setBuffer(buffer: Buffer) {
-        super.setBuffer(buffer);
+        this.setBuffer(buffer);
         this._header.length = buffer.length + 4;
     }
 
     asJSON() {
         return {
             header: this._header,
-            data: super.data.toString("hex"),
+            data: this.data.toString("hex"),
         };
     }
 
     override toString() {
         return `LegacyMessage: ${JSON.stringify({
             header: this._header.toString(),
-            data: super.data.toString("hex"),
+            data: this.data.toString("hex"),
         })}`;
     }
 }
@@ -898,7 +898,8 @@ export class OldServerMessage
      * @param {Buffer} buffer
      */
     override setBuffer(buffer: Buffer) {
-        super.setBuffer(buffer);
+        this.internalBuffer = Buffer.alloc(buffer.length);
+        this.internalBuffer = buffer;
         this._header.length = buffer.length + this._header._size - 2;
     }
 

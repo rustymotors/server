@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { SerializedBuffer, OldServerMessage } from "../../shared";
+import { SerializedBuffer, OldServerMessage } from "rusty-shared";
 export declare class ListEntry extends SerializedBuffer {
     constructor();
 }

@@ -23,7 +23,7 @@ import {
     OldServerMessage,
     ServerMessage,
     type TServerLogger,
-} from "../../shared";
+} from "rusty-shared";
 
 /**
  *

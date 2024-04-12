@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { SerializedBuffer } from "../../shared";
+import { SerializedBuffer } from "rusty-shared";
 export declare class PlayerPhysicalMessage extends SerializedBuffer {
     _msgNo: number;
     _playerId: number;

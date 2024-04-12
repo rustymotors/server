@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { SerializedBuffer, serializeStringRaw } from "../../shared";
-import { Timestamp } from "../../shared";
+import { SerializedBuffer, serializeStringRaw } from "rusty-shared";
+import { Timestamp } from "rusty-shared";
 
 /**
  * A message listing the player's owned vehicles

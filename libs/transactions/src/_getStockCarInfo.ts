@@ -1,7 +1,7 @@
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
 import { StockCarInfoMessage } from "./StockCarInfoMessage.js";
 import { StockCar } from "./StockCar.js";
-import { OldServerMessage } from "../../shared";
+import { OldServerMessage } from "rusty-shared";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 
 /**

@@ -42,6 +42,8 @@ export type {
     ConnectionRecord,
     KeypressEvent,
     IGatewayServer,
+    TPersonaRecord,
+    ServiceArgs
 } from "./src/types.js";
 export { Timestamp } from "./src/Timestamp.js";
 export {

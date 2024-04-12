@@ -9,7 +9,7 @@
  * @property {Buffer} data2
  */
 /// <reference types="node" />
-import { SerializedBuffer } from "../../shared";
+import { SerializedBuffer } from "rusty-shared";
 export declare class GenericReply extends SerializedBuffer {
     msgNo: number;
     msgReply: number;

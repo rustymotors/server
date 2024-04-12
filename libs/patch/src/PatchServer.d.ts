@@ -1,7 +1,7 @@
 /// <reference types="node" />
 /// <reference types="node" />
 import { IncomingMessage, ServerResponse } from "node:http";
-import { ServerLogger } from "../../shared";
+import { ServerLogger } from "rusty-shared";
 import { Buffer } from "node:buffer";
 export declare const CastanetResponse: {
     body: Buffer;

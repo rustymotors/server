@@ -13,7 +13,7 @@
                 "outputFileName": "main.js",
                 "assets": [],
                 "platform": "node",
-                "tsConfig": "libs/types/tsconfig.json"
+                "tsConfig": "apps/server/tsconfig.json"
             },
             "configurations": {
                 "development": {

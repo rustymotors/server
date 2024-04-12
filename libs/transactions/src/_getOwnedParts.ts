@@ -1,10 +1,10 @@
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
-import { OldServerMessage } from "../../shared";
+import { OldServerMessage } from "rusty-shared";
 import { PartsAssemblyMessage } from "./PartsAssemblyMessage.js";
 import {
     fetchStateFromDatabase,
     findSessionByConnectionId,
-} from "../../shared";
+} from "rusty-shared";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 
 export async function _getOwnedParts({

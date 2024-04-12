@@ -1,4 +1,4 @@
-import type { TServerLogger } from "../../shared";
+import type { TServerLogger } from "rusty-shared";
 import { Gateway, getGatewayServer } from "../src/GatewayServer.js";
 import type { TGatewayOptions } from "../src/GatewayServer.js";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";

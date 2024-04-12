@@ -1,4 +1,4 @@
-import { SerializedBuffer } from "../../shared";
+import { SerializedBuffer } from "rusty-shared";
 import type { RacingHistoryRecord } from "./_getPlayerRaceHistory";
 
 export class PlayerRacingHistoryMessage extends SerializedBuffer {

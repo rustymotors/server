@@ -18,7 +18,7 @@
                     }
                 ],
                 "platform": "node",
-                "tsConfig": "libs/types/tsconfig.json"
+                "tsConfig": "libs/shard/tsconfig.json"
             },
             "configurations": {
                 "development": {

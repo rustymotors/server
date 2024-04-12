@@ -1,4 +1,4 @@
-import { Configuration } from "../../shared";
+import { Configuration } from "rusty-shared";
 /**
  * Read the TLS certificate file
  * @param {TConfiguration} config

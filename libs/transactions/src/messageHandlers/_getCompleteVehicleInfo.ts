@@ -1,13 +1,13 @@
 import { GenericRequestMessage } from "../GenericRequestMessage.js";
 
-import { OldServerMessage, getServerLogger } from "../../../shared";
+import { OldServerMessage, getServerLogger } from "rusty-shared";
 import type { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 import { CarInfoMessage } from "../messageStructs/CarInfoMessage.js";
 import {
     getVehiclePartTree,
     type TPart,
     buildVehiclePartTreeFromDB,
-} from "../../../database";
+} from "rusty-database";
 
 const log = getServerLogger();
 

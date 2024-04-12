@@ -161,12 +161,6 @@ importers:
       rusty-cli:
         specifier: workspace:^
         version: link:../cli
-      rusty-lobby:
-        specifier: workspace:^
-        version: link:../lobby
-      rusty-login:
-        specifier: workspace:^
-        version: link:../login
       rusty-nps:
         specifier: workspace:^
         version: link:../nps
@@ -176,9 +170,6 @@ importers:
       rusty-patch:
         specifier: workspace:^
         version: link:../patch
-      rusty-persona:
-        specifier: workspace:^
-        version: link:../persona
       rusty-shard:
         specifier: workspace:^
         version: link:../shard
@@ -188,23 +179,6 @@ importers:
       rusty-transactions:
         specifier: workspace:^
         version: link:../transactions
-
-  libs/interfaces: {}
-
-  libs/lobby:
-    dependencies:
-      rusty-database:
-        specifier: workspace:^
-        version: link:../database
-      rusty-shared:
-        specifier: workspace:^
-        version: link:../shared
-
-  libs/login:
-    dependencies:
-      rusty-shared:
-        specifier: workspace:^
-        version: link:../shared
 
   libs/nps:
     dependencies:
@@ -230,16 +204,11 @@ importers:
         specifier: workspace:^
         version: link:../shared
 
-  libs/persona:
+  libs/shard:
     dependencies:
-      rusty-core:
-        specifier: workspace:^
-        version: link:../core
       rusty-shared:
         specifier: workspace:^
         version: link:../shared
-
-  libs/shard: {}
 
   libs/shared:
     dependencies:

@@ -1,4 +1,4 @@
-import type { MessageHandlerArgs, MessageHandlerResult } from "../../types.js";
+import type { MessageHandlerArgs, MessageHandlerResult } from "rusty-types.js";
 /**
  * @param {MessageHandlerArgs} args
  * @return {Promise<MessageHandlerResult>}

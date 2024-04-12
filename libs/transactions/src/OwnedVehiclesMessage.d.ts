@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { SerializedBuffer } from "../../shared";
+import { SerializedBuffer } from "rusty-shared";
 /**
  * A message listing the player's owned vehicles
  * This is the body of a MessageNode

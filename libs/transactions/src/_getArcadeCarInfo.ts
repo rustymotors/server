@@ -1,5 +1,5 @@
 import { GenericRequestMessage } from "./GenericRequestMessage.js";
-import { OldServerMessage } from "../../shared";
+import { OldServerMessage } from "rusty-shared";
 import { ArcadeCarInfo, ArcadeCarMessage } from "./ArcadeCarMessage.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "./types.js";
 

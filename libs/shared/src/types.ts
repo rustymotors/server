@@ -23,57 +23,11 @@ export type TServerLogger = {
     trace: (message: string) => void;
 };
 
-import type { IncomingMessage, ServerResponse } from "node:http";
-import type { Socket } from "node:net";
-import type { Configuration } from "./Configuration.js";
-
 export interface IGatewayServer {}
 
 export interface SerializedObject {
     serialize: () => Buffer;
     serializeSize: () => number;
-}
-
-interface EncryptionSession {
-    connectionId: string;
-    remoteAddress: string;
-    localPort: number;
-    sessionKey: string;
-    sKey: string;
-    gsCipher: Cipher;
-    gsDecipher: Decipher;
-    tsCipher: Cipher;
-    tsDecipher: Decipher;
-}
-
-interface ClientConnection {
-    status: number;
-    appID: number;
-    id: string;
-    socket: Socket;
-    remoteAddress: string;
-    seq: number;
-    personaId: number;
-    lastMessageTimestamp: number;
-    inQueue: boolean;
-    encryptionSession: EncryptionSession;
-    useEncryption: boolean;
-    port: number;
-    ip: string;
-}
-
-interface SocketWithConnectionInfo {
-    connectionId: string;
-    socket: Socket;
-    seq: number;
-    id: string;
-    remoteAddress: string;
-    localPort: number;
-    personaId: number;
-    lastMessageTimestamp: number;
-    inQueue: boolean;
-    encryptionSession: EncryptionSession;
-    useEncryption: boolean;
 }
 
 export interface DatabaseManager {
@@ -102,53 +56,19 @@ interface SessionKeys {
     sKey: string;
 }
 
-interface TConnection {
-    connectionId: string;
-    localPort: number;
-    remoteAddress: string;
-    socket: Socket;
-    encryptionSession: EncryptionSession;
-    useEncryption: boolean;
-    inQueue: boolean;
-}
-
-interface JSONResponseOfGameMessage {
-    msgNo: number;
-    opCode: number | null;
-    msgLength: number;
-    msgVersion: number;
-    content: string;
-    contextId: string;
-    direction: "sent" | "received";
-    sessionKey: string | null;
-    rawBuffer: string;
-}
-
-interface GameMessage {
-    serialize: () => Buffer;
-    deserialize: (arg0: Buffer) => void;
-    toJSON: () => JSONResponseOfGameMessage;
-    dumpPacket: () => string;
-}
-
 export interface GameMessageOpCode {
     name: string;
     value: number;
     module: "Lobby" | "Login";
 }
 
-interface BuiltinError {
-    code: number;
-    message: string;
-}
-
-export interface PersonaRecord {
+export interface TPersonaRecord {
     customerId: number;
-    id: Buffer;
-    maxPersonas: Buffer;
-    name: Buffer;
-    personaCount: Buffer;
-    shardId: Buffer;
+    personaId: number;
+    maxPersonas: number;
+    personaName: string
+    personaCount: number
+    shardId: number;
 }
 
 export interface UserRecordMini {
@@ -156,22 +76,6 @@ export interface UserRecordMini {
     customerId: number;
     userId: number;
 }
-
-interface WebJSONResponse {
-    code: number;
-    headers:
-        | import("http").OutgoingHttpHeaders
-        | import("http").OutgoingHttpHeader[]
-        | undefined;
-    body: { connectionId: string; remoteAddress: string; inQueue: boolean }[];
-}
-
-type WebConnectionHandler = (
-    req: IncomingMessage,
-    res: ServerResponse,
-    config: Configuration,
-    log: TServerLogger,
-) => void;
 
 /**
  * @exports

@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { OldServerMessage } from "../../shared";
+import { OldServerMessage } from "rusty-shared";
 export declare class TClientConnectMessage extends OldServerMessage {
     _customerId: number;
     _personaId: number;

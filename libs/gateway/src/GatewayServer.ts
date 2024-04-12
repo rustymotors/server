@@ -12,9 +12,6 @@ import {
 import { ConsoleThread } from "rusty-cli";
 import { addWebRoutes } from "./web.js";
 
-import { receiveLoginData } from "rusty-login";
-import { receivePersonaData } from "rusty-persona";
-import { receiveLobbyData } from "rusty-lobby";
 import { receiveTransactionsData } from "rusty-transactions";
 import FastifySensible from "@fastify/sensible";
 
@@ -275,9 +272,9 @@ export class Gateway {
 
         let state = fetchStateFromDatabase();
 
-        state = addOnDataHandler(state, 8226, receiveLoginData);
-        state = addOnDataHandler(state, 8228, receivePersonaData);
-        state = addOnDataHandler(state, 7003, receiveLobbyData);
+        // state = addOnDataHandler(state, 8226, receiveLoginData);
+        // state = addOnDataHandler(state, 8228, receivePersonaData);
+        // state = addOnDataHandler(state, 7003, receiveLobbyData);
         state = addOnDataHandler(state, 43300, receiveTransactionsData);
 
         try {

@@ -47,8 +47,7 @@ export function populateGameMessageProcessors(
 
 export function getGameMessageProcessor(messageId: number): MessageProcessor {
     if (gameMessageProcessors.has(messageId) === true) {
-        // @ts-expect-error - Since has() is true, the return value is NOT undefined
-        return gameMessageProcessors.get(messageId);
+        return gameMessageProcessors.get(messageId) as MessageProcessor;
     }
     throw new MessageProcessorError(messageId, "No message processor found");
 }
@@ -77,8 +76,7 @@ export function populatePortToMessageTypes(portMap: Map<number, string>): void {
 
 export function getPortMessageType(port: number): string {
     if (portToMessageTypes.has(port) === true) {
-        // @ts-expect-error - Since has() is true, the return value is NOT undefined
-        return portToMessageTypes.get(port);
+        return portToMessageTypes.get(port) as string;
     }
     throw new PortMapError(port, "No message type found");
 }

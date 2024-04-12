@@ -1,4 +1,4 @@
-import type { TServerLogger } from "../../shared";
+import type { TServerLogger } from "rusty-shared";
 import { socketErrorHandler } from "../src/index.js";
 import { describe, it, expect, vi } from "vitest";
 

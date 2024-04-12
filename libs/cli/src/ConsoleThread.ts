@@ -49,7 +49,7 @@ export class ConsoleThread extends SubThread {
     }
 
     override init() {
-        super.init();
+        this.init();
         emitKeypressEvents(process.stdin);
         if (process.stdin.isTTY) {
             process.stdin.setRawMode(true);
@@ -74,6 +74,6 @@ export class ConsoleThread extends SubThread {
         // Remove all listeners from stdin, preventing further input
         process.stdin.removeAllListeners("keypress");
         process.stdin.pause();
-        super.shutdown();
+        this.shutdown();
     }
 }

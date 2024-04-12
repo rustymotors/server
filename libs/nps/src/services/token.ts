@@ -49,11 +49,12 @@ export function deleteToken(token: string): void {
 }
 
 export function deleteExpiredTokens(): void {
-    for (const token of activeTokens.keys()) {
+    // Loop though all active tokens and delete the expired ones
+    activeTokens.forEach((_tokenRecord, token) => {
         if (isTokenExpired(token)) {
             deleteToken(token);
         }
-    }
+    });
 }
 
 export function getCustomerId(token: string): number | undefined {

@@ -3,11 +3,13 @@
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
 /// <reference types="node" />
+
+import { ConnectionRecord } from "rusty-shared";
+
 /**
  * This class abstracts database methods
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
-import type { ConnectionRecord } from "../../interfaces/index.js";
 /**
  * @module Database
  */
@@ -52,4 +54,4 @@ export declare function updateSessionKey(
  */
 export declare function fetchSessionKeyByConnectionId(
     connectionId: string,
-): Promise<interfaces.ConnectionRecord>;
+): Promise<ConnectionRecord>;

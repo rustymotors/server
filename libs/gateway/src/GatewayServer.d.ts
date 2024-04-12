@@ -1,8 +1,8 @@
 /// <reference types="node" />
 /// <reference types="node" />
 import { Socket } from "node:net";
-import { Configuration, type TServerLogger } from "../../shared";
-import { ConsoleThread } from "../../cli/ConsoleThread.js";
+import { Configuration, type TServerLogger } from "rusty-shared";
+import { ConsoleThread } from "rusty-cli";
 /**
  * @module gateway
  */

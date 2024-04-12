@@ -104,46 +104,35 @@ export async function deleteUserSession(token: string): Promise<void> {
 export async function getUserSessionByConnectionId(
     connectionId: string,
 ): Promise<UserSession | undefined> {
-    for (const userSession of userSessions.values()) {
-        if (userSession.connectionId === connectionId) {
-            return userSession;
-        }
-    }
-    return undefined;
+    return Array.from(userSessions.values()).find(
+        (userSession) => userSession.connectionId === connectionId,
+    );
 }
 
 export async function getUserSessionByProfileId(
     profileId: number,
 ): Promise<UserSession | undefined> {
-    for (const userSession of userSessions.values()) {
-        if (userSession.activeProfileId === profileId) {
-            return userSession;
-        }
-    }
-    return undefined;
+    return Array.from(userSessions.values()).find(
+        (userSession) => userSession.activeProfileId === profileId,
+    );
 }
 
 export async function getUserSessionByCustomerId(
     customerId: number,
 ): Promise<UserSession | undefined> {
-    for (const userSession of userSessions.values()) {
-        if (userSession.customerId === customerId) {
-            return userSession;
-        }
-    }
-    return undefined;
+    return Array.from(userSessions.values()).find(
+        (userSession) => userSession.customerId === customerId,
+    );
 }
 
 export async function getUserSessionByIPAndPort(
     ipAddress: string,
     port: number,
 ): Promise<UserSession | undefined> {
-    for (const userSession of userSessions.values()) {
-        if (userSession.ipAddress === ipAddress && userSession.port === port) {
-            return userSession;
-        }
-    }
-    return undefined;
+    return Array.from(userSessions.values()).find(
+        (userSession) =>
+            userSession.ipAddress === ipAddress && userSession.port === port,
+    );
 }
 
 export async function createNewUserSession({

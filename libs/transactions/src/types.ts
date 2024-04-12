@@ -34,7 +34,7 @@ import type {
     ServerMessage,
     ServerMessageType,
     TServerLogger,
-} from "../../shared";
+} from "rusty-shared";
 
 export interface MessageHandlerArgs {
     connectionId: string;

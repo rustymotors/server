@@ -20,12 +20,9 @@
         "@sentry/node": "^7.109.0",
         "fastify": "^4.26.2",
         "rusty-cli": "workspace:^",
-        "rusty-lobby": "workspace:^",
-        "rusty-login": "workspace:^",
         "rusty-nps": "workspace:^",
         "rusty-packets": "workspace:^",
         "rusty-patch": "workspace:^",
-        "rusty-persona": "workspace:^",
         "rusty-shard": "workspace:^",
         "rusty-shared": "workspace:^",
         "rusty-transactions": "workspace:^"

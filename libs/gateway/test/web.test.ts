@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
-import { generateShardList } from "../../shard/src/ShardServer";
+import { generateShardList } from "rusty-shard";
 import {
     handleGetCert,
     handleGetKey,
     handleGetRegistry,
-} from "../../shard/src/index";
+} from "rusty-shard";
 
 function mockConfig() {
     return {

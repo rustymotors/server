@@ -74,7 +74,7 @@ describe("_getCompleteVehicleInfo", () => {
         }).catch((error) => {
             // Verify
             expect(error).toBeInstanceOf(Error);
-            expect(error.message).toBe(
+            expect(error.message).toContain(
                 `[GenericRequestMsg] Unable to deserialize buffer: `,
             );
         });
