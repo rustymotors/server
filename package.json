@@ -8,7 +8,7 @@
     },
     "scripts": {
         "lint": "eslint apps libs",
-        "build": "node build.mjs",
+        "build": "tsc -b --verbose",
         "start": "node --env-file=.env dist/server.js",
         "dev": "run-p dev:*"
     },

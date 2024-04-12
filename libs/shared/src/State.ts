@@ -10,6 +10,7 @@ import { Cipher, Decipher } from "crypto";
 import { SerializedBuffer } from "./messageFactory.js";
 import { Socket } from "node:net";
 import { ServerLogger } from "./log.js";
+import type { TServerLogger } from "./types.js";
 
 /**
  * @external RawMessage
@@ -179,11 +180,9 @@ export function wrapSocket(
 }
 
 interface OnDataHandlerArgs {
-    args: {
-        connectionId: string;
-        message: SerializedBuffer;
-        log: ServerLogger;
-    };
+    connectionId: string;
+    message: SerializedBuffer;
+    log: TServerLogger;
 }
 /**
  * @requires module:libs/shared/RawMessage
@@ -194,7 +193,7 @@ export interface ServiceResponse {
     messages: SerializedBuffer[];
 }
 
-export type OnDataHandler = (args: OnDataHandlerArgs) => ServiceResponse;
+export type OnDataHandler = (args: OnDataHandlerArgs) => Promise<ServiceResponse>;
 /**
  * @param {OnDataHandlerArgs} args The arguments for the handler.
  * @returns {ServiceResponse} The

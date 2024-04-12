@@ -23,6 +23,7 @@ import {
     OldServerMessage,
     ServerMessage,
     type TServerLogger,
+    type ServiceResponse,
 } from "rusty-shared";
 
 /**
@@ -115,10 +116,7 @@ export async function receiveTransactionsData({
     connectionId: string;
     message: SerializedBuffer;
     log: TServerLogger;
-}): Promise<{
-    connectionId: string;
-    messages: SerializedBuffer[];
-}> {
+}): Promise<ServiceResponse> {
     log.debug(`Received Transaction Server packet: ${connectionId}`);
 
     // Going to use ServerMessage in this module
