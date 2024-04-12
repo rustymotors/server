@@ -9,6 +9,7 @@
     "scripts": {
         "lint": "eslint apps libs",
         "build": "tsc -b --verbose",
+        "test": "NODE_OPTIONS=--openssl-legacy-provider vitest run",
         "start": "node --env-file=.env dist/server.js",
         "dev": "run-p dev:*"
     },

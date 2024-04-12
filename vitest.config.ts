@@ -17,6 +17,6 @@ export default defineConfig({
         },
         reporters: ["junit", "default", "hanging-process"],
         outputFile: "mcos.junit.xml",
-        pool: "forks"
+        pool: "forks",
     },
 });

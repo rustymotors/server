@@ -36,7 +36,7 @@ jobs:
                   pnpm lint
             - name: Build and Test
               run: |
-                  pnpm build rusty-server
+                  pnpm build
                   pnpm test
               env:
                   CODECOV_UPLOAD_BUNDLE_TOKEN: ${{ secrets.CODECOV_UPLOAD_BUNDLE_TOKEN }}
