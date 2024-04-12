@@ -35,8 +35,8 @@ jobs:
                 run: |
                   pnpm lint
             - name: Build and Test
-                  pnpm nx build rusty-server
-                  pnpm nx test
+                  pnpm build rusty-server
+                  pnpm test
               env:
                   CODECOV_UPLOAD_BUNDLE_TOKEN: ${{ secrets.CODECOV_UPLOAD_BUNDLE_TOKEN }}
             - name: Codecov

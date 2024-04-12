@@ -82,7 +82,7 @@ export async function processEncryptedGameCommand(
     }
 
     // Process the message
-    let response = await processor(
+    const response = await processor(
         decryptedMessage.header.getId(),
         decryptedMessage.getDataAsBuffer(),
     );

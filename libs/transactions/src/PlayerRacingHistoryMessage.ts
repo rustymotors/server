@@ -1,5 +1,4 @@
 import { SerializedBuffer } from "rusty-shared";
-import type { RacingHistoryRecord } from "./_getPlayerRaceHistory";
 
 export class PlayerRacingHistoryMessage extends SerializedBuffer {
     _msgId: number; // 2 bytes

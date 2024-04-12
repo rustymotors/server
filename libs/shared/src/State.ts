@@ -194,7 +194,7 @@ export interface ServiceResponse {
     messages: SerializedBuffer[];
 }
 
-export type OnDataHandler = Function;
+export type OnDataHandler = (args: OnDataHandlerArgs) => ServiceResponse;
 /**
  * @param {OnDataHandlerArgs} args The arguments for the handler.
  * @returns {ServiceResponse} The

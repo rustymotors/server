@@ -50,8 +50,6 @@ export async function clientConnect({
         return { connectionId, messages: [] };
     }
 
-    let result;
-
     log.debug(`Looking up the session key for ${customerId}...`);
 
     const userSession = await getUserSessionByCustomerId(customerId);

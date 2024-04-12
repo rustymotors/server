@@ -453,7 +453,7 @@ export async function buildVehiclePartTree({
         throw new Error(`Skin with id ${skinId} does not exist`);
     }
 
-    let vehicleId = undefined;
+    const vehicleId = undefined;
 
     // Get the vehicle assembly from the database
     const vehicleAssembly = await Sentry.startSpan(

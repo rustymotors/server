@@ -100,59 +100,6 @@ export class PartStruct {
     }
 }
 
-class CarInfoStruct {
-    msgNo: number = 0; // 2 bytes
-    playerId: number = 0; // 4 bytes
-    vehicle: VehicleStruct = new VehicleStruct();
-    noOfParts: number = 0; // 2 bytes
-    parts: PartStruct[] = [];
-
-    serialize() {
-        try {
-            const neededSize = 10 + this.vehicle.size() + this.noOfParts * 26;
-
-            log.debug(`Needed size: ${neededSize}`);
-
-            const buffer = Buffer.alloc(neededSize);
-            log.debug(`Writing msgNo: ${this.msgNo}`);
-            buffer.writeInt16LE(this.msgNo, 0);
-            log.debug(`Writing playerId: ${this.playerId}`);
-            buffer.writeInt32LE(this.playerId, 2);
-            log.debug(`Serializing vehicle`);
-            this.vehicle.serialize().copy(buffer, 6);
-            log.debug(`Writing noOfParts: ${this.noOfParts}`);
-            buffer.writeInt16LE(this.noOfParts, 6 + this.vehicle.size());
-            let offset = 8 + this.vehicle.size();
-            for (const part of this.parts) {
-                log.debug(`Serializing part: ${part}`);
-                part.serialize().copy(buffer, offset);
-                offset += part.size();
-            }
-            return buffer;
-        } catch (error) {
-            log.error(`Error in CarInfoStruct.serialize: ${error}`);
-            throw error;
-        }
-    }
-
-    size() {
-        return (
-            10 + this.vehicle.size() + this.noOfParts * this.getFirstPartSize()
-        );
-    }
-
-    getFirstPartSize() {
-        if (typeof this.parts[0] === "undefined") {
-            return 0;
-        }
-        return this.parts[0].size();
-    }
-
-    toString() {
-        return `msgNo: ${this.msgNo} playerId: ${this.playerId} vehicle: ${this.vehicle} noOfParts: ${this.noOfParts} parts: ${this.parts}`;
-    }
-}
-
 export type DBPart = {
     partId: number;
     parentPartId: number | null;

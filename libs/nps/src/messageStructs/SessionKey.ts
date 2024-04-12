@@ -23,7 +23,7 @@ export class SessionKey implements ISerializable {
         const keyLength = bytes.readUInt16BE(0);
 
         // Set the data offset
-        let dataOffset = 2 + keyLength;
+        const dataOffset = 2 + keyLength;
 
         const key = bytes.subarray(2, dataOffset);
 

@@ -1,4 +1,3 @@
-import type { Cipher, Decipher } from "node:crypto";
 import { serverHeader } from "./messageFactory.js";
 import type { SerializedBuffer } from "./messageFactory.js";
 

@@ -6,7 +6,7 @@ import {
     saveVehicle,
     saveVehiclePartTree,
 } from "rusty-database";
-import type { TServerLogger, ServerMessageType } from "rusty-shared";
+import type { TServerLogger  } from "rusty-shared";
 
 /**
  * @param {MessageHandlerArgs} args

@@ -44,7 +44,6 @@ class AbstractSerializable {
      * @param {Buffer} _buffer
      * @returns {AbstractSerializable}
      */
-    // eslint-disable-next-line no-unused-vars
     _doDeserialize(_buffer: Buffer): AbstractSerializable {
         throw new Error("Method '_doDeserialize()' must be implemented.");
     }
@@ -164,7 +163,7 @@ export function serializeStringRaw(
 class legacyHeader extends SerializableMixin(AbstractSerializable) {
     _size: number;
     id: number;
-    length: any;
+    length: number;
     constructor() {
         super();
         this._size = 4;
@@ -348,7 +347,7 @@ export class NPSHeader extends SerializableMixin(AbstractSerializable) {
  */
 export class serverHeader extends SerializableMixin(AbstractSerializable) {
     _size: number;
-    length: any;
+    length: number;
     mcoSig: string;
     sequence: number;
     flags: number;
