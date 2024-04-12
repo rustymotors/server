@@ -32,7 +32,7 @@ jobs:
                   corepack enable pnpm
                   pnpm install -r
             - name: Lint
-                run: |
+              run: |
                   pnpm lint
             - name: Build and Test
                   pnpm build rusty-server
