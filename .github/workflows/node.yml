@@ -44,7 +44,7 @@ jobs:
                   pip install --user codecov-cli
                   codecovcli --verbose create-commit --fail-on-error 
                   codecovcli --verbose create-report --fail-on-error 
-                  codecovcli do-upload --report-type test_results --file thebeast/mcos.junit.xml
+                  codecovcli do-upload --report-type test_results --file mcos.junit.xml
                   codecovcli --verbose do-upload --fail-on-error --flag database --name database-${{ matrix.node-version }}
                   codecovcli --verbose do-upload --fail-on-error --flag gateway --name gateway-${{ matrix.node-version }}
                   codecovcli --verbose do-upload --fail-on-error --flag lobby --name lobby-${{ matrix.node-version }}
