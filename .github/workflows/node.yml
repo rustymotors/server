@@ -31,8 +31,8 @@ jobs:
               run: |
                   corepack enable pnpm
                   pnpm install
-                  pnpm run build
-                  pnpm test
+                  pnpm build
+                  npm test
               env:
                   CODECOV_UPLOAD_BUNDLE_TOKEN: ${{ secrets.CODECOV_UPLOAD_BUNDLE_TOKEN }}
             - name: Codecov
