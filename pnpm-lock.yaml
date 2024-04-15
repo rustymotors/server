@@ -37,7 +37,7 @@ importers:
         version: 5.0.3
       slonik:
         specifier: ^40.0.0
-        version: 40.2.2(zod@3.22.4)
+        version: 40.2.4(zod@3.22.4)
       tsx:
         specifier: ^4.7.1
         version: 4.7.2
@@ -56,7 +56,7 @@ importers:
         version: 7.110.1
       '@slonik/migrator':
         specifier: 0.12.0
-        version: 0.12.0(@types/node@20.12.7)(slonik@40.2.2)
+        version: 0.12.0(@types/node@20.12.7)(slonik@40.2.4)
       '@types/node':
         specifier: 20.12.7
         version: 20.12.7
@@ -110,7 +110,7 @@ importers:
         version: 7.110.1
       slonik:
         specifier: ^40.0.0
-        version: 40.2.2(zod@3.22.4)
+        version: 40.2.4(zod@3.22.4)
       zod:
         specifier: ^3.22.4
         version: 3.22.4
@@ -1281,13 +1281,13 @@ packages:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
     dev: true
 
-  /@slonik/migrator@0.12.0(@types/node@20.12.7)(slonik@40.2.2):
+  /@slonik/migrator@0.12.0(@types/node@20.12.7)(slonik@40.2.4):
     resolution: {integrity: sha512-2kAXCO/iW9/VOYlfl8Jza4fQpi5Q8+JUyB38YFUxPiWNc+6o41GGND2aIpnyr6EPFNRXdg5x+Fu8+SMyMvMXpQ==}
     peerDependencies:
       slonik: 27 - 29
     dependencies:
       '@rushstack/ts-command-line': 4.19.1(@types/node@20.12.7)
-      slonik: 40.2.2(zod@3.22.4)
+      slonik: 40.2.4(zod@3.22.4)
       umzug: 3.7.0(@types/node@20.12.7)
     transitivePeerDependencies:
       - '@types/node'
@@ -3514,8 +3514,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /slonik@40.2.2(zod@3.22.4):
-    resolution: {integrity: sha512-tZvVO353JL29Lwvi1j9Djyg3sxg1YVTtrnc8bLWhgNIPbpcvtxrioLvTmLyRuZE4gByRlwe8ntc7Wdpjvl36hA==}
+  /slonik@40.2.4(zod@3.22.4):
+    resolution: {integrity: sha512-ErGSUPrp08QoK9W02gZSTM6t5gGkwGgccp2o8G1+pmdUHV4lMkKGsMOVSkXJl0Wake9PWdEY0pZN/OdoPlfY4Q==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3
