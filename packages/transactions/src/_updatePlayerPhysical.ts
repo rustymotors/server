@@ -6,6 +6,7 @@ import { PlayerPhysicalMessage } from "./PlayerPhysicalMessage.js";
 export async function _updatePlayerPhysical(
     args: MessageHandlerArgs,
 ): Promise<MessageHandlerResult> {
+    args.log.setName("mcos:updatePlayerPhysical");
     const updatePlayerPhysicalMessage = new PlayerPhysicalMessage();
     updatePlayerPhysicalMessage.deserialize(args.packet.serialize());
 

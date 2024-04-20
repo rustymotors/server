@@ -12,6 +12,7 @@ export async function _getGameUrls({
     packet,
     log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
+    log.setName("mcos:getGameUrls");
     const getGameUrlsMessage = new GenericRequestMessage();
     getGameUrlsMessage.deserialize(packet.data);
 

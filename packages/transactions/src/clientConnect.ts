@@ -25,6 +25,7 @@ export async function clientConnect({
     packet,
     log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
+    log.setName("mcos:clientConnect");
     /**
      * Let's turn it into a ClientConnectMsg
      */

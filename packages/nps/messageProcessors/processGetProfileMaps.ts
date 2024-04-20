@@ -13,6 +13,7 @@ export async function processGetProfileMaps(
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
+    log.setName("nps:processGetProfileMaps");
     // This message is a version 257, but it's version is set to 0
     // This is a bug in the client, so we need to generate a new message
     // with the correct version
@@ -55,7 +56,7 @@ export async function processGetProfileMaps(
 
         log.info("===========================================");
 
-        socketCallback([outMessage.serialize()]);
+        await socketCallback([outMessage.serialize()]);
     } catch (error) {
         log.error(`Error sending profile info: ${error}`);
         throw new Error("Error sending profile info");

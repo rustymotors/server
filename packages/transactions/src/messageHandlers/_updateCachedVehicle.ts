@@ -9,6 +9,7 @@ export async function _updateCachedVehicle({
     packet,
     log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
+    log.setName("mcos:updateCachedVehicle");
     log.debug(`Received Update Cached Vehicle packet: ${connectionId}, NOOP`);
 
     return { connectionId, messages: [] };

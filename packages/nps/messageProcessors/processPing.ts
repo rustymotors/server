@@ -10,6 +10,7 @@ export async function processPing(
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
+    log.setName("nps:processPing");
     log.info(`Ping: ${message.toString()}`);
 
     const response = new GameMessage(0);
@@ -17,5 +18,5 @@ export async function processPing(
 
     const responseBytes = response.serialize();
 
-    socketCallback([responseBytes]);
+    await socketCallback([responseBytes]);
 }

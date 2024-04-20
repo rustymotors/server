@@ -46,6 +46,7 @@ export async function _getPlayerRaceHistory({
     packet,
     log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
+    log.setName("mcos:getPlayerRaceHistory");
     const getPlayerRaceHistoryMessage = new GenericRequestMessage();
     getPlayerRaceHistoryMessage.deserialize(packet.data);
 

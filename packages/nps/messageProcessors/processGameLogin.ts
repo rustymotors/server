@@ -15,6 +15,7 @@ export async function processGameLogin(
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
+    log.setName("nps:processGameLogin");
     const customerId = getDWord(message.getDataAsBuffer(), 0, false);
 
     const personaId = getDWord(message.getDataAsBuffer(), 4, false);

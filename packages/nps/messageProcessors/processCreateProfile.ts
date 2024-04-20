@@ -11,6 +11,7 @@ export async function processCreateProfile(
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
+    log.setName("nps:processCreateProfile");
     // Log the request
     log.info(`ProcessCreateProfile request: ${message.toString()}`);
 
@@ -35,5 +36,5 @@ export async function processCreateProfile(
     // Log the response
     log.info(`ProcessCreateProfile response: ${response.toString()}`);
 
-    socketCallback([response.serialize()]);
+    await socketCallback([response.serialize()]);
 }

@@ -13,6 +13,7 @@ export async function processGetProfileInfo(
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
+    log.setName("nps:processGetProfileInfo");
     const customerId = getDWord(message.serialize(), 0, false);
 
     log.info(`GetProfileInfo: ${customerId}`);
@@ -50,7 +51,7 @@ export async function processGetProfileInfo(
 
         log.info("===========================================");
 
-        socketCallback([outMessage.serialize()]);
+        await socketCallback([outMessage.serialize()]);
     } catch (error) {
         log.error(`Error sending profile info: ${error}`);
         throw new Error("Error sending profile info");

@@ -90,6 +90,7 @@ export async function processDeleteProfile(
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
+    log.setName("nps:processDeleteProfile");
     // Log the message
     log.info(`Delete profile request: ${message.toString()}`);
 
@@ -100,5 +101,5 @@ export async function processDeleteProfile(
     loginACK.header.setId(0x60c);
 
     // Send the ack
-    socketCallback([loginACK.serialize()]);
+    await socketCallback([loginACK.serialize()]);
 }

@@ -17,6 +17,7 @@ export async function login({
     packet,
     log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
+    log.setName("mcos:login");
     // Read the inbound packet
     const loginMessage = new TLoginMessage();
     loginMessage.deserialize(packet.serialize());
@@ -72,6 +73,7 @@ export async function loginComplete({
     packet,
     log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
+    log.setName("mcos:loginComplete");
     const pReply = new LoginCompleteMessage();
     pReply._msgNo = 213;
     pReply._firstTime = true;

@@ -19,4 +19,5 @@ export type TServerLogger = {
     warn: (message: string) => void;
     debug: (message: string) => void;
     trace: (message: string) => void;
+    setName: (name: string) => void;
 };

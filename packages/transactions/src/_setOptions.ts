@@ -6,6 +6,7 @@ import { GenericReplyMessage } from "./GenericReplyMessage.js";
 export async function _setOptions(
     args: MessageHandlerArgs,
 ): Promise<MessageHandlerResult> {
+    args.log.setName("mcos:setOptions");
     const playerOptionsMessage = new PlayerOptionsMessage();
     playerOptionsMessage.deserialize(args.packet.serialize());
 
