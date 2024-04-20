@@ -5,11 +5,9 @@
  *
  */
 
-// eslint-disable-next-line no-unused-vars
 import { Cipher, Decipher } from "crypto";
 import { SerializedBuffer } from "./messageFactory.js";
 import { Socket } from "node:net";
-import { ServerLogger } from "./log.js";
 import type { TServerLogger } from "./types.js";
 
 /**
