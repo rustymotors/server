@@ -12,7 +12,7 @@ import { processEncryptedGameCommand } from "./processEncryptedGameCommand.js";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { processPing } from "./processPing.js";
 
-export type SocketCallback = (messages: Buffer[]) => void;
+export type SocketCallback = (messages: Buffer[]) => Promise<void>;
 
 export type MessageProcessor = (
     connectionId: string,
@@ -47,8 +47,7 @@ export function populateGameMessageProcessors(
 
 export function getGameMessageProcessor(messageId: number): MessageProcessor {
     if (gameMessageProcessors.has(messageId) === true) {
-        // @ts-expect-error - Since has() is true, the return value is NOT undefined
-        return gameMessageProcessors.get(messageId);
+        return gameMessageProcessors.get(messageId) as MessageProcessor;
     }
     throw new MessageProcessorError(messageId, "No message processor found");
 }

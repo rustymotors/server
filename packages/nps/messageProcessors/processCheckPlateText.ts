@@ -14,6 +14,7 @@ export async function processCheckPlateText(
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
+    log.setName("nps:processCheckPlateText");
     // This message is only called by debug, so let's sey the clinet version to debug
     const session = await getUserSessionByConnectionId(connectionId);
 
@@ -21,7 +22,7 @@ export async function processCheckPlateText(
         log.info(`Setting client version to debug for ${session.customerId}`);
 
         session.clientVersion = "debug";
-        setUserSession(session);
+        await setUserSession(session);
     }
 
     const plateType = message.getDataAsBuffer().readUInt32BE(0);

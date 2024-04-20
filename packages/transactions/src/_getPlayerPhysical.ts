@@ -8,6 +8,7 @@ export async function _getPlayerPhysical({
     packet,
     log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
+    log.setName("mcos:getPlayerPhysical");
     const getPlayerPhysicalMessage = new GenericRequestMessage();
     getPlayerPhysicalMessage.deserialize(packet.data);
 

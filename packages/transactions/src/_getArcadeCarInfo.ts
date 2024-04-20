@@ -12,6 +12,7 @@ export async function _getArcadeCarInfo({
     packet,
     log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
+    log.setName("mcos:getArcadeCarInfo");
     const getArcadeCarInfoMessage = new GenericRequestMessage();
     getArcadeCarInfoMessage.deserialize(packet.data);
 

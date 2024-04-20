@@ -12,6 +12,7 @@ export async function _getOwnedParts({
     packet,
     log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
+    log.setName("mcos:getOwnedParts");
     const getOwnedPartsMessage = new GenericRequestMessage();
     getOwnedPartsMessage.deserialize(packet.data);
 

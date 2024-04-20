@@ -22,6 +22,7 @@ export async function processEncryptedGameCommand(
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
+    log.setName("nps:processEncryptedGameCommand");
     log.info(`Attempting to decrypt message: ${message.toString()}`);
 
     // Get the session
@@ -46,7 +47,7 @@ export async function processEncryptedGameCommand(
                 customerId: session.customerId,
                 sessionKey: session.sessionKey.substring(0, 16),
             });
-            setEncryptionSession(newSession);
+            await setEncryptionSession(newSession);
             encryptionSession = newSession;
         } catch (error) {
             log.error(`Error creating encryption session: ${error}`);
@@ -82,7 +83,7 @@ export async function processEncryptedGameCommand(
     }
 
     // Process the message
-    let response = await processor(
+    const response = await processor(
         decryptedMessage.header.getId(),
         decryptedMessage.getDataAsBuffer(),
     );
@@ -92,7 +93,7 @@ export async function processEncryptedGameCommand(
 
     // Encrypt the response
     const encryptedResponse = encryptionSession.gameCipher.update(response);
-    setEncryptionSession(encryptionSession);
+    await setEncryptionSession(encryptionSession);
 
     // Log the encrypted response
     log.info(
@@ -115,5 +116,5 @@ export async function processEncryptedGameCommand(
     );
     const responseBytes = responsePacket.serialize();
 
-    socketCallback([responseBytes]);
+    await socketCallback([responseBytes]);
 }

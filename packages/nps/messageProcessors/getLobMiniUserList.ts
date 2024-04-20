@@ -10,6 +10,7 @@ export async function getLobMiniUserList(
     commandId: number,
     data: Buffer,
 ): Promise<Buffer> {
+    log.setName("nps:getLobMiniUserList");
     log.info(`Processing getLobMiniUserList command: ${getAsHex(data)}`);
 
     const miniUserList = new MiniUserList(0);

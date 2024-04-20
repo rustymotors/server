@@ -18,6 +18,7 @@ export function getVehiclesForPerson(personId: number) {
 export async function _getOwnedVehicles(
     args: MessageHandlerArgs,
 ): Promise<MessageHandlerResult> {
+    args.log.setName("mcos:getOwnedVehicles");
     const getOwnedVehiclesMessage = new GenericRequestMessage();
     getOwnedVehiclesMessage.deserialize(args.packet.data);
 

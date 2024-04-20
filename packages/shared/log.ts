@@ -1,5 +1,5 @@
 import * as P from "pino";
-import { getServerConfiguration } from "./Configuration.js";
+import type { TServerLogger } from "./types.js";
 
 const DEFAULT_LOG_LEVEL = "trace";
 
@@ -99,6 +99,10 @@ export class ServerLogger {
     trace(message: string) {
         this.logger.trace(message);
     }
+
+    setName(name: string) {
+        this.logger = this.logger.child({ name });
+    }
 }
 
 /**
@@ -107,7 +111,7 @@ export class ServerLogger {
  * @param {ServerLoggerOptions} options
  * @return {ServerLogger}
  */
-export function getServerLogger(options?: ServerLoggerOptions): ServerLogger {
+export function getServerLogger(options?: ServerLoggerOptions): TServerLogger {
     if (typeof ServerLogger.instance === "undefined") {
         ServerLogger.instance = new ServerLogger(options);
     }

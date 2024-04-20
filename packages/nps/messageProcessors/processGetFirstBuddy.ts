@@ -16,6 +16,7 @@ export async function processFirstBuddy(
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
+    log.setName("nps:processFirstBuddy");
     const profileId = getDWord(message.getDataAsBuffer(), 0, false);
 
     log.info(`GetFirstBuddy profile: ${profileId}`);
@@ -35,5 +36,5 @@ export async function processFirstBuddy(
 
     log.info("===========================================");
 
-    socketCallback([outMessage.serialize()]);
+    await socketCallback([outMessage.serialize()]);
 }

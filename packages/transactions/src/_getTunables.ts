@@ -12,6 +12,7 @@ export async function _getTunables({
     packet,
     log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
+    log.setName("mcos:getTunables");
     const getTunablesMessage = new GenericRequestMessage();
     getTunablesMessage.deserialize(packet.data);
 

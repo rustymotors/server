@@ -24,6 +24,7 @@ import {
     OldServerMessage,
     ServerMessage,
 } from "../../shared";
+import type { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 
 /**
  *
@@ -59,16 +60,15 @@ function _MSG_STRING(
 
 /**
  * Route or process MCOTS commands
- * @param {import("./handlers.js").MessageHandlerArgs} args
- * @returns {Promise<import("./handlers.js").MessageHandlerResult>}
  */
 async function processInput({
     connectionId,
     packet,
     log,
-}: import("../types.js").MessageHandlerArgs): Promise<
-    import("../types.js").MessageHandlerResult
+}: MessageHandlerArgs): Promise<
+    MessageHandlerResult
 > {
+    log.setName("mcos:processInput");
     const currentMessageNo = packet._msgNo;
     const currentMessageString = _MSG_STRING(currentMessageNo, "in");
 

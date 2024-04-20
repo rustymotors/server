@@ -11,6 +11,7 @@ export async function trackingPing({
     packet,
     log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
+    log.setName("mcos:trackingPing");
     // Create new response packet
     const pReply = new GenericReplyMessage();
     pReply.msgNo = 101;

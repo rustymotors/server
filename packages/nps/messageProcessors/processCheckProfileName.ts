@@ -11,6 +11,7 @@ export async function processCheckProfileName(
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
+    log.setName("nps:processCheckProfileName");
     const customerId = message.serialize().readUInt32BE(8);
 
     const requestedPersonaName = getLenString(message.serialize(), 12, false);
@@ -24,5 +25,5 @@ export async function processCheckProfileName(
 
     const responseBytes = response.serialize();
 
-    socketCallback([responseBytes]);
+    await socketCallback([responseBytes]);
 }

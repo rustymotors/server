@@ -1,5 +1,5 @@
 import type { SocketCallback } from "./index.js";
-import { getDWord, getLenString, getNBytes } from "../utils/pureGet.js";
+import { getDWord, getLenString  } from "../utils/pureGet.js";
 import {
     getUserSessionByProfileId,
     setUserSession,
@@ -17,6 +17,7 @@ export async function processLobbyLogin(
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
+    log.setName("nps:processLobbyLogin");
     // This message is a BareMessageV0
 
     const profileId = getDWord(message.getDataAsBuffer(), 0, false);
@@ -41,7 +42,7 @@ export async function processLobbyLogin(
     };
 
     // Set the new session
-    setUserSession(newSession);
+    await setUserSession(newSession);
 
     log.info(`LobbyLogin: ${message.toString()}`);
 
@@ -58,5 +59,5 @@ export async function processLobbyLogin(
 
     const responseBytes = responseMessage.serialize();
 
-    socketCallback([responseBytes]);
+    await socketCallback([responseBytes]);
 }

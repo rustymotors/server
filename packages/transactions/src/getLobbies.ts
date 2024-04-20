@@ -77,6 +77,7 @@ export async function getLobbies({
     packet,
     log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
+    log.setName("mcos:getLobbies");
     const result = await _getLobbies({ connectionId, packet, log });
     log.debug("Dumping Lobbies response packet...");
     result.messages.forEach((msg) => {

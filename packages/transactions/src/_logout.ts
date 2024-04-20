@@ -9,6 +9,7 @@ import type { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 export async function _logout(
     args: MessageHandlerArgs,
 ): Promise<MessageHandlerResult> {
+    log.setName("mcos:logout");
     // Create new response packet
     const response = new GenericReplyMessage();
     response.msgNo = 101;

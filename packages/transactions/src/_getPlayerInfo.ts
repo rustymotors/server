@@ -5,7 +5,8 @@ import type { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
 
 export async function _getPlayerInfo(
     args: MessageHandlerArgs,
-): Promise<MessageHandlerResult> {
+): Promise<MessageHandlerResult> {    
+    args.log.setName("mcos:getPlayerInfo");
     const getPlayerInfoMessage = new GenericRequestMessage();
     getPlayerInfoMessage.deserialize(args.packet.data);
 

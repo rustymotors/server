@@ -5,11 +5,10 @@
  *
  */
 
-// eslint-disable-next-line no-unused-vars
 import { Cipher, Decipher } from "crypto";
 import { SerializedBuffer } from "./messageFactory.js";
 import { Socket } from "node:net";
-import { ServerLogger } from "./log.js";
+import type { TServerLogger } from "./types.js";
 
 /**
  * @external RawMessage
@@ -179,22 +178,20 @@ export function wrapSocket(
 }
 
 interface OnDataHandlerArgs {
-    args: {
-        connectionId: string;
-        message: SerializedBuffer;
-        log: ServerLogger;
-    };
+    connectionId: string;
+    message: SerializedBuffer;
+    log: TServerLogger;
 }
 /**
  * @requires module:packages/shared/RawMessage
  */
 
-export interface ServiceResponse {
+export type ServiceResponse = Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
-}
+}>;
 
-export type OnDataHandler = Function;
+export type OnDataHandler = (arg0: OnDataHandlerArgs) => ServiceResponse;
 /**
  * @param {OnDataHandlerArgs} args The arguments for the handler.
  * @returns {ServiceResponse} The

@@ -1,6 +1,7 @@
 import { expect, it, vi } from "vitest";
 import type { DatabaseManager } from "../packages/interfaces/index.js";
 import { verifyLegacyCipherSupport } from "../packages/gateway/src/encryption.js";
+import type { TServerLogger } from "../packages/shared/types.js";
 
 export function mockDatabaseManager(): DatabaseManager {
     return {
@@ -10,7 +11,7 @@ export function mockDatabaseManager(): DatabaseManager {
 }
 
 /** @type TServerLogger */
-export function mockLogger(): any {
+export function mockLogger(): TServerLogger {
     return {
         info: vi.fn(),
         error: vi.fn(),
@@ -18,6 +19,7 @@ export function mockLogger(): any {
         warn: vi.fn(),
         debug: vi.fn(),
         trace: vi.fn(),
+        setName: vi.fn(),
     };
 }
 

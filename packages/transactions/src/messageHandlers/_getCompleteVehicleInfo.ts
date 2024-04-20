@@ -175,6 +175,7 @@ export async function _getCompleteVehicleInfo({
     packet,
     log,
 }: MessageHandlerArgs): Promise<MessageHandlerResult> {
+    log.setName("mcos:getCompleteVehicleInfo");
     const getCompleteVehicleInfoMessage = new GenericRequestMessage();
     getCompleteVehicleInfoMessage.deserialize(packet.data);
 

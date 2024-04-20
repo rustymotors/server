@@ -10,6 +10,7 @@ export async function getLobMiniRiffList(
     commandId: number,
     data: Buffer,
 ): Promise<Buffer> {
+    log.setName("nps:getLobMiniRiffList");
     log.info(`Processing getLobMiniRiffList command: ${getAsHex(data)}`);
 
     const riffList = new MiniRiffList();
