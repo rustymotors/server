@@ -37,13 +37,13 @@ importers:
         version: 5.0.3
       slonik:
         specifier: ^40.0.0
-        version: 40.2.6(zod@3.23.0)
+        version: 40.2.6(zod@3.23.3)
       tsx:
         specifier: ^4.7.1
         version: 4.7.2
       zod:
         specifier: ^3.22.4
-        version: 3.23.0
+        version: 3.23.3
     devDependencies:
       '@eslint/js':
         specifier: ^9.0.0
@@ -110,10 +110,10 @@ importers:
         version: 7.111.0
       slonik:
         specifier: ^40.0.0
-        version: 40.2.6(zod@3.23.0)
+        version: 40.2.6(zod@3.23.3)
       zod:
         specifier: ^3.22.4
-        version: 3.23.0
+        version: 3.23.3
 
   packages/gateway:
     dependencies:
@@ -1297,7 +1297,7 @@ packages:
       slonik: 27 - 29
     dependencies:
       '@rushstack/ts-command-line': 4.19.1(@types/node@20.12.7)
-      slonik: 40.2.6(zod@3.23.0)
+      slonik: 40.2.6(zod@3.23.3)
       umzug: 3.7.0(@types/node@20.12.7)
     transitivePeerDependencies:
       - '@types/node'
@@ -3524,7 +3524,7 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /slonik@40.2.6(zod@3.23.0):
+  /slonik@40.2.6(zod@3.23.3):
     resolution: {integrity: sha512-FzgNQ4O76ZMwnaI/AUNF/CVgpKjTRdG8pxz23b3n5wTdJYXAeQtBqGqedULNeNSk9+4uy0PgyGsGG14Dc1I89w==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -3542,7 +3542,7 @@ packages:
       safe-stable-stringify: 2.4.3
       serialize-error: 8.1.0
       strict-event-emitter-types: 2.0.0
-      zod: 3.23.0
+      zod: 3.23.3
     transitivePeerDependencies:
       - pg-native
 
@@ -4048,5 +4048,5 @@ packages:
       commander: 9.5.0
     dev: true
 
-  /zod@3.23.0:
-    resolution: {integrity: sha512-OFLT+LTocvabn6q76BTwVB0hExEBS0IduTr3cqZyMqEDbOnYmcU+y0tUAYbND4uwclpBGi4I4UUBGzylWpjLGA==}
+  /zod@3.23.3:
+    resolution: {integrity: sha512-tPvq1B/2Yu/dh2uAIH2/BhUlUeLIUvAjr6dpL/75I0pCYefHgjhXk1o1Kob3kTU8C7yU1j396jFHlsVWFi9ogg==}
