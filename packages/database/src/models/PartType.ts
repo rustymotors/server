@@ -1,14 +1,21 @@
-import { DataTypes, Model, type InferAttributes } from "sequelize";
+import {
+    DataTypes,
+    Model,
+    type HasManyGetAssociationsMixin,
+    type HasOneGetAssociationMixin,
+    type InferAttributes,
+} from "sequelize";
 import { getDatabase } from "../services/database.js";
 import { AbstractPartType } from "./AbstractPartType.js";
 import { PartGrade } from "./PartGrade.js";
 
 export class PartType extends Model<InferAttributes<PartType>> {
     declare partTypeId: number;
-    declare abstractPartTypeId: number;
-    declare partGradeId: number;
+    declare abstractPartType: HasManyGetAssociationsMixin<AbstractPartType>;
+    declare partGrade: HasOneGetAssociationMixin<PartGrade>;
     declare partType: string;
     declare partFilename: string;
+
 }
 
 PartType.init(
@@ -18,24 +25,6 @@ PartType.init(
             primaryKey: true,
             unique: true,
             allowNull: false,
-        },
-        abstractPartTypeId: {
-            type: DataTypes.INTEGER,
-            allowNull: true,
-            defaultValue: null,
-            references: {
-                model: AbstractPartType,
-                key: "abstractPartTypeId",
-            },
-        },
-        partGradeId: {
-            type: DataTypes.INTEGER,
-            allowNull: true,
-            defaultValue: null,
-            references: {
-                model: PartGrade,
-                key: "partGradeId",
-            },
         },
         partType: {
             type: DataTypes.STRING,
@@ -67,5 +56,15 @@ PartType.init(
         ],
     },
 );
+
+PartType.belongsTo(AbstractPartType, {
+    foreignKey: "partTypeId",
+    as: "abstractPartType",
+});
+
+PartType.belongsTo(PartGrade, {
+    foreignKey: "partTypeId",
+    as: "partGrade",
+});
 
 // Path: packages/database/src/models/PartType.ts

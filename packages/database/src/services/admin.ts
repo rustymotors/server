@@ -1,8 +1,12 @@
-import type { DatabaseTransactionConnection } from "slonik";
 import { getDatabase } from "./database.js";
 import * as Sentry from "@sentry/node";
 import { getServerLogger } from "@rustymotors/shared";
 import { PTSkin } from "../models/PTSkin.js";
+import { Player } from "../models/Player.js";
+import { BrandedPart } from "../models/BrandedPart.js";
+import { Sequelize } from "sequelize";
+import { PartType } from "../models/PartType.js";
+import { AbstractPartType } from "../models/AbstractPartType.js";
 
 const log = getServerLogger();
 
@@ -18,10 +22,9 @@ async function playerExists(playerId: number): Promise<boolean> {
             },
         },
         async () => {
-            const { slonik, sql } = await getDatabase();
-            return slonik.exists(sql.typeAlias("id")`
-        SELECT 1 FROM player WHERE playerid = ${playerId}
-    `);
+            return await Player.findByPk(playerId).then(
+                (player) => player !== null,
+            );
         },
     );
 }
@@ -39,12 +42,7 @@ async function skinExists(skinId: number): Promise<boolean> {
             },
         },
         async () => {
-            try {
-                return await PTSkin.findByPk(skinId).then((skin) => skin !== null);
-            } catch (error) {
-                log.error(`Error checking if skin with id ${skinId} exists: ${error as string}`);
-                throw Error(`Error checking if skin with id ${skinId} exists: ${error as string}`);
-            }
+            return await PTSkin.findByPk(skinId).then((skin) => skin !== null);
         },
     );
 }
@@ -64,20 +62,36 @@ async function getAbstractPartTypeIDForBrandedPartID(
             },
         },
         async () => {
-            const { slonik, sql } = await getDatabase();
-            return slonik.one(sql.typeAlias("abstractPartType")`
-        SELECT pt.abstractparttypeid 
-        FROM brandedpart bp
-        inner join parttype pt on bp.parttypeid = pt.parttypeid
-        WHERE bp.brandedpartid = ${brandedPartId}
-    `);
+            // Get the abstract part type id for the branded part
+            // link is brandedPart.partTypeId -> partType.abstractparttypeId
+            const brandedPart = await BrandedPart.findByPk(brandedPartId, {
+                include: PartType,
+            });
+
+            if (!brandedPart) {
+                throw Error(`branded part with id ${brandedPartId} does not exist`);
+            }
+
+            const partType = brandedPart.partType.
+
+            return partType.getPartType().then((partType) => {
+                if (!partType) {
+                    throw Error(
+                        `part type with id ${partType.partTypeId} does not exist`,
+                    );
+                }
+
+                return partType.abstractPartTypeId;
+            }
+
         },
     );
 
     if (!abstractPartTypeId) {
         throw Error(`branded part with id ${brandedPartId} does not exist`);
     }
-    return abstractPartTypeId.abstractparttypeid;
+
+    return abstractPartTypeId.
 }
 
 async function isAbstractPartTypeAVehicle(
