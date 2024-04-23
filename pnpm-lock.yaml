@@ -49,11 +49,11 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0
       '@sentry/node':
-        specifier: 7.111.0
-        version: 7.111.0
+        specifier: 7.112.0
+        version: 7.112.0
       '@sentry/profiling-node':
-        specifier: 7.111.0
-        version: 7.111.0
+        specifier: 7.112.0
+        version: 7.112.0
       '@slonik/migrator':
         specifier: 0.12.0
         version: 0.12.0(@types/node@20.12.7)(slonik@40.2.6)
@@ -107,7 +107,7 @@ importers:
     dependencies:
       '@sentry/node':
         specifier: ^7.102.0
-        version: 7.111.0
+        version: 7.112.0
       slonik:
         specifier: ^40.0.0
         version: 40.2.6(zod@3.23.3)
@@ -128,7 +128,7 @@ importers:
         version: link:../shared-packets
       '@sentry/node':
         specifier: ^7.102.0
-        version: 7.111.0
+        version: 7.112.0
       fastify:
         specifier: ^4.25.2
         version: 4.26.2
@@ -147,7 +147,7 @@ importers:
     dependencies:
       '@sentry/node':
         specifier: ^7.102.0
-        version: 7.111.0
+        version: 7.112.0
       short-unique-id:
         specifier: ^5.0.3
         version: 5.0.3
@@ -1123,13 +1123,13 @@ packages:
       - '@types/node'
     dev: true
 
-  /@sentry-internal/tracing@7.111.0:
-    resolution: {integrity: sha512-CgXly8rsdu4loWVKi2RqpInH3C2cVBuaYsx4ZP5IJpzSinsUAMyyr3Pc0PZzCyoVpBBXGBGj/4HhFsY3q6Z0Vg==}
+  /@sentry-internal/tracing@7.112.0:
+    resolution: {integrity: sha512-PkA3NaSg4nTWp9pwVsV9x0EBiY0pEAnIboIpMuLGE5MJ/FL10NC5Fn1GPebcxNnOou62dM7P/z7Wtcm8czAn6A==}
     engines: {node: '>=8'}
     dependencies:
-      '@sentry/core': 7.111.0
-      '@sentry/types': 7.111.0
-      '@sentry/utils': 7.111.0
+      '@sentry/core': 7.112.0
+      '@sentry/types': 7.112.0
+      '@sentry/utils': 7.112.0
 
   /@sentry/babel-plugin-component-annotate@2.16.1:
     resolution: {integrity: sha512-pJka66URsqQbk6hTs9H1XFpUeI0xxuqLYf9Dy5pRGNHSJMtfv91U+CaYSWt03aRRMGDXMduh62zAAY7Wf0HO+A==}
@@ -1239,12 +1239,12 @@ packages:
       - supports-color
     dev: false
 
-  /@sentry/core@7.111.0:
-    resolution: {integrity: sha512-/ljeMjZu8CSrLGrseBi/7S2zRIFsqMcvfyG6Nwgfc07J9nbHt8/MqouE1bXZfiaILqDBpK7BK9MLAAph4mkAWg==}
+  /@sentry/core@7.112.0:
+    resolution: {integrity: sha512-q4K0fTULXMf9vb0Je6qFwQyVjfMvuPiKRRvRHcpWvWudV7oTcfPixlbbIQaj3OiY3nrjk5q86hktqboI/Z6ISw==}
     engines: {node: '>=8'}
     dependencies:
-      '@sentry/types': 7.111.0
-      '@sentry/utils': 7.111.0
+      '@sentry/types': 7.112.0
+      '@sentry/utils': 7.112.0
 
   /@sentry/esbuild-plugin@2.16.1:
     resolution: {integrity: sha512-xwkuDKxNfEL8hMjlD/ByjmTeC1QiLULTsmdiYFjlz9HcYUtjU175V+cmOKqWrXAg/j3DmPZM9zNS9sdg3E7oVg==}
@@ -1258,17 +1258,27 @@ packages:
       - supports-color
     dev: false
 
-  /@sentry/node@7.111.0:
-    resolution: {integrity: sha512-bTLZNETT7W89HEk04rwsch02KSpu++Yec/BEyM3AxUNY+ZQ9ZLL/lrNZuCwbe7fURpKoZrvGAhxpPjgs5UcB9w==}
+  /@sentry/integrations@7.112.0:
+    resolution: {integrity: sha512-brN6eZkXuz1e/OKhMGJsAZjc0cUU+5G+LQWet+gGXWVGM2v7uY7mKDHr5Yl/c8WxeJBurjJzJn7YmtmR9++ZKQ==}
     engines: {node: '>=8'}
     dependencies:
-      '@sentry-internal/tracing': 7.111.0
-      '@sentry/core': 7.111.0
-      '@sentry/types': 7.111.0
-      '@sentry/utils': 7.111.0
+      '@sentry/core': 7.112.0
+      '@sentry/types': 7.112.0
+      '@sentry/utils': 7.112.0
+      localforage: 1.10.0
 
-  /@sentry/profiling-node@7.111.0:
-    resolution: {integrity: sha512-xJCi2EBf0rQ68kSuQHdKpLDOTjQJUtFGHn0QlaVacchgZZaTiDfJKD5dQhuBJZaul5Nrjq8OOFzwRo2/G8uVIA==}
+  /@sentry/node@7.112.0:
+    resolution: {integrity: sha512-Me0Um3PbPQADHhm5zJ1EM4/me+i1OMT3w+1ZUgkPGX+2Wtqfp0djHF/SzCOL45X1IR+YLVrcCTpyAWRhPZAdVw==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry-internal/tracing': 7.112.0
+      '@sentry/core': 7.112.0
+      '@sentry/integrations': 7.112.0
+      '@sentry/types': 7.112.0
+      '@sentry/utils': 7.112.0
+
+  /@sentry/profiling-node@7.112.0:
+    resolution: {integrity: sha512-ha8wW9zhzdagl0IGym1eJfYvNPJ0h/WiG2oXPZ8LNJbGIVDv8ECCH8t0WwYyOb47oYAd6tOwFmk3dT46Z/TyRg==}
     engines: {node: '>=8.0.0'}
     hasBin: true
     requiresBuild: true
@@ -1277,15 +1287,15 @@ packages:
       node-abi: 3.56.0
     dev: true
 
-  /@sentry/types@7.111.0:
-    resolution: {integrity: sha512-Oti4pgQ55+FBHKKcHGu51ZUxO1u52G5iVNK4mbtAN+5ArSCy/2s1H8IDJiOMswn3acfUnCR0oB/QsbEgAPZ26g==}
+  /@sentry/types@7.112.0:
+    resolution: {integrity: sha512-ASonavVCSrgDjMyWjuNMSytKMGYJq7d/1+IoBJsQFLgLe1gLIXuDNbhfUAM4A+muQUGZepV9iRX4ZYhiROMHVQ==}
     engines: {node: '>=8'}
 
-  /@sentry/utils@7.111.0:
-    resolution: {integrity: sha512-CB5rz1EgCSwj3xoXogsCZ5pQtfERrURc/ItcCuoaijUhkD0iMq5MCNWMHW3mBsBrqx/Oba+XGvDu0t/5+SWwBg==}
+  /@sentry/utils@7.112.0:
+    resolution: {integrity: sha512-dNGcNWKoJE9VwIAZxQsqC6/7BC+8wn1rT7Km9S8xltcjhRvaK4n3QZwXoNLHjNWT0mS2lZaFyRx2hsHjblQqLg==}
     engines: {node: '>=8'}
     dependencies:
-      '@sentry/types': 7.111.0
+      '@sentry/types': 7.112.0
 
   /@sinclair/typebox@0.27.8:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
@@ -2487,6 +2497,9 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
+  /immediate@3.0.6:
+    resolution: {integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==}
+
   /import-fresh@3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
     engines: {node: '>=6'}
@@ -2683,6 +2696,11 @@ packages:
       type-check: 0.4.0
     dev: true
 
+  /lie@3.1.1:
+    resolution: {integrity: sha512-RiNhHysUjhrDQntfYSfY4MU24coXXdEOgw9WGcKHNeEwffDYbF//u87M1EWaMGzuFoSbqW0C9C6lEEhDOAswfw==}
+    dependencies:
+      immediate: 3.0.6
+
   /light-my-request@5.12.0:
     resolution: {integrity: sha512-P526OX6E7aeCIfw/9UyJNsAISfcFETghysaWHQAlQYayynShT08MOj4c6fBCvTWBrHXSvqBAKDp3amUPSCQI4w==}
     dependencies:
@@ -2698,6 +2716,11 @@ packages:
       mlly: 1.6.1
       pkg-types: 1.0.3
     dev: true
+
+  /localforage@1.10.0:
+    resolution: {integrity: sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==}
+    dependencies:
+      lie: 3.1.1
 
   /locate-path@6.0.0:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
