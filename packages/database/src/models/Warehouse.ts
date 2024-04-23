@@ -37,7 +37,7 @@ Warehouse.init(
         },
     },
     {
-        sequelize: await getDatabase(),
+        sequelize: getDatabase(),
         modelName: "Warehouse",
         tableName: "warehouses",
         timestamps: false,

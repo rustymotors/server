@@ -50,7 +50,7 @@ StockAssembly.init(
         },
     },
     {
-        sequelize: await getDatabase(),
+        sequelize: getDatabase(),
         modelName: "StockAssembly",
         tableName: "stock_assemblies",
         timestamps: false,

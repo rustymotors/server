@@ -61,7 +61,7 @@ BrandedPart.init(
         },
     },
     {
-        sequelize: await getDatabase(),
+        sequelize: getDatabase(),
         modelName: "BrandedPart",
         tableName: "branded_parts",
         timestamps: false,
