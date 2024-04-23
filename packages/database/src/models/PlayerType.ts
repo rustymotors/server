@@ -1,36 +1,34 @@
 import { DataTypes, Model } from "sequelize";
 import { getDatabase } from "../services/database.js";
 
-export class AttachmentPoint extends Model {};
+export class PlayerType extends Model {}
 
-AttachmentPoint.init(
+PlayerType.init(
     {
-        attachmentPointId: {
-            type: DataTypes.INTEGER,
+        playerTypeId: {
+            type: DataTypes.SMALLINT,
             primaryKey: true,
             unique: true,
             allowNull: false,
         },
-        attachmentPoint: {
+        playerType: {
             type: DataTypes.STRING,
             validate: {
-                len: [1, 100],
+                len: [1, 50],
             },
             allowNull: false,
         },
     },
     {
         sequelize: getDatabase(),
-        modelName: "AttachmentPoint",
-        tableName: "attachment_points",
+        modelName: "PlayerType",
+        tableName: "player_types",
         timestamps: false,
         indexes: [
             {
-                fields: ["attachmentPointId"],
+                fields: ["playerTypeId"],
                 unique: true,
             },
         ],
     },
 );
-
-// Path: packages/database/src/models/AttachmentPoint.ts

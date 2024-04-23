@@ -10,5 +10,6 @@ export {
     buildVehiclePartTree,
     saveVehiclePartTree,
     saveVehicle,
-} from "./src/models/VehiclePartTree.js";
-export type { TPart } from "./src/models/Part.js";
+} from "./src/VehiclePartTree.js";
+export { getDatabase, createDatabase, populateDatabase } from "./src/services/database.js";
+

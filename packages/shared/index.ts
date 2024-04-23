@@ -37,3 +37,20 @@ export { ServerMessage } from "./src/ServerMessage.js";
 export { MessageNode } from "./MessageNode.js";
 export type { TServerLogger, ServerMessageType } from "./types.js";
 export { Timestamp } from "./Timestamp.js";
+
+export interface KeypressEvent {
+    sequence: string;
+    name: string;
+    ctrl: boolean;
+    meta: boolean;
+    shift: boolean;
+}
+
+export interface ConnectionRecord {
+    customerId: number;
+    connectionId: string;
+    sessionKey: string;
+    sKey: string;
+    contextId: string;
+}
+

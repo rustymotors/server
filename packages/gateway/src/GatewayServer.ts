@@ -29,6 +29,7 @@ import {
     gameProfiles,
     populateGameProfiles,
 } from "../../nps/services/profile.js";
+import { createDatabase, populateDatabase } from "../../database/index.js";
 
 /**
  * @module gateway
@@ -252,6 +253,7 @@ export class Gateway {
     }
 
     async init() {
+        this.log.setName("gateway:GatewayServer:init");
         // Create the read thread
         this.readThread = new ConsoleThread({
             parentThread: this,
@@ -290,6 +292,19 @@ export class Gateway {
 
         populatePortToMessageTypes(portToMessageTypes);
         populateGameMessageProcessors(gameMessageProcessors);
+        try {
+            await createDatabase();
+        } catch (error) {
+            this.log.error(`Error creating database: ${error as string}`);
+            throw error;
+        }
+        try {
+            await populateDatabase();
+        } catch (error) {
+            this.log.error(`Error populating database: ${error as string}`);
+            throw error;
+        }
+
 
         state.save();
 

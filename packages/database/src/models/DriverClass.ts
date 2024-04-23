@@ -1,36 +1,36 @@
 import { DataTypes, Model } from "sequelize";
 import { getDatabase } from "../services/database.js";
 
-export class AttachmentPoint extends Model {};
+export class DriverClass extends Model {}
 
-AttachmentPoint.init(
+DriverClass.init(
     {
-        attachmentPointId: {
-            type: DataTypes.INTEGER,
+        driverClassId: {
+            type: DataTypes.SMALLINT,
             primaryKey: true,
             unique: true,
             allowNull: false,
         },
-        attachmentPoint: {
+        driverClass: {
             type: DataTypes.STRING,
             validate: {
-                len: [1, 100],
+                len: [1, 50],
             },
             allowNull: false,
         },
     },
     {
         sequelize: getDatabase(),
-        modelName: "AttachmentPoint",
-        tableName: "attachment_points",
+        modelName: "DriverClass",
+        tableName: "driver_classes",
         timestamps: false,
         indexes: [
             {
-                fields: ["attachmentPointId"],
+                fields: ["driverClassId"],
                 unique: true,
             },
         ],
     },
 );
 
-// Path: packages/database/src/models/AttachmentPoint.ts
+// Path: packages/database/src/models/DriverClass.ts

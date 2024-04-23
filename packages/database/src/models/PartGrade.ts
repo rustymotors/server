@@ -1,17 +1,41 @@
 import { DataTypes, Model } from "sequelize";
 import { getDatabase } from "../services/database.js";
 
-export class Brand extends Model {}
+export class PartGrade extends Model {}
 
-Brand.init(
+PartGrade.init(
     {
-        brandId: {
+        partGradeId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             unique: true,
             allowNull: false,
         },
-        brand: {
+        eText: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            defaultValue: null,
+            validate: {
+                len: [1, 50],
+            },
+        },
+        gText: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            defaultValue: null,
+            validate: {
+                len: [1, 50],
+            },
+        },
+        fText: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            defaultValue: null,
+            validate: {
+                len: [1, 50],
+            },
+        },
+        partGrade: {
             type: DataTypes.STRING,
             allowNull: true,
             defaultValue: null,
@@ -19,31 +43,19 @@ Brand.init(
                 len: [1, 100],
             },
         },
-        picName: {
-            type: DataTypes.STRING,
-            allowNull: true,
-            defaultValue: null,
-            validate: {
-                len: [1, 50],
-            },            
-        },
-        isStock: {
-            type: DataTypes.SMALLINT,
-            defaultValue: 0,
-        },
     },
     {
         sequelize: getDatabase(),
-        modelName: "Brand",
-        tableName: "brands",
+        modelName: "PartGrade",
+        tableName: "part_grades",
         timestamps: false,
         indexes: [
             {
-                fields: ["brandId"],
+                fields: ["partGradeId"],
                 unique: true,
             },
         ],
     },
 );
 
-// Path: packages/database/src/models/Brand.ts
+// Path: packages/database/src/models/PartGrade.ts

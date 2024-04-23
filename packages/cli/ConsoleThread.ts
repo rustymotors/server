@@ -1,5 +1,5 @@
 import { emitKeypressEvents } from "node:readline";
-import { SubThread, type TServerLogger } from "../shared";
+import { SubThread, type KeypressEvent, type TServerLogger } from "../shared";
 import { Gateway } from "../gateway/src/GatewayServer.js";
 
 /**
@@ -32,8 +32,7 @@ export class ConsoleThread extends SubThread {
         this.parentThread = parentThread;
     }
 
-    /** @param {import("../interfaces/index.js").KeypressEvent} key */
-    handleKeypressEvent(key: import("../interfaces/index.js").KeypressEvent) {
+    handleKeypressEvent(key: KeypressEvent) {
         const keyString = key.sequence;
 
         if (keyString === "x") {
@@ -62,7 +61,7 @@ export class ConsoleThread extends SubThread {
         process.stdin.resume();
         process.stdin.on("keypress", (str, key) => {
             if (key !== undefined) {
-                this.handleKeypressEvent(key);
+                this.handleKeypressEvent(key as KeypressEvent);
             }
         });
     }

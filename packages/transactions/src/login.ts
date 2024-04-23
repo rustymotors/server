@@ -37,6 +37,7 @@ async function createNewCarForPlayer(
     loginMessage: TLoginMessage,
     log: TServerLogger,
 ) {
+    log.setName("createNewCarForPlayer");
     try {
         const personaId = loginMessage._personaId;
         const lotOwnerId = loginMessage._lotOwnerId;

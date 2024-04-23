@@ -1,11 +1,10 @@
-import type { TBrand } from "./models/Brand.js";
-import type { VehiclePartTreeType } from "./models/VehiclePartTree.js";
-import { getSlonik } from "./services/database.js";
+import { Brand } from "./models/Brand.js";
+import type { VehiclePartTreeType } from "./VehiclePartTree.js";
 import * as Sentry from "@sentry/node";
 
-const brandCache = new Map<string, TBrand>();
+const brandCache = new Map<string, Brand>();
 
-export async function getBrand(brandName: string): Promise<TBrand | undefined> {
+export async function getBrand(brandName: string): Promise<Brand | undefined> {
     if (brandCache.has(brandName)) {
         return brandCache.get(brandName);
     }
@@ -20,12 +19,17 @@ export async function getBrand(brandName: string): Promise<TBrand | undefined> {
                 db: "postgres",
             },
         },
-        async (span) => {
-            const { slonik, sql } = await getSlonik();
+        async () => {
+            const brand = await Brand.findOne({
+                where: {
+                    brandName,
+                },
+            });
 
-            const brand = await slonik.one(sql.typeAlias("brand")`
-        SELECT brandid, brand, isstock FROM brand WHERE brandname = ${brandName}
-    `);
+            if (!brand) {
+                return undefined;
+            }
+
             brandCache.set(brandName, brand);
             return brand;
         },
@@ -37,11 +41,13 @@ const vehiclePartTreeCache = new Map<number, VehiclePartTreeType>();
 export async function getVehiclePartTree(
     vehicleId: number,
 ): Promise<VehiclePartTreeType | undefined> {
-    if (vehiclePartTreeCache.has(vehicleId)) {
-        return vehiclePartTreeCache.get(vehicleId);
-    }
-
-    return undefined;
+    return new Promise((resolve, reject) => {
+        if (vehiclePartTreeCache.has(vehicleId)) {
+            resolve(vehiclePartTreeCache.get(vehicleId));
+        } else {
+            reject(new Error(`Vehicle part tree not found for vehicle ID ${vehicleId}`));
+        }
+    });
 }
 
 export async function setVehiclePartTree(
@@ -49,4 +55,5 @@ export async function setVehiclePartTree(
     vehiclePartTree: VehiclePartTreeType,
 ): Promise<void> {
     vehiclePartTreeCache.set(vehicleId, vehiclePartTree);
+    return Promise.resolve();
 }

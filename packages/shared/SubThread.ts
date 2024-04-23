@@ -6,10 +6,10 @@ import { EventEmitter } from "node:events";
 import type { TServerLogger } from "./types.js";
 
 export class SubThread extends EventEmitter {
-    name: any;
-    log: any;
+    name: string;
+    log: TServerLogger;
     loopInterval: number;
-    timer: any;
+    timer: ReturnType<typeof setInterval> | null = null;
 
     constructor(name: string, log: TServerLogger, loopInterval = 100) {
         super();

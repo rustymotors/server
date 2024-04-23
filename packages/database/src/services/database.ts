@@ -1,92 +1,27 @@
-import { createPool, type DatabasePool, createSqlTag } from "slonik";
-import { z } from "zod";
+import { Sequelize } from "sequelize";
+import { PTSkin } from "../models/PTSkin";
+import { SkinType } from "../models/SkinType";
+import { PartType } from "../models/PartType";
+import { AbstractPartType } from "../models/AbstractPartType";
+import { PartGrade } from "../models/PartGrade";
 
-let slonik: DatabasePool;
-let sql: ReturnType<typeof createSqlTag>;
+let database: Sequelize;
 
-function initSQL() {
-    return createSqlTag({
-        typeAliases: {
-            vehicleWithOwner: z.object({
-                vehicleid: z.number(),
-                skinid: z.number(),
-                flags: z.number(),
-                class: z.number(),
-                damageinfo: z.instanceof(Buffer) || z.null(),
-                ownerid: z.number(),
-            }),
-            dbPart: z.object({
-                partid: z.number(),
-                parentpartid: z.number(),
-                brandedpartid: z.number(),
-                percentdamage: z.number(),
-                itemwear: z.number(),
-                attachmentpointid: z.number(),
-                ownerid: z.number(),
-                partname: z.string() || z.null(),
-                repaircost: z.number(),
-                scrapvalue: z.number(),
-            }),
-            id: z.number(),
-            brandedPart: z.object({
-                partid: z.number() || z.null(),
-                parentpartid: z.number() || z.null(),
-                brandedpartid: z.number() || z.null(),
-                attachmentpointid: z.number() || z.null(),
-            }),
-            part: z.object({
-                partid: z.number(),
-                parentpartid: z.number(),
-                brandedpartid: z.number(),
-                percentdamage: z.number(),
-                itemwear: z.number(),
-                attachmentpointid: z.number(),
-                partname: z.string() || z.null(),
-                ownerid: z.number(),
-            }),
-            abstractPartType: z.object({
-                abstractparttypeid: z.number(),
-            }),
-            ptSkin: z.object({
-                skinid: z.number(),
-                defaultflag: z.number(),
-            }),
-            nextPartId: z.object({
-                nextval: z.bigint(),
-            }),
-            detailedPart: z.object({
-                brandedpartid: z.number(),
-                parttypeid: z.number(),
-                abstractparttypeid: z.number(),
-                parentabstractparttypeid: z.number(),
-                attachmentpointid: z.number(),
-            }),
-            vehicle: z.object({
-                vehicleid: z.number(),
-                skinid: z.number(),
-                flags: z.number(),
-                class: z.number(),
-                infosetting: z.number(),
-                damageinfo: z.instanceof(Buffer) || z.null(),
-            }),
-            brand: z.object({
-                brandId: z.number(),
-                brand: z.string(),
-                isStock: z.boolean(),
-            }),
-        },
-    });
+export function getDatabase(): Sequelize {
+    if (!database) {
+        database = new Sequelize("postgres://user:password@localhost:5432/rm");
+    }
+    return database;
 }
 
-export async function getSlonik(): Promise<{
-    slonik: DatabasePool;
-    sql: ReturnType<typeof createSqlTag>;
-}> {
-    if (!slonik) {
-        slonik = await createPool("postgres://user:password@localhost:5432/rm");
-    }
-    if (!sql) {
-        sql = initSQL();
-    }
-    return { slonik, sql };
+export async function createDatabase() {
+    await SkinType.sync();
+    await AbstractPartType.sync();
+    await PartGrade.sync();
+    await PartType.sync();
+    await PTSkin.sync();
+}
+
+export async function populateDatabase() {
+    await Promise.all([]);
 }

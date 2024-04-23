@@ -12,7 +12,7 @@
         "module": "ES2022",
         "lib": ["ES2022"],
         "declaration": true,
-        "emitDeclarationOnly": true
+        "noEmit": true,
     },
     "include": ["apps/**/*", "packages/**/*"]
 }
