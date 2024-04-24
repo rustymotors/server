@@ -3,10 +3,9 @@ import * as Sentry from "@sentry/node";
 import { getServerLogger } from "@rustymotors/shared";
 import { PTSkin } from "../models/PTSkin.js";
 import { Player } from "../models/Player.js";
-import { BrandedPart } from "../models/BrandedPart.js";
-import { Sequelize } from "sequelize";
-import { PartType } from "../models/PartType.js";
-import { AbstractPartType } from "../models/AbstractPartType.js";
+import { brandedPart as brandedPartSchema } from "../../../../schema/brandedPart.js";
+import { partType as partTypeSchema } from "../../../../schema/partType.js";
+import { eq } from "drizzle-orm";
 
 const log = getServerLogger();
 
@@ -64,34 +63,38 @@ async function getAbstractPartTypeIDForBrandedPartID(
         async () => {
             // Get the abstract part type id for the branded part
             // link is brandedPart.partTypeId -> partType.abstractparttypeId
-            const brandedPart = await BrandedPart.findByPk(brandedPartId, {
-                include: PartType,
-            });
 
-            if (!brandedPart) {
-                throw Error(`branded part with id ${brandedPartId} does not exist`);
-            }
+            const abstractPartTypeId = await getDatabase()
+                .select()
+                .from(brandedPartSchema)
+                .leftJoin(
+                    partTypeSchema,
+                    eq(brandedPartSchema.partTypeId, partTypeSchema.partTypeId),
+                )
+                .where(eq(brandedPartSchema.brandedPartId, brandedPartId))
+                .then((rows) => {
+                    if (rows.length === 0 || !rows[0]) {
+                        throw Error(
+                            `branded part with id ${brandedPartId} does not exist`,
+                        );
+                    }
 
-            const partType = brandedPart.partType.
+                    const partType = rows[0].part_type;
 
-            return partType.getPartType().then((partType) => {
-                if (!partType) {
-                    throw Error(
-                        `part type with id ${partType.partTypeId} does not exist`,
-                    );
-                }
+                    if (!partType) {
+                        throw Error(
+                            `part type record id ${rows[0].branded_part.partTypeId} does not exist`,
+                        );
+                    }
 
-                return partType.abstractPartTypeId;
-            }
+                    return partType.abstractPartTypeId;
+                });
 
+            return abstractPartTypeId;
         },
     );
 
-    if (!abstractPartTypeId) {
-        throw Error(`branded part with id ${brandedPartId} does not exist`);
-    }
-
-    return abstractPartTypeId.
+    return abstractPartTypeId;
 }
 
 async function isAbstractPartTypeAVehicle(
