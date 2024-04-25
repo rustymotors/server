@@ -36,8 +36,8 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3
       slonik:
-        specifier: ^40.0.0
-        version: 40.2.6(zod@3.23.4)
+        specifier: ^41.0.0
+        version: 41.1.0(zod@3.23.4)
       tsx:
         specifier: ^4.7.1
         version: 4.7.2
@@ -56,7 +56,7 @@ importers:
         version: 7.112.2
       '@slonik/migrator':
         specifier: 0.12.0
-        version: 0.12.0(@types/node@20.12.7)(slonik@40.2.6)
+        version: 0.12.0(@types/node@20.12.7)(slonik@41.1.0)
       '@types/node':
         specifier: 20.12.7
         version: 20.12.7
@@ -109,8 +109,8 @@ importers:
         specifier: ^7.102.0
         version: 7.112.2
       slonik:
-        specifier: ^40.0.0
-        version: 40.2.6(zod@3.23.4)
+        specifier: ^41.0.0
+        version: 41.1.0(zod@3.23.4)
       zod:
         specifier: ^3.22.4
         version: 3.23.4
@@ -1301,13 +1301,13 @@ packages:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
     dev: true
 
-  /@slonik/migrator@0.12.0(@types/node@20.12.7)(slonik@40.2.6):
+  /@slonik/migrator@0.12.0(@types/node@20.12.7)(slonik@41.1.0):
     resolution: {integrity: sha512-2kAXCO/iW9/VOYlfl8Jza4fQpi5Q8+JUyB38YFUxPiWNc+6o41GGND2aIpnyr6EPFNRXdg5x+Fu8+SMyMvMXpQ==}
     peerDependencies:
       slonik: 27 - 29
     dependencies:
       '@rushstack/ts-command-line': 4.19.1(@types/node@20.12.7)
-      slonik: 40.2.6(zod@3.23.4)
+      slonik: 41.1.0(zod@3.23.4)
       umzug: 3.7.0(@types/node@20.12.7)
     transitivePeerDependencies:
       - '@types/node'
@@ -3554,8 +3554,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /slonik@40.2.6(zod@3.23.4):
-    resolution: {integrity: sha512-FzgNQ4O76ZMwnaI/AUNF/CVgpKjTRdG8pxz23b3n5wTdJYXAeQtBqGqedULNeNSk9+4uy0PgyGsGG14Dc1I89w==}
+  /slonik@41.1.0(zod@3.23.4):
+    resolution: {integrity: sha512-Y3AE795poJoqEz3xGtRh6b0UlRXtfXQZAODM2GmELp7ySE8x+UiXbXDZS1hI8uPAVKM8lyja3mZh7Mgst4Odeg==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3
