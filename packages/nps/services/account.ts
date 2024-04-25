@@ -1,35 +1,59 @@
-export type User = {
-    username: string;
-    password: string;
-    customerId: number;
-    createdAt: Date;
-    updatedAt: Date;
-};
+import { getDatabase } from "../../database";
+import { user as userSchema } from "../../../schema/user";
+import { eq } from "drizzle-orm";
+import { getServerLogger } from "../../shared";
 
-const users: User[] = [];
+const log = getServerLogger();
+
+
 
 export async function populateGameUsers(): Promise<void> {
-    // Create the default admin user
-    users.push({
-        username: "admin",
-        password: "admin",
-        customerId: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    });
 
-    // Create the default molly user
-    users.push({
-        username: "molly",
-        password: "molly",
-        customerId: 2,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    });
+    await getDatabase().insert(userSchema).values([
+        {
+            userId: 1,
+            userName: "admin",
+            password: "admin",
+            customerId: 1,
+            isSuperUser: 1,
+        },
+        {
+            userId: 2,
+            userName: "molly",
+            password: "molly",
+            customerId: 2,
+            isSuperUser: 0,
+        },
+    ]).onConflictDoNothing();
 }
 
-export async function getUser(username: string): Promise<User | undefined> {
-    return users.find((user) => user.username === username);
+export async function getUser(username: string): Promise<typeof userSchema.$inferSelect | null> {
+    
+    const userAccount = await getDatabase().select().from(userSchema).where(
+        eq(userSchema.userName, username )
+    ).limit(1).then((result) => {
+        if (result.length === 0) {
+            return null;
+        }
+
+        const record =  result[0];
+
+        if (typeof record === "undefined") {
+            return null;
+        }
+
+        return {
+            userId: record.userId,
+            userName: record.userName,
+            password: record.password,
+            customerId: record.customerId,
+            isSuperUser: record.isSuperUser,
+        }
+    });
+
+    log.debug(`getUser: ${JSON.stringify(userAccount)}`);
+
+    return userAccount
 }
 
 export async function addUser(user: User): Promise<void> {

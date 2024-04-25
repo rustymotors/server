@@ -3,11 +3,6 @@ import { GenericRequestMessage } from "../GenericRequestMessage.js";
 import { OldServerMessage, getServerLogger } from "../../../shared";
 import type { MessageHandlerArgs, MessageHandlerResult } from "../../types.js";
 import { CarInfoMessage } from "../messageStructs/CarInfoMessage.js";
-import {
-    getVehiclePartTree,
-    type TPart,
-    buildVehiclePartTreeFromDB,
-} from "../../../database";
 
 const log = getServerLogger();
 
@@ -35,7 +30,7 @@ export class VehicleStruct {
             }
             return buffer;
         } catch (error) {
-            throw Error(`Error in VehicleStruct.serialize: ${error}`);
+            throw Error(`Error in VehicleStruct.serialize: ${error as string}`);
         }
     }
 
@@ -86,7 +81,7 @@ export class PartStruct {
             buffer.writeInt8(this.damage, 25);
             return buffer;
         } catch (error) {
-            log.error(`Error in PartStruct.serialize: ${error}`);
+            log.error(`Error in PartStruct.serialize: ${error as string}`);
             throw error;
         }
     }

@@ -1,5 +1,6 @@
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import pg from "pg";
+const { Pool } = pg;
 
 let database: NodePgDatabase;
 export function getDatabase(): NodePgDatabase {

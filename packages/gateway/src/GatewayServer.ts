@@ -29,7 +29,6 @@ import {
     gameProfiles,
     populateGameProfiles,
 } from "../../nps/services/profile.js";
-import { createDatabase, populateDatabase } from "../../database/index.js";
 
 /**
  * @module gateway
@@ -286,25 +285,12 @@ export class Gateway {
             await populateGameUsers();
             await populateGameProfiles(gameProfiles);
         } catch (error) {
-            this.log.error(`Error in populating game data: ${error}`);
+            this.log.error(`Error in populating game data: ${error as string}`);
             throw error;
         }
 
         populatePortToMessageTypes(portToMessageTypes);
         populateGameMessageProcessors(gameMessageProcessors);
-        try {
-            await createDatabase();
-        } catch (error) {
-            this.log.error(`Error creating database: ${error as string}`);
-            throw error;
-        }
-        try {
-            await populateDatabase();
-        } catch (error) {
-            this.log.error(`Error populating database: ${error as string}`);
-            throw error;
-        }
-
 
         state.save();
 

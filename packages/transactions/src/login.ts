@@ -1,12 +1,7 @@
 import { LoginCompleteMessage, TLoginMessage } from "./TLoginMessage.js";
 import { OldServerMessage } from "../../shared";
 import type { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
-import {
-    buildVehiclePartTree,
-    saveVehicle,
-    saveVehiclePartTree,
-} from "../../database";
-import type { TServerLogger, ServerMessageType } from "../../shared";
+import type { TServerLogger } from "../../shared";
 
 /**
  * @param {MessageHandlerArgs} args
