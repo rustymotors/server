@@ -24,7 +24,7 @@ import {
     portToMessageTypes,
     gameMessageProcessors,
 } from "../../nps/messageProcessors/index.js";
-import { populateGameUsers } from "../../nps/services/account.js";
+import { populateUsers } from "../../nps/services/account.js";
 import {
     gameProfiles,
     populateGameProfiles,
@@ -272,7 +272,7 @@ export class Gateway {
         this.webServer = fastify({
             logger: false,
         });
-        this.webServer.register(FastifySensible);
+        await this.webServer.register(FastifySensible);
 
         let state = fetchStateFromDatabase();
 
@@ -282,7 +282,7 @@ export class Gateway {
         state = addOnDataHandler(state, 43300, receiveTransactionsData);
 
         try {
-            await populateGameUsers();
+            await populateUsers();
             await populateGameProfiles(gameProfiles);
         } catch (error) {
             this.log.error(`Error in populating game data: ${error as string}`);

@@ -12,7 +12,7 @@ import { processEncryptedGameCommand } from "./processEncryptedGameCommand.js";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { processPing } from "./processPing.js";
 
-export type SocketCallback = (messages: Buffer[]) => Promise<void>;
+export type SocketCallback = (messages: Buffer[]) => void;
 
 export type MessageProcessor = (
     connectionId: string,
@@ -45,11 +45,12 @@ export function populateGameMessageProcessors(
     processors.set(4353, processEncryptedGameCommand); // 0x1101
 }
 
-export function getGameMessageProcessor(messageId: number): MessageProcessor {
+export function getGameMessageProcessor(messageId: number) {
     if (gameMessageProcessors.has(messageId) === true) {
         return gameMessageProcessors.get(messageId) as MessageProcessor;
     }
-    throw new MessageProcessorError(messageId, "No message processor found");
+
+    return undefined;
 }
 
 export class PortMapError extends Error {

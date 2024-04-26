@@ -163,7 +163,9 @@ export function onSocketConnection({
             messageType = getPortMessageType(localPort);
             log.debug(`Message type: ${messageType}`);
         } catch (error) {
-            log.error(`Error getting message type: ${(error as Error).message}`);
+            log.error(
+                `Error getting message type: ${(error as Error).message}`,
+            );
             throw error;
         }
 
@@ -174,13 +176,12 @@ export function onSocketConnection({
 
             // Call the message handler
             if (messageType === "Game") {
-                void handleGameMessage(
+                return handleGameMessage(
                     connectionId,
                     incomingDataAsBuffer,
                     log,
                     socketCallback,
                 );
-                return;
             }
         }
 
@@ -205,7 +206,9 @@ export function onSocketConnection({
                 const { messages } = response;
 
                 // Log the messages
-                log.trace(`Messages: ${messages.map((m) => m.toString()).join(", ")}`);
+                log.trace(
+                    `Messages: ${messages.map((m) => m.toString()).join(", ")}`,
+                );
 
                 // Serialize the messages
                 const serializedMessages = messages.map((m) => m.serialize());
@@ -244,7 +247,7 @@ function sendToSocket(
     }
 }
 
-export async function processGameMessage(
+export function processGameMessage(
     connectionId: string,
     message: OldGameMessage,
     log: TServerLogger,
@@ -256,22 +259,29 @@ export async function processGameMessage(
     // Get the message ID
     const messageId = message.header.getId();
 
-    try {
-        // Get the message processor
-        const messageProcessor = getGameMessageProcessor(messageId);
+    // Get the message processor
+    const messageProcessor = getGameMessageProcessor(messageId);
 
-        // Call the message processor
-        await messageProcessor(connectionId, message, socketCallback);
-    } catch (error) {
+    // If there is no message processor, throw an error
+    if (messageProcessor === undefined) {
+        log.error(`No message processor for message ID: ${messageId}`);
+        throw new MessageProcessorError(
+            messageId,
+            `No message processor for message ID: ${messageId}`,
+        );
+    }
+
+    // Call the message processor
+    messageProcessor(connectionId, message, socketCallback).catch((error) => {
         log.error(`Error processing message: ${(error as Error).message}`);
         throw new MessageProcessorError(
             messageId,
             `Error processing message: ${(error as Error).message}`,
         );
-    }
+    });
 }
 
-export async function handleGameMessage(
+export function handleGameMessage(
     connectionId: string,
     bytes: Buffer,
     log: TServerLogger,
@@ -304,7 +314,7 @@ export async function handleGameMessage(
         message.deserialize(bytes);
 
         // Process the message
-        await processGameMessage(connectionId, message, log, socketCallback);
+        void processGameMessage(connectionId, message, log, socketCallback);
     } catch (error) {
         const err = `Error processing game message: ${(error as Error).message}`;
         log.fatal(err);

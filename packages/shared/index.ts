@@ -35,7 +35,7 @@ export {
 export { RawMessage } from "./src/RawMessage.js";
 export { ServerMessage } from "./src/ServerMessage.js";
 export { MessageNode } from "./MessageNode.js";
-export type { TServerLogger, ServerMessageType } from "./types.js";
+export type * from "./types.js";
 export { Timestamp } from "./Timestamp.js";
 
 export interface KeypressEvent {

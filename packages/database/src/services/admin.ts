@@ -1,8 +1,7 @@
 import { getDatabase } from "./database.js";
 import * as Sentry from "@sentry/node";
 import { getServerLogger } from "@rustymotors/shared";
-import { PTSkin } from "../models/PTSkin.js";
-import { Player } from "../models/Player.js";
+import { player as playerSchema } from "../../../../schema/player.js";
 import { brandedPart as brandedPartSchema } from "../../../../schema/brandedPart.js";
 import { partType as partTypeSchema } from "../../../../schema/partType.js";
 import { eq } from "drizzle-orm";
@@ -49,7 +48,7 @@ async function skinExists(skinId: number): Promise<boolean> {
 async function getAbstractPartTypeIDForBrandedPartID(
     brandedPartId: number,
 ): Promise<number> {
-    const abstractPartTypeId = await Sentry.startSpan(
+    return Sentry.startSpan(
         {
             name: "GetAbstractPartTypeIDForBrandedPartID",
             op: "db.query",
@@ -93,8 +92,6 @@ async function getAbstractPartTypeIDForBrandedPartID(
             return abstractPartTypeId;
         },
     );
-
-    return abstractPartTypeId;
 }
 
 async function isAbstractPartTypeAVehicle(

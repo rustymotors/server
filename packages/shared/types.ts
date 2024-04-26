@@ -21,3 +21,9 @@ export type TServerLogger = {
     trace: (message: string) => void;
     setName: (name: string) => void;
 };
+
+export interface UserRecordMini {
+    contextId: string;
+    customerId: number;
+    userId: number;
+}

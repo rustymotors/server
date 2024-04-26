@@ -164,7 +164,7 @@ export function serializeStringRaw(
 class legacyHeader extends SerializableMixin(AbstractSerializable) {
     _size: number;
     id: number;
-    length: any;
+    length: number;
     constructor() {
         super();
         this._size = 4;
@@ -348,7 +348,7 @@ export class NPSHeader extends SerializableMixin(AbstractSerializable) {
  */
 export class serverHeader extends SerializableMixin(AbstractSerializable) {
     _size: number;
-    length: any;
+    length: number;
     mcoSig: string;
     sequence: number;
     flags: number;
@@ -669,7 +669,7 @@ export class ListMessage extends SerializedBuffer {
     }
 
     override toString() {
-        return `ListMessage: msgNo=${this._msgNo} listCount=${this._listCount} shouldExpectMoreMessages=${this._shouldExpectMoreMessages} list=${this._list}`;
+        return `ListMessage: msgNo=${this._msgNo} listCount=${this._listCount} shouldExpectMoreMessages=${this._shouldExpectMoreMessages} list=${this._list.toString()}`;
     }
 }
 
