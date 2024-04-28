@@ -21,18 +21,20 @@ type ServerLoggerOptions = {
  * @static
  * @property {ServerLogger} instance
  */
-export class ServerLogger {
+export class ServerLogger implements TServerLogger {
     logger: P.Logger;
     static instance: ServerLogger;
+    private name: string;
+    private oldName: string = "";
     /**
      * Creates an instance of ServerLogger.
      * @param {ServerLoggerOptions} options
      */
     constructor(options?: ServerLoggerOptions) {
-        const name = options?.name || "server";
+        this.name = options?.name || "server";
         const level = DEFAULT_LOG_LEVEL;
         this.logger = P.pino({
-            name,
+            name: this.name,
             level,
             transport: {
                 targets: [
@@ -101,7 +103,16 @@ export class ServerLogger {
     }
 
     setName(name: string) {
+        this.oldName = this.name;
         this.logger = this.logger.child({ name });
+    }
+
+    getName() {
+        return this.name;
+    }
+
+    resetName() {
+        this.logger = this.logger.child({ name: this.oldName });
     }
 }
 

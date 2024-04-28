@@ -26,6 +26,7 @@ export async function login({
     // Create new response packet
     const responsePacket = await loginComplete({ connectionId, packet, log });
 
+    log.resetName();
     return { connectionId, messages: responsePacket.messages };
 }
 async function createNewCarForPlayer(

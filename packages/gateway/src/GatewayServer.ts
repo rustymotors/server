@@ -29,6 +29,7 @@ import {
     gameProfiles,
     populateGameProfiles,
 } from "../../nps/services/profile.js";
+import { ScheduledThread } from "../../cli/ScheduledThread.js";
 
 /**
  * @module gateway
@@ -72,6 +73,8 @@ export class Gateway {
     static _instance: Gateway | undefined;
     webServer: import("fastify").FastifyInstance | undefined;
     readThread: ConsoleThread | undefined;
+    scheduledThread: ScheduledThread | undefined;
+
     /**
      * Creates an instance of GatewayServer.
      * @param {TGatewayOptions} options
@@ -146,7 +149,7 @@ export class Gateway {
         this.status = "running";
 
         // Initialize the GatewayServer
-        this.init();
+        await this.init();
 
         this.listeningPortList.forEach((port) => {
             const server = createSocketServer((s) => {
@@ -217,6 +220,11 @@ export class Gateway {
             this.readThread.stop();
         }
 
+        // Stop the scheduled thread
+        if (this.scheduledThread !== undefined) {
+            this.scheduledThread.stop();
+        }
+
         if (this.webServer === undefined) {
             throw new Error("webServer is undefined");
         }
@@ -241,10 +249,10 @@ export class Gateway {
      */
     handleReadThreadEvent(event: string) {
         if (event === "userExit") {
-            this.exit();
+            void this.exit();
         }
         if (event === "userRestart") {
-            this.restart();
+            void this.restart();
         }
         if (event === "userHelp") {
             this.help();
@@ -294,7 +302,14 @@ export class Gateway {
 
         state.save();
 
+        // Create the scheduled thread
+        this.scheduledThread = new ScheduledThread({
+            parentThread: this,
+            log: this.log,
+        });
+
         this.log.debug("GatewayServer initialized");
+        this.log.resetName();
     }
 
     help() {

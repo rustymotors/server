@@ -40,6 +40,7 @@ export async function getAbstractPartTypeId(partId: number): Promise<number> {
             });
         });
 
+        log.resetName();
         return partType;
     });
 

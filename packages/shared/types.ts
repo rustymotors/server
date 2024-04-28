@@ -20,6 +20,8 @@ export type TServerLogger = {
     debug: (message: string) => void;
     trace: (message: string) => void;
     setName: (name: string) => void;
+    getName: () => string;
+    resetName: () => void;
 };
 
 export interface UserRecordMini {

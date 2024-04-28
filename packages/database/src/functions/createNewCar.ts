@@ -7,6 +7,7 @@ import { part as partSchema } from "../../../../schema/part";
 import { player as playerSchema } from "../../../../schema/player";
 import { eq } from "drizzle-orm";
 import { transferPartAssembly } from "./transferPartAssembly";
+import { stockVehicleAttributes as stockVehicleAttributesSchema } from "../../../../schema/stockVehicleAttributes";
 /**
  * Create a new car
  * 
@@ -177,49 +178,65 @@ export async function createNewCar(
                 tx.rollback();
                 throw error;
             }
+            
+            // Get the owner
+            
+            const newOwner = await tx.select().from(playerSchema).where(eq(playerSchema.playerId, playerId)).limit(1).then((result) => {
+                return result[0];
+            });
+            
+            if (!newOwner) {
+                log.error(`Player ${playerId} not found`);
+                tx.rollback();            
+                throw new Error(`Player ${playerId} not found`);
+            }
+            
+            const oldBankBalance = newOwner.bankBalance;
+            
+            if (oldBankBalance === null) {
+                log.error(`Error getting bank balance for player ${playerId}`);
+                tx.rollback();
+                throw new Error(`Error getting bank balance for player ${playerId}`);
+            }
+            
+            
+            if (tradeInValue > 0) {
+                const newbankBalance = oldBankBalance + tradeInValue;
+                try {
+                    await tx.update(playerSchema).set({
+                        bankBalance: newbankBalance,
+                    }).where(eq(playerSchema.playerId, playerId));
+                } catch (error) {
+                    log.error(`Error adding trade-in value to player ${playerId}: ${error}`);
+                    tx.rollback();
+                    throw new Error(`Error adding trade-in value to player ${playerId}: ${error}`);
+                }
+            }
+            
+            // Old car trade-in complete
         }
+            
+            
+            const result = await tx.select({
+                carClass: stockVehicleAttributesSchema.carClass,
+                retailPrice: stockVehicleAttributesSchema.retailPrice
+        }).from(stockVehicleAttributesSchema).where(eq(stockVehicleAttributesSchema.brandedPartId, brandedPartId)).limit(1);
 
-        // Get the owner
+            if (typeof result[0] === "undefined") {
+                tx.rollback();
+                throw new Error(`Car ${brandedPartId} out of stock`);
+            };
 
-        const newOwner = await tx.select().from(playerSchema).where(eq(playerSchema.playerId, playerId)).limit(1).then((result) => {
-            return result[0];
-        });
+        carClass  = result[0].carClass;
+        retailPrice = result[0].retailPrice;
 
-        if (!newOwner) {
-            log.error(`Player ${playerId} not found`);
-            tx.rollback();            
-            throw new Error(`Player ${playerId} not found`);
+        if (dealOfTheDayBrandedPartId === brandedPartId) {
+            dealOfTheDayDiscount = await tx.select({
+                
         }
-
-        const oldBankBalance = newOwner.bankBalance;
-
-        if (oldBankBalance === null) {
-            log.error(`Error getting bank balance for player ${playerId}`);
-            tx.rollback();
-            throw new Error(`Error getting bank balance for player ${playerId}`);
-        }
-
-
-        if (tradeInValue > 0) {
-            const newbankBalance = oldBankBalance + tradeInValue;
-try {
-                await tx.update(playerSchema).set({
-                    bankBalance: newbankBalance,
-                }).where(eq(playerSchema.playerId, playerId));
-} catch (error) {
-        log.error(`Error adding trade-in value to player ${playerId}: ${error}`);
-        tx.rollback();
-        throw new Error(`Error adding trade-in value to player ${playerId}: ${error}`);
-}
-        }
-
-        // Old car trade-in complete
-
         
-
-
         log.debug("Transaction committed");
     }
-
+    log.resetName();
     return Promise.resolve(0);    
 }

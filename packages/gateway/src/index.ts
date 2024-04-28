@@ -228,6 +228,7 @@ export function onSocketConnection({
 
         incomingSocket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
     }
+    log.resetName();
 }
 
 function sendToSocket(

@@ -12,13 +12,13 @@ export const stockAssembly = pgTable(
     {
         parentBrandedPartId: integer("parent_branded_part_id").references(() => brandedPart.brandedPartId).notNull().primaryKey(),
         childBrandedPartId: integer("child_branded_part_id").references(() => brandedPart.brandedPartId).notNull(),
-        attachmentPoointId: integer("attachment_point_id").references(() => attachmentPoint.attachmentPointId).notNull(),
+        attachmentPointId: integer("attachment_point_id").references(() => attachmentPoint.attachmentPointId).notNull(),
         configDefault: smallint("config_default").notNull(),
         physicsDefault: smallint("physics_default").notNull(),
     },
     (table) => {
         return {
-            idIdx: index("stock_assembly_id_idx").on(table.parentBrandedPartId, table.childBrandedPartId, table.attachmentPoointId),
+            idIdx: index("stock_assembly_id_idx").on(table.parentBrandedPartId, table.childBrandedPartId, table.attachmentPointId),
         };
     },
 );
