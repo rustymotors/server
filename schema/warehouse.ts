@@ -14,6 +14,7 @@ export const warehouse = pgTable(
         skinId: integer("skin_id").references(() => skin.skinId).notNull(),
         playerId: integer("player_id").references(() => player.playerId).notNull().primaryKey(),
         qtyAvail: integer("qty_avail"),
+        isDealOfTheDay: integer("is_deal_of_the_day").notNull().default(0),
     },
     (table) => {
         return {

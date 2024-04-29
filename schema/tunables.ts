@@ -61,5 +61,7 @@ export const tunables = pgTable(
         classifiedAdMaxSize: integer("classified_ad_max_size").notNull(),
         classifiedAdMaxPerPersona: integer("classified_ad_max_per_persona").notNull(),
         papAwardPercentage: integer("pap_award_percentage").notNull(),
+        dealOfTheDayBrandedPartId: integer("deal_of_the_day_branded_part_id").notNull(),
+        dealOfTheDayDiscount: integer("deal_of_the_day_discount").notNull(),
     },    
 );

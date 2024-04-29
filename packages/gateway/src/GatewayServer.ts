@@ -4,7 +4,6 @@ import fastify from "fastify";
 import {
     Configuration,
     getServerConfiguration,
-    addOnDataHandler,
     createInitialState,
     fetchStateFromDatabase,
     type TServerLogger,
@@ -12,10 +11,6 @@ import {
 import { ConsoleThread } from "../../cli/ConsoleThread.js";
 import { addWebRoutes } from "./web.js";
 
-import { receiveLoginData } from "../../login/src/index.js";
-import { receivePersonaData } from "../../persona/src/internal.js";
-import { receiveLobbyData } from "../../lobby/src/internal.js";
-import { receiveTransactionsData } from "../../transactions/src/internal.js";
 import FastifySensible from "@fastify/sensible";
 
 import {
@@ -30,6 +25,7 @@ import {
     populateGameProfiles,
 } from "../../nps/services/profile.js";
 import { ScheduledThread } from "../../cli/ScheduledThread.js";
+import { populateServerMessageProcessors } from "../../mcots/index.js";
 
 /**
  * @module gateway
@@ -282,12 +278,7 @@ export class Gateway {
         });
         await this.webServer.register(FastifySensible);
 
-        let state = fetchStateFromDatabase();
-
-        state = addOnDataHandler(state, 8226, receiveLoginData);
-        state = addOnDataHandler(state, 8228, receivePersonaData);
-        state = addOnDataHandler(state, 7003, receiveLobbyData);
-        state = addOnDataHandler(state, 43300, receiveTransactionsData);
+        const state = fetchStateFromDatabase();
 
         try {
             await populateUsers();
@@ -299,6 +290,8 @@ export class Gateway {
 
         populatePortToMessageTypes(portToMessageTypes);
         populateGameMessageProcessors(gameMessageProcessors);
+
+        populateServerMessageProcessors();
 
         state.save();
 
