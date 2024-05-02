@@ -1,5 +1,8 @@
 import { Serializable } from "./BasePacket.js";
 import type { ISerializable, IMessage } from "./interfaces.js";
+import { McosEncryptionPair, getServerLogger } from "../../shared";
+
+const log = getServerLogger();
 
 /**
  *
@@ -56,6 +59,33 @@ export class ServerMessageHeader extends Serializable implements ISerializable {
         this.flags ^= 0x08;
         return this;
     }
+
+    toString(): string {
+        return `ServerMessageHeader {length: ${this.length}, signature: ${this.signature}, sequence: ${this.sequence}, flags: ${this.flags}}`;
+    }
+
+    toHexString(): string {
+        return this.serialize().toString("hex");
+    }
+
+    getSequence(): number {
+        return this.sequence;
+    }
+
+    setSequence(sequence: number): ServerMessageHeader {
+        this.sequence = sequence;
+        return this;
+    }
+
+    setLength(length: number): ServerMessageHeader {
+        this.length = length;
+        return this;
+    }
+
+    setSignature(signature: string): ServerMessageHeader {
+        this.signature = signature;
+        return this;
+    }
 }
 
 export class ServerMessagePayload
@@ -103,22 +133,36 @@ export class ServerGenericRequest extends ServerMessagePayload {
     }
 
     override serialize(): Buffer {
-        const buffer = Buffer.alloc(this.getByteSize());
-        buffer.writeUInt16LE(this.messageId, 0);
-        buffer.writeUInt32LE(this._data.readUInt32LE(0), 2);
-        buffer.writeUInt32LE(this._data2.readUInt32LE(0), 6);
+        try {
+            const buffer = Buffer.alloc(this.getByteSize());
+            buffer.writeUInt16LE(this.messageId, 0);
+            buffer.writeUInt32LE(this._data.readUInt32LE(0), 2);
+            buffer.writeUInt32LE(this._data2.readUInt32LE(0), 6);
 
-        return buffer;
+            return buffer;
+        } catch (error) {
+            log.error(
+                `Error serializing ServerGenericRequest: ${error as string}`,
+            );
+            throw error;
+        }
     }
 
     override deserialize(data: Buffer): ServerGenericRequest {
-        this._assertEnoughData(data, this.getByteSize());
+        try {
+            this._assertEnoughData(data, this.getByteSize());
 
-        this.messageId = data.readUInt16LE(0);
-        this._data = data.subarray(2, 6);
-        this._data = data.subarray(6, 10);
+            this.messageId = data.readUInt16LE(0);
+            this._data = data.subarray(2, 6);
+            this._data2 = data.subarray(6, 10);
 
-        return this;
+            return this;
+        } catch (error) {
+            log.error(
+                `Error deserializing ServerGenericRequest: ${error as string}`,
+            );
+            throw error;
+        }
     }
 
     getData() {
@@ -126,9 +170,8 @@ export class ServerGenericRequest extends ServerMessagePayload {
     }
 
     getData2() {
-        return this._data;
+        return this._data2;
     }
-
 
     toString(): string {
         return `ServerGenericRequest {messageId: ${this.messageId}, data: ${this._data.toString("hex")}, data2: ${this._data2.toString("hex")}}`;
@@ -137,7 +180,7 @@ export class ServerGenericRequest extends ServerMessagePayload {
 
 export class ServerGenericResponse extends ServerMessagePayload {
     private _msgReply: number = 0; // 2 bytes
-    private _result: number = 0; // 4 
+    private _result: number = 0; // 4
     private _data2: Buffer = Buffer.alloc(4);
 
     override getByteSize(): number {
@@ -160,7 +203,7 @@ export class ServerGenericResponse extends ServerMessagePayload {
 
         this.messageId = data.readUInt16LE(0);
         this._msgReply = data.readUInt16LE(2);
-        this._result = data.readUInt32LE(4);        
+        this._result = data.readUInt32LE(4);
         this._data = data.subarray(2, 6);
         this._data = data.subarray(6, 10);
 
@@ -173,8 +216,12 @@ export class ServerGenericResponse extends ServerMessagePayload {
 }
 
 export class ServerMessage extends Serializable implements IMessage {
+    getPreDecryptedMessageId() {
+        return this._preDecryptedMessageId;
+    }
     header: ServerMessageHeader;
     data: ServerMessagePayload;
+    private _preDecryptedMessageId: number = 0;
 
     constructor(messageId: number) {
         super();
@@ -192,6 +239,15 @@ export class ServerMessage extends Serializable implements IMessage {
     override getByteSize(): number {
         return this.header.getByteSize() + this.data.getByteSize();
     }
+
+    populateHeader(seq?: number): ServerMessage {
+        this.header.setLength(this.header.getByteSize() + this.data.getByteSize() - 2);
+        this.header.setSignature("TOMC");
+        this.header.setSequence(seq || 0);
+
+        return this;
+    }
+
     getData(): ISerializable {
         return this.data;
     }
@@ -200,14 +256,19 @@ export class ServerMessage extends Serializable implements IMessage {
         return this;
     }
     override serialize(): Buffer {
-        const buffer = Buffer.alloc(this.getByteSize());
-        const headerBuffer = this.header.serialize();
-        const dataBuffer = this.getDataBuffer();
+        try {
+            const buffer = Buffer.alloc(this.getByteSize());
+            const headerBuffer = this.header.serialize();
+            const dataBuffer = this.getDataBuffer();
 
-        headerBuffer.copy(buffer);
-        dataBuffer.copy(buffer, this.header.getDataOffset());
+            headerBuffer.copy(buffer);
+            dataBuffer.copy(buffer, this.header.getDataOffset());
 
-        return buffer;
+            return buffer;
+        } catch (error) {
+            log.error(`Error serializing ServerMessage: ${error as string}`);
+            throw error;
+        }
     }
     override deserialize(data: Buffer): ServerMessage {
         this._assertEnoughData(data, this.header.getByteSize());
@@ -219,22 +280,51 @@ export class ServerMessage extends Serializable implements IMessage {
     }
 
     isEncrypted() {
-        return this.header.isPayloadEncrypted();    
+        return this.header.isPayloadEncrypted();
     }
 
-    decrypt() {
-        throw new Error("Method not implemented.");
+    shouldEncrypt() {
+        return this.data.getMessageId() !== 438;
     }
 
-    encrypt() {
-        throw new Error("Method not implemented.");
+    decrypt(cipherPair: McosEncryptionPair): ServerMessage {
+        if (this.isEncrypted()) {
+            try {
+                this._preDecryptedMessageId = this.data.getMessageId();
+                this.setDataBuffer(cipherPair.decrypt(this.getDataBuffer()));
+                this.header.togglePayloadEncryption();
+            } catch (error) {
+                log.error(`Error decrypting ServerMessage: ${error as string}`);
+                throw error;
+            }
+        }
+
+        return this;
+    }
+
+    encrypt(cipherPair: McosEncryptionPair): ServerMessage {
+        if (!this.isEncrypted()) {
+            try {
+                this.setDataBuffer(cipherPair.encrypt(this.getDataBuffer()));
+                this.header.togglePayloadEncryption();
+            } catch (error) {
+                log.error(`Error encrypting ServerMessage: ${error as string}`);
+                throw error;
+            }
+        }
+
+        return this;
     }
 
     getId() {
-        return this.data.getMessageId();    
+        return this.data.getMessageId();
     }
 
     toString(): string {
         return `ServerMessage {length: ${this.header.getLength()}, id: ${this.data.getMessageId()}}`;
+    }
+
+    toHexString(): string {
+        return this.serialize().toString("hex");
     }
 }

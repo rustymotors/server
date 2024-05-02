@@ -16,11 +16,9 @@
 
 import { randomUUID } from "node:crypto";
 import {
-    type OnDataHandler,
     type TServerLogger,
     addSocket,
     fetchStateFromDatabase,
-    getOnDataHandler,
     removeSocket,
     wrapSocket,
 } from "../../shared";
@@ -30,15 +28,10 @@ import { ServerLogger } from "../../shared";
 import { Socket } from "node:net";
 
 import {
-    MessageProcessorError,
-    getGameMessageProcessor,
     getPortMessageType,
-    GameMessage as OldGameMessage,
 } from "../../nps/index.js";
-import type { SocketCallback } from "../../nps/messageProcessors/index.js";
-import { GameMessage } from "../../shared-packets";
-import { ServerMessage } from "../../shared-packets/src/ServerMessage";
-import { getServerMessageProcessor } from "../../mcots";
+import { handleGameMessage, sendToGameSocket } from "./handleGameMessage";
+import { Connection } from "../../connection/src/Connection";
 
 /**
  * @typedef {object} OnDataHandlerArgs
@@ -132,6 +125,12 @@ export function onSocketConnection({
     // This is a new connection so generate a new connection ID
     const connectionId = randomUUID();
 
+    if (localPort === 43300) {
+        log.info("New connection on port 43300");
+        new Connection(incomingSocket, connectionId, log);
+        return;
+    }
+
     // Wrap the socket and add it to the global state
     const wrappedSocket = wrapSocket(incomingSocket, connectionId);
 
@@ -157,26 +156,17 @@ export function onSocketConnection({
         }
 
         if (messageType !== "Unknown") {
-            const socketCallback = (messages: Buffer[]) => {
-                sendToSocket(messages, incomingSocket, log);
-            };
-
             // Call the message handler
             if (messageType === "Game") {
+                const gameSocketCallback = (messages: Buffer[]) => {
+                    sendToGameSocket(messages, incomingSocket, log);
+                };
+
                 return handleGameMessage(
                     connectionId,
                     incomingDataAsBuffer,
                     log,
-                    socketCallback,
-                );
-            }
-
-            if (messageType === "Server") {
-                return handleServerMessage(
-                    connectionId,
-                    incomingDataAsBuffer,
-                    log,
-                    socketCallback,
+                    gameSocketCallback,
                 );
             }
         }
@@ -192,168 +182,4 @@ export function onSocketConnection({
     log.resetName();
 }
 
-function sendToSocket(
-    serializedMessages: Buffer[],
-    incomingSocket: Socket,
-    log: TServerLogger,
-) {
-    log.debug(`Sending {${serializedMessages.length}} messages to socket`);
-    try {
-        serializedMessages.forEach((m) => {
-            incomingSocket.write(m);
-            log.trace(`Sent ${m.length} bytes to socket: ${m.toString("hex")}`);
-            log.trace("===========================================");
-        });
-    } catch (error) {
-        log.error(`Error sending data: ${String(error)}`);
-    }
-}
-
-export function processGameMessage(
-    connectionId: string,
-    message: OldGameMessage,
-    log: TServerLogger,
-    socketCallback: SocketCallback,
-) {
-    log.setName("gateway:processGameMessage");
-    log.debug(`Processing game message...`);
-
-    // Get the message ID
-    const messageId = message.header.getId();
-
-    // Get the message processor
-    const messageProcessor = getGameMessageProcessor(messageId);
-
-    // If there is no message processor, throw an error
-    if (messageProcessor === undefined) {
-        log.error(`No message processor for message ID: ${messageId}`);
-        throw new MessageProcessorError(
-            messageId,
-            `No message processor for message ID: ${messageId}`,
-        );
-    }
-
-    // Call the message processor
-    messageProcessor(connectionId, message, socketCallback).catch((error) => {
-        log.error(`Error processing message: ${(error as Error).message}`);
-        throw new MessageProcessorError(
-            messageId,
-            `Error processing message: ${(error as Error).message}`,
-        );
-    });
-}
-
-export function handleGameMessage(
-    connectionId: string,
-    bytes: Buffer,
-    log: TServerLogger,
-    socketCallback: SocketCallback,
-) {
-    log.setName("gateway:handleGameMessage");
-    log.debug(`Handling game message...`);
-
-    // Log raw bytes
-    log.trace(`Raw bytes: ${bytes.toString("hex")}`);
-
-    // Since a GameMessage v1 header is 12 byes long, a message smaller that that can only be v0
-    const msgVersion = bytes.byteLength <= 12 ? 0 : 1;
-
-    // Load new game message
-    const gameMessage = new GameMessage(msgVersion).deserialize(bytes);
-
-    log.debug(`Game message: ${gameMessage.toString()}`);
-
-    // Try to identify the message version
-    const version = OldGameMessage.identifyVersion(bytes);
-
-    // Log the version
-    log.debug(`Message version: ${version}`);
-
-    // Try to parse it
-    try {
-        // Create a new message
-        const message = new OldGameMessage(version);
-        message.deserialize(bytes);
-
-        // Process the message
-        void processGameMessage(connectionId, message, log, socketCallback);
-    } catch (error) {
-        const err = `Error processing game message: ${(error as Error).message}`;
-        log.fatal(err);
-        throw Error(err);
-    }
-}
-
-export function processServerMessage(
-    connectionId: string,
-    message: ServerMessage,
-    log: TServerLogger,
-    socketCallback: SocketCallback,
-) {
-    log.setName("gateway:processServerMessage");
-    log.debug(`Processing server message...`);
-
-    // Is the packet encrypted?
-
-    if (message.isEncrypted()) {
-        log.debug("Packet is encrypted");
-        // Decrypt the packet
-        message.decrypt();
-    }
-
-    
-    // Get the message ID
-    const messageId = message.getId();
-
-    // Get the message processor
-    const messageProcessor = getServerMessageProcessor(messageId);
-
-    // If there is no message processor, throw an error
-    if (messageProcessor === undefined) {
-        log.error(`No message processor for message ID: ${messageId}`);
-        throw new MessageProcessorError(
-            messageId,
-            `No server message processor for message ID: ${messageId}`,
-        );
-    }
-
-    // Call the message processor
-    messageProcessor(connectionId, message, socketCallback).catch((error) => {
-        log.error(`Error processing message: ${(error as Error).message}`);
-        throw new MessageProcessorError(
-            messageId,
-            `Error processing server message: ${(error as Error).message}`,
-        );
-    });
-}
-
-export function handleServerMessage(
-    connectionId: string,
-    bytes: Buffer,
-    log: TServerLogger,
-    socketCallback: SocketCallback,
-) {
-    log.setName("gateway:handleServerMessage");
-    log.debug(`Handling server message...`);
-
-    // If this is a Server message, it will "probably" be a ServerMessage
-    // Try to parse it as a ServerMessage
-
-        // Log raw bytes
-        log.trace(`Raw bytes: ${bytes.toString("hex")}`);
-
-            // Load new game message
-    const serverMessage = new ServerMessage(0).deserialize(bytes);
-
-    log.debug(`Server message: ${serverMessage.toString()}`);
-
-        // Try to parse it
-        try {
-            // Process the message
-            void processServerMessage(connectionId, serverMessage, log, socketCallback);
-        } catch (error) {
-            const err = `Error processing server message: ${(error as Error).message}`;
-            log.fatal(err);
-            throw Error(err);
-        }
-}
+// Path: packages/gateway/src/index.ts

@@ -4,7 +4,6 @@ dotenv.config();
 
 if (!process.env.DB_URL) {
   throw new Error("DB_URL must be set in the environment");
-  process.exit(1);
 }
  
 export default {

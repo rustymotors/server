@@ -48,6 +48,10 @@ flags:
         paths:
             - packages/interfaces/**
         carryforward: false
+    connection:
+        paths:
+            - packages/connection/**
+        carryforward: true
     core:
         paths:
             - packages/core/**

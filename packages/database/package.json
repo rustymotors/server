@@ -14,7 +14,7 @@
     },
     "keywords": [],
     "author": "",
-    "license": "ISC",
+    "license": "AGPL-3.0",
     "dependencies": {
         "@sentry/node": "^7.102.0",
         "pg": "^8.11.5",

@@ -35,7 +35,7 @@ export async function getWarehouseInventory(
 
     const dealOfTheDayDiscount = await getDatabase()
         .select({
-            dealOfTheDayBrandedPartId: brandedPartSchema.brandedPartId,
+            dealOfTheDayBrandedPartId: tunablesSchema.dealOfTheDayBrandedPartId,
             dealOfTheDayDiscount: tunablesSchema.dealOfTheDayDiscount,
         })
         .from(tunablesSchema)
@@ -94,6 +94,18 @@ export async function getWarehouseInventory(
                 eq(
                     warehouseSchema.brandedPartId,
                     brandedPartSchema.brandedPartId,
+                ),
+            )
+            .leftJoin(
+                modelSchema,
+                eq(brandedPartSchema.modelId, modelSchema.modelId),
+            )
+
+            .leftJoin(
+                stockVehicleAttributesSchema,
+                eq(
+                    warehouseSchema.brandedPartId,
+                    stockVehicleAttributesSchema.brandedPartId,
                 ),
             )
             .where(eq(warehouseSchema.playerId, warehouseId));
