@@ -88,6 +88,13 @@ export async function processStockCarInfo(
             responsePacket.addCar(stockCar);
         }
 
+        const theCar = new StockCar();
+        theCar.setBrandedPartId(104);
+        theCar.setIsDealOfTheDay(false);
+        theCar.setRetailPrice(10);
+
+        responsePacket.addCar(theCar);
+
         log.debug(`Sending ${responsePacket.getNumberOfCars()} cars...complete`);
 
         responsePacket.setMoreCars(false);

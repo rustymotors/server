@@ -61,7 +61,7 @@ export class StackCarInfo extends ServerMessagePayload {
             4 +
             4 +
             2 +
-            2 +
+            1 +
             this._cars.length * StockCar.prototype.getByteSize()
         );
     }
@@ -86,7 +86,7 @@ export class StackCarInfo extends ServerMessagePayload {
             buffer.writeUInt32LE(this._dealerId, 6);
             buffer.writeUInt32LE(this._brandId, 10);
             buffer.writeUInt16LE(this.getNumberOfCars(), 14);
-            buffer.writeUInt16LE(this._moreCars, 16);
+            buffer.writeInt8(this._moreCars, 16);
 
             let offset = 18;
             for (const car of this._cars) {

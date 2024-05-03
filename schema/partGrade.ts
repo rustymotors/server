@@ -12,7 +12,7 @@ export const partGrade = pgTable(
         eText: varchar("e_text", { length: 50 }),
         gText: varchar("g_text", { length: 50 }),
         fText: varchar("f_text", { length: 50 }),       
-        partGrade: varchar("part_grade", { length: 100 }).notNull(),
+        partGrade: varchar("part_grade", { length: 50 }),
     },
     (table) => {
         return {

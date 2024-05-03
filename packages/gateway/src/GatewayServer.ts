@@ -26,6 +26,17 @@ import {
 } from "../../nps/services/profile.js";
 import { ScheduledThread } from "../../cli/ScheduledThread.js";
 import { populateServerMessageProcessors } from "../../mcots/index.js";
+import { populateWarehouse } from "../../database/src/seeders/populateWarehouse.js";
+import { populatePlayer } from "../../database/src/seeders/populatePlayer.js";
+import { populatePlayerType } from "../../database/src/seeders/populatePlayerType.js";
+import { populateBrandedPart } from "../../database/src/seeders/populateBrandedPart.js";
+import { populatePartType } from "../../database/src/seeders/populatePartType.js";
+import { populateModel } from "../../database/src/seeders/populateModel.js";
+import { populateAbstractPartType } from "../../database/src/seeders/populateAbstractPartType.js";
+import { populatePartGrade } from "../../database/src/seeders/populatePartGrade.js";
+import { populateBrand } from "../../database/src/seeders/populateBrand.js";
+import { populateSkin } from "../../database/src/seeders/populateSkin.js";
+import { populateSkinType } from "../../database/src/seeders/populateSkinType.js";
 
 /**
  * @module gateway
@@ -283,6 +294,17 @@ export class Gateway {
         try {
             await populateUsers();
             await populateGameProfiles(gameProfiles);
+            await populatePlayerType();
+            await populateAbstractPartType();
+            await populatePartGrade();
+            await populatePartType();
+            await populateBrand();
+            await populateModel();
+            await populateBrandedPart();
+            await populatePlayer();
+            await populateSkinType();
+            await populateSkin();
+            // await populateWarehouse();
         } catch (error) {
             this.log.error(`Error in populating game data: ${error as string}`);
             throw error;

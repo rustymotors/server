@@ -1,7 +1,7 @@
 import {
     pgTable,
     integer,
-    uniqueIndex,
+    index,
 } from "drizzle-orm/pg-core";
 import { player } from "./player";
 import { brandedPart } from "./brandedPart";
@@ -12,15 +12,15 @@ export const warehouse = pgTable(
     {
         brandedPartId: integer("branded_part_id").references(() => brandedPart.brandedPartId).notNull(),
         skinId: integer("skin_id").references(() => skin.skinId).notNull(),
-        playerId: integer("player_id").references(() => player.playerId).notNull().primaryKey(),
+        playerId: integer("player_id").references(() => player.playerId).notNull(),
         qtyAvail: integer("qty_avail"),
         isDealOfTheDay: integer("is_deal_of_the_day").notNull().default(0),
     },
     (table) => {
         return {
-            warehouseBrandedPartIdx: uniqueIndex("warehouse_branded_part_id_idx").on(table.brandedPartId),
-            warehouseSkinIdIdx: uniqueIndex("warehouse_skin_id_idx").on(table.skinId),
-            warehousePlayerIdIdx: uniqueIndex("warehouse_player_id_idx").on(table.playerId),
+            warehouseBrandedPartIdx: index("warehouse_branded_part_id_idx").on(table.brandedPartId),
+            warehouseSkinIdIdx: index("warehouse_skin_id_idx").on(table.skinId),
+            warehousePlayerIdIdx: index("warehouse_player_id_idx").on(table.playerId),
         };
     },
 );

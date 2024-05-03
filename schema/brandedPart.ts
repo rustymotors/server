@@ -1,9 +1,9 @@
 import {
     pgTable,
     integer,
-    uniqueIndex,
     timestamp,
     smallint,
+    index,
 } from "drizzle-orm/pg-core";
 import { partType } from "./partType";
 import { model } from "./model";
@@ -14,7 +14,7 @@ export const brandedPart = pgTable(
         brandedPartId: integer("branded_part_id").notNull().primaryKey(),
         partTypeId: integer("part_id").references(() => partType.partTypeId).notNull(),
         modelId: integer("model_id").references(() => model.modelId).notNull(),
-        mfgDate: timestamp("mfg_date").notNull(),
+        mfgDate: timestamp("mfg_date").notNull().default(new Date(0)),
         qtyAvail: integer("qty_avail").notNull(),
         retailPrice: integer("retail_price").notNull(),
         maxItemWear: smallint("max_item_wear"),
@@ -22,10 +22,8 @@ export const brandedPart = pgTable(
     },
     (table) => {
         return {
-            idIdx: uniqueIndex("branded_part_id_idx").on(table.brandedPartId),
-            brandedPartPartTypeIdIdx: uniqueIndex("branded_part_part_id_idx").on(table.partTypeId),
-            brandedPartModelIdIdx: uniqueIndex("branded_part_model_id_idx").on(table.modelId),
-            brandedPartEngineBlockFamilyIdIdx: uniqueIndex("branded_part_engine_block_family_id_idx").on(table.engineBlockFamilyId),
+            brandedPartPartTypeIdIdx: index("branded_part_part_id_idx").on(table.partTypeId),
+            brandedPartEngineBlockFamilyIdIdx: index("branded_part_engine_block_family_id_idx").on(table.engineBlockFamilyId),
         };
     },
 );
