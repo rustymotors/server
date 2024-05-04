@@ -43,6 +43,12 @@ export async function populatePartType(): Promise<void> {
                 partGradeId: 1,
             },
             {
+                partTypeId: 130,
+                abstractPartTypeId: 101,
+                partType: "1973 Pontiac Firebird T/A",
+                partGradeId: 1,
+            },
+            {
                 partTypeId: 214,
                 abstractPartTypeId: 101,
                 partType: "1970 Plymouth 440 Cuda",

@@ -12,7 +12,7 @@ export const brandedPart = pgTable(
     "branded_part",
     {
         brandedPartId: integer("branded_part_id").notNull().primaryKey(),
-        partTypeId: integer("part_id").references(() => partType.partTypeId).notNull(),
+        partTypeId: integer("part_type_id").references(() => partType.partTypeId).notNull(),
         modelId: integer("model_id").references(() => model.modelId).notNull(),
         mfgDate: timestamp("mfg_date").notNull().default(new Date(0)),
         qtyAvail: integer("qty_avail").notNull(),

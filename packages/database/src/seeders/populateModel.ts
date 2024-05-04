@@ -13,6 +13,15 @@ export async function populateModel(): Promise<void> {
         .insert(modelSchema)
         .values([
             {
+                modelId: 20,
+                brandId: 1,
+                eModel: "Firebird T/A",
+                eExtraInfo: "a/t",
+                eShortModel: "Firebird",
+                debug_string: "1973 Pontiac Firebird T/A",
+                debug_sort_string: "Vehicle",
+            },
+            {
                 modelId: 21,
                 brandId: 1,
                 eModel: "Fairlane",

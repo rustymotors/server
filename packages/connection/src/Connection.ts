@@ -25,6 +25,7 @@ import { eq } from "drizzle-orm";
 
 import { createCipheriv, createDecipheriv, getCiphers } from "node:crypto";
 import { McosEncryptionPair } from "../../shared";
+import { ClientConnectionManager } from "../../mcots/ClientConnectionManager";
 
 /**
  * This function creates a new encryption pair for use with the game server
@@ -98,6 +99,7 @@ export class Connection {
     private _logger: TServerLogger;
     private _personaId: number | null = null;
     private _cipherPair: McosEncryptionPair | null = null;
+    private _channelSecure: boolean = false;
 
     constructor(socket: Socket, connectionId: string, logger: TServerLogger) {
         this._socket = socket;
@@ -110,6 +112,19 @@ export class Connection {
 
         this._logger.debug(`Connection ${this._connectionId} created`);
     }
+
+    get id(): string {
+        return this._connectionId;
+    }
+
+    isChannelSecure(): boolean {
+        return this._channelSecure;
+    }
+
+    setChannelSecure(channelSecure: boolean): void {
+        this._channelSecure = channelSecure;
+    }
+
     private async _getCiperKeyFromDatabase() {
         this._logger.setName("Connection:_getCiperKeyFromDatabase");
         if (this._cipherPair !== null) {
@@ -186,7 +201,7 @@ export class Connection {
 
         if (processor === undefined) {
             this._logger.error(
-                `No message processor found for message ID ${message.getId()}`,
+                `No server message processor found for message ID ${message.getId()}`,
             );
             return;
         }
@@ -215,6 +230,9 @@ export class Connection {
             messages.forEach((message) => {
                 this._logger.debug(`Sending message ID ${message.getId()}`);
                 this._logger.debug(`Message: ${message.toHexString()}`);
+
+                message = this.encryptIfNecessary(message);
+
                 this._socket.write(message.serialize());
             });
         } catch (error) {
@@ -228,11 +246,31 @@ export class Connection {
 
         this._logger.resetName();
     }
+    encryptIfNecessary(message: ServerMessage): ServerMessage {
+        this._logger.setName("Connection:encryptIfNecessary");
+        if (this._channelSecure && !message.isEncrypted()) {
+            if (this._cipherPair === null) {
+                this._logger.error(
+                    `Message should be encrypted but no cipher pair is available for connection ${this._connectionId}`,
+                );
+                throw new Error(
+                    `Message should be encrypted but no cipher pair is available for connection ${this._connectionId}`,
+                );
+            }
+            message.encrypt(this._cipherPair);
+            this._logger.debug(
+                `Encrypted message: message ID ${message.getId()}, prior messsage ID ${message.getPreDecryptedMessageId()}`,
+            );
+        }
+        this._logger.resetName();
+        return message;
+    }
 
     close() {
         this._socket.end(() => {
             this._logger.debug(`Connection ${this._connectionId} closed`);
             this._socket.destroy();
+            ClientConnectionManager.removeConnection(this._connectionId);
         });
     }
 

@@ -27,11 +27,10 @@ import { ServerLogger } from "../../shared";
 
 import { Socket } from "node:net";
 
-import {
-    getPortMessageType,
-} from "../../nps/index.js";
+import { getPortMessageType } from "../../nps/index.js";
 import { handleGameMessage, sendToGameSocket } from "./handleGameMessage";
 import { Connection } from "../../connection/src/Connection";
+import { ClientConnectionManager } from "../../mcots/ClientConnectionManager";
 
 /**
  * @typedef {object} OnDataHandlerArgs
@@ -127,7 +126,9 @@ export function onSocketConnection({
 
     if (localPort === 43300) {
         log.info("New connection on port 43300");
-        new Connection(incomingSocket, connectionId, log);
+        ClientConnectionManager.addConnection(
+            new Connection(incomingSocket, connectionId, log),
+        );
         return;
     }
 

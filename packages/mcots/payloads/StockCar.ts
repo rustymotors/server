@@ -10,7 +10,7 @@ export class StockCar extends Serializable {
     private isDealOfTheDay: number = 0; // 2 bytes
 
     override getByteSize(): number {
-        return 4 + 4 + 2;
+        return 10
     }
 
     override serialize(): Buffer {
@@ -88,7 +88,7 @@ export class StackCarInfo extends ServerMessagePayload {
             buffer.writeUInt16LE(this.getNumberOfCars(), 14);
             buffer.writeInt8(this._moreCars, 16);
 
-            let offset = 18;
+            let offset = 17;
             for (const car of this._cars) {
                 car.serialize().copy(buffer, offset);
                 offset += car.getByteSize();

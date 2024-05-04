@@ -55,6 +55,7 @@ export function processGameMessage(
     }
 
     // Call the message processor
+    log.debug(`Processing message ID: ${messageId} with processor: ${messageProcessor.name}`);
     messageProcessor(connectionId, message, socketCallback).catch((error) => {
         log.error(`Error processing message: ${(error as Error).message}`);
         throw new MessageProcessorError(

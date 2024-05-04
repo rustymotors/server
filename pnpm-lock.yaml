@@ -109,6 +109,8 @@ importers:
         specifier: workspace:*
         version: link:../shared
 
+  packages/connection: {}
+
   packages/database:
     dependencies:
       '@sentry/node':

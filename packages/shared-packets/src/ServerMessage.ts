@@ -222,6 +222,7 @@ export class ServerMessage extends Serializable implements IMessage {
     header: ServerMessageHeader;
     data: ServerMessagePayload;
     private _preDecryptedMessageId: number = 0;
+    private _preEncryptedMessageId: number = 0;
 
     constructor(messageId: number) {
         super();
@@ -283,10 +284,6 @@ export class ServerMessage extends Serializable implements IMessage {
         return this.header.isPayloadEncrypted();
     }
 
-    shouldEncrypt() {
-        return this.data.getMessageId() !== 438;
-    }
-
     decrypt(cipherPair: McosEncryptionPair): ServerMessage {
         if (this.isEncrypted()) {
             try {
@@ -305,6 +302,7 @@ export class ServerMessage extends Serializable implements IMessage {
     encrypt(cipherPair: McosEncryptionPair): ServerMessage {
         if (!this.isEncrypted()) {
             try {
+                this._preEncryptedMessageId = this.data.getMessageId();
                 this.setDataBuffer(cipherPair.encrypt(this.getDataBuffer()));
                 this.header.togglePayloadEncryption();
             } catch (error) {

@@ -12,9 +12,11 @@ import { StackCarInfo, StockCar } from "../payloads/StockCar";
 
 const log = getServerLogger();
 
-// 1300 544f4d43 01 00000000 8d00 [08000000 00000000]
+function verifyCustomer(customerId: number): boolean {
+    return customerId === 1;
+}
 
-export async function processStockCarInfo(
+export async function processClientConnect(
     connectionId: string,
     message: ServerMessage,
     socketCallback: ServerSocketCallback,

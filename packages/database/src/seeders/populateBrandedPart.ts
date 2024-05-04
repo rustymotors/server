@@ -43,7 +43,16 @@ export async function populateBrandedPart(): Promise<void> {
                 qtyAvail: 0,
                 retailPrice: 0,
                 maxItemWear: 30000,
-            },{
+            },
+            {
+                brandedPartId: 130,
+                partTypeId: 130,
+                modelId: 20,
+                qtyAvail: 0,
+                retailPrice: 0,
+                maxItemWear: 30000,
+            },
+            {
                 brandedPartId: 339,
                 partTypeId: 214,
                 modelId: 2183,
