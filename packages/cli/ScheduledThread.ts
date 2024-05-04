@@ -24,10 +24,8 @@ export class ScheduledThread extends SubThread {
     }) {        
         super("ScheduledThread", log, 100);
         this.log.setName("ScheduledThread");
-        if (parentThread === undefined) {
-            throw new Error(
-                "parentThread is undefined when creating ScheduledThread",
-            );
+        if (!parentThread) {
+            throw new Error("parentThread is required when creating ScheduledThread");
         }
         this.parentThread = parentThread;
         this.log.resetName();
