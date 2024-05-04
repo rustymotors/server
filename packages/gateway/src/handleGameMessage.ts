@@ -1,12 +1,12 @@
 import { type TServerLogger } from "../../shared";
 import {
     MessageProcessorError,
-    getGameMessageProcessor, GameMessage as OldGameMessage
+    getGameMessageProcessor,
+    GameMessage as OldGameMessage,
 } from "../../nps/index.js";
 import type { SocketCallback } from "../../nps/messageProcessors/index.js";
 import { GameMessage } from "../../shared-packets";
 import type { Socket } from "node:net";
-
 
 export function sendToGameSocket(
     serializedMessages: Buffer[],
@@ -14,7 +14,9 @@ export function sendToGameSocket(
     log: TServerLogger,
 ) {
     log.setName("gateway:sendToGameSocket");
-    log.debug(`Sending {${serializedMessages.length}} messages to game socket on port ${incomingSocket.localPort}`);
+    log.debug(
+        `Sending {${serializedMessages.length}} messages to game socket on port ${incomingSocket.localPort}`,
+    );
     try {
         serializedMessages.forEach((m) => {
             incomingSocket.write(m);
@@ -29,38 +31,38 @@ export function sendToGameSocket(
     }
 }
 
-
 export function processGameMessage(
     connectionId: string,
     message: OldGameMessage,
     log: TServerLogger,
-    socketCallback: SocketCallback
+    socketCallback: SocketCallback,
 ) {
     log.setName("gateway:processGameMessage");
-    log.debug(`Processing game message...`);
 
     // Get the message ID
     const messageId = message.header.getId();
 
     // Get the message processor
-    const messageProcessor = getGameMessageProcessor(messageId);
+    const processor = getGameMessageProcessor(messageId);
 
     // If there is no message processor, throw an error
-    if (messageProcessor === undefined) {
+    if (processor === undefined) {
         log.error(`No message processor for message ID: ${messageId}`);
         throw new MessageProcessorError(
             messageId,
-            `No message processor for message ID: ${messageId}`
+            `No message processor for message ID: ${messageId}`,
         );
     }
 
     // Call the message processor
-    log.debug(`Processing message ID: ${messageId} with processor: ${messageProcessor.name}`);
-    messageProcessor(connectionId, message, socketCallback).catch((error) => {
+    log.debug(
+        `Processing server message with message ID ${message.getId()}, using processor ${processor.name}`,
+    );
+    processor(connectionId, message, socketCallback).catch((error) => {
         log.error(`Error processing message: ${(error as Error).message}`);
         throw new MessageProcessorError(
             messageId,
-            `Error processing message: ${(error as Error).message}`
+            `Error processing message: ${(error as Error).message}`,
         );
     });
 }
@@ -69,7 +71,7 @@ export function handleGameMessage(
     connectionId: string,
     bytes: Buffer,
     log: TServerLogger,
-    socketCallback: SocketCallback
+    socketCallback: SocketCallback,
 ) {
     log.setName("gateway:handleGameMessage");
     log.debug(`Handling game message...`);

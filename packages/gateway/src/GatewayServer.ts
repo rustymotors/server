@@ -26,7 +26,6 @@ import {
 } from "../../nps/services/profile.js";
 import { ScheduledThread } from "../../cli/ScheduledThread.js";
 import { populateServerMessageProcessors } from "../../mcots/index.js";
-import { populateWarehouse } from "../../database/src/seeders/populateWarehouse.js";
 import { populatePlayer } from "../../database/src/seeders/populatePlayer.js";
 import { populatePlayerType } from "../../database/src/seeders/populatePlayerType.js";
 import { populateBrandedPart } from "../../database/src/seeders/populateBrandedPart.js";

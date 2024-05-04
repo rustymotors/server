@@ -7,7 +7,7 @@ export class MessageHeader implements IMessageHeader {
 
     constructor(version: 0 | 257, id: number, length: number) {
         if (version !== 0 && version !== 257) {
-            throw new Error(`Invalid version ${version}`);
+            throw new Error(`Invalid version ${parseInt(version)}`);
         }
         this.version = version;
         this.id = id;
@@ -31,7 +31,7 @@ export class MessageHeader implements IMessageHeader {
     }
     setVersion(version: 0 | 257): void {
         if (version !== 0 && version !== 257) {
-            throw new Error(`Invalid version ${version}`);
+            throw new Error(`Invalid version ${parseInt(version)}`);
         }
         this.version = version;
     }
@@ -131,6 +131,11 @@ export class GameMessage implements IMessage {
         this.header = new MessageHeader(version, 0, 0);
         this.data = new SerializableData(0);
     }
+
+    getId() {
+        return this.header.getId();
+    }
+
     getDataAsBuffer(): Buffer {
         return this.data.serialize();
     }

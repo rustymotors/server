@@ -106,8 +106,8 @@ export class Connection {
         this._connectionId = connectionId;
         this._logger = logger;
 
-        this._socket.on("data", (data) => this.handleSocketData(data));
-        this._socket.on("error", (error) => this.handleSocketError(error));
+        this._socket.on("data", (data) => this.handleServerSocketData(data));
+        this._socket.on("error", (error) => this.handleServerSocketError(error));
         this._socket.on("close", () => this.close());
 
         this._logger.debug(`Connection ${this._connectionId} created`);
@@ -167,11 +167,11 @@ export class Connection {
 
         this._logger.resetName();
     }
-    handleSocketData(data: Buffer): void {
+    handleServerSocketData(data: Buffer): void {
         this._logger.setName("Connection:handleSocketData");
         try {
             const message = new ServerMessage(0).deserialize(data);
-            this.processMessage(message);
+            this.processServerMessage(message);
         } catch (error) {
             this._logger.error(
                 `Error handling socket data for connectionId ${this._connectionId}: ${error as string}`,
@@ -181,7 +181,7 @@ export class Connection {
         this._logger.resetName();
     }
 
-    processMessage(message: ServerMessage) {
+    processServerMessage(message: ServerMessage) {
         this._logger.setName("Connection:processMessage");
         if (message.isEncrypted() && this._cipherPair === null) {
             this._getCiperKeyFromDatabase().catch((error) => {
@@ -207,10 +207,11 @@ export class Connection {
         }
 
         // Process the message
+        this._logger.debug(`Processing server message with message ID ${message.getId()}, using processor ${processor.name}`);
         processor(
             this._connectionId,
             message,
-            this.sendMessage.bind(this),
+            this.sendSeverMessage.bind(this),
         ).catch((error) => {
             this._logger.error(
                 `Error processing message for connectionId ${this._connectionId}: ${error as string}`,
@@ -221,7 +222,7 @@ export class Connection {
         this._logger.resetName();
     }
 
-    sendMessage(messages: ServerMessage[]) {
+    sendSeverMessage(messages: ServerMessage[]) {
         this._logger.setName("Connection:sendMessage");
         this._logger.debug(
             `Sending ${messages.length} messages for connection ${this._connectionId}`,
@@ -274,7 +275,7 @@ export class Connection {
         });
     }
 
-    handleSocketError(error: NodeJS.ErrnoException) {
+    handleServerSocketError(error: NodeJS.ErrnoException) {
         this._logger.setName("Connection:handleSocketError");
         if (error.code === "ECONNRESET") {
             this._logger.debug(`Connection ${this._connectionId} reset`);

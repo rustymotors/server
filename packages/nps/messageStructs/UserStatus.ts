@@ -6,8 +6,8 @@ export class UserStatus implements ISerializable {
     private customerId: number;
     private personaId: number;
     private isCacheHit: boolean;
-    private ban: UserAction;
-    private gag: UserAction;
+    readonly ban: UserAction = new UserAction("ban");
+    readonly gag: UserAction = new UserAction("gag");
     private sessionKey: SessionKey;
 
     constructor(
@@ -28,7 +28,7 @@ export class UserStatus implements ISerializable {
     serialize(): Buffer {
         return this.toBytes();
     }
-    deserialize(data: Buffer): void {
+    deserialize(): void {
         throw new Error("Method not implemented.");
     }
     getByteSize(): number {
@@ -92,10 +92,14 @@ export class UserStatus implements ISerializable {
 
     getSize(): number {
         return (
-            14 +
+            4 +
+            4 +
+            1 +
             this.ban.getSize() +
             this.gag.getSize() +
-            this.sessionKey.getSize()
+            this.sessionKey.getSize() +
+            4 +
+            64
         );
     }
 
@@ -123,18 +127,6 @@ export class UserStatus implements ISerializable {
         this.sessionKey = sessionKey;
     }
 
-    setBan(ban: UserAction) {
-        this.ban = ban;
-    }
-
-    getGag(): UserAction {
-        return this.gag;
-    }
-
-    setGag(gag: UserAction) {
-        this.gag = gag;
-    }
-
     toString(): string {
         return `UserStatus:
         Customer ID: ${this.customerId}
@@ -149,7 +141,7 @@ export class UserStatus implements ISerializable {
         return this.toBytes().toString("hex");
     }
 
-    setData(data: Buffer) {
+    setData() {
         throw new Error("Method not implemented.");
     }
 }

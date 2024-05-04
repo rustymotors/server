@@ -104,14 +104,14 @@ export async function processUserLogin(
             name: "processUserLogin",
             op: "processUserLogin",
         },
-        async (span) => {
+        async () => {
             log.setName("nps:processUserLogin");
             // Log the message
             log.info(`User login request: ${message.toString()}`);
 
             // Unpack the message
             try {
-                const { sessionKey, gameId, contextToken } =
+                const { sessionKey, contextToken } =
                     unpackUserLoginMessage(message.getData());
 
                 // Log the context token
@@ -129,22 +129,22 @@ export async function processUserLogin(
                     response.header.setId(0x602);
 
                     // Send the message - twice
-                    await Sentry.startSpan(
+                    Sentry.startSpan(
                         {
                             name: "socketCallback",
                             op: "socketCallback",
                         },
-                        async () => {
-                            await socketCallback([response.serialize()]);
+                        () => {
+                            socketCallback([response.serialize()]);
                         },
                     );
-                    await Sentry.startSpan(
+                    Sentry.startSpan(
                         {
                             name: "socketCallback",
                             op: "socketCallback",
                         },
-                        async () => {
-                            await socketCallback([response.serialize()]);
+                        () => {
+                            socketCallback([response.serialize()]);
                         },
                     );
 
@@ -175,14 +175,16 @@ export async function processUserLogin(
                 loginACK.header.setId(0x601);
 
                 // Send the ack
-                await socketCallback([loginACK.serialize()]);
+                socketCallback([loginACK.serialize()]);
 
                 // Create a new UserStatus message
                 const userStatus = UserStatus.new();
                 userStatus.setCustomerId(user.customerId);
                 userStatus.setPersonaId(0);
-                userStatus.setBan(new UserAction("ban"));
-                userStatus.setGag(new UserAction("gag"));
+                userStatus.ban.set({
+                    initiator: "Molly",
+                    startComment: "Because I said so",
+                });
                 userStatus.setSessionKey(SessionKey.fromKeyString(sessionKey));
 
                 // Create a new message - UserStatus
@@ -195,8 +197,8 @@ export async function processUserLogin(
                 log.info(`UserStatus: ${userStatusMessage.toString()}`);
 
                 // Send the message
-                await socketCallback([userStatusMessage.serialize()]);
-                await socketCallback([userStatusMessage.serialize()]);
+                socketCallback([userStatusMessage.serialize()]);
+                socketCallback([userStatusMessage.serialize()]);
 
                 return;
             } catch (e) {
