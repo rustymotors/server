@@ -4,6 +4,9 @@ import { describe, it, expect } from "vitest";
 import { updateSessionKey } from "../../database";
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
 import { mockLogger } from "../../../test/factoryMocks.js";
+import { UserStatusManager } from "../../nps/index.js";
+import { UserStatus } from "../../nps/messageStructs/UserStatus.js";
+import { SessionKey } from "../../nps/messageStructs/SessionKey.js";
 
 describe("clientConnect", () => {
     it("throws when connection is not found", async () => {
@@ -12,12 +15,20 @@ describe("clientConnect", () => {
         const connectionId = "test";
         const sessionKey =
             "1234567890123456123456789012345612345678901234561234567890123456";
-        const contextId = "test";
         const incomingMessage = new TClientConnectMessage();
         incomingMessage._customerId = customerId;
 
         const log = mockLogger();
-        await updateSessionKey(customerId, sessionKey, contextId, connectionId);
+
+        const key = SessionKey.fromKeyString(sessionKey);
+
+        const status = new UserStatus(
+            {
+                customerId,
+                sessionKey: key,
+            }
+        );
+        UserStatusManager.addUserStatus(status);
 
         // act
         try {

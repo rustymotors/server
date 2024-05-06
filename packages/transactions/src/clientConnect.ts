@@ -14,7 +14,7 @@ import {
     createDataEncryptionPair,
 } from "../../gateway/src/encryption.js";
 import type { MessageHandlerArgs, MessageHandlerResult } from "../types.js";
-import { getUserSessionByCustomerId } from "../../nps/services/session.js";
+import { UserStatusManager } from "../../nps/index.js";
 
 /**
  * @param {MessageHandlerArgs} args
@@ -51,11 +51,9 @@ export async function clientConnect({
         return { connectionId, messages: [] };
     }
 
-    let result;
-
     log.debug(`Looking up the session key for ${customerId}...`);
 
-    const userSession = await getUserSessionByCustomerId(customerId);
+    const userSession = UserStatusManager.getUserStatus(customerId);
 
     if (typeof userSession === "undefined") {
         log.warn(`No user session found for ${customerId}`);
@@ -72,11 +70,11 @@ export async function clientConnect({
     }
 
     const newCommandEncryptionPair = createCommandEncryptionPair(
-        userSession.sessionKey,
+        userSession.getSessionKey().getKey(),
     );
 
     const newDataEncryptionPair = createDataEncryptionPair(
-        userSession.sessionKey,
+        userSession.getSessionKey().getKey(),
     );
 
     const newEncryption = new McosEncryption({
@@ -111,5 +109,5 @@ export async function clientConnect({
 
     log.debug(`Response: ${responsePacket.serialize().toString("hex")}`);
 
-    return { connectionId, messages: [responsePacket] };
+    return Promise.resolve({ connectionId, messages: [responsePacket] });
 }

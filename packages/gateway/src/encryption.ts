@@ -16,6 +16,9 @@
 
 import { createCipheriv, createDecipheriv, getCiphers } from "node:crypto";
 import { McosEncryptionPair } from "../../shared";
+import { getServerLogger } from "../../shared";
+
+const log = getServerLogger();
 
 /**
  * This function creates a new encryption pair for use with the game server
@@ -25,7 +28,8 @@ import { McosEncryptionPair } from "../../shared";
  */
 export function createCommandEncryptionPair(key: string): McosEncryptionPair {
     if (key.length < 16) {
-        throw Error(`Key too short: ${key}`);
+        log.error(`Key too short: length ${key.length}, value ${key}`);
+        throw Error(`Key too short: length ${key.length}, value ${key}`);
     }
 
     const sKey = key.slice(0, 16);
@@ -55,7 +59,8 @@ export function createCommandEncryptionPair(key: string): McosEncryptionPair {
  */
 export function createDataEncryptionPair(key: string): McosEncryptionPair {
     if (key.length < 16) {
-        throw Error(`Key too short: ${key}`);
+        log.error(`Key too short: length ${key.length}, value ${key}`);
+        throw Error(`Key too short: length ${key.length}, value ${key}`);
     }
 
     const stringKey = Buffer.from(key, "hex");
