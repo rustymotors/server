@@ -1,7 +1,6 @@
 import { clientConnect } from "../src/clientConnect.js";
 import { describe, it, expect } from "vitest";
 
-import { updateSessionKey } from "../../database";
 import { TClientConnectMessage } from "../src/TClientConnectMessage.js";
 import { mockLogger } from "../../../test/factoryMocks.js";
 import { UserStatusManager } from "../../nps/index.js";
