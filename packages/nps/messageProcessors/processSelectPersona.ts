@@ -1,21 +1,23 @@
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import type { SocketCallback } from "./index.js";
-import { getDWord, getLenString, getNBytes } from "../utils/pureGet.js";
-import {
-    getUserSessionByCustomerId,
-    setUserSession,
-} from "../services/session.js";
+import { getDWord } from "../utils/pureGet.js";
 
 import { getServerLogger } from "../../shared";
+import { UserStatus } from "../messageStructs/UserStatus.js";
+import { UserStatusManager } from "../src/UserStatusManager.js";
 
 const log = getServerLogger();
 
-export async function processGameLogin(
+export async function processSelectPersona(
     connectionId: string,
+    userStatus: UserStatus,
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
-    log.setName("nps:processGameLogin");
+    log.setName("nps:processSelectPersona");
+
+    log.info(`SelectPersona: ${message.toString()}`);
+
     const customerId = getDWord(message.getDataAsBuffer(), 0, false);
 
     const personaId = getDWord(message.getDataAsBuffer(), 4, false);
@@ -27,27 +29,20 @@ export async function processGameLogin(
     log.info(`Persona ID: ${personaId}`);
     log.info(`Shard ID: ${shardId}`);
 
-    // This message is only called by debug, so let's sey the clinet version to debug
-    const session = await getUserSessionByCustomerId(customerId);
+    // Lookup the session
+    const existingStatus = UserStatusManager.getUserStatus(customerId);
 
-    if (!session) {
-        log.error(`Session not found for customer ID ${customerId}`);
-        throw new Error(`Session not found for customer ID ${customerId}`);
+    if (!existingStatus) {
+        log.error(`UserStatus not found for customer ID ${customerId}`);
+        throw new Error(`UserStatus not found for customer ID ${customerId}`);
     }
-
-    if (session) {
-        log.info(`Setting client version to debug for ${session.customerId}`);
-
-        session.clientVersion = "debug";
 
         log.info(
-            `Setting persona ID to ${personaId} for ${session.customerId}`,
+            `Setting persona ID to ${personaId} for ${existingStatus.getCustomerId()}`,
         );
 
-        session.activeProfileId = personaId;
-
-        setUserSession(session);
-    }
+    // Update the user status
+    existingStatus.setPersonaId(personaId);
 
     log.info(`GameLogin: ${message.toString()}`);
 
@@ -57,4 +52,6 @@ export async function processGameLogin(
     const responseBytes = response.serialize();
 
     socketCallback([responseBytes]);
+    log.resetName();
+    return Promise.resolve();
 }

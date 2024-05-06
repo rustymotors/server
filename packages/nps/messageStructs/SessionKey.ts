@@ -1,42 +1,68 @@
 import type { ISerializable } from "../types.js";
+import { isOnlyOneSet } from "../utils/pureCompare.js";
 import { getAsHex } from "../utils/pureGet.js";
+import { getServerLogger } from "../../shared/index.js";
+
+const log = getServerLogger();
 
 export class SessionKey implements ISerializable {
-    private key: Buffer;
-    private timestamp: number;
+    private key: Buffer = Buffer.alloc(0);
+    private timestamp: number = 0;
+    private _isSet: boolean = false;
 
-    constructor(key: Buffer, timestamp: number) {
-        this.key = key;
-        this.timestamp = timestamp;
+    constructor({ key, timestamp }: { key?: Buffer; timestamp?: number }) {
+        log.setName("SessionKey");
+        if (isOnlyOneSet(key, timestamp)) {
+            throw new Error("Both key and timestamp must be set if one is set");
+        }
+
+        if (typeof key !== "undefined" && typeof timestamp !== "undefined") {
+            log.debug(`SessionKey: key=${getAsHex(key)}, timestamp=${timestamp}`);
+            this.key = key;
+            this.timestamp = timestamp;
+            this._isSet = true;
+        }
+        log.resetName();
     }
     serialize(): Buffer {
-        throw new Error("Method not implemented.");
+        return this.toBytes();
     }
     deserialize(data: Buffer): void {
-        throw new Error("Method not implemented.");
+        SessionKey.fromBytes(data);
     }
     getByteSize(): number {
         throw new Error("Method not implemented.");
     }
 
     static fromBytes(bytes: Buffer): SessionKey {
+        log.setName("SessionKey.fromBytes");
         const keyLength = bytes.readUInt16BE(0);
 
         // Set the data offset
-        let dataOffset = 2 + keyLength;
+        const dataOffset = 2 + keyLength;
 
         const key = bytes.subarray(2, dataOffset);
+
+        log.debug(`SessionKey.fromBytes: key=${getAsHex(key)}`);
 
         // Get the timestamp
         const timestamp = bytes.readUInt32BE(dataOffset);
 
-        return new SessionKey(key, timestamp);
+        log.resetName();
+
+        return new SessionKey({
+            key,
+            timestamp,
+        });
     }
 
     static fromKeyString(key: string): SessionKey {
         const keyBuffer = Buffer.from(key, "hex");
 
-        return new SessionKey(keyBuffer, 0);
+        return new SessionKey({
+            key: keyBuffer,
+            timestamp: 0,
+        });
     }
 
     getKey(): string {
@@ -52,6 +78,10 @@ export class SessionKey implements ISerializable {
     }
 
     toBytes(): Buffer {
+        if (!this.isSet()) {
+            throw new Error("Session key is not set");
+        }
+
         const keyLength = this.key.length;
         const timestamp = this.timestamp;
 
@@ -72,7 +102,11 @@ export class SessionKey implements ISerializable {
         throw new Error("Method not implemented.");
     }
 
-    setData(data: Buffer): void {
+    setData(): void {
         throw new Error("Method not implemented.");
+    }
+
+    isSet(): boolean {
+        return this._isSet;
     }
 }

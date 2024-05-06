@@ -5,11 +5,13 @@ import { getGameProfilesForCustomerId } from "../services/profile.js";
 import { ProfileList } from "../messageStructs/ProfileList.js";
 
 import { getServerLogger } from "../../shared";
+import type { UserStatus } from "../messageStructs/UserStatus.js";
 
 const log = getServerLogger();
 
 export async function processGetProfileMaps(
     connectionId: string,
+    userStatus: UserStatus,
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
@@ -26,7 +28,7 @@ export async function processGetProfileMaps(
     log.info(`GetProfileMaps: ${customerId}`);
 
     // Look up the profiles for the customer ID
-    const profiles = await getGameProfilesForCustomerId(customerId);
+    const profiles = getGameProfilesForCustomerId(customerId);
 
     // Create a new NPSList of profiles
     const list = new ProfileList();
@@ -56,9 +58,11 @@ export async function processGetProfileMaps(
 
         log.info("===========================================");
 
-        await socketCallback([outMessage.serialize()]);
+        socketCallback([outMessage.serialize()]);
+        log.resetName();
+        return Promise.resolve();
     } catch (error) {
-        log.error(`Error sending profile info: ${error}`);
+        log.error(`Error sending profile info: ${error as string}`);
         throw new Error("Error sending profile info");
     }
 }

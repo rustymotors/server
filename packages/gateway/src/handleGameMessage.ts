@@ -7,6 +7,7 @@ import {
 import type { SocketCallback } from "../../nps/messageProcessors/index.js";
 import { GameMessage } from "../../shared-packets";
 import type { Socket } from "node:net";
+import type { UserStatus } from "../../nps/messageStructs/UserStatus";
 
 export function sendToGameSocket(
     serializedMessages: Buffer[],
@@ -33,6 +34,7 @@ export function sendToGameSocket(
 
 export function processGameMessage(
     connectionId: string,
+    userStatus: UserStatus,
     message: OldGameMessage,
     log: TServerLogger,
     socketCallback: SocketCallback,
@@ -58,7 +60,7 @@ export function processGameMessage(
     log.debug(
         `Processing server message with message ID ${message.getId()}, using processor ${processor.name}`,
     );
-    processor(connectionId, message, socketCallback).catch((error) => {
+    processor(connectionId, userStatus, message, socketCallback).catch((error) => {
         log.error(`Error processing message: ${(error as Error).message}`);
         throw new MessageProcessorError(
             messageId,
@@ -69,6 +71,7 @@ export function processGameMessage(
 
 export function handleGameMessage(
     connectionId: string,
+    userStatus: UserStatus,
     bytes: Buffer,
     log: TServerLogger,
     socketCallback: SocketCallback,
@@ -100,7 +103,7 @@ export function handleGameMessage(
         message.deserialize(bytes);
 
         // Process the message
-        void processGameMessage(connectionId, message, log, socketCallback);
+        void processGameMessage(connectionId, userStatus, message, log, socketCallback);
     } catch (error) {
         const err = `Error processing game message: ${(error as Error).message}`;
         log.fatal(err);

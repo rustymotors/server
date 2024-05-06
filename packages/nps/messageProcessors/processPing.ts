@@ -2,11 +2,13 @@ import { GameMessage } from "../messageStructs/GameMessage.js";
 import type { SocketCallback } from "./index.js";
 
 import { getServerLogger } from "../../shared";
+import type { UserStatus } from "../messageStructs/UserStatus.js";
 
 const log = getServerLogger();
 
 export async function processPing(
     connectionId: string,
+    userStatus: UserStatus,
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
@@ -18,5 +20,8 @@ export async function processPing(
 
     const responseBytes = response.serialize();
 
-    await socketCallback([responseBytes]);
+    socketCallback([responseBytes]);
+    log.resetName();
+    return Promise.resolve();
+
 }

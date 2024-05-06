@@ -2,9 +2,9 @@ import { GameProfile } from "../messageStructs/GameProfile.js";
 
 export const gameProfiles: GameProfile[] = [];
 
-export async function populateGameProfiles(
+export function populateGameProfiles(
     profiles: GameProfile[],
-): Promise<void> {
+): void {
     const profile1 = GameProfile.new();
     profile1.customerId = 2;
     profile1.profileName = "molly";
@@ -29,9 +29,9 @@ export async function populateGameProfiles(
     profiles.push(profile1);
 }
 
-export async function getGameProfilesForCustomerId(
+export function getGameProfilesForCustomerId(
     customerId: number,
-): Promise<GameProfile[]> {
+): GameProfile[] {
     const profiles: GameProfile[] = [];
     for (const profile of gameProfiles.values()) {
         if (profile.customerId === customerId) {
@@ -41,7 +41,16 @@ export async function getGameProfilesForCustomerId(
     return profiles;
 }
 
-export async function gameProfileExists(profileName: string): Promise<boolean> {
+export function getCustomerId(profileId: number): number {
+    for (const profile of gameProfiles.values()) {
+        if (profile.profileId === profileId) {
+            return profile.customerId;
+        }
+    }
+    return -1;
+}
+
+export function gameProfileExists(profileName: string): boolean {
     for (const profile of gameProfiles.values()) {
         if (profile.profileName === profileName) {
             return true;
@@ -50,11 +59,11 @@ export async function gameProfileExists(profileName: string): Promise<boolean> {
     return false;
 }
 
-export async function addGameProfile(profile: GameProfile): Promise<void> {
+export function addGameProfile(profile: GameProfile): void {
     gameProfiles.push(profile);
 }
 
-export async function deleteGameProfile(profileId: number): Promise<void> {
+export function deleteGameProfile(profileId: number): void {
     for (const [index, profile] of gameProfiles.entries()) {
         if (profile.profileId === profileId) {
             gameProfiles.splice(index, 1);
@@ -63,7 +72,7 @@ export async function deleteGameProfile(profileId: number): Promise<void> {
     }
 }
 
-export async function createGameProfile(): Promise<GameProfile> {
+export function createGameProfile(): GameProfile {
     const profile = GameProfile.new();
 
     addGameProfile(profile);

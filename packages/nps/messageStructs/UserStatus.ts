@@ -1,29 +1,36 @@
+import { randomUUID } from "crypto";
 import type { ISerializable } from "../types.js";
 import { SessionKey } from "./SessionKey.js";
 import { UserAction } from "./UserAction.js";
 
 export class UserStatus implements ISerializable {
-    private customerId: number;
-    private personaId: number;
-    private isCacheHit: boolean;
+    private _sessionId: string = "";
+    private _remoteIp: string = "";
+    private _machineId: string = "";
+    private customerId: number = 0;
+    private personaId: number = 0;
+    private isCacheHit: boolean = false;
     readonly ban: UserAction = new UserAction("ban");
     readonly gag: UserAction = new UserAction("gag");
-    private sessionKey: SessionKey;
+    private sessionKey: SessionKey = new SessionKey({});
 
-    constructor(
-        customerId: number,
-        personaId: number,
-        isCacheHit: boolean,
-        ban: UserAction,
-        gag: UserAction,
-        sessionKey: SessionKey,
-    ) {
+    constructor({
+        customerId,
+        personaId,
+        sessionKey,
+    }: {
+        customerId: number;
+        personaId?: number;
+        sessionKey?: SessionKey;
+    
+    }) {
+        this._sessionId = randomUUID();
         this.customerId = customerId;
-        this.personaId = personaId;
-        this.isCacheHit = isCacheHit;
-        this.ban = ban;
-        this.gag = gag;
-        this.sessionKey = sessionKey;
+        this.personaId = personaId || 0;
+        this.isCacheHit = false;
+        this.ban = new UserAction("ban");
+        this.gag = new UserAction("gag");
+        this.sessionKey = sessionKey || new SessionKey({});
     }
     serialize(): Buffer {
         return this.toBytes();
@@ -35,15 +42,37 @@ export class UserStatus implements ISerializable {
         return this.getSize();
     }
 
+    getSessionId(): string {
+        return this._sessionId;
+    }
+
+    getRemoteIp(): string {
+        return this._remoteIp;
+    }
+
+    setRemoteIp(value: string) {
+        if (this._remoteIp !== "" && this._remoteIp !== value) {
+            throw new Error("Remote IP is already set and cannot be changed");
+        }
+        this._remoteIp = value;
+    }
+
+    getMachineId(): string {
+        return this._machineId;
+    }
+
+    setMachineId(value: string) {
+        if (this._machineId !== "" && this._machineId !== value) {
+            throw new Error("Machine ID is already set and cannot be changed");
+        }
+        this._machineId = value;
+    }
+
     static new(): UserStatus {
-        return new UserStatus(
-            0,
-            0,
-            false,
-            new UserAction("ban"),
-            new UserAction("gag"),
-            new SessionKey(Buffer.alloc(12), 0),
-        );
+        return new UserStatus({
+            customerId: 0,
+        });
+        
     }
 
     static fromBytes(bytes: Buffer): UserStatus {
@@ -52,7 +81,7 @@ export class UserStatus implements ISerializable {
         offset += 4;
         const personaId = bytes.readUInt32BE(offset);
         offset += 4;
-        const isCacheHit = bytes.readUInt8(offset) === 1;
+        // Skip isCacheHit
         offset += 1;
         const ban = UserAction.fromBytes("ban", bytes.subarray(offset));
         offset += ban.getSize();
@@ -60,18 +89,20 @@ export class UserStatus implements ISerializable {
         offset += gag.getSize();
         const sessionKey = SessionKey.fromBytes(bytes.subarray(offset));
 
-        return new UserStatus(
+        return new UserStatus({
             customerId,
             personaId,
-            isCacheHit,
-            ban,
-            gag,
             sessionKey,
-        );
+        
+        });
     }
 
     toBytes(): Buffer {
         const buffer = Buffer.alloc(this.getSize());
+
+        if (this.sessionKey === null) {
+            throw new Error("Session key is required");
+        }
 
         let offset = 0;
         buffer.writeUInt32BE(this.customerId, offset);

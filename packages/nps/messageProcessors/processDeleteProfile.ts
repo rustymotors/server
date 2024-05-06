@@ -6,6 +6,7 @@ import { SessionKey } from "../messageStructs/SessionKey.js";
 import { getLenString } from "../utils/pureGet.js";
 
 import { getServerLogger } from "../../shared";
+import type { UserStatus } from "../messageStructs/UserStatus.js";
 
 const log = getServerLogger();
 
@@ -87,6 +88,7 @@ export function unpackUserLoginMessage(message: GameMessage): {
 
 export async function processDeleteProfile(
     connectionId: string,
+    userStatus: UserStatus,
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
@@ -101,5 +103,7 @@ export async function processDeleteProfile(
     loginACK.header.setId(0x60c);
 
     // Send the ack
-    await socketCallback([loginACK.serialize()]);
+    socketCallback([loginACK.serialize()]);
+    log.resetName();
+    return Promise.resolve();
 }

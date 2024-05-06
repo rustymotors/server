@@ -102,4 +102,25 @@ export class UserAction implements ISerializable {
         this._startComment = "";
         this._endComment = "";
     }
+
+    updateEmptyValuesFrom(other: UserAction) {
+        if (this._endTimeMaybe === 0) {
+            this._endTimeMaybe = other._endTimeMaybe;
+        }
+        if (this._b1 === 0) {
+            this._b1 = other._b1;
+        }
+        if (this._b2 === 0) {
+            this._b2 = other._b2;
+        }
+        if (this._initiator === "") {
+            this._initiator = other._initiator;
+        }
+        if (this._startComment === "") {
+            this._startComment = other._startComment;
+        }
+        if (this._endComment === "") {
+            this._endComment = other._endComment;
+        }    
+    }
 }

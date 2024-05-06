@@ -27,7 +27,7 @@ import { ServerLogger } from "../../shared";
 
 import { Socket } from "node:net";
 
-import { getPortMessageType } from "../../nps/index.js";
+import { UserStatusManager, getPortMessageType } from "../../nps/index.js";
 import { handleGameMessage, sendToGameSocket } from "./handleGameMessage";
 import { Connection } from "../../connection/src/Connection";
 import { ClientConnectionManager } from "../../mcots/ClientConnectionManager";
@@ -124,6 +124,8 @@ export function onSocketConnection({
     // This is a new connection so generate a new connection ID
     const connectionId = randomUUID();
 
+    const userStatus = UserStatusManager.newUserStatus();
+
     if (localPort === 43300) {
         log.info("New connection on port 43300");
         ClientConnectionManager.addConnection(
@@ -165,6 +167,7 @@ export function onSocketConnection({
 
                 return handleGameMessage(
                     connectionId,
+                    userStatus,
                     incomingDataAsBuffer,
                     log,
                     gameSocketCallback,

@@ -3,11 +3,13 @@ import type { SocketCallback } from "./index.js";
 import { GameProfile } from "../messageStructs/GameProfile.js";
 
 import { getServerLogger } from "../../shared";
+import type { UserStatus } from "../messageStructs/UserStatus.js";
 
 const log = getServerLogger();
 
 export async function processCreateProfile(
     connectionId: string,
+    userStatus: UserStatus,
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
@@ -17,7 +19,6 @@ export async function processCreateProfile(
 
     const createProfileMessage = GameProfile.fromBytes(
         message.getDataAsBuffer(),
-        message.getData().getByteSize(),
     );
 
     // Log the request
@@ -36,5 +37,7 @@ export async function processCreateProfile(
     // Log the response
     log.info(`ProcessCreateProfile response: ${response.toString()}`);
 
-    await socketCallback([response.serialize()]);
+    socketCallback([response.serialize()]);
+    log.resetName();
+    return Promise.resolve();
 }
