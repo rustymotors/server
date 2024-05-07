@@ -26,6 +26,7 @@ import { createCipheriv, createDecipheriv, getCiphers } from "node:crypto";
 import { McosEncryptionPair } from "../../shared";
 import { ClientConnectionManager } from "../../mcots/ClientConnectionManager";
 import { getServerLogger } from "../../shared";
+import { ErrorNoKey } from "../../mcots/errors/ErrorNoKey";
 
 const log = getServerLogger();
 
@@ -67,6 +68,11 @@ export function createCommandEncryptionPair(key: string): McosEncryptionPair {
  * @throws Error if the key is too short
  */
 export function createDataEncryptionPair(key: string): McosEncryptionPair {
+    if (key.length === 0) {
+        log.error(`Key is empty: ${key}`);
+        throw new ErrorNoKey(`Key is empty: ${key}`);
+    }
+    
     if (key.length < 16) {
         log.error(`Key too short: length ${key.length}, value ${key}`);
         throw Error(`Key too short: length ${key.length}, value ${key}`);
@@ -129,7 +135,19 @@ export class Connection {
     }
 
     setChannelSecure(channelSecure: boolean): void {
+        if (channelSecure && this._cipherPair === null) {
+            this._logger.error(
+                `Tried to set channel secure without a cipher pair for connection ${this._connectionId}`,
+            );
+            throw new Error(
+                `Tried to set channel secure without a cipher pair for connection ${this._connectionId}`,
+            );
+        }
+
         this._channelSecure = channelSecure;
+        log.debug(
+            `Channel secure set to ${this._channelSecure} for connection ${this._connectionId}`,
+        );
     }
 
     private async _getCiperKeyFromDatabase() {
@@ -174,6 +192,11 @@ export class Connection {
 
         this._logger.resetName();
     }
+
+    setCipherPair(cipherPair: McosEncryptionPair) {
+        this._cipherPair = cipherPair;
+    }
+
     handleServerSocketData(data: Buffer): void {
         this._logger.setName("Connection:handleSocketData");
         try {
@@ -238,22 +261,26 @@ export class Connection {
         );
         try {
             messages.forEach((message) => {
-                this._logger.debug(`Sending message ID ${message.getId()}`);
-                this._logger.debug(`Message: ${message.toHexString()}`);
-
+                this._logger.debug(`Sending server message ID ${message.getId()}`);
+                
+                this._logger.debug(`Server Message: ${message.toHexString()}`);
+                
                 message = this.encryptIfNecessary(message);
-
+                
                 this._socket.write(message.serialize());
+                if (message.getId() === 0x101) {
+                    this.setChannelSecure(true);
+                }
             });
         } catch (error) {
             this._logger.error(
-                `Error sending message for connectionId ${this._connectionId}: ${error as string}`,
+                `Error sending server message for connectionId ${this._connectionId}: ${error as string}`,
             );
             Sentry.captureException(error);
         }
 
         this._logger.debug(
-            `Sent messages for connection ${this._connectionId}`,
+            `Sent ${messages.length} server messages for connection ${this._connectionId}`,
         );
 
         this._logger.resetName();
@@ -318,5 +345,9 @@ export class Connection {
         }
         this._logger.resetName();
         return message;
+    }
+
+    toString(): string {        
+        return `Connection ${this._connectionId}, persona ID ${this._personaId}, channel secure ${this._channelSecure}`;
     }
 }

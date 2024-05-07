@@ -1,106 +1,92 @@
 import {
-    ServerGenericRequest,
+    ServerGenericResponse,
     ServerMessage,
 } from "../../shared-packets/src/ServerMessage";
 import type { ServerSocketCallback } from ".";
 import { getServerLogger } from "../../shared";
-import {
-    getWarehouseInventory,
-    type WarehouseInventory,
-} from "../../database/src/functions/getWarehouseInventory";
-import { StackCarInfo, StockCar } from "../payloads/StockCar";
+import { ClientConnectionMessage } from "../payloads/ClientConnectMessage";
+import { UserStatusManager } from "../../nps";
+import { ClientConnectionManager } from "../ClientConnectionManager";
+import { createDataEncryptionPair } from "../../connection/src/Connection";
+import { ErrorNoKey } from "../errors/ErrorNoKey";
 
 const log = getServerLogger();
-
-function verifyCustomer(customerId: number): boolean {
-    return customerId === 1;
-}
 
 export async function processClientConnect(
     connectionId: string,
     message: ServerMessage,
     socketCallback: ServerSocketCallback,
 ): Promise<void> {
-    log.setName("processStockCarInfo");
+    log.setName("processClientConnect");
     try {
-        log.debug(`Processing stock car info message`);
+        log.debug(`Processing client connect request: ${message.toString()}`);
 
-        const request = new ServerGenericRequest().deserialize(
-            message.data.serialize(),
+        const request = new ClientConnectionMessage(
+            message.getDataBuffer().length,
+        ).deserialize(message.getDataBuffer());
+
+        log.debug(`Received client connect request: ${request.toString()}`);
+
+        const userStatus = UserStatusManager.getUserStatus(
+            request.getCustomerId(),
         );
 
-        log.debug(`Received stock car info request: ${request.toString()}`);
-
-        const lotOwnerId = request.getData().readUInt32LE();
-        const brandId = request.getData2().readUInt32LE();
-
-        log.debug(`Lot owner ID: ${lotOwnerId} Brand ID: ${brandId}`);
-
-        const inventoryCars: WarehouseInventory = await getWarehouseInventory(
-            lotOwnerId,
-            brandId,
-        );
-
-        log.debug(
-            `Sending car info for lot owner ${lotOwnerId} and brand ${brandId}`,
-        );
-
-        const responsePacket = new StackCarInfo();
-
-        responsePacket.setMessageId(141);
-        responsePacket.setStarterCash(100);
-        responsePacket.setDealerId(lotOwnerId);
-        responsePacket.setBrandId(brandId);
-
-        const response = new ServerMessage(141);
-
-        if (
-            inventoryCars.inventory.length > StackCarInfo.MAX_CARS_PER_MESSAGE
-        ) {
+        if (!userStatus) {
             log.error(
-                `Too many cars in inventory: ${inventoryCars.inventory.length}`,
+                `User status not found for customer ID: ${request.getCustomerId()}`,
             );
             return;
         }
 
-        log.debug(`Sending ${inventoryCars.inventory.length} cars`);
+        log.debug(`User status found: ${userStatus.toString()}`);
 
-        while (inventoryCars.inventory.length > 0) {
-            const car = inventoryCars.inventory.shift();
+        // Get the connection record
+        const connection = ClientConnectionManager.getConnection(connectionId);
 
-            if (typeof car === "undefined") {
-                log.error(`Car not found`);
-                break;
-            }
-
-            const stockCar = new StockCar();
-
-            stockCar.setBrandedPartId(car.brandedPartId);
-            stockCar.setIsDealOfTheDay(car.isDealOfTheDay === 1);
-
-            let carCost = car.retailPrice || 0;
-
-            if (car.isDealOfTheDay === 1) {
-                const discount = carCost * inventoryCars.dealOfTheDayDiscount;
-                carCost -= discount;
-            }
-
-            stockCar.setRetailPrice(carCost);
-
-            responsePacket.addCar(stockCar);
+        if (!connection) {
+            log.error(
+                `Connection not found for connection ID: ${connectionId}`,
+            );
+            return;
         }
 
-        log.debug(`Sending ${responsePacket.getNumberOfCars()} cars...complete`);
+        log.debug(`Connection found: ${connection.toString()}`);
 
-        responsePacket.setMoreCars(false);
+        const sessionKey = userStatus.getSessionKey();
 
-        response.setData(responsePacket);
-        response.populateHeader(message.header.getSequence());
+        if (!sessionKey) {
+            log.error(
+                `Session key not found for customer ID: ${request.getCustomerId()}`,
+            );
+            return;
+        }
+
+        const cipherPair = createDataEncryptionPair(sessionKey.getKey());
+
+        connection.setCipherPair(cipherPair);
+
+        const pReply = new ServerGenericResponse();
+        pReply.setMessageId(0x101);
+        pReply.setMsgReply(438);
+
+        const response = new ServerMessage(0x101);
+        response.setData(pReply);
+        response.populateHeader(message.getSequence());
+
+        socketCallback([response]);
         log.resetName();
-        return socketCallback([response]);
+        return Promise.resolve();
     } catch (error) {
-        log.error(`Error processing stock car info: ${error as string}`);
-        throw error;
+        if (error instanceof ErrorNoKey) {
+            log.error(
+                `Error processing client connect request: ${error.message}`,
+            );
+        } else {
+            log.error(
+                `Error processing client connect request: ${error as string}`,
+            );
+            throw error;
+        }
     }
 }
 

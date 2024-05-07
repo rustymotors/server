@@ -210,6 +210,19 @@ export class ServerGenericResponse extends ServerMessagePayload {
         return this;
     }
 
+    getMessageReply(): number {
+        return this._msgReply;
+    }
+
+    getResult(): number {
+        return this._result;
+    }
+
+    setMsgReply(msgReply: number): ServerGenericResponse {
+        this._msgReply = msgReply;
+        return this;
+    }
+
     toString(): string {
         return `ServerGenericResponse {messageId: ${this.messageId}, msgReply: ${this._msgReply}, result: ${this._result}, data: ${this._data.toString("hex")}, data2: ${this._data2.toString("hex")}}`;
     }
@@ -258,6 +271,19 @@ export class ServerMessage extends Serializable implements IMessage {
     }
     override serialize(): Buffer {
         try {
+
+            if (this.header.getSequence() === 0) {
+                throw new Error("ServerMessage sequence is 0, it must be set to a non-zero value before serializing");
+            }
+
+            if (!this.header.isValidSignature()) {
+                throw new Error("ServerMessage signature is invalid, it must be set to 'TOMC' before serializing");
+            }
+
+            if (this.header.getByteSize() === 0) {
+                throw new Error("ServerMessage header byte size is 0, it must be set before serializing");
+            }
+
             const buffer = Buffer.alloc(this.getByteSize());
             const headerBuffer = this.header.serialize();
             const dataBuffer = this.getDataBuffer();
@@ -270,6 +296,7 @@ export class ServerMessage extends Serializable implements IMessage {
             log.error(`Error serializing ServerMessage: ${error as string}`);
             throw error;
         }
+
     }
     override deserialize(data: Buffer): ServerMessage {
         this._assertEnoughData(data, this.header.getByteSize());
@@ -318,11 +345,12 @@ export class ServerMessage extends Serializable implements IMessage {
         return this.data.getMessageId();
     }
 
+    getSequence() {
+        return this.header.getSequence();
+    }
+
     toString(): string {
         return `ServerMessage {length: ${this.header.getLength()}, id: ${this.data.getMessageId()}}`;
     }
 
-    toHexString(): string {
-        return this.serialize().toString("hex");
-    }
 }

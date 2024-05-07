@@ -2,7 +2,8 @@ export interface ISerializable {
     serialize(): Buffer;
     deserialize(data: Buffer): void;
     getByteSize(): number;
-    asHexString(): string;
+    toString(): string;
+    toHexString(): string;
 }
 
 export interface IMessage extends ISerializable {

@@ -4,6 +4,7 @@ import { GameProfile } from "../messageStructs/GameProfile.js";
 
 import { getServerLogger } from "../../shared";
 import type { UserStatus } from "../messageStructs/UserStatus.js";
+import { addGameProfile } from "../services/profile.js";
 
 const log = getServerLogger();
 
@@ -27,6 +28,8 @@ export async function processCreateProfile(
     );
 
     // TODO: Create the profile
+    addGameProfile(createProfileMessage);
+
 
     // TODO: Send the response
     const response = new GameMessage(257);

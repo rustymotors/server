@@ -1,10 +1,9 @@
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
     createCommandEncryptionPair,
     verifyLegacyCipherSupport,
 } from "../src/Connection";
 import { McosEncryptionPair } from "../../shared";
-import { getCiphers } from "node:crypto";
 
 describe("createCommandEncryptionPair", () => {
     it("should create an encryption pair with a valid key", () => {
