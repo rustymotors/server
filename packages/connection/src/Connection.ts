@@ -1,12 +1,3 @@
-import type { Socket } from "node:net";
-import { ServerMessage } from "../../shared-packets";
-import { getServerMessageProcessor } from "../../mcots";
-import type { TServerLogger } from "../../shared";
-import * as Sentry from "@sentry/node";
-import { getDatabase } from "../../database";
-import { key as keySchema } from "../../../schema/key";
-import { eq } from "drizzle-orm";
-
 // mcos is a game server, written from scratch, for an old game
 // Copyright (C) <2017>  <Drazi Crendraven>
 //
@@ -23,6 +14,14 @@ import { eq } from "drizzle-orm";
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import type { Socket } from "node:net";
+import { ServerMessage } from "../../shared-packets";
+import { getServerMessageProcessor } from "../../mcots";
+import type { TServerLogger } from "../../shared";
+import * as Sentry from "@sentry/node";
+import { getDatabase } from "../../database";
+import { key as keySchema } from "../../../schema/key";
+import { eq } from "drizzle-orm";
 import { createCipheriv, createDecipheriv, getCiphers } from "node:crypto";
 import { McosEncryptionPair } from "../../shared";
 import { ClientConnectionManager } from "../../mcots/ClientConnectionManager";
@@ -90,6 +89,7 @@ export function createDataEncryptionPair(key: string): McosEncryptionPair {
  */
 export function verifyLegacyCipherSupport() {
     const cipherList = getCiphers();
+    console.log(`Cipher list: ${cipherList.join(", ")}`);
     if (!cipherList.includes("des-cbc")) {
         throw Error("DES-CBC cipher not available");
     }
@@ -112,7 +112,9 @@ export class Connection {
         this._logger = logger;
 
         this._socket.on("data", (data) => this.handleServerSocketData(data));
-        this._socket.on("error", (error) => this.handleServerSocketError(error));
+        this._socket.on("error", (error) =>
+            this.handleServerSocketError(error),
+        );
         this._socket.on("close", () => this.close());
 
         this._logger.debug(`Connection ${this._connectionId} created`);
@@ -212,7 +214,9 @@ export class Connection {
         }
 
         // Process the message
-        this._logger.debug(`Processing server message with message ID ${message.getId()}, using processor ${processor.name}`);
+        this._logger.debug(
+            `Processing server message with message ID ${message.getId()}, using processor ${processor.name}`,
+        );
         processor(
             this._connectionId,
             message,
@@ -248,7 +252,9 @@ export class Connection {
             Sentry.captureException(error);
         }
 
-        this._logger.debug(`Sent messages for connection ${this._connectionId}`);
+        this._logger.debug(
+            `Sent messages for connection ${this._connectionId}`,
+        );
 
         this._logger.resetName();
     }
