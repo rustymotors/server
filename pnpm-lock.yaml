@@ -160,6 +160,9 @@ importers:
 
   packages/mcots:
     dependencies:
+      '@rustymotors/shared':
+        specifier: workspace:^
+        version: link:../shared
       '@sentry/node':
         specifier: ^7.102.0
         version: 7.111.0

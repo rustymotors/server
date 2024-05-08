@@ -103,7 +103,7 @@ export function unpackUserLoginMessage(message: ISerializable): {
 /**
  * This is the initial connection to the Login server
  */
-export async function processLogin(
+export async function processGameLogin(
     connectionId: string,
     userStatus: UserStatus,
     message: GameMessage,

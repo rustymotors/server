@@ -1,4 +1,4 @@
-import { processLogin } from "./processLogin.js";
+import { processGameLogin } from "./processGameLogin.js";
 import { processGetProfileMaps } from "./processGetProfileMaps.js";
 import { processCheckProfileName } from "./processCheckProfileName.js";
 import { processCheckPlateText } from "./processCheckPlateText.js";
@@ -35,7 +35,7 @@ export function populateGameMessageProcessors(
 ): void {
     processors.set(0x100, processUserLogin);
     processors.set(0x217, processPing); // 0x217
-    processors.set(0x501, processLogin);
+    processors.set(0x501, processGameLogin);
     processors.set(0x503, processSelectPersona);
     processors.set(0x507, processCreateProfile);
     processors.set(0x50b, processFirstBuddy);

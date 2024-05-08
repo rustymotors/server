@@ -66,10 +66,10 @@ export async function processClientConnect(
         connection.setCipherPair(cipherPair);
 
         const pReply = new ServerGenericResponse();
-        pReply.setMessageId(0x101);
+        pReply.setMessageId(101);
         pReply.setMsgReply(438);
 
-        const response = new ServerMessage(0x101);
+        const response = new ServerMessage(101);
         response.setData(pReply);
         response.populateHeader(message.getSequence());
 

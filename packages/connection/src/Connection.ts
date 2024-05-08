@@ -201,6 +201,9 @@ export class Connection {
         this._logger.setName("Connection:handleSocketData");
         try {
             const message = new ServerMessage(0).deserialize(data);
+            log.debug(
+                `Received server message with ID ${message.getId()} for connection ${this._connectionId}`,
+            );
             this.processServerMessage(message);
         } catch (error) {
             this._logger.error(
@@ -222,6 +225,7 @@ export class Connection {
             });
         }
 
+        this._logger.debug(`Raw message header: ${message.header.toString()}`);
         this._logger.debug(`Raw message: ${message.toHexString()}`);
 
         message = this.decryptIfNecessary(message);
@@ -243,7 +247,7 @@ export class Connection {
         processor(
             this._connectionId,
             message,
-            this.sendSeverMessage.bind(this),
+            this.sendServerMessage.bind(this),
         ).catch((error) => {
             this._logger.error(
                 `Error processing message for connectionId ${this._connectionId}: ${error as string}`,
@@ -254,18 +258,21 @@ export class Connection {
         this._logger.resetName();
     }
 
-    sendSeverMessage(messages: ServerMessage[]) {
+    sendServerMessage(messages: ServerMessage[]) {
         this._logger.setName("Connection:sendMessage");
         this._logger.debug(
             `Sending ${messages.length} messages for connection ${this._connectionId}`,
         );
         try {
             messages.forEach((message) => {
-                this._logger.debug(`Sending server message ID ${message.getId()}`);
-                
+                this._logger.debug(`Sending server message header: ${message.header.toString()}`);                
                 this._logger.debug(`Server Message: ${message.toHexString()}`);
                 
                 message = this.encryptIfNecessary(message);
+
+                if (message.isEncrypted()) {
+                    this._logger.debug(`Encrypted Message: ${message.toHexString()}`);
+                }
                 
                 this._socket.write(message.serialize());
                 if (message.getId() === 0x101) {
@@ -296,7 +303,8 @@ export class Connection {
                     `Message should be encrypted but no cipher pair is available for connection ${this._connectionId}`,
                 );
             }
-            message.encrypt(this._cipherPair);
+            message = message.encrypt(this._cipherPair);
+            message.header.setPayloadEncryption(true);
             this._logger.debug(
                 `Encrypted message: message ID ${message.getId()}, prior messsage ID ${message.getPreDecryptedMessageId()}`,
             );
@@ -338,7 +346,7 @@ export class Connection {
                     `Message is encrypted but no cipher pair is available for connection ${this._connectionId}`,
                 );
             }
-            message.decrypt(this._cipherPair);
+            message = message.decrypt(this._cipherPair);
             this._logger.debug(
                 `Decrypted message: message ID ${message.getId()}, prior messsage ID ${message.getPreDecryptedMessageId()}`,
             );

@@ -11,6 +11,7 @@
     "author": "",
     "license": "AGPL-3.0",
     "dependencies": {
+        "@rustymotors/shared": "workspace:^",
         "@sentry/node": "^7.102.0",
         "short-unique-id": "^5.0.3"
     }

@@ -10,7 +10,7 @@ export {
 } from "./messageProcessors/index.js";
 export { GameMessage } from "./messageStructs/GameMessage.js";
 export { getWord } from "./utils/pureGet.js";
-export { processLogin as processUserLogin } from "./messageProcessors/processLogin.js";
+export { processGameLogin as processUserLogin } from "./messageProcessors/processGameLogin.js";
 export {
     populateUsers as populateGameUsers,
     getUserFromDb as getUser,

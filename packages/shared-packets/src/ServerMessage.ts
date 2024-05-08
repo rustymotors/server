@@ -55,8 +55,12 @@ export class ServerMessageHeader extends Serializable implements ISerializable {
         return this.flags >= 0x08;
     }
 
-    togglePayloadEncryption(): ServerMessageHeader {
-        this.flags ^= 0x08;
+    setPayloadEncryption(encrypted: boolean): ServerMessageHeader {
+        if (encrypted) {
+            this.flags |= 0x08;
+        } else {
+            this.flags &= ~0x08;
+        }
         return this;
     }
 
@@ -229,13 +233,10 @@ export class ServerGenericResponse extends ServerMessagePayload {
 }
 
 export class ServerMessage extends Serializable implements IMessage {
-    getPreDecryptedMessageId() {
-        return this._preDecryptedMessageId;
-    }
     header: ServerMessageHeader;
     data: ServerMessagePayload;
-    private _preDecryptedMessageId: number = 0;
-    private _preEncryptedMessageId: number = 0;
+    private _preDecryptedMessageId: number = -1;
+    private _preEncryptedMessageId: number = -1;
 
     constructor(messageId: number) {
         super();
@@ -312,32 +313,38 @@ export class ServerMessage extends Serializable implements IMessage {
     }
 
     decrypt(cipherPair: McosEncryptionPair): ServerMessage {
+        log.setName("ServerMessage::decrypt");
         if (this.isEncrypted()) {
             try {
                 this._preDecryptedMessageId = this.data.getMessageId();
+                log.debug(`Decrypting ServerMessage with message id ${this.data.getMessageId()}`);
                 this.setDataBuffer(cipherPair.decrypt(this.getDataBuffer()));
-                this.header.togglePayloadEncryption();
+                log.debug(`Decrypted ServerMessage with message id ${this._preDecryptedMessageId}, new message id: ${this.data.getMessageId()}`);
+                this.header.setPayloadEncryption(false);
             } catch (error) {
                 log.error(`Error decrypting ServerMessage: ${error as string}`);
                 throw error;
             }
         }
-
+        log.resetName();
         return this;
     }
 
     encrypt(cipherPair: McosEncryptionPair): ServerMessage {
+        log.setName("ServerMessage::encrypt");
         if (!this.isEncrypted()) {
             try {
                 this._preEncryptedMessageId = this.data.getMessageId();
+                log.debug(`Encrypting ServerMessage with message id ${this.data.getMessageId()}`);
                 this.setDataBuffer(cipherPair.encrypt(this.getDataBuffer()));
-                this.header.togglePayloadEncryption();
+                log.debug(`Encrypted ServerMessage with message id ${this._preEncryptedMessageId}, new message id: ${this.data.getMessageId()}`);
+                this.header.setPayloadEncryption(true);
             } catch (error) {
                 log.error(`Error encrypting ServerMessage: ${error as string}`);
                 throw error;
             }
         }
-
+        log.resetName();
         return this;
     }
 
@@ -351,6 +358,15 @@ export class ServerMessage extends Serializable implements IMessage {
 
     toString(): string {
         return `ServerMessage {length: ${this.header.getLength()}, id: ${this.data.getMessageId()}}`;
+    }
+
+    getPreDecryptedMessageId() {
+        return this._preDecryptedMessageId;
+    }
+
+
+    getPreEncryptedMessageId() {
+        return this._preEncryptedMessageId;
     }
 
 }
