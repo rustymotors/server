@@ -72,7 +72,7 @@ export function createDataEncryptionPair(key: string): McosEncryptionPair {
         log.error(`Key is empty: ${key}`);
         throw new ErrorNoKey(`Key is empty: ${key}`);
     }
-    
+
     if (key.length < 16) {
         log.error(`Key too short: length ${key.length}, value ${key}`);
         throw Error(`Key too short: length ${key.length}, value ${key}`);
@@ -265,15 +265,19 @@ export class Connection {
         );
         try {
             messages.forEach((message) => {
-                this._logger.debug(`Sending server message header: ${message.header.toString()}`);                
+                this._logger.debug(
+                    `Sending server message header: ${message.header.toString()}`,
+                );
                 this._logger.debug(`Server Message: ${message.toHexString()}`);
-                
+
                 message = this.encryptIfNecessary(message);
 
                 if (message.isEncrypted()) {
-                    this._logger.debug(`Encrypted Message: ${message.toHexString()}`);
+                    this._logger.debug(
+                        `Encrypted Message: ${message.toHexString()}`,
+                    );
                 }
-                
+
                 this._socket.write(message.serialize());
                 if (message.getId() === 0x101) {
                     this.setChannelSecure(true);
@@ -350,12 +354,13 @@ export class Connection {
             this._logger.debug(
                 `Decrypted message: message ID ${message.getId()}, prior messsage ID ${message.getPreDecryptedMessageId()}`,
             );
+            this._logger.debug(`Decrypted message: ${message.toHexString()}`);
         }
         this._logger.resetName();
         return message;
     }
 
-    toString(): string {        
+    toString(): string {
         return `Connection ${this._connectionId}, persona ID ${this._personaId}, channel secure ${this._channelSecure}`;
     }
 }
