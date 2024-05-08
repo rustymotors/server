@@ -27,6 +27,11 @@ jobs:
               uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
               with:
                   node-version: ${{ matrix.node-version }}
+            - name: Resolve Outdated Comments
+              uses: Ardiannn08/resolve-outdated-comment@v1.3
+              with:
+                  token: ${{ secrets.GH_TOKEN }}
+                  mode: "delete"
             - name: Install and test
               run: |
                   corepack enable pnpm
