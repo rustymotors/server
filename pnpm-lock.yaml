@@ -196,8 +196,6 @@ importers:
 
   packages/shared-packets: {}
 
-  packages/transactions: {}
-
 packages:
 
   /@ampproject/remapping@2.3.0:
