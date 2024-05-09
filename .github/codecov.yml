@@ -8,6 +8,18 @@ comment:
     show_carryforward_flags: true
 
 flags:
+    cli:
+        paths:
+            - packages/cli/**
+        carryforward: true
+    connection:
+        paths:
+            - packages/connection/**
+        carryforward: true
+    core:
+        paths:
+            - packages/core/**
+        carryforward: true
     database:
         paths:
             - packages/database/**
@@ -24,6 +36,14 @@ flags:
         paths:
             - packages/login/**
         carryforward: true
+    mcots:
+        paths:
+            - packages/mcots/**
+        carryforward: false
+    nps:
+        paths:
+            - packages/nps/**
+        carryforward: false
     patch:
         paths:
             - packages/patch/**
@@ -40,28 +60,37 @@ flags:
         paths:
             - packages/shared/**
         carryforward: true
+    shared-packets:
+        paths:
+            - packages/shared-packets/**
+        carryforward: false
     transactions:
         paths:
             - packages/transactions/**
         carryforward: false
-    interfaces:
-        paths:
-            - packages/interfaces/**
-        carryforward: false
-    connection:
-        paths:
-            - packages/connection/**
-        carryforward: true
-    core:
-        paths:
-            - packages/core/**
-        carryforward: true
 
 component_management:
     individual_components:
-        - component_id: components_team1
-          name: Team 1
+        - component_id: components_nps
+          name: NPS
           paths:
-              - packages/core/**
+              - packages/cli/**
+              - packages/connection/**
+              - packages/database/**
               - packages/gateway/**
-              - packages/shared/**
+              - packages/lobby/**
+              - packages/login/**
+              - packages/nps/**
+              - packages/patch/**
+              - packages/persona/**
+              - packages/shard/**
+              - packages/shared-packets/**
+        - component_id: components_mcots
+          name: MCOTS
+          paths:
+              - packages/cli/**
+              - packages/connection/**
+              - packages/database/**
+              - packages/gateway/**
+              - packages/mcots/**
+              - packages/shared-packets/**
