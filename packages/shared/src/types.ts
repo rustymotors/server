@@ -1,4 +1,4 @@
-import { serverHeader } from "./messageFactory.js";
+import { serverHeader } from "../messageFactory.js";
 
 export interface ServerMessageType {
     _header: serverHeader;

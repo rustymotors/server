@@ -14,7 +14,7 @@ export class SerializedBuffer extends BaseSerialized {
             this._data.copy(buffer, 2);
             return buffer;
         } catch (error) {
-            throw new Error(`Unable to serialize buffer: ${error}`);
+            throw new Error(`Unable to serialize buffer: ${(error as Error).message}`);
         }
     }
     override deserialize(buffer: Buffer) {
@@ -30,7 +30,7 @@ export class SerializedBuffer extends BaseSerialized {
             this._data = buffer.subarray(2, 2 + length);
             return this;
         } catch (error) {
-            throw Error(`Unable to deserialize buffer: ${error}`);
+            throw Error(`Unable to deserialize buffer: ${(error as Error).message}`);
         }
     }
 }

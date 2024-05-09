@@ -6,6 +6,10 @@
         ".": {
             "import": "./index.js",
             "require": "./index.js"
+        },
+        "./test": {
+            "import": "./test/index.js",
+            "require": "./test/index.js"
         }
     },
     "type": "module",

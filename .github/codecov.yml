@@ -43,7 +43,7 @@ flags:
     transactions:
         paths:
             - packages/transactions/**
-        carryforward: true
+        carryforward: false
     interfaces:
         paths:
             - packages/interfaces/**

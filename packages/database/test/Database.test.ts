@@ -1,17 +1,18 @@
-import { mockLogger } from "../../../test/factoryMocks.js";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
     fetchSessionKeyByCustomerId,
     fetchSessionKeyByConnectionId,
     updateUser,
 } from "../../database";
 
+
+
+
 describe("Database", () => {
     describe("fetchSessionKeyByCustomerId", () => {
         it("throws when session key is not found", async () => {
             // arrange
 
-            const log = mockLogger();
             const customerId = 1234;
             // act
             try {
@@ -31,7 +32,6 @@ describe("Database", () => {
         it("throws when session key is not found", async () => {
             // arrange
 
-            const log = mockLogger();
             const connectionId = "1234";
             // act
             try {
@@ -48,10 +48,9 @@ describe("Database", () => {
     });
 
     describe("updateUser", () => {
-        it("returns successfully when passed a valid user record", async () => {
+        it("returns successfully when passed a valid user record", () => {
             // arrange
 
-            const log = mockLogger();
             const userRecord = {
                 contextId: "1234",
                 customerId: 1234,
@@ -59,8 +58,8 @@ describe("Database", () => {
                 userData: Buffer.from("1234"),
             };
             // act + assert
-            expect(() => {
-                updateUser(userRecord);
+            expect(async () => {
+                await updateUser(userRecord);
             }).not.toThrow();
         });
     });

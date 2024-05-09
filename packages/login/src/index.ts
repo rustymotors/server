@@ -44,7 +44,7 @@ export class LoginServer {
      * @param {ServerLogger} options.log
      * @memberof LoginServer
      */
-    constructor({ log }: { log: ServerLogger }) {
+    constructor({ log }: { log: TServerLogger }) {
         this._log = log;
         LoginServer._instance = this;
     }

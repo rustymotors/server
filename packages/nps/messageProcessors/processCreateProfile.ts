@@ -1,7 +1,6 @@
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import type { SocketCallback } from "./index.js";
 import { GameProfile } from "../messageStructs/GameProfile.js";
-
 import { getServerLogger } from "../../shared";
 import type { UserStatus } from "../messageStructs/UserStatus.js";
 import { addGameProfile } from "../services/profile.js";
@@ -27,7 +26,7 @@ export async function processCreateProfile(
         `ProcessCreateProfile request: ${createProfileMessage.toString()}`,
     );
 
-    // TODO: Create the profile
+    // Add the profile
     addGameProfile(createProfileMessage);
 
 

@@ -1,10 +1,10 @@
-import { GameProfile } from "../messageStructs/GameProfile.js";
+import { GameProfile } from "../messageStructs/GameProfile";
+import { getDatabase } from "../../database";
+import { profile as profileSchema } from "../../../schema/profile";
 
 export const gameProfiles: GameProfile[] = [];
 
-export function populateGameProfiles(
-    profiles: GameProfile[],
-): void {
+export function populateGameProfiles(profiles: GameProfile[]): void {
     const profile1 = GameProfile.new();
     profile1.customerId = 2;
     profile1.profileName = "molly";
@@ -59,8 +59,29 @@ export function gameProfileExists(profileName: string): boolean {
     return false;
 }
 
-export function addGameProfile(profile: GameProfile): void {
-    gameProfiles.push(profile);
+export async function addGameProfile(profile: GameProfile): Promise<void> {
+    await getDatabase().insert(profileSchema).values([{
+        customerId: profile.customerId,
+        profileName: profile.profileName,
+        serverId: profile.serverId,
+        createStamp: profile.createStamp,
+        lastLoginStamp: profile.lastLoginStamp,
+        numberGames: profile.numberGames,
+        profileId: profile.profileId,
+        isOnline: profile.isOnline,
+        gamePurchaseStamp: profile.gamePurchaseStamp,
+        gameSerialNumber: profile.gameSerialNumber,
+        timeOnline: profile.timeOnline,
+        timeInGame: profile.timeInGame,
+        gameBlob: profile.gameBlob.toString(),
+        personalBlob: profile.personalBlob.toString(),
+        pictureBlob: profile.pictureBlob.toString(),
+        dnd: profile.dnd,
+        gameStartStamp: profile.gameStartStamp,
+        currentKey: profile.currentKey,
+        profileLevel: profile.profileLevel,
+        shardId: profile.shardId,
+    }]).onConflictDoNothing();
 }
 
 export function deleteGameProfile(profileId: number): void {
@@ -75,6 +96,5 @@ export function deleteGameProfile(profileId: number): void {
 export function createGameProfile(): GameProfile {
     const profile = GameProfile.new();
 
-    addGameProfile(profile);
     return profile;
 }

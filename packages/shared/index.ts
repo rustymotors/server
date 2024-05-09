@@ -1,6 +1,6 @@
 export { SubThread } from "./SubThread.js";
 export { NetworkMessage } from "./src/NetworkMessage.js";
-export { ServerLogger, getServerLogger } from "./log.js";
+export { ServerLogger, getServerLogger } from "./src/log.js";
 export { Configuration, getServerConfiguration } from "./Configuration.js";
 export {
     McosEncryptionPair,
@@ -30,12 +30,11 @@ export {
     deserializeString,
     serializeStringRaw,
     NPSHeader,
-    OldServerMessage,
 } from "./messageFactory.js";
 export { RawMessage } from "./src/RawMessage.js";
 export { ServerMessage } from "./src/ServerMessage.js";
 export { MessageNode } from "./MessageNode.js";
-export type * from "./types.js";
+export type * from "./src/types.js";
 export { Timestamp } from "./Timestamp.js";
 
 export interface KeypressEvent {

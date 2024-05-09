@@ -2,7 +2,6 @@ import {
     pgTable,
     varchar,
     integer,
-    uniqueIndex,
     smallint,
     timestamp,
     index,

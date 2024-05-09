@@ -207,7 +207,7 @@ export class Connection {
             this.processServerMessage(message);
         } catch (error) {
             this._logger.error(
-                `Error handling socket data for connectionId ${this._connectionId}: ${error as string}`,
+                `Error handling socket data for connectionId ${this._connectionId}: ${(error as Error).message}`,
             );
             Sentry.captureException(error);
         }
@@ -325,14 +325,14 @@ export class Connection {
         });
     }
 
-    handleServerSocketError(error: NodeJS.ErrnoException) {
+    handleServerSocketError(error: Error) {
         this._logger.setName("Connection:handleSocketError");
-        if (error.code === "ECONNRESET") {
+        if (error instanceof Error && 'code' in error && error.code === "ECONNRESET") {
             this._logger.debug(`Connection ${this._connectionId} reset`);
             return;
         }
         this._logger.error(
-            `Socket error: ${error.message} on connection ${this._connectionId}`,
+            `Socket error: ${error?.message ?? ""} on connection ${this._connectionId}`,
         );
         Sentry.captureException(error);
         this.close();

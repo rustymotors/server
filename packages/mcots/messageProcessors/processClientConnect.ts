@@ -1,5 +1,4 @@
 import {
-    ServerGenericResponse,
     ServerMessage,
 } from "../../shared-packets/src/ServerMessage";
 import type { ServerSocketCallback } from ".";
@@ -9,6 +8,7 @@ import { UserStatusManager } from "../../nps";
 import { ClientConnectionManager } from "../ClientConnectionManager";
 import { createDataEncryptionPair } from "../../connection/src/Connection";
 import { ErrorNoKey } from "../errors/ErrorNoKey";
+import { sendSuccess } from "./sendSuccess";
 
 const log = getServerLogger();
 
@@ -65,15 +65,8 @@ export async function processClientConnect(
 
         connection.setCipherPair(cipherPair);
 
-        const pReply = new ServerGenericResponse();
-        pReply.setMessageId(101);
-        pReply.setMsgReply(438);
-
-        const response = new ServerMessage(101);
-        response.setData(pReply);
-        response.populateHeader(message.getSequence());
-
-        socketCallback([response]);
+        sendSuccess(message, socketCallback);
+        
         log.resetName();
         return Promise.resolve();
     } catch (error) {
@@ -90,4 +83,4 @@ export async function processClientConnect(
     }
 }
 
-// Path: packages/mcots/messageProcessors/processStockCarInfo.ts
+// Path: packages/mcots/messageProcessors/processClientConnect.ts
