@@ -95,7 +95,6 @@ export function createDataEncryptionPair(key: string): McosEncryptionPair {
  */
 export function verifyLegacyCipherSupport() {
     const cipherList = getCiphers();
-    console.log(`Cipher list: ${cipherList.join(", ")}`);
     if (!cipherList.includes("des-cbc")) {
         throw Error("DES-CBC cipher not available");
     }
@@ -111,6 +110,10 @@ export class Connection {
     private _personaId: number | null = null;
     private _cipherPair: McosEncryptionPair | null = null;
     private _channelSecure: boolean = false;
+    
+    getConnectionId() {
+        return this._connectionId;
+    }
 
     constructor(socket: Socket, connectionId: string, logger: TServerLogger) {
         this._socket = socket;
@@ -119,7 +122,7 @@ export class Connection {
 
         this._socket.on("data", (data) => this.handleServerSocketData(data));
         this._socket.on("error", (error) =>
-            this.handleServerSocketError(error),
+            handleServerSocketError(this, error),
         );
         this._socket.on("close", () => this.close());
 
@@ -230,6 +233,7 @@ export class Connection {
 
         message = this.decryptIfNecessary(message);
 
+
         // Lookup the message processor
         const processor = getServerMessageProcessor(message.getId());
 
@@ -325,19 +329,6 @@ export class Connection {
         });
     }
 
-    handleServerSocketError(error: Error) {
-        this._logger.setName("Connection:handleSocketError");
-        if (error instanceof Error && 'code' in error && error.code === "ECONNRESET") {
-            this._logger.debug(`Connection ${this._connectionId} reset`);
-            return;
-        }
-        this._logger.error(
-            `Socket error: ${error?.message ?? ""} on connection ${this._connectionId}`,
-        );
-        Sentry.captureException(error);
-        this.close();
-        this._logger.resetName();
-    }
 
     decryptIfNecessary(message: ServerMessage): ServerMessage {
         this._logger.setName("Connection:decryptIfNecessary");
@@ -364,3 +355,18 @@ export class Connection {
         return `Connection ${this._connectionId}, persona ID ${this._personaId}, channel secure ${this._channelSecure}`;
     }
 }
+
+export function handleServerSocketError(connection: Connection, error: Error) {
+    log.setName("Connection:handleSocketError");
+    if (error.message === "ECONNRESET") {
+        log.debug(`Connection ${connection.getConnectionId()} reset`);
+        return;
+    }
+    log.error(
+        `Socket error: ${error.message} on connection ${connection.getConnectionId()}`,
+    );
+    Sentry.captureException(error);
+    connection.close();
+    log.resetName();
+}
+

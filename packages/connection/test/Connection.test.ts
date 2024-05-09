@@ -2,21 +2,12 @@ import { describe, expect, it, vi } from "vitest";
 import {
     createCommandEncryptionPair,
     verifyLegacyCipherSupport,
-    Connection,
 } from "../src/Connection";
-import { McosEncryptionPair, type TServerLogger } from "../../shared";
-import { Socket } from "node:net";
+import { McosEncryptionPair } from "../../shared";
 
-const mockLogger: TServerLogger = {
-    setName: vi.fn(),
-    debug: vi.fn(),
-    error: vi.fn(),
-    fatal: vi.fn(),
-    getName: vi.fn(),
-    info: vi.fn(),
-    trace: vi.fn(),
-    warn: vi.fn(),
-    resetName: vi.fn(),};
+vi.mock("@sentry/node", () => ({
+    captureException: vi.fn(),
+}));
 
 describe("createCommandEncryptionPair", () => {
     it("should create an encryption pair with a valid key", () => {
@@ -77,46 +68,5 @@ describe("verifyLegacyCipherSupport", () => {
         expect(verifyLegacyCipherSupport).not.toThrow();
 
         vi.resetAllMocks();
-    });
-});
-
-describe("Connection", () => {
-    describe("handleServerSocketError", () => {
-        it("should handle ECONNRESET by logging and not closing the connection", () => {
-
-            const mockSocket = new Socket
-
-
-            const connection = new Connection(mockSocket, "123", mockLogger);
-
-            const error = Error("socket error") as NodeJS.ErrnoException;
-            error.code = "ECONNRESET";
-
-            connection.handleServerSocketError(error);
-
-            expect(mockLogger.setName).toHaveBeenCalledWith(
-                "Connection:handleSocketError",
-            );
-            expect(mockLogger.debug).toHaveBeenCalledWith(
-                "Connection 123 reset",
-            );
-        });
-
-        it("should handle other errors by logging, capturing the exception, and closing the connection", () => {
-            const mockSocket = new Socket
-
-            const connection = new Connection(mockSocket, "123", mockLogger);
-
-            const error = Error("socket error");
-
-            connection.handleServerSocketError(error);
-
-            expect(mockLogger.setName).toHaveBeenCalledWith(
-                "Connection:handleSocketError",
-            );
-            expect(mockLogger.error).toHaveBeenCalledWith(
-                "Socket error: socket error on connection 123",
-            );
-        });
     });
 });

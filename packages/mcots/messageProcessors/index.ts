@@ -13,18 +13,29 @@ export type ServerMessageProcessor = (
     socketCallback: ServerSocketCallback,
 ) => Promise<void>;
 
-export const serverMessageProcessors = new Map<number, ServerMessageProcessor>([]);
+const serverMessageProcessors = new Map<number, ServerMessageProcessor>([]);
+
+export function addServerMessageProcessor(
+    messageId: number,
+    processor: ServerMessageProcessor,
+) {
+    serverMessageProcessors.set(messageId, processor);
+}
 
 export function populateServerMessageProcessors() {
-    serverMessageProcessors.set(105, processServerLogin)
-    serverMessageProcessors.set(109, processSetOptions)
-    serverMessageProcessors.set(141, processStockCarInfo)
-    serverMessageProcessors.set(440, processClientTracking)
-    serverMessageProcessors.set(438, processClientConnect)
+    addServerMessageProcessor(105, processServerLogin);
+    addServerMessageProcessor(109, processSetOptions);
+    addServerMessageProcessor(141, processStockCarInfo);
+    addServerMessageProcessor(440, processClientTracking);
+    addServerMessageProcessor(438, processClientConnect);
 };
 
 export function getServerMessageProcessor(messageId: number) {
     return serverMessageProcessors.get(messageId);
+}
+
+export function getServerMessageProcessors() {
+    return serverMessageProcessors;
 }
 
 
