@@ -3,11 +3,12 @@
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
 
+import type { ConnectionRecord } from "@rustymotors/shared";
+
 /**
  * This class abstracts database methods
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
-import type { ConnectionRecord } from "../../interfaces/index.js";
 
 // This is a fake database table that holds sessions of currently logged in users
 const _sessions: ConnectionRecord[] = [];
@@ -29,6 +30,7 @@ export async function updateUser(user: {
 }): Promise<void> {
     try {
         _users.set(user.userId, user.userData);
+        return Promise.resolve();
     } catch (error) {
         throw Error(`Error updating user: ${String(error)}`);
     }
@@ -48,7 +50,7 @@ export async function fetchSessionKeyByCustomerId(
     if (typeof record === "undefined") {
         throw Error(`Session key not found for customer ${customerId}`);
     }
-    return record;
+    return Promise.resolve(record);
 }
 
 /**
@@ -80,23 +82,26 @@ export async function updateSessionKey(
     });
 
     _sessions.splice(record, 1, updatedSession);
+    return Promise.resolve();
 }
 
 /**
  * Locate customer session encryption key in the database
  *
  * @param {string} connectionId
- * @returns {Promise<interfaces.ConnectionRecord>}
+ * @returns {Promise<ConnectionRecord>}
  * @throws {Error} If the session key is not found
  */
 export async function fetchSessionKeyByConnectionId(
     connectionId: string,
-): Promise<interfaces.ConnectionRecord> {
+): Promise<ConnectionRecord> {
     const record = _sessions.find((session) => {
         return session.connectionId === connectionId;
     });
     if (typeof record === "undefined") {
         throw Error(`Session key not found for connection ${connectionId}`);
     }
-    return record;
+    return Promise.resolve(record);
 }
+
+

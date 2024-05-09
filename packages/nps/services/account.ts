@@ -1,65 +1,61 @@
-export type User = {
-    username: string;
-    password: string;
-    customerId: number;
-    createdAt: Date;
-    updatedAt: Date;
-};
+import { getDatabase } from "../../database";
+import { user as userSchema } from "../../../schema/user";
+import { eq, and } from "drizzle-orm";
+import { getServerLogger } from "../../shared";
 
-const users: User[] = [];
+const log = getServerLogger();
 
-export async function populateGameUsers(): Promise<void> {
-    // Create the default admin user
-    users.push({
-        username: "admin",
-        password: "admin",
-        customerId: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+
+
+export async function populateUsers(): Promise<void> {
+
+    await getDatabase().insert(userSchema).values([
+        {
+            userId: 1,
+            userName: "admin",
+            password: "admin",
+            customerId: 1,
+            isSuperUser: 1,
+        },
+        {
+            userId: 2,
+            userName: "molly",
+            password: "molly",
+            customerId: 2,
+            isSuperUser: 0,
+        },
+    ]).onConflictDoNothing();
+}
+
+export async function getUserFromDb(username: string, password: string): Promise<typeof userSchema.$inferSelect | null> {
+    
+    const userAccount = await getDatabase().select().from(userSchema).where(
+        and(
+            eq(userSchema.userName, username),
+            eq(userSchema.password, password),
+        ),        
+    ).limit(1).then((result) => {
+        if (result.length === 0) {
+            return null;
+        }
+
+        const record =  result[0];
+
+        if (typeof record === "undefined") {
+            return null;
+        }
+
+        return record;
     });
 
-    // Create the default molly user
-    users.push({
-        username: "molly",
-        password: "molly",
-        customerId: 2,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    });
+    log.debug(`getUser: ${JSON.stringify(userAccount)}`);
+
+    return userAccount
 }
 
-export async function getUser(username: string): Promise<User | undefined> {
-    return users.find((user) => user.username === username);
+export async function isSuperUser(username: string, password: string): Promise<boolean> {
+    const user = await getUserFromDb(username, password);
+    return user ? user.isSuperUser === 1 : false;
 }
 
-export async function addUser(user: User): Promise<void> {
-    users.push({
-        username: user.username,
-        password: user.password,
-        customerId: user.customerId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    });
-}
-
-export async function deleteUser(username: string): Promise<void> {
-    const index = users.findIndex((user) => user.username === username);
-    users.splice(index, 1);
-}
-
-export async function getCustomerId(
-    username: string,
-): Promise<number | undefined> {
-    const user = await getUser(username);
-    if (typeof user === "undefined") {
-        return undefined;
-    }
-    return user ? user.customerId : undefined;
-}
-
-export async function checkPassword(
-    user: User,
-    password: string,
-): Promise<boolean> {
-    return user.password === password;
-}
+// Path: packages/nps/services/account.ts

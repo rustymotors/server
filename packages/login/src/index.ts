@@ -29,14 +29,14 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import type { ServerLogger, ServiceResponse, NPSMessage } from "../../shared";
+import type { ServerLogger, ServiceResponse, NPSMessage, TServerLogger, UserRecordMini } from "../../shared";
 import { handleLoginData } from "./internal.js";
 
 /**
  * Please use {@link LoginServer.getInstance()}
  */
 export class LoginServer {
-    _log: any;
+    _log: TServerLogger
     static _instance: LoginServer | undefined;
     /**
      * Please use {@see LoginServer.getInstance} instead
@@ -44,7 +44,7 @@ export class LoginServer {
      * @param {ServerLogger} options.log
      * @memberof LoginServer
      */
-    constructor({ log }: { log: ServerLogger }) {
+    constructor({ log }: { log: TServerLogger }) {
         this._log = log;
         LoginServer._instance = this;
     }
@@ -65,17 +65,11 @@ export class LoginServer {
         return LoginServer._instance;
     }
 
-    /**
-     *
-     * @param {string} contextId
-     * @return {import("../../interfaces/index.js").UserRecordMini}
-     */
     _npsGetCustomerIdByContextId(
         contextId: string,
-    ): import("../../interfaces/index.js").UserRecordMini {
+    ): UserRecordMini {
         this._log.debug(">>> _npsGetCustomerIdByContextId");
-        /** @type {import("../../interfaces/index.js").UserRecordMini[]} */
-        const users: import("../../interfaces/index.js").UserRecordMini[] = [
+        const users: UserRecordMini[] = [
             {
                 contextId: "5213dee3a6bcdb133373b2d4f3b9962758",
                 customerId: 0x0012808b,
@@ -138,7 +132,7 @@ export async function receiveLoginData({
 }: {
     connectionId: string;
     message: NPSMessage;
-    log: ServerLogger;
+    log: TServerLogger;
 }): Promise<ServiceResponse> {
     try {
         log.debug("Entering login module");

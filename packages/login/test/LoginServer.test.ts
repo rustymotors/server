@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { LoginServer } from "../src/index.js";
-import { mockLogger } from "../../../test/factoryMocks.js";
+import { mockLogger } from "../../shared/test";
+
+
 
 describe("LoginServer", () => {
     describe("constructor", () => {

@@ -6,56 +6,47 @@ import type { SocketCallback } from "./index.js";
 import { getAsHex } from "../utils/pureGet.js";
 import {
     type EncryptionSession,
-    getEncryptionSession,
-    getUserSessionByConnectionId,
-    newEncryptionSession,
-    setEncryptionSession,
-} from "../services/session.js";
+    getEncryptionSession, newEncryptionSession,
+    setEncryptionSession
+} from "../src/EncryptionSession.js";
 import { lobbyCommandMap } from "./lobbyCommands.js";
 
 import { getServerLogger } from "../../shared";
+import type { UserStatus } from "../messageStructs/UserStatus.js";
 
 const log = getServerLogger();
 
 export async function processEncryptedGameCommand(
     connectionId: string,
+    userStatus: UserStatus,
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
     log.setName("nps:processEncryptedGameCommand");
     log.info(`Attempting to decrypt message: ${message.toString()}`);
 
-    // Get the session
-    const session = await getUserSessionByConnectionId(connectionId);
-
-    // If the session doesn't exist, return
-    if (!session) {
-        log.error(`Session not found for connection ID ${connectionId}`);
-        throw new Error(`Session not found for connection ID ${connectionId}`);
-    }
-
     // Get the encryption session
     let encryptionSession: EncryptionSession | undefined =
-        await getEncryptionSession(connectionId);
+        getEncryptionSession(connectionId);
 
     // If the encryption session doesn't exist, attempt to create it
     if (typeof encryptionSession === "undefined") {
         try {
             // Create the encryption session
-            const newSession = await newEncryptionSession({
+            const newSession = newEncryptionSession({
                 connectionId,
-                customerId: session.customerId,
-                sessionKey: session.sessionKey.substring(0, 16),
+                customerId: userStatus.getCustomerId(),
+                sessionKey: userStatus.getSessionKey().getKey().substring(0, 16),
             });
-            await setEncryptionSession(newSession);
+            setEncryptionSession(newSession);
             encryptionSession = newSession;
         } catch (error) {
-            log.error(`Error creating encryption session: ${error}`);
+            log.error(`Error creating encryption session: ${error as string}`);
             throw new Error("Error creating encryption session");
         }
 
         // Log the encryption session
-        log.info(`Created encryption session for ${session.customerId}`);
+        log.info(`Created encryption session for ${userStatus.getCustomerId()}`);
     }
 
     // Attempt to decrypt the message
@@ -93,7 +84,7 @@ export async function processEncryptedGameCommand(
 
     // Encrypt the response
     const encryptedResponse = encryptionSession.gameCipher.update(response);
-    await setEncryptionSession(encryptionSession);
+    setEncryptionSession(encryptionSession);
 
     // Log the encrypted response
     log.info(
@@ -116,5 +107,7 @@ export async function processEncryptedGameCommand(
     );
     const responseBytes = responsePacket.serialize();
 
-    await socketCallback([responseBytes]);
+    socketCallback([responseBytes]);
+    log.resetName();
+    return Promise.resolve();
 }

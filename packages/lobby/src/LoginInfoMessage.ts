@@ -55,7 +55,7 @@ export class LoginInfoMessage extends LegacyMessage {
 
             return this;
         } catch (error) {
-            throw Error(`Error deserializing LoginInfoMessage: ${error}`);
+            throw Error(`Error deserializing LoginInfoMessage: ${error as string}`);
         }
     }
 
@@ -87,7 +87,7 @@ export class LoginInfoMessage extends LegacyMessage {
 
             return buffer;
         } catch (error) {
-            throw Error(`Error serializing LoginInfoMessage: ${error}`);
+            throw Error(`Error serializing LoginInfoMessage: ${error as string}`);
         }
     }
 

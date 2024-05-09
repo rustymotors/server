@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { getServerConfiguration } from "../../shared";
+import { getServerConfiguration, type TServerLogger } from "../../shared";
 import { NPSUserStatus } from "./NPSUserStatus.js";
 import { updateSessionKey } from "../../database";
 import {
@@ -57,7 +57,7 @@ async function login({
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log: ServerLogger;
+    log: TServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];
@@ -175,7 +175,7 @@ export const messageHandlers: {
     handler: (args: {
         connectionId: string;
         message: SerializedBuffer;
-        log: ServerLogger;
+        log: TServerLogger;
     }) => Promise<{
         connectionId: string;
         messages: SerializedBuffer[];
@@ -208,7 +208,7 @@ export async function handleLoginData({
 }: {
     connectionId: string;
     message: SerializedBuffer;
-    log: ServerLogger;
+    log: TServerLogger;
 }): Promise<{
     connectionId: string;
     messages: SerializedBuffer[];

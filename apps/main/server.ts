@@ -16,74 +16,87 @@
 
 import Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
-import { getServerLogger } from "../../packages/shared/log.js";
+import { getServerLogger } from "../../packages/shared";
 import { verifyLegacyCipherSupport } from "../../packages/gateway/src/encryption.js";
 import { getServerConfiguration } from "../../packages/shared/Configuration.js";
 import { getGatewayServer } from "../../packages/gateway/src/GatewayServer.js";
-import { exit } from "node:process";
 
-const coreLogger = getServerLogger({
-    level: "info",
-});
 
-try {
-    verifyLegacyCipherSupport();
-} catch (err) {
-    coreLogger.fatal(`Error in core server: ${String(err)}`);
-    throw err;
+export default async function main() {
+    const coreLogger = getServerLogger({
+        level: "info",
+    });
+    
+    try {
+        verifyLegacyCipherSupport();
+    } catch (err) {
+        coreLogger.fatal(`Error in core server: ${String(err)}`);
+        throw err;
+    }
+    
+    Sentry.init({
+        dsn: "https://f4c0126e2fc35876c860dd72fc056db9@o1413557.ingest.sentry.io/4506787875061760",
+        
+        // We recommend adjusting this value in production, or using tracesSampler
+        // for finer control
+        tracesSampleRate: 1.0,
+        profilesSampleRate: 1.0, // Profiling sample rate is relative to tracesSampleRate
+        integrations: [
+            nodeProfilingIntegration(),
+            ...Sentry.autoDiscoverNodePerformanceMonitoringIntegrations(),
+        ],
+        _experiments: {
+            metricsAggregator: true,
+        },
+    });
+    
+    try {
+        if (typeof process.env["EXTERNAL_HOST"] === "undefined") {
+            console.error("Please set EXTERNAL_HOST");
+            process.exit(1);
+        }
+        if (typeof process.env["CERTIFICATE_FILE"] === "undefined") {
+            console.error("Please set CERTIFICATE_FILE");
+            process.exit(1);
+        }
+        if (typeof process.env["PRIVATE_KEY_FILE"] === "undefined") {
+            console.error("Please set PRIVATE_KEY_FILE");
+            process.exit(1);
+        }
+        if (typeof process.env["PUBLIC_KEY_FILE"] === "undefined") {
+            console.error("Please set PUBLIC_KEY_FILE");
+            process.exit(1);
+        }
+        const config = getServerConfiguration({
+            host: process.env["EXTERNAL_HOST"],
+            certificateFile: process.env["CERTIFICATE_FILE"],
+            privateKeyFile: process.env["PRIVATE_KEY_FILE"],
+            publicKeyFile: process.env["PUBLIC_KEY_FILE"],
+        });
+        
+        const appLog = getServerLogger();
+        
+        const listeningPortList: number[] = [
+            6660, 7003, 8228, 8226, 8227,
+            // I don't know what part 9000 is for, but it's in the original list
+            // 9000, 
+            9001, 9002, 9003, 9004, 9005, 9006,
+            9007, 9008, 9009, 9010, 9011, 9012, 9013, 9014, 43200, 43300, 43400,
+            53303,
+        ];
+        
+        const gatewayServer = getGatewayServer({
+            config,
+            log: appLog,
+            listeningPortList,
+        });
+        
+        await gatewayServer.start();
+    } catch (err) {
+        Sentry.captureException(err);
+        coreLogger.fatal(`Error in core server: ${String(err)}`);
+        throw err;
+    }
 }
 
-Sentry.init({
-    dsn: "https://f4c0126e2fc35876c860dd72fc056db9@o1413557.ingest.sentry.io/4506787875061760",
-
-    // We recommend adjusting this value in production, or using tracesSampler
-    // for finer control
-    tracesSampleRate: 1.0,
-    profilesSampleRate: 1.0, // Profiling sample rate is relative to tracesSampleRate
-    integrations: [nodeProfilingIntegration()],
-});
-
-try {
-    if (typeof process.env["EXTERNAL_HOST"] === "undefined") {
-        console.error("Please set EXTERNAL_HOST");
-        process.exit(1);
-    }
-    if (typeof process.env["CERTIFICATE_FILE"] === "undefined") {
-        console.error("Please set CERTIFICATE_FILE");
-        process.exit(1);
-    }
-    if (typeof process.env["PRIVATE_KEY_FILE"] === "undefined") {
-        console.error("Please set PRIVATE_KEY_FILE");
-        process.exit(1);
-    }
-    if (typeof process.env["PUBLIC_KEY_FILE"] === "undefined") {
-        console.error("Please set PUBLIC_KEY_FILE");
-        process.exit(1);
-    }
-    const config = getServerConfiguration({
-        host: process.env["EXTERNAL_HOST"],
-        certificateFile: process.env["CERTIFICATE_FILE"],
-        privateKeyFile: process.env["PRIVATE_KEY_FILE"],
-        publicKeyFile: process.env["PUBLIC_KEY_FILE"],
-    });
-
-    const appLog = getServerLogger();
-
-    const listeningPortList: number[] = [
-        6660, 7003, 8228, 8226, 8227, 9000, 9001, 9002, 9003, 9004, 9005, 9006,
-        9007, 9008, 9009, 9010, 9011, 9012, 9013, 9014, 43200, 43300, 43400,
-        53303,
-    ];
-
-    const gatewayServer = getGatewayServer({
-        config,
-        log: appLog,
-        listeningPortList,
-    });
-
-    await gatewayServer.start();
-} catch (err) {
-    Sentry.captureException(err);
-    coreLogger.fatal(`Error in core server: ${String(err)}`);
-    throw err;
-}
+await main();

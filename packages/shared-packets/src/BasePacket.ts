@@ -1,7 +1,8 @@
 import type { ISerializable } from "./interfaces.js";
+import { getAsHex } from "./utils.js";
 
 export class Serializable implements ISerializable {
-    protected _data: Buffer = Buffer.alloc(0);
+    protected _data: Buffer = Buffer.alloc(4);
 
     protected _asHex(bytes: Buffer): string {
         return bytes.length % 2 === 0
@@ -26,8 +27,8 @@ export class Serializable implements ISerializable {
     getByteSize(): number {
         return this._data.length;
     }
-    asHexString(): string {
-        return this._asHex(this._data);
+    toHexString(): string {
+        return getAsHex(this.serialize());
     }
 }
 
@@ -43,8 +44,5 @@ export class BasePacket extends Serializable implements ISerializable {
     }
     override getByteSize(): number {
         return this.header.getByteSize() + this._data.length;
-    }
-    override asHexString(): string {
-        return this.serialize().toString("hex");
     }
 }

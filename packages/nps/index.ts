@@ -10,11 +10,10 @@ export {
 } from "./messageProcessors/index.js";
 export { GameMessage } from "./messageStructs/GameMessage.js";
 export { getWord } from "./utils/pureGet.js";
-export { processUserLogin } from "./messageProcessors/processUserLogin.js";
+export { processGameLogin as processUserLogin } from "./messageProcessors/processGameLogin.js";
 export {
-    populateGameUsers,
-    getUser,
-    checkPassword,
+    populateUsers as populateGameUsers,
+    getUserFromDb as getUser,
 } from "./services/account.js";
 export { generateToken } from "./services/token.js";
-export { createNewUserSession, setUserSession } from "./services/session.js";
+export { UserStatusManager } from "./src/UserStatusManager.js";

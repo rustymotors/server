@@ -4,7 +4,6 @@ import fastify from "fastify";
 import {
     Configuration,
     getServerConfiguration,
-    addOnDataHandler,
     createInitialState,
     fetchStateFromDatabase,
     type TServerLogger,
@@ -12,10 +11,6 @@ import {
 import { ConsoleThread } from "../../cli/ConsoleThread.js";
 import { addWebRoutes } from "./web.js";
 
-import { receiveLoginData } from "../../login/src/index.js";
-import { receivePersonaData } from "../../persona/src/internal.js";
-import { receiveLobbyData } from "../../lobby/src/internal.js";
-import { receiveTransactionsData } from "../../transactions/src/internal.js";
 import FastifySensible from "@fastify/sensible";
 
 import {
@@ -24,11 +19,23 @@ import {
     portToMessageTypes,
     gameMessageProcessors,
 } from "../../nps/messageProcessors/index.js";
-import { populateGameUsers } from "../../nps/services/account.js";
+import { populateUsers } from "../../nps/services/account.js";
 import {
     gameProfiles,
     populateGameProfiles,
 } from "../../nps/services/profile.js";
+import { ScheduledThread } from "../../cli/ScheduledThread.js";
+import { populateServerMessageProcessors } from "../../mcots/index.js";
+import { populatePlayer } from "../../database/src/seeders/populatePlayer.js";
+import { populatePlayerType } from "../../database/src/seeders/populatePlayerType.js";
+import { populateBrandedPart } from "../../database/src/seeders/populateBrandedPart.js";
+import { populatePartType } from "../../database/src/seeders/populatePartType.js";
+import { populateModel } from "../../database/src/seeders/populateModel.js";
+import { populateAbstractPartType } from "../../database/src/seeders/populateAbstractPartType.js";
+import { populatePartGrade } from "../../database/src/seeders/populatePartGrade.js";
+import { populateBrand } from "../../database/src/seeders/populateBrand.js";
+import { populateSkin } from "../../database/src/seeders/populateSkin.js";
+import { populateSkinType } from "../../database/src/seeders/populateSkinType.js";
 
 /**
  * @module gateway
@@ -72,6 +79,8 @@ export class Gateway {
     static _instance: Gateway | undefined;
     webServer: import("fastify").FastifyInstance | undefined;
     readThread: ConsoleThread | undefined;
+    scheduledThread: ScheduledThread | undefined;
+
     /**
      * Creates an instance of GatewayServer.
      * @param {TGatewayOptions} options
@@ -146,7 +155,7 @@ export class Gateway {
         this.status = "running";
 
         // Initialize the GatewayServer
-        this.init();
+        await this.init();
 
         this.listeningPortList.forEach((port) => {
             const server = createSocketServer((s) => {
@@ -217,6 +226,11 @@ export class Gateway {
             this.readThread.stop();
         }
 
+        // Stop the scheduled thread
+        if (this.scheduledThread !== undefined) {
+            this.scheduledThread.stop();
+        }
+
         if (this.webServer === undefined) {
             throw new Error("webServer is undefined");
         }
@@ -241,10 +255,10 @@ export class Gateway {
      */
     handleReadThreadEvent(event: string) {
         if (event === "userExit") {
-            this.exit();
+            void this.exit();
         }
         if (event === "userRestart") {
-            this.restart();
+            void this.restart();
         }
         if (event === "userHelp") {
             this.help();
@@ -252,6 +266,7 @@ export class Gateway {
     }
 
     async init() {
+        this.log.setName("gateway:GatewayServer:init");
         // Create the read thread
         this.readThread = new ConsoleThread({
             parentThread: this,
@@ -271,29 +286,44 @@ export class Gateway {
         this.webServer = fastify({
             logger: false,
         });
-        this.webServer.register(FastifySensible);
+        await this.webServer.register(FastifySensible);
 
-        let state = fetchStateFromDatabase();
-
-        state = addOnDataHandler(state, 8226, receiveLoginData);
-        state = addOnDataHandler(state, 8228, receivePersonaData);
-        state = addOnDataHandler(state, 7003, receiveLobbyData);
-        state = addOnDataHandler(state, 43300, receiveTransactionsData);
+        const state = fetchStateFromDatabase();
 
         try {
-            await populateGameUsers();
+            await populateUsers();
             await populateGameProfiles(gameProfiles);
+            await populatePlayerType();
+            await populateAbstractPartType();
+            await populatePartGrade();
+            await populatePartType();
+            await populateBrand();
+            await populateModel();
+            await populateBrandedPart();
+            await populatePlayer();
+            await populateSkinType();
+            await populateSkin();
+            // await populateWarehouse();
         } catch (error) {
-            this.log.error(`Error in populating game data: ${error}`);
+            this.log.error(`Error in populating game data: ${error as string}`);
             throw error;
         }
 
         populatePortToMessageTypes(portToMessageTypes);
         populateGameMessageProcessors(gameMessageProcessors);
 
+        populateServerMessageProcessors();
+
         state.save();
 
+        // Create the scheduled thread
+        this.scheduledThread = new ScheduledThread({
+            parentThread: this,
+            log: this.log,
+        });
+
         this.log.debug("GatewayServer initialized");
+        this.log.resetName();
     }
 
     help() {

@@ -20,6 +20,9 @@ describe("getGatewayServer", () => {
             warn: () => vi.fn(),
             fatal: () => vi.fn(),
             trace: () => vi.fn(),
+            getName: () => "",
+            setName: () => vi.fn(),
+            resetName: () => vi.fn(),
         };
 
         const options: TGatewayOptions = {
@@ -44,6 +47,9 @@ describe("getGatewayServer", () => {
             warn: () => vi.fn(),
             fatal: () => vi.fn(),
             trace: () => vi.fn(),
+            getName: () => "",
+            setName: () => vi.fn(),
+            resetName: () => vi.fn(),
         };
 
         const options: TGatewayOptions = {
@@ -68,6 +74,9 @@ describe("getGatewayServer", () => {
             warn: () => vi.fn(),
             fatal: () => vi.fn(),
             trace: () => vi.fn(),
+            getName: () => "",
+            setName: () => vi.fn(),
+            resetName: () => vi.fn(),
         };
 
         const options: TGatewayOptions = {

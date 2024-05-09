@@ -22,7 +22,7 @@ import {
     handleGetKey,
     handleGetRegistry,
 } from "../../shard/src/index.js";
-import { checkPassword, getUser } from "../../nps/services/account.js";
+import { getUserFromDb } from "../../nps/services/account.js";
 import { generateToken } from "../../nps/services/token.js";
 
 /**
@@ -49,21 +49,23 @@ export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
         "/games/EA_Seattle/MotorCity/UpdateInfo",
         (_request, reply) => {
             const response = CastanetResponse;
-            reply.header(response.header.type, response.header.value);
-            return reply.send(response.body);
+            return reply
+                .header(response.header.type, response.header.value)
+                .send(response.body);
         },
     );
 
     webServer.post("/games/EA_Seattle/MotorCity/NPS", (_request, reply) => {
         const response = CastanetResponse;
-        reply.header(response.header.type, response.header.value);
+        void reply.header(response.header.type, response.header.value);
         return reply.send(response.body);
     });
 
     webServer.post("/games/EA_Seattle/MotorCity/MCO", (_request, reply) => {
         const response = CastanetResponse;
-        reply.header(response.header.type, response.header.value);
-        return reply.send(response.body);
+        return reply
+            .header(response.header.type, response.header.value)
+            .send(response.body);
     });
 
     interface IQuerystring {
@@ -84,18 +86,13 @@ export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
         const password = request.query.password;
 
         // Check for the username
-        const user = await getUser(username);
+        const user = await getUserFromDb(username, password);
 
         // If the user doesn't exist, return an error
-        if (typeof user === "undefined") {
+        if (user === null) {
             return reply.send(
-                "reasoncode=INV-200\nreasontext=Opps~\nreasonurl=https://www.winehq.com",
+                "reasoncode=INV-200\nreasontext=Unable to login\nreasonurl=https://rusty-motors.com",
             );
-        }
-
-        // Check the password
-        if ((await checkPassword(user, password)) === false) {
-            return reply.send("Valid=FALSE\nReason=Invalid password");
         }
 
         // Generate a token
@@ -118,9 +115,10 @@ export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
             throw new Error("No host defined in config");
         }
         const certFile = await handleGetCert(config);
-        reply.header("Content-Type", "text/plain");
-        reply.header("Content-Disposition", "attachment; filename=cert.crt");
-        reply.send(certFile);
+        return reply
+            .header("Content-Type", "text/plain")
+            .header("Content-Disposition", "attachment; filename=cert.crt")
+            .send(certFile);
     });
 
     webServer.get("/key", async (_request, reply) => {
@@ -129,9 +127,10 @@ export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
             throw new Error("No host defined in config");
         }
         const keyFile = await handleGetKey(config);
-        reply.header("Content-Type", "text/plain");
-        reply.header("Content-Disposition", "attachment; filename=pub.key");
-        reply.send(keyFile);
+        return reply
+            .header("Content-Type", "text/plain")
+            .header("Content-Disposition", "attachment; filename=pub.key")
+            .send(keyFile);
     });
 
     webServer.get("/registry", (_request, reply) => {
@@ -140,8 +139,6 @@ export function addWebRoutes(webServer: import("fastify").FastifyInstance) {
             throw new Error("No host defined in config");
         }
         const regFile = handleGetRegistry(config);
-        reply.header("Content-Type", "text/plain");
-        reply.header("Content-Disposition", "attachment; filename=client.reg");
-        reply.send(regFile);
+        return reply.header("Content-Type", "text/plain").header("Content-Disposition", "attachment; filename=client.reg").send(regFile);
     });
 }

@@ -1,7 +1,7 @@
 import { handleSendMiniRiffList } from "../../src/handlers/handleSendMiniRiffList.js";
 import { describe, it, expect } from "vitest";
 import { LegacyMessage } from "../../../shared";
-import { mockLogger } from "../../../../test/factoryMocks.js";
+import { mockLogger } from "../../../shared/test"
 
 describe("handleSendMiniRiffList", () => {
     it("should return a buffer", async () => {

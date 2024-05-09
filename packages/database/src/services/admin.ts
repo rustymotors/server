@@ -1,6 +1,12 @@
-import type { DatabaseTransactionConnection } from "slonik";
-import { getSlonik } from "./database.js";
+import { getDatabase } from "./database.js";
 import * as Sentry from "@sentry/node";
+import { getServerLogger } from "@rustymotors/shared";
+import { player as playerSchema } from "../../../../schema/player.js";
+import { brandedPart as brandedPartSchema } from "../../../../schema/brandedPart.js";
+import { partType as partTypeSchema } from "../../../../schema/partType.js";
+import { eq } from "drizzle-orm";
+
+const log = getServerLogger();
 
 async function playerExists(playerId: number): Promise<boolean> {
     return Sentry.startSpan(
@@ -14,15 +20,15 @@ async function playerExists(playerId: number): Promise<boolean> {
             },
         },
         async () => {
-            const { slonik, sql } = await getSlonik();
-            return slonik.exists(sql.typeAlias("id")`
-        SELECT 1 FROM player WHERE playerid = ${playerId}
-    `);
+            return await Player.findByPk(playerId).then(
+                (player) => player !== null,
+            );
         },
     );
 }
 
 async function skinExists(skinId: number): Promise<boolean> {
+    log.setName("skinExists");
     return Sentry.startSpan(
         {
             name: "skinExists",
@@ -34,10 +40,7 @@ async function skinExists(skinId: number): Promise<boolean> {
             },
         },
         async () => {
-            const { slonik, sql } = await getSlonik();
-            return slonik.exists(sql.typeAlias("id")`
-        SELECT 1 FROM ptskin WHERE skinid = ${skinId}
-    `);
+            return await PTSkin.findByPk(skinId).then((skin) => skin !== null);
         },
     );
 }
@@ -45,7 +48,7 @@ async function skinExists(skinId: number): Promise<boolean> {
 async function getAbstractPartTypeIDForBrandedPartID(
     brandedPartId: number,
 ): Promise<number> {
-    const abstractPartTypeId = await Sentry.startSpan(
+    return Sentry.startSpan(
         {
             name: "GetAbstractPartTypeIDForBrandedPartID",
             op: "db.query",
@@ -57,20 +60,38 @@ async function getAbstractPartTypeIDForBrandedPartID(
             },
         },
         async () => {
-            const { slonik, sql } = await getSlonik();
-            return slonik.one(sql.typeAlias("abstractPartType")`
-        SELECT pt.abstractparttypeid 
-        FROM brandedpart bp
-        inner join parttype pt on bp.parttypeid = pt.parttypeid
-        WHERE bp.brandedpartid = ${brandedPartId}
-    `);
+            // Get the abstract part type id for the branded part
+            // link is brandedPart.partTypeId -> partType.abstractparttypeId
+
+            const abstractPartTypeId = await getDatabase()
+                .select()
+                .from(brandedPartSchema)
+                .leftJoin(
+                    partTypeSchema,
+                    eq(brandedPartSchema.partTypeId, partTypeSchema.partTypeId),
+                )
+                .where(eq(brandedPartSchema.brandedPartId, brandedPartId))
+                .then((rows) => {
+                    if (rows.length === 0 || !rows[0]) {
+                        throw Error(
+                            `branded part with id ${brandedPartId} does not exist`,
+                        );
+                    }
+
+                    const partType = rows[0].part_type;
+
+                    if (!partType) {
+                        throw Error(
+                            `part type record id ${rows[0].branded_part.partTypeId} does not exist`,
+                        );
+                    }
+
+                    return partType.abstractPartTypeId;
+                });
+
+            return abstractPartTypeId;
         },
     );
-
-    if (!abstractPartTypeId) {
-        throw Error(`branded part with id ${brandedPartId} does not exist`);
-    }
-    return abstractPartTypeId.abstractparttypeid;
 }
 
 async function isAbstractPartTypeAVehicle(
@@ -91,11 +112,14 @@ export async function createNewCar(
     skinId: number,
     newCarOwnerId: number,
 ): Promise<number> {
+    log.setName("createNewCarForPlayer");
     if ((await playerExists(newCarOwnerId)) === false) {
+        log.error(`player with id ${newCarOwnerId} does not exist`);
         throw Error("player does not exist");
     }
 
     if ((await skinExists(skinId)) === false) {
+        log.error(`skin with id ${skinId} does not exist`);
         throw Error("skin does not exist");
     }
 
@@ -106,6 +130,7 @@ export async function createNewCar(
     console.dir(abstractPartTypeId);
 
     if ((await isAbstractPartTypeAVehicle(abstractPartTypeId)) === false) {
+        log.error(`branded part with id ${brandedPartId} is not a vehicle`);
         throw Error(`branded part with id ${brandedPartId} is not a vehicle`);
     }
 
@@ -131,7 +156,7 @@ export async function createNewCar(
             },
         },
         async () => {
-            const { slonik, sql } = await getSlonik();
+            const { slonik, sql } = await getDatabase();
             return slonik.many(sql.typeAlias("brandedPart")`
         SELECT b.brandedpartid, a.attachmentpointid
         From StockAssembly a
@@ -163,7 +188,7 @@ export async function createNewCar(
                 },
             },
             async () => {
-                const { slonik, sql } = await getSlonik();
+                const { slonik, sql } = await getDatabase();
                 slonik.transaction(async (connection) => {
                     // First insert the new car into the vehicle table
 
@@ -271,7 +296,7 @@ async function addPart(
     newCarOwenrId: number,
 ) {
     try {
-        const { sql } = await getSlonik();
+        const { sql } = await getDatabase();
         await connection.query(sql.typeAlias("part")`
                     INSERT INTO part (partid, parentpartid, brandedpartid, percentdamage, itemwear, attachmentpointid, ownerid, partname, repaircost, scrapvalue)
                     VALUES (${currentPartId}, ${parentPartId}, ${partEntry.brandedPartId}, 0, 0, ${partEntry.AttachmentPointId}, ${newCarOwenrId}, null, 0, 0)
@@ -306,7 +331,7 @@ async function getNextSq(seqName: string) {
             },
         },
         async () => {
-            const { slonik, sql } = await getSlonik();
+            const { slonik, sql } = await getDatabase();
             return Number(
                 (
                     await slonik.one(sql.typeAlias("nextPartId")`

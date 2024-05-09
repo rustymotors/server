@@ -46,7 +46,7 @@ const nativeNodeModulesPlugin = {
 
 esbuild
     .build({
-        sourcemap: "external", // Source map generation must be turned on
+        sourcemap: true,
         platform: "node",
         outdir: "dist",
         entryPoints: ["apps/main/server.ts"],

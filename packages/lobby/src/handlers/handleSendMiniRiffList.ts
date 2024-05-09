@@ -1,8 +1,8 @@
 import {
-    ServerLogger,
     GameMessage,
     LegacyMessage,
     serializeString,
+    type TServerLogger,
 } from "../../../shared";
 import { channelRecordSize, channels } from "./encryptedCommand.js";
 
@@ -13,14 +13,14 @@ import { channelRecordSize, channels } from "./encryptedCommand.js";
  * @param {LegacyMessage} args.message
  * @param {ServerLogger} args.log
  */
-export async function handleSendMiniRiffList({
+export function handleSendMiniRiffList({
     connectionId,
     message,
     log,
 }: {
     connectionId: string;
     message: LegacyMessage;
-    log: ServerLogger;
+    log: TServerLogger;
 }) {
     log.debug("Handling NPS_SEND_MINI_RIFF_LIST");
     log.debug(`Received command: ${message._doSerialize().toString("hex")}`);

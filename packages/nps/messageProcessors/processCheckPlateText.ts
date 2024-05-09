@@ -1,29 +1,18 @@
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import type { SocketCallback } from "./index.js";
-import { getLenString, getNBytes } from "../utils/pureGet.js";
-import {
-    getUserSessionByConnectionId,
-    setUserSession,
-} from "../services/session.js";
+import { getLenString } from "../utils/pureGet.js";
 import { getServerLogger } from "../../shared";
+import type { UserStatus } from "../messageStructs/UserStatus.js";
 
 const log = getServerLogger();
 
 export async function processCheckPlateText(
     connectionId: string,
+    userStatus: UserStatus,
     message: GameMessage,
     socketCallback: SocketCallback,
 ): Promise<void> {
     log.setName("nps:processCheckPlateText");
-    // This message is only called by debug, so let's sey the clinet version to debug
-    const session = await getUserSessionByConnectionId(connectionId);
-
-    if (session) {
-        log.info(`Setting client version to debug for ${session.customerId}`);
-
-        session.clientVersion = "debug";
-        await setUserSession(session);
-    }
 
     const plateType = message.getDataAsBuffer().readUInt32BE(0);
 
@@ -43,4 +32,6 @@ export async function processCheckPlateText(
     const responseBytes = response.serialize();
 
     socketCallback([responseBytes]);
+    log.resetName();
+    return Promise.resolve();
 }

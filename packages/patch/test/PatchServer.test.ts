@@ -1,6 +1,7 @@
 import { PatchServer, CastanetResponse } from "../src/PatchServer.js";
 import { describe, it, expect, vi } from "vitest";
-import { mockLogger } from "../../../test/factoryMocks.js";
+import { mockLogger } from "../../shared/test";
+import type { IncomingMessage, ServerResponse } from "http";
 
 describe("PatchServer", () => {
     it("should return the hard-coded value that tells the client there are no updates or patches", () => {
@@ -21,7 +22,7 @@ describe("PatchServer", () => {
         };
 
         // Act
-        patchServer.castanetResponse(request as any, response as any);
+        patchServer.castanetResponse(request as IncomingMessage, response as unknown as ServerResponse);
 
         // Assert
         expect(response.setHeader).toHaveBeenCalledWith(

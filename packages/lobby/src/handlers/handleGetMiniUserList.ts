@@ -17,7 +17,7 @@ user1._userName = "User 1";
  * @param {ServerLogger} args.log
  */
 
-export async function handleGetMiniUserList({
+export function handleGetMiniUserList({
     connectionId,
     message,
     log,

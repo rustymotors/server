@@ -16,11 +16,9 @@
 
 import { randomUUID } from "node:crypto";
 import {
-    type OnDataHandler,
     type TServerLogger,
     addSocket,
     fetchStateFromDatabase,
-    getOnDataHandler,
     removeSocket,
     wrapSocket,
 } from "../../shared";
@@ -28,17 +26,11 @@ import {
 import { ServerLogger } from "../../shared";
 
 import { Socket } from "node:net";
-import { SerializedBuffer } from "../../shared";
 
-import {
-    MessageProcessorError,
-    getGameMessageProcessor,
-    getPortMessageType,
-    GameMessage as OldGameMessage,
-} from "../../nps/index.js";
-import type { SocketCallback } from "../../nps/messageProcessors/index.js";
-import { getAsHex } from "../../nps/utils/pureGet.js";
-import { GameMessage } from "../../shared-packets";
+import { UserStatusManager, getPortMessageType } from "../../nps/index.js";
+import { handleGameMessage, sendToGameSocket } from "./handleGameMessage";
+import { Connection } from "../../connection/src/Connection";
+import { ClientConnectionManager } from "../../mcots/ClientConnectionManager";
 
 /**
  * @typedef {object} OnDataHandlerArgs
@@ -132,24 +124,21 @@ export function onSocketConnection({
     // This is a new connection so generate a new connection ID
     const connectionId = randomUUID();
 
+    const userStatus = UserStatusManager.newUserStatus();
+
+    if (localPort === 43300) {
+        log.info("New connection on port 43300");
+        ClientConnectionManager.addConnection(
+            new Connection(incomingSocket, connectionId, log),
+        );
+        return;
+    }
+
     // Wrap the socket and add it to the global state
     const wrappedSocket = wrapSocket(incomingSocket, connectionId);
 
     // Add the socket to the global state
     addSocket(fetchStateFromDatabase(), wrappedSocket).save();
-
-    // This is a new TCP socket, so it's probably not using HTTP
-    // Let's look for a port onData handler
-    const portOnDataHandler: OnDataHandler | undefined = getOnDataHandler(
-        fetchStateFromDatabase(),
-        localPort,
-    );
-
-    // Throw an error if there is no onData handler
-    if (typeof portOnDataHandler === "undefined") {
-        log.warn(`No onData handler for port ${localPort}`);
-        return;
-    }
 
     incomingSocket.on("error", (error) =>
         socketErrorHandler({ connectionId: connectionId, error, log }),
@@ -163,59 +152,28 @@ export function onSocketConnection({
             messageType = getPortMessageType(localPort);
             log.debug(`Message type: ${messageType}`);
         } catch (error) {
-            log.error(`Error getting message type: ${(error as Error).message}`);
+            log.error(
+                `Error getting message type: ${(error as Error).message}`,
+            );
             throw error;
         }
 
         if (messageType !== "Unknown") {
-            const socketCallback = (messages: Buffer[]) => {
-                sendToSocket(messages, incomingSocket, log);
-            };
-
             // Call the message handler
             if (messageType === "Game") {
-                void handleGameMessage(
+                const gameSocketCallback = (messages: Buffer[]) => {
+                    sendToGameSocket(messages, incomingSocket, log);
+                };
+
+                return handleGameMessage(
                     connectionId,
+                    userStatus,
                     incomingDataAsBuffer,
                     log,
-                    socketCallback,
+                    gameSocketCallback,
                 );
-                return;
             }
         }
-
-        // Normal handlers can handle the server message
-
-        // Deserialize the raw message
-        const rawMessage = new SerializedBuffer()._doDeserialize(
-            incomingDataAsBuffer,
-        );
-
-        log.debug("Calling onData handler");
-
-        log.trace(`Raw message: ${getAsHex(incomingDataAsBuffer)}`);
-
-        portOnDataHandler({
-            connectionId: connectionId,
-            message: rawMessage,
-            log,
-        })
-            .then((response) => {
-                log.debug("onData handler returned");
-                const { messages } = response;
-
-                // Log the messages
-                log.trace(`Messages: ${messages.map((m) => m.toString()).join(", ")}`);
-
-                // Serialize the messages
-                const serializedMessages = messages.map((m) => m.serialize());
-
-                sendToSocket(serializedMessages, incomingSocket, log);
-            })
-            .catch((error) => {
-                log.error(`Error handling data: ${String(error)}`);
-                throw error;
-            });
     });
 
     log.debug(`Client ${remoteAddress} connected to port ${localPort}`);
@@ -225,104 +183,7 @@ export function onSocketConnection({
 
         incomingSocket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
     }
+    log.resetName();
 }
 
-function sendToSocket(
-    serializedMessages: Buffer[],
-    incomingSocket: Socket,
-    log: TServerLogger,
-) {
-    log.debug(`Sending {${serializedMessages.length}} messages to socket`);
-    try {
-        serializedMessages.forEach((m) => {
-            incomingSocket.write(m);
-            log.trace(`Sent ${m.length} bytes to socket: ${m.toString("hex")}`);
-            log.trace("===========================================");
-        });
-    } catch (error) {
-        log.error(`Error sending data: ${String(error)}`);
-    }
-}
-
-export async function processGameMessage(
-    connectionId: string,
-    message: OldGameMessage,
-    log: TServerLogger,
-    socketCallback: SocketCallback,
-) {
-    log.setName("gateway:processGameMessage");
-    log.debug(`Processing game message...`);
-
-    // Get the message ID
-    const messageId = message.header.getId();
-
-    try {
-        // Get the message processor
-        const messageProcessor = getGameMessageProcessor(messageId);
-
-        // Call the message processor
-        await messageProcessor(connectionId, message, socketCallback);
-    } catch (error) {
-        log.error(`Error processing message: ${(error as Error).message}`);
-        throw new MessageProcessorError(
-            messageId,
-            `Error processing message: ${(error as Error).message}`,
-        );
-    }
-}
-
-export async function handleGameMessage(
-    connectionId: string,
-    bytes: Buffer,
-    log: TServerLogger,
-    socketCallback: SocketCallback,
-) {
-    log.setName("gateway:handleGameMessage");
-    log.debug(`Handling game message...`);
-
-    // Log raw bytes
-    log.trace(`Raw bytes: ${bytes.toString("hex")}`);
-
-    // Since a GameMessage v1 header is 12 byes long, a message smaller that that can only be v0
-    const msgVersion = bytes.byteLength <= 12 ? 0 : 1;
-
-    // Load new game message
-    const gameMessage = new GameMessage(msgVersion).deserialize(bytes);
-
-    log.debug(`Game message: ${gameMessage.toString()}`);
-
-    // Try to identify the message version
-    const version = OldGameMessage.identifyVersion(bytes);
-
-    // Log the version
-    log.debug(`Message version: ${version}`);
-
-    // Try to parse it
-    try {
-        // Create a new message
-        const message = new OldGameMessage(version);
-        message.deserialize(bytes);
-
-        // Process the message
-        await processGameMessage(connectionId, message, log, socketCallback);
-    } catch (error) {
-        const err = `Error processing game message: ${(error as Error).message}`;
-        log.fatal(err);
-        throw Error(err);
-    }
-}
-
-export function handleServerMessage(
-    connectionId: string,
-    bytes: Buffer,
-    log: ServerLogger,
-    socketCallback: SocketCallback,
-) {
-    log.setName("gateway:handleServerMessage");
-    log.debug(`Handling server message...`);
-
-    // If this is a Server message, it will "probably" be a ServerMessage
-    // Try to parse it as a ServerMessage
-
-    // TODO: Handle message
-}
+// Path: packages/gateway/src/index.ts

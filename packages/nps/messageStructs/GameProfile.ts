@@ -1,5 +1,5 @@
 import type { ISerializable } from "../types.js";
-import { putLenBlob, putLenString, putShortBool } from "../utils/purePut.js";
+import { putLenString } from "../utils/purePut.js";
 import {
     getAsHex,
     getLenBlob,
@@ -52,10 +52,10 @@ export class GameProfile implements ISerializable {
         this.shardId = 0;
     }
     serialize(): Buffer {
-        throw new Error("Method not implemented.");
+        return this.toBytes();
     }
-    deserialize(data: Buffer): void {
-        throw new Error("Method not implemented.");
+    deserialize(data: Buffer): GameProfile {
+        return GameProfile.fromBytes(data);
     }
     getByteSize(): number {
         throw new Error("Method not implemented.");
@@ -65,7 +65,7 @@ export class GameProfile implements ISerializable {
         return new GameProfile();
     }
 
-    static fromBytes(data: Buffer, size: number): GameProfile {
+    static fromBytes(data: Buffer): GameProfile {
         const message = new GameProfile();
         let offset = 0;
         message.customerId = data.readUInt32BE(offset);
@@ -173,9 +173,9 @@ export class GameProfile implements ISerializable {
         gameSerialNumber: ${this.gameSerialNumber}
         timeOnline: ${this.timeOnline}
         timeInGame: ${this.timeInGame}
-        gameBlob: ${this.gameBlob}
-        personalBlob: ${this.personalBlob}
-        pictureBlob: ${this.pictureBlob}
+        gameBlob: ${getAsHex(this.gameBlob)}
+        personalBlob: ${getAsHex(this.personalBlob)}
+        pictureBlob: ${getAsHex(this.pictureBlob)}
         dnd: ${this.dnd}
         gameStartStamp: ${this.gameStartStamp}
         currentKey: ${this.currentKey}
@@ -186,7 +186,7 @@ export class GameProfile implements ISerializable {
     toHex(): string {
         return getAsHex(this.toBytes());
     }
-    setData(data: Buffer): void {
+    setData(): void {
         throw new Error("Method not implemented.");
     }
     getData(): Buffer {

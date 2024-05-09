@@ -1,10 +1,6 @@
 import { IncomingMessage, ServerResponse } from "node:http";
-import { ServerLogger, getServerLogger } from "../../shared";
+import { ServerLogger, type TServerLogger } from "../../shared";
 import { Buffer } from "node:buffer";
-
-const debug_reseponse = Buffer.from([
-    0xca, 0xfe, 0xbe, 0xef, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
-]);
 
 export const CastanetResponse = {
     body: Buffer.from([
@@ -39,7 +35,7 @@ export class PatchServer {
      * @private
      * @type {ServerLogger}
      */
-    _log: ServerLogger;
+    _log: TServerLogger;
 
     /**
      * Creates an instance of PatchServer.
@@ -47,7 +43,7 @@ export class PatchServer {
      * @param {ServerLogger} log
      * @memberof PatchServer
      */
-    constructor(log: ServerLogger) {
+    constructor(log: TServerLogger) {
         this._log = log;
     }
 
@@ -59,7 +55,7 @@ export class PatchServer {
      * @return {PatchServer}
      * @memberof PatchServer
      */
-    static getInstance(log: ServerLogger): PatchServer {
+    static getInstance(log: TServerLogger): PatchServer {
         if (!PatchServer._instance) {
             PatchServer._instance = new PatchServer(log);
         }
