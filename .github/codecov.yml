@@ -24,14 +24,6 @@ flags:
         paths:
             - packages/gateway/**
         carryforward: true
-    lobby:
-        paths:
-            - packages/lobby/**
-        carryforward: false
-    login:
-        paths:
-            - packages/login/**
-        carryforward: false
     mcots:
         paths:
             - packages/mcots/**
@@ -44,10 +36,6 @@ flags:
         paths:
             - packages/patch/**
         carryforward: true
-    persona:
-        paths:
-            - packages/persona/**
-        carryforward: false
     shard:
         paths:
             - packages/shard/**
