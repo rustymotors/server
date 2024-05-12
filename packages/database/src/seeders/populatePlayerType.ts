@@ -1,6 +1,6 @@
-import { getServerLogger } from "../../../shared";
-import { playerType as playerTypeSchema } from "../../../../schema/playerType";
-import { getDatabase } from "../services/database";
+import { getServerLogger } from "rusty-motors-shared";
+import { playerType as playerTypeSchema } from "../../../../schema/playerType.js";
+import { getDatabase } from "../services/database.js";
 import * as Sentry from "@sentry/node";
 
 const log = getServerLogger();

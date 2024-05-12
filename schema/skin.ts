@@ -6,9 +6,9 @@ import {
     varchar,
     index,
 } from "drizzle-orm/pg-core";
-import { player } from "./player";
-import { skinType } from "./skinType";
-import { partType } from "./partType";
+import { player } from "./player.js";
+import { skinType } from "./skinType.js";
+import { partType } from "./partType.js";
 
 export const skin = pgTable(
     "skin",

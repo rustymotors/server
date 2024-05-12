@@ -4,11 +4,11 @@ import fastify from "fastify";
 import {
     Configuration,
     getServerConfiguration,
-    createInitialState,
-    fetchStateFromDatabase,
+    type TGateway,
+    type TGatewayOptions,
     type TServerLogger,
-} from "../../shared";
-import { ConsoleThread } from "../../cli/ConsoleThread.js";
+} from "rusty-motors-shared";
+import { ConsoleThread, ScheduledThread } from "rusty-motors-cli";
 import { addWebRoutes } from "./web.js";
 
 import FastifySensible from "@fastify/sensible";
@@ -18,48 +18,33 @@ import {
     populateGameMessageProcessors,
     portToMessageTypes,
     gameMessageProcessors,
-} from "../../nps/messageProcessors/index.js";
-import { populateUsers } from "../../nps/services/account.js";
-import {
+    populateGameUsers,
     gameProfiles,
     populateGameProfiles,
-} from "../../nps/services/profile.js";
-import { ScheduledThread } from "../../cli/ScheduledThread.js";
-import { populateServerMessageProcessors } from "../../mcots/index.js";
-import { populatePlayer } from "../../database/src/seeders/populatePlayer.js";
-import { populatePlayerType } from "../../database/src/seeders/populatePlayerType.js";
-import { populateBrandedPart } from "../../database/src/seeders/populateBrandedPart.js";
-import { populatePartType } from "../../database/src/seeders/populatePartType.js";
-import { populateModel } from "../../database/src/seeders/populateModel.js";
-import { populateAbstractPartType } from "../../database/src/seeders/populateAbstractPartType.js";
-import { populatePartGrade } from "../../database/src/seeders/populatePartGrade.js";
-import { populateBrand } from "../../database/src/seeders/populateBrand.js";
-import { populateSkin } from "../../database/src/seeders/populateSkin.js";
-import { populateSkinType } from "../../database/src/seeders/populateSkinType.js";
+} from "rusty-motors-nps";
+import { populateServerMessageProcessors } from "rusty-motors-mcots";
+import {
+    populatePlayer,
+    populatePlayerType,
+    populateBrandedPart,
+    populatePartType,
+    populateModel,
+    populateAbstractPartType,
+    populatePartGrade,
+    populateBrand,
+    populateSkin,
+    populateSkinType,
+} from "rusty-motors-database";
 
 /**
  * @module gateway
  */
 
-export type TGatewayOptions = {
-    config?: Configuration;
-    log: TServerLogger;
-    backlogAllowedCount?: number;
-    listeningPortList?: number[];
-    socketConnectionHandler?: ({
-        incomingSocket,
-        log,
-    }: {
-        incomingSocket: Socket;
-        log: TServerLogger;
-    }) => void;
-};
-
 /**
  * Gateway server
  * @see {@link getGatewayServer()} to get a singleton instance
  */
-export class Gateway {
+export class Gateway implements TGateway {
     config: Configuration;
     log: TServerLogger;
     timer: NodeJS.Timeout | null;
@@ -245,9 +230,7 @@ export class Gateway {
         this.log.debug("Marking GatewayServer as stopped");
         this.status = "stopped";
 
-        // Reset the global state
-        this.log.debug("Resetting the global state");
-        createInitialState({}).save();
+        this.log.info("Server stopped");
     }
 
     /**
@@ -288,10 +271,8 @@ export class Gateway {
         });
         await this.webServer.register(FastifySensible);
 
-        const state = fetchStateFromDatabase();
-
         try {
-            await populateUsers();
+            await populateGameUsers();
             await populateGameProfiles(gameProfiles);
             await populatePlayerType();
             await populateAbstractPartType();
@@ -313,8 +294,6 @@ export class Gateway {
         populateGameMessageProcessors(gameMessageProcessors);
 
         populateServerMessageProcessors();
-
-        state.save();
 
         // Create the scheduled thread
         this.scheduledThread = new ScheduledThread({

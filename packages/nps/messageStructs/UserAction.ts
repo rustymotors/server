@@ -1,6 +1,6 @@
 import type { ISerializable } from "../types.js";
-import { getAsHex } from "../utils/pureGet.js";
-import { getServerLogger } from "../../shared";
+import { getAsHex } from "../src/utils/pureGet.js";
+import { getServerLogger } from "rusty-motors-shared";
 
 const log = getServerLogger();
 

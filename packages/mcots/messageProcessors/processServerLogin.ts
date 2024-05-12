@@ -1,8 +1,8 @@
-import type { ServerSocketCallback } from ".";
-import { ServerMessage } from "../../shared-packets/src/ServerMessage";
-import { LoginMessage } from "../payloads/LoginMessage";
-import { getServerLogger } from "../../shared";
-import { LoginCompleteMessage } from "../payloads/LoginCompleteMessage";
+import type { ServerSocketCallback } from "./index.js";
+import { ServerMessage } from "rusty-motors-shared-packets";
+import { LoginMessage } from "../payloads/LoginMessage.js";
+import { getServerLogger } from "rusty-motors-shared";
+import { LoginCompleteMessage } from "../payloads/LoginCompleteMessage.js";
 
 const log = getServerLogger();
 

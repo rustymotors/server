@@ -6,7 +6,7 @@ import {
     smallint,
     boolean,
 } from "drizzle-orm/pg-core";
-import { now32 } from "../packages/shared/src/utils";
+import { now32 } from "../packages/shared/src/utils.js";
 
 export const profile = pgTable(
     "profile",

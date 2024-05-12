@@ -3,9 +3,9 @@ import {
     integer,
     index,
 } from "drizzle-orm/pg-core";
-import { brandedPart } from "./brandedPart";
-import { svaCarClass } from "./svaCarClass";
-import { svaModeRestriction } from "./svaModeRestriction";
+import { brandedPart } from "./brandedPart.js";
+import { svaCarClass } from "./svaCarClass.js";
+import { svaModeRestriction } from "./svaModeRestriction.js";
 
 export const stockVehicleAttributes = pgTable(
     "stock_vehicle_attributes",

@@ -3,9 +3,9 @@ import {
     integer,
     index,
 } from "drizzle-orm/pg-core";
-import { player } from "./player";
-import { brandedPart } from "./brandedPart";
-import { skin } from "./skin";
+import { player } from "./player.js";
+import { brandedPart } from "./brandedPart.js";
+import { skin } from "./skin.js";
 
 export const warehouse = pgTable(
     "warehouse",

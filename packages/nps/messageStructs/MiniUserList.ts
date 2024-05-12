@@ -1,5 +1,5 @@
 import type { ISerializable } from "../types.js";
-import { putLenString } from "../utils/purePut.js";
+import { putLenString } from "../src/utils/purePut.js";
 
 export class MiniUserInfo implements ISerializable {
     userId: number; // 4 bytes

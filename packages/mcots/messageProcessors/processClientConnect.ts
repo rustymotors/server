@@ -1,14 +1,14 @@
 import {
     ServerMessage,
-} from "../../shared-packets/src/ServerMessage";
-import type { ServerSocketCallback } from ".";
-import { getServerLogger } from "../../shared";
-import { ClientConnectionMessage } from "../payloads/ClientConnectMessage";
-import { UserStatusManager } from "../../nps";
-import { ClientConnectionManager } from "../ClientConnectionManager";
-import { createDataEncryptionPair } from "../../connection/src/Connection";
-import { ErrorNoKey } from "../errors/ErrorNoKey";
-import { sendSuccess } from "./sendSuccess";
+} from "../../shared-packets/src/ServerMessage.js";
+import type { ServerSocketCallback } from "./index.js";
+import { getServerLogger } from "rusty-motors-shared";
+import { ClientConnectionMessage } from "../payloads/ClientConnectMessage.js";
+import { UserStatusManager } from "rusty-motors-nps";
+import { ClientConnectionManager } from "../ClientConnectionManager.js";
+import { createDataEncryptionPair } from "../../connection/src/Connection.js";
+import { ErrorNoKey } from "../errors/ErrorNoKey.js";
+import { sendSuccess } from "./sendSuccess.js";
 
 const log = getServerLogger();
 

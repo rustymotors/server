@@ -1,8 +1,7 @@
 {
-    "name": "@rustymotors/server",
+    "name": "rusty-motors-server",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
     "type": "module",
     "scripts": {
         "start": "tsx --openssl-legacy-provider --env-file=../../.env server.ts"
@@ -11,6 +10,7 @@
     "author": "",
     "license": "AGPL-3.0",
     "dependencies": {
-        "@rustymotors/shared": "workspace:^"
+        "rusty-motors-gateway": "workspace:^",
+        "rusty-motors-shared": "workspace:^"
     }
 }

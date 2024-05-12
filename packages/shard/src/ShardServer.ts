@@ -24,7 +24,7 @@ export function generateShardList(shardHost: string) {
         80,
     );
 
-    let _possibleShards = [];
+    const _possibleShards = [];
     _possibleShards.push(shardClockTower.formatForShardList());
 
     const shardTwinPinesMall = new ShardEntry(

@@ -1,13 +1,13 @@
-import { type TServerLogger } from "../../shared";
+import { type TServerLogger } from "rusty-motors-shared";
 import {
     MessageProcessorError,
     getGameMessageProcessor,
     GameMessage as OldGameMessage,
-} from "../../nps/index.js";
-import type { SocketCallback } from "../../nps/messageProcessors/index.js";
-import { GameMessage } from "../../shared-packets";
+} from "rusty-motors-nps";
+import type { GameSocketCallback } from "rusty-motors-nps";
+import { GameMessage } from "rusty-motors-nps";
 import type { Socket } from "node:net";
-import type { UserStatus } from "../../nps/messageStructs/UserStatus";
+import type { UserStatus } from "rusty-motors-nps";
 
 export function sendToGameSocket(
     serializedMessages: Buffer[],
@@ -37,7 +37,7 @@ export function processGameMessage(
     userStatus: UserStatus,
     message: OldGameMessage,
     log: TServerLogger,
-    socketCallback: SocketCallback,
+    socketCallback: GameSocketCallback,
 ) {
     log.setName("gateway:processGameMessage");
 
@@ -75,7 +75,7 @@ export function handleGameMessage(
     userStatus: UserStatus,
     bytes: Buffer,
     log: TServerLogger,
-    socketCallback: SocketCallback,
+    socketCallback: GameSocketCallback,
 ) {
     log.setName("gateway:handleGameMessage");
     log.debug(`Handling game message...`);
@@ -84,7 +84,7 @@ export function handleGameMessage(
     log.trace(`Raw bytes: ${bytes.toString("hex")}`);
 
     // Since a GameMessage v1 header is 12 byes long, a message smaller that that can only be v0
-    const msgVersion = bytes.byteLength <= 12 ? 0 : 1;
+    const msgVersion = bytes.byteLength <= 12 ? 0 : 257;
 
     // Load new game message
     const gameMessage = new GameMessage(msgVersion).deserialize(bytes);

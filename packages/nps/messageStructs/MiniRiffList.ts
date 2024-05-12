@@ -1,8 +1,8 @@
 import type { ISerializable } from "../types.js";
-import { putLenString } from "../utils/purePut.js";
+import { putLenString } from "../src/utils/purePut.js";
 import { NPSList } from "./NPSList.js";
 
-import { getServerLogger } from "../../shared";
+import { getServerLogger } from "rusty-motors-shared";
 
 const log = getServerLogger();
 

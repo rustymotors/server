@@ -1,5 +1,5 @@
 {
-    "name": "@rustymotors/database",
+    "name": "rusty-motors-database",
     "version": "1.0.0",
     "description": "",
     "exports": {

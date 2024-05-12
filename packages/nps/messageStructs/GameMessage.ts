@@ -159,7 +159,7 @@ export class GameMessage implements IMessage {
         messageData.copy(buffer, this.header.getDataOffset());
         return buffer;
     }
-    deserialize(data: Buffer): void {
+    deserialize(data: Buffer): GameMessage {
         if (data.length < this.header.getDataOffset()) {
             throw new Error(
                 `Data is too short. Expected at least ${this.header.getDataOffset()} bytes, got ${
@@ -174,6 +174,7 @@ export class GameMessage implements IMessage {
         this.data = new SerializableData(this.header.getLength());
 
         this.data.deserialize(messageData.subarray(0, this.header.getLength()));
+        return this;
     }
 
     toString(): string {
@@ -200,4 +201,5 @@ export class GameMessage implements IMessage {
         message.deserialize(source.serialize());
         return message;
     }
+
 }

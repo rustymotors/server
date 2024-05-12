@@ -1,7 +1,7 @@
-import type { ServerSocketCallback } from ".";
-import type { ServerMessage } from "../../shared-packets";
-import { getServerLogger } from "../../shared";
-import { ClientTrackingMessage } from "../payloads/ClientTrackingMessage";
+import type { ServerSocketCallback } from "./index.js";
+import type { ServerMessage } from "rusty-motors-shared-packets";
+import { getServerLogger } from "rusty-motors-shared";
+import { ClientTrackingMessage } from "../payloads/ClientTrackingMessage.js";
 
 const log = getServerLogger();
 

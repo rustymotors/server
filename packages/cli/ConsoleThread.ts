@@ -1,16 +1,17 @@
 import { emitKeypressEvents } from "node:readline";
-import { SubThread, type KeypressEvent, type TServerLogger } from "../shared";
-import { Gateway } from "../gateway/src/GatewayServer.js";
+import { SubThread, type KeypressEvent, type TServerLogger } from "rusty-motors-shared";
+import type { TConsoleThread, TGateway } from "rusty-motors-shared";
 
 /**
  * @module ConsoleThread
  */
 
+
 /**
  * Console thread
  */
-export class ConsoleThread extends SubThread {
-    parentThread: Gateway;
+export class ConsoleThread extends SubThread implements TConsoleThread{
+    parentThread: TGateway;
     /**
      * @param {object} options
      * @param {Gateway} options.parentThread The parent thread
@@ -20,7 +21,7 @@ export class ConsoleThread extends SubThread {
         parentThread,
         log,
     }: {
-        parentThread: Gateway;
+        parentThread: TGateway;
         log: TServerLogger;
     }) {
         super("ReadInput", log, 100);

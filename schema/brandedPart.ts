@@ -5,8 +5,8 @@ import {
     smallint,
     index,
 } from "drizzle-orm/pg-core";
-import { partType } from "./partType";
-import { model } from "./model";
+import { partType } from "./partType.js";
+import { model } from "./model.js";
 
 export const brandedPart = pgTable(
     "branded_part",

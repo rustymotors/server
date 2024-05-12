@@ -1,4 +1,4 @@
-import { getServerLogger } from "@rustymotors/shared";
+import { getServerLogger } from "rusty-motors-shared";
 import { getDatabase } from "../services/database";
 import { part as partSchema } from "../../../../schema/part";
 import { vehicle as vehicleSchema } from "../../../../schema/vehicle";
@@ -115,8 +115,8 @@ export async function transferPartAssembly(
                 throw Error(`Owner ${topPart.ownerId} not found`);
             }
 
-            if (oldOwner.numCarsOwnned > 1) {
-                oldOwner.numCarsOwnned--;
+            if (oldOwner.numCarsOwned > 0) {
+                oldOwner.numCarsOwned--;
                 try {
                     await db
                         .update(playerSchema)

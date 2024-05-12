@@ -15,18 +15,18 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import type { Socket } from "node:net";
-import { ServerMessage } from "../../shared-packets";
-import { getServerMessageProcessor } from "../../mcots";
-import type { TServerLogger } from "../../shared";
+import { ServerMessage } from "rusty-motors-shared-packets";
+import { getServerMessageProcessor } from "rusty-motors-mcots";
+import type { TServerLogger } from "rusty-motors-shared";
 import * as Sentry from "@sentry/node";
-import { getDatabase } from "../../database";
-import { key as keySchema } from "../../../schema/key";
+import { getDatabase } from "rusty-motors-database";
+import { key as keySchema } from "../../../schema/key.js";
 import { eq } from "drizzle-orm";
 import { createCipheriv, createDecipheriv, getCiphers } from "node:crypto";
-import { McosEncryptionPair } from "../../shared";
-import { ClientConnectionManager } from "../../mcots/ClientConnectionManager";
-import { getServerLogger } from "../../shared";
-import { ErrorNoKey } from "../../mcots/errors/ErrorNoKey";
+import { McosEncryptionPair } from "rusty-motors-shared";
+import { ClientConnectionManager } from "rusty-motors-mcots";
+import { getServerLogger } from "rusty-motors-shared";
+import { ErrorNoKey } from "rusty-motors-mcots";
 
 const log = getServerLogger();
 
@@ -174,7 +174,7 @@ export class Connection {
             .from(keySchema)
             .where(eq(keySchema.userId, this._personaId))
             .then((rows) => {
-                if (rows.length !== 1) {
+                if (rows.length < 1 || typeof rows[0] === "undefined") {
                     this._logger.error(
                         `Error getting cipher key from database for persona ID ${this._personaId}`,
                     );
@@ -183,7 +183,7 @@ export class Connection {
                     );
                 }
 
-                return rows[0]!.sessionKey;
+                return rows[0].sessionKey;
             });
 
         // Set the cipher key

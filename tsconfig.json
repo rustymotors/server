@@ -13,7 +13,8 @@
         "lib": ["ES2022"],
         "declaration": true,
         "sourceMap": true,
-        "noEmit": true,
+        "outDir": "dist",
+        "emitDeclarationOnly": true
         
     },
     "include": ["apps/**/*", "packages/**/*", "drizzle.config.ts", "schema/**/*.ts"],

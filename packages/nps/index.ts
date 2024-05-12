@@ -7,13 +7,16 @@ export {
     portToMessageTypes,
     populatePortToMessageTypes,
     getPortMessageType,
-} from "./messageProcessors/index.js";
+    type GameSocketCallback
+} from "./gameMessageProcessors/index.js";
 export { GameMessage } from "./messageStructs/GameMessage.js";
-export { getWord } from "./utils/pureGet.js";
-export { processGameLogin as processUserLogin } from "./messageProcessors/processGameLogin.js";
+export { getWord } from "./src/utils/pureGet.js";
+export { processGameLogin } from "./gameMessageProcessors/processGameLogin.js";
 export {
-    populateUsers as populateGameUsers,
-    getUserFromDb as getUser,
+    populateGameUsers as populateGameUsers,
+    getUser,
 } from "./services/account.js";
 export { generateToken } from "./services/token.js";
 export { UserStatusManager } from "./src/UserStatusManager.js";
+export { gameProfiles, populateGameProfiles } from "./services/profile.js";
+export { UserStatus } from "./messageStructs/UserStatus.js";

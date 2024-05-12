@@ -1,6 +1,6 @@
-import { getServerLogger } from "../../../shared";
-import { skin as skinSchema } from "../../../../schema/skin";
-import { getDatabase } from "../services/database";
+import { getServerLogger } from "rusty-motors-shared";
+import { skin as skinSchema } from "../../../../schema/skin.js";
+import { getDatabase } from "../services/database.js";
 import * as Sentry from "@sentry/node";
 
 const log = getServerLogger();

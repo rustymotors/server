@@ -5,7 +5,7 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
     eslint.configs.recommended,
-    ...tseslint.configs.recommendedTypeChecked,
+    ...tseslint.configs.strict,
     {
         languageOptions: {
             parserOptions: {
@@ -13,12 +13,15 @@ export default tseslint.config(
                 tsconfigRootDir: import.meta.dirname,
             },
         },
+        rules: {
+            "@typescript-eslint/no-unused-vars": "warn",
+        },
     },
     {
         files: ["**/*.js"],
         extends: [tseslint.configs.disableTypeChecked],
     },
     {
-        ignores: ["vite.config.ts"],
+        ignores: ["vite.config.ts", "dist", "node_modules"],
     },
 );

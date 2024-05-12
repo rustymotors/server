@@ -3,7 +3,7 @@
  * @see {@link getDatabaseServer()} to get a singleton instance
  */
 
-import type { ConnectionRecord } from "@rustymotors/shared";
+import type { ConnectionRecord } from "rusty-motors-shared";
 
 /**
  * This class abstracts database methods

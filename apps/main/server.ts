@@ -16,10 +16,10 @@
 
 import Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
-import { getServerLogger } from "../../packages/shared";
-import { verifyLegacyCipherSupport } from "../../packages/gateway/src/encryption.js";
-import { getServerConfiguration } from "../../packages/shared/Configuration.js";
-import { getGatewayServer } from "../../packages/gateway/src/GatewayServer.js";
+import { getServerLogger } from "rusty-motors-shared";
+import { verifyLegacyCipherSupport } from "rusty-motors-shared";
+import { getServerConfiguration } from "rusty-motors-shared";
+import { getGatewayServer } from "rusty-motors-gateway";
 
 
 export default async function main() {

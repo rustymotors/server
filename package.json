@@ -3,14 +3,11 @@
     "version": "0.5.0",
     "description": "This is a game server, being written from scratch, for a very old and long dead game. The owners of said game have shown no interest in bringing it back, but even so all names of their IP have been avoided to prevent issues.",
     "type": "module",
-    "exports": {
-        ".": "./dist/index.js"
-    },
     "scripts": {
-        "check": "tsc --noEmit",
+        "check": "tsc",
         "lint": "pnpm eslint .",
         "build": "node build.mjs",
-        "start": "node --env-file=.env dist/server.js",
+        "start": "node --loader=ts-node/esm --env-file=.env apps/main/server.ts",
         "dev:rsc": "tsc --watch --preserveWatchOutput",
         "dev:node": "node --watch dist/apps/main/server.js",
         "dev:esbuild": "pnpm run build --watch",
@@ -45,9 +42,9 @@
     },
     "dependencies": {
         "@fastify/sensible": "^5.6.0",
-        "@rustymotors/database": "workspace:^",
-        "@rustymotors/shared": "workspace:^",
-        "@rustymotors/shared-packets": "workspace:^",
+        "rusty-motors-database": "workspace:^",
+        "rusty-motors-shared": "workspace:^",
+        "rusty-motors-shared-packets": "workspace:^",
         "@sentry/esbuild-plugin": "^2.16.1",
         "dotenv": "^16.4.5",
         "drizzle-orm": "^0.30.10",
@@ -56,6 +53,7 @@
         "pino": "^8.21.0",
         "pino-pretty": "^11.0.0",
         "short-unique-id": "^5.2.0",
+        "ts-node": "^10.9.2",
         "tsx": "^4.9.4"
     },
     "packageManager": "pnpm@9.1.0"

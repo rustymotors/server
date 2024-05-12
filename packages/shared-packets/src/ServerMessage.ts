@@ -1,6 +1,6 @@
 import { Serializable } from "./BasePacket.js";
 import type { ISerializable, IMessage } from "./interfaces.js";
-import { McosEncryptionPair, getServerLogger } from "../../shared";
+import { McosEncryptionPair, getServerLogger } from "rusty-motors-shared";
 
 const log = getServerLogger();
 

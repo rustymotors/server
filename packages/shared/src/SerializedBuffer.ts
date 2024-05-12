@@ -4,9 +4,6 @@ import { BaseSerialized } from "./BaseSerialized.js";
  * A serialized buffer, prefixed with its 2-byte length.
  */
 export class SerializedBuffer extends BaseSerialized {
-    constructor(data?: Buffer) {
-        super(data);
-    }
     override serialize() {
         try {
             const buffer = Buffer.alloc(2 + this._data.length);

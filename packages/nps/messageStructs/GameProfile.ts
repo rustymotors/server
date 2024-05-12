@@ -1,11 +1,11 @@
 import type { ISerializable } from "../types.js";
-import { putLenString } from "../utils/purePut.js";
+import { putLenString } from "../src/utils/purePut.js";
 import {
     getAsHex,
     getLenBlob,
     getLenString,
     getShortBool,
-} from "../utils/pureGet.js";
+} from "../src/utils/pureGet.js";
 
 export class GameProfile implements ISerializable {
     customerId: number; // 4 bytes

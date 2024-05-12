@@ -1,8 +1,8 @@
 import {
     ServerGenericResponse,
     ServerMessage
-} from "../../shared-packets/src/ServerMessage";
-import type { ServerSocketCallback } from ".";
+} from "rusty-motors-shared-packets";
+import type { ServerSocketCallback } from "./index.js";
 
 export function sendSuccess(message: ServerMessage, socketCallback: ServerSocketCallback) {
     const pReply = new ServerGenericResponse();

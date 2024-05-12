@@ -1,5 +1,5 @@
 {
-    "name": "@rustymotors/shared-packets",
+    "name": "rusty-motors-shared-packets",
     "private": true,
     "version": "1.0.0",
     "description": "",

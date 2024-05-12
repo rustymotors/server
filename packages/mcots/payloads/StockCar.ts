@@ -1,6 +1,8 @@
-import { Serializable } from "../../shared-packets";
-import { ServerMessagePayload } from "../../shared-packets";
-import { getServerLogger } from "../../shared";
+import {
+    Serializable,
+    ServerMessagePayload,
+} from "rusty-motors-shared-packets";
+import { getServerLogger } from "rusty-motors-shared";
 
 const log = getServerLogger();
 
@@ -10,7 +12,7 @@ export class StockCar extends Serializable {
     private isDealOfTheDay: number = 0; // 2 bytes
 
     override getByteSize(): number {
-        return 10
+        return 10;
     }
 
     override serialize(): Buffer {

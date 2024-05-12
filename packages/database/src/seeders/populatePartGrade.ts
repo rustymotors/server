@@ -1,6 +1,6 @@
-import { getServerLogger } from "../../../shared";
-import { partGrade as partGradeSchema } from "../../../../schema/partGrade";
-import { getDatabase } from "../services/database";
+import { getServerLogger } from "rusty-motors-shared";
+import { partGrade as partGradeSchema } from "../../../../schema/partGrade.js";
+import { getDatabase } from "../services/database.js";
 import * as Sentry from "@sentry/node";
 
 const log = getServerLogger();

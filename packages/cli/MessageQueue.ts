@@ -1,10 +1,9 @@
 
-import { SubThread, type TServerLogger } from "../shared/";
-import { Gateway } from "../gateway/src/GatewayServer.js";
-import type { ServerMessage } from "../shared-packets";
+import { SubThread, type TGateway, type TServerLogger } from "rusty-motors-shared";
+import type { ServerMessage } from "rusty-motors-shared-packets";
 
 export class MessageQueue extends SubThread {
-    parentThread: Gateway;
+    parentThread: TGateway;
 
     private _messageQueue: ServerMessage[] = [];
 
@@ -19,7 +18,7 @@ export class MessageQueue extends SubThread {
         parentThread,
         log,
     }: {
-        parentThread: Gateway;
+        parentThread: TGateway;
         log: TServerLogger;
     }) {        
         super("MessageQueue", log, 100);

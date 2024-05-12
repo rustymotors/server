@@ -1,14 +1,14 @@
 import {
     ServerGenericRequest,
     ServerMessage,
-} from "../../shared-packets/src/ServerMessage";
-import type { ServerSocketCallback } from ".";
-import { getServerLogger } from "../../shared";
+} from "rusty-motors-shared-packets";
+import type { ServerSocketCallback } from "./index.js";
+import { getServerLogger } from "rusty-motors-shared";
 import {
     getWarehouseInventory,
     type WarehouseInventory,
-} from "../../database/src/functions/getWarehouseInventory";
-import { StackCarInfo, StockCar } from "../payloads/StockCar";
+} from "rusty-motors-database";
+import { StackCarInfo, StockCar } from "../payloads/StockCar.js";
 
 const log = getServerLogger();
 

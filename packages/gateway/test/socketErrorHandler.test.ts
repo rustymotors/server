@@ -12,6 +12,9 @@ describe("socketErrorHandler", () => {
             warn: () => vi.fn(),
             fatal: () => vi.fn(),
             trace: () => vi.fn(),
+            setName: () => vi.fn(),
+            getName: () => "",
+            resetName: () => vi.fn(),
         };
 
         const error = new Error("test error");

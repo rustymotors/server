@@ -1,7 +1,9 @@
-import { getServerLogger } from "@rustymotors/shared";
-import { Part } from "../models/Part";
-import { PartType } from "../models/PartType";
-import { BrandedPart } from "../models/BrandedPart";
+import { getServerLogger } from "rusty-motors-shared";
+import { part as partSchema } from "../../../../schema/part";
+import { partType as partTypeSchema } from "../../../../schema/partType";
+import { brandedPart as brandedPartSchema } from "../../../../schema/brandedPart";
+import { getDatabase } from "../services/database";
+import { eq } from "drizzle-orm";
 
 /**
  * Get the abstract part type id from the partId
@@ -17,34 +19,24 @@ export async function getAbstractPartTypeId(partId: number): Promise<number> {
 
     log.debug(`Getting abstract part type ID for part ${partId}`);
 
-    const abstractPartTypeId = await Part.findOne({
-        where: {
-            partId,
-        },
-    }).then(async (part) => {
-        if (part === null) {
+    const db = getDatabase();
+
+    const abstractPartTypeId = await db.select()
+    .from(partSchema)
+    .leftJoin(brandedPartSchema, eq(partSchema.brandedPartId, brandedPartSchema.brandedPartId))
+    .leftJoin(partTypeSchema, eq(brandedPartSchema.partTypeId, partTypeSchema.partTypeId))
+    .where(eq(partSchema.partId, partId))
+    .limit(1)
+    .then((rows) => {
+        if (rows.length === 0) {
             throw new Error(`Part ${partId} not found`);
         }
-
-        const partType = await BrandedPart.findByPk(part.brandedPartId).then((brandedPart) => {
-            if (brandedPart === null) {
-                throw new Error(`Branded part ${part.brandedPartId} not found`);
-            }
-
-            return PartType.findByPk(brandedPart.partTypeId).then((partType) => {
-                if (partType === null) {
-                    throw new Error(`Part type ${brandedPart.partTypeId} not found`);
-                }
-
-                return partType.abstractPartTypeId;
-            });
-        });
-
-        log.resetName();
-        return partType;
+        
+        return rows[0]?.part_type?.abstractPartTypeId
     });
-
-    if (abstractPartTypeId === null) {
+    
+    if (typeof abstractPartTypeId === "undefined") {
+        log.error(`Abstract part type ID not found for part ${partId}`);
         throw new Error(`Abstract part type ID not found for part ${partId}`);
     }
 

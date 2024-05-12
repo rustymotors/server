@@ -5,8 +5,8 @@ import {
     uniqueIndex,
     index,
 } from "drizzle-orm/pg-core";
-import { abstractPartType } from "./abstractPartType";
-import { partGrade } from "./partGrade";
+import { abstractPartType } from "./abstractPartType.js";
+import { partGrade } from "./partGrade.js";
 
 export const partType = pgTable(
     "part_type",

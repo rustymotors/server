@@ -1,4 +1,4 @@
-import { getServerLogger } from "@rustymotors/shared";
+import { getServerLogger } from "rusty-motors-shared";
 import { stockAssembly as stockAssemblySchema } from "../../../../schema/stockAssembly";
 import { brandedPart as brandedPartSchema } from "../../../../schema/brandedPart";
 import { getDatabase } from "../services/database";
@@ -8,6 +8,7 @@ import { player as playerSchema } from "../../../../schema/player";
 import { eq } from "drizzle-orm";
 import { transferPartAssembly } from "./transferPartAssembly";
 import { stockVehicleAttributes as stockVehicleAttributesSchema } from "../../../../schema/stockVehicleAttributes";
+import { tunables as tunablesSchema } from "../../../../schema/tunables";
 /**
  * Create a new car
  * 
@@ -232,11 +233,15 @@ export async function createNewCar(
 
         if (dealOfTheDayBrandedPartId === brandedPartId) {
             dealOfTheDayDiscount = await tx.select({
+                discount: tunablesSchema.dealOfTheDayDiscount
+            }).from(tunablesSchema).limit(1).then((result) => {
+                return result[0]?.discount ?? 0;
+            });
                 
         }
         
         log.debug("Transaction committed");
-    }
+    });
     log.resetName();
     return Promise.resolve(0);    
 }

@@ -1,6 +1,6 @@
-import type { TServerLogger } from "../../shared";
-import { Gateway, getGatewayServer } from "../src/GatewayServer.js";
-import type { TGatewayOptions } from "../src/GatewayServer.js";
+import type { TServerLogger, TGatewayOptions } from "rusty-motors-shared";
+import { getGatewayServer } from "../";
+import { Gateway } from "../src/GatewayServer";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 describe("getGatewayServer", () => {

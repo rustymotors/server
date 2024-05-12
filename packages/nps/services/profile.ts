@@ -1,10 +1,10 @@
-import { GameProfile } from "../messageStructs/GameProfile";
-import { getDatabase } from "../../database";
-import { profile as profileSchema } from "../../../schema/profile";
+import { GameProfile } from "../messageStructs/GameProfile.js";
+import { getDatabase } from "rusty-motors-database";
+import { profile as profileSchema } from "../../../schema/profile.js";
 
 export const gameProfiles: GameProfile[] = [];
 
-export function populateGameProfiles(profiles: GameProfile[]): void {
+export async function populateGameProfiles(profiles: GameProfile[]): Promise<void> {
     const profile1 = GameProfile.new();
     profile1.customerId = 2;
     profile1.profileName = "molly";
@@ -27,6 +27,8 @@ export function populateGameProfiles(profiles: GameProfile[]): void {
     profile1.profileLevel = 0;
     profile1.shardId = 44;
     profiles.push(profile1);
+
+    return Promise.resolve();
 }
 
 export function getGameProfilesForCustomerId(

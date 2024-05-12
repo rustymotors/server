@@ -1,6 +1,6 @@
 import type { ISerializable } from "../types.js";
-import { isOnlyOneSet } from "../utils/pureCompare.js";
-import { getAsHex } from "../utils/pureGet.js";
+import { isOnlyOneSet } from "../src/utils/pureCompare.js";
+import { getAsHex } from "../src/utils/pureGet.js";
 import { getServerLogger } from "../../shared/index.js";
 
 const log = getServerLogger();

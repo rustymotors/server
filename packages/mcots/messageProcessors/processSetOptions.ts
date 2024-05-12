@@ -1,8 +1,8 @@
-import { getServerLogger } from "../../shared/src/log";
-import { ServerMessage } from "../../shared-packets/src/ServerMessage";
-import { SetOptionsMessage } from "../payloads/SetOptionsMessage";
-import type { ServerSocketCallback } from "./index";
-import { sendSuccess } from "./sendSuccess";
+import { getServerLogger } from "rusty-motors-shared";
+import { ServerMessage } from "rusty-motors-shared-packets";
+import { SetOptionsMessage } from "../payloads/SetOptionsMessage.js";
+import type { ServerSocketCallback } from "./index.js";
+import { sendSuccess } from "./sendSuccess.js";
 
 const log = getServerLogger();
 

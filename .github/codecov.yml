@@ -19,7 +19,7 @@ flags:
     core:
         paths:
             - packages/core/**
-        carryforward: true
+        carryforward: false
     database:
         paths:
             - packages/database/**

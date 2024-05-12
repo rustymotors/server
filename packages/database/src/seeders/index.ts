@@ -192,7 +192,7 @@ for (const row of playerCsvRow) {
 
     const player = [csvRowToPlayer(row.map((value, index) => {
         if (typeof value === "undefined") {
-            throw new Error(`Undefined value at index $(playerCsvHeader[index])`);
+            throw new Error(`Undefined value at index ${playerCsvHeader[index]}`);
         }
 
         return value;

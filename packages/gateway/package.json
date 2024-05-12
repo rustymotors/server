@@ -1,8 +1,13 @@
 {
-    "name": "@rustymotors/gateway",
+    "name": "rusty-motors-gateway",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
+    "exports": {
+        ".": {
+            "import": "./index.js",
+            "require": "./index.js"
+        }
+    },
     "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,9 +17,16 @@
     "license": "AGPL-3.0",
     "dependencies": {
         "@fastify/sensible": "^5.5.0",
-        "@rustymotors/shared": "workspace:^",
-        "@rustymotors/shared-packets": "workspace:^",
         "@sentry/node": "^7.102.0",
-        "fastify": "^4.25.2"
+        "fastify": "^4.25.2",
+        "rusty-motors-cli": "workspace:^",
+        "rusty-motors-connection": "workspace:^",
+        "rusty-motors-database": "workspace:^",
+        "rusty-motors-mcots": "workspace:^",
+        "rusty-motors-nps": "workspace:^",
+        "rusty-motors-patch": "workspace:^",
+        "rusty-motors-shard": "workspace:^",
+        "rusty-motors-shared": "workspace:^",
+        "rusty-motors-shared-packets": "workspace:^"
     }
 }

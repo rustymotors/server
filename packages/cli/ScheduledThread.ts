@@ -1,15 +1,17 @@
-import { SubThread, type TServerLogger } from "../shared/";
-import { Gateway } from "../gateway/src/GatewayServer.js";
+import { SubThread, type TServerLogger } from "rusty-motors-shared";
+import type { TGateway, TScheduledThread } from "rusty-motors-shared";
 
 /**
  * @module ConsoleThread
  */
 
+
+
 /**
  * Console thread
  */
-export class ScheduledThread extends SubThread {
-    parentThread: Gateway;
+export class ScheduledThread extends SubThread implements TScheduledThread{
+    parentThread: TGateway;
     /**
      * @param {object} options
      * @param {Gateway} options.parentThread The parent thread
@@ -19,7 +21,7 @@ export class ScheduledThread extends SubThread {
         parentThread,
         log,
     }: {
-        parentThread: Gateway;
+        parentThread: TGateway;
         log: TServerLogger;
     }) {        
         super("ScheduledThread", log, 100);

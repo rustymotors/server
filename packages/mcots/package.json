@@ -1,8 +1,13 @@
 {
-    "name": "@rustymotors/mcots",
+    "name": "rusty-motors-mcots",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
+    "exports": {
+        ".": {
+            "import": "./index.js",
+            "require": "./index.js"
+        }
+    },
     "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,8 +16,9 @@
     "author": "",
     "license": "AGPL-3.0",
     "dependencies": {
-        "@rustymotors/shared": "workspace:^",
         "@sentry/node": "^7.102.0",
+        "rusty-motors-nps": "workspace:^",
+        "rusty-motors-shared": "workspace:^",
         "short-unique-id": "^5.0.3"
     }
 }

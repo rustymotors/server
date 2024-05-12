@@ -6,8 +6,8 @@ import {
     timestamp,
     index,
 } from "drizzle-orm/pg-core";
-import { playerType } from "./playerType";
-import { driverClass } from "./driverClass";
+import { playerType } from "./playerType.js";
+import { driverClass } from "./driverClass.js";
 
 export const player = pgTable(
     "player",

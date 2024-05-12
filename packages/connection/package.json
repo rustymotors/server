@@ -1,5 +1,5 @@
 {
-    "name": "rm-connection-service",
+    "name": "rusty-motors-connection",
     "version": "1.0.0",
     "description": "",
     "exports": {
@@ -16,7 +16,6 @@
     "author": "",
     "license": "AGPL-3.0",
     "dependencies": {
-
+        "rusty-motors-mcots": "workspace:^"
     }
 }
-

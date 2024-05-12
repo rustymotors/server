@@ -14,8 +14,50 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { createCipheriv, createDecipheriv, getCiphers } from "node:crypto";
-import { McosEncryptionPair } from "..";
+import { Cipher, Decipher, createCipheriv, createDecipheriv, getCiphers } from "node:crypto";
+
+
+/**
+ * @external crypto
+ * @see {@link https://nodejs.org/api/crypto.html}
+ */
+
+/**
+ * A pair of encryption ciphers.
+ */
+export class McosEncryptionPair {
+    _cipher: Cipher;
+    _decipher: Decipher;
+    /**
+     * Create a new encryption pair.
+     *
+     * This function creates a new encryption pair. It is used to encrypt and
+     * decrypt data sent to and from the client.
+     *
+     * @param {module:crypto.Cipher} cipher The cipher to use for encryption.
+     * @param {module:crypto.Decipher} decipher The decipher to use for decryption.
+     */
+    constructor(cipher: Cipher, decipher: Decipher) {
+        this._cipher = cipher;
+        this._decipher = decipher;
+    }
+
+    /**
+     * @param {Buffer} data The data to encrypt.
+     * @returns {Buffer} The encrypted data.
+     */
+    encrypt(data: Buffer): Buffer {
+        return this._cipher.update(data);
+    }
+
+    /**
+     * @param {Buffer} data The data to decrypt.
+     * @returns {Buffer} The decrypted data.
+     */
+    decrypt(data: Buffer): Buffer {
+        return this._decipher.update(data);
+    }
+}
 
 /**
  * This function creates a new encryption pair for use with the game server

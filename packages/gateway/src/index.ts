@@ -17,41 +17,16 @@
 import { randomUUID } from "node:crypto";
 import {
     type TServerLogger,
-    addSocket,
-    fetchStateFromDatabase,
-    removeSocket,
-    wrapSocket,
-} from "../../shared";
+} from "rusty-motors-shared";
 
-import { ServerLogger } from "../../shared";
+import { ServerLogger } from "rusty-motors-shared";
 
 import { Socket } from "node:net";
 
-import { UserStatusManager, getPortMessageType } from "../../nps/index.js";
-import { handleGameMessage, sendToGameSocket } from "./handleGameMessage";
-import { Connection } from "../../connection/src/Connection";
-import { ClientConnectionManager } from "../../mcots/ClientConnectionManager";
-
-/**
- * @typedef {object} OnDataHandlerArgs
- * @property {object} args
- * @property {string} args.connectionId The connection id of the socket that
- *                                  received the data.
- * @property {module:packages/shared/RawMessage} args.message The data that was received.
- * @property {module:shared/log.ServerLogger} args.log
- *                                                                    response
- *                                                                to the
- *                                                           data.
- */
-
-/**
- * @typedef {function} OnDataHandler
- * @param {OnDataHandlerArgs} args The arguments for the handler.
- * @returns {ServiceResponse} The
- *                                                                     response
- *                                                                  to the
- *                                                            data.
- */
+import { UserStatusManager, getPortMessageType } from "rusty-motors-nps";
+import { handleGameMessage, sendToGameSocket } from "./handleGameMessage.js";
+import { Connection } from "rusty-motors-connection";
+import { ClientConnectionManager } from "rusty-motors-mcots";
 
 /**
  * Handle socket errors
@@ -92,15 +67,13 @@ export function socketEndHandler({
 }) {
     log.debug(`Connection ${connectionId} ended`);
 
-    // Remove the socket from the global state
-    removeSocket(fetchStateFromDatabase(), connectionId).save();
 }
 
 /**
  * Handle incoming TCP connections
  *
  * @param {object} options
- * @param {module:net.Socket} options.incomingSocket The incoming socket
+ * @param {Socket} options.incomingSocket The incoming socket
  * @param {ServerLogger} options.log The logger to use
  *
  */
@@ -134,11 +107,6 @@ export function onSocketConnection({
         return;
     }
 
-    // Wrap the socket and add it to the global state
-    const wrappedSocket = wrapSocket(incomingSocket, connectionId);
-
-    // Add the socket to the global state
-    addSocket(fetchStateFromDatabase(), wrappedSocket).save();
 
     incomingSocket.on("error", (error) =>
         socketErrorHandler({ connectionId: connectionId, error, log }),

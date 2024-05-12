@@ -1,13 +1,13 @@
-import { getDatabase } from "../../database";
-import { user as userSchema } from "../../../schema/user";
+import { getDatabase } from "rusty-motors-database";
+import { user as userSchema } from "../../../schema/user.js";
 import { eq, and } from "drizzle-orm";
-import { getServerLogger } from "../../shared";
+import { getServerLogger } from "rusty-motors-shared";
 
 const log = getServerLogger();
 
 
 
-export async function populateUsers(): Promise<void> {
+export async function populateGameUsers(): Promise<void> {
 
     await getDatabase().insert(userSchema).values([
         {
@@ -27,7 +27,7 @@ export async function populateUsers(): Promise<void> {
     ]).onConflictDoNothing();
 }
 
-export async function getUserFromDb(username: string, password: string): Promise<typeof userSchema.$inferSelect | null> {
+export async function getUser(username: string, password: string): Promise<typeof userSchema.$inferSelect | null> {
     
     const userAccount = await getDatabase().select().from(userSchema).where(
         and(
@@ -54,7 +54,7 @@ export async function getUserFromDb(username: string, password: string): Promise
 }
 
 export async function isSuperUser(username: string, password: string): Promise<boolean> {
-    const user = await getUserFromDb(username, password);
+    const user = await getUser(username, password);
     return user ? user.isSuperUser === 1 : false;
 }
 

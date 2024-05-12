@@ -1,4 +1,4 @@
-import { UserStatus } from "../messageStructs/UserStatus";
+import { UserStatus } from "../messageStructs/UserStatus.js";
 
 export class UserStatusManager {
     static newUserStatus() {

@@ -3,8 +3,7 @@
  */
 
 import { EventEmitter } from "node:events";
-import type { TServerLogger } from "./types.js";
-
+import type { TServerLogger } from "./index";
 export class SubThread extends EventEmitter {
     name: string;
     log: TServerLogger;
