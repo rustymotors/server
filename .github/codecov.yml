@@ -16,10 +16,6 @@ flags:
         paths:
             - packages/connection/**
         carryforward: true
-    core:
-        paths:
-            - packages/core/**
-        carryforward: false
     database:
         paths:
             - packages/database/**
@@ -31,19 +27,19 @@ flags:
     lobby:
         paths:
             - packages/lobby/**
-        carryforward: true
+        carryforward: false
     login:
         paths:
             - packages/login/**
-        carryforward: true
+        carryforward: false
     mcots:
         paths:
             - packages/mcots/**
-        carryforward: false
+        carryforward: true
     nps:
         paths:
             - packages/nps/**
-        carryforward: false
+        carryforward: true
     patch:
         paths:
             - packages/patch/**
@@ -51,7 +47,7 @@ flags:
     persona:
         paths:
             - packages/persona/**
-        carryforward: true
+        carryforward: false
     shard:
         paths:
             - packages/shard/**
@@ -63,11 +59,11 @@ flags:
     shared-packets:
         paths:
             - packages/shared-packets/**
-        carryforward: false
-    transactions:
+        carryforward: true
+    schema:
         paths:
-            - packages/transactions/**
-        carryforward: false
+            - schema/**
+        carryforward: true
 
 component_management:
     individual_components:
