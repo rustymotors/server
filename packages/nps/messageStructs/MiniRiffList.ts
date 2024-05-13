@@ -1,8 +1,8 @@
-import type { ISerializable } from "../types.js";
-import { putLenString } from "../src/utils/purePut.js";
-import { NPSList } from "./NPSList.js";
+import type { ISerializable } from 'rusty-motors-nps';
+import { putLenString } from 'rusty-motors-nps';
+import { NPSList } from './NPSList.js';
 
-import { getServerLogger } from "rusty-motors-shared";
+import { getServerLogger } from 'rusty-motors-shared';
 
 const log = getServerLogger();
 
@@ -32,12 +32,12 @@ export class MiniRiffInfo implements ISerializable {
         offset += 4;
         buffer.writeUInt16BE(this.population, offset);
         log.debug(
-            `MiniRiffInfo: ${this.toString()} - ${buffer.toString("hex")}`,
+            `MiniRiffInfo: ${this.toString()} - ${buffer.toString('hex')}`
         );
         return buffer;
     }
     deserialize(data: Buffer): void {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     getByteSize(): number {
         return 4 + this.riffName.length + 1 + 4 + 2;
@@ -52,7 +52,7 @@ export class MiniRiffList extends NPSList implements ISerializable {
         return this.toBytes();
     }
     override deserialize(data: Buffer): void {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     override getByteSize(): number {
         return this.getSize();
@@ -79,7 +79,7 @@ export class MiniRiffList extends NPSList implements ISerializable {
         }
 
         log.debug(
-            `MiniRiffList: ${this.toString()} - ${buffer.toString("hex")}`,
+            `MiniRiffList: ${this.toString()} - ${buffer.toString('hex')}`
         );
         return buffer;
     }
@@ -87,7 +87,7 @@ export class MiniRiffList extends NPSList implements ISerializable {
         return `MiniRiffList(riffs=${this.riffs})`;
     }
     override toHex(): string {
-        return this.toBytes().toString("hex");
+        return this.toBytes().toString('hex');
     }
 
     override getSize(): number {

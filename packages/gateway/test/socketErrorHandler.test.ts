@@ -1,5 +1,5 @@
-import type { TServerLogger } from "../../shared";
-import { socketErrorHandler } from "../src/index.js";
+import type { TServerLogger } from "rusty-motors-shared";
+import { socketErrorHandler } from "rusty-motors-gateway";
 import { describe, it, expect, vi } from "vitest";
 
 describe("socketErrorHandler", () => {

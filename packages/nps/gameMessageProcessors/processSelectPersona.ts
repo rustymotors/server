@@ -1,11 +1,8 @@
-import { GameMessage } from "../messageStructs/GameMessage.js";
-import type { GameSocketCallback } from "./index.js";
-import { getDWord } from "../src/utils/pureGet.js";
+import { GameMessage, getDWord } from 'rusty-motors-nps';
+import type { GameSocketCallback } from './index.js';
 
-import { getServerLogger } from "rusty-motors-shared";
-import { UserStatus } from "../messageStructs/UserStatus.js";
-import { UserStatusManager } from "../src/UserStatusManager.js";
-import { sendNPSAck } from "../src/utils/sendNPSAck.js";
+import { UserStatus, UserStatusManager, sendNPSAck } from 'rusty-motors-nps';
+import { getServerLogger } from 'rusty-motors-shared';
 
 const log = getServerLogger();
 
@@ -13,9 +10,9 @@ export async function processSelectPersona(
     connectionId: string,
     userStatus: UserStatus,
     message: GameMessage,
-    socketCallback: GameSocketCallback,
+    socketCallback: GameSocketCallback
 ): Promise<void> {
-    log.setName("nps:processSelectPersona");
+    log.setName('nps:processSelectPersona');
 
     log.info(`SelectPersona: ${message.toString()}`);
 
@@ -38,9 +35,9 @@ export async function processSelectPersona(
         throw new Error(`UserStatus not found for customer ID ${customerId}`);
     }
 
-        log.info(
-            `Setting persona ID to ${personaId} for ${existingStatus.getCustomerId()}`,
-        );
+    log.info(
+        `Setting persona ID to ${personaId} for ${existingStatus.getCustomerId()}`
+    );
 
     // Update the user status
     existingStatus.setPersonaId(personaId);

@@ -1,6 +1,5 @@
 import type { TServerLogger, TGatewayOptions } from "rusty-motors-shared";
-import { getGatewayServer } from "../";
-import { Gateway } from "../src/GatewayServer";
+import { getGatewayServer, Gateway } from "rusty-motors-gateway";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 describe("getGatewayServer", () => {

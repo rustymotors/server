@@ -1,6 +1,6 @@
 import { getServerLogger } from "rusty-motors-shared";
 import { warehouse as wareHouseSchema } from "rusty-motors-schema";
-import { getDatabase } from "../services/database";
+import { getDatabase } from "rusty-motors-database";
 import * as Sentry from "@sentry/node";
 
 const log = getServerLogger();

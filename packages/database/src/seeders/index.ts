@@ -1,4 +1,4 @@
-import { player as playerSchema } from "../../../..//schema/player";
+import { player as playerSchema } from "rusty-motors-schema";
 
 const playerCsvHeader = [
     "player_id",

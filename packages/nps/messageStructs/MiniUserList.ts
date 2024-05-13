@@ -1,5 +1,5 @@
-import type { ISerializable } from "../types.js";
-import { putLenString } from "../src/utils/purePut.js";
+import type { ISerializable } from "rusty-motors-nps";
+import { putLenString } from "rusty-motors-nps";
 
 export class MiniUserInfo implements ISerializable {
     userId: number; // 4 bytes

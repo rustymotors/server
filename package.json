@@ -6,11 +6,17 @@
     "type": "git",
     "url": "git@github.com:drazisil/mcos.git"
   },
-  "dependencies": {},
+  "dependencies": {
+    "rusty-motors-shared": "^1.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
   "description": "This is a game server, being written from scratch, for a very old and long dead game. The owners of said game have shown no interest in bringing it back, but even so all names of their IP have been avoided to prevent issues.",
   "license": "AGPL-3.0",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "start": "node --openssl-legacy-provider --env-file=.env --loader ts-node/esm ./apps/main/server.ts"
+  },
   "type": "module",
   "workspaces": [
     "apps/main",
@@ -24,5 +30,9 @@
     "packages/shard",
     "packages/shared",
     "packages/shared-packets",
-    "schema"  ]
+    "schema"
+  ],
+  "devDependencies": {
+    "nx": "19.0.2"
+  }
 }

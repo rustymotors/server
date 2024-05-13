@@ -1,13 +1,13 @@
-import type { ISerializable } from "../types.js";
-import { GameProfile } from "./GameProfile.js";
-import { NPSList } from "./NPSList.js";
+import type { ISerializable } from 'rusty-motors-nps';
+import { GameProfile } from './GameProfile.js';
+import { NPSList } from './NPSList.js';
 
 export class ProfileList extends NPSList implements ISerializable {
     override serialize(): Buffer {
         return this.toBytes();
     }
     override deserialize(data: Buffer): void {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     override getByteSize(): number {
         return this.getSize();
@@ -40,13 +40,13 @@ export class ProfileList extends NPSList implements ISerializable {
         return `ProfileList(maxProfiles=${this.maxProfiles}, profiles=${this.profiles})`;
     }
     override toHex(): string {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     override setData(data: Buffer): void {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     override getData(): Buffer {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
 
     override getSize(): number {

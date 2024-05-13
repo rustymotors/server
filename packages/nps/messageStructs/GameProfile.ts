@@ -1,11 +1,11 @@
-import type { ISerializable } from "../types.js";
-import { putLenString } from "../src/utils/purePut.js";
+import type { ISerializable } from "rusty-motors-nps";
+import { putLenString } from "rusty-motors-nps";
 import {
     getAsHex,
     getLenBlob,
     getLenString,
     getShortBool,
-} from "../src/utils/pureGet.js";
+} from "rusty-motors-nps";
 
 export class GameProfile implements ISerializable {
     customerId: number; // 4 bytes

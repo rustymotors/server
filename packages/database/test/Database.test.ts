@@ -3,7 +3,7 @@ import {
     fetchSessionKeyByCustomerId,
     fetchSessionKeyByConnectionId,
     updateUser,
-} from "../../database";
+} from "rusty-motors-database";
 
 
 

@@ -1,13 +1,13 @@
-import { getServerLogger } from "rusty-motors-shared";
-import { abstractPartType as abstractPartTypeSchema } from "rusty-motors-schema";
-import { getDatabase } from "../services/database.js";
-import * as Sentry from "@sentry/node";
+import * as Sentry from '@sentry/node';
+import { getDatabase } from 'rusty-motors-database';
+import { abstractPartType as abstractPartTypeSchema } from 'rusty-motors-schema';
+import { getServerLogger } from 'rusty-motors-shared';
 
 const log = getServerLogger();
 export async function populateAbstractPartType(): Promise<void> {
-    log.setName("seeders/populateAbstractPartType");
+    log.setName('seeders/populateAbstractPartType');
 
-    log.debug("Seeding abstractPartType");
+    log.debug('Seeding abstractPartType');
 
     await getDatabase()
         .insert(abstractPartTypeSchema)
@@ -17,7 +17,7 @@ export async function populateAbstractPartType(): Promise<void> {
                 // parentAbstractPartTypeId: null,
                 // dependsOn: null,
                 // partFilename: null,
-                eAPT: "Vehicle",
+                eAPT: 'Vehicle',
                 // gAPT: null,
                 // fAPT: null,
                 // sAPT: null,
@@ -45,11 +45,10 @@ export async function populateAbstractPartType(): Promise<void> {
         ])
         .onConflictDoNothing()
         .then(() => {
-            log.debug("abstractPartType seeded");
+            log.debug('abstractPartType seeded');
         })
         .catch((error: Error) => {
             log.error(`Error seeding abstractPartType: ${error.message}`);
             Sentry.captureException(error);
         });
 }
-

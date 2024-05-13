@@ -1,11 +1,13 @@
-import { getServerLogger } from "rusty-motors-shared";
-import { getDatabase } from "../services/database.js";
-import { warehouse as warehouseSchema } from "rusty-motors-schema";
-import { brandedPart as brandedPartSchema } from "rusty-motors-schema";
-import { stockVehicleAttributes as stockVehicleAttributesSchema } from "rusty-motors-schema";
-import { tunables as tunablesSchema } from "rusty-motors-schema";
-import { model as modelSchema } from "rusty-motors-schema";
-import { eq } from "drizzle-orm";
+import { eq } from 'drizzle-orm';
+import { getDatabase } from 'rusty-motors-database';
+import {
+    brandedPart as brandedPartSchema,
+    model as modelSchema,
+    stockVehicleAttributes as stockVehicleAttributesSchema,
+    tunables as tunablesSchema,
+    warehouse as warehouseSchema,
+} from 'rusty-motors-schema';
+import { getServerLogger } from 'rusty-motors-shared';
 
 export type WarehouseInventory = {
     inventory: {
@@ -18,13 +20,13 @@ export type WarehouseInventory = {
 
 export async function getWarehouseInventory(
     warehouseId: number,
-    brandId: number,
+    brandId: number
 ): Promise<WarehouseInventory> {
     const log = getServerLogger();
-    log.setName("getWarehouseInventory");
+    log.setName('getWarehouseInventory');
 
     log.debug(
-        `Getting warehouse inventory for part ${brandId} in warehouse ${warehouseId}`,
+        `Getting warehouse inventory for part ${brandId} in warehouse ${warehouseId}`
     );
 
     let inventoryCars: {
@@ -45,7 +47,7 @@ export async function getWarehouseInventory(
         });
 
     if (dealOfTheDayDiscount === null) {
-        log.debug("Deal of the day not found");
+        log.debug('Deal of the day not found');
     }
 
     if (brandId > 0) {
@@ -60,26 +62,26 @@ export async function getWarehouseInventory(
                 brandedPartSchema,
                 eq(
                     warehouseSchema.brandedPartId,
-                    brandedPartSchema.brandedPartId,
-                ),
+                    brandedPartSchema.brandedPartId
+                )
             )
             .leftJoin(
                 modelSchema,
-                eq(brandedPartSchema.modelId, modelSchema.modelId),
+                eq(brandedPartSchema.modelId, modelSchema.modelId)
             )
 
             .leftJoin(
                 stockVehicleAttributesSchema,
                 eq(
                     warehouseSchema.brandedPartId,
-                    stockVehicleAttributesSchema.brandedPartId,
-                ),
+                    stockVehicleAttributesSchema.brandedPartId
+                )
             )
             .where(
                 eq(
                     eq(warehouseSchema.playerId, warehouseId),
-                    eq(modelSchema.brandId, brandId),
-                ),
+                    eq(modelSchema.brandId, brandId)
+                )
             );
     } else {
         inventoryCars = await getDatabase()
@@ -93,20 +95,20 @@ export async function getWarehouseInventory(
                 brandedPartSchema,
                 eq(
                     warehouseSchema.brandedPartId,
-                    brandedPartSchema.brandedPartId,
-                ),
+                    brandedPartSchema.brandedPartId
+                )
             )
             .leftJoin(
                 modelSchema,
-                eq(brandedPartSchema.modelId, modelSchema.modelId),
+                eq(brandedPartSchema.modelId, modelSchema.modelId)
             )
 
             .leftJoin(
                 stockVehicleAttributesSchema,
                 eq(
                     warehouseSchema.brandedPartId,
-                    stockVehicleAttributesSchema.brandedPartId,
-                ),
+                    stockVehicleAttributesSchema.brandedPartId
+                )
             )
             .where(eq(warehouseSchema.playerId, warehouseId));
     }

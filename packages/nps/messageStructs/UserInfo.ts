@@ -1,4 +1,4 @@
-import type { ISerializable } from "../types.js";
+import type { ISerializable } from "rusty-motors-nps";
 
 export class UserInfo implements ISerializable {
     private profileId: number; // 4 bytes

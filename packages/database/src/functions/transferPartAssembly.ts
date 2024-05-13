@@ -1,10 +1,12 @@
-import { getServerLogger } from "rusty-motors-shared";
-import { getDatabase } from "../services/database";
-import { part as partSchema } from "rusty-motors-schema";
-import { vehicle as vehicleSchema } from "rusty-motors-schema";
-import { player as playerSchema } from "rusty-motors-schema";
-import { getAbstractPartTypeId } from "./getAbstractPartTypeId";
-import { eq } from "drizzle-orm";
+import { eq } from 'drizzle-orm';
+import { getDatabase } from 'rusty-motors-database';
+import {
+    part as partSchema,
+    player as playerSchema,
+    vehicle as vehicleSchema,
+} from 'rusty-motors-schema';
+import { getServerLogger } from 'rusty-motors-shared';
+import { getAbstractPartTypeId } from './getAbstractPartTypeId';
 
 const ABSTRACT_PART_TYPE_ID_CAR = 101;
 
@@ -25,14 +27,14 @@ const ABSTRACT_PART_TYPE_ID_CAR = 101;
  */
 export async function transferPartAssembly(
     partId: number,
-    newOwnerId: number,
+    newOwnerId: number
 ): Promise<void> {
     const log = getServerLogger();
     const db = getDatabase();
-    log.setName("transferPartAssembly");
+    log.setName('transferPartAssembly');
 
     log.debug(
-        `Transferring part assembly ${partId} to new owner ${newOwnerId}`,
+        `Transferring part assembly ${partId} to new owner ${newOwnerId}`
     );
 
     const topPart = await db
@@ -42,7 +44,7 @@ export async function transferPartAssembly(
         .limit(1)
         .then((rows) => rows[0]);
 
-    if (typeof topPart === "undefined") {
+    if (typeof topPart === 'undefined') {
         log.error(`Part ${partId} not found`);
         throw new Error(`Part ${partId} not found`);
     }
@@ -83,10 +85,10 @@ export async function transferPartAssembly(
     try {
         // If the part is a car, update the owner ID in the vehicle table
         const isPartACar = await getAbstractPartTypeId(
-            topPart.brandedPartId,
+            topPart.brandedPartId
         ).then(
             (abstractPartTypeId) =>
-                abstractPartTypeId === ABSTRACT_PART_TYPE_ID_CAR,
+                abstractPartTypeId === ABSTRACT_PART_TYPE_ID_CAR
         );
 
         if (isPartACar) {
@@ -97,7 +99,7 @@ export async function transferPartAssembly(
                 .limit(1)
                 .then((rows) => rows[0]);
 
-            if (typeof car === "undefined") {
+            if (typeof car === 'undefined') {
                 log.error(`Vehicle ${partId} not found`);
                 throw Error(`Vehicle ${partId} not found`);
             }
@@ -110,7 +112,7 @@ export async function transferPartAssembly(
                 .limit(1)
                 .then((rows) => rows[0]);
 
-            if (typeof oldOwner === "undefined") {
+            if (typeof oldOwner === 'undefined') {
                 log.error(`Owner ${topPart.ownerId} not found`);
                 throw Error(`Owner ${topPart.ownerId} not found`);
             }
@@ -124,10 +126,14 @@ export async function transferPartAssembly(
                         .where(eq(playerSchema.playerId, topPart.ownerId));
                 } catch (error) {
                     log.error(
-                        `Error updating old owner ${topPart.ownerId}: ${String(error)}`,
+                        `Error updating old owner ${topPart.ownerId}: ${String(
+                            error
+                        )}`
                     );
                     throw new Error(
-                        `Error updating old owner ${topPart.ownerId}: ${String(error)}`,
+                        `Error updating old owner ${topPart.ownerId}: ${String(
+                            error
+                        )}`
                     );
                 }
             } else {
@@ -143,9 +149,10 @@ export async function transferPartAssembly(
         }
 
         // Update the parent part's owner ID
-        await db.update(partSchema).set({ ownerId: newOwnerId }).where(
-            eq(partSchema.partId, partId),
-        );
+        await db
+            .update(partSchema)
+            .set({ ownerId: newOwnerId })
+            .where(eq(partSchema.partId, partId));
     } catch (error) {
         log.error(`Error transferring part ${partId}: ${String(error)}`);
         throw new Error(`Error transferring part ${partId}: ${String(error)}`);

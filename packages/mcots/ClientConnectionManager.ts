@@ -1,4 +1,4 @@
-import type { Connection } from "../connection/src/Connection";
+import type { Connection } from "rusty-motors-connection";
 
 export class ClientConnectionManager {
     static _instance: ClientConnectionManager;

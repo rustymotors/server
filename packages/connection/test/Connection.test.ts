@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
     createCommandEncryptionPair,
     verifyLegacyCipherSupport,
-} from "../src/Connection";
+} from "rusty-motors-connection";
 import { McosEncryptionPair } from "rusty-motors-shared";
 
 vi.mock("@sentry/node", () => ({

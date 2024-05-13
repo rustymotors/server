@@ -1,17 +1,16 @@
-import type { ServerSocketCallback } from "./index.js";
-import { ServerMessage } from "rusty-motors-shared-packets";
-import { LoginMessage } from "../payloads/LoginMessage.js";
-import { getServerLogger } from "rusty-motors-shared";
-import { LoginCompleteMessage } from "../payloads/LoginCompleteMessage.js";
+import { LoginCompleteMessage, LoginMessage } from 'rusty-motors-mcots';
+import { getServerLogger } from 'rusty-motors-shared';
+import { ServerMessage } from 'rusty-motors-shared-packets';
+import type { ServerSocketCallback } from './index.js';
 
 const log = getServerLogger();
 
 export async function processServerLogin(
     connectionId: string,
     message: ServerMessage,
-    socketCallback: ServerSocketCallback,
+    socketCallback: ServerSocketCallback
 ): Promise<void> {
-    log.setName("processServerLogin");
+    log.setName('processServerLogin');
     // Read the inbound packet
     const loginMessage = new LoginMessage(message.getDataBuffer().length);
     loginMessage.deserialize(message.getDataBuffer());
@@ -29,7 +28,6 @@ export async function processServerLogin(
     const responsePacket = new ServerMessage(response.getMessageId());
     responsePacket.setData(response);
     responsePacket.populateHeader(message.getSequence());
-
 
     socketCallback([responsePacket]);
     log.resetName();

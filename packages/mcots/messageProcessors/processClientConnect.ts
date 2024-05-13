@@ -1,39 +1,39 @@
+import { createDataEncryptionPair } from 'rusty-motors-connection';
+import type { ServerSocketCallback } from 'rusty-motors-mcots';
 import {
-    ServerMessage,
-} from "../../shared-packets/src/ServerMessage.js";
-import type { ServerSocketCallback } from "./index.js";
-import { getServerLogger } from "rusty-motors-shared";
-import { ClientConnectionMessage } from "../payloads/ClientConnectMessage.js";
-import { UserStatusManager } from "rusty-motors-nps";
-import { ClientConnectionManager } from "../ClientConnectionManager.js";
-import { createDataEncryptionPair } from "../../connection/src/Connection.js";
-import { ErrorNoKey } from "../errors/ErrorNoKey.js";
-import { sendSuccess } from "./sendSuccess.js";
+    ClientConnectionManager,
+    ClientConnectionMessage,
+    ErrorNoKey,
+} from 'rusty-motors-mcots';
+import { UserStatusManager } from 'rusty-motors-nps';
+import { getServerLogger } from 'rusty-motors-shared';
+import { ServerMessage } from 'rusty-motors-shared-packets';
+import { sendSuccess } from './sendSuccess.js';
 
 const log = getServerLogger();
 
 export async function processClientConnect(
     connectionId: string,
     message: ServerMessage,
-    socketCallback: ServerSocketCallback,
+    socketCallback: ServerSocketCallback
 ): Promise<void> {
-    log.setName("processClientConnect");
+    log.setName('processClientConnect');
     try {
         log.debug(`Processing client connect request: ${message.toString()}`);
 
         const request = new ClientConnectionMessage(
-            message.getDataBuffer().length,
+            message.getDataBuffer().length
         ).deserialize(message.getDataBuffer());
 
         log.debug(`Received client connect request: ${request.toString()}`);
 
         const userStatus = UserStatusManager.getUserStatus(
-            request.getCustomerId(),
+            request.getCustomerId()
         );
 
         if (!userStatus) {
             log.error(
-                `User status not found for customer ID: ${request.getCustomerId()}`,
+                `User status not found for customer ID: ${request.getCustomerId()}`
             );
             return;
         }
@@ -45,7 +45,7 @@ export async function processClientConnect(
 
         if (!connection) {
             log.error(
-                `Connection not found for connection ID: ${connectionId}`,
+                `Connection not found for connection ID: ${connectionId}`
             );
             return;
         }
@@ -56,7 +56,7 @@ export async function processClientConnect(
 
         if (!sessionKey) {
             log.error(
-                `Session key not found for customer ID: ${request.getCustomerId()}`,
+                `Session key not found for customer ID: ${request.getCustomerId()}`
             );
             return;
         }
@@ -66,17 +66,17 @@ export async function processClientConnect(
         connection.setCipherPair(cipherPair);
 
         sendSuccess(message, socketCallback);
-        
+
         log.resetName();
         return Promise.resolve();
     } catch (error) {
         if (error instanceof ErrorNoKey) {
             log.error(
-                `Error processing client connect request: ${error.message}`,
+                `Error processing client connect request: ${error.message}`
             );
         } else {
             log.error(
-                `Error processing client connect request: ${error as string}`,
+                `Error processing client connect request: ${error as string}`
             );
             throw error;
         }

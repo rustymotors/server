@@ -1,14 +1,14 @@
 import {
-    ServerGenericRequest,
-    ServerMessage,
-} from "rusty-motors-shared-packets";
-import type { ServerSocketCallback } from "./index.js";
-import { getServerLogger } from "rusty-motors-shared";
-import {
     getWarehouseInventory,
     type WarehouseInventory,
-} from "rusty-motors-database";
-import { StackCarInfo, StockCar } from "../payloads/StockCar.js";
+} from 'rusty-motors-database';
+import { StackCarInfo, StockCar } from 'rusty-motors-mcots';
+import { getServerLogger } from 'rusty-motors-shared';
+import {
+    ServerGenericRequest,
+    ServerMessage,
+} from 'rusty-motors-shared-packets';
+import type { ServerSocketCallback } from './index.js';
 
 const log = getServerLogger();
 
@@ -17,14 +17,14 @@ const log = getServerLogger();
 export async function processStockCarInfo(
     connectionId: string,
     message: ServerMessage,
-    socketCallback: ServerSocketCallback,
+    socketCallback: ServerSocketCallback
 ): Promise<void> {
-    log.setName("processStockCarInfo");
+    log.setName('processStockCarInfo');
     try {
         log.debug(`Processing stock car info message`);
 
         const request = new ServerGenericRequest().deserialize(
-            message.data.serialize(),
+            message.data.serialize()
         );
 
         log.debug(`Received stock car info request: ${request.toString()}`);
@@ -36,11 +36,11 @@ export async function processStockCarInfo(
 
         const inventoryCars: WarehouseInventory = await getWarehouseInventory(
             lotOwnerId,
-            brandId,
+            brandId
         );
 
         log.debug(
-            `Sending car info for lot owner ${lotOwnerId} and brand ${brandId}`,
+            `Sending car info for lot owner ${lotOwnerId} and brand ${brandId}`
         );
 
         const responsePacket = new StackCarInfo();
@@ -56,7 +56,7 @@ export async function processStockCarInfo(
             inventoryCars.inventory.length > StackCarInfo.MAX_CARS_PER_MESSAGE
         ) {
             log.error(
-                `Too many cars in inventory: ${inventoryCars.inventory.length}`,
+                `Too many cars in inventory: ${inventoryCars.inventory.length}`
             );
             return;
         }
@@ -66,7 +66,7 @@ export async function processStockCarInfo(
         while (inventoryCars.inventory.length > 0) {
             const car = inventoryCars.inventory.shift();
 
-            if (typeof car === "undefined") {
+            if (typeof car === 'undefined') {
                 log.error(`Car not found`);
                 break;
             }
@@ -88,7 +88,9 @@ export async function processStockCarInfo(
             responsePacket.addCar(stockCar);
         }
 
-        log.debug(`Sending ${responsePacket.getNumberOfCars()} cars...complete`);
+        log.debug(
+            `Sending ${responsePacket.getNumberOfCars()} cars...complete`
+        );
 
         responsePacket.setMoreCars(false);
 

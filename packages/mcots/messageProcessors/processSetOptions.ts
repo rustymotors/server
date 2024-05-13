@@ -1,21 +1,20 @@
-import { getServerLogger } from "rusty-motors-shared";
-import { ServerMessage } from "rusty-motors-shared-packets";
-import { SetOptionsMessage } from "../payloads/SetOptionsMessage.js";
-import type { ServerSocketCallback } from "./index.js";
-import { sendSuccess } from "./sendSuccess.js";
+import { SetOptionsMessage } from 'rusty-motors-mcots';
+import { getServerLogger } from 'rusty-motors-shared';
+import { ServerMessage } from 'rusty-motors-shared-packets';
+import type { ServerSocketCallback } from './index.js';
+import { sendSuccess } from './sendSuccess.js';
 
 const log = getServerLogger();
-
 
 export async function processSetOptions(
     connectionId: string,
     message: ServerMessage,
-    socketCallback: ServerSocketCallback,
+    socketCallback: ServerSocketCallback
 ) {
-    log.setName("processSetOptions");
+    log.setName('processSetOptions');
     log.info(`Processing SetOptionsMessage`);
     const setOptionsMessage = new SetOptionsMessage().deserialize(
-        message.getDataBuffer(),
+        message.getDataBuffer()
     );
     log.info(`SetOptionsMessage: ${setOptionsMessage.toString()}`);
 

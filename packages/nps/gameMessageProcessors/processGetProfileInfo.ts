@@ -1,11 +1,14 @@
-import { GameMessage } from "../messageStructs/GameMessage.js";
-import { getDWord, getAsHex } from "../src/utils/pureGet.js";
-import type { GameSocketCallback } from "./index.js";
-import { getGameProfilesForCustomerId } from "../services/profile.js";
-import { ProfileList } from "../messageStructs/ProfileList.js";
+import {
+    GameMessage,
+    ProfileList,
+    getAsHex,
+    getDWord,
+    getGameProfilesForCustomerId,
+} from 'rusty-motors-nps';
+import type { GameSocketCallback } from './index.js';
 
-import { getServerLogger } from "rusty-motors-shared";
-import type { UserStatus } from "../messageStructs/UserStatus.js";
+import type { UserStatus } from 'rusty-motors-nps';
+import { getServerLogger } from 'rusty-motors-shared';
 
 const log = getServerLogger();
 
@@ -13,9 +16,9 @@ export async function processGetProfileInfo(
     connectionId: string,
     userStatus: UserStatus,
     message: GameMessage,
-    socketCallback: GameSocketCallback,
+    socketCallback: GameSocketCallback
 ): Promise<void> {
-    log.setName("nps:processGetProfileInfo");
+    log.setName('nps:processGetProfileInfo');
     const customerId = getDWord(message.serialize(), 0, false);
 
     log.info(`GetProfileInfo: ${customerId}`);
@@ -51,13 +54,13 @@ export async function processGetProfileInfo(
         // Log the message
         log.info(`GetProfileInfo: ${outMessage.toString()}`);
 
-        log.info("===========================================");
+        log.info('===========================================');
 
         socketCallback([outMessage.serialize()]);
         log.resetName();
         return Promise.resolve();
     } catch (error) {
         log.error(`Error sending profile info: ${error as string}`);
-        throw new Error("Error sending profile info");
+        throw new Error('Error sending profile info');
     }
 }

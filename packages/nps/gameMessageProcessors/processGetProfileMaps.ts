@@ -1,11 +1,14 @@
-import { GameMessage } from "../messageStructs/GameMessage.js";
-import { getDWord, getAsHex } from "../src/utils/pureGet.js";
-import type { GameSocketCallback } from "./index.js";
-import { getGameProfilesForCustomerId } from "../services/profile.js";
-import { ProfileList } from "../messageStructs/ProfileList.js";
+import {
+    GameMessage,
+    ProfileList,
+    getAsHex,
+    getDWord,
+    getGameProfilesForCustomerId,
+} from 'rusty-motors-nps';
+import type { GameSocketCallback } from './index.js';
 
-import { getServerLogger } from "rusty-motors-shared";
-import type { UserStatus } from "../messageStructs/UserStatus.js";
+import type { UserStatus } from 'rusty-motors-nps';
+import { getServerLogger } from 'rusty-motors-shared';
 
 const log = getServerLogger();
 
@@ -13,9 +16,9 @@ export async function processGetProfileMaps(
     connectionId: string,
     userStatus: UserStatus,
     message: GameMessage,
-    socketCallback: GameSocketCallback,
+    socketCallback: GameSocketCallback
 ): Promise<void> {
-    log.setName("nps:processGetProfileMaps");
+    log.setName('nps:processGetProfileMaps');
     // This message is a version 257, but it's version is set to 0
     // This is a bug in the client, so we need to generate a new message
     // with the correct version
@@ -56,13 +59,13 @@ export async function processGetProfileMaps(
         // Log the message
         log.info(`GetProfileMaps: ${outMessage.toString()}`);
 
-        log.info("===========================================");
+        log.info('===========================================');
 
         socketCallback([outMessage.serialize()]);
         log.resetName();
         return Promise.resolve();
     } catch (error) {
         log.error(`Error sending profile info: ${error as string}`);
-        throw new Error("Error sending profile info");
+        throw new Error('Error sending profile info');
     }
 }

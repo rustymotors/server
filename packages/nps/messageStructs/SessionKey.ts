@@ -1,7 +1,6 @@
-import type { ISerializable } from "../types.js";
-import { isOnlyOneSet } from "../src/utils/pureCompare.js";
-import { getAsHex } from "../src/utils/pureGet.js";
-import { getServerLogger } from "../../shared/index.js";
+import type { ISerializable } from 'rusty-motors-nps';
+import { getAsHex, isOnlyOneSet } from 'rusty-motors-nps';
+import { getServerLogger } from 'rusty-motors-shared';
 
 const log = getServerLogger();
 
@@ -11,13 +10,15 @@ export class SessionKey implements ISerializable {
     private _isSet: boolean = false;
 
     constructor({ key, timestamp }: { key?: Buffer; timestamp?: number }) {
-        log.setName("SessionKey");
+        log.setName('SessionKey');
         if (isOnlyOneSet(key, timestamp)) {
-            throw new Error("Both key and timestamp must be set if one is set");
+            throw new Error('Both key and timestamp must be set if one is set');
         }
 
-        if (typeof key !== "undefined" && typeof timestamp !== "undefined") {
-            log.debug(`SessionKey: key=${getAsHex(key)}, timestamp=${timestamp}`);
+        if (typeof key !== 'undefined' && typeof timestamp !== 'undefined') {
+            log.debug(
+                `SessionKey: key=${getAsHex(key)}, timestamp=${timestamp}`
+            );
             this.key = key;
             this.timestamp = timestamp;
             this._isSet = true;
@@ -31,11 +32,11 @@ export class SessionKey implements ISerializable {
         SessionKey.fromBytes(data);
     }
     getByteSize(): number {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
 
     static fromBytes(bytes: Buffer): SessionKey {
-        log.setName("SessionKey.fromBytes");
+        log.setName('SessionKey.fromBytes');
         const keyLength = bytes.readUInt16BE(0);
 
         // Set the data offset
@@ -57,7 +58,7 @@ export class SessionKey implements ISerializable {
     }
 
     static fromKeyString(key: string): SessionKey {
-        const keyBuffer = Buffer.from(key, "hex");
+        const keyBuffer = Buffer.from(key, 'hex');
 
         return new SessionKey({
             key: keyBuffer,
@@ -66,7 +67,7 @@ export class SessionKey implements ISerializable {
     }
 
     getKey(): string {
-        return this.key.toString("hex");
+        return this.key.toString('hex');
     }
 
     toString(): string {
@@ -79,7 +80,7 @@ export class SessionKey implements ISerializable {
 
     toBytes(): Buffer {
         if (!this.isSet()) {
-            throw new Error("Session key is not set");
+            throw new Error('Session key is not set');
         }
 
         const keyLength = this.key.length;
@@ -99,11 +100,11 @@ export class SessionKey implements ISerializable {
     }
 
     getData(): Buffer {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
 
     setData(): void {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
 
     isSet(): boolean {

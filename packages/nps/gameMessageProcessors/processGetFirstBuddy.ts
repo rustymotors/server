@@ -1,14 +1,14 @@
 import {
     GameMessage,
+    ProfileList,
     SerializableData,
-} from "../messageStructs/GameMessage.js";
-import { getDWord } from "../src/utils/pureGet.js";
-import type { GameSocketCallback } from "./index.js";
-import { getGameProfilesForCustomerId } from "../services/profile.js";
-import { ProfileList } from "../messageStructs/ProfileList.js";
+    getDWord,
+    getGameProfilesForCustomerId,
+} from 'rusty-motors-nps';
+import type { GameSocketCallback } from './index.js';
 
-import { getServerLogger } from "rusty-motors-shared";
-import type { UserStatus } from "../messageStructs/UserStatus.js";
+import type { UserStatus } from 'rusty-motors-nps';
+import { getServerLogger } from 'rusty-motors-shared';
 
 const log = getServerLogger();
 
@@ -16,9 +16,9 @@ export async function processFirstBuddy(
     connectionId: string,
     userStatus: UserStatus,
     message: GameMessage,
-    socketCallback: GameSocketCallback,
+    socketCallback: GameSocketCallback
 ): Promise<void> {
-    log.setName("nps:processFirstBuddy");
+    log.setName('nps:processFirstBuddy');
     const profileId = getDWord(message.getDataAsBuffer(), 0, false);
 
     log.info(`GetFirstBuddy profile: ${profileId}`);
@@ -36,7 +36,7 @@ export async function processFirstBuddy(
     // Log the message
     log.info(`GetFirstBuddy: ${outMessage.toString()}`);
 
-    log.info("===========================================");
+    log.info('===========================================');
 
     socketCallback([outMessage.serialize()]);
     log.resetName();

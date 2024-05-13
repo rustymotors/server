@@ -1,6 +1,6 @@
-import type { ISerializable } from "../types.js";
-import { getAsHex } from "../src/utils/pureGet.js";
-import { getServerLogger } from "rusty-motors-shared";
+import type { ISerializable } from 'rusty-motors-nps';
+import { getAsHex } from 'rusty-motors-nps';
+import { getServerLogger } from 'rusty-motors-shared';
 
 const log = getServerLogger();
 
@@ -9,9 +9,9 @@ export class UserAction implements ISerializable {
     private _endTimeMaybe = 0; // 4 bytes
     private _b1 = 0; // 1 byte
     private _b2 = 0; // 1 byte
-    private _initiator = ""; // 64 bytes
-    private _startComment = ""; // 256 bytes
-    private _endComment = ""; // 256 bytes
+    private _initiator = ''; // 64 bytes
+    private _startComment = ''; // 256 bytes
+    private _endComment = ''; // 256 bytes
 
     constructor(name: string) {
         this.name = name;
@@ -26,11 +26,11 @@ export class UserAction implements ISerializable {
         offset += 1;
         buffer.writeUInt8(this._b2, offset);
         offset += 1;
-        buffer.write(this._initiator, offset, 0x40, "utf8");
+        buffer.write(this._initiator, offset, 0x40, 'utf8');
         offset += 0x40;
-        buffer.write(this._startComment, offset, 0x100, "utf8");
+        buffer.write(this._startComment, offset, 0x100, 'utf8');
         offset += 0x100;
-        buffer.write(this._endComment, offset, 0x100, "utf8");
+        buffer.write(this._endComment, offset, 0x100, 'utf8');
 
         return buffer;
     }
@@ -39,22 +39,22 @@ export class UserAction implements ISerializable {
             this._endTimeMaybe = data.readUInt32BE(0);
             this._b1 = data.readUInt8(4);
             this._b2 = data.readUInt8(5);
-            this._initiator = data.toString("utf8", 6, 0x46);
-            this._startComment = data.toString("utf8", 0x46, 0x146);
-            this._endComment = data.toString("utf8", 0x146, 0x246);
+            this._initiator = data.toString('utf8', 6, 0x46);
+            this._startComment = data.toString('utf8', 0x46, 0x146);
+            this._endComment = data.toString('utf8', 0x146, 0x246);
         } catch (error) {
             log.error(`Error deserializing UserAction: ${error as string}`);
             throw error;
         }
     }
     getByteSize(): number {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     setData(): void {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     getData(): Buffer {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
 
     static fromBytes(name: string, bytes: Buffer): UserAction {
@@ -68,7 +68,7 @@ export class UserAction implements ISerializable {
         return this.serialize();
     }
     toString(): string {
-        return `UserAction: ${this.name} - ${this._initiator} - ${this._startComment} - ${this._endComment}`
+        return `UserAction: ${this.name} - ${this._initiator} - ${this._startComment} - ${this._endComment}`;
     }
     toHex(): string {
         return getAsHex(this.serialize());
@@ -78,29 +78,36 @@ export class UserAction implements ISerializable {
         return 4 + 1 + 1 + 0x40 + 0x100 + 0x100;
     }
 
-    public set({ endTimeMaybe, b1, b2, initiator, startComment, endComment }: {
-        endTimeMaybe?: number,
-        b1?: number,
-        b2?: number,
-        initiator: string,
-        startComment: string,
-        endComment?: string,
+    public set({
+        endTimeMaybe,
+        b1,
+        b2,
+        initiator,
+        startComment,
+        endComment,
+    }: {
+        endTimeMaybe?: number;
+        b1?: number;
+        b2?: number;
+        initiator: string;
+        startComment: string;
+        endComment?: string;
     }): void {
         this._endTimeMaybe = endTimeMaybe || 0;
         this._b1 = b1 || 0;
         this._b2 = b2 || 0;
         this._initiator = initiator;
         this._startComment = startComment;
-        this._endComment = endComment || "";
+        this._endComment = endComment || '';
     }
 
     public clear(): void {
         this._endTimeMaybe = 0;
         this._b1 = 0;
         this._b2 = 0;
-        this._initiator = "";
-        this._startComment = "";
-        this._endComment = "";
+        this._initiator = '';
+        this._startComment = '';
+        this._endComment = '';
     }
 
     updateEmptyValuesFrom(other: UserAction) {
@@ -113,14 +120,14 @@ export class UserAction implements ISerializable {
         if (this._b2 === 0) {
             this._b2 = other._b2;
         }
-        if (this._initiator === "") {
+        if (this._initiator === '') {
             this._initiator = other._initiator;
         }
-        if (this._startComment === "") {
+        if (this._startComment === '') {
             this._startComment = other._startComment;
         }
-        if (this._endComment === "") {
+        if (this._endComment === '') {
             this._endComment = other._endComment;
-        }    
+        }
     }
 }

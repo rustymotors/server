@@ -1,4 +1,4 @@
-import type { ISerializable, IMessageHeader, IMessage } from "../types.js";
+import type { ISerializable, IMessageHeader, IMessage } from "rusty-motors-nps";
 
 export class MessageHeader implements IMessageHeader {
     private version: 0 | 257;

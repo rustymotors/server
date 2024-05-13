@@ -1,9 +1,9 @@
-import { GameMessage } from "../messageStructs/GameMessage.js";
-import type { GameSocketCallback } from "./index.js";
+import { GameMessage } from 'rusty-motors-nps';
+import type { GameSocketCallback } from './index.js';
 
-import { getServerLogger } from "rusty-motors-shared";
-import type { UserStatus } from "../messageStructs/UserStatus.js";
-import { sendNPSAck } from "../src/utils/sendNPSAck.js";
+import type { UserStatus } from 'rusty-motors-nps';
+import { sendNPSAck } from 'rusty-motors-nps';
+import { getServerLogger } from 'rusty-motors-shared';
 
 const log = getServerLogger();
 
@@ -11,13 +11,12 @@ export async function processPing(
     connectionId: string,
     userStatus: UserStatus,
     message: GameMessage,
-    socketCallback: GameSocketCallback,
+    socketCallback: GameSocketCallback
 ): Promise<void> {
-    log.setName("nps:processPing");
+    log.setName('nps:processPing');
     log.info(`Ping: ${message.toString()}`);
 
     sendNPSAck(socketCallback);
     log.resetName();
     return Promise.resolve();
-
 }
