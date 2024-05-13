@@ -1,7 +1,6 @@
 {
     "name": "rusty-motors-server",
     "version": "1.0.0",
-    "description": "",
     "type": "module",
     "scripts": {
         "start": "tsx --openssl-legacy-provider --env-file=../../.env server.ts"
@@ -10,7 +9,9 @@
     "author": "",
     "license": "AGPL-3.0",
     "dependencies": {
-        "rusty-motors-gateway": "workspace:^",
-        "rusty-motors-shared": "workspace:^"
-    }
+        "@sentry/node": "^7.114.0",
+        "@sentry/profiling-node": "^7.114.0"
+    },
+    "devDependencies": {},
+    "description": ""
 }

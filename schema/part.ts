@@ -7,8 +7,8 @@ import {
     smallint,
     index,
 } from "drizzle-orm/pg-core";
-import { brandedPart } from "./brandedPart";
-import { attachmentPoint } from "./attachmentPoint";
+import { brandedPart } from "./brandedPart.js";
+import { attachmentPoint } from "./attachmentPoint.js";
 
 export const part = pgTable(
     "part",

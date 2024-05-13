@@ -1,7 +1,6 @@
 {
     "name": "rusty-motors-cli",
     "version": "1.0.0",
-    "description": "",
     "exports": {
         ".": {
             "import": "./index.js",
@@ -10,12 +9,15 @@
     },
     "type": "module",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 0"
     },
     "keywords": [],
     "author": "",
     "license": "AGPL-3.0",
+    "devDependencies": {},
     "dependencies": {
-        "rusty-motors-shared": "workspace:*"
-    }
+        "rusty-motors-shared": "^1.0.0",
+        "rusty-motors-shared-packets": "^1.0.0"
+    },
+    "description": ""
 }

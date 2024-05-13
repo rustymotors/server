@@ -17,12 +17,11 @@ function mockConfig() {
 
 describe("web", () => {
     it("handleGetCert", async () => {
-        vi.mock("fs/promises", async (importOriginal) => {
+        vi.mock("node:fs/promises", async (importOriginal) => {
+            const originalModule = await importOriginal() as typeof import("node:fs/promises");
             return {
-                ...(await importOriginal<typeof import("node:fs/promises")>()),
-                readFile: () => {
-                    return "test";
-                },
+            ...originalModule,
+            readFile: vi.fn().mockResolvedValue("test"),
             };
         });
         const config = mockConfig();

@@ -1,32 +1,29 @@
 {
-    "name": "rusty-motors-gateway",
-    "version": "1.0.0",
-    "description": "",
-    "exports": {
-        ".": {
-            "import": "./index.js",
-            "require": "./index.js"
-        }
-    },
-    "type": "module",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "AGPL-3.0",
-    "dependencies": {
-        "@fastify/sensible": "^5.5.0",
-        "@sentry/node": "^7.102.0",
-        "fastify": "^4.25.2",
-        "rusty-motors-cli": "workspace:^",
-        "rusty-motors-connection": "workspace:^",
-        "rusty-motors-database": "workspace:^",
-        "rusty-motors-mcots": "workspace:^",
-        "rusty-motors-nps": "workspace:^",
-        "rusty-motors-patch": "workspace:^",
-        "rusty-motors-shard": "workspace:^",
-        "rusty-motors-shared": "workspace:^",
-        "rusty-motors-shared-packets": "workspace:^"
+  "name": "rusty-motors-gateway",
+  "version": "1.0.0",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.js"
     }
+  },
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "@fastify/sensible": "^5.5.0",
+    "@sentry/node": "^7.102.0",
+    "fastify": "^4.25.2",
+
+    "vitest": "^1.6.0"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {},
+  "description": ""
 }

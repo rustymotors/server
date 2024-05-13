@@ -20,7 +20,7 @@ import { getServerMessageProcessor } from "rusty-motors-mcots";
 import type { TServerLogger } from "rusty-motors-shared";
 import * as Sentry from "@sentry/node";
 import { getDatabase } from "rusty-motors-database";
-import { key as keySchema } from "../../../schema/key.js";
+import { key as keySchema } from "rusty-motors-schema";
 import { eq } from "drizzle-orm";
 import { createCipheriv, createDecipheriv, getCiphers } from "node:crypto";
 import { McosEncryptionPair } from "rusty-motors-shared";

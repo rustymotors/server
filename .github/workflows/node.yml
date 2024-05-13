@@ -1,4 +1,4 @@
-name: The Beast
+name: Node.js
 
 on:
     push:
@@ -34,8 +34,7 @@ jobs:
             #       mode: "delete"
             - name: Install and test
               run: |
-                  corepack enable pnpm
-                  pnpm install
+                  npm install
                   npm test
               env:
                   CODECOV_UPLOAD_BUNDLE_TOKEN: ${{ secrets.CODECOV_UPLOAD_BUNDLE_TOKEN }}

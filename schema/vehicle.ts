@@ -4,8 +4,8 @@ import {
     integer,
     uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { skin } from "./skin";
-import { bytea } from "./bytea";
+import { skin } from "./skin.js";
+import { bytea } from "./bytea.js";
 
 
 export const vehicle = pgTable(

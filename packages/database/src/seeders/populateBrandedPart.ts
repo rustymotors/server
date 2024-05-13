@@ -1,5 +1,5 @@
 import { getServerLogger } from "rusty-motors-shared";
-import { brandedPart as brandedPartSchema } from "../../../../schema/brandedPart.js";
+import { brandedPart as brandedPartSchema } from "rusty-motors-schema";
 import { getDatabase } from "../services/database.js";
 import * as Sentry from "@sentry/node";
 

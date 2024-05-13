@@ -1,5 +1,5 @@
 import { getDatabase } from "rusty-motors-database";
-import { user as userSchema } from "../../../schema/user.js";
+import { user as userSchema } from "rusty-motors-schema";
 import { eq, and } from "drizzle-orm";
 import { getServerLogger } from "rusty-motors-shared";
 

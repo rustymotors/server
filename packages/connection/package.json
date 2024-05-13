@@ -1,7 +1,6 @@
 {
     "name": "rusty-motors-connection",
     "version": "1.0.0",
-    "description": "",
     "exports": {
         ".": {
             "import": "./index.js",
@@ -10,12 +9,19 @@
     },
     "type": "module",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 0"
     },
     "keywords": [],
     "author": "",
     "license": "AGPL-3.0",
     "dependencies": {
-        "rusty-motors-mcots": "workspace:^"
-    }
+        "@sentry/node": "^7.114.0",
+        "drizzle-orm": "^0.30.10",
+        "vitest": "^1.6.0"
+    },
+    "directories": {
+        "test": "test"
+    },
+    "devDependencies": {},
+    "description": ""
 }

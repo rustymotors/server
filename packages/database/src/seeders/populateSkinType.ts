@@ -1,5 +1,5 @@
 import { getServerLogger } from "rusty-motors-shared";
-import { skinType as skinTypeSchema } from "../../../../schema/skinType.js";
+import { skinType as skinTypeSchema } from "rusty-motors-schema";
 import { getDatabase } from "../services/database.js";
 import * as Sentry from "@sentry/node";
 

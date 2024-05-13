@@ -1,10 +1,10 @@
 import { getServerLogger } from "rusty-motors-shared";
 import { getDatabase } from "../services/database.js";
-import { warehouse as warehouseSchema } from "../../../../schema/warehouse.js";
-import { brandedPart as brandedPartSchema } from "../../../../schema/brandedPart.js";
-import { stockVehicleAttributes as stockVehicleAttributesSchema } from "../../../../schema/stockVehicleAttributes.js";
-import { tunables as tunablesSchema } from "../../../../schema/tunables.js";
-import { model as modelSchema } from "../../../../schema/model.js";
+import { warehouse as warehouseSchema } from "rusty-motors-schema";
+import { brandedPart as brandedPartSchema } from "rusty-motors-schema";
+import { stockVehicleAttributes as stockVehicleAttributesSchema } from "rusty-motors-schema";
+import { tunables as tunablesSchema } from "rusty-motors-schema";
+import { model as modelSchema } from "rusty-motors-schema";
 import { eq } from "drizzle-orm";
 
 export type WarehouseInventory = {

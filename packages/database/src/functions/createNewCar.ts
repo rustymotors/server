@@ -1,14 +1,14 @@
 import { getServerLogger } from "rusty-motors-shared";
-import { stockAssembly as stockAssemblySchema } from "../../../../schema/stockAssembly";
-import { brandedPart as brandedPartSchema } from "../../../../schema/brandedPart";
+import { stockAssembly as stockAssemblySchema } from "rusty-motors-schema";
+import { brandedPart as brandedPartSchema } from "rusty-motors-schema";
 import { getDatabase } from "../services/database";
-import { warehouse as warehouseSchema } from "../../../../schema/warehouse";
-import { part as partSchema } from "../../../../schema/part";
-import { player as playerSchema } from "../../../../schema/player";
+import { warehouse as warehouseSchema } from "rusty-motors-schema";
+import { part as partSchema } from "rusty-motors-schema";
+import { player as playerSchema } from "rusty-motors-schema";
 import { eq } from "drizzle-orm";
 import { transferPartAssembly } from "./transferPartAssembly";
-import { stockVehicleAttributes as stockVehicleAttributesSchema } from "../../../../schema/stockVehicleAttributes";
-import { tunables as tunablesSchema } from "../../../../schema/tunables";
+import { stockVehicleAttributes as stockVehicleAttributesSchema } from "rusty-motors-schema";
+import { tunables as tunablesSchema } from "rusty-motors-schema";
 /**
  * Create a new car
  * 

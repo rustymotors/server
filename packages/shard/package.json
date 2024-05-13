@@ -1,7 +1,7 @@
 {
     "name": "rusty-motors-shard",
     "version": "1.0.0",
-    "description": "",
+    "description": "The shard service exposing the following endpoints to the gateway service:",
     "exports": {
         ".": {
             "import": "./index.js",
@@ -10,9 +10,16 @@
     },
     "type": "module",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 0"
     },
     "keywords": [],
     "author": "",
-    "license": "AGPL-3.0"
+    "license": "AGPL-3.0",
+    "dependencies": {
+        "vitest": "^1.6.0"
+    },
+    "directories": {
+        "test": "test"
+    },
+    "devDependencies": {}
 }

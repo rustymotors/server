@@ -1,5 +1,5 @@
 import { getServerLogger } from "rusty-motors-shared";
-import { abstractPartType as abstractPartTypeSchema } from "../../../../schema/abstractPartType.js";
+import { abstractPartType as abstractPartTypeSchema } from "rusty-motors-schema";
 import { getDatabase } from "../services/database.js";
 import * as Sentry from "@sentry/node";
 

@@ -1,5 +1,5 @@
-import { getServerLogger } from "../../../shared";
-import { warehouse as wareHouseSchema } from "../../../../schema/warehouse";
+import { getServerLogger } from "rusty-motors-shared";
+import { warehouse as wareHouseSchema } from "rusty-motors-schema";
 import { getDatabase } from "../services/database";
 import * as Sentry from "@sentry/node";
 

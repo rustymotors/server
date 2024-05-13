@@ -1,8 +1,8 @@
 import { getServerLogger } from "rusty-motors-shared";
 import { getDatabase } from "../services/database";
-import { part as partSchema } from "../../../../schema/part";
-import { vehicle as vehicleSchema } from "../../../../schema/vehicle";
-import { player as playerSchema } from "../../../../schema/player";
+import { part as partSchema } from "rusty-motors-schema";
+import { vehicle as vehicleSchema } from "rusty-motors-schema";
+import { player as playerSchema } from "rusty-motors-schema";
 import { getAbstractPartTypeId } from "./getAbstractPartTypeId";
 import { eq } from "drizzle-orm";
 
