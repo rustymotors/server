@@ -14,13 +14,10 @@ jobs:
               with:
                   fetch-depth: 0
 
-            - name: Enable Corepack
+            - name: Install and test using npm
               run: |
-                  corepack enable pnpm
-            - name: Install and test using pnpm
-              run: |
-                  pnpm install
-                  pnpm test
+                  npm install
+                  npm run test --workspaces --if-present
 
             - name: Create Sentry release
               uses: getsentry/action-release@586b62368d564f25d694ce05fcb9cf53de65ac4f # v1

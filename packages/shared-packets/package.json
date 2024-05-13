@@ -10,8 +10,11 @@
         }
     },
     "scripts": {
-        "build": "rm -rf dist && tsc",
-        "test": "echo \"Error: no test specified\" && exit 0"
+      "check": "tsc",
+      "lint": "eslint .",
+      "format": "pnpm prettier --write .",
+      "test": "vitest run --coverage"
+
     },
     "keywords": [],
     "author": "",

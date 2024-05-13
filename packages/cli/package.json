@@ -9,12 +9,17 @@
     },
     "type": "module",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 0"
+        "check": "tsc",
+        "lint": "eslint .",
+        "format": "pnpm prettier --write .",
+        "test": "vitest run --coverage"
     },
     "keywords": [],
     "author": "",
     "license": "AGPL-3.0",
-    "devDependencies": {},
+    "devDependencies": {
+        "@vitest/coverage-v8": "^1.6.0"
+    },
     "dependencies": {
         "rusty-motors-shared": "^1.0.0",
         "rusty-motors-shared-packets": "^1.0.0"

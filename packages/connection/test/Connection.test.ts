@@ -3,7 +3,7 @@ import {
     createCommandEncryptionPair,
     verifyLegacyCipherSupport,
 } from "../src/Connection";
-import { McosEncryptionPair } from "../../shared";
+import { McosEncryptionPair } from "rusty-motors-shared";
 
 vi.mock("@sentry/node", () => ({
     captureException: vi.fn(),
