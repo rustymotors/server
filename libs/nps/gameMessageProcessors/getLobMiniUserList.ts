@@ -3,8 +3,8 @@ import {
     MiniUserInfo,
     MiniUserList,
     getAsHex,
-} from 'rusty-motors-nps';
-import { getServerLogger } from 'rusty-motors-shared';
+} from 'nps';
+import { getServerLogger } from 'shared';
 
 const log = getServerLogger();
 

@@ -15,40 +15,38 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { randomUUID } from "node:crypto";
-import {
-    type TServerLogger,
-} from "rusty-motors-shared";
+import { type TServerLogger } from "shared";
 
-import { ServerLogger } from "rusty-motors-shared";
+import { ServerLogger } from "shared";
 
 import { Socket } from "node:net";
 
-import { UserStatusManager, getPortMessageType } from "rusty-motors-nps";
+import { Connection } from "connection";
+import { ClientConnectionManager } from "mcots";
+import { UserStatusManager, getPortMessageType } from "nps";
 import { handleGameMessage, sendToGameSocket } from "./handleGameMessage.js";
-import { Connection } from "rusty-motors-connection";
-import { ClientConnectionManager } from "rusty-motors-mcots";
 
 /**
  * Handle socket errors
  */
 export function socketErrorHandler({
-    connectionId,
-    error,
-    log,
+  connectionId,
+  error,
+  log,
 }: {
-    connectionId: string;
-    error: NodeJS.ErrnoException;
-    log: TServerLogger;
+  connectionId: string;
+  error: NodeJS.ErrnoException;
+  log: TServerLogger;
 }) {
-    // Handle socket errors
-    if (error.code == "ECONNRESET") {
-        log.debug(`Connection ${connectionId} reset`);
-        return;
-    }
-    log.error(`Socket error: ${error.message} on connection ${connectionId}`);
-    throw new Error(
-        `Socket error: ${error.message} on connection ${connectionId}`,
-    );
+  // Handle socket errors
+  if (error.code == "ECONNRESET") {
+    log.debug(`Connection ${connectionId} reset`);
+    return;
+  }
+  log.error(`Socket error: ${error.message} on connection ${connectionId}`);
+  throw new Error(
+    `Socket error: ${error.message} on connection ${connectionId}`
+  );
 }
 
 /**
@@ -59,14 +57,13 @@ export function socketErrorHandler({
  * @param {ServerLogger} options.log The logger to use
  */
 export function socketEndHandler({
-    connectionId,
-    log,
+  connectionId,
+  log,
 }: {
-    connectionId: string;
-    log: ServerLogger;
+  connectionId: string;
+  log: ServerLogger;
 }) {
-    log.debug(`Connection ${connectionId} ended`);
-
+  log.debug(`Connection ${connectionId} ended`);
 }
 
 /**
@@ -78,80 +75,77 @@ export function socketEndHandler({
  *
  */
 export function onSocketConnection({
-    incomingSocket,
-    log,
+  incomingSocket,
+  log,
 }: {
-    incomingSocket: Socket;
-    log: TServerLogger;
+  incomingSocket: Socket;
+  log: TServerLogger;
 }) {
-    log.setName("gateway:onSocketConnection");
+  log.setName("gateway:onSocketConnection");
 
-    // Get the local port and remote address
-    const { localPort, remoteAddress } = incomingSocket;
+  // Get the local port and remote address
+  const { localPort, remoteAddress } = incomingSocket;
 
-    if (localPort === undefined || remoteAddress === undefined) {
-        log.error("localPort or remoteAddress is undefined");
-        throw new Error("localPort or remoteAddress is undefined");
-    }
+  if (localPort === undefined || remoteAddress === undefined) {
+    log.error("localPort or remoteAddress is undefined");
+    throw new Error("localPort or remoteAddress is undefined");
+  }
 
-    // This is a new connection so generate a new connection ID
-    const connectionId = randomUUID();
+  // This is a new connection so generate a new connection ID
+  const connectionId = randomUUID();
 
-    const userStatus = UserStatusManager.newUserStatus();
+  const userStatus = UserStatusManager.newUserStatus();
 
-    if (localPort === 43300) {
-        log.info("New connection on port 43300");
-        ClientConnectionManager.addConnection(
-            new Connection(incomingSocket, connectionId, log),
-        );
-        return;
-    }
-
-
-    incomingSocket.on("error", (error) =>
-        socketErrorHandler({ connectionId: connectionId, error, log }),
+  if (localPort === 43300) {
+    log.info("New connection on port 43300");
+    ClientConnectionManager.addConnection(
+      new Connection(incomingSocket, connectionId, log)
     );
+    return;
+  }
 
-    // Add the data handler to the socket
-    incomingSocket.on("data", (incomingDataAsBuffer: Buffer) => {
-        // Get message type from the port
-        let messageType = "Unknown";
-        try {
-            messageType = getPortMessageType(localPort);
-            log.debug(`Message type: ${messageType}`);
-        } catch (error) {
-            log.error(
-                `Error getting message type: ${(error as Error).message}`,
-            );
-            throw error;
-        }
+  incomingSocket.on("error", (error) =>
+    socketErrorHandler({ connectionId: connectionId, error, log })
+  );
 
-        if (messageType !== "Unknown") {
-            // Call the message handler
-            if (messageType === "Game") {
-                const gameSocketCallback = (messages: Buffer[]) => {
-                    sendToGameSocket(messages, incomingSocket, log);
-                };
-
-                return handleGameMessage(
-                    connectionId,
-                    userStatus,
-                    incomingDataAsBuffer,
-                    log,
-                    gameSocketCallback,
-                );
-            }
-        }
-    });
-
-    log.debug(`Client ${remoteAddress} connected to port ${localPort}`);
-
-    if (localPort === 7003) {
-        log.info("Sending ok to login packet");
-
-        incomingSocket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
+  // Add the data handler to the socket
+  incomingSocket.on("data", (incomingDataAsBuffer: Buffer) => {
+    // Get message type from the port
+    let messageType = "Unknown";
+    try {
+      messageType = getPortMessageType(localPort);
+      log.debug(`Message type: ${messageType}`);
+    } catch (error) {
+      log.error(`Error getting message type: ${(error as Error).message}`);
+      throw error;
     }
-    log.resetName();
+
+    if (messageType !== "Unknown") {
+      // Call the message handler
+      if (messageType === "Game") {
+        const gameSocketCallback = (messages: Buffer[]) => {
+          sendToGameSocket(messages, incomingSocket, log);
+        };
+
+        return handleGameMessage(
+          connectionId,
+          userStatus,
+          incomingDataAsBuffer,
+          log,
+          gameSocketCallback
+        );
+      }
+    }
+  });
+
+  log.debug(`Client ${remoteAddress} connected to port ${localPort}`);
+
+  if (localPort === 7003) {
+    log.info("Sending ok to login packet");
+
+    incomingSocket.write(Buffer.from([0x02, 0x30, 0x00, 0x00]));
+  }
+  log.resetName();
 }
 
-// Path: packages/gateway/src/index.ts
+// Path: libs/gateway/src/index.ts

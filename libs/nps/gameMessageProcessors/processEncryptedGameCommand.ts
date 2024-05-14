@@ -1,18 +1,18 @@
 import {
     GameMessage,
     SerializableData,
-} from "../messageStructs/GameMessage.js";
+} from "nps";
 import type { GameSocketCallback } from "./index.js";
-import { getAsHex } from "../src/utils/pureGet.js";
+import { getAsHex } from "nps";
 import {
     type EncryptionSession,
     getEncryptionSession, newEncryptionSession,
     setEncryptionSession
-} from "../src/EncryptionSession.js";
+} from "nps";
 import { lobbyCommandMap } from "./lobbyCommands.js";
 
-import { getServerLogger } from "rusty-motors-shared";
-import type { UserStatus } from "../messageStructs/UserStatus.js";
+import { getServerLogger } from "shared";
+import type { UserStatus } from "nps";
 
 const log = getServerLogger();
 

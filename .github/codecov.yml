@@ -1,80 +1,80 @@
 codecov:
-    require_ci_to_pass: false
+  require_ci_to_pass: false
 
 ai_pr_review:
-    enabled: true
+  enabled: true
 
 comment:
-    show_carryforward_flags: true
+  show_carryforward_flags: true
 
 flags:
-    cli:
-        paths:
-            - packages/cli/**
-        carryforward: true
-    connection:
-        paths:
-            - packages/connection/**
-        carryforward: true
-    database:
-        paths:
-            - packages/database/**
-        carryforward: true
-    gateway:
-        paths:
-            - packages/gateway/**
-        carryforward: true
-    mcots:
-        paths:
-            - packages/mcots/**
-        carryforward: true
-    nps:
-        paths:
-            - packages/nps/**
-        carryforward: true
-    patch:
-        paths:
-            - packages/patch/**
-        carryforward: true
-    shard:
-        paths:
-            - packages/shard/**
-        carryforward: true
-    shared:
-        paths:
-            - packages/shared/**
-        carryforward: true
-    shared-packets:
-        paths:
-            - packages/shared-packets/**
-        carryforward: true
-    schema:
-        paths:
-            - schema/**
-        carryforward: true
+  cli:
+    paths:
+      - libs/cli/**
+    carryforward: true
+  connection:
+    paths:
+      - libs/connection/**
+    carryforward: true
+  database:
+    paths:
+      - libs/database/**
+    carryforward: true
+  gateway:
+    paths:
+      - libs/gateway/**
+    carryforward: true
+  mcots:
+    paths:
+      - libs/mcots/**
+    carryforward: true
+  nps:
+    paths:
+      - libs/nps/**
+    carryforward: true
+  patch:
+    paths:
+      - libs/patch/**
+    carryforward: true
+  shard:
+    paths:
+      - libs/shard/**
+    carryforward: true
+  shared:
+    paths:
+      - libs/shared/**
+    carryforward: true
+  shared-packets:
+    paths:
+      - libs/shared-packets/**
+    carryforward: true
+  schema:
+    paths:
+      - schema/**
+    carryforward: true
 
 component_management:
-    individual_components:
-        - component_id: components_nps
-          name: NPS
-          paths:
-              - packages/cli/**
-              - packages/connection/**
-              - packages/database/**
-              - packages/gateway/**
-              - packages/lobby/**
-              - packages/login/**
-              - packages/nps/**
-              - packages/patch/**
-              - packages/persona/**
-              - packages/shard/**
-              - packages/shared-packets/**
-        - component_id: components_mcots
-          name: MCOTS
-          paths:
-              - packages/cli/**
-              - packages/connection/**
-              - packages/database/**
-              - packages/gateway/**
-              - packages/mcots/**
-              - packages/shared-packets/**
+  individual_components:
+    - component_id: components_nps
+      name: NPS
+      paths:
+        - libs/cli/**
+        - libs/connection/**
+        - libs/database/**
+        - libs/gateway/**
+        - libs/lobby/**
+        - libs/login/**
+        - libs/nps/**
+        - libs/patch/**
+        - libs/persona/**
+        - libs/shard/**
+        - libs/shared-packets/**
+    - component_id: components_mcots
+      name: MCOTS
+      paths:
+        - libs/cli/**
+        - libs/connection/**
+        - libs/database/**
+        - libs/gateway/**
+        - libs/mcots/**
+        - libs/shared-packets/**

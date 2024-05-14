@@ -7,8 +7,8 @@ import {
     type TGateway,
     type TGatewayOptions,
     type TServerLogger,
-} from "rusty-motors-shared";
-import { ConsoleThread, ScheduledThread } from "rusty-motors-cli";
+} from "shared";
+import { ConsoleThread, ScheduledThread } from "cli";
 import { addWebRoutes } from "./web.js";
 
 import FastifySensible from "@fastify/sensible";
@@ -21,8 +21,8 @@ import {
     populateGameUsers,
     gameProfiles,
     populateGameProfiles,
-} from "rusty-motors-nps";
-import { populateServerMessageProcessors } from "rusty-motors-mcots";
+} from "nps";
+import { populateServerMessageProcessors } from "mcots";
 import {
     populatePlayer,
     populatePlayerType,
@@ -34,7 +34,7 @@ import {
     populateBrand,
     populateSkin,
     populateSkinType,
-} from "rusty-motors-database";
+} from "database";
 
 /**
  * @module gateway

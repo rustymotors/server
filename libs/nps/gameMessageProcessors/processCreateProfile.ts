@@ -1,9 +1,9 @@
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import type { GameSocketCallback } from "./index.js";
-import { GameProfile } from "../messageStructs/GameProfile.js";
-import { getServerLogger } from "rusty-motors-shared";
-import type { UserStatus } from "../messageStructs/UserStatus.js";
-import { addGameProfile } from "../services/profile.js";
+import { GameProfile } from "nps";
+import { getServerLogger } from "shared";
+import type { UserStatus } from "nps";
+import { addGameProfile } from "nps";
 
 const log = getServerLogger();
 

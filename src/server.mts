@@ -14,14 +14,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import Sentry from "@sentry/node";
-import { nodeProfilingIntegration } from "@sentry/profiling-node";
-import { getGatewayServer } from "../libs/gateway/index.js";
+// Import this first!
+import "./instrument";
+// Other imports
+import * as Sentry from "@sentry/node";
+
+import { getGatewayServer } from "gateway";
 import {
   getServerConfiguration,
   getServerLogger,
   verifyLegacyCipherSupport,
-} from "../libs/shared/index.js";
+} from "shared";
 
 export default async function main() {
   const coreLogger = getServerLogger({
@@ -34,22 +37,6 @@ export default async function main() {
     coreLogger.fatal(`Error in core server: ${String(err)}`);
     throw err;
   }
-
-  Sentry.init({
-    dsn: "https://f4c0126e2fc35876c860dd72fc056db9@o1413557.ingest.sentry.io/4506787875061760",
-
-    // We recommend adjusting this value in production, or using tracesSampler
-    // for finer control
-    tracesSampleRate: 1.0,
-    profilesSampleRate: 1.0, // Profiling sample rate is relative to tracesSampleRate
-    integrations: [
-      nodeProfilingIntegration(),
-      ...Sentry.autoDiscoverNodePerformanceMonitoringIntegrations(),
-    ],
-    _experiments: {
-      metricsAggregator: true,
-    },
-  });
 
   try {
     if (typeof process.env["EXTERNAL_HOST"] === "undefined") {

@@ -1,12 +1,12 @@
 import fs from "node:fs";
 import crypto from "node:crypto";
 import type { GameSocketCallback } from "./index.js";
-import { GameMessage } from "../messageStructs/GameMessage.js";
-import { SessionKey } from "../messageStructs/SessionKey.js";
-import { getLenString } from "../src/utils/pureGet.js";
+import { GameMessage } from "nps";
+import { SessionKey } from "nps";
+import { getLenString } from "nps";
 
-import { getServerLogger } from "rusty-motors-shared";
-import type { UserStatus } from "../messageStructs/UserStatus.js";
+import { getServerLogger } from "shared";
+import type { UserStatus } from "nps";
 
 const log = getServerLogger();
 

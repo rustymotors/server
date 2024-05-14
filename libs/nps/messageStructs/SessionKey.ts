@@ -1,6 +1,6 @@
-import type { ISerializable } from 'rusty-motors-nps';
-import { getAsHex, isOnlyOneSet } from 'rusty-motors-nps';
-import { getServerLogger } from 'rusty-motors-shared';
+import type { ISerializable } from 'nps';
+import { getAsHex, isOnlyOneSet } from 'nps';
+import { getServerLogger } from 'shared';
 
 const log = getServerLogger();
 

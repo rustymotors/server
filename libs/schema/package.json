@@ -1,0 +1,21 @@
+{
+  "name": "schema",
+  "version": "1.0.0",
+  "exports": "./index.js",
+  "type": "module",
+  "scripts": {
+    "check": "tsc",
+    "lint": "eslint .",
+    "format": "pnpm prettier --write .",
+    "test": "vitest run --coverage"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "AGPL-3.0",
+  "devDependencies": {},
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "description": ""
+}

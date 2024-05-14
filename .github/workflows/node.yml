@@ -35,7 +35,7 @@ jobs:
             - name: Install and test
               run: |
                   npm install
-                  npm run test --workspaces --if-present
+                  npm test
               env:
                   CODECOV_UPLOAD_BUNDLE_TOKEN: ${{ secrets.CODECOV_UPLOAD_BUNDLE_TOKEN }}
             - name: Codecov

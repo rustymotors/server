@@ -122,4 +122,4 @@ export function handleGameMessage(
   }
 }
 
-// Path: packages/gateway/src/handleGameMessage.ts
+// Path: libs/gateway/src/handleGameMessage.ts
