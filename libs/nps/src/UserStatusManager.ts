@@ -7,7 +7,7 @@ export class UserStatusManager {
     static _instance: UserStatusManager;
     
     static getInstance() {
-        if (!UserStatusManager._instance) {
+        if (typeof UserStatusManager._instance !== "undefined") {
             UserStatusManager._instance = new UserStatusManager();
         }
         return UserStatusManager._instance;
