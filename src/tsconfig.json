@@ -1,0 +1,18 @@
+{
+  "files": [],
+  "include": [],
+  "references": [
+    { "path": "./cli" },
+    { "path": "./connection" },
+    { "path": "./database" },
+    { "path": "./gateway" },
+    { "path": "./mcots" },
+    { "path": "./nps" },
+    { "path": "./patch" },
+    { "path": "./schema" },
+    { "path": "./server" },
+    { "path": "./shard" },
+    { "path": "./shared" },
+    { "path": "./shared-packets" }
+  ]
+}

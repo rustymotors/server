@@ -10,43 +10,43 @@ comment:
 flags:
   cli:
     paths:
-      - libs/cli/**
+      - src/cli/**
     carryforward: true
   connection:
     paths:
-      - libs/connection/**
+      - src/connection/**
     carryforward: true
   database:
     paths:
-      - libs/database/**
+      - src/database/**
     carryforward: true
   gateway:
     paths:
-      - libs/gateway/**
+      - src/gateway/**
     carryforward: true
   mcots:
     paths:
-      - libs/mcots/**
+      - src/mcots/**
     carryforward: true
   nps:
     paths:
-      - libs/nps/**
+      - src/nps/**
     carryforward: true
   patch:
     paths:
-      - libs/patch/**
+      - src/patch/**
     carryforward: true
   shard:
     paths:
-      - libs/shard/**
+      - src/shard/**
     carryforward: true
   shared:
     paths:
-      - libs/shared/**
+      - src/shared/**
     carryforward: true
   shared-packets:
     paths:
-      - libs/shared-packets/**
+      - src/shared-packets/**
     carryforward: true
   schema:
     paths:
@@ -58,23 +58,23 @@ component_management:
     - component_id: components_nps
       name: NPS
       paths:
-        - libs/cli/**
-        - libs/connection/**
-        - libs/database/**
-        - libs/gateway/**
-        - libs/lobby/**
-        - libs/login/**
-        - libs/nps/**
-        - libs/patch/**
-        - libs/persona/**
-        - libs/shard/**
-        - libs/shared-packets/**
+        - src/cli/**
+        - src/connection/**
+        - src/database/**
+        - src/gateway/**
+        - src/lobby/**
+        - src/login/**
+        - src/nps/**
+        - src/patch/**
+        - src/persona/**
+        - src/shard/**
+        - src/shared-packets/**
     - component_id: components_mcots
       name: MCOTS
       paths:
-        - libs/cli/**
-        - libs/connection/**
-        - libs/database/**
-        - libs/gateway/**
-        - libs/mcots/**
-        - libs/shared-packets/**
+        - src/cli/**
+        - src/connection/**
+        - src/database/**
+        - src/gateway/**
+        - src/mcots/**
+        - src/shared-packets/**

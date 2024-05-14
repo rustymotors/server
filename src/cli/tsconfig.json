@@ -1,0 +1,19 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "declaration": true,
+    "sourceMap": true,
+    "strict": true,
+    "noEmitOnError": true,
+    "skipLibCheck": true
+  },
+  "include": ["**/*.ts"],
+  "references": [
+    {
+      "path": "../shared"
+    },
+    {
+      "path": "../shared-packets"
+    },
+  ]
+}
