@@ -1,21 +1,15 @@
 {
-    "compilerOptions": {
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "target": "ES2022",
-        "verbatimModuleSyntax": true,
-        "resolveJsonModule": true,
-        "moduleDetection": "force",
-        "strict": true,
-        "noUncheckedIndexedAccess": true,
-        "moduleResolution": "Bundler",
-        "module": "ES2022",
-        "lib": ["ES2022"],
-        "declaration": true,
-        "sourceMap": true,
-        "outDir": "dist",
-        "emitDeclarationOnly": true
-        
-    },
-    "include": ["apps/**/*", "packages/**/*", "drizzle.config.ts", "schema/**/*.ts"],
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "module": "NodeNext",
+    "target": "ES2022",
+    "noEmitOnError": true,
+    "skipLibCheck": true,
+    "lib": ["ES2022"],
+    "strict": true,
+    "sourceMap": true,
+    "moduleResolution": "NodeNext",
+  },
+  "exclude": ["node_modules", "dist"]
 }

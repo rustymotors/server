@@ -22,3 +22,4 @@ meta.json
 
 
 .nx/cache
+*.tsbuildinfo

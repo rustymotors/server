@@ -4,35 +4,36 @@
   "author": "Molly Crendraven <drazi@duck.com>",
   "repository": {
     "type": "git",
-    "url": "git@github.com:drazisil/mcos.git"
-  },
-  "dependencies": {
-    "rusty-motors-shared": "^1.0.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "url": "git@github.com:rustymotors/server.git"
   },
   "description": "This is a game server, being written from scratch, for a very old and long dead game. The owners of said game have shown no interest in bringing it back, but even so all names of their IP have been avoided to prevent issues.",
   "license": "AGPL-3.0",
   "private": true,
   "scripts": {
-    "start": "node --openssl-legacy-provider --env-file=.env --loader ts-node/esm ./apps/main/server.ts"
+    "lint": "eslint .",
+    "build": "tsc -b",
+    "start": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "type": "module",
   "workspaces": [
-    "apps/main",
-    "packages/cli",
-    "packages/connection",
-    "packages/database",
-    "packages/gateway",
-    "packages/mcots",
-    "packages/nps",
-    "packages/patch",
-    "packages/shard",
-    "packages/shared",
-    "packages/shared-packets",
-    "schema"
+    "libs/gateway",
+    "libs/shared",
+    "libs/nps"
   ],
   "devDependencies": {
-    "nx": "19.0.2"
+    "@eslint/js": "^9.2.0",
+    "@tsconfig/node21": "^21.0.3",
+    "@types/node": "^20.12.11",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.9.0",
+    "vitest": "^1.6.0"
+  },
+  "dependencies": {
+    "@sentry/node": "^8.0.0",
+    "@sentry/profiling-node": "^8.0.0",
+    "fastify": "^4.27.0",
+    "pino": "^9.1.0"
   }
 }
