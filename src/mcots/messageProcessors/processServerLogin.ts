@@ -1,6 +1,6 @@
-import { LoginCompleteMessage, LoginMessage } from "mcots";
-import { getServerLogger } from "shared";
-import { ServerMessage } from "shared-packets";
+import { LoginCompleteMessage, LoginMessage } from "@rustymotors/mcots";
+import { getServerLogger } from "@rustymotors/shared";
+import { ServerMessage } from "@rustymotors/shared-packets";
 import type { ServerSocketCallback } from "./index.js";
 
 const log = getServerLogger();

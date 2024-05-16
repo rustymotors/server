@@ -1,4 +1,4 @@
-import type { IMessage, IMessageHeader, ISerializable } from "nps";
+import type { IMessage, IMessageHeader, ISerializable } from "@rustymotors/nps";
 
 export class MessageHeader implements IMessageHeader {
   private version: 0 | 257;

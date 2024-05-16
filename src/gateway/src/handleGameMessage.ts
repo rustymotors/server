@@ -1,4 +1,3 @@
-import type { Socket } from "node:net";
 import {
   GameMessage,
   GameSocketCallback,
@@ -6,8 +5,9 @@ import {
   GameMessage as OldGameMessage,
   UserStatus,
   getGameMessageProcessor,
-} from "nps";
-import { type TServerLogger } from "shared";
+} from "@rustymotors/nps";
+import { type TServerLogger } from "@rustymotors/shared";
+import type { Socket } from "node:net";
 
 export function sendToGameSocket(
   serializedMessages: Buffer[],

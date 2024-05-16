@@ -1,7 +1,7 @@
+import { getDatabase } from "@rustymotors/database";
+import { partGrade as partGradeSchema } from "@rustymotors/schema";
+import { getServerLogger } from "@rustymotors/shared";
 import * as Sentry from "@sentry/node";
-import { getDatabase } from "database";
-import { partGrade as partGradeSchema } from "schema";
-import { getServerLogger } from "shared";
 
 const log = getServerLogger();
 export async function populatePartGrade(): Promise<void> {

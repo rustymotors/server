@@ -1,5 +1,9 @@
-import { SubThread, type TGateway, type TServerLogger } from "shared";
-import type { ServerMessage } from "shared-packets";
+import {
+  SubThread,
+  type TGateway,
+  type TServerLogger,
+} from "@rustymotors/shared";
+import type { ServerMessage } from "@rustymotors/shared-packets";
 
 export class MessageQueue extends SubThread {
   parentThread: TGateway;

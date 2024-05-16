@@ -1,0 +1,22 @@
+{
+  "name": "@rustymotors/server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc -b --verbose",
+    "test": "vitest run --coverage"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^1.6.0",
+    "vitest": "^1.6.0"
+  },
+  "dependencies": {
+    "@sentry/node": "^8.0.0",
+    "pino": "^9.1.0",
+    "typescript": "^5.4.5"
+  }
+}

@@ -1,4 +1,4 @@
-import type { TServerLogger } from "shared";
+import type { TServerLogger } from "@rustymotors/shared";
 import { vi } from "vitest";
 
 export function mockLogger(): TServerLogger {

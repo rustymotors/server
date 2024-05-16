@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-    "rootDir": ".",
-    "outDir": "../dist",
     "composite": true,
     "module": "NodeNext",
     "target": "ES2022",

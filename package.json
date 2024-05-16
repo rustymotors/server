@@ -1,5 +1,5 @@
 {
-  "name": "rusty-motors",
+  "name": "@rustymotors/rusty-motors",
   "version": "0.5.0",
   "author": "Molly Crendraven <drazi@duck.com>",
   "repository": {
@@ -10,47 +10,11 @@
   "license": "AGPL-3.0",
   "private": true,
   "scripts": {
-    "lint": "eslint .",
-    "build": "tsc -b",
-    "start": "node dist/index.js",
-    "test": "node --openssl-legacy-provider ./node_modules/.bin/vitest run --coverage"
+    "preinstall": "npx only-allow pnpm", 
+    "start": "node --openssl-legacy-provider ./src/server/dist/server.mjs"
   },
   "type": "module",
-  "workspaces": [
-    "src/gateway",
-    "src/shared",
-    "src/nps",
-    "src/database",
-    "src/connection",
-    "src/shard",
-    "src/cli",
-    "src/mcots",
-    "src/shared-packets",
-    "src/schema",
-    "src/patch",
-    "src/server"
-  ],
-  "devDependencies": {
-    "@eslint/js": "^9.2.0",
-    "@tsconfig/node21": "^21.0.3",
-    "@types/node": "^20.12.11",
-    "@vitest/coverage-v8": "^1.6.0",
-    "eslint": "^8.57.0",
-    "typescript": "^5.4.5",
-    "typescript-eslint": "^7.9.0",
-    "vitest": "^1.6.0"
-  },
-  "dependencies": {
-    "@fastify/sensible": "^5.6.0",
-    "@sentry/node": "^8.0.0",
-    "@sentry/profiling-node": "^8.0.0",
-    "dotenv": "^16.4.5",
-    "drizzle-kit": "^0.21.1",
-    "drizzle-orm": "^0.30.10",
-    "fastify": "^4.27.0",
-    "pg": "^8.11.5",
-    "pino": "^9.1.0",
-    "pino-pretty": "^11.0.0",
-    "short-unique-id": "^5.2.0"
-  }
+  "devDependencies": {},
+  "dependencies": {},
+  "packageManager": "pnpm@9.1.1+sha256.9551e803dcb7a1839fdf5416153a844060c7bce013218ce823410532504ac10b"
 }

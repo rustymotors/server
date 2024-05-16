@@ -1,6 +1,6 @@
+import { ServerLogger, type TServerLogger } from "@rustymotors/shared";
 import { Buffer } from "node:buffer";
 import { IncomingMessage, ServerResponse } from "node:http";
-import { ServerLogger, type TServerLogger } from "shared";
 
 export const CastanetResponse = {
   body: Buffer.from([

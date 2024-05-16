@@ -1,7 +1,7 @@
+import { getServerConfiguration, getServerLogger } from "@rustymotors/shared";
 import * as Sentry from "@sentry/node";
 import crypto from "node:crypto";
 import fs from "node:fs";
-import { getServerConfiguration, getServerLogger } from "shared";
 import { GameMessage } from "../messageStructs/GameMessage.js";
 import { SessionKey } from "../messageStructs/SessionKey.js";
 import { UserStatus } from "../messageStructs/UserStatus.js";

@@ -1,5 +1,4 @@
-import { getDatabase } from "database";
-import { eq } from "drizzle-orm";
+import { getDatabase } from "@rustymotors/database";
 import {
   brandedPart as brandedPartSchema,
   part as partSchema,
@@ -8,8 +7,9 @@ import {
   stockVehicleAttributes as stockVehicleAttributesSchema,
   tunables as tunablesSchema,
   warehouse as warehouseSchema,
-} from "schema";
-import { getServerLogger } from "shared";
+} from "@rustymotors/schema";
+import { getServerLogger } from "@rustymotors/shared";
+import { eq } from "drizzle-orm";
 import { transferPartAssembly } from "./transferPartAssembly.js";
 /**
  * Create a new car

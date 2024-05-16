@@ -1,4 +1,4 @@
-import type { Connection } from "connection";
+import type { IConnection } from "@rustymotors/shared";
 
 export class ClientConnectionManager {
   static _instance: ClientConnectionManager;
@@ -9,21 +9,21 @@ export class ClientConnectionManager {
     }
     return ClientConnectionManager._instance;
   }
-  private _connections: Map<string, Connection> = new Map();
+  private _connections: Map<string, IConnection> = new Map();
 
-  public addConnection(connection: Connection) {
-    this._connections.set(connection.id, connection);
+  public addConnection(connection: IConnection) {
+    this._connections.set(connection.getConnectionId(), connection);
   }
 
   public removeConnection(connectionId: string) {
     this._connections.delete(connectionId);
   }
 
-  public getConnection(connectionId: string): Connection | undefined {
+  public getConnection(connectionId: string): IConnection | undefined {
     return this._connections.get(connectionId);
   }
 
-  public getConnections(): Connection[] {
+  public getConnections(): IConnection[] {
     return Array.from(this._connections.values());
   }
 
@@ -31,7 +31,7 @@ export class ClientConnectionManager {
     this._connections.clear();
   }
 
-  static addConnection(connection: Connection) {
+  static addConnection(connection: IConnection) {
     ClientConnectionManager.getInstance().addConnection(connection);
   }
 
@@ -39,11 +39,11 @@ export class ClientConnectionManager {
     ClientConnectionManager.getInstance().removeConnection(connectionId);
   }
 
-  static getConnection(connectionId: string): Connection | undefined {
+  static getConnection(connectionId: string): IConnection | undefined {
     return ClientConnectionManager.getInstance().getConnection(connectionId);
   }
 
-  static getConnections(): Connection[] {
+  static getConnections(): IConnection[] {
     return ClientConnectionManager.getInstance().getConnections();
   }
 }

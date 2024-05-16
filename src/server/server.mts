@@ -15,16 +15,16 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // Import this first!
-import "./instrument";
+import "./instrument.mjs";
 // Other imports
 import * as Sentry from "@sentry/node";
 
-import { getGatewayServer } from "gateway";
+import { getGatewayServer } from "@rustymotors/gateway";
 import {
   getServerConfiguration,
   getServerLogger,
   verifyLegacyCipherSupport,
-} from "shared";
+} from "@rustymotors/shared";
 
 export default async function main() {
   const coreLogger = getServerLogger({

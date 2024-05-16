@@ -1,113 +1,112 @@
 import {
-    GameMessage,
-    SerializableData,
-} from "nps";
+  GameMessage,
+  SerializableData,
+  getAsHex,
+  getEncryptionSession,
+  newEncryptionSession,
+  setEncryptionSession,
+  type EncryptionSession,
+} from "@rustymotors/nps";
 import type { GameSocketCallback } from "./index.js";
-import { getAsHex } from "nps";
-import {
-    type EncryptionSession,
-    getEncryptionSession, newEncryptionSession,
-    setEncryptionSession
-} from "nps";
 import { lobbyCommandMap } from "./lobbyCommands.js";
 
-import { getServerLogger } from "shared";
-import type { UserStatus } from "nps";
+import type { UserStatus } from "@rustymotors/nps";
+import { getServerLogger } from "@rustymotors/shared";
 
 const log = getServerLogger();
 
 export async function processEncryptedGameCommand(
-    connectionId: string,
-    userStatus: UserStatus,
-    message: GameMessage,
-    socketCallback: GameSocketCallback,
+  connectionId: string,
+  userStatus: UserStatus,
+  message: GameMessage,
+  socketCallback: GameSocketCallback
 ): Promise<void> {
-    log.setName("nps:processEncryptedGameCommand");
-    log.info(`Attempting to decrypt message: ${message.toString()}`);
+  log.setName("nps:processEncryptedGameCommand");
+  log.info(`Attempting to decrypt message: ${message.toString()}`);
 
-    // Get the encryption session
-    let encryptionSession: EncryptionSession | undefined =
-        getEncryptionSession(connectionId);
+  // Get the encryption session
+  let encryptionSession: EncryptionSession | undefined =
+    getEncryptionSession(connectionId);
 
-    // If the encryption session doesn't exist, attempt to create it
-    if (typeof encryptionSession === "undefined") {
-        try {
-            // Create the encryption session
-            const newSession = newEncryptionSession({
-                connectionId,
-                customerId: userStatus.getCustomerId(),
-                sessionKey: userStatus.getSessionKey().getKey().substring(0, 16),
-            });
-            setEncryptionSession(newSession);
-            encryptionSession = newSession;
-        } catch (error) {
-            log.error(`Error creating encryption session: ${error as string}`);
-            throw new Error("Error creating encryption session");
-        }
-
-        // Log the encryption session
-        log.info(`Created encryption session for ${userStatus.getCustomerId()}`);
+  // If the encryption session doesn't exist, attempt to create it
+  if (typeof encryptionSession === "undefined") {
+    try {
+      // Create the encryption session
+      const newSession = newEncryptionSession({
+        connectionId,
+        customerId: userStatus.getCustomerId(),
+        sessionKey: userStatus.getSessionKey().getKey().substring(0, 16),
+      });
+      setEncryptionSession(newSession);
+      encryptionSession = newSession;
+    } catch (error) {
+      log.error(`Error creating encryption session: ${error as string}`);
+      throw new Error("Error creating encryption session");
     }
 
-    // Attempt to decrypt the message
-    const decryptedbytes = encryptionSession.gameDecipher.update(
-        message.getDataAsBuffer(),
-    );
+    // Log the encryption session
+    log.info(`Created encryption session for ${userStatus.getCustomerId()}`);
+  }
 
-    // Log the decrypted bytes
-    log.info(`Decrypted bytes: ${getAsHex(decryptedbytes)}`);
+  // Attempt to decrypt the message
+  const decryptedbytes = encryptionSession.gameDecipher.update(
+    message.getDataAsBuffer()
+  );
 
-    // Set the decrypted bytes as a new message
-    const decryptedMessage = new GameMessage(0);
-    decryptedMessage.deserialize(decryptedbytes);
+  // Log the decrypted bytes
+  log.info(`Decrypted bytes: ${getAsHex(decryptedbytes)}`);
 
-    // Log the decrypted message id
-    log.info(`Decrypted message ID: ${decryptedMessage.header.getId()}`);
+  // Set the decrypted bytes as a new message
+  const decryptedMessage = new GameMessage(0);
+  decryptedMessage.deserialize(decryptedbytes);
 
-    // Do we have a valid message processor?
-    const processor = lobbyCommandMap.get(decryptedMessage.header.getId());
+  // Log the decrypted message id
+  log.info(`Decrypted message ID: ${decryptedMessage.header.getId()}`);
 
-    if (typeof processor === "undefined") {
-        const err = `No processor found for message ID: ${decryptedMessage.header.getId()}`;
-        log.fatal(err);
-        throw Error(err);
-    }
+  // Do we have a valid message processor?
+  const processor = lobbyCommandMap.get(decryptedMessage.header.getId());
 
-    // Process the message
-    const response = await processor(
-        decryptedMessage.header.getId(),
-        decryptedMessage.getDataAsBuffer(),
-    );
+  if (typeof processor === "undefined") {
+    const err = `No processor found for message ID: ${decryptedMessage.header.getId()}`;
+    log.fatal(err);
+    throw Error(err);
+  }
 
-    // Log the response
-    log.info(`Response: ${response.length} bytes, ${getAsHex(response)}`);
+  // Process the message
+  const response = await processor(
+    decryptedMessage.header.getId(),
+    decryptedMessage.getDataAsBuffer()
+  );
 
-    // Encrypt the response
-    const encryptedResponse = encryptionSession.gameCipher.update(response);
-    setEncryptionSession(encryptionSession);
+  // Log the response
+  log.info(`Response: ${response.length} bytes, ${getAsHex(response)}`);
 
-    // Log the encrypted response
-    log.info(
-        `Encrypted response: ${encryptedResponse.length} bytes, ${getAsHex(
-            encryptedResponse,
-        )}`,
-    );
+  // Encrypt the response
+  const encryptedResponse = encryptionSession.gameCipher.update(response);
+  setEncryptionSession(encryptionSession);
 
-    const responsePacket = new GameMessage(0);
-    responsePacket.header.setId(0x1101);
+  // Log the encrypted response
+  log.info(
+    `Encrypted response: ${encryptedResponse.length} bytes, ${getAsHex(
+      encryptedResponse
+    )}`
+  );
 
-    const responseData = new SerializableData(encryptedResponse.length);
-    responseData.deserialize(encryptedResponse);
+  const responsePacket = new GameMessage(0);
+  responsePacket.header.setId(0x1101);
 
-    responsePacket.setData(responseData);
-    log.info(
-        `Response packet: ${responsePacket.header.getLength()} bytes, ${getAsHex(
-            responsePacket.serialize(),
-        )}`,
-    );
-    const responseBytes = responsePacket.serialize();
+  const responseData = new SerializableData(encryptedResponse.length);
+  responseData.deserialize(encryptedResponse);
 
-    socketCallback([responseBytes]);
-    log.resetName();
-    return Promise.resolve();
+  responsePacket.setData(responseData);
+  log.info(
+    `Response packet: ${responsePacket.header.getLength()} bytes, ${getAsHex(
+      responsePacket.serialize()
+    )}`
+  );
+  const responseBytes = responsePacket.serialize();
+
+  socketCallback([responseBytes]);
+  log.resetName();
+  return Promise.resolve();
 }

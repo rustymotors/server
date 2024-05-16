@@ -5,6 +5,8 @@
     "sourceMap": true,
     "strict": true,
     "noEmitOnError": true,
+    "rootDir": ".",
+    "outDir": "./dist",
     "skipLibCheck": true
   },
   "include": ["**/*.ts"],
@@ -14,6 +16,6 @@
     },
     {
       "path": "../shared-packets"
-    },
+    }
   ]
 }

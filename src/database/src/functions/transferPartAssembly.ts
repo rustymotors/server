@@ -1,11 +1,11 @@
-import { getDatabase } from "database";
-import { eq } from "drizzle-orm";
+import { getDatabase } from "@rustymotors/database";
 import {
   part as partSchema,
   player as playerSchema,
   vehicle as vehicleSchema,
-} from "schema";
-import { getServerLogger } from "shared";
+} from "@rustymotors/schema";
+import { getServerLogger } from "@rustymotors/shared";
+import { eq } from "drizzle-orm";
 import { getAbstractPartTypeId } from "./getAbstractPartTypeId.js";
 
 const ABSTRACT_PART_TYPE_ID_CAR = 101;

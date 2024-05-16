@@ -1,13 +1,13 @@
-import { createDataEncryptionPair } from "connection";
-import type { ServerSocketCallback } from "mcots";
+import { createDataEncryptionPair } from "@rustymotors/shared";
+import type { ServerSocketCallback } from "@rustymotors/mcots";
 import {
   ClientConnectionManager,
   ClientConnectionMessage,
   ErrorNoKey,
-} from "mcots";
-import { UserStatusManager } from "nps";
-import { getServerLogger } from "shared";
-import { ServerMessage } from "shared-packets";
+} from "@rustymotors/mcots";
+import { UserStatusManager } from "@rustymotors/nps";
+import { getServerLogger } from "@rustymotors/shared";
+import { ServerMessage } from "@rustymotors/shared-packets";
 import { sendSuccess } from "./sendSuccess.js";
 
 const log = getServerLogger();

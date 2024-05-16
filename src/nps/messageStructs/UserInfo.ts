@@ -1,4 +1,4 @@
-import type { ISerializable } from "nps";
+import type { ISerializable } from "@rustymotors/nps";
 
 export class UserInfo implements ISerializable {
   private profileId: number; // 4 bytes

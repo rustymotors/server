@@ -1,4 +1,4 @@
-import type { IMessage, ISerializable } from "nps";
+import type { IMessage, ISerializable } from "@rustymotors/nps";
 
 export class NPSList implements ISerializable {
   serialize(): Buffer {

@@ -1,9 +1,9 @@
-import { GameMessage, UserInfo, getDWord, getLenString } from "nps";
+import { GameMessage, UserInfo, getDWord, getLenString } from "@rustymotors/nps";
 import type { GameSocketCallback } from "./index.js";
 
-import type { UserStatus } from "nps";
-import { UserStatusManager, getCustomerId } from "nps";
-import { getServerLogger } from "shared";
+import type { UserStatus } from "@rustymotors/nps";
+import { UserStatusManager, getCustomerId } from "@rustymotors/nps";
+import { getServerLogger } from "@rustymotors/shared";
 
 const log = getServerLogger();
 

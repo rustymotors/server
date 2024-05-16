@@ -1,11 +1,11 @@
-import type { ISerializable } from "nps";
+import type { ISerializable } from "@rustymotors/nps";
 import {
   getAsHex,
   getLenBlob,
   getLenString,
   getShortBool,
   putLenString,
-} from "nps";
+} from "@rustymotors/nps";
 
 export class GameProfile implements ISerializable {
   customerId: number; // 4 bytes

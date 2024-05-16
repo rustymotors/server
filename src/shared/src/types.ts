@@ -1,6 +1,8 @@
+import type { KeypressEvent } from "@rustymotors/shared";
 import type { Socket } from "node:net";
-import type { KeypressEvent } from "shared";
 import type { Configuration } from "../Configuration.js";
+import type { ServerMessage } from "@rustymotors/shared-packets";
+import type { McosEncryptionPair } from "../src/encryption.js";
 
 export interface TServerLogger {
   info: (message: string) => void;
@@ -76,4 +78,15 @@ export interface TGateway {
   handleReadThreadEvent: (event: string) => void;
   init: () => Promise<void>;
   shutdown: () => void;
+}
+
+export interface IConnection {
+  getConnectionId(): string;
+  getPersonaId(): number;
+  setChannelSecure(channelSecure: boolean): void;
+  isChannelSecure(): boolean;
+  setCipherPair(cipherPair: McosEncryptionPair): void;
+  handleServerSocketData(data: Buffer): void;
+  sendServerMessage(messages: ServerMessage[]): void;
+  close(): void;
 }

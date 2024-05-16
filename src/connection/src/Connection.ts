@@ -14,20 +14,20 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import * as Sentry from "@sentry/node";
-import { getDatabase } from "database";
-import { eq } from "drizzle-orm";
+import { getDatabase } from "@rustymotors/database";
 import {
   ClientConnectionManager,
   ErrorNoKey,
   getServerMessageProcessor,
-} from "mcots";
+} from "@rustymotors/mcots";
+import { key as keySchema } from "@rustymotors/schema";
+import type { TServerLogger, IConnection } from "@rustymotors/shared";
+import { McosEncryptionPair, getServerLogger, createDataEncryptionPair } from "@rustymotors/shared";
+import { ServerMessage } from "@rustymotors/shared-packets";
+import * as Sentry from "@sentry/node";
+import { eq } from "drizzle-orm";
 import { createCipheriv, createDecipheriv, getCiphers } from "node:crypto";
 import type { Socket } from "node:net";
-import { key as keySchema } from "schema";
-import type { TServerLogger } from "shared";
-import { McosEncryptionPair, getServerLogger } from "shared";
-import { ServerMessage } from "shared-packets";
 
 const log = getServerLogger();
 
@@ -62,33 +62,6 @@ export function createCommandEncryptionPair(key: string): McosEncryptionPair {
 }
 
 /**
- * This function creates a new encryption pair for use with the database server
- *
- * @param {string} key The key to use for encryption
- * @returns {McosEncryptionPair} The encryption pair
- * @throws Error if the key is too short
- */
-export function createDataEncryptionPair(key: string): McosEncryptionPair {
-  if (key.length === 0) {
-    log.error(`Key is empty: ${key}`);
-    throw new ErrorNoKey(`Key is empty: ${key}`);
-  }
-
-  if (key.length < 16) {
-    log.error(`Key too short: length ${key.length.toString()}, value ${key}`);
-    throw Error(`Key too short: length ${key.length.toString()}, value ${key}`);
-  }
-
-  const stringKey = Buffer.from(key, "hex");
-
-  // File deepcode ignore InsecureCipher: RC4 is the encryption algorithum used here, file deepcode ignore HardcodedSecret: A blank IV is used here
-  const tsCipher = createCipheriv("rc4", stringKey.subarray(0, 16), "");
-  const tsDecipher = createDecipheriv("rc4", stringKey.subarray(0, 16), "");
-
-  return new McosEncryptionPair(tsCipher, tsDecipher);
-}
-
-/**
  * This function checks if the server supports the legacy ciphers
  *
  * @returns void
@@ -104,7 +77,7 @@ export function verifyLegacyCipherSupport() {
   }
 }
 
-export class Connection {
+export class Connection implements IConnection{
   private _socket: Socket;
   private _connectionId: string;
   private _logger: TServerLogger;
@@ -121,9 +94,15 @@ export class Connection {
     this._connectionId = connectionId;
     this._logger = logger;
 
-    this._socket.on("data", (data) => { this.handleServerSocketData(data); });
-    this._socket.on("error", (error) => { handleServerSocketError(this, error); });
-    this._socket.on("close", () => { this.close(); });
+    this._socket.on("data", (data) => {
+      this.handleServerSocketData(data);
+    });
+    this._socket.on("error", (error) => {
+      handleServerSocketError(this, error);
+    });
+    this._socket.on("close", () => {
+      this.close();
+    });
 
     this._logger.debug(`Connection ${this._connectionId} created`);
   }
@@ -148,7 +127,9 @@ export class Connection {
 
     this._channelSecure = channelSecure;
     log.debug(
-      `Channel secure set to ${this._channelSecure.toString()} for connection ${this._connectionId}`
+      `Channel secure set to ${this._channelSecure.toString()} for connection ${
+        this._connectionId
+      }`
     );
   }
 
@@ -204,9 +185,9 @@ export class Connection {
     try {
       const message = new ServerMessage(0).deserialize(data);
       log.debug(
-        `Received server message with ID ${message.getId().toString()} for connection ${
-          this._connectionId
-        }`
+        `Received server message with ID ${message
+          .getId()
+          .toString()} for connection ${this._connectionId}`
       );
       this.processServerMessage(message);
     } catch (error) {
@@ -243,16 +224,18 @@ export class Connection {
 
     if (processor === undefined) {
       this._logger.error(
-        `No server message processor found for message ID ${message.getId().toString()}`
+        `No server message processor found for message ID ${message
+          .getId()
+          .toString()}`
       );
       return;
     }
 
     // Process the message
     this._logger.debug(
-      `Processing server message with message ID ${message.getId().toString()}, using processor ${
-        processor.name
-      }`
+      `Processing server message with message ID ${message
+        .getId()
+        .toString()}, using processor ${processor.name}`
     );
     processor(
       this._connectionId,
@@ -273,7 +256,9 @@ export class Connection {
   sendServerMessage(messages: ServerMessage[]) {
     this._logger.setName("Connection:sendMessage");
     this._logger.debug(
-      `Sending ${messages.length.toString()} messages for connection ${this._connectionId}`
+      `Sending ${messages.length.toString()} messages for connection ${
+        this._connectionId
+      }`
     );
     try {
       messages.forEach((message) => {
@@ -303,7 +288,9 @@ export class Connection {
     }
 
     this._logger.debug(
-      `Sent ${messages.length.toString()} server messages for connection ${this._connectionId}`
+      `Sent ${messages.length.toString()} server messages for connection ${
+        this._connectionId
+      }`
     );
 
     this._logger.resetName();
@@ -322,7 +309,11 @@ export class Connection {
       message = message.encrypt(this._cipherPair);
       message.header.setPayloadEncryption(true);
       this._logger.debug(
-        `Encrypted message: message ID ${message.getId().toString()}, prior messsage ID ${message.getPreDecryptedMessageId().toString()}`
+        `Encrypted message: message ID ${message
+          .getId()
+          .toString()}, prior messsage ID ${message
+          .getPreDecryptedMessageId()
+          .toString()}`
       );
     }
     this._logger.resetName();
@@ -350,7 +341,11 @@ export class Connection {
       }
       message = message.decrypt(this._cipherPair);
       this._logger.debug(
-        `Decrypted message: message ID ${message.getId().toString()}, prior messsage ID ${message.getPreDecryptedMessageId().toString()}`
+        `Decrypted message: message ID ${message
+          .getId()
+          .toString()}, prior messsage ID ${message
+          .getPreDecryptedMessageId()
+          .toString()}`
       );
       this._logger.debug(`Decrypted message: ${message.toHexString()}`);
     }
@@ -359,7 +354,9 @@ export class Connection {
   }
 
   toString(): string {
-    return `Connection ${this._connectionId}, persona ID ${this.getPersonaId().toString()}, channel secure ${this._channelSecure.toString()}`;
+    return `Connection ${
+      this._connectionId
+    }, persona ID ${this.getPersonaId().toString()}, channel secure ${this._channelSecure.toString()}`;
   }
   getPersonaId() {
     return this._personaId ?? 0;

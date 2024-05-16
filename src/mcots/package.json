@@ -1,18 +1,29 @@
 {
-  "name": "mcots",
+  "name": "@rustymotors/mcots",
   "version": "1.0.0",
   "description": "",
+  "main": "./dist/index.js",
   "exports": "./index.js",
   "type": "module",
   "directories": {
     "test": "test"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@vitest/coverage-v8": "^1.6.0",
+    "vitest": "^1.6.0"
+  },
   "scripts": {
     "lint": "eslint .",
-    "build": "tsc -b",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -b --verbose",
+    "test": "vitest run --coverage"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@rustymotors/database": "workspace:^",
+    "@rustymotors/nps": "workspace:^",
+    "@rustymotors/shared": "workspace:^",
+    "@rustymotors/shared-packets": "workspace:^",
+    "typescript": "^5.4.5"
+  }
 }

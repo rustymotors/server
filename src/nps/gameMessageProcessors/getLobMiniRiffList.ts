@@ -3,8 +3,8 @@ import {
     MiniRiffInfo,
     MiniRiffList,
     getAsHex,
-} from 'nps';
-import { getServerLogger } from 'shared';
+} from '@rustymotors/nps';
+import { getServerLogger } from '@rustymotors/shared';
 
 const log = getServerLogger();
 

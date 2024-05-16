@@ -14,16 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { type TServerLogger } from "@rustymotors/shared";
 import { randomUUID } from "node:crypto";
-import { type TServerLogger } from "shared";
 
-import { ServerLogger } from "shared";
+import { ServerLogger } from "@rustymotors/shared";
 
 import { Socket } from "node:net";
 
-import { Connection } from "connection";
-import { ClientConnectionManager } from "mcots";
-import { UserStatusManager, getPortMessageType } from "nps";
+import { Connection } from "@rustymotors/connection";
+import { ClientConnectionManager } from "@rustymotors/mcots";
+import { UserStatusManager, getPortMessageType } from "@rustymotors/nps";
 import { handleGameMessage, sendToGameSocket } from "./handleGameMessage.js";
 
 /**

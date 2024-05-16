@@ -1,18 +1,28 @@
 {
-  "name": "shared",
+  "name": "@rustymotors/shared",
   "version": "1.0.0",
+  "main": "./dist/index.js",
   "exports": "./index.js",
   "type": "module",
   "directories": {
     "test": "test"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@vitest/coverage-v8": "^1.6.0",
+    "vitest": "^1.6.0"
+  },
   "scripts": {
     "lint": "eslint .",
-    "build": "tsc -b",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -b --verbose",
+    "test": "vitest run --coverage"
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@rustymotors/shared-packets": "workspace:^",
+    "fastify": "^4.27.0",
+    "pino": "^9.1.0",
+    "typescript": "^5.4.5"
+  }
 }

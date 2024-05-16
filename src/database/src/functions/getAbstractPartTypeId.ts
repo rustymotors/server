@@ -1,11 +1,11 @@
-import { getDatabase } from "database";
-import { eq } from "drizzle-orm";
+import { getDatabase } from "@rustymotors/database";
 import {
   brandedPart as brandedPartSchema,
   part as partSchema,
   partType as partTypeSchema,
-} from "schema";
-import { getServerLogger } from "shared";
+} from "@rustymotors/schema";
+import { getServerLogger } from "@rustymotors/shared";
+import { eq } from "drizzle-orm";
 
 /**
  * Get the abstract part type id from the partId

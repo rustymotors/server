@@ -1,4 +1,4 @@
-import type { ServerMessage } from "shared-packets";
+import type { ServerMessage } from "@rustymotors/shared-packets";
 import { processClientConnect } from "./processClientConnect.js";
 import { processClientTracking } from "./processClientTracking.js";
 import { processServerLogin } from "./processServerLogin.js";

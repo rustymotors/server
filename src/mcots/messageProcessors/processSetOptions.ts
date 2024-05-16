@@ -1,6 +1,6 @@
-import { SetOptionsMessage } from "mcots";
-import { getServerLogger } from "shared";
-import { ServerMessage } from "shared-packets";
+import { SetOptionsMessage } from "@rustymotors/mcots";
+import { getServerLogger } from "@rustymotors/shared";
+import { ServerMessage } from "@rustymotors/shared-packets";
 import type { ServerSocketCallback } from "./index.js";
 import { sendSuccess } from "./sendSuccess.js";
 

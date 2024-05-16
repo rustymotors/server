@@ -1,5 +1,8 @@
-import { getServerLogger } from "shared";
-import { Serializable, ServerMessagePayload } from "shared-packets";
+import { getServerLogger } from "@rustymotors/shared";
+import {
+  Serializable,
+  ServerMessagePayload,
+} from "@rustymotors/shared-packets";
 
 const log = getServerLogger();
 

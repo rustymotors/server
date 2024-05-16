@@ -1,109 +1,107 @@
-import fs from "node:fs";
+import { GameMessage, SessionKey, getLenString } from "@rustymotors/nps";
 import crypto from "node:crypto";
+import fs from "node:fs";
 import type { GameSocketCallback } from "./index.js";
-import { GameMessage } from "nps";
-import { SessionKey } from "nps";
-import { getLenString } from "nps";
 
-import { getServerLogger } from "shared";
-import type { UserStatus } from "nps";
+import type { UserStatus } from "@rustymotors/nps";
+import { getServerLogger } from "@rustymotors/shared";
 
 const log = getServerLogger();
 
 export function loadPrivateKey(path: string): string {
-    const privateKey = fs.readFileSync(path);
+  const privateKey = fs.readFileSync(path);
 
-    return privateKey.toString("utf8");
+  return privateKey.toString("utf8");
 }
 
 export function decryptSessionKey(
-    encryptedSessionKey: string,
-    privateKey: string,
+  encryptedSessionKey: string,
+  privateKey: string
 ): string {
-    const sessionKeyStructure = crypto.privateDecrypt(
-        privateKey,
-        Buffer.from(encryptedSessionKey, "hex"),
-    );
+  const sessionKeyStructure = crypto.privateDecrypt(
+    privateKey,
+    Buffer.from(encryptedSessionKey, "hex")
+  );
 
-    return sessionKeyStructure.toString("hex");
+  return sessionKeyStructure.toString("hex");
 }
 
 export function unpackUserLoginMessage(message: GameMessage): {
-    sessionKey: string;
-    gameId: string;
-    contextToken: string;
+  sessionKey: string;
+  gameId: string;
+  contextToken: string;
 } {
-    // Get the context token
-    const ticket = getLenString(message.getDataAsBuffer(), 0, false);
+  // Get the context token
+  const ticket = getLenString(message.getDataAsBuffer(), 0, false);
 
-    let dataOffset = ticket.length + 2;
+  let dataOffset = ticket.length + 2;
 
-    //  The next data structure is a container with an empty id, a length, and a data structure
+  //  The next data structure is a container with an empty id, a length, and a data structure
 
-    // Skip the empty id
-    dataOffset += 2;
+  // Skip the empty id
+  dataOffset += 2;
 
-    // Get the next data length
-    const nextDataLength = message.getDataAsBuffer().readUInt16BE(dataOffset);
+  // Get the next data length
+  const nextDataLength = message.getDataAsBuffer().readUInt16BE(dataOffset);
 
-    // This value is the encrypted session key hex, stored as a string
-    const encryptedSessionKey = message
-        .getDataAsBuffer()
-        .subarray(dataOffset + 2, dataOffset + 2 + nextDataLength)
-        .toString("utf8");
+  // This value is the encrypted session key hex, stored as a string
+  const encryptedSessionKey = message
+    .getDataAsBuffer()
+    .subarray(dataOffset + 2, dataOffset + 2 + nextDataLength)
+    .toString("utf8");
 
-    // Load the private key
-    const privateKey = loadPrivateKey("./data/private_key.pem");
+  // Load the private key
+  const privateKey = loadPrivateKey("./data/private_key.pem");
 
-    // Decrypt the session key
-    const sessionKey = decryptSessionKey(encryptedSessionKey, privateKey);
+  // Decrypt the session key
+  const sessionKey = decryptSessionKey(encryptedSessionKey, privateKey);
 
-    // Unpack the session key
-    const sessionKeyStructure = SessionKey.fromBytes(
-        Buffer.from(sessionKey, "hex"),
-    );
+  // Unpack the session key
+  const sessionKeyStructure = SessionKey.fromBytes(
+    Buffer.from(sessionKey, "hex")
+  );
 
-    // Update the data offset
-    dataOffset += 2 + nextDataLength;
+  // Update the data offset
+  dataOffset += 2 + nextDataLength;
 
-    // Get the next data length
-    const nextDataLength2 = message.getDataAsBuffer().readUInt16BE(dataOffset);
+  // Get the next data length
+  const nextDataLength2 = message.getDataAsBuffer().readUInt16BE(dataOffset);
 
-    // This value is the game id (used by server to identify the game)
-    const gameId = message
-        .getDataAsBuffer()
-        .subarray(dataOffset + 2, dataOffset + 2 + nextDataLength2)
-        .toString("utf8");
+  // This value is the game id (used by server to identify the game)
+  const gameId = message
+    .getDataAsBuffer()
+    .subarray(dataOffset + 2, dataOffset + 2 + nextDataLength2)
+    .toString("utf8");
 
-    // Update the data offset
-    dataOffset += 2 + nextDataLength2;
+  // Update the data offset
+  dataOffset += 2 + nextDataLength2;
 
-    // Return the session key, game id, and context token
-    return {
-        sessionKey: sessionKeyStructure.getKey(),
-        gameId,
-        contextToken: ticket,
-    };
+  // Return the session key, game id, and context token
+  return {
+    sessionKey: sessionKeyStructure.getKey(),
+    gameId,
+    contextToken: ticket,
+  };
 }
 
 export async function processDeleteProfile(
-    connectionId: string,
-    userStatus: UserStatus,
-    message: GameMessage,
-    socketCallback: GameSocketCallback,
+  connectionId: string,
+  userStatus: UserStatus,
+  message: GameMessage,
+  socketCallback: GameSocketCallback
 ): Promise<void> {
-    log.setName("nps:processDeleteProfile");
-    // Log the message
-    log.info(`Delete profile request: ${message.toString()}`);
+  log.setName("nps:processDeleteProfile");
+  // Log the message
+  log.info(`Delete profile request: ${message.toString()}`);
 
-    // TODO: Delete the profile
+  // TODO: Delete the profile
 
-    // Create a new message - Login ACK
-    const loginACK = new GameMessage(0);
-    loginACK.header.setId(0x60c);
+  // Create a new message - Login ACK
+  const loginACK = new GameMessage(0);
+  loginACK.header.setId(0x60c);
 
-    // Send the ack
-    socketCallback([loginACK.serialize()]);
-    log.resetName();
-    return Promise.resolve();
+  // Send the ack
+  socketCallback([loginACK.serialize()]);
+  log.resetName();
+  return Promise.resolve();
 }

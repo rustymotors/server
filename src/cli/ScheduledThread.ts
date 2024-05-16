@@ -1,5 +1,5 @@
-import type { TGateway, TScheduledThread } from "shared";
-import { SubThread, type TServerLogger } from "shared";
+import type { TGateway, TScheduledThread } from "@rustymotors/shared";
+import { SubThread, type TServerLogger } from "@rustymotors/shared";
 
 /**
  * @module ConsoleThread

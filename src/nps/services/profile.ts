@@ -1,5 +1,5 @@
-import { getDatabase } from "database";
-import { profile as profileSchema } from "schema";
+import { getDatabase } from "@rustymotors/database";
+import { profile as profileSchema } from "@rustymotors/schema";
 import { GameProfile } from "../messageStructs/GameProfile.js";
 
 export const gameProfiles: GameProfile[] = [];

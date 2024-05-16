@@ -1,4 +1,4 @@
-import { McosEncryptionPair, getServerLogger } from "shared";
+import { McosEncryptionPair, getServerLogger } from "@rustymotors/shared";
 import { Serializable } from "./BasePacket.js";
 import type { IMessage, ISerializable } from "./interfaces.js";
 

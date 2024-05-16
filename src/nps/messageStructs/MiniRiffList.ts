@@ -1,8 +1,8 @@
-import type { ISerializable } from "nps";
-import { putLenString } from "nps";
+import type { ISerializable } from "@rustymotors/nps";
+import { putLenString } from "@rustymotors/nps";
 import { NPSList } from "./NPSList.js";
 
-import { getServerLogger } from "shared";
+import { getServerLogger } from "@rustymotors/shared";
 
 const log = getServerLogger();
 

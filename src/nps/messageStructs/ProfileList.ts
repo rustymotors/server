@@ -1,4 +1,4 @@
-import type { ISerializable } from "nps";
+import type { ISerializable } from "@rustymotors/nps";
 import { GameProfile } from "./GameProfile.js";
 import { NPSList } from "./NPSList.js";
 

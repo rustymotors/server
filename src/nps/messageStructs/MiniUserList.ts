@@ -1,5 +1,5 @@
-import type { ISerializable } from "nps";
-import { putLenString } from "nps";
+import type { ISerializable } from "@rustymotors/nps";
+import { putLenString } from "@rustymotors/nps";
 
 export class MiniUserInfo implements ISerializable {
   userId: number; // 4 bytes

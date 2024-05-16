@@ -1,7 +1,7 @@
+import { getDatabase } from "@rustymotors/database";
+import { warehouse as wareHouseSchema } from "@rustymotors/schema";
+import { getServerLogger } from "@rustymotors/shared";
 import * as Sentry from "@sentry/node";
-import { getDatabase } from "database";
-import { warehouse as wareHouseSchema } from "schema";
-import { getServerLogger } from "shared";
 
 const log = getServerLogger();
 export async function populateWarehouse(): Promise<void> {

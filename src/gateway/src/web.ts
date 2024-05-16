@@ -14,15 +14,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { generateToken, getUser } from "nps";
-import { CastanetResponse } from "patch";
+import { generateToken, getUser } from "@rustymotors/nps";
+import { CastanetResponse } from "@rustymotors/patch";
 import {
   generateShardList,
   handleGetCert,
   handleGetKey,
   handleGetRegistry,
-} from "shard";
-import { getServerConfiguration } from "shared";
+} from "@rustymotors/shard";
+import { getServerConfiguration } from "@rustymotors/shared";
 
 /**
  * Add web routes to the web server

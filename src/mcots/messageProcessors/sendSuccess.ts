@@ -1,4 +1,7 @@
-import { ServerGenericResponse, ServerMessage } from "shared-packets";
+import {
+  ServerGenericResponse,
+  ServerMessage,
+} from "@rustymotors/shared-packets";
 import type { ServerSocketCallback } from "./index.js";
 
 export function sendSuccess(

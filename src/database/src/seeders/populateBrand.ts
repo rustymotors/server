@@ -1,7 +1,7 @@
+import { getDatabase } from "@rustymotors/database";
+import { brand as brandSchema } from "@rustymotors/schema";
+import { getServerLogger } from "@rustymotors/shared";
 import * as Sentry from "@sentry/node";
-import { getDatabase } from "database";
-import { brand as brandSchema } from "schema";
-import { getServerLogger } from "shared";
 
 const log = getServerLogger();
 export async function populateBrand(): Promise<void> {

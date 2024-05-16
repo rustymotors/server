@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/node';
-import { getDatabase } from 'database';
-import { abstractPartType as abstractPartTypeSchema } from 'schema';
-import { getServerLogger } from 'shared';
+import { getDatabase } from '@rustymotors/database';
+import { abstractPartType as abstractPartTypeSchema } from '@rustymotors/schema';
+import { getServerLogger } from '@rustymotors/shared';
 
 const log = getServerLogger();
 export async function populateAbstractPartType(): Promise<void> {

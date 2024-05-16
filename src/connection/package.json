@@ -1,18 +1,32 @@
 {
-  "name": "connection",
+  "name": "@rustymotors/connection",
   "version": "1.0.0",
+  "main": "./dist/index.js",
   "description": "",
   "exports": "./index.js",
   "type": "module",
   "directories": {
     "test": "test"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@vitest/coverage-v8": "^1.6.0",
+    "vitest": "^1.6.0"
+  },
   "scripts": {
     "lint": "eslint .",
-    "build": "tsc -b",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -b --verbose",
+    "test": "node --openssl-legacy-provider -- node_modules/.bin/vitest run --coverage"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@rustymotors/database": "workspace:^",
+    "@rustymotors/mcots": "workspace:^",
+    "@rustymotors/schema": "workspace:^",
+    "@rustymotors/shared": "workspace:^",
+    "@rustymotors/shared-packets": "workspace:^",
+    "@sentry/node": "^8.0.0",
+    "drizzle-orm": "^0.30.10",
+    "typescript": "^5.4.5"
+  }
 }

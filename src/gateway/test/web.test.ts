@@ -3,7 +3,7 @@ import {
     handleGetCert,
     handleGetKey,
     handleGetRegistry,
-} from 'shard';
+} from '@rustymotors/shard';
 import { describe, expect, it, vi } from 'vitest';
 
 function mockConfig() {

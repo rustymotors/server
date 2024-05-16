@@ -1,11 +1,18 @@
 {
   "extends": "../tsconfig.base.json",
-  "compilerOptions": {},
-  "include": ["**/*.ts"],
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist",
+
+  },
+  "files": ["./server.mts", "./instrument.mts"],
 
   "references": [
     {
       "path": "../shared"
-    }
+    },
+    {
+      "path": "../gateway"
+    },
   ]
 }

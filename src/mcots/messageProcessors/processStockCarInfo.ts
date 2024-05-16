@@ -1,7 +1,13 @@
-import { getWarehouseInventory, type WarehouseInventory } from "database";
-import { StackCarInfo, StockCar } from "mcots";
-import { getServerLogger } from "shared";
-import { ServerGenericRequest, ServerMessage } from "shared-packets";
+import {
+  getWarehouseInventory,
+  type WarehouseInventory,
+} from "@rustymotors/database";
+import { StackCarInfo, StockCar } from "@rustymotors/mcots";
+import { getServerLogger } from "@rustymotors/shared";
+import {
+  ServerGenericRequest,
+  ServerMessage,
+} from "@rustymotors/shared-packets";
 import type { ServerSocketCallback } from "./index.js";
 
 const log = getServerLogger();
