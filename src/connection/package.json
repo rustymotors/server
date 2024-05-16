@@ -15,7 +15,7 @@
   "scripts": {
     "lint": "eslint .",
     "build": "tsc -b --verbose",
-    "test": "node --openssl-legacy-provider -- node_modules/.bin/vitest run --coverage"
+    "test": "node --openssl-legacy-provider $(pnpm root)/vitest/vitest.mjs run --coverage"
   },
   "author": "",
   "license": "ISC",
