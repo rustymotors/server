@@ -34,8 +34,9 @@ jobs:
             #       mode: "delete"
             - name: Install and test
               run: |
-                  npm install
-                  npm test
+                  codepack enable pnpm
+                  pnpm install
+                  pnpm test
               env:
                   CODECOV_UPLOAD_BUNDLE_TOKEN: ${{ secrets.CODECOV_UPLOAD_BUNDLE_TOKEN }}
             - name: Codecov
