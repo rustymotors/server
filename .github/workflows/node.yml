@@ -34,7 +34,7 @@ jobs:
             #       mode: "delete"
             - name: Install and test
               run: |
-                  codepack enable pnpm
+                  corepack enable pnpm
                   pnpm install
                   pnpm test
               env:
