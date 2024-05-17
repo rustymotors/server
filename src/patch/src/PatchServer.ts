@@ -27,7 +27,7 @@ export class PatchServer {
    * @type {PatchServer}
    * @memberof PatchServer
    */
-  static _instance: PatchServer;
+  static _instance: PatchServer | null = null;
 
   /**
    *
@@ -56,7 +56,7 @@ export class PatchServer {
    * @memberof PatchServer
    */
   static getInstance(log: TServerLogger): PatchServer {
-    if (!PatchServer._instance) {
+    if (PatchServer._instance === null) {
       PatchServer._instance = new PatchServer(log);
     }
     return PatchServer._instance;
@@ -73,7 +73,9 @@ export class PatchServer {
     response: ServerResponse
   ): ServerResponse {
     this._log.debug(
-      `[PATCH] Request from ${request.socket.remoteAddress} for ${request.method} ${request.url}.`
+      `[PATCH] Request from ${request.socket.remoteAddress ?? ""} for ${
+        request.method ?? ""
+      } ${request.url ?? ""}.`
     );
 
     response.setHeader(

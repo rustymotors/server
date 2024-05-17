@@ -19,12 +19,12 @@ export class ScheduledThread extends SubThread implements TScheduledThread {
     parentThread,
     log,
   }: {
-    parentThread: TGateway;
+    parentThread: TGateway | undefined;
     log: TServerLogger;
   }) {
     super("ScheduledThread", log, 100);
     this.log.setName("ScheduledThread");
-    if (!parentThread) {
+    if (typeof parentThread === "undefined") {
       throw new Error("parentThread is required when creating ScheduledThread");
     }
     this.parentThread = parentThread;

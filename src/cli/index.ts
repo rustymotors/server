@@ -1,2 +1,2 @@
-export { ScheduledThread } from "./ScheduledThread.js";
-export { ConsoleThread } from "./ConsoleThread.js";
+export { ScheduledThread } from "./src/ScheduledThread.js";
+export { ConsoleThread } from "./src/ConsoleThread.js";

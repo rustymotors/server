@@ -4,7 +4,18 @@
     "rootDir": ".",
     "outDir": "./dist"
   },
-  "include": ["**/*.ts"],
+  "include": [
+    "./index.ts",
+    "./src/**/*.ts",
+    "./test**/*.ts",
+    "./messageProcessors/**/*.ts",
+    "./payloads/**/*.ts",
+    "./errors/**/*.ts",
+    "./ClientConnectionManager.ts",
+
+  ],
+  "exclude": ["node_modules/*", "dist/*", "coverage/*"],
+
   "references": [
     {
       "path": "../shared"

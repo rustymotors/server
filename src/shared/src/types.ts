@@ -1,8 +1,7 @@
 import type { KeypressEvent } from "@rustymotors/shared";
 import type { Socket } from "node:net";
-import type { Configuration } from "../Configuration.js";
-import type { ServerMessage } from "@rustymotors/shared-packets";
 import type { McosEncryptionPair } from "../src/encryption.js";
+import type { Configuration } from "./Configuration.js";
 
 export interface TServerLogger {
   info: (message: string) => void;
@@ -87,6 +86,22 @@ export interface IConnection {
   isChannelSecure(): boolean;
   setCipherPair(cipherPair: McosEncryptionPair): void;
   handleServerSocketData(data: Buffer): void;
-  sendServerMessage(messages: ServerMessage[]): void;
+  sendServerMessage(messages: IMessage[]): void;
   close(): void;
+}
+
+export interface ISerializable {
+  serialize(): Buffer;
+  deserialize(data: Buffer): void;
+  getByteSize(): number;
+  toString(): string;
+  toHexString(): string;
+}
+
+export interface IMessage extends ISerializable {
+  header: ISerializable;
+  getData(): ISerializable;
+  getDataBuffer(): Buffer;
+  setData(data: ISerializable): void;
+  setDataBuffer(data: Buffer): void;
 }

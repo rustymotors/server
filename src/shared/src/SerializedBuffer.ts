@@ -19,8 +19,8 @@ export class SerializedBuffer extends BaseSerialized {
             const length = buffer.readUInt16BE(0);
             if (buffer.length < 2 + length) {
                 throw new Error(
-                    `Expected buffer of length ${2 + length}, got ${
-                        buffer.length
+                    `Expected buffer of length ${(2 + length).toString()}, got ${
+                        buffer.length.toString()
                     }`,
                 );
             }

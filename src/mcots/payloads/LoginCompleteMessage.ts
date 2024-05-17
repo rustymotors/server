@@ -32,7 +32,7 @@ export class LoginCompleteMessage extends ServerMessagePayload {
     return 2 + 4 + 1 + 1 + 1 + 1 + 1 + 2 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4;
   }
 
-  override deserialize(data: Buffer): LoginCompleteMessage {
+  override deserialize(data: Buffer): this {
     try {
       this._assertEnoughData(data, this.getByteSize());
 

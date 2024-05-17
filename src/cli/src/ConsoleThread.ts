@@ -24,11 +24,11 @@ export class ConsoleThread extends SubThread implements TConsoleThread {
     parentThread,
     log,
   }: {
-    parentThread: TGateway;
+    parentThread: TGateway | undefined;
     log: TServerLogger;
   }) {
     super("ReadInput", log, 100);
-    if (parentThread === undefined) {
+    if (typeof parentThread === "undefined") {
       throw new Error("parentThread is undefined when creating ReadInput");
     }
     this.parentThread = parentThread;

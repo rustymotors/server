@@ -90,18 +90,18 @@ export class ShardEntry {
     formatForShardList(): string {
         return `[${this.name}]
       Description=${this.description}
-      ShardId=${this.id}
+      ShardId=${this.id.toString()}
       LoginServerIP=${this.loginServerIp}
-      LoginServerPort=${this.loginServerPort}
+      LoginServerPort=${this.loginServerPort.toString()}
       LobbyServerIP=${this.lobbyServerIp}
-      LobbyServerPort=${this.lobbyServerPort}
+      LobbyServerPort=${this.lobbyServerPort.toString()}
       MCOTSServerIP=${this.mcotsServerIp}
-      StatusId=${this.statusId}
+      StatusId=${this.statusId.toString()}
       Status_Reason=${this.statusReason}
       ServerGroup_Name=${this.serverGroupName}
-      Population=${this.population}
-      MaxPersonasPerUser=${this.maxPersonasPerUser}
+      Population=${this.population.toString()}
+      MaxPersonasPerUser=${this.maxPersonasPerUser.toString()}
       DiagnosticServerHost=${this.diagnosticServerHost}
-      DiagnosticServerPort=${this.diagnosticServerPort}`;
+      DiagnosticServerPort=${this.diagnosticServerPort.toString()}`;
     }
 }

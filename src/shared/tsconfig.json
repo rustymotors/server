@@ -2,11 +2,10 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "rootDir": ".",
-    "outDir": "./dist",
-
+    "outDir": "./dist"
   },
-  "include": ["**/*.ts"],
-  "references": [
-    { "path": "../shared-packets" }
-  ]
+  "include": ["./index.ts", "./src/**/*.ts", "./test**/*.ts", "./structs.ts"],
+  "exclude": ["node_modules/*", "dist/*", "coverage/*"],
+
+  "references": []
 }

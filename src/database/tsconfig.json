@@ -5,7 +5,10 @@
     "outDir": "./dist",
 
   },
-  "include": ["**/*.ts"],
+  "include": ["./index.ts", "./src/**/*.ts", "./test**/*.ts"],
+  "exclude": ["node_modules/*", "dist/*", "coverage/*"],
+
+
   "references": [
     {
       "path": "../schema"

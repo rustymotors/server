@@ -15,7 +15,7 @@ export class BaseSerialized implements Serializable {
     protected _data: Buffer;
 
     constructor(data?: Buffer) {
-        this._data = data || Buffer.alloc(0);
+        this._data = data ?? Buffer.alloc(0);
     }
 
     get data(): Buffer {
@@ -30,7 +30,8 @@ export class BaseSerialized implements Serializable {
         throw new Error("Not implemented");
     }
 
-    deserialize(buffer: Buffer): Serializable {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    deserialize(_buffer: Buffer): Serializable {
         throw new Error("Not implemented");
     }
 

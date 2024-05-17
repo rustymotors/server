@@ -19,13 +19,13 @@ export class RawMessage extends SerializedBuffer {
     override deserialize(buffer: Buffer) {
         if (buffer.length < 4) {
             throw new Error(
-                `Unable to get header from buffer, got ${buffer.length}`,
+                `Unable to get header from buffer, got ${buffer.length.toString()}`,
             );
         }
         const length = buffer.readUInt16BE(2);
         if (buffer.length < length) {
             throw new Error(
-                `Expected buffer of length ${length}, got ${buffer.length}`,
+                `Expected buffer of length ${length.toString()}, got ${buffer.length.toString()}`,
             );
         }
         this._messageId = buffer.readUInt16BE(0);

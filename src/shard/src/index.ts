@@ -26,7 +26,7 @@ import { readFile } from "node:fs/promises";
  * @return {string}
  */
 export async function handleGetCert(config: Configuration): Promise<string> {
-  if (config.certificateFile === undefined) {
+  if (typeof config.certificateFile === "undefined") {
     throw new Error("Certificate file not defined");
   }
   try {
@@ -81,7 +81,7 @@ export function handleGetRegistry(config: Configuration): string {
  * @return {string}
  */
 export async function handleGetKey(config: Configuration): Promise<string> {
-  if (config.publicKeyFile === undefined) {
+  if (typeof config.publicKeyFile === "undefined") {
     throw new Error("Public key file not defined");
   }
   try {

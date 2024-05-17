@@ -11,9 +11,9 @@ import { SerializedBuffer } from "./SerializedBuffer.js";
  */
 export class NetworkMessage extends SerializedBuffer {
     private _messageId: number;
-    version: number = 0x101;
-    reserved: number = 0x0000;
-    private _checksum: number = 0x00000000;
+    version = 0x101;
+    reserved = 0x0000;
+    private _checksum = 0x00000000;
     constructor(messageId: number, data?: Buffer) {
         super(data);
         this._messageId = messageId;
@@ -31,13 +31,13 @@ export class NetworkMessage extends SerializedBuffer {
     override deserialize(buffer: Buffer) {
         if (buffer.length < 12) {
             throw new Error(
-                `Unable to get header from buffer, got ${buffer.length}`,
+                `Unable to get header from buffer, got ${buffer.length.toString()}`,
             );
         }
         const length = buffer.readUInt16BE(2);
         if (buffer.length < length) {
             throw new Error(
-                `Expected buffer of length ${length}, got ${buffer.length}`,
+                `Expected buffer of length ${length.toString()}, got ${buffer.length.toString()}`,
             );
         }
         this._messageId = buffer.readUInt16BE(0);

@@ -1,6 +1,6 @@
-export { Configuration, getServerConfiguration } from "./Configuration.js";
-export { SubThread } from "./SubThread.js";
+export { Configuration, getServerConfiguration } from "./src/Configuration.js";
 export { NetworkMessage } from "./src/NetworkMessage.js";
+export { SubThread } from "./src/SubThread.js";
 export { ServerLogger, getServerLogger } from "./src/log.js";
 
 export { RawMessage } from "./src/RawMessage.js";

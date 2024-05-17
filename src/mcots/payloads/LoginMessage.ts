@@ -22,7 +22,7 @@ export class LoginMessage extends ServerMessagePayload {
     return 2 + 4 + 4 + 4 + 4 + 4 + 13 + 4;
   }
 
-  override deserialize(data: Buffer): LoginMessage {
+  override deserialize(data: Buffer): this {
     try {
       this._assertEnoughData(data, this.getByteSize());
 

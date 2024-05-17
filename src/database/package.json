@@ -10,6 +10,8 @@
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^1.6.0",
+    "eslint": "^9.2.0",
+    "typescript-eslint": "^7.9.0",
     "vitest": "^1.6.0"
   },
   "scripts": {
@@ -23,6 +25,7 @@
     "@rustymotors/schema": "workspace:^",
     "@rustymotors/shared": "workspace:^",
     "@sentry/node": "^8.0.0",
+    "@types/node": "^20.12.12",
     "@types/pg": "^8.11.6",
     "drizzle-orm": "^0.30.10",
     "fastify": "^4.27.0",

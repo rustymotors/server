@@ -9,6 +9,8 @@
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^1.6.0",
+    "eslint": "^9.2.0",
+    "typescript-eslint": "^7.9.0",
     "vitest": "^1.6.0"
   },
   "scripts": {
@@ -20,7 +22,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@rustymotors/shared-packets": "workspace:^",
+    "@types/node": "^20.12.12",
     "fastify": "^4.27.0",
     "pino": "^9.1.0",
     "typescript": "^5.4.5"

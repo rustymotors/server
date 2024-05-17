@@ -26,7 +26,7 @@ export class SetOptionsMessage extends ServerMessagePayload {
     return 2 + 8 + 4 + 3 * 6;
   }
 
-  override deserialize(data: Buffer): SetOptionsMessage {
+  override deserialize(data: Buffer): this {
     try {
       this._assertEnoughData(data, this.getByteSize());
 

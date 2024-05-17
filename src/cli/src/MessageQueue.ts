@@ -21,13 +21,13 @@ export class MessageQueue extends SubThread {
     parentThread,
     log,
   }: {
-    parentThread: TGateway;
+    parentThread: TGateway | undefined;
     log: TServerLogger;
   }) {
     super("MessageQueue", log, 100);
 
     this.log.setName(this.name);
-    if (parentThread === undefined) {
+    if (typeof parentThread === "undefined") {
       throw new Error(`parentThread is undefined when creating ${this.name}`);
     }
     this.parentThread = parentThread;

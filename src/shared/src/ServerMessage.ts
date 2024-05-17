@@ -26,15 +26,15 @@ class HeaderShim {
  */
 export class ServerMessage extends SerializedBuffer {
   private _signature = "TOMC";
-  private _sequence: number = 0;
-  private _flags: number = 0;
+  private _sequence = 0;
+  private _flags = 0;
   _header: HeaderShim;
 
-  constructor(sequence: number = 0, flags: number = 0, data?: Buffer) {
+  constructor(sequence = 0, flags = 0, data?: Buffer) {
     super();
     this._sequence = sequence;
     this._flags = flags;
-    this._data = data || Buffer.alloc(0);
+    this._data = data ?? Buffer.alloc(0);
     this._header = new HeaderShim(this);
   }
   override serialize() {

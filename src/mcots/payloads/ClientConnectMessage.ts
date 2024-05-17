@@ -20,7 +20,7 @@ export class ClientConnectionMessage extends ServerMessagePayload {
     return 2 + 4 + 4 + 13 + 13 + 4; // 40 bytes
   }
 
-  override deserialize(data: Buffer): ClientConnectionMessage {
+  override deserialize(data: Buffer): this {
     try {
       this._assertEnoughData(data, this.getByteSize());
 

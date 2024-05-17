@@ -10,7 +10,7 @@ export default tseslint.config(
   {
     languageOptions: {
       parserOptions: {
-        project: ["./src/*/tsconfig.json"],
+        project: "./tsconfig.json",
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -18,5 +18,8 @@ export default tseslint.config(
   {
     files: ["**/*.js", "**/*.mjs", "vite.config.ts"],
     extends: [tseslint.configs.disableTypeChecked],
+  },
+  {
+    ignores: ["dist/*"],
   }
 );

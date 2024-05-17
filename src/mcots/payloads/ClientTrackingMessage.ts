@@ -17,7 +17,7 @@ export class ClientTrackingMessage extends ServerMessagePayload {
     return 0;
   }
 
-  override deserialize(data: Buffer): ClientTrackingMessage {
+  override deserialize(data: Buffer): this {
     try {
       this.messageId = data.readUInt16LE(0);
 

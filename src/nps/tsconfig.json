@@ -2,16 +2,26 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "rootDir": ".",
-    "outDir": "./dist",
-
+    "outDir": "./dist"
   },
-  "include": ["**/*.ts"],
+  "include": [
+    "./index.ts",
+    "./src/**/*.ts",
+    "./test**/*.ts",
+    "./messageStructs/**/*.ts",
+    "./gameMessageProcessors/**/*.ts",
+    "./services/**/*.ts",
+    "./types.ts",
+  ],
+  "exclude": ["node_modules/*", "dist/*", "coverage/*"],
+
   "references": [
     {
       "path": "../schema"
     },
     {
-      "path": "../shared-packets"},
+      "path": "../shared-packets"
+    },
     {
       "path": "../database"
     },
