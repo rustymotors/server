@@ -2,7 +2,9 @@
   "name": "@rustymotors/shared",
   "version": "1.0.0",
   "main": "./dist/index.js",
-  "exports": "./index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "type": "module",
   "directories": {
     "test": "test"
@@ -22,9 +24,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@sentry/node": "^8.2.1",
     "@types/node": "^20.12.12",
     "fastify": "^4.27.0",
     "pino": "^9.1.0",
+    "pino-pretty": "^11.0.0",
     "typescript": "^5.4.5"
   }
 }

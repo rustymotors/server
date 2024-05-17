@@ -2,7 +2,9 @@
   "name": "@rustymotors/schema",
   "version": "1.0.0",
   "main": "./dist/index.js",
-  "exports": "./index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "type": "module",
   "scripts": {
     "lint": "eslint .",
@@ -24,6 +26,7 @@
   "description": "",
   "dependencies": {
     "@rustymotors/shared": "workspace:^",
+    "@sentry/node": "^8.2.1",
     "@types/node": "^20.12.12",
     "drizzle-orm": "^0.30.10",
     "typescript": "^5.4.5"

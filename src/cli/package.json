@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",
-  "exports": "./index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "type": "module",
   "directories": {
     "test": "test"
@@ -24,6 +26,7 @@
   "dependencies": {
     "@rustymotors/shared": "workspace:^",
     "@rustymotors/shared-packets": "workspace:^",
+    "@sentry/node": "^8.2.1",
     "@types/node": "^20.12.12",
     "typescript": "^5.4.5"
   }

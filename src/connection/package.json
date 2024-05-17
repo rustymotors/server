@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "./dist/index.js",
   "description": "",
-  "exports": "./index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "type": "module",
   "directories": {
     "test": "test"
@@ -27,7 +29,7 @@
     "@rustymotors/schema": "workspace:^",
     "@rustymotors/shared": "workspace:^",
     "@rustymotors/shared-packets": "workspace:^",
-    "@sentry/node": "^8.0.0",
+    "@sentry/node": "^8.2.1",
     "@types/node": "^20.12.12",
     "drizzle-orm": "^0.30.10",
     "typescript": "^5.4.5"
