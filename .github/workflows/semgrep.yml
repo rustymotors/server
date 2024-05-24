@@ -19,5 +19,5 @@ jobs:
             image: returntocorp/semgrep@sha256:470852e0f80a04389afd851de9809be8e8d2287ecc709abbc7834890786323fa
         if: (github.actor != 'dependabot[bot]')
         steps:
-            - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+            - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4
             - run: semgrep ci
